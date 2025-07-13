@@ -28,7 +28,7 @@ export class TerminalService {
     private logger: Logger,
     private nodePtyService: NodePtyService,
   ) {
-    this.instanceId = Math.random().toString(36).substr(2, 9)
+    this.instanceId = Math.random().toString(36).substring(2, 11)
     this.logger.log(`TerminalService instance created: ${this.instanceId}`)
   }
 
@@ -166,8 +166,18 @@ export class TerminalService {
       }
 
       // Handle terminal exit
-      TerminalService.persistentTerminal.onExit((_code: any) => {
+      TerminalService.persistentTerminal.onExit((code: any) => {
         this.logger.log(`[${this.instanceId}] Persistent terminal exited.`)
+        
+        // Notify the current client that the process has exited
+        if (TerminalService.currentClient) {
+          try {
+            TerminalService.currentClient.emit('process-exit', code)
+          } catch (e) {
+            // Client socket probably closed
+          }
+        }
+        
         TerminalService.persistentTerminal = null
         TerminalService.currentClient = null
         TerminalService.dataListenerAttached = false

@@ -80,6 +80,7 @@ export class TerminalService {
     return !!this.term && !this.isInitializing
   }
 
+
   public reattachToElement(targetElement: ElementRef, elementResize?: Subject<any>) {
     console.debug('[Frontend] reattachToElement called')
     
@@ -199,10 +200,17 @@ export class TerminalService {
 
       // Remove existing listeners to avoid duplicates
       this.io.socket.removeAllListeners('stdout')
+      this.io.socket.removeAllListeners('process-exit')
 
       // Subscribe to incoming data events from server to client
       this.io.socket.on('stdout', (data: string) => {
         this.term.write(data)
+      })
+
+      // Handle terminal process exit - immediately start new session
+      this.io.socket.on('process-exit', () => {
+        console.debug('[Frontend] Terminal process exited during reconnect - starting new session immediately')
+        this.startSession()
       })
 
       // Handle outgoing data events from client to server
@@ -301,9 +309,9 @@ export class TerminalService {
       this.term.write('\n\r\n\rTerminal disconnected. Is the server running?\n\r\n\r')
     })
 
-    // Handle the events
+    // Handle terminal process exit - immediately start new session
     this.io.socket.on('process-exit', () => {
-      this.io.socket.emit('end')
+      console.debug('[Frontend] Terminal process exited - starting new session immediately')
       this.startSession()
     })
 
