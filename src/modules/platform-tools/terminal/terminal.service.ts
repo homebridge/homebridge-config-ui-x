@@ -1,5 +1,6 @@
 import type { EventEmitter } from 'node:events'
 
+import os from 'node:os'
 import process from 'node:process'
 
 import { Injectable } from '@nestjs/common'
@@ -33,6 +34,19 @@ export class TerminalService {
   }
 
   /**
+   * Get the preferred shell for the current platform
+   */
+  private async getPreferredShell(): Promise<string> {
+    // On macOS, prefer zsh if available
+    if (os.platform() === 'darwin' && await pathExists('/bin/zsh')) {
+      return '/bin/zsh'
+    }
+    
+    // Fallback to bash if available, otherwise sh
+    return await pathExists('/bin/bash') ? '/bin/bash' : '/bin/sh'
+  }
+
+  /**
    * Create a new terminal session
    * @param client
    * @param size
@@ -60,8 +74,8 @@ export class TerminalService {
   private async createNewTerminal(client: WsEventEmitter, size: TermSize) {
     this.logger.log('Starting new terminal session.')
 
-    // check if we should use bash or sh
-    const shell = await pathExists('/bin/bash') ? '/bin/bash' : '/bin/sh'
+    // Get the preferred shell for the current platform
+    const shell = await this.getPreferredShell()
 
     // Spawn a new shell
     const term = this.nodePtyService.spawn(shell, [], {
@@ -126,7 +140,7 @@ export class TerminalService {
     if (!TerminalService.persistentTerminal) {
       this.logger.log(`[${this.instanceId}] Creating new persistent terminal session.`)
       
-      const shell = await pathExists('/bin/bash') ? '/bin/bash' : '/bin/sh'
+      const shell = await this.getPreferredShell()
       
       TerminalService.persistentTerminal = this.nodePtyService.spawn(shell, [], {
         name: 'xterm-color',
