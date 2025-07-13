@@ -62,4 +62,7 @@ export interface AppSettingsInterface {
   menuMode: 'default' | 'freeze'
   wallpaper: string
   serverTimestamp: string
+  terminalPersistence?: boolean
+  terminalShowWarning?: boolean
+  terminalBufferSize?: number
 }

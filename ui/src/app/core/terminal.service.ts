@@ -17,15 +17,231 @@ export class TerminalService {
   private webLinksAddon: WebLinksAddon
   private resize: Subject<any>
   private elementResize: Subject<any> | undefined
+  private dataDisposable: any
+  private isInitializing = false
+  private static hasActiveTerminal = false
 
   public term: Terminal
 
   public destroyTerminal() {
+    console.debug('[Frontend] destroyTerminal called')
+    if (this.dataDisposable) {
+      this.dataDisposable.dispose()
+      this.dataDisposable = null
+    }
     this.io.end()
     this.term.dispose()
     this.resize.complete()
     if (this.elementResize) {
       this.elementResize.complete()
+    }
+    TerminalService.hasActiveTerminal = false
+    this.isInitializing = false
+  }
+
+  public destroyPersistentSession() {
+    console.debug('[Frontend] destroyPersistentSession called')
+    
+    // First destroy the frontend terminal
+    this.destroyTerminal()
+    
+    // Then tell the backend to destroy the persistent session
+    if (this.io && this.io.socket && this.io.socket.connected) {
+      console.debug('[Frontend] Sending destroy-persistent-session to backend')
+      this.io.socket.emit('destroy-persistent-session')
+    }
+  }
+
+  public detachTerminal() {
+    // Clean up UI components but keep socket connection alive for persistence
+    if (this.dataDisposable) {
+      this.dataDisposable.dispose()
+      this.dataDisposable = null
+    }
+    if (this.term) {
+      this.term.dispose()
+    }
+    if (this.resize) {
+      this.resize.complete()
+    }
+    if (this.elementResize) {
+      this.elementResize.complete()
+    }
+    // Note: We intentionally do NOT call this.io.end() here to keep the connection alive
+  }
+
+  public hasActiveSession(): boolean {
+    const hasSession = !!(this.io && this.io.socket && this.io.socket.connected)
+    console.debug('[Frontend] hasActiveSession check:', hasSession, 'io:', !!this.io, 'socket:', !!this.io?.socket, 'connected:', this.io?.socket?.connected)
+    return hasSession
+  }
+
+  public isTerminalReady(): boolean {
+    return !!this.term && !this.isInitializing
+  }
+
+  public reattachToElement(targetElement: ElementRef, elementResize?: Subject<any>) {
+    console.debug('[Frontend] reattachToElement called')
+    
+    if (!this.term || !this.io?.socket?.connected) {
+      console.debug('[Frontend] Terminal or connection not ready for reattach')
+      return
+    }
+
+    // Handle element resize events
+    this.elementResize = elementResize
+
+    // Dispose existing data listener before reattaching
+    if (this.dataDisposable) {
+      this.dataDisposable.dispose()
+    }
+
+    // Reattach terminal to new DOM element
+    this.term.open(targetElement.nativeElement)
+
+    // Always set up data listener after reattaching to DOM (term.open clears listeners)
+    console.debug('[Frontend] Setting up onData listener for input after DOM reattach')
+    this.dataDisposable = this.term.onData((data) => {
+      console.debug('[Frontend] onData triggered, sending to backend:', data)
+      if (this.io.socket.connected) {
+        this.io.socket.emit('stdin', data)
+      } else {
+        console.debug('[Frontend] Socket not connected, cannot send stdin')
+      }
+    })
+
+    // Recreate resize listeners
+    if (this.resize) {
+      this.resize.complete()
+    }
+    this.resize = new Subject()
+
+    this.term.onResize((size) => {
+      this.resize.next(size)
+    })
+
+    this.resize.pipe(debounceTime(500)).subscribe((size) => {
+      if (this.io.socket.connected) {
+        this.io.socket.emit('resize', size)
+      }
+    })
+
+    if (this.elementResize) {
+      this.elementResize.pipe(debounceTime(100)).subscribe({
+        next: () => {
+          if (this.fitAddon) {
+            this.fitAddon.fit()
+          }
+        },
+      })
+    }
+
+    // Fit the terminal
+    setTimeout(() => {
+      if (this.fitAddon) {
+        this.fitAddon.fit()
+      }
+    }, 100)
+
+    // Rejoin the backend session
+    console.debug('[Frontend] Rejoining backend session after reattach with cols:', this.term.cols, 'rows:', this.term.rows)
+    this.io.socket.emit('start-session', { cols: this.term.cols, rows: this.term.rows })
+    
+    // Add a small delay to see if the backend responds
+    setTimeout(() => {
+      console.debug('[Frontend] 1 second after emitting start-session from reattach')
+    }, 1000)
+  }
+
+  public reconnectTerminal(
+    targetElement: ElementRef,
+    termOpts: ITerminalOptions = {},
+    elementResize?: Subject<any>,
+  ) {
+    console.debug('[Frontend] reconnectTerminal called, existing connection:', !!this.io?.socket?.connected, 'initializing:', this.isInitializing, 'hasActiveTerminal:', TerminalService.hasActiveTerminal)
+    
+    if (this.isInitializing) {
+      console.debug('[Frontend] Already initializing, ignoring reconnectTerminal call')
+      return
+    }
+    
+    this.isInitializing = true
+    
+    // Handle element resize events
+    this.elementResize = elementResize
+
+    // Reuse existing connection if still active
+    if (this.io && this.io.socket && this.io.socket.connected) {
+      console.debug('[Frontend] Reusing existing connection')
+      // Create a new terminal instance for the UI
+      this.term = new Terminal(termOpts)
+      
+      // Load addons
+      this.fitAddon = new FitAddon()
+      this.webLinksAddon = new WebLinksAddon()
+      
+      setTimeout(() => {
+        this.term.loadAddon(this.fitAddon)
+        this.term.loadAddon(this.webLinksAddon)
+      })
+
+      // Create a subject to listen for resize events
+      this.resize = new Subject()
+
+      // Open the terminal in the target element
+      this.term.open(targetElement.nativeElement)
+
+      // Fit to the element
+      setTimeout(() => {
+        this.fitAddon.activate(this.term)
+        this.fitAddon.fit()
+      })
+
+      // Remove existing listeners to avoid duplicates
+      this.io.socket.removeAllListeners('stdout')
+
+      // Subscribe to incoming data events from server to client
+      this.io.socket.on('stdout', (data: string) => {
+        this.term.write(data)
+      })
+
+      // Handle outgoing data events from client to server
+      // Dispose any existing data listener first
+      if (this.dataDisposable) {
+        this.dataDisposable.dispose()
+      }
+      this.dataDisposable = this.term.onData((data) => {
+        this.io.socket.emit('stdin', data)
+      })
+
+      // Handle resize events from the client
+      this.term.onResize((size) => {
+        this.resize.next(size)
+      })
+
+      // Send resize events to server
+      this.resize.pipe(debounceTime(500)).subscribe((size) => {
+        this.io.socket.emit('resize', size)
+      })
+
+      if (this.elementResize) {
+        // Subscribe to grid resize event
+        this.elementResize.pipe(debounceTime(100)).subscribe({
+          next: () => {
+            this.fitAddon.fit()
+          },
+        })
+      }
+
+      // Rejoin the existing session
+      console.debug('[Frontend] Emitting start-session for reconnect')
+      this.io.socket.emit('start-session', { cols: this.term.cols, rows: this.term.rows })
+      
+      this.isInitializing = false
+    } else {
+      // No active connection, start fresh
+      console.debug('[Frontend] No existing connection, starting fresh')
+      this.startTerminal(targetElement, termOpts, elementResize)
     }
   }
 
@@ -34,11 +250,22 @@ export class TerminalService {
     termOpts: ITerminalOptions = {},
     elementResize?: Subject<any>,
   ) {
+    console.debug('[Frontend] startTerminal called, initializing:', this.isInitializing, 'hasActiveTerminal:', TerminalService.hasActiveTerminal)
+    
+    if (this.isInitializing || TerminalService.hasActiveTerminal) {
+      console.debug('[Frontend] Already initializing or has active terminal, ignoring startTerminal call')
+      return
+    }
+    
+    this.isInitializing = true
+    TerminalService.hasActiveTerminal = true
+    
     // Handle element resize events
     this.elementResize = elementResize
 
     // Connect to the websocket endpoint
     this.io = this.$ws.connectToNamespace('platform-tools/terminal')
+    console.debug('[Frontend] Created new websocket connection')
 
     // Create a terminal instance
     this.term = new Terminal(termOpts)
@@ -91,7 +318,7 @@ export class TerminalService {
     })
 
     // Handle outgoing data events from client to server
-    this.term.onData((data) => {
+    this.dataDisposable = this.term.onData((data) => {
       this.io.socket.emit('stdin', data)
     })
 
@@ -111,8 +338,10 @@ export class TerminalService {
   }
 
   private startSession() {
+    console.debug('[Frontend] startSession called')
     this.term.reset()
     this.io.socket.emit('start-session', { cols: this.term.cols, rows: this.term.rows })
     this.resize.next({ cols: this.term.cols, rows: this.term.rows })
+    this.isInitializing = false
   }
 }

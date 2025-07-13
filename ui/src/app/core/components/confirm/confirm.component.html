@@ -22,9 +22,9 @@
         class="btn btn-elegant"
         data-bs-dismiss="modal"
         (click)="dismissModal()"
-        [attr.aria-label]="'form.button_close' | translate"
+        [attr.aria-label]="cancelButtonLabel || ('form.button_close' | translate)"
       >
-        {{ 'form.button_close' | translate }}
+        {{ cancelButtonLabel || ('form.button_close' | translate) }}
       </button>
     </div>
     <div class="text-center"></div>
