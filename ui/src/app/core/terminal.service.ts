@@ -24,7 +24,6 @@ export class TerminalService {
   public term: Terminal
 
   public destroyTerminal() {
-    console.debug('[Frontend] destroyTerminal called')
     if (this.dataDisposable) {
       this.dataDisposable.dispose()
       this.dataDisposable = null
@@ -40,14 +39,11 @@ export class TerminalService {
   }
 
   public destroyPersistentSession() {
-    console.debug('[Frontend] destroyPersistentSession called')
-    
     // First destroy the frontend terminal
     this.destroyTerminal()
-    
+
     // Then tell the backend to destroy the persistent session
     if (this.io && this.io.socket && this.io.socket.connected) {
-      console.debug('[Frontend] Sending destroy-persistent-session to backend')
       this.io.socket.emit('destroy-persistent-session')
     }
   }
@@ -72,7 +68,6 @@ export class TerminalService {
 
   public hasActiveSession(): boolean {
     const hasSession = !!(this.io && this.io.socket && this.io.socket.connected)
-    console.debug('[Frontend] hasActiveSession check:', hasSession, 'io:', !!this.io, 'socket:', !!this.io?.socket, 'connected:', this.io?.socket?.connected)
     return hasSession
   }
 
@@ -80,12 +75,8 @@ export class TerminalService {
     return !!this.term && !this.isInitializing
   }
 
-
   public reattachToElement(targetElement: ElementRef, elementResize?: Subject<any>) {
-    console.debug('[Frontend] reattachToElement called')
-    
     if (!this.term || !this.io?.socket?.connected) {
-      console.debug('[Frontend] Terminal or connection not ready for reattach')
       return
     }
 
@@ -101,13 +92,9 @@ export class TerminalService {
     this.term.open(targetElement.nativeElement)
 
     // Always set up data listener after reattaching to DOM (term.open clears listeners)
-    console.debug('[Frontend] Setting up onData listener for input after DOM reattach')
     this.dataDisposable = this.term.onData((data) => {
-      console.debug('[Frontend] onData triggered, sending to backend:', data)
       if (this.io.socket.connected) {
         this.io.socket.emit('stdin', data)
-      } else {
-        console.debug('[Frontend] Socket not connected, cannot send stdin')
       }
     })
 
@@ -145,12 +132,10 @@ export class TerminalService {
     }, 100)
 
     // Rejoin the backend session
-    console.debug('[Frontend] Rejoining backend session after reattach with cols:', this.term.cols, 'rows:', this.term.rows)
     this.io.socket.emit('start-session', { cols: this.term.cols, rows: this.term.rows })
-    
+
     // Add a small delay to see if the backend responds
     setTimeout(() => {
-      console.debug('[Frontend] 1 second after emitting start-session from reattach')
     }, 1000)
   }
 
@@ -159,28 +144,24 @@ export class TerminalService {
     termOpts: ITerminalOptions = {},
     elementResize?: Subject<any>,
   ) {
-    console.debug('[Frontend] reconnectTerminal called, existing connection:', !!this.io?.socket?.connected, 'initializing:', this.isInitializing, 'hasActiveTerminal:', TerminalService.hasActiveTerminal)
-    
     if (this.isInitializing) {
-      console.debug('[Frontend] Already initializing, ignoring reconnectTerminal call')
       return
     }
-    
+
     this.isInitializing = true
-    
+
     // Handle element resize events
     this.elementResize = elementResize
 
     // Reuse existing connection if still active
     if (this.io && this.io.socket && this.io.socket.connected) {
-      console.debug('[Frontend] Reusing existing connection')
       // Create a new terminal instance for the UI
       this.term = new Terminal(termOpts)
-      
+
       // Load addons
       this.fitAddon = new FitAddon()
       this.webLinksAddon = new WebLinksAddon()
-      
+
       setTimeout(() => {
         this.term.loadAddon(this.fitAddon)
         this.term.loadAddon(this.webLinksAddon)
@@ -209,7 +190,6 @@ export class TerminalService {
 
       // Handle terminal process exit - immediately start new session
       this.io.socket.on('process-exit', () => {
-        console.debug('[Frontend] Terminal process exited during reconnect - starting new session immediately')
         this.startSession()
       })
 
@@ -242,13 +222,11 @@ export class TerminalService {
       }
 
       // Rejoin the existing session
-      console.debug('[Frontend] Emitting start-session for reconnect')
       this.io.socket.emit('start-session', { cols: this.term.cols, rows: this.term.rows })
-      
+
       this.isInitializing = false
     } else {
       // No active connection, start fresh
-      console.debug('[Frontend] No existing connection, starting fresh')
       this.startTerminal(targetElement, termOpts, elementResize)
     }
   }
@@ -258,22 +236,18 @@ export class TerminalService {
     termOpts: ITerminalOptions = {},
     elementResize?: Subject<any>,
   ) {
-    console.debug('[Frontend] startTerminal called, initializing:', this.isInitializing, 'hasActiveTerminal:', TerminalService.hasActiveTerminal)
-    
     if (this.isInitializing || TerminalService.hasActiveTerminal) {
-      console.debug('[Frontend] Already initializing or has active terminal, ignoring startTerminal call')
       return
     }
-    
+
     this.isInitializing = true
     TerminalService.hasActiveTerminal = true
-    
+
     // Handle element resize events
     this.elementResize = elementResize
 
     // Connect to the websocket endpoint
     this.io = this.$ws.connectToNamespace('platform-tools/terminal')
-    console.debug('[Frontend] Created new websocket connection')
 
     // Create a terminal instance
     this.term = new Terminal(termOpts)
@@ -311,7 +285,6 @@ export class TerminalService {
 
     // Handle terminal process exit - immediately start new session
     this.io.socket.on('process-exit', () => {
-      console.debug('[Frontend] Terminal process exited - starting new session immediately')
       this.startSession()
     })
 
@@ -346,7 +319,6 @@ export class TerminalService {
   }
 
   private startSession() {
-    console.debug('[Frontend] startSession called')
     this.term.reset()
     this.io.socket.emit('start-session', { cols: this.term.cols, rows: this.term.rows })
     this.resize.next({ cols: this.term.cols, rows: this.term.rows })

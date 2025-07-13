@@ -299,7 +299,6 @@ export class TerminalService {
 
     this.logger.log(`[${this.instanceId}] Persistent terminal session destroyed`)
   }
-
 }
 
 export interface WsEventEmitter extends EventEmitter {

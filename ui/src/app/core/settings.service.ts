@@ -67,7 +67,7 @@ export class SettingsService {
     this.lightingMode = data.lightingMode
     this.wallpaper = data.wallpaper
     this.terminalPersistence = data.terminalPersistence === true // default to false
-    this.terminalShowWarning = data.terminalShowWarning === true // default to false  
+    this.terminalShowWarning = data.terminalShowWarning === true // default to false
     this.terminalBufferSize = data.terminalBufferSize || 50000
     this.setLightingMode(this.lightingMode, 'user')
     this.setTheme(data.theme)

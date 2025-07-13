@@ -665,12 +665,12 @@ export class SettingsComponent implements OnInit {
     try {
       this.uiTerminalPersistenceIsSaving = true
       this.$settings.setItem('terminalPersistence', value)
-      
+
       // If persistence is being turned off, clean up any existing session completely
       if (!value && this.$terminal.hasActiveSession()) {
         this.$terminal.destroyPersistentSession()
       }
-      
+
       await this.saveUiSettingChange('terminalPersistence', value)
       setTimeout(() => {
         this.uiTerminalPersistenceIsSaving = false
