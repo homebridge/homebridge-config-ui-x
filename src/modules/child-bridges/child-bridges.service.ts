@@ -1,15 +1,11 @@
 import { Injectable } from '@nestjs/common'
 
-import { ConfigService } from '../../core/config/config.service'
 import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.service'
-import { Logger } from '../../core/logger/logger.service'
 import { AccessoriesService } from '../accessories/accessories.service'
 
 @Injectable()
 export class ChildBridgesService {
   constructor(
-    private readonly logger: Logger,
-    private readonly configService: ConfigService,
     private readonly homebridgeIpcService: HomebridgeIpcService,
     private readonly accessoriesService: AccessoriesService,
   ) {}
