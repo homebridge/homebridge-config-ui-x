@@ -41,7 +41,7 @@ export class TerminalService {
     if (os.platform() === 'darwin' && await pathExists('/bin/zsh')) {
       return '/bin/zsh'
     }
-    
+
     // Fallback to bash if available, otherwise sh
     return await pathExists('/bin/bash') ? '/bin/bash' : '/bin/sh'
   }
@@ -135,13 +135,13 @@ export class TerminalService {
 
   private async attachToPersistentTerminal(client: WsEventEmitter, size: TermSize) {
     this.logger.log(`[${this.instanceId}] attachToPersistentTerminal called`)
-    
+
     // If we don't have a persistent terminal, create one
     if (!TerminalService.persistentTerminal) {
       this.logger.log(`[${this.instanceId}] Creating new persistent terminal session.`)
-      
+
       const shell = await this.getPreferredShell()
-      
+
       TerminalService.persistentTerminal = this.nodePtyService.spawn(shell, [], {
         name: 'xterm-color',
         cols: size.cols,
@@ -156,16 +156,16 @@ export class TerminalService {
         TerminalService.persistentTerminal.onData((data) => {
           try {
             this.logger.log(`[${this.instanceId}] Terminal output: "${data}", length: ${data.length}`)
-            
+
             // Add to buffer for future clients
             TerminalService.terminalBuffer += data
-            
+
             // Keep buffer size reasonable (configurable)
             const maxBufferSize = this.configService.ui.terminalBufferSize || 50000
             if (TerminalService.terminalBuffer.length > maxBufferSize) {
               TerminalService.terminalBuffer = TerminalService.terminalBuffer.slice(-maxBufferSize)
             }
-            
+
             if (TerminalService.currentClient) {
               this.logger.log(`[${this.instanceId}] Sending output to current client`)
               TerminalService.currentClient.emit('stdout', data)
@@ -182,7 +182,7 @@ export class TerminalService {
       // Handle terminal exit
       TerminalService.persistentTerminal.onExit((code: any) => {
         this.logger.log(`[${this.instanceId}] Persistent terminal exited.`)
-        
+
         // Notify the current client that the process has exited
         if (TerminalService.currentClient) {
           try {
@@ -191,7 +191,7 @@ export class TerminalService {
             // Client socket probably closed
           }
         }
-        
+
         TerminalService.persistentTerminal = null
         TerminalService.currentClient = null
         TerminalService.dataListenerAttached = false
@@ -209,7 +209,7 @@ export class TerminalService {
     this.logger.log(`[${this.instanceId}] Cleaning up existing client listeners`)
     client.removeAllListeners('stdin')
     client.removeAllListeners('resize')
-    
+
     // Switch to the new client
     this.logger.log(`[${this.instanceId}] Switching current client`)
     TerminalService.currentClient = client
@@ -228,7 +228,7 @@ export class TerminalService {
 
     // Always add listeners for the new client (each client needs its own listeners)
     this.logger.log(`[${this.instanceId}] Adding stdin and resize listeners`)
-    
+
     client.on('stdin', (data) => {
       this.logger.log(`[${this.instanceId}] Received stdin from client: "${data}", length: ${data.length}`)
       if (TerminalService.persistentTerminal) {
@@ -251,19 +251,19 @@ export class TerminalService {
     // Clean up client listeners on disconnect (but keep terminal alive)
     const onEnd = () => {
       this.logger.log(`[${this.instanceId}] Client disconnecting`)
-      
+
       // Remove all listeners from this specific client
       client.removeAllListeners('stdin')
       client.removeAllListeners('resize')
       client.removeAllListeners('end')
       client.removeAllListeners('disconnect')
-      
+
       // Clear current client if this was the active one
       if (TerminalService.currentClient === client) {
         TerminalService.currentClient = null
         this.logger.log(`[${this.instanceId}] Cleared current client`)
       }
-      
+
       this.logger.log(`[${this.instanceId}] Client cleanup complete`)
     }
 
@@ -277,7 +277,7 @@ export class TerminalService {
    */
   destroyPersistentSession() {
     this.logger.log(`[${this.instanceId}] Destroying persistent terminal session`)
-    
+
     if (TerminalService.persistentTerminal) {
       try {
         this.logger.log(`[${this.instanceId}] Killing persistent terminal process`)
@@ -290,13 +290,13 @@ export class TerminalService {
 
     // Clear the terminal buffer
     TerminalService.terminalBuffer = ''
-    
+
     // Clear data listener flag
     TerminalService.dataListenerAttached = false
-    
+
     // Clear current client reference
     TerminalService.currentClient = null
-    
+
     this.logger.log(`[${this.instanceId}] Persistent terminal session destroyed`)
   }
 
