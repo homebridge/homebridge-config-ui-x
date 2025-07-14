@@ -243,7 +243,7 @@
   "platform.version.restart_required": "Homebridge UI v{{ uiVersion }} has been installed, but the server service is still running v{{ serverVersion }}.",
   "platform.version.service_restart_required": "Restart Required",
   "platform.terminal.confirm_navigation_title": "Terminal session will be terminated",
-  "platform.terminal.confirm_navigation_message": "Navigating away from this page will terminate your current session, any running processes will be stopped.<br>Are you sure you want to terminate your session?",
+  "platform.terminal.confirm_navigation_message": "Navigating away from this page will terminate your current session, all foreground processes will be terminated.<br>Are you sure you want to terminate your session?",
   "platform.terminal.confirm_navigation_button": "Terminate Session",
   "platform.terminal.beforeunload_message": "Your terminal session will be terminated.",
   "plugins.bridge.action_error": "Failed to {{ action }} child bridge(s).",
