@@ -17,18 +17,21 @@
   </div>
   <div class="modal-footer justify-content-between">
     <div class="text-start">
+      @if (cancelButtonLabel) {
       <button
         type="button"
         class="btn btn-elegant"
         data-bs-dismiss="modal"
         (click)="dismissModal()"
-        [attr.aria-label]="'form.button_close' | translate"
+        [attr.aria-label]="cancelButtonLabel"
       >
-        {{ 'form.button_close' | translate }}
+        {{ cancelButtonLabel }}
       </button>
+      }
     </div>
     <div class="text-center"></div>
     <div class="text-end">
+      @if (confirmButtonLabel) {
       <button
         type="button"
         class="btn {{ confirmButtonClass || 'btn-primary' }}"
@@ -37,6 +40,7 @@
       >
         {{ confirmButtonLabel }}
       </button>
+      }
     </div>
   </div>
 </div>

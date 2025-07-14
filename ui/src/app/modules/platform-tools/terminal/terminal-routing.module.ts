@@ -5,6 +5,7 @@ const routes: Routes = [
   {
     path: '',
     loadComponent: () => import('@/app/modules/platform-tools/terminal/terminal.component').then(m => m.TerminalComponent),
+    canDeactivate: [(component: any) => component.canDeactivate ? component.canDeactivate() : true],
   },
 ]
 

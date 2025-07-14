@@ -24,4 +24,9 @@ export class TerminalGateway {
   startTerminalSession(client: WsEventEmitter, payload: TermSize) {
     return this.terminalService.startSession(client, payload)
   }
+
+  @SubscribeMessage('destroy-persistent-session')
+  destroyPersistentSession() {
+    return this.terminalService.destroyPersistentSession()
+  }
 }

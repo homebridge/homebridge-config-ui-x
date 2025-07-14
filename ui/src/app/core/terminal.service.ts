@@ -1,7 +1,7 @@
 import { ElementRef, inject, Injectable } from '@angular/core'
 import { Subject } from 'rxjs'
 import { debounceTime } from 'rxjs/operators'
-import { ITerminalOptions, Terminal } from 'xterm'
+import { IDisposable, ITerminalOptions, Terminal } from 'xterm'
 import { FitAddon } from 'xterm-addon-fit'
 import { WebLinksAddon } from 'xterm-addon-web-links'
 
@@ -17,15 +17,237 @@ export class TerminalService {
   private webLinksAddon: WebLinksAddon
   private resize: Subject<any>
   private elementResize: Subject<any> | undefined
+  private dataDisposable: IDisposable | null = null
+  private isInitializing = false
+  private static hasActiveTerminal = false
+  private static cleanupRegistered = false
 
   public term: Terminal
 
   public destroyTerminal() {
+    if (this.dataDisposable) {
+      this.dataDisposable.dispose()
+      this.dataDisposable = null
+    }
     this.io.end()
     this.term.dispose()
     this.resize.complete()
     if (this.elementResize) {
       this.elementResize.complete()
+    }
+    TerminalService.hasActiveTerminal = false
+    this.isInitializing = false
+    localStorage.removeItem('homebridge-terminal-active')
+  }
+
+  private tryAcquireTerminal(): boolean {
+    const isTerminalActive = localStorage.getItem('homebridge-terminal-active') === 'true'
+
+    if (this.isInitializing || isTerminalActive) {
+      return false
+    }
+
+    this.isInitializing = true
+    TerminalService.hasActiveTerminal = true
+    localStorage.setItem('homebridge-terminal-active', 'true')
+
+    // Register cleanup on page unload (only once)
+    if (!TerminalService.cleanupRegistered) {
+      TerminalService.cleanupRegistered = true
+      window.addEventListener('beforeunload', () => {
+        localStorage.removeItem('homebridge-terminal-active')
+      })
+    }
+
+    return true
+  }
+
+  public destroyPersistentSession() {
+    // First destroy the frontend terminal
+    this.destroyTerminal()
+
+    // Then tell the backend to destroy the persistent session
+    if (this.io && this.io.socket && this.io.socket.connected) {
+      this.io.socket.emit('destroy-persistent-session')
+    }
+  }
+
+  public detachTerminal() {
+    // Clean up UI components but keep socket connection alive for persistence
+    if (this.dataDisposable) {
+      this.dataDisposable.dispose()
+      this.dataDisposable = null
+    }
+    if (this.term) {
+      this.term.dispose()
+    }
+    if (this.resize) {
+      this.resize.complete()
+    }
+    if (this.elementResize) {
+      this.elementResize.complete()
+    }
+    // Note: We intentionally do NOT call this.io.end() here to keep the connection alive
+  }
+
+  public hasActiveSession(): boolean {
+    const hasSession = !!(this.io && this.io.socket && this.io.socket.connected)
+    return hasSession
+  }
+
+  public isTerminalReady(): boolean {
+    return !!this.term && !this.isInitializing
+  }
+
+  public reattachToElement(targetElement: ElementRef, elementResize?: Subject<any>) {
+    if (!this.term || !this.io?.socket?.connected) {
+      return
+    }
+
+    // Handle element resize events
+    this.elementResize = elementResize
+
+    // Dispose existing data listener before reattaching
+    if (this.dataDisposable) {
+      this.dataDisposable.dispose()
+    }
+
+    // Reattach terminal to new DOM element
+    this.term.open(targetElement.nativeElement)
+
+    // Always set up data listener after reattaching to DOM (term.open clears listeners)
+    this.dataDisposable = this.term.onData((data) => {
+      if (this.io.socket.connected) {
+        this.io.socket.emit('stdin', data)
+      }
+    })
+
+    // Recreate resize listeners
+    if (this.resize) {
+      this.resize.complete()
+    }
+    this.resize = new Subject()
+
+    this.term.onResize((size) => {
+      this.resize.next(size)
+    })
+
+    this.resize.pipe(debounceTime(500)).subscribe((size) => {
+      if (this.io.socket.connected) {
+        this.io.socket.emit('resize', size)
+      }
+    })
+
+    if (this.elementResize) {
+      this.elementResize.pipe(debounceTime(100)).subscribe({
+        next: () => {
+          if (this.fitAddon) {
+            this.fitAddon.fit()
+          }
+        },
+      })
+    }
+
+    // Fit the terminal
+    setTimeout(() => {
+      if (this.fitAddon) {
+        this.fitAddon.fit()
+      }
+    }, 100)
+
+    // Rejoin the backend session
+    this.io.socket.emit('start-session', { cols: this.term.cols, rows: this.term.rows })
+  }
+
+  public reconnectTerminal(
+    targetElement: ElementRef,
+    termOpts: ITerminalOptions = {},
+    elementResize?: Subject<any>,
+  ) {
+    if (this.isInitializing) {
+      return
+    }
+
+    this.isInitializing = true
+
+    // Handle element resize events
+    this.elementResize = elementResize
+
+    // Reuse existing connection if still active
+    if (this.io && this.io.socket && this.io.socket.connected) {
+      // Create a new terminal instance for the UI
+      this.term = new Terminal(termOpts)
+
+      // Load addons
+      this.fitAddon = new FitAddon()
+      this.webLinksAddon = new WebLinksAddon()
+
+      setTimeout(() => {
+        this.term.loadAddon(this.fitAddon)
+        this.term.loadAddon(this.webLinksAddon)
+      })
+
+      // Create a subject to listen for resize events
+      this.resize = new Subject()
+
+      // Open the terminal in the target element
+      this.term.open(targetElement.nativeElement)
+
+      // Fit to the element
+      setTimeout(() => {
+        this.fitAddon.activate(this.term)
+        this.fitAddon.fit()
+      })
+
+      // Remove existing listeners to avoid duplicates
+      this.io.socket.removeAllListeners('stdout')
+      this.io.socket.removeAllListeners('process-exit')
+
+      // Subscribe to incoming data events from server to client
+      this.io.socket.on('stdout', (data: string) => {
+        this.term.write(data)
+      })
+
+      // Handle terminal process exit - immediately start new session
+      this.io.socket.on('process-exit', () => {
+        this.startSession()
+      })
+
+      // Handle outgoing data events from client to server
+      // Dispose any existing data listener first
+      if (this.dataDisposable) {
+        this.dataDisposable.dispose()
+      }
+      this.dataDisposable = this.term.onData((data) => {
+        this.io.socket.emit('stdin', data)
+      })
+
+      // Handle resize events from the client
+      this.term.onResize((size) => {
+        this.resize.next(size)
+      })
+
+      // Send resize events to server
+      this.resize.pipe(debounceTime(500)).subscribe((size) => {
+        this.io.socket.emit('resize', size)
+      })
+
+      if (this.elementResize) {
+        // Subscribe to grid resize event
+        this.elementResize.pipe(debounceTime(100)).subscribe({
+          next: () => {
+            this.fitAddon.fit()
+          },
+        })
+      }
+
+      // Rejoin the existing session
+      this.io.socket.emit('start-session', { cols: this.term.cols, rows: this.term.rows })
+
+      this.isInitializing = false
+    } else {
+      // No active connection, start fresh
+      this.startTerminal(targetElement, termOpts, elementResize)
     }
   }
 
@@ -33,7 +255,11 @@ export class TerminalService {
     targetElement: ElementRef,
     termOpts: ITerminalOptions = {},
     elementResize?: Subject<any>,
-  ) {
+  ): boolean {
+    if (!this.tryAcquireTerminal()) {
+      return false
+    }
+
     // Handle element resize events
     this.elementResize = elementResize
 
@@ -74,9 +300,8 @@ export class TerminalService {
       this.term.write('\n\r\n\rTerminal disconnected. Is the server running?\n\r\n\r')
     })
 
-    // Handle the events
+    // Handle terminal process exit - immediately start new session
     this.io.socket.on('process-exit', () => {
-      this.io.socket.emit('end')
       this.startSession()
     })
 
@@ -91,7 +316,7 @@ export class TerminalService {
     })
 
     // Handle outgoing data events from client to server
-    this.term.onData((data) => {
+    this.dataDisposable = this.term.onData((data) => {
       this.io.socket.emit('stdin', data)
     })
 
@@ -108,11 +333,13 @@ export class TerminalService {
         },
       })
     }
+    return true
   }
 
   private startSession() {
     this.term.reset()
     this.io.socket.emit('start-session', { cols: this.term.cols, rows: this.term.rows })
     this.resize.next({ cols: this.term.cols, rows: this.term.rows })
+    this.isInitializing = false
   }
 }

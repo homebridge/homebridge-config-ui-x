@@ -15,6 +15,7 @@ export class ConfirmComponent {
   @Input() confirmButtonLabel: string
   @Input() confirmButtonClass: string
   @Input() faIconClass: string
+  @Input() cancelButtonLabel?: string
 
   public dismissModal() {
     this.$activeModal.dismiss('Dismiss')
