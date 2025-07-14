@@ -1,5 +1,5 @@
 import { NgOptimizedImage } from '@angular/common'
-import { provideHttpClient, withInterceptorsFromDi } from '@angular/common/http'
+import { HttpRequest, provideHttpClient, withFetch, withInterceptors } from '@angular/common/http'
 import { enableProdMode, importProvidersFrom, LOCALE_ID } from '@angular/core'
 import { bootstrapApplication, BrowserModule } from '@angular/platform-browser'
 import { provideAnimations } from '@angular/platform-browser/animations'
@@ -11,7 +11,7 @@ import { ToastrModule } from 'ngx-toastr'
 
 import { AppRoutingModule } from '@/app/app-routing.module'
 import { AppComponent } from '@/app/app.component'
-import { AuthModule } from '@/app/core/auth/auth.module'
+import { AuthModule, tokenGetter } from '@/app/core/auth/auth.module'
 import { supportedLocales } from '@/app/core/locales'
 import { onMonacoLoad } from '@/app/core/monaco-editor.service'
 import { LoginModule } from '@/app/modules/login/login.module'
@@ -25,28 +25,54 @@ if (environment.production) {
   enableProdMode()
 }
 
+export function jwtInterceptor(req: HttpRequest<any>, next: any) {
+  const token = tokenGetter()
+  if (token) {
+    const cloned = req.clone({
+      setHeaders: {
+        Authorization: `bearer ${token}`,
+      },
+    })
+    return next(cloned)
+  }
+  return next(req)
+}
+
 bootstrapApplication(AppComponent, {
   providers: [
-    importProvidersFrom(BrowserModule, TranslateModule.forRoot(), ToastrModule.forRoot({
-      autoDismiss: true,
-      newestOnTop: false,
-      closeButton: true,
-      maxOpened: 2,
-      positionClass: 'toast-bottom-right',
-    }), NgbModule, MonacoEditorModule.forRoot({
-      defaultOptions: {
-        scrollBeyondLastLine: false,
-        quickSuggestions: true,
-        parameterHints: true,
-        formatOnType: true,
-        formatOnPaste: true,
-        folding: true,
-        minimap: {
-          enabled: false,
+    importProvidersFrom(
+      BrowserModule,
+      TranslateModule.forRoot(),
+      ToastrModule.forRoot({
+        autoDismiss: true,
+        newestOnTop: false,
+        closeButton: true,
+        maxOpened: 2,
+        positionClass: 'toast-bottom-right',
+      }),
+      NgbModule,
+      MonacoEditorModule.forRoot({
+        defaultOptions: {
+          scrollBeyondLastLine: false,
+          quickSuggestions: true,
+          parameterHints: true,
+          formatOnType: true,
+          formatOnPaste: true,
+          folding: true,
+          minimap: {
+            enabled: false,
+          },
         },
-      },
-      onMonacoLoad,
-    }), DragulaModule.forRoot(), AuthModule, LoginModule, StatusModule, RestartModule, AppRoutingModule, NgOptimizedImage),
+        onMonacoLoad,
+      }),
+      DragulaModule.forRoot(),
+      AuthModule,
+      LoginModule,
+      StatusModule,
+      RestartModule,
+      AppRoutingModule,
+      NgOptimizedImage,
+    ),
     {
       provide: LOCALE_ID,
       useFactory: (translate: TranslateService) => {
@@ -59,6 +85,6 @@ bootstrapApplication(AppComponent, {
       deps: [TranslateService],
     },
     provideAnimations(),
-    provideHttpClient(withInterceptorsFromDi()),
+    provideHttpClient(withFetch(), withInterceptors([jwtInterceptor])),
   ],
 }).catch(err => console.error(err))
