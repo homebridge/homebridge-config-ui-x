@@ -84,6 +84,7 @@ export class SettingsComponent implements OnInit {
   public runningInDocker = this.$settings.env.runningInDocker
   public runningOnRaspberryPi = this.$settings.env.runningOnRaspberryPi
   public platform = this.$settings.env.platform
+  public enableTerminalAccess = this.$settings.env.enableTerminalAccess
 
   public hbNameIsInvalid = false
   public hbNameIsSaving = false
@@ -111,7 +112,7 @@ export class SettingsComponent implements OnInit {
   public uiTerminalShowWarningFormControl = new FormControl(false)
 
   public uiTerminalBufferSizeIsSaving = false
-  public uiTerminalBufferSizeFormControl = new FormControl(50000)
+  public uiTerminalBufferSizeFormControl = new FormControl(globalThis.terminal.bufferSize)
 
   public hbDebugIsSaving = false
   public hbDebugFormControl = new FormControl(false)

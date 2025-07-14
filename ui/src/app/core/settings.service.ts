@@ -34,7 +34,7 @@ export class SettingsService {
   public wallpaper: string
   public terminalPersistence = false
   public terminalShowWarning = false
-  public terminalBufferSize = 50000
+  public terminalBufferSize = globalThis.terminal.bufferSize
   public serverTimeOffset = 0
   public rtl = false // set true if current translation is RLT
   public onSettingsLoaded = this.settingsLoadedSubject.pipe(first())
@@ -68,7 +68,7 @@ export class SettingsService {
     this.wallpaper = data.wallpaper
     this.terminalPersistence = data.terminalPersistence === true // default to false
     this.terminalShowWarning = data.terminalShowWarning === true // default to false
-    this.terminalBufferSize = data.terminalBufferSize || 50000
+    this.terminalBufferSize = data.terminalBufferSize || globalThis.terminal.bufferSize
     this.setLightingMode(this.lightingMode, 'user')
     this.setTheme(data.theme)
     this.setMenuMode(data.menuMode)

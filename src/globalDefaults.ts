@@ -7,3 +7,8 @@ globalThis.backup = {
   maxBackupFileSize: 10 * 1024 * 1024,
   maxBackupFileSizeText: '10MB',
 }
+
+globalThis.terminal = {
+  // Default buffer size for terminal output in bytes
+  bufferSize: 50000,
+}

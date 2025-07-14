@@ -36,7 +36,7 @@ export class TerminalService {
   /**
    * Get the preferred shell for the current platform
    */
-  private async getPreferredShell(): Promise<string> {
+  private async getPreferredShell(): Promise<'/bin/zsh' | '/bin/bash' | '/bin/sh'> {
     // On macOS, prefer zsh if available
     if (os.platform() === 'darwin' && await pathExists('/bin/zsh')) {
       return '/bin/zsh'
@@ -161,7 +161,7 @@ export class TerminalService {
             TerminalService.terminalBuffer += data
 
             // Keep buffer size reasonable (configurable)
-            const maxBufferSize = this.configService.ui.terminalBufferSize || 50000
+            const maxBufferSize = this.configService.ui.terminalBufferSize || globalThis.terminal.bufferSize
             if (TerminalService.terminalBuffer.length > maxBufferSize) {
               TerminalService.terminalBuffer = TerminalService.terminalBuffer.slice(-maxBufferSize)
             }

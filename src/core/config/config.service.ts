@@ -219,7 +219,7 @@ export class ConfigService {
       menuMode: this.ui.menuMode || 'default',
       terminalPersistence: Boolean(this.ui.terminalPersistence),
       terminalShowWarning: Boolean(this.ui.terminalShowWarning),
-      terminalBufferSize: this.ui.terminalBufferSize || 50000,
+      terminalBufferSize: this.ui.terminalBufferSize || globalThis.terminal.bufferSize,
     }
 
     if (!authorized) {
