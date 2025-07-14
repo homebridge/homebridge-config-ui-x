@@ -20,6 +20,7 @@ export class TerminalService {
   private dataDisposable: IDisposable | null = null
   private isInitializing = false
   private static hasActiveTerminal = false
+  private static cleanupRegistered = false
 
   public term: Terminal
 
@@ -36,6 +37,32 @@ export class TerminalService {
     }
     TerminalService.hasActiveTerminal = false
     this.isInitializing = false
+    localStorage.removeItem('homebridge-terminal-active')
+  }
+
+  private tryAcquireTerminal(): boolean {
+    const isTerminalActive = localStorage.getItem('homebridge-terminal-active') === 'true'
+    console.log('tryAcquireTerminal called - isInitializing:', this.isInitializing, 'isTerminalActive:', isTerminalActive)
+    
+    if (this.isInitializing || isTerminalActive) {
+      console.log('tryAcquireTerminal returning false - terminal already active')
+      return false
+    }
+    
+    this.isInitializing = true
+    TerminalService.hasActiveTerminal = true
+    localStorage.setItem('homebridge-terminal-active', 'true')
+    
+    // Register cleanup on page unload (only once)
+    if (!TerminalService.cleanupRegistered) {
+      TerminalService.cleanupRegistered = true
+      window.addEventListener('beforeunload', () => {
+        localStorage.removeItem('homebridge-terminal-active')
+      })
+    }
+    
+    console.log('tryAcquireTerminal returning true - terminal acquired')
+    return true
   }
 
   public destroyPersistentSession() {
@@ -231,13 +258,10 @@ export class TerminalService {
     targetElement: ElementRef,
     termOpts: ITerminalOptions = {},
     elementResize?: Subject<any>,
-  ) {
-    if (this.isInitializing || TerminalService.hasActiveTerminal) {
-      return
+  ): boolean {
+    if (!this.tryAcquireTerminal()) {
+      return false
     }
-
-    this.isInitializing = true
-    TerminalService.hasActiveTerminal = true
 
     // Handle element resize events
     this.elementResize = elementResize
@@ -312,6 +336,7 @@ export class TerminalService {
         },
       })
     }
+    return true
   }
 
   private startSession() {

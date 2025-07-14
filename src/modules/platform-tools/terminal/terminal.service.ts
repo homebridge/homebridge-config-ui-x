@@ -93,10 +93,10 @@ export class TerminalService {
     })
 
     // Let the client know when the session ends
-    term.onExit((code) => {
+    term.onExit((exitInfo: { exitCode: number; signal?: number }) => {
       try {
         if (!this.ending) {
-          client.emit('process-exit', code)
+          client.emit('process-exit', exitInfo.exitCode)
         }
       } catch (e) {
         // The client socket probably closed
@@ -181,13 +181,13 @@ export class TerminalService {
       }
 
       // Handle terminal exit
-      TerminalService.persistentTerminal.onExit((code: number) => {
+      TerminalService.persistentTerminal.onExit((exitInfo: { exitCode: number; signal?: number }) => {
         this.logger.log(`[${this.instanceId}] Persistent terminal exited.`)
 
         // Notify the current client that the process has exited
         if (TerminalService.currentClient) {
           try {
-            TerminalService.currentClient.emit('process-exit', code)
+            TerminalService.currentClient.emit('process-exit', exitInfo.exitCode)
           } catch (e) {
             // Client socket probably closed
           }
