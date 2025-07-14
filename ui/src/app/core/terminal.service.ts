@@ -42,17 +42,15 @@ export class TerminalService {
 
   private tryAcquireTerminal(): boolean {
     const isTerminalActive = localStorage.getItem('homebridge-terminal-active') === 'true'
-    console.log('tryAcquireTerminal called - isInitializing:', this.isInitializing, 'isTerminalActive:', isTerminalActive)
-    
+
     if (this.isInitializing || isTerminalActive) {
-      console.log('tryAcquireTerminal returning false - terminal already active')
       return false
     }
-    
+
     this.isInitializing = true
     TerminalService.hasActiveTerminal = true
     localStorage.setItem('homebridge-terminal-active', 'true')
-    
+
     // Register cleanup on page unload (only once)
     if (!TerminalService.cleanupRegistered) {
       TerminalService.cleanupRegistered = true
@@ -60,8 +58,7 @@ export class TerminalService {
         localStorage.removeItem('homebridge-terminal-active')
       })
     }
-    
-    console.log('tryAcquireTerminal returning true - terminal acquired')
+
     return true
   }
 

@@ -46,7 +46,6 @@ export class TerminalComponent implements OnInit, OnDestroy {
 
     // If terminal is already ready, use reconnectTerminal for proper session management
     if (this.$terminal.isTerminalReady()) {
-      console.log('Terminal is already ready, using reconnectTerminal')
       this.$terminal.reconnectTerminal(this.termTarget(), {}, this.resizeEvent)
       setTimeout(() => {
         if (this.$terminal.term) {
@@ -57,16 +56,11 @@ export class TerminalComponent implements OnInit, OnDestroy {
     }
 
     // Start or reconnect to the terminal
-    console.log('Terminal component - persistence:', this.$settings.terminalPersistence, 'hasActiveSession:', this.$terminal.hasActiveSession())
     if (this.$settings.terminalPersistence && this.$terminal.hasActiveSession()) {
-      console.log('Using reconnectTerminal path')
       this.$terminal.reconnectTerminal(this.termTarget(), {}, this.resizeEvent)
     } else {
-      console.log('Using startTerminal path')
       const terminalStarted = this.$terminal.startTerminal(this.termTarget(), {}, this.resizeEvent)
-      console.log('startTerminal returned:', terminalStarted)
       if (!terminalStarted) {
-        console.log('Showing terminal already open message')
         this.showTerminalAlreadyOpenMessage()
         return
       }
@@ -133,7 +127,7 @@ export class TerminalComponent implements OnInit, OnDestroy {
     ref.componentInstance.confirmButtonClass = 'btn-primary'
     ref.componentInstance.cancelButtonLabel = '' // Hide cancel button
     ref.componentInstance.faIconClass = 'fas fa-info-circle text-primary'
-    
+
     ref.result.then(() => {
       // User clicked OK - just dismiss modal, stay on blank terminal page
     }).catch(() => {

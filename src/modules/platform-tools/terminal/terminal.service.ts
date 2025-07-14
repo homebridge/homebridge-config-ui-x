@@ -1,9 +1,9 @@
+import type { IPty } from '@homebridge/node-pty-prebuilt-multiarch'
 import type { EventEmitter } from 'node:events'
 
 import os from 'node:os'
 import process from 'node:process'
 
-import type { IPty } from '@homebridge/node-pty-prebuilt-multiarch'
 import { Injectable } from '@nestjs/common'
 import { pathExists } from 'fs-extra'
 
@@ -93,7 +93,7 @@ export class TerminalService {
     })
 
     // Let the client know when the session ends
-    term.onExit((exitInfo: { exitCode: number; signal?: number }) => {
+    term.onExit((exitInfo: { exitCode: number, signal?: number }) => {
       try {
         if (!this.ending) {
           client.emit('process-exit', exitInfo.exitCode)
@@ -181,7 +181,7 @@ export class TerminalService {
       }
 
       // Handle terminal exit
-      TerminalService.persistentTerminal.onExit((exitInfo: { exitCode: number; signal?: number }) => {
+      TerminalService.persistentTerminal.onExit((exitInfo: { exitCode: number, signal?: number }) => {
         this.logger.log(`[${this.instanceId}] Persistent terminal exited.`)
 
         // Notify the current client that the process has exited
