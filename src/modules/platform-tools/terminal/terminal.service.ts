@@ -3,6 +3,7 @@ import type { EventEmitter } from 'node:events'
 import os from 'node:os'
 import process from 'node:process'
 
+import type { IPty } from '@homebridge/node-pty-prebuilt-multiarch'
 import { Injectable } from '@nestjs/common'
 import { pathExists } from 'fs-extra'
 
@@ -18,7 +19,7 @@ export interface TermSize {
 @Injectable()
 export class TerminalService {
   private ending = false
-  private static persistentTerminal: any = null
+  private static persistentTerminal: IPty | null = null
   private static currentClient: WsEventEmitter | null = null
   private static dataListenerAttached = false
   private static terminalBuffer: string = ''
@@ -180,7 +181,7 @@ export class TerminalService {
       }
 
       // Handle terminal exit
-      TerminalService.persistentTerminal.onExit((code: any) => {
+      TerminalService.persistentTerminal.onExit((code: number) => {
         this.logger.log(`[${this.instanceId}] Persistent terminal exited.`)
 
         // Notify the current client that the process has exited

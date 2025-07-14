@@ -1,7 +1,7 @@
 import { ElementRef, inject, Injectable } from '@angular/core'
 import { Subject } from 'rxjs'
 import { debounceTime } from 'rxjs/operators'
-import { ITerminalOptions, Terminal } from 'xterm'
+import { IDisposable, ITerminalOptions, Terminal } from 'xterm'
 import { FitAddon } from 'xterm-addon-fit'
 import { WebLinksAddon } from 'xterm-addon-web-links'
 
@@ -17,7 +17,7 @@ export class TerminalService {
   private webLinksAddon: WebLinksAddon
   private resize: Subject<any>
   private elementResize: Subject<any> | undefined
-  private dataDisposable: any
+  private dataDisposable: IDisposable | null = null
   private isInitializing = false
   private static hasActiveTerminal = false
 
