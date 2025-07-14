@@ -247,7 +247,7 @@
   "platform.terminal.confirm_navigation_button": "Terminate Session",
   "platform.terminal.beforeunload_message": "Your terminal session will be terminated.",
   "platform.terminal.already_open_title": "Terminal already open",
-  "platform.terminal.already_open_message": "The terminal is already open in another tabo, only one terminal session can be active at a time.",
+  "platform.terminal.already_open_message": "The terminal is already open in another tab, only one terminal session can be active at a time.",
   "plugins.bridge.action_error": "Failed to {{ action }} child bridge(s).",
   "plugins.button_homepage": "Plugin Homepage",
   "plugins.button_set_up": "Set Up",
