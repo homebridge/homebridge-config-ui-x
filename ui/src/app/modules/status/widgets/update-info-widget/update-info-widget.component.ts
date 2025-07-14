@@ -51,6 +51,7 @@ export class UpdateInfoWidgetComponent implements OnInit {
   public nodejsStatusDone = false as boolean
   public serverInfo: any
   public isRunningHbV2 = false
+  public isHbV2Loaded = false
   public isHbV2Ready = false
   public packageVersion = this.$settings.env.packageVersion
   public homebridgeVersion = this.$settings.env.homebridgeVersion
@@ -101,6 +102,7 @@ export class UpdateInfoWidgetComponent implements OnInit {
         })
 
       this.isHbV2Ready = this.isHbV2Ready && allHb2Ready
+      this.isHbV2Loaded = true
     }
   }
 

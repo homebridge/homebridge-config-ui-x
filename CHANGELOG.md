@@ -2,6 +2,12 @@
 
 All notable changes to `homebridge-config-ui-x` will be documented in this file. This project tries to adhere to [Semantic Versioning](http://semver.org/).
 
+## v5.0.1 (Unreleased)
+
+### UI Changes
+
+- only show hbv2 readiness icon when ready to show
+
 ## v5.0.0 (2025-07-13)
 
 ### ⚠️ Breaking Changes
