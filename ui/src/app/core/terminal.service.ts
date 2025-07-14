@@ -133,10 +133,6 @@ export class TerminalService {
 
     // Rejoin the backend session
     this.io.socket.emit('start-session', { cols: this.term.cols, rows: this.term.rows })
-
-    // Add a small delay to see if the backend responds
-    setTimeout(() => {
-    }, 1000)
   }
 
   public reconnectTerminal(

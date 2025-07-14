@@ -155,7 +155,7 @@ export class TerminalService {
         this.logger.log(`[${this.instanceId}] Attaching data listener`)
         TerminalService.persistentTerminal.onData((data) => {
           try {
-            this.logger.log(`[${this.instanceId}] Terminal output: "${data}", length: ${data.length}`)
+            this.logger.debug(`[${this.instanceId}] Terminal output: ${data.length} characters`)
 
             // Add to buffer for future clients
             TerminalService.terminalBuffer += data
@@ -230,9 +230,9 @@ export class TerminalService {
     this.logger.log(`[${this.instanceId}] Adding stdin and resize listeners`)
 
     client.on('stdin', (data) => {
-      this.logger.log(`[${this.instanceId}] Received stdin from client: "${data}", length: ${data.length}`)
+      this.logger.debug(`[${this.instanceId}] Received stdin from client: ${data.length} characters`)
       if (TerminalService.persistentTerminal) {
-        this.logger.log(`[${this.instanceId}] Writing to persistent terminal: "${data}"`)
+        this.logger.debug(`[${this.instanceId}] Writing to persistent terminal: ${data.length} characters`)
         TerminalService.persistentTerminal.write(data)
       } else {
         this.logger.log(`[${this.instanceId}] No persistent terminal to write to!`)
