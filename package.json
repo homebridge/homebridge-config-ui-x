@@ -84,7 +84,7 @@
     "@fastify/static": "8.2.0",
     "@homebridge/hap-client": "3.1.0",
     "@homebridge/node-pty-prebuilt-multiarch": "0.13.1",
-    "@nestjs/axios": "4.0.0",
+    "@nestjs/axios": "4.0.1",
     "@nestjs/common": "11.1.3",
     "@nestjs/core": "11.1.3",
     "@nestjs/jwt": "11.0.0",
@@ -120,12 +120,12 @@
     "unzipper": "0.12.3"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^4.16.2",
+    "@antfu/eslint-config": "^4.17.0",
     "@nestjs/testing": "^11.1.3",
     "@prettier/plugin-xml": "^3.4.2",
     "@types/fs-extra": "^11.0.4",
     "@types/lodash": "^4.17.20",
-    "@types/node": "^24.0.13",
+    "@types/node": "^24.0.14",
     "@types/node-schedule": "^2.1.8",
     "@types/passport-jwt": "^4.0.1",
     "@types/semver": "^7.7.0",

@@ -2,6 +2,15 @@
 
 All notable changes to `homebridge-config-ui-x` will be documented in this file. This project tries to adhere to [Semantic Versioning](http://semver.org/).
 
+## v5.0.1 (Unreleased)
+
+### UI Changes
+
+- only show hbv2 readiness icon when ready to show
+- migrate to use `fetch()` for http requests
+- Fix alignment of Plugin Updates in Horizontal Mode (#2495) (@NorthernMan54)
+- terminal session persistence and macos shell optimization (@seidnerj)
+
 ## v5.0.0 (2025-07-13)
 
 ### ⚠️ Breaking Changes
