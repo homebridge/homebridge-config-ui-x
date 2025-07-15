@@ -3,7 +3,7 @@
     {{ 'status.services.updates' | translate }}
   </div>
   <div
-    class="d-flex flex-wrap w-100 mt-1 justify-content-start gridster-item-content overflow-auto no-scrollbars align-items-center"
+    class="d-flex flex-wrap w-100 mt-1 justify-content-start gridster-item-content overflow-auto no-scrollbars align-items-start"
   >
     @if (serverInfo && serverInfo.homebridgeRunningInDocker) {
     <div class="hb-status-item d-flex flex-column mb-1" style="min-width: max(25%, 200px)">
@@ -39,6 +39,7 @@
       </div>
       @if (dockerExpanded) {
       <div class="ps-5 pe-3 d-flex flex-wrap">
+        <!-- Homebridge -->
         <div class="hb-status-item d-flex flex-row py-1" style="min-width: 200px; flex: 1 0 auto">
           <div class="d-flex ps-3 py-1">
             <div class="mb-0 d-flex align-items-center">
@@ -91,6 +92,7 @@
             </div>
           </div>
         </div>
+        <!-- Homebridge UI -->
         <div class="hb-status-item d-flex flex-row py-1" style="min-width: 200px; flex: 1 0 auto">
           <div class="d-flex ps-3 py-1">
             <div class="mb-0 d-flex align-items-center">
@@ -126,6 +128,7 @@
             </div>
           </div>
         </div>
+        <!-- Node.js -->
         <div class="hb-status-item d-flex flex-row py-1" style="min-width: 200px; flex: 1 0 auto">
           <div class="d-flex ps-3 py-1">
             <div class="mb-0 d-flex align-items-center">
@@ -167,6 +170,7 @@
       }
     </div>
     } @if (serverInfo && !serverInfo.homebridgeRunningInDocker) {
+    <!-- Homebridge -->
     <div class="hb-status-item d-flex flex-row mb-1" style="min-width: max(25%, 225px)">
       <div class="d-flex ps-3 py-1">
         <div class="mb-0 d-flex align-items-center">
@@ -218,6 +222,7 @@
         </div>
       </div>
     </div>
+    <!-- Homebridge UI -->
     <div class="hb-status-item d-flex flex-row mb-1" style="min-width: max(25%, 225px)">
       <div class="d-flex ps-3 py-1">
         <div class="mb-0 d-flex align-items-center">
@@ -254,6 +259,7 @@
       </div>
     </div>
     }
+    <!-- Plugins -->
     <div class="hb-status-item d-flex flex-row mb-1" style="min-width: max(25%, 225px)">
       <div class="d-flex ps-3 py-1">
         <div class="mb-0 d-flex align-items-center">
@@ -281,6 +287,7 @@
       </div>
     </div>
     @if (serverInfo && !serverInfo.homebridgeRunningInDocker) {
+    <!-- Node.js -->
     <div class="hb-status-item d-flex flex-row mb-1" style="min-width: max(25%, 225px)">
       <div class="d-flex ps-3 py-1">
         <div class="mb-0 d-flex align-items-center">

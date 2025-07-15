@@ -8,6 +8,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 
 - only show hbv2 readiness icon when ready to show
 - migrate to use `fetch()` for http requests
+- Fix alignment of Plugin Updates in Horizontal Mode (#2495) (@NorthernMan54)
 
 ## v5.0.0 (2025-07-13)
 
