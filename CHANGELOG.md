@@ -7,6 +7,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 ### UI Changes
 
 - only show hbv2 readiness icon when ready to show
+- migrate to use `fetch()` for http requests
 
 ## v5.0.0 (2025-07-13)
 
