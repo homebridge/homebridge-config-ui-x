@@ -34,15 +34,13 @@
             <br />
             <small class="grey-text font-monospace">v{{ version.version }}</small>
           </span>
-          @if (plugin.installedVersion !== version.version) {
           <button class="btn btn-primary m-0 ms-3" (click)="doInstall(version.version)">
+            @if (plugin.installedVersion === version.version) {
+            <i class="fas fa-fw fa-rotate-right"></i>
+            } @else {
             <i class="fas fa-fw fa-arrow-alt-circle-down"></i>
+            }
           </button>
-          } @else {
-          <button class="btn btn-primary m-0 ms-3" disabled>
-            <i class="fas fa-fw fa-check-circle"></i>
-          </button>
-          }
         </li>
         }
         <li class="list-group-item d-flex justify-content-between align-items-center">
@@ -58,13 +56,9 @@
             </select>
           </div>
           @if (versionSelect) {
-          <button
-            class="btn btn-primary m-0 ms-3"
-            [disabled]="versionSelect === plugin.installedVersion"
-            (click)="doInstall(versionSelect)"
-          >
-            @if (versionSelect === plugin.installedVersion) {
-            <i class="fas fa-fw fa-check-circle"></i>
+          <button class="btn btn-primary m-0 ms-3" (click)="doInstall(versionSelect)">
+            @if (plugin.installedVersion === versionSelect) {
+            <i class="fas fa-fw fa-rotate-right"></i>
             } @else {
             <i class="fas fa-fw fa-arrow-alt-circle-down"></i>
             }

@@ -2,7 +2,7 @@
 
 All notable changes to `homebridge-config-ui-x` will be documented in this file. This project tries to adhere to [Semantic Versioning](http://semver.org/).
 
-## v5.0.0 (Unreleased)
+## v5.0.0 (2025-07-13)
 
 ### ⚠️ Breaking Changes
 
@@ -18,6 +18,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - update default dashboard layout
 - add support for dark mode switching with custom plugin uis (@NorthernMan54)
 - Display Docker Version Details in the Update Information Box (#2488) (@NorthernMan54)
+- allow to reinstall installed versions of plugins
 
 ### Other Changes
 

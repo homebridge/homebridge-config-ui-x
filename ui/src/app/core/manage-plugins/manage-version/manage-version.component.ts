@@ -86,22 +86,29 @@ export class ManageVersionComponent implements OnInit {
   private lookupVersions() {
     this.$api.get(`/plugins/lookup/${encodeURIComponent(this.plugin.name)}/versions`).subscribe({
       next: (result: { versions: { [key: string]: VersionData }, tags: { [key: string]: string } }) => {
-        const tagVersions = new Set<string>()
-
         for (const [version, data] of Object.entries(result.versions)) {
           this.versions.push({
             version,
             engines: data.engines || null,
           })
 
-          const tag = Object.keys(result.tags).find(key => result.tags[key] === version)
-          if (tag) {
-            this.versionsWithTags.push({
-              version,
-              tag,
+          // A version is not limited to just one tag, so we need to check all tags
+          Object.keys(result.tags)
+            .filter(key => result.tags[key] === version)
+            .forEach((tag) => {
+              this.versionsWithTags.push({
+                version,
+                tag,
+              })
             })
-            tagVersions.add(version)
-          }
+        }
+
+        // In the case the plugin has an installed version that is not in the versions list, add it
+        if (this.plugin.installedVersion && !this.versions.find(x => x.version === this.plugin.installedVersion)) {
+          this.versions.push({
+            version: this.plugin.installedVersion,
+            engines: this.plugin.engines || null,
+          })
         }
 
         // Sort the versions array
