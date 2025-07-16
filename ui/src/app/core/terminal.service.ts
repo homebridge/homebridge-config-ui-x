@@ -86,8 +86,8 @@ export class TerminalService {
   }
 
   public focusTerminal(): void {
-    if (!this.term || !this.io?.socket?.connected) {
-    }
+    // Method kept for compatibility with components that call it
+    // No-op since we removed active/inactive coordination
   }
 
   public reattachToElement(
