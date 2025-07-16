@@ -30,6 +30,7 @@ const routes: Routes = [
       {
         path: '',
         loadComponent: () => import('@/app/modules/status/status.component').then(m => m.StatusComponent),
+        canDeactivate: [(component: any) => component.canDeactivate ? component.canDeactivate() : true],
       },
       {
         path: 'restart',
