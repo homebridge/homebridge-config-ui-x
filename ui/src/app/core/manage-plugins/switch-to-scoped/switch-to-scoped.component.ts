@@ -3,10 +3,10 @@ import { Component, inject, Input, OnDestroy, OnInit } from '@angular/core'
 import { Router } from '@angular/router'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
+import { FitAddon } from '@xterm/addon-fit'
+import { Terminal } from '@xterm/xterm'
 import { saveAs } from 'file-saver'
 import { ToastrService } from 'ngx-toastr'
-import { Terminal } from 'xterm'
-import { FitAddon } from 'xterm-addon-fit'
 
 import { ApiService } from '@/app/core/api.service'
 import { SettingsService } from '@/app/core/settings.service'
@@ -53,7 +53,6 @@ export class SwitchToScopedComponent implements OnInit, OnDestroy {
         background: '#00000000',
         foreground: this.$settings.actualLightingMode === 'light' ? '#333333' : '#eeeeee',
         cursor: '#d2d2d2',
-        selection: '#d2d2d2',
       },
       allowTransparency: true,
     })

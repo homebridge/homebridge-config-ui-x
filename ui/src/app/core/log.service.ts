@@ -1,9 +1,9 @@
 import { ElementRef, inject, Injectable } from '@angular/core'
+import { FitAddon } from '@xterm/addon-fit'
+import { WebLinksAddon } from '@xterm/addon-web-links'
+import { ITerminalOptions, Terminal } from '@xterm/xterm'
 import { Subject } from 'rxjs'
 import { debounceTime } from 'rxjs/operators'
-import { ITerminalOptions, Terminal } from 'xterm'
-import { FitAddon } from 'xterm-addon-fit'
-import { WebLinksAddon } from 'xterm-addon-web-links'
 
 import { IoNamespace, WsService } from '@/app/core/ws.service'
 

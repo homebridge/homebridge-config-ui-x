@@ -15,7 +15,7 @@ $image-path: '../../img';
 
 @import 'bootstrap/scss/bootstrap';
 
-@import 'xterm/css/xterm.css';
+@import '@xterm/xterm/css/xterm.css';
 @import 'nouislider/dist/nouislider.min.css';
 @import 'dragula/dist/dragula.min.css';
 

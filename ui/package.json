@@ -27,6 +27,9 @@
     "@ng-formworks/bootstrap5": "19.5.8",
     "@ng-formworks/core": "19.5.8",
     "@ngx-translate/core": "16.0.4",
+    "@xterm/addon-fit": "^0.10.0",
+    "@xterm/addon-web-links": "^0.11.0",
+    "@xterm/xterm": "^5.5.0",
     "ajv-keywords": "5.1.0",
     "angular-gridster2": "20.1.0",
     "bootstrap": "5.3.7",
@@ -51,9 +54,6 @@
     "socket.io-client": "4.8.1",
     "tslib": "2.8.1",
     "uuid": "11.1.0",
-    "xterm": "4.19.0",
-    "xterm-addon-fit": "0.5.0",
-    "xterm-addon-web-links": "0.6.0",
     "zone.js": "0.15.1"
   },
   "devDependencies": {
