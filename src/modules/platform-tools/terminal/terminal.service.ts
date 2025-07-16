@@ -178,8 +178,6 @@ export class TerminalService {
                   TerminalService.connectedClients.delete(client)
                 }
               })
-            } else {
-              this.logger.log(`[${this.instanceId}] No connected clients to send output to!`)
             }
           } catch (e) {
             this.logger.log(`[${this.instanceId}] Error sending output to client: ${e}`)
