@@ -85,10 +85,6 @@ export class TerminalService {
     return !!this.term && !this.isInitializing
   }
 
-  public focusTerminal(): void {
-    // Method kept for compatibility with components that call it
-    // No-op since we removed active/inactive coordination
-  }
 
   public reattachToElement(
     targetElement: ElementRef,

@@ -44,8 +44,7 @@ export class TerminalComponent implements OnInit, AfterViewInit, OnDestroy {
   private activateTerminal() {
     // Only focus if this terminal is ready and connected
     if (this.$terminal.isTerminalReady() && this.$terminal.term) {
-      this.$terminal.focusTerminal()
-      // Also focus the actual terminal element for better UX
+      // Focus the actual terminal element for better UX
       this.$terminal.term.focus()
     }
   }
