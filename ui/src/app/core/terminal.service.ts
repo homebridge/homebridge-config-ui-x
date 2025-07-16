@@ -85,7 +85,6 @@ export class TerminalService {
     return !!this.term && !this.isInitializing
   }
 
-
   public reattachToElement(
     targetElement: ElementRef,
     elementResize?: Subject<any>,
