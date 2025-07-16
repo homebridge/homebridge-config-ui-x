@@ -457,7 +457,7 @@
   "settings.general.terminal_persistence_confirm_button": "Disable Persistence",
   "settings.general.terminal_persistence_confirm_message": "Disabling terminal session persistence will terminate your current terminal session.<br>Are you sure you want to continue?",
   "settings.general.terminal_persistence_confirm_title": "Disable Terminal Session Persistence",
-  "settings.general.terminal_persistence_help": "When enabled, terminal sessions will persist when navigating away and can be resumed when returning to the terminal page.",
+  "settings.general.terminal_persistence_help": "When enabled, terminal sessions will persist when navigating away and can be resumed when returning to the terminal page. NOTE: terminal sessions are shared across all admin users.",
   "settings.general.terminal_show_warning": "Show Terminal Termination Warning",
   "settings.general.terminal_show_warning_help": "When enabled, shows a warning dialog before terminating non-persistent terminal sessions. Disabled when persistence is enabled.",
   "settings.general.title_display": "Отображение",
