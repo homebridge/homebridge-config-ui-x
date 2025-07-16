@@ -19,7 +19,6 @@ export class TerminalService {
   private elementResize: Subject<any> | undefined
   private dataDisposable: IDisposable | null = null
   private isInitializing = false
-  private static cleanupRegistered = false
   private hasUserTyped = false
 
   public term: Terminal
@@ -37,29 +36,9 @@ export class TerminalService {
     }
     this.isInitializing = false
     this.hasUserTyped = false
-    localStorage.removeItem('homebridge-terminal-active')
   }
 
-  private tryAcquireTerminal(): boolean {
-    const isTerminalActive = localStorage.getItem('homebridge-terminal-active') === 'true'
 
-    if (this.isInitializing || isTerminalActive) {
-      return false
-    }
-
-    this.isInitializing = true
-    localStorage.setItem('homebridge-terminal-active', 'true')
-
-    // Register cleanup on page unload (only once)
-    if (!TerminalService.cleanupRegistered) {
-      TerminalService.cleanupRegistered = true
-      window.addEventListener('beforeunload', () => {
-        localStorage.removeItem('homebridge-terminal-active')
-      })
-    }
-
-    return true
-  }
 
   public destroyPersistentSession() {
     // First destroy the frontend terminal
@@ -88,6 +67,8 @@ export class TerminalService {
     }
     // Note: We intentionally do NOT call this.io.end() here to keep the connection alive
     // Keep hasUserTyped state for persistence mode
+
+    this.isInitializing = false
   }
 
   public hasActiveSession(): boolean {
@@ -101,6 +82,12 @@ export class TerminalService {
 
   public isTerminalReady(): boolean {
     return !!this.term && !this.isInitializing
+  }
+
+  public focusTerminal(): void {
+    if (!this.term || !this.io?.socket?.connected) {
+      return
+    }
   }
 
   public reattachToElement(targetElement: ElementRef, elementResize?: Subject<any>) {
@@ -168,9 +155,9 @@ export class TerminalService {
     targetElement: ElementRef,
     termOpts: ITerminalOptions = {},
     elementResize?: Subject<any>,
-  ) {
+  ): boolean {
     if (this.isInitializing) {
-      return
+      return false
     }
 
     this.isInitializing = true
@@ -218,6 +205,7 @@ export class TerminalService {
         this.startSession()
       })
 
+
       // Handle outgoing data events from client to server
       // Dispose any existing data listener first
       if (this.dataDisposable) {
@@ -262,9 +250,11 @@ export class TerminalService {
     termOpts: ITerminalOptions = {},
     elementResize?: Subject<any>,
   ): boolean {
-    if (!this.tryAcquireTerminal()) {
+    if (this.isInitializing) {
       return false
     }
+
+    this.isInitializing = true
 
     // Handle element resize events
     this.elementResize = elementResize

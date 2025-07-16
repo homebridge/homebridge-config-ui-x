@@ -1,10 +1,9 @@
-import { Component, ElementRef, HostListener, inject, OnDestroy, OnInit, viewChild } from '@angular/core'
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
-import { TranslatePipe, TranslateService } from '@ngx-translate/core'
+import { AfterViewInit, Component, ElementRef, HostListener, inject, OnDestroy, OnInit, viewChild } from '@angular/core'
+import { TranslatePipe } from '@ngx-translate/core'
 import { Subject } from 'rxjs'
 
-import { ConfirmComponent } from '@/app/core/components/confirm/confirm.component'
 import { SettingsService } from '@/app/core/settings.service'
+import { TerminalNavigationGuardService } from '@/app/core/terminal-navigation-guard.service'
 import { TerminalService } from '@/app/core/terminal.service'
 
 @Component({
@@ -12,11 +11,10 @@ import { TerminalService } from '@/app/core/terminal.service'
   standalone: true,
   imports: [TranslatePipe],
 })
-export class TerminalComponent implements OnInit, OnDestroy {
+export class TerminalComponent implements OnInit, AfterViewInit, OnDestroy {
   private $terminal = inject(TerminalService)
   private $settings = inject(SettingsService)
-  private $modal = inject(NgbModal)
-  private $translate = inject(TranslateService)
+  private $navigationGuard = inject(TerminalNavigationGuardService)
   private resizeEvent = new Subject()
 
   readonly termTarget = viewChild<ElementRef>('terminaloutput')
@@ -28,17 +26,28 @@ export class TerminalComponent implements OnInit, OnDestroy {
 
   @HostListener('window:beforeunload', ['$event'])
   onBeforeUnload(event: BeforeUnloadEvent) {
-    // Only show warning if persistence is disabled, warning is enabled, there's an active session, and user has typed
-    if (!this.$settings.terminalPersistence
-      && this.$settings.terminalShowWarning
-      && this.$terminal.hasActiveSession()
-      && this.$terminal.hasUserTypedInSession()) {
-      const message = this.$translate.instant('platform.terminal.beforeunload_message')
-      event.preventDefault()
-      event.returnValue = message
-      return message // For other browsers
+    return this.$navigationGuard.handleBeforeUnload(event)
+  }
+
+  @HostListener('window:focus', ['$event'])
+  onWindowFocus() {
+    // Auto-focus terminal when user returns to this window
+    this.activateTerminal()
+  }
+
+  @HostListener('click', ['$event'])
+  onClick() {
+    // Focus this terminal when clicked
+    this.activateTerminal()
+  }
+
+  private activateTerminal() {
+    // Only focus if this terminal is ready and connected
+    if (this.$terminal.isTerminalReady() && this.$terminal.term) {
+      this.$terminal.focusTerminal()
+      // Also focus the actual terminal element for better UX
+      this.$terminal.term.focus()
     }
-    return undefined
   }
 
   public ngOnInit() {
@@ -49,9 +58,7 @@ export class TerminalComponent implements OnInit, OnDestroy {
     if (this.$terminal.isTerminalReady()) {
       this.$terminal.reconnectTerminal(this.termTarget(), {}, this.resizeEvent)
       setTimeout(() => {
-        if (this.$terminal.term) {
-          this.$terminal.term.focus()
-        }
+        this.activateTerminal()
       }, 100)
       return
     }
@@ -60,88 +67,37 @@ export class TerminalComponent implements OnInit, OnDestroy {
     if (this.$settings.terminalPersistence && this.$terminal.hasActiveSession()) {
       this.$terminal.reconnectTerminal(this.termTarget(), {}, this.resizeEvent)
     } else {
-      const terminalStarted = this.$terminal.startTerminal(this.termTarget(), {}, this.resizeEvent)
-      if (!terminalStarted) {
-        this.showTerminalAlreadyOpenMessage()
-        return
-      }
+      this.$terminal.startTerminal(this.termTarget(), {}, this.resizeEvent)
     }
 
     // Set focus to the terminal after a delay to ensure it's initialized
     setTimeout(() => {
-      if (this.$terminal.term) {
-        this.$terminal.term.focus()
-      }
+      this.activateTerminal()
     }, 100)
   }
 
-  public canDeactivate(): Promise<boolean> | boolean {
-    // If persistence is enabled, allow navigation without prompt
-    if (this.$settings.terminalPersistence) {
-      return true
-    }
-
-    // If warning is disabled, allow navigation without prompt (preserve current behavior)
-    if (!this.$settings.terminalShowWarning) {
-      return true
-    }
-
-    // If there's no active session, allow navigation without prompt
-    if (!this.$terminal.hasActiveSession()) {
-      return true
-    }
-
-    // If user hasn't typed anything, allow navigation without prompt
-    if (!this.$terminal.hasUserTypedInSession()) {
-      return true
-    }
-
-    // Show confirmation dialog when persistence is disabled, warning is enabled, there's an active session, and user has typed
-    const ref = this.$modal.open(ConfirmComponent, {
-      size: 'lg',
-      backdrop: 'static',
-    })
-
-    ref.componentInstance.title = this.$translate.instant(
-      'platform.terminal.confirm_navigation_title',
-    )
-    ref.componentInstance.message = this.$translate.instant(
-      'platform.terminal.confirm_navigation_message',
-    )
-    ref.componentInstance.confirmButtonLabel = this.$translate.instant(
-      'platform.terminal.confirm_navigation_button',
-    )
-    ref.componentInstance.cancelButtonLabel = this.$translate.instant(
-      'form.button_cancel',
-    )
-    ref.componentInstance.confirmButtonClass = 'btn-warning'
-    ref.componentInstance.faIconClass
-      = 'fas fa-exclamation-triangle text-warning'
-
-    return ref.result.then(() => true).catch(() => false)
+  public ngAfterViewInit() {
+    // Listen for visibility changes to focus terminal when tab becomes visible
+    document.addEventListener('visibilitychange', this.onVisibilityChange.bind(this))
   }
 
-  private showTerminalAlreadyOpenMessage() {
-    const ref = this.$modal.open(ConfirmComponent)
-    ref.componentInstance.title = this.$translate.instant(
-      'platform.terminal.already_open_title',
-    )
-    ref.componentInstance.message = this.$translate.instant(
-      'platform.terminal.already_open_message',
-    )
-    ref.componentInstance.confirmButtonLabel = 'OK'
-    ref.componentInstance.confirmButtonClass = 'btn-primary'
-    ref.componentInstance.cancelButtonLabel = '' // Hide cancel button
-    ref.componentInstance.faIconClass = 'fas fa-info-circle text-primary'
+  private onVisibilityChange() {
+    // When tab becomes visible, focus this terminal
+    if (!document.hidden && this.$terminal.isTerminalReady()) {
+      setTimeout(() => {
+        this.activateTerminal()
+      }, 100)
+    }
+  }
 
-    ref.result.then(() => {
-      // User clicked OK - just dismiss modal, stay on blank terminal page
-    }).catch(() => {
-      // User dismissed the modal (clicked X), just stay on the page
-    })
+  public canDeactivate(): Promise<boolean> | boolean {
+    return this.$navigationGuard.canDeactivate()
   }
 
   public ngOnDestroy() {
+    // Clean up visibility change listener
+    document.removeEventListener('visibilitychange', this.onVisibilityChange.bind(this))
+
     // Unset body bg color
     window.document.querySelector('body').classList.remove('bg-black')
 

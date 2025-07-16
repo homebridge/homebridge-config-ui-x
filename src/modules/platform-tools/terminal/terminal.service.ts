@@ -20,7 +20,7 @@ export interface TermSize {
 export class TerminalService {
   private ending = false
   private static persistentTerminal: IPty | null = null
-  private static currentClient: WsEventEmitter | null = null
+  private static connectedClients: Set<WsEventEmitter> = new Set()
   private static dataListenerAttached = false
   private static terminalBuffer: string = ''
   private instanceId: string
@@ -167,11 +167,19 @@ export class TerminalService {
               TerminalService.terminalBuffer = TerminalService.terminalBuffer.slice(-maxBufferSize)
             }
 
-            if (TerminalService.currentClient) {
-              this.logger.log(`[${this.instanceId}] Sending output to current client`)
-              TerminalService.currentClient.emit('stdout', data)
+            if (TerminalService.connectedClients.size > 0) {
+              this.logger.log(`[${this.instanceId}] Sending output to ${TerminalService.connectedClients.size} connected clients`)
+              TerminalService.connectedClients.forEach(client => {
+                try {
+                  client.emit('stdout', data)
+                } catch (e) {
+                  this.logger.log(`[${this.instanceId}] Error sending output to a client: ${e}`)
+                  // Remove client if it's no longer valid
+                  TerminalService.connectedClients.delete(client)
+                }
+              })
             } else {
-              this.logger.log(`[${this.instanceId}] No current client to send output to!`)
+              this.logger.log(`[${this.instanceId}] No connected clients to send output to!`)
             }
           } catch (e) {
             this.logger.log(`[${this.instanceId}] Error sending output to client: ${e}`)
@@ -184,17 +192,18 @@ export class TerminalService {
       TerminalService.persistentTerminal.onExit((exitInfo: { exitCode: number, signal?: number }) => {
         this.logger.log(`[${this.instanceId}] Persistent terminal exited.`)
 
-        // Notify the current client that the process has exited
-        if (TerminalService.currentClient) {
+        // Notify all connected clients that the process has exited
+        TerminalService.connectedClients.forEach(client => {
           try {
-            TerminalService.currentClient.emit('process-exit', exitInfo.exitCode)
+            client.emit('process-exit', exitInfo.exitCode)
           } catch (e) {
-            // Client socket probably closed
+            // Client socket probably closed, remove it
+            TerminalService.connectedClients.delete(client)
           }
-        }
+        })
 
         TerminalService.persistentTerminal = null
-        TerminalService.currentClient = null
+        TerminalService.connectedClients.clear()
         TerminalService.dataListenerAttached = false
         TerminalService.terminalBuffer = ''
       })
@@ -211,9 +220,9 @@ export class TerminalService {
     client.removeAllListeners('stdin')
     client.removeAllListeners('resize')
 
-    // Switch to the new client
-    this.logger.log(`[${this.instanceId}] Switching current client`)
-    TerminalService.currentClient = client
+    // Add client to connected clients set
+    this.logger.log(`[${this.instanceId}] Adding client to connected clients`)
+    TerminalService.connectedClients.add(client)
 
     // Send buffer to new client if this is an existing persistent terminal
     if (TerminalService.terminalBuffer && TerminalService.terminalBuffer.length > 0) {
@@ -259,10 +268,10 @@ export class TerminalService {
       client.removeAllListeners('end')
       client.removeAllListeners('disconnect')
 
-      // Clear current client if this was the active one
-      if (TerminalService.currentClient === client) {
-        TerminalService.currentClient = null
-        this.logger.log(`[${this.instanceId}] Cleared current client`)
+      // Remove client from connected clients set
+      if (TerminalService.connectedClients.has(client)) {
+        TerminalService.connectedClients.delete(client)
+        this.logger.log(`[${this.instanceId}] Removed client from connected clients`)
       }
 
       this.logger.log(`[${this.instanceId}] Client cleanup complete`)
@@ -295,8 +304,8 @@ export class TerminalService {
     // Clear data listener flag
     TerminalService.dataListenerAttached = false
 
-    // Clear current client reference
-    TerminalService.currentClient = null
+    // Clear all connected clients
+    TerminalService.connectedClients.clear()
 
     this.logger.log(`[${this.instanceId}] Persistent terminal session destroyed`)
   }
