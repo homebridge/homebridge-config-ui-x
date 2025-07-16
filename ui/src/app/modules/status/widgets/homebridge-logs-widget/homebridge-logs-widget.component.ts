@@ -42,22 +42,27 @@ export class HomebridgeLogsWidgetComponent implements OnInit, OnDestroy {
     this.theme = this.widget.theme || 'dark'
 
     setTimeout(() => {
-      this.$log.startTerminal(this.termTarget(), {
-        cursorBlink: false,
-        theme: this.theme !== 'light'
-          ? {
-              background: '#2b2b2b',
-            }
-          : {
-              background: '#00000000',
-              foreground: '#2b2b2b',
-              cursor: '#d2d2d2',
-              selection: '#d2d2d2',
-            },
-        allowTransparency: this.theme === 'light',
-        fontSize: this.fontSize,
-        fontWeight: this.fontWeight,
-      }, this.resizeEvent)
+      this.$log.startTerminal(
+        this.termTarget(),
+        {
+          cursorBlink: false,
+          theme:
+            this.theme !== 'light'
+              ? {
+                  background: '#2b2b2b',
+                }
+              : {
+                  background: '#00000000',
+                  foreground: '#2b2b2b',
+                  cursor: '#d2d2d2',
+                  selection: '#d2d2d2',
+                },
+          allowTransparency: true,
+          fontSize: this.fontSize,
+          fontWeight: this.fontWeight,
+        },
+        this.resizeEvent,
+      )
     })
 
     this.resizeEvent.subscribe({
@@ -91,7 +96,7 @@ export class HomebridgeLogsWidgetComponent implements OnInit, OnDestroy {
                 cursor: '#d2d2d2',
                 selection: '#d2d2d2',
               }
-          this.$log.term.options.allowTransparency = this.theme === 'light'
+          this.$log.term.options.allowTransparency = true
           changed = true
         }
 

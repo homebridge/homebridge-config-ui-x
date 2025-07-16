@@ -169,7 +169,7 @@ export class TerminalService {
 
             if (TerminalService.connectedClients.size > 0) {
               this.logger.log(`[${this.instanceId}] Sending output to ${TerminalService.connectedClients.size} connected clients`)
-              TerminalService.connectedClients.forEach(client => {
+              TerminalService.connectedClients.forEach((client) => {
                 try {
                   client.emit('stdout', data)
                 } catch (e) {
@@ -193,7 +193,7 @@ export class TerminalService {
         this.logger.log(`[${this.instanceId}] Persistent terminal exited.`)
 
         // Notify all connected clients that the process has exited
-        TerminalService.connectedClients.forEach(client => {
+        TerminalService.connectedClients.forEach((client) => {
           try {
             client.emit('process-exit', exitInfo.exitCode)
           } catch (e) {

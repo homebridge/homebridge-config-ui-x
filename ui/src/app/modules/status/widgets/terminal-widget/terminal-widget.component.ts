@@ -75,17 +75,18 @@ export class TerminalWidgetComponent implements OnInit, AfterViewInit, OnDestroy
     setTimeout(() => {
       const terminalOptions = {
         cursorBlink: false,
-        theme: this.theme !== 'light'
-          ? {
-              background: '#2b2b2b',
-            }
-          : {
-              background: 'transparent',
-              foreground: '#2b2b2b',
-              cursor: '#d2d2d2',
-              selection: '#d2d2d2',
-            },
-        allowTransparency: this.theme === 'light',
+        theme:
+          this.theme !== 'light'
+            ? {
+                background: '#2b2b2b',
+              }
+            : {
+                background: 'transparent',
+                foreground: '#2b2b2b',
+                cursor: '#d2d2d2',
+                selection: '#d2d2d2',
+              },
+        allowTransparency: true,
         fontSize: this.fontSize,
         fontWeight: this.fontWeight,
       }
@@ -135,7 +136,7 @@ export class TerminalWidgetComponent implements OnInit, AfterViewInit, OnDestroy
                 cursor: '#d2d2d2',
                 selection: '#d2d2d2',
               }
-          this.$terminal.term.options.allowTransparency = this.theme === 'light'
+          this.$terminal.term.options.allowTransparency = true
           changed = true
         }
 
@@ -174,8 +175,10 @@ export class TerminalWidgetComponent implements OnInit, AfterViewInit, OnDestroy
 
   private isTerminalWidgetVisible(): boolean {
     const element = this.widgetContainerElement()?.nativeElement
-    if (!element) return false
-    
+    if (!element) {
+      return false
+    }
+
     // Check if the element is visible (not hidden by display: none, etc.)
     const rect = element.getBoundingClientRect()
     return rect.width > 0 && rect.height > 0

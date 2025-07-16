@@ -20,7 +20,6 @@ export class TerminalService {
   private dataDisposable: IDisposable | null = null
   private isInitializing = false
   private hasUserTyped = false
-
   public term: Terminal
 
   public destroyTerminal() {
@@ -37,8 +36,6 @@ export class TerminalService {
     this.isInitializing = false
     this.hasUserTyped = false
   }
-
-
 
   public destroyPersistentSession() {
     // First destroy the frontend terminal
@@ -72,7 +69,11 @@ export class TerminalService {
   }
 
   public hasActiveSession(): boolean {
-    const hasSession = !!(this.io && this.io.socket && this.io.socket.connected)
+    const hasSession = !!(
+      this.io
+      && this.io.socket
+      && this.io.socket.connected
+    )
     return hasSession
   }
 
@@ -86,11 +87,13 @@ export class TerminalService {
 
   public focusTerminal(): void {
     if (!this.term || !this.io?.socket?.connected) {
-      return
     }
   }
 
-  public reattachToElement(targetElement: ElementRef, elementResize?: Subject<any>) {
+  public reattachToElement(
+    targetElement: ElementRef,
+    elementResize?: Subject<any>,
+  ) {
     if (!this.term || !this.io?.socket?.connected) {
       return
     }
@@ -148,7 +151,10 @@ export class TerminalService {
     }, 100)
 
     // Rejoin the backend session
-    this.io.socket.emit('start-session', { cols: this.term.cols, rows: this.term.rows })
+    this.io.socket.emit('start-session', {
+      cols: this.term.cols,
+      rows: this.term.rows,
+    })
   }
 
   public reconnectTerminal(
@@ -205,7 +211,6 @@ export class TerminalService {
         this.startSession()
       })
 
-
       // Handle outgoing data events from client to server
       // Dispose any existing data listener first
       if (this.dataDisposable) {
@@ -236,7 +241,10 @@ export class TerminalService {
       }
 
       // Rejoin the existing session
-      this.io.socket.emit('start-session', { cols: this.term.cols, rows: this.term.rows })
+      this.io.socket.emit('start-session', {
+        cols: this.term.cols,
+        rows: this.term.rows,
+      })
 
       this.isInitializing = false
     } else {
@@ -293,7 +301,9 @@ export class TerminalService {
 
     // Handle disconnect events
     this.io.socket.on('disconnect', () => {
-      this.term.write('\n\r\n\rTerminal disconnected. Is the server running?\n\r\n\r')
+      this.term.write(
+        '\n\r\n\rTerminal disconnected. Is the server running?\n\r\n\r',
+      )
     })
 
     // Handle terminal process exit - immediately start new session
@@ -336,7 +346,10 @@ export class TerminalService {
   private startSession() {
     this.term.reset()
     this.hasUserTyped = false
-    this.io.socket.emit('start-session', { cols: this.term.cols, rows: this.term.rows })
+    this.io.socket.emit('start-session', {
+      cols: this.term.cols,
+      rows: this.term.rows,
+    })
     this.resize.next({ cols: this.term.cols, rows: this.term.rows })
     this.isInitializing = false
   }
