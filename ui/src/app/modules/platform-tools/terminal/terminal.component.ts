@@ -28,13 +28,14 @@ export class TerminalComponent implements OnInit, OnDestroy {
 
   @HostListener('window:beforeunload', ['$event'])
   onBeforeUnload(event: BeforeUnloadEvent) {
-    // Only show warning if persistence is disabled, warning is enabled, and there's an active session
+    // Only show warning if persistence is disabled, warning is enabled, there's an active session, and user has typed
     if (!this.$settings.terminalPersistence
       && this.$settings.terminalShowWarning
-      && this.$terminal.hasActiveSession()) {
+      && this.$terminal.hasActiveSession()
+      && this.$terminal.hasUserTypedInSession()) {
       const message = this.$translate.instant('platform.terminal.beforeunload_message')
       event.preventDefault()
-      event.returnValue = message // For Chrome
+      event.returnValue = message
       return message // For other browsers
     }
     return undefined
@@ -90,7 +91,12 @@ export class TerminalComponent implements OnInit, OnDestroy {
       return true
     }
 
-    // Show confirmation dialog when persistence is disabled, warning is enabled, and there's an active session
+    // If user hasn't typed anything, allow navigation without prompt
+    if (!this.$terminal.hasUserTypedInSession()) {
+      return true
+    }
+
+    // Show confirmation dialog when persistence is disabled, warning is enabled, there's an active session, and user has typed
     const ref = this.$modal.open(ConfirmComponent, {
       size: 'lg',
       backdrop: 'static',

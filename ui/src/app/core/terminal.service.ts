@@ -19,8 +19,8 @@ export class TerminalService {
   private elementResize: Subject<any> | undefined
   private dataDisposable: IDisposable | null = null
   private isInitializing = false
-  private static hasActiveTerminal = false
   private static cleanupRegistered = false
+  private hasUserTyped = false
 
   public term: Terminal
 
@@ -35,8 +35,8 @@ export class TerminalService {
     if (this.elementResize) {
       this.elementResize.complete()
     }
-    TerminalService.hasActiveTerminal = false
     this.isInitializing = false
+    this.hasUserTyped = false
     localStorage.removeItem('homebridge-terminal-active')
   }
 
@@ -48,7 +48,6 @@ export class TerminalService {
     }
 
     this.isInitializing = true
-    TerminalService.hasActiveTerminal = true
     localStorage.setItem('homebridge-terminal-active', 'true')
 
     // Register cleanup on page unload (only once)
@@ -88,11 +87,16 @@ export class TerminalService {
       this.elementResize.complete()
     }
     // Note: We intentionally do NOT call this.io.end() here to keep the connection alive
+    // Keep hasUserTyped state for persistence mode
   }
 
   public hasActiveSession(): boolean {
     const hasSession = !!(this.io && this.io.socket && this.io.socket.connected)
     return hasSession
+  }
+
+  public hasUserTypedInSession(): boolean {
+    return this.hasUserTyped
   }
 
   public isTerminalReady(): boolean {
@@ -118,6 +122,7 @@ export class TerminalService {
     // Always set up data listener after reattaching to DOM (term.open clears listeners)
     this.dataDisposable = this.term.onData((data) => {
       if (this.io.socket.connected) {
+        this.hasUserTyped = true
         this.io.socket.emit('stdin', data)
       }
     })
@@ -219,6 +224,7 @@ export class TerminalService {
         this.dataDisposable.dispose()
       }
       this.dataDisposable = this.term.onData((data) => {
+        this.hasUserTyped = true
         this.io.socket.emit('stdin', data)
       })
 
@@ -317,6 +323,7 @@ export class TerminalService {
 
     // Handle outgoing data events from client to server
     this.dataDisposable = this.term.onData((data) => {
+      this.hasUserTyped = true
       this.io.socket.emit('stdin', data)
     })
 
@@ -338,6 +345,7 @@ export class TerminalService {
 
   private startSession() {
     this.term.reset()
+    this.hasUserTyped = false
     this.io.socket.emit('start-session', { cols: this.term.cols, rows: this.term.rows })
     this.resize.next({ cols: this.term.cols, rows: this.term.rows })
     this.isInitializing = false
