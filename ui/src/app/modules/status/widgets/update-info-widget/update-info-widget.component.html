@@ -28,7 +28,7 @@
           @if (!dockerStatusDone) {
           <span class="grey-text small">{{ 'status.homebridge.checking' | translate }}</span>
           } @if (dockerStatusDone) {
-          <span class="grey-text small">{{ dockerInfo.currentVersion }}</span>
+          <span class="grey-text small">{{ dockerInfo.currentVersion }} (v{{ dockerInfo.aptPkgVersion }})</span>
 
           @if (dockerInfo.updateAvailable) { &middot;
           <a href="javascript:void(0)" (click)="dockerUpdateModal()" class="primary-text small">
