@@ -617,6 +617,7 @@ export class StatusService {
    */
   public async getDockerDetails() {
     const currentVersion = process.env.DOCKER_HOMEBRIDGE_VERSION
+    const aptPkgVersion = process.env.HOMEBRIDGE_APT_PKG_VERSION
     let latestVersion: string | null = null
     let latestReleaseBody = ''
     let updateAvailable = false
@@ -679,6 +680,7 @@ export class StatusService {
       latestVersion,
       latestReleaseBody,
       updateAvailable,
+      aptPkgVersion,
     }
   }
 

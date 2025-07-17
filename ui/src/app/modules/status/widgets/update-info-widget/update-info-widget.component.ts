@@ -61,6 +61,7 @@ export class UpdateInfoWidgetComponent implements OnInit {
     latestVersion: null,
     latestReleaseBody: '',
     updateAvailable: false,
+    aptPkgVersion: undefined,
   }
 
   public dockerStatusDone = false as boolean
