@@ -2,6 +2,18 @@
 
 All notable changes to `homebridge-config-ui-x` will be documented in this file. This project tries to adhere to [Semantic Versioning](http://semver.org/).
 
+## v5.3.1 (Unreleased)
+
+### Other Changes
+
+- remove now unused `standalone.ts` file
+
+### Homebridge Dependencies
+
+- `@homebridge/hap-client` @ `v3.1.1`
+- `@homebridge/node-pty-prebuilt-multiarch` @ `v0.13.1`
+- `@homebridge/plugin-ui-utils` @ `v2.1.0`
+
 ## v5.3.0 (2025-07-23)
 
 ### UI Changes
