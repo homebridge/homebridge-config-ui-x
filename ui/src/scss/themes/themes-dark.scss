@@ -124,8 +124,15 @@
     }
 
     .rendux-input:checked + label {
-      background: $darkModePrimary !important;
-      border-color: $darkModePrimary !important;
+      // For the grey theme, the on colour is too close to the off colour,
+      // so as an exception, use a slightly greener colour
+      @if $name == 'dark-mode-grey' {
+        background: #6b7d5a !important;
+        border-color: #6b7d5a !important;
+      } @else {
+        background: $darkModePrimary !important;
+        border-color: $darkModePrimary !important;
+      }
     }
 
     .btn-primary,

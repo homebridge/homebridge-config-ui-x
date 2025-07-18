@@ -4,6 +4,10 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 
 ## v5.2.1 (Unreleased)
 
+### UI Changes
+
+- update 'on' colour for sliding checkbox in dark grey theme
+
 ### Other Changes
 
 - remove now unused `standalone.ts` file
