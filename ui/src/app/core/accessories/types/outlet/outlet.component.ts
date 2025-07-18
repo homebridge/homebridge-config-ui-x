@@ -30,6 +30,8 @@ export class OutletComponent {
       this.service.getCharacteristic('On').setValue(!this.service.values.On)
     } else if ('Active' in this.service.values) {
       this.service.getCharacteristic('Active').setValue(this.service.values.Active ? 0 : 1)
+    } else if ('LockTargetState' in this.service.values) {
+      this.service.getCharacteristic('LockTargetState').setValue(this.service.values.LockTargetState ? 0 : 1)
     }
   }
 }

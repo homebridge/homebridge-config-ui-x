@@ -7,6 +7,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 ### UI Changes
 
 - update 'on' colour for sliding checkbox in dark grey theme
+- custom types: expose a switch/outlet as a lock and vice versa
 
 ### Other Changes
 
