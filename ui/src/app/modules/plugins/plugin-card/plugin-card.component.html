@@ -9,6 +9,7 @@
           <!-- plugin name and right 'action' icon -->
           <div class="d-flex flex-row">
             <h5 class="card-title mb-2 text-truncate">{{ plugin.displayName }}</h5>
+            @if (isAdmin) {
             <div class="ms-auto">
               <!-- update available -->
               @if (plugin.installedVersion && plugin.updateAvailable && !childBridgeRestartInProgress) {
@@ -131,6 +132,7 @@
               }
               <!-- // -->
             </div>
+            }
           </div>
           <!-- // -->
           <!-- plugin npm name/info modal -->
@@ -182,6 +184,7 @@
               <i class="far fa-fw fa-circle-check fa-lg me-1"></i>v{{ plugin.installedVersion }} }
               <!-- // -->
             </p>
+            @if (isAdmin) {
             <div class="ms-auto">
               <!-- icon for child bridge restart -->
               @if (!plugin.disabled && plugin.hasChildBridges && childBridgeStatus === 'ok') {
@@ -358,6 +361,7 @@
               </span>
               }
             </div>
+            }
           </div>
         </div>
       </div>

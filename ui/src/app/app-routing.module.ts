@@ -39,7 +39,6 @@ const routes: Routes = [
       {
         path: 'plugins',
         loadChildren: () => import('./modules/plugins/plugins.module').then(m => m.PluginsModule),
-        canActivate: [AdminGuard],
       },
       {
         path: 'config',

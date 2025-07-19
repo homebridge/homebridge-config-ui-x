@@ -8,6 +8,7 @@ import { ToastrService } from 'ngx-toastr'
 import { firstValueFrom, Subscription } from 'rxjs'
 
 import { ApiService } from '@/app/core/api.service'
+import { AuthService } from '@/app/core/auth/auth.service'
 import { RestartHomebridgeComponent } from '@/app/core/components/restart-homebridge/restart-homebridge.component'
 import { SpinnerComponent } from '@/app/core/components/spinner/spinner.component'
 import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service'
@@ -34,6 +35,7 @@ export class PluginsComponent implements OnInit, OnDestroy {
   @ViewChild('searchInput') searchInput!: ElementRef
 
   private $api = inject(ApiService)
+  private $auth = inject(AuthService)
   private $modal = inject(NgbModal)
   private $plugin = inject(ManagePluginsService)
   private $router = inject(Router)
@@ -52,6 +54,7 @@ export class PluginsComponent implements OnInit, OnDestroy {
   public childBridges = []
   public showSearchBar = false
   public showExitButton = false
+  public isAdmin = this.$auth.user.admin
   public form = new FormGroup({
     query: new FormControl(''),
   })
@@ -288,35 +291,37 @@ export class PluginsComponent implements OnInit, OnDestroy {
   }
 
   private async appendMetaInfo() {
-    // Also get the current configuration for each plugin
-    await Promise.all(this.installedPlugins
-      .filter(plugin => plugin.installedVersion)
-      .map(async (plugin: any) => {
-        try {
-          // Adds some extra properties to the plugin object for the plugin card
-          const configBlocks = await firstValueFrom(this.$api.get(`/config-editor/plugin/${encodeURIComponent(plugin.name)}`))
-          plugin.isConfigured = configBlocks.length > 0
-          plugin.isConfiguredDynamicPlatform = plugin.isConfigured && Object.prototype.hasOwnProperty.call(configBlocks[0], 'platform')
+    if (this.isAdmin) {
+      // Also get the current configuration for each plugin
+      await Promise.all(this.installedPlugins
+        .filter(plugin => plugin.installedVersion)
+        .map(async (plugin: any) => {
+          try {
+            // Adds some extra properties to the plugin object for the plugin card
+            const configBlocks = await firstValueFrom(this.$api.get(`/config-editor/plugin/${encodeURIComponent(plugin.name)}`))
+            plugin.isConfigured = configBlocks.length > 0
+            plugin.isConfiguredDynamicPlatform = plugin.isConfigured && Object.prototype.hasOwnProperty.call(configBlocks[0], 'platform')
 
-          plugin.recommendChildBridge = plugin.isConfiguredDynamicPlatform
-            && this.$settings.env.recommendChildBridges
-            && !['homebridge', 'homebridge-config-ui-x'].includes(plugin.name)
+            plugin.recommendChildBridge = plugin.isConfiguredDynamicPlatform
+              && this.$settings.env.recommendChildBridges
+              && !['homebridge', 'homebridge-config-ui-x'].includes(plugin.name)
 
-          plugin.hasChildBridges = plugin.isConfigured && configBlocks.some(x => x._bridge && x._bridge.username)
+            plugin.hasChildBridges = plugin.isConfigured && configBlocks.some(x => x._bridge && x._bridge.username)
 
-          const pluginChildBridges = this.getPluginChildBridges(plugin)
-          plugin.hasChildBridgesUnpaired = pluginChildBridges.some(x => !x.paired)
+            const pluginChildBridges = this.getPluginChildBridges(plugin)
+            plugin.hasChildBridgesUnpaired = pluginChildBridges.some(x => !x.paired)
 
-          if (this.$settings.env.plugins?.hideUpdatesFor?.includes(plugin.name)) {
-            plugin.updateAvailable = false
+            if (this.$settings.env.plugins?.hideUpdatesFor?.includes(plugin.name)) {
+              plugin.updateAvailable = false
+            }
+          } catch (err) {
+            // May not be technically correct, but if we can't load the config, assume it is configured
+            plugin.isConfigured = true
+            plugin.hasChildBridges = true
           }
-        } catch (err) {
-          // May not be technically correct, but if we can't load the config, assume it is configured
-          plugin.isConfigured = true
-          plugin.hasChildBridges = true
-        }
-      }),
-    )
+        }),
+      )
+    }
   }
 
   private getChildBridgeMetadata() {
