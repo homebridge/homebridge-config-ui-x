@@ -8,6 +8,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 
 - update 'on' colour for sliding checkbox in dark grey theme
 - custom types: expose a switch/outlet as a lock and vice versa
+- update `monaco-editor` from `0.18.1` to `0.21.3`
 
 ### Other Changes
 
