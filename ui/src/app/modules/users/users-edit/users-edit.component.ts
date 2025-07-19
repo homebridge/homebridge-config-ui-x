@@ -1,5 +1,5 @@
 import { NgClass } from '@angular/common'
-import { Component, inject, Input, OnInit } from '@angular/core'
+import { ChangeDetectorRef, Component, inject, Input, OnInit } from '@angular/core'
 import { AbstractControl, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
@@ -7,6 +7,7 @@ import { ToastrService } from 'ngx-toastr'
 
 import { ApiService } from '@/app/core/api.service'
 import { AuthService } from '@/app/core/auth/auth.service'
+import { User } from '@/app/modules/users/users.interface'
 
 @Component({
   templateUrl: './users-edit.component.html',
@@ -22,10 +23,12 @@ export class UsersEditComponent implements OnInit {
   private $activeModal = inject(NgbActiveModal)
   private $api = inject(ApiService)
   private $auth = inject(AuthService)
+  private $cdr = inject(ChangeDetectorRef)
   private $toastr = inject(ToastrService)
   private $translate = inject(TranslateService)
+  private initialFormValue: Partial<User> = {}
 
-  @Input() user: any
+  @Input() user: User
 
   public isCurrentUser = false
   public form = new FormGroup({
@@ -39,9 +42,11 @@ export class UsersEditComponent implements OnInit {
   public ngOnInit() {
     this.isCurrentUser = this.$auth.user.username === this.user.username
     this.form.patchValue(this.user)
+    this.initialFormValue = this.form.getRawValue()
+    this.form.valueChanges.subscribe(() => this.$cdr.detectChanges())
   }
 
-  public onSubmit({ value }) {
+  public onSubmit({ value }: { value: Partial<User> }) {
     this.$api.patch(`/users/${this.user.id}`, value).subscribe({
       next: () => {
         this.$activeModal.close()
@@ -56,6 +61,13 @@ export class UsersEditComponent implements OnInit {
         this.$toastr.error(error.error.message || this.$translate.instant('users.toast_failed_to_add_user'), this.$translate.instant('toast.title_error'))
       },
     })
+  }
+
+  public isFormUnchanged(): boolean {
+    if (this.form.controls.password.value) {
+      return false
+    }
+    return JSON.stringify(this.form.getRawValue()) === JSON.stringify(this.initialFormValue)
   }
 
   public dismissModal() {

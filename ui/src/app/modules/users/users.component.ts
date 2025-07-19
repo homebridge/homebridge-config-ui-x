@@ -10,6 +10,7 @@ import { Users2faDisableComponent } from '@/app/modules/users/users-2fa-disable/
 import { Users2faEnableComponent } from '@/app/modules/users/users-2fa-enable/users-2fa-enable.component'
 import { UsersAddComponent } from '@/app/modules/users/users-add/users-add.component'
 import { UsersEditComponent } from '@/app/modules/users/users-edit/users-edit.component'
+import { User } from '@/app/modules/users/users.interface'
 
 @Component({
   selector: 'app-users',
@@ -27,18 +28,18 @@ export class UsersComponent implements OnInit {
   private $toastr = inject(ToastrService)
   private $translate = inject(TranslateService)
 
-  public homebridgeUsers: Array<any>
+  public homebridgeUsers: User[] = []
   public username = this.$auth.user.username
 
   public ngOnInit() {
-    this.$route.data.subscribe((data: { homebridgeUsers: Array<any> }) => {
+    this.$route.data.subscribe((data: { homebridgeUsers: User[] }) => {
       this.homebridgeUsers = data.homebridgeUsers
     })
   }
 
   private reloadUsers() {
     return this.$api.get('/users').subscribe(
-      (result) => {
+      (result: User[]) => {
         this.homebridgeUsers = result
       },
     )
@@ -55,7 +56,7 @@ export class UsersComponent implements OnInit {
     })
   }
 
-  public openEditUser(user: any) {
+  public openEditUser(user: User) {
     const ref = this.$modal.open(UsersEditComponent, {
       size: 'lg',
       backdrop: 'static',
@@ -80,7 +81,7 @@ export class UsersComponent implements OnInit {
     })
   }
 
-  public setup2fa(user: any) {
+  public setup2fa(user: User) {
     const ref = this.$modal.open(Users2faEnableComponent, {
       size: 'lg',
       backdrop: 'static',
@@ -92,7 +93,7 @@ export class UsersComponent implements OnInit {
     })
   }
 
-  public disable2fa(user: any) {
+  public disable2fa(user: User) {
     const ref = this.$modal.open(Users2faDisableComponent, {
       size: 'lg',
       backdrop: 'static',

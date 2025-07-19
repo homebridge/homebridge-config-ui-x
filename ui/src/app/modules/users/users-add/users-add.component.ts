@@ -6,6 +6,7 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
 
 import { ApiService } from '@/app/core/api.service'
+import { User } from '@/app/modules/users/users.interface'
 
 @Component({
   templateUrl: './users-add.component.html',
@@ -31,7 +32,7 @@ export class UsersAddComponent {
     admin: new FormControl(true),
   }, this.matchPassword)
 
-  public onSubmit({ value }) {
+  public onSubmit({ value }: { value: Partial<User> }) {
     this.$api.post('/users', value).subscribe({
       next: () => {
         this.$activeModal.close()
