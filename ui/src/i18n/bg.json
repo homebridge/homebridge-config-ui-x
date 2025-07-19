@@ -78,6 +78,7 @@
   "accessories.message_must_use_insecure_mode": "За да управлявате вашите аксесоари Homebridge трябва да работи в insecure режим {{ link }}.",
   "accessories.name": "Име",
   "accessories.only_ui": "These settings are only for the Homebridge UI and <strong>will not be reflected in HomeKit</strong>.",
+  "accessories.only_ui_2": "These options are unique to your Homebridge UI account.",
   "accessories.plugin": "Plugin",
   "accessories.room_name": "Име на стая",
   "accessories.service": "Service",

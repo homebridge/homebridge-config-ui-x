@@ -78,6 +78,7 @@
   "accessories.message_must_use_insecure_mode": "För att kontrollera dina tillbehör måste du köra Homebridge i osäkert läge {{ link }}.",
   "accessories.name": "Namn",
   "accessories.only_ui": "These settings are only for the Homebridge UI and <strong>will not be reflected in HomeKit</strong>.",
+  "accessories.only_ui_2": "These options are unique to your Homebridge UI account.",
   "accessories.plugin": "Plugin",
   "accessories.room_name": "Rumsnamn",
   "accessories.service": "Service",

@@ -78,6 +78,7 @@
   "accessories.message_must_use_insecure_mode": "액세서리를 제어하려면 홈브릿지를 insecure 모드로 실행해야합니다 {{ link }}.",
   "accessories.name": "이름",
   "accessories.only_ui": "These settings are only for the Homebridge UI and <strong>will not be reflected in HomeKit</strong>.",
+  "accessories.only_ui_2": "These options are unique to your Homebridge UI account.",
   "accessories.plugin": "Plugin",
   "accessories.room_name": "방 이름",
   "accessories.service": "Service",

@@ -78,6 +78,7 @@
   "accessories.message_must_use_insecure_mode": "על מנת לשלוט באביזריך יש צורך להפעיל את Homebridge במצב לא בטוח {{ link }}.",
   "accessories.name": "שם",
   "accessories.only_ui": "הגדרות אלו מיועדות רק עבור Homebridge UI ו<strong>לא יופיעו ב-HomeKit</strong>.",
+  "accessories.only_ui_2": "These options are unique to your Homebridge UI account.",
   "accessories.plugin": "תוסף",
   "accessories.room_name": "שם חדר",
   "accessories.service": "שירות",
