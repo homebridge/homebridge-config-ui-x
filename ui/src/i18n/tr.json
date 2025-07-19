@@ -545,6 +545,8 @@
   "status.services.updates": "Update Information",
   "status.uptime.title_uptime": "Çalışma Süresi",
   "status.widget.accessories.choose_accessories": "Bu araçta göstermek istediğiniz aksesuarları aksesuarlar sekmesinden seçin.",
+  "status.widget.account_1": "The widget layout is shared among all Homebridge UI users.",
+  "status.widget.account_2": "Admin users can modify the layout, while non-admin users cannot make changes.",
   "status.widget.add.label_pairing_code": "Eşleme Kodu",
   "status.widget.bridge.restart_error": "Failed to restart child bridge.",
   "status.widget.clock": "Saat",

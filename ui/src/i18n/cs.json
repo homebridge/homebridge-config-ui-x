@@ -545,6 +545,8 @@
   "status.services.updates": "Update Information",
   "status.uptime.title_uptime": "Doba provozu",
   "status.widget.accessories.choose_accessories": "Vyberte příslušenství, které se zobrazí v tomto widgetu na kartě Příslušenství.",
+  "status.widget.account_1": "The widget layout is shared among all Homebridge UI users.",
+  "status.widget.account_2": "Admin users can modify the layout, while non-admin users cannot make changes.",
   "status.widget.add.label_pairing_code": "Párovací kód",
   "status.widget.bridge.restart_error": "Nepodařilo se restartovat podřízený most.",
   "status.widget.clock": "Hodiny",

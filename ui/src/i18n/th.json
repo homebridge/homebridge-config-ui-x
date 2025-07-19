@@ -545,6 +545,8 @@
   "status.services.updates": "อัปเดตข้อมูล",
   "status.uptime.title_uptime": "ระยะเวลาเปิดบริการ",
   "status.widget.accessories.choose_accessories": "เลือกอุปกรณ์เสริมที่จะแสดงในวิดเจ็ตนี้จากแท็บอุปกรณ์เสริม",
+  "status.widget.account_1": "The widget layout is shared among all Homebridge UI users.",
+  "status.widget.account_2": "Admin users can modify the layout, while non-admin users cannot make changes.",
   "status.widget.add.label_pairing_code": "รหัสการจับคู่",
   "status.widget.bridge.restart_error": "ไม่สามารถรีสตาร์ทบริดจ์ย่อยได้",
   "status.widget.clock": "นาฬิกา",

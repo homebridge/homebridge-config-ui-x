@@ -545,6 +545,8 @@
   "status.services.updates": "Оновити інформацію",
   "status.uptime.title_uptime": "Час безперервної роботи",
   "status.widget.accessories.choose_accessories": "Виберіть аксесуари для відображення у віджеті на вкладці Аксесуари.",
+  "status.widget.account_1": "The widget layout is shared among all Homebridge UI users.",
+  "status.widget.account_2": "Admin users can modify the layout, while non-admin users cannot make changes.",
   "status.widget.add.label_pairing_code": "Код сполучення",
   "status.widget.bridge.restart_error": "Не вдалося перезапустити Дочірній міст.",
   "status.widget.clock": "Годинник",

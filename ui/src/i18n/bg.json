@@ -545,6 +545,8 @@
   "status.services.updates": "Update Information",
   "status.uptime.title_uptime": "Време на работа",
   "status.widget.accessories.choose_accessories": "Choose the accessories to display in this widget from the Accessories page.",
+  "status.widget.account_1": "The widget layout is shared among all Homebridge UI users.",
+  "status.widget.account_2": "Admin users can modify the layout, while non-admin users cannot make changes.",
   "status.widget.add.label_pairing_code": "Pairing Code",
   "status.widget.bridge.restart_error": "Failed to restart child bridge.",
   "status.widget.clock": "Clock",

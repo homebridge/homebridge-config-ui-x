@@ -545,6 +545,8 @@
   "status.services.updates": "Информация об обновлениях",
   "status.uptime.title_uptime": "Время работы",
   "status.widget.accessories.choose_accessories": "Выберите аксессуары для отображения в этом виджете на странице Аксессуары.",
+  "status.widget.account_1": "The widget layout is shared among all Homebridge UI users.",
+  "status.widget.account_2": "Admin users can modify the layout, while non-admin users cannot make changes.",
   "status.widget.add.label_pairing_code": "Код привязки",
   "status.widget.bridge.restart_error": "Не удалось перезапустить дочерний мост.",
   "status.widget.clock": "Часы",

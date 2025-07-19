@@ -545,6 +545,8 @@
   "status.services.updates": "מידע עדכון",
   "status.uptime.title_uptime": "זמן פעילות",
   "status.widget.accessories.choose_accessories": "בחר את האביזר להצגה בווידג'ט מלשונית האיבזרים",
+  "status.widget.account_1": "The widget layout is shared among all Homebridge UI users.",
+  "status.widget.account_2": "Admin users can modify the layout, while non-admin users cannot make changes.",
   "status.widget.add.label_pairing_code": "קוד צימוד",
   "status.widget.bridge.restart_error": "כשל בהפעלה מחדש של Child Bridge.",
   "status.widget.clock": "שעון",

@@ -545,6 +545,8 @@
   "status.services.updates": "Update Information",
   "status.uptime.title_uptime": "Czas pracy",
   "status.widget.accessories.choose_accessories": "Wybierz to akcesorium, aby wyświetlić go jako widżet.",
+  "status.widget.account_1": "The widget layout is shared among all Homebridge UI users.",
+  "status.widget.account_2": "Admin users can modify the layout, while non-admin users cannot make changes.",
   "status.widget.add.label_pairing_code": "Kod parowania",
   "status.widget.bridge.restart_error": "Nie udało się ponownie uruchomić mostu podrzędnego.",
   "status.widget.clock": "Zegar",

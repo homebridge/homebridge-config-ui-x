@@ -19,6 +19,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - allow non-admin users read-only access to the plugins page
 - validate login redirect route for non-admin users
 - hide unauthorised controls on status page for non-admin users
+- add text on show/hide widget modal to explain layout is shared across all users
 
 ### Other Changes
 

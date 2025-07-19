@@ -545,6 +545,8 @@
   "status.services.updates": "Update Information",
   "status.uptime.title_uptime": "系統執行時間",
   "status.widget.accessories.choose_accessories": "於配件欄位中選擇所要於 Widget 顯示的配件。",
+  "status.widget.account_1": "The widget layout is shared among all Homebridge UI users.",
+  "status.widget.account_2": "Admin users can modify the layout, while non-admin users cannot make changes.",
   "status.widget.add.label_pairing_code": "配對碼",
   "status.widget.bridge.restart_error": "Failed to restart child bridge.",
   "status.widget.clock": "時鐘",

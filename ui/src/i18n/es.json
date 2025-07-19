@@ -545,6 +545,8 @@
   "status.services.updates": "Información de Actualización",
   "status.uptime.title_uptime": "Tiempo encendido",
   "status.widget.accessories.choose_accessories": "Selecciona los accesorios para mostrar en este widget desde la pestaña Accesorios.",
+  "status.widget.account_1": "The widget layout is shared among all Homebridge UI users.",
+  "status.widget.account_2": "Admin users can modify the layout, while non-admin users cannot make changes.",
   "status.widget.add.label_pairing_code": "Código de Emparejamiento",
   "status.widget.bridge.restart_error": "Error al reiniciar el puente hijo.",
   "status.widget.clock": "Reloj",

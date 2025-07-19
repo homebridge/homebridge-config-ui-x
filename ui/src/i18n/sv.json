@@ -545,6 +545,8 @@
   "status.services.updates": "Update Information",
   "status.uptime.title_uptime": "Upptid",
   "status.widget.accessories.choose_accessories": "Välj tillbehör som ska visas i den här widgeten från fliken Tillbehör.",
+  "status.widget.account_1": "The widget layout is shared among all Homebridge UI users.",
+  "status.widget.account_2": "Admin users can modify the layout, while non-admin users cannot make changes.",
   "status.widget.add.label_pairing_code": "Parningskod",
   "status.widget.bridge.restart_error": "Failed to restart child bridge.",
   "status.widget.clock": "Klocka",

@@ -545,6 +545,8 @@
   "status.services.updates": "Update Information",
   "status.uptime.title_uptime": "가동 시간",
   "status.widget.accessories.choose_accessories": "이 위젯에 나타날 액세서리를 액세서리 탭에서 선택해주세요.",
+  "status.widget.account_1": "The widget layout is shared among all Homebridge UI users.",
+  "status.widget.account_2": "Admin users can modify the layout, while non-admin users cannot make changes.",
   "status.widget.add.label_pairing_code": "페어링 코드",
   "status.widget.bridge.restart_error": "Failed to restart child bridge.",
   "status.widget.clock": "시계",
