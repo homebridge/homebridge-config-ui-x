@@ -230,8 +230,13 @@ export class StatusComponent implements OnInit, OnDestroy {
           item.component = 'BridgesWidgetComponent'
           saveNeeded = true
         }
+
+        // Hide terminal for non-admin users
+        if (item.component === 'TerminalWidgetComponent' && !this.isAdmin) {
+          return null
+        }
         return item
-      }))
+      }).filter(Boolean))
 
       if (saveNeeded) {
         this.gridChangedEvent()

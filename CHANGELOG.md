@@ -11,6 +11,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - update `monaco-editor` from `0.18.1` to `0.21.3`
 - fix new users created are always created as admins
 - disable edit user form if no changes are made
+- hide terminal widget for non-admin users
 
 ### Other Changes
 
