@@ -103,7 +103,6 @@
       </div>
     </div>
 
-    @if (isAdmin) {
     <div class="link">
       <div
         class="link-row"
@@ -118,7 +117,8 @@
         <div class="title">{{ 'menu.linux.label_logs' | translate }}</div>
       </div>
     </div>
-    } @if (enableTerminalAccess && isAdmin) {
+
+    @if (enableTerminalAccess && isAdmin) {
     <div class="link">
       <div
         class="link-row"

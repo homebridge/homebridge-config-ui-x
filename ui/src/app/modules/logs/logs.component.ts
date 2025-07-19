@@ -7,6 +7,7 @@ import { ToastrService } from 'ngx-toastr'
 import { Subject } from 'rxjs'
 
 import { ApiService } from '@/app/core/api.service'
+import { AuthService } from '@/app/core/auth/auth.service'
 import { ConfirmComponent } from '@/app/core/components/confirm/confirm.component'
 import { LogService } from '@/app/core/log.service'
 
@@ -17,6 +18,7 @@ import { LogService } from '@/app/core/log.service'
 })
 export class LogsComponent implements OnInit, OnDestroy {
   private $api = inject(ApiService)
+  private $auth = inject(AuthService)
   private $log = inject(LogService)
   private $modal = inject(NgbModal)
   private $toastr = inject(ToastrService)
@@ -25,6 +27,8 @@ export class LogsComponent implements OnInit, OnDestroy {
   private readonly termTarget = viewChild<ElementRef>('logoutput')
 
   private resizeEvent = new Subject()
+
+  public isAdmin = this.$auth.user.admin
 
   @HostListener('window:resize', ['$event'])
   onWindowResize() {

@@ -2,6 +2,7 @@
   <div class="col-6">
     <h3 class="primary-text m-0">{{ 'menu.linux.label_logs' | translate }}</h3>
   </div>
+  @if (isAdmin) {
   <div class="col-6 text-end">
     <button
       class="btn btn-elegant my-0 me-2"
@@ -28,6 +29,7 @@
       <i class="fas fa-fw fa-trash-alt"></i>
     </button>
   </div>
+  }
 </div>
 
 <div class="flex-column d-flex align-items-stretch adjust-for-mobile">
