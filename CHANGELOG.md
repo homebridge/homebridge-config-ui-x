@@ -12,6 +12,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix new users created are always created as admins
 - disable edit user form if no changes are made
 - hide terminal widget for non-admin users
+- hide bridge restart buttons in widget for non-admin users
 
 ### Other Changes
 

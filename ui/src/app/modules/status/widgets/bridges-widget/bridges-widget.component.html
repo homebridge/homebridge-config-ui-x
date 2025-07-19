@@ -24,7 +24,7 @@
       </div>
       <div class="align-self-center flex-child px-3">{{ homebridgeStatus.name || 'Homebridge' }}</div>
       <div class="grey-text ms-auto d-flex align-items-center">
-        @if (homebridgeStatus.status !== 'pending' && !isRestarting) {
+        @if (homebridgeStatus.status !== 'pending' && !isRestarting && isAdmin) {
         <i
           class="icon-button fas fa-fw fa-power-off"
           href="javascript:void(0)"
@@ -72,7 +72,7 @@
       </div>
       <div class="align-self-center flex-child px-3">{{ bridge.name }}</div>
       <div class="grey-text ms-auto d-flex align-items-center">
-        @if (bridge.status !== 'pending' && !bridge.restarting) {
+        @if (bridge.status !== 'pending' && !bridge.restarting && isAdmin) {
         <i
           class="icon-button fas fa-fw fa-power-off"
           href="javascript:void(0)"
