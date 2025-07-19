@@ -180,6 +180,7 @@
       </div>
     </div>
 
+    @if (isAdmin) {
     <div class="link">
       <div
         class="link-row"
@@ -194,8 +195,7 @@
         <div class="title">{{ 'menu.restart.title' | translate }}</div>
       </div>
     </div>
-
-    @if (isPwa) {
+    } @if (isPwa) {
     <div class="link">
       <div
         class="link-row"
