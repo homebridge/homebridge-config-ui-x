@@ -19,17 +19,30 @@
       <div class="d-flex flex-column">
         <div class="d-flex flex-row mb-3">
           <span class="me-auto my-0">
-            <h4 [innerText]="user.name"></h4>
-            <h5 class="small text-truncate primary-text" [innerText]="user.username"></h5>
+            <h4>{{ user.name }}</h4>
+            <h5 class="small text-truncate grey-text">
+              <i
+                class="fas fa-fw"
+                [ngClass]="{
+                  'fa-user-secret': user.admin,
+                  'fa-user': !user.admin,
+                }"
+              ></i>
+              {{ user.username }}
+            </h5>
           </span>
         </div>
         <div class="d-flex flex-row justify-content-between">
-          @if (username === user.username && !user.otpActive) {
-          <button class="btn btn-primary m-0" (click)="setup2fa(user)">{{ 'users.setup_2fa' | translate }}</button>
-          } @if (username === user.username && user.otpActive) {
-          <button class="btn btn-elegant m-0" (click)="disable2fa(user)">
+          @if (user.admin) { @if (user.otpActive) {
+          <button class="btn btn-elegant m-0" (click)="disable2fa(user)" [disabled]="user.username !== username">
             {{ 'users.setup_2fa_disable' | translate }}
           </button>
+          } @else {
+          <button class="btn btn-primary m-0" (click)="setup2fa(user)" [disabled]="user.username !== username">
+            {{ 'users.setup_2fa' | translate }}
+          </button>
+          } } @else {
+          <div></div>
           }
           <div>
             <button

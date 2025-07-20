@@ -21,6 +21,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - hide unauthorised controls on status page for non-admin users
 - add text on show/hide widget modal to explain layout is shared across all users
 - grammar: replace 'unchargeable' with 'not chargeable' on battery tile
+- show admin/non-admin icon on user cards for easier identification
 
 ### Other Changes
 

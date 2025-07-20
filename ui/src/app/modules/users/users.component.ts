@@ -1,3 +1,4 @@
+import { NgClass } from '@angular/common'
 import { Component, inject, OnInit } from '@angular/core'
 import { ActivatedRoute } from '@angular/router'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
@@ -18,6 +19,7 @@ import { User } from '@/app/modules/users/users.interface'
   standalone: true,
   imports: [
     TranslatePipe,
+    NgClass,
   ],
 })
 export class UsersComponent implements OnInit {
@@ -30,6 +32,7 @@ export class UsersComponent implements OnInit {
 
   public homebridgeUsers: User[] = []
   public username = this.$auth.user.username
+  public isAdmin = this.$auth.user.admin
 
   public ngOnInit() {
     this.$route.data.subscribe((data: { homebridgeUsers: User[] }) => {
@@ -68,7 +71,7 @@ export class UsersComponent implements OnInit {
     })
   }
 
-  public deleteUser(id: string) {
+  public deleteUser(id: number) {
     this.$api.delete(`/users/${id}`).subscribe({
       next: () => {
         this.$toastr.success(this.$translate.instant('users.toast_user_deleted'), this.$translate.instant('toast.title_success'))
