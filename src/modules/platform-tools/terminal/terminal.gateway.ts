@@ -29,4 +29,9 @@ export class TerminalGateway {
   destroyPersistentSession() {
     return this.terminalService.destroyPersistentSession()
   }
+
+  @SubscribeMessage('check-persistent-session')
+  checkPersistentSession() {
+    return this.terminalService.hasPersistentSession()
+  }
 }

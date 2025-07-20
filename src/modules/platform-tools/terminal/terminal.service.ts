@@ -280,6 +280,16 @@ export class TerminalService {
   }
 
   /**
+   * Check if there's an active persistent terminal session
+   * This is the authoritative source of truth for backend state
+   */
+  hasPersistentSession(): boolean {
+    const hasPersistent = TerminalService.persistentTerminal !== null
+    this.logger.log(`[${this.instanceId}] hasPersistentSession: ${hasPersistent}`)
+    return hasPersistent
+  }
+
+  /**
    * Destroy the persistent terminal session completely
    * This is called when terminal persistence is disabled
    */

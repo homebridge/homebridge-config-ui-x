@@ -5,6 +5,7 @@ import { IDisposable, ITerminalOptions, Terminal } from '@xterm/xterm'
 import { Subject } from 'rxjs'
 import { debounceTime } from 'rxjs/operators'
 
+import { ApiService } from '@/app/core/api.service'
 import { IoNamespace, WsService } from '@/app/core/ws.service'
 
 @Injectable({
@@ -12,6 +13,7 @@ import { IoNamespace, WsService } from '@/app/core/ws.service'
 })
 export class TerminalService {
   private $ws = inject(WsService)
+  private $api = inject(ApiService)
   private io: IoNamespace
   private fitAddon: FitAddon
   private webLinksAddon: WebLinksAddon
@@ -48,10 +50,11 @@ export class TerminalService {
     // First destroy the frontend terminal
     this.destroyTerminal()
 
-    // Then tell the backend to destroy the persistent session
-    if (this.io && this.io.socket && this.io.socket.connected) {
-      this.io.socket.emit('destroy-persistent-session')
-    }
+    // Then tell the backend to destroy the persistent session via HTTP API
+    this.$api.post('/platform-tools/terminal/destroy-persistent-session', {}).subscribe({
+      next: () => console.log('Persistent session destroyed'),
+      error: (error) => console.error('Failed to destroy persistent session:', error)
+    })
   }
 
   public detachTerminal() {
@@ -82,6 +85,16 @@ export class TerminalService {
       && this.io.socket.connected
     )
     return hasSession
+  }
+
+  public async checkBackendPersistentSession(): Promise<boolean> {
+    try {
+      const response = await this.$api.get('/platform-tools/terminal/has-persistent-session').toPromise() as { hasPersistentSession: boolean }
+      return response.hasPersistentSession
+    } catch (error) {
+      console.error('Failed to check backend persistent session:', error)
+      return false
+    }
   }
 
   public hasUserTypedInSession(): boolean {

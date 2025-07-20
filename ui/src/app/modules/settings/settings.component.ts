@@ -634,45 +634,56 @@ export class SettingsComponent implements OnInit {
   }
 
   private async handleTerminalPersistenceChange(value: boolean) {
-    // If turning off persistence and there's an active session, show confirmation
-    if (!value && this.$terminal.hasActiveSession()) {
-      const ref = this.$modal.open(ConfirmComponent, {
-        size: 'lg',
-        backdrop: 'static',
-      })
-
-      ref.componentInstance.title = this.$translate.instant('settings.general.terminal_persistence_confirm_title')
-      ref.componentInstance.message = this.$translate.instant('settings.general.terminal_persistence_confirm_message')
-      ref.componentInstance.confirmButtonLabel = this.$translate.instant('settings.general.terminal_persistence_confirm_button')
-      ref.componentInstance.cancelButtonLabel = this.$translate.instant('form.button_cancel')
-      ref.componentInstance.confirmButtonClass = 'btn-warning'
-      ref.componentInstance.faIconClass = 'fas fa-exclamation-triangle text-warning'
-
+    // If turning off persistence, check backend and handle session termination
+    if (!value) {
       try {
-        await ref.result
-        // User confirmed, proceed with the change
-        this.uiTerminalPersistenceSave(value)
-      } catch {
-        // User cancelled, revert the form control value
-        this.uiTerminalPersistenceFormControl.patchValue(true, { emitEvent: false })
+        // Check if backend has a persistent session
+        const hasBackendPersistentSession = await this.$terminal.checkBackendPersistentSession()
+        
+        if (hasBackendPersistentSession) {
+          // Show confirmation dialog
+          const ref = this.$modal.open(ConfirmComponent, {
+            size: 'lg',
+            backdrop: 'static',
+          })
+
+          ref.componentInstance.title = this.$translate.instant('settings.general.terminal_persistence_confirm_title')
+          ref.componentInstance.message = this.$translate.instant('settings.general.terminal_persistence_confirm_message')
+          ref.componentInstance.confirmButtonLabel = this.$translate.instant('settings.general.terminal_persistence_confirm_button')
+          ref.componentInstance.cancelButtonLabel = this.$translate.instant('form.button_cancel')
+          ref.componentInstance.confirmButtonClass = 'btn-warning'
+          ref.componentInstance.faIconClass = 'fas fa-exclamation-triangle text-warning'
+
+          try {
+            await ref.result
+            // User confirmed - terminate backend session and save setting
+            this.$terminal.destroyPersistentSession()
+            await this.saveTerminalPersistenceSetting(false)
+          } catch {
+            // User cancelled - revert form control
+            this.uiTerminalPersistenceFormControl.patchValue(true, { emitEvent: false })
+          }
+        } else {
+          // No backend session - just save the setting
+          await this.saveTerminalPersistenceSetting(false)
+        }
+      } catch (error) {
+        console.error('Failed to check backend persistent session:', error)
+        // If check fails, just save the setting
+        await this.saveTerminalPersistenceSetting(false)
       }
     } else {
-      // No active session or turning on persistence, proceed directly
-      this.uiTerminalPersistenceSave(value)
+      // Turning on persistence - just save the setting
+      await this.saveTerminalPersistenceSetting(true)
     }
   }
 
-  private async uiTerminalPersistenceSave(value: boolean) {
+  private async saveTerminalPersistenceSetting(value: boolean) {
     try {
       this.uiTerminalPersistenceIsSaving = true
       this.$settings.setItem('terminalPersistence', value)
-
-      // If persistence is being turned off, clean up any existing session completely
-      if (!value && this.$terminal.hasActiveSession()) {
-        this.$terminal.destroyPersistentSession()
-      }
-
       await this.saveUiSettingChange('terminalPersistence', value)
+      
       setTimeout(() => {
         this.uiTerminalPersistenceIsSaving = false
       }, 1000)
