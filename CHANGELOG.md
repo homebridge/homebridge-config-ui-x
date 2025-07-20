@@ -20,6 +20,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - validate login redirect route for non-admin users
 - hide unauthorised controls on status page for non-admin users
 - add text on show/hide widget modal to explain layout is shared across all users
+- grammar: replace 'unchargeable' with 'not chargeable' on battery tile
 
 ### Other Changes
 
