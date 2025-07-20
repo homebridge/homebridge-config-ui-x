@@ -4,11 +4,19 @@
   </div>
   <div class="col-3 text-end">
     <button
-      class="btn btn-elegant waves-effect m-0"
+      class="btn btn-elegant waves-effect m-0 me-2"
       (click)="openAddNewUser()"
       [attr.aria-label]="'users.button_add_user' | translate"
     >
       <i class="fas fa-fw fa-user-plus"></i>
+    </button>
+    <button
+      type="button"
+      class="btn btn-elegant my-0 me-0"
+      (click)="openSupport()"
+      [attr.aria-label]="'support.title' | translate"
+    >
+      <i class="fa fa-fw fa-question-circle-o"></i>
     </button>
   </div>
 </div>

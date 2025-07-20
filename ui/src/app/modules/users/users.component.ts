@@ -11,6 +11,7 @@ import { Users2faDisableComponent } from '@/app/modules/users/users-2fa-disable/
 import { Users2faEnableComponent } from '@/app/modules/users/users-2fa-enable/users-2fa-enable.component'
 import { UsersAddComponent } from '@/app/modules/users/users-add/users-add.component'
 import { UsersEditComponent } from '@/app/modules/users/users-edit/users-edit.component'
+import { UsersSupportComponent } from '@/app/modules/users/users-support/users-support.component'
 import { User } from '@/app/modules/users/users.interface'
 
 @Component({
@@ -105,6 +106,13 @@ export class UsersComponent implements OnInit {
 
     ref.result.finally(() => {
       this.reloadUsers()
+    })
+  }
+
+  public openSupport() {
+    this.$modal.open(UsersSupportComponent, {
+      size: 'lg',
+      backdrop: 'static',
     })
   }
 }

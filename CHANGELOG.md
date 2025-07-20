@@ -22,6 +22,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - add text on show/hide widget modal to explain layout is shared across all users
 - grammar: replace 'unchargeable' with 'not chargeable' on battery tile
 - show admin/non-admin icon on user cards for easier identification
+- added support icon and modal on users page
 
 ### Other Changes
 
