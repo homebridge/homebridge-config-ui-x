@@ -12,6 +12,10 @@
   <div class="modal-body">
     @if (availableWidgets.length) {
     <ul class="list-group list-group-box mb-0">
+      <li class="list-group-item text-center grey-text small">
+        <span [innerHTML]="'status.widget.account_1' | translate"></span><br />
+        <span [innerHTML]="'status.widget.account_2' | translate"></span>
+      </li>
       @for (widget of availableWidgets; track widget) {
       <li class="list-group-item d-flex justify-content-between align-items-center">
         <span style="word-break: break-all">{{ widget.name }}</span>

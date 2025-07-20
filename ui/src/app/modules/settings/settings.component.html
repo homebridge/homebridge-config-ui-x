@@ -293,7 +293,6 @@
 </div>
 
 <!-- STARTUP/ENV OPTIONS -->
-@if (runningInDocker) {
 <div class="my-4">
   <div
     role="button"
@@ -608,7 +607,6 @@
   </ul>
   }
 </div>
-}
 
 <!-- NETWORK SETTINGS -->
 <div class="my-4">
@@ -1028,7 +1026,7 @@
         class="fa fa-fw"
         [ngClass]="{ 'fa-chevron-down': showFields.cache, 'fa-chevron-right': !showFields.cache }"
       ></i>
-      {{ 'settings.cache.title' | translate }}
+      {{ 'menu.label_accessories' | translate }}
     </h5>
   </div>
   @if (showFields.cache) {

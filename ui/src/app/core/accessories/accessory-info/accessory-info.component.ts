@@ -43,6 +43,11 @@ export class AccessoryInfoComponent implements OnInit {
       'RobotVacuum',
     ],
     [
+      'Switch',
+      'Outlet',
+      'LockMechanism',
+    ],
+    [
       'Door',
       'Window',
       'WindowCovering',
@@ -75,7 +80,9 @@ export class AccessoryInfoComponent implements OnInit {
         .forEach(service => this.extraServices.push(service))
     }
 
-    this.customTypeList = this.allCustomTypeList.find(types => types.includes(this.service.type)) || []
+    this.customTypeList = [
+      ...new Set(this.allCustomTypeList.filter(types => types.includes(this.service.type)).flat()),
+    ]
     if (!this.service.customType) {
       this.service.customType = this.service.type
     }

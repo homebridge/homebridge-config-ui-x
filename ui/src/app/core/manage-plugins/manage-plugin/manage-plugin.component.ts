@@ -24,6 +24,7 @@ import { PluginsMarkdownDirective } from '@/app/core/directives/plugins.markdown
 import { PluginLogsComponent } from '@/app/core/manage-plugins/plugin-logs/plugin-logs.component'
 import { SettingsService } from '@/app/core/settings.service'
 import { IoNamespace, WsService } from '@/app/core/ws.service'
+import { BackupService } from '@/app/modules/settings/backup/backup.service'
 import { HbV2ModalComponent } from '@/app/modules/status/widgets/update-info-widget/hb-v2-modal/hb-v2-modal.component'
 
 @Component({
@@ -46,6 +47,7 @@ import { HbV2ModalComponent } from '@/app/modules/status/widgets/update-info-wid
 export class ManagePluginComponent implements OnInit, OnDestroy {
   private $activeModal = inject(NgbActiveModal)
   private $api = inject(ApiService)
+  private $backup = inject(BackupService)
   private $modal = inject(NgbModal)
   private $router = inject(Router)
   private $settings = inject(SettingsService)
@@ -212,7 +214,10 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
         size: 'xl',
         backdrop: 'static',
       })
-      ref.componentInstance.plugin = { name: this.pluginName }
+      ref.componentInstance.plugin = {
+        name: this.pluginName,
+        displayName: this.pluginDisplayName,
+      }
     } catch (error) {
       console.error(error)
       this.$toastr.error(this.$translate.instant('plugins.manage.child_bridge_restart_failed'), this.$translate.instant('toast.title_error'))
@@ -224,6 +229,15 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
   public downloadLogFile(): void {
     const blob = new Blob([this.errorLog], { type: 'text/plain;charset=utf-8' })
     saveAs(blob, `${this.pluginName}-error.log`)
+  }
+
+  public async downloadBackupFile(): Promise<void> {
+    try {
+      await this.$backup.downloadBackup()
+    } catch (error) {
+      console.error(error)
+      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+    }
   }
 
   public ngOnDestroy() {

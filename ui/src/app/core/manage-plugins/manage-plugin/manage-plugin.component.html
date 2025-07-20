@@ -123,6 +123,10 @@ hb-service start</pre
 
     @if (['homebridge', 'homebridge-config-ui-x'].includes(pluginName)) {
     <div class="mt-4 mb-0">
+      <p class="w-100 text-center mb-1 small">
+        <span class="grey-text">{{ 'plugins.manage.backup' | translate }}</span>
+        <a href="javascript:void(0)" (click)="downloadBackupFile()"><i class="fa fa-fw fa-download mx-1"></i></a>
+      </p>
       <p class="w-100 text-center mb-0 small grey-text">{{ 'plugins.manage.hb_restart' | translate }}</p>
     </div>
     }

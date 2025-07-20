@@ -45,7 +45,7 @@ export class WidgetVisibilityComponent implements OnInit {
         requiresConfig: true,
       },
       {
-        name: this.$translate.instant('accessories.title_accessories'),
+        name: this.$translate.instant('menu.label_accessories'),
         component: 'AccessoriesWidgetComponent',
         hidden: !this.$settings.env.enableAccessories,
         cols: 7,

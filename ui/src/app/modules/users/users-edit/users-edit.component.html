@@ -101,7 +101,7 @@
       </div>
       <div class="text-center"></div>
       <div class="text-end">
-        <button class="btn btn-primary" type="submit" [disabled]="!form.valid">
+        <button class="btn btn-primary" type="submit" [disabled]="!form.valid || isFormUnchanged()">
           {{ 'form.button_save' | translate }}
         </button>
       </div>

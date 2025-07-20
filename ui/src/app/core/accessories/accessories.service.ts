@@ -41,16 +41,18 @@ export class AccessoriesService {
   public accessoryLayout: AccessoryLayout
 
   constructor() {
-    firstValueFrom(this.$api.get('/server/cached-accessories'))
-      .then((data) => {
-        this.accessoryCache = data
-      })
-      .catch(error => console.error(error))
-    firstValueFrom(this.$api.get('/server/pairings'))
-      .then((data) => {
-        this.pairingCache = data
-      })
-      .catch(error => console.error(error))
+    if (this.$auth.user.admin) {
+      firstValueFrom(this.$api.get('/server/cached-accessories'))
+        .then((data) => {
+          this.accessoryCache = data
+        })
+        .catch(error => console.error(error))
+      firstValueFrom(this.$api.get('/server/pairings'))
+        .then((data) => {
+          this.pairingCache = data
+        })
+        .catch(error => console.error(error))
+    }
   }
 
   public showAccessoryInformation(service: any) {

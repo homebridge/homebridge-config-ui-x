@@ -14,7 +14,6 @@ export class PluginsController {
     private pluginsService: PluginsService,
   ) {}
 
-  @UseGuards(AdminGuard)
   @ApiOperation({ summary: 'Get the list of currently installed Homebridge plugins.' })
   @Get()
   pluginsGet() {

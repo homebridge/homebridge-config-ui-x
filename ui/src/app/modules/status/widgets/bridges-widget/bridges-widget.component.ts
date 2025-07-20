@@ -6,6 +6,7 @@ import { ToastrService } from 'ngx-toastr'
 import { firstValueFrom } from 'rxjs'
 
 import { ApiService } from '@/app/core/api.service'
+import { AuthService } from '@/app/core/auth/auth.service'
 import { IoNamespace, WsService } from '@/app/core/ws.service'
 
 @Component({
@@ -20,6 +21,7 @@ import { IoNamespace, WsService } from '@/app/core/ws.service'
 })
 export class BridgesWidgetComponent implements OnInit, OnDestroy {
   private $api = inject(ApiService)
+  private $auth = inject(AuthService)
   private $toastr = inject(ToastrService)
   private $translate = inject(TranslateService)
   private $ws = inject(WsService)
@@ -31,6 +33,7 @@ export class BridgesWidgetComponent implements OnInit, OnDestroy {
   public homebridgeStatus = {} as any
   public childBridges = []
   public isRestarting = false
+  public isAdmin = this.$auth.user.admin
 
   public async ngOnInit(): Promise<void> {
     this.ioMain = this.$ws.getExistingNamespace('status')

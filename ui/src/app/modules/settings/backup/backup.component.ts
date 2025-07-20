@@ -11,6 +11,7 @@ import { debounceTime } from 'rxjs/operators'
 
 import { ApiService } from '@/app/core/api.service'
 import { SettingsService } from '@/app/core/settings.service'
+import { BackupService } from '@/app/modules/settings/backup/backup.service'
 import { RestoreComponent } from '@/app/modules/settings/backup/restore/restore.component'
 
 @Component({
@@ -27,6 +28,7 @@ import { RestoreComponent } from '@/app/modules/settings/backup/restore/restore.
 export class BackupComponent implements OnInit {
   private $activeModal = inject(NgbActiveModal)
   private $api = inject(ApiService)
+  private $backup = inject(BackupService)
   private $modal = inject(NgbModal)
   private $router = inject(Router)
   private $settings = inject(SettingsService)
@@ -120,17 +122,7 @@ export class BackupComponent implements OnInit {
   public async onDownloadBackupClick() {
     this.clicked = true
     try {
-      const res = await firstValueFrom(this.$api.get('/backup/download', { observe: 'response', responseType: 'blob' }))
-      const archiveName = res.headers.get('File-Name') || 'homebridge-backup.tar.gz'
-      const sizeInBytes = res.body.size
-      if (sizeInBytes > globalThis.backup.maxBackupSize) {
-        const message = this.$translate.instant('backup.backup_exceeds_max_size', {
-          maxBackupSizeText: globalThis.backup.maxBackupSizeText,
-          size: `${(sizeInBytes / (1024 * 1024)).toFixed(1)}MB`,
-        })
-        this.$toastr.warning(message, this.$translate.instant('toast.title_warning'))
-      }
-      saveAs(res.body, archiveName)
+      await this.$backup.downloadBackup()
       this.clicked = false
     } catch (error) {
       this.clicked = false

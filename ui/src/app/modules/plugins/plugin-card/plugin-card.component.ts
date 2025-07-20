@@ -6,6 +6,7 @@ import { ToastrService } from 'ngx-toastr'
 import { firstValueFrom } from 'rxjs'
 
 import { ApiService } from '@/app/core/api.service'
+import { AuthService } from '@/app/core/auth/auth.service'
 import { ConfirmComponent } from '@/app/core/components/confirm/confirm.component'
 import { RestartHomebridgeComponent } from '@/app/core/components/restart-homebridge/restart-homebridge.component'
 import { DisablePluginComponent } from '@/app/core/manage-plugins/disable-plugin/disable-plugin.component'
@@ -35,6 +36,7 @@ import { PluginInfoComponent } from '@/app/modules/plugins/plugin-card/plugin-in
 })
 export class PluginCardComponent implements OnInit {
   private $api = inject(ApiService)
+  private $auth = inject(AuthService)
   private $md = inject(MobileDetectService)
   private $modal = inject(NgbModal)
   private $plugin = inject(ManagePluginsService)
@@ -55,6 +57,7 @@ export class PluginCardComponent implements OnInit {
   public isMobile: string
   public setChildBridges = []
   public hb2Status = 'unknown' // 'hide' | 'supported' | 'unknown'
+  public isAdmin = this.$auth.user.admin
 
   // eslint-disable-next-line accessor-pairs
   @Input() set childBridges(childBridges: any[]) {

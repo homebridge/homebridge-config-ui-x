@@ -1,18 +1,18 @@
 <div
   class="accessory-box"
-  [ngClass]="{ 'switch-on': service.values.LockCurrentState === 0 }"
+  [ngClass]="{ 'switch-on': service.values.LockCurrentState === 0 || service.values.On === 1 }"
   (shortClick)="onClick()"
   (longClick)="onLongClick()"
   tabindex="0"
 >
   <div class="d-flex flex-column h-100">
-    @if (service.values.LockCurrentState === 0) {
+    @if (service.values.LockCurrentState === 0 || service.values.On === 1) {
     <div
       [inlineSVG]="'/assets/hap-icons/lock-unlocked.svg'"
       [attr.aria-label]="'Lock (Unlocked)'"
       class="accessory-svg"
     ></div>
-    } @else if (service.values.LockCurrentState === 1) {
+    } @else if (service.values.LockCurrentState === 1 || service.values.On === 0) {
     <div
       [inlineSVG]="'/assets/hap-icons/lock-locked.svg'"
       [attr.aria-label]="'Lock (Locked)'"

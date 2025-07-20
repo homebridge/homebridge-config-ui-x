@@ -29,8 +29,11 @@ export class LockMechanismComponent {
     if (!this.readyForControl) {
       return
     }
-
-    this.service.getCharacteristic('LockTargetState').setValue(this.service.values.LockTargetState ? 0 : 1)
+    if ('LockTargetState' in this.service.values) {
+      this.service.getCharacteristic('LockTargetState').setValue(this.service.values.LockTargetState ? 0 : 1)
+    } else if ('On' in this.service.values) {
+      this.service.getCharacteristic('On').setValue(!this.service.values.On)
+    }
   }
 
   public onLongClick() {
@@ -38,10 +41,12 @@ export class LockMechanismComponent {
       return
     }
 
-    const ref = this.$modal.open(LockMechanismManageComponent, {
-      size: 'md',
-      backdrop: 'static',
-    })
-    ref.componentInstance.service = this.service
+    if ('LockTargetState' in this.service.values) {
+      const ref = this.$modal.open(LockMechanismManageComponent, {
+        size: 'md',
+        backdrop: 'static',
+      })
+      ref.componentInstance.service = this.service
+    }
   }
 }

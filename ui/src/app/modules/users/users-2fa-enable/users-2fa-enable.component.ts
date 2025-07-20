@@ -7,6 +7,7 @@ import { ToastrService } from 'ngx-toastr'
 
 import { ApiService } from '@/app/core/api.service'
 import { QrcodeComponent } from '@/app/core/components/qrcode/qrcode.component'
+import { User } from '@/app/modules/users/users.interface'
 
 @Component({
   templateUrl: './users-2fa-enable.component.html',
@@ -25,7 +26,7 @@ export class Users2faEnableComponent implements OnInit {
   private $toastr = inject(ToastrService)
   private $translate = inject(TranslateService)
 
-  @Input() public user: any
+  @Input() public user: User
 
   public timeDiffError: number | null = null
   public otpString: string

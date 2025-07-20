@@ -2,14 +2,77 @@
 
 All notable changes to `homebridge-config-ui-x` will be documented in this file. This project tries to adhere to [Semantic Versioning](http://semver.org/).
 
-## v5.0.1 (Unreleased)
+## v5.2.1 (Unreleased)
+
+### UI Changes
+
+- update 'on' colour for sliding checkbox in dark grey theme
+- custom types: expose a switch/outlet as a lock and vice versa
+- update `monaco-editor` from `0.18.1` to `0.21.3`
+- fix new users created are always created as admins
+- disable edit user form if no changes are made
+- hide terminal widget for non-admin users
+- hide bridge restart buttons in widget for non-admin users
+- hide unauthorised controls on accessories page for non-admin users
+- re-enable logs for non-admin users, but hide unauthorised controls
+- hide power options page for non-admin users
+- allow non-admin users read-only access to the plugins page
+- validate login redirect route for non-admin users
+- hide unauthorised controls on status page for non-admin users
+- add text on show/hide widget modal to explain layout is shared across all users
+- grammar: replace 'unchargeable' with 'not chargeable' on battery tile
+- show admin/non-admin icon on user cards for easier identification
+- added support icon and modal on users page
+
+### Other Changes
+
+- remove now unused `standalone.ts` file
+
+### Homebridge Dependencies
+
+- `@homebridge/hap-client` @ `v3.0.0`
+- `@homebridge/node-pty-prebuilt-multiarch` @ `v0.13.1`
+- `@homebridge/plugin-ui-utils` @ `v2.1.0`
+
+## v5.2.0 (2025-07-17)
+
+### Node.js Version
+
+- ️⚠️ The `hb-service` backend now has a stricter Node.js version requirement:
+  - if you are running Node.js `v20`, then you must be running at least `v20.19.0`
+  - if you are running Node.js `v22`, then you must be running at least `v22.12.0`
+  - if you are running Node.js `v24`, then you must be running at least `v24.0.0`
+    - although remember that `v24` is not officially supported yet
+- The UI will not allow you to update to UI `v5.2.0` if you are running an unsupported version of Node.js
+- Check the [Homebridge Wiki](https://github.com/homebridge/homebridge/wiki/How-To-Update-Node.js) for instructions on how to update Node.js on your system
+
+### Other Changes
+
+- update node engines to `^20.19.0 || ^22.12.0 || ^24.0.0`
+
+### Homebridge Dependencies
+
+- `@homebridge/hap-client` @ `v3.0.0`
+- `@homebridge/node-pty-prebuilt-multiarch` @ `v0.13.1`
+- `@homebridge/plugin-ui-utils` @ `v2.1.0`
+
+## v5.1.0 (2025-07-17)
 
 ### UI Changes
 
 - only show hbv2 readiness icon when ready to show
 - migrate to use `fetch()` for http requests
 - Fix alignment of Plugin Updates in Horizontal Mode (#2495) (@NorthernMan54)
-- terminal session persistence and macos shell optimization (@seidnerj)
+- offer to download a backup before updating homebridge/ui
+- updates to the `he.json` language file (@seidnerj)
+- pass through plugin display name to logs after update
+- fix accidental hiding of startup settings section
+
+### Homebridge Dependencies
+
+- `@homebridge/hap-client` @ `v3.0.0`
+- `@homebridge/node-pty-prebuilt-multiarch` @ `v0.13.1`
+- `@homebridge/plugin-ui-utils` @ `v2.1.0`
 
 ## v5.0.0 (2025-07-13)
 

@@ -11,7 +11,10 @@
   </div>
   <div class="modal-body">
     <ul class="list-group list-group-box mb-3">
-      <li class="list-group-item text-center grey-text small" [innerHTML]="'accessories.only_ui' | translate"></li>
+      <li class="list-group-item text-center grey-text small">
+        <span [innerHTML]="'accessories.only_ui' | translate"></span><br />
+        <span [innerHTML]="'accessories.only_ui_2' | translate"></span>
+      </li>
       <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
         <label for="form-name" class="mb-2 mb-md-0 w-100 w-md-50">{{ 'accessories.custom_name' | translate }}</label>
         <div class="text-start text-md-end w-100 w-md-50">

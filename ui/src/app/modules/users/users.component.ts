@@ -1,3 +1,4 @@
+import { NgClass } from '@angular/common'
 import { Component, inject, OnInit } from '@angular/core'
 import { ActivatedRoute } from '@angular/router'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
@@ -10,6 +11,8 @@ import { Users2faDisableComponent } from '@/app/modules/users/users-2fa-disable/
 import { Users2faEnableComponent } from '@/app/modules/users/users-2fa-enable/users-2fa-enable.component'
 import { UsersAddComponent } from '@/app/modules/users/users-add/users-add.component'
 import { UsersEditComponent } from '@/app/modules/users/users-edit/users-edit.component'
+import { UsersSupportComponent } from '@/app/modules/users/users-support/users-support.component'
+import { User } from '@/app/modules/users/users.interface'
 
 @Component({
   selector: 'app-users',
@@ -17,6 +20,7 @@ import { UsersEditComponent } from '@/app/modules/users/users-edit/users-edit.co
   standalone: true,
   imports: [
     TranslatePipe,
+    NgClass,
   ],
 })
 export class UsersComponent implements OnInit {
@@ -27,18 +31,19 @@ export class UsersComponent implements OnInit {
   private $toastr = inject(ToastrService)
   private $translate = inject(TranslateService)
 
-  public homebridgeUsers: Array<any>
+  public homebridgeUsers: User[] = []
   public username = this.$auth.user.username
+  public isAdmin = this.$auth.user.admin
 
   public ngOnInit() {
-    this.$route.data.subscribe((data: { homebridgeUsers: Array<any> }) => {
+    this.$route.data.subscribe((data: { homebridgeUsers: User[] }) => {
       this.homebridgeUsers = data.homebridgeUsers
     })
   }
 
   private reloadUsers() {
     return this.$api.get('/users').subscribe(
-      (result) => {
+      (result: User[]) => {
         this.homebridgeUsers = result
       },
     )
@@ -55,7 +60,7 @@ export class UsersComponent implements OnInit {
     })
   }
 
-  public openEditUser(user: any) {
+  public openEditUser(user: User) {
     const ref = this.$modal.open(UsersEditComponent, {
       size: 'lg',
       backdrop: 'static',
@@ -67,7 +72,7 @@ export class UsersComponent implements OnInit {
     })
   }
 
-  public deleteUser(id: string) {
+  public deleteUser(id: number) {
     this.$api.delete(`/users/${id}`).subscribe({
       next: () => {
         this.$toastr.success(this.$translate.instant('users.toast_user_deleted'), this.$translate.instant('toast.title_success'))
@@ -80,7 +85,7 @@ export class UsersComponent implements OnInit {
     })
   }
 
-  public setup2fa(user: any) {
+  public setup2fa(user: User) {
     const ref = this.$modal.open(Users2faEnableComponent, {
       size: 'lg',
       backdrop: 'static',
@@ -92,7 +97,7 @@ export class UsersComponent implements OnInit {
     })
   }
 
-  public disable2fa(user: any) {
+  public disable2fa(user: User) {
     const ref = this.$modal.open(Users2faDisableComponent, {
       size: 'lg',
       backdrop: 'static',
@@ -101,6 +106,13 @@ export class UsersComponent implements OnInit {
 
     ref.result.finally(() => {
       this.reloadUsers()
+    })
+  }
+
+  public openSupport() {
+    this.$modal.open(UsersSupportComponent, {
+      size: 'lg',
+      backdrop: 'static',
     })
   }
 }

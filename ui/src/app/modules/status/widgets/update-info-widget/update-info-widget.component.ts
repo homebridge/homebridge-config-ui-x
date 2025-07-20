@@ -7,6 +7,7 @@ import { ToastrService } from 'ngx-toastr'
 import { firstValueFrom } from 'rxjs'
 
 import { ApiService } from '@/app/core/api.service'
+import { AuthService } from '@/app/core/auth/auth.service'
 import { InformationComponent } from '@/app/core/components/information/information.component'
 import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service'
 import { SettingsService } from '@/app/core/settings.service'
@@ -33,6 +34,7 @@ interface DockerDetails {
 })
 export class UpdateInfoWidgetComponent implements OnInit {
   private $api = inject(ApiService)
+  private $auth = inject(AuthService)
   private $modal = inject(NgbModal)
   private $plugin = inject(ManagePluginsService)
   private $settings = inject(SettingsService)
@@ -55,6 +57,7 @@ export class UpdateInfoWidgetComponent implements OnInit {
   public isHbV2Ready = false
   public packageVersion = this.$settings.env.packageVersion
   public homebridgeVersion = this.$settings.env.homebridgeVersion
+  public isAdmin = this.$auth.user.admin
 
   public dockerInfo: DockerDetails = {
     currentVersion: undefined,
@@ -92,7 +95,7 @@ export class UpdateInfoWidgetComponent implements OnInit {
     // The user on UI v5 will already have a compatible Node.js version
     this.isHbV2Ready = true
 
-    if (!this.isRunningHbV2) {
+    if (!this.isRunningHbV2 && this.isAdmin) {
       const installedPlugins = await firstValueFrom(this.$api.get('/plugins'))
       const allHb2Ready = installedPlugins
         .filter((x: any) => x.name !== 'homebridge-config-ui-x')

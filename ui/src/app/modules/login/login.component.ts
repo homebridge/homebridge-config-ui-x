@@ -29,6 +29,12 @@ export class LoginComponent implements OnInit, AfterViewChecked {
   private $router = inject(Router)
   private $settings = inject(SettingsService)
   private targetRoute: string
+  private validNonAdminRoutes = [
+    '/accessories',
+    '/plugins',
+    '/logs',
+    '/support',
+  ]
 
   readonly passwordInput = viewChild<ElementRef>('password')
   readonly usernameInput = viewChild<ElementRef>('username')
@@ -92,6 +98,10 @@ export class LoginComponent implements OnInit, AfterViewChecked {
 
     try {
       await this.$auth.login(this.form.getRawValue())
+
+      if (!this.$auth.user.admin && !this.validNonAdminRoutes.includes(this.targetRoute)) {
+        this.targetRoute = '/'
+      }
       this.$router.navigateByUrl(this.targetRoute)
       window.sessionStorage.removeItem('target_route')
     } catch (error) {
