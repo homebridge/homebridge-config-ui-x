@@ -27,9 +27,16 @@ export class TerminalService {
       this.dataDisposable.dispose()
       this.dataDisposable = null
     }
-    this.io.end()
-    this.term.dispose()
-    this.resize.complete()
+    if (this.io) {
+      this.io.end()
+    }
+    if (this.term) {
+      this.term.dispose()
+      this.term = null
+    }
+    if (this.resize) {
+      this.resize.complete()
+    }
     if (this.elementResize) {
       this.elementResize.complete()
     }

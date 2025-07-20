@@ -53,16 +53,14 @@ export class TerminalComponent implements OnInit, AfterViewInit, OnDestroy {
     // Set body bg color
     window.document.querySelector('body').classList.add('bg-black')
 
-    // If terminal is already ready, use reconnectTerminal for proper session management
+    // Always ensure clean state when component initializes
+    // This prevents event handler duplication and state inconsistencies
     if (this.$terminal.isTerminalReady()) {
-      this.$terminal.reconnectTerminal(this.termTarget(), {}, this.resizeEvent)
-      setTimeout(() => {
-        this.activateTerminal()
-      }, 100)
-      return
+      // Clean up existing terminal completely before proceeding
+      this.$terminal.destroyTerminal()
     }
 
-    // Start or reconnect to the terminal
+    // Start or reconnect to the terminal based on current persistence state
     if (this.$settings.terminalPersistence && this.$terminal.hasActiveSession()) {
       this.$terminal.reconnectTerminal(this.termTarget(), {}, this.resizeEvent)
     } else {
