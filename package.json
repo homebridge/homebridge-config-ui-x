@@ -82,7 +82,7 @@
     "@fastify/multipart": "9.0.3",
     "@fastify/static": "8.2.0",
     "@homebridge/hap-client": "3.1.1",
-    "@homebridge/node-pty-prebuilt-multiarch": "0.13.1",
+    "@homebridge/node-pty-prebuilt-multiarch": "0.14.1-beta.1",
     "@nestjs/axios": "4.0.1",
     "@nestjs/common": "11.1.5",
     "@nestjs/core": "11.1.5",

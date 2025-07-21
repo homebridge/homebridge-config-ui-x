@@ -11,6 +11,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 ### Other Changes
 
 - remove now unused `standalone.ts` file
+- update `@homebridge/node-pty-prebuilt-multiarch` to `0.14.1-beta`
 
 ### Homebridge Dependencies
 
