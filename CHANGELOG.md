@@ -4,6 +4,10 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 
 ## v5.3.1 (Unreleased)
 
+### UI Changes
+
+- json config editor to offer child bridge restarts where possible
+
 ### Other Changes
 
 - remove now unused `standalone.ts` file

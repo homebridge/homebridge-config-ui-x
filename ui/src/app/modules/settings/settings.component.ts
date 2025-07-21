@@ -24,6 +24,7 @@ import { RemoveIndividualAccessoriesComponent } from '@/app/modules/settings/rem
 import { ResetAllBridgesComponent } from '@/app/modules/settings/reset-all-bridges/reset-all-bridges.component'
 import { ResetIndividualBridgesComponent } from '@/app/modules/settings/reset-individual-bridges/reset-individual-bridges.component'
 import { SelectNetworkInterfacesComponent } from '@/app/modules/settings/select-network-interfaces/select-network-interfaces.component'
+import { SettingsSupportComponent } from '@/app/modules/settings/settings-support/settings-support.component'
 import { WallpaperComponent } from '@/app/modules/settings/wallpaper/wallpaper.component'
 
 @Component({
@@ -413,6 +414,13 @@ export class SettingsComponent implements OnInit {
 
   public toggleSection(section: string) {
     this.showFields[section] = !this.showFields[section]
+  }
+
+  public openSupport() {
+    this.$modal.open(SettingsSupportComponent, {
+      size: 'lg',
+      backdrop: 'static',
+    })
   }
 
   private async initStartupSettings() {

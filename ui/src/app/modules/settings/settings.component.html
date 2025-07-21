@@ -1,9 +1,22 @@
+<div class="row mb-3">
+  <div class="col-6">
+    <h3 class="primary-text m-0">{{ 'menu.settings.title' | translate }}</h3>
+  </div>
+  <div class="col-6 text-end">
+    <button
+      type="button"
+      class="btn btn-elegant my-0 me-0"
+      (click)="openSupport()"
+      [attr.aria-label]="'support.title' | translate"
+    >
+      <i class="fa fa-fw fa-question-circle-o"></i>
+    </button>
+  </div>
+</div>
+
 @if (loading) {
 <app-spinner />
-}
-
-<h3 class="primary-text m-0">{{ 'menu.settings.title' | translate }}</h3>
-
+} @else {
 <!-- GENERAL SETTINGS -->
 <div class="my-4">
   <div
@@ -1082,3 +1095,4 @@
   }
 </div>
 <div class="pb-3"></div>
+}

@@ -4,15 +4,25 @@ import { ActivatedRoute } from '@angular/router'
 import { NgbModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import json5 from 'json5'
+import { isEqual } from 'lodash-es'
 import { DiffEditorComponent, EditorComponent, NgxEditorModel } from 'ngx-monaco-editor-v2'
 import { ToastrService } from 'ngx-toastr'
 import { firstValueFrom } from 'rxjs'
 
 import { ApiService } from '@/app/core/api.service'
+import { RestartChildBridgesComponent } from '@/app/core/components/restart-child-bridges/restart-child-bridges.component'
 import { RestartHomebridgeComponent } from '@/app/core/components/restart-homebridge/restart-homebridge.component'
+import { ChildBridge } from '@/app/core/manage-plugins/manage-plugins.interfaces'
 import { MobileDetectService } from '@/app/core/mobile-detect.service'
 import { MonacoEditorService } from '@/app/core/monaco-editor.service'
 import { SettingsService } from '@/app/core/settings.service'
+import {
+  AccessoryConfig,
+  ChildBridgeToRestart,
+  HomebridgeConfig,
+  PlatformConfig,
+  PluginChildBridge,
+} from '@/app/modules/config-editor/config-editor.interfaces'
 import { ConfigRestoreComponent } from '@/app/modules/config-editor/config-restore/config.restore.component'
 
 @Component({
@@ -39,6 +49,9 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
   private editorDecorations = []
   private lastHeight: number
   private visualViewPortEventCallback: () => void
+  private latestSavedConfig: HomebridgeConfig
+  private childBridgesToRestart: ChildBridgeToRestart[] = []
+  private hbPendingRestart = false
 
   public homebridgeConfig: string
   public originalConfig: string
@@ -82,9 +95,10 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
 
     this.$route.data.subscribe((data: { config: string }) => {
       this.homebridgeConfig = data.config
+      this.latestSavedConfig = JSON.parse(data.config)
     })
 
-    // Setup the base monaco editor model
+    // Set up the base monaco editor model
     this.monacoEditorModel = {
       value: '{}',
       language: 'json',
@@ -582,13 +596,183 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
     try {
       const data = await firstValueFrom(this.$api.post('/config-editor', config))
       this.homebridgeConfig = JSON.stringify(data, null, 4)
-      this.$modal.open(RestartHomebridgeComponent, {
-        size: 'lg',
-        backdrop: 'static',
-      })
+      await this.detectSavesChangesForRestart()
     } catch (error) {
       console.error(error)
       this.$toastr.error(this.$translate.instant('config.failed_to_save_config'), this.$translate.instant('toast.title_error'))
+    }
+  }
+
+  private validateArraysEqual(a: string[], b: string[]): boolean {
+    if (a.length !== b.length) {
+      return false
+    }
+    const sortedA = [...a].sort()
+    const sortedB = [...b].sort()
+    return sortedA.every((val, idx) => val === sortedB[idx])
+  }
+
+  private removePlatformsAndAccessories(config: HomebridgeConfig): Omit<HomebridgeConfig, 'platforms' | 'accessories'> {
+    // eslint-disable-next-line unused-imports/no-unused-vars
+    const { accessories, platforms, ...rest } = config
+    return rest
+  }
+
+  private removeEmptyBridges(entries: (PlatformConfig | AccessoryConfig)[]): PluginChildBridge[] {
+    return entries
+      .filter((p: PlatformConfig | AccessoryConfig) => p._bridge && Object.keys(p._bridge).length > 0)
+      .map((p: PlatformConfig | AccessoryConfig) => p._bridge)
+  }
+
+  private validateBridgesEqual(a: PluginChildBridge[], b: PluginChildBridge[]): boolean {
+    if (a.length !== b.length) {
+      return false
+    }
+    return a.every(itemA => b.some(itemB => isEqual(itemA, itemB)))
+  }
+
+  private async detectSavesChangesForRestart() {
+    try {
+      // If homebridge is pending a restart, we don't even need to start with these checks
+      if (this.hbPendingRestart) {
+        throw new Error('homebridge already pending a restart')
+      }
+
+      // We can try to find things that have changed, to offer the best restart option
+      const originalConfigJson = this.latestSavedConfig
+      const originalConfigString = JSON.stringify(originalConfigJson, null, 4)
+      const updatedConfigJson = JSON.parse(this.homebridgeConfig) as HomebridgeConfig
+      const updatedConfigString = this.homebridgeConfig
+
+      // Check one: has anything actually changed?
+      if (originalConfigString === updatedConfigString && !this.childBridgesToRestart.length) {
+        this.$toastr.info(this.$translate.instant('config.no_restart'), this.$translate.instant('config.config_saved'))
+      } else {
+        // Check two: has a new key been added or removed at the top level?
+        if (!this.validateArraysEqual(Object.keys(originalConfigJson), Object.keys(updatedConfigJson))) {
+          throw new Error('top level keys have changed')
+        }
+
+        // Check three: if the user has no child bridges, then there is no point in checking the rest
+        const platformsAndAccessories = [
+          ...(updatedConfigJson.platforms || []),
+          ...(updatedConfigJson.accessories || []),
+        ]
+        // Check if no child bridges are present
+        if (platformsAndAccessories.every((entry: PlatformConfig | AccessoryConfig) => !entry._bridge || !Object.keys(entry._bridge).length)) {
+          throw new Error('All platforms and accessories are missing a valid _bridge property.')
+        }
+
+        // Check four: have any of the top level properties changed (except plugins and accessories)?
+        // Remove 'accessories' and 'platforms' from both configs
+        const originalConfigOmitted = this.removePlatformsAndAccessories(originalConfigJson)
+        const updatedConfigOmitted = this.removePlatformsAndAccessories(updatedConfigJson)
+        if (!isEqual(originalConfigOmitted, updatedConfigOmitted)) {
+          throw new Error('top level properties have changed (except accessories and platforms)')
+        }
+
+        // So far so good, now we just needs to deal with the platforms and accessories keys
+        // Check five: In each case, for the properties of those arrays, compare on the 'platform' or 'accessory' key
+        // If by comparing them, we find a 'platform' or 'accessory' has been added, removed or changed, we need a full restart
+        const originalPlatforms = originalConfigJson.platforms || []
+        const updatedPlatforms = updatedConfigJson.platforms || []
+        const originalPlatformKeys = originalPlatforms.map((p: PlatformConfig) => p.platform)
+        const updatedPlatformKeys = updatedPlatforms.map((p: PlatformConfig) => p.platform)
+        if (!this.validateArraysEqual(originalPlatformKeys, updatedPlatformKeys)) {
+          throw new Error('platform keys have changed')
+        }
+        const originalAccessories = originalConfigJson.accessories || []
+        const updatedAccessories = updatedConfigJson.accessories || []
+        const originalAccessoryKeys = originalAccessories.map((a: AccessoryConfig) => a.accessory)
+        const updatedAccessoryKeys = updatedAccessories.map((a: AccessoryConfig) => a.accessory)
+        if (!this.validateArraysEqual(originalAccessoryKeys, updatedAccessoryKeys)) {
+          throw new Error('accessory keys have changed')
+        }
+
+        // Any object in the platforms array can have a '_bridge' key, and the value is an object
+        // Check six: We need a full restart if for any of the platforms a '_bridge' key has been added, changed or removed
+        if (!this.validateBridgesEqual(this.removeEmptyBridges(originalPlatforms), this.removeEmptyBridges(updatedPlatforms))) {
+          throw new Error('platform bridges have changed')
+        }
+        if (!this.validateBridgesEqual(this.removeEmptyBridges(originalAccessories), this.removeEmptyBridges(updatedAccessories))) {
+          throw new Error('accessory bridges have changed')
+        }
+
+        // For the rest of the checks, we need to find out which entries have changed
+        const changedPlatformEntries = originalPlatforms.filter((p: PlatformConfig) => {
+          return !isEqual(p, updatedPlatforms.find((up: PlatformConfig) => up.platform === p.platform))
+        })
+        const changedAccessoryEntries = originalAccessories.filter((a: AccessoryConfig) => {
+          return !isEqual(a, updatedAccessories.find((ua: AccessoryConfig) => ua.accessory === a.accessory))
+        })
+        const changedEntries = [...changedPlatformEntries, ...changedAccessoryEntries]
+
+        // Check seven: we need a full restart if the homebridge ui config entry has changed
+        if (changedPlatformEntries.some((entry: PlatformConfig) => entry.platform === 'config')) {
+          throw new Error('homebridge ui config has changed')
+        }
+
+        // Check eight: apart from the ui config entry, if any of the changed entries do not have a '_bridge' key
+        //   (or it is null or an empty object), we must do a full restart
+        const hasChangedEntriesWithoutBridge = changedEntries.some((entry: PlatformConfig | AccessoryConfig) => {
+          if (entry.platform === 'config') {
+            return false
+          }
+          return !entry._bridge || Object.keys(entry._bridge).length === 0
+        })
+        if (hasChangedEntriesWithoutBridge) {
+          throw new Error('some changed entry does not have a _bridge key')
+        }
+
+        // At this point we have a list of the changed entries, and we know they all have a _bridge key
+        // Now we can start to form a list of the child bridges that we can restart.
+        const data: ChildBridge[] = await firstValueFrom(this.$api.get('/status/homebridge/child-bridges'))
+
+        // Match up the changed entries with the child bridges
+        changedEntries.forEach((entry: PlatformConfig | AccessoryConfig) => {
+          // Grab the username from the _bridge key, uppercase it, and find the matching child bridge
+          const configUsername = entry._bridge.username.toUpperCase()
+          const childBridge = data.find(({ username }) => username === configUsername)
+          if (childBridge) {
+            if (!this.childBridgesToRestart.some((b: ChildBridgeToRestart) => b.username === childBridge.username)) {
+              this.childBridgesToRestart.push({
+                name: childBridge.name,
+                username: childBridge.username,
+              })
+            }
+          } else {
+            throw new Error(`no child bridge found for username: ${configUsername}`)
+          }
+        })
+
+        const ref = this.$modal.open(RestartChildBridgesComponent, {
+          size: 'lg',
+          backdrop: 'static',
+        })
+        ref.componentInstance.bridges = this.childBridgesToRestart
+
+        // If the user dismisses the modal, the child bridges are still pending a restart
+        try {
+          await ref.result
+          this.childBridgesToRestart = []
+        } catch (error) { /* modal dismissed */ }
+      }
+    } catch (error) {
+      console.error(error)
+      const ref = this.$modal.open(RestartHomebridgeComponent, {
+        size: 'lg',
+        backdrop: 'static',
+      })
+
+      try {
+        await ref.result
+        this.hbPendingRestart = false
+        this.childBridgesToRestart = []
+      } catch {
+        this.hbPendingRestart = true
+      }
+    } finally {
+      this.latestSavedConfig = JSON.parse(this.homebridgeConfig)
     }
   }
 
