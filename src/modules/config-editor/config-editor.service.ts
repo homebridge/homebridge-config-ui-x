@@ -463,6 +463,22 @@ export class ConfigEditorService {
   }
 
   /**
+   * Delete a config backup
+   * @param backupId
+   */
+  public async deleteConfigBackup(backupId: number) {
+    const requestedBackupPath = resolve(this.configService.configBackupPath, `config.json.${backupId}`)
+
+    // Check backup file exists
+    if (!await pathExists(requestedBackupPath)) {
+      throw new NotFoundException(`Backup ${backupId} Not Found`)
+    }
+
+    // Delete the backup file
+    await unlink(resolve(this.configService.configBackupPath, `config.json.${backupId}`))
+  }
+
+  /**
    * Delete all config backups
    */
   public async deleteAllConfigBackups() {

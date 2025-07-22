@@ -329,6 +329,11 @@ export class SettingsComponent implements OnInit {
     })
   }
 
+  public openConfigBackup() {
+    // go to /config?action=restore
+    this.$router.navigate(['/config'], { queryParams: { action: 'restore' } })
+  }
+
   public openWallpaperModal() {
     this.$modal.open(WallpaperComponent, {
       size: 'lg',

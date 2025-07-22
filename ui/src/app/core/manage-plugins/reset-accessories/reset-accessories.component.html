@@ -91,7 +91,7 @@
         [disabled]="!toDelete.length || clicked"
         (click)="cleanBridges()"
       >
-        @if (!clicked) { {{ 'form.button_remove' | translate }} @if (toDelete.length > 0) { ({{ toDelete.length }}) }}
+        @if (!clicked) { {{ 'form.button_reset' | translate }} @if (toDelete.length > 0) { ({{ toDelete.length }}) }}
         @if (clicked) {
         <i class="fas fa-fw fa-spinner fa-pulse"></i>
         }

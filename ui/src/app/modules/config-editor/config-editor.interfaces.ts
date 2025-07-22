@@ -52,3 +52,9 @@ export interface ChildBridgeToRestart {
   name: string
   username: string
 }
+
+export interface ConfigRestoreBackup {
+  id: string
+  timestamp: string
+  file: string
+}

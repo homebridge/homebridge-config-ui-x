@@ -7,6 +7,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 ### UI Changes
 
 - json config editor to offer child bridge restarts where possible
+- improvements to the restore config file modal
 
 ### Other Changes
 
