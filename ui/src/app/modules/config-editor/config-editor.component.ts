@@ -1,6 +1,6 @@
 import { Component, inject, OnDestroy, OnInit, Renderer2 } from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { ActivatedRoute } from '@angular/router'
+import { ActivatedRoute, Router } from '@angular/router'
 import { NgbModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import json5 from 'json5'
@@ -23,7 +23,7 @@ import {
   PlatformConfig,
   PluginChildBridge,
 } from '@/app/modules/config-editor/config-editor.interfaces'
-import { ConfigRestoreComponent } from '@/app/modules/config-editor/config-restore/config.restore.component'
+import { ConfigRestoreComponent } from '@/app/modules/config-editor/config-restore/config-restore.component'
 
 @Component({
   templateUrl: './config-editor.component.html',
@@ -43,6 +43,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
   private $monacoEditor = inject(MonacoEditorService)
   private $route = inject(ActivatedRoute)
   private $renderer = inject(Renderer2)
+  private $router = inject(Router)
   private $settings = inject(SettingsService)
   private $toastr = inject(ToastrService)
   private $translate = inject(TranslateService)
@@ -114,6 +115,24 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
       })
     } else {
       this.setMonacoEditorModel()
+    }
+
+    // Get any query parameters
+    const { action } = this.$router.parseUrl(this.$router.url).queryParams
+    if (action) {
+      switch (action) {
+        case 'restore': {
+          this.onRestore(true)
+          break
+        }
+      }
+
+      // Clear the query parameters so that we don't keep showing the same action
+      this.$router.navigate([], {
+        queryParams: {},
+        replaceUrl: true,
+        queryParamsHandling: '',
+      })
     }
   }
 
@@ -208,14 +227,17 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
     this.saveInProgress = false
   }
 
-  public onRestore() {
-    this.$modal
-      .open(ConfigRestoreComponent, {
-        size: 'lg',
-        backdrop: 'static',
-      })
-      .result
-      .then((backupId) => {
+  public onRestore(fromSettings = false) {
+    const ref = this.$modal.open(ConfigRestoreComponent, {
+      size: 'lg',
+      backdrop: 'static',
+    })
+
+    ref.componentInstance.currentConfig = this.homebridgeConfig
+    ref.componentInstance.fromSettings = fromSettings
+
+    ref.result
+      .then((backupId: string) => {
         if (!this.originalConfig) {
           this.originalConfig = this.homebridgeConfig
         }
@@ -269,19 +291,11 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
       .catch(() => { /* modal dismissed */ })
   }
 
-  public onExportConfig() {
-    const dataStr = `data:text/json;charset=utf-8,${encodeURIComponent(this.homebridgeConfig)}`
-    const downloadAnchorNode = document.createElement('a')
-    downloadAnchorNode.setAttribute('href', dataStr)
-    downloadAnchorNode.setAttribute('download', 'config.json')
-    document.body.appendChild(downloadAnchorNode) // required for firefox
-    downloadAnchorNode.click()
-    downloadAnchorNode.remove()
-  }
-
   public onCancelRestore() {
     this.homebridgeConfig = this.originalConfig
     this.originalConfig = ''
+
+    this.onRestore()
   }
 
   public ngOnDestroy() {

@@ -4,20 +4,7 @@
       <h3 class="primary-text m-0">{{ 'menu.config_json_editor' | translate }}</h3>
     </div>
     <div class="col-6 text-end">
-      @if (!originalConfig) {
-      <button
-        class="btn btn-elegant waves-effect my-0 me-2"
-        (click)="onExportConfig()"
-        container="body"
-        placement="bottom"
-        openDelay="150"
-        triggers="hover"
-        [attr.aria-label]="'form.button_download' | translate"
-        [ngbTooltip]="'form.button_download' | translate"
-      >
-        <i class="fas fa-fw fa-download"></i>
-      </button>
-      } @if (originalConfig) {
+      @if (originalConfig) {
       <button
         class="btn btn-danger waves-effect my-0 me-2"
         (click)="onCancelRestore()"

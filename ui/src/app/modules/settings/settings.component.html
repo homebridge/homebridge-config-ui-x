@@ -67,6 +67,17 @@
       </button>
     </li>
     <li class="list-group-item d-flex justify-content-between align-items-center">
+      <span class="pe-2"> {{ 'config.restore.title' | translate }} </span>
+      <button
+        class="btn btn-primary waves-effect m-0 ms-3"
+        style="min-width: 50px"
+        (click)="openConfigBackup()"
+        [attr.aria-label]="'config.restore.title' | translate"
+      >
+        <i class="fas fa-fw fa-arrow-right"></i>
+      </button>
+    </li>
+    <li class="list-group-item d-flex justify-content-between align-items-center">
       <span class="pe-2"> {{ 'menu.tooltip_user_accounts' | translate }} </span>
       <a
         class="btn btn-primary waves-effect m-0 ms-3"
