@@ -15,7 +15,9 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-24.04, ubuntu-22.04, macos-15, macos-14, macos-13, windows-2025, windows-2022]
+        # windows-11-arm is not working (yet), see:
+        # https://github.com/homebridge/homebridge-config-ui-x/actions/runs/16482469131/job/46600012357
+        os: [ubuntu-24.04, ubuntu-24.04-arm, ubuntu-22.04, ubuntu-22.04-arm, macos-15, macos-14, macos-13, windows-2025, windows-2022]
 
     uses: homebridge/.github/.github/workflows/nodejs-build-and-test.yml@latest
     with:
