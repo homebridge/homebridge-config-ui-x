@@ -92,7 +92,7 @@
     "@nestjs/platform-socket.io": "11.1.4",
     "@nestjs/swagger": "11.2.0",
     "@nestjs/websockets": "11.1.4",
-    "axios": "1.10.0",
+    "axios": "1.11.0",
     "bash-color": "0.0.4",
     "class-transformer": "0.5.1",
     "class-validator": "0.14.2",
