@@ -14,6 +14,8 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vites
 import { AuthModule } from '../../src/core/auth/auth.module'
 import { PluginsSettingsUiModule } from '../../src/modules/custom-plugins/plugins-settings-ui/plugins-settings-ui.module'
 
+import '../../src/globalDefaults'
+
 describe('PluginsSettingsUiController (e2e)', () => {
   let app: NestFastifyApplication
   let httpService: HttpService

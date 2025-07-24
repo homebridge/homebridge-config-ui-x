@@ -122,6 +122,9 @@ export class ConfigService {
     scheduledBackupPath?: string
     scheduledBackupDisable?: boolean
     disableServerMetricsMonitoring?: boolean
+    terminalPersistence?: boolean
+    terminalShowWarning?: boolean
+    terminalBufferSize?: number
   }
 
   private bridgeFreeze: this['homebridgeConfig']['bridge']
@@ -214,6 +217,9 @@ export class ConfigService {
       serverTimestamp: new Date().toISOString(),
       theme: this.ui.theme || 'deep-purple',
       menuMode: this.ui.menuMode || 'default',
+      terminalPersistence: Boolean(this.ui.terminalPersistence),
+      terminalShowWarning: Boolean(this.ui.terminalShowWarning),
+      terminalBufferSize: this.ui.terminalBufferSize || globalThis.terminal.bufferSize,
     }
 
     if (!authorized) {

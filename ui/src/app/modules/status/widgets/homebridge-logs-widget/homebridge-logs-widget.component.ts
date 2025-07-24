@@ -92,7 +92,8 @@ export class HomebridgeLogsWidgetComponent implements OnInit, OnDestroy {
                 cursor: '#d2d2d2',
                 selectionBackground: '#d2d2d2',
               }
-          this.$log.term.options.allowTransparency = this.theme === 'light'
+          this.$log.term.options.allowTransparency = true
+          this.$log.term.options.allowProposedApi = true
           changed = true
         }
 
