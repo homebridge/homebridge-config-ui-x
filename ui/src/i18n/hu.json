@@ -666,6 +666,7 @@
   "users.setup_2fa_warning": "Two Factor Authentication requires your Homebridge server to have a very accurate date and time to login. If your server does not have the ability to keep time accurately you should not enable 2FA, otherwise you risk being locked out of the Homebridge UI.",
   "users.support.acc_1": "There are two types of users that can access the Homebridge UI: admin and non-admin users. Admins can access and control everything available in the UI. Non-admin users have a read-only view of the following pages:",
   "users.support.acc_2": "2FA can only be set up on admin accounts, and must do this via the users page logged in as themselves.",
+  "users.support.control": "can be controlled",
   "users.title_add_user": "Felhasználó hozzáadása",
   "users.title_edit_user": "Felhasználó szerkesztése",
   "users.title_users": "Felhasználók",

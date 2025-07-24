@@ -15,6 +15,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - show/copy user qr code secrets when setting up 2fa
 - fix json schema icons from font awesome update
 - disable plugin notes now based on keep orphans setting
+- text clarification in users support modal
 
 ### Other Changes
 
