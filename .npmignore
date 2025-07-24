@@ -77,3 +77,6 @@ yarn.lock
 .env
 .DS_Store
 .idea
+
+public/assets/monaco-0.21.3/monaco.d.ts
+!public/assets/monaco-0.21.3/min/vs/base/browser/ui/codicons/codicon/codicon.ttf

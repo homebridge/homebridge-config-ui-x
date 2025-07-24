@@ -17,11 +17,11 @@ export class TerminalNavigationGuardService {
 
   public handleBeforeUnload(event: BeforeUnloadEvent): string | undefined {
     // Only show warning if persistence is disabled, warning is enabled, there's an active session, and user has typed
-    if (!this.$settings.terminalPersistence
-      && this.$settings.terminalShowWarning
+    if (!this.$settings.env.terminal?.persistence
+      && !this.$settings.env.terminal?.hideWarning
       && this.$terminal.hasActiveSession()
       && this.$terminal.hasUserTypedInSession()) {
-      const message = this.$translate.instant('platform.terminal.beforeunload_message')
+      const message = this.$translate.instant('platform.terminal.terminate_unload')
       event.preventDefault()
       event.returnValue = message
       return message // For other browsers
@@ -31,12 +31,12 @@ export class TerminalNavigationGuardService {
 
   public canDeactivate(): Promise<boolean> | boolean {
     // If persistence is enabled, allow navigation without prompt
-    if (this.$settings.terminalPersistence) {
+    if (this.$settings.env.terminal?.persistence) {
       return true
     }
 
     // If warning is disabled, allow navigation without prompt (preserve current behavior)
-    if (!this.$settings.terminalShowWarning) {
+    if (this.$settings.env.terminal?.hideWarning) {
       return true
     }
 
@@ -56,19 +56,12 @@ export class TerminalNavigationGuardService {
       backdrop: 'static',
     })
 
-    ref.componentInstance.title = this.$translate.instant(
-      'platform.terminal.confirm_navigation_title',
-    )
-    ref.componentInstance.message = this.$translate.instant(
-      'platform.terminal.confirm_navigation_message',
-    )
-    ref.componentInstance.confirmButtonLabel = this.$translate.instant(
-      'platform.terminal.confirm_navigation_button',
-    )
-    ref.componentInstance.cancelButtonLabel = this.$translate.instant(
-      'form.button_cancel',
-    )
-    ref.componentInstance.confirmButtonClass = 'btn-warning'
+    ref.componentInstance.title = this.$translate.instant('platform.terminal.terminate_title')
+    ref.componentInstance.message = this.$translate.instant('platform.terminal.terminate_message_1')
+    ref.componentInstance.message2 = this.$translate.instant('platform.terminal.terminate_message_2')
+    ref.componentInstance.message3 = this.$translate.instant('common.phrases.are_you_sure')
+    ref.componentInstance.confirmButtonLabel = this.$translate.instant('form.button_continue')
+    ref.componentInstance.confirmButtonClass = 'btn-primary'
     ref.componentInstance.faIconClass = 'fas fa-exclamation-triangle text-warning'
 
     return ref.result.then(() => true).catch(() => false)

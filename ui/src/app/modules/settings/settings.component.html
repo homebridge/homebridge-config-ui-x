@@ -88,81 +88,6 @@
         <i class="fas fa-fw fa-arrow-right"></i>
       </a>
     </li>
-    @if (enableTerminalAccess) {
-    <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
-      <div class="d-flex flex-column">
-        <span>{{ 'settings.general.terminal_persistence' | translate }}</span>
-        <div class="small grey-text">{{ 'settings.general.terminal_persistence_help' | translate }}</div>
-      </div>
-      <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
-        <div class="custom-switch order-1 order-md-2">
-          <input
-            type="checkbox"
-            class="rendux-input"
-            id="terminalPersistence"
-            [formControl]="uiTerminalPersistenceFormControl"
-            [attr.aria-label]="'settings.general.terminal_persistence' | translate"
-          />
-          <label class="rendux-label" for="terminalPersistence"></label>
-        </div>
-        @if (uiTerminalPersistenceIsSaving) {
-        <i
-          @fadeInOut
-          class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
-        ></i>
-        }
-      </div>
-    </li>
-    @if (!uiTerminalPersistenceFormControl.value) {
-    <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
-      <div class="d-flex flex-column">
-        <span>{{ 'settings.general.terminal_show_warning' | translate }}</span>
-        <div class="small grey-text">{{ 'settings.general.terminal_show_warning_help' | translate }}</div>
-      </div>
-      <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
-        <div class="custom-switch order-1 order-md-2">
-          <input
-            type="checkbox"
-            class="rendux-input"
-            id="terminalShowWarning"
-            [formControl]="uiTerminalShowWarningFormControl"
-            [attr.aria-label]="'settings.general.terminal_show_warning' | translate"
-          />
-          <label class="rendux-label" for="terminalShowWarning"></label>
-        </div>
-        @if (uiTerminalShowWarningIsSaving) {
-        <i
-          @fadeInOut
-          class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
-        ></i>
-        }
-      </div>
-    </li>
-    } @if (uiTerminalPersistenceFormControl.value) {
-    <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
-      <div class="d-flex flex-column">
-        <span>{{ 'settings.general.terminal_buffer_size' | translate }}</span>
-        <div class="small grey-text">{{ 'settings.general.terminal_buffer_size_help' | translate }}</div>
-      </div>
-      <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
-        <input
-          class="form-control custom-input resp-input order-1 order-md-2"
-          type="number"
-          min="10000"
-          max="100000"
-          step="10000"
-          [formControl]="uiTerminalBufferSizeFormControl"
-          [attr.aria-label]="'settings.general.terminal_buffer_size' | translate"
-        />
-        @if (uiTerminalBufferSizeIsSaving) {
-        <i
-          @fadeInOut
-          class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
-        ></i>
-        }
-      </div>
-    </li>
-    } }
   </ul>
   }
 </div>
@@ -580,54 +505,6 @@
       </a>
     </li>
     }
-    <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
-      <span>
-        {{ 'settings.startup.log_max' | translate }}<br />
-        <small class="grey-text pe-2">{{ 'settings.startup.log_max_desc' | translate }}</small>
-      </span>
-      <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
-        <input
-          class="form-control custom-input resp-input order-1 order-md-2"
-          type="number"
-          min="-1"
-          placeholder="1000000"
-          [formControl]="hbLogSizeFormControl"
-          [attr.aria-label]="'settings.startup.log_max' | translate"
-          [ngClass]="{ 'is-invalid': hbLogSizeIsInvalid }"
-        />
-        @if (hbLogSizeIsSaving) {
-        <i
-          @fadeInOut
-          class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
-        ></i>
-        }
-      </div>
-    </li>
-    @if (hbLogSizeFormControl.value > 0) {
-    <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
-      <span>
-        {{ 'settings.startup.log_truncate' | translate }}<br />
-        <small class="grey-text pe-2">{{ 'settings.startup.log_truncate_desc' | translate }}</small>
-      </span>
-      <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
-        <input
-          class="form-control custom-input resp-input order-1 order-md-2"
-          type="number"
-          min="0"
-          placeholder="200000"
-          [formControl]="hbLogTruncateFormControl"
-          [attr.aria-label]="'settings.startup.log_truncate' | translate"
-          [ngClass]="{ 'is-invalid': hbLogTruncateIsInvalid }"
-        />
-        @if (hbLogTruncateIsSaving) {
-        <i
-          @fadeInOut
-          class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
-        ></i>
-        }
-      </div>
-    </li>
-    }
   </ul>
   }
 </div>
@@ -849,6 +726,158 @@
         }
       </div>
     </li>
+  </ul>
+  }
+</div>
+
+<!-- LOGGING & TERMINAL SETTINGS -->
+<div class="my-4">
+  <div
+    role="button"
+    tabindex="0"
+    [attr.aria-expanded]="showFields.terminal ? 'true' : 'false'"
+    [attr.aria-controls]="'fieldsTerminal'"
+    (click)="toggleSection('terminal')"
+    class="mt-3 hover-pointer"
+  >
+    <h5 class="primary-text">
+      <i
+        class="fa fa-fw"
+        [ngClass]="{ 'fa-chevron-down': showFields.terminal, 'fa-chevron-right': !showFields.terminal }"
+      ></i>
+      {{ 'settings.network.title_terminal' | translate }}
+    </h5>
+  </div>
+  @if (showFields.terminal) {
+  <ul class="list-group list-group-box mt-2 mx-0" id="fieldsTerminal">
+    <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+      <span>
+        {{ 'settings.terminal.log_max' | translate }}<br />
+        <small class="grey-text pe-2">{{ 'settings.terminal.log_max_desc' | translate }}</small>
+      </span>
+      <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
+        <input
+          class="form-control custom-input resp-input order-1 order-md-2"
+          type="number"
+          min="-1"
+          placeholder="1000000"
+          [formControl]="hbLogSizeFormControl"
+          [attr.aria-label]="'settings.terminal.log_max' | translate"
+          [ngClass]="{ 'is-invalid': hbLogSizeIsInvalid }"
+        />
+        @if (hbLogSizeIsSaving) {
+        <i
+          @fadeInOut
+          class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
+        ></i>
+        }
+      </div>
+    </li>
+    @if (hbLogSizeFormControl.value > 0) {
+    <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+      <span>
+        {{ 'settings.terminal.log_truncate' | translate }}<br />
+        <small class="grey-text pe-2">{{ 'settings.terminal.log_truncate_desc' | translate }}</small>
+      </span>
+      <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
+        <input
+          class="form-control custom-input resp-input order-1 order-md-2"
+          type="number"
+          min="0"
+          placeholder="200000"
+          [formControl]="hbLogTruncateFormControl"
+          [attr.aria-label]="'settings.terminal.log_truncate' | translate"
+          [ngClass]="{ 'is-invalid': hbLogTruncateIsInvalid }"
+        />
+        @if (hbLogTruncateIsSaving) {
+        <i
+          @fadeInOut
+          class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
+        ></i>
+        }
+      </div>
+    </li>
+    } @if (enableTerminalAccess) {
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+      <span>
+        {{ 'settings.terminal.persistence' | translate }}
+        <span class="badge badge-primary ms-1">{{ 'common.labels.beta' | translate }}</span><br />
+        <small class="grey-text pe-2">{{ 'settings.terminal.persistence_help' | translate }}</small>
+      </span>
+      <div class="d-flex align-items-center">
+        <div class="order-1 order-md-2">
+          <input
+            type="checkbox"
+            class="rendux-input"
+            id="terminalPersistence"
+            [formControl]="uiTerminalPersistenceFormControl"
+            [attr.aria-label]="'settings.terminal.persistence' | translate"
+          />
+          <label class="rendux-label ms-3" for="terminalPersistence"></label>
+        </div>
+        @if (uiTerminalPersistenceIsSaving) {
+        <i
+          @fadeInOut
+          class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
+        ></i>
+        }
+      </div>
+    </li>
+    @if (!uiTerminalPersistenceFormControl.value) {
+    <li class="list-group-item d-flex justify-content-between align-items-center">
+      <span>
+        {{ 'settings.terminal.warning' | translate }}
+        <span class="badge badge-primary ms-1">{{ 'common.labels.beta' | translate }}</span><br />
+        <small class="grey-text pe-2">{{ 'settings.terminal.warning_help' | translate }}</small>
+      </span>
+      <div class="d-flex align-items-center">
+        <div class="order-1 order-md-2">
+          <input
+            type="checkbox"
+            class="rendux-input"
+            id="terminalHideWarning"
+            [formControl]="uiTerminalHideWarningFormControl"
+            [attr.aria-label]="'settings.terminal.warning' | translate"
+          />
+          <label class="rendux-label ms-3" for="terminalHideWarning"></label>
+        </div>
+        @if (uiTerminalHideWarningIsSaving) {
+        <i
+          @fadeInOut
+          class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
+        ></i>
+        }
+      </div>
+    </li>
+    } @if (uiTerminalPersistenceFormControl.value) {
+    <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+      <div class="d-flex flex-column">
+        <span>
+          {{ 'settings.terminal.buffer_size' | translate }}
+          <span class="badge badge-primary ms-1">{{ 'common.labels.beta' | translate }}</span>
+        </span>
+        <div class="small grey-text">{{ 'settings.terminal.buffer_size_help' | translate }}</div>
+      </div>
+      <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
+        <input
+          class="form-control custom-input resp-input order-1 order-md-2"
+          type="number"
+          min="10000"
+          max="100000"
+          step="10000"
+          [formControl]="uiTerminalBufferSizeFormControl"
+          [attr.aria-label]="'settings.terminal.buffer_size' | translate"
+          [ngClass]="{ 'is-invalid': uiTerminalBufferSizeIsInvalid }"
+        />
+        @if (uiTerminalBufferSizeIsSaving) {
+        <i
+          @fadeInOut
+          class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
+        ></i>
+        }
+      </div>
+    </li>
+    } }
   </ul>
   }
 </div>

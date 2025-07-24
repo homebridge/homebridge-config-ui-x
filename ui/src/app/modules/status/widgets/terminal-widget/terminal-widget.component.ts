@@ -97,7 +97,7 @@ export class TerminalWidgetComponent implements OnInit, AfterViewInit, OnDestroy
       }
 
       // Start or reconnect to the terminal
-      if (this.$settings.terminalPersistence && this.$terminal.hasActiveSession()) {
+      if (this.$settings.env.terminal?.persistence && this.$terminal.hasActiveSession()) {
         this.$terminal.reconnectTerminal(this.termTarget(), terminalOptions, this.resizeEvent)
       } else {
         this.$terminal.startTerminal(this.termTarget(), terminalOptions, this.resizeEvent)
@@ -193,7 +193,7 @@ export class TerminalWidgetComponent implements OnInit, AfterViewInit, OnDestroy
 
     // Use persistence setting to determine behavior
     // NOTE: This is essential for proper terminal lifecycle management
-    if (this.$settings.terminalPersistence) {
+    if (this.$settings.env.terminal?.persistence) {
       // Detach the terminal but keep the session alive
       this.$terminal.detachTerminal()
     } else {

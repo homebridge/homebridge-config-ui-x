@@ -14,20 +14,23 @@
     <i class="fas fa-fw {{ faIconClass }} mb-3" style="font-size: 75px"></i>
     }
     <p class="mb-0 text-center" [innerHTML]="message"></p>
+    @if (message2) {
+    <p class="mt-2 mb-0 text-center" [innerHTML]="message2"></p>
+    } @if (message3) {
+    <p class="mt-2 mb-0 text-center" [innerHTML]="message3"></p>
+    }
   </div>
   <div class="modal-footer justify-content-between">
     <div class="text-start">
-      @if (cancelButtonLabel) {
       <button
         type="button"
         class="btn btn-elegant"
         data-bs-dismiss="modal"
         (click)="dismissModal()"
-        [attr.aria-label]="cancelButtonLabel"
+        [attr.aria-label]="'form.button_cancel' | translate"
       >
-        {{ cancelButtonLabel }}
+        {{ 'form.button_cancel' | translate }}
       </button>
-      }
     </div>
     <div class="text-center"></div>
     <div class="text-end">

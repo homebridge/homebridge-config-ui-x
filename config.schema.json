@@ -551,6 +551,38 @@
             }
           }
         }
+      },
+      "terminal": {
+        "type": "object",
+        "title": "Terminal Settings",
+        "description": "The terminal settings for the Homebridge UI.",
+        "properties": {
+          "persistence": {
+            "title": "Terminal Session Persistence",
+            "type": "boolean",
+            "description": "When enabled, terminal sessions will persist when navigating away and can be resumed when returning to the terminal page (or status page widget). Terminal sessions are shared across Homebridge UI admin users.",
+            "default": false
+          },
+          "hideWarning": {
+            "title": "Hide Terminal Termination Warning",
+            "type": "boolean",
+            "description": "When enabled, the warning dialog will not be shown before terminating non-persistent terminal sessions.",
+            "default": false,
+            "condition": {
+              "functionBody": "return !model.terminal?.persistence"
+            }
+          },
+          "bufferSize": {
+            "title": "Terminal Buffer Character Size",
+            "type": "integer",
+            "description": "Amount of terminal output to preserve for persistent sessions. Larger values use more memory.",
+            "default": 50000,
+            "minimum": 0,
+            "condition": {
+              "functionBody": "return model.terminal?.persistence"
+            }
+          }
+        }
       }
     }
   },

@@ -39,6 +39,7 @@
               "@xterm/addon-web-links",
               "@xterm/xterm",
               "ajv",
+              "ajv-formats",
               "ajv-keywords",
               "dayjs",
               "dragula",

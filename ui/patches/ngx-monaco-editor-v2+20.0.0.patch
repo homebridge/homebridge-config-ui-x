@@ -1,0 +1,13 @@
+diff --git a/node_modules/ngx-monaco-editor-v2/fesm2022/ngx-monaco-editor-v2.mjs b/node_modules/ngx-monaco-editor-v2/fesm2022/ngx-monaco-editor-v2.mjs
+index c1c185b..7705573 100644
+--- a/node_modules/ngx-monaco-editor-v2/fesm2022/ngx-monaco-editor-v2.mjs
++++ b/node_modules/ngx-monaco-editor-v2/fesm2022/ngx-monaco-editor-v2.mjs
+@@ -37,7 +37,7 @@ class BaseEditor {
+                 let baseUrl = this.config.baseUrl;
+                 // ensure backward compatibility
+                 if (baseUrl === "assets" || !baseUrl) {
+-                    baseUrl = "./assets/monaco/min/vs";
++                    baseUrl = "./assets/monaco-0.21.3/min/vs";
+                 }
+                 if (typeof (window.monaco) === 'object') {
+                     this.initMonaco(this._options, this.insideNg);
