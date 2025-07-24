@@ -660,6 +660,7 @@
   "users.setup_2fa_enabled_success": "2FA activada.",
   "users.setup_2fa_enter_code": "Ingresa el código de tu aplicación de autenticación:",
   "users.setup_2fa_scan_qr_code": "Escanea el siguiente Código QR con tu aplicación de autenticación:",
+  "users.setup_2fa_scan_qr_manual": "If you cannot scan the QR code, you can enter the following secret key manually:",
   "users.setup_2fa_server_time_out": "El reloj de tu servidor está desactualizado por {{ timeDiffError }}ms. El máximo permitido es +/-5000 ms.",
   "users.setup_2fa_warning": "2FA requiere que tu servidor Homebridge tenga una fecha y hora muy precisas para iniciar sesión. Si tu servidor no tiene la capacidad de mantener la hora con precisión, no debes habilitar la 2FA o te arriesgas a ser bloqueado de la interfaz de Homebridge.",
   "users.support.acc_1": "There are two types of users that can access the Homebridge UI: admin and non-admin users. Admins can access and control everything available in the UI. Non-admin users have a read-only view of the following pages:",

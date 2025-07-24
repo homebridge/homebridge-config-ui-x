@@ -660,6 +660,7 @@
   "users.setup_2fa_enabled_success": "二段階認証を有効化しました。",
   "users.setup_2fa_enter_code": "認証アプリからコードを入力",
   "users.setup_2fa_scan_qr_code": "以下のQRコードを認証アプリでスキャンしてください。",
+  "users.setup_2fa_scan_qr_manual": "If you cannot scan the QR code, you can enter the following secret key manually:",
   "users.setup_2fa_server_time_out": "お使いのサーバの時間が {{ timeDiffError }} msずれています。許容誤差は +/-5000 msです。",
   "users.setup_2fa_warning": "二段階認証ではHomebridgeサーバに正確な日時でログインする必要があります。サーバが正確な日時を保てない場合は、二段階認証を有効にすることを推奨しません。これに従わない場合、Homebridge UIにアクセスできなくなる危険性があります。",
   "users.support.acc_1": "There are two types of users that can access the Homebridge UI: admin and non-admin users. Admins can access and control everything available in the UI. Non-admin users have a read-only view of the following pages:",

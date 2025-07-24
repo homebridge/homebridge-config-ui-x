@@ -660,6 +660,7 @@
   "users.setup_2fa_enabled_success": "Двофакторна аутентифікація увімкнена.",
   "users.setup_2fa_enter_code": "Введіть код з Вашого додатку для аутентифікації:",
   "users.setup_2fa_scan_qr_code": "Відскануйте QR-код нижче за допомогою Вашого додатку для аутентифікації:",
+  "users.setup_2fa_scan_qr_manual": "If you cannot scan the QR code, you can enter the following secret key manually:",
   "users.setup_2fa_server_time_out": "Годинник Вашого сервера має похибку на {{ timeDiffError }} мс. Максимально допустиме значення +/-5000 мс.",
   "users.setup_2fa_warning": "Двофакторна аутентифікація вимагає, щоб Ваш сервер Homebridge мав дуже точну дату та час для входу в систему. Якщо Ваш сервер не має можливості точно відстежувати час, Ви не повинні вмикати 2FA або ризикуєте втратити доступ до інтерфейсу користувача Homebridge.",
   "users.support.acc_1": "There are two types of users that can access the Homebridge UI: admin and non-admin users. Admins can access and control everything available in the UI. Non-admin users have a read-only view of the following pages:",
