@@ -1,4 +1,4 @@
-import { Component, inject, OnDestroy, OnInit } from '@angular/core'
+import { Component, HostListener, inject, OnDestroy, OnInit } from '@angular/core'
 import { NgbModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap'
 import { TranslatePipe } from '@ngx-translate/core'
 import { GridsterComponent, GridsterConfig, GridsterItem, GridsterItemComponent } from 'angular-gridster2'
@@ -9,6 +9,7 @@ import { SpinnerComponent } from '@/app//core/components/spinner/spinner.compone
 import { AuthService } from '@/app/core/auth/auth.service'
 import { NotificationService } from '@/app/core/notification.service'
 import { SettingsService } from '@/app/core/settings.service'
+import { TerminalNavigationGuardService } from '@/app/core/terminal-navigation-guard.service'
 import { IoNamespace, WsService } from '@/app/core/ws.service'
 import { CreditsComponent } from '@/app/modules/status/credits/credits.component'
 import { WidgetControlComponent } from '@/app/modules/status/widget-control/widget-control.component'
@@ -33,6 +34,7 @@ export class StatusComponent implements OnInit, OnDestroy {
   private $modal = inject(NgbModal)
   private $notification = inject(NotificationService)
   private $settings = inject(SettingsService)
+  private $navigationGuard = inject(TerminalNavigationGuardService)
   private $ws = inject(WsService)
   private isUnlocked = false
   private io: IoNamespace
@@ -297,5 +299,27 @@ export class StatusComponent implements OnInit, OnDestroy {
       console.error('Failed to save dashboard layout')
       console.error(e)
     }
+  }
+
+  @HostListener('window:beforeunload', ['$event'])
+  onBeforeUnload(event: BeforeUnloadEvent) {
+    // Check if any terminal widget needs to warn about navigation
+    const hasTerminalWidget = this.dashboard.some(item => item.component === 'TerminalWidgetComponent')
+
+    if (hasTerminalWidget) {
+      return this.$navigationGuard.handleBeforeUnload(event)
+    }
+    return undefined
+  }
+
+  public canDeactivate(): Promise<boolean> | boolean {
+    // Check if any terminal widget needs to confirm navigation
+    const hasTerminalWidget = this.dashboard.some(item => item.component === 'TerminalWidgetComponent')
+
+    if (!hasTerminalWidget) {
+      return true
+    }
+
+    return this.$navigationGuard.canDeactivate()
   }
 }
