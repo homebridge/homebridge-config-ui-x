@@ -666,6 +666,7 @@
   "users.setup_2fa_warning": "Die Zwei-Faktor-Authentifizierung verlangt, dass dein Homebridge-Server eine präzise Datum- und Zeitangabe zum Anmelden aufweist. Sollte dein Server die aktuelle Zeit nicht präzise angeben können, solltest du 2FA nicht aktivieren. Andernfalls riskierst du, dass du dich nicht mehr in Homebridge UI anmelden kannst.",
   "users.support.acc_1": "There are two types of users that can access the Homebridge UI: admin and non-admin users. Admins can access and control everything available in the UI. Non-admin users have a read-only view of the following pages:",
   "users.support.acc_2": "2FA can only be set up on admin accounts, and must do this via the users page logged in as themselves.",
+  "users.support.control": "can be controlled",
   "users.title_add_user": "Benutzer hinzufügen",
   "users.title_edit_user": "Benutzer bearbeiten",
   "users.title_users": "Benutzer",

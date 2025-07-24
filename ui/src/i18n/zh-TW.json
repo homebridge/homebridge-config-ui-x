@@ -666,6 +666,7 @@
   "users.setup_2fa_warning": "雙重驗證需要 Homebridge 伺服器以相當精準的時間及時間執行、以進行登入動作。假如您的伺服器無法保持時間精準、建議不要開啟雙重驗證，以避免 Homebridge UI 遭到鎖定。",
   "users.support.acc_1": "There are two types of users that can access the Homebridge UI: admin and non-admin users. Admins can access and control everything available in the UI. Non-admin users have a read-only view of the following pages:",
   "users.support.acc_2": "2FA can only be set up on admin accounts, and must do this via the users page logged in as themselves.",
+  "users.support.control": "can be controlled",
   "users.title_add_user": "新增使用者",
   "users.title_edit_user": "編輯使用者",
   "users.title_users": "使用者",
