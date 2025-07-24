@@ -32,9 +32,6 @@ export class SettingsService {
   public browserLightingMode: 'light' | 'dark'
   public menuMode: 'default' | 'freeze'
   public wallpaper: string
-  public terminalPersistence = false
-  public terminalShowWarning = false
-  public terminalBufferSize = globalThis.terminal.bufferSize
   public serverTimeOffset = 0
   public rtl = false // set true if current translation is RLT
   public onSettingsLoaded = this.settingsLoadedSubject.pipe(first())
@@ -66,9 +63,6 @@ export class SettingsService {
     this.env = data.env
     this.lightingMode = data.lightingMode
     this.wallpaper = data.wallpaper
-    this.terminalPersistence = data.terminalPersistence === true // default to false
-    this.terminalShowWarning = data.terminalShowWarning === true // default to false
-    this.terminalBufferSize = data.terminalBufferSize || globalThis.terminal.bufferSize
     this.setLightingMode(this.lightingMode, 'user')
     this.setTheme(data.theme)
     this.setMenuMode(data.menuMode)

@@ -47,6 +47,11 @@ export interface EnvInterface {
     shutdown?: string
     restart?: string
   }
+  terminal?: {
+    persistence?: boolean
+    hideWarning?: boolean
+    bufferSize?: number
+  }
   host?: string
   proxyHost?: string
   homebridgePackagePath?: string
@@ -62,7 +67,4 @@ export interface AppSettingsInterface {
   menuMode: 'default' | 'freeze'
   wallpaper: string
   serverTimestamp: string
-  terminalPersistence?: boolean
-  terminalShowWarning?: boolean
-  terminalBufferSize?: number
 }
