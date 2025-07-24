@@ -31,6 +31,7 @@ export class SettingsService {
   public actualLightingMode: 'light' | 'dark'
   public browserLightingMode: 'light' | 'dark'
   public menuMode: 'default' | 'freeze'
+  public keepOrphans: boolean
   public wallpaper: string
   public serverTimeOffset = 0
   public rtl = false // set true if current translation is RLT
@@ -66,6 +67,7 @@ export class SettingsService {
     this.setLightingMode(this.lightingMode, 'user')
     this.setTheme(data.theme)
     this.setMenuMode(data.menuMode)
+    this.setKeepOrphans(data.keepOrphans)
     this.setTitle(this.env.homebridgeInstanceName)
     this.checkServerTime(data.serverTimestamp)
     this.setUiVersion(data.env.packageVersion)
@@ -161,6 +163,10 @@ export class SettingsService {
 
   public setMenuMode(value: 'default' | 'freeze') {
     this.menuMode = value
+  }
+
+  public setKeepOrphans(value: boolean) {
+    this.keepOrphans = value
   }
 
   public setLang(lang: string) {

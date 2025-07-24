@@ -19,6 +19,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - remove now unused `standalone.ts` file
 - update `@homebridge/node-pty-prebuilt-multiarch` to `0.14.1-beta`
 - added `arm` runners to the ui workflows for testing
+- make 'keep orphans' setting available in ui settings service
 
 ### Homebridge Dependencies
 
