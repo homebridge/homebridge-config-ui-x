@@ -660,6 +660,7 @@
   "users.setup_2fa_enabled_success": "İki aşamalı doğrulama etkinleştirildi.",
   "users.setup_2fa_enter_code": "Doğrulama uygulamanızdaki kodu girin:",
   "users.setup_2fa_scan_qr_code": "Doğrulama uygulamanızla aşağıdaki QR kodu tarayın:",
+  "users.setup_2fa_scan_qr_manual": "If you cannot scan the QR code, you can enter the following secret key manually:",
   "users.setup_2fa_server_time_out": "Sunucunuzun saat farkı {{ timeDiffError }} ms. En fazla izin verilen +/-5000 milisaniyedir",
   "users.setup_2fa_warning": "İki aşamalı doğrulama ile giriş yapmak için Homebridge sunucunuzun tam doğru tarih ve zaman ayarında olması gerekir. Eğer sunucunuz tarih ve saat ayarını doğru şekilde tutamıyorsa 2AD'yi etkinleştirmemeniz gerekir aksi takdirde Homebridge UI'a kalıcı olarak giriş yapamayabilirsiniz.",
   "users.support.acc_1": "There are two types of users that can access the Homebridge UI: admin and non-admin users. Admins can access and control everything available in the UI. Non-admin users have a read-only view of the following pages:",

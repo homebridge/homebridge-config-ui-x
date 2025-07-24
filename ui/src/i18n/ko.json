@@ -660,6 +660,7 @@
   "users.setup_2fa_enabled_success": "2차인증이 활성화 되었습니다.",
   "users.setup_2fa_enter_code": "인증기 앱의 코드를 입력해주세요:",
   "users.setup_2fa_scan_qr_code": "인증기 앱으로 아래 QR코드를 스캔하세요:",
+  "users.setup_2fa_scan_qr_manual": "If you cannot scan the QR code, you can enter the following secret key manually:",
   "users.setup_2fa_server_time_out": "서버에 설정된 시간의 오차가 {{ timeDiffError }} 밀리초를 초과했습니다. 허용되는 최대 값은 +/- 5000 밀리초입니다.",
   "users.setup_2fa_warning": "2차인증을 활성화하려면 Homebridge 서버의 로그인 날짜와 시간이 정확해야합니다. 서버 시간을 정확하게 유지할 수 없다면 2차인증을 활성화해서는 안되며, 그렇지 않을 경우 Homebridge UI가 잠길 위험이 있습니다.",
   "users.support.acc_1": "There are two types of users that can access the Homebridge UI: admin and non-admin users. Admins can access and control everything available in the UI. Non-admin users have a read-only view of the following pages:",

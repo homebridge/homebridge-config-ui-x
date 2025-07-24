@@ -1,3 +1,4 @@
+/* global NodeJS */
 import { Component, inject, Input, OnInit } from '@angular/core'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { NgbActiveModal, NgbAlert } from '@ng-bootstrap/ng-bootstrap'
@@ -25,11 +26,14 @@ export class Users2faEnableComponent implements OnInit {
   private $api = inject(ApiService)
   private $toastr = inject(ToastrService)
   private $translate = inject(TranslateService)
+  private copyTimeout: NodeJS.Timeout | null = null
 
   @Input() public user: User
 
   public timeDiffError: number | null = null
   public otpString: string
+  public otpSecret: string
+  public secretCopied = false
   public formGroup = new FormGroup({
     code: new FormControl('', [Validators.required, Validators.minLength(6), Validators.maxLength(6)]),
   })
@@ -40,6 +44,7 @@ export class Users2faEnableComponent implements OnInit {
         this.checkTimeDiff(data.timestamp)
         if (!this.timeDiffError) {
           this.otpString = data.otpauth
+          this.otpSecret = (new URL(this.otpString)).searchParams.get('secret') || ''
         }
       },
       error: (error) => {
@@ -61,6 +66,19 @@ export class Users2faEnableComponent implements OnInit {
         this.$toastr.error(this.$translate.instant('users.setup_2fa_activate_error'), this.$translate.instant('toast.title_error'))
       },
     })
+  }
+
+  public async copySecretToClipboard(): Promise<void> {
+    await navigator.clipboard.writeText(this.otpSecret)
+    this.secretCopied = true
+
+    if (this.copyTimeout) {
+      clearTimeout(this.copyTimeout)
+    }
+
+    this.copyTimeout = setTimeout(() => {
+      this.secretCopied = false
+    }, 3000)
   }
 
   public dismissModal() {
