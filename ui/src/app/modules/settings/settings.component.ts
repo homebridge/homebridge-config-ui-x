@@ -791,6 +791,7 @@ export class SettingsComponent implements OnInit {
         ENV_DEBUG: this.hbEnvDebugFormControl.value,
         ENV_NODE_OPTIONS: this.hbEnvNodeFormControl.value,
       }))
+      this.$settings.setKeepOrphans(value)
       setTimeout(() => {
         this.hbKeepIsSaving = false
         this.$api.put('/platform-tools/hb-service/set-full-service-restart-flag', {}).subscribe({

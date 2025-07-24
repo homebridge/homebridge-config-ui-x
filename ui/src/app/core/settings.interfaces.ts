@@ -67,4 +67,5 @@ export interface AppSettingsInterface {
   menuMode: 'default' | 'freeze'
   wallpaper: string
   serverTimestamp: string
+  keepOrphans: boolean
 }
