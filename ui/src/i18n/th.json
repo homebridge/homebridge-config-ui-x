@@ -289,6 +289,7 @@
   "plugins.manage.confirm_disable_accessory_2": "เมื่อคุณเปิดใช้งานปลั๊กอินอีกครั้ง อุปกรณ์เสริมจะปรากฏขึ้นใน Homebridge UI และ HomeKit อีกครั้ง อุปกรณ์เสริมจะสูญเสียข้อมูล HomeKit (เช่น ฉากและการทำงานอัตโนมัติที่เกี่ยวข้อง)",
   "plugins.manage.confirm_disable_platform_1": "อุปกรณ์เสริมใด ๆ ที่เปิดเผยโดยปลั๊กอินนี้จะถูกลบออกจากหน้าจออุปกรณ์เสริม Homebridge UI แต่ยังคงอยู่ใน HomeKit พร้อมป้าย 'ไม่มีการตอบสนอง'",
   "plugins.manage.confirm_disable_platform_2": "เมื่อคุณเปิดใช้งานปลั๊กอินอีกครั้ง อุปกรณ์เสริมจะปรากฏขึ้นใน Homebridge UI อีกครั้ง และสามารถควบคุมได้ใน HomeKit อีกครั้ง อุปกรณ์เสริมจะไม่สูญเสียข้อมูล HomeKit (เช่น ฉากและการทำงานอัตโนมัติที่เกี่ยวข้อง)",
+  "plugins.manage.confirm_disable_setting": "Your setting for {{ setting }} is currently {{ value }}, therefore:",
   "plugins.manage.confirm_enable": "แน่ใจไหมว่าต้องการเปิดใช้งาน {{ pluginName }}?",
   "plugins.manage.disable": "ปิดการใช้งาน",
   "plugins.manage.enable": "เปิดการใช้งาน",

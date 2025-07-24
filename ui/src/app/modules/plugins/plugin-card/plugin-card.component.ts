@@ -121,6 +121,7 @@ export class PluginCardComponent implements OnInit {
     ref.componentInstance.pluginName = plugin.displayName
     ref.componentInstance.isConfigured = plugin.isConfigured
     ref.componentInstance.isConfiguredDynamicPlatform = plugin.isConfiguredDynamicPlatform
+    ref.componentInstance.keepOrphans = this.$settings.keepOrphans
 
     ref.result.then(async () => {
       try {

@@ -289,6 +289,7 @@
   "plugins.manage.confirm_disable_accessory_2": "When you re-enable the plugin, the accessories will reappear in the Homebridge UI and HomeKit. The accessories will lose their HomeKit data (like related scenes and automations).",
   "plugins.manage.confirm_disable_platform_1": "Any accessories exposed by this plugin will be removed from the Homebridge UI accessory screen but remain in HomeKit with a 'No Response' label.",
   "plugins.manage.confirm_disable_platform_2": "When you re-enable the plugin, the accessories will reappear in the Homebridge UI and become controllable again in HomeKit. The accessories will not lose their HomeKit data (like related scenes and automations).",
+  "plugins.manage.confirm_disable_setting": "Your setting for {{ setting }} is currently {{ value }}, therefore:",
   "plugins.manage.confirm_enable": "確定要啟用 {{ pluginName }} 嗎？",
   "plugins.manage.disable": "關閉",
   "plugins.manage.enable": "開啟",

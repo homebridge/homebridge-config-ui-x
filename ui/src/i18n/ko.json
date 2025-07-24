@@ -289,6 +289,7 @@
   "plugins.manage.confirm_disable_accessory_2": "플러그인을 다시 활성화하면 액세서리가 Homebridge UI와 HomeKit에 다시 나타납니다. 그러나 액세서리는 HomeKit 데이터(예: 관련 장면 및 자동화)를 잃게 됩니다.",
   "plugins.manage.confirm_disable_platform_1": "이 플러그인이 노출하는 모든 액세서리는 Homebridge UI 액세서리 화면에서 제거되지만, HomeKit에서는 '응답 없음' 라벨과 함께 남아있게 됩니다.",
   "plugins.manage.confirm_disable_platform_2": "플러그인을 다시 활성화하면 액세서리가 Homebridge UI에 다시 나타나고 HomeKit에서 다시 제어할 수 있게 됩니다. 액세서리는 HomeKit 데이터(예: 관련 장면 및 자동화)를 잃지 않습니다.",
+  "plugins.manage.confirm_disable_setting": "Your setting for {{ setting }} is currently {{ value }}, therefore:",
   "plugins.manage.confirm_enable": "{{ pluginName }} 플러그인을 활성화 할까요?",
   "plugins.manage.disable": "비활성화",
   "plugins.manage.enable": "활성화",
