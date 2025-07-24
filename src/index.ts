@@ -28,8 +28,8 @@ class HomebridgeUi {
       .option('-T, --no-timestamp', '', () => process.env.UIX_LOG_NO_TIMESTAMPS = '1')
       .parse(process.argv)
 
-    if (!satisfies(process.version, '>=20.18.0')) {
-      const msg = `Node.js v20.18.0 higher is required. You may experience issues running this plugin running on ${process.version}.`
+    if (!satisfies(process.version, '>=20.19.0')) {
+      const msg = `Node.js v20.19.0 higher is required. You may experience issues running this plugin running on ${process.version}.`
       log.error(msg)
       log.warn(msg)
     }

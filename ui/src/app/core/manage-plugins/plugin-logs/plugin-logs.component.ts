@@ -114,7 +114,7 @@ export class PluginLogsComponent implements OnInit, OnDestroy {
       },
       error: (error) => {
         console.error(error)
-        this.$toastr.error(error.error.message || error.message, this.$translate.instant('toast.title_error'))
+        this.$toastr.error(error.error?.message || error.message, this.$translate.instant('toast.title_error'))
         this.$activeModal.dismiss()
       },
     })

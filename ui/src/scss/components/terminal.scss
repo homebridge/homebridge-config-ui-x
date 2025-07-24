@@ -13,3 +13,8 @@
   scrollbar-width: none; // firefox
   -ms-overflow-style: none; // edge
 }
+
+// https://github.com/xtermjs/xterm.js/pull/4979/files
+.terminal .xterm-rows span {
+  pointer-events: none;
+}

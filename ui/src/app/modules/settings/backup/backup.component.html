@@ -113,7 +113,7 @@
       @for (backup of scheduledBackups; track backup) {
       <li class="list-group-item d-flex justify-content-between align-items-center">
         <span>
-          <span [ngbTooltip]="backup.fileName" container="modal" openDelay="150" triggers="hover">
+          <span [ngbTooltip]="backup.fileName" container="modal" [openDelay]="150" triggers="hover">
             {{ backup.timestamp | date:'mediumDate' }}
           </span>
           <br />
@@ -122,7 +122,7 @@
             <span
               [ngbTooltip]="'backup.backup_exceeds_max_size' | translate: { backupSize: backup.size + 'MB', maxBackupSizeText: backup.maxBackupSizeText }"
               container="modal"
-              openDelay="150"
+              [openDelay]="150"
               triggers="hover"
               class="red-text"
             >
@@ -142,7 +142,7 @@
             [ngbTooltip]="'form.button_restore' | translate"
             placement="bottom"
             container="modal"
-            openDelay="150"
+            [openDelay]="150"
             triggers="hover"
             [attr.aria-label]="'form.button_restore' | translate"
           >
@@ -155,7 +155,7 @@
             [ngbTooltip]="'form.button_download' | translate"
             placement="bottom"
             container="modal"
-            openDelay="150"
+            [openDelay]="150"
             triggers="hover"
             [attr.aria-label]="'form.button_download' | translate"
           >
@@ -168,7 +168,7 @@
             [ngbTooltip]="'form.button_delete' | translate"
             placement="bottom"
             container="modal"
-            openDelay="150"
+            [openDelay]="150"
             triggers="hover"
             [attr.aria-label]="'form.button_delete' | translate"
           >

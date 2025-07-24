@@ -26,6 +26,7 @@ import { RemoveIndividualAccessoriesComponent } from '@/app/modules/settings/rem
 import { ResetAllBridgesComponent } from '@/app/modules/settings/reset-all-bridges/reset-all-bridges.component'
 import { ResetIndividualBridgesComponent } from '@/app/modules/settings/reset-individual-bridges/reset-individual-bridges.component'
 import { SelectNetworkInterfacesComponent } from '@/app/modules/settings/select-network-interfaces/select-network-interfaces.component'
+import { SettingsSupportComponent } from '@/app/modules/settings/settings-support/settings-support.component'
 import { WallpaperComponent } from '@/app/modules/settings/wallpaper/wallpaper.component'
 
 @Component({
@@ -201,7 +202,7 @@ export class SettingsComponent implements OnInit {
   public hbLinuxRestartIsSaving = false
   public hbLinuxRestartFormControl = new FormControl('')
 
-  public readonly linkDebug = '<a href="https://github.com/homebridge/homebridge-config-ui-x/wiki/Debug-Common-Values" target="_blank"><i class="fa fa-fw fa-external-link-alt primary-text"></i></a>'
+  public readonly linkDebug = '<a href="https://github.com/homebridge/homebridge-config-ui-x/wiki/Debug-Common-Values" target="_blank" rel="noopener noreferrer"><i class="fa fa-fw fa-external-link-alt primary-text"></i></a>'
 
   public async ngOnInit() {
     this.isHbV2 = this.$settings.env.homebridgeVersion.startsWith('2')
@@ -355,6 +356,11 @@ export class SettingsComponent implements OnInit {
     })
   }
 
+  public openConfigBackup() {
+    // go to /config?action=restore
+    this.$router.navigate(['/config'], { queryParams: { action: 'restore' } })
+  }
+
   public openWallpaperModal() {
     this.$modal.open(WallpaperComponent, {
       size: 'lg',
@@ -440,6 +446,13 @@ export class SettingsComponent implements OnInit {
 
   public toggleSection(section: string) {
     this.showFields[section] = !this.showFields[section]
+  }
+
+  public openSupport() {
+    this.$modal.open(SettingsSupportComponent, {
+      size: 'lg',
+      backdrop: 'static',
+    })
   }
 
   private async initStartupSettings() {

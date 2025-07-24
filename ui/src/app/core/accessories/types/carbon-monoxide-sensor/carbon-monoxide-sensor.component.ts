@@ -1,7 +1,7 @@
 import { NgClass } from '@angular/common'
 import { Component, Input } from '@angular/core'
 import { TranslatePipe } from '@ngx-translate/core'
-import { InlineSVGModule } from 'ng-inline-svg-2'
+import { InlineSVGDirective } from 'ng-inline-svg-2'
 
 import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
 
@@ -12,7 +12,7 @@ import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
   standalone: true,
   imports: [
     NgClass,
-    InlineSVGModule,
+    InlineSVGDirective,
     TranslatePipe,
   ],
 })

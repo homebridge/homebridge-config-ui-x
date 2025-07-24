@@ -13,7 +13,7 @@
     <i class="fas fa-fw fa-power-off primary-text mb-3" style="font-size: 75px"></i>
     <p class="w-100">{{ 'restart.child_bridge_list' | translate }}</p>
     <div class="text-center">
-      <ul class="d-inline-block text-start">
+      <ul class="d-inline-block text-start mb-0">
         @for (bridge of bridges; track bridge) {
         <li>{{ bridge.name }} (<span class="font-monospace">{{ bridge.username }}</span>)</li>
         }

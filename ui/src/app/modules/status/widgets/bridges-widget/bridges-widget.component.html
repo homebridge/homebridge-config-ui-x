@@ -16,7 +16,7 @@
           }"
           container="body"
           placement="right"
-          openDelay="150"
+          [openDelay]="150"
           triggers="hover"
           [ngbTooltip]="(homebridgeStatus.status === 'down' && !isRestarting ? 'status.services.label_not_running' : 'status.services.label_running') | translate"
           [attr.aria-label]="(homebridgeStatus.status === 'down' && !isRestarting ? 'status.services.label_not_running' : 'status.services.label_running') | translate"
@@ -31,7 +31,7 @@
           (click)="restartHomebridge()"
           [ngbTooltip]="'menu.tooltip_restart' | translate"
           container="body"
-          openDelay="150"
+          [openDelay]="150"
           triggers="hover"
           placement="left"
         ></i>
@@ -42,7 +42,7 @@
           class="fas fa-fw ms-2 fa-link"
           [ngbTooltip]="(homebridgeStatus.paired ? 'status.widget.qr_paired' : 'status.widget.qr_unpaired') | translate"
           container="body"
-          openDelay="150"
+          [openDelay]="150"
           triggers="hover"
           placement="left"
           [ngClass]="{
@@ -64,7 +64,7 @@
           }"
           container="body"
           placement="right"
-          openDelay="150"
+          [openDelay]="150"
           triggers="hover"
           [ngbTooltip]="(bridge.status === 'down' && !bridge.restarting && !isRestarting ? 'status.services.label_not_running' : 'status.services.label_running') | translate"
           [attr.aria-label]="(bridge.status === 'down' && !bridge.restarting && !isRestarting ? 'status.services.label_not_running' : 'status.services.label_running') | translate"
@@ -79,7 +79,7 @@
           (click)="restartChildBridge(bridge)"
           [ngbTooltip]="'menu.tooltip_restart' | translate"
           container="body"
-          openDelay="150"
+          [openDelay]="150"
           triggers="hover"
           placement="left"
         ></i>
@@ -90,7 +90,7 @@
           class="fas fa-fw ms-2 fa-link"
           [ngbTooltip]="(bridge.paired ? 'status.widget.qr_paired' : 'status.widget.qr_unpaired') | translate"
           container="body"
-          openDelay="150"
+          [openDelay]="150"
           triggers="hover"
           placement="left"
           [ngClass]="{

@@ -40,7 +40,9 @@ export class LogsComponent implements OnInit, OnDestroy {
     window.document.querySelector('body').classList.add('bg-black')
 
     // Start the terminal
-    this.$log.startTerminal(this.termTarget(), {}, this.resizeEvent)
+    this.$log.startTerminal(this.termTarget(), {
+      allowProposedApi: true,
+    }, this.resizeEvent)
   }
 
   public ngOnDestroy() {
@@ -104,7 +106,7 @@ export class LogsComponent implements OnInit, OnDestroy {
           },
           error: (error: HttpErrorResponse) => {
             console.error(error)
-            this.$toastr.error(error.error.message || this.$translate.instant('logs.truncate.error'), this.$translate.instant('toast.title_error'))
+            this.$toastr.error(error.error?.message || this.$translate.instant('logs.truncate.error'), this.$translate.instant('toast.title_error'))
           },
         })
       })

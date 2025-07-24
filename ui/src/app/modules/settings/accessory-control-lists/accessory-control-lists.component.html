@@ -26,7 +26,7 @@
               class="fas fa-fw fa-link"
               [ngbTooltip]="(mainPairing._isPaired ? 'status.widget.qr_paired' : 'status.widget.qr_unpaired') | translate"
               container="body"
-              openDelay="150"
+              [openDelay]="150"
               triggers="hover"
               placement="left"
               [ngClass]="{
@@ -60,7 +60,7 @@
               class="fas fa-fw fa-link"
               [ngbTooltip]="(item._isPaired ? 'status.widget.qr_paired' : 'status.widget.qr_unpaired') | translate"
               container="body"
-              openDelay="150"
+              [openDelay]="150"
               triggers="hover"
               placement="left"
               [ngClass]="{

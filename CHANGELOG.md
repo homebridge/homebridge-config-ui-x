@@ -2,7 +2,25 @@
 
 All notable changes to `homebridge-config-ui-x` will be documented in this file. This project tries to adhere to [Semantic Versioning](http://semver.org/).
 
-## v5.2.1 (Unreleased)
+## v5.3.1 (Unreleased)
+
+### UI Changes
+
+- json config editor to offer child bridge restarts where possible
+- improvements to the restore config file modal
+
+### Other Changes
+
+- remove now unused `standalone.ts` file
+- update `@homebridge/node-pty-prebuilt-multiarch` to `0.14.1-beta`
+
+### Homebridge Dependencies
+
+- `@homebridge/hap-client` @ `v3.1.1`
+- `@homebridge/node-pty-prebuilt-multiarch` @ `v0.13.1`
+- `@homebridge/plugin-ui-utils` @ `v2.1.0`
+
+## v5.3.0 (2025-07-23)
 
 ### UI Changes
 
@@ -23,14 +41,19 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - grammar: replace 'unchargeable' with 'not chargeable' on battery tile
 - show admin/non-admin icon on user cards for easier identification
 - added support icon and modal on users page
+- use a new component for support modal footers for suggestions
 
 ### Other Changes
 
-- remove now unused `standalone.ts` file
+- set the minimum wanted version of node to `v20.19.0`
+- fix undefined `error.error` instances in various places
+- revert to using angular http `withInterceptorsFromDi`
+- fix type of ngbtooltip `openDelay` in angular templates
+- updated dependencies
 
 ### Homebridge Dependencies
 
-- `@homebridge/hap-client` @ `v3.0.0`
+- `@homebridge/hap-client` @ `v3.1.1`
 - `@homebridge/node-pty-prebuilt-multiarch` @ `v0.13.1`
 - `@homebridge/plugin-ui-utils` @ `v2.1.0`
 

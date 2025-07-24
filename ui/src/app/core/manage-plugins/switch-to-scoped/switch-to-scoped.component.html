@@ -120,7 +120,7 @@ hb-service start</pre
         [disabled]="installing || uninstalling || restarting || !onlineUpdateOk || failure"
       >
         @if (!installing && !uninstalling && !restarting) {
-        <span> {{ 'form.label_continue' | translate }} </span>
+        <span> {{ 'form.button_continue' | translate }} </span>
         } @if ((installing || uninstalling || restarting) && !failure) {
         <i class="fas fa-fw fa-spinner fa-pulse"></i>
         }

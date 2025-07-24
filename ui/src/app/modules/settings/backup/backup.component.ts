@@ -41,7 +41,7 @@ export class BackupComponent implements OnInit {
   public clicked = false
   public scheduledBackups = []
   public backupTime: string
-  public deleting = null
+  public deleting: string | null = null
   public currentSettingEnabled = false
   public currentSettingPath = ''
   public enabledFormControl = new FormControl(false)

@@ -6,6 +6,7 @@ export interface ChildBridge {
   pid: number
   pin: string
   plugin: string
+  port?: number
   setupUri: string
   status: string
   username: string

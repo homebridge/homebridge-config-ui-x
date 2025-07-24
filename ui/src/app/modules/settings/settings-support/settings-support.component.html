@@ -1,0 +1,29 @@
+<div class="modal-content">
+  <form>
+    <div class="modal-header">
+      <h5 class="modal-title">{{ 'support.title' | translate }}</h5>
+      <button
+        type="button"
+        class="btn-close"
+        data-bs-dismiss="modal"
+        [attr.aria-label]="'form.button_close' | translate"
+        (click)="dismissModal()"
+      ></button>
+    </div>
+    <div class="modal-body">
+      <div class="text-center mb-3">
+        <i class="fa fa-fw fa-question-circle-o primary-text" style="font-size: 75px"></i>
+      </div>
+      <app-support-banner></app-support-banner>
+    </div>
+    <div class="modal-footer justify-content-between">
+      <div class="text-start"></div>
+      <div class="text-center">
+        <button type="button" class="btn btn-elegant" data-bs-dismiss="modal" (click)="dismissModal()">
+          {{ 'form.button_close' | translate }}
+        </button>
+      </div>
+      <div class="text-end"></div>
+    </div>
+  </form>
+</div>

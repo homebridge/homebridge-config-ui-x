@@ -42,7 +42,7 @@
       }
     </ul>
     <ngb-alert type="warning" [dismissible]="false" class="mb-0">
-      <p class="text-center mb-0">{{ 'plugins.compat.are_you_sure' | translate }}</p>
+      <p class="text-center mb-0">{{ 'common.phrases.are_you_sure' | translate }}</p>
     </ngb-alert>
     }
 
@@ -116,7 +116,7 @@
     <div class="text-end">
       @if (!['homebridge', 'homebridge-config-ui-x'].includes(plugin.name)) {
       <button type="button" class="btn btn-danger" data-bs-dismiss="modal" (click)="closeModal()">
-        {{ 'form.label_continue' | translate }}
+        {{ 'form.button_continue' | translate }}
       </button>
       }
     </div>

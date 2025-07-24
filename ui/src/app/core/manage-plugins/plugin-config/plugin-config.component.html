@@ -31,7 +31,7 @@
                 [ngbTooltip]="'form.button_delete' | translate"
                 container="modal"
                 placement="left"
-                openDelay="150"
+                [openDelay]="150"
                 triggers="hover"
               >
                 <i class="fa fa-fw fa-trash"></i>
@@ -43,7 +43,7 @@
                 [ngbTooltip]="'form.button_edit' | translate"
                 container="modal"
                 placement="left"
-                openDelay="150"
+                [openDelay]="150"
                 triggers="hover"
               >
                 <i class="fa fa-fw fa-edit"></i>
@@ -58,7 +58,7 @@
                 [ngbTooltip]="(formBlocksValid[i] ? 'form.label_valid' : (strictValidation ? 'form.label_invalid_strict' : 'form.label_invalid')) | translate"
                 container="modal"
                 placement="left"
-                openDelay="150"
+                [openDelay]="150"
                 triggers="hover"
               ></i>
             </div>
@@ -125,7 +125,7 @@
         [ngbTooltip]="(formIsValid ? 'form.label_valid' : (strictValidation ? 'form.label_invalid_strict' : 'form.label_invalid')) | translate"
         container="modal"
         placement="top"
-        openDelay="150"
+        [openDelay]="150"
         triggers="hover"
       ></i>
       } @if (!schema.singular) {

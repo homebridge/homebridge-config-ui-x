@@ -1,5 +1,5 @@
 import { NgOptimizedImage } from '@angular/common'
-import { HttpRequest, provideHttpClient, withFetch, withInterceptors } from '@angular/common/http'
+import { provideHttpClient, withFetch, withInterceptorsFromDi } from '@angular/common/http'
 import { enableProdMode, importProvidersFrom, LOCALE_ID } from '@angular/core'
 import { bootstrapApplication, BrowserModule } from '@angular/platform-browser'
 import { provideAnimations } from '@angular/platform-browser/animations'
@@ -11,7 +11,7 @@ import { ToastrModule } from 'ngx-toastr'
 
 import { AppRoutingModule } from '@/app/app-routing.module'
 import { AppComponent } from '@/app/app.component'
-import { AuthModule, tokenGetter } from '@/app/core/auth/auth.module'
+import { AuthModule } from '@/app/core/auth/auth.module'
 import { supportedLocales } from '@/app/core/locales'
 import { onMonacoLoad } from '@/app/core/monaco-editor.service'
 import { LoginModule } from '@/app/modules/login/login.module'
@@ -23,19 +23,6 @@ import '../../src/globalDefaults'
 
 if (environment.production) {
   enableProdMode()
-}
-
-export function jwtInterceptor(req: HttpRequest<any>, next: any) {
-  const token = tokenGetter()
-  if (token) {
-    const cloned = req.clone({
-      setHeaders: {
-        Authorization: `bearer ${token}`,
-      },
-    })
-    return next(cloned)
-  }
-  return next(req)
 }
 
 bootstrapApplication(AppComponent, {
@@ -85,6 +72,6 @@ bootstrapApplication(AppComponent, {
       deps: [TranslateService],
     },
     provideAnimations(),
-    provideHttpClient(withFetch(), withInterceptors([jwtInterceptor])),
+    provideHttpClient(withFetch(), withInterceptorsFromDi()),
   ],
 }).catch(err => console.error(err))

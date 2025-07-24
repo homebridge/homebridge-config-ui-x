@@ -18,7 +18,7 @@
                 class="card-link"
                 (click)="checkAndUpdatePlugin()"
                 container="body"
-                openDelay="150"
+                [openDelay]="150"
                 triggers="hover"
                 [ngbTooltip]="'plugins.button_update' | translate"
                 [attr.aria-label]="'plugins.button_update' | translate"
@@ -38,7 +38,7 @@
                 class="card-link"
                 (click)="switchToScoped()"
                 container="body"
-                openDelay="150"
+                [openDelay]="150"
                 triggers="hover"
                 [ngbTooltip]="'plugins.manage.scoped.switch' | translate"
                 [attr.aria-label]="'plugins.manage.scoped.switch' | translate"
@@ -60,7 +60,7 @@
                 (click)="openSettings()"
                 [ngbTooltip]="'plugins.button_set_up' | translate"
                 container="body"
-                openDelay="150"
+                [openDelay]="150"
                 triggers="hover"
                 [attr.aria-label]="'plugins.button_set_up' | translate"
               >
@@ -78,7 +78,7 @@
                 (click)="openBridgeSettings()"
                 [ngbTooltip]="'child_bridge.setup' | translate"
                 container="body"
-                openDelay="150"
+                [openDelay]="150"
                 triggers="hover"
                 [attr.aria-label]="'child_bridge.setup' | translate"
               >
@@ -100,7 +100,7 @@
                 (click)="openBridgeSettings()"
                 [ngbTooltip]="'child_bridge.bridge_connect' | translate"
                 container="body"
-                openDelay="150"
+                [openDelay]="150"
                 triggers="hover"
                 [attr.aria-label]="'child_bridge.bridge_connect' | translate"
               >
@@ -193,7 +193,7 @@
                 (click)="doChildBridgeAction('restart')"
                 class="card-link"
                 container="body"
-                openDelay="150"
+                [openDelay]="150"
                 triggers="hover"
                 [ngbTooltip]="(setChildBridges.length > 1 ? 'child_bridge.restart_plural' : 'child_bridge.restart') | translate"
               >
@@ -208,7 +208,7 @@
                   class="far fa-fw fa-pause-circle fa-lg"
                   [ngbTooltip]="'plugins.status_disabled' | translate"
                   container="body"
-                  openDelay="150"
+                  [openDelay]="150"
                   triggers="hover"
                 ></i>
               </a>

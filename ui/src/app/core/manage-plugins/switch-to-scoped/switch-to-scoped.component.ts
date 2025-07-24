@@ -4,6 +4,7 @@ import { Router } from '@angular/router'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { FitAddon } from '@xterm/addon-fit'
+import { WebLinksAddon } from '@xterm/addon-web-links'
 import { Terminal } from '@xterm/xterm'
 import { saveAs } from 'file-saver'
 import { ToastrService } from 'ngx-toastr'
@@ -33,6 +34,7 @@ export class SwitchToScopedComponent implements OnInit, OnDestroy {
   private term: Terminal
   private termTarget: HTMLElement
   private fitAddon = new FitAddon()
+  private webLinksAddon = new WebLinksAddon()
   private errorLog = ''
 
   @Input() plugin: any
@@ -53,10 +55,13 @@ export class SwitchToScopedComponent implements OnInit, OnDestroy {
         background: '#00000000',
         foreground: this.$settings.actualLightingMode === 'light' ? '#333333' : '#eeeeee',
         cursor: '#d2d2d2',
+        selectionBackground: '#d2d2d2',
       },
       allowTransparency: true,
+      allowProposedApi: true,
     })
     this.term.loadAddon(this.fitAddon)
+    this.term.loadAddon(this.webLinksAddon)
   }
 
   public ngOnInit(): void {

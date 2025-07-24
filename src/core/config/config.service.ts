@@ -37,7 +37,7 @@ export class ConfigService {
   public homebridgeVersion: string
 
   // Server env
-  public minimumNodeVersion = '20.18.0'
+  public minimumNodeVersion = '20.19.0'
   public runningInDocker = Boolean(process.env.HOMEBRIDGE_CONFIG_UI === '1')
   public runningInSynologyPackage = Boolean(process.env.HOMEBRIDGE_SYNOLOGY_PACKAGE === '1')
   public runningInPackageMode = Boolean(process.env.HOMEBRIDGE_APT_PACKAGE === '1')

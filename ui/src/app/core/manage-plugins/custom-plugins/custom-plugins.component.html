@@ -82,7 +82,7 @@
         [ngbTooltip]="(formIsValid ? 'form.label_valid' : (strictValidation ? 'form.label_invalid_strict' : 'form.label_invalid')) | translate"
         container="modal"
         placement="top"
-        openDelay="150"
+        [openDelay]="150"
         triggers="hover"
       ></i>
       }

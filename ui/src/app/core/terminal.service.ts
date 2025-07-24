@@ -52,8 +52,7 @@ export class TerminalService {
 
     // Then tell the backend to destroy the persistent session via HTTP API
     this.$api.post('/platform-tools/terminal/destroy-persistent-session', {}).subscribe({
-      next: () => console.log('Persistent session destroyed'),
-      error: (error) => console.error('Failed to destroy persistent session:', error)
+      error: error => console.error('Failed to destroy persistent session:', error),
     })
   }
 

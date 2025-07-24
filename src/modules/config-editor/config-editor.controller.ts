@@ -127,6 +127,14 @@ export class ConfigEditorController {
   }
 
   @UseGuards(AdminGuard)
+  @ApiOperation({ summary: 'Delete the backup file for the given backup ID.' })
+  @ApiParam({ name: 'backupId', type: 'number' })
+  @Delete('/backups/:backupId')
+  deleteBackup(@Param('backupId', ParseIntPipe) backupId) {
+    return this.configEditorService.deleteConfigBackup(backupId)
+  }
+
+  @UseGuards(AdminGuard)
   @ApiOperation({ summary: 'Delete all the Homebridge `config.json` backups.' })
   @Delete('/backups')
   deleteAllConfigBackups() {

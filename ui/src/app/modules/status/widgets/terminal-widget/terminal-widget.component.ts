@@ -74,17 +74,18 @@ export class TerminalWidgetComponent implements OnInit, AfterViewInit, OnDestroy
     setTimeout(() => {
       const terminalOptions = {
         cursorBlink: false,
-        theme:
-          this.theme !== 'light'
-            ? {
-                background: '#2b2b2b',
-              }
-            : {
-                background: 'transparent',
-                foreground: '#2b2b2b',
-                cursor: '#d2d2d2',
-              },
-        allowTransparency: true,
+        theme: this.theme !== 'light'
+          ? {
+              background: '#2b2b2b',
+            }
+          : {
+              background: '#00000000',
+              foreground: '#2b2b2b',
+              cursor: '#d2d2d2',
+              selectionBackground: '#d2d2d2',
+            },
+        allowTransparency: this.theme === 'light',
+        allowProposedApi: true,
         fontSize: this.fontSize,
         fontWeight: this.fontWeight,
       }
@@ -132,8 +133,10 @@ export class TerminalWidgetComponent implements OnInit, AfterViewInit, OnDestroy
                 background: 'transparent',
                 foreground: '#2b2b2b',
                 cursor: '#d2d2d2',
+                selectionBackground: '#d2d2d2',
               }
           this.$terminal.term.options.allowTransparency = true
+          this.$terminal.term.options.allowProposedApi = true
           changed = true
         }
 

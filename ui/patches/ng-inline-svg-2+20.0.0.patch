@@ -1,0 +1,13 @@
+diff --git a/node_modules/ng-inline-svg-2/lib_esmodule/inline-svg.component.js b/node_modules/ng-inline-svg-2/lib_esmodule/inline-svg.component.js
+index e4e428d..0f57048 100644
+--- a/node_modules/ng-inline-svg-2/lib_esmodule/inline-svg.component.js
++++ b/node_modules/ng-inline-svg-2/lib_esmodule/inline-svg.component.js
+@@ -20,7 +20,7 @@ var InlineSVGComponent = (function () {
+         this._inlineSVGService.insertEl(this.context, this._el.nativeElement, this.content, this.replaceContents, this.prepend);
+     };
+     InlineSVGComponent.ɵfac = function InlineSVGComponent_Factory(t) { return new (t || InlineSVGComponent)(i0.ɵɵdirectiveInject(i1.InlineSVGService), i0.ɵɵdirectiveInject(i0.ElementRef)); };
+-    InlineSVGComponent.ɵcmp = i0.ɵɵdefineComponent({ type: InlineSVGComponent, selectors: [["inline-svg"]], inputs: { context: "context", content: "content", replaceContents: "replaceContents", prepend: "prepend" }, standalone: true, features: [i0.ɵɵNgOnChangesFeature, i0.ɵɵStandaloneFeature], decls: 0, vars: 0, template: function InlineSVGComponent_Template(rf, ctx) { }, encapsulation: 2, changeDetection: 0 });
++    InlineSVGComponent.ɵcmp = i0.ɵɵdefineComponent({ type: InlineSVGComponent, selectors: [["inline-svg"]], inputs: { context: "context", content: "content", replaceContents: "replaceContents", prepend: "prepend" }, standalone: true, features: [i0.ɵɵNgOnChangesFeature], decls: 0, vars: 0, template: function InlineSVGComponent_Template(rf, ctx) { }, encapsulation: 2, changeDetection: 0 });
+     return InlineSVGComponent;
+ }());
+ export { InlineSVGComponent };

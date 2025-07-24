@@ -17,7 +17,7 @@
       style="width: 85%"
       (click)="restartHomebridgeService()"
       container="body"
-      openDelay="150"
+      [openDelay]="150"
       triggers="hover"
       [ngbTooltip]="'reset.force_restart_hb_help_text' | translate"
     >

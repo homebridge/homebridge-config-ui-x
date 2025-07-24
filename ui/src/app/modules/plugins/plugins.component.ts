@@ -160,7 +160,7 @@ export class PluginsComponent implements OnInit, OnDestroy {
         this.loading = false
         this.isSearchMode = false
         console.error(error)
-        this.$toastr.error(error.error.message || error.message, this.$translate.instant('toast.title_error'))
+        this.$toastr.error(error.error?.message || error.message, this.$translate.instant('toast.title_error'))
         this.loadInstalledPlugins()
       },
     })

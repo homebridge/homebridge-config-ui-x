@@ -42,7 +42,7 @@
                 (click)="removeBlock($index)"
                 [ngbTooltip]="'form.button_delete' | translate"
                 container="modal"
-                openDelay="150"
+                [openDelay]="150"
                 triggers="hover"
               >
                 <i class="fa fa-fw fa-trash"></i>
@@ -54,7 +54,7 @@
                 (click)="editBlock($index)"
                 [ngbTooltip]="'form.button_edit' | translate"
                 container="modal"
-                openDelay="150"
+                [openDelay]="150"
                 triggers="hover"
               >
                 <i class="fa fa-fw fa-edit"></i>
