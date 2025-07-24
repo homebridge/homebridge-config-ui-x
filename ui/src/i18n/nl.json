@@ -289,6 +289,7 @@
   "plugins.manage.confirm_disable_accessory_2": "Als U de plugin heractiveert, zullen de accessoires opnieuw verschijnen in de Homebridge UI en HomeKit. De accessoires zullen hun HomeKit data verliezen (zoals gerelateerde scènes en automatiseringen).",
   "plugins.manage.confirm_disable_platform_1": "Alle accessoires die getoond worden door deze plugin zullen verwijderd worden uit het Homebridge UI accessoire scherm, maar blijven in HomeKit met een 'Geen Reactie' label.",
   "plugins.manage.confirm_disable_platform_2": "Als U de plugin heractiveert, zullen de accessoires opnieuw verschijnen in de Homebridge UI en worden opnieuw bestuurbaar in HomeKit. De accessoires verliezen niet hun HomeKit data (zoals gerelateerde scènes en automatiseringen).",
+  "plugins.manage.confirm_disable_setting": "Your setting for {{ setting }} is currently {{ value }}, therefore:",
   "plugins.manage.confirm_enable": "Weet u zeker dat u {{ pluginName }} wilt activeren?",
   "plugins.manage.disable": "Deactiveren",
   "plugins.manage.enable": "Activeren",

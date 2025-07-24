@@ -289,6 +289,7 @@
   "plugins.manage.confirm_disable_accessory_2": "Коли Ви повторно ввімкнете плагін, аксесуари знову з’являться в Homebridge UI та HomeKit. Аксесуари втратять свої дані HomeKit (наприклад, пов’язані сцени та автоматизацію).",
   "plugins.manage.confirm_disable_platform_1": "Будь-які аксесуари, доступні за допомогою цього плагіна, буде видалено з екрану аксесуарів Homebridge UI, але вони залишиться в HomeKit із позначкою «Немає відповіді».",
   "plugins.manage.confirm_disable_platform_2": "Коли Ви знову ввімкнете плагін, аксесуари з’являться в інтерфейсі користувача Homebridge, і ними знову можна буде керувати в HomeKit. Аксесуари не втратять свої дані в HomeKit (наприклад, пов’язані сцени та автоматизація).",
+  "plugins.manage.confirm_disable_setting": "Your setting for {{ setting }} is currently {{ value }}, therefore:",
   "plugins.manage.confirm_enable": "Ви впевнені, що хочете увімкнути {{ pluginName }}?",
   "plugins.manage.disable": "Вимкнути",
   "plugins.manage.enable": "Увімкнути",

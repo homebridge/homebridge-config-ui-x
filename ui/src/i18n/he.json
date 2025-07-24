@@ -289,6 +289,7 @@
   "plugins.manage.confirm_disable_accessory_2": "כשתפעיל מחדש את התוסף, האביזרים יופיעו שוב ב-Homebridge UI ובHomeKit. האביזרים יאבדו את הנתונים שלהם ב-HomeKit (כמו סצינות ואוטומציות קשורות).",
   "plugins.manage.confirm_disable_platform_1": "כל האביזרים שחשופים על ידי התוסף הזה יוסרו ממסך האביזרים של Homebridge UI אך יישארו ב-HomeKit עם תווית 'אין תגובה'.",
   "plugins.manage.confirm_disable_platform_2": "כשתפעיל מחדש את התוסף, האביזרים יופיעו שוב ב-Homebridge UI ויהיו ניתנים לשליטה שוב ב-HomeKit. האביזרים לא יאבדו את הנתונים שלהם ב-HomeKit (כמו סצינות ואוטומציות קשורות).",
+  "plugins.manage.confirm_disable_setting": "Your setting for {{ setting }} is currently {{ value }}, therefore:",
   "plugins.manage.confirm_enable": "האם אתה בטוח שאתה רוצה לאפשר את {{ pluginName }}?",
   "plugins.manage.disable": "לא פעיל",
   "plugins.manage.enable": "מאופשר",

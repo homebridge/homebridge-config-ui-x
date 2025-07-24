@@ -289,6 +289,7 @@
   "plugins.manage.confirm_disable_accessory_2": "Cuando vuelvas a habilitar el plugin, los accesorios reaparecerán en la UI de Homebridge y HomeKit. Los accesorios perderán sus datos de HomeKit (como escenas y automatizaciones relacionadas).",
   "plugins.manage.confirm_disable_platform_1": "Los accesorios expuestos por este plugin serán eliminados de la pantalla de accesorios de Homebridge UI pero permanecerán en HomeKit con la etiqueta 'Sin respuesta'.",
   "plugins.manage.confirm_disable_platform_2": "Cuando vuelvas a habilitar el plugin, los accesorios reaparecerán en la UI de Homebridge y volverán a ser controlables en HomeKit. Los accesorios no perderán sus datos de HomeKit (como escenas y automatizaciones relacionadas).",
+  "plugins.manage.confirm_disable_setting": "Your setting for {{ setting }} is currently {{ value }}, therefore:",
   "plugins.manage.confirm_enable": "¿Seguro que deseas activar {{ pluginName }}?",
   "plugins.manage.disable": "Deshabilitar",
   "plugins.manage.enable": "Habilitar",
