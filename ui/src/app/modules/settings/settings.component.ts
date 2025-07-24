@@ -14,7 +14,6 @@ import { debounceTime } from 'rxjs/operators'
 import { ApiService } from '@/app/core/api.service'
 import { ConfirmComponent } from '@/app/core/components/confirm/confirm.component'
 import { SpinnerComponent } from '@/app/core/components/spinner/spinner.component'
-import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service'
 import { NotificationService } from '@/app/core/notification.service'
 import { SettingsService } from '@/app/core/settings.service'
 import { TerminalService } from '@/app/core/terminal.service'
@@ -57,7 +56,6 @@ export class SettingsComponent implements OnInit {
   private $api = inject(ApiService)
   private $modal = inject(NgbModal)
   private $notification = inject(NotificationService)
-  private $plugin = inject(ManagePluginsService)
   private $router = inject(Router)
   private $settings = inject(SettingsService)
   private $terminal = inject(TerminalService)
@@ -71,6 +69,7 @@ export class SettingsComponent implements OnInit {
     startup: true,
     network: true,
     security: true,
+    terminal: true,
     reset: true,
     cache: true,
   }
@@ -109,10 +108,11 @@ export class SettingsComponent implements OnInit {
   public uiTerminalPersistenceIsSaving = false
   public uiTerminalPersistenceFormControl = new FormControl(false)
 
-  public uiTerminalShowWarningIsSaving = false
-  public uiTerminalShowWarningFormControl = new FormControl(false)
+  public uiTerminalHideWarningIsSaving = false
+  public uiTerminalHideWarningFormControl = new FormControl(false)
 
   public uiTerminalBufferSizeIsSaving = false
+  public uiTerminalBufferSizeIsInvalid = false
   public uiTerminalBufferSizeFormControl = new FormControl(globalThis.terminal.bufferSize)
 
   public hbDebugIsSaving = false
@@ -239,17 +239,17 @@ export class SettingsComponent implements OnInit {
     this.uiTempFormControl.valueChanges
       .pipe(debounceTime(750))
       .subscribe((value: string) => this.uiTempSave(value))
-    this.uiTerminalPersistenceFormControl.patchValue(this.$settings.terminalPersistence)
+    this.uiTerminalPersistenceFormControl.patchValue(this.$settings.env.terminal?.persistence)
     this.uiTerminalPersistenceFormControl.valueChanges
       .pipe(debounceTime(750))
-      .subscribe((value: boolean) => this.handleTerminalPersistenceChange(value))
+      .subscribe((value: boolean) => this.uiTerminalPersistenceSave(value))
 
-    this.uiTerminalShowWarningFormControl.patchValue(this.$settings.terminalShowWarning)
-    this.uiTerminalShowWarningFormControl.valueChanges
+    this.uiTerminalHideWarningFormControl.patchValue(this.$settings.env.terminal?.hideWarning)
+    this.uiTerminalHideWarningFormControl.valueChanges
       .pipe(debounceTime(750))
-      .subscribe((value: boolean) => this.uiTerminalShowWarningSave(value))
+      .subscribe((value: boolean) => this.uiTerminalHideWarningSave(value))
 
-    this.uiTerminalBufferSizeFormControl.patchValue(this.$settings.terminalBufferSize)
+    this.uiTerminalBufferSizeFormControl.patchValue(this.$settings.env.terminal?.bufferSize)
     this.uiTerminalBufferSizeFormControl.valueChanges
       .pipe(debounceTime(1500))
       .subscribe((value: number) => this.uiTerminalBufferSizeSave(value))
@@ -646,57 +646,41 @@ export class SettingsComponent implements OnInit {
     }
   }
 
-  private async handleTerminalPersistenceChange(value: boolean) {
-    // If turning off persistence, check backend and handle session termination
-    if (!value) {
+  private async uiTerminalPersistenceSave(value: boolean) {
+    // If turning off persistence and there's an active session, show confirmation
+    if (!value && this.$terminal.hasActiveSession()) {
+      const ref = this.$modal.open(ConfirmComponent, {
+        size: 'lg',
+        backdrop: 'static',
+      })
+
+      ref.componentInstance.title = this.$translate.instant('settings.terminal.persistence_confirm_title')
+      ref.componentInstance.message = this.$translate.instant('settings.terminal.persistence_confirm_message')
+      ref.componentInstance.message2 = this.$translate.instant('common.phrases.are_you_sure')
+      ref.componentInstance.confirmButtonLabel = this.$translate.instant('form.button_continue')
+      ref.componentInstance.confirmButtonClass = 'btn-primary'
+      ref.componentInstance.faIconClass = 'fas fa-exclamation-triangle text-warning'
+
       try {
-        // Check if backend has a persistent session
-        const hasBackendPersistentSession = await this.$terminal.checkBackendPersistentSession()
-
-        if (hasBackendPersistentSession) {
-          // Show confirmation dialog
-          const ref = this.$modal.open(ConfirmComponent, {
-            size: 'lg',
-            backdrop: 'static',
-          })
-
-          ref.componentInstance.title = this.$translate.instant('settings.general.terminal_persistence_confirm_title')
-          ref.componentInstance.message = this.$translate.instant('settings.general.terminal_persistence_confirm_message')
-          ref.componentInstance.confirmButtonLabel = this.$translate.instant('settings.general.terminal_persistence_confirm_button')
-          ref.componentInstance.cancelButtonLabel = this.$translate.instant('form.button_cancel')
-          ref.componentInstance.confirmButtonClass = 'btn-warning'
-          ref.componentInstance.faIconClass = 'fas fa-exclamation-triangle text-warning'
-
-          try {
-            await ref.result
-            // User confirmed - terminate backend session and save setting
-            this.$terminal.destroyPersistentSession()
-            await this.saveTerminalPersistenceSetting(false)
-          } catch {
-            // User cancelled - revert form control
-            this.uiTerminalPersistenceFormControl.patchValue(true, { emitEvent: false })
-          }
-        } else {
-          // No backend session - just save the setting
-          await this.saveTerminalPersistenceSetting(false)
-        }
-      } catch (error) {
-        console.error('Failed to check backend persistent session:', error)
-        // If check fails, just save the setting
-        await this.saveTerminalPersistenceSetting(false)
+        // An error will throw if the user cancels the modal
+        await ref.result
+      } catch {
+        // User cancelled, revert the form control value
+        this.uiTerminalPersistenceFormControl.patchValue(true, { emitEvent: false })
+        return
       }
-    } else {
-      // Turning on persistence - just save the setting
-      await this.saveTerminalPersistenceSetting(true)
     }
-  }
 
-  private async saveTerminalPersistenceSetting(value: boolean) {
     try {
       this.uiTerminalPersistenceIsSaving = true
-      this.$settings.setItem('terminalPersistence', value)
-      await this.saveUiSettingChange('terminalPersistence', value)
 
+      // If persistence is being turned off, clean up any existing session completely
+      if (!value) {
+        this.$terminal.destroyPersistentSession()
+      }
+
+      this.$settings.setEnvItem('terminal.persistence', value)
+      await this.saveUiSettingChange('terminal.persistence', value)
       setTimeout(() => {
         this.uiTerminalPersistenceIsSaving = false
       }, 1000)
@@ -707,26 +691,32 @@ export class SettingsComponent implements OnInit {
     }
   }
 
-  private async uiTerminalShowWarningSave(value: boolean) {
+  private async uiTerminalHideWarningSave(value: boolean) {
     try {
-      this.uiTerminalShowWarningIsSaving = true
-      this.$settings.setItem('terminalShowWarning', value)
-      await this.saveUiSettingChange('terminalShowWarning', value)
+      this.uiTerminalHideWarningIsSaving = true
+      this.$settings.setEnvItem('terminal.hideWarning', value)
+      await this.saveUiSettingChange('terminal.hideWarning', value)
       setTimeout(() => {
-        this.uiTerminalShowWarningIsSaving = false
+        this.uiTerminalHideWarningIsSaving = false
       }, 1000)
     } catch (error) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
-      this.uiTerminalShowWarningIsSaving = false
+      this.uiTerminalHideWarningIsSaving = false
     }
   }
 
   private async uiTerminalBufferSizeSave(value: number) {
+    if (value && (typeof value !== 'number' || value < 0 || Number.isInteger(value) === false)) {
+      this.uiTerminalBufferSizeIsInvalid = true
+      return
+    }
+
     try {
       this.uiTerminalBufferSizeIsSaving = true
-      this.$settings.setItem('terminalBufferSize', value)
-      await this.saveUiSettingChange('terminalBufferSize', value)
+      this.$settings.setEnvItem('terminal.bufferSize', value)
+      await this.saveUiSettingChange('terminal.bufferSize', value)
+      this.uiTerminalBufferSizeIsInvalid = false
       setTimeout(() => {
         this.uiTerminalBufferSizeIsSaving = false
       }, 1000)

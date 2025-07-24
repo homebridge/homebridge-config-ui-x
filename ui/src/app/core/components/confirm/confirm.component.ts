@@ -12,10 +12,11 @@ export class ConfirmComponent {
 
   @Input() title: string
   @Input() message: string
-  @Input() confirmButtonLabel: string
-  @Input() confirmButtonClass: string
-  @Input() faIconClass: string
-  @Input() cancelButtonLabel?: string
+  @Input() message2?: string
+  @Input() message3?: string
+  @Input() confirmButtonLabel?: string
+  @Input() confirmButtonClass?: string
+  @Input() faIconClass?: string
 
   public dismissModal() {
     this.$activeModal.dismiss('Dismiss')

@@ -31,7 +31,7 @@ export class TerminalComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @HostListener('window:focus', ['$event'])
   onWindowFocus() {
-    // Auto-focus terminal when user returns to this window
+    // Autofocus terminal when user returns to this window
     this.activateTerminal()
   }
 
@@ -61,9 +61,13 @@ export class TerminalComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     // Start or reconnect to the terminal based on current persistence state
-    if (this.$settings.terminalPersistence && this.$terminal.hasActiveSession()) {
+    if (this.$settings.env.terminal?.persistence && this.$terminal.hasActiveSession()) {
       this.$terminal.reconnectTerminal(this.termTarget(), {}, this.resizeEvent)
     } else {
+      // If persistence is disabled but there's still an active session, destroy it first
+      if (!this.$settings.env.terminal?.persistence && this.$terminal.hasActiveSession()) {
+        this.$terminal.destroyPersistentSession()
+      }
       this.$terminal.startTerminal(this.termTarget(), {}, this.resizeEvent)
     }
 
@@ -99,12 +103,12 @@ export class TerminalComponent implements OnInit, AfterViewInit, OnDestroy {
     window.document.querySelector('body').classList.remove('bg-black')
 
     // Use persistence setting to determine behavior
-    if (this.$settings.terminalPersistence) {
+    if (this.$settings.env.terminal?.persistence) {
       // Detach the terminal but keep the session alive
       this.$terminal.detachTerminal()
     } else {
-      // Destroy the terminal completely
-      this.$terminal.destroyTerminal()
+      // Destroy the terminal completely and ensure any persistent session is destroyed
+      this.$terminal.destroyPersistentSession()
     }
   }
 }

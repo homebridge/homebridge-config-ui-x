@@ -119,7 +119,7 @@
     "unzipper": "0.12.3"
   },
   "devDependencies": {
-    "@antfu/eslint-config": "^4.18.0",
+    "@antfu/eslint-config": "^5.0.0",
     "@nestjs/testing": "^11.1.5",
     "@prettier/plugin-xml": "^3.4.2",
     "@types/fs-extra": "^11.0.4",

@@ -78,12 +78,7 @@ export class TerminalService {
   }
 
   public hasActiveSession(): boolean {
-    const hasSession = !!(
-      this.io
-      && this.io.socket
-      && this.io.socket.connected
-    )
-    return hasSession
+    return this.io && this.io.socket && this.io.socket.connected
   }
 
   public async checkBackendPersistentSession(): Promise<boolean> {
@@ -101,74 +96,7 @@ export class TerminalService {
   }
 
   public isTerminalReady(): boolean {
-    return !!this.term && !this.isInitializing
-  }
-
-  public reattachToElement(
-    targetElement: ElementRef,
-    elementResize?: Subject<any>,
-  ) {
-    if (!this.term || !this.io?.socket?.connected) {
-      return
-    }
-
-    // Handle element resize events
-    this.elementResize = elementResize
-
-    // Dispose existing data listener before reattaching
-    if (this.dataDisposable) {
-      this.dataDisposable.dispose()
-    }
-
-    // Reattach terminal to new DOM element
-    this.term.open(targetElement.nativeElement)
-
-    // Always set up data listener after reattaching to DOM (term.open clears listeners)
-    this.dataDisposable = this.term.onData((data) => {
-      if (this.io.socket.connected) {
-        this.hasUserTyped = true
-        this.io.socket.emit('stdin', data)
-      }
-    })
-
-    // Recreate resize listeners
-    if (this.resize) {
-      this.resize.complete()
-    }
-    this.resize = new Subject()
-
-    this.term.onResize((size) => {
-      this.resize.next(size)
-    })
-
-    this.resize.pipe(debounceTime(500)).subscribe((size) => {
-      if (this.io.socket.connected) {
-        this.io.socket.emit('resize', size)
-      }
-    })
-
-    if (this.elementResize) {
-      this.elementResize.pipe(debounceTime(100)).subscribe({
-        next: () => {
-          if (this.fitAddon) {
-            this.fitAddon.fit()
-          }
-        },
-      })
-    }
-
-    // Fit the terminal
-    setTimeout(() => {
-      if (this.fitAddon) {
-        this.fitAddon.fit()
-      }
-    }, 100)
-
-    // Rejoin the backend session
-    this.io.socket.emit('start-session', {
-      cols: this.term.cols,
-      rows: this.term.rows,
-    })
+    return this.term && !this.isInitializing
   }
 
   public reconnectTerminal(
