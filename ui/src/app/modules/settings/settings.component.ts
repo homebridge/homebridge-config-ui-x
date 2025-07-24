@@ -652,7 +652,7 @@ export class SettingsComponent implements OnInit {
       try {
         // Check if backend has a persistent session
         const hasBackendPersistentSession = await this.$terminal.checkBackendPersistentSession()
-        
+
         if (hasBackendPersistentSession) {
           // Show confirmation dialog
           const ref = this.$modal.open(ConfirmComponent, {
@@ -696,7 +696,7 @@ export class SettingsComponent implements OnInit {
       this.uiTerminalPersistenceIsSaving = true
       this.$settings.setItem('terminalPersistence', value)
       await this.saveUiSettingChange('terminalPersistence', value)
-      
+
       setTimeout(() => {
         this.uiTerminalPersistenceIsSaving = false
       }, 1000)
