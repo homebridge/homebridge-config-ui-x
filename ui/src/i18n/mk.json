@@ -660,6 +660,7 @@
   "users.setup_2fa_enabled_success": "2FA автентикацијата е овозможена.",
   "users.setup_2fa_enter_code": "Внесете го кодот од вашата апликација за автентикација:",
   "users.setup_2fa_scan_qr_code": "Скенирајте го QR кодот со вашата апликација за автентикација:",
+  "users.setup_2fa_scan_qr_manual": "If you cannot scan the QR code, you can enter the following secret key manually:",
   "users.setup_2fa_server_time_out": "Вашиот серверски саат е поместен за {{ timeDiffError }} ms. Максималната дозволена вредност е +/-5000 ms.",
   "users.setup_2fa_warning": "2FA автентикацијата бара точно серверско време на Вашиот Homebridge сервер за да може да се најавите. Ако вашиот сервер не е во можност да одржува точно време на ја овозможувајте 2FA автентикацијата.",
   "users.support.acc_1": "There are two types of users that can access the Homebridge UI: admin and non-admin users. Admins can access and control everything available in the UI. Non-admin users have a read-only view of the following pages:",

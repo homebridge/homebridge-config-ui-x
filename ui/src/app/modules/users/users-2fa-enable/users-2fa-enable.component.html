@@ -27,9 +27,22 @@
     } @if (!timeDiffError) {
     <ul class="list-group list-group-box mb-0">
       <li class="list-group-item text-center">
-        <div class="text-center w-100 d-flex justify-content-center">
+        <div class="text-center w-100 d-flex justify-content-center my-2">
           <app-qrcode [data]="otpString" class="mx-auto" style="width: 175px; height: 175px"></app-qrcode>
         </div>
+        @if (otpSecret) {
+        <div class="grey-text small mt-0 mb-1">
+          {{ 'users.setup_2fa_scan_qr_manual' | translate }}<br />
+          {{ otpSecret }}
+          <a href="javascript:void(0)" class="ms-1 text-primary" (click)="copySecretToClipboard()">
+            @if (secretCopied) {
+            <i class="fas fa-fw fa-check green-text"></i>
+            } @else {
+            <i class="fas fa-fw fa-copy"></i>
+            }
+          </a>
+        </div>
+        }
       </li>
       <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
         <label class="mb-2 mb-md-0 w-100 w-md-50">{{ 'users.setup_2fa_enter_code' | translate }}</label>

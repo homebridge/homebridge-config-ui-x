@@ -660,6 +660,7 @@
   "users.setup_2fa_enabled_success": "两步验证已启用。",
   "users.setup_2fa_enter_code": "输入您验证软件上的代码：",
   "users.setup_2fa_scan_qr_code": "使用您的验证软件扫描下面的二维码：",
+  "users.setup_2fa_scan_qr_manual": "If you cannot scan the QR code, you can enter the following secret key manually:",
   "users.setup_2fa_server_time_out": "您的服务器的时间偏差了 {{ timeDiffError }} 毫秒。 允许最大的时间偏差值是 +/-5000 毫秒。",
   "users.setup_2fa_warning": "两步验证需要您服务器的时间与日期极其准确。如果您不能保证服务器的时间准确，那么不建议启用两步验证，否则您则有着无法访问 Homebridge UI 的风险。",
   "users.support.acc_1": "There are two types of users that can access the Homebridge UI: admin and non-admin users. Admins can access and control everything available in the UI. Non-admin users have a read-only view of the following pages:",
