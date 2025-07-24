@@ -13,17 +13,30 @@
     <div class="mb-3 text-center">
       <i class="fas fa-fw fa-circle-pause primary-text" style="font-size: 75px"></i>
     </div>
-    @if (isConfigured && !isConfiguredDynamicPlatform) {
+    @if (isConfigured) { @if (isConfiguredDynamicPlatform) {
+    <ul class="mb-3">
+      <li
+        [innerHtml]="'plugins.manage.confirm_disable_setting' | translate: {
+          setting: keepOrphansName,
+          value: keepOrphansValue,
+         }"
+      ></li>
+      <ul class="mb-1">
+        @if (keepOrphans) {
+        <li>{{ 'plugins.manage.confirm_disable_platform_1' | translate }}</li>
+        <li>{{ 'plugins.manage.confirm_disable_platform_2' | translate }}</li>
+        } @else {
+        <li>{{ 'plugins.manage.confirm_disable_accessory_1' | translate }}</li>
+        <li>{{ 'plugins.manage.confirm_disable_accessory_2' | translate }}</li>
+        }
+      </ul>
+    </ul>
+    } @else {
     <ul class="mb-3">
       <li>{{ 'plugins.manage.confirm_disable_accessory_1' | translate }}</li>
       <li>{{ 'plugins.manage.confirm_disable_accessory_2' | translate }}</li>
     </ul>
-    } @if (isConfigured && isConfiguredDynamicPlatform) {
-    <ul class="mb-3">
-      <li>{{ 'plugins.manage.confirm_disable_platform_1' | translate }}</li>
-      <li>{{ 'plugins.manage.confirm_disable_platform_2' | translate }}</li>
-    </ul>
-    }
+    } }
     <ngb-alert type="warning" [dismissible]="false" class="mb-0">
       <p class="w-100 text-center mb-0">{{ 'plugins.manage.confirm_disable' | translate: { pluginName } }}</p>
     </ngb-alert>

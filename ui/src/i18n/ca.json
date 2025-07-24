@@ -289,6 +289,7 @@
   "plugins.manage.confirm_disable_accessory_2": "Quan tornis a habilitar aquest plugin, els accessoris tornaran a aparèixer a la interfície d'usuari de Homebridge i a HomeKit. Els accessoris perdran les seves dades d'HomeKit (com escenes i automatitzacions relacionades).",
   "plugins.manage.confirm_disable_platform_1": "Tots els accessoris exposats per aquest plugin s'eliminaran de la pantalla d'accessoris de la interfície d'usuari de Homebridge, però romandran a HomeKit amb l'etiqueta 'Sense resposta'.",
   "plugins.manage.confirm_disable_platform_2": "Quan tornis a habilitar aquest plugin, els accessoris tornaran a aparèixer a la interfície d'usuari de Homebridge i tornaran a ser controlables a HomeKit. Els accessoris no perdran les seves dades d'HomeKit (com escenes i automatitzacions relacionades).",
+  "plugins.manage.confirm_disable_setting": "Your setting for {{ setting }} is currently {{ value }}, therefore:",
   "plugins.manage.confirm_enable": "Estàs segur que vols activar {{ pluginName }}?",
   "plugins.manage.disable": "Desactivar",
   "plugins.manage.enable": "Activar",

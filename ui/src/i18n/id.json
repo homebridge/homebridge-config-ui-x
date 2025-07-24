@@ -289,6 +289,7 @@
   "plugins.manage.confirm_disable_accessory_2": "Saat Anda mengaktifkan kembali plugin, aksesori akan muncul kembali di Homebridge UI dan HomeKit.Aksesori akan kehilangan data homeKit mereka (seperti adegan dan otomatisasi terkait).",
   "plugins.manage.confirm_disable_platform_1": "Aksesori apa pun yang diekspos oleh plugin ini akan dihapus dari layar aksesori Homebridge UI tetapi tetap di HomeKit dengan label 'tidak ada respons'.",
   "plugins.manage.confirm_disable_platform_2": "Saat Anda mengaktifkan kembali plugin, aksesoris akan muncul kembali di Homebridge UI dan dapat dikendalikan lagi di HomeKit.Aksesori tidak akan kehilangan data homeKit mereka (seperti adegan dan otomatisasi terkait).",
+  "plugins.manage.confirm_disable_setting": "Your setting for {{ setting }} is currently {{ value }}, therefore:",
   "plugins.manage.confirm_enable": "Apakah Anda yakin ingin mengaktifkan {{ pluginName }}?",
   "plugins.manage.disable": "Nonaktifkan",
   "plugins.manage.enable": "Aktifkan",
