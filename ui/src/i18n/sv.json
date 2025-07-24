@@ -660,6 +660,7 @@
   "users.setup_2fa_enabled_success": "Tvåfaktorsautentisering har aktiverats.",
   "users.setup_2fa_enter_code": "Ange koden från din autentiseringsapp:",
   "users.setup_2fa_scan_qr_code": "Skanna QR-koden nedan med din autentiseringsapp:",
+  "users.setup_2fa_scan_qr_manual": "If you cannot scan the QR code, you can enter the following secret key manually:",
   "users.setup_2fa_server_time_out": "Din servers klocka går fel med {{ timeDiffError }} ms. Maximalt tillåtet är +/- 5000 ms.",
   "users.setup_2fa_warning": "Tvåfaktorsautentisering kräver att din Homebridge-server har ett mycket exakt datum och tid för att kunna logga in. Om din server inte har förmågan att hålla tiden korrekt bör du inte aktivera 2FA, annars riskerar du att bli utelåst från Homebridge UI.",
   "users.support.acc_1": "There are two types of users that can access the Homebridge UI: admin and non-admin users. Admins can access and control everything available in the UI. Non-admin users have a read-only view of the following pages:",

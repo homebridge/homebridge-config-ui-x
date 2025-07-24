@@ -660,6 +660,7 @@
   "users.setup_2fa_enabled_success": "2FA zostało włączone.",
   "users.setup_2fa_enter_code": "Wprowadź kod z aplikacji uwierzytelniającej:",
   "users.setup_2fa_scan_qr_code": "Zeskanuj kod QR w aplikacji uwierzytelniającej:",
+  "users.setup_2fa_scan_qr_manual": "If you cannot scan the QR code, you can enter the following secret key manually:",
   "users.setup_2fa_server_time_out": "Zegar serwera jest przesunięty o {{ timeDiffError }} ms. Dopuszczalne maksimum to +/-5000 ms.",
   "users.setup_2fa_warning": "Uwierzytelnianie dwuskładnikowe wymaga serwera Homebridge, aby mieć aktualny czas i datę w trakcie logowania. Jeśli twój server nie będzie w stanie utrzymać poprawnego czasu, może nie być możliwe włączenie 2FA lub może wystąpić ryzyko zablokowania interfejsu Config UI X.",
   "users.support.acc_1": "There are two types of users that can access the Homebridge UI: admin and non-admin users. Admins can access and control everything available in the UI. Non-admin users have a read-only view of the following pages:",

@@ -660,6 +660,7 @@
   "users.setup_2fa_enabled_success": "אימות די שלבי הופעל בהצלחה",
   "users.setup_2fa_enter_code": "הכנס את הקוד מאפליקצית האימות שלך",
   "users.setup_2fa_scan_qr_code": "סרוק את קוד הקיו אר מאפליקצית האימות שלך:",
+  "users.setup_2fa_scan_qr_manual": "If you cannot scan the QR code, you can enter the following secret key manually:",
   "users.setup_2fa_server_time_out": "שעון השרת שלך לא מעודכן {{ timeDiffError }} מילישניות. המקסימום המותר הוא +/-5000 מילישניות.",
   "users.setup_2fa_warning": "זיהוי דו שלבי דורש משעון השרת שלכם להיות מאוד מדויק. אם לשרת שלך אין את היכולת לשמור על זמן מדויק עדיף שלא להכיל זיהוי דו שלבי מהסיכון להנעל מחוץ לממשק המשתמש",
   "users.support.acc_1": "There are two types of users that can access the Homebridge UI: admin and non-admin users. Admins can access and control everything available in the UI. Non-admin users have a read-only view of the following pages:",

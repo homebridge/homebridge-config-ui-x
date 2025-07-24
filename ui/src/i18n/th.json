@@ -660,6 +660,7 @@
   "users.setup_2fa_enabled_success": "เปิดใช้งานการรับรองความถูกต้องด้วยสองปัจจัยแล้ว",
   "users.setup_2fa_enter_code": "ป้อนรหัสจากแอปตรวจสอบสิทธิ์ของคุณ :",
   "users.setup_2fa_scan_qr_code": "สแกนโค้ด QR ด้านล่างด้วยแอพตรวจสอบสิทธิ์ของคุณ :",
+  "users.setup_2fa_scan_qr_manual": "If you cannot scan the QR code, you can enter the following secret key manually:",
   "users.setup_2fa_server_time_out": "นาฬิกาเซิร์ฟเวอร์ของคุณมีเวลาแตกต่าง {{ timeDiffError }} มิลลิวินาที ค่าเวลาแตกต่างที่ยอมรับได้ไม่เกิน +/-5000 มิลลิวินาที",
   "users.setup_2fa_warning": "การรับรองความถูกต้องด้วยสองปัจจัยต้องการให้เซิร์ฟเวอร์ Homebridge ของคุณมีวันที่และเวลาที่แม่นยำมากในการเข้าสู่ระบบ หากเซิร์ฟเวอร์ของคุณไม่สามารถรักษาเวลาได้อย่างแม่นยำคุณไม่ควรเปิดใช้งาน 2FA หรือเสี่ยงต่อการถูกล็อกไม่ให้ใช้งาน Homebridge UI",
   "users.support.acc_1": "There are two types of users that can access the Homebridge UI: admin and non-admin users. Admins can access and control everything available in the UI. Non-admin users have a read-only view of the following pages:",

@@ -660,6 +660,7 @@
   "users.setup_2fa_enabled_success": "Otentikasi dua faktor (2FA) telah diaktifkan.",
   "users.setup_2fa_enter_code": "Masukkan kode dari aplikasi autentikator anda:",
   "users.setup_2fa_scan_qr_code": "Pindai kode QR di bawah ini dengan aplikasi autentikator anda:",
+  "users.setup_2fa_scan_qr_manual": "If you cannot scan the QR code, you can enter the following secret key manually:",
   "users.setup_2fa_server_time_out": "Jam server anda meleset {{ timeDiffError }} milidetik. Maksimum perbedaan adalah +/-5000 milidetik.",
   "users.setup_2fa_warning": "Otentikasi Dua Faktor (2FA) mengharuskan server Homebridge anda memiliki tanggal dan waktu yang sangat akurat untuk masuk. Jika server Anda tidak memiliki kemampuan untuk menjaga waktu secara akurat, sebaiknya anda tidak mengaktifkan 2FA atau berisiko terkunci dari Homebridge UI.",
   "users.support.acc_1": "There are two types of users that can access the Homebridge UI: admin and non-admin users. Admins can access and control everything available in the UI. Non-admin users have a read-only view of the following pages:",

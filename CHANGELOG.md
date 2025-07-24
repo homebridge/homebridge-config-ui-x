@@ -12,6 +12,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
   - big thank you to @seidnerj for this contribution!
   - to read more info about these changes, see the [pull request](https://github.com/homebridge/homebridge-config-ui-x/pull/2493#issue-3226899065)
 - small tweaks to persistent terminal integration
+- show/copy user qr code secrets when setting up 2fa
 
 ### Other Changes
 

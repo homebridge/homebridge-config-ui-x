@@ -660,6 +660,7 @@
   "users.setup_2fa_enabled_success": "雙重驗證已開啟。",
   "users.setup_2fa_enter_code": "輸入驗證 App 所顯示之驗證碼：",
   "users.setup_2fa_scan_qr_code": "以驗證 App 掃描下方 QR 碼：",
+  "users.setup_2fa_scan_qr_manual": "If you cannot scan the QR code, you can enter the following secret key manually:",
   "users.setup_2fa_server_time_out": "伺服器時間誤差 {{ timeDiffError }} ms。最大允許值為 +/-5000 ms。",
   "users.setup_2fa_warning": "雙重驗證需要 Homebridge 伺服器以相當精準的時間及時間執行、以進行登入動作。假如您的伺服器無法保持時間精準、建議不要開啟雙重驗證，以避免 Homebridge UI 遭到鎖定。",
   "users.support.acc_1": "There are two types of users that can access the Homebridge UI: admin and non-admin users. Admins can access and control everything available in the UI. Non-admin users have a read-only view of the following pages:",
