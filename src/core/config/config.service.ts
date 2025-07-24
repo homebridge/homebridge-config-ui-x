@@ -65,6 +65,11 @@ export class ConfigService {
   // package.json
   public package = readJsonSync(resolve(process.env.UIX_BASE_PATH, 'package.json'))
 
+  // Startup settings
+  public hbStartupSettings = pathExistsSync(resolve(this.storagePath, '.uix-hb-service-homebridge-startup.json'))
+    ? readJsonSync(resolve(this.storagePath, '.uix-hb-service-homebridge-startup.json'))
+    : {}
+
   // First user setup wizard
   public setupWizardComplete = true
 
@@ -274,6 +279,7 @@ export class ConfigService {
       proxyHost: this.ui.proxyHost,
       homebridgePackagePath: this.ui.homebridgePackagePath,
       disableServerMetricsMonitoring: this.ui.disableServerMetricsMonitoring,
+      keepOrphans: this.hbStartupSettings?.keepOrphans || false,
     }
   }
 
