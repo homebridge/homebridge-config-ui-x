@@ -666,6 +666,7 @@
   "users.setup_2fa_warning": "Uwierzytelnianie dwuskładnikowe wymaga serwera Homebridge, aby mieć aktualny czas i datę w trakcie logowania. Jeśli twój server nie będzie w stanie utrzymać poprawnego czasu, może nie być możliwe włączenie 2FA lub może wystąpić ryzyko zablokowania interfejsu Config UI X.",
   "users.support.acc_1": "There are two types of users that can access the Homebridge UI: admin and non-admin users. Admins can access and control everything available in the UI. Non-admin users have a read-only view of the following pages:",
   "users.support.acc_2": "2FA can only be set up on admin accounts, and must do this via the users page logged in as themselves.",
+  "users.support.control": "can be controlled",
   "users.title_add_user": "Dodaj użytkownika",
   "users.title_edit_user": "Edytuj użytkownika",
   "users.title_users": "Użytkownicy",
