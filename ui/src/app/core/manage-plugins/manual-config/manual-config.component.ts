@@ -1,4 +1,4 @@
-import type { PluginSchema } from '@/app/core/manage-plugins/manage-plugins.interfaces'
+import type { ChildBridge, PluginSchema } from '@/app/core/manage-plugins/manage-plugins.interfaces'
 
 import { Component, inject, Input, OnInit } from '@angular/core'
 import { FormsModule } from '@angular/forms'
@@ -68,7 +68,7 @@ export class ManualConfigComponent implements OnInit {
   public currentBlock: string
   public currentBlockIndex: number | null = null
   public saveInProgress = false
-  public childBridges: any[] = []
+  public childBridges: ChildBridge[] = []
   public isFirstSave = false
   public monacoEditor: any
   public editorOptions: any
@@ -283,7 +283,7 @@ export class ManualConfigComponent implements OnInit {
 
   private async getChildBridges(): Promise<void> {
     try {
-      const data: any[] = await firstValueFrom(this.$api.get('/status/homebridge/child-bridges'))
+      const data: ChildBridge[] = await firstValueFrom(this.$api.get('/status/homebridge/child-bridges'))
       data.forEach((bridge) => {
         if (this.plugin.name === bridge.plugin) {
           this.childBridges.push(bridge)

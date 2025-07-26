@@ -61,7 +61,7 @@ export class PluginCardComponent implements OnInit {
   public isAdmin = this.$auth.user.admin
 
   // eslint-disable-next-line accessor-pairs
-  @Input() set childBridges(childBridges: any[]) {
+  @Input() set childBridges(childBridges: ChildBridge[]) {
     this.hasChildBridges = childBridges.length > 0
     this.hasUnpairedChildBridges = childBridges.filter(x => x.paired === false).length > 0
     this.allChildBridgesStopped = childBridges.filter(x => x.manuallyStopped === true).length === childBridges.length
