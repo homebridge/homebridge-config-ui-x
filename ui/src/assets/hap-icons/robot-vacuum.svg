@@ -1,34 +1,37 @@
-<svg
-  width="32px"
-  height="32px"
-  viewBox="0 0 32 32"
-  version="1.1"
-  xmlns="http://www.w3.org/2000/svg"
-  xmlns:xlink="http://www.w3.org/1999/xlink"
->
+<svg width="32px" height="32px" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <!-- Clip lines to the top part, above robot back (approx y=5) -->
+    <!-- clip lines to above the machine -->
     <clipPath id="motionClip">
       <rect x="0" y="-0.5" width="32" height="8" />
     </clipPath>
   </defs>
 
   <g transform="translate(0, 5)">
-    <!-- Robot shape -->
-    <ellipse cx="16" cy="10" rx="14" ry="8.4" stroke="#7F7F7F" stroke-width="1.75" fill="none" />
-    <line x1="2" y1="10" x2="2" y2="16" stroke="#7F7F7F" stroke-width="1.75" />
-    <line x1="30" y1="10" x2="30" y2="16" stroke="#7F7F7F" stroke-width="1.75" />
-    <path d="M2,16 A14,6.9 0 0,0 30,16" stroke="#7F7F7F" stroke-width="1.75" fill="none" />
-    <ellipse cx="16" cy="10" rx="4.2" ry="2.5" stroke="#7F7F7F" stroke-width="1" fill="#1976d2" fill-opacity="0.3" />
-    <circle cx="16" cy="15" r="0.9" fill="#7F7F7F" />
-    <line x1="2" y1="16" x2="0.5" y2="18.5" stroke="#7F7F7F" stroke-width="1" />
-    <line x1="2" y1="16" x2="0.5" y2="14" stroke="#7F7F7F" stroke-width="1" />
-    <line x1="30" y1="16" x2="31.5" y2="18.5" stroke="#7F7F7F" stroke-width="1" />
-    <line x1="30" y1="16" x2="31.5" y2="14" stroke="#7F7F7F" stroke-width="1" />
+    <!-- main ellipse -->
+    <ellipse cx="16" cy="10" rx="14" ry="8.4" stroke="#7f7f7f" stroke-width="1.75" fill="none" />
+
+    <!-- side walls -->
+    <line x1="2" y1="10" x2="2" y2="16" stroke="#7f7f7f" stroke-width="1.75" />
+    <line x1="30" y1="10" x2="30" y2="16" stroke="#7f7f7f" stroke-width="1.75" />
+
+    <!-- base arc -->
+    <path d="M2,16 A14,6.9 0 0,0 30,16" stroke="#7f7f7f" stroke-width="1.75" fill="none" />
+
+    <!-- blue ring -->
+    <ellipse cx="16" cy="10" rx="4.2" ry="2.5" stroke="#7f7f7f" stroke-width="1" fill="#1976d2" fill-opacity="0.5" />
+
+    <!-- power button -->
+    <circle cx="16" cy="15" r="0.9" fill="#7f7f7f" />
+
+    <!-- whisker brushes -->
+    <line x1="2" y1="16" x2="0.5" y2="18.5" stroke="#7f7f7f" stroke-width="1" />
+    <line x1="2" y1="16" x2="0.5" y2="14" stroke="#7f7f7f" stroke-width="1" />
+    <line x1="30" y1="16" x2="31.5" y2="18.5" stroke="#7f7f7f" stroke-width="1" />
+    <line x1="30" y1="16" x2="31.5" y2="14" stroke="#7f7f7f" stroke-width="1" />
   </g>
 
-  <g clip-path="url(#motionClip)" stroke="#7F7F7F" stroke-linecap="round">
-    <!-- Left middle line -->
+  <g class="motion-lines" style="display: none;" clip-path="url(#motionClip)" stroke="#7f7f7f" stroke-linecap="round">
+    <!-- left line -->
     <line x1="12" y1="8" x2="12" y2="14" stroke-width="2.1" opacity="0">
       <animate attributeName="y1" values="8;0" dur="3s" begin="0.3s" repeatCount="indefinite" />
       <animate attributeName="y2" values="14;6" dur="3s" begin="0.3s" repeatCount="indefinite" />
@@ -42,7 +45,7 @@
       />
     </line>
 
-    <!-- Middle line -->
+    <!-- middle line -->
     <line x1="16" y1="8" x2="16" y2="14" stroke-width="2.5" opacity="0">
       <animate attributeName="y1" values="8;0" dur="3s" begin="0.6s" repeatCount="indefinite" />
       <animate attributeName="y2" values="14;6" dur="3s" begin="0.6s" repeatCount="indefinite" />
@@ -56,7 +59,7 @@
       />
     </line>
 
-    <!-- Right middle line -->
+    <!-- right line -->
     <line x1="20" y1="8" x2="20" y2="14" stroke-width="2.1" opacity="0">
       <animate attributeName="y1" values="8;0" dur="3s" begin="0.9s" repeatCount="indefinite" />
       <animate attributeName="y2" values="14;6" dur="3s" begin="0.9s" repeatCount="indefinite" />
