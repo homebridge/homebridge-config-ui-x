@@ -1,4 +1,4 @@
-import type { PluginSchema } from '@/app/core/manage-plugins/manage-plugins.interfaces'
+import type { ChildBridge, PluginSchema } from '@/app/core/manage-plugins/manage-plugins.interfaces'
 
 import { NgClass } from '@angular/common'
 import { Component, ElementRef, inject, Input, OnDestroy, OnInit, viewChild } from '@angular/core'
@@ -62,7 +62,7 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
   public formValid = true
   public formUpdatedSubject = new Subject()
   public formActionSubject = new Subject()
-  public childBridges: any[] = []
+  public childBridges: ChildBridge[] = []
   public isFirstSave = false
   public formIsValid = true
   public strictValidation = false
@@ -507,7 +507,7 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
 
   private async getChildBridges(): Promise<void> {
     try {
-      const data: any[] = await firstValueFrom(this.$api.get('/status/homebridge/child-bridges'))
+      const data: ChildBridge[] = await firstValueFrom(this.$api.get('/status/homebridge/child-bridges'))
       data.forEach((bridge) => {
         if (this.plugin.name === bridge.plugin) {
           this.childBridges.push(bridge)

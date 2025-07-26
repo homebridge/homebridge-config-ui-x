@@ -9,17 +9,13 @@ import { firstValueFrom } from 'rxjs'
 import { ApiService } from '@/app/core/api.service'
 import { AuthService } from '@/app/core/auth/auth.service'
 import { InformationComponent } from '@/app/core/components/information/information.component'
+import { Plugin } from '@/app/core/manage-plugins/manage-plugins.interfaces'
 import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service'
 import { SettingsService } from '@/app/core/settings.service'
 import { IoNamespace, WsService } from '@/app/core/ws.service'
 import { HbV2ModalComponent } from '@/app/modules/status/widgets/update-info-widget/hb-v2-modal/hb-v2-modal.component'
-
-interface DockerDetails {
-  currentVersion: string | undefined
-  latestVersion: string | null
-  latestReleaseBody: string
-  updateAvailable: boolean
-}
+import { NodeVersionModalComponent } from '@/app/modules/status/widgets/update-info-widget/node-version-modal/node-version-modal.component'
+import { DockerDetails, NodeJsInfo, ServerInfo } from '@/app/modules/status/widgets/update-info-widget/update-info-widget.interfaces'
 
 @Component({
   templateUrl: './update-info-widget.component.html',
@@ -45,29 +41,26 @@ export class UpdateInfoWidgetComponent implements OnInit {
 
   @Input() widget: any
 
-  public homebridgePkg = {} as any
-  public homebridgeUiPkg = {} as any
-  public homebridgePluginStatus = [] as any
-  public homebridgePluginStatusDone = false as boolean
-  public nodejsInfo = {} as any
-  public nodejsStatusDone = false as boolean
-  public serverInfo: any
+  public homebridgePkg: Plugin = {} as Plugin
+  public homebridgeUiPkg: Plugin = {} as Plugin
+  public homebridgePluginStatus: Plugin[] = []
+  public homebridgePluginStatusDone = false
+  public nodejsInfo: NodeJsInfo
+  public nodejsStatusDone = false
+  public serverInfo: ServerInfo
   public isRunningHbV2 = false
   public isHbV2Loaded = false
   public isHbV2Ready = false
   public packageVersion = this.$settings.env.packageVersion
   public homebridgeVersion = this.$settings.env.homebridgeVersion
   public isAdmin = this.$auth.user.admin
-
+  public dockerStatusDone = false as boolean
+  public dockerExpanded = false
   public dockerInfo: DockerDetails = {
-    currentVersion: undefined,
     latestVersion: null,
     latestReleaseBody: '',
     updateAvailable: false,
   }
-
-  public dockerStatusDone = false as boolean
-  public dockerExpanded = false
 
   public async ngOnInit() {
     this.io = this.$ws.getExistingNamespace('status')
@@ -109,34 +102,18 @@ export class UpdateInfoWidgetComponent implements OnInit {
     }
   }
 
-  public nodeUpdateModal() {
-    const ref = this.$modal.open(InformationComponent, {
+  public nodeVersionModal(compareVersion: string) {
+    const ref = this.$modal.open(NodeVersionModalComponent, {
       size: 'lg',
       backdrop: 'static',
     })
 
-    ref.componentInstance.title = this.$translate.instant('status.widget.info.node_update_title')
-    ref.componentInstance.message = this.$translate.instant('status.widget.info.node_update_message')
-    if (this.serverInfo.homebridgeRunningInSynologyPackage || this.serverInfo.homebridgeRunningInDocker) {
-      ref.componentInstance.message2 = this.$translate.instant('status.widget.info.node_update_message_2')
-    }
-    ref.componentInstance.subtitle = `${this.serverInfo.nodeVersion} &rarr; ${this.nodejsInfo.latestVersion}`
-    ref.componentInstance.ctaButtonLabel = this.$translate.instant('form.button_more_info')
-    ref.componentInstance.faIconClass = 'fab fa-fw fa-node-js primary-text'
-    ref.componentInstance.ctaButtonLink = 'https://github.com/homebridge/homebridge/wiki/How-To-Update-Node.js'
-  }
-
-  public nodeUnsupportedModal() {
-    const ref = this.$modal.open(InformationComponent, {
-      size: 'lg',
-      backdrop: 'static',
-    })
-
-    ref.componentInstance.title = this.$translate.instant('status.widget.info.node_unsupp_title')
-    ref.componentInstance.message = this.$translate.instant('status.widget.info.node_unsupp_message')
-    ref.componentInstance.ctaButtonLabel = this.$translate.instant('form.button_more_info')
-    ref.componentInstance.faIconClass = 'fab fa-fw fa-node-js primary-text'
-    ref.componentInstance.ctaButtonLink = 'https://github.com/homebridge/homebridge/wiki/How-To-Update-Node.js'
+    ref.componentInstance.nodeVersion = this.serverInfo.nodeVersion
+    ref.componentInstance.latestVersion = compareVersion
+    ref.componentInstance.showNodeUnsupportedWarning = this.nodejsInfo.showNodeUnsupportedWarning
+    ref.componentInstance.homebridgeRunningInSynologyPackage = this.serverInfo.homebridgeRunningInSynologyPackage
+    ref.componentInstance.homebridgeRunningInDocker = this.serverInfo.homebridgeRunningInDocker
+    ref.componentInstance.homebridgePkg = this.homebridgePkg
   }
 
   public readyForV2Modal() {
@@ -148,11 +125,11 @@ export class UpdateInfoWidgetComponent implements OnInit {
     ref.componentInstance.skipIfCompatible = false
   }
 
-  public installAlternateVersion(pkg) {
+  public installAlternateVersion(pkg: Plugin) {
     this.$plugin.installAlternateVersion(pkg)
   }
 
-  public updatePackage(pkg) {
+  public updatePackage(pkg: Plugin) {
     this.$plugin.upgradeHomebridge(pkg, pkg.latestVersion)
   }
 

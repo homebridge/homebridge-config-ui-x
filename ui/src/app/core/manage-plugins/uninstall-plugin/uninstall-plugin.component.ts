@@ -7,7 +7,7 @@ import { firstValueFrom } from 'rxjs'
 
 import { ApiService } from '@/app/core/api.service'
 import { ManagePluginComponent } from '@/app/core/manage-plugins/manage-plugin/manage-plugin.component'
-import { Plugin } from '@/app/core/manage-plugins/manage-plugins.interfaces'
+import { ChildBridge, Plugin } from '@/app/core/manage-plugins/manage-plugins.interfaces'
 import { SettingsService } from '@/app/core/settings.service'
 
 @Component({
@@ -28,7 +28,7 @@ export class UninstallPluginComponent implements OnInit {
   private $translate = inject(TranslateService)
 
   @Input() plugin: Plugin
-  @Input() childBridges: any[]
+  @Input() childBridges: ChildBridge[]
   @Input() action: string
 
   public loading = true

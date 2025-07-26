@@ -145,7 +145,12 @@
               } } }
             </div>
             <div class="align-self-center px-3">
-              Node.js@if (widget.showNpmVersion && nodejsInfo.npmVersion) { &middot; npm }
+              <a
+                href="javascript:void(0)"
+                (click)="nodeVersionModal(serverInfo.nodeVersion)"
+                class="card-link card-link-title"
+                >Node.js</a
+              >@if (widget.showNpmVersion && nodejsInfo.npmVersion) { &middot; npm }
               <br />
               @if (!nodejsStatusDone) {
               <span class="grey-text small">{{ 'status.homebridge.checking' | translate }}</span>
@@ -155,11 +160,19 @@
                 nodejsInfo.npmVersion }} }</span
               >
               @if (!widget.hideNodeInfo) { @if (nodejsInfo.updateAvailable && isAdmin) { &middot;
-              <a href="javascript:void(0)" (click)="nodeUpdateModal()" class="primary-text small">
+              <a
+                href="javascript:void(0)"
+                (click)="nodeVersionModal(nodejsInfo.latestVersion)"
+                class="primary-text small"
+              >
                 {{'plugins.button_update' | translate }}
               </a>
               } @if (nodejsInfo.showNodeUnsupportedWarning && !nodejsInfo.updateAvailable) { &middot;
-              <a href="javascript:void(0)" (click)="nodeUnsupportedModal()" class="primary-text small">
+              <a
+                href="javascript:void(0)"
+                (click)="nodeVersionModal(serverInfo.nodeVersion)"
+                class="primary-text small"
+              >
                 {{ 'status.widget.info.node_unsupp' | translate }}
               </a>
               } } }
@@ -307,7 +320,12 @@
           } } }
         </div>
         <div class="align-self-center px-3">
-          Node.js@if (widget.showNpmVersion && nodejsInfo.npmVersion) { &middot; npm }
+          <a
+            href="javascript:void(0)"
+            (click)="nodeVersionModal(serverInfo.nodeVersion)"
+            class="card-link card-link-title"
+            >Node.js</a
+          >@if (widget.showNpmVersion && nodejsInfo.npmVersion) { &middot; npm }
           <br />
           @if (!nodejsStatusDone) {
           <span class="grey-text small">{{ 'status.homebridge.checking' | translate }}</span>
@@ -317,11 +335,11 @@
             nodejsInfo.npmVersion }} }</span
           >
           @if (!widget.hideNodeInfo) { @if (nodejsInfo.updateAvailable && isAdmin) { &middot;
-          <a href="javascript:void(0)" (click)="nodeUpdateModal()" class="primary-text small">
+          <a href="javascript:void(0)" (click)="nodeVersionModal(nodejsInfo.latestVersion)" class="primary-text small">
             {{'plugins.button_update' | translate }}
           </a>
           } @if (nodejsInfo.showNodeUnsupportedWarning && !nodejsInfo.updateAvailable) { &middot;
-          <a href="javascript:void(0)" (click)="nodeUnsupportedModal()" class="primary-text small">
+          <a href="javascript:void(0)" (click)="nodeVersionModal(serverInfo.nodeVersion)" class="primary-text small">
             {{ 'status.widget.info.node_unsupp' | translate }}
           </a>
           } } }
