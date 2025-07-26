@@ -34,7 +34,7 @@ export class DonateComponent implements OnInit {
     // Normalise the different funding attribute formats
     if (Array.isArray(this.plugin.funding)) {
       // eslint-disable-next-line array-callback-return
-      this.fundingOptions = this.plugin.funding.map((option: any) => {
+      this.fundingOptions = this.plugin.funding.map((option: PluginFundingOption | string) => {
         if (typeof option === 'string') {
           return {
             type: 'other',

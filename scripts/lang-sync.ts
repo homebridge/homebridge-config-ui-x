@@ -13,11 +13,14 @@ import { readdir, readFile, readJson, stat, writeJson } from 'fs-extra'
 const projectDir = resolve(dirname(__dirname), 'ui/src')
 
 const ignoreKeys = [
-  'plugins.settings.custom.homebridge-gsh.label_account_linked',
-  'plugins.settings.custom.homebridge-gsh.label_link_account',
-  'plugins.settings.custom.homebridge-gsh.message_about',
-  'plugins.settings.custom.homebridge-gsh.message_account_link_required',
-  'plugins.settings.custom.homebridge-gsh.message_homebridge_restart_required',
+  'plugins.settings.custom.homebridge-gsh.label_account_linked', // used in google-gsh plugin config
+  'plugins.settings.custom.homebridge-gsh.label_link_account', // used in google-gsh plugin config
+  'plugins.settings.custom.homebridge-gsh.message_about', // used in google-gsh plugin config
+  'plugins.settings.custom.homebridge-gsh.message_account_link_required', // used in google-gsh plugin config
+  'plugins.settings.custom.homebridge-gsh.message_homebridge_restart_required', // used in google-gsh plugin config
+  'status.widget.update_node_yes', // used in ui/src/app/modules/status/widgets/update-info-widget/node-version-modal
+  'status.widget.update_node_no', // used in ui/src/app/modules/status/widgets/update-info-widget/node-version-modal
+  'status.widget.update_node_unknown', // used in ui/src/app/modules/status/widgets/update-info-widget/node-version-modal
 ]
 
 async function getAllFiles(dirPath: string, arrayOfFiles: string[] = []): Promise<string[]> {
