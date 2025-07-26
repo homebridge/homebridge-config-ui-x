@@ -20,6 +20,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - add restart child bridges option to plugin log modal
 - node version modal: show hb/ui/plugin compatibility
 - air purifier tile: update icon to match new style
+- robot vacuum tile: use css to use a single svg file
 
 ### Other Changes
 
