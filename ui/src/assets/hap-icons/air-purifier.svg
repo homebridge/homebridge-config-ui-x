@@ -1,50 +1,50 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<svg
-  width="100px"
-  height="149px"
-  viewBox="0 0 100 149"
-  version="1.1"
-  xmlns="http://www.w3.org/2000/svg"
-  xmlns:xlink="http://www.w3.org/1999/xlink"
->
-  <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
-    <g id="air-purifier" transform="translate(7.000000, 5.000000)">
-      <path
-        d="M-4.26325641e-14,6.22067087 C4.02953795,8.50225516 12.4315562,9.67933849 25.2060547,9.75192087 C32.8391014,9.79529045 51.5791554,2.41088415 63.7714844,0.357389618 C69.2464736,-0.564736121 76.8610569,0.297568567 86.6152344,2.94430368"
-        id="Line"
-        class="air-purifier_off_grey"
-        stroke="#5BC8FA"
-        stroke-width="10"
-        stroke-linecap="square"
-      />
-      <path
-        d="M-4.26325641e-14,30.2206709 C4.02953795,32.5022552 12.4315562,33.6793385 25.2060547,33.7519209 C32.8391014,33.7952905 51.5791554,26.4108841 63.7714844,24.3573896 C69.2464736,23.4352639 76.8610569,24.2975686 86.6152344,26.9443037"
-        id="Line"
-        class="air-purifier_off_grey"
-        stroke="#91DBFB"
-        stroke-width="10"
-        stroke-linecap="square"
-      />
-      <path
-        d="M-4.26325641e-14,54.2206709 C4.02953795,56.5022552 12.4315562,57.6793385 25.2060547,57.7519209 C32.8391014,57.7952905 51.5791554,50.4108841 63.7714844,48.3573896 C69.2464736,47.4352639 76.8610569,48.2975686 86.6152344,50.9443037"
-        id="Line"
-        class="air-purifier_off_grey"
-        stroke="#C8EAFE"
-        stroke-width="10"
-        stroke-linecap="square"
-      />
-      <polygon
-        id="Path"
-        class="air-purifier_off_grey"
-        fill="#C7C5CB"
-        points="17.2333685 76.7914641 70.0374945 76.7914641 73.9430133 79.2866885 76.8250853 84.9649087 87.1832833 114.139252 87.1832833 140.017181 85.5385126 142.175202 83.1303576 143.984565 5.21741581 143.984565 2.85966936 142.750318 1.09613307 140.017181 1.09613307 114.139252 10.9193128 84.9649087 14.372682 79.2866885"
-      />
-      <rect class="rectangle air-purifier_off_lgrey" fill="#e0e0e0" x="46" y="84" width="17" height="5" />
-      <rect class="rectangle air-purifier_off_lgrey" fill="#e0e0e0" x="46" y="94" width="20" height="5" />
-      <rect class="rectangle air-purifier_off_lgrey" fill="#e0e0e0" x="46" y="103" width="22" height="5" />
-      <rect class="rectangle air-purifier_off_lgrey" fill="#e0e0e0" x="20" y="103" width="22" height="5" />
-      <rect class="rectangle air-purifier_off_lgrey" fill="#e0e0e0" x="22" y="94" width="20" height="5" />
-      <rect class="rectangle air-purifier_off_lgrey" fill="#e0e0e0" x="25" y="84" width="17" height="5" />
-    </g>
-  </g>
+<svg width="32px" height="32px" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+  <!-- top wave -->
+  <path
+    d="M3,3.0706147 C3.28945166,3.8007217 5.978098,4.1773883 10.0660175,4.2006147 C12.5085124,4.2144929 18.5053297,1.8514837 22.4060749,1.1943647 C24.1588716,0.898084 26.5955382,1.1756219 28.716875,2.0221772"
+    class="air-line"
+    stroke="#7f7f7f"
+    fill="transparent"
+    stroke-width="1.5"
+    stroke-linecap="round"
+  />
+
+  <!-- bottom wave -->
+  <path
+    d="M3,9.0706147 C3.28945166,9.8007217 5.978098,10.1773883 10.0660175,10.2006147 C12.5085124,10.2144929 18.5053297,7.8514837 22.4060749,7.1943647 C24.1588716,6.898084 26.5955382,7.1756219 28.716875,8.0221772"
+    class="air-line bottom-line"
+    stroke="#7f7f7f"
+    fill="transparent"
+    stroke-width="1.5"
+    stroke-linecap="round"
+  />
+
+  <!-- back top line -->
+  <line x1="7" y1="14" x2="25" y2="14" stroke="#7f7f7f" stroke-width="1.5" stroke-linecap="round" />
+
+  <!-- back left to front left -->
+  <line x1="7" y1="14" x2="2" y2="23" stroke="#7f7f7f" stroke-width="1.5" stroke-linecap="round" />
+
+  <!-- back right to front right -->
+  <line x1="25" y1="14" x2="30" y2="23" stroke="#7f7f7f" stroke-width="1.5" stroke-linecap="round" />
+
+  <!-- grille lines -->
+  <line x1="8" y1="16.5" x2="24" y2="16.5" stroke="#7f7f7f" stroke-width="1" stroke-linecap="round" />
+  <line x1="7" y1="18.5" x2="25" y2="18.5" stroke="#7f7f7f" stroke-width="1" stroke-linecap="round" />
+  <line x1="6" y1="20.5" x2="26" y2="20.5" stroke="#7f7f7f" stroke-width="1" stroke-linecap="round" />
+
+  <!-- front top line -->
+  <line x1="2" y1="23" x2="30" y2="23" stroke="#7f7f7f" stroke-width="1.5" stroke-linecap="round" />
+
+  <!-- side left line -->
+  <line x1="30" y1="23" x2="30" y2="31" stroke="#7f7f7f" stroke-width="1.5" stroke-linecap="round" />
+
+  <!-- side right line -->
+  <line x1="2" y1="23" x2="2" y2="31" stroke="#7f7f7f" stroke-width="1.5" stroke-linecap="round" />
+
+  <!-- power button -->
+  <circle cx="15.5" cy="27" r="2.5" stroke="#7f7f7f" stroke-width="1" fill="#1976d2" fill-opacity="0.5" />
+
+  <!-- front bottom line -->
+  <line x1="2" y1="31" x2="30" y2="31" stroke="#7f7f7f" stroke-width="1.5" stroke-linecap="round" />
 </svg>

@@ -1,6 +1,13 @@
 <div
   class="accessory-box"
-  [ngClass]="{ 'switch-on': service.values.Active || service.values.On, 'switch-off': !service.values.Active && !service.values.On }"
+  [ngClass]="{
+    'switch-on': (service.values.Active && !('CurrentAirPurifierState' in service.values))
+      || (service.values.Active && 'CurrentAirPurifierState' in service.values && service.values.CurrentAirPurifierState !== 0)
+      || service.values.On,
+    'purifying': (service.values.Active && !('CurrentAirPurifierState' in service.values))
+      || (service.values.Active && 'CurrentAirPurifierState' in service.values && service.values.CurrentAirPurifierState === 2)
+      || service.values.On,
+  }"
   (longClick)="onLongClick()"
   (shortClick)="onClick()"
   tabindex="0"
@@ -12,13 +19,18 @@
       class="accessory-svg"
     ></div>
     <div class="accessory-label mt-auto">{{ service.customName || service.serviceName }}</div>
-    @if ((service.values.Active || service.values.On) && service.values.RotationSpeed) {
+
+    @if ((service.values.Active && !('CurrentAirPurifierState' in service.values)) || (service.values.Active &&
+    'CurrentAirPurifierState' in service.values && service.values.CurrentAirPurifierState === 2) || service.values.On) {
+    @if ('RotationSpeed' in service.values) {
     <div class="accessory-label grey-text">{{ service.values.RotationSpeed }}%</div>
     } @else {
-    <div
-      class="accessory-label grey-text"
-      [innerText]="((service.values.Active || service.values.On) ? 'accessories.control.on' : 'accessories.control.off') | translate"
-    ></div>
+    <div class="accessory-label grey-text">{{ 'accessories.control.on' | translate }}</div>
+    } } @else if ((service.values.Active && !('CurrentAirPurifierState' in service.values)) || (service.values.Active &&
+    'CurrentAirPurifierState' in service.values && service.values.CurrentAirPurifierState === 1) || service.values.On) {
+    <div class="accessory-label grey-text">{{ 'accessories.control.idle' | translate }}</div>
+    } @else {
+    <div class="accessory-label grey-text">{{ 'accessories.control.off' | translate }}</div>
     }
   </div>
 </div>

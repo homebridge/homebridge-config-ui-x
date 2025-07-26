@@ -1,19 +1,26 @@
 ::ng-deep {
-  .switch-off {
+  .purifying {
     svg {
-      .air-purifier_off_grey {
-        stroke: #808080;
-        fill: #808080;
+      .air-line {
+        animation: wave-motion 5s ease-in-out infinite;
+        stroke: #1976d2;
+        stroke-opacity: 0.5;
       }
-      .air-purifier_off_lgrey {
-        fill: #d9d9d9;
+
+      .bottom-line {
+        animation-delay: 0.4s;
       }
-    }
-  }
-  .switch-on {
-    svg {
-      .rectangle {
-        fill: #ffffff !important;
+
+      @keyframes wave-motion {
+        0%,
+        100% {
+          transform: translateY(0px);
+          stroke-opacity: 0.5;
+        }
+        50% {
+          transform: translateY(2px);
+          stroke-opacity: 1;
+        }
       }
     }
   }
