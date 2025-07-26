@@ -12,6 +12,7 @@ import { firstValueFrom } from 'rxjs'
 import { ApiService } from '@/app/core/api.service'
 import { QrcodeComponent } from '@/app/core/components/qrcode/qrcode.component'
 import { RestartHomebridgeComponent } from '@/app/core/components/restart-homebridge/restart-homebridge.component'
+import { Plugin } from '@/app/core/manage-plugins/manage-plugins.interfaces'
 import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service'
 import { SettingsService } from '@/app/core/settings.service'
 
@@ -31,13 +32,13 @@ export class PluginBridgeComponent implements OnInit {
   private $activeModal = inject(NgbActiveModal)
   private $api = inject(ApiService)
   private $modal = inject(NgbModal)
-  private $plugins = inject(ManagePluginsService)
+  private $plugin = inject(ManagePluginsService)
   private $router = inject(Router)
   private $settings = inject(SettingsService)
   private $toastr = inject(ToastrService)
   private $translate = inject(TranslateService)
 
-  @Input() plugin: any
+  @Input() plugin: Plugin
   @Input() schema: PluginSchema
   @Input() justInstalled = false
 
@@ -280,11 +281,11 @@ export class PluginBridgeComponent implements OnInit {
     this.$activeModal.close()
 
     // Open the plugin config modal
-    this.$plugins.settings({
+    this.$plugin.settings({
       name: this.plugin.name,
       settingsSchema: true,
       links: {},
-    })
+    } as Plugin)
   }
 
   private generateUsername() {

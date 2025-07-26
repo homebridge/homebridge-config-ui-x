@@ -3,6 +3,8 @@ import { Component, inject, Input, OnInit } from '@angular/core'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
 import { TranslatePipe } from '@ngx-translate/core'
 
+import { Plugin, PluginFundingOption } from '@/app/core/manage-plugins/manage-plugins.interfaces'
+
 @Component({
   templateUrl: './donate.component.html',
   styleUrls: ['./donate.component.scss'],
@@ -15,9 +17,9 @@ import { TranslatePipe } from '@ngx-translate/core'
 export class DonateComponent implements OnInit {
   private $activeModal = inject(NgbActiveModal)
 
-  @Input() plugin: any
+  @Input() plugin: Plugin
 
-  public fundingOptions: { type: string, url: string }[]
+  public fundingOptions: PluginFundingOption[]
 
   public ngOnInit(): void {
     if (!this.plugin.funding) {

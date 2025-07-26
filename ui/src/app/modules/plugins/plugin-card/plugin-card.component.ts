@@ -11,6 +11,7 @@ import { ConfirmComponent } from '@/app/core/components/confirm/confirm.componen
 import { RestartHomebridgeComponent } from '@/app/core/components/restart-homebridge/restart-homebridge.component'
 import { DisablePluginComponent } from '@/app/core/manage-plugins/disable-plugin/disable-plugin.component'
 import { DonateComponent } from '@/app/core/manage-plugins/donate/donate.component'
+import { ChildBridge, Plugin } from '@/app/core/manage-plugins/manage-plugins.interfaces'
 import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service'
 import { PluginLogsComponent } from '@/app/core/manage-plugins/plugin-logs/plugin-logs.component'
 import { MobileDetectService } from '@/app/core/mobile-detect.service'
@@ -46,7 +47,7 @@ export class PluginCardComponent implements OnInit {
   private $ws = inject(WsService)
   private io: IoNamespace
 
-  @Input() plugin: any
+  @Input() plugin: Plugin
 
   public hasChildBridges = false
   public hasUnpairedChildBridges = false
@@ -55,7 +56,7 @@ export class PluginCardComponent implements OnInit {
   public childBridgeRestartInProgress = false
   public defaultIcon = 'assets/hb-icon.png'
   public isMobile: string
-  public setChildBridges = []
+  public setChildBridges: ChildBridge[] = []
   public hb2Status = 'unknown' // 'hide' | 'supported' | 'unknown'
   public isAdmin = this.$auth.user.admin
 
@@ -96,7 +97,7 @@ export class PluginCardComponent implements OnInit {
     }
   }
 
-  public openFundingModal(plugin: any) {
+  public openFundingModal(plugin: Plugin) {
     const ref = this.$modal.open(DonateComponent, {
       size: 'lg',
       backdrop: 'static',
@@ -104,7 +105,7 @@ export class PluginCardComponent implements OnInit {
     ref.componentInstance.plugin = plugin
   }
 
-  public pluginInfoModal(plugin: any) {
+  public pluginInfoModal(plugin: Plugin) {
     const ref = this.$modal.open(PluginInfoComponent, {
       size: 'lg',
       backdrop: 'static',
@@ -112,7 +113,7 @@ export class PluginCardComponent implements OnInit {
     ref.componentInstance.plugin = plugin
   }
 
-  public disablePlugin(plugin: any) {
+  public disablePlugin(plugin: Plugin) {
     const ref = this.$modal.open(DisablePluginComponent, {
       size: 'lg',
       backdrop: 'static',
@@ -144,7 +145,7 @@ export class PluginCardComponent implements OnInit {
     })
   }
 
-  public enablePlugin(plugin: any) {
+  public enablePlugin(plugin: Plugin) {
     const ref = this.$modal.open(ConfirmComponent, {
       size: 'lg',
       backdrop: 'static',
@@ -184,6 +185,7 @@ export class PluginCardComponent implements OnInit {
     })
 
     ref.componentInstance.plugin = this.plugin
+    ref.componentInstance.childBridges = this.setChildBridges
   }
 
   public async doChildBridgeAction(action: 'stop' | 'start' | 'restart') {
