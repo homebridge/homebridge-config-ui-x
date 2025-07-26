@@ -19,6 +19,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - remove glibc checks as node 18 is now unsupported
 - add restart child bridges option to plugin log modal
 - node version modal: show hb/ui/plugin compatibility
+- air purifier tile: update icon to match new style
 
 ### Other Changes
 
