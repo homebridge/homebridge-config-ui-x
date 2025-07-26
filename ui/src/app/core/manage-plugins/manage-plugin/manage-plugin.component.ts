@@ -221,6 +221,7 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
         name: this.pluginName,
         displayName: this.pluginDisplayName,
       }
+      ref.componentInstance.childBridges = this.childBridges
     } catch (error) {
       console.error(error)
       this.$toastr.error(this.$translate.instant('plugins.manage.child_bridge_restart_failed'), this.$translate.instant('toast.title_error'))

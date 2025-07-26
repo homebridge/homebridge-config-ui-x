@@ -139,7 +139,7 @@
   "child_bridge.confirm_delete_2": "You will need to remove the paired bridges manually from the Home app. Any accessories will be removed and re-created on the main Homebridge bridge.",
   "child_bridge.must_configure_plugin": "Você precisa configurar esse plugin primeiro antes de gerenciar as configurações de Ponte.",
   "child_bridge.reset_accessories": "Reset Accessories",
-  "child_bridge.restart": "Restart Child Bridges",
+  "child_bridge.restart": "Restart Child Bridge",
   "child_bridge.restart_homebridge": "Reinicie o Homebridge para finalizar a configuração dessa ponte filha.",
   "child_bridge.restart_plural": "Restart Child Bridges",
   "child_bridge.return_to_pair": "Retorne à essa tela depois que o Homebridge reiniciar para ver o codigo QR de pareamento.",

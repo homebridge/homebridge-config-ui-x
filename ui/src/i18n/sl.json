@@ -139,7 +139,7 @@
   "child_bridge.confirm_delete_2": "You will need to remove the paired bridges manually from the Home app. Any accessories will be removed and re-created on the main Homebridge bridge.",
   "child_bridge.must_configure_plugin": "Ta vtičnik morate konfigurirati, preden lahko upravljate njegove nastavitve mostu.",
   "child_bridge.reset_accessories": "Reset Accessories",
-  "child_bridge.restart": "Restart Child Bridges",
+  "child_bridge.restart": "Restart Child Bridge",
   "child_bridge.restart_homebridge": "Znova zaženite Homebridge, da dokončate nastavitev tega otroškega mostu.",
   "child_bridge.restart_plural": "Restart Child Bridges",
   "child_bridge.return_to_pair": "Vrnite se na ta zaslon, potem ko se Homebridge znova zažene, da si ogledate kodo za seznanjanje QR.",
