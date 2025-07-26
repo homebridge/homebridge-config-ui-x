@@ -1,9 +1,10 @@
 <div
   class="accessory-box"
-  [ngClass]="{ 'switch-on':
-    ('On' in service.values && service.values.On)
-    || ('On' in service.values && service.values.Active)
-    || ('LockTargetState' in service.values && !service.values.LockTargetState)
+  [ngClass]="{
+    'switch-on': service.values.On
+      ||  service.values.Active
+      || ('LockTargetState' in service.values && !service.values.LockTargetState)
+      || ('CurrentDoorState' in service.values && [0, 2].includes(service.values.CurrentDoorState))
   }"
   (shortClick)="onClick()"
   tabindex="0"
@@ -13,9 +14,13 @@
     <div class="accessory-label mt-auto">{{ service.customName || service.serviceName }}</div>
     <div
       class="accessory-label grey-text"
-      [innerText]="((('On' in service.values && service.values.On)
-    || ('On' in service.values && service.values.Active)
-    || ('LockTargetState' in service.values && !service.values.LockTargetState)) ? 'accessories.control.on' : 'accessories.control.off') | translate"
+      [innerText]="(
+        (service.values.On
+          || service.values.Active
+          || ('LockTargetState' in service.values && !service.values.LockTargetState)
+          || ('CurrentDoorState' in service.values && [0, 2].includes(service.values.CurrentDoorState)))
+            ? 'accessories.control.on'
+            : 'accessories.control.off') | translate"
     ></div>
   </div>
 </div>

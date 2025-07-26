@@ -26,6 +26,12 @@ export class GarageDoorOpenerComponent {
       return
     }
 
-    this.service.getCharacteristic('TargetDoorState').setValue(this.service.values.TargetDoorState ? 0 : 1)
+    if ('TargetDoorState' in this.service.values) {
+      this.service.getCharacteristic('TargetDoorState').setValue(this.service.values.TargetDoorState ? 0 : 1)
+    } else if ('On' in this.service.values) {
+      this.service.getCharacteristic('On').setValue(!this.service.values.On)
+    } else if ('Active' in this.service.values) {
+      this.service.getCharacteristic('Active').setValue(!this.service.values.Active)
+    }
   }
 }

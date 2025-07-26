@@ -21,6 +21,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - node version modal: show hb/ui/plugin compatibility
 - air purifier tile: update icon to match new style
 - robot vacuum tile: use css to use a single svg file
+- custom types: expose a switch/outlet as a garage door and vice versa
 
 ### Other Changes
 

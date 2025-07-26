@@ -32,6 +32,8 @@ export class OutletComponent {
       this.service.getCharacteristic('Active').setValue(this.service.values.Active ? 0 : 1)
     } else if ('LockTargetState' in this.service.values) {
       this.service.getCharacteristic('LockTargetState').setValue(this.service.values.LockTargetState ? 0 : 1)
+    } else if ('TargetDoorState' in this.service.values) {
+      this.service.getCharacteristic('TargetDoorState').setValue(this.service.values.TargetDoorState ? 0 : 1)
     }
   }
 }
