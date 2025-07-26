@@ -8,7 +8,10 @@
     <div class="accessory-label mt-auto">{{ service.customName || service.serviceName }}</div>
     <div
       class="accessory-label"
-      [ngClass]="{ 'grey-text': service.values.AirQuality < 4, 'red-text': service.values.AirQuality > 3 }"
+      [ngClass]="{
+        'grey-text': service.values.AirQuality < 4,
+        'red-text': service.values.AirQuality > 3,
+      }"
     >
       {{ labels[service.values.AirQuality || 0] }}
     </div>
