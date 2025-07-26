@@ -1,6 +1,10 @@
 <div
   class="accessory-box"
-  [ngClass]="{ 'switch-on': service.values.CurrentDoorState === 0 || service.values.CurrentDoorState === 2 }"
+  [ngClass]="{
+    'switch-on': [0, 2].includes(service.values.CurrentDoorState)
+      || service.values.On
+      || service.values.Active
+    }"
   (shortClick)="onClick()"
   tabindex="0"
 >
@@ -12,18 +16,20 @@
     ></div>
     <div class="accessory-label mt-auto">{{ service.customName || service.serviceName }}</div>
 
-    @if (service.values.CurrentDoorState < 2 ) {
-    <div
-      class="accessory-label"
-      [innerText]="(service.values.CurrentDoorState ? 'accessories.control.closed' : 'accessories.control.open') | translate"
-      [ngClass]="{ 'red-text': !service.values.CurrentDoorState, 'grey-text': service.values.CurrentDoorState }"
-    ></div>
-    } @else if (service.values.CurrentDoorState === 2) {
+    @if ('CurrentDoorState' in service.values) { @switch (service.values.CurrentDoorState) {@case (0) {
+    <div class="accessory-label red-text">{{ 'accessories.control.open' | translate }}</div>
+    } @case (1) {
+    <div class="accessory-label grey-text">{{ 'accessories.control.closed' | translate }}</div>
+    } @case (2) {
     <div class="accessory-label red-text">{{ 'accessories.control.opening' | translate }}...</div>
-    } @else if (service.values.CurrentDoorState === 3) {
+    } @case (3) {
     <div class="accessory-label red-text">{{ 'accessories.control.closing' | translate }}...</div>
-    } @else if (service.values.CurrentDoorState === 4) {
+    } @case (4) {
     <div class="accessory-label red-text">{{ 'accessories.control.stopped' | translate }}</div>
-    }
+    } } } @else { @if (service.values.On || service.values.Active) {
+    <div class="accessory-label red-text">{{ 'accessories.control.open' | translate }}</div>
+    } @else {
+    <div class="accessory-label grey-text">{{ 'accessories.control.closed' | translate }}</div>
+    } }
   </div>
 </div>
