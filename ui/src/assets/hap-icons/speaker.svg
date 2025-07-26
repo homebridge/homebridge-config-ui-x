@@ -10,12 +10,12 @@
     <title>speaker</title>
     <!-- Speaker path -->
     <path
-      stroke="#7F7F7F"
+      stroke="#7f7f7f"
       id="speaker"
       d="m2.63366,10.44981l0,11.04296l6.25803,0l8.3897,7.72829l0,-26.49955l-8.38553,7.7283l-6.26221,0z"
       fill-opacity="null"
       stroke-opacity="null"
-      stroke-width="2.0"
+      stroke-width="2"
       fill="none"
     />
 
@@ -26,7 +26,7 @@
       d="m21.86025,22.54724c1.7013,-1.70615 2.7538,-4.07114 2.75518,-6.67943c0.00138,-2.60829 -1.05806,-4.98158 -2.75796,-6.68786"
       fill-opacity="null"
       stroke-opacity="null"
-      stroke-width="2.0"
+      stroke-width="2"
       fill="none"
       class="wave"
     />
@@ -38,7 +38,7 @@
       d="m25.06092,26.02826c2.51718,-2.53001 4.07787,-6.03471 4.07506,-9.89195c0.00141,-3.86001 -1.55925,-7.3675 -4.08062,-9.8947"
       fill-opacity="null"
       stroke-opacity="null"
-      stroke-width="2.0"
+      stroke-width="2"
       fill="none"
       class="wave"
     />
