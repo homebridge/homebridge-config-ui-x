@@ -1,9 +1,7 @@
 import { NgClass, TitleCasePipe } from '@angular/common'
 import { Component, inject, Input, OnInit } from '@angular/core'
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
-import { TranslatePipe, TranslateService } from '@ngx-translate/core'
+import { TranslatePipe } from '@ngx-translate/core'
 
-import { InformationComponent } from '@/app/core/components/information/information.component'
 import { IoNamespace, WsService } from '@/app/core/ws.service'
 
 @Component({
@@ -17,8 +15,6 @@ import { IoNamespace, WsService } from '@/app/core/ws.service'
   ],
 })
 export class SystemInfoWidgetComponent implements OnInit {
-  private $modal = inject(NgbModal)
-  private $translate = inject(TranslateService)
   private $ws = inject(WsService)
   private io: IoNamespace
 
@@ -36,18 +32,6 @@ export class SystemInfoWidgetComponent implements OnInit {
     if (this.io.socket.connected) {
       this.getSystemInfo()
     }
-  }
-
-  public glibcVersionModal() {
-    const ref = this.$modal.open(InformationComponent, {
-      size: 'lg',
-      backdrop: 'static',
-    })
-    ref.componentInstance.title = this.$translate.instant('status.widget.info.glibc_title')
-    ref.componentInstance.message = this.$translate.instant('status.widget.info.glibc_message')
-    ref.componentInstance.ctaButtonLabel = this.$translate.instant('form.button_more_info')
-    ref.componentInstance.faIconClass = 'fab fa-fw fa-node-js primary-text'
-    ref.componentInstance.ctaButtonLink = 'https://github.com/homebridge/homebridge-config-ui-x/wiki/Troubleshooting/#error---update-node---your-version-of-linux-does-not-meet-the-glibc-version'
   }
 
   private getSystemInfo() {
