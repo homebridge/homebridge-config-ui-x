@@ -583,8 +583,6 @@
   "status.widget.info.docker": "Docker",
   "status.widget.info.docker_update_message": "עדכון מיכל Docker דורש משיכה ידנית של התמונה האחרונה והפעלה מחדש של המיכל. Homebridge לא מבצע זאת אוטומטית. עיין בתיעוד של תמונת Docker שלך להוראות עדכון.",
   "status.widget.info.docker_update_title": "עדכון מיכל Docker",
-  "status.widget.info.glibc_message": "הודעה זו מציינת שמערכת ההפעלה שלך אינה תומכת בגרסאות חדשות יותר של Node.js. כדי לפתור זאת ולהיות מסוגל להתקין גרסאות מעודכנות של Node.js בעתיד, תצטרך לעדכן את מערכת ההפעלה שלך לגרסה עדכנית יותר.",
-  "status.widget.info.glibc_title": "עדכון מערכת הפעלה",
   "status.widget.info.hostname": "שם מארח",
   "status.widget.info.ipv4": "IPv4",
   "status.widget.info.ipv6": "IPv6",

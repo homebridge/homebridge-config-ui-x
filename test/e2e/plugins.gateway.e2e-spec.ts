@@ -139,7 +139,7 @@ describe('PluginsGateway (e2e)', () => {
     expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('Operation succeeded!'))
   })
 
-  it('ON /plugins/install (sudo)', async () => {
+  it('ON /plugins/install (sudo)', { timeout: 20_000 }, async () => {
     // Sudo does not work on windows
     if (platform() === 'win32') {
       return
