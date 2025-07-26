@@ -4,6 +4,7 @@ import { TranslatePipe } from '@ngx-translate/core'
 import { interval, Subscription } from 'rxjs'
 
 import { IoNamespace, WsService } from '@/app/core/ws.service'
+import { Widget } from '@/app/modules/status/widgets/widgets.interfaces'
 
 @Component({
   templateUrl: './uptime-widget.component.html',
@@ -15,7 +16,7 @@ export class UptimeWidgetComponent implements OnInit, OnDestroy {
   private io: IoNamespace
   private intervalSubscription: Subscription
 
-  @Input() widget: any
+  @Input() widget: Widget
 
   public serverUptime: string
   public processUptime: string

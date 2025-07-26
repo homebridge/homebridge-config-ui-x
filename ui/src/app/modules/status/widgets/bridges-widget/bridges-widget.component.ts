@@ -8,6 +8,7 @@ import { firstValueFrom } from 'rxjs'
 import { ApiService } from '@/app/core/api.service'
 import { AuthService } from '@/app/core/auth/auth.service'
 import { IoNamespace, WsService } from '@/app/core/ws.service'
+import { Widget } from '@/app/modules/status/widgets/widgets.interfaces'
 
 @Component({
   templateUrl: './bridges-widget.component.html',
@@ -28,7 +29,7 @@ export class BridgesWidgetComponent implements OnInit, OnDestroy {
   private ioMain: IoNamespace
   private ioChild: IoNamespace
 
-  @Input() widget: any
+  @Input() widget: Widget
 
   public homebridgeStatus = {} as any
   public childBridges = []

@@ -8,7 +8,7 @@ import { satisfies } from 'semver'
 
 import { ApiService } from '@/app/core/api.service'
 import { Plugin } from '@/app/core/manage-plugins/manage-plugins.interfaces'
-import { PluginNodeCheck } from '@/app/modules/status/widgets/update-info-widget/update-info-widget.interfaces'
+import { PluginNodeCheck } from '@/app/modules/status/widgets/widgets.interfaces'
 
 @Component({
   templateUrl: './node-version-modal.component.html',

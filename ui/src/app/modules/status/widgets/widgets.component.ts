@@ -13,6 +13,7 @@ import { TerminalWidgetComponent } from '@/app/modules/status/widgets/terminal-w
 import { UpdateInfoWidgetComponent } from '@/app/modules/status/widgets/update-info-widget/update-info-widget.component'
 import { UptimeWidgetComponent } from '@/app/modules/status/widgets/uptime-widget/uptime-widget.component'
 import { WeatherWidgetComponent } from '@/app/modules/status/widgets/weather-widget/weather-widget.component'
+import { Widget } from '@/app/modules/status/widgets/widgets.interfaces'
 
 @Component({
   selector: 'app-widgets',
@@ -41,7 +42,7 @@ export class WidgetsComponent implements OnInit, OnDestroy {
     BridgesWidgetComponent,
   }
 
-  @Input() widget: any
+  @Input() widget: Widget
 
   public ngOnInit() {
     if (Object.prototype.hasOwnProperty.call(this.availableWidgets, this.widget.component)) {

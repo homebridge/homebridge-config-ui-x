@@ -2,6 +2,8 @@ import { DatePipe } from '@angular/common'
 import { Component, Input, OnDestroy, OnInit } from '@angular/core'
 import { interval, Subscription } from 'rxjs'
 
+import { Widget } from '@/app/modules/status/widgets/widgets.interfaces'
+
 @Component({
   templateUrl: './clock-widget.component.html',
   standalone: true,
@@ -11,7 +13,7 @@ export class ClockWidgetComponent implements OnInit, OnDestroy {
   private secondsCounter = interval(1000)
   private secondsCounterSubscription: Subscription
 
-  @Input() widget: any
+  @Input() widget: Widget
 
   public currentTime: Date = new Date()
 
