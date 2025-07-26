@@ -3,6 +3,7 @@ import { NgbActiveModal, NgbAlert } from '@ng-bootstrap/ng-bootstrap'
 import { TranslatePipe } from '@ngx-translate/core'
 import { minVersion, SemVer } from 'semver'
 
+import { Plugin } from '@/app/core/manage-plugins/manage-plugins.interfaces'
 import { SettingsService } from '@/app/core/settings.service'
 
 @Component({
@@ -14,7 +15,7 @@ export class PluginCompatibilityComponent implements OnInit {
   private $activeModal = inject(NgbActiveModal)
   private $settings = inject(SettingsService)
 
-  @Input() plugin: any
+  @Input() plugin: Plugin
   @Input() isValidNode: boolean
   @Input() isValidHb: boolean
   @Input() action: 'install' | 'update' | 'alternate'

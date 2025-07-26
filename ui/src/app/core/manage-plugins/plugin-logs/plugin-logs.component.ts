@@ -1,19 +1,20 @@
 import { HttpErrorResponse, HttpResponse } from '@angular/common/http'
 import { Component, ElementRef, HostListener, inject, Input, OnDestroy, OnInit, viewChild } from '@angular/core'
-import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap'
+import { NgbActiveModal, NgbModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { saveAs } from 'file-saver'
 import { ToastrService } from 'ngx-toastr'
-import { Subject } from 'rxjs'
+import { firstValueFrom, Subject } from 'rxjs'
 
 import { ApiService } from '@/app/core/api.service'
 import { ConfirmComponent } from '@/app/core/components/confirm/confirm.component'
 import { LogService } from '@/app/core/log.service'
+import { ChildBridge, Plugin } from '@/app/core/manage-plugins/manage-plugins.interfaces'
 
 @Component({
   templateUrl: './plugin-logs.component.html',
   standalone: true,
-  imports: [TranslatePipe],
+  imports: [TranslatePipe, NgbTooltip],
 })
 export class PluginLogsComponent implements OnInit, OnDestroy {
   private $activeModal = inject(NgbActiveModal)
@@ -25,9 +26,12 @@ export class PluginLogsComponent implements OnInit, OnDestroy {
   private resizeEvent = new Subject()
   private pluginAlias: string
 
-  @Input() plugin: any
+  @Input() plugin: Plugin
+  @Input() childBridges: ChildBridge[] = []
 
   readonly termTarget = viewChild<ElementRef>('pluginlogoutput')
+
+  public midAction = false
 
   @HostListener('window:resize', ['$event'])
   onWindowResize() {
@@ -38,7 +42,26 @@ export class PluginLogsComponent implements OnInit, OnDestroy {
     this.getPluginLog()
   }
 
+  public async restartChildBridges() {
+    this.midAction = true
+    try {
+      for (const bridge of this.childBridges) {
+        await firstValueFrom(this.$api.put(`/server/restart/${bridge.username}`, {}))
+      }
+      this.$toastr.success(
+        this.$translate.instant('plugins.manage.child_bridge_restart'),
+        this.$translate.instant('toast.title_success'),
+      )
+      this.midAction = false
+    } catch (error) {
+      console.error(error)
+      this.$toastr.error(this.$translate.instant('plugins.manage.child_bridge_restart_failed'), this.$translate.instant('toast.title_error'))
+      this.midAction = false
+    }
+  }
+
   public downloadLogFile() {
+    this.midAction = true
     const ref = this.$modal.open(ConfirmComponent, {
       size: 'lg',
       backdrop: 'static',
@@ -68,20 +91,21 @@ export class PluginLogsComponent implements OnInit, OnDestroy {
                 if (line.match(/36m\[.*?\]/)) {
                   includeNextLine = false
                 } else {
-                // eslint-disable-next-line no-control-regex
+                  // eslint-disable-next-line no-control-regex
                   finalOutput += `${line.replace(/\x1B\[(\d{1,3}(;\d{1,2})?)?[mGK]/g, '')}\r\n`
                   return
                 }
               }
 
               if (line.includes(`36m[${this.pluginAlias}]`)) {
-              // eslint-disable-next-line no-control-regex
+                // eslint-disable-next-line no-control-regex
                 finalOutput += `${line.replace(/\x1B\[(\d{1,3}(;\d{1,2})?)?[mGK]/g, '')}\r\n`
                 includeNextLine = true
               }
             })
 
             saveAs(new Blob([finalOutput], { type: 'text/plain;charset=utf-8' }), `${this.plugin.name}.log.txt`)
+            this.midAction = false
           },
           error: async (err: HttpErrorResponse) => {
             let message: string
@@ -91,10 +115,13 @@ export class PluginLogsComponent implements OnInit, OnDestroy {
               console.error(error)
             }
             this.$toastr.error(message || this.$translate.instant('logs.download.error'), this.$translate.instant('toast.title_error'))
+            this.midAction = false
           },
         })
       })
-      .catch(() => { /* do nothing */ })
+      .catch(() => {
+        this.midAction = false
+      })
   }
 
   public ngOnDestroy() {

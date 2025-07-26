@@ -10,6 +10,7 @@ import { debounceTime } from 'rxjs/operators'
 import { rcompare } from 'semver'
 
 import { ApiService } from '@/app/core/api.service'
+import { Plugin } from '@/app/core/manage-plugins/manage-plugins.interfaces'
 import { SettingsService } from '@/app/core/settings.service'
 
 @Component({
@@ -28,7 +29,7 @@ export class ManageVersionComponent implements OnInit {
   private $toastr = inject(ToastrService)
   private $translate = inject(TranslateService)
 
-  @Input() plugin: any
+  @Input() plugin: Plugin
 
   public isUpdateHidden: boolean = false
   public hideUpdatesFormControl = new FormControl(false)

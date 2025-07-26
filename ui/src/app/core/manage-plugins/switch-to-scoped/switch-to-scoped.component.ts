@@ -10,6 +10,7 @@ import { saveAs } from 'file-saver'
 import { ToastrService } from 'ngx-toastr'
 
 import { ApiService } from '@/app/core/api.service'
+import { Plugin } from '@/app/core/manage-plugins/manage-plugins.interfaces'
 import { SettingsService } from '@/app/core/settings.service'
 import { IoNamespace, WsService } from '@/app/core/ws.service'
 
@@ -37,7 +38,7 @@ export class SwitchToScopedComponent implements OnInit, OnDestroy {
   private webLinksAddon = new WebLinksAddon()
   private errorLog = ''
 
-  @Input() plugin: any
+  @Input() plugin: Plugin
 
   public installing = false
   public installed = false

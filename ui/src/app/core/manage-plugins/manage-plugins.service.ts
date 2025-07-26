@@ -8,6 +8,7 @@ import { lt, minVersion } from 'semver'
 import { ApiService } from '@/app/core/api.service'
 import { CustomPluginsService } from '@/app/core/manage-plugins/custom-plugins/custom-plugins.service'
 import { ManagePluginComponent } from '@/app/core/manage-plugins/manage-plugin/manage-plugin.component'
+import { Plugin } from '@/app/core/manage-plugins/manage-plugins.interfaces'
 import { ManageVersionComponent } from '@/app/core/manage-plugins/manage-version/manage-version.component'
 import { ManualConfigComponent } from '@/app/core/manage-plugins/manual-config/manual-config.component'
 import { PluginBridgeComponent } from '@/app/core/manage-plugins/plugin-bridge/plugin-bridge.component'
@@ -29,7 +30,7 @@ export class ManagePluginsService {
   private $toastr = inject(ToastrService)
   private $translate = inject(TranslateService)
 
-  installPlugin(plugin: any, targetVersion: string) {
+  installPlugin(plugin: Plugin, targetVersion: string) {
     const ref = this.$modal.open(ManagePluginComponent, {
       size: 'lg',
       backdrop: 'static',
@@ -40,7 +41,7 @@ export class ManagePluginsService {
     ref.componentInstance.targetVersion = targetVersion
   }
 
-  uninstallPlugin(plugin: any, childBridges: any[]) {
+  uninstallPlugin(plugin: Plugin, childBridges: any[]) {
     const ref = this.$modal.open(UninstallPluginComponent, {
       size: 'lg',
       backdrop: 'static',
@@ -50,7 +51,7 @@ export class ManagePluginsService {
     ref.componentInstance.childBridges = childBridges
   }
 
-  async checkAndUpdatePlugin(plugin: any, targetVersion: string) {
+  async checkAndUpdatePlugin(plugin: Plugin, targetVersion: string) {
     if (!await this.checkHbAndNodeVersion(plugin, 'update')) {
       return
     }
@@ -58,7 +59,7 @@ export class ManagePluginsService {
     await this.updatePlugin(plugin, targetVersion)
   }
 
-  async updatePlugin(plugin: any, targetVersion: string) {
+  async updatePlugin(plugin: Plugin, targetVersion: string) {
     const ref = this.$modal.open(ManagePluginComponent, {
       size: 'lg',
       backdrop: 'static',
@@ -94,7 +95,7 @@ export class ManagePluginsService {
    *
    * @param plugin
    */
-  async installAlternateVersion(plugin: any) {
+  async installAlternateVersion(plugin: Plugin) {
     const ref = this.$modal.open(ManageVersionComponent, {
       size: 'lg',
       backdrop: 'static',
@@ -127,7 +128,7 @@ export class ManagePluginsService {
    * @param plugin
    * @param justInstalled
    */
-  async bridgeSettings(plugin: any, justInstalled = false) {
+  async bridgeSettings(plugin: Plugin, justInstalled = false) {
     // Load the plugins schema
     let schema: any
     if (plugin.settingsSchema) {
@@ -155,7 +156,7 @@ export class ManagePluginsService {
    *
    * @param plugin
    */
-  async settings(plugin: any) {
+  async settings(plugin: Plugin) {
     // Load the plugins schema
     let schema: any
     if (plugin.settingsSchema) {
@@ -195,7 +196,7 @@ export class ManagePluginsService {
   /**
    * Open the json config modal
    */
-  async jsonEditor(plugin: any) {
+  async jsonEditor(plugin: Plugin) {
     // Load the plugins schema
     let schema: any
     if (plugin.settingsSchema) {
@@ -217,7 +218,7 @@ export class ManagePluginsService {
     return ref.result.catch(error => console.error(error))
   }
 
-  async checkHbAndNodeVersion(plugin: any, action: string): Promise<boolean> {
+  async checkHbAndNodeVersion(plugin: Plugin, action: string): Promise<boolean> {
     let isValidNode = true
     let isValidHb = true
 
@@ -274,7 +275,7 @@ export class ManagePluginsService {
     ref.componentInstance.childBridges = childBridges
   }
 
-  async switchToScoped(plugin: any) {
+  async switchToScoped(plugin: Plugin) {
     const ref = this.$modal.open(SwitchToScopedComponent, {
       size: 'lg',
       backdrop: 'static',

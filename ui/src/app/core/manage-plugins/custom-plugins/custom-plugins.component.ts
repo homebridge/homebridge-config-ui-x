@@ -12,6 +12,7 @@ import { ApiService } from '@/app/core/api.service'
 import { RestartChildBridgesComponent } from '@/app/core/components/restart-child-bridges/restart-child-bridges.component'
 import { RestartHomebridgeComponent } from '@/app/core/components/restart-homebridge/restart-homebridge.component'
 import { SchemaFormComponent } from '@/app/core/components/schema-form/schema-form.component'
+import { Plugin } from '@/app/core/manage-plugins/manage-plugins.interfaces'
 import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service'
 import { SettingsService } from '@/app/core/settings.service'
 import { IoNamespace, WsService } from '@/app/core/ws.service'
@@ -40,7 +41,7 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
 
   readonly customPluginUiElementTarget = viewChild<ElementRef>('custompluginui')
 
-  @Input() plugin: any
+  @Input() plugin: Plugin
   @Input() schema: PluginSchema
   @Input() pluginConfig: Record<string, any>[]
 
