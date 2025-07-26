@@ -1,7 +1,8 @@
 <div
   class="accessory-box"
   [ngClass]="{
-    'switch-on': [0, 2].includes(service.values.CurrentDoorState)
+    'switch-on': ('ObstructionDetected' in service.values && service.values.ObstructionDetected)
+      || [0, 2].includes(service.values.CurrentDoorState)
       || service.values.On
       || service.values.Active
     }"
@@ -16,7 +17,9 @@
     ></div>
     <div class="accessory-label mt-auto">{{ service.customName || service.serviceName }}</div>
 
-    @if ('CurrentDoorState' in service.values) { @switch (service.values.CurrentDoorState) {@case (0) {
+    @if ('ObstructionDetected' in service.values && service.values.ObstructionDetected) {
+    <div class="accessory-label red-text">{{ 'accessories.control.obstructed' | translate }}</div>
+    } @else if ('CurrentDoorState' in service.values) { @switch (service.values.CurrentDoorState) {@case (0) {
     <div class="accessory-label red-text">{{ 'accessories.control.open' | translate }}</div>
     } @case (1) {
     <div class="accessory-label grey-text">{{ 'accessories.control.closed' | translate }}</div>
