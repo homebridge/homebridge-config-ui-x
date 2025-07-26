@@ -26,6 +26,7 @@ import { SchemaFormComponent } from '@/app/core/components/schema-form/schema-fo
 import { PluginsMarkdownDirective } from '@/app/core/directives/plugins.markdown.directive'
 import { HomebridgeDeconzComponent } from '@/app/core/manage-plugins/custom-plugins/homebridge-deconz/homebridge-deconz.component'
 import { HomebridgeHueComponent } from '@/app/core/manage-plugins/custom-plugins/homebridge-hue/homebridge-hue.component'
+import { Plugin } from '@/app/core/manage-plugins/manage-plugins.interfaces'
 import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service'
 import { InterpolateMdPipe } from '@/app/core/pipes/interpolate-md.pipe'
 import { SettingsService } from '@/app/core/settings.service'
@@ -61,7 +62,7 @@ export class PluginConfigComponent implements OnInit {
   private $toastr = inject(ToastrService)
   private $translate = inject(TranslateService)
 
-  @Input() plugin: any
+  @Input() plugin: Plugin
   @Input() schema: PluginSchema
 
   public pluginAlias: string

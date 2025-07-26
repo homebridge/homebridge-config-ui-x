@@ -4,6 +4,7 @@ import { firstValueFrom } from 'rxjs'
 
 import { ApiService } from '@/app/core/api.service'
 import { CustomPluginsComponent } from '@/app/core/manage-plugins/custom-plugins/custom-plugins.component'
+import { Plugin } from '@/app/core/manage-plugins/manage-plugins.interfaces'
 
 @Injectable({
   providedIn: 'root',
@@ -14,7 +15,7 @@ export class CustomPluginsService {
 
   public plugins = {}
 
-  async openSettings(plugin: any, schema: any) {
+  async openSettings(plugin: Plugin, schema: any) {
     const pluginConfig = await this.loadPluginConfig(plugin.name)
     const ref = this.$modal.open(this.plugins[plugin.name], {
       size: 'lg',
@@ -27,7 +28,7 @@ export class CustomPluginsService {
     return ref.result.catch(() => { /* do nothing */ })
   }
 
-  async openCustomSettingsUi(plugin: any, schema: any) {
+  async openCustomSettingsUi(plugin: Plugin, schema: any) {
     const pluginConfig = await this.loadPluginConfig(plugin.name)
     const ref = this.$modal.open(CustomPluginsComponent, {
       size: 'lg',

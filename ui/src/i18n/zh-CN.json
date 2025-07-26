@@ -139,7 +139,7 @@
   "child_bridge.confirm_delete_2": "You will need to remove the paired bridges manually from the Home app. Any accessories will be removed and re-created on the main Homebridge bridge.",
   "child_bridge.must_configure_plugin": "在进行子网桥配置前，您需要先完成插件的配置。",
   "child_bridge.reset_accessories": "Reset Accessories",
-  "child_bridge.restart": "Restart Child Bridges",
+  "child_bridge.restart": "Restart Child Bridge",
   "child_bridge.restart_homebridge": "重启 Homebridge 以完成子网桥设置。",
   "child_bridge.restart_plural": "Restart Child Bridges",
   "child_bridge.return_to_pair": "在 Homebridge 重启后返回到该页面查看配对二维码。",

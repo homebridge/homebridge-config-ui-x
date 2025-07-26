@@ -11,6 +11,7 @@ import { ApiService } from '@/app/core/api.service'
 import { AuthService } from '@/app/core/auth/auth.service'
 import { RestartHomebridgeComponent } from '@/app/core/components/restart-homebridge/restart-homebridge.component'
 import { SpinnerComponent } from '@/app/core/components/spinner/spinner.component'
+import { Plugin } from '@/app/core/manage-plugins/manage-plugins.interfaces'
 import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service'
 import { SettingsService } from '@/app/core/settings.service'
 import { IoNamespace, WsService } from '@/app/core/ws.service'
@@ -143,7 +144,7 @@ export class PluginsComponent implements OnInit, OnDestroy {
             }
             if (x.newHbScope) {
               const y = x.newHbScope.to
-              const yExists = data.some((plugin: any) => plugin.name === y)
+              const yExists = data.some((plugin: Plugin) => plugin.name === y)
               if (x.installedVersion || !yExists) {
                 hiddenPlugins.add(y)
                 acc.push(x)
@@ -226,7 +227,7 @@ export class PluginsComponent implements OnInit, OnDestroy {
     this.io.end()
   }
 
-  public getPluginChildBridges(plugin: any) {
+  public getPluginChildBridges(plugin: Plugin) {
     return this.childBridges.filter(x => x.plugin === plugin.name)
   }
 
@@ -295,7 +296,7 @@ export class PluginsComponent implements OnInit, OnDestroy {
       // Also get the current configuration for each plugin
       await Promise.all(this.installedPlugins
         .filter(plugin => plugin.installedVersion)
-        .map(async (plugin: any) => {
+        .map(async (plugin: Plugin) => {
           try {
             // Adds some extra properties to the plugin object for the plugin card
             const configBlocks = await firstValueFrom(this.$api.get(`/config-editor/plugin/${encodeURIComponent(plugin.name)}`))
