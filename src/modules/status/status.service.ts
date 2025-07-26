@@ -459,15 +459,13 @@ export class StatusService {
     try {
       const versionList = (await firstValueFrom(this.httpService.get('https://nodejs.org/dist/index.json'))).data
 
-      // Get the newest v18 and v20 in the list
-      const latest18 = versionList.filter((x: { version: string }) => x.version.startsWith('v18'))[0]
+      // Get the newest node v22 and v24
       const latest22 = versionList.filter((x: { version: string }) => x.version.startsWith('v22'))[0]
       const latest24 = versionList.filter((x: { version: string }) => x.version.startsWith('v24'))[0]
 
       let updateAvailable = false
       let latestVersion = process.version
       let showNodeUnsupportedWarning = false
-      let showGlibcUnsupportedWarning = false
 
       /**
        * NodeJS Version - Minimum GLIBC Version
@@ -480,40 +478,6 @@ export class StatusService {
 
       // Behaviour depends on the installed version of node
       switch (process.version.split('.')[0]) {
-        case 'v18': {
-          // Currently using v18, but v22 is available
-          // If the user is running linux, then check their glibc version
-          //   If they are running glibc 2.31 or higher, then show the option to update to v22
-          //   Otherwise we would still want to see if there is a minor/patch update available for v18
-          // Otherwise, already show the option for updating to node 22
-          if (platform() === 'linux') {
-            const glibcVersion = this.getGlibcVersion()
-            if (glibcVersion) {
-              if (Number.parseFloat(glibcVersion) >= 2.31) {
-                // Glibc version is high enough to support v22
-                updateAvailable = true
-                latestVersion = latest22.version
-              } else {
-                // Glibc version is too low to support v22
-                // Check if there is a new minor/patch version available
-                if (gt(latest18.version, process.version)) {
-                  updateAvailable = true
-                  latestVersion = latest18.version
-                }
-
-                // Show the user a warning about the glibc version for upcoming end-of-life Node 18
-                if (Number.parseFloat(glibcVersion) < 2.31) {
-                  showGlibcUnsupportedWarning = true
-                }
-              }
-            }
-          } else {
-            // Not running linux, so show the option for updating to node 22
-            updateAvailable = true
-            latestVersion = latest22.version
-          }
-          break
-        }
         case 'v20': {
           // Currently using v20
           // Show the option for updating to node 22
@@ -559,7 +523,6 @@ export class StatusService {
         latestVersion,
         updateAvailable,
         showNodeUnsupportedWarning,
-        showGlibcUnsupportedWarning,
         installPath: dirname(process.execPath),
         npmVersion,
       }
@@ -572,7 +535,6 @@ export class StatusService {
         latestVersion: process.version,
         updateAvailable: false,
         showNodeUnsupportedWarning: false,
-        showGlibcUnsupportedWarning: false,
       }
       this.statusCache.set('nodeJsVersion', versionInformation, 3600)
       return versionInformation

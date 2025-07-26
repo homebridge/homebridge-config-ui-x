@@ -16,6 +16,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix json schema icons from font awesome update
 - disable plugin notes now based on keep orphans setting
 - text clarification in users support modal
+- remove glibc checks as node 18 is now unsupported
 
 ### Other Changes
 
