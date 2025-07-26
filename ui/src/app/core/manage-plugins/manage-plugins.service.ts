@@ -8,7 +8,7 @@ import { lt, minVersion } from 'semver'
 import { ApiService } from '@/app/core/api.service'
 import { CustomPluginsService } from '@/app/core/manage-plugins/custom-plugins/custom-plugins.service'
 import { ManagePluginComponent } from '@/app/core/manage-plugins/manage-plugin/manage-plugin.component'
-import { Plugin } from '@/app/core/manage-plugins/manage-plugins.interfaces'
+import { ChildBridge, Plugin } from '@/app/core/manage-plugins/manage-plugins.interfaces'
 import { ManageVersionComponent } from '@/app/core/manage-plugins/manage-version/manage-version.component'
 import { ManualConfigComponent } from '@/app/core/manage-plugins/manual-config/manual-config.component'
 import { PluginBridgeComponent } from '@/app/core/manage-plugins/plugin-bridge/plugin-bridge.component'
@@ -41,7 +41,7 @@ export class ManagePluginsService {
     ref.componentInstance.targetVersion = targetVersion
   }
 
-  uninstallPlugin(plugin: Plugin, childBridges: any[]) {
+  uninstallPlugin(plugin: Plugin, childBridges: ChildBridge[]) {
     const ref = this.$modal.open(UninstallPluginComponent, {
       size: 'lg',
       backdrop: 'static',
@@ -73,7 +73,7 @@ export class ManagePluginsService {
     ref.componentInstance.isDisabled = plugin.disabled
   }
 
-  async upgradeHomebridge(homebridgePkg: any, targetVersion: string) {
+  async upgradeHomebridge(homebridgePkg: Plugin, targetVersion: string) {
     if (!await this.checkHbAndNodeVersion(homebridgePkg, 'update')) {
       return
     }
@@ -266,7 +266,7 @@ export class ManagePluginsService {
   /**
    * Open the reset child bridges modal
    */
-  async resetChildBridges(childBridges: any[]) {
+  async resetChildBridges(childBridges: ChildBridge[]) {
     const ref = this.$modal.open(ResetAccessoriesComponent, {
       size: 'lg',
       backdrop: 'static',

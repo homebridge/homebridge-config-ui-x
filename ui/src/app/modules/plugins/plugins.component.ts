@@ -51,7 +51,7 @@ export class PluginsComponent implements OnInit, OnDestroy {
   public mainError = false
   public loading = true
   public tab: 'main' | 'stats' = 'main'
-  public installedPlugins: any = []
+  public installedPlugins: Plugin[] = []
   public childBridges = []
   public showSearchBar = false
   public showExitButton = false
@@ -76,7 +76,7 @@ export class PluginsComponent implements OnInit, OnDestroy {
       // Get any query parameters
       const { action: queryAction, plugin: queryPlugin } = this.$router.parseUrl(this.$router.url).queryParams
       if (queryAction) {
-        const plugin = this.installedPlugins.find(x => x.name === queryPlugin)
+        const plugin: Plugin = this.installedPlugins.find(x => x.name === queryPlugin)
         switch (queryAction) {
           case 'just-installed': {
             if (plugin) {
@@ -138,7 +138,7 @@ export class PluginsComponent implements OnInit, OnDestroy {
         // If the user has the unscoped version installed, but not the scoped version, then hide the scoped version
         const hiddenPlugins = new Set<string>()
         this.installedPlugins = data
-          .reduce((acc: any, x: any) => {
+          .reduce((acc: any, x: Plugin) => {
             if (x.name === 'homebridge-config-ui-x' || hiddenPlugins.has(x.name)) {
               return acc
             }
@@ -240,7 +240,7 @@ export class PluginsComponent implements OnInit, OnDestroy {
 
     try {
       const installedPlugins = await firstValueFrom(this.$api.get('/plugins'))
-      this.installedPlugins = installedPlugins.filter((x: any) => x.name !== 'homebridge-config-ui-x')
+      this.installedPlugins = installedPlugins.filter((x: Plugin) => x.name !== 'homebridge-config-ui-x')
       await this.appendMetaInfo()
 
       // The backend used to sort this only by plugins with updates first

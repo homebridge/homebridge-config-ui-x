@@ -1,4 +1,4 @@
-import type { PluginConfigBlock, PluginSchema } from '@/app/core/manage-plugins/manage-plugins.interfaces'
+import type { ChildBridge, PluginConfigBlock, PluginSchema } from '@/app/core/manage-plugins/manage-plugins.interfaces'
 
 import { NgClass } from '@angular/common'
 import { Component, inject, Input, OnInit } from '@angular/core'
@@ -71,7 +71,7 @@ export class PluginConfigComponent implements OnInit {
   public form: any = {}
   public show = ''
   public saveInProgress: boolean
-  public childBridges: any[] = []
+  public childBridges: ChildBridge[] = []
   public isFirstSave = false
   public formBlocksValid: { [key: number]: boolean } = {}
   public formIsValid = true
@@ -233,7 +233,7 @@ export class PluginConfigComponent implements OnInit {
 
   private async getChildBridges(): Promise<void> {
     try {
-      const data: any[] = await firstValueFrom(this.$api.get('/status/homebridge/child-bridges'))
+      const data: ChildBridge[] = await firstValueFrom(this.$api.get('/status/homebridge/child-bridges'))
       data.forEach((bridge) => {
         if (this.plugin.name === bridge.plugin) {
           this.childBridges.push(bridge)

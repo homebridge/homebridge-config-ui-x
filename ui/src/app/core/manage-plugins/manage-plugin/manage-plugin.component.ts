@@ -22,6 +22,7 @@ import { firstValueFrom } from 'rxjs'
 import { ApiService } from '@/app/core/api.service'
 import { RestartHomebridgeComponent } from '@/app/core/components/restart-homebridge/restart-homebridge.component'
 import { PluginsMarkdownDirective } from '@/app/core/directives/plugins.markdown.directive'
+import { ChildBridge } from '@/app/core/manage-plugins/manage-plugins.interfaces'
 import { PluginLogsComponent } from '@/app/core/manage-plugins/plugin-logs/plugin-logs.component'
 import { SettingsService } from '@/app/core/settings.service'
 import { IoNamespace, WsService } from '@/app/core/ws.service'
@@ -76,7 +77,7 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
   public actionFailed = false
   public justUpdatedPlugin = false
   public updateToBeta = false
-  public childBridges: any[] = []
+  public childBridges: ChildBridge[] = []
   public presentTenseVerb: string
   public pastTenseVerb: string
   public onlineUpdateOk: boolean
@@ -380,7 +381,7 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
   }
 
   private async getChildBridges(): Promise<void> {
-    const data: any[] = await firstValueFrom(this.$api.get('/status/homebridge/child-bridges'))
+    const data: ChildBridge[] = await firstValueFrom(this.$api.get('/status/homebridge/child-bridges'))
     data.forEach((bridge) => {
       if (this.pluginName === bridge.plugin) {
         this.childBridges.push(bridge)
