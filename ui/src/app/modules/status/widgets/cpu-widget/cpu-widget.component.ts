@@ -8,6 +8,7 @@ import { interval, Subscription } from 'rxjs'
 import { ConvertTempPipe } from '@/app/core/pipes/convert-temp.pipe'
 import { SettingsService } from '@/app/core/settings.service'
 import { IoNamespace, WsService } from '@/app/core/ws.service'
+import { Widget } from '@/app/modules/status/widgets/widgets.interfaces'
 
 @Component({
   templateUrl: './cpu-widget.component.html',
@@ -31,7 +32,7 @@ export class CpuWidgetComponent implements OnInit, OnDestroy {
   readonly chart = viewChild(BaseChartDirective)
   readonly widgetBackground = viewChild<ElementRef>('widgetbackground')
 
-  @Input() public widget: any
+  @Input() public widget: Widget
 
   public temperatureUnits = this.$settings.env.temperatureUnits
   public cpu = {} as any
@@ -102,8 +103,8 @@ export class CpuWidgetComponent implements OnInit, OnDestroy {
     if (!this.widget.historyItems) {
       this.widget.historyItems = 60
     }
-    this.refreshInterval = Math.min(60, Math.max(1, Number.parseInt(this.widget.refreshInterval, 10)))
-    this.historyItems = Math.min(60, Math.max(1, Number.parseInt(this.widget.historyItems, 10)))
+    this.refreshInterval = Math.min(60, Math.max(1, this.widget.refreshInterval))
+    this.historyItems = Math.min(60, Math.max(1, this.widget.historyItems))
 
     this.intervalSubscription = interval(this.refreshInterval * 1000).subscribe(() => {
       if (this.io.socket.connected) {

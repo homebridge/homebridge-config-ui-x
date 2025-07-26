@@ -8,6 +8,7 @@ import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
 import { AccessoriesService } from '@/app/core/accessories/accessories.service'
 import { AccessoryTileComponent } from '@/app/core/accessories/accessory-tile/accessory-tile.component'
 import { MobileDetectService } from '@/app/core/mobile-detect.service'
+import { Widget } from '@/app/modules/status/widgets/widgets.interfaces'
 
 @Component({
   templateUrl: './accessories-widget.component.html',
@@ -27,7 +28,7 @@ export class AccessoriesWidgetComponent implements OnInit, OnDestroy {
   private layoutSubscription: Subscription
   private orderSubscription: Subscription
 
-  @Input() widget: any
+  @Input() widget: Widget
 
   public isMobile: any = false
   public dashboardAccessories: ServiceTypeX[] = []

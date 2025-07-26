@@ -15,7 +15,7 @@ export interface NodeJsInfo {
 }
 
 export interface ServerInfo {
-  glibcVersion?: string
+  homebridgeCustomPluginPath?: string
   homebridgeConfigJsonPath: string
   homebridgeInsecureMode: boolean
   homebridgePluginPath: string
@@ -34,6 +34,8 @@ export interface ServerInfo {
   }
   nodeVersion: string
   os: {
+    hostname: string
+    arch: string
     platform: string
     distro: string
     release: string
@@ -54,4 +56,30 @@ export interface DockerDetails {
   latestVersion: string | null
   latestReleaseBody: string
   updateAvailable: boolean
+}
+
+export interface Widget {
+  $configureEvent: any
+  $resizeEvent: any
+  $saveWidgetsEvent: any
+  cols: number
+  component: string
+  draggable: boolean
+  hideOnMobile: boolean
+  mobileOrder: number
+  rows: number
+  x: number
+  y: number
+  accessoryOrder?: string[] // accessory widget
+  fontSize?: number // homebridge logs widget, terminal widget
+  fontWeight?: string // homebridge logs widget, terminal widget
+  theme?: 'light' | 'dark' // homebridge logs widget, terminal widget
+  timeFormat?: string // clock widget
+  dateFormat?: string // clock widget
+  refreshInterval?: number // cpu widget, memory widget, disk widget, network widget
+  historyItems?: number // cpu widget, memory widget, disk widget, network widget
+  networkInterface?: string // network widget
+  location?: {
+    id: string // weather widget
+  }
 }

@@ -6,6 +6,7 @@ import { BaseChartDirective } from 'ng2-charts'
 import { interval, Subscription } from 'rxjs'
 
 import { IoNamespace, WsService } from '@/app/core/ws.service'
+import { Widget } from '@/app/modules/status/widgets/widgets.interfaces'
 
 @Component({
   templateUrl: './memory-widget.component.html',
@@ -23,7 +24,7 @@ export class MemoryWidgetComponent implements OnInit, OnDestroy {
   private io: IoNamespace
   private intervalSubscription: Subscription
 
-  @Input() public widget: any
+  @Input() public widget: Widget
 
   readonly chart = viewChild(BaseChartDirective)
   readonly widgetBackground = viewChild<ElementRef>('widgetbackground')
@@ -97,8 +98,8 @@ export class MemoryWidgetComponent implements OnInit, OnDestroy {
     if (!this.widget.historyItems) {
       this.widget.historyItems = 60
     }
-    this.refreshInterval = Math.min(60, Math.max(1, Number.parseInt(this.widget.refreshInterval, 10)))
-    this.historyItems = Math.min(60, Math.max(1, Number.parseInt(this.widget.historyItems, 10)))
+    this.refreshInterval = Math.min(60, Math.max(1, this.widget.refreshInterval))
+    this.historyItems = Math.min(60, Math.max(1, this.widget.historyItems))
 
     this.intervalSubscription = interval(this.refreshInterval * 1000).subscribe(() => {
       if (this.io.socket.connected) {

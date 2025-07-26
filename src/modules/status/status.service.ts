@@ -433,7 +433,6 @@ export class StatusService {
       homebridgeRunningInPackageMode: this.configService.runningInPackageMode,
       nodeVersion: process.version,
       os: await this.getOsInfo(),
-      glibcVersion: this.getGlibcVersion(),
       time: time(),
       network: await this.getDefaultInterface() || {},
     }

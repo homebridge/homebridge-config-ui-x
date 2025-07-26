@@ -6,6 +6,7 @@ import { Subject } from 'rxjs'
 
 import { LogService } from '@/app/core/log.service'
 import { SettingsService } from '@/app/core/settings.service'
+import { Widget } from '@/app/modules/status/widgets/widgets.interfaces'
 
 @Component({
   templateUrl: './homebridge-logs-widget.component.html',
@@ -26,7 +27,7 @@ export class HomebridgeLogsWidgetComponent implements OnInit, OnDestroy {
   readonly titleElement = viewChild<ElementRef>('terminaltitle')
   readonly termTarget = viewChild<ElementRef>('logoutput')
 
-  @Input() widget: any
+  @Input() widget: Widget
   @Input() resizeEvent: Subject<any>
   @Input() configureEvent: Subject<any>
 
@@ -35,7 +36,7 @@ export class HomebridgeLogsWidgetComponent implements OnInit, OnDestroy {
 
   public ngOnInit() {
     this.fontSize = this.widget.fontSize || 15
-    this.fontWeight = this.widget.fontWeight || 400
+    this.fontWeight = Number.parseInt(this.widget.fontWeight || '400')
     if (this.$settings.actualLightingMode === 'dark') {
       this.widget.theme = 'dark'
     }
@@ -76,8 +77,8 @@ export class HomebridgeLogsWidgetComponent implements OnInit, OnDestroy {
           changed = true
         }
         if (this.widget.fontWeight !== this.fontWeight) {
-          this.fontWeight = this.widget.fontWeight
-          this.$log.term.options.fontWeight = this.widget.fontWeight
+          this.fontWeight = Number.parseInt(this.widget.fontWeight, 10)
+          this.$log.term.options.fontWeight = Number.parseInt(this.widget.fontWeight, 10)
           changed = true
         }
         if (this.widget.theme !== this.theme) {

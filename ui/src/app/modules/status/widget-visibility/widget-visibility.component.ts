@@ -4,6 +4,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 
 import { SettingsService } from '@/app/core/settings.service'
+import { Widget } from '@/app/modules/status/widgets/widgets.interfaces'
 
 @Component({
   templateUrl: './widget-visibility.component.html',
@@ -145,7 +146,7 @@ export class WidgetVisibilityComponent implements OnInit {
       }))
   }
 
-  public selectWidget(widget: any) {
+  public selectWidget(widget: Widget) {
     this.$activeModal.close(widget)
   }
 
