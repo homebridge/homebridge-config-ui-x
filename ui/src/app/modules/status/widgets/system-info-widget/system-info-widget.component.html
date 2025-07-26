@@ -21,7 +21,9 @@
         </tr>
         <tr>
           <th scope="row" class="text-nowrap">{{ 'status.widget.info.arch' | translate }}</th>
-          <td class="grey-text">{{ serverInfo.os.arch }}</td>
+          <td class="grey-text">
+            {{ serverInfo.os.arch }} ({{ arch64bitList.includes(serverInfo.os.arch) ? '64-bit' : '32-bit' }})
+          </td>
         </tr>
         } @if (serverInfo.network.ip4) {
         <tr>

@@ -23,6 +23,20 @@ export class SystemInfoWidgetComponent implements OnInit {
 
   public serverInfo: ServerInfo = { network: {}, os: {}, time: {} } as ServerInfo
   public nodejsInfo: NodeJsInfo = {} as NodeJsInfo
+  public arch64bitList = [
+    'x64',
+    'amd64',
+    'arm64',
+    'aarch64',
+    'ppc64',
+    'ppc64le',
+    's390x',
+    'riscv64',
+    'loongarch64',
+    'mips64el',
+    'mips64',
+    'sparc64',
+  ]
 
   public ngOnInit() {
     this.io = this.$ws.getExistingNamespace('status')
