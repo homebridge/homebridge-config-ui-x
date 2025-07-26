@@ -1,4 +1,12 @@
-<div class="accessory-box" [ngClass]="{ 'switch-on': service.values.AirQuality > 3 }">
+<div
+  class="accessory-box"
+  [ngClass]="{
+    'switch-on': service.values.AirQuality === 5,
+    'fill-red': service.values.AirQuality === 5,
+    'fill-orange': [3, 4].includes(service.values.AirQuality),
+    'fill-green': [1, 2].includes(service.values.AirQuality),
+  }"
+>
   <div class="d-flex flex-column h-100">
     <div
       [inlineSVG]="'/assets/hap-icons/air-quality-sensor.svg'"
@@ -8,7 +16,10 @@
     <div class="accessory-label mt-auto">{{ service.customName || service.serviceName }}</div>
     <div
       class="accessory-label"
-      [ngClass]="{ 'grey-text': service.values.AirQuality < 4, 'red-text': service.values.AirQuality > 3 }"
+      [ngClass]="{
+        'grey-text': service.values.AirQuality < 5,
+        'red-text': service.values.AirQuality === 5,
+      }"
     >
       {{ labels[service.values.AirQuality || 0] }}
     </div>

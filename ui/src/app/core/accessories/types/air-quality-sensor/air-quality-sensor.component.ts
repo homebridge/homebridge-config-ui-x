@@ -7,6 +7,7 @@ import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
 @Component({
   selector: 'app-air-quality-sensor',
   templateUrl: './air-quality-sensor.component.html',
+  styleUrls: ['./air-quality-sensor.component.scss'],
   standalone: true,
   imports: [NgClass, InlineSVGDirective],
 })
