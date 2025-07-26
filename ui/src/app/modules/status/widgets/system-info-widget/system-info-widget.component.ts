@@ -3,6 +3,7 @@ import { Component, inject, Input, OnInit } from '@angular/core'
 import { TranslatePipe } from '@ngx-translate/core'
 
 import { IoNamespace, WsService } from '@/app/core/ws.service'
+import { NodeJsInfo, ServerInfo, Widget } from '@/app/modules/status/widgets/widgets.interfaces'
 
 @Component({
   templateUrl: './system-info-widget.component.html',
@@ -18,10 +19,10 @@ export class SystemInfoWidgetComponent implements OnInit {
   private $ws = inject(WsService)
   private io: IoNamespace
 
-  @Input() widget: any
+  @Input() widget: Widget
 
-  public serverInfo: any
-  public nodejsInfo = {} as any
+  public serverInfo: ServerInfo = { network: {}, os: {}, time: {} } as ServerInfo
+  public nodejsInfo: NodeJsInfo = {} as NodeJsInfo
 
   public ngOnInit() {
     this.io = this.$ws.getExistingNamespace('status')

@@ -7,6 +7,7 @@ import { Subject } from 'rxjs'
 import { SettingsService } from '@/app/core/settings.service'
 import { TerminalNavigationGuardService } from '@/app/core/terminal-navigation-guard.service'
 import { TerminalService } from '@/app/core/terminal.service'
+import { Widget } from '@/app/modules/status/widgets/widgets.interfaces'
 
 @Component({
   templateUrl: './terminal-widget.component.html',
@@ -29,7 +30,7 @@ export class TerminalWidgetComponent implements OnInit, AfterViewInit, OnDestroy
   readonly titleElement = viewChild<ElementRef>('terminaltitle')
   readonly termTarget = viewChild<ElementRef>('terminaloutput')
 
-  @Input() widget: any
+  @Input() widget: Widget
   @Input() resizeEvent: Subject<any>
   @Input() configureEvent: Subject<any>
 
@@ -65,7 +66,7 @@ export class TerminalWidgetComponent implements OnInit, AfterViewInit, OnDestroy
 
   public ngOnInit() {
     this.fontSize = this.widget.fontSize || 15
-    this.fontWeight = this.widget.fontWeight || 400
+    this.fontWeight = Number.parseInt(this.widget.fontWeight || '400', 10)
     if (this.$settings.actualLightingMode === 'dark') {
       this.widget.theme = 'dark'
     }
@@ -119,8 +120,8 @@ export class TerminalWidgetComponent implements OnInit, AfterViewInit, OnDestroy
           changed = true
         }
         if (this.widget.fontWeight !== this.fontWeight) {
-          this.fontWeight = this.widget.fontWeight
-          this.$terminal.term.options.fontWeight = this.widget.fontWeight
+          this.fontWeight = Number.parseInt(this.widget.fontWeight, 10)
+          this.$terminal.term.options.fontWeight = Number.parseInt(this.widget.fontWeight, 10)
           changed = true
         }
         if (this.widget.theme !== this.theme) {

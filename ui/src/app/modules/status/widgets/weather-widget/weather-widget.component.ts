@@ -8,6 +8,7 @@ import { interval, Subject, Subscription } from 'rxjs'
 import { ConvertTempPipe } from '@/app/core/pipes/convert-temp.pipe'
 import { SettingsService } from '@/app/core/settings.service'
 import { IoNamespace, WsService } from '@/app/core/ws.service'
+import { Widget } from '@/app/modules/status/widgets/widgets.interfaces'
 import { environment } from '@/environments/environment'
 
 @Component({
@@ -30,7 +31,7 @@ export class WeatherWidgetComponent implements OnInit, OnDestroy {
   private io: IoNamespace
   private intervalSubscription: Subscription
 
-  @Input() widget: any
+  @Input() widget: Widget
   @Input() configureEvent: Subject<any>
 
   public currentWeather: any

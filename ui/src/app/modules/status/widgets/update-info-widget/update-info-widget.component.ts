@@ -15,7 +15,7 @@ import { SettingsService } from '@/app/core/settings.service'
 import { IoNamespace, WsService } from '@/app/core/ws.service'
 import { HbV2ModalComponent } from '@/app/modules/status/widgets/update-info-widget/hb-v2-modal/hb-v2-modal.component'
 import { NodeVersionModalComponent } from '@/app/modules/status/widgets/update-info-widget/node-version-modal/node-version-modal.component'
-import { DockerDetails, NodeJsInfo, ServerInfo } from '@/app/modules/status/widgets/update-info-widget/update-info-widget.interfaces'
+import { DockerDetails, NodeJsInfo, ServerInfo, Widget } from '@/app/modules/status/widgets/widgets.interfaces'
 
 @Component({
   templateUrl: './update-info-widget.component.html',
@@ -39,7 +39,7 @@ export class UpdateInfoWidgetComponent implements OnInit {
   private $ws = inject(WsService)
   private io: IoNamespace
 
-  @Input() widget: any
+  @Input() widget: Widget
 
   public homebridgePkg: Plugin = {} as Plugin
   public homebridgeUiPkg: Plugin = {} as Plugin

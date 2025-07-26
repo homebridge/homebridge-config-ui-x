@@ -16,6 +16,7 @@ import {
 
 import { ApiService } from '@/app/core/api.service'
 import { SettingsService } from '@/app/core/settings.service'
+import { Widget } from '@/app/modules/status/widgets/widgets.interfaces'
 import { environment } from '@/environments/environment'
 
 @Component({
@@ -36,7 +37,7 @@ export class WidgetControlComponent implements OnInit {
   private $settings = inject(SettingsService)
   private $translate = inject(TranslateService)
 
-  @Input() widget: any
+  @Input() widget: Widget
 
   // Weather
   public searching: boolean
