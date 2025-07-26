@@ -48,6 +48,11 @@ export class AccessoryInfoComponent implements OnInit {
       'LockMechanism',
     ],
     [
+      'Switch',
+      'Outlet',
+      'GarageDoorOpener',
+    ],
+    [
       'Door',
       'Window',
       'WindowCovering',
