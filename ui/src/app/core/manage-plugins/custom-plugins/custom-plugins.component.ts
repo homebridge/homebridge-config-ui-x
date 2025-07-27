@@ -380,6 +380,8 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
     const customStyles = `
       body {
         height: unset !important;
+        background-color: ${darkMode ? '#242424' : '#FFFFFF'} !important;
+        color: ${darkMode ? '#FFFFFF' : '#000000'} !important;
       }
     `
     event.source.postMessage({ action: 'inline-style', style: customStyles }, event.origin)

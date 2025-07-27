@@ -25,6 +25,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - garage door tile: show when obstruction detected
 - air quality sensor tile: update icon to match new style
 - show in sys info widget if arch is 32-bit or 64-bit
+- fix for custom ui colouring in dark mode
 
 ### Other Changes
 
