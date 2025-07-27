@@ -133,20 +133,32 @@ export class SettingsService {
         if (iframeDoc) {
           const iframeBody = iframeDoc.body
 
-          iframeBody.classList.remove(`config-ui-x-${this.theme}`)
-          iframeBody.classList.remove(`config-ui-x-dark-mode-${this.theme}`)
           if (this.actualLightingMode === 'dark') {
-            iframeBody.classList.add(`config-ui-x-dark-mode-${this.theme}`)
-
+            if (iframeBody.classList.contains(`config-ui-x-${this.theme}`)) {
+              iframeBody.classList.remove(`config-ui-x-${this.theme}`)
+            }
+            if (!iframeBody.classList.contains(`config-ui-x-dark-mode-${this.theme}`)) {
+              iframeBody.classList.add(`config-ui-x-dark-mode-${this.theme}`)
+            }
             if (!iframeBody.classList.contains('dark-mode')) {
               iframeBody.classList.add('dark-mode')
             }
-          } else {
-            iframeBody.classList.add(`config-ui-x-${this.theme}`)
 
+            iframeBody.style.backgroundColor = '#242424 !important'
+            iframeBody.style.color = '#ffffff !important'
+          } else {
+            if (!iframeBody.classList.contains(`config-ui-x-${this.theme}`)) {
+              iframeBody.classList.add(`config-ui-x-${this.theme}`)
+            }
+            if (iframeBody.classList.contains(`config-ui-x-dark-mode-${this.theme}`)) {
+              iframeBody.classList.remove(`config-ui-x-dark-mode-${this.theme}`)
+            }
             if (iframeBody.classList.contains('dark-mode')) {
               iframeBody.classList.remove('dark-mode')
             }
+
+            iframeBody.style.backgroundColor = '#ffffff !important'
+            iframeBody.style.color = '#000000 !important'
           }
 
           // Notify iframe Angular app
