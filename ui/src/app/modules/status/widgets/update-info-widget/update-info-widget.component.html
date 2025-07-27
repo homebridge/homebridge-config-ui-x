@@ -23,8 +23,7 @@
           } }
         </div>
         <div class="align-self-center px-3">
-          Docker-Homebridge
-          @if (!dockerStatusDone) {
+          Docker-Homebridge @if (!dockerStatusDone) {
           <span class="grey-text small">{{ 'status.homebridge.checking' | translate }}</span>
           } @if (dockerStatusDone) {
           <span class="grey-text small">{{ dockerInfo.currentVersion }}</span>
