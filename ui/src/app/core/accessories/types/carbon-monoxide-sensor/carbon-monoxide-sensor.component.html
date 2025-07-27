@@ -1,10 +1,4 @@
-<div
-  class="accessory-box"
-  [ngClass]="{
-    'switch-on': service.values.CarbonMonoxideDetected,
-    'switch-off': !service.values.CarbonMonoxideDetected
-  }"
->
+<div class="accessory-box" [ngClass]="{ 'switch-on': service.values.CarbonMonoxideDetected }">
   <div class="d-flex flex-column h-100">
     <div
       [inlineSVG]="'/assets/accessory-icons/carbon-monoxide-sensor.svg'"
