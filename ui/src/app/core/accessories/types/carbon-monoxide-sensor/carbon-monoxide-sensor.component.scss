@@ -1,14 +1,24 @@
 ::ng-deep {
-  .switch-off {
+  .switch-on {
     svg {
-      .smoke_sensor_trigger_lines {
-        display: none;
+      .air-line {
+        stroke: #d32f2f;
+        animation: flash 1s infinite;
       }
-      .smoke_sensor_box {
-        fill: #808080;
+
+      .type {
+        fill: #d32f2f;
+        animation: flash 1s infinite;
       }
-      .label-text {
-        fill: #2b2b2b;
+
+      @keyframes flash {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.2;
+        }
       }
     }
   }

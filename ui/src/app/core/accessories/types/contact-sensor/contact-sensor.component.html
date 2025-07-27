@@ -1,24 +1,10 @@
-<div
-  class="accessory-box"
-  [ngClass]="{
-    'switch-on': service.values.ContactSensorState,
-    'switch-off': !service.values.ContactSensorState
-  }"
->
+<div class="accessory-box" [ngClass]="{ 'switch-on': service.values.ContactSensorState }">
   <div class="d-flex flex-column h-100">
-    @if (service.values.ContactSensorState) {
     <div
-      [inlineSVG]="'/assets/hap-icons/contact-sensor-open.svg'"
-      [attr.aria-label]="'Contact Sensor (Open)'"
+      [inlineSVG]="'/assets/accessory-icons/contact-sensor.svg'"
+      [attr.aria-label]="'Contact Sensor'"
       class="accessory-svg"
     ></div>
-    } @if (!service.values.ContactSensorState) {
-    <div
-      [inlineSVG]="'/assets/hap-icons/contact-sensor-closed.svg'"
-      [attr.aria-label]="'Contact Sensor (Closed)'"
-      class="accessory-svg"
-    ></div>
-    }
     <div class="accessory-label mt-auto">{{ service.customName || service.serviceName }}</div>
     @if (service.values.ContactSensorState) {
     <div class="accessory-label red-text">{{ 'accessories.control.open' | translate }}</div>

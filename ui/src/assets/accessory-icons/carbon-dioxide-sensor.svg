@@ -1,72 +1,53 @@
-<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
-<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
-<svg
-  xmlns="http://www.w3.org/2000/svg"
-  xmlns:xlink="http://www.w3.org/1999/xlink"
-  version="1.1"
-  width="500"
-  height="500"
-  viewBox="0 0 500 500"
-  xml:space="preserve"
->
-<desc>CO Sensor with Spaced, Wide, Thick Cyan Wavy Lines</desc>
-  <defs />
-  <!-- Sensor Housing -->
-  <g transform="matrix(1 0 0 1 250 125)" opacity="1" fill="#3daeff" fill-opacity="1" class="smoke_sensor_box">
-    <path
-      style="stroke: none; fill-rule: nonzero; opacity: 1;"
-      vector-effect="non-scaling-stroke"
-      transform=" translate(-222.5, -100)"
-      d="M 0 0 L 445 0 L 445 124.6137 L 402.96864 124.6137 L 350.9804 200 L 88.48046 200 L 36.492219999999996 124.6137 L 0.0011099999999970578 124.6137 z M 94.73049 185.04636 L 149.73026 185.04636 L 149.73026 130.21633 L 94.73048999999999 130.21633 z M 289.72949 184.04945 L 343.72913 184.04945 L 343.72913 130.21633 L 289.72949 130.21633 z M 224.72945 185.04636 L 279.72922 185.04636 L 279.72922 130.21633 L 224.72944999999999 130.21633 z M 159.73052 185.04636 L 214.73029000000002 185.04636 L 214.73029000000002 130.21633 L 159.73052 130.21633 z"
-    />
-  </g>
+<svg width="32px" height="32px" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+  <!-- outer casing -->
+  <rect x="1" y="1" width="30" height="12" rx="1" stroke="#7f7f7f" fill="none" stroke-width="1.25" />
 
-  <!-- Centered CO Label -->
-  <g transform="matrix(1 0 0 1 250 100)" fill="#ffffff" class="label-text">
-    <text
-      text-anchor="middle"
-      dominant-baseline="middle"
-      font-family="Arial"
-      font-size="100"
-      font-weight="bold"
-      x="0"
-      y="0"
-    >
-      CO2
-    </text>
-  </g>
-
-  <!-- Cyan Wavy Lines -->
-  <!-- Top Wave (narrowest) -->
-  <g
-    transform="matrix(1 0 0 1 250 268)"
-    fill="none"
-    stroke="#00cfd6"
-    stroke-width="15"
-    class="smoke_sensor_trigger_lines"
+  <!-- alarm type -->
+  <text
+    class="type"
+    text-anchor="middle"
+    dominant-baseline="middle"
+    font-family="Arial"
+    font-size="7.5"
+    x="16"
+    y="7.7"
+    fill="#7f7f7f"
+    stroke-width="0.6"
+    font-weight="900"
   >
-    <path d="M -50 0 Q -40 10 -30 0 Q -20 -10 -10 0 Q 0 10 10 0 Q 20 -10 30 0 Q 40 10 50 0" />
-  </g>
+    CO2
+  </text>
 
-  <!-- Middle Wave (wider) -->
-  <g
-    transform="matrix(1 0 0 1 250 318)"
-    fill="none"
-    stroke="#00cfd6"
-    stroke-width="15"
-    class="smoke_sensor_trigger_lines"
-  >
-    <path d="M -65 0 Q -52 12 -39 0 Q -26 -12 -13 0 Q 0 12 13 0 Q 26 -12 39 0 Q 52 12 65 0" />
-  </g>
+  <!-- grille blue background -->
+  <line x1="6" y1="14.5" x2="25.5" y2="14.5" stroke="#1976d2" stroke-opacity="0.5" stroke-width="2" />
 
-  <!-- Bottom Wave (widest) -->
-  <g
-    transform="matrix(1 0 0 1 250 368)"
-    fill="none"
-    stroke="#00cfd6"
-    stroke-width="15"
-    class="smoke_sensor_trigger_lines"
-  >
-    <path d="M -80 0 Q -64 14 -48 0 Q -32 -14 -16 0 Q 0 14 16 0 Q 32 -14 48 0 Q 64 14 80 0" />
-  </g>
+  <!-- grille vertical lines -->
+  <line stroke-linecap="round" x1="5" y1="13" x2="6.5" y2="16" stroke="#7f7f7f" stroke-width="1.25" />
+  <line stroke-linecap="round" x1="11" y1="13" x2="11" y2="16" stroke="#7f7f7f" stroke-width="1" />
+  <line stroke-linecap="round" x1="15.5" y1="13" x2="15.5" y2="16" stroke="#7f7f7f" stroke-width="1" />
+  <line stroke-linecap="round" x1="20" y1="13" x2="20" y2="16" stroke="#7f7f7f" stroke-width="1" />
+  <line stroke-linecap="round" x1="26" y1="13" x2="24.5" y2="16" stroke="#7f7f7f" stroke-width="1.25" />
+
+  <!-- grille horizontal lines -->
+  <line stroke-linecap="round" x1="6.5" y1="16" x2="24.5" y2="16" stroke="#7f7f7f" stroke-width="1.25" />
+
+  <!-- top wave -->
+  <path
+    d="M3,24.0706147 C3.28945166,24.8007217 5.978098,25.1773883 10.0660175,25.2006147 C12.5085124,25.2144929 18.5053297,22.8514837 22.4060749,22.1943647 C24.1588716,21.898084 26.5955382,22.1756219 28.716875,23.0221772"
+    class="air-line"
+    stroke="#7f7f7f"
+    fill="transparent"
+    stroke-width="1.5"
+    stroke-linecap="round"
+  />
+
+  <!-- bottom wave -->
+  <path
+    d="M3,30.0706147 C3.28945166,30.8007217 5.978098,31.1773883 10.0660175,31.2006147 C12.5085124,31.2144929 18.5053297,28.8514837 22.4060749,28.1943647 C24.1588716,27.898084 26.5955382,28.1756219 28.716875,29.0221772"
+    class="air-line"
+    stroke="#7f7f7f"
+    fill="transparent"
+    stroke-width="1.5"
+    stroke-linecap="round"
+  />
 </svg>
