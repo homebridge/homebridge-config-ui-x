@@ -8,7 +8,7 @@
     <div class="hb-status-item d-flex flex-row w-100 px-3 mt-2 mb-1" style="min-width: max(25%, 225px)">
       <div class="hb-status-icon d-flex align-items-center">
         <i
-          class="fas fa-fw"
+          class="fas"
           [ngClass]="{
             'fa-bridge-circle-check green-text': homebridgeStatus.status === 'up' && !isRestarting,
             'fa-bridge-circle-exclamation text-warning': homebridgeStatus.status === 'pending' || isRestarting,
@@ -26,7 +26,7 @@
       <div class="grey-text ms-auto d-flex align-items-center">
         @if (homebridgeStatus.status !== 'pending' && !isRestarting && isAdmin) {
         <i
-          class="icon-button fas fa-fw fa-power-off"
+          class="icon-button fas fa-power-off"
           href="javascript:void(0)"
           (click)="restartHomebridge()"
           [ngbTooltip]="'menu.tooltip_restart' | translate"
@@ -36,10 +36,10 @@
           placement="left"
         ></i>
         } @if (homebridgeStatus.status === 'pending' || isRestarting) {
-        <i class="fas fa-fw fa-spinner fa-pulse"></i>
+        <i class="fas fa-spinner fa-pulse"></i>
         }
         <i
-          class="fas fa-fw ms-2 fa-link"
+          class="fas ms-2 fa-link"
           [ngbTooltip]="(homebridgeStatus.paired ? 'status.widget.qr_paired' : 'status.widget.qr_unpaired') | translate"
           container="body"
           [openDelay]="150"
@@ -56,7 +56,7 @@
     <div class="hb-status-item d-flex flex-row w-100 px-3 mt-2 mb-1" style="min-width: max(25%, 225px)">
       <div class="hb-status-icon d-flex align-items-center">
         <i
-          class="fas fa-fw"
+          class="fas"
           [ngClass]="{
             'fa-bridge-circle-check green-text': bridge.status === 'ok' && !bridge.restarting && !isRestarting,
             'fa-bridge-circle-exclamation text-warning': bridge.status === 'pending' || bridge.restarting || isRestarting,
@@ -74,7 +74,7 @@
       <div class="grey-text ms-auto d-flex align-items-center">
         @if (bridge.status !== 'pending' && !bridge.restarting && isAdmin) {
         <i
-          class="icon-button fas fa-fw fa-power-off"
+          class="icon-button fas fa-power-off"
           href="javascript:void(0)"
           (click)="restartChildBridge(bridge)"
           [ngbTooltip]="'menu.tooltip_restart' | translate"
@@ -84,10 +84,10 @@
           placement="left"
         ></i>
         } @if (bridge.status === 'pending' || bridge.restarting) {
-        <i class="fas fa-fw fa-spinner fa-pulse"></i>
+        <i class="fas fa-spinner fa-pulse"></i>
         }
         <i
-          class="fas fa-fw ms-2 fa-link"
+          class="fas ms-2 fa-link"
           [ngbTooltip]="(bridge.paired ? 'status.widget.qr_paired' : 'status.widget.qr_unpaired') | translate"
           container="body"
           [openDelay]="150"

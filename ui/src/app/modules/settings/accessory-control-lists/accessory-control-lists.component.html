@@ -11,7 +11,7 @@
     ></button>
   </div>
   <div class="modal-body">
-    <div class="text-center mb-3"><i class="fas fa-fw fa-list-check primary-text" style="font-size: 75px"></i></div>
+    <div class="text-center mb-3"><i class="fas fa-list-check primary-text" style="font-size: 75px"></i></div>
     <ul class="mb-3">
       <li>{{ 'settings.security.ui_control_desc' | translate }}</li>
       <li>{{ 'settings.security.ui_control_desc_2' | translate }}</li>
@@ -23,7 +23,7 @@
           {{ mainPairing.name }}<br />
           <small class="grey-text">
             <i
-              class="fas fa-fw fa-link"
+              class="fas fa-link"
               [ngbTooltip]="(mainPairing._isPaired ? 'status.widget.qr_paired' : 'status.widget.qr_unpaired') | translate"
               container="body"
               [openDelay]="150"
@@ -57,7 +57,7 @@
           <br />
           <small class="grey-text">
             <i
-              class="fas fa-fw fa-link"
+              class="fas fa-link"
               [ngbTooltip]="(item._isPaired ? 'status.widget.qr_paired' : 'status.widget.qr_unpaired') | translate"
               container="body"
               [openDelay]="150"
@@ -109,7 +109,7 @@
         (click)="updateBlacklist()"
       >
         @if (!clicked) { {{ 'form.button_save' | translate }} } @if (clicked) {
-        <i class="fas fa-fw fa-spinner fa-pulse"></i>
+        <i class="fas fa-spinner fa-pulse"></i>
         }
       </button>
     </div>

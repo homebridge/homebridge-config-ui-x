@@ -15,11 +15,11 @@
   <div class="modal-body">
     @if (loading) {
     <div class="text-center primary-text">
-      <i class="fa fa-fw fa-cog fa-spin" style="font-size: 75px"></i>
+      <i class="fa fa-cog fa-spin" style="font-size: 75px"></i>
     </div>
     } @if (!loading) {
     <div class="mb-3 text-center">
-      <i class="fas fa-fw fa-bridge primary-text" style="font-size: 75px"></i>
+      <i class="fas fa-bridge primary-text" style="font-size: 75px"></i>
     </div>
     <ul class="mb-3">
       <li [innerHTML]="'child_bridge.about' | translate: { link: linkChildBridges }"></li>
@@ -130,7 +130,7 @@
           <p class="mx-auto mt-3 mb-1">{{ deviceInfo[configBlocks[selectedBlock]._bridge?.username].pincode }}</p>
           <p class="grey-text mx-auto small mb-1" style="max-width: 400px">
             <i
-              class="fas fa-fw fa-link"
+              class="fas fa-link"
               [ngClass]="{
                 'green-text': deviceInfo[configBlocks[selectedBlock]._bridge?.username]._isPaired,
                 'grey-text': !deviceInfo[configBlocks[selectedBlock]._bridge?.username]._isPaired
@@ -296,7 +296,7 @@
       @if (justInstalled) {
       <button type="button" class="btn btn-primary" (click)="save()" [disabled]="saveInProgress">
         {{ 'form.button_save' | translate }} @if (saveInProgress) {
-        <i class="fas fa-fw fa-spinner fa-pulse"></i>
+        <i class="fas fa-spinner fa-pulse"></i>
         }
       </button>
       } @if (!canConfigure) {
@@ -309,7 +309,7 @@
       @if (canConfigure && !justInstalled) { @if (configBlocks.length) {
       <button type="button" class="btn btn-primary" (click)="save()" [disabled]="saveInProgress || loading">
         @if (!saveInProgress) { {{ 'form.button_save' | translate }} } @if (saveInProgress) {
-        <i class="fas fa-fw fa-spinner fa-pulse"></i>
+        <i class="fas fa-spinner fa-pulse"></i>
         }
       </button>
       } @if (!configBlocks.length) {

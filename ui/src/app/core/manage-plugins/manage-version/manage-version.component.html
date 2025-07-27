@@ -12,18 +12,18 @@
   <div class="modal-body d-flex flex-row flex-grow-1 w-100">
     @if (loading) {
     <div class="w-100 text-center primary-text">
-      <i class="fa fa-fw fa-cog fa-spin" style="font-size: 75px"></i>
+      <i class="fa fa-cog fa-spin" style="font-size: 75px"></i>
     </div>
     } @else {
     <div class="w-100 text-center">
       @if (plugin.installedVersion) {
-      <i class="fas fa-fw fa-code-compare primary-text mb-3" style="font-size: 75px"></i>
+      <i class="fas fa-code-compare primary-text mb-3" style="font-size: 75px"></i>
       <h6 class="mb-3">{{ 'plugins.manage.select_version' | translate }}</h6>
       <p class="mb-3">
         {{ 'plugins.status_installed' | translate }}: <span class="font-monospace">v{{ plugin.installedVersion }}</span>
       </p>
       } @else {
-      <i class="far fa-fw fa-arrow-alt-circle-down primary-text mb-3" style="font-size: 75px"></i>
+      <i class="far fa-arrow-alt-circle-down primary-text mb-3" style="font-size: 75px"></i>
       <h6 class="mb-3">{{ 'plugins.manage.select_version' | translate }}</h6>
       }
       <ul class="list-group list-group-box mb-0">
@@ -36,9 +36,9 @@
           </span>
           <button class="btn btn-primary m-0 ms-3" (click)="doInstall(version.version)">
             @if (plugin.installedVersion === version.version) {
-            <i class="fas fa-fw fa-rotate-right"></i>
+            <i class="fas fa-rotate-right"></i>
             } @else {
-            <i class="fas fa-fw fa-arrow-alt-circle-down"></i>
+            <i class="fas fa-arrow-alt-circle-down"></i>
             }
           </button>
         </li>
@@ -58,9 +58,9 @@
           @if (versionSelect) {
           <button class="btn btn-primary m-0 ms-3" (click)="doInstall(versionSelect)">
             @if (plugin.installedVersion === versionSelect) {
-            <i class="fas fa-fw fa-rotate-right"></i>
+            <i class="fas fa-rotate-right"></i>
             } @else {
-            <i class="fas fa-fw fa-arrow-alt-circle-down"></i>
+            <i class="fas fa-arrow-alt-circle-down"></i>
             }
           </button>
           }

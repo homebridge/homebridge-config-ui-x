@@ -67,16 +67,16 @@ export class DonateComponent implements OnInit {
   public getIconClass(type: string) {
     switch (type.toLowerCase()) {
       case 'paypal':
-        return 'fab fa-fw fa-paypal'
+        return 'fab fa-paypal'
       case 'github':
-        return 'fab fa-fw fa-github'
+        return 'fab fa-github'
       case 'patreon':
-        return 'fab fa-fw fa-patreon'
+        return 'fab fa-patreon'
       case 'kofi':
       case 'ko-fi':
-        return 'fas fa-fw fa-coffee'
+        return 'fas fa-coffee'
       default:
-        return 'fas fa-fw fa-link'
+        return 'fas fa-link'
     }
   }
 

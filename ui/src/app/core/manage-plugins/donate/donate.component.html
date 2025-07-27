@@ -11,7 +11,7 @@
   </div>
   <div class="modal-body">
     <div class="text-center pink-text mb-3">
-      <i class="fas fa-fw fa-heart" style="font-size: 75px"></i>
+      <i class="fas fa-heart" style="font-size: 75px"></i>
     </div>
     <ul class="mb-3">
       <li>{{ 'plugins.donate.message_1' | translate }}</li>
@@ -20,7 +20,7 @@
     <ul class="list-group list-group-box">
       @for (option of fundingOptions; track option) {
       <li class="list-group-item">
-        <i [ngClass]="getIconClass(option.type)" class="me-2 primary-text fa-fw fa-xl"></i>
+        <i [ngClass]="getIconClass(option.type)" class="me-2 primary-text fa-xl"></i>
         <a [href]="option.url" target="_blank" rel="noopener noreferrer" class="text-break-all">{{ option.url }}</a>
       </li>
       }

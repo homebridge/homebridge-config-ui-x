@@ -20,22 +20,22 @@
       <button type="button" class="btn mb-0 mx-0 p-3 btn-control" (click)="setActive(0, $event)">
         <div class="float-start primary-text">
           <i
-            class="fas fa-fw fa-xl"
+            class="fas fa-xl"
             [ngClass]="{ 'fa-check-circle': service.values.Active === 0, 'fa-blank': service.values.Active !== 0 }"
           ></i>
         </div>
         {{ 'accessories.control.off' | translate }}
-        <div class="float-end"><i class="fas fa-fw fa-xl fa-blank"></i></div>
+        <div class="float-end"><i class="fas fa-xl fa-blank"></i></div>
       </button>
       <button type="button" class="btn mb-0 mx-0 p-3 btn-control" (click)="setActive(1, $event)">
         <div class="float-start primary-text">
           <i
-            class="fas fa-fw fa-xl"
+            class="fas fa-xl"
             [ngClass]="{ 'fa-check-circle': service.values.Active === 1, 'fa-blank': service.values.Active !== 1 }"
           ></i>
         </div>
         {{ 'accessories.control.on' | translate }}
-        <div class="float-end"><i class="fas fa-fw fa-xl fa-blank"></i></div>
+        <div class="float-end"><i class="fas fa-xl fa-blank"></i></div>
       </button>
     </div>
     } @if (sourceList.length) { @if (hasActive) {
@@ -50,12 +50,12 @@
       <button type="button" class="btn mb-0 mx-0 p-3 btn-control" (click)="setInput(source.identifier, $event)">
         <div class="float-start primary-text">
           <i
-            class="fas fa-fw fa-xl"
+            class="fas fa-xl"
             [ngClass]="{ 'fa-check-circle': service.values.ActiveIdentifier === source.identifier, 'fa-blank': service.values.ActiveIdentifier !== source.identifier }"
           ></i>
         </div>
         {{ source.name }}
-        <div class="float-end"><i class="fas fa-fw fa-xl fa-blank"></i></div>
+        <div class="float-end"><i class="fas fa-xl fa-blank"></i></div>
       </button>
       }
     </div>

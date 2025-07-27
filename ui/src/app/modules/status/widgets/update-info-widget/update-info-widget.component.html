@@ -14,11 +14,11 @@
       >
         <div class="mb-0 d-flex align-items-center">
           @if (!dockerStatusDone) {
-          <i class="fas fa-fw fa-lg fa-cog fa-spin primary-text"></i>
+          <i class="fas fa-lg fa-cog fa-spin primary-text"></i>
           } @if (dockerStatusDone) { @if (dockerInfo.updateAvailable) {
-          <i class="fas fa-fw fa-lg fa-arrow-alt-circle-up orange-text"></i>
+          <i class="fas fa-lg fa-arrow-alt-circle-up orange-text"></i>
           } @if (!dockerInfo.updateAvailable) {
-          <i class="fas fa-fw fa-lg fa-check-circle green-text"></i>
+          <i class="fas fa-lg fa-check-circle green-text"></i>
           } }
         </div>
         <div class="align-self-center px-3">
@@ -44,11 +44,11 @@
           <div class="d-flex ps-3 py-1">
             <div class="mb-0 d-flex align-items-center">
               @if (!homebridgePkg.installedVersion) {
-              <i class="fas fa-fw fa-lg fa-cog fa-spin primary-text"></i>
+              <i class="fas fa-lg fa-cog fa-spin primary-text"></i>
               } @if (homebridgePkg.installedVersion && !homebridgePkg.updateAvailable) {
-              <i class="fas fa-fw fa-lg fa-check-circle green-text"></i>
+              <i class="fas fa-lg fa-check-circle green-text"></i>
               } @if (homebridgePkg.installedVersion && homebridgePkg.updateAvailable) {
-              <i class="fas fa-fw fa-lg fa-arrow-alt-circle-up orange-text"></i>
+              <i class="fas fa-lg fa-arrow-alt-circle-up orange-text"></i>
               }
             </div>
             <div class="align-self-center px-3">
@@ -72,7 +72,7 @@
                 aria-label="Homebridge v2 Readiness"
               >
                 <i
-                  class="fas fa-fw fa-info-circle"
+                  class="fas fa-info-circle"
                   [ngClass]="{ 'green-text': isHbV2Ready, 'orange-text': !isHbV2Ready }"
                 ></i>
               </a>
@@ -97,11 +97,11 @@
           <div class="d-flex ps-3 py-1">
             <div class="mb-0 d-flex align-items-center">
               @if (!homebridgeUiPkg.installedVersion) {
-              <i class="fas fa-fw fa-lg fa-cog fa-spin primary-text"></i>
+              <i class="fas fa-lg fa-cog fa-spin primary-text"></i>
               } @if (homebridgeUiPkg.installedVersion && !homebridgeUiPkg.updateAvailable) {
-              <i class="fas fa-fw fa-lg fa-check-circle green-text"></i>
+              <i class="fas fa-lg fa-check-circle green-text"></i>
               } @if (homebridgeUiPkg.installedVersion && homebridgeUiPkg.updateAvailable) {
-              <i class="fas fa-fw fa-lg fa-arrow-alt-circle-up orange-text"></i>
+              <i class="fas fa-lg fa-arrow-alt-circle-up orange-text"></i>
               }
             </div>
             <div class="align-self-center px-3">
@@ -133,15 +133,15 @@
           <div class="d-flex ps-3 py-1">
             <div class="mb-0 d-flex align-items-center">
               @if (!nodejsStatusDone) {
-              <i class="fas fa-fw fa-lg fa-cog fa-spin primary-text"></i>
+              <i class="fas fa-lg fa-cog fa-spin primary-text"></i>
               } @if (nodejsStatusDone) { @if (widget.hideNodeInfo) {
-              <i class="fas fa-fw fa-lg fa-circle green-text"></i>
+              <i class="fas fa-lg fa-circle green-text"></i>
               } @if (!widget.hideNodeInfo) { @if (nodejsInfo.updateAvailable) {
-              <i class="fas fa-fw fa-lg fa-arrow-alt-circle-up orange-text"></i>
+              <i class="fas fa-lg fa-arrow-alt-circle-up orange-text"></i>
               } @if (nodejsInfo.showNodeUnsupportedWarning && !nodejsInfo.updateAvailable) {
-              <i class="fas fa-fw fa-lg fa-exclamation-circle orange-text"></i>
+              <i class="fas fa-lg fa-exclamation-circle orange-text"></i>
               } @if (!nodejsInfo.updateAvailable && !nodejsInfo.showNodeUnsupportedWarning) {
-              <i class="fas fa-fw fa-lg fa-check-circle green-text"></i>
+              <i class="fas fa-lg fa-check-circle green-text"></i>
               } } }
             </div>
             <div class="align-self-center px-3">
@@ -188,11 +188,11 @@
       <div class="d-flex ps-3 py-1">
         <div class="mb-0 d-flex align-items-center">
           @if (!homebridgePkg.installedVersion) {
-          <i class="fas fa-fw fa-lg fa-cog fa-spin primary-text"></i>
+          <i class="fas fa-lg fa-cog fa-spin primary-text"></i>
           } @if (homebridgePkg.installedVersion && !homebridgePkg.updateAvailable) {
-          <i class="fas fa-fw fa-lg fa-check-circle green-text"></i>
+          <i class="fas fa-lg fa-check-circle green-text"></i>
           } @if (homebridgePkg.installedVersion && homebridgePkg.updateAvailable) {
-          <i class="fas fa-fw fa-lg fa-arrow-alt-circle-up orange-text"></i>
+          <i class="fas fa-lg fa-arrow-alt-circle-up orange-text"></i>
           }
         </div>
         <div class="align-self-center px-3">
@@ -215,10 +215,7 @@
             placement="top"
             aria-label="Homebridge v2 Readiness"
           >
-            <i
-              class="fas fa-fw fa-info-circle"
-              [ngClass]="{ 'green-text': isHbV2Ready, 'orange-text': !isHbV2Ready }"
-            ></i>
+            <i class="fas fa-info-circle" [ngClass]="{ 'green-text': isHbV2Ready, 'orange-text': !isHbV2Ready }"></i>
           </a>
           } } @if (!homebridgePkg.installedVersion) {
           <span>Homebridge</span>
@@ -241,11 +238,11 @@
       <div class="d-flex ps-3 py-1">
         <div class="mb-0 d-flex align-items-center">
           @if (!homebridgeUiPkg.installedVersion) {
-          <i class="fas fa-fw fa-lg fa-cog fa-spin primary-text"></i>
+          <i class="fas fa-lg fa-cog fa-spin primary-text"></i>
           } @if (homebridgeUiPkg.installedVersion && !homebridgeUiPkg.updateAvailable) {
-          <i class="fas fa-fw fa-lg fa-check-circle green-text"></i>
+          <i class="fas fa-lg fa-check-circle green-text"></i>
           } @if (homebridgeUiPkg.installedVersion && homebridgeUiPkg.updateAvailable) {
-          <i class="fas fa-fw fa-lg fa-arrow-alt-circle-up orange-text"></i>
+          <i class="fas fa-lg fa-arrow-alt-circle-up orange-text"></i>
           }
         </div>
         <div class="align-self-center px-3">
@@ -278,11 +275,11 @@
       <div class="d-flex ps-3 py-1">
         <div class="mb-0 d-flex align-items-center">
           @if (!homebridgePluginStatusDone) {
-          <i class="fas fa-fw fa-lg fa-cog fa-spin primary-text"></i>
+          <i class="fas fa-lg fa-cog fa-spin primary-text"></i>
           } @if (homebridgePluginStatusDone && homebridgePluginStatus.length) {
-          <i class="fas fa-fw fa-lg fa-arrow-alt-circle-up orange-text"></i>
+          <i class="fas fa-lg fa-arrow-alt-circle-up orange-text"></i>
           } @if (homebridgePluginStatusDone && !homebridgePluginStatus.length) {
-          <i class="fas fa-fw fa-lg fa-check-circle green-text"></i>
+          <i class="fas fa-lg fa-check-circle green-text"></i>
           }
         </div>
         <div class="align-self-center px-3">
@@ -308,15 +305,15 @@
       <div class="d-flex ps-3 py-1">
         <div class="mb-0 d-flex align-items-center">
           @if (!nodejsStatusDone) {
-          <i class="fas fa-fw fa-lg fa-cog fa-spin primary-text"></i>
+          <i class="fas fa-lg fa-cog fa-spin primary-text"></i>
           } @if (nodejsStatusDone) { @if (widget.hideNodeInfo) {
-          <i class="fas fa-fw fa-lg fa-circle green-text"></i>
+          <i class="fas fa-lg fa-circle green-text"></i>
           } @if (!widget.hideNodeInfo) { @if (nodejsInfo.updateAvailable) {
-          <i class="fas fa-fw fa-lg fa-arrow-alt-circle-up orange-text"></i>
+          <i class="fas fa-lg fa-arrow-alt-circle-up orange-text"></i>
           } @if (nodejsInfo.showNodeUnsupportedWarning && !nodejsInfo.updateAvailable) {
-          <i class="fas fa-fw fa-lg fa-exclamation-circle orange-text"></i>
+          <i class="fas fa-lg fa-exclamation-circle orange-text"></i>
           } @if (!nodejsInfo.updateAvailable && !nodejsInfo.showNodeUnsupportedWarning) {
-          <i class="fas fa-fw fa-lg fa-check-circle green-text"></i>
+          <i class="fas fa-lg fa-check-circle green-text"></i>
           } } }
         </div>
         <div class="align-self-center px-3">

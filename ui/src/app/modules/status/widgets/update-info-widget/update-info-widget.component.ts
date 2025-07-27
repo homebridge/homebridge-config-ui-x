@@ -211,7 +211,7 @@ export class UpdateInfoWidgetComponent implements OnInit {
       ? `${this.dockerInfo.currentVersion} → ${this.dockerInfo.latestVersion}`
       : this.$translate.instant('accessories.control.unknown')
     ref.componentInstance.ctaButtonLabel = this.$translate.instant('form.button_more_info')
-    ref.componentInstance.faIconClass = 'fab fa-fw fa-docker primary-text'
+    ref.componentInstance.faIconClass = 'fab fa-docker primary-text'
     ref.componentInstance.ctaButtonLink = 'https://github.com/homebridge/docker-homebridge/wiki/How-To-Update-Docker-Homebridge'
   }
 }

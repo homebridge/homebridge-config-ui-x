@@ -41,7 +41,7 @@
       <div class="w-100">
         <form novalidate (ngSubmit)="createFirstUser()" [formGroup]="createUserForm">
           <div class="input-group mb-4">
-            <span class="input-group-text custom-input"><i class="fas fa-fw fa-user primary-text fa-lg"></i></span>
+            <span class="input-group-text custom-input"><i class="fas fa-user primary-text fa-lg"></i></span>
             <input
               formControlName="username"
               type="text"
@@ -60,7 +60,7 @@
             />
           </div>
           <div class="input-group mb-4">
-            <span class="input-group-text custom-input"><i class="fas fa-fw fa-lock primary-text fa-lg"></i></span>
+            <span class="input-group-text custom-input"><i class="fas fa-lock primary-text fa-lg"></i></span>
             <input
               formControlName="password"
               type="password"
@@ -78,7 +78,7 @@
             />
           </div>
           <div class="input-group mb-4">
-            <span class="input-group-text custom-input"><i class="fas fa-fw fa-lock primary-text fa-lg"></i></span>
+            <span class="input-group-text custom-input"><i class="fas fa-lock primary-text fa-lg"></i></span>
             <input
               formControlName="passwordConfirm"
               type="password"
@@ -138,7 +138,7 @@
           [disabled]="restoreUploading || !selectedFile"
         >
           @if (restoreUploading) {
-          <i class="fas fa-fw fa-spinner fa-pulse"></i>
+          <i class="fas fa-spinner fa-pulse"></i>
           {{ 'backup.label_uploading' | translate }} } @else { {{ 'form.button_continue' | translate }} }
         </button>
       </div>

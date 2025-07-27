@@ -13,7 +13,7 @@
   @if (!restoreStarted && !setupWizardRestore) {
   <div class="modal-body">
     <div class="text-center mb-3">
-      <i class="fas fa-fw fa-hard-drive primary-text" style="font-size: 75px"></i>
+      <i class="fas fa-hard-drive primary-text" style="font-size: 75px"></i>
     </div>
     <ul class="mb-3">
       <li>{{ 'backup.restore_help_one' | translate }}</li>
@@ -76,7 +76,7 @@
         @if (clicked) {
         <span>
           @if (!uploadPercent || uploadPercent === 100) {
-          <i class="fa fa-fw fa-circle-notch fa-spin"></i>
+          <i class="fa fa-circle-notch fa-spin"></i>
           } @if (uploadPercent && uploadPercent !== 100) {
           <span>{{ uploadPercent }}% - </span>
           } @if (uploadPercent === 100) {

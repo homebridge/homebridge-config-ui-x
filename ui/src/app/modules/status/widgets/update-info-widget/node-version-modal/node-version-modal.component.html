@@ -12,11 +12,11 @@
   <div class="modal-body">
     @if (loading) {
     <div class="w-100 text-center primary-text text-center">
-      <i class="fa fa-fw fa-cog fa-spin" style="font-size: 75px"></i>
+      <i class="fa fa-cog fa-spin" style="font-size: 75px"></i>
     </div>
     } @else {
     <div class="text-center">
-      <i class="fas fa-fw fab fa-fw fa-node-js primary-text mb-3" style="font-size: 75px"></i>
+      <i class="fas fab fa-node-js primary-text mb-3" style="font-size: 75px"></i>
       <h5 class="mb-3">{{ nodeVersion }}@if (latestVersion !== nodeVersion) { &rarr; {{ latestVersion }} }</h5>
     </div>
 
@@ -72,7 +72,7 @@
         href="https://github.com/homebridge/homebridge/wiki/How-To-Update-Node.js"
         rel="noopener noreferrer"
       >
-        {{ 'form.button_more_info' | translate }} <i class="fas fa-fw fa-external-link-alt"></i>
+        {{ 'form.button_more_info' | translate }} <i class="fas fa-external-link-alt"></i>
       </a>
     </div>
   </div>

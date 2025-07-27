@@ -14,7 +14,7 @@
   <div class="modal-body plugin-modal-body">
     @if (justUpdatedPlugin) {
     <div class="mb-3 text-center">
-      <i class="far fa-fw fa-check-circle primary-text" style="font-size: 75px"></i>
+      <i class="far fa-check-circle primary-text" style="font-size: 75px"></i>
     </div>
     <h5 class="text-center mb-3">{{ this.pastTenseVerb }}: {{ pluginDisplayName }} ({{ targetVersionPretty }})</h5>
     @if (!isDisabled) {
@@ -32,7 +32,7 @@
   <div class="modal-body">
     <div class="mb-3 text-center">
       <i
-        class="fas fa-fw primary-text"
+        class="fas primary-text"
         [ngClass]="{
           'fa-arrow-alt-circle-down': action === 'Install',
           'fa-code-compare': action === 'Update' && installedVersion,
@@ -56,7 +56,7 @@ hb-service start</pre
   <div class="modal-body plugin-modal-body">
     <div class="mb-3 text-center">
       <i
-        class="far fa-fw primary-text"
+        class="far primary-text"
         [ngClass]="{
           'fa-arrow-alt-circle-down': action === 'Install' && !installedVersion,
           'fa-code-compare': action === 'Install' && installedVersion,
@@ -80,7 +80,7 @@ hb-service start</pre
           <div class="alert release-notes p-3 pb-1 my-0">
             @if (action === 'Update' && !versionNotesLoaded) {
             <div class="w-100 text-center primary-text mt-3 mb-4">
-              <i class="fa fa-fw fa-cog fa-spin" style="font-size: 75px"></i>
+              <i class="fa fa-cog fa-spin" style="font-size: 75px"></i>
             </div>
             } @else { @if (versionNotes) {
             <markdown class="plugin-md" [data]="versionNotes"></markdown>
@@ -105,7 +105,7 @@ hb-service start</pre
           <div class="alert release-notes p-3 pb-1 my-0" style="border-top-left-radius: 0; border-top-right-radius: 0">
             @if (action === 'Update' && !fullChangelogLoaded) {
             <div class="w-100 text-center primary-text mt-3 mb-4">
-              <i class="fa fa-fw fa-cog fa-spin" style="font-size: 75px"></i>
+              <i class="fa fa-cog fa-spin" style="font-size: 75px"></i>
             </div>
             } @else { @if (fullChangelog) {
             <markdown class="plugin-md" [data]="fullChangelog"></markdown>
@@ -125,7 +125,7 @@ hb-service start</pre
     <div class="mt-4 mb-0">
       <p class="w-100 text-center mb-1 small">
         <span class="grey-text">{{ 'plugins.manage.backup' | translate }}</span>
-        <a href="javascript:void(0)" (click)="downloadBackupFile()"><i class="fa fa-fw fa-download mx-1"></i></a>
+        <a href="javascript:void(0)" (click)="downloadBackupFile()"><i class="fa fa-download mx-1"></i></a>
       </p>
       <p class="w-100 text-center mb-0 small grey-text">{{ 'plugins.manage.hb_restart' | translate }}</p>
     </div>

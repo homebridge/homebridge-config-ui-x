@@ -12,7 +12,7 @@
   </div>
   <div class="modal-body">
     <div class="mb-3 text-center">
-      <i class="fas fa-fw fa-arrow-right-arrow-left primary-text" style="font-size: 75px"></i>
+      <i class="fas fa-arrow-right-arrow-left primary-text" style="font-size: 75px"></i>
     </div>
     <ul class="mb-0">
       <li [innerHTML]="'plugins.manage.scoped.info_1' | translate: { prefix }"></li>
@@ -37,7 +37,7 @@ hb-service start</pre
       <ul class="d-inline-block text-start mt-3 mb-3" style="list-style-type: none">
         <li>
           <i
-            class="fa fa-fw"
+            class="fa"
             [ngClass]="{
               'fa-circle-o': !installing && !installed && !failure,
               'fa-spinner fa-pulse': installing,
@@ -49,7 +49,7 @@ hb-service start</pre
         </li>
         <li>
           <i
-            class="fa fa-fw"
+            class="fa"
             [ngClass]="{
               'fa-circle-o': !uninstalling && !uninstalled && !failure,
               'fa-spinner fa-pulse': uninstalling,
@@ -61,7 +61,7 @@ hb-service start</pre
         </li>
         <li>
           <i
-            class="fa fa-fw"
+            class="fa"
             [ngClass]="{
               'fa-circle-o': !restarting && !failure,
               'fa-spinner fa-pulse': restarting,
@@ -122,7 +122,7 @@ hb-service start</pre
         @if (!installing && !uninstalling && !restarting) {
         <span> {{ 'form.button_continue' | translate }} </span>
         } @if ((installing || uninstalling || restarting) && !failure) {
-        <i class="fas fa-fw fa-spinner fa-pulse"></i>
+        <i class="fas fa-spinner fa-pulse"></i>
         }
       </button>
       }

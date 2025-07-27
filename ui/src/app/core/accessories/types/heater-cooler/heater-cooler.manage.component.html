@@ -26,23 +26,17 @@
     >
       <button type="button" class="btn mb-0 mx-0 p-3 btn-control" (click)="setTargetState(0, $event)">
         <div class="float-start primary-text">
-          <i
-            class="fas fa-fw fa-xl"
-            [ngClass]="{ 'fa-check-circle': targetState === 0, 'fa-blank': targetState !== 0 }"
-          ></i>
+          <i class="fas fa-xl" [ngClass]="{ 'fa-check-circle': targetState === 0, 'fa-blank': targetState !== 0 }"></i>
         </div>
         {{ 'accessories.control.off' | translate }}
-        <div class="float-end"><i class="fas fa-fw fa-xl fa-blank"></i></div>
+        <div class="float-end"><i class="fas fa-xl fa-blank"></i></div>
       </button>
       <button type="button" class="btn mb-0 mx-0 p-3 btn-control" (click)="setTargetState(1, $event)">
         <div class="float-start primary-text">
-          <i
-            class="fas fa-fw fa-xl"
-            [ngClass]="{ 'fa-check-circle': targetState === 1, 'fa-blank': targetState !== 1 }"
-          ></i>
+          <i class="fas fa-xl" [ngClass]="{ 'fa-check-circle': targetState === 1, 'fa-blank': targetState !== 1 }"></i>
         </div>
         {{ 'accessories.control.on' | translate }}
-        <div class="float-end"><i class="fas fa-fw fa-xl fa-blank"></i></div>
+        <div class="float-end"><i class="fas fa-xl fa-blank"></i></div>
       </button>
     </div>
     @if (targetStateValidValues.length) {
@@ -55,35 +49,26 @@
       @if (targetStateValidValues.includes(0)) {
       <button type="button" class="btn mb-0 mx-0 p-3 btn-control" (click)="setTargetMode(0, $event)">
         <div class="float-start primary-text">
-          <i
-            class="fas fa-fw fa-xl"
-            [ngClass]="{ 'fa-check-circle': targetMode === 0, 'fa-blank': targetMode !== 0 }"
-          ></i>
+          <i class="fas fa-xl" [ngClass]="{ 'fa-check-circle': targetMode === 0, 'fa-blank': targetMode !== 0 }"></i>
         </div>
         {{ 'accessories.control.auto' | translate }}
-        <div class="float-end"><i class="fas fa-fw fa-xl fa-blank"></i></div>
+        <div class="float-end"><i class="fas fa-xl fa-blank"></i></div>
       </button>
       } @if (targetStateValidValues.includes(1)) {
       <button type="button" class="btn mb-0 mx-0 p-3 btn-control" (click)="setTargetMode(1, $event)">
         <div class="float-start primary-text">
-          <i
-            class="fas fa-fw fa-xl"
-            [ngClass]="{ 'fa-check-circle': targetMode === 1, 'fa-blank': targetMode !== 1 }"
-          ></i>
+          <i class="fas fa-xl" [ngClass]="{ 'fa-check-circle': targetMode === 1, 'fa-blank': targetMode !== 1 }"></i>
         </div>
         {{ 'accessories.control.heat' | translate }}
-        <div class="float-end"><i class="fas fa-fw fa-xl fa-blank"></i></div>
+        <div class="float-end"><i class="fas fa-xl fa-blank"></i></div>
       </button>
       } @if (targetStateValidValues.includes(2)) {
       <button type="button" class="btn mb-0 mx-0 p-3 btn-control" (click)="setTargetMode(2, $event)">
         <div class="float-start primary-text">
-          <i
-            class="fas fa-fw fa-xl"
-            [ngClass]="{ 'fa-check-circle': targetMode === 2, 'fa-blank': targetMode !== 2 }"
-          ></i>
+          <i class="fas fa-xl" [ngClass]="{ 'fa-check-circle': targetMode === 2, 'fa-blank': targetMode !== 2 }"></i>
         </div>
         {{ 'accessories.control.cool' | translate }}
-        <div class="float-end"><i class="fas fa-fw fa-xl fa-blank"></i></div>
+        <div class="float-end"><i class="fas fa-xl fa-blank"></i></div>
       </button>
       }
     </div>

@@ -16,7 +16,7 @@
       <h4 class="mb-4 text-center">{{ 'setup.welcome_to_homebridge' | translate }}</h4>
       @if (!twoFactorCodeRequired) {
       <div class="input-group mb-4">
-        <span class="input-group-text custom-input"><i class="fas fa-fw fa-user primary-text fa-lg"></i></span>
+        <span class="input-group-text custom-input"><i class="fas fa-user primary-text fa-lg"></i></span>
         <input
           #username
           formControlName="username"
@@ -35,7 +35,7 @@
         />
       </div>
       <div class="input-group mb-4">
-        <span class="input-group-text custom-input"><i class="fas fa-fw fa-lock primary-text fa-lg"></i></span>
+        <span class="input-group-text custom-input"><i class="fas fa-lock primary-text fa-lg"></i></span>
         <input
           #password
           formControlName="password"
@@ -53,7 +53,7 @@
       </div>
       } @if (twoFactorCodeRequired) {
       <div class="input-group mb-4">
-        <span class="input-group-text custom-input"><i class="fas fa-fw fa-key primary-text fa-lg"></i></span>
+        <span class="input-group-text custom-input"><i class="fas fa-key primary-text fa-lg"></i></span>
         <input
           #otp
           formControlName="otp"
@@ -72,7 +72,7 @@
       } @if (invalidCredentials) {
       <div class="input-group no-border mb-4">
         <div class="input-group-text custom-input">
-          <i class="fas fa-fw fa-exclamation-triangle pink-text fa-lg"></i>
+          <i class="fas fa-exclamation-triangle pink-text fa-lg"></i>
         </div>
         <div class="form-control custom-input">
           <div class="small grey-text fw-semibold">{{ 'login.invalid_credentials' | translate }}</div>
@@ -82,7 +82,7 @@
       } @if (invalid2faCode) {
       <div class="input-group no-border mb-4">
         <div class="input-group-text custom-input">
-          <i class="fas fa-fw fa-exclamation-triangle pink-text fa-lg"></i>
+          <i class="fas fa-exclamation-triangle pink-text fa-lg"></i>
         </div>
         <div class="form-control custom-input">
           <div class="small grey-text fw-semibold">{{ 'login.invalid_code' | translate }}</div>

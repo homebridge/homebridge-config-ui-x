@@ -19,22 +19,22 @@
       <button type="button" class="btn mb-0 mx-0 p-3 btn-control" (click)="setActive(0, $event)">
         <div class="float-start primary-text">
           <i
-            class="fas fa-fw fa-xl"
+            class="fas fa-xl"
             [ngClass]="{ 'fa-check-circle': service.values.Active === 0, 'fa-blank': service.values.Active !== 0 }"
           ></i>
         </div>
         {{ 'accessories.control.off' | translate }}
-        <div class="float-end"><i class="fas fa-fw fa-xl fa-blank"></i></div>
+        <div class="float-end"><i class="fas fa-xl fa-blank"></i></div>
       </button>
       <button type="button" class="btn mb-0 mx-0 p-3 btn-control" (click)="setActive(1, $event)">
         <div class="float-start primary-text">
           <i
-            class="fas fa-fw fa-xl"
+            class="fas fa-xl"
             [ngClass]="{ 'fa-check-circle': service.values.Active === 1, 'fa-blank': service.values.Active !== 1 }"
           ></i>
         </div>
         {{ 'accessories.control.on' | translate }}
-        <div class="float-end"><i class="fas fa-fw fa-xl fa-blank"></i></div>
+        <div class="float-end"><i class="fas fa-xl fa-blank"></i></div>
       </button>
     </div>
     } @else if ('TargetMediaState' in service.values) {
@@ -46,32 +46,32 @@
       <button type="button" class="btn mb-0 mx-0 p-3 btn-control" (click)="setTargetState(0, $event)">
         <div class="float-start primary-text">
           <i
-            class="fas fa-fw fa-xl"
+            class="fas fa-xl"
             [ngClass]="{ 'fa-check-circle': service.values.CurrentMediaState === 0, 'fa-blank': service.values.CurrentMediaState !== 0 }"
           ></i>
         </div>
         {{ 'accessories.control.play' | translate }}
-        <div class="float-end"><i class="fas fa-fw fa-xl fa-blank"></i></div>
+        <div class="float-end"><i class="fas fa-xl fa-blank"></i></div>
       </button>
       <button type="button" class="btn mb-0 mx-0 p-3 btn-control" (click)="setTargetState(1, $event)">
         <div class="float-start primary-text">
           <i
-            class="fas fa-fw fa-xl"
+            class="fas fa-xl"
             [ngClass]="{ 'fa-check-circle': service.values.CurrentMediaState === 1, 'fa-blank': service.values.CurrentMediaState !== 1 }"
           ></i>
         </div>
         {{ 'accessories.control.pause' | translate }}
-        <div class="float-end"><i class="fas fa-fw fa-xl fa-blank"></i></div>
+        <div class="float-end"><i class="fas fa-xl fa-blank"></i></div>
       </button>
       <button type="button" class="btn mb-0 mx-0 p-3 btn-control" (click)="setTargetState(2, $event)">
         <div class="float-start primary-text">
           <i
-            class="fas fa-fw fa-xl"
+            class="fas fa-xl"
             [ngClass]="{ 'fa-check-circle': service.values.CurrentMediaState === 2, 'fa-blank': service.values.CurrentMediaState !== 2 }"
           ></i>
         </div>
         {{ 'accessories.control.stop' | translate }}
-        <div class="float-end"><i class="fas fa-fw fa-xl fa-blank"></i></div>
+        <div class="float-end"><i class="fas fa-xl fa-blank"></i></div>
       </button>
     </div>
     } @if ('Mute' in service.values) {
@@ -86,17 +86,17 @@
     >
       <button type="button" class="btn mb-0 mx-0 p-3 btn-control" (click)="setTargetMode(false, $event)">
         <div class="float-start primary-text">
-          <i class="fas fa-fw fa-xl" [ngClass]="{ 'fa-check-circle': !targetMode, 'fa-blank': targetMode }"></i>
+          <i class="fas fa-xl" [ngClass]="{ 'fa-check-circle': !targetMode, 'fa-blank': targetMode }"></i>
         </div>
         {{ 'accessories.control.not_mute' | translate }}
-        <div class="float-end"><i class="fas fa-fw fa-xl fa-blank"></i></div>
+        <div class="float-end"><i class="fas fa-xl fa-blank"></i></div>
       </button>
       <button type="button" class="btn mb-0 mx-0 p-3 btn-control" (click)="setTargetMode(true, $event)">
         <div class="float-start primary-text">
-          <i class="fas fa-fw fa-xl" [ngClass]="{ 'fa-check-circle': targetMode, 'fa-blank': !targetMode }"></i>
+          <i class="fas fa-xl" [ngClass]="{ 'fa-check-circle': targetMode, 'fa-blank': !targetMode }"></i>
         </div>
         {{ 'accessories.control.mute' | translate }}
-        <div class="float-end"><i class="fas fa-fw fa-xl fa-blank"></i></div>
+        <div class="float-end"><i class="fas fa-xl fa-blank"></i></div>
       </button>
     </div>
     } @if (targetVolume) {

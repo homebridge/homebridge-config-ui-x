@@ -11,7 +11,7 @@
   </div>
   <div class="modal-body">
     <div class="text-center mb-3">
-      <i class="fas fa-fw fa-key primary-text" style="font-size: 75px"></i>
+      <i class="fas fa-key primary-text" style="font-size: 75px"></i>
     </div>
     <ul class="mb-3">
       <li>{{ 'users.setup_2fa_warning' | translate }}</li>
@@ -36,9 +36,9 @@
           {{ otpSecret }}
           <a href="javascript:void(0)" class="ms-1 text-primary" (click)="copySecretToClipboard()">
             @if (secretCopied) {
-            <i class="fas fa-fw fa-check green-text"></i>
+            <i class="fas fa-check green-text"></i>
             } @else {
-            <i class="fas fa-fw fa-copy"></i>
+            <i class="fas fa-copy"></i>
             }
           </a>
         </div>

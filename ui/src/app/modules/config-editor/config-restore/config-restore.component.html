@@ -12,7 +12,7 @@
   </div>
   <div class="modal-body">
     <div class="text-center mb-3">
-      <i class="fas fa-fw fa-history primary-text" style="font-size: 75px"></i>
+      <i class="fas fa-history primary-text" style="font-size: 75px"></i>
     </div>
     <ul class="mb-3">
       <li>{{ 'config.restore.help_1' | translate }}</li>
@@ -31,13 +31,13 @@
           [disabled]="clicked || deleting"
           [attr.aria-label]="'backup.backup_now' | translate"
         >
-          <i class="fas fa-fw fa-arrow-right"></i>
+          <i class="fas fa-arrow-right"></i>
         </button>
       </li>
     </ul>
     @if (loading) {
     <div class="text-center primary-text">
-      <i class="fa fa-fw fa-cog fa-spin mt-3" style="font-size: 75px"></i>
+      <i class="fa fa-cog fa-spin mt-3" style="font-size: 75px"></i>
     </div>
     } @else if (backupList.length) {
     <ul class="list-group list-group-box mt-3">
@@ -59,7 +59,7 @@
             triggers="hover"
             [attr.aria-label]="'config.restore.copy_to_editor' | translate"
           >
-            <i class="fas fa-fw fa-history"></i>
+            <i class="fas fa-history"></i>
           </button>
           <button
             class="btn btn-primary m-0 ms-2"
@@ -72,7 +72,7 @@
             triggers="hover"
             [attr.aria-label]="'form.button_download' | translate"
           >
-            <i class="fas fa-fw fa-download"></i>
+            <i class="fas fa-download"></i>
           </button>
           <button
             class="btn btn-danger m-0 ms-2"
@@ -86,7 +86,7 @@
             [attr.aria-label]="'form.button_delete' | translate"
           >
             <i
-              class="fas fa-fw"
+              class="fas"
               [ngClass]="{ 'fa-trash': backup.id !== deleting, 'fa-cog fa-spin': backup.id === deleting }"
             ></i>
           </button>
@@ -110,10 +110,7 @@
             triggers="hover"
             [attr.aria-label]="'form.button_delete' | translate"
           >
-            <i
-              class="fas fa-fw"
-              [ngClass]="{ 'fa-trash': 'all' !== deleting, 'fa-cog fa-spin': 'all' === deleting }"
-            ></i>
+            <i class="fas" [ngClass]="{ 'fa-trash': 'all' !== deleting, 'fa-cog fa-spin': 'all' === deleting }"></i>
           </button>
         </span>
       </li>

@@ -81,8 +81,8 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
   public presentTenseVerb: string
   public pastTenseVerb: string
   public onlineUpdateOk: boolean
-  public readonly iconStar = '<i class="fas fa-fw fa-star primary-text"></i>'
-  public readonly iconThumbsUp = '<i class="fas fa-fw fa-thumbs-up primary-text"></i>'
+  public readonly iconStar = '<i class="fas fa-star primary-text"></i>'
+  public readonly iconThumbsUp = '<i class="fas fa-thumbs-up primary-text"></i>'
   public versionNotes: string
   public versionNotesLoaded = false
   public versionNotesShow = false

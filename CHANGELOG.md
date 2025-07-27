@@ -36,6 +36,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - make 'keep orphans' setting available in ui settings service
 - improve types for widgets
 - use new folder for updated accessory icons (fix cache issues)
+- font awesome `fa-fw` class no longer needed
 
 ### Homebridge Dependencies
 

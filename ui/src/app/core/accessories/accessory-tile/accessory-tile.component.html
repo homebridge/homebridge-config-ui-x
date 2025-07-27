@@ -1,10 +1,10 @@
 <ng-container>
   @if ($accessories.readyForControl) {
   <a href="javascript:void(0)" class="manage-accessory-button" (click)="$accessories.showAccessoryInformation(service)">
-    <i class="fas fa-fw fa-bars grey-text"></i>
+    <i class="fas fa-bars grey-text"></i>
   </a>
   } @if (!$accessories.readyForControl) {
-  <i class="fas fa-fw fa-spin fa-sync-alt refreshing-accessory-status-icon grey-text"></i>
+  <i class="fas fa-spin fa-sync-alt refreshing-accessory-status-icon grey-text"></i>
   } @switch (service.customType || service.type) { @case ('Switch') {
   <app-switch [service]="service" [readyForControl]="$accessories.readyForControl">Switch</app-switch>
   } @case ('Thermostat') {

@@ -47,7 +47,7 @@ export class SwitchToScopedComponent implements OnInit, OnDestroy {
   public restarting = false
   public failure: string = ''
   public onlineUpdateOk: boolean
-  public readonly moreInfo = '<a href="https://github.com/homebridge/plugins/wiki/Scoped-Plugins" target="_blank"><i class="fa fa-fw fa-external-link-alt primary-text"></i></a>'
+  public readonly moreInfo = '<a href="https://github.com/homebridge/plugins/wiki/Scoped-Plugins" target="_blank"><i class="fa fa-external-link-alt primary-text"></i></a>'
   public readonly prefix = '<span class="font-monospace">@homebridge-plugins/</span>'
 
   constructor() {

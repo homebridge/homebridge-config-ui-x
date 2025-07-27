@@ -201,7 +201,7 @@ export class SettingsComponent implements OnInit {
   public hbLinuxRestartIsSaving = false
   public hbLinuxRestartFormControl = new FormControl('')
 
-  public readonly linkDebug = '<a href="https://github.com/homebridge/homebridge-config-ui-x/wiki/Debug-Common-Values" target="_blank" rel="noopener noreferrer"><i class="fa fa-fw fa-external-link-alt primary-text"></i></a>'
+  public readonly linkDebug = '<a href="https://github.com/homebridge/homebridge-config-ui-x/wiki/Debug-Common-Values" target="_blank" rel="noopener noreferrer"><i class="fa fa-external-link-alt primary-text"></i></a>'
 
   public async ngOnInit() {
     this.isHbV2 = this.$settings.env.homebridgeVersion.startsWith('2')

@@ -132,7 +132,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
       : 'rpi.throttled.previously_message',
     )
     ref.componentInstance.ctaButtonLabel = this.$translate.instant('form.button_more_info')
-    ref.componentInstance.faIconClass = 'fas fa-fw fa-bolt yellow-text'
+    ref.componentInstance.faIconClass = 'fas fa-bolt yellow-text'
     ref.componentInstance.ctaButtonLink = 'https://pimylifeup.com/raspberry-pi-low-voltage-warning'
   }
 

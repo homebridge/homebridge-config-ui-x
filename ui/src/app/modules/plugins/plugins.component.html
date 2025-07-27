@@ -19,7 +19,7 @@
       [ngbTooltip]="'plugins.search' | translate"
       [attr.aria-label]="'plugins.search' | translate"
     >
-      <i class="fas fa-fw{{ showSearchBar ? ' primary-text' : '' }} fa-search"></i>
+      <i class="fas{{ showSearchBar ? ' primary-text' : '' }} fa-search"></i>
     </button>
     <button
       type="button"
@@ -32,7 +32,7 @@
       [ngbTooltip]="'plugins.stats' | translate"
       [attr.aria-label]="'plugins.stats' | translate"
     >
-      <i class="fas fa-fw{{ tab === 'stats' ? ' primary-text' : '' }} fa-sliders"></i>
+      <i class="fas{{ tab === 'stats' ? ' primary-text' : '' }} fa-sliders"></i>
     </button>
     }
     <button
@@ -41,7 +41,7 @@
       (click)="openSupport()"
       [attr.aria-label]="'support.title' | translate"
     >
-      <i class="fa fa-fw fa-question-circle-o"></i>
+      <i class="fa fa-question-circle-o"></i>
     </button>
   </div>
 </div>
@@ -59,7 +59,7 @@
       />
       @if (showExitButton) {
       <a class="hb-npm-search-clear" href="javascript:void(0)" (click)="onClearSearch()">
-        <i class="far fa-fw fa-times-circle"></i>
+        <i class="far fa-times-circle"></i>
       </a>
       }
     </form>
@@ -74,7 +74,7 @@
   } @if (installedPlugins.length === 0 && !loading && !mainError) {
   <div class="alert alert-info mt-4 text-center w-100">
     <i
-      class="fas fa-fw primary-text my-3"
+      class="fas primary-text my-3"
       style="font-size: 75px"
       [ngClass]="{
         'fa-magnifying-glass': !showExitButton,
@@ -90,7 +90,7 @@
   <div class="mb-2">
     <code
       >https://developers.homebridge.io/analytics
-      <a href="https://developers.homebridge.io/analytics" target="_blank"><i class="fa fa-fw fa-external-link"></i></a
+      <a href="https://developers.homebridge.io/analytics" target="_blank"><i class="fa fa-external-link"></i></a
     ></code>
   </div>
   <div class="small grey-text">{{ 'plugins.stats_note' | translate }}</div>

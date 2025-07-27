@@ -12,7 +12,7 @@
   </div>
   <div class="modal-body">
     <div class="text-center mb-3">
-      <i class="fas fa-fw fa-hard-drive primary-text" style="font-size: 75px"></i>
+      <i class="fas fa-hard-drive primary-text" style="font-size: 75px"></i>
     </div>
     <ul class="mb-3">
       <li>{{ 'backup.backup_help_one' | translate }}</li>
@@ -71,7 +71,7 @@
           [disabled]="clicked"
           [attr.aria-label]="'backup.backup_now' | translate"
         >
-          <i class="fas fa-fw" [ngClass]="{ 'fa-arrow-right': !clicked, 'fa-cog fa-spin': clicked }"></i>
+          <i class="fas" [ngClass]="{ 'fa-arrow-right': !clicked, 'fa-cog fa-spin': clicked }"></i>
         </button>
       </li>
       <li class="list-group-item d-flex justify-content-between align-items-center">
@@ -86,7 +86,7 @@
           [disabled]="clicked"
           [attr.aria-label]="'backup.backup_now' | translate"
         >
-          <i class="fas fa-fw" [ngClass]="{ 'fa-arrow-right': !clicked, 'fa-cog fa-spin': clicked }"></i>
+          <i class="fas" [ngClass]="{ 'fa-arrow-right': !clicked, 'fa-cog fa-spin': clicked }"></i>
         </button>
       </li>
       <li class="list-group-item d-flex justify-content-between align-items-center">
@@ -101,7 +101,7 @@
           [attr.aria-label]="'backup.restore_now' | translate"
           [disabled]="clicked"
         >
-          <i class="fas fa-fw fa-arrow-right"></i>
+          <i class="fas fa-arrow-right"></i>
         </button>
       </li>
     </ul>
@@ -126,7 +126,7 @@
               triggers="hover"
               class="red-text"
             >
-              <i class="fas fa-fw fa-exclamation-circle"></i>
+              <i class="fas fa-exclamation-circle"></i>
               {{ backup.size }}MB
             </span>
             } @if (backup.size <= backup.maxBackupSize) {
@@ -146,7 +146,7 @@
             triggers="hover"
             [attr.aria-label]="'form.button_restore' | translate"
           >
-            <i class="fas fa-fw fa-history"></i>
+            <i class="fas fa-history"></i>
           </button>
           <button
             class="btn btn-primary m-0 ms-2"
@@ -159,7 +159,7 @@
             triggers="hover"
             [attr.aria-label]="'form.button_download' | translate"
           >
-            <i class="fas fa-fw fa-download"></i>
+            <i class="fas fa-download"></i>
           </button>
           <button
             class="btn btn-danger m-0 ms-2"
@@ -173,7 +173,7 @@
             [attr.aria-label]="'form.button_delete' | translate"
           >
             <i
-              class="fas fa-fw"
+              class="fas"
               [ngClass]="{ 'fa-trash': backup.id !== deleting, 'fa-cog fa-spin': backup.id === deleting }"
             ></i>
           </button>

@@ -13,12 +13,12 @@
   <div class="modal-body">
     @if (cachedAccessories.length === 0) {
     <div class="text-center mb-3">
-      <i class="fas fa-fw fa-circle-check primary-text" style="font-size: 75px"></i>
+      <i class="fas fa-circle-check primary-text" style="font-size: 75px"></i>
     </div>
     <p class="mb-0 text-center">{{ 'reset.no_accessories' | translate }}</p>
     } @if (cachedAccessories.length > 0) {
     <div class="text-center mb-3">
-      <i class="fas fa-fw fa-network-wired primary-text" style="font-size: 75px"></i>
+      <i class="fas fa-network-wired primary-text" style="font-size: 75px"></i>
     </div>
     <ul class="mb-3">
       <li>{{ 'reset.accessory_all.list_1' | translate }}</li>
@@ -68,7 +68,7 @@
         [disabled]="clicked"
       >
         @if (!clicked) { {{ 'form.button_remove' | translate }} } @if (clicked) {
-        <i class="fas fa-fw fa-spinner fa-pulse"></i>
+        <i class="fas fa-spinner fa-pulse"></i>
         }
       </button>
       }

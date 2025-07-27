@@ -16,19 +16,19 @@
     <p class="grey-text mb-1 font-monospace">&#64;{{ plugin.author }}</p>
     <p class="mb-3">{{ plugin.description }}</p>
     <i
-      class="fas fa-fw fa-shield-alt mb-3"
+      class="fas fa-shield-alt mb-3"
       style="font-size: 48px"
       [ngClass]="{ 'orange-text': !plugin.verifiedPlugin && !plugin.verifiedPlusPlugin, 'grey-text': plugin.verifiedPlugin || plugin.verifiedPlusPlugin }"
       [ngStyle]="{ 'opacity': !plugin.verifiedPlugin && !plugin.verifiedPlusPlugin ? 1 : 0.25 }"
     ></i>
     <i
-      class="fas fa-fw fa-shield-alt mb-3"
+      class="fas fa-shield-alt mb-3"
       style="font-size: 48px"
       [ngClass]="{ 'green-text': !plugin.isHbScoped && (plugin.verifiedPlugin || plugin.verifiedPlusPlugin), 'grey-text': plugin.isHbScoped || (!plugin.verifiedPlugin && !plugin.verifiedPlusPlugin) }"
       [ngStyle]="{ 'opacity': !plugin.isHbScoped && (plugin.verifiedPlugin || plugin.verifiedPlusPlugin) ? 1 : 0.25 }"
     ></i>
     <i
-      class="fas fa-fw fa-shield-alt mb-3"
+      class="fas fa-shield-alt mb-3"
       style="font-size: 48px"
       [ngClass]="{ 'purple-text': plugin.isHbScoped, 'grey-text': !plugin.isHbScoped }"
       [ngStyle]="{ 'opacity': plugin.isHbScoped ? 1 : 0.25 }"
@@ -72,7 +72,7 @@
         [href]="plugin.links.homepage || plugin.links.npm"
         rel="noopener noreferrer"
       >
-        {{ 'plugins.button_homepage' | translate }} <i class="fas fa-fw fa-external-link-alt"></i>
+        {{ 'plugins.button_homepage' | translate }} <i class="fas fa-external-link-alt"></i>
       </a>
       }
     </div>

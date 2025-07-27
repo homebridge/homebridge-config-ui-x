@@ -19,10 +19,7 @@
     class="mt-3 hover-pointer"
   >
     <h5 class="primary-text">
-      <i
-        class="fa fa-fw"
-        [ngClass]="{ 'fa-chevron-down': showFields.general, 'fa-chevron-right': !showFields.general }"
-      ></i>
+      <i class="fa" [ngClass]="{ 'fa-chevron-down': showFields.general, 'fa-chevron-right': !showFields.general }"></i>
       {{ 'settings.general.title_general' | translate }}
     </h5>
   </div>
@@ -39,10 +36,7 @@
           [ngClass]="{ 'is-invalid': hbNameIsInvalid }"
         />
         @if (hbNameIsSaving) {
-        <i
-          @fadeInOut
-          class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
-        ></i>
+        <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
         }
       </div>
     </li>
@@ -54,7 +48,7 @@
         (click)="openBackupModal()"
         [attr.aria-label]="'backup.title_backup' | translate"
       >
-        <i class="fas fa-fw fa-arrow-right"></i>
+        <i class="fas fa-arrow-right"></i>
       </button>
     </li>
     <li class="list-group-item d-flex justify-content-between align-items-center">
@@ -65,7 +59,7 @@
         (click)="openConfigBackup()"
         [attr.aria-label]="'config.restore.title' | translate"
       >
-        <i class="fas fa-fw fa-arrow-right"></i>
+        <i class="fas fa-arrow-right"></i>
       </button>
     </li>
     <li class="list-group-item d-flex justify-content-between align-items-center">
@@ -76,7 +70,7 @@
         routerLink="/users"
         [attr.aria-label]="'menu.tooltip_user_accounts' | translate"
       >
-        <i class="fas fa-fw fa-arrow-right"></i>
+        <i class="fas fa-arrow-right"></i>
       </a>
     </li>
   </ul>
@@ -94,10 +88,7 @@
     class="mt-3 hover-pointer"
   >
     <h5 class="primary-text">
-      <i
-        class="fa fa-fw"
-        [ngClass]="{ 'fa-chevron-down': showFields.display, 'fa-chevron-right': !showFields.display }"
-      ></i>
+      <i class="fa" [ngClass]="{ 'fa-chevron-down': showFields.display, 'fa-chevron-right': !showFields.display }"></i>
       {{ 'settings.general.title_display' | translate }}
     </h5>
   </div>
@@ -138,10 +129,7 @@
           <option value="uk">Ukrainian (uk)</option>
         </select>
         @if (uiLangIsSaving) {
-        <i
-          @fadeInOut
-          class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
-        ></i>
+        <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
         }
       </div>
     </li>
@@ -164,10 +152,7 @@
           <option value="brown">{{ 'settings.display.brown' | translate }}</option>
         </select>
         @if (uiThemeIsSaving) {
-        <i
-          @fadeInOut
-          class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
-        ></i>
+        <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
         }
       </div>
     </li>
@@ -180,10 +165,7 @@
           <option value="dark">{{ 'settings.display.dark' | translate }}</option>
         </select>
         @if (uiLightIsSaving) {
-        <i
-          @fadeInOut
-          class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
-        ></i>
+        <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
         }
       </div>
     </li>
@@ -195,10 +177,7 @@
           <option value="freeze">{{ 'settings.display.menu_freeze' | translate }}</option>
         </select>
         @if (uiMenuIsSaving) {
-        <i
-          @fadeInOut
-          class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
-        ></i>
+        <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
         }
       </div>
     </li>
@@ -210,10 +189,7 @@
           <option value="f">{{ 'settings.display.temp_units.f' | translate }}</option>
         </select>
         @if (uiTempIsSaving) {
-        <i
-          @fadeInOut
-          class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
-        ></i>
+        <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
         }
       </div>
     </li>
@@ -225,7 +201,7 @@
         (click)="openWallpaperModal()"
         [attr.aria-label]="'settings.display.wallpaper' | translate"
       >
-        <i class="fas fa-fw fa-arrow-right"></i>
+        <i class="fas fa-arrow-right"></i>
       </button>
     </li>
   </ul>
@@ -243,10 +219,7 @@
     class="mt-3 hover-pointer"
   >
     <h5 class="primary-text">
-      <i
-        class="fa fa-fw"
-        [ngClass]="{ 'fa-chevron-down': showFields.startup, 'fa-chevron-right': !showFields.startup }"
-      ></i>
+      <i class="fa" [ngClass]="{ 'fa-chevron-down': showFields.startup, 'fa-chevron-right': !showFields.startup }"></i>
       {{ 'settings.title_startup_options' | translate }}
     </h5>
   </div>
@@ -271,10 +244,7 @@
           <label for="homebridgeDebugMode" class="rendux-label ms-3" style="min-width: 50px"></label>
         </div>
         @if (hbDebugIsSaving) {
-        <i
-          @fadeInOut
-          class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
-        ></i>
+        <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
         }
       </div>
     </li>
@@ -295,10 +265,7 @@
           <label for="homebridgeInsecureMode" class="rendux-label ms-3" style="min-width: 50px"></label>
         </div>
         @if (hbInsecureIsSaving) {
-        <i
-          @fadeInOut
-          class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
-        ></i>
+        <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
         }
       </div>
     </li>
@@ -319,10 +286,7 @@
           <label for="homebridgeKeepOrphans" class="rendux-label ms-3" style="min-width: 50px"></label>
         </div>
         @if (hbKeepIsSaving) {
-        <i
-          @fadeInOut
-          class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
-        ></i>
+        <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
         }
       </div>
     </li>
@@ -343,10 +307,7 @@
           <label for="homebridgeMetrics" class="rendux-label ms-3" style="min-width: 50px"></label>
         </div>
         @if (uiMetricsIsSaving) {
-        <i
-          @fadeInOut
-          class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
-        ></i>
+        <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
         }
       </div>
     </li>
@@ -364,10 +325,7 @@
           [attr.aria-label]="('settings.network.hb_package' | translate)"
         />
         @if (hbPackageIsSaving) {
-        <i
-          @fadeInOut
-          class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
-        ></i>
+        <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
         }
       </div>
     </li>
@@ -386,10 +344,7 @@
           [attr.aria-label]="('settings.linux.shutdown' | translate)"
         />
         @if (hbLinuxShutdownIsSaving) {
-        <i
-          @fadeInOut
-          class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
-        ></i>
+        <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
         }
       </div>
     </li>
@@ -407,10 +362,7 @@
           [attr.aria-label]="('settings.linux.restart' | translate)"
         />
         @if (hbLinuxRestartIsSaving) {
-        <i
-          @fadeInOut
-          class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
-        ></i>
+        <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
         }
       </div>
     </li>
@@ -429,10 +381,7 @@
           [attr.aria-label]="('settings.linux.temp' | translate)"
         />
         @if (uiTempFileIsSaving) {
-        <i
-          @fadeInOut
-          class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
-        ></i>
+        <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
         }
       </div>
     </li>
@@ -453,10 +402,7 @@
           placeholder="HAP-NodeJS:Advertiser,HAP-NodeJS:Service"
         />
         @if (hbEnvDebugIsSaving) {
-        <i
-          @fadeInOut
-          class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
-        ></i>
+        <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
         }
       </div>
     </li>
@@ -473,10 +419,7 @@
           placeholder="--max-old-space-size=512 --max-http-header-size=8192"
         />
         @if (hbEnvNodeIsSaving) {
-        <i
-          @fadeInOut
-          class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
-        ></i>
+        <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
         }
       </div>
     </li>
@@ -492,7 +435,7 @@
         routerLink="/platform-tools/docker/startup-script"
         [attr.aria-label]="'menu.docker.startup_script' | translate"
       >
-        <i class="fas fa-fw fa-arrow-right"></i>
+        <i class="fas fa-arrow-right"></i>
       </a>
     </li>
     }
@@ -511,10 +454,7 @@
     class="mt-3 hover-pointer"
   >
     <h5 class="primary-text">
-      <i
-        class="fa fa-fw"
-        [ngClass]="{ 'fa-chevron-down': showFields.network, 'fa-chevron-right': !showFields.network }"
-      ></i>
+      <i class="fa" [ngClass]="{ 'fa-chevron-down': showFields.network, 'fa-chevron-right': !showFields.network }"></i>
       {{ 'settings.network.title_network' | translate }}
     </h5>
   </div>
@@ -530,7 +470,7 @@
           [ngClass]="{ 'badge-danger': adapter.missing, 'badge-info': !adapter.missing }"
         >
           @if (adapter.missing) {
-          <i class="fas fa-fw fa-exclamation-triangle"></i>
+          <i class="fas fa-exclamation-triangle"></i>
           } {{ adapter.iface }}:
           <span class="fw-normal"
             >{{ adapter.missing ? ('settings.mdns_advertiser_not_connected' | translate) : adapter.ip4 || adapter.ip6
@@ -546,7 +486,7 @@
         [disabled]="!adaptersAvailable.length"
         [attr.aria-label]="'settings.network.title_network_interfaces' | translate"
       >
-        <i class="fas fa-fw fa-arrow-right"></i>
+        <i class="fas fa-arrow-right"></i>
       </button>
     </li>
     <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
@@ -573,10 +513,7 @@
           }
         </select>
         @if (hbMDnsIsSaving) {
-        <i
-          @fadeInOut
-          class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
-        ></i>
+        <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
         }
       </div>
     </li>
@@ -596,10 +533,7 @@
           [ngClass]="{ 'is-invalid': hbPortIsInvalid }"
         />
         @if (hbPortIsSaving) {
-        <i
-          @fadeInOut
-          class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
-        ></i>
+        <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
         }
       </div>
     </li>
@@ -620,10 +554,7 @@
           [ngClass]="{ 'is-invalid': uiPortIsInvalid }"
         />
         @if (uiPortIsSaving) {
-        <i
-          @fadeInOut
-          class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
-        ></i>
+        <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
         }
       </div>
     </li>
@@ -643,10 +574,7 @@
           [ngClass]="{ 'is-invalid': hbStartPortIsInvalid }"
         />
         @if (hbStartPortIsSaving) {
-        <i
-          @fadeInOut
-          class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
-        ></i>
+        <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
         }
       </div>
     </li>
@@ -666,10 +594,7 @@
           [ngClass]="{ 'is-invalid': hbEndPortIsInvalid }"
         />
         @if (hbEndPortIsSaving) {
-        <i
-          @fadeInOut
-          class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
-        ></i>
+        <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
         }
       </div>
     </li>
@@ -688,10 +613,7 @@
           [attr.aria-label]="('settings.network.host' | translate)"
         />
         @if (uiHostIsSaving) {
-        <i
-          @fadeInOut
-          class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
-        ></i>
+        <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
         }
       </div>
     </li>
@@ -710,10 +632,7 @@
           [attr.aria-label]="('settings.network.proxy' | translate)"
         />
         @if (uiProxyHostIsSaving) {
-        <i
-          @fadeInOut
-          class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
-        ></i>
+        <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
         }
       </div>
     </li>
@@ -733,7 +652,7 @@
   >
     <h5 class="primary-text">
       <i
-        class="fa fa-fw"
+        class="fa"
         [ngClass]="{ 'fa-chevron-down': showFields.terminal, 'fa-chevron-right': !showFields.terminal }"
       ></i>
       {{ 'settings.network.title_terminal' | translate }}
@@ -757,10 +676,7 @@
           [ngClass]="{ 'is-invalid': hbLogSizeIsInvalid }"
         />
         @if (hbLogSizeIsSaving) {
-        <i
-          @fadeInOut
-          class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
-        ></i>
+        <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
         }
       </div>
     </li>
@@ -781,10 +697,7 @@
           [ngClass]="{ 'is-invalid': hbLogTruncateIsInvalid }"
         />
         @if (hbLogTruncateIsSaving) {
-        <i
-          @fadeInOut
-          class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
-        ></i>
+        <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
         }
       </div>
     </li>
@@ -807,10 +720,7 @@
           <label class="rendux-label ms-3" for="terminalPersistence"></label>
         </div>
         @if (uiTerminalPersistenceIsSaving) {
-        <i
-          @fadeInOut
-          class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
-        ></i>
+        <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
         }
       </div>
     </li>
@@ -833,10 +743,7 @@
           <label class="rendux-label ms-3" for="terminalHideWarning"></label>
         </div>
         @if (uiTerminalHideWarningIsSaving) {
-        <i
-          @fadeInOut
-          class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
-        ></i>
+        <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
         }
       </div>
     </li>
@@ -861,10 +768,7 @@
           [ngClass]="{ 'is-invalid': uiTerminalBufferSizeIsInvalid }"
         />
         @if (uiTerminalBufferSizeIsSaving) {
-        <i
-          @fadeInOut
-          class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
-        ></i>
+        <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
         }
       </div>
     </li>
@@ -885,7 +789,7 @@
   >
     <h5 class="primary-text">
       <i
-        class="fa fa-fw"
+        class="fa"
         [ngClass]="{ 'fa-chevron-down': showFields.security, 'fa-chevron-right': !showFields.security }"
       ></i>
       {{ 'settings.network.title_security' | translate }}
@@ -910,10 +814,7 @@
           <label for="uiAuthForm" class="rendux-label ms-3" style="min-width: 50px"></label>
         </div>
         @if (uiAuthIsSaving) {
-        <i
-          @fadeInOut
-          class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
-        ></i>
+        <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
         }
       </div>
     </li>
@@ -935,10 +836,7 @@
           [ngClass]="{ 'is-invalid': uiSessionTimeoutIsInvalid }"
         />
         @if (uiSessionTimeoutIsSaving) {
-        <i
-          @fadeInOut
-          class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
-        ></i>
+        <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
         }
       </div>
     </li>
@@ -972,10 +870,7 @@
           [attr.aria-label]="('settings.security.key' | translate)"
         />
         @if (uiSslKeyIsSaving) {
-        <i
-          @fadeInOut
-          class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
-        ></i>
+        <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
         }
       </div>
     </li>
@@ -990,10 +885,7 @@
           [attr.aria-label]="('settings.security.cert' | translate)"
         />
         @if (uiSslCertIsSaving) {
-        <i
-          @fadeInOut
-          class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
-        ></i>
+        <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
         }
       </div>
     </li>
@@ -1009,10 +901,7 @@
           [attr.aria-label]="('settings.security.pfx' | translate)"
         />
         @if (uiSslPfxIsSaving) {
-        <i
-          @fadeInOut
-          class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
-        ></i>
+        <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
         }
       </div>
     </li>
@@ -1029,10 +918,7 @@
           (blur)="showPfxPassphrase = false"
         />
         @if (uiSslPassphraseIsSaving) {
-        <i
-          @fadeInOut
-          class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
-        ></i>
+        <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
         }
       </div>
     </li>
@@ -1048,7 +934,7 @@
         (click)="accessoryUiControl()"
         [attr.aria-label]="'settings.security.ui_control' | translate"
       >
-        <i class="fas fa-fw fa-arrow-right"></i>
+        <i class="fas fa-arrow-right"></i>
       </button>
     </li>
   </ul>
@@ -1066,10 +952,7 @@
     class="mt-3 hover-pointer"
   >
     <h5 class="primary-text">
-      <i
-        class="fa fa-fw"
-        [ngClass]="{ 'fa-chevron-down': showFields.cache, 'fa-chevron-right': !showFields.cache }"
-      ></i>
+      <i class="fa" [ngClass]="{ 'fa-chevron-down': showFields.cache, 'fa-chevron-right': !showFields.cache }"></i>
       {{ 'menu.label_accessories' | translate }}
     </h5>
   </div>
@@ -1094,10 +977,7 @@
           <label for="accessoryDebug" class="rendux-label ms-3" style="min-width: 50px"></label>
         </div>
         @if (uiAccDebugIsSaving) {
-        <i
-          @fadeInOut
-          class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
-        ></i>
+        <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
         }
       </div>
     </li>
@@ -1112,7 +992,7 @@
         (click)="removeSingleCachedAccessories()"
         [attr.aria-label]="'reset.accessory_ind.title' | translate"
       >
-        <i class="fas fa-fw fa-arrow-right"></i>
+        <i class="fas fa-arrow-right"></i>
       </button>
     </li>
     <li class="list-group-item d-flex justify-content-between align-items-center">
@@ -1126,7 +1006,7 @@
         (click)="removeBridgeAccessories()"
         [attr.aria-label]="'reset.accessory_all.title' | translate"
       >
-        <i class="fas fa-fw fa-arrow-right"></i>
+        <i class="fas fa-arrow-right"></i>
       </button>
     </li>
     <li class="list-group-item d-flex justify-content-between align-items-center">
@@ -1140,7 +1020,7 @@
         (click)="removeAllCachedAccessories()"
         [attr.aria-label]="'reset.accessory_all.title' | translate"
       >
-        <i class="fas fa-fw fa-arrow-right"></i>
+        <i class="fas fa-arrow-right"></i>
       </button>
     </li>
   </ul>
@@ -1158,10 +1038,7 @@
     class="mt-3 hover-pointer"
   >
     <h5 class="primary-text">
-      <i
-        class="fa fa-fw"
-        [ngClass]="{ 'fa-chevron-down': showFields.reset, 'fa-chevron-right': !showFields.reset }"
-      ></i>
+      <i class="fa" [ngClass]="{ 'fa-chevron-down': showFields.reset, 'fa-chevron-right': !showFields.reset }"></i>
       {{ 'reset.bridges.title' | translate }}
     </h5>
   </div>
@@ -1180,7 +1057,7 @@
         (click)="unpairAccessory()"
         [attr.aria-label]="'reset.bridge_ind.title' | translate"
       >
-        <i class="fas fa-fw fa-arrow-right"></i>
+        <i class="fas fa-arrow-right"></i>
       </button>
     </li>
     <li class="list-group-item d-flex justify-content-between align-items-center">
@@ -1194,7 +1071,7 @@
         (click)="resetHomebridgeState()"
         [attr.aria-label]="'reset.bridge_all.title' | translate"
       >
-        <i class="fas fa-fw fa-arrow-right"></i>
+        <i class="fas fa-arrow-right"></i>
       </button>
     </li>
   </ul>

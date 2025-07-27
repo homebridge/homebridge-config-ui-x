@@ -11,7 +11,7 @@
   </div>
   <div class="modal-body text-center">
     @if (faIconClass) {
-    <i class="fas fa-fw {{ faIconClass }} mb-3" style="font-size: 75px"></i>
+    <i class="fas {{ faIconClass }} mb-3" style="font-size: 75px"></i>
     }
     <p class="mb-0 text-center" [innerHTML]="message"></p>
     @if (message2) {

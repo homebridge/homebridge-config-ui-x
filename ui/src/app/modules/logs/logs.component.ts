@@ -61,7 +61,7 @@ export class LogsComponent implements OnInit, OnDestroy {
     ref.componentInstance.title = this.$translate.instant('logs.title_download_log_file')
     ref.componentInstance.message = this.$translate.instant('logs.download_warning')
     ref.componentInstance.confirmButtonLabel = this.$translate.instant('form.button_download')
-    ref.componentInstance.faIconClass = 'fas fa-fw fa-user-secret primary-text'
+    ref.componentInstance.faIconClass = 'fas fa-user-secret primary-text'
 
     ref.result
       .then(() => {
@@ -92,7 +92,7 @@ export class LogsComponent implements OnInit, OnDestroy {
     ref.componentInstance.message = this.$translate.instant('logs.truncate_log_warning')
     ref.componentInstance.confirmButtonLabel = this.$translate.instant('form.button_delete')
     ref.componentInstance.confirmButtonClass = 'btn-danger'
-    ref.componentInstance.faIconClass = 'fas fa-fw fa-circle-exclamation primary-text'
+    ref.componentInstance.faIconClass = 'fas fa-circle-exclamation primary-text'
 
     ref.result
       .then(() => {

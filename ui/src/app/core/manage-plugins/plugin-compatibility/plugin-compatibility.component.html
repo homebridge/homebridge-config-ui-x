@@ -14,7 +14,7 @@
     @if (!['homebridge', 'homebridge-config-ui-x'].includes(plugin.name)) {
     <div class="text-center mb-3">
       <i
-        class="{{ action === 'install' ? 'far fa-fw fa-arrow-alt-circle-down' : ( action === 'update' ? 'far fa-fw fa-arrow-alt-circle-up' : 'fas fa-fw fa-code-compare') }} primary-text"
+        class="{{ action === 'install' ? 'far fa-arrow-alt-circle-down' : ( action === 'update' ? 'far fa-arrow-alt-circle-up' : 'fas fa-code-compare') }} primary-text"
         style="font-size: 75px"
       ></i>
     </div>
@@ -49,7 +49,7 @@
     <!-- homebridge -->
     @if (plugin.name === 'homebridge') {
     <div class="text-center mb-3">
-      <i class="fab fa-fw fa-node-js primary-text" style="font-size: 75px"></i>
+      <i class="fab fa-node-js primary-text" style="font-size: 75px"></i>
     </div>
     <ul class="list-group list-group-box mb-3 text-start">
       <li class="list-group-item d-flex justify-content-between align-items-center">
@@ -66,7 +66,7 @@
       <p class="text-center mb-1">{{ 'plugins.compat.node_first' | translate: { packageName: 'Homebridge' } }}</p>
       <p class="text-center mb-0">
         <a href="https://homebridge.io/w/JTKEF" target="_blank" rel="noopener noreferrer">
-          {{ 'plugins.compat.node_link' | translate }} <i class="fa fa-fw fa-external-link-alt"></i>
+          {{ 'plugins.compat.node_link' | translate }} <i class="fa fa-external-link-alt"></i>
         </a>
       </p>
     </ngb-alert>
@@ -75,7 +75,7 @@
     <!-- homebridge ui -->
     @if (plugin.name === 'homebridge-config-ui-x') {
     <div class="text-center mb-3">
-      <i class="fab fa-fw fa-node-js primary-text" style="font-size: 75px"></i>
+      <i class="fab fa-node-js primary-text" style="font-size: 75px"></i>
     </div>
     <ul class="list-group list-group-box mb-3 text-start">
       <li class="list-group-item d-flex justify-content-between align-items-center">
@@ -92,7 +92,7 @@
       <p class="text-center mb-1">{{ 'plugins.compat.node_first' | translate: { packageName: 'Homebridge UI' } }}</p>
       <p class="text-center mb-0">
         <a href="https://homebridge.io/w/JTKEF" target="_blank" rel="noopener noreferrer">
-          {{ 'plugins.compat.node_link' | translate }} <i class="fa fa-fw fa-external-link-alt"></i>
+          {{ 'plugins.compat.node_link' | translate }} <i class="fa fa-external-link-alt"></i>
         </a>
       </p>
     </ngb-alert>
