@@ -21,43 +21,7 @@
     </ul>
     <ul class="list-group list-group-box mb-0">
       <li class="list-group-item">
-        <h6 class="mb-0 text-center">{{ 'backup.settings_title' | translate }}</h6>
-      </li>
-      <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
-        <div class="mb-2 mb-md-0 w-100 w-md-50">
-          {{ 'backup.settings_path' | translate }}<br />
-          <span class="grey-text small">{{ 'backup.settings_path_desc' | translate }}</span>
-        </div>
-        <div class="text-start text-md-end w-100 w-md-50">
-          <input
-            type="text"
-            class="form-control custom-input"
-            placeholder="/home/pi/homebridge-backups"
-            [formControl]="pathFormControl"
-            [attr.aria-label]="'backup.settings_path' | translate"
-          />
-        </div>
-      </li>
-      <li class="list-group-item d-flex justify-content-between align-items-center flex-row pb-2">
-        <div class="text-start">
-          {{ 'backup.settings_enable' | translate }}<br />
-          <span class="small grey-text">
-            @if (enabledFormControl.value) { @if (backupTime) { {{ 'backup.scheduled_backup_time' | translate: {
-            backupTime: backupTime | date:'shortTime', dayCount: 7 } }} } @else { {{ 'plugins.settings.restart_required'
-            | translate }} } } @else { {{ (backupTime ? 'plugins.settings.restart_required' :
-            'backup.scheduled_backup_disabled') | translate }} }
-          </span>
-        </div>
-        <div class="text-end grey-text d-flex align-items-center">
-          <input
-            type="checkbox"
-            id="disableScheduledBackups"
-            class="rendux-input"
-            [formControl]="enabledFormControl"
-            [attr.aria-label]="'backup.settings_enable' | translate"
-          />
-          <label for="disableScheduledBackups" class="rendux-label"></label>
-        </div>
+        <h6 class="mb-0 text-center">{{ 'backup.title_backup' | translate }}</h6>
       </li>
       <li class="list-group-item d-flex justify-content-between align-items-center">
         <div>
@@ -76,7 +40,7 @@
       </li>
       <li class="list-group-item d-flex justify-content-between align-items-center">
         <div>
-          <span>{{ 'backup.backup_now' | translate }}</span>
+          <span>{{ 'backup.backup_now_save' | translate }}</span>
           <br />
           <small class="grey-text">{{ 'backup.backup_now_save_desc' | translate }}</small>
         </div>
@@ -182,6 +146,47 @@
       }
     </ul>
     }
+    <ul class="list-group list-group-box mb-0">
+      <li class="list-group-item">
+        <h6 class="mb-0 text-center">{{ 'backup.settings_title' | translate }}</h6>
+      </li>
+      <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
+        <div class="mb-2 mb-md-0 w-100 w-md-50">
+          {{ 'backup.settings_path' | translate }}<br />
+          <span class="grey-text small">{{ 'backup.settings_path_desc' | translate }}</span>
+        </div>
+        <div class="text-start text-md-end w-100 w-md-50">
+          <input
+            type="text"
+            class="form-control custom-input"
+            placeholder="/home/pi/homebridge-backups"
+            [formControl]="pathFormControl"
+            [attr.aria-label]="'backup.settings_path' | translate"
+          />
+        </div>
+      </li>
+      <li class="list-group-item d-flex justify-content-between align-items-center flex-row pb-2">
+        <div class="text-start">
+          {{ 'backup.settings_enable' | translate }}<br />
+          <span class="small grey-text">
+            @if (enabledFormControl.value) { @if (backupTime) { {{ 'backup.scheduled_backup_time' | translate: {
+            backupTime: backupTime | date:'shortTime', dayCount: 7 } }} } @else { {{ 'plugins.settings.restart_required'
+            | translate }} } } @else { {{ (backupTime ? 'plugins.settings.restart_required' :
+            'backup.scheduled_backup_disabled') | translate }} }
+          </span>
+        </div>
+        <div class="text-end grey-text d-flex align-items-center">
+          <input
+            type="checkbox"
+            id="disableScheduledBackups"
+            class="rendux-input"
+            [formControl]="enabledFormControl"
+            [attr.aria-label]="'backup.settings_enable' | translate"
+          />
+          <label for="disableScheduledBackups" class="rendux-label"></label>
+        </div>
+      </li>
+    </ul>
   </div>
 
   <div class="modal-footer justify-content-between">
