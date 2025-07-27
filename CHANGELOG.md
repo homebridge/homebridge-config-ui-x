@@ -34,6 +34,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - added `arm` runners to the ui workflows for testing
 - make 'keep orphans' setting available in ui settings service
 - improve types for widgets
+- use new folder for updated accessory icons (fix cache issues)
 
 ### Homebridge Dependencies
 
