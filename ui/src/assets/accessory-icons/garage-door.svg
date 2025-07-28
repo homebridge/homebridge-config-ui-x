@@ -1,0 +1,120 @@
+<svg width="32px" height="32px" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+  <!-- circle in roof -->
+  <circle
+    class="window"
+    cx="15.5"
+    cy="10.25"
+    r="3"
+    stroke="#7f7f7f"
+    stroke-width="0.5"
+    fill="#1976d2"
+    fill-opacity="0.5"
+  />
+
+  <!-- left roof line -->
+  <line x1="1" y1="12" x2="15" y2="1" stroke="#7f7f7f" stroke-width="1.5" stroke-linecap="round" />
+
+  <!-- right roof line -->
+  <line x1="31" y1="12" x2="16" y2="1" stroke="#7f7f7f" stroke-width="1.5" stroke-linecap="round" />
+
+  <!-- roof summit -->
+  <circle cx="15.5" cy="1.3" r="0.5" stroke="#7f7f7f" stroke-width="1.5" />
+
+  <!-- side left line -->
+  <line x1="3" y1="11" x2="3" y2="31" stroke="#7f7f7f" stroke-width="1.5" stroke-linecap="round" />
+
+  <!-- right side line -->
+  <line x1="29" y1="11" x2="29" y2="31" stroke="#7f7f7f" stroke-width="1.5" stroke-linecap="round" />
+
+  <!-- bottom left horizontal line -->
+  <line x1="3" y1="31" x2="6" y2="31" stroke="#7f7f7f" stroke-width="1.5" stroke-linecap="round" />
+
+  <!-- bottom right horizontal line -->
+  <line x1="26" y1="31" x2="29" y2="31" stroke="#7f7f7f" stroke-width="1.5" stroke-linecap="round" />
+
+  <!-- left garage line -->
+  <line x1="6" y1="17" x2="6" y2="31" stroke="#7f7f7f" stroke-width="1.5" />
+
+  <!-- right garage line -->
+  <line x1="26" y1="17" x2="26" y2="31" stroke="#7f7f7f" stroke-width="1.5" />
+
+  <!-- garage door lines -->
+  <line x1="5.25" y1="17" x2="26.75" y2="17" stroke="#7f7f7f" stroke-width="1" />
+  <line
+    class="line line1"
+    x1="6.75"
+    y1="18"
+    x2="25.25"
+    y2="18"
+    stroke="#1976d2"
+    stroke-width="1"
+    stroke-opacity="0.5"
+  />
+  <line class="line line2" x1="5.25" y1="19" x2="26.75" y2="19" stroke="#7f7f7f" stroke-width="1" />
+  <line
+    class="line line3"
+    x1="6.75"
+    y1="20"
+    x2="25.25"
+    y2="20"
+    stroke="#1976d2"
+    stroke-width="1"
+    stroke-opacity="0.5"
+  />
+  <line class="line line4" x1="5.25" y1="21" x2="26.75" y2="21" stroke="#7f7f7f" stroke-width="1" />
+  <line
+    class="line line5"
+    x1="6.75"
+    y1="22"
+    x2="25.25"
+    y2="22"
+    stroke="#1976d2"
+    stroke-width="1"
+    stroke-opacity="0.5"
+  />
+  <line class="line line6" x1="5.25" y1="23" x2="26.75" y2="23" stroke="#7f7f7f" stroke-width="1" />
+  <line
+    class="line line7"
+    x1="6.75"
+    y1="24"
+    x2="25.25"
+    y2="24"
+    stroke="#1976d2"
+    stroke-width="1"
+    stroke-opacity="0.5"
+  />
+  <line class="line line8" x1="5.25" y1="25" x2="26.75" y2="25" stroke="#7f7f7f" stroke-width="1" />
+  <line
+    class="line line9"
+    x1="6.75"
+    y1="26"
+    x2="25.25"
+    y2="26"
+    stroke="#1976d2"
+    stroke-width="1"
+    stroke-opacity="0.5"
+  />
+  <line class="line line10" x1="5.25" y1="27" x2="26.75" y2="27" stroke="#7f7f7f" stroke-width="1" />
+  <line
+    class="line line11"
+    x1="6.75"
+    y1="28"
+    x2="25.25"
+    y2="28"
+    stroke="#1976d2"
+    stroke-width="1"
+    stroke-opacity="0.5"
+  />
+  <line class="line line12" x1="5.25" y1="29" x2="26.75" y2="29" stroke="#7f7f7f" stroke-width="1" />
+  <line
+    class="line line13"
+    x1="6.75"
+    y1="30"
+    x2="25.25"
+    y2="30"
+    stroke="#1976d2"
+    stroke-width="1"
+    stroke-opacity="0.5"
+  />
+  <line class="line line14" x1="5.25" y1="31" x2="26.75" y2="31" stroke="#7f7f7f" stroke-width="1" />
+</svg>

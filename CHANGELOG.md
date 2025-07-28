@@ -27,6 +27,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - show in sys info widget if arch is 32-bit or 64-bit
 - fix for custom ui colouring in dark mode
 - updated icons: co, co2, smoke + context sensors
+- improvements to garage door icon
 
 ### Other Changes
 

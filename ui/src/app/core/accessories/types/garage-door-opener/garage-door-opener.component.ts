@@ -9,6 +9,7 @@ import { LongClickDirective } from '@/app/core/directives/long-click.directive'
 @Component({
   selector: 'app-garage-door-opener',
   templateUrl: './garage-door-opener.component.html',
+  styleUrls: ['./garage-door-opener.component.scss'],
   standalone: true,
   imports: [
     LongClickDirective,
