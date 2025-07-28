@@ -63,9 +63,9 @@
       </button>
       }
     </div>
-    @if (targetStateValidValues.includes(3)) {
+    @if ('TargetTemperature' in service.values) {
     <h6 class="mt-4">
-      {{ 'accessories.control.target_auto' | translate }}: {{ targetTemperature.value | convertTemp | number: '1.0-1'
+      {{ 'accessories.control.target' | translate }}: {{ targetTemperature.value | convertTemp | number: '1.0-1'
       }}&deg;{{ temperatureUnits | uppercase }}
     </h6>
     <nouislider
@@ -76,7 +76,7 @@
       (ngModelChange)="onTemperatureStateChange()"
     >
     </nouislider>
-    @if (HeatingThresholdTemperature && CoolingThresholdTemperature) {
+    } @if (targetStateValidValues.includes(3)) { @if (HeatingThresholdTemperature && CoolingThresholdTemperature) {
     <h6 class="mt-4 mb-1">
       {{ 'accessories.control.threshold_auto' | translate }}: {{ autoTemp[0] | convertTemp | number: '1.0-1' }}&deg;{{
       temperatureUnits | uppercase }} - {{ autoTemp[1] | convertTemp | number: '1.0-1' }}&deg;{{ temperatureUnits |

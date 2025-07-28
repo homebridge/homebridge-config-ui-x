@@ -115,7 +115,7 @@ export class ThermostatManageComponent implements OnInit {
       value: TargetTemperature.value,
       min: TargetTemperature.minValue,
       max: TargetTemperature.maxValue,
-      step: TargetTemperature.minStep,
+      step: TargetTemperature.minStep || 0.5,
     }
     this.targetCoolingTemp = this.service.getCharacteristic('CoolingThresholdTemperature')?.value as number
     this.targetHeatingTemp = this.service.getCharacteristic('HeatingThresholdTemperature')?.value as number
