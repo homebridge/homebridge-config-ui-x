@@ -264,11 +264,11 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
           break
         }
         case 'i18n.lang': {
-          this.requestResponse(e, this.$translate.currentLang)
+          this.requestResponse(e, this.$translate.getCurrentLang())
           break
         }
         case 'i18n.translations': {
-          this.requestResponse(e, this.$translate.store.translations[this.$translate.currentLang])
+          this.requestResponse(e, this.$translate.instant(e.data.key, e.data.params))
           break
         }
         case 'close': {

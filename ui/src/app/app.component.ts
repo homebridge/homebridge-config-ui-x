@@ -62,7 +62,7 @@ export class AppComponent {
 
     // Watch for lang changes
     this.$translate.onLangChange.subscribe(() => {
-      this.$settings.rtl = rtlLanguages.includes(this.$translate.currentLang)
+      this.$settings.rtl = rtlLanguages.includes(this.$translate.getCurrentLang())
     })
 
     const browserLang = languages.find(x => x === this.$translate.getBrowserLang() || x === this.$translate.getBrowserCultureLang())
@@ -75,7 +75,7 @@ export class AppComponent {
     if (browserLang) {
       this.$translate.use(browserLang)
     } else {
-      this.$translate.setDefaultLang('en')
+      this.$translate.setFallbackLang('en')
     }
   }
 }

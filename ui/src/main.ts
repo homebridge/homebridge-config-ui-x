@@ -4,7 +4,7 @@ import { enableProdMode, importProvidersFrom, LOCALE_ID } from '@angular/core'
 import { bootstrapApplication, BrowserModule } from '@angular/platform-browser'
 import { provideAnimations } from '@angular/platform-browser/animations'
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap'
-import { TranslateModule, TranslateService } from '@ngx-translate/core'
+import { provideTranslateService, TranslateService } from '@ngx-translate/core'
 import { DragulaModule } from 'ng2-dragula'
 import { MonacoEditorModule } from 'ngx-monaco-editor-v2'
 import { ToastrModule } from 'ngx-toastr'
@@ -29,7 +29,6 @@ bootstrapApplication(AppComponent, {
   providers: [
     importProvidersFrom(
       BrowserModule,
-      TranslateModule.forRoot(),
       ToastrModule.forRoot({
         autoDismiss: true,
         newestOnTop: false,
@@ -63,8 +62,8 @@ bootstrapApplication(AppComponent, {
     {
       provide: LOCALE_ID,
       useFactory: (translate: TranslateService) => {
-        if (translate.currentLang in supportedLocales) {
-          return supportedLocales[translate.currentLang]
+        if (translate.getCurrentLang() in supportedLocales) {
+          return supportedLocales[translate.getCurrentLang()]
         } else {
           return 'en'
         }
@@ -73,5 +72,9 @@ bootstrapApplication(AppComponent, {
     },
     provideAnimations(),
     provideHttpClient(withFetch(), withInterceptorsFromDi()),
+    provideTranslateService({
+      fallbackLang: 'en',
+      lang: 'en',
+    }),
   ],
 }).catch(err => console.error(err))

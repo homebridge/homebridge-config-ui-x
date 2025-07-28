@@ -131,7 +131,7 @@ export class WeatherWidgetComponent implements OnInit, OnDestroy {
           id: this.widget.location.id,
           appid: environment.owm.appid,
           units: 'metric',
-          lang: this.$translate.currentLang,
+          lang: this.$translate.getCurrentLang(),
         },
       }),
     }).subscribe((data: any) => {
