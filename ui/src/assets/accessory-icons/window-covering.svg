@@ -1,0 +1,44 @@
+<svg width="32px" height="32px" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+  <!-- outer frame -->
+  <rect x="1" y="0.8" width="30" height="30.2" rx="0.5" stroke="#7f7f7f" fill="none" stroke-width="1.5" />
+
+  <!-- left window frame -->
+  <rect x="2.8" y="2.6" width="12.4" height="26.6" stroke="#7f7f7f" fill="none" stroke-width="1" />
+
+  <!-- left window divider -->
+  <rect x="3.66" y="15.65" width="10.68" height="0.5" stroke="#7f7f7f" fill="none" stroke-width="0.5" />
+
+  <!-- right window frame -->
+  <rect x="16.8" y="2.6" width="12.4" height="26.6" stroke="#7f7f7f" fill="none" stroke-width="1" />
+
+  <!-- right window divider -->
+  <rect x="17.66" y="15.65" width="10.68" height="0.5" stroke="#7f7f7f" fill="none" stroke-width="0.5" />
+
+  <!-- blind -->
+  <rect
+    class="c-blinds"
+    x="2.3"
+    y="2.1"
+    width="27.4"
+    height="27.6"
+    stroke="#808080"
+    fill="#808080"
+    stroke-width="0.5"
+    stroke-opacity="0.9"
+    fill-opacity="0.9"
+  />
+
+  <!-- light -->
+  <rect
+    class="c-light"
+    x="2.05"
+    y="29.9"
+    width="27.9"
+    height="0"
+    stroke="#ffffff"
+    fill="#ffffff"
+    stroke-width="0.5"
+    stroke-opacity="0"
+    fill-opacity="0.5"
+  />
+</svg>

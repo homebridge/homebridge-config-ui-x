@@ -11,6 +11,7 @@ import { LongClickDirective } from '@/app/core/directives/long-click.directive'
 @Component({
   selector: 'app-window',
   templateUrl: './window.component.html',
+  styleUrls: ['./window.component.scss'],
   standalone: true,
   imports: [
     LongClickDirective,

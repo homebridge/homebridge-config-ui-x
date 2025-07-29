@@ -1,0 +1,28 @@
+<svg width="32px" height="32px" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+  <!-- outer frame -->
+  <rect x="7.8" y="0.8" width="16.4" height="30.2" rx="0.5" stroke="#7f7f7f" fill="none" stroke-width="1.5" />
+
+  <!-- door outline -->
+  <rect class="outline" x="9.6" y="2.6" width="12.8" height="26.6" stroke="#7f7f7f" fill="none" stroke-width="1" />
+
+  <!-- top panel -->
+  <rect class="panel" x="11.2" y="4.2" width="9.6" height="10.8" stroke="#7f7f7f" fill-opacity="0" stroke-width="0.5" />
+
+  <!-- bottom panel -->
+  <rect
+    class="panel"
+    x="11.2"
+    y="16.8"
+    width="9.6"
+    height="10.8"
+    stroke="#7f7f7f"
+    fill-opacity="0"
+    stroke-width="0.5"
+  />
+
+  <!-- wider floor -->
+  <line x1="0" y1="31" x2="32" y2="31" stroke="#7f7f7f" stroke-width="1.5" />
+
+  <!-- door handle -->
+  <rect class="handle" x="19.25" y="15.87" width="1.55" height="0.05" stroke="#1976d2" fill="none" stroke-width="0.5" />
+</svg>

@@ -1,0 +1,67 @@
+::ng-deep {
+  svg {
+    .outline-left {
+      x: 2.8px;
+      width: 12.4px;
+    }
+
+    .divider-left {
+      x: 3.66px;
+      width: 10.68px;
+    }
+
+    .handle-left {
+      x: 15.16px;
+      width: 0.1px;
+    }
+
+    .outline-right {
+      x: 16.8px;
+      width: 12.4px;
+    }
+
+    .divider-right {
+      x: 17.66px;
+      width: 10.68px;
+    }
+
+    .handle-right {
+      x: 16.76px;
+      width: 0.1px;
+    }
+  }
+
+  .accessory-on {
+    svg {
+      .outline-left {
+        x: 2.8px;
+        width: 2.4px;
+      }
+
+      .divider-left {
+        x: 3.66px;
+        width: 0.68px;
+      }
+
+      .handle-left {
+        x: 5.16px;
+        width: 0.1px;
+      }
+
+      .outline-right {
+        x: 26.8px;
+        width: 2.4px;
+      }
+
+      .divider-right {
+        x: 27.66px;
+        width: 0.68px;
+      }
+
+      .handle-right {
+        x: 26.76px;
+        width: 0.1px;
+      }
+    }
+  }
+}

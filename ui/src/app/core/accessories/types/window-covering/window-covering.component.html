@@ -1,24 +1,16 @@
 <div
   class="accessory-box"
-  [ngClass]="{ 'window-on': service.values.TargetPosition }"
+  [ngClass]="{ 'accessory-on': service.values.CurrentPosition }"
   (longClick)="onLongClick()"
   (shortClick)="onClick()"
   tabindex="0"
 >
   <div class="d-flex flex-column h-100">
-    @if (!service.values.TargetPosition) {
     <div
-      [inlineSVG]="'/assets/hap-icons/window-covering-closed.svg'"
-      [attr.aria-label]="'Window Covering (Closed)'"
+      [inlineSVG]="'/assets/accessory-icons/window-covering.svg'"
+      [attr.aria-label]="'Window Covering'"
       class="accessory-svg"
     ></div>
-    } @if (service.values.TargetPosition) {
-    <div
-      [inlineSVG]="'/assets/hap-icons/window-covering-open.svg'"
-      [attr.aria-label]="'Window Covering (Open)'"
-      class="accessory-svg"
-    ></div>
-    }
     <div class="accessory-label mt-auto">{{ service.customName || service.serviceName }}</div>
     @if (service.values.PositionState === 2) {
     <div class="accessory-label grey-text">

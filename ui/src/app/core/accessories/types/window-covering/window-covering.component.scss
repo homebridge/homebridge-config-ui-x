@@ -1,0 +1,41 @@
+::ng-deep {
+  body.dark-mode {
+    .c-blinds {
+      fill: #2b2b2b;
+      stroke: #2b2b2b;
+      stroke-opacity: 0.8;
+      fill-opacity: 0.8;
+    }
+  }
+  svg {
+    .c-blinds {
+      transition: height 3s ease;
+      height: 27.6px;
+    }
+
+    .c-light {
+      transition:
+        y 3s ease,
+        height 3s ease;
+      y: 29.9px;
+      height: 0;
+    }
+  }
+
+  .accessory-on {
+    svg {
+      .c-blinds {
+        transition: height 3s ease;
+        height: 0.3px;
+      }
+
+      .c-light {
+        transition:
+          y 3s ease,
+          height 3s ease;
+        y: 2.65px;
+        height: 27.3px;
+      }
+    }
+  }
+}

@@ -1,0 +1,43 @@
+::ng-deep {
+  svg {
+    .outline {
+      transition: width 3s ease;
+      width: 12.8px;
+    }
+
+    .panel {
+      transition: width 3s ease;
+      width: 9.6px;
+    }
+
+    .handle {
+      visibility: visible;
+      opacity: 1;
+      transition:
+        opacity 3s ease,
+        visibility 0s linear 3s;
+    }
+  }
+
+  .accessory-on {
+    svg {
+      .outline {
+        transition: width 3s ease;
+        width: 3.8px;
+      }
+
+      .panel {
+        transition: width 3s ease;
+        width: 0.6px;
+      }
+
+      .handle {
+        visibility: hidden;
+        opacity: 0;
+        transition:
+          opacity 3s ease,
+          visibility 0s linear 0s;
+      }
+    }
+  }
+}
