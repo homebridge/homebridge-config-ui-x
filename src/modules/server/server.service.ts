@@ -238,7 +238,7 @@ export class ServerService {
     const persistPath = join(this.configService.storagePath, 'persist')
 
     const devices = (await readdir(persistPath))
-      .filter(x => x.match(/AccessoryInfo\.([A-F,a-f0-9]+)\.json/))
+      .filter(x => x.match(/AccessoryInfo\.([A-Fa-f0-9]+)\.json$/))
 
     const configFile = await this.configEditorService.getConfigFile()
 

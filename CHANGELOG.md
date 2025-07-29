@@ -41,6 +41,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - use new folder for updated accessory icons (fix cache issues)
 - font awesome `fa-fw` class no longer needed
 - upgrade `@ngx-translate/core` from `v16` to `v17`
+- fix get pairings, ignore `.json.bak` files
 
 ### Homebridge Dependencies
 
