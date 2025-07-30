@@ -34,7 +34,7 @@
                 [openDelay]="150"
                 triggers="hover"
               >
-                <i class="fa fa-trash"></i>
+                <i class="fa fa-fw fa-trash"></i>
               </button>
               }
               <button
@@ -46,10 +46,10 @@
                 [openDelay]="150"
                 triggers="hover"
               >
-                <i class="fa fa-edit"></i>
+                <i class="fa fa-fw fa-edit"></i>
               </button>
               <i
-                class="fa fa-xl"
+                class="fa fa-fw fa-xl"
                 [ngClass]="{
                   'fa-circle-check green-text': formBlocksValid[i],
                   'fa-circle-exclamation red-text': strictValidation && !formBlocksValid[i],
@@ -116,7 +116,7 @@
     <div class="text-end d-flex align-items-center justify-content-end">
       @if (schema.singular) {
       <i
-        class="fa fa-xl me-2"
+        class="fa fa-fw fa-xl me-2"
         [ngClass]="{
           'fa-circle-check green-text': formIsValid,
           'fa-circle-exclamation red-text': strictValidation && !formIsValid,
@@ -130,7 +130,7 @@
       ></i>
       } @if (!schema.singular) {
       <button type="button" class="btn btn-elegant me-2" data-dismiss="modal" (click)="addBlock()">
-        <i class="fa fa-plus"></i>
+        <i class="fa fa-fw fa-plus"></i>
       </button>
       }
       <button
@@ -143,7 +143,7 @@
         @if (!saveInProgress) {
         <span>{{ 'form.button_save' | translate }}</span>
         } @if (saveInProgress) {
-        <i class="fas fa-spinner fa-pulse"></i>
+        <i class="fas fa-fw fa-spinner fa-pulse"></i>
         }
       </button>
     </div>

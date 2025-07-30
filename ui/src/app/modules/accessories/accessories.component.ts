@@ -42,7 +42,7 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
   public enableAccessories = this.$settings.env.enableAccessories
   public isMobile: any = false
   public hideHidden = true
-  public readonly linkInsecure = '<a href="https://github.com/homebridge/homebridge-config-ui-x/wiki/Enabling-Accessory-Control" target="_blank"><i class="fa fa-external-link-alt primary-text"></i></a>'
+  public readonly linkInsecure = '<a href="https://github.com/homebridge/homebridge-config-ui-x/wiki/Enabling-Accessory-Control" target="_blank"><i class="fa fa-fw fa-external-link-alt primary-text"></i></a>'
 
   constructor() {
     const dragulaService = this.dragulaService

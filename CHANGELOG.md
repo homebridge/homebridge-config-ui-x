@@ -30,6 +30,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - improvements to garage door icon
 - thermostat accessory: show target slider when available
 - updated icon for door, window and window covering services
+- revert back to font-awesome v6 for compatibility
 
 ### Other Changes
 

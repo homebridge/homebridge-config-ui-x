@@ -7,7 +7,7 @@ index 752fe83..af0512a 100644
  import { SortablejsModule } from 'nxt-sortablejs';
  import { HttpClient } from '@angular/common/http';
 +import ajvKeywords from 'ajv-keywords'
- 
+
  class Framework {
      constructor() {
 @@ -6392,7 +6393,7 @@ class JsonSchemaFormService {
@@ -82,7 +82,7 @@ index 752fe83..af0512a 100644
 +        <span class="hb-uix-slider hb-uix-round"></span>
        </label>
      </div>
- 
+
 @@ -7462,20 +7469,21 @@ class CheckboxesComponent {
        <div *ngFor="let checkboxItem of checkboxList" [class]="options?.htmlClass || ''">
          <label
@@ -127,7 +127,7 @@ index 752fe83..af0512a 100644
 +        <span class="hb-uix-slider hb-uix-round"></span>
        </label>
      </div>
- 
+
 @@ -7517,20 +7526,21 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "19.2.6", ngImpor
        <div *ngFor="let checkboxItem of checkboxList" [class]="options?.htmlClass || ''">
          <label
@@ -194,7 +194,7 @@ index 752fe83..af0512a 100644
          [innerHTML]="options?.description"></p>
        </div>
 -    </fieldset>`, isInline: true, styles: [".legend{font-weight:700}.expandable>legend:before,.expandable>label:before{content:\"\\25b6\";padding-right:.3em;font-family:auto}.expanded>legend:before,.expanded>label:before{content:\"\\25bc\";padding-right:.2em}\n"], dependencies: [{ kind: "directive", type: i1.NgIf, selector: "[ngIf]", inputs: ["ngIf", "ngIfThen", "ngIfElse"] }, { kind: "component", type: RootComponent, selector: "root-widget", inputs: ["dataIndex", "layoutIndex", "layout", "isOrderable", "isFlexItem"] }] }); }
-+    </fieldset>`, isInline: true, styles: [".legend{font-weight:700}.expandable>legend,.expandable>label,.expanded>legend,.expanded>label{cursor:pointer;}.expandable>legend:before,.expandable>label:before{font-weight:900;font-family:'Font Awesome 7 Free';content:'\\f054';padding-right:.3em;}.expanded>legend:before,.expanded>label:before{font-weight:900;font-family:'Font Awesome 7 Free';content:'\\f078';padding-right:.2em;}\n"], dependencies: [{ kind: "directive", type: i1.NgIf, selector: "[ngIf]", inputs: ["ngIf", "ngIfThen", "ngIfElse"] }, { kind: "component", type: RootComponent, selector: "root-widget", inputs: ["dataIndex", "layoutIndex", "layout", "isOrderable", "isFlexItem"] }] }); }
++    </fieldset>`, isInline: true, styles: [".legend{font-weight:700}.expandable>legend,.expandable>label,.expanded>legend,.expanded>label{cursor:pointer;}.expandable>legend:before,.expandable>label:before{font-weight:900;font-family:'Font Awesome 6 Free';content:'\\f054';padding-right:.3em;}.expanded>legend:before,.expanded>label:before{font-weight:900;font-family:'Font Awesome 6 Free';content:'\\f078';padding-right:.2em;}\n"], dependencies: [{ kind: "directive", type: i1.NgIf, selector: "[ngIf]", inputs: ["ngIf", "ngIfThen", "ngIfElse"] }, { kind: "component", type: RootComponent, selector: "root-widget", inputs: ["dataIndex", "layoutIndex", "layout", "isOrderable", "isFlexItem"] }] }); }
  }
  i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "19.2.6", ngImport: i0, type: SectionComponent, decorators: [{
              type: Component,
@@ -203,9 +203,9 @@ index 752fe83..af0512a 100644
          [innerHTML]="options?.description"></p>
        </div>
 -    </fieldset>`, standalone: false, styles: [".legend{font-weight:700}.expandable>legend:before,.expandable>label:before{content:\"\\25b6\";padding-right:.3em;font-family:auto}.expanded>legend:before,.expanded>label:before{content:\"\\25bc\";padding-right:.2em}\n"] }]
-+    </fieldset>`, standalone: false, styles: [".legend{font-weight:700}.expandable>legend,.expandable>label,.expanded>legend,.expanded>label{cursor:pointer;}.expandable>legend:before,.expandable>label:before{font-weight:900;font-family:'Font Awesome 7 Free';content:'\\f054';padding-right:.3em;}.expanded>legend:before,.expanded>label:before{font-weight:900;font-family:'Font Awesome 7 Free';content:'\\f078';padding-right:.2em;}\n"] }]
++    </fieldset>`, standalone: false, styles: [".legend{font-weight:700}.expandable>legend,.expandable>label,.expanded>legend,.expanded>label{cursor:pointer;}.expandable>legend:before,.expandable>label:before{font-weight:900;font-family:'Font Awesome 6 Free';content:'\\f054';padding-right:.3em;}.expanded>legend:before,.expanded>label:before{font-weight:900;font-family:'Font Awesome 6 Free';content:'\\f078';padding-right:.2em;}\n"] }]
          }] });
- 
+
  class SelectComponent {
 @@ -8615,6 +8625,16 @@ class SelectComponent {
          this.options = this.layoutNode().options || {};
