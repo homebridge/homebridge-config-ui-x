@@ -1,5 +1,6 @@
 import { Component, inject, Input, OnInit } from '@angular/core'
 import { FormsModule } from '@angular/forms'
+import { CharacteristicType } from '@homebridge/hap-client'
 import { Enums } from '@homebridge/hap-client/dist/hap-types'
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap'
 import { TranslatePipe } from '@ngx-translate/core'
@@ -69,6 +70,7 @@ export class AccessoryInfoComponent implements OnInit {
   @Input() private pairingCache: any[]
   @Input() public service: ServiceTypeX
 
+  public isDetailsVisible: { [key: string]: boolean } = {}
   public accessoryInformation: Array<any>
   public extraServices: ServiceTypeX[] = []
   public matchedCachedAccessory: any = null
@@ -100,6 +102,12 @@ export class AccessoryInfoComponent implements OnInit {
       backdrop: 'static',
     })
     ref.componentInstance.selectedBridge = this.service.instance.username.replaceAll(':', '')
+  }
+
+  public toggleDetailsVisibility(char: CharacteristicType): void {
+    if ('minStep' in char || 'minValue' in char || 'maxValue' in char || 'validValues' in char) {
+      this.isDetailsVisible[char.uuid] = !this.isDetailsVisible[char.uuid]
+    }
   }
 
   public dismissModal() {

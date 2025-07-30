@@ -85,8 +85,40 @@
         <span class="text-start text-md-end grey-text font-monospace">{{ service.serviceName }}</span>
       </li>
       @for (characteristic of service.serviceCharacteristics; track characteristic) {
-      <li class="list-group-item d-flex justify-content-between align-items-left flex-column flex-md-row">
-        <span class="text-start">{{ characteristic.description }}</span>
+      <li class="list-group-item d-flex justify-content-between align-items-center flex-column flex-md-row">
+        <span>
+          <button
+            class="btn btn-link p-0 grey-text me-1"
+            (click)="toggleDetailsVisibility(characteristic)"
+            [attr.aria-expanded]="isDetailsVisible[characteristic.uuid]"
+          >
+            <i
+              [class]="isDetailsVisible[characteristic.uuid] ? 'fas fa-fw fa-chevron-down' : 'fas fa-fw fa-chevron-right'"
+            ></i>
+          </button>
+          <span
+            class="hover-pointer"
+            (click)="toggleDetailsVisibility(characteristic)"
+            [attr.aria-expanded]="isDetailsVisible[characteristic.uuid]"
+            >{{ characteristic.description }}</span
+          >
+          @if (isDetailsVisible[characteristic.uuid]) {
+          <div class="grey-text small m-0 p-1 ms-4">
+            @if ('minStep' in characteristic) {
+            <div>Step: <code>{{ characteristic.minStep }}</code></div>
+            } @if ('minValue' in characteristic) {
+            <div>Min: <code>{{ characteristic.minValue }}</code></div>
+            } @if ('maxValue' in characteristic) {
+            <div>Max: <code>{{ characteristic.maxValue }}</code></div>
+            } @if ('validValues' in characteristic) {
+            <div>
+              Valid: @for (value of characteristic.validValues; track value; let last = $last) {
+              <code>{{ value }}</code> @if (!last) { &middot; } }
+            </div>
+            }
+          </div>
+          }
+        </span>
         <span class="text-start text-md-end grey-text font-monospace">
           @switch (characteristic.unit) { @case ('percentage') { {{ characteristic.value }}% } @case ('celsius') { {{
           characteristic.value | convertTemp }}&deg; } @default { @switch (characteristic.type) { @case
@@ -112,8 +144,40 @@
         <span class="text-start text-md-end grey-text font-monospace">{{ extraService.serviceName }}</span>
       </li>
       @for (characteristic of extraService.serviceCharacteristics; track characteristic) {
-      <li class="list-group-item d-flex justify-content-between align-items-left flex-column flex-md-row">
-        <span class="text-start">{{ characteristic.description }}</span>
+      <li class="list-group-item d-flex justify-content-between align-items-center flex-column flex-md-row">
+        <span>
+          <button
+            class="btn btn-link p-0 grey-text me-1"
+            (click)="toggleDetailsVisibility(characteristic)"
+            [attr.aria-expanded]="isDetailsVisible[characteristic.uuid]"
+          >
+            <i
+              [class]="isDetailsVisible[characteristic.uuid] ? 'fas fa-fw fa-chevron-down' : 'fas fa-fw fa-chevron-right'"
+            ></i>
+          </button>
+          <span
+            class="hover-pointer"
+            (click)="toggleDetailsVisibility(characteristic)"
+            [attr.aria-expanded]="isDetailsVisible[characteristic.uuid]"
+            >{{ characteristic.description }}</span
+          >
+          @if (isDetailsVisible[characteristic.uuid]) {
+          <div class="grey-text small m-0 p-1 ms-4">
+            @if ('minStep' in characteristic) {
+            <div>Step: <code>{{ characteristic.minStep }}</code></div>
+            } @if ('minValue' in characteristic) {
+            <div>Min: <code>{{ characteristic.minValue }}</code></div>
+            } @if ('maxValue' in characteristic) {
+            <div>Max: <code>{{ characteristic.maxValue }}</code></div>
+            } @if ('validValues' in characteristic) {
+            <div>
+              Valid: @for (value of characteristic.validValues; track value; let last = $last) {
+              <code>{{ value }}</code> @if (!last) { &middot; } }
+            </div>
+            }
+          </div>
+          }
+        </span>
         <span class="text-start text-md-end grey-text font-monospace">
           @switch (characteristic.unit) { @case ('percentage') { {{ characteristic.value }}% } @case ('celsius') { {{
           characteristic.value | convertTemp }}&deg; } @default { @switch (characteristic.type) { @case
