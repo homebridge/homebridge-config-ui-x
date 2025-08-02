@@ -1,33 +1,23 @@
 <div
   class="accessory-box"
-  [ngClass]="{ 'switch-on': service.values.SecuritySystemCurrentState !== 3 }"
+  [ngClass]="{
+    'switch-on': service.values.SecuritySystemCurrentState !== 3,
+    'home': service.values.SecuritySystemCurrentState === 0,
+    'away': service.values.SecuritySystemCurrentState === 1,
+    'night': service.values.SecuritySystemCurrentState === 2,
+    'triggered': service.values.SecuritySystemCurrentState === 4,
+  }"
   (longClick)="onClick()"
   (shortClick)="onClick()"
   tabindex="0"
 >
   <div class="d-flex flex-column h-100">
-    @if (service.values.SecuritySystemCurrentState === 3) {
     <div
-      [inlineSVG]="'/assets/hap-icons/security-system-off.svg'"
-      [attr.aria-label]="'Security System (Disarmed)'"
+      [inlineSVG]="'/assets/service-icons/security-system.svg'"
+      [attr.aria-label]="'Security System'"
       class="accessory-svg"
     ></div>
-    } @else if (service.values.SecuritySystemCurrentState === 4) {
-    <div
-      [inlineSVG]="'/assets/hap-icons/security-system-triggered.svg'"
-      [attr.aria-label]="'Security System (Triggered)'"
-      class="accessory-svg"
-    ></div>
-    } @else {
-    <div
-      [inlineSVG]="'/assets/hap-icons/security-system-active.svg'"
-      [attr.aria-label]="'Security System (Armed)'"
-      class="accessory-svg"
-    ></div>
-    }
-
     <div class="accessory-label mt-auto">{{ service.customName || service.serviceName }}</div>
-
     @switch (service.values.SecuritySystemCurrentState) { @case (0) {
     <div class="accessory-label grey-text">{{ 'accessories.control.home' | translate }}</div>
     } @case (1) {
