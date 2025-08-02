@@ -9,6 +9,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - updates to the `pl.json` language file (#2522) (@mkz212)
 - refreshed icons: stateless programmable switch
 - refreshed icons: security system
+- refreshed icons: lock mechanism
 
 ### Homebridge Dependencies
 

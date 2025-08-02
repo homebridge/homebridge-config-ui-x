@@ -1,32 +1,21 @@
 <div
   class="accessory-box"
-  [ngClass]="{ 'switch-on': service.values.LockCurrentState === 0 || service.values.On === 1 }"
+  [ngClass]="{
+    'switch-on': ('LockCurrentState' in service.values && service.values.LockCurrentState !== 1) || service.values.On === 1,
+    'unlocked': service.values.LockCurrentState === 0  || service.values.On === 1,
+    'jammed': service.values.LockCurrentState === 2,
+    'error': service.values.LockCurrentState === 3,
+  }"
   (shortClick)="onClick()"
   (longClick)="onLongClick()"
   tabindex="0"
 >
   <div class="d-flex flex-column h-100">
-    @if (service.values.LockCurrentState === 0 || service.values.On === 1) {
     <div
-      [inlineSVG]="'/assets/hap-icons/lock-unlocked.svg'"
-      [attr.aria-label]="'Lock (Unlocked)'"
+      [inlineSVG]="'/assets/service-icons/lock-mechanism.svg'"
+      [attr.aria-label]="'Lock Mechanism'"
       class="accessory-svg"
     ></div>
-    } @else if (service.values.LockCurrentState === 1 || service.values.On === 0) {
-    <div
-      [inlineSVG]="'/assets/hap-icons/lock-locked.svg'"
-      [attr.aria-label]="'Lock (Locked)'"
-      class="accessory-svg"
-    ></div>
-    } @else if (service.values.LockCurrentState === 2) {
-    <div
-      [inlineSVG]="'/assets/hap-icons/lock-unlocked.svg'"
-      [attr.aria-label]="'Lock (Jammed)'"
-      class="accessory-svg"
-    ></div>
-    } @else if (service.values.LockCurrentState === 3) {
-    <div [inlineSVG]="'/assets/hap-icons/unknown.svg'" [attr.aria-label]="'Lock (Error)'" class="accessory-svg"></div>
-    }
 
     <div class="accessory-label mt-auto">{{ service.customName || service.serviceName }}</div>
 

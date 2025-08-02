@@ -1,0 +1,61 @@
+::ng-deep {
+  @keyframes blink {
+    0%,
+    100% {
+      fill-opacity: 1;
+    }
+    50% {
+      fill-opacity: 0.2;
+    }
+  }
+
+  .unlocked {
+    svg {
+      .shackle-locked {
+        stroke-opacity: 0 !important;
+      }
+
+      .shackle-unlocked {
+        stroke-opacity: 1 !important;
+      }
+
+      .keyhole {
+        fill: #ff9800 !important;
+      }
+    }
+  }
+
+  .jammed {
+    svg {
+      .shackle-locked {
+        stroke-opacity: 0 !important;
+      }
+
+      .shackle-unlocked {
+        stroke-opacity: 1 !important;
+      }
+
+      .keyhole {
+        fill: #d32f2f !important;
+        animation: blink 1s infinite;
+      }
+    }
+  }
+
+  .error {
+    svg {
+      .shackle-locked {
+        stroke-opacity: 0 !important;
+      }
+
+      .shackle-unlocked {
+        stroke-opacity: 1 !important;
+      }
+
+      .keyhole {
+        fill: #d32f2f !important;
+        animation: blink 1s infinite;
+      }
+    }
+  }
+}
