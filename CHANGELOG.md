@@ -7,6 +7,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 ### UI Changes
 
 - refreshed icons: security system
+- refreshed icons: lock mechanism
 
 ### Homebridge Dependencies
 

@@ -11,6 +11,7 @@ import { LongClickDirective } from '@/app/core/directives/long-click.directive'
 @Component({
   selector: 'app-lock-mechanism',
   templateUrl: './lock-mechanism.component.html',
+  styleUrls: ['./lock-mechanism.component.scss'],
   standalone: true,
   imports: [
     LongClickDirective,
