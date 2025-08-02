@@ -2,6 +2,19 @@
 
 All notable changes to `homebridge-config-ui-x` will be documented in this file. This project tries to adhere to [Semantic Versioning](http://semver.org/).
 
+## v5.4.1 (Unreleased)
+
+### UI Changes
+
+- updates to the `pl.json` language file (#2522) (@mkz212)
+- refreshed icons: stateless programmable switch
+
+### Homebridge Dependencies
+
+- `@homebridge/hap-client` @ `v3.1.1`
+- `@homebridge/node-pty-prebuilt-multiarch` @ `v0.13.1`
+- `@homebridge/plugin-ui-utils` @ `v2.1.0`
+
 ## v5.4.0 (2025-08-02)
 
 ### UI Changes

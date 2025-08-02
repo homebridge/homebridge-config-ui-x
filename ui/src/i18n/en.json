@@ -65,6 +65,7 @@
   "accessories.control.set_duration": "Set Duration",
   "accessories.control.speaker": "Speaker",
   "accessories.control.speaker_volume": "Volume",
+  "accessories.control.stateless": "Stateless",
   "accessories.control.stop": "Stop",
   "accessories.control.stopped": "Stopped",
   "accessories.control.target": "Target",

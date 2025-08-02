@@ -1,0 +1,25 @@
+::ng-deep {
+  .press-single {
+    svg {
+      .single {
+        fill: #1976d2 !important;
+      }
+    }
+  }
+
+  .press-double {
+    svg {
+      .double {
+        fill: #1976d2 !important;
+      }
+    }
+  }
+
+  .press-long {
+    svg {
+      .long {
+        fill: #1976d2 !important;
+      }
+    }
+  }
+}

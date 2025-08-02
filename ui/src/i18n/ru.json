@@ -65,6 +65,7 @@
   "accessories.control.set_duration": "Set Duration",
   "accessories.control.speaker": "Speaker",
   "accessories.control.speaker_volume": "Громкость",
+  "accessories.control.stateless": "Stateless",
   "accessories.control.stop": "Stop",
   "accessories.control.stopped": "Остановлено",
   "accessories.control.target": "Целевая температура",

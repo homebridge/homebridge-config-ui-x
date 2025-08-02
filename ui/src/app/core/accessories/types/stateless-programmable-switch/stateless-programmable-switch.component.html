@@ -1,10 +1,18 @@
-<div class="accessory-box">
+<div
+  class="accessory-box"
+  [ngClass]="{
+    'press-single': service.values.ProgrammableSwitchEvent === 0,
+    'press-double': service.values.ProgrammableSwitchEvent === 1,
+    'press-long': service.values.ProgrammableSwitchEvent === 2,
+  }"
+>
   <div class="d-flex flex-column h-100">
     <div
-      [inlineSVG]="'/assets/hap-icons/stateless-programmable-switch.svg'"
+      [inlineSVG]="'/assets/service-icons/stateless-programmable-switch.svg'"
       [attr.aria-label]="'Stateless Programmable Switch'"
       class="accessory-svg"
     ></div>
     <div class="accessory-label mt-auto">{{ service.customName || service.serviceName }}</div>
+    <div class="accessory-label grey-text">{{ 'accessories.control.stateless' | translate }}</div>
   </div>
 </div>

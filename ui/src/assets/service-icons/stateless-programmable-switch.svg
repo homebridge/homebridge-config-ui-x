@@ -1,0 +1,18 @@
+<svg width="32px" height="32px" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+  <!-- frame -->
+  <rect x="1" y="1" width="30" height="30" rx="3" stroke="#7f7f7f" fill="none" stroke-width="2" />
+
+  <!-- single click -->
+  <circle class="single" cx="8.5" cy="9.5" r="5" stroke="#7f7f7f" stroke-width="1" fill="none" fill-opacity="0.5" />
+
+  <!-- double click, outer then inner -->
+  <circle class="double" cx="23.5" cy="9.5" r="5" stroke="#7f7f7f" stroke-width="1" fill="none" fill-opacity="0.5" />
+  <circle cx="23.5" cy="9.5" r="3" stroke="#7f7f7f" stroke-width="1" fill="none" />
+
+  <!-- long click -->
+  <circle class="long" cx="16" cy="23.5" r="5" stroke="#7f7f7f" stroke-width="1" fill="none" fill-opacity="0.5" />
+
+  <!-- long click lies, left then right -->
+  <line x1="5" y1="23.5" x2="11" y2="23.5" stroke="#7f7f7f" stroke-width="0.5" />
+  <line x1="21" y1="23.5" x2="27" y2="23.5" stroke="#7f7f7f" stroke-width="0.5" />
+</svg>
