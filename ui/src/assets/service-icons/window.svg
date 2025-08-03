@@ -15,6 +15,7 @@
     stroke="#7f7f7f"
     fill="none"
     stroke-width="0.5"
+    ry="2"
   />
 
   <!-- left window handle -->
@@ -27,6 +28,7 @@
     stroke="#1976d2"
     fill="none"
     stroke-width="0.5"
+    ry="2"
   />
 
   <!-- right window frame -->
@@ -51,6 +53,7 @@
     stroke="#7f7f7f"
     fill="none"
     stroke-width="0.5"
+    ry="2"
   />
 
   <!-- right window handle -->
@@ -63,5 +66,6 @@
     stroke="#1976d2"
     fill="none"
     stroke-width="0.5"
+    ry="2"
   />
 </svg>

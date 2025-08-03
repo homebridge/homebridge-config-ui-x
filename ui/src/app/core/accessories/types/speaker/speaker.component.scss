@@ -2,20 +2,22 @@
   .switch-on:not(.paused):not(.muted) {
     svg {
       .wave-inner {
-        animation: pulse-inner 2s infinite; // Inner waves animation
+        animation: pulse-inner 2s infinite;
       }
 
       .wave-outer {
-        animation: pulse-outer 2s infinite; // Outer waves animation
+        animation: pulse-outer 2s infinite;
       }
 
       @keyframes pulse-inner {
         0% {
           stroke-opacity: 0.5;
         }
+
         50% {
           stroke-opacity: 1;
         }
+
         100% {
           stroke-opacity: 0.5;
         }
@@ -25,9 +27,11 @@
         0% {
           stroke-opacity: 0.3;
         }
+
         50% {
           stroke-opacity: 0.8;
         }
+
         100% {
           stroke-opacity: 0.3;
         }

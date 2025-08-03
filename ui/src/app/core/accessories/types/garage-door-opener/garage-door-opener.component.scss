@@ -7,7 +7,7 @@
       }
 
       .line {
-        animation: fadeOut 0.5s ease-in-out forwards;
+        animation: fade-out 0.5s ease-in-out forwards;
       }
 
       .line1 {
@@ -66,7 +66,7 @@
         animation-delay: 0s;
       }
 
-      @keyframes fadeOut {
+      @keyframes fade-out {
         to {
           opacity: 0;
         }
@@ -94,7 +94,7 @@
 
       .line {
         opacity: 0;
-        animation: fadeIn 0.5s ease-in-out forwards;
+        animation: fade-in 0.5s ease-in-out forwards;
       }
 
       .line1 {
@@ -153,7 +153,7 @@
         animation-delay: 9.282s;
       }
 
-      @keyframes fadeIn {
+      @keyframes fade-in {
         to {
           opacity: 1;
         }
@@ -200,6 +200,7 @@
       100% {
         fill-opacity: 0.5;
       }
+
       50% {
         fill-opacity: 0.1;
       }

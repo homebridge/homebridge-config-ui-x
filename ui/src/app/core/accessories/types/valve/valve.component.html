@@ -8,25 +8,25 @@
   <div class="d-flex flex-column h-100">
     @if (service.values.ValveType === 0 || !service.values.ValveType) {
     <div
-      [inlineSVG]="'/assets/hap-icons/valve-generic.svg'"
+      [inlineSVG]="'/assets/service-icons/valve-generic.svg'"
       [attr.aria-label]="'Generic Valve'"
       class="accessory-svg"
     ></div>
     } @else if (service.values.ValveType === 1) {
     <div
-      [inlineSVG]="'/assets/hap-icons/valve-irrigation.svg'"
+      [inlineSVG]="'/assets/service-icons/valve-irrigation.svg'"
       [attr.aria-label]="'Irrigation Valve'"
       class="accessory-svg"
     ></div>
     } @else if (service.values.ValveType === 2) {
     <div
-      [inlineSVG]="'/assets/hap-icons/valve-shower-head.svg'"
+      [inlineSVG]="'/assets/service-icons/valve-shower-head.svg'"
       [attr.aria-label]="'Shower Head Valve'"
       class="accessory-svg"
     ></div>
     } @else if (service.values.ValveType === 3) {
     <div
-      [inlineSVG]="'/assets/hap-icons/valve-faucet.svg'"
+      [inlineSVG]="'/assets/service-icons/valve-faucet.svg'"
       [attr.aria-label]="'Faucet Valve'"
       class="accessory-svg"
     ></div>

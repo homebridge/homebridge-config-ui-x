@@ -13,6 +13,6 @@
   <circle class="long" cx="16" cy="23.5" r="5" stroke="#7f7f7f" stroke-width="1" fill="none" fill-opacity="0.5" />
 
   <!-- long click lies, left then right -->
-  <line x1="5" y1="23.5" x2="11" y2="23.5" stroke="#7f7f7f" stroke-width="0.5" />
-  <line x1="21" y1="23.5" x2="27" y2="23.5" stroke="#7f7f7f" stroke-width="0.5" />
+  <line x1="5" y1="23.5" x2="11" y2="23.5" stroke="#7f7f7f" stroke-width="0.5" stroke-linecap="round" />
+  <line x1="21" y1="23.5" x2="27" y2="23.5" stroke="#7f7f7f" stroke-width="0.5" stroke-linecap="round" />
 </svg>

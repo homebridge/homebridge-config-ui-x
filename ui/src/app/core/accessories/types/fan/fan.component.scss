@@ -3,7 +3,6 @@
     svg {
       g {
         .fan-blades {
-          -webkit-animation: fa-spin 2s infinite linear;
           animation: fa-spin 2s infinite linear;
           transform-origin: 53.5% 50%;
         }
@@ -15,7 +14,6 @@
     svg {
       g {
         .fan-blades {
-          -webkit-animation: fa-spin-counter 2s infinite linear;
           animation: fa-spin-counter 2s infinite linear;
           transform-origin: 53.5% 50%;
         }
@@ -23,27 +21,11 @@
     }
   }
 
-  @-webkit-keyframes fa-spin {
-    0% {
-      transform: rotate(0deg);
-    }
-    100% {
-      transform: rotate(359deg);
-    }
-  }
   @keyframes fa-spin {
     0% {
       transform: rotate(0deg);
     }
-    100% {
-      transform: rotate(359deg);
-    }
-  }
 
-  @-webkit-keyframes fa-spin-counter {
-    0% {
-      transform: rotate(0deg);
-    }
     100% {
       transform: rotate(-359deg);
     }
@@ -53,6 +35,7 @@
     0% {
       transform: rotate(0deg);
     }
+
     100% {
       transform: rotate(-359deg);
     }

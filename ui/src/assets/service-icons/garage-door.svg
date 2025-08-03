@@ -33,7 +33,7 @@
   <line x1="26" y1="31" x2="29" y2="31" stroke="#7f7f7f" stroke-width="1.5" stroke-linecap="round" />
 
   <!-- left garage line -->
-  <line x1="6" y1="17" x2="6" y2="31" stroke="#7f7f7f" stroke-width="1.5" />
+  <line x1="6" y1="17" x2="6" y2="31" stroke="#7f7f7f" stroke-width="1.5" stroke-linecap="" />
 
   <!-- right garage line -->
   <line x1="26" y1="17" x2="26" y2="31" stroke="#7f7f7f" stroke-width="1.5" />

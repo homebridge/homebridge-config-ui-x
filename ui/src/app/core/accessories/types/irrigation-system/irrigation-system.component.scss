@@ -1,11 +1,25 @@
 ::ng-deep {
-  .switch-off {
+  .switch-on {
     svg {
-      .valve_off_hidden {
-        display: none;
+      .field {
+        fill: #4caf50;
       }
-      .valve_off_grey {
-        fill: #808080;
+
+      .pipe {
+        animation: pulse 5s infinite;
+      }
+
+      @keyframes pulse {
+        0%,
+        100% {
+          stroke: #7f7f7f;
+          stroke-opacity: 0.5;
+        }
+
+        50% {
+          stroke: #1976d2;
+          stroke-opacity: 1;
+        }
       }
     }
   }
