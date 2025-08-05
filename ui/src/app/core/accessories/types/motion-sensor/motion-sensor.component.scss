@@ -1,26 +1,20 @@
 ::ng-deep {
-  .switch-off {
+  .switch-on {
     svg {
-      .motion_sensor_person,
-      .motion_sensor_trail_lines {
-        fill: #e0e0e0;
+      .orange-outline {
+        stroke: #ff9800;
+        animation: flash 1s infinite;
       }
-      .motion_sensor_trigger_lines {
-        display: none;
-      }
-      .motion_sensor_background {
-        fill: #808080;
-      }
-    }
-  }
-}
 
-::ng-deep body.dark-mode {
-  .switch-off {
-    svg {
-      .motion_sensor_person,
-      .motion_sensor_trail_lines {
-        fill: #2b2b2b;
+      @keyframes flash {
+        0%,
+        100% {
+          stroke-opacity: 0.8;
+        }
+
+        50% {
+          stroke-opacity: 0.2;
+        }
       }
     }
   }

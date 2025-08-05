@@ -1,13 +1,7 @@
-<div
-  class="accessory-box"
-  [ngClass]="{
-    'switch-on': service.values.LeakDetected,
-    'switch-off': !service.values.LeakDetected
-  }"
->
+<div class="accessory-box" [ngClass]="{ 'switch-on': service.values.LeakDetected }">
   <div class="d-flex flex-column h-100">
     <div
-      [inlineSVG]="'/assets/hap-icons/leak-sensor.svg'"
+      [inlineSVG]="'/assets/service-icons/leak-sensor.svg'"
       [attr.aria-label]="'Leak Sensor'"
       class="accessory-svg"
     ></div>
