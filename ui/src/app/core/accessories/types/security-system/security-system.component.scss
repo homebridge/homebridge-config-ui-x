@@ -1,0 +1,49 @@
+::ng-deep {
+  .home {
+    svg {
+      .dome {
+        fill: #1976d2 !important;
+      }
+    }
+  }
+
+  .away {
+    svg {
+      .dome {
+        fill: #ff9800 !important;
+      }
+    }
+  }
+
+  .night {
+    svg {
+      .dome {
+        fill: #673ab7 !important;
+      }
+    }
+  }
+
+  .triggered {
+    svg {
+      .dome {
+        fill: #d32f2f !important;
+      }
+
+      .ray {
+        stroke: #d32f2f;
+        stroke-opacity: 0.5;
+        animation: blink 1s infinite;
+      }
+
+      @keyframes blink {
+        0%,
+        100% {
+          stroke-opacity: 1;
+        }
+        50% {
+          stroke-opacity: 0.2;
+        }
+      }
+    }
+  }
+}

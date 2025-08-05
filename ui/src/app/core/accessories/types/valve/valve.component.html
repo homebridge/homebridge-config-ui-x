@@ -1,6 +1,6 @@
 <div
   class="accessory-box"
-  [ngClass]="{ 'switch-on': service.values.Active || service.values.On, 'switch-off': !service.values.Active && !service.values.On }"
+  [ngClass]="{ 'switch-on': service.values.Active || service.values.On }"
   (longClick)="onLongClick()"
   (shortClick)="onClick()"
   tabindex="0"
