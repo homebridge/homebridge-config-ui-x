@@ -11,10 +11,14 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - refreshed icons: irrigation system + valves
 - refreshed icons: light, leak, motion, occ. sensor
 
+### Other Changes
+
+- update `@homebridge/node-pty-prebuilt-multiarch` to `v0.14-beta`
+
 ### Homebridge Dependencies
 
 - `@homebridge/hap-client` @ `v3.1.1`
-- `@homebridge/node-pty-prebuilt-multiarch` @ `v0.13.1`
+- `@homebridge/node-pty-prebuilt-multiarch` @ `v0.14.1-beta`
 - `@homebridge/plugin-ui-utils` @ `v2.1.0`
 
 ## v5.4.1 (2025-08-05)
