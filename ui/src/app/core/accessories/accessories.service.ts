@@ -6,7 +6,13 @@ import { TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
 import { firstValueFrom, Subject } from 'rxjs'
 
-import { AccessoryLayout, ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
+import {
+  AccessoryData,
+  CacheLayoutRoom,
+  CacheLayoutService,
+  LiveLayoutRoom,
+  ServiceTypeX,
+} from '@/app/core/accessories/accessories.interfaces'
 import { AccessoryInfoComponent } from '@/app/core/accessories/accessory-info/accessory-info.component'
 import { ApiService } from '@/app/core/api.service'
 import { AuthService } from '@/app/core/auth/auth.service'
@@ -16,6 +22,8 @@ import { IoNamespace, WsService } from '@/app/core/ws.service'
   providedIn: 'root',
 })
 export class AccessoriesService {
+  private readonly defaultRoomName = 'Default Room'
+
   private $api = inject(ApiService)
   private $auth = inject(AuthService)
   private $modal = inject(NgbModal)
@@ -36,23 +44,12 @@ export class AccessoriesService {
   public layoutSaved = new Subject()
   public accessoryData = new Subject()
   public readyForControl = false
-  public accessories: { services: ServiceType[] } = { services: [] }
-  public rooms: Array<{ name: string, services: ServiceTypeX[] }> = []
-  public accessoryLayout: AccessoryLayout
+  public accessories: AccessoryData = { services: [] }
+  public rooms: LiveLayoutRoom[] = []
+  public cachedRoomsAndServices: CacheLayoutRoom[] = []
 
   constructor() {
-    if (this.$auth.user.admin) {
-      firstValueFrom(this.$api.get('/server/cached-accessories'))
-        .then((data) => {
-          this.accessoryCache = data
-        })
-        .catch(error => console.error(error))
-      firstValueFrom(this.$api.get('/server/pairings'))
-        .then((data) => {
-          this.pairingCache = data
-        })
-        .catch(error => console.error(error))
-    }
+    this.getExtraAccessoryData()
   }
 
   public showAccessoryInformation(service: any) {
@@ -80,7 +77,7 @@ export class AccessoriesService {
     this.rooms = []
     this.accessories = { services: [] }
     this.roomsOrdered = false
-    delete this.accessoryLayout
+    delete this.cachedRoomsAndServices
   }
 
   /**
@@ -143,25 +140,51 @@ export class AccessoriesService {
 
   /**
    * Save the room layout
+   * This is called after reordering services and add/edit/remove rooms
    */
   public saveLayout() {
-    // Generate layout schema to save to disk
-    this.accessoryLayout = this.rooms.map(room => ({
-      name: room.name,
-      services: room.services.map(service => ({
-        uniqueId: service.uniqueId,
-        aid: service.aid,
-        iid: service.iid,
-        uuid: service.uuid,
-        customName: service.customName || undefined,
-        customType: service.customType || undefined,
-        hidden: service.hidden || undefined,
-        onDashboard: service.onDashboard || undefined,
-      })),
-    })).filter(room => room.services.length)
+    const liveServiceToRoom = new Map<string, string>()
+    const roomMap = new Map<string, CacheLayoutRoom>()
+
+    // Build the initial layout and map for quick lookups
+    const newCacheRoomsAndServices: CacheLayoutRoom[] = this.rooms
+      .map((room) => {
+        const services: CacheLayoutService[] = room.services.map((service) => {
+          liveServiceToRoom.set(service.uniqueId, room.name)
+          return this.createServiceObject(service)
+        })
+        const roomData = { name: room.name, services }
+        roomMap.set(room.name, roomData)
+        return roomData
+      })
+      .filter(room => room.services.length)
+
+    // Add missing services from the cache
+    this.cachedRoomsAndServices.forEach((cachedRoom) => {
+      cachedRoom.services.forEach((service) => {
+        if (!liveServiceToRoom.has(service.uniqueId)) {
+          // This service is not (yet) in the live layout (has not been discovered)
+          const existingRoom = roomMap.get(cachedRoom.name)
+          if (existingRoom) {
+            // Push it to the end of the same room
+            existingRoom.services.push(service)
+          } else {
+            // The room no longer exists, so push it to the default room
+            const defaultRoom = roomMap.get(this.defaultRoomName)
+            if (defaultRoom) {
+              defaultRoom.services.push(service)
+            } else {
+              const newDefaultRoom = { name: this.defaultRoomName, services: [service] }
+              roomMap.set(this.defaultRoomName, newDefaultRoom)
+              newCacheRoomsAndServices.push(newDefaultRoom)
+            }
+          }
+        }
+      })
+    })
 
     // Send update request to server
-    this.io.request('save-layout', { user: this.$auth.user.username, layout: this.accessoryLayout }).subscribe({
+    this.io.request('save-layout', { user: this.$auth.user.username, layout: newCacheRoomsAndServices }).subscribe({
       next: () => this.layoutSaved.next(undefined),
       error: (error) => {
         console.error(error)
@@ -170,14 +193,29 @@ export class AccessoriesService {
     })
   }
 
+  private async getExtraAccessoryData() {
+    if (this.$auth.user.admin) {
+      try {
+        const [accessoryData, pairingData] = await Promise.all([
+          firstValueFrom(this.$api.get('/server/cached-accessories')),
+          firstValueFrom(this.$api.get('/server/pairings')),
+        ])
+        this.accessoryCache = accessoryData
+        this.pairingCache = pairingData
+      } catch (error) {
+        console.error(error)
+      }
+    }
+  }
+
   /**
    * Load the room layout
    */
   private async loadLayout() {
-    this.accessoryLayout = await firstValueFrom(this.io.request('get-layout', { user: this.$auth.user.username }))
+    this.cachedRoomsAndServices = await firstValueFrom(this.io.request('get-layout', { user: this.$auth.user.username }))
 
     // Build empty room layout
-    this.rooms = this.accessoryLayout.map(room => ({
+    this.rooms = this.cachedRoomsAndServices.map(room => ({
       name: room.name,
       services: [],
     }))
@@ -195,13 +233,6 @@ export class AccessoriesService {
     // Update the existing objects to avoid re-painting the dom element each refresh
     services.forEach((service) => {
       const existing = this.accessories.services.find(x => x.uniqueId === service.uniqueId)
-
-      // Special case for locks - if there exists just one mechanism and one management service, link them
-      // This allows us to manage the settings for lock management inside the long press modal for the lock mechanism
-      if (service.type === 'LockMechanism') {
-        this.attachLockManagementToMechanism(service)
-      }
-
       if (existing) {
         Object.assign(existing, service)
       } else {
@@ -229,26 +260,32 @@ export class AccessoriesService {
         })
       }
 
+      // Special case for locks - if there exists just one mechanism and one management service, link them
+      // This allows us to manage the settings for lock management inside the long press modal for the lock mechanism
+      if (service.type === 'LockMechanism') {
+        this.attachLockManagementToMechanism(service)
+      }
+
       // Check if the service has already been allocated to an active room
       const inRoom = this.rooms.find(r => r.services.find(s => s.uniqueId === service.uniqueId))
 
       // Not in an active room, perhaps the service is in the layout cache
       if (!inRoom) {
-        const inCache = this.accessoryLayout.find(r => r.services.find(s => s.uniqueId === service.uniqueId))
+        const inCache = this.cachedRoomsAndServices.find(r => r.services.find(s => s.uniqueId === service.uniqueId))
 
         if (inCache) {
           // It's in the cache, add to the correct room
           this.rooms.find(r => r.name === inCache.name).services.push(service)
         } else {
           // New accessory add the default room
-          const defaultRoom = this.rooms.find(r => r.name === 'Default Room')
+          const defaultRoom = this.rooms.find(r => r.name === this.defaultRoomName)
 
           // Does the default room exist?
           if (defaultRoom) {
             defaultRoom.services.push(service)
           } else {
             this.rooms.push({
-              name: 'Default Room',
+              name: this.defaultRoomName,
               services: [service],
             })
           }
@@ -263,7 +300,7 @@ export class AccessoriesService {
   private orderRooms() {
     // Order the services within each room
     this.rooms.forEach((room) => {
-      const roomCache = this.accessoryLayout.find(r => r.name === room.name)
+      const roomCache = this.cachedRoomsAndServices.find(r => r.name === room.name)
       room.services.sort((a, b) => {
         const posA = roomCache.services.findIndex(s => s.uniqueId === a.uniqueId)
         const posB = roomCache.services.findIndex(s => s.uniqueId === b.uniqueId)
@@ -283,7 +320,7 @@ export class AccessoriesService {
   private applyCustomAttributes() {
     // Apply custom saved attributes to the service
     this.rooms.forEach((room) => {
-      const roomCache = this.accessoryLayout.find(r => r.name === room.name)
+      const roomCache = this.cachedRoomsAndServices.find(r => r.name === room.name)
       room.services.forEach((service) => {
         const serviceCache = roomCache.services.find(s => s.uniqueId === service.uniqueId)
         Object.assign(service, serviceCache)
@@ -348,6 +385,19 @@ export class AccessoriesService {
         service.linkedServices = {}
       }
       service.linkedServices[lockManagement.iid] = lockManagement
+    }
+  }
+
+  private createServiceObject(service: ServiceTypeX): CacheLayoutService {
+    return {
+      uniqueId: service.uniqueId,
+      aid: service.aid,
+      iid: service.iid,
+      uuid: service.uuid,
+      customName: service.customName,
+      customType: service.customType,
+      hidden: service.hidden,
+      onDashboard: service.onDashboard,
     }
   }
 }

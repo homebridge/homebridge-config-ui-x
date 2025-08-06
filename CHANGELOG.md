@@ -14,6 +14,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 ### Other Changes
 
 - update `@homebridge/node-pty-prebuilt-multiarch` to `v0.14-beta`
+- fix saving custom attributes for ui layouts
 
 ### Homebridge Dependencies
 
