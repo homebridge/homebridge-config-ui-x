@@ -1,10 +1,75 @@
 <div class="accessory-box" [ngClass]="{ 'switch-on': service.values.InUse }">
   <div class="d-flex flex-column h-100">
-    <div
-      [inlineSVG]="'/assets/service-icons/irrigation-system.svg'"
-      [attr.aria-label]="'Irrigation System'"
-      class="accessory-svg"
-    ></div>
+    <div [attr.aria-label]="'Irrigation System'" class="accessory-svg">
+      <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+        <!-- water tank -->
+        <rect
+          x="9"
+          y="1"
+          width="14"
+          height="6.5"
+          rx="2"
+          fill="#1976d2"
+          stroke="#7b7b7b"
+          stroke-width="0.5"
+          fill-opacity="0.5"
+        />
+        <!-- vertical pipe -->
+        <line class="pipe" x1="16" y1="8" x2="16" y2="31" stroke="#7f7f7f" stroke-width="1" stroke-linecap="round" />
+        <!-- horizontal pipes, top to bottom -->
+        <line class="pipe" x1="1" y1="9" x2="31" y2="9" stroke="#7f7f7f" stroke-width="1" stroke-linecap="round" />
+        <line class="pipe" x1="1" y1="20" x2="31" y2="20" stroke="#7f7f7f" stroke-width="1" stroke-linecap="round" />
+        <line class="pipe" x1="1" y1="31" x2="31" y2="31" stroke="#7f7f7f" stroke-width="1" stroke-linecap="round" />
+        <!-- top left field -->
+        <rect
+          class="field"
+          x="1"
+          y="10"
+          width="14"
+          height="9"
+          rx="0"
+          fill="#7f7f7f"
+          stroke-width="0"
+          fill-opacity="0.5"
+        />
+        <!-- top right field -->
+        <rect
+          class="field"
+          x="17"
+          y="10"
+          width="14"
+          height="9"
+          rx="0"
+          fill="#7f7f7f"
+          stroke-width="0"
+          fill-opacity="0.5"
+        />
+        <!-- bottom left field -->
+        <rect
+          class="field"
+          x="1"
+          y="21"
+          width="14"
+          height="9"
+          rx="0"
+          fill="#7f7f7f"
+          stroke-width="0"
+          fill-opacity="0.5"
+        />
+        <!-- bottom right field -->
+        <rect
+          class="field"
+          x="17"
+          y="21"
+          width="14"
+          height="9"
+          rx="0"
+          fill="#7f7f7f"
+          stroke-width="0"
+          fill-opacity="0.5"
+        />
+      </svg>
+    </div>
     <div class="accessory-label mt-auto">
       {{ service.customName || service.values.ConfiguredName || service.serviceName }}
     </div>

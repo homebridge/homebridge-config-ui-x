@@ -2,7 +2,6 @@ import { NgClass } from '@angular/common'
 import { Component, inject, Input, OnInit } from '@angular/core'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
 import { TranslatePipe } from '@ngx-translate/core'
-import { InlineSVGDirective } from 'ng-inline-svg-2'
 
 import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
 import { FanManageComponent } from '@/app/core/accessories/types/fan/fan.manage.component'
@@ -17,7 +16,6 @@ import { LongClickDirective } from '@/app/core/directives/long-click.directive'
     LongClickDirective,
     NgClass,
     TranslatePipe,
-    InlineSVGDirective,
   ],
 })
 export class FanComponent implements OnInit {

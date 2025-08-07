@@ -13,11 +13,56 @@
   tabindex="0"
 >
   <div class="d-flex flex-column h-100">
-    <div
-      [inlineSVG]="'/assets/service-icons/air-purifier.svg'"
-      [attr.aria-label]="'Air Purifier'"
-      class="accessory-svg"
-    ></div>
+    <div [attr.aria-label]="'Air Purifier'" class="accessory-svg">
+      <svg width="32px" height="32px" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+        <!-- top wave -->
+        <path
+          d="M3,3.0706147 C3.28945166,3.8007217 5.978098,4.1773883 10.0660175,4.2006147 C12.5085124,4.2144929 18.5053297,1.8514837 22.4060749,1.1943647 C24.1588716,0.898084 26.5955382,1.1756219 28.716875,2.0221772"
+          class="air-line"
+          stroke="#7f7f7f"
+          fill="transparent"
+          stroke-width="1.5"
+          stroke-linecap="round"
+        />
+        <!-- bottom wave -->
+        <path
+          d="M3,9.0706147 C3.28945166,9.8007217 5.978098,10.1773883 10.0660175,10.2006147 C12.5085124,10.2144929 18.5053297,7.8514837 22.4060749,7.1943647 C24.1588716,6.898084 26.5955382,7.1756219 28.716875,8.0221772"
+          class="air-line bottom-line"
+          stroke="#7f7f7f"
+          fill="transparent"
+          stroke-width="1.5"
+          stroke-linecap="round"
+        />
+        <!-- back top line -->
+        <line x1="7" y1="14" x2="25" y2="14" stroke="#7f7f7f" stroke-width="1.5" stroke-linecap="round" />
+
+        <!-- back left to front left -->
+        <line x1="7" y1="14" x2="2" y2="23" stroke="#7f7f7f" stroke-width="1.5" stroke-linecap="round" />
+
+        <!-- back right to front right -->
+        <line x1="25" y1="14" x2="30" y2="23" stroke="#7f7f7f" stroke-width="1.5" stroke-linecap="round" />
+
+        <!-- grille lines -->
+        <line x1="8" y1="16.5" x2="24" y2="16.5" stroke="#7f7f7f" stroke-width="1" stroke-linecap="round" />
+        <line x1="7" y1="18.5" x2="25" y2="18.5" stroke="#7f7f7f" stroke-width="1" stroke-linecap="round" />
+        <line x1="6" y1="20.5" x2="26" y2="20.5" stroke="#7f7f7f" stroke-width="1" stroke-linecap="round" />
+
+        <!-- front top line -->
+        <line x1="2" y1="23" x2="30" y2="23" stroke="#7f7f7f" stroke-width="1.5" stroke-linecap="round" />
+
+        <!-- side left line -->
+        <line x1="30" y1="23" x2="30" y2="31" stroke="#7f7f7f" stroke-width="1.5" stroke-linecap="round" />
+
+        <!-- side right line -->
+        <line x1="2" y1="23" x2="2" y2="31" stroke="#7f7f7f" stroke-width="1.5" stroke-linecap="round" />
+
+        <!-- power button -->
+        <circle cx="15.5" cy="27" r="2.5" stroke="#7f7f7f" stroke-width="1" fill="#1976d2" fill-opacity="0.5" />
+
+        <!-- front bottom line -->
+        <line x1="2" y1="31" x2="30" y2="31" stroke="#7f7f7f" stroke-width="1.5" stroke-linecap="round" />
+      </svg>
+    </div>
     <div class="accessory-label mt-auto">{{ service.customName || service.serviceName }}</div>
 
     @if ((service.values.Active && !('CurrentAirPurifierState' in service.values)) || (service.values.Active &&
