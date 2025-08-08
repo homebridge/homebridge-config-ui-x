@@ -120,7 +120,12 @@ export class WidgetControlComponent implements OnInit {
         this.networkInterfaces = adapters
       })
     }
-    this.serverInfo = await firstValueFrom(this.io.request('get-homebridge-server-info'))
+    try {
+      this.serverInfo = await firstValueFrom(this.io.request('get-homebridge-server-info'))
+    } catch (error) {
+      console.error('Failed to fetch server info:', error)
+      this.serverInfo = null
+    }
   }
 
   public dismissModal() {
