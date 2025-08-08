@@ -16,7 +16,8 @@ import {
 
 import { ApiService } from '@/app/core/api.service'
 import { SettingsService } from '@/app/core/settings.service'
-import { Widget } from '@/app/modules/status/widgets/widgets.interfaces'
+import { IoNamespace, WsService } from '@/app/core/ws.service'
+import { ServerInfo, Widget } from '@/app/modules/status/widgets/widgets.interfaces'
 import { environment } from '@/environments/environment'
 
 @Component({
@@ -36,6 +37,8 @@ export class WidgetControlComponent implements OnInit {
   private $http = inject(HttpClient)
   private $settings = inject(SettingsService)
   private $translate = inject(TranslateService)
+  private $ws = inject(WsService)
+  private io: IoNamespace
 
   @Input() widget: Widget
 
@@ -54,6 +57,9 @@ export class WidgetControlComponent implements OnInit {
     'H:mm',
     'H:mm:ss',
   ]
+
+  // Update Information Widget
+  public serverInfo: ServerInfo
 
   public dateFormats = [
     'yyyy-MM-dd',
@@ -94,7 +100,8 @@ export class WidgetControlComponent implements OnInit {
 
   public searchCountryCodeFormatter = (result: any) => `${result.name}, ${result.country}`
 
-  public ngOnInit() {
+  public async ngOnInit() {
+    this.io = this.$ws.getExistingNamespace('status')
     this.isLightMode = this.$settings.actualLightingMode === 'light'
     if (this.widget.component === 'HomebridgeLogsWidgetComponent' || this.widget.component === 'TerminalWidgetComponent') {
       if (!this.widget.fontWeight) {
@@ -113,6 +120,7 @@ export class WidgetControlComponent implements OnInit {
         this.networkInterfaces = adapters
       })
     }
+    this.serverInfo = await firstValueFrom(this.io.request('get-homebridge-server-info'))
   }
 
   public dismissModal() {

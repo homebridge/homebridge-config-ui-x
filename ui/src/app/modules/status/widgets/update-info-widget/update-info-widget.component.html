@@ -23,7 +23,7 @@
         </div>
         <div class="align-self-center px-3">
           Docker-Homebridge
-          <i class="fas fa-chevron-down ms-2" [ngClass]="{ 'fa-rotate-180': dockerExpanded }"></i>
+          <i class="fas fa-chevron-down ms-2" [ngClass]="{ 'fa-rotate-180': ! widget.dockerExpanded }"></i>
           <br />
           @if (!dockerStatusDone) {
           <span class="grey-text small">{{ 'status.homebridge.checking' | translate }}</span>
@@ -37,7 +37,7 @@
           } }
         </div>
       </div>
-      @if (dockerExpanded) {
+      @if (widget.dockerExpanded) {
       <div class="ps-5 pe-3 d-flex flex-wrap">
         <!-- Homebridge -->
         <div class="hb-status-item d-flex flex-row py-1" style="min-width: 200px; flex: 1 0 auto">

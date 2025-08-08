@@ -17,6 +17,10 @@ import { HbV2ModalComponent } from '@/app/modules/status/widgets/update-info-wid
 import { NodeVersionModalComponent } from '@/app/modules/status/widgets/update-info-widget/node-version-modal/node-version-modal.component'
 import { DockerDetails, NodeJsInfo, ServerInfo, Widget } from '@/app/modules/status/widgets/widgets.interfaces'
 
+interface ExtendedWidget extends Widget {
+  dockerExpanded?: boolean
+}
+
 @Component({
   templateUrl: './update-info-widget.component.html',
   styleUrls: ['./update-info-widget.component.scss'],
@@ -39,7 +43,7 @@ export class UpdateInfoWidgetComponent implements OnInit {
   private $ws = inject(WsService)
   private io: IoNamespace
 
-  @Input() widget: Widget
+  @Input() widget: ExtendedWidget
 
   public homebridgePkg: Plugin = {} as Plugin
   public homebridgeUiPkg: Plugin = {} as Plugin
@@ -55,7 +59,6 @@ export class UpdateInfoWidgetComponent implements OnInit {
   public homebridgeVersion = this.$settings.env.homebridgeVersion
   public isAdmin = this.$auth.user.admin
   public dockerStatusDone = false as boolean
-  public dockerExpanded = false
   public dockerInfo: DockerDetails = {
     latestVersion: null,
     latestReleaseBody: '',
@@ -195,7 +198,8 @@ export class UpdateInfoWidgetComponent implements OnInit {
   }
 
   public toggleDockerExpand() {
-    this.dockerExpanded = !this.dockerExpanded
+    this.widget.dockerExpanded = !this.widget.dockerExpanded
+    this.widget.$saveWidgetsEvent.next() // Trigger the save event
   }
 
   public dockerUpdateModal() {
@@ -208,7 +212,7 @@ export class UpdateInfoWidgetComponent implements OnInit {
     ref.componentInstance.message = this.$translate.instant('status.widget.info.docker_update_message')
     ref.componentInstance.markdownMessage2 = this.dockerInfo.latestReleaseBody
     ref.componentInstance.subtitle = (this.dockerInfo.currentVersion && this.dockerInfo.latestVersion)
-      ? `${this.dockerInfo.currentVersion} → ${this.dockerInfo.latestVersion}`
+      ? `${this.dockerInfo.currentVersion} &rarr; ${this.dockerInfo.latestVersion}`
       : this.$translate.instant('accessories.control.unknown')
     ref.componentInstance.ctaButtonLabel = this.$translate.instant('form.button_more_info')
     ref.componentInstance.faIconClass = 'fab fa-fw fa-docker primary-text'
