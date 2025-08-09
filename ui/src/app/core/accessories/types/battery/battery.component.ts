@@ -1,4 +1,4 @@
-import { DecimalPipe, NgClass } from '@angular/common'
+import { NgClass } from '@angular/common'
 import { Component, Input } from '@angular/core'
 import { TranslatePipe } from '@ngx-translate/core'
 
@@ -11,10 +11,10 @@ import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
   standalone: true,
   imports: [
     NgClass,
-    DecimalPipe,
     TranslatePipe,
   ],
 })
 export class BatteryComponent {
   @Input() public service: ServiceTypeX
+  protected readonly Math = Math
 }
