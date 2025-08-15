@@ -37,6 +37,7 @@ export class SettingsService {
   public wallpaper: string
   public serverTimeOffset = 0
   public rtl = false // set true if current translation is RLT
+  public browserLang: string // set by the browser language
   public onSettingsLoaded = this.settingsLoadedSubject.pipe(first())
   public settingsLoaded = false
   public readonly themeList = [
@@ -78,6 +79,7 @@ export class SettingsService {
     this.setLang(this.env.lang)
     this.settingsLoaded = true
     this.settingsLoadedSubject.next(undefined)
+    this.browserLang = this.$translate.getBrowserCultureLang()
   }
 
   public setBrowserLightingMode(lighting: 'light' | 'dark') {

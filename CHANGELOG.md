@@ -7,6 +7,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 ### UI Changes
 
 - refreshed icons: lightbulb, switch, outlet + unknown
+- refreshed icons: heater, cooler, de/humidifier + thermostat
 
 ### Homebridge Dependencies
 

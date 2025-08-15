@@ -1,7 +1,7 @@
 <div
   class="accessory-box"
   [ngClass]="{
-    'switch-on': service.values.SecuritySystemCurrentState !== 3,
+    'accessory-on': service.values.SecuritySystemCurrentState !== 3,
     'home': service.values.SecuritySystemCurrentState === 0,
     'away': service.values.SecuritySystemCurrentState === 1,
     'night': service.values.SecuritySystemCurrentState === 2,
