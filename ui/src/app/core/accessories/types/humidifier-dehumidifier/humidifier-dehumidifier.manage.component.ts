@@ -13,7 +13,6 @@ import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
 
 @Component({
   templateUrl: './humidifier-dehumidifier.manage.component.html',
-  styleUrls: ['./humidifier-dehumidifier.component.scss'],
   standalone: true,
   imports: [
     NgClass,

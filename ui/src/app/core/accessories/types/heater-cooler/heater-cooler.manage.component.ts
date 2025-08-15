@@ -15,7 +15,6 @@ import { SettingsService } from '@/app/core/settings.service'
 
 @Component({
   templateUrl: './heater-cooler.manage.component.html',
-  styleUrls: ['./heater-cooler.component.scss'],
   standalone: true,
   imports: [
     NgClass,

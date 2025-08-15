@@ -1,7 +1,7 @@
 <div
   class="accessory-box"
   [ngClass]="{
-    'switch-on': service.values.AirQuality === 5,
+    'accessory-on': service.values.AirQuality === 5,
     'fill-red': service.values.AirQuality === 5,
     'fill-orange': [3, 4].includes(service.values.AirQuality),
     'fill-green': [1, 2].includes(service.values.AirQuality),

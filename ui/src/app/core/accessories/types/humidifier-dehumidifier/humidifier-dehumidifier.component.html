@@ -1,23 +1,97 @@
 <div
   class="accessory-box"
-  [ngClass]="{ 'switch-on': service.values.Active || service.values.On }"
+  [ngClass]="{ 'accessory-on': service.values.Active || service.values.On }"
   (longClick)="onLongClick()"
   (shortClick)="onClick()"
   tabindex="0"
 >
   <div class="d-flex flex-column h-100">
-    <div
-      class="humidity-drop humidity-drop-collapse"
-      [ngClass]="{
-        'dehumidifying': (service.values.CurrentHumidifierDehumidifierState === 3 && service.values.Active === 1) || (type === 'dehumidifier' && (service.values.Active || service.values.On)),
-        'humidifying': (service.values.CurrentHumidifierDehumidifierState === 2 && service.values.Active === 1) || (type === 'humidifier' && (service.values.Active || service.values.On)),
-        'no-current-state': service.values.CurrentHumidifierDehumidifierState === 1 && service.values.Active === 1
-      }"
-    >
-      <div
-        class="humidity-drop-text"
-        [innerText]="'CurrentRelativeHumidity' in service.values ? ((service.values.CurrentRelativeHumidity) + '%') : ''"
-      ></div>
+    <div [attr.aria-label]="'Heater Cooler'" class="accessory-svg">
+      <svg width="32px" height="32px" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="humidifyingGradient" x1="0" y1="1" x2="0" y2="0">
+            <stop offset="0%" stop-color="#1e8bbd">
+              <animate attributeName="stop-color" values="#1e8bbd;#66d6d6;#1e8bbd" dur="5s" repeatCount="indefinite" />
+            </stop>
+            <stop offset="50%" stop-color="#66d6d6">
+              <animate attributeName="stop-color" values="#66d6d6;#1e8bbd;#66d6d6" dur="5s" repeatCount="indefinite" />
+            </stop>
+            <stop offset="100%" stop-color="#1e8bbd">
+              <animate attributeName="stop-color" values="#1e8bbd;#66d6d6;#1e8bbd" dur="5s" repeatCount="indefinite" />
+            </stop>
+          </linearGradient>
+          <linearGradient id="dehumidifyingGradient" x1="0" y1="1" x2="0" y2="0">
+            <stop offset="0%" stop-color="#cc5e00">
+              <animate
+                attributeName="stop-color"
+                values="#cc5e00;#e69533;#cc5e00;#e69533"
+                dur="5s"
+                repeatCount="indefinite"
+              />
+            </stop>
+            <stop offset="50%" stop-color="#e69533">
+              <animate
+                attributeName="stop-color"
+                values="#e69533;#cc5e00;#e69533;#cc5e00"
+                dur="5s"
+                repeatCount="indefinite"
+              />
+            </stop>
+            <stop offset="100%" stop-color="#cc5e00">
+              <animate
+                attributeName="stop-color"
+                values="#cc5e00;#e69533;#cc5e00;#e69533"
+                dur="5s"
+                repeatCount="indefinite"
+              />
+            </stop>
+          </linearGradient>
+        </defs>
+        <!-- outer casing -->
+        <rect x="1" y="3.5" width="30" height="25" rx="3" stroke="#7f7f7f" fill="none" stroke-width="1.2" />
+        <!-- grille -->
+        <line x1="6" y1="10" x2="6" y2="10" stroke="#7f7f7f" stroke-width="1.2" stroke-linecap="round" />
+        <line x1="6" y1="12" x2="6" y2="12" stroke="#7f7f7f" stroke-width="1.2" stroke-linecap="round" />
+        <line x1="6" y1="14" x2="6" y2="14" stroke="#7f7f7f" stroke-width="1.2" stroke-linecap="round" />
+        <line x1="10" y1="10" x2="10" y2="10" stroke="#7f7f7f" stroke-width="1.2" stroke-linecap="round" />
+        <line x1="10" y1="12" x2="10" y2="12" stroke="#7f7f7f" stroke-width="1.2" stroke-linecap="round" />
+        <line x1="10" y1="14" x2="10" y2="14" stroke="#7f7f7f" stroke-width="1.2" stroke-linecap="round" />
+        <line x1="14" y1="10" x2="14" y2="10" stroke="#7f7f7f" stroke-width="1.2" stroke-linecap="round" />
+        <line x1="14" y1="12" x2="14" y2="12" stroke="#7f7f7f" stroke-width="1.2" stroke-linecap="round" />
+        <line x1="14" y1="14" x2="14" y2="14" stroke="#7f7f7f" stroke-width="1.2" stroke-linecap="round" />
+        <line x1="18" y1="10" x2="18" y2="10" stroke="#7f7f7f" stroke-width="1.2" stroke-linecap="round" />
+        <line x1="18" y1="12" x2="18" y2="12" stroke="#7f7f7f" stroke-width="1.2" stroke-linecap="round" />
+        <line x1="18" y1="14" x2="18" y2="14" stroke="#7f7f7f" stroke-width="1.2" stroke-linecap="round" />
+        <line x1="22" y1="10" x2="22" y2="10" stroke="#7f7f7f" stroke-width="1.2" stroke-linecap="round" />
+        <line x1="22" y1="12" x2="22" y2="12" stroke="#7f7f7f" stroke-width="1.2" stroke-linecap="round" />
+        <line x1="22" y1="14" x2="22" y2="14" stroke="#7f7f7f" stroke-width="1.2" stroke-linecap="round" />
+        <line x1="26" y1="10" x2="26" y2="10" stroke="#7f7f7f" stroke-width="1.2" stroke-linecap="round" />
+        <line x1="26" y1="12" x2="26" y2="12" stroke="#7f7f7f" stroke-width="1.2" stroke-linecap="round" />
+        <line x1="26" y1="14" x2="26" y2="14" stroke="#7f7f7f" stroke-width="1.2" stroke-linecap="round" />
+        <!-- status window -->
+        <rect
+          x="1"
+          y="7"
+          width="30"
+          height="10"
+          rx="0"
+          stroke="#7f7f7f"
+          stroke-width="1.2"
+          fill-opacity="0.5"
+          [attr.fill]="
+            (service.values.CurrentHumidifierDehumidifierState === 2 && service.values.Active === 1) || (type === 'humidifier' && (service.values.Active || service.values.On))
+              ? 'url(#humidifyingGradient)'
+              : (service.values.CurrentHumidifierDehumidifierState === 3 && service.values.Active === 1) || (type === 'dehumidifier' && (service.values.Active || service.values.On))
+                ? 'url(#dehumidifyingGradient)'
+                : (service.values.Active || service.values.On ? '#42d672' : '#7b7b7b')"
+        />
+        <!--  current humidity -->
+        @if ('CurrentRelativeHumidity' in service.values) {
+        <text x="16.5" y="25.5" font-size="7" text-anchor="middle" fill="#7f7f7f" font-family="Arial, sans-serif">
+          {{ service.values.CurrentRelativeHumidity }}%
+        </text>
+        }
+      </svg>
     </div>
     <div class="accessory-label mt-auto">{{ service.customName || service.serviceName }}</div>
     <div class="accessory-label grey-text">
