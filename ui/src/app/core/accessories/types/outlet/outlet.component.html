@@ -1,7 +1,7 @@
 <div
   class="accessory-box"
   [ngClass]="{
-    'switch-on': service.values.On
+    'accessory-on': service.values.On
       ||  service.values.Active
       || ('LockTargetState' in service.values && !service.values.LockTargetState)
       || ('CurrentDoorState' in service.values && [0, 2].includes(service.values.CurrentDoorState))
@@ -27,27 +27,15 @@
         />
         <!-- inner circle -->
         <circle cx="16" cy="16" r="10" fill="none" stroke="#7f7f7f" stroke-width="1.5" class="inner" />
-        <!-- top hole -->
+        @if (browserLang === 'en-GB') {
+        <line x1="16" y1="10" x2="16" y2="13" stroke="#7f7f7f" stroke-linecap="round" stroke-width="1.5" />
+        <line x1="10" y1="19" x2="13" y2="19" stroke="#7f7f7f" stroke-linecap="round" stroke-width="1.5" />
+        <line x1="19" y1="19" x2="22" y2="19" stroke="#7f7f7f" stroke-linecap="round" stroke-width="1.5" />
+        } @else {
         <line x1="16" y1="19" x2="16" y2="22" stroke="#7f7f7f" stroke-linecap="round" stroke-width="1.5" />
-        <!-- left hole -->
         <line x1="10" y1="14" x2="13" y2="14" stroke="#7f7f7f" stroke-linecap="round" stroke-width="1.5" />
-        <!-- right hole -->
         <line x1="19" y1="14" x2="22" y2="14" stroke="#7f7f7f" stroke-linecap="round" stroke-width="1.5" />
-        <!-- plug -->
-        <rect
-          class="plug"
-          x="6"
-          y="11"
-          width="20"
-          height="10"
-          fill="#7f7f7f"
-          stroke="none"
-          stroke-width="1.5"
-          rx="1"
-          ry="1"
-        />
-        <!-- plug cord -->
-        <line class="plug" x1="16" y1="16" x2="16" y2="32" stroke="#7f7f7f" stroke-linecap="round" stroke-width="1.5" />
+        }
       </svg>
     </div>
     <div class="accessory-label mt-auto">{{ service.customName || service.serviceName }}</div>

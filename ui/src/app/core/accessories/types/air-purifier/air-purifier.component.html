@@ -1,7 +1,7 @@
 <div
   class="accessory-box"
   [ngClass]="{
-    'switch-on': (service.values.Active && !('CurrentAirPurifierState' in service.values))
+    'accessory-on': (service.values.Active && !('CurrentAirPurifierState' in service.values))
       || (service.values.Active && 'CurrentAirPurifierState' in service.values && service.values.CurrentAirPurifierState !== 0)
       || service.values.On,
     'purifying': (service.values.Active && !('CurrentAirPurifierState' in service.values))
