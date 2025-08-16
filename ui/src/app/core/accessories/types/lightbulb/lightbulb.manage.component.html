@@ -13,7 +13,7 @@
     <div
       class="btn-group-vertical d-flex justify-content-center mb-0 p-0"
       role="group"
-      aria-label="Lightbulb Mode Control"
+      [attr.aria-label]="'accessories.control.mode_control' | translate"
     >
       <button type="button" class="btn mb-0 mx-0 p-3 btn-control" (click)="setTargetMode(false, $event)">
         <div class="float-start primary-text">

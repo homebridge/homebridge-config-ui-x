@@ -15,7 +15,7 @@
       class="btn-group-vertical d-flex justify-content-center mb-4 p-0"
       [ngClass]="{ 'mb-4': sourceList.length, 'mb-0': !sourceList.length }"
       role="group"
-      aria-label="Television Mode Control"
+      [attr.aria-label]="'accessories.control.mode_control' | translate"
     >
       <button type="button" class="btn mb-0 mx-0 p-3 btn-control" (click)="setActive(0, $event)">
         <div class="float-start primary-text">
@@ -44,7 +44,7 @@
     <div
       class="btn-group-vertical d-flex justify-content-center mb-0 p-0"
       role="group"
-      aria-label="Television Input Control"
+      [attr.aria-label]="'accessories.control.input_control' | translate"
     >
       @for (source of sourceList; track source) {
       <button type="button" class="btn mb-0 mx-0 p-3 btn-control" (click)="setInput(source.identifier, $event)">

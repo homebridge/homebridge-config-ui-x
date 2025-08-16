@@ -9,7 +9,7 @@ import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
 import { ConvertMiredPipe } from '@/app/core/pipes/convert-mired.pipe'
 import { ConvertTempPipe } from '@/app/core/pipes/convert-temp.pipe'
 import { PrettifyPipe } from '@/app/core/pipes/prettify.pipe'
-import { SpaceBeforeCapsPipe } from '@/app/core/pipes/space-before-caps'
+import { ServiceToTranslationStringPipe } from '@/app/core/pipes/service-to-translation-string'
 import { RemoveIndividualAccessoriesComponent } from '@/app/modules/settings/remove-individual-accessories/remove-individual-accessories.component'
 
 @Component({
@@ -21,7 +21,7 @@ import { RemoveIndividualAccessoriesComponent } from '@/app/modules/settings/rem
     ConvertTempPipe,
     PrettifyPipe,
     ConvertMiredPipe,
-    SpaceBeforeCapsPipe,
+    ServiceToTranslationStringPipe,
   ],
 })
 export class AccessoryInfoComponent implements OnInit {

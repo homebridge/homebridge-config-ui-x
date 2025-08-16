@@ -12,7 +12,7 @@ import { ColourService } from '@/app/core/colour.service'
 import { ConvertMiredPipe } from '@/app/core/pipes/convert-mired.pipe'
 
 @Component({
-  templateUrl: './light-bulb.manage.component.html',
+  templateUrl: './lightbulb.manage.component.html',
   standalone: true,
   imports: [
     FormsModule,
@@ -22,7 +22,7 @@ import { ConvertMiredPipe } from '@/app/core/pipes/convert-mired.pipe'
     ConvertMiredPipe,
   ],
 })
-export class LightBulbManageComponent implements OnInit {
+export class LightbulbManageComponent implements OnInit {
   private $activeModal = inject(NgbActiveModal)
   private $colour = inject(ColourService)
 

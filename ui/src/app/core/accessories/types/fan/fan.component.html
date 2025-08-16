@@ -7,7 +7,7 @@
 >
   <div class="d-flex flex-column h-100">
     <div
-      [attr.aria-label]="'Fan'"
+      [attr.aria-label]="'accessories.core.fan' | translate"
       class="accessory-svg"
       [ngClass]="{
         'spin': (service.values.On || service.values.Active) && (!hasRotationDirection || (hasRotationDirection && service.values.RotationDirection === 0)),
