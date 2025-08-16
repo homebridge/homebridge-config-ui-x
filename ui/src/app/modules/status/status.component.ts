@@ -271,27 +271,13 @@ export class StatusComponent implements OnInit, OnDestroy {
 
   private async gridChangedEvent() {
     // Sort the array to ensure mobile displays correctly
-    this.dashboard.sort((a: any, b: any) => {
-      if (a.mobileOrder < b.mobileOrder) {
-        return -1
-      }
-
-      // eslint-disable-next-line no-self-compare
-      if (b.mobileOrder > b.mobileOrder) {
-        return 1
-      }
-      return 0
-    })
+    this.dashboard.sort((a: any, b: any) => a.mobileOrder - b.mobileOrder)
 
     // Remove private properties
     const layout = this.dashboard.map((item) => {
-      const resp = {}
-      for (const key of Object.keys(item)) {
-        if (!key.startsWith('$')) {
-          resp[key] = item[key]
-        }
-      }
-      return resp
+      // eslint-disable-next-line unused-imports/no-unused-vars
+      const { $resizeEvent, $configureEvent, $saveWidgetsEvent, ...cleanItem } = item
+      return cleanItem
     })
 
     // Save to server

@@ -88,10 +88,14 @@ describe('PluginsGateway (e2e)', () => {
   it('ON /plugins/install', async () => {
     const mockSpawn = vi.spyOn(nodePtyService, 'spawn')
       .mockImplementation(() => {
-        const term = new EventEmitter()
+        const term = {
+          onData: vi.fn(),
+          onExit: vi.fn(),
+          kill: vi.fn(),
+        }
         setTimeout(() => {
-          term.emit('data', 'some log from terminal')
-          term.emit('exit', 0)
+          term.onData.mock.calls[0]?.[0]('some log from terminal')
+          term.onExit.mock.calls[0]?.[0]({ exitCode: 0 })
         }, 10)
         return term
       })
@@ -115,10 +119,14 @@ describe('PluginsGateway (e2e)', () => {
   it('ON /plugins/install (custom version)', async () => {
     const mockSpawn = vi.spyOn(nodePtyService, 'spawn')
       .mockImplementation(() => {
-        const term = new EventEmitter()
+        const term = {
+          onData: vi.fn(),
+          onExit: vi.fn(),
+          kill: vi.fn(),
+        }
         setTimeout(() => {
-          term.emit('data', 'some log from terminal')
-          term.emit('exit', 0)
+          term.onData.mock.calls[0]?.[0]('some log from terminal')
+          term.onExit.mock.calls[0]?.[0]({ exitCode: 0 })
         }, 10)
         return term
       })
@@ -150,9 +158,13 @@ describe('PluginsGateway (e2e)', () => {
 
     const mockSpawn = vi.spyOn(nodePtyService, 'spawn')
       .mockImplementation(() => {
-        const term = new EventEmitter()
+        const term = {
+          onData: vi.fn(),
+          onExit: vi.fn(),
+          kill: vi.fn(),
+        }
         setTimeout(() => {
-          term.emit('exit', 0)
+          term.onExit.mock.calls[0]?.[0]({ exitCode: 0 })
         }, 10)
         return term
       })
@@ -169,9 +181,13 @@ describe('PluginsGateway (e2e)', () => {
   it('ON /plugins/install (fail)', async () => {
     const mockSpawn = vi.spyOn(nodePtyService, 'spawn')
       .mockImplementation(() => {
-        const term = new EventEmitter()
+        const term = {
+          onData: vi.fn(),
+          onExit: vi.fn(),
+          kill: vi.fn(),
+        }
         setTimeout(() => {
-          term.emit('exit', 1)
+          term.onExit.mock.calls[0]?.[0]({ exitCode: 1 })
         }, 10)
         return term
       })
@@ -194,9 +210,13 @@ describe('PluginsGateway (e2e)', () => {
   it('ON /plugins/uninstall', async () => {
     const mockSpawn = vi.spyOn(nodePtyService, 'spawn')
       .mockImplementation(() => {
-        const term = new EventEmitter()
+        const term = {
+          onData: vi.fn(),
+          onExit: vi.fn(),
+          kill: vi.fn(),
+        }
         setTimeout(() => {
-          term.emit('exit', 0)
+          term.onExit.mock.calls[0]?.[0]({ exitCode: 0 })
         }, 10)
         return term
       })
@@ -219,9 +239,13 @@ describe('PluginsGateway (e2e)', () => {
   it('ON /plugins/uninstall (prevent self uninstall)', async () => {
     const mockSpawn = vi.spyOn(nodePtyService, 'spawn')
       .mockImplementation(() => {
-        const term = new EventEmitter()
+        const term = {
+          onData: vi.fn(),
+          onExit: vi.fn(),
+          kill: vi.fn(),
+        }
         setTimeout(() => {
-          term.emit('exit', 0)
+          term.onExit.mock.calls[0]?.[0]({ exitCode: 0 })
         }, 10)
         return term
       })
@@ -240,9 +264,13 @@ describe('PluginsGateway (e2e)', () => {
   it('ON /plugins/update', async () => {
     const mockSpawn = vi.spyOn(nodePtyService, 'spawn')
       .mockImplementation(() => {
-        const term = new EventEmitter()
+        const term = {
+          onData: vi.fn(),
+          onExit: vi.fn(),
+          kill: vi.fn(),
+        }
         setTimeout(() => {
-          term.emit('exit', 0)
+          term.onExit.mock.calls[0]?.[0]({ exitCode: 0 })
         }, 10)
         return term
       })
@@ -265,9 +293,13 @@ describe('PluginsGateway (e2e)', () => {
   it('ON /plugins/update (custom version)', async () => {
     const mockSpawn = vi.spyOn(nodePtyService, 'spawn')
       .mockImplementation(() => {
-        const term = new EventEmitter()
+        const term = {
+          onData: vi.fn(),
+          onExit: vi.fn(),
+          kill: vi.fn(),
+        }
         setTimeout(() => {
-          term.emit('exit', 0)
+          term.onExit.mock.calls[0]?.[0]({ exitCode: 0 })
         }, 10)
         return term
       })
@@ -300,9 +332,13 @@ describe('PluginsGateway (e2e)', () => {
 
     const mockSpawn = vi.spyOn(nodePtyService, 'spawn')
       .mockImplementation(() => {
-        const term = new EventEmitter()
+        const term = {
+          onData: vi.fn(),
+          onExit: vi.fn(),
+          kill: vi.fn(),
+        }
         setTimeout(() => {
-          term.emit('exit', 0)
+          term.onExit.mock.calls[0]?.[0]({ exitCode: 0 })
         }, 10)
         return term
       })
@@ -336,9 +372,13 @@ describe('PluginsGateway (e2e)', () => {
 
     const mockSpawn = vi.spyOn(nodePtyService, 'spawn')
       .mockImplementation(() => {
-        const term = new EventEmitter()
+        const term = {
+          onData: vi.fn(),
+          onExit: vi.fn(),
+          kill: vi.fn(),
+        }
         setTimeout(() => {
-          term.emit('exit', 0)
+          term.onExit.mock.calls[0]?.[0]({ exitCode: 0 })
         }, 10)
         return term
       })
