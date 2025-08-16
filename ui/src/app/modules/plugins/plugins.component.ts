@@ -137,6 +137,7 @@ export class PluginsComponent implements OnInit, OnDestroy {
         // If the user does not have either installed, or has the scoped version installed, then hide the unscoped version
         // If the user has the unscoped version installed, but not the scoped version, then hide the scoped version
         const hiddenPlugins = new Set<string>()
+        const pluginMap = new Map(data.map((plugin: Plugin) => [plugin.name, plugin]))
         this.installedPlugins = data
           .reduce((acc: any, x: Plugin) => {
             if (x.name === 'homebridge-config-ui-x' || hiddenPlugins.has(x.name)) {
@@ -144,7 +145,7 @@ export class PluginsComponent implements OnInit, OnDestroy {
             }
             if (x.newHbScope) {
               const y = x.newHbScope.to
-              const yExists = data.some((plugin: Plugin) => plugin.name === y)
+              const yExists = pluginMap.has(y)
               if (x.installedVersion || !yExists) {
                 hiddenPlugins.add(y)
                 acc.push(x)
@@ -243,42 +244,31 @@ export class PluginsComponent implements OnInit, OnDestroy {
       this.installedPlugins = installedPlugins.filter((x: Plugin) => x.name !== 'homebridge-config-ui-x')
       await this.appendMetaInfo()
 
-      // The backend used to sort this only by plugins with updates first
-      // I removed this sorting since now we want the frontend to do more of the work
-      // We have more things that we want to bring to the top of the list
+      // Multi-criteria sorting
       const sortedList = this.installedPlugins.sort((a, b) => {
-        // Priority 1: updateAvailable (true first, sorted alphabetically by 'name')
-        if (a.updateAvailable !== b.updateAvailable) {
-          return a.updateAvailable ? -1 : 1
-        }
+        // Priority 1: updateAvailable (=true)
+        // Priority 2: newHbScope (=true)
+        // Priority 3: disabled (=false)
+        // Priority 4: isConfigured (=false) - unconfigured plugins need setup
+        // Priority 5: hasChildBridgesUnpaired (=true) - unpaired bridges need pairing
+        // Priority 6: hasChildBridges (=false)
+        // Create sort keys for better performance
+        const aScore = (a.updateAvailable ? 1000 : 0)
+          + (a.newHbScope ? 100 : 0)
+          + (a.disabled ? -10 : 0)
+          + (a.isConfigured ? -20 : 0)
+          + (a.hasChildBridgesUnpaired ? 5 : 0)
+          + (a.hasChildBridges && this.$settings.env.recommendChildBridges ? -1 : 0)
 
-        // Priority 2: newHbScope (true first, sorted alphabetically by 'name')
-        if (a.newHbScope && !b.newHbScope) {
-          return -1
-        }
+        const bScore = (b.updateAvailable ? 1000 : 0)
+          + (b.newHbScope ? 100 : 0)
+          + (b.disabled ? -10 : 0)
+          + (b.isConfigured ? -20 : 0)
+          + (b.hasChildBridgesUnpaired ? 5 : 0)
+          + (b.hasChildBridges && this.$settings.env.recommendChildBridges ? -1 : 0)
 
-        // Priority 3: disabled (false first, sorted alphabetically by 'name')
-        if (a.disabled !== b.disabled) {
-          return a.disabled ? 1 : -1
-        }
-
-        // Priority 4: isConfigured (false first, sorted alphabetically by 'name')
-        if (a.isConfigured !== b.isConfigured) {
-          return a.isConfigured ? 1 : -1
-        }
-
-        // Priority 5: hasChildBridgesUnpaired (true first, sorted alphabetically by 'name')
-        if (a.hasChildBridgesUnpaired !== b.hasChildBridgesUnpaired) {
-          return a.hasChildBridgesUnpaired ? -1 : 1
-        }
-
-        // Priority 6: hasChildBridges (false first, sorted alphabetically by 'name', only when recommendChildBridges is true)
-        if (a.hasChildBridges !== b.hasChildBridges && this.$settings.env.recommendChildBridges) {
-          return a.hasChildBridges ? 1 : -1
-        }
-
-        // If all criteria are equal, sort alphabetically by 'name'
-        return a.name.localeCompare(b.name)
+        // Compare scores first, then fallback to name
+        return aScore !== bScore ? bScore - aScore : a.name.localeCompare(b.name)
       })
 
       this.loading = false
