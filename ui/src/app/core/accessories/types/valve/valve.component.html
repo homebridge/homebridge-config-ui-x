@@ -7,7 +7,7 @@
 >
   <div class="d-flex flex-column h-100">
     @if (service.values.ValveType === 0 || !service.values.ValveType) {
-    <div [attr.aria-label]="'Generic Valve'" class="accessory-svg">
+    <div [attr.aria-label]="'accessories.core.generic_valve' | translate" class="accessory-svg">
       <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
         <!-- top twister -->
         <line x1="8" y1="3" x2="14" y2="3" stroke="#7f7f7f" stroke-width="3" stroke-linecap="round" />
@@ -29,7 +29,7 @@
       </svg>
     </div>
     } @else if (service.values.ValveType === 1) {
-    <div [attr.aria-label]="'Irrigation Valve'" class="accessory-svg">
+    <div [attr.aria-label]="'accessories.core.irrigation_valve' | translate" class="accessory-svg">
       <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
         <!-- small drops, left to right -->
         <circle class="drop drop-out" fill="#1976d2" fill-opacity="0" cx="1" cy="16" r="1" />
@@ -62,7 +62,7 @@
       </svg>
     </div>
     } @else if (service.values.ValveType === 2) {
-    <div [attr.aria-label]="'Shower Head Valve'" class="accessory-svg">
+    <div [attr.aria-label]="'accessories.core.shower_head_valve' | translate" class="accessory-svg">
       <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
         <!-- top horizontal pipe -->
         <line x1="1" y1="1" x2="16" y2="1" stroke="#7f7f7f" stroke-width="2" stroke-linecap="round" />
@@ -91,7 +91,7 @@
       </svg>
     </div>
     } @else if (service.values.ValveType === 3) {
-    <div [attr.aria-label]="'Faucet Valve'" class="accessory-svg">
+    <div [attr.aria-label]="'accessories.core.faucet_valve' | translate" class="accessory-svg">
       <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
         <!-- sink -->
         <rect class="sink" x="-3" y="28" width="21" height="6.5" fill="#7f7f7f" stroke-width="0" fill-opacity="0.5" />
