@@ -1,4 +1,5 @@
 import { Component, inject, Input } from '@angular/core'
+import { TranslatePipe } from '@ngx-translate/core'
 
 import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
 import { AccessoriesService } from '@/app/core/accessories/accessories.service'
@@ -18,8 +19,8 @@ import { HumidifierDehumidifierComponent } from '@/app/core/accessories/types/hu
 import { HumiditySensorComponent } from '@/app/core/accessories/types/humidity-sensor/humidity-sensor.component'
 import { IrrigationSystemComponent } from '@/app/core/accessories/types/irrigation-system/irrigation-system.component'
 import { LeakSensorComponent } from '@/app/core/accessories/types/leak-sensor/leak-sensor.component'
-import { LightBulbComponent } from '@/app/core/accessories/types/light-bulb/light-bulb.component'
 import { LightSensorComponent } from '@/app/core/accessories/types/light-sensor/light-sensor.component'
+import { LightbulbComponent } from '@/app/core/accessories/types/lightbulb/lightbulb.component'
 import { LockMechanismComponent } from '@/app/core/accessories/types/lock-mechanism/lock-mechanism.component'
 import { MicrophoneComponent } from '@/app/core/accessories/types/microphone/microphone.component'
 import { MotionSensorComponent } from '@/app/core/accessories/types/motion-sensor/motion-sensor.component'
@@ -50,7 +51,7 @@ import { WindowComponent } from '@/app/core/accessories/types/window/window.comp
     OutletComponent,
     FanComponent,
     AirPurifierComponent,
-    LightBulbComponent,
+    LightbulbComponent,
     LightSensorComponent,
     LockMechanismComponent,
     TemperatureSensorComponent,
@@ -82,6 +83,7 @@ import { WindowComponent } from '@/app/core/accessories/types/window/window.comp
     MicrophoneComponent,
     RobotVacuumComponent,
     WashingMachineComponent,
+    TranslatePipe,
   ],
 })
 export class AccessoryTileComponent {

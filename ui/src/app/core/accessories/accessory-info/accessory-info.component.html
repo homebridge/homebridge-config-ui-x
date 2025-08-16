@@ -37,7 +37,7 @@
         <div class="text-start text-md-end w-100 w-md-50">
           <select class="custom-select" [(ngModel)]="service.customType">
             @for (customType of customTypeList.sort(); track customType) {
-            <option [value]="customType">{{ customType | spaceBeforeCaps }}</option>
+            <option [value]="customType">{{ (customType | serviceToTranslationString) | translate }}</option>
             }
           </select>
         </div>
