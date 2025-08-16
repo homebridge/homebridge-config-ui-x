@@ -14,7 +14,7 @@
     <div
       class="btn-group-vertical d-flex justify-content-center mb-4 p-0"
       role="group"
-      aria-label="Speaker Mode Control"
+      [attr.aria-label]="'accessories.control.mode_control' | translate"
     >
       <button type="button" class="btn mb-0 mx-0 p-3 btn-control" (click)="setActive(0, $event)">
         <div class="float-start primary-text">
@@ -41,7 +41,7 @@
     <div
       class="btn-group-vertical d-flex justify-content-center mb-4 p-0"
       role="group"
-      aria-label="Speaker Mode Control"
+      [attr.aria-label]="'accessories.control.media_control' | translate"
     >
       <button type="button" class="btn mb-0 mx-0 p-3 btn-control" (click)="setTargetState(0, $event)">
         <div class="float-start primary-text">
@@ -82,7 +82,7 @@
     <div
       class="btn-group-vertical d-flex justify-content-center mb-0 p-0"
       role="group"
-      aria-label="Speaker Mute Control"
+      [attr.aria-label]="'accessories.control.mute_control' | translate"
     >
       <button type="button" class="btn mb-0 mx-0 p-3 btn-control" (click)="setTargetMode(false, $event)">
         <div class="float-start primary-text">
