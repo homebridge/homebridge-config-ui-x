@@ -119,7 +119,13 @@ export class AccessoriesService {
    * @param services
    */
   private refreshCharacteristics(services: any[]) {
-    services.forEach(service => service.refreshCharacteristics())
+    Promise.all(services.map(service =>
+      service.refreshCharacteristics().catch((error) => {
+        this.logger.error(`Failed to refresh characteristics for service ${service.uniqueId}: ${error.message}`)
+      }),
+    )).catch((error) => {
+      this.logger.warn(`Failed to refresh characteristics: ${error.message}`)
+    })
   }
 
   /**

@@ -276,9 +276,11 @@ export class AccessoriesService {
    * Sort the accessories into their rooms
    */
   private sortIntoRooms() {
+    const hiddenTypesSet = new Set(this.hiddenTypes)
+
     this.accessories.services.forEach((service) => {
       // Don't put hidden types into rooms
-      if (this.hiddenTypes.includes(service.type)) {
+      if (hiddenTypesSet.has(service.type)) {
         return
       }
 

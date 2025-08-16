@@ -13,6 +13,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 ### Other Changes
 
 - preserve custom service info for undiscovered accessories
+- minor performance updates
 
 ### Homebridge Dependencies
 
