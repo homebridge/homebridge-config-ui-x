@@ -28,6 +28,61 @@
                 "glob": "ui.js*",
                 "input": "node_modules/@homebridge/plugin-ui-utils/dist",
                 "output": "./assets/plugin-ui-utils/"
+              },
+              {
+                "glob": "LICENSE",
+                "input": "node_modules/monaco-editor",
+                "output": "./assets/monaco/"
+              },
+              {
+                "glob": "ThirdPartyNotices.txt",
+                "input": "node_modules/monaco-editor",
+                "output": "./assets/monaco/"
+              },
+              {
+                "glob": "monaco.d.ts",
+                "input": "node_modules/monaco-editor",
+                "output": "./assets/monaco/"
+              },
+              {
+                "glob": "vs/loader.js",
+                "input": "node_modules/monaco-editor/min",
+                "output": "./assets/monaco/min/"
+              },
+              {
+                "glob": "vs/editor/editor.main.css",
+                "input": "node_modules/monaco-editor/min",
+                "output": "./assets/monaco/min/"
+              },
+              {
+                "glob": "vs/editor/editor.main.js",
+                "input": "node_modules/monaco-editor/min",
+                "output": "./assets/monaco/min/"
+              },
+              {
+                "glob": "vs/base/worker/workerMain.js",
+                "input": "node_modules/monaco-editor/min",
+                "output": "./assets/monaco/min/"
+              },
+              {
+                "glob": "vs/basic-languages/shell/shell.js",
+                "input": "node_modules/monaco-editor/min",
+                "output": "./assets/monaco/min/"
+              },
+              {
+                "glob": "vs/language/json/jsonMode.js",
+                "input": "node_modules/monaco-editor/min",
+                "output": "./assets/monaco/min/"
+              },
+              {
+                "glob": "vs/language/json/jsonWorker.js",
+                "input": "node_modules/monaco-editor/min",
+                "output": "./assets/monaco/min/"
+              },
+              {
+                "glob": "vs/base/browser/ui/codicons/codicon/codicon.ttf",
+                "input": "node_modules/monaco-editor/min",
+                "output": "./assets/monaco/min/"
               }
             ],
             "styles": [
@@ -38,7 +93,7 @@
               "@xterm/addon-fit",
               "@xterm/addon-web-links",
               "@xterm/xterm",
-              "ajv",
+              "ajv/dist/2019",
               "ajv-formats",
               "ajv-keywords",
               "dayjs",
@@ -48,8 +103,6 @@
               "he",
               "json5",
               "lodash",
-              "lodash/isArray",
-              "lodash/isPlainObject",
               "mobile-detect",
               "prismjs",
               "qrcode",

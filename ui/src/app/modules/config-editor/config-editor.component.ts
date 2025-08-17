@@ -5,7 +5,7 @@ import { NgbModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import json5 from 'json5'
 import { isEqual } from 'lodash-es'
-import { DiffEditorComponent, EditorComponent, NgxEditorModel } from 'ngx-monaco-editor-v2'
+import { DiffEditorComponent, DiffEditorModel, EditorComponent, NgxEditorModel } from 'ngx-monaco-editor-v2'
 import { ToastrService } from 'ngx-toastr'
 import { firstValueFrom } from 'rxjs'
 
@@ -24,6 +24,14 @@ import {
   PluginChildBridge,
 } from '@/app/modules/config-editor/config-editor.interfaces'
 import { ConfigRestoreComponent } from '@/app/modules/config-editor/config-restore/config-restore.component'
+
+declare const monaco: any
+
+declare global {
+  interface Window {
+    editor?: any
+  }
+}
 
 @Component({
   templateUrl: './config-editor.component.html',
@@ -61,6 +69,8 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
   public monacoEditor: any
   public editorOptions: any
   public monacoEditorModel: NgxEditorModel
+  public diffOriginalModel: DiffEditorModel
+  public diffModifiedModel: DiffEditorModel
 
   constructor() {
     this.isMobile = this.$md.detect.mobile()
@@ -70,7 +80,10 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
     this.editorOptions = {
       language: 'json',
       theme: this.$settings.actualLightingMode === 'dark' ? 'vs-dark' : 'vs-light',
-      automaticLayout: true,
+      renderSideBySide: true,
+      renderIndicators: true,
+      ignoreTrimWhitespace: false,
+      glyphMargin: true,
     }
 
     const content = document.querySelector('.content')
@@ -97,6 +110,11 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
     this.$route.data.subscribe((data: { config: string }) => {
       this.homebridgeConfig = data.config
       this.latestSavedConfig = JSON.parse(data.config)
+
+      // Update diff models with initial config
+      if (this.diffModifiedModel) {
+        this.updateDiffModels()
+      }
     })
 
     // Set up the base monaco editor model
@@ -106,12 +124,21 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
       uri: (window as any).monaco ? (window as any).monaco.Uri.parse('a://homebridge/config.json') : undefined,
     }
 
-    //  if monaco is not loaded yet, wait for it, otherwise set up the editor now
+    // Set up diff editor models with initial content
+    this.diffOriginalModel = {
+      code: '',
+      language: 'json',
+    }
+
+    this.diffModifiedModel = {
+      code: this.homebridgeConfig || '{}',
+      language: 'json',
+    }
+
+    // If monaco is not loaded yet, wait for it, otherwise set up the editor now
     if (!(window as any).monaco) {
       this.$monacoEditor.readyEvent.subscribe({
-        next: () => {
-          this.setMonacoEditorModel()
-        },
+        next: () => this.setMonacoEditorModel(),
       })
     } else {
       this.setMonacoEditorModel()
@@ -140,20 +167,41 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
    * Called when the monaco editor is ready
    */
   public onEditorInit(editor: any) {
-    // @ts-expect-error - TS2339: Property editor does not exist on type Window & typeof globalThis
     window.editor = editor
     this.monacoEditor = editor
     this.monacoEditor.getModel().setValue(this.homebridgeConfig)
   }
 
   public onInitDiffEditor(editor: any) {
-    this.monacoEditor = editor.modifiedEditor
-
-    editor.getModel().original.setValue(this.originalConfig)
-    editor.getModel().modified.setValue(this.homebridgeConfig)
-
-    // @ts-expect-error - TS2339: Property editor does not exist on type Window & typeof globalThis
+    this.monacoEditor = editor.getModifiedEditor()
+    this.updateDiffModels()
     window.editor = editor
+  }
+
+  private updateDiffModels() {
+    if (this.diffOriginalModel) {
+      this.diffOriginalModel.code = this.originalConfig || ''
+    }
+    if (this.diffModifiedModel) {
+      this.diffModifiedModel.code = this.homebridgeConfig || '{}'
+    }
+
+    if ((window as any).editor && (window as any).editor.getOriginalEditor) {
+      const originalEditor = (window as any).editor.getOriginalEditor()
+      const modifiedEditor = (window as any).editor.getModifiedEditor()
+
+      if (originalEditor && modifiedEditor) {
+        const originalModel = originalEditor.getModel()
+        const modifiedModel = modifiedEditor.getModel()
+
+        if (originalModel) {
+          originalModel.setValue(this.originalConfig || '')
+        }
+        if (modifiedModel) {
+          modifiedModel.setValue(this.homebridgeConfig || '{}')
+        }
+      }
+    }
   }
 
   public async onSave() {
@@ -240,6 +288,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
       .then((backupId: string) => {
         if (!this.originalConfig) {
           this.originalConfig = this.homebridgeConfig
+          this.updateDiffModels()
         }
 
         this.$api.get(`/config-editor/backups/${backupId}`).subscribe({
@@ -250,18 +299,17 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
             )
 
             this.homebridgeConfig = JSON.stringify(json, null, 4)
+            this.updateDiffModels()
 
             // Update the editor
-            // @ts-expect-error - TS2339: Property editor does not exist on type Window & typeof globalThis
             if (this.monacoEditor && window.editor.modifiedEditor) {
-            // Remove all decorations
+              // Remove all decorations
               this.editorDecorations = this.monacoEditor.deltaDecorations(this.editorDecorations, [])
 
               // Remove existing config
               this.monacoEditor.executeEdits('beautifier', [
                 {
                   identifier: 'delete' as any,
-                  // eslint-disable-next-line no-undef
                   range: new monaco.Range(1, 1, this.monacoEditor.getModel().getLineCount() + 10, 1),
                   text: '',
                   forceMoveMarkers: true,
@@ -272,7 +320,6 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
               this.monacoEditor.executeEdits('beautifier', [
                 {
                   identifier: 'insert' as any,
-                  // eslint-disable-next-line no-undef
                   range: new monaco.Range(1, 1, 1, 1),
                   text: this.homebridgeConfig,
                   forceMoveMarkers: true,
@@ -290,9 +337,17 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
   }
 
   public onCancelRestore() {
+    // Properly dispose of diff editor before clearing config
+    if (window.editor && window.editor.dispose) {
+      try {
+        window.editor.dispose()
+        window.editor = undefined
+      } catch (error) { /* cancelled */ }
+    }
+
     this.homebridgeConfig = this.originalConfig
     this.originalConfig = ''
-
+    this.updateDiffModels()
     this.onRestore()
   }
 
@@ -305,9 +360,34 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
       this.$md.enableTouchMove()
     }
 
-    if (this.monacoEditor) {
-      this.monacoEditor.dispose()
-    }
+    try {
+      // Clear up main editor
+      if (window.editor && window.editor.dispose) {
+        window.editor.dispose()
+        window.editor = undefined
+      }
+
+      // Clean up models
+      if ((window as any).monaco) {
+        const originalUri = (window as any).monaco.Uri.parse('file:///original.json')
+        const modifiedUri = (window as any).monaco.Uri.parse('file:///modified.json')
+
+        const existingOriginalModel = (window as any).monaco.editor.getModel(originalUri)
+        if (existingOriginalModel) {
+          existingOriginalModel.dispose()
+        }
+
+        const existingModifiedModel = (window as any).monaco.editor.getModel(modifiedUri)
+        if (existingModifiedModel) {
+          existingModifiedModel.dispose()
+        }
+      }
+
+      // Clean up monaco editor instance
+      if (this.monacoEditor) {
+        this.monacoEditor.dispose()
+      }
+    } catch (error) { /* no problem disposing */ }
   }
 
   private validateSection(sections: any[], type: 'accessory' | 'platform') {
@@ -365,7 +445,6 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
       if (matches.length) {
         const matchRange = matches[0].range
 
-        // eslint-disable-next-line no-undef
         const range = new monaco.Range(
           matchRange.startLineNumber,
           matchRange.startColumn,
@@ -388,7 +467,6 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
       return
     }
 
-    // eslint-disable-next-line no-undef
     const uri = monaco.Uri.parse('a://homebridge/config.json');
 
     (window as any).monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
@@ -581,7 +659,6 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
       ],
     })
 
-    // eslint-disable-next-line no-undef
     this.monacoEditorModel.uri = monaco.Uri.parse('a://homebridge/config.json')
   }
 

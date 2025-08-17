@@ -44,7 +44,6 @@ export class StartupScriptComponent implements OnInit, OnDestroy {
     this.editorOptions = {
       language: 'shell',
       theme: this.$settings.actualLightingMode === 'dark' ? 'vs-dark' : 'vs-light',
-      automaticLayout: true,
     }
 
     // Capture viewport events
