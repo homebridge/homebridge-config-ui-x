@@ -6,7 +6,7 @@ import { provideAnimations } from '@angular/platform-browser/animations'
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap'
 import { provideTranslateService, TranslateService } from '@ngx-translate/core'
 import { DragulaModule } from 'ng2-dragula'
-import { MonacoEditorModule } from 'ngx-monaco-editor-v2'
+import { MonacoEditorModule, NgxMonacoEditorConfig } from 'ngx-monaco-editor-v2'
 import { ToastrModule } from 'ngx-toastr'
 
 import { AppRoutingModule } from '@/app/app-routing.module'
@@ -25,6 +25,35 @@ if (environment.production) {
   enableProdMode()
 }
 
+const monacoBaseUrl = './assets/monaco/min/vs'
+
+const monacoConfig: NgxMonacoEditorConfig = {
+  baseUrl: monacoBaseUrl,
+  defaultOptions: {
+    'automaticLayout': true,
+    'copyWithSyntaxHighlighting': true,
+    'ignoreTrimWhitespace': false,
+    'scrollBeyondLastLine': false,
+    'quickSuggestions': true,
+    'parameterHints': true,
+    'formatOnType': true,
+    'formatOnPaste': true,
+    'folding': true,
+    'bracketPairColorization.enabled': true,
+    'minimap': {
+      enabled: false,
+    },
+  },
+  onMonacoLoad: () => {
+    (window as any).MonacoEnvironment = {
+      getWorker() {
+        return new Worker(`${monacoBaseUrl}/base/worker/workerMain.js`)
+      },
+    }
+    onMonacoLoad()
+  },
+}
+
 bootstrapApplication(AppComponent, {
   providers: [
     importProvidersFrom(
@@ -37,20 +66,7 @@ bootstrapApplication(AppComponent, {
         positionClass: 'toast-bottom-right',
       }),
       NgbModule,
-      MonacoEditorModule.forRoot({
-        defaultOptions: {
-          scrollBeyondLastLine: false,
-          quickSuggestions: true,
-          parameterHints: true,
-          formatOnType: true,
-          formatOnPaste: true,
-          folding: true,
-          minimap: {
-            enabled: false,
-          },
-        },
-        onMonacoLoad,
-      }),
+      MonacoEditorModule.forRoot(monacoConfig),
       DragulaModule.forRoot(),
       AuthModule,
       LoginModule,
