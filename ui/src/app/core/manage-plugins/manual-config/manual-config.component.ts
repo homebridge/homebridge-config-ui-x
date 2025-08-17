@@ -28,6 +28,12 @@ import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.s
 import { MobileDetectService } from '@/app/core/mobile-detect.service'
 import { SettingsService } from '@/app/core/settings.service'
 
+declare global {
+  interface Window {
+    editor?: any
+  }
+}
+
 @Component({
   templateUrl: './manual-config.component.html',
   styleUrls: ['./manual-config.component.scss'],
@@ -81,7 +87,6 @@ export class ManualConfigComponent implements OnInit {
     this.editorOptions = {
       language: 'json',
       theme: this.$settings.actualLightingMode === 'dark' ? 'vs-dark' : 'vs-light',
-      automaticLayout: true,
     }
 
     if (this.$md.detect.mobile()) {
@@ -93,7 +98,6 @@ export class ManualConfigComponent implements OnInit {
   }
 
   public async onEditorInit(editor: any) {
-    // @ts-expect-error - TS2339: Property editor does not exist on type Window & typeof globalThis
     window.editor = editor
     this.monacoEditor = editor
     await this.monacoEditor.getModel().setValue(this.currentBlock)

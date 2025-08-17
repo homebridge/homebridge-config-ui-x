@@ -66,8 +66,8 @@
   <ngx-monaco-diff-editor
     class="flex-grow-1 h-100 w-100 mt-3 mb-0"
     [options]="editorOptions"
-    [originalModel]="monacoEditorModel"
-    [modifiedModel]="monacoEditorModel"
+    [originalModel]="diffOriginalModel"
+    [modifiedModel]="diffModifiedModel"
     (onInit)="onInitDiffEditor($event)"
     (keydown.control.s)="$event.preventDefault(); onSave()"
     (keydown.meta.s)="$event.preventDefault(); onSave()"
