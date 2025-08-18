@@ -225,6 +225,8 @@
   "config.restore.help_2": "You can restore a previous version of your config file by selecting it from the list below. You will be able to compare this version with your current config before deciding whether to restore it.",
   "config.restore.title": "Config File Backup & Restore",
   "config.restore.toast_backups_deleted": "Všechny zálohy byly smazány",
+  "config.restore.view_inline": "Inline View",
+  "config.restore.view_side_by_side": "Side-By-Side View",
   "config.title_backup_loaded": "Záloha byla načtena",
   "form.button_allow": "Allow",
   "form.button_back": "Zpět",

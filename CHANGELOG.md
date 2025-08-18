@@ -10,6 +10,9 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - refreshed icons: heater, cooler, de/humidifier + thermostat
 - put services types into translatable strings
 - update `monaco-editor` from `v0.21.3` to `v0.52.2`
+- allow user to choose config comparison view type
+  - the default view is the **new inline view**, which shows the differences together
+  - a new button allows switching between the inline view and the **existing side-by-side view**
 
 ### Other Changes
 

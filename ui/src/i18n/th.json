@@ -225,6 +225,8 @@
   "config.restore.help_2": "คุณสามารถกู้คืนไฟล์ config เวอร์ชันก่อนหน้าได้โดยเลือกจากรายการด้านล่าง คุณจะสามารถเปรียบเทียบเวอร์ชันนี้กับ config ปัจจุบันของคุณได้ก่อนตัดสินใจว่าจะกู้คืนหรือไม่",
   "config.restore.title": "กำหนดค่าการสำรองและกู้คืนไฟล์",
   "config.restore.toast_backups_deleted": "ลบข้อมูลสำรองทั้งหมดแล้ว",
+  "config.restore.view_inline": "Inline View",
+  "config.restore.view_side_by_side": "Side-By-Side View",
   "config.title_backup_loaded": "โหลดข้อมูลสำรองแล้ว",
   "form.button_allow": "อนุญาต",
   "form.button_back": "ย้่อนกลับ",

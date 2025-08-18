@@ -225,6 +225,8 @@
   "config.restore.help_2": "Ви можете відновити попередню версію Вашого конфігураційного файлу, вибравши його зі списку нижче. Ви зможете порівняти цю версію з Вашою поточною конфігурацією, перш ніж вирішити, чи відновлювати її.",
   "config.restore.title": "Резервне копіювання та відновлення файлів конфігурації",
   "config.restore.toast_backups_deleted": "Всі резервні копії видалено",
+  "config.restore.view_inline": "Inline View",
+  "config.restore.view_side_by_side": "Side-By-Side View",
   "config.title_backup_loaded": "Резервна копія завантажена",
   "form.button_allow": "Дозволити",
   "form.button_back": "Назад",
