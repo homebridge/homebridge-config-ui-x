@@ -225,6 +225,8 @@
   "config.restore.help_2": "Możesz przywrócić poprzednią wersję pliku konfiguracyjnego wybierając go z poniższej listy. Będziesz mógł porównać tę wersję z obecną konfiguracją przed podjęciem decyzji czy ją przywrócić.",
   "config.restore.title": "Plik konfiguracyjny JSON",
   "config.restore.toast_backups_deleted": "Wszystkie backupy zostały usunięte",
+  "config.restore.view_inline": "Inline View",
+  "config.restore.view_side_by_side": "Side-By-Side View",
   "config.title_backup_loaded": "Backup został załadowany",
   "form.button_allow": "Pozwól",
   "form.button_back": "Cofnij",

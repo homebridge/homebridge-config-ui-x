@@ -71,6 +71,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
   public monacoEditorModel: NgxEditorModel
   public diffOriginalModel: DiffEditorModel
   public diffModifiedModel: DiffEditorModel
+  public renderSideBySide = false
 
   constructor() {
     this.isMobile = this.$md.detect.mobile()
@@ -80,7 +81,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
     this.editorOptions = {
       language: 'json',
       theme: this.$settings.actualLightingMode === 'dark' ? 'vs-dark' : 'vs-light',
-      renderSideBySide: true,
+      renderSideBySide: this.renderSideBySide,
       renderIndicators: true,
       ignoreTrimWhitespace: false,
       glyphMargin: true,
@@ -347,8 +348,16 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
 
     this.homebridgeConfig = this.originalConfig
     this.originalConfig = ''
+    if (this.renderSideBySide) {
+      this.toggleSideBySide() // reset to default
+    }
     this.updateDiffModels()
     this.onRestore()
+  }
+
+  public toggleSideBySide() {
+    this.renderSideBySide = !this.renderSideBySide
+    this.editorOptions = { ...this.editorOptions, renderSideBySide: this.renderSideBySide }
   }
 
   public ngOnDestroy() {
