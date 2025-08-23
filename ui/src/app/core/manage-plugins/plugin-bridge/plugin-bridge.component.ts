@@ -302,7 +302,7 @@ export class PluginBridgeComponent implements OnInit {
   }
 
   public openFullConfigEditor() {
-    this.$router.navigate(['/config'])
+    void this.$router.navigate(['/config'])
     this.$activeModal.close()
   }
 

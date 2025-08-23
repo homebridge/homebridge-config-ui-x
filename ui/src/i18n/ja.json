@@ -550,6 +550,8 @@
   "settings.network.title_network_interfaces": "ネットワークインターフェイス",
   "settings.network.title_security": "セキュリティ",
   "settings.network.title_terminal": "ログとターミナル",
+  "settings.network.webroot": "Webroot Path",
+  "settings.network.webroot_desc": "This can be configured if you want to access the Homebridge UI under a specific URL path.",
   "settings.reset_bridge.error": "ブリッジのリセットに失敗しました。",
   "settings.security.auth": "認証",
   "settings.security.auth_desc": "Homebridge UIでユーザー名とパスワードによる認証を有効にするかどうか。",

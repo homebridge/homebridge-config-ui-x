@@ -550,6 +550,8 @@
   "settings.network.title_network_interfaces": "Interfejsy sieciowe",
   "settings.network.title_security": "Bezpieczeństwo",
   "settings.network.title_terminal": "Log & Terminal",
+  "settings.network.webroot": "Webroot Path",
+  "settings.network.webroot_desc": "This can be configured if you want to access the Homebridge UI under a specific URL path.",
   "settings.reset_bridge.error": "Nie udało się zresetować mostu.",
   "settings.security.auth": "Uwierzytelnianie",
   "settings.security.auth_desc": "Uwierzytelnianie dla interfejsu Homebridge za pomocą nazwy użytkownika i hasła.",

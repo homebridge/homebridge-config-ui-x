@@ -21,14 +21,14 @@ export class LoginGuard implements CanActivate {
 
     if (this.$settings.env.setupWizardComplete === false) {
       // Redirect to set up wizard page
-      this.$router.navigate(['/setup'])
+      void this.$router.navigate(['/setup'])
       return false
     }
 
     // If using not using auth, or already logged in, redirect back to home screen
     if (this.$settings.formAuth === false || this.$auth.isLoggedIn()) {
       // Redirect to login page
-      this.$router.navigate(['/'])
+      void this.$router.navigate(['/'])
       return false
     }
 

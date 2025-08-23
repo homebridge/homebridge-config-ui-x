@@ -550,6 +550,8 @@
   "settings.network.title_network_interfaces": "การเชื่อมต่อเครือข่าย",
   "settings.network.title_security": "ความปลอดภัย",
   "settings.network.title_terminal": "Logging & Terminal",
+  "settings.network.webroot": "Webroot Path",
+  "settings.network.webroot_desc": "This can be configured if you want to access the Homebridge UI under a specific URL path.",
   "settings.reset_bridge.error": "การรีเซ็ตบริดจ์ล้มเหลว",
   "settings.security.auth": "การรับรองความถูกต้อง",
   "settings.security.auth_desc": "ว่าจะเปิดใช้งานการตรวจสอบสิทธิ์สำหรับ Homebridge UI ด้วยชื่อผู้ใช้และรหัสผ่านหรือไม่",

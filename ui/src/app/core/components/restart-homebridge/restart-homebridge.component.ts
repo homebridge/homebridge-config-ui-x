@@ -13,7 +13,7 @@ export class RestartHomebridgeComponent {
   private $router = inject(Router)
 
   public onRestartHomebridgeClick() {
-    this.$router.navigate(['/restart'])
+    void this.$router.navigate(['/restart'])
     this.$activeModal.close()
   }
 

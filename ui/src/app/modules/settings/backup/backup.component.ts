@@ -199,7 +199,7 @@ export class BackupComponent implements OnInit {
 
       if (ref && ref.onTap) {
         ref.onTap.subscribe(() => {
-          this.$router.navigate(['/restart'])
+          void this.$router.navigate(['/restart'])
         })
       }
     }

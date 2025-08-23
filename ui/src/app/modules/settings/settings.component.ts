@@ -73,6 +73,8 @@ export class SettingsComponent implements OnInit {
     cache: true,
   }
 
+  public readonly originalWebroot = this.$settings.originalWebroot
+
   public loading = true
   public isHbV2 = false
   public showAvahiMdnsOption = false
@@ -84,6 +86,7 @@ export class SettingsComponent implements OnInit {
   public runningOnRaspberryPi = this.$settings.env.runningOnRaspberryPi
   public platform = this.$settings.env.platform
   public enableTerminalAccess = this.$settings.env.enableTerminalAccess
+  public hideWebrootCode = globalThis.webroot.errorCode
 
   public hbNameIsInvalid = false
   public hbNameIsSaving = false
@@ -161,6 +164,9 @@ export class SettingsComponent implements OnInit {
 
   public uiHostIsSaving = false
   public uiHostFormControl = new FormControl('')
+
+  public uiWebrootIsSaving = false
+  public uiWebrootFormControl = new FormControl('')
 
   public uiProxyHostIsSaving = false
   public uiProxyHostFormControl = new FormControl('')
@@ -319,6 +325,11 @@ export class SettingsComponent implements OnInit {
       .pipe(debounceTime(1500))
       .subscribe((value: string) => this.uiHostSave(value))
 
+    this.uiWebrootFormControl.patchValue(this.$settings.webroot || '')
+    this.uiWebrootFormControl.valueChanges
+      .pipe(debounceTime(1500))
+      .subscribe((value: string) => this.uiWebrootSave(value))
+
     this.uiProxyHostFormControl.patchValue(this.$settings.proxyHost || '')
     this.uiProxyHostFormControl.valueChanges
       .pipe(debounceTime(1500))
@@ -365,8 +376,10 @@ export class SettingsComponent implements OnInit {
   }
 
   public openConfigBackup() {
-    // go to /config?action=restore
-    this.$router.navigate(['/config'], { queryParams: { action: 'restore' } })
+    // Go to /config?action=restore
+    void this.$router.navigate(['/config'], {
+      queryParams: { action: 'restore' },
+    })
   }
 
   public openWallpaperModal() {
@@ -1166,6 +1179,33 @@ export class SettingsComponent implements OnInit {
     }
   }
 
+  private async uiWebrootSave(value: string) {
+    try {
+      this.uiWebrootIsSaving = true
+
+      // Normalise webroot: remove multiple slashes, ensure single leading slash, no trailing slash
+      // It is really important we keep this property value in a consistent format
+      value = value
+        ? `/${value}`.replace(/\/+/g, '/').replace(/\/$/, '')
+        : ''
+      if (value === '/') {
+        value = ''
+      }
+
+      this.$settings.setItem('webroot', value)
+      await this.saveUiSettingChange('webroot', value)
+      this.uiWebrootFormControl.patchValue(value, { emitEvent: false })
+      setTimeout(() => {
+        this.uiWebrootIsSaving = false
+        this.showRestartToast()
+      }, 1000)
+    } catch (error) {
+      console.error(error)
+      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      this.uiWebrootIsSaving = false
+    }
+  }
+
   private async uiProxyHostSave(value: string) {
     try {
       this.uiProxyHostIsSaving = true
@@ -1345,7 +1385,7 @@ export class SettingsComponent implements OnInit {
 
       if (ref && ref.onTap) {
         ref.onTap.subscribe(() => {
-          this.$router.navigate(['/restart'])
+          void this.$router.navigate(['/restart'])
         })
       }
     }

@@ -550,6 +550,8 @@
   "settings.network.title_network_interfaces": "Netwerk Interfaces",
   "settings.network.title_security": "Beveiliging",
   "settings.network.title_terminal": "Logging & Terminal",
+  "settings.network.webroot": "Webroot Path",
+  "settings.network.webroot_desc": "This can be configured if you want to access the Homebridge UI under a specific URL path.",
   "settings.reset_bridge.error": "Mislukt om bridge te resetten.",
   "settings.security.auth": "Authenticatie",
   "settings.security.auth_desc": "Of authenticatie voor de Homebridge UI met een gebruikersnaam en wachtwoord ingeschakeld moet worden.",

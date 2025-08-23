@@ -59,6 +59,7 @@ export class PluginsSettingsUiService {
       if (assetPath === 'index.html') {
         return reply
           .type('text/html')
+          .header('Origin-Agent-Cluster', '?1')
           .send(await this.buildIndexHtml(pluginUi, origin))
       }
 
@@ -144,7 +145,7 @@ export class PluginsSettingsUiService {
             serverEnv: ${JSON.stringify(this.configService.uiSettings(true))},
           };
           </script>
-          <script src="${origin || 'http://localhost:4200'}/assets/plugin-ui-utils/ui.js?v=${this.configService.package.version}"></script>
+          <script src="${origin || 'http://localhost:4200'}${origin ? (this.configService.ui.webroot || '') : ''}/assets/plugin-ui-utils/ui.js?v=${this.configService.package.version}"></script>
           <script>
             window.addEventListener('load', () => {
               window.parent.postMessage({action: 'loaded'}, '*');

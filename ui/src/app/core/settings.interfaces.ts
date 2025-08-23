@@ -61,6 +61,8 @@ export interface AppSettingsInterface {
   env: EnvInterface
   formAuth: boolean
   host?: string
+  webroot?: string
+  originalWebroot?: string
   proxyHost?: string
   sessionTimeout: number
   theme: string

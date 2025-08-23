@@ -9,6 +9,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix sidebar scrollbars (#2574) (@dnicolson)
 - refreshed icons: heater, cooler, de/humidifier + thermostat
 - put services types into translatable strings
+- added config option to configure a webroot for the ui
 
 ### Other Changes
 
