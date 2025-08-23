@@ -40,6 +40,7 @@ const routes: Routes = [
       {
         path: 'plugins',
         loadChildren: () => import('./modules/plugins/plugins.module').then(m => m.PluginsModule),
+        canActivate: [AuthGuard],
       },
       {
         path: 'config',
@@ -49,10 +50,12 @@ const routes: Routes = [
       {
         path: 'accessories',
         loadChildren: () => import('./modules/accessories/accessories.module').then(m => m.AccessoriesModule),
+        canActivate: [AuthGuard],
       },
       {
         path: 'logs',
         loadChildren: () => import('./modules/logs/logs.module').then(m => m.LogsModule),
+        canActivate: [AuthGuard],
       },
       {
         path: 'users',
@@ -67,10 +70,12 @@ const routes: Routes = [
       {
         path: 'support',
         loadChildren: () => import('./modules/support/support.module').then(m => m.SupportModule),
+        canActivate: [AuthGuard],
       },
       {
         path: 'power-options',
         loadChildren: () => import('./modules/power-options/power-options.module').then(m => m.PowerOptionsModule),
+        canActivate: [AdminGuard],
       },
       {
         path: 'platform-tools',

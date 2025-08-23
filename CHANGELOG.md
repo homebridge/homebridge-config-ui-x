@@ -13,6 +13,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - allow user to choose config comparison view type
   - the default view is the **new inline view**, which shows the differences together
   - a new button allows switching between the inline view and the **existing side-by-side view**
+- improvements to frontend route auth, guards and auth services
 
 ### Other Changes
 
