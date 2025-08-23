@@ -2,6 +2,7 @@ import { inject, Injectable } from '@angular/core'
 import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot } from '@angular/router'
 import { firstValueFrom } from 'rxjs'
 
+import { AuthHelperService } from '@/app/core/auth/auth-helper.service'
 import { AuthService } from '@/app/core/auth/auth.service'
 import { SettingsService } from '@/app/core/settings.service'
 
@@ -10,6 +11,7 @@ import { SettingsService } from '@/app/core/settings.service'
 })
 export class AuthGuard implements CanActivate {
   private $auth = inject(AuthService)
+  private $authHelper = inject(AuthHelperService)
   private $router = inject(Router)
   private $settings = inject(SettingsService)
 
@@ -19,22 +21,20 @@ export class AuthGuard implements CanActivate {
       await firstValueFrom(this.$settings.onSettingsLoaded)
     }
 
-    if (this.$auth.isLoggedIn()) {
+    // If not using form auth, get a token automatically
+    if (this.$settings.formAuth === false) {
+      await this.$auth.noauth()
       return true
-    } else {
-      // If using not using auth, get a token
-      if (this.$settings.formAuth === false) {
-        await this.$auth.noauth()
-        return true
-      }
-
-      // Store desired route in session storage
-      window.sessionStorage.setItem('target_route', state.url)
-
-      // Redirect to login page
-      this.$router.navigate(['login'])
-
-      return false
     }
+
+    // Check authentication status
+    if (await this.$authHelper.isAuthenticated()) {
+      return true
+    }
+
+    // Not authenticated - redirect to login
+    window.sessionStorage.setItem('target_route', state.url)
+    await this.$router.navigate(['/login'])
+    return false
   }
 }
