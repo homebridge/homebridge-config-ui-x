@@ -49,8 +49,8 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
   private $md = inject(MobileDetectService)
   private $modal = inject(NgbModal)
   private $monacoEditor = inject(MonacoEditorService)
-  private $route = inject(ActivatedRoute)
   private $renderer = inject(Renderer2)
+  private $route = inject(ActivatedRoute)
   private $router = inject(Router)
   private $settings = inject(SettingsService)
   private $toastr = inject(ToastrService)
@@ -156,7 +156,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
       }
 
       // Clear the query parameters so that we don't keep showing the same action
-      this.$router.navigate([], {
+      void this.$router.navigate([], {
         queryParams: {},
         replaceUrl: true,
         queryParamsHandling: '',
@@ -726,15 +726,79 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
     return a.every(itemA => b.some(itemB => isEqual(itemA, itemB)))
   }
 
+  private detectConfigPlatformChanges(): boolean {
+    try {
+      const originalConfigJson = this.latestSavedConfig
+      const updatedConfigJson = JSON.parse(this.homebridgeConfig) as HomebridgeConfig
+
+      // Find config platforms in original config
+      const originalConfigPlatform = (originalConfigJson.platforms || [])
+        .find(platform => platform.platform === 'config')
+
+      // Find config platforms in updated config
+      const updatedConfigPlatform = (updatedConfigJson.platforms || [])
+        .find(platform => platform.platform === 'config')
+
+      // Handle webroot changes in all scenarios
+      const oldWebroot = originalConfigPlatform?.webroot || ''
+      let newWebroot = updatedConfigPlatform?.webroot || ''
+
+      if (oldWebroot !== newWebroot) {
+        // Normalise webroot: remove multiple slashes, ensure single leading slash, no trailing slash
+        // It is really important we keep this property value in a consistent format
+        newWebroot = newWebroot
+          ? `/${newWebroot}`.replace(/\/+/g, '/').replace(/\/$/, '')
+          : ''
+
+        if (newWebroot === '/') {
+          newWebroot = ''
+        }
+
+        // Update settings service
+        this.$settings.setItem('webroot', newWebroot)
+        if (updatedConfigPlatform) {
+          if (newWebroot && this.$settings.originalWebroot !== globalThis.webroot.errorCode) {
+            updatedConfigPlatform.webroot = newWebroot
+          } else {
+            delete updatedConfigPlatform.webroot
+          }
+          this.homebridgeConfig = JSON.stringify(updatedConfigJson, null, 4)
+          if (this.monacoEditor) {
+            this.monacoEditor.getModel().setValue(this.homebridgeConfig)
+          }
+        }
+      }
+
+      // If one exists and the other doesn't, that's a change
+      if (!originalConfigPlatform && updatedConfigPlatform) {
+        return true
+      }
+      if (originalConfigPlatform && !updatedConfigPlatform) {
+        return true
+      }
+      if (!originalConfigPlatform && !updatedConfigPlatform) {
+        return false
+      }
+
+      // Both exist - compare all keys (deep equality check)
+      return !isEqual(originalConfigPlatform, updatedConfigPlatform)
+    } catch (error) {
+      console.error('Error detecting config platform changes:', error)
+      return false // Default to no service restart if we can't determine
+    }
+  }
+
   private async detectSavesChangesForRestart() {
     const restartType = await this.determineRestartType()
 
     if (restartType === 'full') {
-      await this.performFullRestart()
+      // If any of the keys inside the platforms[].entry where entry.platform === 'config' have changed, we need a full service restart
+      const doServiceRestart = this.detectConfigPlatformChanges()
+
+      await this.performFullRestart(doServiceRestart)
     } else if (restartType === 'child') {
       await this.performChildBridgeRestart()
     }
-    // If restartType === 'none', do nothing
 
     this.latestSavedConfig = JSON.parse(this.homebridgeConfig)
   }
@@ -876,7 +940,12 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
     } catch (error) { /* modal dismissed */ }
   }
 
-  private async performFullRestart() {
+  private async performFullRestart(restartService: boolean) {
+    // If restartService is true, set the flag to do a full service restart
+    if (restartService) {
+      await firstValueFrom(this.$api.put('/platform-tools/hb-service/set-full-service-restart-flag', {}))
+    }
+
     const ref = this.$modal.open(RestartHomebridgeComponent, {
       size: 'lg',
       backdrop: 'static',

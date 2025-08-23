@@ -520,6 +520,19 @@ export class PluginsService {
 
     const userPlatform = platform()
 
+    // Guard rails to keep users safe!
+    // Here we can throw any error, and it will appear in the UI terminal for the user to see
+
+    // (1) If user has a webroot configured and is trying to install a UI version that doesn't support it
+    if (this.configService.ui.webroot && lt(pluginAction.version, '5.5.1-beta.0')) {
+      throw new Error(
+        `Cannot install HB UI v${pluginAction.version} when a webroot is configured.\n\r`
+        + 'Please either:\n\r'
+        + ' - Remove the configured webroot, restart Homebridge, then try the install again, or\n\r'
+        + ' - Install HB UI v5.6.0 or later.\n\r\n\r',
+      )
+    }
+
     // Set the default install path
     let installPath = this.configService.customPluginPath
       ? this.configService.customPluginPath

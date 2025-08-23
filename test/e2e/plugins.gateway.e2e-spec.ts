@@ -399,7 +399,91 @@ describe('PluginsGateway (e2e)', () => {
     expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('Operation succeeded!'))
   })
 
+  it('ON /plugins/install (webroot version guard rail - should fail)', async () => {
+    // Mock configService to have a webroot configured
+    const originalWebroot = configService.ui.webroot
+    configService.ui.webroot = '/homebridge'
+
+    try {
+      // Try to install an older UI version that doesn't support webroot
+      await pluginsGateway.installPlugin(client, { name: 'homebridge-config-ui-x', version: '5.4.0' })
+    } catch (e) {
+      // Should throw an error about webroot compatibility
+      expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('Cannot install UI version 5.4.0 when a webroot is configured'))
+    } finally {
+      // Restore original webroot
+      configService.ui.webroot = originalWebroot
+    }
+  })
+
+  it('ON /plugins/install (webroot version guard rail - should succeed)', async () => {
+    // Mock configService to have a webroot configured
+    const originalWebroot = configService.ui.webroot
+    configService.ui.webroot = '/homebridge'
+
+    // Mock spawn to simulate successful installation
+    const mockSpawn = vi.spyOn(nodePtyService, 'spawn')
+      .mockImplementation(() => {
+        const term = {
+          onData: vi.fn(),
+          onExit: vi.fn(),
+          kill: vi.fn(),
+        }
+        setTimeout(() => {
+          term.onExit.mock.calls[0]?.[0]({ exitCode: 0 })
+        }, 10)
+        return term
+      })
+
+    try {
+      // Try to install a compatible UI version
+      await pluginsGateway.installPlugin(client, { name: 'homebridge-config-ui-x', version: '5.6.0' })
+
+      // Should succeed and not show webroot error
+      expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('Operation succeeded!'))
+      expect(client.emit).not.toHaveBeenCalledWith('stdout', expect.stringContaining('Cannot install UI version'))
+    } finally {
+      // Restore original webroot
+      configService.ui.webroot = originalWebroot
+      mockSpawn.mockRestore()
+    }
+  })
+
+  it('ON /plugins/install (no webroot configured - should succeed)', async () => {
+    // Ensure no webroot is configured
+    const originalWebroot = configService.ui.webroot
+    configService.ui.webroot = ''
+
+    // Mock spawn to simulate successful installation
+    const mockSpawn = vi.spyOn(nodePtyService, 'spawn')
+      .mockImplementation(() => {
+        const term = {
+          onData: vi.fn(),
+          onExit: vi.fn(),
+          kill: vi.fn(),
+        }
+        setTimeout(() => {
+          term.onExit.mock.calls[0]?.[0]({ exitCode: 0 })
+        }, 10)
+        return term
+      })
+
+    try {
+      // Try to install an older UI version (should be allowed without webroot)
+      await pluginsGateway.installPlugin(client, { name: 'homebridge-config-ui-x', version: '5.0.0' })
+
+      // Should succeed
+      expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('Operation succeeded!'))
+    } finally {
+      // Restore original webroot
+      configService.ui.webroot = originalWebroot
+      mockSpawn.mockRestore()
+    }
+  })
+
   afterAll(async () => {
     await app.close()
   })
-}, 10_000)
+}, {
+  timeout: 10_000,
+})

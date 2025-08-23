@@ -546,6 +546,8 @@
   "settings.network.title_network_interfaces": "ממשק רשת",
   "settings.network.title_security": "אבטחה",
   "settings.network.title_terminal": "Logging & Terminal",
+  "settings.network.webroot": "Webroot Path",
+  "settings.network.webroot_desc": "This can be configured if you want to access the Homebridge UI under a specific URL path.",
   "settings.reset_bridge.error": "כשל באיפוס ה-Bridge.",
   "settings.security.auth": "אימות",
   "settings.security.auth_desc": "האם לאפשר אימות עבור ה-UI של Homebridge עם שם משתמש וסיסמה.",

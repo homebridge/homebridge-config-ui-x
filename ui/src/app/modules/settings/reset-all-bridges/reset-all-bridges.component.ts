@@ -17,7 +17,7 @@ import { ApiService } from '@/app/core/api.service'
 export class ResetAllBridgesComponent {
   private $activeModal = inject(NgbActiveModal)
   private $api = inject(ApiService)
-  private $route = inject(Router)
+  private $router = inject(Router)
   private $toastr = inject(ToastrService)
   private $translate = inject(TranslateService)
 
@@ -29,7 +29,7 @@ export class ResetAllBridgesComponent {
       next: () => {
         this.$toastr.success(this.$translate.instant('reset.accessory_reset'), this.$translate.instant('toast.title_success'))
         this.$activeModal.close()
-        this.$route.navigate(['/restart'])
+        void this.$router.navigate(['/restart'])
       },
       error: (error) => {
         console.error(error)
