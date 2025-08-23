@@ -20,7 +20,7 @@ export class RestoreComponent implements OnInit, OnDestroy {
   private $activeModal = inject(NgbActiveModal)
   private $api = inject(ApiService)
   private $modal = inject(NgbModal)
-  private $route = inject(Router)
+  private $router = inject(Router)
   private $toastr = inject(ToastrService)
   private $translate = inject(TranslateService)
   private $ws = inject(WsService)
@@ -89,7 +89,7 @@ export class RestoreComponent implements OnInit, OnDestroy {
     this.$api.put('/backup/restart', {}).subscribe({
       next: () => {
         this.$activeModal.close(true)
-        this.$route.navigate(['/'])
+        void this.$router.navigate(['/'])
       },
       error: () => {},
     })

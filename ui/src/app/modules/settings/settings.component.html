@@ -695,6 +695,30 @@
         }
       </div>
     </li>
+    @if (originalWebroot !== hideWebrootCode) {
+    <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+      <span>
+        {{ 'settings.network.webroot' | translate }}
+        <span class="badge badge-primary ms-1">{{ 'common.labels.beta' | translate }}</span><br />
+        <small class="grey-text pe-2" [innerHtml]="'settings.network.webroot_desc' | translate"></small>
+      </span>
+      <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
+        <input
+          class="form-control custom-input resp-input order-1 order-md-2"
+          type="text"
+          [formControl]="uiWebrootFormControl"
+          placeholder="/"
+          [attr.aria-label]="('settings.network.webroot' | translate)"
+        />
+        @if (uiWebrootIsSaving) {
+        <i
+          @fadeInOut
+          class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
+        ></i>
+        }
+      </div>
+    </li>
+    }
     <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
       <span>
         {{ 'settings.network.proxy' | translate }}<br />

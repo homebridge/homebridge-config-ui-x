@@ -65,7 +65,7 @@ export class RestartLinuxComponent implements OnInit, OnDestroy {
             this.$translate.instant('platform.linux.server_restarted'),
             this.$translate.instant('toast.title_success'),
           )
-          this.$router.navigate(['/'])
+          void this.$router.navigate(['/'])
         }
       })
     }, 30000)
