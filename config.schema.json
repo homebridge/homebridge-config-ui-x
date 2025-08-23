@@ -179,7 +179,7 @@
       "temp": {
         "title": "OS Temp File Path",
         "type": "string",
-        "placeholder": "eg. /sys/class/thermal/thermal_zone0/temp",
+        "placeholder": "e.g. /sys/class/thermal/thermal_zone0/temp",
         "description": "If you are running Homebridge on a Raspberry Pi, you can enter the path to the OS temp file here. This will display the current temperature on the Homebridge status page."
       },
       "tempUnits": {
@@ -390,20 +390,20 @@
         "title": "Login Wallpaper Path",
         "description": "The full path to the .jpg file.",
         "type": "string",
-        "placeholder": "eg. /home/pi/mywallpaper.jpg"
+        "placeholder": "e.g. /home/pi/mywallpaper.jpg"
       },
       "homebridgePackagePath": {
         "title": "Path To Homebridge Module",
         "type": "string",
         "description": "If you have multiple versions of Homebridge installed, you can specify the path to the version you want to use here.",
-        "placeholder": "eg. /usr/local/lib/node_modules/homebridge"
+        "placeholder": "e.g. /usr/local/lib/node_modules/homebridge"
       },
       "host": {
         "title": "Host IP Address",
         "type": "string",
         "pattern": "^[^{}/ :\\\\]+(?::\\d+)?$",
         "description": "The host IP address to listen on. In most cases this will be '::' or '0.0.0.0'.",
-        "placeholder": "eg. 0.0.0.0"
+        "placeholder": "e.g. 0.0.0.0"
       },
       "sessionTimeout": {
         "title": "Session Timeout (Seconds)",
@@ -445,25 +445,25 @@
             "title": "Private Key Path",
             "type": "string",
             "description": "The full path to the private key file.",
-            "placeholder": "eg. /Users/homebridge/.homebridge/certs/server.key"
+            "placeholder": "e.g. /Users/homebridge/.homebridge/certs/server.key"
           },
           "cert": {
             "title": "Certificate Path",
             "type": "string",
             "description": "The full path to the certificate file.",
-            "placeholder": "eg. /Users/homebridge/.homebridge/certs/server.crt"
+            "placeholder": "e.g. /Users/homebridge/.homebridge/certs/server.crt"
           },
           "pfx": {
             "title": "PKCS#12 Certificate Path",
             "type": "string",
             "description": "The full path to the PKCS#12 certificate file.",
-            "placeholder": "eg. /Users/homebridge/.homebridge/certs/server.pfx"
+            "placeholder": "e.g. /Users/homebridge/.homebridge/certs/server.pfx"
           },
           "passphrase": {
             "title": "PKCS#12 Certificate Passphrase",
             "type": "string",
             "description": "The passphrase for the PKCS#12 certificate file.",
-            "placeholder": "eg. mypassphrase"
+            "placeholder": "e.g. mypassphrase"
           }
         }
       },
@@ -481,7 +481,7 @@
             "title": "Blacklisted Bridges/Instances",
             "type": "array",
             "description": "A list of instances (or bridge usernames) that should not be controlled via the web UI.",
-            "placeholder": "eg. 00:00:00:00:00:00",
+            "placeholder": "e.g. 00:00:00:00:00:00",
             "items": {
               "title": "Instance Username",
               "type": "string",
@@ -498,29 +498,35 @@
           "shutdown": {
             "title": "Shutdown Command",
             "type": "string",
-            "placeholder": "eg. shutdown",
+            "placeholder": "e.g. shutdown",
             "description": "If no shutdown command is set the process will terminate with a non-zero exit code."
           },
           "restart": {
             "title": "Restart Command",
             "type": "string",
-            "placeholder": "eg. reboot",
+            "placeholder": "e.g. reboot",
             "description": "If no restart command is set the process will terminate with a non-zero exit code."
           }
         }
+      },
+      "webroot": {
+        "title": "Webroot Path",
+        "type": "string",
+        "description": "This can be configured if you want to access the Homebridge UI under a specific URL path.",
+        "placeholder": "e.g. /ui"
       },
       "proxyHost": {
         "title": "Reverse Proxy Hostname",
         "type": "string",
         "pattern": "^[^{}/ :\\\\]+(?::\\d+)?$",
-        "placeholder": "eg. example.com:8443",
+        "placeholder": "e.g. example.com:8443",
         "description": "When running behind a reverse proxy you may need to enter the hostname you use to access the UI."
       },
       "scheduledBackupPath": {
         "title": "Scheduled Backup Destination",
         "description": "The full path to where the service should save daily scheduled backups archives.",
         "type": "string",
-        "placeholder": "eg. /home/pi/homebridge-backups",
+        "placeholder": "e.g. /home/pi/homebridge-backups",
         "condition": {
           "functionBody": "return !model.scheduledBackupDisable"
         }

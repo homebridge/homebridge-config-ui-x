@@ -1,7 +1,8 @@
 import { NgClass } from '@angular/common'
-import { Component } from '@angular/core'
+import { Component, inject } from '@angular/core'
 import { TranslatePipe } from '@ngx-translate/core'
 
+import { SettingsService } from '@/app/core/settings.service'
 import { environment } from '@/environments/environment'
 
 @Component({
@@ -13,6 +14,7 @@ import { environment } from '@/environments/environment'
   ],
 })
 export class SupportComponent {
+  private $settings = inject(SettingsService)
   private swaggerEndpoint = '/swagger'
   public showFields = {
     general: true,

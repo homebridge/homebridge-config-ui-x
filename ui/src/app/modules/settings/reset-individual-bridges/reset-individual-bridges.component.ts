@@ -54,7 +54,9 @@ export class ResetIndividualBridgesComponent implements OnInit {
       next: () => {
         this.$toastr.success(this.$translate.instant('reset.bridge_ind.done'), this.$translate.instant('toast.title_success'))
         this.$activeModal.close()
-        this.$router.navigate(['/restart'], { queryParams: { restarting: true } })
+        void this.$router.navigate(['/restart'], {
+          queryParams: { restarting: true },
+        })
       },
       error: (error) => {
         this.clicked = false

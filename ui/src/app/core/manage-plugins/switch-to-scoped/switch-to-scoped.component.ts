@@ -113,7 +113,7 @@ export class SwitchToScopedComponent implements OnInit, OnDestroy {
             this.$api.put('/platform-tools/hb-service/set-full-service-restart-flag', {}).subscribe({
               next: () => {
                 this.$activeModal.close()
-                this.$router.navigate(['/restart'])
+                void this.$router.navigate(['/restart'])
               },
               error: (error) => {
                 this.restarting = false

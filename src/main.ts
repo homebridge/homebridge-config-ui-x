@@ -16,6 +16,7 @@ import { AppModule } from './app.module'
 import { ConfigService } from './core/config/config.service'
 import { getStartupConfig } from './core/config/config.startup'
 import { Logger } from './core/logger/logger.service'
+import { SpaHtmlService } from './core/spa/spa-html.service'
 import { SpaFilter } from './core/spa/spa.filter'
 
 import './self-check'
@@ -83,12 +84,26 @@ async function bootstrap(): Promise<NestFastifyApplication> {
   const configService: ConfigService = app.get(ConfigService)
   const logger: Logger = app.get(Logger)
 
+  // Update index.html with webroot base href and set webroot env var for SPA filter
+  let realWebroot = startupConfig.webroot || ''
+  try {
+    await SpaHtmlService.updateIndexHtml(startupConfig.webroot)
+    process.env.UIX_ORIGINAL_WEBROOT = startupConfig.webroot
+    configService.setOriginalWebroot(startupConfig.webroot)
+  } catch (error) {
+    logger.warn(`Could not update index.html with webroot ${startupConfig.webroot}: ${error.message}`)
+    realWebroot = ''
+    process.env.UIX_ORIGINAL_WEBROOT = globalThis.webroot.errorCode
+    configService.setOriginalWebroot(globalThis.webroot.errorCode)
+  }
+
   // Serve index.html without a cache
-  app.getHttpAdapter().get('/', async (req: FastifyRequest, res: FastifyReply) => {
+  app.getHttpAdapter().get(realWebroot || '/', async (req: FastifyRequest, res: FastifyReply) => {
     res.type('text/html')
     res.header('Cache-Control', 'no-cache, no-store, must-revalidate')
     res.header('Pragma', 'no-cache')
     res.header('Expires', '0')
+    res.header('Origin-Agent-Cluster', '?1')
     res.send(await readFile(resolve(process.env.UIX_BASE_PATH, 'public/index.html')))
   })
 
@@ -98,10 +113,11 @@ async function bootstrap(): Promise<NestFastifyApplication> {
     setHeaders(res) {
       res.setHeader('Cache-Control', 'public,max-age=31536000,immutable')
     },
+    ...realWebroot ? { prefix: realWebroot } : {},
   })
 
   // Set prefix
-  app.setGlobalPrefix('/api')
+  app.setGlobalPrefix(`${realWebroot || ''}/api`)
 
   // Setup cors
   app.enableCors({
@@ -132,7 +148,7 @@ async function bootstrap(): Promise<NestFastifyApplication> {
     .build()
 
   const document = SwaggerModule.createDocument(app, options)
-  SwaggerModule.setup('swagger', app, document)
+  SwaggerModule.setup(`${realWebroot}/swagger`.replace(/^\//, ''), app, document)
 
   // Serve spa on all 404
   app.useGlobalFilters(new SpaFilter())

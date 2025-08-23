@@ -29,6 +29,7 @@ export async function getStartupConfig() {
     }
     cspWsOverride?: string
     debug?: boolean
+    webroot?: string
   }
 
   // Check if IPv6 is available on this host
@@ -83,6 +84,17 @@ export async function getStartupConfig() {
   } else {
     config.debug = false
     process.env.UIX_DEBUG_LOGGING = '0'
+  }
+
+  // Preload webroot settings
+  if (ui.webroot && process.env.UIX_DEVELOPMENT !== '1') {
+    // Normalise webroot: remove multiple slashes, ensure single leading slash, no trailing slash
+    let webroot = `/${ui.webroot.toString().trim()}`.replace(/\/+/g, '/').replace(/\/$/, '')
+    if (webroot === '/') {
+      webroot = ''
+    }
+    config.webroot = webroot
+    logger.log(`Setting up the UI on webroot: ${webroot}`)
   }
 
   return config

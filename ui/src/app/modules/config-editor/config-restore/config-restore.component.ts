@@ -113,7 +113,7 @@ export class ConfigRestoreComponent implements OnInit {
 
   public dismissModal() {
     if (this.fromSettings) {
-      this.$router.navigate(['/settings'])
+      void this.$router.navigate(['/settings'])
     }
     this.$activeModal.dismiss('Dismiss')
   }
