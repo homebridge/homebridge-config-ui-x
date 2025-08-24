@@ -6,7 +6,28 @@
   tabindex="0"
 >
   <div class="d-flex flex-column h-100">
-    <div [inlineSVG]="'/assets/hap-icons/light-bulb.svg'" [attr.aria-label]="'Light Bulb'" class="accessory-svg"></div>
+    <div [attr.aria-label]="'Light Bulb'" class="accessory-svg">
+      <svg width="32px" height="32px" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+        <!-- bulb outline -->
+        <path
+          [attr.fill]="(service.values.On || service.values.Active) ? ('Hue' in service.values
+            ? 'hsl(' + service.values.Hue + ', ' + service.values.Saturation + '%, 50%)'
+            : ('ColorTemperature' in service.values
+                ? $colour.kelvinToHsl($colour.miredToKelvin(service.values.ColorTemperature))
+                : '#ffcf55')) : 'none'"
+          [attr.fill-opacity]="'Brightness' in service.values ? (0.25 + (service.values.Brightness / 100) * 0.5) : 0.75"
+          stroke="#7f7f7f"
+          stroke-width="1.5"
+          d="M8 21c-2.8-2.2-4.5-5.4-4.5-9 0-6.1 5-11 11.5-11S27.5 5.9 27.5 12c0 3.5-1.7 6.7-4.5 8.9-1.2 1-1.8 4.8-3 7.3-.9 2-2.2 2.7-4.5 2.7s-3.6-.7-4.5-2.7c-1.2-2.5-1.8-6.3-3-7.3z"
+        />
+        <!-- top inner line -->
+        <line stroke="#7f7f7f" stroke-width="1.5" x1="8" y1="21.5" x2="23" y2="21.5" />
+        <!-- diagonal lines top to bottom -->
+        <line stroke="#7f7f7f" stroke-width="0.75" x1="10" y1="23" x2="21" y2="24" />
+        <line stroke="#7f7f7f" stroke-width="0.75" x1="10" y1="25.5" x2="21" y2="26.5" />
+        <line stroke="#7f7f7f" stroke-width="0.75" x1="11" y1="28" x2="20" y2="29" />
+      </svg>
+    </div>
     <div class="accessory-label mt-auto">{{ service.customName || service.serviceName }}</div>
     @if (service.values.Brightness) {
     <div
