@@ -589,6 +589,8 @@
   "settings.terminal.warning_help": "כאשר מופעל, מציג דיאלוג אזהרה לפני סיום סשני טרמינל לא קבועים. מושבת כאשר התמדה מופעלת.",
   "settings.title_startup_options": "אתחול וסביבה",
   "settings.unpair_bridge.load_error": "לא ניתן לטעון Bridges מצומדים.",
+  "settings.warning_pwa": "This setting cannot be changed when accessing the UI from a PWA, please use a regular browser.",
+  "settings.warning_webroot": "The Homebridge does not have write access to the served <code>index.html</code> file. To set up a webroot, please fix this issue and restart the Homebridge service.",
   "setup.button_get_started": "התחל",
   "setup.create_account": "צור חשבון",
   "setup.intro": "אם אתה מגדיר לראשונה, או אם אתה רק צריך לאפס את הסיסמה עבור ההתקנה הקיימת שלך של Homebridge, בחר <strong>התחל</strong>.",
