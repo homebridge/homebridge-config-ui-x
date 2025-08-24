@@ -593,6 +593,8 @@
   "settings.terminal.warning_help": "เมื่อเปิดใช้งาน กล่องโต้ตอบคำเตือนจะไม่ปรากฏก่อนที่จะยุติเซสชันเทอร์มินัลที่ไม่คงอยู่",
   "settings.title_startup_options": "ตัวเลือกการเริ่มต้น",
   "settings.unpair_bridge.load_error": "บริดจ์จับคู่ไม่สามารถโหลดได้",
+  "settings.warning_pwa": "This setting cannot be changed when accessing the UI from a PWA, please use a regular browser.",
+  "settings.warning_webroot": "The Homebridge does not have write access to the served <code>index.html</code> file. To set up a webroot, please fix this issue and restart the Homebridge service.",
   "setup.button_get_started": "เริ่ม",
   "setup.create_account": "สร้างบัญชี",
   "setup.intro": "หากคุณกำลังตั้งค่าเป็นครั้งแรก หรือหากคุณเพียงแค่ต้องการรีเซ็ตรหัสผ่านสำหรับการตั้งค่า Homebridge ที่มีอยู่ของคุณ ให้เลือก<strong>เริ่มต้นใช้งาน</strong>",

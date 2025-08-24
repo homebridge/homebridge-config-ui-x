@@ -593,6 +593,8 @@
   "settings.terminal.warning_help": "When enabled, the warning dialog will not be shown before terminating non-persistent terminal sessions.",
   "settings.title_startup_options": "Başlangıç Seçenekleri",
   "settings.unpair_bridge.load_error": "Paired bridges could not be loaded.",
+  "settings.warning_pwa": "This setting cannot be changed when accessing the UI from a PWA, please use a regular browser.",
+  "settings.warning_webroot": "The Homebridge does not have write access to the served <code>index.html</code> file. To set up a webroot, please fix this issue and restart the Homebridge service.",
   "setup.button_get_started": "Get Started",
   "setup.create_account": "Create Account",
   "setup.intro": "If you are setting up for the first time, or if you just need to reset the password for your existing Homebridge setup, then choose <strong>Get Started</strong>.",

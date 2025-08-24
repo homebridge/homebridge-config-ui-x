@@ -559,6 +559,12 @@
       <span>
         {{ 'settings.network.port_ui' | translate }}<br />
         <small class="grey-text pe-2">{{ 'settings.network.port_ui_desc' | translate }}</small>
+        @if (isPwa) {
+        <br /><small class="grey-text pe-2">
+          <i class="fas fa-exclamation-triangle red-text"></i>
+          {{ 'settings.warning_pwa' | translate }}
+        </small>
+        }
       </span>
       <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
         <input
@@ -620,6 +626,12 @@
       <span>
         {{ 'settings.network.host' | translate }}<br />
         <small class="grey-text pe-2" [innerHtml]="'settings.network.host_desc' | translate"></small>
+        @if (isPwa) {
+        <br /><small class="grey-text pe-2">
+          <i class="fas fa-exclamation-triangle red-text"></i>
+          {{ 'settings.warning_pwa' | translate }}
+        </small>
+        }
       </span>
       <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
         <input
@@ -635,12 +647,22 @@
         }
       </div>
     </li>
-    @if (originalWebroot !== hideWebrootCode) {
     <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
       <span>
         {{ 'settings.network.webroot' | translate }}
         <span class="badge badge-primary ms-1">{{ 'common.labels.beta' | translate }}</span><br />
         <small class="grey-text pe-2" [innerHtml]="'settings.network.webroot_desc' | translate"></small>
+        @if (webrootSettingDisabledAccess) {
+        <br /><small class="grey-text pe-2">
+          <i class="fas fa-exclamation-triangle red-text"></i>
+          <span [innerHtml]="'settings.warning_webroot' | translate"></span>
+        </small>
+        } @else if (isPwa) {
+        <br /><small class="grey-text pe-2">
+          <i class="fas fa-exclamation-triangle red-text"></i>
+          <span [innerHtml]="'settings.warning_pwa' | translate"></span>
+        </small>
+        }
       </span>
       <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
         <input
@@ -651,18 +673,20 @@
           [attr.aria-label]="('settings.network.webroot' | translate)"
         />
         @if (uiWebrootIsSaving) {
-        <i
-          @fadeInOut
-          class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
-        ></i>
+        <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
         }
       </div>
     </li>
-    }
     <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
       <span>
         {{ 'settings.network.proxy' | translate }}<br />
         <small class="grey-text pe-2">{{ 'settings.network.proxy_desc' | translate }}</small>
+        @if (isPwa) {
+        <br /><small class="grey-text pe-2">
+          <i class="fas fa-exclamation-triangle red-text"></i>
+          {{ 'settings.warning_pwa' | translate }}
+        </small>
+        }
       </span>
       <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
         <input
@@ -887,6 +911,12 @@
       <span>
         {{ 'settings.security.https' | translate }}<br />
         <small class="grey-text pe-2">{{ 'settings.security.https_desc' | translate }}</small>
+        @if (isPwa) {
+        <br /><small class="grey-text pe-2">
+          <i class="fas fa-exclamation-triangle red-text"></i>
+          {{ 'settings.warning_pwa' | translate }}
+        </small>
+        }
       </span>
       <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
         <select
@@ -903,6 +933,12 @@
     @if (this.uiSslTypeFormControl.value === 'keycert') {
     <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
       <span>{{ 'settings.security.key' | translate }}</span>
+      @if (isPwa) {
+      <br /><small class="grey-text pe-2">
+        <i class="fas fa-exclamation-triangle red-text"></i>
+        {{ 'settings.warning_pwa' | translate }}
+      </small>
+      }
       <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
         <input
           class="form-control custom-input resp-input order-1 order-md-2"
@@ -918,6 +954,12 @@
     </li>
     <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
       <span>{{ 'settings.security.cert' | translate }}</span>
+      @if (isPwa) {
+      <br /><small class="grey-text pe-2">
+        <i class="fas fa-exclamation-triangle red-text"></i>
+        {{ 'settings.warning_pwa' | translate }}
+      </small>
+      }
       <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
         <input
           class="form-control custom-input resp-input order-1 order-md-2"
@@ -934,6 +976,12 @@
     } @if (this.uiSslTypeFormControl.value === 'pfx') {
     <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
       <span>{{ 'settings.security.pfx' | translate }}</span>
+      @if (isPwa) {
+      <br /><small class="grey-text pe-2">
+        <i class="fas fa-exclamation-triangle red-text"></i>
+        {{ 'settings.warning_pwa' | translate }}
+      </small>
+      }
       <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
         <input
           class="form-control custom-input resp-input order-1 order-md-2"
@@ -949,6 +997,12 @@
     </li>
     <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
       <span>{{ 'settings.security.pass' | translate }}</span>
+      @if (isPwa) {
+      <br /><small class="grey-text pe-2">
+        <i class="fas fa-exclamation-triangle red-text"></i>
+        {{ 'settings.warning_pwa' | translate }}
+      </small>
+      }
       <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
         <input
           class="form-control custom-input resp-input order-1 order-md-2"

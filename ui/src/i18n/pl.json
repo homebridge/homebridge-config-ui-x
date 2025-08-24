@@ -593,6 +593,8 @@
   "settings.terminal.warning_help": "Po włączeniu okno dialogowe z ostrzeżeniem nie zostanie wyświetlone przed zakończeniem nietrwałych sesji terminala.",
   "settings.title_startup_options": "Opcje specjalne",
   "settings.unpair_bridge.load_error": "Nie można było załadować sparowanych mostków.",
+  "settings.warning_pwa": "This setting cannot be changed when accessing the UI from a PWA, please use a regular browser.",
+  "settings.warning_webroot": "The Homebridge does not have write access to the served <code>index.html</code> file. To set up a webroot, please fix this issue and restart the Homebridge service.",
   "setup.button_get_started": "Rozpocznij",
   "setup.create_account": "Utwórz konto",
   "setup.intro": "Jeśli konfigurujesz po raz pierwszy lub po prostu chcesz zresetować hasło do istniejącej konfiguracji Homebridge, wybierz <strong>Rozpocznij</strong>.",

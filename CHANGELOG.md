@@ -10,6 +10,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - refreshed icons: heater, cooler, de/humidifier + thermostat
 - put services types into translatable strings
 - added config option to configure a webroot for the ui
+- prevent url-based settings from being changed from a pwa
 
 ### Other Changes
 
