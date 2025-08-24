@@ -15,6 +15,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
   - a new button allows switching between the inline view and the **existing side-by-side view**
 - improvements to frontend route auth, guards and auth services
 - added config option to configure a webroot to access the UI from
+- prevent url-based settings from being changed from a pwa
 
 ### Other Changes
 

@@ -7,6 +7,7 @@ import { FormControl, FormsModule, ReactiveFormsModule, UntypedFormControl } fro
 import { Router, RouterLink } from '@angular/router'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
+import { isStandalonePWA } from 'is-standalone-pwa'
 import { ToastrService } from 'ngx-toastr'
 import { firstValueFrom } from 'rxjs'
 import { debounceTime } from 'rxjs/operators'
@@ -86,7 +87,8 @@ export class SettingsComponent implements OnInit {
   public runningOnRaspberryPi = this.$settings.env.runningOnRaspberryPi
   public platform = this.$settings.env.platform
   public enableTerminalAccess = this.$settings.env.enableTerminalAccess
-  public hideWebrootCode = globalThis.webroot.errorCode
+  public isPwa = Boolean(isStandalonePWA())
+  public webrootSettingDisabledAccess = false
 
   public hbNameIsInvalid = false
   public hbNameIsSaving = false
@@ -214,6 +216,27 @@ export class SettingsComponent implements OnInit {
 
     await this.initNetworkingOptions()
     await this.initStartupSettings()
+
+    // Some settings might need to be disabled for some users
+    // (1) Disable the webroot settings if the Homebridge user does not have permission to modify the index.html file
+    if (this.$settings.originalWebroot === globalThis.webroot.errorCode) {
+      this.webrootSettingDisabledAccess = true
+      this.uiWebrootFormControl.disable()
+    }
+
+    // (2) Disable some settings that can modify the URL from being changed from a PWA
+    //     This is to stop users from getting stuck if they change the webroot or port
+    if (this.isPwa) {
+      this.uiPortFormControl.disable()
+      this.uiHostFormControl.disable()
+      this.uiWebrootFormControl.disable()
+      this.uiProxyHostFormControl.disable()
+      this.uiSslTypeFormControl.disable()
+      this.uiSslKeyFormControl.disable()
+      this.uiSslCertFormControl.disable()
+      this.uiSslPfxFormControl.disable()
+      this.uiSslPassphraseFormControl.disable()
+    }
 
     this.hbNameFormControl.patchValue(this.$settings.env.homebridgeInstanceName)
     this.hbNameFormControl.valueChanges
