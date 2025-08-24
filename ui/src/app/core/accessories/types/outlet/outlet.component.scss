@@ -1,0 +1,29 @@
+.accessory-svg {
+  .plug {
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(100%);
+    transition:
+      transform 1.5s cubic-bezier(0.4, 0, 0.2, 1),
+      opacity 1.5s;
+  }
+}
+
+.switch-on .accessory-svg {
+  .outer {
+    stroke: #1976d2;
+    stroke-opacity: 0.75;
+    stroke-width: 2.5;
+  }
+
+  .inner {
+    stroke: #1976d2;
+    stroke-opacity: 0.75;
+  }
+
+  .plug {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+}
