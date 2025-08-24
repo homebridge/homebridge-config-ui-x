@@ -1,7 +1,6 @@
 import { NgClass } from '@angular/common'
 import { Component, Input } from '@angular/core'
 import { TranslatePipe } from '@ngx-translate/core'
-import { InlineSVGDirective } from 'ng-inline-svg-2'
 
 import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
 import { LongClickDirective } from '@/app/core/directives/long-click.directive'
@@ -9,11 +8,11 @@ import { LongClickDirective } from '@/app/core/directives/long-click.directive'
 @Component({
   selector: 'app-switch',
   templateUrl: './switch.component.html',
+  styleUrls: ['./switch.component.scss'],
   standalone: true,
   imports: [
     LongClickDirective,
     NgClass,
-    InlineSVGDirective,
     TranslatePipe,
   ],
 })

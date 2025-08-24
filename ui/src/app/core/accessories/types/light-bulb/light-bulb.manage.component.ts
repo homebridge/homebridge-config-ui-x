@@ -8,6 +8,7 @@ import { BehaviorSubject, Subject } from 'rxjs'
 import { debounceTime } from 'rxjs/operators'
 
 import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
+import { ColourService } from '@/app/core/colour.service'
 import { ConvertMiredPipe } from '@/app/core/pipes/convert-mired.pipe'
 
 @Component({
@@ -23,6 +24,7 @@ import { ConvertMiredPipe } from '@/app/core/pipes/convert-mired.pipe'
 })
 export class LightBulbManageComponent implements OnInit {
   private $activeModal = inject(NgbActiveModal)
+  private $colour = inject(ColourService)
 
   @Input() public service: ServiceTypeX
   @Input() public isAdaptiveLightingEnabled$: BehaviorSubject<boolean>
@@ -117,7 +119,7 @@ export class LightBulbManageComponent implements OnInit {
   }
 
   public onColorTemperatureStateChange() {
-    const miredValue = this.kelvinToMired(this.targetColorTemperature.value)
+    const miredValue = this.$colour.kelvinToMired(this.targetColorTemperature.value)
     this.targetColorTemperature.mired = miredValue
     this.targetColorTemperatureChanged.next(miredValue)
   }
@@ -194,18 +196,18 @@ export class LightBulbManageComponent implements OnInit {
     if (TargetColorTemperature) {
       // Here, the min and max are switched because mired and kelvin are inversely related
       this.targetColorTemperature = {
-        value: this.miredToKelvin(TargetColorTemperature.value as number),
+        value: this.$colour.miredToKelvin(TargetColorTemperature.value as number),
         mired: TargetColorTemperature.value as number,
-        min: this.miredToKelvin(TargetColorTemperature.maxValue),
-        max: this.miredToKelvin(TargetColorTemperature.minValue),
+        min: this.$colour.miredToKelvin(TargetColorTemperature.maxValue),
+        max: this.$colour.miredToKelvin(TargetColorTemperature.minValue),
         step: TargetColorTemperature.minStep,
       }
 
       setTimeout(() => {
         const sliderElement = document.querySelectorAll('.noUi-target')[this.sliderIndex] as HTMLElement
         if (sliderElement) {
-          const minHsl = this.kelvinToHsl(this.targetColorTemperature.min)
-          const maxHsl = this.kelvinToHsl(this.targetColorTemperature.max)
+          const minHsl = this.$colour.kelvinToHsl(this.targetColorTemperature.min)
+          const maxHsl = this.$colour.kelvinToHsl(this.targetColorTemperature.max)
           sliderElement.style.background = `linear-gradient(to right, ${minHsl}, ${maxHsl})`
         }
       }, 10)
@@ -217,50 +219,5 @@ export class LightBulbManageComponent implements OnInit {
         })
       }
     }
-  }
-
-  private miredToKelvin(kelvin: number): number {
-    return Math.round(1000000 / kelvin)
-  }
-
-  private kelvinToMired(kelvin: number): number {
-    return Math.round(1000000 / kelvin)
-  }
-
-  private kelvinToHsl(kelvin: number): string {
-    const temp = kelvin / 100
-    let red: number, green: number, blue: number
-    if (temp <= 66) {
-      red = 255
-      green = Math.min(99.4708025861 * Math.log(temp) - 161.1195681661, 255)
-      blue = temp <= 19 ? 0 : Math.min(138.5177312231 * Math.log(temp - 10) - 305.0447927307, 255)
-    } else {
-      red = Math.min(329.698727446 * (temp - 60) ** -0.1332047592, 255)
-      green = Math.min(288.1221695283 * (temp - 60) ** -0.0755148492, 255)
-      blue = 255
-    }
-    red /= 255
-    green /= 255
-    blue /= 255
-    const max = Math.max(red, green, blue)
-    const min = Math.min(red, green, blue)
-    const delta = max - min
-    let hue = 0
-    if (delta !== 0) {
-      if (max === red) {
-        hue = ((green - blue) / delta) % 6
-      } else if (max === green) {
-        hue = (blue - red) / delta + 2
-      } else {
-        hue = (red - green) / delta + 4
-      }
-      hue = Math.round(hue * 60)
-      if (hue < 0) {
-        hue += 360
-      }
-    }
-    const lightness = (max + min) / 2
-    const saturation = delta === 0 ? 0 : delta / (1 - Math.abs(2 * lightness - 1))
-    return `hsl(${Math.round(hue)}, ${Math.round(saturation * 100)}%, ${Math.round(lightness * 100)}%)`
   }
 }
