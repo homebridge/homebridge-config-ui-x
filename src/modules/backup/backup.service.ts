@@ -1,7 +1,7 @@
 import type { MultipartFile } from '@fastify/multipart'
 import type { FastifyReply } from 'fastify'
 
-import type { HomebridgePlugin } from '../plugins/types'
+import type { HomebridgePlugin } from '../plugins/plugins.interfaces'
 
 import { EventEmitter } from 'node:events'
 import { platform, tmpdir } from 'node:os'
@@ -39,7 +39,8 @@ import { networkInterfaces } from 'systeminformation'
 import { create, extract } from 'tar'
 import { Extract } from 'unzipper'
 
-import { ConfigService, HomebridgeConfig } from '../../core/config/config.service'
+import { HomebridgeConfig } from '../../core/config/config.interfaces'
+import { ConfigService } from '../../core/config/config.service'
 import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.service'
 import { Logger } from '../../core/logger/logger.service'
 import { SchedulerService } from '../../core/scheduler/scheduler.service'
@@ -748,7 +749,10 @@ export class BackupService {
     }
 
     // Add config ui platform
-    targetConfig.platforms.push(this.configService.ui)
+    targetConfig.platforms.push({
+      ...this.configService.ui,
+      platform: 'config',
+    })
 
     // Save the config
     await writeJson(this.configService.configPath, targetConfig, { spaces: 4 })

@@ -1,6 +1,6 @@
 import type { EventEmitter } from 'node:events'
 
-import type { HomebridgePluginUiMetadata } from '../../plugins/types'
+import type { HomebridgePluginUiMetadata } from '../../plugins/plugins.interfaces'
 
 import { fork } from 'node:child_process'
 import { basename, dirname, join, normalize, resolve } from 'node:path'
