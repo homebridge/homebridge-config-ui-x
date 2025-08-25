@@ -1,3 +1,5 @@
+import type { AccessoryConfig, HomebridgeConfig, PlatformConfig } from '../../core/config/config.interfaces'
+
 import { resolve } from 'node:path'
 
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common'
@@ -16,7 +18,7 @@ import {
 } from 'fs-extra'
 import { gte } from 'semver'
 
-import { ConfigService, HomebridgeConfig } from '../../core/config/config.service'
+import { ConfigService } from '../../core/config/config.service'
 import { Logger } from '../../core/logger/logger.service'
 import { SchedulerService } from '../../core/scheduler/scheduler.service'
 import { PluginsService } from '../plugins/plugins.service'
@@ -245,14 +247,25 @@ export class ConfigEditorService {
     let positionIndices: number
 
     // Remove the existing config blocks
-    config[arrayKey] = config[arrayKey].filter((block, index) => {
-      if (block[plugin.pluginType] === plugin.pluginAlias || block[plugin.pluginType] === `${pluginName}.${plugin.pluginAlias}`) {
-        positionIndices = index
-        return false
-      } else {
-        return true
-      }
-    })
+    if (arrayKey === 'accessories') {
+      config.accessories = config.accessories?.filter((block, index) => {
+        if (block[plugin.pluginType] === plugin.pluginAlias || block[plugin.pluginType] === `${pluginName}.${plugin.pluginAlias}`) {
+          positionIndices = index
+          return false
+        } else {
+          return true
+        }
+      }) || []
+    } else {
+      config.platforms = config.platforms?.filter((block, index) => {
+        if (block[plugin.pluginType] === plugin.pluginAlias || block[plugin.pluginType] === `${pluginName}.${plugin.pluginAlias}`) {
+          positionIndices = index
+          return false
+        } else {
+          return true
+        }
+      }) || []
+    }
 
     // Try and keep any _bridge object 'clean'
     pluginConfig.forEach((block) => {
@@ -282,10 +295,18 @@ export class ConfigEditorService {
     })
 
     // Replace with the provided config, trying to put it back in the same location
-    if (positionIndices !== undefined) {
-      config[arrayKey].splice(positionIndices, 0, ...pluginConfig)
+    if (arrayKey === 'accessories') {
+      if (positionIndices !== undefined) {
+        config.accessories?.splice(positionIndices, 0, ...(pluginConfig as AccessoryConfig[]))
+      } else {
+        config.accessories?.push(...(pluginConfig as AccessoryConfig[]))
+      }
     } else {
-      config[arrayKey].push(...pluginConfig)
+      if (positionIndices !== undefined) {
+        config.platforms?.splice(positionIndices, 0, ...(pluginConfig as PlatformConfig[]))
+      } else {
+        config.platforms?.push(...(pluginConfig as PlatformConfig[]))
+      }
     }
 
     // Save the config file
@@ -612,13 +633,13 @@ export class ConfigEditorService {
    * @return {Record<string, any>}
    * @private
    */
-  private cleanUpUiConfig(uiConfig: Record<string, any>): Record<string, any> {
+  private cleanUpUiConfig(uiConfig: Record<string, any>): PlatformConfig {
     // Name key first, platform key last
     const { name, platform, ...rest } = uiConfig
-    const cleanedUiConfig = {
+    const cleanedUiConfig: PlatformConfig = {
       name,
+      platform: platform || 'config',
       ...rest,
-      platform,
     }
     this.removeEmpty(cleanedUiConfig)
     return cleanedUiConfig

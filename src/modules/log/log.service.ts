@@ -12,6 +12,7 @@ import { Tail } from 'tail'
 
 import { ConfigService } from '../../core/config/config.service'
 import { NodePtyService } from '../../core/node-pty/node-pty.service'
+import { LogTermSize } from './log.interfaces'
 
 @Injectable()
 export class LogService {
@@ -265,9 +266,4 @@ export class LogService {
   private logNotConfigured() {
     this.command = null
   }
-}
-
-export interface LogTermSize {
-  cols: number
-  rows: number
 }
