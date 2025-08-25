@@ -1,6 +1,6 @@
 <div class="modal-content">
   <div class="modal-header">
-    <h5 class="modal-title">{{ plugin.displayName || plugin.name }}</h5>
+    <h5 class="modal-title">{{ plugin.displayName || plugin.name }} - {{ pluginType }}</h5>
     <button
       type="button"
       class="btn-close"
@@ -34,11 +34,11 @@
       >
         <div ngbAccordionHeader class="card-header">
           <div class="d-flex align-items-center justify-content-between">
-            <h5 class="m-0">{{ block.name || pluginAlias }}</h5>
+            <h5 class="m-0 py-2 ps-1">{{ block.name || pluginAlias }}</h5>
             <div>
-              @if (show === 'configBlock.' + $index) { @if (!schema?.singular || pluginConfig.length > 1) {
+              @if (!schema?.singular || pluginConfig.length > 1) { @if (show === 'configBlock.' + $index) {
               <button
-                class="btn btn-danger m-0 ms-3"
+                class="btn btn-danger m-0 ms-2"
                 (click)="removeBlock($index)"
                 [ngbTooltip]="'form.button_delete' | translate"
                 container="modal"
@@ -47,9 +47,9 @@
               >
                 <i class="fa fa-fw fa-trash"></i>
               </button>
-              } }
+              }
               <button
-                class="btn btn-primary m-0 ms-2"
+                class="btn btn-primary m-0 ms-2 me-2"
                 ngbAccordionToggle
                 (click)="editBlock($index)"
                 [ngbTooltip]="'form.button_edit' | translate"
@@ -59,6 +59,21 @@
               >
                 <i class="fa fa-fw fa-edit"></i>
               </button>
+              } @if (!schema?.singular) {
+              <i
+                class="fa fa-fw fa-xl"
+                [ngClass]="{
+                  'fa-circle-check green-text': formBlocksValid[$index],
+                  'fa-circle-exclamation red-text': strictValidation && !formBlocksValid[$index],
+                  'fa-circle-exclamation orange-text': !strictValidation && !formBlocksValid[$index]
+                }"
+                [ngbTooltip]="(formBlocksValid[$index] ? 'form.label_valid' : (strictValidation ? 'form.label_invalid_strict' : 'form.label_invalid')) | translate"
+                container="modal"
+                placement="left"
+                [openDelay]="150"
+                triggers="hover"
+              ></i>
+              }
             </div>
           </div>
         </div>
@@ -91,8 +106,22 @@
       </button>
     </div>
     <div class="text-center"></div>
-    <div class="text-end">
-      @if (canConfigure) { @if (!schema?.singular) {
+    <div class="text-end d-flex align-items-center justify-content-end">
+      @if (canConfigure) { @if (schema?.singular) {
+      <i
+        class="fa fa-fw fa-xl me-2"
+        [ngClass]="{
+            'fa-circle-check green-text': formIsValid,
+            'fa-circle-exclamation red-text': strictValidation && !formIsValid,
+            'fa-circle-exclamation orange-text': !strictValidation && !formIsValid
+          }"
+        [ngbTooltip]="(formIsValid ? 'form.label_valid' : (strictValidation ? 'form.label_invalid_strict' : 'form.label_invalid')) | translate"
+        container="modal"
+        placement="top"
+        [openDelay]="150"
+        triggers="hover"
+      ></i>
+      } @if (!schema?.singular) {
       <button type="button" class="btn btn-elegant me-2" data-bs-dismiss="modal" (click)="addBlock()">
         <i class="fa fa-fw fa-plus"></i>
       </button>
@@ -102,7 +131,7 @@
         class="btn btn-primary"
         data-bs-dismiss="modal"
         (click)="save()"
-        [disabled]="saveInProgress"
+        [disabled]="saveInProgress || (!formIsValid && strictValidation)"
       >
         @if (!saveInProgress) { {{ 'form.button_save' | translate }} } @if (saveInProgress) {
         <i class="fas fa-fw fa-spinner fa-pulse"></i>
