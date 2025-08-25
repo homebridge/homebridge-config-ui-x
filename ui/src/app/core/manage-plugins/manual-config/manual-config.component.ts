@@ -1,6 +1,7 @@
-import type { ChildBridge, PluginSchema } from '@/app/core/manage-plugins/manage-plugins.interfaces'
+import type { PluginSchema } from '@/app/core/manage-plugins/manage-plugins.interfaces'
 
-import { Component, inject, Input, OnInit } from '@angular/core'
+import { NgClass } from '@angular/common'
+import { ChangeDetectorRef, Component, inject, Input, OnDestroy, OnInit } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { Router } from '@angular/router'
 import {
@@ -11,7 +12,6 @@ import {
   NgbAccordionItem,
   NgbAccordionToggle,
   NgbActiveModal,
-  NgbModal,
   NgbTooltip,
 } from '@ng-bootstrap/ng-bootstrap'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
@@ -21,8 +21,8 @@ import { ToastrService } from 'ngx-toastr'
 import { firstValueFrom } from 'rxjs'
 
 import { ApiService } from '@/app/core/api.service'
-import { RestartChildBridgesComponent } from '@/app/core/components/restart-child-bridges/restart-child-bridges.component'
-import { RestartHomebridgeComponent } from '@/app/core/components/restart-homebridge/restart-homebridge.component'
+import { ChildBridgesService } from '@/app/core/child-bridges.service'
+import { createChildBridgeSchema } from '@/app/core/helpers/child-bridges-schema.helper'
 import { Plugin } from '@/app/core/manage-plugins/manage-plugins.interfaces'
 import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service'
 import { MobileDetectService } from '@/app/core/mobile-detect.service'
@@ -39,6 +39,7 @@ declare global {
   styleUrls: ['./manual-config.component.scss'],
   standalone: true,
   imports: [
+    NgClass,
     NgbAccordionDirective,
     NgbAccordionItem,
     NgbAccordionHeader,
@@ -51,11 +52,12 @@ declare global {
     NgbAccordionToggle,
   ],
 })
-export class ManualConfigComponent implements OnInit {
+export class ManualConfigComponent implements OnInit, OnDestroy {
   private $activeModal = inject(NgbActiveModal)
   private $api = inject(ApiService)
+  private $cb = inject(ChildBridgesService)
+  private $cdr = inject(ChangeDetectorRef)
   private $md = inject(MobileDetectService)
-  private $modal = inject(NgbModal)
   private $plugin = inject(ManagePluginsService)
   private $router = inject(Router)
   private $settings = inject(SettingsService)
@@ -74,9 +76,13 @@ export class ManualConfigComponent implements OnInit {
   public currentBlock: string
   public currentBlockIndex: number | null = null
   public saveInProgress = false
-  public childBridges: ChildBridge[] = []
   public isFirstSave = false
   public monacoEditor: any
+
+  // Validation properties
+  public formBlocksValid: { [key: number]: boolean } = {}
+  public formIsValid = true
+  public strictValidation = false
   public editorOptions: any
 
   get arrayKey() {
@@ -89,6 +95,9 @@ export class ManualConfigComponent implements OnInit {
       theme: this.$settings.actualLightingMode === 'dark' ? 'vs-dark' : 'vs-light',
     }
 
+    // Initialize validation properties
+    this.strictValidation = this.schema?.strictValidation || false
+
     if (this.$md.detect.mobile()) {
       this.loading = false
       this.canConfigure = false
@@ -100,8 +109,290 @@ export class ManualConfigComponent implements OnInit {
   public async onEditorInit(editor: any) {
     window.editor = editor
     this.monacoEditor = editor
+
+    // Set up schema validation before setting content
+    this.setupSchemaValidation()
+
+    // Add event listener for content changes to trigger validation
+    // Debounce validation to avoid excessive calls
+    this.monacoEditor.onDidChangeModelContent(() => setTimeout(() => this.onValidationChange(), 300))
+
+    // Also listen for marker changes to get more accurate validation timing
+    const monaco = (window as any).monaco
+    monaco.editor.onDidChangeMarkers((uris: any[]) => {
+      const modelUri = this.monacoEditor.getModel()?.uri
+      if (modelUri && uris.some((uri: any) => uri.toString() === modelUri.toString())) {
+        // Markers for our model have changed, update validation state
+        this.onValidationChange()
+      }
+    })
+
     await this.monacoEditor.getModel().setValue(this.currentBlock)
     await this.monacoEditor.getAction('editor.action.formatDocument').run()
+  }
+
+  public ngOnDestroy() {
+    try {
+      // Clear up main editor
+      if (window.editor && window.editor.dispose) {
+        window.editor.dispose()
+        window.editor = undefined
+      }
+
+      // Clean up validation schemas to avoid duplicates if modal is reopened
+      if ((window as any).monaco) {
+        const pluginAlias = this.schema?.pluginAlias || this.pluginAlias
+        const schemaUri = `http://plugin/${pluginAlias}/config.json`
+
+        const existingSchemas = (window as any).monaco.languages.json.jsonDefaults.diagnosticsOptions.schemas || []
+        const updatedSchemas = existingSchemas.filter((x: any) => x.uri !== schemaUri);
+        (window as any).monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
+          validate: true,
+          allowComments: false,
+          schemas: updatedSchemas,
+        })
+      }
+
+      // Clean up monaco editor instance
+      if (this.monacoEditor) {
+        this.monacoEditor.dispose()
+      }
+    } catch (error) { /* no problem disposing */ }
+  }
+
+  private setupSchemaValidation() {
+    // Create a basic schema if plugin doesn't have one
+    let schemaToUse = this.schema?.schema
+    if (!schemaToUse) {
+      schemaToUse = this.createBasicSchema()
+    }
+
+    const pluginAlias = this.schema?.pluginAlias || this.pluginAlias
+    const schemaUri = `http://plugin/${pluginAlias}/config.json`
+
+    const childBridgeSchema = createChildBridgeSchema(this.$translate)
+
+    // Ensure required properties are present for the plugin type
+    const existingRequired = schemaToUse.required || []
+    const requiredProperties = [...existingRequired]
+
+    if (this.pluginType === 'platform') {
+      // Platform must have 'platform' property
+      if (!requiredProperties.includes('platform')) {
+        requiredProperties.push('platform')
+      }
+
+      // Also - we must ensure that the platform property is equal to the plugin alias
+      if (schemaToUse.properties?.platform) {
+        schemaToUse.properties.platform.const = this.pluginAlias
+      } else {
+        schemaToUse.properties = {
+          ...schemaToUse.properties,
+          platform: {
+            type: 'string',
+            title: 'Platform Name',
+            description: 'This is used by Homebridge to identify which plugin this platform belongs to.',
+            const: this.pluginAlias,
+          },
+        }
+      }
+    } else {
+      // Accessory must have both 'accessory' and 'name' properties
+      if (!requiredProperties.includes('accessory')) {
+        requiredProperties.push('accessory')
+      }
+      if (!requiredProperties.includes('name')) {
+        requiredProperties.push('name')
+      }
+
+      // Also - we must ensure that the accessory property is equal to the plugin alias
+      if (schemaToUse.properties?.accessory) {
+        schemaToUse.properties.accessory.const = this.pluginAlias
+      } else {
+        schemaToUse.properties = {
+          ...schemaToUse.properties,
+          accessory: {
+            type: 'string',
+            title: this.$translate.instant('child_bridge.config.accessory'),
+            description: 'This is used by Homebridge to identify which plugin this accessory belongs to.',
+            const: this.pluginAlias,
+          },
+        }
+      }
+    }
+
+    // Set up schema validation using the plugin schema (from config.schema.json)
+    const monaco = (window as any).monaco
+    monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
+      validate: true,
+      allowComments: false,
+      schemas: [
+        {
+          uri: schemaUri,
+          fileMatch: ['*'], // Apply to all JSON files in this editor
+          schema: {
+            ...schemaToUse,
+            required: requiredProperties,
+            properties: {
+              ...schemaToUse.properties,
+              _bridge: childBridgeSchema,
+            },
+          },
+        },
+      ],
+    })
+  }
+
+  private createBasicSchema() {
+    const childBridgeSchema = createChildBridgeSchema(this.$translate)
+
+    if (this.pluginType === 'platform') {
+      // Platform template
+      return {
+        type: 'object',
+        required: ['platform'],
+        title: this.$translate.instant('plugins.button_settings'),
+        properties: {
+          platform: {
+            type: 'string',
+            title: 'Platform Name',
+            description: 'This is used by Homebridge to identify which plugin this platform belongs to.',
+            not: { enum: ['config'] },
+          },
+          name: {
+            type: 'string',
+            title: this.$translate.instant('accessories.name'),
+            description: 'The name of the platform.',
+          },
+          _bridge: childBridgeSchema,
+        },
+      }
+    } else {
+      // Accessory template
+      return {
+        type: 'object',
+        required: ['accessory', 'name'],
+        title: this.$translate.instant('plugins.button_settings'),
+        properties: {
+          accessory: {
+            type: 'string',
+            title: this.$translate.instant('child_bridge.config.accessory'),
+            description: 'This is used by Homebridge to identify which plugin this accessory belongs to.',
+          },
+          name: {
+            type: 'string',
+            title: this.$translate.instant('accessories.name'),
+            description: 'The name of the accessory.',
+          },
+          _bridge: childBridgeSchema,
+        },
+      }
+    }
+  }
+
+  /**
+   * Check if the current JSON content matches the schema
+   * @returns true if valid, false if there are validation errors
+   */
+  public isJsonValid(): boolean {
+    if (!this.monacoEditor) {
+      // Consider valid if no editor
+      return true
+    }
+
+    const model = this.monacoEditor.getModel()
+    if (!model) {
+      return true
+    }
+
+    // Get validation markers (errors, warnings) from Monaco
+    const markers = (window as any).monaco.editor.getModelMarkers({ resource: model.uri })
+
+    // Filter for error-level and warning-level markers (schema violations)
+    const monaco = (window as any).monaco
+    const validationIssues = markers.filter((marker: any) =>
+      marker.severity === monaco.MarkerSeverity.Error || marker.severity === monaco.MarkerSeverity.Warning,
+    )
+
+    return !validationIssues.length
+  }
+
+  /**
+   * Update the overall form validation state
+   */
+  private updateOverallValidation(): void {
+    this.formIsValid = Object.values(this.formBlocksValid).every(x => x)
+  }
+
+  /**
+   * Trigger validation update for the current block
+   */
+  public onValidationChange(): void {
+    if (this.currentBlockIndex !== null && this.monacoEditor) {
+      // Update validation state immediately since we're now called when markers are ready
+      this.formBlocksValid[this.currentBlockIndex] = this.isJsonValid()
+      this.updateOverallValidation()
+
+      // Manually trigger change detection to update the UI immediately
+      this.$cdr.detectChanges()
+
+      // Log validation issues to console if any exist
+      const validationErrors = this.getValidationErrors()
+      if (validationErrors.length > 0) {
+        console.error('Manual config validation issues:', validationErrors)
+      }
+    }
+  }
+
+  /**
+   * Get detailed validation information
+   * @returns array of validation errors/warnings
+   */
+  public getValidationErrors(): Array<{ message: string, line: number, column: number, severity: string }> {
+    if (!this.monacoEditor) {
+      return []
+    }
+
+    const model = this.monacoEditor.getModel()
+    if (!model) {
+      return []
+    }
+
+    const markers = (window as any).monaco.editor.getModelMarkers({ resource: model.uri })
+
+    // Return both errors and warnings as validation issues
+    const monaco = (window as any).monaco
+    const validationMarkers = markers.filter((marker: any) =>
+      marker.severity === monaco.MarkerSeverity.Error || marker.severity === monaco.MarkerSeverity.Warning,
+    )
+
+    return validationMarkers.map((marker: any) => ({
+      message: marker.message,
+      line: marker.startLineNumber,
+      column: marker.startColumn,
+      severity: this.getMarkerSeverityName(marker.severity),
+    }))
+  }
+
+  private getMarkerSeverityName(severity: number): string {
+    const monaco = (window as any).monaco
+    switch (severity) {
+      case monaco.MarkerSeverity.Error: {
+        return 'error'
+      }
+      case monaco.MarkerSeverity.Warning: {
+        return 'warning'
+      }
+      case monaco.MarkerSeverity.Info: {
+        return 'info'
+      }
+      case monaco.MarkerSeverity.Hint: {
+        return 'hint'
+      }
+      default: {
+        return 'unknown'
+      }
+    }
   }
 
   public addBlock() {
@@ -119,13 +410,30 @@ export class ManualConfigComponent implements OnInit {
   }
 
   public editBlock(index: number) {
-    if (!this.saveCurrentBlock()) {
-      return
+    // Save current block and capture its final validation state
+    if (this.currentBlockIndex !== null) {
+      if (!this.saveCurrentBlock()) {
+        return
+      }
+
+      // Capture final validation state for the block we're leaving
+      this.formBlocksValid[this.currentBlockIndex] = this.isJsonValid()
     }
 
     this.show = `configBlock.${index}`
     this.currentBlockIndex = index
     this.currentBlock = JSON.stringify(this.pluginConfig[this.currentBlockIndex], null, 4)
+
+    // Initialize validation state for this block if not already set
+    if (!(index in this.formBlocksValid)) {
+      this.formBlocksValid[index] = true
+    }
+
+    // Update overall validation immediately
+    this.updateOverallValidation()
+
+    // Trigger validation check after Monaco is ready
+    setTimeout(() => this.onValidationChange(), 150)
   }
 
   public removeBlock(index: number) {
@@ -157,31 +465,13 @@ export class ManualConfigComponent implements OnInit {
       if (this.isFirstSave && this.$settings.env.recommendChildBridges && newConfig[0]?.platform) {
         // Close the modal and open the child bridge setup modal
         this.$activeModal.close()
-        this.$plugin.bridgeSettings(this.plugin, true)
+        void this.$plugin.bridgeSettings(this.plugin, true)
         return
       }
 
-      if (!['homebridge', 'homebridge-config-ui-x'].includes(this.plugin.name)) {
-        await this.getChildBridges()
-        if (this.childBridges.length > 0) {
-          this.$activeModal.close()
-          const ref = this.$modal.open(RestartChildBridgesComponent, {
-            size: 'lg',
-            backdrop: 'static',
-          })
-          ref.componentInstance.bridges = this.childBridges.map(childBridge => ({
-            name: childBridge.name,
-            username: childBridge.username,
-          }))
-          return
-        }
-      }
-
+      // This will show the child bridge restart modal if needed, otherwise the full restart homebridge modal
       this.$activeModal.close()
-      this.$modal.open(RestartHomebridgeComponent, {
-        size: 'lg',
-        backdrop: 'static',
-      })
+      await this.$cb.openCorrectRestartModalForPlugin(this.plugin.name)
     } catch (error) {
       console.error(error)
       this.$toastr.error(this.$translate.instant('config.failed_to_save_config'), this.$translate.instant('toast.title_error'))
@@ -216,21 +506,22 @@ export class ManualConfigComponent implements OnInit {
   }
 
   private loadHomebridgeConfig() {
-    this.$api.get(`/config-editor/plugin/${encodeURIComponent(this.plugin.name)}`).subscribe(
-      (config) => {
-        this.pluginConfig = config
+    this.$api.get(`/config-editor/plugin/${encodeURIComponent(this.plugin.name)}`).subscribe((config) => {
+      this.pluginConfig = config
 
-        this.canConfigure = true
-        this.loading = false
+      this.canConfigure = true
+      this.loading = false
 
-        if (this.pluginConfig.length) {
-          this.editBlock(0)
-        } else {
-          this.isFirstSave = true
-          this.addBlock()
-        }
-      },
-    )
+      // Initialize validation state for all blocks
+      this.initializeValidationState()
+
+      if (this.pluginConfig.length) {
+        this.editBlock(0)
+      } else {
+        this.isFirstSave = true
+        this.addBlock()
+      }
+    })
   }
 
   private saveCurrentBlock() {
@@ -285,18 +576,12 @@ export class ManualConfigComponent implements OnInit {
     return true
   }
 
-  private async getChildBridges(): Promise<void> {
-    try {
-      const data: ChildBridge[] = await firstValueFrom(this.$api.get('/status/homebridge/child-bridges'))
-      data.forEach((bridge) => {
-        if (this.plugin.name === bridge.plugin) {
-          this.childBridges.push(bridge)
-        }
-      })
-    } catch (error) {
-      console.error(error)
-      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
-      this.childBridges = []
+  private initializeValidationState() {
+    // Always initialise validation state
+    this.formBlocksValid = {}
+    for (let i = 0; i < this.pluginConfig.length; i += 1) {
+      this.formBlocksValid[i] = true
     }
+    this.updateOverallValidation()
   }
 }

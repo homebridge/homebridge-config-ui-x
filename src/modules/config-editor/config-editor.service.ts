@@ -333,7 +333,7 @@ export class ConfigEditorService {
       const properties = property.split('.')
       let current = pluginConfig
 
-      for (let i = 0; i < properties.length - 1; i++) {
+      for (let i = 0; i < properties.length - 1; i += 1) {
         if (!forbiddenKeys.includes(properties[i])) {
           if (!current[properties[i]]) {
             current[properties[i]] = {}
@@ -593,7 +593,7 @@ export class ConfigEditorService {
   public generateUsername() {
     const hexDigits = '0123456789ABCDEF'
     let username = '0E:'
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 5; i += 1) {
       username += hexDigits.charAt(Math.round(Math.random() * 15))
       username += hexDigits.charAt(Math.round(Math.random() * 15))
       if (i !== 4) {

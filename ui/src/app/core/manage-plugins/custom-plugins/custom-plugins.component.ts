@@ -1,16 +1,15 @@
-import type { ChildBridge, PluginSchema } from '@/app/core/manage-plugins/manage-plugins.interfaces'
+import type { PluginSchema } from '@/app/core/manage-plugins/manage-plugins.interfaces'
 
 import { NgClass } from '@angular/common'
 import { Component, ElementRef, inject, Input, OnDestroy, OnInit, viewChild } from '@angular/core'
-import { NgbActiveModal, NgbModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap'
+import { NgbActiveModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
 import { firstValueFrom, Subject } from 'rxjs'
 import { debounceTime, skip } from 'rxjs/operators'
 
 import { ApiService } from '@/app/core/api.service'
-import { RestartChildBridgesComponent } from '@/app/core/components/restart-child-bridges/restart-child-bridges.component'
-import { RestartHomebridgeComponent } from '@/app/core/components/restart-homebridge/restart-homebridge.component'
+import { ChildBridgesService } from '@/app/core/child-bridges.service'
 import { SchemaFormComponent } from '@/app/core/components/schema-form/schema-form.component'
 import { Plugin } from '@/app/core/manage-plugins/manage-plugins.interfaces'
 import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service'
@@ -32,7 +31,7 @@ import { environment } from '@/environments/environment'
 export class CustomPluginsComponent implements OnInit, OnDestroy {
   private $activeModal = inject(NgbActiveModal)
   private $api = inject(ApiService)
-  private $modal = inject(NgbModal)
+  private $cb = inject(ChildBridgesService)
   private $plugin = inject(ManagePluginsService)
   private $settings = inject(SettingsService)
   private $toastr = inject(ToastrService)
@@ -62,7 +61,6 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
   public formValid = true
   public formUpdatedSubject = new Subject()
   public formActionSubject = new Subject()
-  public childBridges: ChildBridge[] = []
   public isFirstSave = false
   public formIsValid = true
   public strictValidation = false
@@ -155,36 +153,18 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
         if (this.isFirstSave && this.$settings.env.recommendChildBridges && newConfig[0]?.platform) {
           // Close the modal and open the child bridge setup modal
           this.$activeModal.close()
-          this.$plugin.bridgeSettings(this.plugin, true)
+          void this.$plugin.bridgeSettings(this.plugin, true)
           return
         }
 
-        if (!['homebridge', 'homebridge-config-ui-x'].includes(this.plugin.name)) {
-          await this.getChildBridges()
-          if (this.childBridges.length > 0) {
-            this.$activeModal.close()
-            const ref = this.$modal.open(RestartChildBridgesComponent, {
-              size: 'lg',
-              backdrop: 'static',
-            })
-            ref.componentInstance.bridges = this.childBridges.map(childBridge => ({
-              name: childBridge.name,
-              username: childBridge.username,
-            }))
-            return
-          }
-        }
-
+        // This will show the child bridge restart modal if needed, otherwise the full restart homebridge modal
         this.$activeModal.close()
-        this.$modal.open(RestartHomebridgeComponent, {
-          size: 'lg',
-          backdrop: 'static',
-        })
+        await this.$cb.openCorrectRestartModalForPlugin(this.plugin.name)
       }
     } catch (error) {
-      this.saveInProgress = false
       console.error(error)
       this.$toastr.error(this.$translate.instant('config.failed_to_save_config'), this.$translate.instant('toast.title_error'))
+      this.saveInProgress = false
     }
   }
 
@@ -210,7 +190,7 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
     if (e.origin === environment.api.origin || e.origin === window.origin) {
       switch (e.data.action) {
         case 'loaded':
-          this.injectDefaultStyles(e)
+          void this.injectDefaultStyles(e)
           this.confirmReady(e)
           break
         case 'request': {
@@ -238,11 +218,11 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
           break
         }
         case 'cachedAccessories.get': {
-          this.handleGetCachedAccessories(e)
+          void this.handleGetCachedAccessories(e)
           break
         }
         case 'schema.show': {
-          this.formEnd() // do not show other forms at the same time
+          void this.formEnd() // do not show other forms at the same time
           this.showSchemaForm = true
           break
         }
@@ -252,11 +232,11 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
         }
         case 'form.create': {
           this.showSchemaForm = false // hide the schema generated form
-          this.formCreate(e.data.formId, e.data.schema, e.data.data, e.data.submitButton, e.data.cancelButton)
+          void this.formCreate(e.data.formId, e.data.schema, e.data.data, e.data.submitButton, e.data.cancelButton)
           break
         }
         case 'form.end': {
-          this.formEnd()
+          void this.formEnd()
           break
         }
         case 'user.lightingMode': {
@@ -506,20 +486,5 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
   private async handleGetCachedAccessories(event) {
     const cachedAccessories = await firstValueFrom(this.$api.get('/server/cached-accessories'))
     return this.requestResponse(event, cachedAccessories.filter(x => x.plugin === this.plugin.name))
-  }
-
-  private async getChildBridges(): Promise<void> {
-    try {
-      const data: ChildBridge[] = await firstValueFrom(this.$api.get('/status/homebridge/child-bridges'))
-      data.forEach((bridge) => {
-        if (this.plugin.name === bridge.plugin) {
-          this.childBridges.push(bridge)
-        }
-      })
-    } catch (error) {
-      console.error(error)
-      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
-      this.childBridges = []
-    }
   }
 }

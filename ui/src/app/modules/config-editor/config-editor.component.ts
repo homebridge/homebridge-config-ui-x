@@ -12,6 +12,7 @@ import { firstValueFrom } from 'rxjs'
 import { ApiService } from '@/app/core/api.service'
 import { RestartChildBridgesComponent } from '@/app/core/components/restart-child-bridges/restart-child-bridges.component'
 import { RestartHomebridgeComponent } from '@/app/core/components/restart-homebridge/restart-homebridge.component'
+import { createChildBridgeSchema } from '@/app/core/helpers/child-bridges-schema.helper'
 import { ChildBridge } from '@/app/core/manage-plugins/manage-plugins.interfaces'
 import { MobileDetectService } from '@/app/core/mobile-detect.service'
 import { MonacoEditorService } from '@/app/core/monaco-editor.service'
@@ -478,73 +479,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
 
     const uri = monaco.Uri.parse('a://homebridge/config.json')
 
-    // Common child bridge schema definition
-    const childBridgeSchema = {
-      type: 'object',
-      required: ['username'],
-      additionalProperties: false,
-      title: this.$translate.instant('child_bridge.bridge_settings'),
-      properties: {
-        username: {
-          type: 'string',
-          title: this.$translate.instant('accessories.bridge_username'),
-          description: 'The child bridge username must be 6 pairs of colon-separated hexadecimal characters (A-F 0-9).\n'
-            + 'Example: 0E:89:49:64:91:86.',
-          pattern: '^([A-Fa-f0-9]{2}:){5}[A-Fa-f0-9]{2}$',
-        },
-        port: {
-          type: 'number',
-          title: this.$translate.instant('accessories.bridge_port'),
-          description: 'The port the child bridge listens on.',
-          minimum: 1025,
-          maximum: 65534,
-        },
-        pin: {
-          type: 'string',
-          title: 'Bridge PIN',
-          description: 'The child bridge pin.\n'
-            + 'Example: 630-27-655.',
-          pattern: '^([0-9]{3}-[0-9]{2}-[0-9]{3})$',
-        },
-        name: {
-          type: 'string',
-          title: this.$translate.instant('child_bridge.config.name'),
-          description: 'The name of the child bridge.',
-        },
-        manufacturer: {
-          type: 'string',
-          title: this.$translate.instant('child_bridge.config.manufacturer'),
-          description: 'The child bridge manufacturer to be displayed in HomeKit.',
-        },
-        firmwareRevision: {
-          type: 'string',
-          title: this.$translate.instant('child_bridge.config.firmware'),
-          description: 'The child bridge firmware version to be displayed in HomeKit.',
-        },
-        model: {
-          type: 'string',
-          title: this.$translate.instant('child_bridge.config.model'),
-          description: 'The child bridge model to be displayed in HomeKit.',
-        },
-        env: {
-          type: 'object',
-          title: 'Environment Variables',
-          description: 'Environment variables to set for this child bridge.',
-          properties: {
-            DEBUG: {
-              type: 'string',
-              title: 'DEBUG',
-              description: this.$translate.instant('settings.service.debug_tooltip'),
-            },
-            NODE_OPTIONS: {
-              type: 'string',
-              title: 'NODE_OPTIONS',
-              description: this.$translate.instant('settings.service.node_tooltip'),
-            },
-          },
-        },
-      },
-    };
+    const childBridgeSchema = createChildBridgeSchema(this.$translate);
 
     (window as any).monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
       allowComments: false,
@@ -680,6 +615,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
                     {
                       type: 'object',
                       required: ['platform'],
+                      title: this.$translate.instant('plugins.button_settings'),
                       properties: {
                         platform: {
                           type: 'string',
@@ -1024,6 +960,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
                 items: {
                   type: 'object',
                   required: ['accessory', 'name'],
+                  title: this.$translate.instant('plugins.button_settings'),
                   properties: {
                     accessory: {
                       type: 'string',

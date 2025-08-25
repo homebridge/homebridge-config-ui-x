@@ -1,4 +1,4 @@
-import type { ChildBridge, PluginConfigBlock, PluginSchema } from '@/app/core/manage-plugins/manage-plugins.interfaces'
+import type { PluginConfigBlock, PluginSchema } from '@/app/core/manage-plugins/manage-plugins.interfaces'
 
 import { NgClass } from '@angular/common'
 import { Component, inject, Input, OnInit } from '@angular/core'
@@ -10,7 +10,6 @@ import {
   NgbAccordionItem,
   NgbAccordionToggle,
   NgbActiveModal,
-  NgbModal,
   NgbTooltip,
 } from '@ng-bootstrap/ng-bootstrap'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
@@ -20,8 +19,7 @@ import { firstValueFrom } from 'rxjs'
 import { v4 as uuid } from 'uuid'
 
 import { ApiService } from '@/app/core/api.service'
-import { RestartChildBridgesComponent } from '@/app/core/components/restart-child-bridges/restart-child-bridges.component'
-import { RestartHomebridgeComponent } from '@/app/core/components/restart-homebridge/restart-homebridge.component'
+import { ChildBridgesService } from '@/app/core/child-bridges.service'
 import { SchemaFormComponent } from '@/app/core/components/schema-form/schema-form.component'
 import { PluginsMarkdownDirective } from '@/app/core/directives/plugins.markdown.directive'
 import { HomebridgeDeconzComponent } from '@/app/core/manage-plugins/custom-plugins/homebridge-deconz/homebridge-deconz.component'
@@ -56,8 +54,8 @@ import { SettingsService } from '@/app/core/settings.service'
 export class PluginConfigComponent implements OnInit {
   private $activeModal = inject(NgbActiveModal)
   private $api = inject(ApiService)
+  private $cb = inject(ChildBridgesService)
   private $plugin = inject(ManagePluginsService)
-  private $modal = inject(NgbModal)
   private $settings = inject(SettingsService)
   private $toastr = inject(ToastrService)
   private $translate = inject(TranslateService)
@@ -71,7 +69,6 @@ export class PluginConfigComponent implements OnInit {
   public form: any = {}
   public show = ''
   public saveInProgress: boolean
-  public childBridges: ChildBridge[] = []
   public isFirstSave = false
   public formBlocksValid: { [key: number]: boolean } = {}
   public formIsValid = true
@@ -100,36 +97,18 @@ export class PluginConfigComponent implements OnInit {
         if (this.isFirstSave && this.$settings.env.recommendChildBridges && newConfig[0]?.platform) {
           // Close the modal and open the child bridge setup modal
           this.$activeModal.close()
-          this.$plugin.bridgeSettings(this.plugin, true)
+          void this.$plugin.bridgeSettings(this.plugin, true)
           return
         }
       }
 
-      if (!['homebridge', 'homebridge-config-ui-x'].includes(this.plugin.name)) {
-        await this.getChildBridges()
-        if (this.childBridges.length > 0) {
-          this.$activeModal.close()
-          const ref = this.$modal.open(RestartChildBridgesComponent, {
-            size: 'lg',
-            backdrop: 'static',
-          })
-          ref.componentInstance.bridges = this.childBridges.map(childBridge => ({
-            name: childBridge.name,
-            username: childBridge.username,
-          }))
-          return
-        }
-      }
-
+      // This will show the child bridge restart modal if needed, otherwise the full restart homebridge modal
       this.$activeModal.close()
-      this.$modal.open(RestartHomebridgeComponent, {
-        size: 'lg',
-        backdrop: 'static',
-      })
+      await this.$cb.openCorrectRestartModalForPlugin(this.plugin.name)
     } catch (error) {
-      this.saveInProgress = false
       console.error(error)
       this.$toastr.error(this.$translate.instant('config.failed_to_save_config'), this.$translate.instant('toast.title_error'))
+      this.saveInProgress = false
     }
   }
 
@@ -228,21 +207,6 @@ export class PluginConfigComponent implements OnInit {
       this.schema.schema.properties.users.properties[key] = {
         type: 'string',
       }
-    }
-  }
-
-  private async getChildBridges(): Promise<void> {
-    try {
-      const data: ChildBridge[] = await firstValueFrom(this.$api.get('/status/homebridge/child-bridges'))
-      data.forEach((bridge) => {
-        if (this.plugin.name === bridge.plugin) {
-          this.childBridges.push(bridge)
-        }
-      })
-    } catch (error) {
-      console.error(error)
-      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
-      this.childBridges = []
     }
   }
 }
