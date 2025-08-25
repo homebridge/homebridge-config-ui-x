@@ -1,6 +1,8 @@
 import type { MultipartFile } from '@fastify/multipart'
 import type { Systeminformation } from 'systeminformation'
 
+import type { AccessoryConfig, HomebridgeConfig, PlatformConfig } from '../../core/config/config.interfaces'
+
 import { Buffer } from 'node:buffer'
 import { exec, spawn } from 'node:child_process'
 import { extname, join, resolve } from 'node:path'
@@ -29,7 +31,7 @@ import NodeCache from 'node-cache'
 import { networkInterfaces } from 'systeminformation'
 import { check as tcpCheck } from 'tcp-port-used'
 
-import { ConfigService, HomebridgeConfig } from '../../core/config/config.service'
+import { ConfigService } from '../../core/config/config.service'
 import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.service'
 import { Logger } from '../../core/logger/logger.service'
 import { AccessoriesService } from '../accessories/accessories.service'
@@ -108,9 +110,11 @@ export class ServerService {
       // Only available for child bridges
       if (resetPairingInfo) {
         // An error thrown here should not interrupt the process, this is a convenience feature
-        const pluginBlocks = configFile.accessories
-          .concat(configFile.platforms)
-          .concat([{ _bridge: configFile.bridge }])
+        const pluginBlocks = ([
+          ...(configFile.accessories || []),
+          ...(configFile.platforms || []),
+          { _bridge: configFile.bridge },
+        ] as (AccessoryConfig | PlatformConfig | { _bridge: any })[])
           .filter((block: any) => block._bridge?.username?.toUpperCase() === username.toUpperCase())
 
         const pluginBlock = pluginBlocks.find((block: any) => block._bridge?.port)

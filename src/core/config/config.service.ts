@@ -1,5 +1,7 @@
 import type { ReadStream } from 'fs-extra'
 
+import type { HomebridgeConfig } from './config.interfaces'
+
 import { createHash, randomBytes } from 'node:crypto'
 import { homedir, platform, totalmem } from 'node:os'
 import { resolve } from 'node:path'
@@ -448,26 +450,4 @@ export class ConfigService {
       this.runningOnRaspberryPi = false
     }
   }
-}
-
-export interface HomebridgeConfig {
-  bridge: {
-    username: string
-    pin: string
-    name: string
-    port: number
-    advertiser?: 'avahi' | 'resolved' | 'ciao' | 'bonjour-hap'
-    bind?: string | string[]
-  }
-  mdns?: {
-    interface?: string | string[]
-  }
-  ports?: {
-    start?: number
-    end?: number
-  }
-  platforms: Record<string, any>[]
-  accessories: Record<string, any>[]
-  plugins?: string[]
-  disabledPlugins?: string[]
 }
