@@ -535,7 +535,7 @@ export class ServerService {
     let encodedPayload = (buffer.readUInt32BE(4) + (buffer.readUInt32BE(0) * 2 ** 32)).toString(36).toUpperCase()
 
     if (encodedPayload.length !== 9) {
-      for (let i = 0; i <= 9 - encodedPayload.length; i++) {
+      for (let i = 0; i <= 9 - encodedPayload.length; i += 1) {
         encodedPayload = `0${encodedPayload}`
       }
     }

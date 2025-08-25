@@ -109,7 +109,7 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
     if (this.isMobile) {
       const servicesBags = document.querySelectorAll('.services-bag')
       servicesBags.forEach((servicesBag) => {
-        for (let i = 0; i < 10; i++) {
+        for (let i = 0; i < 10; i += 1) {
           const invisibleDiv = document.createElement('div')
           invisibleDiv.className = 'accessory-box invisible py-0 my-0'
           invisibleDiv.style.height = '0'
