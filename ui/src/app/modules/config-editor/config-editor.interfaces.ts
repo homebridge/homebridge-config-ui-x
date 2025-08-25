@@ -21,7 +21,7 @@ export interface PlatformConfig {
 
 export interface AccessoryConfig {
   accessory: string
-  name?: string
+  name: string
   _bridge?: PluginChildBridge
   [key: string]: any
 }
@@ -34,9 +34,13 @@ export interface HomebridgeConfig {
     port: number
     advertiser?: 'avahi' | 'resolved' | 'ciao' | 'bonjour-hap'
     bind?: string | string[]
+    manufacturer?: string
+    model?: string
+    firmwareRevision?: string
   }
   mdns?: {
     interface?: string | string[]
+    legacyAdvertiser?: boolean
   }
   ports?: {
     start?: number
