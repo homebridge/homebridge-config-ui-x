@@ -18,6 +18,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - prevent url-based settings from being changed from a pwa
 - improvements to schema and translations in config editor
 - add schema info and validation to manual plugin config editor
+- show plugin schema header and footer in plugin json editor
 
 ### Other Changes
 

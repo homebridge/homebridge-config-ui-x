@@ -16,16 +16,19 @@ import {
 } from '@ng-bootstrap/ng-bootstrap'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import json5 from 'json5'
+import { NgxMdModule } from 'ngx-md'
 import { EditorComponent } from 'ngx-monaco-editor-v2'
 import { ToastrService } from 'ngx-toastr'
 import { firstValueFrom } from 'rxjs'
 
 import { ApiService } from '@/app/core/api.service'
 import { ChildBridgesService } from '@/app/core/child-bridges.service'
+import { PluginsMarkdownDirective } from '@/app/core/directives/plugins.markdown.directive'
 import { createChildBridgeSchema } from '@/app/core/helpers/child-bridges-schema.helper'
 import { Plugin } from '@/app/core/manage-plugins/manage-plugins.interfaces'
 import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service'
 import { MobileDetectService } from '@/app/core/mobile-detect.service'
+import { InterpolateMdPipe } from '@/app/core/pipes/interpolate-md.pipe'
 import { SettingsService } from '@/app/core/settings.service'
 
 declare global {
@@ -50,6 +53,9 @@ declare global {
     FormsModule,
     TranslatePipe,
     NgbAccordionToggle,
+    InterpolateMdPipe,
+    NgxMdModule,
+    PluginsMarkdownDirective,
   ],
 })
 export class ManualConfigComponent implements OnInit, OnDestroy {
