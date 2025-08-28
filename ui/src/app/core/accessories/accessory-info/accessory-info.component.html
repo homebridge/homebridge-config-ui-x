@@ -37,7 +37,10 @@
         <div class="text-start text-md-end w-100 w-md-50">
           <select class="custom-select" [(ngModel)]="service.customType">
             @for (customType of customTypeList.sort(); track customType) {
-            <option [value]="customType">{{ (customType | serviceToTranslationString) | translate }}</option>
+            <option [value]="customType">
+              {{ (customType | serviceToTranslationString) | translate }} @if (customType === service.type) { ({{
+              'settings.display.menu_default' | translate }}) }
+            </option>
             }
           </select>
         </div>
@@ -113,16 +116,17 @@
           }
           <div class="d-block d-md-none font-monospace grey-text">
             @if (isDetailsVisible[characteristic.uuid]) { Value: } @switch (characteristic.unit) { @case ('percentage')
-            { {{ characteristic.value }}% } @case ('celsius') { {{ characteristic.value | convertTemp }}&deg; } @default
-            { @switch (characteristic.type) { @case ('ColorTemperature') { {{ characteristic.value | convertMired }} }
-            @default { {{ characteristic.value }} } } } } @if (enums[characteristic.type]?.[characteristic.value]) { ({{
-            enums[characteristic.type][characteristic.value] | prettify }}) } @else if (characteristic.format ===
-            'bool') { ({{ (characteristic.value ? 'status.widget.info.yes' : 'status.widget.info.no') | translate }}) }
+            { {{ characteristic.value }}% } @case ('celsius') { {{ Number(characteristic.value) | convertTemp }}&deg; }
+            @default { @switch (characteristic.type) { @case ('ColorTemperature') { {{ characteristic.value |
+            convertMired }} } @default { {{ characteristic.value }} } } } } @if
+            (enums[characteristic.type]?.[characteristic.value]) { ({{ enums[characteristic.type][characteristic.value]
+            | prettify }}) } @else if (characteristic.format === 'bool') { ({{ (characteristic.value ?
+            'status.widget.info.yes' : 'status.widget.info.no') | translate }}) }
           </div>
         </span>
         <span class="text-start text-md-end grey-text font-monospace d-none d-md-block align-content-center">
           @switch (characteristic.unit) { @case ('percentage') { {{ characteristic.value }}% } @case ('celsius') { {{
-          characteristic.value | convertTemp }}&deg; } @default { @switch (characteristic.type) { @case
+          Number(characteristic.value) | convertTemp }}&deg; } @default { @switch (characteristic.type) { @case
           ('ColorTemperature') { {{ characteristic.value | convertMired }} } @default { {{ characteristic.value }} } } }
           } @if (enums[characteristic.type]?.[characteristic.value]) { ({{
           enums[characteristic.type][characteristic.value] | prettify }}) } @else if (characteristic.format === 'bool')
@@ -173,16 +177,17 @@
           }
           <div class="d-block d-md-none font-monospace grey-text">
             @if (isDetailsVisible[characteristic.uuid]) { Value: } @switch (characteristic.unit) { @case ('percentage')
-            { {{ characteristic.value }}% } @case ('celsius') { {{ characteristic.value | convertTemp }}&deg; } @default
-            { @switch (characteristic.type) { @case ('ColorTemperature') { {{ characteristic.value | convertMired }} }
-            @default { {{ characteristic.value }} } } } } @if (enums[characteristic.type]?.[characteristic.value]) { ({{
-            enums[characteristic.type][characteristic.value] | prettify }}) } @else if (characteristic.format ===
-            'bool') { ({{ (characteristic.value ? 'status.widget.info.yes' : 'status.widget.info.no') | translate }}) }
+            { {{ characteristic.value }}% } @case ('celsius') { {{ Number(characteristic.value) | convertTemp }}&deg; }
+            @default { @switch (characteristic.type) { @case ('ColorTemperature') { {{ characteristic.value |
+            convertMired }} } @default { {{ characteristic.value }} } } } } @if
+            (enums[characteristic.type]?.[characteristic.value]) { ({{ enums[characteristic.type][characteristic.value]
+            | prettify }}) } @else if (characteristic.format === 'bool') { ({{ (characteristic.value ?
+            'status.widget.info.yes' : 'status.widget.info.no') | translate }}) }
           </div>
         </span>
         <span class="text-start text-md-end grey-text font-monospace d-none d-md-block align-content-center">
           @switch (characteristic.unit) { @case ('percentage') { {{ characteristic.value }}% } @case ('celsius') { {{
-          characteristic.value | convertTemp }}&deg; } @default { @switch (characteristic.type) { @case
+          Number(characteristic.value) | convertTemp }}&deg; } @default { @switch (characteristic.type) { @case
           ('ColorTemperature') { {{ characteristic.value | convertMired }} } @default { {{ characteristic.value }} } } }
           } @if (enums[characteristic.type]?.[characteristic.value]) { ({{
           enums[characteristic.type][characteristic.value] | prettify }}) } @else if (characteristic.format === 'bool')

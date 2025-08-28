@@ -10,6 +10,10 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - refreshed icons: heater, cooler, de/humidifier + thermostat
 - put services types into translatable strings
 
+### Other Changes
+
+- preserve custom service info for undiscovered accessories
+
 ### Homebridge Dependencies
 
 - `@homebridge/hap-client` @ `v3.1.1`
