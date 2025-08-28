@@ -39,6 +39,7 @@ export class AccessoriesService {
   public accessories: { services: ServiceType[] } = { services: [] }
   public rooms: Array<{ name: string, services: ServiceTypeX[] }> = []
   public accessoryLayout: AccessoryLayout
+  private originalLayout: AccessoryLayout
 
   constructor() {
     if (this.$auth.user.admin) {
@@ -81,6 +82,7 @@ export class AccessoriesService {
     this.accessories = { services: [] }
     this.roomsOrdered = false
     delete this.accessoryLayout
+    delete this.originalLayout
   }
 
   /**
@@ -145,8 +147,8 @@ export class AccessoriesService {
    * Save the room layout
    */
   public saveLayout() {
-    // Generate layout schema to save to disk
-    this.accessoryLayout = this.rooms.map(room => ({
+    // Generate layout schema from currently active rooms
+    const currentLayout = this.rooms.map(room => ({
       name: room.name,
       services: room.services.map(service => ({
         uniqueId: service.uniqueId,
@@ -159,6 +161,9 @@ export class AccessoriesService {
         onDashboard: service.onDashboard || undefined,
       })),
     })).filter(room => room.services.length)
+
+    // Merge with undiscovered services from original layout to preserve custom information
+    this.accessoryLayout = this.mergeWithUndiscoveredServices(currentLayout)
 
     // Send update request to server
     this.io.request('save-layout', { user: this.$auth.user.username, layout: this.accessoryLayout }).subscribe({
@@ -176,11 +181,68 @@ export class AccessoriesService {
   private async loadLayout() {
     this.accessoryLayout = await firstValueFrom(this.io.request('get-layout', { user: this.$auth.user.username }))
 
+    // Store original layout to preserve undiscovered services
+    this.originalLayout = JSON.parse(JSON.stringify(this.accessoryLayout))
+
     // Build empty room layout
     this.rooms = this.accessoryLayout.map(room => ({
       name: room.name,
       services: [],
     }))
+  }
+
+  /**
+   * Merge current layout with undiscovered services to preserve custom information
+   */
+  private mergeWithUndiscoveredServices(currentLayout: AccessoryLayout): AccessoryLayout {
+    if (!this.originalLayout) {
+      return currentLayout
+    }
+
+    // Create a set of discovered service uniqueIds for quick lookup
+    const discoveredServiceIds = new Set<string>()
+    currentLayout.forEach((room) => {
+      room.services.forEach((service) => {
+        discoveredServiceIds.add(service.uniqueId)
+      })
+    })
+
+    // Create the merged layout starting with current rooms
+    const mergedLayout: AccessoryLayout = JSON.parse(JSON.stringify(currentLayout))
+
+    // Add undiscovered services from original layout to preserve their custom information
+    this.originalLayout.forEach((originalRoom) => {
+      originalRoom.services.forEach((originalService) => {
+        // Skip if this service has already been discovered
+        if (discoveredServiceIds.has(originalService.uniqueId)) {
+          return
+        }
+
+        // Find or create the room for this undiscovered service
+        let targetRoom = mergedLayout.find(room => room.name === originalRoom.name)
+        if (!targetRoom) {
+          targetRoom = {
+            name: originalRoom.name,
+            services: [],
+          }
+          mergedLayout.push(targetRoom)
+        }
+
+        // Add the undiscovered service with its preserved custom information
+        targetRoom.services.push({
+          uniqueId: originalService.uniqueId,
+          aid: originalService.aid,
+          iid: originalService.iid,
+          uuid: originalService.uuid,
+          customName: originalService.customName,
+          customType: originalService.customType,
+          hidden: originalService.hidden,
+          onDashboard: originalService.onDashboard,
+        })
+      })
+    })
+
+    return mergedLayout.filter(room => room.services.length)
   }
 
   /**

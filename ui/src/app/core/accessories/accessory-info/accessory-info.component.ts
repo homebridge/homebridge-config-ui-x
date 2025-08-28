@@ -146,4 +146,6 @@ export class AccessoryInfoComponent implements OnInit {
       }
     }
   }
+
+  protected readonly Number = Number
 }
