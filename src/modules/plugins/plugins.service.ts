@@ -735,13 +735,18 @@ export class PluginsService {
     const installedTag = homebridgeVersion.prerelease[0]?.toString()
 
     // Show pre-releases updates if the user is currently running an alpha/beta/test release
-    if (installedTag && ['alpha', 'beta', 'test'].includes(installedTag) && gt(homebridge.installedVersion, homebridge.latestVersion)) {
+    // or if the alwaysShowBetas setting is enabled
+    const shouldCheckBetas = (installedTag && ['alpha', 'beta', 'test'].includes(installedTag) && gt(homebridge.installedVersion, homebridge.latestVersion))
+      || this.configService.ui.plugins?.alwaysShowBetas
+
+    if (shouldCheckBetas) {
       const versions = await this.getAvailablePluginVersions('homebridge')
-      if (versions.tags[installedTag] && gt(versions.tags[installedTag], homebridge.installedVersion)) {
-        homebridge.latestVersion = versions.tags[installedTag]
+      const targetTag = this.configService.ui.plugins?.alwaysShowBetas && !installedTag ? 'beta' : installedTag
+      if (versions.tags[targetTag] && gt(versions.tags[targetTag], homebridge.installedVersion)) {
+        homebridge.latestVersion = versions.tags[targetTag]
         homebridge.updateAvailable = true
         homebridge.updateEngines = versions.versions?.[homebridge.latestVersion]?.engines || null
-        homebridge.updateTag = installedTag
+        homebridge.updateTag = targetTag
       }
     }
 
@@ -1511,20 +1516,24 @@ export class PluginsService {
       plugin.updateEngines = plugin.updateAvailable ? pkg.engines : null
 
       // check for beta updates, if no latest version is available
+      // or if the alwaysShowBetas setting is enabled
       if (!plugin.updateAvailable) {
         const pluginVersion = parse(plugin.installedVersion)
         const installedTag = pluginVersion.prerelease[0]?.toString()
-        if (
+        const shouldCheckBetas = (
           installedTag
           && ['alpha', 'beta', 'test'].includes(installedTag)
           && gt(plugin.installedVersion, plugin.latestVersion)
-        ) {
+        ) || this.configService.ui.plugins?.alwaysShowBetas
+
+        if (shouldCheckBetas) {
           const versions = await this.getAvailablePluginVersions(plugin.name)
-          if (versions.tags[installedTag] && gt(versions.tags[installedTag], plugin.installedVersion)) {
-            plugin.latestVersion = versions.tags[installedTag]
+          const targetTag = this.configService.ui.plugins?.alwaysShowBetas && !installedTag ? 'beta' : installedTag
+          if (versions.tags[targetTag] && gt(versions.tags[targetTag], plugin.installedVersion)) {
+            plugin.latestVersion = versions.tags[targetTag]
             plugin.updateAvailable = true
             plugin.updateEngines = versions.versions?.[plugin.latestVersion]?.engines || null
-            plugin.updateTag = installedTag
+            plugin.updateTag = targetTag
           }
         }
       }

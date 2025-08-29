@@ -506,6 +506,7 @@
   "settings.display.pink": "Różowy",
   "settings.display.purple": "Fioletowy",
   "settings.display.red": "Czerwony",
+  "settings.display.show_betas": "Show Beta Versions",
   "settings.display.teal": "Turkusowy",
   "settings.display.temp_units": "Jednostka temperatury",
   "settings.display.temp_units.c": "Celsius (°C)",

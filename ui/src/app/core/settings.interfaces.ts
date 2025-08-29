@@ -42,6 +42,7 @@ export interface EnvInterface {
   }
   plugins?: {
     hideUpdatesFor?: string[]
+    alwaysShowBetas?: boolean
   }
   linux?: {
     shutdown?: string

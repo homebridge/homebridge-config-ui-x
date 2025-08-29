@@ -21,6 +21,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - show plugin schema header and footer in plugin json editor
 - hide search button when no plugins installed
 - show help on accessories when no plugins installed
+- add config option to always show beta versions of plugins
 
 ### Other Changes
 

@@ -100,6 +100,7 @@ export interface HomebridgeUiConfig {
   }
   plugins?: {
     hideUpdatesFor?: string[]
+    alwaysShowBetas?: boolean
   }
   temp?: string
   tempUnits?: string

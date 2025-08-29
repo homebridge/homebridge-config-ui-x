@@ -919,6 +919,11 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
                                 pattern: '^(?:@[\\w-]+(?:\\.[\\w-]+)*/)?homebridge-[\\w-]+$',
                               },
                             },
+                            alwaysShowBetas: {
+                              type: 'boolean',
+                              title: this.$translate.instant('settings.display.show_betas'),
+                              description: 'When enabled, beta releases will be shown as available for Homebridge, the UI and plugins.',
+                            },
                           },
                         },
                         terminal: {
