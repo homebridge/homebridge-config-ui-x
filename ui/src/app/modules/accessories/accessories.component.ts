@@ -3,11 +3,13 @@ import { Component, inject, OnDestroy, OnInit } from '@angular/core'
 import { NgbModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap'
 import { TranslatePipe } from '@ngx-translate/core'
 import { DragulaModule, DragulaService } from 'ng2-dragula'
-import { Subscription } from 'rxjs'
+import { firstValueFrom, Subscription } from 'rxjs'
 
 import { AccessoriesService } from '@/app/core/accessories/accessories.service'
 import { AccessoryTileComponent } from '@/app/core/accessories/accessory-tile/accessory-tile.component'
+import { ApiService } from '@/app/core/api.service'
 import { AuthService } from '@/app/core/auth/auth.service'
+import { SpinnerComponent } from '@/app/core/components/spinner/spinner.component'
 import { MobileDetectService } from '@/app/core/mobile-detect.service'
 import { SettingsService } from '@/app/core/settings.service'
 import { AccessorySupportComponent } from '@/app/modules/accessories/accessory-support/accessory-support.component'
@@ -26,11 +28,13 @@ import { DragHerePlaceholderComponent } from '@/app/modules/accessories/drag-her
     AccessoryTileComponent,
     DragHerePlaceholderComponent,
     TranslatePipe,
+    SpinnerComponent,
   ],
 })
 export class AccessoriesComponent implements OnInit, OnDestroy {
   protected $accessories = inject(AccessoriesService)
 
+  private $api = inject(ApiService)
   private $auth = inject(AuthService)
   private dragulaService = inject(DragulaService)
   private $modal = inject(NgbModal)
@@ -43,6 +47,8 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
   public isMobile: any = false
   public hideHidden = true
   public readonly linkInsecure = '<a href="https://github.com/homebridge/homebridge-config-ui-x/wiki/Enabling-Accessory-Control" target="_blank"><i class="fa fa-fw fa-external-link-alt primary-text"></i></a>'
+  public hasPlugins = false
+  public loading = true
 
   constructor() {
     const dragulaService = this.dragulaService
@@ -71,6 +77,7 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
 
   public ngOnInit() {
     this.$accessories.start()
+    this.checkForPlugins()
   }
 
   public addRoom() {
@@ -136,5 +143,17 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
     this.orderSubscription.unsubscribe()
     this.dragulaService.destroy('rooms-bag')
     this.dragulaService.destroy('services-bag')
+  }
+
+  private async checkForPlugins() {
+    try {
+      const installedPlugins = await firstValueFrom(this.$api.get('/plugins'))
+      this.hasPlugins = installedPlugins.length > 1 // ignore the ui plugin
+    } catch (error) {
+      console.error(error)
+      this.hasPlugins = true
+    } finally {
+      this.loading = false
+    }
   }
 }
