@@ -506,6 +506,7 @@
   "settings.display.pink": "분홍",
   "settings.display.purple": "보라",
   "settings.display.red": "빨강",
+  "settings.display.show_betas": "Show Beta Versions",
   "settings.display.teal": "청록",
   "settings.display.temp_units": "온도 단위",
   "settings.display.temp_units.c": "섭씨 (°C)",

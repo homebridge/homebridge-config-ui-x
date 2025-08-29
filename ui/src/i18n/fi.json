@@ -506,6 +506,7 @@
   "settings.display.pink": "Pinkki",
   "settings.display.purple": "Puppura",
   "settings.display.red": "Punainen",
+  "settings.display.show_betas": "Show Beta Versions",
   "settings.display.teal": "Sinivihreä",
   "settings.display.temp_units": "Lämpötilan yksikkö",
   "settings.display.temp_units.c": "Celsius (°C)",

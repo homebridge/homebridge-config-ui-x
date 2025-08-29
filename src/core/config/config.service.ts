@@ -214,6 +214,7 @@ export class ConfigService {
         },
         plugins: {
           hideUpdatesFor: this.ui.plugins?.hideUpdatesFor || [],
+          alwaysShowBetas: Boolean(this.ui.plugins?.alwaysShowBetas),
         },
         linux: {
           shutdown: this.ui.linux?.shutdown,

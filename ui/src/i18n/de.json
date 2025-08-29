@@ -506,6 +506,7 @@
   "settings.display.pink": "Rosa",
   "settings.display.purple": "Lila",
   "settings.display.red": "Rot",
+  "settings.display.show_betas": "Show Beta Versions",
   "settings.display.teal": "Türkis",
   "settings.display.temp_units": "Temperatureinheiten",
   "settings.display.temp_units.c": "Celsius (°C)",

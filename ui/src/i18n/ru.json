@@ -506,6 +506,7 @@
   "settings.display.pink": "Розовый",
   "settings.display.purple": "Фиолетовый",
   "settings.display.red": "Красный",
+  "settings.display.show_betas": "Show Beta Versions",
   "settings.display.teal": "Сине-зелёный",
   "settings.display.temp_units": "Единицы температуры",
   "settings.display.temp_units.c": "Цельсий (°C)",

@@ -506,6 +506,7 @@
   "settings.display.pink": "Pink",
   "settings.display.purple": "Ungu",
   "settings.display.red": "Merah",
+  "settings.display.show_betas": "Show Beta Versions",
   "settings.display.teal": "Teal",
   "settings.display.temp_units": "Unit suhu",
   "settings.display.temp_units.c": "Celcius (°C)",

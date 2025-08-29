@@ -506,6 +506,7 @@
   "settings.display.pink": "สีชมพู",
   "settings.display.purple": "สีม่วง",
   "settings.display.red": "สีอดง",
+  "settings.display.show_betas": "Show Beta Versions",
   "settings.display.teal": "สีเป็ดเทา",
   "settings.display.temp_units": "หน่วยอุณหภูมิ",
   "settings.display.temp_units.c": "เซลเซียส (°C)",

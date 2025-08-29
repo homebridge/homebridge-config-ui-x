@@ -506,6 +506,7 @@
   "settings.display.pink": "Růžová",
   "settings.display.purple": "Fialová",
   "settings.display.red": "Červená",
+  "settings.display.show_betas": "Show Beta Versions",
   "settings.display.teal": "Tyrkysová",
   "settings.display.temp_units": "Jednotky teploty",
   "settings.display.temp_units.c": "Celsia (°C)",

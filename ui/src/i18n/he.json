@@ -506,6 +506,7 @@
   "settings.display.pink": "ורוד",
   "settings.display.purple": "סגול",
   "settings.display.red": "אדום",
+  "settings.display.show_betas": "Show Beta Versions",
   "settings.display.teal": "טיל",
   "settings.display.temp_units": "יחידות טמפרטורה",
   "settings.display.temp_units.c": "צלזיוס (°C)",

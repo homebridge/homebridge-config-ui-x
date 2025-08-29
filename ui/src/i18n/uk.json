@@ -506,6 +506,7 @@
   "settings.display.pink": "Рожевий",
   "settings.display.purple": "Фіолетовий",
   "settings.display.red": "Червоний",
+  "settings.display.show_betas": "Show Beta Versions",
   "settings.display.teal": "Бірюзовий",
   "settings.display.temp_units": "Одиниці вимірювання температури",
   "settings.display.temp_units.c": "Цельсій (°C)",
