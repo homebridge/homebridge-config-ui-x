@@ -616,6 +616,7 @@
   "status.widget.network.seconds": "seconds",
   "status.widget.qr_paired": "Appairé",
   "status.widget.qr_unpaired": "Non appairé",
+  "status.widget.service_status.title": "Statut du Service",
   "status.widget.show_hide": "Show/Hide Widgets",
   "status.widget.title_manage_widget": "Gérer le Widget",
   "status.widget.update_node_no": "{{ pluginName }} is not compatible with Node {{ nodeVersion }}.",

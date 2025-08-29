@@ -1,0 +1,54 @@
+<div class="card h-100">
+  <div class="card-header">
+    <i class="fas fa-cogs"></i>
+    {{ 'status.widget.service_status.title' | translate }}
+  </div>
+  
+  <div class="card-body d-flex flex-column">
+    <!-- Service Status Display -->
+    <div class="d-flex align-items-center mb-2">
+      <i [class]="getStatusIcon()" class="me-2"></i>
+      <span class="fw-bold">{{ getStatusText() }}</span>
+    </div>
+    
+    <!-- Platform Info -->
+    <div class="text-muted small mb-2" *ngIf="!loading">
+      Platform: {{ getPlatformDisplayName() }}
+      <span *ngIf="serviceStatus.serviceName" class="ms-2">
+        ({{ serviceStatus.serviceName }})
+      </span>
+    </div>
+    
+    <!-- Recommendations Section -->
+    <div *ngIf="showRecommendations" class="mt-auto">
+      <hr class="my-2">
+      <div class="alert alert-warning p-2 mb-0 small">
+        <div class="fw-bold mb-1">
+          <i class="fas fa-bed me-1"></i>
+          Sleep/Wake Issues?
+        </div>
+        <div class="mb-2">
+          HomeKit accessories may become unresponsive when your computer sleeps.
+        </div>
+        <div>
+          <strong>Solution:</strong> Set up Homebridge as a system service.
+        </div>
+        <button 
+          class="btn btn-outline-warning btn-sm mt-2"
+          (click)="showRecommendations = false"
+          type="button">
+          <i class="fas fa-times me-1"></i>
+          Dismiss
+        </button>
+      </div>
+    </div>
+    
+    <!-- All Good Message -->
+    <div *ngIf="!loading && serviceStatus.isRunningAsService" class="mt-auto">
+      <div class="alert alert-success p-2 mb-0 small">
+        <i class="fas fa-check me-1"></i>
+        Homebridge is configured to survive sleep/wake cycles.
+      </div>
+    </div>
+  </div>
+</div>

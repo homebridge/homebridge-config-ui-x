@@ -1,0 +1,44 @@
+.alert {
+  border-radius: 0.375rem;
+}
+
+.card-header {
+  padding: 0.75rem;
+  font-weight: 600;
+}
+
+.card-body {
+  padding: 0.75rem;
+  min-height: 120px;
+}
+
+.text-warning {
+  color: #f39c12 !important;
+}
+
+.text-success {
+  color: #27ae60 !important;
+}
+
+.btn-outline-warning {
+  border-color: #f39c12;
+  color: #f39c12;
+}
+
+.btn-outline-warning:hover {
+  background-color: #f39c12;
+  border-color: #f39c12;
+  color: white;
+}
+
+.alert-warning {
+  background-color: rgba(243, 156, 18, 0.1);
+  border-color: rgba(243, 156, 18, 0.2);
+  color: #856404;
+}
+
+.alert-success {
+  background-color: rgba(39, 174, 96, 0.1);
+  border-color: rgba(39, 174, 96, 0.2);
+  color: #155724;
+}

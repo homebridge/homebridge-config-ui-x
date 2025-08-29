@@ -8,6 +8,7 @@ import { HapQrcodeWidgetComponent } from '@/app/modules/status/widgets/hap-qrcod
 import { HomebridgeLogsWidgetComponent } from '@/app/modules/status/widgets/homebridge-logs-widget/homebridge-logs-widget.component'
 import { MemoryWidgetComponent } from '@/app/modules/status/widgets/memory-widget/memory-widget.component'
 import { NetworkWidgetComponent } from '@/app/modules/status/widgets/network-widget/network-widget.component'
+import { ServiceStatusWidgetComponent } from '@/app/modules/status/widgets/service-status-widget/service-status-widget.component'
 import { SystemInfoWidgetComponent } from '@/app/modules/status/widgets/system-info-widget/system-info-widget.component'
 import { TerminalWidgetComponent } from '@/app/modules/status/widgets/terminal-widget/terminal-widget.component'
 import { UpdateInfoWidgetComponent } from '@/app/modules/status/widgets/update-info-widget/update-info-widget.component'
@@ -36,6 +37,7 @@ export class WidgetsComponent implements OnInit, OnDestroy {
     UptimeWidgetComponent,
     UpdateInfoWidgetComponent,
     SystemInfoWidgetComponent,
+    ServiceStatusWidgetComponent,
     WeatherWidgetComponent,
     AccessoriesWidgetComponent,
     ClockWidgetComponent,
