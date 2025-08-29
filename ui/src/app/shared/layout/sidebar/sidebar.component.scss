@@ -43,6 +43,12 @@
   .link-wrapper {
     overflow-y: auto;
     max-height: calc(100vh - 80px) !important;
+
+    // iOS Safari viewport fix: add bottom padding to prevent menu items being hidden by URL bar
+    @media (max-width: 767px) {
+      padding-bottom: env(safe-area-inset-bottom, 60px);
+      max-height: calc(100vh - 140px) !important;
+    }
     .link {
       .link-row {
         display: flex;
