@@ -22,6 +22,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - hide search button when no plugins installed
 - show help on accessories when no plugins installed
 - add config option to always show beta versions of plugins
+- fix iOS Safari burger menu items being hidden by URL bar
 
 ### Other Changes
 
