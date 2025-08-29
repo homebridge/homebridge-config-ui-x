@@ -43,11 +43,11 @@ export class ServiceStatusWidgetComponent implements OnInit {
     try {
       this.serviceStatus = await this.$api.get('/status/service').toPromise()
       this.loading = false
-      
+
       // Show recommendations if not running as service and has recommendations
-      this.showRecommendations = !this.serviceStatus.isRunningAsService && 
-                                 this.serviceStatus.recommendations && 
-                                 this.serviceStatus.recommendations.length > 0
+      this.showRecommendations = !this.serviceStatus.isRunningAsService
+        && this.serviceStatus.recommendations
+        && this.serviceStatus.recommendations.length > 0
     } catch (error) {
       console.error('Failed to load service status:', error)
       this.loading = false

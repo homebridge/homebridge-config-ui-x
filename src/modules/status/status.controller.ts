@@ -82,9 +82,9 @@ export class StatusController {
     return this.statusService.getRaspberryPiThrottledStatus()
   }
 
-  @ApiOperation({ 
+  @ApiOperation({
     summary: 'Check if Homebridge is running as a system service.',
-    description: 'Returns service status and recommendations for better sleep/wake reliability.'
+    description: 'Returns service status and recommendations for better sleep/wake reliability.',
   })
   @Get('/service')
   async getServiceStatus() {
