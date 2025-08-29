@@ -43,6 +43,11 @@
   .link-wrapper {
     overflow-y: auto;
     max-height: calc(100vh - 80px) !important;
+
+    @media (max-width: 767px) {
+      padding-bottom: 60px; // prevent menu items being hidden by URL bar on ios safari
+    }
+
     .link {
       .link-row {
         display: flex;
