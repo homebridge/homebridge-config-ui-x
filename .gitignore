@@ -72,4 +72,3 @@ yarn.lock
 
 # test directories
 test/.homebridge*
-.pr-rebase-marker
