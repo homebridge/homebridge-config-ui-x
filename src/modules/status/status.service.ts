@@ -705,4 +705,71 @@ export class StatusService {
       return { releases: [], rawReleases: [] }
     }
   }
+
+  /**
+   * Check if Homebridge is running as a system service
+   * This helps detect if users have properly installed Homebridge to survive sleep/wake cycles
+   */
+  public async getServiceStatus(): Promise<{
+    isRunningAsService: boolean
+    platform: string
+    serviceName?: string
+    recommendations?: string[]
+  }> {
+    const systemPlatform = platform()
+    const result = {
+      isRunningAsService: false,
+      platform: systemPlatform,
+      serviceName: undefined as string | undefined,
+      recommendations: [] as string[],
+    }
+
+    try {
+      if (systemPlatform === 'darwin') {
+        // Check for macOS LaunchDaemon
+        const serviceName = 'com.homebridge.server'
+        try {
+          await execAsync(`launchctl list | grep "${serviceName}"`)
+          result.isRunningAsService = true
+          result.serviceName = serviceName
+        } catch {
+          result.recommendations.push('Run "sudo hb-service install" to set up Homebridge as a system service')
+          result.recommendations.push('This ensures Homebridge stays running when your computer sleeps or restarts')
+        }
+      } else if (systemPlatform === 'linux') {
+        // Check for systemd service
+        const serviceName = 'homebridge'
+        try {
+          await execAsync(`systemctl is-active ${serviceName}`)
+          result.isRunningAsService = true
+          result.serviceName = serviceName
+        } catch {
+          result.recommendations.push('Run "sudo hb-service install" to set up Homebridge as a systemd service')
+          result.recommendations.push('This ensures Homebridge stays running in the background')
+        }
+      } else if (systemPlatform === 'win32') {
+        // Check for Windows service
+        const serviceName = 'Homebridge'
+        try {
+          await execAsync(`sc query "${serviceName}"`)
+          result.isRunningAsService = true
+          result.serviceName = serviceName
+        } catch {
+          result.recommendations.push('Run "hb-service install" as Administrator to set up Homebridge as a Windows service')
+          result.recommendations.push('This ensures Homebridge stays running in the background')
+        }
+      } else {
+        result.recommendations.push('Consider running Homebridge as a system service for better reliability')
+      }
+
+      // Add general recommendation if not running as service
+      if (!result.isRunningAsService && process.env.HOMEBRIDGE_CONFIG_UI_TERMINAL !== '1') {
+        result.recommendations.push('HomeKit accessories may become unresponsive when your computer sleeps without a service setup')
+      }
+    } catch (error) {
+      this.logger.warn(`Failed to check service status: ${error.message}`)
+    }
+
+    return result
+  }
 }
