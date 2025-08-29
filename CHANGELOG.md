@@ -2,6 +2,12 @@
 
 All notable changes to `homebridge-config-ui-x` will be documented in this file. This project tries to adhere to [Semantic Versioning](http://semver.org/).
 
+## [Unreleased]
+
+### Other Changes
+
+- add comprehensive GitHub Copilot instructions for developers (#2543)
+
 ## v5.5.0 (2025-08-28)
 
 ### UI Changes
