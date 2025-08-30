@@ -111,6 +111,14 @@ export class WidgetVisibilityComponent implements OnInit {
         mobileOrder: 100,
       },
       {
+        name: this.$translate.instant('status.widget.add.label_matter_pairing_code'),
+        component: 'MatterQrcodeWidgetComponent',
+        hidden: false,
+        cols: 3,
+        rows: 7,
+        mobileOrder: 105,
+      },
+      {
         name: this.$translate.instant('status.widget.homebridge_logs'),
         component: 'HomebridgeLogsWidgetComponent',
         hidden: false,

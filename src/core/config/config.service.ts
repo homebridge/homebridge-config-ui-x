@@ -454,6 +454,19 @@ export interface HomebridgeConfig {
     start?: number
     end?: number
   }
+  matter?: {
+    enabled?: boolean
+    port?: number
+    discriminator?: number
+    passcode?: number
+    vendorId?: number
+    productId?: number
+    deviceName?: string
+    storageDir?: string
+    debugEnabled?: boolean
+    announceInterval?: number
+    commissioningTimeout?: number
+  }
   platforms: Record<string, any>[]
   accessories: Record<string, any>[]
   plugins?: string[]

@@ -1,0 +1,29 @@
+<div class="d-flex w-100 p-2">
+  <div #qrcodecontainer class="drag-handler d-flex flex-column w-100 h-100">
+    <div class="w-100" [ngStyle]="{'height.px': qrCodeHeight, 'width.px': qrCodeWidth}">
+      <div class="text-center qr-code-container w-100 h-100 p-3">
+        @if (setupUri) {
+        <div class="w-100 h-100">
+          <app-qrcode [data]="setupUri" class="mx-auto"></app-qrcode>
+        </div>
+        }
+      </div>
+    </div>
+    <div #pincode class="text-center w-100 mt-auto gridster-item-content">
+      <p class="mb-1">{{ pin }}</p>
+      <p class="grey-text mb-1 small">
+        <i
+          class="fas fa-fw fa-link"
+          [ngClass]="{
+            'green-text': paired,
+            'grey-text': !paired
+          }"
+        ></i>
+        {{ (paired ? 'status.widget.matter_qr_paired' : 'status.widget.matter_qr_unpaired') | translate }} @if (!paired)
+        {
+        <span> &middot; {{ 'status.code_scan' | translate }} </span>
+        }
+      </p>
+    </div>
+  </div>
+</div>

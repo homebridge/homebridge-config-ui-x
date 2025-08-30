@@ -146,6 +146,15 @@ export class StatusGateway {
     }
   }
 
+  @SubscribeMessage('get-matter-pairing-info')
+  async getMatterPairingInfo() {
+    try {
+      return await this.statusService.getMatterPairingInfo()
+    } catch (e) {
+      return new WsException(e.message)
+    }
+  }
+
   @SubscribeMessage('get-homebridge-status')
   async getHomebridgeStatus() {
     try {

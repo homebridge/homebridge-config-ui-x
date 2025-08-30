@@ -291,6 +291,51 @@ export class StatusService {
   }
 
   /**
+   * Returns Matter pairing information
+   */
+  public async getMatterPairingInfo() {
+    const matterConfig = this.configService.homebridgeConfig.matter
+
+    if (!matterConfig || !matterConfig.enabled) {
+      return {
+        enabled: false,
+        pin: null,
+        setupUri: null,
+        paired: false,
+      }
+    }
+
+    // Generate Matter QR code setup URI based on configuration
+    // This is a placeholder implementation - the actual implementation
+    // would depend on the Matter library integration
+    const setupUri = this.generateMatterSetupUri(matterConfig)
+
+    return {
+      enabled: true,
+      pin: matterConfig.passcode?.toString() || 'Not configured',
+      setupUri,
+      paired: false, // Matter pairing status would come from Matter library
+    }
+  }
+
+  /**
+   * Generate Matter setup URI for QR code
+   * This is a placeholder implementation
+   */
+  private generateMatterSetupUri(matterConfig: any): string | null {
+    if (!matterConfig.passcode || !matterConfig.discriminator) {
+      return null
+    }
+
+    // Matter QR code format: MT:<discriminator>:<passcode>:<productId>:<vendorId>
+    // This is a simplified format - actual implementation would follow Matter specification
+    const vendorId = matterConfig.vendorId || 65521
+    const productId = matterConfig.productId || 32769
+
+    return `MT:${matterConfig.discriminator}:${matterConfig.passcode}:${productId}:${vendorId}`
+  }
+
+  /**
    * Returns Homebridge up/down status from cache
    */
   public async getHomebridgeStatus() {
