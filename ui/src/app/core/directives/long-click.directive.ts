@@ -8,8 +8,8 @@ import { Directive, HostListener, Input, OnDestroy, output } from '@angular/core
 export class LongClickDirective implements OnDestroy {
   private downTimeout: NodeJS.Timeout
   private done = false
-  private touchInProgress = false
-  private touchStartTime = 0
+  private touchHandled = false
+  private lastTouchTime = 0
 
   @Input() public duration = 350
 
@@ -23,12 +23,15 @@ export class LongClickDirective implements OnDestroy {
 
   @HostListener('mouseup', ['$event'])
   public onMouseUp(event: MouseEvent): void {
-    if (!this.touchInProgress && !this.isSyntheticEvent()) {
-      clearTimeout(this.downTimeout)
-      if (!this.done) {
-        this.done = true
-        this.shortClick.emit(event)
-      }
+    // Ignore mouse events that are triggered after touch events
+    if (this.isSyntheticMouseEvent()) {
+      return
+    }
+
+    clearTimeout(this.downTimeout)
+    if (!this.done) {
+      this.done = true
+      this.shortClick.emit(event)
     }
   }
 
@@ -36,25 +39,34 @@ export class LongClickDirective implements OnDestroy {
   public onTouchEnd(event: TouchEvent): void {
     clearTimeout(this.downTimeout)
 
+    // Only prevent default for Android Chrome/Edge which have issues with tap handling
+    if (this.isAndroidChromium()) {
+      event.preventDefault()
+    }
+
     if (!this.done) {
       this.done = true
+      this.touchHandled = true
+      this.lastTouchTime = Date.now()
       this.shortClick.emit(event)
     }
 
+    // Reset touch handled flag after a delay
     setTimeout(() => {
-      this.touchInProgress = false
-    }, 150)
+      this.touchHandled = false
+    }, 100)
   }
 
   @HostListener('touchstart', ['$event'])
   @HostListener('mousedown', ['$event'])
   public onMouseDown(event: MouseEvent | TouchEvent): void {
     if (event instanceof TouchEvent) {
-      this.touchInProgress = true
       this.done = false
-      this.touchStartTime = Date.now()
+      this.touchHandled = true
+      this.lastTouchTime = Date.now()
 
-      if (event.cancelable && this.isSafariMobile()) {
+      // Only prevent default for Android Chrome/Edge
+      if (this.isAndroidChromium()) {
         event.preventDefault()
       }
 
@@ -68,17 +80,23 @@ export class LongClickDirective implements OnDestroy {
     }
 
     if (event instanceof MouseEvent) {
-      if (!this.touchInProgress && !this.isSyntheticEvent()) {
-        if (event.button === 0) {
-          this.done = false
-          this.downTimeout = setTimeout(() => {
-            if (!this.done) {
-              this.done = true
-              this.longClick.emit(event)
-            }
-          }, this.duration)
-        }
+      // Ignore synthetic mouse events from touch
+      if (this.isSyntheticMouseEvent()) {
+        return
       }
+
+      // Check for the left mouse button (button 0)
+      if (event.button !== 0) {
+        return
+      }
+
+      this.done = false
+      this.downTimeout = setTimeout(() => {
+        if (!this.done) {
+          this.done = true
+          this.longClick.emit(event)
+        }
+      }, this.duration)
     }
   }
 
@@ -89,18 +107,19 @@ export class LongClickDirective implements OnDestroy {
     clearTimeout(this.downTimeout)
   }
 
-  private isSyntheticEvent(): boolean {
-    const timeSinceTouch = Date.now() - this.touchStartTime
-    return this.touchInProgress && timeSinceTouch < 300
+  private isSyntheticMouseEvent(): boolean {
+    // Check if a mouse event occurred shortly after a touch event
+    const timeSinceTouch = Date.now() - this.lastTouchTime
+    return this.touchHandled && timeSinceTouch < 300
   }
 
-  private isSafariMobile(): boolean {
-    const userAgent = navigator.userAgent
-    return /iPad|iPhone|iPod/.test(userAgent) && /Safari/.test(userAgent) && !/Chrome|CriOS|FxiOS|EdgiOS/.test(userAgent)
+  private isAndroidChromium(): boolean {
+    const userAgent = navigator.userAgent.toLowerCase()
+    // Check for Android and Chrome/Edge/Chromium-based browsers
+    return /android/.test(userAgent) && (/chrome|crios|edg/.test(userAgent) || /chromium/.test(userAgent))
   }
 
   public ngOnDestroy() {
     clearTimeout(this.downTimeout)
-    this.touchInProgress = false
   }
 }

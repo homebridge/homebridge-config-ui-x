@@ -23,6 +23,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - show help on accessories when no plugins installed
 - add config option to always show beta versions of plugins
 - fix ios safari burger menu viewport issue
+- revisit: fix for accessory control issue on android-edge/chrome
 
 ### Other Changes
 
