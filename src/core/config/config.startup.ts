@@ -1,4 +1,4 @@
-import type { Buffer } from 'node:buffer'
+import type { StartupConfig } from './config.interfaces'
 
 import { homedir, networkInterfaces } from 'node:os'
 import { resolve } from 'node:path'
@@ -19,17 +19,7 @@ export async function getStartupConfig() {
   const homebridgeConfig = await readJson(configPath)
   const ui = Array.isArray(homebridgeConfig.platforms) ? homebridgeConfig.platforms.find((x: any) => x.platform === 'config') : undefined
 
-  const config = {} as {
-    host?: '::' | '0.0.0.0' | string
-    httpsOptions?: {
-      key?: Buffer
-      cert?: Buffer
-      pfx?: Buffer
-      passphrase?: string
-    }
-    cspWsOverride?: string
-    debug?: boolean
-  }
+  const config = {} as StartupConfig
 
   // Check if IPv6 is available on this host
   const ipv6 = Object.entries(networkInterfaces()).filter(([, addresses]) => {
@@ -37,6 +27,7 @@ export async function getStartupConfig() {
   }).length
 
   config.host = ipv6 ? '::' : '0.0.0.0'
+  config.webroot = '' // need to set as empty string rather than leaving as undefined
 
   // If no ui settings configured - we are done
   if (!ui) {
@@ -83,6 +74,19 @@ export async function getStartupConfig() {
   } else {
     config.debug = false
     process.env.UIX_DEBUG_LOGGING = '0'
+  }
+
+  // Preload webroot settings
+  if (ui.webroot && process.env.UIX_DEVELOPMENT !== '1') {
+    // Normalise webroot: remove multiple slashes, ensure single leading slash, no trailing slash
+    let webroot = `/${ui.webroot.toString().trim()}`.replace(/\/+/g, '/').replace(/\/$/, '')
+    if (webroot === '/') {
+      webroot = ''
+    }
+    config.webroot = webroot
+    logger.log(`Setting up the UI on webroot: ${webroot}`)
+  } else {
+    config.webroot = '' // need to set as empty string rather than leaving as undefined
   }
 
   return config

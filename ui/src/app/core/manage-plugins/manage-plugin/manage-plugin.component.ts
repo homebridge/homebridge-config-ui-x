@@ -124,7 +124,7 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
 
     switch (this.action) {
       case 'Install':
-        this.install()
+        void this.install()
         this.presentTenseVerb = this.$translate.instant('plugins.manage.install')
         this.pastTenseVerb = this.$translate.instant('plugins.manage.installed')
         break
@@ -146,7 +146,7 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
         }
         this.presentTenseVerb = this.$translate.instant('plugins.manage.update')
         this.pastTenseVerb = this.$translate.instant('plugins.manage.updated')
-        this.getVersionNotes()
+        void this.getVersionNotes()
         break
     }
   }
@@ -175,26 +175,28 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
       next: async () => {
         // Updating the UI needs a restart straight away
         if (this.pluginName === 'homebridge-config-ui-x') {
-          this.$api.put('/platform-tools/hb-service/set-full-service-restart-flag', {}).subscribe({
-            next: () => {
-              window.location.href = '/restart'
-            },
-            error: (error) => {
-              console.error(error)
-              window.location.href = '/restart'
-            },
-          })
-          return
+          try {
+            if (this.$settings.webroot && this.$settings.webroot !== '/') {
+              // Update index.html with current webroot - this ensures the base href is correct when we refresh
+              await firstValueFrom(this.$api.put('/server/webroot', {
+                webroot: this.$settings.webroot,
+              }))
+            }
+            window.location.href = 'restart'
+          } catch (error) {
+            console.error('Failed to update webroot:', error)
+            window.location.href = 'restart'
+          }
+        } else {
+          try {
+            await this.getChildBridges()
+          } catch (error) {
+            console.error(error)
+          }
+          this.actionComplete = true
+          this.justUpdatedPlugin = true
+          void this.$router.navigate(['/plugins'])
         }
-
-        try {
-          await this.getChildBridges()
-        } catch (error) {
-          console.error(error)
-        }
-        this.actionComplete = true
-        this.justUpdatedPlugin = true
-        this.$router.navigate(['/plugins'])
       },
       error: (error) => {
         this.actionFailed = true
@@ -205,7 +207,7 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
   }
 
   public onRestartHomebridgeClick(): void {
-    this.$router.navigate(['/restart'])
+    void this.$router.navigate(['/restart'])
     this.$activeModal.close()
   }
 
@@ -276,7 +278,7 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
       error: (error) => {
         this.actionFailed = true
         console.error(error)
-        this.$router.navigate(['/plugins'])
+        void this.$router.navigate(['/plugins'])
         this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
       },
     })
@@ -290,7 +292,7 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
     }).subscribe({
       next: () => {
         this.$activeModal.close()
-        this.$router.navigate(['/plugins'])
+        void this.$router.navigate(['/plugins'])
         this.$modal.open(RestartHomebridgeComponent, {
           size: 'lg',
           backdrop: 'static',

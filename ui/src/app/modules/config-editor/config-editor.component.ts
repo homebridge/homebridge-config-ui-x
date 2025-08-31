@@ -5,13 +5,14 @@ import { NgbModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import json5 from 'json5'
 import { isEqual } from 'lodash-es'
-import { DiffEditorComponent, EditorComponent, NgxEditorModel } from 'ngx-monaco-editor-v2'
+import { DiffEditorComponent, DiffEditorModel, EditorComponent, NgxEditorModel } from 'ngx-monaco-editor-v2'
 import { ToastrService } from 'ngx-toastr'
 import { firstValueFrom } from 'rxjs'
 
 import { ApiService } from '@/app/core/api.service'
 import { RestartChildBridgesComponent } from '@/app/core/components/restart-child-bridges/restart-child-bridges.component'
 import { RestartHomebridgeComponent } from '@/app/core/components/restart-homebridge/restart-homebridge.component'
+import { createChildBridgeSchema } from '@/app/core/helpers/child-bridges-schema.helper'
 import { ChildBridge } from '@/app/core/manage-plugins/manage-plugins.interfaces'
 import { MobileDetectService } from '@/app/core/mobile-detect.service'
 import { MonacoEditorService } from '@/app/core/monaco-editor.service'
@@ -24,6 +25,14 @@ import {
   PluginChildBridge,
 } from '@/app/modules/config-editor/config-editor.interfaces'
 import { ConfigRestoreComponent } from '@/app/modules/config-editor/config-restore/config-restore.component'
+
+declare const monaco: any
+
+declare global {
+  interface Window {
+    editor?: any
+  }
+}
 
 @Component({
   templateUrl: './config-editor.component.html',
@@ -41,8 +50,8 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
   private $md = inject(MobileDetectService)
   private $modal = inject(NgbModal)
   private $monacoEditor = inject(MonacoEditorService)
-  private $route = inject(ActivatedRoute)
   private $renderer = inject(Renderer2)
+  private $route = inject(ActivatedRoute)
   private $router = inject(Router)
   private $settings = inject(SettingsService)
   private $toastr = inject(ToastrService)
@@ -61,6 +70,9 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
   public monacoEditor: any
   public editorOptions: any
   public monacoEditorModel: NgxEditorModel
+  public diffOriginalModel: DiffEditorModel
+  public diffModifiedModel: DiffEditorModel
+  public renderSideBySide = false
 
   constructor() {
     this.isMobile = this.$md.detect.mobile()
@@ -70,7 +82,10 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
     this.editorOptions = {
       language: 'json',
       theme: this.$settings.actualLightingMode === 'dark' ? 'vs-dark' : 'vs-light',
-      automaticLayout: true,
+      renderSideBySide: this.renderSideBySide,
+      renderIndicators: true,
+      ignoreTrimWhitespace: false,
+      glyphMargin: true,
     }
 
     const content = document.querySelector('.content')
@@ -97,6 +112,11 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
     this.$route.data.subscribe((data: { config: string }) => {
       this.homebridgeConfig = data.config
       this.latestSavedConfig = JSON.parse(data.config)
+
+      // Update diff models with initial config
+      if (this.diffModifiedModel) {
+        this.updateDiffModels()
+      }
     })
 
     // Set up the base monaco editor model
@@ -106,12 +126,21 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
       uri: (window as any).monaco ? (window as any).monaco.Uri.parse('a://homebridge/config.json') : undefined,
     }
 
-    //  if monaco is not loaded yet, wait for it, otherwise set up the editor now
+    // Set up diff editor models with initial content
+    this.diffOriginalModel = {
+      code: '',
+      language: 'json',
+    }
+
+    this.diffModifiedModel = {
+      code: this.homebridgeConfig || '{}',
+      language: 'json',
+    }
+
+    // If monaco is not loaded yet, wait for it, otherwise set up the editor now
     if (!(window as any).monaco) {
       this.$monacoEditor.readyEvent.subscribe({
-        next: () => {
-          this.setMonacoEditorModel()
-        },
+        next: () => this.setMonacoEditorModel(),
       })
     } else {
       this.setMonacoEditorModel()
@@ -128,7 +157,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
       }
 
       // Clear the query parameters so that we don't keep showing the same action
-      this.$router.navigate([], {
+      void this.$router.navigate([], {
         queryParams: {},
         replaceUrl: true,
         queryParamsHandling: '',
@@ -140,20 +169,41 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
    * Called when the monaco editor is ready
    */
   public onEditorInit(editor: any) {
-    // @ts-expect-error - TS2339: Property editor does not exist on type Window & typeof globalThis
     window.editor = editor
     this.monacoEditor = editor
     this.monacoEditor.getModel().setValue(this.homebridgeConfig)
   }
 
   public onInitDiffEditor(editor: any) {
-    this.monacoEditor = editor.modifiedEditor
-
-    editor.getModel().original.setValue(this.originalConfig)
-    editor.getModel().modified.setValue(this.homebridgeConfig)
-
-    // @ts-expect-error - TS2339: Property editor does not exist on type Window & typeof globalThis
+    this.monacoEditor = editor.getModifiedEditor()
+    this.updateDiffModels()
     window.editor = editor
+  }
+
+  private updateDiffModels() {
+    if (this.diffOriginalModel) {
+      this.diffOriginalModel.code = this.originalConfig || ''
+    }
+    if (this.diffModifiedModel) {
+      this.diffModifiedModel.code = this.homebridgeConfig || '{}'
+    }
+
+    if ((window as any).editor && (window as any).editor.getOriginalEditor) {
+      const originalEditor = (window as any).editor.getOriginalEditor()
+      const modifiedEditor = (window as any).editor.getModifiedEditor()
+
+      if (originalEditor && modifiedEditor) {
+        const originalModel = originalEditor.getModel()
+        const modifiedModel = modifiedEditor.getModel()
+
+        if (originalModel) {
+          originalModel.setValue(this.originalConfig || '')
+        }
+        if (modifiedModel) {
+          modifiedModel.setValue(this.homebridgeConfig || '{}')
+        }
+      }
+    }
   }
 
   public async onSave() {
@@ -240,6 +290,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
       .then((backupId: string) => {
         if (!this.originalConfig) {
           this.originalConfig = this.homebridgeConfig
+          this.updateDiffModels()
         }
 
         this.$api.get(`/config-editor/backups/${backupId}`).subscribe({
@@ -250,18 +301,17 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
             )
 
             this.homebridgeConfig = JSON.stringify(json, null, 4)
+            this.updateDiffModels()
 
             // Update the editor
-            // @ts-expect-error - TS2339: Property editor does not exist on type Window & typeof globalThis
             if (this.monacoEditor && window.editor.modifiedEditor) {
-            // Remove all decorations
+              // Remove all decorations
               this.editorDecorations = this.monacoEditor.deltaDecorations(this.editorDecorations, [])
 
               // Remove existing config
               this.monacoEditor.executeEdits('beautifier', [
                 {
                   identifier: 'delete' as any,
-                  // eslint-disable-next-line no-undef
                   range: new monaco.Range(1, 1, this.monacoEditor.getModel().getLineCount() + 10, 1),
                   text: '',
                   forceMoveMarkers: true,
@@ -272,7 +322,6 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
               this.monacoEditor.executeEdits('beautifier', [
                 {
                   identifier: 'insert' as any,
-                  // eslint-disable-next-line no-undef
                   range: new monaco.Range(1, 1, 1, 1),
                   text: this.homebridgeConfig,
                   forceMoveMarkers: true,
@@ -290,10 +339,26 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
   }
 
   public onCancelRestore() {
+    // Properly dispose of diff editor before clearing config
+    if (window.editor && window.editor.dispose) {
+      try {
+        window.editor.dispose()
+        window.editor = undefined
+      } catch (error) { /* cancelled */ }
+    }
+
     this.homebridgeConfig = this.originalConfig
     this.originalConfig = ''
-
+    if (this.renderSideBySide) {
+      this.toggleSideBySide() // reset to default
+    }
+    this.updateDiffModels()
     this.onRestore()
+  }
+
+  public toggleSideBySide() {
+    this.renderSideBySide = !this.renderSideBySide
+    this.editorOptions = { ...this.editorOptions, renderSideBySide: this.renderSideBySide }
   }
 
   public ngOnDestroy() {
@@ -305,9 +370,34 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
       this.$md.enableTouchMove()
     }
 
-    if (this.monacoEditor) {
-      this.monacoEditor.dispose()
-    }
+    try {
+      // Clear up main editor
+      if (window.editor && window.editor.dispose) {
+        window.editor.dispose()
+        window.editor = undefined
+      }
+
+      // Clean up models
+      if ((window as any).monaco) {
+        const originalUri = (window as any).monaco.Uri.parse('file:///original.json')
+        const modifiedUri = (window as any).monaco.Uri.parse('file:///modified.json')
+
+        const existingOriginalModel = (window as any).monaco.editor.getModel(originalUri)
+        if (existingOriginalModel) {
+          existingOriginalModel.dispose()
+        }
+
+        const existingModifiedModel = (window as any).monaco.editor.getModel(modifiedUri)
+        if (existingModifiedModel) {
+          existingModifiedModel.dispose()
+        }
+      }
+
+      // Clean up monaco editor instance
+      if (this.monacoEditor) {
+        this.monacoEditor.dispose()
+      }
+    } catch (error) { /* no problem disposing */ }
   }
 
   private validateSection(sections: any[], type: 'accessory' | 'platform') {
@@ -365,7 +455,6 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
       if (matches.length) {
         const matchRange = matches[0].range
 
-        // eslint-disable-next-line no-undef
         const range = new monaco.Range(
           matchRange.startLineNumber,
           matchRange.startColumn,
@@ -388,8 +477,9 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
       return
     }
 
-    // eslint-disable-next-line no-undef
-    const uri = monaco.Uri.parse('a://homebridge/config.json');
+    const uri = monaco.Uri.parse('a://homebridge/config.json')
+
+    const childBridgeSchema = createChildBridgeSchema(this.$translate);
 
     (window as any).monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
       allowComments: false,
@@ -408,50 +498,60 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
                 properties: {
                   name: {
                     type: 'string',
+                    title: this.$translate.instant('settings.name'),
                     description: 'The Homebridge instance name.\n'
                       + 'This should be unique if you are running multiple instances of Homebridge.',
                     default: 'Homebridge',
                   },
                   username: {
                     type: 'string',
-                    description: 'Homebridge username must be 6 pairs of colon-separated hexadecimal characters (A-F 0-9).'
-                      + '\nYou should change this pin if you need to re-pair your instance with HomeKit.\nExample: 0E:89:49:64:91:86',
+                    title: this.$translate.instant('accessories.bridge_username'),
+                    description: 'Homebridge username must be 6 pairs of colon-separated hexadecimal characters (A-F 0-9).\n'
+                      + 'You should change this pin if you need to re-pair your instance with HomeKit.\n'
+                      + 'Example: 0E:89:49:64:91:86.',
                     default: '0E:89:49:64:91:86',
                     pattern: '^([A-Fa-f0-9]{2}:){5}[A-Fa-f0-9]{2}$',
                   },
                   port: {
                     type: 'number',
-                    description: 'The port Homebridge listens on.\nIf running more than one instance of Homebridge '
-                      + 'on the same server make sure each instance is given a unique port.',
+                    title: this.$translate.instant('settings.network.port_hb'),
+                    description: 'The port Homebridge listens on.\n'
+                      + 'If running more than one instance of Homebridge on the same server make sure each instance is given a unique port.',
                     default: 51173,
                     minimum: 1025,
                     maximum: 65534,
                   },
                   pin: {
                     type: 'string',
-                    description: 'The Homebridge instance pin.\nThis is used when pairing Homebridge to HomeKit.\nExample: 630-27-655',
+                    description: 'The Homebridge instance pin.\n'
+                      + 'This is used when pairing Homebridge to HomeKit.\n'
+                      + 'Example: 630-27-655.',
                     default: '630-27-655',
                     pattern: '^([0-9]{3}-[0-9]{2}-[0-9]{3})$',
                   },
                   manufacturer: {
                     type: 'string',
-                    description: 'The bridge manufacturer to be displayed in HomeKit',
+                    title: this.$translate.instant('child_bridge.config.manufacturer'),
+                    description: 'The bridge manufacturer to be displayed in HomeKit.',
                   },
                   firmwareRevision: {
                     type: 'string',
-                    description: 'The bridge firmware version to be displayed in HomeKit',
+                    title: this.$translate.instant('child_bridge.config.firmware'),
+                    description: 'The bridge firmware version to be displayed in HomeKit.',
                   },
                   model: {
                     type: 'string',
-                    description: 'The bridge model to be displayed in HomeKit',
+                    title: this.$translate.instant('child_bridge.config.model'),
+                    description: 'The bridge model to be displayed in HomeKit.',
                   },
                   bind: {
-                    description: 'A string or an array of strings with the name(s) of the network interface(s) '
-                      + 'Homebridge should bind to.\n\nRequires Homebridge v1.3 or later.',
+                    title: this.$translate.instant('settings.network.title_network_interfaces'),
+                    description: 'A string or an array of strings with the name(s) of the network interface(s) Homebridge should bind to.\n'
+                      + 'Requires Homebridge v1.3 or later.',
                     type: ['string', 'array'],
                     items: {
                       type: 'string',
-                      description: 'Network Interface name that Homebridge should bind to.',
+                      description: this.$translate.instant('status.widget.network.network_interface'),
                     },
                   },
                 },
@@ -462,38 +562,23 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
                 properties: {
                   interface: {
                     type: 'string',
-                    description: 'The interface or IP address of the interface you want Homebridge to listen on. '
-                      + 'This is useful if your server has multiple interfaces. '
-                      + '\n\nDeprecated as of Homebridge v1.3.0 - use bridge.bind instead.',
+                    title: this.$translate.instant('status.widget.network.network_interface'),
+                    description: 'The interface or IP address of the interface you want Homebridge to listen on.\n'
+                      + 'This is useful if your server has multiple interfaces.\n'
+                      + 'Deprecated as of Homebridge v1.3.0 - use bridge.bind instead.',
                   },
                   legacyAdvertiser: {
                     type: 'boolean',
-                    description: 'Set to `false` to use the new mdns library, ciao.',
+                    title: 'Legacy mDNS Advertiser',
+                    description: 'Set to false to use the new mdns library, ciao.',
                   },
                 },
                 default: { legacyAdvertiser: false },
               },
-              plugins: {
-                type: 'array',
-                description: 'An array of plugins that should be selectively enabled. Remove this array to enable all plugins.',
-                items: {
-                  type: 'string',
-                  description: 'The full plugin npm package name.\nExample: homebridge-dummy',
-                },
-                default: ['homebridge-config-ui-x'],
-              },
-              disabledPlugins: {
-                type: 'array',
-                description: 'An array of plugins that should be disabled.\n\nRequires Homebridge v1.3 or later.',
-                items: {
-                  type: 'string',
-                  description: 'The full plugin npm package name.\nExample: homebridge-dummy',
-                },
-                default: [],
-              },
               ports: {
                 type: 'object',
-                description: 'The range of ports that should be used for certain accessories like cameras and TVs',
+                title: 'Port Range',
+                description: 'The range of ports that should be used for external accessories like cameras and TVs.',
                 required: ['start', 'end'],
                 properties: {
                   start: {
@@ -501,12 +586,16 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
                     default: 52100,
                     minimum: 1025,
                     maximum: 65534,
+                    title: this.$translate.instant('settings.network.port_start'),
+                    description: this.$translate.instant('settings.network.port_start_desc'),
                   },
                   end: {
                     type: 'number',
                     default: 52150,
                     minimum: 1025,
                     maximum: 65534,
+                    title: this.$translate.instant('settings.network.port_end'),
+                    description: this.$translate.instant('settings.network.port_end_desc'),
                   },
                 },
                 default: {
@@ -516,8 +605,9 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
               },
               platforms: {
                 type: 'array',
-                description: 'Any plugin that exposes a platform should have its config entered in this array.'
-                  + '\nSeparate each plugin config block using a comma.',
+                title: 'Platforms',
+                description: 'Any plugin that exposes a platform should have its config entered in this array.\n'
+                  + 'Separate each plugin config block using a comma.',
                 items: {
                   type: 'object',
                   required: ['platform'],
@@ -525,16 +615,20 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
                     {
                       type: 'object',
                       required: ['platform'],
+                      title: this.$translate.instant('plugins.button_settings'),
                       properties: {
                         platform: {
                           type: 'string',
+                          title: 'Platform Name',
                           description: 'This is used by Homebridge to identify which plugin this platform belongs to.',
                           not: { enum: ['config'] },
                         },
                         name: {
                           type: 'string',
+                          title: this.$translate.instant('accessories.name'),
                           description: 'The name of the platform.',
                         },
+                        _bridge: childBridgeSchema,
                       },
                     },
                     {
@@ -542,14 +636,321 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
                       properties: {
                         platform: {
                           type: 'string',
-                          description: 'Homebridge UI platform name must be set to "config".\nDo Not Change!',
-                          oneOf: [
-                            { enum: 'config' },
-                          ],
+                          title: 'Platform Name',
+                          description: 'Homebridge UI platform name must be set to "config".\n'
+                            + 'Do not change!',
+                          const: 'config',
                         },
                         name: {
+                          title: this.$translate.instant('accessories.name'),
                           type: 'string',
-                          description: 'The name used in the Homebridge log.',
+                          default: 'Homebridge UI',
+                          minLength: 1,
+                          description: 'The name of the Homebridge instance.',
+                        },
+                        port: {
+                          title: this.$translate.instant('settings.network.port_ui'),
+                          type: 'integer',
+                          default: 8080,
+                          minimum: 1025,
+                          maximum: 65535,
+                          description: this.$translate.instant('settings.network.port_ui_desc'),
+                        },
+                        auth: {
+                          type: 'string',
+                          default: 'form',
+                          title: this.$translate.instant('settings.security.auth'),
+                          description: this.$translate.instant('settings.security.auth_desc'),
+                          oneOf: [
+                            {
+                              title: 'Require Authentication',
+                              enum: ['form'],
+                            },
+                            {
+                              title: 'None',
+                              enum: ['none'],
+                            },
+                          ],
+                        },
+                        theme: {
+                          title: this.$translate.instant('settings.display.theme'),
+                          description: 'The theme used for the UI.',
+                          type: 'string',
+                          default: 'orange',
+                          oneOf: [
+                            { title: this.$translate.instant('settings.display.orange'), enum: ['orange'] },
+                            { title: this.$translate.instant('settings.display.red'), enum: ['red'] },
+                            { title: this.$translate.instant('settings.display.pink'), enum: ['pink'] },
+                            { title: this.$translate.instant('settings.display.purple'), enum: ['purple'] },
+                            { title: this.$translate.instant('settings.display.deep_purple'), enum: ['deep-purple'] },
+                            { title: this.$translate.instant('settings.display.indigo'), enum: ['indigo'] },
+                            { title: this.$translate.instant('settings.display.blue'), enum: ['blue'] },
+                            { title: this.$translate.instant('settings.display.bluegrey'), enum: ['blue-grey'] },
+                            { title: this.$translate.instant('settings.display.cyan'), enum: ['cyan'] },
+                            { title: this.$translate.instant('settings.display.green'), enum: ['green'] },
+                            { title: this.$translate.instant('settings.display.teal'), enum: ['teal'] },
+                            { title: this.$translate.instant('settings.display.grey'), enum: ['grey'] },
+                            { title: this.$translate.instant('settings.display.brown'), enum: ['brown'] },
+                          ],
+                        },
+                        lightingMode: {
+                          title: this.$translate.instant('settings.display.lighting_mode'),
+                          description: 'The lighting mode used for the UI.',
+                          type: 'string',
+                          default: 'auto',
+                          oneOf: [
+                            { title: this.$translate.instant('accessories.control.auto'), enum: ['auto'] },
+                            { title: this.$translate.instant('settings.display.light'), enum: ['light'] },
+                            { title: this.$translate.instant('settings.display.dark'), enum: ['dark'] },
+                          ],
+                        },
+                        menuMode: {
+                          title: this.$translate.instant('settings.display.menu_mode'),
+                          description: 'Modes for the UI side menu.',
+                          type: 'string',
+                          default: 'default',
+                          oneOf: [
+                            { title: this.$translate.instant('settings.display.menu_default'), enum: ['default'] },
+                            { title: this.$translate.instant('settings.display.menu_freeze'), enum: ['freeze'] },
+                          ],
+                        },
+                        temp: {
+                          title: this.$translate.instant('settings.linux.temp'),
+                          type: 'string',
+                          description: this.$translate.instant('settings.linux.temp_desc'),
+                        },
+                        tempUnits: {
+                          title: this.$translate.instant('settings.display.temp_units'),
+                          description: 'The units used to display the temperature.',
+                          type: 'string',
+                          default: 'c',
+                          oneOf: [
+                            { title: this.$translate.instant('settings.display.temp_units.c'), enum: ['c'] },
+                            { title: this.$translate.instant('settings.display.temp_units.f'), enum: ['f'] },
+                          ],
+                        },
+                        lang: {
+                          title: this.$translate.instant('settings.display.lang'),
+                          type: 'string',
+                          default: 'auto',
+                          description: 'The language used for the UI.',
+                          oneOf: [
+                            { title: this.$translate.instant('form.select.auto'), enum: ['auto'] },
+                            { title: 'Bulgarian (bg)', enum: ['bg'] },
+                            { title: 'Catalan (ca)', enum: ['ca'] },
+                            { title: 'Chinese - Simplified (zh-CN)', enum: ['zh-CN'] },
+                            { title: 'Chinese - Traditional (zh-TW)', enum: ['zh-TW'] },
+                            { title: 'Czech (cs)', enum: ['cs'] },
+                            { title: 'Dutch (nl)', enum: ['nl'] },
+                            { title: 'English (en)', enum: ['en'] },
+                            { title: 'Finnish (fi)', enum: ['fi'] },
+                            { title: 'French (fr)', enum: ['fr'] },
+                            { title: 'German (de)', enum: ['de'] },
+                            { title: 'Hebrew (he)', enum: ['he'] },
+                            { title: 'Hungarian (hu)', enum: ['hu'] },
+                            { title: 'Indonesian (id)', enum: ['id'] },
+                            { title: 'Italian (it)', enum: ['it'] },
+                            { title: 'Japanese (ja)', enum: ['ja'] },
+                            { title: 'Korean (ko)', enum: ['ko'] },
+                            { title: 'Macedonian (mk)', enum: ['mk'] },
+                            { title: 'Norwegian (no)', enum: ['no'] },
+                            { title: 'Polish (pl)', enum: ['pl'] },
+                            { title: 'Portuguese (Brazil)', enum: ['pt-BR'] },
+                            { title: 'Portuguese (Portugal)', enum: ['pt'] },
+                            { title: 'Russian (ru)', enum: ['ru'] },
+                            { title: 'Slovenian (sl)', enum: ['sl'] },
+                            { title: 'Spanish (es)', enum: ['es'] },
+                            { title: 'Swedish (sv)', enum: ['sv'] },
+                            { title: 'Thai (th)', enum: ['th'] },
+                            { title: 'Turkish (tr)', enum: ['tr'] },
+                            { title: 'Ukrainian (uk)', enum: ['uk'] },
+                          ],
+                        },
+                        wallpaper: {
+                          title: this.$translate.instant('settings.display.wallpaper'),
+                          description: 'The full path to the .jpg file.',
+                          type: 'string',
+                        },
+                        homebridgePackagePath: {
+                          title: this.$translate.instant('settings.network.hb_package'),
+                          type: 'string',
+                          description: this.$translate.instant('settings.network.hb_package_desc'),
+                        },
+                        host: {
+                          type: 'string',
+                          pattern: '^[^{}/ :\\\\]+(?::\\d+)?$',
+                          title: this.$translate.instant('settings.network.host'),
+                          description: this.$translate.instant('settings.network.host_desc'),
+                        },
+                        sessionTimeout: {
+                          type: 'integer',
+                          minimum: 600,
+                          maximum: 86400000,
+                          title: this.$translate.instant('settings.startup.session'),
+                          description: this.$translate.instant('settings.startup.session_desc'),
+                        },
+                        log: {
+                          type: 'object',
+                          title: 'Log Settings',
+                          description: 'The log settings for the Homebridge UI.',
+                          properties: {
+                            maxSize: {
+                              type: 'integer',
+                              title: this.$translate.instant('settings.terminal.log_max'),
+                              description: this.$translate.instant('settings.terminal.log_max_desc'),
+                              minimum: -1,
+                            },
+                            truncateSize: {
+                              type: 'integer',
+                              title: this.$translate.instant('settings.terminal.log_truncate'),
+                              description: this.$translate.instant('settings.terminal.log_truncate_desc'),
+                              minimum: 0,
+                            },
+                          },
+                        },
+                        ssl: {
+                          type: 'object',
+                          title: this.$translate.instant('settings.security.https'),
+                          description: this.$translate.instant('settings.security.https_desc'),
+                          properties: {
+                            key: {
+                              type: 'string',
+                              title: this.$translate.instant('settings.security.key'),
+                              description: 'The full path to the private key file.',
+                            },
+                            cert: {
+                              type: 'string',
+                              title: this.$translate.instant('settings.security.cert'),
+                              description: 'The full path to the certificate file.',
+                            },
+                            pfx: {
+                              title: this.$translate.instant('settings.security.pfx'),
+                              type: 'string',
+                              description: 'The full path to the PKCS#12 certificate file.',
+                            },
+                            passphrase: {
+                              title: this.$translate.instant('settings.security.pass'),
+                              type: 'string',
+                              description: 'The passphrase for the PKCS#12 certificate file.',
+                            },
+                          },
+                        },
+                        accessoryControl: {
+                          title: 'Accessory Control Setup',
+                          type: 'object',
+                          description: 'The accessory control settings for the Homebridge UI.',
+                          properties: {
+                            debug: {
+                              title: this.$translate.instant('settings.accessory.debug'),
+                              type: 'boolean',
+                              description: this.$translate.instant('settings.accessory.debug_desc'),
+                            },
+                            instanceBlacklist: {
+                              title: this.$translate.instant('settings.security.ui_control'),
+                              type: 'array',
+                              description: this.$translate.instant('settings.security.ui_control_desc'),
+                              items: {
+                                title: this.$translate.instant('accessories.bridge_username'),
+                                type: 'string',
+                                pattern: '^([A-Fa-f0-9]{2}:){5}[A-Fa-f0-9]{2}$',
+                              },
+                            },
+                          },
+                        },
+                        linux: {
+                          title: 'Linux Server Commands',
+                          type: 'object',
+                          description: 'The Linux server commands for the Homebridge UI.',
+                          properties: {
+                            shutdown: {
+                              title: this.$translate.instant('settings.linux.shutdown'),
+                              type: 'string',
+                              description: this.$translate.instant('settings.linux.shutdown_desc'),
+                            },
+                            restart: {
+                              title: this.$translate.instant('settings.linux.restart'),
+                              type: 'string',
+                              description: this.$translate.instant('settings.linux.restart_desc'),
+                            },
+                          },
+                        },
+                        ...this.$settings.originalWebroot !== globalThis.webroot.errorCode
+                          ? {
+                              webroot: {
+                                title: this.$translate.instant('settings.network.webroot'),
+                                type: 'string',
+                                description: this.$translate.instant('settings.network.webroot_desc'),
+                              },
+                            }
+                          : {},
+                        proxyHost: {
+                          title: this.$translate.instant('settings.network.proxy'),
+                          type: 'string',
+                          pattern: '^[^{}/ :\\\\]+(?::\\d+)?$',
+                          description: this.$translate.instant('settings.network.proxy_desc'),
+                        },
+                        scheduledBackupPath: {
+                          title: this.$translate.instant('backup.settings_path'),
+                          description: 'The full path to where the service should save daily scheduled backups archives.',
+                          type: 'string',
+                        },
+                        scheduledBackupDisable: {
+                          title: 'Disable Scheduled Backups',
+                          type: 'boolean',
+                          description: 'When enabled, the Homebridge UI will not create daily scheduled backups.',
+                        },
+                        disableServerMetricsMonitoring: {
+                          title: 'Disable Server Metrics Monitoring',
+                          type: 'boolean',
+                          description: 'When enabled, the Homebridge UI will not collect or report CPU or memory stats.',
+                        },
+                        plugins: {
+                          title: this.$translate.instant('menu.label_plugins'),
+                          type: 'object',
+                          description: 'Settings surrounding plugins used by the Homebridge UI.',
+                          properties: {
+                            hideUpdatesFor: {
+                              type: 'array',
+                              title: 'Hide Plugin Updates For',
+                              description: 'A list of plugin names for which frontend update notifications will be hidden.',
+                              items: {
+                                type: 'string',
+                                title: this.$translate.instant('accessories.plugin'),
+                                pattern: '^(?:@[\\w-]+(?:\\.[\\w-]+)*/)?homebridge-[\\w-]+$',
+                              },
+                            },
+                            alwaysShowBetas: {
+                              type: 'boolean',
+                              title: this.$translate.instant('settings.display.show_betas'),
+                              description: 'When enabled, beta releases will be shown as available for Homebridge, the UI and plugins.',
+                            },
+                          },
+                        },
+                        terminal: {
+                          type: 'object',
+                          title: 'Terminal Settings',
+                          description: 'The terminal settings for the Homebridge UI.',
+                          properties: {
+                            persistence: {
+                              title: this.$translate.instant('settings.terminal.persistence'),
+                              type: 'boolean',
+                              description: this.$translate.instant('settings.terminal.persistence_help'),
+                              default: false,
+                            },
+                            hideWarning: {
+                              title: this.$translate.instant('settings.terminal.warning'),
+                              type: 'boolean',
+                              description: this.$translate.instant('settings.terminal.warning_help'),
+                              default: false,
+                            },
+                            bufferSize: {
+                              title: this.$translate.instant('settings.terminal.buffer_size'),
+                              type: 'integer',
+                              description: this.$translate.instant('settings.terminal.buffer_size_help'),
+                              default: 50000,
+                              minimum: 0,
+                            },
+                          },
                         },
                       },
                     },
@@ -558,22 +959,52 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
               },
               accessories: {
                 type: 'array',
-                description: 'Any plugin that exposes an accessory should have its config entered in this array.'
-                  + '\nSeparate each plugin config block using a comma.',
+                title: this.$translate.instant('menu.label_accessories'),
+                description: 'Any plugin that exposes an accessory should have its config entered in this array.\n'
+                  + 'Separate each plugin config block using a comma.',
                 items: {
                   type: 'object',
                   required: ['accessory', 'name'],
+                  title: this.$translate.instant('plugins.button_settings'),
                   properties: {
                     accessory: {
                       type: 'string',
+                      title: this.$translate.instant('child_bridge.config.accessory'),
                       description: 'This is used by Homebridge to identify which plugin this accessory belongs to.',
                     },
                     name: {
                       type: 'string',
+                      title: this.$translate.instant('accessories.name'),
                       description: 'The name of the accessory.',
                     },
+                    _bridge: childBridgeSchema,
                   },
                 },
+              },
+              plugins: {
+                type: 'array',
+                title: this.$translate.instant('menu.label_plugins'),
+                description: 'An array of plugins that should be selectively enabled.\n'
+                  + 'Remove this array to enable all plugins.',
+                items: {
+                  type: 'string',
+                  title: this.$translate.instant('accessories.plugin'),
+                  description: 'The full plugin npm package name.'
+                    + '\nExample: homebridge-dummy.',
+                },
+                default: ['homebridge-config-ui-x'],
+              },
+              disabledPlugins: {
+                type: 'array',
+                description: 'An array of plugins that should be disabled.\n'
+                  + 'Requires Homebridge v1.3 or later.',
+                items: {
+                  type: 'string',
+                  title: this.$translate.instant('accessories.plugin'),
+                  description: 'The full plugin npm package name.\n'
+                    + 'Example: homebridge-dummy.',
+                },
+                default: [],
               },
             },
           },
@@ -581,7 +1012,6 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
       ],
     })
 
-    // eslint-disable-next-line no-undef
     this.monacoEditorModel.uri = monaco.Uri.parse('a://homebridge/config.json')
   }
 
@@ -640,15 +1070,79 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
     return a.every(itemA => b.some(itemB => isEqual(itemA, itemB)))
   }
 
+  private detectConfigPlatformChanges(): boolean {
+    try {
+      const originalConfigJson = this.latestSavedConfig
+      const updatedConfigJson = JSON.parse(this.homebridgeConfig) as HomebridgeConfig
+
+      // Find config platforms in original config
+      const originalConfigPlatform = (originalConfigJson.platforms || [])
+        .find(platform => platform.platform === 'config')
+
+      // Find config platforms in updated config
+      const updatedConfigPlatform = (updatedConfigJson.platforms || [])
+        .find(platform => platform.platform === 'config')
+
+      // Handle webroot changes in all scenarios
+      const oldWebroot = originalConfigPlatform?.webroot || ''
+      let newWebroot = updatedConfigPlatform?.webroot || ''
+
+      if (oldWebroot !== newWebroot) {
+        // Normalise webroot: remove multiple slashes, ensure single leading slash, no trailing slash
+        // It is really important we keep this property value in a consistent format
+        newWebroot = newWebroot
+          ? `/${newWebroot}`.replace(/\/+/g, '/').replace(/\/$/, '')
+          : ''
+
+        if (newWebroot === '/') {
+          newWebroot = ''
+        }
+
+        // Update settings service
+        this.$settings.setItem('webroot', newWebroot)
+        if (updatedConfigPlatform) {
+          if (newWebroot && this.$settings.originalWebroot !== globalThis.webroot.errorCode) {
+            updatedConfigPlatform.webroot = newWebroot
+          } else {
+            delete updatedConfigPlatform.webroot
+          }
+          this.homebridgeConfig = JSON.stringify(updatedConfigJson, null, 4)
+          if (this.monacoEditor) {
+            this.monacoEditor.getModel().setValue(this.homebridgeConfig)
+          }
+        }
+      }
+
+      // If one exists and the other doesn't, that's a change
+      if (!originalConfigPlatform && updatedConfigPlatform) {
+        return true
+      }
+      if (originalConfigPlatform && !updatedConfigPlatform) {
+        return true
+      }
+      if (!originalConfigPlatform && !updatedConfigPlatform) {
+        return false
+      }
+
+      // Both exist - compare all keys (deep equality check)
+      return !isEqual(originalConfigPlatform, updatedConfigPlatform)
+    } catch (error) {
+      console.error('Error detecting config platform changes:', error)
+      return false // Default to no service restart if we can't determine
+    }
+  }
+
   private async detectSavesChangesForRestart() {
     const restartType = await this.determineRestartType()
 
     if (restartType === 'full') {
-      await this.performFullRestart()
+      // If any of the keys inside the platforms[].entry where entry.platform === 'config' have changed, we need a full service restart
+      const doServiceRestart = this.detectConfigPlatformChanges()
+
+      await this.performFullRestart(doServiceRestart)
     } else if (restartType === 'child') {
       await this.performChildBridgeRestart()
     }
-    // If restartType === 'none', do nothing
 
     this.latestSavedConfig = JSON.parse(this.homebridgeConfig)
   }
@@ -790,7 +1284,12 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
     } catch (error) { /* modal dismissed */ }
   }
 
-  private async performFullRestart() {
+  private async performFullRestart(restartService: boolean) {
+    // If restartService is true, set the flag to do a full service restart
+    if (restartService) {
+      await firstValueFrom(this.$api.put('/platform-tools/hb-service/set-full-service-restart-flag', {}))
+    }
+
     const ref = this.$modal.open(RestartHomebridgeComponent, {
       size: 'lg',
       backdrop: 'static',

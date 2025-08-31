@@ -291,7 +291,7 @@ export class PluginBridgeComponent implements OnInit {
   private generateUsername() {
     const hexDigits = '0123456789ABCDEF'
     let username = '0E:'
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 5; i += 1) {
       username += hexDigits.charAt(Math.round(Math.random() * 15))
       username += hexDigits.charAt(Math.round(Math.random() * 15))
       if (i !== 4) {
@@ -302,7 +302,7 @@ export class PluginBridgeComponent implements OnInit {
   }
 
   public openFullConfigEditor() {
-    this.$router.navigate(['/config'])
+    void this.$router.navigate(['/config'])
     this.$activeModal.close()
   }
 

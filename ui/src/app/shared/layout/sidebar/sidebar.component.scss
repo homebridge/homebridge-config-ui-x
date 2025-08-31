@@ -43,6 +43,11 @@
   .link-wrapper {
     overflow-y: auto;
     max-height: calc(100vh - 80px) !important;
+
+    @media (max-width: 767px) {
+      padding-bottom: 60px; // prevent menu items being hidden by URL bar on ios safari
+    }
+
     .link {
       .link-row {
         display: flex;
@@ -156,13 +161,7 @@
     right: 10px;
     top: 28px;
     width: 30px;
-    -webkit-transform: rotate(0deg);
-    -moz-transform: rotate(0deg);
-    -o-transform: rotate(0deg);
     transform: rotate(0deg);
-    -webkit-transition: 0.5s ease-in-out;
-    -moz-transition: 0.5s ease-in-out;
-    -o-transition: 0.5s ease-in-out;
     transition: 0.5s ease-in-out;
     cursor: pointer;
 
@@ -175,13 +174,7 @@
       border-radius: 9px;
       opacity: 1;
       left: 0;
-      -webkit-transform: rotate(0deg);
-      -moz-transform: rotate(0deg);
-      -o-transform: rotate(0deg);
       transform: rotate(0deg);
-      -webkit-transition: 0.25s ease-in-out;
-      -moz-transition: 0.25s ease-in-out;
-      -o-transition: 0.25s ease-in-out;
       transition: 0.25s ease-in-out;
     }
 
@@ -207,16 +200,10 @@
 
   .hamburger-icon-cross {
     span:nth-child(2) {
-      -webkit-transform: rotate(45deg);
-      -moz-transform: rotate(45deg);
-      -o-transform: rotate(45deg);
       transform: rotate(45deg);
     }
 
     span:nth-child(3) {
-      -webkit-transform: rotate(-45deg);
-      -moz-transform: rotate(-45deg);
-      -o-transform: rotate(-45deg);
       transform: rotate(-45deg);
     }
 

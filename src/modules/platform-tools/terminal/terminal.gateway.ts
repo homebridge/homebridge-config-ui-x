@@ -1,4 +1,4 @@
-import type { TermSize, WsEventEmitter } from './terminal.service'
+import type { TermSize, WsEventEmitter } from './terminal.interfaces'
 
 import { UseGuards } from '@nestjs/common'
 import { SubscribeMessage, WebSocketGateway } from '@nestjs/websockets'

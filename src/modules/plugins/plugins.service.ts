@@ -1,6 +1,7 @@
 /* global NodeJS */
 import type { EventEmitter } from 'node:events'
 
+import type { HomebridgeConfig } from '../../core/config/config.interfaces'
 import type {
   HomebridgePlugin,
   HomebridgePluginUiMetadata,
@@ -12,7 +13,7 @@ import type {
   PluginListData,
   PluginListItem,
   PluginListNewScopeItem,
-} from './types'
+} from './plugins.interfaces'
 
 import { execSync, fork, spawn } from 'node:child_process'
 import { arch, cpus, platform, userInfo } from 'node:os'
@@ -51,7 +52,7 @@ import pLimit from 'p-limit'
 import { firstValueFrom } from 'rxjs'
 import { gt, lt, parse, satisfies } from 'semver'
 
-import { ConfigService, HomebridgeConfig } from '../../core/config/config.service'
+import { ConfigService } from '../../core/config/config.service'
 import { Logger } from '../../core/logger/logger.service'
 import { NodePtyService } from '../../core/node-pty/node-pty.service'
 import { HomebridgeUpdateActionDto, PluginActionDto } from './plugins.dto'
@@ -89,6 +90,9 @@ export class PluginsService {
 
   // Create a cache for storing plugin alias
   private pluginAliasCache = new NodeCache({ stdTTL: 86400 })
+
+  // Cache for installed plugins to avoid redundant file system operations
+  private installedPluginsCache = new NodeCache({ stdTTL: 60 })
 
   /**
    * Define the alias / type some plugins without a schema where the extract method does not work
@@ -146,14 +150,22 @@ export class PluginsService {
    * Return an array of plugins currently installed
    */
   public async getInstalledPlugins(): Promise<HomebridgePlugin[]> {
+    // Check cache first
+    const cached = this.installedPluginsCache.get<HomebridgePlugin[]>('installed-plugins')
+    if (cached) {
+      this.installedPlugins = cached
+      return cached
+    }
+
     const plugins: HomebridgePlugin[] = []
     const modules = await this.getInstalledModules()
     const disabledPlugins = await this.getDisabledPlugins()
 
     // Filter out non-homebridge plugins by name
-    const homebridgePlugins = modules
-      .filter(module => (module.name.indexOf('homebridge-') === 0) || this.isScopedPlugin(module.name))
-      .filter(module => pathExistsSync(join(module.installPath, 'package.json')))
+    const homebridgePlugins = modules.filter(module =>
+      ((module.name.indexOf('homebridge-') === 0) || this.isScopedPlugin(module.name))
+      && pathExistsSync(join(module.installPath, 'package.json')),
+    )
 
     // Limit lookup concurrency to the number of cpu cores
     const limit = pLimit(cpus().length)
@@ -171,10 +183,11 @@ export class PluginsService {
             plugin.disabled = disabledPlugins.includes(plugin.name)
 
             // Filter out duplicate plugins and give preference to non-global plugins
-            if (!plugins.find(x => plugin.name === x.name)) {
+            const existingPlugin = plugins.find(x => plugin.name === x.name)
+            if (!existingPlugin) {
               plugins.push(plugin)
-            } else if (!plugin.globalInstall && plugins.find(x => plugin.name === x.name && x.globalInstall === true)) {
-              const index = plugins.findIndex(x => plugin.name === x.name && x.globalInstall === true)
+            } else if (!plugin.globalInstall && existingPlugin.globalInstall === true) {
+              const index = plugins.indexOf(existingPlugin)
               plugins[index] = plugin
             }
           }
@@ -185,6 +198,10 @@ export class PluginsService {
     }))
 
     this.installedPlugins = plugins.map(plugin => this.fixDisplayName(plugin))
+
+    // Cache the result
+    this.installedPluginsCache.set('installed-plugins', this.installedPlugins)
+
     return this.installedPlugins
   }
 
@@ -273,13 +290,18 @@ export class PluginsService {
     // Separator: '-' character, only get the terms from the plugin name, ignoring any scope
     const nameTerms = this.extractTerms(pluginName.substring(pluginName.lastIndexOf('/') + 1), /-/)
 
+    // Convert arrays to Sets for faster lookup
+    const searchTermsSet = new Set(searchTerms)
+    const keywordsSet = new Set(pluginKeywords)
+    const nameTermsSet = new Set(nameTerms)
+
     // The search terms contain all the parts of the name
-    if (nameTerms.every(term => searchTerms.includes(term))) {
+    if (nameTerms.every(term => searchTermsSet.has(term))) {
       return 'exactName'
     }
     // The keywords or name contain all the search terms
-    if (searchTerms.every(term => pluginKeywords.includes(term))
-      || searchTerms.every(term => nameTerms.includes(term))) {
+    if (searchTerms.every(term => keywordsSet.has(term))
+      || searchTerms.every(term => nameTermsSet.has(term))) {
       return 'exactKeyword'
     }
     if (
@@ -328,9 +350,13 @@ export class PluginsService {
       throw new InternalServerErrorException(`Failed to search the npm registry as ${e.message}, see logs.`)
     }
 
+    const hiddenPluginsSet = new Set(this.hiddenPlugins)
+
     const plugins: HomebridgePlugin[] = searchResults.objects
-      .filter(x => x.package.name.startsWith('homebridge-') || this.isScopedPlugin(x.package.name))
-      .filter(x => !this.hiddenPlugins.includes(x.package.name))
+      .filter(x =>
+        (x.package.name.startsWith('homebridge-') || this.isScopedPlugin(x.package.name))
+        && !hiddenPluginsSet.has(x.package.name),
+      )
       .map((pkg) => {
         const isInstalled = this.installedPlugins.find(x => x.name === pkg.package.name)
 
@@ -494,6 +520,19 @@ export class PluginsService {
     }
 
     const userPlatform = platform()
+
+    // Guard rails to keep users safe!
+    // Here we can throw any error, and it will appear in the UI terminal for the user to see
+
+    // (1) If user has a webroot configured and is trying to install a UI version that doesn't support it
+    if (this.configService.ui.webroot && lt(pluginAction.version, '5.5.1-beta.0')) {
+      throw new Error(
+        `Cannot install HB UI v${pluginAction.version} when a webroot is configured.\n\r`
+        + 'Please either:\n\r'
+        + ' - Remove the configured webroot, restart Homebridge, then try the install again, or\n\r'
+        + ' - Install HB UI v5.6.0 or later.\n\r\n\r',
+      )
+    }
 
     // Set the default install path
     let installPath = this.configService.customPluginPath
@@ -696,13 +735,18 @@ export class PluginsService {
     const installedTag = homebridgeVersion.prerelease[0]?.toString()
 
     // Show pre-releases updates if the user is currently running an alpha/beta/test release
-    if (installedTag && ['alpha', 'beta', 'test'].includes(installedTag) && gt(homebridge.installedVersion, homebridge.latestVersion)) {
+    // or if the alwaysShowBetas setting is enabled
+    const shouldCheckBetas = (installedTag && ['alpha', 'beta', 'test'].includes(installedTag) && gt(homebridge.installedVersion, homebridge.latestVersion))
+      || this.configService.ui.plugins?.alwaysShowBetas
+
+    if (shouldCheckBetas) {
       const versions = await this.getAvailablePluginVersions('homebridge')
-      if (versions.tags[installedTag] && gt(versions.tags[installedTag], homebridge.installedVersion)) {
-        homebridge.latestVersion = versions.tags[installedTag]
+      const targetTag = this.configService.ui.plugins?.alwaysShowBetas && !installedTag ? 'beta' : installedTag
+      if (versions.tags[targetTag] && gt(versions.tags[targetTag], homebridge.installedVersion)) {
+        homebridge.latestVersion = versions.tags[targetTag]
         homebridge.updateAvailable = true
         homebridge.updateEngines = versions.versions?.[homebridge.latestVersion]?.engines || null
-        homebridge.updateTag = installedTag
+        homebridge.updateTag = targetTag
       }
     }
 
@@ -1472,20 +1516,24 @@ export class PluginsService {
       plugin.updateEngines = plugin.updateAvailable ? pkg.engines : null
 
       // check for beta updates, if no latest version is available
+      // or if the alwaysShowBetas setting is enabled
       if (!plugin.updateAvailable) {
         const pluginVersion = parse(plugin.installedVersion)
         const installedTag = pluginVersion.prerelease[0]?.toString()
-        if (
+        const shouldCheckBetas = (
           installedTag
           && ['alpha', 'beta', 'test'].includes(installedTag)
           && gt(plugin.installedVersion, plugin.latestVersion)
-        ) {
+        ) || this.configService.ui.plugins?.alwaysShowBetas
+
+        if (shouldCheckBetas) {
           const versions = await this.getAvailablePluginVersions(plugin.name)
-          if (versions.tags[installedTag] && gt(versions.tags[installedTag], plugin.installedVersion)) {
-            plugin.latestVersion = versions.tags[installedTag]
+          const targetTag = this.configService.ui.plugins?.alwaysShowBetas && !installedTag ? 'beta' : installedTag
+          if (versions.tags[targetTag] && gt(versions.tags[targetTag], plugin.installedVersion)) {
+            plugin.latestVersion = versions.tags[targetTag]
             plugin.updateAvailable = true
             plugin.updateEngines = versions.versions?.[plugin.latestVersion]?.engines || null
-            plugin.updateTag = installedTag
+            plugin.updateTag = targetTag
           }
         }
       }
@@ -1604,6 +1652,9 @@ export class PluginsService {
     client.emit('stdout', cyan(`DIR: ${cwd}\n\r`))
     client.emit('stdout', cyan(`CMD: ${command.join(' ')}\n\r\n\r`))
 
+    // Clear the installed plugins cache
+    this.installedPluginsCache.del('installed-plugins')
+
     await new Promise((res, rej) => {
       const term = this.nodePtyService.spawn(command.shift(), command, {
         name: 'xterm-color',
@@ -1614,19 +1665,19 @@ export class PluginsService {
       })
 
       // Send stdout data from the process to all clients
-      term.on('data', (data) => {
+      term.onData((data) => {
         client.emit('stdout', data)
       })
 
       // Send an error message to the client if the command does not exit with code 0
-      term.on('exit', (code) => {
-        if (code === 0) {
+      term.onExit(({ exitCode }) => {
+        if (exitCode === 0) {
           clearTimeout(timeoutTimer)
           client.emit('stdout', green('\n\rOperation succeeded!.\n\r'))
           res(null)
         } else {
           clearTimeout(timeoutTimer)
-          rej(new Error(`Operation failed with code ${code}.\n\rYou can download this log file for future reference.\n\rSee https://github.com/homebridge/homebridge-config-ui-x/wiki/Troubleshooting for help.`))
+          rej(new Error(`Operation failed with code ${exitCode}.\n\rYou can download this log file for future reference.\n\rSee https://github.com/homebridge/homebridge-config-ui-x/wiki/Troubleshooting for help.`))
         }
       })
 

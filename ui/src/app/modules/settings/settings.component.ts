@@ -7,6 +7,7 @@ import { FormControl, FormsModule, ReactiveFormsModule, UntypedFormControl } fro
 import { Router, RouterLink } from '@angular/router'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
+import { isStandalonePWA } from 'is-standalone-pwa'
 import { ToastrService } from 'ngx-toastr'
 import { firstValueFrom } from 'rxjs'
 import { debounceTime } from 'rxjs/operators'
@@ -73,6 +74,8 @@ export class SettingsComponent implements OnInit {
     cache: true,
   }
 
+  public readonly originalWebroot = this.$settings.originalWebroot
+
   public loading = true
   public isHbV2 = false
   public showAvahiMdnsOption = false
@@ -84,6 +87,8 @@ export class SettingsComponent implements OnInit {
   public runningOnRaspberryPi = this.$settings.env.runningOnRaspberryPi
   public platform = this.$settings.env.platform
   public enableTerminalAccess = this.$settings.env.enableTerminalAccess
+  public isPwa = Boolean(isStandalonePWA())
+  public webrootSettingDisabledAccess = false
 
   public hbNameIsInvalid = false
   public hbNameIsSaving = false
@@ -103,6 +108,9 @@ export class SettingsComponent implements OnInit {
 
   public uiTempIsSaving = false
   public uiTempFormControl = new FormControl('')
+
+  public uiAlwaysShowBetasIsSaving = false
+  public uiAlwaysShowBetasFormControl = new FormControl(false)
 
   public uiTerminalPersistenceIsSaving = false
   public uiTerminalPersistenceFormControl = new FormControl(false)
@@ -159,6 +167,9 @@ export class SettingsComponent implements OnInit {
   public uiHostIsSaving = false
   public uiHostFormControl = new FormControl('')
 
+  public uiWebrootIsSaving = false
+  public uiWebrootFormControl = new FormControl('')
+
   public uiProxyHostIsSaving = false
   public uiProxyHostFormControl = new FormControl('')
 
@@ -209,6 +220,27 @@ export class SettingsComponent implements OnInit {
     await this.initNetworkingOptions()
     await this.initStartupSettings()
 
+    // Some settings might need to be disabled for some users
+    // (1) Disable the webroot settings if the Homebridge user does not have permission to modify the index.html file
+    if (this.$settings.originalWebroot === globalThis.webroot.errorCode) {
+      this.webrootSettingDisabledAccess = true
+      this.uiWebrootFormControl.disable()
+    }
+
+    // (2) Disable some settings that can modify the URL from being changed from a PWA
+    //     This is to stop users from getting stuck if they change the webroot or port
+    if (this.isPwa) {
+      this.uiPortFormControl.disable()
+      this.uiHostFormControl.disable()
+      this.uiWebrootFormControl.disable()
+      this.uiProxyHostFormControl.disable()
+      this.uiSslTypeFormControl.disable()
+      this.uiSslKeyFormControl.disable()
+      this.uiSslCertFormControl.disable()
+      this.uiSslPfxFormControl.disable()
+      this.uiSslPassphraseFormControl.disable()
+    }
+
     this.hbNameFormControl.patchValue(this.$settings.env.homebridgeInstanceName)
     this.hbNameFormControl.valueChanges
       .pipe(debounceTime(1500))
@@ -238,6 +270,12 @@ export class SettingsComponent implements OnInit {
     this.uiTempFormControl.valueChanges
       .pipe(debounceTime(750))
       .subscribe((value: string) => this.uiTempSave(value))
+
+    this.uiAlwaysShowBetasFormControl.patchValue(this.$settings.env.plugins?.alwaysShowBetas || false)
+    this.uiAlwaysShowBetasFormControl.valueChanges
+      .pipe(debounceTime(750))
+      .subscribe((value: boolean) => this.uiAlwaysShowBetasSave(value))
+
     this.uiTerminalPersistenceFormControl.patchValue(this.$settings.env.terminal?.persistence)
     this.uiTerminalPersistenceFormControl.valueChanges
       .pipe(debounceTime(750))
@@ -310,6 +348,11 @@ export class SettingsComponent implements OnInit {
       .pipe(debounceTime(1500))
       .subscribe((value: string) => this.uiHostSave(value))
 
+    this.uiWebrootFormControl.patchValue(this.$settings.webroot || '')
+    this.uiWebrootFormControl.valueChanges
+      .pipe(debounceTime(1500))
+      .subscribe((value: string) => this.uiWebrootSave(value))
+
     this.uiProxyHostFormControl.patchValue(this.$settings.proxyHost || '')
     this.uiProxyHostFormControl.valueChanges
       .pipe(debounceTime(1500))
@@ -356,8 +399,10 @@ export class SettingsComponent implements OnInit {
   }
 
   public openConfigBackup() {
-    // go to /config?action=restore
-    this.$router.navigate(['/config'], { queryParams: { action: 'restore' } })
+    // Go to /config?action=restore
+    void this.$router.navigate(['/config'], {
+      queryParams: { action: 'restore' },
+    })
   }
 
   public openWallpaperModal() {
@@ -635,6 +680,21 @@ export class SettingsComponent implements OnInit {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
       this.uiTempIsSaving = false
+    }
+  }
+
+  private async uiAlwaysShowBetasSave(value: boolean) {
+    try {
+      this.uiAlwaysShowBetasIsSaving = true
+      this.$settings.setEnvItem('plugins.alwaysShowBetas', value)
+      await this.saveUiSettingChange('plugins.alwaysShowBetas', value)
+      setTimeout(() => {
+        this.uiAlwaysShowBetasIsSaving = false
+      }, 1000)
+    } catch (error) {
+      console.error(error)
+      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      this.uiAlwaysShowBetasIsSaving = false
     }
   }
 
@@ -1142,6 +1202,33 @@ export class SettingsComponent implements OnInit {
     }
   }
 
+  private async uiWebrootSave(value: string) {
+    try {
+      this.uiWebrootIsSaving = true
+
+      // Normalise webroot: remove multiple slashes, ensure single leading slash, no trailing slash
+      // It is really important we keep this property value in a consistent format
+      value = value
+        ? `/${value}`.replace(/\/+/g, '/').replace(/\/$/, '')
+        : ''
+      if (value === '/') {
+        value = ''
+      }
+
+      this.$settings.setItem('webroot', value)
+      await this.saveUiSettingChange('webroot', value)
+      this.uiWebrootFormControl.patchValue(value, { emitEvent: false })
+      setTimeout(() => {
+        this.uiWebrootIsSaving = false
+        this.showRestartToast()
+      }, 1000)
+    } catch (error) {
+      console.error(error)
+      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      this.uiWebrootIsSaving = false
+    }
+  }
+
   private async uiProxyHostSave(value: string) {
     try {
       this.uiProxyHostIsSaving = true
@@ -1321,7 +1408,7 @@ export class SettingsComponent implements OnInit {
 
       if (ref && ref.onTap) {
         ref.onTap.subscribe(() => {
-          this.$router.navigate(['/restart'])
+          void this.$router.navigate(['/restart'])
         })
       }
     }

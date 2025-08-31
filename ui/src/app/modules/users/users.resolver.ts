@@ -19,7 +19,7 @@ export class UsersResolver implements Resolve<any> {
     } catch (error) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
-      this.$router.navigate(['/'])
+      void this.$router.navigate(['/'])
     }
   }
 }

@@ -335,7 +335,7 @@ describe('BackupController (e2e)', () => {
       })
     }
 
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < 10; i += 1) {
       await createEmptyFileOfSize(largeFilePath + i, 9000000)
     }
 
@@ -507,4 +507,6 @@ describe('BackupController (e2e)', () => {
     schedulerService.scheduledJobs['instance-backup']?.cancel()
     await app.close()
   })
-}, 10_000)
+}, {
+  timeout: 10_000,
+})

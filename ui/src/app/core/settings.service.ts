@@ -24,6 +24,8 @@ export class SettingsService {
   public env: EnvInterface = {} as EnvInterface
   public host: string
   public proxyHost: string
+  public webroot: string
+  public originalWebroot: string
   public formAuth = true
   public sessionTimeout = 28800
   public uiVersion: string
@@ -37,6 +39,7 @@ export class SettingsService {
   public wallpaper: string
   public serverTimeOffset = 0
   public rtl = false // set true if current translation is RLT
+  public browserLang: string // set by the browser language
   public onSettingsLoaded = this.settingsLoadedSubject.pipe(first())
   public settingsLoaded = false
   public readonly themeList = [
@@ -65,6 +68,8 @@ export class SettingsService {
     this.sessionTimeout = data.sessionTimeout
     this.env = data.env
     this.host = data.host
+    this.webroot = data.webroot
+    this.originalWebroot = data.originalWebroot
     this.proxyHost = data.proxyHost
     this.lightingMode = data.lightingMode
     this.wallpaper = data.wallpaper
@@ -78,6 +83,7 @@ export class SettingsService {
     this.setLang(this.env.lang)
     this.settingsLoaded = true
     this.settingsLoadedSubject.next(undefined)
+    this.browserLang = this.$translate.getBrowserCultureLang()
   }
 
   public setBrowserLightingMode(lighting: 'light' | 'dark') {
@@ -203,7 +209,7 @@ export class SettingsService {
     if (key.includes('.')) {
       const keys = key.split('.')
       let current = this.env
-      for (let i = 0; i < keys.length - 1; i++) {
+      for (let i = 0; i < keys.length - 1; i += 1) {
         if (this.forbiddenKeys.includes(keys[i])) {
           return
         }

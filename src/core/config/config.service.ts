@@ -1,5 +1,7 @@
 import type { ReadStream } from 'fs-extra'
 
+import type { HomebridgeConfig, HomebridgeUiConfig } from './config.interfaces'
+
 import { createHash, randomBytes } from 'node:crypto'
 import { homedir, platform, totalmem } from 'node:os'
 import { resolve } from 'node:path'
@@ -44,6 +46,7 @@ export class ConfigService {
   public runningInLinux = (!this.runningInDocker && !this.runningInSynologyPackage && !this.runningInPackageMode && platform() === 'linux')
   public runningInFreeBSD = (platform() === 'freebsd')
   public canShutdownRestartHost = (this.runningInLinux || process.env.UIX_CAN_SHUTDOWN_RESTART_HOST === '1')
+  public originalWebroot: string // set later by setOriginalWebroot()
   public enableTerminalAccess = (this.runningInDocker && process.env.HOMEBRIDGE_CONFIG_UI_TERMINAL !== '0')
     || (this.runningInPackageMode && process.env.HOMEBRIDGE_CONFIG_UI_TERMINAL !== '0')
     || this.runningInSynologyPackage
@@ -81,58 +84,7 @@ export class ConfigService {
 
   public homebridgeConfig: HomebridgeConfig
 
-  public ui: {
-    name: string
-    port: number
-    host?: '::' | '0.0.0.0' | string
-    proxyHost?: string
-    auth: 'form' | 'none'
-    theme: string
-    lightingMode: 'auto' | 'light' | 'dark'
-    menuMode?: 'default' | 'freeze'
-    sudo?: boolean
-    restart?: string
-    lang?: string
-    log?: {
-      method?: 'file' | 'custom' | 'systemd' | 'native'
-      command?: string
-      path?: string
-      service?: string
-      maxSize?: number
-      truncateSize?: number
-    }
-    ssl?: {
-      key?: string
-      cert?: string
-      pfx?: string
-      passphrase?: string
-    }
-    accessoryControl?: {
-      debug?: boolean
-      instanceBlacklist?: string[]
-    }
-    plugins?: {
-      hideUpdatesFor?: string[]
-    }
-    temp?: string
-    tempUnits?: string
-    wallpaper?: string
-    linux?: {
-      shutdown?: string
-      restart?: string
-    }
-    debug?: boolean
-    sessionTimeout?: number
-    homebridgePackagePath?: string
-    scheduledBackupPath?: string
-    scheduledBackupDisable?: boolean
-    disableServerMetricsMonitoring?: boolean
-    terminal?: {
-      persistence?: boolean
-      hideWarning?: boolean
-      bufferSize?: number
-    }
-  }
+  public ui: HomebridgeUiConfig
 
   private bridgeFreeze: this['homebridgeConfig']['bridge']
   private uiFreeze: this['ui']
@@ -262,6 +214,7 @@ export class ConfigService {
         },
         plugins: {
           hideUpdatesFor: this.ui.plugins?.hideUpdatesFor || [],
+          alwaysShowBetas: Boolean(this.ui.plugins?.alwaysShowBetas),
         },
         linux: {
           shutdown: this.ui.linux?.shutdown,
@@ -276,11 +229,21 @@ export class ConfigService {
       menuMode: this.ui.menuMode || 'default',
       wallpaper: this.ui.wallpaper,
       host: this.ui.host || '',
+      webroot: this.ui.webroot || '',
+      originalWebroot: this.originalWebroot || '',
       proxyHost: this.ui.proxyHost || '',
       homebridgePackagePath: this.ui.homebridgePackagePath,
       disableServerMetricsMonitoring: this.ui.disableServerMetricsMonitoring,
       keepOrphans: this.hbStartupSettings?.keepOrphans || false,
     }
+  }
+
+  /**
+   * Set the original webroot that is used (used by main.ts)
+   * @param webroot
+   */
+  public setOriginalWebroot(webroot: string) {
+    this.originalWebroot = webroot
   }
 
   /**

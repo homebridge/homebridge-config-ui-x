@@ -10,20 +10,13 @@
     ></button>
   </div>
   <div class="modal-body text-center px-5">
-    <div
-      class="humidity-drop humidity-drop-big mb-3"
-      [ngClass]="{
-        'dehumidifying': service.values.CurrentHumidifierDehumidifierState === 3 && service.values.Active === 1,
-        'humidifying': service.values.CurrentHumidifierDehumidifierState === 2 && service.values.Active === 1,
-        'no-current-state': service.values.CurrentHumidifierDehumidifierState === 1 && service.values.Active === 1
-      }"
-    >
-      <div class="humidity-drop-text" [innerText]="(service.values.CurrentRelativeHumidity) + '%'"></div>
-    </div>
+    <h6 class="mt-2 mb-4 fs-4">
+      <i class="fas fa-fw fa-temperature-full"></i>{{ service.values.CurrentRelativeHumidity }}%
+    </h6>
     <div
       class="btn-group-vertical d-flex justify-content-center mb-4 p-0"
       role="group"
-      aria-label="Humidifier Dehumidifier State Control"
+      [attr.aria-label]="'accessories.control.state_control' | translate"
     >
       <button type="button" class="btn mb-0 mx-0 p-3 btn-control" (click)="setTargetState(0, $event)">
         <div class="float-start primary-text">
@@ -51,7 +44,7 @@
     <div
       class="btn-group-vertical d-flex justify-content-center mb-0 p-0"
       role="group"
-      aria-label="Humidifier Dehumidifier Mode Control"
+      [attr.aria-label]="'accessories.control.mode_control' | translate"
     >
       @if (targetStateValidValues.includes(0)) {
       <button type="button" class="btn mb-0 mx-0 p-3 btn-control" (click)="setTargetMode(0, $event)">

@@ -1,5 +1,6 @@
 import type { IPty } from '@homebridge/node-pty-prebuilt-multiarch'
-import type { EventEmitter } from 'node:events'
+
+import type { TermSize, WsEventEmitter } from './terminal.interfaces'
 
 import os from 'node:os'
 import process from 'node:process'
@@ -10,11 +11,6 @@ import { pathExists } from 'fs-extra'
 import { ConfigService } from '../../../core/config/config.service'
 import { Logger } from '../../../core/logger/logger.service'
 import { NodePtyService } from '../../../core/node-pty/node-pty.service'
-
-export interface TermSize {
-  cols: number
-  rows: number
-}
 
 @Injectable()
 export class TerminalService {
@@ -317,8 +313,4 @@ export class TerminalService {
 
     this.logger.debug(`[${this.instanceId}] Persistent terminal session destroyed`)
   }
-}
-
-export interface WsEventEmitter extends EventEmitter {
-  disconnect: () => void
 }

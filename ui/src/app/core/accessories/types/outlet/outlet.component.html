@@ -1,7 +1,7 @@
 <div
   class="accessory-box"
   [ngClass]="{
-    'switch-on': service.values.On
+    'accessory-on': service.values.On
       ||  service.values.Active
       || ('LockTargetState' in service.values && !service.values.LockTargetState)
       || ('CurrentDoorState' in service.values && [0, 2].includes(service.values.CurrentDoorState))
@@ -10,7 +10,34 @@
   tabindex="0"
 >
   <div class="d-flex flex-column h-100">
-    <div [inlineSVG]="'/assets/hap-icons/outlet.svg'" [attr.aria-label]="'Outlet'" class="accessory-svg"></div>
+    <div [attr.aria-label]="'accessories.core.outlet' | translate" class="accessory-svg">
+      <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+        <!-- socket outline -->
+        <rect
+          x="1"
+          y="1"
+          width="30"
+          height="30"
+          rx="6"
+          ry="6"
+          fill="none"
+          stroke="#7f7f7f"
+          stroke-width="1.5"
+          class="outer"
+        />
+        <!-- inner circle -->
+        <circle cx="16" cy="16" r="10" fill="none" stroke="#7f7f7f" stroke-width="1.5" class="inner" />
+        @if (browserLang === 'en-GB') {
+        <line x1="16" y1="10" x2="16" y2="13" stroke="#7f7f7f" stroke-linecap="round" stroke-width="1.5" />
+        <line x1="10" y1="19" x2="13" y2="19" stroke="#7f7f7f" stroke-linecap="round" stroke-width="1.5" />
+        <line x1="19" y1="19" x2="22" y2="19" stroke="#7f7f7f" stroke-linecap="round" stroke-width="1.5" />
+        } @else {
+        <line x1="16" y1="19" x2="16" y2="22" stroke="#7f7f7f" stroke-linecap="round" stroke-width="1.5" />
+        <line x1="10" y1="14" x2="13" y2="14" stroke="#7f7f7f" stroke-linecap="round" stroke-width="1.5" />
+        <line x1="19" y1="14" x2="22" y2="14" stroke="#7f7f7f" stroke-linecap="round" stroke-width="1.5" />
+        }
+      </svg>
+    </div>
     <div class="accessory-label mt-auto">{{ service.customName || service.serviceName }}</div>
     <div
       class="accessory-label grey-text"

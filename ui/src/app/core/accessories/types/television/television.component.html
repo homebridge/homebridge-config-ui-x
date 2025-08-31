@@ -1,12 +1,12 @@
 <div
   class="accessory-box"
-  [ngClass]="{ 'switch-on': service.values.Active || service.values.On }"
+  [ngClass]="{ 'accessory-on': service.values.Active || service.values.On }"
   (longClick)="onLongClick()"
   (shortClick)="onClick()"
   tabindex="0"
 >
   <div class="d-flex flex-column h-100">
-    <div [attr.aria-label]="'Television'" class="accessory-svg">
+    <div [attr.aria-label]="'accessories.core.television' | translate" class="accessory-svg">
       <svg width="32px" height="32px" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
         <!-- stand -->
         <line

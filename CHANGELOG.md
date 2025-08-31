@@ -2,6 +2,42 @@
 
 All notable changes to `homebridge-config-ui-x` will be documented in this file. This project tries to adhere to [Semantic Versioning](http://semver.org/).
 
+## v5.5.1 (Unreleased)
+
+### UI Changes
+
+- refreshed icons: lightbulb, switch, outlet + unknown
+- refreshed icons: heater, cooler, de/humidifier + thermostat
+- put services types into translatable strings
+- update `monaco-editor` from `v0.21.3` to `v0.52.2`
+- allow user to choose config comparison view type
+  - the default view is the **new inline view**, which shows the differences together
+  - a new button allows switching between the inline view and the **existing side-by-side view**
+- improvements to frontend route auth, guards and auth services
+- added config option to configure a webroot to access the UI from
+- prevent url-based settings from being changed from a pwa
+- improvements to schema and translations in config editor
+- add schema info and validation to manual plugin config editor
+- show plugin schema header and footer in plugin json editor
+- hide search button when no plugins installed
+- show help on accessories when no plugins installed
+- add config option to always show beta versions of plugins
+- fix ios safari burger menu viewport issue
+- revisit: fix for accessory control issue on android-edge/chrome
+
+### Other Changes
+
+- preserve custom service info for undiscovered accessories
+- minor performance updates
+- improvements to backend types and organisation
+- added copilot instructions file (#2544) (copilot)
+
+### Homebridge Dependencies
+
+- `@homebridge/hap-client` @ `v3.1.1`
+- `@homebridge/node-pty-prebuilt-multiarch` @ `v0.13.1`
+- `@homebridge/plugin-ui-utils` @ `v2.1.0`
+
 ## v5.5.0 (2025-08-28)
 
 ### UI Changes

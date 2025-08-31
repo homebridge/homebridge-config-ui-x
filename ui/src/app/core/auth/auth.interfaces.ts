@@ -4,3 +4,8 @@ export interface UserInterface {
   admin?: boolean
   instanceId?: string
 }
+
+export interface TokenCacheEntry {
+  token: string | null
+  timestamp: number
+}
