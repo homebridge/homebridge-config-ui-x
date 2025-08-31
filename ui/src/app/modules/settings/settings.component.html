@@ -813,30 +813,6 @@
   </div>
   @if (showFields.matter) {
   <ul class="list-group list-group-box mt-2 mx-0" id="fieldsMatter">
-    <li class="list-group-item d-flex justify-content-between align-items-center">
-      <span>
-        {{ 'settings.matter.enabled' | translate }}<br />
-        <small class="grey-text pe-2">{{ 'settings.matter.enabled_desc' | translate }}</small>
-      </span>
-      <div class="d-flex align-items-center">
-        <div class="order-1 order-md-2">
-          <input
-            type="checkbox"
-            class="rendux-input"
-            id="matterEnabled"
-            [formControl]="matterEnabledFormControl"
-            [attr.aria-label]="'settings.matter.enabled' | translate"
-          />
-          <label for="matterEnabled" class="rendux-label ms-3" style="min-width: 50px"></label>
-        </div>
-        @if (matterEnabledIsSaving) {
-        <i
-          @fadeInOut
-          class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
-        ></i>
-        }
-      </div>
-    </li>
     <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
       <span>
         {{ 'settings.matter.port' | translate }}<br />
@@ -862,43 +838,17 @@
     </li>
     <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
       <span>
-        {{ 'settings.matter.discriminator' | translate }}<br />
-        <small class="grey-text pe-2">{{ 'settings.matter.discriminator_desc' | translate }}</small>
+        {{ 'settings.matter.device_name' | translate }}<br />
+        <small class="grey-text pe-2">{{ 'settings.matter.device_name_desc' | translate }}</small>
       </span>
       <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
         <input
           class="form-control custom-input resp-input order-1 order-md-2"
-          type="number"
-          min="0"
-          max="4095"
-          [formControl]="matterDiscriminatorFormControl"
-          [attr.aria-label]="('settings.matter.discriminator' | translate)"
-          [ngClass]="{ 'is-invalid': matterDiscriminatorIsInvalid }"
+          type="text"
+          [formControl]="matterDeviceNameFormControl"
+          [attr.aria-label]="('settings.matter.device_name' | translate)"
         />
-        @if (matterDiscriminatorIsSaving) {
-        <i
-          @fadeInOut
-          class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
-        ></i>
-        }
-      </div>
-    </li>
-    <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
-      <span>
-        {{ 'settings.matter.passcode' | translate }}<br />
-        <small class="grey-text pe-2">{{ 'settings.matter.passcode_desc' | translate }}</small>
-      </span>
-      <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
-        <input
-          class="form-control custom-input resp-input order-1 order-md-2"
-          type="number"
-          min="1"
-          max="99999999"
-          [formControl]="matterPasscodeFormControl"
-          [attr.aria-label]="('settings.matter.passcode' | translate)"
-          [ngClass]="{ 'is-invalid': matterPasscodeIsInvalid }"
-        />
-        @if (matterPasscodeIsSaving) {
+        @if (matterDeviceNameIsSaving) {
         <i
           @fadeInOut
           class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
@@ -945,49 +895,6 @@
           [ngClass]="{ 'is-invalid': matterProductIdIsInvalid }"
         />
         @if (matterProductIdIsSaving) {
-        <i
-          @fadeInOut
-          class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
-        ></i>
-        }
-      </div>
-    </li>
-    <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
-      <span>
-        {{ 'settings.matter.device_name' | translate }}<br />
-        <small class="grey-text pe-2">{{ 'settings.matter.device_name_desc' | translate }}</small>
-      </span>
-      <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
-        <input
-          class="form-control custom-input resp-input order-1 order-md-2"
-          type="text"
-          [formControl]="matterDeviceNameFormControl"
-          [attr.aria-label]="('settings.matter.device_name' | translate)"
-        />
-        @if (matterDeviceNameIsSaving) {
-        <i
-          @fadeInOut
-          class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
-        ></i>
-        }
-      </div>
-    </li>
-    <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
-      <span>
-        {{ 'settings.matter.device_type' | translate }}<br />
-        <small class="grey-text pe-2">{{ 'settings.matter.device_type_desc' | translate }}</small>
-      </span>
-      <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
-        <input
-          class="form-control custom-input resp-input order-1 order-md-2"
-          type="number"
-          min="1"
-          max="65535"
-          [formControl]="matterDeviceTypeFormControl"
-          [attr.aria-label]="('settings.matter.device_type' | translate)"
-          [ngClass]="{ 'is-invalid': matterDeviceTypeIsInvalid }"
-        />
-        @if (matterDeviceTypeIsSaving) {
         <i
           @fadeInOut
           class="fas fa-fw fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"

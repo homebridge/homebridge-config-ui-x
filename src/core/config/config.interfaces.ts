@@ -53,7 +53,7 @@ export interface HomebridgeConfig {
     model?: string
     firmwareRevision?: string
   }
-  matter: {
+  matter?: {
     enabled?: boolean
     port?: number
     discriminator?: number
