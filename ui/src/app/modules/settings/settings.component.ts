@@ -68,6 +68,7 @@ export class SettingsComponent implements OnInit {
     display: true,
     startup: true,
     network: true,
+    matter: true,
     security: true,
     terminal: true,
     reset: true,
@@ -211,6 +212,37 @@ export class SettingsComponent implements OnInit {
 
   public hbLinuxRestartIsSaving = false
   public hbLinuxRestartFormControl = new FormControl('')
+
+  // Matter settings form controls
+  public matterEnabledIsSaving = false
+  public matterEnabledFormControl = new FormControl(false)
+
+  public matterPortIsInvalid = false
+  public matterPortIsSaving = false
+  public matterPortFormControl = new FormControl(5540)
+
+  public matterDiscriminatorIsInvalid = false
+  public matterDiscriminatorIsSaving = false
+  public matterDiscriminatorFormControl = new FormControl(3840)
+
+  public matterPasscodeIsInvalid = false
+  public matterPasscodeIsSaving = false
+  public matterPasscodeFormControl = new FormControl(20202021)
+
+  public matterVendorIdIsInvalid = false
+  public matterVendorIdIsSaving = false
+  public matterVendorIdFormControl = new FormControl(65521)
+
+  public matterProductIdIsInvalid = false
+  public matterProductIdIsSaving = false
+  public matterProductIdFormControl = new FormControl(32769)
+
+  public matterDeviceNameIsSaving = false
+  public matterDeviceNameFormControl = new FormControl('Homebridge Matter Bridge')
+
+  public matterDeviceTypeIsInvalid = false
+  public matterDeviceTypeIsSaving = false
+  public matterDeviceTypeFormControl = new FormControl(22)
 
   public readonly linkDebug = '<a href="https://github.com/homebridge/homebridge-config-ui-x/wiki/Debug-Common-Values" target="_blank" rel="noopener noreferrer"><i class="fa fa-fw fa-external-link-alt primary-text"></i></a>'
 
@@ -387,6 +419,9 @@ export class SettingsComponent implements OnInit {
     this.hbLinuxRestartFormControl.valueChanges
       .pipe(debounceTime(1500))
       .subscribe((value: string) => this.hbLinuxRestartSave(value))
+
+    // Initialize Matter settings
+    await this.initMatterSettings()
 
     this.loading = false
   }
@@ -1389,6 +1424,208 @@ export class SettingsComponent implements OnInit {
         }
       }
     })
+  }
+
+  private async initMatterSettings() {
+    try {
+      const config = await firstValueFrom(this.$api.get('/config-editor'))
+      const matterConfig = config.matter || {}
+
+      this.matterEnabledFormControl.patchValue(matterConfig.enabled || false)
+      this.matterEnabledFormControl.valueChanges
+        .pipe(debounceTime(750))
+        .subscribe((value: boolean) => this.matterEnabledSave(value))
+
+      this.matterPortFormControl.patchValue(matterConfig.port || 5540)
+      this.matterPortFormControl.valueChanges
+        .pipe(debounceTime(1500))
+        .subscribe((value: number) => this.matterPortSave(value))
+
+      this.matterDiscriminatorFormControl.patchValue(matterConfig.discriminator || 3840)
+      this.matterDiscriminatorFormControl.valueChanges
+        .pipe(debounceTime(1500))
+        .subscribe((value: number) => this.matterDiscriminatorSave(value))
+
+      this.matterPasscodeFormControl.patchValue(matterConfig.passcode || 20202021)
+      this.matterPasscodeFormControl.valueChanges
+        .pipe(debounceTime(1500))
+        .subscribe((value: number) => this.matterPasscodeSave(value))
+
+      this.matterVendorIdFormControl.patchValue(matterConfig.vendorId || 65521)
+      this.matterVendorIdFormControl.valueChanges
+        .pipe(debounceTime(1500))
+        .subscribe((value: number) => this.matterVendorIdSave(value))
+
+      this.matterProductIdFormControl.patchValue(matterConfig.productId || 32769)
+      this.matterProductIdFormControl.valueChanges
+        .pipe(debounceTime(1500))
+        .subscribe((value: number) => this.matterProductIdSave(value))
+
+      this.matterDeviceNameFormControl.patchValue(matterConfig.deviceName || 'Homebridge Matter Bridge')
+      this.matterDeviceNameFormControl.valueChanges
+        .pipe(debounceTime(1500))
+        .subscribe((value: string) => this.matterDeviceNameSave(value))
+
+      this.matterDeviceTypeFormControl.patchValue(matterConfig.deviceType || 22)
+      this.matterDeviceTypeFormControl.valueChanges
+        .pipe(debounceTime(1500))
+        .subscribe((value: number) => this.matterDeviceTypeSave(value))
+    } catch (error) {
+      console.error('Failed to load Matter configuration:', error)
+      this.$toastr.error('Failed to load Matter configuration', this.$translate.instant('toast.title_error'))
+    }
+  }
+
+  private async saveMatterConfigChange(updates: any) {
+    try {
+      const config = await firstValueFrom(this.$api.get('/config-editor'))
+
+      if (!config.matter) {
+        config.matter = {}
+      }
+
+      // Apply updates to the matter configuration
+      Object.assign(config.matter, updates)
+
+      await firstValueFrom(this.$api.post('/config-editor', config))
+      this.showRestartToast()
+    } catch (error) {
+      console.error('Failed to save Matter configuration:', error)
+      this.$toastr.error('Failed to save Matter configuration', this.$translate.instant('toast.title_error'))
+      throw error
+    }
+  }
+
+  private async matterEnabledSave(value: boolean) {
+    try {
+      this.matterEnabledIsSaving = true
+      await this.saveMatterConfigChange({ enabled: value })
+      setTimeout(() => {
+        this.matterEnabledIsSaving = false
+      }, 1000)
+    } catch (error) {
+      this.matterEnabledIsSaving = false
+    }
+  }
+
+  private async matterPortSave(value: number) {
+    if (!value || typeof value !== 'number' || value < 1025 || value > 65533 || Number.isInteger(value) === false) {
+      this.matterPortIsInvalid = true
+      return
+    }
+
+    try {
+      this.matterPortIsSaving = true
+      await this.saveMatterConfigChange({ port: value })
+      this.matterPortIsInvalid = false
+      setTimeout(() => {
+        this.matterPortIsSaving = false
+      }, 1000)
+    } catch (error) {
+      this.matterPortIsSaving = false
+    }
+  }
+
+  private async matterDiscriminatorSave(value: number) {
+    if (!value || typeof value !== 'number' || value < 0 || value > 4095 || Number.isInteger(value) === false) {
+      this.matterDiscriminatorIsInvalid = true
+      return
+    }
+
+    try {
+      this.matterDiscriminatorIsSaving = true
+      await this.saveMatterConfigChange({ discriminator: value })
+      this.matterDiscriminatorIsInvalid = false
+      setTimeout(() => {
+        this.matterDiscriminatorIsSaving = false
+      }, 1000)
+    } catch (error) {
+      this.matterDiscriminatorIsSaving = false
+    }
+  }
+
+  private async matterPasscodeSave(value: number) {
+    if (!value || typeof value !== 'number' || value < 1 || value > 99999999 || Number.isInteger(value) === false) {
+      this.matterPasscodeIsInvalid = true
+      return
+    }
+
+    try {
+      this.matterPasscodeIsSaving = true
+      await this.saveMatterConfigChange({ passcode: value })
+      this.matterPasscodeIsInvalid = false
+      setTimeout(() => {
+        this.matterPasscodeIsSaving = false
+      }, 1000)
+    } catch (error) {
+      this.matterPasscodeIsSaving = false
+    }
+  }
+
+  private async matterVendorIdSave(value: number) {
+    if (!value || typeof value !== 'number' || value < 1 || value > 65535 || Number.isInteger(value) === false) {
+      this.matterVendorIdIsInvalid = true
+      return
+    }
+
+    try {
+      this.matterVendorIdIsSaving = true
+      await this.saveMatterConfigChange({ vendorId: value })
+      this.matterVendorIdIsInvalid = false
+      setTimeout(() => {
+        this.matterVendorIdIsSaving = false
+      }, 1000)
+    } catch (error) {
+      this.matterVendorIdIsSaving = false
+    }
+  }
+
+  private async matterProductIdSave(value: number) {
+    if (!value || typeof value !== 'number' || value < 1 || value > 65535 || Number.isInteger(value) === false) {
+      this.matterProductIdIsInvalid = true
+      return
+    }
+
+    try {
+      this.matterProductIdIsSaving = true
+      await this.saveMatterConfigChange({ productId: value })
+      this.matterProductIdIsInvalid = false
+      setTimeout(() => {
+        this.matterProductIdIsSaving = false
+      }, 1000)
+    } catch (error) {
+      this.matterProductIdIsSaving = false
+    }
+  }
+
+  private async matterDeviceNameSave(value: string) {
+    try {
+      this.matterDeviceNameIsSaving = true
+      await this.saveMatterConfigChange({ deviceName: value || 'Homebridge Matter Bridge' })
+      setTimeout(() => {
+        this.matterDeviceNameIsSaving = false
+      }, 1000)
+    } catch (error) {
+      this.matterDeviceNameIsSaving = false
+    }
+  }
+
+  private async matterDeviceTypeSave(value: number) {
+    if (!value || typeof value !== 'number' || value < 1 || value > 65535 || Number.isInteger(value) === false) {
+      this.matterDeviceTypeIsInvalid = true
+      return
+    }
+
+    try {
+      this.matterDeviceTypeIsSaving = true
+      await this.saveMatterConfigChange({ deviceType: value })
+      this.matterDeviceTypeIsInvalid = false
+      setTimeout(() => {
+        this.matterDeviceTypeIsSaving = false
+      }, 1000)
+    } catch (error) {
+      this.matterDeviceTypeIsSaving = false
+    }
   }
 
   private showRestartToast() {
