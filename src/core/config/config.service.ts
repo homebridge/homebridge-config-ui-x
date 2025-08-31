@@ -1,6 +1,6 @@
 import type { ReadStream } from 'fs-extra'
 
-import type { HomebridgeConfig, HomebridgeUiConfig } from './config.interfaces'
+import type { HomebridgeUiConfig, HomebridgeConfig as ImportedHomebridgeConfig } from './config.interfaces'
 
 import { createHash, randomBytes } from 'node:crypto'
 import { homedir, platform, totalmem } from 'node:os'
@@ -82,7 +82,7 @@ export class ConfigService {
   // Set true to force the ui to restart on next restart request
   public hbServiceUiRestartRequired = false
 
-  public homebridgeConfig: HomebridgeConfig
+  public homebridgeConfig: ImportedHomebridgeConfig
 
   public ui: HomebridgeUiConfig
 
@@ -104,7 +104,7 @@ export class ConfigService {
   /**
    * Loads the config from the config.json
    */
-  public parseConfig(homebridgeConfig: HomebridgeConfig) {
+  public parseConfig(homebridgeConfig: ImportedHomebridgeConfig) {
     this.homebridgeConfig = homebridgeConfig
 
     if (!this.homebridgeConfig.bridge) {
