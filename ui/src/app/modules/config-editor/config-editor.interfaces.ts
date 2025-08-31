@@ -38,6 +38,16 @@ export interface HomebridgeConfig {
     model?: string
     firmwareRevision?: string
   }
+  matter?: {
+    enabled?: boolean
+    port?: number
+    discriminator?: number
+    passcode?: number
+    vendorId?: number
+    productId?: number
+    deviceName?: string
+    deviceType?: number
+  }
   mdns?: {
     interface?: string | string[]
     legacyAdvertiser?: boolean
