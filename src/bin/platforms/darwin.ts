@@ -371,6 +371,8 @@ export class DarwinInstaller extends BasePlatform {
       `        <string>${this.plistName}</string>`,
       '    <key>ProgramArguments</key>',
       '        <array>',
+      '             <string>/usr/bin/caffeinate</string>',
+      '             <string>-s</string>',
       `             <string>${process.execPath}</string>`,
       `             <string>${this.hbService.selfPath}</string>`,
       '             <string>run</string>',
