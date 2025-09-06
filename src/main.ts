@@ -10,6 +10,7 @@ import { ValidationPipe } from '@nestjs/common'
 import { NestFactory } from '@nestjs/core'
 import { FastifyAdapter } from '@nestjs/platform-fastify'
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
+import { Bonjour } from 'bonjour-service'
 import { readFile } from 'fs-extra'
 
 import { AppModule } from './app.module'
@@ -139,6 +140,33 @@ async function bootstrap(): Promise<NestFastifyApplication> {
 
   logger.warn(`Homebridge UI v${configService.package.version} is listening on ${startupConfig.host} port ${configService.ui.port}.`)
   await app.listen(configService.ui.port, startupConfig.host)
+
+  // Advertise the HTTP service via mDNS/Bonjour for easy discovery
+  const bonjour = new Bonjour()
+  const service = bonjour.publish({
+    name: 'Homebridge Config UI X',
+    type: 'http',
+    port: configService.ui.port,
+    txt: {
+      path: '/',
+      version: configService.package.version,
+    },
+  })
+
+  logger.log(`Homebridge Config UI X HTTP service advertised via mDNS as "${service.name}" on port ${configService.ui.port}`)
+
+  // Graceful shutdown: unpublish the service when the app is closing
+  process.on('SIGINT', () => {
+    logger.log('Shutting down mDNS service advertising...')
+    bonjour.unpublishAll()
+    bonjour.destroy()
+  })
+
+  process.on('SIGTERM', () => {
+    logger.log('Shutting down mDNS service advertising...')
+    bonjour.unpublishAll()
+    bonjour.destroy()
+  })
 
   return app
 }
