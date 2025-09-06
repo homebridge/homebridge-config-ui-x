@@ -13,6 +13,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 ### Other Changes
 
 - remove logging of every `MessageEvent` (#2575) (@dnicolson)
+- preserve custom service info for undiscovered accessories
 
 ### Homebridge Dependencies
 

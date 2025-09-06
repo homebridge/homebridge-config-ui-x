@@ -39,6 +39,7 @@ export class AccessoriesService {
   public accessories: { services: ServiceType[] } = { services: [] }
   public rooms: Array<{ name: string, services: ServiceTypeX[] }> = []
   public accessoryLayout: AccessoryLayout
+  private originalLayout: AccessoryLayout
 
   constructor() {
     if (this.$auth.user.admin) {
@@ -81,6 +82,7 @@ export class AccessoriesService {
     this.accessories = { services: [] }
     this.roomsOrdered = false
     delete this.accessoryLayout
+    delete this.originalLayout
   }
 
   /**
@@ -145,11 +147,14 @@ export class AccessoriesService {
    * Save the room layout
    */
   public saveLayout() {
-    // Generate layout schema to save to disk
-    this.accessoryLayout = this.rooms.map(room => ({
+    // Generate layout schema from currently active rooms
+    const currentLayout = this.rooms.map(room => ({
       name: room.name,
       services: room.services.map(service => ({
         uniqueId: service.uniqueId,
+        name: service.serviceName,
+        serial: service.accessoryInformation['Serial Number'],
+        bridge: service.instance.username,
         aid: service.aid,
         iid: service.iid,
         uuid: service.uuid,
@@ -159,6 +164,9 @@ export class AccessoriesService {
         onDashboard: service.onDashboard || undefined,
       })),
     })).filter(room => room.services.length)
+
+    // Merge with undiscovered services from original layout to preserve custom information
+    this.accessoryLayout = this.mergeWithUndiscoveredServices(currentLayout)
 
     // Send update request to server
     this.io.request('save-layout', { user: this.$auth.user.username, layout: this.accessoryLayout }).subscribe({
@@ -176,11 +184,115 @@ export class AccessoriesService {
   private async loadLayout() {
     this.accessoryLayout = await firstValueFrom(this.io.request('get-layout', { user: this.$auth.user.username }))
 
+    // Store original layout to preserve undiscovered services
+    this.originalLayout = JSON.parse(JSON.stringify(this.accessoryLayout))
+
     // Build empty room layout
     this.rooms = this.accessoryLayout.map(room => ({
       name: room.name,
       services: [],
     }))
+  }
+
+  /**
+   * Merge current layout with undiscovered services to preserve custom information
+   */
+  private mergeWithUndiscoveredServices(currentLayout: AccessoryLayout): AccessoryLayout {
+    if (!this.originalLayout) {
+      return currentLayout
+    }
+
+    // Create the merged layout starting with current rooms
+    const mergedLayout: AccessoryLayout = JSON.parse(JSON.stringify(currentLayout))
+
+    // Track which services have been matched
+    const matchedOriginalServices = new Set<string>()
+
+    // First pass: Apply custom properties from original layout to discovered services
+    // This includes both uniqueId matches and fallback matches
+    mergedLayout.forEach((room) => {
+      room.services.forEach((discoveredService) => {
+        let matchedOriginalService = null
+
+        // Try to find matching service in original layout
+        for (const originalRoom of this.originalLayout) {
+          for (const originalService of originalRoom.services) {
+            // Skip services without name (cleanup old cache files)
+            if (!originalService.name) {
+              continue
+            }
+
+            // Primary match: by uniqueId
+            if (originalService.uniqueId === discoveredService.uniqueId) {
+              matchedOriginalService = originalService
+              break
+            }
+
+            // Fallback match: by name + serial + bridge + uuid (if uniqueId didn't match)
+            if (!matchedOriginalService
+              && originalService.name === discoveredService.name
+              && originalService.serial === discoveredService.serial
+              && originalService.bridge === discoveredService.bridge
+              && originalService.uuid === discoveredService.uuid) {
+              matchedOriginalService = originalService
+              break
+            }
+          }
+          if (matchedOriginalService) {
+            break
+          }
+        }
+
+        // If we found a match, just track it - don't override custom properties
+        // The discoveredService already has the correct values from the current session
+        if (matchedOriginalService) {
+          // Mark this original service as matched
+          matchedOriginalServices.add(matchedOriginalService.uniqueId)
+        }
+      })
+    })
+
+    // Second pass: Add unmatched services from original layout (truly undiscovered services)
+    this.originalLayout.forEach((originalRoom) => {
+      originalRoom.services.forEach((originalService) => {
+        // Skip if this service was already matched to a discovered service
+        if (matchedOriginalServices.has(originalService.uniqueId)) {
+          return
+        }
+
+        // Skip services without a name - this cleans up old cache files that don't have names
+        if (!originalService.name) {
+          return
+        }
+
+        // Find or create the room for this undiscovered service
+        let targetRoom = mergedLayout.find(room => room.name === originalRoom.name)
+        if (!targetRoom) {
+          targetRoom = {
+            name: originalRoom.name,
+            services: [],
+          }
+          mergedLayout.push(targetRoom)
+        }
+
+        // Add the undiscovered service with its preserved custom information
+        targetRoom.services.push({
+          uniqueId: originalService.uniqueId,
+          name: originalService.name,
+          bridge: originalService.bridge,
+          serial: originalService.serial,
+          aid: originalService.aid,
+          iid: originalService.iid,
+          uuid: originalService.uuid,
+          customName: originalService.customName,
+          customType: originalService.customType,
+          hidden: originalService.hidden,
+          onDashboard: originalService.onDashboard,
+        })
+      })
+    })
+
+    return mergedLayout.filter(room => room.services.length)
   }
 
   /**
@@ -236,11 +348,50 @@ export class AccessoriesService {
 
       // Not in an active room, perhaps the service is in the layout cache
       if (!inRoom) {
-        const inCache = this.accessoryLayout.find(r => r.services.find(s => s.uniqueId === service.uniqueId))
+        let inCache = null
+        let serviceCache = null
 
-        if (inCache) {
+        // Try to find the service in cache using the same matching logic as mergeWithUndiscoveredServices
+        for (const room of this.accessoryLayout) {
+          // Primary match: by uniqueId
+          serviceCache = room.services.find(s => s.uniqueId === service.uniqueId)
+          if (serviceCache) {
+            inCache = room
+            break
+          }
+
+          // Fallback match: by name + serial + bridge + uuid (if uniqueId didn't match)
+          serviceCache = room.services.find(s =>
+            s.name === service.serviceName
+            && s.serial === service.accessoryInformation?.['Serial Number']
+            && s.bridge === service.instance?.username
+            && s.uuid === service.uuid,
+          )
+          if (serviceCache) {
+            inCache = room
+            break
+          }
+        }
+
+        if (inCache && serviceCache) {
           // It's in the cache, add to the correct room
-          this.rooms.find(r => r.name === inCache.name).services.push(service)
+          const targetRoom = this.rooms.find(r => r.name === inCache.name)
+
+          // Apply custom attributes from cache before adding to room
+          if (serviceCache.customType) {
+            (service as ServiceTypeX).customType = serviceCache.customType
+          }
+          if (serviceCache.customName) {
+            (service as ServiceTypeX).customName = serviceCache.customName
+          }
+          if (serviceCache.hidden) {
+            (service as ServiceTypeX).hidden = serviceCache.hidden
+          }
+          if (serviceCache.onDashboard) {
+            (service as ServiceTypeX).onDashboard = serviceCache.onDashboard
+          }
+
+          targetRoom.services.push(service)
         } else {
           // New accessory add the default room
           const defaultRoom = this.rooms.find(r => r.name === 'Default Room')

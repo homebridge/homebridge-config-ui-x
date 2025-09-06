@@ -7,6 +7,9 @@ export type AccessoryLayout = {
     iid: number
     uuid: string
     uniqueId: string
+    name: string
+    serial: string
+    bridge: string
     customName?: string
     customType?: string
     hidden?: boolean
