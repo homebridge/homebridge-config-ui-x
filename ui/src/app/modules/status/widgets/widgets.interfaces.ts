@@ -12,6 +12,8 @@ export interface NodeJsInfo {
   npmVersion: string
   showNodeUnsupportedWarning: boolean
   updateAvailable: boolean
+  architecture: string
+  supportsNodeJs24: boolean
 }
 
 export interface ServerInfo {

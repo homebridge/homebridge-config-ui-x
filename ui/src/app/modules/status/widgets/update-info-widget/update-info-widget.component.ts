@@ -113,6 +113,8 @@ export class UpdateInfoWidgetComponent implements OnInit {
     ref.componentInstance.homebridgeRunningInSynologyPackage = this.serverInfo.homebridgeRunningInSynologyPackage
     ref.componentInstance.homebridgeRunningInDocker = this.serverInfo.homebridgeRunningInDocker
     ref.componentInstance.homebridgePkg = this.homebridgePkg
+    ref.componentInstance.architecture = this.nodejsInfo.architecture
+    ref.componentInstance.supportsNodeJs24 = this.nodejsInfo.supportsNodeJs24
   }
 
   public readyForV2Modal() {

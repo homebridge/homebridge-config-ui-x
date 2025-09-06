@@ -30,6 +30,8 @@ export class NodeVersionModalComponent implements OnInit {
   @Input() homebridgeRunningInSynologyPackage: boolean
   @Input() homebridgeRunningInDocker: boolean
   @Input() homebridgePkg: Plugin
+  @Input() architecture: string
+  @Input() supportsNodeJs24: boolean
 
   public loading = true
   public installedPlugins: PluginNodeCheck[] = []
