@@ -1,5 +1,7 @@
 import type { ReadStream } from 'fs-extra'
 
+import type { HomebridgeConfig, HomebridgeUiConfig } from './config.interfaces'
+
 import { createHash, randomBytes } from 'node:crypto'
 import { homedir, platform, totalmem } from 'node:os'
 import { resolve } from 'node:path'
@@ -81,59 +83,7 @@ export class ConfigService {
 
   public homebridgeConfig: HomebridgeConfig
 
-  public ui: {
-    name: string
-    port: number
-    host?: '::' | '0.0.0.0' | string
-    proxyHost?: string
-    auth: 'form' | 'none'
-    theme: string
-    lightingMode: 'auto' | 'light' | 'dark'
-    menuMode?: 'default' | 'freeze'
-    sudo?: boolean
-    restart?: string
-    lang?: string
-    log?: {
-      method?: 'file' | 'custom' | 'systemd' | 'native'
-      command?: string
-      path?: string
-      service?: string
-      maxSize?: number
-      truncateSize?: number
-    }
-    ssl?: {
-      key?: string
-      cert?: string
-      pfx?: string
-      passphrase?: string
-    }
-    accessoryControl?: {
-      debug?: boolean
-      instanceBlacklist?: string[]
-    }
-    plugins?: {
-      hideUpdatesFor?: string[]
-      alwaysShowBetas?: boolean
-    }
-    temp?: string
-    tempUnits?: string
-    wallpaper?: string
-    linux?: {
-      shutdown?: string
-      restart?: string
-    }
-    debug?: boolean
-    sessionTimeout?: number
-    homebridgePackagePath?: string
-    scheduledBackupPath?: string
-    scheduledBackupDisable?: boolean
-    disableServerMetricsMonitoring?: boolean
-    terminal?: {
-      persistence?: boolean
-      hideWarning?: boolean
-      bufferSize?: number
-    }
-  }
+  public ui: HomebridgeUiConfig
 
   private bridgeFreeze: this['homebridgeConfig']['bridge']
   private uiFreeze: this['ui']
@@ -438,26 +388,4 @@ export class ConfigService {
       this.runningOnRaspberryPi = false
     }
   }
-}
-
-export interface HomebridgeConfig {
-  bridge: {
-    username: string
-    pin: string
-    name: string
-    port: number
-    advertiser?: 'avahi' | 'resolved' | 'ciao' | 'bonjour-hap'
-    bind?: string | string[]
-  }
-  mdns?: {
-    interface?: string | string[]
-  }
-  ports?: {
-    start?: number
-    end?: number
-  }
-  platforms: Record<string, any>[]
-  accessories: Record<string, any>[]
-  plugins?: string[]
-  disabledPlugins?: string[]
 }
