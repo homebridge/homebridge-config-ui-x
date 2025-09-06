@@ -507,9 +507,8 @@ export class StatusService {
           if (gt(latest22.version, process.version)) {
             updateAvailable = true
             latestVersion = latest22.version
-          }
-          // If 64-bit architecture and Node 24 is available and newer, recommend v24
-          else if (isNodeJs24Supported && latest24 && gt(latest24.version, process.version)) {
+          } else if (isNodeJs24Supported && latest24 && gt(latest24.version, process.version)) {
+            // If 64-bit architecture and Node 24 is available and newer, recommend v24
             updateAvailable = true
             latestVersion = latest24.version
           }

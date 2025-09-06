@@ -216,7 +216,7 @@ describe('StatusController (e2e)', () => {
     expect(res.json()).toHaveProperty('architecture')
     expect(res.json()).toHaveProperty('supportsNodeJs24')
     expect(res.json().architecture).toBe(process.arch)
-    
+
     // Test architecture detection logic
     const supportedArchitectures = ['x64', 'arm64', 'ppc64', 's390x']
     const expectedSupport = supportedArchitectures.includes(process.arch)
@@ -258,13 +258,13 @@ describe('StatusController (e2e)', () => {
     })
 
     expect(res.statusCode).toBe(200)
-    
+
     // Test that the endpoint includes the new architecture fields
     expect(res.json()).toHaveProperty('architecture')
     expect(res.json()).toHaveProperty('supportsNodeJs24')
     expect(typeof res.json().supportsNodeJs24).toBe('boolean')
     expect(typeof res.json().architecture).toBe('string')
-    
+
     // Verify that 64-bit architectures are properly detected
     const supportedArchitectures = ['x64', 'arm64', 'ppc64', 's390x']
     const currentArchSupportsNode24 = supportedArchitectures.includes(res.json().architecture)
