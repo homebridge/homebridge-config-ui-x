@@ -446,6 +446,16 @@ export class StatusService {
   }
 
   /**
+   * Checks if the current architecture supports Node.js v24
+   * Node.js v24 is only available for 64-bit architectures
+   */
+  private isNodeJs24SupportedByArchitecture(): boolean {
+    // Node.js 24 is only supported on 64-bit architectures
+    const supportedArchitectures = ['x64', 'arm64', 'ppc64', 's390x']
+    return supportedArchitectures.includes(process.arch)
+  }
+
+  /**
    * Checks the current version of Node.js and compares to the latest LTS
    */
   public async getNodeJsVersionInfo() {
@@ -472,29 +482,41 @@ export class StatusService {
        *      18            2.28
        *      20            2.31
        *      22            2.31 (assumption - the code below assumes this)
-       *      24            ????
+       *      24            2.31+ (64-bit architectures only)
        */
+
+      const isNodeJs24Supported = this.isNodeJs24SupportedByArchitecture()
 
       // Behaviour depends on the installed version of node
       switch (process.version.split('.')[0]) {
         case 'v20': {
           // Currently using v20
-          // Show the option for updating to node 22
-          updateAvailable = true
-          latestVersion = latest22.version
-          break
-        }
-        case 'v22': {
-          // Currently using v22
-          // Check if there is a new minor/patch version available
-          if (gt(latest22.version, process.version)) {
+          // If 64-bit architecture and Node 24 is available, recommend v24, otherwise recommend v22
+          if (isNodeJs24Supported && latest24) {
+            updateAvailable = true
+            latestVersion = latest24.version
+          } else {
             updateAvailable = true
             latestVersion = latest22.version
           }
           break
         }
+        case 'v22': {
+          // Currently using v22
+          // First check if there's a new v22 patch/minor available
+          if (gt(latest22.version, process.version)) {
+            updateAvailable = true
+            latestVersion = latest22.version
+          }
+          // If 64-bit architecture and Node 24 is available and newer, recommend v24
+          else if (isNodeJs24Supported && latest24 && gt(latest24.version, process.version)) {
+            updateAvailable = true
+            latestVersion = latest24.version
+          }
+          break
+        }
         case 'v24': {
-          // Currently using v24
+          // Currently using v24 (only possible on 64-bit architectures)
           // Check if there is a new minor/patch version available
           if (gt(latest24.version, process.version)) {
             updateAvailable = true
@@ -524,6 +546,8 @@ export class StatusService {
         showNodeUnsupportedWarning,
         installPath: dirname(process.execPath),
         npmVersion,
+        architecture: process.arch,
+        supportsNodeJs24: isNodeJs24Supported,
       }
       this.statusCache.set('nodeJsVersion', versionInformation, 86400)
       return versionInformation
@@ -534,6 +558,8 @@ export class StatusService {
         latestVersion: process.version,
         updateAvailable: false,
         showNodeUnsupportedWarning: false,
+        architecture: process.arch,
+        supportsNodeJs24: this.isNodeJs24SupportedByArchitecture(),
       }
       this.statusCache.set('nodeJsVersion', versionInformation, 3600)
       return versionInformation

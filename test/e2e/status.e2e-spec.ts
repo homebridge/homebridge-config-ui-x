@@ -180,20 +180,16 @@ describe('StatusController (e2e)', () => {
   it('GET /status/nodejs', async () => {
     const data = [
       {
-        version: 'v21.6.1',
+        version: 'v24.1.0',
         lts: false,
       },
       {
-        version: 'v20.12.2',
+        version: 'v22.12.0',
+        lts: 'Jod',
+      },
+      {
+        version: 'v20.19.0',
         lts: 'Iron',
-      },
-      {
-        version: 'v18.19.0',
-        lts: 'Hydrogen',
-      },
-      {
-        version: 'v16.20.2',
-        lts: 'Gallium',
       },
     ]
 
@@ -217,7 +213,62 @@ describe('StatusController (e2e)', () => {
 
     expect(res.statusCode).toBe(200)
     expect(res.json().currentVersion).toEqual(process.version)
-    // expect(res.json().latestVersion).toBe('v20.14.0' || 'v22.3.0');
+    expect(res.json()).toHaveProperty('architecture')
+    expect(res.json()).toHaveProperty('supportsNodeJs24')
+    expect(res.json().architecture).toBe(process.arch)
+    
+    // Test architecture detection logic
+    const supportedArchitectures = ['x64', 'arm64', 'ppc64', 's390x']
+    const expectedSupport = supportedArchitectures.includes(process.arch)
+    expect(res.json().supportsNodeJs24).toBe(expectedSupport)
+  })
+
+  it('GET /status/nodejs (architecture-specific recommendations)', async () => {
+    const data = [
+      {
+        version: 'v24.1.0',
+        lts: false,
+      },
+      {
+        version: 'v22.12.0',
+        lts: 'Jod',
+      },
+      {
+        version: 'v20.19.0',
+        lts: 'Iron',
+      },
+    ]
+
+    const response: AxiosResponse<any> = {
+      data,
+      headers: {},
+      config: { url: 'https://nodejs.org/dist/index.json' } as InternalAxiosRequestConfig,
+      status: 200,
+      statusText: 'OK',
+    }
+
+    vi.spyOn(httpService, 'get').mockImplementationOnce(() => of(response) as any)
+
+    const res = await app.inject({
+      method: 'GET',
+      path: '/status/nodejs',
+      headers: {
+        authorization,
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+    
+    // Test that the endpoint includes the new architecture fields
+    expect(res.json()).toHaveProperty('architecture')
+    expect(res.json()).toHaveProperty('supportsNodeJs24')
+    expect(typeof res.json().supportsNodeJs24).toBe('boolean')
+    expect(typeof res.json().architecture).toBe('string')
+    
+    // Verify that 64-bit architectures are properly detected
+    const supportedArchitectures = ['x64', 'arm64', 'ppc64', 's390x']
+    const currentArchSupportsNode24 = supportedArchitectures.includes(res.json().architecture)
+    expect(res.json().supportsNodeJs24).toBe(currentArchSupportsNode24)
   })
 
   afterAll(async () => {
