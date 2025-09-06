@@ -57,4 +57,12 @@ export class AuthController {
   checkAuth() {
     return { status: 'OK' }
   }
+
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Refresh the authentication token to extend the session.' })
+  @UseGuards(AuthGuard())
+  @Post('/refresh')
+  refreshToken(@Request() req: any) {
+    return this.authService.refreshToken(req.user)
+  }
 }

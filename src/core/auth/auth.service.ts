@@ -146,6 +146,26 @@ export class AuthService {
   }
 
   /**
+   * Refresh an existing token to extend the session
+   * @param user the current user payload from the JWT
+   */
+  async refreshToken(user: any): Promise<any> {
+    // Generate a new token with the same user data but updated expiration
+    const token = this.jwtService.sign({
+      username: user.username,
+      name: user.name,
+      admin: user.admin,
+      instanceId: user.instanceId,
+    })
+
+    return {
+      access_token: token,
+      token_type: 'Bearer',
+      expires_in: this.configService.ui.sessionTimeout,
+    }
+  }
+
+  /**
    * Validate User
    * All information about the user we need is stored in the payload
    * @param payload the decoded, verified jwt payload
