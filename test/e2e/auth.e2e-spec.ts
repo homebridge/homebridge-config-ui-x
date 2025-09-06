@@ -234,7 +234,7 @@ describe('AuthController (e2e)', () => {
     expect(res.json()).toHaveProperty('token_type', 'Bearer')
     expect(res.json()).toHaveProperty('expires_in')
     // Verify the token is valid (length and structure)
-    expect(res.json().access_token).toMatch(/^[A-Za-z0-9\-_]+\.[A-Za-z0-9\-_]+\.[A-Za-z0-9\-_]+$/)
+    expect(res.json().access_token).toMatch(/^\w+\.\w+\.\w+$/)
   })
 
   it('POST /auth/refresh (invalid token)', async () => {
