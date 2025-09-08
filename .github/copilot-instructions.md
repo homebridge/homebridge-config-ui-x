@@ -4,6 +4,17 @@ Homebridge Config UI X is a web-based management tool for Homebridge written in 
 
 Always reference these instructions first and fallback to search or bash commands only when you encounter unexpected information that does not match the info here.
 
+## Pull Request Guidelines
+
+**CRITICAL**: Always create pull requests against the current beta branch, NOT the main/latest branch.
+
+- **Target Branch**: Always target the current beta branch (typically named `beta-X.Y.Z`, e.g., `beta-5.6.1`)
+- **Finding the Current Beta Branch**: Use `git branch -a | grep beta` or check the GitHub repository branches to identify the latest beta branch
+- **Never target**: `main`, `latest`, or any other non-beta branch unless explicitly instructed otherwise
+- **Branch Naming**: When creating feature branches, use descriptive names like `copilot/fix-XXXX` or `feature/description`
+
+This ensures all changes go through the beta testing process before being merged to production releases.
+
 ## Working Effectively
 
 - Bootstrap, build, and test the repository:
