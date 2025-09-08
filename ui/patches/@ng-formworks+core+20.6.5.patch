@@ -29,6 +29,15 @@ index 70a72ec..a91b419 100644
          const parentValues = this.getFormControlValue(parentCtxAsSignals);
          const isArrayItem = (parentNode.type || '').slice(-5) === 'array' && isArray(parentValues);
          const text = JsonPointer.getFirst(isArrayItem && childNode.type !== '$ref'
+@@ -7548,7 +7556,7 @@ class JsonSchemaFormService {
+         //to use for the value
+         if (ctx.options?.condition || layoutNode?.oneOfPointer) {
+             const dataPointer = this.getDataPointer(ctx);
+-            const controlValue = ctx.formControl.value;
++            const controlValue = ctx.formControl?.value;
+             const dataValue = JsonPointer.has(this.data, dataPointer) ?
+                 JsonPointer.get(this.data, dataPointer) : undefined;
+             const formValue = JsonPointer.has(this.formValues, dataPointer) ?
 @@ -8096,7 +8100,7 @@ class CheckboxComponent {
      static { this.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "17.1.0", version: "20.1.6", type: CheckboxComponent, isStandalone: false, selector: "checkbox-widget", inputs: { layoutNode: { classPropertyName: "layoutNode", publicName: "layoutNode", isSignal: true, isRequired: false, transformFunction: null }, layoutIndex: { classPropertyName: "layoutIndex", publicName: "layoutIndex", isSignal: true, isRequired: false, transformFunction: null }, dataIndex: { classPropertyName: "dataIndex", publicName: "dataIndex", isSignal: true, isRequired: false, transformFunction: null } }, ngImport: i0, template: `
      <label
