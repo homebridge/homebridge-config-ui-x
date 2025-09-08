@@ -36,6 +36,24 @@ export class ConfigService {
   public homebridgeInsecureMode = Boolean(process.env.UIX_INSECURE_MODE === '1')
   public homebridgeVersion: string
 
+  /**
+   * Check if HapClient should be disabled
+   * This checks both the environment variable and the UI platform config option
+   */
+  public get hapClientDisabled(): boolean {
+    // Check environment variable first
+    if (process.env.HOMEBRIDGE_CONFIG_UI_NO_HAP_CLIENT === '1') {
+      return true
+    }
+
+    // Check UI platform config option
+    if (this.ui?.noHapClient === true) {
+      return true
+    }
+
+    return false
+  }
+
   // Server env
   public minimumNodeVersion = '20.19.0'
   public runningInDocker = Boolean(process.env.HOMEBRIDGE_CONFIG_UI === '1')
@@ -133,6 +151,7 @@ export class ConfigService {
       hideWarning?: boolean
       bufferSize?: number
     }
+    noHapClient?: boolean
   }
 
   private bridgeFreeze: this['homebridgeConfig']['bridge']

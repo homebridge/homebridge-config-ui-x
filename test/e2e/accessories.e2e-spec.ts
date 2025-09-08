@@ -375,6 +375,61 @@ describe('AccessoriesController (e2e)', () => {
     expect(res.body).toContain('value should not be null or undefined')
   })
 
+  describe('noHapClient configuration', () => {
+    it('GET /accessories (noHapClient enabled in config)', async () => {
+      // Set the config option
+      configService.ui.noHapClient = true
+
+      const res = await app.inject({
+        method: 'GET',
+        path: '/accessories',
+        headers: {
+          authorization,
+        },
+      })
+
+      expect(res.statusCode).toBe(400)
+      expect(res.body).toContain('HapClient is disabled via configuration')
+    })
+
+    it('GET /accessories (HOMEBRIDGE_CONFIG_UI_NO_HAP_CLIENT environment variable)', async () => {
+      // Reset config option and set environment variable
+      configService.ui.noHapClient = false
+      process.env.HOMEBRIDGE_CONFIG_UI_NO_HAP_CLIENT = '1'
+
+      const res = await app.inject({
+        method: 'GET',
+        path: '/accessories',
+        headers: {
+          authorization,
+        },
+      })
+
+      expect(res.statusCode).toBe(400)
+      expect(res.body).toContain('HapClient is disabled via configuration')
+
+      // Clean up
+      delete process.env.HOMEBRIDGE_CONFIG_UI_NO_HAP_CLIENT
+    })
+
+    it('resetInstancePool should not be called when noHapClient is enabled', () => {
+      configService.ui.noHapClient = true
+
+      // Create a spy on resetInstancePool
+      const resetSpy = vi.fn()
+      if (accessoriesService.hapClient) {
+        accessoriesService.hapClient.resetInstancePool = resetSpy
+      }
+
+      accessoriesService.resetInstancePool()
+
+      expect(resetSpy).not.toHaveBeenCalled()
+
+      // Reset
+      configService.ui.noHapClient = false
+    })
+  })
+
   afterAll(async () => {
     await app.close()
   })

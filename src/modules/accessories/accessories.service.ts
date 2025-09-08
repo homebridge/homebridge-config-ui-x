@@ -19,7 +19,7 @@ export class AccessoriesService {
     private readonly configService: ConfigService,
     private readonly logger: Logger,
   ) {
-    if (this.configService.homebridgeInsecureMode) {
+    if (this.configService.homebridgeInsecureMode && !this.configService.hapClientDisabled) {
       this.hapClient = new HapClient({
         pin: this.configService.homebridgeConfig.bridge.pin,
         logger: this.logger,
@@ -35,6 +35,16 @@ export class AccessoriesService {
   public async connect(client: any) {
     if (!this.configService.homebridgeInsecureMode) {
       this.logger.error('Homebridge must be running in insecure mode to control accessories.')
+      return
+    }
+
+    if (this.configService.hapClientDisabled) {
+      this.logger.warn('HapClient is disabled via configuration. Accessory control is not available.')
+      return
+    }
+
+    if (!this.hapClient) {
+      this.logger.error('HapClient is not initialized. Accessory control is not available.')
       return
     }
 
@@ -134,6 +144,14 @@ export class AccessoriesService {
   public async loadAccessories(): Promise<ServiceType[]> {
     if (!this.configService.homebridgeInsecureMode) {
       throw new BadRequestException('Homebridge must be running in insecure mode to access accessories.')
+    }
+
+    if (this.configService.hapClientDisabled) {
+      throw new BadRequestException('HapClient is disabled via configuration.')
+    }
+
+    if (!this.hapClient) {
+      throw new BadRequestException('HapClient is not initialized.')
     }
 
     try {
@@ -286,7 +304,7 @@ export class AccessoriesService {
    * Reset the instance pool and do a full scan for Homebridge instances
    */
   public resetInstancePool() {
-    if (this.configService.homebridgeInsecureMode) {
+    if (this.configService.homebridgeInsecureMode && !this.configService.hapClientDisabled && this.hapClient) {
       this.hapClient.resetInstancePool()
     }
   }
