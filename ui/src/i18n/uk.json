@@ -579,6 +579,8 @@
   "settings.startup.metrics_desc": "Коли ця функція ввімкнена, інтерфейс користувача Homebridge збиратиме та відображатиме статистику процесора та пам'яті на сторінці стану.",
   "settings.startup.session": "Час очікування сеансу",
   "settings.startup.session_desc": "Кількість секунд, після якої користувач вийде з інтерфейсу користувача. За замовчуванням – 8 годин.",
+  "settings.startup.session_inactivity_based": "Inactivity-Based Session Refresh",
+  "settings.startup.session_inactivity_based_desc": "When enabled, the session will automatically refresh on navigation to prevent logout during active use.",
   "settings.terminal.buffer_size": "Розмір символів буферу терміналу",
   "settings.terminal.buffer_size_help": "Обсяг виводу терміналу, який потрібно зберегти для постійних сеансів. Більші значення використовують більше пам'яті.",
   "settings.terminal.log_max": "Максимальний розмір журналу",

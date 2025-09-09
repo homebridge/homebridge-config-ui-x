@@ -579,6 +579,8 @@
   "settings.startup.metrics_desc": "Wanneer ingeschakeld, zal de Homebridge UI CPU en geheugen statistieken verzamelen en tonen op de status pagina.",
   "settings.startup.session": "Sessie Timeout",
   "settings.startup.session_desc": "Het aantal seconden voordat een gebruiker uitgelogd wordt uit de UI. Standaard 8 uur.",
+  "settings.startup.session_inactivity_based": "Inactivity-Based Session Refresh",
+  "settings.startup.session_inactivity_based_desc": "When enabled, the session will automatically refresh on navigation to prevent logout during active use.",
   "settings.terminal.buffer_size": "Terminal Buffer Character Size",
   "settings.terminal.buffer_size_help": "Amount of terminal output to preserve for persistent sessions. Larger values use more memory.",
   "settings.terminal.log_max": "Log Maximale Grootte",

@@ -65,6 +65,7 @@ export interface AppSettingsInterface {
   originalWebroot?: string
   proxyHost?: string
   sessionTimeout: number
+  sessionTimeoutInactivityBased: boolean
   theme: string
   lightingMode: 'auto' | 'light' | 'dark'
   menuMode: 'default' | 'freeze'

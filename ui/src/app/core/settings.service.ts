@@ -28,6 +28,7 @@ export class SettingsService {
   public originalWebroot: string
   public formAuth = true
   public sessionTimeout = 28800
+  public sessionTimeoutInactivityBased = false
   public uiVersion: string
   public theme: string
   public lightingMode: 'auto' | 'light' | 'dark'
@@ -66,6 +67,7 @@ export class SettingsService {
     const data = await firstValueFrom(this.$api.get('/auth/settings')) as AppSettingsInterface
     this.formAuth = data.formAuth
     this.sessionTimeout = data.sessionTimeout
+    this.sessionTimeoutInactivityBased = data.sessionTimeoutInactivityBased
     this.env = data.env
     this.host = data.host
     this.webroot = data.webroot

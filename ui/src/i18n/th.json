@@ -579,6 +579,8 @@
   "settings.startup.metrics_desc": "เมื่อเปิดใช้งาน UI ของ Homebridge จะรวบรวมและแสดงสถิติ CPU และหน่วยความจำบนหน้าสถานะ",
   "settings.startup.session": "หมดเวลาเซสชัน",
   "settings.startup.session_desc": "จำนวนวินาทีก่อนที่ผู้ใช้จะออกจากระบบ UI ค่าเริ่มต้นคือ 8 ชั่วโมง",
+  "settings.startup.session_inactivity_based": "Inactivity-Based Session Refresh",
+  "settings.startup.session_inactivity_based_desc": "When enabled, the session will automatically refresh on navigation to prevent logout during active use.",
   "settings.terminal.buffer_size": "ขนาดอักขระบัฟเฟอร์เทอร์มินัล",
   "settings.terminal.buffer_size_help": "ปริมาณเอาต์พุตเทอร์มินัลที่จะเก็บรักษาไว้สำหรับเซสชันถาวร ค่าที่มากขึ้นจะใช้หน่วยความจำมากขึ้น",
   "settings.terminal.log_max": "Log ขนาดสูงสุด",

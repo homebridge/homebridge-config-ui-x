@@ -39,6 +39,9 @@ export class AdminGuard implements CanActivate {
       return false
     }
 
+    // Refresh token if needed on navigation
+    await this.$auth.checkAndRefreshIfNeeded()
+
     // Check if user is admin
     if (this.$auth.user?.admin) {
       return true

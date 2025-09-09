@@ -180,6 +180,9 @@ export class SettingsComponent implements OnInit {
   public uiSessionTimeoutIsSaving = false
   public uiSessionTimeoutFormControl = new FormControl(0)
 
+  public uiSessionTimeoutInactivityBasedIsSaving = false
+  public uiSessionTimeoutInactivityBasedFormControl = new FormControl(false)
+
   public uiSslTypeFormControl = new FormControl('off')
 
   public uiSslKeyIsSaving = false
@@ -315,6 +318,11 @@ export class SettingsComponent implements OnInit {
     this.uiSessionTimeoutFormControl.valueChanges
       .pipe(debounceTime(750))
       .subscribe((value: number) => this.uiSessionTimeoutSave(value))
+
+    this.uiSessionTimeoutInactivityBasedFormControl.patchValue(this.$settings.sessionTimeoutInactivityBased || false)
+    this.uiSessionTimeoutInactivityBasedFormControl.valueChanges
+      .pipe(debounceTime(750))
+      .subscribe((value: boolean) => this.uiSessionTimeoutInactivityBasedSave(value))
 
     this.uiSslKeyFormControl.patchValue(this.$settings.env.ssl?.key || '')
     this.uiSslKeyFormControl.valueChanges
@@ -1091,6 +1099,22 @@ export class SettingsComponent implements OnInit {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
       this.uiSessionTimeoutIsSaving = false
+    }
+  }
+
+  private async uiSessionTimeoutInactivityBasedSave(value: boolean) {
+    try {
+      this.uiSessionTimeoutInactivityBasedIsSaving = true
+      this.$settings.setItem('sessionTimeoutInactivityBased', value)
+      await this.saveUiSettingChange('sessionTimeoutInactivityBased', value)
+      setTimeout(() => {
+        this.uiSessionTimeoutInactivityBasedIsSaving = false
+        this.showRestartToast()
+      }, 1000)
+    } catch (error) {
+      console.error(error)
+      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      this.uiSessionTimeoutInactivityBasedIsSaving = false
     }
   }
 

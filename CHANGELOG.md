@@ -11,6 +11,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - put services types into translatable strings
 - added config option to configure a webroot for the ui
 - prevent url-based settings from being changed from a pwa
+- added config option to for inactivity-based session timeout
 
 ### Other Changes
 
