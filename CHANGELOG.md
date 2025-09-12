@@ -13,6 +13,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - prevent url-based settings from being changed from a pwa
 - added config option to for inactivity-based session timeout
 - add search bar on settings page for filtering options
+- added config option to advertise the ui over mdns
 
 ### Other Changes
 
