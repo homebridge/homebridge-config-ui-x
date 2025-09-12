@@ -1,0 +1,29 @@
+.search-bar {
+  outline: none;
+  box-sizing: inherit !important;
+  background-color: inherit;
+  height: 50px !important;
+  width: 100%;
+  border-width: 0.5px;
+  padding: 10px;
+  margin-bottom: 15px;
+
+  @media (hover: hover) {
+    &:hover {
+      border: 1px solid #000000;
+    }
+  }
+  &:focus {
+    border: 1px solid #000000;
+    box-shadow: 0 1px 0 0 #000000;
+  }
+}
+
+.search-bar-clear {
+  position: absolute;
+  right: 30px;
+  font-size: 25px;
+  color: #d0d0d0;
+  line-height: 50px;
+  cursor: pointer;
+}

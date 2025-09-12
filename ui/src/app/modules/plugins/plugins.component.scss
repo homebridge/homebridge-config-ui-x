@@ -1,4 +1,4 @@
-.hb-npm-search {
+.search-bar {
   outline: none;
   box-sizing: inherit !important;
   background-color: inherit;
@@ -19,10 +19,10 @@
   }
 }
 
-.hb-npm-search-clear {
+.search-bar-clear {
   position: absolute;
-  right: 25px;
-  font-size: 35px;
+  right: 30px;
+  font-size: 25px;
   color: #d0d0d0;
   line-height: 50px;
   cursor: pointer;

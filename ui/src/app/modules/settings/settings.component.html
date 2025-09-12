@@ -2,13 +2,44 @@
   <div class="col-6">
     <h3 class="primary-text m-0">{{ 'menu.settings.title' | translate }}</h3>
   </div>
-  <div class="col-6 text-end"></div>
+  <div class="col-6 text-end">
+    <button
+      type="button"
+      class="btn btn-elegant my-0 me-0"
+      (click)="toggleSearch()"
+      [attr.aria-label]="'form.search' | translate"
+    >
+      <i class="fas{{ showSearchBar ? ' primary-text' : '' }} fa-search"></i>
+    </button>
+  </div>
 </div>
 
-@if (loading) {
+@if (showSearchBar) {
+<div class="row">
+  <div class="col-md-12">
+    <form novalidate>
+      <input
+        type="text"
+        class="search-bar"
+        #searchInput
+        [placeholder]="'form.search' | translate"
+        [(ngModel)]="searchQuery"
+        (ngModelChange)="filterSettings()"
+        [ngModelOptions]="{standalone: true}"
+      />
+      @if (searchQuery) {
+      <a class="search-bar-clear" href="javascript:void(0)" (click)="clearSearch()">
+        <i class="fas fa-square-xmark"></i>
+      </a>
+      }
+    </form>
+  </div>
+</div>
+} @if (loading) {
 <app-spinner />
 } @else {
 <!-- GENERAL SETTINGS -->
+@if (isSectionVisible('general')) {
 <div class="my-4">
   <div
     role="button"
@@ -25,7 +56,8 @@
   </div>
   @if (showFields.general) {
   <ul class="list-group list-group-box mt-2 mx-0" id="fieldsGeneral">
-    <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+    @if (!isItemHidden('setting-name')) {
+    <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
       <span>{{ 'settings.name' | translate }}</span>
       <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
         <input
@@ -40,7 +72,8 @@
         }
       </div>
     </li>
-    <li class="list-group-item d-flex justify-content-between align-items-center">
+    } @if (!isItemHidden('setting-backup')) {
+    <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
       <span class="pe-2"> {{ 'backup.title_backup' | translate }} </span>
       <button
         class="btn btn-primary waves-effect m-0 ms-3"
@@ -51,7 +84,8 @@
         <i class="fas fa-arrow-right"></i>
       </button>
     </li>
-    <li class="list-group-item d-flex justify-content-between align-items-center">
+    } @if (!isItemHidden('setting-restore')) {
+    <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
       <span class="pe-2"> {{ 'config.restore.title' | translate }} </span>
       <button
         class="btn btn-primary waves-effect m-0 ms-3"
@@ -62,7 +96,8 @@
         <i class="fas fa-arrow-right"></i>
       </button>
     </li>
-    <li class="list-group-item d-flex justify-content-between align-items-center">
+    } @if (!isItemHidden('setting-users')) {
+    <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
       <span class="pe-2"> {{ 'menu.tooltip_user_accounts' | translate }} </span>
       <a
         class="btn btn-primary waves-effect m-0 ms-3"
@@ -73,11 +108,14 @@
         <i class="fas fa-arrow-right"></i>
       </a>
     </li>
+    }
   </ul>
   }
 </div>
+}
 
 <!-- DISPLAY SETTINGS -->
+@if (isSectionVisible('display')) {
 <div class="my-4">
   <div
     role="button"
@@ -94,7 +132,8 @@
   </div>
   @if (showFields.display) {
   <ul class="list-group list-group-box mt-2 mx-0" id="fieldsDisplay">
-    <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+    @if (!isItemHidden('setting-lang')) {
+    <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
       {{ 'settings.display.lang' | translate }}
       <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
         <select class="custom-select resp-select order-1 order-md-2" [formControl]="uiLangFormControl">
@@ -133,7 +172,8 @@
         }
       </div>
     </li>
-    <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+    } @if (!isItemHidden('setting-theme')) {
+    <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
       {{ 'settings.display.theme' | translate }}
       <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
         <select class="custom-select resp-select order-1 order-md-2" [formControl]="uiThemeFormControl">
@@ -156,7 +196,8 @@
         }
       </div>
     </li>
-    <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+    } @if (!isItemHidden('setting-lighting')) {
+    <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
       {{ 'settings.display.lighting_mode' | translate }}
       <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
         <select class="custom-select resp-select order-1 order-md-2" [formControl]="uiLightFormControl">
@@ -169,7 +210,8 @@
         }
       </div>
     </li>
-    <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+    } @if (!isItemHidden('setting-menu')) {
+    <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
       {{ 'settings.display.menu_mode' | translate }}
       <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
         <select class="custom-select resp-select order-1 order-md-2" [formControl]="uiMenuFormControl">
@@ -181,7 +223,8 @@
         }
       </div>
     </li>
-    <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+    } @if (!isItemHidden('setting-temp')) {
+    <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
       {{ 'settings.display.temp_units' | translate }}
       <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
         <select class="custom-select resp-select order-1 order-md-2" [formControl]="uiTempFormControl">
@@ -193,7 +236,8 @@
         }
       </div>
     </li>
-    <li class="list-group-item d-flex justify-content-between align-items-center">
+    } @if (!isItemHidden('setting-betas')) {
+    <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
       <span
         >{{ 'settings.display.show_betas' | translate }}
         <span class="badge badge-primary ms-1">{{ 'common.labels.beta' | translate }}</span>
@@ -214,7 +258,8 @@
         }
       </div>
     </li>
-    <li class="list-group-item d-flex justify-content-between align-items-center">
+    } @if (!isItemHidden('setting-wallpaper')) {
+    <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
       <span class="pe-2">{{ 'settings.display.wallpaper' | translate }}</span>
       <button
         class="btn btn-primary waves-effect m-0 ms-3"
@@ -225,11 +270,14 @@
         <i class="fas fa-arrow-right"></i>
       </button>
     </li>
+    }
   </ul>
   }
 </div>
+}
 
 <!-- STARTUP/ENV OPTIONS -->
+@if (isSectionVisible('startup')) {
 <div class="my-4">
   <div
     role="button"
@@ -246,7 +294,8 @@
   </div>
   @if (showFields.startup) {
   <ul class="list-group list-group-box mb-4 mx-0" id="fieldsStartup">
-    <li class="list-group-item d-flex justify-content-between align-items-center">
+    @if (!isItemHidden('setting-debug')) {
+    <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
       <span>
         {{ 'settings.startup.debug' | translate }} <code>-D</code><br />
         <small class="grey-text pe-2">
@@ -269,7 +318,8 @@
         }
       </div>
     </li>
-    <li class="list-group-item d-flex justify-content-between align-items-center">
+    } @if (!isItemHidden('setting-insecure')) {
+    <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
       <span>
         {{ 'settings.startup.insecure' | translate }} <code>-I</code><br />
         <small class="grey-text pe-2">{{ 'settings.startup.insecure_desc' | translate }}</small>
@@ -290,7 +340,8 @@
         }
       </div>
     </li>
-    <li class="list-group-item d-flex justify-content-between align-items-center">
+    } @if (!isItemHidden('setting-keep')) {
+    <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
       <span>
         {{ 'settings.startup.keep_accessories' | translate }} <code>-K</code><br />
         <small class="grey-text pe-2">{{ 'settings.startup.keep_accessories_desc' | translate }}</small>
@@ -311,7 +362,8 @@
         }
       </div>
     </li>
-    <li class="list-group-item d-flex justify-content-between align-items-center">
+    } @if (!isItemHidden('setting-metrics-startup')) {
+    <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
       <span>
         {{ 'settings.startup.metrics' | translate }}<br />
         <small class="grey-text pe-2">{{ 'settings.startup.metrics_desc' | translate }}</small>
@@ -332,7 +384,8 @@
         }
       </div>
     </li>
-    <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+    } @if (!isItemHidden('setting-package-path')) {
+    <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
       <span>
         {{ 'settings.network.hb_package' | translate }}<br />
         <small class="grey-text pe-2">{{ 'settings.network.hb_package_desc' | translate }}</small>
@@ -350,8 +403,8 @@
         }
       </div>
     </li>
-    @if (platform === 'linux') {
-    <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+    } @if (platform === 'linux') {
+    <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
       <span>
         {{ 'settings.linux.shutdown' | translate }}<br />
         <small class="grey-text pe-2">{{ 'settings.linux.shutdown_desc' | translate }}</small>
@@ -369,7 +422,8 @@
         }
       </div>
     </li>
-    <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+    @if (!isItemHidden('setting-linux-restart')) {
+    <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
       <span>
         {{ 'settings.linux.restart' | translate }}<br />
         <small class="grey-text pe-2">{{ 'settings.linux.restart_desc' | translate }}</small>
@@ -387,8 +441,8 @@
         }
       </div>
     </li>
-    @if (runningOnRaspberryPi) {
-    <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+    } @if (runningOnRaspberryPi) {
+    <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
       <span>
         {{ 'settings.linux.temp' | translate }}<br />
         <small class="grey-text pe-2">{{ 'settings.linux.temp_desc' | translate }}</small>
@@ -406,8 +460,8 @@
         }
       </div>
     </li>
-    } }
-    <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+    } } @if (!isItemHidden('setting-env-debug-manual')) {
+    <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
       <span>
         <span class="font-monospace">DEBUG</span><br />
         <small
@@ -427,7 +481,8 @@
         }
       </div>
     </li>
-    <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+    } @if (!isItemHidden('setting-env-node')) {
+    <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
       <span>
         <span class="font-monospace">NODE_OPTIONS</span><br />
         <small class="grey-text pe-2">{{ 'settings.service.node_tooltip' | translate }}</small>
@@ -444,8 +499,8 @@
         }
       </div>
     </li>
-    @if (runningInDocker) {
-    <li class="list-group-item d-flex justify-content-between align-items-center">
+    } @if (runningInDocker) {
+    <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
       <span>
         {{ 'menu.docker.startup_script' | translate }}<br />
         <small class="grey-text pe-2">{{ 'platform.docker.script_help' | translate }}</small>
@@ -463,8 +518,10 @@
   </ul>
   }
 </div>
+}
 
 <!-- NETWORK SETTINGS -->
+@if (isSectionVisible('network')) {
 <div class="my-4">
   <div
     role="button"
@@ -481,7 +538,8 @@
   </div>
   @if (showFields.network) {
   <ul class="list-group list-group-box mt-2 mx-0" id="fieldsNetwork">
-    <li class="list-group-item d-flex justify-content-between align-items-center">
+    @if (!isItemHidden('setting-interfaces')) {
+    <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
       <span class="pe-2">
         {{ 'settings.network.title_network_interfaces' | translate }}<br />
         <div class="small grey-text pe-2">{{ 'settings.network.message_network_interface' | translate }}</div>
@@ -510,7 +568,8 @@
         <i class="fas fa-arrow-right"></i>
       </button>
     </li>
-    <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+    } @if (!isItemHidden('setting-mdns')) {
+    <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
       <span>
         {{ 'settings.mdns_advertiser' | translate }}<br />
         <small class="grey-text pe-2">{{ 'settings.mdns_advertiser_help' | translate }}</small>
@@ -538,7 +597,8 @@
         }
       </div>
     </li>
-    <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+    } @if (!isItemHidden('setting-port-hb')) {
+    <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
       <span>
         {{ 'settings.network.port_hb' | translate }}<br />
         <small class="grey-text pe-2">{{ 'settings.network.port_hb_desc' | translate }}</small>
@@ -558,34 +618,8 @@
         }
       </div>
     </li>
-    <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
-      <span>
-        {{ 'settings.network.port_ui' | translate }}<br />
-        <small class="grey-text pe-2">{{ 'settings.network.port_ui_desc' | translate }}</small>
-        @if (isPwa) {
-        <br /><small class="grey-text pe-2">
-          <i class="fas fa-exclamation-triangle red-text"></i>
-          {{ 'settings.warning_pwa' | translate }}
-        </small>
-        }
-      </span>
-      <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
-        <input
-          class="form-control custom-input resp-input order-1 order-md-2"
-          type="number"
-          min="1025"
-          max="65533"
-          placeholder="8581"
-          [formControl]="uiPortFormControl"
-          [attr.aria-label]="('settings.network.port_ui' | translate)"
-          [ngClass]="{ 'is-invalid': uiPortIsInvalid }"
-        />
-        @if (uiPortIsSaving) {
-        <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
-        }
-      </div>
-    </li>
-    <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+    } @if (!isItemHidden('setting-port-range')) {
+    <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
       <span>
         {{ 'settings.network.port_start' | translate }}<br />
         <small class="grey-text pe-2">{{ 'settings.network.port_start_desc' | translate }}</small>
@@ -605,7 +639,8 @@
         }
       </div>
     </li>
-    <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+    } @if (!isItemHidden('setting-port-end')) {
+    <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
       <span>
         {{ 'settings.network.port_end' | translate }}<br />
         <small class="grey-text pe-2">{{ 'settings.network.port_end_desc' | translate }}</small>
@@ -625,7 +660,8 @@
         }
       </div>
     </li>
-    <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+    } @if (!isItemHidden('setting-network-host')) {
+    <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
       <span>
         {{ 'settings.network.host' | translate }}<br />
         <small class="grey-text pe-2" [innerHtml]="'settings.network.host_desc' | translate"></small>
@@ -650,7 +686,62 @@
         }
       </div>
     </li>
-    <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+    } @if (!isItemHidden('setting-network-proxy')) {
+    <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+      <span>
+        {{ 'settings.network.proxy' | translate }}<br />
+        <small class="grey-text pe-2">{{ 'settings.network.proxy_desc' | translate }}</small>
+        @if (isPwa) {
+        <br /><small class="grey-text pe-2">
+          <i class="fas fa-exclamation-triangle red-text"></i>
+          {{ 'settings.warning_pwa' | translate }}
+        </small>
+        }
+      </span>
+      <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
+        <input
+          class="form-control custom-input resp-input order-1 order-md-2"
+          type="text"
+          pattern="^[^{}/:\\s]+(?::\d+)?$"
+          placeholder="example.com:8443"
+          [formControl]="uiProxyHostFormControl"
+          [attr.aria-label]="'settings.network.proxy' | translate"
+        />
+        @if (uiProxyHostIsSaving) {
+        <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
+        }
+      </div>
+    </li>
+    } @if (!isItemHidden('setting-ui-port-network')) {
+    <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+      <span>
+        {{ 'settings.network.port_ui' | translate }}<br />
+        <small class="grey-text pe-2">{{ 'settings.network.port_ui_desc' | translate }}</small>
+        @if (isPwa) {
+        <br /><small class="grey-text pe-2">
+          <i class="fas fa-exclamation-triangle red-text"></i>
+          {{ 'settings.warning_pwa' | translate }}
+        </small>
+        }
+      </span>
+      <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
+        <input
+          class="form-control custom-input resp-input order-1 order-md-2"
+          type="number"
+          min="1025"
+          max="65533"
+          placeholder="8581"
+          [formControl]="uiPortFormControl"
+          [attr.aria-label]="'settings.network.port_ui' | translate"
+          [ngClass]="{ 'is-invalid': uiPortIsInvalid }"
+        />
+        @if (uiPortIsSaving) {
+        <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
+        }
+      </div>
+    </li>
+    } @if (!isItemHidden('setting-webroot-network')) {
+    <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
       <span>
         {{ 'settings.network.webroot' | translate }}
         <span class="badge badge-primary ms-1">{{ 'common.labels.beta' | translate }}</span><br />
@@ -680,36 +771,14 @@
         }
       </div>
     </li>
-    <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
-      <span>
-        {{ 'settings.network.proxy' | translate }}<br />
-        <small class="grey-text pe-2">{{ 'settings.network.proxy_desc' | translate }}</small>
-        @if (isPwa) {
-        <br /><small class="grey-text pe-2">
-          <i class="fas fa-exclamation-triangle red-text"></i>
-          {{ 'settings.warning_pwa' | translate }}
-        </small>
-        }
-      </span>
-      <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
-        <input
-          class="form-control custom-input resp-input order-1 order-md-2"
-          type="text"
-          pattern="^[^{}/:\\s]+(?::\d+)?$"
-          placeholder="example.com:8443"
-          [formControl]="uiProxyHostFormControl"
-          [attr.aria-label]="('settings.network.proxy' | translate)"
-        />
-        @if (uiProxyHostIsSaving) {
-        <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
-        }
-      </div>
-    </li>
+    }
   </ul>
   }
 </div>
+}
 
 <!-- LOGGING & TERMINAL SETTINGS -->
+@if (isSectionVisible('terminal')) {
 <div class="my-4">
   <div
     role="button"
@@ -729,7 +798,8 @@
   </div>
   @if (showFields.terminal) {
   <ul class="list-group list-group-box mt-2 mx-0" id="fieldsTerminal">
-    <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+    @if (!isItemHidden('setting-terminal-log-max')) {
+    <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
       <span>
         {{ 'settings.terminal.log_max' | translate }}<br />
         <small class="grey-text pe-2">{{ 'settings.terminal.log_max_desc' | translate }}</small>
@@ -749,8 +819,8 @@
         }
       </div>
     </li>
-    @if (hbLogSizeFormControl.value > 0) {
-    <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+    } @if (hbLogSizeFormControl.value > 0) {
+    <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
       <span>
         {{ 'settings.terminal.log_truncate' | translate }}<br />
         <small class="grey-text pe-2">{{ 'settings.terminal.log_truncate_desc' | translate }}</small>
@@ -770,8 +840,8 @@
         }
       </div>
     </li>
-    } @if (enableTerminalAccess) {
-    <li class="list-group-item d-flex justify-content-between align-items-center">
+    } @if (enableTerminalAccess) { @if (!isItemHidden('setting-terminal-persistence')) {
+    <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
       <span>
         {{ 'settings.terminal.persistence' | translate }}
         <span class="badge badge-primary ms-1">{{ 'common.labels.beta' | translate }}</span><br />
@@ -793,8 +863,8 @@
         }
       </div>
     </li>
-    @if (!uiTerminalPersistenceFormControl.value) {
-    <li class="list-group-item d-flex justify-content-between align-items-center">
+    } @if (!uiTerminalPersistenceFormControl.value) {
+    <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
       <span>
         {{ 'settings.terminal.warning' | translate }}
         <span class="badge badge-primary ms-1">{{ 'common.labels.beta' | translate }}</span><br />
@@ -816,8 +886,8 @@
         }
       </div>
     </li>
-    } @if (uiTerminalPersistenceFormControl.value) {
-    <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+    } @if (uiTerminalPersistenceFormControl.value) { @if (!isItemHidden('setting-terminal-buffer')) {
+    <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
       <div class="d-flex flex-column">
         <span>
           {{ 'settings.terminal.buffer_size' | translate }}
@@ -841,12 +911,14 @@
         }
       </div>
     </li>
-    } }
+    } } }
   </ul>
   }
 </div>
+}
 
 <!-- SECURITY SETTINGS -->
+@if (isSectionVisible('security')) {
 <div class="my-4">
   <div
     role="button"
@@ -866,7 +938,8 @@
   </div>
   @if (showFields.security) {
   <ul class="list-group list-group-box mt-2 mx-0" id="fieldsSecurity">
-    <li class="list-group-item d-flex justify-content-between align-items-center">
+    @if (!isItemHidden('setting-security-auth')) {
+    <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
       <span>
         {{ 'settings.security.auth' | translate }}<br />
         <small class="grey-text pe-2"> {{ 'settings.security.auth_desc' | translate }} </small>
@@ -887,8 +960,8 @@
         }
       </div>
     </li>
-    @if (uiAuthFormControl.value) {
-    <li class="list-group-item d-flex justify-content-between align-items-center">
+    } @if (uiAuthFormControl.value) { @if (!isItemHidden('setting-session-inactivity-nested')) {
+    <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
       <span>
         {{ 'settings.startup.session_inactivity_based' | translate }}
         <span class="badge badge-primary ms-1">{{ 'common.labels.beta' | translate }}</span><br />
@@ -910,7 +983,8 @@
         }
       </div>
     </li>
-    <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+    } @if (!isItemHidden('setting-security-session')) {
+    <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
       <span>
         {{ 'settings.startup.session' | translate }}<br />
         <small class="grey-text pe-2">{{ 'settings.startup.session_desc' | translate }}</small>
@@ -931,8 +1005,8 @@
         }
       </div>
     </li>
-    }
-    <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+    } } @if (!isItemHidden('setting-security-https')) {
+    <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
       <span>
         {{ 'settings.security.https' | translate }}<br />
         <small class="grey-text pe-2">{{ 'settings.security.https_desc' | translate }}</small>
@@ -955,8 +1029,8 @@
         </select>
       </div>
     </li>
-    @if (this.uiSslTypeFormControl.value === 'keycert') {
-    <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+    } @if (this.uiSslTypeFormControl.value === 'keycert') {
+    <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
       <span>{{ 'settings.security.key' | translate }}</span>
       @if (isPwa) {
       <br /><small class="grey-text pe-2">
@@ -977,7 +1051,8 @@
         }
       </div>
     </li>
-    <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+    @if (!isItemHidden('setting-security-cert')) {
+    <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
       <span>{{ 'settings.security.cert' | translate }}</span>
       @if (isPwa) {
       <br /><small class="grey-text pe-2">
@@ -998,8 +1073,8 @@
         }
       </div>
     </li>
-    } @if (this.uiSslTypeFormControl.value === 'pfx') {
-    <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+    } } @if (this.uiSslTypeFormControl.value === 'pfx') {
+    <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
       <span>{{ 'settings.security.pfx' | translate }}</span>
       @if (isPwa) {
       <br /><small class="grey-text pe-2">
@@ -1020,7 +1095,8 @@
         }
       </div>
     </li>
-    <li class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+    @if (!isItemHidden('setting-security-pass')) {
+    <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
       <span>{{ 'settings.security.pass' | translate }}</span>
       @if (isPwa) {
       <br /><small class="grey-text pe-2">
@@ -1043,8 +1119,8 @@
         }
       </div>
     </li>
-    }
-    <li class="list-group-item d-flex justify-content-between align-items-center">
+    } } @if (!isItemHidden('setting-security-control')) {
+    <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
       <span class="pe-2">
         {{ 'settings.security.ui_control' | translate }}<br />
         <small class="grey-text pe-2">{{ 'settings.security.ui_control_desc' | translate }}</small>
@@ -1058,11 +1134,14 @@
         <i class="fas fa-arrow-right"></i>
       </button>
     </li>
+    }
   </ul>
   }
 </div>
+}
 
 <!-- CACHE SETTINGS -->
+@if (isSectionVisible('cache')) {
 <div class="my-4">
   <div
     role="button"
@@ -1081,7 +1160,8 @@
   <p class="small grey-text mb-2 mx-0">{{ 'settings.cache.desc' | translate }}</p>
   } @if (showFields.cache) {
   <ul class="list-group list-group-box mb-4 mx-0" id="fieldsCache">
-    <li class="list-group-item d-flex justify-content-between align-items-center">
+    @if (!isItemHidden('setting-accessory-debug')) {
+    <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
       <span>
         {{ 'settings.accessory.debug' | translate }}<br />
         <small class="grey-text pe-2">{{ 'settings.accessory.debug_desc' | translate }}</small>
@@ -1102,7 +1182,8 @@
         }
       </div>
     </li>
-    <li class="list-group-item d-flex justify-content-between align-items-center">
+    } @if (!isItemHidden('setting-reset-accessory-ind')) {
+    <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
       <span class="pe-2">
         {{ 'reset.accessory_ind.title' | translate }}<br />
         <small class="grey-text pe-2">{{ 'reset.accessory_ind.desc' | translate }}</small>
@@ -1116,7 +1197,8 @@
         <i class="fas fa-arrow-right"></i>
       </button>
     </li>
-    <li class="list-group-item d-flex justify-content-between align-items-center">
+    } @if (!isItemHidden('setting-reset-bridge-accessories')) {
+    <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
       <span class="pe-2">
         {{ 'reset.bridge_accessories.title' | translate }}<br />
         <small class="grey-text pe-2">{{ 'reset.bridge_accessories.desc' | translate }}</small>
@@ -1130,7 +1212,8 @@
         <i class="fas fa-arrow-right"></i>
       </button>
     </li>
-    <li class="list-group-item d-flex justify-content-between align-items-center">
+    } @if (!isItemHidden('setting-reset-accessory-all')) {
+    <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
       <span class="pe-2">
         {{ 'reset.accessory_all.title' | translate }}<br />
         <small class="grey-text pe-2">{{ 'reset.accessory_all.desc' | translate }}</small>
@@ -1144,11 +1227,14 @@
         <i class="fas fa-arrow-right"></i>
       </button>
     </li>
+    }
   </ul>
   }
 </div>
+}
 
 <!-- RESET SETTINGS -->
+@if (isSectionVisible('reset')) {
 <div class="my-4">
   <div
     role="button"
@@ -1167,7 +1253,8 @@
   <p class="small grey-text mb-2 mx-0">{{ 'reset.bridges.desc' | translate }}</p>
   } @if (showFields.reset) {
   <ul class="list-group list-group-box mt-2 mx-0" id="fieldsReset">
-    <li class="list-group-item d-flex justify-content-between align-items-center">
+    @if (!isItemHidden('setting-reset-bridge-ind')) {
+    <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
       <span class="pe-2">
         {{ 'reset.bridge_ind.title' | translate }}<br />
         <small class="grey-text pe-2">{{ 'reset.bridge_ind.desc' | translate }}</small>
@@ -1181,7 +1268,8 @@
         <i class="fas fa-arrow-right"></i>
       </button>
     </li>
-    <li class="list-group-item d-flex justify-content-between align-items-center">
+    } @if (!isItemHidden('setting-reset-bridge-all')) {
+    <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
       <span class="pe-2">
         {{ 'reset.bridge_all.title' | translate | titlecase }}<br />
         <small class="grey-text pe-2">{{ 'reset.bridge_all.desc' | translate }}</small>
@@ -1195,8 +1283,10 @@
         <i class="fas fa-arrow-right"></i>
       </button>
     </li>
+    }
   </ul>
   }
 </div>
+}
 <div class="pb-3"></div>
 }
