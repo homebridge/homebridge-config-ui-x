@@ -41,8 +41,10 @@
   }
 
   .link-wrapper {
+    overflow-x: hidden;
     overflow-y: auto;
     max-height: calc(100vh - 80px) !important;
+    scrollbar-width: thin;
 
     @media (max-width: 767px) {
       padding-bottom: 60px; // prevent menu items being hidden by URL bar on ios safari

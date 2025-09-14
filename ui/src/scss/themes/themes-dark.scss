@@ -31,6 +31,8 @@
       }
 
       .link-wrapper {
+        scrollbar-color: $darkModePrimary transparent;
+
         .link {
           .link-row {
             &:hover {

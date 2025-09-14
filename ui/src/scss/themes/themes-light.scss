@@ -29,6 +29,8 @@
       }
 
       .link-wrapper {
+        scrollbar-color: $primary transparent;
+
         .link {
           .link-row {
             &:hover {
