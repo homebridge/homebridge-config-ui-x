@@ -280,8 +280,6 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
         case 'button.save.enabled':
           this.saveButtonDisabled = false
           break
-        default:
-          console.log(e) // eslint-disable-line no-console
       }
     }
   }
