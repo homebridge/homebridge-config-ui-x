@@ -79,6 +79,10 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
   }
 
   public ngOnInit() {
+    // Set page title
+    const title = this.$translate.instant('page_title.config')
+    this.$settings.setPageTitle(title)
+
     this.editorOptions = {
       language: 'json',
       theme: this.$settings.actualLightingMode === 'dark' ? 'vs-dark' : 'vs-light',

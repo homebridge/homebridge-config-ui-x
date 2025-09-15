@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, ElementRef, HostListener, inject, OnDestroy, OnInit, viewChild } from '@angular/core'
-import { TranslatePipe } from '@ngx-translate/core'
+import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { Subject } from 'rxjs'
 
 import { SettingsService } from '@/app/core/settings.service'
@@ -15,6 +15,7 @@ export class TerminalComponent implements OnInit, AfterViewInit, OnDestroy {
   private $terminal = inject(TerminalService)
   private $settings = inject(SettingsService)
   private $navigationGuard = inject(TerminalNavigationGuardService)
+  private $translate = inject(TranslateService)
   private resizeEvent = new Subject()
 
   readonly termTarget = viewChild<ElementRef>('terminaloutput')
@@ -50,6 +51,10 @@ export class TerminalComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   public ngOnInit() {
+    // Set page title
+    const title = this.$translate.instant('page_title.platform_tools')
+    this.$settings.setPageTitle(title)
+
     // Set body bg color
     window.document.querySelector('body').classList.add('bg-black')
 

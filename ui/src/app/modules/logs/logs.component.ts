@@ -10,6 +10,7 @@ import { ApiService } from '@/app/core/api.service'
 import { AuthService } from '@/app/core/auth/auth.service'
 import { ConfirmComponent } from '@/app/core/components/confirm/confirm.component'
 import { LogService } from '@/app/core/log.service'
+import { SettingsService } from '@/app/core/settings.service'
 
 @Component({
   templateUrl: './logs.component.html',
@@ -21,6 +22,7 @@ export class LogsComponent implements OnInit, OnDestroy {
   private $auth = inject(AuthService)
   private $log = inject(LogService)
   private $modal = inject(NgbModal)
+  private $settings = inject(SettingsService)
   private $toastr = inject(ToastrService)
   private $translate = inject(TranslateService)
 
@@ -36,6 +38,10 @@ export class LogsComponent implements OnInit, OnDestroy {
   }
 
   public ngOnInit() {
+    // Set page title
+    const title = this.$translate.instant('page_title.logs')
+    this.$settings.setPageTitle(title)
+
     // Set body bg color
     window.document.querySelector('body').classList.add('bg-black')
 

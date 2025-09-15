@@ -209,6 +209,10 @@ export class SettingsComponent implements OnInit {
   public async ngOnInit() {
     this.isHbV2 = this.$settings.env.homebridgeVersion.startsWith('2')
 
+    // Set page title
+    const title = this.$translate.instant('page_title.settings')
+    this.$settings.setPageTitle(title)
+
     await this.initNetworkingOptions()
     await this.initStartupSettings()
 

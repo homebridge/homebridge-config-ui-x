@@ -256,4 +256,13 @@ export class SettingsService {
   private setTitle(title: string) {
     this.$title.setTitle(title || 'Homebridge')
   }
+
+  public setPageTitle(pageTitle?: string) {
+    const baseName = this.env.homebridgeInstanceName || 'Homebridge'
+    if (pageTitle) {
+      this.$title.setTitle(`${baseName} — ${pageTitle}`)
+    } else {
+      this.$title.setTitle(baseName)
+    }
+  }
 }

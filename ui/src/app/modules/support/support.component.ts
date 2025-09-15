@@ -1,7 +1,8 @@
 import { NgClass } from '@angular/common'
-import { Component } from '@angular/core'
-import { TranslatePipe } from '@ngx-translate/core'
+import { Component, inject, OnInit } from '@angular/core'
+import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 
+import { SettingsService } from '@/app/core/settings.service'
 import { environment } from '@/environments/environment'
 
 @Component({
@@ -12,11 +13,19 @@ import { environment } from '@/environments/environment'
     TranslatePipe,
   ],
 })
-export class SupportComponent {
+export class SupportComponent implements OnInit {
+  private $settings = inject(SettingsService)
+  private $translate = inject(TranslateService)
   private swaggerEndpoint = '/swagger'
   public showFields = {
     general: true,
     dev: true,
+  }
+
+  public ngOnInit() {
+    // Set page title
+    const title = this.$translate.instant('page_title.support')
+    this.$settings.setPageTitle(title)
   }
 
   public get swaggerUrl(): string {

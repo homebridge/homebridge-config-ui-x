@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core'
+import { Component, inject, OnInit } from '@angular/core'
 import { Router } from '@angular/router'
 import { NgbModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
@@ -16,7 +16,7 @@ import { SettingsService } from '@/app/core/settings.service'
     TranslatePipe,
   ],
 })
-export class PowerOptionsComponent {
+export class PowerOptionsComponent implements OnInit {
   private $api = inject(ApiService)
   private $modal = inject(NgbModal)
   private $router = inject(Router)
@@ -26,6 +26,12 @@ export class PowerOptionsComponent {
 
   public canShutdownRestartHost = this.$settings.env.canShutdownRestartHost
   public runningInDocker = this.$settings.env.runningInDocker
+
+  public ngOnInit() {
+    // Set page title
+    const title = this.$translate.instant('page_title.power_options')
+    this.$settings.setPageTitle(title)
+  }
 
   public restartHomebridge() {
     this.$router.navigate(['/restart'])

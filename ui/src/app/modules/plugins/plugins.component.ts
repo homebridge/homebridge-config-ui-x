@@ -61,6 +61,10 @@ export class PluginsComponent implements OnInit, OnDestroy {
   })
 
   public async ngOnInit() {
+    // Set page title
+    const title = this.$translate.instant('page_title.plugins')
+    this.$settings.setPageTitle(title)
+
     this.io = this.$ws.connectToNamespace('child-bridges')
     this.io.connected.subscribe(async () => {
       this.getChildBridgeMetadata()

@@ -1,7 +1,7 @@
 import { NgClass } from '@angular/common'
 import { Component, inject, OnDestroy, OnInit } from '@angular/core'
 import { NgbModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap'
-import { TranslatePipe } from '@ngx-translate/core'
+import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { DragulaModule, DragulaService } from 'ng2-dragula'
 import { firstValueFrom, Subscription } from 'rxjs'
 
@@ -40,6 +40,7 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
   private $modal = inject(NgbModal)
   private $settings = inject(SettingsService)
   private $md = inject(MobileDetectService)
+  private $translate = inject(TranslateService)
   private orderSubscription: Subscription
 
   public isAdmin = this.$auth.user.admin
@@ -76,6 +77,10 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
   }
 
   public ngOnInit() {
+    // Set page title
+    const title = this.$translate.instant('page_title.accessories')
+    this.$settings.setPageTitle(title)
+
     this.$accessories.start()
     this.checkForPlugins()
   }

@@ -7,6 +7,7 @@ import { ToastrService } from 'ngx-toastr'
 
 import { ApiService } from '@/app/core/api.service'
 import { AuthService } from '@/app/core/auth/auth.service'
+import { SettingsService } from '@/app/core/settings.service'
 import { Users2faDisableComponent } from '@/app/modules/users/users-2fa-disable/users-2fa-disable.component'
 import { Users2faEnableComponent } from '@/app/modules/users/users-2fa-enable/users-2fa-enable.component'
 import { UsersAddComponent } from '@/app/modules/users/users-add/users-add.component'
@@ -28,6 +29,7 @@ export class UsersComponent implements OnInit {
   private $auth = inject(AuthService)
   private $modal = inject(NgbModal)
   private $route = inject(ActivatedRoute)
+  private $settings = inject(SettingsService)
   private $toastr = inject(ToastrService)
   private $translate = inject(TranslateService)
 
@@ -36,6 +38,10 @@ export class UsersComponent implements OnInit {
   public isAdmin = this.$auth.user.admin
 
   public ngOnInit() {
+    // Set page title
+    const title = this.$translate.instant('page_title.users')
+    this.$settings.setPageTitle(title)
+
     this.$route.data.subscribe((data: { homebridgeUsers: User[] }) => {
       this.homebridgeUsers = data.homebridgeUsers
     })

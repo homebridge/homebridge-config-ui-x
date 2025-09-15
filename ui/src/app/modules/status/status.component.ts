@@ -51,6 +51,9 @@ export class StatusComponent implements OnInit, OnDestroy {
   }
 
   public ngOnInit() {
+    // Set page title (status page should only show instance name)
+    this.$settings.setPageTitle()
+
     this.currentYear = new Date().getFullYear()
     this.io = this.$ws.connectToNamespace('status')
     this.options = {
