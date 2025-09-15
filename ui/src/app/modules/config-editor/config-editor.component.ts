@@ -79,8 +79,8 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
   }
 
   public ngOnInit() {
-    // Set page title
-    const title = this.$translate.instant('page_title.config')
+    // Set page title - using "JSON Config" from menu
+    const title = this.$translate.instant('menu.config_json_editor')
     this.$settings.setPageTitle(title)
 
     this.editorOptions = {

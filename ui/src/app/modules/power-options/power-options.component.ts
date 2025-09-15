@@ -29,7 +29,7 @@ export class PowerOptionsComponent implements OnInit {
 
   public ngOnInit() {
     // Set page title
-    const title = this.$translate.instant('page_title.power_options')
+    const title = this.$translate.instant('menu.restart.title')
     this.$settings.setPageTitle(title)
   }
 

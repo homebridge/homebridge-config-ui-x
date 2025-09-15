@@ -39,7 +39,7 @@ export class LogsComponent implements OnInit, OnDestroy {
 
   public ngOnInit() {
     // Set page title
-    const title = this.$translate.instant('page_title.logs')
+    const title = this.$translate.instant('menu.linux.label_logs')
     this.$settings.setPageTitle(title)
 
     // Set body bg color

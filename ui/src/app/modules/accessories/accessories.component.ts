@@ -78,7 +78,7 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
 
   public ngOnInit() {
     // Set page title
-    const title = this.$translate.instant('page_title.accessories')
+    const title = this.$translate.instant('menu.label_accessories')
     this.$settings.setPageTitle(title)
 
     this.$accessories.start()

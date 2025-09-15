@@ -39,7 +39,7 @@ export class UsersComponent implements OnInit {
 
   public ngOnInit() {
     // Set page title
-    const title = this.$translate.instant('page_title.users')
+    const title = this.$translate.instant('users.title_users')
     this.$settings.setPageTitle(title)
 
     this.$route.data.subscribe((data: { homebridgeUsers: User[] }) => {

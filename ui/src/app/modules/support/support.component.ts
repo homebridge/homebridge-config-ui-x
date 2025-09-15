@@ -24,7 +24,7 @@ export class SupportComponent implements OnInit {
 
   public ngOnInit() {
     // Set page title
-    const title = this.$translate.instant('page_title.support')
+    const title = this.$translate.instant('support.title')
     this.$settings.setPageTitle(title)
   }
 

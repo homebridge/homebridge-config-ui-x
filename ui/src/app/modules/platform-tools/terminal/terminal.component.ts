@@ -52,7 +52,7 @@ export class TerminalComponent implements OnInit, AfterViewInit, OnDestroy {
 
   public ngOnInit() {
     // Set page title
-    const title = this.$translate.instant('page_title.platform_tools')
+    const title = this.$translate.instant('menu.linux.label_terminal')
     this.$settings.setPageTitle(title)
 
     // Set body bg color

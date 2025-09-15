@@ -210,7 +210,7 @@ export class SettingsComponent implements OnInit {
     this.isHbV2 = this.$settings.env.homebridgeVersion.startsWith('2')
 
     // Set page title
-    const title = this.$translate.instant('page_title.settings')
+    const title = this.$translate.instant('menu.label_settings')
     this.$settings.setPageTitle(title)
 
     await this.initNetworkingOptions()
