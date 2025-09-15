@@ -15,7 +15,6 @@ import { SettingsService } from '@/app/core/settings.service'
 
 @Component({
   templateUrl: './thermostat.manage.component.html',
-  styleUrls: ['./thermostat.component.scss'],
   standalone: true,
   imports: [
     NgClass,

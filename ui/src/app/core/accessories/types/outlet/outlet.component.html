@@ -1,7 +1,7 @@
 <div
   class="accessory-box"
   [ngClass]="{
-    'switch-on': service.values.On
+    'accessory-on': service.values.On
       ||  service.values.Active
       || ('LockTargetState' in service.values && !service.values.LockTargetState)
       || ('CurrentDoorState' in service.values && [0, 2].includes(service.values.CurrentDoorState))

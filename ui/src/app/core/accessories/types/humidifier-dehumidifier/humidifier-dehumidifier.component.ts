@@ -10,7 +10,6 @@ import { LongClickDirective } from '@/app/core/directives/long-click.directive'
 @Component({
   selector: 'app-humidifier-dehumidifier',
   templateUrl: './humidifier-dehumidifier.component.html',
-  styleUrls: ['./humidifier-dehumidifier.component.scss'],
   standalone: true,
   imports: [
     LongClickDirective,
@@ -56,6 +55,7 @@ export class HumidifierDehumidifierComponent {
         backdrop: 'static',
       })
       ref.componentInstance.service = this.service
+      ref.componentInstance.type = this.type
     }
   }
 }

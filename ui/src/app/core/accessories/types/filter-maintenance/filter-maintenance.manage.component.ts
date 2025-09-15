@@ -26,7 +26,7 @@ export class FilterMaintenanceManageComponent implements OnInit {
     setTimeout(() => {
       const sliderElements = document.querySelectorAll('.noUi-target')
       sliderElements.forEach((sliderElement: HTMLElement) => {
-        sliderElement.style.background = 'linear-gradient(to right, #8B4513, #4169E1)'
+        sliderElement.style.background = 'linear-gradient(to right, #d32f2f, #e69533, #42d672, #42d672)'
       })
     }, 10)
   }

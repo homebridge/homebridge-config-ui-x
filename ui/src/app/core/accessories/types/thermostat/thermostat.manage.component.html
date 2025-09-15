@@ -10,20 +10,20 @@
     ></button>
   </div>
   <div class="modal-body text-center px-5">
-    <div
-      class="temperature-circle temperature-circle-big mb-4"
-      [innerText]="(service.values.CurrentTemperature | convertTemp | number: '1.0-1') + '°' + (temperatureUnits | uppercase)"
-      [ngClass]="{
-        'cooling': service.values.CurrentHeatingCoolingState === 2 && service.values.TargetHeatingCoolingState > 0,
-        'heating': service.values.CurrentHeatingCoolingState === 1 && service.values.TargetHeatingCoolingState > 0,
-        'no-current-state': service.values.TargetHeatingCoolingState > 0 && service.values.CurrentHeatingCoolingState === 0
-      }"
-    ></div>
-    @if (hasHumidity) {
-    <div class="humidity-drop humidity-drop-big ms-5 no-current-state">
-      <div class="humidity-drop-text" [innerText]="(service.values.CurrentRelativeHumidity) + '%'"></div>
-    </div>
-    }
+    <h6 class="mt-2 mb-4 fs-4">
+      <i
+        class="fas fa-temperature-full"
+        [style.color]="
+          service.values.CurrentHeatingCoolingState === 2
+            ? '#1e8bbd'
+            : service.values.CurrentHeatingCoolingState === 1
+              ? '#e69533'
+              : (service.values.TargetHeatingCoolingState === 3 ? '#42d672' : '#7b7b7b')
+        "
+      ></i
+      >{{ service.values.CurrentTemperature | convertTemp | number: '1.0-1' }}°{{ temperatureUnits | uppercase }} @if
+      (hasHumidity) { &middot; {{ service.values.CurrentRelativeHumidity }}% }
+    </h6>
     <div
       class="btn-group-vertical d-flex justify-content-center mb-0 p-0"
       role="group"

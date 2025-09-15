@@ -1,26 +1,86 @@
 <div
   class="accessory-box"
-  [ngClass]="{ 'switch-on': service.values.TargetHeatingCoolingState > 0 }"
+  [ngClass]="{ 'accessory-on': service.values.TargetHeatingCoolingState > 0 }"
   (longClick)="onClick()"
   (shortClick)="onClick()"
   tabindex="0"
 >
   <div class="d-flex flex-column h-100">
-    <div
-      class="temperature-circle temperature-circle-collapse"
-      [innerText]="(service.values.CurrentTemperature | convertTemp | number: '1.0-1') + '°' + (temperatureUnits | uppercase)"
-      [ngClass]="{
-        'cooling': service.values.CurrentHeatingCoolingState === 2 && service.values.TargetHeatingCoolingState > 0,
-        'heating': service.values.CurrentHeatingCoolingState === 1 && service.values.TargetHeatingCoolingState > 0,
-        'no-current-state': service.values.TargetHeatingCoolingState > 0 && service.values.CurrentHeatingCoolingState === 0
-      }"
-    ></div>
+    <div [attr.aria-label]="'Heater Cooler'" class="accessory-svg">
+      <svg width="32px" height="32px" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="coolingGradient" x1="0" y1="1" x2="0" y2="0">
+            <stop offset="0%" stop-color="#1e8bbd">
+              <animate attributeName="stop-color" values="#1e8bbd;#66d6d6;#1e8bbd" dur="5s" repeatCount="indefinite" />
+            </stop>
+            <stop offset="50%" stop-color="#66d6d6">
+              <animate attributeName="stop-color" values="#66d6d6;#1e8bbd;#66d6d6" dur="5s" repeatCount="indefinite" />
+            </stop>
+            <stop offset="100%" stop-color="#1e8bbd">
+              <animate attributeName="stop-color" values="#1e8bbd;#66d6d6;#1e8bbd" dur="5s" repeatCount="indefinite" />
+            </stop>
+          </linearGradient>
+          <linearGradient id="heatingGradient" x1="0" y1="1" x2="0" y2="0">
+            <stop offset="0%" stop-color="#cc5e00">
+              <animate
+                attributeName="stop-color"
+                values="#cc5e00;#e69533;#cc5e00;#e69533"
+                dur="5s"
+                repeatCount="indefinite"
+              />
+            </stop>
+            <stop offset="50%" stop-color="#e69533">
+              <animate
+                attributeName="stop-color"
+                values="#e69533;#cc5e00;#e69533;#cc5e00"
+                dur="5s"
+                repeatCount="indefinite"
+              />
+            </stop>
+            <stop offset="100%" stop-color="#cc5e00">
+              <animate
+                attributeName="stop-color"
+                values="#cc5e00;#e69533;#cc5e00;#e69533"
+                dur="5s"
+                repeatCount="indefinite"
+              />
+            </stop>
+          </linearGradient>
+        </defs>
+        <!-- outer casing -->
+        <rect x="1" y="1" width="30" height="30" rx="3" stroke="#7f7f7f" fill="none" stroke-width="1.2" />
+        <!-- grille -->
+        <!-- status window -->
+        <rect
+          x="1"
+          y="19"
+          width="30"
+          height="8"
+          rx="0"
+          stroke="#7f7f7f"
+          stroke-width="0.75"
+          fill-opacity="0.5"
+          [attr.fill]="
+            (service.values.CurrentHeatingCoolingState === 2)
+              ? 'url(#coolingGradient)'
+              : (service.values.CurrentHeatingCoolingState === 1)
+                ? 'url(#heatingGradient)'
+                : (service.values.TargetHeatingCoolingState === 3 ? '#42d672' : '#7b7b7b')"
+        />
+        <!-- current temperature -->
+        @if ('CurrentTemperature' in service.values) {
+        <text x="16" y="13" font-size="8" text-anchor="middle" fill="#7f7f7f" font-family="Arial, sans-serif">
+          {{ service.values.CurrentTemperature | convertTemp | number: '1.0-1'}}&deg;{{ temperatureUnits | uppercase }}
+        </text>
+        }
+      </svg>
+    </div>
     <div class="accessory-label mt-auto">{{ service.customName || service.serviceName }}</div>
 
     <div class="accessory-label grey-text">
       @if (service.values.TargetHeatingCoolingState === 0) { {{ 'accessories.control.off' | translate }} } @else if
-      (service.values.TargetHeatingCoolingState === 1) { {{'accessories.control.heat' | translate }} } @else if
-      (service.values.TargetHeatingCoolingState === 2) { {{'accessories.control.cool' | translate }} } @else if
+      (service.values.CurrentHeatingCoolingState === 1) { {{'accessories.control.heat' | translate }} } @else if
+      (service.values.CurrentHeatingCoolingState === 2) { {{'accessories.control.cool' | translate }} } @else if
       (service.values.TargetHeatingCoolingState === 3) {
       <i class="fa fas fa-bullseye"></i> {{ service.values.TargetTemperature | convertTemp | number: '1.0-1' }}&deg;{{
       temperatureUnits | uppercase }} }

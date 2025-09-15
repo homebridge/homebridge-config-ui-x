@@ -13,7 +13,6 @@ import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
 
 @Component({
   templateUrl: './humidifier-dehumidifier.manage.component.html',
-  styleUrls: ['./humidifier-dehumidifier.component.scss'],
   standalone: true,
   imports: [
     NgClass,
@@ -26,6 +25,7 @@ export class HumidifierDehumidifierManageComponent implements OnInit {
   private $activeModal = inject(NgbActiveModal)
 
   @Input() public service: ServiceTypeX
+  @Input() public type: 'humidifier' | 'dehumidifier'
 
   public targetState: number
   public targetMode: number
