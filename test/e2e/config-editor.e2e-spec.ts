@@ -895,6 +895,85 @@ describe('ConfigEditorController (e2e)', () => {
     expect(res.statusCode).toBe(200)
   })
 
+  it('GET/PUT /config-editor/ui/plugins/hide-updates-for (should handle hide updates functionality)', async () => {
+    // Test 1: Should return empty array initially
+    let res = await app.inject({
+      method: 'GET',
+      url: '/config-editor/ui/plugins/hide-updates-for',
+      headers: {
+        authorization,
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+    let result = res.json()
+    expect(Array.isArray(result)).toBe(true)
+    expect(result.length).toBe(0)
+
+    // Test 2: Should set hide updates list
+    const testPlugins = ['homebridge-test-plugin', 'homebridge-another-plugin']
+
+    res = await app.inject({
+      method: 'PUT',
+      url: '/config-editor/ui/plugins/hide-updates-for',
+      headers: {
+        authorization,
+      },
+      payload: {
+        body: testPlugins,
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+
+    // Test 3: Should return the set plugins
+    res = await app.inject({
+      method: 'GET',
+      url: '/config-editor/ui/plugins/hide-updates-for',
+      headers: {
+        authorization,
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+    result = res.json()
+    expect(Array.isArray(result)).toBe(true)
+    expect(result.length).toBe(2)
+    expect(result).toContain('homebridge-test-plugin')
+    expect(result).toContain('homebridge-another-plugin')
+
+    // Test 4: Should filter invalid plugin names
+    const mixedPlugins = ['homebridge-valid-plugin', 'invalid-plugin', '', 'homebridge-another-valid']
+
+    res = await app.inject({
+      method: 'PUT',
+      url: '/config-editor/ui/plugins/hide-updates-for',
+      headers: {
+        authorization,
+      },
+      payload: {
+        body: mixedPlugins,
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+
+    // Check that only valid plugins were saved
+    res = await app.inject({
+      method: 'GET',
+      url: '/config-editor/ui/plugins/hide-updates-for',
+      headers: {
+        authorization,
+      },
+    })
+
+    result = res.json()
+    expect(result.length).toBe(2)
+    expect(result).toContain('homebridge-valid-plugin')
+    expect(result).toContain('homebridge-another-valid')
+    expect(result).not.toContain('invalid-plugin')
+  })
+
   afterAll(async () => {
     await app.close()
   })

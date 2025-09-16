@@ -381,6 +381,18 @@ export class ConfigEditorService {
   }
 
   /**
+   * Get the plugin hide update list
+   */
+  public async getPluginsHideUpdatesFor(): Promise<string[]> {
+    // 1. Get the current config for the Homebridge UI
+    const config = await this.getConfigFile()
+    const pluginConfig = config.platforms.find(x => x.platform === 'config')
+
+    // 2. Return the hideUpdatesFor list or empty array if not set
+    return pluginConfig?.plugins?.hideUpdatesFor || []
+  }
+
+  /**
    * Set the plugin hide update list (this request is not partial)
    */
   public async setPluginsHideUpdatesFor(value: string[]) {
