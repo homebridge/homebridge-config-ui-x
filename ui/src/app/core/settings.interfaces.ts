@@ -48,6 +48,7 @@ export interface EnvInterface {
     shutdown?: string
     restart?: string
   }
+  enableMdnsAdvertise?: boolean
   terminal?: {
     persistence?: boolean
     hideWarning?: boolean
@@ -61,8 +62,11 @@ export interface AppSettingsInterface {
   env: EnvInterface
   formAuth: boolean
   host?: string
+  webroot?: string
+  originalWebroot?: string
   proxyHost?: string
   sessionTimeout: number
+  sessionTimeoutInactivityBased: boolean
   theme: string
   lightingMode: 'auto' | 'light' | 'dark'
   menuMode: 'default' | 'freeze'

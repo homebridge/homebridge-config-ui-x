@@ -6,124 +6,164 @@
   } @if (!$accessories.readyForControl) {
   <i class="fas fa-spin fa-sync-alt refreshing-accessory-status-icon grey-text"></i>
   } @switch (service.customType || service.type) { @case ('Switch') {
-  <app-switch [service]="service" [readyForControl]="$accessories.readyForControl">Switch</app-switch>
+  <app-switch [service]="service" [readyForControl]="$accessories.readyForControl"
+    >{{ 'accessories.core.switch' | translate }}</app-switch
+  >
   } @case ('Thermostat') {
-  <app-thermostat [service]="service" [readyForControl]="$accessories.readyForControl">Thermostat</app-thermostat>
+  <app-thermostat [service]="service" [readyForControl]="$accessories.readyForControl"
+    >{{ 'accessories.core.thermostat' | translate }}</app-thermostat
+  >
   } @case ('Outlet') {
-  <app-outlet [service]="service" [readyForControl]="$accessories.readyForControl">Outlet</app-outlet>
+  <app-outlet [service]="service" [readyForControl]="$accessories.readyForControl"
+    >{{ 'accessories.core.outlet' | translate }}</app-outlet
+  >
   } @case ('Fan') {
-  <app-fan [service]="service" [readyForControl]="$accessories.readyForControl" class="w-100">Fan</app-fan>
+  <app-fan [service]="service" [readyForControl]="$accessories.readyForControl" class="w-100"
+    >{{ 'accessories.core.fan' | translate }}</app-fan
+  >
   } @case ('Fanv2') {
-  <app-fan [service]="service" [readyForControl]="$accessories.readyForControl" class="w-100">Fan</app-fan>
+  <app-fan [service]="service" [readyForControl]="$accessories.readyForControl" class="w-100"
+    >{{ 'accessories.core.fan' | translate }}</app-fan
+  >
   } @case ('AirPurifier') {
   <app-air-purifier [service]="service" [readyForControl]="$accessories.readyForControl" class="w-100"
-    >Air Purifier</app-air-purifier
+    >{{ 'accessories.core.air_purifier' | translate }}</app-air-purifier
   >
   } @case ('Lightbulb') {
-  <app-light-bulb [service]="service" [readyForControl]="$accessories.readyForControl">Lightbulb</app-light-bulb>
+  <app-lightbulb [service]="service" [readyForControl]="$accessories.readyForControl"
+    >{{ 'accessories.core.lightbulb' | translate }}</app-lightbulb
+  >
   } @case ('LightSensor') {
-  <app-light-sensor [service]="service">Light Sensor</app-light-sensor>
+  <app-light-sensor [service]="service">{{ 'accessories.core.light_sensor' | translate }}</app-light-sensor>
   } @case ('LockMechanism') {
   <app-lock-mechanism [service]="service" [readyForControl]="$accessories.readyForControl"
-    >Lock Mechanism</app-lock-mechanism
+    >{{ 'accessories.core.lock_mechanism' | translate }}</app-lock-mechanism
   >
   } @case ('TemperatureSensor') {
-  <app-temperature-sensor [service]="service">Temperature Sensor</app-temperature-sensor>
+  <app-temperature-sensor [service]="service"
+    >{{ 'accessories.core.temperature_sensor' | translate }}</app-temperature-sensor
+  >
   } @case ('GarageDoorOpener') {
   <app-garage-door-opener [service]="service" [readyForControl]="$accessories.readyForControl"
-    >Garage Door Opener</app-garage-door-opener
+    >{{ 'accessories.core.garage_door_opener' | translate }}</app-garage-door-opener
   >
   } @case ('MotionSensor') {
-  <app-motion-sensor [service]="service">Motion Sensor</app-motion-sensor>
+  <app-motion-sensor [service]="service">{{ 'accessories.core.motion_sensor' | translate }}</app-motion-sensor>
   } @case ('OccupancySensor') {
-  <app-occupancy-sensor [service]="service">Occupancy Sensor</app-occupancy-sensor>
+  <app-occupancy-sensor [service]="service">{{ 'accessories.core.occupancy_sensor' | translate }}</app-occupancy-sensor>
   } @case ('ContactSensor') {
-  <app-contact-sensor [service]="service">Contact Sensor</app-contact-sensor>
+  <app-contact-sensor [service]="service">{{ 'accessories.core.contact_sensor' | translate }}</app-contact-sensor>
   } @case ('HumiditySensor') {
-  <app-humidity-sensor [service]="service">Humidity Sensor</app-humidity-sensor>
+  <app-humidity-sensor [service]="service">{{ 'accessories.core.humidity_sensor' | translate }}</app-humidity-sensor>
   } @case ('AirQualitySensor') {
-  <app-air-quality-sensor [service]="service">Air Quality Sensor</app-air-quality-sensor>
+  <app-air-quality-sensor [service]="service"
+    >{{ 'accessories.core.air_quality_sensor' | translate }}</app-air-quality-sensor
+  >
   } @case ('WindowCovering') {
   <app-window-covering [service]="service" [readyForControl]="$accessories.readyForControl"
-    >Window Covering</app-window-covering
+    >{{ 'accessories.core.window_covering' | translate }}</app-window-covering
   >
   } @case ('Window') {
-  <app-window [service]="service" [readyForControl]="$accessories.readyForControl">Window</app-window>
+  <app-window [service]="service" [readyForControl]="$accessories.readyForControl"
+    >{{ 'accessories.core.window' | translate }}</app-window
+  >
   } @case ('Door') {
-  <app-door [service]="service" [readyForControl]="$accessories.readyForControl">Door</app-door>
+  <app-door [service]="service" [readyForControl]="$accessories.readyForControl"
+    >{{ 'accessories.core.door' | translate }}</app-door
+  >
   } @case ('Television') {
-  <app-television [service]="service" [readyForControl]="$accessories.readyForControl">Television</app-television>
+  <app-television [service]="service" [readyForControl]="$accessories.readyForControl"
+    >{{ 'accessories.core.television' | translate }}</app-television
+  >
   } @case ('Battery') {
-  <app-battery [service]="service">Battery</app-battery>
+  <app-battery [service]="service">{{ 'accessories.core.battery' | translate }}</app-battery>
   } @case ('BatteryService') {
-  <app-battery [service]="service">Battery</app-battery>
+  <app-battery [service]="service">{{ 'accessories.core.battery' | translate }}</app-battery>
   } @case ('Speaker') {
-  <app-speaker [service]="service" [readyForControl]="$accessories.readyForControl">Speaker</app-speaker>
+  <app-speaker [service]="service" [readyForControl]="$accessories.readyForControl"
+    >{{ 'accessories.core.speaker' | translate }}</app-speaker
+  >
   } @case ('SmartSpeaker') {
-  <app-speaker [service]="service" [readyForControl]="$accessories.readyForControl">Speaker</app-speaker>
+  <app-speaker [service]="service" [readyForControl]="$accessories.readyForControl"
+    >{{ 'accessories.core.speaker' | translate }}</app-speaker
+  >
   } @case ('Doorbell') {
-  <app-doorbell [service]="service" [readyForControl]="$accessories.readyForControl">Doorbell</app-doorbell>
+  <app-doorbell [service]="service" [readyForControl]="$accessories.readyForControl"
+    >{{ 'accessories.core.doorbell' | translate }}</app-doorbell
+  >
   } @case ('Microphone') {
-  <app-microphone [service]="service" [readyForControl]="$accessories.readyForControl">Microphone</app-microphone>
+  <app-microphone [service]="service" [readyForControl]="$accessories.readyForControl"
+    >{{ 'accessories.core.microphone' | translate }}</app-microphone
+  >
   } @case ('SecuritySystem') {
   <app-security-system [service]="service" [readyForControl]="$accessories.readyForControl"
-    >Security System</app-security-system
+    >{{ 'accessories.core.security_system' | translate }}</app-security-system
   >
   } @case ('LeakSensor') {
-  <app-leak-sensor [service]="service">Leak Sensor</app-leak-sensor>
+  <app-leak-sensor [service]="service">{{ 'accessories.core.leak_sensor' | translate }}</app-leak-sensor>
   } @case ('SmokeSensor') {
-  <app-smoke-sensor [service]="service">Smoke Sensor</app-smoke-sensor>
+  <app-smoke-sensor [service]="service">{{ 'accessories.core.smoke_sensor' | translate }}</app-smoke-sensor>
   } @case ('CarbonMonoxideSensor') {
-  <app-carbon-monoxide-sensor [service]="service">Carbon Monoxide Sensor</app-carbon-monoxide-sensor>
+  <app-carbon-monoxide-sensor [service]="service"
+    >{{ 'accessories.core.carbon_monoxide_sensor' | translate }}</app-carbon-monoxide-sensor
+  >
   } @case ('CarbonDioxideSensor') {
-  <app-carbon-dioxide-sensor [service]="service">Carbon Dioxide Sensor</app-carbon-dioxide-sensor>
+  <app-carbon-dioxide-sensor [service]="service"
+    >{{ 'accessories.core.carbon_dioxide_sensor' | translate }}</app-carbon-dioxide-sensor
+  >
   } @case ('Valve') {
-  <app-valve [service]="service" [readyForControl]="$accessories.readyForControl">Valve</app-valve>
+  <app-valve [service]="service" [readyForControl]="$accessories.readyForControl"
+    >{{ 'accessories.core.valve' | translate }}</app-valve
+  >
   } @case ('IrrigationSystem') {
-  <app-irrigation-system [service]="service">Irrigation System</app-irrigation-system>
+  <app-irrigation-system [service]="service"
+    >{{ 'accessories.core.irrigation_system' | translate }}</app-irrigation-system
+  >
   } @case ('HeaterCooler') {
   <app-heater-cooler [service]="service" [readyForControl]="$accessories.readyForControl"
-    >Heater Cooler</app-heater-cooler
+    >{{ 'accessories.core.heater_cooler' | translate }}</app-heater-cooler
   >
   } @case ('Heater') {
   <app-heater-cooler [service]="service" [type]="'heater'" [readyForControl]="$accessories.readyForControl"
-    >Heater</app-heater-cooler
+    >{{ 'accessories.core.heater' | translate }}</app-heater-cooler
   >
   } @case ('Cooler') {
   <app-heater-cooler [service]="service" [type]="'cooler'" [readyForControl]="$accessories.readyForControl"
-    >Cooler</app-heater-cooler
+    >{{ 'accessories.core.cooler' | translate }}</app-heater-cooler
   >
   } @case ('HumidifierDehumidifier') {
   <app-humidifier-dehumidifier [service]="service" [readyForControl]="$accessories.readyForControl"
-    >Humidifier Dehumidifier</app-humidifier-dehumidifier
+    >{{ 'accessories.core.humidifier_dehumidifier' | translate }}</app-humidifier-dehumidifier
   >
   } @case ('Humidifier') {
   <app-humidifier-dehumidifier
     [service]="service"
     [type]="'humidifier'"
     [readyForControl]="$accessories.readyForControl"
-    >Humidifier Dehumidifier</app-humidifier-dehumidifier
+    >{{ 'accessories.core.humidifier' | translate }}</app-humidifier-dehumidifier
   >
   } @case ('Dehumidifier') {
   <app-humidifier-dehumidifier
     [service]="service"
     [type]="'dehumidifier'"
     [readyForControl]="$accessories.readyForControl"
-    >Humidifier Dehumidifier</app-humidifier-dehumidifier
+    >{{ 'accessories.core.dehumidifier' | translate }}</app-humidifier-dehumidifier
   >
   } @case ('StatelessProgrammableSwitch') {
   <app-stateless-programmable-switch [service]="service"
-    >Stateless Programmable Switch</app-stateless-programmable-switch
+    >{{ 'accessories.core.stateless_programmable_switch' | translate }}</app-stateless-programmable-switch
   >
   } @case ('FilterMaintenance') {
   <app-filter-maintenance [service]="service" [readyForControl]="$accessories.readyForControl"
-    >Filter Maintenance</app-filter-maintenance
+    >{{ 'accessories.core.filter_maintenance' | translate }}</app-filter-maintenance
   >
   } @case ('RobotVacuum') {
-  <app-robot-vacuum [service]="service" [readyForControl]="$accessories.readyForControl">Robot Vacuum</app-robot-vacuum>
+  <app-robot-vacuum [service]="service" [readyForControl]="$accessories.readyForControl"
+    >{{ 'accessories.core.robot_vacuum' | translate }}</app-robot-vacuum
+  >
   } @case ('WashingMachine') {
   <app-washing-machine [service]="service" [readyForControl]="$accessories.readyForControl"
-    >Washing Machine</app-washing-machine
+    >{{ 'accessories.core.washing_machine' | translate }}</app-washing-machine
   >
   } @default {
   <app-unknown [service]="service">{{ service.humanType }}</app-unknown>

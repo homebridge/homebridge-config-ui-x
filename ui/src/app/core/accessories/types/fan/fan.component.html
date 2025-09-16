@@ -1,13 +1,13 @@
 <div
   class="accessory-box"
-  [ngClass]="{ 'switch-on': service.values.On || service.values.Active }"
+  [ngClass]="{ 'accessory-on': service.values.On || service.values.Active }"
   (longClick)="onLongClick()"
   (shortClick)="onClick()"
   tabindex="0"
 >
   <div class="d-flex flex-column h-100">
     <div
-      [attr.aria-label]="'Fan'"
+      [attr.aria-label]="'accessories.core.fan' | translate"
       class="accessory-svg"
       [ngClass]="{
         'spin': (service.values.On || service.values.Active) && (!hasRotationDirection || (hasRotationDirection && service.values.RotationDirection === 0)),

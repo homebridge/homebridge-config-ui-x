@@ -85,7 +85,7 @@
       color: #eeeeee !important;
     }
 
-    .hb-npm-search {
+    .search-bar {
       border: 0 !important;
       background-color: #111111 !important;
     }
@@ -341,7 +341,7 @@
       }
     }
 
-    .hb-npm-search {
+    .search-bar {
       color: #999999 !important;
       border-color: #242424 !important;
 
@@ -370,14 +370,6 @@
     .accessory-box {
       background-color: $secondaryBackground;
       color: $secondaryText;
-    }
-
-    .accessory-on,
-    .switch-on,
-    .light-on,
-    .window-on {
-      background-color: #fff;
-      color: #000000;
     }
 
     .rectangle {

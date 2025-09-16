@@ -20,7 +20,7 @@ export class SetupWizardGuard implements CanActivate {
       return true
     }
 
-    this.$router.navigate(['/'])
+    void this.$router.navigate(['/'])
     return true
   }
 }

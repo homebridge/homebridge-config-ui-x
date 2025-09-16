@@ -31,37 +31,7 @@ import { Logger } from '../../core/logger/logger.service'
 import { isNodeV24SupportedArchitecture } from '../../core/node-version.constants'
 import { PluginsService } from '../plugins/plugins.service'
 import { ServerService } from '../server/server.service'
-
-export enum HomebridgeStatus {
-  OK = 'ok',
-  UP = 'up',
-  DOWN = 'down',
-}
-
-export interface HomebridgeStatusUpdate {
-  status: HomebridgeStatus
-  paired?: null | boolean
-  setupUri?: null | string
-  name?: string
-  username?: string
-  pin?: string
-}
-
-interface DockerRelease {
-  tag_name: string
-  published_at: string
-  prerelease: boolean
-  body: string
-}
-
-interface DockerReleaseInfo {
-  version: string
-  publishedAt: string
-  isPrerelease: boolean
-  isTest: boolean
-  testTag: 'beta' | 'test' | null
-  isLatestStable: boolean
-}
+import { DockerRelease, DockerReleaseInfo, HomebridgeStatus, HomebridgeStatusUpdate } from './status.interfaces'
 
 const execAsync = promisify(exec)
 

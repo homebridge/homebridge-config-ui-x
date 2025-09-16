@@ -28,13 +28,13 @@ export class PowerOptionsComponent {
   public runningInDocker = this.$settings.env.runningInDocker
 
   public restartHomebridge() {
-    this.$router.navigate(['/restart'])
+    void this.$router.navigate(['/restart'])
   }
 
   public restartHomebridgeService() {
     this.$api.put('/platform-tools/hb-service/set-full-service-restart-flag', {}).subscribe({
       next: () => {
-        this.$router.navigate(['/restart'])
+        void this.$router.navigate(['/restart'])
       },
       error: (error) => {
         console.error(error)
@@ -44,7 +44,7 @@ export class PowerOptionsComponent {
   }
 
   public restartServer() {
-    this.$router.navigate(['/platform-tools/linux/restart-server'])
+    void this.$router.navigate(['/platform-tools/linux/restart-server'])
   }
 
   public shutdownServer() {
@@ -60,12 +60,12 @@ export class PowerOptionsComponent {
 
     ref.result
       .then(() => {
-        this.$router.navigate(['/platform-tools/linux/shutdown-server'])
+        void this.$router.navigate(['/platform-tools/linux/shutdown-server'])
       })
       .catch(() => { /* do nothing */ })
   }
 
   public dockerRestartContainer() {
-    this.$router.navigate(['/platform-tools/docker/restart-container'])
+    void this.$router.navigate(['/platform-tools/docker/restart-container'])
   }
 }

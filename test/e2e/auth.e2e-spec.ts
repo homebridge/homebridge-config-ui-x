@@ -211,6 +211,53 @@ describe('AuthController (e2e)', () => {
     expect(res.json().env.homebridgeInstanceName).toBe('Homebridge Test')
   })
 
+  it('POST /auth/refresh (valid token)', async () => {
+    const accessToken = (await app.inject({
+      method: 'POST',
+      path: '/auth/login',
+      payload: {
+        username: 'admin',
+        password: 'admin',
+      },
+    })).json().access_token
+
+    const res = await app.inject({
+      method: 'POST',
+      path: '/auth/refresh',
+      headers: {
+        authorization: `bearer ${accessToken}`,
+      },
+    })
+
+    expect(res.statusCode).toBe(201)
+    expect(res.json()).toHaveProperty('access_token')
+    expect(res.json()).toHaveProperty('token_type', 'Bearer')
+    expect(res.json()).toHaveProperty('expires_in')
+    // Verify the token is valid (length and structure) - JWT uses base64url which includes - and _ chars
+    expect(res.json().access_token).toMatch(/^[\w-]+\.[\w-]+\.[\w-]+$/)
+  })
+
+  it('POST /auth/refresh (invalid token)', async () => {
+    const res = await app.inject({
+      method: 'POST',
+      path: '/auth/refresh',
+      headers: {
+        authorization: 'bearer invalid-token',
+      },
+    })
+
+    expect(res.statusCode).toBe(401)
+  })
+
+  it('POST /auth/refresh (no token)', async () => {
+    const res = await app.inject({
+      method: 'POST',
+      path: '/auth/refresh',
+    })
+
+    expect(res.statusCode).toBe(401)
+  })
+
   afterAll(async () => {
     await app.close()
   })

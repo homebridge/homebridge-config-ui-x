@@ -5,13 +5,13 @@ import { TranslatePipe } from '@ngx-translate/core'
 import { BehaviorSubject } from 'rxjs'
 
 import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
-import { LightBulbManageComponent } from '@/app/core/accessories/types/light-bulb/light-bulb.manage.component'
+import { LightbulbManageComponent } from '@/app/core/accessories/types/lightbulb/lightbulb.manage.component'
 import { ColourService } from '@/app/core/colour.service'
 import { LongClickDirective } from '@/app/core/directives/long-click.directive'
 
 @Component({
-  selector: 'app-light-bulb',
-  templateUrl: './light-bulb.component.html',
+  selector: 'app-lightbulb',
+  templateUrl: './lightbulb.component.html',
   standalone: true,
   imports: [
     LongClickDirective,
@@ -19,7 +19,7 @@ import { LongClickDirective } from '@/app/core/directives/long-click.directive'
     TranslatePipe,
   ],
 })
-export class LightBulbComponent {
+export class LightbulbComponent {
   private $modal = inject(NgbModal)
   private intervalId: any
 
@@ -65,7 +65,7 @@ export class LightBulbComponent {
     }
 
     if ('Brightness' in this.service.values || 'Hue' in this.service.values || 'Saturation' in this.service.values || 'ColorTemperature' in this.service.values) {
-      const ref = this.$modal.open(LightBulbManageComponent, {
+      const ref = this.$modal.open(LightbulbManageComponent, {
         size: 'md',
         backdrop: 'static',
       })

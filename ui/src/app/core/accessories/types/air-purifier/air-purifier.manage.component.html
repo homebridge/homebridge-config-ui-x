@@ -13,7 +13,7 @@
     <div
       class="btn-group-vertical d-flex justify-content-center mb-0 p-0"
       role="group"
-      aria-label="Air Purifier State Control"
+      [attr.aria-label]="'accessories.control.state_control' | translate"
     >
       <button type="button" class="btn mb-0 mx-0 p-3 btn-control" (click)="setTargetState(0, $event)">
         <div class="float-start primary-text">
@@ -35,7 +35,7 @@
     <div
       class="btn-group-vertical d-flex justify-content-center mb-0 p-0"
       role="group"
-      aria-label="Air Purifier Mode Control"
+      [attr.aria-label]="'accessories.control.mode_control' | translate"
     >
       @if (targetModeValidValues.includes(0)) {
       <button type="button" class="btn mb-0 mx-0 p-3 btn-control" (click)="setTargetMode(0, $event)">

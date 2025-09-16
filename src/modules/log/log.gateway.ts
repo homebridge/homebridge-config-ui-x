@@ -1,6 +1,6 @@
 import type { EventEmitter } from 'node:events'
 
-import type { LogTermSize } from './log.service'
+import type { LogTermSize } from './log.interfaces'
 
 import { UseGuards } from '@nestjs/common'
 import { SubscribeMessage, WebSocketGateway } from '@nestjs/websockets'

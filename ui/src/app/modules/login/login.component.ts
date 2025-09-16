@@ -102,7 +102,7 @@ export class LoginComponent implements OnInit, AfterViewChecked {
       if (!this.$auth.user.admin && !this.validNonAdminRoutes.includes(this.targetRoute)) {
         this.targetRoute = '/'
       }
-      this.$router.navigateByUrl(this.targetRoute)
+      void this.$router.navigateByUrl(this.targetRoute)
       window.sessionStorage.removeItem('target_route')
     } catch (error) {
       if (error.status === 412) {

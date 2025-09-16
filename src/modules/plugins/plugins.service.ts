@@ -1,6 +1,7 @@
 /* global NodeJS */
 import type { EventEmitter } from 'node:events'
 
+import type { HomebridgeConfig } from '../../core/config/config.interfaces'
 import type {
   HomebridgePlugin,
   HomebridgePluginUiMetadata,
@@ -12,7 +13,7 @@ import type {
   PluginListData,
   PluginListItem,
   PluginListNewScopeItem,
-} from './types'
+} from './plugins.interfaces'
 
 import { execSync, fork, spawn } from 'node:child_process'
 import { arch, cpus, platform, userInfo } from 'node:os'
@@ -51,7 +52,7 @@ import pLimit from 'p-limit'
 import { firstValueFrom } from 'rxjs'
 import { gt, lt, parse, satisfies } from 'semver'
 
-import { ConfigService, HomebridgeConfig } from '../../core/config/config.service'
+import { ConfigService } from '../../core/config/config.service'
 import { Logger } from '../../core/logger/logger.service'
 import { NodePtyService } from '../../core/node-pty/node-pty.service'
 import { HomebridgeUpdateActionDto, PluginActionDto } from './plugins.dto'
@@ -519,6 +520,19 @@ export class PluginsService {
     }
 
     const userPlatform = platform()
+
+    // Guard rails to keep users safe!
+    // Here we can throw any error, and it will appear in the UI terminal for the user to see
+
+    // (1) If user has a webroot configured and is trying to install a UI version that doesn't support it
+    if (this.configService.ui.webroot && lt(pluginAction.version, '5.6.1-alpha.0')) {
+      throw new Error(
+        `Cannot install HB UI v${pluginAction.version} when a webroot is configured.\n\r`
+        + 'Please either:\n\r'
+        + ' - Remove the configured webroot, restart Homebridge, then try the install again, or\n\r'
+        + ' - Install HB UI v5.7.0 or later.\n\r\n\r',
+      )
+    }
 
     // Set the default install path
     let installPath = this.configService.customPluginPath

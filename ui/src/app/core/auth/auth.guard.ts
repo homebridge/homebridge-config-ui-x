@@ -29,6 +29,8 @@ export class AuthGuard implements CanActivate {
 
     // Check authentication status
     if (await this.$authHelper.isAuthenticated()) {
+      // Refresh token if needed on navigation
+      await this.$auth.checkAndRefreshIfNeeded()
       return true
     }
 

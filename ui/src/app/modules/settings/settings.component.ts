@@ -2,11 +2,12 @@ import type { NetworkAdapterAvailable, NetworkAdapterSelected } from '@/app/modu
 
 import { animate, style, transition, trigger } from '@angular/animations'
 import { NgClass, TitleCasePipe } from '@angular/common'
-import { Component, inject, OnInit } from '@angular/core'
+import { ChangeDetectorRef, Component, ElementRef, inject, OnInit, ViewChild } from '@angular/core'
 import { FormControl, FormsModule, ReactiveFormsModule, UntypedFormControl } from '@angular/forms'
 import { Router, RouterLink } from '@angular/router'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
+import { isStandalonePWA } from 'is-standalone-pwa'
 import { ToastrService } from 'ngx-toastr'
 import { firstValueFrom } from 'rxjs'
 import { debounceTime } from 'rxjs/operators'
@@ -29,6 +30,7 @@ import { WallpaperComponent } from '@/app/modules/settings/wallpaper/wallpaper.c
 
 @Component({
   templateUrl: './settings.component.html',
+  styleUrls: ['./settings.component.scss'],
   standalone: true,
   imports: [
     NgClass,
@@ -49,10 +51,41 @@ import { WallpaperComponent } from '@/app/modules/settings/wallpaper/wallpaper.c
         animate('750ms', style({ opacity: 0 })),
       ]),
     ]),
+    trigger('smoothHide', [
+      transition(':enter', [
+        style({
+          opacity: 0.01,
+          height: '0px',
+          overflow: 'hidden',
+          marginBottom: 0,
+          transform: 'scale(0.97)',
+        }),
+        animate('450ms cubic-bezier(0.0, 0.0, 0.2, 1)', style({
+          opacity: 1,
+          height: '*',
+          marginBottom: '*',
+          transform: 'scale(1)',
+        })),
+      ]),
+      transition(':leave', [
+        animate('150ms cubic-bezier(0.4, 0.0, 1, 1)', style({
+          opacity: 0,
+          height: 0,
+          marginBottom: 0,
+          paddingTop: 0,
+          paddingBottom: 0,
+          overflow: 'hidden',
+          transform: 'scale(0.98)',
+        })),
+      ]),
+    ]),
   ],
 })
 export class SettingsComponent implements OnInit {
+  @ViewChild('searchInput') searchInput!: ElementRef
+
   private $api = inject(ApiService)
+  private $cdr = inject(ChangeDetectorRef)
   private $modal = inject(NgbModal)
   private $notification = inject(NotificationService)
   private $router = inject(Router)
@@ -61,6 +94,9 @@ export class SettingsComponent implements OnInit {
   private $toastr = inject(ToastrService)
   private $translate = inject(TranslateService)
   private restartToastIsShown = false
+
+  public showSearchBar = false
+  public searchQuery = ''
 
   public showFields = {
     general: true,
@@ -73,6 +109,11 @@ export class SettingsComponent implements OnInit {
     cache: true,
   }
 
+  // Track which items are hidden by search
+  public hiddenItems: Record<string, boolean> = {}
+
+  public readonly originalWebroot = this.$settings.originalWebroot
+
   public loading = true
   public isHbV2 = false
   public showAvahiMdnsOption = false
@@ -84,6 +125,8 @@ export class SettingsComponent implements OnInit {
   public runningOnRaspberryPi = this.$settings.env.runningOnRaspberryPi
   public platform = this.$settings.env.platform
   public enableTerminalAccess = this.$settings.env.enableTerminalAccess
+  public isPwa = Boolean(isStandalonePWA())
+  public webrootSettingDisabledAccess = false
 
   public hbNameIsInvalid = false
   public hbNameIsSaving = false
@@ -143,6 +186,9 @@ export class SettingsComponent implements OnInit {
   public hbMDnsIsSaving = false
   public hbMDnsFormControl = new FormControl('')
 
+  public enableMdnsAdvertiseFormControl = new FormControl(false)
+  public enableMdnsAdvertiseIsSaving = false
+
   public hbPortIsInvalid = false
   public hbPortIsSaving = false
   public hbPortFormControl = new FormControl(0)
@@ -162,6 +208,9 @@ export class SettingsComponent implements OnInit {
   public uiHostIsSaving = false
   public uiHostFormControl = new FormControl('')
 
+  public uiWebrootIsSaving = false
+  public uiWebrootFormControl = new FormControl('')
+
   public uiProxyHostIsSaving = false
   public uiProxyHostFormControl = new FormControl('')
 
@@ -171,6 +220,9 @@ export class SettingsComponent implements OnInit {
   public uiSessionTimeoutIsInvalid = false
   public uiSessionTimeoutIsSaving = false
   public uiSessionTimeoutFormControl = new FormControl(0)
+
+  public uiSessionTimeoutInactivityBasedIsSaving = false
+  public uiSessionTimeoutInactivityBasedFormControl = new FormControl(false)
 
   public uiSslTypeFormControl = new FormControl('off')
 
@@ -206,11 +258,252 @@ export class SettingsComponent implements OnInit {
 
   public readonly linkDebug = '<a href="https://github.com/homebridge/homebridge-config-ui-x/wiki/Debug-Common-Values" target="_blank" rel="noopener noreferrer"><i class="fa fa-external-link-alt primary-text"></i></a>'
 
+  public toggleSearch() {
+    this.showSearchBar = !this.showSearchBar
+    if (this.showSearchBar) {
+      // Focus on search input after a short delay
+      setTimeout(() => {
+        if (this.searchInput && this.searchInput.nativeElement) {
+          this.searchInput.nativeElement.focus()
+        }
+      }, 100)
+    } else {
+      // Clear search when hiding
+      this.clearSearch()
+    }
+  }
+
+  public clearSearch() {
+    this.searchQuery = ''
+    this.filterSettings()
+  }
+
+  public filterSettings() {
+    // Clear all hidden items
+    this.hiddenItems = {}
+
+    if (!this.searchQuery) {
+      // If no search query, show everything
+      return
+    }
+
+    const query = this.searchQuery.toLowerCase()
+    const itemsContent = this.getItemsContent()
+
+    // Check each item and hide those that don't match
+    Object.entries(itemsContent).forEach(([itemId, searchableText]) => {
+      const matches = searchableText && searchableText.toLowerCase().includes(query)
+      if (!matches) {
+        this.hiddenItems[itemId] = true
+      }
+    })
+
+    // Trigger change detection manually
+    this.$cdr.detectChanges()
+  }
+
+  public isItemHidden(itemId: string): boolean {
+    const isHidden = !!this.hiddenItems[itemId]
+    if (this.searchQuery) { // Only log when searching
+    }
+    return isHidden
+  }
+
+  public isSectionVisible(sectionName: string): boolean {
+    // If no search query, all sections are visible
+    if (!this.searchQuery) {
+      return true
+    }
+
+    // Define which items belong to which section
+    const sectionItems: Record<string, string[]> = {
+      general: [
+        'setting-name',
+        'setting-backup',
+        'setting-restore',
+        'setting-users',
+      ],
+      display: [
+        'setting-lang',
+        'setting-theme',
+        'setting-lighting',
+        'setting-menu',
+        'setting-temp',
+        'setting-betas',
+        'setting-wallpaper',
+      ],
+      startup: [
+        'setting-debug',
+        'setting-insecure',
+        'setting-keep',
+        'setting-metrics-startup',
+        'setting-package-path',
+        'setting-linux-restart',
+        'setting-env-debug-manual',
+        'setting-env-node',
+      ],
+      network: [
+        'setting-interfaces',
+        'setting-mdns',
+        'setting-port-hb',
+        'setting-port-range',
+        'setting-port-end',
+        'setting-network-host',
+        'setting-network-proxy',
+        'setting-ui-port-network',
+        'setting-webroot-network',
+        'setting-mdns-advertise',
+      ],
+      terminal: [
+        'setting-terminal-log-max',
+        'setting-terminal-persistence',
+        'setting-terminal-buffer',
+      ],
+      security: [
+        'setting-security-auth',
+        'setting-session-inactivity-nested',
+        'setting-security-session',
+        'setting-security-https',
+        'setting-security-cert',
+        'setting-security-pass',
+        'setting-security-control',
+      ],
+      cache: [
+        'setting-accessory-debug',
+        'setting-reset-accessory-ind',
+        'setting-reset-bridge-accessories',
+        'setting-reset-accessory-all',
+      ],
+      reset: [
+        'setting-reset-bridge-ind',
+        'setting-reset-bridge-all',
+      ],
+    }
+
+    // Get the items for this section
+    const items = sectionItems[sectionName]
+    if (!items) {
+      return true // If section not defined, show it by default
+    }
+
+    // Check if at least one item in the section is visible
+    return items.some(itemId => !this.isItemHidden(itemId))
+  }
+
+  private getItemsContent(): Record<string, string> {
+    // Map each setting item to its translated text
+    return {
+      // General section
+      'setting-name': this.$translate.instant('settings.name'),
+      'setting-backup': this.$translate.instant('backup.title_backup'),
+      'setting-restore': this.$translate.instant('config.restore.title'),
+      'setting-users': this.$translate.instant('menu.tooltip_user_accounts'),
+
+      // Display section
+      'setting-lang': this.$translate.instant('settings.display.lang'),
+      'setting-theme': this.$translate.instant('settings.display.theme'),
+      'setting-lighting': this.$translate.instant('settings.display.lighting_mode'),
+      'setting-menu': this.$translate.instant('settings.display.menu_mode'),
+      'setting-temp': this.$translate.instant('settings.display.temp_units'),
+      'setting-betas': this.$translate.instant('settings.display.show_betas'),
+      'setting-wallpaper': this.$translate.instant('settings.display.wallpaper'),
+
+      // Startup section
+      'setting-debug': this.$translate.instant('settings.startup.debug'),
+      'setting-insecure': this.$translate.instant('settings.startup.insecure'),
+      'setting-keep': this.$translate.instant('settings.startup.keep_accessories'),
+      'setting-metrics-startup': this.$translate.instant('settings.startup.metrics'),
+      'setting-env-debug': this.$translate.instant('settings.startup.env_debug'),
+      'setting-env-debug-manual': 'DEBUG',
+      'setting-env-node': this.$translate.instant('settings.startup.env_node_options'),
+      'setting-log-size': this.$translate.instant('settings.startup.log_length'),
+      'setting-log-truncate': this.$translate.instant('settings.startup.truncate_log'),
+      'setting-package-path': this.$translate.instant('settings.startup.homebridge_package_path'),
+
+      // Network section
+      'setting-mdns': this.$translate.instant('settings.mdns_advertiser'),
+      'setting-interfaces': this.$translate.instant('settings.network.title_network_interfaces'),
+      'setting-port-hb': this.$translate.instant('settings.network.port_hb'),
+      'setting-port-bridge': this.$translate.instant('settings.network.port.bridge'),
+      'setting-port-range': this.$translate.instant('settings.network.port.start'),
+      'setting-port-end': this.$translate.instant('settings.network.port.end'),
+      'setting-network-host': this.$translate.instant('settings.network.host'),
+      'setting-network-proxy': this.$translate.instant('settings.network.proxy'),
+      'setting-ui-port-network': this.$translate.instant('settings.network.port_ui'),
+      'setting-webroot-network': this.$translate.instant('settings.network.webroot'),
+      'setting-mdns-advertise': this.$translate.instant('settings.network.mdns_advertise'),
+
+      // Security section
+      'setting-security-auth': this.$translate.instant('settings.security.auth'),
+      'setting-security-session': this.$translate.instant('settings.startup.session'),
+      'setting-security-https': this.$translate.instant('settings.security.https'),
+      'setting-security-cert': this.$translate.instant('settings.security.cert'),
+      'setting-security-pass': this.$translate.instant('settings.security.pass'),
+      'setting-security-control': this.$translate.instant('settings.security.ui_control'),
+      'setting-ui-port': this.$translate.instant('settings.security.webui_port'),
+      'setting-ui-host': this.$translate.instant('settings.security.webui_host'),
+      'setting-ui-auth': this.$translate.instant('settings.security.webui_auth'),
+      'setting-session-timeout': this.$translate.instant('settings.security.session_timeout'),
+      'setting-session-inactivity': this.$translate.instant('settings.security.session_timeout_inactivity_based'),
+      'setting-session-inactivity-nested': this.$translate.instant('settings.startup.session_inactivity_based'),
+      'setting-webroot': this.$translate.instant('settings.security.webui_webroot'),
+      'setting-proxy': this.$translate.instant('settings.security.webui_proxy_host'),
+      'setting-ssl': this.$translate.instant('settings.security.ssl_key'),
+
+      // Terminal section
+      'setting-terminal-log-max': this.$translate.instant('settings.terminal.log_max'),
+      'setting-terminal-persistence': this.$translate.instant('settings.terminal.persistence'),
+      'setting-terminal-warning': this.$translate.instant('settings.terminal.hide_warning'),
+      'setting-terminal-buffer': this.$translate.instant('settings.terminal.buffer_size'),
+
+      // Reset section
+      'setting-reset-accessory-ind': this.$translate.instant('reset.accessory_ind.title'),
+      'setting-reset-bridge-accessories': this.$translate.instant('reset.bridge_accessories.title'),
+      'setting-reset-accessory-all': this.$translate.instant('reset.accessory_all.title'),
+      'setting-reset-bridge-ind': this.$translate.instant('reset.bridge_ind.title'),
+      'setting-reset-bridge-all': this.$translate.instant('reset.bridge_all.title'),
+      'setting-reset-state': this.$translate.instant('settings.reset.reset_homebridge_state'),
+      'setting-unpair': this.$translate.instant('settings.reset.unpair_bridges'),
+      'setting-metrics': this.$translate.instant('settings.reset.enable_metrics'),
+      'setting-accessory-control': this.$translate.instant('settings.reset.control_panel'),
+      'setting-accessory-debug': this.$translate.instant('settings.accessory.debug'),
+      'setting-temp-files': this.$translate.instant('settings.reset.temp_files'),
+      'setting-linux-shutdown': this.$translate.instant('settings.reset.linux_shutdown'),
+      'setting-linux-restart': this.$translate.instant('settings.reset.linux_restart'),
+
+      // Cache section
+      'setting-cache-all': this.$translate.instant('settings.cache.title_clear_cache'),
+      'setting-cache-bridge': this.$translate.instant('settings.cache.title_clear_bridge_cache'),
+      'setting-cache-accessories': this.$translate.instant('settings.cache.title_clear_cached_accessories'),
+    }
+  }
+
   public async ngOnInit() {
     this.isHbV2 = this.$settings.env.homebridgeVersion.startsWith('2')
 
     await this.initNetworkingOptions()
     await this.initStartupSettings()
+
+    // Some settings might need to be disabled for some users
+    // (1) Disable the webroot settings if the Homebridge user does not have permission to modify the index.html file
+    if (this.$settings.originalWebroot === globalThis.webroot.errorCode) {
+      this.webrootSettingDisabledAccess = true
+      this.uiWebrootFormControl.disable()
+    }
+
+    // (2) Disable some settings that can modify the URL from being changed from a PWA
+    //     This is to stop users from getting stuck if they change the webroot or port
+    if (this.isPwa) {
+      this.uiPortFormControl.disable()
+      this.uiHostFormControl.disable()
+      this.uiWebrootFormControl.disable()
+      this.uiProxyHostFormControl.disable()
+      this.uiSslTypeFormControl.disable()
+      this.uiSslKeyFormControl.disable()
+      this.uiSslCertFormControl.disable()
+      this.uiSslPfxFormControl.disable()
+      this.uiSslPassphraseFormControl.disable()
+    }
 
     this.hbNameFormControl.patchValue(this.$settings.env.homebridgeInstanceName)
     this.hbNameFormControl.valueChanges
@@ -287,6 +580,11 @@ export class SettingsComponent implements OnInit {
       .pipe(debounceTime(750))
       .subscribe((value: number) => this.uiSessionTimeoutSave(value))
 
+    this.uiSessionTimeoutInactivityBasedFormControl.patchValue(this.$settings.sessionTimeoutInactivityBased || false)
+    this.uiSessionTimeoutInactivityBasedFormControl.valueChanges
+      .pipe(debounceTime(750))
+      .subscribe((value: boolean) => this.uiSessionTimeoutInactivityBasedSave(value))
+
     this.uiSslKeyFormControl.patchValue(this.$settings.env.ssl?.key || '')
     this.uiSslKeyFormControl.valueChanges
       .pipe(debounceTime(1500))
@@ -319,6 +617,11 @@ export class SettingsComponent implements OnInit {
       .pipe(debounceTime(1500))
       .subscribe((value: string) => this.uiHostSave(value))
 
+    this.uiWebrootFormControl.patchValue(this.$settings.webroot || '')
+    this.uiWebrootFormControl.valueChanges
+      .pipe(debounceTime(1500))
+      .subscribe((value: string) => this.uiWebrootSave(value))
+
     this.uiProxyHostFormControl.patchValue(this.$settings.proxyHost || '')
     this.uiProxyHostFormControl.valueChanges
       .pipe(debounceTime(1500))
@@ -333,6 +636,11 @@ export class SettingsComponent implements OnInit {
     this.uiMetricsFormControl.valueChanges
       .pipe(debounceTime(750))
       .subscribe((value: boolean) => this.uiMetricsSave(value))
+
+    this.enableMdnsAdvertiseFormControl.patchValue(this.$settings.env.enableMdnsAdvertise || false)
+    this.enableMdnsAdvertiseFormControl.valueChanges
+      .pipe(debounceTime(750))
+      .subscribe((value: boolean) => this.enableMdnsAdvertiseSave(value))
 
     this.uiAccDebugFormControl.patchValue(this.$settings.env.accessoryControl?.debug)
     this.uiAccDebugFormControl.valueChanges
@@ -365,8 +673,10 @@ export class SettingsComponent implements OnInit {
   }
 
   public openConfigBackup() {
-    // go to /config?action=restore
-    this.$router.navigate(['/config'], { queryParams: { action: 'restore' } })
+    // Go to /config?action=restore
+    void this.$router.navigate(['/config'], {
+      queryParams: { action: 'restore' },
+    })
   }
 
   public openWallpaperModal() {
@@ -1058,6 +1368,22 @@ export class SettingsComponent implements OnInit {
     }
   }
 
+  private async uiSessionTimeoutInactivityBasedSave(value: boolean) {
+    try {
+      this.uiSessionTimeoutInactivityBasedIsSaving = true
+      this.$settings.setItem('sessionTimeoutInactivityBased', value)
+      await this.saveUiSettingChange('sessionTimeoutInactivityBased', value)
+      setTimeout(() => {
+        this.uiSessionTimeoutInactivityBasedIsSaving = false
+        this.showRestartToast()
+      }, 1000)
+    } catch (error) {
+      console.error(error)
+      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      this.uiSessionTimeoutInactivityBasedIsSaving = false
+    }
+  }
+
   private async uiSslKeySave(value: string) {
     try {
       this.uiSslKeyIsSaving = true
@@ -1166,6 +1492,33 @@ export class SettingsComponent implements OnInit {
     }
   }
 
+  private async uiWebrootSave(value: string) {
+    try {
+      this.uiWebrootIsSaving = true
+
+      // Normalise webroot: remove multiple slashes, ensure single leading slash, no trailing slash
+      // It is really important we keep this property value in a consistent format
+      value = value
+        ? `/${value}`.replace(/\/+/g, '/').replace(/\/$/, '')
+        : ''
+      if (value === '/') {
+        value = ''
+      }
+
+      this.$settings.setItem('webroot', value)
+      await this.saveUiSettingChange('webroot', value)
+      this.uiWebrootFormControl.patchValue(value, { emitEvent: false })
+      setTimeout(() => {
+        this.uiWebrootIsSaving = false
+        this.showRestartToast()
+      }, 1000)
+    } catch (error) {
+      console.error(error)
+      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      this.uiWebrootIsSaving = false
+    }
+  }
+
   private async uiProxyHostSave(value: string) {
     try {
       this.uiProxyHostIsSaving = true
@@ -1217,6 +1570,27 @@ export class SettingsComponent implements OnInit {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
       this.uiMetricsIsSaving = false
+    }
+  }
+
+  private async enableMdnsAdvertiseSave(value: boolean) {
+    try {
+      this.enableMdnsAdvertiseIsSaving = true
+      this.$settings.setEnvItem('enableMdnsAdvertise', value)
+      await this.saveUiSettingChange('enableMdnsAdvertise', value)
+      setTimeout(() => {
+        this.enableMdnsAdvertiseIsSaving = false
+        this.$api.put('/platform-tools/hb-service/set-full-service-restart-flag', {}).subscribe({
+          next: () => this.showRestartToast(),
+          error: (error) => {
+            console.error(error)
+            this.showRestartToast()
+          },
+        })
+      }, 1000)
+    } catch (error) {
+      console.error(error)
+      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
     }
   }
 
@@ -1345,7 +1719,7 @@ export class SettingsComponent implements OnInit {
 
       if (ref && ref.onTap) {
         ref.onTap.subscribe(() => {
-          this.$router.navigate(['/restart'])
+          void this.$router.navigate(['/restart'])
         })
       }
     }

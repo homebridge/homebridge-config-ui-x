@@ -1,5 +1,5 @@
 ::ng-deep {
-  .switch-on:not(.paused):not(.muted) {
+  .accessory-on:not(.paused):not(.muted) {
     svg {
       .wave-inner {
         animation: pulse-inner 2s infinite;
@@ -40,7 +40,7 @@
   }
 
   body.dark-mode {
-    div.accessory-box:not(.switch-on) {
+    div.accessory-box:not(.accessory-on) {
       svg {
         .inner {
           fill: #2b2b2b !important; // Dark mode inner circle color

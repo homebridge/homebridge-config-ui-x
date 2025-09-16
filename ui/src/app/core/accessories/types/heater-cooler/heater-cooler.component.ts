@@ -12,7 +12,6 @@ import { SettingsService } from '@/app/core/settings.service'
 @Component({
   selector: 'app-heater-cooler',
   templateUrl: './heater-cooler.component.html',
-  styleUrls: ['./heater-cooler.component.scss'],
   standalone: true,
   imports: [
     LongClickDirective,
@@ -63,6 +62,7 @@ export class HeaterCoolerComponent {
         backdrop: 'static',
       })
       ref.componentInstance.service = this.service
+      ref.componentInstance.type = this.type
     }
   }
 }

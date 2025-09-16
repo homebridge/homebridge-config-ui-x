@@ -12,7 +12,6 @@ import { SettingsService } from '@/app/core/settings.service'
 @Component({
   selector: 'app-thermostat',
   templateUrl: './thermostat.component.html',
-  styleUrls: ['./thermostat.component.scss'],
   standalone: true,
   imports: [
     LongClickDirective,

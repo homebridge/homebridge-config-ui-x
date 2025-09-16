@@ -10,7 +10,11 @@
     ></button>
   </div>
   <div class="modal-body text-center px-5">
-    <div class="btn-group-vertical d-flex justify-content-center mb-4 p-0" role="group" aria-label="Valve Mode Control">
+    <div
+      class="btn-group-vertical d-flex justify-content-center mb-4 p-0"
+      role="group"
+      [attr.aria-label]="'accessories.control.mode_control' | translate"
+    >
       <button type="button" class="btn mb-0 mx-0 p-3 btn-control" (click)="setTargetMode(false, $event)">
         <div class="float-start primary-text">
           <i class="fas fa-xl" [ngClass]="{ 'fa-check-circle': !targetMode, 'fa-blank': targetMode }"></i>

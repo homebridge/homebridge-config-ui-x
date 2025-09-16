@@ -1,7 +1,7 @@
 <div
   class="accessory-box"
   [ngClass]="{
-    'switch-on': service.values.ObstructionDetected
+    'accessory-on': service.values.ObstructionDetected
       || [0, 2, 3, 4].includes(service.values.CurrentDoorState)
       || service.values.On
       || service.values.Active,
@@ -16,7 +16,7 @@
   tabindex="0"
 >
   <div class="d-flex flex-column h-100">
-    <div [attr.aria-label]="'Garage Door'" class="accessory-svg">
+    <div [attr.aria-label]="'accessories.core.garage_door_opener' | translate" class="accessory-svg">
       <svg width="32px" height="32px" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
         <!-- circle in roof -->
         <circle

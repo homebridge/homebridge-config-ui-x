@@ -1,7 +1,6 @@
 /* global NodeJS */
 import { inject, Injectable } from '@angular/core'
 import { JwtHelperService } from '@auth0/angular-jwt'
-import dayjs from 'dayjs'
 import { firstValueFrom } from 'rxjs'
 
 import { ApiService } from '@/app/core/api.service'
@@ -18,6 +17,8 @@ export class AuthService {
   public token: string
   public user: UserInterface = {}
   private logoutTimer: NodeJS.Timeout
+  private lastRefreshTime: number = Date.now()
+  private isRefreshing: boolean = false
 
   constructor() {
     // Load the token (if present) from local storage on page init
@@ -46,6 +47,7 @@ export class AuthService {
   public logout() {
     this.user = null
     this.token = null
+    clearTimeout(this.logoutTimer)
     window.localStorage.removeItem(environment.jwt.tokenKey)
     window.location.reload()
   }
@@ -99,10 +101,11 @@ export class AuthService {
   private setLogoutTimer() {
     clearTimeout(this.logoutTimer)
     if (!this.$jwtHelper.isTokenExpired(this.token, this.$settings.serverTimeOffset)) {
-      const expires = dayjs(this.$jwtHelper.getTokenExpirationDate(this.token))
-      const timeout = expires.diff(dayjs().add(this.$settings.serverTimeOffset, 's'), 'millisecond')
-      // SetTimeout only accepts a 32bit integer, if the number is larger than this, do not time out
-      if (timeout <= 2147483647) {
+      // Use sessionTimeout as inactivity timeout
+      const inactivityTimeout = this.$settings.sessionTimeout * 1000 // Convert to milliseconds
+
+      // Set timeout only accepts a 32bit integer, if the number is larger than this, do not time out
+      if (inactivityTimeout <= 2147483647) {
         this.logoutTimer = setTimeout(async () => {
           if (this.$settings.formAuth === false) {
             await this.noauth()
@@ -110,8 +113,63 @@ export class AuthService {
           } else {
             this.logout()
           }
-        }, timeout)
+        }, inactivityTimeout)
       }
+    }
+  }
+
+  /**
+   * Check if the session needs to be refreshed and do so if needed
+   * Called on user navigation/interaction
+   */
+  public async checkAndRefreshIfNeeded(): Promise<void> {
+    // Only perform refresh if form auth is enabled and the feature is enabled
+    if (!this.$settings.formAuth || !this.$settings.sessionTimeoutInactivityBased) {
+      return
+    }
+
+    if (!this.token || !this.isLoggedIn() || this.isRefreshing) {
+      return
+    }
+
+    const now = Date.now()
+    const timeSinceLastRefresh = now - this.lastRefreshTime
+    const sessionTimeoutMs = this.$settings.sessionTimeout * 1000
+    const refreshThreshold = sessionTimeoutMs * 0.7 // Refresh when 70% of timeout has elapsed
+
+    // Only refresh if we're past the threshold since last refresh
+    if (timeSinceLastRefresh > refreshThreshold) {
+      try {
+        await this.refreshSession()
+      } catch (err) {
+        console.error('Failed to refresh session:', err)
+        // On error, the user will be logged out when the timer expires
+      }
+    }
+  }
+
+  /**
+   * Refresh the current session by getting a new token
+   */
+  private async refreshSession() {
+    if (this.isRefreshing) {
+      return
+    }
+
+    this.isRefreshing = true
+
+    try {
+      const resp = await firstValueFrom(this.$api.post('/auth/refresh', {}))
+      if (resp.access_token) {
+        this.token = resp.access_token
+        window.localStorage.setItem(environment.jwt.tokenKey, resp.access_token)
+        // Update the last refresh timestamp
+        this.lastRefreshTime = Date.now()
+        // Reset the logout timer with the new session timeout
+        this.setLogoutTimer()
+      }
+    } finally {
+      this.isRefreshing = false
     }
   }
 }

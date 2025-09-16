@@ -2,6 +2,31 @@
 
 All notable changes to `homebridge-config-ui-x` will be documented in this file. This project tries to adhere to [Semantic Versioning](http://semver.org/).
 
+## v5.6.2 (Unreleased)
+
+### UI Changes
+
+- fix sidebar scrollbars (#2574) (@dnicolson)
+- refreshed icons: heater, cooler, de/humidifier + thermostat
+- put services types into translatable strings
+- added config option to configure a webroot for the ui
+- prevent url-based settings from being changed from a pwa
+- added config option to for inactivity-based session timeout
+- add search bar on settings page for filtering options
+- added config option to advertise the ui over mdns
+
+### Other Changes
+
+- remove logging of every `MessageEvent` (#2575) (@dnicolson)
+- preserve custom service info for undiscovered accessories
+- improvements to backend types and organisation
+
+### Homebridge Dependencies
+
+- `@homebridge/hap-client` @ `v3.1.2`
+- `@homebridge/node-pty-prebuilt-multiarch` @ `v0.13.1`
+- `@homebridge/plugin-ui-utils` @ `v2.1.0`
+
 ## v5.6.1 (2025-09-13)
 
 ### UI Changes
