@@ -102,9 +102,10 @@ export class ConfigEditorController {
   }
 
   @UseGuards(AdminGuard)
+  @UseGuards(AdminGuard)
   @Get('/ui/plugins/hide-updates-for')
   @ApiOperation({ summary: 'Get the plugins hide updates for list.' })
-  getPluginsHideUpdatesFor() {
+  getPluginsHideUpdatesFor(): Promise<string[]> {
     return this.configEditorService.getPluginsHideUpdatesFor()
   }
 
