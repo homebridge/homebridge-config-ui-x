@@ -112,6 +112,8 @@ export class SettingsComponent implements OnInit {
   // Track which items are hidden by search
   public hiddenItems: Record<string, boolean> = {}
 
+  public readonly originalWebroot = this.$settings.originalWebroot
+
   public loading = true
   public debugFieldDesc = 'settings.startup.debug_desc_v1' // default, may be changed in ngOnInit
   public showAvahiMdnsOption = false
@@ -124,6 +126,7 @@ export class SettingsComponent implements OnInit {
   public platform = this.$settings.env.platform
   public enableTerminalAccess = this.$settings.env.enableTerminalAccess
   public isPwa = Boolean(isStandalonePWA())
+  public webrootSettingDisabledAccess = false
 
   public hbNameIsInvalid = false
   public hbNameIsSaving = false
@@ -204,6 +207,9 @@ export class SettingsComponent implements OnInit {
 
   public uiHostIsSaving = false
   public uiHostFormControl = new FormControl('')
+
+  public uiWebrootIsSaving = false
+  public uiWebrootFormControl = new FormControl('')
 
   public uiProxyHostIsSaving = false
   public uiProxyHostFormControl = new FormControl('')
@@ -347,6 +353,7 @@ export class SettingsComponent implements OnInit {
         'setting-network-host',
         'setting-network-proxy',
         'setting-ui-port-network',
+        'setting-webroot-network',
         'setting-mdns-advertise',
       ],
       terminal: [
@@ -425,6 +432,7 @@ export class SettingsComponent implements OnInit {
       'setting-network-host': this.$translate.instant('settings.network.host'),
       'setting-network-proxy': this.$translate.instant('settings.network.proxy'),
       'setting-ui-port-network': this.$translate.instant('settings.network.port_ui'),
+      'setting-webroot-network': this.$translate.instant('settings.network.webroot'),
       'setting-mdns-advertise': this.$translate.instant('settings.network.mdns_advertise'),
 
       // Security section
@@ -483,11 +491,18 @@ export class SettingsComponent implements OnInit {
     await this.initStartupSettings()
 
     // Some settings might need to be disabled for some users
-    // (1) Disable some settings that can modify the URL from being changed from a PWA
-    //     This is to stop users from getting stuck if they change the port for example
+    // (1) Disable the webroot settings if the Homebridge user does not have permission to modify the index.html file
+    if (this.$settings.originalWebroot === globalThis.webroot.errorCode) {
+      this.webrootSettingDisabledAccess = true
+      this.uiWebrootFormControl.disable()
+    }
+
+    // (2) Disable some settings that can modify the URL from being changed from a PWA
+    //     This is to stop users from getting stuck if they change the webroot or port
     if (this.isPwa) {
       this.uiPortFormControl.disable()
       this.uiHostFormControl.disable()
+      this.uiWebrootFormControl.disable()
       this.uiProxyHostFormControl.disable()
       this.uiSslTypeFormControl.disable()
       this.uiSslKeyFormControl.disable()
@@ -625,6 +640,11 @@ export class SettingsComponent implements OnInit {
       .pipe(debounceTime(1500))
       .subscribe((value: string) => this.uiHostSave(value))
 
+    this.uiWebrootFormControl.patchValue(this.$settings.webroot || '')
+    this.uiWebrootFormControl.valueChanges
+      .pipe(debounceTime(1500))
+      .subscribe((value: string) => this.uiWebrootSave(value))
+
     this.uiProxyHostFormControl.patchValue(this.$settings.proxyHost || '')
     this.uiProxyHostFormControl.valueChanges
       .pipe(debounceTime(1500))
@@ -677,7 +697,9 @@ export class SettingsComponent implements OnInit {
 
   public openConfigBackup() {
     // Go to /config?action=restore
-    void this.$router.navigate(['/config'], { queryParams: { action: 'restore' } })
+    void this.$router.navigate(['/config'], {
+      queryParams: { action: 'restore' },
+    })
   }
 
   public openWallpaperModal() {
@@ -1508,6 +1530,33 @@ export class SettingsComponent implements OnInit {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
       this.uiHostIsSaving = false
+    }
+  }
+
+  private async uiWebrootSave(value: string) {
+    try {
+      this.uiWebrootIsSaving = true
+
+      // Normalise webroot: remove multiple slashes, ensure single leading slash, no trailing slash
+      // It is really important we keep this property value in a consistent format
+      value = value
+        ? `/${value}`.replace(/\/+/g, '/').replace(/\/$/, '')
+        : ''
+      if (value === '/') {
+        value = ''
+      }
+
+      this.$settings.setItem('webroot', value)
+      await this.saveUiSettingChange('webroot', value)
+      this.uiWebrootFormControl.patchValue(value, { emitEvent: false })
+      setTimeout(() => {
+        this.uiWebrootIsSaving = false
+        this.showRestartToast()
+      }, 1000)
+    } catch (error) {
+      console.error(error)
+      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      this.uiWebrootIsSaving = false
     }
   }
 

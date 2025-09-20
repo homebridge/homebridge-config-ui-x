@@ -175,26 +175,28 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
       next: async () => {
         // Updating the UI needs a restart straight away
         if (this.pluginName === 'homebridge-config-ui-x') {
-          this.$api.put('/platform-tools/hb-service/set-full-service-restart-flag', {}).subscribe({
-            next: () => {
-              window.location.href = '/restart'
-            },
-            error: (error) => {
-              console.error(error)
-              window.location.href = '/restart'
-            },
-          })
-          return
+          try {
+            if (this.$settings.webroot && this.$settings.webroot !== '/') {
+              // Update index.html with current webroot - this ensures the base href is correct when we refresh
+              await firstValueFrom(this.$api.put('/server/webroot', {
+                webroot: this.$settings.webroot,
+              }))
+            }
+            window.location.href = 'restart'
+          } catch (error) {
+            console.error('Failed to update webroot:', error)
+            window.location.href = 'restart'
+          }
+        } else {
+          try {
+            await this.getChildBridges()
+          } catch (error) {
+            console.error(error)
+          }
+          this.actionComplete = true
+          this.justUpdatedPlugin = true
+          void this.$router.navigate(['/plugins'])
         }
-
-        try {
-          await this.getChildBridges()
-        } catch (error) {
-          console.error(error)
-        }
-        this.actionComplete = true
-        this.justUpdatedPlugin = true
-        void this.$router.navigate(['/plugins'])
       },
       error: (error) => {
         this.actionFailed = true

@@ -4,6 +4,10 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 
 ## v5.9.1 (Unreleased)
 
+### UI Changes
+
+- added config option to configure a webroot for the ui
+
 ### Other Changes
 
 - recommend update to node 24 when available
