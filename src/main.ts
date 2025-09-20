@@ -17,6 +17,7 @@ import { AppModule } from './app.module.js'
 import { ConfigService } from './core/config/config.service.js'
 import { getStartupConfig } from './core/config/config.startup.js'
 import { Logger } from './core/logger/logger.service.js'
+import { SpaHtmlService } from './core/spa/spa-html.service.js'
 import { SpaFilter } from './core/spa/spa.filter.js'
 
 import './env-setup.js'
@@ -88,8 +89,21 @@ async function bootstrap(): Promise<NestFastifyApplication> {
   const configService: ConfigService = app.get(ConfigService)
   const logger: Logger = app.get(Logger)
 
-  // Serve index.html without a cache
-  app.getHttpAdapter().get('/', async (req: FastifyRequest, res: FastifyReply) => {
+  // (5) Sort out the webroot - update index.html and set env var for spa filter
+  let realWebroot = startupConfig.webroot || ''
+  try {
+    await SpaHtmlService.updateIndexHtml(startupConfig.webroot)
+    process.env.UIX_ORIGINAL_WEBROOT = startupConfig.webroot
+    configService.setOriginalWebroot(startupConfig.webroot)
+  } catch (error) {
+    logger.warn(`Could not update index.html with webroot ${startupConfig.webroot}: ${error.message}`)
+    realWebroot = ''
+    process.env.UIX_ORIGINAL_WEBROOT = globalThis.webroot.errorCode
+    configService.setOriginalWebroot(globalThis.webroot.errorCode)
+  }
+
+  // (6) Serve index.html without a cache
+  app.getHttpAdapter().get(realWebroot || '/', async (req: FastifyRequest, res: FastifyReply) => {
     res.type('text/html')
     res.header('Cache-Control', 'no-cache, no-store, must-revalidate')
     res.header('Pragma', 'no-cache')
@@ -103,10 +117,11 @@ async function bootstrap(): Promise<NestFastifyApplication> {
     setHeaders(res) {
       res.setHeader('Cache-Control', 'public,max-age=31536000,immutable')
     },
+    ...realWebroot ? { prefix: realWebroot } : {},
   })
 
-  // Set prefix
-  app.setGlobalPrefix('/api')
+  // (8) Set api prefix (including webroot)
+  app.setGlobalPrefix(`${realWebroot || ''}/api`)
 
   // (9) Set up cors
   app.enableCors({
@@ -136,7 +151,7 @@ async function bootstrap(): Promise<NestFastifyApplication> {
     })
     .build()
   const document = SwaggerModule.createDocument(app, options)
-  SwaggerModule.setup('swagger', app, document)
+  SwaggerModule.setup(`${realWebroot}/swagger`.replace(/^\//, ''), app, document)
 
   // (12) Use the spa filter to serve index.html for any non-api routes
   app.useGlobalFilters(new SpaFilter())
@@ -159,7 +174,7 @@ async function bootstrap(): Promise<NestFastifyApplication> {
         port: configService.ui.port,
         host: startupConfig.host === '0.0.0.0' || startupConfig.host === '::' ? undefined : startupConfig.host,
         txt: {
-          path: '/',
+          path: realWebroot || '/',
           version: configService.package.version,
           https: startupConfig.httpsOptions ? 'true' : 'false',
         },

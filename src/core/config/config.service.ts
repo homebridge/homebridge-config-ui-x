@@ -43,6 +43,7 @@ export class ConfigService {
   public runningInLinux = (!this.runningInDocker && !this.runningInSynologyPackage && !this.runningInPackageMode && platform() === 'linux')
   public runningInFreeBSD = (platform() === 'freebsd')
   public canShutdownRestartHost = (this.runningInLinux || process.env.UIX_CAN_SHUTDOWN_RESTART_HOST === '1')
+  public originalWebroot: string // set later by setOriginalWebroot()
   public enableTerminalAccess = (this.runningInDocker && process.env.HOMEBRIDGE_CONFIG_UI_TERMINAL !== '0')
     || (this.runningInPackageMode && process.env.HOMEBRIDGE_CONFIG_UI_TERMINAL !== '0')
     || this.runningInSynologyPackage
@@ -232,11 +233,21 @@ export class ConfigService {
       menuMode: this.ui.menuMode || 'default',
       wallpaper: this.ui.wallpaper,
       host: this.ui.host || '',
+      webroot: this.ui.webroot || '',
+      originalWebroot: this.originalWebroot || '',
       proxyHost: this.ui.proxyHost || '',
       homebridgePackagePath: this.ui.homebridgePackagePath,
       disableServerMetricsMonitoring: this.ui.disableServerMetricsMonitoring,
       keepOrphans: this.hbStartupSettings?.keepOrphans || false,
     }
+  }
+
+  /**
+   * Set the original webroot that is used (used by main.ts)
+   * @param webroot
+   */
+  public setOriginalWebroot(webroot: string) {
+    this.originalWebroot = webroot
   }
 
   /**

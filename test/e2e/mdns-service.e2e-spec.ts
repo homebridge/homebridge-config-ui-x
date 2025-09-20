@@ -214,6 +214,35 @@ describe('mDNS Service (e2e)', () => {
       expect(serviceName).toBe('My Custom Bridge')
     })
 
+    it('should handle webroot in mDNS path', async () => {
+      const testConfig = {
+        bridge: {
+          name: 'Test Bridge',
+          username: '0E:89:49:64:91:86',
+          port: 51173,
+          pin: '630-27-655',
+        },
+        platforms: [{
+          platform: 'config',
+          name: 'Config',
+          port: 8581,
+          webroot: '/admin',
+          enableMdnsAdvertise: true,
+        }],
+      }
+
+      await writeJson(configPath, testConfig)
+
+      configService = new ConfigService()
+      configService.parseConfig(testConfig)
+
+      expect(configService.ui.webroot).toBe('/admin')
+
+      // Test that webroot would be included in mDNS path
+      const mdnsPath = configService.ui.webroot || '/'
+      expect(mdnsPath).toBe('/admin')
+    })
+
     it('should handle HTTPS configuration in mDNS', async () => {
       const testConfig = {
         bridge: {

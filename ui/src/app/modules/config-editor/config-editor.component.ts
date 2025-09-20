@@ -929,6 +929,15 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
                             },
                           },
                         },
+                        ...this.$settings.originalWebroot !== globalThis.webroot.errorCode
+                          ? {
+                              webroot: {
+                                title: this.$translate.instant('settings.network.webroot'),
+                                type: 'string',
+                                description: this.$translate.instant('settings.network.webroot_desc'),
+                              },
+                            }
+                          : {},
                         proxyHost: {
                           title: this.$translate.instant('settings.network.proxy'),
                           type: 'string',
@@ -1168,6 +1177,36 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
       // Find config platforms in updated config
       const updatedConfigPlatform = (updatedConfigJson.platforms || [])
         .find(platform => platform.platform === 'config')
+
+      // Handle webroot changes in all scenarios
+      const oldWebroot = originalConfigPlatform?.webroot || ''
+      let newWebroot = updatedConfigPlatform?.webroot || ''
+
+      if (oldWebroot !== newWebroot) {
+        // Normalise webroot: remove multiple slashes, ensure single leading slash, no trailing slash
+        // It is really important we keep this property value in a consistent format
+        newWebroot = newWebroot
+          ? `/${newWebroot}`.replace(/\/+/g, '/').replace(/\/$/, '')
+          : ''
+
+        if (newWebroot === '/') {
+          newWebroot = ''
+        }
+
+        // Update settings service
+        this.$settings.setItem('webroot', newWebroot)
+        if (updatedConfigPlatform) {
+          if (newWebroot && this.$settings.originalWebroot !== globalThis.webroot.errorCode) {
+            updatedConfigPlatform.webroot = newWebroot
+          } else {
+            delete updatedConfigPlatform.webroot
+          }
+          this.homebridgeConfig = JSON.stringify(updatedConfigJson, null, 4)
+          if (this.monacoEditor) {
+            this.monacoEditor.getModel().setValue(this.homebridgeConfig)
+          }
+        }
+      }
 
       // If one exists and the other doesn't, that's a change
       if (!originalConfigPlatform && updatedConfigPlatform) {

@@ -10,6 +10,7 @@ export interface StartupConfig {
   }
   cspWsOverride?: string
   debug?: boolean
+  webroot?: string
 }
 
 interface PluginChildBridge {
@@ -82,6 +83,7 @@ export interface HomebridgeUiConfig {
   name: string
   port: number
   host?: '::' | '0.0.0.0' | string
+  webroot?: string
   proxyHost?: string
   auth: 'form' | 'none'
   theme: string
