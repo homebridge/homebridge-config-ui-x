@@ -171,6 +171,7 @@ export class ConfigService {
       },
       formAuth: Boolean(this.ui.auth !== 'none'),
       sessionTimeout: this.ui.sessionTimeout || 28800,
+      sessionTimeoutInactivityBased: Boolean(this.ui.sessionTimeoutInactivityBased),
       lightingMode: this.ui.lightingMode || 'auto',
       serverTimestamp: new Date().toISOString(),
       theme: this.ui.theme || 'deep-purple',

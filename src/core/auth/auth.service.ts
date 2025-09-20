@@ -146,6 +146,44 @@ export class AuthService {
   }
 
   /**
+   * Refresh an existing token to extend the session
+   * @param user the current user payload from the JWT
+   */
+  async refreshToken(user: any): Promise<any> {
+    // Validate that the user still exists and has the same permissions
+    const currentUser = await this.findByUsername(user.username)
+    if (!currentUser) {
+      throw new UnauthorizedException('User no longer exists')
+    }
+
+    this.logger.log(`Request received to refresh token for ${user.username}.`)
+
+    // Verify the user's admin status hasn't changed
+    if (currentUser.admin !== user.admin) {
+      throw new UnauthorizedException('User permissions have changed, please log in again')
+    }
+
+    // Check if the instance ID matches (prevents cross-instance token reuse)
+    if (user.instanceId !== this.configService.instanceId) {
+      throw new UnauthorizedException('Token is not valid for this instance')
+    }
+
+    // Generate a new token with the same user data but updated expiration
+    const token = this.jwtService.sign({
+      username: user.username,
+      name: user.name,
+      admin: user.admin,
+      instanceId: user.instanceId,
+    })
+
+    return {
+      access_token: token,
+      token_type: 'Bearer',
+      expires_in: this.configService.ui.sessionTimeout,
+    }
+  }
+
+  /**
    * Validate User
    * All information about the user we need is stored in the payload
    * @param payload the decoded, verified jwt payload

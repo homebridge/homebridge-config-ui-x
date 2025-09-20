@@ -579,6 +579,8 @@
   "settings.startup.metrics_desc": "Po włączeniu, interfejs użytkownika Homebridge będzie zbierał i wyświetlał statystyki procesora i pamięci na stronie statusu.",
   "settings.startup.session": "Limit czasu sesji",
   "settings.startup.session_desc": "Liczba sekund zanim użytkownik zostanie wylogowany. Domyślnie 28800 (8 godzin).",
+  "settings.startup.session_inactivity_based": "Inactivity-Based Session Refresh",
+  "settings.startup.session_inactivity_based_desc": "When enabled, the session will automatically refresh on navigation to prevent logout during active use.",
   "settings.terminal.buffer_size": "Rozmiar bufora terminala",
   "settings.terminal.buffer_size_help": "Ilość danych wyjściowych terminala do zachowania dla trwałych sesji. Większe wartości zużywają więcej pamięci.",
   "settings.terminal.log_max": "Maksymalny rozmiar loga",

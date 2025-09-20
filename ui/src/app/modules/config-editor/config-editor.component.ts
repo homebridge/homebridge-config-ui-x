@@ -797,6 +797,11 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
                           title: this.$translate.instant('settings.network.host'),
                           description: this.$translate.instant('settings.network.host_desc'),
                         },
+                        sessionTimeoutInactivityBased: {
+                          type: 'boolean',
+                          title: this.$translate.instant('settings.startup.session_inactivity_based'),
+                          description: this.$translate.instant('settings.startup.session_inactivity_based_desc'),
+                        },
                         sessionTimeout: {
                           type: 'integer',
                           minimum: 600,

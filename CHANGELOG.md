@@ -11,6 +11,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - detect full restart needed after config (editor) update
 - fix microphone active state on accessory tile
 - added config option to advertise the ui over mdns
+- added config option to for inactivity-based session timeout
 
 ### Homebridge Dependencies
 

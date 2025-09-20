@@ -109,6 +109,7 @@ export interface HomebridgeUiConfig {
   }
   debug?: boolean
   sessionTimeout?: number
+  sessionTimeoutInactivityBased?: boolean
   homebridgePackagePath?: string
   scheduledBackupPath?: string
   scheduledBackupDisable?: boolean
