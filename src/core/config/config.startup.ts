@@ -27,6 +27,7 @@ export async function getStartupConfig() {
   }).length
 
   config.host = ipv6 ? '::' : '0.0.0.0'
+  config.webroot = '' // need to set as empty string rather than leaving as undefined
 
   // If no ui settings configured - we are done
   if (!ui) {
@@ -73,6 +74,19 @@ export async function getStartupConfig() {
   } else {
     config.debug = false
     process.env.UIX_DEBUG_LOGGING = '0'
+  }
+
+  // Preload webroot settings
+  if (ui.webroot && process.env.UIX_DEVELOPMENT !== '1') {
+    // Normalise webroot: remove multiple slashes, ensure single leading slash, no trailing slash
+    let webroot = `/${ui.webroot.toString().trim()}`.replace(/\/+/g, '/').replace(/\/$/, '')
+    if (webroot === '/') {
+      webroot = ''
+    }
+    config.webroot = webroot
+    logger.log(`Setting up the UI on webroot: ${webroot}`)
+  } else {
+    config.webroot = '' // need to set as empty string rather than leaving as undefined
   }
 
   return config

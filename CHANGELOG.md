@@ -4,6 +4,10 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 
 ## v5.8.1 (Unreleased)
 
+### UI Changes
+
+- added config option to configure a webroot for the ui
+
 ### Other Changes
 
 - implement simple feature flags system dependent on hb version
