@@ -13,3 +13,8 @@ globalThis.terminal = {
   // Default buffer size for terminal output in bytes
   bufferSize: 50000,
 }
+
+globalThis.webroot = {
+  // Error code to indicate webroot cannot be used
+  errorCode: 'EACCES',
+}
