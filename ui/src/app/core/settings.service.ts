@@ -24,6 +24,8 @@ export class SettingsService {
   public env: EnvInterface = {} as EnvInterface
   public host: string
   public proxyHost: string
+  public webroot: string
+  public originalWebroot: string
   public formAuth = true
   public sessionTimeout = 28800
   public sessionTimeoutInactivityBased = false
@@ -68,6 +70,8 @@ export class SettingsService {
     this.sessionTimeoutInactivityBased = data.sessionTimeoutInactivityBased
     this.env = data.env
     this.host = data.host
+    this.webroot = data.webroot
+    this.originalWebroot = data.originalWebroot
     this.proxyHost = data.proxyHost
     this.lightingMode = data.lightingMode
     this.wallpaper = data.wallpaper
