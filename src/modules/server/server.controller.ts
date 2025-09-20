@@ -19,6 +19,7 @@ import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiParam, ApiQuery, 
 
 import { AdminGuard } from '../../core/auth/guards/admin.guard'
 import { Logger } from '../../core/logger/logger.service'
+import { SpaHtmlService } from '../../core/spa/spa-html.service'
 import { ChildBridgesService } from '../child-bridges/child-bridges.service'
 import { HomebridgeMdnsSettingDto, HomebridgeNetworkInterfacesDto } from './server.dto'
 import { ServerService } from './server.service'
@@ -291,5 +292,12 @@ export class ServerController {
   @HttpCode(204)
   async deleteWallpaper(): Promise<void> {
     await this.serverService.deleteWallpaper()
+  }
+
+  @UseGuards(AdminGuard)
+  @ApiOperation({ summary: 'Update the index.html file to use the specified webroot.' })
+  @Put('/webroot')
+  async updateWebroot(@Body() body: { webroot: string }): Promise<void> {
+    await SpaHtmlService.updateIndexHtml(body.webroot)
   }
 }
