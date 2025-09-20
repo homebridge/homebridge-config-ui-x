@@ -10,6 +10,7 @@ import { ValidationPipe } from '@nestjs/common'
 import { NestFactory } from '@nestjs/core'
 import { FastifyAdapter } from '@nestjs/platform-fastify'
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
+import { Bonjour } from 'bonjour-service'
 import { readFile } from 'fs-extra'
 
 import { AppModule } from './app.module'
@@ -143,6 +144,52 @@ async function bootstrap(): Promise<NestFastifyApplication> {
   // (13) Start listening - woohoo!
   logger.warn(`Homebridge UI v${configService.package.version} is listening on ${startupConfig.host} port ${configService.ui.port}.`)
   await app.listen(configService.ui.port, startupConfig.host)
+
+  // Advertise the HTTP service via mDNS/Bonjour for easy discovery (if enabled)
+  let bonjour: Bonjour | null = null
+  if (configService.ui.enableMdnsAdvertise) {
+    try {
+      bonjour = new Bonjour()
+      const serviceName = configService.homebridgeConfig?.bridge?.name
+        ? configService.homebridgeConfig.bridge.name
+        : 'Homebridge UI'
+      const service = bonjour.publish({
+        name: serviceName,
+        type: 'http',
+        port: configService.ui.port,
+        host: startupConfig.host === '0.0.0.0' || startupConfig.host === '::' ? undefined : startupConfig.host,
+        txt: {
+          path: realWebroot || '/',
+          version: configService.package.version,
+          https: startupConfig.httpsOptions ? 'true' : 'false',
+        },
+      })
+
+      logger.log(`Homebridge UI HTTP service advertised via mDNS as "${service.name}" on port ${configService.ui.port}`)
+    } catch (error) {
+      logger.error('Failed to advertise mDNS service:', error)
+    }
+  }
+
+  const handleShutdown = (signal: string) => {
+    logger.log(`Received ${signal}, starting graceful shutdown...`)
+    if (bonjour) {
+      try {
+        logger.log('Shutting down mDNS service advertising...')
+        bonjour.unpublishAll()
+        bonjour.destroy()
+        bonjour = null
+      } catch (error) {
+        logger.error('Error during mDNS cleanup:', error)
+      }
+    }
+    app.close().finally(() => {
+      process.exit(0)
+    })
+  }
+
+  process.once('SIGINT', () => handleShutdown('SIGINT'))
+  process.once('SIGTERM', () => handleShutdown('SIGTERM'))
 
   return app
 }

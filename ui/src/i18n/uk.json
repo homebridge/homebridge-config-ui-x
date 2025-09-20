@@ -535,6 +535,8 @@
   "settings.network.hb_package_desc": "Якщо у Вас встановлено кілька версій Homebridge, Ви можете вказати тут шлях до потрібної версії.",
   "settings.network.host": "IP-адреса хоста",
   "settings.network.host_desc": "IP-адреса хоста для прослуховування. У більшості випадків це буде <code>::</code> або <code>0.0.0.0</code>.",
+  "settings.network.mdns_advertise": "Advertise Via mDNS",
+  "settings.network.mdns_advertise_help": "Enable mDNS advertising (using Bonjour) for your Homebridge UI, making it discoverable as an HTTP service on your local network.",
   "settings.network.message_network_interface": "Якщо не обрано жодного мережевого інтерфейсу, Homebridge спробує автоматично визначити, які інтерфейси рекламувати.",
   "settings.network.port_end": "Кінцевий порт",
   "settings.network.port_end_desc": "Контролюйте кінцевий діапазон портів, на яких повинні працювати окремі аксесуари (наприклад, камера або телевізор). Він має бути між 1025 та 65533 і вищим за початковий порт вище.",

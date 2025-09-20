@@ -740,6 +740,29 @@
         }
       </div>
     </li>
+    } @if (!isItemHidden('setting-mdns-advertise')) {
+    <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
+      <span>
+        {{ 'settings.network.mdns_advertise' | translate }}
+        <span class="badge badge-primary ms-1">{{ 'common.labels.beta' | translate }}</span><br />
+        <small class="grey-text pe-2">{{ 'settings.network.mdns_advertise_help' | translate }}</small>
+      </span>
+      <div class="d-flex align-items-center">
+        <div class="order-1 order-md-2">
+          <input
+            type="checkbox"
+            class="rendux-input"
+            id="enableMdnsAdvertise"
+            [formControl]="enableMdnsAdvertiseFormControl"
+            [attr.aria-label]="'settings.network.mdns_advertise' | translate"
+          />
+          <label class="rendux-label ms-3" for="enableMdnsAdvertise" style="min-width: 50px"></label>
+        </div>
+        @if (enableMdnsAdvertiseIsSaving) {
+        <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
+        }
+      </div>
+    </li>
     }
   </ul>
   }

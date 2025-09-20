@@ -535,6 +535,8 @@
   "settings.network.hb_package_desc": "複数のHomebridgeバージョンをインストールしている場合、使用したいバージョンのパスを指定できます。",
   "settings.network.host": "ホストIPアドレス",
   "settings.network.host_desc": "待ち受けるホストIPアドレス。通常は<code>::</code>または<code>0.0.0.0</code>です。",
+  "settings.network.mdns_advertise": "Advertise Via mDNS",
+  "settings.network.mdns_advertise_help": "Enable mDNS advertising (using Bonjour) for your Homebridge UI, making it discoverable as an HTTP service on your local network.",
   "settings.network.message_network_interface": "ネットワークインターフェイスを選択しない場合、Homebridgeは自動的にインターフェイスを設定します。",
   "settings.network.port_end": "終了ポート",
   "settings.network.port_end_desc": "カメラやテレビなどの個別アクセサリが使うポートの終端を設定します。1025〜65533の間で、開始ポートより大きくする必要があります。",

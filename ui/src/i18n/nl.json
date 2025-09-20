@@ -535,6 +535,8 @@
   "settings.network.hb_package_desc": "Als u meerdere versies van Homebridge geïnstalleerd heeft, kunt u hier het pad naar de versie die u wilt gebruiken specificeren.",
   "settings.network.host": "Host IP Adres",
   "settings.network.host_desc": "Het host IP adres om naar te luisteren. In de meeste gevallen is dit <code>::</code> of <code>0.0.0.0</code>.",
+  "settings.network.mdns_advertise": "Advertise Via mDNS",
+  "settings.network.mdns_advertise_help": "Enable mDNS advertising (using Bonjour) for your Homebridge UI, making it discoverable as an HTTP service on your local network.",
   "settings.network.message_network_interface": "Als er geen netwerk interfaces geselecteerd zijn, dan zal Homebridge automatisch proberen vast te stellen welke interfaces geadverteerd moeten worden.",
   "settings.network.port_end": "Eind Poort",
   "settings.network.port_end_desc": "Beheer het einde van het bereik van poorten waarop separate accessoires (zoals camera of televisie) moeten draaien. Dit moet tussen 1025 en 65533 zijn, en hoger dan de start poort hierboven.",

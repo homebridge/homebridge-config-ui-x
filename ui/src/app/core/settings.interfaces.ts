@@ -48,6 +48,7 @@ export interface EnvInterface {
     shutdown?: string
     restart?: string
   }
+  enableMdnsAdvertise?: boolean
   terminal?: {
     persistence?: boolean
     hideWarning?: boolean

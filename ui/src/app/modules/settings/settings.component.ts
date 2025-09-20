@@ -183,6 +183,9 @@ export class SettingsComponent implements OnInit {
   public hbMDnsIsSaving = false
   public hbMDnsFormControl = new FormControl('')
 
+  public enableMdnsAdvertiseFormControl = new FormControl(false)
+  public enableMdnsAdvertiseIsSaving = false
+
   public hbPortIsInvalid = false
   public hbPortIsSaving = false
   public hbPortFormControl = new FormControl(0)
@@ -339,6 +342,7 @@ export class SettingsComponent implements OnInit {
         'setting-network-host',
         'setting-network-proxy',
         'setting-ui-port-network',
+        'setting-mdns-advertise',
       ],
       terminal: [
         'setting-terminal-log-max',
@@ -415,6 +419,7 @@ export class SettingsComponent implements OnInit {
       'setting-network-host': this.$translate.instant('settings.network.host'),
       'setting-network-proxy': this.$translate.instant('settings.network.proxy'),
       'setting-ui-port-network': this.$translate.instant('settings.network.port_ui'),
+      'setting-mdns-advertise': this.$translate.instant('settings.network.mdns_advertise'),
 
       // Security section
       'setting-security-auth': this.$translate.instant('settings.security.auth'),
@@ -603,6 +608,11 @@ export class SettingsComponent implements OnInit {
     this.uiMetricsFormControl.valueChanges
       .pipe(debounceTime(750))
       .subscribe((value: boolean) => this.uiMetricsSave(value))
+
+    this.enableMdnsAdvertiseFormControl.patchValue(this.$settings.env.enableMdnsAdvertise || false)
+    this.enableMdnsAdvertiseFormControl.valueChanges
+      .pipe(debounceTime(750))
+      .subscribe((value: boolean) => this.enableMdnsAdvertiseSave(value))
 
     this.uiAccDebugFormControl.patchValue(this.$settings.env.accessoryControl?.debug)
     this.uiAccDebugFormControl.valueChanges
@@ -1487,6 +1497,27 @@ export class SettingsComponent implements OnInit {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
       this.uiMetricsIsSaving = false
+    }
+  }
+
+  private async enableMdnsAdvertiseSave(value: boolean) {
+    try {
+      this.enableMdnsAdvertiseIsSaving = true
+      this.$settings.setEnvItem('enableMdnsAdvertise', value)
+      await this.saveUiSettingChange('enableMdnsAdvertise', value)
+      setTimeout(() => {
+        this.enableMdnsAdvertiseIsSaving = false
+        this.$api.put('/platform-tools/hb-service/set-full-service-restart-flag', {}).subscribe({
+          next: () => this.showRestartToast(),
+          error: (error) => {
+            console.error(error)
+            this.showRestartToast()
+          },
+        })
+      }, 1000)
+    } catch (error) {
+      console.error(error)
+      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
     }
   }
 

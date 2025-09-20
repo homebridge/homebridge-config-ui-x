@@ -507,4 +507,6 @@ describe('BackupController (e2e)', () => {
     schedulerService.scheduledJobs['instance-backup']?.cancel()
     await app.close()
   })
-}, 10_000)
+}, {
+  timeout: 10_000,
+})

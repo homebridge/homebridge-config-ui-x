@@ -910,6 +910,11 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
                           type: 'boolean',
                           description: 'When enabled, the Homebridge UI will not collect or report CPU or memory stats.',
                         },
+                        enableMdnsAdvertise: {
+                          title: this.$translate.instant('settings.network.mdns_advertise'),
+                          type: 'boolean',
+                          description: this.$translate.instant('settings.network.mdns_advertise_help'),
+                        },
                         plugins: {
                           title: this.$translate.instant('menu.label_plugins'),
                           type: 'object',

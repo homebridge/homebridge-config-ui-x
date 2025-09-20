@@ -535,6 +535,8 @@
   "settings.network.hb_package_desc": "Jeśli masz zainstalowane kilka wersji Homebridge, możesz tutaj określić ścieżkę do wersji, której chcesz użyć.",
   "settings.network.host": "Adres IP hosta",
   "settings.network.host_desc": "Adres IP hosta do nasłuchiwania. W większości przypadków będzie to <code>::</code> lub <code>0.0.0.0</code>.",
+  "settings.network.mdns_advertise": "Advertise Via mDNS",
+  "settings.network.mdns_advertise_help": "Enable mDNS advertising (using Bonjour) for your Homebridge UI, making it discoverable as an HTTP service on your local network.",
   "settings.network.message_network_interface": "Jeśli żaden interfejs nie zostanie wybrany, Homebridge wybierze automatycznie.",
   "settings.network.port_end": "Końcowy zakres portów",
   "settings.network.port_end_desc": "Kontroluj koniec zakresu portów, na których powinny działać oddzielne akcesoria (takie jak kamera lub telewizor). To musi być między 1025 a 65533 i wyższe niż port startowy powyżej.",

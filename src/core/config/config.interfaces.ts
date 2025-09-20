@@ -113,6 +113,7 @@ export interface HomebridgeUiConfig {
   scheduledBackupPath?: string
   scheduledBackupDisable?: boolean
   disableServerMetricsMonitoring?: boolean
+  enableMdnsAdvertise?: boolean
   terminal?: {
     persistence?: boolean
     hideWarning?: boolean
