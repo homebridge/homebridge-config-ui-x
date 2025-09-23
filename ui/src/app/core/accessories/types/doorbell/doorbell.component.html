@@ -3,7 +3,7 @@
   [ngClass]="{
     'accessory-on': 'Active' in service.values
       ? service.values.Active
-      : ('CurrentMediaState' in service.values ? [0, 1].includes(service.values.CurrentMediaState) : ['Speaker', 'SmartSpeaker'].includes(service.customType || service.type) ? ('Mute' in service.values && !service.values.Mute) : false),
+      : ('CurrentMediaState' in service.values ? [0, 1].includes(service.values.CurrentMediaState) : 'Mute' in service.values && 'Volume' in service.values ? !service.values.Mute && service.values.Volume > 0 : 'Mute' in service.values && !service.values.Mute),
     'paused': 'CurrentMediaState' in service.values && service.values.CurrentMediaState === 1,
   }"
   (longClick)="onLongClick()"

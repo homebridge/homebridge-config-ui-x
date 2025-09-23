@@ -9,6 +9,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - remove accessory focus style (#2582) (@dnicolson)
 - updates to the uk.json language file (#2584) (@xrust83)
 - detect full restart needed after config (editor) update
+- fix microphone active state on accessory tile
 
 ### Homebridge Dependencies
 
