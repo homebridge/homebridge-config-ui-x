@@ -8,11 +8,11 @@
     <div class="hb-status-item d-flex flex-row w-100 px-3 mt-2 mb-1" style="min-width: max(25%, 225px)">
       <div class="hb-status-icon d-flex align-items-center">
         <i
-          class="fas"
+          class="fas fa-hap"
           [ngClass]="{
-            'fa-bridge-circle-check green-text': homebridgeStatus.status === 'up' && !isRestarting,
-            'fa-bridge-circle-exclamation text-warning': homebridgeStatus.status === 'pending' || isRestarting,
-            'fa-bridge-circle-xmark red-text': homebridgeStatus.status === 'down' && !isRestarting
+            'green-text': homebridgeStatus.status === 'up' && !isRestarting,
+            'text-warning': homebridgeStatus.status === 'pending' || isRestarting,
+            'red-text': homebridgeStatus.status === 'down' && !isRestarting
           }"
           container="body"
           placement="right"
@@ -56,11 +56,11 @@
     <div class="hb-status-item d-flex flex-row w-100 px-3 mt-2 mb-1" style="min-width: max(25%, 225px)">
       <div class="hb-status-icon d-flex align-items-center">
         <i
-          class="fas"
+          class="fas fa-hap"
           [ngClass]="{
-            'fa-bridge-circle-check green-text': bridge.status === 'ok' && !bridge.restarting && !isRestarting,
-            'fa-bridge-circle-exclamation text-warning': bridge.status === 'pending' || bridge.restarting || isRestarting,
-            'fa-bridge-circle-xmark red-text': bridge.status === 'down' && !bridge.restarting && !isRestarting
+            'green-text': bridge.status === 'ok' && !bridge.restarting && !isRestarting,
+            'text-warning': bridge.status === 'pending' || bridge.restarting || isRestarting,
+            'red-text': bridge.status === 'down' && !bridge.restarting && !isRestarting
           }"
           container="body"
           placement="right"

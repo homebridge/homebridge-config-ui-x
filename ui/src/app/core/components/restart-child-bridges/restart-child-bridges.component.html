@@ -15,7 +15,10 @@
     <div class="text-center">
       <ul class="d-inline-block text-start mb-0">
         @for (bridge of bridges; track bridge) {
-        <li>{{ bridge.name }} (<span class="font-monospace">{{ bridge.username }}</span>)</li>
+        <li>
+          <i class="fas fa-hap me-1"></i>{{ bridge.name }}
+          <span class="grey-text"> &middot; <span class="font-monospace grey-text">{{ bridge.username }}</span></span>
+        </li>
         }
       </ul>
     </div>

@@ -27,11 +27,12 @@
       @for (item of pairingsNonChild; track item) {
       <li class="list-group-item d-flex justify-content-between align-items-center">
         <span>
+          <i class="fas fa-hap me-1"></i>
           {{ item.name }}
           <br />
           <small class="grey-text">
             <i
-              class="fas fa-link"
+              class="fas fa-link me-1"
               [ngClass]="{
                 'green-text': item._isPaired,
                 'grey-text': !item._isPaired
@@ -70,11 +71,12 @@
       @for (item of pairingsChildActive; track item) {
       <li class="list-group-item d-flex justify-content-between align-items-center">
         <span>
+          <i class="fas fa-hap me-1"></i>
           {{ item.name }}
           <br />
           <small class="grey-text">
             <i
-              class="fas fa-link"
+              class="fas fa-link me-1"
               [ngClass]="{
                 'green-text': item._isPaired,
                 'grey-text': !item._isPaired
@@ -112,11 +114,12 @@
       @for (item of pairingsChildStale; track item) {
       <li class="list-group-item d-flex justify-content-between align-items-center">
         <span>
+          <i class="fas fa-hap me-1"></i>
           {{ item.name }}
           <br />
           <small class="grey-text">
             <i
-              class="fas fa-link"
+              class="fas fa-link me-1"
               [ngClass]="{
                 'green-text': item._isPaired,
                 'grey-text': !item._isPaired

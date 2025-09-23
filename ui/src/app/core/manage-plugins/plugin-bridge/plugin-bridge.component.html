@@ -63,7 +63,10 @@
           configBlocks[selectedBlock].accessory }}
         </div>
       </li>
-      } @if (currentBridgeHasLinks) {
+      }
+    </ul>
+    <ul class="list-group list-group-box mt-3 mb-0">
+      @if (currentBridgeHasLinks) {
       <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
         <label class="mb-2 mb-md-0 w-100 w-md-50">{{ 'child_bridge.config.use' | translate }}</label>
         <div class="text-start text-md-end w-100 w-md-50 grey-text">
@@ -72,7 +75,7 @@
       </li>
       } @if (!currentBridgeHasLinks) {
       <li class="list-group-item d-flex justify-content-between align-items-center flex-row pb-2">
-        <span class="text-start">{{ 'child_bridge.config.use' | translate }}</span>
+        <span class="text-start"><i class="fas fa-hap me-1"></i> {{ 'child_bridge.config.use' | translate }}</span>
         <div class="text-end grey-text d-flex align-items-center">
           <input
             type="checkbox"
@@ -127,7 +130,9 @@
             style="width: 175px; height: 175px"
           >
           </app-qrcode>
-          <p class="mx-auto mt-3 mb-1">{{ deviceInfo[configBlocks[selectedBlock]._bridge?.username].pincode }}</p>
+          <p class="mx-auto mt-3 mb-1 font-monospace">
+            {{ deviceInfo[configBlocks[selectedBlock]._bridge?.username].pincode }}
+          </p>
           <p class="grey-text mx-auto small mb-1" style="max-width: 400px">
             <i
               class="fas fa-link"
@@ -256,9 +261,10 @@
         <ul class="d-inline-block text-start mb-0">
           @for (bridge of deleteBridges; track bridge) {
           <li>
-            {{ bridge.bridgeName || this.deviceInfo[bridge.id]?.displayName }} (<span class="font-monospace"
-              >{{ bridge.id }}</span
-            >)
+            <i class="fas fa-hap"></i>
+            {{ bridge.bridgeName || this.deviceInfo[bridge.id]?.displayName }}
+            <span class="grey-text"> &middot; </span>
+            <span class="grey-text font-monospace">{{ bridge.id }}</span>
           </li>
           }
         </ul>
