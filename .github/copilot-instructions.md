@@ -1,3 +1,4 @@
+
 # Homebridge Config UI X
 
 Homebridge Config UI X is a web-based management tool for Homebridge written in TypeScript using Nest.js for the server backend and Angular for the client frontend.
