@@ -124,7 +124,7 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
 
     switch (this.action) {
       case 'Install':
-        this.install()
+        void this.install()
         this.presentTenseVerb = this.$translate.instant('plugins.manage.install')
         this.pastTenseVerb = this.$translate.instant('plugins.manage.installed')
         break
@@ -146,7 +146,7 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
         }
         this.presentTenseVerb = this.$translate.instant('plugins.manage.update')
         this.pastTenseVerb = this.$translate.instant('plugins.manage.updated')
-        this.getVersionNotes()
+        void this.getVersionNotes()
         break
     }
   }
@@ -194,7 +194,7 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
         }
         this.actionComplete = true
         this.justUpdatedPlugin = true
-        this.$router.navigate(['/plugins'])
+        void this.$router.navigate(['/plugins'])
       },
       error: (error) => {
         this.actionFailed = true
@@ -205,7 +205,7 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
   }
 
   public onRestartHomebridgeClick(): void {
-    this.$router.navigate(['/restart'])
+    void this.$router.navigate(['/restart'])
     this.$activeModal.close()
   }
 
@@ -276,7 +276,7 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
       error: (error) => {
         this.actionFailed = true
         console.error(error)
-        this.$router.navigate(['/plugins'])
+        void this.$router.navigate(['/plugins'])
         this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
       },
     })
@@ -290,7 +290,7 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
     }).subscribe({
       next: () => {
         this.$activeModal.close()
-        this.$router.navigate(['/plugins'])
+        void this.$router.navigate(['/plugins'])
         this.$modal.open(RestartHomebridgeComponent, {
           size: 'lg',
           backdrop: 'static',

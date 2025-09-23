@@ -66,7 +66,7 @@ export class ContainerRestartComponent implements OnInit, OnDestroy {
             this.$translate.instant('platform.docker.container_restarted'),
             this.$translate.instant('toast.title_success'),
           )
-          this.$router.navigate(['/'])
+          void this.$router.navigate(['/'])
         }
       })
     }, 10000)

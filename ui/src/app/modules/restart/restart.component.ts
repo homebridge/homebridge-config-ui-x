@@ -67,7 +67,7 @@ export class RestartComponent implements OnInit, OnDestroy {
   }
 
   public viewLogs() {
-    this.$router.navigate(['/logs'])
+    void this.$router.navigate(['/logs'])
   }
 
   public ngOnDestroy() {
@@ -84,7 +84,7 @@ export class RestartComponent implements OnInit, OnDestroy {
         this.uiOnline = true
         if (data.status === 'up' || data.status === 'pending') {
           this.$toastr.success(this.$translate.instant('restart.toast_server_restarted'), this.$translate.instant('toast.title_success'))
-          this.$router.navigate(['/'])
+          void this.$router.navigate(['/'])
         }
       })
     }, 7000)

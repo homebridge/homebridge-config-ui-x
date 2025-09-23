@@ -104,7 +104,7 @@ export class PluginsComponent implements OnInit, OnDestroy {
         }
 
         // Clear the query parameters so that we don't keep showing the same action
-        this.$router.navigate([], {
+        void this.$router.navigate([], {
           queryParams: {},
           replaceUrl: true,
           queryParamsHandling: '',

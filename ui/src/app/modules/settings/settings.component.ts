@@ -635,8 +635,8 @@ export class SettingsComponent implements OnInit {
   }
 
   public openConfigBackup() {
-    // go to /config?action=restore
-    this.$router.navigate(['/config'], { queryParams: { action: 'restore' } })
+    // Go to /config?action=restore
+    void this.$router.navigate(['/config'], { queryParams: { action: 'restore' } })
   }
 
   public openWallpaperModal() {
@@ -1615,7 +1615,7 @@ export class SettingsComponent implements OnInit {
 
       if (ref && ref.onTap) {
         ref.onTap.subscribe(() => {
-          this.$router.navigate(['/restart'])
+          void this.$router.navigate(['/restart'])
         })
       }
     }
