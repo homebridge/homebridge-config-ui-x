@@ -13,6 +13,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - added config option to advertise the ui over mdns
 - added config option to for inactivity-based session timeout
 - added config option to configure a webroot for the ui
+- fix air purifier off switch in control modal
 
 ### Homebridge Dependencies
 
