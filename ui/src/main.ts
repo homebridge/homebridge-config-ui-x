@@ -1,5 +1,5 @@
 import { NgOptimizedImage } from '@angular/common'
-import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http'
+import { provideHttpClient, withFetch, withInterceptorsFromDi } from '@angular/common/http'
 import { enableProdMode, importProvidersFrom, LOCALE_ID } from '@angular/core'
 import { bootstrapApplication, BrowserModule } from '@angular/platform-browser'
 import { provideAnimations } from '@angular/platform-browser/animations'
@@ -12,7 +12,6 @@ import { ToastrModule } from 'ngx-toastr'
 import { AppRoutingModule } from '@/app/app-routing.module'
 import { AppComponent } from '@/app/app.component'
 import { AuthModule } from '@/app/core/auth/auth.module'
-import { authErrorInterceptor } from '@/app/core/auth/auth-error.interceptor'
 import { supportedLocales } from '@/app/core/locales'
 import { onMonacoLoad } from '@/app/core/monaco-editor.service'
 import { LoginModule } from '@/app/modules/login/login.module'
@@ -88,7 +87,7 @@ bootstrapApplication(AppComponent, {
       deps: [TranslateService],
     },
     provideAnimations(),
-    provideHttpClient(withFetch(), withInterceptors([authErrorInterceptor])),
+    provideHttpClient(withFetch(), withInterceptorsFromDi()),
     provideTranslateService({
       fallbackLang: 'en',
       lang: 'en',

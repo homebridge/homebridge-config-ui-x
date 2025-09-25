@@ -1,7 +1,9 @@
+import { HTTP_INTERCEPTORS } from '@angular/common/http'
 import { NgModule } from '@angular/core'
 import { JwtModule } from '@auth0/angular-jwt'
 
 import { AdminGuard } from '@/app/core/auth/admin.guard'
+import { AuthErrorInterceptor } from '@/app/core/auth/auth-error.interceptor'
 import { AuthHelperService } from '@/app/core/auth/auth-helper.service'
 import { AuthGuard } from '@/app/core/auth/auth.guard'
 import { AuthService } from '@/app/core/auth/auth.service'
@@ -28,6 +30,11 @@ const tokenGetter = () => localStorage.getItem(environment.jwt.tokenKey)
     AuthGuard,
     AdminGuard,
     TokenCacheService,
+    {
+      provide: HTTP_INTERCEPTORS,
+      useClass: AuthErrorInterceptor,
+      multi: true,
+    },
   ],
   exports: [],
 })
