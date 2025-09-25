@@ -27,9 +27,19 @@ export class AuthHelperService {
 
     // Validate token and check if still logged in
     try {
-      return this.$auth.isLoggedIn()
+      const isLoggedIn = this.$auth.isLoggedIn()
+      
+      // If token is expired on client side, clear it immediately
+      if (!isLoggedIn) {
+        this.$auth.token = null
+        this.$auth.user = {}
+        this.$tokenCache.invalidateCache()
+      }
+      
+      return isLoggedIn
     } catch (error) {
       // Token validation failed, clear it and invalidate cache
+      console.warn('Token validation error, clearing auth state')
       this.$auth.logout()
       this.$tokenCache.invalidateCache()
       return false

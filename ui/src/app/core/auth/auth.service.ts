@@ -63,14 +63,22 @@ export class AuthService {
   }
 
   public async checkToken() {
+    // First do a quick client-side check if token is expired to avoid API call
+    if (!this.token || this.$jwtHelper.isTokenExpired(this.token, this.$settings.serverTimeOffset)) {
+      console.warn('Token expired on client side, logging out immediately')
+      this.logout()
+      return
+    }
+
     try {
       return await firstValueFrom(this.$api.get('/auth/check'))
     } catch (err) {
       if (err.status === 401) {
-        // Token is no longer valid, do logout
-        console.error('Current token is not valid')
+        // Token is no longer valid on server side, do logout
+        console.error('Current token is not valid on server')
         this.logout()
       }
+      throw err // Re-throw to let the interceptor handle it
     }
   }
 
