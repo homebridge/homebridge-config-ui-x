@@ -716,7 +716,7 @@
   "toast.title_success": "成功",
   "toast.title_warning": "警告",
   "users.button_add_user": "添加用户",
-  "users.label_admin_user": "管理员用户？",
+  "users.label_admin_user": "管理员用户",
   "users.label_confirm_password": "确认密码",
   "users.label_full_name": "全名",
   "users.label_new_password": "新密码",
