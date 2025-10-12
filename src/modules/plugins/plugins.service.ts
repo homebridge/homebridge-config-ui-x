@@ -953,7 +953,7 @@ export class PluginsService {
     const i18nPath = plugin.directories?.i18n
     const lang = this.configService.ui.lang === 'auto' ? 'en' : this.configService.ui.lang
 
-    let schemaPath = resolve(plugin.installPath, pluginName, i18nPath, 'config.schema.json.' + lang)
+    let schemaPath = resolve(plugin.installPath, pluginName, i18nPath, `config.schema.json.${lang}`)
     if (!i18nPath === undefined || !pathExistsSync(schemaPath)) {
       schemaPath = resolve(plugin.installPath, pluginName, 'config.schema.json')
     }
