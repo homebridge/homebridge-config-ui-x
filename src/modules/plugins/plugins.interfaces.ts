@@ -39,6 +39,9 @@ export interface HomebridgePlugin {
     to: string
     switch: string
   }
+  directories?: {
+    i18n?: string
+  }
 }
 
 export interface HomebridgePluginUiMetadata {
