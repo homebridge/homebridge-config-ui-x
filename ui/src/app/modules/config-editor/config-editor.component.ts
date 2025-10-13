@@ -62,6 +62,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
   private latestSavedConfig: HomebridgeConfig
   private childBridgesToRestart: ChildBridgeToRestart[] = []
   private hbPendingRestart = false
+  private isDebugModeEnabled = this.$settings.isFeatureEnabled('childBridgeDebugMode')
 
   public homebridgeConfig: string
   public originalConfig: string
@@ -494,7 +495,9 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
 
     const uri = monaco.Uri.parse('a://homebridge/config.json')
 
-    const childBridgeSchema = createChildBridgeSchema(this.$translate);
+    const childBridgeSchema = createChildBridgeSchema(this.$translate, {
+      isDebugModeEnabled: this.isDebugModeEnabled,
+    });
 
     (window as any).monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
       allowComments: false,
@@ -520,7 +523,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
                   },
                   username: {
                     type: 'string',
-                    title: this.$translate.instant('accessories.bridge_username'),
+                    title: this.$translate.instant('users.label_username'),
                     description: 'Homebridge username must be 6 pairs of colon-separated hexadecimal characters (A-F 0-9).\n'
                       + 'You should change this pin if you need to re-pair your instance with HomeKit.\n'
                       + 'Example: 0E:89:49:64:91:86.',
@@ -870,7 +873,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
                               type: 'array',
                               description: this.$translate.instant('settings.security.ui_control_desc'),
                               items: {
-                                title: this.$translate.instant('accessories.bridge_username'),
+                                title: this.$translate.instant('users.label_username'),
                                 type: 'string',
                                 pattern: '^([A-Fa-f0-9]{2}:){5}[A-Fa-f0-9]{2}$',
                               },
