@@ -17,6 +17,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix type import in config editor test file
 - add missing debug child bridge flag to schemas
 - settings - put restart toast into reference for future use
+- get available port function should adhere to configured range
 
 ### Homebridge Dependencies
 

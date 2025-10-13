@@ -649,7 +649,11 @@ export class ServerService {
    * Generate a random, unused port and return it
    */
   public async lookupUnusedPort() {
-    const randomPort = () => Math.floor(Math.random() * (60000 - 30000 + 1) + 30000)
+    // We should adhere to any port ranges defined in the config
+    const min = this.configService.homebridgeConfig.ports?.start ?? 30000
+    const max = this.configService.homebridgeConfig.ports?.end ?? 60000
+
+    const randomPort = () => Math.floor(Math.random() * (max - min + 1) + min)
 
     let port = randomPort()
     while (await tcpCheck(port)) {
