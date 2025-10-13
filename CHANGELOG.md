@@ -11,6 +11,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 ### Other Changes
 
 - implement simple feature flags system dependent on hb version
+- fix type import in config editor test file
 
 ### Homebridge Dependencies
 

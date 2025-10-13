@@ -1,7 +1,7 @@
 import type { NestFastifyApplication } from '@nestjs/platform-fastify'
 import type { TestingModule } from '@nestjs/testing'
 
-import type { HomebridgeConfig } from '../../src/core/config/config.service'
+import type { HomebridgeConfig } from '../../src/core/config/config.interfaces'
 
 import { resolve } from 'node:path'
 import process from 'node:process'
