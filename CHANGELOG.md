@@ -9,6 +9,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - added config option to configure a webroot for the ui
 - reduce padding on input fields, add bridge icons for use
 - status qr code widget - show pin in monospace
+- bridges widget - show bridges as restarting on full restart
 
 ### Other Changes
 

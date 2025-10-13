@@ -72,7 +72,7 @@
       </div>
       <div class="align-self-center flex-child px-3">{{ bridge.name }}</div>
       <div class="grey-text ms-auto d-flex align-items-center">
-        @if (bridge.status !== 'pending' && !bridge.restarting && isAdmin) {
+        @if (bridge.status !== 'pending' && !bridge.restarting && !isRestarting && isAdmin) {
         <i
           class="icon-button fas fa-power-off"
           href="javascript:void(0)"
@@ -83,7 +83,7 @@
           triggers="hover"
           placement="left"
         ></i>
-        } @if (bridge.status === 'pending' || bridge.restarting) {
+        } @if (bridge.status === 'pending' || bridge.restarting || isRestarting) {
         <i class="fas fa-spinner fa-pulse"></i>
         }
         <i
