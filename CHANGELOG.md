@@ -16,6 +16,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - implement simple feature flags system dependent on hb version
 - fix type import in config editor test file
 - add missing debug child bridge flag to schemas
+- settings - put restart toast into reference for future use
 
 ### Homebridge Dependencies
 

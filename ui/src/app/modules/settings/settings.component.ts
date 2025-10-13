@@ -8,7 +8,7 @@ import { Router, RouterLink } from '@angular/router'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { isStandalonePWA } from 'is-standalone-pwa'
-import { ToastrService } from 'ngx-toastr'
+import { ActiveToast, ToastrService } from 'ngx-toastr'
 import { firstValueFrom } from 'rxjs'
 import { debounceTime } from 'rxjs/operators'
 
@@ -94,6 +94,7 @@ export class SettingsComponent implements OnInit {
   private $toastr = inject(ToastrService)
   private $translate = inject(TranslateService)
   private restartToastIsShown = false
+  private restartToastRef: ActiveToast<any> = null
 
   public showSearchBar = false
   public searchQuery = ''
@@ -1709,7 +1710,7 @@ export class SettingsComponent implements OnInit {
   private showRestartToast() {
     if (!this.restartToastIsShown) {
       this.restartToastIsShown = true
-      const ref = this.$toastr.info(
+      this.restartToastRef = this.$toastr.info(
         this.$translate.instant('settings.changes.saved'),
         this.$translate.instant('menu.hbrestart.title'),
         {
@@ -1721,8 +1722,8 @@ export class SettingsComponent implements OnInit {
         },
       )
 
-      if (ref && ref.onTap) {
-        ref.onTap.subscribe(() => {
+      if (this.restartToastRef && this.restartToastRef.onTap) {
+        this.restartToastRef.onTap.subscribe(() => {
           void this.$router.navigate(['/restart'])
         })
       }
