@@ -21,6 +21,8 @@ import {
 import { isEqual } from 'lodash'
 import { satisfies } from 'semver'
 
+import { FEATURE_FLAGS } from '../feature-flags/feature-flags.registry'
+
 @Injectable()
 export class ConfigService {
   public name = 'homebridge-config-ui-x'
@@ -157,6 +159,7 @@ export class ConfigService {
         canShutdownRestartHost: this.canShutdownRestartHost,
         customWallpaperHash: this.customWallpaperHash,
         dockerOfflineUpdate: this.dockerOfflineUpdate,
+        featureFlags: this.getFeatureFlags(),
         homebridgeVersion: this.homebridgeVersion || null,
         homebridgeInstanceName: this.homebridgeConfig.bridge.name,
         instanceId: this.instanceId,
@@ -388,5 +391,34 @@ export class ConfigService {
     } catch (e) {
       this.runningOnRaspberryPi = false
     }
+  }
+
+  /**
+   * Evaluates all feature flags based on the current Homebridge version
+   * @returns Object with feature flag keys and their enabled/disabled status
+   */
+  private getFeatureFlags(): Record<string, boolean> {
+    const featureFlags: Record<string, boolean> = {}
+
+    if (!this.homebridgeVersion) {
+      // If Homebridge version is not available, disable all features
+      FEATURE_FLAGS.forEach((flag) => {
+        featureFlags[flag.key] = false
+      })
+      return featureFlags
+    }
+
+    // Evaluate each feature flag
+    FEATURE_FLAGS.forEach((flag) => {
+      try {
+        // Use semver to check if the current version satisfies the minimum version
+        featureFlags[flag.key] = satisfies(this.homebridgeVersion, flag.range)
+      } catch (error) {
+        // If there's an error parsing the version, disable the feature
+        featureFlags[flag.key] = false
+      }
+    })
+
+    return featureFlags
   }
 }

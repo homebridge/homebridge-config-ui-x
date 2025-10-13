@@ -64,7 +64,7 @@ export class PluginBridgeComponent implements OnInit {
 
   public async ngOnInit(): Promise<void> {
     await Promise.all([this.getPluginType(), this.loadPluginConfig()])
-    this.canShowBridgeDebug = this.$settings.env.homebridgeVersion.startsWith('2')
+    this.canShowBridgeDebug = this.$settings.isFeatureEnabled('childBridgeDebugMode')
     this.loading = false
   }
 

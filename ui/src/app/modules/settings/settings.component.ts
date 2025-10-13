@@ -113,7 +113,7 @@ export class SettingsComponent implements OnInit {
   public hiddenItems: Record<string, boolean> = {}
 
   public loading = true
-  public isHbV2 = false
+  public debugFieldDesc = 'settings.startup.debug_desc_v1' // default, may be changed in ngOnInit
   public showAvahiMdnsOption = false
   public showResolvedMdnsOption = false
   public adaptersAvailable: NetworkAdapterAvailable[] = []
@@ -469,11 +469,13 @@ export class SettingsComponent implements OnInit {
   }
 
   public async ngOnInit() {
-    this.isHbV2 = this.$settings.env.homebridgeVersion.startsWith('2')
-
     // Set page title
     const title = this.$translate.instant('menu.label_settings')
     this.$settings.setPageTitle(title)
+
+    if (this.$settings.isFeatureEnabled('childBridgeDebugMode')) {
+      this.debugFieldDesc = 'settings.startup.debug_desc_v2'
+    }
 
     await this.initNetworkingOptions()
     await this.initStartupSettings()

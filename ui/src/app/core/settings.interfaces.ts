@@ -1,7 +1,12 @@
+export interface FeatureFlags {
+  [key: string]: boolean
+}
+
 export interface EnvInterface {
   platform: 'darwin' | 'win32' | 'linux' | 'freebsd'
   enableAccessories: boolean
   enableTerminalAccess: boolean
+  featureFlags?: FeatureFlags
   homebridgeInstanceName: string
   homebridgeVersion?: string
   homebridgeUiVersion?: string
