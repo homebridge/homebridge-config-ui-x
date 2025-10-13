@@ -31,7 +31,13 @@ import { Logger } from '../../core/logger/logger.service'
 import { isNodeV24SupportedArchitecture } from '../../core/node-version.constants'
 import { PluginsService } from '../plugins/plugins.service'
 import { ServerService } from '../server/server.service'
-import { DockerRelease, DockerReleaseInfo, HomebridgeStatus, HomebridgeStatusUpdate } from './status.interfaces'
+import {
+  DockerRelease,
+  DockerReleaseInfo,
+  HomebridgeStatsResponse,
+  HomebridgeStatus,
+  HomebridgeStatusUpdate,
+} from './status.interfaces'
 
 const execAsync = promisify(exec)
 
@@ -82,7 +88,7 @@ export class StatusService {
     }
 
     this.homebridgeIpcService.on('serverStatusUpdate', (data: HomebridgeStatusUpdate) => {
-      this.homebridgeStatus = data.status === HomebridgeStatus.OK ? HomebridgeStatus.UP : data.status
+      this.homebridgeStatus = data.status
 
       if (data?.setupUri) {
         this.serverService.setupCode = data.setupUri
@@ -310,7 +316,7 @@ export class StatusService {
   /**
    * Returns Homebridge Status From Healthcheck
    */
-  private async getHomebridgeStats() {
+  private async getHomebridgeStats(): Promise<HomebridgeStatsResponse> {
     return {
       consolePort: this.configService.ui.port,
       port: this.configService.homebridgeConfig.bridge.port,

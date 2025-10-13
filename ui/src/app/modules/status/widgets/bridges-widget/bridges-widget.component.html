@@ -10,7 +10,7 @@
         <i
           class="fas"
           [ngClass]="{
-            'fa-bridge-circle-check green-text': homebridgeStatus.status === 'up' && !isRestarting,
+            'fa-bridge-circle-check green-text': homebridgeStatus.status === 'ok' && !isRestarting,
             'fa-bridge-circle-exclamation text-warning': homebridgeStatus.status === 'pending' || isRestarting,
             'fa-bridge-circle-xmark red-text': homebridgeStatus.status === 'down' && !isRestarting
           }"

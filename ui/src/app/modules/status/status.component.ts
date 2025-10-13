@@ -8,6 +8,7 @@ import { take } from 'rxjs/operators'
 import { SpinnerComponent } from '@/app//core/components/spinner/spinner.component'
 import { AuthService } from '@/app/core/auth/auth.service'
 import { NotificationService } from '@/app/core/notification.service'
+import { HomebridgeStatusResponse } from '@/app/core/server.interfaces'
 import { SettingsService } from '@/app/core/settings.service'
 import { TerminalNavigationGuardService } from '@/app/core/terminal-navigation-guard.service'
 import { IoNamespace, WsService } from '@/app/core/ws.service'
@@ -32,9 +33,9 @@ import { WidgetsComponent } from '@/app/modules/status/widgets/widgets.component
 export class StatusComponent implements OnInit, OnDestroy {
   private $auth = inject(AuthService)
   private $modal = inject(NgbModal)
+  private $navigationGuard = inject(TerminalNavigationGuardService)
   private $notification = inject(NotificationService)
   private $settings = inject(SettingsService)
-  private $navigationGuard = inject(TerminalNavigationGuardService)
   private $ws = inject(WsService)
   private isUnlocked = false
   private io: IoNamespace
@@ -102,7 +103,7 @@ export class StatusComponent implements OnInit, OnDestroy {
       this.consoleStatus = 'down'
     })
 
-    this.io.socket.on('homebridge-status', (data) => {
+    this.io.socket.on('homebridge-status', (data: HomebridgeStatusResponse) => {
       // Check if client is up-to-date
       if (data.packageVersion && data.packageVersion !== this.$settings.uiVersion) {
         window.location.reload()
