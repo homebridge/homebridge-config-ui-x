@@ -7,6 +7,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 ### UI Changes
 
 - added config option to configure a webroot for the ui
+- reduce padding on input fields, add bridge icons for use
 
 ### Other Changes
 
