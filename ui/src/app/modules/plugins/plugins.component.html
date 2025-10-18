@@ -17,7 +17,7 @@
       [openDelay]="150"
       triggers="hover"
       [ngbTooltip]="'form.search' | translate"
-      [hidden]="!installedPlugins.length"
+      [hidden]="!installedPlugins.length && !showSearchBar"
       [attr.aria-label]="'form.search' | translate"
     >
       <i class="fas{{ showSearchBar ? ' primary-text' : '' }} fa-search"></i>
