@@ -47,6 +47,7 @@ export interface EnvInterface {
   }
   plugins?: {
     hideUpdatesFor?: string[]
+    hidePairingAlerts?: string[]
     alwaysShowBetas?: boolean
   }
   linux?: {

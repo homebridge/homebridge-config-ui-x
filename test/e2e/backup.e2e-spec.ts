@@ -51,7 +51,7 @@ function randomValueHex(len: number) {
     .toUpperCase() // return required number of characters
 }
 
-describe('BackupController (e2e)', () => {
+describe('BackupController (e2e)', { timeout: 10_000 }, () => {
   let app: NestFastifyApplication
 
   let authFilePath: string
@@ -507,6 +507,4 @@ describe('BackupController (e2e)', () => {
     schedulerService.scheduledJobs['instance-backup']?.cancel()
     await app.close()
   })
-}, {
-  timeout: 10_000,
 })

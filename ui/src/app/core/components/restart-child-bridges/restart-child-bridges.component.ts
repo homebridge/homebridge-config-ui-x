@@ -5,6 +5,8 @@ import { ToastrService } from 'ngx-toastr'
 import { firstValueFrom } from 'rxjs'
 
 import { ApiService } from '@/app/core/api.service'
+import { SettingsService } from '@/app/core/settings.service'
+import { ChildBridgeToRestart } from '@/app/modules/config-editor/config-editor.interfaces'
 
 @Component({
   templateUrl: './restart-child-bridges.component.html',
@@ -14,10 +16,13 @@ import { ApiService } from '@/app/core/api.service'
 export class RestartChildBridgesComponent {
   private $activeModal = inject(NgbActiveModal)
   private $api = inject(ApiService)
+  private $settings = inject(SettingsService)
   private $toastr = inject(ToastrService)
   private $translate = inject(TranslateService)
 
-  @Input() bridges: { username: string, name: string }[] = []
+  public isMatterSupported = this.$settings.isFeatureEnabled('matterSupport')
+
+  @Input() bridges: ChildBridgeToRestart[] = []
 
   public async onRestartChildBridgeClick() {
     try {

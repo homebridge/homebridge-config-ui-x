@@ -17,7 +17,7 @@ import { PluginsGateway } from '../../src/modules/plugins/plugins.gateway'
 import { PluginsModule } from '../../src/modules/plugins/plugins.module'
 import { PluginsService } from '../../src/modules/plugins/plugins.service'
 
-describe('PluginsGateway (e2e)', () => {
+describe('PluginsGateway (e2e)', { timeout: 10_000 }, () => {
   let app: NestFastifyApplication
 
   let authFilePath: string
@@ -484,6 +484,4 @@ describe('PluginsGateway (e2e)', () => {
   afterAll(async () => {
     await app.close()
   })
-}, {
-  timeout: 10_000,
 })

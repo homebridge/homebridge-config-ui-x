@@ -12,6 +12,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - bridges widget - show bridges as restarting on full restart
 - do not hide search button when no search results found
 - improve widget state around first data load
+- integration with updated homebridge version
 
 ### Other Changes
 

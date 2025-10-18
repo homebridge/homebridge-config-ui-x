@@ -57,14 +57,27 @@ export class PluginCardComponent implements OnInit {
   public defaultIcon = 'assets/hb-icon.png'
   public isMobile: string
   public setChildBridges: ChildBridge[] = []
-  public hb2Status = 'unknown' // 'hide' | 'supported' | 'unknown'
   public isAdmin = this.$auth.user.admin
 
   // eslint-disable-next-line accessor-pairs
   @Input() set childBridges(childBridges: ChildBridge[]) {
     this.hasChildBridges = childBridges.length > 0
-    this.hasUnpairedChildBridges = childBridges.filter(x => x.paired === false).length > 0
-    this.allChildBridgesStopped = childBridges.filter(x => x.manuallyStopped === true).length === childBridges.length
+
+    // Get the hidePairingAlerts setting
+    const hidePairingAlerts = new Set(this.$settings.env.plugins?.hidePairingAlerts || [])
+
+    // Check for unpaired HAP bridges OR unpaired Matter bridges that are NOT hidden
+    this.hasUnpairedChildBridges = childBridges.some((x) => {
+      const hapIdentifier = `${x.username}-hap`
+      const matterIdentifier = `${x.username}-matter`
+
+      const hasUnpairedHap = x.paired === false && !hidePairingAlerts.has(hapIdentifier.toUpperCase())
+      const hasUnpairedMatter = x.matterConfig && x.matterCommissioned === false && !hidePairingAlerts.has(matterIdentifier.toUpperCase())
+
+      return hasUnpairedHap || hasUnpairedMatter
+    })
+
+    this.allChildBridgesStopped = childBridges.every(x => x.manuallyStopped === true)
 
     if (this.hasChildBridges) {
       // Get the "worse" status of all child bridges and use that for colour icon
@@ -78,10 +91,6 @@ export class PluginCardComponent implements OnInit {
     }
 
     this.setChildBridges = childBridges
-
-    const homebridgeVersion = this.$settings.env.homebridgeVersion?.split('.')[0]
-    const hbEngines = this.plugin.engines?.homebridge?.split('||').map((x: string) => x.trim()) || []
-    this.hb2Status = homebridgeVersion === '2' ? 'hide' : hbEngines.some((x: string) => (x.startsWith('^2') || x.startsWith('>=2'))) ? 'supported' : this.hb2Status
   }
 
   public ngOnInit(): void {

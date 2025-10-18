@@ -218,6 +218,7 @@ export class ConfigService {
         },
         plugins: {
           hideUpdatesFor: this.ui.plugins?.hideUpdatesFor || [],
+          hidePairingAlerts: this.ui.plugins?.hidePairingAlerts || [],
           alwaysShowBetas: Boolean(this.ui.plugins?.alwaysShowBetas),
         },
         linux: {
