@@ -1,5 +1,5 @@
 import { DecimalPipe, NgClass, UpperCasePipe } from '@angular/common'
-import { Component, ElementRef, inject, Input, OnDestroy, OnInit, viewChild } from '@angular/core'
+import { ChangeDetectorRef, Component, ElementRef, inject, Input, NgZone, OnDestroy, OnInit, viewChild } from '@angular/core'
 import { TranslatePipe } from '@ngx-translate/core'
 import { ChartConfiguration } from 'chart.js'
 import { BaseChartDirective } from 'ng2-charts'
@@ -26,6 +26,8 @@ import { Widget } from '@/app/modules/status/widgets/widgets.interfaces'
 export class CpuWidgetComponent implements OnInit, OnDestroy {
   private $settings = inject(SettingsService)
   private $ws = inject(WsService)
+  private $ngZone = inject(NgZone)
+  private $cdr = inject(ChangeDetectorRef)
   private io: IoNamespace
   private intervalSubscription: Subscription
 
@@ -37,7 +39,7 @@ export class CpuWidgetComponent implements OnInit, OnDestroy {
   public temperatureUnits = this.$settings.env.temperatureUnits
   public cpu = {} as any
   public cpuTemperature = {} as any
-  public currentLoad = 0
+  public currentLoad: number
   public refreshInterval: number
   public historyItems: number
   public lineChartLabels = []
@@ -119,8 +121,11 @@ export class CpuWidgetComponent implements OnInit, OnDestroy {
 
   private getServerCpuInfo() {
     this.io.request('get-server-cpu-info').subscribe((data) => {
-      this.updateData(data)
-      this.chart().update()
+      this.$ngZone.run(() => {
+        this.updateData(data)
+        this.chart().update()
+        this.$cdr.markForCheck()
+      })
     })
   }
 
