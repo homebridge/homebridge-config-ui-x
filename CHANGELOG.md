@@ -7,6 +7,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 ### UI Changes
 
 - added config option to configure a webroot for the ui
+- improve widget state around first data load
 
 ### Other Changes
 

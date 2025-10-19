@@ -14,11 +14,19 @@
   <div class="d-flex flex-row flex-grow-1 align-items-center w-100 gridster-item-content text-center">
     <div class="d-flex justify-content-around flex-wrap w-100">
       <div class="text-center widget-value-parent-wrap">
-        <div class="widget-value mb-0">{{ totalMemory | number:'1.0-2' }} GB</div>
+        <div class="widget-value mb-0">
+          @if (totalMemory !== undefined) { {{ totalMemory | number:'1.0-2' }} GB } @else {
+          <i class="fas fa-spinner fa-pulse"></i>
+          }
+        </div>
         <div class="widget-value-label grey-text">{{ 'status.memory.label_total' | translate }}</div>
       </div>
       <div class="text-center widget-value-parent-wrap">
-        <div class="widget-value mb-0">{{ freeMemory | number:'1.0-2' }} GB</div>
+        <div class="widget-value mb-0">
+          @if (freeMemory !== undefined) { {{ freeMemory | number:'1.0-2' }} GB } @else {
+          <i class="fas fa-spinner fa-pulse"></i>
+          }
+        </div>
         <div class="widget-value-label grey-text">{{ 'status.memory.label_available' | translate }}</div>
       </div>
     </div>

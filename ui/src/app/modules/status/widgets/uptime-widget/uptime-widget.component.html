@@ -5,11 +5,19 @@
   <div class="d-flex flex-row flex-grow-1 align-items-center w-100 gridster-item-content text-center">
     <div class="d-flex justify-content-around flex-wrap w-100">
       <div class="text-center widget-value-parent-wrap">
-        <div class="widget-value mb-0">{{ serverUptime }}</div>
+        <div class="widget-value mb-0">
+          @if (serverUptime) { {{ serverUptime }} } @else {
+          <i class="fas fa-spinner fa-pulse"></i>
+          }
+        </div>
         <div class="widget-value-label grey-text">{{ 'status.widget.uptime.label_server' | translate }}</div>
       </div>
       <div class="text-center widget-value-parent-wrap">
-        <div class="widget-value mb-0">{{ processUptime }}</div>
+        <div class="widget-value mb-0">
+          @if (processUptime) { {{ processUptime }} } @else {
+          <i class="fas fa-spinner fa-pulse"></i>
+          }
+        </div>
         <div class="widget-value-label grey-text">{{ 'status.widget.uptime.label_process' | translate }}</div>
       </div>
     </div>

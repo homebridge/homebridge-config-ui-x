@@ -1,5 +1,5 @@
 import { NgClass, TitleCasePipe } from '@angular/common'
-import { Component, inject, Input, OnInit } from '@angular/core'
+import { ChangeDetectorRef, Component, inject, Input, NgZone, OnInit } from '@angular/core'
 import { TranslatePipe } from '@ngx-translate/core'
 
 import { IoNamespace, WsService } from '@/app/core/ws.service'
@@ -17,6 +17,8 @@ import { NodeJsInfo, ServerInfo, Widget } from '@/app/modules/status/widgets/wid
 })
 export class SystemInfoWidgetComponent implements OnInit {
   private $ws = inject(WsService)
+  private $ngZone = inject(NgZone)
+  private $cdr = inject(ChangeDetectorRef)
   private io: IoNamespace
 
   @Input() widget: Widget
@@ -51,11 +53,17 @@ export class SystemInfoWidgetComponent implements OnInit {
 
   private getSystemInfo() {
     this.io.request('get-homebridge-server-info').subscribe((data) => {
-      this.serverInfo = data
+      this.$ngZone.run(() => {
+        this.serverInfo = data
+        this.$cdr.markForCheck()
+      })
     })
 
     this.io.request('nodejs-version-check').subscribe((data) => {
-      this.nodejsInfo = data
+      this.$ngZone.run(() => {
+        this.nodejsInfo = data
+        this.$cdr.markForCheck()
+      })
     })
   }
 }

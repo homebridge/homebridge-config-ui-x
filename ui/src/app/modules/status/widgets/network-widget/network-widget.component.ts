@@ -1,5 +1,5 @@
 import { DecimalPipe, NgClass } from '@angular/common'
-import { Component, ElementRef, inject, Input, OnDestroy, OnInit, viewChild } from '@angular/core'
+import { ChangeDetectorRef, Component, ElementRef, inject, Input, NgZone, OnDestroy, OnInit, viewChild } from '@angular/core'
 import { TranslatePipe } from '@ngx-translate/core'
 import { ChartConfiguration } from 'chart.js'
 import { BaseChartDirective } from 'ng2-charts'
@@ -21,6 +21,8 @@ import { Widget } from '@/app/modules/status/widgets/widgets.interfaces'
 })
 export class NetworkWidgetComponent implements OnInit, OnDestroy {
   private $ws = inject(WsService)
+  private $ngZone = inject(NgZone)
+  private $cdr = inject(ChangeDetectorRef)
   private io: IoNamespace
   private intervalSubscription: Subscription
 
@@ -113,26 +115,29 @@ export class NetworkWidgetComponent implements OnInit, OnDestroy {
 
   private getServerNetworkInfo() {
     this.io.request('get-server-network-info', { netInterfaces: [this.widget.networkInterface] }).subscribe((data) => {
-      // If no param given, the backend will return the default network interface
-      // Clear the current chart if the network interface has changed
-      if (this.interface !== data.net.iface) {
-        this.widget.networkInterface = data.net.iface
-        this.interface = data.net.iface
-        this.lineChartData.datasets[0].data = { ...[] }
-        this.lineChartLabels = []
+      this.$ngZone.run(() => {
+        // If no param given, the backend will return the default network interface
+        // Clear the current chart if the network interface has changed
+        if (this.interface !== data.net.iface) {
+          this.widget.networkInterface = data.net.iface
+          this.interface = data.net.iface
+          this.lineChartData.datasets[0].data = { ...[] }
+          this.lineChartLabels = []
+          this.chart().update()
+        }
+
+        this.receivedPerSec = (data.net.rx_sec / 1024 / 1024) * 8
+        this.sentPerSec = (data.net.tx_sec / 1024 / 1024) * 8
+
+        // The chart looks strange if the data rate is < 1.
+        if (data.point < 1) {
+          data.point = 0
+        }
+
+        this.updateData(data)
         this.chart().update()
-      }
-
-      this.receivedPerSec = (data.net.rx_sec / 1024 / 1024) * 8
-      this.sentPerSec = (data.net.tx_sec / 1024 / 1024) * 8
-
-      // The chart looks strange if the data rate is < 1.
-      if (data.point < 1) {
-        data.point = 0
-      }
-
-      this.updateData(data)
-      this.chart().update()
+        this.$cdr.markForCheck()
+      })
     })
   }
 
