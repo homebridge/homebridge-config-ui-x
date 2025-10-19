@@ -12,6 +12,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - bridges widget - show bridges as restarting on full restart
 - do not hide search button when no search results found
 - change session timeout from seconds to days, hours, minutes
+- improve widget state around first data load
 
 ### Other Changes
 

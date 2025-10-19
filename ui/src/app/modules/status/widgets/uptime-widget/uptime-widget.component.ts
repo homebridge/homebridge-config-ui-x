@@ -1,5 +1,5 @@
 import { NgClass } from '@angular/common'
-import { Component, inject, Input, OnDestroy, OnInit } from '@angular/core'
+import { ChangeDetectorRef, Component, inject, Input, NgZone, OnDestroy, OnInit } from '@angular/core'
 import { TranslatePipe } from '@ngx-translate/core'
 import { interval, Subscription } from 'rxjs'
 
@@ -13,6 +13,8 @@ import { Widget } from '@/app/modules/status/widgets/widgets.interfaces'
 })
 export class UptimeWidgetComponent implements OnInit, OnDestroy {
   private $ws = inject(WsService)
+  private $ngZone = inject(NgZone)
+  private $cdr = inject(ChangeDetectorRef)
   private io: IoNamespace
   private intervalSubscription: Subscription
 
@@ -44,8 +46,11 @@ export class UptimeWidgetComponent implements OnInit, OnDestroy {
 
   private getServerUptimeInfo() {
     this.io.request('get-server-uptime-info').subscribe((data) => {
-      this.serverUptime = this.humaniseDuration(data.time.uptime)
-      this.processUptime = this.humaniseDuration(data.processUptime)
+      this.$ngZone.run(() => {
+        this.serverUptime = this.humaniseDuration(data.time.uptime)
+        this.processUptime = this.humaniseDuration(data.processUptime)
+        this.$cdr.markForCheck()
+      })
     })
   }
 
