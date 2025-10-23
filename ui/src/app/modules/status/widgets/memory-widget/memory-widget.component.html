@@ -15,7 +15,7 @@
     <div class="d-flex justify-content-around flex-wrap w-100">
       <div class="text-center widget-value-parent-wrap">
         <div class="widget-value mb-0">
-          @if (totalMemory !== undefined) { {{ totalMemory | number:'1.0-2' }}GB } @else {
+          @if (totalMemory !== undefined) { {{ totalMemory | number:'1.0-2' }} GB } @else {
           <i class="fas fa-spinner fa-pulse"></i>
           }
         </div>
@@ -23,7 +23,7 @@
       </div>
       <div class="text-center widget-value-parent-wrap">
         <div class="widget-value mb-0">
-          @if (freeMemory !== undefined) { {{ freeMemory | number:'1.0-2' }}GB } @else {
+          @if (freeMemory !== undefined) { {{ freeMemory | number:'1.0-2' }} GB } @else {
           <i class="fas fa-spinner fa-pulse"></i>
           }
         </div>
