@@ -220,7 +220,9 @@ export class SettingsComponent implements OnInit {
 
   public uiSessionTimeoutIsInvalid = false
   public uiSessionTimeoutIsSaving = false
-  public uiSessionTimeoutFormControl = new FormControl(0)
+  public uiSessionTimeoutDaysFormControl = new FormControl(0)
+  public uiSessionTimeoutHoursFormControl = new FormControl(8)
+  public uiSessionTimeoutMinutesFormControl = new FormControl(0)
 
   public uiSessionTimeoutInactivityBasedIsSaving = false
   public uiSessionTimeoutInactivityBasedFormControl = new FormControl(false)
@@ -580,10 +582,27 @@ export class SettingsComponent implements OnInit {
       .pipe(debounceTime(750))
       .subscribe((value: boolean) => this.uiAuthSave(value))
 
-    this.uiSessionTimeoutFormControl.patchValue(this.$settings.sessionTimeout)
-    this.uiSessionTimeoutFormControl.valueChanges
+    // Convert seconds to days, hours, minutes
+    const sessionTimeoutSeconds = this.$settings.sessionTimeout
+    const days = Math.floor(sessionTimeoutSeconds / 86400)
+    const hours = Math.floor((sessionTimeoutSeconds % 86400) / 3600)
+    const minutes = Math.floor((sessionTimeoutSeconds % 3600) / 60)
+
+    this.uiSessionTimeoutDaysFormControl.patchValue(days)
+    this.uiSessionTimeoutHoursFormControl.patchValue(hours)
+    this.uiSessionTimeoutMinutesFormControl.patchValue(minutes)
+
+    this.uiSessionTimeoutDaysFormControl.valueChanges
       .pipe(debounceTime(750))
-      .subscribe((value: number) => this.uiSessionTimeoutSave(value))
+      .subscribe(() => this.uiSessionTimeoutSaveFromFields())
+
+    this.uiSessionTimeoutHoursFormControl.valueChanges
+      .pipe(debounceTime(750))
+      .subscribe(() => this.uiSessionTimeoutSaveFromFields())
+
+    this.uiSessionTimeoutMinutesFormControl.valueChanges
+      .pipe(debounceTime(750))
+      .subscribe(() => this.uiSessionTimeoutSaveFromFields())
 
     this.uiSessionTimeoutInactivityBasedFormControl.patchValue(this.$settings.sessionTimeoutInactivityBased || false)
     this.uiSessionTimeoutInactivityBasedFormControl.valueChanges
@@ -1351,16 +1370,34 @@ export class SettingsComponent implements OnInit {
     }
   }
 
-  private async uiSessionTimeoutSave(value: number) {
-    if (value && (typeof value !== 'number' || value < 600 || value > 86400000 || Number.isInteger(value) === false)) {
+  private async uiSessionTimeoutSaveFromFields() {
+    const days = this.uiSessionTimeoutDaysFormControl.value || 0
+    const hours = this.uiSessionTimeoutHoursFormControl.value || 0
+    const minutes = this.uiSessionTimeoutMinutesFormControl.value || 0
+
+    // Validate individual fields
+    if (
+      typeof days !== 'number' || days < 0 || days > 365 || !Number.isInteger(days)
+      || typeof hours !== 'number' || hours < 0 || hours > 23 || !Number.isInteger(hours)
+      || typeof minutes !== 'number' || minutes < 0 || minutes > 59 || !Number.isInteger(minutes)
+    ) {
+      this.uiSessionTimeoutIsInvalid = true
+      return
+    }
+
+    // Convert to seconds
+    const totalSeconds = (days * 86400) + (hours * 3600) + (minutes * 60)
+
+    // Validate total: minimum 10 minutes (600 seconds), maximum 1000 days (86400000 seconds)
+    if (totalSeconds < 600 || totalSeconds > 86400000) {
       this.uiSessionTimeoutIsInvalid = true
       return
     }
 
     try {
       this.uiSessionTimeoutIsSaving = true
-      this.$settings.setItem('sessionTimeout', value)
-      await this.saveUiSettingChange('sessionTimeout', value)
+      this.$settings.setItem('sessionTimeout', totalSeconds)
+      await this.saveUiSettingChange('sessionTimeout', totalSeconds)
       this.uiSessionTimeoutIsInvalid = false
       setTimeout(() => {
         this.uiSessionTimeoutIsSaving = false

@@ -1011,16 +1011,56 @@
         <small class="grey-text pe-2">{{ 'settings.startup.session_desc' | translate }}</small>
       </span>
       <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
-        <input
-          class="form-control custom-input resp-input order-1 order-md-2"
-          type="number"
-          min="600"
-          max="86400000"
-          placeholder="28800"
-          [formControl]="uiSessionTimeoutFormControl"
-          [attr.aria-label]="'settings.startup.session' | translate"
-          [ngClass]="{ 'is-invalid': uiSessionTimeoutIsInvalid }"
-        />
+        <div class="d-flex align-items-center gap-2">
+          <div class="d-flex align-items-center">
+            <input
+              class="form-control custom-input"
+              type="number"
+              min="0"
+              max="365"
+              placeholder="0"
+              style="width: 44px; text-align: right"
+              [formControl]="uiSessionTimeoutDaysFormControl"
+              [attr.aria-label]="'settings.startup.session_days' | translate"
+              [ngClass]="{ 'is-invalid': uiSessionTimeoutIsInvalid }"
+            />
+            <label class="ms-1 me-2 mb-0 text-nowrap grey-text small"
+              >{{ 'settings.startup.session_days' | translate }}</label
+            >
+          </div>
+          <div class="d-flex align-items-center">
+            <input
+              class="form-control custom-input"
+              type="number"
+              min="0"
+              max="23"
+              placeholder="8"
+              style="width: 44px; text-align: right"
+              [formControl]="uiSessionTimeoutHoursFormControl"
+              [attr.aria-label]="'settings.startup.session_hours' | translate"
+              [ngClass]="{ 'is-invalid': uiSessionTimeoutIsInvalid }"
+            />
+            <label class="ms-1 me-2 mb-0 text-nowrap grey-text small"
+              >{{ 'settings.startup.session_hours' | translate }}</label
+            >
+          </div>
+          <div class="d-flex align-items-center">
+            <input
+              class="form-control custom-input"
+              type="number"
+              min="0"
+              max="59"
+              placeholder="0"
+              style="width: 44px; text-align: right"
+              [formControl]="uiSessionTimeoutMinutesFormControl"
+              [attr.aria-label]="'settings.startup.session_minutes' | translate"
+              [ngClass]="{ 'is-invalid': uiSessionTimeoutIsInvalid }"
+            />
+            <label class="ms-1 me-2 mb-0 text-nowrap grey-text small"
+              >{{ 'settings.startup.session_minutes' | translate }}</label
+            >
+          </div>
+        </div>
         @if (uiSessionTimeoutIsSaving) {
         <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
         }

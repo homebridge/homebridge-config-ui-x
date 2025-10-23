@@ -11,6 +11,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - status qr code widget - show pin in monospace
 - bridges widget - show bridges as restarting on full restart
 - do not hide search button when no search results found
+- change session timeout from seconds to days, hours, minutes
 
 ### Other Changes
 
