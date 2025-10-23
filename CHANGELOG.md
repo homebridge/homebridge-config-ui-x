@@ -9,6 +9,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - added config option to configure a webroot for the ui
 - improve widget state around first data load
 - integration with updated homebridge version
+- add a complete https management to settings (#2617) (@donavanbecker)
 
 ### Other Changes
 
