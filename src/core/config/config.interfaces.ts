@@ -99,6 +99,8 @@ export interface HomebridgeUiConfig {
     cert?: string
     pfx?: string
     passphrase?: string
+    selfSigned?: boolean
+    selfSignedHostnames?: string[]
   }
   accessoryControl?: {
     debug?: boolean

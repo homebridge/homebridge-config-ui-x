@@ -255,6 +255,9 @@ export class SettingsComponent implements OnInit {
   public uiSslPassphraseIsSaving = false
   public uiSslPassphraseFormControl = new FormControl('')
 
+  public uiSslSelfSignedHostnamesIsSaving = false
+  public uiSslSelfSignedHostnamesFormControl = new FormControl('')
+
   public hbPackageIsSaving = false
   public hbPackageFormControl = new FormControl('')
 
@@ -397,6 +400,7 @@ export class SettingsComponent implements OnInit {
         'setting-security-https',
         'setting-security-cert',
         'setting-security-pass',
+        'setting-security-selfsigned-hostnames',
         'setting-security-control',
       ],
       cache: [
@@ -474,6 +478,7 @@ export class SettingsComponent implements OnInit {
       'setting-security-https': this.$translate.instant('settings.security.https'),
       'setting-security-cert': this.$translate.instant('settings.security.cert'),
       'setting-security-pass': this.$translate.instant('settings.security.pass'),
+      'setting-security-selfsigned-hostnames': this.$translate.instant('settings.security.selfsigned_hostnames'),
       'setting-security-control': this.$translate.instant('settings.security.ui_control'),
       'setting-ui-port': this.$translate.instant('settings.security.webui_port'),
       'setting-ui-host': this.$translate.instant('settings.security.webui_host'),
@@ -543,6 +548,7 @@ export class SettingsComponent implements OnInit {
       this.uiSslCertFormControl.disable()
       this.uiSslPfxFormControl.disable()
       this.uiSslPassphraseFormControl.disable()
+      this.uiSslSelfSignedHostnamesFormControl.disable()
     }
 
     this.hbNameFormControl.patchValue(this.$settings.env.homebridgeInstanceName)
@@ -645,9 +651,20 @@ export class SettingsComponent implements OnInit {
       .pipe(debounceTime(1500))
       .subscribe((value: string) => this.uiSslPassphraseSave(value))
 
-    this.uiSslTypeFormControl.patchValue(this.uiSslKeyFormControl.value || this.uiSslCertFormControl.value
-      ? 'keycert'
-      : (this.uiSslPfxFormControl.value || this.uiSslPassphraseFormControl.value) ? 'pfx' : 'off')
+    this.uiSslSelfSignedHostnamesFormControl.patchValue(
+      this.$settings.env.ssl?.selfSignedHostnames?.join(', ') || 'localhost, 127.0.0.1',
+    )
+    this.uiSslSelfSignedHostnamesFormControl.valueChanges
+      .pipe(debounceTime(1500))
+      .subscribe((value: string) => this.uiSslSelfSignedHostnamesSave(value))
+
+    this.uiSslTypeFormControl.patchValue(
+      this.$settings.env.ssl?.selfSigned
+        ? 'selfsigned'
+        : this.uiSslKeyFormControl.value || this.uiSslCertFormControl.value
+          ? 'keycert'
+          : (this.uiSslPfxFormControl.value || this.uiSslPassphraseFormControl.value) ? 'pfx' : 'off',
+    )
     this.uiSslTypeFormControl.valueChanges
       .pipe(debounceTime(750))
       .subscribe((value: string) => this.uiSslTypeSave(value))
@@ -1490,6 +1507,24 @@ export class SettingsComponent implements OnInit {
     }
   }
 
+  private async uiSslSelfSignedHostnamesSave(value: string) {
+    try {
+      this.uiSslSelfSignedHostnamesIsSaving = true
+      // Convert comma-separated string to array, trim whitespace
+      const hostnames = value.split(',').map(h => h.trim()).filter(h => h.length > 0)
+      this.$settings.setEnvItem('ssl.selfSignedHostnames', hostnames)
+      await this.saveUiSettingChange('ssl.selfSignedHostnames', hostnames)
+      setTimeout(() => {
+        this.uiSslSelfSignedHostnamesIsSaving = false
+        this.showRestartToast()
+      }, 1000)
+    } catch (error) {
+      console.error(error)
+      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      this.uiSslSelfSignedHostnamesIsSaving = false
+    }
+  }
+
   private async uiSslTypeSave(value: string) {
     switch (value) {
       case 'keycert':
@@ -1497,12 +1532,33 @@ export class SettingsComponent implements OnInit {
         this.uiSslPassphraseFormControl.patchValue('', { emitEvent: false })
         this.$settings.setEnvItem('ssl.pfx', '')
         this.$settings.setEnvItem('ssl.passphrase', '')
+        this.$settings.setEnvItem('ssl.selfSigned', false)
+        await this.saveUiSettingChange('ssl.selfSigned', false)
         break
       case 'pfx':
         this.uiSslKeyFormControl.patchValue('', { emitEvent: false })
         this.uiSslCertFormControl.patchValue('', { emitEvent: false })
         this.$settings.setEnvItem('ssl.key', '')
         this.$settings.setEnvItem('ssl.cert', '')
+        this.$settings.setEnvItem('ssl.selfSigned', false)
+        await this.saveUiSettingChange('ssl.selfSigned', false)
+        break
+      case 'selfsigned':
+        this.uiSslKeyFormControl.patchValue('', { emitEvent: false })
+        this.uiSslCertFormControl.patchValue('', { emitEvent: false })
+        this.uiSslPfxFormControl.patchValue('', { emitEvent: false })
+        this.uiSslPassphraseFormControl.patchValue('', { emitEvent: false })
+        this.$settings.setEnvItem('ssl.key', '')
+        this.$settings.setEnvItem('ssl.cert', '')
+        this.$settings.setEnvItem('ssl.pfx', '')
+        this.$settings.setEnvItem('ssl.passphrase', '')
+        this.$settings.setEnvItem('ssl.selfSigned', true)
+        await this.saveUiSettingChange('ssl.selfSigned', true)
+        // Initialize with default hostnames if not set
+        if (!this.uiSslSelfSignedHostnamesFormControl.value) {
+          this.uiSslSelfSignedHostnamesFormControl.patchValue('localhost, 127.0.0.1', { emitEvent: true })
+        }
+        this.showRestartToast()
         break
       default:
         this.uiSslKeyFormControl.patchValue('', { emitEvent: false })
@@ -1513,6 +1569,7 @@ export class SettingsComponent implements OnInit {
         this.$settings.setEnvItem('ssl.cert', '')
         this.$settings.setEnvItem('ssl.pfx', '')
         this.$settings.setEnvItem('ssl.passphrase', '')
+        this.$settings.setEnvItem('ssl.selfSigned', false)
         await this.saveUiSettingChange('ssl', '')
         this.showRestartToast()
     }
