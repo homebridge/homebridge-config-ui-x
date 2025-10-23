@@ -1070,7 +1070,11 @@
     <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
       <span>
         {{ 'settings.security.https' | translate }}<br />
-        <small class="grey-text pe-2">{{ 'settings.security.https_desc' | translate }}</small>
+        <small class="grey-text pe-2">
+          {{ 'settings.security.https_desc' | translate }} @if (runningOnRaspbianImage &&
+          this.uiSslTypeFormControl.value === 'off') {
+          <span [innerHtml]="'settings.security.raspbian_image_ssl_note' | translate"></span> }
+        </small>
         @if (isPwa) {
         <br /><small class="grey-text pe-2">
           <i class="fas fa-exclamation-triangle red-text"></i>
@@ -1085,9 +1089,38 @@
           [attr.aria-label]="'settings.security.https' | translate"
         >
           <option value="off">{{ 'accessories.control.off' | translate }}</option>
+          @if (!runningOnRaspbianImage) {
+          <option value="selfsigned">{{ 'settings.security.https_selfsigned' | translate }}</option>
+          }
           <option value="keycert">{{ 'settings.security.https_keycert' | translate }}</option>
           <option value="pfx">{{ 'settings.security.https_pfx' | translate }}</option>
         </select>
+      </div>
+    </li>
+    } @if (this.uiSslTypeFormControl.value === 'selfsigned') {
+    <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+      <span>
+        {{ 'settings.security.selfsigned_hostnames' | translate }}
+        <span class="badge badge-primary ms-1">{{ 'common.labels.beta' | translate }}</span><br />
+        <small class="grey-text pe-2">{{ 'settings.security.selfsigned_hostnames_desc' | translate }}</small>
+      </span>
+      @if (isPwa) {
+      <br /><small class="grey-text pe-2">
+        <i class="fas fa-exclamation-triangle red-text"></i>
+        {{ 'settings.warning_pwa' | translate }}
+      </small>
+      }
+      <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
+        <input
+          class="form-control custom-input resp-input order-1 order-md-2"
+          type="text"
+          placeholder="localhost, 127.0.0.1, homebridge.local"
+          [formControl]="uiSslSelfSignedHostnamesFormControl"
+          [attr.aria-label]="'settings.security.selfsigned_hostnames' | translate"
+        />
+        @if (uiSslSelfSignedHostnamesIsSaving) {
+        <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
+        }
       </div>
     </li>
     } @if (this.uiSslTypeFormControl.value === 'keycert') {

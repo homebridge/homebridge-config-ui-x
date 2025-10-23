@@ -8,6 +8,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 
 - added config option to configure a webroot for the ui
 - improve widget state around first data load
+- add self-signed certificate generation feature
 
 ### Other Changes
 

@@ -19,6 +19,7 @@ export interface EnvInterface {
   runningInSynologyPackage: boolean
   runningInPackageMode: boolean
   runningOnRaspberryPi: boolean
+  runningOnRaspbianImage: boolean
   canShutdownRestartHost: boolean
   dockerOfflineUpdate: boolean
   lang: string | null
@@ -40,6 +41,8 @@ export interface EnvInterface {
     cert?: string
     pfx?: string
     passphrase?: string
+    selfSigned?: boolean
+    selfSignedHostnames?: string[]
   }
   accessoryControl?: {
     debug?: boolean
