@@ -287,6 +287,9 @@ export class PluginsComponent implements OnInit, OnDestroy {
 
   private async appendMetaInfo() {
     if (this.isAdmin) {
+      // Get the hidePairingAlerts setting
+      const hidePairingAlerts = new Set(this.$settings.env.plugins?.hidePairingAlerts || [])
+
       // Also get the current configuration for each plugin
       await Promise.all(this.installedPlugins
         .filter(plugin => plugin.installedVersion)
@@ -304,7 +307,17 @@ export class PluginsComponent implements OnInit, OnDestroy {
             plugin.hasChildBridges = plugin.isConfigured && configBlocks.some(x => x._bridge && x._bridge.username)
 
             const pluginChildBridges = this.getPluginChildBridges(plugin)
-            plugin.hasChildBridgesUnpaired = pluginChildBridges.some(x => !x.paired)
+
+            // Check for unpaired HAP bridges OR unpaired Matter bridges that are NOT hidden
+            plugin.hasChildBridgesUnpaired = pluginChildBridges.some((x) => {
+              const hapIdentifier = `${x.username}-hap`
+              const matterIdentifier = `${x.username}-matter`
+
+              const hasUnpairedHap = x.paired === false && !hidePairingAlerts.has(hapIdentifier.toUpperCase())
+              const hasUnpairedMatter = x.matterConfig && x.matterCommissioned === false && !hidePairingAlerts.has(matterIdentifier.toUpperCase())
+
+              return hasUnpairedHap || hasUnpairedMatter
+            })
 
             if (this.$settings.env.plugins?.hideUpdatesFor?.includes(plugin.name)) {
               plugin.updateAvailable = false

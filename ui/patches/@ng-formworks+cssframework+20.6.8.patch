@@ -1,8 +1,8 @@
 diff --git a/node_modules/@ng-formworks/cssframework/fesm2022/ng-formworks-cssframework.mjs b/node_modules/@ng-formworks/cssframework/fesm2022/ng-formworks-cssframework.mjs
-index acbdaec..bc24aa3 100644
+index 67a5332..4c5fc5d 100644
 --- a/node_modules/@ng-formworks/cssframework/fesm2022/ng-formworks-cssframework.mjs
 +++ b/node_modules/@ng-formworks/cssframework/fesm2022/ng-formworks-cssframework.mjs
-@@ -284,6 +284,9 @@ class CssFrameworkComponent {
+@@ -295,6 +295,9 @@ class CssFrameworkComponent {
              case 'fieldset':
                  this.widgetOptions.title = this.options.title;
                  return null;
@@ -12,7 +12,7 @@ index acbdaec..bc24aa3 100644
              default:
                  this.widgetOptions.title = null;
                  return this.jsf.setItemTitle(this);
-@@ -297,11 +300,11 @@ class CssFrameworkComponent {
+@@ -309,11 +312,11 @@ class CssFrameworkComponent {
          this.jsf.removeItem(this);
      }
      static { this.ɵfac = i0.ɵɵngDeclareFactory({ minVersion: "12.0.0", version: "20.1.6", ngImport: i0, type: CssFrameworkComponent, deps: [], target: i0.ɵɵFactoryTarget.Component }); }

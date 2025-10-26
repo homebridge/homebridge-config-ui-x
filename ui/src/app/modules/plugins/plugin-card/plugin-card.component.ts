@@ -50,22 +50,18 @@ export class PluginCardComponent implements OnInit {
   @Input() plugin: Plugin
 
   public hasChildBridges = false
-  public hasUnpairedChildBridges = false
   public allChildBridgesStopped = false
   public childBridgeStatus = 'pending'
   public childBridgeRestartInProgress = false
   public defaultIcon = 'assets/hb-icon.png'
   public isMobile: string
   public setChildBridges: ChildBridge[] = []
-  public hb2Status = 'unknown' // 'hide' | 'supported' | 'unknown'
   public isAdmin = this.$auth.user.admin
 
   // eslint-disable-next-line accessor-pairs
   @Input() set childBridges(childBridges: ChildBridge[]) {
     this.hasChildBridges = childBridges.length > 0
-    this.hasUnpairedChildBridges = childBridges.filter(x => x.paired === false).length > 0
-    this.allChildBridgesStopped = childBridges.filter(x => x.manuallyStopped === true).length === childBridges.length
-
+    this.allChildBridgesStopped = childBridges.every(x => x.manuallyStopped === true)
     if (this.hasChildBridges) {
       // Get the "worse" status of all child bridges and use that for colour icon
       if (childBridges.some(x => x.status === 'down')) {
@@ -78,10 +74,6 @@ export class PluginCardComponent implements OnInit {
     }
 
     this.setChildBridges = childBridges
-
-    const homebridgeVersion = this.$settings.env.homebridgeVersion?.split('.')[0]
-    const hbEngines = this.plugin.engines?.homebridge?.split('||').map((x: string) => x.trim()) || []
-    this.hb2Status = homebridgeVersion === '2' ? 'hide' : hbEngines.some((x: string) => (x.startsWith('^2') || x.startsWith('>=2'))) ? 'supported' : this.hb2Status
   }
 
   public ngOnInit(): void {

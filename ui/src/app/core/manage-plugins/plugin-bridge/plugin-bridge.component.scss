@@ -7,3 +7,21 @@
   background-color: transparent;
   border: 0;
 }
+
+.qr-code-placeholder {
+  width: 175px;
+  height: 175px;
+  border: 2px solid currentColor;
+  border-radius: 8px;
+  background-color: #f8f9fa;
+  padding: 20px;
+}
+
+::ng-deep {
+  body.dark-mode,
+  [class*='config-ui-x-dark-mode'] {
+    .qr-code-placeholder {
+      background-color: #1a1a1a;
+    }
+  }
+}

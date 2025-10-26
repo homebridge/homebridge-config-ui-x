@@ -1,5 +1,5 @@
 diff --git a/node_modules/@ng-formworks/core/fesm2022/ng-formworks-core.mjs b/node_modules/@ng-formworks/core/fesm2022/ng-formworks-core.mjs
-index 946f4a1..b15f8da 100644
+index 16a4f0f..c27255e 100644
 --- a/node_modules/@ng-formworks/core/fesm2022/ng-formworks-core.mjs
 +++ b/node_modules/@ng-formworks/core/fesm2022/ng-formworks-core.mjs
 @@ -22,6 +22,11 @@ import uniqueId from 'lodash/uniqueId';
@@ -157,7 +157,7 @@ index 946f4a1..b15f8da 100644
          </label>
        </div>
      </div>`,
-@@ -9199,7 +9213,7 @@ class RadiosComponent {
+@@ -9211,7 +9225,7 @@ class RadiosComponent {
          [class]="(options?.itemLabelHtmlClass || '') +
            ((controlValue + '' === radioItem?.value + '') ?
            (' ' + (options?.activeClass || '') + ' ' + (options?.style?.selected || '')) :
@@ -166,7 +166,7 @@ index 946f4a1..b15f8da 100644
          <input type="radio"
            [attr.aria-describedby]="'control' + layoutNode()?._id + 'Status'"
            [attr.readonly]="options?.readonly ? 'readonly' : null"
-@@ -9224,7 +9238,7 @@ class RadiosComponent {
+@@ -9236,7 +9250,7 @@ class RadiosComponent {
            [class]="(options?.itemLabelHtmlClass || '') +
              ((controlValue + '' === radioItem?.value + '') ?
              (' ' + (options?.activeClass || '') + ' ' + (options?.style?.selected || '')) :
@@ -175,7 +175,7 @@ index 946f4a1..b15f8da 100644
            <input type="radio"
              [attr.aria-describedby]="'control' + layoutNode()?._id + 'Status'"
              [attr.readonly]="options?.readonly ? 'readonly' : null"
-@@ -9261,7 +9275,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "20.1.6", ngImpor
+@@ -9273,7 +9287,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "20.1.6", ngImpor
          [class]="(options?.itemLabelHtmlClass || '') +
            ((controlValue + '' === radioItem?.value + '') ?
            (' ' + (options?.activeClass || '') + ' ' + (options?.style?.selected || '')) :
@@ -184,7 +184,7 @@ index 946f4a1..b15f8da 100644
          <input type="radio"
            [attr.aria-describedby]="'control' + layoutNode()?._id + 'Status'"
            [attr.readonly]="options?.readonly ? 'readonly' : null"
-@@ -9286,7 +9300,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "20.1.6", ngImpor
+@@ -9298,7 +9312,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "20.1.6", ngImpor
            [class]="(options?.itemLabelHtmlClass || '') +
              ((controlValue + '' === radioItem?.value + '') ?
              (' ' + (options?.activeClass || '') + ' ' + (options?.style?.selected || '')) :
@@ -193,7 +193,7 @@ index 946f4a1..b15f8da 100644
            <input type="radio"
              [attr.aria-describedby]="'control' + layoutNode()?._id + 'Status'"
              [attr.readonly]="options?.readonly ? 'readonly' : null"
-@@ -9683,7 +9697,7 @@ class SectionComponent {
+@@ -9701,7 +9715,7 @@ class SectionComponent {
          [class]="options?.labelHelpBlockClass || ''"
          [innerHTML]="options?.description"></p>
        </div>
@@ -202,7 +202,7 @@ index 946f4a1..b15f8da 100644
  }
  i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "20.1.6", ngImport: i0, type: SectionComponent, decorators: [{
              type: Component,
-@@ -9748,7 +9762,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "20.1.6", ngImpor
+@@ -9766,7 +9780,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "20.1.6", ngImpor
          [class]="options?.labelHelpBlockClass || ''"
          [innerHTML]="options?.description"></p>
        </div>
@@ -211,7 +211,7 @@ index 946f4a1..b15f8da 100644
          }] });
  
  class SelectComponent {
-@@ -9771,6 +9785,16 @@ class SelectComponent {
+@@ -9789,6 +9803,16 @@ class SelectComponent {
          //as either a grouped select or a flat select
          this.selectListFlatGroup = buildTitleMap(this.options.titleMap || this.options.enumNames, this.options.enum, !!this.options.required, true);
          this.jsf.initializeControl(this);

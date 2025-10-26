@@ -1,0 +1,20 @@
+[
+  {
+    "uuid": "matter-test-accessory-uuid-1",
+    "plugin": "homebridge-test-plugin",
+    "displayName": "Test Matter Light",
+    "manufacturer": "Test Manufacturer",
+    "model": "Matter Light v1",
+    "serialNumber": "MATTER-001",
+    "firmwareRevision": "1.0.0"
+  },
+  {
+    "uuid": "matter-test-accessory-uuid-2",
+    "plugin": "homebridge-test-plugin",
+    "displayName": "Test Matter Switch",
+    "manufacturer": "Test Manufacturer",
+    "model": "Matter Switch v1",
+    "serialNumber": "MATTER-002",
+    "firmwareRevision": "1.0.0"
+  }
+]
