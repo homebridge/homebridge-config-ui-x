@@ -10,6 +10,9 @@ export interface PluginChildBridge {
     DEBUG?: string
     NODE_OPTIONS?: string
   }
+  matter?: {
+    port?: number
+  }
 }
 
 export interface PlatformConfig {
@@ -37,6 +40,9 @@ export interface HomebridgeConfig {
     manufacturer?: string
     model?: string
     firmwareRevision?: string
+    matter?: {
+      port?: number
+    }
   }
   mdns?: {
     interface?: string | string[]
@@ -55,6 +61,7 @@ export interface HomebridgeConfig {
 export interface ChildBridgeToRestart {
   name: string
   username: string
+  matterSerialNumber: string
 }
 
 export interface ConfigRestoreBackup {

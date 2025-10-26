@@ -102,7 +102,6 @@ export class ConfigEditorController {
   }
 
   @UseGuards(AdminGuard)
-  @UseGuards(AdminGuard)
   @Get('/ui/plugins/hide-updates-for')
   @ApiOperation({ summary: 'Get the plugins hide updates for list.' })
   getPluginsHideUpdatesFor(): Promise<string[]> {
@@ -115,6 +114,21 @@ export class ConfigEditorController {
   @ApiBody({ description: 'Array of plugin names to hide updates for in the UI.', type: 'json', isArray: true })
   setPluginsHideUpdatesFor(@Body() { body }) {
     return this.configEditorService.setPluginsHideUpdatesFor(body)
+  }
+
+  @UseGuards(AdminGuard)
+  @Get('/ui/plugins/hide-pairing-alerts')
+  @ApiOperation({ summary: 'Get the plugins hide pairing alerts list.' })
+  getPluginsHidePairingAlerts(): Promise<string[]> {
+    return this.configEditorService.getPluginsHidePairingAlerts()
+  }
+
+  @UseGuards(AdminGuard)
+  @Put('/ui/plugins/hide-pairing-alerts')
+  @ApiOperation({ summary: 'Update the plugins hide pairing alerts list.' })
+  @ApiBody({ description: 'Array of bridge identifiers (e.g., "0E:02:9A:9D:44:45-hap" or "0E:02:9A:9D:44:45-matter") to hide pairing alerts for in the UI.', type: 'json', isArray: true })
+  setPluginsHidePairingAlerts(@Body() { body }) {
+    return this.configEditorService.setPluginsHidePairingAlerts(body)
   }
 
   @UseGuards(AdminGuard)
@@ -145,5 +159,36 @@ export class ConfigEditorController {
   @Delete('/backups')
   deleteAllConfigBackups() {
     return this.configEditorService.deleteAllConfigBackups()
+  }
+
+  @UseGuards(AdminGuard)
+  @ApiOperation({
+    summary: 'Get Matter Configuration',
+    description: 'Returns the Matter configuration object for the main Homebridge bridge.',
+  })
+  @Get('/matter')
+  getMatterConfig() {
+    return this.configEditorService.getMatterConfig()
+  }
+
+  @UseGuards(AdminGuard)
+  @ApiOperation({
+    summary: 'Update Matter Configuration',
+    description: 'Update the Matter configuration object for the main Homebridge bridge.',
+  })
+  @ApiBody({ description: 'Matter configuration', type: 'json' })
+  @Put('/matter')
+  updateMatterConfig(@Body() matterConfig) {
+    return this.configEditorService.updateMatterConfig(matterConfig)
+  }
+
+  @UseGuards(AdminGuard)
+  @ApiOperation({
+    summary: 'Delete Matter Configuration',
+    description: 'Removes the Matter configuration object for the main Homebridge bridge, and deletes the Matter data for it.',
+  })
+  @Delete('/matter')
+  deleteMatterConfig() {
+    return this.configEditorService.deleteMatterConfig()
   }
 }

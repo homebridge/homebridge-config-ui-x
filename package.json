@@ -92,7 +92,7 @@
     "@nestjs/platform-socket.io": "11.1.8",
     "@nestjs/swagger": "11.2.1",
     "@nestjs/websockets": "11.1.8",
-    "axios": "1.12.2",
+    "axios": "1.13.0",
     "bash-color": "0.0.4",
     "bonjour-service": "1.3.0",
     "class-transformer": "0.5.1",
@@ -149,7 +149,7 @@
   },
   "overrides": {
     "@homebridge/hap-client": {
-      "axios": "1.12.2"
+      "axios": "1.13.0"
     }
   },
   "maintainers": [

@@ -3,10 +3,13 @@ import { TranslateService } from '@ngx-translate/core'
 /**
  * Creates the JSON schema definition for child bridge configuration
  * @param translate - The translation service for localized strings
- * @param isDebugModeEnabled - Whether debug mode is enabled to include the debug option
+ * @param options - Configuration options
+ * @param options.isDebugModeEnabled - Whether debug mode is enabled to include the debug option
+ * @param options.isMatterSupported - Whether Matter support is enabled to include Matter settings
+ * @param options.isPlatformPlugin - Whether the plugin is platform-based (Matter only works with platform plugins)
  * @returns Child bridge schema object
  */
-export function createChildBridgeSchema(translate: TranslateService, { isDebugModeEnabled }) {
+export function createChildBridgeSchema(translate: TranslateService, { isDebugModeEnabled, isMatterSupported, isPlatformPlugin = true }) {
   return {
     type: 'object',
     required: ['username'],
@@ -38,21 +41,25 @@ export function createChildBridgeSchema(translate: TranslateService, { isDebugMo
         type: 'string',
         title: translate.instant('child_bridge.config.name'),
         description: 'The name of the child bridge.',
+        maxLength: 64,
       },
       manufacturer: {
         type: 'string',
         title: translate.instant('child_bridge.config.manufacturer'),
         description: 'The child bridge manufacturer to be displayed in HomeKit.',
+        maxLength: 32,
       },
       firmwareRevision: {
         type: 'string',
         title: translate.instant('child_bridge.config.firmware'),
         description: 'The child bridge firmware version to be displayed in HomeKit.',
+        maxLength: 64,
       },
       model: {
         type: 'string',
         title: translate.instant('child_bridge.config.model'),
         description: 'The child bridge model to be displayed in HomeKit.',
+        maxLength: 32,
       },
       ...isDebugModeEnabled
         ? {
@@ -80,6 +87,25 @@ export function createChildBridgeSchema(translate: TranslateService, { isDebugMo
           },
         },
       },
+      ...(isMatterSupported && isPlatformPlugin)
+        ? {
+            matter: {
+              type: 'object',
+              additionalProperties: false,
+              title: translate.instant('settings.matter.title'),
+              description: 'Matter-specific configuration for this child bridge.',
+              properties: {
+                port: {
+                  type: 'number',
+                  title: translate.instant('settings.matter.port'),
+                  description: translate.instant('settings.matter.port_desc'),
+                  minimum: 1025,
+                  maximum: 65534,
+                },
+              },
+            },
+          }
+        : {},
     },
   }
 }
