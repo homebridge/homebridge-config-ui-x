@@ -27,6 +27,11 @@ export const FEATURE_FLAGS: FeatureFlagDefinition[] = [
   {
     key: 'childBridgeDebugMode',
     description: 'Enables debug mode configuration for child bridges',
-    range: '>=2.0.0-beta.0',
+    range: '>=2.0.0-alpha.0',
+  },
+  {
+    key: 'matterSupport',
+    description: 'Enables support for Matter bridges',
+    range: '>=2.0.0-alpha.0 <2.0.0-beta.0 || >=2.0.0-beta.31',
   },
 ]

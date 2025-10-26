@@ -70,6 +70,7 @@ export class ManualConfigComponent implements OnInit, OnDestroy {
   private $toastr = inject(ToastrService)
   private $translate = inject(TranslateService)
   private isDebugModeEnabled = this.$settings.isFeatureEnabled('childBridgeDebugMode')
+  private isMatterSupported = this.$settings.isFeatureEnabled('matterSupport')
 
   @Input() plugin: Plugin
   @Input() schema: PluginSchema
@@ -179,6 +180,7 @@ export class ManualConfigComponent implements OnInit, OnDestroy {
 
     const childBridgeSchema = createChildBridgeSchema(this.$translate, {
       isDebugModeEnabled: this.isDebugModeEnabled,
+      isMatterSupported: this.isMatterSupported,
     })
 
     // Ensure required properties are present for the plugin type
@@ -255,6 +257,7 @@ export class ManualConfigComponent implements OnInit, OnDestroy {
   private createBasicSchema() {
     const childBridgeSchema = createChildBridgeSchema(this.$translate, {
       isDebugModeEnabled: this.isDebugModeEnabled,
+      isMatterSupported: this.isMatterSupported,
     })
 
     if (this.pluginType === 'platform') {

@@ -1,6 +1,6 @@
-import type { AccessoryConfig, HomebridgeConfig, PlatformConfig } from '../../core/config/config.interfaces'
+import type { AccessoryConfig, HomebridgeConfig, MatterConfig, PlatformConfig } from '../../core/config/config.interfaces'
 
-import { resolve } from 'node:path'
+import { join, resolve } from 'node:path'
 
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common'
 import dayjs from 'dayjs'
@@ -19,6 +19,7 @@ import {
 import { gte } from 'semver'
 
 import { ConfigService } from '../../core/config/config.service'
+import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.service'
 import { Logger } from '../../core/logger/logger.service'
 import { SchedulerService } from '../../core/scheduler/scheduler.service'
 import { PluginsService } from '../plugins/plugins.service'
@@ -30,6 +31,7 @@ export class ConfigEditorService {
     private readonly configService: ConfigService,
     private readonly schedulerService: SchedulerService,
     private readonly pluginsService: PluginsService,
+    private readonly homebridgeIpcService: HomebridgeIpcService,
   ) {
     this.start()
     this.scheduleConfigBackupCleanup()
@@ -414,6 +416,40 @@ export class ConfigEditorService {
   }
 
   /**
+   * Get the plugin hide pairing alerts list
+   */
+  public async getPluginsHidePairingAlerts(): Promise<string[]> {
+    // 1. Get the current config for the Homebridge UI
+    const config = await this.getConfigFile()
+    const pluginConfig = config.platforms.find(x => x.platform === 'config')
+
+    // 2. Return the hidePairingAlerts list or empty array if not set
+    return pluginConfig?.plugins?.hidePairingAlerts || []
+  }
+
+  /**
+   * Set the plugin hide pairing alerts list (this request is not partial)
+   */
+  public async setPluginsHidePairingAlerts(value: string[]) {
+    // 1. Get the current config for the Homebridge UI
+    const config = await this.getConfigFile()
+    const pluginConfig = config.platforms.find(x => x.platform === 'config')
+
+    // 2. Ensure the plugins object exists and set the hidePairingAlerts property
+    if (!pluginConfig.plugins) {
+      pluginConfig.plugins = {}
+    }
+    // Validate format: USERNAME-hap or USERNAME-matter (e.g., "0E:02:9A:9D:44:45-hap")
+    pluginConfig.plugins.hidePairingAlerts = (value || [])
+      .filter(x => typeof x === 'string' && x.trim() !== '' && /^[0-9A-F]{2}(?::[0-9A-F]{2}){5}-(?:hap|matter)$/i.test(x.trim()))
+      .map(x => x.trim().toUpperCase())
+
+    // 3. Clean and save the UI config block
+    config.platforms[config.platforms.findIndex(x => x.platform === 'config')] = this.cleanUpUiConfig(pluginConfig)
+    await this.updateConfigFile(config)
+  }
+
+  /**
    * Mark a plugin as disabled
    */
   public async disablePlugin(pluginName: string) {
@@ -655,5 +691,72 @@ export class ConfigEditorService {
     }
     this.removeEmpty(cleanedUiConfig)
     return cleanedUiConfig
+  }
+
+  /**
+   * Get the Matter configuration from config.bridge.matter
+   * Returns null if Matter is not configured (disabled)
+   */
+  public async getMatterConfig(): Promise<MatterConfig | null> {
+    const config = await this.getConfigFile()
+    // Return null if matter config doesn't exist (disabled)
+    // Return the config object if it exists (enabled)
+    return config.bridge.matter || null
+  }
+
+  /**
+   * Update the Matter configuration in config.bridge.matter
+   */
+  public async updateMatterConfig(matterConfig: MatterConfig): Promise<MatterConfig> {
+    // Validate the configuration
+    this.validateMatterConfig(matterConfig)
+
+    const config = await this.getConfigFile()
+    config.bridge.matter = matterConfig
+    await this.updateConfigFile(config)
+    return matterConfig
+  }
+
+  /**
+   * Delete the Matter configuration from config.bridge.matter
+   */
+  public async deleteMatterConfig(): Promise<void> {
+    const config = await this.getConfigFile()
+    delete config.bridge.matter
+    await this.updateConfigFile(config)
+
+    // Delete the folder for this Matter bridge
+    // Wait for homebridge to stop
+    await this.homebridgeIpcService.restartAndWaitForClose()
+    const deviceId = config.bridge.username.replace(/:/g, '').toUpperCase()
+    const matterPath = join(this.configService.storagePath, 'matter', deviceId)
+    if (await pathExists(matterPath)) {
+      await remove(matterPath)
+      this.logger.warn(`Bridge ${deviceId} reset: removed Matter bridge storage at ${matterPath}.`)
+    }
+  }
+
+  /**
+   * Validate Matter configuration
+   * @param matterConfig - The Matter configuration to validate
+   * @throws BadRequestException if configuration is invalid
+   */
+  private validateMatterConfig(matterConfig: MatterConfig): void {
+    // Validate port
+    if (matterConfig.port !== undefined) {
+      if (
+        typeof matterConfig.port !== 'number'
+        || !Number.isInteger(matterConfig.port)
+        || matterConfig.port < 1024
+        || matterConfig.port > 65535
+      ) {
+        throw new BadRequestException('Port must be an integer between 1024 and 65535')
+      }
+
+      // Check for reserved ports
+      if ([5353, 8080, 8443].includes(matterConfig.port)) {
+        throw new BadRequestException('Port 5353, 8080, and 8443 are reserved and cannot be used')
+      }
+    }
   }
 }

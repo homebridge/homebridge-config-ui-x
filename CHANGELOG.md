@@ -14,6 +14,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - change session timeout from seconds to days, hours, minutes
 - improve widget state around first data load
 - add self-signed certificate generation feature
+- integration with updated homebridge version
 
 ### Other Changes
 
