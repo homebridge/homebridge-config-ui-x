@@ -22,12 +22,13 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - add missing debug child bridge flag to schemas
 - settings - put restart toast into reference for future use
 - get available port function should adhere to configured range
+- support `dynamicDefaults` in config schema forms
 
 ### Homebridge Dependencies
 
 - `@homebridge/hap-client` @ `v3.1.2`
 - `@homebridge/node-pty-prebuilt-multiarch` @ `v0.13.1`
-- `@homebridge/plugin-ui-utils` @ `v2.1.0`
+- `@homebridge/plugin-ui-utils` @ `v2.1.1-beta.0`
 
 ## v5.8.0 (2025-09-27)
 
