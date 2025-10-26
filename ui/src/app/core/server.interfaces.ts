@@ -4,6 +4,16 @@ export enum HomebridgeStatus {
   DOWN = 'down',
 }
 
+export interface HomebridgeStatusMatterUpdate {
+  enabled: boolean
+  port?: number
+  setupUri?: string
+  pin?: string
+  serialNumber?: string
+  commissioned?: boolean
+  deviceCount?: number
+}
+
 export interface HomebridgeStatusResponse {
   consolePort: number
   port: number
@@ -12,6 +22,7 @@ export interface HomebridgeStatusResponse {
   paired: boolean
   packageVersion: string
   status: HomebridgeStatus
+  matter?: HomebridgeStatusMatterUpdate
 }
 
 export interface ChildBridgeStatusResponse {
@@ -47,4 +58,27 @@ export interface ChildBridgeStatusResponse {
 
   /** Manually stopped flag */
   manuallyStopped: boolean
+
+  /** Matter configuration */
+  matterConfig?: {
+    port?: number
+  }
+
+  /** Matter identifier (filesystem storage key) */
+  matterIdentifier?: string
+
+  /** Matter setup URI (QR code payload) */
+  matterSetupUri?: string
+
+  /** Matter manual pairing code */
+  matterPin?: string
+
+  /** Matter serial number */
+  matterSerialNumber?: string
+
+  /** Whether Matter is commissioned */
+  matterCommissioned?: boolean
+
+  /** Number of Matter devices */
+  matterDeviceCount?: number
 }

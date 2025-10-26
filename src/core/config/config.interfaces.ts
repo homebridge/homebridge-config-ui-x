@@ -25,6 +25,9 @@ interface PluginChildBridge {
     DEBUG?: string
     NODE_OPTIONS?: string
   }
+  matter?: {
+    port?: number
+  }
 }
 
 export interface PlatformConfig {
@@ -52,6 +55,9 @@ export interface HomebridgeConfig {
     manufacturer?: string
     model?: string
     firmwareRevision?: string
+    matter?: {
+      port?: number
+    }
   }
   mdns?: {
     interface?: string | string[]
@@ -102,6 +108,7 @@ export interface HomebridgeUiConfig {
   }
   plugins?: {
     hideUpdatesFor?: string[]
+    hidePairingAlerts?: string[]
     alwaysShowBetas?: boolean
   }
   temp?: string

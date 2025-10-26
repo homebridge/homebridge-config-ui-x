@@ -1,4 +1,4 @@
-import { NgClass, TitleCasePipe } from '@angular/common'
+import { NgClass } from '@angular/common'
 import { Component, inject, OnInit } from '@angular/core'
 import { Router } from '@angular/router'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
@@ -7,13 +7,13 @@ import { ToastrService } from 'ngx-toastr'
 import { firstValueFrom } from 'rxjs'
 
 import { ApiService } from '@/app/core/api.service'
+import { SettingsService } from '@/app/core/settings.service'
 
 @Component({
   templateUrl: './reset-individual-bridges.component.html',
   standalone: true,
   imports: [
     NgClass,
-    TitleCasePipe,
     TranslatePipe,
   ],
 })
@@ -21,6 +21,7 @@ export class ResetIndividualBridgesComponent implements OnInit {
   private $activeModal = inject(NgbActiveModal)
   private $api = inject(ApiService)
   private $router = inject(Router)
+  private $settings = inject(SettingsService)
   private $toastr = inject(ToastrService)
   private $translate = inject(TranslateService)
 
@@ -29,6 +30,7 @@ export class ResetIndividualBridgesComponent implements OnInit {
   public pairingsChildActive: any[] = []
   public pairingsChildStale: any[] = []
   public toDelete: { id: string, resetPairingInfo: boolean }[] = []
+  public isMatterSupported = this.$settings.isFeatureEnabled('matterSupport')
 
   public ngOnInit(): void {
     this.loadPairings()
@@ -52,11 +54,11 @@ export class ResetIndividualBridgesComponent implements OnInit {
       body: this.toDelete,
     }).subscribe({
       next: () => {
-        this.$toastr.success(this.$translate.instant('reset.bridge_ind.done'), this.$translate.instant('toast.title_success'))
         this.$activeModal.close()
         void this.$router.navigate(['/restart'], {
           queryParams: { restarting: true },
         })
+        this.$toastr.success(this.$translate.instant('reset.bridge_ind.done'), this.$translate.instant('toast.title_success'))
       },
       error: (error) => {
         this.clicked = false
