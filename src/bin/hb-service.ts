@@ -1298,12 +1298,16 @@ export class HomebridgeServiceHelper {
       const currentConfig = await this.readConfig()
       if (Array.isArray(currentConfig.platforms)) {
         const uiConfigBlock = currentConfig.platforms.find((x: any) => x.platform === 'config')
-        if (uiConfigBlock && uiConfigBlock.ssl) {
-          useHttps = true
+        // Check if SSL is configured - either self-signed or file-based (key/cert or pfx)
+        if (uiConfigBlock && uiConfigBlock.ssl && typeof uiConfigBlock.ssl === 'object') {
+          if (uiConfigBlock.ssl.selfSigned || uiConfigBlock.ssl.pfx || (uiConfigBlock.ssl.key && uiConfigBlock.ssl.cert)) {
+            useHttps = true
+          }
         }
       }
     } catch (e) {
-      // If we can't read the config, default to HTTP
+      // If we can't read the config, default to HTTP and continue
+      // This ensures the status check still works even if config is temporarily unavailable
     }
 
     const protocol = useHttps ? 'https' : 'http'
@@ -1311,7 +1315,8 @@ export class HomebridgeServiceHelper {
 
     try {
       const res = await axios.get(`${protocol}://localhost:${this.uiPort}/api`, {
-        // Disable SSL certificate validation for self-signed certificates
+        // For HTTPS: Disable SSL certificate validation to support self-signed certificates
+        // This is safe for localhost connections in a homebridge service context
         httpsAgent: useHttps ? new HttpsAgent({ rejectUnauthorized: false }) : undefined,
       })
       if (res.data === 'Hello World!') {
