@@ -2,6 +2,7 @@ import { HttpModule } from '@nestjs/axios'
 import { Module } from '@nestjs/common'
 import { PassportModule } from '@nestjs/passport'
 
+import { AuthModule } from '../../core/auth/auth.module'
 import { ConfigModule } from '../../core/config/config.module'
 import { HomebridgeIpcModule } from '../../core/homebridge-ipc/homebridge-ipc.module'
 import { LoggerModule } from '../../core/logger/logger.module'
@@ -17,6 +18,7 @@ import { StatusService } from './status.service'
     PassportModule.register({ defaultStrategy: 'jwt' }),
     HttpModule,
     LoggerModule,
+    AuthModule,
     PluginsModule,
     ConfigModule,
     ServerModule,

@@ -1,13 +1,13 @@
 import { Controller, Get, UseGuards } from '@nestjs/common'
-import { AuthGuard } from '@nestjs/passport'
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger'
 
+import { JwtOrApiTokenGuard } from '../../core/auth/guards/jwt-or-api-token.guard'
 import { ChildBridgesService } from '../child-bridges/child-bridges.service'
 import { StatusService } from './status.service'
 
 @ApiTags('Server Status')
 @ApiBearerAuth()
-@UseGuards(AuthGuard())
+@UseGuards(JwtOrApiTokenGuard)
 @Controller('status')
 export class StatusController {
   constructor(
