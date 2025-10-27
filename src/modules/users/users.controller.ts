@@ -22,11 +22,12 @@ import {
 
 import { AuthService } from '../../core/auth/auth.service'
 import { AdminGuard } from '../../core/auth/guards/admin.guard'
-import { UserActivateOtpDto, UserDeactivateOtpDto, UserDto, UserUpdatePasswordDto } from './users.dto'
+import { JwtOrApiTokenGuard } from '../../core/auth/guards/jwt-or-api-token.guard'
+import { CreateApiTokenDto, UserActivateOtpDto, UserDeactivateOtpDto, UserDto, UserUpdatePasswordDto } from './users.dto'
 
 @ApiTags('User Management')
 @ApiBearerAuth()
-@UseGuards(AuthGuard())
+@UseGuards(JwtOrApiTokenGuard)
 @Controller('users')
 export class UsersController {
   constructor(
@@ -91,5 +92,25 @@ export class UsersController {
   @Post('/otp/deactivate')
   deactivateOtp(@Request() req, @Body() body: UserDeactivateOtpDto) {
     return this.authService.deactivateOtp(req.user.username, body.password)
+  }
+
+  @ApiOperation({ summary: 'Get all API tokens for the current user.' })
+  @Get('/api-tokens')
+  getApiTokens(@Request() req) {
+    return this.authService.getApiTokens(req.user.username)
+  }
+
+  @ApiOperation({ summary: 'Create a new API token for the current user.' })
+  @ApiBody({ type: CreateApiTokenDto })
+  @Post('/api-tokens')
+  createApiToken(@Request() req, @Body() body: CreateApiTokenDto) {
+    return this.authService.createApiToken(req.user.username, body.name)
+  }
+
+  @ApiOperation({ summary: 'Delete an API token for the current user.' })
+  @ApiParam({ name: 'tokenId', type: 'string' })
+  @Delete('/api-tokens/:tokenId')
+  deleteApiToken(@Request() req, @Param('tokenId') tokenId: string) {
+    return this.authService.deleteApiToken(req.user.username, tokenId)
   }
 }

@@ -478,6 +478,109 @@ describe('UsersController (e2e)', () => {
     expect(authFile[0].otpSecret).toBeTruthy()
   })
 
+  it('GET /users/api-tokens', async () => {
+    const res = await app.inject({
+      method: 'GET',
+      path: '/users/api-tokens',
+      headers: {
+        authorization,
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+    expect(Array.isArray(res.json())).toBe(true)
+  })
+
+  it('POST /users/api-tokens', async () => {
+    const payload = {
+      name: 'Uptime-Kuma',
+    }
+
+    const res = await app.inject({
+      method: 'POST',
+      path: '/users/api-tokens',
+      headers: {
+        authorization,
+      },
+      payload,
+    })
+
+    expect(res.statusCode).toBe(201)
+    expect(res.json()).toHaveProperty('id')
+    expect(res.json()).toHaveProperty('name', 'Uptime-Kuma')
+    expect(res.json()).toHaveProperty('token')
+    expect(res.json()).toHaveProperty('createdAt')
+
+    // Verify the token is a 64 character hex string
+    expect(res.json().token).toMatch(/^[0-9a-f]{64}$/)
+
+    // Verify the token was saved to the auth file
+    const authFile: UserDto[] = await readJson(authFilePath)
+    expect(authFile[0].apiTokens).toBeDefined()
+    expect(authFile[0].apiTokens.length).toBe(1)
+    expect(authFile[0].apiTokens[0].name).toBe('Uptime-Kuma')
+  })
+
+  it('DELETE /users/api-tokens/:tokenId', async () => {
+    // Create a token first
+    const createRes = await app.inject({
+      method: 'POST',
+      path: '/users/api-tokens',
+      headers: {
+        authorization,
+      },
+      payload: {
+        name: 'Test Token',
+      },
+    })
+
+    const tokenId = createRes.json().id
+
+    // Delete the token
+    const deleteRes = await app.inject({
+      method: 'DELETE',
+      path: `/users/api-tokens/${tokenId}`,
+      headers: {
+        authorization,
+      },
+    })
+
+    expect(deleteRes.statusCode).toBe(200)
+
+    // Verify the token was removed from the auth file
+    const authFile: UserDto[] = await readJson(authFilePath)
+    expect(authFile[0].apiTokens).toBeDefined()
+    expect(authFile[0].apiTokens.length).toBe(0)
+  })
+
+  it('Authenticate with API token', async () => {
+    // Create a token first
+    const createRes = await app.inject({
+      method: 'POST',
+      path: '/users/api-tokens',
+      headers: {
+        authorization,
+      },
+      payload: {
+        name: 'Test Token',
+      },
+    })
+
+    const apiToken = createRes.json().token
+
+    // Use the token to access a protected endpoint
+    const res = await app.inject({
+      method: 'GET',
+      path: '/auth/check',
+      headers: {
+        authorization: `bearer ${apiToken}`,
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+    expect(res.json().status).toBe('OK')
+  })
+
   afterAll(async () => {
     await app.close()
   })

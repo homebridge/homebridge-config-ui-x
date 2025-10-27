@@ -61,6 +61,15 @@ export class UserDto {
   @Equals(undefined)
   @ApiProperty({ readOnly: true })
   otpActive?: boolean
+
+  @Equals(undefined)
+  apiTokens?: Array<{
+    id: string
+    name: string
+    hashedToken: string
+    lastUsed?: Date
+    createdAt: Date
+  }>
 }
 
 export class UserUpdatePasswordDto {
@@ -73,4 +82,19 @@ export class UserUpdatePasswordDto {
   @IsNotEmpty()
   @ApiProperty()
   newPassword: string
+}
+
+export interface ApiToken {
+  id: string
+  name: string
+  token?: string // Only included when token is first created
+  lastUsed?: Date
+  createdAt: Date
+}
+
+export class CreateApiTokenDto {
+  @IsString()
+  @IsNotEmpty()
+  @ApiProperty()
+  name: string
 }

@@ -548,4 +548,163 @@ export class AuthService {
 
     return false
   }
+
+  /**
+   * Generate a random API token (64 character hex string)
+   */
+  private async generateApiToken(): Promise<string> {
+    return new Promise((resolve, reject) => {
+      randomBytes(32, (err, buf) => {
+        if (err) {
+          return reject(err)
+        }
+        return resolve(buf.toString('hex'))
+      })
+    })
+  }
+
+  /**
+   * Hash an API token for secure storage
+   */
+  private async hashApiToken(token: string): Promise<string> {
+    return new Promise((resolve, reject) => {
+      pbkdf2(token, 'api-token-salt', 1000, 64, 'sha512', (err, derivedKey) => {
+        if (err) {
+          return reject(err)
+        }
+        return resolve(derivedKey.toString('hex'))
+      })
+    })
+  }
+
+  /**
+   * Create a new API token for a user
+   */
+  async createApiToken(username: string, tokenName: string) {
+    const authfile = await this.getUsers()
+    const user = authfile.find(x => x.username === username)
+
+    if (!user) {
+      throw new NotFoundException('User not found.')
+    }
+
+    // Generate a unique token
+    const token = await this.generateApiToken()
+    const hashedToken = await this.hashApiToken(token)
+
+    // Initialize apiTokens array if it doesn't exist
+    if (!user.apiTokens) {
+      user.apiTokens = []
+    }
+
+    // Generate a unique ID for the token
+    const tokenId = await this.generateApiToken()
+
+    // Add the new token
+    const newToken = {
+      id: tokenId,
+      name: tokenName,
+      hashedToken,
+      createdAt: new Date(),
+    }
+
+    user.apiTokens.push(newToken)
+
+    await this.saveUserFile(authfile)
+    this.logger.warn(`Created API token "${tokenName}" for ${username}.`)
+
+    // Return the token with the actual token value (only shown once)
+    return {
+      id: tokenId,
+      name: tokenName,
+      token, // The actual token, only shown once
+      createdAt: newToken.createdAt,
+    }
+  }
+
+  /**
+   * Get all API tokens for a user (without the actual token values)
+   */
+  async getApiTokens(username: string) {
+    const user = await this.findByUsername(username)
+
+    if (!user) {
+      throw new NotFoundException('User not found.')
+    }
+
+    if (!user.apiTokens) {
+      return []
+    }
+
+    // Return tokens without the hashed values
+    return user.apiTokens.map(token => ({
+      id: token.id,
+      name: token.name,
+      lastUsed: token.lastUsed,
+      createdAt: token.createdAt,
+    }))
+  }
+
+  /**
+   * Delete an API token for a user
+   */
+  async deleteApiToken(username: string, tokenId: string) {
+    const authfile = await this.getUsers()
+    const user = authfile.find(x => x.username === username)
+
+    if (!user) {
+      throw new NotFoundException('User not found.')
+    }
+
+    if (!user.apiTokens) {
+      throw new NotFoundException('Token not found.')
+    }
+
+    const tokenIndex = user.apiTokens.findIndex(t => t.id === tokenId)
+
+    if (tokenIndex < 0) {
+      throw new NotFoundException('Token not found.')
+    }
+
+    const tokenName = user.apiTokens[tokenIndex].name
+    user.apiTokens.splice(tokenIndex, 1)
+
+    await this.saveUserFile(authfile)
+    this.logger.warn(`Deleted API token "${tokenName}" for ${username}.`)
+  }
+
+  /**
+   * Validate an API token and return the user if valid
+   */
+  async validateApiToken(token: string): Promise<any> {
+    const hashedToken = await this.hashApiToken(token)
+    const users = await this.getUsers()
+
+    for (const user of users) {
+      if (!user.apiTokens) {
+        continue
+      }
+
+      for (const apiToken of user.apiTokens) {
+        const tokenHashBuff = Buffer.from(hashedToken, 'hex')
+        const storedHashBuff = Buffer.from(apiToken.hashedToken, 'hex')
+
+        if (timingSafeEqual(tokenHashBuff, storedHashBuff)) {
+          // Update last used timestamp
+          apiToken.lastUsed = new Date()
+          await this.saveUserFile(users)
+
+          // Return user payload
+          return {
+            username: user.username,
+            name: user.name,
+            admin: user.admin,
+            instanceId: this.configService.instanceId,
+          }
+        }
+      }
+    }
+
+    return null
+  }
 }

@@ -14,5 +14,6 @@ import { UsersController } from './users.controller'
     AuthModule,
   ],
   controllers: [UsersController],
+  providers: [],
 })
 export class UsersModule {}

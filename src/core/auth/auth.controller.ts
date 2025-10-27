@@ -14,6 +14,7 @@ import { ConfigService } from '../config/config.service'
 import { AuthDto } from './auth.dto'
 import { AuthService } from './auth.service'
 import { CustomGuard } from './guards/custom.guard'
+import { JwtOrApiTokenGuard } from './guards/jwt-or-api-token.guard'
 
 @ApiTags('Authentication')
 @Controller('auth')
@@ -52,7 +53,7 @@ export class AuthController {
 
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Check to see if an authentication token is still valid.' })
-  @UseGuards(AuthGuard())
+  @UseGuards(JwtOrApiTokenGuard)
   @Get('/check')
   checkAuth() {
     return { status: 'OK' }
@@ -60,7 +61,7 @@ export class AuthController {
 
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Refresh the authentication token to extend the session.' })
-  @UseGuards(AuthGuard())
+  @UseGuards(JwtOrApiTokenGuard)
   @Post('/refresh')
   refreshToken(@Request() req: any) {
     return this.authService.refreshToken(req.user)
