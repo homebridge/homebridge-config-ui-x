@@ -14,6 +14,7 @@ import type { BasePlatform } from './base-platform'
 
 import { Buffer } from 'node:buffer'
 import { execSync, fork } from 'node:child_process'
+import { Agent as HttpsAgent } from 'node:https'
 import { arch, cpus, homedir, platform, release, tmpdir, type } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
 import process from 'node:process'
@@ -1291,8 +1292,28 @@ export class HomebridgeServiceHelper {
   private async checkStatus() {
     this.logger(`Testing hb-service is running on port ${this.uiPort}...`)
 
+    // Determine if HTTPS is enabled by reading the config
+    let useHttps = false
     try {
-      const res = await axios.get(`http://localhost:${this.uiPort}/api`)
+      const currentConfig = await this.readConfig()
+      if (Array.isArray(currentConfig.platforms)) {
+        const uiConfigBlock = currentConfig.platforms.find((x: any) => x.platform === 'config')
+        if (uiConfigBlock && uiConfigBlock.ssl) {
+          useHttps = true
+        }
+      }
+    } catch (e) {
+      // If we can't read the config, default to HTTP
+    }
+
+    const protocol = useHttps ? 'https' : 'http'
+    this.logger(`Using ${protocol.toUpperCase()} to check status...`)
+
+    try {
+      const res = await axios.get(`${protocol}://localhost:${this.uiPort}/api`, {
+        // Disable SSL certificate validation for self-signed certificates
+        httpsAgent: useHttps ? new HttpsAgent({ rejectUnauthorized: false }) : undefined,
+      })
       if (res.data === 'Hello World!') {
         this.logger('Homebridge UI running.', 'succeed')
       } else {
