@@ -1,0 +1,93 @@
+<div class="modal-content api-tokens">
+  <div class="modal-header">
+    <h5 class="modal-title">{{ 'users.api_tokens' | translate }}</h5>
+    <button
+      type="button"
+      class="btn-close"
+      data-bs-dismiss="modal"
+      [attr.aria-label]="'form.button_close' | translate"
+      (click)="dismissModal()"
+    ></button>
+  </div>
+  <div class="modal-body">
+    <div class="text-center mb-3">
+      <i class="fas fa-key primary-text" style="font-size: 75px"></i>
+    </div>
+    <p class="mb-3">{{ 'users.api_tokens_description' | translate }}</p>
+
+    @if (newToken?.token) {
+    <ngb-alert type="success" [dismissible]="true" (closed)="closeNewTokenAlert()">
+      <p class="fw-bold mb-2">{{ 'users.api_tokens_token_created_copy' | translate }}</p>
+      <div class="input-group mb-2">
+        <input type="text" class="form-control" [value]="newToken.token" readonly />
+        <button class="btn btn-outline-secondary" type="button" (click)="copyTokenToClipboard()">
+          @if (tokenCopied) {
+          <i class="fas fa-check"></i>
+          } @else {
+          <i class="fas fa-copy"></i>
+          } {{ 'users.api_tokens_copy_token' | translate }}
+        </button>
+      </div>
+    </ngb-alert>
+    }
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h6 class="mb-0">{{ 'users.api_tokens' | translate }}</h6>
+      <button type="button" class="btn btn-primary btn-sm" (click)="toggleCreateForm()">
+        <i class="fas" [ngClass]="showCreateForm ? 'fa-times' : 'fa-plus'"></i>
+        @if (showCreateForm) { {{ 'form.button_cancel' | translate }} } @else { {{ 'users.api_tokens_generate' |
+        translate }} }
+      </button>
+    </div>
+
+    @if (showCreateForm) {
+    <div class="card mb-3">
+      <div class="card-body">
+        <form [formGroup]="formGroup" (ngSubmit)="createToken()">
+          <div class="mb-3">
+            <label class="form-label">{{ 'users.api_tokens_name' | translate }}</label>
+            <input
+              type="text"
+              class="form-control"
+              [formControl]="formGroup.controls.name"
+              [placeholder]="'users.api_tokens_name_placeholder' | translate"
+            />
+          </div>
+          <button type="submit" class="btn btn-primary" [disabled]="formGroup.invalid">
+            {{ 'users.api_tokens_generate' | translate }}
+          </button>
+        </form>
+      </div>
+    </div>
+    } @if (apiTokens.length === 0 && !showCreateForm) {
+    <div class="alert alert-info mb-0">
+      <i class="fas fa-info-circle me-2"></i>
+      {{ 'users.api_tokens_empty' | translate }}
+    </div>
+    } @else if (apiTokens.length > 0) {
+    <ul class="list-group">
+      @for (token of apiTokens; track token.id) {
+      <li class="list-group-item d-flex justify-content-between align-items-center">
+        <div>
+          <div class="fw-bold">{{ token.name }}</div>
+          <small class="text-muted">
+            {{ 'users.api_tokens_created' | translate }}: {{ token.createdAt | date:'short' }}
+            <br />
+            {{ 'users.api_tokens_last_used' | translate }}: @if (token.lastUsed) { {{ token.lastUsed | date:'short' }} }
+            @else { {{ 'users.api_tokens_never_used' | translate }} }
+          </small>
+        </div>
+        <button type="button" class="btn btn-danger btn-sm" (click)="deleteToken(token)">
+          <i class="fas fa-trash"></i>
+        </button>
+      </li>
+      }
+    </ul>
+    }
+  </div>
+  <div class="modal-footer">
+    <button type="button" class="btn btn-elegant" data-bs-dismiss="modal" (click)="dismissModal()">
+      {{ 'form.button_close' | translate }}
+    </button>
+  </div>
+</div>

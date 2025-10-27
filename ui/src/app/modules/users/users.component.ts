@@ -11,6 +11,7 @@ import { SettingsService } from '@/app/core/settings.service'
 import { Users2faDisableComponent } from '@/app/modules/users/users-2fa-disable/users-2fa-disable.component'
 import { Users2faEnableComponent } from '@/app/modules/users/users-2fa-enable/users-2fa-enable.component'
 import { UsersAddComponent } from '@/app/modules/users/users-add/users-add.component'
+import { UsersApiTokensComponent } from '@/app/modules/users/users-api-tokens/users-api-tokens.component'
 import { UsersEditComponent } from '@/app/modules/users/users-edit/users-edit.component'
 import { UsersSupportComponent } from '@/app/modules/users/users-support/users-support.component'
 import { User } from '@/app/modules/users/users.interface'
@@ -120,5 +121,13 @@ export class UsersComponent implements OnInit {
       size: 'lg',
       backdrop: 'static',
     })
+  }
+
+  public manageApiTokens(user: User) {
+    const ref = this.$modal.open(UsersApiTokensComponent, {
+      size: 'lg',
+      backdrop: 'static',
+    })
+    ref.componentInstance.user = user
   }
 }
