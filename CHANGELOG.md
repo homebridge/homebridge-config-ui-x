@@ -24,6 +24,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - settings - put restart toast into reference for future use
 - get available port function should adhere to configured range
 - support `dynamicDefaults` in config schema forms
+- update versions of actions in workflows
 
 ### Homebridge Dependencies
 
