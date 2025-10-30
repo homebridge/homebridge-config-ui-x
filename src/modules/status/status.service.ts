@@ -459,17 +459,27 @@ export class StatusService {
       switch (process.version.split('.')[0]) {
         case 'v20': {
           // Currently using v20
-          // Show the option for updating to node 22
-          updateAvailable = true
-          latestVersion = latest22.version
+          if (isNodeJs24Supported) {
+            // If node 24 is supported, suggest updating to that
+            updateAvailable = true
+            latestVersion = latest24.version
+          } else {
+            // Otherwise, show the option for updating to node 22
+            updateAvailable = true
+            latestVersion = latest22.version
+          }
           break
         }
         case 'v22': {
           // Currently using v22
-          // Check if there is a new minor/patch version available
           if (gt(latest22.version, process.version)) {
+            // Check if there is a new minor/patch version available
             updateAvailable = true
             latestVersion = latest22.version
+          } else if (isNodeJs24Supported) {
+            // If node 24 is supported, suggest updating to that
+            updateAvailable = true
+            latestVersion = latest24.version
           }
           break
         }
