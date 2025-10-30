@@ -15,6 +15,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - improve widget state around first data load
 - add self-signed certificate generation feature
 - integration with updated homebridge version
+- recommend update to node 24 when available
 
 ### Other Changes
 
