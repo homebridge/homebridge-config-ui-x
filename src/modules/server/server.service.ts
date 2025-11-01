@@ -1250,7 +1250,7 @@ export class ServerService {
   /**
    * Upload a PEM key+cert pair, validate they match, save to storage, and update config
    */
-  public async uploadSslKeyCert(req: any): Promise<{ ok: boolean, type: 'keycert', keyPath: string, certPath: string, details?: string }> {
+  public async uploadSslKeyCert(req: any): Promise<{ ok: boolean, type: 'keycert', keyPath?: string, certPath?: string, details?: string }> {
     // Accept both specific field names (key, cert) and a generic 'files' array; detect content by PEM headers
     const parts = req.parts ? req.parts() : null
     const files: Array<{ fieldname: string, filename: string, mimetype: string, file: Readable, truncated?: boolean }> = []
@@ -1270,7 +1270,7 @@ export class ServerService {
     }
 
     if (!files.length) {
-      throw new BadRequestException('No files uploaded. Please upload both the private key and certificate files.')
+      throw new BadRequestException('No files uploaded. Please upload the private key and/or certificate file(s).')
     }
 
     // Read all file streams into buffers
@@ -1305,8 +1305,56 @@ export class ServerService {
       }
     }
 
-    if (!keyPem || !certPem) {
-      throw new BadRequestException('Both a PEM private key and certificate must be provided.')
+    // If only one artifact is provided, save it and update config, allowing users to upload key/cert separately.
+    // Full validation (key matches cert) will only occur when both are present.
+    if (!!keyPem && !certPem) {
+      const sslDir = join(this.configService.storagePath, 'ssl-certs')
+      const keyPath = join(sslDir, 'ui-ssl.key')
+      const { ensureDir, writeFile } = await import('fs-extra')
+      await ensureDir(sslDir)
+      await writeFile(keyPath, keyPem)
+
+      const configFile = await this.configEditorService.getConfigFile()
+      const uiConfigBlock = configFile.platforms.find((x: any) => x.platform === 'config')
+      if (!uiConfigBlock) {
+        throw new InternalServerErrorException('Config platform block not found.')
+      }
+      uiConfigBlock.ssl = uiConfigBlock.ssl || {}
+      uiConfigBlock.ssl.key = keyPath
+      // Do not modify cert / pfx / selfSigned here
+      await this.configEditorService.updateConfigFile(configFile)
+
+      return {
+        ok: true,
+        type: 'keycert',
+        keyPath,
+        details: 'Private key uploaded and saved. Upload the certificate to complete configuration.',
+      }
+    }
+
+    if (!keyPem && !!certPem) {
+      const sslDir = join(this.configService.storagePath, 'ssl-certs')
+      const certPath = join(sslDir, 'ui-ssl.crt')
+      const { ensureDir, writeFile } = await import('fs-extra')
+      await ensureDir(sslDir)
+      await writeFile(certPath, certPem)
+
+      const configFile = await this.configEditorService.getConfigFile()
+      const uiConfigBlock = configFile.platforms.find((x: any) => x.platform === 'config')
+      if (!uiConfigBlock) {
+        throw new InternalServerErrorException('Config platform block not found.')
+      }
+      uiConfigBlock.ssl = uiConfigBlock.ssl || {}
+      uiConfigBlock.ssl.cert = certPath
+      // Do not modify key / pfx / selfSigned here
+      await this.configEditorService.updateConfigFile(configFile)
+
+      return {
+        ok: true,
+        type: 'keycert',
+        certPath,
+        details: 'Certificate uploaded and saved. Upload the private key to complete configuration.',
+      }
     }
 
     // Validate: ensure key matches cert public key

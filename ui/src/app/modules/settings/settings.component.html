@@ -51,128 +51,12 @@
   >
     <h5 class="primary-text">
       <i class="fa" [ngClass]="{ 'fa-chevron-down': showFields.general, 'fa-chevron-right': !showFields.general }"></i>
-      {{ 'settings.general.title_general' | translate }}
+      {{ 'settings.title_display_options' | translate }}
     </h5>
   </div>
   @if (showFields.general) {
-  <ul class="list-group list-group-box mt-2 mx-0" id="fieldsGeneral">
-    @if (!isItemHidden('setting-name')) {
-    <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
-      <span>{{ 'settings.name' | translate }}</span>
-      <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
-        <input
-          class="form-control custom-input resp-input order-1 order-md-2"
-          type="text"
-          [formControl]="hbNameFormControl"
-          [attr.aria-label]="'settings.name' | translate"
-          [ngClass]="{ 'is-invalid': hbNameIsInvalid }"
-        />
-        @if (hbNameIsSaving) {
-        <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
-        }
-      </div>
-    </li>
-    } @if (!isItemHidden('setting-backup')) {
-    <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
-      <span class="pe-2"> {{ 'backup.title_backup' | translate }} </span>
-      <button
-        class="btn btn-primary waves-effect m-0 ms-3"
-        style="min-width: 50px"
-        (click)="openBackupModal()"
-        [attr.aria-label]="'backup.title_backup' | translate"
-      >
-        <i class="fas fa-arrow-right"></i>
-      </button>
-    </li>
-    } @if (!isItemHidden('setting-restore')) {
-    <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
-      <span class="pe-2"> {{ 'config.restore.title' | translate }} </span>
-      <button
-        class="btn btn-primary waves-effect m-0 ms-3"
-        style="min-width: 50px"
-        (click)="openConfigBackup()"
-        [attr.aria-label]="'config.restore.title' | translate"
-      >
-        <i class="fas fa-arrow-right"></i>
-      </button>
-    </li>
-    } @if (!isItemHidden('setting-users')) {
-    <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
-      <span class="pe-2"> {{ 'menu.tooltip_user_accounts' | translate }} </span>
-      <a
-        class="btn btn-primary waves-effect m-0 ms-3"
-        style="min-width: 50px"
-        routerLink="/users"
-        [attr.aria-label]="'menu.tooltip_user_accounts' | translate"
-      >
-        <i class="fas fa-arrow-right"></i>
-      </a>
-    </li>
-    }
-  </ul>
-  }
-</div>
-}
-
-<!-- DISPLAY SETTINGS -->
-@if (isSectionVisible('display')) {
-<div class="my-4">
-  <div
-    role="button"
-    tabindex="0"
-    [attr.aria-expanded]="showFields.display ? 'true' : 'false'"
-    [attr.aria-controls]="'fieldsDisplay'"
-    (click)="toggleSection('display')"
-    class="mt-3 hover-pointer"
-  >
-    <h5 class="primary-text">
-      <i class="fa" [ngClass]="{ 'fa-chevron-down': showFields.display, 'fa-chevron-right': !showFields.display }"></i>
-      {{ 'settings.general.title_display' | translate }}
-    </h5>
-  </div>
-  @if (showFields.display) {
-  <ul class="list-group list-group-box mt-2 mx-0" id="fieldsDisplay">
-    @if (!isItemHidden('setting-lang')) {
-    <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
-      {{ 'settings.display.lang' | translate }}
-      <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
-        <select class="custom-select resp-select order-1 order-md-2" [formControl]="uiLangFormControl">
-          <option value="auto">{{ 'form.select.auto' | translate }}</option>
-          <option value="bg">Bulgarian (bg)</option>
-          <option value="ca">Catalan (ca)</option>
-          <option value="zh-CN">Chinese - Simplified (zh-CN)</option>
-          <option value="zh-TW">Chinese - Traditional (zh-TW)</option>
-          <option value="cs">Czech (cs)</option>
-          <option value="nl">Dutch (nl)</option>
-          <option value="en">English (en)</option>
-          <option value="fi">Finnish (fi)</option>
-          <option value="fr">French (fr)</option>
-          <option value="de">German (de)</option>
-          <option value="he">Hebrew (he)</option>
-          <option value="hu">Hungarian (hu)</option>
-          <option value="id">Indonesian (id)</option>
-          <option value="it">Italian (it)</option>
-          <option value="ja">Japanese (ja)</option>
-          <option value="ko">Korean (ko)</option>
-          <option value="mk">Macedonian (mk)</option>
-          <option value="no">Norwegian (no)</option>
-          <option value="pl">Polish (pl)</option>
-          <option value="pt-BR">Portuguese (Brazil)</option>
-          <option value="pt">Portuguese (Portugal)</option>
-          <option value="ru">Russian (ru)</option>
-          <option value="sl">Slovenian (sl)</option>
-          <option value="es">Spanish (es)</option>
-          <option value="sv">Swedish (sv)</option>
-          <option value="th">Thai (th)</option>
-          <option value="tr">Turkish (tr)</option>
-          <option value="uk">Ukrainian (uk)</option>
-        </select>
-        @if (uiLangIsSaving) {
-        <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
-        }
-      </div>
-    </li>
-    } @if (!isItemHidden('setting-theme')) {
+  <ul class="list-group list-group-box mb-4 mx-0" id="fieldsGeneral">
+    @if (!isItemHidden('setting-theme')) {
     <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
       {{ 'settings.display.theme' | translate }}
       <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
@@ -710,7 +594,7 @@
         }
       </div>
     </li>
-    } @if (!isItemHidden('setting-ui-port-network')) {
+    } @if (this.uiSslTypeFormControl.value === 'off' && !isItemHidden('setting-ui-port-network')) {
     <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
       <span>
         {{ 'settings.network.port_ui' | translate }}<br />
@@ -1183,12 +1067,6 @@
         <span class="badge badge-primary ms-1">{{ 'common.labels.beta' | translate }}</span><br />
         <small class="grey-text pe-2">{{ 'settings.security.selfsigned_hostnames_desc' | translate }}</small>
       </span>
-      @if (isPwa) {
-      <br /><small class="grey-text pe-2">
-        <i class="fas fa-exclamation-triangle red-text"></i>
-        {{ 'settings.warning_pwa' | translate }}
-      </small>
-      }
       <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
         <input
           class="form-control custom-input resp-input order-1 order-md-2"
@@ -1222,6 +1100,71 @@
         }
       </div>
     </li>
+    <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+      <span>
+        {{ 'settings.security.port_https' | translate }}<br />
+        <small class="grey-text pe-2">{{ 'settings.security.port_https_desc' | translate }}</small>
+      </span>
+      <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
+        <input
+          class="form-control custom-input resp-input order-1 order-md-2"
+          type="number"
+          min="1025"
+          max="65533"
+          placeholder="8581"
+          [formControl]="uiHttpsPortFormControl"
+          [attr.aria-label]="'settings.security.port_https' | translate"
+          [ngClass]="{ 'is-invalid': uiHttpsPortIsInvalid }"
+        />
+        @if (uiHttpsPortIsSaving) {
+        <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
+        }
+      </div>
+    </li>
+    } @if (!isItemHidden('setting-security-redirect')) {
+    <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
+      <span>
+        {{ 'settings.security.redirect_http_to_https' | translate }}<br />
+        <small class="grey-text pe-2">{{ 'settings.security.redirect_http_to_https_desc' | translate }}</small>
+      </span>
+      <div class="d-flex align-items-center">
+        <div class="order-1 order-md-2">
+          <input
+            type="checkbox"
+            class="rendux-input"
+            id="redirectHttpToHttps"
+            [formControl]="redirectHttpToHttpsFormControl"
+            [attr.aria-label]="'settings.security.redirect_http_to_https' | translate"
+          />
+          <label for="redirectHttpToHttps" class="rendux-label ms-3" style="min-width: 50px"></label>
+        </div>
+        @if (redirectHttpToHttpsIsSaving) {
+        <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
+        }
+      </div>
+    </li>
+    } @if (redirectHttpToHttpsFormControl.value && !isItemHidden('setting-security-http-port')) {
+    <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+      <span>
+        {{ 'settings.security.port_http' | translate }}<br />
+        <small class="grey-text pe-2">{{ 'settings.security.port_http_desc' | translate }}</small>
+      </span>
+      <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
+        <input
+          class="form-control custom-input resp-input order-1 order-md-2"
+          type="number"
+          min="1025"
+          max="65533"
+          placeholder="8580"
+          [formControl]="uiHttpPortFormControl"
+          [attr.aria-label]="'settings.security.port_http' | translate"
+          [ngClass]="{ 'is-invalid': uiHttpPortIsInvalid }"
+        />
+        @if (uiHttpPortIsSaving) {
+        <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
+        }
+      </div>
+    </li>
     } @if (this.uiSslTypeFormControl.value === 'keycert') {
     <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
       <span>{{ 'settings.security.key' | translate }}</span>
@@ -1231,23 +1174,7 @@
         {{ 'settings.warning_pwa' | translate }}
       </small>
       }
-      <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center gap-2">
-        <button
-          class="btn btn-elegant m-0"
-          type="button"
-          (click)="triggerKeyCertSelect()"
-          [attr.aria-label]="'settings.security.ssl_upload_keycert_aria' | translate"
-          title="{{ 'settings.security.ssl_upload_keycert_aria' | translate }}"
-        >
-          <i class="fas fa-upload"></i>
-        </button>
-        <input
-          #sslKeyCertInput
-          type="file"
-          multiple
-          (change)="onSslKeyCertChange(sslKeyCertInput.files)"
-          class="d-none"
-        />
+      <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
         <input
           class="form-control custom-input resp-input order-1 order-md-2"
           type="text"
@@ -1255,6 +1182,23 @@
           [formControl]="uiSslKeyFormControl"
           [attr.aria-label]="'settings.security.key' | translate"
         />
+        <input
+          #sslKeyCertInput
+          type="file"
+          class="d-none"
+          multiple
+          (change)="onSslKeyCertChange($event.target.files)"
+          accept=".key,.crt,.pem,.cer,.cert"
+        />
+        <button
+          class="btn btn-primary waves-effect ms-2 order-3"
+          style="min-width: 50px"
+          (click)="triggerKeyCertSelect()"
+          [disabled]="isPwa"
+          [attr.aria-label]="'settings.security.ssl_upload_keycert_aria' | translate"
+        >
+          <i class="fas fa-upload"></i>
+        </button>
         @if (uiSslKeyIsSaving) {
         <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
         }
@@ -1269,16 +1213,7 @@
         {{ 'settings.warning_pwa' | translate }}
       </small>
       }
-      <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center gap-2">
-        <button
-          class="btn btn-elegant m-0"
-          type="button"
-          (click)="triggerKeyCertSelect()"
-          [attr.aria-label]="'settings.security.ssl_upload_keycert_aria' | translate"
-          title="{{ 'settings.security.ssl_upload_keycert_aria' | translate }}"
-        >
-          <i class="fas fa-upload"></i>
-        </button>
+      <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
         <input
           class="form-control custom-input resp-input order-1 order-md-2"
           type="text"
@@ -1286,6 +1221,9 @@
           [formControl]="uiSslCertFormControl"
           [attr.aria-label]="'settings.security.cert' | translate"
         />
+        <button class="btn btn-secondary waves-effect ms-2 order-3" style="min-width: 50px" (click)="validateSsl()">
+          <i class="fas fa-check"></i>
+        </button>
         @if (uiSslCertIsSaving) {
         <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
         }
@@ -1300,17 +1238,7 @@
         {{ 'settings.warning_pwa' | translate }}
       </small>
       }
-      <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center gap-2">
-        <button
-          class="btn btn-elegant m-0"
-          type="button"
-          (click)="triggerPfxSelect()"
-          [attr.aria-label]="'settings.security.ssl_upload_pfx_aria' | translate"
-          title="{{ 'settings.security.ssl_upload_pfx_aria' | translate }}"
-        >
-          <i class="fas fa-upload"></i>
-        </button>
-        <input #sslPfxInput type="file" (change)="onSslPfxChange(sslPfxInput.files)" class="d-none" />
+      <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
         <input
           class="form-control custom-input resp-input order-1 order-md-2"
           type="text"
@@ -1318,6 +1246,22 @@
           [formControl]="uiSslPfxFormControl"
           [attr.aria-label]="'settings.security.pfx' | translate"
         />
+        <input
+          #sslPfxInput
+          type="file"
+          class="d-none"
+          (change)="onSslPfxChange($event.target.files)"
+          accept=".pfx,.p12"
+        />
+        <button
+          class="btn btn-primary waves-effect ms-2 order-3"
+          style="min-width: 50px"
+          (click)="triggerPfxSelect()"
+          [disabled]="isPwa"
+          [attr.aria-label]="'settings.security.ssl_upload_pfx_aria' | translate"
+        >
+          <i class="fas fa-upload"></i>
+        </button>
         @if (uiSslPfxIsSaving) {
         <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
         }

@@ -1,22 +1,23 @@
 <svg
   xmlns="http://www.w3.org/2000/svg"
   width="1280"
-  height="720"
-  viewBox="0 0 1280 720"
+  height="920"
+  viewBox="0 0 1280 920"
   role="img"
   aria-labelledby="title desc"
 >
   <title id="title">Homebridge UI — Settings › Security › HTTPS (Mockup)</title>
   <desc id="desc">
-    A simplified mockup of the HTTPS settings section showing the SSL mode selector, validate button, self-signed
-    hostnames input, and two generate actions.
+    A comprehensive mockup of the HTTPS settings section showing HTTPS port, redirect toggle, HTTP port, SSL mode
+    selector,
+    validate button, self-signed hostnames input, generate actions, and certificate upload fields.
   </desc>
 
   <!-- Background -->
-  <rect x="0" y="0" width="1280" height="720" fill="#0f172a" />
+  <rect x="0" y="0" width="1280" height="920" fill="#0f172a" />
 
   <!-- Panel -->
-  <rect x="80" y="60" width="1120" height="600" rx="10" fill="#111827" stroke="#1f2937" />
+  <rect x="80" y="60" width="1120" height="800" rx="10" fill="#111827" stroke="#1f2937" />
 
   <!-- Header -->
   <text
@@ -27,7 +28,7 @@
     font-weight="600"
     font-size="28"
   >
-    Settings › Security
+    Settings › Security › HTTPS
   </text>
   <text
     x="120"
@@ -36,10 +37,10 @@
     font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif"
     font-size="18"
   >
-    Enable HTTPS using a self-signed certificate or your own certificate files.
+    Configure HTTPS with default port 8581, optional HTTP redirect, SSL uploads, and self-signed generation.
   </text>
 
-  <!-- HTTPS row -->
+  <!-- HTTPS Port -->
   <text
     x="120"
     y="210"
@@ -47,10 +48,9 @@
     font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif"
     font-size="18"
   >
-    Enable HTTPS
+    HTTPS Port
   </text>
-  <!-- Selector -->
-  <rect x="360" y="188" width="300" height="36" rx="6" fill="#0b1220" stroke="#1f2937" />
+  <rect x="360" y="188" width="160" height="36" rx="6" fill="#0b1220" stroke="#1f2937" />
   <text
     x="380"
     y="212"
@@ -58,17 +58,100 @@
     font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif"
     font-size="16"
   >
-    Self‑Signed Certificate
+    8581
   </text>
-  <!-- Validate button -->
-  <rect x="680" y="188" width="44" height="36" rx="6" fill="#111827" stroke="#374151" />
-  <text x="693" y="212" fill="#e5e7eb" font-family="monospace" font-size="16">✓</text>
   <text
-    x="734"
+    x="540"
     y="210"
     fill="#9ca3af"
     font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif"
-    font-size="12"
+    font-size="14"
+  >
+    (default: 8581)
+  </text>
+
+  <!-- Redirect HTTP to HTTPS -->
+  <text
+    x="120"
+    y="268"
+    fill="#e5e7eb"
+    font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif"
+    font-size="18"
+  >
+    Redirect HTTP to HTTPS
+  </text>
+  <rect x="360" y="250" width="48" height="28" rx="14" fill="#2563eb" />
+  <circle cx="389" cy="264" r="10" fill="#ffffff" />
+  <text
+    x="420"
+    y="268"
+    fill="#9ca3af"
+    font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif"
+    font-size="14"
+  >
+    Enabled
+  </text>
+
+  <!-- HTTP Port (shown when redirect is enabled) -->
+  <text
+    x="120"
+    y="326"
+    fill="#e5e7eb"
+    font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif"
+    font-size="18"
+  >
+    HTTP Port
+  </text>
+  <rect x="360" y="304" width="160" height="36" rx="6" fill="#0b1220" stroke="#1f2937" />
+  <text
+    x="380"
+    y="328"
+    fill="#e5e7eb"
+    font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif"
+    font-size="16"
+  >
+    8580
+  </text>
+  <text
+    x="540"
+    y="326"
+    fill="#9ca3af"
+    font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif"
+    font-size="14"
+  >
+    (default: 8580, used for redirect)
+  </text>
+
+  <!-- HTTPS Mode row -->
+  <text
+    x="120"
+    y="384"
+    fill="#e5e7eb"
+    font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif"
+    font-size="18"
+  >
+    Enable HTTPS
+  </text>
+  <!-- Selector -->
+  <rect x="360" y="362" width="300" height="36" rx="6" fill="#0b1220" stroke="#1f2937" />
+  <text
+    x="380"
+    y="386"
+    fill="#e5e7eb"
+    font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif"
+    font-size="16"
+  >
+    Self‑Signed Certificate
+  </text>
+  <!-- Validate button -->
+  <rect x="680" y="362" width="100" height="36" rx="6" fill="#111827" stroke="#374151" />
+  <text x="706" y="386" fill="#10b981" font-family="monospace" font-size="18">✓</text>
+  <text
+    x="726"
+    y="386"
+    fill="#e5e7eb"
+    font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif"
+    font-size="14"
   >
     Validate
   </text>
@@ -76,7 +159,7 @@
   <!-- Self-signed hostnames -->
   <text
     x="120"
-    y="268"
+    y="442"
     fill="#e5e7eb"
     font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif"
     font-size="18"
@@ -85,18 +168,18 @@
   </text>
   <text
     x="120"
-    y="292"
+    y="466"
     fill="#9ca3af"
     font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif"
     font-size="14"
   >
     Comma-separated list (e.g., localhost, 127.0.0.1, homebridge.local)
   </text>
-  <rect x="360" y="272" width="520" height="36" rx="6" fill="#0b1220" stroke="#1f2937" />
+  <rect x="360" y="446" width="520" height="36" rx="6" fill="#0b1220" stroke="#1f2937" />
   <text
     x="376"
-    y="296"
-    fill="#9ca3af"
+    y="470"
+    fill="#e5e7eb"
     font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif"
     font-size="14"
   >
@@ -104,10 +187,10 @@
   </text>
 
   <!-- Generate buttons -->
-  <rect x="900" y="272" width="250" height="36" rx="6" fill="#2563eb" />
+  <rect x="900" y="446" width="280" height="36" rx="6" fill="#2563eb" />
   <text
-    x="916"
-    y="296"
+    x="920"
+    y="470"
     fill="#ffffff"
     font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif"
     font-weight="600"
@@ -116,10 +199,10 @@
     Generate Self‑Signed &amp; Use as Key + Cert
   </text>
 
-  <rect x="900" y="320" width="250" height="36" rx="6" fill="#1f2937" stroke="#374151" />
+  <rect x="900" y="494" width="280" height="36" rx="6" fill="#1f2937" stroke="#374151" />
   <text
-    x="916"
-    y="344"
+    x="920"
+    y="518"
     fill="#e5e7eb"
     font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif"
     font-weight="600"
@@ -128,111 +211,117 @@
     Generate &amp; Enable Self‑Signed Mode
   </text>
 
+  <!-- Divider -->
+  <line x1="120" y1="560" x2="1160" y2="560" stroke="#1f2937" stroke-width="2" />
+
   <!-- Key/Cert section (for keycert mode) -->
   <text
     x="120"
-    y="392"
+    y="606"
     fill="#e5e7eb"
     font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif"
     font-size="18"
   >
-    Private Key Path
+    Private Key
   </text>
-  <rect x="360" y="372" width="520" height="36" rx="6" fill="#0b1220" stroke="#1f2937" />
+  <rect x="360" y="586" width="480" height="36" rx="6" fill="#0b1220" stroke="#1f2937" />
   <text
     x="376"
-    y="396"
+    y="610"
     fill="#9ca3af"
     font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif"
     font-size="14"
   >
-    /path/to/ui-ssl.key
+    /var/lib/homebridge/ssl-certs/ui-ssl.key
   </text>
-  <rect x="900" y="372" width="44" height="36" rx="6" fill="#1f2937" stroke="#374151" />
+  <rect x="860" y="586" width="80" height="36" rx="6" fill="#1f2937" stroke="#374151" />
   <text
-    x="915"
-    y="396"
+    x="885"
+    y="610"
     fill="#e5e7eb"
     font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif"
-    font-size="16"
+    font-size="14"
   >
-    ⇪
+    Upload
   </text>
 
   <text
     x="120"
-    y="444"
+    y="668"
     fill="#e5e7eb"
     font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif"
     font-size="18"
   >
-    Certificate Path
+    Certificate
   </text>
-  <rect x="360" y="424" width="520" height="36" rx="6" fill="#0b1220" stroke="#1f2937" />
+  <rect x="360" y="648" width="480" height="36" rx="6" fill="#0b1220" stroke="#1f2937" />
   <text
     x="376"
-    y="448"
+    y="672"
     fill="#9ca3af"
     font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif"
     font-size="14"
   >
-    /path/to/ui-ssl.crt
+    /var/lib/homebridge/ssl-certs/ui-ssl.crt
   </text>
-  <rect x="900" y="424" width="44" height="36" rx="6" fill="#1f2937" stroke="#374151" />
+  <rect x="860" y="648" width="80" height="36" rx="6" fill="#1f2937" stroke="#374151" />
   <text
-    x="915"
-    y="448"
+    x="885"
+    y="672"
     fill="#e5e7eb"
     font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif"
-    font-size="16"
+    font-size="14"
   >
-    ⇪
+    Upload
   </text>
+
+  <!-- Divider -->
+  <line x1="120" y1="710" x2="1160" y2="710" stroke="#1f2937" stroke-width="2" />
 
   <!-- PFX section (for pfx mode) -->
   <text
     x="120"
-    y="506"
+    y="756"
     fill="#e5e7eb"
     font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif"
     font-size="18"
   >
-    PKCS#12 Certificate Path
+    PKCS#12 Certificate
   </text>
-  <rect x="360" y="486" width="520" height="36" rx="6" fill="#0b1220" stroke="#1f2937" />
+  <rect x="360" y="736" width="480" height="36" rx="6" fill="#0b1220" stroke="#1f2937" />
   <text
     x="376"
-    y="510"
+    y="760"
     fill="#9ca3af"
     font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif"
     font-size="14"
   >
-    /path/to/ui-ssl.pfx
+    /var/lib/homebridge/ssl-certs/ui-ssl.pfx
   </text>
-  <rect x="900" y="486" width="44" height="36" rx="6" fill="#1f2937" stroke="#374151" />
+  <rect x="860" y="736" width="80" height="36" rx="6" fill="#1f2937" stroke="#374151" />
   <text
-    x="915"
-    y="510"
+    x="885"
+    y="760"
     fill="#e5e7eb"
     font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif"
-    font-size="16"
+    font-size="14"
   >
-    ⇪
+    Upload
   </text>
 
   <text
     x="120"
-    y="558"
+    y="818"
     fill="#e5e7eb"
     font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif"
     font-size="18"
   >
     PKCS#12 Passphrase
   </text>
-  <rect x="360" y="538" width="520" height="36" rx="6" fill="#0b1220" stroke="#1f2937" />
+  <rect x="360" y="798" width="480" height="36" rx="6" fill="#0b1220" stroke="#1f2937" />
   <text
     x="376"
-    y="562"
+    y="822"
     fill="#9ca3af"
     font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif"
     font-size="14"
@@ -243,11 +332,12 @@
   <!-- Footer note -->
   <text
     x="120"
-    y="628"
+    y="890"
     fill="#9ca3af"
     font-family="-apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica, Arial, sans-serif"
     font-size="14"
   >
-    Tip: Click ✓ to validate your current SSL configuration. Restart required after changing HTTPS settings.
+    Tip: HTTPS is enabled by default on new installs (port 8581). Use Validate to verify SSL. Restart required after
+    changes.
   </text>
 </svg>
