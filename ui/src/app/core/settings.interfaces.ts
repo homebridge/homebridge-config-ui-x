@@ -74,6 +74,7 @@ export interface AppSettingsInterface {
   webroot?: string
   originalWebroot?: string
   proxyHost?: string
+  redirectHttpToHttps?: boolean
   sessionTimeout: number
   sessionTimeoutInactivityBased: boolean
   theme: string

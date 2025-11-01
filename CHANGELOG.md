@@ -1,3 +1,24 @@
+## Unreleased
+
+### Added
+- Settings: HTTPS Port field under Security > HTTPS to explicitly configure the HTTPS listener (defaults to 8581).
+- Settings: HTTP Port field (shown when Redirect HTTP→HTTPS is enabled) to configure the HTTP listener used for redirects (defaults to 8580).
+- Settings: SSL certificate and key upload (PEM format) with server-side validation.
+- Settings: PKCS#12 (.pfx/.p12) certificate upload with optional passphrase support.
+- Settings: "Validate SSL" button to verify the current HTTPS configuration.
+- Settings: Generate self-signed certificate from the UI with custom hostnames/SANs (two modes: file-based or runtime).
+- Installer: `hb-service install` now generates a self-signed certificate and enables HTTPS by default on new installs.
+
+### Changed
+- HTTPS‑first defaults: When HTTPS is enabled, the UI prefers the HTTPS port and treats HTTPS as the primary listener. Port precedence is now `httpsPort > port > httpPort`.
+- Default ports: HTTPS 8581 (primary), HTTP 8580.
+- Settings: Network > "Homebridge UI Port" is now hidden when HTTPS is enabled to avoid duplication with Security > HTTPS Port.
+
+### Notes
+- The Redirect HTTP→HTTPS toggle, HTTPS Port, and HTTP Port settings may require a restart of the UI service to take effect.
+- If HTTPS fails to bind, the UI will automatically fall back to HTTP to remain reachable.
+- SSL certificate uploads, validation, and self-signed generation are admin-only operations.
+
 # Change Log
 
 All notable changes to `homebridge-config-ui-x` will be documented in this file. This project tries to adhere to [Semantic Versioning](http://semver.org/).

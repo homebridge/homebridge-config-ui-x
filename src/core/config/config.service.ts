@@ -126,8 +126,22 @@ export class ConfigService {
 
     this.setConfig()
 
+    // Default ports
     if (!this.ui.port) {
-      this.ui.port = 8080
+      this.ui.port = 8581
+    }
+    // Default httpPort to 8580 when not explicitly set
+    if (!this.ui.httpPort) {
+      this.ui.httpPort = 8580
+    }
+    // Default httpsPort to 8581 when not explicitly set
+    if (!this.ui.httpsPort) {
+      this.ui.httpsPort = 8581
+    }
+    // Leave httpsPort unchanged if explicitly configured; allows single-port setups to remain unchanged
+    // Default HTTP->HTTPS redirect flag
+    if (typeof this.ui.redirectHttpToHttps !== 'boolean') {
+      this.ui.redirectHttpToHttps = false
     }
 
     if (!this.ui.sessionTimeout) {
@@ -166,6 +180,8 @@ export class ConfigService {
         packageVersion: this.package.version,
         platform: platform(),
         port: this.ui.port,
+        httpPort: this.ui.httpPort || this.ui.port,
+        httpsPort: this.ui.httpsPort || null,
         setupWizardComplete: this.setupWizardComplete,
         scheduledBackupDisable: Boolean(this.ui.scheduledBackupDisable),
         scheduledBackupPath: this.ui.scheduledBackupPath || this.instanceBackupPath,

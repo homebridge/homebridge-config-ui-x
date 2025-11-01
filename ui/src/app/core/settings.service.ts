@@ -28,6 +28,7 @@ export class SettingsService {
   public proxyHost: string
   public webroot: string
   public originalWebroot: string
+  public redirectHttpToHttps?: boolean
   public formAuth = true
   public sessionTimeout = 28800
   public sessionTimeoutInactivityBased = false
@@ -75,6 +76,7 @@ export class SettingsService {
     this.webroot = data.webroot
     this.originalWebroot = data.originalWebroot
     this.proxyHost = data.proxyHost
+    this.redirectHttpToHttps = data.redirectHttpToHttps
     this.lightingMode = data.lightingMode
     this.wallpaper = data.wallpaper
     this.setLightingMode(this.lightingMode, 'user')
