@@ -36,6 +36,8 @@ export class AccessoriesService {
   public layoutSaved = new Subject()
   public accessoryData = new Subject()
   public readyForControl = false
+  public hapReadyForControl = false
+  public matterReadyForControl = false
   public accessories: { services: ServiceType[] } = { services: [] }
   public rooms: Array<{ name: string, services: ServiceTypeX[] }> = []
   public accessoryLayout: AccessoryLayout
@@ -56,7 +58,7 @@ export class AccessoriesService {
     }
   }
 
-  public showAccessoryInformation(service: any) {
+  public showAccessoryInformation(service: ServiceTypeX) {
     const ref = this.$modal.open(AccessoryInfoComponent, {
       size: 'lg',
       backdrop: 'static',
@@ -90,6 +92,8 @@ export class AccessoriesService {
    */
   public async start() {
     this.readyForControl = false
+    this.hapReadyForControl = false
+    this.matterReadyForControl = false
 
     // Connect to the socket endpoint
     this.io = this.$ws.connectToNamespace('accessories')
@@ -132,6 +136,14 @@ export class AccessoriesService {
       await this.start()
     })
 
+    // When only Matter accessories need to reload
+    this.io.socket.on('matter-accessories-reload-required', async () => {
+      // Trigger reload by emitting accessory-control-refresh
+      // This will reload accessories from the backend without full reconnection
+      this.matterReadyForControl = false
+      this.io.socket.emit('accessory-control', { refresh: true })
+    })
+
     this.io.socket.on('accessory-control-failure', (message: string) => {
       console.error(message)
       this.$toastr.error(message, this.$translate.instant('toast.title_error'))
@@ -140,6 +152,15 @@ export class AccessoriesService {
     // When the system is ready for accessory control
     this.io.socket.on('accessories-ready-for-control', () => {
       this.readyForControl = true
+    })
+
+    // Protocol-specific ready events
+    this.io.socket.on('hap-accessories-ready-for-control', () => {
+      this.hapReadyForControl = true
+    })
+
+    this.io.socket.on('matter-accessories-ready-for-control', () => {
+      this.matterReadyForControl = true
     })
   }
 
@@ -449,32 +470,72 @@ export class AccessoriesService {
    */
   private generateHelpers() {
     this.accessories.services.forEach((service) => {
-      if (!service.getCharacteristic) {
-        service.getCharacteristic = (type: string) => {
-          const characteristic = service.serviceCharacteristics.find(x => x.type === type)
+      const serviceX = service as ServiceTypeX
 
-          if (!characteristic) {
-            return null
-          }
+      // Matter accessories use cluster-based control
+      if (serviceX.protocol === 'matter') {
+        if (!serviceX.getCluster) {
+          serviceX.getCluster = (clusterName: string) => {
+            const clusters = serviceX.clusters || {}
 
-          characteristic.setValue = (value: number | string | boolean) => new Promise((resolve) => {
-            if (!this.readyForControl) {
-              resolve(undefined)
+            if (!clusters[clusterName]) {
+              return null
             }
 
-            this.io.socket.emit('accessory-control', {
-              set: {
-                uniqueId: service.uniqueId,
-                aid: service.aid,
-                siid: service.iid,
-                iid: characteristic.iid,
-                value,
-              },
-            })
-            return resolve(undefined)
-          })
+            return {
+              attributes: clusters[clusterName],
+              setAttributes: (attributes: Record<string, unknown>) => new Promise<void>((resolve) => {
+                if (!this.matterReadyForControl) {
+                  console.warn('Matter control attempted but not ready for control:', {
+                    matterReadyForControl: this.matterReadyForControl,
+                    uniqueId: service.uniqueId,
+                    cluster: clusterName,
+                  })
+                  resolve(undefined)
+                  return
+                }
 
-          return characteristic
+                this.io.socket.emit('accessory-control', {
+                  set: {
+                    uniqueId: service.uniqueId,
+                    cluster: clusterName,
+                    attributes,
+                  },
+                })
+                return resolve(undefined)
+              }),
+            }
+          }
+        }
+      } else {
+        // HAP accessories use characteristic-based control
+        if (!service.getCharacteristic) {
+          service.getCharacteristic = (type: string) => {
+            const characteristic = service.serviceCharacteristics.find(x => x.type === type)
+
+            if (!characteristic) {
+              return null
+            }
+
+            characteristic.setValue = (value: number | string | boolean) => new Promise((resolve) => {
+              if (!this.readyForControl) {
+                resolve(undefined)
+              }
+
+              this.io.socket.emit('accessory-control', {
+                set: {
+                  uniqueId: service.uniqueId,
+                  aid: service.aid,
+                  siid: service.iid,
+                  iid: characteristic.iid,
+                  value,
+                },
+              })
+              return resolve(undefined)
+            })
+
+            return characteristic
+          }
         }
       }
     })

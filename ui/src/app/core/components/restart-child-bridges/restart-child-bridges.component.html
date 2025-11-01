@@ -17,7 +17,12 @@
         @for (bridge of bridges; track bridge) {
         <li class="list-group-item d-flex justify-content-between align-items-center">
           <span class="me-3">
+            @if (isMatterSupported) {
+            <i class="fas fa-lg fa-hap me-2"></i>
+            <i class="fas fa-lg fa-matter" [style.opacity]="bridge.matterSerialNumber ? '1' : '0.25'"></i>
+            } @else {
             <i class="fas fa-hap"></i>
+            }
           </span>
           <span class="flex-grow-1 text-start">
             {{ bridge.name }}<br />

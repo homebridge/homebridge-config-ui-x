@@ -1,7 +1,12 @@
-import type { AccessoryConfig, HomebridgeConfig, PlatformConfig } from '../../core/config/config.interfaces.js'
+import type {
+  AccessoryConfig,
+  HomebridgeConfig,
+  MatterConfig,
+  PlatformConfig,
+} from '../../core/config/config.interfaces.js'
 
 import { readdir, readFile, rename, unlink } from 'node:fs/promises'
-import { resolve } from 'node:path'
+import { join, resolve } from 'node:path'
 
 import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common'
 import dayjs from 'dayjs'
@@ -262,6 +267,12 @@ export class ConfigEditorService {
     // Try and keep any _bridge object 'clean'
     pluginConfig.forEach((block) => {
       if (block._bridge) {
+        // Matter is only supported for platform-based plugins, not accessory-based plugins
+        if (plugin.pluginType === 'accessory' && block._bridge.matter) {
+          this.logger.warn(`Removing Matter configuration from accessory-based plugin: ${pluginName}`)
+          delete block._bridge.matter
+        }
+
         // The env object is only compatible with homebridge 1.8.0 and above
         const isEnvObjAllowed = gte(this.configService.homebridgeVersion, '1.8.0')
 
@@ -429,9 +440,9 @@ export class ConfigEditorService {
     if (!pluginConfig.plugins) {
       pluginConfig.plugins = {}
     }
-    // Validate format: USERNAME-hap (e.g., "0E:02:9A:9D:44:45-hap")
+    // Validate format: USERNAME-hap or USERNAME-matter (e.g., "0E:02:9A:9D:44:45-hap")
     pluginConfig.plugins.hidePairingAlerts = (value || [])
-      .filter(x => typeof x === 'string' && x.trim() !== '' && /^[0-9A-F]{2}(?::[0-9A-F]{2}){5}-hap$/i.test(x.trim()))
+      .filter(x => typeof x === 'string' && x.trim() !== '' && /^[0-9A-F]{2}(?::[0-9A-F]{2}){5}-(?:hap|matter)$/i.test(x.trim()))
       .map(x => x.trim().toUpperCase())
 
     // 3. Clean and save the UI config block
@@ -681,5 +692,72 @@ export class ConfigEditorService {
     }
     this.removeEmpty(cleanedUiConfig)
     return cleanedUiConfig
+  }
+
+  /**
+   * Get the Matter configuration from config.bridge.matter
+   * Returns null if Matter is not configured (disabled)
+   */
+  public async getMatterConfig(): Promise<MatterConfig | null> {
+    const config = await this.getConfigFile()
+    // Return null if matter config doesn't exist (disabled)
+    // Return the config object if it exists (enabled)
+    return config.bridge.matter || null
+  }
+
+  /**
+   * Update the Matter configuration in config.bridge.matter
+   */
+  public async updateMatterConfig(matterConfig: MatterConfig): Promise<MatterConfig> {
+    // Validate the configuration
+    this.validateMatterConfig(matterConfig)
+
+    const config = await this.getConfigFile()
+    config.bridge.matter = matterConfig
+    await this.updateConfigFile(config)
+    return matterConfig
+  }
+
+  /**
+   * Delete the Matter configuration from config.bridge.matter
+   */
+  public async deleteMatterConfig(): Promise<void> {
+    const config = await this.getConfigFile()
+    delete config.bridge.matter
+    await this.updateConfigFile(config)
+
+    // Delete the folder for this Matter bridge
+    // Wait for homebridge to stop
+    await this.homebridgeIpcService.restartAndWaitForClose()
+    const deviceId = config.bridge.username.replace(/:/g, '').toUpperCase()
+    const matterPath = join(this.configService.storagePath, 'matter', deviceId)
+    if (await pathExists(matterPath)) {
+      await remove(matterPath)
+      this.logger.warn(`Bridge ${deviceId} reset: removed Matter bridge storage at ${matterPath}.`)
+    }
+  }
+
+  /**
+   * Validate Matter configuration
+   * @param matterConfig - The Matter configuration to validate
+   * @throws BadRequestException if configuration is invalid
+   */
+  private validateMatterConfig(matterConfig: MatterConfig): void {
+    // Validate port
+    if (matterConfig.port !== undefined) {
+      if (
+        typeof matterConfig.port !== 'number'
+        || !Number.isInteger(matterConfig.port)
+        || matterConfig.port < 1024
+        || matterConfig.port > 65535
+      ) {
+        throw new BadRequestException('Port must be an integer between 1024 and 65535')
+      }
+
+      // Check for reserved ports
+      if ([5353, 8080, 8443].includes(matterConfig.port)) {
+        throw new BadRequestException('Port 5353, 8080, and 8443 are reserved and cannot be used')
+      }
+    }
   }
 }

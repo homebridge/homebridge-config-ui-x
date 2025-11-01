@@ -8,6 +8,7 @@ import { firstValueFrom } from 'rxjs'
 import { ApiService } from '@/app/core/api.service'
 import { AuthService } from '@/app/core/auth/auth.service'
 import { ChildBridgeStatusResponse, HomebridgeStatusResponse } from '@/app/core/server.interfaces'
+import { SettingsService } from '@/app/core/settings.service'
 import { IoNamespace, WsService } from '@/app/core/ws.service'
 import { Widget } from '@/app/modules/status/widgets/widgets.interfaces'
 
@@ -24,6 +25,7 @@ import { Widget } from '@/app/modules/status/widgets/widgets.interfaces'
 export class BridgesWidgetComponent implements OnInit, OnDestroy {
   private $api = inject(ApiService)
   private $auth = inject(AuthService)
+  private $settings = inject(SettingsService)
   private $toastr = inject(ToastrService)
   private $translate = inject(TranslateService)
   private $ws = inject(WsService)
@@ -36,6 +38,7 @@ export class BridgesWidgetComponent implements OnInit, OnDestroy {
   public childBridges = []
   public isRestarting = false
   public isAdmin = this.$auth.user.admin
+  public isMatterSupported = this.$settings.isFeatureEnabled('matterSupport')
 
   public async ngOnInit(): Promise<void> {
     this.ioMain = this.$ws.getExistingNamespace('status')

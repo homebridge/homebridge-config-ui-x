@@ -63,6 +63,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
   private childBridgesToRestart: ChildBridgeToRestart[] = []
   private hbPendingRestart = false
   private isDebugModeEnabled = this.$settings.isFeatureEnabled('childBridgeDebugMode')
+  private isMatterSupported = this.$settings.isFeatureEnabled('matterSupport')
 
   public homebridgeConfig: string
   public originalConfig: string
@@ -497,6 +498,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
 
     const childBridgeSchema = createChildBridgeSchema(this.$translate, {
       isDebugModeEnabled: this.isDebugModeEnabled,
+      isMatterSupported: this.isMatterSupported,
     });
 
     (window as any).monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
@@ -572,6 +574,25 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
                       description: this.$translate.instant('status.widget.network.network_interface'),
                     },
                   },
+                  ...this.isMatterSupported
+                    ? {
+                        matter: {
+                          type: 'object',
+                          additionalProperties: false,
+                          title: this.$translate.instant('settings.matter.title'),
+                          description: 'Matter-specific configuration for the main bridge.',
+                          properties: {
+                            port: {
+                              type: 'number',
+                              title: this.$translate.instant('settings.matter.port'),
+                              description: this.$translate.instant('settings.matter.port_desc'),
+                              minimum: 1025,
+                              maximum: 65534,
+                            },
+                          },
+                        },
+                      }
+                    : {},
                 },
                 default: { name: 'Homebridge', username: '0E:89:49:64:91:86', port: 51173, pin: '6302-7655' },
               },
@@ -950,11 +971,11 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
                             hidePairingAlerts: {
                               type: 'array',
                               title: 'Hide Pairing Alerts',
-                              description: 'A list of bridge identifiers (e.g., "0E:02:9A:9D:44:45-HAP") for which pairing alerts will be hidden in the UI.',
+                              description: 'A list of bridge identifiers (e.g., "0E:02:9A:9D:44:45-HAP" or "0E:02:9A:9D:44:45-MATTER") for which pairing alerts will be hidden in the UI.',
                               items: {
                                 type: 'string',
                                 title: 'Bridge Identifier',
-                                pattern: '^[0-9A-F]{2}(?::[0-9A-F]{2}){5}-(HAP)$',
+                                pattern: '^[0-9A-F]{2}(?::[0-9A-F]{2}){5}-(HAP|MATTER)$',
                               },
                             },
                             alwaysShowBetas: {
@@ -1294,6 +1315,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
             this.childBridgesToRestart.push({
               name: childBridge.name,
               username: childBridge.username,
+              matterSerialNumber: childBridge.matterSerialNumber,
             })
           }
         } else {

@@ -62,6 +62,15 @@ export interface ChildBridge {
   setupUri: string
   status: string
   username: string
+  matterConfig?: {
+    port?: number
+  }
+  matterIdentifier?: string
+  matterSerialNumber?: string
+  matterDeviceCount?: number
+  matterCommissioned?: boolean
+  matterSetupUri?: string
+  matterPin?: string
 }
 
 export interface DeviceInfo {
