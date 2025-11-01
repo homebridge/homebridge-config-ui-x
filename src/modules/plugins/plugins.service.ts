@@ -1057,6 +1057,15 @@ export class PluginsService {
             },
           },
         },
+        matter: {
+          type: 'object',
+          properties: {
+            port: {
+              type: 'integer',
+              maximum: 65535,
+            },
+          },
+        },
       },
     }
 

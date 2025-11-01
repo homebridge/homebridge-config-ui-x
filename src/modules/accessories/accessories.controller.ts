@@ -4,6 +4,7 @@ import {
   Get,
   Inject,
   Param,
+  Post,
   Put,
   Request,
   UseGuards,
@@ -57,5 +58,18 @@ export class AccessoriesController {
   @Put('/:uniqueId')
   setAccessoryCharacteristic(@Param('uniqueId') uniqueId, @Body() body: AccessorySetCharacteristicDto) {
     return this.accessoriesService.setAccessoryCharacteristic(uniqueId, body.characteristicType, body.value)
+  }
+
+  @ApiOperation({
+    summary: 'Control a Matter accessory by updating cluster attributes.',
+  })
+  @Post('/matter/control')
+  controlMatterAccessory(@Body() body: { uuid: string, cluster: string, attributes: Record<string, unknown>, bridgeUsername?: string, partId?: string }) {
+    try {
+      return this.accessoriesService.controlMatterAccessory(body.uuid, body.cluster, body.attributes, body.bridgeUsername, body.partId)
+    } catch (e) {
+      console.error(e)
+      throw e
+    }
   }
 }

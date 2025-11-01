@@ -7,6 +7,7 @@ import { ToastrService } from 'ngx-toastr'
 import { firstValueFrom } from 'rxjs'
 
 import { ApiService } from '@/app/core/api.service'
+import { SettingsService } from '@/app/core/settings.service'
 
 @Component({
   templateUrl: './reset-individual-bridges.component.html',
@@ -21,6 +22,7 @@ export class ResetIndividualBridgesComponent implements OnInit {
   private $activeModal = inject(NgbActiveModal)
   private $api = inject(ApiService)
   private $router = inject(Router)
+  private $settings = inject(SettingsService)
   private $toastr = inject(ToastrService)
   private $translate = inject(TranslateService)
 
@@ -29,6 +31,7 @@ export class ResetIndividualBridgesComponent implements OnInit {
   public pairingsChildActive: any[] = []
   public pairingsChildStale: any[] = []
   public toDelete: { id: string, resetPairingInfo: boolean }[] = []
+  public isMatterSupported = this.$settings.isFeatureEnabled('matterSupport')
 
   public ngOnInit(): void {
     this.loadPairings()

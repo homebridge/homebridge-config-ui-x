@@ -1,42 +1,191 @@
 <ng-container>
-  @if ($accessories.readyForControl) {
+  @if ((service.protocol === 'matter' && $accessories.matterReadyForControl) || (service.protocol !== 'matter' &&
+  $accessories.hapReadyForControl)) {
   <a href="javascript:void(0)" class="manage-accessory-button" (click)="$accessories.showAccessoryInformation(service)">
     <i class="fas fa-bars grey-text"></i>
   </a>
-  } @if (!$accessories.readyForControl) {
+  } @else {
   <i class="fas fa-spin fa-sync-alt refreshing-accessory-status-icon grey-text"></i>
-  } @switch (service.customType || service.type) { @case ('Switch') {
-  <app-switch [service]="service" [readyForControl]="$accessories.readyForControl"
+  }
+  <!-- Matter Protocol Devices (check protocol first) -->
+  @if (service.protocol === 'matter') { @switch (service.customType || service.deviceType) {
+  <!-- Matter Light Devices -->
+  @case ('OnOffLight') {
+  <app-matter-lightbulb [service]="service" [readyForControl]="$accessories.matterReadyForControl"
+    >{{ 'accessories.core.lightbulb' | translate }}</app-matter-lightbulb
+  >
+  } @case ('DimmableLight') {
+  <app-matter-lightbulb [service]="service" [readyForControl]="$accessories.matterReadyForControl"
+    >{{ 'accessories.core.lightbulb' | translate }}</app-matter-lightbulb
+  >
+  } @case ('ColorTemperatureLight') {
+  <app-matter-lightbulb [service]="service" [readyForControl]="$accessories.matterReadyForControl"
+    >{{ 'accessories.core.lightbulb' | translate }}</app-matter-lightbulb
+  >
+  } @case ('ExtendedColorLight') {
+  <app-matter-lightbulb [service]="service" [readyForControl]="$accessories.matterReadyForControl"
+    >{{ 'accessories.core.lightbulb' | translate }}</app-matter-lightbulb
+  >
+  } @case ('Lightbulb') {
+  <app-matter-lightbulb [service]="service" [readyForControl]="$accessories.matterReadyForControl"
+    >{{ 'accessories.core.lightbulb' | translate }}</app-matter-lightbulb
+  >
+  }
+  <!-- Matter Outlet Devices -->
+  @case ('OnOffOutlet') {
+  <app-matter-outlet [service]="service" [readyForControl]="$accessories.matterReadyForControl"
+    >{{ 'accessories.core.outlet' | translate }}</app-matter-outlet
+  >
+  } @case ('DimmableOutlet') {
+  <app-matter-outlet [service]="service" [readyForControl]="$accessories.matterReadyForControl"
+    >{{ 'accessories.core.outlet' | translate }}</app-matter-outlet
+  >
+  } @case ('Outlet') {
+  <app-matter-outlet [service]="service" [readyForControl]="$accessories.matterReadyForControl"
+    >{{ 'accessories.core.outlet' | translate }}</app-matter-outlet
+  >
+  }
+  <!-- Matter Switch Devices -->
+  @case ('OnOffSwitch') {
+  <app-matter-switch [service]="service" [readyForControl]="$accessories.matterReadyForControl"
+    >{{ 'accessories.core.switch' | translate }}</app-matter-switch
+  >
+  } @case ('Switch') {
+  <app-matter-switch [service]="service" [readyForControl]="$accessories.matterReadyForControl"
+    >{{ 'accessories.core.switch' | translate }}</app-matter-switch
+  >
+  } @default {
+  <app-unknown [service]="service">{{ service.humanType }}</app-unknown>
+  } } } @else { @switch (service.customType || service.type || service.deviceType) {
+  <!-- Matter Light Devices (legacy - shouldn't be hit) -->
+  @case ('OnOffLight') {
+  <app-lightbulb [service]="service" [readyForControl]="$accessories.hapReadyForControl"
+    >{{ 'accessories.core.lightbulb' | translate }}</app-lightbulb
+  >
+  } @case ('DimmableLight') {
+  <app-lightbulb [service]="service" [readyForControl]="$accessories.hapReadyForControl"
+    >{{ 'accessories.core.lightbulb' | translate }}</app-lightbulb
+  >
+  } @case ('ColorTemperatureLight') {
+  <app-lightbulb [service]="service" [readyForControl]="$accessories.hapReadyForControl"
+    >{{ 'accessories.core.lightbulb' | translate }}</app-lightbulb
+  >
+  } @case ('ExtendedColorLight') {
+  <app-lightbulb [service]="service" [readyForControl]="$accessories.hapReadyForControl"
+    >{{ 'accessories.core.lightbulb' | translate }}</app-lightbulb
+  >
+  }
+  <!-- Matter Outlet Devices -->
+  @case ('OnOffOutlet') {
+  <app-outlet [service]="service" [readyForControl]="$accessories.hapReadyForControl"
+    >{{ 'accessories.core.outlet' | translate }}</app-outlet
+  >
+  } @case ('DimmableOutlet') {
+  <app-outlet [service]="service" [readyForControl]="$accessories.hapReadyForControl"
+    >{{ 'accessories.core.outlet' | translate }}</app-outlet
+  >
+  }
+  <!-- Matter Switch Devices -->
+  @case ('OnOffSwitch') {
+  <app-switch [service]="service" [readyForControl]="$accessories.hapReadyForControl"
+    >{{ 'accessories.core.switch' | translate }}</app-switch
+  >
+  } @case ('GenericSwitch') {
+  <app-stateless-programmable-switch [service]="service"
+    >{{ 'accessories.core.stateless_programmable_switch' | translate }}</app-stateless-programmable-switch
+  >
+  }
+  <!-- Matter Sensor Devices -->
+  @case ('TemperatureSensor') {
+  <app-temperature-sensor [service]="service"
+    >{{ 'accessories.core.temperature_sensor' | translate }}</app-temperature-sensor
+  >
+  } @case ('HumiditySensor') {
+  <app-humidity-sensor [service]="service">{{ 'accessories.core.humidity_sensor' | translate }}</app-humidity-sensor>
+  } @case ('AirQualitySensor') {
+  <app-air-quality-sensor [service]="service"
+    >{{ 'accessories.core.air_quality_sensor' | translate }}</app-air-quality-sensor
+  >
+  } @case ('LightSensor') {
+  <app-light-sensor [service]="service">{{ 'accessories.core.light_sensor' | translate }}</app-light-sensor>
+  } @case ('MotionSensor') {
+  <app-motion-sensor [service]="service">{{ 'accessories.core.motion_sensor' | translate }}</app-motion-sensor>
+  } @case ('ContactSensor') {
+  <app-contact-sensor [service]="service">{{ 'accessories.core.contact_sensor' | translate }}</app-contact-sensor>
+  } @case ('LeakSensor') {
+  <app-leak-sensor [service]="service">{{ 'accessories.core.leak_sensor' | translate }}</app-leak-sensor>
+  } @case ('SmokeSensor') {
+  <app-smoke-sensor [service]="service">{{ 'accessories.core.smoke_sensor' | translate }}</app-smoke-sensor>
+  }
+  <!-- Matter HVAC Devices -->
+  @case ('Thermostat') {
+  <app-thermostat [service]="service" [readyForControl]="$accessories.hapReadyForControl"
+    >{{ 'accessories.core.thermostat' | translate }}</app-thermostat
+  >
+  } @case ('Fan') {
+  <app-fan [service]="service" [readyForControl]="$accessories.hapReadyForControl" class="w-100"
+    >{{ 'accessories.core.fan' | translate }}</app-fan
+  >
+  } @case ('RoomAirConditioner') {
+  <app-heater-cooler [service]="service" [type]="'cooler'" [readyForControl]="$accessories.hapReadyForControl"
+    >{{ 'accessories.core.cooler' | translate }}</app-heater-cooler
+  >
+  }
+  <!-- Matter Security Devices -->
+  @case ('DoorLock') {
+  <app-lock-mechanism [service]="service" [readyForControl]="$accessories.hapReadyForControl"
+    >{{ 'accessories.core.lock_mechanism' | translate }}</app-lock-mechanism
+  >
+  }
+  <!-- Matter Window Covering -->
+  @case ('WindowCovering') {
+  <app-window-covering [service]="service" [readyForControl]="$accessories.hapReadyForControl"
+    >{{ 'accessories.core.window_covering' | translate }}</app-window-covering
+  >
+  }
+  <!-- Matter Appliances -->
+  @case ('RoboticVacuumCleaner') {
+  <app-robot-vacuum [service]="service" [readyForControl]="$accessories.hapReadyForControl"
+    >{{ 'accessories.core.robot_vacuum' | translate }}</app-robot-vacuum
+  >
+  } @case ('Pump') {
+  <app-valve [service]="service" [readyForControl]="$accessories.hapReadyForControl"
+    >{{ 'accessories.core.valve' | translate }}</app-valve
+  >
+  }
+  <!-- HAP Device Types -->
+  @case ('Switch') {
+  <app-switch [service]="service" [readyForControl]="$accessories.hapReadyForControl"
     >{{ 'accessories.core.switch' | translate }}</app-switch
   >
   } @case ('Thermostat') {
-  <app-thermostat [service]="service" [readyForControl]="$accessories.readyForControl"
+  <app-thermostat [service]="service" [readyForControl]="$accessories.hapReadyForControl"
     >{{ 'accessories.core.thermostat' | translate }}</app-thermostat
   >
   } @case ('Outlet') {
-  <app-outlet [service]="service" [readyForControl]="$accessories.readyForControl"
+  <app-outlet [service]="service" [readyForControl]="$accessories.hapReadyForControl"
     >{{ 'accessories.core.outlet' | translate }}</app-outlet
   >
   } @case ('Fan') {
-  <app-fan [service]="service" [readyForControl]="$accessories.readyForControl" class="w-100"
+  <app-fan [service]="service" [readyForControl]="$accessories.hapReadyForControl" class="w-100"
     >{{ 'accessories.core.fan' | translate }}</app-fan
   >
   } @case ('Fanv2') {
-  <app-fan [service]="service" [readyForControl]="$accessories.readyForControl" class="w-100"
+  <app-fan [service]="service" [readyForControl]="$accessories.hapReadyForControl" class="w-100"
     >{{ 'accessories.core.fan' | translate }}</app-fan
   >
   } @case ('AirPurifier') {
-  <app-air-purifier [service]="service" [readyForControl]="$accessories.readyForControl" class="w-100"
+  <app-air-purifier [service]="service" [readyForControl]="$accessories.hapReadyForControl" class="w-100"
     >{{ 'accessories.core.air_purifier' | translate }}</app-air-purifier
   >
   } @case ('Lightbulb') {
-  <app-lightbulb [service]="service" [readyForControl]="$accessories.readyForControl"
+  <app-lightbulb [service]="service" [readyForControl]="$accessories.hapReadyForControl"
     >{{ 'accessories.core.lightbulb' | translate }}</app-lightbulb
   >
   } @case ('LightSensor') {
   <app-light-sensor [service]="service">{{ 'accessories.core.light_sensor' | translate }}</app-light-sensor>
   } @case ('LockMechanism') {
-  <app-lock-mechanism [service]="service" [readyForControl]="$accessories.readyForControl"
+  <app-lock-mechanism [service]="service" [readyForControl]="$accessories.hapReadyForControl"
     >{{ 'accessories.core.lock_mechanism' | translate }}</app-lock-mechanism
   >
   } @case ('TemperatureSensor') {
@@ -44,7 +193,7 @@
     >{{ 'accessories.core.temperature_sensor' | translate }}</app-temperature-sensor
   >
   } @case ('GarageDoorOpener') {
-  <app-garage-door-opener [service]="service" [readyForControl]="$accessories.readyForControl"
+  <app-garage-door-opener [service]="service" [readyForControl]="$accessories.hapReadyForControl"
     >{{ 'accessories.core.garage_door_opener' | translate }}</app-garage-door-opener
   >
   } @case ('MotionSensor') {
@@ -60,19 +209,19 @@
     >{{ 'accessories.core.air_quality_sensor' | translate }}</app-air-quality-sensor
   >
   } @case ('WindowCovering') {
-  <app-window-covering [service]="service" [readyForControl]="$accessories.readyForControl"
+  <app-window-covering [service]="service" [readyForControl]="$accessories.hapReadyForControl"
     >{{ 'accessories.core.window_covering' | translate }}</app-window-covering
   >
   } @case ('Window') {
-  <app-window [service]="service" [readyForControl]="$accessories.readyForControl"
+  <app-window [service]="service" [readyForControl]="$accessories.hapReadyForControl"
     >{{ 'accessories.core.window' | translate }}</app-window
   >
   } @case ('Door') {
-  <app-door [service]="service" [readyForControl]="$accessories.readyForControl"
+  <app-door [service]="service" [readyForControl]="$accessories.hapReadyForControl"
     >{{ 'accessories.core.door' | translate }}</app-door
   >
   } @case ('Television') {
-  <app-television [service]="service" [readyForControl]="$accessories.readyForControl"
+  <app-television [service]="service" [readyForControl]="$accessories.hapReadyForControl"
     >{{ 'accessories.core.television' | translate }}</app-television
   >
   } @case ('Battery') {
@@ -80,23 +229,23 @@
   } @case ('BatteryService') {
   <app-battery [service]="service">{{ 'accessories.core.battery' | translate }}</app-battery>
   } @case ('Speaker') {
-  <app-speaker [service]="service" [readyForControl]="$accessories.readyForControl"
+  <app-speaker [service]="service" [readyForControl]="$accessories.hapReadyForControl"
     >{{ 'accessories.core.speaker' | translate }}</app-speaker
   >
   } @case ('SmartSpeaker') {
-  <app-speaker [service]="service" [readyForControl]="$accessories.readyForControl"
+  <app-speaker [service]="service" [readyForControl]="$accessories.hapReadyForControl"
     >{{ 'accessories.core.speaker' | translate }}</app-speaker
   >
   } @case ('Doorbell') {
-  <app-doorbell [service]="service" [readyForControl]="$accessories.readyForControl"
+  <app-doorbell [service]="service" [readyForControl]="$accessories.hapReadyForControl"
     >{{ 'accessories.core.doorbell' | translate }}</app-doorbell
   >
   } @case ('Microphone') {
-  <app-microphone [service]="service" [readyForControl]="$accessories.readyForControl"
+  <app-microphone [service]="service" [readyForControl]="$accessories.hapReadyForControl"
     >{{ 'accessories.core.microphone' | translate }}</app-microphone
   >
   } @case ('SecuritySystem') {
-  <app-security-system [service]="service" [readyForControl]="$accessories.readyForControl"
+  <app-security-system [service]="service" [readyForControl]="$accessories.hapReadyForControl"
     >{{ 'accessories.core.security_system' | translate }}</app-security-system
   >
   } @case ('LeakSensor') {
@@ -112,7 +261,7 @@
     >{{ 'accessories.core.carbon_dioxide_sensor' | translate }}</app-carbon-dioxide-sensor
   >
   } @case ('Valve') {
-  <app-valve [service]="service" [readyForControl]="$accessories.readyForControl"
+  <app-valve [service]="service" [readyForControl]="$accessories.hapReadyForControl"
     >{{ 'accessories.core.valve' | translate }}</app-valve
   >
   } @case ('IrrigationSystem') {
@@ -120,33 +269,33 @@
     >{{ 'accessories.core.irrigation_system' | translate }}</app-irrigation-system
   >
   } @case ('HeaterCooler') {
-  <app-heater-cooler [service]="service" [readyForControl]="$accessories.readyForControl"
+  <app-heater-cooler [service]="service" [readyForControl]="$accessories.hapReadyForControl"
     >{{ 'accessories.core.heater_cooler' | translate }}</app-heater-cooler
   >
   } @case ('Heater') {
-  <app-heater-cooler [service]="service" [type]="'heater'" [readyForControl]="$accessories.readyForControl"
+  <app-heater-cooler [service]="service" [type]="'heater'" [readyForControl]="$accessories.hapReadyForControl"
     >{{ 'accessories.core.heater' | translate }}</app-heater-cooler
   >
   } @case ('Cooler') {
-  <app-heater-cooler [service]="service" [type]="'cooler'" [readyForControl]="$accessories.readyForControl"
+  <app-heater-cooler [service]="service" [type]="'cooler'" [readyForControl]="$accessories.hapReadyForControl"
     >{{ 'accessories.core.cooler' | translate }}</app-heater-cooler
   >
   } @case ('HumidifierDehumidifier') {
-  <app-humidifier-dehumidifier [service]="service" [readyForControl]="$accessories.readyForControl"
+  <app-humidifier-dehumidifier [service]="service" [readyForControl]="$accessories.hapReadyForControl"
     >{{ 'accessories.core.humidifier_dehumidifier' | translate }}</app-humidifier-dehumidifier
   >
   } @case ('Humidifier') {
   <app-humidifier-dehumidifier
     [service]="service"
     [type]="'humidifier'"
-    [readyForControl]="$accessories.readyForControl"
+    [readyForControl]="$accessories.hapReadyForControl"
     >{{ 'accessories.core.humidifier' | translate }}</app-humidifier-dehumidifier
   >
   } @case ('Dehumidifier') {
   <app-humidifier-dehumidifier
     [service]="service"
     [type]="'dehumidifier'"
-    [readyForControl]="$accessories.readyForControl"
+    [readyForControl]="$accessories.hapReadyForControl"
     >{{ 'accessories.core.dehumidifier' | translate }}</app-humidifier-dehumidifier
   >
   } @case ('StatelessProgrammableSwitch') {
@@ -154,18 +303,18 @@
     >{{ 'accessories.core.stateless_programmable_switch' | translate }}</app-stateless-programmable-switch
   >
   } @case ('FilterMaintenance') {
-  <app-filter-maintenance [service]="service" [readyForControl]="$accessories.readyForControl"
+  <app-filter-maintenance [service]="service" [readyForControl]="$accessories.hapReadyForControl"
     >{{ 'accessories.core.filter_maintenance' | translate }}</app-filter-maintenance
   >
   } @case ('RobotVacuum') {
-  <app-robot-vacuum [service]="service" [readyForControl]="$accessories.readyForControl"
+  <app-robot-vacuum [service]="service" [readyForControl]="$accessories.hapReadyForControl"
     >{{ 'accessories.core.robot_vacuum' | translate }}</app-robot-vacuum
   >
   } @case ('WashingMachine') {
-  <app-washing-machine [service]="service" [readyForControl]="$accessories.readyForControl"
+  <app-washing-machine [service]="service" [readyForControl]="$accessories.hapReadyForControl"
     >{{ 'accessories.core.washing_machine' | translate }}</app-washing-machine
   >
   } @default {
   <app-unknown [service]="service">{{ service.humanType }}</app-unknown>
-  } }
+  } } }
 </ng-container>

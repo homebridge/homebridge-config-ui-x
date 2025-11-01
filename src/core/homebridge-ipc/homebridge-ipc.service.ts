@@ -15,6 +15,7 @@ export class HomebridgeIpcService extends EventEmitter {
     'childBridgeMetadataResponse',
     'childBridgeStatusUpdate',
     'serverStatusUpdate',
+    'matterEvent',
   ]
 
   constructor(
