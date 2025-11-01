@@ -6,6 +6,7 @@ import { ClockWidgetComponent } from '@/app/modules/status/widgets/clock-widget/
 import { CpuWidgetComponent } from '@/app/modules/status/widgets/cpu-widget/cpu-widget.component'
 import { HapQrcodeWidgetComponent } from '@/app/modules/status/widgets/hap-qrcode-widget/hap-qrcode-widget.component'
 import { HomebridgeLogsWidgetComponent } from '@/app/modules/status/widgets/homebridge-logs-widget/homebridge-logs-widget.component'
+import { MatterQrcodeWidgetComponent } from '@/app/modules/status/widgets/matter-qrcode-widget/matter-qrcode-widget.component'
 import { MemoryWidgetComponent } from '@/app/modules/status/widgets/memory-widget/memory-widget.component'
 import { NetworkWidgetComponent } from '@/app/modules/status/widgets/network-widget/network-widget.component'
 import { SystemInfoWidgetComponent } from '@/app/modules/status/widgets/system-info-widget/system-info-widget.component'
@@ -30,6 +31,7 @@ export const AVAILABLE_WIDGETS = [
   'AccessoriesWidgetComponent',
   'ClockWidgetComponent',
   'BridgesWidgetComponent',
+  'MatterQrcodeWidgetComponent',
 ] as const
 
 @Component({
@@ -45,6 +47,7 @@ export class WidgetsComponent implements OnInit, OnDestroy {
   private componentRef: any
   private availableWidgets = {
     HapQrcodeWidgetComponent,
+    MatterQrcodeWidgetComponent,
     HomebridgeLogsWidgetComponent,
     TerminalWidgetComponent,
     CpuWidgetComponent,

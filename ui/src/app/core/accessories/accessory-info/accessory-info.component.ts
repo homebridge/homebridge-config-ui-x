@@ -1,3 +1,4 @@
+import { KeyValuePipe } from '@angular/common'
 import { Component, inject, Input, OnInit } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { CharacteristicType } from '@homebridge/hap-client'
@@ -12,11 +13,22 @@ import { PrettifyPipe } from '@/app/core/pipes/prettify.pipe'
 import { ServiceToTranslationStringPipe } from '@/app/core/pipes/service-to-translation-string'
 import { RemoveIndividualAccessoriesComponent } from '@/app/modules/settings/remove-individual-accessories/remove-individual-accessories.component'
 
+// Matter device type to simplified display type mapping
+const MATTER_DEFAULT_TYPES: Record<string, string> = {
+  OnOffLight: 'Lightbulb',
+  OnOffSwitch: 'Switch',
+  OnOffOutlet: 'Outlet',
+}
+
+// Matter device types that support custom type switching
+const MATTER_SWITCHABLE_TYPES = Object.keys(MATTER_DEFAULT_TYPES)
+
 @Component({
   templateUrl: './accessory-info.component.html',
   standalone: true,
   imports: [
     FormsModule,
+    KeyValuePipe,
     TranslatePipe,
     ConvertTempPipe,
     PrettifyPipe,
@@ -72,27 +84,71 @@ export class AccessoryInfoComponent implements OnInit {
   @Input() public service: ServiceTypeX
 
   public isDetailsVisible: { [key: string]: boolean } = {}
-  public accessoryInformation: Array<any>
+  public accessoryInformation: Array<{ key: string, value: string | number | undefined }>
   public extraServices: ServiceTypeX[] = []
   public matchedCachedAccessory: any = null
   public enums = Enums
   public customTypeList: Array<ServiceTypeX['type']> = []
+  public isMatterAccessory = false
+  public clusterInfo: Array<{ name: string, attributes: Record<string, unknown> }> = []
 
   public ngOnInit() {
-    this.accessoryInformation = Object.entries(this.service.accessoryInformation).map(([key, value]) => ({ key, value }))
-    this.matchedCachedAccessory = this.matchToCachedAccessory()
+    // Check if this is a Matter accessory
+    this.isMatterAccessory = this.service.protocol === 'matter'
 
-    if (this.service.type === 'LockMechanism') {
-      Object.values(this.service.linkedServices)
-        .filter(service => service.type === 'LockManagement')
-        .forEach(service => this.extraServices.push(service))
-    }
+    if (this.isMatterAccessory) {
+      // For Matter accessories, use displayName and handle cluster info
+      const clusters = this.service.clusters || {}
+      this.clusterInfo = Object.entries(clusters).map(([name, attributes]) => ({ name, attributes }))
 
-    this.customTypeList = [
-      ...new Set(this.allCustomTypeList.filter(types => types.includes(this.service.type)).flat()),
-    ]
-    if (!this.service.customType) {
-      this.service.customType = this.service.type
+      // Build basic accessory information from Matter accessory
+      // Start with the standard accessoryInformation from backend
+      this.accessoryInformation = Object.entries(this.service.accessoryInformation || {}).map(([key, value]) => ({
+        key,
+        value: value as string | number | undefined,
+      }))
+
+      // Prepend Device Type
+      this.accessoryInformation.unshift(
+        { key: 'Device Type', value: this.service.deviceType || 'Unknown' },
+      )
+
+      // Set up custom type list for Matter accessories
+      // Only show custom types for implemented Matter device types with onOff clusters
+      const deviceType = this.service.deviceType || ''
+
+      if (MATTER_SWITCHABLE_TYPES.includes(deviceType)) {
+        this.customTypeList = Object.values(MATTER_DEFAULT_TYPES) as Array<ServiceTypeX['type']>
+
+        // Set default customType for new Matter accessories
+        if (!this.service.customType) {
+          this.service.customType = MATTER_DEFAULT_TYPES[deviceType]
+        }
+      } else {
+        this.customTypeList = []
+      }
+    } else {
+      // HAP accessory
+      this.accessoryInformation = Object.entries(this.service.accessoryInformation).map(([key, value]) => ({
+        key,
+        value: value as string | number | undefined,
+      }))
+      this.matchedCachedAccessory = this.matchToCachedAccessory()
+
+      if (this.service.type === 'LockMechanism') {
+        Object.values(this.service.linkedServices)
+          .filter(service => service.type === 'LockManagement')
+          .forEach(service => this.extraServices.push(service))
+      }
+
+      this.customTypeList = [
+        ...new Set(this.allCustomTypeList.filter(types => types.includes(this.service.type)).flat()),
+      ]
+
+      // Set default customType for HAP accessories
+      if (!this.service.customType) {
+        this.service.customType = this.service.type
+      }
     }
   }
 
@@ -103,6 +159,15 @@ export class AccessoryInfoComponent implements OnInit {
       backdrop: 'static',
     })
     ref.componentInstance.selectedBridge = this.service.instance.username.replaceAll(':', '')
+  }
+
+  public isDefaultType(customType: string): boolean {
+    if (this.isMatterAccessory) {
+      return MATTER_DEFAULT_TYPES[this.service.deviceType || ''] === customType
+    } else {
+      // For HAP accessories, check against service.type
+      return customType === this.service.type
+    }
   }
 
   public toggleDetailsVisibility(char: CharacteristicType): void {

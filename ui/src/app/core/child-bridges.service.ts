@@ -33,6 +33,7 @@ export class ChildBridgesService {
       ref.componentInstance.bridges = childBridges.map(childBridge => ({
         name: childBridge.name,
         username: childBridge.username,
+        matterSerialNumber: childBridge.matterSerialNumber,
       }))
     } else {
       this.$modal.open(RestartHomebridgeComponent, {

@@ -22,6 +22,9 @@ import { LeakSensorComponent } from '@/app/core/accessories/types/leak-sensor/le
 import { LightSensorComponent } from '@/app/core/accessories/types/light-sensor/light-sensor.component'
 import { LightbulbComponent } from '@/app/core/accessories/types/lightbulb/lightbulb.component'
 import { LockMechanismComponent } from '@/app/core/accessories/types/lock-mechanism/lock-mechanism.component'
+import { MatterLightbulbComponent } from '@/app/core/accessories/types/matter/matter-lightbulb.component'
+import { MatterOutletComponent } from '@/app/core/accessories/types/matter/matter-outlet.component'
+import { MatterSwitchComponent } from '@/app/core/accessories/types/matter/matter-switch.component'
 import { MicrophoneComponent } from '@/app/core/accessories/types/microphone/microphone.component'
 import { MotionSensorComponent } from '@/app/core/accessories/types/motion-sensor/motion-sensor.component'
 import { OccupancySensorComponent } from '@/app/core/accessories/types/occupancy-sensor/occupancy-sensor.component'
@@ -83,6 +86,9 @@ import { WindowComponent } from '@/app/core/accessories/types/window/window.comp
     MicrophoneComponent,
     RobotVacuumComponent,
     WashingMachineComponent,
+    MatterLightbulbComponent,
+    MatterOutletComponent,
+    MatterSwitchComponent,
     TranslatePipe,
   ],
 })
