@@ -8,6 +8,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 
 - added config option to configure a webroot for the ui
 - improve widget state around first data load
+- integration with updated homebridge version
 
 ### Other Changes
 
@@ -18,7 +19,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 
 - `@homebridge/hap-client` @ `v3.1.2`
 - `@homebridge/node-pty-prebuilt-multiarch` @ `v0.13.1`
-- `@homebridge/plugin-ui-utils` @ `v2.1.0`
+- `@homebridge/plugin-ui-utils` @ `v2.1.1-beta.0`
 
 ## v5.9.0 (2025-11-01)
 

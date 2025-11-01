@@ -5,6 +5,7 @@ import { ToastrService } from 'ngx-toastr'
 import { firstValueFrom } from 'rxjs'
 
 import { ApiService } from '@/app/core/api.service'
+import { SettingsService } from '@/app/core/settings.service'
 import { ChildBridgeToRestart } from '@/app/modules/config-editor/config-editor.interfaces'
 
 @Component({
@@ -15,8 +16,11 @@ import { ChildBridgeToRestart } from '@/app/modules/config-editor/config-editor.
 export class RestartChildBridgesComponent {
   private $activeModal = inject(NgbActiveModal)
   private $api = inject(ApiService)
+  private $settings = inject(SettingsService)
   private $toastr = inject(ToastrService)
   private $translate = inject(TranslateService)
+
+  public isMatterSupported = this.$settings.isFeatureEnabled('matterSupport')
 
   @Input() bridges: ChildBridgeToRestart[] = []
 
