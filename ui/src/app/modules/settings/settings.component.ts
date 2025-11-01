@@ -125,6 +125,8 @@ export class SettingsComponent implements OnInit {
   public adaptersAvailable: NetworkAdapterAvailable[] = []
   public adaptersSelected: NetworkAdapterSelected[] = []
   public showPfxPassphrase = false
+  @ViewChild('sslKeyCertInput') sslKeyCertInput!: ElementRef<HTMLInputElement>
+  @ViewChild('sslPfxInput') sslPfxInput!: ElementRef<HTMLInputElement>
   public runningInDocker = this.$settings.env.runningInDocker
   public runningOnRaspberryPi = this.$settings.env.runningOnRaspberryPi
   public platform = this.$settings.env.platform
@@ -1548,6 +1550,49 @@ export class SettingsComponent implements OnInit {
     }
   }
 
+  // Generate a self-signed certificate and optionally switch to keycert mode using generated files
+  generateSelfSigned(mode: 'keycert' | 'selfsigned' = 'keycert') {
+    const raw = this.uiSslSelfSignedHostnamesFormControl.value || ''
+    const hostnames = String(raw)
+      .split(',')
+      .map(s => s.trim())
+      .filter(s => !!s)
+    const body: any = { hostnames, mode }
+    this.$api.post('/server/ssl/selfsigned/generate', body).subscribe({
+      next: (res: any) => {
+        if (mode === 'keycert') {
+          if (res?.keyPath) {
+            this.$settings.setEnvItem('ssl.key', res.keyPath)
+            this.uiSslKeyFormControl.patchValue(res.keyPath, { emitEvent: false })
+          }
+          if (res?.certPath) {
+            this.$settings.setEnvItem('ssl.cert', res.certPath)
+            this.uiSslCertFormControl.patchValue(res.certPath, { emitEvent: false })
+          }
+          this.$settings.setEnvItem('ssl.selfSigned', false)
+          this.uiSslTypeFormControl.patchValue('keycert', { emitEvent: true })
+          this.$toastr.success(
+            this.$translate.instant('settings.security.selfsigned_generate_success_keycert'),
+            this.$translate.instant('toast.title_success'),
+          )
+        } else {
+          this.$settings.setEnvItem('ssl.selfSigned', true)
+          this.$settings.setEnvItem('ssl.selfSignedHostnames', hostnames)
+          this.uiSslTypeFormControl.patchValue('selfsigned', { emitEvent: true })
+          this.$toastr.success(
+            this.$translate.instant('settings.security.selfsigned_generate_success_selfsigned'),
+            this.$translate.instant('toast.title_success'),
+          )
+        }
+        this.showRestartToast()
+      },
+      error: (err) => {
+        console.error(err)
+        this.$toastr.error(err.error?.message || err.message, this.$translate.instant('toast.title_error'))
+      },
+    })
+  }
+
   private async uiSslTypeSave(value: string) {
     switch (value) {
       case 'keycert':
@@ -2029,5 +2074,99 @@ export class SettingsComponent implements OnInit {
         })
       }
     }
+  }
+
+  // SSL Uploads (Key+Cert and PFX)
+  public triggerKeyCertSelect() {
+    if (this.sslKeyCertInput?.nativeElement) {
+      this.sslKeyCertInput.nativeElement.value = ''
+      this.sslKeyCertInput.nativeElement.click()
+    }
+  }
+
+  public onSslKeyCertChange(files: FileList | null) {
+    if (!files || files.length === 0) {
+      return
+    }
+    // Allow multiple selection; send all to the server which will detect key vs cert
+    const formData = new FormData()
+    Array.from(files).forEach((f: File) => {
+      formData.append('files', f, f.name)
+    })
+
+    this.$api.post('/server/ssl/keycert', formData).subscribe({
+      next: (res: any) => {
+        // Update settings and form controls
+        if (res?.keyPath) {
+          this.$settings.setEnvItem('ssl.key', res.keyPath)
+          this.uiSslKeyFormControl.patchValue(res.keyPath, { emitEvent: false })
+        }
+        if (res?.certPath) {
+          this.$settings.setEnvItem('ssl.cert', res.certPath)
+          this.uiSslCertFormControl.patchValue(res.certPath, { emitEvent: false })
+        }
+        this.$settings.setEnvItem('ssl.selfSigned', false)
+        this.uiSslTypeFormControl.patchValue('keycert', { emitEvent: true })
+        this.$toastr.success(this.$translate.instant('settings.security.ssl_upload_success_keycert'), this.$translate.instant('toast.title_success'))
+        this.showRestartToast()
+      },
+      error: (error) => {
+        console.error(error)
+        this.$toastr.error(error.error?.message || error.message, this.$translate.instant('toast.title_error'))
+      },
+    })
+  }
+
+  public triggerPfxSelect() {
+    if (this.sslPfxInput?.nativeElement) {
+      this.sslPfxInput.nativeElement.value = ''
+      this.sslPfxInput.nativeElement.click()
+    }
+  }
+
+  public onSslPfxChange(files: FileList | null) {
+    if (!files || files.length === 0) {
+      return
+    }
+    const formData = new FormData()
+    formData.append('pfx', files[0], files[0].name)
+    if (this.uiSslPassphraseFormControl.value) {
+      formData.append('passphrase', this.uiSslPassphraseFormControl.value)
+    }
+
+    this.$api.post('/server/ssl/pfx', formData).subscribe({
+      next: (res: any) => {
+        if (res?.pfxPath) {
+          this.$settings.setEnvItem('ssl.pfx', res.pfxPath)
+          this.uiSslPfxFormControl.patchValue(res.pfxPath, { emitEvent: false })
+        }
+        // Keep user's passphrase in the form and config (server also saved it)
+        this.$settings.setEnvItem('ssl.selfSigned', false)
+        this.uiSslTypeFormControl.patchValue('pfx', { emitEvent: true })
+        this.$toastr.success(this.$translate.instant('settings.security.ssl_upload_success_pfx'), this.$translate.instant('toast.title_success'))
+        this.showRestartToast()
+      },
+      error: (error) => {
+        console.error(error)
+        this.$toastr.error(error.error?.message || error.message, this.$translate.instant('toast.title_error'))
+      },
+    })
+  }
+
+  public validateSsl() {
+    this.$api.post('/server/ssl/validate', {}).subscribe({
+      next: (res: any) => {
+        if (res?.valid) {
+          this.$toastr.success(res?.details || this.$translate.instant('settings.security.ssl_validate_success'), this.$translate.instant('toast.title_success'))
+        } else {
+          const msg = res?.details || this.$translate.instant('settings.security.ssl_validate_error')
+          this.$toastr.error(msg, this.$translate.instant('toast.title_error'))
+        }
+      },
+      error: (error) => {
+        console.error(error)
+        this.$toastr.error(error.error?.message || error.message, this.$translate.instant('toast.title_error'))
+      },
+    })
   }
 }

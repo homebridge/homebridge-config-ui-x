@@ -57,7 +57,7 @@ export class SslCertGeneratorService {
    * Generate a new self-signed certificate
    * @param hostnames Array of hostnames to include in the certificate
    */
-  private async generateCertificate(hostnames: string[]): Promise<SslCertificateData> {
+  public async generateCertificate(hostnames: string[]): Promise<SslCertificateData> {
     this.logger.log('Generating self-signed certificate...')
 
     try {
