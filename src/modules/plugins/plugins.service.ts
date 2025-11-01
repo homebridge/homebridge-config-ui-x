@@ -1727,7 +1727,9 @@ export class PluginsService {
     }
 
     return new Promise((res) => {
-      const child = spawn(command.shift(), command, { shell: true })
+      // Join command and args into a single string to avoid DEP0190 deprecation warning
+      const fullCommand = command.join(' ')
+      const child = spawn(fullCommand, { shell: true })
 
       child.on('exit', (code) => {
         this.logger.log(`Executed npm cache clear command with exit code ${code}.`)
