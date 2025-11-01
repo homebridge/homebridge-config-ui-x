@@ -3,12 +3,15 @@
  *
  * These types define the interfaces for child bridge communication
  * between the UI and homebridge core.
+ * Child bridges can have both HAP and optional Matter functionality.
  */
 
 export type BridgeStatus = 'pending' | 'ok' | 'down'
 
 /**
- * Child bridge metadata
+ * Child bridge metadata (unified HAP + optional Matter)
+ * This represents a child bridge that always runs HAP, and optionally
+ * can also expose devices via Matter when matterConfig is present.
  */
 export interface ChildBridgeMetadata {
   /** Operational status */
@@ -43,4 +46,27 @@ export interface ChildBridgeMetadata {
 
   /** Manually stopped flag */
   manuallyStopped: boolean
+
+  /** Matter configuration */
+  matterConfig?: {
+    port?: number
+  }
+
+  /** Matter identifier (filesystem storage key) */
+  matterIdentifier?: string
+
+  /** Matter setup URI (QR code payload) */
+  matterSetupUri?: string
+
+  /** Matter manual pairing code */
+  matterPin?: string
+
+  /** Matter serial number */
+  matterSerialNumber?: string
+
+  /** Whether Matter is commissioned */
+  matterCommissioned?: boolean
+
+  /** Number of Matter devices */
+  matterDeviceCount?: number
 }

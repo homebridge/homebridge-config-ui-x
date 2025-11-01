@@ -110,6 +110,16 @@ export class WidgetVisibilityComponent implements OnInit {
         rows: 7,
         mobileOrder: 100,
       },
+      ...this.$settings.isFeatureEnabled('matterSupport')
+        ? [{
+            name: this.$translate.instant('status.widget.add.matter_pairing_code'),
+            component: 'MatterQrcodeWidgetComponent',
+            hidden: false,
+            cols: 3,
+            rows: 7,
+            mobileOrder: 105,
+          }]
+        : [],
       {
         name: this.$translate.instant('status.widget.homebridge_logs'),
         component: 'HomebridgeLogsWidgetComponent',
