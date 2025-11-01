@@ -1165,6 +1165,15 @@
           <option value="keycert">{{ 'settings.security.https_keycert' | translate }}</option>
           <option value="pfx">{{ 'settings.security.https_pfx' | translate }}</option>
         </select>
+        <button
+          class="btn btn-elegant ms-2"
+          type="button"
+          (click)="validateSsl()"
+          [attr.aria-label]="'settings.security.ssl_validate' | translate"
+          title="{{ 'settings.security.ssl_validate' | translate }}"
+        >
+          <i class="fas fa-check"></i>
+        </button>
       </div>
     </li>
     } @if (this.uiSslTypeFormControl.value === 'selfsigned') {
@@ -1188,6 +1197,26 @@
           [formControl]="uiSslSelfSignedHostnamesFormControl"
           [attr.aria-label]="'settings.security.selfsigned_hostnames' | translate"
         />
+        <button
+          class="btn btn-primary waves-effect m-0 ms-3"
+          style="min-width: 50px"
+          type="button"
+          (click)="generateSelfSigned('keycert')"
+          [attr.aria-label]="'settings.security.selfsigned_generate_keycert' | translate"
+          title="{{ 'settings.security.selfsigned_generate_keycert' | translate }}"
+        >
+          <i class="fas fa-magic"></i>
+        </button>
+        <button
+          class="btn btn-elegant m-0 ms-2"
+          style="min-width: 50px"
+          type="button"
+          (click)="generateSelfSigned('selfsigned')"
+          [attr.aria-label]="'settings.security.selfsigned_generate_selfsigned' | translate"
+          title="{{ 'settings.security.selfsigned_generate_selfsigned' | translate }}"
+        >
+          <i class="fas fa-shield-alt"></i>
+        </button>
         @if (uiSslSelfSignedHostnamesIsSaving) {
         <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
         }
@@ -1202,7 +1231,23 @@
         {{ 'settings.warning_pwa' | translate }}
       </small>
       }
-      <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
+      <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center gap-2">
+        <button
+          class="btn btn-elegant m-0"
+          type="button"
+          (click)="triggerKeyCertSelect()"
+          [attr.aria-label]="'settings.security.ssl_upload_keycert_aria' | translate"
+          title="{{ 'settings.security.ssl_upload_keycert_aria' | translate }}"
+        >
+          <i class="fas fa-upload"></i>
+        </button>
+        <input
+          #sslKeyCertInput
+          type="file"
+          multiple
+          (change)="onSslKeyCertChange(sslKeyCertInput.files)"
+          class="d-none"
+        />
         <input
           class="form-control custom-input resp-input order-1 order-md-2"
           type="text"
@@ -1224,7 +1269,16 @@
         {{ 'settings.warning_pwa' | translate }}
       </small>
       }
-      <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
+      <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center gap-2">
+        <button
+          class="btn btn-elegant m-0"
+          type="button"
+          (click)="triggerKeyCertSelect()"
+          [attr.aria-label]="'settings.security.ssl_upload_keycert_aria' | translate"
+          title="{{ 'settings.security.ssl_upload_keycert_aria' | translate }}"
+        >
+          <i class="fas fa-upload"></i>
+        </button>
         <input
           class="form-control custom-input resp-input order-1 order-md-2"
           type="text"
@@ -1246,7 +1300,17 @@
         {{ 'settings.warning_pwa' | translate }}
       </small>
       }
-      <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
+      <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center gap-2">
+        <button
+          class="btn btn-elegant m-0"
+          type="button"
+          (click)="triggerPfxSelect()"
+          [attr.aria-label]="'settings.security.ssl_upload_pfx_aria' | translate"
+          title="{{ 'settings.security.ssl_upload_pfx_aria' | translate }}"
+        >
+          <i class="fas fa-upload"></i>
+        </button>
+        <input #sslPfxInput type="file" (change)="onSslPfxChange(sslPfxInput.files)" class="d-none" />
         <input
           class="form-control custom-input resp-input order-1 order-md-2"
           type="text"
