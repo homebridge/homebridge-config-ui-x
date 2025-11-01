@@ -7,6 +7,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 ### Other Changes
 
 - recommend update to node 24 when available
+- fix node deprecation `DEP0190` (shell option)
 
 ### Homebridge Dependencies
 
