@@ -10,6 +10,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - add spinners for loading data widget values
 - hide ssl settings when on hb raspbian image
 - added config option to configure a webroot for the ui
+- add a complete https management to settings (#2617) (@donavanbecker)
 
 ### Other Changes
 
