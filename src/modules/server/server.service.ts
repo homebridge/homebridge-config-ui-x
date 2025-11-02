@@ -5,11 +5,13 @@ import type { AccessoryConfig, HomebridgeConfig, PlatformConfig } from '../../co
 
 import { Buffer } from 'node:buffer'
 import { exec, spawn } from 'node:child_process'
+import { createPrivateKey, createPublicKey, X509Certificate } from 'node:crypto'
 import { createWriteStream } from 'node:fs'
 import { readdir, unlink } from 'node:fs/promises'
 import { extname, join, resolve } from 'node:path'
 import process from 'node:process'
-import { pipeline } from 'node:stream'
+import { pipeline, Readable } from 'node:stream'
+import { createSecureContext } from 'node:tls'
 import { promisify } from 'node:util'
 
 import { Categories } from '@homebridge/hap-client/dist/hap-types.js'
@@ -29,6 +31,7 @@ import { check as tcpCheck } from 'tcp-port-used'
 import { ConfigService } from '../../core/config/config.service.js'
 import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.service.js'
 import { Logger } from '../../core/logger/logger.service.js'
+import { SslCertGeneratorService } from '../../core/ssl/ssl-cert-generator.service.js'
 import { AccessoriesService } from '../accessories/accessories.service.js'
 import { ConfigEditorService } from '../config-editor/config-editor.service.js'
 import { HomebridgeMdnsSettingDto } from './server.dto.js'
@@ -878,5 +881,318 @@ export class ServerService {
         return res(result)
       })
     })
+  }
+
+  /**
+   * Upload a PEM key+cert pair, validate they match, save to storage, and update config
+   */
+  public async uploadSslKeyCert(req: any): Promise<{ ok: boolean, type: 'keycert', keyPath: string, certPath: string, details?: string }> {
+    // Accept both specific field names (key, cert) and a generic 'files' array; detect content by PEM headers
+    const parts = req.parts ? req.parts() : null
+    const files: Array<{ fieldname: string, filename: string, mimetype: string, file: Readable, truncated?: boolean }> = []
+
+    if (parts) {
+      for await (const part of parts) {
+        if (part.file) {
+          files.push(part)
+        }
+      }
+    } else {
+      // Fallback to single file (should not happen for pair uploads)
+      const single = await req.file()
+      if (single?.file) {
+        files.push(single)
+      }
+    }
+
+    if (!files.length) {
+      throw new BadRequestException('No files uploaded. Please upload both the private key and certificate files.')
+    }
+
+    // Read all file streams into buffers
+    const readStreamToBuffer = async (stream: Readable): Promise<Buffer> => {
+      const chunks: Buffer[] = []
+      await new Promise<void>((resolvePromise, rejectPromise) => {
+        stream.on('data', (d: Buffer) => chunks.push(Buffer.isBuffer(d) ? d : Buffer.from(d)))
+        stream.on('end', () => resolvePromise())
+        stream.on('error', rejectPromise)
+      })
+      return Buffer.concat(chunks)
+    }
+
+    let keyPem: Buffer | null = null
+    let certPem: Buffer | null = null
+
+    for (const f of files) {
+      if ((f as any).file?.truncated) {
+        throw new InternalServerErrorException(`Upload exceeds maximum size ${globalThis.backup.maxBackupSizeText}.`)
+      }
+      const buf = await readStreamToBuffer(f.file as unknown as Readable)
+      const text = buf.toString('utf8')
+      if (/-----BEGIN (?:RSA |EC )?PRIVATE KEY-----/.test(text)) {
+        keyPem = buf
+      } else if (/-----BEGIN CERTIFICATE-----/.test(text)) {
+        // Some uploads may contain a full chain; we’ll accept as cert bundle
+        certPem = buf
+      } else if (f.fieldname === 'key') {
+        keyPem = buf
+      } else if (f.fieldname === 'cert') {
+        certPem = buf
+      }
+    }
+
+    if (!keyPem || !certPem) {
+      throw new BadRequestException('Both a PEM private key and certificate must be provided.')
+    }
+
+    // Validate: ensure key matches cert public key
+    try {
+      const x509 = new X509Certificate(certPem)
+      const certPub = x509.publicKey.export({ type: 'spki', format: 'der' }) as Buffer
+      const priv = createPrivateKey({ key: keyPem })
+      const pubFromPriv = createPublicKey(priv).export({ type: 'spki', format: 'der' }) as Buffer
+      if (!certPub.equals(pubFromPriv)) {
+        throw new BadRequestException('The private key does not match the certificate public key.')
+      }
+
+      // Also try building a TLS context to verify basic integrity
+      createSecureContext({ key: keyPem, cert: certPem })
+    } catch (e: any) {
+      if (e instanceof BadRequestException) {
+        throw e
+      }
+      throw new BadRequestException(`Invalid key/certificate: ${e?.message || e}`)
+    }
+
+    // Save files to storagePath/ssl-certs
+    const sslDir = join(this.configService.storagePath, 'ssl-certs')
+    const keyPath = join(sslDir, 'ui-ssl.key')
+    const certPath = join(sslDir, 'ui-ssl.crt')
+
+    const { ensureDir, writeFile } = await import('fs-extra')
+    await ensureDir(sslDir)
+
+    // If existing files exist at these paths, overwrite them
+    await writeFile(keyPath, keyPem)
+    await writeFile(certPath, certPem)
+
+    // Update config.json UI block
+    const configFile = await this.configEditorService.getConfigFile()
+    const uiConfigBlock = configFile.platforms.find((x: any) => x.platform === 'config')
+    if (!uiConfigBlock) {
+      throw new InternalServerErrorException('Config platform block not found.')
+    }
+    if (!uiConfigBlock.ssl) {
+      uiConfigBlock.ssl = {}
+    }
+    uiConfigBlock.ssl.key = keyPath
+    uiConfigBlock.ssl.cert = certPath
+    // Clear pfx settings and selfSigned
+    delete uiConfigBlock.ssl.pfx
+    delete uiConfigBlock.ssl.passphrase
+    uiConfigBlock.ssl.selfSigned = false
+
+    await this.configEditorService.updateConfigFile(configFile)
+
+    return {
+      ok: true,
+      type: 'keycert',
+      keyPath,
+      certPath,
+      details: 'Certificate and key validated and saved.',
+    }
+  }
+
+  /**
+   * Upload a PFX, validate passphrase, save to storage, and update config
+   */
+  public async uploadSslPfx(req: any): Promise<{ ok: boolean, type: 'pfx', pfxPath: string, details?: string }> {
+    // Expect file field named 'pfx' (or any file) and optional field 'passphrase'
+    let passphrase: string | undefined
+    let filePart: any
+
+    if (req.parts) {
+      for await (const part of req.parts()) {
+        if (part.type === 'file' || part.file) {
+          filePart = part
+        } else if (part.type === 'field' || part.value) {
+          if (part.fieldname === 'passphrase') {
+            passphrase = part.value
+          }
+        }
+      }
+    } else {
+      // Fallback to single-file API
+      filePart = await req.file()
+      passphrase = req.body?.passphrase
+    }
+
+    if (!filePart) {
+      throw new BadRequestException('No PFX file uploaded.')
+    }
+    if (filePart.file?.truncated) {
+      throw new InternalServerErrorException(`Upload exceeds maximum size ${globalThis.backup.maxBackupSizeText}.`)
+    }
+
+    const readStreamToBuffer = async (stream: Readable): Promise<Buffer> => {
+      const chunks: Buffer[] = []
+      await new Promise<void>((resolvePromise, rejectPromise) => {
+        stream.on('data', (d: Buffer) => chunks.push(Buffer.isBuffer(d) ? d : Buffer.from(d)))
+        stream.on('end', () => resolvePromise())
+        stream.on('error', rejectPromise)
+      })
+      return Buffer.concat(chunks)
+    }
+    const pfxBuffer = await readStreamToBuffer(filePart.file as unknown as Readable)
+
+    // Validate by attempting to create a secure context
+    try {
+      createSecureContext({ pfx: pfxBuffer, passphrase })
+    } catch (e: any) {
+      // OpenSSL errors will be thrown here if the passphrase is wrong or the file is invalid
+      throw new BadRequestException(`Invalid PFX or passphrase: ${e?.message || e}`)
+    }
+
+    // Save to storage
+    const sslDir = join(this.configService.storagePath, 'ssl-certs')
+    const pfxPath = join(sslDir, 'ui-ssl.pfx')
+    const { ensureDir, writeFile } = await import('fs-extra')
+    await ensureDir(sslDir)
+    await writeFile(pfxPath, pfxBuffer)
+
+    // Update config
+    const configFile = await this.configEditorService.getConfigFile()
+    const uiConfigBlock = configFile.platforms.find((x: any) => x.platform === 'config')
+    if (!uiConfigBlock) {
+      throw new InternalServerErrorException('Config platform block not found.')
+    }
+    if (!uiConfigBlock.ssl) {
+      uiConfigBlock.ssl = {}
+    }
+    uiConfigBlock.ssl.pfx = pfxPath
+    uiConfigBlock.ssl.passphrase = passphrase || ''
+    // Clear other ssl modes
+    delete uiConfigBlock.ssl.key
+    delete uiConfigBlock.ssl.cert
+    uiConfigBlock.ssl.selfSigned = false
+
+    await this.configEditorService.updateConfigFile(configFile)
+
+    return {
+      ok: true,
+      type: 'pfx',
+      pfxPath,
+      details: 'PFX validated and saved.',
+    }
+  }
+
+  /**
+   * Validate the currently configured SSL settings
+   */
+  public async validateCurrentSslConfig(): Promise<{ ok: boolean, valid: boolean, type: 'off' | 'selfsigned' | 'keycert' | 'pfx', details?: string }> {
+    const configFile = await this.configEditorService.getConfigFile()
+    const uiConfigBlock = configFile.platforms.find((x: any) => x.platform === 'config')
+    const ssl = uiConfigBlock?.ssl || {}
+
+    if (!ssl || (!ssl.selfSigned && !ssl.key && !ssl.cert && !ssl.pfx)) {
+      return { ok: true, valid: true, type: 'off', details: 'HTTPS is disabled.' }
+    }
+
+    if (ssl.selfSigned) {
+      return { ok: true, valid: true, type: 'selfsigned', details: 'Self-signed mode enabled.' }
+    }
+
+    try {
+      if (ssl.key && ssl.cert) {
+        const { readFile } = await import('fs-extra')
+        const keyPem = await readFile(ssl.key)
+        const certPem = await readFile(ssl.cert)
+        const x509 = new X509Certificate(certPem)
+        const certPub = x509.publicKey.export({ type: 'spki', format: 'der' }) as Buffer
+        const priv = createPrivateKey({ key: keyPem })
+        const pubFromPriv = createPublicKey(priv).export({ type: 'spki', format: 'der' }) as Buffer
+        if (!certPub.equals(pubFromPriv)) {
+          return { ok: true, valid: false, type: 'keycert', details: 'Private key does not match certificate.' }
+        }
+        createSecureContext({ key: keyPem, cert: certPem })
+        return { ok: true, valid: true, type: 'keycert', details: 'Key and certificate are valid and match.' }
+      }
+
+      if (ssl.pfx) {
+        const { readFile } = await import('fs-extra')
+        const pfx = await readFile(ssl.pfx)
+        createSecureContext({ pfx, passphrase: ssl.passphrase })
+        return { ok: true, valid: true, type: 'pfx', details: 'PFX file and passphrase are valid.' }
+      }
+    } catch (e: any) {
+      return { ok: true, valid: false, type: ssl.pfx ? 'pfx' : 'keycert', details: e?.message || String(e) }
+    }
+
+    return { ok: true, valid: false, type: 'off', details: 'No SSL configuration found.' }
+  }
+
+  /**
+   * Generate a self-signed certificate now and optionally set it as the active key/cert in config.
+   * @param options object containing self-signed generation options
+   * @param options.hostnames optional list of hostnames / IPs for Subject Alternative Name
+   * @param options.mode 'keycert' to use generated files as ssl.key/cert, or 'selfsigned' to enable self-signed mode
+   */
+  public async generateSelfSignedCertificate(
+    options: { hostnames?: string[], mode?: 'keycert' | 'selfsigned' } = {},
+  ): Promise<{
+    ok: boolean
+    type: 'generated'
+    mode: 'keycert' | 'selfsigned'
+    keyPath?: string
+    certPath?: string
+    details?: string
+  }> {
+    const hostnames = Array.isArray(options.hostnames) && options.hostnames.length
+      ? options.hostnames.map(h => String(h).trim()).filter(Boolean)
+      : ['localhost', '127.0.0.1']
+    const mode = options.mode || 'keycert'
+
+    // Generate and persist the certificate to storagePath/ssl-certs
+    const generator = new SslCertGeneratorService()
+    await generator.generateCertificate(hostnames)
+
+    const sslDir = join(this.configService.storagePath, 'ssl-certs')
+    const keyPath = join(sslDir, 'private-key.pem')
+    const certPath = join(sslDir, 'certificate.pem')
+
+    // Update config.json UI block according to mode
+    const configFile = await this.configEditorService.getConfigFile()
+    const uiConfigBlock = configFile.platforms.find((x: any) => x.platform === 'config')
+    if (!uiConfigBlock.ssl) {
+      uiConfigBlock.ssl = {}
+    }
+
+    if (mode === 'keycert') {
+      uiConfigBlock.ssl.key = keyPath
+      uiConfigBlock.ssl.cert = certPath
+      delete uiConfigBlock.ssl.pfx
+      delete uiConfigBlock.ssl.passphrase
+      uiConfigBlock.ssl.selfSigned = false
+      uiConfigBlock.ssl.selfSignedHostnames = hostnames
+    } else {
+      // Keep using runtime self-signed mode on startup
+      delete uiConfigBlock.ssl.key
+      delete uiConfigBlock.ssl.cert
+      delete uiConfigBlock.ssl.pfx
+      delete uiConfigBlock.ssl.passphrase
+      uiConfigBlock.ssl.selfSigned = true
+      uiConfigBlock.ssl.selfSignedHostnames = hostnames
+    }
+
+    await this.configEditorService.updateConfigFile(configFile)
+
+    return {
+      ok: true,
+      type: 'generated',
+      mode,
+      keyPath: mode === 'keycert' ? keyPath : undefined,
+      certPath: mode === 'keycert' ? certPath : undefined,
+      details: `Self-signed certificate generated for ${hostnames.join(', ')}`,
+    }
   }
 }
