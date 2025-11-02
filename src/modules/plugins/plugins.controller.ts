@@ -1,8 +1,9 @@
-import { Controller, Get, Param, UseGuards } from '@nestjs/common'
+import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common'
 import { AuthGuard } from '@nestjs/passport'
-import { ApiBearerAuth, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger'
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger'
 
 import { AdminGuard } from '../../core/auth/guards/admin.guard'
+import { TriggerUpdateDto } from './plugins.dto'
 import { PluginsService } from './plugins.service'
 
 @ApiTags('Plugins')
@@ -12,7 +13,7 @@ import { PluginsService } from './plugins.service'
 export class PluginsController {
   constructor(
     private pluginsService: PluginsService,
-  ) {}
+  ) { }
 
   @ApiOperation({ summary: 'Get the list of currently installed Homebridge plugins.' })
   @Get()
@@ -81,5 +82,16 @@ export class PluginsController {
   @Get('alias/:pluginName')
   getPluginAlias(@Param('pluginName') pluginName) {
     return this.pluginsService.getPluginAlias(pluginName)
+  }
+
+  @UseGuards(AdminGuard)
+  @ApiOperation({
+    summary: 'Trigger an update for Homebridge, homebridge-config-ui-x, or any plugin.',
+    description: 'This endpoint queues an update to be performed in the background. The update will be executed asynchronously and the server will restart after completion.',
+  })
+  @ApiBody({ type: TriggerUpdateDto })
+  @Post('trigger-update')
+  triggerUpdate(@Body() body: TriggerUpdateDto) {
+    return this.pluginsService.triggerUpdate(body)
   }
 }

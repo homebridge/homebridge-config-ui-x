@@ -799,6 +799,111 @@ export class PluginsService {
   }
 
   /**
+   * Trigger an update for Homebridge, homebridge-config-ui-x, or any plugin
+   * This method queues the update to be performed asynchronously
+   * @param triggerUpdateDto - The update trigger DTO
+   * @param triggerUpdateDto.name - The package name to update
+   * @param triggerUpdateDto.version - Optional version to update to (defaults to 'latest')
+   */
+  public async triggerUpdate(triggerUpdateDto: { name: string, version?: string }) {
+    const { name, version } = triggerUpdateDto
+
+    // Validate the package name
+    if (name !== 'homebridge' && name !== 'homebridge-config-ui-x' && !PluginsService.PLUGIN_IDENTIFIER_PATTERN.test(name)) {
+      throw new BadRequestException('Invalid package name. Must be "homebridge", "homebridge-config-ui-x", or a valid Homebridge plugin name.')
+    }
+
+    // Get package information to validate it exists
+    let targetVersion = version || 'latest'
+
+    try {
+      if (name === 'homebridge') {
+        const homebridge = await this.getHomebridgePackage()
+        if (targetVersion === 'latest' && homebridge.latestVersion) {
+          targetVersion = homebridge.latestVersion
+        }
+      } else if (name === 'homebridge-config-ui-x') {
+        const uiPackage = await this.getHomebridgeUiPackage()
+        if (!uiPackage) {
+          throw new NotFoundException(`Package ${name} is not installed.`)
+        }
+        if (targetVersion === 'latest' && uiPackage.latestVersion) {
+          targetVersion = uiPackage.latestVersion
+        }
+      } else {
+        // It's a plugin
+        const plugins = await this.getInstalledPlugins()
+        const plugin = plugins.find(p => p.name === name)
+        if (!plugin) {
+          throw new NotFoundException(`Plugin ${name} is not installed.`)
+        }
+        if (targetVersion === 'latest' && plugin.latestVersion) {
+          targetVersion = plugin.latestVersion
+        }
+      }
+    } catch (e) {
+      if (e instanceof NotFoundException) {
+        throw e
+      }
+      this.logger.error(`Failed to validate package ${name} for update: ${e.message}`)
+      throw new BadRequestException(`Failed to validate package ${name} for update.`)
+    }
+
+    // Schedule the update to run asynchronously
+    setImmediate(() => {
+      this.performScheduledUpdate(name, targetVersion).catch((error) => {
+        this.logger.error(`Failed to perform scheduled update for ${name}: ${error.message}`)
+      })
+    })
+
+    return {
+      message: `Update for ${name} to version ${targetVersion} has been queued and will be performed in the background.`,
+      name,
+      version: targetVersion,
+      status: 'queued',
+    }
+  }
+
+  /**
+   * Perform the scheduled update in the background
+   * @param name
+   * @param version
+   */
+  private async performScheduledUpdate(name: string, version: string) {
+    this.logger.log(`Starting scheduled update for ${name} to version ${version}`)
+
+    try {
+      // Create a mock client for capturing output
+      const mockClient = new (await import('node:events')).EventEmitter()
+
+      // Log output from the update process
+      mockClient.on('stdout', (data) => {
+        this.logger.log(`[${name} update] ${data.toString().trim()}`)
+      })
+
+      if (name === 'homebridge') {
+        await this.updateHomebridgePackage({ version }, mockClient)
+        this.logger.log(`Successfully updated Homebridge to version ${version}. Restart required.`)
+      } else {
+        // It's a plugin (including homebridge-config-ui-x)
+        await this.managePlugin('install', { name, version }, mockClient)
+        this.logger.log(`Successfully updated ${name} to version ${version}. Restart required.`)
+      }
+
+      // If it's homebridge-config-ui-x, schedule a restart
+      if (name === 'homebridge-config-ui-x') {
+        this.logger.warn('homebridge-config-ui-x has been updated. Server will restart in 5 seconds...')
+        setTimeout(() => {
+          process.exit(0)
+        }, 5000)
+      }
+    } catch (error) {
+      this.logger.error(`Failed to update ${name}: ${error.message}`)
+      throw error
+    }
+  }
+
+  /**
    * Gets the Homebridge UI package details
    */
   public async getHomebridgeUiPackage(): Promise<HomebridgePlugin> {
@@ -1166,7 +1271,7 @@ export class PluginsService {
             try {
               const changelog = (await firstValueFrom(this.httpService.get(`https://raw.githubusercontent.com/${match[1]}/${match[2]}/refs/tags/${latestTag}/${changelogPath}changelog.md`))).data
               changelogData = changelog.data
-            } catch {}
+            } catch { }
           }
 
           return {
