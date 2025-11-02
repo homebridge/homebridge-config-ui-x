@@ -200,6 +200,16 @@ export class SettingsComponent implements OnInit {
   public uiPortIsSaving = false
   public uiPortFormControl = new FormControl(0)
 
+  public uiHttpsPortIsInvalid = false
+  public uiHttpsPortIsSaving = false
+  public uiHttpsPortFormControl = new FormControl(0)
+
+  public uiHttpPortIsInvalid = false
+  public uiHttpPortIsSaving = false
+  public uiHttpPortFormControl = new FormControl(0)
+
+  public hbStartPortIsInvalid = false
+  public hbStartPortIsSaving = false
   public hbStartPortFormControl = new FormControl(0)
 
   public hbEndPortIsInvalid = false
@@ -530,6 +540,8 @@ export class SettingsComponent implements OnInit {
     //     This is to stop users from getting stuck if they change the webroot or port
     if (this.isPwa) {
       this.uiPortFormControl.disable()
+      this.uiHttpsPortFormControl.disable()
+      this.uiHttpPortFormControl.disable()
       this.uiHostFormControl.disable()
       this.uiWebrootFormControl.disable()
       this.uiProxyHostFormControl.disable()
@@ -606,6 +618,18 @@ export class SettingsComponent implements OnInit {
     this.uiPortFormControl.valueChanges
       .pipe(debounceTime(1500))
       .subscribe((value: number) => this.uiPortSave(value))
+
+    // HTTPS Port
+    this.uiHttpsPortFormControl.patchValue((this.$settings.env as any).httpsPort || this.$settings.env.port)
+    this.uiHttpsPortFormControl.valueChanges
+      .pipe(debounceTime(1500))
+      .subscribe((value: number) => this.uiHttpsPortSave(value))
+
+    // HTTP Port (for redirect / dual-bind)
+    this.uiHttpPortFormControl.patchValue((this.$settings.env as any).httpPort || 8580)
+    this.uiHttpPortFormControl.valueChanges
+      .pipe(debounceTime(1500))
+      .subscribe((value: number) => this.uiHttpPortSave(value))
 
     this.uiAuthFormControl.patchValue(this.$settings.formAuth)
     this.uiAuthFormControl.valueChanges
@@ -1381,7 +1405,7 @@ export class SettingsComponent implements OnInit {
   }
 
   private async uiPortSave(value: number) {
-    if (!value || typeof value !== 'number' || value < 1025 || value > 65533 || Number.isInteger(value) === false || value === this.hbPortFormControl.value) {
+    if (!value || typeof value !== 'number' || value < 1025 || value > 65533 || Number.isInteger(value) === false) {
       this.uiPortIsInvalid = true
       return
     }
@@ -1392,14 +1416,60 @@ export class SettingsComponent implements OnInit {
       await this.saveUiSettingChange('port', value)
       this.uiPortIsInvalid = false
       setTimeout(() => {
-        this.hbPortIsSaving = true
-        this.hbPortIsInvalid = false
-        this.hbPortIsSaving = false
-        this.hbPortIsSaving = false
-        console.error(error)
-        this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
         this.uiPortIsSaving = false
-      }
+        this.showRestartToast()
+      }, 1000)
+    } catch (error: any) {
+      console.error(error)
+      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      this.uiPortIsSaving = false
+    }
+  }
+
+  private async uiHttpsPortSave(value: number) {
+    if (!value || typeof value !== 'number' || value < 1025 || value > 65533 || Number.isInteger(value) === false) {
+      this.uiHttpsPortIsInvalid = true
+      return
+    }
+
+    try {
+      this.uiHttpsPortIsSaving = true
+      ; (this.$settings.env as any).httpsPort = value
+      this.$settings.setEnvItem('httpsPort', value)
+      await this.saveUiSettingChange('httpsPort', value)
+      this.uiHttpsPortIsInvalid = false
+      setTimeout(() => {
+        this.uiHttpsPortIsSaving = false
+        this.showRestartToast()
+      }, 1000)
+    } catch (error: any) {
+      console.error(error)
+      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      this.uiHttpsPortIsSaving = false
+    }
+  }
+
+  private async uiHttpPortSave(value: number) {
+    if (!value || typeof value !== 'number' || value < 1025 || value > 65533 || Number.isInteger(value) === false) {
+      this.uiHttpPortIsInvalid = true
+      return
+    }
+
+    try {
+      this.uiHttpPortIsSaving = true
+      ; (this.$settings.env as any).httpPort = value
+      this.$settings.setEnvItem('httpPort', value)
+      await this.saveUiSettingChange('httpPort', value)
+      this.uiHttpPortIsInvalid = false
+      setTimeout(() => {
+        this.uiHttpPortIsSaving = false
+        this.showRestartToast()
+      }, 1000)
+    } catch (error: any) {
+      console.error(error)
+      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      this.uiHttpPortIsSaving = false
+    }
   }
 
   private async uiAuthSave(value: boolean) {

@@ -133,15 +133,15 @@ export class ConfigService {
 
     // Default ports
     if (!this.ui.port) {
-      this.ui.port = 8581;
+      this.ui.port = 8581
     }
     // Default httpPort to 8580 when not explicitly set
     if (!this.ui.httpPort) {
-      this.ui.httpPort = 8580;
+      this.ui.httpPort = 8580
     }
     // Default httpsPort to 8581 when not explicitly set
     if (!this.ui.httpsPort) {
-      this.ui.httpsPort = 8581;
+      this.ui.httpsPort = 8581
     }
     // Leave httpsPort unchanged if explicitly configured; allows single-port setups to remain unchanged
     // Default HTTP->HTTPS redirect flag
