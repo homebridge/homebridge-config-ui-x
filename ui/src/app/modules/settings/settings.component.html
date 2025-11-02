@@ -3,12 +3,8 @@
     <h3 class="primary-text m-0">{{ 'menu.settings.title' | translate }}</h3>
   </div>
   <div class="col-6 text-end">
-    <button
-      type="button"
-      class="btn btn-elegant my-0 me-0"
-      (click)="toggleSearch()"
-      [attr.aria-label]="'form.search' | translate"
-    >
+    <button type="button" class="btn btn-elegant my-0 me-0" (click)="toggleSearch()"
+      [attr.aria-label]="'form.search' | translate">
       <i class="fas{{ showSearchBar ? ' primary-text' : '' }} fa-search"></i>
     </button>
   </div>
@@ -18,15 +14,8 @@
 <div class="row">
   <div class="col-md-12">
     <form novalidate>
-      <input
-        type="text"
-        class="search-bar"
-        #searchInput
-        [placeholder]="'form.search' | translate"
-        [(ngModel)]="searchQuery"
-        (ngModelChange)="filterSettings()"
-        [ngModelOptions]="{standalone: true}"
-      />
+      <input type="text" class="search-bar" #searchInput [placeholder]="'form.search' | translate"
+        [(ngModel)]="searchQuery" (ngModelChange)="filterSettings()" [ngModelOptions]="{standalone: true}" />
       @if (searchQuery) {
       <a class="search-bar-clear" href="javascript:void(0)" (click)="clearSearch()">
         <i class="fas fa-square-xmark"></i>
@@ -41,14 +30,8 @@
 <!-- GENERAL SETTINGS -->
 @if (isSectionVisible('general')) {
 <div class="my-4">
-  <div
-    role="button"
-    tabindex="0"
-    [attr.aria-expanded]="showFields.general ? 'true' : 'false'"
-    [attr.aria-controls]="'fieldsGeneral'"
-    (click)="toggleSection('general')"
-    class="mt-3 hover-pointer"
-  >
+  <div role="button" tabindex="0" [attr.aria-expanded]="showFields.general ? 'true' : 'false'"
+    [attr.aria-controls]="'fieldsGeneral'" (click)="toggleSection('general')" class="mt-3 hover-pointer">
     <h5 class="primary-text">
       <i class="fa" [ngClass]="{ 'fa-chevron-down': showFields.general, 'fa-chevron-right': !showFields.general }"></i>
       {{ 'settings.general.title_general' | translate }}
@@ -60,13 +43,9 @@
     <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
       <span>{{ 'settings.name' | translate }}</span>
       <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
-        <input
-          class="form-control custom-input resp-input order-1 order-md-2"
-          type="text"
-          [formControl]="hbNameFormControl"
-          [attr.aria-label]="'settings.name' | translate"
-          [ngClass]="{ 'is-invalid': hbNameIsInvalid }"
-        />
+        <input class="form-control custom-input resp-input order-1 order-md-2" type="text"
+          [formControl]="hbNameFormControl" [attr.aria-label]="'settings.name' | translate"
+          [ngClass]="{ 'is-invalid': hbNameIsInvalid }" />
         @if (hbNameIsSaving) {
         <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
         }
@@ -75,36 +54,24 @@
     } @if (!isItemHidden('setting-backup')) {
     <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
       <span class="pe-2"> {{ 'backup.title_backup' | translate }} </span>
-      <button
-        class="btn btn-primary waves-effect m-0 ms-3"
-        style="min-width: 50px"
-        (click)="openBackupModal()"
-        [attr.aria-label]="'backup.title_backup' | translate"
-      >
+      <button class="btn btn-primary waves-effect m-0 ms-3" style="min-width: 50px" (click)="openBackupModal()"
+        [attr.aria-label]="'backup.title_backup' | translate">
         <i class="fas fa-arrow-right"></i>
       </button>
     </li>
     } @if (!isItemHidden('setting-restore')) {
     <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
       <span class="pe-2"> {{ 'config.restore.title' | translate }} </span>
-      <button
-        class="btn btn-primary waves-effect m-0 ms-3"
-        style="min-width: 50px"
-        (click)="openConfigBackup()"
-        [attr.aria-label]="'config.restore.title' | translate"
-      >
+      <button class="btn btn-primary waves-effect m-0 ms-3" style="min-width: 50px" (click)="openConfigBackup()"
+        [attr.aria-label]="'config.restore.title' | translate">
         <i class="fas fa-arrow-right"></i>
       </button>
     </li>
     } @if (!isItemHidden('setting-users')) {
     <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
       <span class="pe-2"> {{ 'menu.tooltip_user_accounts' | translate }} </span>
-      <a
-        class="btn btn-primary waves-effect m-0 ms-3"
-        style="min-width: 50px"
-        routerLink="/users"
-        [attr.aria-label]="'menu.tooltip_user_accounts' | translate"
-      >
+      <a class="btn btn-primary waves-effect m-0 ms-3" style="min-width: 50px" routerLink="/users"
+        [attr.aria-label]="'menu.tooltip_user_accounts' | translate">
         <i class="fas fa-arrow-right"></i>
       </a>
     </li>
@@ -117,14 +84,8 @@
 <!-- DISPLAY SETTINGS -->
 @if (isSectionVisible('display')) {
 <div class="my-4">
-  <div
-    role="button"
-    tabindex="0"
-    [attr.aria-expanded]="showFields.display ? 'true' : 'false'"
-    [attr.aria-controls]="'fieldsDisplay'"
-    (click)="toggleSection('display')"
-    class="mt-3 hover-pointer"
-  >
+  <div role="button" tabindex="0" [attr.aria-expanded]="showFields.display ? 'true' : 'false'"
+    [attr.aria-controls]="'fieldsDisplay'" (click)="toggleSection('display')" class="mt-3 hover-pointer">
     <h5 class="primary-text">
       <i class="fa" [ngClass]="{ 'fa-chevron-down': showFields.display, 'fa-chevron-right': !showFields.display }"></i>
       {{ 'settings.general.title_display' | translate }}
@@ -238,19 +199,14 @@
     </li>
     } @if (!isItemHidden('setting-betas')) {
     <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
-      <span
-        >{{ 'settings.display.show_betas' | translate }}
+      <span>{{ 'settings.display.show_betas' | translate }}
         <span class="badge badge-primary ms-1">{{ 'common.labels.beta' | translate }}</span>
       </span>
       <div class="d-flex align-items-center">
         <div class="order-1 order-md-2">
-          <input
-            type="checkbox"
-            class="rendux-input"
-            id="uiAlwaysShowBetas"
+          <input type="checkbox" class="rendux-input" id="uiAlwaysShowBetas"
             [formControl]="uiAlwaysShowBetasFormControl"
-            [attr.aria-label]="'settings.display.show_betas' | translate"
-          />
+            [attr.aria-label]="'settings.display.show_betas' | translate" />
           <label for="uiAlwaysShowBetas" class="rendux-label ms-3" style="min-width: 50px"></label>
         </div>
         @if (uiAlwaysShowBetasIsSaving) {
@@ -261,12 +217,8 @@
     } @if (!isItemHidden('setting-wallpaper')) {
     <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
       <span class="pe-2">{{ 'settings.display.wallpaper' | translate }}</span>
-      <button
-        class="btn btn-primary waves-effect m-0 ms-3"
-        style="min-width: 50px"
-        (click)="openWallpaperModal()"
-        [attr.aria-label]="'settings.display.wallpaper' | translate"
-      >
+      <button class="btn btn-primary waves-effect m-0 ms-3" style="min-width: 50px" (click)="openWallpaperModal()"
+        [attr.aria-label]="'settings.display.wallpaper' | translate">
         <i class="fas fa-arrow-right"></i>
       </button>
     </li>
@@ -279,14 +231,8 @@
 <!-- STARTUP/ENV OPTIONS -->
 @if (isSectionVisible('startup')) {
 <div class="my-4">
-  <div
-    role="button"
-    tabindex="0"
-    [attr.aria-expanded]="showFields.startup ? 'true' : 'false'"
-    [attr.aria-controls]="'fieldsStartup'"
-    (click)="toggleSection('startup')"
-    class="mt-3 hover-pointer"
-  >
+  <div role="button" tabindex="0" [attr.aria-expanded]="showFields.startup ? 'true' : 'false'"
+    [attr.aria-controls]="'fieldsStartup'" (click)="toggleSection('startup')" class="mt-3 hover-pointer">
     <h5 class="primary-text">
       <i class="fa" [ngClass]="{ 'fa-chevron-down': showFields.startup, 'fa-chevron-right': !showFields.startup }"></i>
       {{ 'settings.title_startup_options' | translate }}
@@ -302,13 +248,8 @@
       </span>
       <div class="d-flex align-items-center">
         <div class="order-1 order-md-2">
-          <input
-            type="checkbox"
-            class="rendux-input"
-            id="homebridgeDebugMode"
-            [formControl]="hbDebugFormControl"
-            [attr.aria-label]="'settings.startup.debug' | translate"
-          />
+          <input type="checkbox" class="rendux-input" id="homebridgeDebugMode" [formControl]="hbDebugFormControl"
+            [attr.aria-label]="'settings.startup.debug' | translate" />
           <label for="homebridgeDebugMode" class="rendux-label ms-3" style="min-width: 50px"></label>
         </div>
         @if (hbDebugIsSaving) {
@@ -324,13 +265,8 @@
       </span>
       <div class="d-flex align-items-center">
         <div class="order-1 order-md-2">
-          <input
-            type="checkbox"
-            class="rendux-input"
-            id="homebridgeInsecureMode"
-            [formControl]="hbInsecureFormControl"
-            [attr.aria-label]="'settings.startup.insecure' | translate"
-          />
+          <input type="checkbox" class="rendux-input" id="homebridgeInsecureMode" [formControl]="hbInsecureFormControl"
+            [attr.aria-label]="'settings.startup.insecure' | translate" />
           <label for="homebridgeInsecureMode" class="rendux-label ms-3" style="min-width: 50px"></label>
         </div>
         @if (hbInsecureIsSaving) {
@@ -346,13 +282,8 @@
       </span>
       <div class="d-flex align-items-center">
         <div class="order-1 order-md-2">
-          <input
-            type="checkbox"
-            class="rendux-input"
-            id="homebridgeKeepOrphans"
-            [formControl]="hbKeepFormControl"
-            [attr.aria-label]="'settings.startup.keep_accessories' | translate"
-          />
+          <input type="checkbox" class="rendux-input" id="homebridgeKeepOrphans" [formControl]="hbKeepFormControl"
+            [attr.aria-label]="'settings.startup.keep_accessories' | translate" />
           <label for="homebridgeKeepOrphans" class="rendux-label ms-3" style="min-width: 50px"></label>
         </div>
         @if (hbKeepIsSaving) {
@@ -368,13 +299,8 @@
       </span>
       <div class="d-flex align-items-center">
         <div class="order-1 order-md-2">
-          <input
-            type="checkbox"
-            class="rendux-input"
-            id="homebridgeMetrics"
-            [formControl]="uiMetricsFormControl"
-            [attr.aria-label]="'settings.startup.metrics' | translate"
-          />
+          <input type="checkbox" class="rendux-input" id="homebridgeMetrics" [formControl]="uiMetricsFormControl"
+            [attr.aria-label]="'settings.startup.metrics' | translate" />
           <label for="homebridgeMetrics" class="rendux-label ms-3" style="min-width: 50px"></label>
         </div>
         @if (uiMetricsIsSaving) {
@@ -389,13 +315,9 @@
         <small class="grey-text pe-2">{{ 'settings.network.hb_package_desc' | translate }}</small>
       </span>
       <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
-        <input
-          class="form-control custom-input resp-input order-1 order-md-2"
-          type="text"
-          placeholder="/usr/local/lib/node_modules/homebridge"
-          [formControl]="hbPackageFormControl"
-          [attr.aria-label]="'settings.network.hb_package' | translate"
-        />
+        <input class="form-control custom-input resp-input order-1 order-md-2" type="text"
+          placeholder="/usr/local/lib/node_modules/homebridge" [formControl]="hbPackageFormControl"
+          [attr.aria-label]="'settings.network.hb_package' | translate" />
         @if (hbPackageIsSaving) {
         <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
         }
@@ -408,13 +330,8 @@
         <small class="grey-text pe-2">{{ 'settings.linux.shutdown_desc' | translate }}</small>
       </span>
       <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
-        <input
-          class="form-control custom-input resp-input order-1 order-md-2"
-          type="text"
-          placeholder="shutdown"
-          [formControl]="hbLinuxShutdownFormControl"
-          [attr.aria-label]="'settings.linux.shutdown' | translate"
-        />
+        <input class="form-control custom-input resp-input order-1 order-md-2" type="text" placeholder="shutdown"
+          [formControl]="hbLinuxShutdownFormControl" [attr.aria-label]="'settings.linux.shutdown' | translate" />
         @if (hbLinuxShutdownIsSaving) {
         <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
         }
@@ -427,13 +344,8 @@
         <small class="grey-text pe-2">{{ 'settings.linux.restart_desc' | translate }}</small>
       </span>
       <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
-        <input
-          class="form-control custom-input resp-input order-1 order-md-2"
-          type="text"
-          placeholder="reboot"
-          [formControl]="hbLinuxRestartFormControl"
-          [attr.aria-label]="'settings.linux.restart' | translate"
-        />
+        <input class="form-control custom-input resp-input order-1 order-md-2" type="text" placeholder="reboot"
+          [formControl]="hbLinuxRestartFormControl" [attr.aria-label]="'settings.linux.restart' | translate" />
         @if (hbLinuxRestartIsSaving) {
         <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
         }
@@ -446,13 +358,9 @@
         <small class="grey-text pe-2">{{ 'settings.linux.temp_desc' | translate }}</small>
       </span>
       <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
-        <input
-          class="form-control custom-input resp-input order-1 order-md-2"
-          type="text"
-          placeholder="/sys/class/thermal/thermal_zone0/temp"
-          [formControl]="uiTempFileFormControl"
-          [attr.aria-label]="'settings.linux.temp' | translate"
-        />
+        <input class="form-control custom-input resp-input order-1 order-md-2" type="text"
+          placeholder="/sys/class/thermal/thermal_zone0/temp" [formControl]="uiTempFileFormControl"
+          [attr.aria-label]="'settings.linux.temp' | translate" />
         @if (uiTempFileIsSaving) {
         <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
         }
@@ -462,18 +370,12 @@
     <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
       <span>
         <span class="font-monospace">DEBUG</span><br />
-        <small
-          class="grey-text pe-2"
-          [innerHTML]="'settings.service.debug_tooltip' | translate: { link: linkDebug }"
-        ></small>
+        <small class="grey-text pe-2"
+          [innerHTML]="'settings.service.debug_tooltip' | translate: { link: linkDebug }"></small>
       </span>
       <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
-        <input
-          class="form-control custom-input resp-input order-1 order-md-2"
-          [formControl]="hbEnvDebugFormControl"
-          type="text"
-          placeholder="HAP-NodeJS:Advertiser,HAP-NodeJS:Service"
-        />
+        <input class="form-control custom-input resp-input order-1 order-md-2" [formControl]="hbEnvDebugFormControl"
+          type="text" placeholder="HAP-NodeJS:Advertiser,HAP-NodeJS:Service" />
         @if (hbEnvDebugIsSaving) {
         <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
         }
@@ -486,12 +388,8 @@
         <small class="grey-text pe-2">{{ 'settings.service.node_tooltip' | translate }}</small>
       </span>
       <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
-        <input
-          class="form-control custom-input resp-input order-1 order-md-2"
-          [formControl]="hbEnvNodeFormControl"
-          type="text"
-          placeholder="--max-old-space-size=512 --max-http-header-size=8192"
-        />
+        <input class="form-control custom-input resp-input order-1 order-md-2" [formControl]="hbEnvNodeFormControl"
+          type="text" placeholder="--max-old-space-size=512 --max-http-header-size=8192" />
         @if (hbEnvNodeIsSaving) {
         <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
         }
@@ -503,12 +401,8 @@
         {{ 'menu.docker.startup_script' | translate }}<br />
         <small class="grey-text pe-2">{{ 'platform.docker.script_help' | translate }}</small>
       </span>
-      <a
-        class="btn btn-primary waves-effect m-0 ms-3"
-        style="min-width: 50px"
-        routerLink="/platform-tools/docker/startup-script"
-        [attr.aria-label]="'menu.docker.startup_script' | translate"
-      >
+      <a class="btn btn-primary waves-effect m-0 ms-3" style="min-width: 50px"
+        routerLink="/platform-tools/docker/startup-script" [attr.aria-label]="'menu.docker.startup_script' | translate">
         <i class="fas fa-arrow-right"></i>
       </a>
     </li>
@@ -521,14 +415,8 @@
 <!-- NETWORK SETTINGS -->
 @if (isSectionVisible('network')) {
 <div class="my-4">
-  <div
-    role="button"
-    tabindex="0"
-    [attr.aria-expanded]="showFields.network ? 'true' : 'false'"
-    [attr.aria-controls]="'fieldsNetwork'"
-    (click)="toggleSection('network')"
-    class="mt-3 hover-pointer"
-  >
+  <div role="button" tabindex="0" [attr.aria-expanded]="showFields.network ? 'true' : 'false'"
+    [attr.aria-controls]="'fieldsNetwork'" (click)="toggleSection('network')" class="mt-3 hover-pointer">
     <h5 class="primary-text">
       <i class="fa" [ngClass]="{ 'fa-chevron-down': showFields.network, 'fa-chevron-right': !showFields.network }"></i>
       {{ 'settings.network.title_network' | translate }}
@@ -542,27 +430,20 @@
         {{ 'settings.network.title_network_interfaces' | translate }}<br />
         <div class="small grey-text pe-2">{{ 'settings.network.message_network_interface' | translate }}</div>
         @for (adapter of adaptersSelected; track adapter) {
-        <span
-          class="badge badge-primary me-1"
-          [ngClass]="{ 'badge-danger': adapter.missing, 'badge-info': !adapter.missing }"
-        >
+        <span class="badge badge-primary me-1"
+          [ngClass]="{ 'badge-danger': adapter.missing, 'badge-info': !adapter.missing }">
           @if (adapter.missing) {
           <i class="fas fa-exclamation-triangle"></i>
           } {{ adapter.iface }}:
-          <span class="fw-normal"
-            >{{ adapter.missing ? ('settings.mdns_advertiser_not_connected' | translate) : adapter.ip4 || adapter.ip6
-            }}</span
-          >
+          <span class="fw-normal">{{ adapter.missing ? ('settings.mdns_advertiser_not_connected' | translate) :
+            adapter.ip4 || adapter.ip6
+            }}</span>
         </span>
         }
       </span>
-      <button
-        class="btn btn-primary waves-effect m-0 ms-3"
-        style="min-width: 50px"
-        (click)="selectNetworkInterfaces()"
+      <button class="btn btn-primary waves-effect m-0 ms-3" style="min-width: 50px" (click)="selectNetworkInterfaces()"
         [disabled]="!adaptersAvailable.length"
-        [attr.aria-label]="'settings.network.title_network_interfaces' | translate"
-      >
+        [attr.aria-label]="'settings.network.title_network_interfaces' | translate">
         <i class="fas fa-arrow-right"></i>
       </button>
     </li>
@@ -573,11 +454,8 @@
         <small class="grey-text pe-2">{{ 'settings.mdns_advertiser_help' | translate }}</small>
       </span>
       <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
-        <select
-          class="custom-select resp-select order-1 order-md-2"
-          [formControl]="hbMDnsFormControl"
-          [attr.aria-label]="'settings.mdns_advertiser' | translate"
-        >
+        <select class="custom-select resp-select order-1 order-md-2" [formControl]="hbMDnsFormControl"
+          [attr.aria-label]="'settings.mdns_advertiser' | translate">
           @if (showAvahiMdnsOption) {
           <option value="avahi">Avahi ({{ 'settings.mdns_advertiser_rec' | translate }})</option>
           }
@@ -602,15 +480,9 @@
         <small class="grey-text pe-2">{{ 'settings.network.port_hb_desc' | translate }}</small>
       </span>
       <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
-        <input
-          class="form-control custom-input resp-input order-1 order-md-2"
-          type="number"
-          min="1025"
-          max="65533"
-          [formControl]="hbPortFormControl"
-          [attr.aria-label]="'settings.network.port_hb' | translate"
-          [ngClass]="{ 'is-invalid': hbPortIsInvalid }"
-        />
+        <input class="form-control custom-input resp-input order-1 order-md-2" type="number" min="1025" max="65533"
+          [formControl]="hbPortFormControl" [attr.aria-label]="'settings.network.port_hb' | translate"
+          [ngClass]="{ 'is-invalid': hbPortIsInvalid }" />
         @if (hbPortIsSaving) {
         <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
         }
@@ -623,15 +495,9 @@
         <small class="grey-text pe-2">{{ 'settings.network.port_start_desc' | translate }}</small>
       </span>
       <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
-        <input
-          class="form-control custom-input resp-input order-1 order-md-2"
-          type="number"
-          min="1025"
-          max="65533"
-          [formControl]="hbStartPortFormControl"
-          [attr.aria-label]="'settings.network.port_start' | translate"
-          [ngClass]="{ 'is-invalid': hbStartPortIsInvalid }"
-        />
+        <input class="form-control custom-input resp-input order-1 order-md-2" type="number" min="1025" max="65533"
+          [formControl]="hbStartPortFormControl" [attr.aria-label]="'settings.network.port_start' | translate"
+          [ngClass]="{ 'is-invalid': hbStartPortIsInvalid }" />
         @if (hbStartPortIsSaving) {
         <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
         }
@@ -644,15 +510,9 @@
         <small class="grey-text pe-2">{{ 'settings.network.port_end_desc' | translate }}</small>
       </span>
       <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
-        <input
-          class="form-control custom-input resp-input order-1 order-md-2"
-          type="number"
-          min="1025"
-          max="65533"
-          [formControl]="hbEndPortFormControl"
-          [attr.aria-label]="'settings.network.port_end' | translate"
-          [ngClass]="{ 'is-invalid': hbEndPortIsInvalid }"
-        />
+        <input class="form-control custom-input resp-input order-1 order-md-2" type="number" min="1025" max="65533"
+          [formControl]="hbEndPortFormControl" [attr.aria-label]="'settings.network.port_end' | translate"
+          [ngClass]="{ 'is-invalid': hbEndPortIsInvalid }" />
         @if (hbEndPortIsSaving) {
         <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
         }
@@ -671,14 +531,9 @@
         }
       </span>
       <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
-        <input
-          class="form-control custom-input resp-input order-1 order-md-2"
-          type="text"
-          pattern="^[^{}/:\\s]+(?::\d+)?$"
-          [formControl]="uiHostFormControl"
-          placeholder="0.0.0.0"
-          [attr.aria-label]="'settings.network.host' | translate"
-        />
+        <input class="form-control custom-input resp-input order-1 order-md-2" type="text"
+          pattern="^[^{}/:\\s]+(?::\d+)?$" [formControl]="uiHostFormControl" placeholder="0.0.0.0"
+          [attr.aria-label]="'settings.network.host' | translate" />
         @if (uiHostIsSaving) {
         <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
         }
@@ -697,14 +552,9 @@
         }
       </span>
       <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
-        <input
-          class="form-control custom-input resp-input order-1 order-md-2"
-          type="text"
-          pattern="^[^{}/:\\s]+(?::\d+)?$"
-          placeholder="example.com:8443"
-          [formControl]="uiProxyHostFormControl"
-          [attr.aria-label]="'settings.network.proxy' | translate"
-        />
+        <input class="form-control custom-input resp-input order-1 order-md-2" type="text"
+          pattern="^[^{}/:\\s]+(?::\d+)?$" placeholder="example.com:8443" [formControl]="uiProxyHostFormControl"
+          [attr.aria-label]="'settings.network.proxy' | translate" />
         @if (uiProxyHostIsSaving) {
         <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
         }
@@ -723,16 +573,9 @@
         }
       </span>
       <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
-        <input
-          class="form-control custom-input resp-input order-1 order-md-2"
-          type="number"
-          min="1025"
-          max="65533"
-          placeholder="8581"
-          [formControl]="uiPortFormControl"
-          [attr.aria-label]="'settings.network.port_ui' | translate"
-          [ngClass]="{ 'is-invalid': uiPortIsInvalid }"
-        />
+        <input class="form-control custom-input resp-input order-1 order-md-2" type="number" min="1025" max="65533"
+          placeholder="8581" [formControl]="uiPortFormControl"
+          [attr.aria-label]="'settings.network.port_ui' | translate" [ngClass]="{ 'is-invalid': uiPortIsInvalid }" />
         @if (uiPortIsSaving) {
         <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
         }
@@ -757,13 +600,9 @@
         }
       </span>
       <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
-        <input
-          class="form-control custom-input resp-input order-1 order-md-2"
-          type="text"
-          [formControl]="uiWebrootFormControl"
-          placeholder="/"
-          [attr.aria-label]="'settings.network.webroot' | translate"
-        />
+        <input class="form-control custom-input resp-input order-1 order-md-2" type="text"
+          [formControl]="uiWebrootFormControl" placeholder="/"
+          [attr.aria-label]="'settings.network.webroot' | translate" />
         @if (uiWebrootIsSaving) {
         <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
         }
@@ -778,13 +617,9 @@
       </span>
       <div class="d-flex align-items-center">
         <div class="order-1 order-md-2">
-          <input
-            type="checkbox"
-            class="rendux-input"
-            id="enableMdnsAdvertise"
+          <input type="checkbox" class="rendux-input" id="enableMdnsAdvertise"
             [formControl]="enableMdnsAdvertiseFormControl"
-            [attr.aria-label]="'settings.network.mdns_advertise' | translate"
-          />
+            [attr.aria-label]="'settings.network.mdns_advertise' | translate" />
           <label class="rendux-label ms-3" for="enableMdnsAdvertise" style="min-width: 50px"></label>
         </div>
         @if (enableMdnsAdvertiseIsSaving) {
@@ -801,14 +636,8 @@
 <!-- MATTER SETTINGS -->
 @if (isMatterSupported && isSectionVisible('matter')) {
 <div class="my-4">
-  <div
-    role="button"
-    tabindex="0"
-    [attr.aria-expanded]="showFields.matter ? 'true' : 'false'"
-    [attr.aria-controls]="'fieldsMatter'"
-    (click)="toggleSection('matter')"
-    class="mt-3 hover-pointer"
-  >
+  <div role="button" tabindex="0" [attr.aria-expanded]="showFields.matter ? 'true' : 'false'"
+    [attr.aria-controls]="'fieldsMatter'" (click)="toggleSection('matter')" class="mt-3 hover-pointer">
     <h5 class="primary-text">
       <i class="fa" [ngClass]="{ 'fa-chevron-down': showFields.matter, 'fa-chevron-right': !showFields.matter }"></i>
       {{ 'settings.matter.title' | translate }}
@@ -826,13 +655,8 @@
       </span>
       <div class="d-flex align-items-center">
         <div class="order-1 order-md-2">
-          <input
-            type="checkbox"
-            class="rendux-input"
-            id="matterEnabled"
-            [formControl]="matterEnabledFormControl"
-            [attr.aria-label]="'settings.matter.enabled' | translate"
-          />
+          <input type="checkbox" class="rendux-input" id="matterEnabled" [formControl]="matterEnabledFormControl"
+            [attr.aria-label]="'settings.matter.enabled' | translate" />
           <label for="matterEnabled" class="rendux-label ms-3" style="min-width: 50px"></label>
         </div>
         @if (matterEnabledIsSaving) {
@@ -847,16 +671,9 @@
         <small class="grey-text pe-2">{{ 'settings.matter.port_desc' | translate }}</small>
       </span>
       <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
-        <input
-          class="form-control custom-input resp-input order-1 order-md-2"
-          type="number"
-          min="1024"
-          max="65535"
-          placeholder="5540"
-          [formControl]="matterPortFormControl"
-          [attr.aria-label]="'settings.matter.port' | translate"
-          [ngClass]="{ 'is-invalid': matterPortIsInvalid }"
-        />
+        <input class="form-control custom-input resp-input order-1 order-md-2" type="number" min="1024" max="65535"
+          placeholder="5540" [formControl]="matterPortFormControl"
+          [attr.aria-label]="'settings.matter.port' | translate" [ngClass]="{ 'is-invalid': matterPortIsInvalid }" />
         @if (matterPortIsSaving) {
         <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
         }
@@ -871,19 +688,11 @@
 <!-- LOGGING & TERMINAL SETTINGS -->
 @if (isSectionVisible('terminal')) {
 <div class="my-4">
-  <div
-    role="button"
-    tabindex="0"
-    [attr.aria-expanded]="showFields.terminal ? 'true' : 'false'"
-    [attr.aria-controls]="'fieldsTerminal'"
-    (click)="toggleSection('terminal')"
-    class="mt-3 hover-pointer"
-  >
+  <div role="button" tabindex="0" [attr.aria-expanded]="showFields.terminal ? 'true' : 'false'"
+    [attr.aria-controls]="'fieldsTerminal'" (click)="toggleSection('terminal')" class="mt-3 hover-pointer">
     <h5 class="primary-text">
-      <i
-        class="fa"
-        [ngClass]="{ 'fa-chevron-down': showFields.terminal, 'fa-chevron-right': !showFields.terminal }"
-      ></i>
+      <i class="fa"
+        [ngClass]="{ 'fa-chevron-down': showFields.terminal, 'fa-chevron-right': !showFields.terminal }"></i>
       {{ 'settings.network.title_terminal' | translate }}
     </h5>
   </div>
@@ -896,15 +705,10 @@
         <small class="grey-text pe-2">{{ 'settings.terminal.log_max_desc' | translate }}</small>
       </span>
       <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
-        <input
-          class="form-control custom-input resp-input order-1 order-md-2"
-          type="number"
-          min="-1"
-          placeholder="1000000"
-          [formControl]="hbLogSizeFormControl"
+        <input class="form-control custom-input resp-input order-1 order-md-2" type="number" min="-1"
+          placeholder="1000000" [formControl]="hbLogSizeFormControl"
           [attr.aria-label]="'settings.terminal.log_max' | translate"
-          [ngClass]="{ 'is-invalid': hbLogSizeIsInvalid }"
-        />
+          [ngClass]="{ 'is-invalid': hbLogSizeIsInvalid }" />
         @if (hbLogSizeIsSaving) {
         <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
         }
@@ -917,15 +721,10 @@
         <small class="grey-text pe-2">{{ 'settings.terminal.log_truncate_desc' | translate }}</small>
       </span>
       <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
-        <input
-          class="form-control custom-input resp-input order-1 order-md-2"
-          type="number"
-          min="0"
-          placeholder="200000"
-          [formControl]="hbLogTruncateFormControl"
+        <input class="form-control custom-input resp-input order-1 order-md-2" type="number" min="0"
+          placeholder="200000" [formControl]="hbLogTruncateFormControl"
           [attr.aria-label]="'settings.terminal.log_truncate' | translate"
-          [ngClass]="{ 'is-invalid': hbLogTruncateIsInvalid }"
-        />
+          [ngClass]="{ 'is-invalid': hbLogTruncateIsInvalid }" />
         @if (hbLogTruncateIsSaving) {
         <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
         }
@@ -940,13 +739,9 @@
       </span>
       <div class="d-flex align-items-center">
         <div class="order-1 order-md-2">
-          <input
-            type="checkbox"
-            class="rendux-input"
-            id="terminalPersistence"
+          <input type="checkbox" class="rendux-input" id="terminalPersistence"
             [formControl]="uiTerminalPersistenceFormControl"
-            [attr.aria-label]="'settings.terminal.persistence' | translate"
-          />
+            [attr.aria-label]="'settings.terminal.persistence' | translate" />
           <label class="rendux-label ms-3" for="terminalPersistence" style="min-width: 50px"></label>
         </div>
         @if (uiTerminalPersistenceIsSaving) {
@@ -963,13 +758,9 @@
       </span>
       <div class="d-flex align-items-center">
         <div class="order-1 order-md-2">
-          <input
-            type="checkbox"
-            class="rendux-input"
-            id="terminalHideWarning"
+          <input type="checkbox" class="rendux-input" id="terminalHideWarning"
             [formControl]="uiTerminalHideWarningFormControl"
-            [attr.aria-label]="'settings.terminal.warning' | translate"
-          />
+            [attr.aria-label]="'settings.terminal.warning' | translate" />
           <label class="rendux-label ms-3" for="terminalHideWarning" style="min-width: 50px"></label>
         </div>
         @if (uiTerminalHideWarningIsSaving) {
@@ -987,16 +778,10 @@
         <div class="small grey-text">{{ 'settings.terminal.buffer_size_help' | translate }}</div>
       </div>
       <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
-        <input
-          class="form-control custom-input resp-input order-1 order-md-2"
-          type="number"
-          min="10000"
-          max="100000"
-          step="10000"
-          [formControl]="uiTerminalBufferSizeFormControl"
+        <input class="form-control custom-input resp-input order-1 order-md-2" type="number" min="10000" max="100000"
+          step="10000" [formControl]="uiTerminalBufferSizeFormControl"
           [attr.aria-label]="'settings.terminal.buffer_size' | translate"
-          [ngClass]="{ 'is-invalid': uiTerminalBufferSizeIsInvalid }"
-        />
+          [ngClass]="{ 'is-invalid': uiTerminalBufferSizeIsInvalid }" />
         @if (uiTerminalBufferSizeIsSaving) {
         <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
         }
@@ -1011,19 +796,11 @@
 <!-- SECURITY SETTINGS -->
 @if (isSectionVisible('security')) {
 <div class="my-4">
-  <div
-    role="button"
-    tabindex="0"
-    [attr.aria-expanded]="showFields.security ? 'true' : 'false'"
-    [attr.aria-controls]="'fieldsSecurity'"
-    (click)="toggleSection('security')"
-    class="mt-3 hover-pointer"
-  >
+  <div role="button" tabindex="0" [attr.aria-expanded]="showFields.security ? 'true' : 'false'"
+    [attr.aria-controls]="'fieldsSecurity'" (click)="toggleSection('security')" class="mt-3 hover-pointer">
     <h5 class="primary-text">
-      <i
-        class="fa"
-        [ngClass]="{ 'fa-chevron-down': showFields.security, 'fa-chevron-right': !showFields.security }"
-      ></i>
+      <i class="fa"
+        [ngClass]="{ 'fa-chevron-down': showFields.security, 'fa-chevron-right': !showFields.security }"></i>
       {{ 'settings.network.title_security' | translate }}
     </h5>
   </div>
@@ -1037,13 +814,8 @@
       </span>
       <div class="d-flex align-items-center">
         <div class="order-1 order-md-2">
-          <input
-            type="checkbox"
-            class="rendux-input"
-            id="uiAuthForm"
-            [formControl]="uiAuthFormControl"
-            [attr.aria-label]="'settings.security.auth' | translate"
-          />
+          <input type="checkbox" class="rendux-input" id="uiAuthForm" [formControl]="uiAuthFormControl"
+            [attr.aria-label]="'settings.security.auth' | translate" />
           <label for="uiAuthForm" class="rendux-label ms-3" style="min-width: 50px"></label>
         </div>
         @if (uiAuthIsSaving) {
@@ -1060,13 +832,9 @@
       </span>
       <div class="d-flex align-items-center">
         <div class="order-1 order-md-2">
-          <input
-            type="checkbox"
-            class="rendux-input"
-            id="session-inactivity-based"
+          <input type="checkbox" class="rendux-input" id="session-inactivity-based"
             [formControl]="uiSessionTimeoutInactivityBasedFormControl"
-            [attr.aria-label]="'settings.startup.session_inactivity_based' | translate"
-          />
+            [attr.aria-label]="'settings.startup.session_inactivity_based' | translate" />
           <label class="rendux-label ms-3" for="session-inactivity-based" style="min-width: 50px"></label>
         </div>
         @if (uiSessionTimeoutInactivityBasedIsSaving) {
@@ -1083,52 +851,28 @@
       <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
         <div class="d-flex align-items-center gap-2">
           <div class="d-flex align-items-center">
-            <input
-              class="form-control custom-input"
-              type="number"
-              min="0"
-              max="365"
-              placeholder="0"
-              style="width: 44px; text-align: right"
-              [formControl]="uiSessionTimeoutDaysFormControl"
+            <input class="form-control custom-input" type="number" min="0" max="365" placeholder="0"
+              style="width: 44px; text-align: right" [formControl]="uiSessionTimeoutDaysFormControl"
               [attr.aria-label]="'settings.startup.session_days' | translate"
-              [ngClass]="{ 'is-invalid': uiSessionTimeoutIsInvalid }"
-            />
-            <label class="ms-1 me-2 mb-0 text-nowrap grey-text small"
-              >{{ 'settings.startup.session_days' | translate }}</label
-            >
+              [ngClass]="{ 'is-invalid': uiSessionTimeoutIsInvalid }" />
+            <label class="ms-1 me-2 mb-0 text-nowrap grey-text small">{{ 'settings.startup.session_days' | translate
+              }}</label>
           </div>
           <div class="d-flex align-items-center">
-            <input
-              class="form-control custom-input"
-              type="number"
-              min="0"
-              max="23"
-              placeholder="8"
-              style="width: 44px; text-align: right"
-              [formControl]="uiSessionTimeoutHoursFormControl"
+            <input class="form-control custom-input" type="number" min="0" max="23" placeholder="8"
+              style="width: 44px; text-align: right" [formControl]="uiSessionTimeoutHoursFormControl"
               [attr.aria-label]="'settings.startup.session_hours' | translate"
-              [ngClass]="{ 'is-invalid': uiSessionTimeoutIsInvalid }"
-            />
-            <label class="ms-1 me-2 mb-0 text-nowrap grey-text small"
-              >{{ 'settings.startup.session_hours' | translate }}</label
-            >
+              [ngClass]="{ 'is-invalid': uiSessionTimeoutIsInvalid }" />
+            <label class="ms-1 me-2 mb-0 text-nowrap grey-text small">{{ 'settings.startup.session_hours' | translate
+              }}</label>
           </div>
           <div class="d-flex align-items-center">
-            <input
-              class="form-control custom-input"
-              type="number"
-              min="0"
-              max="59"
-              placeholder="0"
-              style="width: 44px; text-align: right"
-              [formControl]="uiSessionTimeoutMinutesFormControl"
+            <input class="form-control custom-input" type="number" min="0" max="59" placeholder="0"
+              style="width: 44px; text-align: right" [formControl]="uiSessionTimeoutMinutesFormControl"
               [attr.aria-label]="'settings.startup.session_minutes' | translate"
-              [ngClass]="{ 'is-invalid': uiSessionTimeoutIsInvalid }"
-            />
-            <label class="ms-1 me-2 mb-0 text-nowrap grey-text small"
-              >{{ 'settings.startup.session_minutes' | translate }}</label
-            >
+              [ngClass]="{ 'is-invalid': uiSessionTimeoutIsInvalid }" />
+            <label class="ms-1 me-2 mb-0 text-nowrap grey-text small">{{ 'settings.startup.session_minutes' | translate
+              }}</label>
           </div>
         </div>
         @if (uiSessionTimeoutIsSaving) {
@@ -1153,11 +897,8 @@
         }
       </span>
       <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
-        <select
-          class="custom-select resp-select order-1 order-md-2"
-          [formControl]="uiSslTypeFormControl"
-          [attr.aria-label]="'settings.security.https' | translate"
-        >
+        <select class="custom-select resp-select order-1 order-md-2" [formControl]="uiSslTypeFormControl"
+          [attr.aria-label]="'settings.security.https' | translate">
           <option value="off">{{ 'accessories.control.off' | translate }}</option>
           @if (!runningOnRaspbianImage) {
           <option value="selfsigned">{{ 'settings.security.https_selfsigned' | translate }}</option>
@@ -1165,9 +906,35 @@
           <option value="keycert">{{ 'settings.security.https_keycert' | translate }}</option>
           <option value="pfx">{{ 'settings.security.https_pfx' | translate }}</option>
         </select>
+<<<<<<< Updated upstream
+=======
+        <button class="btn btn-elegant ms-2" type="button" (click)="validateSsl()"
+          [attr.aria-label]="'settings.security.ssl_validate' | translate"
+          title="{{ 'settings.security.ssl_validate' | translate }}">
+          <i class="fas fa-check"></i>
+        </button>
+>>>>>>> Stashed changes
       </div>
     </li>
-    } @if (this.uiSslTypeFormControl.value === 'selfsigned') {
+    } @if (this.uiSslTypeFormControl.value === 'selfsigned') { @if (!isItemHidden('setting-security-redirect')) {
+    <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
+      <span>
+        {{ 'settings.security.redirect_http_to_https' | translate }}<br />
+        <small class="grey-text pe-2">{{ 'settings.security.redirect_http_to_https_desc' | translate }}</small>
+      </span>
+      <div class="d-flex align-items-center">
+        <div class="order-1 order-md-2">
+          <input type="checkbox" class="rendux-input" id="redirectHttpToHttps"
+            [formControl]="redirectHttpToHttpsFormControl"
+            [attr.aria-label]="'settings.security.redirect_http_to_https' | translate" />
+          <label for="redirectHttpToHttps" class="rendux-label ms-3" style="min-width: 50px"></label>
+        </div>
+        @if (redirectHttpToHttpsIsSaving) {
+        <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
+        }
+      </div>
+    </li>
+    }
     <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
       <span>
         {{ 'settings.security.selfsigned_hostnames' | translate }}
@@ -1181,6 +948,7 @@
       </small>
       }
       <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
+<<<<<<< Updated upstream
         <input
           class="form-control custom-input resp-input order-1 order-md-2"
           type="text"
@@ -1188,6 +956,23 @@
           [formControl]="uiSslSelfSignedHostnamesFormControl"
           [attr.aria-label]="'settings.security.selfsigned_hostnames' | translate"
         />
+=======
+        <input class="form-control custom-input resp-input order-1 order-md-2" type="text"
+          placeholder="localhost, 127.0.0.1, homebridge.local" [formControl]="uiSslSelfSignedHostnamesFormControl"
+          [attr.aria-label]="'settings.security.selfsigned_hostnames' | translate" />
+        <button class="btn btn-primary waves-effect m-0 ms-3" style="min-width: 50px" type="button"
+          (click)="generateSelfSigned('keycert')"
+          [attr.aria-label]="'settings.security.selfsigned_generate_keycert' | translate"
+          title="{{ 'settings.security.selfsigned_generate_keycert' | translate }}">
+          <i class="fas fa-magic"></i>
+        </button>
+        <button class="btn btn-elegant m-0 ms-2" style="min-width: 50px" type="button"
+          (click)="generateSelfSigned('selfsigned')"
+          [attr.aria-label]="'settings.security.selfsigned_generate_selfsigned' | translate"
+          title="{{ 'settings.security.selfsigned_generate_selfsigned' | translate }}">
+          <i class="fas fa-shield-alt"></i>
+        </button>
+>>>>>>> Stashed changes
         @if (uiSslSelfSignedHostnamesIsSaving) {
         <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
         }
@@ -1202,6 +987,7 @@
         {{ 'settings.warning_pwa' | translate }}
       </small>
       }
+<<<<<<< Updated upstream
       <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
         <input
           class="form-control custom-input resp-input order-1 order-md-2"
@@ -1210,6 +996,19 @@
           [formControl]="uiSslKeyFormControl"
           [attr.aria-label]="'settings.security.key' | translate"
         />
+=======
+      <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center gap-2">
+        <button class="btn btn-elegant m-0" type="button" (click)="triggerKeyCertSelect()"
+          [attr.aria-label]="'settings.security.ssl_upload_keycert_aria' | translate"
+          title="{{ 'settings.security.ssl_upload_keycert_aria' | translate }}">
+          <i class="fas fa-upload"></i>
+        </button>
+        <input #sslKeyCertInput type="file" multiple (change)="onSslKeyCertChange(sslKeyCertInput.files)"
+          class="d-none" />
+        <input class="form-control custom-input resp-input order-1 order-md-2" type="text"
+          placeholder="/Users/.../certs/server.key" [formControl]="uiSslKeyFormControl"
+          [attr.aria-label]="'settings.security.key' | translate" />
+>>>>>>> Stashed changes
         @if (uiSslKeyIsSaving) {
         <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
         }
@@ -1224,6 +1023,7 @@
         {{ 'settings.warning_pwa' | translate }}
       </small>
       }
+<<<<<<< Updated upstream
       <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
         <input
           class="form-control custom-input resp-input order-1 order-md-2"
@@ -1232,6 +1032,17 @@
           [formControl]="uiSslCertFormControl"
           [attr.aria-label]="'settings.security.cert' | translate"
         />
+=======
+      <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center gap-2">
+        <button class="btn btn-elegant m-0" type="button" (click)="triggerKeyCertSelect()"
+          [attr.aria-label]="'settings.security.ssl_upload_keycert_aria' | translate"
+          title="{{ 'settings.security.ssl_upload_keycert_aria' | translate }}">
+          <i class="fas fa-upload"></i>
+        </button>
+        <input class="form-control custom-input resp-input order-1 order-md-2" type="text"
+          placeholder="/Users/.../certs/server.crt" [formControl]="uiSslCertFormControl"
+          [attr.aria-label]="'settings.security.cert' | translate" />
+>>>>>>> Stashed changes
         @if (uiSslCertIsSaving) {
         <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
         }
@@ -1246,6 +1057,7 @@
         {{ 'settings.warning_pwa' | translate }}
       </small>
       }
+<<<<<<< Updated upstream
       <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
         <input
           class="form-control custom-input resp-input order-1 order-md-2"
@@ -1254,6 +1066,18 @@
           [formControl]="uiSslPfxFormControl"
           [attr.aria-label]="'settings.security.pfx' | translate"
         />
+=======
+      <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center gap-2">
+        <button class="btn btn-elegant m-0" type="button" (click)="triggerPfxSelect()"
+          [attr.aria-label]="'settings.security.ssl_upload_pfx_aria' | translate"
+          title="{{ 'settings.security.ssl_upload_pfx_aria' | translate }}">
+          <i class="fas fa-upload"></i>
+        </button>
+        <input #sslPfxInput type="file" (change)="onSslPfxChange(sslPfxInput.files)" class="d-none" />
+        <input class="form-control custom-input resp-input order-1 order-md-2" type="text"
+          placeholder="/Users/.../certs/server.pfx" [formControl]="uiSslPfxFormControl"
+          [attr.aria-label]="'settings.security.pfx' | translate" />
+>>>>>>> Stashed changes
         @if (uiSslPfxIsSaving) {
         <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
         }
@@ -1269,15 +1093,10 @@
       </small>
       }
       <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
-        <input
-          class="form-control custom-input resp-input order-1 order-md-2"
-          [type]="showPfxPassphrase ? 'text' : 'password'"
-          placeholder="mypassphrase"
-          [formControl]="uiSslPassphraseFormControl"
-          [attr.aria-label]="'settings.security.pass' | translate"
-          (focus)="showPfxPassphrase = true"
-          (blur)="showPfxPassphrase = false"
-        />
+        <input class="form-control custom-input resp-input order-1 order-md-2"
+          [type]="showPfxPassphrase ? 'text' : 'password'" placeholder="mypassphrase"
+          [formControl]="uiSslPassphraseFormControl" [attr.aria-label]="'settings.security.pass' | translate"
+          (focus)="showPfxPassphrase = true" (blur)="showPfxPassphrase = false" />
         @if (uiSslPassphraseIsSaving) {
         <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
         }
@@ -1289,12 +1108,8 @@
         {{ 'settings.security.ui_control' | translate }}<br />
         <small class="grey-text pe-2">{{ 'settings.security.ui_control_desc' | translate }}</small>
       </span>
-      <button
-        class="btn btn-primary waves-effect m-0 ms-3"
-        style="min-width: 50px"
-        (click)="accessoryUiControl()"
-        [attr.aria-label]="'settings.security.ui_control' | translate"
-      >
+      <button class="btn btn-primary waves-effect m-0 ms-3" style="min-width: 50px" (click)="accessoryUiControl()"
+        [attr.aria-label]="'settings.security.ui_control' | translate">
         <i class="fas fa-arrow-right"></i>
       </button>
     </li>
@@ -1307,14 +1122,8 @@
 <!-- CACHE SETTINGS -->
 @if (isSectionVisible('cache')) {
 <div class="my-4">
-  <div
-    role="button"
-    tabindex="0"
-    [attr.aria-expanded]="showFields.cache ? 'true' : 'false'"
-    [attr.aria-controls]="'fieldsCache'"
-    (click)="toggleSection('cache')"
-    class="mt-3 hover-pointer"
-  >
+  <div role="button" tabindex="0" [attr.aria-expanded]="showFields.cache ? 'true' : 'false'"
+    [attr.aria-controls]="'fieldsCache'" (click)="toggleSection('cache')" class="mt-3 hover-pointer">
     <h5 class="primary-text">
       <i class="fa" [ngClass]="{ 'fa-chevron-down': showFields.cache, 'fa-chevron-right': !showFields.cache }"></i>
       {{ 'menu.label_accessories' | translate }}
@@ -1331,13 +1140,8 @@
       </span>
       <div class="d-flex align-items-center">
         <div class="order-1 order-md-2">
-          <input
-            type="checkbox"
-            class="rendux-input"
-            id="accessoryDebug"
-            [formControl]="uiAccDebugFormControl"
-            [attr.aria-label]="'settings.accessory.debug' | translate"
-          />
+          <input type="checkbox" class="rendux-input" id="accessoryDebug" [formControl]="uiAccDebugFormControl"
+            [attr.aria-label]="'settings.accessory.debug' | translate" />
           <label for="accessoryDebug" class="rendux-label ms-3" style="min-width: 50px"></label>
         </div>
         @if (uiAccDebugIsSaving) {
@@ -1351,12 +1155,8 @@
         {{ 'reset.accessory_ind.title' | translate }}<br />
         <small class="grey-text pe-2">{{ 'reset.accessory_ind.desc' | translate }}</small>
       </span>
-      <button
-        class="btn btn-primary waves-effect m-0 ms-3"
-        style="min-width: 50px"
-        (click)="removeSingleCachedAccessories()"
-        [attr.aria-label]="'reset.accessory_ind.title' | translate"
-      >
+      <button class="btn btn-primary waves-effect m-0 ms-3" style="min-width: 50px"
+        (click)="removeSingleCachedAccessories()" [attr.aria-label]="'reset.accessory_ind.title' | translate">
         <i class="fas fa-arrow-right"></i>
       </button>
     </li>
@@ -1366,12 +1166,8 @@
         {{ 'reset.bridge_accessories.title' | translate }}<br />
         <small class="grey-text pe-2">{{ 'reset.bridge_accessories.desc' | translate }}</small>
       </span>
-      <button
-        class="btn btn-primary waves-effect m-0 ms-3"
-        style="min-width: 50px"
-        (click)="removeBridgeAccessories()"
-        [attr.aria-label]="'reset.accessory_all.title' | translate"
-      >
+      <button class="btn btn-primary waves-effect m-0 ms-3" style="min-width: 50px" (click)="removeBridgeAccessories()"
+        [attr.aria-label]="'reset.accessory_all.title' | translate">
         <i class="fas fa-arrow-right"></i>
       </button>
     </li>
@@ -1381,12 +1177,8 @@
         {{ 'reset.accessory_all.title' | translate }}<br />
         <small class="grey-text pe-2">{{ 'reset.accessory_all.desc' | translate }}</small>
       </span>
-      <button
-        class="btn btn-primary waves-effect m-0 ms-3"
-        style="min-width: 50px"
-        (click)="removeAllCachedAccessories()"
-        [attr.aria-label]="'reset.accessory_all.title' | translate"
-      >
+      <button class="btn btn-primary waves-effect m-0 ms-3" style="min-width: 50px"
+        (click)="removeAllCachedAccessories()" [attr.aria-label]="'reset.accessory_all.title' | translate">
         <i class="fas fa-arrow-right"></i>
       </button>
     </li>
@@ -1399,14 +1191,8 @@
 <!-- RESET SETTINGS -->
 @if (isSectionVisible('reset')) {
 <div class="my-4">
-  <div
-    role="button"
-    tabindex="0"
-    [attr.aria-expanded]="showFields.reset ? 'true' : 'false'"
-    [attr.aria-controls]="'fieldsReset'"
-    (click)="toggleSection('reset')"
-    class="mt-3 hover-pointer"
-  >
+  <div role="button" tabindex="0" [attr.aria-expanded]="showFields.reset ? 'true' : 'false'"
+    [attr.aria-controls]="'fieldsReset'" (click)="toggleSection('reset')" class="mt-3 hover-pointer">
     <h5 class="primary-text">
       <i class="fa" [ngClass]="{ 'fa-chevron-down': showFields.reset, 'fa-chevron-right': !showFields.reset }"></i>
       {{ 'reset.bridges.title' | translate }}
@@ -1421,12 +1207,8 @@
         {{ 'reset.bridge_ind.title' | translate }}<br />
         <small class="grey-text pe-2">{{ 'reset.bridge_ind.desc' | translate }}</small>
       </span>
-      <button
-        class="btn btn-primary waves-effect m-0 ms-3"
-        style="min-width: 50px"
-        (click)="unpairAccessory()"
-        [attr.aria-label]="'reset.bridge_ind.title' | translate"
-      >
+      <button class="btn btn-primary waves-effect m-0 ms-3" style="min-width: 50px" (click)="unpairAccessory()"
+        [attr.aria-label]="'reset.bridge_ind.title' | translate">
         <i class="fas fa-arrow-right"></i>
       </button>
     </li>
@@ -1436,12 +1218,8 @@
         {{ 'reset.bridge_all.title' | translate | titlecase }}<br />
         <small class="grey-text pe-2">{{ 'reset.bridge_all.desc' | translate }}</small>
       </span>
-      <button
-        class="btn btn-primary waves-effect m-0 ms-3"
-        style="min-width: 50px"
-        (click)="resetHomebridgeState()"
-        [attr.aria-label]="'reset.bridge_all.title' | translate"
-      >
+      <button class="btn btn-primary waves-effect m-0 ms-3" style="min-width: 50px" (click)="resetHomebridgeState()"
+        [attr.aria-label]="'reset.bridge_all.title' | translate">
         <i class="fas fa-arrow-right"></i>
       </button>
     </li>
