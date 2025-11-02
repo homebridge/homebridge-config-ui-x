@@ -13,6 +13,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - hide accessory widget if insecure mode disabled
 - rename insecure option to accessory control
 - added config option to configure a webroot for the ui
+- add a complete https management to settings (#2617) (@donavanbecker)
 
 ### Other Changes
 
