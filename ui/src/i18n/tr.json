@@ -636,6 +636,7 @@
   "status.widget.account_2": "Admin users can modify the layout, while non-admin users cannot make changes.",
   "status.widget.add.label_pairing_code": "Eşleme Kodu",
   "status.widget.bridge.restart_error": "Failed to restart child bridge.",
+  "status.widget.bridge.stop_error": "Failed to stop child bridge.",
   "status.widget.clock": "Saat",
   "status.widget.clock_dateformat": "Tarih Biçimi",
   "status.widget.clock_timeformat": "Saat Biçimi",

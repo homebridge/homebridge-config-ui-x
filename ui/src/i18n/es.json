@@ -636,6 +636,7 @@
   "status.widget.account_2": "Admin users can modify the layout, while non-admin users cannot make changes.",
   "status.widget.add.label_pairing_code": "Código de Emparejamiento",
   "status.widget.bridge.restart_error": "Error al reiniciar el puente hijo.",
+  "status.widget.bridge.stop_error": "Failed to stop child bridge.",
   "status.widget.clock": "Reloj",
   "status.widget.clock_dateformat": "Formato de Fecha",
   "status.widget.clock_timeformat": "Formato de Hora",

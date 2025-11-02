@@ -88,6 +88,20 @@ export class BridgesWidgetComponent implements OnInit, OnDestroy {
     }
   }
 
+  public async stopChildBridge(bridge: any) {
+    try {
+      bridge.restarting = true
+      await firstValueFrom(this.ioChild.request('stop-child-bridge', bridge.username))
+    } catch (error) {
+      console.error(error)
+      this.$toastr.error(this.$translate.instant('status.widget.bridge.stop_error'), this.$translate.instant('toast.title_error'))
+    } finally {
+      setTimeout(() => {
+        bridge.restarting = false
+      }, 10000)
+    }
+  }
+
   public restartHomebridge() {
     this.isRestarting = true
     this.$api.put('/server/restart', {}).subscribe({

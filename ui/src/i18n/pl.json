@@ -636,6 +636,7 @@
   "status.widget.account_2": "Administratorzy mogą modyfikować układ, podczas gdy użytkownicy niebędący administratorami nie mogą wprowadzać zmian.",
   "status.widget.add.label_pairing_code": "Kod parowania",
   "status.widget.bridge.restart_error": "Nie udało się ponownie uruchomić mostu podrzędnego.",
+  "status.widget.bridge.stop_error": "Failed to stop child bridge.",
   "status.widget.clock": "Zegar",
   "status.widget.clock_dateformat": "Format daty",
   "status.widget.clock_timeformat": "Format czasu",

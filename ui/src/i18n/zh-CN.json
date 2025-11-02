@@ -636,6 +636,7 @@
   "status.widget.account_2": "管理员用户可以修改布局，非管理员用户无法更改。",
   "status.widget.add.label_pairing_code": "配对码",
   "status.widget.bridge.restart_error": "重启子网桥失败。",
+  "status.widget.bridge.stop_error": "Failed to stop child bridge.",
   "status.widget.clock": "时钟",
   "status.widget.clock_dateformat": "日期格式",
   "status.widget.clock_timeformat": "时间格式",

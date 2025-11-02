@@ -636,6 +636,7 @@
   "status.widget.account_2": "Admin users can modify the layout, while non-admin users cannot make changes.",
   "status.widget.add.label_pairing_code": "Pairing-Code",
   "status.widget.bridge.restart_error": "Neustart der Child-Bridge fehlgeschlagen.",
+  "status.widget.bridge.stop_error": "Failed to stop child bridge.",
   "status.widget.clock": "Uhr",
   "status.widget.clock_dateformat": "Datumsformat",
   "status.widget.clock_timeformat": "Zeitformat",

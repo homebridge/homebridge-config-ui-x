@@ -636,6 +636,7 @@
   "status.widget.account_2": "Admin users can modify the layout, while non-admin users cannot make changes.",
   "status.widget.add.label_pairing_code": "Paritus koodi",
   "status.widget.bridge.restart_error": "Lapsisillan uudelleenkäynnistys epäonnistui.",
+  "status.widget.bridge.stop_error": "Failed to stop child bridge.",
   "status.widget.clock": "Kello",
   "status.widget.clock_dateformat": "Päiväyksen muoto",
   "status.widget.clock_timeformat": "Ajan muoto",

@@ -636,6 +636,7 @@
   "status.widget.account_2": "Admin users can modify the layout, while non-admin users cannot make changes.",
   "status.widget.add.label_pairing_code": "Koppel Code",
   "status.widget.bridge.restart_error": "Herstart child bridge mislukt.",
+  "status.widget.bridge.stop_error": "Failed to stop child bridge.",
   "status.widget.clock": "Klok",
   "status.widget.clock_dateformat": "Datum Formaat",
   "status.widget.clock_timeformat": "Tijd Formaat",

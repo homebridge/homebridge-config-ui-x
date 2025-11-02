@@ -636,6 +636,7 @@
   "status.widget.account_2": "Admin users can modify the layout, while non-admin users cannot make changes.",
   "status.widget.add.label_pairing_code": "Код за спарување",
   "status.widget.bridge.restart_error": "Failed to restart child bridge.",
+  "status.widget.bridge.stop_error": "Failed to stop child bridge.",
   "status.widget.clock": "Часовник",
   "status.widget.clock_dateformat": "Формат на датум",
   "status.widget.clock_timeformat": "Формат на време",

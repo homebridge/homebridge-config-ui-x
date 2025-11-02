@@ -636,6 +636,7 @@
   "status.widget.account_2": "ผู้ใช้ที่เป็นผู้ดูแลระบบสามารถปรับเปลี่ยนเค้าโครงได้ ในขณะที่ผู้ใช้ที่ไม่ใช่ผู้ดูแลระบบไม่สามารถทำการเปลี่ยนแปลงได้",
   "status.widget.add.label_pairing_code": "รหัสการจับคู่",
   "status.widget.bridge.restart_error": "ไม่สามารถรีสตาร์ทบริดจ์ย่อยได้",
+  "status.widget.bridge.stop_error": "Failed to stop child bridge.",
   "status.widget.clock": "นาฬิกา",
   "status.widget.clock_dateformat": "รูปแบบวันที่",
   "status.widget.clock_timeformat": "รูปแบบเวลา",

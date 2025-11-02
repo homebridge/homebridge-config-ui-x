@@ -636,6 +636,7 @@
   "status.widget.account_2": "Admin users can modify the layout, while non-admin users cannot make changes.",
   "status.widget.add.label_pairing_code": "Párovací kód",
   "status.widget.bridge.restart_error": "Nepodařilo se restartovat podřízený most.",
+  "status.widget.bridge.stop_error": "Failed to stop child bridge.",
   "status.widget.clock": "Hodiny",
   "status.widget.clock_dateformat": "Formát data",
   "status.widget.clock_timeformat": "Formát času",

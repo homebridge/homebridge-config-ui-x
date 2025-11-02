@@ -636,6 +636,7 @@
   "status.widget.account_2": "Admin users can modify the layout, while non-admin users cannot make changes.",
   "status.widget.add.label_pairing_code": "Codi de aparellaments",
   "status.widget.bridge.restart_error": "Failed to restart child bridge.",
+  "status.widget.bridge.stop_error": "Failed to stop child bridge.",
   "status.widget.clock": "Rellotge",
   "status.widget.clock_dateformat": "Format de data",
   "status.widget.clock_timeformat": "Format d'hora",

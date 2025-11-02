@@ -61,12 +61,34 @@
       </div>
       <div class="align-self-center flex-child px-2">{{ bridge.name }}</div>
       <div class="grey-text ms-auto d-flex align-items-center">
-        @if (bridge.status !== 'pending' && !bridge.restarting && !isRestarting && isAdmin) {
+        @if (bridge.status === 'ok' && isAdmin) {
+        <i
+          class="icon-button fas fa-stop"
+          href="javascript:void(0)"
+          (click)="stopChildBridge(bridge)"
+          [ngbTooltip]="'child_bridge.stop' | translate"
+          container="body"
+          [openDelay]="150"
+          triggers="hover"
+          placement="left"
+        ></i>
+        } @if (bridge.status === 'down' && !bridge.restarting && !isRestarting && isAdmin) {
+        <i
+          class="icon-button fas fa-play"
+          href="javascript:void(0)"
+          (click)="restartChildBridge(bridge)"
+          [ngbTooltip]="'child_bridge.start' | translate"
+          container="body"
+          [openDelay]="150"
+          triggers="hover"
+          placement="left"
+        ></i>
+        } @if (bridge.status !== 'down' && bridge.status !== 'pending' && !bridge.restarting && !isRestarting && isAdmin) {
         <i
           class="icon-button fas fa-power-off"
           href="javascript:void(0)"
           (click)="restartChildBridge(bridge)"
-          [ngbTooltip]="'menu.tooltip_restart' | translate"
+          [ngbTooltip]="'child_bridge.restart' | translate"
           container="body"
           [openDelay]="150"
           triggers="hover"

@@ -636,6 +636,7 @@
   "status.widget.account_2": "Admin users can modify the layout, while non-admin users cannot make changes.",
   "status.widget.add.label_pairing_code": "Код привязки",
   "status.widget.bridge.restart_error": "Не удалось перезапустить дочерний мост.",
+  "status.widget.bridge.stop_error": "Failed to stop child bridge.",
   "status.widget.clock": "Часы",
   "status.widget.clock_dateformat": "Формат даты",
   "status.widget.clock_timeformat": "Формат времени",

@@ -636,6 +636,7 @@
   "status.widget.account_2": "管理者ユーザーのみレイアウトを編集できます。非管理者は変更できません。",
   "status.widget.add.label_pairing_code": "ペアリングコード",
   "status.widget.bridge.restart_error": "子ブリッジの再起動に失敗しました。",
+  "status.widget.bridge.stop_error": "Failed to stop child bridge.",
   "status.widget.clock": "時計",
   "status.widget.clock_dateformat": "日付形式",
   "status.widget.clock_timeformat": "時刻形式",

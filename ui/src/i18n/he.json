@@ -636,6 +636,7 @@
   "status.widget.account_2": "Admin users can modify the layout, while non-admin users cannot make changes.",
   "status.widget.add.label_pairing_code": "קוד צימוד",
   "status.widget.bridge.restart_error": "כשל בהפעלה מחדש של Child Bridge.",
+  "status.widget.bridge.stop_error": "Failed to stop child bridge.",
   "status.widget.clock": "שעון",
   "status.widget.clock_dateformat": "פורמט תאריך",
   "status.widget.clock_timeformat": "פורמט זמן",
