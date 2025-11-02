@@ -4,6 +4,10 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 
 ## v5.9.1 (Unreleased)
 
+### UI Changes
+
+- fix german welcome translation typo
+
 ### Other Changes
 
 - add method to determine if running on raspbian image

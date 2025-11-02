@@ -598,7 +598,7 @@
   "setup.button_get_started": "Los geht's",
   "setup.create_account": "Konto erstellen",
   "setup.intro": "If you are setting up for the first time, or if you just need to reset the password for your existing Homebridge setup, then choose <strong>Get Started</strong>.",
-  "setup.welcome_to_homebridge": "Wilkommen bei Homebridge",
+  "setup.welcome_to_homebridge": "Willkommen bei Homebridge",
   "setup_wizard_complete": "Restore Complete!",
   "setup_wizard_complete_title": "Herzlichen Glückwunsch!",
   "setup_wizard_completed": "Der Einrichtungsvorgang ist abgeschlossen und du kannst Homebridge jetzt verwenden.",
