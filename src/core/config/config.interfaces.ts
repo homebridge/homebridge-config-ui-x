@@ -83,6 +83,12 @@ export interface MatterConfig {
 export interface HomebridgeUiConfig {
   name: string
   port: number
+  /** Optional dedicated HTTP port. Defaults to `port` when not specified. */
+  httpPort?: number
+  /** Optional dedicated HTTPS port when SSL is configured. Defaults to none (or `port` if only one port is used). */
+  httpsPort?: number
+  /** If true, start a minimal HTTP redirect server that issues 308 redirects to the HTTPS port. Off by default. */
+  redirectHttpToHttps?: boolean
   host?: '::' | '0.0.0.0' | string
   webroot?: string
   proxyHost?: string

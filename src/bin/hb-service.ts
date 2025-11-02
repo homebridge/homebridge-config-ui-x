@@ -14,6 +14,7 @@ import type { BasePlatform } from './base-platform'
 
 import { Buffer } from 'node:buffer'
 import { execSync, fork } from 'node:child_process'
+import { Agent as HttpsAgent } from 'node:https'
 import { arch, cpus, homedir, platform, release, tmpdir, type } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
 import process from 'node:process'
@@ -49,6 +50,7 @@ import { Tail } from 'tail'
 import { extract } from 'tar'
 import { check as tcpCheck } from 'tcp-port-used'
 
+import { SslCertGeneratorService } from '../core/ssl/ssl-cert-generator.service'
 import { DarwinInstaller } from './platforms/darwin'
 import { FreeBSDInstaller } from './platforms/freebsd'
 import { LinuxInstaller } from './platforms/linux'
@@ -449,12 +451,12 @@ export class HomebridgeServiceHelper {
       this.logger('Stopping services...')
       try {
         this.homebridge.kill()
-      } catch (e) {}
+      } catch (e) { }
 
       setTimeout(() => {
         try {
           this.homebridge.kill('SIGKILL')
-        } catch (e) {}
+        } catch (e) { }
         process.exit(1282)
       }, 7000)
     }
@@ -688,16 +690,29 @@ export class HomebridgeServiceHelper {
     const defaultAdapter = await networkInterfaceDefault()
     const defaultInterface = (await networkInterfaces()).find((x: any) => x.iface === defaultAdapter)
 
+    // Detect if SSL is enabled to choose scheme
+    let scheme = 'http'
+    try {
+      const currentConfig = await this.readConfig()
+      const ui = currentConfig.platforms?.find((x: any) => x.platform === 'config') || {}
+      const sslConfigured = Boolean(ui.ssl && (ui.ssl.selfSigned || ui.ssl.pfx || (ui.ssl.key && ui.ssl.cert)))
+      if (sslConfigured) {
+        scheme = 'https'
+      }
+    } catch {
+      // default to http
+    }
+
     console.log('\nManage Homebridge by going to one of the following in your browser:\n')
 
-    console.log(`* http://localhost:${this.uiPort}`)
+    console.log(`* ${scheme}://localhost:${this.uiPort}`)
 
     if (defaultInterface && defaultInterface.ip4) {
-      console.log(`* http://${defaultInterface.ip4}:${this.uiPort}`)
+      console.log(`* ${scheme}://${defaultInterface.ip4}:${this.uiPort}`)
     }
 
     if (defaultInterface && defaultInterface.ip6) {
-      console.log(`* http://[${defaultInterface.ip6}]:${this.uiPort}`)
+      console.log(`* ${scheme}://[${defaultInterface.ip6}]:${this.uiPort}`)
     }
 
     console.log('')
@@ -781,6 +796,14 @@ export class HomebridgeServiceHelper {
           uiConfigBlock.port = this.uiPort
           this.logger(`Homebridge UI port in ${process.env.UIX_CONFIG_PATH} changed to: ${this.uiPort}.`, 'warn')
         }
+        // Enable self-signed SSL by default on install if not explicitly configured
+        if (!uiConfigBlock.ssl) {
+          uiConfigBlock.ssl = {
+            selfSigned: true,
+            selfSignedHostnames: ['localhost', '127.0.0.1'],
+          }
+          this.logger('Enabled self-signed SSL by default. A certificate will be generated for localhost / 127.0.0.1.', 'info')
+        }
         // Delete unnecessary config
         delete uiConfigBlock.restart
         delete uiConfigBlock.sudo
@@ -828,6 +851,22 @@ export class HomebridgeServiceHelper {
 
       if (saveRequired) {
         await writeJson(process.env.UIX_CONFIG_PATH, currentConfig, { spaces: 4 })
+      }
+
+      // If SSL is enabled (default on install), ensure a self-signed certificate exists now
+      if (this.action === 'install' && uiConfigBlock?.ssl?.selfSigned) {
+        try {
+          const hosts: string[] = Array.isArray(uiConfigBlock.ssl.selfSignedHostnames) && uiConfigBlock.ssl.selfSignedHostnames.length
+            ? uiConfigBlock.ssl.selfSignedHostnames
+            : ['localhost', '127.0.0.1']
+          const ssl = new SslCertGeneratorService()
+          await ssl.generateOrLoadCertificate(hosts)
+          // Ensure permissions on cert directory when running as root
+          await this.chownPath(resolve(this.storagePath, 'ssl-certs'))
+          this.logger('Self-signed certificate is ready.', 'succeed')
+        } catch (e) {
+          this.logger(`Failed to generate self-signed certificate: ${e.message}`, 'warn')
+        }
       }
     } catch (e) {
       const backupFile = resolve(this.storagePath, `config.json.invalid.${new Date().getTime().toString()}`)
@@ -1289,10 +1328,42 @@ export class HomebridgeServiceHelper {
    * Check the current status of the Homebridge UI by calling its API
    */
   private async checkStatus() {
-    this.logger(`Testing hb-service is running on port ${this.uiPort}...`)
-
+    // Detect HTTPS and target port from config to support dual-port setups
     try {
-      const res = await axios.get(`http://localhost:${this.uiPort}/api`)
+      const currentConfig = await this.readConfig()
+      const uiConfigBlock = currentConfig.platforms?.find((x: any) => x.platform === 'config') || {}
+
+      // Determine protocol and port
+      const sslConfigured = Boolean(uiConfigBlock.ssl && (uiConfigBlock.ssl.selfSigned || uiConfigBlock.ssl.pfx || (uiConfigBlock.ssl.key && uiConfigBlock.ssl.cert)))
+      const httpsPort: number | undefined = (typeof uiConfigBlock.httpsPort === 'number') ? uiConfigBlock.httpsPort : undefined
+      const httpPort: number = (typeof uiConfigBlock.httpPort === 'number') ? uiConfigBlock.httpPort : (typeof uiConfigBlock.port === 'number' ? uiConfigBlock.port : this.uiPort)
+      const protocol = sslConfigured && httpsPort && httpsPort !== httpPort ? 'https' : (sslConfigured && !httpsPort ? 'https' : 'http')
+      const targetPort = protocol === 'https' ? (httpsPort || httpPort) : httpPort
+
+      this.logger(`Testing hb-service is running on ${protocol.toUpperCase()} port ${targetPort}...`)
+
+      // Build axios config - prefer validating certs; if using self-signed, trust the generated CA
+      let axiosConfig: Record<string, any> = {}
+      if (protocol === 'https') {
+        try {
+          if (uiConfigBlock?.ssl?.selfSigned) {
+            // Use the generated self-signed certificate as CA so validation remains enabled
+            const caPath = resolve(this.storagePath, 'ssl-certs', 'certificate.pem')
+            const ca = await readFile(caPath)
+            axiosConfig = {
+              httpsAgent: new HttpsAgent({ ca }),
+            }
+          } else {
+            // Default HTTPS agent (validation enabled)
+            axiosConfig = { httpsAgent: new HttpsAgent({}) }
+          }
+        } catch (e) {
+          // Fall back to default agent if CA load fails
+          axiosConfig = { httpsAgent: new HttpsAgent({}) }
+        }
+      }
+
+      const res = await axios.get(`${protocol}://localhost:${targetPort}/api`, axiosConfig)
       if (res.data === 'Hello World!') {
         this.logger('Homebridge UI running.', 'succeed')
       } else {

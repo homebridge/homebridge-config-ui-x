@@ -576,6 +576,8 @@
   "settings.security.pass": "Hasło certyfikatu PKCS#12",
   "settings.security.pfx": "Ścieżka certyfikatu PKCS#12",
   "settings.security.raspbian_image_ssl_note": "SSL is already configured and managed by <code>nginx</code> on the Homebridge Raspbian Image. The self-signed certificate option is not available.",
+  "settings.security.redirect_http_to_https": "Redirect HTTP to HTTPS",
+  "settings.security.redirect_http_to_https_desc": "When enabled, the UI will bind an HTTP port and automatically redirect all requests to HTTPS (308 Permanent Redirect). This is useful if you want to enforce HTTPS without a reverse proxy.",
   "settings.security.selfsigned_generate_keycert": "Generate Self‑Signed & Use as Key + Cert",
   "settings.security.selfsigned_generate_selfsigned": "Generate & Enable Self‑Signed Mode",
   "settings.security.selfsigned_generate_success_keycert": "Generated self‑signed certificate and set as Key + Cert",
