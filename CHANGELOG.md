@@ -7,6 +7,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 ### UI Changes
 
 - fix german welcome translation typo
+- add spinners for loading data widget values
 
 ### Other Changes
 
