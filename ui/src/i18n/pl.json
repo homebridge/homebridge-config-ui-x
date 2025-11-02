@@ -556,6 +556,7 @@
   "settings.security.https_desc": "Włącz HTTPS dostarczając własne pliki certyfikatów przechowywane na serwerze Homebridge.",
   "settings.security.https_keycert": "Klucz prywatny + certyfikat",
   "settings.security.https_pfx": "Certyfikat PKCS#12 + hasło",
+  "settings.security.https_raspbian": "HTTPS is already enabled by default when running the Homebridge Raspbian image {{ link }}.",
   "settings.security.key": "Ścieżka klucza prywatnego",
   "settings.security.pass": "Hasło certyfikatu PKCS#12",
   "settings.security.pfx": "Ścieżka certyfikatu PKCS#12",

@@ -9,6 +9,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - updates to the `uk.json` language file (#2618) (@xrust83)
 - fix german welcome translation typo
 - add spinners for loading data widget values
+- hide ssl settings when on hb raspbian image
 
 ### Other Changes
 
