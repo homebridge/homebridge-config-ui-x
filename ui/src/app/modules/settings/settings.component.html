@@ -1039,19 +1039,25 @@
     <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
       <span>
         {{ 'settings.security.https' | translate }}<br />
+        @if (runningOnRaspbianImage) {
+        <small class="grey-text pe-2">
+          <span [innerHtml]="'settings.security.https_raspbian' | translate: { link: linkRaspbianSsl }"></span>
+        </small>
+        } @else {
         <small class="grey-text pe-2">{{ 'settings.security.https_desc' | translate }}</small>
         @if (isPwa) {
         <br /><small class="grey-text pe-2">
           <i class="fas fa-exclamation-triangle red-text"></i>
           {{ 'settings.warning_pwa' | translate }}
         </small>
-        }
+        } }
       </span>
       <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
         <select
           class="custom-select resp-select order-1 order-md-2"
           [formControl]="uiSslTypeFormControl"
           [attr.aria-label]="'settings.security.https' | translate"
+          [hidden]="runningOnRaspbianImage"
         >
           <option value="off">{{ 'accessories.control.off' | translate }}</option>
           <option value="keycert">{{ 'settings.security.https_keycert' | translate }}</option>
@@ -1059,7 +1065,9 @@
         </select>
       </div>
     </li>
-    } @if (this.uiSslTypeFormControl.value === 'keycert') {
+    }
+    <!-- the following options should be hidden for raspbian -->
+    @if (!runningOnRaspbianImage) { @if (this.uiSslTypeFormControl.value === 'keycert') {
     <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
       <span>{{ 'settings.security.key' | translate }}</span>
       @if (isPwa) {
@@ -1149,7 +1157,9 @@
         }
       </div>
     </li>
-    } } @if (!isItemHidden('setting-security-control')) {
+    } } }
+    <!-- end of raspbian hidden options -->
+    @if (!isItemHidden('setting-security-control')) {
     <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
       <span class="pe-2">
         {{ 'settings.security.ui_control' | translate }}<br />

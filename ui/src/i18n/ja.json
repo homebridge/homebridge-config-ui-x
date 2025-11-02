@@ -556,6 +556,7 @@
   "settings.security.https_desc": "サーバーに保存した証明書を指定してHTTPSを有効にします。",
   "settings.security.https_keycert": "秘密鍵と証明書",
   "settings.security.https_pfx": "PKCS#12証明書とパスフレーズ",
+  "settings.security.https_raspbian": "HTTPS is already enabled by default when running the Homebridge Raspbian image {{ link }}.",
   "settings.security.key": "秘密鍵パス",
   "settings.security.pass": "PKCS#12証明書のパスフレーズ",
   "settings.security.pfx": "PKCS#12証明書パス",

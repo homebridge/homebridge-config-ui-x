@@ -556,6 +556,7 @@
   "settings.security.https_desc": "เปิดใช้งาน HTTPS โดยจัดเตรียมไฟล์ใบรับรองของคุณเองที่จัดเก็บไว้บนเซิร์ฟเวอร์ Homebridge",
   "settings.security.https_keycert": "คีย์ส่วนตัว + ใบรับรอง",
   "settings.security.https_pfx": "ใบรับรอง PKCS#12 + รหัสผ่าน",
+  "settings.security.https_raspbian": "HTTPS is already enabled by default when running the Homebridge Raspbian image {{ link }}.",
   "settings.security.key": "เส้นทางคีย์ส่วนตัว",
   "settings.security.pass": "รหัสผ่านใบรับรอง PKCS#12",
   "settings.security.pfx": "เส้นทางใบรับรอง PKCS#12",

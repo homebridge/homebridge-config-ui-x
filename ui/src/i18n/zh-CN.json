@@ -556,6 +556,7 @@
   "settings.security.https_desc": "通过提供存储在 Homebridge 服务器上的证书文件来启用 HTTPS。",
   "settings.security.https_keycert": "私钥 + 证书",
   "settings.security.https_pfx": "PKCS#12 证书 + 口令",
+  "settings.security.https_raspbian": "HTTPS is already enabled by default when running the Homebridge Raspbian image {{ link }}.",
   "settings.security.key": "私钥路径",
   "settings.security.pass": "PKCS#12 证书口令",
   "settings.security.pfx": "PKCS#12 证书路径",

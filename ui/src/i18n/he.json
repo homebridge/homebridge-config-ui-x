@@ -556,6 +556,7 @@
   "settings.security.https_desc": "הפעל HTTPS על ידי ספיקת קבצי אשרור משלך המאוכסנים בשרת Homebridge שלך.",
   "settings.security.https_keycert": "מפתח פרטי + אשרור",
   "settings.security.https_pfx": "אשרור PKCS#12 + צירוף משפטים",
+  "settings.security.https_raspbian": "HTTPS is already enabled by default when running the Homebridge Raspbian image {{ link }}.",
   "settings.security.key": "נתיב מפתח פרטי",
   "settings.security.pass": "צירוף משפטים אשרור PKCS#12",
   "settings.security.pfx": "נתיב אשרור PKCS#12",

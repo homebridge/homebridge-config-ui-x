@@ -254,6 +254,7 @@ export class SettingsComponent implements OnInit {
   public hbLinuxRestartFormControl = new FormControl('')
 
   public readonly linkDebug = '<a href="https://github.com/homebridge/homebridge-config-ui-x/wiki/Debug-Common-Values" target="_blank" rel="noopener noreferrer"><i class="fa fa-external-link-alt primary-text"></i></a>'
+  public readonly linkRaspbianSsl = '<a href="https://github.com/homebridge/homebridge-raspbian-image/wiki/SSL-HTTPS-Access" target="_blank" rel="noopener noreferrer"><i class="fa fa-external-link-alt primary-text"></i></a>'
 
   public toggleSearch() {
     this.showSearchBar = !this.showSearchBar
@@ -495,6 +496,11 @@ export class SettingsComponent implements OnInit {
       this.uiSslCertFormControl.disable()
       this.uiSslPfxFormControl.disable()
       this.uiSslPassphraseFormControl.disable()
+    }
+
+    // (2) Disable the SSL select box if running in raspbian image (externally managed)
+    if (this.runningOnRaspbianImage) {
+      this.uiSslTypeFormControl.disable()
     }
 
     this.hbNameFormControl.patchValue(this.$settings.env.homebridgeInstanceName)
