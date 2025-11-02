@@ -329,6 +329,77 @@ describe('PluginController (e2e)', () => {
     expect(res.json().pluginType).toBe('accessory')
   })
 
+  it('POST /plugins/trigger-update (plugin)', async () => {
+    const res = await app.inject({
+      method: 'POST',
+      path: '/plugins/trigger-update',
+      headers: {
+        authorization,
+      },
+      payload: {
+        name: 'homebridge-mock-plugin',
+        version: '1.0.1',
+      },
+    })
+
+    expect(res.statusCode).toBe(201)
+    expect(res.json()).toHaveProperty('message')
+    expect(res.json()).toHaveProperty('name')
+    expect(res.json()).toHaveProperty('version')
+    expect(res.json()).toHaveProperty('status')
+    expect(res.json().status).toBe('queued')
+    expect(res.json().name).toBe('homebridge-mock-plugin')
+  })
+
+  it('POST /plugins/trigger-update (homebridge)', async () => {
+    const res = await app.inject({
+      method: 'POST',
+      path: '/plugins/trigger-update',
+      headers: {
+        authorization,
+      },
+      payload: {
+        name: 'homebridge',
+      },
+    })
+
+    expect(res.statusCode).toBe(201)
+    expect(res.json()).toHaveProperty('message')
+    expect(res.json()).toHaveProperty('name')
+    expect(res.json().name).toBe('homebridge')
+    expect(res.json().status).toBe('queued')
+  })
+
+  it('POST /plugins/trigger-update (not installed)', async () => {
+    const res = await app.inject({
+      method: 'POST',
+      path: '/plugins/trigger-update',
+      headers: {
+        authorization,
+      },
+      payload: {
+        name: 'homebridge-not-installed',
+      },
+    })
+
+    expect(res.statusCode).toBe(404)
+  })
+
+  it('POST /plugins/trigger-update (invalid name)', async () => {
+    const res = await app.inject({
+      method: 'POST',
+      path: '/plugins/trigger-update',
+      headers: {
+        authorization,
+      },
+      payload: {
+        name: 'invalid-plugin-name',
+      },
+    })
+
+    expect(res.statusCode).toBe(400)
+  })
+
   afterAll(async () => {
     await app.close()
   })

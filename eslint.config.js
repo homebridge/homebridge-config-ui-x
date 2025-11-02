@@ -1,7 +1,7 @@
 import antfu from '@antfu/eslint-config'
 
-export default antfu({
-  ignores: ['dist', 'ui/.angular'],
+module.exports = antfu({
+  ignores: ['dist', 'ui/.angular', 'docs/**/*.md'],
   rules: {
     'jsdoc/check-alignment': 'error',
     'jsdoc/check-line-alignment': 'error',

@@ -40,3 +40,14 @@ export class PluginActionDto {
   @IsNotEmpty()
   termRows?: number
 }
+
+export class TriggerUpdateDto {
+  @IsDefined()
+  @IsNotEmpty()
+  @IsString()
+  name: string
+
+  @IsOptional()
+  @IsString()
+  version?: string
+}
