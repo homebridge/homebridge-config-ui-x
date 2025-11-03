@@ -1,7 +1,7 @@
 /* global NodeJS */
 import type { EventEmitter } from 'node:events'
 
-import type { HomebridgeConfig } from '../../core/config/config.interfaces'
+import type { HomebridgeConfig } from '../../core/config/config.interfaces.js'
 import type {
   HomebridgePlugin,
   HomebridgePluginUiMetadata,
@@ -13,9 +13,12 @@ import type {
   PluginListData,
   PluginListItem,
   PluginListNewScopeItem,
-} from './plugins.interfaces'
+} from './plugins.interfaces.js'
 
 import { execSync, fork, spawn } from 'node:child_process'
+import { constants, existsSync } from 'node:fs'
+import { access, readdir, readFile, realpath, stat } from 'node:fs/promises'
+import { createRequire } from 'node:module'
 import { arch, cpus, platform, userInfo } from 'node:os'
 import {
   basename,
@@ -28,41 +31,52 @@ import {
 import process from 'node:process'
 
 import { HttpService } from '@nestjs/axios'
-import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common'
+import { BadRequestException, Inject, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common'
 import axios from 'axios'
 import { cyan, green, red, yellow } from 'bash-color'
-import {
-  access,
-  constants,
-  createFile,
-  ensureDir,
-  existsSync,
-  pathExists,
-  pathExistsSync,
-  readdir,
-  readFile,
-  readJson,
-  realpath,
-  remove,
-  stat,
-} from 'fs-extra'
-import { orderBy, uniq } from 'lodash'
+import { createFile, ensureDir, pathExists, pathExistsSync, readJson, remove } from 'fs-extra/esm'
+import _ from 'lodash'
 import NodeCache from 'node-cache'
 import pLimit from 'p-limit'
 import { firstValueFrom } from 'rxjs'
 import { gt, lt, parse, satisfies } from 'semver'
 
-import { ConfigService } from '../../core/config/config.service'
-import { Logger } from '../../core/logger/logger.service'
-import { NodePtyService } from '../../core/node-pty/node-pty.service'
-import { HomebridgeUpdateActionDto, PluginActionDto } from './plugins.dto'
+import { ConfigService } from '../../core/config/config.service.js'
+import { Logger } from '../../core/logger/logger.service.js'
+import { NodePtyService } from '../../core/node-pty/node-pty.service.js'
+import { HomebridgeUpdateActionDto, PluginActionDto } from './plugins.dto.js'
+
+const { orderBy, uniq } = _
+
+// Create a require function for ESM compatibility
+const require = createRequire(import.meta.url)
 
 @Injectable()
 export class PluginsService {
   private static readonly PLUGIN_IDENTIFIER_PATTERN = /^(@[\w-]+(\.[\w-]+)*\/)?homebridge-[\w-]+$/
 
-  private npm: Array<string> = this.getNpmPath()
-  private paths: Array<string> = this.getBasePaths()
+  private _npm: Array<string> | undefined
+  private _paths: Array<string> | undefined
+
+  /**
+   * Lazy getter for npm path - computed only when first accessed
+   */
+  private get npm(): Array<string> {
+    if (!this._npm) {
+      this._npm = this.getNpmPath()
+    }
+    return this._npm
+  }
+
+  /**
+   * Lazy getter for base paths - computed only when first accessed
+   */
+  private get paths(): Array<string> {
+    if (!this._paths) {
+      this._paths = this.getBasePaths()
+    }
+    return this._paths
+  }
 
   // Installed plugin cache
   private installedPlugins: HomebridgePlugin[]
@@ -105,10 +119,10 @@ export class PluginsService {
   }
 
   constructor(
-    private httpService: HttpService,
-    private nodePtyService: NodePtyService,
-    private logger: Logger,
-    private configService: ConfigService,
+    @Inject(HttpService) private readonly httpService: HttpService,
+    @Inject(NodePtyService) private readonly nodePtyService: NodePtyService,
+    @Inject(Logger) private readonly logger: Logger,
+    @Inject(ConfigService) private readonly configService: ConfigService,
   ) {
     /**
      * The "timeout" option on axios is the response timeout
@@ -127,10 +141,10 @@ export class PluginsService {
       return config
     })
 
-    // First load of verified plugins
-    this.loadPluginList()
-
-    // Update the verified plugins list every 12 hours
+    // Load the verified plugins list on init, then update every 12 hours
+    this.loadPluginList().catch((err) => {
+      this.logger.error('Failed to load plugin list during initialization:', err)
+    })
     setInterval(this.loadPluginList.bind(this), 60000 * 60 * 12)
   }
 

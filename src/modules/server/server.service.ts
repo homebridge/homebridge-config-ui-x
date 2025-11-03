@@ -1,45 +1,40 @@
 import type { MultipartFile } from '@fastify/multipart'
 import type { Systeminformation } from 'systeminformation'
 
-import type { AccessoryConfig, HomebridgeConfig, PlatformConfig } from '../../core/config/config.interfaces'
+import type { AccessoryConfig, HomebridgeConfig, PlatformConfig } from '../../core/config/config.interfaces.js'
 
 import { Buffer } from 'node:buffer'
 import { exec, spawn } from 'node:child_process'
 import { createPrivateKey, createPublicKey, X509Certificate } from 'node:crypto'
+import { createWriteStream } from 'node:fs'
+import { readdir, unlink } from 'node:fs/promises'
 import { extname, join, resolve } from 'node:path'
 import process from 'node:process'
 import { pipeline, Readable } from 'node:stream'
 import { createSecureContext } from 'node:tls'
 import { promisify } from 'node:util'
 
-import { Categories } from '@homebridge/hap-client/dist/hap-types'
+import { Categories } from '@homebridge/hap-client/dist/hap-types.js'
 import {
   BadRequestException,
+  Inject,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
   ServiceUnavailableException,
 } from '@nestjs/common'
-import {
-  createWriteStream,
-  pathExists,
-  readdir,
-  readJson,
-  remove,
-  unlink,
-  writeJson,
-} from 'fs-extra'
+import { pathExists, readJson, remove, writeJson } from 'fs-extra/esm'
 import NodeCache from 'node-cache'
 import { networkInterfaces } from 'systeminformation'
 import { check as tcpCheck } from 'tcp-port-used'
 
-import { ConfigService } from '../../core/config/config.service'
-import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.service'
-import { Logger } from '../../core/logger/logger.service'
-import { SslCertGeneratorService } from '../../core/ssl/ssl-cert-generator.service'
-import { AccessoriesService } from '../accessories/accessories.service'
-import { ConfigEditorService } from '../config-editor/config-editor.service'
-import { HomebridgeMdnsSettingDto } from './server.dto'
+import { ConfigService } from '../../core/config/config.service.js'
+import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.service.js'
+import { Logger } from '../../core/logger/logger.service.js'
+import { SslCertGeneratorService } from '../../core/ssl/ssl-cert-generator.service.js'
+import { AccessoriesService } from '../accessories/accessories.service.js'
+import { ConfigEditorService } from '../config-editor/config-editor.service.js'
+import { HomebridgeMdnsSettingDto } from './server.dto.js'
 
 const pump = promisify(pipeline)
 
@@ -54,11 +49,11 @@ export class ServerService {
   public paired: boolean = false
 
   constructor(
-    private readonly configService: ConfigService,
-    private readonly configEditorService: ConfigEditorService,
-    private readonly accessoriesService: AccessoriesService,
-    private readonly homebridgeIpcService: HomebridgeIpcService,
-    private readonly logger: Logger,
+    @Inject(ConfigService) private readonly configService: ConfigService,
+    @Inject(ConfigEditorService) private readonly configEditorService: ConfigEditorService,
+    @Inject(AccessoriesService) private readonly accessoriesService: AccessoriesService,
+    @Inject(HomebridgeIpcService) private readonly homebridgeIpcService: HomebridgeIpcService,
+    @Inject(Logger) private readonly logger: Logger,
   ) {
     this.accessoryId = this.configService.homebridgeConfig.bridge.username.split(':').join('')
     this.accessoryInfoPath = join(this.configService.storagePath, 'persist', `AccessoryInfo.${this.accessoryId}.json`)

@@ -6,7 +6,7 @@ import { NotFoundException } from '@nestjs/common'
 import { ensureDir, remove, writeFile } from 'fs-extra'
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { SpaFilter } from '../../src/core/spa/spa.filter'
+import { SpaFilter } from '../../src/core/spa/spa.filter.js'
 
 describe('SpaFilter (e2e)', () => {
   let spaFilter: SpaFilter

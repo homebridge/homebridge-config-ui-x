@@ -11,9 +11,9 @@ import { Test } from '@nestjs/testing'
 import { copy } from 'fs-extra'
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { AuthModule } from '../../src/core/auth/auth.module'
-import { LinuxModule } from '../../src/modules/platform-tools/linux/linux.module'
-import { LinuxService } from '../../src/modules/platform-tools/linux/linux.service'
+import { AuthModule } from '../../src/core/auth/auth.module.js'
+import { LinuxModule } from '../../src/modules/platform-tools/linux/linux.module.js'
+import { LinuxService } from '../../src/modules/platform-tools/linux/linux.service.js'
 
 describe('PlatformToolsLinux (e2e)', () => {
   let app: NestFastifyApplication

@@ -2,7 +2,7 @@ import type { IPty } from '@homebridge/node-pty-prebuilt-multiarch'
 import type { NestFastifyApplication } from '@nestjs/platform-fastify'
 import type { TestingModule } from '@nestjs/testing'
 
-import type { WsEventEmitter } from '../../src/modules/platform-tools/terminal/terminal.service'
+import type { WsEventEmitter } from '../../src/modules/platform-tools/terminal/terminal.interfaces.js'
 
 import { EventEmitter } from 'node:events'
 import { resolve } from 'node:path'
@@ -13,10 +13,10 @@ import { Test } from '@nestjs/testing'
 import { copy } from 'fs-extra'
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { ConfigService } from '../../src/core/config/config.service'
-import { NodePtyService } from '../../src/core/node-pty/node-pty.service'
-import { TerminalGateway } from '../../src/modules/platform-tools/terminal/terminal.gateway'
-import { TerminalModule } from '../../src/modules/platform-tools/terminal/terminal.module'
+import { ConfigService } from '../../src/core/config/config.service.js'
+import { NodePtyService } from '../../src/core/node-pty/node-pty.service.js'
+import { TerminalGateway } from '../../src/modules/platform-tools/terminal/terminal.gateway.js'
+import { TerminalModule } from '../../src/modules/platform-tools/terminal/terminal.module.js'
 
 // create mock websocket client
 class MockWsEventEmitter extends EventEmitter implements WsEventEmitter {

@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  Inject,
   Param,
   ParseIntPipe,
   Post,
@@ -18,8 +19,8 @@ import {
   ApiTags,
 } from '@nestjs/swagger'
 
-import { AdminGuard } from '../../core/auth/guards/admin.guard'
-import { ConfigEditorService } from './config-editor.service'
+import { AdminGuard } from '../../core/auth/guards/admin.guard.js'
+import { ConfigEditorService } from './config-editor.service.js'
 
 @ApiTags('Homebridge Config Editor')
 @ApiBearerAuth()
@@ -27,7 +28,7 @@ import { ConfigEditorService } from './config-editor.service'
 @Controller('config-editor')
 export class ConfigEditorController {
   constructor(
-    private configEditorService: ConfigEditorService,
+    @Inject(ConfigEditorService) private readonly configEditorService: ConfigEditorService,
   ) {}
 
   @UseGuards(AdminGuard)

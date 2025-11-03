@@ -4,9 +4,13 @@
  * This script "mocks" homebridge and is used to extract the plugin alias and type.
  */
 
-const process = require('node:process')
-const EventEmitter = require('node:events').EventEmitter
-const path = require('node:path')
+import { EventEmitter } from 'node:events'
+import { createRequire } from 'node:module'
+import path from 'node:path'
+import process from 'node:process'
+
+// Create a require function for loading CommonJS plugins
+const require = createRequire(import.meta.url)
 
 let pluginAlias
 let pluginType

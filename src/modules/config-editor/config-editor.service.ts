@@ -1,35 +1,27 @@
-import type { AccessoryConfig, HomebridgeConfig, PlatformConfig } from '../../core/config/config.interfaces'
+import type { AccessoryConfig, HomebridgeConfig, PlatformConfig } from '../../core/config/config.interfaces.js'
 
+import { readdir, readFile, rename, unlink } from 'node:fs/promises'
 import { resolve } from 'node:path'
 
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common'
+import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common'
 import dayjs from 'dayjs'
-import {
-  ensureDir,
-  move,
-  pathExists,
-  readdir,
-  readFile,
-  readJson,
-  remove,
-  rename,
-  unlink,
-  writeJsonSync,
-} from 'fs-extra'
+import { ensureDir, move, pathExists, readJson, remove, writeJsonSync } from 'fs-extra/esm'
 import { gte } from 'semver'
 
-import { ConfigService } from '../../core/config/config.service'
-import { Logger } from '../../core/logger/logger.service'
-import { SchedulerService } from '../../core/scheduler/scheduler.service'
-import { PluginsService } from '../plugins/plugins.service'
+import { ConfigService } from '../../core/config/config.service.js'
+import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.service.js'
+import { Logger } from '../../core/logger/logger.service.js'
+import { SchedulerService } from '../../core/scheduler/scheduler.service.js'
+import { PluginsService } from '../plugins/plugins.service.js'
 
 @Injectable()
 export class ConfigEditorService {
   constructor(
-    private readonly logger: Logger,
-    private readonly configService: ConfigService,
-    private readonly schedulerService: SchedulerService,
-    private readonly pluginsService: PluginsService,
+    @Inject(Logger) private readonly logger: Logger,
+    @Inject(ConfigService) private readonly configService: ConfigService,
+    @Inject(SchedulerService) private readonly schedulerService: SchedulerService,
+    @Inject(PluginsService) private readonly pluginsService: PluginsService,
+    @Inject(HomebridgeIpcService) private readonly homebridgeIpcService: HomebridgeIpcService,
   ) {
     this.start()
     this.scheduleConfigBackupCleanup()

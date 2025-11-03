@@ -11,9 +11,9 @@ import { Test } from '@nestjs/testing'
 import { copy, readFile } from 'fs-extra'
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { AuthModule } from '../../src/core/auth/auth.module'
-import { DockerModule } from '../../src/modules/platform-tools/docker/docker.module'
-import { DockerService } from '../../src/modules/platform-tools/docker/docker.service'
+import { AuthModule } from '../../src/core/auth/auth.module.js'
+import { DockerModule } from '../../src/modules/platform-tools/docker/docker.module.js'
+import { DockerService } from '../../src/modules/platform-tools/docker/docker.service.js'
 
 describe('PlatformToolsDocker (e2e)', () => {
   let app: NestFastifyApplication

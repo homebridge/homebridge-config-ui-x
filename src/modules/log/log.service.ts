@@ -1,18 +1,19 @@
 import type { EventEmitter } from 'node:events'
 
 import { exec } from 'node:child_process'
+import { createReadStream, existsSync } from 'node:fs'
+import { stat } from 'node:fs/promises'
 import { platform } from 'node:os'
 import process from 'node:process'
 
-import { Injectable } from '@nestjs/common'
+import { Inject, Injectable } from '@nestjs/common'
 import { cyan, red, yellow } from 'bash-color'
-import { createReadStream, existsSync, stat } from 'fs-extra'
 import { satisfies } from 'semver'
 import { Tail } from 'tail'
 
-import { ConfigService } from '../../core/config/config.service'
-import { NodePtyService } from '../../core/node-pty/node-pty.service'
-import { LogTermSize } from './log.interfaces'
+import { ConfigService } from '../../core/config/config.service.js'
+import { NodePtyService } from '../../core/node-pty/node-pty.service.js'
+import { LogTermSize } from './log.interfaces.js'
 
 @Injectable()
 export class LogService {
@@ -22,8 +23,8 @@ export class LogService {
   private nativeTail: Tail
 
   constructor(
-    private configService: ConfigService,
-    private nodePtyService: NodePtyService,
+    @Inject(ConfigService) private readonly configService: ConfigService,
+    @Inject(NodePtyService) private readonly nodePtyService: NodePtyService,
   ) {
     this.setLogMethod()
   }

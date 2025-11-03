@@ -6,13 +6,13 @@ import { HttpService } from '@nestjs/axios'
 import { of } from 'rxjs'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { ConfigService } from '../../src/core/config/config.service'
-import { HomebridgeIpcService } from '../../src/core/homebridge-ipc/homebridge-ipc.service'
-import { Logger } from '../../src/core/logger/logger.service'
-import { isNodeV24SupportedArchitecture } from '../../src/core/node-version.constants'
-import { PluginsService } from '../../src/modules/plugins/plugins.service'
-import { ServerService } from '../../src/modules/server/server.service'
-import { StatusService } from '../../src/modules/status/status.service'
+import { ConfigService } from '../../src/core/config/config.service.js'
+import { HomebridgeIpcService } from '../../src/core/homebridge-ipc/homebridge-ipc.service.js'
+import { Logger } from '../../src/core/logger/logger.service.js'
+import { isNodeV24SupportedArchitecture } from '../../src/core/node-version.constants.js'
+import { PluginsService } from '../../src/modules/plugins/plugins.service.js'
+import { ServerService } from '../../src/modules/server/server.service.js'
+import { StatusService } from '../../src/modules/status/status.service.js'
 
 interface NodeJsVersionInfo {
   currentVersion: string

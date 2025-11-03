@@ -1,7 +1,7 @@
 import type { NestFastifyApplication } from '@nestjs/platform-fastify'
 import type { TestingModule } from '@nestjs/testing'
 
-import type { HomebridgeConfig } from '../../src/core/config/config.interfaces'
+import type { HomebridgeConfig } from '../../src/core/config/config.interfaces.js'
 
 import { resolve } from 'node:path'
 import process from 'node:process'
@@ -23,10 +23,10 @@ import {
 } from 'fs-extra'
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest'
 
-import { AuthModule } from '../../src/core/auth/auth.module'
-import { SchedulerService } from '../../src/core/scheduler/scheduler.service'
-import { ConfigEditorModule } from '../../src/modules/config-editor/config-editor.module'
-import { ConfigEditorService } from '../../src/modules/config-editor/config-editor.service'
+import { AuthModule } from '../../src/core/auth/auth.module.js'
+import { SchedulerService } from '../../src/core/scheduler/scheduler.service.js'
+import { ConfigEditorModule } from '../../src/modules/config-editor/config-editor.module.js'
+import { ConfigEditorService } from '../../src/modules/config-editor/config-editor.service.js'
 
 describe('ConfigEditorController (e2e)', () => {
   let app: NestFastifyApplication

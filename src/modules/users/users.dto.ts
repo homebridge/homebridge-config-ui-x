@@ -12,41 +12,41 @@ import {
 export class UserActivateOtpDto {
   @IsString()
   @IsNotEmpty()
-  @ApiProperty()
+  @ApiProperty({ type: String })
   code: string
 }
 
 export class UserDeactivateOtpDto {
   @IsString()
   @IsNotEmpty()
-  @ApiProperty()
+  @ApiProperty({ type: String })
   password: string
 }
 
 export class UserDto {
   @IsNumber()
-  @ApiProperty({ readOnly: true })
+  @ApiProperty({ readOnly: true, type: Number })
   id?: number
 
   @IsString()
   @IsNotEmpty()
   @IsDefined()
-  @ApiProperty()
+  @ApiProperty({ type: String })
   name: string
 
   @IsString()
   @IsNotEmpty()
   @IsDefined()
-  @ApiProperty()
+  @ApiProperty({ type: String })
   username: string
 
-  @ApiProperty()
+  @ApiProperty({ type: Boolean })
   @IsBoolean()
   admin: boolean
 
   @IsString()
   @IsOptional()
-  @ApiProperty({ writeOnly: true })
+  @ApiProperty({ writeOnly: true, type: String })
   password?: string
 
   @Equals(undefined)
@@ -59,18 +59,18 @@ export class UserDto {
   otpSecret?: string
 
   @Equals(undefined)
-  @ApiProperty({ readOnly: true })
+  @ApiProperty({ readOnly: true, type: Boolean })
   otpActive?: boolean
 }
 
 export class UserUpdatePasswordDto {
   @IsString()
   @IsNotEmpty()
-  @ApiProperty()
+  @ApiProperty({ type: String })
   currentPassword: string
 
   @IsString()
   @IsNotEmpty()
-  @ApiProperty()
+  @ApiProperty({ type: String })
   newPassword: string
 }

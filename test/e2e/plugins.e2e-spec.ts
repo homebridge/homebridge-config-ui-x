@@ -1,7 +1,7 @@
 import type { NestFastifyApplication } from '@nestjs/platform-fastify'
 import type { TestingModule } from '@nestjs/testing'
 
-import type { HomebridgePlugin } from '../../src/modules/plugins/types'
+import type { HomebridgePlugin } from '../../src/modules/plugins/plugins.interfaces.js'
 
 import { resolve } from 'node:path'
 import process from 'node:process'
@@ -13,8 +13,8 @@ import { Test } from '@nestjs/testing'
 import { copy, remove } from 'fs-extra'
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { AuthModule } from '../../src/core/auth/auth.module'
-import { PluginsModule } from '../../src/modules/plugins/plugins.module'
+import { AuthModule } from '../../src/core/auth/auth.module.js'
+import { PluginsModule } from '../../src/modules/plugins/plugins.module.js'
 
 describe('PluginController (e2e)', () => {
   let app: NestFastifyApplication

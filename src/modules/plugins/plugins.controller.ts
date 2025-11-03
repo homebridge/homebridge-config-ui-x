@@ -1,9 +1,9 @@
-import { Controller, Get, Param, UseGuards } from '@nestjs/common'
+import { Controller, Get, Inject, Param, UseGuards } from '@nestjs/common'
 import { AuthGuard } from '@nestjs/passport'
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger'
 
-import { AdminGuard } from '../../core/auth/guards/admin.guard'
-import { PluginsService } from './plugins.service'
+import { AdminGuard } from '../../core/auth/guards/admin.guard.js'
+import { PluginsService } from './plugins.service.js'
 
 @ApiTags('Plugins')
 @ApiBearerAuth()
@@ -11,7 +11,7 @@ import { PluginsService } from './plugins.service'
 @Controller('plugins')
 export class PluginsController {
   constructor(
-    private pluginsService: PluginsService,
+    @Inject(PluginsService) private readonly pluginsService: PluginsService,
   ) {}
 
   @ApiOperation({ summary: 'Get the list of currently installed Homebridge plugins.' })

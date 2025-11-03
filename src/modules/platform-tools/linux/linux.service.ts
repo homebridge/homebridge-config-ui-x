@@ -1,15 +1,15 @@
 import { exec } from 'node:child_process'
 
-import { Injectable } from '@nestjs/common'
+import { Inject, Injectable } from '@nestjs/common'
 
-import { ConfigService } from '../../../core/config/config.service'
-import { Logger } from '../../../core/logger/logger.service'
+import { ConfigService } from '../../../core/config/config.service.js'
+import { Logger } from '../../../core/logger/logger.service.js'
 
 @Injectable()
 export class LinuxService {
   constructor(
-    private readonly configService: ConfigService,
-    private readonly logger: Logger,
+    @Inject(ConfigService) private readonly configService: ConfigService,
+    @Inject(Logger) private readonly logger: Logger,
   ) {}
 
   /**

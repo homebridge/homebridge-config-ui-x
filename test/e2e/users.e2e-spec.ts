@@ -1,7 +1,7 @@
 import type { NestFastifyApplication } from '@nestjs/platform-fastify'
 import type { TestingModule } from '@nestjs/testing'
 
-import type { UserActivateOtpDto, UserDeactivateOtpDto, UserDto, UserUpdatePasswordDto } from '../../src/modules/users/users.dto'
+import type { UserActivateOtpDto, UserDeactivateOtpDto, UserDto, UserUpdatePasswordDto } from '../../src/modules/users/users.dto.js'
 
 import { resolve } from 'node:path'
 import process from 'node:process'
@@ -13,7 +13,7 @@ import { copy, readJson, writeJson } from 'fs-extra'
 import { authenticator } from 'otplib'
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from 'vitest'
 
-import { UsersModule } from '../../src/modules/users/users.module'
+import { UsersModule } from '../../src/modules/users/users.module.js'
 
 describe('UsersController (e2e)', () => {
   let app: NestFastifyApplication

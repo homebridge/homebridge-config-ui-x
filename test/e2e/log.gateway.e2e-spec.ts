@@ -11,10 +11,10 @@ import { Test } from '@nestjs/testing'
 import { copy, writeFile } from 'fs-extra'
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { ConfigService } from '../../src/core/config/config.service'
-import { LogGateway } from '../../src/modules/log/log.gateway'
-import { LogModule } from '../../src/modules/log/log.module'
-import { LogService } from '../../src/modules/log/log.service'
+import { ConfigService } from '../../src/core/config/config.service.js'
+import { LogGateway } from '../../src/modules/log/log.gateway.js'
+import { LogModule } from '../../src/modules/log/log.module.js'
+import { LogService } from '../../src/modules/log/log.service.js'
 
 describe('LogGateway (e2e)', () => {
   let app: NestFastifyApplication

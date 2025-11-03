@@ -1,8 +1,8 @@
-import { UseGuards } from '@nestjs/common'
+import { Inject, UseGuards } from '@nestjs/common'
 import { SubscribeMessage, WebSocketGateway, WsException } from '@nestjs/websockets'
 
-import { WsGuard } from '../../core/auth/guards/ws.guard'
-import { AccessoriesService } from './accessories.service'
+import { WsGuard } from '../../core/auth/guards/ws.guard.js'
+import { AccessoriesService } from './accessories.service.js'
 
 @UseGuards(WsGuard)
 @WebSocketGateway({
@@ -15,7 +15,7 @@ import { AccessoriesService } from './accessories.service'
 })
 export class AccessoriesGateway {
   constructor(
-    private accessoriesService: AccessoriesService,
+    @Inject(AccessoriesService) private readonly accessoriesService: AccessoriesService,
   ) {}
 
   @SubscribeMessage('get-accessories')

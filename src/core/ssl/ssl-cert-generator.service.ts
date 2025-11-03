@@ -1,14 +1,15 @@
 import { Buffer } from 'node:buffer'
 import { existsSync } from 'node:fs'
+import { readFile, writeFile } from 'node:fs/promises'
 import { homedir } from 'node:os'
 import { join, resolve } from 'node:path'
 import process from 'node:process'
 
 import { Injectable } from '@nestjs/common'
-import { ensureDir, readFile, writeFile } from 'fs-extra'
+import { ensureDir } from 'fs-extra/esm'
 import forge from 'node-forge'
 
-import { Logger } from '../logger/logger.service'
+import { Logger } from '../logger/logger.service.js'
 
 interface SslCertificateData {
   privateKey: Buffer

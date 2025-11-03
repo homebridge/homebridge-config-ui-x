@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   Header,
+  Inject,
   Post,
   Request,
   UseGuards,
@@ -10,17 +11,17 @@ import {
 import { AuthGuard } from '@nestjs/passport'
 import { ApiBearerAuth, ApiExcludeEndpoint, ApiOperation, ApiTags } from '@nestjs/swagger'
 
-import { ConfigService } from '../config/config.service'
-import { AuthDto } from './auth.dto'
-import { AuthService } from './auth.service'
-import { CustomGuard } from './guards/custom.guard'
+import { ConfigService } from '../config/config.service.js'
+import { AuthDto } from './auth.dto.js'
+import { AuthService } from './auth.service.js'
+import { CustomGuard } from './guards/custom.guard.js'
 
 @ApiTags('Authentication')
 @Controller('auth')
 export class AuthController {
   constructor(
-    private readonly authService: AuthService,
-    private readonly configService: ConfigService,
+    @Inject(AuthService) private readonly authService: AuthService,
+    @Inject(ConfigService) private readonly configService: ConfigService,
   ) {}
 
   @ApiOperation({ summary: 'Exchange a username and password for an authentication token.' })
