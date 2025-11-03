@@ -1,11 +1,13 @@
 import { execSync } from 'node:child_process'
+import { existsSync, readFileSync, unlinkSync } from 'node:fs'
+import { chmod } from 'node:fs/promises'
 import { userInfo } from 'node:os'
 import { resolve } from 'node:path'
 import process from 'node:process'
 
-import { chmod, existsSync, outputFile, readFileSync, unlinkSync } from 'fs-extra'
+import { outputFile } from 'fs-extra/esm'
 
-import { BasePlatform } from '../base-platform'
+import { BasePlatform } from '../base-platform.js'
 
 export class FreeBSDInstaller extends BasePlatform {
   private get rcServiceName() {

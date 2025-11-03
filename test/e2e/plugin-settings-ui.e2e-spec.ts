@@ -11,8 +11,8 @@ import { Test } from '@nestjs/testing'
 import { copy, ensureDir, remove, writeFile } from 'fs-extra'
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { AuthModule } from '../../src/core/auth/auth.module'
-import { PluginsSettingsUiModule } from '../../src/modules/custom-plugins/plugins-settings-ui/plugins-settings-ui.module'
+import { AuthModule } from '../../src/core/auth/auth.module.js'
+import { PluginsSettingsUiModule } from '../../src/modules/custom-plugins/plugins-settings-ui/plugins-settings-ui.module.js'
 
 import '../../src/globalDefaults'
 

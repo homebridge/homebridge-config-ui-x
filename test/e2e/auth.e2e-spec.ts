@@ -10,9 +10,9 @@ import { Test } from '@nestjs/testing'
 import { copy, pathExists, remove } from 'fs-extra'
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from 'vitest'
 
-import { AuthModule } from '../../src/core/auth/auth.module'
-import { AuthService } from '../../src/core/auth/auth.service'
-import { ConfigService } from '../../src/core/config/config.service'
+import { AuthModule } from '../../src/core/auth/auth.module.js'
+import { AuthService } from '../../src/core/auth/auth.service.js'
+import { ConfigService } from '../../src/core/config/config.service.js'
 
 import '../../src/globalDefaults'
 

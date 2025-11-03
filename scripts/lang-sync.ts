@@ -5,9 +5,15 @@
  * - output any keys that it does not think are used in the project
  */
 
+import { readdir, readFile, stat } from 'node:fs/promises'
 import { dirname, resolve } from 'node:path'
+import { fileURLToPath } from 'node:url'
 
-import { readdir, readFile, readJson, stat, writeJson } from 'fs-extra'
+import { readJson, writeJson } from 'fs-extra/esm'
+
+// ESM equivalent of __dirname
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = dirname(__filename)
 
 // Path to the project directory
 const projectDir = resolve(dirname(__dirname), 'ui/src')

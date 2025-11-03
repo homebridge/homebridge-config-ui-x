@@ -13,9 +13,9 @@ import { copy } from 'fs-extra'
 import { of } from 'rxjs'
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { AuthModule } from '../../src/core/auth/auth.module'
-import { HomebridgeIpcService } from '../../src/core/homebridge-ipc/homebridge-ipc.service'
-import { StatusModule } from '../../src/modules/status/status.module'
+import { AuthModule } from '../../src/core/auth/auth.module.js'
+import { HomebridgeIpcService } from '../../src/core/homebridge-ipc/homebridge-ipc.service.js'
+import { StatusModule } from '../../src/modules/status/status.module.js'
 
 describe('StatusController (e2e)', () => {
   let app: NestFastifyApplication

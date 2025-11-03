@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  Inject,
   Param,
   ParseIntPipe,
   Patch,
@@ -20,9 +21,9 @@ import {
   ApiTags,
 } from '@nestjs/swagger'
 
-import { AuthService } from '../../core/auth/auth.service'
-import { AdminGuard } from '../../core/auth/guards/admin.guard'
-import { UserActivateOtpDto, UserDeactivateOtpDto, UserDto, UserUpdatePasswordDto } from './users.dto'
+import { AuthService } from '../../core/auth/auth.service.js'
+import { AdminGuard } from '../../core/auth/guards/admin.guard.js'
+import { UserActivateOtpDto, UserDeactivateOtpDto, UserDto, UserUpdatePasswordDto } from './users.dto.js'
 
 @ApiTags('User Management')
 @ApiBearerAuth()
@@ -30,7 +31,7 @@ import { UserActivateOtpDto, UserDeactivateOtpDto, UserDto, UserUpdatePasswordDt
 @Controller('users')
 export class UsersController {
   constructor(
-    private authService: AuthService,
+    @Inject(AuthService) private readonly authService: AuthService,
   ) {}
 
   @UseGuards(AdminGuard)

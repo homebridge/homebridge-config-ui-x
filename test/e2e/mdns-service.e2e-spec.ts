@@ -129,7 +129,7 @@ describe('mDNS Service (e2e)', () => {
       vi.resetModules()
 
       // Import ConfigService
-      const configModule = await import('../../src/core/config/config.service')
+      const configModule = await import('../../src/core/config/config.service.js')
       ConfigService = configModule.ConfigService
     })
 

@@ -1,6 +1,6 @@
-const { antfu } = require('@antfu/eslint-config')
+import antfu from '@antfu/eslint-config'
 
-module.exports = antfu({
+export default antfu({
   ignores: ['dist', 'ui/.angular'],
   rules: {
     'jsdoc/check-alignment': 'error',

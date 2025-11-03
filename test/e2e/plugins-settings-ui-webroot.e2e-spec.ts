@@ -4,10 +4,10 @@ import process from 'node:process'
 import { HttpService } from '@nestjs/axios'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { ConfigService } from '../../src/core/config/config.service'
-import { Logger } from '../../src/core/logger/logger.service'
-import { PluginsSettingsUiService } from '../../src/modules/custom-plugins/plugins-settings-ui/plugins-settings-ui.service'
-import { PluginsService } from '../../src/modules/plugins/plugins.service'
+import { ConfigService } from '../../src/core/config/config.service.js'
+import { Logger } from '../../src/core/logger/logger.service.js'
+import { PluginsSettingsUiService } from '../../src/modules/custom-plugins/plugins-settings-ui/plugins-settings-ui.service.js'
+import { PluginsService } from '../../src/modules/plugins/plugins.service.js'
 
 describe('PluginsSettingsUiService Webroot (e2e)', () => {
   let pluginsSettingsUiService: PluginsSettingsUiService

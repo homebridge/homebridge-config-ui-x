@@ -2,10 +2,10 @@ import type { ChildProcess } from 'node:child_process'
 
 import { EventEmitter } from 'node:events'
 
-import { Injectable, ServiceUnavailableException } from '@nestjs/common'
+import { Inject, Injectable, ServiceUnavailableException } from '@nestjs/common'
 
-import { ConfigService } from '../config/config.service'
-import { Logger } from '../logger/logger.service'
+import { ConfigService } from '../config/config.service.js'
+import { Logger } from '../logger/logger.service.js'
 
 @Injectable()
 export class HomebridgeIpcService extends EventEmitter {
@@ -18,8 +18,8 @@ export class HomebridgeIpcService extends EventEmitter {
   ]
 
   constructor(
-    private logger: Logger,
-    private configService: ConfigService,
+    @Inject(Logger) private readonly logger: Logger,
+    @Inject(ConfigService) private readonly configService: ConfigService,
   ) {
     super()
   }

@@ -45,7 +45,7 @@ jobs:
     name: Publish ${{ needs.tag.outputs.version }}
     if: ${{ github.repository == 'homebridge/homebridge-config-ui-x' }}
 
-    uses: homebridge/.github/.github/workflows/npm-publish.yml@latest
+    uses: homebridge/.github/.github/workflows/npm-publish-esm.yml@latest
     with:
       install_cmd: npm ci && cd ui && npm ci
     secrets:

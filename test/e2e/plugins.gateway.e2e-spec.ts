@@ -11,11 +11,11 @@ import { Test } from '@nestjs/testing'
 import { copy, remove } from 'fs-extra'
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { ConfigService } from '../../src/core/config/config.service'
-import { NodePtyService } from '../../src/core/node-pty/node-pty.service'
-import { PluginsGateway } from '../../src/modules/plugins/plugins.gateway'
-import { PluginsModule } from '../../src/modules/plugins/plugins.module'
-import { PluginsService } from '../../src/modules/plugins/plugins.service'
+import { ConfigService } from '../../src/core/config/config.service.js'
+import { NodePtyService } from '../../src/core/node-pty/node-pty.service.js'
+import { PluginsGateway } from '../../src/modules/plugins/plugins.gateway.js'
+import { PluginsModule } from '../../src/modules/plugins/plugins.module.js'
+import { PluginsService } from '../../src/modules/plugins/plugins.service.js'
 
 describe('PluginsGateway (e2e)', { timeout: 10_000 }, () => {
   let app: NestFastifyApplication

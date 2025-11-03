@@ -1,7 +1,7 @@
 import type { NestFastifyApplication } from '@nestjs/platform-fastify'
 import type { TestingModule } from '@nestjs/testing'
 
-import type { UserDto } from '../../src/modules/users/users.dto'
+import type { UserDto } from '../../src/modules/users/users.dto.js'
 
 import { resolve } from 'node:path'
 import process from 'node:process'
@@ -12,8 +12,8 @@ import { Test } from '@nestjs/testing'
 import { copy, readJson, remove } from 'fs-extra'
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest'
 
-import { ConfigService } from '../../src/core/config/config.service'
-import { SetupWizardModule } from '../../src/modules/setup-wizard/setup-wizard.module'
+import { ConfigService } from '../../src/core/config/config.service.js'
+import { SetupWizardModule } from '../../src/modules/setup-wizard/setup-wizard.module.js'
 
 describe('SetupWizard (e2e)', () => {
   let app: NestFastifyApplication

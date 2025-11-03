@@ -1,16 +1,16 @@
 import type { IPty } from '@homebridge/node-pty-prebuilt-multiarch'
 
-import type { TermSize, WsEventEmitter } from './terminal.interfaces'
+import type { TermSize, WsEventEmitter } from './terminal.interfaces.js'
 
 import os from 'node:os'
 import process from 'node:process'
 
-import { Injectable } from '@nestjs/common'
-import { pathExists } from 'fs-extra'
+import { Inject, Injectable } from '@nestjs/common'
+import { pathExists } from 'fs-extra/esm'
 
-import { ConfigService } from '../../../core/config/config.service'
-import { Logger } from '../../../core/logger/logger.service'
-import { NodePtyService } from '../../../core/node-pty/node-pty.service'
+import { ConfigService } from '../../../core/config/config.service.js'
+import { Logger } from '../../../core/logger/logger.service.js'
+import { NodePtyService } from '../../../core/node-pty/node-pty.service.js'
 
 @Injectable()
 export class TerminalService {
@@ -22,9 +22,9 @@ export class TerminalService {
   private instanceId: string
 
   constructor(
-    private configService: ConfigService,
-    private logger: Logger,
-    private nodePtyService: NodePtyService,
+    @Inject(ConfigService) private readonly configService: ConfigService,
+    @Inject(Logger) private readonly logger: Logger,
+    @Inject(NodePtyService) private readonly nodePtyService: NodePtyService,
   ) {
     this.instanceId = Math.random().toString(36).substring(2, 11)
     this.logger.debug(`TerminalService instance created: ${this.instanceId}`)

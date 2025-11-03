@@ -12,4 +12,4 @@ process.on('disconnect', () => {
   process.exit()
 })
 
-import('../main')
+import('../main.js')

@@ -1,14 +1,15 @@
+import { createReadStream } from 'node:fs'
 import { resolve } from 'node:path'
 
-import { Injectable, NotFoundException, StreamableFile } from '@nestjs/common'
-import { createReadStream, pathExists } from 'fs-extra'
+import { Inject, Injectable, NotFoundException, StreamableFile } from '@nestjs/common'
+import { pathExists } from 'fs-extra/esm'
 
-import { ConfigService } from '../../../core/config/config.service'
+import { ConfigService } from '../../../core/config/config.service.js'
 
 @Injectable()
 export class HomebridgeDeconzService {
   constructor(
-    private configService: ConfigService,
+    @Inject(ConfigService) private readonly configService: ConfigService,
   ) {}
 
   async streamDumpFile(): Promise<StreamableFile> {

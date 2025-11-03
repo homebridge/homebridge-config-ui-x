@@ -1,7 +1,8 @@
+import { readFile, writeFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import process from 'node:process'
 
-import { exists, readFile, writeFile } from 'fs-extra'
+import { pathExists as exists } from 'fs-extra/esm'
 
 export class SpaHtmlService {
   /**

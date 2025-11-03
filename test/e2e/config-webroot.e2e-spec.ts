@@ -4,7 +4,7 @@ import process from 'node:process'
 import { copy, remove, writeJson } from 'fs-extra'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
-import { ConfigService } from '../../src/core/config/config.service'
+import { ConfigService } from '../../src/core/config/config.service.js'
 
 describe('ConfigService Webroot (e2e)', () => {
   let configService: ConfigService

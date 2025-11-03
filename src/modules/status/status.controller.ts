@@ -1,9 +1,9 @@
-import { Controller, Get, UseGuards } from '@nestjs/common'
+import { Controller, Get, Inject, UseGuards } from '@nestjs/common'
 import { AuthGuard } from '@nestjs/passport'
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger'
 
-import { ChildBridgesService } from '../child-bridges/child-bridges.service'
-import { StatusService } from './status.service'
+import { ChildBridgesService } from '../child-bridges/child-bridges.service.js'
+import { StatusService } from './status.service.js'
 
 @ApiTags('Server Status')
 @ApiBearerAuth()
@@ -11,8 +11,8 @@ import { StatusService } from './status.service'
 @Controller('status')
 export class StatusController {
   constructor(
-    private readonly statusService: StatusService,
-    private readonly childBridgesService: ChildBridgesService,
+    @Inject(StatusService) private readonly statusService: StatusService,
+    @Inject(ChildBridgesService) private readonly childBridgesService: ChildBridgesService,
   ) {}
 
   @ApiOperation({ summary: 'Return the current CPU load, load history and temperature (if available).' })

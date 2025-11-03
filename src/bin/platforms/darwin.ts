@@ -1,14 +1,16 @@
-import type { PathLike } from 'fs-extra'
+import type { PathLike } from 'node:fs'
 
 import { execFileSync, execSync } from 'node:child_process'
+import { existsSync, unlinkSync } from 'node:fs'
+import { writeFile } from 'node:fs/promises'
 import { homedir, release, userInfo } from 'node:os'
 import { dirname, resolve } from 'node:path'
 import process from 'node:process'
 
-import { existsSync, pathExists, remove, unlinkSync, writeFile } from 'fs-extra'
+import { pathExists, remove } from 'fs-extra/esm'
 import { gte, lt } from 'semver'
 
-import { BasePlatform } from '../base-platform'
+import { BasePlatform } from '../base-platform.js'
 
 export class DarwinInstaller extends BasePlatform {
   private user: string

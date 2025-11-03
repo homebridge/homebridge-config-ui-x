@@ -1,27 +1,22 @@
-import type { ReadStream } from 'fs-extra'
+import type { ReadStream } from 'node:fs'
 
-import type { HomebridgeConfig, HomebridgeUiConfig } from './config.interfaces'
+import type { HomebridgeConfig, HomebridgeUiConfig } from './config.interfaces.js'
 
 import { createHash, randomBytes } from 'node:crypto'
+import { createReadStream } from 'node:fs'
+import { stat } from 'node:fs/promises'
 import { homedir, platform, totalmem } from 'node:os'
 import { resolve } from 'node:path'
 import process from 'node:process'
 
 import { Injectable } from '@nestjs/common'
-import {
-  createReadStream,
-  pathExists,
-  pathExistsSync,
-  readJson,
-  readJSONSync,
-  readJsonSync,
-  stat,
-  writeJsonSync,
-} from 'fs-extra'
-import { isEqual } from 'lodash'
+import { pathExists, pathExistsSync, readJson, readJSONSync, readJsonSync, writeJsonSync } from 'fs-extra/esm'
+import _ from 'lodash'
 import { satisfies } from 'semver'
 
-import { FEATURE_FLAGS } from '../feature-flags/feature-flags.registry'
+import { FEATURE_FLAGS } from '../feature-flags/feature-flags.registry.js'
+
+const { isEqual } = _
 
 @Injectable()
 export class ConfigService {

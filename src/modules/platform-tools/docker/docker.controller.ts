@@ -1,9 +1,9 @@
-import { Body, Controller, Get, Put, UseGuards } from '@nestjs/common'
+import { Body, Controller, Get, Inject, Put, UseGuards } from '@nestjs/common'
 import { AuthGuard } from '@nestjs/passport'
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger'
 
-import { AdminGuard } from '../../../core/auth/guards/admin.guard'
-import { DockerService } from './docker.service'
+import { AdminGuard } from '../../../core/auth/guards/admin.guard.js'
+import { DockerService } from './docker.service.js'
 
 @ApiTags('Platform - Docker')
 @ApiBearerAuth()
@@ -11,7 +11,7 @@ import { DockerService } from './docker.service'
 @Controller('platform-tools/docker')
 export class DockerController {
   constructor(
-    private readonly dockerService: DockerService,
+    @Inject(DockerService) private readonly dockerService: DockerService,
   ) {}
 
   @UseGuards(AdminGuard)

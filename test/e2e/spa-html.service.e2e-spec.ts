@@ -5,7 +5,7 @@ import process from 'node:process'
 import { ensureDir, readFile, remove, writeFile } from 'fs-extra'
 import { afterAll, beforeAll, describe, expect, it } from 'vitest'
 
-import { SpaHtmlService } from '../../src/core/spa/spa-html.service'
+import { SpaHtmlService } from '../../src/core/spa/spa-html.service.js'
 
 describe('SpaHtmlService (e2e)', () => {
   let tempDir: string
