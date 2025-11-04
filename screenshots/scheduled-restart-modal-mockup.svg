@@ -1,0 +1,74 @@
+<svg width="900" height="700" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="900" height="700" fill="#1e1e1e"/>
+  
+  <!-- Modal Container -->
+  <rect x="100" y="50" width="700" height="600" rx="8" fill="#2d2d2d" stroke="#404040" stroke-width="1"/>
+  
+  <!-- Header -->
+  <rect x="100" y="50" width="700" height="60" rx="8" fill="#333333"/>
+  <text x="140" y="87" font-family="Arial, sans-serif" font-size="24" fill="#ffffff" font-weight="bold">Scheduled Restart</text>
+  
+  <!-- Close button -->
+  <circle cx="760" cy="80" r="15" fill="#404040"/>
+  <text x="754" y="88" font-family="Arial, sans-serif" font-size="20" fill="#999999">✕</text>
+  
+  <!-- Subtitle -->
+  <text x="140" y="145" font-family="Arial, sans-serif" font-size="14" fill="#cccccc">
+    Configure automatic restart schedule for Homebridge
+  </text>
+  
+  <!-- Main Content Area -->
+  <rect x="140" y="180" width="620" height="420" rx="8" fill="#1a1a1a" stroke="#404040" stroke-width="1"/>
+  
+  <!-- Enable Toggle -->
+  <text x="170" y="225" font-family="Arial, sans-serif" font-size="15" fill="#ffffff">Enable Scheduled Restart</text>
+  <rect x="640" y="207" width="60" height="26" rx="13" fill="#4caf50"/>
+  <circle cx="683" cy="220" r="11" fill="#ffffff"/>
+  
+  <!-- Cron Expression Label -->
+  <text x="170" y="275" font-family="Arial, sans-serif" font-size="15" fill="#ffffff">Cron Expression</text>
+  
+  <!-- Cron Input Field -->
+  <rect x="170" y="285" width="560" height="40" rx="6" fill="#0d0d0d" stroke="#4caf50" stroke-width="1"/>
+  <text x="190" y="312" font-family="Courier New, monospace" font-size="16" fill="#4caf50">0 4 * * *</text>
+  
+  <!-- Examples Box -->
+  <rect x="170" y="340" width="560" height="120" rx="6" fill="#262626" stroke="#404040" stroke-width="1"/>
+  <text x="190" y="365" font-family="Arial, sans-serif" font-size="13" fill="#ffd700">💡 Examples:</text>
+  <text x="210" y="390" font-family="Courier New, monospace" font-size="12" fill="#cccccc">• 0 3 * * *</text>
+  <text x="340" y="390" font-family="Arial, sans-serif" font-size="12" fill="#999999">= Daily at 3:00 AM</text>
+  
+  <text x="210" y="410" font-family="Courier New, monospace" font-size="12" fill="#cccccc">• 0 4 * * 0</text>
+  <text x="340" y="410" font-family="Arial, sans-serif" font-size="12" fill="#999999">= Weekly on Sunday at 4:00 AM</text>
+  
+  <text x="210" y="430" font-family="Courier New, monospace" font-size="12" fill="#cccccc">• 0 2 */3 * *</text>
+  <text x="340" y="430" font-family="Arial, sans-serif" font-size="12" fill="#999999">= Every 3 days at 2:00 AM</text>
+  
+  <text x="210" y="450" font-family="Courier New, monospace" font-size="12" fill="#cccccc">• 0 */6 * * *</text>
+  <text x="340" y="450" font-family="Arial, sans-serif" font-size="12" fill="#999999">= Every 6 hours</text>
+  
+  <!-- Timezone Label -->
+  <text x="170" y="495" font-family="Arial, sans-serif" font-size="15" fill="#ffffff">Timezone (Optional)</text>
+  
+  <!-- Timezone Input Field -->
+  <rect x="170" y="505" width="560" height="40" rx="6" fill="#0d0d0d" stroke="#404040" stroke-width="1"/>
+  <text x="190" y="532" font-family="Arial, sans-serif" font-size="14" fill="#cccccc">America/Los_Angeles</text>
+  
+  <text x="170" y="560" font-family="Arial, sans-serif" font-size="12" fill="#888888">
+    Leave blank to use system timezone
+  </text>
+  
+  <!-- Info Box -->
+  <rect x="170" y="575" width="560" height="60" rx="6" fill="#1a2a3a" stroke="#3b7dd6" stroke-width="1"/>
+  <text x="190" y="595" font-family="Arial, sans-serif" font-size="12" fill="#66b3ff">ℹ️  This will schedule automatic restarts of the main Homebridge</text>
+  <text x="205" y="612" font-family="Arial, sans-serif" font-size="12" fill="#66b3ff">process. Individual child bridges can have their own schedules</text>
+  <text x="205" y="629" font-family="Arial, sans-serif" font-size="12" fill="#66b3ff">configured in their respective bridge settings.</text>
+  
+  <!-- Action Buttons -->
+  <rect x="480" y="650" width="100" height="36" rx="6" fill="#404040"/>
+  <text x="510" y="674" font-family="Arial, sans-serif" font-size="14" fill="#ffffff">Cancel</text>
+  
+  <rect x="600" y="650" width="160" height="36" rx="6" fill="#4caf50"/>
+  <text x="625" y="674" font-family="Arial, sans-serif" font-size="14" fill="#ffffff" font-weight="bold">Save Changes</text>
+</svg>

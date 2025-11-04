@@ -1,0 +1,96 @@
+<svg width="1400" height="600" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="1400" height="600" fill="#1e1e1e"/>
+  
+  <!-- Sidebar -->
+  <rect x="0" y="0" width="60" height="600" fill="#252525"/>
+  
+  <!-- Sidebar Icons -->
+  <g id="home-icon">
+    <circle cx="30" cy="40" r="4" fill="#666666"/>
+    <rect x="23" y="45" width="14" height="10" fill="#666666"/>
+    <polygon points="30,35 20,43 40,43" fill="#666666"/>
+  </g>
+  
+  <circle cx="30" cy="90" r="4" fill="#666666"/>
+  <circle cx="25" cy="95" r="2" fill="#666666"/>
+  <circle cx="35" cy="95" r="2" fill="#666666"/>
+  
+  <circle cx="30" cy="140" r="6" fill="#4caf50"/>
+  <text x="24" y="146" font-family="Arial, sans-serif" font-size="12" fill="#ffffff" font-weight="bold">⚙</text>
+  
+  <rect x="24" y="185" width="12" height="12" fill="#666666"/>
+  <rect x="26" y="187" width="8" height="8" fill="#252525"/>
+  
+  <text x="21" y="242" font-family="Arial, sans-serif" font-size="18" fill="#666666">&gt;_</text>
+  
+  <text x="20" y="293" font-family="Arial, sans-serif" font-size="20" fill="#666666">&lt;/&gt;</text>
+  
+  <!-- Main Content Area -->
+  <rect x="60" y="0" width="1340" height="600" fill="#1e1e1e"/>
+  
+  <!-- Header -->
+  <text x="95" y="50" font-family="Arial, sans-serif" font-size="32" fill="#ffffff" font-weight="300">Settings</text>
+  
+  <!-- Search Icon -->
+  <circle cx="1340" cy="42" r="16" stroke="#666666" stroke-width="2" fill="none"/>
+  <line x1="1352" y1="54" x2="1362" y2="64" stroke="#666666" stroke-width="2"/>
+  
+  <!-- General Section -->
+  <text x="95" y="110" font-family="Arial, sans-serif" font-size="18" fill="#4caf50">▼ General</text>
+  
+  <!-- Settings List Container -->
+  <rect x="95" y="130" width="1260" height="320" rx="8" fill="#2d2d2d"/>
+  
+  <!-- Homebridge Name -->
+  <rect x="95" y="130" width="1260" height="64" rx="8" fill="#333333"/>
+  <text x="135" y="167" font-family="Arial, sans-serif" font-size="16" fill="#ffffff">Homebridge Name</text>
+  <text x="1180" y="167" font-family="Arial, sans-serif" font-size="15" fill="#cccccc">Homebridge</text>
+  <text x="1310" y="167" font-family="Arial, sans-serif" font-size="20" fill="#4caf50">→</text>
+  
+  <!-- Backup & Restore -->
+  <line x1="95" y1="194" x2="1355" y2="194" stroke="#404040" stroke-width="1"/>
+  <rect x="95" y="194" width="1260" height="64" fill="#2d2d2d"/>
+  <text x="135" y="231" font-family="Arial, sans-serif" font-size="16" fill="#ffffff">Backup &amp; Restore</text>
+  <text x="1310" y="231" font-family="Arial, sans-serif" font-size="20" fill="#4caf50">→</text>
+  
+  <!-- Config File Backup & Restore -->
+  <line x1="95" y1="258" x2="1355" y2="258" stroke="#404040" stroke-width="1"/>
+  <rect x="95" y="258" width="1260" height="64" fill="#2d2d2d"/>
+  <text x="135" y="295" font-family="Arial, sans-serif" font-size="16" fill="#ffffff">Config File Backup &amp; Restore</text>
+  <text x="1310" y="295" font-family="Arial, sans-serif" font-size="20" fill="#4caf50">→</text>
+  
+  <!-- User Accounts -->
+  <line x1="95" y1="322" x2="1355" y2="322" stroke="#404040" stroke-width="1"/>
+  <rect x="95" y="322" width="1260" height="64" fill="#2d2d2d"/>
+  <text x="135" y="359" font-family="Arial, sans-serif" font-size="16" fill="#ffffff">User Accounts</text>
+  <text x="1310" y="359" font-family="Arial, sans-serif" font-size="20" fill="#4caf50">→</text>
+  
+  <!-- Scheduled Restart (NEW - HIGHLIGHTED) -->
+  <line x1="95" y1="386" x2="1355" y2="386" stroke="#4caf50" stroke-width="2"/>
+  <rect x="95" y="386" width="1260" height="64" rx="0 0 8 8" fill="#1a3a1a" stroke="#4caf50" stroke-width="2"/>
+  <text x="135" y="423" font-family="Arial, sans-serif" font-size="16" fill="#ffffff" font-weight="bold">Scheduled Restart</text>
+  <text x="1310" y="423" font-family="Arial, sans-serif" font-size="20" fill="#4caf50">→</text>
+  
+  <!-- NEW Badge -->
+  <rect x="350" y="402" width="50" height="24" rx="12" fill="#4caf50"/>
+  <text x="362" y="419" font-family="Arial, sans-serif" font-size="12" fill="#ffffff" font-weight="bold">NEW</text>
+  
+  <!-- Display Section (collapsed) -->
+  <text x="95" y="490" font-family="Arial, sans-serif" font-size="18" fill="#666666">▼ Display</text>
+  
+  <!-- Annotation -->
+  <defs>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#4caf50"/>
+    </marker>
+  </defs>
+  
+  <line x1="1100" y1="470" x2="1100" y2="440" stroke="#4caf50" stroke-width="2" marker-end="url(#arrow)"/>
+  <text x="950" y="490" font-family="Arial, sans-serif" font-size="14" fill="#4caf50" font-weight="bold">
+    New Scheduled Restart Option
+  </text>
+  <text x="870" y="510" font-family="Arial, sans-serif" font-size="12" fill="#b8e6b8">
+    Configure automatic restarts for main Homebridge process
+  </text>
+</svg>

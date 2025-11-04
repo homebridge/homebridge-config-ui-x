@@ -25,6 +25,7 @@ import { RemoveBridgeAccessoriesComponent } from '@/app/modules/settings/remove-
 import { RemoveIndividualAccessoriesComponent } from '@/app/modules/settings/remove-individual-accessories/remove-individual-accessories.component'
 import { ResetAllBridgesComponent } from '@/app/modules/settings/reset-all-bridges/reset-all-bridges.component'
 import { ResetIndividualBridgesComponent } from '@/app/modules/settings/reset-individual-bridges/reset-individual-bridges.component'
+import { ScheduledRestartComponent } from '@/app/modules/settings/scheduled-restart/scheduled-restart.component'
 import { SelectNetworkInterfacesComponent } from '@/app/modules/settings/select-network-interfaces/select-network-interfaces.component'
 import { WallpaperComponent } from '@/app/modules/settings/wallpaper/wallpaper.component'
 
@@ -339,6 +340,7 @@ export class SettingsComponent implements OnInit {
       general: [
         'setting-name',
         'setting-backup',
+        'setting-scheduled-restart',
         'setting-restore',
         'setting-users',
       ],
@@ -420,6 +422,7 @@ export class SettingsComponent implements OnInit {
       // General section
       'setting-name': this.$translate.instant('settings.name'),
       'setting-backup': this.$translate.instant('backup.title_backup'),
+      'setting-scheduled-restart': this.$translate.instant('restart.schedule.title'),
       'setting-restore': this.$translate.instant('config.restore.title'),
       'setting-users': this.$translate.instant('menu.tooltip_user_accounts'),
 
@@ -745,6 +748,13 @@ export class SettingsComponent implements OnInit {
     // Go to /config?action=restore
     void this.$router.navigate(['/config'], {
       queryParams: { action: 'restore' },
+    })
+  }
+
+  public openScheduledRestartModal() {
+    this.$modal.open(ScheduledRestartComponent, {
+      size: 'lg',
+      backdrop: 'static',
     })
   }
 

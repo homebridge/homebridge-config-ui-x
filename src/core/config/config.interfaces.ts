@@ -25,6 +25,11 @@ interface PluginChildBridge {
     DEBUG?: string
     NODE_OPTIONS?: string
   }
+  scheduledRestart?: {
+    enabled?: boolean
+    cron?: string
+    timezone?: string
+  }
   matter?: {
     port?: number
   }
@@ -100,6 +105,11 @@ export interface HomebridgeUiConfig {
     service?: string
     maxSize?: number
     truncateSize?: number
+  }
+  scheduledRestart?: {
+    enabled?: boolean
+    cron?: string
+    timezone?: string
   }
   ssl?: {
     key?: string

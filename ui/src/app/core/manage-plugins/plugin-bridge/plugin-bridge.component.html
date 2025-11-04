@@ -2,14 +2,8 @@
   <div class="modal-header">
     <h5 class="modal-title">{{ plugin.displayName || plugin.name }}</h5>
     @if (!justInstalled) {
-    <button
-      type="button"
-      class="btn-close"
-      data-bs-dismiss="modal"
-      [attr.aria-label]="'form.button_close' | translate"
-      (click)="closeModal()"
-      [disabled]="saveInProgress"
-    ></button>
+    <button type="button" class="btn-close" data-bs-dismiss="modal" [attr.aria-label]="'form.button_close' | translate"
+      (click)="closeModal()" [disabled]="saveInProgress"></button>
     }
   </div>
   <div class="modal-body">
@@ -38,12 +32,8 @@
           {{ 'child_bridge.config.accessory' | translate }}
         </label>
         <div class="text-start text-md-end w-100 w-md-50">
-          <select
-            class="custom-select"
-            id="bridgeSelect"
-            [(ngModel)]="selectedBlock"
-            (change)="onBlockChange(selectedBlock)"
-          >
+          <select class="custom-select" id="bridgeSelect" [(ngModel)]="selectedBlock"
+            (change)="onBlockChange(selectedBlock)">
             @for (block of configBlocks; track block; let i = $index) {
             <option [value]="i">{{ block.name || block.platform || block.accessory }}</option>
             }
@@ -57,16 +47,11 @@
       <!-- Link Bridge Option -->
       @if (!configBlocks[selectedBlock]._bridge?.username && bridgesAvailableForLink.length && !currentBridgeHasLinks) {
       <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
-        <label for="bridgeLink" class="mb-2 mb-md-0 w-100 w-md-50"
-          >{{ 'child_bridge.config.or_link' | translate }}</label
-        >
+        <label for="bridgeLink" class="mb-2 mb-md-0 w-100 w-md-50">{{ 'child_bridge.config.or_link' | translate
+          }}</label>
         <div class="text-start text-md-end w-100 w-md-50">
-          <select
-            class="custom-select"
-            id="bridgeLink"
-            #bridgeLinkSelect
-            (change)="onLinkBridgeChange(bridgeLinkSelect.value)"
-          >
+          <select class="custom-select" id="bridgeLink" #bridgeLinkSelect
+            (change)="onLinkBridgeChange(bridgeLinkSelect.value)">
             <option [value]="">{{ 'child_bridge.config.select_existing' | translate }}</option>
             @for (bridge of bridgesAvailableForLink; track bridge) {
             <option [value]="bridge.username">
@@ -92,13 +77,9 @@
           {{ (currentlySelectedLink ? 'child_bridge.config.or_link' : 'child_bridge.config.use') | translate }}
         </span>
         <div class="text-end grey-text d-flex align-items-center">
-          <input
-            type="checkbox"
-            class="rendux-input"
-            [id]="'toggleExternalBridgeInput_' + selectedBlock"
+          <input type="checkbox" class="rendux-input" [id]="'toggleExternalBridgeInput_' + selectedBlock"
             (change)="toggleExternalBridge(configBlocks[selectedBlock], enabledBlocks[selectedBlock], selectedBlock)"
-            [(ngModel)]="enabledBlocks[selectedBlock]"
-          />
+            [(ngModel)]="enabledBlocks[selectedBlock]" />
           <label [for]="'toggleExternalBridgeInput_' + selectedBlock" class="rendux-label"></label>
         </div>
       </li>
@@ -134,58 +115,38 @@
       <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
         <label class="mb-2 mb-md-0 w-100 w-md-50">{{ 'child_bridge.config.name' | translate }}</label>
         <div class="text-start text-md-end w-100 w-md-50">
-          <input
-            type="text"
-            class="form-control custom-input"
-            [(ngModel)]="configBlocks[selectedBlock]._bridge.name"
-            [ngClass]="{ 'is-invalid': getHapNameValidationError(selectedBlock) }"
-          />
+          <input type="text" class="form-control custom-input" [(ngModel)]="configBlocks[selectedBlock]._bridge.name"
+            [ngClass]="{ 'is-invalid': getHapNameValidationError(selectedBlock) }" />
         </div>
       </li>
       <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
         <label class="mb-2 mb-md-0 w-100 w-md-50">{{ 'child_bridge.config.manufacturer' | translate }}</label>
         <div class="text-start text-md-end w-100 w-md-50">
-          <input
-            type="text"
-            class="form-control custom-input"
-            [placeholder]="'form.optional' | translate"
-            [(ngModel)]="configBlocks[selectedBlock]._bridge['manufacturer']"
-          />
+          <input type="text" class="form-control custom-input" [placeholder]="'form.optional' | translate"
+            [(ngModel)]="configBlocks[selectedBlock]._bridge['manufacturer']" />
         </div>
       </li>
       <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
         <label class="mb-2 mb-md-0 w-100 w-md-50">{{ 'child_bridge.config.model' | translate }}</label>
         <div class="text-start text-md-end w-100 w-md-50">
-          <input
-            type="text"
-            class="form-control custom-input"
-            [placeholder]="'form.optional' | translate"
-            [(ngModel)]="configBlocks[selectedBlock]._bridge.model"
-          />
+          <input type="text" class="form-control custom-input" [placeholder]="'form.optional' | translate"
+            [(ngModel)]="configBlocks[selectedBlock]._bridge.model" />
         </div>
       </li>
       <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
         <label class="mb-2 mb-md-0 w-100 w-md-50">{{ 'child_bridge.config.firmware' | translate }}</label>
         <div class="text-start text-md-end w-100 w-md-50">
-          <input
-            type="text"
-            class="form-control custom-input"
-            [placeholder]="'form.optional' | translate"
-            [(ngModel)]="configBlocks[selectedBlock]._bridge.firmwareRevision"
-          />
+          <input type="text" class="form-control custom-input" [placeholder]="'form.optional' | translate"
+            [(ngModel)]="configBlocks[selectedBlock]._bridge.firmwareRevision" />
         </div>
       </li>
       @if (canShowBridgeDebug) {
       <li class="list-group-item d-flex justify-content-between align-items-center flex-row pb-2">
         <span class="text-start">{{ 'child_bridge.config.debug' | translate }} <code>-D</code></span>
         <div class="text-end grey-text d-flex align-items-center">
-          <input
-            type="checkbox"
-            class="rendux-input"
-            [id]="'homebridgeDebugMode_' + selectedBlock"
+          <input type="checkbox" class="rendux-input" [id]="'homebridgeDebugMode_' + selectedBlock"
             [(ngModel)]="configBlocks[selectedBlock]._bridge.debugModeEnabled"
-            [attr.aria-label]="'settings.startup.debug' | translate"
-          />
+            [attr.aria-label]="'settings.startup.debug' | translate" />
           <label [for]="'homebridgeDebugMode_' + selectedBlock" class="rendux-label"></label>
         </div>
       </li>
@@ -193,18 +154,13 @@
       <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
         <label class="mb-2 mb-md-0 w-100 w-md-50">
           <span class="font-monospace">DEBUG</span><br />
-          <small
-            class="grey-text"
-            [innerHTML]="'settings.service.debug_tooltip' | translate: { link: linkDebug }"
-          ></small>
+          <small class="grey-text"
+            [innerHTML]="'settings.service.debug_tooltip' | translate: { link: linkDebug }"></small>
         </label>
         <div class="text-start text-md-end w-100 w-md-50">
-          <input
-            type="text"
-            class="form-control custom-input"
+          <input type="text" class="form-control custom-input"
             [(ngModel)]="configBlocks[selectedBlock]._bridge.env.DEBUG"
-            placeholder="HAP-NodeJS:Advertiser,HAP-NodeJS:Service"
-          />
+            placeholder="HAP-NodeJS:Advertiser,HAP-NodeJS:Service" />
         </div>
       </li>
       <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
@@ -213,12 +169,37 @@
           <small class="grey-text">{{ 'settings.service.node_tooltip' | translate }}</small>
         </label>
         <div class="text-start text-md-end w-100 w-md-50">
-          <input
-            type="text"
-            class="form-control custom-input"
+          <input type="text" class="form-control custom-input"
             [(ngModel)]="configBlocks[selectedBlock]._bridge.env.NODE_OPTIONS"
-            placeholder="--max-old-space-size=512 --max-http-header-size=8192"
-          />
+            placeholder="--max-old-space-size=512 --max-http-header-size=8192" />
+        </div>
+      </li>
+
+      <!-- Scheduled Restart for Child Bridge -->
+      <li class="list-group-item d-flex justify-content-between align-items-center flex-row pb-2">
+        <span class="text-start">
+          {{ 'child_bridge.config.scheduled_restart' | translate }}<br />
+          <small class="grey-text">{{ 'child_bridge.config.scheduled_restart_desc' | translate }}</small>
+        </span>
+        <div class="text-end grey-text d-flex align-items-center">
+          <input type="checkbox" class="rendux-input" [id]="'toggleScheduledRestart_' + selectedBlock"
+            [(ngModel)]="configBlocks[selectedBlock]._bridge.scheduledRestart.enabled" />
+          <label [for]="'toggleScheduledRestart_' + selectedBlock" class="rendux-label"></label>
+        </div>
+      </li>
+      <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
+        <label class="mb-2 mb-md-0 w-100 w-md-50">{{ 'child_bridge.config.scheduled_restart_cron' | translate }}</label>
+        <div class="text-start text-md-end w-100 w-md-50">
+          <input type="text" class="form-control custom-input"
+            [(ngModel)]="configBlocks[selectedBlock]._bridge.scheduledRestart.cron" placeholder="0 4 * * *" />
+        </div>
+      </li>
+      <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
+        <label class="mb-2 mb-md-0 w-100 w-md-50">{{ 'child_bridge.config.scheduled_restart_tz' | translate }}</label>
+        <div class="text-start text-md-end w-100 w-md-50">
+          <input type="text" class="form-control custom-input"
+            [(ngModel)]="configBlocks[selectedBlock]._bridge.scheduledRestart.timezone"
+            placeholder="e.g. Europe/London" />
         </div>
       </li>
       }
@@ -233,14 +214,8 @@
           <i class="fas fa-xl fa-hap me-2 my-2"></i> {{ 'child_bridge.config.enable_hap' | translate }}
         </span>
         <div class="text-end grey-text d-flex align-items-center" style="opacity: 0.5; cursor: not-allowed">
-          <input
-            type="checkbox"
-            class="rendux-input"
-            [id]="'toggleHapInput_' + selectedBlock"
-            [checked]="true"
-            [disabled]="true"
-            style="pointer-events: none"
-          />
+          <input type="checkbox" class="rendux-input" [id]="'toggleHapInput_' + selectedBlock" [checked]="true"
+            [disabled]="true" style="pointer-events: none" />
           <label [for]="'toggleHapInput_' + selectedBlock" class="rendux-label" style="cursor: not-allowed"></label>
         </div>
       </li>
@@ -263,23 +238,17 @@
       } @if (deviceInfo.get(configBlocks[selectedBlock]._bridge?.username)) {
       <li class="list-group-item text-center">
         <div class="w-100 d-flex flex-column text-center">
-          <app-qrcode
-            [data]="deviceInfo.get(configBlocks[selectedBlock]._bridge?.username)?.['_setupCode']"
-            class="mx-auto"
-            style="width: 175px; height: 175px"
-          >
+          <app-qrcode [data]="deviceInfo.get(configBlocks[selectedBlock]._bridge?.username)?.['_setupCode']"
+            class="mx-auto" style="width: 175px; height: 175px">
           </app-qrcode>
           <p class="mx-auto mt-3 mb-1 font-monospace">
             {{ deviceInfo.get(configBlocks[selectedBlock]._bridge?.username)?.['pincode'] }}
           </p>
           <p class="grey-text mx-auto small mb-1" style="max-width: 400px">
-            <i
-              class="fas fa-link"
-              [ngClass]="{
+            <i class="fas fa-link" [ngClass]="{
                 'green-text': deviceInfo.get(configBlocks[selectedBlock]._bridge?.username)?.['_isPaired'],
                 'grey-text': !deviceInfo.get(configBlocks[selectedBlock]._bridge?.username)?.['_isPaired']
-              }"
-            ></i>
+              }"></i>
             {{ (deviceInfo.get(configBlocks[selectedBlock]._bridge?.username)?.['_isPaired'] ? 'status.widget.qr_paired'
             : 'status.widget.qr_unpaired') | translate }} @if
             (!deviceInfo.get(configBlocks[selectedBlock]._bridge?.username)?.['_isPaired']) {
@@ -292,14 +261,10 @@
       <li class="list-group-item d-flex justify-content-between align-items-center flex-row pb-2">
         <span class="text-start">{{ 'child_bridge.config.hide_pairing_alert' | translate }}</span>
         <div class="text-end grey-text d-flex align-items-center">
-          <input
-            type="checkbox"
-            class="rendux-input"
-            [id]="'toggleHideHapUnpairing_' + selectedBlock"
+          <input type="checkbox" class="rendux-input" [id]="'toggleHideHapUnpairing_' + selectedBlock"
             [checked]="isUnpairingHidden(configBlocks[selectedBlock]._bridge?.username, 'hap')"
             (change)="toggleHideUnpairing(configBlocks[selectedBlock]._bridge?.username, 'hap')"
-            [attr.aria-label]="'child_bridge.config.hide_pairing_alert' | translate"
-          />
+            [attr.aria-label]="'child_bridge.config.hide_pairing_alert' | translate" />
           <label [for]="'toggleHideHapUnpairing_' + selectedBlock" class="rendux-label"></label>
         </div>
       </li>
@@ -309,14 +274,8 @@
       <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
         <label class="mb-2 mb-md-0 w-100 w-md-50">{{ 'child_bridge.config.port' | translate }}</label>
         <div class="text-start text-md-end w-100 w-md-50">
-          <input
-            type="number"
-            class="form-control custom-input"
-            [(ngModel)]="configBlocks[selectedBlock]._bridge.port"
-            [ngClass]="{ 'is-invalid': getHapPortValidationError(selectedBlock) }"
-            min="1025"
-            max="65533"
-          />
+          <input type="number" class="form-control custom-input" [(ngModel)]="configBlocks[selectedBlock]._bridge.port"
+            [ngClass]="{ 'is-invalid': getHapPortValidationError(selectedBlock) }" min="1025" max="65533" />
         </div>
       </li>
     </ul>
@@ -331,13 +290,9 @@
           <span class="badge badge-primary ms-1">{{ 'common.labels.beta' | translate }}</span>
         </label>
         <div class="text-end grey-text d-flex align-items-center">
-          <input
-            type="checkbox"
-            class="rendux-input"
-            [id]="'toggleMatterBridgeInput_' + selectedBlock"
+          <input type="checkbox" class="rendux-input" [id]="'toggleMatterBridgeInput_' + selectedBlock"
             (change)="toggleMatterBridge(configBlocks[selectedBlock], matterEnabledBlocks[selectedBlock], selectedBlock)"
-            [(ngModel)]="matterEnabledBlocks[selectedBlock]"
-          />
+            [(ngModel)]="matterEnabledBlocks[selectedBlock]" />
           <label [for]="'toggleMatterBridgeInput_' + selectedBlock" class="rendux-label"></label>
         </div>
       </li>
@@ -356,23 +311,17 @@
       @if (matterDeviceInfo.get(configBlocks[selectedBlock]._bridge?.username)?.setupUri) {
       <li class="list-group-item text-center">
         <div class="w-100 d-flex flex-column text-center">
-          <app-qrcode
-            [data]="matterDeviceInfo.get(configBlocks[selectedBlock]._bridge?.username)?.setupUri"
-            class="mx-auto"
-            style="width: 175px; height: 175px"
-          >
+          <app-qrcode [data]="matterDeviceInfo.get(configBlocks[selectedBlock]._bridge?.username)?.setupUri"
+            class="mx-auto" style="width: 175px; height: 175px">
           </app-qrcode>
           <p class="mx-auto mt-3 mb-1 font-monospace">
             {{ matterDeviceInfo.get(configBlocks[selectedBlock]._bridge?.username)?.pin }}
           </p>
           <p class="grey-text mx-auto small mb-1" style="max-width: 400px">
-            <i
-              class="fas fa-link"
-              [ngClass]="{
+            <i class="fas fa-link" [ngClass]="{
                 'green-text': matterDeviceInfo.get(configBlocks[selectedBlock]._bridge?.username)?.commissioned,
                 'grey-text': !matterDeviceInfo.get(configBlocks[selectedBlock]._bridge?.username)?.commissioned
-              }"
-            ></i>
+              }"></i>
             {{ (matterDeviceInfo.get(configBlocks[selectedBlock]._bridge?.username)?.commissioned ?
             'status.widget.qr_paired' : 'status.widget.qr_unpaired') | translate }} @if
             (!matterDeviceInfo.get(configBlocks[selectedBlock]._bridge?.username)?.commissioned) {
@@ -385,14 +334,10 @@
       <li class="list-group-item d-flex justify-content-between align-items-center flex-row pb-2">
         <span class="text-start">{{ 'child_bridge.config.hide_pairing_alert' | translate }}</span>
         <div class="text-end grey-text d-flex align-items-center">
-          <input
-            type="checkbox"
-            class="rendux-input"
-            [id]="'toggleHideMatterUnpairing_' + selectedBlock"
+          <input type="checkbox" class="rendux-input" [id]="'toggleHideMatterUnpairing_' + selectedBlock"
             [checked]="isUnpairingHidden(configBlocks[selectedBlock]._bridge?.username, 'matter')"
             (change)="toggleHideUnpairing(configBlocks[selectedBlock]._bridge?.username, 'matter')"
-            [attr.aria-label]="'child_bridge.config.hide_pairing_alert' | translate"
-          />
+            [attr.aria-label]="'child_bridge.config.hide_pairing_alert' | translate" />
           <label [for]="'toggleHideMatterUnpairing_' + selectedBlock" class="rendux-label"></label>
         </div>
       </li>
@@ -416,15 +361,9 @@
       <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
         <label class="mb-2 mb-md-0 w-100 w-md-50">{{ 'child_bridge.config.port' | translate }}</label>
         <div class="text-start text-md-end w-100 w-md-50">
-          <input
-            type="number"
-            class="form-control custom-input"
-            min="1024"
-            max="65535"
-            placeholder="e.g. 5540"
+          <input type="number" class="form-control custom-input" min="1024" max="65535" placeholder="e.g. 5540"
             [(ngModel)]="configBlocks[selectedBlock]._bridge.matter.port"
-            [ngClass]="{ 'is-invalid': getMatterPortValidationError(selectedBlock) }"
-          />
+            [ngClass]="{ 'is-invalid': getMatterPortValidationError(selectedBlock) }" />
         </div>
       </li>
       }
@@ -472,13 +411,8 @@
   <div class="modal-footer justify-content-between">
     <div class="text-start">
       @if (canConfigure && !justInstalled) {
-      <button
-        type="button"
-        class="btn btn-elegant"
-        data-bs-dismiss="modal"
-        (click)="closeModal()"
-        [disabled]="saveInProgress"
-      >
+      <button type="button" class="btn btn-elegant" data-bs-dismiss="modal" (click)="closeModal()"
+        [disabled]="saveInProgress">
         {{ 'form.button_close' | translate }}
       </button>
       }

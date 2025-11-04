@@ -158,6 +158,10 @@ export class PluginBridgeComponent implements OnInit {
           const existingBridge = existingBridgeEntry ? existingBridgeEntry[1] : undefined
           if (existingBridge) {
             block._bridge.env = {}
+            // Ensure scheduledRestart object exists for template bindings
+            if (!block._bridge.scheduledRestart) {
+              (block._bridge as any).scheduledRestart = {}
+            }
             this.accessoryBridgeLinks.push({
               index: i.toString(),
               usesIndex: existingBridgeIndex.toString(),
@@ -167,6 +171,9 @@ export class PluginBridgeComponent implements OnInit {
             })
           } else {
             block._bridge.env = block._bridge.env || {}
+            if (!block._bridge.scheduledRestart) {
+              (block._bridge as any).scheduledRestart = {}
+            }
             this.bridgeCache.set(i, block._bridge)
             await this.getDeviceInfo(block._bridge.username)
 
@@ -256,6 +263,7 @@ export class PluginBridgeComponent implements OnInit {
         firmwareRevision: bridgeCache?.firmwareRevision,
         debugModeEnabled: bridgeCache?.debugModeEnabled,
         env: bridgeCache?.env || {},
+        scheduledRestart: bridgeCache?.scheduledRestart || {},
       }
 
       // Restore Matter configuration if it was previously cached (cached means it was enabled before disabling)
