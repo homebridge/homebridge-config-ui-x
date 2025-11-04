@@ -1,0 +1,151 @@
+<svg width="900" height="1400" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="900" height="1400" fill="#1e1e1e" />
+
+  <!-- Modal Container -->
+  <rect x="50" y="30" width="800" height="1340" rx="8" fill="#2d2d2d" stroke="#404040" stroke-width="1" />
+
+  <!-- Header -->
+  <rect x="50" y="30" width="800" height="60" rx="8" fill="#333333" />
+  <text x="90" y="67" font-family="Arial, sans-serif" font-size="24" fill="#ffffff" font-weight="bold">
+    Air Quality
+  </text>
+
+  <!-- Close button -->
+  <circle cx="810" cy="60" r="15" fill="#404040" />
+  <text x="804" y="68" font-family="Arial, sans-serif" font-size="20" fill="#999999">✕</text>
+
+  <!-- Plugin Icon -->
+  <rect x="400" y="120" width="100" height="100" rx="12" fill="#3b7dd6" />
+  <text x="420" y="165" font-family="Arial, sans-serif" font-size="16" fill="#ffffff" font-weight="bold">AirNow</text>
+  <circle cx="425" cy="180" r="15" stroke="#ffffff" stroke-width="2" fill="none" />
+  <circle cx="425" cy="180" r="10" fill="#ffffff" />
+
+  <!-- Info Text -->
+  <text x="90" y="260" font-family="Arial, sans-serif" font-size="14" fill="#cccccc">
+    • Homebridge allows you to run your plugin's platform or accessory as an isolated child bridge
+  </text>
+  <text x="100" y="280" font-family="Arial, sans-serif" font-size="14" fill="#3b7dd6" text-decoration="underline">
+    🔗
+  </text>
+  <text x="120" y="280" font-family="Arial, sans-serif" font-size="14" fill="#cccccc">
+    . This can improve the general responsiveness and reliability of Homebridge.
+  </text>
+
+  <text x="90" y="310" font-family="Arial, sans-serif" font-size="14" fill="#cccccc">
+    • Each child bridge platform or accessory will need to be paired with HomeKit separately.
+  </text>
+
+  <!-- Use Child Bridge Toggle -->
+  <rect x="90" y="340" width="720" height="50" rx="6" fill="#262626" />
+  <text x="110" y="370" font-family="Arial, sans-serif" font-size="15" fill="#ffffff">Use Child Bridge</text>
+  <rect x="720" y="352" width="60" height="26" rx="13" fill="#4caf50" />
+  <circle cx="763" cy="365" r="11" fill="#ffffff" />
+
+  <!-- Username -->
+  <text x="90" y="430" font-family="Arial, sans-serif" font-size="14" fill="#999999">Username</text>
+  <text x="620" y="430" font-family="Arial, sans-serif" font-size="14" fill="#cccccc">0E:AE:C6:D3:94:EB</text>
+
+  <!-- Name Field -->
+  <text x="90" y="470" font-family="Arial, sans-serif" font-size="14" fill="#999999">Name</text>
+  <rect x="430" y="452" width="380" height="32" rx="4" fill="#1a1a1a" stroke="#404040" stroke-width="1" />
+  <text x="445" y="474" font-family="Arial, sans-serif" font-size="14" fill="#ffffff">Air Quality</text>
+
+  <!-- Manufacturer Field -->
+  <text x="90" y="520" font-family="Arial, sans-serif" font-size="14" fill="#999999">Manufacturer</text>
+  <rect x="430" y="502" width="380" height="32" rx="4" fill="#1a1a1a" stroke="#404040" stroke-width="1" />
+  <text x="445" y="524" font-family="Arial, sans-serif" font-size="14" fill="#ffffff">Air Quality</text>
+
+  <!-- Model Field -->
+  <text x="90" y="570" font-family="Arial, sans-serif" font-size="14" fill="#999999">Model</text>
+  <rect x="430" y="552" width="380" height="32" rx="4" fill="#1a1a1a" stroke="#404040" stroke-width="1" />
+  <text x="445" y="574" font-family="Arial, sans-serif" font-size="14" fill="#ffffff">Bridge</text>
+
+  <!-- Firmware Version Field -->
+  <text x="90" y="620" font-family="Arial, sans-serif" font-size="14" fill="#999999">Firmware Version</text>
+  <rect x="430" y="602" width="380" height="32" rx="4" fill="#1a1a1a" stroke="#404040" stroke-width="1" />
+  <text x="445" y="624" font-family="Arial, sans-serif" font-size="14" fill="#666666">Optional</text>
+
+  <!-- Debug Mode Toggle -->
+  <text x="90" y="670" font-family="Arial, sans-serif" font-size="14" fill="#999999">Debug Mode</text>
+  <text x="200" y="670" font-family="Arial, sans-serif" font-size="12" fill="#ff6b6b">-D</text>
+  <rect x="720" y="652" width="60" height="26" rx="13" fill="#666666" />
+  <circle cx="733" cy="665" r="11" fill="#ffffff" />
+
+  <!-- SCHEDULED RESTART SECTION (HIGHLIGHTED) -->
+  <rect x="90" y="710" width="720" height="280" rx="8" fill="#1a3a1a" stroke="#4caf50" stroke-width="2" />
+
+  <text x="110" y="740" font-family="Arial, sans-serif" font-size="16" fill="#ffffff" font-weight="bold">
+    SCHEDULED RESTART
+  </text>
+
+  <text x="110" y="765" font-family="Arial, sans-serif" font-size="13" fill="#b8e6b8">
+    Automatically restart this child bridge on a schedule
+  </text>
+
+  <!-- Enable Toggle -->
+  <text x="110" y="805" font-family="Arial, sans-serif" font-size="14" fill="#cccccc">Enable Scheduled Restart</text>
+  <rect x="680" y="787" width="60" height="26" rx="13" fill="#4caf50" />
+  <circle cx="723" cy="800" r="11" fill="#ffffff" />
+
+  <!-- Cron Expression -->
+  <text x="110" y="845" font-family="Arial, sans-serif" font-size="14" fill="#cccccc">Cron Expression</text>
+  <rect x="110" y="855" width="680" height="32" rx="4" fill="#0d0d0d" stroke="#4caf50" stroke-width="1" />
+  <text x="125" y="877" font-family="Courier New, monospace" font-size="14" fill="#4caf50">0 3 * * *</text>
+
+  <text x="110" y="905" font-family="Arial, sans-serif" font-size="12" fill="#888888">
+    Example: 0 3 * * * = Daily at 3:00 AM
+  </text>
+
+  <!-- Timezone -->
+  <text x="110" y="935" font-family="Arial, sans-serif" font-size="14" fill="#cccccc">Timezone (Optional)</text>
+  <rect x="110" y="945" width="680" height="32" rx="4" fill="#0d0d0d" stroke="#404040" stroke-width="1" />
+  <text x="125" y="967" font-family="Arial, sans-serif" font-size="14" fill="#cccccc">America/New_York</text>
+
+  <text x="110" y="995" font-family="Arial, sans-serif" font-size="12" fill="#888888">
+    Leave blank to use system timezone
+  </text>
+
+  <!-- DEBUG Section -->
+  <text x="90" y="1030" font-family="Arial, sans-serif" font-size="14" fill="#ffffff" font-weight="bold">DEBUG</text>
+  <text x="90" y="1050" font-family="Arial, sans-serif" font-size="12" fill="#999999">
+    Some plugins require you to set the DEBUG environment variable
+  </text>
+  <text x="90" y="1065" font-family="Arial, sans-serif" font-size="12" fill="#3b7dd6" text-decoration="underline">
+    🔗
+  </text>
+  <text x="110" y="1065" font-family="Arial, sans-serif" font-size="12" fill="#999999">
+    to enable debug level logging.
+  </text>
+  <rect x="90" y="1075" width="720" height="32" rx="4" fill="#1a1a1a" stroke="#404040" stroke-width="1" />
+  <text x="105" y="1097" font-family="Arial, sans-serif" font-size="13" fill="#cccccc">
+    HAP-NodeJS:Advertiser,HAP-NodeJS:Service
+  </text>
+
+  <!-- NODE_OPTIONS Section -->
+  <text x="90" y="1140" font-family="Arial, sans-serif" font-size="14" fill="#ffffff" font-weight="bold">
+    NODE_OPTIONS
+  </text>
+  <text x="90" y="1160" font-family="Arial, sans-serif" font-size="12" fill="#999999">
+    Node.js runtime options for this process. This should be kept blank
+  </text>
+  <text x="90" y="1175" font-family="Arial, sans-serif" font-size="12" fill="#999999">
+    unless you know what you are doing.
+  </text>
+  <rect x="90" y="1185" width="720" height="32" rx="4" fill="#1a1a1a" stroke="#404040" stroke-width="1" />
+  <text x="105" y="1207" font-family="Arial, sans-serif" font-size="13" fill="#cccccc">
+    --max-old-space-size=512 --max-http-header-size=80000
+  </text>
+
+  <!-- Annotation Arrow -->
+  <defs>
+    <marker id="arrowhead" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto">
+      <polygon points="0 0, 10 3, 0 6" fill="#4caf50" />
+    </marker>
+  </defs>
+  <line x1="850" y1="850" x2="820" y2="850" stroke="#4caf50" stroke-width="2" marker-end="url(#arrowhead)" />
+  <text x="860" y="830" font-family="Arial, sans-serif" font-size="14" fill="#4caf50" font-weight="bold">NEW</text>
+  <text x="860" y="850" font-family="Arial, sans-serif" font-size="12" fill="#b8e6b8">Scheduled</text>
+  <text x="860" y="865" font-family="Arial, sans-serif" font-size="12" fill="#b8e6b8">Restart</text>
+  <text x="860" y="880" font-family="Arial, sans-serif" font-size="12" fill="#b8e6b8">Feature</text>
+</svg>

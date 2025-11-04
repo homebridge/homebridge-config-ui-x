@@ -221,6 +221,45 @@
           />
         </div>
       </li>
+
+      <!-- Scheduled Restart for Child Bridge -->
+      <li class="list-group-item d-flex justify-content-between align-items-center flex-row pb-2">
+        <span class="text-start">
+          {{ 'child_bridge.config.scheduled_restart' | translate }}<br />
+          <small class="grey-text">{{ 'child_bridge.config.scheduled_restart_desc' | translate }}</small>
+        </span>
+        <div class="text-end grey-text d-flex align-items-center">
+          <input
+            type="checkbox"
+            class="rendux-input"
+            [id]="'toggleScheduledRestart_' + selectedBlock"
+            [(ngModel)]="configBlocks[selectedBlock]._bridge.scheduledRestart.enabled"
+          />
+          <label [for]="'toggleScheduledRestart_' + selectedBlock" class="rendux-label"></label>
+        </div>
+      </li>
+      <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
+        <label class="mb-2 mb-md-0 w-100 w-md-50">{{ 'child_bridge.config.scheduled_restart_cron' | translate }}</label>
+        <div class="text-start text-md-end w-100 w-md-50">
+          <input
+            type="text"
+            class="form-control custom-input"
+            [(ngModel)]="configBlocks[selectedBlock]._bridge.scheduledRestart.cron"
+            placeholder="0 4 * * *"
+          />
+        </div>
+      </li>
+      <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
+        <label class="mb-2 mb-md-0 w-100 w-md-50">{{ 'child_bridge.config.scheduled_restart_tz' | translate }}</label>
+        <div class="text-start text-md-end w-100 w-md-50">
+          <input
+            type="text"
+            class="form-control custom-input"
+            [(ngModel)]="configBlocks[selectedBlock]._bridge.scheduledRestart.timezone"
+            placeholder="e.g. Europe/London"
+          />
+        </div>
+      </li>
       }
     </ul>
 
