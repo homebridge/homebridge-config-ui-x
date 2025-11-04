@@ -61,6 +61,7 @@ export class ConfigService {
 
   // Check this async
   public runningOnRaspberryPi = false
+  public runningOnRaspbianImage = false
 
   // Docker settings
   public startupScript = resolve(this.storagePath, 'startup.sh')
@@ -100,6 +101,7 @@ export class ConfigService {
     const homebridgeConfig = readJSONSync(this.configPath)
     this.parseConfig(homebridgeConfig)
     this.checkIfRunningOnRaspberryPi()
+    this.checkIfRunningOnRaspbianImage()
   }
 
   /**
@@ -199,6 +201,7 @@ export class ConfigService {
         runningInLinux: this.runningInLinux,
         runningInFreeBSD: this.runningInFreeBSD,
         runningOnRaspberryPi: this.runningOnRaspberryPi,
+        runningOnRaspbianImage: this.runningOnRaspbianImage,
         temperatureUnits: this.ui.tempUnits || 'c',
         temp: this.ui.temp,
         log: {
@@ -391,6 +394,19 @@ export class ConfigService {
       this.runningOnRaspberryPi = await pathExists('/usr/bin/vcgencmd') && await pathExists('/usr/bin/raspi-config')
     } catch (e) {
       this.runningOnRaspberryPi = false
+    }
+  }
+
+  /**
+   * Checks to see if we are running on the Homebridge Raspbian Image
+   * The Raspbian image has nginx proxying the UI and handling SSL
+   */
+  private async checkIfRunningOnRaspbianImage() {
+    try {
+      // Check for the marker file that only exists on the Raspbian image
+      this.runningOnRaspbianImage = platform() === 'linux' && await pathExists('/etc/hb-ui-port')
+    } catch (e) {
+      this.runningOnRaspbianImage = false
     }
   }
 
