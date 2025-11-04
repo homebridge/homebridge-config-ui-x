@@ -513,7 +513,7 @@
   "settings.display.wallpaper_rule": "คุณสามารถเลือกไฟล์รูปภาพขนาดสูงสุด {{ maxFileSizeText }} ได้",
   "settings.display.wallpaper_rule2": "คุณจะต้องคลิกบันทึกเพื่ออัปโหลดวอลเปเปอร์ไปยังไดเร็กทอรีที่จัดเก็บข้อมูล Homebridge ของคุณ",
   "settings.display.wallpaper_success": "อัปเดตวอลเปเปอร์สำเร็จแล้ว",
-  "settings.general.title_display": "การแดงผล",
+  "settings.general.title_display": "การแสดงผล",
   "settings.general.title_general": "ทั่วไป",
   "settings.linux.restart": "รีสตาร์ทคำสั่ง",
   "settings.linux.restart_desc": "ถ้าไม่ได้ตั้งค่าคำสั่งรีสตาร์ท กระบวนการจะยุติด้วยรหัสออกที่ไม่ใช่ศูนย์",
