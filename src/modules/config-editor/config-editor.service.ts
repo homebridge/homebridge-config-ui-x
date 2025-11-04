@@ -9,6 +9,7 @@ import { readdir, readFile, rename, unlink } from 'node:fs/promises'
 import { join, resolve } from 'node:path'
 
 import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common'
+import { ModuleRef } from '@nestjs/core'
 import dayjs from 'dayjs'
 import { ensureDir, move, pathExists, readJson, remove, writeJsonSync } from 'fs-extra/esm'
 import { gte } from 'semver'
@@ -25,12 +26,23 @@ export class ConfigEditorService {
     @Inject(Logger) private readonly logger: Logger,
     @Inject(ConfigService) private readonly configService: ConfigService,
     @Inject(SchedulerService) private readonly schedulerService: SchedulerService,
+    @Inject(ModuleRef) private readonly moduleRef: ModuleRef,
     @Inject(PluginsService) private readonly pluginsService: PluginsService,
     @Inject(HomebridgeIpcService) private readonly homebridgeIpcService: HomebridgeIpcService,
   ) {
+    // Resolve optional RestartSchedulerService at runtime if available
+    try {
+      // strict:false allows resolution even if not in the same module tree (eg. tests)
+      this.restartScheduler = this.moduleRef.get('UIX_RESTART_SCHEDULER', { strict: false }) as { refreshSchedules: (cfg?: HomebridgeConfig) => Promise<void> | void }
+    } catch {
+      // ignore if not available (eg. in isolated test modules)
+    }
     this.start()
     this.scheduleConfigBackupCleanup()
   }
+
+  // Optional reference (resolved via ModuleRef)
+  private readonly restartScheduler?: { refreshSchedules: (cfg?: HomebridgeConfig) => Promise<void> | void }
 
   /**
    * Executed when the UI starts
@@ -188,6 +200,13 @@ export class ConfigEditorService {
     // Parse the config for ui settings
     const configCopy = JSON.parse(JSON.stringify(config))
     this.configService.parseConfig(configCopy)
+
+    // Refresh any dependent schedules
+    try {
+      await this.restartScheduler?.refreshSchedules(config)
+    } catch (e) {
+      this.logger.warn(`Failed to refresh restart schedules after config update: ${(e as any)?.message}`)
+    }
 
     return config
   }
