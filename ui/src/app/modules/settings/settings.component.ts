@@ -121,6 +121,7 @@ export class SettingsComponent implements OnInit {
   public showPfxPassphrase = false
   public runningInDocker = this.$settings.env.runningInDocker
   public runningOnRaspberryPi = this.$settings.env.runningOnRaspberryPi
+  public runningOnRaspbianImage = this.$settings.env.runningOnRaspbianImage
   public platform = this.$settings.env.platform
   public enableTerminalAccess = this.$settings.env.enableTerminalAccess
   public isPwa = Boolean(isStandalonePWA())

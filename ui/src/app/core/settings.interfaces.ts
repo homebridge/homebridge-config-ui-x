@@ -19,6 +19,7 @@ export interface EnvInterface {
   runningInSynologyPackage: boolean
   runningInPackageMode: boolean
   runningOnRaspberryPi: boolean
+  runningOnRaspbianImage: boolean
   canShutdownRestartHost: boolean
   dockerOfflineUpdate: boolean
   lang: string | null
