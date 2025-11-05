@@ -248,6 +248,11 @@ export class StatusComponent implements OnInit, OnDestroy {
           return null
         }
 
+        // If accessory control is disabled (insecure mode is disabled), hide the accessories widget
+        if (item.component === 'AccessoriesWidgetComponent' && !this.$settings.env.enableAccessories) {
+          return null
+        }
+
         return item
       }).filter(Boolean))
 
