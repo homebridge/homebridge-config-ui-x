@@ -568,7 +568,7 @@
   "settings.startup.debug": "Homebridge Debug-läge",
   "settings.startup.debug_desc_v1": "Enable this if you need Homebridge to output more detailed logs. This setting applies to the main Homebridge bridge as well as all child bridges. Some plugins may also adhere to this setting and output more detailed logs.",
   "settings.startup.debug_desc_v2": "Enable this if you need Homebridge to output more detailed logs. This setting applies to the main Homebridge bridge. The setting for child bridges can be found in the child bridge configuration from the plugins page. Some plugins may also adhere to this setting and output more detailed logs.",
-  "settings.startup.insecure": "Homebridge 'Insecure'-läge",
+  "settings.startup.insecure": "Enable UI Accessory Control",
   "settings.startup.insecure_desc": "To control your accessories via the Homebridge UI you must be running Homebridge in insecure mode.",
   "settings.startup.keep_accessories": "Behåll tillbehör till avinstallerade plugins",
   "settings.startup.keep_accessories_desc": "If enabled, accessories of platform plugins will remain in the cache even after the plugin is uninstalled. This can be useful if you plan to reinstall the plugin later.",

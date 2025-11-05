@@ -568,7 +568,7 @@
   "settings.startup.debug": "Mode Debug Homebridge",
   "settings.startup.debug_desc_v1": "Aktifkan ini jika Anda membutuhkan Homebridge untuk mengeluarkan log lebih rinci. Pengaturan ini berlaku untuk Jembatan Homebridge utama serta semua jembatan anak. Beberapa plugin juga dapat mematuhi pengaturan ini dan output log lebih rinci.",
   "settings.startup.debug_desc_v2": "Aktifkan ini jika Anda membutuhkan Homebridge untuk mengeluarkan log lebih rinci. Pengaturan ini berlaku untuk Jembatan Homebridge utama. Pengaturan untuk jembatan anak dapat ditemukan di konfigurasi jembatan anak dari halaman plugin.Beberapa plugin juga dapat mematuhi pengaturan ini dan output log lebih rinci.",
-  "settings.startup.insecure": "Mode homebridge 'tidak aman'",
+  "settings.startup.insecure": "Enable UI Accessory Control",
   "settings.startup.insecure_desc": "Untuk mengontrol aksesori Anda melalui Homebridge UI, Anda harus menjalankan Homebridge dalam mode tidak aman.",
   "settings.startup.keep_accessories": "Simpan aksesoris plugin yang tidak diinstal",
   "settings.startup.keep_accessories_desc": "Jika diaktifkan, aksesori plugin platform akan tetap berada di cache bahkan setelah plugin tidak diinstal. Ini bisa berguna jika Anda berencana untuk menginstal ulang plugin nanti.",

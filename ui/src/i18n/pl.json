@@ -568,7 +568,7 @@
   "settings.startup.debug": "Tryb Homebridge Debug",
   "settings.startup.debug_desc_v1": "Wyświetlaj bardziej szczegółowe logi systemu. To ustawienie dotyczy Homebridge, a także wszystkich mostków podrzędnych. Tej opcji mogą też wymagać niektóre wtyczki aby wyświetlać bardziej szczegółowe logi.",
   "settings.startup.debug_desc_v2": "Wyświetlaj bardziej szczegółowe logi systemu. To ustawienie dotyczy Homebridge. Ustawienia dla każdego mostka podrzędnego można znaleźć w konfiguracji mostka podrzędnego dla danej wtyczki. Tej opcji mogą też wymagać niektóre wtyczki aby wyświetlać bardziej szczegółowe logi.",
-  "settings.startup.insecure": "Tryb Homebridge 'Insecure'",
+  "settings.startup.insecure": "Enable UI Accessory Control",
   "settings.startup.insecure_desc": "Aby sterować akcesoriami za pomocą interfejsu użytkownika Homebridge, musisz uruchomić Homebridge w trybie niezabezpieczonym (Insecure).",
   "settings.startup.keep_accessories": "Zachowaj akcesoria odinstalowanych wtyczek",
   "settings.startup.keep_accessories_desc": "Akcesoria wtyczek (tych typu platform) pozostaną w pamięci podręcznej nawet po odinstalowaniu wtyczki. Może to być przydatne jeśli planujesz ponownie zainstalować wtyczkę w przyszłości.",

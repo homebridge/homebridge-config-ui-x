@@ -568,7 +568,7 @@
   "settings.startup.debug": "Homebridge Debug Modus",
   "settings.startup.debug_desc_v1": "Activeer dit als Homebridge meer gedetailleerde logs moet aanmaken. Deze instelling heeft zowel betrekking op de hoofd Homebridge bridge als op alle child bridges. Sommige plugins kunnen ook rekening houden met deze instelling and meer gedetailleerde logs aanmaken.",
   "settings.startup.debug_desc_v2": "Activeer dit als Homebridge meer gedetailleerde logs moet aanmaken. Deze instelling heeft betrekking op de main Homebridge bridge. De instelling voor de child bridges bevindt zich in de child bridge configuratie in de plugins pagina. Sommige plugins kunnen ook rekening houden met deze instelling en meer gedetailleerde logs aanmaken.",
-  "settings.startup.insecure": "Homebridge 'Onveilig' modus",
+  "settings.startup.insecure": "Enable UI Accessory Control",
   "settings.startup.insecure_desc": "Om accessories via de Homebridge UI te bedienen moet Homebridge in onveilige modus werken.",
   "settings.startup.keep_accessories": "Bewaar accessoires van gedeïnstalleerde plugins",
   "settings.startup.keep_accessories_desc": "Indien geactiveerd, zullen accessoires van platform plugins in cache bewaard blijven ook als de plugin is gedeïnstalleerd. Dit kan handig zijn als U van plan bent de plugin later opnieuw te installeren.",

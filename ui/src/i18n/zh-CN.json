@@ -568,7 +568,7 @@
   "settings.startup.debug": "Homebridge 调试模式",
   "settings.startup.debug_desc_v1": "启用后，Homebridge 将输出更详细的日志。该设置适用于主 Homebridge 网桥以及所有子网桥。某些插件也可能遵循此设置并输出更详细的日志。",
   "settings.startup.debug_desc_v2": "启用后，Homebridge 将输出更详细的日志。该设置适用于主 Homebridge 网桥。子网桥的设置可在插件页面的子网桥配置中找到。某些插件也可能遵循此设置并输出更详细的日志。",
-  "settings.startup.insecure": "Homebridge 非安全模式",
+  "settings.startup.insecure": "Enable UI Accessory Control",
   "settings.startup.insecure_desc": "要通过 Homebridge UI 控制您的配件，必须在非安全模式下运行 Homebridge。",
   "settings.startup.keep_accessories": "保留已卸载插件的配件",
   "settings.startup.keep_accessories_desc": "启用后，平台插件的配件即使在卸载插件后，也会保留在缓存中。如果您计划稍后重新安装该插件，这会很有用。",

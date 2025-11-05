@@ -568,7 +568,7 @@
   "settings.startup.debug": "מצב Debug של Homebridge",
   "settings.startup.debug_desc_v1": "הפעל את זה אם אתה צריך ש-Homebridge יפליט לוגים מפורטים יותר. הגדרה זו חלה על ה-Bridge הראשי של Homebridge כמו גם על כל ה-Child Bridges. חלק מהתוספים עלולים גם להשמיע להגדרה זו ולהפליט לוגים מפורטים יותר.",
   "settings.startup.debug_desc_v2": "הפעל את זה אם אתה צריך ש-Homebridge יפליט לוגים מפורטים יותר. הגדרה זו חלה על ה-Bridge הראשי של Homebridge. הגדרה עבור Child Bridges ניתן למצוא בקונפיגורציה של ה-Child Bridge מעמוד התוספים. חלק מהתוספים עלולים גם להשמיע להגדרה זו ולהפליט לוגים מפורטים יותר.",
-  "settings.startup.insecure": "מצב 'לא בטוח' של Homebridge",
+  "settings.startup.insecure": "Enable UI Accessory Control",
   "settings.startup.insecure_desc": "כדי לשלוט באביזרים שלך דרך ה-UI של Homebridge, אתה חייב להריץ את Homebridge במצב לא בטוח.",
   "settings.startup.keep_accessories": "שמור אביזרים של תוספים מוסרים",
   "settings.startup.keep_accessories_desc": "אם מופעל, אביזרים של תוספי פלטפורמה ישארו במטמון גם אחרי שהתוסף הוסר. זה יכול להיות שימושי אם אתה מתכנן להתקין את התוסף מאוחר יותר.",

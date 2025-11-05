@@ -568,7 +568,7 @@
   "settings.startup.debug": "Homebridge vianhaku tila",
   "settings.startup.debug_desc_v1": "Ota tämä käyttöön, jos tarvitset yksityiskohtaisempia lokeja. Tämä asetus koskee Homebridgen pääsiltaa sekä kaikkia lapsisiltoja. Jotkut laajennukset voivat myös noudattaa tätä asetusta ja tuottaa yksityiskohtaisempia lokeja.",
   "settings.startup.debug_desc_v2": "Ota tämä käyttöön, jos tarvitset yksityiskohtaisempia lokeja. Tämä asetus koskee Homebridgen pääsiltaa. Lapsisiltojen asetukset löytyvät liitännäissivun lapsisiltamäärityksistä. Jotkut laajennukset voivat myös noudattaa tätä asetusta ja tuottaa yksityiskohtaisempia lokeja.",
-  "settings.startup.insecure": "Homebridge 'Turvaton' tila",
+  "settings.startup.insecure": "Enable UI Accessory Control",
   "settings.startup.insecure_desc": "Hallitaksesi laitteitasi Homebridge UI:n kautta Homebridgen on toimittava turvattomassa tilassa.",
   "settings.startup.keep_accessories": "Pidä poistettujen lisäosien laitteet",
   "settings.startup.keep_accessories_desc": "Jos valittu, niin laitteiden tiedot säilytetään välimuistissa vaikka siihen liittyvä lisäosa poistetaan. Tästä voi olla hyötyä jos myöhemmin asennat lisäosan uudelleen.",

@@ -568,7 +568,7 @@
   "settings.startup.debug": "Homebridge Režim ladění",
   "settings.startup.debug_desc_v1": "Povolení, pokud potřebujete, aby Homebridge generoval podrobnější protokoly. Toto nastavení platí pro hlavní Homebridge most, stejně jako všechny podřízené mosty. Některé pluginy se také mohou přizpůsobit tomuto nastavení a generovat podrobnější protokoly.",
   "settings.startup.debug_desc_v2": "Povolení, pokud potřebujete, aby Homebridge generoval podrobnější protokoly. Toto nastavení platí pouze pro hlavní Homebridge most. Nastavení pro podřízené mosty naleznete v konfiguraci podřízených mostů na stránce pluginů. Některé pluginy se také mohou přizpůsobit tomuto nastavení a generovat podrobnější protokoly.",
-  "settings.startup.insecure": "Homebridge 'Nezabezpečený' Režim",
+  "settings.startup.insecure": "Enable UI Accessory Control",
   "settings.startup.insecure_desc": "Pro ovládání příslušenství prostřednictvím rozhraní Homebridge UI musíte běžet Homebridge v nezabezpečeném režimu.",
   "settings.startup.keep_accessories": "Zachovat příslušenství od odinstalovaných pluginů",
   "settings.startup.keep_accessories_desc": "Pokud je povoleno, příslušenství platformových pluginů zůstane v cache i po odinstalaci pluginu. To může být užitečné, pokud plánujete plugin později znovu nainstalovat.",

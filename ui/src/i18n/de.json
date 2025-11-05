@@ -568,7 +568,7 @@
   "settings.startup.debug": "Homebridge 'Debug' Mode",
   "settings.startup.debug_desc_v1": "Aktivieren Sie diese Option, wenn Homebridge ausführlichere Logs ausgeben soll. Diese Einstellung gilt sowohl für die Haupt-Homebridge als auch für alle Child-Bridges. Einige Plugins können sich auch an diese Einstellung halten und ausführlichere Logs ausgeben.",
   "settings.startup.debug_desc_v2": "Aktivieren Sie diese Option, wenn Homebridge ausführlichere Logs ausgeben soll. Diese Einstellung gilt für die Main-Homebridge-Bridge. Die Einstellung für Child-Bridges finden Sie in der Child-Bridge-Konfiguration auf der Plugins-Seite. Einige Plugins können sich auch an diese Einstellung halten und ausführlichere Logs ausgeben.",
-  "settings.startup.insecure": "Homebridge 'Insecure' Mode",
+  "settings.startup.insecure": "Enable UI Accessory Control",
   "settings.startup.insecure_desc": "Um Ihre Zubehör über die Homebridge-Benutzeroberfläche zu steuern, müssen Sie Homebridge im 'Insecure' Mode ausführen.",
   "settings.startup.keep_accessories": "Behalte Zubehöre von nicht installierten Plugins",
   "settings.startup.keep_accessories_desc": "Wenn diese Option aktiviert ist, verbleiben Zubehöre von Plattform-Plugins im Cache, auch wenn das Plugin deinstalliert wird. Dies kann nützlich sein, wenn Sie planen, das Plugin später erneut zu installieren.",

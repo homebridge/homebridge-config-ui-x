@@ -568,7 +568,7 @@
   "settings.startup.debug": "Homebridgeデバッグモード",
   "settings.startup.debug_desc_v1": "有効にするとHomebridgeが詳細なログを出力します。これはメインブリッジとすべての子ブリッジに適用されます。プラグインによってはこの設定に従って詳細なログを出力するものがあります。",
   "settings.startup.debug_desc_v2": "有効にするとHomebridgeが詳細なログを出力します。これはメインブリッジに適用されます。子ブリッジの設定はプラグインページの子ブリッジ設定で行ってください。プラグインによってはこの設定に従うものがあります。",
-  "settings.startup.insecure": "Homebridgeの非セキュアモード",
+  "settings.startup.insecure": "Enable UI Accessory Control",
   "settings.startup.insecure_desc": "Homebridge UIからアクセサリを制御するにはHomebridgeを非セキュアモードで起動する必要があります。",
   "settings.startup.keep_accessories": "アンインストールしたプラットフォームプラグインのアクセサリを保持する",
   "settings.startup.keep_accessories_desc": "有効にすると、プラットフォームプラグインのアクセサリがアンインストール後もキャッシュに残ります。後でプラグインを再インストールする予定がある場合に便利です。",

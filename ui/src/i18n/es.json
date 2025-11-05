@@ -568,7 +568,7 @@
   "settings.startup.debug": "Modo Debug de Homebridge",
   "settings.startup.debug_desc_v1": "Activa esto si necesitas que Homebridge genere registros más detallados. Esta configuración se aplica tanto al puente principal de Homebridge como a todos los puentes hijos. Algunos plugins también pueden adherirse a esta configuración y generar registros más detallados.",
   "settings.startup.debug_desc_v2": "Activa esto si necesitas que Homebridge genere registros más detallados. Esta configuración se aplica al puente principal de Homebridge. La configuración para los puentes hijos se encuentra en la configuración del puente hijo desde la página de plugins. Algunos plugins también pueden adherirse a esta configuración y generar registros más detallados.",
-  "settings.startup.insecure": "Modo 'Inseguro' de Homebridge",
+  "settings.startup.insecure": "Enable UI Accessory Control",
   "settings.startup.insecure_desc": "Para controlar tus accesorios a través de la interfaz de Homebridge, debes ejecutar Homebridge en modo inseguro.",
   "settings.startup.keep_accessories": "Mantener accesorios de los plugins desinstalados",
   "settings.startup.keep_accessories_desc": "Si está activado, los accesorios de los plugins de plataforma permanecerán en la caché incluso después de que el plugin sea desinstalado. Esto puede ser útil si planeas reinstalar el plugin más tarde.",
