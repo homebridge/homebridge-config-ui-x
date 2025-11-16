@@ -1,7 +1,8 @@
 import type { PluginSchema } from '@/app/core/manage-plugins/manage-plugins.interfaces'
 
 import { NgClass } from '@angular/common'
-import { Component, ElementRef, inject, Input, OnDestroy, OnInit, viewChild } from '@angular/core'
+import { Component, DestroyRef, ElementRef, inject, Input, OnDestroy, OnInit, viewChild } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { NgbActiveModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
@@ -29,6 +30,7 @@ import { environment } from '@/environments/environment'
   ],
 })
 export class CustomPluginsComponent implements OnInit, OnDestroy {
+  private $destroyRef = inject(DestroyRef)
   private $activeModal = inject(NgbActiveModal)
   private $api = inject(ApiService)
   private $cb = inject(ChildBridgesService)
@@ -124,7 +126,9 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
       skip(1),
     ).subscribe(this.formUpdated.bind(this))
 
-    this.formActionSubject.subscribe(this.formActionEvent.bind(this))
+    this.formActionSubject
+      .pipe(takeUntilDestroyed(this.$destroyRef))
+      .subscribe(this.formActionEvent.bind(this))
 
     this.basePath = `/plugins/settings-ui/${encodeURIComponent(this.plugin.name)}`
 

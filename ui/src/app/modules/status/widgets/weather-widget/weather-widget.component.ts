@@ -1,6 +1,7 @@
 import { DecimalPipe, NgClass, TitleCasePipe, UpperCasePipe } from '@angular/common'
 import { HttpClient, HttpParams } from '@angular/common/http'
-import { Component, inject, Input, OnDestroy, OnInit } from '@angular/core'
+import { Component, DestroyRef, inject, Input, OnDestroy, OnInit } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import dayjs from 'dayjs'
 import { interval, Subject, Subscription } from 'rxjs'
@@ -24,6 +25,7 @@ import { environment } from '@/environments/environment'
   ],
 })
 export class WeatherWidgetComponent implements OnInit, OnDestroy {
+  private $destroyRef = inject(DestroyRef)
   private $http = inject(HttpClient)
   private $settings = inject(SettingsService)
   private $translate = inject(TranslateService)
@@ -39,23 +41,29 @@ export class WeatherWidgetComponent implements OnInit, OnDestroy {
 
   public ngOnInit() {
     this.io = this.$ws.getExistingNamespace('status')
-    this.io.connected.subscribe(async () => {
-      this.getCurrentWeather()
-    })
+    this.io.connected
+      .pipe(takeUntilDestroyed(this.$destroyRef))
+      .subscribe(async () => {
+        this.getCurrentWeather()
+      })
 
     if (this.io.socket.connected) {
       this.getCurrentWeather()
     }
 
-    this.configureEvent.subscribe({
-      next: () => {
-        this.getCurrentWeather()
-      },
-    })
+    this.configureEvent
+      .pipe(takeUntilDestroyed(this.$destroyRef))
+      .subscribe({
+        next: () => {
+          this.getCurrentWeather()
+        },
+      })
 
-    this.intervalSubscription = interval(1300000).subscribe(() => {
-      this.getCurrentWeather()
-    })
+    this.intervalSubscription = interval(1300000)
+      .pipe(takeUntilDestroyed(this.$destroyRef))
+      .subscribe(() => {
+        this.getCurrentWeather()
+      })
   }
 
   public ngOnDestroy() {

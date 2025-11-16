@@ -1,4 +1,5 @@
-import { Component, inject } from '@angular/core'
+import { Component, DestroyRef, inject } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { RouterOutlet } from '@angular/router'
 import { TranslateService } from '@ngx-translate/core'
 
@@ -11,8 +12,9 @@ import { SettingsService } from '@/app/core/settings.service'
   imports: [RouterOutlet],
 })
 export class AppComponent {
-  private $translate = inject(TranslateService)
+  private $destroyRef = inject(DestroyRef)
   private $settings = inject(SettingsService)
+  private $translate = inject(TranslateService)
 
   constructor() {
     // Detect if the user has a dark mode preference
@@ -61,7 +63,7 @@ export class AppComponent {
     ]
 
     // Watch for lang changes
-    this.$translate.onLangChange.subscribe(() => {
+    this.$translate.onLangChange.pipe(takeUntilDestroyed(this.$destroyRef)).subscribe(() => {
       this.$settings.rtl = rtlLanguages.includes(this.$translate.getCurrentLang())
     })
 

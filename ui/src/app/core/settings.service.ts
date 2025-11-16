@@ -1,5 +1,6 @@
 import { inject, Injectable } from '@angular/core'
 import { Title } from '@angular/platform-browser'
+import { Router } from '@angular/router'
 import { TranslateService } from '@ngx-translate/core'
 import dayjs from 'dayjs'
 import { ActiveToast, ToastrService } from 'ngx-toastr'
@@ -14,6 +15,7 @@ import { AppSettingsInterface, EnvInterface } from '@/app/core/settings.interfac
 })
 export class SettingsService {
   private $api = inject(ApiService)
+  private $router = inject(Router)
   private $title = inject(Title)
   private $toastr = inject(ToastrService)
   private $translate = inject(TranslateService)
@@ -280,5 +282,45 @@ export class SettingsService {
    */
   public isFeatureEnabled(featureKey: string): boolean {
     return this.env.featureFlags?.[featureKey] ?? false
+  }
+
+  /**
+   * Show the restart toast notification
+   * This is a shared utility to avoid code duplication across components
+   * @returns The created toast reference
+   */
+  public showRestartToast(): ActiveToast<any> {
+    if (!this.restartToastRef) {
+      this.restartToastRef = this.$toastr.info(
+        this.$translate.instant('settings.changes.saved'),
+        this.$translate.instant('menu.hbrestart.title'),
+        {
+          timeOut: 0,
+          tapToDismiss: true,
+          disableTimeOut: true,
+          positionClass: 'toast-bottom-right',
+          enableHtml: true,
+        },
+      )
+
+      if (this.restartToastRef && this.restartToastRef.onTap) {
+        this.restartToastRef.onTap.subscribe(() => {
+          void this.$router.navigate(['/restart'])
+        })
+      }
+    }
+
+    return this.restartToastRef
+  }
+
+  /**
+   * Dismiss/hide the restart toast notification
+   * This is a shared utility to avoid code duplication across components
+   */
+  public dismissRestartToast(): void {
+    if (this.restartToastRef) {
+      this.$toastr.clear(this.restartToastRef.toastId)
+      this.restartToastRef = undefined
+    }
   }
 }

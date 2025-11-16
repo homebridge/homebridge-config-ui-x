@@ -1,7 +1,8 @@
 import type { CharacteristicType } from '@homebridge/hap-client'
 
 import { DecimalPipe, NgClass, UpperCasePipe } from '@angular/common'
-import { Component, inject, Input, OnDestroy, OnInit } from '@angular/core'
+import { Component, DestroyRef, inject, Input, OnDestroy, OnInit } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { FormsModule } from '@angular/forms'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
 import { TranslatePipe } from '@ngx-translate/core'
@@ -29,6 +30,7 @@ import { SettingsService } from '@/app/core/settings.service'
 })
 export class HeaterCoolerManageComponent implements OnInit, OnDestroy {
   private $activeModal = inject(NgbActiveModal)
+  private $destroyRef = inject(DestroyRef)
   private $settings = inject(SettingsService)
 
   @Input() public service: ServiceTypeX
@@ -50,7 +52,7 @@ export class HeaterCoolerManageComponent implements OnInit, OnDestroy {
 
   constructor() {
     this.targetTemperatureChanged
-      .pipe(debounceTime(500))
+      .pipe(debounceTime(500), takeUntilDestroyed(this.$destroyRef))
       .subscribe(() => {
         if (this.HeatingThresholdTemperature) {
           this.service.getCharacteristic('HeatingThresholdTemperature').setValue(this.targetHeatingTemp)

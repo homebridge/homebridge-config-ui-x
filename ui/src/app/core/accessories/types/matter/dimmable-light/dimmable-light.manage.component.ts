@@ -1,5 +1,6 @@
 import { NgClass } from '@angular/common'
-import { Component, inject, Input, OnDestroy, OnInit } from '@angular/core'
+import { Component, DestroyRef, inject, Input, OnDestroy, OnInit } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { FormsModule } from '@angular/forms'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
 import { TranslatePipe } from '@ngx-translate/core'
@@ -24,6 +25,7 @@ import { getBrightnessLevel, getOnOffState, levelToPercentage } from '@/app/core
 })
 export class DimmableLightManageComponent implements OnInit, OnDestroy {
   private $activeModal = inject(NgbActiveModal)
+  private $destroyRef = inject(DestroyRef)
 
   @Input() public service: ServiceTypeX
   @Input() public $accessories: AccessoriesService
@@ -35,7 +37,7 @@ export class DimmableLightManageComponent implements OnInit, OnDestroy {
 
   constructor() {
     this.targetBrightnessChanged
-      .pipe(debounceTime(300))
+      .pipe(debounceTime(300), takeUntilDestroyed(this.$destroyRef))
       .subscribe(() => {
         if (this.targetBrightness.value === MatterBrightness.Min) {
           // Turning off - use onOff cluster

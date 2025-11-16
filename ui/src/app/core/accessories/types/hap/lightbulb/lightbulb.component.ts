@@ -1,5 +1,6 @@
 import { NgClass } from '@angular/common'
-import { Component, inject, Input } from '@angular/core'
+import { Component, DestroyRef, inject, Input } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
 import { TranslatePipe } from '@ngx-translate/core'
 import { BehaviorSubject } from 'rxjs'
@@ -22,6 +23,7 @@ import { LongClickDirective } from '@/app/core/directives/long-click.directive'
 })
 export class LightbulbComponent {
   private $accessories = inject(AccessoriesService)
+  private $destroyRef = inject(DestroyRef)
   private $modal = inject(NgbModal)
   private intervalId: any
 
@@ -84,9 +86,11 @@ export class LightbulbComponent {
         this.intervalId = setInterval(() => {
           this.isAdaptiveLightingEnabled$.next(!!this.service.values.CharacteristicValueActiveTransitionCount)
         }, 3000)
-        const subscription = this.isAdaptiveLightingEnabled$.subscribe((value) => {
-          this.isAdaptiveLightingEnabled = value
-        })
+        const subscription = this.isAdaptiveLightingEnabled$
+          .pipe(takeUntilDestroyed(this.$destroyRef))
+          .subscribe((value) => {
+            this.isAdaptiveLightingEnabled = value
+          })
 
         // Clear the interval and subscription when the modal is closed and reset to the original interval
         ref.result.finally(() => {
@@ -138,9 +142,11 @@ export class LightbulbComponent {
       this.intervalId = setInterval(() => {
         this.isAdaptiveLightingEnabled$.next(!!this.service.values.CharacteristicValueActiveTransitionCount)
       }, 30000)
-      this.isAdaptiveLightingEnabled$.subscribe((value) => {
-        this.isAdaptiveLightingEnabled = value
-      })
+      this.isAdaptiveLightingEnabled$
+        .pipe(takeUntilDestroyed(this.$destroyRef))
+        .subscribe((value) => {
+          this.isAdaptiveLightingEnabled = value
+        })
     }
   }
 

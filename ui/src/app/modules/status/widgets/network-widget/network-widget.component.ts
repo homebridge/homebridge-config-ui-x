@@ -1,5 +1,6 @@
 import { DecimalPipe, NgClass } from '@angular/common'
-import { Component, ElementRef, inject, Input, OnDestroy, OnInit, viewChild } from '@angular/core'
+import { Component, DestroyRef, ElementRef, inject, Input, OnDestroy, OnInit, viewChild } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { TranslatePipe } from '@ngx-translate/core'
 import { ChartConfiguration } from 'chart.js'
 import { BaseChartDirective } from 'ng2-charts'
@@ -20,6 +21,7 @@ import { Widget } from '@/app/modules/status/widgets/widgets.interfaces'
   ],
 })
 export class NetworkWidgetComponent implements OnInit, OnDestroy {
+  private $destroyRef = inject(DestroyRef)
   private $ws = inject(WsService)
   private io: IoNamespace
   private intervalSubscription: Subscription
@@ -85,9 +87,11 @@ export class NetworkWidgetComponent implements OnInit, OnDestroy {
       this.lineChartOptions.elements.line.borderColor = userColor
     }
 
-    this.io.connected.subscribe(async () => {
-      this.getServerNetworkInfo()
-    })
+    this.io.connected
+      .pipe(takeUntilDestroyed(this.$destroyRef))
+      .subscribe(async () => {
+        this.getServerNetworkInfo()
+      })
 
     if (this.io.socket.connected) {
       this.getServerNetworkInfo()
@@ -96,9 +100,11 @@ export class NetworkWidgetComponent implements OnInit, OnDestroy {
     this.initializeWidget()
 
     // Listen for configuration changes
-    this.configureEvent.subscribe(() => {
-      this.reinitializeWidget()
-    })
+    this.configureEvent
+      .pipe(takeUntilDestroyed(this.$destroyRef))
+      .subscribe(() => {
+        this.reinitializeWidget()
+      })
   }
 
   private initializeWidget() {
@@ -112,11 +118,13 @@ export class NetworkWidgetComponent implements OnInit, OnDestroy {
     this.refreshInterval = Math.min(60, Math.max(1, this.widget.refreshInterval))
     this.historyItems = Math.min(60, Math.max(1, this.widget.historyItems))
 
-    this.intervalSubscription = interval(this.refreshInterval * 1000).subscribe(() => {
-      if (this.io.socket.connected) {
-        this.getServerNetworkInfo()
-      }
-    })
+    this.intervalSubscription = interval(this.refreshInterval * 1000)
+      .pipe(takeUntilDestroyed(this.$destroyRef))
+      .subscribe(() => {
+        if (this.io.socket.connected) {
+          this.getServerNetworkInfo()
+        }
+      })
   }
 
   private reinitializeWidget() {
@@ -144,28 +152,30 @@ export class NetworkWidgetComponent implements OnInit, OnDestroy {
   }
 
   private getServerNetworkInfo() {
-    this.io.request('get-server-network-info', { netInterfaces: [this.widget.networkInterface] }).subscribe((data) => {
+    this.io.request('get-server-network-info', { netInterfaces: [this.widget.networkInterface] })
+      .pipe(takeUntilDestroyed(this.$destroyRef))
+      .subscribe((data) => {
       // If no param given, the backend will return the default network interface
       // Clear the current chart if the network interface has changed
-      if (this.interface !== data.net.iface) {
-        this.widget.networkInterface = data.net.iface
-        this.interface = data.net.iface
-        this.lineChartData.datasets[0].data = { ...[] }
-        this.lineChartLabels = []
+        if (this.interface !== data.net.iface) {
+          this.widget.networkInterface = data.net.iface
+          this.interface = data.net.iface
+          this.lineChartData.datasets[0].data = { ...[] }
+          this.lineChartLabels = []
+          this.chart().update()
+        }
+
+        this.receivedPerSec = (data.net.rx_sec / 1024 / 1024) * 8
+        this.sentPerSec = (data.net.tx_sec / 1024 / 1024) * 8
+
+        // The chart looks strange if the data rate is < 1.
+        if (data.point < 1) {
+          data.point = 0
+        }
+
+        this.updateData(data)
         this.chart().update()
-      }
-
-      this.receivedPerSec = (data.net.rx_sec / 1024 / 1024) * 8
-      this.sentPerSec = (data.net.tx_sec / 1024 / 1024) * 8
-
-      // The chart looks strange if the data rate is < 1.
-      if (data.point < 1) {
-        data.point = 0
-      }
-
-      this.updateData(data)
-      this.chart().update()
-    })
+      })
   }
 
   private updateData(data: any) {

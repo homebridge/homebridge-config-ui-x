@@ -1,5 +1,5 @@
 import { NgClass } from '@angular/common'
-import { Component, inject, Input, OnDestroy, OnInit } from '@angular/core'
+import { Component, DestroyRef, inject, Input, OnDestroy, OnInit } from '@angular/core'
 import { TranslatePipe } from '@ngx-translate/core'
 import { DragulaModule, DragulaService } from 'ng2-dragula'
 import { Subscription } from 'rxjs'
@@ -22,6 +22,7 @@ import { Widget } from '@/app/modules/status/widgets/widgets.interfaces'
 })
 export class AccessoriesWidgetComponent implements OnInit, OnDestroy {
   private $accessories = inject(AccessoriesService)
+  private $destroyRef = inject(DestroyRef)
   private $dragula = inject(DragulaService)
   private $md = inject(MobileDetectService)
   private accessoryDataSubscription: Subscription

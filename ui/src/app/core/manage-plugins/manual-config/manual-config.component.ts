@@ -1,7 +1,8 @@
 import type { PluginSchema } from '@/app/core/manage-plugins/manage-plugins.interfaces'
 
 import { NgClass } from '@angular/common'
-import { ChangeDetectorRef, Component, inject, Input, OnDestroy, OnInit } from '@angular/core'
+import { ChangeDetectorRef, Component, DestroyRef, inject, Input, OnDestroy, OnInit } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { FormsModule } from '@angular/forms'
 import { Router } from '@angular/router'
 import {
@@ -63,6 +64,7 @@ export class ManualConfigComponent implements OnInit, OnDestroy {
   private $api = inject(ApiService)
   private $cb = inject(ChildBridgesService)
   private $cdr = inject(ChangeDetectorRef)
+  private $destroyRef = inject(DestroyRef)
   private $md = inject(MobileDetectService)
   private $plugin = inject(ManagePluginsService)
   private $router = inject(Router)
@@ -448,39 +450,43 @@ export class ManualConfigComponent implements OnInit, OnDestroy {
   }
 
   private loadPluginAlias() {
-    this.$api.get(`/plugins/alias/${encodeURIComponent(this.plugin.name)}`).subscribe({
-      next: (result) => {
-        if (result.pluginAlias && result.pluginType) {
-          this.pluginAlias = result.pluginAlias
-          this.pluginType = result.pluginType
-          this.loadHomebridgeConfig()
-        } else {
+    this.$api.get(`/plugins/alias/${encodeURIComponent(this.plugin.name)}`)
+      .pipe(takeUntilDestroyed(this.$destroyRef))
+      .subscribe({
+        next: (result) => {
+          if (result.pluginAlias && result.pluginType) {
+            this.pluginAlias = result.pluginAlias
+            this.pluginType = result.pluginType
+            this.loadHomebridgeConfig()
+          } else {
+            this.loading = false
+          }
+        },
+        error: () => {
           this.loading = false
-        }
-      },
-      error: () => {
-        this.loading = false
-      },
-    })
+        },
+      })
   }
 
   private loadHomebridgeConfig() {
-    this.$api.get(`/config-editor/plugin/${encodeURIComponent(this.plugin.name)}`).subscribe((config) => {
-      this.pluginConfig = config
+    this.$api.get(`/config-editor/plugin/${encodeURIComponent(this.plugin.name)}`)
+      .pipe(takeUntilDestroyed(this.$destroyRef))
+      .subscribe((config) => {
+        this.pluginConfig = config
 
-      this.canConfigure = true
-      this.loading = false
+        this.canConfigure = true
+        this.loading = false
 
-      // Initialize validation state for all blocks
-      this.initializeValidationState()
+        // Initialize validation state for all blocks
+        this.initializeValidationState()
 
-      if (this.pluginConfig.length) {
-        this.editBlock(0)
-      } else {
-        this.isFirstSave = true
-        this.addBlock()
-      }
-    })
+        if (this.pluginConfig.length) {
+          this.editBlock(0)
+        } else {
+          this.isFirstSave = true
+          this.addBlock()
+        }
+      })
   }
 
   private saveCurrentBlock() {

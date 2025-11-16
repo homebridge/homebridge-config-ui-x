@@ -1,5 +1,6 @@
 import { NgClass, NgOptimizedImage } from '@angular/common'
-import { Component, inject, Input, OnDestroy, OnInit, Renderer2 } from '@angular/core'
+import { Component, DestroyRef, inject, Input, OnDestroy, OnInit, Renderer2 } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { NavigationEnd, NavigationStart, Router, RouterLink, RouterLinkActive } from '@angular/router'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
@@ -27,6 +28,7 @@ import { SettingsService } from '@/app/core/settings.service'
 export class SidebarComponent implements OnInit, OnDestroy {
   private $auth = inject(AuthService)
   private $authHelper = inject(AuthHelperService)
+  private $destroyRef = inject(DestroyRef)
   private $settings = inject(SettingsService)
   private $modal = inject(NgbModal)
   private $notification = inject(NotificationService)
@@ -56,45 +58,51 @@ export class SidebarComponent implements OnInit, OnDestroy {
     })
 
     // Check authentication before navigation and ensure the menu closes when we navigate
-    this.$router.events.subscribe(async (event) => {
-      if (event instanceof NavigationStart) {
+    this.$router.events
+      .pipe(takeUntilDestroyed(this.$destroyRef))
+      .subscribe(async (event) => {
+        if (event instanceof NavigationStart) {
         // Check if using form auth and if the token is expired
-        if (this.$settings.formAuth && event.url !== '/login') {
-          const isAuthenticated = await this.$authHelper.isAuthenticated()
-          if (!isAuthenticated) {
+          if (this.$settings.formAuth && event.url !== '/login') {
+            const isAuthenticated = await this.$authHelper.isAuthenticated()
+            if (!isAuthenticated) {
             // Store the target route before redirecting
-            window.sessionStorage.setItem('target_route', event.url)
+              window.sessionStorage.setItem('target_route', event.url)
 
-            // Prevent the navigation and redirect to the login page
-            await this.$router.navigate(['/login'])
-            return
+              // Prevent the navigation and redirect to the login page
+              await this.$router.navigate(['/login'])
+              return
+            }
           }
         }
-      }
 
-      if (event instanceof NavigationEnd) {
-        this.closeSidebar()
-        this.freezeMenu = true
-        setTimeout(() => {
-          this.freezeMenu = false
-        }, 750)
-      }
-    })
+        if (event instanceof NavigationEnd) {
+          this.closeSidebar()
+          this.freezeMenu = true
+          setTimeout(() => {
+            this.freezeMenu = false
+          }, 750)
+        }
+      })
   }
 
   public ngOnInit() {
-    this.$notification.raspberryPiThrottled.subscribe((throttled) => {
-      if (throttled['Under Voltage']) {
-        this.rPiCurrentlyUnderVoltage = true
-      }
-      if (throttled['Under-voltage has occurred']) {
-        this.rPiWasUnderVoltage = true
-      }
-    })
+    this.$notification.raspberryPiThrottled
+      .pipe(takeUntilDestroyed(this.$destroyRef))
+      .subscribe((throttled) => {
+        if (throttled['Under Voltage']) {
+          this.rPiCurrentlyUnderVoltage = true
+        }
+        if (throttled['Under-voltage has occurred']) {
+          this.rPiWasUnderVoltage = true
+        }
+      })
 
-    this.$notification.formAuthEnabled.subscribe((value) => {
-      this.formAuth = value
-    })
+    this.$notification.formAuthEnabled
+      .pipe(takeUntilDestroyed(this.$destroyRef))
+      .subscribe((value) => {
+        this.formAuth = value
+      })
 
     // Declare element for event listeners
     const sidebar = document.querySelector('.sidebar')

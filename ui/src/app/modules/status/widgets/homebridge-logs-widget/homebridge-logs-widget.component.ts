@@ -1,5 +1,6 @@
 import { NgClass, NgStyle } from '@angular/common'
-import { Component, ElementRef, inject, Input, OnDestroy, OnInit, viewChild } from '@angular/core'
+import { Component, DestroyRef, ElementRef, inject, Input, OnDestroy, OnInit, viewChild } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { TranslatePipe } from '@ngx-translate/core'
 import { ITerminalOptions } from '@xterm/xterm'
 import { Subject } from 'rxjs'
@@ -18,6 +19,7 @@ import { Widget } from '@/app/modules/status/widgets/widgets.interfaces'
   ],
 })
 export class HomebridgeLogsWidgetComponent implements OnInit, OnDestroy {
+  private $destroyRef = inject(DestroyRef)
   private $log = inject(LogService)
   private $settings = inject(SettingsService)
   private fontSize = 15
@@ -68,44 +70,46 @@ export class HomebridgeLogsWidgetComponent implements OnInit, OnDestroy {
       },
     })
 
-    this.configureEvent.subscribe({
-      next: () => {
-        let changed = false
-        if (this.widget.fontSize !== this.fontSize) {
-          this.fontSize = this.widget.fontSize
-          this.$log.term.options.fontSize = this.widget.fontSize
-          changed = true
-        }
-        if (this.widget.fontWeight !== this.fontWeight) {
-          this.fontWeight = Number.parseInt(this.widget.fontWeight, 10)
-          this.$log.term.options.fontWeight = Number.parseInt(this.widget.fontWeight, 10)
-          changed = true
-        }
-        if (this.widget.theme !== this.theme) {
-          this.theme = this.widget.theme
-          this.$log.term.options.theme = this.theme !== 'light'
-            ? {
-                background: '#2b2b2b',
-              }
-            : {
-                background: '#00000000',
-                foreground: '#2b2b2b',
-                cursor: '#d2d2d2',
-                selectionBackground: '#d2d2d2',
-              }
-          this.$log.term.options.allowTransparency = true
-          this.$log.term.options.allowProposedApi = true
-          changed = true
-        }
+    this.configureEvent
+      .pipe(takeUntilDestroyed(this.$destroyRef))
+      .subscribe({
+        next: () => {
+          let changed = false
+          if (this.widget.fontSize !== this.fontSize) {
+            this.fontSize = this.widget.fontSize
+            this.$log.term.options.fontSize = this.widget.fontSize
+            changed = true
+          }
+          if (this.widget.fontWeight !== this.fontWeight) {
+            this.fontWeight = Number.parseInt(this.widget.fontWeight, 10)
+            this.$log.term.options.fontWeight = Number.parseInt(this.widget.fontWeight, 10)
+            changed = true
+          }
+          if (this.widget.theme !== this.theme) {
+            this.theme = this.widget.theme
+            this.$log.term.options.theme = this.theme !== 'light'
+              ? {
+                  background: '#2b2b2b',
+                }
+              : {
+                  background: '#00000000',
+                  foreground: '#2b2b2b',
+                  cursor: '#d2d2d2',
+                  selectionBackground: '#d2d2d2',
+                }
+            this.$log.term.options.allowTransparency = true
+            this.$log.term.options.allowProposedApi = true
+            changed = true
+          }
 
-        if (changed) {
-          this.resizeEvent.next(undefined)
-          setTimeout(() => {
-            this.$log.term.scrollToBottom()
-          }, 100)
-        }
-      },
-    })
+          if (changed) {
+            this.resizeEvent.next(undefined)
+            setTimeout(() => {
+              this.$log.term.scrollToBottom()
+            }, 100)
+          }
+        },
+      })
   }
 
   public ngOnDestroy() {

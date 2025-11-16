@@ -1,5 +1,6 @@
 import { NgClass, NgStyle } from '@angular/common'
-import { AfterViewInit, Component, ElementRef, HostListener, inject, Input, OnDestroy, OnInit, viewChild } from '@angular/core'
+import { AfterViewInit, Component, DestroyRef, ElementRef, HostListener, inject, Input, OnDestroy, OnInit, viewChild } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { TranslatePipe } from '@ngx-translate/core'
 import { ITerminalOptions } from '@xterm/xterm'
 import { Subject } from 'rxjs'
@@ -19,6 +20,7 @@ import { Widget } from '@/app/modules/status/widgets/widgets.interfaces'
   ],
 })
 export class TerminalWidgetComponent implements OnInit, AfterViewInit, OnDestroy {
+  private $destroyRef = inject(DestroyRef)
   private $terminal = inject(TerminalService)
   private $settings = inject(SettingsService)
   private $navigationGuard = inject(TerminalNavigationGuardService)
@@ -111,44 +113,46 @@ export class TerminalWidgetComponent implements OnInit, AfterViewInit, OnDestroy
       },
     })
 
-    this.configureEvent.subscribe({
-      next: () => {
-        let changed = false
-        if (this.widget.fontSize !== this.fontSize) {
-          this.fontSize = this.widget.fontSize
-          this.$terminal.term.options.fontSize = this.widget.fontSize
-          changed = true
-        }
-        if (this.widget.fontWeight !== this.fontWeight) {
-          this.fontWeight = Number.parseInt(this.widget.fontWeight, 10)
-          this.$terminal.term.options.fontWeight = Number.parseInt(this.widget.fontWeight, 10)
-          changed = true
-        }
-        if (this.widget.theme !== this.theme) {
-          this.theme = this.widget.theme
-          this.$terminal.term.options.theme = this.theme !== 'light'
-            ? {
-                background: '#2b2b2b',
-              }
-            : {
-                background: 'transparent',
-                foreground: '#2b2b2b',
-                cursor: '#d2d2d2',
-                selectionBackground: '#d2d2d2',
-              }
-          this.$terminal.term.options.allowTransparency = true
-          this.$terminal.term.options.allowProposedApi = true
-          changed = true
-        }
+    this.configureEvent
+      .pipe(takeUntilDestroyed(this.$destroyRef))
+      .subscribe({
+        next: () => {
+          let changed = false
+          if (this.widget.fontSize !== this.fontSize) {
+            this.fontSize = this.widget.fontSize
+            this.$terminal.term.options.fontSize = this.widget.fontSize
+            changed = true
+          }
+          if (this.widget.fontWeight !== this.fontWeight) {
+            this.fontWeight = Number.parseInt(this.widget.fontWeight, 10)
+            this.$terminal.term.options.fontWeight = Number.parseInt(this.widget.fontWeight, 10)
+            changed = true
+          }
+          if (this.widget.theme !== this.theme) {
+            this.theme = this.widget.theme
+            this.$terminal.term.options.theme = this.theme !== 'light'
+              ? {
+                  background: '#2b2b2b',
+                }
+              : {
+                  background: 'transparent',
+                  foreground: '#2b2b2b',
+                  cursor: '#d2d2d2',
+                  selectionBackground: '#d2d2d2',
+                }
+            this.$terminal.term.options.allowTransparency = true
+            this.$terminal.term.options.allowProposedApi = true
+            changed = true
+          }
 
-        if (changed) {
-          this.resizeEvent.next(undefined)
-          setTimeout(() => {
-            this.$terminal.term.scrollToBottom()
-          }, 100)
-        }
-      },
-    })
+          if (changed) {
+            this.resizeEvent.next(undefined)
+            setTimeout(() => {
+              this.$terminal.term.scrollToBottom()
+            }, 100)
+          }
+        },
+      })
   }
 
   public ngAfterViewInit() {

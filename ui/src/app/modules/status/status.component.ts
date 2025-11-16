@@ -1,4 +1,5 @@
-import { Component, HostListener, inject, OnDestroy, OnInit } from '@angular/core'
+import { Component, DestroyRef, HostListener, inject, OnDestroy, OnInit } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { NgbModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap'
 import { TranslatePipe } from '@ngx-translate/core'
 import { GridsterComponent, GridsterConfig, GridsterItem, GridsterItemComponent } from 'angular-gridster2'
@@ -33,6 +34,7 @@ import { Widget } from '@/app/modules/status/widgets/widgets.interfaces'
 })
 export class StatusComponent implements OnInit, OnDestroy {
   private $auth = inject(AuthService)
+  private $destroyRef = inject(DestroyRef)
   private $modal = inject(NgbModal)
   private $navigationGuard = inject(TerminalNavigationGuardService)
   private $notification = inject(NotificationService)
@@ -96,10 +98,12 @@ export class StatusComponent implements OnInit, OnDestroy {
       })
     }
 
-    this.io.connected.subscribe(async () => {
-      this.consoleStatus = 'up'
-      this.io.socket.emit('monitor-server-status')
-    })
+    this.io.connected
+      .pipe(takeUntilDestroyed(this.$destroyRef))
+      .subscribe(async () => {
+        this.consoleStatus = 'up'
+        this.io.socket.emit('monitor-server-status')
+      })
 
     this.io.socket.on('disconnect', () => {
       this.consoleStatus = 'down'
@@ -114,17 +118,21 @@ export class StatusComponent implements OnInit, OnDestroy {
 
     // This allows widgets to trigger a save to the grid layout
     // E.g. when the order of the accessories in the accessories widget changes
-    this.saveWidgetsEvent.subscribe({
-      next: () => {
-        this.gridChangedEvent()
-      },
-    })
+    this.saveWidgetsEvent
+      .pipe(takeUntilDestroyed(this.$destroyRef))
+      .subscribe({
+        next: () => {
+          this.gridChangedEvent()
+        },
+      })
 
     // If raspberry pi, do a check for throttled
     if (this.$settings.env.runningOnRaspberryPi) {
-      this.io.request('get-raspberry-pi-throttled-status').subscribe((throttled) => {
-        this.$notification.raspberryPiThrottled.next(throttled)
-      })
+      this.io.request('get-raspberry-pi-throttled-status')
+        .pipe(takeUntilDestroyed(this.$destroyRef))
+        .subscribe((throttled) => {
+          this.$notification.raspberryPiThrottled.next(throttled)
+        })
     }
   }
 
@@ -220,49 +228,51 @@ export class StatusComponent implements OnInit, OnDestroy {
   }
 
   private getLayout() {
-    this.io.request('get-dashboard-layout').subscribe((layout) => {
-      if (!layout.length) {
-        return this.resetLayout()
-      }
+    this.io.request('get-dashboard-layout')
+      .pipe(takeUntilDestroyed(this.$destroyRef))
+      .subscribe((layout) => {
+        if (!layout.length) {
+          return this.resetLayout()
+        }
 
-      let saveNeeded = false
-      this.setLayout(layout.map((item: GridsterItem) => {
+        let saveNeeded = false
+        this.setLayout(layout.map((item: GridsterItem) => {
         // Renamed between v4.68.0 and v4.69.0
-        if (item.component === 'HomebridgeStatusWidgetComponent') {
-          item.component = 'UpdateInfoWidgetComponent'
-          saveNeeded = true
-        } else if (item.component === 'ChildBridgeWidgetComponent') {
-          item.component = 'BridgesWidgetComponent'
-          saveNeeded = true
+          if (item.component === 'HomebridgeStatusWidgetComponent') {
+            item.component = 'UpdateInfoWidgetComponent'
+            saveNeeded = true
+          } else if (item.component === 'ChildBridgeWidgetComponent') {
+            item.component = 'BridgesWidgetComponent'
+            saveNeeded = true
+          }
+
+          // Hide terminal for non-admin users
+          if (item.component === 'TerminalWidgetComponent' && !this.isAdmin) {
+            return null
+          }
+
+          // Hide matter qr code if not supported
+          if (item.component === 'MatterQrcodeWidgetComponent' && !this.isMatterSupported) {
+            return null
+          }
+
+          // Hide items not in the list of available widgets
+          if (!AVAILABLE_WIDGETS.includes(item.component)) {
+            return null
+          }
+
+          // If accessory control is disabled (insecure mode is disabled), hide the accessories widget
+          if (item.component === 'AccessoriesWidgetComponent' && !this.$settings.env.enableAccessories) {
+            return null
+          }
+
+          return item
+        }).filter(Boolean))
+
+        if (saveNeeded) {
+          this.gridChangedEvent()
         }
-
-        // Hide terminal for non-admin users
-        if (item.component === 'TerminalWidgetComponent' && !this.isAdmin) {
-          return null
-        }
-
-        // Hide matter qr code if not supported
-        if (item.component === 'MatterQrcodeWidgetComponent' && !this.isMatterSupported) {
-          return null
-        }
-
-        // Hide items not in the list of available widgets
-        if (!AVAILABLE_WIDGETS.includes(item.component)) {
-          return null
-        }
-
-        // If accessory control is disabled (insecure mode is disabled), hide the accessories widget
-        if (item.component === 'AccessoriesWidgetComponent' && !this.$settings.env.enableAccessories) {
-          return null
-        }
-
-        return item
-      }).filter(Boolean))
-
-      if (saveNeeded) {
-        this.gridChangedEvent()
-      }
-    })
+      })
   }
 
   private setLayout(layout: GridsterItem[]) {

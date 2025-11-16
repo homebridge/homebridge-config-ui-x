@@ -1,4 +1,5 @@
-import { Component, inject, OnDestroy, OnInit, Renderer2 } from '@angular/core'
+import { Component, DestroyRef, inject, OnDestroy, OnInit, Renderer2 } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { FormsModule } from '@angular/forms'
 import { ActivatedRoute, Router } from '@angular/router'
 import { NgbModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap'
@@ -47,6 +48,7 @@ declare global {
 })
 export class ConfigEditorComponent implements OnInit, OnDestroy {
   private $api = inject(ApiService)
+  private $destroyRef = inject(DestroyRef)
   private $md = inject(MobileDetectService)
   private $modal = inject(NgbModal)
   private $monacoEditor = inject(MonacoEditorService)
@@ -115,15 +117,17 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
       this.$md.disableTouchMove()
     }
 
-    this.$route.data.subscribe((data: { config: string }) => {
-      this.homebridgeConfig = data.config
-      this.latestSavedConfig = JSON.parse(data.config)
+    this.$route.data
+      .pipe(takeUntilDestroyed(this.$destroyRef))
+      .subscribe((data: { config: string }) => {
+        this.homebridgeConfig = data.config
+        this.latestSavedConfig = JSON.parse(data.config)
 
-      // Update diff models with initial config
-      if (this.diffModifiedModel) {
-        this.updateDiffModels()
-      }
-    })
+        // Update diff models with initial config
+        if (this.diffModifiedModel) {
+          this.updateDiffModels()
+        }
+      })
 
     // Set up the base monaco editor model
     this.monacoEditorModel = {
@@ -145,9 +149,11 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
 
     // If monaco is not loaded yet, wait for it, otherwise set up the editor now
     if (!(window as any).monaco) {
-      this.$monacoEditor.readyEvent.subscribe({
-        next: () => this.setMonacoEditorModel(),
-      })
+      this.$monacoEditor.readyEvent
+        .pipe(takeUntilDestroyed(this.$destroyRef))
+        .subscribe({
+          next: () => this.setMonacoEditorModel(),
+        })
     } else {
       this.setMonacoEditorModel()
     }

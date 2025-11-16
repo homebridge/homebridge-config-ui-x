@@ -1,5 +1,6 @@
 import { NgClass } from '@angular/common'
-import { Component, inject, Input, OnDestroy, OnInit } from '@angular/core'
+import { Component, DestroyRef, inject, Input, OnDestroy, OnInit } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
@@ -25,6 +26,7 @@ import { Widget } from '@/app/modules/status/widgets/widgets.interfaces'
 export class BridgesWidgetComponent implements OnInit, OnDestroy {
   private $api = inject(ApiService)
   private $auth = inject(AuthService)
+  private $destroyRef = inject(DestroyRef)
   private $settings = inject(SettingsService)
   private $toastr = inject(ToastrService)
   private $translate = inject(TranslateService)
@@ -48,9 +50,11 @@ export class BridgesWidgetComponent implements OnInit, OnDestroy {
         this.isRestarting = false
       }
     })
-    this.ioMain.connected.subscribe(async () => {
-      await this.getHomebridgeStatus()
-    })
+    this.ioMain.connected
+      .pipe(takeUntilDestroyed(this.$destroyRef))
+      .subscribe(async () => {
+        await this.getHomebridgeStatus()
+      })
     if (this.ioMain.socket.connected) {
       await this.getHomebridgeStatus()
     }
@@ -59,10 +63,12 @@ export class BridgesWidgetComponent implements OnInit, OnDestroy {
     })
 
     this.ioChild = this.$ws.connectToNamespace('child-bridges')
-    this.ioChild.connected.subscribe(async () => {
-      this.getChildBridgeMetadata()
-      this.ioChild.socket.emit('monitor-child-bridge-status')
-    })
+    this.ioChild.connected
+      .pipe(takeUntilDestroyed(this.$destroyRef))
+      .subscribe(async () => {
+        this.getChildBridgeMetadata()
+        this.ioChild.socket.emit('monitor-child-bridge-status')
+      })
     this.ioChild.socket.on('child-bridge-status-update', (data: ChildBridgeStatusResponse) => {
       const existingBridge = this.childBridges.find(x => x.username === data.username)
       if (existingBridge) {
@@ -114,9 +120,11 @@ export class BridgesWidgetComponent implements OnInit, OnDestroy {
   }
 
   private getChildBridgeMetadata() {
-    this.ioChild.request('get-homebridge-child-bridge-status').subscribe((data: ChildBridgeStatusResponse[]) => {
-      this.childBridges = data
-      this.childBridges = data.sort((a, b) => a.name.localeCompare(b.name))
-    })
+    this.ioChild.request('get-homebridge-child-bridge-status')
+      .pipe(takeUntilDestroyed(this.$destroyRef))
+      .subscribe((data: ChildBridgeStatusResponse[]) => {
+        this.childBridges = data
+        this.childBridges = data.sort((a, b) => a.name.localeCompare(b.name))
+      })
   }
 }

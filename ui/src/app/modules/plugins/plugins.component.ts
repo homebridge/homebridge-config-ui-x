@@ -1,5 +1,6 @@
 import { NgClass } from '@angular/common'
-import { Component, ElementRef, inject, OnDestroy, OnInit, ViewChild } from '@angular/core'
+import { Component, DestroyRef, ElementRef, inject, OnDestroy, OnInit, ViewChild } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { NavigationEnd, Router } from '@angular/router'
 import { NgbModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap'
@@ -37,6 +38,7 @@ export class PluginsComponent implements OnInit, OnDestroy {
 
   private $api = inject(ApiService)
   private $auth = inject(AuthService)
+  private $destroyRef = inject(DestroyRef)
   private $modal = inject(NgbModal)
   private $plugin = inject(ManagePluginsService)
   private $router = inject(Router)
@@ -67,51 +69,55 @@ export class PluginsComponent implements OnInit, OnDestroy {
     this.$settings.setPageTitle(title)
 
     // Subscribe to plugin list refresh events
-    this.pluginRefreshSubscription = this.$plugin.onPluginListRefresh.subscribe(async () => {
-      await this.loadInstalledPlugins()
-      this.getChildBridgeMetadata()
-    })
+    this.pluginRefreshSubscription = this.$plugin.onPluginListRefresh
+      .pipe(takeUntilDestroyed(this.$destroyRef))
+      .subscribe(async () => {
+        await this.loadInstalledPlugins()
+        this.getChildBridgeMetadata()
+      })
 
     this.io = this.$ws.connectToNamespace('child-bridges')
-    this.io.connected.subscribe(async () => {
-      this.getChildBridgeMetadata()
-      this.io.socket.emit('monitor-child-bridge-status')
+    this.io.connected
+      .pipe(takeUntilDestroyed(this.$destroyRef))
+      .subscribe(async () => {
+        this.getChildBridgeMetadata()
+        this.io.socket.emit('monitor-child-bridge-status')
 
-      // Load list of installed plugins
-      await this.loadInstalledPlugins()
+        // Load list of installed plugins
+        await this.loadInstalledPlugins()
 
-      if (!this.installedPlugins.length) {
-        this.showSearch()
-      }
-
-      // Get any query parameters
-      const { action: queryAction, plugin: queryPlugin } = this.$router.parseUrl(this.$router.url).queryParams
-      if (queryAction) {
-        const plugin: Plugin = this.installedPlugins.find(x => x.name === queryPlugin)
-        switch (queryAction) {
-          case 'just-installed': {
-            if (plugin) {
-              if (plugin.isConfigured) {
-                this.$modal.open(RestartHomebridgeComponent, {
-                  size: 'lg',
-                  backdrop: 'static',
-                })
-              } else {
-                this.$plugin.settings(plugin)
-              }
-            }
-            break
-          }
+        if (!this.installedPlugins.length) {
+          this.showSearch()
         }
 
-        // Clear the query parameters so that we don't keep showing the same action
-        void this.$router.navigate([], {
-          queryParams: {},
-          replaceUrl: true,
-          queryParamsHandling: '',
-        })
-      }
-    })
+        // Get any query parameters
+        const { action: queryAction, plugin: queryPlugin } = this.$router.parseUrl(this.$router.url).queryParams
+        if (queryAction) {
+          const plugin: Plugin = this.installedPlugins.find(x => x.name === queryPlugin)
+          switch (queryAction) {
+            case 'just-installed': {
+              if (plugin) {
+                if (plugin.isConfigured) {
+                  this.$modal.open(RestartHomebridgeComponent, {
+                    size: 'lg',
+                    backdrop: 'static',
+                  })
+                } else {
+                  this.$plugin.settings(plugin)
+                }
+              }
+              break
+            }
+          }
+
+          // Clear the query parameters so that we don't keep showing the same action
+          void this.$router.navigate([], {
+            queryParams: {},
+            replaceUrl: true,
+            queryParamsHandling: '',
+          })
+        }
+      })
 
     this.io.socket.on('child-bridge-status-update', (data) => {
       const existingBridge = this.childBridges.find(x => x.username === data.username)
@@ -122,12 +128,14 @@ export class PluginsComponent implements OnInit, OnDestroy {
       }
     })
 
-    this.navigationSubscription = this.$router.events.subscribe((e: any) => {
+    this.navigationSubscription = this.$router.events
+      .pipe(takeUntilDestroyed(this.$destroyRef))
+      .subscribe((e: any) => {
       // If it is a NavigationEnd event re-initialise the component
-      if (e instanceof NavigationEnd) {
-        this.loadInstalledPlugins()
-      }
-    })
+        if (e instanceof NavigationEnd) {
+          this.loadInstalledPlugins()
+        }
+      })
   }
 
   public search() {

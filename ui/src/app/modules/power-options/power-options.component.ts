@@ -34,10 +34,7 @@ export class PowerOptionsComponent implements OnInit {
   }
 
   private closeRestartToast() {
-    if (this.$settings.restartToastRef) {
-      this.$toastr.clear(this.$settings.restartToastRef.toastId)
-      this.$settings.restartToastRef = null
-    }
+    this.$settings.dismissRestartToast()
   }
 
   public restartHomebridge() {

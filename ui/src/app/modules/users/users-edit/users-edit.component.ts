@@ -1,5 +1,6 @@
 import { NgClass } from '@angular/common'
-import { ChangeDetectorRef, Component, inject, Input, OnInit } from '@angular/core'
+import { ChangeDetectorRef, Component, DestroyRef, inject, Input, OnInit } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { AbstractControl, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
@@ -24,6 +25,7 @@ export class UsersEditComponent implements OnInit {
   private $api = inject(ApiService)
   private $auth = inject(AuthService)
   private $cdr = inject(ChangeDetectorRef)
+  private $destroyRef = inject(DestroyRef)
   private $toastr = inject(ToastrService)
   private $translate = inject(TranslateService)
   private initialFormValue: Partial<User> = {}
@@ -43,7 +45,9 @@ export class UsersEditComponent implements OnInit {
     this.isCurrentUser = this.$auth.user.username === this.user.username
     this.form.patchValue(this.user)
     this.initialFormValue = this.form.getRawValue()
-    this.form.valueChanges.subscribe(() => this.$cdr.detectChanges())
+    this.form.valueChanges
+      .pipe(takeUntilDestroyed(this.$destroyRef))
+      .subscribe(() => this.$cdr.detectChanges())
   }
 
   public onSubmit({ value }: { value: Partial<User> }) {

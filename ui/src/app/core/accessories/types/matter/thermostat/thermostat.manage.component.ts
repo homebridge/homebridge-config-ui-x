@@ -1,5 +1,6 @@
 import { DecimalPipe, NgClass, UpperCasePipe } from '@angular/common'
-import { Component, inject, Input, OnDestroy, OnInit } from '@angular/core'
+import { Component, DestroyRef, inject, Input, OnDestroy, OnInit } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { FormsModule } from '@angular/forms'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
 import { TranslatePipe } from '@ngx-translate/core'
@@ -36,6 +37,7 @@ import { SettingsService } from '@/app/core/settings.service'
 })
 export class MatterThermostatManageComponent implements OnInit, OnDestroy {
   private $activeModal = inject(NgbActiveModal)
+  private $destroyRef = inject(DestroyRef)
   private $settings = inject(SettingsService)
 
   @Input() public service: ServiceTypeX
@@ -60,19 +62,19 @@ export class MatterThermostatManageComponent implements OnInit, OnDestroy {
 
   constructor() {
     this.heatingTempChanged
-      .pipe(debounceTime(500))
+      .pipe(debounceTime(500), takeUntilDestroyed(this.$destroyRef))
       .subscribe(() => {
         setThermostatHeatingSetpoint(this.service, this.targetHeatingTemp)
       })
 
     this.coolingTempChanged
-      .pipe(debounceTime(500))
+      .pipe(debounceTime(500), takeUntilDestroyed(this.$destroyRef))
       .subscribe(() => {
         setThermostatCoolingSetpoint(this.service, this.targetCoolingTemp)
       })
 
     this.autoTempChanged
-      .pipe(debounceTime(500))
+      .pipe(debounceTime(500), takeUntilDestroyed(this.$destroyRef))
       .subscribe(() => {
         setThermostatHeatingSetpoint(this.service, this.autoTemp[0])
         setThermostatCoolingSetpoint(this.service, this.autoTemp[1])

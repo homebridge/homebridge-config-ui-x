@@ -1,5 +1,6 @@
 import { NgClass } from '@angular/common'
-import { Component, inject, OnInit } from '@angular/core'
+import { Component, DestroyRef, inject, OnInit } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { ActivatedRoute } from '@angular/router'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
@@ -27,6 +28,7 @@ import { User } from '@/app/modules/users/users.interface'
 export class UsersComponent implements OnInit {
   private $api = inject(ApiService)
   private $auth = inject(AuthService)
+  private $destroyRef = inject(DestroyRef)
   private $modal = inject(NgbModal)
   private $route = inject(ActivatedRoute)
   private $settings = inject(SettingsService)
@@ -42,7 +44,7 @@ export class UsersComponent implements OnInit {
     const title = this.$translate.instant('users.title_users')
     this.$settings.setPageTitle(title)
 
-    this.$route.data.subscribe((data: { homebridgeUsers: User[] }) => {
+    this.$route.data.pipe(takeUntilDestroyed(this.$destroyRef)).subscribe((data: { homebridgeUsers: User[] }) => {
       this.homebridgeUsers = data.homebridgeUsers
     })
   }

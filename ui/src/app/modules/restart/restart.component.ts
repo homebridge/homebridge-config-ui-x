@@ -1,6 +1,7 @@
 /* global NodeJS */
 import { NgClass } from '@angular/common'
-import { Component, inject, isDevMode, OnDestroy, OnInit } from '@angular/core'
+import { Component, DestroyRef, inject, isDevMode, OnDestroy, OnInit } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { Router } from '@angular/router'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
@@ -22,6 +23,7 @@ import { IoNamespace, WsService } from '@/app/core/ws.service'
 })
 export class RestartComponent implements OnInit, OnDestroy {
   private $api = inject(ApiService)
+  private $destroyRef = inject(DestroyRef)
   private $router = inject(Router)
   private $settings = inject(SettingsService)
   private $toastr = inject(ToastrService)
@@ -39,7 +41,7 @@ export class RestartComponent implements OnInit, OnDestroy {
 
   public ngOnInit() {
     this.io = this.$ws.connectToNamespace('status')
-    this.io.connected.subscribe(() => {
+    this.io.connected.pipe(takeUntilDestroyed(this.$destroyRef)).subscribe(() => {
       this.io.socket.emit('monitor-server-status')
       this.$settings.getAppSettings().catch(() => { /* do nothing */ })
     })

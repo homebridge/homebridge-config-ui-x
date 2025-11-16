@@ -78,7 +78,9 @@ export class AccessoryControlListsComponent implements OnInit {
         body: this.updatedBlacklist,
       }))
       this.$settings.setEnvItem('accessoryControl.instanceBlacklist', this.updatedBlacklist)
-      this.$activeModal.close()
+
+      // Return blacklist for coordinated change tracking
+      this.$activeModal.close(this.updatedBlacklist)
     } catch (error) {
       this.clicked = false
       console.error(error)

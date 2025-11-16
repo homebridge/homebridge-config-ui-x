@@ -1,5 +1,6 @@
 import { NgClass, NgOptimizedImage, NgStyle } from '@angular/common'
-import { AfterViewChecked, ChangeDetectorRef, Component, ElementRef, inject, OnInit, viewChild } from '@angular/core'
+import { AfterViewChecked, ChangeDetectorRef, Component, DestroyRef, ElementRef, inject, OnInit, viewChild } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { Router } from '@angular/router'
 import { TranslatePipe } from '@ngx-translate/core'
@@ -26,6 +27,7 @@ import { environment } from '@/environments/environment'
 export class LoginComponent implements OnInit, AfterViewChecked {
   private $auth = inject(AuthService)
   private $cdr = inject(ChangeDetectorRef)
+  private $destroyRef = inject(DestroyRef)
   private $router = inject(Router)
   private $settings = inject(SettingsService)
   private targetRoute: string
@@ -57,12 +59,17 @@ export class LoginComponent implements OnInit, AfterViewChecked {
       password: new FormControl(''),
     })
 
-    this.form.valueChanges.pipe(debounceTime(500)).subscribe((changes) => {
-      const passwordInputValue = this.passwordInput()?.nativeElement.value
-      if (passwordInputValue && passwordInputValue !== changes.password) {
-        this.form.controls.password.setValue(passwordInputValue)
-      }
-    })
+    this.form.valueChanges
+      .pipe(
+        debounceTime(500),
+        takeUntilDestroyed(this.$destroyRef),
+      )
+      .subscribe((changes) => {
+        const passwordInputValue = this.passwordInput()?.nativeElement.value
+        if (passwordInputValue && passwordInputValue !== changes.password) {
+          this.form.controls.password.setValue(passwordInputValue)
+        }
+      })
 
     this.targetRoute = window.sessionStorage.getItem('target_route') || ''
     this.setBackground()

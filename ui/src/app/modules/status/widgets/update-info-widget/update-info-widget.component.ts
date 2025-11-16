@@ -1,5 +1,6 @@
 import { NgClass } from '@angular/common'
-import { Component, inject, Input, OnInit } from '@angular/core'
+import { Component, DestroyRef, inject, Input, OnInit } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { RouterLink } from '@angular/router'
 import { NgbModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
@@ -32,6 +33,7 @@ import { environment } from '@/environments/environment'
 export class UpdateInfoWidgetComponent implements OnInit {
   private $api = inject(ApiService)
   private $auth = inject(AuthService)
+  private $destroyRef = inject(DestroyRef)
   private $modal = inject(NgbModal)
   private $plugin = inject(ManagePluginsService)
   private $settings = inject(SettingsService)
@@ -65,15 +67,17 @@ export class UpdateInfoWidgetComponent implements OnInit {
   public async ngOnInit() {
     this.io = this.$ws.getExistingNamespace('status')
 
-    this.io.connected.subscribe(async () => {
-      await this.getNodeInfo()
-      await Promise.all([
-        this.checkHomebridgeVersion(),
-        this.checkHomebridgeUiVersion(),
-        this.getOutOfDatePlugins(),
-        this.getDockerInfo(),
-      ])
-    })
+    this.io.connected
+      .pipe(takeUntilDestroyed(this.$destroyRef))
+      .subscribe(async () => {
+        await this.getNodeInfo()
+        await Promise.all([
+          this.checkHomebridgeVersion(),
+          this.checkHomebridgeUiVersion(),
+          this.getOutOfDatePlugins(),
+          this.getDockerInfo(),
+        ])
+      })
 
     if (this.io.socket.connected) {
       await this.getNodeInfo()

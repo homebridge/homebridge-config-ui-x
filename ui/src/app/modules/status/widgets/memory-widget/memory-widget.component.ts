@@ -1,5 +1,6 @@
 import { DecimalPipe, NgClass } from '@angular/common'
-import { Component, ElementRef, inject, Input, OnDestroy, OnInit, viewChild } from '@angular/core'
+import { Component, DestroyRef, ElementRef, inject, Input, OnDestroy, OnInit, viewChild } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { TranslatePipe } from '@ngx-translate/core'
 import { ChartConfiguration } from 'chart.js'
 import { BaseChartDirective } from 'ng2-charts'
@@ -20,6 +21,7 @@ import { Widget } from '@/app/modules/status/widgets/widgets.interfaces'
   ],
 })
 export class MemoryWidgetComponent implements OnInit, OnDestroy {
+  private $destroyRef = inject(DestroyRef)
   private $ws = inject(WsService)
   private io: IoNamespace
   private intervalSubscription: Subscription
@@ -86,9 +88,11 @@ export class MemoryWidgetComponent implements OnInit, OnDestroy {
       this.lineChartOptions.elements.line.borderColor = userColor
     }
 
-    this.io.connected.subscribe(async () => {
-      this.getServerMemoryInfo()
-    })
+    this.io.connected
+      .pipe(takeUntilDestroyed(this.$destroyRef))
+      .subscribe(async () => {
+        this.getServerMemoryInfo()
+      })
 
     if (this.io.socket.connected) {
       this.getServerMemoryInfo()
@@ -97,9 +101,11 @@ export class MemoryWidgetComponent implements OnInit, OnDestroy {
     this.initializeWidget()
 
     // Listen for configuration changes
-    this.configureEvent.subscribe(() => {
-      this.reinitializeWidget()
-    })
+    this.configureEvent
+      .pipe(takeUntilDestroyed(this.$destroyRef))
+      .subscribe(() => {
+        this.reinitializeWidget()
+      })
   }
 
   private initializeWidget() {
@@ -113,11 +119,13 @@ export class MemoryWidgetComponent implements OnInit, OnDestroy {
     this.refreshInterval = Math.min(60, Math.max(1, this.widget.refreshInterval))
     this.historyItems = Math.min(60, Math.max(1, this.widget.historyItems))
 
-    this.intervalSubscription = interval(this.refreshInterval * 1000).subscribe(() => {
-      if (this.io.socket.connected) {
-        this.getServerMemoryInfo()
-      }
-    })
+    this.intervalSubscription = interval(this.refreshInterval * 1000)
+      .pipe(takeUntilDestroyed(this.$destroyRef))
+      .subscribe(() => {
+        if (this.io.socket.connected) {
+          this.getServerMemoryInfo()
+        }
+      })
   }
 
   private reinitializeWidget() {
@@ -145,10 +153,12 @@ export class MemoryWidgetComponent implements OnInit, OnDestroy {
   }
 
   private getServerMemoryInfo() {
-    this.io.request('get-server-memory-info').subscribe((data) => {
-      this.updateData(data)
-      this.chart().update()
-    })
+    this.io.request('get-server-memory-info')
+      .pipe(takeUntilDestroyed(this.$destroyRef))
+      .subscribe((data) => {
+        this.updateData(data)
+        this.chart().update()
+      })
   }
 
   private updateData(data: any) {

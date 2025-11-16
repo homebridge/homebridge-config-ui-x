@@ -1,5 +1,6 @@
 import { NgClass } from '@angular/common'
-import { Component, inject, OnDestroy, OnInit } from '@angular/core'
+import { Component, DestroyRef, inject, OnDestroy, OnInit } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { NgbModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { DragulaModule, DragulaService } from 'ng2-dragula'
@@ -36,6 +37,7 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
 
   private $api = inject(ApiService)
   private $auth = inject(AuthService)
+  private $destroyRef = inject(DestroyRef)
   private dragulaService = inject(DragulaService)
   private $modal = inject(NgbModal)
   private $settings = inject(SettingsService)
@@ -67,11 +69,13 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
     })
 
     // Save the room and service layout
-    this.orderSubscription = dragulaService.drop().subscribe(() => {
-      setTimeout(() => {
-        this.$accessories.saveLayout()
+    this.orderSubscription = dragulaService.drop()
+      .pipe(takeUntilDestroyed(this.$destroyRef))
+      .subscribe(() => {
+        setTimeout(() => {
+          this.$accessories.saveLayout()
+        })
       })
-    })
 
     this.isMobile = true
   }

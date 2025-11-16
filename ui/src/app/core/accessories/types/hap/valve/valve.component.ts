@@ -1,5 +1,6 @@
 import { NgClass } from '@angular/common'
-import { Component, inject, Input, OnDestroy, OnInit } from '@angular/core'
+import { Component, DestroyRef, inject, Input, OnDestroy, OnInit } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
 import { TranslatePipe } from '@ngx-translate/core'
 import { interval, Subscription } from 'rxjs'
@@ -22,6 +23,7 @@ import { LongClickDirective } from '@/app/core/directives/long-click.directive'
   ],
 })
 export class ValveComponent implements OnInit, OnDestroy {
+  private $destroyRef = inject(DestroyRef)
   private $accessories = inject(AccessoriesService)
   private $modal = inject(NgbModal)
 
@@ -83,17 +85,19 @@ export class ValveComponent implements OnInit, OnDestroy {
   }
 
   private setupRemainingDurationCounter() {
-    this.remainingDurationSubscription = this.remainingDurationInterval.subscribe(() => {
-      this.secondsActive++
-      const remainingSeconds = this.service.getCharacteristic('RemainingDuration').value as number - this.secondsActive
-      if (remainingSeconds > 0) {
-        this.remainingDuration = remainingSeconds < 3600
-          ? new Date(remainingSeconds * 1000).toISOString().substring(14, 19)
-          : new Date(remainingSeconds * 1000).toISOString().substring(11, 19)
-      } else {
-        this.remainingDuration = ''
-      }
-    })
+    this.remainingDurationSubscription = this.remainingDurationInterval
+      .pipe(takeUntilDestroyed(this.$destroyRef))
+      .subscribe(() => {
+        this.secondsActive++
+        const remainingSeconds = this.service.getCharacteristic('RemainingDuration').value as number - this.secondsActive
+        if (remainingSeconds > 0) {
+          this.remainingDuration = remainingSeconds < 3600
+            ? new Date(remainingSeconds * 1000).toISOString().substring(14, 19)
+            : new Date(remainingSeconds * 1000).toISOString().substring(11, 19)
+        } else {
+          this.remainingDuration = ''
+        }
+      })
   }
 
   private resetRemainingDuration() {

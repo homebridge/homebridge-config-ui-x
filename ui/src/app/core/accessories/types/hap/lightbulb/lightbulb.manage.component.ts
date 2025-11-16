@@ -1,5 +1,6 @@
 import { NgClass } from '@angular/common'
-import { Component, inject, Input, OnDestroy, OnInit } from '@angular/core'
+import { Component, DestroyRef, inject, Input, OnDestroy, OnInit } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { FormsModule } from '@angular/forms'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
 import { TranslatePipe } from '@ngx-translate/core'
@@ -24,6 +25,7 @@ import { ConvertMiredPipe } from '@/app/core/pipes/convert-mired.pipe'
   ],
 })
 export class LightbulbManageComponent implements OnInit, OnDestroy {
+  private $destroyRef = inject(DestroyRef)
   private $activeModal = inject(NgbActiveModal)
   private $colour = inject(ColourService)
 
@@ -245,9 +247,11 @@ export class LightbulbManageComponent implements OnInit, OnDestroy {
 
       if (this.isAdaptiveLightingEnabled$) {
         this.hasAdaptiveLighting = true
-        this.isAdaptiveLightingEnabled$.subscribe((value) => {
-          this.isAdaptiveLightingEnabled = value
-        })
+        this.isAdaptiveLightingEnabled$
+          .pipe(takeUntilDestroyed(this.$destroyRef))
+          .subscribe((value) => {
+            this.isAdaptiveLightingEnabled = value
+          })
       }
     }
   }

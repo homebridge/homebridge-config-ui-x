@@ -1,7 +1,8 @@
 import type { CharacteristicType } from '@homebridge/hap-client'
 
 import { NgClass } from '@angular/common'
-import { Component, inject, Input, OnDestroy, OnInit } from '@angular/core'
+import { Component, DestroyRef, inject, Input, OnDestroy, OnInit } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { FormsModule } from '@angular/forms'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
 import { TranslatePipe } from '@ngx-translate/core'
@@ -24,6 +25,7 @@ import { AccessoriesService } from '@/app/core/accessories/accessories.service'
 })
 export class HumidifierDehumidifierManageComponent implements OnInit, OnDestroy {
   private $activeModal = inject(NgbActiveModal)
+  private $destroyRef = inject(DestroyRef)
 
   @Input() public service: ServiceTypeX
   @Input() public type: 'humidifier' | 'dehumidifier'
@@ -43,7 +45,7 @@ export class HumidifierDehumidifierManageComponent implements OnInit, OnDestroy 
 
   constructor() {
     this.targetHumidityChanged
-      .pipe(debounceTime(500))
+      .pipe(debounceTime(500), takeUntilDestroyed(this.$destroyRef))
       .subscribe(() => {
         if (this.RelativeHumidityHumidifierThreshold) {
           this.service.getCharacteristic('RelativeHumidityHumidifierThreshold').setValue(this.targetHumidifierHumidity)

@@ -1,7 +1,7 @@
 import { DatePipe, NgClass } from '@angular/common'
-import { Component, inject, OnInit } from '@angular/core'
+import { Component, DestroyRef, inject, OnInit } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { FormControl, ReactiveFormsModule } from '@angular/forms'
-import { Router } from '@angular/router'
 import { NgbActiveModal, NgbModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { saveAs } from 'file-saver'
@@ -10,6 +10,7 @@ import { firstValueFrom } from 'rxjs'
 import { debounceTime } from 'rxjs/operators'
 
 import { ApiService } from '@/app/core/api.service'
+import { valuesAreEqual } from '@/app/core/helpers/value-comparison.helper'
 import { SettingsService } from '@/app/core/settings.service'
 import { BackupService } from '@/app/modules/settings/backup/backup.service'
 import { RestoreComponent } from '@/app/modules/settings/backup/restore/restore.component'
@@ -29,12 +30,11 @@ export class BackupComponent implements OnInit {
   private $activeModal = inject(NgbActiveModal)
   private $api = inject(ApiService)
   private $backup = inject(BackupService)
+  private $destroyRef = inject(DestroyRef)
   private $modal = inject(NgbModal)
-  private $router = inject(Router)
   private $settings = inject(SettingsService)
   private $toastr = inject(ToastrService)
   private $translate = inject(TranslateService)
-  private restartToastIsShown = false
 
   protected readonly Date = Date
 
@@ -47,6 +47,10 @@ export class BackupComponent implements OnInit {
   public enabledFormControl = new FormControl(false)
   public pathFormControl = new FormControl('')
 
+  // Injected from parent component for coordinated change tracking
+  public initialValues: Record<string, any> = {}
+  public changedFields: Set<string> = new Set()
+
   public ngOnInit(): void {
     this.getScheduledBackups()
     this.getNextBackup()
@@ -57,15 +61,29 @@ export class BackupComponent implements OnInit {
     this.enabledFormControl.patchValue(this.currentSettingEnabled)
     this.pathFormControl.patchValue(this.currentSettingPath)
 
+    // Store initial values if not already stored
+    if (this.initialValues.scheduledBackupDisable === undefined) {
+      this.initialValues.scheduledBackupDisable = this.$settings.env.scheduledBackupDisable
+    }
+    if (this.initialValues.scheduledBackupPath === undefined) {
+      this.initialValues.scheduledBackupPath = this.$settings.env.scheduledBackupPath
+    }
+
     this.enabledFormControl.valueChanges
-      .pipe(debounceTime(750))
+      .pipe(
+        debounceTime(750),
+        takeUntilDestroyed(this.$destroyRef),
+      )
       .subscribe(async (value) => {
         this.currentSettingEnabled = value
         await this.saveUiSettingChange('scheduledBackupDisable', !this.currentSettingEnabled)
       })
 
     this.pathFormControl.valueChanges
-      .pipe(debounceTime(1500))
+      .pipe(
+        debounceTime(1500),
+        takeUntilDestroyed(this.$destroyRef),
+      )
       .subscribe(async (value) => {
         this.currentSettingPath = value
         await this.saveUiSettingChange('scheduledBackupPath', this.currentSettingPath)
@@ -155,7 +173,28 @@ export class BackupComponent implements OnInit {
       // Update the environment variable in the settings service
       this.$settings.setEnvItem(key, value)
 
-      this.showRestartToast()
+      // Coordinated change tracking with parent component
+      const initialValue = this.initialValues[key]
+      const hasChanged = !valuesAreEqual(value, initialValue)
+
+      if (hasChanged) {
+        // Field has changed from initial value - add to changed fields set
+        this.changedFields.add(key)
+      } else {
+        // Field has been reverted to initial value - remove from changed fields set
+        this.changedFields.delete(key)
+
+        // If no fields are changed anymore, dismiss the toast
+        if (this.changedFields.size === 0 && this.$settings.restartToastRef) {
+          this.$settings.dismissRestartToast()
+          return
+        }
+      }
+
+      // Show the restart toast if it's not already showing
+      if (!this.$settings.restartToastRef) {
+        this.$settings.showRestartToast()
+      }
     } catch (error) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
@@ -180,28 +219,5 @@ export class BackupComponent implements OnInit {
         console.error(err)
       },
     })
-  }
-
-  private showRestartToast() {
-    if (!this.restartToastIsShown) {
-      this.restartToastIsShown = true
-      const ref = this.$toastr.info(
-        this.$translate.instant('settings.changes.saved'),
-        this.$translate.instant('menu.hbrestart.title'),
-        {
-          timeOut: 0,
-          tapToDismiss: true,
-          disableTimeOut: true,
-          positionClass: 'toast-bottom-right',
-          enableHtml: true,
-        },
-      )
-
-      if (ref && ref.onTap) {
-        ref.onTap.subscribe(() => {
-          void this.$router.navigate(['/restart'])
-        })
-      }
-    }
   }
 }

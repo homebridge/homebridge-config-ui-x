@@ -378,6 +378,7 @@
             [style.letter-spacing]="'0.15em'"
             [style.text-align]="'center'"
             maxlength="30"
+            [ngClass]="{ 'is-invalid': scheduledRestartCronIsInvalid }"
           />
           @if (scheduledRestartCronIsSaving) {
           <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>

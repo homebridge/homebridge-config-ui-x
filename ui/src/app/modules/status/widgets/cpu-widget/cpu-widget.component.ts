@@ -1,5 +1,6 @@
 import { DecimalPipe, NgClass, UpperCasePipe } from '@angular/common'
-import { Component, ElementRef, inject, Input, OnDestroy, OnInit, viewChild } from '@angular/core'
+import { Component, DestroyRef, ElementRef, inject, Input, OnDestroy, OnInit, viewChild } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { TranslatePipe } from '@ngx-translate/core'
 import { ChartConfiguration } from 'chart.js'
 import { BaseChartDirective } from 'ng2-charts'
@@ -24,6 +25,7 @@ import { Widget } from '@/app/modules/status/widgets/widgets.interfaces'
   ],
 })
 export class CpuWidgetComponent implements OnInit, OnDestroy {
+  private $destroyRef = inject(DestroyRef)
   private $settings = inject(SettingsService)
   private $ws = inject(WsService)
   private io: IoNamespace
@@ -91,9 +93,11 @@ export class CpuWidgetComponent implements OnInit, OnDestroy {
       this.lineChartOptions.elements.line.borderColor = userColor
     }
 
-    this.io.connected.subscribe(async () => {
-      this.getServerCpuInfo()
-    })
+    this.io.connected
+      .pipe(takeUntilDestroyed(this.$destroyRef))
+      .subscribe(async () => {
+        this.getServerCpuInfo()
+      })
 
     if (this.io.socket.connected) {
       this.getServerCpuInfo()
@@ -102,9 +106,11 @@ export class CpuWidgetComponent implements OnInit, OnDestroy {
     this.initializeWidget()
 
     // Listen for configuration changes
-    this.configureEvent.subscribe(() => {
-      this.reinitializeWidget()
-    })
+    this.configureEvent
+      .pipe(takeUntilDestroyed(this.$destroyRef))
+      .subscribe(() => {
+        this.reinitializeWidget()
+      })
   }
 
   private initializeWidget() {
@@ -118,11 +124,13 @@ export class CpuWidgetComponent implements OnInit, OnDestroy {
     this.refreshInterval = Math.min(60, Math.max(1, this.widget.refreshInterval))
     this.historyItems = Math.min(60, Math.max(1, this.widget.historyItems))
 
-    this.intervalSubscription = interval(this.refreshInterval * 1000).subscribe(() => {
-      if (this.io.socket.connected) {
-        this.getServerCpuInfo()
-      }
-    })
+    this.intervalSubscription = interval(this.refreshInterval * 1000)
+      .pipe(takeUntilDestroyed(this.$destroyRef))
+      .subscribe(() => {
+        if (this.io.socket.connected) {
+          this.getServerCpuInfo()
+        }
+      })
   }
 
   private reinitializeWidget() {
@@ -150,10 +158,12 @@ export class CpuWidgetComponent implements OnInit, OnDestroy {
   }
 
   private getServerCpuInfo() {
-    this.io.request('get-server-cpu-info').subscribe((data) => {
-      this.updateData(data)
-      this.chart().update()
-    })
+    this.io.request('get-server-cpu-info')
+      .pipe(takeUntilDestroyed(this.$destroyRef))
+      .subscribe((data) => {
+        this.updateData(data)
+        this.chart().update()
+      })
   }
 
   private updateData(data: any) {

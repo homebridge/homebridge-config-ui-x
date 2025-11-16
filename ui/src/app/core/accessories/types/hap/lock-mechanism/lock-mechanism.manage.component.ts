@@ -1,5 +1,6 @@
 import { NgClass } from '@angular/common'
-import { Component, inject, Input, OnDestroy, OnInit } from '@angular/core'
+import { Component, DestroyRef, inject, Input, OnDestroy, OnInit } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { FormsModule } from '@angular/forms'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
 import { TranslatePipe } from '@ngx-translate/core'
@@ -24,6 +25,7 @@ import { DurationPipe } from '@/app/core/pipes/duration.pipe'
 })
 export class LockMechanismManageComponent implements OnInit, OnDestroy {
   private $activeModal = inject(NgbActiveModal)
+  private $destroyRef = inject(DestroyRef)
   private lockTimeout: any
 
   @Input() public service: ServiceTypeX
@@ -48,6 +50,7 @@ export class LockMechanismManageComponent implements OnInit, OnDestroy {
         .pipe(
           debounceTime(300),
           distinctUntilChanged(),
+          takeUntilDestroyed(this.$destroyRef),
         )
         .subscribe(() => {
           this.serviceManagement.getCharacteristic('LockManagementAutoSecurityTimeout').setValue(this.targetLockManagementAutoSecurityTimeout.value)
