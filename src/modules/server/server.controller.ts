@@ -122,6 +122,36 @@ export class ServerController {
   }
 
   @UseGuards(AdminGuard)
+  @ApiOperation({ summary: 'List cached Matter accessories.' })
+  @Get('/matter-accessories')
+  getMatterAccessories() {
+    return this.serverService.getMatterAccessories()
+  }
+
+  @UseGuards(AdminGuard)
+  @ApiOperation({
+    summary: 'Remove a single Matter cached accessory.',
+  })
+  @ApiParam({ name: 'deviceId' })
+  @ApiParam({ name: 'uuid' })
+  @Delete('/matter-accessories/:deviceId/:uuid')
+  @HttpCode(204)
+  deleteMatterAccessory(@Param('deviceId') deviceId: string, @Param('uuid') uuid: string) {
+    return this.serverService.deleteMatterAccessory(deviceId, uuid)
+  }
+
+  @UseGuards(AdminGuard)
+  @ApiOperation({
+    summary: 'Remove multiple Matter cached accessories.',
+  })
+  @ApiBody({ description: 'Array of Matter accessories (deviceId and uuid) to remove from the cache', type: 'json', isArray: true })
+  @Delete('/matter-accessories')
+  @HttpCode(204)
+  deleteMatterAccessories(@Body() accessories?: { deviceId: string, uuid: string }[]) {
+    return this.serverService.deleteMatterAccessories(accessories)
+  }
+
+  @UseGuards(AdminGuard)
   @ApiOperation({ summary: 'List all paired accessories (main bridge, external cameras, TVs etc).' })
   @Get('/pairings')
   getDevicePairings() {
@@ -150,6 +180,17 @@ export class ServerController {
 
   @UseGuards(AdminGuard)
   @ApiOperation({
+    summary: 'Remove Matter configuration from a child bridge.',
+  })
+  @ApiParam({ name: 'deviceId' })
+  @Delete('/pairings/:deviceId/matter')
+  @HttpCode(204)
+  deleteDeviceMatterConfig(@Param('deviceId') deviceId: string) {
+    return this.serverService.deleteDeviceMatterConfig(deviceId)
+  }
+
+  @UseGuards(AdminGuard)
+  @ApiOperation({
     summary: 'Remove multiple paired bridges.',
   })
   @ApiBody({ description: 'Array of paired bridges (id and resetPairingInfo) to remove from the cache', type: 'json', isArray: true })
@@ -174,10 +215,10 @@ export class ServerController {
   @ApiOperation({
     summary: 'Remove multiple paired bridges\'s cached accessories.',
   })
-  @ApiBody({ description: 'Array of bridges (id) for which to remove accessories.', type: 'json', isArray: true })
+  @ApiBody({ description: 'Array of bridges (id and optional protocol) for which to remove accessories.', type: 'json', isArray: true })
   @Delete('/pairings/accessories')
   @HttpCode(204)
-  deleteDevicesAccessories(@Body() bridges?: { id: string }[]) {
+  deleteDevicesAccessories(@Body() bridges?: { id: string, protocol?: 'hap' | 'matter' | 'both' }[]) {
     return this.serverService.deleteDevicesAccessories(bridges)
   }
 
@@ -186,6 +227,13 @@ export class ServerController {
   @Get('/port/new')
   lookupUnusedPort() {
     return this.serverService.lookupUnusedPort()
+  }
+
+  @UseGuards(AdminGuard)
+  @ApiOperation({ summary: 'Return a random, unused port from the Matter port range (5530-5541).' })
+  @Get('/port/new/matter')
+  lookupUnusedMatterPort() {
+    return this.serverService.lookupUnusedMatterPort()
   }
 
   @UseGuards(AdminGuard)

@@ -251,7 +251,20 @@
     <ul class="list-group list-group-box mt-3 mb-0">
       <!-- HAP Header with Always-On Toggle -->
       <li class="list-group-item d-flex justify-content-between align-items-center flex-row pb-2">
-        <span class="text-start"> <i class="fas fa-xl fa-hap me-2 my-2"></i> HAP </span>
+        <span class="text-start">
+          <i class="fas fa-xl fa-hap me-2 my-2"></i> {{ 'child_bridge.config.enable_hap' | translate }}
+        </span>
+        <div class="text-end grey-text d-flex align-items-center" style="opacity: 0.5; cursor: not-allowed">
+          <input
+            type="checkbox"
+            class="rendux-input"
+            [id]="'toggleHapInput_' + selectedBlock"
+            [checked]="true"
+            [disabled]="true"
+            style="pointer-events: none"
+          />
+          <label [for]="'toggleHapInput_' + selectedBlock" class="rendux-label" style="cursor: not-allowed"></label>
+        </div>
       </li>
 
       <!-- HAP QR Code -->
@@ -304,8 +317,8 @@
             type="checkbox"
             class="rendux-input"
             [id]="'toggleHideHapUnpairing_' + selectedBlock"
-            [checked]="isUnpairingHidden(configBlocks[selectedBlock]._bridge?.username)"
-            (change)="toggleHideUnpairing(configBlocks[selectedBlock]._bridge?.username)"
+            [checked]="isUnpairingHidden(configBlocks[selectedBlock]._bridge?.username, 'hap')"
+            (change)="toggleHideUnpairing(configBlocks[selectedBlock]._bridge?.username, 'hap')"
             [attr.aria-label]="'child_bridge.config.hide_pairing_alert' | translate"
           />
           <label [for]="'toggleHideHapUnpairing_' + selectedBlock" class="rendux-label"></label>
@@ -328,7 +341,115 @@
         </div>
       </li>
     </ul>
-    } } @if (deleteBridges.length) {
+
+    <!-- MATTER SECTION - Only shown when child bridge is enabled and plugin is platform-based -->
+    @if (isMatterSupported && !configBlocks[selectedBlock].accessory) {
+    <ul class="list-group list-group-box mt-3 mb-0">
+      <!-- Matter Header with Toggle -->
+      <li class="list-group-item d-flex justify-content-between align-items-center flex-row pb-2">
+        <label class="mb-2 mb-md-0 w-100 w-md-50">
+          <i class="fas fa-xl fa-matter me-2 my-2"></i> {{ 'matter_bridge.config.use' | translate }}
+          <span class="badge badge-primary ms-1">{{ 'common.labels.beta' | translate }}</span>
+        </label>
+        <div class="text-end grey-text d-flex align-items-center">
+          <input
+            type="checkbox"
+            class="rendux-input"
+            [id]="'toggleMatterBridgeInput_' + selectedBlock"
+            (change)="toggleMatterBridge(configBlocks[selectedBlock], matterEnabledBlocks[selectedBlock], selectedBlock)"
+            [(ngModel)]="matterEnabledBlocks[selectedBlock]"
+          />
+          <label [for]="'toggleMatterBridgeInput_' + selectedBlock" class="rendux-label"></label>
+        </div>
+      </li>
+
+      <!-- Matter Content (only when enabled) -->
+      @if (matterEnabledBlocks[selectedBlock] && configBlocks[selectedBlock]._bridge?.matter &&
+      configBlocks[selectedBlock]._bridge?.username) {
+      <li class="list-group-item">
+        <ul class="grey-text small">
+          <li>{{ 'child_bridge.config.matter_note_1' | translate }}</li>
+          <li>{{ 'child_bridge.config.matter_note_2' | translate }}</li>
+        </ul>
+      </li>
+      <!-- Matter QR Code -->
+      @if (matterDeviceInfo.get(configBlocks[selectedBlock]._bridge?.username)?.setupUri) {
+      <li class="list-group-item text-center">
+        <div class="w-100 d-flex flex-column text-center">
+          <app-qrcode
+            [data]="matterDeviceInfo.get(configBlocks[selectedBlock]._bridge?.username)?.setupUri"
+            class="mx-auto"
+            style="width: 175px; height: 175px"
+          >
+          </app-qrcode>
+          <p class="mx-auto mt-3 mb-1 font-monospace">
+            {{ matterDeviceInfo.get(configBlocks[selectedBlock]._bridge?.username)?.pin }}
+          </p>
+          <p class="grey-text mx-auto small mb-1" style="max-width: 400px">
+            <i
+              class="fas fa-link"
+              [ngClass]="{
+                'green-text': matterDeviceInfo.get(configBlocks[selectedBlock]._bridge?.username)?.commissioned,
+                'grey-text': !matterDeviceInfo.get(configBlocks[selectedBlock]._bridge?.username)?.commissioned
+              }"
+            ></i>
+            {{ (matterDeviceInfo.get(configBlocks[selectedBlock]._bridge?.username)?.commissioned ?
+            'status.widget.qr_paired' : 'status.widget.qr_unpaired') | translate }} @if
+            (!matterDeviceInfo.get(configBlocks[selectedBlock]._bridge?.username)?.commissioned) {
+            <span> &middot; {{ 'status.code_scan' | translate }} </span>
+            }
+          </p>
+        </div>
+      </li>
+      @if (!matterDeviceInfo.get(configBlocks[selectedBlock]._bridge?.username)?.commissioned) {
+      <li class="list-group-item d-flex justify-content-between align-items-center flex-row pb-2">
+        <span class="text-start">{{ 'child_bridge.config.hide_pairing_alert' | translate }}</span>
+        <div class="text-end grey-text d-flex align-items-center">
+          <input
+            type="checkbox"
+            class="rendux-input"
+            [id]="'toggleHideMatterUnpairing_' + selectedBlock"
+            [checked]="isUnpairingHidden(configBlocks[selectedBlock]._bridge?.username, 'matter')"
+            (change)="toggleHideUnpairing(configBlocks[selectedBlock]._bridge?.username, 'matter')"
+            [attr.aria-label]="'child_bridge.config.hide_pairing_alert' | translate"
+          />
+          <label [for]="'toggleHideMatterUnpairing_' + selectedBlock" class="rendux-label"></label>
+        </div>
+      </li>
+      } } @if (matterDeviceInfo.get(configBlocks[selectedBlock]._bridge?.username) &&
+      !matterDeviceInfo.get(configBlocks[selectedBlock]._bridge?.username)?.setupUri) {
+      <li class="list-group-item text-center">
+        <div class="w-100 d-flex flex-column text-center">
+          <div class="mx-auto d-flex align-items-center justify-content-center qr-code-placeholder primary-text">
+            <div>
+              <div class="text-center grey-text">
+                <i class="fas fa-qrcode fa-2x mb-2 primary-text"></i>
+              </div>
+              <div class="text-center small grey-text">{{ 'child_bridge.return_to_pair' | translate }}</div>
+            </div>
+          </div>
+        </div>
+      </li>
+      }
+
+      <!-- Matter Configuration Fields -->
+      <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
+        <label class="mb-2 mb-md-0 w-100 w-md-50">{{ 'child_bridge.config.port' | translate }}</label>
+        <div class="text-start text-md-end w-100 w-md-50">
+          <input
+            type="number"
+            class="form-control custom-input font-monospace"
+            min="1024"
+            max="65535"
+            placeholder="e.g. 5540"
+            [(ngModel)]="configBlocks[selectedBlock]._bridge.matter.port"
+            [ngClass]="{ 'is-invalid': getMatterPortValidationError(selectedBlock) }"
+          />
+        </div>
+      </li>
+      }
+    </ul>
+    } } } @if (deleteBridges.length || deleteMatterBridges.length) {
     <ngb-alert type="error" [dismissible]="false" class="mt-3 mb-0">
       <p>
         {{ 'child_bridge.confirm_delete_1' | translate }} @if (deletingPairedBridge) { {{
@@ -342,6 +463,13 @@
             {{ bridge.bridgeName || deviceInfo.get(bridge.id)?.['displayName'] }}
             <span class="grey-text"> &middot; </span>
             <span class="grey-text font-monospace">{{ bridge.id }}</span>
+          </li>
+          } @for (matterBridge of deleteMatterBridges; track matterBridge) {
+          <li>
+            <i class="fas fa-lg fa-matter me-1"></i>
+            {{ matterBridge.name }}
+            <span class="grey-text"> &middot; </span>
+            <span class="grey-text font-monospace">{{ matterBridge.username }}</span>
           </li>
           }
         </ul>

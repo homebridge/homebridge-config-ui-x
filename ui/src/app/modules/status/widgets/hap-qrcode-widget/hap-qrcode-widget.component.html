@@ -2,16 +2,23 @@
   <div #qrcodecontainer class="drag-handler d-flex flex-column w-100 h-100">
     <div class="w-100" [ngStyle]="{'height.px': qrCodeHeight, 'width.px': qrCodeWidth}">
       <div class="text-center qr-code-container w-100 h-100 p-3">
-        @if (setupUri) {
         <div class="w-100 h-100">
+          @if (setupUri) {
           <app-qrcode [data]="setupUri" class="mx-auto" />
+          } @else {
+          <div class="d-flex align-items-center justify-content-center w-100 h-100">
+            <i class="fas fa-circle-notch fa-spin fa-2xl grey-text"></i>
+          </div>
+          }
         </div>
-        }
       </div>
     </div>
     <div #pincode class="text-center w-100 mt-auto gridster-item-content">
-      <p class="mb-1 font-monospace">{{ pin }}</p>
+      <p class="mb-1">
+        <span class="font-monospace">{{ pin }}</span>
+      </p>
       <p class="grey-text mb-1 small">
+        <i class="fas fa-hap"></i> HAP @if (pin) { &middot;
         <i
           class="fas fa-link"
           [ngClass]="{
@@ -20,8 +27,9 @@
           }"
         ></i>
         {{ (paired ? 'status.widget.qr_paired' : 'status.widget.qr_unpaired') | translate }} @if (!paired) {
-        <span> &middot; {{ 'status.code_scan' | translate }} </span>
-        }
+        <br />
+        <small>{{ 'status.code_scan' | translate }}</small>
+        } }
       </p>
     </div>
   </div>

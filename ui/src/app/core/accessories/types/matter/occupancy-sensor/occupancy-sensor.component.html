@@ -1,0 +1,58 @@
+<div class="accessory-box" [ngClass]="{ 'accessory-on': isOccupied }">
+  <div class="d-flex flex-column h-100">
+    <div [attr.aria-label]="'accessories.core.occupancy_sensor' | translate" class="accessory-svg">
+      <svg width="32px" height="32px" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+        <!-- outer casing -->
+        <rect
+          class="orange-outline"
+          x="3.5"
+          y="1"
+          width="25"
+          height="30"
+          rx="3"
+          stroke="#7f7f7f"
+          fill="none"
+          stroke-width="1.2"
+        />
+        <!-- human figure -->
+        <g transform="translate(4.75, -0.75), scale(0.075)">
+          <path
+            d="M190.85 83.94C190.85 70.36 180.09 59.24 166.93 59.24C153.78 59.24 143.02 70.36 143.02 83.94C143.02 97.53 153.78 108.65 166.93 108.65C180.09 108.65 190.85 97.53 190.85 83.94Z"
+            fill="#ff9800"
+            fill-opacity="0.25"
+            stroke="#7f7f7f"
+            stroke-width="7"
+          />
+          <path
+            d="M232.24 175.95C210.12 175.95 190.98 163.6 180.22 145.69C179.08 143.72 169.99 127.91 168.86 125.93C164.67 118.52 156.9 114.2 148.53 114.2C145.54 114.2 142.55 114.81 139.56 116.05C135.37 117.82 114.45 126.67 76.78 142.6L76.78 200.66L100.69 200.66L100.69 159.28L121.62 150.02L88.73 324.17L113.85 324.17L134.78 225.36L160.49 250.06L160.49 324.17L184.4 324.17L184.4 230.92L159.89 205.6C164.19 183.36 166.59 171.01 167.06 168.54C182.61 188.3 205.93 200.66 232.24 200.66C232.24 195.72 232.24 178.42 232.24 175.95Z"
+            fill="#ff9800"
+            fill-opacity="0.25"
+            stroke="#7f7f7f"
+            stroke-width="7"
+          />
+        </g>
+        <!-- grille horizontal lines -->
+        <line stroke-linecap="round" x1="7" y1="26" x2="25" y2="26" stroke="#7f7f7f" stroke-width="0.5" />
+        <line stroke-linecap="round" x1="7" y1="27.5" x2="25" y2="27.5" stroke="#7f7f7f" stroke-width="0.5" />
+        <line stroke-linecap="round" x1="7" y1="29" x2="25" y2="29" stroke="#7f7f7f" stroke-width="0.5" />
+        <!-- grille vertical lines -->
+        <line stroke-linecap="round" x1="7" y1="26" x2="7" y2="29" stroke="#7f7f7f" stroke-width="0.5" />
+        <line stroke-linecap="round" x1="9" y1="26" x2="9" y2="29" stroke="#7f7f7f" stroke-width="0.5" />
+        <line stroke-linecap="round" x1="11" y1="26" x2="11" y2="29" stroke="#7f7f7f" stroke-width="0.5" />
+        <line stroke-linecap="round" x1="13" y1="26" x2="13" y2="29" stroke="#7f7f7f" stroke-width="0.5" />
+        <line stroke-linecap="round" x1="15" y1="26" x2="15" y2="29" stroke="#7f7f7f" stroke-width="0.5" />
+        <line stroke-linecap="round" x1="17" y1="26" x2="17" y2="29" stroke="#7f7f7f" stroke-width="0.5" />
+        <line stroke-linecap="round" x1="19" y1="26" x2="19" y2="29" stroke="#7f7f7f" stroke-width="0.5" />
+        <line stroke-linecap="round" x1="21" y1="26" x2="21" y2="29" stroke="#7f7f7f" stroke-width="0.5" />
+        <line stroke-linecap="round" x1="23" y1="26" x2="23" y2="29" stroke="#7f7f7f" stroke-width="0.5" />
+        <line stroke-linecap="round" x1="25" y1="26" x2="25" y2="29" stroke="#7f7f7f" stroke-width="0.5" />
+      </svg>
+    </div>
+    <div class="accessory-label mt-auto">{{ service.customName || service.serviceName }}</div>
+    @if (isOccupied) {
+    <div class="accessory-label red-text">{{ 'accessories.control.detected' | translate }}</div>
+    } @else {
+    <div class="accessory-label grey-text">{{ 'accessories.control.not_detected' | translate }}</div>
+    }
+  </div>
+</div>

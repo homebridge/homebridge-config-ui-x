@@ -1,0 +1,47 @@
+<div class="modal-content">
+  <div class="modal-header">
+    <h5 class="modal-title" [innerText]="service.customName || service.serviceName"></h5>
+    <button
+      type="button"
+      class="btn-close"
+      data-bs-dismiss="modal"
+      [attr.aria-label]="'form.button_close' | translate"
+      (click)="dismissModal()"
+    ></button>
+  </div>
+  <div class="modal-body text-center px-5">
+    <div
+      class="btn-group-vertical d-flex justify-content-center mb-0 p-0"
+      role="group"
+      [attr.aria-label]="'accessories.control.mode_control' | translate"
+    >
+      <button type="button" class="btn mb-0 mx-0 p-3 btn-control" (click)="setMode(0, $event)">
+        <div class="float-start primary-text">
+          <i class="fas fa-xl" [ngClass]="{ 'fa-check-circle': currentMode === 0, 'fa-blank': currentMode !== 0 }"></i>
+        </div>
+        {{ 'accessories.control.stopped' | translate }}
+        <div class="float-end"><i class="fas fa-xl fa-blank"></i></div>
+      </button>
+      <button
+        type="button"
+        class="btn mb-0 mx-0 p-3 btn-control"
+        [class.btn-pause-disabled]="isPauseDisabled"
+        (click)="setMode(2, $event)"
+      >
+        <div class="float-start primary-text">
+          <i class="fas fa-xl" [ngClass]="{ 'fa-check-circle': currentMode === 2, 'fa-blank': currentMode !== 2 }"></i>
+        </div>
+        {{ 'accessories.control.paused' | translate }}
+        <div class="float-end"><i class="fas fa-xl fa-blank"></i></div>
+      </button>
+      <button type="button" class="btn mb-0 mx-0 p-3 btn-control" (click)="setMode(1, $event)">
+        <div class="float-start primary-text">
+          <i class="fas fa-xl" [ngClass]="{ 'fa-check-circle': currentMode === 1, 'fa-blank': currentMode !== 1 }"></i>
+        </div>
+        {{ 'accessories.control.cleaning' | translate }}
+        <div class="float-end"><i class="fas fa-xl fa-blank"></i></div>
+      </button>
+    </div>
+  </div>
+  <div class="modal-footer"></div>
+</div>

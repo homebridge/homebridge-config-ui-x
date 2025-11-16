@@ -5,6 +5,7 @@ export interface FeatureFlags {
 export interface BridgeConfig {
   username: string
   hideHapAlert?: boolean
+  hideMatterAlert?: boolean
   scheduledRestartCron?: string
 }
 

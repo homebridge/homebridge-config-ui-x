@@ -24,8 +24,8 @@ export class AccessoriesService {
   private $ws = inject(WsService)
   private accessoryCache: any[] = []
   private pairingCache: any[] = []
+  private customAttributesApplied = new Set<string>()
   private io: IoNamespace
-  private roomsOrdered = false
   private hiddenTypes = [
     'InputSource',
     'LockManagement',
@@ -36,7 +36,8 @@ export class AccessoriesService {
 
   public layoutSaved = new Subject()
   public accessoryData = new Subject()
-  public readyForControl = false
+  public hapReadyForControl = false
+  public matterReadyForControl = false
   public accessories: { services: ServiceType[] } = { services: [] }
   public rooms: Array<{ name: string, services: ServiceTypeX[] }> = []
   public accessoryLayout: AccessoryLayout
@@ -57,7 +58,7 @@ export class AccessoriesService {
     }
   }
 
-  public showAccessoryInformation(service: any) {
+  public showAccessoryInformation(service: ServiceTypeX) {
     const ref = this.$modal.open(AccessoryInfoComponent, {
       size: 'lg',
       backdrop: 'static',
@@ -81,7 +82,7 @@ export class AccessoriesService {
     this.io.end()
     this.rooms = []
     this.accessories = { services: [] }
-    this.roomsOrdered = false
+    this.customAttributesApplied.clear()
     delete this.accessoryLayout
     delete this.originalLayout
   }
@@ -90,7 +91,8 @@ export class AccessoriesService {
    * Start the accessory control session
    */
   public async start() {
-    this.readyForControl = false
+    this.hapReadyForControl = false
+    this.matterReadyForControl = false
 
     // Connect to the socket endpoint
     this.io = this.$ws.connectToNamespace('accessories')
@@ -118,11 +120,10 @@ export class AccessoriesService {
       this.generateHelpers()
       this.sortIntoRooms()
 
-      if (!this.roomsOrdered) {
-        this.orderRooms()
-        this.applyCustomAttributes()
-        this.roomsOrdered = true
-      }
+      // Always order rooms to handle accessories that arrive late (e.g., Matter accessories)
+      this.orderRooms()
+
+      this.applyCustomAttributes()
 
       this.accessoryData.next(data)
     })
@@ -133,14 +134,26 @@ export class AccessoriesService {
       await this.start()
     })
 
+    // When only Matter accessories need to reload
+    this.io.socket.on('matter-accessories-reload-required', async () => {
+      // Trigger reload by emitting accessory-control-refresh
+      // This will reload accessories from the backend without full reconnection
+      this.matterReadyForControl = false
+      this.io.socket.emit('accessory-control', { refresh: true })
+    })
+
     this.io.socket.on('accessory-control-failure', (message: string) => {
       console.error(message)
       this.$toastr.error(message, this.$translate.instant('toast.title_error'))
     })
 
-    // When the system is ready for accessory control
-    this.io.socket.on('accessories-ready-for-control', () => {
-      this.readyForControl = true
+    // Protocol-specific ready events
+    this.io.socket.on('hap-accessories-ready-for-control', () => {
+      this.hapReadyForControl = true
+    })
+
+    this.io.socket.on('matter-accessories-ready-for-control', () => {
+      this.matterReadyForControl = true
     })
   }
 
@@ -196,6 +209,29 @@ export class AccessoriesService {
   }
 
   /**
+   * Check if a cached service matches a discovered service
+   * Handles different matching logic for HAP vs Matter accessories
+   */
+  private servicesMatch(cachedService: any, discoveredService: any): boolean {
+    const isMatterAccessory = discoveredService.protocol === 'matter' || discoveredService.uniqueId?.startsWith('matter:')
+    if (isMatterAccessory) {
+      // Matter-specific matching: uuid + bridge
+      return cachedService.uniqueId === discoveredService.uniqueId
+        && cachedService.bridge === (discoveredService.instance?.username || discoveredService.bridge)
+    } else {
+      // HAP-specific matching: primary match - by uniqueId
+      if (cachedService.uniqueId === discoveredService.uniqueId) {
+        return true
+      }
+
+      return cachedService.name === (discoveredService.serviceName || discoveredService.name)
+        && cachedService.serial === (discoveredService.accessoryInformation?.['Serial Number'] || discoveredService.serial)
+        && cachedService.bridge === (discoveredService.instance?.username || discoveredService.bridge)
+        && cachedService.uuid === discoveredService.uuid
+    }
+  }
+
+  /**
    * Merge current layout with undiscovered services to preserve custom information
    */
   private mergeWithUndiscoveredServices(currentLayout: AccessoryLayout): AccessoryLayout {
@@ -223,18 +259,8 @@ export class AccessoriesService {
               continue
             }
 
-            // Primary match: by uniqueId
-            if (originalService.uniqueId === discoveredService.uniqueId) {
-              matchedOriginalService = originalService
-              break
-            }
-
-            // Fallback match: by name + serial + bridge + uuid (if uniqueId didn't match)
-            if (!matchedOriginalService
-              && originalService.name === discoveredService.name
-              && originalService.serial === discoveredService.serial
-              && originalService.bridge === discoveredService.bridge
-              && originalService.uuid === discoveredService.uuid) {
+            // Use helper method to check if services match
+            if (this.servicesMatch(originalService, discoveredService)) {
               matchedOriginalService = originalService
               break
             }
@@ -354,20 +380,7 @@ export class AccessoriesService {
 
         // Try to find the service in cache using the same matching logic as mergeWithUndiscoveredServices
         for (const room of this.accessoryLayout) {
-          // Primary match: by uniqueId
-          serviceCache = room.services.find(s => s.uniqueId === service.uniqueId)
-          if (serviceCache) {
-            inCache = room
-            break
-          }
-
-          // Fallback match: by name + serial + bridge + uuid (if uniqueId didn't match)
-          serviceCache = room.services.find(s =>
-            s.name === service.serviceName
-            && s.serial === service.accessoryInformation?.['Serial Number']
-            && s.bridge === service.instance?.username
-            && s.uuid === service.uuid,
-          )
+          serviceCache = room.services.find(s => this.servicesMatch(s, service))
           if (serviceCache) {
             inCache = room
             break
@@ -392,10 +405,16 @@ export class AccessoriesService {
             (service as ServiceTypeX).onDashboard = serviceCache.onDashboard
           }
 
+          // Mark that custom attributes have been applied to this accessory
+          this.customAttributesApplied.add(service.uniqueId)
+
           targetRoom.services.push(service)
         } else {
           // New accessory add the default room
           const defaultRoom = this.rooms.find(r => r.name === 'Default Room')
+
+          // Mark as processed (even though no custom attributes to apply)
+          this.customAttributesApplied.add(service.uniqueId)
 
           // Does the default room exist?
           if (defaultRoom) {
@@ -432,15 +451,44 @@ export class AccessoriesService {
   }
 
   /**
-   * Setup custom attributes
+   * Apply custom attributes to services that haven't been processed yet
+   * Only applies the custom properties we care about: customName, customType, hidden, onDashboard
    */
   private applyCustomAttributes() {
-    // Apply custom saved attributes to the service
     this.rooms.forEach((room) => {
       const roomCache = this.accessoryLayout.find(r => r.name === room.name)
+      if (!roomCache) {
+        return
+      }
+
       room.services.forEach((service) => {
+        // Skip if we've already applied custom attributes to this accessory
+        if (this.customAttributesApplied.has(service.uniqueId)) {
+          return
+        }
+
         const serviceCache = roomCache.services.find(s => s.uniqueId === service.uniqueId)
-        Object.assign(service, serviceCache)
+        if (!serviceCache) {
+          return
+        }
+
+        // Only apply the custom properties we care about, not all properties
+        const serviceX = service as ServiceTypeX
+        if (serviceCache.customType) {
+          serviceX.customType = serviceCache.customType
+        }
+        if (serviceCache.customName) {
+          serviceX.customName = serviceCache.customName
+        }
+        if (serviceCache.hidden) {
+          serviceX.hidden = serviceCache.hidden
+        }
+        if (serviceCache.onDashboard) {
+          serviceX.onDashboard = serviceCache.onDashboard
+        }
+
+        // Mark this accessory as processed
+        this.customAttributesApplied.add(service.uniqueId)
       })
     })
   }
@@ -450,32 +498,72 @@ export class AccessoriesService {
    */
   private generateHelpers() {
     this.accessories.services.forEach((service) => {
-      if (!service.getCharacteristic) {
-        service.getCharacteristic = (type: string) => {
-          const characteristic = service.serviceCharacteristics.find(x => x.type === type)
+      const serviceX = service as ServiceTypeX
 
-          if (!characteristic) {
-            return null
-          }
+      // Matter accessories use cluster-based control
+      if (serviceX.protocol === 'matter') {
+        if (!serviceX.getCluster) {
+          serviceX.getCluster = (clusterName: string) => {
+            const clusters = serviceX.clusters || {}
 
-          characteristic.setValue = (value: number | string | boolean) => new Promise((resolve) => {
-            if (!this.readyForControl) {
-              resolve(undefined)
+            if (!clusters[clusterName]) {
+              return null
             }
 
-            this.io.socket.emit('accessory-control', {
-              set: {
-                uniqueId: service.uniqueId,
-                aid: service.aid,
-                siid: service.iid,
-                iid: characteristic.iid,
-                value,
-              },
-            })
-            return resolve(undefined)
-          })
+            return {
+              attributes: clusters[clusterName],
+              setAttributes: (attributes: Record<string, unknown>) => new Promise<void>((resolve) => {
+                if (!this.matterReadyForControl) {
+                  console.warn('Matter control attempted but not ready for control:', {
+                    matterReadyForControl: this.matterReadyForControl,
+                    uniqueId: service.uniqueId,
+                    cluster: clusterName,
+                  })
+                  resolve(undefined)
+                  return
+                }
 
-          return characteristic
+                this.io.socket.emit('accessory-control', {
+                  set: {
+                    uniqueId: service.uniqueId,
+                    cluster: clusterName,
+                    attributes,
+                  },
+                })
+                return resolve(undefined)
+              }),
+            }
+          }
+        }
+      } else {
+        // HAP accessories use characteristic-based control
+        if (!service.getCharacteristic) {
+          service.getCharacteristic = (type: string) => {
+            const characteristic = service.serviceCharacteristics.find(x => x.type === type)
+
+            if (!characteristic) {
+              return null
+            }
+
+            characteristic.setValue = (value: number | string | boolean) => new Promise((resolve) => {
+              if (!this.hapReadyForControl) {
+                resolve(undefined)
+              }
+
+              this.io.socket.emit('accessory-control', {
+                set: {
+                  uniqueId: service.uniqueId,
+                  aid: service.aid,
+                  siid: service.iid,
+                  iid: characteristic.iid,
+                  value,
+                },
+              })
+              return resolve(undefined)
+            })
+
+            return characteristic
+          }
         }
       }
     })

@@ -1,3 +1,4 @@
+import { KeyValuePipe } from '@angular/common'
 /* global NodeJS */
 import { Component, inject, Input, OnInit, signal, WritableSignal } from '@angular/core'
 import { FormsModule } from '@angular/forms'
@@ -18,6 +19,7 @@ import { RemoveIndividualAccessoriesComponent } from '@/app/modules/settings/rem
   standalone: true,
   imports: [
     FormsModule,
+    KeyValuePipe,
     TranslatePipe,
     ConvertTempPipe,
     PrettifyPipe,
@@ -29,7 +31,7 @@ export class AccessoryInfoComponent implements OnInit {
   private $activeModal = inject(NgbActiveModal)
   private $modal = inject(NgbModal)
   private copyTimeouts = new Map<WritableSignal<boolean>, NodeJS.Timeout>()
-  private allCustomTypeList: Array<Array<ServiceTypeX['type']>> = [
+  private hapCustomTypeList: Array<Array<ServiceTypeX['type']>> = [
     // Groups of service types that can be changed from one to another
     [
       'AirPurifier',
@@ -69,34 +71,95 @@ export class AccessoryInfoComponent implements OnInit {
     ],
   ]
 
+  private matterCustomTypeList: Array<Array<ServiceTypeX['type']>> = [
+    // Groups of service types that can be changed from one to another
+    [
+      'OnOffLight',
+      'OnOffLightSwitch',
+      'OnOffPlugInUnit',
+      'RoboticVacuumCleaner',
+    ],
+    [
+      'Door',
+      'Window',
+      'WindowCovering',
+    ],
+    [
+      'Fan',
+    ],
+    [
+      'Thermostat',
+    ],
+  ]
+
   @Input() private accessoryCache: any[]
   @Input() private pairingCache: any[]
   @Input() public service: ServiceTypeX
 
   public isDetailsVisible: { [key: string]: boolean } = {}
-  public accessoryInformation: Array<any>
+  public accessoryInformation: Array<{ key: string, value: string | number | undefined }>
   public extraServices: ServiceTypeX[] = []
   public matchedCachedAccessory: any = null
   public enums = Enums
   public customTypeList: Array<ServiceTypeX['type']> = []
   public uniqueIdCopied = signal(false)
   public uuidCopied = signal(false)
+  public isMatterAccessory = false
+  public clusterInfo: Array<{ name: string, attributes: unknown }> = []
 
   public ngOnInit() {
-    this.accessoryInformation = Object.entries(this.service.accessoryInformation).map(([key, value]) => ({ key, value }))
-    this.matchedCachedAccessory = this.matchToCachedAccessory()
+    // Check if this is a Matter accessory
+    this.isMatterAccessory = this.service.protocol === 'matter'
 
-    if (this.service.type === 'LockMechanism' && this.service.linkedServices) {
-      Object.values(this.service.linkedServices)
-        .filter(service => service.type === 'LockManagement')
-        .forEach(service => this.extraServices.push(service))
-    }
+    if (this.isMatterAccessory) {
+      // For Matter accessories, use deviceType to build custom type list from matterCustomTypeList
+      this.customTypeList = [
+        ...new Set(this.matterCustomTypeList.filter(types => types.includes(this.service.deviceType)).flat()),
+      ]
 
-    this.customTypeList = [
-      ...new Set(this.allCustomTypeList.filter(types => types.includes(this.service.type)).flat()),
-    ]
-    if (!this.service.customType) {
-      this.service.customType = this.service.type
+      // For Matter accessories, use displayName and handle cluster info
+      const clusters = this.service.clusters || {}
+      this.clusterInfo = Object.entries(clusters).map(([name, attributes]) => ({ name, attributes }))
+
+      // Build basic accessory information from Matter accessory
+      // Start with the standard accessoryInformation from backend
+      this.accessoryInformation = Object.entries(this.service.accessoryInformation || {}).map(([key, value]) => ({
+        key,
+        value: value as string | number | undefined,
+      }))
+
+      // Prepend Device Type
+      this.accessoryInformation.unshift(
+        { key: 'Device Type', value: this.service.deviceType || 'Unknown' },
+      )
+
+      // Set default customType for Matter accessories
+      if (!this.service.customType) {
+        this.service.customType = this.service.deviceType
+      }
+    } else {
+      // HAP accessory - use type to build custom type list from hapCustomTypeList
+      this.customTypeList = [
+        ...new Set(this.hapCustomTypeList.filter(types => types.includes(this.service.type)).flat()),
+      ]
+
+      // HAP accessory
+      this.accessoryInformation = Object.entries(this.service.accessoryInformation).map(([key, value]) => ({
+        key,
+        value: value as string | number | undefined,
+      }))
+      this.matchedCachedAccessory = this.matchToCachedAccessory()
+
+      if (this.service.type === 'LockMechanism' && this.service.linkedServices) {
+        Object.values(this.service.linkedServices)
+          .filter(service => service.type === 'LockManagement')
+          .forEach(service => this.extraServices.push(service))
+      }
+
+      // Set default customType for HAP accessories
+      if (!this.service.customType) {
+        this.service.customType = this.service.type
+      }
     }
   }
 
@@ -113,6 +176,15 @@ export class AccessoryInfoComponent implements OnInit {
       backdrop: 'static',
     })
     ref.componentInstance.selectedBridge = this.service.instance.username.replaceAll(':', '')
+  }
+
+  public isDefaultType(customType: string): boolean {
+    if (this.isMatterAccessory) {
+      return customType === this.service.deviceType
+    } else {
+      // For HAP accessories, check against service.type
+      return customType === this.service.type
+    }
   }
 
   public toggleDetailsVisibility(char: CharacteristicType): void {
@@ -215,4 +287,5 @@ export class AccessoryInfoComponent implements OnInit {
   }
 
   protected readonly Number = Number
+  protected readonly JSON = JSON
 }

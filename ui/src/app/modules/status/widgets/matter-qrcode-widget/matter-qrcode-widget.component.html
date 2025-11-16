@@ -1,0 +1,39 @@
+<div class="d-flex w-100 p-2">
+  <div #qrcodecontainerMatter class="drag-handler d-flex flex-column w-100 h-100">
+    <div class="w-100" [ngStyle]="{'height.px': qrCodeHeight, 'width.px': qrCodeWidth}">
+      <div class="text-center qr-code-container w-100 h-100 p-3">
+        <div class="w-100 h-100">
+          @if (setupUri) {
+          <app-qrcode [data]="setupUri" class="mx-auto" />
+          } @else {
+          <div class="d-flex align-items-center justify-content-center w-100 h-100">
+            @if (loading) {<i class="fas fa-circle-notch fa-spin fa-2xl grey-text"></i> } @else if (!enabled) {<i
+              class="fas fa-matter grey-text fa-2xl"
+            ></i>
+            }
+          </div>
+          }
+        </div>
+      </div>
+    </div>
+    <div #pincodeMatter class="text-center w-100 mt-auto gridster-item-content">
+      <p class="mb-1">
+        <span class="font-monospace">{{ pin }}</span>
+      </p>
+      <p class="grey-text mb-1 small">
+        <i class="fas fa-matter"></i> Matter @if (pin && enabled) { &middot;
+        <i
+          class="fas fa-link"
+          [ngClass]="{
+            'green-text': commissioned,
+            'grey-text': !commissioned
+          }"
+        ></i>
+        {{ (commissioned ? 'status.widget.qr_paired' : 'status.widget.qr_unpaired') | translate }} @if (!commissioned) {
+        <br />
+        <small>{{ 'status.code_scan' | translate }}</small>
+        } }
+      </p>
+    </div>
+  </div>
+</div>

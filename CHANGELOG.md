@@ -12,6 +12,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - further tweaks for node + plugin update preferences
 - open accessory info on tile loading icon click
 - first step of improvements to https settings (@donavanbecker)
+- improvements for homebridge v2
 
 ### Homebridge Dependencies
 

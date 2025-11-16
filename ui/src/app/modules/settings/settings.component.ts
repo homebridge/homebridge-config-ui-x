@@ -104,6 +104,7 @@ export class SettingsComponent implements OnInit {
     display: true,
     startup: true,
     network: true,
+    matter: true,
     security: true,
     terminal: true,
     reset: true,
@@ -127,6 +128,7 @@ export class SettingsComponent implements OnInit {
   public runningOnRaspbianImage = this.$settings.env.runningOnRaspbianImage
   public platform = this.$settings.env.platform
   public enableTerminalAccess = this.$settings.env.enableTerminalAccess
+  public isMatterSupported = this.$settings.isFeatureEnabled('matterSupport')
   public isPwa = Boolean(isStandalonePWA())
 
   public hbNameIsInvalid = false
@@ -259,6 +261,16 @@ export class SettingsComponent implements OnInit {
   public scheduledRestartCronIsSaving = false
   public scheduledRestartCronFormControl = new FormControl('')
 
+  public matterEnabledIsSaving = false
+  public matterEnabledFormControl = new FormControl(false)
+
+  public matterPortIsInvalid = false
+  public matterPortIsSaving = false
+  public matterPortFormControl = new FormControl(0)
+
+  // Cache for Matter config values (in-memory only, for restoring after accidental disable)
+  private matterConfigCache: { port?: number } = {}
+
   public readonly linkDebug = '<a href="https://github.com/homebridge/homebridge-config-ui-x/wiki/Debug-Common-Values" target="_blank" rel="noopener noreferrer"><i class="fa fa-external-link-alt primary-text"></i></a>'
   public readonly linkRaspbianSsl = '<a href="https://github.com/homebridge/homebridge-raspbian-image/wiki/SSL-HTTPS-Access" target="_blank" rel="noopener noreferrer"><i class="fa fa-external-link-alt primary-text"></i></a>'
   public readonly linkCron = '<a href="https://crontab.guru/" target="_blank" rel="noopener noreferrer"><i class="fa fa-external-link-alt primary-text"></i></a>'
@@ -359,6 +371,10 @@ export class SettingsComponent implements OnInit {
         'setting-ui-port-network',
         'setting-mdns-advertise',
       ],
+      matter: [
+        'setting-matter-enabled',
+        'setting-matter-port',
+      ],
       terminal: [
         'setting-terminal-log-max',
         'setting-terminal-persistence',
@@ -437,6 +453,10 @@ export class SettingsComponent implements OnInit {
       'setting-network-proxy': this.$translate.instant('settings.network.proxy'),
       'setting-ui-port-network': this.$translate.instant('settings.network.port_ui'),
       'setting-mdns-advertise': this.$translate.instant('settings.network.mdns_advertise'),
+
+      // Matter section
+      'setting-matter-enabled': this.$translate.instant('settings.matter.enabled'),
+      'setting-matter-port': this.$translate.instant('settings.matter.port'),
 
       // Security section
       'setting-security-auth': this.$translate.instant('settings.security.auth'),
@@ -693,6 +713,8 @@ export class SettingsComponent implements OnInit {
     this.scheduledRestartCronFormControl.valueChanges
       .pipe(debounceTime(1500))
       .subscribe((value: string) => this.scheduledRestartCronSave(value))
+
+    await this.initMatterSettings()
 
     this.loading = false
   }
@@ -1816,6 +1838,188 @@ export class SettingsComponent implements OnInit {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
       this.scheduledRestartCronIsSaving = false
+    }
+  }
+
+  private async initMatterSettings() {
+    try {
+      const matterConfig = await firstValueFrom(this.$api.get('/config-editor/matter'))
+
+      // null means Matter is disabled, {} or {port, name} means Matter is enabled
+      const isEnabled = matterConfig !== null
+
+      if (isEnabled) {
+        // Matter is enabled - populate fields with config values
+        this.matterPortFormControl.patchValue(matterConfig.port || '')
+      } else {
+        // Matter is disabled - set default values but don't show fields
+        this.matterPortFormControl.patchValue(0)
+      }
+
+      // Subscribe to form changes
+      this.matterPortFormControl.valueChanges
+        .pipe(debounceTime(1500))
+        .subscribe((value: number) => this.matterPortSave(value))
+
+      // Set enabled state
+      this.matterEnabledFormControl.patchValue(isEnabled, { emitEvent: false })
+
+      // Subscribe to toggle changes
+      this.matterEnabledFormControl.valueChanges.subscribe((value: boolean) => this.matterEnabledSave(value))
+    } catch (error) {
+      console.error(error)
+      // Don't show error toast - Matter might not be configured yet
+      // Subscribe to toggle changes even if config doesn't exist yet
+      this.matterEnabledFormControl.valueChanges.subscribe((value: boolean) => this.matterEnabledSave(value))
+    }
+  }
+
+  private async matterPortSave(value: number) {
+    // Port is optional - if empty/null/undefined, just save without validation
+    if (!value && value !== 0) {
+      // Empty value is valid (optional field)
+      try {
+        this.matterPortIsSaving = true
+        this.matterPortIsInvalid = false
+        await firstValueFrom(this.$api.put('/config-editor/matter', {
+          port: undefined,
+        }))
+        setTimeout(() => {
+          this.matterPortIsSaving = false
+          this.showRestartToast()
+        }, 1000)
+      } catch (error) {
+        console.error(error)
+        this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+        this.matterPortIsSaving = false
+      }
+      return
+    }
+
+    // If a value is provided, validate it
+    if (typeof value !== 'number' || value < 1024 || value > 65535 || Number.isInteger(value) === false) {
+      this.matterPortIsInvalid = true
+      this.$cdr.detectChanges()
+      return
+    }
+
+    // Check for reserved ports
+    if ([5353, 8080, 8443].includes(value)) {
+      this.matterPortIsInvalid = true
+      this.$cdr.detectChanges()
+      this.$toastr.error('Port 5353, 8080, and 8443 are reserved and cannot be used', this.$translate.instant('toast.title_error'))
+      return
+    }
+
+    try {
+      this.matterPortIsSaving = true
+      this.matterPortIsInvalid = false
+      await firstValueFrom(this.$api.put('/config-editor/matter', {
+        port: value,
+      }))
+      setTimeout(() => {
+        this.matterPortIsSaving = false
+        this.showRestartToast()
+      }, 1000)
+    } catch (error) {
+      console.error(error)
+      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      this.matterPortIsSaving = false
+      this.matterPortIsInvalid = true
+    }
+  }
+
+  private async matterEnabledSave(value: boolean) {
+    try {
+      this.matterEnabledIsSaving = true
+      if (value) {
+        // When enabling, restore cached port if it exists, otherwise query for available port
+        let port: number | undefined
+
+        if (this.matterConfigCache.port) {
+          // Restore from cache
+          port = this.matterConfigCache.port
+        } else {
+          // First time enabling - get an available Matter port from the server
+          try {
+            const portResponse = await firstValueFrom(this.$api.get('/server/port/new/matter'))
+            port = portResponse.port
+          } catch (error) {
+            console.error('Failed to get Matter port, using fallback', error)
+            // Fallback to Matter port range if API call fails
+            port = Math.floor(Math.random() * (5541 - 5530 + 1) + 5530)
+          }
+        }
+
+        await firstValueFrom(this.$api.put('/config-editor/matter', {
+          port,
+        }))
+
+        // Update the form value
+        if (port !== undefined) {
+          this.matterPortFormControl.patchValue(port, { emitEvent: false })
+        }
+
+        // Update cache with current value
+        this.matterConfigCache = { port }
+
+        setTimeout(() => {
+          this.matterEnabledIsSaving = false
+          this.showRestartToast()
+        }, 1000)
+      } else {
+        // When disabling, show confirmation modal
+        const ref = this.$modal.open(ConfirmComponent, {
+          size: 'lg',
+          backdrop: 'static',
+        })
+
+        ref.componentInstance.title = 'Disable Matter'
+        ref.componentInstance.message = 'Disabling Matter will delete all Matter bridge files. This action cannot be undone.'
+        ref.componentInstance.message2 = 'Are you sure you want to continue?'
+        ref.componentInstance.confirmButtonLabel = 'Continue'
+        ref.componentInstance.confirmButtonClass = 'btn-danger'
+        ref.componentInstance.faIconClass = 'fas fa-exclamation-triangle text-warning'
+
+        try {
+          // Wait for user confirmation
+          await ref.result
+
+          // User confirmed - cache the current port value before deleting
+          this.matterConfigCache = {
+            port: this.matterPortFormControl.value || undefined,
+          }
+
+          // Hide the restart toast if it's shown
+          if (this.$settings.restartToastRef) {
+            this.$toastr.clear(this.$settings.restartToastRef.toastId)
+            this.$settings.restartToastRef = null
+            this.restartToastIsShown = false
+          }
+
+          this.$router.navigate(['/restart'], {
+            queryParams: { alreadyRestarting: 'true' },
+          })
+          await firstValueFrom(this.$api.delete('/config-editor/matter'))
+        } catch (error) {
+          if (error === 'Dismiss') {
+            // User cancelled - revert the toggle
+            this.matterEnabledFormControl.patchValue(true, { emitEvent: false })
+            this.matterEnabledIsSaving = false
+          } else {
+            // Actual error - show error message and revert toggle
+            console.error(error)
+            this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+            this.matterEnabledFormControl.patchValue(true, { emitEvent: false })
+            this.matterEnabledIsSaving = false
+          }
+        }
+      }
+    } catch (error) {
+      console.error(error)
+      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      this.matterEnabledFormControl.patchValue(value, { emitEvent: false })
+      this.matterEnabledIsSaving = false
     }
   }
 

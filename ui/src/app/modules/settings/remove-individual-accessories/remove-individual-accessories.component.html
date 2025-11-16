@@ -55,26 +55,32 @@
       } @for (item of selectedBridgeAccessories; track item) {
       <li class="list-group-item d-flex justify-content-between align-items-center">
         <span class="me-3">
-          <i class="fas fa-lg fa-hap"></i>
+          <i
+            class="fas fa-lg"
+            [ngClass]="{
+            'fa-matter': item.$protocol === 'matter',
+            'fa-hap': item.$protocol !== 'matter'
+          }"
+          ></i>
         </span>
         <span class="flex-grow-1">
           {{ item.displayName }}
           <br />
-          <small><span class="font-monospace grey-text">{{ item.UUID }}</span></small>
+          <small><span class="font-monospace grey-text">{{ item.UUID || item.uuid }}</span></small>
         </span>
         <button
           class="btn btn-danger m-0 ms-3"
-          (click)="toggleList(item.UUID, item.$cacheFile)"
+          (click)="toggleList(item.UUID || item.uuid, item.$cacheFile, item.$protocol, item.$deviceId)"
           [disabled]="clicked"
-          [ngClass]="{ 'btn-danger': !isInList(item.UUID, item.$cacheFile), 'btn-elegant': isInList(item.UUID, item.$cacheFile) }"
+          [ngClass]="{ 'btn-danger': !isInList(item.UUID || item.uuid, item.$cacheFile, item.$protocol), 'btn-elegant': isInList(item.UUID || item.uuid, item.$cacheFile, item.$protocol) }"
           [attr.aria-label]="'form.button_delete' | translate"
         >
           <i
             class="fas"
             [ngClass]="{
-              'fa-trash': !isInList(item.UUID, item.$cacheFile),
-              'fa-undo': isInList(item.UUID, item.$cacheFile) && !clicked,
-              'fa-circle-notch fa-spin': isInList(item.UUID, item.$cacheFile) && clicked
+              'fa-trash': !isInList(item.UUID || item.uuid, item.$cacheFile, item.$protocol),
+              'fa-undo': isInList(item.UUID || item.uuid, item.$cacheFile, item.$protocol) && !clicked,
+              'fa-circle-notch fa-spin': isInList(item.UUID || item.uuid, item.$cacheFile, item.$protocol) && clicked
             }"
           ></i>
         </button>

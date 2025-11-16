@@ -5,6 +5,7 @@
  */
 
 import { EventEmitter } from 'node:events'
+import { readFileSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import path from 'node:path'
 import process from 'node:process'
@@ -40,6 +41,26 @@ const HomebridgeApiMock = {
   serverVersion: '1.2.3',
   on: () => { /** mock */ },
   emit: () => { /** mock */ },
+  // Mock Matter API
+  isMatterAvailable() {
+    return true
+  },
+  isMatterEnabled() {
+    return true
+  },
+  matterDeviceTypes: new Proxy({}, {
+    get() {
+      return {} // Return empty object for any device type
+    },
+  }),
+  matterClusters: new Proxy({}, {
+    get() {
+      return {} // Return empty object for any cluster
+    },
+  }),
+  registerMatterAccessory: () => { /** mock */ },
+  unregisterMatterAccessory: () => { /** mock */ },
+  updateMatterAccessoryState: () => { /** mock */ },
   hap: {
     Characteristic: new class Characteristic extends EventEmitter {
       constructor() {
@@ -103,11 +124,41 @@ const HomebridgeApiMock = {
   },
 }
 
-function main() {
+async function main() {
   try {
     let pluginInitializer
     const pluginPath = process.env.UIX_EXTRACT_PLUGIN_PATH
-    const pluginModules = require(pluginPath)
+
+    // Read package.json to get the proper entry point
+    let actualEntryPoint = pluginPath
+    try {
+      const packageJsonPath = path.join(pluginPath, 'package.json')
+      const packageJson = JSON.parse(readFileSync(packageJsonPath, 'utf8'))
+
+      if (packageJson.main) {
+        actualEntryPoint = path.join(pluginPath, packageJson.main)
+      }
+    } catch (err) {
+      console.error('[extract-plugin-alias] Could not read package.json, using directory path')
+    }
+
+    let pluginModules
+
+    // Try to load as CommonJS first
+    try {
+      pluginModules = require(actualEntryPoint)
+    } catch (requireError) {
+      // If require fails, try dynamic import for ESM modules
+      try {
+        // For ESM, we need to use file:// URL on some platforms
+        const importPath = actualEntryPoint.startsWith('/') || actualEntryPoint.startsWith('file://')
+          ? actualEntryPoint
+          : path.resolve(actualEntryPoint)
+        pluginModules = await import(importPath)
+      } catch (importError) {
+        throw requireError // Throw the original error
+      }
+    }
 
     if (typeof pluginModules === 'function') {
       pluginInitializer = pluginModules

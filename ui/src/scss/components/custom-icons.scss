@@ -1,4 +1,5 @@
-.fa-hap {
+.fa-hap,
+.fa-matter {
   width: auto !important;
 }
 
@@ -10,5 +11,16 @@
   background-color: currentColor;
   mask: url('../../assets/hap.svg') no-repeat center/contain;
   -webkit-mask: url('../../assets/hap.svg') no-repeat center/contain;
+  vertical-align: -0.2em;
+}
+
+.fa-matter::before {
+  content: '';
+  display: inline-block;
+  width: 1.125em;
+  height: 1.125em;
+  background-color: currentColor;
+  mask: url('../../assets/matter.svg') no-repeat center/contain;
+  -webkit-mask: url('../../assets/matter.svg') no-repeat center/contain;
   vertical-align: -0.2em;
 }

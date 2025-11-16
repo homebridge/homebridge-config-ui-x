@@ -417,7 +417,7 @@ export class ConfigService {
    * Evaluates all feature flags based on the current Homebridge version
    * @returns Object with feature flag keys and their enabled/disabled status
    */
-  private getFeatureFlags(): Record<string, boolean> {
+  public getFeatureFlags(): Record<string, boolean> {
     const featureFlags: Record<string, boolean> = {}
 
     if (!this.homebridgeVersion) {

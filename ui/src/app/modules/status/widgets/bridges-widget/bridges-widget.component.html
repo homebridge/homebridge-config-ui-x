@@ -5,6 +5,7 @@
   <div
     class="d-flex flex-wrap w-100 mt-0 justify-content-start gridster-item-content overflow-auto no-scrollbars align-items-center"
   >
+    <!-- Main Bridge -->
     <div class="hb-status-item d-flex flex-row w-100 px-3 mt-2 mb-1" style="min-width: max(25%, 225px)">
       <div class="hb-status-icon d-flex align-items-center">
         <i
@@ -21,6 +22,24 @@
           [ngbTooltip]="(homebridgeStatus.status === 'down' && !isRestarting ? 'status.services.label_not_running' : 'status.services.label_running') | translate"
           [attr.aria-label]="(homebridgeStatus.status === 'down' && !isRestarting ? 'status.services.label_not_running' : 'status.services.label_running') | translate"
         ></i>
+        @if (isMatterSupported) {
+        <i
+          class="fas fa-matter fa-sm ms-2"
+          [ngClass]="{
+            'green-text': homebridgeStatus.matter?.enabled && homebridgeStatus.status === 'ok' && !isRestarting,
+            'text-warning': homebridgeStatus.matter?.enabled && (homebridgeStatus.status === 'pending' || isRestarting),
+            'red-text': homebridgeStatus.matter?.enabled && homebridgeStatus.status === 'down' && !isRestarting,
+            'grey-text': !homebridgeStatus.matter?.enabled
+          }"
+          [style.opacity]="!homebridgeStatus.matter?.enabled ? '0.25' : '1'"
+          container="body"
+          placement="right"
+          [openDelay]="150"
+          triggers="hover"
+          [ngbTooltip]="(homebridgeStatus.matter?.enabled ? (homebridgeStatus.status === 'down' && !isRestarting ? 'status.services.label_not_running' : 'status.services.label_running') : 'status.services.label_not_enabled') | translate"
+          [attr.aria-label]="(homebridgeStatus.matter?.enabled ? (homebridgeStatus.status === 'down' && !isRestarting ? 'status.services.label_not_running' : 'status.services.label_running') : 'status.services.label_not_enabled') | translate"
+        ></i>
+        }
       </div>
       <div class="align-self-center flex-child px-2">{{ homebridgeStatus.name || 'Homebridge' }}</div>
       <div class="grey-text ms-auto d-flex align-items-center">
@@ -58,6 +77,24 @@
           [ngbTooltip]="(bridge.status === 'down' && !bridge.restarting && !isRestarting ? 'status.services.label_not_running' : 'status.services.label_running') | translate"
           [attr.aria-label]="(bridge.status === 'down' && !bridge.restarting && !isRestarting ? 'status.services.label_not_running' : 'status.services.label_running') | translate"
         ></i>
+        @if (isMatterSupported) {
+        <i
+          class="fas fa-matter fa-sm ms-2"
+          [ngClass]="{
+            'green-text': bridge.matterConfig && bridge.status === 'ok' && !bridge.restarting && !isRestarting,
+            'text-warning': bridge.matterConfig && (bridge.status === 'pending' || bridge.restarting || isRestarting),
+            'red-text': bridge.matterConfig && bridge.status === 'down' && !bridge.restarting && !isRestarting,
+            'grey-text': !bridge.matterConfig
+          }"
+          [style.opacity]="!bridge.matterConfig ? '0.25' : '1'"
+          container="body"
+          placement="right"
+          [openDelay]="150"
+          triggers="hover"
+          [ngbTooltip]="(bridge.matterConfig ? (bridge.status === 'down' && !bridge.restarting && !isRestarting ? 'status.services.label_not_running' : 'status.services.label_running') : 'status.services.label_not_enabled') | translate"
+          [attr.aria-label]="(bridge.matterConfig ? (bridge.status === 'down' && !bridge.restarting && !isRestarting ? 'status.services.label_not_running' : 'status.services.label_running') : 'status.services.label_not_enabled') | translate"
+        ></i>
+        }
       </div>
       <div class="align-self-center flex-child px-2">{{ bridge.name }}</div>
       <div class="grey-text ms-auto d-flex align-items-center">

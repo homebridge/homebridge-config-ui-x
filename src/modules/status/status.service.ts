@@ -37,6 +37,7 @@ import {
   DockerReleaseInfo,
   HomebridgeStatsResponse,
   HomebridgeStatus,
+  HomebridgeStatusMatterUpdate,
   HomebridgeStatusUpdate,
 } from './status.interfaces.js'
 
@@ -48,6 +49,9 @@ export class StatusService {
   private dashboardLayout: any
   private homebridgeStatus: HomebridgeStatus = HomebridgeStatus.DOWN
   private homebridgeStatusChange = new Subject<HomebridgeStatus>()
+  private matterInfo: HomebridgeStatusMatterUpdate = {
+    enabled: false,
+  }
 
   private cpuLoadHistory: number[] = []
   private memoryUsageHistory: number[] = []
@@ -94,6 +98,11 @@ export class StatusService {
       if (data?.setupUri) {
         this.serverService.setupCode = data.setupUri
         this.serverService.paired = data.paired
+      }
+
+      // Store Matter info if provided
+      if (data?.matter) {
+        this.matterInfo = data.matter
       }
 
       this.homebridgeStatusChange.next(this.homebridgeStatus)
@@ -265,6 +274,7 @@ export class StatusService {
       pin: this.configService.homebridgeConfig.bridge.pin,
       setupUri: await this.serverService.getSetupCode(),
       paired: this.serverService.paired,
+      matter: this.matterInfo,
     }
   }
 
@@ -281,6 +291,7 @@ export class StatusService {
       setupUri: this.serverService.setupCode,
       packageVersion: this.configService.package.version,
       paired: this.serverService.paired,
+      matter: this.matterInfo,
     }
   }
 
@@ -326,6 +337,7 @@ export class StatusService {
       paired: this.serverService.paired,
       packageVersion: this.configService.package.version,
       status: await this.checkHomebridgeStatus(),
+      matter: this.matterInfo,
     }
   }
 
