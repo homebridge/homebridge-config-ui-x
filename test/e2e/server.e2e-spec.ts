@@ -11,7 +11,7 @@ import { ValidationPipe } from '@nestjs/common'
 import { FastifyAdapter } from '@nestjs/platform-fastify'
 import { Test } from '@nestjs/testing'
 import FormData from 'form-data'
-import { copy, pathExists, readFile, readJson, remove, writeJson } from 'fs-extra'
+import { copy, ensureDir, pathExists, readFile, readJson, remove, writeJson } from 'fs-extra'
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { AuthModule } from '../../src/core/auth/auth.module.js'
@@ -582,6 +582,300 @@ describe('ServerController (e2e)', () => {
     // Check the config file was updated
     const config = await readJson(configService.configPath)
     expect(config.platforms[0].wallpaper).toBeUndefined()
+  })
+
+  it('GET /server/matter-accessories (should return empty array when no Matter storage)', async () => {
+    // Ensure no Matter directory exists
+    const matterPath = resolve(process.env.UIX_STORAGE_PATH, 'matter')
+    await remove(matterPath)
+
+    const res = await app.inject({
+      method: 'GET',
+      path: '/server/matter-accessories',
+      headers: {
+        authorization,
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+    expect(Array.isArray(res.json())).toBe(true)
+    expect(res.json()).toHaveLength(0)
+  })
+
+  it('GET /server/matter-accessories (should return accessories from all devices)', async () => {
+    // Copy mock Matter storage
+    const matterPath = resolve(process.env.UIX_STORAGE_PATH, 'matter')
+    await copy(resolve(__dirname, '../mocks', 'matter'), matterPath)
+
+    const res = await app.inject({
+      method: 'GET',
+      path: '/server/matter-accessories',
+      headers: {
+        authorization,
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+    const accessories = res.json()
+    expect(Array.isArray(accessories)).toBe(true)
+    expect(accessories.length).toBeGreaterThan(0)
+
+    // Verify structure
+    const firstAccessory = accessories[0]
+    expect(firstAccessory).toHaveProperty('uuid')
+    expect(firstAccessory).toHaveProperty('$deviceId')
+    expect(firstAccessory).toHaveProperty('$protocol', 'matter')
+
+    // Cleanup
+    await remove(matterPath)
+  })
+
+  it('DELETE /server/matter-accessories/:deviceId/:uuid (should remove single Matter accessory)', async () => {
+    // Setup: Copy mock Matter storage
+    const matterPath = resolve(process.env.UIX_STORAGE_PATH, 'matter')
+    await copy(resolve(__dirname, '../mocks', 'matter'), matterPath)
+
+    const deviceId = '67E41F0EA05D'
+    const uuid = 'matter-test-accessory-uuid-1'
+
+    const res = await app.inject({
+      method: 'DELETE',
+      path: `/server/matter-accessories/${deviceId}/${uuid}`,
+      headers: {
+        authorization,
+      },
+    })
+
+    expect(res.statusCode).toBe(204)
+
+    // Verify accessory was removed from the file
+    const accessoriesPath = resolve(matterPath, deviceId, 'accessories.json')
+    const accessories = await readJson(accessoriesPath)
+    expect(accessories.find(a => a.uuid === uuid)).toBeUndefined()
+
+    // Cleanup
+    await remove(matterPath)
+  })
+
+  it('DELETE /server/matter-accessories/:deviceId/:uuid (should return 404 if accessories file not found)', async () => {
+    const deviceId = 'NONEXISTENT'
+    const uuid = 'some-uuid'
+
+    const res = await app.inject({
+      method: 'DELETE',
+      path: `/server/matter-accessories/${deviceId}/${uuid}`,
+      headers: {
+        authorization,
+      },
+    })
+
+    expect(res.statusCode).toBe(404)
+  })
+
+  it('DELETE /server/matter-accessories/:deviceId/:uuid (should return 404 if uuid not found)', async () => {
+    // Setup: Copy mock Matter storage
+    const matterPath = resolve(process.env.UIX_STORAGE_PATH, 'matter')
+    await copy(resolve(__dirname, '../mocks', 'matter'), matterPath)
+
+    const deviceId = '67E41F0EA05D'
+    const uuid = 'nonexistent-uuid'
+
+    const res = await app.inject({
+      method: 'DELETE',
+      path: `/server/matter-accessories/${deviceId}/${uuid}`,
+      headers: {
+        authorization,
+      },
+    })
+
+    expect(res.statusCode).toBe(404)
+
+    // Cleanup
+    await remove(matterPath)
+  })
+
+  it('DELETE /server/matter-accessories (should remove multiple Matter accessories)', async () => {
+    // Setup: Copy mock Matter storage
+    const matterPath = resolve(process.env.UIX_STORAGE_PATH, 'matter')
+    await copy(resolve(__dirname, '../mocks', 'matter'), matterPath)
+
+    const accessoriesToDelete = [
+      { deviceId: '67E41F0EA05D', uuid: 'matter-test-accessory-uuid-1' },
+      { deviceId: '67E41F0EA05D', uuid: 'matter-test-accessory-uuid-2' },
+    ]
+
+    const res = await app.inject({
+      method: 'DELETE',
+      path: '/server/matter-accessories',
+      headers: {
+        authorization,
+      },
+      payload: accessoriesToDelete,
+    })
+
+    expect(res.statusCode).toBe(204)
+
+    // Verify accessories were removed
+    const accessoriesPath = resolve(matterPath, '67E41F0EA05D', 'accessories.json')
+    const accessories = await readJson(accessoriesPath)
+    expect(accessories).toHaveLength(0)
+
+    // Cleanup
+    await remove(matterPath)
+  })
+
+  it('GET /server/port/new/matter (should return port in Matter range)', async () => {
+    const res = await app.inject({
+      method: 'GET',
+      path: '/server/port/new/matter',
+      headers: {
+        authorization,
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+    expect(typeof res.json().port).toBe('number')
+    expect(res.json().port).toBeGreaterThanOrEqual(5530)
+    expect(res.json().port).toBeLessThanOrEqual(5541)
+  })
+
+  it('GET /server/port/new/matter (should avoid already used ports)', async () => {
+    // Set up config with some used Matter ports
+    const config = await readJson(configService.configPath)
+    config.bridge.matter = { port: 5530 }
+    config.platforms = [
+      {
+        name: 'Test Plugin',
+        _bridge: {
+          username: '0E:02:9A:9D:44:45',
+          matter: {
+            port: 5531,
+          },
+        },
+      },
+    ]
+    await writeJson(configService.configPath, config)
+
+    const res = await app.inject({
+      method: 'GET',
+      path: '/server/port/new/matter',
+      headers: {
+        authorization,
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+    const returnedPort = res.json().port
+    expect(returnedPort).not.toBe(5530)
+    expect(returnedPort).not.toBe(5531)
+    expect(returnedPort).toBeGreaterThanOrEqual(5530)
+    expect(returnedPort).toBeLessThanOrEqual(5541)
+  })
+
+  it('DELETE /server/pairings/:deviceId/matter (should remove Matter config from child bridge)', async () => {
+    // Setup: Create config with Matter enabled on a child bridge
+    const config = await readJson(configService.configPath)
+    const deviceId = '0E029A9D4445'
+    const username = '0E:02:9A:9D:44:45'
+
+    config.platforms = [
+      {
+        name: 'Test Plugin',
+        _bridge: {
+          username,
+          matter: {
+            port: 5540,
+          },
+        },
+      },
+    ]
+    await writeJson(configService.configPath, config)
+
+    // Create Matter storage for this bridge
+    const matterPath = resolve(process.env.UIX_STORAGE_PATH, 'matter', deviceId)
+    await ensureDir(matterPath)
+    await writeJson(resolve(matterPath, 'test.json'), { test: true })
+
+    expect(await pathExists(matterPath)).toBe(true)
+
+    const res = await app.inject({
+      method: 'DELETE',
+      path: `/server/pairings/${deviceId}/matter`,
+      headers: {
+        authorization,
+      },
+    })
+
+    expect(res.statusCode).toBe(204)
+
+    // Verify Matter config was removed from config.json
+    const updatedConfig = await readJson(configService.configPath)
+    expect(updatedConfig.platforms[0]._bridge.matter).toBeUndefined()
+
+    // Verify Matter storage was removed
+    expect(await pathExists(matterPath)).toBe(false)
+  })
+
+  it('DELETE /server/pairings/:deviceId/matter (should return 404 if Matter config not found)', async () => {
+    const config = await readJson(configService.configPath)
+    config.platforms = [
+      {
+        name: 'Test Plugin',
+        _bridge: {
+          username: '0E:02:9A:9D:44:45',
+          // No Matter config
+        },
+      },
+    ]
+    await writeJson(configService.configPath, config)
+
+    const res = await app.inject({
+      method: 'DELETE',
+      path: '/server/pairings/0E029A9D4445/matter',
+      headers: {
+        authorization,
+      },
+    })
+
+    expect(res.statusCode).toBe(404)
+  })
+
+  it('DELETE /server/pairings/:deviceId/matter (should handle deviceId with colons)', async () => {
+    // Setup: Create config with Matter enabled
+    const config = await readJson(configService.configPath)
+    const username = '0E:02:9A:9D:44:45'
+
+    config.platforms = [
+      {
+        name: 'Test Plugin',
+        _bridge: {
+          username,
+          matter: {
+            port: 5540,
+          },
+        },
+      },
+    ]
+    await writeJson(configService.configPath, config)
+
+    // Create Matter storage
+    const matterPath = resolve(process.env.UIX_STORAGE_PATH, 'matter', '0E029A9D4445')
+    await ensureDir(matterPath)
+    await writeJson(resolve(matterPath, 'test.json'), { test: true })
+
+    // Use deviceId WITH colons
+    const res = await app.inject({
+      method: 'DELETE',
+      path: `/server/pairings/${username}/matter`,
+      headers: {
+        authorization,
+      },
+    })
+
+    expect(res.statusCode).toBe(204)
+
+    // Verify Matter storage was removed
+    expect(await pathExists(matterPath)).toBe(false)
   })
 
   afterAll(async () => {

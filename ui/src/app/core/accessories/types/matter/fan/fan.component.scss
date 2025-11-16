@@ -1,0 +1,43 @@
+::ng-deep {
+  .spin {
+    svg {
+      g {
+        .fan-blades {
+          animation: fa-spin 2s infinite linear;
+          transform-origin: 53.5% 50%;
+        }
+      }
+    }
+  }
+
+  .spin-counter {
+    svg {
+      g {
+        .fan-blades {
+          animation: fa-spin-counter 2s infinite linear;
+          transform-origin: 53.5% 50%;
+        }
+      }
+    }
+  }
+
+  @keyframes fa-spin {
+    0% {
+      transform: rotate(0deg);
+    }
+
+    100% {
+      transform: rotate(359deg);
+    }
+  }
+
+  @keyframes fa-spin-counter {
+    0% {
+      transform: rotate(0deg);
+    }
+
+    100% {
+      transform: rotate(-359deg);
+    }
+  }
+}

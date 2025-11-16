@@ -1,0 +1,41 @@
+import { NgClass } from '@angular/common'
+import { Component, inject, Input } from '@angular/core'
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
+import { TranslatePipe } from '@ngx-translate/core'
+
+import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
+import { AccessoriesService } from '@/app/core/accessories/accessories.service'
+import { FilterMaintenanceManageComponent } from '@/app/core/accessories/types/hap/filter-maintenance/filter-maintenance.manage.component'
+import { LongClickDirective } from '@/app/core/directives/long-click.directive'
+
+@Component({
+  selector: 'app-filter-maintenance',
+  templateUrl: './filter-maintenance.component.html',
+  styleUrls: ['./filter-maintenance.component.scss'],
+  standalone: true,
+  imports: [
+    NgClass,
+    TranslatePipe,
+    LongClickDirective,
+  ],
+})
+export class FilterMaintenanceComponent {
+  private $accessories = inject(AccessoriesService)
+  private $modal = inject(NgbModal)
+
+  @Input() public service: ServiceTypeX
+  @Input() public readyForControl = false
+
+  public onClick() {
+    if (!this.readyForControl) {
+      return
+    }
+
+    const ref = this.$modal.open(FilterMaintenanceManageComponent, {
+      size: 'md',
+      backdrop: 'static',
+    })
+    ref.componentInstance.service = this.service
+    ref.componentInstance.$accessories = this.$accessories
+  }
+}

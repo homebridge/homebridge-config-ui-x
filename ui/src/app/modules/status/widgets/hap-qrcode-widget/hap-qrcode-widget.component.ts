@@ -1,5 +1,6 @@
 import { NgClass, NgStyle } from '@angular/common'
-import { Component, ElementRef, inject, Input, OnInit, viewChild } from '@angular/core'
+import { Component, DestroyRef, ElementRef, inject, Input, OnInit, viewChild } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { TranslatePipe } from '@ngx-translate/core'
 import { Subject } from 'rxjs'
 
@@ -18,6 +19,7 @@ import { IoNamespace, WsService } from '@/app/core/ws.service'
   ],
 })
 export class HapQrcodeWidgetComponent implements OnInit {
+  private $destroyRef = inject(DestroyRef)
   private $ws = inject(WsService)
   private io: IoNamespace
 
@@ -27,15 +29,13 @@ export class HapQrcodeWidgetComponent implements OnInit {
   @Input() resizeEvent: Subject<any>
 
   public paired: boolean = false
-  public pin = 'Loading...'
+  public pin = ''
   public setupUri: string | null = null
   public qrCodeHeight: number
   public qrCodeWidth: number
 
   public ngOnInit() {
     this.io = this.$ws.getExistingNamespace('status')
-
-    this.resizeQrCode()
 
     this.io.socket.on('homebridge-status', (data: HomebridgeStatusResponse) => {
       this.pin = data.pin
@@ -68,10 +68,13 @@ export class HapQrcodeWidgetComponent implements OnInit {
   }
 
   private getPairingPin() {
-    this.io.request('get-homebridge-pairing-pin').subscribe((data) => {
-      this.pin = data.pin
-      this.setupUri = data.setupUri
-      this.paired = data.paired
-    })
+    this.io.request('get-homebridge-pairing-pin')
+      .pipe(takeUntilDestroyed(this.$destroyRef))
+      .subscribe((data) => {
+        this.pin = data.pin
+        this.setupUri = data.setupUri
+        this.paired = data.paired
+        setTimeout(() => this.resizeQrCode(), 10)
+      })
   }
 }

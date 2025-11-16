@@ -1,0 +1,11 @@
+[
+  {
+    "uuid": "matter-external-accessory-uuid-1",
+    "plugin": "homebridge-external-plugin",
+    "displayName": "External Matter Sensor",
+    "manufacturer": "External Manufacturer",
+    "model": "Matter Sensor v2",
+    "serialNumber": "EXT-MATTER-001",
+    "firmwareRevision": "2.0.0"
+  }
+]

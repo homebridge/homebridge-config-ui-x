@@ -1,0 +1,60 @@
+<div
+  class="accessory-box"
+  [ngClass]="{
+    'accessory-on': lockState !== 1,
+    'unlocked': lockState === 2,
+    'jammed': lockState === 0
+  }"
+  (shortClick)="onClick()"
+  (longClick)="onLongClick()"
+  tabindex="0"
+>
+  <div class="d-flex flex-column h-100">
+    <div [attr.aria-label]="'accessories.core.lock_mechanism' | translate" class="accessory-svg">
+      <svg width="32px" height="32px" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+        <!-- shackle, locked -->
+        <path
+          d="M8 16 C6 -4, 26 -4, 24 16"
+          fill="none"
+          stroke="#7f7f7f"
+          stroke-width="2"
+          class="shackle-locked"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+        <!-- shackle, unlocked -->
+        <path
+          d="M8 16 C6 -2, 22 -2, 24 7"
+          fill="none"
+          stroke="#7f7f7f"
+          stroke-width="2"
+          class="shackle-unlocked"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-opacity="0"
+        />
+        <!-- main lock -->
+        <rect x="5" y="16" width="22" height="15" rx="3" fill="none" stroke="#7f7f7f" stroke-width="2" />
+        <!-- status keyhole -->
+        <circle
+          cx="16"
+          cy="23.5"
+          r="3"
+          stroke="#7f7f7f"
+          stroke-width="0.5"
+          fill="#4caf50"
+          fill-opacity="0.5"
+          class="keyhole"
+        />
+      </svg>
+    </div>
+    <div class="accessory-label mt-auto">{{ service.customName || service.serviceName || service.displayName }}</div>
+    @if (lockState === 1) {
+    <div class="accessory-label grey-text">{{ 'accessories.control.locked' | translate }}</div>
+    } @else if (lockState === 2) {
+    <div class="accessory-label red-text">{{ 'accessories.control.unlocked' | translate }}</div>
+    } @else if (lockState === 0) {
+    <div class="accessory-label red-text">{{ 'accessories.control.jammed' | translate }}</div>
+    }
+  </div>
+</div>

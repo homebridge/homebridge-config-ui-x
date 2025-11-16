@@ -4,6 +4,16 @@ export enum HomebridgeStatus {
   DOWN = 'down',
 }
 
+export interface HomebridgeStatusMatterUpdate {
+  enabled: boolean
+  port?: number
+  setupUri?: string
+  pin?: string
+  serialNumber?: string
+  commissioned?: boolean
+  deviceCount?: number
+}
+
 export interface HomebridgeStatusUpdate {
   status: HomebridgeStatus
   paired?: null | boolean
@@ -11,6 +21,7 @@ export interface HomebridgeStatusUpdate {
   name?: string
   username?: string
   pin?: string
+  matter: HomebridgeStatusMatterUpdate
 }
 
 export interface DockerRelease {
@@ -37,4 +48,5 @@ export interface HomebridgeStatsResponse {
   paired: boolean
   packageVersion: string
   status: HomebridgeStatus
+  matter: HomebridgeStatusMatterUpdate
 }

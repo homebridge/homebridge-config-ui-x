@@ -1,0 +1,28 @@
+::ng-deep {
+  .fill-red {
+    svg {
+      .leaves {
+        fill: #d32f2f !important;
+        fill-opacity: 0.5 !important;
+      }
+    }
+  }
+
+  .fill-orange {
+    svg {
+      .leaves {
+        fill: #ff9800 !important;
+        fill-opacity: 0.5 !important;
+      }
+    }
+  }
+
+  .fill-green {
+    svg {
+      .leaves {
+        fill: #4caf50 !important;
+        fill-opacity: 0.5 !important;
+      }
+    }
+  }
+}

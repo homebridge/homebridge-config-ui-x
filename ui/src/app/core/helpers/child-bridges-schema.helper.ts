@@ -5,9 +5,11 @@ import { TranslateService } from '@ngx-translate/core'
  * @param translate - The translation service for localized strings
  * @param options - Configuration options
  * @param options.isDebugModeEnabled - Whether debug mode is enabled to include the debug option
+ * @param options.isMatterSupported - Whether Matter support is enabled to include Matter settings
+ * @param options.isPlatformPlugin - Whether the plugin is platform-based (Matter only works with platform plugins)
  * @returns Child bridge schema object
  */
-export function createChildBridgeSchema(translate: TranslateService, { isDebugModeEnabled }) {
+export function createChildBridgeSchema(translate: TranslateService, { isDebugModeEnabled, isMatterSupported, isPlatformPlugin = true }) {
   return {
     type: 'object',
     required: ['username'],
@@ -86,6 +88,25 @@ export function createChildBridgeSchema(translate: TranslateService, { isDebugMo
           },
         },
       },
+      ...(isMatterSupported && isPlatformPlugin)
+        ? {
+            matter: {
+              type: 'object',
+              additionalProperties: false,
+              title: translate.instant('settings.matter.title'),
+              description: 'Matter-specific configuration for this child bridge.',
+              properties: {
+                port: {
+                  type: 'number',
+                  title: translate.instant('settings.matter.port'),
+                  description: translate.instant('settings.matter.port_desc'),
+                  minimum: 1025,
+                  maximum: 65534,
+                },
+              },
+            },
+          }
+        : {},
     },
   }
 }

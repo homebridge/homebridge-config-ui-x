@@ -221,6 +221,10 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
           void this.handleGetCachedAccessories(e)
           break
         }
+        case 'cachedMatterAccessories.get': {
+          void this.handleGetCachedMatterAccessories(e)
+          break
+        }
         case 'schema.show': {
           void this.formEnd() // do not show other forms at the same time
           this.showSchemaForm = true
@@ -466,7 +470,6 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
 
   /**
    * Fired when a custom form is cancelled or submitted
-   *
    * @param formEvent
    */
   private formActionEvent(formEvent: 'cancel' | 'submit') {
@@ -486,5 +489,13 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
   private async handleGetCachedAccessories(event) {
     const cachedAccessories = await firstValueFrom(this.$api.get('/server/cached-accessories'))
     return this.requestResponse(event, cachedAccessories.filter(x => x.plugin === this.plugin.name))
+  }
+
+  /**
+   * Handle the event to get a list of cached Matter accessories
+   */
+  private async handleGetCachedMatterAccessories(event) {
+    const cachedMatterAccessories = await firstValueFrom(this.$api.get('/server/matter-accessories'))
+    return this.requestResponse(event, cachedMatterAccessories.filter(x => x.plugin === this.plugin.name))
   }
 }

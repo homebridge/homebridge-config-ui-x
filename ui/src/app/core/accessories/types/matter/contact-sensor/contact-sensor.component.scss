@@ -1,0 +1,20 @@
+::ng-deep {
+  .accessory-on {
+    svg {
+      .left-sensor {
+        fill: #ff9800;
+        fill-opacity: 0.5;
+      }
+
+      .right-object {
+        x: 24px;
+      }
+
+      .right-sensor {
+        x: 24px;
+        fill: #ff9800;
+        fill-opacity: 0.5;
+      }
+    }
+  }
+}
