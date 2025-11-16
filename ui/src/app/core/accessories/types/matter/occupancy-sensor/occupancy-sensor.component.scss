@@ -1,0 +1,21 @@
+::ng-deep {
+  .accessory-on {
+    svg {
+      .orange-outline {
+        stroke: #ff9800;
+        animation: flash 1s infinite;
+      }
+
+      @keyframes flash {
+        0%,
+        100% {
+          stroke-opacity: 0.8;
+        }
+
+        50% {
+          stroke-opacity: 0.2;
+        }
+      }
+    }
+  }
+}

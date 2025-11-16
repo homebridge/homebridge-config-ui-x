@@ -42,6 +42,7 @@ export class StatusComponent implements OnInit, OnDestroy {
   private io: IoNamespace
 
   public isAdmin = this.$auth.user.admin
+  public isMatterSupported = this.$settings.isFeatureEnabled('matterSupport')
   public saveWidgetsEvent = new Subject()
   public options: GridsterConfig
   public dashboard: Array<GridsterItem> = []
@@ -237,6 +238,11 @@ export class StatusComponent implements OnInit, OnDestroy {
 
         // Hide terminal for non-admin users
         if (item.component === 'TerminalWidgetComponent' && !this.isAdmin) {
+          return null
+        }
+
+        // Hide matter qr code if not supported
+        if (item.component === 'MatterQrcodeWidgetComponent' && !this.isMatterSupported) {
           return null
         }
 

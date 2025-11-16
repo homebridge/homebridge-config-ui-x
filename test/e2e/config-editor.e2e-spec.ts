@@ -974,6 +974,314 @@ describe('ConfigEditorController (e2e)', () => {
     expect(result).not.toContain('invalid-plugin')
   })
 
+  it('GET/PUT /config-editor/ui/bridges/:username (should handle bridge configuration)', async () => {
+    const testUsername1 = '67:E4:1F:0E:A0:5D'
+    const testUsername2 = '0E:02:9A:9D:44:45'
+
+    // Test 1: Should return object with false values for non-existent bridge
+    let res = await app.inject({
+      method: 'GET',
+      url: `/config-editor/ui/bridges/${testUsername1}`,
+      headers: {
+        authorization,
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+    let result = res.json()
+    expect(result).toBeTruthy()
+    expect(result.username).toBe(testUsername1)
+    expect(result.hideHapAlert).toBe(false)
+    expect(result.hideMatterAlert).toBe(false)
+    expect(result.scheduledRestartCron).toBe(null)
+
+    // Test 2: Should set hideHapAlert for bridge
+    res = await app.inject({
+      method: 'PUT',
+      url: `/config-editor/ui/bridges/${testUsername1}/hide-hap-alert`,
+      headers: {
+        authorization,
+      },
+      payload: {
+        value: true,
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+
+    // Test 3: Should return bridge with hideHapAlert set
+    res = await app.inject({
+      method: 'GET',
+      url: `/config-editor/ui/bridges/${testUsername1}`,
+      headers: {
+        authorization,
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+    result = res.json()
+    expect(result).toBeTruthy()
+    expect(result.username).toBe(testUsername1)
+    expect(result.hideHapAlert).toBe(true)
+    expect(result.hideMatterAlert).toBe(false)
+
+    // Test 4: Should set hideMatterAlert for same bridge (merging properties)
+    res = await app.inject({
+      method: 'PUT',
+      url: `/config-editor/ui/bridges/${testUsername1}/hide-matter-alert`,
+      headers: {
+        authorization,
+      },
+      payload: {
+        value: true,
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+
+    // Test 5: Should return bridge with both flags set
+    res = await app.inject({
+      method: 'GET',
+      url: `/config-editor/ui/bridges/${testUsername1}`,
+      headers: {
+        authorization,
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+    result = res.json()
+    expect(result.username).toBe(testUsername1)
+    expect(result.hideHapAlert).toBe(true)
+    expect(result.hideMatterAlert).toBe(true)
+
+    // Test 6: Should set hideMatterAlert for different bridge
+    res = await app.inject({
+      method: 'PUT',
+      url: `/config-editor/ui/bridges/${testUsername2}/hide-matter-alert`,
+      headers: {
+        authorization,
+      },
+      payload: {
+        value: true,
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+
+    // Test 7: Should return second bridge with only hideMatterAlert
+    res = await app.inject({
+      method: 'GET',
+      url: `/config-editor/ui/bridges/${testUsername2}`,
+      headers: {
+        authorization,
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+    result = res.json()
+    expect(result.username).toBe(testUsername2)
+    expect(result.hideHapAlert).toBe(false)
+    expect(result.hideMatterAlert).toBe(true)
+
+    // Test 8: Should unset hideHapAlert
+    res = await app.inject({
+      method: 'PUT',
+      url: `/config-editor/ui/bridges/${testUsername1}/hide-hap-alert`,
+      headers: {
+        authorization,
+      },
+      payload: {
+        value: false,
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+
+    // Test 9: Should return bridge with only hideMatterAlert now
+    res = await app.inject({
+      method: 'GET',
+      url: `/config-editor/ui/bridges/${testUsername1}`,
+      headers: {
+        authorization,
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+    result = res.json()
+    expect(result.username).toBe(testUsername1)
+    expect(result.hideHapAlert).toBe(false)
+    expect(result.hideMatterAlert).toBe(true)
+
+    // Test 10: Should handle invalid username formats
+    res = await app.inject({
+      method: 'GET',
+      url: '/config-editor/ui/bridges/invalid-mac',
+      headers: {
+        authorization,
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+    expect(res.json()).toBeNull()
+  })
+
+  it('GET /config-editor/matter (should return null when not configured)', async () => {
+    const res = await app.inject({
+      method: 'GET',
+      path: '/config-editor/matter',
+      headers: {
+        authorization,
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+    expect(res.json()).toBe(null)
+  })
+
+  it('PUT /config-editor/matter (should save valid Matter config)', async () => {
+    const matterConfig = {
+      port: 5540,
+    }
+
+    const res = await app.inject({
+      method: 'PUT',
+      path: '/config-editor/matter',
+      headers: {
+        authorization,
+      },
+      payload: matterConfig,
+    })
+
+    expect(res.statusCode).toBe(200)
+    expect(res.json()).toEqual(matterConfig)
+
+    // Verify it was saved to config.json
+    const config: HomebridgeConfig = await readJson(configFilePath)
+    expect(config.bridge.matter).toEqual(matterConfig)
+  })
+
+  it('GET /config-editor/matter (should return config when configured)', async () => {
+    // First set a config
+    const matterConfig = {
+      port: 5535,
+    }
+
+    await app.inject({
+      method: 'PUT',
+      path: '/config-editor/matter',
+      headers: {
+        authorization,
+      },
+      payload: matterConfig,
+    })
+
+    // Then get it
+    const res = await app.inject({
+      method: 'GET',
+      path: '/config-editor/matter',
+      headers: {
+        authorization,
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+    expect(res.json()).toEqual(matterConfig)
+  })
+
+  it('PUT /config-editor/matter (should reject invalid port - too low)', async () => {
+    const matterConfig = {
+      port: 1000,
+    }
+
+    const res = await app.inject({
+      method: 'PUT',
+      path: '/config-editor/matter',
+      headers: {
+        authorization,
+      },
+      payload: matterConfig,
+    })
+
+    expect(res.statusCode).toBe(400)
+    expect(res.body).toContain('Port must be an integer between 1024 and 65535')
+  })
+
+  it('PUT /config-editor/matter (should reject invalid port - too high)', async () => {
+    const matterConfig = {
+      port: 70000,
+    }
+
+    const res = await app.inject({
+      method: 'PUT',
+      path: '/config-editor/matter',
+      headers: {
+        authorization,
+      },
+      payload: matterConfig,
+    })
+
+    expect(res.statusCode).toBe(400)
+    expect(res.body).toContain('Port must be an integer between 1024 and 65535')
+  })
+
+  it('PUT /config-editor/matter (should reject reserved ports)', async () => {
+    const reservedPorts = [5353, 8080, 8443]
+
+    for (const port of reservedPorts) {
+      const res = await app.inject({
+        method: 'PUT',
+        path: '/config-editor/matter',
+        headers: {
+          authorization,
+        },
+        payload: {
+          port,
+        },
+      })
+
+      expect(res.statusCode).toBe(400)
+      expect(res.body).toContain('reserved and cannot be used')
+    }
+  })
+
+  it('PUT /config-editor/matter (should reject non-integer port)', async () => {
+    const matterConfig = {
+      port: 5540.5,
+    }
+
+    const res = await app.inject({
+      method: 'PUT',
+      path: '/config-editor/matter',
+      headers: {
+        authorization,
+      },
+      payload: matterConfig,
+    })
+
+    expect(res.statusCode).toBe(400)
+    expect(res.body).toContain('Port must be an integer')
+  })
+
+  it('PUT /config-editor/matter (should accept empty config object)', async () => {
+    const matterConfig = {}
+
+    const res = await app.inject({
+      method: 'PUT',
+      path: '/config-editor/matter',
+      headers: {
+        authorization,
+      },
+      payload: matterConfig,
+    })
+
+    expect(res.statusCode).toBe(200)
+    expect(res.json()).toEqual(matterConfig)
+
+    // Verify it was saved to config.json
+    const config: HomebridgeConfig = await readJson(configFilePath)
+    expect(config.bridge.matter).toEqual(matterConfig)
+  })
+
   it('GET/PUT /config-editor/ui/bridges/:username/scheduled-restart-cron (should handle scheduled restart cron)', async () => {
     const testUsername1 = '67:E4:1F:0E:A0:5D'
     const testUsername2 = '0E:02:9A:9D:44:45'
@@ -1233,6 +1541,58 @@ describe('ConfigEditorController (e2e)', () => {
     config = await readJson(configFilePath)
     const uiPlatform4 = config.platforms.find(p => p.platform === 'config')
     expect(uiPlatform4.scheduledRestartCron).toBeUndefined()
+  })
+
+  it('DELETE /config-editor/matter (should remove Matter config and storage)', async () => {
+    // First set a Matter config
+    await app.inject({
+      method: 'PUT',
+      path: '/config-editor/matter',
+      headers: {
+        authorization,
+      },
+      payload: {
+        port: 5540,
+      },
+    })
+
+    // Create mock Matter storage directory
+    const matterStoragePath = resolve(process.env.UIX_STORAGE_PATH, 'matter', '67E41F0EA05D')
+    await ensureDir(matterStoragePath)
+    await writeJson(resolve(matterStoragePath, 'test.json'), { test: true })
+
+    // Verify it exists
+    expect(await pathExists(matterStoragePath)).toBe(true)
+
+    // Delete the Matter config
+    const res = await app.inject({
+      method: 'DELETE',
+      path: '/config-editor/matter',
+      headers: {
+        authorization,
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+
+    // Verify config was removed from config.json
+    const config: HomebridgeConfig = await readJson(configFilePath)
+    expect(config.bridge.matter).toBeUndefined()
+
+    // Verify storage directory was removed
+    expect(await pathExists(matterStoragePath)).toBe(false)
+
+    // Verify GET returns null again
+    const getRes = await app.inject({
+      method: 'GET',
+      path: '/config-editor/matter',
+      headers: {
+        authorization,
+      },
+    })
+
+    expect(getRes.statusCode).toBe(200)
+    expect(getRes.json()).toBe(null)
   })
 
   afterAll(async () => {

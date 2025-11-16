@@ -1,0 +1,113 @@
+<div class="modal-content">
+  <div class="modal-header">
+    <h5 class="modal-title" [innerText]="service.customName || service.serviceName || service.displayName"></h5>
+    <button
+      type="button"
+      class="btn-close"
+      data-bs-dismiss="modal"
+      [attr.aria-label]="'form.button_close' | translate"
+      (click)="dismissModal()"
+    ></button>
+  </div>
+  <div class="modal-body text-center px-5">
+    @if (currentTemperature !== null) {
+    <h6 class="mt-2 mb-4 fs-4">
+      <i
+        class="fas fa-temperature-full"
+        [style.color]="
+            targetMode === 3
+              ? '#1e8bbd'
+              : targetMode === 4
+                ? '#e69533'
+                : (targetMode === 1 ? '#42d672' : '#7b7b7b')
+          "
+      ></i
+      >{{ currentTemperature | convertTemp | number: '1.0-1' }}°{{ temperatureUnits | uppercase }}
+    </h6>
+    }
+    <div
+      class="btn-group-vertical d-flex justify-content-center mb-0 p-0"
+      role="group"
+      [attr.aria-label]="'accessories.control.mode_control' | translate"
+    >
+      <button type="button" class="btn mb-0 mx-0 p-3 btn-control" (click)="setTargetMode(0, $event)">
+        <div class="float-start primary-text">
+          <i class="fas fa-xl" [ngClass]="{ 'fa-check-circle': targetMode === 0, 'fa-blank': targetMode !== 0 }"></i>
+        </div>
+        {{ 'accessories.control.off' | translate }}
+        <div class="float-end"><i class="fas fa-xl fa-blank"></i></div>
+      </button>
+      <button type="button" class="btn mb-0 mx-0 p-3 btn-control" (click)="setTargetMode(1, $event)">
+        <div class="float-start primary-text">
+          <i class="fas fa-xl" [ngClass]="{ 'fa-check-circle': targetMode === 1, 'fa-blank': targetMode !== 1 }"></i>
+        </div>
+        {{ 'accessories.control.auto' | translate }}
+        <div class="float-end"><i class="fas fa-xl fa-blank"></i></div>
+      </button>
+      <button type="button" class="btn mb-0 mx-0 p-3 btn-control" (click)="setTargetMode(4, $event)">
+        <div class="float-start primary-text">
+          <i class="fas fa-xl" [ngClass]="{ 'fa-check-circle': targetMode === 4, 'fa-blank': targetMode !== 4 }"></i>
+        </div>
+        {{ 'accessories.control.heat' | translate }}
+        <div class="float-end"><i class="fas fa-xl fa-blank"></i></div>
+      </button>
+      <button type="button" class="btn mb-0 mx-0 p-3 btn-control" (click)="setTargetMode(3, $event)">
+        <div class="float-start primary-text">
+          <i class="fas fa-xl" [ngClass]="{ 'fa-check-circle': targetMode === 3, 'fa-blank': targetMode !== 3 }"></i>
+        </div>
+        {{ 'accessories.control.cool' | translate }}
+        <div class="float-end"><i class="fas fa-xl fa-blank"></i></div>
+      </button>
+    </div>
+
+    <!-- Auto mode - both heating and cooling -->
+    @if (targetMode === 1) {
+    <h6 class="mt-4 mb-1">
+      {{ 'accessories.control.threshold_auto' | translate }}: {{ autoTemp[0] | convertTemp | number: '1.0-1' }}&deg;{{
+      temperatureUnits | uppercase }} - {{ autoTemp[1] | convertTemp | number: '1.0-1' }}&deg;{{ temperatureUnits |
+      uppercase }}
+    </h6>
+    <nouislider
+      [min]="minHeatSetpoint"
+      [max]="maxCoolSetpoint"
+      [step]="0.5"
+      [(ngModel)]="autoTemp"
+      (ngModelChange)="onAutoTempChange()"
+    >
+    </nouislider>
+    }
+
+    <!-- Heat mode - only heating setpoint -->
+    @if (targetMode === 4) {
+    <h6 class="mt-4">
+      {{ 'accessories.control.target' | translate }}: {{ targetHeatingTemp | convertTemp | number: '1.0-1' }}&deg;{{
+      temperatureUnits | uppercase }}
+    </h6>
+    <nouislider
+      [min]="minHeatSetpoint"
+      [max]="maxHeatSetpoint"
+      [step]="0.5"
+      [(ngModel)]="targetHeatingTemp"
+      (ngModelChange)="onHeatingTempChange()"
+    >
+    </nouislider>
+    }
+
+    <!-- Cool mode - only cooling setpoint -->
+    @if (targetMode === 3) {
+    <h6 class="mt-4">
+      {{ 'accessories.control.target' | translate }}: {{ targetCoolingTemp | convertTemp | number: '1.0-1' }}&deg;{{
+      temperatureUnits | uppercase }}
+    </h6>
+    <nouislider
+      [min]="minCoolSetpoint"
+      [max]="maxCoolSetpoint"
+      [step]="0.5"
+      [(ngModel)]="targetCoolingTemp"
+      (ngModelChange)="onCoolingTempChange()"
+    >
+    </nouislider>
+    }
+  </div>
+  <div class="modal-footer"></div>
+</div>

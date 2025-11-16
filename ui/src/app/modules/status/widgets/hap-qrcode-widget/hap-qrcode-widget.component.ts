@@ -27,15 +27,13 @@ export class HapQrcodeWidgetComponent implements OnInit {
   @Input() resizeEvent: Subject<any>
 
   public paired: boolean = false
-  public pin = 'Loading...'
+  public pin = ''
   public setupUri: string | null = null
   public qrCodeHeight: number
   public qrCodeWidth: number
 
   public ngOnInit() {
     this.io = this.$ws.getExistingNamespace('status')
-
-    this.resizeQrCode()
 
     this.io.socket.on('homebridge-status', (data: HomebridgeStatusResponse) => {
       this.pin = data.pin
@@ -68,10 +66,12 @@ export class HapQrcodeWidgetComponent implements OnInit {
   }
 
   private getPairingPin() {
-    this.io.request('get-homebridge-pairing-pin').subscribe((data) => {
-      this.pin = data.pin
-      this.setupUri = data.setupUri
-      this.paired = data.paired
-    })
+    this.io.request('get-homebridge-pairing-pin')
+      .subscribe((data) => {
+        this.pin = data.pin
+        this.setupUri = data.setupUri
+        this.paired = data.paired
+        setTimeout(() => this.resizeQrCode(), 10)
+      })
   }
 }

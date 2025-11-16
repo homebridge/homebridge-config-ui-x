@@ -405,9 +405,12 @@ export class PluginsComponent implements OnInit, OnDestroy, CanComponentDeactiva
 
             const pluginChildBridges = this.getPluginChildBridges(plugin)
 
-            // Check for unpaired HAP bridges that are NOT hidden
+            // Check for unpaired HAP bridges OR unpaired Matter bridges that are NOT hidden
             plugin.hasChildBridgesUnpaired = pluginChildBridges.some((x) => {
-              return x.paired === false && !this.isBridgeAlertHidden(x.username)
+              const hasUnpairedHap = x.paired === false && !this.isBridgeAlertHidden(x.username, 'hap')
+              const hasUnpairedMatter = x.matterConfig && x.matterCommissioned === false && !this.isBridgeAlertHidden(x.username, 'matter')
+
+              return hasUnpairedHap || hasUnpairedMatter
             })
 
             if (this.$settings.env.plugins?.hideUpdatesFor?.includes(plugin.name)) {
@@ -432,11 +435,11 @@ export class PluginsComponent implements OnInit, OnDestroy, CanComponentDeactiva
   /**
    * Check if a specific bridge protocol alert is hidden
    */
-  private isBridgeAlertHidden(username: string): boolean {
+  private isBridgeAlertHidden(username: string, protocol: 'hap' | 'matter'): boolean {
     const bridge = this.$settings.env.bridges?.find(b => b.username.toUpperCase() === username.toUpperCase())
     if (!bridge) {
       return false
     }
-    return !!bridge.hideHapAlert
+    return protocol === 'hap' ? !!bridge.hideHapAlert : !!bridge.hideMatterAlert
   }
 }

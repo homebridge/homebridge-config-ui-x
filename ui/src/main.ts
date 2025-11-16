@@ -19,7 +19,7 @@ import { RestartModule } from '@/app/modules/restart/restart.module'
 import { StatusModule } from '@/app/modules/status/status.module'
 import { environment } from '@/environments/environment'
 
-import '../../src/globalDefaults.js'
+import '../../src/globalDefaults'
 
 if (environment.production) {
   enableProdMode()

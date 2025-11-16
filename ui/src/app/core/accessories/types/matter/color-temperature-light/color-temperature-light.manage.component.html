@@ -1,0 +1,55 @@
+<div class="modal-content">
+  <div class="modal-header">
+    <h5 class="modal-title" [innerText]="service.customName || service.serviceName || service.displayName"></h5>
+    <button
+      type="button"
+      class="btn-close"
+      data-bs-dismiss="modal"
+      [attr.aria-label]="'form.button_close' | translate"
+      (click)="dismissModal()"
+    ></button>
+  </div>
+  <div class="modal-body text-center px-5">
+    <div
+      class="btn-group-vertical d-flex justify-content-center mb-0 p-0"
+      role="group"
+      [attr.aria-label]="'accessories.control.mode_control' | translate"
+    >
+      <button type="button" class="btn mb-0 mx-0 p-3 btn-control" (click)="setTargetMode(false, $event)">
+        <div class="float-start primary-text">
+          <i class="fas fa-xl" [ngClass]="{ 'fa-check-circle': !targetMode, 'fa-blank': targetMode }"></i>
+        </div>
+        {{ 'accessories.control.off' | translate }}
+        <div class="float-end"><i class="fas fa-xl fa-blank"></i></div>
+      </button>
+      <button type="button" class="btn mb-0 mx-0 p-3 btn-control" (click)="setTargetMode(true, $event)">
+        <div class="float-start primary-text">
+          <i class="fas fa-xl" [ngClass]="{ 'fa-check-circle': targetMode, 'fa-blank': !targetMode }"></i>
+        </div>
+        {{ 'accessories.control.on' | translate }}
+        <div class="float-end"><i class="fas fa-xl fa-blank"></i></div>
+      </button>
+    </div>
+    <h6 class="mt-4">{{ 'accessories.control.brightness' | translate }}: {{ brightnessPercentage }}%</h6>
+    <nouislider
+      [min]="targetBrightness.min"
+      [max]="targetBrightness.max"
+      [step]="targetBrightness.step"
+      [(ngModel)]="targetBrightness.value"
+      (ngModelChange)="onBrightnessStateChange()"
+    >
+    </nouislider>
+    <h6 class="mt-4">
+      {{ 'accessories.control.color_temperature' | translate }}: {{ targetColorTemperature.mired | convertMired }}
+    </h6>
+    <nouislider
+      [min]="targetColorTemperature.min"
+      [max]="targetColorTemperature.max"
+      [step]="targetColorTemperature.step"
+      [(ngModel)]="targetColorTemperature.value"
+      (ngModelChange)="onColorTemperatureStateChange()"
+    >
+    </nouislider>
+  </div>
+  <div class="modal-footer"></div>
+</div>

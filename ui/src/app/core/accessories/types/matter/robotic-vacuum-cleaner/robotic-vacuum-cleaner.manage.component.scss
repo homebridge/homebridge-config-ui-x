@@ -1,0 +1,9 @@
+.btn-control.btn-pause-disabled {
+  opacity: 0.5;
+  cursor: not-allowed !important;
+  pointer-events: auto !important;
+
+  &:hover {
+    cursor: not-allowed !important;
+  }
+}
