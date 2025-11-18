@@ -20,10 +20,15 @@ import { LogService } from './log.service.js'
 export class LogGateway {
   constructor(
     @Inject(LogService) private readonly logService: LogService,
-  ) {}
+  ) { }
 
   @SubscribeMessage('tail-log')
   connect(client: EventEmitter, payload: LogTermSize) {
     this.logService.connect(client, payload)
+  }
+
+  @SubscribeMessage('update-log-filters')
+  updateLogFilters(client: EventEmitter, filters: import('./log.interfaces.js').LogFilterOptions) {
+    this.logService.updateFilters(client, filters)
   }
 }

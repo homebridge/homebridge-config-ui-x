@@ -27,10 +27,14 @@ export class LogsComponent implements OnInit, OnDestroy {
   private $translate = inject(TranslateService)
 
   private readonly termTarget = viewChild<ElementRef>('logoutput')
-
   private resizeEvent = new Subject()
-
   public isAdmin = this.$auth.user.admin
+
+  // Log filter state
+  public logTypes = ['Matter', 'Homebridge', 'HAP', 'UI']
+  public selectedLogTypesMap: { [type: string]: boolean } = {}
+  public plugins: string[] = []
+  public selectedPluginsMap: { [plugin: string]: boolean } = {}
 
   @HostListener('window:resize', ['$event'])
   onWindowResize() {
@@ -45,18 +49,42 @@ export class LogsComponent implements OnInit, OnDestroy {
     // Set body bg color
     window.document.querySelector('body').classList.add('bg-black')
 
-    // Start the terminal
+    // Fetch plugin list for filtering (simulate for now, replace with real API if available)
+    this.plugins = this.getAvailablePlugins()
+    this.logTypes.forEach(type => this.selectedLogTypesMap[type] = false)
+    this.plugins.forEach(plugin => this.selectedPluginsMap[plugin] = false)
+
+    // Start the terminal with initial filters
     this.$log.startTerminal(this.termTarget(), {
       allowProposedApi: true,
-    }, this.resizeEvent)
+    }, this.resizeEvent, undefined, this.getCurrentFilters())
   }
 
   public ngOnDestroy() {
     // Unset body bg color
     window.document.querySelector('body').classList.remove('bg-black')
-
     // Destroy the terminal
     this.$log.destroyTerminal()
+  }
+
+  // Called when a filter checkbox is changed
+  public onFiltersChanged() {
+    const filters = this.getCurrentFilters()
+    this.$log.updateLogFilters(filters)
+  }
+
+  // Gather current filters from UI state
+  private getCurrentFilters() {
+    return {
+      plugins: Object.keys(this.selectedPluginsMap).filter(p => this.selectedPluginsMap[p]),
+      types: Object.keys(this.selectedLogTypesMap).filter(t => this.selectedLogTypesMap[t]),
+    }
+  }
+
+  // Simulate plugin list (replace with real API if available)
+  private getAvailablePlugins(): string[] {
+    // TODO: Replace with dynamic plugin list from backend if available
+    return ['example-plugin', 'another-plugin', 'homebridge-sample']
   }
 
   public downloadLogFile() {

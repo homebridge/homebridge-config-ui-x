@@ -13,7 +13,7 @@ import { Tail } from 'tail'
 
 import { ConfigService } from '../../core/config/config.service.js'
 import { NodePtyService } from '../../core/node-pty/node-pty.service.js'
-import { LogTermSize } from './log.interfaces.js'
+import { LogFilterOptions, LogTermSize } from './log.interfaces.js'
 
 @Injectable()
 export class LogService {
@@ -55,8 +55,16 @@ export class LogService {
    * @param client
    * @param size
    */
+  // Store filters per client
+  private clientFilters = new WeakMap<EventEmitter, LogFilterOptions>()
+
   public connect(client: EventEmitter, size: LogTermSize) {
     this.ending = false
+
+    // Set initial filters if provided
+    if (size.filters) {
+      this.clientFilters.set(client, size.filters)
+    }
 
     if (!satisfies(process.version, `>=${this.configService.minimumNodeVersion}`)) {
       client.emit('stdout', yellow(`Node.js v${this.configService.minimumNodeVersion} higher is required for ${this.configService.name}.\n\r`))
@@ -77,6 +85,10 @@ export class LogService {
     }
   }
 
+  public updateFilters(client: EventEmitter, filters: LogFilterOptions) {
+    this.clientFilters.set(client, filters)
+  }
+
   /**
    * Connect pty
    * @param client
@@ -94,9 +106,30 @@ export class LogService {
       env: process.env,
     })
 
-    // Send stdout data from the process to the client
+    // Send stdout data from the process to the client, with filtering
     term.onData((data) => {
-      client.emit('stdout', data)
+      const filters = this.clientFilters.get(client)
+      if (filters && (filters.plugins?.length || filters.types?.length)) {
+        // Split data into lines and filter
+        const lines = data.split('\n')
+        const filtered = lines.filter((line) => {
+          let match = false
+          if (filters.plugins?.length) {
+            // Plugins are logged as [PLUGIN_NAME]
+            match = filters.plugins.some(plugin => line.includes(`[${plugin}]`))
+          }
+          if (filters.types?.length) {
+            // Types: e.g., [Matter], [Homebridge], [HAP], [UI]
+            match = match || filters.types.some(type => line.includes(`[${type}]`))
+          }
+          return match
+        })
+        if (filtered.length) {
+          client.emit('stdout', filtered.join('\n'))
+        }
+      } else {
+        client.emit('stdout', data)
+      }
     })
 
     // Send an error message to the client if the log tailing process exits early
@@ -117,7 +150,7 @@ export class LogService {
     client.on('resize', (resize: { rows: number, cols: number }) => {
       try {
         term.resize(resize.cols, resize.rows)
-      } catch (e) {}
+      } catch (e) { }
     })
 
     // Cleanup on disconnect
@@ -130,7 +163,7 @@ export class LogService {
 
       try {
         term.kill()
-      } catch (e) {}
+      } catch (e) { }
       // Really make sure the log tail command is killed when using sudo mode
       if (this.configService.ui.sudo && term && term.pid) {
         exec(`sudo -n kill -9 ${term.pid}`)

@@ -1,3 +1,5 @@
+import type { LogFilterOptions } from '@/../../src/modules/log/log.interfaces'
+
 import { ElementRef, inject, Injectable } from '@angular/core'
 import { FitAddon } from '@xterm/addon-fit'
 import { WebLinksAddon } from '@xterm/addon-web-links'
@@ -18,6 +20,7 @@ export class LogService {
   private resize: Subject<any>
   private elementResize: Subject<any> | undefined
   private pluginName: string
+  private filters: LogFilterOptions | undefined
 
   public term: Terminal
 
@@ -26,8 +29,10 @@ export class LogService {
     termOpts: ITerminalOptions = {},
     elementResize?: Subject<any>,
     pluginName?: string,
+    filters?: LogFilterOptions,
   ) {
     this.pluginName = pluginName
+    this.filters = filters
 
     // Handle element resize events
     this.elementResize = elementResize
@@ -62,7 +67,7 @@ export class LogService {
     // Start the terminal session when the socket is connected
     this.io.connected.subscribe(() => {
       this.term.reset()
-      this.io.socket.emit('tail-log', { cols: this.term.cols, rows: this.term.rows })
+      this.io.socket.emit('tail-log', { cols: this.term.cols, rows: this.term.rows, filters: this.filters })
     })
 
     // Handle disconnect events
@@ -77,32 +82,7 @@ export class LogService {
 
     // Subscribe to incoming data events from server to client
     this.io.socket.on('stdout', (data: string) => {
-      if (this.pluginName) {
-        const lines = data.split('\n\r')
-        let includeNextLine = false
-
-        lines.forEach((line: string) => {
-          if (!line) {
-            return
-          }
-
-          if (includeNextLine) {
-            if (line.match(/36m\[.*?\]/)) {
-              includeNextLine = false
-            } else {
-              this.term.write(`${line}\n\r`)
-              return
-            }
-          }
-
-          if (line.includes(`36m[${this.pluginName}]`)) {
-            this.term.write(`${line}\n\r`)
-            includeNextLine = true
-          }
-        })
-      } else {
-        this.term.write(data)
-      }
+      this.term.write(data)
     })
 
     // Handle resize events from the client
@@ -117,6 +97,13 @@ export class LogService {
           this.fitAddon.fit()
         },
       })
+    }
+  }
+
+  public updateLogFilters(filters: LogFilterOptions) {
+    this.filters = filters
+    if (this.io && this.io.socket) {
+      this.io.socket.emit('update-log-filters', filters)
     }
   }
 

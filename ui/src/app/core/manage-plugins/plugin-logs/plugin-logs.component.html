@@ -10,8 +10,41 @@
       [disabled]="midAction"
     ></button>
   </div>
-  <div class="modal-body d-flex flex-row flex-grow-1 w-100 p-0">
-    <div #pluginlogoutput class="w-100 bg-black plugin-log-output terminal align-self-end w-100 h-100 mb-0 p-2"></div>
+  <div class="modal-body d-flex flex-column flex-grow-1 w-100 p-0">
+    <!-- Log Filters UI -->
+    <div class="mb-2">
+      <div class="d-flex flex-wrap align-items-center gap-3">
+        <div>
+          <label class="fw-bold me-2">Log Types:</label>
+          <ng-container *ngFor="let type of logTypes">
+            <input
+              type="checkbox"
+              [id]="'log-type-' + type"
+              [value]="type"
+              [(ngModel)]="selectedLogTypesMap[type]"
+              (change)="onFiltersChanged()"
+            />
+            <label [for]="'log-type-' + type" class="me-2">{{ type }}</label>
+          </ng-container>
+        </div>
+        <div>
+          <label class="fw-bold me-2">Plugins:</label>
+          <ng-container *ngFor="let plugin of plugins">
+            <input
+              type="checkbox"
+              [id]="'plugin-' + plugin"
+              [value]="plugin"
+              [(ngModel)]="selectedPluginsMap[plugin]"
+              (change)="onFiltersChanged()"
+            />
+            <label [for]="'plugin-' + plugin" class="me-2">{{ plugin }}</label>
+          </ng-container>
+        </div>
+      </div>
+    </div>
+    <div class="flex-grow-1 d-flex flex-row w-100 p-0">
+      <div #pluginlogoutput class="w-100 bg-black plugin-log-output terminal align-self-end h-100 mb-0 p-2"></div>
+    </div>
   </div>
   <div class="modal-footer justify-content-between">
     <div class="text-start">

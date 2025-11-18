@@ -11,6 +11,12 @@ import { ConfirmComponent } from '@/app/core/components/confirm/confirm.componen
 import { LogService } from '@/app/core/log.service'
 import { ChildBridge, Plugin } from '@/app/core/manage-plugins/manage-plugins.interfaces'
 
+// Local type definition to avoid import error
+interface LogFilterOptions {
+  plugins?: string[]
+  types?: string[]
+}
+
 @Component({
   templateUrl: './plugin-logs.component.html',
   standalone: true,
@@ -25,6 +31,10 @@ export class PluginLogsComponent implements OnInit, OnDestroy {
   private $translate = inject(TranslateService)
   private resizeEvent = new Subject()
   private pluginAlias: string
+  public logTypes = ['Matter', 'Homebridge', 'HAP', 'UI']
+  public selectedLogTypesMap: { [type: string]: boolean } = {}
+  public plugins: string[] = []
+  public selectedPluginsMap: { [plugin: string]: boolean } = {}
 
   @Input() plugin: Plugin
   @Input() childBridges: ChildBridge[] = []
@@ -39,6 +49,9 @@ export class PluginLogsComponent implements OnInit, OnDestroy {
   }
 
   public ngOnInit(): void {
+    this.plugins = this.getAvailablePlugins()
+    this.logTypes.forEach(type => this.selectedLogTypesMap[type] = false)
+    this.plugins.forEach(plugin => this.selectedPluginsMap[plugin] = false)
     this.getPluginLog()
   }
 
@@ -137,7 +150,10 @@ export class PluginLogsComponent implements OnInit, OnDestroy {
     this.$api.get(`/config-editor/plugin/${encodeURIComponent(this.plugin.name)}`).subscribe({
       next: (result) => {
         this.pluginAlias = this.plugin.name === 'homebridge-config-ui-x' ? 'Homebridge UI' : (result[0]?.name || this.plugin.name)
-        this.$log.startTerminal(this.termTarget(), {}, this.resizeEvent, this.pluginAlias)
+        // Set this plugin as the only selected plugin filter by default
+        this.plugins.forEach(p => this.selectedPluginsMap[p] = false)
+        this.selectedPluginsMap[this.pluginAlias] = true
+        this.$log.startTerminal(this.termTarget(), {}, this.resizeEvent, undefined, this.getCurrentFilters())
       },
       error: (error) => {
         console.error(error)
@@ -145,5 +161,23 @@ export class PluginLogsComponent implements OnInit, OnDestroy {
         this.$activeModal.dismiss()
       },
     })
+  }
+
+  public onFiltersChanged() {
+    const filters = this.getCurrentFilters()
+    this.$log.updateLogFilters(filters)
+  }
+
+  private getCurrentFilters(): LogFilterOptions {
+    return {
+      plugins: Object.keys(this.selectedPluginsMap).filter(p => this.selectedPluginsMap[p]),
+      types: Object.keys(this.selectedLogTypesMap).filter(t => this.selectedLogTypesMap[t]),
+    }
+  }
+
+  // Simulate plugin list (replace with real API if available)
+  private getAvailablePlugins(): string[] {
+    // TODO: Replace with dynamic plugin list from backend if available
+    return ['example-plugin', 'another-plugin', 'homebridge-sample', 'Homebridge UI']
   }
 }
