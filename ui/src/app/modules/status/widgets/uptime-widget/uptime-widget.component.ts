@@ -57,16 +57,49 @@ export class UptimeWidgetComponent implements OnInit, OnDestroy {
       })
   }
 
-  private humaniseDuration(seconds: number) {
-    if (seconds < 50) {
-      return '< 1m'
+  private humaniseDuration(totalSeconds: number): string {
+    const showDays = this.widget?.uptimeShowDays
+    const showHours = this.widget?.uptimeShowHours
+    const showMinutes = this.widget?.uptimeShowMinutes
+    const showSeconds = this.widget?.uptimeShowSeconds
+
+    let seconds = Math.floor(totalSeconds)
+    const days = Math.floor(seconds / 86400)
+    seconds -= days * 86400
+    const hours = Math.floor(seconds / 3600)
+    seconds -= hours * 3600
+    const minutes = Math.floor(seconds / 60)
+    seconds -= minutes * 60
+
+    // If nothing is picked, default to days
+    if (!showDays && !showHours && !showMinutes && !showSeconds) {
+      return `${Math.floor(totalSeconds / 86400)}d`
     }
-    if (seconds < 3600) {
-      return `${Math.round((seconds / 60))}m`
+
+    // Only one unit: show total for that unit
+    if (showDays && !showHours && !showMinutes && !showSeconds) {
+      return `${Math.floor(totalSeconds / 86400)}d`
     }
-    if (seconds < 86400) {
-      return `${Math.round((seconds / 60 / 60))}h`
+    if (!showDays && showHours && !showMinutes && !showSeconds) {
+      return `${Math.floor(totalSeconds / 3600)}h`
     }
-    return `${Math.floor((seconds / 60 / 60 / 24))}d`
+    if (!showDays && !showHours && showMinutes && !showSeconds) {
+      return `${Math.floor(totalSeconds / 60)}m`
+    }
+    if (!showDays && !showHours && !showMinutes && showSeconds) {
+      return `${Math.floor(totalSeconds)}s`
+    }
+
+    // Build string for any combination (split units)
+    const parts: string[] = []
+    if (showDays)
+      parts.push(`${days}d`)
+    if (showHours)
+      parts.push(`${hours}h`)
+    if (showMinutes)
+      parts.push(`${minutes}m`)
+    if (showSeconds)
+      parts.push(`${seconds}s`)
+    return parts.join(' ')
   }
 }

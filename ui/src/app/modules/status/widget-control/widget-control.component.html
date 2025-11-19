@@ -24,7 +24,38 @@
           <label for="hideOnMobile" class="rendux-label ms-3"></label>
         </div>
       </li>
-      @switch (widget.component) { @case ('UpdateInfoWidgetComponent') {
+      @switch (widget.component) { @case ('UpdateInfoWidgetComponent') { } @case ('UptimeWidgetComponent') {
+      <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
+        <label class="mb-2 mb-md-0 w-100 w-md-50">Uptime Display Units</label>
+        <div class="text-start text-md-end w-100 w-md-50">
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" id="uptimeShowDays" [(ngModel)]="widget.uptimeShowDays" />
+            <label class="form-check-label" for="uptimeShowDays">Days</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input class="form-check-input" type="checkbox" id="uptimeShowHours" [(ngModel)]="widget.uptimeShowHours" />
+            <label class="form-check-label" for="uptimeShowHours">Hours</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              id="uptimeShowMinutes"
+              [(ngModel)]="widget.uptimeShowMinutes"
+            />
+            <label class="form-check-label" for="uptimeShowMinutes">Minutes</label>
+          </div>
+          <div class="form-check form-check-inline">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              id="uptimeShowSeconds"
+              [(ngModel)]="widget.uptimeShowSeconds"
+            />
+            <label class="form-check-label" for="uptimeShowSeconds">Seconds</label>
+          </div>
+        </div>
+      </li>
       <li class="list-group-item d-flex justify-content-between align-items-center flex-row pb-2">
         <span class="text-start">{{ 'status.widget.hide_node_info' | translate }}</span>
         <div class="text-end grey-text d-flex align-items-center">

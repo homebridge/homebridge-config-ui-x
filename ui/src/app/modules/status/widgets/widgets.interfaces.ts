@@ -86,4 +86,8 @@ export interface Widget {
   }
   showNpmVersion?: boolean // update info widget
   dockerExpanded?: boolean // update info widget
+  uptimeShowDays?: boolean // uptime widget
+  uptimeShowHours?: boolean // uptime widget
+  uptimeShowMinutes?: boolean // uptime widget
+  uptimeShowSeconds?: boolean // uptime widget
 }
