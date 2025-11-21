@@ -1,7 +1,7 @@
 <div
   class="setup-container gradient d-flex align-items-start justify-content-center"
-  [ngStyle]="{ 'background': backgroundStyle }"
-  [ngClass]="{ 'anim': !backgroundStyle }"
+  [style.background]="backgroundStyle"
+  [class.anim]="!backgroundStyle"
 >
   <div class="w-100 setup-card d-flex py-4 flex-column">
     <img
@@ -20,7 +20,7 @@
         [attr.aria-valuenow]="progress"
         aria-valuemin="0"
         aria-valuemax="100"
-        [ngClass]="{ 'progress-bar-animated': loading || restoreUploading }"
+        [class.progress-bar-animated]="loading || restoreUploading"
       ></div>
     </div>
     @if (step === 'welcome') {
@@ -51,7 +51,7 @@
               tabindex="1"
               class="form-control custom-input"
               [readonly]="loading"
-              [ngClass]="{
+              [class]="{
                 'is-valid': (createUserForm.controls.username.dirty) && createUserForm.controls.username.valid,
                 'is-invalid': (createUserForm.controls.username.dirty) && createUserForm.controls.username.invalid
               }"
@@ -69,7 +69,7 @@
               tabindex="2"
               class="form-control custom-input"
               [readonly]="loading"
-              [ngClass]="{
+              [class]="{
                 'is-valid': (createUserForm.controls.password.dirty) && createUserForm.controls.password.valid,
                 'is-invalid': (createUserForm.controls.password.dirty) && createUserForm.controls.password.errors
               }"
@@ -87,7 +87,7 @@
               tabindex="2"
               class="form-control custom-input"
               [readonly]="loading"
-              [ngClass]="{
+              [class]="{
                 'is-valid': (createUserForm.controls.passwordConfirm.dirty) && createUserForm.controls.passwordConfirm.valid,
                 'is-invalid': (createUserForm.controls.passwordConfirm.dirty) && createUserForm.controls.passwordConfirm.errors
               }"

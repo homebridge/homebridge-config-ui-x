@@ -50,7 +50,7 @@
               </button>
               <i
                 class="fa fa-xl"
-                [ngClass]="{
+                [class]="{
                   'fa-circle-check green-text': formBlocksValid[i],
                   'fa-circle-exclamation red-text': strictValidation && !formBlocksValid[i],
                   'fa-circle-exclamation orange-text': !strictValidation && !formBlocksValid[i]
@@ -107,7 +107,7 @@
       @if (schema.singular) {
       <i
         class="fa fa-xl me-2"
-        [ngClass]="{
+        [class]="{
           'fa-circle-check green-text': formIsValid,
           'fa-circle-exclamation red-text': strictValidation && !formIsValid,
           'fa-circle-exclamation orange-text': !strictValidation && !formIsValid

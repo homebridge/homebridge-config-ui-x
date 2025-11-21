@@ -1,4 +1,4 @@
-import { NgClass, NgOptimizedImage, NgStyle } from '@angular/common'
+import { NgOptimizedImage } from '@angular/common'
 import { Component, inject } from '@angular/core'
 import { AbstractControl, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { Title } from '@angular/platform-browser'
@@ -16,12 +16,10 @@ import { environment } from '@/environments/environment'
   templateUrl: './setup-wizard.component.html',
   styleUrls: ['./setup-wizard.component.scss'],
   imports: [
-    NgClass,
     TranslatePipe,
     NgOptimizedImage,
     FormsModule,
     ReactiveFormsModule,
-    NgStyle,
   ],
 })
 export class SetupWizardComponent {

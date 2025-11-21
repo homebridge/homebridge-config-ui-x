@@ -1,6 +1,6 @@
 <div
   class="accessory-box"
-  [ngClass]="{ 'accessory-on': service.values.On || service.values.Active }"
+  [class.accessory-on]="service.values.On || service.values.Active"
   (longClick)="onLongClick()"
   (shortClick)="onClick()"
   tabindex="0"
@@ -9,7 +9,7 @@
     <div
       [attr.aria-label]="'accessories.core.fan' | translate"
       class="accessory-svg"
-      [ngClass]="{
+      [class]="{
         'spin': (service.values.On || service.values.Active) && (!hasRotationDirection || (hasRotationDirection && service.values.RotationDirection === 0)),
         'spin-counter': (service.values.On || service.values.Active) && hasRotationDirection && service.values.RotationDirection === 1,
       }"

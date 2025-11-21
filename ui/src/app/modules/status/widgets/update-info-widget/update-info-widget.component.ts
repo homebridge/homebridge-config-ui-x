@@ -1,4 +1,3 @@
-import { NgClass } from '@angular/common'
 import { Component, inject, Input, OnInit } from '@angular/core'
 import { RouterLink } from '@angular/router'
 import { NgbModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap'
@@ -23,7 +22,6 @@ import { environment } from '@/environments/environment'
   styleUrls: ['./update-info-widget.component.scss'],
   standalone: true,
   imports: [
-    NgClass,
     TranslatePipe,
     RouterLink,
     NgbTooltip,

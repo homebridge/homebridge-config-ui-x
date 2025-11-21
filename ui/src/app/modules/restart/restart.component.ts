@@ -1,5 +1,4 @@
 /* global NodeJS */
-import { NgClass } from '@angular/common'
 import { Component, inject, isDevMode, OnDestroy, OnInit } from '@angular/core'
 import { Router } from '@angular/router'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
@@ -16,7 +15,6 @@ import { IoNamespace, WsService } from '@/app/core/ws.service'
   styleUrls: ['./restart.component.scss'],
   standalone: true,
   imports: [
-    NgClass,
     TranslatePipe,
   ],
 })

@@ -64,7 +64,7 @@
               } @if (!schema?.singular) {
               <i
                 class="fa fa-xl"
-                [ngClass]="{
+                [class]="{
                   'fa-circle-check green-text': formBlocksValid[$index],
                   'fa-circle-exclamation red-text': strictValidation && !formBlocksValid[$index],
                   'fa-circle-exclamation orange-text': !strictValidation && !formBlocksValid[$index]
@@ -115,7 +115,7 @@
       @if (canConfigure) { @if (schema?.singular) {
       <i
         class="fa fa-xl me-2"
-        [ngClass]="{
+        [class]="{
             'fa-circle-check green-text': formIsValid,
             'fa-circle-exclamation red-text': strictValidation && !formIsValid,
             'fa-circle-exclamation orange-text': !strictValidation && !formIsValid

@@ -1,4 +1,3 @@
-import { NgClass, NgStyle } from '@angular/common'
 import { Component, ElementRef, inject, Input, OnInit, viewChild } from '@angular/core'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { Subject } from 'rxjs'
@@ -11,9 +10,7 @@ import { IoNamespace, WsService } from '@/app/core/ws.service'
   templateUrl: './matter-qrcode-widget.component.html',
   standalone: true,
   imports: [
-    NgStyle,
     QrcodeComponent,
-    NgClass,
     TranslatePipe,
   ],
 })

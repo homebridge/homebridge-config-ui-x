@@ -47,12 +47,12 @@
           class="btn btn-danger m-0 ms-3"
           (click)="toggleList(item._id, item._protocol)"
           [disabled]="clicked"
-          [ngClass]="{ 'btn-danger': !isInList(item._id, item._protocol), 'btn-elegant': isInList(item._id, item._protocol) }"
+          [class]="{ 'btn-danger': !isInList(item._id, item._protocol), 'btn-elegant': isInList(item._id, item._protocol) }"
           [attr.aria-label]="'form.button_delete' | translate"
         >
           <i
             class="fas"
-            [ngClass]="{
+            [class]="{
               'fa-broom': !isInList(item._id, item._protocol),
               'fa-undo': isInList(item._id, item._protocol) && !clicked,
               'fa-circle-notch fa-spin': isInList(item._id, item._protocol) && clicked

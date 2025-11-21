@@ -16,7 +16,7 @@
       <div class="restart-progress-box primary-text">
         <span>
           <i
-            [ngClass]="{
+            [class]="{
               'fas fa-circle-notch fa-spin': !uiOnline,
               'far fa-check-circle': uiOnline
             }"
@@ -25,9 +25,9 @@
         </span>
       </div>
       <div class="restart-progress-box primary-text">
-        <span [ngClass]="{ 'grey-text': !uiOnline }">
+        <span [class.grey-text]="!uiOnline">
           <i
-            [ngClass]="{
+            [class]="{
               'far fa-circle': !uiOnline,
               'fas fa-circle-notch fa-spin': uiOnline
             }"

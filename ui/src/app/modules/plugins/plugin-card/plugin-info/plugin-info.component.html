@@ -18,20 +18,20 @@
     <i
       class="fas fa-shield-alt mb-3"
       style="font-size: 48px"
-      [ngClass]="{ 'orange-text': !plugin.verifiedPlugin && !plugin.verifiedPlusPlugin, 'grey-text': plugin.verifiedPlugin || plugin.verifiedPlusPlugin }"
-      [ngStyle]="{ 'opacity': !plugin.verifiedPlugin && !plugin.verifiedPlusPlugin ? 1 : 0.25 }"
+      [class]="{ 'orange-text': !plugin.verifiedPlugin && !plugin.verifiedPlusPlugin, 'grey-text': plugin.verifiedPlugin || plugin.verifiedPlusPlugin }"
+      [style.opacity]="!plugin.verifiedPlugin && !plugin.verifiedPlusPlugin ? 1 : 0.25"
     ></i>
     <i
       class="fas fa-shield-alt mb-3"
       style="font-size: 48px"
-      [ngClass]="{ 'green-text': !plugin.isHbScoped && (plugin.verifiedPlugin || plugin.verifiedPlusPlugin), 'grey-text': plugin.isHbScoped || (!plugin.verifiedPlugin && !plugin.verifiedPlusPlugin) }"
-      [ngStyle]="{ 'opacity': !plugin.isHbScoped && (plugin.verifiedPlugin || plugin.verifiedPlusPlugin) ? 1 : 0.25 }"
+      [class]="{ 'green-text': !plugin.isHbScoped && (plugin.verifiedPlugin || plugin.verifiedPlusPlugin), 'grey-text': plugin.isHbScoped || (!plugin.verifiedPlugin && !plugin.verifiedPlusPlugin) }"
+      [style.opacity]="!plugin.isHbScoped && (plugin.verifiedPlugin || plugin.verifiedPlusPlugin) ? 1 : 0.25"
     ></i>
     <i
       class="fas fa-shield-alt mb-3"
       style="font-size: 48px"
-      [ngClass]="{ 'purple-text': plugin.isHbScoped, 'grey-text': !plugin.isHbScoped }"
-      [ngStyle]="{ 'opacity': plugin.isHbScoped ? 1 : 0.25 }"
+      [class]="{ 'purple-text': plugin.isHbScoped, 'grey-text': !plugin.isHbScoped }"
+      [style.opacity]="plugin.isHbScoped ? 1 : 0.25"
     ></i>
     @if (plugin.isHbScoped) {
     <h6 class="mb-2">{{ 'plugins.manage.scoped_subtitle' | translate }}</h6>

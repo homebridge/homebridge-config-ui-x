@@ -1,6 +1,5 @@
 import type { PluginConfigBlock, PluginSchema } from '@/app/core/manage-plugins/manage-plugins.interfaces'
 
-import { NgClass } from '@angular/common'
 import { Component, inject, Input, OnInit } from '@angular/core'
 import {
   NgbAccordionBody,
@@ -42,7 +41,6 @@ import { SettingsService } from '@/app/core/settings.service'
     NgbTooltip,
     NgbAccordionCollapse,
     NgbAccordionBody,
-    NgClass,
     SchemaFormComponent,
     HomebridgeDeconzComponent,
     HomebridgeHueComponent,

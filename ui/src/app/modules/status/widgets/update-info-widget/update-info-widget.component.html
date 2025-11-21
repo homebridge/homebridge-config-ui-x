@@ -1,5 +1,5 @@
 <div class="flex-column d-flex align-items-stretch h-100 w-100 pb-2">
-  <div class="drag-handler p-2" [ngClass]="{ 'widget-cursor': widget.draggable }">
+  <div class="drag-handler p-2" [class.widget-cursor]="widget.draggable">
     {{ 'status.services.updates' | translate }}
   </div>
   <div
@@ -23,7 +23,7 @@
         </div>
         <div class="align-self-center px-3">
           Docker-Homebridge
-          <i class="fas fa-chevron-down ms-2" [ngClass]="{ 'fa-rotate-180': !widget.dockerExpanded }"></i>
+          <i class="fas fa-chevron-down ms-2" [class.fa-rotate-180]="!widget.dockerExpanded"></i>
           <br />
           @if (!dockerStatusDone) {
           <span class="grey-text small">{{ 'status.homebridge.checking' | translate }}</span>
@@ -71,10 +71,7 @@
                 placement="top"
                 aria-label="Homebridge v2 Readiness"
               >
-                <i
-                  class="fas fa-info-circle"
-                  [ngClass]="{ 'green-text': isHbV2Ready, 'orange-text': !isHbV2Ready }"
-                ></i>
+                <i class="fas fa-info-circle" [class]="{ 'green-text': isHbV2Ready, 'orange-text': !isHbV2Ready }"></i>
               </a>
               } } @if (!homebridgePkg.installedVersion) {
               <span>Homebridge</span>
@@ -215,7 +212,7 @@
             placement="top"
             aria-label="Homebridge v2 Readiness"
           >
-            <i class="fas fa-info-circle" [ngClass]="{ 'green-text': isHbV2Ready, 'orange-text': !isHbV2Ready }"></i>
+            <i class="fas fa-info-circle" [class]="{ 'green-text': isHbV2Ready, 'orange-text': !isHbV2Ready }"></i>
           </a>
           } } @if (!homebridgePkg.installedVersion) {
           <span>Homebridge</span>

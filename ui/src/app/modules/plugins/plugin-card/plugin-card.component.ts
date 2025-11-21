@@ -1,4 +1,4 @@
-import { DatePipe, NgClass } from '@angular/common'
+import { DatePipe } from '@angular/common'
 import { Component, inject, Input, OnInit } from '@angular/core'
 import { NgbDropdown, NgbDropdownButtonItem, NgbDropdownItem, NgbDropdownMenu, NgbDropdownToggle, NgbModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
@@ -25,7 +25,6 @@ import { PluginInfoComponent } from '@/app/modules/plugins/plugin-card/plugin-in
   standalone: true,
   imports: [
     NgbTooltip,
-    NgClass,
     NgbDropdown,
     NgbDropdownToggle,
     NgbDropdownMenu,

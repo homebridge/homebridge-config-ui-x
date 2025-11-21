@@ -1,4 +1,4 @@
-import { NgClass, NgOptimizedImage, NgStyle } from '@angular/common'
+import { NgOptimizedImage } from '@angular/common'
 import { AfterViewChecked, ChangeDetectorRef, Component, ElementRef, inject, OnInit, viewChild } from '@angular/core'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { Router } from '@angular/router'
@@ -15,10 +15,8 @@ import { environment } from '@/environments/environment'
   styleUrls: ['./login.component.scss'],
   standalone: true,
   imports: [
-    NgStyle,
     FormsModule,
     ReactiveFormsModule,
-    NgClass,
     TranslatePipe,
     NgOptimizedImage,
   ],

@@ -1,4 +1,3 @@
-import { NgClass, NgStyle } from '@angular/common'
 import { Component, inject, Input, OnInit } from '@angular/core'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
 import { TranslatePipe } from '@ngx-translate/core'
@@ -9,7 +8,7 @@ import { Plugin } from '@/app/core/manage-plugins/manage-plugins.interfaces'
   templateUrl: './plugin-info.component.html',
   styleUrls: ['./plugin-info.component.scss'],
   standalone: true,
-  imports: [TranslatePipe, NgClass, NgStyle],
+  imports: [TranslatePipe],
 })
 export class PluginInfoComponent implements OnInit {
   private $activeModal = inject(NgbActiveModal)

@@ -1,4 +1,3 @@
-import { NgClass } from '@angular/common'
 import { Component, inject, OnInit } from '@angular/core'
 import { Router } from '@angular/router'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
@@ -13,7 +12,6 @@ import { SettingsService } from '@/app/core/settings.service'
   templateUrl: './remove-bridge-accessories.component.html',
   standalone: true,
   imports: [
-    NgClass,
     TranslatePipe,
   ],
 })

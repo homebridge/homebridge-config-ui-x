@@ -1,6 +1,5 @@
 import type { PluginSchema } from '@/app/core/manage-plugins/manage-plugins.interfaces'
 
-import { NgClass } from '@angular/common'
 import { Component, ElementRef, inject, Input, OnDestroy, OnInit, viewChild } from '@angular/core'
 import { NgbActiveModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
@@ -24,7 +23,6 @@ import { environment } from '@/environments/environment'
   imports: [
     SchemaFormComponent,
     NgbTooltip,
-    NgClass,
     TranslatePipe,
   ],
 })

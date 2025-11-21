@@ -1,4 +1,3 @@
-import { NgClass } from '@angular/common'
 import { Component, inject, Input } from '@angular/core'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
 import { TranslatePipe } from '@ngx-translate/core'
@@ -15,7 +14,6 @@ import { LongClickDirective } from '@/app/core/directives/long-click.directive'
   imports: [
     LongClickDirective,
     TranslatePipe,
-    NgClass,
   ],
 })
 export class DoorbellComponent {

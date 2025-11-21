@@ -1,4 +1,3 @@
-import { NgClass } from '@angular/common'
 import { Component, inject, Input, OnDestroy, OnInit } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
@@ -18,7 +17,6 @@ import { getFanPercentSetting, isFanOn, setFanSpeed } from '@/app/core/accessori
     FormsModule,
     NouisliderComponent,
     TranslatePipe,
-    NgClass,
   ],
 })
 export class MatterFanManageComponent implements OnInit, OnDestroy {

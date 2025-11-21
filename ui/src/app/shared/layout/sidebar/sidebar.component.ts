@@ -1,4 +1,4 @@
-import { NgClass, NgOptimizedImage } from '@angular/common'
+import { NgOptimizedImage } from '@angular/common'
 import { Component, inject, Input, OnDestroy, OnInit, Renderer2 } from '@angular/core'
 import { NavigationEnd, NavigationStart, Router, RouterLink, RouterLinkActive } from '@angular/router'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
@@ -19,7 +19,6 @@ import { SettingsService } from '@/app/core/settings.service'
   imports: [
     RouterLink,
     NgOptimizedImage,
-    NgClass,
     RouterLinkActive,
     TranslatePipe,
   ],

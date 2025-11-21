@@ -1,7 +1,7 @@
 import type { NetworkAdapterAvailable, NetworkAdapterSelected } from '@/app/modules/settings/settings.interfaces'
 
 import { animate, style, transition, trigger } from '@angular/animations'
-import { NgClass, TitleCasePipe } from '@angular/common'
+import { TitleCasePipe } from '@angular/common'
 import { ChangeDetectorRef, Component, ElementRef, inject, OnInit, ViewChild } from '@angular/core'
 import { FormControl, FormsModule, ReactiveFormsModule, UntypedFormControl } from '@angular/forms'
 import { Router, RouterLink } from '@angular/router'
@@ -33,7 +33,6 @@ import { WallpaperComponent } from '@/app/modules/settings/wallpaper/wallpaper.c
   styleUrls: ['./settings.component.scss'],
   standalone: true,
   imports: [
-    NgClass,
     RouterLink,
     FormsModule,
     ReactiveFormsModule,

@@ -1,6 +1,6 @@
 <div
   class="accessory-box"
-  [ngClass]="{ 'accessory-on': service.values.On || service.values.Active }"
+  [class.accessory-on]="service.values.On || service.values.Active"
   (shortClick)="onClick()"
   tabindex="0"
 >

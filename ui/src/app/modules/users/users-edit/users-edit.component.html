@@ -51,9 +51,7 @@
               autocomplete="new-password"
               id="form-pass"
               class="form-control custom-input"
-              [ngClass]="{
-                'is-invalid': form.controls.password.dirty && form.controls.password.errors
-              }"
+              [class.is-invalid]="form.controls.password.dirty && form.controls.password.errors"
               [attr.aria-label]="'users.label_new_password' | translate"
             />
           </div>
@@ -70,9 +68,7 @@
               autocomplete="new-password"
               id="form-pass-confirm"
               class="form-control custom-input"
-              [ngClass]="{
-                'is-invalid': form.controls.passwordConfirm.dirty && form.controls.passwordConfirm.errors
-              }"
+              [class.is-invalid]="form.controls.passwordConfirm.dirty && form.controls.passwordConfirm.errors"
               [attr.aria-label]="'users.label_confirm_password' | translate"
             />
           </div>

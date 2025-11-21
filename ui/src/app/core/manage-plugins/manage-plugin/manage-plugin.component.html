@@ -33,7 +33,7 @@
     <div class="mb-3 text-center">
       <i
         class="fas primary-text"
-        [ngClass]="{
+        [class]="{
           'fa-arrow-alt-circle-down': action === 'Install',
           'fa-code-compare': action === 'Update' && installedVersion,
           'fa-arrow-alt-circle-up': action === 'Update' && !installedVersion,
@@ -57,7 +57,7 @@ hb-service start</pre
     <div class="mb-3 text-center">
       <i
         class="far primary-text"
-        [ngClass]="{
+        [class]="{
           'fa-arrow-alt-circle-down': action === 'Install' && !installedVersion,
           'fa-code-compare': action === 'Install' && installedVersion,
           'fa-arrow-alt-circle-up': action === 'Update',

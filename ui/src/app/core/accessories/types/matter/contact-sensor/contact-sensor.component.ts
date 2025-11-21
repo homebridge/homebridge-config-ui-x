@@ -1,4 +1,3 @@
-import { NgClass } from '@angular/common'
 import { Component, Input } from '@angular/core'
 import { TranslatePipe } from '@ngx-translate/core'
 
@@ -11,7 +10,6 @@ import { getContactSensorState } from '@/app/core/accessories/types/matter/matte
   styleUrls: ['./contact-sensor.component.scss'],
   standalone: true,
   imports: [
-    NgClass,
     TranslatePipe,
   ],
 })

@@ -38,7 +38,7 @@ hb-service start</pre
         <li>
           <i
             class="fa"
-            [ngClass]="{
+            [class]="{
               'fa-circle-o': !installing && !installed && !failure,
               'fa-circle-notch fa-spin': installing,
               'fa-check-circle green-text': installed && !failure,
@@ -50,7 +50,7 @@ hb-service start</pre
         <li>
           <i
             class="fa"
-            [ngClass]="{
+            [class]="{
               'fa-circle-o': !uninstalling && !uninstalled && !failure,
               'fa-circle-notch fa-spin': uninstalling,
               'fa-check-circle green-text': uninstalled && !failure,
@@ -62,7 +62,7 @@ hb-service start</pre
         <li>
           <i
             class="fa"
-            [ngClass]="{
+            [class]="{
               'fa-circle-o': !restarting && !failure,
               'fa-circle-notch fa-spin': restarting,
               'fa-times-circle red-text': failure,

@@ -1,7 +1,6 @@
 import type { DeviceInfo, PluginSchema } from '@/app/core/manage-plugins/manage-plugins.interfaces'
 import type { BridgeConfig } from '@/app/core/settings.interfaces'
 
-import { NgClass } from '@angular/common'
 import { Component, inject, Input, OnInit } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { Router } from '@angular/router'
@@ -25,7 +24,6 @@ import { SettingsService } from '@/app/core/settings.service'
     FormsModule,
     NgbAlert,
     QrcodeComponent,
-    NgClass,
     TranslatePipe,
   ],
 })

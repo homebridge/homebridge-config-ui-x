@@ -1,4 +1,3 @@
-import { NgClass } from '@angular/common'
 import { Component, inject, Input, OnDestroy, OnInit } from '@angular/core'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
 import { TranslatePipe } from '@ngx-translate/core'
@@ -13,7 +12,6 @@ import { getDoorLockState, setDoorLockState } from '@/app/core/accessories/types
   standalone: true,
   imports: [
     TranslatePipe,
-    NgClass,
   ],
 })
 export class DoorLockManageComponent implements OnInit, OnDestroy {

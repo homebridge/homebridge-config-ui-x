@@ -1,6 +1,6 @@
 import type { CharacteristicType } from '@homebridge/hap-client'
 
-import { DecimalPipe, NgClass, UpperCasePipe } from '@angular/common'
+import { DecimalPipe, UpperCasePipe } from '@angular/common'
 import { Component, inject, Input, OnDestroy, OnInit } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
@@ -18,7 +18,6 @@ import { SettingsService } from '@/app/core/settings.service'
   templateUrl: './heater-cooler.manage.component.html',
   standalone: true,
   imports: [
-    NgClass,
     FormsModule,
     NouisliderComponent,
     DecimalPipe,

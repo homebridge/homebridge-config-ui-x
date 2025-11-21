@@ -1,6 +1,6 @@
 <div
   class="accessory-box"
-  [ngClass]="{ 'accessory-on': service.values.TargetHeatingCoolingState > 0 }"
+  [class.accessory-on]="service.values.TargetHeatingCoolingState > 0"
   (longClick)="onClick()"
   (shortClick)="onClick()"
   tabindex="0"
