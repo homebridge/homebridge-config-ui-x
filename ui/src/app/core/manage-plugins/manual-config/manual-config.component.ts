@@ -1,6 +1,5 @@
 import type { PluginSchema } from '@/app/core/manage-plugins/manage-plugins.interfaces'
 
-import { NgClass } from '@angular/common'
 import { ChangeDetectorRef, Component, inject, Input, OnDestroy, OnInit } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { Router } from '@angular/router'
@@ -42,7 +41,6 @@ declare global {
   styleUrls: ['./manual-config.component.scss'],
   standalone: true,
   imports: [
-    NgClass,
     NgbAccordionDirective,
     NgbAccordionItem,
     NgbAccordionHeader,

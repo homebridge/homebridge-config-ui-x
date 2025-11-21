@@ -13,7 +13,7 @@
     @if (hasActive) {
     <div
       class="btn-group-vertical d-flex justify-content-center mb-4 p-0"
-      [ngClass]="{ 'mb-4': sourceList.length, 'mb-0': !sourceList.length }"
+      [class]="{ 'mb-4': sourceList.length, 'mb-0': !sourceList.length }"
       role="group"
       [attr.aria-label]="'accessories.control.mode_control' | translate"
     >
@@ -21,7 +21,7 @@
         <div class="float-start primary-text">
           <i
             class="fas fa-xl"
-            [ngClass]="{ 'fa-check-circle': service.values.Active === 0, 'fa-blank': service.values.Active !== 0 }"
+            [class]="{ 'fa-check-circle': service.values.Active === 0, 'fa-blank': service.values.Active !== 0 }"
           ></i>
         </div>
         {{ 'accessories.control.off' | translate }}
@@ -31,7 +31,7 @@
         <div class="float-start primary-text">
           <i
             class="fas fa-xl"
-            [ngClass]="{ 'fa-check-circle': service.values.Active === 1, 'fa-blank': service.values.Active !== 1 }"
+            [class]="{ 'fa-check-circle': service.values.Active === 1, 'fa-blank': service.values.Active !== 1 }"
           ></i>
         </div>
         {{ 'accessories.control.on' | translate }}
@@ -51,7 +51,7 @@
         <div class="float-start primary-text">
           <i
             class="fas fa-xl"
-            [ngClass]="{ 'fa-check-circle': service.values.ActiveIdentifier === source.identifier, 'fa-blank': service.values.ActiveIdentifier !== source.identifier }"
+            [class]="{ 'fa-check-circle': service.values.ActiveIdentifier === source.identifier, 'fa-blank': service.values.ActiveIdentifier !== source.identifier }"
           ></i>
         </div>
         {{ source.name }}

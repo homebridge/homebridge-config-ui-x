@@ -121,9 +121,11 @@
               !plugin.disabled) {
               <i
                 class="fas fa-lg ms-3"
-                [ngClass]="{
-                  'fa-bridge-circle-exclamation orange-text': childBridgeStatus === 'pending',
-                  'fa-bridge-circle-xmark red-text': childBridgeStatus === 'down'
+                [class]="{
+                  'fa-bridge-circle-exclamation': childBridgeStatus === 'pending',
+                  'orange-text': childBridgeStatus === 'pending',
+                  'fa-bridge-circle-xmark': childBridgeStatus === 'down',
+                  'red-text': childBridgeStatus === 'down',
                 }"
               ></i>
               }
@@ -137,7 +139,7 @@
             <a href="javascript:void(0)" (click)="pluginInfoModal(plugin)" class="card-link">
               <i
                 class="fas fa-shield-alt fa-lg me-1"
-                [ngClass]="{
+                [class]="{
                   'purple-text': plugin.isHbScoped,
                   'green-text': !plugin.isHbScoped && (plugin.verifiedPlugin || plugin.verifiedPlusPlugin),
                   'orange-text': !plugin.isHbScoped && !plugin.verifiedPlugin && !plugin.verifiedPlusPlugin,

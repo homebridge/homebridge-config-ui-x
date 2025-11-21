@@ -38,11 +38,14 @@ hb-service start</pre
         <li>
           <i
             class="fa"
-            [ngClass]="{
+            [class]="{
               'fa-circle-o': !installing && !installed && !failure,
-              'fa-circle-notch fa-spin': installing,
-              'fa-check-circle green-text': installed && !failure,
-              'fa-times-circle red-text': !installed && failure,
+              'fa-circle-notch': installing,
+              'fa-spin': installing,
+              'fa-check-circle': installed && !failure,
+              'green-text': installed && !failure,
+              'fa-times-circle': !installed && failure,
+              'red-text': !installed && failure,
             }"
           ></i>
           {{ 'plugins.manage.install' | translate }} <span class="font-monospace">{{ plugin.newHbScope.to }}</span>
@@ -50,11 +53,14 @@ hb-service start</pre
         <li>
           <i
             class="fa"
-            [ngClass]="{
+            [class]="{
               'fa-circle-o': !uninstalling && !uninstalled && !failure,
-              'fa-circle-notch fa-spin': uninstalling,
-              'fa-check-circle green-text': uninstalled && !failure,
-              'fa-times-circle red-text': !uninstalled && failure,
+              'fa-circle-notch': uninstalling,
+              'fa-spin': uninstalling,
+              'fa-check-circle': uninstalled && !failure,
+              'green-text': uninstalled && !failure,
+              'fa-times-circle': !uninstalled && failure,
+              'red-text': !uninstalled && failure,
             }"
           ></i>
           {{ 'plugins.manage.uninstall' | translate }} <span class="font-monospace">{{ plugin.newHbScope.from }}</span>
@@ -62,10 +68,12 @@ hb-service start</pre
         <li>
           <i
             class="fa"
-            [ngClass]="{
+            [class]="{
               'fa-circle-o': !restarting && !failure,
-              'fa-circle-notch fa-spin': restarting,
-              'fa-times-circle red-text': failure,
+              'fa-circle-notch': restarting,
+              'fa-spin': restarting,
+              'fa-times-circle': failure,
+              'red-text': failure,
             }"
           ></i>
           {{ 'menu.hbrestart.title' | translate }}

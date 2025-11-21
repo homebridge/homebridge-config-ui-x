@@ -1,4 +1,4 @@
-import { DatePipe, NgClass } from '@angular/common'
+import { DatePipe } from '@angular/common'
 import { Component, inject, OnInit } from '@angular/core'
 import { FormControl, ReactiveFormsModule } from '@angular/forms'
 import { Router } from '@angular/router'
@@ -19,7 +19,6 @@ import { RestoreComponent } from '@/app/modules/settings/backup/restore/restore.
   standalone: true,
   imports: [
     NgbTooltip,
-    NgClass,
     DatePipe,
     TranslatePipe,
     ReactiveFormsModule,

@@ -1,6 +1,5 @@
 import type { Pairing } from '@/app/modules/settings/settings.interfaces'
 
-import { NgClass } from '@angular/common'
 import { Component, inject, Input, OnInit } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { Router } from '@angular/router'
@@ -16,7 +15,6 @@ import { SettingsService } from '@/app/core/settings.service'
   templateUrl: './remove-individual-accessories.component.html',
   standalone: true,
   imports: [
-    NgClass,
     TranslatePipe,
     FormsModule,
   ],

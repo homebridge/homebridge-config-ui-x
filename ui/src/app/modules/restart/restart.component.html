@@ -16,20 +16,26 @@
       <div class="restart-progress-box primary-text">
         <span>
           <i
-            [ngClass]="{
-              'fas fa-circle-notch fa-spin': !uiOnline,
-              'far fa-check-circle': uiOnline
+            [class]="{
+              'fas': !uiOnline,
+              'fa-circle-notch': !uiOnline,
+              'fa-spin': !uiOnline,
+              'far': uiOnline,
+              'fa-check-circle': uiOnline,
             }"
           ></i>
           {{ 'restart.ui_online' | translate }}
         </span>
       </div>
       <div class="restart-progress-box primary-text">
-        <span [ngClass]="{ 'grey-text': !uiOnline }">
+        <span [class.grey-text]="!uiOnline">
           <i
-            [ngClass]="{
-              'far fa-circle': !uiOnline,
-              'fas fa-circle-notch fa-spin': uiOnline
+            [class]="{
+              'far': !uiOnline,
+              'fa-circle': !uiOnline,
+              'fas': uiOnline,
+              'fa-circle-notch': uiOnline,
+              'fa-spin': uiOnline,
             }"
           ></i>
           {{ 'restart.service_ready' | translate }}

@@ -14,6 +14,10 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - first step of improvements to https settings (@donavanbecker)
 - improvements for homebridge v2
 
+### Other Changes
+
+- run angular migrations `ngclass-to-class` + `style`
+
 ### Homebridge Dependencies
 
 - `@homebridge/hap-client` @ `v3.1.2`

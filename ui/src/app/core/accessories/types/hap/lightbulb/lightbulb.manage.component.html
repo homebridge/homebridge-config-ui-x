@@ -17,14 +17,14 @@
     >
       <button type="button" class="btn mb-0 mx-0 p-3 btn-control" (click)="setTargetMode(false, $event)">
         <div class="float-start primary-text">
-          <i class="fas fa-xl" [ngClass]="{ 'fa-check-circle': !targetMode, 'fa-blank': targetMode }"></i>
+          <i class="fas fa-xl" [class]="{ 'fa-check-circle': !targetMode, 'fa-blank': targetMode }"></i>
         </div>
         {{ 'accessories.control.off' | translate }}
         <div class="float-end"><i class="fas fa-xl fa-blank"></i></div>
       </button>
       <button type="button" class="btn mb-0 mx-0 p-3 btn-control" (click)="setTargetMode(true, $event)">
         <div class="float-start primary-text">
-          <i class="fas fa-xl" [ngClass]="{ 'fa-check-circle': targetMode, 'fa-blank': !targetMode }"></i>
+          <i class="fas fa-xl" [class]="{ 'fa-check-circle': targetMode, 'fa-blank': !targetMode }"></i>
         </div>
         {{ 'accessories.control.on' | translate }}
         <div class="float-end"><i class="fas fa-xl fa-blank"></i></div>
@@ -39,7 +39,7 @@
         <div class="float-start primary-text">
           <i
             class="fas fa-xl fa-sun"
-            [ngClass]="{ 'off-text': !isAdaptiveLightingEnabled, 'on-text': isAdaptiveLightingEnabled }"
+            [class]="{ 'off-text': !isAdaptiveLightingEnabled, 'on-text': isAdaptiveLightingEnabled }"
           ></i>
         </div>
         {{ 'accessories.control.adaptive_lighting' | translate }}: {{ isAdaptiveLightingEnabled ? 'ON' : 'OFF' }}
@@ -63,7 +63,7 @@
       [step]="1"
       [(ngModel)]="targetHue.value"
       (ngModelChange)="onHueStateChange()"
-      [ngClass]="{ 'mb-1': isAdaptiveLightingEnabled, '': !isAdaptiveLightingEnabled }"
+      [class]="{ 'mb-1': isAdaptiveLightingEnabled, '': !isAdaptiveLightingEnabled }"
     />
     @if (isAdaptiveLightingEnabled) {
     <div class="d-flex text-center mt-0 mb-1">
@@ -77,7 +77,7 @@
       [step]="1"
       [(ngModel)]="targetSaturation.value"
       (ngModelChange)="onSaturationStateChange()"
-      [ngClass]="{ 'mb-1': isAdaptiveLightingEnabled, '': !isAdaptiveLightingEnabled }"
+      [class]="{ 'mb-1': isAdaptiveLightingEnabled, '': !isAdaptiveLightingEnabled }"
     />
     @if (isAdaptiveLightingEnabled) {
     <div class="d-flex text-center mt-0 mb-1">
@@ -93,7 +93,7 @@
       [step]="targetColorTemperature.step"
       [(ngModel)]="targetColorTemperature.value"
       (ngModelChange)="onColorTemperatureStateChange()"
-      [ngClass]="{ 'mb-1': isAdaptiveLightingEnabled, '': !isAdaptiveLightingEnabled }"
+      [class]="{ 'mb-1': isAdaptiveLightingEnabled, '': !isAdaptiveLightingEnabled }"
     />
     @if (isAdaptiveLightingEnabled) {
     <div class="d-flex text-center mt-0 mb-1">

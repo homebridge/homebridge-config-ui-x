@@ -1,4 +1,4 @@
-import { DatePipe, NgClass } from '@angular/common'
+import { DatePipe } from '@angular/common'
 import { HttpClient, HttpParams } from '@angular/common/http'
 import { Component, inject, Input, OnInit } from '@angular/core'
 import { FormsModule } from '@angular/forms'
@@ -25,7 +25,6 @@ import { environment } from '@/environments/environment'
   standalone: true,
   imports: [
     FormsModule,
-    NgClass,
     NgbTypeahead,
     DatePipe,
     TranslatePipe,

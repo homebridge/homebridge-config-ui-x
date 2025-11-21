@@ -1,4 +1,3 @@
-import { NgClass } from '@angular/common'
 import { Component, Input } from '@angular/core'
 import { TranslatePipe } from '@ngx-translate/core'
 
@@ -11,7 +10,6 @@ import { isSmokeCoAlarmTriggered } from '@/app/core/accessories/types/matter/mat
   styleUrls: ['./smoke-co-alarm.component.scss'],
   standalone: true,
   imports: [
-    NgClass,
     TranslatePipe,
   ],
 })

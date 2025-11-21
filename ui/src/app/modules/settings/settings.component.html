@@ -56,10 +56,7 @@
       class="mt-3 hover-pointer"
     >
       <h5 class="primary-text">
-        <i
-          class="fa"
-          [ngClass]="{ 'fa-chevron-down': showFields.general, 'fa-chevron-right': !showFields.general }"
-        ></i>
+        <i class="fa" [class]="{ 'fa-chevron-down': showFields.general, 'fa-chevron-right': !showFields.general }"></i>
         {{ 'settings.general.title_general' | translate }}
       </h5>
     </div>
@@ -74,7 +71,7 @@
             type="text"
             [formControl]="hbNameFormControl"
             [attr.aria-label]="'settings.name' | translate"
-            [ngClass]="{ 'is-invalid': hbNameIsInvalid }"
+            [class.is-invalid]="hbNameIsInvalid"
           />
           @if (hbNameIsSaving) {
           <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
@@ -135,10 +132,7 @@
       class="mt-3 hover-pointer"
     >
       <h5 class="primary-text">
-        <i
-          class="fa"
-          [ngClass]="{ 'fa-chevron-down': showFields.display, 'fa-chevron-right': !showFields.display }"
-        ></i>
+        <i class="fa" [class]="{ 'fa-chevron-down': showFields.display, 'fa-chevron-right': !showFields.display }"></i>
         {{ 'settings.general.title_display' | translate }}
       </h5>
     </div>
@@ -278,10 +272,7 @@
       class="mt-3 hover-pointer"
     >
       <h5 class="primary-text">
-        <i
-          class="fa"
-          [ngClass]="{ 'fa-chevron-down': showFields.startup, 'fa-chevron-right': !showFields.startup }"
-        ></i>
+        <i class="fa" [class]="{ 'fa-chevron-down': showFields.startup, 'fa-chevron-right': !showFields.startup }"></i>
         {{ 'settings.title_startup_options' | translate }}
       </h5>
     </div>
@@ -569,10 +560,7 @@
       class="mt-3 hover-pointer"
     >
       <h5 class="primary-text">
-        <i
-          class="fa"
-          [ngClass]="{ 'fa-chevron-down': showFields.network, 'fa-chevron-right': !showFields.network }"
-        ></i>
+        <i class="fa" [class]="{ 'fa-chevron-down': showFields.network, 'fa-chevron-right': !showFields.network }"></i>
         {{ 'settings.network.title_network' | translate }}
       </h5>
     </div>
@@ -586,7 +574,7 @@
           @for (adapter of adaptersSelected; track adapter) {
           <span
             class="badge badge-primary me-1"
-            [ngClass]="{ 'badge-danger': adapter.missing, 'badge-info': !adapter.missing }"
+            [class]="{ 'badge-danger': adapter.missing, 'badge-info': !adapter.missing }"
           >
             @if (adapter.missing) {
             <i class="fas fa-exclamation-triangle"></i>
@@ -651,7 +639,7 @@
             max="65533"
             [formControl]="hbPortFormControl"
             [attr.aria-label]="'settings.network.port_hb' | translate"
-            [ngClass]="{ 'is-invalid': hbPortIsInvalid }"
+            [class.is-invalid]="hbPortIsInvalid"
           />
           @if (hbPortIsSaving) {
           <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
@@ -672,7 +660,7 @@
             max="65533"
             [formControl]="hbStartPortFormControl"
             [attr.aria-label]="'settings.network.port_start' | translate"
-            [ngClass]="{ 'is-invalid': hbStartPortIsInvalid }"
+            [class.is-invalid]="hbStartPortIsInvalid"
           />
           @if (hbStartPortIsSaving) {
           <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
@@ -693,7 +681,7 @@
             max="65533"
             [formControl]="hbEndPortFormControl"
             [attr.aria-label]="'settings.network.port_end' | translate"
-            [ngClass]="{ 'is-invalid': hbEndPortIsInvalid }"
+            [class.is-invalid]="hbEndPortIsInvalid"
           />
           @if (hbEndPortIsSaving) {
           <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
@@ -773,7 +761,7 @@
             placeholder="8581"
             [formControl]="uiPortFormControl"
             [attr.aria-label]="'settings.network.port_ui' | translate"
-            [ngClass]="{ 'is-invalid': uiPortIsInvalid }"
+            [class.is-invalid]="uiPortIsInvalid"
           />
           @if (uiPortIsSaving) {
           <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
@@ -821,7 +809,7 @@
       class="mt-3 hover-pointer"
     >
       <h5 class="primary-text">
-        <i class="fa" [ngClass]="{ 'fa-chevron-down': showFields.matter, 'fa-chevron-right': !showFields.matter }"></i>
+        <i class="fa" [class]="{ 'fa-chevron-down': showFields.matter, 'fa-chevron-right': !showFields.matter }"></i>
         {{ 'settings.matter.title' | translate }}
       </h5>
     </div>
@@ -866,7 +854,7 @@
             placeholder="5540"
             [formControl]="matterPortFormControl"
             [attr.aria-label]="'settings.matter.port' | translate"
-            [ngClass]="{ 'is-invalid': matterPortIsInvalid }"
+            [class.is-invalid]="matterPortIsInvalid"
           />
           @if (matterPortIsSaving) {
           <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
@@ -893,7 +881,7 @@
       <h5 class="primary-text">
         <i
           class="fa"
-          [ngClass]="{ 'fa-chevron-down': showFields.terminal, 'fa-chevron-right': !showFields.terminal }"
+          [class]="{ 'fa-chevron-down': showFields.terminal, 'fa-chevron-right': !showFields.terminal }"
         ></i>
         {{ 'settings.network.title_terminal' | translate }}
       </h5>
@@ -914,7 +902,7 @@
             placeholder="1000000"
             [formControl]="hbLogSizeFormControl"
             [attr.aria-label]="'settings.terminal.log_max' | translate"
-            [ngClass]="{ 'is-invalid': hbLogSizeIsInvalid }"
+            [class.is-invalid]="hbLogSizeIsInvalid"
           />
           @if (hbLogSizeIsSaving) {
           <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
@@ -935,7 +923,7 @@
             placeholder="200000"
             [formControl]="hbLogTruncateFormControl"
             [attr.aria-label]="'settings.terminal.log_truncate' | translate"
-            [ngClass]="{ 'is-invalid': hbLogTruncateIsInvalid }"
+            [class.is-invalid]="hbLogTruncateIsInvalid"
           />
           @if (hbLogTruncateIsSaving) {
           <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
@@ -1001,7 +989,7 @@
             step="10000"
             [formControl]="uiTerminalBufferSizeFormControl"
             [attr.aria-label]="'settings.terminal.buffer_size' | translate"
-            [ngClass]="{ 'is-invalid': uiTerminalBufferSizeIsInvalid }"
+            [class.is-invalid]="uiTerminalBufferSizeIsInvalid"
           />
           @if (uiTerminalBufferSizeIsSaving) {
           <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
@@ -1028,7 +1016,7 @@
       <h5 class="primary-text">
         <i
           class="fa"
-          [ngClass]="{ 'fa-chevron-down': showFields.security, 'fa-chevron-right': !showFields.security }"
+          [class]="{ 'fa-chevron-down': showFields.security, 'fa-chevron-right': !showFields.security }"
         ></i>
         {{ 'settings.network.title_security' | translate }}
       </h5>
@@ -1098,7 +1086,7 @@
                 style="width: 44px; text-align: right"
                 [formControl]="uiSessionTimeoutDaysFormControl"
                 [attr.aria-label]="'settings.startup.session_days' | translate"
-                [ngClass]="{ 'is-invalid': uiSessionTimeoutIsInvalid }"
+                [class.is-invalid]="uiSessionTimeoutIsInvalid"
               />
               <label class="ms-1 me-2 mb-0 text-nowrap grey-text small"
                 >{{ 'settings.startup.session_days' | translate }}</label
@@ -1114,7 +1102,7 @@
                 style="width: 44px; text-align: right"
                 [formControl]="uiSessionTimeoutHoursFormControl"
                 [attr.aria-label]="'settings.startup.session_hours' | translate"
-                [ngClass]="{ 'is-invalid': uiSessionTimeoutIsInvalid }"
+                [class.is-invalid]="uiSessionTimeoutIsInvalid"
               />
               <label class="ms-1 me-2 mb-0 text-nowrap grey-text small"
                 >{{ 'settings.startup.session_hours' | translate }}</label
@@ -1130,7 +1118,7 @@
                 style="width: 44px; text-align: right"
                 [formControl]="uiSessionTimeoutMinutesFormControl"
                 [attr.aria-label]="'settings.startup.session_minutes' | translate"
-                [ngClass]="{ 'is-invalid': uiSessionTimeoutIsInvalid }"
+                [class.is-invalid]="uiSessionTimeoutIsInvalid"
               />
               <label class="ms-1 me-2 mb-0 text-nowrap grey-text small"
                 >{{ 'settings.startup.session_minutes' | translate }}</label
@@ -1382,7 +1370,7 @@
       class="mt-3 hover-pointer"
     >
       <h5 class="primary-text">
-        <i class="fa" [ngClass]="{ 'fa-chevron-down': showFields.cache, 'fa-chevron-right': !showFields.cache }"></i>
+        <i class="fa" [class]="{ 'fa-chevron-down': showFields.cache, 'fa-chevron-right': !showFields.cache }"></i>
         {{ 'menu.label_accessories' | translate }}
       </h5>
     </div>
@@ -1474,7 +1462,7 @@
       class="mt-3 hover-pointer"
     >
       <h5 class="primary-text">
-        <i class="fa" [ngClass]="{ 'fa-chevron-down': showFields.reset, 'fa-chevron-right': !showFields.reset }"></i>
+        <i class="fa" [class]="{ 'fa-chevron-down': showFields.reset, 'fa-chevron-right': !showFields.reset }"></i>
         {{ 'reset.bridges.title' | translate }}
       </h5>
     </div>

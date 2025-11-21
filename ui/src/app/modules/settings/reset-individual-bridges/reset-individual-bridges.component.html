@@ -45,15 +45,16 @@
           class="btn btn-danger m-0 ms-3"
           (click)="toggleList(item._id, false)"
           [disabled]="clicked"
-          [ngClass]="{ 'btn-danger': !isInList(item._id), 'btn-elegant': isInList(item._id) }"
+          [class]="{ 'btn-danger': !isInList(item._id), 'btn-elegant': isInList(item._id) }"
           [attr.aria-label]="'form.button_unpair' | translate"
         >
           <i
             class="fas"
-            [ngClass]="{
+            [class]="{
               'fa-refresh': !isInList(item._id),
               'fa-undo': isInList(item._id) && !clicked,
-              'fa-circle-notch fa-spin': isInList(item._id) && clicked,
+              'fa-circle-notch': isInList(item._id) && clicked,
+              'fa-spin': isInList(item._id) && clicked,
             }"
           ></i>
         </button>
@@ -85,15 +86,16 @@
           class="btn btn-danger m-0 ms-3"
           (click)="toggleList(item._id, true)"
           [disabled]="clicked"
-          [ngClass]="{ 'btn-danger': !isInList(item._id), 'btn-elegant': isInList(item._id) }"
+          [class]="{ 'btn-danger': !isInList(item._id), 'btn-elegant': isInList(item._id) }"
           [attr.aria-label]="'form.button_unpair' | translate"
         >
           <i
             class="fas"
-            [ngClass]="{
+            [class]="{
               'fa-refresh': !isInList(item._id),
               'fa-undo': isInList(item._id) && !clicked,
-              'fa-circle-notch fa-spin': isInList(item._id) && clicked,
+              'fa-circle-notch': isInList(item._id) && clicked,
+              'fa-spin': isInList(item._id) && clicked,
             }"
           ></i>
         </button>
@@ -125,15 +127,16 @@
           class="btn btn-danger m-0 ms-3"
           (click)="toggleList(item._id, false)"
           [disabled]="clicked"
-          [ngClass]="{ 'btn-danger': !isInList(item._id), 'btn-elegant': isInList(item._id) }"
+          [class]="{ 'btn-danger': !isInList(item._id), 'btn-elegant': isInList(item._id) }"
           [attr.aria-label]="'form.button_unpair' | translate"
         >
           <i
             class="fas"
-            [ngClass]="{
+            [class]="{
               'fa-trash': !isInList(item._id),
               'fa-undo': isInList(item._id) && !clicked,
-              'fa-circle-notch fa-spin': isInList(item._id) && clicked,
+              'fa-circle-notch': isInList(item._id) && clicked,
+              'fa-spin': isInList(item._id) && clicked,
             }"
           ></i>
         </button>

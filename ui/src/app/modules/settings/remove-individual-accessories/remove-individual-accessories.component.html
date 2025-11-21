@@ -57,10 +57,10 @@
         <span class="me-3">
           <i
             class="fas fa-lg"
-            [ngClass]="{
-            'fa-matter': item.$protocol === 'matter',
-            'fa-hap': item.$protocol !== 'matter'
-          }"
+            [class]="{
+              'fa-matter': item.$protocol === 'matter',
+              'fa-hap': item.$protocol !== 'matter'
+            }"
           ></i>
         </span>
         <span class="flex-grow-1">
@@ -72,15 +72,16 @@
           class="btn btn-danger m-0 ms-3"
           (click)="toggleList(item.UUID || item.uuid, item.$cacheFile, item.$protocol, item.$deviceId)"
           [disabled]="clicked"
-          [ngClass]="{ 'btn-danger': !isInList(item.UUID || item.uuid, item.$cacheFile, item.$protocol), 'btn-elegant': isInList(item.UUID || item.uuid, item.$cacheFile, item.$protocol) }"
+          [class]="{ 'btn-danger': !isInList(item.UUID || item.uuid, item.$cacheFile, item.$protocol), 'btn-elegant': isInList(item.UUID || item.uuid, item.$cacheFile, item.$protocol) }"
           [attr.aria-label]="'form.button_delete' | translate"
         >
           <i
             class="fas"
-            [ngClass]="{
+            [class]="{
               'fa-trash': !isInList(item.UUID || item.uuid, item.$cacheFile, item.$protocol),
               'fa-undo': isInList(item.UUID || item.uuid, item.$cacheFile, item.$protocol) && !clicked,
-              'fa-circle-notch fa-spin': isInList(item.UUID || item.uuid, item.$cacheFile, item.$protocol) && clicked
+              'fa-circle-notch': isInList(item.UUID || item.uuid, item.$cacheFile, item.$protocol) && clicked,
+              'fa-spin': isInList(item.UUID || item.uuid, item.$cacheFile, item.$protocol) && clicked,
             }"
           ></i>
         </button>

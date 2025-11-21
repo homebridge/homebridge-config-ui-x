@@ -1,4 +1,3 @@
-import { NgClass } from '@angular/common'
 import { Component, inject, Input, OnDestroy, OnInit } from '@angular/core'
 import { Router } from '@angular/router'
 import {
@@ -38,7 +37,6 @@ import { HbV2ModalComponent } from '@/app/modules/status/widgets/update-info-wid
     NgxMdModule,
     PluginsMarkdownDirective,
     TranslatePipe,
-    NgClass,
     NgbNavOutlet,
     NgbNav,
     NgbNavItem,

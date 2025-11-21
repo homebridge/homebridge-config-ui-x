@@ -1,4 +1,3 @@
-import { NgClass } from '@angular/common'
 import { Component, inject, OnInit } from '@angular/core'
 import { Router, RouterOutlet } from '@angular/router'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
@@ -20,7 +19,6 @@ import { environment } from '@/environments/environment'
   standalone: true,
   imports: [
     SidebarComponent,
-    NgClass,
     RouterOutlet,
   ],
 })

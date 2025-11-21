@@ -43,7 +43,7 @@
     >
       <i
         class="fas"
-        [ngClass]="{
+        [class]="{
         'fa-eye': !hideHidden,
         'fa-eye-slash': hideHidden
       }"
@@ -99,7 +99,7 @@
     @if (!isMobile || room.services.length) {
     <div class="row">
       <div class="col-md-12">
-        <h5 class="primary-text drag-handle room-title m-0 mb-1 mb-sm-0" [ngClass]="{ 'cursor-move': !isMobile }">
+        <h5 class="primary-text drag-handle room-title m-0 mb-1 mb-sm-0" [class.cursor-move]="!isMobile">
           {{ room.name === 'Default Room' ? ('accessories.control.default_room' | translate) : room.name }}
         </h5>
       </div>
@@ -109,7 +109,7 @@
       @if (room.services.length) {
       <div
         class="col-md-12 d-flex flex-wrap noselect services-bag"
-        [ngClass]="{ 'justify-content-between': isMobile }"
+        [class.justify-content-between]="isMobile"
         [dragula]="'services-bag'"
         [(dragulaModel)]="room.services"
       >

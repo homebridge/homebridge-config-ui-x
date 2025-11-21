@@ -1,4 +1,3 @@
-import { NgClass } from '@angular/common'
 import { ChangeDetectorRef, Component, inject, Input, OnInit } from '@angular/core'
 import { AbstractControl, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
@@ -15,7 +14,6 @@ import { User } from '@/app/modules/users/users.interface'
   imports: [
     FormsModule,
     ReactiveFormsModule,
-    NgClass,
     TranslatePipe,
   ],
 })

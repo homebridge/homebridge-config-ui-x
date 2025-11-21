@@ -1,4 +1,3 @@
-import { NgClass } from '@angular/common'
 import { Component, ElementRef, inject, OnDestroy, OnInit, ViewChild } from '@angular/core'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { NavigationEnd, Router } from '@angular/router'
@@ -32,7 +31,6 @@ export interface CanComponentDeactivate {
     ReactiveFormsModule,
     PluginCardComponent,
     TranslatePipe,
-    NgClass,
     NgbTooltip,
   ],
 })

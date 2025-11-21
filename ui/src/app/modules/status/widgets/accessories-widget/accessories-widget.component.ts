@@ -1,4 +1,3 @@
-import { NgClass } from '@angular/common'
 import { Component, inject, Input, OnDestroy, OnInit } from '@angular/core'
 import { TranslatePipe } from '@ngx-translate/core'
 import { DragulaModule, DragulaService } from 'ng2-dragula'
@@ -14,7 +13,6 @@ import { Widget } from '@/app/modules/status/widgets/widgets.interfaces'
   templateUrl: './accessories-widget.component.html',
   standalone: true,
   imports: [
-    NgClass,
     DragulaModule,
     AccessoryTileComponent,
     TranslatePipe,

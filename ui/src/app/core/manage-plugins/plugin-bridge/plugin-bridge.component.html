@@ -136,7 +136,7 @@
             type="text"
             class="form-control custom-input"
             [(ngModel)]="configBlocks[selectedBlock]._bridge.name"
-            [ngClass]="{ 'is-invalid': getHapNameValidationError(selectedBlock) }"
+            [class.is-invalid]="getHapNameValidationError(selectedBlock)"
           />
         </div>
       </li>
@@ -168,7 +168,7 @@
           <input
             type="text"
             class="form-control custom-input"
-            [ngClass]="{ 'font-monospace': configBlocks[selectedBlock]._bridge.firmwareRevision }"
+            [class.font-monospace]="configBlocks[selectedBlock]._bridge.firmwareRevision"
             [placeholder]="'form.optional' | translate"
             [(ngModel)]="configBlocks[selectedBlock]._bridge.firmwareRevision"
           />
@@ -296,7 +296,7 @@
           <p class="grey-text mx-auto small mb-1" style="max-width: 400px">
             <i
               class="fas fa-link"
-              [ngClass]="{
+              [class]="{
                 'green-text': deviceInfo.get(configBlocks[selectedBlock]._bridge?.username)?.['_isPaired'],
                 'grey-text': !deviceInfo.get(configBlocks[selectedBlock]._bridge?.username)?.['_isPaired']
               }"
@@ -334,7 +334,7 @@
             type="number"
             class="form-control custom-input font-monospace"
             [(ngModel)]="configBlocks[selectedBlock]._bridge.port"
-            [ngClass]="{ 'is-invalid': getHapPortValidationError(selectedBlock) }"
+            [class.is-invalid]="getHapPortValidationError(selectedBlock)"
             min="1025"
             max="65533"
           />
@@ -388,7 +388,7 @@
           <p class="grey-text mx-auto small mb-1" style="max-width: 400px">
             <i
               class="fas fa-link"
-              [ngClass]="{
+              [class]="{
                 'green-text': matterDeviceInfo.get(configBlocks[selectedBlock]._bridge?.username)?.commissioned,
                 'grey-text': !matterDeviceInfo.get(configBlocks[selectedBlock]._bridge?.username)?.commissioned
               }"
@@ -443,7 +443,7 @@
             max="65535"
             placeholder="e.g. 5540"
             [(ngModel)]="configBlocks[selectedBlock]._bridge.matter.port"
-            [ngClass]="{ 'is-invalid': getMatterPortValidationError(selectedBlock) }"
+            [class.is-invalid]="getMatterPortValidationError(selectedBlock)"
           />
         </div>
       </li>

@@ -1,4 +1,3 @@
-import { NgClass } from '@angular/common'
 import { Component, inject, Input, OnDestroy, OnInit } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
@@ -19,7 +18,6 @@ import { ConvertMiredPipe } from '@/app/core/pipes/convert-mired.pipe'
     FormsModule,
     NouisliderComponent,
     TranslatePipe,
-    NgClass,
     ConvertMiredPipe,
   ],
 })

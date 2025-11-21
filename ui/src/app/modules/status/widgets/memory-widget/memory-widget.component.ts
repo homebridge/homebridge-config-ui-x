@@ -1,4 +1,4 @@
-import { DecimalPipe, NgClass } from '@angular/common'
+import { DecimalPipe } from '@angular/common'
 import { Component, ElementRef, inject, Input, OnDestroy, OnInit, viewChild } from '@angular/core'
 import { TranslatePipe } from '@ngx-translate/core'
 import { ChartConfiguration } from 'chart.js'
@@ -13,7 +13,6 @@ import { Widget } from '@/app/modules/status/widgets/widgets.interfaces'
   styleUrls: ['./memory-widget.component.scss'],
   standalone: true,
   imports: [
-    NgClass,
     BaseChartDirective,
     DecimalPipe,
     TranslatePipe,

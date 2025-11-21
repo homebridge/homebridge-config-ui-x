@@ -1,6 +1,5 @@
 import type { CharacteristicType } from '@homebridge/hap-client'
 
-import { NgClass } from '@angular/common'
 import { Component, inject, Input, OnDestroy, OnInit } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
@@ -16,7 +15,6 @@ import { AccessoriesService } from '@/app/core/accessories/accessories.service'
   templateUrl: './humidifier-dehumidifier.manage.component.html',
   standalone: true,
   imports: [
-    NgClass,
     FormsModule,
     NouisliderComponent,
     TranslatePipe,

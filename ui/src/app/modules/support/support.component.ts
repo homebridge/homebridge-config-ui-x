@@ -1,4 +1,3 @@
-import { NgClass } from '@angular/common'
 import { Component, inject, OnInit } from '@angular/core'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 
@@ -9,7 +8,6 @@ import { environment } from '@/environments/environment'
   templateUrl: './support.component.html',
   standalone: true,
   imports: [
-    NgClass,
     TranslatePipe,
   ],
 })

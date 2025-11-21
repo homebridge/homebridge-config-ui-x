@@ -87,7 +87,11 @@
           >
             <i
               class="fas"
-              [ngClass]="{ 'fa-trash': backup.id !== deleting, 'fa-circle-notch fa-spin': backup.id === deleting }"
+              [class]="{
+                'fa-trash': backup.id !== deleting,
+                'fa-circle-notch': backup.id === deleting,
+                'fa-spin': backup.id === deleting,
+              }"
             ></i>
           </button>
         </span>
@@ -112,7 +116,11 @@
           >
             <i
               class="fas"
-              [ngClass]="{ 'fa-trash': 'all' !== deleting, 'fa-circle-notch fa-spin': 'all' === deleting }"
+              [class]="{
+                'fa-trash': 'all' !== deleting,
+                'fa-circle-notch': 'all' === deleting,
+                'fa-spin': 'all' === deleting,
+              }"
             ></i>
           </button>
         </span>

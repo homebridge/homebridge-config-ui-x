@@ -1,4 +1,3 @@
-import { NgClass, NgStyle } from '@angular/common'
 import { Component, ElementRef, inject, Input, OnInit, viewChild } from '@angular/core'
 import { TranslatePipe } from '@ngx-translate/core'
 import { Subject } from 'rxjs'
@@ -11,10 +10,8 @@ import { IoNamespace, WsService } from '@/app/core/ws.service'
   templateUrl: './hap-qrcode-widget.component.html',
   standalone: true,
   imports: [
-    NgStyle,
     QrcodeComponent,
     TranslatePipe,
-    NgClass,
   ],
 })
 export class HapQrcodeWidgetComponent implements OnInit {

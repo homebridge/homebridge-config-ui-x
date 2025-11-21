@@ -1,6 +1,6 @@
 <div
   class="accessory-box"
-  [ngClass]="{ 'accessory-on': service.values.Active || service.values.On }"
+  [class.accessory-on]="service.values.Active || service.values.On"
   [style.cursor]="readyForControl ? 'pointer' : 'default'"
   (longClick)="onLongClick()"
   (shortClick)="onClick()"

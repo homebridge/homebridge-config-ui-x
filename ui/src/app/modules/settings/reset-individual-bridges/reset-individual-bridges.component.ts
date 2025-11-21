@@ -1,4 +1,4 @@
-import { NgClass, TitleCasePipe } from '@angular/common'
+import { TitleCasePipe } from '@angular/common'
 import { Component, inject, OnInit } from '@angular/core'
 import { Router } from '@angular/router'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
@@ -13,7 +13,6 @@ import { SettingsService } from '@/app/core/settings.service'
   templateUrl: './reset-individual-bridges.component.html',
   standalone: true,
   imports: [
-    NgClass,
     TitleCasePipe,
     TranslatePipe,
   ],

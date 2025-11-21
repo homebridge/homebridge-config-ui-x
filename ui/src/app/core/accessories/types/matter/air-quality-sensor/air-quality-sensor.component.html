@@ -1,6 +1,6 @@
 <div
   class="accessory-box"
-  [ngClass]="{
+  [class]="{
     'accessory-on': airQuality === 5,
     'fill-red': airQuality === 5,
     'fill-orange': [3, 4].includes(airQuality),
@@ -40,7 +40,7 @@
     <div class="accessory-label mt-auto">{{ service.customName || service.displayName }}</div>
     <div
       class="accessory-label"
-      [ngClass]="{
+      [class]="{
         'grey-text': airQuality < 5,
         'red-text': airQuality === 5,
       }"

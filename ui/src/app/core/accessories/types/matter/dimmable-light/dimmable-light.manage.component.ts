@@ -1,4 +1,3 @@
-import { NgClass } from '@angular/common'
 import { Component, inject, Input, OnDestroy, OnInit } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
@@ -19,7 +18,6 @@ import { getBrightnessLevel, getOnOffState, levelToPercentage } from '@/app/core
     FormsModule,
     NouisliderComponent,
     TranslatePipe,
-    NgClass,
   ],
 })
 export class DimmableLightManageComponent implements OnInit, OnDestroy {

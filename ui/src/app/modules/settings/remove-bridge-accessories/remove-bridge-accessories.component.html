@@ -31,10 +31,10 @@
         <span class="me-3">
           <i
             class="fas fa-lg"
-            [ngClass]="{
-            'fa-matter': item._protocol === 'matter',
-            'fa-hap': item._protocol !== 'matter'
-          }"
+            [class]="{
+              'fa-matter': item._protocol === 'matter',
+              'fa-hap': item._protocol !== 'matter'
+            }"
           ></i>
         </span>
         <span class="flex-grow-1">
@@ -48,15 +48,16 @@
           class="btn btn-danger m-0 ms-3"
           (click)="toggleList(item._id, item._protocol)"
           [disabled]="clicked"
-          [ngClass]="{ 'btn-danger': !isInList(item._id, item._protocol), 'btn-elegant': isInList(item._id, item._protocol) }"
+          [class]="{ 'btn-danger': !isInList(item._id, item._protocol), 'btn-elegant': isInList(item._id, item._protocol) }"
           [attr.aria-label]="'form.button_delete' | translate"
         >
           <i
             class="fas"
-            [ngClass]="{
+            [class]="{
               'fa-broom': !isInList(item._id, item._protocol),
               'fa-undo': isInList(item._id, item._protocol) && !clicked,
-              'fa-circle-notch fa-spin': isInList(item._id, item._protocol) && clicked
+              'fa-circle-notch': isInList(item._id, item._protocol) && clicked,
+              'fa-spin': isInList(item._id, item._protocol) && clicked,
             }"
           ></i>
         </button>

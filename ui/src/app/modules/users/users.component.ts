@@ -1,4 +1,3 @@
-import { NgClass } from '@angular/common'
 import { Component, inject, OnInit } from '@angular/core'
 import { ActivatedRoute } from '@angular/router'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
@@ -21,7 +20,6 @@ import { User } from '@/app/modules/users/users.interface'
   standalone: true,
   imports: [
     TranslatePipe,
-    NgClass,
   ],
 })
 export class UsersComponent implements OnInit {

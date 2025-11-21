@@ -13,7 +13,7 @@
     <img style="height: 35px; width: 35px" ngSrc="assets/homebridge-logo.svg" alt="HB Logo" height="35" width="35" />
     <div class="hb-logo-text-mobile">Homebridge</div>
   </a>
-  <div class="hamburger-icon" [ngClass]="{ 'hamburger-icon-cross': isExpanded }">
+  <div class="hamburger-icon" [class.hamburger-icon-cross]="isExpanded">
     <span></span>
     <span></span>
     <span></span>
@@ -21,7 +21,7 @@
   </div>
 </div>
 
-<div class="sidebar" [ngClass]="{ 'expanded': isExpanded }" role="navigation" id="sidebar">
+<div class="sidebar" [class.expanded]="isExpanded" role="navigation" id="sidebar">
   <div class="header" (click)="toggleSidebar()" tabindex="0" role="button" (keydown)="handleKeydown($event)">
     <a [routerLink]="['/']" [attr.aria-label]="'menu.label_status' | translate">
       <img style="height: 35px; width: 35px" ngSrc="assets/homebridge-logo.svg" alt="HB Logo" height="35" width="35" />

@@ -71,7 +71,14 @@
           [disabled]="clicked"
           [attr.aria-label]="'backup.backup_now' | translate"
         >
-          <i class="fas" [ngClass]="{ 'fa-arrow-right': !clicked, 'fa-circle-notch fa-spin': clicked }"></i>
+          <i
+            class="fas"
+            [class]="{
+              'fa-arrow-right': !clicked,
+              'fa-circle-notch': clicked,
+              'fa-spin': clicked,
+             }"
+          ></i>
         </button>
       </li>
       <li class="list-group-item d-flex justify-content-between align-items-center">
@@ -86,7 +93,14 @@
           [disabled]="clicked"
           [attr.aria-label]="'backup.backup_now' | translate"
         >
-          <i class="fas" [ngClass]="{ 'fa-arrow-right': !clicked, 'fa-circle-notch fa-spin': clicked }"></i>
+          <i
+            class="fas"
+            [class]="{
+              'fa-arrow-right': !clicked,
+              'fa-circle-notch': clicked,
+              'fa-spin': clicked,
+             }"
+          ></i>
         </button>
       </li>
       <li class="list-group-item d-flex justify-content-between align-items-center">
@@ -174,7 +188,11 @@
           >
             <i
               class="fas"
-              [ngClass]="{ 'fa-trash': backup.id !== deleting, 'fa-circle-notch fa-spin': backup.id === deleting }"
+              [class]="{
+                'fa-trash': backup.id !== deleting,
+                'fa-circle-notch': backup.id === deleting,
+                'fa-spin': backup.id === deleting,
+              }"
             ></i>
           </button>
         </span>

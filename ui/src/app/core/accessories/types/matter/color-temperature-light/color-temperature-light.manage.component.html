@@ -17,14 +17,14 @@
     >
       <button type="button" class="btn mb-0 mx-0 p-3 btn-control" (click)="setTargetMode(false, $event)">
         <div class="float-start primary-text">
-          <i class="fas fa-xl" [ngClass]="{ 'fa-check-circle': !targetMode, 'fa-blank': targetMode }"></i>
+          <i class="fas fa-xl" [class]="{ 'fa-check-circle': !targetMode, 'fa-blank': targetMode }"></i>
         </div>
         {{ 'accessories.control.off' | translate }}
         <div class="float-end"><i class="fas fa-xl fa-blank"></i></div>
       </button>
       <button type="button" class="btn mb-0 mx-0 p-3 btn-control" (click)="setTargetMode(true, $event)">
         <div class="float-start primary-text">
-          <i class="fas fa-xl" [ngClass]="{ 'fa-check-circle': targetMode, 'fa-blank': !targetMode }"></i>
+          <i class="fas fa-xl" [class]="{ 'fa-check-circle': targetMode, 'fa-blank': !targetMode }"></i>
         </div>
         {{ 'accessories.control.on' | translate }}
         <div class="float-end"><i class="fas fa-xl fa-blank"></i></div>

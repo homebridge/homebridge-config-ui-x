@@ -1,6 +1,6 @@
 <div
   class="accessory-box"
-  [ngClass]="{
+  [class]="{
     'accessory-on': 'Active' in service.values
       ? service.values.Active
       : ('CurrentMediaState' in service.values ? [0, 1].includes(service.values.CurrentMediaState) : 'Mute' in service.values && 'Volume' in service.values ? !service.values.Mute && service.values.Volume > 0 : 'Mute' in service.values && !service.values.Mute),

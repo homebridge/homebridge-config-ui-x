@@ -1,4 +1,3 @@
-import { NgClass } from '@angular/common'
 import { Component, inject, Input, OnDestroy, OnInit } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
@@ -19,7 +18,6 @@ import { DurationPipe } from '@/app/core/pipes/duration.pipe'
     NouisliderComponent,
     TranslatePipe,
     DurationPipe,
-    NgClass,
   ],
 })
 export class LockMechanismManageComponent implements OnInit, OnDestroy {

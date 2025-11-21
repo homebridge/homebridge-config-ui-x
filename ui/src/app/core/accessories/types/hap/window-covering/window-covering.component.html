@@ -1,6 +1,6 @@
 <div
   class="accessory-box"
-  [ngClass]="{ 'accessory-on': service.values.CurrentPosition }"
+  [class.accessory-on]="service.values.CurrentPosition"
   [style.cursor]="readyForControl ? 'pointer' : 'default'"
   (longClick)="onLongClick()"
   (shortClick)="onClick()"

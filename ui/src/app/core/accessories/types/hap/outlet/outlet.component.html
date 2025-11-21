@@ -1,11 +1,9 @@
 <div
   class="accessory-box"
-  [ngClass]="{
-    'accessory-on': service.values.On
-      ||  service.values.Active
-      || ('LockTargetState' in service.values && !service.values.LockTargetState)
-      || ('CurrentDoorState' in service.values && [0, 2].includes(service.values.CurrentDoorState))
-  }"
+  [class.accessory-on]="service.values.On
+    ||  service.values.Active
+    || ('LockTargetState' in service.values && !service.values.LockTargetState)
+    || ('CurrentDoorState' in service.values && [0, 2].includes(service.values.CurrentDoorState))"
   [style.cursor]="readyForControl ? 'pointer' : 'default'"
   (shortClick)="onClick()"
   tabindex="0"

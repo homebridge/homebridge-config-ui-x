@@ -76,7 +76,7 @@
       @if (!saveButtonDisabled) {
       <i
         class="fa fa-xl me-2"
-        [ngClass]="formIsValid ? 'fa-circle-check green-text' : (strictValidation ? 'fa-circle-exclamation red-text' : 'fa-circle-exclamation orange-text')"
+        [class]="formIsValid ? 'fa-circle-check green-text' : (strictValidation ? 'fa-circle-exclamation red-text' : 'fa-circle-exclamation orange-text')"
         [ngbTooltip]="(formIsValid ? 'form.label_valid' : (strictValidation ? 'form.label_invalid_strict' : 'form.label_invalid')) | translate"
         container="modal"
         placement="top"

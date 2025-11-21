@@ -1,4 +1,3 @@
-import { NgClass } from '@angular/common'
 import { Component, inject, Input } from '@angular/core'
 import { TranslatePipe } from '@ngx-translate/core'
 
@@ -12,7 +11,6 @@ import { SettingsService } from '@/app/core/settings.service'
   styleUrls: ['./on-off-plug-in-unit.component.scss'],
   standalone: true,
   imports: [
-    NgClass,
     TranslatePipe,
   ],
 })

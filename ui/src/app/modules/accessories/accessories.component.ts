@@ -1,4 +1,3 @@
-import { NgClass } from '@angular/common'
 import { Component, inject, OnDestroy, OnInit } from '@angular/core'
 import { NgbModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
@@ -23,7 +22,6 @@ import { DragHerePlaceholderComponent } from '@/app/modules/accessories/drag-her
   standalone: true,
   imports: [
     NgbTooltip,
-    NgClass,
     DragulaModule,
     AccessoryTileComponent,
     DragHerePlaceholderComponent,
