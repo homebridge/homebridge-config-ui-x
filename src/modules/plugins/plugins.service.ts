@@ -1612,10 +1612,11 @@ export class PluginsService {
     // Walk up the directory tree and add node_modules at each level
     for (let i = parts.length; i > 0; i--) {
       // Skip if the current part is already 'node_modules'
-      if (parts[i] === 'node_modules') {
+      if (parts[i - 1] === 'node_modules') {
         continue
       }
       const dir = parts.slice(0, i).join(sep)
+      // Skip root-level paths (empty string on Unix, drive letter on Windows)
       if (dir) {
         const modulesPath = join(dir, 'node_modules')
         paths.push(modulesPath)
