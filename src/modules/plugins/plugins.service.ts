@@ -18,7 +18,6 @@ import { execSync, fork, spawn } from 'node:child_process'
 import { EventEmitter } from 'node:events'
 import { constants, existsSync } from 'node:fs'
 import { access, readdir, readFile, realpath, stat } from 'node:fs/promises'
-import { createRequire } from 'node:module'
 import { arch, cpus, platform, userInfo } from 'node:os'
 import {
   basename,
@@ -49,9 +48,6 @@ import { ChildBridgesService } from '../child-bridges/child-bridges.service.js'
 import { HomebridgeUpdateActionDto, PluginActionDto } from './plugins.dto.js'
 
 const { orderBy, uniq } = _
-
-// Create a require function for ESM compatibility
-const require = createRequire(import.meta.url)
 
 @Injectable()
 export class PluginsService {
@@ -1579,7 +1575,9 @@ export class PluginsService {
         paths.push(...this.getNpmPrefixToSearchPaths())
       }
     } else {
-      paths = paths.concat(require.main?.paths || [])
+      // In ESM, require.main is undefined, so we generate module paths manually
+      // Use process.cwd() as the starting point for module resolution
+      paths = paths.concat(this.getModuleResolutionPaths(process.cwd()))
 
       if (process.env.NODE_PATH) {
         paths = process.env.NODE_PATH.split(delimiter).filter(p => !!p).concat(paths)
@@ -1599,6 +1597,30 @@ export class PluginsService {
     return uniq(paths).filter((requiredPath) => {
       return existsSync(requiredPath)
     })
+  }
+
+  /**
+   * Generate module resolution paths for ESM compatibility.
+   * Replicates the behavior of require.main.paths which is not available in ESM.
+   * @param startPath - The starting path to generate module paths from
+   * @returns Array of node_modules paths
+   */
+  private getModuleResolutionPaths(startPath: string): string[] {
+    const paths: string[] = []
+    const parts = startPath.split(sep)
+
+    // Walk up the directory tree and add node_modules at each level
+    for (let i = parts.length; i >= 0; i--) {
+      // Skip if the current part is already 'node_modules'
+      if (parts[i] === 'node_modules') {
+        continue
+      }
+      const dir = parts.slice(0, i).join(sep) || sep
+      const modulesPath = join(dir, 'node_modules')
+      paths.push(modulesPath)
+    }
+
+    return paths
   }
 
   /**
