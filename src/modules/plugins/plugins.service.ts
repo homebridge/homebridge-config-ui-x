@@ -1610,14 +1610,16 @@ export class PluginsService {
     const parts = startPath.split(sep)
 
     // Walk up the directory tree and add node_modules at each level
-    for (let i = parts.length; i >= 0; i--) {
+    for (let i = parts.length; i > 0; i--) {
       // Skip if the current part is already 'node_modules'
       if (parts[i] === 'node_modules') {
         continue
       }
-      const dir = parts.slice(0, i).join(sep) || sep
-      const modulesPath = join(dir, 'node_modules')
-      paths.push(modulesPath)
+      const dir = parts.slice(0, i).join(sep)
+      if (dir) {
+        const modulesPath = join(dir, 'node_modules')
+        paths.push(modulesPath)
+      }
     }
 
     return paths
