@@ -1,20 +1,21 @@
 import type { EventEmitter } from 'node:events'
 
-import type { HomebridgePluginUiMetadata } from '../../plugins/plugins.interfaces'
+import type { HomebridgePluginUiMetadata } from '../../plugins/plugins.interfaces.js'
 
 import { fork } from 'node:child_process'
+import { readFile } from 'node:fs/promises'
 import { basename, dirname, join, normalize, resolve } from 'node:path'
 import process from 'node:process'
 
 import { HttpService } from '@nestjs/axios'
-import { Injectable, NotFoundException } from '@nestjs/common'
-import { pathExists, readFile } from 'fs-extra'
+import { Inject, Injectable, NotFoundException } from '@nestjs/common'
+import { pathExists } from 'fs-extra/esm'
 import NodeCache from 'node-cache'
 import { firstValueFrom } from 'rxjs'
 
-import { ConfigService } from '../../../core/config/config.service'
-import { Logger } from '../../../core/logger/logger.service'
-import { PluginsService } from '../../plugins/plugins.service'
+import { ConfigService } from '../../../core/config/config.service.js'
+import { Logger } from '../../../core/logger/logger.service.js'
+import { PluginsService } from '../../plugins/plugins.service.js'
 
 @Injectable()
 export class PluginsSettingsUiService {
@@ -22,10 +23,10 @@ export class PluginsSettingsUiService {
   private pluginUiLastVersionCache = new NodeCache({ stdTTL: 86400 })
 
   constructor(
-    private loggerService: Logger,
-    private pluginsService: PluginsService,
-    private configService: ConfigService,
-    private httpService: HttpService,
+    @Inject(Logger) private readonly loggerService: Logger,
+    @Inject(PluginsService) private readonly pluginsService: PluginsService,
+    @Inject(ConfigService) private readonly configService: ConfigService,
+    @Inject(HttpService) private readonly httpService: HttpService,
   ) {}
 
   /**

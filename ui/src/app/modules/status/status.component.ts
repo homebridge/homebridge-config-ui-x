@@ -16,6 +16,7 @@ import { CreditsComponent } from '@/app/modules/status/credits/credits.component
 import { WidgetControlComponent } from '@/app/modules/status/widget-control/widget-control.component'
 import { WidgetVisibilityComponent } from '@/app/modules/status/widget-visibility/widget-visibility.component'
 import { AVAILABLE_WIDGETS, WidgetsComponent } from '@/app/modules/status/widgets/widgets.component'
+import { Widget } from '@/app/modules/status/widgets/widgets.interfaces'
 
 @Component({
   templateUrl: './status.component.html',
@@ -163,7 +164,7 @@ export class StatusComponent implements OnInit, OnDestroy {
         }
 
         // Add the widget
-        const item = {
+        const item: Widget = {
           x: undefined,
           y: undefined,
           component: widget.component,
@@ -174,6 +175,7 @@ export class StatusComponent implements OnInit, OnDestroy {
           $resizeEvent: new Subject(),
           $configureEvent: new Subject(),
           $saveWidgetsEvent: this.saveWidgetsEvent,
+          draggable: this.options.draggable.enabled,
         }
 
         this.dashboard.push(item)
@@ -190,7 +192,7 @@ export class StatusComponent implements OnInit, OnDestroy {
       .catch(() => { /* modal dismissed */ })
   }
 
-  public manageWidget(item) {
+  public manageWidget(item: Widget) {
     const ref = this.$modal.open(WidgetControlComponent, {
       size: 'lg',
       backdrop: 'static',
@@ -199,12 +201,7 @@ export class StatusComponent implements OnInit, OnDestroy {
     ref.result
       .then(() => {
         this.gridChangedEvent()
-        item.$configureEvent.next(undefined)
-
-        // Some need a refresh after configuration to take effect
-        if (['CpuWidgetComponent', 'MemoryWidgetComponent', 'NetworkWidgetComponent'].includes(item.component)) {
-          window.location.reload()
-        }
+        item.$configureEvent.next()
       })
       .catch(() => { /* modal dismissed */ })
   }
@@ -228,7 +225,7 @@ export class StatusComponent implements OnInit, OnDestroy {
       }
 
       let saveNeeded = false
-      this.setLayout(layout.map((item: any) => {
+      this.setLayout(layout.map((item: GridsterItem) => {
         // Renamed between v4.68.0 and v4.69.0
         if (item.component === 'HomebridgeStatusWidgetComponent') {
           item.component = 'UpdateInfoWidgetComponent'
@@ -248,6 +245,11 @@ export class StatusComponent implements OnInit, OnDestroy {
           return null
         }
 
+        // If accessory control is disabled (insecure mode is disabled), hide the accessories widget
+        if (item.component === 'AccessoriesWidgetComponent' && !this.$settings.env.enableAccessories) {
+          return null
+        }
+
         return item
       }).filter(Boolean))
 
@@ -257,10 +259,11 @@ export class StatusComponent implements OnInit, OnDestroy {
     })
   }
 
-  private setLayout(layout: any[]) {
+  private setLayout(layout: GridsterItem[]) {
     this.dashboard = layout.map((item) => {
-      item.$resizeEvent = new Subject()
-      item.$configureEvent = new Subject()
+      // Preserve existing Subjects to maintain subscriptions, or create new ones if they don't exist
+      item.$resizeEvent = item.$resizeEvent || new Subject()
+      item.$configureEvent = item.$configureEvent || new Subject()
       item.$saveWidgetsEvent = this.saveWidgetsEvent
       item.draggable = this.options.draggable.enabled
       return item
@@ -273,7 +276,7 @@ export class StatusComponent implements OnInit, OnDestroy {
     this.gridChangedEvent()
   }
 
-  private gridResizeEvent(_item: any, itemComponent: any) {
+  private gridResizeEvent(_item: GridsterItem, itemComponent: any) {
     itemComponent.item.$resizeEvent.next('resize')
     this.page.mobile = (window.innerWidth < 1024)
     this.page.showWidgetConfigure = (window.innerWidth < 576)
@@ -281,7 +284,7 @@ export class StatusComponent implements OnInit, OnDestroy {
 
   private async gridChangedEvent() {
     // Sort the array to ensure mobile displays correctly
-    this.dashboard.sort((a: any, b: any) => a.mobileOrder - b.mobileOrder)
+    this.dashboard.sort((a: GridsterItem, b: GridsterItem) => a.mobileOrder - b.mobileOrder)
 
     // Remove private properties
     const layout = this.dashboard.map((item) => {

@@ -87,8 +87,7 @@
       [step]="RelativeHumidityDehumidifierThreshold.minStep"
       [(ngModel)]="autoHumidity"
       (ngModelChange)="onAutoHumidityStateChange()"
-    >
-    </nouislider>
+    />
     } @else if (RelativeHumidityHumidifierThreshold && !RelativeHumidityDehumidifierThreshold) {
     <h6 class="mt-4">{{ 'accessories.control.target_auto' | translate }}: {{ targetHumidifierHumidity }}%</h6>
     <nouislider
@@ -97,8 +96,7 @@
       [step]="RelativeHumidityHumidifierThreshold.minStep"
       [(ngModel)]="targetHumidifierHumidity"
       (ngModelChange)="onHumidityStateChange()"
-    >
-    </nouislider>
+    />
     } @else if (!RelativeHumidityHumidifierThreshold && RelativeHumidityDehumidifierThreshold) {
 
     <h6 class="mt-4">{{ 'accessories.control.target_auto' | translate }}: {{ targetDehumidifierHumidity }}%</h6>
@@ -108,8 +106,7 @@
       [step]="RelativeHumidityDehumidifierThreshold.minStep"
       [(ngModel)]="targetDehumidifierHumidity"
       (ngModelChange)="onHumidityStateChange()"
-    >
-    </nouislider>
+    />
     } }
   </div>
   <div class="modal-footer"></div>

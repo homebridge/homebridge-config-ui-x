@@ -73,8 +73,7 @@
     (onInit)="onEditorInit($event)"
     (keydown.control.s)="$event.preventDefault(); onSave()"
     (keydown.meta.s)="$event.preventDefault(); onSave()"
-  >
-  </ngx-monaco-editor>
+  />
   } @if (!isMobile && originalConfig) {
   <ngx-monaco-diff-editor
     class="flex-grow-1 h-100 w-100 mt-3 mb-0"
@@ -84,8 +83,7 @@
     (onInit)="onInitDiffEditor($event)"
     (keydown.control.s)="$event.preventDefault(); onSave()"
     (keydown.meta.s)="$event.preventDefault(); onSave()"
-  >
-  </ngx-monaco-diff-editor>
+  />
   } @if (isMobile) {
   <textarea
     wrap="off"

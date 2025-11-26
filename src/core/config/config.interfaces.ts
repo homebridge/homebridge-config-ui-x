@@ -66,6 +66,18 @@ export interface HomebridgeConfig {
   disabledPlugins?: string[]
 }
 
+/**
+ * Homebridge UI bridge config interface
+ */
+export interface HomebridgeUiBridgeConfig {
+  username: string
+  hideHapAlert?: boolean
+  scheduledRestartCron?: string
+}
+
+/**
+ * Homebridge UI config interface
+ */
 export interface HomebridgeUiConfig {
   name: string
   port: number
@@ -98,9 +110,10 @@ export interface HomebridgeUiConfig {
   }
   plugins?: {
     hideUpdatesFor?: string[]
-    hidePairingAlerts?: string[]
     alwaysShowBetas?: boolean
   }
+  scheduledRestartCron?: string
+  bridges?: HomebridgeUiBridgeConfig[]
   temp?: string
   tempUnits?: string
   wallpaper?: string

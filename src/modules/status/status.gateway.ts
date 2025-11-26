@@ -1,9 +1,9 @@
-import { UseGuards } from '@nestjs/common'
+import { Inject, UseGuards } from '@nestjs/common'
 import { SubscribeMessage, WebSocketGateway, WsException } from '@nestjs/websockets'
 
-import { WsGuard } from '../../core/auth/guards/ws.guard'
-import { PluginsService } from '../plugins/plugins.service'
-import { StatusService } from './status.service'
+import { WsGuard } from '../../core/auth/guards/ws.guard.js'
+import { PluginsService } from '../plugins/plugins.service.js'
+import { StatusService } from './status.service.js'
 
 @UseGuards(WsGuard)
 @WebSocketGateway({
@@ -16,8 +16,8 @@ import { StatusService } from './status.service'
 })
 export class StatusGateway {
   constructor(
-    private statusService: StatusService,
-    private pluginsService: PluginsService,
+    @Inject(StatusService) private readonly statusService: StatusService,
+    @Inject(PluginsService) private readonly pluginsService: PluginsService,
   ) {}
 
   @SubscribeMessage('get-dashboard-layout')

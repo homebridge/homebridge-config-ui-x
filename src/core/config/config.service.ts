@@ -1,27 +1,22 @@
-import type { ReadStream } from 'fs-extra'
+import type { ReadStream } from 'node:fs'
 
-import type { HomebridgeConfig, HomebridgeUiConfig } from './config.interfaces'
+import type { HomebridgeConfig, HomebridgeUiConfig } from './config.interfaces.js'
 
 import { createHash, randomBytes } from 'node:crypto'
+import { createReadStream } from 'node:fs'
+import { stat } from 'node:fs/promises'
 import { homedir, platform, totalmem } from 'node:os'
 import { resolve } from 'node:path'
 import process from 'node:process'
 
 import { Injectable } from '@nestjs/common'
-import {
-  createReadStream,
-  pathExists,
-  pathExistsSync,
-  readJson,
-  readJSONSync,
-  readJsonSync,
-  stat,
-  writeJsonSync,
-} from 'fs-extra'
-import { isEqual } from 'lodash'
+import { pathExists, pathExistsSync, readJson, readJSONSync, readJsonSync, writeJsonSync } from 'fs-extra/esm'
+import _ from 'lodash'
 import { satisfies } from 'semver'
 
-import { FEATURE_FLAGS } from '../feature-flags/feature-flags.registry'
+import { FEATURE_FLAGS } from '../feature-flags/feature-flags.registry.js'
+
+const { isEqual } = _
 
 @Injectable()
 export class ConfigService {
@@ -61,6 +56,7 @@ export class ConfigService {
 
   // Check this async
   public runningOnRaspberryPi = false
+  public runningOnRaspbianImage = false
 
   // Docker settings
   public startupScript = resolve(this.storagePath, 'startup.sh')
@@ -100,6 +96,7 @@ export class ConfigService {
     const homebridgeConfig = readJSONSync(this.configPath)
     this.parseConfig(homebridgeConfig)
     this.checkIfRunningOnRaspberryPi()
+    this.checkIfRunningOnRaspbianImage()
   }
 
   /**
@@ -199,6 +196,7 @@ export class ConfigService {
         runningInLinux: this.runningInLinux,
         runningInFreeBSD: this.runningInFreeBSD,
         runningOnRaspberryPi: this.runningOnRaspberryPi,
+        runningOnRaspbianImage: this.runningOnRaspbianImage,
         temperatureUnits: this.ui.tempUnits || 'c',
         temp: this.ui.temp,
         log: {
@@ -217,9 +215,10 @@ export class ConfigService {
         },
         plugins: {
           hideUpdatesFor: this.ui.plugins?.hideUpdatesFor || [],
-          hidePairingAlerts: this.ui.plugins?.hidePairingAlerts || [],
           alwaysShowBetas: Boolean(this.ui.plugins?.alwaysShowBetas),
         },
+        scheduledRestartCron: this.ui.scheduledRestartCron || null,
+        bridges: this.ui.bridges || [],
         linux: {
           shutdown: this.ui.linux?.shutdown,
           restart: this.ui.linux?.restart,
@@ -391,6 +390,19 @@ export class ConfigService {
       this.runningOnRaspberryPi = await pathExists('/usr/bin/vcgencmd') && await pathExists('/usr/bin/raspi-config')
     } catch (e) {
       this.runningOnRaspberryPi = false
+    }
+  }
+
+  /**
+   * Checks to see if we are running on the Homebridge Raspbian Image
+   * The Raspbian image has nginx proxying the UI and handling SSL
+   */
+  private async checkIfRunningOnRaspbianImage() {
+    try {
+      // Check for the marker file that only exists on the Raspbian image
+      this.runningOnRaspbianImage = platform() === 'linux' && await pathExists('/etc/hb-ui-port')
+    } catch (e) {
+      this.runningOnRaspbianImage = false
     }
   }
 

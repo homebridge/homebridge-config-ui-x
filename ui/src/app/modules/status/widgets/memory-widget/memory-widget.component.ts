@@ -3,7 +3,7 @@ import { Component, ElementRef, inject, Input, OnDestroy, OnInit, viewChild } fr
 import { TranslatePipe } from '@ngx-translate/core'
 import { ChartConfiguration } from 'chart.js'
 import { BaseChartDirective } from 'ng2-charts'
-import { interval, Subscription } from 'rxjs'
+import { interval, Subject, Subscription } from 'rxjs'
 
 import { IoNamespace, WsService } from '@/app/core/ws.service'
 import { Widget } from '@/app/modules/status/widgets/widgets.interfaces'
@@ -23,8 +23,11 @@ export class MemoryWidgetComponent implements OnInit, OnDestroy {
   private $ws = inject(WsService)
   private io: IoNamespace
   private intervalSubscription: Subscription
+  private configureSubscription: Subscription
 
   @Input() public widget: Widget
+  @Input() public resizeEvent: Subject<void>
+  @Input() public configureEvent: Subject<void>
 
   readonly chart = viewChild(BaseChartDirective)
   readonly widgetBackground = viewChild<ElementRef>('widgetbackground')
@@ -91,6 +94,15 @@ export class MemoryWidgetComponent implements OnInit, OnDestroy {
       this.getServerMemoryInfo()
     }
 
+    this.initializeWidget()
+
+    // Listen for configuration changes
+    this.configureEvent.subscribe(() => {
+      this.reinitializeWidget()
+    })
+  }
+
+  private initializeWidget() {
     // Interval and history items should be in [1, 60]
     if (!this.widget.refreshInterval) {
       this.widget.refreshInterval = 10
@@ -108,8 +120,28 @@ export class MemoryWidgetComponent implements OnInit, OnDestroy {
     })
   }
 
+  private reinitializeWidget() {
+    // Unsubscribe from the old interval
+    if (this.intervalSubscription) {
+      this.intervalSubscription.unsubscribe()
+    }
+
+    // Clear the chart data
+    this.lineChartData.datasets[0].data = []
+    this.lineChartLabels = []
+
+    // Reinitialize with new settings
+    this.initializeWidget()
+
+    // Fetch new data immediately
+    if (this.io.socket.connected) {
+      this.getServerMemoryInfo()
+    }
+  }
+
   public ngOnDestroy() {
     this.intervalSubscription.unsubscribe()
+    this.configureSubscription?.unsubscribe()
   }
 
   private getServerMemoryInfo() {

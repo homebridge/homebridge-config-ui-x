@@ -26,7 +26,7 @@
           <small class="grey-text">{{ 'config.restore.download' | translate }}</small>
         </div>
         <button
-          class="btn btn-primary m-0 ms-3"
+          class="btn btn-primary m-0 ms-3 py-1"
           (click)="downloadCurrentConfig()"
           [disabled]="clicked || deleting"
           [attr.aria-label]="'backup.backup_now' | translate"
@@ -51,7 +51,7 @@
           <button
             (click)="restore(backup.id)"
             [disabled]="clicked || deleting"
-            class="btn btn-primary m-0 ms-3"
+            class="btn btn-primary m-0 ms-3 py-1"
             [ngbTooltip]="'config.restore.copy_to_editor' | translate"
             placement="bottom"
             container="modal"
@@ -96,7 +96,7 @@
       <li class="list-group-item d-flex justify-content-between align-items-center">
         <span>
           {{ 'form.button_delete_all' | translate }}<br />
-          <span class="grey-text small"> {{ 'common.labels.no_confirmation' | translate }} </span>
+          <span class="grey-text small">{{ 'common.labels.no_confirmation' | translate }}</span>
         </span>
         <span style="display: flex; flex-wrap: nowrap">
           <button

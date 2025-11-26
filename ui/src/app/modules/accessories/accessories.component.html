@@ -115,7 +115,7 @@
       >
         @for (service of room.services; track service) { @if (!hideHidden || !service.hidden) {
         <div class="accessory-item accessory-tab">
-          <app-accessory-tile [service]="service"></app-accessory-tile>
+          <app-accessory-tile [service]="service" />
         </div>
         } }
         <div style="height: 0" class="accessory-box invisible py-0 my-0"></div>
@@ -131,7 +131,7 @@
       </div>
       } @if (!room.services.length && !isMobile) {
       <div class="col-md-12 d-flex flex-wrap noselect" [dragula]="'services-bag'" [(dragulaModel)]="room.services">
-        <app-drag-here-placeholder class="no-drag"></app-drag-here-placeholder>
+        <app-drag-here-placeholder class="no-drag" />
       </div>
       }
     </div>

@@ -152,14 +152,14 @@
       </h4>
       <div id="output" class="font-monospace small alert alert-info w-100 text-start mt-1 mb-0"></div>
       @if (step === 'restore-complete') {
-      <a class="btn btn-lg btn-primary mt-4" href="/login"> {{ 'form.button_continue' | translate }} </a>
+      <a class="btn btn-lg btn-primary mt-4" href="/login">{{ 'form.button_continue' | translate }}</a>
       }
     </div>
     } @else if (step === 'setup-complete') {
     <div class="w-100 d-flex flex-column align-items-center mb-2">
       <h4 class="mb-3">{{ 'setup_wizard_complete_title' | translate }}</h4>
       <div class="mb-4 small grey-text text-center">{{ 'setup_wizard_completed' | translate }}</div>
-      <a class="btn btn-lg btn-primary" href="/"> {{ 'form.button_continue' | translate }} </a>
+      <a class="btn btn-lg btn-primary" href="/">{{ 'form.button_continue' | translate }}</a>
     </div>
     }
   </div>

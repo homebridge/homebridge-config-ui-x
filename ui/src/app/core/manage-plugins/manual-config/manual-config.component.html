@@ -21,7 +21,7 @@
       'plugins.settings.message_consult_documentation' | translate }}
     </div>
     } @if (schema?.headerDisplay) {
-    <markdown class="plugin-md" [data]="schema.headerDisplay | interpolateMd"></markdown>
+    <markdown class="plugin-md" [data]="schema.headerDisplay | interpolateMd" />
     }
 
     <!-- MULTIPLE CONFIG BLOCKS-->
@@ -86,8 +86,7 @@
               [options]="editorOptions"
               [(ngModel)]="currentBlock"
               (onInit)="onEditorInit($event)"
-            >
-            </ngx-monaco-editor>
+            />
           </div>
         </div>
       </div>
@@ -95,7 +94,7 @@
     </div>
     @if (schema?.footerDisplay) {
     <div class="mt-3">
-      <markdown class="plugin-md" [data]="schema.footerDisplay | interpolateMd"></markdown>
+      <markdown class="plugin-md" [data]="schema.footerDisplay | interpolateMd" />
     </div>
     } }
   </div>

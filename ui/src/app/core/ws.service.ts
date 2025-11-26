@@ -22,7 +22,6 @@ export class WsService {
 
   /**
    * Wrapper function to reuse the same connection
-   *
    * @param namespace
    */
   public connectToNamespace(namespace: string): IoNamespace {
@@ -80,7 +79,6 @@ export class WsService {
 
   /**
    * Establish a connection to the namespace
-   *
    * @param namespace
    */
   private establishConnectionToNamespace(namespace: string): IoNamespace {

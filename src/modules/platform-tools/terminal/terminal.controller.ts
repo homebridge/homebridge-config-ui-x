@@ -1,13 +1,13 @@
-import { Controller, Get, Post, UseGuards } from '@nestjs/common'
+import { Controller, Get, Inject, Post, UseGuards } from '@nestjs/common'
 import { AuthGuard } from '@nestjs/passport'
 
-import { TerminalService } from './terminal.service'
+import { TerminalService } from './terminal.service.js'
 
 @UseGuards(AuthGuard())
 @Controller('platform-tools/terminal')
 export class TerminalController {
   constructor(
-    private readonly terminalService: TerminalService,
+    @Inject(TerminalService) private readonly terminalService: TerminalService,
   ) {}
 
   @Get('has-persistent-session')

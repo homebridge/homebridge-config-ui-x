@@ -1,4 +1,5 @@
 import type { DeviceInfo, PluginSchema } from '@/app/core/manage-plugins/manage-plugins.interfaces'
+import type { BridgeConfig } from '@/app/core/settings.interfaces'
 
 import { NgClass } from '@angular/common'
 import { Component, inject, Input, OnInit } from '@angular/core'
@@ -37,6 +38,9 @@ export class PluginBridgeComponent implements OnInit {
   private $settings = inject(SettingsService)
   private $toastr = inject(ToastrService)
   private $translate = inject(TranslateService)
+  private bridgeConfigs = new Map<string, BridgeConfig>()
+  private originalScheduledRestartCrons = new Map<string, string | null>()
+  private originalHideAlerts = new Map<string, { hideHapAlert?: boolean }>()
 
   @Input() plugin: Plugin
   @Input() schema: PluginSchema
@@ -62,10 +66,10 @@ export class PluginBridgeComponent implements OnInit {
   public readonly defaultIcon = 'assets/hb-icon.png'
   public readonly linkChildBridges = '<a href="https://github.com/homebridge/homebridge/wiki/Child-Bridges" target="_blank"><i class="fas fa-external-link-alt primary-text"></i></a>'
   public readonly linkDebug = '<a href="https://github.com/homebridge/homebridge-config-ui-x/wiki/Debug-Common-Values" target="_blank"><i class="fa fa-external-link-alt primary-text"></i></a>'
-  public hidePairingAlerts: Set<string> = new Set()
+  public readonly linkCron = '<a href="https://crontab.guru/" target="_blank" rel="noopener noreferrer"><i class="fa fa-external-link-alt primary-text"></i></a>'
 
   public async ngOnInit(): Promise<void> {
-    await Promise.all([this.getPluginType(), this.loadPluginConfig(), this.loadHidePairingAlerts()])
+    await Promise.all([this.getPluginType(), this.loadPluginConfig(), this.loadBridgeConfigs()])
     this.canShowBridgeDebug = this.$settings.isFeatureEnabled('childBridgeDebugMode')
     this.loading = false
   }
@@ -170,7 +174,8 @@ export class PluginBridgeComponent implements OnInit {
                 block._bridge.name = info.displayName
               }
             }
-            this.originalBridges.push(block._bridge)
+            // Deep clone the bridge config to track original state
+            this.originalBridges.push(JSON.parse(JSON.stringify(block._bridge)))
           }
         }
       }
@@ -222,7 +227,7 @@ export class PluginBridgeComponent implements OnInit {
       block._bridge = {
         username: bridgeCache ? bridgeCache.username : this.generateUsername(),
         port: await this.getUnusedPort(),
-        name: bridgeCache?.name || this.plugin.displayName || this.plugin.name,
+        name: bridgeCache?.name || this.sanitizeBridgeName(this.plugin.displayName || this.plugin.name),
         model: bridgeCache?.model,
         manufacturer: bridgeCache?.manufacturer,
         firmwareRevision: bridgeCache?.firmwareRevision,
@@ -285,6 +290,27 @@ export class PluginBridgeComponent implements OnInit {
     }
   }
 
+  /**
+   * Sanitize a bridge name to comply with HAP name validation rules
+   * Removes invalid characters and ensures name starts/ends with letter or number
+   */
+  private sanitizeBridgeName(name: string): string {
+    if (!name) {
+      return name
+    }
+
+    // Remove any characters that aren't letters, numbers, spaces, or apostrophes
+    let sanitized = name.replace(/[^\p{L}\p{N} ']/gu, '')
+
+    // Remove leading/trailing spaces and apostrophes
+    sanitized = sanitized.replace(/^[ ']+|[ ']+$/g, '')
+
+    // Ensure it starts and ends with letter or number by removing invalid start/end chars
+    sanitized = sanitized.replace(/^[^\p{L}\p{N}]+|[^\p{L}\p{N}]+$/gu, '')
+
+    return sanitized
+  }
+
   public getHapNameValidationError(index: string): boolean {
     const block = this.configBlocks[Number(index)]
     if (!block._bridge?.name) {
@@ -296,6 +322,20 @@ export class PluginBridgeComponent implements OnInit {
     // https://github.com/homebridge/HAP-NodeJS/blob/ee41309fd9eac383cdcace39f4f6f6a3d54396f3/src/lib/util/checkName.ts#L12
     const hapNamePattern = /^[\p{L}\p{N}][\p{L}\p{N} ']*[\p{L}\p{N}]$/u
     return !hapNamePattern.test(name)
+  }
+
+  /**
+   * Check if any validation errors exist across all enabled bridges
+   */
+  public get hasValidationErrors(): boolean {
+    for (const [index, block] of this.configBlocks.entries()) {
+      if (this.enabledBlocks[index] && block._bridge?.username) {
+        if (this.getHapNameValidationError(index.toString()) || this.getHapPortValidationError(index.toString())) {
+          return true
+        }
+      }
+    }
+    return false
   }
 
   public getHapPortValidationError(index: string): boolean {
@@ -324,7 +364,7 @@ export class PluginBridgeComponent implements OnInit {
     this.saveInProgress = true
 
     try {
-      // Validate HAP config before saving
+      // Validate HAP configs before saving
       for (const [index, block] of this.configBlocks.entries()) {
         // HAP validation
         if (block._bridge?.username) {
@@ -362,11 +402,84 @@ export class PluginBridgeComponent implements OnInit {
         }
       }
 
-      this.$activeModal.close()
-      this.$modal.open(RestartHomebridgeComponent, {
-        size: 'lg',
-        backdrop: 'static',
-      })
+      // Check what has changed
+      const cronHasChanged = this.hasScheduledRestartCronChanged()
+      const hideAlertsChanged = this.hasHideAlertsChanged()
+      const bridgeConfigChanged = this.hasBridgeConfigChanged()
+      const bridgesDeleted = this.deleteBridges.length > 0
+      const nothingChanged = !cronHasChanged && !hideAlertsChanged && !bridgeConfigChanged && !bridgesDeleted
+      const onlyHideAlertsChanged = hideAlertsChanged && !cronHasChanged && !bridgeConfigChanged && !bridgesDeleted
+
+      // Save hide alert settings only for bridges that changed and are not being deleted
+      for (const [username, bridgeConfig] of this.bridgeConfigs.entries()) {
+        // Skip bridges that are being deleted
+        if (this.deleteBridges.some(b => b.id === username)) {
+          continue
+        }
+
+        const original = this.originalHideAlerts.get(username)
+
+        const currentHapAlert = !!bridgeConfig.hideHapAlert
+
+        // If no original, treat as false (default for new bridges)
+        const originalHapAlert = original ? !!original.hideHapAlert : false
+
+        try {
+          // Save hideHapAlert only if changed
+          if (currentHapAlert !== originalHapAlert) {
+            await this.saveHideAlert(username, currentHapAlert)
+          }
+        } catch (error) {
+          console.error(error)
+        }
+      }
+
+      // Save scheduled restart cron only for bridges that changed and are not being deleted
+      for (const [username, bridgeConfig] of this.bridgeConfigs.entries()) {
+        // Skip bridges that are being deleted
+        if (this.deleteBridges.some(b => b.id === username)) {
+          continue
+        }
+
+        const currentValue = bridgeConfig.scheduledRestartCron || null
+        const originalValue = this.originalScheduledRestartCrons.get(username) || null
+
+        // Normalize empty strings to null for comparison
+        const normalizedCurrent = currentValue === '' ? null : currentValue
+        const normalizedOriginal = originalValue === '' ? null : originalValue
+
+        if (normalizedCurrent !== normalizedOriginal) {
+          try {
+            await this.saveScheduledRestartCron(username, normalizedCurrent)
+          } catch (error) {
+            console.error(error)
+          }
+        }
+      }
+
+      // Set full service restart flag if cron changed
+      if (cronHasChanged) {
+        try {
+          await firstValueFrom(this.$api.put('/platform-tools/hb-service/set-full-service-restart-flag', {}))
+        } catch (error) {
+          console.error(error)
+        }
+      }
+
+      // Close modal without restart if nothing changed
+      if (nothingChanged) {
+        this.$activeModal.close()
+      } else if (onlyHideAlertsChanged) {
+        // Close modal with 'refresh' result if only hide alerts changed
+        this.$activeModal.close('refresh')
+      } else {
+        // Show restart modal for any other changes
+        this.$activeModal.close()
+        this.$modal.open(RestartHomebridgeComponent, {
+          size: 'lg',
+          backdrop: 'static',
+        })
+      }
     } catch (error) {
       console.error(error)
       this.$toastr.error(this.$translate.instant('config.failed_to_save_config'), this.$translate.instant('toast.title_error'))
@@ -414,47 +527,243 @@ export class PluginBridgeComponent implements OnInit {
   }
 
   /**
-   * Load the hidePairingAlerts setting from the server
+   * Load bridge configurations from settings
    */
-  private async loadHidePairingAlerts(): Promise<void> {
-    try {
-      const hidePairingAlerts = await firstValueFrom(this.$api.get('/config-editor/ui/plugins/hide-pairing-alerts'))
-      this.hidePairingAlerts = new Set(hidePairingAlerts)
-    } catch (error) {
-      console.error('Failed to load hide pairing alerts:', error)
+  private async loadBridgeConfigs(): Promise<void> {
+    // Load from settings env which is already populated from the server
+    const bridges = this.$settings.env.bridges || []
+    this.bridgeConfigs.clear()
+    this.originalScheduledRestartCrons.clear()
+    this.originalHideAlerts.clear()
+    for (const bridge of bridges) {
+      const normalizedUsername = bridge.username.toUpperCase()
+      this.bridgeConfigs.set(normalizedUsername, bridge)
+
+      // Store original values for change detection
+      this.originalScheduledRestartCrons.set(normalizedUsername, bridge.scheduledRestartCron || null)
+      this.originalHideAlerts.set(normalizedUsername, {
+        hideHapAlert: bridge.hideHapAlert,
+      })
     }
   }
 
   /**
-   * Check if a specific bridge protocol is hidden
+   * Check if a specific bridge protocol alert is hidden
    */
-  public isUnpairingHidden(username: string, protocol: 'hap'): boolean {
-    return this.hidePairingAlerts.has(`${username}-${protocol}`.toUpperCase())
+  public isUnpairingHidden(username: string): boolean {
+    const bridge = this.bridgeConfigs.get(username.toUpperCase())
+    if (!bridge) {
+      return false
+    }
+    return !!bridge.hideHapAlert
   }
 
   /**
-   * Toggle hiding of unpairing for a specific bridge protocol
+   * Toggle hiding of unpairing alert for a specific bridge protocol (will be saved when modal is saved)
    */
-  public async toggleHideUnpairing(username: string, protocol: 'hap'): Promise<void> {
-    const identifier = `${username}-${protocol}`.toUpperCase()
-    let currentSetting = Array.from(this.hidePairingAlerts)
+  public toggleHideUnpairing(username: string): void {
+    const normalizedUsername = username.toUpperCase()
+    const currentValue = this.isUnpairingHidden(username)
+    const newValue = !currentValue
 
-    if (this.hidePairingAlerts.has(identifier)) {
-      currentSetting = currentSetting.filter(x => x !== identifier)
+    // Update local cache
+    let bridge = this.bridgeConfigs.get(normalizedUsername)
+    if (!bridge) {
+      bridge = { username: normalizedUsername }
+      this.bridgeConfigs.set(normalizedUsername, bridge)
+    }
+
+    if (newValue) {
+      bridge.hideHapAlert = true
     } else {
-      currentSetting.push(identifier)
-      currentSetting.sort()
+      delete bridge.hideHapAlert
+    }
+  }
+
+  /**
+   * Get the scheduled restart cron for a specific bridge
+   */
+  public getScheduledRestartCron(username: string | undefined): string {
+    if (!username) {
+      return ''
+    }
+    const bridge = this.bridgeConfigs.get(username.toUpperCase())
+    return bridge?.scheduledRestartCron || ''
+  }
+
+  /**
+   * Update scheduled restart cron locally (will be saved when modal is saved)
+   */
+  public onScheduledRestartCronChange(value: string, username: string): void {
+    if (!username) {
+      return
     }
 
+    const normalizedUsername = username.toUpperCase()
+    let bridge = this.bridgeConfigs.get(normalizedUsername)
+    if (!bridge) {
+      bridge = { username: normalizedUsername }
+      this.bridgeConfigs.set(normalizedUsername, bridge)
+    }
+
+    // Update local cache
+    const trimmedValue = value?.trim()
+    if (trimmedValue) {
+      bridge.scheduledRestartCron = trimmedValue
+    } else {
+      delete bridge.scheduledRestartCron
+    }
+  }
+
+  /**
+   * Check if scheduled restart cron has changed for any bridge
+   */
+  private hasScheduledRestartCronChanged(): boolean {
+    for (const [username, bridge] of this.bridgeConfigs.entries()) {
+      const currentValue = bridge.scheduledRestartCron || null
+      const originalValue = this.originalScheduledRestartCrons.get(username) || null
+
+      // Normalize empty strings to null for comparison
+      const normalizedCurrent = currentValue === '' ? null : currentValue
+      const normalizedOriginal = originalValue === '' ? null : originalValue
+
+      if (normalizedCurrent !== normalizedOriginal) {
+        return true
+      }
+    }
+    return false
+  }
+
+  /**
+   * Check if bridge configuration (not including hide alerts or cron) has changed
+   */
+  private hasBridgeConfigChanged(): boolean {
+    // Check if number of config blocks changed
+    if (this.configBlocks.length !== this.originalBridges.length) {
+      return true
+    }
+
+    // Check if any bridge config has changed
+    for (const [, block] of this.configBlocks.entries()) {
+      if (!block._bridge) {
+        continue
+      }
+
+      const original = this.originalBridges.find(b => b.username === block._bridge.username)
+      if (!original) {
+        // New bridge added
+        return true
+      }
+
+      // Check all bridge properties that require restart
+      if (block._bridge.name !== original.name)
+        return true
+      if (block._bridge.port !== original.port)
+        return true
+      if (block._bridge.model !== original.model)
+        return true
+      if (block._bridge.manufacturer !== original.manufacturer)
+        return true
+      if (block._bridge.firmwareRevision !== original.firmwareRevision)
+        return true
+      if (block._bridge.debugModeEnabled !== original.debugModeEnabled)
+        return true
+
+      // Check env variables
+      const currentEnv = block._bridge.env || {}
+      const originalEnv = original.env || {}
+      if (currentEnv.DEBUG !== originalEnv.DEBUG)
+        return true
+      if (currentEnv.NODE_OPTIONS !== originalEnv.NODE_OPTIONS)
+        return true
+    }
+
+    return false
+  }
+
+  /**
+   * Check if hide alerts have changed for any bridge
+   */
+  private hasHideAlertsChanged(): boolean {
+    for (const [username, bridge] of this.bridgeConfigs.entries()) {
+      const original = this.originalHideAlerts.get(username)
+
+      const currentHapAlert = !!bridge.hideHapAlert
+
+      // If no original, treat as false (default for new bridges)
+      const originalHapAlert = original ? !!original.hideHapAlert : false
+
+      if (currentHapAlert !== originalHapAlert) {
+        return true
+      }
+    }
+    return false
+  }
+
+  /**
+   * Update or add a bridge configuration in the local settings env
+   */
+  private updateLocalBridgeConfig(username: string, updates: Partial<BridgeConfig>): void {
+    const normalizedUsername = username.toUpperCase()
+    const bridges = this.$settings.env.bridges || []
+    const bridgeIndex = bridges.findIndex(b => b.username.toUpperCase() === normalizedUsername)
+
+    if (bridgeIndex !== -1) {
+      // Update existing bridge
+      Object.assign(bridges[bridgeIndex], updates)
+    } else {
+      // Add new bridge entry
+      bridges.push({
+        username: normalizedUsername,
+        ...updates,
+      })
+    }
+
+    this.$settings.env.bridges = bridges
+  }
+
+  /**
+   * Save hide alert setting for a specific bridge protocol
+   */
+  private async saveHideAlert(username: string, value: boolean): Promise<void> {
+    const normalizedUsername = username.toUpperCase()
+    const endpoint = `/config-editor/ui/bridges/${encodeURIComponent(normalizedUsername)}/hide-hap-alert`
+
     try {
-      await firstValueFrom(this.$api.put('/config-editor/ui/plugins/hide-pairing-alerts', {
-        body: currentSetting,
-      }))
-      this.hidePairingAlerts = new Set(currentSetting)
-      this.$settings.setEnvItem('plugins.hidePairingAlerts', currentSetting)
+      await firstValueFrom(this.$api.put(endpoint, { value }))
+      this.updateLocalBridgeConfig(normalizedUsername, { hideHapAlert: value })
     } catch (error) {
-      console.error('Failed to update hide pairing alerts:', error)
-      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      console.error(`Failed to update hide alert:`, error)
+      throw error
+    }
+  }
+
+  /**
+   * Save scheduled restart cron for a specific bridge
+   */
+  private async saveScheduledRestartCron(username: string, value: string | null): Promise<void> {
+    const normalizedUsername = username.toUpperCase()
+
+    try {
+      await firstValueFrom(this.$api.put(
+        `/config-editor/ui/bridges/${encodeURIComponent(normalizedUsername)}/scheduled-restart-cron`,
+        { value: value || null },
+      ))
+
+      if (value) {
+        this.updateLocalBridgeConfig(normalizedUsername, { scheduledRestartCron: value })
+      } else {
+        // Remove the property if value is null
+        const bridges = this.$settings.env.bridges || []
+        const bridgeIndex = bridges.findIndex(b => b.username.toUpperCase() === normalizedUsername)
+        if (bridgeIndex !== -1) {
+          delete bridges[bridgeIndex].scheduledRestartCron
+          this.$settings.env.bridges = bridges
+        }
+      }
+    } catch (error) {
+      console.error('Failed to update scheduled restart cron:', error)
+      throw error
     }
   }
 }

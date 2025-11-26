@@ -40,49 +40,69 @@
                 "output": "./assets/monaco/"
               },
               {
-                "glob": "monaco.d.ts",
-                "input": "node_modules/monaco-editor",
-                "output": "./assets/monaco/"
+                "glob": "**/*",
+                "input": "node_modules/monaco-editor/min/vs/editor",
+                "output": "./assets/monaco/min/vs/editor"
               },
               {
-                "glob": "vs/loader.js",
-                "input": "node_modules/monaco-editor/min",
-                "output": "./assets/monaco/min/"
+                "glob": "**/*",
+                "input": "node_modules/monaco-editor/min/vs/language/json",
+                "output": "./assets/monaco/min/vs/language/json"
               },
               {
-                "glob": "vs/editor/editor.main.css",
-                "input": "node_modules/monaco-editor/min",
-                "output": "./assets/monaco/min/"
+                "glob": "{shell,javascript,typescript}/**/*",
+                "input": "node_modules/monaco-editor/min/vs/basic-languages",
+                "output": "./assets/monaco/min/vs/basic-languages"
               },
               {
-                "glob": "vs/editor/editor.main.js",
-                "input": "node_modules/monaco-editor/min",
-                "output": "./assets/monaco/min/"
+                "glob": "loader.js",
+                "input": "node_modules/monaco-editor/min/vs",
+                "output": "./assets/monaco/min/vs"
               },
               {
-                "glob": "vs/base/worker/workerMain.js",
-                "input": "node_modules/monaco-editor/min",
-                "output": "./assets/monaco/min/"
+                "glob": "nls.messages-loader.js",
+                "input": "node_modules/monaco-editor/min/vs",
+                "output": "./assets/monaco/min/vs"
               },
               {
-                "glob": "vs/basic-languages/shell/shell.js",
-                "input": "node_modules/monaco-editor/min",
-                "output": "./assets/monaco/min/"
+                "glob": "monaco.contribution*.js",
+                "input": "node_modules/monaco-editor/min/vs",
+                "output": "./assets/monaco/min/vs"
               },
               {
-                "glob": "vs/language/json/jsonMode.js",
-                "input": "node_modules/monaco-editor/min",
-                "output": "./assets/monaco/min/"
+                "glob": "editor.api*.js",
+                "input": "node_modules/monaco-editor/min/vs",
+                "output": "./assets/monaco/min/vs"
               },
               {
-                "glob": "vs/language/json/jsonWorker.js",
-                "input": "node_modules/monaco-editor/min",
-                "output": "./assets/monaco/min/"
+                "glob": "workers*.js",
+                "input": "node_modules/monaco-editor/min/vs",
+                "output": "./assets/monaco/min/vs"
               },
               {
-                "glob": "vs/base/browser/ui/codicons/codicon/codicon.ttf",
-                "input": "node_modules/monaco-editor/min",
-                "output": "./assets/monaco/min/"
+                "glob": "jsonMode*.js",
+                "input": "node_modules/monaco-editor/min/vs",
+                "output": "./assets/monaco/min/vs"
+              },
+              {
+                "glob": "lspLanguageFeatures*.js",
+                "input": "node_modules/monaco-editor/min/vs",
+                "output": "./assets/monaco/min/vs"
+              },
+              {
+                "glob": "editor.worker*.js",
+                "input": "node_modules/monaco-editor/min/vs/assets",
+                "output": "./assets/monaco/min/vs/assets"
+              },
+              {
+                "glob": "json.worker*.js",
+                "input": "node_modules/monaco-editor/min/vs/assets",
+                "output": "./assets/monaco/min/vs/assets"
+              },
+              {
+                "glob": "monaco.contribution.js",
+                "input": "node_modules/monaco-editor/min/vs/basic-languages",
+                "output": "./assets/monaco/min/vs/basic-languages"
               }
             ],
             "styles": [

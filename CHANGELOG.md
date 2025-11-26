@@ -2,10 +2,61 @@
 
 All notable changes to `homebridge-config-ui-x` will be documented in this file. This project tries to adhere to [Semantic Versioning](http://semver.org/).
 
-## v5.9.1 (Unreleased)
+## v5.11.0 (2025-11-25)
 
 ### UI Changes
-- added Stop Child Bridge option to Bridges widget
+
+- fix: plugins/accessories not displaying
+- fix: show all child bridge details, not just first
+- fix: fix removing listeners events from sidebar
+- update `monaco-editor` to `v0.55.1` + more deps
+
+### Other Changes
+
+- replace badges in readme, use `shields.io`
+- run angular migration - use self-closing tags
+
+### Homebridge Dependencies
+
+- `@homebridge/hap-client` @ `v3.1.2`
+- `@homebridge/node-pty-prebuilt-multiarch` @ `v0.13.1`
+- `@homebridge/plugin-ui-utils` @ `v2.1.2`
+
+## v5.10.0 (2025-11-16)
+
+### UI Changes
+
+- updates to the `uk.json` language file (#2618) (@xrust83)
+- updates to the `th.json` language file (#2628) (@tomzt)
+- fix german welcome translation typo
+- add spinners for loading data widget values
+- hide ssl settings when on hb raspbian image
+- hide accessory widget if insecure mode disabled
+- rename insecure option to accessory control
+- improve json schema for ui settings section
+- avoid refreshing after changing widget setting
+- avoid refresh after plugin install/setting change
+- shorten arrow button for same row height
+- monospace input font for relevant options
+- scheduled restart option for (child) bridges
+
+### Other Changes
+
+- add method to determine if running on raspbian image
+- fix node deprecation `DEP0190` (shell option)
+- config editor - fix restart case of no child bridges
+- code styling chore - consistent code spacing
+- extract 'extract' string to language files
+- lift from beta - custom types, betas, terminal
+- convert repo to esm modules
+- enable nestjs logging when in dev mode
+- add api endpoint for updating a package
+
+### Homebridge Dependencies
+
+- `@homebridge/hap-client` @ `v3.1.2`
+- `@homebridge/node-pty-prebuilt-multiarch` @ `v0.13.1`
+- `@homebridge/plugin-ui-utils` @ `v2.1.1`
 
 ## v5.9.0 (2025-11-01)
 

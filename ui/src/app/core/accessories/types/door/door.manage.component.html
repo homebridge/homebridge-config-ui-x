@@ -27,8 +27,7 @@
       [(ngModel)]="targetPosition.value"
       (ngModelChange)="onTargetPositionChange()"
       class="mb-1"
-    >
-    </nouislider>
+    />
     <div class="d-flex justify-content-between align-items-center mt-0 mb-1">
       <span class="grey-text small">{{ 'accessories.control.closed' | translate }}</span>
       <span class="grey-text small">{{ 'accessories.control.open' | translate }}</span>
@@ -43,8 +42,7 @@
       [disabled]="true"
       [(ngModel)]="this.service.getCharacteristic('CurrentPosition').value"
       class="mb-1"
-    >
-    </nouislider>
+    />
     <div class="d-flex justify-content-between align-items-center mt-0 mb-1">
       <span class="grey-text small">{{ 'accessories.control.closed' | translate }}</span>
       <span class="grey-text small">{{ 'accessories.control.open' | translate }}</span>

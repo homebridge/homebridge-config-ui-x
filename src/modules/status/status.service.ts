@@ -3,14 +3,15 @@ import type { Subscription } from 'rxjs'
 import type { Systeminformation } from 'systeminformation'
 
 import { exec, execSync } from 'node:child_process'
+import { readFile } from 'node:fs/promises'
 import { cpus, loadavg, platform, userInfo } from 'node:os'
 import { dirname, resolve } from 'node:path'
 import process from 'node:process'
 import { promisify } from 'node:util'
 
 import { HttpService } from '@nestjs/axios'
-import { BadRequestException, Injectable } from '@nestjs/common'
-import { readFile, readJson, writeJsonSync } from 'fs-extra'
+import { BadRequestException, Inject, Injectable } from '@nestjs/common'
+import { readJson, writeJsonSync } from 'fs-extra/esm'
 import NodeCache from 'node-cache'
 import { firstValueFrom, Subject } from 'rxjs'
 import { gt } from 'semver'
@@ -25,19 +26,19 @@ import {
   time,
 } from 'systeminformation'
 
-import { ConfigService } from '../../core/config/config.service'
-import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.service'
-import { Logger } from '../../core/logger/logger.service'
-import { isNodeV24SupportedArchitecture } from '../../core/node-version.constants'
-import { PluginsService } from '../plugins/plugins.service'
-import { ServerService } from '../server/server.service'
+import { ConfigService } from '../../core/config/config.service.js'
+import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.service.js'
+import { Logger } from '../../core/logger/logger.service.js'
+import { isNodeV24SupportedArchitecture } from '../../core/node-version.constants.js'
+import { PluginsService } from '../plugins/plugins.service.js'
+import { ServerService } from '../server/server.service.js'
 import {
   DockerRelease,
   DockerReleaseInfo,
   HomebridgeStatsResponse,
   HomebridgeStatus,
   HomebridgeStatusUpdate,
-} from './status.interfaces'
+} from './status.interfaces.js'
 
 const execAsync = promisify(exec)
 
@@ -65,12 +66,12 @@ export class StatusService {
   }
 
   constructor(
-    private httpService: HttpService,
-    private logger: Logger,
-    private configService: ConfigService,
-    private pluginsService: PluginsService,
-    private serverService: ServerService,
-    private homebridgeIpcService: HomebridgeIpcService,
+    @Inject(HttpService) private readonly httpService: HttpService,
+    @Inject(Logger) private readonly logger: Logger,
+    @Inject(ConfigService) private readonly configService: ConfigService,
+    @Inject(PluginsService) private readonly pluginsService: PluginsService,
+    @Inject(ServerService) private readonly serverService: ServerService,
+    @Inject(HomebridgeIpcService) private readonly homebridgeIpcService: HomebridgeIpcService,
   ) {
     // Systeminformation cpu data is not supported in FreeBSD Jail Shells
     if (platform() === 'freebsd') {

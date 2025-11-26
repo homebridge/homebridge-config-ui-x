@@ -10,7 +10,7 @@
   >
     @for (service of dashboardAccessories; track service) { @if (!service.hidden) {
     <div class="accessory-item accessory-widget-box noselect">
-      <app-accessory-tile [service]="service"></app-accessory-tile>
+      <app-accessory-tile [service]="service" />
     </div>
     } }
   </div>

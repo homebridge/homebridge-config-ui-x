@@ -32,7 +32,7 @@ jobs:
   publish:
     needs: [build_and_test]
     if: ${{ github.repository == 'homebridge/homebridge-config-ui-x' }}
-    uses: homebridge/.github/.github/workflows/npm-publish.yml@latest
+    uses: homebridge/.github/.github/workflows/npm-publish-esm.yml@latest
     with:
       tag: beta
       dynamically_adjust_version: true

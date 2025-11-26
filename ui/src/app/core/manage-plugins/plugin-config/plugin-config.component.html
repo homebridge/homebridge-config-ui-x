@@ -12,7 +12,7 @@
   </div>
   <div class="modal-body pb-0">
     @if (schema.headerDisplay) {
-    <markdown class="plugin-md" [data]="schema.headerDisplay | interpolateMd"></markdown>
+    <markdown class="plugin-md" [data]="schema.headerDisplay | interpolateMd" />
     }
 
     <!-- MULTIPLE CONFIG BLOCKS-->
@@ -66,11 +66,7 @@
         </div>
         <div ngbAccordionCollapse>
           <div ngbAccordionBody class="card-body">
-            <app-schema-form
-              [configSchema]="schema"
-              [(data)]="block.config"
-              (isValid)="onIsValid($event, i)"
-            ></app-schema-form>
+            <app-schema-form [configSchema]="schema" [(data)]="block.config" (isValid)="onIsValid($event, i)" />
           </div>
         </div>
       </div>
@@ -81,20 +77,16 @@
     <!-- SINGLE CONFIG BLOCK ONLY -->
     @if (pluginConfig.length && schema.singular) {
     <div class="card card-body">
-      <app-schema-form
-        [configSchema]="schema"
-        [(data)]="pluginConfig[0].config"
-        (isValid)="onIsValid($event, 0)"
-      ></app-schema-form>
+      <app-schema-form [configSchema]="schema" [(data)]="pluginConfig[0].config" (isValid)="onIsValid($event, 0)" />
       @if (plugin.name==='homebridge-deconz') {
-      <app-homebridge-deconz></app-homebridge-deconz>
+      <app-homebridge-deconz />
       } @if (plugin.name==='homebridge-hue') {
-      <app-homebridge-hue></app-homebridge-hue>
+      <app-homebridge-hue />
       }
     </div>
     } @if (schema.footerDisplay) {
     <div class="mt-3">
-      <markdown class="plugin-md" [data]="schema.footerDisplay | interpolateMd"></markdown>
+      <markdown class="plugin-md" [data]="schema.footerDisplay | interpolateMd" />
     </div>
     }
   </div>

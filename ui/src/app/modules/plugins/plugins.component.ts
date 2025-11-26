@@ -47,6 +47,7 @@ export class PluginsComponent implements OnInit, OnDestroy {
   private isSearchMode = false
   private io: IoNamespace
   private navigationSubscription: Subscription
+  private pluginRefreshSubscription: Subscription
 
   public mainError = false
   public loading = true
@@ -64,6 +65,12 @@ export class PluginsComponent implements OnInit, OnDestroy {
     // Set page title
     const title = this.$translate.instant('menu.label_plugins')
     this.$settings.setPageTitle(title)
+
+    // Subscribe to plugin list refresh events
+    this.pluginRefreshSubscription = this.$plugin.onPluginListRefresh.subscribe(async () => {
+      await this.loadInstalledPlugins()
+      this.getChildBridgeMetadata()
+    })
 
     this.io = this.$ws.connectToNamespace('child-bridges')
     this.io.connected.subscribe(async () => {
@@ -92,12 +99,6 @@ export class PluginsComponent implements OnInit, OnDestroy {
               } else {
                 this.$plugin.settings(plugin)
               }
-            }
-            break
-          }
-          case 'open-manage-version': {
-            if (plugin) {
-              this.$plugin.installAlternateVersion(plugin)
             }
             break
           }
@@ -229,6 +230,9 @@ export class PluginsComponent implements OnInit, OnDestroy {
     if (this.navigationSubscription) {
       this.navigationSubscription.unsubscribe()
     }
+    if (this.pluginRefreshSubscription) {
+      this.pluginRefreshSubscription.unsubscribe()
+    }
     this.io.end()
   }
 
@@ -287,9 +291,6 @@ export class PluginsComponent implements OnInit, OnDestroy {
 
   private async appendMetaInfo() {
     if (this.isAdmin) {
-      // Get the hidePairingAlerts setting
-      const hidePairingAlerts = new Set(this.$settings.env.plugins?.hidePairingAlerts || [])
-
       // Also get the current configuration for each plugin
       await Promise.all(this.installedPlugins
         .filter(plugin => plugin.installedVersion)
@@ -310,8 +311,7 @@ export class PluginsComponent implements OnInit, OnDestroy {
 
             // Check for unpaired HAP bridges that are NOT hidden
             plugin.hasChildBridgesUnpaired = pluginChildBridges.some((x) => {
-              const hapIdentifier = `${x.username}-hap`
-              return x.paired === false && !hidePairingAlerts.has(hapIdentifier.toUpperCase())
+              return x.paired === false && !this.isBridgeAlertHidden(x.username)
             })
 
             if (this.$settings.env.plugins?.hideUpdatesFor?.includes(plugin.name)) {
@@ -331,5 +331,16 @@ export class PluginsComponent implements OnInit, OnDestroy {
     this.io.request('get-homebridge-child-bridge-status').subscribe((data) => {
       this.childBridges = data
     })
+  }
+
+  /**
+   * Check if a specific bridge protocol alert is hidden
+   */
+  private isBridgeAlertHidden(username: string): boolean {
+    const bridge = this.$settings.env.bridges?.find(b => b.username.toUpperCase() === username.toUpperCase())
+    if (!bridge) {
+      return false
+    }
+    return !!bridge.hideHapAlert
   }
 }

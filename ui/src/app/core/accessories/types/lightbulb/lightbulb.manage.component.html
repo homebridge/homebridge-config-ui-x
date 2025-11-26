@@ -54,8 +54,7 @@
       [step]="targetBrightness.step"
       [(ngModel)]="targetBrightness.value"
       (ngModelChange)="onBrightnessStateChange()"
-    >
-    </nouislider>
+    />
     } @if (targetHue) {
     <h6 class="mt-4">{{ 'accessories.control.hue' | translate }}: {{ targetHue.value }}&deg;</h6>
     <nouislider
@@ -65,8 +64,7 @@
       [(ngModel)]="targetHue.value"
       (ngModelChange)="onHueStateChange()"
       [ngClass]="{ 'mb-1': isAdaptiveLightingEnabled, '': !isAdaptiveLightingEnabled }"
-    >
-    </nouislider>
+    />
     @if (isAdaptiveLightingEnabled) {
     <div class="d-flex text-center mt-0 mb-1">
       <span class="grey-text small">{{ 'accessories.control.adaptive_lighting_note' | translate }}</span>
@@ -80,8 +78,7 @@
       [(ngModel)]="targetSaturation.value"
       (ngModelChange)="onSaturationStateChange()"
       [ngClass]="{ 'mb-1': isAdaptiveLightingEnabled, '': !isAdaptiveLightingEnabled }"
-    >
-    </nouislider>
+    />
     @if (isAdaptiveLightingEnabled) {
     <div class="d-flex text-center mt-0 mb-1">
       <span class="grey-text small">{{ 'accessories.control.adaptive_lighting_note' | translate }}</span>
@@ -97,8 +94,7 @@
       [(ngModel)]="targetColorTemperature.value"
       (ngModelChange)="onColorTemperatureStateChange()"
       [ngClass]="{ 'mb-1': isAdaptiveLightingEnabled, '': !isAdaptiveLightingEnabled }"
-    >
-    </nouislider>
+    />
     @if (isAdaptiveLightingEnabled) {
     <div class="d-flex text-center mt-0 mb-1">
       <span class="grey-text small">{{ 'accessories.control.adaptive_lighting_note' | translate }}</span>

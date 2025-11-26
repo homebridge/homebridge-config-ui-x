@@ -1,9 +1,9 @@
-import { Controller, Get, Param, UseGuards } from '@nestjs/common'
+import { Controller, Get, Inject, Param, Post, Query, UseGuards } from '@nestjs/common'
 import { AuthGuard } from '@nestjs/passport'
-import { ApiBearerAuth, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger'
+import { ApiBearerAuth, ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger'
 
-import { AdminGuard } from '../../core/auth/guards/admin.guard'
-import { PluginsService } from './plugins.service'
+import { AdminGuard } from '../../core/auth/guards/admin.guard.js'
+import { PluginsService } from './plugins.service.js'
 
 @ApiTags('Plugins')
 @ApiBearerAuth()
@@ -11,7 +11,7 @@ import { PluginsService } from './plugins.service'
 @Controller('plugins')
 export class PluginsController {
   constructor(
-    private pluginsService: PluginsService,
+    @Inject(PluginsService) private readonly pluginsService: PluginsService,
   ) {}
 
   @ApiOperation({ summary: 'Get the list of currently installed Homebridge plugins.' })
@@ -81,5 +81,48 @@ export class PluginsController {
   @Get('alias/:pluginName')
   getPluginAlias(@Param('pluginName') pluginName) {
     return this.pluginsService.getPluginAlias(pluginName)
+  }
+
+  @UseGuards(AdminGuard)
+  @ApiOperation({
+    summary: 'Trigger an update for Homebridge, homebridge-config-ui-x, or any plugin.',
+    description: 'This endpoint queues an update to be performed in the background. The update will be executed asynchronously and the appropriate restart will be performed based on what was updated.',
+  })
+  @ApiParam({
+    name: 'pluginName',
+    type: String,
+    description: 'The name of the package to update (homebridge, homebridge-config-ui-x, or a plugin name)',
+    example: 'homebridge-example-plugin',
+  })
+  @ApiQuery({
+    name: 'version',
+    type: String,
+    required: false,
+    description: 'Specific version to install. If not provided, the latest version will be installed.',
+    example: '1.2.3',
+  })
+  @ApiResponse({
+    status: 201,
+    description: 'Update has been queued successfully.',
+    schema: {
+      type: 'object',
+      properties: {
+        ok: { type: 'boolean', example: true },
+        name: { type: 'string', example: 'homebridge-example-plugin' },
+        version: { type: 'string', example: '1.2.3' },
+      },
+    },
+  })
+  @ApiResponse({
+    status: 400,
+    description: 'Invalid package name or validation error.',
+  })
+  @ApiResponse({
+    status: 404,
+    description: 'Package not installed.',
+  })
+  @Post('update/:pluginName')
+  triggerUpdate(@Param('pluginName') pluginName: string, @Query('version') version?: string) {
+    return this.pluginsService.triggerUpdate(pluginName, version)
   }
 }

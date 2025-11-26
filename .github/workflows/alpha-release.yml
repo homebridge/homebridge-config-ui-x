@@ -9,7 +9,7 @@ jobs:
   publish:
     if: ${{ github.repository == 'homebridge/homebridge-config-ui-x' }}
     name: Publish Pre Release Alpha to NPM
-    uses: homebridge/.github/.github/workflows/npm-publish.yml@latest
+    uses: homebridge/.github/.github/workflows/npm-publish-esm.yml@latest
     with:
       tag: alpha
       dynamically_adjust_version: true

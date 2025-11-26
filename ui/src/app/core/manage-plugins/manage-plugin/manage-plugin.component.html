@@ -83,7 +83,7 @@ hb-service start</pre
               <i class="fa fa-cog fa-spin" style="font-size: 75px"></i>
             </div>
             } @else { @if (versionNotes) {
-            <markdown class="plugin-md" [data]="versionNotes"></markdown>
+            <markdown class="plugin-md" [data]="versionNotes" />
             } @else { @if (versionNotesShow) {
             <div class="w-100 text-center grey-text mt-3 mb-4">{{ 'plugins.manage.notes_none' | translate }}</div>
             } @else { @if (targetVersion.includes('beta') || targetVersion.includes('alpha') ||
@@ -108,7 +108,7 @@ hb-service start</pre
               <i class="fa fa-cog fa-spin" style="font-size: 75px"></i>
             </div>
             } @else { @if (fullChangelog) {
-            <markdown class="plugin-md" [data]="fullChangelog"></markdown>
+            <markdown class="plugin-md" [data]="fullChangelog" />
             } @else {
             <div
               class="w-100 text-center grey-text mt-3 mb-4"

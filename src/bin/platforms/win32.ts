@@ -1,12 +1,13 @@
 import { execSync } from 'node:child_process'
+import { createWriteStream } from 'node:fs'
 import { arch } from 'node:os'
 import { resolve } from 'node:path'
 import process from 'node:process'
 
 import axios from 'axios'
-import { createWriteStream, pathExists, remove } from 'fs-extra'
+import { pathExists, remove } from 'fs-extra/esm'
 
-import { BasePlatform } from '../base-platform'
+import { BasePlatform } from '../base-platform.js'
 
 export class Win32Installer extends BasePlatform {
   /**

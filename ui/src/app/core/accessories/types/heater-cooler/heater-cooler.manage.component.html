@@ -88,8 +88,7 @@
       [step]="CoolingThresholdTemperature.minStep"
       [(ngModel)]="autoTemp"
       (ngModelChange)="onAutoTemperatureStateChange()"
-    >
-    </nouislider>
+    />
     } @else if (HeatingThresholdTemperature && !CoolingThresholdTemperature) {
     <h6 class="mt-4">
       {{ 'accessories.control.target_auto' | translate }}: {{ targetHeatingTemp | convertTemp | number: '1.0-1'
@@ -101,8 +100,7 @@
       [step]="HeatingThresholdTemperature.minStep"
       [(ngModel)]="targetHeatingTemp"
       (ngModelChange)="onTemperatureStateChange()"
-    >
-    </nouislider>
+    />
     } @else if (!HeatingThresholdTemperature && CoolingThresholdTemperature) {
     <h6 class="mt-4">
       {{ 'accessories.control.target_auto' | translate }}: {{ targetCoolingTemp | convertTemp | number: '1.0-1'
@@ -114,8 +112,7 @@
       [step]="CoolingThresholdTemperature.minStep"
       [(ngModel)]="targetCoolingTemp"
       (ngModelChange)="onTemperatureStateChange()"
-    >
-    </nouislider>
+    />
     } }
   </div>
   <div class="modal-footer"></div>

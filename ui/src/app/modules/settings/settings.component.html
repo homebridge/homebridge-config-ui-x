@@ -74,9 +74,9 @@
     </li>
     } @if (!isItemHidden('setting-backup')) {
     <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
-      <span class="pe-2"> {{ 'backup.title_backup' | translate }} </span>
+      <span class="pe-2">{{ 'backup.title_backup' | translate }}</span>
       <button
-        class="btn btn-primary waves-effect m-0 ms-3"
+        class="btn btn-primary waves-effect m-0 ms-3 py-1"
         style="min-width: 50px"
         (click)="openBackupModal()"
         [attr.aria-label]="'backup.title_backup' | translate"
@@ -86,9 +86,9 @@
     </li>
     } @if (!isItemHidden('setting-restore')) {
     <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
-      <span class="pe-2"> {{ 'config.restore.title' | translate }} </span>
+      <span class="pe-2">{{ 'config.restore.title' | translate }}</span>
       <button
-        class="btn btn-primary waves-effect m-0 ms-3"
+        class="btn btn-primary waves-effect m-0 ms-3 py-1"
         style="min-width: 50px"
         (click)="openConfigBackup()"
         [attr.aria-label]="'config.restore.title' | translate"
@@ -98,9 +98,9 @@
     </li>
     } @if (!isItemHidden('setting-users')) {
     <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
-      <span class="pe-2"> {{ 'menu.tooltip_user_accounts' | translate }} </span>
+      <span class="pe-2">{{ 'menu.tooltip_user_accounts' | translate }}</span>
       <a
-        class="btn btn-primary waves-effect m-0 ms-3"
+        class="btn btn-primary waves-effect m-0 ms-3 py-1"
         style="min-width: 50px"
         routerLink="/users"
         [attr.aria-label]="'menu.tooltip_user_accounts' | translate"
@@ -238,10 +238,7 @@
     </li>
     } @if (!isItemHidden('setting-betas')) {
     <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
-      <span
-        >{{ 'settings.display.show_betas' | translate }}
-        <span class="badge badge-primary ms-1">{{ 'common.labels.beta' | translate }}</span>
-      </span>
+      {{ 'settings.display.show_betas' | translate }}
       <div class="d-flex align-items-center">
         <div class="order-1 order-md-2">
           <input
@@ -262,7 +259,7 @@
     <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
       <span class="pe-2">{{ 'settings.display.wallpaper' | translate }}</span>
       <button
-        class="btn btn-primary waves-effect m-0 ms-3"
+        class="btn btn-primary waves-effect m-0 ms-3 py-1"
         style="min-width: 50px"
         (click)="openWallpaperModal()"
         [attr.aria-label]="'settings.display.wallpaper' | translate"
@@ -298,7 +295,7 @@
     <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
       <span>
         {{ 'settings.startup.debug' | translate }} <code>-D</code><br />
-        <small class="grey-text pe-2"> {{ debugFieldDesc | translate }} </small>
+        <small class="grey-text pe-2">{{ debugFieldDesc | translate }}</small>
       </span>
       <div class="d-flex align-items-center">
         <div class="order-1 order-md-2">
@@ -360,6 +357,34 @@
         }
       </div>
     </li>
+    } @if (!isItemHidden('setting-scheduled-restart')) {
+    <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+      <span>
+        {{ 'settings.startup.scheduled_restart' | translate }}
+        <span class="badge badge-primary ms-1">{{ 'common.labels.beta' | translate }}</span><br />
+        <small class="grey-text pe-2">
+          <span [innerHtml]="'settings.startup.scheduled_restart_desc' | translate: { link: linkCron }"></span>
+          {{'settings.startup.scheduled_restart_desc_2' | translate }}
+        </small>
+      </span>
+      <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex flex-column align-items-end">
+        <div class="d-flex align-items-center w-100">
+          <input
+            class="form-control custom-input resp-input order-1 order-md-2 font-monospace"
+            type="text"
+            placeholder="mm hh dd MM ww"
+            [formControl]="scheduledRestartCronFormControl"
+            [attr.aria-label]="'settings.startup.scheduled_restart' | translate"
+            [style.letter-spacing]="'0.15em'"
+            [style.text-align]="'center'"
+            maxlength="30"
+          />
+          @if (scheduledRestartCronIsSaving) {
+          <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
+          }
+        </div>
+      </div>
+    </li>
     } @if (!isItemHidden('setting-metrics-startup')) {
     <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
       <span>
@@ -390,7 +415,7 @@
       </span>
       <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
         <input
-          class="form-control custom-input resp-input order-1 order-md-2"
+          class="form-control custom-input resp-input order-1 order-md-2 font-monospace"
           type="text"
           placeholder="/usr/local/lib/node_modules/homebridge"
           [formControl]="hbPackageFormControl"
@@ -409,7 +434,7 @@
       </span>
       <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
         <input
-          class="form-control custom-input resp-input order-1 order-md-2"
+          class="form-control custom-input resp-input order-1 order-md-2 font-monospace"
           type="text"
           placeholder="shutdown"
           [formControl]="hbLinuxShutdownFormControl"
@@ -426,7 +451,7 @@
         {{ 'settings.linux.restart' | translate }}<br />
         <small class="grey-text pe-2">{{ 'settings.linux.restart_desc' | translate }}</small>
       </span>
-      <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
+      <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center font-monospace">
         <input
           class="form-control custom-input resp-input order-1 order-md-2"
           type="text"
@@ -447,7 +472,7 @@
       </span>
       <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
         <input
-          class="form-control custom-input resp-input order-1 order-md-2"
+          class="form-control custom-input resp-input order-1 order-md-2 font-monospace"
           type="text"
           placeholder="/sys/class/thermal/thermal_zone0/temp"
           [formControl]="uiTempFileFormControl"
@@ -469,7 +494,7 @@
       </span>
       <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
         <input
-          class="form-control custom-input resp-input order-1 order-md-2"
+          class="form-control custom-input resp-input order-1 order-md-2 font-monospace"
           [formControl]="hbEnvDebugFormControl"
           type="text"
           placeholder="HAP-NodeJS:Advertiser,HAP-NodeJS:Service"
@@ -487,7 +512,7 @@
       </span>
       <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
         <input
-          class="form-control custom-input resp-input order-1 order-md-2"
+          class="form-control custom-input resp-input order-1 order-md-2 font-monospace"
           [formControl]="hbEnvNodeFormControl"
           type="text"
           placeholder="--max-old-space-size=512 --max-http-header-size=8192"
@@ -504,7 +529,7 @@
         <small class="grey-text pe-2">{{ 'platform.docker.script_help' | translate }}</small>
       </span>
       <a
-        class="btn btn-primary waves-effect m-0 ms-3"
+        class="btn btn-primary waves-effect m-0 ms-3 py-1"
         style="min-width: 50px"
         routerLink="/platform-tools/docker/startup-script"
         [attr.aria-label]="'menu.docker.startup_script' | translate"
@@ -557,7 +582,7 @@
         }
       </span>
       <button
-        class="btn btn-primary waves-effect m-0 ms-3"
+        class="btn btn-primary waves-effect m-0 ms-3 py-1"
         style="min-width: 50px"
         (click)="selectNetworkInterfaces()"
         [disabled]="!adaptersAvailable.length"
@@ -603,7 +628,7 @@
       </span>
       <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
         <input
-          class="form-control custom-input resp-input order-1 order-md-2"
+          class="form-control custom-input resp-input order-1 order-md-2 font-monospace"
           type="number"
           min="1025"
           max="65533"
@@ -624,7 +649,7 @@
       </span>
       <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
         <input
-          class="form-control custom-input resp-input order-1 order-md-2"
+          class="form-control custom-input resp-input order-1 order-md-2 font-monospace"
           type="number"
           min="1025"
           max="65533"
@@ -645,7 +670,7 @@
       </span>
       <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
         <input
-          class="form-control custom-input resp-input order-1 order-md-2"
+          class="form-control custom-input resp-input order-1 order-md-2 font-monospace"
           type="number"
           min="1025"
           max="65533"
@@ -672,7 +697,7 @@
       </span>
       <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
         <input
-          class="form-control custom-input resp-input order-1 order-md-2"
+          class="form-control custom-input resp-input order-1 order-md-2 font-monospace"
           type="text"
           pattern="^[^{}/:\\s]+(?::\d+)?$"
           [formControl]="uiHostFormControl"
@@ -698,7 +723,7 @@
       </span>
       <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
         <input
-          class="form-control custom-input resp-input order-1 order-md-2"
+          class="form-control custom-input resp-input order-1 order-md-2 font-monospace"
           type="text"
           pattern="^[^{}/:\\s]+(?::\d+)?$"
           placeholder="example.com:8443"
@@ -724,7 +749,7 @@
       </span>
       <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
         <input
-          class="form-control custom-input resp-input order-1 order-md-2"
+          class="form-control custom-input resp-input order-1 order-md-2 font-monospace"
           type="number"
           min="1025"
           max="65533"
@@ -796,7 +821,7 @@
       </span>
       <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
         <input
-          class="form-control custom-input resp-input order-1 order-md-2"
+          class="form-control custom-input resp-input order-1 order-md-2 font-monospace"
           type="number"
           min="-1"
           placeholder="1000000"
@@ -817,7 +842,7 @@
       </span>
       <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
         <input
-          class="form-control custom-input resp-input order-1 order-md-2"
+          class="form-control custom-input resp-input order-1 order-md-2 font-monospace"
           type="number"
           min="0"
           placeholder="200000"
@@ -833,8 +858,7 @@
     } @if (enableTerminalAccess) { @if (!isItemHidden('setting-terminal-persistence')) {
     <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
       <span>
-        {{ 'settings.terminal.persistence' | translate }}
-        <span class="badge badge-primary ms-1">{{ 'common.labels.beta' | translate }}</span><br />
+        {{ 'settings.terminal.persistence' | translate }}<br />
         <small class="grey-text pe-2">{{ 'settings.terminal.persistence_help' | translate }}</small>
       </span>
       <div class="d-flex align-items-center">
@@ -856,8 +880,7 @@
     } @if (!uiTerminalPersistenceFormControl.value) {
     <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
       <span>
-        {{ 'settings.terminal.warning' | translate }}
-        <span class="badge badge-primary ms-1">{{ 'common.labels.beta' | translate }}</span><br />
+        {{ 'settings.terminal.warning' | translate }}<br />
         <small class="grey-text pe-2">{{ 'settings.terminal.warning_help' | translate }}</small>
       </span>
       <div class="d-flex align-items-center">
@@ -879,15 +902,12 @@
     } @if (uiTerminalPersistenceFormControl.value) { @if (!isItemHidden('setting-terminal-buffer')) {
     <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
       <div class="d-flex flex-column">
-        <span>
-          {{ 'settings.terminal.buffer_size' | translate }}
-          <span class="badge badge-primary ms-1">{{ 'common.labels.beta' | translate }}</span>
-        </span>
+        <span>{{ 'settings.terminal.buffer_size' | translate }}</span>
         <div class="small grey-text">{{ 'settings.terminal.buffer_size_help' | translate }}</div>
       </div>
       <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
         <input
-          class="form-control custom-input resp-input order-1 order-md-2"
+          class="form-control custom-input resp-input order-1 order-md-2 font-monospace"
           type="number"
           min="10000"
           max="100000"
@@ -932,7 +952,7 @@
     <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
       <span>
         {{ 'settings.security.auth' | translate }}<br />
-        <small class="grey-text pe-2"> {{ 'settings.security.auth_desc' | translate }} </small>
+        <small class="grey-text pe-2">{{ 'settings.security.auth_desc' | translate }}</small>
       </span>
       <div class="d-flex align-items-center">
         <div class="order-1 order-md-2">
@@ -983,7 +1003,7 @@
         <div class="d-flex align-items-center gap-2">
           <div class="d-flex align-items-center">
             <input
-              class="form-control custom-input"
+              class="form-control custom-input font-monospace"
               type="number"
               min="0"
               max="365"
@@ -999,7 +1019,7 @@
           </div>
           <div class="d-flex align-items-center">
             <input
-              class="form-control custom-input"
+              class="form-control custom-input font-monospace"
               type="number"
               min="0"
               max="23"
@@ -1015,7 +1035,7 @@
           </div>
           <div class="d-flex align-items-center">
             <input
-              class="form-control custom-input"
+              class="form-control custom-input font-monospace"
               type="number"
               min="0"
               max="59"
@@ -1039,19 +1059,25 @@
     <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
       <span>
         {{ 'settings.security.https' | translate }}<br />
+        @if (runningOnRaspbianImage) {
+        <small class="grey-text pe-2">
+          <span [innerHtml]="'settings.security.https_raspbian' | translate: { link: linkRaspbianSsl }"></span>
+        </small>
+        } @else {
         <small class="grey-text pe-2">{{ 'settings.security.https_desc' | translate }}</small>
         @if (isPwa) {
         <br /><small class="grey-text pe-2">
           <i class="fas fa-exclamation-triangle red-text"></i>
           {{ 'settings.warning_pwa' | translate }}
         </small>
-        }
+        } }
       </span>
       <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
         <select
           class="custom-select resp-select order-1 order-md-2"
           [formControl]="uiSslTypeFormControl"
           [attr.aria-label]="'settings.security.https' | translate"
+          [hidden]="runningOnRaspbianImage"
         >
           <option value="off">{{ 'accessories.control.off' | translate }}</option>
           <option value="keycert">{{ 'settings.security.https_keycert' | translate }}</option>
@@ -1059,7 +1085,9 @@
         </select>
       </div>
     </li>
-    } @if (this.uiSslTypeFormControl.value === 'keycert') {
+    }
+    <!-- the following options should be hidden for raspbian -->
+    @if (!runningOnRaspbianImage) { @if (this.uiSslTypeFormControl.value === 'keycert') {
     <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
       <span>{{ 'settings.security.key' | translate }}</span>
       @if (isPwa) {
@@ -1149,14 +1177,16 @@
         }
       </div>
     </li>
-    } } @if (!isItemHidden('setting-security-control')) {
+    } } }
+    <!-- end of raspbian hidden options -->
+    @if (!isItemHidden('setting-security-control')) {
     <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
       <span class="pe-2">
         {{ 'settings.security.ui_control' | translate }}<br />
         <small class="grey-text pe-2">{{ 'settings.security.ui_control_desc' | translate }}</small>
       </span>
       <button
-        class="btn btn-primary waves-effect m-0 ms-3"
+        class="btn btn-primary waves-effect m-0 ms-3 py-1"
         style="min-width: 50px"
         (click)="accessoryUiControl()"
         [attr.aria-label]="'settings.security.ui_control' | translate"
@@ -1218,7 +1248,7 @@
         <small class="grey-text pe-2">{{ 'reset.accessory_ind.desc' | translate }}</small>
       </span>
       <button
-        class="btn btn-primary waves-effect m-0 ms-3"
+        class="btn btn-primary waves-effect m-0 ms-3 py-1"
         style="min-width: 50px"
         (click)="removeSingleCachedAccessories()"
         [attr.aria-label]="'reset.accessory_ind.title' | translate"
@@ -1233,7 +1263,7 @@
         <small class="grey-text pe-2">{{ 'reset.bridge_accessories.desc' | translate }}</small>
       </span>
       <button
-        class="btn btn-primary waves-effect m-0 ms-3"
+        class="btn btn-primary waves-effect m-0 ms-3 py-1"
         style="min-width: 50px"
         (click)="removeBridgeAccessories()"
         [attr.aria-label]="'reset.accessory_all.title' | translate"
@@ -1248,7 +1278,7 @@
         <small class="grey-text pe-2">{{ 'reset.accessory_all.desc' | translate }}</small>
       </span>
       <button
-        class="btn btn-primary waves-effect m-0 ms-3"
+        class="btn btn-primary waves-effect m-0 ms-3 py-1"
         style="min-width: 50px"
         (click)="removeAllCachedAccessories()"
         [attr.aria-label]="'reset.accessory_all.title' | translate"
@@ -1288,7 +1318,7 @@
         <small class="grey-text pe-2">{{ 'reset.bridge_ind.desc' | translate }}</small>
       </span>
       <button
-        class="btn btn-primary waves-effect m-0 ms-3"
+        class="btn btn-primary waves-effect m-0 ms-3 py-1"
         style="min-width: 50px"
         (click)="unpairAccessory()"
         [attr.aria-label]="'reset.bridge_ind.title' | translate"
@@ -1303,7 +1333,7 @@
         <small class="grey-text pe-2">{{ 'reset.bridge_all.desc' | translate }}</small>
       </span>
       <button
-        class="btn btn-primary waves-effect m-0 ms-3"
+        class="btn btn-primary waves-effect m-0 ms-3 py-1"
         style="min-width: 50px"
         (click)="resetHomebridgeState()"
         [attr.aria-label]="'reset.bridge_all.title' | translate"

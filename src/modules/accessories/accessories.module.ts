@@ -1,11 +1,11 @@
 import { Module } from '@nestjs/common'
 import { PassportModule } from '@nestjs/passport'
 
-import { ConfigModule } from '../../core/config/config.module'
-import { LoggerModule } from '../../core/logger/logger.module'
-import { AccessoriesController } from './accessories.controller'
-import { AccessoriesGateway } from './accessories.gateway'
-import { AccessoriesService } from './accessories.service'
+import { ConfigModule } from '../../core/config/config.module.js'
+import { LoggerModule } from '../../core/logger/logger.module.js'
+import { AccessoriesController } from './accessories.controller.js'
+import { AccessoriesGateway } from './accessories.gateway.js'
+import { AccessoriesService } from './accessories.service.js'
 
 @Module({
   imports: [

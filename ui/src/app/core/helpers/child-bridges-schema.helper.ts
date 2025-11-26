@@ -70,6 +70,7 @@ export function createChildBridgeSchema(translate: TranslateService, { isDebugMo
         : {},
       env: {
         type: 'object',
+        additionalProperties: false,
         title: 'Environment Variables',
         description: 'Environment variables to set for this child bridge.',
         properties: {

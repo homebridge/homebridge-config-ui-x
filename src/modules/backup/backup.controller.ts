@@ -5,6 +5,7 @@ import {
   Controller,
   Delete,
   Get,
+  Inject,
   InternalServerErrorException,
   Param,
   Post,
@@ -23,9 +24,9 @@ import {
   ApiTags,
 } from '@nestjs/swagger'
 
-import { AdminGuard } from '../../core/auth/guards/admin.guard'
-import { Logger } from '../../core/logger/logger.service'
-import { BackupService } from './backup.service'
+import { AdminGuard } from '../../core/auth/guards/admin.guard.js'
+import { Logger } from '../../core/logger/logger.service.js'
+import { BackupService } from './backup.service.js'
 
 @ApiTags('Backup & Restore')
 @ApiBearerAuth()
@@ -33,8 +34,8 @@ import { BackupService } from './backup.service'
 @Controller('backup')
 export class BackupController {
   constructor(
-    private backupService: BackupService,
-    private logger: Logger,
+    @Inject(BackupService) private readonly backupService: BackupService,
+    @Inject(Logger) private readonly logger: Logger,
   ) {}
 
   @UseGuards(AdminGuard)

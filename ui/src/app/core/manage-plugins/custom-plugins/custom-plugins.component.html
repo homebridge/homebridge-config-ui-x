@@ -33,8 +33,7 @@
         [(data)]="pluginConfig[0]"
         (dataChanged)="schemaFormUpdatedSubject.next($event)"
         (isValid)="onIsValid($event)"
-      >
-      </app-schema-form>
+      />
     </div>
     } @if (formId) {
     <div class="card card-body">
@@ -43,8 +42,7 @@
         [(data)]="formData"
         (dataChanged)="formUpdatedSubject.next($event)"
         (isValid)="formValidEvent($event)"
-      >
-      </app-schema-form>
+      />
       <div class="text-end custom-form-action-buttons">
         @if (formCancelButtonLabel) {
         <button class="btn btn-elegant" (click)="formActionSubject.next('cancel')">{{ formCancelButtonLabel }}</button>

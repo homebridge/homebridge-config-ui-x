@@ -71,6 +71,7 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
   @Input() installedVersion: string
   @Input() isDisabled: boolean
   @Input() action: string
+  @Input() onRefreshPluginList: () => void
 
   public targetVersionPretty = ''
   public actionComplete = false
@@ -268,10 +269,23 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
       termCols: this.term.cols,
       termRows: this.term.rows,
     }).subscribe({
-      next: () => {
-        this.$activeModal.close()
+      next: async () => {
         this.$toastr.success(`${this.pastTenseVerb} ${this.pluginName}`, this.toastSuccess)
-        window.location.href = `/plugins?action=just-installed&plugin=${this.pluginName}`
+
+        // Trigger refresh of the plugin list in the background
+        if (this.onRefreshPluginList) {
+          this.onRefreshPluginList()
+        }
+
+        // Fetch the updated plugin data and close with it
+        try {
+          const installedPlugins = await firstValueFrom(this.$api.get('/plugins'))
+          const installedPlugin = installedPlugins.find((x: any) => x.name === this.pluginName)
+          this.$activeModal.close({ action: 'just-installed', plugin: installedPlugin })
+        } catch (error) {
+          console.error('Failed to fetch updated plugin data:', error)
+          this.$activeModal.close({ action: 'just-installed', pluginName: this.pluginName })
+        }
       },
       error: (error) => {
         this.actionFailed = true

@@ -14,11 +14,19 @@
   <div class="d-flex flex-row flex-grow-1 align-items-center w-100 gridster-item-content text-center">
     <div class="d-flex justify-content-around flex-wrap w-100">
       <div class="text-center widget-value-parent-wrap">
-        <div class="widget-value mb-0">{{ receivedPerSec | number: '1.0-1' }} Mb/s</div>
+        <div class="widget-value mb-0">
+          @if (receivedPerSec !== undefined) { {{ receivedPerSec | number: '1.0-1' }} Mb/s } @else {
+          <i class="fas fa-spinner fa-pulse"></i>
+          }
+        </div>
         <div class="widget-value-label grey-text">{{ 'status.network.received_per_second' | translate }}</div>
       </div>
       <div class="text-center widget-value-parent-wrap">
-        <div class="widget-value mb-0">{{ sentPerSec | number: '1.0-1' }} Mb/s</div>
+        <div class="widget-value mb-0">
+          @if (sentPerSec !== undefined) { {{ sentPerSec | number: '1.0-1' }} Mb/s } @else {
+          <i class="fas fa-spinner fa-pulse"></i>
+          }
+        </div>
         <div class="widget-value-label grey-text">{{ 'status.network.sent_per_second' | translate }}</div>
       </div>
     </div>

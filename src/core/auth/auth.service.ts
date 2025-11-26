@@ -6,27 +6,28 @@ import {
   ConflictException,
   ForbiddenException,
   HttpException,
+  Inject,
   Injectable,
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
-import { pathExists, readJson, writeJson } from 'fs-extra'
+import { pathExists, readJson, writeJson } from 'fs-extra/esm'
 import NodeCache from 'node-cache'
 import { authenticator } from 'otplib'
 
-import { UserDto } from '../../modules/users/users.dto'
-import { ConfigService } from '../config/config.service'
-import { Logger } from '../logger/logger.service'
+import { UserDto } from '../../modules/users/users.dto.js'
+import { ConfigService } from '../config/config.service.js'
+import { Logger } from '../logger/logger.service.js'
 
 @Injectable()
 export class AuthService {
   private otpUsageCache = new NodeCache({ stdTTL: 90 })
 
   constructor(
-    private readonly jwtService: JwtService,
-    private readonly configService: ConfigService,
-    private readonly logger: Logger,
+    @Inject(JwtService) private readonly jwtService: JwtService,
+    @Inject(ConfigService) private readonly configService: ConfigService,
+    @Inject(Logger) private readonly logger: Logger,
   ) {
     this.checkAuthFile()
 

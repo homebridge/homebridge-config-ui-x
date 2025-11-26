@@ -1,13 +1,13 @@
-import { Controller, Get, Param, Query, Res } from '@nestjs/common'
+import { Controller, Get, Inject, Param, Query, Res } from '@nestjs/common'
 import { ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger'
 
-import { PluginsSettingsUiService } from './plugins-settings-ui.service'
+import { PluginsSettingsUiService } from './plugins-settings-ui.service.js'
 
 @ApiTags('Plugins')
 @Controller('plugins/settings-ui')
 export class PluginsSettingsUiController {
   constructor(
-    private pluginSettingsUiService: PluginsSettingsUiService,
+    @Inject(PluginsSettingsUiService) private readonly pluginSettingsUiService: PluginsSettingsUiService,
   ) {}
 
   @Get('/:pluginName/*')

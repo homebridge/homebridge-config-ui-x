@@ -1,35 +1,31 @@
-import type { AccessoryConfig, HomebridgeConfig, PlatformConfig } from '../../core/config/config.interfaces'
-
+import { readdir, readFile, rename, unlink } from 'node:fs/promises'
 import { resolve } from 'node:path'
 
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common'
+import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common'
 import dayjs from 'dayjs'
-import {
-  ensureDir,
-  move,
-  pathExists,
-  readdir,
-  readFile,
-  readJson,
-  remove,
-  rename,
-  unlink,
-  writeJsonSync,
-} from 'fs-extra'
+import { ensureDir, move, pathExists, readJson, remove, writeJsonSync } from 'fs-extra/esm'
 import { gte } from 'semver'
 
-import { ConfigService } from '../../core/config/config.service'
-import { Logger } from '../../core/logger/logger.service'
-import { SchedulerService } from '../../core/scheduler/scheduler.service'
-import { PluginsService } from '../plugins/plugins.service'
+import {
+  AccessoryConfig,
+  HomebridgeConfig,
+  HomebridgeUiBridgeConfig,
+  PlatformConfig,
+} from '../../core/config/config.interfaces.js'
+import { ConfigService } from '../../core/config/config.service.js'
+import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.service.js'
+import { Logger } from '../../core/logger/logger.service.js'
+import { SchedulerService } from '../../core/scheduler/scheduler.service.js'
+import { PluginsService } from '../plugins/plugins.service.js'
 
 @Injectable()
 export class ConfigEditorService {
   constructor(
-    private readonly logger: Logger,
-    private readonly configService: ConfigService,
-    private readonly schedulerService: SchedulerService,
-    private readonly pluginsService: PluginsService,
+    @Inject(Logger) private readonly logger: Logger,
+    @Inject(ConfigService) private readonly configService: ConfigService,
+    @Inject(SchedulerService) private readonly schedulerService: SchedulerService,
+    @Inject(PluginsService) private readonly pluginsService: PluginsService,
+    @Inject(HomebridgeIpcService) private readonly homebridgeIpcService: HomebridgeIpcService,
   ) {
     this.start()
     this.scheduleConfigBackupCleanup()
@@ -414,37 +410,97 @@ export class ConfigEditorService {
   }
 
   /**
-   * Get the plugin hide pairing alerts list
+   * Get a specific bridge configuration by username
+   * Returns an object with username and boolean flags (defaults to false if not set)
    */
-  public async getPluginsHidePairingAlerts(): Promise<string[]> {
-    // 1. Get the current config for the Homebridge UI
+  public async getBridge(username: string): Promise<HomebridgeUiBridgeConfig | null> {
+    // Validate username format
+    if (!username || !/^[0-9A-F]{2}(?::[0-9A-F]{2}){5}$/i.test(username.trim())) {
+      return null
+    }
+
     const config = await this.getConfigFile()
     const pluginConfig = config.platforms.find(x => x.platform === 'config')
+    const normalizedUsername = username.trim().toUpperCase()
 
-    // 2. Return the hidePairingAlerts list or empty array if not set
-    return pluginConfig?.plugins?.hidePairingAlerts || []
+    const bridge = pluginConfig?.bridges?.find((b: HomebridgeUiBridgeConfig) => b.username.toUpperCase() === normalizedUsername)
+
+    // Always return an object with consistent structure
+    return {
+      username: normalizedUsername,
+      hideHapAlert: bridge?.hideHapAlert || false,
+      scheduledRestartCron: bridge?.scheduledRestartCron || null,
+      // Spread any other properties that might exist on the bridge
+      ...(bridge
+        ? Object.keys(bridge).reduce<Record<string, any>>((acc, key) => {
+            if (key !== 'username' && key !== 'hideHapAlert' && key !== 'hideMatterAlert' && key !== 'scheduledRestartCron') {
+              acc[key] = bridge[key]
+            }
+            return acc
+          }, {})
+        : {}),
+    }
   }
 
   /**
-   * Set the plugin hide pairing alerts list (this request is not partial)
+   * Update a specific bridge property
    */
-  public async setPluginsHidePairingAlerts(value: string[]) {
-    // 1. Get the current config for the Homebridge UI
+  private async updateBridgeProperty(username: string, property: string, value: any): Promise<void> {
+    // Validate username format
+    if (!username || !/^[0-9A-F]{2}(?::[0-9A-F]{2}){5}$/i.test(username.trim())) {
+      throw new NotFoundException('Invalid bridge username format')
+    }
+
     const config = await this.getConfigFile()
     const pluginConfig = config.platforms.find(x => x.platform === 'config')
+    const normalizedUsername = username.trim().toUpperCase()
 
-    // 2. Ensure the plugins object exists and set the hidePairingAlerts property
-    if (!pluginConfig.plugins) {
-      pluginConfig.plugins = {}
+    // Initialize bridges array if it doesn't exist
+    if (!pluginConfig.bridges) {
+      pluginConfig.bridges = []
     }
-    // Validate format: USERNAME-hap (e.g., "0E:02:9A:9D:44:45-hap")
-    pluginConfig.plugins.hidePairingAlerts = (value || [])
-      .filter(x => typeof x === 'string' && x.trim() !== '' && /^[0-9A-F]{2}(?::[0-9A-F]{2}){5}-hap$/i.test(x.trim()))
-      .map(x => x.trim().toUpperCase())
 
-    // 3. Clean and save the UI config block
+    let bridge = pluginConfig.bridges.find((b: HomebridgeUiBridgeConfig) => b.username.toUpperCase() === normalizedUsername)
+
+    // Check if value is "truthy" - for booleans this is true, for strings this is non-empty, for null/undefined this is false
+    const shouldSet = value !== null && value !== undefined && value !== false && value !== '' && value !== 'never'
+
+    if (shouldSet) {
+      // Set property to the value
+      if (!bridge) {
+        bridge = { username: normalizedUsername }
+        pluginConfig.bridges.push(bridge)
+      }
+      bridge[property] = value
+    } else {
+      // Remove the property
+      if (bridge) {
+        delete bridge[property]
+
+        // Remove bridge if it has no properties other than username
+        const hasOtherProps = Object.keys(bridge).some(key => key !== 'username')
+        if (!hasOtherProps) {
+          pluginConfig.bridges = pluginConfig.bridges.filter((b: HomebridgeUiBridgeConfig) => b.username.toUpperCase() !== normalizedUsername)
+        }
+      }
+    }
+
     config.platforms[config.platforms.findIndex(x => x.platform === 'config')] = this.cleanUpUiConfig(pluginConfig)
     await this.updateConfigFile(config)
+  }
+
+  /**
+   * Set hideHapAlert for a specific bridge
+   */
+  public async setBridgeHideHapAlert(username: string, value: boolean): Promise<void> {
+    await this.updateBridgeProperty(username, 'hideHapAlert', value)
+  }
+
+  /**
+   * Set scheduledRestartCron for a specific bridge
+   */
+  public async setBridgeScheduledRestartCron(username: string, value: string | null): Promise<void> {
+    await this.updateBridgeProperty(username, 'scheduledRestartCron', value)
   }
 
   /**
@@ -687,6 +743,12 @@ export class ConfigEditorService {
       platform: platform || 'config',
       ...rest,
     }
+
+    // Clean up bridges array - remove entries without a username
+    if (Array.isArray(cleanedUiConfig.bridges)) {
+      cleanedUiConfig.bridges = cleanedUiConfig.bridges.filter(bridge => bridge && bridge.username)
+    }
+
     this.removeEmpty(cleanedUiConfig)
     return cleanedUiConfig
   }

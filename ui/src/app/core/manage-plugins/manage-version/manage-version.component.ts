@@ -30,6 +30,7 @@ export class ManageVersionComponent implements OnInit {
   private $translate = inject(TranslateService)
 
   @Input() plugin: Plugin
+  @Input() onRefreshPluginList: () => void
 
   public isUpdateHidden: boolean = false
   public hideUpdatesFormControl = new FormControl(false)
@@ -71,8 +72,12 @@ export class ManageVersionComponent implements OnInit {
       await firstValueFrom(this.$api.put('/config-editor/ui/plugins/hide-updates-for', {
         body: currentSetting,
       }))
+
+      // Trigger refresh of the plugin list in the background
       this.$settings.setEnvItem('plugins.hideUpdatesFor', currentSetting)
-      window.location.href = `/plugins?action=open-manage-version&plugin=${this.plugin.name}`
+      if (this.onRefreshPluginList) {
+        this.onRefreshPluginList()
+      }
     } catch (error) {
       this.hideUpdatesFormControl.patchValue(this.isUpdateHidden, { emitEvent: false })
       console.error(error)

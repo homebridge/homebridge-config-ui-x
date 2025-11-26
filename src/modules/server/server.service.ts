@@ -1,42 +1,37 @@
 import type { MultipartFile } from '@fastify/multipart'
 import type { Systeminformation } from 'systeminformation'
 
-import type { AccessoryConfig, HomebridgeConfig, PlatformConfig } from '../../core/config/config.interfaces'
+import type { AccessoryConfig, HomebridgeConfig, PlatformConfig } from '../../core/config/config.interfaces.js'
 
 import { Buffer } from 'node:buffer'
 import { exec, spawn } from 'node:child_process'
+import { createWriteStream } from 'node:fs'
+import { readdir, unlink } from 'node:fs/promises'
 import { extname, join, resolve } from 'node:path'
 import process from 'node:process'
 import { pipeline } from 'node:stream'
 import { promisify } from 'node:util'
 
-import { Categories } from '@homebridge/hap-client/dist/hap-types'
+import { Categories } from '@homebridge/hap-client/dist/hap-types.js'
 import {
   BadRequestException,
+  Inject,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
   ServiceUnavailableException,
 } from '@nestjs/common'
-import {
-  createWriteStream,
-  pathExists,
-  readdir,
-  readJson,
-  remove,
-  unlink,
-  writeJson,
-} from 'fs-extra'
+import { pathExists, readJson, remove, writeJson } from 'fs-extra/esm'
 import NodeCache from 'node-cache'
 import { networkInterfaces } from 'systeminformation'
 import { check as tcpCheck } from 'tcp-port-used'
 
-import { ConfigService } from '../../core/config/config.service'
-import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.service'
-import { Logger } from '../../core/logger/logger.service'
-import { AccessoriesService } from '../accessories/accessories.service'
-import { ConfigEditorService } from '../config-editor/config-editor.service'
-import { HomebridgeMdnsSettingDto } from './server.dto'
+import { ConfigService } from '../../core/config/config.service.js'
+import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.service.js'
+import { Logger } from '../../core/logger/logger.service.js'
+import { AccessoriesService } from '../accessories/accessories.service.js'
+import { ConfigEditorService } from '../config-editor/config-editor.service.js'
+import { HomebridgeMdnsSettingDto } from './server.dto.js'
 
 const pump = promisify(pipeline)
 
@@ -51,11 +46,11 @@ export class ServerService {
   public paired: boolean = false
 
   constructor(
-    private readonly configService: ConfigService,
-    private readonly configEditorService: ConfigEditorService,
-    private readonly accessoriesService: AccessoriesService,
-    private readonly homebridgeIpcService: HomebridgeIpcService,
-    private readonly logger: Logger,
+    @Inject(ConfigService) private readonly configService: ConfigService,
+    @Inject(ConfigEditorService) private readonly configEditorService: ConfigEditorService,
+    @Inject(AccessoriesService) private readonly accessoriesService: AccessoriesService,
+    @Inject(HomebridgeIpcService) private readonly homebridgeIpcService: HomebridgeIpcService,
+    @Inject(Logger) private readonly logger: Logger,
   ) {
     this.accessoryId = this.configService.homebridgeConfig.bridge.username.split(':').join('')
     this.accessoryInfoPath = join(this.configService.storagePath, 'persist', `AccessoryInfo.${this.accessoryId}.json`)
@@ -100,11 +95,23 @@ export class ServerService {
       // Check if the original username is in the access list, if so, update it to the new username
       const uiConfig = configFile.platforms.find(x => x.platform === 'config')
       let blacklistChanged = false
+      let bridgesChanged = false
       if (uiConfig.accessoryControl?.instanceBlacklist?.includes(username)) {
         // Remove the old username from the blacklist
         blacklistChanged = true
         uiConfig.accessoryControl.instanceBlacklist = uiConfig.accessoryControl.instanceBlacklist
           .filter((x: string) => x.toUpperCase() !== username)
+      }
+
+      // Check if the original username is in the config.bridges list (as a username property with colons)
+      let oldBridgeConfig: { username: string, hideHapAlert?: boolean, scheduledRestartCron?: string } | undefined
+      if (uiConfig.bridges && Array.isArray(uiConfig.bridges)) {
+        const bridgeIndex = uiConfig.bridges.findIndex(x => x.username?.toUpperCase() === username)
+        if (bridgeIndex > -1) {
+          bridgesChanged = true
+          oldBridgeConfig = uiConfig.bridges[bridgeIndex]
+          uiConfig.bridges.splice(bridgeIndex, 1)
+        }
       }
 
       // Only available for child bridges
@@ -133,7 +140,15 @@ export class ServerService {
           // Add the new username to the blacklist if it was previously there
           if (blacklistChanged) {
             uiConfig.accessoryControl.instanceBlacklist = uiConfig.accessoryControl.instanceBlacklist
-              .concat(pluginBlock._bridge.username.toUpperCase())
+              .concat(pluginBlock._bridge.username)
+          }
+
+          // Add an entry to the bridges list mirroring the new username and original object
+          if (bridgesChanged) {
+            uiConfig.bridges.push({
+              ...oldBridgeConfig,
+              username: pluginBlock._bridge.username,
+            })
           }
 
           this.logger.warn(`Bridge ${id} reset: new username: ${pluginBlock._bridge.username} and new pin: ${pluginBlock._bridge.pin}.`)
@@ -849,7 +864,7 @@ export class ServerService {
     return new Promise((res) => {
       let result = false
 
-      const child = spawn(process.execPath, ['-v'], { shell: true })
+      const child = spawn(process.execPath, ['-v'])
 
       child.stdout.once('data', (data) => {
         result = data.toString().trim() !== process.version

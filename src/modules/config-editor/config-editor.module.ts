@@ -1,12 +1,13 @@
 import { Module } from '@nestjs/common'
 import { PassportModule } from '@nestjs/passport'
 
-import { ConfigModule } from '../../core/config/config.module'
-import { LoggerModule } from '../../core/logger/logger.module'
-import { SchedulerModule } from '../../core/scheduler/scheduler.module'
-import { PluginsModule } from '../plugins/plugins.module'
-import { ConfigEditorController } from './config-editor.controller'
-import { ConfigEditorService } from './config-editor.service'
+import { ConfigModule } from '../../core/config/config.module.js'
+import { HomebridgeIpcModule } from '../../core/homebridge-ipc/homebridge-ipc.module.js'
+import { LoggerModule } from '../../core/logger/logger.module.js'
+import { SchedulerModule } from '../../core/scheduler/scheduler.module.js'
+import { PluginsModule } from '../plugins/plugins.module.js'
+import { ConfigEditorController } from './config-editor.controller.js'
+import { ConfigEditorService } from './config-editor.service.js'
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { ConfigEditorService } from './config-editor.service'
     ConfigModule,
     SchedulerModule,
     PluginsModule,
+    HomebridgeIpcModule,
   ],
   providers: [
     ConfigEditorService,

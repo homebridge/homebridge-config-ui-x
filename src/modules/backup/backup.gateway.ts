@@ -1,12 +1,12 @@
 import type { EventEmitter } from 'node:events'
 
-import { UseGuards } from '@nestjs/common'
+import { Inject, UseGuards } from '@nestjs/common'
 import { SubscribeMessage, WebSocketGateway, WsException } from '@nestjs/websockets'
 import { red } from 'bash-color'
 
-import { WsAdminGuard } from '../../core/auth/guards/ws-admin-guard'
-import { Logger } from '../../core/logger/logger.service'
-import { BackupService } from './backup.service'
+import { WsAdminGuard } from '../../core/auth/guards/ws-admin-guard.js'
+import { Logger } from '../../core/logger/logger.service.js'
+import { BackupService } from './backup.service.js'
 
 @UseGuards(WsAdminGuard)
 @WebSocketGateway({
@@ -19,8 +19,8 @@ import { BackupService } from './backup.service'
 })
 export class BackupGateway {
   constructor(
-    private backupService: BackupService,
-    private logger: Logger,
+    @Inject(BackupService) private readonly backupService: BackupService,
+    @Inject(Logger) private readonly logger: Logger,
   ) {}
 
   @SubscribeMessage('do-restore')

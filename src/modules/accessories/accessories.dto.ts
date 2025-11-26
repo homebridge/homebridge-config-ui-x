@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger'
 import { IsDefined, IsNotEmpty, IsString } from 'class-validator'
 
 export class AccessorySetCharacteristicDto {
-  @ApiProperty({ required: true })
+  @ApiProperty({ required: true, type: String })
   @IsDefined()
   @IsString()
   characteristicType: string

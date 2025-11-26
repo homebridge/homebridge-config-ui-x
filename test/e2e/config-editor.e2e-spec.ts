@@ -1,7 +1,7 @@
 import type { NestFastifyApplication } from '@nestjs/platform-fastify'
 import type { TestingModule } from '@nestjs/testing'
 
-import type { HomebridgeConfig } from '../../src/core/config/config.interfaces'
+import type { HomebridgeConfig } from '../../src/core/config/config.interfaces.js'
 
 import { resolve } from 'node:path'
 import process from 'node:process'
@@ -23,10 +23,10 @@ import {
 } from 'fs-extra'
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest'
 
-import { AuthModule } from '../../src/core/auth/auth.module'
-import { SchedulerService } from '../../src/core/scheduler/scheduler.service'
-import { ConfigEditorModule } from '../../src/modules/config-editor/config-editor.module'
-import { ConfigEditorService } from '../../src/modules/config-editor/config-editor.service'
+import { AuthModule } from '../../src/core/auth/auth.module.js'
+import { SchedulerService } from '../../src/core/scheduler/scheduler.service.js'
+import { ConfigEditorModule } from '../../src/modules/config-editor/config-editor.module.js'
+import { ConfigEditorService } from '../../src/modules/config-editor/config-editor.service.js'
 
 describe('ConfigEditorController (e2e)', () => {
   let app: NestFastifyApplication
@@ -972,6 +972,267 @@ describe('ConfigEditorController (e2e)', () => {
     expect(result).toContain('homebridge-valid-plugin')
     expect(result).toContain('homebridge-another-valid')
     expect(result).not.toContain('invalid-plugin')
+  })
+
+  it('GET/PUT /config-editor/ui/bridges/:username/scheduled-restart-cron (should handle scheduled restart cron)', async () => {
+    const testUsername1 = '67:E4:1F:0E:A0:5D'
+    const testUsername2 = '0E:02:9A:9D:44:45'
+
+    // Test 1: Should set scheduledRestartCron for bridge
+    let res = await app.inject({
+      method: 'PUT',
+      url: `/config-editor/ui/bridges/${testUsername1}/scheduled-restart-cron`,
+      headers: {
+        authorization,
+      },
+      payload: {
+        value: '0 5 * * *',
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+
+    // Test 2: Should return bridge with scheduledRestartCron set
+    res = await app.inject({
+      method: 'GET',
+      url: `/config-editor/ui/bridges/${testUsername1}`,
+      headers: {
+        authorization,
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+    let result = res.json()
+    expect(result).toBeTruthy()
+    expect(result.username).toBe(testUsername1)
+    expect(result.scheduledRestartCron).toBe('0 5 * * *')
+
+    // Test 3: Should update scheduledRestartCron to different value
+    res = await app.inject({
+      method: 'PUT',
+      url: `/config-editor/ui/bridges/${testUsername1}/scheduled-restart-cron`,
+      headers: {
+        authorization,
+      },
+      payload: {
+        value: '0 3 * * 1',
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+
+    // Verify it was updated
+    res = await app.inject({
+      method: 'GET',
+      url: `/config-editor/ui/bridges/${testUsername1}`,
+      headers: {
+        authorization,
+      },
+    })
+
+    result = res.json()
+    expect(result.scheduledRestartCron).toBe('0 3 * * 1')
+
+    // Test 4: Should remove scheduledRestartCron when set to null
+    res = await app.inject({
+      method: 'PUT',
+      url: `/config-editor/ui/bridges/${testUsername1}/scheduled-restart-cron`,
+      headers: {
+        authorization,
+      },
+      payload: {
+        value: null,
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+
+    // Verify it was removed
+    res = await app.inject({
+      method: 'GET',
+      url: `/config-editor/ui/bridges/${testUsername1}`,
+      headers: {
+        authorization,
+      },
+    })
+
+    result = res.json()
+    expect(result.scheduledRestartCron).toBe(null)
+
+    // Test 5: Should remove scheduledRestartCron when set to empty string
+    // First set it
+    await app.inject({
+      method: 'PUT',
+      url: `/config-editor/ui/bridges/${testUsername1}/scheduled-restart-cron`,
+      headers: {
+        authorization,
+      },
+      payload: {
+        value: '0 5 * * *',
+      },
+    })
+
+    // Then remove with empty string
+    res = await app.inject({
+      method: 'PUT',
+      url: `/config-editor/ui/bridges/${testUsername1}/scheduled-restart-cron`,
+      headers: {
+        authorization,
+      },
+      payload: {
+        value: '',
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+
+    // Verify it was removed
+    res = await app.inject({
+      method: 'GET',
+      url: `/config-editor/ui/bridges/${testUsername1}`,
+      headers: {
+        authorization,
+      },
+    })
+
+    result = res.json()
+    expect(result.scheduledRestartCron).toBe(null)
+
+    // Test 6: Should set scheduledRestartCron for different bridge
+    res = await app.inject({
+      method: 'PUT',
+      url: `/config-editor/ui/bridges/${testUsername2}/scheduled-restart-cron`,
+      headers: {
+        authorization,
+      },
+      payload: {
+        value: '0 2 * * *',
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+
+    // Test 7: Should return second bridge with its own scheduledRestartCron
+    res = await app.inject({
+      method: 'GET',
+      url: `/config-editor/ui/bridges/${testUsername2}`,
+      headers: {
+        authorization,
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+    result = res.json()
+    expect(result.username).toBe(testUsername2)
+    expect(result.scheduledRestartCron).toBe('0 2 * * *')
+
+    // Test 8: Should handle invalid username formats
+    res = await app.inject({
+      method: 'PUT',
+      url: '/config-editor/ui/bridges/invalid-mac/scheduled-restart-cron',
+      headers: {
+        authorization,
+      },
+      payload: {
+        value: '0 5 * * *',
+      },
+    })
+
+    expect(res.statusCode).toBe(404)
+  })
+
+  it('PUT /config-editor/ui (should handle scheduled restart cron for main bridge)', async () => {
+    // Test 1: Should set scheduledRestartCron for main bridge
+    let res = await app.inject({
+      method: 'PUT',
+      url: '/config-editor/ui',
+      headers: {
+        authorization,
+      },
+      payload: {
+        key: 'scheduledRestartCron',
+        value: '0 4 * * *',
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+
+    // Verify it was saved to config.json
+    let config: HomebridgeConfig = await readJson(configFilePath)
+    const uiPlatform = config.platforms.find(p => p.platform === 'config')
+    expect(uiPlatform).toBeTruthy()
+    expect(uiPlatform.scheduledRestartCron).toBe('0 4 * * *')
+
+    // Test 2: Should update scheduledRestartCron to different value
+    res = await app.inject({
+      method: 'PUT',
+      url: '/config-editor/ui',
+      headers: {
+        authorization,
+      },
+      payload: {
+        key: 'scheduledRestartCron',
+        value: '0 6 * * *',
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+
+    config = await readJson(configFilePath)
+    const uiPlatform2 = config.platforms.find(p => p.platform === 'config')
+    expect(uiPlatform2.scheduledRestartCron).toBe('0 6 * * *')
+
+    // Test 3: Should remove scheduledRestartCron when set to null
+    res = await app.inject({
+      method: 'PUT',
+      url: '/config-editor/ui',
+      headers: {
+        authorization,
+      },
+      payload: {
+        key: 'scheduledRestartCron',
+        value: null,
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+
+    config = await readJson(configFilePath)
+    const uiPlatform3 = config.platforms.find(p => p.platform === 'config')
+    expect(uiPlatform3.scheduledRestartCron).toBeUndefined()
+
+    // Test 4: Should remove scheduledRestartCron when set to empty string
+    // First set it
+    await app.inject({
+      method: 'PUT',
+      url: '/config-editor/ui',
+      headers: {
+        authorization,
+      },
+      payload: {
+        key: 'scheduledRestartCron',
+        value: '0 5 * * *',
+      },
+    })
+
+    // Then remove with empty string
+    res = await app.inject({
+      method: 'PUT',
+      url: '/config-editor/ui',
+      headers: {
+        authorization,
+      },
+      payload: {
+        key: 'scheduledRestartCron',
+        value: '',
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+
+    config = await readJson(configFilePath)
+    const uiPlatform4 = config.platforms.find(p => p.platform === 'config')
+    expect(uiPlatform4.scheduledRestartCron).toBeUndefined()
   })
 
   afterAll(async () => {

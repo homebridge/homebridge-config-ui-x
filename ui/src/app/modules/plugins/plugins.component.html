@@ -70,7 +70,7 @@
 <div class="d-flex flex-wrap justify-content-between">
   @for (plugin of installedPlugins; track plugin) {
   <div class="hb-plugin-space-between">
-    <app-plugin-card [plugin]="plugin" [childBridges]="getPluginChildBridges(plugin)"></app-plugin-card>
+    <app-plugin-card [plugin]="plugin" [childBridges]="getPluginChildBridges(plugin)" />
   </div>
   } @if (installedPlugins.length === 0 && !loading && !mainError) {
   <div class="alert alert-info mt-4 text-center w-100">
