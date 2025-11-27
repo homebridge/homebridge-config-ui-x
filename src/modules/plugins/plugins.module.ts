@@ -9,6 +9,7 @@ import { HomebridgeIpcModule } from '../../core/homebridge-ipc/homebridge-ipc.mo
 import { LoggerModule } from '../../core/logger/logger.module.js'
 import { NodePtyModule } from '../../core/node-pty/node-pty.module.js'
 import { ChildBridgesModule } from '../child-bridges/child-bridges.module.js'
+import { NPM_FETCH_TIMEOUT } from './plugins.constants.js'
 import { PluginsController } from './plugins.controller.js'
 import { PluginsGateway } from './plugins.gateway.js'
 import { PluginsService } from './plugins.service.js'
@@ -20,7 +21,7 @@ import { PluginsService } from './plugins.service.js'
       headers: {
         'User-Agent': 'homebridge-config-ui-x',
       },
-      timeout: 10000,
+      timeout: NPM_FETCH_TIMEOUT,
       httpsAgent: new Agent({ keepAlive: true }),
     }),
     NodePtyModule,
