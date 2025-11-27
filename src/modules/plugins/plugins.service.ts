@@ -46,7 +46,6 @@ import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.s
 import { Logger } from '../../core/logger/logger.service.js'
 import { NodePtyService } from '../../core/node-pty/node-pty.service.js'
 import { ChildBridgesService } from '../child-bridges/child-bridges.service.js'
-import { NPM_FETCH_TIMEOUT } from './plugins.constants.js'
 import { HomebridgeUpdateActionDto, PluginActionDto } from './plugins.dto.js'
 
 const { orderBy, uniq } = _
@@ -137,16 +136,15 @@ export class PluginsService {
      * The "timeout" option on axios is the response timeout
      * If the user has no internet, the dns lookup may take a long time to timeout
      * As the dns lookup timeout is not configurable in Node.js, this interceptor
-     * will cancel the request after NPM_FETCH_TIMEOUT + 5 seconds to account for DNS lookup.
+     * will cancel the request after 35 seconds.
      */
-    const requestTimeout = NPM_FETCH_TIMEOUT + 5000
     this.httpService.axiosRef.interceptors.request.use((config) => {
       const source = axios.CancelToken.source()
       config.cancelToken = source.token
 
       setTimeout(() => {
-        source.cancel(`Timeout: request took more than ${requestTimeout / 1000} seconds`)
-      }, requestTimeout)
+        source.cancel('Timeout: request took more than 35 seconds')
+      }, 35000)
 
       return config
     })
