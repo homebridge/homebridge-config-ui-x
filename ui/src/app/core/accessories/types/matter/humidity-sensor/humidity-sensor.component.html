@@ -31,9 +31,9 @@
         <line stroke-linecap="round" x1="25" y1="26" x2="25" y2="29" stroke="#7f7f7f" stroke-width="0.5" />
       </svg>
     </div>
-    <div class="accessory-label mt-auto">{{ service.customName || service.serviceName }}</div>
+    <div class="accessory-label mt-auto">{{ service().customName || service().serviceName }}</div>
     <div class="accessory-label grey-text">
-      @if (humidity !== null) { {{ humidity }}% } @else { {{ 'accessories.control.no_data' | translate }} }
+      @if (humidity() !== null) { {{ humidity() }}% } @else { {{ 'accessories.control.no_data' | translate }} }
     </div>
   </div>
 </div>

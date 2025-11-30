@@ -7,7 +7,7 @@
       data-bs-dismiss="modal"
       [attr.aria-label]="'form.button_close' | translate"
       (click)="dismissModal()"
-      [disabled]="clicked || deleting"
+      [disabled]="clicked() || deleting()"
     ></button>
   </div>
   <div class="modal-body">
@@ -28,20 +28,20 @@
         <button
           class="btn btn-primary m-0 ms-3 py-1"
           (click)="downloadCurrentConfig()"
-          [disabled]="clicked || deleting"
+          [disabled]="clicked() || deleting()"
           [attr.aria-label]="'backup.backup_now' | translate"
         >
           <i class="fas fa-arrow-right"></i>
         </button>
       </li>
     </ul>
-    @if (loading) {
+    @if (loading()) {
     <div class="text-center primary-text">
       <i class="fa fa-circle-notch fa-spin mt-3" style="font-size: 75px"></i>
     </div>
-    } @else if (backupList.length) {
+    } @else if (backupList().length) {
     <ul class="list-group list-group-box mt-3">
-      @for (backup of backupList; track backup) {
+      @for (backup of backupList(); track backup) {
       <li class="list-group-item d-flex justify-content-between align-items-center">
         <span>
           {{ backup.timestamp | date:'mediumDate' }}<br />
@@ -50,7 +50,7 @@
         <span style="display: flex; flex-wrap: nowrap">
           <button
             (click)="restore(backup.id)"
-            [disabled]="clicked || deleting"
+            [disabled]="clicked() || deleting()"
             class="btn btn-primary m-0 ms-3 py-1"
             [ngbTooltip]="'config.restore.copy_to_editor' | translate"
             placement="bottom"
@@ -64,7 +64,7 @@
           <button
             class="btn btn-primary m-0 ms-2"
             (click)="download(backup.id)"
-            [disabled]="clicked || deleting"
+            [disabled]="clicked() || deleting()"
             [ngbTooltip]="'form.button_download' | translate"
             placement="bottom"
             container="modal"
@@ -77,7 +77,7 @@
           <button
             class="btn btn-danger m-0 ms-2"
             (click)="delete(backup.id)"
-            [disabled]="clicked || deleting"
+            [disabled]="clicked() || deleting()"
             [ngbTooltip]="'form.button_delete' | translate"
             placement="bottom"
             container="modal"
@@ -87,7 +87,7 @@
           >
             <i
               class="fas"
-              [class]="{ 'fa-trash': backup.id !== deleting, 'fa-circle-notch fa-spin': backup.id === deleting }"
+              [class]="{ 'fa-trash': backup.id !== deleting(), 'fa-circle-notch fa-spin': backup.id === deleting() }"
             ></i>
           </button>
         </span>
@@ -102,7 +102,7 @@
           <button
             class="btn btn-danger m-0 ms-2"
             (click)="deleteAllBackups()"
-            [disabled]="clicked || deleting"
+            [disabled]="clicked() || deleting()"
             [ngbTooltip]="'form.button_delete_all' | translate"
             placement="bottom"
             container="modal"
@@ -112,7 +112,7 @@
           >
             <i
               class="fas"
-              [class]="{ 'fa-trash': 'all' !== deleting, 'fa-circle-notch fa-spin': 'all' === deleting }"
+              [class]="{ 'fa-trash': 'all' !== deleting(), 'fa-circle-notch fa-spin': 'all' === deleting() }"
             ></i>
           </button>
         </span>
@@ -128,7 +128,7 @@
         class="btn btn-elegant"
         data-bs-dismiss="modal"
         (click)="dismissModal()"
-        [disabled]="clicked || deleting"
+        [disabled]="clicked() || deleting()"
         [attr.aria-label]="'form.button_close' | translate"
       >
         {{ 'form.button_close' | translate }}

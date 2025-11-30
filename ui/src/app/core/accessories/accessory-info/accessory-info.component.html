@@ -1,6 +1,8 @@
-<div class="modal-content">
+<div class="modal-content" role="dialog" aria-modal="true" [attr.aria-labelledby]="'accessory-info-modal-title'">
   <div class="modal-header">
-    <h5 class="modal-title">{{ service.customName || service.serviceName }}</h5>
+    <h5 class="modal-title" id="accessory-info-modal-title">
+      {{ localService.customName || localService.serviceName }}
+    </h5>
     <button
       type="button"
       class="btn-close"
@@ -19,8 +21,8 @@
         <label for="form-name" class="mb-2 mb-md-0 w-100 w-md-50">{{ 'accessories.custom_name' | translate }}</label>
         <div class="text-start text-md-end w-100 w-md-50">
           <input
-            [ngModel]="service.customName || service.serviceName"
-            (ngModelChange)="service.customName = $event"
+            [ngModel]="localService.customName || localService.serviceName"
+            (ngModelChange)="localService.customName = $event"
             type="text"
             id="form-name"
             autocomplete="off"
@@ -32,7 +34,7 @@
       <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
         <label class="mb-2 mb-md-0 w-100 w-md-50">{{ 'accessories.custom_type' | translate }}</label>
         <div class="text-start text-md-end w-100 w-md-50">
-          <select class="custom-select" [(ngModel)]="service.customType">
+          <select class="custom-select" [(ngModel)]="localService.customType">
             @for (customType of customTypeList.sort(); track customType) {
             <option [value]="customType">
               {{ (customType | serviceToTranslationString) | translate }} @if (isDefaultType(customType)) { ({{
@@ -49,21 +51,21 @@
           <input
             type="checkbox"
             class="rendux-input"
-            [(ngModel)]="service.hidden"
+            [(ngModel)]="localService.hidden"
             id="hide-accessory"
             [attr.aria-label]="'accessories.hide_this_accessory' | translate"
           />
           <label for="hide-accessory" class="rendux-label ms-3"></label>
         </div>
       </li>
-      @if (!service.hidden) {
+      @if (!localService.hidden) {
       <li class="list-group-item d-flex justify-content-between align-items-center flex-row pb-2">
         <span class="text-start">{{ 'accessories.show_on_dashboard' | translate }}</span>
         <div class="text-end grey-text d-flex align-items-center">
           <input
             type="checkbox"
             class="rendux-input mb-0"
-            [(ngModel)]="service.onDashboard"
+            [(ngModel)]="localService.onDashboard"
             id="show-on-dashboard"
             [attr.aria-label]="'accessories.show_on_dashboard' | translate"
           />
@@ -97,13 +99,13 @@
       </li>
       <li class="list-group-item d-flex justify-content-between align-items-left flex-column flex-md-row">
         <span class="text-start">{{ 'accessories.service' | translate }}</span>
-        <span class="text-start text-md-end grey-text font-monospace">{{ service.humanType }}</span>
+        <span class="text-start text-md-end grey-text font-monospace">{{ localService.humanType }}</span>
       </li>
       <li class="list-group-item d-flex justify-content-between align-items-left flex-column flex-md-row">
         <span class="text-start">{{ 'accessories.name' | translate }}</span>
-        <span class="text-start text-md-end grey-text font-monospace">{{ service.serviceName }}</span>
+        <span class="text-start text-md-end grey-text font-monospace">{{ localService.serviceName }}</span>
       </li>
-      @for (characteristic of service.serviceCharacteristics; track characteristic) {
+      @for (characteristic of localService.serviceCharacteristics; track characteristic) {
       <li class="list-group-item d-flex justify-content-between align-items-left flex-column flex-md-row">
         <span>
           @if ('minStep' in characteristic || 'minValue' in characteristic || 'maxValue' in characteristic ||
@@ -244,12 +246,12 @@
       </li>
       <li class="list-group-item d-flex justify-content-between align-items-left flex-column flex-md-row">
         <span class="text-start">Bridge</span>
-        <span class="text-start text-md-end grey-text font-monospace">{{ service.instance.name }}</span>
+        <span class="text-start text-md-end grey-text font-monospace">{{ localService.instance.name }}</span>
       </li>
       }
       <li class="list-group-item d-flex justify-content-between align-items-left flex-column flex-md-row">
         <span class="text-start">{{ 'users.label_username' | translate }}</span>
-        <span class="text-start text-md-end grey-text font-monospace">{{ service.instance.username }}</span>
+        <span class="text-start text-md-end grey-text font-monospace">{{ localService.instance.username }}</span>
       </li>
       @if (matchedCachedAccessory) {
       <li class="list-group-item d-flex justify-content-between align-items-left flex-column flex-md-row">
@@ -259,19 +261,19 @@
       } @if (!isMatterAccessory) {
       <li class="list-group-item d-flex justify-content-between align-items-left flex-column flex-md-row">
         <span class="text-start">{{ 'accessories.bridge_ip' | translate }}</span>
-        <span class="text-start text-md-end grey-text font-monospace">{{ service.instance.ipAddress }}</span>
+        <span class="text-start text-md-end grey-text font-monospace">{{ localService.instance.ipAddress }}</span>
       </li>
       <li class="list-group-item d-flex justify-content-between align-items-left flex-column flex-md-row">
         <span class="text-start">{{ 'accessories.bridge_port' | translate }}</span>
-        <span class="text-start text-md-end grey-text font-monospace">{{ service.instance.port }}</span>
+        <span class="text-start text-md-end grey-text font-monospace">{{ localService.instance.port }}</span>
       </li>
       <li class="list-group-item d-flex justify-content-between align-items-left flex-column flex-md-row">
         <span class="text-start font-monospace">aid</span>
-        <span class="text-start text-md-end grey-text font-monospace">{{ service.aid }}</span>
+        <span class="text-start text-md-end grey-text font-monospace">{{ localService.aid }}</span>
       </li>
       <li class="list-group-item d-flex justify-content-between align-items-left flex-column flex-md-row">
         <span class="text-start font-monospace">iid</span>
-        <span class="text-start text-md-end grey-text font-monospace">{{ service.iid }}</span>
+        <span class="text-start text-md-end grey-text font-monospace">{{ localService.iid }}</span>
       </li>
       } @if (matchedCachedAccessory) {
       <li class="list-group-item d-flex justify-content-between align-items-left flex-column flex-md-row">

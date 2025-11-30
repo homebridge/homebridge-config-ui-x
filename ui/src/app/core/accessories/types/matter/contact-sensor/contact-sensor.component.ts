@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core'
+import { Component, computed, input } from '@angular/core'
 import { TranslatePipe } from '@ngx-translate/core'
 
 import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
@@ -14,9 +14,7 @@ import { getContactSensorState } from '@/app/core/accessories/types/matter/matte
   ],
 })
 export class MatterContactSensorComponent {
-  @Input() public service: ServiceTypeX
+  public service = input.required<ServiceTypeX>()
 
-  public get isOpen(): boolean {
-    return getContactSensorState(this.service)
-  }
+  public isOpen = computed(() => getContactSensorState(this.service()))
 }

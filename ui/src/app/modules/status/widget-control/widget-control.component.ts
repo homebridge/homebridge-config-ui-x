@@ -1,8 +1,9 @@
 import { DatePipe } from '@angular/common'
 import { HttpClient, HttpParams } from '@angular/common/http'
-import { Component, inject, Input, OnInit } from '@angular/core'
+import { Component, inject, OnInit, signal } from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { NgbActiveModal, NgbTypeahead } from '@ng-bootstrap/ng-bootstrap'
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal'
+import { NgbTypeahead } from '@ng-bootstrap/ng-bootstrap/typeahead'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { firstValueFrom, Observable, of } from 'rxjs'
 import {
@@ -14,9 +15,10 @@ import {
   tap,
 } from 'rxjs/operators'
 
-import { ApiService } from '@/app/core/api.service'
-import { SettingsService } from '@/app/core/settings.service'
-import { IoNamespace, WsService } from '@/app/core/ws.service'
+import { ApiService } from '@/app/core/communication/api.service'
+import { IoNamespace, WsService } from '@/app/core/communication/ws.service'
+import { WIDGET_CONTROL_MODAL_DATA } from '@/app/core/modal-data-tokens'
+import { SettingsService } from '@/app/core/ui/settings.service'
 import { ServerInfo, Widget } from '@/app/modules/status/widgets/widgets.interfaces'
 import { environment } from '@/environments/environment'
 
@@ -31,24 +33,29 @@ import { environment } from '@/environments/environment'
   ],
 })
 export class WidgetControlComponent implements OnInit {
+  // Injected dependencies
   private $activeModal = inject(NgbActiveModal)
   private $api = inject(ApiService)
   private $http = inject(HttpClient)
   private $settings = inject(SettingsService)
   private $translate = inject(TranslateService)
   private $ws = inject(WsService)
+  private modalData = inject(WIDGET_CONTROL_MODAL_DATA)
+
+  // Public properties for component use
+  public widget = this.modalData.widget
+
+  // Signals
+  public searching = signal<boolean>(false)
+  public serverInfo = signal<ServerInfo | null>(null)
+  public networkInterfaces = signal<string[]>([])
+  public isLightMode = signal<boolean>(false)
+
+  // Other properties
   private io: IoNamespace
-
-  @Input() widget: Widget
-
-  // Weather
-  public searching: boolean
-
-  // Terminal
+  private originalWidget: Widget
   public fontSizes = [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
   public fontWeights = ['100', '200', '300', '400', '500', '600', '700', '800', '900', 'bold', 'normal']
-
-  // Clock
   public currentDate = new Date()
   public timeFormats = [
     'h:mm a',
@@ -56,9 +63,6 @@ export class WidgetControlComponent implements OnInit {
     'H:mm',
     'H:mm:ss',
   ]
-
-  // Update Information Widget
-  public serverInfo: ServerInfo
 
   public dateFormats = [
     'yyyy-MM-dd',
@@ -78,64 +82,89 @@ export class WidgetControlComponent implements OnInit {
     'EEEE, MMM d',
   ]
 
-  public networkInterfaces: string[] = []
-  public isLightMode: boolean
-
   public searchCountryCodes = (text$: Observable<string>) => text$.pipe(
     debounceTime(300),
     distinctUntilChanged(),
-    tap(() => this.searching = true),
+    tap(() => this.searching.set(true)),
     switchMap(term => term.length < 3
       ? []
       : this.findOpenWeatherMapCity(term).pipe(
           catchError(() => {
-            this.searching = false
+            this.searching.set(false)
             return of([])
           }),
         ),
     ),
-    tap(() => this.searching = false),
+    tap(() => this.searching.set(false)),
   )
 
   public searchCountryCodeFormatter = (result: any) => `${result.name}, ${result.country}`
 
-  public async ngOnInit() {
+  public ngOnInit(): void {
+    void this.initialize()
+  }
+
+  private async initialize(): Promise<void> {
+    const widget = this.widget
+    if (!widget) {
+      return
+    }
+
+    // Store original reference and create a working copy to avoid mutating during editing
+    this.originalWidget = widget
+    this.widget = { ...widget }
+
     this.io = this.$ws.getExistingNamespace('status')
-    this.isLightMode = this.$settings.actualLightingMode === 'light'
-    if (this.widget.component === 'HomebridgeLogsWidgetComponent' || this.widget.component === 'TerminalWidgetComponent') {
-      if (!this.widget.fontWeight) {
-        this.widget.fontWeight = '400'
+    this.isLightMode.set(this.$settings.actualLightingMode === 'light')
+
+    const currentWidget = this.widget
+    if (!currentWidget) {
+      return
+    }
+
+    if (currentWidget.component === 'HomebridgeLogsWidgetComponent' || currentWidget.component === 'TerminalWidgetComponent') {
+      if (!currentWidget.fontWeight) {
+        currentWidget.fontWeight = '400'
       }
-      if (!this.widget.fontSize) {
-        this.widget.fontSize = 15
+      if (!currentWidget.fontSize) {
+        currentWidget.fontSize = 15
       }
-      if (!this.widget.theme) {
-        this.widget.theme = 'dark'
+      if (!currentWidget.theme) {
+        currentWidget.theme = 'dark'
       }
     }
-    if (this.widget.component === 'NetworkWidgetComponent') {
+    if (currentWidget.component === 'NetworkWidgetComponent') {
       // Get a list of active network interfaces from the settings
-      firstValueFrom(this.$api.get('/server/network-interfaces/bridge')).then((adapters) => {
-        this.networkInterfaces = adapters
-      })
+      void this.loadNetworkInterfaces()
     }
     try {
-      this.serverInfo = await firstValueFrom(this.io.request('get-homebridge-server-info'))
+      this.serverInfo.set(await firstValueFrom(this.io.request('get-homebridge-server-info')))
     } catch (error) {
       console.error('Failed to fetch server info:', error)
-      this.serverInfo = null
+      this.serverInfo.set(null)
     }
   }
 
-  public dismissModal() {
+  private async loadNetworkInterfaces(): Promise<void> {
+    const adapters = await this.$api.get('/server/network-interfaces/bridge')
+    this.networkInterfaces.set(adapters)
+  }
+
+  public dismissModal(): void {
     this.$activeModal.dismiss('Dismiss')
   }
 
-  public closeModal() {
+  public closeModal(): void {
+    const widget = this.widget
+    if (!widget) {
+      return
+    }
+    // Copy changes from working copy back to original widget
+    Object.assign(this.originalWidget, widget)
     this.$activeModal.close()
   }
 
-  private findOpenWeatherMapCity(query: string) {
+  private findOpenWeatherMapCity(query: string): Observable<any> {
     return this.$http
       .get('https://api.openweathermap.org/data/2.5/find', {
         params: new HttpParams({

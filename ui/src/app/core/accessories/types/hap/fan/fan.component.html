@@ -1,6 +1,6 @@
 <div
   class="accessory-box"
-  [class.accessory-on]="service.values.On || service.values.Active"
+  [class.accessory-on]="service().values?.On || service().values?.Active"
   (longClick)="onLongClick()"
   (shortClick)="onClick()"
   tabindex="0"
@@ -10,8 +10,8 @@
       [attr.aria-label]="'accessories.core.fan' | translate"
       class="accessory-svg"
       [class]="{
-        'spin': (service.values.On || service.values.Active) && (!hasRotationDirection || (hasRotationDirection && service.values.RotationDirection === 0)),
-        'spin-counter': (service.values.On || service.values.Active) && hasRotationDirection && service.values.RotationDirection === 1,
+        'spin': (service().values?.On || service().values?.Active) && (!hasRotationDirection || (hasRotationDirection && service().values?.RotationDirection === 0)),
+        'spin-counter': (service().values?.On || service().values?.Active) && hasRotationDirection && service().values?.RotationDirection === 1,
       }"
     >
       <svg width="32px" height="32px" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
@@ -29,13 +29,13 @@
         <circle cx="16" cy="16" r="3.6" stroke="#7f7f7f" stroke-width="2" fill="#1976d2" fill-opacity="0.5" />
       </svg>
     </div>
-    <div class="accessory-label mt-auto">{{ service.customName || service.serviceName }}</div>
-    @if (service.values.On && service.values.RotationSpeed) {
-    <div class="accessory-label grey-text">{{ service.values.RotationSpeed }}{{ rotationSpeedUnit }}</div>
+    <div class="accessory-label mt-auto">{{ service().customName || service().serviceName }}</div>
+    @if (service().values?.On && service().values?.RotationSpeed) {
+    <div class="accessory-label grey-text">{{ service().values?.RotationSpeed }}{{ rotationSpeedUnit }}</div>
     } @else {
     <div
       class="accessory-label grey-text"
-      [innerText]="((service.values.On || service.values.Active) ? 'accessories.control.on' : 'accessories.control.off') | translate"
+      [innerText]="((service().values?.On || service().values?.Active) ? 'accessories.control.on' : 'accessories.control.off') | translate"
     ></div>
     }
   </div>

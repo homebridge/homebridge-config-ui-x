@@ -1,11 +1,13 @@
-import { Component, inject, Input, OnDestroy, OnInit } from '@angular/core'
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
+import { Component, createEnvironmentInjector, DestroyRef, EnvironmentInjector, inject, input, OnInit } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe } from '@ngx-translate/core'
-import { interval, Subscription } from 'rxjs'
+import { interval } from 'rxjs'
 import { filter } from 'rxjs/operators'
 
 import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
 import { AccessoriesService } from '@/app/core/accessories/accessories.service'
+import { ACCESSORY_MANAGE_MODAL_DATA } from '@/app/core/accessories/types/base-manage.component'
 import { ValveManageComponent } from '@/app/core/accessories/types/hap/valve/valve.manage.component'
 import { LongClickDirective } from '@/app/core/directives/long-click.directive'
 
@@ -19,60 +21,65 @@ import { LongClickDirective } from '@/app/core/directives/long-click.directive'
     TranslatePipe,
   ],
 })
-export class ValveComponent implements OnInit, OnDestroy {
+export class ValveComponent implements OnInit {
+  private destroyRef = inject(DestroyRef)
+  private injector = inject(EnvironmentInjector)
   private $accessories = inject(AccessoriesService)
   private $modal = inject(NgbModal)
 
-  @Input() public service: ServiceTypeX
-  @Input() public readyForControl = false
+  public service = input.required<ServiceTypeX>()
+  public readyForControl = input<boolean>(false)
 
   public secondsActive = 0
   public remainingDuration: string
   private remainingDurationInterval = interval(1000).pipe(filter(() => this.isActive()))
-  private remainingDurationSubscription: Subscription
 
   public ngOnInit() {
     // Set up the RemainingDuration countdown handlers, if the valve has the RemainingDuration Characteristic
-    if ('SetDuration' in this.service.values) {
+    if ('SetDuration' in this.service().values) {
       this.setupRemainingDurationCounter()
     }
   }
 
   public onClick() {
-    if (!this.readyForControl) {
+    if (!this.readyForControl()) {
       return
     }
 
-    if ('Active' in this.service.values) {
-      this.service.getCharacteristic('Active').setValue(this.service.values.Active ? 0 : 1)
-    } else if ('On' in this.service.values) {
-      this.service.getCharacteristic('On').setValue(!this.service.values.On)
+    if ('Active' in this.service().values) {
+      void this.service().getCharacteristic('Active').setValue(this.service().values.Active ? 0 : 1)
+    } else if ('On' in this.service().values) {
+      void this.service().getCharacteristic('On').setValue(!this.service().values.On)
     }
   }
 
   public onLongClick() {
-    if (!this.readyForControl) {
+    if (!this.readyForControl()) {
       return
     }
 
-    if ('SetDuration' in this.service.values) {
-      const ref = this.$modal.open(ValveManageComponent, {
+    if ('SetDuration' in this.service().values) {
+      const modalInjector = createEnvironmentInjector(
+        [{
+          provide: ACCESSORY_MANAGE_MODAL_DATA,
+          useValue: {
+            service: this.service(),
+            $accessories: this.$accessories,
+          },
+        }],
+        this.injector,
+      )
+
+      this.$modal.open(ValveManageComponent, {
         size: 'md',
         backdrop: 'static',
+        injector: modalInjector,
       })
-      ref.componentInstance.service = this.service
-      ref.componentInstance.$accessories = this.$accessories
-    }
-  }
-
-  public ngOnDestroy() {
-    if (this.remainingDurationSubscription) {
-      this.remainingDurationSubscription.unsubscribe()
     }
   }
 
   private isActive() {
-    if (this.service.values.Active) {
+    if (this.service().values.Active) {
       return true
     } else {
       this.resetRemainingDuration()
@@ -81,22 +88,24 @@ export class ValveComponent implements OnInit, OnDestroy {
   }
 
   private setupRemainingDurationCounter() {
-    this.remainingDurationSubscription = this.remainingDurationInterval.subscribe(() => {
-      this.secondsActive++
-      const remainingSeconds = this.service.getCharacteristic('RemainingDuration').value as number - this.secondsActive
-      if (remainingSeconds > 0) {
-        this.remainingDuration = remainingSeconds < 3600
-          ? new Date(remainingSeconds * 1000).toISOString().substring(14, 19)
-          : new Date(remainingSeconds * 1000).toISOString().substring(11, 19)
-      } else {
-        this.remainingDuration = ''
-      }
-    })
+    this.remainingDurationInterval
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        this.secondsActive++
+        const remainingSeconds = this.service().getCharacteristic('RemainingDuration').value as number - this.secondsActive
+        if (remainingSeconds > 0) {
+          this.remainingDuration = remainingSeconds < 3600
+            ? new Date(remainingSeconds * 1000).toISOString().substring(14, 19)
+            : new Date(remainingSeconds * 1000).toISOString().substring(11, 19)
+        } else {
+          this.remainingDuration = ''
+        }
+      })
   }
 
   private resetRemainingDuration() {
     this.secondsActive = 0
-    if (this.service.getCharacteristic('RemainingDuration')) {
+    if (this.service().getCharacteristic('RemainingDuration')) {
       this.remainingDuration = ''
     }
   }

@@ -1,14 +1,17 @@
 import { DecimalPipe, UpperCasePipe } from '@angular/common'
-import { Component, inject, Input, OnDestroy, OnInit } from '@angular/core'
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, inject, OnInit } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { FormsModule } from '@angular/forms'
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe } from '@ngx-translate/core'
 import { NouisliderComponent } from 'ng2-nouislider'
-import { Subject, Subscription } from 'rxjs'
+import { ToastrService } from 'ngx-toastr'
+import { Subject } from 'rxjs'
 import { debounceTime } from 'rxjs/operators'
 
 import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
 import { AccessoriesService } from '@/app/core/accessories/accessories.service'
+import { ACCESSORY_MANAGE_MODAL_DATA } from '@/app/core/accessories/types/base-manage.component'
 import {
   getThermostatCoolingSetpoint,
   getThermostatHeatingSetpoint,
@@ -19,7 +22,7 @@ import {
   setThermostatSystemMode,
 } from '@/app/core/accessories/types/matter/matter-device.utils'
 import { ConvertTempPipe } from '@/app/core/pipes/convert-temp.pipe'
-import { SettingsService } from '@/app/core/settings.service'
+import { SettingsService } from '@/app/core/ui/settings.service'
 
 @Component({
   templateUrl: './thermostat.manage.component.html',
@@ -32,24 +35,31 @@ import { SettingsService } from '@/app/core/settings.service'
     ConvertTempPipe,
     UpperCasePipe,
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MatterThermostatManageComponent implements OnInit, OnDestroy {
-  private $activeModal = inject(NgbActiveModal)
+export class MatterThermostatManageComponent implements OnInit {
+  protected destroyRef = inject(DestroyRef)
+  protected $activeModal = inject(NgbActiveModal)
+  protected cdr = inject(ChangeDetectorRef)
   private $settings = inject(SettingsService)
+  private $toastr = inject(ToastrService)
 
-  @Input() public service: ServiceTypeX
-  @Input() public $accessories: AccessoriesService
+  // Inject modal data using modern DI pattern
+  private modalData = inject(ACCESSORY_MANAGE_MODAL_DATA)
+
+  // Public properties for component use (accessed by templates)
+  public service!: ServiceTypeX
+  public $accessories!: AccessoriesService
 
   public targetMode: number
   public targetHeatingTemp: number
   public targetCoolingTemp: number
   public autoTemp: [number, number]
   public temperatureUnits = this.$settings.env.temperatureUnits
-  private stateSubscription: Subscription
 
-  public heatingTempChanged: Subject<number> = new Subject<number>()
-  public coolingTempChanged: Subject<number> = new Subject<number>()
-  public autoTempChanged: Subject<[number, number]> = new Subject<[number, number]>()
+  private heatingTempChanged: Subject<number> = new Subject<number>()
+  private coolingTempChanged: Subject<number> = new Subject<number>()
+  private autoTempChanged: Subject<[number, number]> = new Subject<[number, number]>()
 
   // Temperature range limits (in Celsius, will be converted if needed)
   public minHeatSetpoint: number = 7
@@ -57,28 +67,63 @@ export class MatterThermostatManageComponent implements OnInit, OnDestroy {
   public minCoolSetpoint: number = 10
   public maxCoolSetpoint: number = 35
 
-  constructor() {
-    this.heatingTempChanged
-      .pipe(debounceTime(500))
-      .subscribe(() => {
-        setThermostatHeatingSetpoint(this.service, this.targetHeatingTemp)
-      })
+  public ngOnInit() {
+    // Null safety check
+    if (!this.modalData.service || !this.modalData.$accessories) {
+      console.error('MatterThermostatManageComponent: service or $accessories not provided')
+      this.$activeModal.dismiss('Missing required data')
+      return
+    }
 
-    this.coolingTempChanged
-      .pipe(debounceTime(500))
-      .subscribe(() => {
-        setThermostatCoolingSetpoint(this.service, this.targetCoolingTemp)
-      })
+    // Store in public properties (same object references)
+    this.service = this.modalData.service
+    this.$accessories = this.modalData.$accessories
 
-    this.autoTempChanged
-      .pipe(debounceTime(500))
-      .subscribe(() => {
-        setThermostatHeatingSetpoint(this.service, this.autoTemp[0])
-        setThermostatCoolingSetpoint(this.service, this.autoTemp[1])
-      })
+    this.setupComponent()
+    this.subscribeToAccessoryUpdates()
   }
 
-  public ngOnInit() {
+  public dismissModal() {
+    this.$activeModal.dismiss('Dismiss')
+  }
+
+  private setupComponent() {
+    this.createDebouncedSubscription(this.heatingTempChanged, async () => {
+      try {
+        await setThermostatHeatingSetpoint(this.service, this.targetHeatingTemp)
+      } catch (error) {
+        this.$toastr.error('Failed to set heating temperature', 'Error')
+        // Revert to current value on error
+        this.targetHeatingTemp = getThermostatHeatingSetpoint(this.service)
+        this.cdr.markForCheck()
+      }
+    })
+
+    this.createDebouncedSubscription(this.coolingTempChanged, async () => {
+      try {
+        await setThermostatCoolingSetpoint(this.service, this.targetCoolingTemp)
+      } catch (error) {
+        this.$toastr.error('Failed to set cooling temperature', 'Error')
+        // Revert to current value on error
+        this.targetCoolingTemp = getThermostatCoolingSetpoint(this.service)
+        this.cdr.markForCheck()
+      }
+    })
+
+    this.createDebouncedSubscription(this.autoTempChanged, async () => {
+      try {
+        await setThermostatHeatingSetpoint(this.service, this.autoTemp[0])
+        await setThermostatCoolingSetpoint(this.service, this.autoTemp[1])
+      } catch (error) {
+        this.$toastr.error('Failed to set temperature range', 'Error')
+        // Revert to current values on error
+        this.targetHeatingTemp = getThermostatHeatingSetpoint(this.service)
+        this.targetCoolingTemp = getThermostatCoolingSetpoint(this.service)
+        this.autoTemp = [this.targetHeatingTemp, this.targetCoolingTemp]
+        this.cdr.markForCheck()
+      }
+    })
+
     this.targetMode = getThermostatSystemMode(this.service)
     this.targetHeatingTemp = getThermostatHeatingSetpoint(this.service)
     this.targetCoolingTemp = getThermostatCoolingSetpoint(this.service)
@@ -93,29 +138,71 @@ export class MatterThermostatManageComponent implements OnInit, OnDestroy {
       this.maxCoolSetpoint = cluster.maxCoolSetpointLimit ? cluster.maxCoolSetpointLimit / 100 : 35
     }
 
-    this.applySliderGradient()
+    this.applySliderGradient('linear-gradient(to right, rgb(80, 80, 179), rgb(173, 216, 230), rgb(255, 185, 120), rgb(139, 90, 60))')
+  }
 
-    // Subscribe to state changes to update modal in real-time
-    this.stateSubscription = this.$accessories.accessoryData.subscribe(() => {
-      this.targetMode = getThermostatSystemMode(this.service)
-      this.targetHeatingTemp = getThermostatHeatingSetpoint(this.service)
-      this.targetCoolingTemp = getThermostatCoolingSetpoint(this.service)
-      this.autoTemp = [this.targetHeatingTemp, this.targetCoolingTemp]
+  private subscribeToAccessoryUpdates() {
+    if (this.$accessories) {
+      this.$accessories.accessoryData.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+        this.handleAccessoryUpdate()
+        this.cdr.markForCheck()
+      })
+    }
+  }
 
-      // Apply gradient when mode changes externally
-      this.applySliderGradient()
+  private createDebouncedSubscription<T>(
+    subject$: Subject<T>,
+    callback: (value: T) => void,
+    debounceMs: number = 500,
+  ) {
+    subject$
+      .pipe(debounceTime(debounceMs), takeUntilDestroyed(this.destroyRef))
+      .subscribe(callback)
+  }
+
+  private applySliderGradient(gradient: string, selector: string = '.noUi-target') {
+    requestAnimationFrame(() => {
+      const sliderElements = document.querySelectorAll<HTMLElement>(selector)
+      sliderElements.forEach((sliderElement) => {
+        sliderElement.style.background = gradient
+      })
     })
   }
 
-  public setTargetMode(value: number, event: MouseEvent) {
-    this.targetMode = value
-    setThermostatSystemMode(this.service, this.targetMode)
-
+  protected blurTarget(event: MouseEvent) {
     const target = event.target as HTMLButtonElement
     target.blur()
+  }
 
-    // Apply gradient to the new slider after it's created
-    this.applySliderGradient()
+  private handleAccessoryUpdate() {
+    this.targetMode = getThermostatSystemMode(this.service)
+    this.targetHeatingTemp = getThermostatHeatingSetpoint(this.service)
+    this.targetCoolingTemp = getThermostatCoolingSetpoint(this.service)
+    this.autoTemp = [this.targetHeatingTemp, this.targetCoolingTemp]
+
+    // Apply gradient when mode changes externally
+    this.applySliderGradient('linear-gradient(to right, rgb(80, 80, 179), rgb(173, 216, 230), rgb(255, 185, 120), rgb(139, 90, 60))')
+  }
+
+  public async setTargetMode(value: number, event: MouseEvent) {
+    const previousMode = this.targetMode
+
+    try {
+      this.targetMode = value
+      this.cdr.markForCheck()
+
+      await setThermostatSystemMode(this.service, this.targetMode)
+
+      this.blurTarget(event)
+
+      // Apply gradient to the new slider after it's created
+      this.applySliderGradient('linear-gradient(to right, rgb(80, 80, 179), rgb(173, 216, 230), rgb(255, 185, 120), rgb(139, 90, 60))')
+    } catch (error) {
+      this.$toastr.error('Failed to set thermostat mode', 'Error')
+      // Revert to previous mode on error
+      this.targetMode = previousMode
+      this.cdr.markForCheck()
+    }
   }
 
   public onHeatingTempChange() {
@@ -132,26 +219,7 @@ export class MatterThermostatManageComponent implements OnInit, OnDestroy {
     this.autoTempChanged.next(this.autoTemp)
   }
 
-  public dismissModal() {
-    this.$activeModal.dismiss('Dismiss')
-  }
-
-  public ngOnDestroy() {
-    if (this.stateSubscription) {
-      this.stateSubscription.unsubscribe()
-    }
-  }
-
   public get currentTemperature(): number | null {
     return getThermostatLocalTemperature(this.service)
-  }
-
-  private applySliderGradient() {
-    setTimeout(() => {
-      const sliderElements = document.querySelectorAll('.noUi-target')
-      sliderElements.forEach((sliderElement: HTMLElement) => {
-        sliderElement.style.background = 'linear-gradient(to right, rgb(80, 80, 179), rgb(173, 216, 230), rgb(255, 185, 120), rgb(139, 90, 60))'
-      })
-    }, 10)
   }
 }

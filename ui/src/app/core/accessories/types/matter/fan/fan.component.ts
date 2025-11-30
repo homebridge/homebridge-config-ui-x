@@ -1,9 +1,10 @@
-import { Component, inject, Input } from '@angular/core'
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
+import { Component, computed, createEnvironmentInjector, EnvironmentInjector, inject, input } from '@angular/core'
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe } from '@ngx-translate/core'
 
 import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
 import { AccessoriesService } from '@/app/core/accessories/accessories.service'
+import { ACCESSORY_MANAGE_MODAL_DATA } from '@/app/core/accessories/types/base-manage.component'
 import { MatterFanManageComponent } from '@/app/core/accessories/types/matter/fan/fan.manage.component'
 import { getFanPercentSetting, isFanOn, toggleFan } from '@/app/core/accessories/types/matter/matter-device.utils'
 import { LongClickDirective } from '@/app/core/directives/long-click.directive'
@@ -20,37 +21,44 @@ import { LongClickDirective } from '@/app/core/directives/long-click.directive'
 })
 export class MatterFanComponent {
   private $accessories = inject(AccessoriesService)
+  private injector = inject(EnvironmentInjector)
   private $modal = inject(NgbModal)
 
-  @Input() public service: ServiceTypeX
-  @Input() public readyForControl = false
+  public service = input.required<ServiceTypeX>()
+  public readyForControl = input<boolean>(false)
 
   public onClick() {
-    if (!this.readyForControl) {
+    if (!this.readyForControl()) {
       return
     }
 
-    toggleFan(this.service)
+    void toggleFan(this.service())
   }
 
   public onLongClick() {
-    if (!this.readyForControl) {
+    if (!this.readyForControl()) {
       return
     }
 
-    const ref = this.$modal.open(MatterFanManageComponent, {
+    const modalInjector = createEnvironmentInjector(
+      [{
+        provide: ACCESSORY_MANAGE_MODAL_DATA,
+        useValue: {
+          service: this.service(),
+          $accessories: this.$accessories,
+        },
+      }],
+      this.injector,
+    )
+
+    this.$modal.open(MatterFanManageComponent, {
       size: 'md',
       backdrop: 'static',
+      injector: modalInjector,
     })
-    ref.componentInstance.service = this.service
-    ref.componentInstance.$accessories = this.$accessories
   }
 
-  public get isOn(): boolean {
-    return isFanOn(this.service)
-  }
+  public isOn = computed(() => isFanOn(this.service()))
 
-  public get fanSpeed(): number {
-    return getFanPercentSetting(this.service)
-  }
+  public fanSpeed = computed(() => getFanPercentSetting(this.service()))
 }

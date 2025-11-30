@@ -1,17 +1,17 @@
 <ng-container>
-  @if (configSchema.schema) {
+  @if (configSchema().schema) {
   <json-schema-form
-    [jsfPatch]="configSchema.fixArrays"
+    [jsfPatch]="configSchema().fixArrays"
     [options]="jsonFormOptions"
-    [schema]="configSchema.schema"
-    [UISchema]="configSchema.uiSchema"
-    [layout]="configSchema.layout"
-    [form]="configSchema.form"
-    [data]="currentData"
+    [schema]="configSchema().schema"
+    [UISchema]="configSchema().uiSchema"
+    [layout]="configSchema().layout"
+    [form]="configSchema().form"
+    [data]="currentData()"
     framework="bootstrap-5"
     (onChanges)="onChanges($event)"
     (isValid)="validChange($event)"
-    [language]="language"
+    [language]="language()"
     class="ng-bs5-validate"
   />
   }

@@ -10,8 +10,8 @@
     ></button>
   </div>
   <div class="modal-body">
-    @if (loading) {
-    <div class="text-center primary-text my-5 w-100">
+    @if (loading()) {
+    <div class="w-100 text-center primary-text text-center">
       <i class="fa fa-circle-notch fa-spin" style="font-size: 75px"></i>
     </div>
     } @else {
@@ -48,10 +48,10 @@
       </li>
     </ul>
 
-    @if (installedPlugins.length) {
+    @if (installedPlugins().length) {
     <ul class="list-group list-group-box mt-3 mb-0">
       <li class="list-group-item text-center">{{ 'menu.label_plugins' | translate }}</li>
-      @for (plugin of installedPlugins; track plugin) {
+      @for (plugin of installedPlugins(); track plugin) {
       <li class="list-group-item d-flex justify-content-between align-items-center">
         <div class="text-start flex-grow-1">
           {{ plugin.displayName }}<br />

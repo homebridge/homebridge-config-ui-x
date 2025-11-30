@@ -1,11 +1,23 @@
-import { AfterViewInit, Component, ElementRef, HostListener, inject, Input, OnDestroy, OnInit, viewChild } from '@angular/core'
+import {
+  Component,
+  DestroyRef,
+  ElementRef,
+  HostListener,
+  inject,
+  input,
+  OnDestroy,
+  OnInit,
+  signal,
+  viewChild,
+} from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { TranslatePipe } from '@ngx-translate/core'
 import { ITerminalOptions } from '@xterm/xterm'
 import { Subject } from 'rxjs'
 
-import { SettingsService } from '@/app/core/settings.service'
-import { TerminalNavigationGuardService } from '@/app/core/terminal-navigation-guard.service'
-import { TerminalService } from '@/app/core/terminal.service'
+import { SettingsService } from '@/app/core/ui/settings.service'
+import { TerminalNavigationGuardService } from '@/app/core/utilities/terminal-navigation-guard.service'
+import { TerminalService } from '@/app/core/utilities/terminal.service'
 import { Widget } from '@/app/modules/status/widgets/widgets.interfaces'
 
 @Component({
@@ -15,45 +27,48 @@ import { Widget } from '@/app/modules/status/widgets/widgets.interfaces'
     TranslatePipe,
   ],
 })
-export class TerminalWidgetComponent implements OnInit, AfterViewInit, OnDestroy {
+export class TerminalWidgetComponent implements OnInit, OnDestroy {
+  // Injected dependencies
+  private destroyRef = inject(DestroyRef)
   private $terminal = inject(TerminalService)
   private $settings = inject(SettingsService)
   private $navigationGuard = inject(TerminalNavigationGuardService)
-  private fontSize = 15
-  private fontWeight: ITerminalOptions['fontWeight'] = '400'
-  private visibilityChangeHandler: (() => void) | null = null
 
+  // Signals
+  widget = input.required<Widget>()
   readonly widgetContainerElement = viewChild<ElementRef>('widgetcontainer')
   readonly titleElement = viewChild<ElementRef>('terminaltitle')
   readonly termTarget = viewChild<ElementRef>('terminaloutput')
+  public terminalHeight = signal<number>(200)
+  public theme = signal<'dark' | 'light'>('dark')
 
-  @Input() widget: Widget
-  @Input() resizeEvent: Subject<any>
-  @Input() configureEvent: Subject<any>
-
-  public terminalHeight = 200
-  public theme: 'dark' | 'light' = 'dark'
+  // Other properties
+  private fontSize = 15
+  private fontWeight: ITerminalOptions['fontWeight'] = '400'
+  private visibilityChangeHandler: (() => void) | null = null
+  resizeEvent!: Subject<void> // Set directly by ComponentFactoryResolver
+  configureEvent!: Subject<void> // Set directly by ComponentFactoryResolver
 
   @HostListener('window:beforeunload', ['$event'])
-  onBeforeUnload(event: BeforeUnloadEvent) {
+  onBeforeUnload(event: BeforeUnloadEvent): void {
     // NOTE: This is a safeguard - the status component also handles beforeunload events
     // when terminal widgets are present, so this may not be strictly necessary
-    return this.$navigationGuard.handleBeforeUnload(event)
+    this.$navigationGuard.handleBeforeUnload(event)
   }
 
-  @HostListener('window:focus', ['$event'])
-  onWindowFocus() {
-    // Auto-focus terminal when user returns to this window
+  @HostListener('window:focus')
+  onWindowFocus(): void {
+    // Autofocus terminal when user returns to this window
     this.activateTerminal()
   }
 
-  @HostListener('click', ['$event'])
-  onClick() {
+  @HostListener('click')
+  onClick(): void {
     // Focus this terminal when clicked
     this.activateTerminal()
   }
 
-  private activateTerminal() {
+  private activateTerminal(): void {
     // Only focus if this terminal is ready and connected
     if (this.$terminal.isTerminalReady() && this.$terminal.term) {
       // Focus the actual terminal element for better UX
@@ -61,18 +76,19 @@ export class TerminalWidgetComponent implements OnInit, AfterViewInit, OnDestroy
     }
   }
 
-  public ngOnInit() {
-    this.fontSize = this.widget.fontSize || 15
-    this.fontWeight = Number.parseInt(this.widget.fontWeight || '400', 10)
+  public ngOnInit(): void {
+    this.fontSize = this.widget().fontSize || 15
+    this.fontWeight = Number.parseInt(this.widget().fontWeight || '400', 10)
     if (this.$settings.actualLightingMode === 'dark') {
-      this.widget.theme = 'dark'
+      this.widget().theme = 'dark'
     }
-    this.theme = this.widget.theme || 'dark'
+    this.theme.set(this.widget().theme || 'dark')
 
-    setTimeout(() => {
+    // Defer terminal initialization to avoid NG0100
+    queueMicrotask(() => {
       const terminalOptions = {
         cursorBlink: false,
-        theme: this.theme !== 'light'
+        theme: this.theme() !== 'light'
           ? {
               background: '#2b2b2b',
             }
@@ -82,7 +98,7 @@ export class TerminalWidgetComponent implements OnInit, AfterViewInit, OnDestroy
               cursor: '#d2d2d2',
               selectionBackground: '#d2d2d2',
             },
-        allowTransparency: this.theme === 'light',
+        allowTransparency: this.theme() === 'light',
         allowProposedApi: true,
         fontSize: this.fontSize,
         fontWeight: this.fontWeight,
@@ -100,30 +116,35 @@ export class TerminalWidgetComponent implements OnInit, AfterViewInit, OnDestroy
       } else {
         this.$terminal.startTerminal(this.termTarget(), terminalOptions, this.resizeEvent)
       }
+
+      // Autofocus terminal when component is fully loaded
+      setTimeout(() => {
+        this.activateTerminal()
+      }, 100)
     })
 
-    this.resizeEvent.subscribe({
+    this.resizeEvent.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
-        this.terminalHeight = this.getTerminalHeight()
+        this.terminalHeight.set(this.getTerminalHeight())
       },
     })
 
-    this.configureEvent.subscribe({
+    this.configureEvent.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
         let changed = false
-        if (this.widget.fontSize !== this.fontSize) {
-          this.fontSize = this.widget.fontSize
-          this.$terminal.term.options.fontSize = this.widget.fontSize
+        if (this.widget().fontSize !== this.fontSize) {
+          this.fontSize = this.widget().fontSize
+          this.$terminal.term.options.fontSize = this.widget().fontSize
           changed = true
         }
-        if (this.widget.fontWeight !== this.fontWeight) {
-          this.fontWeight = Number.parseInt(this.widget.fontWeight, 10)
-          this.$terminal.term.options.fontWeight = Number.parseInt(this.widget.fontWeight, 10)
+        if (this.widget().fontWeight !== this.fontWeight) {
+          this.fontWeight = Number.parseInt(this.widget().fontWeight, 10)
+          this.$terminal.term.options.fontWeight = Number.parseInt(this.widget().fontWeight, 10)
           changed = true
         }
-        if (this.widget.theme !== this.theme) {
-          this.theme = this.widget.theme
-          this.$terminal.term.options.theme = this.theme !== 'light'
+        if (this.widget().theme !== this.theme()) {
+          this.theme.set(this.widget().theme)
+          this.$terminal.term.options.theme = this.theme() !== 'light'
             ? {
                 background: '#2b2b2b',
               }
@@ -146,20 +167,13 @@ export class TerminalWidgetComponent implements OnInit, AfterViewInit, OnDestroy
         }
       },
     })
-  }
-
-  public ngAfterViewInit() {
-    // Auto-focus terminal when component is fully loaded
-    setTimeout(() => {
-      this.activateTerminal()
-    }, 100)
 
     // Listen for visibility changes to focus terminal when tab becomes visible
     this.visibilityChangeHandler = this.onVisibilityChange.bind(this)
     document.addEventListener('visibilitychange', this.visibilityChangeHandler)
   }
 
-  private onVisibilityChange() {
+  private onVisibilityChange(): void {
     // When tab becomes visible, focus this terminal
     if (!document.hidden && this.$terminal.isTerminalReady()) {
       // Only focus if this terminal widget is actually visible on screen
@@ -182,7 +196,7 @@ export class TerminalWidgetComponent implements OnInit, AfterViewInit, OnDestroy
     return rect.width > 0 && rect.height > 0
   }
 
-  public ngOnDestroy() {
+  public ngOnDestroy(): void {
     // Clean up visibility change listener
     if (this.visibilityChangeHandler) {
       document.removeEventListener('visibilitychange', this.visibilityChangeHandler)

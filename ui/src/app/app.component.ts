@@ -1,8 +1,9 @@
 import { Component, inject } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { RouterOutlet } from '@angular/router'
 import { TranslateService } from '@ngx-translate/core'
 
-import { SettingsService } from '@/app/core/settings.service'
+import { SettingsService } from '@/app/core/ui/settings.service'
 
 @Component({
   selector: 'app-root',
@@ -61,16 +62,25 @@ export class AppComponent {
     ]
 
     // Watch for lang changes
-    this.$translate.onLangChange.subscribe(() => {
-      this.$settings.rtl = rtlLanguages.includes(this.$translate.getCurrentLang())
-    })
+    this.$translate.onLangChange
+      .pipe(takeUntilDestroyed())
+      .subscribe(() => {
+        this.$settings.rtl = rtlLanguages.includes(this.$translate.getCurrentLang())
+      })
 
     const browserLang = languages.find(x => x === this.$translate.getBrowserLang() || x === this.$translate.getBrowserCultureLang())
 
-    for (const lang of languages) {
-      // eslint-disable-next-line ts/no-require-imports
-      this.$translate.setTranslation(lang, require(`../i18n/${lang}.json`))
-    }
+    // Load all translations asynchronously
+    void this.loadTranslations(languages, browserLang)
+  }
+
+  private async loadTranslations(languages: string[], browserLang: string | undefined): Promise<void> {
+    await Promise.all(
+      languages.map(async (lang) => {
+        const translation = await import(`../i18n/${lang}.json`)
+        this.$translate.setTranslation(lang, translation.default)
+      }),
+    )
 
     if (browserLang) {
       this.$translate.use(browserLang)

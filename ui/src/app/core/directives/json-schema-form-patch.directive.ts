@@ -1,4 +1,4 @@
-import { Directive, inject, Input } from '@angular/core'
+import { Directive, inject, input } from '@angular/core'
 import { JsonSchemaFormComponent } from '@ng-formworks/core'
 import { cloneDeep, merge, uniqueId } from 'lodash-es'
 
@@ -9,7 +9,7 @@ import { cloneDeep, merge, uniqueId } from 'lodash-es'
 export class JsonSchemaFormPatchDirective {
   jsonSchemaForm = inject(JsonSchemaFormComponent, { host: true, self: true, optional: true })
 
-  @Input() jsfPatch = false
+  readonly jsfPatch = input(false)
 
   constructor() {
     const jsonSchemaForm = this.jsonSchemaForm
@@ -18,7 +18,7 @@ export class JsonSchemaFormPatchDirective {
 
     jsonSchemaForm.jsf.buildLayout = (widgetLibrary: any) => {
       buildLayoutOriginal(widgetLibrary)
-      if (jsonSchemaForm.jsf.formValues && this.jsfPatch) {
+      if (jsonSchemaForm.jsf.formValues && this.jsfPatch()) {
         return this.fixNestedArrayLayout(
           jsonSchemaForm.jsf.layout,
           jsonSchemaForm.jsf.formValues,

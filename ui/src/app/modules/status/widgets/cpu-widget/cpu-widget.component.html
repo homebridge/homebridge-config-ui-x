@@ -1,5 +1,7 @@
 <div class="flex-column d-flex align-items-stretch h-100 w-100 pb-1">
-  <div class="drag-handler p-2" [class.widget-cursor]="widget.draggable">{{ 'status.cpu.title_cpu' | translate }}</div>
+  <div class="drag-handler p-2" [class.widget-cursor]="widget().draggable">
+    {{ 'status.cpu.title_cpu' | translate }}
+  </div>
   <canvas
     class="widget-chart h-100 w-100"
     baseChart
@@ -13,17 +15,17 @@
     <div class="d-flex justify-content-around flex-wrap w-100">
       <div class="text-center widget-value-parent-wrap">
         <div class="widget-value mb-0">
-          @if (currentLoad !== undefined) { {{ currentLoad | number:'1.0-0' }}% } @else {
+          @if (currentLoad() !== undefined) { {{ currentLoad() | number:'1.0-0' }}% } @else {
           <i class="fas fa-circle-notch fa-spin"></i>
           }
         </div>
         <div class="widget-value-label grey-text">{{ 'status.cpu.load' | translate }}</div>
       </div>
-      @if (cpuTemperature.main > 0) {
+      @if (cpuTemperature().main > 0) {
       <div class="text-center widget-value-parent-wrap">
         <div class="widget-value mb-0">
-          {{ cpuTemperature.main | convertTemp: temperatureUnits | number:'1.0-0' }}&deg;{{ temperatureUnits | uppercase
-          }}
+          {{ cpuTemperature().main | convertTemp: temperatureUnits | number:'1.0-0' }}&deg;{{ temperatureUnits |
+          uppercase }}
         </div>
         <div class="widget-value-label grey-text">{{ 'status.cpu.temp' | translate }}</div>
       </div>

@@ -1,6 +1,6 @@
-<div class="modal-content">
+<div class="modal-content" role="dialog" aria-modal="true" [attr.aria-labelledby]="'confirm-modal-title'">
   <div class="modal-header">
-    <h5 class="modal-title">{{ title }}</h5>
+    <h5 class="modal-title" id="confirm-modal-title">{{ title }}</h5>
     <button
       type="button"
       class="btn-close"

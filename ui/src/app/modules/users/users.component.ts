@@ -1,12 +1,14 @@
-import { Component, inject, OnInit } from '@angular/core'
+import { Component, createEnvironmentInjector, DestroyRef, EnvironmentInjector, inject, OnInit, signal } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { ActivatedRoute } from '@angular/router'
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
 
-import { ApiService } from '@/app/core/api.service'
 import { AuthService } from '@/app/core/auth/auth.service'
-import { SettingsService } from '@/app/core/settings.service'
+import { ApiService } from '@/app/core/communication/api.service'
+import { USER_MODAL_DATA } from '@/app/core/modal-data-tokens'
+import { SettingsService } from '@/app/core/ui/settings.service'
 import { Users2faDisableComponent } from '@/app/modules/users/users-2fa-disable/users-2fa-disable.component'
 import { Users2faEnableComponent } from '@/app/modules/users/users-2fa-enable/users-2fa-enable.component'
 import { UsersAddComponent } from '@/app/modules/users/users-add/users-add.component'
@@ -23,6 +25,9 @@ import { User } from '@/app/modules/users/users.interface'
   ],
 })
 export class UsersComponent implements OnInit {
+  // Injected dependencies
+  private injector = inject(EnvironmentInjector)
+  private destroyRef = inject(DestroyRef)
   private $api = inject(ApiService)
   private $auth = inject(AuthService)
   private $modal = inject(NgbModal)
@@ -31,89 +36,122 @@ export class UsersComponent implements OnInit {
   private $toastr = inject(ToastrService)
   private $translate = inject(TranslateService)
 
-  public homebridgeUsers: User[] = []
+  // Signals
+  public homebridgeUsers = signal<User[]>([])
+
+  // Other properties
   public username = this.$auth.user.username
   public isAdmin = this.$auth.user.admin
 
-  public ngOnInit() {
+  public ngOnInit(): void {
     // Set page title
     const title = this.$translate.instant('users.title_users')
     this.$settings.setPageTitle(title)
 
-    this.$route.data.subscribe((data: { homebridgeUsers: User[] }) => {
-      this.homebridgeUsers = data.homebridgeUsers
-    })
+    this.$route.data
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((data: { homebridgeUsers: User[] }) => {
+        this.homebridgeUsers.set(data.homebridgeUsers)
+      })
   }
 
-  private reloadUsers() {
-    return this.$api.get('/users').subscribe(
-      (result: User[]) => {
-        this.homebridgeUsers = result
-      },
-    )
+  private async reloadUsers(): Promise<void> {
+    const result: User[] = await this.$api.get('/users')
+    this.homebridgeUsers.set(result)
   }
 
-  public openAddNewUser() {
+  public async openAddNewUser(): Promise<void> {
     const ref = this.$modal.open(UsersAddComponent, {
       size: 'lg',
       backdrop: 'static',
     })
 
-    ref.result.finally(() => {
-      this.reloadUsers()
-    })
+    try {
+      await ref.result
+      void this.reloadUsers()
+    } catch {
+      // Modal dismissed, do nothing
+    }
   }
 
-  public openEditUser(user: User) {
+  public async openEditUser(user: User): Promise<void> {
+    const injector = createEnvironmentInjector([{
+      provide: USER_MODAL_DATA,
+      useValue: {
+        user,
+      },
+    }], this.injector)
+
     const ref = this.$modal.open(UsersEditComponent, {
       size: 'lg',
       backdrop: 'static',
+      injector,
     })
-    ref.componentInstance.user = user
 
-    ref.result.finally(() => {
-      this.reloadUsers()
-    })
+    try {
+      await ref.result
+      void this.reloadUsers()
+    } catch {
+      // Modal dismissed, do nothing
+    }
   }
 
-  public deleteUser(id: number) {
-    this.$api.delete(`/users/${id}`).subscribe({
-      next: () => {
-        this.$toastr.success(this.$translate.instant('users.toast_user_deleted'), this.$translate.instant('toast.title_success'))
-        this.reloadUsers()
-      },
-      error: (error) => {
-        console.error(error)
-        this.$toastr.error(error.error?.message || this.$translate.instant('users.toast_failed_to_delete_user'), this.$translate.instant('toast.title_error'))
-      },
-    })
+  public async deleteUser(id: number): Promise<void> {
+    try {
+      await this.$api.delete(`/users/${id}`)
+      this.$toastr.success(this.$translate.instant('users.toast_user_deleted'), this.$translate.instant('toast.title_success'))
+      void this.reloadUsers()
+    } catch (error) {
+      console.error(error)
+      this.$toastr.error(error.error?.message || this.$translate.instant('users.toast_failed_to_delete_user'), this.$translate.instant('toast.title_error'))
+    }
   }
 
-  public setup2fa(user: User) {
+  public async setup2fa(user: User): Promise<void> {
+    const injector = createEnvironmentInjector([{
+      provide: USER_MODAL_DATA,
+      useValue: {
+        user,
+      },
+    }], this.injector)
+
     const ref = this.$modal.open(Users2faEnableComponent, {
       size: 'lg',
       backdrop: 'static',
+      injector,
     })
-    ref.componentInstance.user = user
 
-    ref.result.finally(() => {
-      this.reloadUsers()
-    })
+    try {
+      await ref.result
+      void this.reloadUsers()
+    } catch {
+      // Modal dismissed, do nothing
+    }
   }
 
-  public disable2fa(user: User) {
+  public async disable2fa(user: User): Promise<void> {
+    const injector = createEnvironmentInjector([{
+      provide: USER_MODAL_DATA,
+      useValue: {
+        user,
+      },
+    }], this.injector)
+
     const ref = this.$modal.open(Users2faDisableComponent, {
       size: 'lg',
       backdrop: 'static',
+      injector,
     })
-    ref.componentInstance.user = user
 
-    ref.result.finally(() => {
-      this.reloadUsers()
-    })
+    try {
+      await ref.result
+      void this.reloadUsers()
+    } catch {
+      // Modal dismissed, do nothing
+    }
   }
 
-  public openSupport() {
+  public openSupport(): void {
     this.$modal.open(UsersSupportComponent, {
       size: 'lg',
       backdrop: 'static',

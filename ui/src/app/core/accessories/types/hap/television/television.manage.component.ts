@@ -1,11 +1,8 @@
-import { Component, inject, Input, OnDestroy, OnInit } from '@angular/core'
+import { ChangeDetectionStrategy, Component, input } from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
 import { TranslatePipe } from '@ngx-translate/core'
-import { Subscription } from 'rxjs'
 
-import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
-import { AccessoriesService } from '@/app/core/accessories/accessories.service'
+import { BaseManageComponent } from '@/app/core/accessories/types/base-manage.component'
 
 @Component({
   templateUrl: './television.manage.component.html',
@@ -14,19 +11,15 @@ import { AccessoriesService } from '@/app/core/accessories/accessories.service'
     FormsModule,
     TranslatePipe,
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TelevisionManageComponent implements OnInit, OnDestroy {
-  private $activeModal = inject(NgbActiveModal)
-
-  @Input() public service: ServiceTypeX
-  @Input() public inputList: Record<number, string>
-  @Input() public $accessories: AccessoriesService
+export class TelevisionManageComponent extends BaseManageComponent {
+  public inputList = input.required<Record<number, string>>()
 
   public hasActive: boolean = false
   public sourceList: { identifier: number, name: string }[] = []
-  private stateSubscription: Subscription
 
-  public ngOnInit() {
+  protected setupComponent() {
     if ('Active' in this.service.values) {
       this.hasActive = true
     }
@@ -39,36 +32,23 @@ export class TelevisionManageComponent implements OnInit, OnDestroy {
         })
       })
     }
+  }
 
-    // Subscribe to state changes to update modal in real-time
-    this.stateSubscription = this.$accessories.accessoryData.subscribe(() => {
-      if ('Active' in this.service.values) {
-        this.hasActive = true
-      }
-    })
+  protected handleAccessoryUpdate() {
+    if ('Active' in this.service.values) {
+      this.hasActive = true
+    }
   }
 
   public setActive(value: number, event: MouseEvent) {
-    this.service.getCharacteristic('Active').setValue(value)
+    void this.service.getCharacteristic('Active').setValue(value)
 
-    const target = event.target as HTMLButtonElement
-    target.blur()
+    this.blurTarget(event)
   }
 
   public setInput(value: number | string, event: MouseEvent) {
-    this.service.getCharacteristic('ActiveIdentifier').setValue(value)
+    void this.service.getCharacteristic('ActiveIdentifier').setValue(value)
 
-    const target = event.target as HTMLButtonElement
-    target.blur()
-  }
-
-  public dismissModal() {
-    this.$activeModal.dismiss('Dismiss')
-  }
-
-  public ngOnDestroy() {
-    if (this.stateSubscription) {
-      this.stateSubscription.unsubscribe()
-    }
+    this.blurTarget(event)
   }
 }

@@ -1,14 +1,16 @@
 import { NgOptimizedImage } from '@angular/common'
-import { Component, inject, Input, OnInit } from '@angular/core'
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
+import { Component, inject, OnInit, signal } from '@angular/core'
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
 import { firstValueFrom } from 'rxjs'
 import { satisfies } from 'semver'
 
-import { ApiService } from '@/app/core/api.service'
-import { SettingsService } from '@/app/core/settings.service'
-import { IoNamespace, WsService } from '@/app/core/ws.service'
+import { ApiService } from '@/app/core/communication/api.service'
+import { IoNamespace, WsService } from '@/app/core/communication/ws.service'
+import { HB_V2_MODAL_DATA } from '@/app/core/modal-data-tokens'
+import { SettingsService } from '@/app/core/ui/settings.service'
+import { InstalledPlugin } from '@/app/modules/status/widgets/update-info-widget/hb-v2-modal/hb-v2-modal.interfaces'
 
 @Component({
   templateUrl: './hb-v2-modal.component.html',
@@ -27,27 +29,36 @@ export class HbV2ModalComponent implements OnInit {
   private $ws = inject(WsService)
   private io: IoNamespace
 
-  @Input() isUpdating: boolean = false
-  @Input() skipIfCompatible: boolean = true
+  // Inject modal data
+  private modalData = inject(HB_V2_MODAL_DATA)
 
-  public loading = true
-  public installedPlugins: any = []
-  public allPluginsSupported = true
-  public nodeReady = false
+  // Public properties (from injected data)
+  public isUpdating = this.modalData.isUpdating
+  public skipIfCompatible = this.modalData.skipIfCompatible
 
-  public async ngOnInit() {
+  // Signals
+  public loading = signal(true)
+  public installedPlugins = signal<InstalledPlugin[]>([])
+  public allPluginsSupported = signal(true)
+  public nodeReady = signal(false)
+
+  public ngOnInit(): void {
+    void this.initialize()
+  }
+
+  private async initialize(): Promise<void> {
     this.io = this.$ws.getExistingNamespace('status')
     if (this.io.socket.connected) {
       await this.checkHomebridgeUiVersion()
     }
     await this.loadInstalledPlugins()
-    this.loading = false
+    this.loading.set(false)
   }
 
   private async checkHomebridgeUiVersion() {
     try {
       const { nodeVersion } = await firstValueFrom(this.io.request('get-homebridge-server-info'))
-      this.nodeReady = satisfies(nodeVersion, '>=20')
+      this.nodeReady.set(satisfies(nodeVersion, '>=20'))
     } catch (error) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
@@ -55,29 +66,31 @@ export class HbV2ModalComponent implements OnInit {
   }
 
   private async loadInstalledPlugins() {
-    this.installedPlugins = []
-    this.loading = true
+    this.installedPlugins.set([])
+    this.loading.set(true)
     const homebridgeVersion = this.$settings.env.homebridgeVersion.split('.')[0]
 
     try {
-      const installedPlugins = await firstValueFrom(this.$api.get('/plugins'))
-      this.installedPlugins = installedPlugins
+      const installedPlugins = await this.$api.get('/plugins')
+      const processedPlugins = installedPlugins
         .filter((x: any) => x.name !== 'homebridge-config-ui-x')
         .map((x: any) => {
           const hbEngines = x.engines?.homebridge?.split('||').map((x: string) => x.trim()) || []
           const hb2Ready = homebridgeVersion === '2' ? 'hide' : hbEngines.some((x: string) => (x.startsWith('^2') || x.startsWith('>=2'))) ? 'supported' : 'unknown'
           if (hb2Ready === 'unknown') {
-            this.allPluginsSupported = false
+            this.allPluginsSupported.set(false)
           }
           return {
             ...x,
             hb2Ready,
-          }
+          } as InstalledPlugin
         })
-        .sort((a, b) => a.name.localeCompare(b.name))
+        .sort((a: InstalledPlugin, b: InstalledPlugin) => a.name.localeCompare(b.name))
+
+      this.installedPlugins.set(processedPlugins)
 
       // Skip if there are no plugins installed
-      if (this.skipIfCompatible && this.installedPlugins.length === 0) {
+      if (this.skipIfCompatible && this.installedPlugins().length === 0) {
         this.$activeModal.close('update')
       }
     } catch (error) {

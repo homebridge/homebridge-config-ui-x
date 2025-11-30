@@ -8,8 +8,8 @@
   </div>
   <div class="text-center">
     <h4 class="primary-text mb-4">{{ 'platform.linux.shutting_down_server' | translate }}</h4>
-    @if (error) {
-    <div class="alert alert-error my-4">{{ error }}</div>
+    @if (error()) {
+    <div class="alert alert-error my-4">{{ error() }}</div>
     } @else {
     <p class="grey-text">{{ 'platform.linux.server_will_power_down' | translate }}</p>
     }

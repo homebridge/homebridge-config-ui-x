@@ -1,7 +1,8 @@
-import { Component, inject, OnDestroy, OnInit, Renderer2 } from '@angular/core'
+import { Component, createEnvironmentInjector, EnvironmentInjector, inject, OnDestroy, OnInit, Renderer2, signal } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { ActivatedRoute, Router } from '@angular/router'
-import { NgbModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap'
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
+import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap/tooltip'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import json5 from 'json5'
 import { isEqual } from 'lodash-es'
@@ -9,14 +10,15 @@ import { DiffEditorComponent, DiffEditorModel, EditorComponent, NgxEditorModel }
 import { ToastrService } from 'ngx-toastr'
 import { firstValueFrom } from 'rxjs'
 
-import { ApiService } from '@/app/core/api.service'
+import { ApiService } from '@/app/core/communication/api.service'
 import { RestartChildBridgesComponent } from '@/app/core/components/restart-child-bridges/restart-child-bridges.component'
 import { RestartHomebridgeComponent } from '@/app/core/components/restart-homebridge/restart-homebridge.component'
 import { createChildBridgeSchema } from '@/app/core/helpers/child-bridges-schema.helper'
-import { ChildBridge } from '@/app/core/manage-plugins/manage-plugins.interfaces'
-import { MobileDetectService } from '@/app/core/mobile-detect.service'
-import { MonacoEditorService } from '@/app/core/monaco-editor.service'
-import { SettingsService } from '@/app/core/settings.service'
+import { CONFIG_RESTORE_MODAL_DATA, RESTART_CHILD_BRIDGES_MODAL_DATA } from '@/app/core/modal-data-tokens'
+import { ChildBridge } from '@/app/core/plugins/manage-plugins.interfaces'
+import { MonacoEditorService } from '@/app/core/ui/monaco-editor.service'
+import { SettingsService } from '@/app/core/ui/settings.service'
+import { MobileDetectService } from '@/app/core/utilities/mobile-detect.service'
 import {
   AccessoryConfig,
   ChildBridgeToRestart,
@@ -46,6 +48,7 @@ declare global {
   ],
 })
 export class ConfigEditorComponent implements OnInit, OnDestroy {
+  private injector = inject(EnvironmentInjector)
   private $api = inject(ApiService)
   private $md = inject(MobileDetectService)
   private $modal = inject(NgbModal)
@@ -65,19 +68,19 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
   private isDebugModeEnabled = this.$settings.isFeatureEnabled('childBridgeDebugMode')
   private isMatterSupported = this.$settings.isFeatureEnabled('matterSupport')
 
-  public homebridgeConfig: string
-  public originalConfig: string
-  public saveInProgress: boolean
-  public isMobile: any = false
+  public homebridgeConfig = signal<string>('')
+  public originalConfig = signal<string>('')
+  public saveInProgress = signal(false)
+  public isMobile = signal<boolean>(false)
   public monacoEditor: any
   public editorOptions: any
   public monacoEditorModel: NgxEditorModel
   public diffOriginalModel: DiffEditorModel
   public diffModifiedModel: DiffEditorModel
-  public renderSideBySide = false
+  public renderSideBySide = signal(false)
 
   constructor() {
-    this.isMobile = this.$md.detect.mobile()
+    this.isMobile.set(!!this.$md.detect.mobile())
   }
 
   public ngOnInit() {
@@ -88,7 +91,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
     this.editorOptions = {
       language: 'json',
       theme: this.$settings.actualLightingMode === 'dark' ? 'vs-dark' : 'vs-light',
-      renderSideBySide: this.renderSideBySide,
+      renderSideBySide: this.renderSideBySide(),
       renderIndicators: true,
       ignoreTrimWhitespace: false,
       glyphMargin: true,
@@ -101,7 +104,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
     this.visualViewPortEventCallback = () => this.visualViewPortChanged()
     this.lastHeight = window.innerHeight
 
-    if (window.visualViewport && !this.isMobile) {
+    if (window.visualViewport && !this.isMobile()) {
       window.visualViewport.addEventListener('resize', this.visualViewPortEventCallback, true)
       this.$md.disableTouchMove()
     }
@@ -110,13 +113,13 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
     this.visualViewPortEventCallback = () => this.visualViewPortChanged()
     this.lastHeight = window.innerHeight
 
-    if (window.visualViewport && !this.isMobile) {
+    if (window.visualViewport && !this.isMobile()) {
       window.visualViewport.addEventListener('resize', this.visualViewPortEventCallback, true)
       this.$md.disableTouchMove()
     }
 
     this.$route.data.subscribe((data: { config: string }) => {
-      this.homebridgeConfig = data.config
+      this.homebridgeConfig.set(data.config)
       this.latestSavedConfig = JSON.parse(data.config)
 
       // Update diff models with initial config
@@ -139,15 +142,13 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
     }
 
     this.diffModifiedModel = {
-      code: this.homebridgeConfig || '{}',
+      code: this.homebridgeConfig() || '{}',
       language: 'json',
     }
 
     // If monaco is not loaded yet, wait for it, otherwise set up the editor now
     if (!(window as any).monaco) {
-      this.$monacoEditor.readyEvent.subscribe({
-        next: () => this.setMonacoEditorModel(),
-      })
+      void this.waitForMonaco()
     } else {
       this.setMonacoEditorModel()
     }
@@ -157,7 +158,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
     if (action) {
       switch (action) {
         case 'restore': {
-          this.onRestore(true)
+          void this.onRestore(true)
           break
         }
       }
@@ -171,13 +172,25 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
     }
   }
 
+  private async waitForMonaco(): Promise<void> {
+    try {
+      await firstValueFrom(this.$monacoEditor.readyEvent)
+      this.setMonacoEditorModel()
+    } catch (error) {
+      console.error('Failed to wait for monaco ready event:', error)
+    }
+  }
+
   /**
    * Called when the monaco editor is ready
    */
   public onEditorInit(editor: any) {
     window.editor = editor
     this.monacoEditor = editor
-    this.monacoEditor.getModel().setValue(this.homebridgeConfig)
+    const model = this.monacoEditor.getModel()
+    if (model) {
+      model.setValue(this.homebridgeConfig())
+    }
   }
 
   public onInitDiffEditor(editor: any) {
@@ -188,10 +201,10 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
 
   private updateDiffModels() {
     if (this.diffOriginalModel) {
-      this.diffOriginalModel.code = this.originalConfig || ''
+      this.diffOriginalModel.code = this.originalConfig() || ''
     }
     if (this.diffModifiedModel) {
-      this.diffModifiedModel.code = this.homebridgeConfig || '{}'
+      this.diffModifiedModel.code = this.homebridgeConfig() || '{}'
     }
 
     if ((window as any).editor && (window as any).editor.getOriginalEditor) {
@@ -203,17 +216,17 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
         const modifiedModel = modifiedEditor.getModel()
 
         if (originalModel) {
-          originalModel.setValue(this.originalConfig || '')
+          originalModel.setValue(this.originalConfig() || '')
         }
         if (modifiedModel) {
-          modifiedModel.setValue(this.homebridgeConfig || '{}')
+          modifiedModel.setValue(this.homebridgeConfig() || '{}')
         }
       }
     }
   }
 
   public async onSave() {
-    if (this.saveInProgress) {
+    if (this.saveInProgress()) {
       return
     }
 
@@ -222,11 +235,11 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
       this.editorDecorations = this.monacoEditor.deltaDecorations(this.editorDecorations, [])
     }
 
-    this.saveInProgress = true
+    this.saveInProgress.set(true)
     // Verify homebridgeConfig contains valid json
     try {
       // Get the value from the editor
-      if (!this.isMobile) {
+      if (!this.isMobile()) {
         // Format the document
         await this.monacoEditor.getAction('editor.action.formatDocument').run()
 
@@ -235,21 +248,21 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
 
         for (const issue of issues) {
           if (issue.message === 'Duplicate object key') {
-            this.saveInProgress = false
+            this.saveInProgress.set(false)
             this.$toastr.error(this.$translate.instant('config.config_invalid_json'), this.$translate.instant('toast.title_error'))
             return
           }
         }
 
         // Set the value
-        this.homebridgeConfig = this.monacoEditor.getModel().getValue()
+        this.homebridgeConfig.set(this.monacoEditor.getModel().getValue())
       }
 
       // Get the config from the editor
       const config = this.parseConfigFromEditor()
 
       // Ensure it's formatted so errors can be easily spotted
-      this.homebridgeConfig = JSON.stringify(config, null, 4)
+      this.homebridgeConfig.set(JSON.stringify(config, null, 4))
 
       // Basic validation of homebridge config spec
       if (typeof (config.bridge) !== 'object') {
@@ -274,74 +287,80 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
         // Handled in validator function
       } else {
         await this.saveConfig(config)
-        this.originalConfig = ''
+        this.originalConfig.set('')
       }
     } catch (error) {
       console.error(error)
       this.$toastr.error(this.$translate.instant('config.config_invalid_json'), this.$translate.instant('toast.title_error'))
     }
-    this.saveInProgress = false
+    this.saveInProgress.set(false)
   }
 
-  public onRestore(fromSettings = false) {
+  public async onRestore(fromSettings = false): Promise<void> {
+    const injector = createEnvironmentInjector([{
+      provide: CONFIG_RESTORE_MODAL_DATA,
+      useValue: {
+        currentConfig: this.homebridgeConfig(),
+        fromSettings,
+      },
+    }], this.injector)
+
     const ref = this.$modal.open(ConfigRestoreComponent, {
       size: 'lg',
       backdrop: 'static',
+      injector,
     })
 
-    ref.componentInstance.currentConfig = this.homebridgeConfig
-    ref.componentInstance.fromSettings = fromSettings
-
-    ref.result
-      .then((backupId: string) => {
-        if (!this.originalConfig) {
-          this.originalConfig = this.homebridgeConfig
+    try {
+      const backupId: string = await ref.result
+      try {
+        if (!this.originalConfig()) {
+          this.originalConfig.set(this.homebridgeConfig())
           this.updateDiffModels()
         }
 
-        this.$api.get(`/config-editor/backups/${backupId}`).subscribe({
-          next: (json) => {
-            this.$toastr.info(
-              this.$translate.instant('config.restore.confirm'),
-              this.$translate.instant('config.title_backup_loaded'),
-            )
+        const json = await this.$api.get(`/config-editor/backups/${backupId}`)
+        this.$toastr.info(
+          this.$translate.instant('config.restore.confirm'),
+          this.$translate.instant('config.title_backup_loaded'),
+        )
 
-            this.homebridgeConfig = JSON.stringify(json, null, 4)
-            this.updateDiffModels()
+        this.homebridgeConfig.set(JSON.stringify(json, null, 4))
+        this.updateDiffModels()
 
-            // Update the editor
-            if (this.monacoEditor && window.editor.modifiedEditor) {
-              // Remove all decorations
-              this.editorDecorations = this.monacoEditor.deltaDecorations(this.editorDecorations, [])
+        // Update the editor
+        if (this.monacoEditor && window.editor.modifiedEditor) {
+          // Remove all decorations
+          this.editorDecorations = this.monacoEditor.deltaDecorations(this.editorDecorations, [])
 
-              // Remove existing config
-              this.monacoEditor.executeEdits('beautifier', [
-                {
-                  identifier: 'delete' as any,
-                  range: new monaco.Range(1, 1, this.monacoEditor.getModel().getLineCount() + 10, 1),
-                  text: '',
-                  forceMoveMarkers: true,
-                },
-              ])
+          // Remove existing config
+          this.monacoEditor.executeEdits('beautifier', [
+            {
+              identifier: 'delete' as any,
+              range: new monaco.Range(1, 1, this.monacoEditor.getModel().getLineCount() + 10, 1),
+              text: '',
+              forceMoveMarkers: true,
+            },
+          ])
 
-              // Inject the restored content
-              this.monacoEditor.executeEdits('beautifier', [
-                {
-                  identifier: 'insert' as any,
-                  range: new monaco.Range(1, 1, 1, 1),
-                  text: this.homebridgeConfig,
-                  forceMoveMarkers: true,
-                },
-              ])
-            }
-          },
-          error: (error) => {
-            console.error(error)
-            this.$toastr.error(error.error?.message || this.$translate.instant('backup.load_error'), this.$translate.instant('toast.title_error'))
-          },
-        })
-      })
-      .catch(() => { /* modal dismissed */ })
+          // Inject the restored content
+          this.monacoEditor.executeEdits('beautifier', [
+            {
+              identifier: 'insert' as any,
+              range: new monaco.Range(1, 1, 1, 1),
+              text: this.homebridgeConfig(),
+              forceMoveMarkers: true,
+            },
+          ])
+        }
+      } catch (error: unknown) {
+        console.error(error)
+        const errorMessage = (error as { error?: { message?: string } })?.error?.message || this.$translate.instant('backup.load_error')
+        this.$toastr.error(errorMessage, this.$translate.instant('toast.title_error'))
+      }
+    } catch {
+      // Modal dismissed, do nothing
+    }
   }
 
   public onCancelRestore() {
@@ -353,18 +372,18 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
       } catch (error) { /* cancelled */ }
     }
 
-    this.homebridgeConfig = this.originalConfig
-    this.originalConfig = ''
-    if (this.renderSideBySide) {
+    this.homebridgeConfig.set(this.originalConfig())
+    this.originalConfig.set('')
+    if (this.renderSideBySide()) {
       this.toggleSideBySide() // reset to default
     }
     this.updateDiffModels()
-    this.onRestore()
+    void this.onRestore()
   }
 
   public toggleSideBySide() {
-    this.renderSideBySide = !this.renderSideBySide
-    this.editorOptions = { ...this.editorOptions, renderSideBySide: this.renderSideBySide }
+    this.renderSideBySide.set(!this.renderSideBySide())
+    this.editorOptions = { ...this.editorOptions, renderSideBySide: this.renderSideBySide() }
   }
 
   public ngOnDestroy() {
@@ -417,26 +436,26 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
     } catch (error) { /* no problem disposing */ }
   }
 
-  private validateSection(sections: any[], type: 'accessory' | 'platform') {
+  private validateSection(sections: unknown[], type: 'accessory' | 'platform') {
     for (const section of sections) {
       // Check section is an object
-      if (typeof section !== 'object' || Array.isArray(section)) {
+      if (typeof section !== 'object' || section === null || Array.isArray(section)) {
         this.$toastr.error(this.$translate.instant('config.error_blocks_objects', { type }), this.$translate.instant('toast.title_error'))
-        this.highlightOffendingArrayItem(section)
+        this.highlightOffendingArrayItem(JSON.stringify(section))
         return false
       }
 
       // Check section contains platform/accessory key
-      if (!section[type]) {
+      if (!(type in section)) {
         this.$toastr.error(this.$translate.instant('config.error_blocks_type', { type }), this.$translate.instant('toast.title_error'))
-        this.highlightOffendingArrayItem(section)
+        this.highlightOffendingArrayItem(JSON.stringify(section))
         return false
       }
 
       // Check section platform/accessory key is a string
-      if (typeof section[type] !== 'string') {
+      if (typeof (section as Record<string, unknown>)[type] !== 'string') {
         this.$toastr.error(this.$translate.instant('config.error_string_type', { type }), this.$translate.instant('toast.title_error'))
-        this.highlightOffendingArrayItem(section)
+        this.highlightOffendingArrayItem(JSON.stringify(section))
         return false
       }
     }
@@ -445,7 +464,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
     return true
   }
 
-  private validatePlugins(plugins: any[], key: string) {
+  private validatePlugins(plugins: unknown[], key: string) {
     for (const item of plugins) {
       if (typeof item !== 'string') {
         this.$toastr.error(this.$translate.instant('config.error_string_array', { key }), this.$translate.instant('toast.title_error'))
@@ -466,7 +485,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
     // Figure out which lines the offending block spans, add leading space as per formatting rules
     block = JSON.stringify(block, null, 4).split('\n').map(x => `        ${x}`).join('\n')
 
-    setTimeout(() => {
+    requestAnimationFrame(() => {
       const matches = this.monacoEditor.getModel().findMatches(block)
 
       if (matches.length) {
@@ -483,11 +502,11 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
           { range, options: { isWholeLine: true, linesDecorationsClassName: 'hb-monaco-editor-line-error' } },
         ])
       }
-    }, 200)
+    })
   }
 
   /**
-   * Set up a json schema object used to check the config against
+   * Set up a JSON schema object used to check the config against
    */
   private setMonacoEditorModel() {
     if ((window as any).monaco.languages.json.jsonDefaults.diagnosticsOptions.schemas.some((x: any) => x.uri === 'http://homebridge/config.json')) {
@@ -1152,10 +1171,10 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
     }
   }
 
-  private async saveConfig(config: any) {
+  private async saveConfig(config: HomebridgeConfig) {
     try {
-      const data = await firstValueFrom(this.$api.post('/config-editor', config))
-      this.homebridgeConfig = JSON.stringify(data, null, 4)
+      const data = await this.$api.post('/config-editor', config)
+      this.homebridgeConfig.set(JSON.stringify(data, null, 4))
       await this.detectSavesChangesForRestart()
     } catch (error) {
       console.error(error)
@@ -1194,7 +1213,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
   private detectConfigPlatformChanges(): boolean {
     try {
       const originalConfigJson = this.latestSavedConfig
-      const updatedConfigJson = JSON.parse(this.homebridgeConfig) as HomebridgeConfig
+      const updatedConfigJson = JSON.parse(this.homebridgeConfig()) as HomebridgeConfig
 
       // Find config platforms in original config
       const originalConfigPlatform = (originalConfigJson.platforms || [])
@@ -1227,9 +1246,9 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
           } else {
             delete updatedConfigPlatform.webroot
           }
-          this.homebridgeConfig = JSON.stringify(updatedConfigJson, null, 4)
+          this.homebridgeConfig.set(JSON.stringify(updatedConfigJson, null, 4))
           if (this.monacoEditor) {
-            this.monacoEditor.getModel().setValue(this.homebridgeConfig)
+            this.monacoEditor.getModel().setValue(this.homebridgeConfig())
           }
         }
       }
@@ -1265,7 +1284,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
       await this.performChildBridgeRestart()
     }
 
-    this.latestSavedConfig = JSON.parse(this.homebridgeConfig)
+    this.latestSavedConfig = JSON.parse(this.homebridgeConfig())
   }
 
   private async determineRestartType(): Promise<'none' | 'child' | 'full'> {
@@ -1277,8 +1296,8 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
     // We can try to find things that have changed, to offer the best restart option
     const originalConfigJson = this.latestSavedConfig
     const originalConfigString = JSON.stringify(originalConfigJson, null, 4)
-    const updatedConfigJson = JSON.parse(this.homebridgeConfig) as HomebridgeConfig
-    const updatedConfigString = this.homebridgeConfig
+    const updatedConfigJson = JSON.parse(this.homebridgeConfig()) as HomebridgeConfig
+    const updatedConfigString = this.homebridgeConfig()
 
     // Check one: has anything actually changed?
     if (originalConfigString === updatedConfigString && !this.childBridgesToRestart.length) {
@@ -1365,7 +1384,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
     // At this point we have a list of the changed entries, and we know they all have a _bridge key
     // Now we can start to form a list of the child bridges that we can restart.
     try {
-      const data: ChildBridge[] = await firstValueFrom(this.$api.get('/status/homebridge/child-bridges'))
+      const data: ChildBridge[] = await this.$api.get('/status/homebridge/child-bridges')
 
       // Match up the changed entries with the child bridges
       changedEntries.forEach((entry: PlatformConfig | AccessoryConfig) => {
@@ -1399,11 +1418,18 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
       return
     }
 
+    const injector = createEnvironmentInjector([{
+      provide: RESTART_CHILD_BRIDGES_MODAL_DATA,
+      useValue: {
+        bridges: this.childBridgesToRestart,
+      },
+    }], this.injector)
+
     const ref = this.$modal.open(RestartChildBridgesComponent, {
       size: 'lg',
       backdrop: 'static',
+      injector,
     })
-    ref.componentInstance.bridges = this.childBridgesToRestart
 
     // If the user dismisses the modal, the child bridges are still pending a restart
     try {
@@ -1415,7 +1441,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
   private async performFullRestart(restartService: boolean) {
     // If restartService is true, set the flag to do a full service restart
     if (restartService) {
-      await firstValueFrom(this.$api.put('/platform-tools/hb-service/set-full-service-restart-flag', {}))
+      await this.$api.put('/platform-tools/hb-service/set-full-service-restart-flag', {})
     }
 
     const ref = this.$modal.open(RestartHomebridgeComponent, {
@@ -1434,12 +1460,12 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
 
   private parseConfigFromEditor() {
     try {
-      return JSON.parse(this.homebridgeConfig)
+      return JSON.parse(this.homebridgeConfig())
     } catch (e) {
-      const config = json5.parse(this.homebridgeConfig)
-      this.homebridgeConfig = JSON.stringify(config, null, 4)
+      const config = json5.parse(this.homebridgeConfig())
+      this.homebridgeConfig.set(JSON.stringify(config, null, 4))
       if (this.monacoEditor) {
-        this.monacoEditor.getModel().setValue(this.homebridgeConfig)
+        this.monacoEditor.getModel().setValue(this.homebridgeConfig())
       }
       return config
     }

@@ -30,7 +30,7 @@
         </div>
       </li>
     </ul>
-    @if (invalidCredentials && !formGroup.controls.password.value) {
+    @if (invalidCredentials() && !formGroup.controls.password.value) {
     <ngb-alert type="error" [dismissible]="false" class="mt-3 mb-0">
       <p class="mb-0">{{ 'login.invalid_password' | translate }}</p>
     </ngb-alert>

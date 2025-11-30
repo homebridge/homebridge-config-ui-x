@@ -1,0 +1,133 @@
+<div class="modal-content">
+  <div class="modal-header">
+    <h5 class="modal-title">{{ 'plugins.manage.scoped.switch' | translate }}</h5>
+    <button
+      type="button"
+      class="btn-close"
+      data-bs-dismiss="modal"
+      [attr.aria-label]="'form.button_close' | translate"
+      (click)="dismissModal()"
+      [disabled]="installing() || uninstalling() || restarting()"
+    ></button>
+  </div>
+  <div class="modal-body">
+    <div class="mb-3 text-center">
+      <i class="fas fa-arrow-right-arrow-left primary-text" style="font-size: 75px"></i>
+    </div>
+    <ul class="mb-0">
+      <li [innerHTML]="'plugins.manage.scoped.info_1' | translate: { prefix }"></li>
+      <li>{{ 'plugins.manage.scoped_message' | translate }}</li>
+      <li [innerHTML]="'plugins.manage.scoped.info_2' | translate: { link: moreInfo }"></li>
+      @if (onlineUpdateOk()) {
+      <li>{{ 'plugins.manage.scoped.process' | translate }}</li>
+      } @if (!onlineUpdateOk()) {
+      <li [innerHTML]="'plugins.manage.scoped.windows' | translate"></li>
+      <li>{{ 'plugins.manage.manual_update_command' | translate }}</li>
+      }
+    </ul>
+    @if (plugin && !onlineUpdateOk()) {
+    <pre class="mt-3 mb-0">
+hb-service stop
+npm install -g {{ plugin.newHbScope.to }}&#64;{{ plugin.newHbScope.switch }}
+npm uninstall -g {{ plugin.newHbScope.from }}
+hb-service start</pre
+    >
+    } @if (plugin && onlineUpdateOk()) {
+    <div class="text-center">
+      <ul class="d-inline-block text-start mt-3 mb-3" style="list-style-type: none">
+        <li>
+          <i
+            class="fa"
+            [class]="{
+              'fa-circle-o': !installing() && !installed() && !failure(),
+              'fa-circle-notch fa-spin': installing(),
+              'fa-check-circle green-text': installed() && !failure(),
+              'fa-times-circle red-text': !installed() && failure(),
+            }"
+          ></i>
+          {{ 'plugins.manage.install' | translate }}
+          <span class="font-monospace">{{ plugin.newHbScope.to }}</span>
+        </li>
+        <li>
+          <i
+            class="fa"
+            [class]="{
+              'fa-circle-o': !uninstalling() && !uninstalled() && !failure(),
+              'fa-circle-notch fa-spin': uninstalling(),
+              'fa-check-circle green-text': uninstalled() && !failure(),
+              'fa-times-circle red-text': !uninstalled() && failure(),
+            }"
+          ></i>
+          {{ 'plugins.manage.uninstall' | translate }}
+          <span class="font-monospace">{{ plugin.newHbScope.from }}</span>
+        </li>
+        <li>
+          <i
+            class="fa"
+            [class]="{
+              'fa-circle-o': !restarting() && !failure(),
+              'fa-circle-notch fa-spin': restarting(),
+              'fa-times-circle red-text': failure(),
+            }"
+          ></i>
+          {{ 'menu.hbrestart.title' | translate }}
+        </li>
+      </ul>
+    </div>
+    } @if (failure()) {
+    <div class="alert alert-error mb-0">
+      <p>{{ 'plugins.manage.scoped.error' | translate }}</p>
+      <p class="font-monospace">{{ failure() }}</p>
+      <button class="btn btn-primary mb-0" (click)="downloadLogFile()">{{ 'form.button_download' | translate }}</button>
+    </div>
+    }
+    <div class="mb-0" [hidden]="!onlineUpdateOk() || failure()" id="plugin-output"></div>
+  </div>
+  <div class="modal-footer justify-content-between">
+    <div class="text-start">
+      @if (onlineUpdateOk()) {
+      <button
+        type="button"
+        class="btn btn-elegant"
+        data-bs-dismiss="modal"
+        (click)="dismissModal()"
+        [attr.aria-label]="'form.button_close' | translate"
+        [disabled]="installing() || uninstalling() || restarting()"
+      >
+        {{ 'form.button_close' | translate }}
+      </button>
+      }
+    </div>
+    <div class="text-center">
+      @if (!onlineUpdateOk()) {
+      <button
+        type="button"
+        class="btn btn-elegant"
+        data-bs-dismiss="modal"
+        (click)="dismissModal()"
+        [attr.aria-label]="'form.button_close' | translate"
+        [disabled]="installing() || uninstalling() || restarting()"
+      >
+        {{ 'form.button_close' | translate }}
+      </button>
+      }
+    </div>
+    <div class="text-end">
+      @if (onlineUpdateOk()) {
+      <button
+        type="button"
+        class="btn btn-primary"
+        data-bs-dismiss="modal"
+        (click)="doSwitch()"
+        [disabled]="installing() || uninstalling() || restarting() || !onlineUpdateOk() || failure()"
+      >
+        @if (!installing() && !uninstalling() && !restarting()) {
+        <span>{{ 'form.button_continue' | translate }}</span>
+        } @if ((installing() || uninstalling() || restarting()) && !failure()) {
+        <i class="fas fa-circle-notch fa-spin"></i>
+        }
+      </button>
+      }
+    </div>
+  </div>
+</div>

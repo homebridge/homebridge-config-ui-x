@@ -31,10 +31,29 @@ export interface NetworkAdapterSelected {
   selected: boolean
 }
 
+export interface CachedAccessory {
+  displayName: string
+  $cacheFile?: string
+  $protocol?: 'hap' | 'matter'
+  $deviceId?: string
+  uuid?: string
+  UUID?: string
+  [key: string]: unknown
+}
+
 export interface Pairing {
   _id: string
   _username: string
   _main?: boolean
   name: string
-  accessories: any[]
+  accessories: CachedAccessory[]
+}
+
+export interface SslKeyCertResponse {
+  keyPath?: string
+  certPath?: string
+}
+
+export interface SslPfxResponse {
+  pfxPath?: string
 }

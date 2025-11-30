@@ -1,15 +1,15 @@
 import { NgOptimizedImage } from '@angular/common'
-import { Component, inject } from '@angular/core'
+import { Component, inject, OnInit, signal } from '@angular/core'
 import { AbstractControl, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { Title } from '@angular/platform-browser'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
 import { firstValueFrom } from 'rxjs'
 
-import { ApiService } from '@/app/core/api.service'
 import { AuthService } from '@/app/core/auth/auth.service'
-import { SettingsService } from '@/app/core/settings.service'
-import { IoNamespace, WsService } from '@/app/core/ws.service'
+import { ApiService } from '@/app/core/communication/api.service'
+import { IoNamespace, WsService } from '@/app/core/communication/ws.service'
+import { SettingsService } from '@/app/core/ui/settings.service'
 import { environment } from '@/environments/environment'
 
 @Component({
@@ -22,7 +22,8 @@ import { environment } from '@/environments/environment'
     ReactiveFormsModule,
   ],
 })
-export class SetupWizardComponent {
+export class SetupWizardComponent implements OnInit {
+  // Injected dependencies
   private $api = inject(ApiService)
   private $auth = inject(AuthService)
   private $settings = inject(SettingsService)
@@ -30,95 +31,100 @@ export class SetupWizardComponent {
   private $toastr = inject(ToastrService)
   private $translate = inject(TranslateService)
   private $ws = inject(WsService)
-  private io: IoNamespace
 
-  public step: 'welcome' | 'create-account' | 'setup-complete' | 'restore-backup' | 'restoring' | 'restarting' | 'restore-complete' = 'welcome'
-  public backgroundStyle: string
-  public progress = 1
-  public restoreInProgress = false
-  public restoreStarted = false
-  public restoreFailed = false
-  public loading = false
-  public selectedFile: File
-  public restoreUploading = false
+  // Signals
+  public step = signal<'welcome' | 'create-account' | 'setup-complete' | 'restore-backup' | 'restoring' | 'restarting' | 'restore-complete'>('welcome')
+  public backgroundStyle = signal<string | undefined>(undefined)
+  public progress = signal(1)
+  public restoreInProgress = signal(false)
+  public restoreStarted = signal(false)
+  public restoreFailed = signal(false)
+  public loading = signal(false)
+  public selectedFile = signal<File | undefined>(undefined)
+  public restoreUploading = signal(false)
+
+  // Other properties
+  private io: IoNamespace
   public createUserForm = new FormGroup({
     username: new FormControl('', [Validators.required]),
     password: new FormControl('', [Validators.compose([Validators.required, Validators.minLength(4)])]),
     passwordConfirm: new FormControl('', [Validators.required]),
   }, this.matchPassword)
 
-  public async ngOnInit(): Promise<void> {
+  public ngOnInit(): void {
     this.$title.setTitle(this.$translate.instant('setup_wizard_page_title'))
-    await this.setBackground()
+    void this.setBackground()
   }
 
-  public onClickGettingStarted() {
-    this.step = 'create-account'
-    this.progress = 50
+  public onClickGettingStarted(): void {
+    this.step.set('create-account')
+    this.progress.set(50)
   }
 
-  public onClickRestoreBackup() {
-    this.step = 'restore-backup'
-    this.progress = 20
+  public onClickRestoreBackup(): void {
+    this.step.set('restore-backup')
+    this.progress.set(20)
   }
 
-  public onClickCancelRestore() {
-    this.selectedFile = null
-    this.step = 'welcome'
-    this.progress = 1
+  public onClickCancelRestore(): void {
+    this.selectedFile.set(undefined)
+    this.step.set('welcome')
+    this.progress.set(1)
   }
 
-  public async createFirstUser() {
-    this.loading = true
-    this.progress = 75
+  public async createFirstUser(): Promise<void> {
+    this.loading.set(true)
+    this.progress.set(75)
 
     const payload = this.createUserForm.getRawValue() as Record<string, string>
     payload.name = payload.username
 
     try {
-      await firstValueFrom(this.$api.post('/setup-wizard/create-first-user', payload))
+      await this.$api.post('/setup-wizard/create-first-user', payload)
       this.$settings.env.setupWizardComplete = true
-      this.progress = 100
-      this.loading = false
+      this.progress.set(100)
+      this.loading.set(false)
       await this.$auth.login({
         username: payload.username,
         password: payload.password,
       })
-      this.step = 'setup-complete'
+      this.step.set('setup-complete')
     } catch (error) {
-      this.loading = false
-      this.progress = 50
+      this.loading.set(false)
+      this.progress.set(50)
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
     }
   }
 
-  public handleRestoreFileInput(files: FileList) {
-    if (files.length) {
-      this.selectedFile = files[0]
-      this.progress = 40
+  public handleRestoreFileInput(event: Event): void {
+    const files = (event.target as HTMLInputElement).files
+    if (files?.length) {
+      this.selectedFile.set(files[0])
+      this.progress.set(40)
     } else {
-      delete this.selectedFile
-      this.progress = 20
+      this.selectedFile.set(undefined)
+      this.progress.set(20)
     }
   }
 
-  public async onRestoreBackupClick() {
-    this.restoreUploading = true
-    this.step = 'restoring'
-    this.progress = 60
+  public async onRestoreBackupClick(): Promise<void> {
+    this.restoreUploading.set(true)
+    this.step.set('restoring')
+    this.progress.set(60)
     try {
       // get and set a temporary access token
-      const authorization = await firstValueFrom(this.$api.get('/setup-wizard/get-setup-wizard-token'))
+      const authorization = await this.$api.get('/setup-wizard/get-setup-wizard-token')
       window.localStorage.setItem(environment.jwt.tokenKey, authorization.access_token)
       this.$auth.token = authorization.access_token
-      this.progress = 65
+      this.progress.set(65)
 
       // upload archive
       const formData: FormData = new FormData()
-      formData.append('restoreArchive', this.selectedFile, this.selectedFile.name)
-      await firstValueFrom(this.$api.post('/backup/restore', formData))
-      this.progress = 70
+      const selectedFile = this.selectedFile()
+      formData.append('restoreArchive', selectedFile, selectedFile.name)
+      await this.$api.post('/backup/restore', formData)
+      this.progress.set(70)
 
       // start restore
       this.io = this.$ws.connectToNamespace('backup')
@@ -144,15 +150,15 @@ export class SetupWizardComponent {
           }
         })
       })
-      this.restoreStarted = true
-      this.restoreInProgress = true
-      this.progress = 75
+      this.restoreStarted.set(true)
+      this.restoreInProgress.set(true)
+      this.progress.set(75)
       await firstValueFrom(this.io.request('do-restore'))
-      this.progress = 80
-      this.restoreInProgress = false
-      await firstValueFrom(this.$api.put('/backup/restart', {}))
-      this.step = 'restarting'
-      this.progress = 85
+      this.progress.set(80)
+      this.restoreInProgress.set(false)
+      await this.$api.put('/backup/restart', {})
+      this.step.set('restarting')
+      this.progress.set(85)
 
       // remove tokens
       window.localStorage.removeItem(environment.jwt.tokenKey)
@@ -167,33 +173,33 @@ export class SetupWizardComponent {
 
       // wait at least 15 seconds
       await new Promise(resolve => setTimeout(resolve, 3000))
-      this.progress = 88
+      this.progress.set(88)
       await new Promise(resolve => setTimeout(resolve, 3000))
-      this.progress = 91
+      this.progress.set(91)
       await new Promise(resolve => setTimeout(resolve, 3000))
-      this.progress = 94
+      this.progress.set(94)
       await new Promise(resolve => setTimeout(resolve, 3000))
-      this.progress = 97
+      this.progress.set(97)
       await new Promise(resolve => setTimeout(resolve, 3000))
-      this.progress = 99
+      this.progress.set(99)
 
       const checkHomebridgeInterval = setInterval(async () => {
         try {
-          await firstValueFrom(this.$api.get('/auth/settings'))
+          await this.$api.get('/auth/settings')
           clearInterval(checkHomebridgeInterval)
-          this.progress = 100
-          this.restoreUploading = false
-          this.step = 'restore-complete'
+          this.progress.set(100)
+          this.restoreUploading.set(false)
+          this.step.set('restore-complete')
         } catch (error) {
           // not up yet
         }
       }, 1000)
     } catch (error) {
       console.error(error)
-      this.restoreUploading = false
-      this.restoreFailed = true
-      this.progress = 20
-      this.step = 'restore-backup'
+      this.restoreUploading.set(false)
+      this.restoreFailed.set(true)
+      this.progress.set(20)
+      this.step.set('restore-backup')
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
     } finally {
       if (this.io) {
@@ -202,14 +208,14 @@ export class SetupWizardComponent {
     }
   }
 
-  private async setBackground() {
+  private async setBackground(): Promise<void> {
     if (!this.$settings.settingsLoaded) {
       await firstValueFrom(this.$settings.onSettingsLoaded)
     }
 
     if (this.$settings.env.customWallpaperHash) {
       const backgroundImageUrl = `${environment.api.base}/auth/wallpaper/${this.$settings.env.customWallpaperHash}`
-      this.backgroundStyle = `url('${backgroundImageUrl}') center/cover`
+      this.backgroundStyle.set(`url('${backgroundImageUrl}') center/cover`)
     }
   }
 

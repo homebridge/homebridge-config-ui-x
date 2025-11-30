@@ -1,3 +1,5 @@
+import { ChildBridgeStatusResponse } from '@/app/core/server.interfaces'
+
 export interface PluginNodeCheck {
   displayName: string
   name: string
@@ -60,6 +62,57 @@ export interface DockerDetails {
   updateAvailable: boolean
 }
 
+/**
+ * CPU widget data from server
+ */
+export interface CpuWidgetData {
+  cpuTemperature: {
+    main?: number
+    cores?: number[]
+    max?: number
+  }
+  currentLoad: number
+  cpuLoadHistory: number[]
+}
+
+/**
+ * Memory widget data from server
+ */
+export interface MemoryWidgetData {
+  mem: {
+    total: number
+    available: number
+  }
+  memoryUsageHistory: number[]
+}
+
+/**
+ * Network widget data from server
+ */
+export interface NetworkWidgetData {
+  net: {
+    iface: string
+    rx_sec: number
+    tx_sec: number
+  }
+  point: number
+}
+
+/**
+ * Weather widget data from OpenWeatherMap API
+ */
+export interface OpenWeatherMapResponse {
+  name: string
+  weather: Array<{
+    description: string
+    icon: string
+  }>
+  main: {
+    temp: number
+  }
+  timestamp?: string
+}
+
 export interface Widget {
   $configureEvent: any
   $resizeEvent: any
@@ -86,4 +139,12 @@ export interface Widget {
   }
   showNpmVersion?: boolean // update info widget
   dockerExpanded?: boolean // update info widget
+  hideNodeInfo?: boolean // update info widget
+}
+
+/**
+ * Extends ChildBridgeStatusResponse with UI-only state
+ */
+export interface ChildBridgeWithUIState extends ChildBridgeStatusResponse {
+  restarting?: boolean
 }

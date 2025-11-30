@@ -1,9 +1,10 @@
-import { Component, inject, Input } from '@angular/core'
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
+import { Component, inject } from '@angular/core'
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe } from '@ngx-translate/core'
 import { NgxMdModule } from 'ngx-md'
 
 import { PluginsMarkdownDirective } from '@/app/core/directives/plugins.markdown.directive'
+import { INFORMATION_MODAL_DATA } from '@/app/core/modal-data-tokens'
 
 @Component({
   templateUrl: './information.component.html',
@@ -16,18 +17,22 @@ import { PluginsMarkdownDirective } from '@/app/core/directives/plugins.markdown
   ],
 })
 export class InformationComponent {
+  // Injected dependencies
   private $activeModal = inject(NgbActiveModal)
+  private modalData = inject(INFORMATION_MODAL_DATA)
 
-  @Input() title: string
-  @Input() subtitle?: string
-  @Input() message: string
-  @Input() message2?: string
-  @Input() ctaButtonLabel?: string
-  @Input() ctaButtonLink?: string
-  @Input() faIconClass: string
-  @Input() markdownMessage2?: string
+  // Public properties (from injected data)
+  public title = this.modalData.title
+  public subtitle = this.modalData.subtitle
+  public message = this.modalData.message
+  public message2 = this.modalData.markdownMessage2
+  public ctaButtonLabel = this.modalData.ctaButtonLabel
+  public ctaButtonLink = this.modalData.ctaButtonLink
+  public faIconClass = this.modalData.faIconClass
+  public markdownMessage2 = this.modalData.markdownMessage2
 
-  public dismissModal() {
+  // Public methods
+  public dismissModal(): void {
     this.$activeModal.dismiss('Dismiss')
   }
 }

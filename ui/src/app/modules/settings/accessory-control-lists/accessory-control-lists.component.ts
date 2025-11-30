@@ -1,13 +1,15 @@
 import { TitleCasePipe } from '@angular/common'
-import { Component, inject, Input, OnInit } from '@angular/core'
+import { Component, inject, OnInit, signal } from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { NgbActiveModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap'
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal'
+import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap/tooltip'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
-import { firstValueFrom } from 'rxjs'
 
-import { ApiService } from '@/app/core/api.service'
-import { SettingsService } from '@/app/core/settings.service'
+import { ApiService } from '@/app/core/communication/api.service'
+import { ACCESSORY_CONTROL_LISTS_MODAL_DATA } from '@/app/core/modal-data-tokens'
+import { SettingsService } from '@/app/core/ui/settings.service'
+import { Pairing } from '@/app/modules/settings/accessory-control-lists/accessory-control-lists.interfaces'
 
 @Component({
   templateUrl: './accessory-control-lists.component.html',
@@ -20,36 +22,43 @@ import { SettingsService } from '@/app/core/settings.service'
   ],
 })
 export class AccessoryControlListsComponent implements OnInit {
+  // Injected dependencies
   private $activeModal = inject(NgbActiveModal)
   private $api = inject(ApiService)
   private $settings = inject(SettingsService)
   private $toastr = inject(ToastrService)
   private $translate = inject(TranslateService)
+  private modalData = inject(ACCESSORY_CONTROL_LISTS_MODAL_DATA)
+
+  // Signals
+  public clicked = signal(false)
+  public mainPairing = signal<Pairing | undefined>(undefined)
+  public pairings = signal<Pairing[]>([])
+
+  // Other properties
   private originalBlacklist: string[] = []
   private updatedBlacklist: string[] = []
 
-  @Input() existingBlacklist: string[] = []
-
-  public clicked: boolean = false
-  public mainPairing: any = {}
-  public pairings: any[] = []
-
-  get blacklistHasUpdated() {
+  get blacklistHasUpdated(): boolean {
     return this.updatedBlacklist.join(',') !== this.originalBlacklist.join(',')
   }
 
-  public async ngOnInit(): Promise<void> {
-    this.updatedBlacklist = this.existingBlacklist
+  public ngOnInit(): void {
+    void this.initialize()
+  }
+
+  private async initialize(): Promise<void> {
+    this.updatedBlacklist = this.modalData.existingBlacklist
       .map(x => x.trim().toUpperCase())
       .sort((a, b) => a.localeCompare(b))
     this.originalBlacklist = [...this.updatedBlacklist]
 
     try {
-      const pairings = await firstValueFrom(this.$api.get('/server/pairings'))
-      this.mainPairing = pairings.find(p => p._main)
-      this.pairings = pairings
+      const pairings = await this.$api.get('/server/pairings')
+      this.mainPairing.set(pairings.find(p => p._main))
+      this.pairings.set(pairings
         .filter(p => !p._main)
-        .sort((a, b) => a.name.localeCompare(b.name))
+        .sort((a, b) => a.name.localeCompare(b.name)))
     } catch (error) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
@@ -57,7 +66,7 @@ export class AccessoryControlListsComponent implements OnInit {
     }
   }
 
-  public toggleList(username: string) {
+  public toggleList(username: string): void {
     if (this.updatedBlacklist.includes(username)) {
       this.updatedBlacklist = this.updatedBlacklist.filter(x => x !== username)
     } else {
@@ -66,26 +75,26 @@ export class AccessoryControlListsComponent implements OnInit {
     }
   }
 
-  public isInList(username: string) {
+  public isInList(username: string): boolean {
     return this.updatedBlacklist.includes(username)
   }
 
-  public async updateBlacklist() {
-    this.clicked = true
+  public async updateBlacklist(): Promise<void> {
+    this.clicked.set(true)
     try {
-      await firstValueFrom(this.$api.put('/config-editor/ui/accessory-control/instance-blacklist', {
+      await this.$api.put('/config-editor/ui/accessory-control/instance-blacklist', {
         body: this.updatedBlacklist,
-      }))
+      })
       this.$settings.setEnvItem('accessoryControl.instanceBlacklist', this.updatedBlacklist)
       this.$activeModal.close()
     } catch (error) {
-      this.clicked = false
+      this.clicked.set(false)
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
     }
   }
 
-  public dismissModal() {
+  public dismissModal(): void {
     this.$activeModal.dismiss('Dismiss')
   }
 }

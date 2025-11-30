@@ -2,9 +2,9 @@ import { AfterViewInit, Component, ElementRef, HostListener, inject, OnDestroy, 
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { Subject } from 'rxjs'
 
-import { SettingsService } from '@/app/core/settings.service'
-import { TerminalNavigationGuardService } from '@/app/core/terminal-navigation-guard.service'
-import { TerminalService } from '@/app/core/terminal.service'
+import { SettingsService } from '@/app/core/ui/settings.service'
+import { TerminalNavigationGuardService } from '@/app/core/utilities/terminal-navigation-guard.service'
+import { TerminalService } from '@/app/core/utilities/terminal.service'
 
 @Component({
   templateUrl: './terminal.component.html',
@@ -21,7 +21,7 @@ export class TerminalComponent implements OnInit, AfterViewInit, OnDestroy {
 
   readonly termTarget = viewChild<ElementRef>('terminaloutput')
 
-  @HostListener('window:resize', ['$event'])
+  @HostListener('window:resize')
   onWindowResize() {
     this.resizeEvent.next(undefined)
   }
@@ -31,13 +31,13 @@ export class TerminalComponent implements OnInit, AfterViewInit, OnDestroy {
     return this.$navigationGuard.handleBeforeUnload(event)
   }
 
-  @HostListener('window:focus', ['$event'])
+  @HostListener('window:focus')
   onWindowFocus() {
     // Autofocus terminal when user returns to this window
     this.activateTerminal()
   }
 
-  @HostListener('click', ['$event'])
+  @HostListener('click')
   onClick() {
     // Focus this terminal when clicked
     this.activateTerminal()
@@ -81,15 +81,15 @@ export class TerminalComponent implements OnInit, AfterViewInit, OnDestroy {
     } else {
       // If persistence is disabled but there's still an active session, destroy it first
       if (!this.$settings.env.terminal?.persistence && this.$terminal.hasActiveSession()) {
-        this.$terminal.destroyPersistentSession()
+        void this.$terminal.destroyPersistentSession()
       }
       this.$terminal.startTerminal(this.termTarget(), {}, this.resizeEvent)
     }
 
-    // Set focus to the terminal after a delay to ensure it's initialized
-    setTimeout(() => {
+    // Set focus to the terminal after next render to ensure it's initialized
+    requestAnimationFrame(() => {
       this.activateTerminal()
-    }, 100)
+    })
   }
 
   public ngAfterViewInit() {
@@ -100,18 +100,18 @@ export class TerminalComponent implements OnInit, AfterViewInit, OnDestroy {
   private onVisibilityChange() {
     // When tab becomes visible, focus this terminal
     if (!document.hidden && this.$terminal.isTerminalReady()) {
-      setTimeout(() => {
+      requestAnimationFrame(() => {
         this.activateTerminal()
-      }, 100)
+      })
     }
   }
 
-  public canDeactivate(nextUrl?: string): Promise<boolean> | boolean {
+  public async canDeactivate(nextUrl?: string): Promise<boolean> {
     // Check if navigation guard allows deactivation
-    const guardResult = this.$navigationGuard.canDeactivate()
+    const guardResult = await this.$navigationGuard.canDeactivate()
 
     // If guard blocks navigation, return immediately
-    if (guardResult === false || (guardResult instanceof Promise && guardResult.then)) {
+    if (guardResult === false) {
       return guardResult
     }
 
@@ -171,7 +171,7 @@ export class TerminalComponent implements OnInit, AfterViewInit, OnDestroy {
       this.$terminal.detachTerminal()
     } else {
       // Destroy the terminal completely and ensure any persistent session is destroyed
-      this.$terminal.destroyPersistentSession()
+      void this.$terminal.destroyPersistentSession()
     }
   }
 }

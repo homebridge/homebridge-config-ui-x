@@ -1,7 +1,7 @@
 <div
   class="accessory-box"
-  [class.accessory-on]="isActive"
-  (longClick)="canShowModal && onLongClick()"
+  [class.accessory-on]="isActive()"
+  (longClick)="canShowModal() && onLongClick()"
   (shortClick)="onClick()"
   tabindex="0"
 >
@@ -90,7 +90,7 @@
         </g>
       </svg>
     </div>
-    <div class="accessory-label mt-auto">{{ service.customName || service.serviceName }}</div>
-    <div class="accessory-label grey-text" [innerText]="statusText | translate"></div>
+    <div class="accessory-label mt-auto">{{ service().customName || service().serviceName }}</div>
+    <div class="accessory-label grey-text" [innerText]="statusText() | translate"></div>
   </div>
 </div>

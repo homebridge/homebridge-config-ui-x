@@ -1,23 +1,28 @@
 import type { ServiceType } from '@homebridge/hap-client'
 
-import { inject, Injectable } from '@angular/core'
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
+import { createEnvironmentInjector, DestroyRef, EnvironmentInjector, inject, Injectable, signal } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
 import { firstValueFrom, Subject } from 'rxjs'
+import { takeUntil } from 'rxjs/operators'
 
 import { AccessoryLayout, ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
 import { AccessoryInfoComponent } from '@/app/core/accessories/accessory-info/accessory-info.component'
-import { ApiService } from '@/app/core/api.service'
 import { AuthService } from '@/app/core/auth/auth.service'
-import { IoNamespace, WsService } from '@/app/core/ws.service'
+import { ApiService } from '@/app/core/communication/api.service'
+import { IoNamespace, WsService } from '@/app/core/communication/ws.service'
+import { ACCESSORY_INFO_MODAL_DATA } from '@/app/core/modal-data-tokens'
 
 @Injectable({
   providedIn: 'root',
 })
 export class AccessoriesService {
+  private injector = inject(EnvironmentInjector)
   private $api = inject(ApiService)
   private $auth = inject(AuthService)
+  private $destroyRef = inject(DestroyRef)
   private $modal = inject(NgbModal)
   private $toastr = inject(ToastrService)
   private $translate = inject(TranslateService)
@@ -26,6 +31,7 @@ export class AccessoriesService {
   private pairingCache: any[] = []
   private customAttributesApplied = new Set<string>()
   private io: IoNamespace
+  private stop$ = new Subject<void>()
   private hiddenTypes = [
     'InputSource',
     'LockManagement',
@@ -39,38 +45,53 @@ export class AccessoriesService {
   public hapReadyForControl = false
   public matterReadyForControl = false
   public accessories: { services: ServiceType[] } = { services: [] }
-  public rooms: Array<{ name: string, services: ServiceTypeX[] }> = []
+  public rooms = signal<Array<{ name: string, services: ServiceTypeX[] }>>([])
   public accessoryLayout: AccessoryLayout
   private originalLayout: AccessoryLayout
 
   constructor() {
     if (this.$auth.user.admin) {
-      firstValueFrom(this.$api.get('/server/cached-accessories'))
-        .then((data) => {
-          this.accessoryCache = data
-        })
-        .catch(error => console.error(error))
-      firstValueFrom(this.$api.get('/server/pairings'))
-        .then((data) => {
-          this.pairingCache = data
-        })
-        .catch(error => console.error(error))
+      void this.loadCachedData()
     }
   }
 
-  public showAccessoryInformation(service: ServiceTypeX) {
+  private async loadCachedData(): Promise<void> {
+    try {
+      this.accessoryCache = await this.$api.get('/server/cached-accessories')
+    } catch (error) {
+      console.error(error)
+    }
+
+    try {
+      this.pairingCache = await this.$api.get('/server/pairings')
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  public async showAccessoryInformation(service: ServiceTypeX): Promise<boolean> {
+    const injector = createEnvironmentInjector([{
+      provide: ACCESSORY_INFO_MODAL_DATA,
+      useValue: {
+        service,
+        accessoryCache: this.accessoryCache,
+        pairingCache: this.pairingCache,
+      },
+    }], this.injector)
+
     const ref = this.$modal.open(AccessoryInfoComponent, {
       size: 'lg',
       backdrop: 'static',
+      injector,
     })
 
-    ref.componentInstance.service = service
-    ref.componentInstance.accessoryCache = this.accessoryCache
-    ref.componentInstance.pairingCache = this.pairingCache
-
-    ref.result
-      .then(() => this.saveLayout())
-      .catch(() => this.saveLayout())
+    try {
+      await ref.result
+    } catch {
+      // Modal dismissed
+    } finally {
+      this.saveLayout()
+    }
 
     return false
   }
@@ -79,12 +100,19 @@ export class AccessoriesService {
    * Stop the accessory control session
    */
   public stop() {
+    // Complete all subscriptions
+    this.stop$.next()
+    this.stop$.complete()
+
     this.io.end()
-    this.rooms = []
+    this.rooms.set([])
     this.accessories = { services: [] }
     this.customAttributesApplied.clear()
     delete this.accessoryLayout
     delete this.originalLayout
+
+    // Reset for next session
+    this.stop$ = new Subject<void>()
   }
 
   /**
@@ -101,18 +129,16 @@ export class AccessoriesService {
     // Load the room layout first
     await this.loadLayout()
 
-    // Start accessory subscription
-    if (this.io.connected) {
-      this.io.socket.emit('get-accessories')
-      setTimeout(() => {
-        this.io.connected.subscribe(() => {
-          this.io.socket.emit('get-accessories')
-        })
-      }, 1000)
-    } else {
-      this.io.connected.subscribe(() => {
+    // Subscribe for reconnections
+    this.io.connected
+      .pipe(takeUntil(this.stop$))
+      .subscribe(() => {
         this.io.socket.emit('get-accessories')
       })
+
+    // Check if already connected and initialize immediately
+    if (this.io.socket.connected) {
+      this.io.socket.emit('get-accessories')
     }
 
     // Subscribe to accessory events
@@ -168,7 +194,7 @@ export class AccessoriesService {
    */
   public saveLayout() {
     // Generate layout schema from currently active rooms
-    const currentLayout = this.rooms.map(room => ({
+    const currentLayout = this.rooms().map(room => ({
       name: room.name,
       services: room.services.map(service => ({
         uniqueId: service.uniqueId,
@@ -189,13 +215,18 @@ export class AccessoriesService {
     this.accessoryLayout = this.mergeWithUndiscoveredServices(currentLayout)
 
     // Send update request to server
-    this.io.request('save-layout', { user: this.$auth.user.username, layout: this.accessoryLayout }).subscribe({
-      next: () => this.layoutSaved.next(undefined),
-      error: (error) => {
-        console.error(error)
-        this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
-      },
-    })
+    this.io.request('save-layout', { user: this.$auth.user.username, layout: this.accessoryLayout })
+      .pipe(
+        takeUntil(this.stop$),
+        takeUntilDestroyed(this.$destroyRef),
+      )
+      .subscribe({
+        next: () => this.layoutSaved.next(undefined),
+        error: (error) => {
+          console.error(error)
+          this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+        },
+      })
   }
 
   /**
@@ -208,10 +239,10 @@ export class AccessoriesService {
     this.originalLayout = JSON.parse(JSON.stringify(this.accessoryLayout))
 
     // Build empty room layout
-    this.rooms = this.accessoryLayout.map(room => ({
+    this.rooms.set(this.accessoryLayout.map(room => ({
       name: room.name,
       services: [],
-    }))
+    })))
   }
 
   /**
@@ -377,7 +408,7 @@ export class AccessoriesService {
       }
 
       // Check if the service has already been allocated to an active room
-      const inRoom = this.rooms.find(r => r.services.find(s => s.uniqueId === service.uniqueId))
+      const inRoom = this.rooms().find(r => r.services.find(s => s.uniqueId === service.uniqueId))
 
       // Not in an active room, perhaps the service is in the layout cache
       if (!inRoom) {
@@ -394,9 +425,6 @@ export class AccessoriesService {
         }
 
         if (inCache && serviceCache) {
-          // It's in the cache, add to the correct room
-          const targetRoom = this.rooms.find(r => r.name === inCache.name)
-
           // Apply custom attributes from cache before adding to room
           if (serviceCache.customType) {
             (service as ServiceTypeX).customType = serviceCache.customType
@@ -414,22 +442,29 @@ export class AccessoriesService {
           // Mark that custom attributes have been applied to this accessory
           this.customAttributesApplied.add(service.uniqueId)
 
-          targetRoom.services.push(service)
+          // Add to the correct room using signal update
+          this.rooms.update(current => current.map(r =>
+            r.name === inCache.name
+              ? { ...r, services: [...r.services, service] }
+              : r,
+          ))
         } else {
-          // New accessory add the default room
-          const defaultRoom = this.rooms.find(r => r.name === 'Default Room')
-
           // Mark as processed (even though no custom attributes to apply)
           this.customAttributesApplied.add(service.uniqueId)
 
-          // Does the default room exist?
-          if (defaultRoom) {
-            defaultRoom.services.push(service)
+          // New accessory add the default room
+          const hasDefaultRoom = this.rooms().some(r => r.name === 'Default Room')
+          if (hasDefaultRoom) {
+            this.rooms.update(current => current.map(r =>
+              r.name === 'Default Room'
+                ? { ...r, services: [...r.services, service] }
+                : r,
+            ))
           } else {
-            this.rooms.push({
+            this.rooms.update(current => [...current, {
               name: 'Default Room',
               services: [service],
-            })
+            }])
           }
         }
       }
@@ -440,10 +475,10 @@ export class AccessoriesService {
    * Order the rooms on the screen
    */
   private orderRooms() {
-    // Order the services within each room
-    this.rooms.forEach((room) => {
+    // Order the services within each room using immutable update
+    this.rooms.update(current => current.map((room) => {
       const roomCache = this.accessoryLayout.find(r => r.name === room.name)
-      room.services.sort((a, b) => {
+      const sortedServices = [...room.services].sort((a, b) => {
         const posA = roomCache.services.findIndex(s => s.uniqueId === a.uniqueId)
         const posB = roomCache.services.findIndex(s => s.uniqueId === b.uniqueId)
         if (posA < posB) {
@@ -453,7 +488,8 @@ export class AccessoriesService {
         }
         return 0
       })
-    })
+      return { ...room, services: sortedServices }
+    }))
   }
 
   /**
@@ -461,7 +497,7 @@ export class AccessoriesService {
    * Only applies the custom properties we care about: customName, customType, hidden, onDashboard
    */
   private applyCustomAttributes() {
-    this.rooms.forEach((room) => {
+    this.rooms().forEach((room) => {
       const roomCache = this.accessoryLayout.find(r => r.name === room.name)
       if (!roomCache) {
         return

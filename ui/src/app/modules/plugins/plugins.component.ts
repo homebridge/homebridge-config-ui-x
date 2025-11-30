@@ -1,19 +1,21 @@
-import { Component, ElementRef, inject, OnDestroy, OnInit, ViewChild } from '@angular/core'
+import { Component, DestroyRef, ElementRef, inject, OnDestroy, OnInit, signal, viewChild } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms'
-import { NavigationEnd, Router } from '@angular/router'
-import { NgbModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap'
+import { NavigationEnd, Router, Event as RouterEvent } from '@angular/router'
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
+import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap/tooltip'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
-import { firstValueFrom, Observable, Subscription } from 'rxjs'
+import { Observable } from 'rxjs'
 
-import { ApiService } from '@/app/core/api.service'
 import { AuthService } from '@/app/core/auth/auth.service'
+import { ApiService } from '@/app/core/communication/api.service'
+import { IoNamespace, WsService } from '@/app/core/communication/ws.service'
 import { RestartHomebridgeComponent } from '@/app/core/components/restart-homebridge/restart-homebridge.component'
 import { SpinnerComponent } from '@/app/core/components/spinner/spinner.component'
-import { Plugin } from '@/app/core/manage-plugins/manage-plugins.interfaces'
-import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service'
-import { SettingsService } from '@/app/core/settings.service'
-import { IoNamespace, WsService } from '@/app/core/ws.service'
+import { ChildBridge, Plugin } from '@/app/core/plugins/manage-plugins.interfaces'
+import { ManagePluginsService } from '@/app/core/plugins/manage-plugins.service'
+import { SettingsService } from '@/app/core/ui/settings.service'
 import { PluginCardComponent } from '@/app/modules/plugins/plugin-card/plugin-card.component'
 import { PluginSupportComponent } from '@/app/modules/plugins/plugin-support/plugin-support.component'
 
@@ -34,9 +36,10 @@ export interface CanComponentDeactivate {
     NgbTooltip,
   ],
 })
-export class PluginsComponent implements OnInit, OnDestroy, CanComponentDeactivate {
-  @ViewChild('searchInput') searchInput!: ElementRef
 
+export class PluginsComponent implements OnInit, OnDestroy, CanComponentDeactivate {
+  // Injected dependencies
+  private destroyRef = inject(DestroyRef)
   private $api = inject(ApiService)
   private $auth = inject(AuthService)
   private $modal = inject(NgbModal)
@@ -46,173 +49,166 @@ export class PluginsComponent implements OnInit, OnDestroy, CanComponentDeactiva
   private $toastr = inject(ToastrService)
   private $translate = inject(TranslateService)
   private $ws = inject(WsService)
-  private isSearchMode = false
-  private io: IoNamespace
-  private navigationSubscription: Subscription
-  private pluginRefreshSubscription: Subscription
 
-  public mainError = false
-  public loading = true
-  public tab: 'main' | 'stats' = 'main'
-  public installedPlugins: Plugin[] = []
-  public childBridges = []
-  public showSearchBar = false
-  public showExitButton = false
-  public isAdmin = this.$auth.user.admin
+  // ViewChild queries
+  readonly searchInput = viewChild<ElementRef>('searchInput')
+
+  // Signals
+  public mainError = signal(false)
+  public loading = signal(true)
+  public tab = signal<'main' | 'stats'>('main')
+  public installedPlugins = signal<Plugin[]>([])
+  public childBridges = signal<ChildBridge[]>([])
+  public showSearchBar = signal(false)
+  public showExitButton = signal(false)
+
+  // Other properties
+  private isSearchMode = signal(false)
+  private io: IoNamespace
+  public readonly isAdmin = this.$auth.user.admin
   public form = new FormGroup({
-    query: new FormControl(''),
+    query: new FormControl<string>(''),
   })
 
-  public async ngOnInit() {
+  public ngOnInit(): void {
     // Set page title
     const title = this.$translate.instant('menu.label_plugins')
     this.$settings.setPageTitle(title)
 
     // Subscribe to plugin list refresh events
-    this.pluginRefreshSubscription = this.$plugin.onPluginListRefresh.subscribe(async () => {
-      await this.loadInstalledPlugins()
-      this.getChildBridgeMetadata()
-    })
+    this.$plugin.onPluginListRefresh
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        void this.loadInstalledPlugins()
+        this.getChildBridgeMetadata()
+      })
 
     this.io = this.$ws.connectToNamespace('child-bridges')
-    this.io.connected.subscribe(async () => {
-      this.getChildBridgeMetadata()
-      this.io.socket.emit('monitor-child-bridge-status')
 
-      // Load list of installed plugins
-      await this.loadInstalledPlugins()
-
-      if (!this.installedPlugins.length) {
-        this.showSearch()
-      }
-
-      // Get any query parameters
-      const { action: queryAction, plugin: queryPlugin } = this.$router.parseUrl(this.$router.url).queryParams
-      if (queryAction) {
-        const plugin: Plugin = this.installedPlugins.find(x => x.name === queryPlugin)
-        switch (queryAction) {
-          case 'just-installed': {
-            if (plugin) {
-              if (plugin.isConfigured) {
-                this.$modal.open(RestartHomebridgeComponent, {
-                  size: 'lg',
-                  backdrop: 'static',
-                })
-              } else {
-                this.$plugin.settings(plugin)
-              }
-            }
-            break
-          }
-        }
-
-        // Clear the query parameters so that we don't keep showing the same action
-        void this.$router.navigate([], {
-          queryParams: {},
-          replaceUrl: true,
-          queryParamsHandling: '',
-        })
-      }
+    // Subscribe to connection events for reconnections
+    this.io.connected.subscribe(() => {
+      void this.initialize()
     })
+
+    // If already connected, initialize immediately
+    if (this.io.socket.connected) {
+      void this.initialize()
+    }
 
     this.io.socket.on('child-bridge-status-update', (data) => {
-      const existingBridge = this.childBridges.find(x => x.username === data.username)
+      const existingBridge = this.childBridges().find(x => x.username === data.username)
       if (existingBridge) {
         Object.assign(existingBridge, data)
+
+        // Trigger signal update
+        this.childBridges.set([...this.childBridges()])
       } else {
-        this.childBridges.push(data)
+        this.childBridges.update(bridges => [...bridges, data])
       }
     })
 
-    this.navigationSubscription = this.$router.events.subscribe((e: any) => {
-      // If it is a NavigationEnd event re-initialise the component
-      if (e instanceof NavigationEnd) {
-        this.loadInstalledPlugins()
-      }
-    })
+    this.$router.events
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((e: RouterEvent) => {
+        // If it is a NavigationEnd event re-initialize the component
+        if (e instanceof NavigationEnd) {
+          void this.loadInstalledPlugins()
+        }
+      })
   }
 
-  public search() {
-    this.installedPlugins = []
-    this.loading = true
-    this.showExitButton = true
+  public async search(): Promise<void> {
+    this.installedPlugins.set([])
+    this.loading.set(true)
+    this.showExitButton.set(true)
 
-    this.$api.get(`/plugins/search/${encodeURIComponent(this.form.value.query)}`).subscribe({
-      next: (data) => {
-        // Some filtering in regard to the changeover to scoped plugins
-        // A plugin may have two versions, like homebridge-foo and @homebridge-plugins/homebridge-foo
-        // If the user does not have either installed, or has the scoped version installed, then hide the unscoped version
-        // If the user has the unscoped version installed, but not the scoped version, then hide the scoped version
-        const hiddenPlugins = new Set<string>()
-        const pluginMap = new Map(data.map((plugin: Plugin) => [plugin.name, plugin]))
-        this.installedPlugins = data
-          .reduce((acc: any, x: Plugin) => {
-            if (x.name === 'homebridge-config-ui-x' || hiddenPlugins.has(x.name)) {
-              return acc
-            }
-            if (x.newHbScope) {
-              const y = x.newHbScope.to
-              const yExists = pluginMap.has(y)
-              if (x.installedVersion || !yExists) {
-                hiddenPlugins.add(y)
-                acc.push(x)
-              }
-            } else {
+    try {
+      const data = await this.$api.get<Plugin[]>(`/plugins/search/${encodeURIComponent(this.form.value.query)}`)
+
+      // Some filtering in regard to the changeover to scoped plugins
+      // A plugin may have two versions, like homebridge-foo and @homebridge-plugins/homebridge-foo
+      // If the user does not have either installed, or has the scoped version installed, then hide the unscoped version
+      // If the user has the unscoped version installed, but not the scoped version, then hide the scoped version
+      const hiddenPlugins = new Set<string>()
+      const pluginMap = new Map(data.map((plugin: Plugin) => [plugin.name, plugin]))
+      this.installedPlugins.set(data
+        .reduce((acc: Plugin[], x: Plugin) => {
+          if (x.name === 'homebridge-config-ui-x' || hiddenPlugins.has(x.name)) {
+            return acc
+          }
+          if (x.newHbScope) {
+            const y = x.newHbScope.to
+            const yExists = pluginMap.has(y)
+            if (x.installedVersion || !yExists) {
+              hiddenPlugins.add(y)
               acc.push(x)
             }
-            return acc
-          }, [])
-        this.appendMetaInfo()
-        this.loading = false
-      },
-      error: (error) => {
-        this.loading = false
-        this.isSearchMode = false
-        console.error(error)
-        this.$toastr.error(error.error?.message || error.message, this.$translate.instant('toast.title_error'))
-        this.loadInstalledPlugins()
-      },
-    })
+          } else {
+            acc.push(x)
+          }
+          return acc
+        }, []))
+      await this.appendMetaInfo()
+    } catch (error) {
+      this.isSearchMode.set(false)
+      console.error(error)
+      const message = error instanceof Error ? error.message : this.$translate.instant('plugins.toast_failed_to_search_plugins')
+      this.$toastr.error(message, this.$translate.instant('toast.title_error'))
+      void this.loadInstalledPlugins()
+    } finally {
+      this.loading.set(false)
+    }
   }
 
-  public onClearSearch() {
-    this.loadInstalledPlugins()
+  public onClearSearch(): void {
+    this.form.setValue({ query: '' })
+    this.showExitButton.set(false)
+    if (this.isSearchMode()) {
+      this.isSearchMode.set(false)
+      void this.loadInstalledPlugins()
+    }
   }
 
-  public onSubmit({ value }) {
+  public onSubmit({ value }): void {
     if (!value.query.length) {
-      if (this.isSearchMode) {
-        this.isSearchMode = false
-        this.loadInstalledPlugins()
+      // Close search mode if in search mode
+      if (this.isSearchMode()) {
+        this.isSearchMode.set(false)
+        void this.loadInstalledPlugins()
       }
+      // Close search bar if empty
+      this.showSearchBar.set(false)
     } else {
-      this.isSearchMode = true
-      this.search()
+      this.isSearchMode.set(true)
+      void this.search()
     }
   }
 
-  public showSearch() {
-    if (this.showSearchBar) {
-      this.showSearchBar = false
-      if (this.isSearchMode) {
-        this.isSearchMode = false
+  public showSearch(): void {
+    if (this.showSearchBar()) {
+      this.showSearchBar.set(false)
+      if (this.isSearchMode()) {
+        this.isSearchMode.set(false)
         this.form.setValue({ query: '' })
-        this.loadInstalledPlugins()
+        void this.loadInstalledPlugins()
       }
     } else {
-      window.document.querySelector('body').classList.remove('bg-black')
-      this.tab = 'main'
-      this.showSearchBar = true
-      setTimeout(() => this.searchInput.nativeElement.focus(), 0)
+      window.document.querySelector('body')?.classList.remove('bg-black')
+      this.tab.set('main')
+      this.showSearchBar.set(true)
+      const input = this.searchInput()
+      if (input) {
+        setTimeout(() => input.nativeElement.focus(), 0)
+      }
     }
   }
 
-  public showStats() {
-    if (this.tab === 'stats') {
+  public showStats(): void {
+    if (this.tab() === 'stats') {
       // In dark mode, no animations needed
       if (this.$settings.actualLightingMode !== 'light') {
         window.document.querySelector('body').classList.remove('bg-black')
-        this.tab = 'main'
+        this.tab.set('main')
         return
       }
 
@@ -235,14 +231,14 @@ export class PluginsComponent implements OnInit, OnDestroy, CanComponentDeactiva
 
         // Wait for background transition before switching tab
         setTimeout(() => {
-          this.tab = 'main'
+          this.tab.set('main')
         }, 250)
       }, 250)
     } else {
       // Set body bg color
       window.document.querySelector('body').classList.add('bg-black')
-      this.tab = 'stats'
-      this.showSearchBar = false
+      this.tab.set('stats')
+      this.showSearchBar.set(false)
 
       // Add light-mode class for animations (only in light mode)
       if (this.$settings.actualLightingMode === 'light') {
@@ -259,7 +255,7 @@ export class PluginsComponent implements OnInit, OnDestroy, CanComponentDeactiva
     }
   }
 
-  public openSupport() {
+  public openSupport(): void {
     this.$modal.open(PluginSupportComponent, {
       size: 'lg',
       backdrop: 'static',
@@ -268,7 +264,7 @@ export class PluginsComponent implements OnInit, OnDestroy, CanComponentDeactiva
 
   public canDeactivate(nextUrl?: string): Promise<boolean> | boolean {
     // Only animate if we're on the stats tab
-    if (this.tab !== 'stats') {
+    if (this.tab() !== 'stats') {
       return true
     }
 
@@ -321,33 +317,67 @@ export class PluginsComponent implements OnInit, OnDestroy, CanComponentDeactiva
     // Clean up light-mode class
     window.document.querySelector('body').classList.remove('light-mode')
 
-    if (this.navigationSubscription) {
-      this.navigationSubscription.unsubscribe()
-    }
-    if (this.pluginRefreshSubscription) {
-      this.pluginRefreshSubscription.unsubscribe()
-    }
     this.io.end()
   }
 
-  public getPluginChildBridges(plugin: Plugin) {
-    return this.childBridges.filter(x => x.plugin === plugin.name)
+  public getPluginChildBridges(plugin: Plugin): ChildBridge[] {
+    return this.childBridges().filter(x => x.plugin === plugin.name)
   }
 
-  private async loadInstalledPlugins() {
+  private async initialize(): Promise<void> {
+    this.getChildBridgeMetadata()
+    this.io.socket.emit('monitor-child-bridge-status')
+
+    // Load list of installed plugins
+    await this.loadInstalledPlugins()
+
+    if (!this.installedPlugins().length) {
+      this.showSearch()
+    }
+
+    // Get any query parameters
+    const { action: queryAction, plugin: queryPlugin } = this.$router.parseUrl(this.$router.url).queryParams
+    if (queryAction) {
+      const plugin: Plugin | undefined = this.installedPlugins().find(x => x.name === queryPlugin)
+      switch (queryAction) {
+        case 'just-installed': {
+          if (plugin) {
+            if (plugin.isConfigured) {
+              this.$modal.open(RestartHomebridgeComponent, {
+                size: 'lg',
+                backdrop: 'static',
+              })
+            } else {
+              void this.$plugin.settings(plugin)
+            }
+          }
+          break
+        }
+      }
+
+      // Clear the query parameters so that we don't keep showing the same action
+      void this.$router.navigate([], {
+        queryParams: {},
+        replaceUrl: true,
+        queryParamsHandling: '',
+      })
+    }
+  }
+
+  private async loadInstalledPlugins(): Promise<Plugin[] | undefined> {
     this.form.setValue({ query: '' })
-    this.showExitButton = false
-    this.installedPlugins = []
-    this.loading = true
-    this.mainError = false
+    this.showExitButton.set(false)
+    this.installedPlugins.set([])
+    this.loading.set(true)
+    this.mainError.set(false)
 
     try {
-      const installedPlugins = await firstValueFrom(this.$api.get('/plugins'))
-      this.installedPlugins = installedPlugins.filter((x: Plugin) => x.name !== 'homebridge-config-ui-x')
+      const installedPlugins = await this.$api.get<Plugin[]>('/plugins')
+      this.installedPlugins.set(installedPlugins.filter((x: Plugin) => x.name !== 'homebridge-config-ui-x'))
       await this.appendMetaInfo()
 
       // Multi-criteria sorting
-      const sortedList = this.installedPlugins.sort((a, b) => {
+      const sortedList = this.installedPlugins().sort((a, b) => {
         // Priority 1: updateAvailable (=true)
         // Priority 2: newHbScope (=true)
         // Priority 3: disabled (=false)
@@ -373,60 +403,66 @@ export class PluginsComponent implements OnInit, OnDestroy, CanComponentDeactiva
         return aScore !== bScore ? bScore - aScore : a.name.localeCompare(b.name)
       })
 
-      this.loading = false
+      this.installedPlugins.set(sortedList)
       return sortedList
     } catch (error) {
       console.error(error)
-      this.loading = false
-      this.mainError = true
-      this.$toastr.error(this.$translate.instant('plugins.toast_failed_to_load_plugins'), this.$translate.instant('toast.title_error'))
+      const message = error instanceof Error ? error.message : this.$translate.instant('plugins.toast_failed_to_load_plugins')
+      this.$toastr.error(message, this.$translate.instant('toast.title_error'))
+      this.mainError.set(true)
+    } finally {
+      this.loading.set(false)
     }
   }
 
-  private async appendMetaInfo() {
-    if (this.isAdmin) {
-      // Also get the current configuration for each plugin
-      await Promise.all(this.installedPlugins
-        .filter(plugin => plugin.installedVersion)
-        .map(async (plugin: Plugin) => {
-          try {
-            // Adds some extra properties to the plugin object for the plugin card
-            const configBlocks = await firstValueFrom(this.$api.get(`/config-editor/plugin/${encodeURIComponent(plugin.name)}`))
-            plugin.isConfigured = configBlocks.length > 0
-            plugin.isConfiguredDynamicPlatform = plugin.isConfigured && Object.prototype.hasOwnProperty.call(configBlocks[0], 'platform')
+  private async appendMetaInfo(): Promise<void> {
+    if (!this.isAdmin) {
+      return
+    }
 
-            plugin.recommendChildBridge = plugin.isConfigured
-              && this.$settings.env.recommendChildBridges
-              && !['homebridge', 'homebridge-config-ui-x'].includes(plugin.name)
+    // Also get the current configuration for each plugin
+    await Promise.all(this.installedPlugins()
+      .filter(plugin => plugin.installedVersion)
+      .map(async (plugin: Plugin) => {
+        try {
+          // Adds some extra properties to the plugin object for the plugin card
+          const configBlocks = await this.$api.get<any[]>(`/config-editor/plugin/${encodeURIComponent(plugin.name)}`)
+          plugin.isConfigured = configBlocks.length > 0
+          plugin.isConfiguredDynamicPlatform = plugin.isConfigured && Object.prototype.hasOwnProperty.call(configBlocks[0], 'platform')
 
-            plugin.hasChildBridges = plugin.isConfigured && configBlocks.some(x => x._bridge && x._bridge.username)
+          plugin.recommendChildBridge = plugin.isConfigured
+            && this.$settings.env.recommendChildBridges
+            && !['homebridge', 'homebridge-config-ui-x'].includes(plugin.name)
 
-            const pluginChildBridges = this.getPluginChildBridges(plugin)
+          plugin.hasChildBridges = plugin.isConfigured && configBlocks.some(x => x._bridge && x._bridge.username)
 
-            // Check for unpaired HAP bridges OR unpaired Matter bridges that are NOT hidden
-            plugin.hasChildBridgesUnpaired = pluginChildBridges.some((x) => {
-              const hasUnpairedHap = x.paired === false && !this.isBridgeAlertHidden(x.username, 'hap')
-              const hasUnpairedMatter = x.matterConfig && x.matterCommissioned === false && !this.isBridgeAlertHidden(x.username, 'matter')
+          const pluginChildBridges = this.getPluginChildBridges(plugin)
 
-              return hasUnpairedHap || hasUnpairedMatter
-            })
+          // Check for unpaired HAP bridges OR unpaired Matter bridges that are NOT hidden
+          plugin.hasChildBridgesUnpaired = pluginChildBridges.some((x) => {
+            const hasUnpairedHap = x.paired === false && !this.isBridgeAlertHidden(x.username, 'hap')
+            const hasUnpairedMatter = x.matterConfig && x.matterCommissioned === false && !this.isBridgeAlertHidden(x.username, 'matter')
 
-            if (this.$settings.env.plugins?.hideUpdatesFor?.includes(plugin.name)) {
-              plugin.updateAvailable = false
-            }
-          } catch (err) {
-            // May not be technically correct, but if we can't load the config, assume it is configured
-            plugin.isConfigured = true
-            plugin.hasChildBridges = true
+            return hasUnpairedHap || hasUnpairedMatter
+          })
+
+          if (this.$settings.env.plugins?.hideUpdatesFor?.includes(plugin.name)) {
+            plugin.updateAvailable = false
           }
-        }),
-      )
-    }
+        } catch (error) {
+          console.error(`Failed to load config for ${plugin.name}:`, error)
+
+          // May not be technically correct, but if we can't load the config, assume it is configured
+          plugin.isConfigured = true
+          plugin.hasChildBridges = true
+        }
+      }),
+    )
   }
 
-  private getChildBridgeMetadata() {
+  private getChildBridgeMetadata(): void {
     this.io.request('get-homebridge-child-bridge-status').subscribe((data) => {
-      this.childBridges = data
+      this.childBridges.set(data)
     })
   }
 

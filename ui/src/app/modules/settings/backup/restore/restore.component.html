@@ -7,10 +7,10 @@
       data-bs-dismiss="modal"
       [attr.aria-label]="'form.button_close' | translate"
       (click)="dismissModal()"
-      [disabled]="restoreInProgress"
+      [disabled]="restoreInProgress()"
     ></button>
   </div>
-  @if (!restoreStarted && !setupWizardRestore) {
+  @if (!restoreStarted() && !setupWizardRestore) {
   <div class="modal-body">
     <div class="text-center mb-3">
       <i class="fas fa-hard-drive primary-text" style="font-size: 75px"></i>
@@ -29,15 +29,15 @@
       class="form-control"
       id="restoreFileUpload"
       accept="application/gzip, .gz, .hbfx"
-      (change)="handleRestoreFileInput($event.target.files)"
+      (change)="handleRestoreFileInput($event)"
     />
     }
   </div>
   }
 
-  <div [hidden]="!restoreStarted" id="plugin-log-output" class="modal-body"></div>
+  <div [hidden]="!restoreStarted()" id="plugin-log-output" class="modal-body"></div>
 
-  @if (!restoreStarted || restoreFailed === true) {
+  @if (!restoreStarted() || restoreFailed() === true) {
   <div class="modal-footer justify-content-between">
     <div class="text-start">
       @if (setupWizardRestore) {
@@ -47,7 +47,7 @@
         data-bs-dismiss="modal"
         (click)="dismissModal()"
         [attr.aria-label]="'form.button_close' | translate"
-        [disabled]="clicked"
+        [disabled]="clicked()"
       >
         {{ 'form.button_close' | translate }}
       </button>
@@ -58,7 +58,7 @@
         data-bs-dismiss="modal"
         (click)="reopenBackupModal()"
         [attr.aria-label]="'form.button_back' | translate"
-        [disabled]="clicked"
+        [disabled]="clicked()"
       >
         {{ 'form.button_back' | translate }}
       </button>
@@ -71,25 +71,25 @@
         class="btn btn-primary"
         data-bs-dismiss="modal"
         (click)="onRestoreBackupClick()"
-        [disabled]="(!selectedBackup && !selectedFile) || clicked"
+        [disabled]="(!selectedBackup && !selectedFile()) || clicked()"
       >
-        @if (clicked) {
+        @if (clicked()) {
         <span>
-          @if (!uploadPercent || uploadPercent === 100) {
+          @if (!uploadPercent() || uploadPercent() === 100) {
           <i class="fa fa-circle-notch fa-spin"></i>
-          } @if (uploadPercent && uploadPercent !== 100) {
-          <span>{{ uploadPercent }}% - </span>
-          } @if (uploadPercent === 100) {
+          } @if (uploadPercent() && uploadPercent() !== 100) {
+          <span>{{ uploadPercent() }}% - </span>
+          } @if (uploadPercent() === 100) {
           <span>{{ 'backup.label_extracting' | translate }}</span>
-          } @if (uploadPercent !== 100) {
+          } @if (uploadPercent() !== 100) {
           <span>{{ 'backup.label_uploading' | translate }}</span>
           }
         </span>
-        } @if (!clicked) { {{ 'form.button_restore' | translate }} }
+        } @if (!clicked()) { {{ 'form.button_restore' | translate }} }
       </button>
     </div>
   </div>
-  } @if (!restoreInProgress && restoreStarted) {
+  } @if (!restoreInProgress() && restoreStarted) {
   <div class="modal-footer justify-content-between">
     <div class="text-start"></div>
     <div class="text-center">

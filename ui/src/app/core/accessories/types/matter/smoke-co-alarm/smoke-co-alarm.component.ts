@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core'
+import { Component, computed, input } from '@angular/core'
 import { TranslatePipe } from '@ngx-translate/core'
 
 import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
@@ -14,9 +14,7 @@ import { isSmokeCoAlarmTriggered } from '@/app/core/accessories/types/matter/mat
   ],
 })
 export class MatterSmokeCoAlarmComponent {
-  @Input() public service: ServiceTypeX
+  public service = input.required<ServiceTypeX>()
 
-  public get isTriggered(): boolean {
-    return isSmokeCoAlarmTriggered(this.service)
-  }
+  public isTriggered = computed(() => isSmokeCoAlarmTriggered(this.service()))
 }

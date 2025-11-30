@@ -1,11 +1,11 @@
 <div
   class="accessory-box"
   [class]="{
-    'accessory-on': service.values.SecuritySystemCurrentState !== 3,
-    'home': service.values.SecuritySystemCurrentState === 0,
-    'away': service.values.SecuritySystemCurrentState === 1,
-    'night': service.values.SecuritySystemCurrentState === 2,
-    'triggered': service.values.SecuritySystemCurrentState === 4,
+    'accessory-on': service().values?.SecuritySystemCurrentState !== 3,
+    'home': service().values?.SecuritySystemCurrentState === 0,
+    'away': service().values?.SecuritySystemCurrentState === 1,
+    'night': service().values?.SecuritySystemCurrentState === 2,
+    'triggered': service().values?.SecuritySystemCurrentState === 4,
   }"
   (longClick)="onClick()"
   (shortClick)="onClick()"
@@ -31,8 +31,8 @@
         <line class="ray" x1="26" y1="3" x2="22" y2="7" stroke-width="3" />
       </svg>
     </div>
-    <div class="accessory-label mt-auto">{{ service.customName || service.serviceName }}</div>
-    @switch (service.values.SecuritySystemCurrentState) { @case (0) {
+    <div class="accessory-label mt-auto">{{ service().customName || service().serviceName }}</div>
+    @switch (service().values?.SecuritySystemCurrentState) { @case (0) {
     <div class="accessory-label grey-text">{{ 'accessories.control.home' | translate }}</div>
     } @case (1) {
     <div class="accessory-label grey-text">{{ 'accessories.control.away' | translate }}</div>

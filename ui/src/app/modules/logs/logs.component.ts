@@ -1,18 +1,21 @@
-import { HttpErrorResponse, HttpResponse } from '@angular/common/http'
-import { Component, ElementRef, HostListener, inject, OnDestroy, OnInit, signal, viewChild } from '@angular/core'
+import { HttpResponse } from '@angular/common/http'
+import { Component, createEnvironmentInjector, DestroyRef, ElementRef, EnvironmentInjector, HostListener, inject, OnDestroy, OnInit, signal, viewChild } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms'
-import { NgbModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap'
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
+import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap/tooltip'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { saveAs } from 'file-saver'
 import { ToastrService } from 'ngx-toastr'
-import { Observable, Subject, Subscription } from 'rxjs'
+import { Observable, Subject } from 'rxjs'
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators'
 
-import { ApiService } from '@/app/core/api.service'
 import { AuthService } from '@/app/core/auth/auth.service'
+import { ApiService } from '@/app/core/communication/api.service'
 import { ConfirmComponent } from '@/app/core/components/confirm/confirm.component'
-import { LogService } from '@/app/core/log.service'
-import { SettingsService } from '@/app/core/settings.service'
+import { CONFIRM_MODAL_DATA } from '@/app/core/modal-data-tokens'
+import { SettingsService } from '@/app/core/ui/settings.service'
+import { LogService } from '@/app/core/utilities/log.service'
 
 export interface CanComponentDeactivate {
   canDeactivate: (nextUrl?: string) => Observable<boolean> | Promise<boolean> | boolean
@@ -25,6 +28,8 @@ export interface CanComponentDeactivate {
   imports: [NgbTooltip, TranslatePipe, ReactiveFormsModule],
 })
 export class LogsComponent implements OnInit, OnDestroy, CanComponentDeactivate {
+  private destroyRef = inject(DestroyRef)
+  private injector = inject(EnvironmentInjector)
   private $api = inject(ApiService)
   private $auth = inject(AuthService)
   private $log = inject(LogService)
@@ -37,7 +42,6 @@ export class LogsComponent implements OnInit, OnDestroy, CanComponentDeactivate 
   readonly searchInput = viewChild<ElementRef>('searchInput')
 
   private resizeEvent = new Subject<void>()
-  private valueChangesSubscription?: Subscription
 
   public isAdmin = this.$auth.user.admin
   public showSearchBar = signal(false)
@@ -52,7 +56,7 @@ export class LogsComponent implements OnInit, OnDestroy, CanComponentDeactivate 
     return query.length > 0 && query.length < 3
   }
 
-  @HostListener('window:resize', ['$event'])
+  @HostListener('window:resize')
   onWindowResize() {
     this.resizeEvent.next(undefined)
   }
@@ -80,9 +84,10 @@ export class LogsComponent implements OnInit, OnDestroy, CanComponentDeactivate 
     }, this.resizeEvent)
 
     // Watch for changes in the search query
-    this.valueChangesSubscription = this.form.get('query')?.valueChanges.pipe(
+    this.form.get('query')?.valueChanges.pipe(
       debounceTime(500),
       distinctUntilChanged(),
+      takeUntilDestroyed(this.destroyRef),
     ).subscribe((value) => {
       const query = value || ''
 
@@ -203,11 +208,6 @@ export class LogsComponent implements OnInit, OnDestroy, CanComponentDeactivate 
     // Clean up light-mode class
     window.document.querySelector('body').classList.remove('light-mode')
 
-    // Unsubscribe from form changes
-    if (this.valueChangesSubscription) {
-      this.valueChangesSubscription.unsubscribe()
-    }
-
     // Complete resize subject
     this.resizeEvent.complete()
 
@@ -215,63 +215,95 @@ export class LogsComponent implements OnInit, OnDestroy, CanComponentDeactivate 
     this.$log.destroyTerminal()
   }
 
-  public downloadLogFile(): void {
+  public async downloadLogFile(): Promise<void> {
+    const injector = createEnvironmentInjector([{
+      provide: CONFIRM_MODAL_DATA,
+      useValue: {
+        title: this.$translate.instant('logs.title_download_log_file'),
+        message: this.$translate.instant('logs.download_warning'),
+        confirmButtonLabel: this.$translate.instant('form.button_download'),
+        faIconClass: 'fas fa-user-secret primary-text',
+      },
+    }], this.injector)
+
     const ref = this.$modal.open(ConfirmComponent, {
       size: 'lg',
       backdrop: 'static',
+      injector,
     })
-    ref.componentInstance.title = this.$translate.instant('logs.title_download_log_file')
-    ref.componentInstance.message = this.$translate.instant('logs.download_warning')
-    ref.componentInstance.confirmButtonLabel = this.$translate.instant('form.button_download')
-    ref.componentInstance.faIconClass = 'fas fa-user-secret primary-text'
 
-    ref.result
-      .then(() => {
-        this.$api.get('/platform-tools/hb-service/log/download', { observe: 'response', responseType: 'blob' }).subscribe({
-          next: (res: HttpResponse<any>) => {
-            saveAs(res.body, 'homebridge.log.txt')
-          },
-          error: async (err: HttpErrorResponse) => {
-            let message: string
-            try {
-              message = JSON.parse(await err.error.text()).message
-            } catch (error) {
-              console.error(error)
-            }
-            this.$toastr.error(message || this.$translate.instant('logs.download.error'), this.$translate.instant('toast.title_error'))
-          },
-        })
-      })
-      .catch(() => { /* do nothing */ })
+    try {
+      await ref.result
+      try {
+        const res = await this.$api.get('/platform-tools/hb-service/log/download', { observe: 'response', responseType: 'blob' }) as HttpResponse<Blob>
+
+        // If search is active, filter the log content
+        const searchFilter = this.$log.getSearchFilter()
+        if (searchFilter) {
+          const logText = await res.body.text()
+          const filteredLines = logText.split('\n').filter((line: string) => {
+            // eslint-disable-next-line no-control-regex, unicorn/escape-case
+            const cleanLine = line.replace(/\x1b\[[0-9;]*m/g, '').toLowerCase()
+            return cleanLine.includes(searchFilter.toLowerCase())
+          })
+          const filteredBlob = new Blob([filteredLines.join('\n')], { type: 'text/plain' })
+          saveAs(filteredBlob, 'homebridge.log.txt')
+        } else {
+          saveAs(res.body, 'homebridge.log.txt')
+        }
+      } catch (err) {
+        let message: string | undefined
+        try {
+          if (err && typeof err === 'object' && 'error' in err) {
+            const errorText = await (err as { error: Blob }).error.text()
+            message = JSON.parse(errorText).message
+          }
+        } catch (error) {
+          console.error(error)
+        }
+        this.$toastr.error(message || this.$translate.instant('logs.download.error'), this.$translate.instant('toast.title_error'))
+      }
+    } catch {
+      // Modal dismissed, do nothing
+    }
   }
 
-  public truncateLogFile(): void {
+  public async truncateLogFile(): Promise<void> {
+    const injector = createEnvironmentInjector([{
+      provide: CONFIRM_MODAL_DATA,
+      useValue: {
+        title: this.$translate.instant('logs.title_truncate_log_file'),
+        message: this.$translate.instant('logs.truncate_log_warning'),
+        confirmButtonLabel: this.$translate.instant('form.button_delete'),
+        confirmButtonClass: 'btn-danger',
+        faIconClass: 'fas fa-circle-exclamation primary-text',
+      },
+    }], this.injector)
+
     const ref = this.$modal.open(ConfirmComponent, {
       size: 'lg',
       backdrop: 'static',
+      injector,
     })
-    ref.componentInstance.title = this.$translate.instant('logs.title_truncate_log_file')
-    ref.componentInstance.message = this.$translate.instant('logs.truncate_log_warning')
-    ref.componentInstance.confirmButtonLabel = this.$translate.instant('form.button_delete')
-    ref.componentInstance.confirmButtonClass = 'btn-danger'
-    ref.componentInstance.faIconClass = 'fas fa-circle-exclamation primary-text'
 
-    ref.result
-      .then(() => {
-        this.$api.put('/platform-tools/hb-service/log/truncate', {}).subscribe({
-          next: () => {
-            this.$toastr.success(
-              this.$translate.instant('logs.log_file_truncated'),
-              this.$translate.instant('toast.title_success'),
-            )
-            this.$log.term.clear()
-          },
-          error: (error: HttpErrorResponse) => {
-            console.error(error)
-            this.$toastr.error(error.error?.message || this.$translate.instant('logs.truncate.error'), this.$translate.instant('toast.title_error'))
-          },
-        })
-      })
-      .catch(() => { /* do nothing */ })
+    try {
+      await ref.result
+      try {
+        await this.$api.put('/platform-tools/hb-service/log/truncate', {})
+        this.$toastr.success(
+          this.$translate.instant('logs.log_file_truncated'),
+          this.$translate.instant('toast.title_success'),
+        )
+        this.$log.term.clear()
+      } catch (error) {
+        console.error(error)
+        const message = (error && typeof error === 'object' && 'error' in error && error.error && typeof error.error === 'object' && 'message' in error.error)
+          ? String(error.error.message)
+          : this.$translate.instant('logs.truncate.error')
+        this.$toastr.error(message, this.$translate.instant('toast.title_error'))
+      }
+    } catch {
+      // Modal dismissed, do nothing
+    }
   }
 }

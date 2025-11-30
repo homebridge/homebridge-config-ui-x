@@ -1,13 +1,13 @@
 <div
   class="accessory-box"
-  [class.accessory-on]="currentPosition > 0"
+  [class.accessory-on]="currentPosition() > 0"
   (longClick)="onLongClick()"
   (shortClick)="onClick()"
   tabindex="0"
 >
   <div class="d-flex flex-column h-100">
     <!-- Window Covering Icon -->
-    @if (isWindowCovering) {
+    @if (isWindowCovering()) {
     <div [attr.aria-label]="'accessories.core.window_covering' | translate" class="accessory-svg">
       <svg width="32px" height="32px" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
         <!-- outer frame -->
@@ -50,7 +50,7 @@
     </div>
     }
     <!-- Door Icon -->
-    @if (isDoor) {
+    @if (isDoor()) {
     <div [attr.aria-label]="'accessories.core.door' | translate" class="accessory-svg">
       <svg width="32px" height="32px" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
         <!-- outer frame -->
@@ -108,7 +108,7 @@
     </div>
     }
     <!-- Window Icon -->
-    @if (isWindow) {
+    @if (isWindow()) {
     <div [attr.aria-label]="'accessories.core.window' | translate" class="accessory-svg">
       <svg width="32px" height="32px" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
         <!-- outer frame -->
@@ -186,11 +186,13 @@
       </svg>
     </div>
     }
-    <div class="accessory-label mt-auto">{{ service.customName || service.serviceName || service.displayName }}</div>
+    <div class="accessory-label mt-auto">
+      {{ service().customName || service().serviceName || service().displayName }}
+    </div>
     <div class="accessory-label grey-text">
-      @if (currentPosition === 0) { {{ 'accessories.control.closed' | translate }} } @else if (currentPosition === 100)
-      { {{ 'accessories.control.open' | translate }} } @else { {{ 'accessories.control.open' | translate }} {{
-      currentPosition }}% }
+      @if (currentPosition() === 0) { {{ 'accessories.control.closed' | translate }} } @else if (currentPosition() ===
+      100) { {{ 'accessories.control.open' | translate }} } @else { {{ 'accessories.control.open' | translate }} {{
+      currentPosition() }}% }
     </div>
   </div>
 </div>

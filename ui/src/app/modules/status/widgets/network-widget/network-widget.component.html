@@ -1,6 +1,6 @@
 <div class="flex-column d-flex align-items-stretch h-100 w-100 pb-1">
-  <div class="drag-handler p-2" [class.widget-cursor]="widget.draggable">
-    {{ 'status.network.title_network' | translate }} ({{ this.widget.networkInterface }})
+  <div class="drag-handler p-2" [class.widget-cursor]="widget().draggable">
+    {{ 'status.network.title_network' | translate }} ({{ widget().networkInterface }})
   </div>
   <canvas
     class="widget-chart h-100 w-100"
@@ -15,7 +15,7 @@
     <div class="d-flex justify-content-around flex-wrap w-100">
       <div class="text-center widget-value-parent-wrap">
         <div class="widget-value mb-0">
-          @if (receivedPerSec !== undefined) { {{ receivedPerSec | number: '1.0-1' }} Mb/s } @else {
+          @if (receivedPerSec() !== undefined) { {{ receivedPerSec() | number: '1.0-1' }} Mb/s } @else {
           <i class="fas fa-circle-notch fa-spin"></i>
           }
         </div>
@@ -23,7 +23,7 @@
       </div>
       <div class="text-center widget-value-parent-wrap">
         <div class="widget-value mb-0">
-          @if (sentPerSec !== undefined) { {{ sentPerSec | number: '1.0-1' }} Mb/s } @else {
+          @if (sentPerSec() !== undefined) { {{ sentPerSec() | number: '1.0-1' }} Mb/s } @else {
           <i class="fas fa-circle-notch fa-spin"></i>
           }
         </div>

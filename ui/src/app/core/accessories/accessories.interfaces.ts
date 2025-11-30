@@ -303,7 +303,7 @@ export interface MatterFanControlCluster extends Record<string, unknown> {
  */
 export interface MatterThermostatCluster extends Record<string, unknown> {
   // Temperature measurements
-  localTemperature: number | null // read-only, hundredths of °C, auto-populated from externalMeasuredIndoorTemperature or TemperatureMeasurement cluster
+  localTemperature: number | null // read-only, hundredths of °C, autopopulated from externalMeasuredIndoorTemperature or TemperatureMeasurement cluster
   externalMeasuredIndoorTemperature?: number | null // writable state for external temperature sensor (hundredths of °C)
   outdoorTemperature?: number | null
 
@@ -370,6 +370,34 @@ export interface MatterClusters extends Record<string, unknown> {
   thermostat?: MatterThermostatCluster
 }
 
+/**
+ * HAP Accessory Slider Control Configuration
+ * Used for slider controls in manage components (brightness, volume, rotation speed, etc.)
+ */
+export interface SliderControlConfig {
+  value: number
+  min?: number
+  max?: number
+  step?: number
+  unit?: 'unit' | 'percentage' | 'celsius' | 'arcdegrees' | 'lux' | 'seconds'
+}
+
+/**
+ * HAP Accessory Simple Value Control Configuration
+ * Used for simple numeric controls without min/max/step (hue, saturation)
+ */
+export interface SimpleValueControlConfig {
+  value: number
+}
+
+/**
+ * HAP Accessory Color Temperature Control Configuration
+ * Includes both Kelvin and Mired values for color temperature
+ */
+export interface ColorTemperatureControlConfig extends SliderControlConfig {
+  mired: number
+}
+
 export type ServiceTypeX = ServiceType & {
   customName?: string
   customType?: string
@@ -389,3 +417,34 @@ export type ServiceTypeX = ServiceType & {
     setAttributes: (attributes: Record<string, unknown>) => Promise<void>
   } | null
 }
+
+/**
+ * Accessory Info Component Interfaces
+ */
+export interface CharacteristicInfo {
+  displayName: string
+  value: string | number
+}
+
+export interface ServiceInfo {
+  constructorName: string
+  characteristics: CharacteristicInfo[]
+}
+
+export interface CachedAccessoryWithServices {
+  $cacheFile?: string
+  services: ServiceInfo[]
+  plugin: string
+  platform: string
+  accessory: string
+  UUID: string
+}
+
+export interface PairingInfo {
+  _username: string
+  _main?: boolean
+  _id: string
+  name: string
+}
+
+export type MatchedCachedAccessory = (CachedAccessoryWithServices & { bridge: string }) | null

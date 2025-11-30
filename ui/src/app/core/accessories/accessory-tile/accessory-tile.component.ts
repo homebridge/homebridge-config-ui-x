@@ -1,4 +1,4 @@
-import { Component, inject, Input } from '@angular/core'
+import { Component, inject, input } from '@angular/core'
 import { TranslatePipe } from '@ngx-translate/core'
 
 import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
@@ -129,5 +129,5 @@ import { MatterWindowCoveringComponent } from '@/app/core/accessories/types/matt
 export class AccessoryTileComponent {
   $accessories = inject(AccessoriesService)
 
-  @Input() public service: ServiceTypeX
+  public service = input.required<ServiceTypeX>()
 }

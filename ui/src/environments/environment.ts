@@ -3,9 +3,10 @@
 // `ng build --env=prod` then `environment.prod.ts` will be used instead.
 // The list of which env maps to which file can be found in `.angular-cli.json`.
 
+import packageJson from '../../../package.json'
+
 export const environment = {
-  // eslint-disable-next-line ts/no-require-imports
-  serverTarget: require('../../../package.json').version,
+  serverTarget: packageJson.version,
   production: false,
   api: {
     base: 'http://localhost:8581/api',

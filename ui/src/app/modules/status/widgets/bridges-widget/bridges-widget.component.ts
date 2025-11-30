@@ -1,15 +1,16 @@
-import { Component, inject, Input, OnDestroy, OnInit } from '@angular/core'
-import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap'
+import { Component, DestroyRef, inject, input, OnDestroy, OnInit, signal } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
+import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap/tooltip'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
 import { firstValueFrom } from 'rxjs'
 
-import { ApiService } from '@/app/core/api.service'
 import { AuthService } from '@/app/core/auth/auth.service'
-import { ChildBridgeStatusResponse, HomebridgeStatusResponse } from '@/app/core/server.interfaces'
-import { SettingsService } from '@/app/core/settings.service'
-import { IoNamespace, WsService } from '@/app/core/ws.service'
-import { Widget } from '@/app/modules/status/widgets/widgets.interfaces'
+import { ApiService } from '@/app/core/communication/api.service'
+import { IoNamespace, WsService } from '@/app/core/communication/ws.service'
+import { ChildBridgeStatusResponse, HomebridgeStatus, HomebridgeStatusResponse } from '@/app/core/server.interfaces'
+import { SettingsService } from '@/app/core/ui/settings.service'
+import { ChildBridgeWithUIState, Widget } from '@/app/modules/status/widgets/widgets.interfaces'
 
 @Component({
   templateUrl: './bridges-widget.component.html',
@@ -21,100 +22,145 @@ import { Widget } from '@/app/modules/status/widgets/widgets.interfaces'
   ],
 })
 export class BridgesWidgetComponent implements OnInit, OnDestroy {
+  // Injected dependencies
+  private destroyRef = inject(DestroyRef)
   private $api = inject(ApiService)
   private $auth = inject(AuthService)
   private $settings = inject(SettingsService)
   private $toastr = inject(ToastrService)
   private $translate = inject(TranslateService)
   private $ws = inject(WsService)
+
+  // Signals
+  widget = input.required<Widget>()
+  public homebridgeStatus = signal<Partial<HomebridgeStatusResponse & { name?: string }> | null>(null)
+  public childBridges = signal<ChildBridgeWithUIState[]>([])
+  public isRestarting = signal<boolean>(false)
+
+  // Other properties
   private ioMain: IoNamespace
   private ioChild: IoNamespace
-
-  @Input() widget: Widget
-
-  public homebridgeStatus = {} as any
-  public childBridges = []
-  public isRestarting = false
   public isAdmin = this.$auth.user.admin
   public isMatterSupported = this.$settings.isFeatureEnabled('matterSupport')
 
-  public async ngOnInit(): Promise<void> {
-    this.ioMain = this.$ws.getExistingNamespace('status')
+  public ngOnInit(): void {
+    void this.initialize()
+  }
+
+  private async initialize(): Promise<void> {
+    this.ioMain = this.$ws.connectToNamespace('status')
+
     this.ioMain.socket.on('homebridge-status', (data: HomebridgeStatusResponse) => {
-      this.homebridgeStatus = data
+      this.homebridgeStatus.set(data)
       if (data.status === 'ok') {
-        this.isRestarting = false
+        this.isRestarting.set(false)
       }
     })
-    this.ioMain.connected.subscribe(async () => {
-      await this.getHomebridgeStatus()
+
+    this.ioMain.connected.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+      this.getHomebridgeStatus()
     })
-    if (this.ioMain.socket.connected) {
-      await this.getHomebridgeStatus()
-    }
+
     this.ioMain.socket.on('disconnect', () => {
-      this.homebridgeStatus.status = 'down'
+      this.homebridgeStatus.update(status => ({ ...status, status: HomebridgeStatus.DOWN }))
     })
 
     this.ioChild = this.$ws.connectToNamespace('child-bridges')
-    this.ioChild.connected.subscribe(async () => {
+
+    this.ioChild.connected.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
       this.getChildBridgeMetadata()
       this.ioChild.socket.emit('monitor-child-bridge-status')
     })
+
     this.ioChild.socket.on('child-bridge-status-update', (data: ChildBridgeStatusResponse) => {
-      const existingBridge = this.childBridges.find(x => x.username === data.username)
-      if (existingBridge) {
-        Object.assign(existingBridge, data)
-        if (data.status === 'ok') {
-          existingBridge.restarting = false
+      this.childBridges.update((bridges) => {
+        const existingIndex = bridges.findIndex(x => x.username === data.username)
+        if (existingIndex !== -1) {
+          const updated = [...bridges]
+          updated[existingIndex] = {
+            ...updated[existingIndex],
+            ...data,
+            restarting: data.status === 'ok' ? false : updated[existingIndex].restarting,
+          } as ChildBridgeWithUIState
+          return updated
+        } else {
+          return [...bridges, { ...data, restarting: false } as ChildBridgeWithUIState].sort((a, b) => a.name.localeCompare(b.name))
         }
-      } else {
-        this.childBridges.push(data)
-        this.childBridges.sort((a, b) => a.name.localeCompare(b.name))
-      }
+      })
     })
+
+    // Fetch initial data if already connected
+    if (this.ioMain.socket.connected) {
+      void this.getHomebridgeStatus()
+    }
+
+    if (this.ioChild.socket.connected) {
+      this.getChildBridgeMetadata()
+      this.ioChild.socket.emit('monitor-child-bridge-status')
+    }
   }
 
-  public async restartChildBridge(bridge: any) {
+  public async restartChildBridge(bridge: ChildBridgeWithUIState): Promise<void> {
     try {
-      bridge.restarting = true
+      this.childBridges.update((bridges) => {
+        const updated = [...bridges]
+        const index = updated.findIndex(x => x.username === bridge.username)
+        if (index !== -1) {
+          updated[index] = { ...updated[index], restarting: true } as ChildBridgeWithUIState
+        }
+        return updated
+      })
+
       await firstValueFrom(this.ioChild.request('restart-child-bridge', bridge.username))
     } catch (error) {
       console.error(error)
       this.$toastr.error(this.$translate.instant('status.widget.bridge.restart_error'), this.$translate.instant('toast.title_error'))
     } finally {
       setTimeout(() => {
-        bridge.restarting = false
+        this.childBridges.update((bridges) => {
+          const updated = [...bridges]
+          const index = updated.findIndex(x => x.username === bridge.username)
+          if (index !== -1) {
+            updated[index] = { ...updated[index], restarting: false } as ChildBridgeWithUIState
+          }
+          return updated
+        })
       }, 15000)
     }
   }
 
-  public restartHomebridge() {
-    this.isRestarting = true
-    this.$api.put('/server/restart', {}).subscribe({
-      error: (error: any) => {
-        console.error(error)
-        this.$toastr.error(this.$translate.instant('restart.toast_server_restart_error'), this.$translate.instant('toast.title_error'))
-      },
-    })
-    setTimeout(() => {
-      this.isRestarting = false
-    }, 15000)
+  public async restartHomebridge(): Promise<void> {
+    this.isRestarting.set(true)
+    try {
+      await this.$api.put('/server/restart', {})
+    } catch (error: any) {
+      console.error(error)
+      this.$toastr.error(this.$translate.instant('restart.toast_server_restart_error'), this.$translate.instant('toast.title_error'))
+    } finally {
+      setTimeout(() => {
+        this.isRestarting.set(false)
+      }, 15000)
+    }
   }
 
   public ngOnDestroy(): void {
-    this.ioMain.end()
-    this.ioChild.end()
+    if (this.ioMain) {
+      this.ioMain.end()
+    }
+    if (this.ioChild) {
+      this.ioChild.end()
+    }
   }
 
-  private async getHomebridgeStatus() {
-    this.homebridgeStatus = await firstValueFrom(this.ioMain.request('get-homebridge-status'))
+  private async getHomebridgeStatus(): Promise<void> {
+    const data = await firstValueFrom(this.ioMain.request('get-homebridge-status'))
+    this.homebridgeStatus.set(data)
   }
 
-  private getChildBridgeMetadata() {
-    this.ioChild.request('get-homebridge-child-bridge-status').subscribe((data: ChildBridgeStatusResponse[]) => {
-      this.childBridges = data
-      this.childBridges = data.sort((a, b) => a.name.localeCompare(b.name))
-    })
+  private getChildBridgeMetadata(): void {
+    this.ioChild.request('get-homebridge-child-bridge-status')
+      .subscribe((data: ChildBridgeStatusResponse[]) => {
+        this.childBridges.set(data.map(bridge => ({ ...bridge, restarting: false })).sort((a, b) => a.name.localeCompare(b.name)))
+      })
   }
 }

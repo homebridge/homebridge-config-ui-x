@@ -1,6 +1,6 @@
 <div
   class="accessory-box"
-  [class.accessory-on]="service.values.Active || service.values.On"
+  [class.accessory-on]="service().values?.Active || service().values?.On"
   (longClick)="onLongClick()"
   (shortClick)="onClick()"
   tabindex="0"
@@ -35,11 +35,11 @@
       </svg>
     </div>
     <div class="accessory-label mt-auto">
-      {{ service.customName || service.values.ConfiguredName || service.serviceName }}
+      {{ service().customName || service().values?.ConfiguredName || service().serviceName }}
     </div>
-    @if (service.values.On || service.values.Active) {
+    @if (service().values?.On || service().values?.Active) {
     <div class="accessory-label grey-text">
-      {{ channelList[service.values.ActiveIdentifier] || ('accessories.control.on' | translate) }}
+      {{ channelList[service().values?.ActiveIdentifier] || ('accessories.control.on' | translate) }}
     </div>
     } @else {
     <div class="accessory-label grey-text">{{ 'accessories.control.off' | translate }}</div>

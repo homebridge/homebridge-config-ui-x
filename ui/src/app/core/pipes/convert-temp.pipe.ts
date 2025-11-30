@@ -1,6 +1,6 @@
 import { inject, Pipe, PipeTransform } from '@angular/core'
 
-import { SettingsService } from '@/app/core/settings.service'
+import { SettingsService } from '@/app/core/ui/settings.service'
 
 @Pipe({
   name: 'convertTemp',

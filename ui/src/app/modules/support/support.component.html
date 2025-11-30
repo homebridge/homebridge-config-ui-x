@@ -6,17 +6,20 @@
   <div
     role="button"
     tabindex="0"
-    [attr.aria-expanded]="showFields.general ? 'true' : 'false'"
+    [attr.aria-expanded]="showFields().general ? 'true' : 'false'"
     [attr.aria-controls]="'fieldsGeneral'"
     (click)="toggleSection('general')"
     class="mt-3 hover-pointer"
   >
     <h5 class="primary-text">
-      <i class="fa" [class]="{ 'fa-chevron-down': showFields.general, 'fa-chevron-right' : !showFields.general }"></i>
+      <i
+        class="fa"
+        [class]="{ 'fa-chevron-down': showFields().general, 'fa-chevron-right' : !showFields().general }"
+      ></i>
       {{ 'support.links.title' | translate }}
     </h5>
   </div>
-  @if (showFields.general) {
+  @if (showFields().general) {
   <ul class="list-group list-group-box mt-2 mx-0" id="fieldsGeneral">
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <span class="pe-2">
@@ -89,17 +92,17 @@
   <div
     role="button"
     tabindex="0"
-    [attr.aria-expanded]="showFields.dev ? 'true' : 'false'"
+    [attr.aria-expanded]="showFields().dev ? 'true' : 'false'"
     [attr.aria-controls]="'fieldsDev'"
     (click)="toggleSection('dev')"
     class="mt-3 hover-pointer"
   >
     <h5 class="primary-text">
-      <i class="fa" [class]="{ 'fa-chevron-down': showFields.dev, 'fa-chevron-right' : !showFields.dev }"></i>
+      <i class="fa" [class]="{ 'fa-chevron-down': showFields().dev, 'fa-chevron-right' : !showFields().dev }"></i>
       {{ 'support.dev.title' | translate }}
     </h5>
   </div>
-  @if (showFields.dev) {
+  @if (showFields().dev) {
   <ul class="list-group list-group-box mt-2 mx-0" id="fieldsDev">
     <li class="list-group-item d-flex justify-content-between align-items-center">
       <span class="pe-2">

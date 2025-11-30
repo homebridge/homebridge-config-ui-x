@@ -1,20 +1,21 @@
 <div class="flex-column d-flex align-items-stretch h-100 w-100 pb-1 overflow-auto no-scrollbars">
-  <div class="drag-handler p-2" [class.widget-cursor]="widget.draggable">
+  <div class="drag-handler p-2" [class.widget-cursor]="widget().draggable">
     {{ 'menu.label_accessories' | translate }}
   </div>
-  @if (dashboardAccessories.length) {
+  @if (dashboardAccessories().length) {
   <div
     class="d-flex flex-wrap gridster-item-content"
     [dragula]='"widget-accessories-bag"'
-    [(dragulaModel)]="dashboardAccessories"
+    [dragulaModel]="dashboardAccessories()"
+    (dragulaModelChange)="dashboardAccessories.set($event)"
   >
-    @for (service of dashboardAccessories; track service) { @if (!service.hidden) {
+    @for (service of dashboardAccessories(); track service) { @if (!service.hidden) {
     <div class="accessory-item accessory-widget-box noselect">
       <app-accessory-tile [service]="service" />
     </div>
     } }
   </div>
-  } @if (loaded && !dashboardAccessories.length) {
+  } @if (loaded() && !dashboardAccessories().length) {
   <div class="d-flex flex-row flex-grow-1 align-items-center w-100 gridster-item-content text-center">
     <div class="d-flex flex-column w-100 pb-2">
       <h1><i class="fas fa-user-cog"></i></h1>

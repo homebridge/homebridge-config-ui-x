@@ -119,6 +119,73 @@
       }
     }
 
+    .icon-button-reset {
+      background: none;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      color: inherit;
+
+      @media (hover: hover) {
+        &:hover {
+          color: $primary !important;
+        }
+      }
+    }
+
+    .widget-control-button {
+      background: none;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      color: inherit;
+      position: absolute;
+      top: 2px;
+      right: 2px;
+      z-index: 100;
+      padding: 5px;
+      border-radius: 3px;
+
+      @media (hover: hover) {
+        &:hover {
+          color: $primary !important;
+          background-color: rgba(0, 0, 0, 0.05);
+        }
+      }
+    }
+
+    .manage-accessory-button {
+      background: none;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      color: inherit;
+
+      @media (hover: hover) {
+        &:hover i {
+          color: $primary !important;
+        }
+      }
+    }
+
+    .search-bar-clear {
+      background: none;
+      border: none;
+      padding: 0;
+      cursor: pointer;
+      color: inherit;
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+
+      @media (hover: hover) {
+        &:hover {
+          color: $primary !important;
+        }
+      }
+    }
+
     .hb-uix-switch {
       .hb-uix-slider {
         border-color: $primary !important;

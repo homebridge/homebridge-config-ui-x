@@ -7,7 +7,7 @@
       data-bs-dismiss="modal"
       [attr.aria-label]="'form.button_close' | translate"
       (click)="dismissModal()"
-      [disabled]="clicked"
+      [disabled]="clicked()"
     ></button>
   </div>
   <div class="modal-body">
@@ -30,7 +30,7 @@
         data-bs-dismiss="modal"
         (click)="dismissModal()"
         [attr.aria-label]="'form.button_close' | translate"
-        [disabled]="clicked"
+        [disabled]="clicked()"
       >
         {{ 'form.button_close' | translate }}
       </button>
@@ -42,9 +42,9 @@
         class="btn btn-danger"
         data-bs-dismiss="modal"
         (click)="onResetHomebridgeAccessoryClick()"
-        [disabled]="clicked"
+        [disabled]="clicked()"
       >
-        @if (!clicked) { {{ 'form.button_reset' | translate }} } @if (clicked) {
+        @if (!clicked()) { {{ 'form.button_reset' | translate }} } @if (clicked()) {
         <i class="fas fa-circle-notch fa-spin"></i>
         }
       </button>

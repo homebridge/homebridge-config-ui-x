@@ -1,12 +1,12 @@
 <div class="d-flex w-100 p-2">
   <div #qrcodecontainer class="drag-handler d-flex flex-column w-100 h-100">
-    <div class="w-100" [style.height.px]="qrCodeHeight" [style.width.px]="qrCodeWidth">
+    <div class="w-100" [style.height.px]="qrCodeHeight()" [style.width.px]="qrCodeWidth()">
       <div class="text-center qr-code-container w-100 h-100 p-3">
         <div class="w-100 h-100">
-          @if (setupUri) {
-          <app-qrcode [data]="setupUri" class="mx-auto" />
+          @if (setupUri()) {
+          <app-qrcode [data]="setupUri()" class="mx-auto" />
           } @else {
-          <div class="d-flex align-items-center justify-content-center w-100 h-100">
+          <div class="d-flex align-items-center justify-content-center w-100 h-100" style="min-height: 200px">
             <i class="fas fa-circle-notch fa-spin fa-2xl grey-text"></i>
           </div>
           }
@@ -15,18 +15,18 @@
     </div>
     <div #pincode class="text-center w-100 mt-auto gridster-item-content">
       <p class="mb-1">
-        <span class="font-monospace">{{ pin }}</span>
+        <span class="font-monospace">{{ pin() }}</span>
       </p>
       <p class="grey-text mb-1 small">
-        <i class="fas fa-hap"></i> HAP @if (pin) { &middot;
+        <i class="fas fa-hap"></i> HAP @if (pin()) { &middot;
         <i
           class="fas fa-link"
           [class]="{
-            'green-text': paired,
-            'grey-text': !paired
+            'green-text': paired(),
+            'grey-text': !paired()
           }"
         ></i>
-        {{ (paired ? 'status.widget.qr_paired' : 'status.widget.qr_unpaired') | translate }} @if (!paired) {
+        {{ (paired() ? 'status.widget.qr_paired' : 'status.widget.qr_unpaired') | translate }} @if (!paired()) {
         <br />
         <small>{{ 'status.code_scan' | translate }}</small>
         } }

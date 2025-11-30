@@ -1,15 +1,12 @@
 import type { CharacteristicType } from '@homebridge/hap-client'
 
-import { Component, inject, Input, OnDestroy, OnInit } from '@angular/core'
+import { ChangeDetectionStrategy, Component, input } from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
 import { TranslatePipe } from '@ngx-translate/core'
 import { NouisliderComponent } from 'ng2-nouislider'
-import { Subject, Subscription } from 'rxjs'
-import { debounceTime } from 'rxjs/operators'
+import { Subject } from 'rxjs'
 
-import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
-import { AccessoriesService } from '@/app/core/accessories/accessories.service'
+import { BaseManageComponent } from '@/app/core/accessories/types/base-manage.component'
 
 @Component({
   templateUrl: './humidifier-dehumidifier.manage.component.html',
@@ -19,15 +16,10 @@ import { AccessoriesService } from '@/app/core/accessories/accessories.service'
     NouisliderComponent,
     TranslatePipe,
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class HumidifierDehumidifierManageComponent implements OnInit, OnDestroy {
-  private $activeModal = inject(NgbActiveModal)
-
-  @Input() public service: ServiceTypeX
-  @Input() public type: 'humidifier' | 'dehumidifier'
-  @Input() public $accessories: AccessoriesService
-
-  private stateSubscription: Subscription
+export class HumidifierDehumidifierManageComponent extends BaseManageComponent {
+  public type = input.required<'humidifier' | 'dehumidifier'>()
 
   public targetState: number
   public targetMode: number
@@ -39,47 +31,34 @@ export class HumidifierDehumidifierManageComponent implements OnInit, OnDestroy 
   public targetHumidifierHumidity: number
   public autoHumidity: [number, number]
 
-  constructor() {
-    this.targetHumidityChanged
-      .pipe(debounceTime(500))
-      .subscribe(() => {
-        if (this.RelativeHumidityHumidifierThreshold) {
-          this.service.getCharacteristic('RelativeHumidityHumidifierThreshold').setValue(this.targetHumidifierHumidity)
-        }
-        if (this.RelativeHumidityDehumidifierThreshold) {
-          this.service.getCharacteristic('RelativeHumidityDehumidifierThreshold').setValue(this.targetDehumidifierHumidity)
-        }
-      })
-  }
+  protected setupComponent() {
+    this.createDebouncedSubscription(this.targetHumidityChanged, () => {
+      if (this.RelativeHumidityHumidifierThreshold) {
+        void this.service.getCharacteristic('RelativeHumidityHumidifierThreshold').setValue(this.targetHumidifierHumidity)
+      }
+      if (this.RelativeHumidityDehumidifierThreshold) {
+        void this.service.getCharacteristic('RelativeHumidityDehumidifierThreshold').setValue(this.targetDehumidifierHumidity)
+      }
+    })
 
-  public ngOnInit() {
     this.targetState = this.service.values.Active
     this.targetMode = this.service.values.TargetHumidifierDehumidifierState
     this.RelativeHumidityDehumidifierThreshold = this.service.getCharacteristic('RelativeHumidityDehumidifierThreshold')
     this.RelativeHumidityHumidifierThreshold = this.service.getCharacteristic('RelativeHumidityHumidifierThreshold')
     this.targetStateValidValues = this.service.getCharacteristic('TargetHumidifierDehumidifierState').validValues as number[]
     this.loadTargetHumidity()
-    this.applySliderGradient()
-
-    // Subscribe to real-time accessory updates
-    if (this.$accessories) {
-      this.stateSubscription = this.$accessories.accessoryData.subscribe(() => {
-        this.targetState = this.service.values.Active
-        this.targetMode = this.service.values.TargetHumidifierDehumidifierState
-        this.targetDehumidifierHumidity = this.service.getCharacteristic('RelativeHumidityDehumidifierThreshold')?.value as number
-        this.targetHumidifierHumidity = this.service.getCharacteristic('RelativeHumidityHumidifierThreshold')?.value as number
-        this.autoHumidity = [this.targetHumidifierHumidity, this.targetDehumidifierHumidity]
-
-        // Apply gradient when mode changes externally
-        this.applySliderGradient()
-      })
-    }
+    this.applySliderGradient('linear-gradient(to left, rgb(80, 80, 179), rgb(173, 216, 230), rgb(255, 185, 120), rgb(139, 90, 60))')
   }
 
-  public ngOnDestroy() {
-    if (this.stateSubscription) {
-      this.stateSubscription.unsubscribe()
-    }
+  protected handleAccessoryUpdate() {
+    this.targetState = this.service.values.Active
+    this.targetMode = this.service.values.TargetHumidifierDehumidifierState
+    this.targetDehumidifierHumidity = this.service.getCharacteristic('RelativeHumidityDehumidifierThreshold')?.value as number
+    this.targetHumidifierHumidity = this.service.getCharacteristic('RelativeHumidityHumidifierThreshold')?.value as number
+    this.autoHumidity = [this.targetHumidifierHumidity, this.targetDehumidifierHumidity]
+
+    // Apply gradient when mode changes externally
+    this.applySliderGradient('linear-gradient(to left, rgb(80, 80, 179), rgb(173, 216, 230), rgb(255, 185, 120), rgb(139, 90, 60))')
   }
 
   private loadTargetHumidity() {
@@ -90,23 +69,21 @@ export class HumidifierDehumidifierManageComponent implements OnInit, OnDestroy 
 
   public setTargetState(value: number, event: MouseEvent) {
     this.targetState = value
-    this.service.getCharacteristic('Active').setValue(this.targetState)
+    void this.service.getCharacteristic('Active').setValue(this.targetState)
     this.loadTargetHumidity()
 
-    const target = event.target as HTMLButtonElement
-    target.blur()
+    this.blurTarget(event)
   }
 
   public setTargetMode(value: number, event: MouseEvent) {
     this.targetMode = value
-    this.service.getCharacteristic('TargetHumidifierDehumidifierState').setValue(this.targetMode)
+    void this.service.getCharacteristic('TargetHumidifierDehumidifierState').setValue(this.targetMode)
     this.loadTargetHumidity()
 
-    const target = event.target as HTMLButtonElement
-    target.blur()
+    this.blurTarget(event)
 
     // Apply gradient to the new slider after it's created
-    this.applySliderGradient()
+    this.applySliderGradient('linear-gradient(to left, rgb(80, 80, 179), rgb(173, 216, 230), rgb(255, 185, 120), rgb(139, 90, 60))')
   }
 
   public onHumidityStateChange() {
@@ -118,18 +95,5 @@ export class HumidifierDehumidifierManageComponent implements OnInit, OnDestroy 
     this.targetHumidifierHumidity = this.autoHumidity[0]
     this.targetDehumidifierHumidity = this.autoHumidity[1]
     this.targetHumidityChanged.next(undefined)
-  }
-
-  public dismissModal() {
-    this.$activeModal.dismiss('Dismiss')
-  }
-
-  private applySliderGradient() {
-    setTimeout(() => {
-      const sliderElements = document.querySelectorAll('.noUi-target')
-      sliderElements.forEach((sliderElement: HTMLElement) => {
-        sliderElement.style.background = 'linear-gradient(to left, rgb(80, 80, 179), rgb(173, 216, 230), rgb(255, 185, 120), rgb(139, 90, 60))'
-      })
-    }, 10)
   }
 }

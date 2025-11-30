@@ -1,5 +1,5 @@
 import { Component } from '@angular/core'
-import { NgbAlert } from '@ng-bootstrap/ng-bootstrap'
+import { NgbAlert } from '@ng-bootstrap/ng-bootstrap/alert'
 import { TranslatePipe } from '@ngx-translate/core'
 
 @Component({

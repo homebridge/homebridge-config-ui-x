@@ -1,17 +1,18 @@
-import { Component, HostListener, inject, OnDestroy, OnInit } from '@angular/core'
-import { NgbModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap'
+import { Component, createEnvironmentInjector, EnvironmentInjector, HostListener, inject, OnDestroy, OnInit, signal } from '@angular/core'
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
+import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap/tooltip'
 import { TranslatePipe } from '@ngx-translate/core'
-import { GridsterComponent, GridsterConfig, GridsterItem, GridsterItemComponent } from 'angular-gridster2'
+import { Gridster, GridsterConfig, GridsterItem, GridsterItemConfig } from 'angular-gridster2'
 import { firstValueFrom, Subject } from 'rxjs'
-import { take } from 'rxjs/operators'
 
-import { SpinnerComponent } from '@/app//core/components/spinner/spinner.component'
 import { AuthService } from '@/app/core/auth/auth.service'
-import { NotificationService } from '@/app/core/notification.service'
+import { NotificationService } from '@/app/core/communication/notification.service'
+import { IoNamespace, WsService } from '@/app/core/communication/ws.service'
+import { SpinnerComponent } from '@/app/core/components/spinner/spinner.component'
+import { WIDGET_CONTROL_MODAL_DATA, WIDGET_VISIBILITY_MODAL_DATA } from '@/app/core/modal-data-tokens'
 import { HomebridgeStatusResponse } from '@/app/core/server.interfaces'
-import { SettingsService } from '@/app/core/settings.service'
-import { TerminalNavigationGuardService } from '@/app/core/terminal-navigation-guard.service'
-import { IoNamespace, WsService } from '@/app/core/ws.service'
+import { SettingsService } from '@/app/core/ui/settings.service'
+import { TerminalNavigationGuardService } from '@/app/core/utilities/terminal-navigation-guard.service'
 import { CreditsComponent } from '@/app/modules/status/credits/credits.component'
 import { WidgetControlComponent } from '@/app/modules/status/widget-control/widget-control.component'
 import { WidgetVisibilityComponent } from '@/app/modules/status/widget-visibility/widget-visibility.component'
@@ -25,33 +26,34 @@ import { Widget } from '@/app/modules/status/widgets/widgets.interfaces'
   imports: [
     NgbTooltip,
     SpinnerComponent,
-    GridsterComponent,
-    GridsterItemComponent,
+    Gridster,
+    GridsterItem,
     WidgetsComponent,
     TranslatePipe,
   ],
 })
 export class StatusComponent implements OnInit, OnDestroy {
+  private injector = inject(EnvironmentInjector)
   private $auth = inject(AuthService)
   private $modal = inject(NgbModal)
   private $navigationGuard = inject(TerminalNavigationGuardService)
   private $notification = inject(NotificationService)
   private $settings = inject(SettingsService)
   private $ws = inject(WsService)
-  private isUnlocked = false
+  private isUnlocked = signal(false)
   private io: IoNamespace
 
   public isAdmin = this.$auth.user.admin
   public isMatterSupported = this.$settings.isFeatureEnabled('matterSupport')
   public saveWidgetsEvent = new Subject()
   public options: GridsterConfig
-  public dashboard: Array<GridsterItem> = []
-  public consoleStatus: 'up' | 'down' = 'down'
+  public dashboard = signal<Array<GridsterItemConfig>>([])
+  public consoleStatus = signal<'up' | 'down'>('down')
   public currentYear: number
-  public page = {
+  public page = signal({
     mobile: (window.innerWidth < 1024),
     showWidgetConfigure: (window.innerWidth < 576),
-  }
+  })
 
   public ngOnInit() {
     // Set page title (status page should only show instance name)
@@ -65,10 +67,10 @@ export class StatusComponent implements OnInit, OnDestroy {
       itemChangeCallback: this.gridChangedEvent.bind(this),
       itemResizeCallback: this.gridResizeEvent.bind(this),
       draggable: {
-        enabled: this.isUnlocked,
+        enabled: this.isUnlocked(),
       },
       resizable: {
-        enabled: this.isUnlocked,
+        enabled: this.isUnlocked(),
       },
       gridType: 'verticalFixed',
       margin: 8,
@@ -84,25 +86,24 @@ export class StatusComponent implements OnInit, OnDestroy {
       displayGrid: 'none',
     }
 
-    if (this.io.socket.connected) {
-      this.getLayout()
-      this.consoleStatus = 'up'
-    } else {
-      this.consoleStatus = 'down'
-
-      // Get the dashboard layout when the server is up
-      this.io.connected.pipe(take(1)).subscribe(() => {
-        this.getLayout()
-      })
-    }
-
-    this.io.connected.subscribe(async () => {
-      this.consoleStatus = 'up'
+    // Subscribe for reconnections
+    this.io.connected.subscribe(() => {
+      this.consoleStatus.set('up')
       this.io.socket.emit('monitor-server-status')
+      this.getLayout()
     })
 
+    // Check if already connected and initialize immediately
+    if (this.io.socket.connected) {
+      this.consoleStatus.set('up')
+      this.io.socket.emit('monitor-server-status')
+      this.getLayout()
+    } else {
+      this.consoleStatus.set('down')
+    }
+
     this.io.socket.on('disconnect', () => {
-      this.consoleStatus = 'down'
+      this.consoleStatus.set('down')
     })
 
     this.io.socket.on('homebridge-status', (data: HomebridgeStatusResponse) => {
@@ -116,7 +117,7 @@ export class StatusComponent implements OnInit, OnDestroy {
     // E.g. when the order of the accessories in the accessories widget changes
     this.saveWidgetsEvent.subscribe({
       next: () => {
-        this.gridChangedEvent()
+        void this.gridChangedEvent()
       },
     })
 
@@ -129,82 +130,122 @@ export class StatusComponent implements OnInit, OnDestroy {
   }
 
   public lockLayout() {
-    this.options.draggable.enabled = false
-    this.options.resizable.enabled = false
-    this.options.api.optionsChanged()
-    this.isUnlocked = false
-    this.setLayout(this.dashboard)
+    this.options = {
+      ...this.options,
+      draggable: { enabled: false },
+      resizable: { enabled: false },
+    }
+    this.isUnlocked.set(false)
+    this.setLayout(this.dashboard())
   }
 
   public unlockLayout() {
-    this.options.draggable.enabled = true
-    this.options.resizable.enabled = true
-    this.options.api.optionsChanged()
-    this.isUnlocked = true
-    this.setLayout(this.dashboard)
+    this.options = {
+      ...this.options,
+      draggable: { enabled: true },
+      resizable: { enabled: true },
+    }
+    this.isUnlocked.set(true)
+    this.setLayout(this.dashboard())
   }
 
-  public addWidget() {
+  public async addWidget(): Promise<void> {
+    const injector = createEnvironmentInjector([{
+      provide: WIDGET_VISIBILITY_MODAL_DATA,
+      useValue: {
+        dashboard: this.dashboard(),
+        resetLayout: this.resetLayout.bind(this),
+        lockLayout: this.lockLayout.bind(this),
+        unlockLayout: this.unlockLayout.bind(this),
+      },
+    }], this.injector)
+
     const ref = this.$modal.open(WidgetVisibilityComponent, {
       size: 'lg',
       backdrop: 'static',
+      injector,
     })
-    ref.componentInstance.dashboard = this.dashboard
-    ref.componentInstance.resetLayout = this.resetLayout.bind(this)
-    ref.componentInstance.lockLayout = this.lockLayout.bind(this)
-    ref.componentInstance.unlockLayout = this.unlockLayout.bind(this)
 
-    ref.result
-      .then((widget) => {
-        const index = this.dashboard.findIndex(x => x.component === widget.component)
-        if (index > -1) {
-          // Widget already exists, remove it
-          this.dashboard.splice(index, 1)
-          this.gridChangedEvent()
-          return
-        }
+    try {
+      const widget = await ref.result
+      const currentDashboard = this.dashboard()
+      const index = currentDashboard.findIndex(x => x.component === widget.component)
+      if (index > -1) {
+        // Widget already exists, remove it
+        const updated = [...currentDashboard]
+        updated.splice(index, 1)
+        this.dashboard.set(updated)
+        void this.gridChangedEvent()
+        return
+      }
 
-        // Add the widget
-        const item: Widget = {
-          x: undefined,
-          y: undefined,
-          component: widget.component,
-          cols: widget.cols,
-          rows: widget.rows,
-          mobileOrder: widget.mobileOrder,
-          hideOnMobile: widget.hideOnMobile,
-          $resizeEvent: new Subject(),
-          $configureEvent: new Subject(),
-          $saveWidgetsEvent: this.saveWidgetsEvent,
-          draggable: this.options.draggable.enabled,
-        }
+      // Add the widget
+      const item: Widget = {
+        x: undefined,
+        y: undefined,
+        component: widget.component,
+        cols: widget.cols,
+        rows: widget.rows,
+        mobileOrder: widget.mobileOrder,
+        hideOnMobile: widget.hideOnMobile,
+        $resizeEvent: new Subject(),
+        $configureEvent: new Subject(),
+        $saveWidgetsEvent: this.saveWidgetsEvent,
+        draggable: this.options.draggable.enabled,
+      }
 
-        this.dashboard.push(item)
+      this.dashboard.set([...currentDashboard, item])
 
-        if (widget.requiresConfig) {
-          this.manageWidget(item)
-        }
+      if (widget.requiresConfig) {
+        void this.manageWidget(item)
+      }
 
-        setTimeout(() => {
-          const widgetElement = document.getElementById(widget.component)
-          widgetElement.scrollIntoView()
-        }, 500)
-      })
-      .catch(() => { /* modal dismissed */ })
+      setTimeout(() => {
+        const widgetElement = document.getElementById(widget.component)
+        widgetElement.scrollIntoView()
+      }, 500)
+    } catch {
+      // Modal dismissed, do nothing
+    }
   }
 
-  public manageWidget(item: Widget) {
+  public async manageWidget(item: Widget): Promise<void> {
+    const injector = createEnvironmentInjector([{
+      provide: WIDGET_CONTROL_MODAL_DATA,
+      useValue: {
+        widget: item,
+      },
+    }], this.injector)
+
     const ref = this.$modal.open(WidgetControlComponent, {
       size: 'lg',
       backdrop: 'static',
+      injector,
     })
-    ref.componentInstance.widget = item
-    ref.result
-      .then(() => {
-        this.gridChangedEvent()
-        item.$configureEvent.next()
-      })
-      .catch(() => { /* modal dismissed */ })
+    try {
+      await ref.result
+      // Update the dashboard signal to trigger change detection with new object reference
+      const currentDashboard = this.dashboard()
+      const index = currentDashboard.findIndex(w => w.component === item.component)
+      if (index > -1) {
+        // Create new array with new object reference for the modified widget
+        const updated = [...currentDashboard]
+        updated[index] = {
+          ...updated[index],
+          // Preserve the Subjects
+          $resizeEvent: updated[index].$resizeEvent,
+          $configureEvent: updated[index].$configureEvent,
+          $saveWidgetsEvent: updated[index].$saveWidgetsEvent,
+        }
+        this.dashboard.set(updated)
+
+        // Defer to avoid NG0100 error when widget updates its configuration
+        queueMicrotask(() => updated[index].$configureEvent.next())
+      }
+      void this.gridChangedEvent()
+    } catch {
+      // Modal dismissed, do nothing
+    }
   }
 
   public openCreditsModal() {
@@ -226,7 +267,7 @@ export class StatusComponent implements OnInit, OnDestroy {
       }
 
       let saveNeeded = false
-      this.setLayout(layout.map((item: GridsterItem) => {
+      this.setLayout(layout.map((item: GridsterItemConfig) => {
         // Renamed between v4.68.0 and v4.69.0
         if (item.component === 'HomebridgeStatusWidgetComponent') {
           item.component = 'UpdateInfoWidgetComponent'
@@ -260,40 +301,45 @@ export class StatusComponent implements OnInit, OnDestroy {
       }).filter(Boolean))
 
       if (saveNeeded) {
-        this.gridChangedEvent()
+        void this.gridChangedEvent()
       }
     })
   }
 
-  private setLayout(layout: GridsterItem[]) {
-    this.dashboard = layout.map((item) => {
+  private setLayout(layout: GridsterItemConfig[]) {
+    this.dashboard.set(layout.map(item => ({
+      // Create new object instead of mutating to ensure proper signal change detection
+      ...item,
       // Preserve existing Subjects to maintain subscriptions, or create new ones if they don't exist
-      item.$resizeEvent = item.$resizeEvent || new Subject()
-      item.$configureEvent = item.$configureEvent || new Subject()
-      item.$saveWidgetsEvent = this.saveWidgetsEvent
-      item.draggable = this.options.draggable.enabled
-      return item
-    })
+      $resizeEvent: item.$resizeEvent || new Subject(),
+      $configureEvent: item.$configureEvent || new Subject(),
+      $saveWidgetsEvent: this.saveWidgetsEvent,
+      draggable: this.options.draggable.enabled,
+    })))
   }
 
   private resetLayout() {
     // eslint-disable-next-line ts/no-require-imports
     this.setLayout(require('./default-dashboard-layout.json'))
-    this.gridChangedEvent()
+    void this.gridChangedEvent()
   }
 
-  private gridResizeEvent(_item: GridsterItem, itemComponent: any) {
-    itemComponent.item.$resizeEvent.next('resize')
-    this.page.mobile = (window.innerWidth < 1024)
-    this.page.showWidgetConfigure = (window.innerWidth < 576)
+  private gridResizeEvent(_item: GridsterItemConfig) {
+    _item.$resizeEvent.next('resize')
+    this.page.set({
+      mobile: (window.innerWidth < 1024),
+      showWidgetConfigure: (window.innerWidth < 576),
+    })
   }
 
   private async gridChangedEvent() {
     // Sort the array to ensure mobile displays correctly
-    this.dashboard.sort((a: GridsterItem, b: GridsterItem) => a.mobileOrder - b.mobileOrder)
+    const currentDashboard = [...this.dashboard()]
+    currentDashboard.sort((a: GridsterItemConfig, b: GridsterItemConfig) => a.mobileOrder - b.mobileOrder)
+    this.dashboard.set(currentDashboard)
 
     // Remove private properties
-    const layout = this.dashboard.map((item) => {
+    const layout = currentDashboard.map((item) => {
       // eslint-disable-next-line unused-imports/no-unused-vars
       const { $resizeEvent, $configureEvent, $saveWidgetsEvent, ...cleanItem } = item
       return cleanItem
@@ -311,7 +357,7 @@ export class StatusComponent implements OnInit, OnDestroy {
   @HostListener('window:beforeunload', ['$event'])
   onBeforeUnload(event: BeforeUnloadEvent) {
     // Check if any terminal widget needs to warn about navigation
-    const hasTerminalWidget = this.dashboard.some(item => item.component === 'TerminalWidgetComponent')
+    const hasTerminalWidget = this.dashboard().some(item => item.component === 'TerminalWidgetComponent')
 
     if (hasTerminalWidget) {
       return this.$navigationGuard.handleBeforeUnload(event)
@@ -321,7 +367,7 @@ export class StatusComponent implements OnInit, OnDestroy {
 
   public canDeactivate(): Promise<boolean> | boolean {
     // Check if any terminal widget needs to confirm navigation
-    const hasTerminalWidget = this.dashboard.some(item => item.component === 'TerminalWidgetComponent')
+    const hasTerminalWidget = this.dashboard().some(item => item.component === 'TerminalWidgetComponent')
 
     if (!hasTerminalWidget) {
       return true

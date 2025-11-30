@@ -1,13 +1,13 @@
-import { Component, inject, Input, OnInit } from '@angular/core'
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
+import { Component, inject, OnInit, signal } from '@angular/core'
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { NgxMdModule } from 'ngx-md'
 import { ToastrService } from 'ngx-toastr'
-import { firstValueFrom } from 'rxjs'
 import { satisfies } from 'semver'
 
-import { ApiService } from '@/app/core/api.service'
-import { Plugin } from '@/app/core/manage-plugins/manage-plugins.interfaces'
+import { ApiService } from '@/app/core/communication/api.service'
+import { NODE_VERSION_MODAL_DATA } from '@/app/core/modal-data-tokens'
+import { InstalledPlugin } from '@/app/modules/status/widgets/update-info-widget/hb-v2-modal/hb-v2-modal.interfaces'
 import { PluginNodeCheck } from '@/app/modules/status/widgets/widgets.interfaces'
 
 @Component({
@@ -24,21 +24,30 @@ export class NodeVersionModalComponent implements OnInit {
   private $toastr = inject(ToastrService)
   private $translate = inject(TranslateService)
 
-  @Input() nodeVersion: string
-  @Input() latestVersion: string
-  @Input() showNodeUnsupportedWarning: boolean
-  @Input() homebridgeRunningInSynologyPackage: boolean
-  @Input() homebridgeRunningInDocker: boolean
-  @Input() homebridgePkg: Plugin
-  @Input() architecture: string
-  @Input() supportsNodeJs24: boolean
+  // Inject modal data
+  private modalData = inject(NODE_VERSION_MODAL_DATA)
 
-  public loading = true
-  public installedPlugins: PluginNodeCheck[] = []
+  // Public properties (from injected data)
+  public nodeVersion = this.modalData.nodeVersion
+  public latestVersion = this.modalData.latestVersion
+  public showNodeUnsupportedWarning = this.modalData.showNodeUnsupportedWarning
+  public homebridgeRunningInSynologyPackage = this.modalData.homebridgeRunningInSynologyPackage
+  public homebridgeRunningInDocker = this.modalData.homebridgeRunningInDocker
+  public homebridgePkg = this.modalData.homebridgePkg
+  public architecture = this.modalData.architecture
+  public supportsNodeJs24 = this.modalData.supportsNodeJs24
 
-  public async ngOnInit() {
+  // Signals
+  public loading = signal(true)
+  public installedPlugins = signal<PluginNodeCheck[]>([])
+
+  public ngOnInit(): void {
+    void this.initialize()
+  }
+
+  private async initialize(): Promise<void> {
     await this.loadInstalledPlugins()
-    this.loading = false
+    this.loading.set(false)
   }
 
   public dismissModal() {
@@ -46,11 +55,11 @@ export class NodeVersionModalComponent implements OnInit {
   }
 
   private async loadInstalledPlugins() {
-    this.installedPlugins = []
+    this.installedPlugins.set([])
 
     try {
-      const installedPlugins = await firstValueFrom(this.$api.get('/plugins'))
-      this.installedPlugins = installedPlugins
+      const installedPlugins = await this.$api.get('/plugins')
+      const processedPlugins = installedPlugins
         .map((x: any) => {
           const isSupported = x.engines?.node
             ? (satisfies(this.latestVersion, x.engines.node, { includePrerelease: true }) ? 'yes' : 'no')
@@ -61,9 +70,9 @@ export class NodeVersionModalComponent implements OnInit {
             name: x.name,
             isSupported,
             isSupportedStr: `status.widget.update_node_${isSupported}`,
-          }
+          } as PluginNodeCheck
         })
-        .sort((a, b) => {
+        .sort((a: InstalledPlugin, b: InstalledPlugin) => {
           if (a.name === 'homebridge-config-ui-x') {
             return -1
           }
@@ -77,12 +86,14 @@ export class NodeVersionModalComponent implements OnInit {
       const hbIsSupported = satisfies(this.latestVersion, this.homebridgePkg.engines.node, { includePrerelease: true })
         ? 'yes'
         : 'no'
-      this.installedPlugins.unshift({
+      processedPlugins.unshift({
         displayName: 'Homebridge',
         name: 'homebridge',
         isSupported: hbIsSupported,
         isSupportedStr: `status.widget.update_node_${hbIsSupported}`,
       })
+
+      this.installedPlugins.set(processedPlugins)
     } catch (error) {
       console.error(error)
       this.$toastr.error(this.$translate.instant('plugins.toast_failed_to_load_plugins'), this.$translate.instant('toast.title_error'))

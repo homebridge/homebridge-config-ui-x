@@ -1,12 +1,11 @@
-import { DecimalPipe } from '@angular/common'
-import { Component, ElementRef, inject, Input, OnDestroy, OnInit, viewChild } from '@angular/core'
-import { TranslatePipe } from '@ngx-translate/core'
-import { ChartConfiguration } from 'chart.js'
-import { BaseChartDirective } from 'ng2-charts'
-import { interval, Subject, Subscription } from 'rxjs'
+import type { NetworkWidgetData } from '@/app/modules/status/widgets/widgets.interfaces'
 
-import { IoNamespace, WsService } from '@/app/core/ws.service'
-import { Widget } from '@/app/modules/status/widgets/widgets.interfaces'
+import { DecimalPipe } from '@angular/common'
+import { ChangeDetectionStrategy, Component, signal } from '@angular/core'
+import { TranslatePipe } from '@ngx-translate/core'
+import { BaseChartDirective } from 'ng2-charts'
+
+import { BaseChartWidgetComponent } from '@/app/modules/status/widgets/base-chart-widget.component'
 
 @Component({
   templateUrl: './network-widget.component.html',
@@ -17,145 +16,28 @@ import { Widget } from '@/app/modules/status/widgets/widgets.interfaces'
     DecimalPipe,
     TranslatePipe,
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class NetworkWidgetComponent implements OnInit, OnDestroy {
-  private $ws = inject(WsService)
-  private io: IoNamespace
-  private intervalSubscription: Subscription
-  private configureSubscription: Subscription
+export class NetworkWidgetComponent extends BaseChartWidgetComponent {
+  // Signals
+  public interface = signal<string>('')
+  public receivedPerSec = signal<number>(0)
+  public sentPerSec = signal<number>(0)
 
-  @Input() public widget: Widget
-  @Input() public resizeEvent: Subject<void>
-  @Input() public configureEvent: Subject<void>
-
-  readonly chart = viewChild(BaseChartDirective)
-  readonly widgetBackground = viewChild<ElementRef>('widgetbackground')
-
-  public interface: string
-  public receivedPerSec: number
-  public sentPerSec: number
-  public refreshInterval: number
-  public historyItems: number
-  public lineChartLabels = []
-  public lineChartType: ChartConfiguration['type'] = 'line'
-
-  public lineChartData: ChartConfiguration['data'] = {
-    datasets: [{ data: [] }],
-  }
-
-  public lineChartOptions: ChartConfiguration['options'] = {
-    responsive: true,
-    elements: {
-      point: {
-        radius: 0,
-      },
-      line: {
-        tension: 0.4,
-        backgroundColor: 'rgba(148,159,177,0.2)',
-        borderColor: 'rgba(148,159,177,0.2)',
-        fill: 'origin',
-      },
-    },
-    plugins: {
-      legend: {
-        display: false,
-      },
-      tooltip: {
-        enabled: false,
-      },
-    },
-    scales: {
-      x: {
-        display: false,
-      },
-      y: {
-        display: false,
-        min: 0,
-      },
-    },
-  }
-
-  public ngOnInit() {
-    this.io = this.$ws.getExistingNamespace('status')
-    // Lookup the chart color based on the current theme
-    const userColor = getComputedStyle(this.widgetBackground().nativeElement).backgroundColor
-    if (userColor) {
-      this.lineChartOptions.elements.line.backgroundColor = userColor
-      this.lineChartOptions.elements.line.borderColor = userColor
-    }
-
-    this.io.connected.subscribe(async () => {
-      this.getServerNetworkInfo()
-    })
-
-    if (this.io.socket.connected) {
-      this.getServerNetworkInfo()
-    }
-
-    this.initializeWidget()
-
-    // Listen for configuration changes
-    this.configureEvent.subscribe(() => {
-      this.reinitializeWidget()
-    })
-  }
-
-  private initializeWidget() {
-    // Interval and history items should be in [1, 60]
-    if (!this.widget.refreshInterval) {
-      this.widget.refreshInterval = 10
-    }
-    if (!this.widget.historyItems) {
-      this.widget.historyItems = 60
-    }
-    this.refreshInterval = Math.min(60, Math.max(1, this.widget.refreshInterval))
-    this.historyItems = Math.min(60, Math.max(1, this.widget.historyItems))
-
-    this.intervalSubscription = interval(this.refreshInterval * 1000).subscribe(() => {
-      if (this.io.socket.connected) {
-        this.getServerNetworkInfo()
-      }
-    })
-  }
-
-  private reinitializeWidget() {
-    // Unsubscribe from the old interval
-    if (this.intervalSubscription) {
-      this.intervalSubscription.unsubscribe()
-    }
-
-    // Clear the chart data
-    this.lineChartData.datasets[0].data = []
-    this.lineChartLabels = []
-
-    // Reinitialize with new settings
-    this.initializeWidget()
-
-    // Fetch new data immediately
-    if (this.io.socket.connected) {
-      this.getServerNetworkInfo()
-    }
-  }
-
-  public ngOnDestroy() {
-    this.intervalSubscription.unsubscribe()
-    this.configureSubscription?.unsubscribe()
-  }
-
-  private getServerNetworkInfo() {
-    this.io.request('get-server-network-info', { netInterfaces: [this.widget.networkInterface] }).subscribe((data) => {
+  protected fetchData(): void {
+    this.io.request('get-server-network-info', { netInterfaces: [this.widget().networkInterface] }).subscribe((data: NetworkWidgetData) => {
       // If no param given, the backend will return the default network interface
       // Clear the current chart if the network interface has changed
-      if (this.interface !== data.net.iface) {
-        this.widget.networkInterface = data.net.iface
-        this.interface = data.net.iface
+      if (this.interface() !== data.net.iface) {
+        this.widget().networkInterface = data.net.iface
+        this.interface.set(data.net.iface)
         this.lineChartData.datasets[0].data = { ...[] }
         this.lineChartLabels = []
         this.chart().update()
       }
 
-      this.receivedPerSec = (data.net.rx_sec / 1024 / 1024) * 8
-      this.sentPerSec = (data.net.tx_sec / 1024 / 1024) * 8
+      this.receivedPerSec.set((data.net.rx_sec / 1024 / 1024) * 8)
+      this.sentPerSec.set((data.net.tx_sec / 1024 / 1024) * 8)
 
       // The chart looks strange if the data rate is < 1.
       if (data.point < 1) {
@@ -167,40 +49,14 @@ export class NetworkWidgetComponent implements OnInit, OnDestroy {
     })
   }
 
-  private updateData(data: any) {
+  protected updateData(data: NetworkWidgetData): void {
     const dataLength = Object.keys(this.lineChartData.datasets[0].data).length
     if (!dataLength) {
-      this.initializeChartData(data)
+      // Network widget initializes with a single point instead of history
+      const items = [data.point]
+      this.initializeChartData(items)
     } else {
-      this.updateChartData(data, dataLength)
+      this.updateChartData(data.point)
     }
-  }
-
-  private initializeChartData(data: any) {
-    const items = [data.point]
-    this.lineChartData.datasets[0].data = { ...items }
-    this.lineChartLabels = items.map(() => 'point')
-  }
-
-  private updateChartData(data: any, dataLength: number) {
-    this.lineChartData.datasets[0].data[dataLength] = data.point
-    this.lineChartLabels.push('point')
-
-    if (dataLength >= this.historyItems) {
-      this.shiftChartData()
-    }
-  }
-
-  private shiftChartData() {
-    const newItems = {}
-    Object.keys(this.lineChartData.datasets[0].data).forEach((key, index, array) => {
-      if (index + 1 < array.length) {
-        newItems[key] = this.lineChartData.datasets[0].data[array[index + 1]]
-      }
-    })
-
-    // @ts-expect-error - TS2740: Type {} is missing the following properties from type...
-    this.lineChartData.datasets[0].data = newItems
-    this.lineChartLabels = this.lineChartLabels.slice(1)
   }
 }
