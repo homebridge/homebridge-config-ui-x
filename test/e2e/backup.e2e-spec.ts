@@ -39,7 +39,7 @@ import { BackupModule } from '../../src/modules/backup/backup.module.js'
 import { BackupService } from '../../src/modules/backup/backup.service.js'
 import { PluginsService } from '../../src/modules/plugins/plugins.service.js'
 
-import '../../src/globalDefaults'
+import '../../src/globalDefaults.js'
 
 vi.spyOn(globalThis.console, 'error')
 
