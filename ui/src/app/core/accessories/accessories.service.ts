@@ -46,12 +46,16 @@ export class AccessoriesService {
   public hapReadyForControl = false
   public matterReadyForControl = false
   public accessories: { services: ServiceType[] } = { services: [] }
-  public rooms = signal<Array<{ name: string, services: ServiceTypeX[] }>>([])
   public accessoryLayout: AccessoryLayout
   private originalLayout: AccessoryLayout
   public availableBridges: string[] = []
   public selectedBridges: string[] | null = null
   public bridgeUsernameToNameMap: Map<string, string> = new Map()
+  public rooms = signal<Array<{
+    name: string
+    isDefault?: boolean
+    services: ServiceTypeX[]
+  }>>([])
 
   constructor() {
     if (this.$auth.user.admin) {
@@ -202,6 +206,7 @@ export class AccessoriesService {
     // Generate layout schema from currently active rooms
     const currentLayout = this.rooms().map(room => ({
       name: room.name,
+      isDefault: room.isDefault,
       services: room.services.map(service => ({
         uniqueId: service.uniqueId,
         name: service.serviceName,
@@ -215,9 +220,16 @@ export class AccessoriesService {
         hidden: service.hidden || undefined,
         onDashboard: service.onDashboard || undefined,
       })),
-    })).filter(room => room.services.length)
+    }))
+
+    // Ensure at least one room has isDefault: true
+    const hasDefaultRoom = currentLayout.some(r => r.isDefault === true)
+    if (!hasDefaultRoom && currentLayout.length > 0) {
+      currentLayout[0].isDefault = true
+    }
 
     // Merge with undiscovered services from original layout to preserve custom information
+    // This will add back rooms that exist in the original layout even if they have no discovered services
     this.accessoryLayout = this.mergeWithUndiscoveredServices(currentLayout)
 
     // Send update request to server
@@ -244,9 +256,19 @@ export class AccessoriesService {
     // Store original layout to preserve undiscovered services
     this.originalLayout = JSON.parse(JSON.stringify(this.accessoryLayout))
 
+    // Backward compatibility: Ensure at least one room has isDefault flag
+    const hasDefaultRoom = this.accessoryLayout.some(r => r.isDefault)
+    if (!hasDefaultRoom && this.accessoryLayout.length > 0) {
+      // Find room named "Default Room" or use first room
+      const defaultRoomIndex = this.accessoryLayout.findIndex(r => r.name === 'Default Room')
+      const indexToMakeDefault = defaultRoomIndex !== -1 ? defaultRoomIndex : 0
+      this.accessoryLayout[indexToMakeDefault].isDefault = true
+    }
+
     // Build empty room layout
     this.rooms.set(this.accessoryLayout.map(room => ({
       name: room.name,
+      isDefault: room.isDefault,
       services: [],
     })))
   }
@@ -335,14 +357,17 @@ export class AccessoriesService {
           return
         }
 
-        // Find or create the room for this undiscovered service
+        // Find the room for this undiscovered service
         let targetRoom = mergedLayout.find(room => room.name === originalRoom.name)
+
+        // If the room doesn't exist in current layout, it was deleted by the user
+        // Move undiscovered services to the default room instead of recreating the deleted room
         if (!targetRoom) {
-          targetRoom = {
-            name: originalRoom.name,
-            services: [],
+          targetRoom = mergedLayout.find(room => room.isDefault)
+          // If no default room exists, skip this service (shouldn't happen but safety check)
+          if (!targetRoom) {
+            return
           }
-          mergedLayout.push(targetRoom)
         }
 
         // Add the undiscovered service with its preserved custom information
@@ -362,7 +387,11 @@ export class AccessoriesService {
       })
     })
 
-    return mergedLayout.filter(room => room.services.length)
+    // Keep rooms that either have services OR were in the current layout (user-created empty rooms)
+    // This filters out rooms that only existed in originalLayout with undiscovered services
+    return mergedLayout.filter(room =>
+      room.services.length > 0 || currentLayout.some(r => r.name === room.name),
+    )
   }
 
   /**
@@ -461,17 +490,23 @@ export class AccessoriesService {
           // Mark as processed (even though no custom attributes to apply)
           this.customAttributesApplied.add(service.uniqueId)
 
-          // New accessory add the default room
-          const hasDefaultRoom = this.rooms().some(r => r.name === 'Default Room')
-          if (hasDefaultRoom) {
+          // New accessory add to the default room
+          // First try to find a room with isDefault: true, then fall back to room named "Default Room"
+          let defaultRoom = this.rooms().find(r => r.isDefault === true)
+          if (!defaultRoom) {
+            defaultRoom = this.rooms().find(r => r.name === 'Default Room')
+          }
+
+          if (defaultRoom) {
             this.rooms.update(current => current.map(r =>
-              r.name === 'Default Room'
+              r.name === defaultRoom.name
                 ? { ...r, services: [...r.services, service] }
                 : r,
             ))
           } else {
             this.rooms.update(current => [...current, {
               name: 'Default Room',
+              isDefault: true,
               services: [service],
             }])
           }

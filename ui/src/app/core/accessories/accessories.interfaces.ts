@@ -2,6 +2,7 @@ import type { ServiceType } from '@homebridge/hap-client'
 
 export type AccessoryLayout = {
   name: string
+  isDefault?: boolean
   services: Array<{
     aid: number
     iid: number

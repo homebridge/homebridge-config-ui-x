@@ -145,10 +145,25 @@
   <div>
     @if (!isMobile() || room.services.length) {
     <div class="row">
-      <div class="col-md-12">
-        <h5 class="primary-text drag-handle room-title m-0 mb-1 mb-sm-0" [class.cursor-move]="!isMobile()">
-          {{ room.name === 'Default Room' ? ('accessories.control.default_room' | translate) : room.name }}
+      <div class="col-md-12 d-flex align-items-center">
+        <h5 class="primary-text drag-handle room-title m-0 mb-1 mb-sm-0 flex-grow-1" [class.cursor-move]="!isMobile()">
+          {{ room.name }}
         </h5>
+        <button
+          type="button"
+          class="btn btn-elegant ms-2"
+          (click)="editRoom($index)"
+          container="body"
+          placement="bottom"
+          [openDelay]="150"
+          triggers="hover"
+          [ngbTooltip]="'accessories.button_edit_room' | translate"
+          [attr.aria-label]="'accessories.button_edit_room' | translate"
+          [style.visibility]="isMobile() ? 'hidden' : 'visible'"
+          [style.pointer-events]="isMobile() ? 'none' : 'auto'"
+        >
+          <i class="fas fa-cog"></i>
+        </button>
       </div>
     </div>
     }

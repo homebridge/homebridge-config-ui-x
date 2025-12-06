@@ -1,5 +1,5 @@
 import { NgTemplateOutlet } from '@angular/common'
-import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core'
+import { Component, createEnvironmentInjector, EnvironmentInjector, inject, OnDestroy, OnInit, signal } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { FormsModule } from '@angular/forms'
 import { NgbDropdown, NgbDropdownItem, NgbDropdownMenu, NgbDropdownToggle } from '@ng-bootstrap/ng-bootstrap/dropdown'
@@ -21,6 +21,8 @@ import { MobileDetectService } from '@/app/core/utilities/mobile-detect.service'
 import { AccessorySupportComponent } from '@/app/modules/accessories/accessory-support/accessory-support.component'
 import { AddRoomComponent } from '@/app/modules/accessories/add-room/add-room.component'
 import { DragHerePlaceholderComponent } from '@/app/modules/accessories/drag-here-placeholder/drag-here-placeholder.component'
+import { EditRoomComponent } from '@/app/modules/accessories/edit-room/edit-room.component'
+import { ADD_ROOM_MODAL_DATA, EDIT_ROOM_MODAL_DATA } from '@/app/modules/accessories/modal-data-tokens'
 
 @Component({
   selector: 'app-accessories',
@@ -49,6 +51,7 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
   private $auth = inject(AuthService)
   private dragulaService = inject(DragulaService)
   private $md = inject(MobileDetectService)
+  private injector = inject(EnvironmentInjector)
   private $modal = inject(NgbModal)
   private $settings = inject(SettingsService)
   private $translate = inject(TranslateService)
@@ -154,31 +157,144 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
   }
 
   public async addRoom(): Promise<void> {
+    const injector = createEnvironmentInjector([{
+      provide: ADD_ROOM_MODAL_DATA,
+      useValue: {
+        existingRooms: this.$accessories.rooms(),
+      },
+    }], this.injector)
+
     const ref = this.$modal.open(AddRoomComponent, {
       size: 'lg',
       backdrop: 'static',
+      injector,
     })
 
     try {
-      const roomName: string = await ref.result
-      // No room name provided
-      if (!roomName || !roomName.length) {
+      const result: { name: string, isDefault: boolean } = await ref.result
+      // No room name provided (validation should prevent this, but safety check)
+      if (!result?.name || !result.name.length) {
         return
       }
 
-      // Duplicate room name
-      if (this.$accessories.rooms().find(r => r.name === roomName)) {
-        return
+      // If setting as default, unset other default rooms
+      if (result.isDefault) {
+        this.$accessories.rooms.update(current => current.map(r => ({
+          ...r,
+          isDefault: false,
+        })))
       }
 
       this.$accessories.rooms.update(current => [...current, {
-        name: roomName,
+        name: result.name,
+        isDefault: result.isDefault,
         services: [],
       }])
+
+      // Save the layout to persist the new room
+      this.$accessories.saveLayout()
 
       if (this.isMobile()) {
         this.toggleLayoutLock()
       }
+    } catch {
+      // Modal dismissed, do nothing
+    }
+  }
+
+  public async editRoom(roomIndex: number): Promise<void> {
+    const room = this.$accessories.rooms()[roomIndex]
+    if (!room) {
+      return
+    }
+
+    const injector = createEnvironmentInjector([{
+      provide: EDIT_ROOM_MODAL_DATA,
+      useValue: {
+        roomName: room.name,
+        isDefault: room.isDefault || false,
+        existingRooms: this.$accessories.rooms(),
+        currentRoomIndex: roomIndex,
+      },
+    }], this.injector)
+
+    const ref = this.$modal.open(EditRoomComponent, {
+      size: 'lg',
+      backdrop: 'static',
+      injector,
+    })
+
+    try {
+      const result: { name?: string, isDefault?: boolean, delete?: boolean } = await ref.result
+
+      // Handle delete mode
+      if (result?.delete) {
+        const roomToDelete = this.$accessories.rooms()[roomIndex]
+        if (!roomToDelete) {
+          return
+        }
+
+        // Find target room to move services to
+        let targetRoomIndex: number
+        if (roomToDelete.isDefault) {
+          // If deleting default room, move services to first other room (which will become new default)
+          targetRoomIndex = roomIndex === 0 ? 1 : 0
+        } else {
+          // If deleting non-default room, move services to current default room
+          const defaultRoomIndex = this.$accessories.rooms().findIndex(r => r.isDefault)
+          targetRoomIndex = defaultRoomIndex !== -1 ? defaultRoomIndex : 0
+        }
+
+        // If deleting the default room, set the target room as the new default
+        if (roomToDelete.isDefault) {
+          this.$accessories.rooms.update(current => current.map((r, idx) =>
+            idx === targetRoomIndex
+              ? { ...r, isDefault: true }
+              : { ...r, isDefault: false },
+          ))
+        }
+
+        // Move services from room being deleted to target room
+        const servicesToMove = roomToDelete.services
+        if (servicesToMove.length > 0) {
+          this.$accessories.rooms.update(current => current.map((r, idx) =>
+            idx === targetRoomIndex
+              ? { ...r, services: [...r.services, ...servicesToMove] }
+              : r,
+          ))
+        }
+
+        // Remove the room
+        this.$accessories.rooms.update(current => current.filter((_, idx) => idx !== roomIndex))
+
+        // Save the layout to persist the changes
+        this.$accessories.saveLayout()
+        return
+      }
+
+      // Handle edit mode
+      // No room name provided (validation should prevent this, but safety check)
+      if (!result?.name || !result.name.length) {
+        return
+      }
+
+      // If setting as default, unset other default rooms
+      if (result.isDefault) {
+        this.$accessories.rooms.update(current => current.map(r => ({
+          ...r,
+          isDefault: false,
+        })))
+      }
+
+      // Update the room
+      this.$accessories.rooms.update(current => current.map((r, idx) =>
+        idx === roomIndex
+          ? { ...r, name: result.name, isDefault: result.isDefault }
+          : r,
+      ))
+
+      // Save the layout to persist the changes
+      this.$accessories.saveLayout()
     } catch {
       // Modal dismissed, do nothing
     }

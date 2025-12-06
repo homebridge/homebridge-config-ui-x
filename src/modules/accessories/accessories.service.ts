@@ -360,6 +360,7 @@ export class AccessoriesService {
       return [
         {
           name: 'Default Room',
+          isDefault: true,
           services: [],
         },
       ]
