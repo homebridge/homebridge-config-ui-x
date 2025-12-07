@@ -307,7 +307,7 @@
   "platform.linux.server_taking_long_time": "Il sistema impiega molto tempo per tornare online",
   "platform.linux.server_will_power_down": "Il sistema si spegnerà a breve.",
   "platform.linux.shutting_down_server": "Arresto del sistema",
-  "platform.terminal.terminate_message_1": "Lasciando questa pagina terminerai la sessione corrente, tutti i processi in primo piano verranno terminati.",
+  "platform.terminal.terminate_message_1": "Lasciando questa pagina terminerai la sessione corrente: tutti i processi in primo piano verranno terminati.",
   "platform.terminal.terminate_message_2": "Per evitare questo avviso, abilita la <strong>Persistenza della sessione del terminale</strong> dalla pagina delle impostazioni.",
   "platform.terminal.terminate_title": "Terminazione sessione",
   "platform.terminal.terminate_unload": "La tua sessione del terminale verrà terminata. Abilita la Persistenza della sessione del terminale nelle Impostazioni per evitare che ciò accada.",
