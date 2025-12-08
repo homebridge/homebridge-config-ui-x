@@ -536,7 +536,7 @@
   "settings.network.hb_package_desc": "Se hai più versioni di Homebridge installate, puoi specificare qui il percorso della versione che vuoi utilizzare.",
   "settings.network.host": "Indirizzo IP Host",
   "settings.network.host_desc": "L'indirizzo IP host su cui ascoltare. Nella maggior parte dei casi sarà <code>::</code> o <code>0.0.0.0</code>.",
-  "settings.network.mdns_advertise": "Pubblicizza via mDNS",
+  "settings.network.mdns_advertise": "Annuncia via mDNS",
   "settings.network.mdns_advertise_help": "Abilita la pubblicità mDNS (usando Bonjour) per la tua interfaccia Homebridge, rendendola scopribile come servizio HTTP sulla tua rete locale.",
   "settings.network.message_network_interface": "Se nessuna interfaccia di rete è selezionata, Homebridge sceglierà automaticamente su quali annunciarsi.",
   "settings.network.port_end": "Porta finale",
