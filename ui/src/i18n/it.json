@@ -683,7 +683,7 @@
   "status.widget.network.history_items": "Elementi cronologia",
   "status.widget.network.items": "elementi",
   "status.widget.network.network_interface": "Interfaccia di rete",
-  "status.widget.network.none_selected": "In uso predefinito",
+  "status.widget.network.none_selected": "Utilizzando l'impostazione predefinita",
   "status.widget.network.refresh_interval": "Intervallo aggiornamento",
   "status.widget.network.seconds": "secondi",
   "status.widget.qr_paired": "Abbinato",
