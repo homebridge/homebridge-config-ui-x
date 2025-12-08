@@ -537,7 +537,7 @@
   "settings.network.host": "Indirizzo IP Host",
   "settings.network.host_desc": "L'indirizzo IP host su cui ascoltare. Nella maggior parte dei casi sarà <code>::</code> o <code>0.0.0.0</code>.",
   "settings.network.mdns_advertise": "Annuncia via mDNS",
-  "settings.network.mdns_advertise_help": "Abilita la pubblicità mDNS (usando Bonjour) per la tua interfaccia Homebridge, rendendola scopribile come servizio HTTP sulla tua rete locale.",
+  "settings.network.mdns_advertise_help": "Abilita gli annunci mDNS (usando Bonjour) per la tua interfaccia Homebridge, rendendola scopribile come servizio HTTP sulla tua rete locale.",
   "settings.network.message_network_interface": "Se nessuna interfaccia di rete è selezionata, Homebridge sceglierà automaticamente su quali annunciarsi.",
   "settings.network.port_end": "Porta finale",
   "settings.network.port_end_desc": "Controlla la fine dell'intervallo di porte su cui dovrebbero essere eseguiti gli accessori separati (come telecamere o televisioni). Questo deve essere tra 1025 e 65533, e maggiore della porta iniziale qui sopra.",
