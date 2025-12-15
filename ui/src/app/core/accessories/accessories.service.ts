@@ -37,6 +37,7 @@ export class AccessoriesService {
     'LockManagement',
     'CameraRTPStreamManagement',
     'ProtocolInformation',
+    'NFCAccess',
   ]
 
   public layoutSaved = new Subject()
