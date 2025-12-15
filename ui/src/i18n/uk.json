@@ -791,10 +791,5 @@
   "users.support.control": "можна контролювати",
   "users.title_add_user": "Додати користувача",
   "users.title_edit_user": "Профіль користувача",
-  "users.title_users": "Користувачі",
-  "users.toast_added_new_user": "Нового користувача додано",
-  "users.toast_failed_to_add_user": "Не вдалося додати користувача",
-  "users.toast_failed_to_delete_user": "Не вдалося видалити користувача",
-  "users.toast_updated_user": "Дані користувача оновлено",
-  "users.toast_user_deleted": "Користувача видалено"
+  "users.title_users": "Користувачі"
 }

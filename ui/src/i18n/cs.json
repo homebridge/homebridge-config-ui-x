@@ -791,10 +791,5 @@
   "users.support.control": "can be controlled",
   "users.title_add_user": "Přidat uživatele",
   "users.title_edit_user": "Editovat uživatele",
-  "users.title_users": "Uživatel",
-  "users.toast_added_new_user": "Přidán nový uživatel",
-  "users.toast_failed_to_add_user": "Nepodařilo se přidat uživatele",
-  "users.toast_failed_to_delete_user": "Smazání uživatele se nezdařilo",
-  "users.toast_updated_user": "Uživatel byl aktualizovaný",
-  "users.toast_user_deleted": "Uživatel byl smazán"
+  "users.title_users": "Uživatel"
 }

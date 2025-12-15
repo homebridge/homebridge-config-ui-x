@@ -791,10 +791,5 @@
   "users.support.control": "can be controlled",
   "users.title_add_user": "Добави потребител",
   "users.title_edit_user": "Промени потребител",
-  "users.title_users": "Потребители",
-  "users.toast_added_new_user": "Добавен е нов потребител",
-  "users.toast_failed_to_add_user": "Неуспешно добавяне на потребител",
-  "users.toast_failed_to_delete_user": "Неуспешно изтриване на потребителя",
-  "users.toast_updated_user": "Потребителя е обновен",
-  "users.toast_user_deleted": "Потребителя е изтрит"
+  "users.title_users": "Потребители"
 }

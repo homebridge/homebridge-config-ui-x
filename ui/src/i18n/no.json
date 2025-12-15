@@ -791,10 +791,5 @@
   "users.support.control": "can be controlled",
   "users.title_add_user": "Legg til bruker",
   "users.title_edit_user": "Rediger bruker",
-  "users.title_users": "Brukere",
-  "users.toast_added_new_user": "Lagt til ny bruker",
-  "users.toast_failed_to_add_user": "Kunne ikke legge til bruker",
-  "users.toast_failed_to_delete_user": "Kunne ikke slette brukeren",
-  "users.toast_updated_user": "Bruker oppdatert",
-  "users.toast_user_deleted": "Bruker slettet"
+  "users.title_users": "Brukere"
 }

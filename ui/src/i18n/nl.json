@@ -791,10 +791,5 @@
   "users.support.control": "can be controlled",
   "users.title_add_user": "Gebruiker toevoegen",
   "users.title_edit_user": "Gebruiker wijzigen",
-  "users.title_users": "Gebruikers",
-  "users.toast_added_new_user": "Nieuwe gebruiker toegevoegd",
-  "users.toast_failed_to_add_user": "Kon gebruiker niet toevoegen",
-  "users.toast_failed_to_delete_user": "Kon gebruiker niet verwijderen",
-  "users.toast_updated_user": "Gebruiker Bijgewerkt",
-  "users.toast_user_deleted": "Gebruiker Verwijderd"
+  "users.title_users": "Gebruikers"
 }

@@ -791,10 +791,5 @@
   "users.support.control": "can be controlled",
   "users.title_add_user": "Dodaj uporabnika",
   "users.title_edit_user": "Urejanje uporabnika",
-  "users.title_users": "Uporabniki",
-  "users.toast_added_new_user": "Dodan nov uporabnik",
-  "users.toast_failed_to_add_user": "Uporabnika ni bilo mogoče dodati",
-  "users.toast_failed_to_delete_user": "Ni bil omogoče izbrisati uporabnika",
-  "users.toast_updated_user": "Posodobljeni uporabnik",
-  "users.toast_user_deleted": "Uporabnik je izbrisan"
+  "users.title_users": "Uporabniki"
 }

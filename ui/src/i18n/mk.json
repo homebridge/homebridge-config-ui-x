@@ -791,10 +791,5 @@
   "users.support.control": "can be controlled",
   "users.title_add_user": "Додади корисник",
   "users.title_edit_user": "Измени корисник",
-  "users.title_users": "Корисници",
-  "users.toast_added_new_user": "Додаден е нов корисник",
-  "users.toast_failed_to_add_user": "Грешка при додавање на корисник",
-  "users.toast_failed_to_delete_user": "Грешка при отстранување на корисник",
-  "users.toast_updated_user": "Ажурирај корисник",
-  "users.toast_user_deleted": "Корисникот е отстранет"
+  "users.title_users": "Корисници"
 }

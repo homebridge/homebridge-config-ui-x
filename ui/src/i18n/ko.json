@@ -791,10 +791,5 @@
   "users.support.control": "can be controlled",
   "users.title_add_user": "사용자 추가",
   "users.title_edit_user": "사용자 수정",
-  "users.title_users": "사용자",
-  "users.toast_added_new_user": "새로운 사용자 추가됨",
-  "users.toast_failed_to_add_user": "사용자 추가 실패",
-  "users.toast_failed_to_delete_user": "사용자 삭제 실패",
-  "users.toast_updated_user": "사용자 정보 수정됨",
-  "users.toast_user_deleted": "사용자 삭제됨"
+  "users.title_users": "사용자"
 }

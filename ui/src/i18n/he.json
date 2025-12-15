@@ -791,10 +791,5 @@
   "users.support.control": "can be controlled",
   "users.title_add_user": "הוסף משתמש",
   "users.title_edit_user": "ערוך משתמש",
-  "users.title_users": "משתמשים",
-  "users.toast_added_new_user": "הוספת משתמש חדש",
-  "users.toast_failed_to_add_user": "כשלון בהוספת משתמש",
-  "users.toast_failed_to_delete_user": "כשלון במחיקת משתמש",
-  "users.toast_updated_user": "משתמש עודכן",
-  "users.toast_user_deleted": "משתמש נמחק"
+  "users.title_users": "משתמשים"
 }

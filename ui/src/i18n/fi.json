@@ -791,10 +791,5 @@
   "users.support.control": "can be controlled",
   "users.title_add_user": "Lisää käyttäjä",
   "users.title_edit_user": "Muokkaa käyttäjää",
-  "users.title_users": "Käyttäjät",
-  "users.toast_added_new_user": "Uusi käyttäjä lisätty",
-  "users.toast_failed_to_add_user": "Käyttäjän lisäys epäonnistui",
-  "users.toast_failed_to_delete_user": "Käyttäjän poisto epäonnistui",
-  "users.toast_updated_user": "Käyttäjä päivitetty",
-  "users.toast_user_deleted": "Käyttäjä poistettu"
+  "users.title_users": "Käyttäjät"
 }

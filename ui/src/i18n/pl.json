@@ -791,10 +791,5 @@
   "users.support.control": "może być kontrolowany",
   "users.title_add_user": "Dodaj użytkownika",
   "users.title_edit_user": "Edytuj użytkownika",
-  "users.title_users": "Użytkownicy",
-  "users.toast_added_new_user": "Dodaj użytkownika",
-  "users.toast_failed_to_add_user": "Błąd dodawania użytkownika",
-  "users.toast_failed_to_delete_user": "Błąd usuwania użytkownika",
-  "users.toast_updated_user": "Użytkownik zaktualizowany",
-  "users.toast_user_deleted": "Użytkownik usunięty"
+  "users.title_users": "Użytkownicy"
 }

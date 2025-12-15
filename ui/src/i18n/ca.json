@@ -791,10 +791,5 @@
   "users.support.control": "can be controlled",
   "users.title_add_user": "Afegir usuari",
   "users.title_edit_user": "Editar usuari",
-  "users.title_users": "Usuaris",
-  "users.toast_added_new_user": "Nou usuari afegit",
-  "users.toast_failed_to_add_user": "Error a l'afegir l'usuari",
-  "users.toast_failed_to_delete_user": "Error a l'eliminar l'usuari",
-  "users.toast_updated_user": "Usuari actualitzat",
-  "users.toast_user_deleted": "Usuari eliminat"
+  "users.title_users": "Usuaris"
 }

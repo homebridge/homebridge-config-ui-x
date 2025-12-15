@@ -791,10 +791,5 @@
   "users.support.control": "can be controlled",
   "users.title_add_user": "Tambah Pengguna",
   "users.title_edit_user": "Ubah Pengguna",
-  "users.title_users": "Pengguna",
-  "users.toast_added_new_user": "Menambahkan Pengguna Baru",
-  "users.toast_failed_to_add_user": "Gagal Menambah Pengguna",
-  "users.toast_failed_to_delete_user": "Gagal Menghapus Pengguna",
-  "users.toast_updated_user": "Pengguna yang Diperbarui",
-  "users.toast_user_deleted": "Pengguna Dihapus"
+  "users.title_users": "Pengguna"
 }

@@ -791,10 +791,5 @@
   "users.support.control": "สามารถควบคุมได้",
   "users.title_add_user": "เพิ่มผู้ใช้",
   "users.title_edit_user": "แก้ไขผู้ใช้",
-  "users.title_users": "ผู้ใช้",
-  "users.toast_added_new_user": "เพิ่มผู้ใช้ใหม่",
-  "users.toast_failed_to_add_user": "เพิ่มผู้ใช้ไม่สำเร็จ",
-  "users.toast_failed_to_delete_user": "ลบผู้ใช้ไม่สำเร็จ",
-  "users.toast_updated_user": "อัปเดตผู้ใช้แล้ว",
-  "users.toast_user_deleted": "ลบผู้ใช้แล้ว"
+  "users.title_users": "ผู้ใช้"
 }

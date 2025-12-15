@@ -791,10 +791,5 @@
   "users.support.control": "can be controlled",
   "users.title_add_user": "Kullanıcı Ekle",
   "users.title_edit_user": "Kullanıcıyı Düzenle",
-  "users.title_users": "Kullanıcılar",
-  "users.toast_added_new_user": "Yeni Kullanıcı Eklendi",
-  "users.toast_failed_to_add_user": "Kullanıcı Eklenemedi",
-  "users.toast_failed_to_delete_user": "Kullanıcı Silinemedi",
-  "users.toast_updated_user": "Kullanıcı Güncellendi",
-  "users.toast_user_deleted": "Kullanıcı Silindi"
+  "users.title_users": "Kullanıcılar"
 }

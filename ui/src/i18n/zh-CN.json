@@ -791,10 +791,5 @@
   "users.support.control": "可控制",
   "users.title_add_user": "添加用户",
   "users.title_edit_user": "编辑用户",
-  "users.title_users": "用户",
-  "users.toast_added_new_user": "新用户已添加",
-  "users.toast_failed_to_add_user": "添加新用户失败",
-  "users.toast_failed_to_delete_user": "删除用户失败",
-  "users.toast_updated_user": "用户信息已更新",
-  "users.toast_user_deleted": "用户已删除"
+  "users.title_users": "用户"
 }

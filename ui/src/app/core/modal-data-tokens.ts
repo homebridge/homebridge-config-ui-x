@@ -139,9 +139,16 @@ export const SWITCH_TO_SCOPED_MODAL_DATA = new InjectionToken<SwitchToScopedModa
 // ===== User Management =====
 export interface UserModalData {
   user: any // User type
+  existingUsers?: any[] // For duplicate validation
 }
 
 export const USER_MODAL_DATA = new InjectionToken<UserModalData>('UserModalData')
+
+export interface AddUserModalData {
+  existingUsers: any[] // List of existing users for duplicate validation
+}
+
+export const ADD_USER_MODAL_DATA = new InjectionToken<AddUserModalData>('AddUserModalData')
 
 // ===== Settings =====
 export interface NetworkInterfacesModalData {

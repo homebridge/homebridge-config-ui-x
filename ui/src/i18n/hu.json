@@ -791,10 +791,5 @@
   "users.support.control": "can be controlled",
   "users.title_add_user": "Felhasználó hozzáadása",
   "users.title_edit_user": "Felhasználó szerkesztése",
-  "users.title_users": "Felhasználók",
-  "users.toast_added_new_user": "Felhasználó hozzáadva",
-  "users.toast_failed_to_add_user": "Probléma hozzáadáskor",
-  "users.toast_failed_to_delete_user": "Probléma törléskor",
-  "users.toast_updated_user": "Felhasználó frissítve",
-  "users.toast_user_deleted": "Felhasználó törölve"
+  "users.title_users": "Felhasználók"
 }
