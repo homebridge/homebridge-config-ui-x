@@ -11,7 +11,7 @@
   </div>
   <div class="modal-body">
     @if (availableWidgets().length) {
-    <ul class="list-group list-group-box mb-0">
+    <ul class="list-group list-group-box mb-4">
       <li class="list-group-item text-center grey-text small">
         <span [innerHTML]="'status.widget.account_1' | translate"></span><br />
         <span [innerHTML]="'status.widget.account_2' | translate"></span>
@@ -34,9 +34,28 @@
       }
     </ul>
     }
+
+    <ul class="list-group list-group-box mb-0">
+      <li class="list-group-item d-flex justify-content-between align-items-center">
+        <div>
+          <span>{{ 'form.button_reset' | translate }}</span>
+          <br />
+          <small class="grey-text">{{ 'status.widget.reset' | translate }}</small>
+        </div>
+        <button
+          class="btn btn-danger m-0 ms-3 py-1"
+          (click)="doResetLayout()"
+          [attr.aria-label]="'form.button_reset' | translate"
+          data-bs-dismiss="modal"
+        >
+          <i class="fas fa-arrow-right"></i>
+        </button>
+      </li>
+    </ul>
   </div>
   <div class="modal-footer justify-content-between">
-    <div class="text-start">
+    <div class="text-start"></div>
+    <div class="text-center">
       <button
         type="button"
         class="btn btn-elegant"
@@ -47,11 +66,6 @@
         {{ 'form.button_close' | translate }}
       </button>
     </div>
-    <div class="text-center"></div>
-    <div class="text-end">
-      <button type="button" class="btn btn-danger" data-bs-dismiss="modal" (click)="doResetLayout()">
-        {{ 'form.button_reset' | translate }}
-      </button>
-    </div>
+    <div class="text-end"></div>
   </div>
 </div>

@@ -730,6 +730,7 @@
   "status.widget.network.seconds": "secondi",
   "status.widget.qr_paired": "Abbinato",
   "status.widget.qr_unpaired": "No abbinato",
+  "status.widget.reset": "Reset your status page layout to the default widget arrangement. This will overwrite your current layout.",
   "status.widget.show_hide": "Mostra/Nascondi Widget",
   "status.widget.title_manage_widget": "Gestisci widget",
   "status.widget.update_node_no": "{{ pluginName }} non è compatibile con Node {{ nodeVersion }}.",

@@ -730,6 +730,7 @@
   "status.widget.network.seconds": "seconds",
   "status.widget.qr_paired": "Paired",
   "status.widget.qr_unpaired": "Not Paired",
+  "status.widget.reset": "Reset your status page layout to the default widget arrangement. This will overwrite your current layout.",
   "status.widget.show_hide": "Show/Hide Widgets",
   "status.widget.title_manage_widget": "Aracı Yönet",
   "status.widget.update_node_no": "{{ pluginName }} is not compatible with Node {{ nodeVersion }}.",

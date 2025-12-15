@@ -730,6 +730,7 @@
   "status.widget.network.seconds": "秒",
   "status.widget.qr_paired": "ペアリング済み",
   "status.widget.qr_unpaired": "未ペアリング",
+  "status.widget.reset": "Reset your status page layout to the default widget arrangement. This will overwrite your current layout.",
   "status.widget.show_hide": "表示/非表示",
   "status.widget.title_manage_widget": "ウィジェット管理",
   "status.widget.update_node_no": "{{ pluginName }}はNode {{ nodeVersion }}と互換性がありません。",

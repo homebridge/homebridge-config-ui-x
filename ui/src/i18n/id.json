@@ -730,6 +730,7 @@
   "status.widget.network.seconds": "detik",
   "status.widget.qr_paired": "Terpasang",
   "status.widget.qr_unpaired": "Tidak Terpasang",
+  "status.widget.reset": "Reset your status page layout to the default widget arrangement. This will overwrite your current layout.",
   "status.widget.show_hide": "Tampilkan/Sembunyikan Widget",
   "status.widget.title_manage_widget": "Kelola Widget",
   "status.widget.update_node_no": "{{ pluginName }} is not compatible with Node {{ nodeVersion }}.",

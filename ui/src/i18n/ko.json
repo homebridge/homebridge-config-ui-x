@@ -730,6 +730,7 @@
   "status.widget.network.seconds": "초",
   "status.widget.qr_paired": "연결됨",
   "status.widget.qr_unpaired": "연결되지 않음",
+  "status.widget.reset": "Reset your status page layout to the default widget arrangement. This will overwrite your current layout.",
   "status.widget.show_hide": "위젯 표시/숨기기",
   "status.widget.title_manage_widget": "위젯 관리",
   "status.widget.update_node_no": "{{ pluginName }} is not compatible with Node {{ nodeVersion }}.",

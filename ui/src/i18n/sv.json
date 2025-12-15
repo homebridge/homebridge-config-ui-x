@@ -730,6 +730,7 @@
   "status.widget.network.seconds": "sekunder",
   "status.widget.qr_paired": "Ansluten",
   "status.widget.qr_unpaired": "Ej ansluten",
+  "status.widget.reset": "Reset your status page layout to the default widget arrangement. This will overwrite your current layout.",
   "status.widget.show_hide": "Show/Hide Widgets",
   "status.widget.title_manage_widget": "Hantera widget",
   "status.widget.update_node_no": "{{ pluginName }} is not compatible with Node {{ nodeVersion }}.",

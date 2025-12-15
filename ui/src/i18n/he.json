@@ -730,6 +730,7 @@
   "status.widget.network.seconds": "שניות",
   "status.widget.qr_paired": "מְחוּבָּר",
   "status.widget.qr_unpaired": "לא מחובר",
+  "status.widget.reset": "Reset your status page layout to the default widget arrangement. This will overwrite your current layout.",
   "status.widget.show_hide": "הצג/הסתר ווידג'טים",
   "status.widget.title_manage_widget": "נהל ווידג'טים",
   "status.widget.update_node_no": "{{ pluginName }} is not compatible with Node {{ nodeVersion }}.",

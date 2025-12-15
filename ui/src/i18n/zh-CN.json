@@ -730,6 +730,7 @@
   "status.widget.network.seconds": "秒",
   "status.widget.qr_paired": "已配对",
   "status.widget.qr_unpaired": "未配对",
+  "status.widget.reset": "Reset your status page layout to the default widget arrangement. This will overwrite your current layout.",
   "status.widget.show_hide": "显示/隐藏小组件",
   "status.widget.title_manage_widget": "管理小组件",
   "status.widget.update_node_no": "{{ pluginName }} 与 Node {{ nodeVersion }} 不兼容。",

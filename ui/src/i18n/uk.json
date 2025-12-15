@@ -730,6 +730,7 @@
   "status.widget.network.seconds": "секунди",
   "status.widget.qr_paired": "Cпарований",
   "status.widget.qr_unpaired": "Не спарований",
+  "status.widget.reset": "Reset your status page layout to the default widget arrangement. This will overwrite your current layout.",
   "status.widget.show_hide": "Показати/сховати віджети",
   "status.widget.title_manage_widget": "Керування віджетом",
   "status.widget.update_node_no": "{{ pluginName }} не сумісний з вузлом {{ nodeVersion }}.",
