@@ -280,6 +280,12 @@
         <span class="text-start font-monospace">UUID</span>
         <span class="text-start text-md-end grey-text font-monospace">{{ matchedCachedAccessory.UUID }}</span>
       </li>
+      }
+      <li class="list-group-item d-flex justify-content-between align-items-left flex-column flex-md-row">
+        <span class="text-start">{{ 'accessories.unique_id' | translate }}</span>
+        <span class="text-start text-md-end grey-text font-monospace">{{ localService.uniqueId }}</span>
+      </li>
+      @if (matchedCachedAccessory) {
       <li class="list-group-item d-flex justify-content-between align-items-center">
         <span class="text-start">{{ 'accessories.button_remove' | translate }}</span>
         <button (click)="removeSingleCachedAccessories()" class="btn btn-primary m-0 ms-3 py-1">
