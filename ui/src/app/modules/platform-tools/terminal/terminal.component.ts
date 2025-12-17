@@ -20,6 +20,8 @@ export class TerminalComponent implements OnInit, AfterViewInit, OnDestroy {
 
   readonly termTarget = viewChild<ElementRef>('terminaloutput')
 
+  private visibilityChangeHandler: (() => void) | null = null
+
   @HostListener('window:resize', ['$event'])
   onWindowResize() {
     this.resizeEvent.next(undefined)
@@ -32,65 +34,70 @@ export class TerminalComponent implements OnInit, AfterViewInit, OnDestroy {
 
   @HostListener('window:focus', ['$event'])
   onWindowFocus() {
-    // Autofocus terminal when user returns to this window
     this.activateTerminal()
   }
 
   @HostListener('click', ['$event'])
   onClick() {
-    // Focus this terminal when clicked
     this.activateTerminal()
   }
 
   private activateTerminal() {
-    // Only focus if this terminal is ready and connected
     if (this.$terminal.isTerminalReady() && this.$terminal.term) {
-      // Focus the actual terminal element for better UX
       this.$terminal.term.focus()
     }
   }
 
+  private patchXtermLiveRegion() {
+    const host = this.termTarget()?.nativeElement as HTMLElement | undefined
+    if (!host) return
+
+    const live = host.querySelector('[aria-live]') as HTMLElement | null
+    if (!live) return
+
+    live.setAttribute('role', 'status')
+    live.setAttribute('aria-live', 'polite')
+    live.setAttribute('aria-atomic', 'true')
+  }
+
   public ngOnInit() {
-    // Set page title
     const title = this.$translate.instant('menu.linux.label_terminal')
     this.$settings.setPageTitle(title)
 
-    // Set body bg color
     window.document.querySelector('body').classList.add('bg-black')
 
-    // Always ensure clean state when component initializes
-    // This prevents event handler duplication and state inconsistencies
     if (this.$terminal.isTerminalReady()) {
-      // Clean up existing terminal completely before proceeding
       this.$terminal.destroyTerminal()
     }
 
-    // Start or reconnect to the terminal based on current persistence state
     if (this.$settings.env.terminal?.persistence && this.$terminal.hasActiveSession()) {
-      this.$terminal.reconnectTerminal(this.termTarget(), {}, this.resizeEvent)
+      this.$terminal.reconnectTerminal(this.termTarget(), { screenReaderMode: true }, this.resizeEvent)
     } else {
-      // If persistence is disabled but there's still an active session, destroy it first
       if (!this.$settings.env.terminal?.persistence && this.$terminal.hasActiveSession()) {
         this.$terminal.destroyPersistentSession()
       }
-      this.$terminal.startTerminal(this.termTarget(), {}, this.resizeEvent)
+      this.$terminal.startTerminal(this.termTarget(), { screenReaderMode: true }, this.resizeEvent)
     }
 
-    // Set focus to the terminal after a delay to ensure it's initialized
     setTimeout(() => {
+      this.patchXtermLiveRegion()
       this.activateTerminal()
     }, 100)
   }
 
   public ngAfterViewInit() {
-    // Listen for visibility changes to focus terminal when tab becomes visible
-    document.addEventListener('visibilitychange', this.onVisibilityChange.bind(this))
+    this.visibilityChangeHandler = this.onVisibilityChange.bind(this)
+    document.addEventListener('visibilitychange', this.visibilityChangeHandler)
+
+    setTimeout(() => {
+      this.patchXtermLiveRegion()
+    }, 0)
   }
 
   private onVisibilityChange() {
-    // When tab becomes visible, focus this terminal
     if (!document.hidden && this.$terminal.isTerminalReady()) {
       setTimeout(() => {
+        this.patchXtermLiveRegion()
         this.activateTerminal()
       }, 100)
     }
@@ -101,18 +108,16 @@ export class TerminalComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   public ngOnDestroy() {
-    // Clean up visibility change listener
-    document.removeEventListener('visibilitychange', this.onVisibilityChange.bind(this))
+    if (this.visibilityChangeHandler) {
+      document.removeEventListener('visibilitychange', this.visibilityChangeHandler)
+      this.visibilityChangeHandler = null
+    }
 
-    // Unset body bg color
     window.document.querySelector('body').classList.remove('bg-black')
 
-    // Use persistence setting to determine behavior
     if (this.$settings.env.terminal?.persistence) {
-      // Detach the terminal but keep the session alive
       this.$terminal.detachTerminal()
     } else {
-      // Destroy the terminal completely and ensure any persistent session is destroyed
       this.$terminal.destroyPersistentSession()
     }
   }

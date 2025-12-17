@@ -1,8 +1,34 @@
-<div class="accessory-box" [ngClass]="{ 'accessory-on': service.values.MotionDetected }">
+@let detected = !!service.values.MotionDetected;
+
+@let stateText = detected
+  ? ('accessories.control.detected' | translate)
+  : ('accessories.control.not_detected' | translate);
+
+@let srBaseName = (service.customName || service.serviceName || '').trim();
+@let srType = ('accessories.core.motion_sensor' | translate);
+@let includeType = srBaseName.toLowerCase().indexOf(srType.toLowerCase()) === -1;
+
+@let srText =
+  srBaseName
+  + (includeType ? (', ' + srType) : '')
+  + ', '
+  + stateText;
+
+<div class="accessory-box" [ngClass]="{ 'accessory-on': detected }">
+  <span class="visually-hidden" role="status" aria-live="polite" aria-atomic="true">
+    {{ srText }}
+  </span>
+
   <div class="d-flex flex-column h-100">
-    <div [attr.aria-label]="'accessories.core.motion_sensor' | translate" class="accessory-svg">
-      <svg width="32px" height="32px" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-        <!-- outer casing -->
+    <div class="accessory-svg" aria-hidden="true">
+      <svg
+        width="32px"
+        height="32px"
+        viewBox="0 0 32 32"
+        xmlns="http://www.w3.org/2000/svg"
+        focusable="false"
+        aria-hidden="true"
+      >
         <rect
           class="orange-outline"
           x="3.5"
@@ -14,7 +40,7 @@
           fill="none"
           stroke-width="1.2"
         />
-        <!-- human figure -->
+
         <g transform="translate(7, -0.75), scale(0.075)">
           <path
             d="M190.85 83.94C190.85 70.36 180.09 59.24 166.93 59.24C153.78 59.24 143.02 70.36 143.02 83.94C143.02 97.53 153.78 108.65 166.93 108.65C180.09 108.65 190.85 97.53 190.85 83.94Z"
@@ -31,45 +57,15 @@
             stroke-width="7"
           />
         </g>
-        <!-- motion lines, top to bottom -->
-        <rect
-          x="9"
-          y="9"
-          width="2"
-          height="1"
-          rx="0.2"
-          stroke="#7f7f7f"
-          fill="#1976d2"
-          fill-opacity="0.25"
-          stroke-width="0.25"
-        />
-        <rect
-          x="7"
-          y="13"
-          width="3"
-          height="1"
-          rx="0.2"
-          stroke="#7f7f7f"
-          fill="#1976d2"
-          fill-opacity="0.25"
-          stroke-width="0.25"
-        />
-        <rect
-          x="8"
-          y="17"
-          width="4"
-          height="1"
-          rx="0.2"
-          stroke="#7f7f7f"
-          fill="#1976d2"
-          fill-opacity="0.25"
-          stroke-width="0.25"
-        />
-        <!-- grille horizontal lines -->
+
+        <rect x="9" y="9" width="2" height="1" rx="0.2" stroke="#7f7f7f" fill="#1976d2" fill-opacity="0.25" stroke-width="0.25" />
+        <rect x="7" y="13" width="3" height="1" rx="0.2" stroke="#7f7f7f" fill="#1976d2" fill-opacity="0.25" stroke-width="0.25" />
+        <rect x="8" y="17" width="4" height="1" rx="0.2" stroke="#7f7f7f" fill="#1976d2" fill-opacity="0.25" stroke-width="0.25" />
+
         <line stroke-linecap="round" x1="7" y1="26" x2="25" y2="26" stroke="#7f7f7f" stroke-width="0.5" />
         <line stroke-linecap="round" x1="7" y1="27.5" x2="25" y2="27.5" stroke="#7f7f7f" stroke-width="0.5" />
         <line stroke-linecap="round" x1="7" y1="29" x2="25" y2="29" stroke="#7f7f7f" stroke-width="0.5" />
-        <!-- grille vertical lines -->
+
         <line stroke-linecap="round" x1="7" y1="26" x2="7" y2="29" stroke="#7f7f7f" stroke-width="0.5" />
         <line stroke-linecap="round" x1="9" y1="26" x2="9" y2="29" stroke="#7f7f7f" stroke-width="0.5" />
         <line stroke-linecap="round" x1="11" y1="26" x2="11" y2="29" stroke="#7f7f7f" stroke-width="0.5" />
@@ -82,11 +78,19 @@
         <line stroke-linecap="round" x1="25" y1="26" x2="25" y2="29" stroke="#7f7f7f" stroke-width="0.5" />
       </svg>
     </div>
-    <div class="accessory-label mt-auto">{{ service.customName || service.serviceName }}</div>
-    @if (service.values.MotionDetected) {
-    <div class="accessory-label red-text">{{ 'accessories.control.detected' | translate }}</div>
+
+    <div class="accessory-label mt-auto" aria-hidden="true">
+      {{ service.customName || service.serviceName }}
+    </div>
+
+    @if (detected) {
+    <div class="accessory-label red-text" aria-hidden="true">
+      {{ 'accessories.control.detected' | translate }}
+    </div>
     } @else {
-    <div class="accessory-label grey-text">{{ 'accessories.control.not_detected' | translate }}</div>
+    <div class="accessory-label grey-text" aria-hidden="true">
+      {{ 'accessories.control.not_detected' | translate }}
+    </div>
     }
   </div>
 </div>

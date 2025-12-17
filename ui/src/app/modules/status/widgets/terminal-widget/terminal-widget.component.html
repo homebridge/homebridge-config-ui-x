@@ -12,9 +12,32 @@
     class="drag-handler p-2"
     [ngClass]="{ 'widget-cursor': widget.draggable }"
   >
-    Homebridge {{ 'menu.docker.terminal' | translate }}
+    <div style="display: flex; align-items: center; gap: 8px;">
+      <span aria-hidden="true">▶</span>
+      <span>Homebridge {{ 'menu.docker.terminal' | translate }}</span>
+    </div>
+
+    <button
+      type="button"
+      class="visually-hidden-focusable"
+      [attr.aria-expanded]="srExpanded"
+      [attr.aria-controls]="contentId"
+      (click)="toggleSrExpanded($event)"
+    >
+      Terminal
+    </button>
   </div>
-  <div [ngStyle]="{'height.px': terminalHeight}" class="p-2">
-    <div #terminaloutput class="terminal gridster-item-content w-100 h-100" style="max-height: 100%"></div>
+
+  <div
+    [attr.id]="contentId"
+    class="p-2"
+    [attr.aria-hidden]="srExpanded ? null : 'true'"
+    [attr.inert]="srExpanded ? null : ''"
+  >
+    <div
+      #terminaloutput
+      class="terminal gridster-item-content w-100 h-100"
+      style="max-height: 100%"
+    ></div>
   </div>
 </div>

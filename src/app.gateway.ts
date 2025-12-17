@@ -8,7 +8,7 @@ import { WsGuard } from './core/auth/guards/ws.guard.js'
   namespace: 'app',
   allowEIO3: true,
   cors: {
-    origin: ['http://localhost:8080', 'http://localhost:4200'],
+    origin: ['http://localhost:8080', 'http://localhost:4200', 'http://192.168.1.225:4200'],
     credentials: true,
   },
 })

@@ -9,87 +9,133 @@
       (click)="dismissModal()"
     ></button>
   </div>
+
   <div class="modal-body d-flex flex-row flex-grow-1 w-100">
     @if (loading) {
-    <div class="w-100 text-center primary-text">
-      <i class="fa fa-cog fa-spin" style="font-size: 75px"></i>
-    </div>
+      <div class="w-100 text-center primary-text">
+        <i class="fa fa-cog fa-spin" style="font-size: 75px" aria-hidden="true"></i>
+      </div>
     } @else {
-    <div class="w-100 text-center">
-      @if (plugin.installedVersion) {
-      <i class="fas fa-code-compare primary-text mb-3" style="font-size: 75px"></i>
-      <h6 class="mb-3">{{ 'plugins.manage.select_version' | translate }}</h6>
-      <p class="mb-3">
-        {{ 'plugins.status_installed' | translate }}: <span class="font-monospace">v{{ plugin.installedVersion }}</span>
-      </p>
-      } @else {
-      <i class="far fa-arrow-alt-circle-down primary-text mb-3" style="font-size: 75px"></i>
-      <h6 class="mb-3">{{ 'plugins.manage.select_version' | translate }}</h6>
-      }
-      <ul class="list-group list-group-box mb-0">
-        @for (version of versionsWithTags; track version) {
-        <li class="list-group-item d-flex justify-content-between align-items-center">
-          <span class="text-start">
-            {{ version.tag }}
-            <br />
-            <small class="grey-text font-monospace">v{{ version.version }}</small>
-          </span>
-          <button class="btn btn-primary m-0 ms-3 py-1" (click)="doInstall(version.version)">
-            @if (plugin.installedVersion === version.version) {
-            <i class="fas fa-rotate-right"></i>
-            } @else {
-            <i class="fas fa-arrow-alt-circle-down"></i>
-            }
-          </button>
-        </li>
+      <div class="w-100 text-center">
+        @if (plugin.installedVersion) {
+          <i class="fas fa-code-compare primary-text mb-3" style="font-size: 75px" aria-hidden="true"></i>
+          <h6 class="mb-3">{{ 'plugins.manage.select_version' | translate }}</h6>
+          <p class="mb-3">
+            {{ 'plugins.status_installed' | translate }}:
+            <span class="font-monospace">v{{ plugin.installedVersion }}</span>
+          </p>
+        } @else {
+          <i class="far fa-arrow-alt-circle-down primary-text mb-3" style="font-size: 75px" aria-hidden="true"></i>
+          <h6 class="mb-3">{{ 'plugins.manage.select_version' | translate }}</h6>
         }
-        <li class="list-group-item d-flex justify-content-between align-items-center">
-          <div class="text-start" style="min-width: 50%">
-            {{ 'plugins.manage.all_versions' | translate }}
-            <br />
-            <select class="custom-select w-100 font-monospace" style="font-size: 0.875rem" [(ngModel)]="versionSelect">
-              @for (version of versions; track version) {
-              <option [value]="version.version" [selected]="versionSelect == version.version">
-                v{{ version.version }} @if (version.version == plugin.installedVersion) { ✓ }
-              </option>
-              }
-            </select>
-          </div>
-          @if (versionSelect) {
-          <button class="btn btn-primary m-0 ms-3 py-1" (click)="doInstall(versionSelect)">
-            @if (plugin.installedVersion === versionSelect) {
-            <i class="fas fa-rotate-right"></i>
-            } @else {
-            <i class="fas fa-arrow-alt-circle-down"></i>
-            }
-          </button>
-          }
-        </li>
-      </ul>
 
-      @if (plugin.installedVersion && !['homebridge', 'homebridge-config-ui-x'].includes(plugin.name)) {
-      <ul class="list-group list-group-box mt-3 mb-0">
-        <li class="list-group-item d-flex justify-content-between align-items-center flex-row pb-2">
-          <div class="text-start">
-            {{ 'plugins.manage.hide_updates' | translate }}<br />
-            <span class="grey-text small">{{ 'plugins.manage.hide_updates_desc' | translate }}</span>
-          </div>
-          <div class="text-end grey-text d-flex align-items-center">
-            <input
-              type="checkbox"
-              class="rendux-input"
-              [formControl]="hideUpdatesFormControl"
-              id="hidePluginUpdates"
-              [attr.aria-label]="'plugins.manage.hide_updates' | translate"
-            />
-            <label for="hidePluginUpdates" class="rendux-label ms-3"></label>
-          </div>
-        </li>
-      </ul>
-      }
-    </div>
+        <ul class="list-group list-group-box mb-0">
+          @for (version of versionsWithTags; track version) {
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <span class="text-start">
+                {{ version.tag }}
+                <br />
+                <small class="grey-text font-monospace">v{{ version.version }}</small>
+              </span>
+
+              <button
+                type="button"
+                class="btn btn-primary m-0 ms-3 py-1"
+                (click)="doInstall(version.version)"
+                [attr.aria-label]="
+                  (plugin.installedVersion === version.version ? 'Reinstall' : 'Install')
+                  + ' v' + version.version
+                "
+                [attr.aria-hidden]="plugin.installedVersion === version.version ? 'true' : null"
+                [attr.tabindex]="plugin.installedVersion === version.version ? '-1' : null"
+              >
+                <span class="visually-hidden" aria-hidden="true">
+                  {{ plugin.installedVersion === version.version ? 'Reinstall' : 'Install' }} v{{ version.version }}
+                </span>
+
+                @if (plugin.installedVersion === version.version) {
+                  <i class="fas fa-rotate-right" aria-hidden="true"></i>
+                } @else {
+                  <i class="fas fa-arrow-alt-circle-down" aria-hidden="true"></i>
+                }
+              </button>
+            </li>
+          }
+
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <div class="text-start" style="min-width: 50%">
+              <span aria-hidden="true">
+                {{ 'plugins.manage.all_versions' | translate }}
+              </span>
+              <br />
+              <select
+                class="custom-select w-100 font-monospace"
+                style="font-size: 0.875rem"
+                [(ngModel)]="versionSelect"
+                [attr.aria-label]="'plugins.manage.all_versions' | translate"
+              >
+                @for (version of versions; track version) {
+                  <option [value]="version.version" [selected]="versionSelect == version.version">
+                    v{{ version.version }} @if (version.version == plugin.installedVersion) { ✓ }
+                  </option>
+                }
+              </select>
+            </div>
+
+            @if (versionSelect) {
+              <button
+                type="button"
+                class="btn btn-primary m-0 ms-3 py-1"
+                (click)="doInstall(versionSelect)"
+                [attr.aria-label]="
+                  (plugin.installedVersion === versionSelect ? 'Reinstall' : 'Install')
+                  + ' v' + versionSelect
+                "
+              >
+                <span class="visually-hidden" aria-hidden="true">
+                  {{ plugin.installedVersion === versionSelect ? 'Reinstall' : 'Install' }} v{{ versionSelect }}
+                </span>
+
+                @if (plugin.installedVersion === versionSelect) {
+                  <i class="fas fa-rotate-right" aria-hidden="true"></i>
+                } @else {
+                  <i class="fas fa-arrow-alt-circle-down" aria-hidden="true"></i>
+                }
+              </button>
+            }
+          </li>
+        </ul>
+
+        @if (plugin.installedVersion && !['homebridge', 'homebridge-config-ui-x'].includes(plugin.name)) {
+          <ul class="list-group list-group-box mt-3 mb-0">
+            <li class="list-group-item d-flex justify-content-between align-items-center flex-row pb-2">
+              <div class="text-start">
+                <span aria-hidden="true">
+                  {{ 'plugins.manage.hide_updates' | translate }}
+                </span>
+                <br />
+                <span class="grey-text small">
+                  {{ 'plugins.manage.hide_updates_desc' | translate }}
+                </span>
+              </div>
+
+              <div class="text-end grey-text d-flex align-items-center">
+                <input
+                  type="checkbox"
+                  class="rendux-input"
+                  [formControl]="hideUpdatesFormControl"
+                  id="hidePluginUpdates"
+                  [attr.aria-label]="'plugins.manage.hide_updates' | translate"
+                />
+                <label for="hidePluginUpdates" class="rendux-label ms-3" aria-hidden="true"></label>
+              </div>
+            </li>
+          </ul>
+        }
+      </div>
     }
   </div>
+
   <div class="modal-footer justify-content-between">
     <div class="text-start"></div>
     <div class="text-center">
@@ -98,7 +144,6 @@
         class="btn btn-elegant"
         data-bs-dismiss="modal"
         (click)="dismissModal()"
-        [attr.aria-label]="'form.button_close' | translate"
       >
         {{ 'form.button_close' | translate }}
       </button>

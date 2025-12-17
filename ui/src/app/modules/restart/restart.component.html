@@ -17,7 +17,7 @@
         <span>
           <i
             [ngClass]="{
-              'fas fa-spinner fa-spin': !uiOnline,
+              'fas fa-circle-notch fa-spin': !uiOnline,
               'far fa-check-circle': uiOnline
             }"
           ></i>
@@ -29,7 +29,7 @@
           <i
             [ngClass]="{
               'far fa-circle': !uiOnline,
-              'fas fa-spinner fa-spin': uiOnline
+              'fas fa-circle-notch fa-spin': uiOnline
             }"
           ></i>
           {{ 'restart.service_ready' | translate }}

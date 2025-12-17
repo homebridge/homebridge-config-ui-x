@@ -1,81 +1,158 @@
+<div class="visually-hidden" role="status" aria-atomic="true">
+  {{ actionLiveMessage }}
+</div>
+
 <div class="row mb-3">
   <div class="col-6">
     <h3 class="primary-text m-0">{{ 'menu.label_status' | translate }}</h3>
   </div>
+
   @if (consoleStatus === 'up' && isAdmin) {
-  <div class="col-6 text-end">
-    <button
-      type="button"
-      class="btn btn-elegant my-0 me-0"
-      [hidden]="!options.draggable.enabled && !page.showWidgetConfigure"
-      (click)="addWidget()"
-      container="body"
-      placement="bottom"
-      [openDelay]="150"
-      triggers="hover"
-      [ngbTooltip]="'status.widget.show_hide' | translate"
-      [attr.aria-label]="'status.widget.show_hide' | translate"
-    >
-      <i class="fas fa-eye-low-vision"></i>
-    </button>
-    <div class="btn-group d-none d-sm-inline-block" role="group">
-      <button
-        type="button"
-        class="btn btn-elegant my-0 ms-2"
-        [disabled]="options.draggable.enabled"
-        (click)="unlockLayout()"
-        container="body"
-        placement="bottom"
-        [openDelay]="150"
-        triggers="hover"
-        [ngbTooltip]="'form.button_unlock' | translate"
-        [attr.aria-label]="'form.button_unlock' | translate"
-      >
-        <i class="fas fa-unlock"></i>
-      </button>
+    <div class="col-6 text-end">
       <button
         type="button"
         class="btn btn-elegant my-0 me-0"
-        [disabled]="!options.draggable.enabled"
-        (click)="lockLayout()"
+        [hidden]="!options.draggable.enabled && !page.showWidgetConfigure"
+        (click)="addWidget()"
         container="body"
         placement="bottom"
         [openDelay]="150"
         triggers="hover"
-        [ngbTooltip]="'form.button_lock' | translate"
-        [attr.aria-label]="'form.button_lock' | translate"
+        [ngbTooltip]="'status.widget.show_hide' | translate"
+        [attr.aria-label]="'status.widget.show_hide' | translate"
       >
-        <i class="fas fa-lock"></i>
+        <i class="fas fa-eye-low-vision"></i>
       </button>
+
+      <div class="btn-group d-none d-sm-inline-block">
+        <button
+          type="button"
+          class="btn btn-elegant my-0 ms-2"
+          [disabled]="options.draggable.enabled"
+          (click)="unlockLayout()"
+          container="body"
+          placement="bottom"
+          [openDelay]="150"
+          triggers="hover"
+          [ngbTooltip]="'form.button_unlock' | translate"
+          [attr.aria-label]="'form.button_unlock' | translate"
+        >
+          <i class="fas fa-unlock"></i>
+        </button>
+
+        <button
+          type="button"
+          class="btn btn-elegant my-0 me-0"
+          [disabled]="!options.draggable.enabled"
+          (click)="lockLayout()"
+          container="body"
+          placement="bottom"
+          [openDelay]="150"
+          triggers="hover"
+          [ngbTooltip]="'form.button_lock' | translate"
+          [attr.aria-label]="'form.button_lock' | translate"
+        >
+          <i class="fas fa-lock"></i>
+        </button>
+      </div>
     </div>
-  </div>
   }
 </div>
+
 <div class="status-container d-flex flex-column mt-0">
   @if (consoleStatus === 'down') {
-  <app-spinner />
+    <app-spinner />
   }
+
   <div class="row flex-column flex-grow-1">
     @if (dashboard.length) {
-    <gridster [options]="options" class="flex-grow-1 no-scrollbars py-0" [hidden]="consoleStatus === 'down'">
-      @for (item of dashboard; track item) { @if (!(item.hideOnMobile && page.mobile)) {
-      <gridster-item class="widget-item" [item]="item" [id]="item.component">
-        <div class="gridster-item-content">
-          @if (options.draggable.enabled || page.showWidgetConfigure) {
-          <div class="widget-control-button" (click)="manageWidget(item)">
-            <i class="fas fa-cog"></i>
-          </div>
-          }
+
+      @if (options.draggable.enabled && isAdmin) {
+        <div class="col-12 mb-2">
+          <button
+            type="button"
+            class="btn btn-elegant my-0"
+            (click)="toggleReorderMode()"
+            [attr.aria-pressed]="reorderMode"
+          >
+            {{ reorderMode ? 'Exit reorder mode' : 'Reorder widgets' }}
+          </button>
         </div>
-        <app-widgets [widget]="item" class="d-flex h-100 w-100" />
-      </gridster-item>
-      } }
-    </gridster>
+
+        @if (reorderMode) {
+          <div class="col-12 mb-3">
+            <ul
+              class="list-group list-group-box"
+              role="listbox"
+              aria-label="Reorder widgets"
+              [attr.aria-hidden]="reorderMode ? null : 'true'"
+            >
+              @for (component of reorderComponents; track component) {
+                <li
+                  class="list-group-item d-flex justify-content-between align-items-center flex-wrap gap-2"
+                  role="option"
+                  [id]="'reorder-item-' + component"
+                  [attr.tabindex]="component === selectedReorderComponent ? '0' : '-1'"
+                  [attr.aria-selected]="component === selectedReorderComponent"
+                  [attr.aria-label]="getReorderItemAriaLabel(component)"
+                  (focus)="setSelectedReorderComponent(component)"
+                  (keydown)="onReorderKeydown($event)"
+                >
+                  <span class="text-start" aria-hidden="true">
+                    {{ getWidgetDisplayName(component) }}
+                  </span>
+
+                  @if (options.draggable.enabled || page.showWidgetConfigure) {
+                    <button
+                      type="button"
+                      class="btn btn-link p-0"
+                      (click)="manageWidgetByComponent(component)"
+                      [attr.aria-label]="getWidgetSettingsAriaLabel({ component: component })"
+                      [attr.aria-hidden]="reorderMode ? 'true' : null"
+                      [attr.tabindex]="reorderMode ? '-1' : null"
+                    >
+                      <i class="fas fa-cog" aria-hidden="true"></i>
+                    </button>
+                  }
+                </li>
+              }
+            </ul>
+          </div>
+        }
+      }
+
+      <gridster
+        [options]="options"
+        class="flex-grow-1 no-scrollbars py-0"
+        [hidden]="consoleStatus === 'down'"
+      >
+        @for (item of dashboard; track item.component) {
+          @if (!(item.hideOnMobile && page.mobile)) {
+            <gridster-item class="widget-item" [item]="item" [id]="item.component">
+              <div class="gridster-item-content">
+                @if ((options.draggable.enabled || page.showWidgetConfigure) && !reorderMode) {
+                  <button
+                    type="button"
+                    class="widget-control-button btn btn-link p-0"
+                    (click)="manageWidget(item)"
+                    [attr.aria-label]="getWidgetSettingsAriaLabel(item)"
+                  >
+                    <i class="fas fa-cog" aria-hidden="true"></i>
+                  </button>
+                }
+              </div>
+
+              <app-widgets [widget]="item" class="d-flex h-100 w-100" />
+            </gridster-item>
+          }
+        }
+      </gridster>
+
     }
   </div>
+
   <div class="row mb-auto">
     <div class="col-md-12 text-center px-4 pt-1 pt-lg-2 pb-3 pb-lg-2 grey-text">
-      <!-- The below copyright notice shall be included and displayed on all copies or substantial portions of this software. -->
       <small>
         &copy; {{ currentYear }} &middot;
         <a class="grey-text" target="_blank" rel="noopener noreferrer" href="https://github.com/homebridge/homebridge">
@@ -91,9 +168,15 @@
           Homebridge UI
         </a>
         &middot;
-        <a class="grey-text" href="javascript: void(0);" (click)="openCreditsModal()"> <i class="fas fa-heart"></i></a>
+        <button
+          type="button"
+          class="btn btn-link p-0 text-decoration-none grey-text"
+          (click)="openCreditsModal()"
+          aria-label="Credits"
+        >
+          <i class="fas fa-heart"></i>
+        </button>
       </small>
-      <!-- The above copyright notice shall be included and displayed on all copies or substantial portions of this software. -->
     </div>
   </div>
 </div>

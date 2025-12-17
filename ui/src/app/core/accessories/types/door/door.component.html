@@ -1,78 +1,88 @@
-<div
-  class="accessory-box"
-  [ngClass]="{ 'accessory-on': service.values.CurrentPosition }"
-  (longClick)="onLongClick()"
-  (shortClick)="onClick()"
-  tabindex="0"
->
-  <div class="d-flex flex-column h-100">
-    <div [attr.aria-label]="'accessories.core.door' | translate" class="accessory-svg">
-      <svg width="32px" height="32px" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-        <!-- outer frame -->
-        <rect x="7.8" y="0.8" width="16.4" height="30.2" rx="0.5" stroke="#7f7f7f" fill="none" stroke-width="1.5" />
-        <!-- door outline -->
-        <rect
-          class="outline"
-          x="9.6"
-          y="2.6"
-          width="12.8"
-          height="26.6"
-          stroke="#7f7f7f"
-          fill="none"
-          stroke-width="1"
-        />
-        <!-- top panel -->
-        <rect
-          class="panel"
-          x="11.2"
-          y="4.2"
-          width="9.6"
-          height="10.8"
-          stroke="#7f7f7f"
-          fill-opacity="0"
-          stroke-width="0.5"
-          rx="0.25"
-        />
-        <!-- bottom panel -->
-        <rect
-          class="panel"
-          x="11.2"
-          y="16.8"
-          width="9.6"
-          height="10.8"
-          stroke="#7f7f7f"
-          fill-opacity="0"
-          stroke-width="0.5"
-          rx="0.25"
-        />
-        <!-- wider floor -->
-        <line x1="0" y1="31" x2="32" y2="31" stroke="#7f7f7f" stroke-width="1.5" />
-        <!-- door handle -->
-        <rect
-          class="handle"
-          x="19.25"
-          y="15.87"
-          width="1.55"
-          height="0.05"
-          stroke="#1976d2"
-          fill="none"
-          stroke-width="0.5"
-          rx="10"
-        />
-      </svg>
+<div class="door-wrapper">
+  <button
+    type="button"
+    class="accessory-box"
+    [ngClass]="{ 'accessory-on': service.values.CurrentPosition }"
+    [attr.aria-label]="accessibleLabel"
+    aria-haspopup="has dialog"
+    (longClick)="onLongClick()"
+    (shortClick)="onClick()"
+    (keydown)="onKeyDown($event)"
+    aria-keyshortcuts="shift f10"
+  >
+    <div class="d-flex flex-column h-100">
+      <div aria-hidden="true" class="accessory-svg">
+        <svg width="32px" height="32px" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+          <!-- outer frame -->
+          <rect x="7.8" y="0.8" width="16.4" height="30.2" rx="0.5" stroke="#7f7f7f" fill="none" stroke-width="1.5" />
+          <!-- door outline -->
+          <rect
+            class="outline"
+            x="9.6"
+            y="2.6"
+            width="12.8"
+            height="26.6"
+            stroke="#7f7f7f"
+            fill="none"
+            stroke-width="1"
+          />
+          <!-- top panel -->
+          <rect
+            class="panel"
+            x="11.2"
+            y="4.2"
+            width="9.6"
+            height="10.8"
+            stroke="#7f7f7f"
+            fill-opacity="0"
+            stroke-width="0.5"
+            rx="0.25"
+          />
+          <!-- bottom panel -->
+          <rect
+            class="panel"
+            x="11.2"
+            y="16.8"
+            width="9.6"
+            height="10.8"
+            stroke="#7f7f7f"
+            fill-opacity="0"
+            stroke-width="0.5"
+            rx="0.25"
+          />
+          <!-- wider floor -->
+          <line x1="0" y1="31" x2="32" y2="31" stroke="#7f7f7f" stroke-width="1.5" />
+          <!-- door handle -->
+          <rect
+            class="handle"
+            x="19.25"
+            y="15.87"
+            width="1.55"
+            height="0.05"
+            stroke="#1976d2"
+            fill="none"
+            stroke-width="0.5"
+            rx="10"
+          />
+        </svg>
+      </div>
+      <div aria-hidden="true" class="accessory-label mt-auto">{{ service.customName || service.serviceName }}</div>
+      @if (service.values.PositionState === 2) {
+      <div aria-hidden="true" class="accessory-label grey-text">
+        @if (service.values.CurrentPosition === 0) { {{ 'accessories.control.closed' | translate }} } @if
+        (service.values.CurrentPosition > 0 && service.values.CurrentPosition < 100) { {{ 'accessories.control.open' |
+        translate }} {{ service.values.CurrentPosition }}% } @if (service.values.CurrentPosition === 100) { {{
+        'accessories.control.open' | translate }} }
+      </div>
+      } @else if (service.values.PositionState === 1) {
+      <div aria-hidden="true" class="accessory-label red-text">{{ 'accessories.control.opening' | translate }}...</div>
+      } @else if (service.values.PositionState === 0) {
+      <div aria-hidden="true" class="accessory-label red-text">{{ 'accessories.control.closing' | translate }}...</div>
+      }
     </div>
-    <div class="accessory-label mt-auto">{{ service.customName || service.serviceName }}</div>
-    @if (service.values.PositionState === 2) {
-    <div class="accessory-label grey-text">
-      @if (service.values.CurrentPosition === 0) { {{ 'accessories.control.closed' | translate }} } @if
-      (service.values.CurrentPosition > 0 && service.values.CurrentPosition < 100) { {{ 'accessories.control.open' |
-      translate }} {{ service.values.CurrentPosition }}% } @if (service.values.CurrentPosition === 100) { {{
-      'accessories.control.open' | translate }} }
-    </div>
-    } @else if (service.values.PositionState === 1) {
-    <div class="accessory-label red-text">{{ 'accessories.control.opening' | translate }}...</div>
-    } @else if (service.values.PositionState === 0) {
-    <div class="accessory-label red-text">{{ 'accessories.control.closing' | translate }}...</div>
-    }
+  </button>
+  <!-- Live region for state announcements - outside button -->
+  <div class="visually-hidden" role="status" aria-live="assertive" aria-atomic="true">
+    {{ stateAnnouncement }}
   </div>
 </div>

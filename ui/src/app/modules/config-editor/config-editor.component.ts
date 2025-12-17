@@ -1,7 +1,7 @@
 import { Component, inject, OnDestroy, OnInit, Renderer2 } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { ActivatedRoute, Router } from '@angular/router'
-import { NgbModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap'
+import { NgbDropdownModule, NgbModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import json5 from 'json5'
 import { isEqual } from 'lodash-es'
@@ -39,6 +39,7 @@ declare global {
   standalone: true,
   imports: [
     NgbTooltip,
+    NgbDropdownModule,
     EditorComponent,
     DiffEditorComponent,
     FormsModule,
@@ -56,6 +57,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
   private $settings = inject(SettingsService)
   private $toastr = inject(ToastrService)
   private $translate = inject(TranslateService)
+
   private editorDecorations = []
   private lastHeight: number
   private visualViewPortEventCallback: () => void
@@ -75,12 +77,54 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
   public diffModifiedModel: DiffEditorModel
   public renderSideBySide = false
 
+  public preferPlainTextEditor = false
+
   constructor() {
     this.isMobile = this.$md.detect.mobile()
+    this.preferPlainTextEditor = localStorage.getItem('hb_config_editor_plaintext') === 'true'
+  }
+
+  public isUsingPlainTextEditor() {
+    return !!this.isMobile || !!this.preferPlainTextEditor
+  }
+
+  public togglePlainTextEditor() {
+    this.preferPlainTextEditor = !this.preferPlainTextEditor
+    localStorage.setItem('hb_config_editor_plaintext', this.preferPlainTextEditor ? 'true' : 'false')
+
+    if (!this.preferPlainTextEditor) {
+      setTimeout(() => {
+        try {
+          if (this.monacoEditor && this.homebridgeConfig) {
+            this.monacoEditor.getModel().setValue(this.homebridgeConfig)
+            this.monacoEditor.focus()
+          }
+        } catch { /* ignore */ }
+      }, 0)
+    }
+  }
+
+  public setPlainTextEditor(enabled: boolean) {
+    if (!!enabled === !!this.preferPlainTextEditor) {
+      return
+    }
+
+    this.preferPlainTextEditor = !!enabled
+    localStorage.setItem('hb_config_editor_plaintext', this.preferPlainTextEditor ? 'true' : 'false')
+
+    if (!this.preferPlainTextEditor) {
+      setTimeout(() => {
+        try {
+          if (this.monacoEditor && this.homebridgeConfig) {
+            this.monacoEditor.getModel().setValue(this.homebridgeConfig)
+            this.monacoEditor.focus()
+          }
+        } catch { /* ignore */ }
+      }, 0)
+    }
   }
 
   public ngOnInit() {
-    // Set page title - using "JSON Config" from menu
     const title = this.$translate.instant('menu.config_json_editor')
     this.$settings.setPageTitle(title)
 
@@ -96,16 +140,6 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
     const content = document.querySelector('.content')
     this.$renderer.setStyle(content, 'height', '100%')
 
-    // Capture viewport events
-    this.visualViewPortEventCallback = () => this.visualViewPortChanged()
-    this.lastHeight = window.innerHeight
-
-    if (window.visualViewport && !this.isMobile) {
-      window.visualViewport.addEventListener('resize', this.visualViewPortEventCallback, true)
-      this.$md.disableTouchMove()
-    }
-
-    // Capture viewport events
     this.visualViewPortEventCallback = () => this.visualViewPortChanged()
     this.lastHeight = window.innerHeight
 
@@ -118,20 +152,17 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
       this.homebridgeConfig = data.config
       this.latestSavedConfig = JSON.parse(data.config)
 
-      // Update diff models with initial config
       if (this.diffModifiedModel) {
         this.updateDiffModels()
       }
     })
 
-    // Set up the base monaco editor model
     this.monacoEditorModel = {
       value: '{}',
       language: 'json',
       uri: (window as any).monaco ? (window as any).monaco.Uri.parse('a://homebridge/config.json') : undefined,
     }
 
-    // Set up diff editor models with initial content
     this.diffOriginalModel = {
       code: '',
       language: 'json',
@@ -142,7 +173,6 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
       language: 'json',
     }
 
-    // If monaco is not loaded yet, wait for it, otherwise set up the editor now
     if (!(window as any).monaco) {
       this.$monacoEditor.readyEvent.subscribe({
         next: () => this.setMonacoEditorModel(),
@@ -151,7 +181,6 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
       this.setMonacoEditorModel()
     }
 
-    // Get any query parameters
     const { action } = this.$router.parseUrl(this.$router.url).queryParams
     if (action) {
       switch (action) {
@@ -161,7 +190,6 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
         }
       }
 
-      // Clear the query parameters so that we don't keep showing the same action
       void this.$router.navigate([], {
         queryParams: {},
         replaceUrl: true,
@@ -170,13 +198,12 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
     }
   }
 
-  /**
-   * Called when the monaco editor is ready
-   */
   public onEditorInit(editor: any) {
     window.editor = editor
     this.monacoEditor = editor
-    this.monacoEditor.getModel().setValue(this.homebridgeConfig)
+    if (!this.isUsingPlainTextEditor()) {
+      this.monacoEditor.getModel().setValue(this.homebridgeConfig)
+    }
   }
 
   public onInitDiffEditor(editor: any) {
@@ -216,22 +243,16 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
       return
     }
 
-    // Hide decorations
     if (this.monacoEditor) {
       this.editorDecorations = this.monacoEditor.deltaDecorations(this.editorDecorations, [])
     }
 
     this.saveInProgress = true
-    // Verify homebridgeConfig contains valid json
     try {
-      // Get the value from the editor
-      if (!this.isMobile) {
-        // Format the document
+      if (!this.isUsingPlainTextEditor()) {
         await this.monacoEditor.getAction('editor.action.formatDocument').run()
 
-        // Check for issues, specifically block saving if there are any duplicate keys
         const issues = (window as any).monaco.editor.getModelMarkers({ owner: 'json' })
-
         for (const issue of issues) {
           if (issue.message === 'Duplicate object key') {
             this.saveInProgress = false
@@ -240,17 +261,12 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
           }
         }
 
-        // Set the value
         this.homebridgeConfig = this.monacoEditor.getModel().getValue()
       }
 
-      // Get the config from the editor
       const config = this.parseConfigFromEditor()
-
-      // Ensure it's formatted so errors can be easily spotted
       this.homebridgeConfig = JSON.stringify(config, null, 4)
 
-      // Basic validation of homebridge config spec
       if (typeof (config.bridge) !== 'object') {
         this.$toastr.error(this.$translate.instant('config.config_bridge_missing'), this.$translate.instant('toast.title_error'))
       } else if (!/^(?:[0-9A-F]{2}:){5}[0-9A-F]{2}$/i.test(config.bridge.username)) {
@@ -260,17 +276,17 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
       } else if (config.platforms && !Array.isArray(config.platforms)) {
         this.$toastr.error(this.$translate.instant('config.config_platform_must_be_array'), this.$translate.instant('toast.title_error'))
       } else if (config.platforms && Array.isArray(config.platforms) && !this.validateSection(config.platforms, 'platform')) {
-        // Handled in validator function
+        // handled
       } else if (config.accessories && Array.isArray(config.accessories) && !this.validateSection(config.accessories, 'accessory')) {
-        // Handled in validator function
+        // handled
       } else if (config.plugins && Array.isArray(config.plugins) && !this.validatePlugins(config.plugins, 'plugins')) {
-        // Handled in validator function
+        // handled
       } else if (
         config.disabledPlugins
         && Array.isArray(config.disabledPlugins)
         && !this.validatePlugins(config.disabledPlugins, 'disabledPlugins')
       ) {
-        // Handled in validator function
+        // handled
       } else {
         await this.saveConfig(config)
         this.originalConfig = ''
@@ -308,12 +324,9 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
             this.homebridgeConfig = JSON.stringify(json, null, 4)
             this.updateDiffModels()
 
-            // Update the editor
-            if (this.monacoEditor && window.editor.modifiedEditor) {
-              // Remove all decorations
+            if (!this.isUsingPlainTextEditor() && this.monacoEditor && (window as any).editor?.getModifiedEditor) {
               this.editorDecorations = this.monacoEditor.deltaDecorations(this.editorDecorations, [])
 
-              // Remove existing config
               this.monacoEditor.executeEdits('beautifier', [
                 {
                   identifier: 'delete' as any,
@@ -323,7 +336,6 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
                 },
               ])
 
-              // Inject the restored content
               this.monacoEditor.executeEdits('beautifier', [
                 {
                   identifier: 'insert' as any,
@@ -344,18 +356,17 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
   }
 
   public onCancelRestore() {
-    // Properly dispose of diff editor before clearing config
     if (window.editor && window.editor.dispose) {
       try {
         window.editor.dispose()
         window.editor = undefined
-      } catch (error) { /* cancelled */ }
+      } catch { /* ignore */ }
     }
 
     this.homebridgeConfig = this.originalConfig
     this.originalConfig = ''
     if (this.renderSideBySide) {
-      this.toggleSideBySide() // reset to default
+      this.toggleSideBySide()
     }
     this.updateDiffModels()
     this.onRestore()
@@ -376,13 +387,11 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
     }
 
     try {
-      // Clear up main editor
       if (window.editor && window.editor.dispose) {
         window.editor.dispose()
         window.editor = undefined
       }
 
-      // Clean up models
       if ((window as any).monaco) {
         const originalUri = (window as any).monaco.Uri.parse('file:///original.json')
         const modifiedUri = (window as any).monaco.Uri.parse('file:///modified.json')
@@ -397,50 +406,42 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
           existingModifiedModel.dispose()
         }
 
-        // Clean up validation schemas to prevent interference with other Monaco editors
-        // Remove the homebridge config schema we added
         const existingSchemas = (window as any).monaco.languages.json.jsonDefaults.diagnosticsOptions.schemas || []
-        const updatedSchemas = existingSchemas.filter((x: any) => x.uri !== 'http://homebridge/config.json');
+        const updatedSchemas = existingSchemas.filter((x: any) => x.uri !== 'http://homebridge/config.json')
 
-        (window as any).monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
+        ;(window as any).monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
           validate: true,
           allowComments: false,
           schemas: updatedSchemas,
         })
       }
 
-      // Clean up monaco editor instance
       if (this.monacoEditor) {
         this.monacoEditor.dispose()
       }
-    } catch (error) { /* no problem disposing */ }
+    } catch { /* ignore */ }
   }
 
   private validateSection(sections: any[], type: 'accessory' | 'platform') {
     for (const section of sections) {
-      // Check section is an object
       if (typeof section !== 'object' || Array.isArray(section)) {
         this.$toastr.error(this.$translate.instant('config.error_blocks_objects', { type }), this.$translate.instant('toast.title_error'))
         this.highlightOffendingArrayItem(section)
         return false
       }
 
-      // Check section contains platform/accessory key
       if (!section[type]) {
         this.$toastr.error(this.$translate.instant('config.error_blocks_type', { type }), this.$translate.instant('toast.title_error'))
         this.highlightOffendingArrayItem(section)
         return false
       }
 
-      // Check section platform/accessory key is a string
       if (typeof section[type] !== 'string') {
         this.$toastr.error(this.$translate.instant('config.error_string_type', { type }), this.$translate.instant('toast.title_error'))
         this.highlightOffendingArrayItem(section)
         return false
       }
     }
-
-    // Validation passed
     return true
   }
 
@@ -454,15 +455,11 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
     return true
   }
 
-  /**
-   * Highlight the problematic rows in the editor
-   */
   private highlightOffendingArrayItem(block: string) {
     if (!this.monacoEditor) {
       return
     }
 
-    // Figure out which lines the offending block spans, add leading space as per formatting rules
     block = JSON.stringify(block, null, 4).split('\n').map(x => `        ${x}`).join('\n')
 
     setTimeout(() => {
@@ -485,9 +482,6 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
     }, 200)
   }
 
-  /**
-   * Set up a json schema object used to check the config against
-   */
   private setMonacoEditorModel() {
     if ((window as any).monaco.languages.json.jsonDefaults.diagnosticsOptions.schemas.some((x: any) => x.uri === 'http://homebridge/config.json')) {
       return
@@ -497,9 +491,9 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
 
     const childBridgeSchema = createChildBridgeSchema(this.$translate, {
       isDebugModeEnabled: this.isDebugModeEnabled,
-    });
+    })
 
-    (window as any).monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
+    ;(window as any).monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
       allowComments: false,
       validate: true,
       schemas: [
@@ -569,22 +563,10 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
                     title: this.$translate.instant('settings.mdns_advertiser'),
                     description: this.$translate.instant('settings.mdns_advertiser_help'),
                     oneOf: [
-                      {
-                        title: 'Avahi',
-                        enum: ['avahi'],
-                      },
-                      {
-                        title: 'Bonjour HAP',
-                        enum: ['bonjour-hap'],
-                      },
-                      {
-                        title: 'Ciao',
-                        enum: ['ciao'],
-                      },
-                      {
-                        title: 'Resolved',
-                        enum: ['resolved'],
-                      },
+                      { title: 'Avahi', enum: ['avahi'] },
+                      { title: 'Bonjour HAP', enum: ['bonjour-hap'] },
+                      { title: 'Ciao', enum: ['ciao'] },
+                      { title: 'Resolved', enum: ['resolved'] },
                     ],
                   },
                   bind: {
@@ -643,10 +625,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
                     description: this.$translate.instant('settings.network.port_end_desc'),
                   },
                 },
-                default: {
-                  start: 52100,
-                  end: 52150,
-                },
+                default: { start: 52100, end: 52150 },
               },
               platforms: {
                 type: 'array',
@@ -708,14 +687,8 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
                           title: this.$translate.instant('settings.security.auth'),
                           description: this.$translate.instant('settings.security.auth_desc'),
                           oneOf: [
-                            {
-                              title: 'Require Authentication',
-                              enum: ['form'],
-                            },
-                            {
-                              title: 'None',
-                              enum: ['none'],
-                            },
+                            { title: 'Require Authentication', enum: ['form'] },
+                            { title: 'None', enum: ['none'] },
                           ],
                         },
                         theme: {
@@ -1103,15 +1076,13 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
 
   private visualViewPortChanged() {
     if (this.lastHeight < window.visualViewport.height) {
-      (document.activeElement as HTMLElement).blur()
+      ;(document.activeElement as HTMLElement).blur()
     }
 
     if (window.visualViewport.height < window.innerHeight) {
-      // Keyboard may have opened
       this.$md.enableTouchMove()
       this.lastHeight = window.visualViewport.height
     } else if (window.visualViewport.height === window.innerHeight) {
-      // Keyboard is closed
       this.$md.disableTouchMove()
       this.lastHeight = window.visualViewport.height
     }
@@ -1138,7 +1109,6 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
   }
 
   private removePlatformsAndAccessories(config: HomebridgeConfig): Omit<HomebridgeConfig, 'platforms' | 'accessories'> {
-    // eslint-disable-next-line unused-imports/no-unused-vars
     const { accessories, platforms, ...rest } = config
     return rest
   }
@@ -1161,15 +1131,12 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
       const originalConfigJson = this.latestSavedConfig
       const updatedConfigJson = JSON.parse(this.homebridgeConfig) as HomebridgeConfig
 
-      // Find config platforms in original config
       const originalConfigPlatform = (originalConfigJson.platforms || [])
         .find(platform => platform.platform === 'config')
 
-      // Find config platforms in updated config
       const updatedConfigPlatform = (updatedConfigJson.platforms || [])
         .find(platform => platform.platform === 'config')
 
-      // If one exists and the other doesn't, that's a change
       if (!originalConfigPlatform && updatedConfigPlatform) {
         return true
       }
@@ -1180,11 +1147,10 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
         return false
       }
 
-      // Both exist - compare all keys (deep equality check)
       return !isEqual(originalConfigPlatform, updatedConfigPlatform)
     } catch (error) {
       console.error('Error detecting config platform changes:', error)
-      return false // Default to no service restart if we can't determine
+      return false
     }
   }
 
@@ -1192,9 +1158,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
     const restartType = await this.determineRestartType()
 
     if (restartType === 'full') {
-      // If any of the keys inside the platforms[].entry where entry.platform === 'config' have changed, we need a full service restart
       const doServiceRestart = this.detectConfigPlatformChanges()
-
       await this.performFullRestart(doServiceRestart)
     } else if (restartType === 'child') {
       await this.performChildBridgeRestart()
@@ -1204,49 +1168,39 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
   }
 
   private async determineRestartType(): Promise<'none' | 'child' | 'full'> {
-    // If homebridge is pending a restart, we don't even need to start with these checks
     if (this.hbPendingRestart) {
       return 'full'
     }
 
-    // We can try to find things that have changed, to offer the best restart option
     const originalConfigJson = this.latestSavedConfig
     const originalConfigString = JSON.stringify(originalConfigJson, null, 4)
     const updatedConfigJson = JSON.parse(this.homebridgeConfig) as HomebridgeConfig
     const updatedConfigString = this.homebridgeConfig
 
-    // Check one: has anything actually changed?
     if (originalConfigString === updatedConfigString && !this.childBridgesToRestart.length) {
       this.$toastr.info(this.$translate.instant('config.no_restart'), this.$translate.instant('config.config_saved'))
       return 'none'
     }
 
-    // Check two: has a new key been added or removed at the top level?
     if (!this.validateArraysEqual(Object.keys(originalConfigJson), Object.keys(updatedConfigJson))) {
       return 'full'
     }
 
-    // Check three: if the user has no child bridges, then there is no point in checking the rest
     const platformsAndAccessories = [
       ...(updatedConfigJson.platforms || []),
       ...(updatedConfigJson.accessories || []),
     ]
-    // Check if no child bridges are present
+
     if (platformsAndAccessories.every((entry: PlatformConfig | AccessoryConfig) => !entry._bridge || !Object.keys(entry._bridge).length)) {
       return 'full'
     }
 
-    // Check four: have any of the top level properties changed (except plugins and accessories)?
-    // Remove 'accessories' and 'platforms' from both configs
     const originalConfigOmitted = this.removePlatformsAndAccessories(originalConfigJson)
     const updatedConfigOmitted = this.removePlatformsAndAccessories(updatedConfigJson)
     if (!isEqual(originalConfigOmitted, updatedConfigOmitted)) {
       return 'full'
     }
 
-    // So far so good, now we just needs to deal with the platforms and accessories keys
-    // Check five: In each case, for the properties of those arrays, compare on the 'platform' or 'accessory' key
-    // If by comparing them, we find a 'platform' or 'accessory' has been added, removed or changed, we need a full restart
     const originalPlatforms = originalConfigJson.platforms || []
     const updatedPlatforms = updatedConfigJson.platforms || []
     const originalPlatformKeys = originalPlatforms.map((p: PlatformConfig) => p.platform)
@@ -1254,6 +1208,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
     if (!this.validateArraysEqual(originalPlatformKeys, updatedPlatformKeys)) {
       return 'full'
     }
+
     const originalAccessories = originalConfigJson.accessories || []
     const updatedAccessories = updatedConfigJson.accessories || []
     const originalAccessoryKeys = originalAccessories.map((a: AccessoryConfig) => a.accessory)
@@ -1262,8 +1217,6 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
       return 'full'
     }
 
-    // Any object in the platforms array can have a '_bridge' key, and the value is an object
-    // Check six: We need a full restart if for any of the platforms a '_bridge' key has been added, changed or removed
     if (!this.validateBridgesEqual(this.removeEmptyBridges(originalPlatforms), this.removeEmptyBridges(updatedPlatforms))) {
       return 'full'
     }
@@ -1271,7 +1224,6 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
       return 'full'
     }
 
-    // For the rest of the checks, we need to find out which entries have changed
     const changedPlatformEntries = originalPlatforms.filter((p: PlatformConfig) => {
       return !isEqual(p, updatedPlatforms.find((up: PlatformConfig) => up.platform === p.platform))
     })
@@ -1280,15 +1232,12 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
     })
     const changedEntries = [...changedPlatformEntries, ...changedAccessoryEntries]
 
-    // Check seven: we need a full restart if the homebridge ui config entry has changed
     if (changedPlatformEntries.some((entry: PlatformConfig) => entry.platform === 'config')) {
       return 'full'
     }
 
-    // Check eight: apart from the ui config entry, if any of the changed entries do not have a '_bridge' key
-    //   (or it is null or an empty object), we must do a full restart
     const hasChangedEntriesWithoutBridge = changedEntries.some((entry: PlatformConfig | AccessoryConfig) => {
-      if (entry.platform === 'config') {
+      if ((entry as PlatformConfig).platform === 'config') {
         return false
       }
       return !entry._bridge || Object.keys(entry._bridge).length === 0
@@ -1297,37 +1246,33 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
       return 'full'
     }
 
-    // At this point we have a list of the changed entries, and we know they all have a _bridge key
-    // Now we can start to form a list of the child bridges that we can restart.
     try {
       const data: ChildBridge[] = await firstValueFrom(this.$api.get('/status/homebridge/child-bridges'))
 
-      // Match up the changed entries with the child bridges
-      changedEntries.forEach((entry: PlatformConfig | AccessoryConfig) => {
-        // Grab the username from the _bridge key, uppercase it, and find the matching child bridge
+      for (const entry of changedEntries) {
         const configUsername = entry._bridge.username.toUpperCase()
         const childBridge = data.find(({ username }) => username === configUsername)
-        if (childBridge) {
-          if (!this.childBridgesToRestart.some((b: ChildBridgeToRestart) => b.username === childBridge.username)) {
-            this.childBridgesToRestart.push({
-              name: childBridge.name,
-              username: childBridge.username,
-            })
-          }
-        } else {
-          return 'full' // child bridge not found, need full restart
-        }
-      })
 
-      return 'child' // child bridge restart is sufficient
+        if (!childBridge) {
+          return 'full'
+        }
+
+        if (!this.childBridgesToRestart.some((b: ChildBridgeToRestart) => b.username === childBridge.username)) {
+          this.childBridgesToRestart.push({
+            name: childBridge.name,
+            username: childBridge.username,
+          })
+        }
+      }
+
+      return 'child'
     } catch (error) {
       console.error('Error fetching child bridges:', error)
-      return 'full' // api error, fallback to full restart
+      return 'full'
     }
   }
 
   private async performChildBridgeRestart() {
-    // If there are no child bridges to restart, fall through to full restart
     if (!this.childBridgesToRestart.length) {
       await this.performFullRestart(false)
       return
@@ -1339,15 +1284,13 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
     })
     ref.componentInstance.bridges = this.childBridgesToRestart
 
-    // If the user dismisses the modal, the child bridges are still pending a restart
     try {
       await ref.result
       this.childBridgesToRestart = []
-    } catch (error) { /* modal dismissed */ }
+    } catch { /* modal dismissed */ }
   }
 
   private async performFullRestart(restartService: boolean) {
-    // If restartService is true, set the flag to do a full service restart
     if (restartService) {
       await firstValueFrom(this.$api.put('/platform-tools/hb-service/set-full-service-restart-flag', {}))
     }
@@ -1373,7 +1316,9 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
       const config = json5.parse(this.homebridgeConfig)
       this.homebridgeConfig = JSON.stringify(config, null, 4)
       if (this.monacoEditor) {
-        this.monacoEditor.getModel().setValue(this.homebridgeConfig)
+        try {
+          this.monacoEditor.getModel().setValue(this.homebridgeConfig)
+        } catch { /* ignore */ }
       }
       return config
     }

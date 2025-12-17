@@ -33,7 +33,7 @@ import { PluginSupportComponent } from '@/app/modules/plugins/plugin-support/plu
   ],
 })
 export class PluginsComponent implements OnInit, OnDestroy {
-  @ViewChild('searchInput') searchInput!: ElementRef
+  @ViewChild('searchInput') searchInput?: ElementRef<HTMLInputElement>
 
   private $api = inject(ApiService)
   private $auth = inject(AuthService)
@@ -174,7 +174,14 @@ export class PluginsComponent implements OnInit, OnDestroy {
   }
 
   public onClearSearch() {
+    this.isSearchMode = false
+    this.form.setValue({ query: '' })
+    this.showExitButton = false
     this.loadInstalledPlugins()
+
+    setTimeout(() => {
+      this.searchInput?.nativeElement?.focus()
+    }, 0)
   }
 
   public onSubmit({ value }) {
@@ -201,7 +208,9 @@ export class PluginsComponent implements OnInit, OnDestroy {
       window.document.querySelector('body').classList.remove('bg-black')
       this.tab = 'main'
       this.showSearchBar = true
-      setTimeout(() => this.searchInput.nativeElement.focus(), 0)
+      setTimeout(() => {
+        this.searchInput?.nativeElement?.focus()
+      }, 0)
     }
   }
 

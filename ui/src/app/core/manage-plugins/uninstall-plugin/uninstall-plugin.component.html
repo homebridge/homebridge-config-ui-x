@@ -1,4 +1,9 @@
-<div class="modal-content" style="min-height: 300px">
+<div
+  class="modal-content"
+  style="min-height: 300px"
+  role="presentation"
+  aria-describedby="uninstall-confirmation-desc"
+>
   <div class="modal-header">
     <h5 class="modal-title">{{ plugin.displayName || plugin.name }}</h5>
     <button
@@ -10,50 +15,81 @@
       [disabled]="uninstalling"
     ></button>
   </div>
+
+  <div
+    id="uninstall-confirmation-desc"
+    class="visually-hidden"
+    role="presentation"
+  >
+    {{ 'plugins.uninstall_remove_confirmation' | translate: { pluginName: plugin.displayName } }}
+  </div>
+
   <div class="modal-body">
     @if (loading) {
-    <div class="text-center primary-text">
-      <i class="fa fa-cog fa-spin" style="font-size: 75px"></i>
-    </div>
-    } @if (!loading) {
-    <div class="text-center mb-3">
-      <i class="fas fa-trash primary-text" style="font-size: 75px"></i>
-    </div>
-    <div class="text-center">
-      @if (isConfigured) {
-      <p class="d-inline-block text-start mb-1">
-        <label class="hb-uix-switch d-block" for="remove-plugin-config">
-          <input id="remove-plugin-config" type="checkbox" [(ngModel)]="removeConfig" />
-          {{ 'plugins.uninstall_remove_plugin_config' | translate }}
-          <span class="hb-uix-slider hb-uix-round"></span>
-        </label>
-        @if (hasChildBridges) {
-        <label class="hb-uix-switch d-block" for="remove-plugin-child-bridges">
-          <input id="remove-plugin-child-bridges" type="checkbox" [(ngModel)]="removeChildBridges" />
-          @if (childBridges.length === 1) { {{ 'plugins.uninstall_remove_child_bridge' | translate }} } @if
-          (childBridges.length > 1) { {{ 'plugins.uninstall_remove_child_bridges' | translate: { count:
-          childBridges.length } }} }
-          <span class="hb-uix-slider hb-uix-round"></span>
-        </label>
-        }
-      </p>
-      }
-    </div>
-    @if (hasChildBridges && removeChildBridges) {
-    <ul class="mb-3 text-start">
-      <li>{{ 'plugins.uninstall_warn_1' | translate }}</li>
-      <li>{{ 'plugins.uninstall_warn_2' | translate }}</li>
-    </ul>
-    } @if (isConfigured && (!pluginAlias || !pluginType)) {
-    <ngb-alert type="info" [dismissible]="false" class="mb-3">
-      {{ 'plugins.uninstall_remove_config_required' | translate }}
-    </ngb-alert>
+      <div class="text-center primary-text">
+        <i class="fa fa-cog fa-spin" style="font-size: 75px"></i>
+      </div>
     }
-    <ngb-alert type="warning" [dismissible]="false" class="mb-0">
-      <p class="mb-0">{{ 'plugins.uninstall_remove_confirmation' | translate: { pluginName: plugin.displayName } }}</p>
-    </ngb-alert>
+
+    @if (!loading) {
+      <div class="text-center mb-3">
+        <i class="fas fa-trash primary-text" style="font-size: 75px"></i>
+      </div>
+
+      <div class="text-center">
+        @if (isConfigured) {
+          <p class="d-inline-block text-start mb-1">
+            <label class="hb-uix-switch d-block" for="remove-plugin-config">
+              <input
+                id="remove-plugin-config"
+                type="checkbox"
+                [(ngModel)]="removeConfig"
+                [attr.aria-label]="'plugins.uninstall_remove_plugin_config' | translate"
+              />
+              <span class="hb-uix-slider hb-uix-round"></span>
+            </label>
+
+            @if (hasChildBridges) {
+              <label class="hb-uix-switch d-block" for="remove-plugin-child-bridges">
+                <input
+                  id="remove-plugin-child-bridges"
+                  type="checkbox"
+                  [(ngModel)]="removeChildBridges"
+                  [attr.aria-label]="
+                    childBridges.length === 1
+                      ? ('plugins.uninstall_remove_child_bridge' | translate)
+                      : ('plugins.uninstall_remove_child_bridges' | translate: { count: childBridges.length })
+                  "
+                />
+                <span class="hb-uix-slider hb-uix-round"></span>
+              </label>
+            }
+          </p>
+        }
+      </div>
+
+      @if (hasChildBridges && removeChildBridges) {
+        <ul class="mb-3 text-start">
+          <li>{{ 'plugins.uninstall_warn_1' | translate }}</li>
+          <li>{{ 'plugins.uninstall_warn_2' | translate }}</li>
+        </ul>
+      }
+
+      @if (isConfigured && (!pluginAlias || !pluginType)) {
+        <ngb-alert type="info" [dismissible]="false" class="mb-3">
+          {{ 'plugins.uninstall_remove_config_required' | translate }}
+        </ngb-alert>
+      }
+
+      <ngb-alert type="warning" [dismissible]="false" class="mb-0"
+      aria-hidden="true">
+        <p class="mb-0">
+          {{ 'plugins.uninstall_remove_confirmation' | translate: { pluginName: plugin.displayName } }}
+        </p>
+      </ngb-alert>
     }
   </div>
+
   <div class="modal-footer justify-content-between">
     <div class="text-start">
       <button
@@ -67,7 +103,9 @@
         {{ 'form.button_close' | translate }}
       </button>
     </div>
+
     <div class="text-center"></div>
+
     <div class="text-end">
       <button
         type="button"
@@ -76,8 +114,11 @@
         (click)="doUninstall()"
         [disabled]="loading || uninstalling"
       >
-        @if (!uninstalling) { {{ 'plugins.manage.uninstall' | translate }} } @if (uninstalling) {
-        <i class="fas fa-spinner fa-pulse"></i>
+        @if (!uninstalling) {
+          {{ 'plugins.manage.uninstall' | translate }}
+        }
+        @if (uninstalling) {
+          <i class="fas fa-spinner fa-pulse"></i>
         }
       </button>
     </div>

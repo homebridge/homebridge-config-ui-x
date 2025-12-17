@@ -111,7 +111,7 @@ async function bootstrap(): Promise<NestFastifyApplication> {
 
   // (9) Set up cors
   app.enableCors({
-    origin: ['http://localhost:8080', 'http://localhost:4200'],
+    origin: ['http://localhost:8080', 'http://localhost:4200', 'http://192.168.1.225:4200'],
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   })
 

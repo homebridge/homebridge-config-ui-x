@@ -6,28 +6,36 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { SettingsService } from '@/app/core/settings.service'
 import { Widget } from '@/app/modules/status/widgets/widgets.interfaces'
 
+type WidgetChoice = Widget & {
+  shown: boolean
+  name: string
+  component: string
+  cols?: number
+  rows?: number
+  mobileOrder?: number
+  hideOnMobile?: boolean
+  requiresConfig?: boolean
+}
+
 @Component({
   templateUrl: './widget-visibility.component.html',
   standalone: true,
-  imports: [
-    TranslatePipe,
-    FormsModule,
-  ],
+  imports: [TranslatePipe, FormsModule],
 })
 export class WidgetVisibilityComponent implements OnInit {
   private $activeModal = inject(NgbActiveModal)
   private $settings = inject(SettingsService)
   private $translate = inject(TranslateService)
 
-  @Input() dashboard: any
+  @Input() dashboard: any[]
   @Input() resetLayout: () => void
   @Input() lockLayout: () => void
   @Input() unlockLayout: () => void
 
-  public availableWidgets = []
+  public availableWidgets: WidgetChoice[] = []
 
   public ngOnInit() {
-    const allWidgets = [
+    const allWidgets: any[] = [
       {
         name: this.$translate.instant('status.services.updates'),
         component: 'UpdateInfoWidgetComponent',
@@ -137,6 +145,11 @@ export class WidgetVisibilityComponent implements OnInit {
         hideOnMobile: true,
       },
     ]
+
+    if (!Array.isArray(this.dashboard)) {
+      this.dashboard = []
+    }
+
     this.availableWidgets = allWidgets
       .filter(x => !x.hidden)
       .sort((a, b) => a.name.localeCompare(b.name))
@@ -146,8 +159,36 @@ export class WidgetVisibilityComponent implements OnInit {
       }))
   }
 
-  public selectWidget(widget: Widget) {
-    this.$activeModal.close(widget)
+  private addWidgetInPlace(widget: WidgetChoice) {
+    if (this.dashboard.some((i: any) => i.component === widget.component)) {
+      return
+    }
+
+    this.dashboard.push({
+      component: widget.component,
+      cols: widget.cols,
+      rows: widget.rows,
+      mobileOrder: widget.mobileOrder,
+      hideOnMobile: widget.hideOnMobile,
+      requiresConfig: widget.requiresConfig,
+    })
+  }
+
+  private removeWidgetInPlace(widget: WidgetChoice) {
+    const idx = this.dashboard.findIndex((i: any) => i.component === widget.component)
+    if (idx >= 0) {
+      this.dashboard.splice(idx, 1)
+    }
+  }
+
+  public toggleWidget(widget: WidgetChoice, checked: boolean) {
+    widget.shown = !!checked
+
+    if (widget.shown) {
+      this.addWidgetInPlace(widget)
+    } else {
+      this.removeWidgetInPlace(widget)
+    }
   }
 
   public doResetLayout() {
@@ -155,7 +196,7 @@ export class WidgetVisibilityComponent implements OnInit {
     this.$activeModal.dismiss()
   }
 
-  public dismissModal() {
-    this.$activeModal.dismiss('Dismiss')
+  public closeModal() {
+    this.$activeModal.close(this.dashboard)
   }
 }

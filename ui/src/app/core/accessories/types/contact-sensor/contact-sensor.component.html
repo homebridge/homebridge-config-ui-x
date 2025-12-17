@@ -1,8 +1,34 @@
-<div class="accessory-box" [ngClass]="{ 'accessory-on': service.values.ContactSensorState }">
+@let isOpen = !!service.values.ContactSensorState;
+
+@let stateText = isOpen
+  ? ('accessories.control.open' | translate)
+  : ('accessories.control.closed' | translate);
+
+@let srBaseName = (service.customName || service.serviceName || '').trim();
+@let srType = ('accessories.core.contact_sensor' | translate);
+@let includeType = srBaseName.toLowerCase().indexOf(srType.toLowerCase()) === -1;
+
+@let srText =
+  srBaseName
+  + (includeType ? (', ' + srType) : '')
+  + ', '
+  + stateText;
+
+<div class="accessory-box" [ngClass]="{ 'accessory-on': isOpen }">
+  <span class="visually-hidden" role="status" aria-live="polite" aria-atomic="true">
+    {{ srText }}
+  </span>
+
   <div class="d-flex flex-column h-100">
-    <div [attr.aria-label]="'accessories.core.contact_sensor' | translate" class="accessory-svg">
-      <svg width="32px" height="32px" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-        <!-- left object -->
+    <div class="accessory-svg" aria-hidden="true">
+      <svg
+        width="32px"
+        height="32px"
+        viewBox="0 0 32 32"
+        xmlns="http://www.w3.org/2000/svg"
+        focusable="false"
+        aria-hidden="true"
+      >
         <rect
           class="left-object"
           x="1"
@@ -14,7 +40,6 @@
           fill="none"
           stroke-width="1.5"
         />
-        <!-- right object -->
         <rect
           class="right-object"
           x="16"
@@ -26,7 +51,6 @@
           fill="none"
           stroke-width="1.5"
         />
-        <!-- left sensor -->
         <rect
           class="left-sensor"
           x="10"
@@ -39,7 +63,6 @@
           fill-opacity="0.5"
           stroke-width="0.5"
         />
-        <!-- right sensor -->
         <rect
           class="right-sensor"
           x="16"
@@ -54,11 +77,19 @@
         />
       </svg>
     </div>
-    <div class="accessory-label mt-auto">{{ service.customName || service.serviceName }}</div>
-    @if (service.values.ContactSensorState) {
-    <div class="accessory-label red-text">{{ 'accessories.control.open' | translate }}</div>
+
+    <div class="accessory-label mt-auto" aria-hidden="true">
+      {{ service.customName || service.serviceName }}
+    </div>
+
+    @if (isOpen) {
+    <div class="accessory-label red-text" aria-hidden="true">
+      {{ 'accessories.control.open' | translate }}
+    </div>
     } @else {
-    <div class="accessory-label grey-text">{{ 'accessories.control.closed' | translate }}</div>
+    <div class="accessory-label grey-text" aria-hidden="true">
+      {{ 'accessories.control.closed' | translate }}
+    </div>
     }
   </div>
 </div>

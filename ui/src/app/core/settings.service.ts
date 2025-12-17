@@ -39,8 +39,8 @@ export class SettingsService {
   public keepOrphans: boolean
   public wallpaper: string
   public serverTimeOffset = 0
-  public rtl = false // set true if current translation is RLT
-  public browserLang: string // set by the browser language
+  public rtl = false
+  public browserLang: string
   public onSettingsLoaded = this.settingsLoadedSubject.pipe(first())
   public settingsLoaded = false
   public readonly themeList = [
@@ -104,24 +104,28 @@ export class SettingsService {
     }
   }
 
+  private getIframeOrigin(iframe: HTMLIFrameElement): string {
+    try {
+      const src = iframe.getAttribute('src') || ''
+      const url = new URL(src, window.location.href)
+      return url.origin
+    } catch {
+      return ''
+    }
+  }
+
   public setTheme(theme: string) {
-    // Default theme is deep-purple
     if (!theme || !this.themeList.includes(theme)) {
       theme = this.defaultTheme
-
-      // Save the new property to the config file
       firstValueFrom(this.$api.put('/config-editor/ui', { key: 'theme', value: theme }))
         .catch(error => console.error('Error saving setTheme:', error))
     }
 
-    // Grab the body element
     const bodySelector = window.document.querySelector('body')
 
-    // Remove all existing theme classes
     bodySelector.classList.remove(`config-ui-x-${this.theme}`)
     bodySelector.classList.remove(`config-ui-x-dark-mode-${this.theme}`)
 
-    // Set the new theme
     this.theme = theme
     if (this.actualLightingMode === 'dark') {
       bodySelector.classList.add(`config-ui-x-dark-mode-${this.theme}`)
@@ -135,50 +139,59 @@ export class SettingsService {
       }
     }
 
-    // Update same-origin iframes
-    const iframes = window.document.querySelectorAll('iframe')
+    const iframes = window.document.querySelectorAll('iframe') as NodeListOf<HTMLIFrameElement>
     iframes.forEach((iframe, index) => {
-      try {
-        const iframeDoc = iframe.contentDocument
-        if (iframeDoc) {
-          const iframeBody = iframeDoc.body
+      const iframeOrigin = this.getIframeOrigin(iframe)
+      const sameOrigin = !!iframeOrigin && iframeOrigin === window.location.origin
 
-          if (this.actualLightingMode === 'dark') {
-            if (iframeBody.classList.contains(`config-ui-x-${this.theme}`)) {
-              iframeBody.classList.remove(`config-ui-x-${this.theme}`)
-            }
-            if (!iframeBody.classList.contains(`config-ui-x-dark-mode-${this.theme}`)) {
-              iframeBody.classList.add(`config-ui-x-dark-mode-${this.theme}`)
-            }
-            if (!iframeBody.classList.contains('dark-mode')) {
-              iframeBody.classList.add('dark-mode')
-            }
+      if (sameOrigin) {
+        try {
+          const iframeDoc = iframe.contentDocument
+          const iframeBody = iframeDoc?.body
 
-            iframeBody.style.backgroundColor = '#242424 !important'
-            iframeBody.style.color = '#ffffff !important'
-          } else {
-            if (!iframeBody.classList.contains(`config-ui-x-${this.theme}`)) {
-              iframeBody.classList.add(`config-ui-x-${this.theme}`)
-            }
-            if (iframeBody.classList.contains(`config-ui-x-dark-mode-${this.theme}`)) {
-              iframeBody.classList.remove(`config-ui-x-dark-mode-${this.theme}`)
-            }
-            if (iframeBody.classList.contains('dark-mode')) {
-              iframeBody.classList.remove('dark-mode')
-            }
+          if (iframeBody) {
+            if (this.actualLightingMode === 'dark') {
+              if (iframeBody.classList.contains(`config-ui-x-${this.theme}`)) {
+                iframeBody.classList.remove(`config-ui-x-${this.theme}`)
+              }
+              if (!iframeBody.classList.contains(`config-ui-x-dark-mode-${this.theme}`)) {
+                iframeBody.classList.add(`config-ui-x-dark-mode-${this.theme}`)
+              }
+              if (!iframeBody.classList.contains('dark-mode')) {
+                iframeBody.classList.add('dark-mode')
+              }
 
-            iframeBody.style.backgroundColor = '#ffffff !important'
-            iframeBody.style.color = '#000000 !important'
+              iframeBody.style.backgroundColor = '#242424 !important'
+              iframeBody.style.color = '#ffffff !important'
+            } else {
+              if (!iframeBody.classList.contains(`config-ui-x-${this.theme}`)) {
+                iframeBody.classList.add(`config-ui-x-${this.theme}`)
+              }
+              if (iframeBody.classList.contains(`config-ui-x-dark-mode-${this.theme}`)) {
+                iframeBody.classList.remove(`config-ui-x-dark-mode-${this.theme}`)
+              }
+              if (iframeBody.classList.contains('dark-mode')) {
+                iframeBody.classList.remove('dark-mode')
+              }
+
+              iframeBody.style.backgroundColor = '#ffffff !important'
+              iframeBody.style.color = '#000000 !important'
+            }
           }
+        } catch (e) {
+          console.warn(`Iframe ${index}: Same-origin access failed`, { error: e, src: iframe.src })
+        }
+      }
 
-          // Notify iframe Angular app
+      try {
+        if (iframe.contentWindow) {
           iframe.contentWindow.postMessage(
             { type: 'theme-update', isDark: this.actualLightingMode === 'dark', theme },
-            window.location.origin,
+            iframeOrigin || '*',
           )
         }
       } catch (e) {
-        console.warn(`Iframe ${index}: Access denied (cross-origin?)`, { error: e, src: iframe.src })
+        console.warn(`Iframe ${index}: postMessage failed`, { error: e, src: iframe.src })
       }
     })
   }
@@ -205,7 +218,6 @@ export class SettingsService {
   }
 
   public setEnvItem(key: string, value: any) {
-    // If the key contains a dot, we assume it's a nested property
     if (key.includes('.')) {
       const keys = key.split('.')
       let current = this.env
@@ -226,11 +238,6 @@ export class SettingsService {
     }
   }
 
-  /**
-   * Check to make sure the server time is roughly the same as the client time.
-   * A warning is shown if the time difference is >= 4 hours.
-   * @param timestamp
-   */
   private checkServerTime(timestamp: string) {
     const serverTime = dayjs(timestamp)
     const diff = serverTime.diff(dayjs(), 'hour')
@@ -269,11 +276,6 @@ export class SettingsService {
     }
   }
 
-  /**
-   * Check if a specific feature is enabled based on feature flags
-   * @param featureKey The feature flag key to check
-   * @returns true if the feature is enabled, false otherwise
-   */
   public isFeatureEnabled(featureKey: string): boolean {
     return this.env.featureFlags?.[featureKey] ?? false
   }

@@ -1,10 +1,36 @@
-<div class="accessory-box" [ngClass]="{ 'accessory-on': service.values.CarbonMonoxideDetected }">
+@let detected = !!service.values.CarbonMonoxideDetected;
+
+@let stateText = detected
+  ? ('accessories.control.detected' | translate)
+  : ('accessories.control.not_detected' | translate);
+
+@let srBaseName = (service.customName || service.serviceName || '').trim();
+@let srType = ('accessories.core.carbon_monoxide_sensor' | translate);
+@let includeType = srBaseName.toLowerCase().indexOf(srType.toLowerCase()) === -1;
+
+@let srText =
+  srBaseName
+  + (includeType ? (', ' + srType) : '')
+  + ', '
+  + stateText;
+
+<div class="accessory-box" [ngClass]="{ 'accessory-on': detected }">
+  <span class="visually-hidden" role="status" aria-live="polite" aria-atomic="true">
+    {{ srText }}
+  </span>
+
   <div class="d-flex flex-column h-100">
-    <div [attr.aria-label]="'accessories.core.carbon_monoxide_sensor' | translate" class="accessory-svg">
-      <svg width="32px" height="32px" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-        <!-- outer casing -->
+    <div class="accessory-svg" aria-hidden="true">
+      <svg
+        width="32px"
+        height="32px"
+        viewBox="0 0 32 32"
+        xmlns="http://www.w3.org/2000/svg"
+        focusable="false"
+        aria-hidden="true"
+      >
         <rect x="1" y="1" width="30" height="12" rx="1" stroke="#7f7f7f" fill="none" stroke-width="1.25" />
-        <!-- alarm type -->
+
         <text
           class="type"
           text-anchor="middle"
@@ -19,17 +45,17 @@
         >
           CO
         </text>
-        <!-- grille blue background -->
+
         <line x1="6" y1="14.5" x2="25.5" y2="14.5" stroke="#1976d2" stroke-opacity="0.5" stroke-width="2" />
-        <!-- grille vertical lines -->
+
         <line stroke-linecap="round" x1="5" y1="13" x2="6.5" y2="16" stroke="#7f7f7f" stroke-width="1.25" />
         <line stroke-linecap="round" x1="11" y1="13" x2="11" y2="16" stroke="#7f7f7f" stroke-width="1" />
         <line stroke-linecap="round" x1="15.5" y1="13" x2="15.5" y2="16" stroke="#7f7f7f" stroke-width="1" />
         <line stroke-linecap="round" x1="20" y1="13" x2="20" y2="16" stroke="#7f7f7f" stroke-width="1" />
         <line stroke-linecap="round" x1="26" y1="13" x2="24.5" y2="16" stroke="#7f7f7f" stroke-width="1.25" />
-        <!-- grille horizontal lines -->
+
         <line stroke-linecap="round" x1="6.5" y1="16" x2="24.5" y2="16" stroke="#7f7f7f" stroke-width="1.25" />
-        <!-- top wave -->
+
         <path
           d="M3,23 C6,25 9,21 12,23 C15,25 18,21 21,23 C24,25 27,21 30,23"
           class="air-line"
@@ -38,7 +64,6 @@
           stroke-width="1.5"
           stroke-linecap="round"
         />
-        <!-- bottom wave -->
         <path
           d="M3,30 C6,32 9,28 12,30 C15,32 18,28 21,30 C24,32 27,28 30,30"
           class="air-line"
@@ -49,11 +74,19 @@
         />
       </svg>
     </div>
-    <div class="accessory-label mt-auto">{{ service.customName || service.serviceName }}</div>
-    @if (service.values.CarbonMonoxideDetected) {
-    <div class="accessory-label red-text">{{ 'accessories.control.detected' | translate }}</div>
+
+    <div class="accessory-label mt-auto" aria-hidden="true">
+      {{ service.customName || service.serviceName }}
+    </div>
+
+    @if (detected) {
+    <div class="accessory-label red-text" aria-hidden="true">
+      {{ 'accessories.control.detected' | translate }}
+    </div>
     } @else {
-    <div class="accessory-label grey-text">{{ 'accessories.control.not_detected' | translate }}</div>
+    <div class="accessory-label grey-text" aria-hidden="true">
+      {{ 'accessories.control.not_detected' | translate }}
+    </div>
     }
   </div>
 </div>

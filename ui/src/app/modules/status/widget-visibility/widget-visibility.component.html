@@ -4,11 +4,11 @@
     <button
       type="button"
       class="btn-close"
-      data-bs-dismiss="modal"
       [attr.aria-label]="'form.button_close' | translate"
-      (click)="dismissModal()"
+      (click)="closeModal()"
     ></button>
   </div>
+
   <div class="modal-body">
     @if (availableWidgets.length) {
     <ul class="list-group list-group-box mb-0">
@@ -16,40 +16,39 @@
         <span [innerHTML]="'status.widget.account_1' | translate"></span><br />
         <span [innerHTML]="'status.widget.account_2' | translate"></span>
       </li>
+
       @for (widget of availableWidgets; track widget) {
-      <li class="list-group-item d-flex justify-content-between align-items-center">
-        <span style="word-break: break-all">{{ widget.name }}</span>
-        <span>
-          <input
-            type="checkbox"
-            class="rendux-input"
-            [checked]="widget.shown"
-            [id]="'widget' + widget.name"
-            (click)="selectWidget(widget)"
-            [attr.aria-label]="('form.button_show' | translate) + ' ' + widget.name"
-          />
-          <label [for]="'widget' + widget.name" class="rendux-label ms-3"></label>
-        </span>
+      <li class="list-group-item d-flex justify-content-end align-items-center">
+        <input
+          type="checkbox"
+          class="rendux-input"
+          [(ngModel)]="widget.shown"
+          (ngModelChange)="toggleWidget(widget, $event)"
+          [attr.aria-label]="widget.name"
+        />
       </li>
       }
     </ul>
     }
   </div>
+
   <div class="modal-footer justify-content-between">
     <div class="text-start">
       <button
         type="button"
         class="btn btn-elegant"
-        data-bs-dismiss="modal"
-        (click)="dismissModal()"
-        [attr.aria-label]="'form.button_close' | translate"
+        (click)="closeModal()"
       >
         {{ 'form.button_close' | translate }}
       </button>
     </div>
-    <div class="text-center"></div>
+
     <div class="text-end">
-      <button type="button" class="btn btn-danger" data-bs-dismiss="modal" (click)="doResetLayout()">
+      <button
+        type="button"
+        class="btn btn-danger"
+        (click)="doResetLayout()"
+      >
         {{ 'form.button_reset' | translate }}
       </button>
     </div>

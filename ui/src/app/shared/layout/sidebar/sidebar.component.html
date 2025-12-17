@@ -1,216 +1,584 @@
-<div
-  class="m-header text-end"
-  (click)="toggleSidebar()"
-  tabindex="0"
-  role="button"
-  (keydown)="handleKeydown($event)"
-  [attr.aria-expanded]="isExpanded ? 'true' : 'false'"
-  [attr.aria-controls]="'sidebar'"
-  [attr.aria-label]="'menu.sidebar.aria_menu' | translate"
->
-  <span class="me-2 d-block d-lg-none" style="font-size: 0.9rem; color: #dddddd"></span>
-  <a [routerLink]="['/']" [attr.aria-label]="'menu.label_status' | translate">
-    <img style="height: 35px; width: 35px" ngSrc="assets/homebridge-logo.svg" alt="HB Logo" height="35" width="35" />
-    <div class="hb-logo-text-mobile">Homebridge</div>
+<!-- Top header with logo + hamburger -->
+<div class="m-header text-end">
+  <!-- Decorative logo; not focusable, not announced -->
+  <a tabindex="-1" aria-hidden="true">
+    <img
+      style="height: 35px; width: 35px"
+      ngSrc="assets/homebridge-logo.svg"
+      alt=""
+      aria-hidden="true"
+      height="35"
+      width="35"
+    />
+    <div class="hb-logo-text-mobile" aria-hidden="true">Homebridge</div>
   </a>
-  <div class="hamburger-icon" [ngClass]="{ 'hamburger-icon-cross': isExpanded }">
-    <span></span>
-    <span></span>
-    <span></span>
-    <span></span>
-  </div>
+
+  <!-- The ONLY interactive element in the header -->
+  <button
+    type="button"
+    class="hamburger-toggle"
+    (click)="toggleSidebar()"
+    [attr.aria-expanded]="!isMobile ? (isExpanded ? 'true' : 'false') : null"
+    aria-controls="sidebar"
+    [attr.aria-label]="
+      isMobile
+        ? (isExpanded ? 'Navigation menu, expanded' : 'Navigation menu, collapsed')
+        : 'Navigation menu'
+    "
+  >
+    <div
+      class="hamburger-icon"
+      [ngClass]="{ 'hamburger-icon-cross': isExpanded }"
+      aria-hidden="true"
+    >
+      <span></span><span></span><span></span><span></span>
+    </div>
+  </button>
 </div>
 
-<div class="sidebar" [ngClass]="{ 'expanded': isExpanded }" role="navigation" id="sidebar">
-  <div class="header" (click)="toggleSidebar()" tabindex="0" role="button" (keydown)="handleKeydown($event)">
-    <a [routerLink]="['/']" [attr.aria-label]="'menu.label_status' | translate">
-      <img style="height: 35px; width: 35px" ngSrc="assets/homebridge-logo.svg" alt="HB Logo" height="35" width="35" />
-      <div class="hb-logo-text">Homebridge</div>
+<!-- DESKTOP: sidebar with navigation landmark -->
+@if (!isMobile) {
+<nav
+  class="sidebar"
+  [ngClass]="{ 'expanded': isExpanded }"
+  id="sidebar"
+  aria-label="Sidebar"
+>
+  <div class="header">
+    <a tabindex="-1" aria-hidden="true">
+      <img
+        style="height: 35px; width: 35px"
+        ngSrc="assets/homebridge-logo.svg"
+        alt=""
+        aria-hidden="true"
+        height="35"
+        width="35"
+      />
+      <div class="hb-logo-text" aria-hidden="true">Homebridge</div>
     </a>
   </div>
+
   <div class="link-wrapper">
+    <!-- Status -->
     <div class="link">
-      <div
+      <button
+        type="button"
         class="link-row"
         [routerLink]="['/']"
-        [routerLinkActive]="'active'"
-        [routerLinkActiveOptions]="{exact: true}"
-        [attr.aria-label]="'menu.label_status' | translate"
-        role="menuitem"
-        tabindex="0"
-        (keydown)="handleKeydown($event)"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }"
+        #statusRla="routerLinkActive"
+        [attr.aria-label]="
+          ('menu.label_status' | translate)
+          + (statusRla.isActive ? ', current page' : '')
+        "
       >
-        <div class="icon"><i class="fa fa-house"></i></div>
+        <div class="icon">
+          <i class="fa fa-house" aria-hidden="true"></i>
+        </div>
         <div class="title">{{ 'menu.label_status' | translate }}</div>
-      </div>
+      </button>
     </div>
 
+    <!-- RPi under-voltage -->
     @if (rPiWasUnderVoltage || rPiCurrentlyUnderVoltage) {
     <div class="link">
-      <div
+      <button
+        type="button"
         class="link-row"
         (click)="openUnderVoltageModal()"
-        [attr.aria-label]="('rpi.throttled.undervoltage_title' | translate) + ' - ' + ('rpi.throttled.undervoltage_description' | translate)"
-        role="menuitem"
-        tabindex="0"
-        (keydown)="handleKeydown($event)"
+        [attr.aria-label]="
+          ('rpi.throttled.undervoltage_title' | translate)
+          + ' - '
+          + ('rpi.throttled.undervoltage_description' | translate)
+        "
       >
-        <div class="icon"><i class="fas fa-bolt fa-beat yellow-text" style="--fa-beat-scale: 1.5"></i></div>
+        <div class="icon">
+          <i
+            class="fas fa-bolt fa-beat yellow-text"
+            style="--fa-beat-scale: 1.5"
+            aria-hidden="true"
+          ></i>
+        </div>
         <div class="title">{{ 'rpi.throttled.undervoltage_title' | translate }}</div>
-      </div>
+      </button>
     </div>
     }
 
+    <!-- Plugins -->
     <div class="link">
-      <div
+      <button
+        type="button"
         class="link-row"
         [routerLink]="['/plugins']"
-        [routerLinkActive]="'active'"
-        [attr.aria-label]="'menu.label_plugins' | translate"
-        role="menuitem"
-        tabindex="0"
-        (keydown)="handleKeydown($event)"
+        routerLinkActive="active"
+        #pluginsRla="routerLinkActive"
+        [attr.aria-label]="
+          ('menu.label_plugins' | translate)
+          + (pluginsRla.isActive ? ', current page' : '')
+        "
       >
-        <div class="icon"><i class="fa fa-plug"></i></div>
+        <div class="icon">
+          <i class="fa fa-plug" aria-hidden="true"></i>
+        </div>
         <div class="title">{{ 'menu.label_plugins' | translate }}</div>
-      </div>
+      </button>
     </div>
 
+    <!-- Accessories -->
     <div class="link">
-      <div
+      <button
+        type="button"
         class="link-row"
         [routerLink]="['/accessories']"
-        [routerLinkActive]="'active'"
-        [attr.aria-label]="'menu.label_accessories' | translate"
-        role="menuitem"
-        tabindex="0"
-        (keydown)="handleKeydown($event)"
+        routerLinkActive="active"
+        #accessoriesRla="routerLinkActive"
+        [attr.aria-label]="
+          ('menu.label_accessories' | translate)
+          + (accessoriesRla.isActive ? ', current page' : '')
+        "
       >
-        <div class="icon"><i class="fa fa-lightbulb"></i></div>
+        <div class="icon">
+          <i class="fa fa-lightbulb" aria-hidden="true"></i>
+        </div>
         <div class="title">{{ 'menu.label_accessories' | translate }}</div>
-      </div>
+      </button>
     </div>
 
+    <!-- Logs -->
     <div class="link">
-      <div
+      <button
+        type="button"
         class="link-row"
         [routerLink]="['/logs']"
-        [routerLinkActive]="'active'"
-        [attr.aria-label]="'menu.linux.label_logs' | translate"
-        role="menuitem"
-        tabindex="0"
-        (keydown)="handleKeydown($event)"
+        routerLinkActive="active"
+        #logsRla="routerLinkActive"
+        [attr.aria-label]="
+          ('menu.linux.label_logs' | translate)
+          + (logsRla.isActive ? ', current page' : '')
+        "
       >
-        <div class="icon"><i class="fa fa-wave-square"></i></div>
+        <div class="icon">
+          <i class="fa fa-wave-square" aria-hidden="true"></i>
+        </div>
         <div class="title">{{ 'menu.linux.label_logs' | translate }}</div>
-      </div>
+      </button>
     </div>
 
+    <!-- Terminal (admin only) -->
     @if (enableTerminalAccess && isAdmin) {
     <div class="link">
-      <div
+      <button
+        type="button"
         class="link-row"
         [routerLink]="['/platform-tools/terminal']"
-        [routerLinkActive]="'active'"
-        [attr.aria-label]="'menu.linux.label_terminal' | translate"
-        role="menuitem"
-        tabindex="0"
-        (keydown)="handleKeydown($event)"
+        routerLinkActive="active"
+        #terminalRla="routerLinkActive"
+        [attr.aria-label]="
+          ('menu.linux.label_terminal' | translate)
+          + (terminalRla.isActive ? ', current page' : '')
+        "
       >
-        <div class="icon"><i class="fa fa-terminal"></i></div>
+        <div class="icon">
+          <i class="fa fa-terminal" aria-hidden="true"></i>
+        </div>
         <div class="title">{{ 'menu.linux.label_terminal' | translate }}</div>
-      </div>
-    </div>
-    } @if (isAdmin) {
-    <div class="link">
-      <div
-        class="link-row"
-        [routerLink]="['/config']"
-        [routerLinkActive]="'active'"
-        [attr.aria-label]="'menu.config_json_editor' | translate"
-        role="menuitem"
-        tabindex="0"
-        (keydown)="handleKeydown($event)"
-      >
-        <div class="icon"><i class="fa fa-code"></i></div>
-        <div class="title">{{ 'menu.config_json_editor' | translate }}</div>
-      </div>
-    </div>
-    } @if (isAdmin) {
-    <div class="link">
-      <div
-        class="link-row"
-        [routerLink]="['/settings']"
-        [routerLinkActive]="'active'"
-        [attr.aria-label]="'menu.label_settings' | translate"
-        role="menuitem"
-        tabindex="0"
-        (keydown)="handleKeydown($event)"
-      >
-        <div class="icon"><i class="fa fa-cog"></i></div>
-        <div class="title">{{ 'menu.label_settings' | translate }}</div>
-      </div>
+      </button>
     </div>
     }
 
-    <div class="link">
-      <div
-        class="link-row"
-        [routerLink]="['/support']"
-        [routerLinkActive]="'active'"
-        [attr.aria-label]="'support.title' | translate"
-        role="menuitem"
-        tabindex="0"
-        (keydown)="handleKeydown($event)"
-      >
-        <div class="icon"><i class="fa fa-question-circle-o"></i></div>
-        <div class="title">{{ 'support.title' | translate }}</div>
-      </div>
-    </div>
-
+    <!-- Config JSON editor (admin) -->
     @if (isAdmin) {
     <div class="link">
-      <div
+      <button
+        type="button"
+        class="link-row"
+        [routerLink]="['/config']"
+        routerLinkActive="active"
+        #configRla="routerLinkActive"
+        [attr.aria-label]="
+          ('menu.config_json_editor' | translate)
+          + (configRla.isActive ? ', current page' : '')
+        "
+      >
+        <div class="icon">
+          <i class="fa fa-code" aria-hidden="true"></i>
+        </div>
+        <div class="title">{{ 'menu.config_json_editor' | translate }}</div>
+      </button>
+    </div>
+    }
+
+    <!-- Settings (admin) -->
+    @if (isAdmin) {
+    <div class="link">
+      <button
+        type="button"
+        class="link-row"
+        [routerLink]="['/settings']"
+        routerLinkActive="active"
+        #settingsRla="routerLinkActive"
+        [attr.aria-label]="
+          ('menu.label_settings' | translate)
+          + (settingsRla.isActive ? ', current page' : '')
+        "
+      >
+        <div class="icon">
+          <i class="fa fa-cog" aria-hidden="true"></i>
+        </div>
+        <div class="title">{{ 'menu.label_settings' | translate }}</div>
+      </button>
+    </div>
+    }
+
+    <!-- Support -->
+    <div class="link">
+      <button
+        type="button"
+        class="link-row"
+        [routerLink]="['/support']"
+        routerLinkActive="active"
+        #supportRla="routerLinkActive"
+        [attr.aria-label]="
+          ('support.title' | translate)
+          + (supportRla.isActive ? ', current page' : '')
+        "
+      >
+        <div class="icon">
+          <i class="fa fa-question-circle-o" aria-hidden="true"></i>
+        </div>
+        <div class="title">{{ 'support.title' | translate }}</div>
+      </button>
+    </div>
+
+    <!-- Power options (admin) -->
+    @if (isAdmin) {
+    <div class="link">
+      <button
+        type="button"
         class="link-row"
         [routerLink]="['/power-options']"
-        [routerLinkActive]="'active'"
-        [attr.aria-label]="'menu.restart.title' | translate"
-        role="menuitem"
-        tabindex="0"
-        (keydown)="handleKeydown($event)"
+        routerLinkActive="active"
+        #powerRla="routerLinkActive"
+        [attr.aria-label]="
+          ('menu.restart.title' | translate)
+          + (powerRla.isActive ? ', current page' : '')
+        "
       >
-        <div class="icon"><i class="fa fa-power-off"></i></div>
+        <div class="icon">
+          <i class="fa fa-power-off" aria-hidden="true"></i>
+        </div>
         <div class="title">{{ 'menu.restart.title' | translate }}</div>
-      </div>
+      </button>
     </div>
-    } @if (isPwa) {
+    }
+
+    <!-- Reload (PWA only) -->
+    @if (isPwa) {
     <div class="link">
-      <div
+      <button
+        type="button"
         class="link-row"
         (click)="reloadPage()"
         [attr.aria-label]="'menu.reload' | translate"
-        role="menuitem"
-        tabindex="0"
-        (keydown)="handleKeydown($event)"
       >
-        <div class="icon"><i class="fa fa-refresh"></i></div>
+        <div class="icon">
+          <i class="fa fa-refresh" aria-hidden="true"></i>
+        </div>
         <div class="title">{{ 'menu.reload' | translate }}</div>
-      </div>
+      </button>
     </div>
-    } @if (formAuth) {
+    }
+
+    <!-- Logout (form auth only) -->
+    @if (formAuth) {
     <div class="link">
-      <div
+      <button
+        type="button"
         class="link-row"
         (click)="logout()"
         [attr.aria-label]="'menu.tooltip_logout' | translate"
-        role="menuitem"
-        tabindex="0"
-        (keydown)="handleKeydown($event)"
       >
-        <div class="icon"><i class="fa fa-right-from-bracket"></i></div>
+        <div class="icon">
+          <i class="fa fa-right-from-bracket" aria-hidden="true"></i>
+        </div>
         <div class="title">{{ 'menu.tooltip_logout' | translate }}</div>
-      </div>
+      </button>
+    </div>
+    }
+  </div>
+</nav>
+}
+
+<!-- MOBILE: sidebar without navigation landmark -->
+@if (isMobile) {
+<div
+  class="sidebar"
+  [ngClass]="{ 'expanded': isExpanded }"
+  id="sidebar"
+>
+  <div class="header">
+    <a tabindex="-1" aria-hidden="true">
+      <img
+        style="height: 35px; width: 35px"
+        ngSrc="assets/homebridge-logo.svg"
+        alt=""
+        aria-hidden="true"
+        height="35"
+        width="35"
+      />
+      <div class="hb-logo-text" aria-hidden="true">Homebridge</div>
+    </a>
+  </div>
+
+  <div class="link-wrapper">
+    <!-- Status -->
+    <div class="link">
+      <button
+        type="button"
+        class="link-row"
+        [routerLink]="['/']"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: true }"
+        #statusRlaM="routerLinkActive"
+        [attr.aria-label]="
+          ('menu.label_status' | translate)
+          + (statusRlaM.isActive ? ', current page' : '')
+        "
+      >
+        <div class="icon">
+          <i class="fa fa-house" aria-hidden="true"></i>
+        </div>
+        <div class="title">{{ 'menu.label_status' | translate }}</div>
+      </button>
+    </div>
+
+    <!-- RPi under-voltage -->
+    @if (rPiWasUnderVoltage || rPiCurrentlyUnderVoltage) {
+    <div class="link">
+      <button
+        type="button"
+        class="link-row"
+        (click)="openUnderVoltageModal()"
+        [attr.aria-label]="
+          ('rpi.throttled.undervoltage_title' | translate)
+          + ' - '
+          + ('rpi.throttled.undervoltage_description' | translate)
+        "
+      >
+        <div class="icon">
+          <i
+            class="fas fa-bolt fa-beat yellow-text"
+            style="--fa-beat-scale: 1.5"
+            aria-hidden="true"
+          ></i>
+        </div>
+        <div class="title">{{ 'rpi.throttled.undervoltage_title' | translate }}</div>
+      </button>
+    </div>
+    }
+
+    <!-- Plugins -->
+    <div class="link">
+      <button
+        type="button"
+        class="link-row"
+        [routerLink]="['/plugins']"
+        routerLinkActive="active"
+        #pluginsRlaM="routerLinkActive"
+        [attr.aria-label]="
+          ('menu.label_plugins' | translate)
+          + (pluginsRlaM.isActive ? ', current page' : '')
+        "
+      >
+        <div class="icon">
+          <i class="fa fa-plug" aria-hidden="true"></i>
+        </div>
+        <div class="title">{{ 'menu.label_plugins' | translate }}</div>
+      </button>
+    </div>
+
+    <!-- Accessories -->
+    <div class="link">
+      <button
+        type="button"
+        class="link-row"
+        [routerLink]="['/accessories']"
+        routerLinkActive="active"
+        #accessoriesRlaM="routerLinkActive"
+        [attr.aria-label]="
+          ('menu.label_accessories' | translate)
+          + (accessoriesRlaM.isActive ? ', current page' : '')
+        "
+      >
+        <div class="icon">
+          <i class="fa fa-lightbulb" aria-hidden="true"></i>
+        </div>
+        <div class="title">{{ 'menu.label_accessories' | translate }}</div>
+      </button>
+    </div>
+
+    <!-- Logs -->
+    <div class="link">
+      <button
+        type="button"
+        class="link-row"
+        [routerLink]="['/logs']"
+        routerLinkActive="active"
+        #logsRlaM="routerLinkActive"
+        [attr.aria-label]="
+          ('menu.linux.label_logs' | translate)
+          + (logsRlaM.isActive ? ', current page' : '')
+        "
+      >
+        <div class="icon">
+          <i class="fa fa-wave-square" aria-hidden="true"></i>
+        </div>
+        <div class="title">{{ 'menu.linux.label_logs' | translate }}</div>
+      </button>
+    </div>
+
+    <!-- Terminal (admin only) -->
+    @if (enableTerminalAccess && isAdmin) {
+    <div class="link">
+      <button
+        type="button"
+        class="link-row"
+        [routerLink]="['/platform-tools/terminal']"
+        routerLinkActive="active"
+        #terminalRlaM="routerLinkActive"
+        [attr.aria-label]="
+          ('menu.linux.label_terminal' | translate)
+          + (terminalRlaM.isActive ? ', current page' : '')
+        "
+      >
+        <div class="icon">
+          <i class="fa fa-terminal" aria-hidden="true"></i>
+        </div>
+        <div class="title">{{ 'menu.linux.label_terminal' | translate }}</div>
+      </button>
+    </div>
+    }
+
+    <!-- Config JSON editor (admin) -->
+    @if (isAdmin) {
+    <div class="link">
+      <button
+        type="button"
+        class="link-row"
+        [routerLink]="['/config']"
+        routerLinkActive="active"
+        #configRlaM="routerLinkActive"
+        [attr.aria-label]="
+          ('menu.config_json_editor' | translate)
+          + (configRlaM.isActive ? ', current page' : '')
+        "
+      >
+        <div class="icon">
+          <i class="fa fa-code" aria-hidden="true"></i>
+        </div>
+        <div class="title">{{ 'menu.config_json_editor' | translate }}</div>
+      </button>
+    </div>
+    }
+
+    <!-- Settings (admin) -->
+    @if (isAdmin) {
+    <div class="link">
+      <button
+        type="button"
+        class="link-row"
+        [routerLink]="['/settings']"
+        routerLinkActive="active"
+        #settingsRlaM="routerLinkActive"
+        [attr.aria-label]="
+          ('menu.label_settings' | translate)
+          + (settingsRlaM.isActive ? ', current page' : '')
+        "
+      >
+        <div class="icon">
+          <i class="fa fa-cog" aria-hidden="true"></i>
+        </div>
+        <div class="title">{{ 'menu.label_settings' | translate }}</div>
+      </button>
+    </div>
+    }
+
+    <!-- Support -->
+    <div class="link">
+      <button
+        type="button"
+        class="link-row"
+        [routerLink]="['/support']"
+        routerLinkActive="active"
+        #supportRlaM="routerLinkActive"
+        [attr.aria-label]="
+          ('support.title' | translate)
+          + (supportRlaM.isActive ? ', current page' : '')
+        "
+      >
+        <div class="icon">
+          <i class="fa fa-question-circle-o" aria-hidden="true"></i>
+        </div>
+        <div class="title">{{ 'support.title' | translate }}</div>
+      </button>
+    </div>
+
+    <!-- Power options (admin) -->
+    @if (isAdmin) {
+    <div class="link">
+      <button
+        type="button"
+        class="link-row"
+        [routerLink]="['/power-options']"
+        routerLinkActive="active"
+        #powerRlaM="routerLinkActive"
+        [attr.aria-label]="
+          ('menu.restart.title' | translate)
+          + (powerRlaM.isActive ? ', current page' : '')
+        "
+      >
+        <div class="icon">
+          <i class="fa fa-power-off" aria-hidden="true"></i>
+        </div>
+        <div class="title">{{ 'menu.restart.title' | translate }}</div>
+      </button>
+    </div>
+    }
+
+    <!-- Reload (PWA only) -->
+    @if (isPwa) {
+    <div class="link">
+      <button
+        type="button"
+        class="link-row"
+        (click)="reloadPage()"
+        [attr.aria-label]="'menu.reload' | translate"
+      >
+        <div class="icon">
+          <i class="fa fa-refresh" aria-hidden="true"></i>
+        </div>
+        <div class="title">{{ 'menu.reload' | translate }}</div>
+      </button>
+    </div>
+    }
+
+    <!-- Logout (form auth only) -->
+    @if (formAuth) {
+    <div class="link">
+      <button
+        type="button"
+        class="link-row"
+        (click)="logout()"
+        [attr.aria-label]="'menu.tooltip_logout' | translate"
+      >
+        <div class="icon">
+          <i class="fa fa-right-from-bracket" aria-hidden="true"></i>
+        </div>
+        <div class="title">{{ 'menu.tooltip_logout' | translate }}</div>
+      </button>
     </div>
     }
   </div>
 </div>
+}

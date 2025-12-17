@@ -1,41 +1,66 @@
+@let batteryLevel = (service.values.BatteryLevel ?? 0);
+@let isLow = (service.values.StatusLowBattery === 1) || (batteryLevel === 0);
+
+@let chargingText =
+  (service.values.ChargingState === 0) ? ('accessories.control.battery_notcharging' | translate) :
+  (service.values.ChargingState === 1) ? ('accessories.control.battery_charging' | translate) :
+  (service.values.ChargingState === 2) ? ('accessories.control.battery_notchargeable' | translate) :
+  (isLow ? ('accessories.control.battery_low' | translate) : ('accessories.control.battery_charged' | translate));
+
+@let srBaseName = (service.customName || service.serviceName || '').trim();
+@let srType = ('accessories.core.battery' | translate);
+@let includeType = srBaseName.toLowerCase().indexOf(srType.toLowerCase()) === -1;
+
+@let srText =
+  srBaseName
+  + (includeType ? (', ' + srType) : '')
+  + ', '
+  + batteryLevel
+  + '%, '
+  + chargingText;
+
 <div class="accessory-box" [ngClass]="{ 'accessory-on': service.values.ChargingState === 1 }">
+  <!-- single announcement source -->
+  <span class="visually-hidden" role="status" aria-live="polite" aria-atomic="true">
+    {{ srText }}
+  </span>
+
   <div class="d-flex flex-column h-100">
-    <div [attr.aria-label]="'accessories.core.battery' | translate" class="accessory-svg">
-      <svg width="32px" height="32px" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-        <!-- filler colour -->
+    <div class="accessory-svg" aria-hidden="true">
+      <svg
+        width="32px"
+        height="32px"
+        viewBox="0 0 32 32"
+        xmlns="http://www.w3.org/2000/svg"
+        focusable="false"
+        aria-hidden="true"
+      >
         <rect
           x="1"
           y="5"
-          [attr.width]="Math.round(29 / 100 * (service.values.BatteryLevel || 0))"
+          [attr.width]="Math.round(29 / 100 * batteryLevel)"
           height="13"
           rx="2"
           stroke="none"
-          [attr.fill]="service.values.ChargingState === 1 ? '#4caf50' : (service.values.StatusLowBattery === 1 ? '#e69533' : '#808080')"
-          [attr.fill-opacity]="service.values.ChargingState === 1 ? '0.5' : (service.values.StatusLowBattery === 1 ? '0.5' : '1')"
-          stroke-width="0"
+          [attr.fill]="service.values.ChargingState === 1 ? '#4caf50' : (isLow ? '#e69533' : '#808080')"
+          [attr.fill-opacity]="service.values.ChargingState === 1 ? '0.5' : (isLow ? '0.5' : '1')"
         />
 
-        <!-- battery outline -->
-        <rect x="29.5" y="8" width="2" height="7" rx="2" stroke="none" fill="#7f7f7f" stroke-width="1" />
-
-        <!-- battery right spot -->
+        <rect x="29.5" y="8" width="2" height="7" rx="2" fill="#7f7f7f" />
         <rect x="1" y="5" width="29" height="13" rx="2" stroke="#7f7f7f" fill="none" stroke-width="0.75" />
 
-        <!-- battery level -->
-        <text x="16" y="28" font-size="9" text-anchor="middle" fill="#7f7f7f" font-family="Arial, sans-serif">
-          {{ service.values.BatteryLevel || 0 }}%
+        <text x="16" y="28" font-size="9" text-anchor="middle" fill="#7f7f7f">
+          {{ batteryLevel }}%
         </text>
       </svg>
     </div>
 
-    <div class="accessory-label mt-auto">{{ service.customName || service.serviceName }}</div>
-    <div class="accessory-label grey-text">
-      @if (service.values.ChargingState === 0) { {{ 'accessories.control.battery_notcharging' | translate }} } @else if
-      (service.values.ChargingState === 1) { {{ 'accessories.control.battery_charging' | translate }} } @else if
-      (service.values.ChargingState === 2) { {{ 'accessories.control.battery_notchargeable' | translate }} } @else if
-      (service.values.StatusLowBattery === 1 || service.values.BatteryLevel === 0) {
-      <span class="red-text">{{ 'accessories.control.battery_low' | translate }}</span>
-      } @else { {{ 'accessories.control.battery_charged' | translate }} }
+    <div class="accessory-label mt-auto" aria-hidden="true">
+      {{ service.customName || service.serviceName }}
+    </div>
+
+    <div class="accessory-label grey-text" aria-hidden="true">
+      {{ chargingText }}
     </div>
   </div>
 </div>

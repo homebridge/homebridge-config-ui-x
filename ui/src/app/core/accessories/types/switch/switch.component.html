@@ -2,15 +2,27 @@
   class="accessory-box"
   [ngClass]="{
     'accessory-on': service.values.On
-      ||  service.values.Active
+      || service.values.Active
       || ('LockTargetState' in service.values && !service.values.LockTargetState)
       || ('CurrentDoorState' in service.values && [0, 2].includes(service.values.CurrentDoorState))
   }"
   (shortClick)="onClick()"
+  (keydown.enter)="onClick()"
+  (keydown.space)="onClick()"
   tabindex="0"
+  role="switch"
+  [attr.aria-checked]="
+    service.values.On
+      || service.values.Active
+      || ('LockTargetState' in service.values && !service.values.LockTargetState)
+      || ('CurrentDoorState' in service.values && [0, 2].includes(service.values.CurrentDoorState))
+      ? 'true'
+      : 'false'
+  "
+  [attr.aria-label]="service.customName || service.serviceName"
 >
   <div class="d-flex flex-column h-100">
-    <div [attr.aria-label]="'accessories.core.switch' | translate" class="accessory-svg">
+    <div class="accessory-svg" aria-hidden="true">
       <svg width="32px" height="32px" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
         <!-- outer circle -->
         <circle cx="16" cy="16" r="14" fill="none" stroke="#7f7f7f" stroke-width="2" />
@@ -35,16 +47,20 @@
         />
       </svg>
     </div>
-    <div class="accessory-label mt-auto">{{ service.customName || service.serviceName }}</div>
-    <div
-      class="accessory-label grey-text"
-      [innerText]="(
+
+    <div class="accessory-label mt-auto">
+      {{ service.customName || service.serviceName }}
+    </div>
+
+    <div class="accessory-label grey-text" aria-hidden="true">
+      {{
         (service.values.On
           || service.values.Active
           || ('LockTargetState' in service.values && !service.values.LockTargetState)
           || ('CurrentDoorState' in service.values && [0, 2].includes(service.values.CurrentDoorState)))
-            ? 'accessories.control.on'
-            : 'accessories.control.off') | translate"
-    ></div>
+          ? ('accessories.control.on' | translate)
+          : ('accessories.control.off' | translate)
+      }}
+    </div>
   </div>
 </div>

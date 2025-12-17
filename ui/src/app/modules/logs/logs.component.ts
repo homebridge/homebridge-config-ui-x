@@ -48,7 +48,38 @@ export class LogsComponent implements OnInit, OnDestroy {
     // Start the terminal
     this.$log.startTerminal(this.termTarget(), {
       allowProposedApi: true,
+      screenReaderMode: true,
+      disableStdin: true,
     }, this.resizeEvent)
+
+    // Hide screen reader elements except the list
+    setTimeout(() => {
+      const logContainer = this.termTarget()?.nativeElement
+      if (logContainer) {
+        // Hide the textarea input
+        const textarea = logContainer.querySelector('textarea')
+        if (textarea) {
+          textarea.setAttribute('aria-hidden', 'true')
+          textarea.setAttribute('tabindex', '-1')
+        }
+        
+        // Hide the live region that duplicates all text
+        const liveRegion = logContainer.querySelector('[aria-live]')
+        if (liveRegion && !liveRegion.hasAttribute('role')) {
+          liveRegion.setAttribute('aria-hidden', 'true')
+        }
+        
+        // Hide any standalone text content that's not in the list
+        const screenReaderDiv = logContainer.querySelector('.xterm-accessibility')
+        if (screenReaderDiv) {
+          Array.from(screenReaderDiv.children).forEach((child: HTMLElement) => {
+            if (child.tagName !== 'UL' && !child.hasAttribute('role')) {
+              child.setAttribute('aria-hidden', 'true')
+            }
+          })
+        }
+      }
+    }, 100)
   }
 
   public ngOnDestroy() {
