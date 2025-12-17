@@ -1,5 +1,6 @@
+/* global NodeJS */
 import { KeyValuePipe } from '@angular/common'
-import { ChangeDetectionStrategy, Component, createEnvironmentInjector, EnvironmentInjector, inject, OnInit } from '@angular/core'
+import { ChangeDetectionStrategy, Component, createEnvironmentInjector, EnvironmentInjector, inject, OnInit, signal } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { CharacteristicType } from '@homebridge/hap-client'
 import { Enums } from '@homebridge/hap-client/dist/hap-types'
@@ -57,8 +58,10 @@ export class AccessoryInfoComponent implements OnInit {
   public customTypeList: Array<ServiceTypeX['type']> = []
   public isMatterAccessory = false
   public clusterInfo: Array<{ name: string, attributes: unknown }> = []
+  public uniqueIdCopied = signal(false)
 
   // Private properties
+  private copyTimeout: NodeJS.Timeout | null = null
   private hapCustomTypeList: Array<Array<ServiceTypeX['type']>> = [
     // Groups of service types that can be changed from one to another
     [
@@ -228,6 +231,23 @@ export class AccessoryInfoComponent implements OnInit {
 
   public dismissModal() {
     this.$activeModal.dismiss('Dismiss')
+  }
+
+  public async copyUniqueIdToClipboard(): Promise<void> {
+    const uniqueId = this.localService.uniqueId
+    if (!uniqueId) {
+      return
+    }
+    await navigator.clipboard.writeText(uniqueId)
+    this.uniqueIdCopied.set(true)
+
+    if (this.copyTimeout) {
+      clearTimeout(this.copyTimeout)
+    }
+
+    this.copyTimeout = setTimeout(() => {
+      this.uniqueIdCopied.set(false)
+    }, 3000)
   }
 
   // Private methods

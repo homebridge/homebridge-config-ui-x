@@ -283,7 +283,16 @@
       }
       <li class="list-group-item d-flex justify-content-between align-items-left flex-column flex-md-row">
         <span class="text-start">{{ 'accessories.unique_id' | translate }}</span>
-        <span class="text-start text-md-end grey-text font-monospace">{{ localService.uniqueId }}</span>
+        <span class="text-start text-md-end grey-text font-monospace">
+          {{ localService.uniqueId }}
+          <a href="javascript:void(0)" class="ms-1 text-primary" (click)="copyUniqueIdToClipboard()">
+            @if (uniqueIdCopied()) {
+            <i class="fas fa-check green-text"></i>
+            } @else {
+            <i class="fas fa-copy"></i>
+            }
+          </a>
+        </span>
       </li>
       @if (matchedCachedAccessory) {
       <li class="list-group-item d-flex justify-content-between align-items-center">
