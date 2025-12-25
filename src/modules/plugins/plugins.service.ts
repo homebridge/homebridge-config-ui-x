@@ -950,7 +950,7 @@ export class PluginsService {
       throw new NotFoundException()
     }
 
-    let schemaPath = undefined
+    let schemaPath
 
     const i18nPath = plugin.directories?.i18n
     if (i18nPath !== undefined) {
