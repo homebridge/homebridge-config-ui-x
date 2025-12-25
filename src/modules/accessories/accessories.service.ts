@@ -3,12 +3,12 @@ import type { ServiceType } from '@homebridge/hap-client'
 import { join } from 'node:path'
 
 import { HapClient } from '@homebridge/hap-client'
-import { BadRequestException, Injectable } from '@nestjs/common'
-import { mkdirp, pathExists, readJson, writeJsonSync } from 'fs-extra'
+import { BadRequestException, Inject, Injectable } from '@nestjs/common'
+import { mkdirp, pathExists, readJson, writeJsonSync } from 'fs-extra/esm'
 import NodeCache from 'node-cache'
 
-import { ConfigService } from '../../core/config/config.service'
-import { Logger } from '../../core/logger/logger.service'
+import { ConfigService } from '../../core/config/config.service.js'
+import { Logger } from '../../core/logger/logger.service.js'
 
 @Injectable()
 export class AccessoriesService {
@@ -16,8 +16,8 @@ export class AccessoriesService {
   public accessoriesCache = new NodeCache({ stdTTL: 0 })
 
   constructor(
-    private readonly configService: ConfigService,
-    private readonly logger: Logger,
+    @Inject(ConfigService) private readonly configService: ConfigService,
+    @Inject(Logger) private readonly logger: Logger,
   ) {
     if (this.configService.homebridgeInsecureMode) {
       this.hapClient = new HapClient({

@@ -1,13 +1,13 @@
 import type { EventEmitter } from 'node:events'
 
-import { UseGuards, UsePipes, ValidationPipe } from '@nestjs/common'
+import { Inject, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common'
 import { SubscribeMessage, WebSocketGateway, WsException } from '@nestjs/websockets'
 import { red } from 'bash-color'
 
-import { WsAdminGuard } from '../../core/auth/guards/ws-admin-guard'
-import { Logger } from '../../core/logger/logger.service'
-import { HomebridgeUpdateActionDto, PluginActionDto } from './plugins.dto'
-import { PluginsService } from './plugins.service'
+import { WsAdminGuard } from '../../core/auth/guards/ws-admin-guard.js'
+import { Logger } from '../../core/logger/logger.service.js'
+import { HomebridgeUpdateActionDto, PluginActionDto } from './plugins.dto.js'
+import { PluginsService } from './plugins.service.js'
 
 @UseGuards(WsAdminGuard)
 @WebSocketGateway({
@@ -27,8 +27,8 @@ import { PluginsService } from './plugins.service'
 }))
 export class PluginsGateway {
   constructor(
-    private pluginsService: PluginsService,
-    private logger: Logger,
+    @Inject(PluginsService) private readonly pluginsService: PluginsService,
+    @Inject(Logger) private readonly logger: Logger,
   ) {}
 
   @SubscribeMessage('install')

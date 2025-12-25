@@ -5,6 +5,7 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
 
 import { ApiService } from '@/app/core/api.service'
+import { HomebridgeStatusResponse } from '@/app/core/server.interfaces'
 import { SettingsService } from '@/app/core/settings.service'
 import { IoNamespace, WsService } from '@/app/core/ws.service'
 
@@ -59,8 +60,8 @@ export class RestartLinuxComponent implements OnInit, OnDestroy {
   private checkIfServerUp() {
     this.checkDelay = setTimeout(() => {
       // Listen to homebridge-status events to see when it's back online
-      this.io.socket.on('homebridge-status', (data) => {
-        if (data.status === 'up' || data.status === 'pending') {
+      this.io.socket.on('homebridge-status', (data: HomebridgeStatusResponse) => {
+        if (data.status === 'ok' || data.status === 'pending') {
           this.$toastr.success(
             this.$translate.instant('platform.linux.server_restarted'),
             this.$translate.instant('toast.title_success'),

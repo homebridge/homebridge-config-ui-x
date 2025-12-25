@@ -41,8 +41,7 @@ class HomebridgeUi {
   }
 }
 
-// eslint-disable-next-line no-restricted-syntax
-export = (api) => {
+export default (api) => {
   homebridge = api
   homebridge.registerPlatform('homebridge-config-ui-x', 'config', HomebridgeUi)
   process.on('disconnect', () => process.exit())

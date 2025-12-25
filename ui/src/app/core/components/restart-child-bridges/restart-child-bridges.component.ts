@@ -5,6 +5,7 @@ import { ToastrService } from 'ngx-toastr'
 import { firstValueFrom } from 'rxjs'
 
 import { ApiService } from '@/app/core/api.service'
+import { ChildBridgeToRestart } from '@/app/modules/config-editor/config-editor.interfaces'
 
 @Component({
   templateUrl: './restart-child-bridges.component.html',
@@ -17,7 +18,7 @@ export class RestartChildBridgesComponent {
   private $toastr = inject(ToastrService)
   private $translate = inject(TranslateService)
 
-  @Input() bridges: { username: string, name: string }[] = []
+  @Input() bridges: ChildBridgeToRestart[] = []
 
   public async onRestartChildBridgeClick() {
     try {

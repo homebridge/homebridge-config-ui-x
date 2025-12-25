@@ -30,10 +30,7 @@
       </li>
       @if (customTypeList.length) {
       <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
-        <label class="mb-2 mb-md-0 w-100 w-md-50">
-          {{ 'accessories.custom_type' | translate }}
-          <span class="badge badge-primary ms-1">{{ 'common.labels.beta' | translate }}</span>
-        </label>
+        <label class="mb-2 mb-md-0 w-100 w-md-50">{{ 'accessories.custom_type' | translate }}</label>
         <div class="text-start text-md-end w-100 w-md-50">
           <select class="custom-select" [(ngModel)]="service.customType">
             @for (customType of customTypeList.sort(); track customType) {
@@ -223,12 +220,12 @@
       </li>
       }
       <li class="list-group-item d-flex justify-content-between align-items-left flex-column flex-md-row">
-        <span class="text-start">{{ 'accessories.bridge_username' | translate }}</span>
+        <span class="text-start">{{ 'users.label_username' | translate }}</span>
         <span class="text-start text-md-end grey-text font-monospace">{{ service.instance.username }}</span>
       </li>
       @if (matchedCachedAccessory) {
       <li class="list-group-item d-flex justify-content-between align-items-left flex-column flex-md-row">
-        <span class="text-start">{{ 'accessories.bridge_name' | translate }}</span>
+        <span class="text-start">{{ 'child_bridge.config.name' | translate }}</span>
         <span class="text-start text-md-end grey-text font-monospace">{{ matchedCachedAccessory.bridge }}</span>
       </li>
       }
@@ -255,7 +252,7 @@
       </li>
       <li class="list-group-item d-flex justify-content-between align-items-center">
         <span class="text-start">{{ 'accessories.button_remove' | translate }}</span>
-        <button (click)="removeSingleCachedAccessories()" class="btn btn-primary m-0 ms-3">
+        <button (click)="removeSingleCachedAccessories()" class="btn btn-primary m-0 ms-3 py-1">
           <i class="fas fa-arrow-right"></i>
         </button>
       </li>

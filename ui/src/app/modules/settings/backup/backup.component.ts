@@ -58,7 +58,7 @@ export class BackupComponent implements OnInit {
     this.pathFormControl.patchValue(this.currentSettingPath)
 
     this.enabledFormControl.valueChanges
-      .pipe(debounceTime(750))
+      .pipe(debounceTime(500))
       .subscribe(async (value) => {
         this.currentSettingEnabled = value
         await this.saveUiSettingChange('scheduledBackupDisable', !this.currentSettingEnabled)

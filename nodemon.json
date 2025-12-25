@@ -6,6 +6,6 @@
   "ignore": [
     "src/**/*.spec.ts"
   ],
-  "exec": "sleep 2 && UIX_DEVELOPMENT=1 UIX_INSECURE_MODE=1 UIX_SERVICE_MODE=1 HOMEBRIDGE_CONFIG_UI_TERMINAL=1 ts-node -r tsconfig-paths/register src/bin/hb-service.ts run --stdout",
+  "exec": "sleep 2 && UIX_DEVELOPMENT=1 UIX_INSECURE_MODE=1 UIX_SERVICE_MODE=1 HOMEBRIDGE_CONFIG_UI_TERMINAL=1 tsx src/bin/hb-service.ts run --stdout",
   "signal": "SIGTERM"
 }

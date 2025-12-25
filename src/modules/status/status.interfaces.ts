@@ -1,6 +1,6 @@
 export enum HomebridgeStatus {
   OK = 'ok',
-  UP = 'up',
+  PENDING = 'pending',
   DOWN = 'down',
 }
 
@@ -27,4 +27,14 @@ export interface DockerReleaseInfo {
   isTest: boolean
   testTag: 'beta' | 'test' | null
   isLatestStable: boolean
+}
+
+export interface HomebridgeStatsResponse {
+  consolePort: number
+  port: number
+  pin: string
+  setupUri: string
+  paired: boolean
+  packageVersion: string
+  status: HomebridgeStatus
 }

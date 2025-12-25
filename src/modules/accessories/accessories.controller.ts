@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  Inject,
   Param,
   Put,
   Request,
@@ -10,8 +11,8 @@ import {
 import { AuthGuard } from '@nestjs/passport'
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger'
 
-import { AccessorySetCharacteristicDto } from './accessories.dto'
-import { AccessoriesService } from './accessories.service'
+import { AccessorySetCharacteristicDto } from './accessories.dto.js'
+import { AccessoriesService } from './accessories.service.js'
 
 @ApiTags('Accessories')
 @ApiBearerAuth()
@@ -19,7 +20,7 @@ import { AccessoriesService } from './accessories.service'
 @Controller('accessories')
 export class AccessoriesController {
   constructor(
-    private readonly accessoriesService: AccessoriesService,
+    @Inject(AccessoriesService) private readonly accessoriesService: AccessoriesService,
   ) {}
 
   @ApiOperation({

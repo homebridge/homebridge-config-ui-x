@@ -92,7 +92,7 @@
               <!-- installed, configured, setup as child bridge, not paired with homekit -->
               @if (plugin.installedVersion && (!plugin.newHbScope || plugin.newHbScope.switch !==
               plugin.installedVersion) && !plugin.updateAvailable && plugin.isConfigured && plugin.hasChildBridges &&
-              !childBridgeRestartInProgress && hasUnpairedChildBridges && childBridgeStatus === 'ok' &&
+              !childBridgeRestartInProgress && plugin.hasChildBridgesUnpaired && childBridgeStatus === 'ok' &&
               !plugin.disabled) {
               <a
                 href="javascript:void(0)"
@@ -112,12 +112,12 @@
               }
               <!-- // -->
               <!-- restart in progress spinner -->
-              <i [hidden]="!childBridgeRestartInProgress" class="fas fa-spinner fa-pulse fa-lg grey-text ms-3"></i>
+              <i [hidden]="!childBridgeRestartInProgress" class="fas fa-circle-notch fa-spin fa-lg grey-text ms-3"></i>
               <!-- // -->
               <!-- child bridge status (good status is not shown) -->
               @if (plugin.installedVersion && (!plugin.newHbScope || plugin.newHbScope.switch !==
               plugin.installedVersion) && !plugin.updateAvailable && plugin.isConfigured && plugin.hasChildBridges &&
-              !childBridgeRestartInProgress && !hasUnpairedChildBridges && childBridgeStatus !== 'ok' &&
+              !childBridgeRestartInProgress && !plugin.hasChildBridgesUnpaired && childBridgeStatus !== 'ok' &&
               !plugin.disabled) {
               <i
                 class="fas fa-lg ms-3"

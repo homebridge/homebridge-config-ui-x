@@ -5,43 +5,25 @@
  * The purpose of this file is to run and install homebridge and homebridge-config-ui-x as a service
  */
 
-import type { PathLike, WriteStream } from 'fs-extra'
 import type { ChildProcessWithoutNullStreams, ForkOptions } from 'node:child_process'
+import type { PathLike, WriteStream } from 'node:fs'
 import type { TarOptionsWithAliases } from 'tar'
 
-import type { HomebridgeIpcService } from '../core/homebridge-ipc/homebridge-ipc.service'
-import type { BasePlatform } from './base-platform'
+import type { HomebridgeIpcService } from '../core/homebridge-ipc/homebridge-ipc.service.js'
+import type { BasePlatform } from './base-platform.js'
 
 import { Buffer } from 'node:buffer'
 import { execSync, fork } from 'node:child_process'
+import { chownSync, createReadStream, createWriteStream, existsSync } from 'node:fs'
+import { mkdtemp, open, readFile, rename, stat } from 'node:fs/promises'
 import { arch, cpus, homedir, platform, release, tmpdir, type } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
 import process from 'node:process'
+import { fileURLToPath } from 'node:url'
 
 import axios from 'axios'
 import { program } from 'commander'
-import {
-  chownSync,
-  close,
-  createReadStream,
-  createWriteStream,
-  existsSync,
-  ftruncate,
-  mkdirp,
-  mkdtemp,
-  open,
-  pathExists,
-  pathExistsSync,
-  read,
-  readFile,
-  readJson,
-  readJsonSync,
-  remove,
-  rename,
-  stat,
-  write,
-  writeJson,
-} from 'fs-extra'
+import { mkdirp, pathExists, pathExistsSync, readJson, readJsonSync, remove, writeJson } from 'fs-extra/esm'
 import ora from 'ora'
 import { gt, gte, parse } from 'semver'
 import { networkInterfaceDefault, networkInterfaces } from 'systeminformation'
@@ -49,12 +31,15 @@ import { Tail } from 'tail'
 import { extract } from 'tar'
 import { check as tcpCheck } from 'tcp-port-used'
 
-import { DarwinInstaller } from './platforms/darwin'
-import { FreeBSDInstaller } from './platforms/freebsd'
-import { LinuxInstaller } from './platforms/linux'
-import { Win32Installer } from './platforms/win32'
+import { DarwinInstaller } from './platforms/darwin.js'
+import { FreeBSDInstaller } from './platforms/freebsd.js'
+import { LinuxInstaller } from './platforms/linux.js'
+import { Win32Installer } from './platforms/win32.js'
 
 process.title = 'hb-service'
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = dirname(__filename)
 
 export class HomebridgeServiceHelper {
   public action: 'install' | 'uninstall' | 'start' | 'stop' | 'restart' | 'rebuild' | 'run' | 'add' | 'remove' | 'logs' | 'view' | 'update-node' | 'before-start' | 'status'
@@ -358,14 +343,14 @@ export class HomebridgeServiceHelper {
       const logStartPosition = logStats.size - truncateSize
       const logBuffer = Buffer.alloc(truncateSize)
       const logFileHandle = await open(this.logPath, 'a+')
-      await read(logFileHandle, logBuffer, 0, truncateSize, logStartPosition)
+      await logFileHandle.read(logBuffer, 0, truncateSize, logStartPosition)
 
       // Truncate the existing file
-      await ftruncate(logFileHandle)
+      await logFileHandle.truncate()
 
       // Re-write the truncated log file
-      await write(logFileHandle, logBuffer)
-      await close(logFileHandle)
+      await logFileHandle.write(logBuffer)
+      await logFileHandle.close()
     } catch (e) {
       this.logger(`Failed to truncate log file: ${e.message}.`, 'fail')
     }
@@ -562,7 +547,7 @@ export class HomebridgeServiceHelper {
   private async runUi() {
     try {
       // Import main module
-      const main = await import('../main')
+      const main = await import('../main.js')
 
       // Load the nest js instance
       const ui = await main.app

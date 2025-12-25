@@ -1,0 +1,84 @@
+// Smooth transition for body background color change (light mode only)
+::ng-deep body.light-mode {
+  transition: background-color 0.25s ease-in-out;
+}
+
+#log-output.light-mode {
+  opacity: 0;
+  animation: fadeIn 0.25s ease-in-out 0.25s forwards;
+
+  &.fade-out {
+    animation: fadeOut 0.25s ease-in-out forwards !important;
+    opacity: 1;
+  }
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  to {
+    opacity: 0;
+  }
+}
+
+.search-bar {
+  background-color: #111111 !important;
+  color: #999999 !important;
+  border: 0 #242424 !important;
+
+  @media (hover: hover) {
+    &:hover {
+      border: 1px solid #242424 !important;
+    }
+  }
+
+  &:focus {
+    border: 1px solid #242424 !important;
+    box-shadow: inherit !important;
+    color: #eeeeee !important;
+  }
+
+  &::placeholder {
+    color: #636363 !important;
+    opacity: 1 !important;
+  }
+}
+
+.search-bar.is-invalid {
+  border: 1px solid #d32f2f !important;
+  box-shadow: 0 1px 0 0 #d32f2f !important;
+
+  @media (hover: hover) {
+    &:hover {
+      border: 1px solid #d32f2f !important;
+      box-shadow: 0 1px 0 0 #d32f2f !important;
+    }
+  }
+
+  &:focus {
+    border: 1px solid #d32f2f !important;
+    box-shadow: 0 1px 0 0 #d32f2f !important;
+  }
+}
+
+.search-bar-badge {
+  position: absolute;
+  right: 10px;
+  top: 16px;
+  font-size: 0.75rem;
+  padding: 0.25em 0.5em;
+}
+
+.adjust-for-mobile-with-search {
+  height: calc(100% - 95px);
+  width: calc(100% + 17px);
+  overflow: hidden;
+
+  @media (max-width: 767px) {
+    height: calc(100% - 125px);
+  }
+}

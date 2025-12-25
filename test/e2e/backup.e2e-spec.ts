@@ -31,13 +31,13 @@ import {
 } from 'fs-extra'
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { AuthModule } from '../../src/core/auth/auth.module'
-import { ConfigService } from '../../src/core/config/config.service'
-import { SchedulerService } from '../../src/core/scheduler/scheduler.service'
-import { BackupGateway } from '../../src/modules/backup/backup.gateway'
-import { BackupModule } from '../../src/modules/backup/backup.module'
-import { BackupService } from '../../src/modules/backup/backup.service'
-import { PluginsService } from '../../src/modules/plugins/plugins.service'
+import { AuthModule } from '../../src/core/auth/auth.module.js'
+import { ConfigService } from '../../src/core/config/config.service.js'
+import { SchedulerService } from '../../src/core/scheduler/scheduler.service.js'
+import { BackupGateway } from '../../src/modules/backup/backup.gateway.js'
+import { BackupModule } from '../../src/modules/backup/backup.module.js'
+import { BackupService } from '../../src/modules/backup/backup.service.js'
+import { PluginsService } from '../../src/modules/plugins/plugins.service.js'
 
 import '../../src/globalDefaults'
 
@@ -51,7 +51,7 @@ function randomValueHex(len: number) {
     .toUpperCase() // return required number of characters
 }
 
-describe('BackupController (e2e)', () => {
+describe('BackupController (e2e)', { timeout: 10_000 }, () => {
   let app: NestFastifyApplication
 
   let authFilePath: string
@@ -507,6 +507,4 @@ describe('BackupController (e2e)', () => {
     schedulerService.scheduledJobs['instance-backup']?.cancel()
     await app.close()
   })
-}, {
-  timeout: 10_000,
 })

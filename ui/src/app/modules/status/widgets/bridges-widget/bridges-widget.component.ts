@@ -7,6 +7,7 @@ import { firstValueFrom } from 'rxjs'
 
 import { ApiService } from '@/app/core/api.service'
 import { AuthService } from '@/app/core/auth/auth.service'
+import { ChildBridgeStatusResponse, HomebridgeStatusResponse } from '@/app/core/server.interfaces'
 import { IoNamespace, WsService } from '@/app/core/ws.service'
 import { Widget } from '@/app/modules/status/widgets/widgets.interfaces'
 
@@ -38,9 +39,9 @@ export class BridgesWidgetComponent implements OnInit, OnDestroy {
 
   public async ngOnInit(): Promise<void> {
     this.ioMain = this.$ws.getExistingNamespace('status')
-    this.ioMain.socket.on('homebridge-status', (data) => {
+    this.ioMain.socket.on('homebridge-status', (data: HomebridgeStatusResponse) => {
       this.homebridgeStatus = data
-      if (data.status === 'up') {
+      if (data.status === 'ok') {
         this.isRestarting = false
       }
     })
@@ -59,7 +60,7 @@ export class BridgesWidgetComponent implements OnInit, OnDestroy {
       this.getChildBridgeMetadata()
       this.ioChild.socket.emit('monitor-child-bridge-status')
     })
-    this.ioChild.socket.on('child-bridge-status-update', (data: any) => {
+    this.ioChild.socket.on('child-bridge-status-update', (data: ChildBridgeStatusResponse) => {
       const existingBridge = this.childBridges.find(x => x.username === data.username)
       if (existingBridge) {
         Object.assign(existingBridge, data)
@@ -110,7 +111,7 @@ export class BridgesWidgetComponent implements OnInit, OnDestroy {
   }
 
   private getChildBridgeMetadata() {
-    this.ioChild.request('get-homebridge-child-bridge-status').subscribe((data) => {
+    this.ioChild.request('get-homebridge-child-bridge-status').subscribe((data: ChildBridgeStatusResponse[]) => {
       this.childBridges = data
       this.childBridges = data.sort((a, b) => a.name.localeCompare(b.name))
     })

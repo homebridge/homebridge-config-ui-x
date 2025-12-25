@@ -62,6 +62,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
   private latestSavedConfig: HomebridgeConfig
   private childBridgesToRestart: ChildBridgeToRestart[] = []
   private hbPendingRestart = false
+  private isDebugModeEnabled = this.$settings.isFeatureEnabled('childBridgeDebugMode')
 
   public homebridgeConfig: string
   public originalConfig: string
@@ -494,7 +495,9 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
 
     const uri = monaco.Uri.parse('a://homebridge/config.json')
 
-    const childBridgeSchema = createChildBridgeSchema(this.$translate);
+    const childBridgeSchema = createChildBridgeSchema(this.$translate, {
+      isDebugModeEnabled: this.isDebugModeEnabled,
+    });
 
     (window as any).monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
       allowComments: false,
@@ -505,10 +508,12 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
           fileMatch: [uri.toString()],
           schema: {
             type: 'object',
+            additionalProperties: false,
             required: ['bridge'],
             properties: {
               bridge: {
                 type: 'object',
+                additionalProperties: false,
                 required: ['name', 'username', 'port', 'pin'],
                 properties: {
                   name: {
@@ -520,7 +525,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
                   },
                   username: {
                     type: 'string',
-                    title: this.$translate.instant('accessories.bridge_username'),
+                    title: this.$translate.instant('users.label_username'),
                     description: 'Homebridge username must be 6 pairs of colon-separated hexadecimal characters (A-F 0-9).\n'
                       + 'You should change this pin if you need to re-pair your instance with HomeKit.\n'
                       + 'Example: 0E:89:49:64:91:86.',
@@ -559,6 +564,29 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
                     title: this.$translate.instant('child_bridge.config.model'),
                     description: 'The bridge model to be displayed in HomeKit.',
                   },
+                  advertiser: {
+                    type: 'string',
+                    title: this.$translate.instant('settings.mdns_advertiser'),
+                    description: this.$translate.instant('settings.mdns_advertiser_help'),
+                    oneOf: [
+                      {
+                        title: 'Avahi',
+                        enum: ['avahi'],
+                      },
+                      {
+                        title: 'Bonjour HAP',
+                        enum: ['bonjour-hap'],
+                      },
+                      {
+                        title: 'Ciao',
+                        enum: ['ciao'],
+                      },
+                      {
+                        title: 'Resolved',
+                        enum: ['resolved'],
+                      },
+                    ],
+                  },
                   bind: {
                     title: this.$translate.instant('settings.network.title_network_interfaces'),
                     description: 'A string or an array of strings with the name(s) of the network interface(s) Homebridge should bind to.\n'
@@ -574,6 +602,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
               },
               mdns: {
                 type: 'object',
+                additionalProperties: false,
                 properties: {
                   interface: {
                     type: 'string',
@@ -592,6 +621,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
               },
               ports: {
                 type: 'object',
+                additionalProperties: false,
                 title: 'Port Range',
                 description: 'The range of ports that should be used for external accessories like cameras and TVs.',
                 required: ['start', 'end'],
@@ -648,6 +678,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
                     },
                     {
                       type: 'object',
+                      additionalProperties: false,
                       properties: {
                         platform: {
                           type: 'string',
@@ -811,6 +842,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
                         },
                         log: {
                           type: 'object',
+                          additionalProperties: false,
                           title: 'Log Settings',
                           description: 'The log settings for the Homebridge UI.',
                           properties: {
@@ -830,6 +862,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
                         },
                         ssl: {
                           type: 'object',
+                          additionalProperties: false,
                           title: this.$translate.instant('settings.security.https'),
                           description: this.$translate.instant('settings.security.https_desc'),
                           properties: {
@@ -858,6 +891,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
                         accessoryControl: {
                           title: 'Accessory Control Setup',
                           type: 'object',
+                          additionalProperties: false,
                           description: 'The accessory control settings for the Homebridge UI.',
                           properties: {
                             debug: {
@@ -870,7 +904,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
                               type: 'array',
                               description: this.$translate.instant('settings.security.ui_control_desc'),
                               items: {
-                                title: this.$translate.instant('accessories.bridge_username'),
+                                title: this.$translate.instant('users.label_username'),
                                 type: 'string',
                                 pattern: '^([A-Fa-f0-9]{2}:){5}[A-Fa-f0-9]{2}$',
                               },
@@ -880,6 +914,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
                         linux: {
                           title: 'Linux Server Commands',
                           type: 'object',
+                          additionalProperties: false,
                           description: 'The Linux server commands for the Homebridge UI.',
                           properties: {
                             shutdown: {
@@ -910,6 +945,11 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
                           type: 'boolean',
                           description: 'When enabled, the Homebridge UI will not create daily scheduled backups.',
                         },
+                        scheduledRestartCron: {
+                          type: 'string',
+                          title: this.$translate.instant('settings.startup.scheduled_restart'),
+                          description: this.$translate.instant('settings.startup.scheduled_restart_desc'),
+                        },
                         disableServerMetricsMonitoring: {
                           title: 'Disable Server Metrics Monitoring',
                           type: 'boolean',
@@ -923,11 +963,12 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
                         plugins: {
                           title: this.$translate.instant('menu.label_plugins'),
                           type: 'object',
-                          description: 'Settings surrounding plugins used by the Homebridge UI.',
+                          additionalProperties: false,
+                          description: 'Settings surrounding plugins that are used by the Homebridge UI.',
                           properties: {
                             hideUpdatesFor: {
                               type: 'array',
-                              title: 'Hide Plugin Updates For',
+                              title: this.$translate.instant('config.hide_plugin_updates'),
                               description: 'A list of plugin names for which frontend update notifications will be hidden.',
                               items: {
                                 type: 'string',
@@ -942,8 +983,37 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
                             },
                           },
                         },
+                        bridges: {
+                          type: 'array',
+                          title: this.$translate.instant('child_bridge.bridges'),
+                          description: 'Settings surrounding bridges that are used by the Homebridge UI.',
+                          items: {
+                            type: 'object',
+                            additionalProperties: false,
+                            required: ['username'],
+                            properties: {
+                              username: {
+                                type: 'string',
+                                title: this.$translate.instant('users.label_username'),
+                                description: 'The MAC address of the bridge (e.g., "0E:02:9A:9D:44:45").',
+                                pattern: '^[0-9A-F]{2}(?::[0-9A-F]{2}){5}$',
+                              },
+                              hideHapAlert: {
+                                type: 'boolean',
+                                title: this.$translate.instant('config.hide_hap_pairing'),
+                                description: 'Hide the HAP pairing alert for this bridge.',
+                              },
+                              scheduledRestartCron: {
+                                type: 'string',
+                                title: this.$translate.instant('settings.startup.scheduled_restart'),
+                                description: this.$translate.instant('settings.startup.scheduled_restart_desc'),
+                              },
+                            },
+                          },
+                        },
                         terminal: {
                           type: 'object',
+                          additionalProperties: false,
                           title: 'Terminal Settings',
                           description: 'The terminal settings for the Homebridge UI.',
                           properties: {
@@ -1257,6 +1327,12 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
   }
 
   private async performChildBridgeRestart() {
+    // If there are no child bridges to restart, fall through to full restart
+    if (!this.childBridgesToRestart.length) {
+      await this.performFullRestart(false)
+      return
+    }
+
     const ref = this.$modal.open(RestartChildBridgesComponent, {
       size: 'lg',
       backdrop: 'static',

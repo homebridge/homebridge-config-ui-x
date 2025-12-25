@@ -23,7 +23,7 @@ export class PluginLogsComponent implements OnInit, OnDestroy {
   private $modal = inject(NgbModal)
   private $toastr = inject(ToastrService)
   private $translate = inject(TranslateService)
-  private resizeEvent = new Subject()
+  private resizeEvent = new Subject<void>()
   private pluginAlias: string
 
   @Input() plugin: Plugin

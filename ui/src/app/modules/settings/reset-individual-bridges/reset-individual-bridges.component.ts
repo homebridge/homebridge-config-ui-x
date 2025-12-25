@@ -52,11 +52,11 @@ export class ResetIndividualBridgesComponent implements OnInit {
       body: this.toDelete,
     }).subscribe({
       next: () => {
-        this.$toastr.success(this.$translate.instant('reset.bridge_ind.done'), this.$translate.instant('toast.title_success'))
         this.$activeModal.close()
         void this.$router.navigate(['/restart'], {
           queryParams: { restarting: true },
         })
+        this.$toastr.success(this.$translate.instant('reset.bridge_ind.done'), this.$translate.instant('toast.title_success'))
       },
       error: (error) => {
         this.clicked = false

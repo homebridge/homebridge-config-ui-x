@@ -6,6 +6,7 @@ import {
   Delete,
   Get,
   HttpCode,
+  Inject,
   InternalServerErrorException,
   Param,
   Post,
@@ -17,11 +18,11 @@ import {
 import { AuthGuard } from '@nestjs/passport'
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiParam, ApiQuery, ApiTags } from '@nestjs/swagger'
 
-import { AdminGuard } from '../../core/auth/guards/admin.guard'
-import { Logger } from '../../core/logger/logger.service'
-import { ChildBridgesService } from '../child-bridges/child-bridges.service'
-import { HomebridgeMdnsSettingDto, HomebridgeNetworkInterfacesDto } from './server.dto'
-import { ServerService } from './server.service'
+import { AdminGuard } from '../../core/auth/guards/admin.guard.js'
+import { Logger } from '../../core/logger/logger.service.js'
+import { ChildBridgesService } from '../child-bridges/child-bridges.service.js'
+import { HomebridgeMdnsSettingDto, HomebridgeNetworkInterfacesDto } from './server.dto.js'
+import { ServerService } from './server.service.js'
 
 @ApiTags('Homebridge')
 @ApiBearerAuth()
@@ -29,9 +30,9 @@ import { ServerService } from './server.service'
 @Controller('server')
 export class ServerController {
   constructor(
-    private serverService: ServerService,
-    private childBridgesService: ChildBridgesService,
-    private logger: Logger,
+    @Inject(ServerService) private readonly serverService: ServerService,
+    @Inject(ChildBridgesService) private readonly childBridgesService: ChildBridgesService,
+    @Inject(Logger) private readonly logger: Logger,
   ) {}
 
   @Put('/restart')

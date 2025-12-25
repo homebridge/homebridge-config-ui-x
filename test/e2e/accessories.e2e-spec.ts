@@ -11,10 +11,10 @@ import { Test } from '@nestjs/testing'
 import { copy } from 'fs-extra'
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { AuthModule } from '../../src/core/auth/auth.module'
-import { ConfigService } from '../../src/core/config/config.service'
-import { AccessoriesModule } from '../../src/modules/accessories/accessories.module'
-import { AccessoriesService } from '../../src/modules/accessories/accessories.service'
+import { AuthModule } from '../../src/core/auth/auth.module.js'
+import { ConfigService } from '../../src/core/config/config.service.js'
+import { AccessoriesModule } from '../../src/modules/accessories/accessories.module.js'
+import { AccessoriesService } from '../../src/modules/accessories/accessories.service.js'
 
 describe('AccessoriesController (e2e)', () => {
   let app: NestFastifyApplication

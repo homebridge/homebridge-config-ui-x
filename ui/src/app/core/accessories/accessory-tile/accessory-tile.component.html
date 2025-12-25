@@ -4,7 +4,7 @@
     <i class="fas fa-bars grey-text"></i>
   </a>
   } @if (!$accessories.readyForControl) {
-  <i class="fas fa-spin fa-sync-alt refreshing-accessory-status-icon grey-text"></i>
+  <i class="fas fa-circle-notch fa-spin refreshing-accessory-status-icon grey-text"></i>
   } @switch (service.customType || service.type) { @case ('Switch') {
   <app-switch [service]="service" [readyForControl]="$accessories.readyForControl"
     >{{ 'accessories.core.switch' | translate }}</app-switch

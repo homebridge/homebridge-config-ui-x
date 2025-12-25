@@ -40,7 +40,7 @@ hb-service start</pre
             class="fa"
             [ngClass]="{
               'fa-circle-o': !installing && !installed && !failure,
-              'fa-spinner fa-pulse': installing,
+              'fa-circle-notch fa-spin': installing,
               'fa-check-circle green-text': installed && !failure,
               'fa-times-circle red-text': !installed && failure,
             }"
@@ -52,7 +52,7 @@ hb-service start</pre
             class="fa"
             [ngClass]="{
               'fa-circle-o': !uninstalling && !uninstalled && !failure,
-              'fa-spinner fa-pulse': uninstalling,
+              'fa-circle-notch fa-spin': uninstalling,
               'fa-check-circle green-text': uninstalled && !failure,
               'fa-times-circle red-text': !uninstalled && failure,
             }"
@@ -64,7 +64,7 @@ hb-service start</pre
             class="fa"
             [ngClass]="{
               'fa-circle-o': !restarting && !failure,
-              'fa-spinner fa-pulse': restarting,
+              'fa-circle-notch fa-spin': restarting,
               'fa-times-circle red-text': failure,
             }"
           ></i>
@@ -120,9 +120,9 @@ hb-service start</pre
         [disabled]="installing || uninstalling || restarting || !onlineUpdateOk || failure"
       >
         @if (!installing && !uninstalling && !restarting) {
-        <span> {{ 'form.button_continue' | translate }} </span>
+        <span>{{ 'form.button_continue' | translate }}</span>
         } @if ((installing || uninstalling || restarting) && !failure) {
-        <i class="fas fa-spinner fa-pulse"></i>
+        <i class="fas fa-circle-notch fa-spin"></i>
         }
       </button>
       }

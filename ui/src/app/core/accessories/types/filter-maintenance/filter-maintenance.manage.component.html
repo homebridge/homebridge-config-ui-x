@@ -11,8 +11,7 @@
   </div>
   <div class="modal-body text-center px-5">
     <h6 class="mb-4">{{ 'accessories.control.filter_level' | translate }}: {{ service.values.FilterLifeLevel }}%</h6>
-    <nouislider [min]="0" [max]="100" [step]="1" [disabled]="true" [(ngModel)]="service.values.FilterLifeLevel">
-    </nouislider>
+    <nouislider [min]="0" [max]="100" [step]="1" [disabled]="true" [(ngModel)]="service.values.FilterLifeLevel" />
     <div
       class="btn-group-vertical d-flex justify-content-center mt-5 mb-0 p-0"
       role="group"

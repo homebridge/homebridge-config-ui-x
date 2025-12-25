@@ -1,31 +1,6 @@
-.search-bar {
-  outline: none;
-  box-sizing: inherit !important;
-  background-color: inherit;
-  height: 50px !important;
-  width: 100%;
-  border-width: 0.5px;
-  padding: 10px;
-  margin-bottom: 15px;
-
-  @media (hover: hover) {
-    &:hover {
-      border: 1px solid #000000;
-    }
-  }
-  &:focus {
-    border: 1px solid #000000;
-    box-shadow: 0 1px 0 0 #000000;
-  }
-}
-
-.search-bar-clear {
-  position: absolute;
-  right: 30px;
-  font-size: 25px;
-  color: #d0d0d0;
-  line-height: 50px;
-  cursor: pointer;
+// Smooth transition for body background color change (light mode only)
+::ng-deep body.light-mode {
+  transition: background-color 0.25s ease-in-out;
 }
 
 .hb-plugin-space-between {
@@ -41,6 +16,16 @@
   background: #242424;
   border-top-left-radius: 0.5rem;
   border-top-right-radius: 0.5rem;
+
+  &.light-mode {
+    opacity: 0;
+    animation: fadeIn 0.25s ease-in-out 0.25s forwards;
+
+    &.fade-out {
+      animation: fadeOut 0.25s ease-in-out forwards !important;
+      opacity: 1;
+    }
+  }
 
   code {
     border: 1px solid grey;
@@ -58,7 +43,29 @@
   border-bottom-left-radius: 0.5rem;
   border-bottom-right-radius: 0.5rem;
 
+  &.light-mode {
+    opacity: 0;
+    animation: fadeIn 0.25s ease-in-out 0.25s forwards;
+
+    &.fade-out {
+      animation: fadeOut 0.25s ease-in-out forwards !important;
+      opacity: 1;
+    }
+  }
+
   @media (max-width: 767px) {
     height: calc(100% - 60px);
+  }
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  to {
+    opacity: 0;
   }
 }

@@ -33,11 +33,20 @@ export class PowerOptionsComponent implements OnInit {
     this.$settings.setPageTitle(title)
   }
 
+  private closeRestartToast() {
+    if (this.$settings.restartToastRef) {
+      this.$toastr.clear(this.$settings.restartToastRef.toastId)
+      this.$settings.restartToastRef = null
+    }
+  }
+
   public restartHomebridge() {
+    this.closeRestartToast()
     void this.$router.navigate(['/restart'])
   }
 
   public restartHomebridgeService() {
+    this.closeRestartToast()
     this.$api.put('/platform-tools/hb-service/set-full-service-restart-flag', {}).subscribe({
       next: () => {
         void this.$router.navigate(['/restart'])
@@ -50,10 +59,12 @@ export class PowerOptionsComponent implements OnInit {
   }
 
   public restartServer() {
+    this.closeRestartToast()
     void this.$router.navigate(['/platform-tools/linux/restart-server'])
   }
 
   public shutdownServer() {
+    this.closeRestartToast()
     // Confirmation dialog
     const ref = this.$modal.open(ConfirmComponent, {
       size: 'lg',
@@ -72,6 +83,7 @@ export class PowerOptionsComponent implements OnInit {
   }
 
   public dockerRestartContainer() {
+    this.closeRestartToast()
     void this.$router.navigate(['/platform-tools/docker/restart-container'])
   }
 }

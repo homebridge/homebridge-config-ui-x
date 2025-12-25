@@ -15,16 +15,19 @@ export class LogService {
   private io: IoNamespace
   private fitAddon: FitAddon
   private webLinksAddon: WebLinksAddon
-  private resize: Subject<any>
-  private elementResize: Subject<any> | undefined
-  private pluginName: string
+  private resize: Subject<{ cols: number, rows: number }>
+  private elementResize: Subject<void> | undefined
+  private pluginName: string | undefined
+  private searchFilter: string | null = null
+  private logBuffer: string[] = []
+  private readonly maxBufferSize = 1000 // Maximum number of log chunks to keep in buffer
 
   public term: Terminal
 
   public startTerminal(
     targetElement: ElementRef,
     termOpts: ITerminalOptions = {},
-    elementResize?: Subject<any>,
+    elementResize?: Subject<void>,
     pluginName?: string,
   ) {
     this.pluginName = pluginName
@@ -48,7 +51,7 @@ export class LogService {
     this.webLinksAddon = new WebLinksAddon()
 
     // Create a subject to listen for resize events
-    this.resize = new Subject()
+    this.resize = new Subject<{ cols: number, rows: number }>()
 
     // Open the terminal in the target element
     this.term.open(targetElement.nativeElement)
@@ -62,6 +65,7 @@ export class LogService {
     // Start the terminal session when the socket is connected
     this.io.connected.subscribe(() => {
       this.term.reset()
+      this.logBuffer = []
       this.io.socket.emit('tail-log', { cols: this.term.cols, rows: this.term.rows })
     })
 
@@ -101,7 +105,25 @@ export class LogService {
           }
         })
       } else {
-        this.term.write(data)
+        // Store raw data in buffer
+        this.logBuffer.push(data)
+
+        // Limit buffer size to prevent memory issues
+        if (this.logBuffer.length > this.maxBufferSize) {
+          this.logBuffer.shift() // Remove oldest entry
+        }
+
+        // Apply search filter if active
+        if (this.searchFilter) {
+          const lines = data.split('\n\r')
+          lines.forEach((line: string) => {
+            if (line && this.lineMatchesFilter(line)) {
+              this.term.write(`${line}\n\r`)
+            }
+          })
+        } else {
+          this.term.write(data)
+        }
       }
     })
 
@@ -120,6 +142,60 @@ export class LogService {
     }
   }
 
+  public setSearchFilter(filter: string): void {
+    this.searchFilter = filter.toLowerCase()
+    this.redrawTerminalWithFilter()
+  }
+
+  public clearSearchFilter(): void {
+    this.searchFilter = null
+    this.redrawTerminalWithFilter()
+  }
+
+  public getSearchFilter(): string | null {
+    return this.searchFilter
+  }
+
+  public scrollToBottom(): void {
+    if (this.term) {
+      // Use setTimeout to ensure scrolling happens after any pending terminal updates
+      setTimeout(() => this.term.scrollToLine(this.term.buffer.active.length), 10)
+    }
+  }
+
+  private lineMatchesFilter(line: string): boolean {
+    if (!this.searchFilter) {
+      return true
+    }
+    // Strip ANSI color codes before searching
+    // eslint-disable-next-line no-control-regex, unicorn/escape-case
+    const cleanLine = line.replace(/\x1b\[[0-9;]*m/g, '').toLowerCase()
+    return cleanLine.includes(this.searchFilter)
+  }
+
+  private redrawTerminalWithFilter(): void {
+    if (!this.term) {
+      return
+    }
+
+    // Clear the terminal
+    this.term.clear()
+
+    // Redraw all buffered logs with filter
+    this.logBuffer.forEach((data: string) => {
+      if (this.searchFilter) {
+        const lines = data.split('\n\r')
+        lines.forEach((line: string) => {
+          if (line && this.lineMatchesFilter(line)) {
+            this.term.write(`${line}\n\r`)
+          }
+        })
+      } else {
+        this.term.write(data)
+      }
+    })
+  }
+
   public destroyTerminal() {
     this.io.end()
     this.term.dispose()
@@ -127,5 +203,7 @@ export class LogService {
     if (this.elementResize) {
       this.elementResize.complete()
     }
+    this.logBuffer = []
+    this.searchFilter = null
   }
 }

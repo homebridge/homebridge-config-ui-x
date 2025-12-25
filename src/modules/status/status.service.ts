@@ -3,14 +3,15 @@ import type { Subscription } from 'rxjs'
 import type { Systeminformation } from 'systeminformation'
 
 import { exec, execSync } from 'node:child_process'
+import { readFile } from 'node:fs/promises'
 import { cpus, loadavg, platform, userInfo } from 'node:os'
 import { dirname, resolve } from 'node:path'
 import process from 'node:process'
 import { promisify } from 'node:util'
 
 import { HttpService } from '@nestjs/axios'
-import { BadRequestException, Injectable } from '@nestjs/common'
-import { readFile, readJson, writeJsonSync } from 'fs-extra'
+import { BadRequestException, Inject, Injectable } from '@nestjs/common'
+import { readJson, writeJsonSync } from 'fs-extra/esm'
 import NodeCache from 'node-cache'
 import { firstValueFrom, Subject } from 'rxjs'
 import { gt } from 'semver'
@@ -25,13 +26,19 @@ import {
   time,
 } from 'systeminformation'
 
-import { ConfigService } from '../../core/config/config.service'
-import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.service'
-import { Logger } from '../../core/logger/logger.service'
-import { isNodeV24SupportedArchitecture } from '../../core/node-version.constants'
-import { PluginsService } from '../plugins/plugins.service'
-import { ServerService } from '../server/server.service'
-import { DockerRelease, DockerReleaseInfo, HomebridgeStatus, HomebridgeStatusUpdate } from './status.interfaces'
+import { ConfigService } from '../../core/config/config.service.js'
+import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.service.js'
+import { Logger } from '../../core/logger/logger.service.js'
+import { isNodeV24SupportedArchitecture } from '../../core/node-version.constants.js'
+import { PluginsService } from '../plugins/plugins.service.js'
+import { ServerService } from '../server/server.service.js'
+import {
+  DockerRelease,
+  DockerReleaseInfo,
+  HomebridgeStatsResponse,
+  HomebridgeStatus,
+  HomebridgeStatusUpdate,
+} from './status.interfaces.js'
 
 const execAsync = promisify(exec)
 
@@ -59,12 +66,12 @@ export class StatusService {
   }
 
   constructor(
-    private httpService: HttpService,
-    private logger: Logger,
-    private configService: ConfigService,
-    private pluginsService: PluginsService,
-    private serverService: ServerService,
-    private homebridgeIpcService: HomebridgeIpcService,
+    @Inject(HttpService) private readonly httpService: HttpService,
+    @Inject(Logger) private readonly logger: Logger,
+    @Inject(ConfigService) private readonly configService: ConfigService,
+    @Inject(PluginsService) private readonly pluginsService: PluginsService,
+    @Inject(ServerService) private readonly serverService: ServerService,
+    @Inject(HomebridgeIpcService) private readonly homebridgeIpcService: HomebridgeIpcService,
   ) {
     // Systeminformation cpu data is not supported in FreeBSD Jail Shells
     if (platform() === 'freebsd') {
@@ -82,7 +89,7 @@ export class StatusService {
     }
 
     this.homebridgeIpcService.on('serverStatusUpdate', (data: HomebridgeStatusUpdate) => {
-      this.homebridgeStatus = data.status === HomebridgeStatus.OK ? HomebridgeStatus.UP : data.status
+      this.homebridgeStatus = data.status
 
       if (data?.setupUri) {
         this.serverService.setupCode = data.setupUri
@@ -310,7 +317,7 @@ export class StatusService {
   /**
    * Returns Homebridge Status From Healthcheck
    */
-  private async getHomebridgeStats() {
+  private async getHomebridgeStats(): Promise<HomebridgeStatsResponse> {
     return {
       consolePort: this.configService.ui.port,
       port: this.configService.homebridgeConfig.bridge.port,
@@ -452,17 +459,27 @@ export class StatusService {
       switch (process.version.split('.')[0]) {
         case 'v20': {
           // Currently using v20
-          // Show the option for updating to node 22
-          updateAvailable = true
-          latestVersion = latest22.version
+          if (isNodeJs24Supported) {
+            // If node 24 is supported, suggest updating to that
+            updateAvailable = true
+            latestVersion = latest24.version
+          } else {
+            // Otherwise, show the option for updating to node 22
+            updateAvailable = true
+            latestVersion = latest22.version
+          }
           break
         }
         case 'v22': {
           // Currently using v22
-          // Check if there is a new minor/patch version available
           if (gt(latest22.version, process.version)) {
+            // Check if there is a new minor/patch version available
             updateAvailable = true
             latestVersion = latest22.version
+          } else if (isNodeJs24Supported) {
+            // If node 24 is supported, suggest updating to that
+            updateAvailable = true
+            latestVersion = latest24.version
           }
           break
         }

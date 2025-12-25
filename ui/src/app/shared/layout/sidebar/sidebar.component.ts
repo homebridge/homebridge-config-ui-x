@@ -45,6 +45,10 @@ export class SidebarComponent implements OnInit, OnDestroy {
   public freezeMenu = false
   public isPwa = isStandalonePWA()
 
+  // Store listener references for proper cleanup
+  private sidebarMouseEnterListener = () => this.openSidebar()
+  private sidebarMouseLeaveListener = () => this.closeSidebar()
+
   constructor() {
     this.isMobile = window.innerWidth < 768
     let resizeTimeout: any
@@ -117,8 +121,8 @@ export class SidebarComponent implements OnInit, OnDestroy {
     } else {
       this.updateListeners()
 
-      mobileHeader.addEventListener('mouseenter', () => this.openSidebar(), { passive: false })
-      mobileHeader.addEventListener('mouseleave', () => this.closeSidebar(), { passive: false })
+      mobileHeader.addEventListener('mouseenter', this.sidebarMouseEnterListener, { passive: false })
+      mobileHeader.addEventListener('mouseleave', this.sidebarMouseLeaveListener, { passive: false })
 
       document.addEventListener('click', (e: MouseEvent) => {
         if (sidebar.contains(e.target as HTMLElement) && e.clientX > 60) {
@@ -206,10 +210,15 @@ export class SidebarComponent implements OnInit, OnDestroy {
   private updateListeners() {
     this.isMobile = window.innerWidth < 768
     const sidebar = document.querySelector('.sidebar')
-    sidebar.removeAllListeners()
+
+    // Remove existing listeners
+    sidebar.removeEventListener('mouseenter', this.sidebarMouseEnterListener)
+    sidebar.removeEventListener('mouseleave', this.sidebarMouseLeaveListener)
+
+    // Add listeners based on mobile state and menu mode
     if (this.isMobile || (!this.isMobile && this.$settings.menuMode !== 'freeze')) {
-      sidebar.addEventListener('mouseenter', () => this.openSidebar(), { passive: false })
-      sidebar.addEventListener('mouseleave', () => this.closeSidebar(), { passive: false })
+      sidebar.addEventListener('mouseenter', this.sidebarMouseEnterListener, { passive: false })
+      sidebar.addEventListener('mouseleave', this.sidebarMouseLeaveListener, { passive: false })
     }
   }
 }

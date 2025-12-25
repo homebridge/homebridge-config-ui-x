@@ -1,0 +1,14 @@
+.fa-hap {
+  width: auto !important;
+}
+
+.fa-hap::before {
+  content: '';
+  display: inline-block;
+  width: 1.125em;
+  height: 1.125em;
+  background-color: currentColor;
+  mask: url('../../assets/hap.svg') no-repeat center/contain;
+  -webkit-mask: url('../../assets/hap.svg') no-repeat center/contain;
+  vertical-align: -0.2em;
+}

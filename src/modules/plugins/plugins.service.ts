@@ -1,7 +1,6 @@
 /* global NodeJS */
-import type { EventEmitter } from 'node:events'
 
-import type { HomebridgeConfig } from '../../core/config/config.interfaces'
+import type { HomebridgeConfig } from '../../core/config/config.interfaces.js'
 import type {
   HomebridgePlugin,
   HomebridgePluginUiMetadata,
@@ -13,9 +12,13 @@ import type {
   PluginListData,
   PluginListItem,
   PluginListNewScopeItem,
-} from './plugins.interfaces'
+} from './plugins.interfaces.js'
 
 import { execSync, fork, spawn } from 'node:child_process'
+import { EventEmitter } from 'node:events'
+import { constants, existsSync } from 'node:fs'
+import { access, readdir, readFile, realpath, stat } from 'node:fs/promises'
+import { createRequire } from 'node:module'
 import { arch, cpus, platform, userInfo } from 'node:os'
 import {
   basename,
@@ -28,41 +31,58 @@ import {
 import process from 'node:process'
 
 import { HttpService } from '@nestjs/axios'
-import { BadRequestException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common'
+import { BadRequestException, Inject, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common'
 import axios from 'axios'
 import { cyan, green, red, yellow } from 'bash-color'
-import {
-  access,
-  constants,
-  createFile,
-  ensureDir,
-  existsSync,
-  pathExists,
-  pathExistsSync,
-  readdir,
-  readFile,
-  readJson,
-  realpath,
-  remove,
-  stat,
-} from 'fs-extra'
-import { orderBy, uniq } from 'lodash'
+import { createFile, ensureDir, pathExists, pathExistsSync, readJson, remove } from 'fs-extra/esm'
+import _ from 'lodash'
 import NodeCache from 'node-cache'
 import pLimit from 'p-limit'
 import { firstValueFrom } from 'rxjs'
 import { gt, lt, parse, satisfies } from 'semver'
 
-import { ConfigService } from '../../core/config/config.service'
-import { Logger } from '../../core/logger/logger.service'
-import { NodePtyService } from '../../core/node-pty/node-pty.service'
-import { HomebridgeUpdateActionDto, PluginActionDto } from './plugins.dto'
+import { ConfigService } from '../../core/config/config.service.js'
+import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.service.js'
+import { Logger } from '../../core/logger/logger.service.js'
+import { NodePtyService } from '../../core/node-pty/node-pty.service.js'
+import { ChildBridgesService } from '../child-bridges/child-bridges.service.js'
+import { HomebridgeUpdateActionDto, PluginActionDto } from './plugins.dto.js'
+
+const { orderBy, uniq } = _
+
+// Create a require function for ESM compatibility
+const require = createRequire(import.meta.url)
+const module = require('node:module')
 
 @Injectable()
 export class PluginsService {
   private static readonly PLUGIN_IDENTIFIER_PATTERN = /^(@[\w-]+(\.[\w-]+)*\/)?homebridge-[\w-]+$/
 
-  private npm: Array<string> = this.getNpmPath()
-  private paths: Array<string> = this.getBasePaths()
+  private _npm: Array<string> | undefined
+  private _paths: Array<string> | undefined
+
+  /**
+   * Lazy getter for npm path - computed only when first accessed
+   */
+  private get npm(): Array<string> {
+    if (!this._npm) {
+      this._npm = this.getNpmPath()
+    }
+    return this._npm
+  }
+
+  /**
+   * Lazy getter for base paths - computed only when first accessed
+   */
+  private get paths(): Array<string> {
+    if (!this._paths) {
+      this._paths = this.getBasePaths()
+    }
+    return this._paths
+  }
+
+  // Constants
+  private static readonly UI_RESTART_DELAY_MS = 5000
 
   // Installed plugin cache
   private installedPlugins: HomebridgePlugin[]
@@ -105,32 +125,34 @@ export class PluginsService {
   }
 
   constructor(
-    private httpService: HttpService,
-    private nodePtyService: NodePtyService,
-    private logger: Logger,
-    private configService: ConfigService,
+    @Inject(HttpService) private readonly httpService: HttpService,
+    @Inject(NodePtyService) private readonly nodePtyService: NodePtyService,
+    @Inject(Logger) private readonly logger: Logger,
+    @Inject(ConfigService) private readonly configService: ConfigService,
+    @Inject(HomebridgeIpcService) private readonly homebridgeIpcService: HomebridgeIpcService,
+    @Inject(ChildBridgesService) private readonly childBridgesService: ChildBridgesService,
   ) {
     /**
      * The "timeout" option on axios is the response timeout
      * If the user has no internet, the dns lookup may take a long time to timeout
      * As the dns lookup timeout is not configurable in Node.js, this interceptor
-     * will cancel the request after 15 seconds.
+     * will cancel the request after 35 seconds.
      */
     this.httpService.axiosRef.interceptors.request.use((config) => {
       const source = axios.CancelToken.source()
       config.cancelToken = source.token
 
       setTimeout(() => {
-        source.cancel('Timeout: request took more than 15 seconds')
-      }, 15000)
+        source.cancel('Timeout: request took more than 35 seconds')
+      }, 35000)
 
       return config
     })
 
-    // First load of verified plugins
-    this.loadPluginList()
-
-    // Update the verified plugins list every 12 hours
+    // Load the verified plugins list on init, then update every 12 hours
+    this.loadPluginList().catch((err) => {
+      this.logger.error('Failed to load plugin list during initialization:', err)
+    })
     setInterval(this.loadPluginList.bind(this), 60000 * 60 * 12)
   }
 
@@ -786,6 +808,122 @@ export class PluginsService {
   }
 
   /**
+   * Trigger an update for Homebridge, homebridge-config-ui-x, or any plugin
+   * This method queues the update to be performed asynchronously
+   * @param name - The package name (homebridge, homebridge-config-ui-x, or a plugin name)
+   * @param version - Optional version to install (defaults to latest)
+   * @returns Object containing operation status, package name, and version
+   */
+  public async triggerUpdate(name: string, version?: string): Promise<{ ok: boolean, name: string, version: string }> {
+    // Get package information to validate it exists
+    let targetVersion = version || 'latest'
+
+    try {
+      switch (name) {
+        case 'homebridge': {
+          const homebridge = await this.getHomebridgePackage()
+          if (targetVersion === 'latest' && homebridge.latestVersion) {
+            targetVersion = homebridge.latestVersion
+          }
+          break
+        }
+        case 'homebridge-config-ui-x': {
+          const uiPackage = await this.getHomebridgeUiPackage()
+          if (!uiPackage) {
+            throw new NotFoundException(`Package ${name} is not installed.`)
+          }
+          if (targetVersion === 'latest' && uiPackage.latestVersion) {
+            targetVersion = uiPackage.latestVersion
+          }
+          break
+        }
+        default: {
+          if (!PluginsService.PLUGIN_IDENTIFIER_PATTERN.test(name)) {
+            throw new BadRequestException('Invalid package name. Must be "homebridge", "homebridge-config-ui-x", or a valid Homebridge plugin name.')
+          }
+
+          // It's a plugin
+          const plugins = await this.getInstalledPlugins()
+          const plugin = plugins.find(p => p.name === name)
+          if (!plugin) {
+            throw new NotFoundException(`Plugin ${name} is not installed.`)
+          }
+          if (targetVersion === 'latest' && plugin.latestVersion) {
+            targetVersion = plugin.latestVersion
+          }
+        }
+      }
+    } catch (e) {
+      if (e instanceof NotFoundException) {
+        throw e
+      }
+      this.logger.error(`Failed to validate package ${name} for update: ${e.message}`)
+      throw new BadRequestException(`Failed to validate package ${name} for update.`)
+    }
+
+    // Schedule the update to run asynchronously
+    setImmediate(async () => {
+      try {
+        this.logger.log(`Starting scheduled update for ${name} to version ${targetVersion}`)
+
+        // Create a mock client for capturing output
+        const mockClient = new EventEmitter()
+        mockClient.on('stdout', (data) => {
+          this.logger.log(`[${name} update] ${data.toString().trim()}`)
+        })
+
+        // Perform the update based on package type
+        if (name === 'homebridge') {
+          await this.updateHomebridgePackage({ version: targetVersion }, mockClient)
+          this.logger.log(`Successfully updated Homebridge to version ${targetVersion}. Performing quick restart of Homebridge process...`)
+          this.homebridgeIpcService.restartHomebridge()
+        } else if (name === this.configService.name) {
+          await this.managePlugin('install', { name, version: targetVersion }, mockClient)
+          this.logger.warn(`homebridge-config-ui-x has been updated, server will restart in ${PluginsService.UI_RESTART_DELAY_MS / 1000} seconds...`)
+          setTimeout(() => {
+            process.exit(0)
+          }, PluginsService.UI_RESTART_DELAY_MS)
+        } else {
+          // It's a regular plugin - install it then check where it's running
+          await this.managePlugin('install', { name, version: targetVersion }, mockClient)
+          this.logger.log(`Successfully updated ${name} to version ${targetVersion}.`)
+
+          // Check if the plugin is running in child bridges
+          const childBridgeUsernames = await this.getPluginChildBridgeUsernames(name)
+
+          if (childBridgeUsernames.length > 0) {
+            // Plugin is running in one or more child bridges - restart each child bridge
+            this.logger.log(`${name} is running in ${childBridgeUsernames.length} child bridge(s). Restarting child bridges: ${childBridgeUsernames.join(', ')}`)
+            for (const username of childBridgeUsernames) {
+              this.logger.log(`Restarting child bridge ${username}...`)
+              this.childBridgesService.restartChildBridge(username)
+            }
+          } else {
+            // Plugin is not running in a child bridge - do a quick restart of Homebridge
+            this.logger.log(`${name} is not running in a child bridge. Performing quick restart of Homebridge process...`)
+            this.homebridgeIpcService.restartHomebridge()
+          }
+        }
+      } catch (error) {
+        this.logger.error(`Failed to update ${name}: ${error.message}`)
+        // Fallback to restarting Homebridge if anything goes wrong
+        try {
+          this.logger.warn('Attempting fallback restart of Homebridge process...')
+          this.homebridgeIpcService.restartHomebridge()
+        } catch (restartError) {
+          this.logger.error(`Failed to restart Homebridge: ${restartError.message}`)
+        }
+      }
+    })
+
+    return {
+      ok: true,
+      name,
+      version: targetVersion,
+    }
+  }
+
+  /**
    * Gets the Homebridge UI package details
    */
   public async getHomebridgeUiPackage(): Promise<HomebridgePlugin> {
@@ -1241,6 +1379,47 @@ export class PluginsService {
   }
 
   /**
+   * Get the child bridge username(s) for a plugin if it's running in a child bridge
+   * Returns an empty array if the plugin is not running in a child bridge
+   * @param pluginName - The name of the plugin to check
+   * @returns Array of unique child bridge usernames
+   */
+  public async getPluginChildBridgeUsernames(pluginName: string): Promise<string[]> {
+    try {
+      // Get plugin alias information
+      const plugin = await this.getPluginAlias(pluginName)
+      if (!plugin.pluginAlias) {
+        return []
+      }
+
+      // Read the config file
+      const config: HomebridgeConfig = await readJson(this.configService.configPath)
+
+      const arrayKey = plugin.pluginType === 'accessory' ? 'accessories' : 'platforms'
+      const usernamesSet = new Set<string>()
+
+      // Find all config blocks for this plugin that have a _bridge property
+      const pluginBlocks = config[arrayKey]?.filter((block) => {
+        const matchesPlugin = block[plugin.pluginType] === plugin.pluginAlias
+          || block[plugin.pluginType] === `${pluginName}.${plugin.pluginAlias}`
+        return matchesPlugin && block._bridge?.username
+      }) || []
+
+      // Extract unique usernames
+      for (const block of pluginBlocks) {
+        if (block._bridge?.username) {
+          usernamesSet.add(block._bridge.username)
+        }
+      }
+
+      return Array.from(usernamesSet)
+    } catch (e) {
+      this.logger.error(`Failed to get child bridge usernames for ${pluginName}: ${e.message}`)
+      return []
+    }
+  }
+
+  /**
    * Returns the custom ui path for a plugin
    */
   public async getPluginUiMetadata(pluginName: string): Promise<HomebridgePluginUiMetadata> {
@@ -1413,7 +1592,8 @@ export class PluginsService {
         paths.push(...this.getNpmPrefixToSearchPaths())
       }
     } else {
-      paths = paths.concat(require.main?.paths || [])
+      // In ESM, require.main is not available, so we use Module._nodeModulePaths instead
+      paths = paths.concat(module._nodeModulePaths(dirname(require.resolve.paths('.')?.[0] || process.cwd())))
 
       if (process.env.NODE_PATH) {
         paths = process.env.NODE_PATH.split(delimiter).filter(p => !!p).concat(paths)
@@ -1739,7 +1919,9 @@ export class PluginsService {
     }
 
     return new Promise((res) => {
-      const child = spawn(command.shift(), command, { shell: true })
+      // Join command and args into a single string to avoid DEP0190 deprecation warning
+      const fullCommand = command.join(' ')
+      const child = spawn(fullCommand, { shell: true })
 
       child.on('exit', (code) => {
         this.logger.log(`Executed npm cache clear command with exit code ${code}.`)

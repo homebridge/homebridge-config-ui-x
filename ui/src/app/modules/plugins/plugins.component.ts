@@ -5,7 +5,7 @@ import { NavigationEnd, Router } from '@angular/router'
 import { NgbModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
-import { firstValueFrom, Subscription } from 'rxjs'
+import { firstValueFrom, Observable, Subscription } from 'rxjs'
 
 import { ApiService } from '@/app/core/api.service'
 import { AuthService } from '@/app/core/auth/auth.service'
@@ -17,6 +17,10 @@ import { SettingsService } from '@/app/core/settings.service'
 import { IoNamespace, WsService } from '@/app/core/ws.service'
 import { PluginCardComponent } from '@/app/modules/plugins/plugin-card/plugin-card.component'
 import { PluginSupportComponent } from '@/app/modules/plugins/plugin-support/plugin-support.component'
+
+export interface CanComponentDeactivate {
+  canDeactivate: (nextUrl?: string) => Observable<boolean> | Promise<boolean> | boolean
+}
 
 @Component({
   templateUrl: './plugins.component.html',
@@ -32,7 +36,7 @@ import { PluginSupportComponent } from '@/app/modules/plugins/plugin-support/plu
     NgbTooltip,
   ],
 })
-export class PluginsComponent implements OnInit, OnDestroy {
+export class PluginsComponent implements OnInit, OnDestroy, CanComponentDeactivate {
   @ViewChild('searchInput') searchInput!: ElementRef
 
   private $api = inject(ApiService)
@@ -47,6 +51,7 @@ export class PluginsComponent implements OnInit, OnDestroy {
   private isSearchMode = false
   private io: IoNamespace
   private navigationSubscription: Subscription
+  private pluginRefreshSubscription: Subscription
 
   public mainError = false
   public loading = true
@@ -64,6 +69,12 @@ export class PluginsComponent implements OnInit, OnDestroy {
     // Set page title
     const title = this.$translate.instant('menu.label_plugins')
     this.$settings.setPageTitle(title)
+
+    // Subscribe to plugin list refresh events
+    this.pluginRefreshSubscription = this.$plugin.onPluginListRefresh.subscribe(async () => {
+      await this.loadInstalledPlugins()
+      this.getChildBridgeMetadata()
+    })
 
     this.io = this.$ws.connectToNamespace('child-bridges')
     this.io.connected.subscribe(async () => {
@@ -92,12 +103,6 @@ export class PluginsComponent implements OnInit, OnDestroy {
               } else {
                 this.$plugin.settings(plugin)
               }
-            }
-            break
-          }
-          case 'open-manage-version': {
-            if (plugin) {
-              this.$plugin.installAlternateVersion(plugin)
             }
             break
           }
@@ -206,13 +211,53 @@ export class PluginsComponent implements OnInit, OnDestroy {
 
   public showStats() {
     if (this.tab === 'stats') {
-      window.document.querySelector('body').classList.remove('bg-black')
-      this.tab = 'main'
+      // In dark mode, no animations needed
+      if (this.$settings.actualLightingMode !== 'light') {
+        window.document.querySelector('body').classList.remove('bg-black')
+        this.tab = 'main'
+        return
+      }
+
+      // Remove light-mode class from body
+      window.document.querySelector('body').classList.remove('light-mode')
+
+      // Fade out stats before switching to main
+      const statsHeader = document.getElementById('stats-header')
+      const statsIframe = document.getElementById('stats-iframe')
+
+      if (statsHeader && statsIframe) {
+        statsHeader.classList.add('fade-out')
+        statsIframe.classList.add('fade-out')
+      }
+
+      // Wait for fade-out animation (250ms)
+      setTimeout(() => {
+        // Remove body bg color to trigger background transition
+        window.document.querySelector('body').classList.remove('bg-black')
+
+        // Wait for background transition before switching tab
+        setTimeout(() => {
+          this.tab = 'main'
+        }, 250)
+      }, 250)
     } else {
       // Set body bg color
       window.document.querySelector('body').classList.add('bg-black')
       this.tab = 'stats'
       this.showSearchBar = false
+
+      // Add light-mode class for animations (only in light mode)
+      if (this.$settings.actualLightingMode === 'light') {
+        window.document.querySelector('body').classList.add('light-mode')
+        setTimeout(() => {
+          const statsHeader = document.getElementById('stats-header')
+          const statsIframe = document.getElementById('stats-iframe')
+          if (statsHeader && statsIframe) {
+            statsHeader.classList.add('light-mode')
+            statsIframe.classList.add('light-mode')
+          }
+        }, 0)
+      }
     }
   }
 
@@ -223,11 +268,66 @@ export class PluginsComponent implements OnInit, OnDestroy {
     })
   }
 
+  public canDeactivate(nextUrl?: string): Promise<boolean> | boolean {
+    // Only animate if we're on the stats tab
+    if (this.tab !== 'stats') {
+      return true
+    }
+
+    // If in dark mode, no animations needed - navigate immediately
+    if (this.$settings.actualLightingMode !== 'light') {
+      window.document.querySelector('body').classList.remove('bg-black')
+      return Promise.resolve(true)
+    }
+
+    // Remove light-mode class from body
+    window.document.querySelector('body').classList.remove('light-mode')
+
+    // Check if we're navigating to another black-background page
+    const stayingBlack = nextUrl && (
+      nextUrl.includes('/platform-tools/terminal')
+      || nextUrl.includes('/logs')
+    )
+
+    return new Promise((resolve) => {
+      // Fade out stats before leaving
+      const statsHeader = document.getElementById('stats-header')
+      const statsIframe = document.getElementById('stats-iframe')
+
+      if (statsHeader && statsIframe) {
+        statsHeader.classList.add('fade-out')
+        statsIframe.classList.add('fade-out')
+      }
+
+      if (stayingBlack) {
+        // Just fade out the stats, keep background black
+        setTimeout(() => {
+          resolve(true)
+        }, 250)
+      } else {
+        // Wait for fade-out animation (250ms) and body background transition (250ms)
+        setTimeout(() => {
+          // Remove body bg color to trigger background transition
+          window.document.querySelector('body').classList.remove('bg-black')
+        }, 250)
+
+        // Wait for both animations to complete before allowing navigation
+        setTimeout(() => {
+          resolve(true)
+        }, 500)
+      }
+    })
+  }
+
   public ngOnDestroy() {
-    window.document.querySelector('body').classList.remove('bg-black')
+    // Clean up light-mode class
+    window.document.querySelector('body').classList.remove('light-mode')
 
     if (this.navigationSubscription) {
       this.navigationSubscription.unsubscribe()
+    }
+    if (this.pluginRefreshSubscription) {
+      this.pluginRefreshSubscription.unsubscribe()
     }
     this.io.end()
   }
@@ -304,7 +404,11 @@ export class PluginsComponent implements OnInit, OnDestroy {
             plugin.hasChildBridges = plugin.isConfigured && configBlocks.some(x => x._bridge && x._bridge.username)
 
             const pluginChildBridges = this.getPluginChildBridges(plugin)
-            plugin.hasChildBridgesUnpaired = pluginChildBridges.some(x => !x.paired)
+
+            // Check for unpaired HAP bridges that are NOT hidden
+            plugin.hasChildBridgesUnpaired = pluginChildBridges.some((x) => {
+              return x.paired === false && !this.isBridgeAlertHidden(x.username)
+            })
 
             if (this.$settings.env.plugins?.hideUpdatesFor?.includes(plugin.name)) {
               plugin.updateAvailable = false
@@ -323,5 +427,16 @@ export class PluginsComponent implements OnInit, OnDestroy {
     this.io.request('get-homebridge-child-bridge-status').subscribe((data) => {
       this.childBridges = data
     })
+  }
+
+  /**
+   * Check if a specific bridge protocol alert is hidden
+   */
+  private isBridgeAlertHidden(username: string): boolean {
+    const bridge = this.$settings.env.bridges?.find(b => b.username.toUpperCase() === username.toUpperCase())
+    if (!bridge) {
+      return false
+    }
+    return !!bridge.hideHapAlert
   }
 }

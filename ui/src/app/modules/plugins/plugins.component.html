@@ -17,7 +17,6 @@
       [openDelay]="150"
       triggers="hover"
       [ngbTooltip]="'form.search' | translate"
-      [hidden]="!installedPlugins.length"
       [attr.aria-label]="'form.search' | translate"
     >
       <i class="fas{{ showSearchBar ? ' primary-text' : '' }} fa-search"></i>
@@ -59,9 +58,14 @@
         formControlName="query"
       />
       @if (showExitButton) {
-      <a class="search-bar-clear" href="javascript:void(0)" (click)="onClearSearch()">
-        <i class="fas fa-square-xmark"></i>
-      </a>
+      <button
+        type="button"
+        class="search-bar-clear"
+        (click)="onClearSearch()"
+        [attr.aria-label]="'form.button_clear' | translate"
+      >
+        <i class="fas fa-square-xmark" aria-hidden="true"></i>
+      </button>
       }
     </form>
   </div>
@@ -70,7 +74,7 @@
 <div class="d-flex flex-wrap justify-content-between">
   @for (plugin of installedPlugins; track plugin) {
   <div class="hb-plugin-space-between">
-    <app-plugin-card [plugin]="plugin" [childBridges]="getPluginChildBridges(plugin)"></app-plugin-card>
+    <app-plugin-card [plugin]="plugin" [childBridges]="getPluginChildBridges(plugin)" />
   </div>
   } @if (installedPlugins.length === 0 && !loading && !mainError) {
   <div class="alert alert-info mt-4 text-center w-100">
@@ -87,7 +91,7 @@
   }
 </div>
 } } @else if (tab === 'stats') {
-<div class="w-100 py-3 hb-stats-header text-white text-center">
+<div class="w-100 py-3 hb-stats-header text-white text-center" id="stats-header">
   <div class="mb-2">
     <code
       >https://developers.homebridge.io/analytics
@@ -99,6 +103,7 @@
 <iframe
   src="https://developers.homebridge.io/analytics/"
   class="hb-stats"
+  id="stats-iframe"
   sandbox="allow-scripts allow-same-origin allow-popups"
   referrerpolicy="no-referrer"
 >

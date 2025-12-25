@@ -1,28 +1,22 @@
+import { constants, createReadStream } from 'node:fs'
+import { access, truncate } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import { Transform } from 'node:stream'
 
-import { BadRequestException, Injectable } from '@nestjs/common'
-import {
-  access,
-  constants,
-  createReadStream,
-  pathExists,
-  readJson,
-  truncate,
-  writeJsonSync,
-} from 'fs-extra'
+import { BadRequestException, Inject, Injectable } from '@nestjs/common'
+import { pathExists, readJson, writeJsonSync } from 'fs-extra/esm'
 
-import { ConfigService } from '../../../core/config/config.service'
-import { Logger } from '../../../core/logger/logger.service'
-import { HbServiceStartupSettings } from './hb-service.dto'
+import { ConfigService } from '../../../core/config/config.service.js'
+import { Logger } from '../../../core/logger/logger.service.js'
+import { HbServiceStartupSettings } from './hb-service.dto.js'
 
 @Injectable()
 export class HbServiceService {
   private readonly hbServiceSettingsPath: string
 
   constructor(
-    private readonly configService: ConfigService,
-    private readonly logger: Logger,
+    @Inject(ConfigService) private readonly configService: ConfigService,
+    @Inject(Logger) private readonly logger: Logger,
   ) {
     this.hbServiceSettingsPath = resolve(this.configService.storagePath, '.uix-hb-service-homebridge-startup.json')
   }

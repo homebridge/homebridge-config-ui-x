@@ -2,6 +2,152 @@
 
 All notable changes to `homebridge-config-ui-x` will be documented in this file. This project tries to adhere to [Semantic Versioning](http://semver.org/).
 
+## v5.12.0 (2025-12-15)
+
+### UI Changes
+
+- updates to the `it.json` language file (#2664) (@g-flex)
+- updates to the `de.json` language file (#2665) (@michi-onl)
+- move control list setting to under insecure mode setting
+- never hide the search button on the plugins page
+- added log search facility on main logs page
+- convert main spinner animation from `svg` to `css`
+- use transitions when changing between light and dark backgrounds
+- add a couple more post-update messages
+- show spinner when backing up before updating hb/ui
+- restore required field indicators in plugin config forms
+- make loading spinners consistent across the ui
+
+### Other Changes
+
+- update npm publish process for `oidc` auth
+- update npm publish process for `oidc` auth (fix)
+- fix: adjusted timeout for npm requests to 30 seconds (@NorthernMan54) (#2655, #2656)
+- recommend update to node 24 when available
+- dependency updates
+
+### Homebridge Dependencies
+
+- `@homebridge/hap-client` @ `v3.1.2`
+- `@homebridge/node-pty-prebuilt-multiarch` @ `v0.13.1`
+- `@homebridge/plugin-ui-utils` @ `v2.1.2`
+
+## v5.11.2 (2025-12-06)
+
+### UI Changes
+
+- updates to the `th.json` language file (#2659) (@tomzt)
+
+### Other Changes
+
+- dependency updates
+
+### Homebridge Dependencies
+
+- `@homebridge/hap-client` @ `v3.1.2`
+- `@homebridge/node-pty-prebuilt-multiarch` @ `v0.13.1`
+- `@homebridge/plugin-ui-utils` @ `v2.1.2`
+
+## v5.11.1 (2025-11-27)
+
+### Other Changes
+
+- fix required csp for monaco web workers
+
+### Homebridge Dependencies
+
+- `@homebridge/hap-client` @ `v3.1.2`
+- `@homebridge/node-pty-prebuilt-multiarch` @ `v0.13.1`
+- `@homebridge/plugin-ui-utils` @ `v2.1.2`
+
+## v5.11.0 (2025-11-25)
+
+### UI Changes
+
+- fix: plugins/accessories not displaying
+- fix: show all child bridge details, not just first
+- fix: fix removing listeners events from sidebar
+- update `monaco-editor` to `v0.55.1` + more deps
+
+### Other Changes
+
+- replace badges in readme, use `shields.io`
+- run angular migration - use self-closing tags
+
+### Homebridge Dependencies
+
+- `@homebridge/hap-client` @ `v3.1.2`
+- `@homebridge/node-pty-prebuilt-multiarch` @ `v0.13.1`
+- `@homebridge/plugin-ui-utils` @ `v2.1.2`
+
+## v5.10.0 (2025-11-16)
+
+### UI Changes
+
+- updates to the `uk.json` language file (#2618) (@xrust83)
+- updates to the `th.json` language file (#2628) (@tomzt)
+- fix german welcome translation typo
+- add spinners for loading data widget values
+- hide ssl settings when on hb raspbian image
+- hide accessory widget if insecure mode disabled
+- rename insecure option to accessory control
+- improve json schema for ui settings section
+- avoid refreshing after changing widget setting
+- avoid refresh after plugin install/setting change
+- shorten arrow button for same row height
+- monospace input font for relevant options
+- scheduled restart option for (child) bridges
+
+### Other Changes
+
+- add method to determine if running on raspbian image
+- fix node deprecation `DEP0190` (shell option)
+- config editor - fix restart case of no child bridges
+- code styling chore - consistent code spacing
+- extract 'extract' string to language files
+- lift from beta - custom types, betas, terminal
+- convert repo to esm modules
+- enable nestjs logging when in dev mode
+- add api endpoint for updating a package
+
+### Homebridge Dependencies
+
+- `@homebridge/hap-client` @ `v3.1.2`
+- `@homebridge/node-pty-prebuilt-multiarch` @ `v0.13.1`
+- `@homebridge/plugin-ui-utils` @ `v2.1.1`
+
+## v5.9.0 (2025-11-01)
+
+### UI Changes
+
+- updates to the `th.json` language file (#2592) (@tomzt)
+- updates to the `zh-cn.json` language file (#2594) (@honue)
+- consistent sizing of input fields and select fields
+- status qr code widget - show pin in monospace
+- bridges widget - show bridges as restarting on full restart
+- do not hide search button when no search results found
+- close settings restart toast if any restart button clicked
+- change session timeout from seconds to days, hours, minutes
+- updated various dependencies
+- support `dynamicDefaults` in config schema forms
+- use homebridge icon for child bridges
+- refactor child bridge screen with config alerts
+- hide widgets that do not exist in const list
+
+### Other Changes
+
+- implement simple feature flags system dependent on hb version
+- fix type import in config editor test file
+- improve schemas and types for bridges
+- get available port function should adhere to configured range
+- update versions of actions, remove `macos-13`
+
+### Homebridge Dependencies
+
+- `@homebridge/hap-client` @ `v3.1.2`
+- `@homebridge/node-pty-prebuilt-multiarch` @ `v0.13.1`
+- `@homebridge/plugin-ui-utils` @ `v2.1.0`
+
 ## v5.8.0 (2025-09-27)
 
 ### UI Changes

@@ -14,7 +14,7 @@
       >
         <div class="mb-0 d-flex align-items-center">
           @if (!dockerStatusDone) {
-          <i class="fas fa-lg fa-cog fa-spin primary-text"></i>
+          <i class="fas fa-lg fa-circle-notch fa-spin primary-text"></i>
           } @if (dockerStatusDone) { @if (dockerInfo.updateAvailable) {
           <i class="fas fa-lg fa-arrow-alt-circle-up orange-text"></i>
           } @if (!dockerInfo.updateAvailable) {
@@ -44,7 +44,7 @@
           <div class="d-flex ps-3 py-1">
             <div class="mb-0 d-flex align-items-center">
               @if (!homebridgePkg.installedVersion) {
-              <i class="fas fa-lg fa-cog fa-spin primary-text"></i>
+              <i class="fas fa-lg fa-circle-notch fa-spin primary-text"></i>
               } @if (homebridgePkg.installedVersion && !homebridgePkg.updateAvailable) {
               <i class="fas fa-lg fa-check-circle green-text"></i>
               } @if (homebridgePkg.installedVersion && homebridgePkg.updateAvailable) {
@@ -97,7 +97,7 @@
           <div class="d-flex ps-3 py-1">
             <div class="mb-0 d-flex align-items-center">
               @if (!homebridgeUiPkg.installedVersion) {
-              <i class="fas fa-lg fa-cog fa-spin primary-text"></i>
+              <i class="fas fa-lg fa-circle-notch fa-spin primary-text"></i>
               } @if (homebridgeUiPkg.installedVersion && !homebridgeUiPkg.updateAvailable) {
               <i class="fas fa-lg fa-check-circle green-text"></i>
               } @if (homebridgeUiPkg.installedVersion && homebridgeUiPkg.updateAvailable) {
@@ -133,7 +133,7 @@
           <div class="d-flex ps-3 py-1">
             <div class="mb-0 d-flex align-items-center">
               @if (!nodejsStatusDone) {
-              <i class="fas fa-lg fa-cog fa-spin primary-text"></i>
+              <i class="fas fa-lg fa-circle-notch fa-spin primary-text"></i>
               } @if (nodejsStatusDone) { @if (widget.hideNodeInfo) {
               <i class="fas fa-lg fa-circle green-text"></i>
               } @if (!widget.hideNodeInfo) { @if (nodejsInfo.updateAvailable) {
@@ -188,7 +188,7 @@
       <div class="d-flex ps-3 py-1">
         <div class="mb-0 d-flex align-items-center">
           @if (!homebridgePkg.installedVersion) {
-          <i class="fas fa-lg fa-cog fa-spin primary-text"></i>
+          <i class="fas fa-lg fa-circle-notch fa-spin primary-text"></i>
           } @if (homebridgePkg.installedVersion && !homebridgePkg.updateAvailable) {
           <i class="fas fa-lg fa-check-circle green-text"></i>
           } @if (homebridgePkg.installedVersion && homebridgePkg.updateAvailable) {
@@ -238,7 +238,7 @@
       <div class="d-flex ps-3 py-1">
         <div class="mb-0 d-flex align-items-center">
           @if (!homebridgeUiPkg.installedVersion) {
-          <i class="fas fa-lg fa-cog fa-spin primary-text"></i>
+          <i class="fas fa-lg fa-circle-notch fa-spin primary-text"></i>
           } @if (homebridgeUiPkg.installedVersion && !homebridgeUiPkg.updateAvailable) {
           <i class="fas fa-lg fa-check-circle green-text"></i>
           } @if (homebridgeUiPkg.installedVersion && homebridgeUiPkg.updateAvailable) {
@@ -275,7 +275,7 @@
       <div class="d-flex ps-3 py-1">
         <div class="mb-0 d-flex align-items-center">
           @if (!homebridgePluginStatusDone) {
-          <i class="fas fa-lg fa-cog fa-spin primary-text"></i>
+          <i class="fas fa-lg fa-circle-notch fa-spin primary-text"></i>
           } @if (homebridgePluginStatusDone && homebridgePluginStatus.length) {
           <i class="fas fa-lg fa-arrow-alt-circle-up orange-text"></i>
           } @if (homebridgePluginStatusDone && !homebridgePluginStatus.length) {
@@ -305,7 +305,7 @@
       <div class="d-flex ps-3 py-1">
         <div class="mb-0 d-flex align-items-center">
           @if (!nodejsStatusDone) {
-          <i class="fas fa-lg fa-cog fa-spin primary-text"></i>
+          <i class="fas fa-lg fa-circle-notch fa-spin primary-text"></i>
           } @if (nodejsStatusDone) { @if (widget.hideNodeInfo) {
           <i class="fas fa-lg fa-circle green-text"></i>
           } @if (!widget.hideNodeInfo) { @if (nodejsInfo.updateAvailable) {

@@ -5,9 +5,9 @@
 
 # Homebridge UI
 
-[![npm](https://badgen.net/npm/v/homebridge-config-ui-x/latest?label=latest)](https://www.npmjs.com/package/homebridge-config-ui-x)
-[![npm](https://badgen.net/npm/v/homebridge-config-ui-x/beta?label=beta)](https://www.npmjs.com/package/homebridge-config-ui-x)
-[![npm](https://badgen.net/npm/dt/homebridge-config-ui-x?label=downloads)](https://www.npmjs.com/package/homebridge-config-ui-x)
+[![npm](https://img.shields.io/npm/v/homebridge-config-ui-x/latest?label=latest)](https://www.npmjs.com/package/homebridge-config-ui-x)
+[![npm](https://img.shields.io/npm/v/homebridge-config-ui-x/beta?label=beta)](https://www.npmjs.com/package/homebridge-config-ui-x)
+[![npm](https://img.shields.io/npm/dt/homebridge-config-ui-x?label=downloads)](https://www.npmjs.com/package/homebridge-config-ui-x)
 
 :gb: :de: :fr: :poland: :czech_republic: :ru: :cn: :hungary: :jp: :es: :netherlands: :tr: :it: :bulgaria: :sweden: :norway: :finland: :slovenia: :brazil: :portugal: :indonesia: :kr: :macedonia: :thailand: :israel: :ukraine:
 

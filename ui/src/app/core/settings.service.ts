@@ -2,7 +2,7 @@ import { inject, Injectable } from '@angular/core'
 import { Title } from '@angular/platform-browser'
 import { TranslateService } from '@ngx-translate/core'
 import dayjs from 'dayjs'
-import { ToastrService } from 'ngx-toastr'
+import { ActiveToast, ToastrService } from 'ngx-toastr'
 import { firstValueFrom, Subject } from 'rxjs'
 import { first } from 'rxjs/operators'
 
@@ -20,6 +20,8 @@ export class SettingsService {
   private settingsLoadedSubject = new Subject()
   private readonly defaultTheme = 'deep-purple'
   private forbiddenKeys = ['__proto__', 'constructor', 'prototype']
+
+  public restartToastRef: ActiveToast<any> = null
 
   public env: EnvInterface = {} as EnvInterface
   public host: string
@@ -227,7 +229,6 @@ export class SettingsService {
   /**
    * Check to make sure the server time is roughly the same as the client time.
    * A warning is shown if the time difference is >= 4 hours.
-   *
    * @param timestamp
    */
   private checkServerTime(timestamp: string) {
@@ -266,5 +267,14 @@ export class SettingsService {
     } else {
       this.$title.setTitle(baseName)
     }
+  }
+
+  /**
+   * Check if a specific feature is enabled based on feature flags
+   * @param featureKey The feature flag key to check
+   * @returns true if the feature is enabled, false otherwise
+   */
+  public isFeatureEnabled(featureKey: string): boolean {
+    return this.env.featureFlags?.[featureKey] ?? false
   }
 }

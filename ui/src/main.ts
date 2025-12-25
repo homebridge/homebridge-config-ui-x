@@ -41,15 +41,28 @@ const monacoConfig: NgxMonacoEditorConfig = {
     'folding': true,
     'bracketPairColorization.enabled': true,
     'minimap': {
-      enabled: false,
+      enabled: true,
+      showSlider: 'mouseover',
+      scale: 2,
+    },
+    'smoothScrolling': true,
+    'cursorSmoothCaretAnimation': 'on',
+    'stickyScroll': {
+      enabled: true,
+    },
+    'renderWhitespace': 'boundary',
+    'tabCompletion': 'on',
+    'unicodeHighlight': {
+      ambiguousCharacters: true,
+      invisibleCharacters: true,
+    },
+    'suggest': {
+      showWords: true,
+      showSnippets: true,
+      preview: true,
     },
   },
   onMonacoLoad: () => {
-    (window as any).MonacoEnvironment = {
-      getWorker() {
-        return new Worker(`${monacoBaseUrl}/base/worker/workerMain.js`)
-      },
-    }
     onMonacoLoad()
   },
 }

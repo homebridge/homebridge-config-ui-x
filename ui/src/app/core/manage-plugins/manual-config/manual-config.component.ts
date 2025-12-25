@@ -69,6 +69,7 @@ export class ManualConfigComponent implements OnInit, OnDestroy {
   private $settings = inject(SettingsService)
   private $toastr = inject(ToastrService)
   private $translate = inject(TranslateService)
+  private isDebugModeEnabled = this.$settings.isFeatureEnabled('childBridgeDebugMode')
 
   @Input() plugin: Plugin
   @Input() schema: PluginSchema
@@ -176,7 +177,9 @@ export class ManualConfigComponent implements OnInit, OnDestroy {
     const pluginAlias = this.schema?.pluginAlias || this.pluginAlias
     const schemaUri = `http://plugin/${pluginAlias}/config.json`
 
-    const childBridgeSchema = createChildBridgeSchema(this.$translate)
+    const childBridgeSchema = createChildBridgeSchema(this.$translate, {
+      isDebugModeEnabled: this.isDebugModeEnabled,
+    })
 
     // Ensure required properties are present for the plugin type
     const existingRequired = schemaToUse.required || []
@@ -250,7 +253,9 @@ export class ManualConfigComponent implements OnInit, OnDestroy {
   }
 
   private createBasicSchema() {
-    const childBridgeSchema = createChildBridgeSchema(this.$translate)
+    const childBridgeSchema = createChildBridgeSchema(this.$translate, {
+      isDebugModeEnabled: this.isDebugModeEnabled,
+    })
 
     if (this.pluginType === 'platform') {
       // Platform template

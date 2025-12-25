@@ -1,7 +1,18 @@
+export interface FeatureFlags {
+  [key: string]: boolean
+}
+
+export interface BridgeConfig {
+  username: string
+  hideHapAlert?: boolean
+  scheduledRestartCron?: string
+}
+
 export interface EnvInterface {
   platform: 'darwin' | 'win32' | 'linux' | 'freebsd'
   enableAccessories: boolean
   enableTerminalAccess: boolean
+  featureFlags?: FeatureFlags
   homebridgeInstanceName: string
   homebridgeVersion?: string
   homebridgeUiVersion?: string
@@ -14,6 +25,7 @@ export interface EnvInterface {
   runningInSynologyPackage: boolean
   runningInPackageMode: boolean
   runningOnRaspberryPi: boolean
+  runningOnRaspbianImage: boolean
   canShutdownRestartHost: boolean
   dockerOfflineUpdate: boolean
   lang: string | null
@@ -44,6 +56,8 @@ export interface EnvInterface {
     hideUpdatesFor?: string[]
     alwaysShowBetas?: boolean
   }
+  scheduledRestartCron?: string | null
+  bridges?: BridgeConfig[]
   linux?: {
     shutdown?: string
     restart?: string

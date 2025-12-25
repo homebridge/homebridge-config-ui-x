@@ -54,8 +54,12 @@
       </li>
       } @for (item of selectedBridgeAccessories; track item) {
       <li class="list-group-item d-flex justify-content-between align-items-center">
-        <span>
-          {{ item.displayName }}<br />
+        <span class="me-3">
+          <i class="fas fa-lg fa-hap"></i>
+        </span>
+        <span class="flex-grow-1">
+          {{ item.displayName }}
+          <br />
           <small><span class="font-monospace grey-text">{{ item.UUID }}</span></small>
         </span>
         <button
@@ -70,7 +74,7 @@
             [ngClass]="{
               'fa-trash': !isInList(item.UUID, item.$cacheFile),
               'fa-undo': isInList(item.UUID, item.$cacheFile) && !clicked,
-              'fa-spinner fa-pulse': isInList(item.UUID, item.$cacheFile) && clicked
+              'fa-circle-notch fa-spin': isInList(item.UUID, item.$cacheFile) && clicked
             }"
           ></i>
         </button>
@@ -111,7 +115,7 @@
       >
         @if (!clicked) { {{ 'form.button_remove' | translate }} @if (toDelete.length > 0) { ({{ toDelete.length }}) } }
         @if (clicked) {
-        <i class="fas fa-spinner fa-pulse"></i>
+        <i class="fas fa-circle-notch fa-spin"></i>
         }
       </button>
       }

@@ -12,8 +12,8 @@
   </div>
   <div class="modal-body">
     @if (loading) {
-    <div class="text-center primary-text">
-      <i class="fa fa-cog fa-spin" style="font-size: 75px"></i>
+    <div class="text-center primary-text my-5 w-100">
+      <i class="fa fa-circle-notch fa-spin" style="font-size: 75px"></i>
     </div>
     } @if (!loading) {
     <div class="text-center mb-3">
@@ -77,7 +77,7 @@
         [disabled]="loading || uninstalling"
       >
         @if (!uninstalling) { {{ 'plugins.manage.uninstall' | translate }} } @if (uninstalling) {
-        <i class="fas fa-spinner fa-pulse"></i>
+        <i class="fas fa-circle-notch fa-spin"></i>
         }
       </button>
     </div>

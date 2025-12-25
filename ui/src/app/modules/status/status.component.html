@@ -53,7 +53,7 @@
 </div>
 <div class="status-container d-flex flex-column mt-0">
   @if (consoleStatus === 'down') {
-  <app-spinner></app-spinner>
+  <app-spinner />
   }
   <div class="row flex-column flex-grow-1">
     @if (dashboard.length) {
@@ -67,7 +67,7 @@
           </div>
           }
         </div>
-        <app-widgets [widget]="item" class="d-flex h-100 w-100"></app-widgets>
+        <app-widgets [widget]="item" class="d-flex h-100 w-100" />
       </gridster-item>
       } }
     </gridster>

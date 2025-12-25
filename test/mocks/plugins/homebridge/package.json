@@ -1,0 +1,11 @@
+{
+  "name": "homebridge",
+  "displayName": "Homebridge",
+  "version": "1.8.0",
+  "private": true,
+  "description": "Mock Homebridge package for testing",
+  "license": "Apache-2.0",
+  "engines": {
+    "node": "^20 || ^22 || ^24"
+  }
+}

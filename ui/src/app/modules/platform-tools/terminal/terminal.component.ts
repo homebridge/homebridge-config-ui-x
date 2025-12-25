@@ -8,6 +8,7 @@ import { TerminalService } from '@/app/core/terminal.service'
 
 @Component({
   templateUrl: './terminal.component.html',
+  styleUrls: ['./terminal.component.scss'],
   standalone: true,
   imports: [TranslatePipe],
 })
@@ -16,7 +17,7 @@ export class TerminalComponent implements OnInit, AfterViewInit, OnDestroy {
   private $settings = inject(SettingsService)
   private $navigationGuard = inject(TerminalNavigationGuardService)
   private $translate = inject(TranslateService)
-  private resizeEvent = new Subject()
+  private resizeEvent = new Subject<void>()
 
   readonly termTarget = viewChild<ElementRef>('terminaloutput')
 
@@ -58,6 +59,15 @@ export class TerminalComponent implements OnInit, AfterViewInit, OnDestroy {
     // Set body bg color
     window.document.querySelector('body').classList.add('bg-black')
 
+    // Add light-mode class for animations (only in light mode)
+    if (this.$settings.actualLightingMode === 'light') {
+      window.document.querySelector('body').classList.add('light-mode')
+      const terminal = this.termTarget()?.nativeElement
+      if (terminal) {
+        terminal.classList.add('light-mode')
+      }
+    }
+
     // Always ensure clean state when component initializes
     // This prevents event handler duplication and state inconsistencies
     if (this.$terminal.isTerminalReady()) {
@@ -96,16 +106,64 @@ export class TerminalComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  public canDeactivate(): Promise<boolean> | boolean {
-    return this.$navigationGuard.canDeactivate()
+  public canDeactivate(nextUrl?: string): Promise<boolean> | boolean {
+    // Check if navigation guard allows deactivation
+    const guardResult = this.$navigationGuard.canDeactivate()
+
+    // If guard blocks navigation, return immediately
+    if (guardResult === false || (guardResult instanceof Promise && guardResult.then)) {
+      return guardResult
+    }
+
+    // If in dark mode, no animations needed - navigate immediately
+    if (this.$settings.actualLightingMode !== 'light') {
+      window.document.querySelector('body').classList.remove('bg-black')
+      return Promise.resolve(true)
+    }
+
+    // Remove light-mode class from body
+    window.document.querySelector('body').classList.remove('light-mode')
+
+    // Check if we're navigating to another black-background page
+    const stayingBlack = nextUrl && (
+      nextUrl.includes('/platform-tools/terminal')
+      || nextUrl.includes('/logs')
+    )
+
+    // Otherwise, handle fade-out animation
+    return new Promise((resolve) => {
+      // Add fade-out class to terminal
+      const terminal = this.termTarget()?.nativeElement
+      if (terminal) {
+        terminal.classList.add('fade-out')
+      }
+
+      if (stayingBlack) {
+        // Just fade out the terminal, keep background black
+        setTimeout(() => {
+          resolve(true)
+        }, 250)
+      } else {
+        // Wait for fade-out animation (250ms) and body background transition (250ms)
+        setTimeout(() => {
+          // Remove body bg color to trigger background transition
+          window.document.querySelector('body').classList.remove('bg-black')
+        }, 250)
+
+        // Wait for both animations to complete before allowing navigation
+        setTimeout(() => {
+          resolve(true)
+        }, 500)
+      }
+    })
   }
 
   public ngOnDestroy() {
     // Clean up visibility change listener
     document.removeEventListener('visibilitychange', this.onVisibilityChange.bind(this))
 
-    // Unset body bg color
-    window.document.querySelector('body').classList.remove('bg-black')
+    // Clean up light-mode class
+    window.document.querySelector('body').classList.remove('light-mode')
 
     // Use persistence setting to determine behavior
     if (this.$settings.env.terminal?.persistence) {

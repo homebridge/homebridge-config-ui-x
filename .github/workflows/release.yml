@@ -1,38 +1,81 @@
-name: Node Release
-run-name: Production Release
+name: Release
+
+# This workflow handles latest, beta, and alpha releases:
+# - Latest: Triggered by GitHub releases (tag vX.Y.Z)
+# - Beta: Triggered by pushes to beta-X.Y.Z branches
+# - Alpha: Triggered by pushes to alpha-X.Y.Z branches
 
 on:
   release:
     types: [released]
+  push:
+    branches:
+      - beta-*.*.*
+      - alpha-*.*.*
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: write
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
-  tag:
-    name: Verify Release Tag
+  determine-release-type:
+    name: Determine Release Type
     runs-on: ubuntu-latest
+    if: ${{ github.repository == 'homebridge/homebridge-config-ui-x' }}
     outputs:
+      release_type: ${{ steps.release-type.outputs.type }}
+      npm_tag: ${{ steps.release-type.outputs.tag }}
       version: ${{ steps.get_version.outputs.version }}
     steps:
-      - name: Get Release Tag
+      - name: Determine release type
+        id: release-type
+        run: |
+          if [[ "${{ github.event_name }}" == "release" ]]; then
+            echo "type=latest" >> $GITHUB_OUTPUT
+            echo "tag=latest" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.ref }}" == refs/heads/beta-* ]]; then
+            echo "type=beta" >> $GITHUB_OUTPUT
+            echo "tag=beta" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.ref }}" == refs/heads/alpha-* ]]; then
+            echo "type=alpha" >> $GITHUB_OUTPUT
+            echo "tag=alpha" >> $GITHUB_OUTPUT
+          else
+            echo "type=none" >> $GITHUB_OUTPUT
+            echo "tag=none" >> $GITHUB_OUTPUT
+            echo "No valid release type detected - skipping publish"
+          fi
+
+      - name: Get Release Tag (Latest Only)
+        if: steps.release-type.outputs.type == 'latest'
         id: get_version
         uses: jannemattila/get-version-from-tag@v3
-      - name: Tag Info
+
+      - name: Tag Info (Latest Only)
+        if: steps.release-type.outputs.type == 'latest'
         run: |
           echo "Release Tag: ${{github.ref}}"
           echo "Latest Tag: ${{ steps.get_version.outputs.version }}"
-      - name: Tag Info Matches
-        if: endsWith(github.ref, steps.get_version.outputs.version )
+
+      - name: Tag Info Matches (Latest Only)
+        if: steps.release-type.outputs.type == 'latest' && endsWith(github.ref, steps.get_version.outputs.version)
         run: |
           echo Latest Tag matches Release tag
-      - name: Tag Info Doesn't Match
-        if: ${{ !endsWith(github.ref, steps.get_version.outputs.version ) }}
+
+      - name: Tag Info Doesn't Match (Latest Only)
+        if: steps.release-type.outputs.type == 'latest' && !endsWith(github.ref, steps.get_version.outputs.version)
         run: |
           echo Latest Tag does not matches Release tag
           exit 1
 
-  build_and_test:
-    needs: tag
-    name: Build and Test ${{ needs.tag.outputs.version }}
-    if: ${{ github.repository == 'homebridge/homebridge-config-ui-x' }}
+  build_and_test_latest:
+    needs: determine-release-type
+    name: Build and Test ${{ needs.determine-release-type.outputs.version }}
+    if: needs.determine-release-type.outputs.release_type == 'latest'
     uses: homebridge/.github/.github/workflows/nodejs-build-and-test.yml@latest
     with:
       enable_coverage: true
@@ -40,35 +83,123 @@ jobs:
     secrets:
       token: ${{ secrets.GITHUB_TOKEN }}
 
-  publish:
-    needs: [tag, build_and_test]
-    name: Publish ${{ needs.tag.outputs.version }}
-    if: ${{ github.repository == 'homebridge/homebridge-config-ui-x' }}
-
-    uses: homebridge/.github/.github/workflows/npm-publish.yml@latest
+  build_and_test_beta:
+    needs: determine-release-type
+    name: Build and Test (Beta)
+    if: needs.determine-release-type.outputs.release_type == 'beta'
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, ubuntu-24.04-arm, ubuntu-22.04, ubuntu-22.04-arm, macos-15, macos-14, windows-2025, windows-2022]
+    uses: homebridge/.github/.github/workflows/nodejs-build-and-test.yml@latest
     with:
+      enable_coverage: false
+      runs_on: ${{ matrix.os }}
       install_cmd: npm ci && cd ui && npm ci
     secrets:
-      npm_auth_token: ${{ secrets.npm_token }}
+      token: ${{ secrets.GITHUB_TOKEN }}
+
+  publish:
+    needs: [determine-release-type, build_and_test_latest, build_and_test_beta]
+    if: |
+      always() &&
+      needs.determine-release-type.outputs.release_type != 'none' &&
+      (needs.determine-release-type.outputs.release_type == 'alpha' ||
+       needs.build_and_test_latest.result == 'success' ||
+       needs.build_and_test_latest.result == 'skipped') &&
+      (needs.build_and_test_beta.result == 'success' ||
+       needs.build_and_test_beta.result == 'skipped')
+    name: Publish to npm (${{ needs.determine-release-type.outputs.npm_tag }})
+    runs-on: ubuntu-latest
+    outputs:
+      npm_version: ${{ steps.get-published-version.outputs.version }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          registry-url: 'https://registry.npmjs.org'
+
+      - name: Upgrade npm for OIDC support
+        run: npm install -g npm@latest
+
+      - name: Install dependencies
+        run: npm ci && cd ui && npm ci
+
+      - name: Handle prerelease versioning
+        if: needs.determine-release-type.outputs.release_type == 'beta' || needs.determine-release-type.outputs.release_type == 'alpha'
+        run: |
+          # Download versioning script from homebridge/.github
+          mkdir -p .github
+          wget -q https://raw.githubusercontent.com/homebridge/.github/latest/.github/npm-version-script-esm.js -O .github/npm-version-script-esm.js
+
+          # Run the script to set base version
+          node .github/npm-version-script-esm.js ${{ github.ref }} ${{ needs.determine-release-type.outputs.release_type }}
+
+          # Add prerelease suffix
+          npm version pre --preid=${{ needs.determine-release-type.outputs.release_type }} --no-git-tag-version
+
+      - name: Build
+        run: npm run build
+
+      - name: Publish to npm with OIDC
+        run: npm publish --tag ${{ needs.determine-release-type.outputs.npm_tag }} --provenance --access public
+
+      - name: Get published version
+        id: get-published-version
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Published version: $VERSION"
+
+  pre-release:
+    needs: [determine-release-type, publish]
+    name: Create GitHub Pre-Release
+    if: |
+      always() &&
+      needs.publish.result == 'success' &&
+      github.repository == 'homebridge/homebridge-config-ui-x' &&
+      (needs.determine-release-type.outputs.release_type == 'beta' || needs.determine-release-type.outputs.release_type == 'alpha')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - name: Create nightly release
+        id: create_release
+        uses: viperproject/create-nightly-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ needs.publish.outputs.npm_version }}
+          release_name: v${{ needs.publish.outputs.npm_version }}
+          body: |
+            v${{ needs.publish.outputs.npm_version }}
+            [How To Test Upcoming Changes](https://github.com/homebridge/homebridge-config-ui-x/wiki/How-To-Test-Upcoming-Changes)
+          keep_num: 5
+          keep_tags: false
 
   attach-artifact:
-    needs: [tag, publish]
-    if: ${{ github.repository == 'homebridge/homebridge-config-ui-x' }}
-    name: Attach Artifact ${{ needs.tag.outputs.version }}
+    needs: [determine-release-type, publish, pre-release]
+    if: |
+      always() &&
+      needs.publish.result == 'success' &&
+      (needs.pre-release.result == 'success' || needs.pre-release.result == 'skipped')
+    name: Attach Artifact v${{ needs.publish.outputs.npm_version }}
     runs-on: ubuntu-latest
-
     steps:
       - name: Setup node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
-          node-version: 22.x
+          node-version: 24.x
 
-      - name: Install package
+      - name: Install package v${{ needs.publish.outputs.npm_version }}
         run: |
           export npm_config_prefix=$(pwd)/package
           for i in {1..10}; do
-            npm install -g --omit=dev homebridge-config-ui-x@${{ needs.tag.outputs.version }} && break || {
-              if [ $? -eq 1 ] && grep -q 'ETARGET' <<< "$(npm install -g --omit=dev homebridge-config-ui-x@${{ needs.tag.outputs.version }} 2>&1)"; then
+            npm install -g --omit=dev homebridge-config-ui-x@${{ needs.publish.outputs.npm_version }} && break || {
+              if [ $? -eq 1 ] && grep -q 'ETARGET' <<< "$(npm install -g --omit=dev homebridge-config-ui-x@${{ needs.publish.outputs.npm_version }} 2>&1)"; then
                 echo "Attempt $i failed with ETARGET error. Retrying in 1 minute..."
                 sleep 60
               else
@@ -78,51 +209,55 @@ jobs:
             }
           done
 
-      - name: Remove invalid node-pty node-gyp run
+      - name: Remove invalid node-pty node-gyp run v${{ needs.publish.outputs.npm_version }}
         run: |
           rm -rf $(pwd)/package/lib/node_modules/homebridge-config-ui-x/node_modules/@homebridge/node-pty-prebuilt-multiarch/build
 
-      - name: Create Bundle
+      - name: Create Bundle v${{ needs.publish.outputs.npm_version }}
         run: |
-          tar -C $(pwd)/package --owner=0 --group=0 --format=posix -czvf homebridge-config-ui-x-${{ needs.tag.outputs.version }}.tar.gz .
-          shasum -a 256 homebridge-config-ui-x-${{ needs.tag.outputs.version }}.tar.gz > SHASUMS256.txt
+          tar -C $(pwd)/package --owner=0 --group=0 --format=posix -czvf homebridge-config-ui-x-${{ needs.publish.outputs.npm_version }}.tar.gz .
+          shasum -a 256 homebridge-config-ui-x-${{ needs.publish.outputs.npm_version }}.tar.gz > SHASUMS256.txt
 
-      - name: Check Bundle
+      - name: Check Bundle v${{ needs.publish.outputs.npm_version }}
         run: |
-          if [ $(stat -c%s "homebridge-config-ui-x-${{ needs.tag.outputs.version }}.tar.gz") -lt 10000000 ]; then
+          if [ $(stat -c%s "homebridge-config-ui-x-${{ needs.publish.outputs.npm_version }}.tar.gz") -lt 10000000 ]; then
             echo "Bundle is under 10MB, stopping"
             exit 1
           fi
 
-      - name: Upload tar.gz Bundle to GitHub Artifacts
-        uses: actions/upload-artifact@v4
+      - name: Upload tar.gz Bundle to GitHub Artifacts v${{ needs.publish.outputs.npm_version }}
+        uses: actions/upload-artifact@v6
         with:
-          name: 'homebridge-config-ui-x-${{ needs.tag.outputs.version }}.tar.gz'
+          name: 'homebridge-config-ui-x-${{ needs.publish.outputs.npm_version }}.tar.gz'
           path: |
-            ./homebridge-config-ui-x-${{ needs.tag.outputs.version }}.tar.gz
+            ./homebridge-config-ui-x-${{ needs.publish.outputs.npm_version }}.tar.gz
 
-      - name: Upload SHASUMS256.txt to GitHub Artifacts
-        uses: actions/upload-artifact@v4
+      - name: Upload SHASUMS256.txt to GitHub Artifacts v${{ needs.publish.outputs.npm_version }}
+        uses: actions/upload-artifact@v6
         with:
           name: SHASUMS256.txt
           path: |
             ./SHASUMS256.txt
 
-      - name: Attach Bundle
+      - name: Attach Bundle v${{ needs.publish.outputs.npm_version }}
         uses: AButler/upload-release-assets@v3.0
         with:
-          files: 'homebridge-config-ui-x-${{ needs.tag.outputs.version }}.tar.gz;SHASUMS256.txt'
+          files: 'homebridge-config-ui-x-${{ needs.publish.outputs.npm_version }}.tar.gz;SHASUMS256.txt'
           repo-token: ${{ secrets.GITHUB_TOKEN }}
-          release-tag: v${{ needs.tag.outputs.version }}
+          release-tag: v${{ needs.publish.outputs.npm_version }}
 
   github-releases-to-discord:
     name: Discord Webhooks
-    needs: [tag, build_and_test, publish, attach-artifact]
+    needs: [determine-release-type, publish, attach-artifact]
+    if: |
+      always() &&
+      needs.publish.result == 'success' &&
+      needs.attach-artifact.result == 'success'
     uses: homebridge/.github/.github/workflows/discord-webhooks.yml@latest
     with:
-      title: Homebridge UI Release
+      title: ${{ needs.determine-release-type.outputs.release_type == 'latest' && 'Homebridge UI Release' || needs.determine-release-type.outputs.release_type == 'beta' && 'Homebridge UI Beta Release' || 'Homebridge UI Alpha Release' }}
       description: |
-        Version `v${{ needs.publish.outputs.NPM_VERSION }}`
-      url: 'https://github.com/homebridge/homebridge-config-ui-x/releases/tag/v${{ needs.publish.outputs.NPM_VERSION }}'
+        Version `v${{ needs.publish.outputs.npm_version }}`
+      url: 'https://github.com/homebridge/homebridge-config-ui-x/releases/tag/v${{ needs.publish.outputs.npm_version }}'
     secrets:
-      DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL_LATEST }}
+      DISCORD_WEBHOOK: ${{ needs.determine-release-type.outputs.release_type == 'latest' && secrets.DISCORD_WEBHOOK_URL_LATEST || secrets.DISCORD_WEBHOOK_URL_BETA }}

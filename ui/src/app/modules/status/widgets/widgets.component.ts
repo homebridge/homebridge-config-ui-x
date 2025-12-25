@@ -15,6 +15,23 @@ import { UptimeWidgetComponent } from '@/app/modules/status/widgets/uptime-widge
 import { WeatherWidgetComponent } from '@/app/modules/status/widgets/weather-widget/weather-widget.component'
 import { Widget } from '@/app/modules/status/widgets/widgets.interfaces'
 
+// Export available widget component names for filtering in status component
+export const AVAILABLE_WIDGETS = [
+  'HapQrcodeWidgetComponent',
+  'HomebridgeLogsWidgetComponent',
+  'TerminalWidgetComponent',
+  'CpuWidgetComponent',
+  'NetworkWidgetComponent',
+  'MemoryWidgetComponent',
+  'UptimeWidgetComponent',
+  'UpdateInfoWidgetComponent',
+  'SystemInfoWidgetComponent',
+  'WeatherWidgetComponent',
+  'AccessoriesWidgetComponent',
+  'ClockWidgetComponent',
+  'BridgesWidgetComponent',
+] as const
+
 @Component({
   selector: 'app-widgets',
   template: '',

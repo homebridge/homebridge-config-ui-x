@@ -1,0 +1,30 @@
+// Smooth transition for body background color change (light mode only)
+::ng-deep body.light-mode {
+  transition: background-color 0.25s ease-in-out;
+}
+
+#docker-terminal.light-mode {
+  opacity: 0;
+  animation: fadeIn 0.25s ease-in-out 0.25s forwards;
+
+  &.fade-out {
+    animation: fadeOut 0.25s ease-in-out forwards !important;
+    opacity: 1;
+  }
+}
+
+@keyframes fadeIn {
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeOut {
+  to {
+    opacity: 0;
+  }
+}
+
+.adjust-for-mobile {
+  height: calc(100% - 60px);
+}

@@ -1,10 +1,10 @@
 import type { ArgumentsHost, ExceptionFilter, HttpException } from '@nestjs/common'
 
+import { readFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import process from 'node:process'
 
 import { Catch, NotFoundException } from '@nestjs/common'
-import { readFileSync } from 'fs-extra'
 
 @Catch(NotFoundException)
 export class SpaFilter implements ExceptionFilter {

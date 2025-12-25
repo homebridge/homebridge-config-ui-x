@@ -25,3 +25,31 @@
   width: 200px;
   overflow: visible;
 }
+
+@keyframes spinner-rotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes spinner-rotate-reverse {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(-360deg);
+  }
+}
+
+.spinner_outer {
+  animation: spinner-rotate 2.5s linear infinite;
+  transform-origin: 50px 50px;
+}
+
+.spinner_inner {
+  animation: spinner-rotate-reverse 2.5s linear infinite;
+  transform-origin: 50px 50px;
+}

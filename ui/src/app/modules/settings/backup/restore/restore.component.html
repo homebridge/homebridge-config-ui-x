@@ -80,9 +80,9 @@
           } @if (uploadPercent && uploadPercent !== 100) {
           <span>{{ uploadPercent }}% - </span>
           } @if (uploadPercent === 100) {
-          <span> Extracting Archive</span>
+          <span>{{ 'backup.label_extracting' | translate }}</span>
           } @if (uploadPercent !== 100) {
-          <span> {{ 'backup.label_uploading' | translate }}</span>
+          <span>{{ 'backup.label_uploading' | translate }}</span>
           }
         </span>
         } @if (!clicked) { {{ 'form.button_restore' | translate }} }

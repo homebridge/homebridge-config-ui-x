@@ -31,7 +31,7 @@
         <div class="text-start text-md-end w-100 w-md-50">
           <input
             type="text"
-            class="form-control custom-input"
+            class="form-control custom-input font-monospace"
             placeholder="/home/pi/homebridge-backups"
             [formControl]="pathFormControl"
             [attr.aria-label]="'backup.settings_path' | translate"
@@ -66,12 +66,12 @@
           <small class="grey-text">{{ 'backup.backup_now_desc' | translate }}</small>
         </div>
         <button
-          class="btn btn-primary m-0 ms-3"
+          class="btn btn-primary m-0 ms-3 py-1"
           (click)="onDownloadBackupClick()"
           [disabled]="clicked"
           [attr.aria-label]="'backup.backup_now' | translate"
         >
-          <i class="fas" [ngClass]="{ 'fa-arrow-right': !clicked, 'fa-cog fa-spin': clicked }"></i>
+          <i class="fas" [ngClass]="{ 'fa-arrow-right': !clicked, 'fa-circle-notch fa-spin': clicked }"></i>
         </button>
       </li>
       <li class="list-group-item d-flex justify-content-between align-items-center">
@@ -81,12 +81,12 @@
           <small class="grey-text">{{ 'backup.backup_now_save_desc' | translate }}</small>
         </div>
         <button
-          class="btn btn-primary m-0 ms-3"
+          class="btn btn-primary m-0 ms-3 py-1"
           (click)="onCreateBackupClick()"
           [disabled]="clicked"
           [attr.aria-label]="'backup.backup_now' | translate"
         >
-          <i class="fas" [ngClass]="{ 'fa-arrow-right': !clicked, 'fa-cog fa-spin': clicked }"></i>
+          <i class="fas" [ngClass]="{ 'fa-arrow-right': !clicked, 'fa-circle-notch fa-spin': clicked }"></i>
         </button>
       </li>
       <li class="list-group-item d-flex justify-content-between align-items-center">
@@ -96,7 +96,7 @@
           <small class="grey-text">{{ 'backup.restore_now_desc' | translate }}</small>
         </div>
         <button
-          class="btn btn-primary m-0 ms-3"
+          class="btn btn-primary m-0 ms-3 py-1"
           (click)="restore(null)"
           [attr.aria-label]="'backup.restore_now' | translate"
           [disabled]="clicked"
@@ -130,13 +130,13 @@
               {{ backup.size }}MB
             </span>
             } @if (backup.size <= backup.maxBackupSize) {
-            <span> {{ backup.size }}MB </span>
+            <span>{{ backup.size }}MB</span>
             }
           </small>
         </span>
         <span style="display: flex; flex-wrap: nowrap">
           <button
-            class="btn btn-primary m-0 ms-3"
+            class="btn btn-primary m-0 ms-3 py-1"
             (click)="restore(backup)"
             [disabled]="clicked || deleting || backup.size > backup.maxBackupSize"
             [ngbTooltip]="'form.button_restore' | translate"
@@ -174,7 +174,7 @@
           >
             <i
               class="fas"
-              [ngClass]="{ 'fa-trash': backup.id !== deleting, 'fa-cog fa-spin': backup.id === deleting }"
+              [ngClass]="{ 'fa-trash': backup.id !== deleting, 'fa-circle-notch fa-spin': backup.id === deleting }"
             ></i>
           </button>
         </span>

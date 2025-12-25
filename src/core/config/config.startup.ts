@@ -1,12 +1,13 @@
-import type { StartupConfig } from './config.interfaces'
+import type { StartupConfig } from './config.interfaces.js'
 
+import { readFile, stat } from 'node:fs/promises'
 import { homedir, networkInterfaces } from 'node:os'
 import { resolve } from 'node:path'
 import process from 'node:process'
 
-import { readFile, readJson, stat } from 'fs-extra'
+import { readJson } from 'fs-extra/esm'
 
-import { Logger } from '../logger/logger.service'
+import { Logger } from '../logger/logger.service.js'
 
 /**
  * Return config required to start the console server

@@ -1,21 +1,23 @@
-import { Injectable } from '@nestjs/common'
+import type { ChildBridgeMetadata } from './child-bridges.interfaces.js'
 
-import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.service'
-import { AccessoriesService } from '../accessories/accessories.service'
+import { Inject, Injectable } from '@nestjs/common'
+
+import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.service.js'
+import { AccessoriesService } from '../accessories/accessories.service.js'
 
 @Injectable()
 export class ChildBridgesService {
   constructor(
-    private readonly homebridgeIpcService: HomebridgeIpcService,
-    private readonly accessoriesService: AccessoriesService,
+    @Inject(HomebridgeIpcService) private readonly homebridgeIpcService: HomebridgeIpcService,
+    @Inject(AccessoriesService) private readonly accessoriesService: AccessoriesService,
   ) {}
 
   /**
    * Return an array of child bridges
    */
-  public async getChildBridges() {
+  public async getChildBridges(): Promise<ChildBridgeMetadata[]> {
     try {
-      return await this.homebridgeIpcService.requestResponse('childBridgeMetadataRequest', 'childBridgeMetadataResponse')
+      return await this.homebridgeIpcService.requestResponse('childBridgeMetadataRequest', 'childBridgeMetadataResponse') as ChildBridgeMetadata[]
     } catch (e) {
       return []
     }

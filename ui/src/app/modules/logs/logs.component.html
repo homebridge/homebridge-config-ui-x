@@ -6,6 +6,18 @@
   <div class="col-6 text-end">
     <button
       class="btn btn-elegant my-0 me-2"
+      (click)="showSearch()"
+      container="body"
+      placement="bottom"
+      [openDelay]="150"
+      triggers="hover"
+      [ngbTooltip]="'form.search' | translate"
+      [attr.aria-label]="'form.search' | translate"
+    >
+      <i class="fas{{ showSearchBar() ? ' primary-text' : '' }} fa-search"></i>
+    </button>
+    <button
+      class="btn btn-elegant my-0 me-2"
       (click)="downloadLogFile()"
       container="body"
       placement="bottom"
@@ -32,6 +44,40 @@
   }
 </div>
 
-<div class="flex-column d-flex align-items-stretch adjust-for-mobile">
+@if (showSearchBar()) {
+<div class="row">
+  <div class="col-md-12">
+    <form novalidate (ngSubmit)="onSubmit(form.value)" [formGroup]="form">
+      <input
+        type="text"
+        id="logs-search"
+        class="search-bar"
+        #searchInput
+        [placeholder]="'logs.placeholder_search_logs' | translate"
+        formControlName="query"
+        [class.is-invalid]="searchInputInvalid"
+      />
+      @if (form.get('query')?.value) {
+      <button
+        type="button"
+        class="search-bar-clear"
+        (click)="onClearSearch()"
+        [attr.aria-label]="'form.button_clear' | translate"
+      >
+        <i class="fas fa-square-xmark" aria-hidden="true"></i>
+      </button>
+      } @else {
+      <span class="search-bar-badge badge badge-primary badge-beta">{{ 'common.labels.beta' | translate }}</span>
+      }
+    </form>
+  </div>
+</div>
+}
+
+<div
+  class="flex-column d-flex align-items-stretch"
+  [class.adjust-for-mobile]="!showSearchBar()"
+  [class.adjust-for-mobile-with-search]="showSearchBar()"
+>
   <div #logoutput id="log-output" class="align-self-end w-100 h-100 mb-1"></div>
 </div>

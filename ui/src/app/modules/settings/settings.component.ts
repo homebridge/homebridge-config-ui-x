@@ -97,6 +97,7 @@ export class SettingsComponent implements OnInit {
 
   public showSearchBar = false
   public searchQuery = ''
+  public isThemeTransitioning = false
 
   public showFields = {
     general: true,
@@ -113,7 +114,7 @@ export class SettingsComponent implements OnInit {
   public hiddenItems: Record<string, boolean> = {}
 
   public loading = true
-  public isHbV2 = false
+  public debugFieldDesc = 'settings.startup.debug_desc_v1' // default, may be changed in ngOnInit
   public showAvahiMdnsOption = false
   public showResolvedMdnsOption = false
   public adaptersAvailable: NetworkAdapterAvailable[] = []
@@ -121,6 +122,7 @@ export class SettingsComponent implements OnInit {
   public showPfxPassphrase = false
   public runningInDocker = this.$settings.env.runningInDocker
   public runningOnRaspberryPi = this.$settings.env.runningOnRaspberryPi
+  public runningOnRaspbianImage = this.$settings.env.runningOnRaspbianImage
   public platform = this.$settings.env.platform
   public enableTerminalAccess = this.$settings.env.enableTerminalAccess
   public isPwa = Boolean(isStandalonePWA())
@@ -213,7 +215,9 @@ export class SettingsComponent implements OnInit {
 
   public uiSessionTimeoutIsInvalid = false
   public uiSessionTimeoutIsSaving = false
-  public uiSessionTimeoutFormControl = new FormControl(0)
+  public uiSessionTimeoutDaysFormControl = new FormControl(0)
+  public uiSessionTimeoutHoursFormControl = new FormControl(8)
+  public uiSessionTimeoutMinutesFormControl = new FormControl(0)
 
   public uiSessionTimeoutInactivityBasedIsSaving = false
   public uiSessionTimeoutInactivityBasedFormControl = new FormControl(false)
@@ -250,7 +254,12 @@ export class SettingsComponent implements OnInit {
   public hbLinuxRestartIsSaving = false
   public hbLinuxRestartFormControl = new FormControl('')
 
+  public scheduledRestartCronIsSaving = false
+  public scheduledRestartCronFormControl = new FormControl('')
+
   public readonly linkDebug = '<a href="https://github.com/homebridge/homebridge-config-ui-x/wiki/Debug-Common-Values" target="_blank" rel="noopener noreferrer"><i class="fa fa-external-link-alt primary-text"></i></a>'
+  public readonly linkRaspbianSsl = '<a href="https://github.com/homebridge/homebridge-raspbian-image/wiki/SSL-HTTPS-Access" target="_blank" rel="noopener noreferrer"><i class="fa fa-external-link-alt primary-text"></i></a>'
+  public readonly linkCron = '<a href="https://crontab.guru/" target="_blank" rel="noopener noreferrer"><i class="fa fa-external-link-alt primary-text"></i></a>'
 
   public toggleSearch() {
     this.showSearchBar = !this.showSearchBar
@@ -329,7 +338,9 @@ export class SettingsComponent implements OnInit {
       startup: [
         'setting-debug',
         'setting-insecure',
+        'setting-security-control',
         'setting-keep',
+        'setting-scheduled-restart',
         'setting-metrics-startup',
         'setting-package-path',
         'setting-linux-restart',
@@ -359,7 +370,6 @@ export class SettingsComponent implements OnInit {
         'setting-security-https',
         'setting-security-cert',
         'setting-security-pass',
-        'setting-security-control',
       ],
       cache: [
         'setting-accessory-debug',
@@ -405,6 +415,7 @@ export class SettingsComponent implements OnInit {
       'setting-debug': this.$translate.instant('settings.startup.debug'),
       'setting-insecure': this.$translate.instant('settings.startup.insecure'),
       'setting-keep': this.$translate.instant('settings.startup.keep_accessories'),
+      'setting-scheduled-restart': this.$translate.instant('settings.startup.scheduled_restart'),
       'setting-metrics-startup': this.$translate.instant('settings.startup.metrics'),
       'setting-env-debug': this.$translate.instant('settings.startup.env_debug'),
       'setting-env-debug-manual': 'DEBUG',
@@ -469,11 +480,13 @@ export class SettingsComponent implements OnInit {
   }
 
   public async ngOnInit() {
-    this.isHbV2 = this.$settings.env.homebridgeVersion.startsWith('2')
-
     // Set page title
     const title = this.$translate.instant('menu.label_settings')
     this.$settings.setPageTitle(title)
+
+    if (this.$settings.isFeatureEnabled('childBridgeDebugMode')) {
+      this.debugFieldDesc = 'settings.startup.debug_desc_v2'
+    }
 
     await this.initNetworkingOptions()
     await this.initStartupSettings()
@@ -490,6 +503,11 @@ export class SettingsComponent implements OnInit {
       this.uiSslCertFormControl.disable()
       this.uiSslPfxFormControl.disable()
       this.uiSslPassphraseFormControl.disable()
+    }
+
+    // (2) Disable the SSL select box if running in raspbian image (externally managed)
+    if (this.runningOnRaspbianImage) {
+      this.uiSslTypeFormControl.disable()
     }
 
     this.hbNameFormControl.patchValue(this.$settings.env.homebridgeInstanceName)
@@ -562,10 +580,27 @@ export class SettingsComponent implements OnInit {
       .pipe(debounceTime(750))
       .subscribe((value: boolean) => this.uiAuthSave(value))
 
-    this.uiSessionTimeoutFormControl.patchValue(this.$settings.sessionTimeout)
-    this.uiSessionTimeoutFormControl.valueChanges
+    // Convert seconds to days, hours, minutes
+    const sessionTimeoutSeconds = this.$settings.sessionTimeout
+    const days = Math.floor(sessionTimeoutSeconds / 86400)
+    const hours = Math.floor((sessionTimeoutSeconds % 86400) / 3600)
+    const minutes = Math.floor((sessionTimeoutSeconds % 3600) / 60)
+
+    this.uiSessionTimeoutDaysFormControl.patchValue(days)
+    this.uiSessionTimeoutHoursFormControl.patchValue(hours)
+    this.uiSessionTimeoutMinutesFormControl.patchValue(minutes)
+
+    this.uiSessionTimeoutDaysFormControl.valueChanges
       .pipe(debounceTime(750))
-      .subscribe((value: number) => this.uiSessionTimeoutSave(value))
+      .subscribe(() => this.uiSessionTimeoutSaveFromFields())
+
+    this.uiSessionTimeoutHoursFormControl.valueChanges
+      .pipe(debounceTime(750))
+      .subscribe(() => this.uiSessionTimeoutSaveFromFields())
+
+    this.uiSessionTimeoutMinutesFormControl.valueChanges
+      .pipe(debounceTime(750))
+      .subscribe(() => this.uiSessionTimeoutSaveFromFields())
 
     this.uiSessionTimeoutInactivityBasedFormControl.patchValue(this.$settings.sessionTimeoutInactivityBased || false)
     this.uiSessionTimeoutInactivityBasedFormControl.valueChanges
@@ -643,6 +678,11 @@ export class SettingsComponent implements OnInit {
     this.hbLinuxRestartFormControl.valueChanges
       .pipe(debounceTime(1500))
       .subscribe((value: string) => this.hbLinuxRestartSave(value))
+
+    this.scheduledRestartCronFormControl.patchValue(this.$settings.env.scheduledRestartCron || '')
+    this.scheduledRestartCronFormControl.valueChanges
+      .pipe(debounceTime(1500))
+      .subscribe((value: string) => this.scheduledRestartCronSave(value))
 
     this.loading = false
   }
@@ -882,8 +922,21 @@ export class SettingsComponent implements OnInit {
   private async uiThemeSave(value: string) {
     try {
       this.uiThemeIsSaving = true
+
+      // Start fade-out animation
+      this.isThemeTransitioning = true
+
+      // Wait for fade-out to complete
+      await new Promise(resolve => setTimeout(resolve, 250))
+
+      // Change the theme (background will transition)
       this.$settings.setTheme(value)
       await this.saveUiSettingChange('theme', value)
+
+      // Wait for background transition to start, then fade content back in
+      await new Promise(resolve => setTimeout(resolve, 100))
+      this.isThemeTransitioning = false
+
       setTimeout(() => {
         this.uiThemeIsSaving = false
       }, 1000)
@@ -891,14 +944,28 @@ export class SettingsComponent implements OnInit {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
       this.uiThemeIsSaving = false
+      this.isThemeTransitioning = false
     }
   }
 
   private async uiLightSave(value: 'auto' | 'light' | 'dark') {
     try {
       this.uiLightIsSaving = true
+
+      // Start fade-out animation
+      this.isThemeTransitioning = true
+
+      // Wait for fade-out to complete
+      await new Promise(resolve => setTimeout(resolve, 250))
+
+      // Change the lighting mode (background will transition)
       this.$settings.setLightingMode(value, 'user')
       await this.saveUiSettingChange('lightingMode', value)
+
+      // Wait for background transition to start, then fade content back in
+      await new Promise(resolve => setTimeout(resolve, 100))
+      this.isThemeTransitioning = false
+
       setTimeout(() => {
         this.uiLightIsSaving = false
       }, 1000)
@@ -906,6 +973,7 @@ export class SettingsComponent implements OnInit {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
       this.uiLightIsSaving = false
+      this.isThemeTransitioning = false
     }
   }
 
@@ -1326,16 +1394,34 @@ export class SettingsComponent implements OnInit {
     }
   }
 
-  private async uiSessionTimeoutSave(value: number) {
-    if (value && (typeof value !== 'number' || value < 600 || value > 86400000 || Number.isInteger(value) === false)) {
+  private async uiSessionTimeoutSaveFromFields() {
+    const days = this.uiSessionTimeoutDaysFormControl.value || 0
+    const hours = this.uiSessionTimeoutHoursFormControl.value || 0
+    const minutes = this.uiSessionTimeoutMinutesFormControl.value || 0
+
+    // Validate individual fields
+    if (
+      typeof days !== 'number' || days < 0 || days > 365 || !Number.isInteger(days)
+      || typeof hours !== 'number' || hours < 0 || hours > 23 || !Number.isInteger(hours)
+      || typeof minutes !== 'number' || minutes < 0 || minutes > 59 || !Number.isInteger(minutes)
+    ) {
+      this.uiSessionTimeoutIsInvalid = true
+      return
+    }
+
+    // Convert to seconds
+    const totalSeconds = (days * 86400) + (hours * 3600) + (minutes * 60)
+
+    // Validate total: minimum 10 minutes (600 seconds), maximum 1000 days (86400000 seconds)
+    if (totalSeconds < 600 || totalSeconds > 86400000) {
       this.uiSessionTimeoutIsInvalid = true
       return
     }
 
     try {
       this.uiSessionTimeoutIsSaving = true
-      this.$settings.setItem('sessionTimeout', value)
-      await this.saveUiSettingChange('sessionTimeout', value)
+      this.$settings.setItem('sessionTimeout', totalSeconds)
+      await this.saveUiSettingChange('sessionTimeout', totalSeconds)
       this.uiSessionTimeoutIsInvalid = false
       setTimeout(() => {
         this.uiSessionTimeoutIsSaving = false
@@ -1629,6 +1715,30 @@ export class SettingsComponent implements OnInit {
     }
   }
 
+  private async scheduledRestartCronSave(value: string) {
+    try {
+      this.scheduledRestartCronIsSaving = true
+      // Convert empty string to null
+      const cronValue = value?.trim() ? value : null
+      this.$settings.setEnvItem('scheduledRestartCron', cronValue)
+      await firstValueFrom(this.$api.put('/config-editor/ui', { key: 'scheduledRestartCron', value: cronValue }))
+      setTimeout(() => {
+        this.scheduledRestartCronIsSaving = false
+        this.$api.put('/platform-tools/hb-service/set-full-service-restart-flag', {}).subscribe({
+          next: () => this.showRestartToast(),
+          error: (error) => {
+            console.error(error)
+            this.showRestartToast()
+          },
+        })
+      }, 1000)
+    } catch (error) {
+      console.error(error)
+      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      this.scheduledRestartCronIsSaving = false
+    }
+  }
+
   private buildBridgeNetworkAdapterList(adapters: string[]) {
     if (!adapters.length) {
       this.adaptersSelected = []
@@ -1658,7 +1768,7 @@ export class SettingsComponent implements OnInit {
   private showRestartToast() {
     if (!this.restartToastIsShown) {
       this.restartToastIsShown = true
-      const ref = this.$toastr.info(
+      this.$settings.restartToastRef = this.$toastr.info(
         this.$translate.instant('settings.changes.saved'),
         this.$translate.instant('menu.hbrestart.title'),
         {
@@ -1670,8 +1780,8 @@ export class SettingsComponent implements OnInit {
         },
       )
 
-      if (ref && ref.onTap) {
-        ref.onTap.subscribe(() => {
+      if (this.$settings.restartToastRef && this.$settings.restartToastRef.onTap) {
+        this.$settings.restartToastRef.onTap.subscribe(() => {
           void this.$router.navigate(['/restart'])
         })
       }

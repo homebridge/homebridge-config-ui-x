@@ -1,29 +1,14 @@
-.search-bar {
-  outline: none;
-  box-sizing: inherit !important;
-  background-color: inherit;
-  height: 50px !important;
-  width: 100%;
-  border-width: 0.5px;
-  padding: 10px;
-  margin-bottom: 15px;
-
-  @media (hover: hover) {
-    &:hover {
-      border: 1px solid #000000;
-    }
-  }
-  &:focus {
-    border: 1px solid #000000;
-    box-shadow: 0 1px 0 0 #000000;
-  }
+// Smooth transition for body background color when lighting mode changes
+::ng-deep body {
+  transition: background-color 0.5s ease-in-out;
 }
 
-.search-bar-clear {
-  position: absolute;
-  right: 30px;
-  font-size: 25px;
-  color: #d0d0d0;
-  line-height: 50px;
-  cursor: pointer;
+// Fade out/in animation for content during theme change
+.settings-content {
+  opacity: 1;
+  transition: opacity 0.25s ease-in-out;
+
+  &.theme-transitioning {
+    opacity: 0;
+  }
 }

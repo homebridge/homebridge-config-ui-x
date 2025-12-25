@@ -3,7 +3,7 @@ import { Component, ElementRef, inject, Input, OnDestroy, OnInit, viewChild } fr
 import { TranslatePipe } from '@ngx-translate/core'
 import { ChartConfiguration } from 'chart.js'
 import { BaseChartDirective } from 'ng2-charts'
-import { interval, Subscription } from 'rxjs'
+import { interval, Subject, Subscription } from 'rxjs'
 
 import { ConvertTempPipe } from '@/app/core/pipes/convert-temp.pipe'
 import { SettingsService } from '@/app/core/settings.service'
@@ -28,11 +28,14 @@ export class CpuWidgetComponent implements OnInit, OnDestroy {
   private $ws = inject(WsService)
   private io: IoNamespace
   private intervalSubscription: Subscription
+  private configureSubscription: Subscription
 
   readonly chart = viewChild(BaseChartDirective)
   readonly widgetBackground = viewChild<ElementRef>('widgetbackground')
 
   @Input() public widget: Widget
+  @Input() public resizeEvent: Subject<void>
+  @Input() public configureEvent: Subject<void>
 
   public temperatureUnits = this.$settings.env.temperatureUnits
   public cpu = {} as any
@@ -96,6 +99,15 @@ export class CpuWidgetComponent implements OnInit, OnDestroy {
       this.getServerCpuInfo()
     }
 
+    this.initializeWidget()
+
+    // Listen for configuration changes
+    this.configureEvent.subscribe(() => {
+      this.reinitializeWidget()
+    })
+  }
+
+  private initializeWidget() {
     // Interval and history items should be in [1, 60]
     if (!this.widget.refreshInterval) {
       this.widget.refreshInterval = 10
@@ -113,8 +125,28 @@ export class CpuWidgetComponent implements OnInit, OnDestroy {
     })
   }
 
+  private reinitializeWidget() {
+    // Unsubscribe from the old interval
+    if (this.intervalSubscription) {
+      this.intervalSubscription.unsubscribe()
+    }
+
+    // Clear the chart data
+    this.lineChartData.datasets[0].data = []
+    this.lineChartLabels = []
+
+    // Reinitialize with new settings
+    this.initializeWidget()
+
+    // Fetch new data immediately
+    if (this.io.socket.connected) {
+      this.getServerCpuInfo()
+    }
+  }
+
   public ngOnDestroy() {
     this.intervalSubscription.unsubscribe()
+    this.configureSubscription?.unsubscribe()
   }
 
   private getServerCpuInfo() {

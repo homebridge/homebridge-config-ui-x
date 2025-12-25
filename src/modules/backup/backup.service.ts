@@ -1,9 +1,11 @@
 import type { MultipartFile } from '@fastify/multipart'
 import type { FastifyReply } from 'fastify'
 
-import type { HomebridgePlugin } from '../plugins/plugins.interfaces'
+import type { HomebridgePlugin } from '../plugins/plugins.interfaces.js'
 
 import { EventEmitter } from 'node:events'
+import { constants, createReadStream, statSync } from 'node:fs'
+import { access, lstat, mkdtemp, readdir, realpath } from 'node:fs/promises'
 import { platform, tmpdir } from 'node:os'
 import { basename, join, resolve } from 'node:path'
 import process from 'node:process'
@@ -12,6 +14,7 @@ import { promisify } from 'node:util'
 
 import {
   BadRequestException,
+  Inject,
   Injectable,
   InternalServerErrorException,
   NotFoundException,
@@ -19,32 +22,17 @@ import {
 } from '@nestjs/common'
 import { cyan, green, red, yellow } from 'bash-color'
 import dayjs from 'dayjs'
-import {
-  access,
-  constants,
-  copy,
-  createReadStream,
-  ensureDir,
-  lstat,
-  mkdtemp,
-  pathExists,
-  readdir,
-  readJson,
-  realpath,
-  remove,
-  statSync,
-  writeJson,
-} from 'fs-extra'
+import { copy, ensureDir, pathExists, readJson, remove, writeJson } from 'fs-extra/esm'
 import { networkInterfaces } from 'systeminformation'
 import { create, extract } from 'tar'
 import { Extract } from 'unzipper'
 
-import { HomebridgeConfig } from '../../core/config/config.interfaces'
-import { ConfigService } from '../../core/config/config.service'
-import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.service'
-import { Logger } from '../../core/logger/logger.service'
-import { SchedulerService } from '../../core/scheduler/scheduler.service'
-import { PluginsService } from '../plugins/plugins.service'
+import { HomebridgeConfig } from '../../core/config/config.interfaces.js'
+import { ConfigService } from '../../core/config/config.service.js'
+import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.service.js'
+import { Logger } from '../../core/logger/logger.service.js'
+import { SchedulerService } from '../../core/scheduler/scheduler.service.js'
+import { PluginsService } from '../plugins/plugins.service.js'
 
 const pump = promisify(pipeline)
 
@@ -53,11 +41,11 @@ export class BackupService {
   private restoreDirectory: string
 
   constructor(
-    private readonly configService: ConfigService,
-    private readonly pluginsService: PluginsService,
-    private readonly schedulerService: SchedulerService,
-    private readonly homebridgeIpcService: HomebridgeIpcService,
-    private readonly logger: Logger,
+    @Inject(ConfigService) private readonly configService: ConfigService,
+    @Inject(PluginsService) private readonly pluginsService: PluginsService,
+    @Inject(SchedulerService) private readonly schedulerService: SchedulerService,
+    @Inject(HomebridgeIpcService) private readonly homebridgeIpcService: HomebridgeIpcService,
+    @Inject(Logger) private readonly logger: Logger,
   ) {
     this.scheduleInstanceBackups()
   }

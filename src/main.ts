@@ -1,6 +1,7 @@
 import type { NestFastifyApplication } from '@nestjs/platform-fastify'
 import type { FastifyReply, FastifyRequest } from 'fastify'
 
+import { readFile } from 'node:fs/promises'
 import { resolve } from 'node:path'
 import process from 'node:process'
 
@@ -11,20 +12,19 @@ import { NestFactory } from '@nestjs/core'
 import { FastifyAdapter } from '@nestjs/platform-fastify'
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
 import { Bonjour } from 'bonjour-service'
-import { readFile } from 'fs-extra'
 
-import { AppModule } from './app.module'
-import { ConfigService } from './core/config/config.service'
-import { getStartupConfig } from './core/config/config.startup'
-import { Logger } from './core/logger/logger.service'
-import { SpaFilter } from './core/spa/spa.filter'
+import { AppModule } from './app.module.js'
+import { ConfigService } from './core/config/config.service.js'
+import { getStartupConfig } from './core/config/config.startup.js'
+import { Logger } from './core/logger/logger.service.js'
+import { SpaFilter } from './core/spa/spa.filter.js'
 
-import './self-check'
-import './globalDefaults'
+import './env-setup.js'
+import 'reflect-metadata'
+import './self-check.js'
+import './globalDefaults.js'
 
-export { HomebridgeIpcService } from './core/homebridge-ipc/homebridge-ipc.service'
-
-process.env.UIX_BASE_PATH = process.env.UIX_BASE_PATH_OVERRIDE || resolve(__dirname, '../')
+export { HomebridgeIpcService } from './core/homebridge-ipc/homebridge-ipc.service.js'
 
 async function bootstrap(): Promise<NestFastifyApplication> {
   const startupConfig = await getStartupConfig()
@@ -63,8 +63,9 @@ async function bootstrap(): Promise<NestFastifyApplication> {
           return `wss://${req.headers.host} ws://${req.headers.host} ${startupConfig.cspWsOverride || ''}`
         }],
         frameSrc: ['\'self\'', 'data:', 'https://developers.homebridge.io'],
+        workerSrc: ['\'self\'', 'blob:'], // required for web-workers for monaco editor
+        fontSrc: ['\'self\'', 'data:'], // required for web-workers for monaco editor
         scriptSrcAttr: null,
-        fontSrc: null,
         objectSrc: null,
         frameAncestors: null,
         formAction: null,
@@ -80,7 +81,7 @@ async function bootstrap(): Promise<NestFastifyApplication> {
     AppModule,
     fAdapter,
     {
-      logger: startupConfig.debug ? new Logger() : false,
+      logger: (startupConfig.debug || process.env.UIX_DEVELOPMENT === '1') ? new Logger() : false,
       httpsOptions: startupConfig.httpsOptions,
     },
   )

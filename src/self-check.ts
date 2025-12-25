@@ -1,9 +1,15 @@
 import { execSync } from 'node:child_process'
+import { createRequire } from 'node:module'
 import { platform } from 'node:os'
 import { dirname } from 'node:path'
 import process from 'node:process'
+import { fileURLToPath } from 'node:url'
 
-import { Logger } from './core/logger/logger.service'
+import { Logger } from './core/logger/logger.service.js'
+
+const require = createRequire(import.meta.url)
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = dirname(__filename)
 
 const logger = new Logger()
 
@@ -35,7 +41,6 @@ function tryRebuildNodePtyModule() {
 function main() {
   // check if node-pty is built correctly
   try {
-    // eslint-disable-next-line ts/no-require-imports
     require('@homebridge/node-pty-prebuilt-multiarch')
   } catch (e) {
     logger.error(e)

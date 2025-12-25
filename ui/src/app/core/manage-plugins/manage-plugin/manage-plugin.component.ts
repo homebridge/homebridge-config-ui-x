@@ -71,6 +71,10 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
   @Input() installedVersion: string
   @Input() isDisabled: boolean
   @Input() action: string
+  @Input() onRefreshPluginList: () => void
+  @Input() verifiedPlugin: boolean
+  @Input() verifiedPlusPlugin: boolean
+  @Input() funding: any
 
   public targetVersionPretty = ''
   public actionComplete = false
@@ -81,8 +85,12 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
   public presentTenseVerb: string
   public pastTenseVerb: string
   public onlineUpdateOk: boolean
-  public readonly iconStar = '<i class="fas fa-star primary-text"></i>'
-  public readonly iconThumbsUp = '<i class="fas fa-thumbs-up primary-text"></i>'
+  public readonly iconStar = '<i class="fas fa-star orange-text"></i>'
+  public readonly iconThumbsUp = '<i class="fas fa-thumbs-up orange-text"></i>'
+  public readonly iconCoffee = '<i class="fas fa-coffee pink-text"></i>'
+  public readonly iconHeart = '<i class="fas fa-heart pink-text"></i>'
+  public supportMessageKey: string
+  public donationLink: string
   public versionNotes: string
   public versionNotesLoaded = false
   public versionNotesShow = false
@@ -90,6 +98,7 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
   public fullChangelogLoaded = false
   public releaseNotesShow = false
   public releaseNotesTab: number = 1
+  public downloadingBackup = false
 
   constructor() {
     this.term.loadAddon(this.fitAddon)
@@ -148,6 +157,40 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
         this.pastTenseVerb = this.$translate.instant('plugins.manage.updated')
         void this.getVersionNotes()
         break
+    }
+
+    // Determine which support message to show
+    this.determineSupportMessage()
+  }
+
+  private determineSupportMessage() {
+    // Default to GitHub message
+    this.supportMessageKey = 'plugins.manage.support_github'
+    this.donationLink = ''
+
+    // Never show donation messages for homebridge or homebridge-config-ui-x
+    if (['homebridge', 'homebridge-config-ui-x'].includes(this.pluginName)) {
+      return
+    }
+
+    // Check if plugin qualifies for donation message and randomly decide to show it
+    if ((this.verifiedPlugin || this.verifiedPlusPlugin) && this.funding && Math.random() < 0.5) {
+      // Extract random donation URL from funding data
+      let donationUrl: string | null = null
+      if (typeof this.funding === 'string') {
+        donationUrl = this.funding
+      } else if (Array.isArray(this.funding)) {
+        const urls = this.funding.map((o: any) => typeof o === 'string' ? o : o?.url).filter(Boolean)
+        donationUrl = urls.length > 0 ? urls[Math.floor(Math.random() * urls.length)] : null
+      } else if (this.funding?.url) {
+        donationUrl = this.funding.url
+      }
+
+      if (donationUrl) {
+        const isKofi = /ko-?fi/i.test(donationUrl)
+        this.supportMessageKey = isKofi ? 'plugins.manage.support_kofi' : 'plugins.manage.support_donate'
+        this.donationLink = `<a href="${donationUrl}" target="_blank" rel="noopener noreferrer"><i class="fas fa-external-link-alt primary-text"></i></a>`
+      }
     }
   }
 
@@ -237,11 +280,14 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
   }
 
   public async downloadBackupFile(): Promise<void> {
+    this.downloadingBackup = true
     try {
       await this.$backup.downloadBackup()
     } catch (error) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+    } finally {
+      this.downloadingBackup = false
     }
   }
 
@@ -268,10 +314,23 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
       termCols: this.term.cols,
       termRows: this.term.rows,
     }).subscribe({
-      next: () => {
-        this.$activeModal.close()
+      next: async () => {
         this.$toastr.success(`${this.pastTenseVerb} ${this.pluginName}`, this.toastSuccess)
-        window.location.href = `/plugins?action=just-installed&plugin=${this.pluginName}`
+
+        // Trigger refresh of the plugin list in the background
+        if (this.onRefreshPluginList) {
+          this.onRefreshPluginList()
+        }
+
+        // Fetch the updated plugin data and close with it
+        try {
+          const installedPlugins = await firstValueFrom(this.$api.get('/plugins'))
+          const installedPlugin = installedPlugins.find((x: any) => x.name === this.pluginName)
+          this.$activeModal.close({ action: 'just-installed', plugin: installedPlugin })
+        } catch (error) {
+          console.error('Failed to fetch updated plugin data:', error)
+          this.$activeModal.close({ action: 'just-installed', pluginName: this.pluginName })
+        }
       },
       error: (error) => {
         this.actionFailed = true

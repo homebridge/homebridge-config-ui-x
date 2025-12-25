@@ -46,8 +46,12 @@
   }
 }
 
+.custom-input {
+  padding: 3px 7px;
+}
+
 .custom-select {
-  padding: 7px;
+  padding: 3px 7px;
   border-radius: 0.25rem;
   width: 100%;
   border: 1px solid #ced4da;
@@ -105,5 +109,50 @@
 .noUi-target:not([disabled='true']) {
   .noUi-touch-area {
     cursor: pointer;
+  }
+}
+
+// Search bar styles (used in plugins and logs components)
+form {
+  position: relative;
+}
+
+.search-bar {
+  outline: none;
+  box-sizing: inherit !important;
+  background-color: inherit;
+  height: 50px !important;
+  width: 100%;
+  border-width: 0.5px;
+  padding: 10px 45px 10px 10px;
+  margin-bottom: 15px;
+
+  @media (hover: hover) {
+    &:hover {
+      border: 1px solid #000000;
+    }
+  }
+  &:focus {
+    border: 1px solid #000000;
+    box-shadow: 0 1px 0 0 #000000;
+  }
+}
+
+.search-bar-clear {
+  position: absolute;
+  right: 8px;
+  top: 0;
+  height: 50px;
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  color: #d0d0d0;
+  cursor: pointer;
+  padding: 0 8px;
+  display: flex;
+  align-items: center;
+
+  &:hover {
+    color: #a0a0a0;
   }
 }

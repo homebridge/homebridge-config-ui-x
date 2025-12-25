@@ -30,6 +30,7 @@ $image-path: '../../img';
 @import './components/accessories.scss';
 @import './components/json-schema-form.scss';
 @import './components/sliding-checkbox.scss';
+@import './components/custom-icons.scss';
 
 @import './components/widgets.scss';
 @import './components/terminal.scss';
@@ -37,3 +38,13 @@ $image-path: '../../img';
 
 @import './themes/themes-light.scss';
 @import './themes/themes-dark.scss';
+
+// Custom animations
+@keyframes spin-reverse {
+  from {
+    transform: translate(-50%, -50%) rotate(360deg);
+  }
+  to {
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+}

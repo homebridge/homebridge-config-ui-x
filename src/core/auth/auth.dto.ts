@@ -5,17 +5,17 @@ export class AuthDto {
   @IsDefined()
   @IsString()
   @IsNotEmpty()
-  @ApiProperty()
+  @ApiProperty({ type: String })
   readonly username: string
 
   @IsDefined()
   @IsString()
   @IsNotEmpty()
-  @ApiProperty()
+  @ApiProperty({ type: String })
   readonly password: string
 
   @IsString()
   @IsOptional()
-  @ApiProperty({ required: false })
+  @ApiProperty({ required: false, type: String })
   readonly otp?: string
 }
