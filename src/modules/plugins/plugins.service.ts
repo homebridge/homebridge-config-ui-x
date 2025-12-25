@@ -924,7 +924,7 @@ export class PluginsService {
     await new Promise(res => setTimeout(res, 800))
 
     client.emit('stdout', yellow('If you have not started the Docker container with ')
-    + red('--restart=always') + yellow(' you may\n\rneed to manually start the container again.\n\r\n\r'))
+      + red('--restart=always') + yellow(' you may\n\rneed to manually start the container again.\n\r\n\r'))
     await new Promise(res => setTimeout(res, 800))
 
     client.emit('stdout', yellow('This process may take several minutes. Please be patient.\n\r'))
@@ -950,13 +950,19 @@ export class PluginsService {
       throw new NotFoundException()
     }
 
-    const i18nPath = plugin.directories?.i18n
-    const lang = this.configService.ui.lang === 'auto' ? 'en' : this.configService.ui.lang
+    let schemaPath = undefined
 
-    let schemaPath = resolve(plugin.installPath, pluginName, i18nPath, `config.schema.json.${lang}`)
-    if (!i18nPath === undefined || !pathExistsSync(schemaPath)) {
-      schemaPath = resolve(plugin.installPath, pluginName, 'config.schema.json')
+    const i18nPath = plugin.directories?.i18n
+    if (i18nPath !== undefined) {
+      const lang = this.configService.ui.lang === 'auto' ? 'en' : this.configService.ui.lang
+
+      const i18nSchemaPath = resolve(plugin.installPath, pluginName, i18nPath, `config.schema.json.${lang}`)
+      if (pathExistsSync(schemaPath)) {
+        schemaPath = i18nSchemaPath
+      }
     }
+
+    schemaPath ??= resolve(plugin.installPath, pluginName, 'config.schema.json')
 
     let configSchema = await readJson(schemaPath)
 
@@ -1150,7 +1156,7 @@ export class PluginsService {
             try {
               const changelog = (await firstValueFrom(this.httpService.get(`https://raw.githubusercontent.com/${match[1]}/${match[2]}/refs/tags/${latestTag}/${changelogPath}changelog.md`))).data
               changelogData = changelog.data
-            } catch {}
+            } catch { }
           }
 
           return {
