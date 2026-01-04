@@ -122,6 +122,21 @@ export class ConfigEditorController {
   }
 
   @UseGuards(AdminGuard)
+  @Get('/ui/plugins/node-update-policy')
+  @ApiOperation({ summary: 'Get the Node.js update notification policy.' })
+  getNodeUpdatePolicy(): Promise<string> {
+    return this.configEditorService.getNodeUpdatePolicy()
+  }
+
+  @UseGuards(AdminGuard)
+  @Put('/ui/plugins/node-update-policy')
+  @ApiOperation({ summary: 'Update the Node.js update notification policy.' })
+  @ApiBody({ description: 'Node.js update policy: "all" (default), "none", or "major" (hide major version updates).', type: 'string' })
+  setNodeUpdatePolicy(@Body() { body }) {
+    return this.configEditorService.setNodeUpdatePolicy(body)
+  }
+
+  @UseGuards(AdminGuard)
   @Get('/ui/bridges/:username')
   @ApiOperation({ summary: 'Get a specific bridge configuration by username.' })
   @ApiParam({

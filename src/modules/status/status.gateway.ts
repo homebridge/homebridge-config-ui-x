@@ -83,6 +83,12 @@ export class StatusGateway {
     }
   }
 
+  @SubscribeMessage('clear-nodejs-version-cache')
+  clearNodeJsVersionCache() {
+    this.statusService.clearNodeJsVersionCache()
+    return { success: true }
+  }
+
   @SubscribeMessage('get-out-of-date-plugins')
   async getOutOfDatePlugins() {
     try {

@@ -410,6 +410,43 @@ export class ConfigEditorService {
   }
 
   /**
+   * Get the Node.js update notification policy
+   */
+  public async getNodeUpdatePolicy(): Promise<string> {
+    // 1. Get the current config for the Homebridge UI
+    const config = await this.getConfigFile()
+    const pluginConfig = config.platforms.find(x => x.platform === 'config')
+
+    // 2. Return the nodeUpdatePolicy setting or 'all' if not set
+    return pluginConfig?.plugins?.nodeUpdatePolicy || 'all'
+  }
+
+  /**
+   * Set the Node.js update notification policy
+   */
+  public async setNodeUpdatePolicy(value: string) {
+    // 1. Get the current config for the Homebridge UI
+    const config = await this.getConfigFile()
+    const pluginConfig = config.platforms.find(x => x.platform === 'config')
+
+    // 2. Validate the value
+    const validValues = ['all', 'none', 'major']
+    if (!validValues.includes(value)) {
+      value = 'all'
+    }
+
+    // 3. Ensure the plugins object exists and set the nodeUpdatePolicy property
+    if (!pluginConfig.plugins) {
+      pluginConfig.plugins = {}
+    }
+    pluginConfig.plugins.nodeUpdatePolicy = value
+
+    // 4. Clean and save the UI config block
+    config.platforms[config.platforms.findIndex(x => x.platform === 'config')] = this.cleanUpUiConfig(pluginConfig)
+    await this.updateConfigFile(config)
+  }
+
+  /**
    * Get a specific bridge configuration by username
    * Returns an object with username and boolean flags (defaults to false if not set)
    */

@@ -424,6 +424,14 @@ export class StatusService {
   }
 
   /**
+   * Clear the Node.js version cache
+   * Used when Node.js update policy changes
+   */
+  public clearNodeJsVersionCache() {
+    this.statusCache.del('nodeJsVersion')
+  }
+
+  /**
    * Checks the current version of Node.js and compares to the latest LTS
    */
   public async getNodeJsVersionInfo() {
@@ -507,16 +515,33 @@ export class StatusService {
         this.logger.debug(`Could not check npm version as ${e.message}.`)
       }
 
+      // Apply node update policy
+      const nodeUpdatePolicy = this.configService.getNodeUpdatePolicy()
+      let finalUpdateAvailable = updateAvailable
+
+      if (nodeUpdatePolicy === 'none') {
+        // Hide all Node.js update notifications
+        finalUpdateAvailable = false
+      } else if (nodeUpdatePolicy === 'major' && updateAvailable) {
+        // Hide major version updates, only show updates within the same major version
+        const currentMajor = Number.parseInt(process.version.split('.')[0].replace('v', ''), 10)
+        const latestMajor = Number.parseInt(latestVersion.split('.')[0].replace('v', ''), 10)
+        if (latestMajor > currentMajor) {
+          finalUpdateAvailable = false
+        }
+      }
+
       const versionInformation = {
         currentVersion: process.version,
         latestVersion,
-        updateAvailable,
+        updateAvailable: finalUpdateAvailable,
         showNodeUnsupportedWarning,
         installPath: dirname(process.execPath),
         npmVersion,
         architecture: process.arch,
         supportsNodeJs24: isNodeJs24Supported,
       }
+
       this.statusCache.set('nodeJsVersion', versionInformation, 86400)
       return versionInformation
     } catch (e) {

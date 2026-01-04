@@ -1,13 +1,16 @@
 import { Component, inject, Input, OnInit } from '@angular/core'
+import { FormControl, ReactiveFormsModule } from '@angular/forms'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { NgxMdModule } from 'ngx-md'
 import { ToastrService } from 'ngx-toastr'
 import { firstValueFrom } from 'rxjs'
+import { debounceTime, distinctUntilChanged } from 'rxjs/operators'
 import { satisfies } from 'semver'
 
 import { ApiService } from '@/app/core/api.service'
 import { Plugin } from '@/app/core/manage-plugins/manage-plugins.interfaces'
+import { SettingsService } from '@/app/core/settings.service'
 import { PluginNodeCheck } from '@/app/modules/status/widgets/widgets.interfaces'
 
 @Component({
@@ -16,11 +19,13 @@ import { PluginNodeCheck } from '@/app/modules/status/widgets/widgets.interfaces
   imports: [
     TranslatePipe,
     NgxMdModule,
+    ReactiveFormsModule,
   ],
 })
 export class NodeVersionModalComponent implements OnInit {
   private $activeModal = inject(NgbActiveModal)
   private $api = inject(ApiService)
+  private $settings = inject(SettingsService)
   private $toastr = inject(ToastrService)
   private $translate = inject(TranslateService)
 
@@ -32,13 +37,62 @@ export class NodeVersionModalComponent implements OnInit {
   @Input() homebridgePkg: Plugin
   @Input() architecture: string
   @Input() supportsNodeJs24: boolean
+  @Input() onUpdate?: () => void
+  @Input() statusIo?: any
 
   public loading = true
   public installedPlugins: PluginNodeCheck[] = []
+  public nodeUpdatePolicyControl = new FormControl<'all' | 'none' | 'major'>('all')
 
   public async ngOnInit() {
+    // Initialize the node update policy value
+    this.nodeUpdatePolicyControl.setValue(this.$settings.env.plugins?.nodeUpdatePolicy || 'all')
+
+    // Watch for changes and update the backend
+    this.nodeUpdatePolicyControl.valueChanges
+      .pipe(debounceTime(500), distinctUntilChanged())
+      .subscribe(value => this.updateNodeUpdatePolicy(value))
+
     await this.loadInstalledPlugins()
     this.loading = false
+  }
+
+  public async updateNodeUpdatePolicy(value: 'all' | 'none' | 'major') {
+    try {
+      await firstValueFrom(this.$api.put('/config-editor/ui/plugins/node-update-policy', {
+        body: value,
+      }))
+
+      // Update the local settings cache
+      if (!this.$settings.env.plugins) {
+        this.$settings.env.plugins = {}
+      }
+      this.$settings.env.plugins.nodeUpdatePolicy = value
+
+      // Clear the backend cache so the new policy is applied
+      if (this.statusIo) {
+        await firstValueFrom(this.statusIo.request('clear-nodejs-version-cache'))
+      }
+
+      // Call the onUpdate callback if provided to refresh the widget
+      if (this.onUpdate) {
+        await this.onUpdate()
+      }
+
+      // Show success toast
+      this.$toastr.success(
+        this.$translate.instant('config.config_saved'),
+        this.$translate.instant('toast.title_success'),
+      )
+    } catch (error) {
+      console.error(error)
+      this.$toastr.error(
+        this.$translate.instant('config.toast_failed_to_save_config'),
+        this.$translate.instant('toast.title_error'),
+      )
+      // Revert the form control on error
+      this.nodeUpdatePolicyControl.setValue(this.$settings.env.plugins?.nodeUpdatePolicy || 'all', { emitEvent: false })
+    }
   }
 
   public dismissModal() {

@@ -116,6 +116,11 @@ export class UpdateInfoWidgetComponent implements OnInit {
     ref.componentInstance.homebridgePkg = this.homebridgePkg
     ref.componentInstance.architecture = this.nodejsInfo.architecture
     ref.componentInstance.supportsNodeJs24 = this.nodejsInfo.supportsNodeJs24
+    ref.componentInstance.statusIo = this.io
+    ref.componentInstance.onUpdate = async () => {
+      // Reload to refresh the widget display
+      await this.getNodeInfo()
+    }
   }
 
   public readyForV2Modal() {
@@ -152,6 +157,20 @@ export class UpdateInfoWidgetComponent implements OnInit {
     try {
       this.serverInfo = await firstValueFrom(this.io.request('get-homebridge-server-info'))
       this.nodejsInfo = await firstValueFrom(this.io.request('nodejs-version-check'))
+
+      // Apply frontend policy check to handle cached backend responses
+      // This ensures the UI reflects policy changes even if backend data is cached
+      const policy = this.$settings.env.plugins?.nodeUpdatePolicy || 'all'
+      if (policy === 'none') {
+        this.nodejsInfo.updateAvailable = false
+      } else if (policy === 'major' && this.nodejsInfo.updateAvailable) {
+        const currentMajor = Number.parseInt(this.serverInfo.nodeVersion.split('.')[0].replace('v', ''), 10)
+        const latestMajor = Number.parseInt(this.nodejsInfo.latestVersion.split('.')[0].replace('v', ''), 10)
+        if (latestMajor > currentMajor) {
+          this.nodejsInfo.updateAvailable = false
+        }
+      }
+
       this.nodejsStatusDone = true
     } catch (error) {
       console.error(error)

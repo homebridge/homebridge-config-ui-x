@@ -55,6 +55,7 @@ export interface EnvInterface {
   plugins?: {
     hideUpdatesFor?: string[]
     alwaysShowBetas?: boolean
+    nodeUpdatePolicy?: 'all' | 'none' | 'major'
   }
   scheduledRestartCron?: string | null
   bridges?: BridgeConfig[]

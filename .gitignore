@@ -62,6 +62,7 @@ yarn.lock
 # dotenv environment variables file
 .env
 .DS_Store
+.envrc
 
 # webstorm/intellij
 .idea
@@ -72,3 +73,7 @@ yarn.lock
 
 # test directories
 test/.homebridge*
+
+
+# AI agents
+.claude

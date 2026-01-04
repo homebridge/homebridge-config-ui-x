@@ -434,4 +434,12 @@ export class ConfigService {
 
     return featureFlags
   }
+
+  /**
+   * Get the Node.js update notification policy
+   * @returns 'all' (default), 'none', or 'major'
+   */
+  public getNodeUpdatePolicy(): 'all' | 'none' | 'major' {
+    return this.ui?.plugins?.nodeUpdatePolicy || 'all'
+  }
 }
