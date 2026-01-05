@@ -9,6 +9,7 @@ import { IoNamespace, WsService } from '@/app/core/ws.service'
 
 @Component({
   templateUrl: './hap-qrcode-widget.component.html',
+  styleUrls: ['./hap-qrcode-widget.component.scss'],
   standalone: true,
   imports: [
     NgStyle,
@@ -31,6 +32,7 @@ export class HapQrcodeWidgetComponent implements OnInit {
   public setupUri: string | null = null
   public qrCodeHeight: number
   public qrCodeWidth: number
+  public readonly isIos: boolean = /iPad|iPhone|iPod/.test(navigator?.userAgent || '')
 
   public ngOnInit() {
     this.io = this.$ws.getExistingNamespace('status')

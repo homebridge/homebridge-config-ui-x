@@ -2,11 +2,19 @@
   <div #qrcodecontainer class="drag-handler d-flex flex-column w-100 h-100">
     <div class="w-100" [ngStyle]="{'height.px': qrCodeHeight, 'width.px': qrCodeWidth}">
       <div class="text-center qr-code-container w-100 h-100 p-3">
-        @if (setupUri) {
+        @if (setupUri) { @if (paired || !isIos) {
         <div class="w-100 h-100">
           <app-qrcode [data]="setupUri" class="mx-auto" />
         </div>
-        }
+        } @else {
+        <a
+          [href]="setupUri"
+          class="d-block w-100 h-100 text-decoration-none qr-code-link"
+          aria-label="Open Home app to pair this bridge"
+        >
+          <app-qrcode [data]="setupUri" class="mx-auto" />
+        </a>
+        } }
       </div>
     </div>
     <div #pincode class="text-center w-100 mt-auto gridster-item-content">

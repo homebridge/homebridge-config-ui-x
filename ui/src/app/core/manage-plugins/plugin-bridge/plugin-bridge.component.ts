@@ -67,6 +67,7 @@ export class PluginBridgeComponent implements OnInit {
   public readonly linkChildBridges = '<a href="https://github.com/homebridge/homebridge/wiki/Child-Bridges" target="_blank"><i class="fas fa-external-link-alt primary-text"></i></a>'
   public readonly linkDebug = '<a href="https://github.com/homebridge/homebridge-config-ui-x/wiki/Debug-Common-Values" target="_blank"><i class="fa fa-external-link-alt primary-text"></i></a>'
   public readonly linkCron = '<a href="https://crontab.guru/" target="_blank" rel="noopener noreferrer"><i class="fa fa-external-link-alt primary-text"></i></a>'
+  public readonly isIos: boolean = /iPad|iPhone|iPod/.test(navigator?.userAgent || '')
 
   public async ngOnInit(): Promise<void> {
     await Promise.all([this.getPluginType(), this.loadPluginConfig(), this.loadBridgeConfigs()])

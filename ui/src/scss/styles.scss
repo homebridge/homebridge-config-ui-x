@@ -31,6 +31,7 @@ $image-path: '../../img';
 @import './components/json-schema-form.scss';
 @import './components/sliding-checkbox.scss';
 @import './components/custom-icons.scss';
+@import './components/qr-code.scss';
 
 @import './components/widgets.scss';
 @import './components/terminal.scss';
@@ -44,6 +45,7 @@ $image-path: '../../img';
   from {
     transform: translate(-50%, -50%) rotate(360deg);
   }
+
   to {
     transform: translate(-50%, -50%) rotate(0deg);
   }
