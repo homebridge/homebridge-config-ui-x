@@ -983,6 +983,27 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
                             },
                           },
                         },
+                        nodeUpdatePolicy: {
+                          type: 'string',
+                          title: this.$translate.instant('status.widget.node_update_policy'),
+                          description: 'Controls when Node.js update notifications are shown.',
+                          default: 'all',
+                          enum: ['all', 'major', 'none'],
+                          oneOf: [
+                            {
+                              title: this.$translate.instant('status.widget.node_update_policy_all'),
+                              const: 'all',
+                            },
+                            {
+                              title: this.$translate.instant('status.widget.node_update_policy_major'),
+                              const: 'major',
+                            },
+                            {
+                              title: this.$translate.instant('status.widget.node_update_policy_none'),
+                              const: 'none',
+                            },
+                          ],
+                        },
                         bridges: {
                           type: 'array',
                           title: this.$translate.instant('child_bridge.bridges'),

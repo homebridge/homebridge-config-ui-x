@@ -313,6 +313,32 @@ export class ConfigEditorService {
   /**
    * Set a specific property for the Homebridge UI
    */
+  /**
+   * Get a property from the UI config
+   */
+  public async getPropertyForUi(property: string) {
+    // 1. Get the current config for the Homebridge UI
+    const config = await this.getConfigFile()
+    const pluginConfig = config.platforms.find(x => x.platform === 'config')
+
+    // 2. Get the property value, supporting dot notation for nested properties
+    if (property.includes('.')) {
+      const properties = property.split('.')
+      let current = pluginConfig
+
+      for (const prop of properties) {
+        if (current && typeof current === 'object') {
+          current = current[prop]
+        } else {
+          return undefined
+        }
+      }
+      return current
+    }
+
+    return pluginConfig?.[property]
+  }
+
   public async setPropertyForUi(property: string, value: any) {
     // Cannot update the platform property
     if (property === 'platform') {
@@ -405,43 +431,6 @@ export class ConfigEditorService {
       .map(x => x.trim().toLowerCase())
 
     // 3. Clean and save the UI config block
-    config.platforms[config.platforms.findIndex(x => x.platform === 'config')] = this.cleanUpUiConfig(pluginConfig)
-    await this.updateConfigFile(config)
-  }
-
-  /**
-   * Get the Node.js update notification policy
-   */
-  public async getNodeUpdatePolicy(): Promise<string> {
-    // 1. Get the current config for the Homebridge UI
-    const config = await this.getConfigFile()
-    const pluginConfig = config.platforms.find(x => x.platform === 'config')
-
-    // 2. Return the nodeUpdatePolicy setting or 'all' if not set
-    return pluginConfig?.plugins?.nodeUpdatePolicy || 'all'
-  }
-
-  /**
-   * Set the Node.js update notification policy
-   */
-  public async setNodeUpdatePolicy(value: string) {
-    // 1. Get the current config for the Homebridge UI
-    const config = await this.getConfigFile()
-    const pluginConfig = config.platforms.find(x => x.platform === 'config')
-
-    // 2. Validate the value
-    const validValues = ['all', 'none', 'major']
-    if (!validValues.includes(value)) {
-      value = 'all'
-    }
-
-    // 3. Ensure the plugins object exists and set the nodeUpdatePolicy property
-    if (!pluginConfig.plugins) {
-      pluginConfig.plugins = {}
-    }
-    pluginConfig.plugins.nodeUpdatePolicy = value
-
-    // 4. Clean and save the UI config block
     config.platforms[config.platforms.findIndex(x => x.platform === 'config')] = this.cleanUpUiConfig(pluginConfig)
     await this.updateConfigFile(config)
   }

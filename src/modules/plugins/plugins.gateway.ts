@@ -5,6 +5,7 @@ import { SubscribeMessage, WebSocketGateway, WsException } from '@nestjs/websock
 import { red } from 'bash-color'
 
 import { WsAdminGuard } from '../../core/auth/guards/ws-admin-guard.js'
+import { devServerCorsConfig } from '../../core/cors.config.js'
 import { Logger } from '../../core/logger/logger.service.js'
 import { HomebridgeUpdateActionDto, PluginActionDto } from './plugins.dto.js'
 import { PluginsService } from './plugins.service.js'
@@ -13,10 +14,7 @@ import { PluginsService } from './plugins.service.js'
 @WebSocketGateway({
   namespace: '/plugins',
   allowEIO3: true,
-  cors: {
-    origin: ['http://localhost:8080', 'http://localhost:4200'],
-    credentials: true,
-  },
+  cors: devServerCorsConfig,
 })
 @UsePipes(new ValidationPipe({
   whitelist: true,

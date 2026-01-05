@@ -440,6 +440,6 @@ export class ConfigService {
    * @returns 'all' (default), 'none', or 'major'
    */
   public getNodeUpdatePolicy(): 'all' | 'none' | 'major' {
-    return this.ui?.plugins?.nodeUpdatePolicy || 'all'
+    return this.ui?.nodeUpdatePolicy || 'all'
   }
 }

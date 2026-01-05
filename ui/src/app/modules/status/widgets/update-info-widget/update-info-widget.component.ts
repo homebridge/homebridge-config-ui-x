@@ -160,7 +160,7 @@ export class UpdateInfoWidgetComponent implements OnInit {
 
       // Apply frontend policy check to handle cached backend responses
       // This ensures the UI reflects policy changes even if backend data is cached
-      const policy = this.$settings.env.plugins?.nodeUpdatePolicy || 'all'
+      const policy = this.$settings.env.nodeUpdatePolicy || 'all'
       if (policy === 'none') {
         this.nodejsInfo.updateAvailable = false
       } else if (policy === 'major' && this.nodejsInfo.updateAvailable) {

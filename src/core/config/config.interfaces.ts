@@ -111,8 +111,8 @@ export interface HomebridgeUiConfig {
   plugins?: {
     hideUpdatesFor?: string[]
     alwaysShowBetas?: boolean
-    nodeUpdatePolicy?: 'all' | 'none' | 'major'
   }
+  nodeUpdatePolicy?: 'all' | 'none' | 'major'
   scheduledRestartCron?: string
   bridges?: HomebridgeUiBridgeConfig[]
   temp?: string

@@ -16,6 +16,7 @@ import { Bonjour } from 'bonjour-service'
 import { AppModule } from './app.module.js'
 import { ConfigService } from './core/config/config.service.js'
 import { getStartupConfig } from './core/config/config.startup.js'
+import { devServerCorsConfig } from './core/cors.config.js'
 import { Logger } from './core/logger/logger.service.js'
 import { SpaFilter } from './core/spa/spa.filter.js'
 
@@ -111,7 +112,7 @@ async function bootstrap(): Promise<NestFastifyApplication> {
 
   // (9) Set up cors
   app.enableCors({
-    origin: ['http://localhost:8080', 'http://localhost:4200'],
+    ...devServerCorsConfig,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
   })
 

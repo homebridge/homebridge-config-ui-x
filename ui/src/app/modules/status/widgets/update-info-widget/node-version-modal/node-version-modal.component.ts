@@ -46,7 +46,7 @@ export class NodeVersionModalComponent implements OnInit {
 
   public async ngOnInit() {
     // Initialize the node update policy value
-    this.nodeUpdatePolicyControl.setValue(this.$settings.env.plugins?.nodeUpdatePolicy || 'all')
+    this.nodeUpdatePolicyControl.setValue(this.$settings.env.nodeUpdatePolicy || 'all')
 
     // Watch for changes and update the backend
     this.nodeUpdatePolicyControl.valueChanges
@@ -57,17 +57,19 @@ export class NodeVersionModalComponent implements OnInit {
     this.loading = false
   }
 
+  public selectPolicy(value: 'all' | 'none' | 'major') {
+    this.nodeUpdatePolicyControl.setValue(value)
+  }
+
   public async updateNodeUpdatePolicy(value: 'all' | 'none' | 'major') {
     try {
-      await firstValueFrom(this.$api.put('/config-editor/ui/plugins/node-update-policy', {
-        body: value,
+      await firstValueFrom(this.$api.put('/config-editor/ui', {
+        key: 'nodeUpdatePolicy',
+        value,
       }))
 
       // Update the local settings cache
-      if (!this.$settings.env.plugins) {
-        this.$settings.env.plugins = {}
-      }
-      this.$settings.env.plugins.nodeUpdatePolicy = value
+      this.$settings.env.nodeUpdatePolicy = value
 
       // Clear the backend cache so the new policy is applied
       if (this.statusIo) {
@@ -91,7 +93,7 @@ export class NodeVersionModalComponent implements OnInit {
         this.$translate.instant('toast.title_error'),
       )
       // Revert the form control on error
-      this.nodeUpdatePolicyControl.setValue(this.$settings.env.plugins?.nodeUpdatePolicy || 'all', { emitEvent: false })
+      this.nodeUpdatePolicyControl.setValue(this.$settings.env.nodeUpdatePolicy || 'all', { emitEvent: false })
     }
   }
 

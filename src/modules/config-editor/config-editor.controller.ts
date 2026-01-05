@@ -92,6 +92,14 @@ export class ConfigEditorController {
   }
 
   @UseGuards(AdminGuard)
+  @ApiOperation({ summary: 'Get a config property for the Homebridge UI.' })
+  @ApiParam({ name: 'key', type: 'string', description: 'The property key to retrieve (e.g., "nodeUpdatePolicy")' })
+  @Get('/ui/:key')
+  getPropertyForUi(@Param('key') key: string) {
+    return this.configEditorService.getPropertyForUi(key)
+  }
+
+  @UseGuards(AdminGuard)
   @ApiOperation({ summary: 'Update a config property for the Homebridge UI.' })
   @Put('/ui')
   setPropertyForUi(@Body() { key, value }) {
@@ -119,21 +127,6 @@ export class ConfigEditorController {
   @ApiBody({ description: 'Array of plugin names to hide updates for in the UI.', type: 'json', isArray: true })
   setPluginsHideUpdatesFor(@Body() { body }) {
     return this.configEditorService.setPluginsHideUpdatesFor(body)
-  }
-
-  @UseGuards(AdminGuard)
-  @Get('/ui/plugins/node-update-policy')
-  @ApiOperation({ summary: 'Get the Node.js update notification policy.' })
-  getNodeUpdatePolicy(): Promise<string> {
-    return this.configEditorService.getNodeUpdatePolicy()
-  }
-
-  @UseGuards(AdminGuard)
-  @Put('/ui/plugins/node-update-policy')
-  @ApiOperation({ summary: 'Update the Node.js update notification policy.' })
-  @ApiBody({ description: 'Node.js update policy: "all" (default), "none", or "major" (hide major version updates).', type: 'string' })
-  setNodeUpdatePolicy(@Body() { body }) {
-    return this.configEditorService.setNodeUpdatePolicy(body)
   }
 
   @UseGuards(AdminGuard)

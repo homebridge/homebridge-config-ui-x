@@ -2,6 +2,7 @@ import { Inject, UseGuards } from '@nestjs/common'
 import { SubscribeMessage, WebSocketGateway, WsException } from '@nestjs/websockets'
 
 import { WsGuard } from '../../core/auth/guards/ws.guard.js'
+import { devServerCorsConfig } from '../../core/cors.config.js'
 import { PluginsService } from '../plugins/plugins.service.js'
 import { StatusService } from './status.service.js'
 
@@ -9,10 +10,7 @@ import { StatusService } from './status.service.js'
 @WebSocketGateway({
   namespace: 'status',
   allowEIO3: true,
-  cors: {
-    origin: ['http://localhost:8080', 'http://localhost:4200'],
-    credentials: true,
-  },
+  cors: devServerCorsConfig,
 })
 export class StatusGateway {
   constructor(
