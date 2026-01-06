@@ -6,6 +6,7 @@ import {
   Delete,
   Get,
   HttpCode,
+  HttpException,
   Inject,
   InternalServerErrorException,
   Param,
@@ -283,6 +284,97 @@ export class ServerController {
     } catch (err) {
       this.logger.error(`Wallpaper upload failed as ${err.message}`)
       throw new InternalServerErrorException(err.message)
+    }
+  }
+
+  @UseGuards(AdminGuard)
+  @Post('/ssl/keycert')
+  @ApiOperation({ summary: 'Upload a PEM private key and certificate, validate, and save to storage, updating config.' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        key: { type: 'string', format: 'binary' },
+        cert: { type: 'string', format: 'binary' },
+        files: { type: 'string', format: 'binary', description: 'Alternatively, submit both files as multiple parts with field name "files"' },
+      },
+    },
+  })
+  async uploadSslKeyCert(@Req() req: FastifyRequest) {
+    try {
+      return await this.serverService.uploadSslKeyCert(req)
+    } catch (err) {
+      if (err instanceof HttpException) {
+        throw err
+      }
+      this.logger.error(`SSL key/cert upload failed as ${(err as Error)?.message}`)
+      throw new InternalServerErrorException((err as Error)?.message)
+    }
+  }
+
+  @UseGuards(AdminGuard)
+  @Post('/ssl/pfx')
+  @ApiOperation({ summary: 'Upload a PKCS#12 (PFX/P12) file with passphrase, validate, and save to storage, updating config.' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        pfx: { type: 'string', format: 'binary' },
+        passphrase: { type: 'string' },
+      },
+      required: ['pfx'],
+    },
+  })
+  async uploadSslPfx(@Req() req: FastifyRequest) {
+    try {
+      return await this.serverService.uploadSslPfx(req)
+    } catch (err) {
+      if (err instanceof HttpException) {
+        throw err
+      }
+      this.logger.error(`SSL pfx upload failed as ${(err as Error)?.message}`)
+      throw new InternalServerErrorException((err as Error)?.message)
+    }
+  }
+
+  @UseGuards(AdminGuard)
+  @Post('/ssl/validate')
+  @ApiOperation({ summary: 'Validate the currently configured SSL settings (key+cert or pfx+passphrase).' })
+  async validateSsl() {
+    try {
+      return await this.serverService.validateCurrentSslConfig()
+    } catch (err) {
+      if (err instanceof HttpException) {
+        throw err
+      }
+      this.logger.error(`SSL validate failed as ${(err as Error)?.message}`)
+      throw new InternalServerErrorException((err as Error)?.message)
+    }
+  }
+
+  @UseGuards(AdminGuard)
+  @Post('/ssl/selfsigned/generate')
+  @ApiOperation({ summary: 'Generate a self-signed certificate and optionally set it as active key/cert in config.' })
+  @ApiBody({
+    schema: {
+      type: 'object',
+      properties: {
+        hostnames: { type: 'array', items: { type: 'string' } },
+        mode: { type: 'string', enum: ['selfsigned', 'keycert'], default: 'keycert' },
+      },
+    },
+  })
+  async generateSelfSigned(@Body() body: { hostnames?: string[], mode?: 'selfsigned' | 'keycert' }) {
+    try {
+      return await this.serverService.generateSelfSignedCertificate(body)
+    } catch (err) {
+      if (err instanceof HttpException) {
+        throw err
+      }
+      this.logger.error(`Generate self-signed certificate failed as ${(err as Error)?.message}`)
+      throw new InternalServerErrorException((err as Error)?.message)
     }
   }
 

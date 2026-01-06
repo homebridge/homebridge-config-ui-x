@@ -8,6 +8,7 @@ import process from 'node:process'
 import { readJson } from 'fs-extra/esm'
 
 import { Logger } from '../logger/logger.service.js'
+import { SslCertGeneratorService } from '../ssl/ssl-cert-generator.service.js'
 
 /**
  * Return config required to start the console server
@@ -40,25 +41,44 @@ export async function getStartupConfig() {
   }
 
   // Preload ssl settings
-  if (ui.ssl && ((ui.ssl.key && ui.ssl.cert) || ui.ssl.pfx) && process.env.UIX_DEVELOPMENT !== '1') {
-    for (const attribute of ['key', 'cert', 'pfx']) {
-      if (ui.ssl[attribute]) {
-        if (!(await (stat(ui.ssl[attribute]))).isFile()) {
-          logger.error(`SSL config error: ui.ssl.${attribute}: ${ui.ssl[attribute]} is not a valid file.`)
+  if (ui.ssl && process.env.UIX_DEVELOPMENT !== '1') {
+    // Check if self-signed certificate is enabled
+    if (ui.ssl.selfSigned) {
+      try {
+        const sslCertGenerator = new SslCertGeneratorService()
+        const hostnames = ui.ssl.selfSignedHostnames || ['localhost', '127.0.0.1']
+        const { privateKey, certificate } = await sslCertGenerator.generateOrLoadCertificate(hostnames)
+
+        config.httpsOptions = {
+          key: privateKey,
+          cert: certificate,
+        }
+        logger.log('Self-signed certificate loaded successfully')
+      } catch (e) {
+        logger.error(`Could not generate self-signed certificate: ${e.message}`)
+        logger.error(e)
+      }
+    } else if ((ui.ssl.key && ui.ssl.cert) || ui.ssl.pfx) {
+      // Traditional file-based SSL
+      for (const attribute of ['key', 'cert', 'pfx']) {
+        if (ui.ssl[attribute]) {
+          if (!(await (stat(ui.ssl[attribute]))).isFile()) {
+            logger.error(`SSL config error: ui.ssl.${attribute}: ${ui.ssl[attribute]} is not a valid file.`)
+          }
         }
       }
-    }
 
-    try {
-      config.httpsOptions = {
-        key: ui.ssl.key ? await readFile(ui.ssl.key) : undefined,
-        cert: ui.ssl.cert ? await readFile(ui.ssl.cert) : undefined,
-        pfx: ui.ssl.pfx ? await readFile(ui.ssl.pfx) : undefined,
-        passphrase: ui.ssl.passphrase,
+      try {
+        config.httpsOptions = {
+          key: ui.ssl.key ? await readFile(ui.ssl.key) : undefined,
+          cert: ui.ssl.cert ? await readFile(ui.ssl.cert) : undefined,
+          pfx: ui.ssl.pfx ? await readFile(ui.ssl.pfx) : undefined,
+          passphrase: ui.ssl.passphrase,
+        }
+      } catch (e) {
+        logger.error(`Could not start server with SSL enabled as ${e.message}.`)
+        logger.error(e)
       }
-    } catch (e) {
-      logger.error(`Could not start server with SSL enabled as ${e.message}.`)
-      logger.error(e)
     }
   }
 

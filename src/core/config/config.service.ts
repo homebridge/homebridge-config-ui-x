@@ -208,6 +208,8 @@ export class ConfigService {
           cert: this.ui.ssl?.cert,
           pfx: this.ui.ssl?.pfx,
           passphrase: this.ui.ssl?.passphrase,
+          selfSigned: this.ui.ssl?.selfSigned,
+          selfSignedHostnames: this.ui.ssl?.selfSignedHostnames,
         },
         accessoryControl: {
           debug: this.ui.accessoryControl?.debug,
