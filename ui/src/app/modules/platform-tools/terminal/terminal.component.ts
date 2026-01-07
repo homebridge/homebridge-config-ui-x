@@ -77,13 +77,23 @@ export class TerminalComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Start or reconnect to the terminal based on current persistence state
     if (this.$settings.env.terminal?.persistence && this.$terminal.hasActiveSession()) {
-      this.$terminal.reconnectTerminal(this.termTarget(), {}, this.resizeEvent)
+      this.$terminal.reconnectTerminal(this.termTarget(), {
+        allowProposedApi: true,
+        allowTransparency: true,
+        fontSize: 13,
+        lineHeight: 1.2,
+      }, this.resizeEvent)
     } else {
       // If persistence is disabled but there's still an active session, destroy it first
       if (!this.$settings.env.terminal?.persistence && this.$terminal.hasActiveSession()) {
         this.$terminal.destroyPersistentSession()
       }
-      this.$terminal.startTerminal(this.termTarget(), {}, this.resizeEvent)
+      this.$terminal.startTerminal(this.termTarget(), {
+        allowProposedApi: true,
+        allowTransparency: true,
+        fontSize: 13,
+        lineHeight: 1.2,
+      }, this.resizeEvent)
     }
 
     // Set focus to the terminal after a delay to ensure it's initialized

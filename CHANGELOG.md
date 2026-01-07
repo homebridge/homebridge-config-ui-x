@@ -13,6 +13,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - open accessory info on tile loading icon click
 - first step of improvements to https settings (@donavanbecker)
 - improvements for homebridge v2
+- upgrade `xterm` to `v6` + style improvements
 
 ### Other Changes
 

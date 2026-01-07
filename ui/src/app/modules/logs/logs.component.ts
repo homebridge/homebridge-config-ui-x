@@ -77,6 +77,9 @@ export class LogsComponent implements OnInit, OnDestroy, CanComponentDeactivate 
     // Start the terminal
     this.$log.startTerminal(this.termTarget(), {
       allowProposedApi: true,
+      allowTransparency: true,
+      fontSize: 13,
+      lineHeight: 1.2,
     }, this.resizeEvent)
 
     // Watch for changes in the search query

@@ -137,7 +137,12 @@ export class PluginLogsComponent implements OnInit, OnDestroy {
     this.$api.get(`/config-editor/plugin/${encodeURIComponent(this.plugin.name)}`).subscribe({
       next: (result) => {
         this.pluginAlias = this.plugin.name === 'homebridge-config-ui-x' ? 'Homebridge UI' : (result[0]?.name || this.plugin.name)
-        this.$log.startTerminal(this.termTarget(), {}, this.resizeEvent, this.pluginAlias)
+        this.$log.startTerminal(this.termTarget(), {
+          allowProposedApi: true,
+          allowTransparency: true,
+          fontSize: 13,
+          lineHeight: 1.2,
+        }, this.resizeEvent, this.pluginAlias)
       },
       error: (error) => {
         console.error(error)

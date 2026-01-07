@@ -57,7 +57,7 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
   private $ws = inject(WsService)
   private io: IoNamespace
   private toastSuccess: string
-  private term = new Terminal()
+  private term: Terminal
   private termTarget: HTMLElement
   private fitAddon = new FitAddon()
   private webLinksAddon = new WebLinksAddon()
@@ -101,6 +101,15 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
   public downloadingBackup = false
 
   constructor() {
+    this.term = new Terminal({
+      theme: {
+        background: '#00000000',
+      },
+      allowProposedApi: true,
+      allowTransparency: true,
+      fontSize: 13,
+      lineHeight: 1.2,
+    })
     this.term.loadAddon(this.fitAddon)
     this.term.loadAddon(this.webLinksAddon)
   }

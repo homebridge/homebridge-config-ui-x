@@ -4,6 +4,7 @@ import { Router } from '@angular/router'
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { FitAddon } from '@xterm/addon-fit'
+import { WebLinksAddon } from '@xterm/addon-web-links'
 import { Terminal } from '@xterm/xterm'
 import { ToastrService } from 'ngx-toastr'
 
@@ -25,9 +26,10 @@ export class RestoreComponent implements OnInit, OnDestroy {
   private $translate = inject(TranslateService)
   private $ws = inject(WsService)
   private io: IoNamespace
-  private term = new Terminal()
+  private term: Terminal
   private termTarget: HTMLElement
   private fitAddon = new FitAddon()
+  private webLinksAddon = new WebLinksAddon()
 
   @Input() setupWizardRestore = false
   @Input() selectedBackup: { id: any, fileName: string } = null
@@ -44,6 +46,17 @@ export class RestoreComponent implements OnInit, OnDestroy {
   public async ngOnInit() {
     this.io = this.$ws.connectToNamespace('backup')
     this.termTarget = document.getElementById('plugin-log-output')
+    this.term = new Terminal({
+      theme: {
+        background: '#00000000',
+      },
+      allowProposedApi: true,
+      allowTransparency: true,
+      fontSize: 13,
+      lineHeight: 1.2,
+    })
+    this.term.loadAddon(this.fitAddon)
+    this.term.loadAddon(this.webLinksAddon)
     this.term.open(this.termTarget)
     this.fitAddon.fit()
 
