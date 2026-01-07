@@ -217,6 +217,11 @@ export class ConfigService {
           hideUpdatesFor: this.ui.plugins?.hideUpdatesFor || [],
           alwaysShowBetas: Boolean(this.ui.plugins?.alwaysShowBetas),
         },
+        nodeUpdatePolicy: this.ui.nodeUpdatePolicy || 'all',
+        homebridgeHideUpdates: Boolean(this.ui.homebridgeHideUpdates),
+        homebridgeAlwaysShowBetas: Boolean(this.ui.homebridgeAlwaysShowBetas),
+        homebridgeUiHideUpdates: Boolean(this.ui.homebridgeUiHideUpdates),
+        homebridgeUiAlwaysShowBetas: Boolean(this.ui.homebridgeUiAlwaysShowBetas),
         scheduledRestartCron: this.ui.scheduledRestartCron || null,
         bridges: this.ui.bridges || [],
         linux: {

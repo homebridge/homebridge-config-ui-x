@@ -1004,6 +1004,26 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
                             },
                           ],
                         },
+                        homebridgeHideUpdates: {
+                          type: 'boolean',
+                          title: `${this.$translate.instant('plugins.manage.hide_updates')} (Homebridge)`,
+                          description: 'Hide Homebridge update notifications.',
+                        },
+                        homebridgeAlwaysShowBetas: {
+                          type: 'boolean',
+                          title: `${this.$translate.instant('settings.display.show_betas')} (Homebridge)`,
+                          description: 'Show beta releases as available updates for Homebridge.',
+                        },
+                        homebridgeUiHideUpdates: {
+                          type: 'boolean',
+                          title: `${this.$translate.instant('plugins.manage.hide_updates')} (Homebridge UI)`,
+                          description: 'Hide Homebridge UI update notifications.',
+                        },
+                        homebridgeUiAlwaysShowBetas: {
+                          type: 'boolean',
+                          title: `${this.$translate.instant('settings.display.show_betas')} (Homebridge UI)`,
+                          description: 'Show beta releases as available updates for Homebridge UI.',
+                        },
                         bridges: {
                           type: 'array',
                           title: this.$translate.instant('child_bridge.bridges'),

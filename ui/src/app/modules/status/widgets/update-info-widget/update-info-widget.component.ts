@@ -15,19 +15,19 @@ import { SettingsService } from '@/app/core/settings.service'
 import { IoNamespace, WsService } from '@/app/core/ws.service'
 import { HbV2ModalComponent } from '@/app/modules/status/widgets/update-info-widget/hb-v2-modal/hb-v2-modal.component'
 import { NodeVersionModalComponent } from '@/app/modules/status/widgets/update-info-widget/node-version-modal/node-version-modal.component'
-import { DockerDetails, NodeJsInfo, ServerInfo, Widget } from '@/app/modules/status/widgets/widgets.interfaces'
+import {
+  DockerDetails,
+  NodeJsInfo,
+  ServerInfo,
+  Widget,
+} from '@/app/modules/status/widgets/widgets.interfaces'
 import { environment } from '@/environments/environment'
 
 @Component({
   templateUrl: './update-info-widget.component.html',
   styleUrls: ['./update-info-widget.component.scss'],
   standalone: true,
-  imports: [
-    NgClass,
-    TranslatePipe,
-    RouterLink,
-    NgbTooltip,
-  ],
+  imports: [NgClass, TranslatePipe, RouterLink, NgbTooltip],
 })
 export class UpdateInfoWidgetComponent implements OnInit {
   private $api = inject(ApiService)
@@ -93,8 +93,12 @@ export class UpdateInfoWidgetComponent implements OnInit {
       const allHb2Ready = installedPlugins
         .filter((x: any) => x.name !== 'homebridge-config-ui-x')
         .every((x: any) => {
-          const hbEngines = x.engines?.homebridge?.split('||').map((s: string) => s.trim()) || []
-          return hbEngines.some((v: string) => v.startsWith('^2') || v.startsWith('>=2'))
+          const hbEngines
+            = x.engines?.homebridge?.split('||').map((s: string) => s.trim())
+              || []
+          return hbEngines.some(
+            (v: string) => v.startsWith('^2') || v.startsWith('>=2'),
+          )
         })
 
       this.isHbV2Ready = this.isHbV2Ready && allHb2Ready
@@ -110,9 +114,12 @@ export class UpdateInfoWidgetComponent implements OnInit {
 
     ref.componentInstance.nodeVersion = this.serverInfo.nodeVersion
     ref.componentInstance.latestVersion = compareVersion
-    ref.componentInstance.showNodeUnsupportedWarning = this.nodejsInfo.showNodeUnsupportedWarning
-    ref.componentInstance.homebridgeRunningInSynologyPackage = this.serverInfo.homebridgeRunningInSynologyPackage
-    ref.componentInstance.homebridgeRunningInDocker = this.serverInfo.homebridgeRunningInDocker
+    ref.componentInstance.showNodeUnsupportedWarning
+      = this.nodejsInfo.showNodeUnsupportedWarning
+    ref.componentInstance.homebridgeRunningInSynologyPackage
+      = this.serverInfo.homebridgeRunningInSynologyPackage
+    ref.componentInstance.homebridgeRunningInDocker
+      = this.serverInfo.homebridgeRunningInDocker
     ref.componentInstance.homebridgePkg = this.homebridgePkg
     ref.componentInstance.architecture = this.nodejsInfo.architecture
     ref.componentInstance.supportsNodeJs24 = this.nodejsInfo.supportsNodeJs24
@@ -133,7 +140,15 @@ export class UpdateInfoWidgetComponent implements OnInit {
   }
 
   public installAlternateVersion(pkg: Plugin) {
-    this.$plugin.installAlternateVersion(pkg)
+    // Pass a callback to refresh the widget when settings change
+    const onSettingsChange = async () => {
+      if (pkg.name === 'homebridge') {
+        await this.checkHomebridgeVersion()
+      } else if (pkg.name === 'homebridge-config-ui-x') {
+        await this.checkHomebridgeUiVersion()
+      }
+    }
+    this.$plugin.installAlternateVersion(pkg, onSettingsChange)
   }
 
   public updatePackage(pkg: Plugin) {
@@ -142,21 +157,35 @@ export class UpdateInfoWidgetComponent implements OnInit {
 
   private async checkHomebridgeVersion() {
     try {
-      const response = await firstValueFrom(this.io.request('homebridge-version-check'))
+      const response = await firstValueFrom(
+        this.io.request('homebridge-version-check'),
+      )
       this.homebridgePkg = response
       this.homebridgePkg.displayName = 'Homebridge'
       this.$settings.env.homebridgeVersion = response.installedVersion
       this.isRunningHbV2 = response.installedVersion.startsWith('2.')
+
+      // Apply hide updates setting for Homebridge
+      if (this.$settings.env.homebridgeHideUpdates) {
+        this.homebridgePkg.updateAvailable = false
+      }
     } catch (error) {
       console.error(error)
-      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      this.$toastr.error(
+        error.message,
+        this.$translate.instant('toast.title_error'),
+      )
     }
   }
 
   private async getNodeInfo() {
     try {
-      this.serverInfo = await firstValueFrom(this.io.request('get-homebridge-server-info'))
-      this.nodejsInfo = await firstValueFrom(this.io.request('nodejs-version-check'))
+      this.serverInfo = await firstValueFrom(
+        this.io.request('get-homebridge-server-info'),
+      )
+      this.nodejsInfo = await firstValueFrom(
+        this.io.request('nodejs-version-check'),
+      )
 
       // Apply frontend policy check to handle cached backend responses
       // This ensures the UI reflects policy changes even if backend data is cached
@@ -164,8 +193,14 @@ export class UpdateInfoWidgetComponent implements OnInit {
       if (policy === 'none') {
         this.nodejsInfo.updateAvailable = false
       } else if (policy === 'major' && this.nodejsInfo.updateAvailable) {
-        const currentMajor = Number.parseInt(this.serverInfo.nodeVersion.split('.')[0].replace('v', ''), 10)
-        const latestMajor = Number.parseInt(this.nodejsInfo.latestVersion.split('.')[0].replace('v', ''), 10)
+        const currentMajor = Number.parseInt(
+          this.serverInfo.nodeVersion.split('.')[0].replace('v', ''),
+          10,
+        )
+        const latestMajor = Number.parseInt(
+          this.nodejsInfo.latestVersion.split('.')[0].replace('v', ''),
+          10,
+        )
         if (latestMajor > currentMajor) {
           this.nodejsInfo.updateAvailable = false
         }
@@ -174,44 +209,70 @@ export class UpdateInfoWidgetComponent implements OnInit {
       this.nodejsStatusDone = true
     } catch (error) {
       console.error(error)
-      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      this.$toastr.error(
+        error.message,
+        this.$translate.instant('toast.title_error'),
+      )
     }
   }
 
   private async checkHomebridgeUiVersion() {
     try {
-      const response = await firstValueFrom(this.io.request('homebridge-ui-version-check'))
+      const response = await firstValueFrom(
+        this.io.request('homebridge-ui-version-check'),
+      )
       this.homebridgeUiPkg = response
       this.$settings.env.homebridgeUiVersion = response.installedVersion
       if (!environment.production) {
         this.homebridgeUiPkg.updateAvailable = false
       }
+
+      // Apply hide updates setting for Homebridge UI
+      if (this.$settings.env.homebridgeUiHideUpdates) {
+        this.homebridgeUiPkg.updateAvailable = false
+      }
     } catch (error) {
       console.error(error)
-      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      this.$toastr.error(
+        error.message,
+        this.$translate.instant('toast.title_error'),
+      )
     }
   }
 
   private async getOutOfDatePlugins() {
     try {
-      const outOfDatePlugins = await firstValueFrom(this.io.request('get-out-of-date-plugins'))
-      this.homebridgePluginStatus = outOfDatePlugins
-        .filter((x: any) => x.name !== 'homebridge-config-ui-x' && !this.$settings.env.plugins?.hideUpdatesFor?.includes(x.name))
+      const outOfDatePlugins = await firstValueFrom(
+        this.io.request('get-out-of-date-plugins'),
+      )
+      this.homebridgePluginStatus = outOfDatePlugins.filter(
+        (x: any) =>
+          x.name !== 'homebridge-config-ui-x'
+          && !this.$settings.env.plugins?.hideUpdatesFor?.includes(x.name),
+      )
       this.homebridgePluginStatusDone = true
     } catch (error) {
       console.error(error)
-      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      this.$toastr.error(
+        error.message,
+        this.$translate.instant('toast.title_error'),
+      )
     }
   }
 
   private async getDockerInfo() {
     if (this.serverInfo?.homebridgeRunningInDocker) {
       try {
-        this.dockerInfo = await firstValueFrom(this.io.request('docker-version-check'))
+        this.dockerInfo = await firstValueFrom(
+          this.io.request('docker-version-check'),
+        )
         this.dockerStatusDone = true
       } catch (error) {
         console.error(error)
-        this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+        this.$toastr.error(
+          error.message,
+          this.$translate.instant('toast.title_error'),
+        )
       }
     } else {
       this.dockerStatusDone = true
@@ -229,14 +290,22 @@ export class UpdateInfoWidgetComponent implements OnInit {
       backdrop: 'static',
     })
 
-    ref.componentInstance.title = this.$translate.instant('status.widget.info.docker_update_title')
-    ref.componentInstance.message = this.$translate.instant('status.widget.info.docker_update_message')
+    ref.componentInstance.title = this.$translate.instant(
+      'status.widget.info.docker_update_title',
+    )
+    ref.componentInstance.message = this.$translate.instant(
+      'status.widget.info.docker_update_message',
+    )
     ref.componentInstance.markdownMessage2 = this.dockerInfo.latestReleaseBody
-    ref.componentInstance.subtitle = (this.dockerInfo.currentVersion && this.dockerInfo.latestVersion)
-      ? `${this.dockerInfo.currentVersion} &rarr; ${this.dockerInfo.latestVersion}`
-      : this.$translate.instant('accessories.control.unknown')
-    ref.componentInstance.ctaButtonLabel = this.$translate.instant('form.button_more_info')
+    ref.componentInstance.subtitle
+      = this.dockerInfo.currentVersion && this.dockerInfo.latestVersion
+        ? `${this.dockerInfo.currentVersion} &rarr; ${this.dockerInfo.latestVersion}`
+        : this.$translate.instant('accessories.control.unknown')
+    ref.componentInstance.ctaButtonLabel = this.$translate.instant(
+      'form.button_more_info',
+    )
     ref.componentInstance.faIconClass = 'fab fa-docker primary-text'
-    ref.componentInstance.ctaButtonLink = 'https://github.com/homebridge/docker-homebridge/wiki/How-To-Update-Docker-Homebridge'
+    ref.componentInstance.ctaButtonLink
+      = 'https://github.com/homebridge/docker-homebridge/wiki/How-To-Update-Docker-Homebridge'
   }
 }

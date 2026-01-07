@@ -57,6 +57,10 @@ export interface EnvInterface {
     alwaysShowBetas?: boolean
   }
   nodeUpdatePolicy?: 'all' | 'none' | 'major'
+  homebridgeHideUpdates?: boolean
+  homebridgeAlwaysShowBetas?: boolean
+  homebridgeUiHideUpdates?: boolean
+  homebridgeUiAlwaysShowBetas?: boolean
   scheduledRestartCron?: string | null
   bridges?: BridgeConfig[]
   linux?: {

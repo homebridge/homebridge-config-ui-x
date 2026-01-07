@@ -250,7 +250,10 @@
       </li>
       } @if (!isItemHidden('setting-betas')) {
       <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
-        {{ 'settings.display.show_betas' | translate }}
+        <div class="text-start">
+          {{ 'settings.display.show_betas' | translate }}<br />
+          <span class="grey-text small">{{ 'settings.display.show_betas_desc' | translate }}</span>
+        </div>
         <div class="d-flex align-items-center">
           <div class="order-1 order-md-2">
             <input
