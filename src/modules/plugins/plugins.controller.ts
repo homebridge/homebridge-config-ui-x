@@ -21,6 +21,14 @@ export class PluginsController {
   }
 
   @UseGuards(AdminGuard)
+  @ApiOperation({ summary: 'Clear the installed plugins cache.' })
+  @Post('clear-cache')
+  clearPluginsCache() {
+    this.pluginsService.clearInstalledPluginsCache()
+    return { success: true }
+  }
+
+  @UseGuards(AdminGuard)
   @ApiOperation({ summary: 'Search the NPM registry for Homebridge plugins.' })
   @ApiParam({ name: 'query', type: 'string' })
   @Get('search/:query')

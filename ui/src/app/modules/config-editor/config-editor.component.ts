@@ -976,10 +976,15 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
                                 pattern: '^(?:@[\\w-]+(?:\\.[\\w-]+)*/)?homebridge-[\\w-]+$',
                               },
                             },
-                            alwaysShowBetas: {
-                              type: 'boolean',
-                              title: this.$translate.instant('settings.display.show_betas'),
-                              description: 'When enabled, beta releases will be shown as available for Homebridge, the UI and plugins.',
+                            alwaysShowBetasFor: {
+                              type: 'array',
+                              title: 'Prefer Beta Versions For',
+                              description: 'A list of plugin names that should prefer beta releases.',
+                              items: {
+                                type: 'string',
+                                title: this.$translate.instant('accessories.plugin'),
+                                pattern: '^(?:@[\\w-]+(?:\\.[\\w-]+)*/)?homebridge-[\\w-]+$',
+                              },
                             },
                           },
                         },
@@ -1003,6 +1008,26 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
                               const: 'none',
                             },
                           ],
+                        },
+                        homebridgeHideUpdates: {
+                          type: 'boolean',
+                          title: `${this.$translate.instant('plugins.manage.hide_updates')} (Homebridge)`,
+                          description: 'Hide Homebridge update notifications.',
+                        },
+                        homebridgeAlwaysShowBetas: {
+                          type: 'boolean',
+                          title: `${this.$translate.instant('settings.display.show_betas')} (Homebridge)`,
+                          description: 'Show beta releases as available updates for Homebridge.',
+                        },
+                        homebridgeUiHideUpdates: {
+                          type: 'boolean',
+                          title: `${this.$translate.instant('plugins.manage.hide_updates')} (Homebridge UI)`,
+                          description: 'Hide Homebridge UI update notifications.',
+                        },
+                        homebridgeUiAlwaysShowBetas: {
+                          type: 'boolean',
+                          title: `${this.$translate.instant('settings.display.show_betas')} (Homebridge UI)`,
+                          description: 'Show beta releases as available updates for Homebridge UI.',
                         },
                         bridges: {
                           type: 'array',

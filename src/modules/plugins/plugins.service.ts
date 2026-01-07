@@ -740,26 +740,12 @@ export class PluginsService {
       return homebridge
     }
 
-    const homebridgeVersion = parse(homebridge.installedVersion)
-    const installedTag = homebridgeVersion.prerelease[0]?.toString()
-
-    // check for beta updates, if no latest version is available
-    // or if the alwaysShowBetas setting is enabled
-    if (!homebridge.updateAvailable) {
-      const shouldCheckBetas = (installedTag && ['alpha', 'beta', 'test'].includes(installedTag) && gt(homebridge.installedVersion, homebridge.latestVersion))
-        || this.configService.ui.plugins?.alwaysShowBetas
-
-      if (shouldCheckBetas) {
-        const versions = await this.getAvailablePluginVersions('homebridge')
-        const targetTag = this.configService.ui.plugins?.alwaysShowBetas && !installedTag ? 'beta' : installedTag
-        if (versions.tags[targetTag] && gt(versions.tags[targetTag], homebridge.installedVersion)) {
-          homebridge.latestVersion = versions.tags[targetTag]
-          homebridge.updateAvailable = true
-          homebridge.updateEngines = versions.versions?.[homebridge.latestVersion]?.engines || null
-          homebridge.updateTag = targetTag
-        }
-      }
-    }
+    // Check for beta updates using Homebridge-specific preference
+    await this.checkForBetaUpdates(
+      homebridge,
+      'homebridge',
+      this.configService.ui.homebridgeAlwaysShowBetas || false,
+    )
 
     this.configService.homebridgeVersion = homebridge.installedVersion
 
@@ -924,11 +910,73 @@ export class PluginsService {
   }
 
   /**
+   * Clear the installed plugins cache
+   * Used when beta preferences change to force refresh
+   */
+  public clearInstalledPluginsCache() {
+    this.installedPluginsCache.del('installed-plugins')
+  }
+
+  /**
    * Gets the Homebridge UI package details
+   * Special-cased like getHomebridgePackage() to avoid double beta checking
    */
   public async getHomebridgeUiPackage(): Promise<HomebridgePlugin> {
-    const plugins = await this.getInstalledPlugins()
-    return plugins.find((x: HomebridgePlugin) => x.name === this.configService.name)
+    const modules = await this.getInstalledModules()
+    const uiModule = modules.find(x => x.name === this.configService.name)
+
+    if (!uiModule) {
+      throw new Error('Unable to find Homebridge UI installation.')
+    }
+
+    const pkgJson: IPackageJson = await readJson(join(uiModule.installPath, 'package.json'))
+
+    // Build the plugin object manually (like parsePackageJson but inline to control the flow)
+    const uiPackage: HomebridgePlugin = {
+      name: pkgJson.name,
+      displayName: pkgJson.displayName || this.pluginNames[pkgJson.name],
+      private: pkgJson.private || false,
+      description: (pkgJson.description)
+        ? pkgJson.description.replace(/(?:https?|ftp):\/\/[\n\S]+/g, '').trim()
+        : pkgJson.name,
+      verifiedPlugin: this.verifiedPlugins.includes(pkgJson.name),
+      verifiedPlusPlugin: this.verifiedPlusPlugins.includes(pkgJson.name),
+      icon: this.pluginIcons[pkgJson.name]
+        ? `${this.pluginListUrl}${this.pluginIcons[pkgJson.name]}`
+        : null,
+      isHbScoped: pkgJson.name.startsWith('@homebridge-plugins/'),
+      newHbScope: this.newScopePlugins[pkgJson.name],
+      isHbMaintained: this.maintainedPlugins.includes(pkgJson.name),
+      installedVersion: pkgJson.version || '0.0.1',
+      globalInstall: (uiModule.path !== this.configService.customPluginPath),
+      settingsSchema: await pathExists(resolve(uiModule.path, pkgJson.name, 'config.schema.json')),
+      engines: pkgJson.engines,
+      installPath: uiModule.path,
+      funding: (this.verifiedPlugins.includes(pkgJson.name) || this.verifiedPlusPlugins.includes(pkgJson.name))
+        ? pkgJson.funding
+        : undefined,
+      directories: pkgJson.directories,
+      publicPackage: false,
+      latestVersion: null,
+      updateAvailable: false,
+      links: {},
+    }
+
+    // Get npm data but skip the beta check (we'll do it separately with the correct preference)
+    await this.getPluginFromNpm(uiPackage, true)
+
+    if (!uiPackage.latestVersion) {
+      return uiPackage
+    }
+
+    // Check for beta updates using Homebridge UI-specific preference
+    await this.checkForBetaUpdates(
+      uiPackage,
+      this.configService.name,
+      this.configService.ui.homebridgeUiAlwaysShowBetas || false,
+    )
+
+    return uiPackage
   }
 
   /**
@@ -1640,6 +1688,47 @@ export class PluginsService {
    * @param pkgJson
    * @param installPath
    */
+  /**
+   * Shared method to check for beta version updates
+   * Modifies the plugin object in place if a beta update is found
+   * @param plugin - The plugin object to check and update
+   * @param packageName - The package name to query for versions
+   * @param preferBetas - Whether to prefer beta versions for this package
+   */
+  private async checkForBetaUpdates(
+    plugin: HomebridgePlugin,
+    packageName: string,
+    preferBetas: boolean,
+  ): Promise<void> {
+    if (plugin.updateAvailable) {
+      return // Already has an update available
+    }
+
+    const pluginVersion = parse(plugin.installedVersion)
+    const installedTag = pluginVersion.prerelease[0]?.toString()
+
+    // Check for beta updates if:
+    // - Currently on a beta/alpha/test version AND current > latest stable
+    // - OR preferBetas setting is enabled for this package
+    const shouldCheckBetas = (
+      installedTag
+      && ['alpha', 'beta', 'test'].includes(installedTag)
+      && gt(plugin.installedVersion, plugin.latestVersion)
+    ) || preferBetas
+
+    if (shouldCheckBetas) {
+      const versions = await this.getAvailablePluginVersions(packageName)
+      const targetTag = preferBetas && !installedTag ? 'beta' : installedTag
+
+      if (versions.tags[targetTag] && gt(versions.tags[targetTag], plugin.installedVersion)) {
+        plugin.latestVersion = versions.tags[targetTag]
+        plugin.updateAvailable = true
+        plugin.updateEngines = versions.versions?.[plugin.latestVersion]?.engines || null
+        plugin.updateTag = targetTag
+      }
+    }
+  }
+
   private async parsePackageJson(pkgJson: IPackageJson, installPath: string): Promise<HomebridgePlugin> {
     const plugin: HomebridgePlugin = {
       name: pkgJson.name,
@@ -1684,8 +1773,9 @@ export class PluginsService {
   /**
    * Accepts a HomebridgePlugin and adds data from npm
    * @param plugin
+   * @param skipBetaCheck - Skip beta checking (used when beta check is done separately)
    */
-  private async getPluginFromNpm(plugin: HomebridgePlugin): Promise<HomebridgePlugin> {
+  private async getPluginFromNpm(plugin: HomebridgePlugin, skipBetaCheck = false): Promise<HomebridgePlugin> {
     try {
       // Attempt to load from cache
       const fromCache = this.npmPluginCache.get(plugin.name)
@@ -1701,27 +1791,15 @@ export class PluginsService {
       plugin.updateAvailable = gt(pkg.version, plugin.installedVersion)
       plugin.updateEngines = plugin.updateAvailable ? pkg.engines : null
 
-      // check for beta updates, if no latest version is available
-      // or if the alwaysShowBetas setting is enabled
-      if (!plugin.updateAvailable) {
-        const pluginVersion = parse(plugin.installedVersion)
-        const installedTag = pluginVersion.prerelease[0]?.toString()
-        const shouldCheckBetas = (
-          installedTag
-          && ['alpha', 'beta', 'test'].includes(installedTag)
-          && gt(plugin.installedVersion, plugin.latestVersion)
-        ) || this.configService.ui.plugins?.alwaysShowBetas
+      // Check for beta updates using plugin-specific preference (unless skipped)
+      if (!skipBetaCheck) {
+        const preferBetas = this.configService.ui.plugins?.alwaysShowBetasFor?.includes(plugin.name) || false
 
-        if (shouldCheckBetas) {
-          const versions = await this.getAvailablePluginVersions(plugin.name)
-          const targetTag = this.configService.ui.plugins?.alwaysShowBetas && !installedTag ? 'beta' : installedTag
-          if (versions.tags[targetTag] && gt(versions.tags[targetTag], plugin.installedVersion)) {
-            plugin.latestVersion = versions.tags[targetTag]
-            plugin.updateAvailable = true
-            plugin.updateEngines = versions.versions?.[plugin.latestVersion]?.engines || null
-            plugin.updateTag = targetTag
-          }
-        }
+        await this.checkForBetaUpdates(
+          plugin,
+          plugin.name,
+          preferBetas,
+        )
       }
 
       // Store in cache if it was not there already

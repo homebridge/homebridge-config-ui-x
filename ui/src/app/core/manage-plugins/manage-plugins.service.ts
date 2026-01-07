@@ -143,7 +143,7 @@ export class ManagePluginsService {
    * Open the version selector
    * @param plugin
    */
-  async installAlternateVersion(plugin: Plugin) {
+  async installAlternateVersion(plugin: Plugin, onSettingsChange?: () => void) {
     const ref = this.$modal.open(ManageVersionComponent, {
       size: 'lg',
       backdrop: 'static',
@@ -151,6 +151,9 @@ export class ManagePluginsService {
 
     ref.componentInstance.plugin = plugin
     ref.componentInstance.onRefreshPluginList = () => this.pluginListRefreshSubject.next()
+    if (onSettingsChange) {
+      ref.componentInstance.onSettingsChange = onSettingsChange
+    }
 
     try {
       const { action, version, engines } = await ref.result

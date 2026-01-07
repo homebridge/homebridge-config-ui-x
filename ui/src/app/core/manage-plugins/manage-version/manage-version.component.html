@@ -82,24 +82,75 @@
         </li>
       </ul>
 
-      @if (plugin.installedVersion && !['homebridge', 'homebridge-config-ui-x'].includes(plugin.name)) {
+      @if (plugin.installedVersion) {
       <ul class="list-group list-group-box mt-3 mb-0">
-        <li class="list-group-item d-flex justify-content-between align-items-center flex-row pb-2">
-          <div class="text-start">
-            {{ 'plugins.manage.hide_updates' | translate }}<br />
-            <span class="grey-text small">{{ 'plugins.manage.hide_updates_desc' | translate }}</span>
+        <li class="list-group-item text-center">{{ 'plugins.manage.update_preferences' | translate }}</li>
+        <button
+          type="button"
+          class="list-group-item d-flex align-items-center text-start"
+          (click)="selectUpdatePreference('stable')"
+        >
+          <div class="me-3">
+            <i
+              class="fas fa-arrow-alt-circle-up fa-fw fa-lg"
+              [class.primary-text]="updatePreferenceControl.value === 'stable'"
+              [class.grey-text]="updatePreferenceControl.value !== 'stable'"
+            ></i>
           </div>
-          <div class="text-end grey-text d-flex align-items-center">
-            <input
-              type="checkbox"
-              class="rendux-input"
-              [formControl]="hideUpdatesFormControl"
-              id="hidePluginUpdates"
-              [attr.aria-label]="'plugins.manage.hide_updates' | translate"
-            />
-            <label for="hidePluginUpdates" class="rendux-label ms-3"></label>
+          <div class="flex-grow-1">
+            <div>{{ 'plugins.manage.update_pref_stable' | translate }}</div>
+            <div class="text-muted small">{{ 'plugins.manage.update_pref_stable_desc' | translate }}</div>
           </div>
-        </li>
+          @if (updatePreferenceControl.value === 'stable') {
+          <div class="ms-3">
+            <i class="fas fa-check-circle primary-text"></i>
+          </div>
+          }
+        </button>
+        <button
+          type="button"
+          class="list-group-item d-flex align-items-center text-start"
+          (click)="selectUpdatePreference('beta')"
+        >
+          <div class="me-3">
+            <i
+              class="fas fa-vial fa-fw fa-lg"
+              [class.primary-text]="updatePreferenceControl.value === 'beta'"
+              [class.grey-text]="updatePreferenceControl.value !== 'beta'"
+            ></i>
+          </div>
+          <div class="flex-grow-1">
+            <div>{{ 'plugins.manage.update_pref_beta' | translate }}</div>
+            <div class="text-muted small">{{ 'plugins.manage.update_pref_beta_desc' | translate }}</div>
+          </div>
+          @if (updatePreferenceControl.value === 'beta') {
+          <div class="ms-3">
+            <i class="fas fa-check-circle primary-text"></i>
+          </div>
+          }
+        </button>
+        <button
+          type="button"
+          class="list-group-item d-flex align-items-center text-start"
+          (click)="selectUpdatePreference('none')"
+        >
+          <div class="me-3">
+            <i
+              class="fas fa-bell-slash fa-fw fa-lg"
+              [class.primary-text]="updatePreferenceControl.value === 'none'"
+              [class.grey-text]="updatePreferenceControl.value !== 'none'"
+            ></i>
+          </div>
+          <div class="flex-grow-1">
+            <div>{{ 'plugins.manage.update_pref_none' | translate }}</div>
+            <div class="text-muted small">{{ 'plugins.manage.update_pref_none_desc' | translate }}</div>
+          </div>
+          @if (updatePreferenceControl.value === 'none') {
+          <div class="ms-3">
+            <i class="fas fa-check-circle primary-text"></i>
+          </div>
+          }
+        </button>
       </ul>
       }
     </div>

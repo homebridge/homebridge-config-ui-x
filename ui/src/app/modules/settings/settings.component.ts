@@ -146,9 +146,6 @@ export class SettingsComponent implements OnInit {
   public uiTempIsSaving = false
   public uiTempFormControl = new FormControl('')
 
-  public uiAlwaysShowBetasIsSaving = false
-  public uiAlwaysShowBetasFormControl = new FormControl(false)
-
   public uiTerminalPersistenceIsSaving = false
   public uiTerminalPersistenceFormControl = new FormControl(false)
 
@@ -539,11 +536,6 @@ export class SettingsComponent implements OnInit {
     this.uiTempFormControl.valueChanges
       .pipe(debounceTime(750))
       .subscribe((value: string) => this.uiTempSave(value))
-
-    this.uiAlwaysShowBetasFormControl.patchValue(this.$settings.env.plugins?.alwaysShowBetas || false)
-    this.uiAlwaysShowBetasFormControl.valueChanges
-      .pipe(debounceTime(750))
-      .subscribe((value: boolean) => this.uiAlwaysShowBetasSave(value))
 
     this.uiTerminalPersistenceFormControl.patchValue(this.$settings.env.terminal?.persistence)
     this.uiTerminalPersistenceFormControl.valueChanges
@@ -1002,21 +994,6 @@ export class SettingsComponent implements OnInit {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
       this.uiTempIsSaving = false
-    }
-  }
-
-  private async uiAlwaysShowBetasSave(value: boolean) {
-    try {
-      this.uiAlwaysShowBetasIsSaving = true
-      this.$settings.setEnvItem('plugins.alwaysShowBetas', value)
-      await this.saveUiSettingChange('plugins.alwaysShowBetas', value)
-      setTimeout(() => {
-        this.uiAlwaysShowBetasIsSaving = false
-      }, 1000)
-    } catch (error) {
-      console.error(error)
-      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
-      this.uiAlwaysShowBetasIsSaving = false
     }
   }
 
