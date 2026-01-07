@@ -9,7 +9,14 @@
     <i class="fas fa-bars grey-text" aria-hidden="true"></i>
   </button>
   } @if (!$accessories.readyForControl) {
-  <i class="fas fa-circle-notch fa-spin refreshing-accessory-status-icon grey-text"></i>
+  <button
+    type="button"
+    class="refreshing-accessory-button"
+    (click)="$accessories.showAccessoryInformation(service)"
+    [attr.aria-label]="('form.button_edit' | translate) + ' ' + (service.customName || service.serviceName)"
+  >
+    <i class="fas fa-circle-notch fa-spin grey-text" aria-hidden="true"></i>
+  </button>
   } @switch (service.customType || service.type) { @case ('Switch') {
   <app-switch [service]="service" [readyForControl]="$accessories.readyForControl">
     {{ 'accessories.core.switch' | translate }}

@@ -10,6 +10,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix disable plugin showing incorrect `keepOrphans` (#2692) (@copilot)
 - feat: add separate beta preferences for plugins (#2687) (@seidnerj)
 - further tweaks for node + plugin update preferences
+- open accessory info on tile loading icon click
 
 ### Homebridge Dependencies
 
