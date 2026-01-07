@@ -110,7 +110,7 @@ export interface HomebridgeUiConfig {
   }
   plugins?: {
     hideUpdatesFor?: string[]
-    alwaysShowBetas?: boolean
+    alwaysShowBetasFor?: string[]
   }
   nodeUpdatePolicy?: 'all' | 'none' | 'major'
   homebridgeHideUpdates?: boolean

@@ -1793,10 +1793,12 @@ export class PluginsService {
 
       // Check for beta updates using plugin-specific preference (unless skipped)
       if (!skipBetaCheck) {
+        const preferBetas = this.configService.ui.plugins?.alwaysShowBetasFor?.includes(plugin.name) || false
+
         await this.checkForBetaUpdates(
           plugin,
           plugin.name,
-          this.configService.ui.plugins?.alwaysShowBetas || false,
+          preferBetas,
         )
       }
 

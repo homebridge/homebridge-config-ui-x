@@ -33,49 +33,54 @@ export class ManageVersionComponent implements OnInit {
   @Input() onRefreshPluginList: () => void
   @Input() onSettingsChange?: () => void
 
-  public isUpdateHidden: boolean = false
-  public hideUpdatesFormControl = new FormControl(false)
-  public preferBetasFormControl = new FormControl(false)
+  public updatePreferenceControl = new FormControl<'stable' | 'beta' | 'none'>('stable')
   public loading = true
   public versions: Array<VersionData> = []
   public versionsWithTags: Array<{ version: string, tag: string }> = []
   public versionSelect: string
 
-  // Configuration map for special packages
-  private readonly packageConfig = {
-    'homebridge': {
-      hideKey: 'homebridgeHideUpdates' as const,
-      betaKey: 'homebridgeAlwaysShowBetas' as const,
-    },
-    'homebridge-config-ui-x': {
-      hideKey: 'homebridgeUiHideUpdates' as const,
-      betaKey: 'homebridgeUiAlwaysShowBetas' as const,
-    },
-  }
-
   public ngOnInit(): void {
     this.versionSelect = this.plugin.installedVersion || this.plugin.latestVersion
     this.lookupVersions()
 
-    // Initialize hide updates toggle
-    const config = this.packageConfig[this.plugin.name]
-    if (config) {
-      this.isUpdateHidden = this.$settings.env[config.hideKey] || false
-    } else {
-      this.isUpdateHidden = this.$settings.env.plugins?.hideUpdatesFor?.includes(this.plugin.name) || false
-    }
-    this.hideUpdatesFormControl.patchValue(this.isUpdateHidden)
-    this.hideUpdatesFormControl.valueChanges
+    // Initialize update preference based on package type
+    const currentPref = this.getCurrentUpdatePreference()
+    this.updatePreferenceControl.setValue(currentPref)
+    this.updatePreferenceControl.valueChanges
       .pipe(debounceTime(500))
-      .subscribe((value: boolean) => this.toggleHideUpdates(value))
+      .subscribe((value: 'stable' | 'beta' | 'none') => this.updatePreference(value))
+  }
 
-    // Initialize prefer betas toggle (only for homebridge and UI)
-    if (config) {
-      this.preferBetasFormControl.patchValue(this.$settings.env[config.betaKey] || false)
-      this.preferBetasFormControl.valueChanges
-        .pipe(debounceTime(500))
-        .subscribe((value: boolean) => this.togglePreferBetas(value))
+  private getCurrentUpdatePreference(): 'stable' | 'beta' | 'none' {
+    // Check hide updates first (takes precedence)
+    if (this.plugin.name === 'homebridge' && this.$settings.env.homebridgeHideUpdates) {
+      return 'none'
     }
+    if (this.plugin.name === 'homebridge-config-ui-x' && this.$settings.env.homebridgeUiHideUpdates) {
+      return 'none'
+    }
+    if (this.$settings.env.plugins?.hideUpdatesFor?.includes(this.plugin.name)) {
+      return 'none'
+    }
+
+    // Check beta preference
+    if (this.plugin.name === 'homebridge' && this.$settings.env.homebridgeAlwaysShowBetas) {
+      return 'beta'
+    }
+    if (this.plugin.name === 'homebridge-config-ui-x' && this.$settings.env.homebridgeUiAlwaysShowBetas) {
+      return 'beta'
+    }
+
+    // Check per-plugin beta preference
+    if (this.$settings.env.plugins?.alwaysShowBetasFor?.includes(this.plugin.name)) {
+      return 'beta'
+    }
+
+    return 'stable'
+  }
+
+  public selectUpdatePreference(value: 'stable' | 'beta' | 'none') {
+    this.updatePreferenceControl.setValue(value)
   }
 
   public doInstall(selectedVersion: string) {
@@ -87,80 +92,71 @@ export class ManageVersionComponent implements OnInit {
     })
   }
 
-  public async toggleHideUpdates(value: boolean) {
+  private async updatePreference(value: 'stable' | 'beta' | 'none') {
     try {
-      const config = this.packageConfig[this.plugin.name]
+      // Map the new 3-option preference to the existing boolean fields
+      const hideUpdates = value === 'none'
+      const preferBetas = value === 'beta'
 
-      if (config) {
-        // Handle homebridge and UI with separate boolean fields
+      // Update based on package type
+      if (this.plugin.name === 'homebridge') {
         await firstValueFrom(this.$api.put('/config-editor/ui', {
-          key: config.hideKey,
-          value,
+          key: 'homebridgeHideUpdates',
+          value: hideUpdates,
         }))
-        this.$settings.env[config.hideKey] = value
+        await firstValueFrom(this.$api.put('/config-editor/ui', {
+          key: 'homebridgeAlwaysShowBetas',
+          value: preferBetas,
+        }))
+        this.$settings.env.homebridgeHideUpdates = hideUpdates
+        this.$settings.env.homebridgeAlwaysShowBetas = preferBetas
+        await firstValueFrom(this.$api.post('/plugins/clear-cache', {}))
+      } else if (this.plugin.name === 'homebridge-config-ui-x') {
+        await firstValueFrom(this.$api.put('/config-editor/ui', {
+          key: 'homebridgeUiHideUpdates',
+          value: hideUpdates,
+        }))
+        await firstValueFrom(this.$api.put('/config-editor/ui', {
+          key: 'homebridgeUiAlwaysShowBetas',
+          value: preferBetas,
+        }))
+        this.$settings.env.homebridgeUiHideUpdates = hideUpdates
+        this.$settings.env.homebridgeUiAlwaysShowBetas = preferBetas
+        await firstValueFrom(this.$api.post('/plugins/clear-cache', {}))
       } else {
-        // Handle regular plugins with the array approach
-        let currentSetting = this.$settings.env.plugins?.hideUpdatesFor || []
-        if (value) {
-          if (!currentSetting.includes(this.plugin.name)) {
-            currentSetting = [...currentSetting, this.plugin.name].sort((a, b) => a.localeCompare(b))
-          }
-        } else {
-          currentSetting = currentSetting.filter(x => x !== this.plugin.name)
+        // Regular plugins - use array-based preferences
+        let hideList = this.$settings.env.plugins?.hideUpdatesFor || []
+        if (hideUpdates && !hideList.includes(this.plugin.name)) {
+          hideList = [...hideList, this.plugin.name].sort((a, b) => a.localeCompare(b))
+        } else if (!hideUpdates) {
+          hideList = hideList.filter(x => x !== this.plugin.name)
         }
-        await firstValueFrom(this.$api.put('/config-editor/ui/plugins/hide-updates-for', {
-          body: currentSetting,
-        }))
-        this.$settings.setEnvItem('plugins.hideUpdatesFor', currentSetting)
-      }
 
-      // Clear cache if this is homebridge or UI (since they're cached separately)
-      if (config) {
+        let betaList = this.$settings.env.plugins?.alwaysShowBetasFor || []
+        if (preferBetas && !betaList.includes(this.plugin.name)) {
+          betaList = [...betaList, this.plugin.name].sort((a, b) => a.localeCompare(b))
+        } else if (!preferBetas) {
+          betaList = betaList.filter(x => x !== this.plugin.name)
+        }
+
+        await firstValueFrom(this.$api.put('/config-editor/ui/plugins/hide-updates-for', {
+          body: hideList,
+        }))
+        await firstValueFrom(this.$api.put('/config-editor/ui', {
+          key: 'plugins.alwaysShowBetasFor',
+          value: betaList,
+        }))
+        this.$settings.setEnvItem('plugins.hideUpdatesFor', hideList)
+        this.$settings.setEnvItem('plugins.alwaysShowBetasFor', betaList)
+
+        // Clear cache for regular plugins too
         await firstValueFrom(this.$api.post('/plugins/clear-cache', {}))
       }
 
-      // Trigger refresh of the plugin list
+      // Trigger refreshes
       if (this.onRefreshPluginList) {
         this.onRefreshPluginList()
       }
-
-      // Trigger settings change callback (for status widget refresh)
-      if (this.onSettingsChange) {
-        this.onSettingsChange()
-      }
-
-      // Show success toast
-      this.$toastr.success(
-        this.$translate.instant('config.config_saved'),
-        this.$translate.instant('toast.title_success'),
-      )
-    } catch (error) {
-      this.hideUpdatesFormControl.patchValue(this.isUpdateHidden, { emitEvent: false })
-      console.error(error)
-      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
-    }
-  }
-
-  public async togglePreferBetas(value: boolean) {
-    try {
-      const config = this.packageConfig[this.plugin.name]
-      if (!config) {
-        return // Only for homebridge and UI
-      }
-
-      await firstValueFrom(this.$api.put('/config-editor/ui', {
-        key: config.betaKey,
-        value,
-      }))
-      this.$settings.env[config.betaKey] = value
-
-      // Clear the backend cache and trigger refresh
-      await firstValueFrom(this.$api.post('/plugins/clear-cache', {}))
-      if (this.onRefreshPluginList) {
-        this.onRefreshPluginList()
-      }
-
-      // Trigger settings change callback (for status widget refresh)
       if (this.onSettingsChange) {
         this.onSettingsChange()
       }
@@ -174,10 +170,7 @@ export class ManageVersionComponent implements OnInit {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
       // Revert on error
-      const config = this.packageConfig[this.plugin.name]
-      if (config) {
-        this.preferBetasFormControl.patchValue(this.$settings.env[config.betaKey] || false, { emitEvent: false })
-      }
+      this.updatePreferenceControl.setValue(this.getCurrentUpdatePreference(), { emitEvent: false })
     }
   }
 
