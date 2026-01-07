@@ -12,6 +12,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - promote advertise via mdns feature from beta
 - promote inactivity based session from beta
 - run angular migrations `ngclass-to-class` + `style`
+- a11y: improvements to custom plugins modal (from #2677) (@rfiorentino1)
 
 ### Other Changes
 
