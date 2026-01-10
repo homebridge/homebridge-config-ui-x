@@ -15,6 +15,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - improvements for homebridge v2
 - upgrade `xterm` to `v6` + style improvements
 - a11y: improvements to custom plugins modal (from #2677) (@rfiorentino1)
+- a11y: improvements to plugin json schema forms (from #2677) (@rfiorentino1)
 
 ### Other Changes
 
