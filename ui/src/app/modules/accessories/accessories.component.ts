@@ -6,6 +6,7 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { DragulaModule, DragulaService } from 'ng2-dragula'
 import { firstValueFrom, Subscription } from 'rxjs'
 
+import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
 import { AccessoriesService } from '@/app/core/accessories/accessories.service'
 import { AccessoryTileComponent } from '@/app/core/accessories/accessory-tile/accessory-tile.component'
 import { ApiService } from '@/app/core/api.service'
@@ -54,6 +55,13 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
   public loading = true
   public selectedBridge = ''
   public availableBridges: string[] = []
+
+  /**
+   * Computed property to check if filter UI should be shown
+   */
+  public get shouldShowFilters(): boolean {
+    return this.hasPlugins && !this.loading
+  }
 
   constructor() {
     const dragulaService = this.dragulaService
@@ -191,7 +199,7 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
   /**
    * Check if a service should be displayed based on current filters
    */
-  public shouldDisplayService(service: any): boolean {
+  public shouldDisplayService(service: ServiceTypeX): boolean {
     // Check hidden filter
     if (this.hideHidden && service.hidden) {
       return false

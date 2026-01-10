@@ -90,7 +90,7 @@
     </button>
   </div>
 </div>
-@if (hasPlugins && !loading) {
+@if (shouldShowFilters) {
 <div class="row mb-3">
   <div class="col-12 col-md-6 col-lg-4">
     <label for="bridge-filter" class="form-label small mb-1">{{ 'accessories.filter_by_bridge' | translate }}</label>
