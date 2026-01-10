@@ -9,11 +9,6 @@
       [(ngModel)]="selectedFontSize"
       (ngModelChange)="onFontSizeChange()"
       [attr.aria-label]="'status.widget.font_size' | translate"
-      container="body"
-      placement="bottom"
-      [openDelay]="150"
-      triggers="hover"
-      [ngbTooltip]="'status.widget.font_size' | translate"
     >
       @for (size of fontSizes; track size) {
       <option [value]="size">{{ size }}</option>
