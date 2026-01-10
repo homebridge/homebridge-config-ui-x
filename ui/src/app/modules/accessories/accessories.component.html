@@ -90,7 +90,24 @@
     </button>
   </div>
 </div>
-@if (loading) {
+@if (hasPlugins && !loading) {
+<div class="row mb-3">
+  <div class="col-12 col-md-6 col-lg-4">
+    <label for="bridge-filter" class="form-label small mb-1">{{ 'accessories.filter_by_bridge' | translate }}</label>
+    <select
+      id="bridge-filter"
+      class="form-select form-select-sm"
+      [(ngModel)]="selectedBridge"
+      [attr.aria-label]="'accessories.filter_by_bridge' | translate"
+    >
+      <option value="">{{ 'accessories.filter_all_bridges' | translate }}</option>
+      @for (bridge of availableBridges; track bridge) {
+      <option [value]="bridge">{{ bridge }}</option>
+      }
+    </select>
+  </div>
+</div>
+} @if (loading) {
 <app-spinner />
 } @else { @if (hasPlugins) {
 <div [dragula]="'rooms-bag'" [(dragulaModel)]="$accessories.rooms">
@@ -113,7 +130,7 @@
         [dragula]="'services-bag'"
         [(dragulaModel)]="room.services"
       >
-        @for (service of room.services; track service) { @if (!hideHidden || !service.hidden) {
+        @for (service of room.services; track service) { @if (shouldDisplayService(service)) {
         <div class="accessory-item accessory-tab">
           <app-accessory-tile [service]="service" />
         </div>

@@ -1,5 +1,6 @@
 import { NgClass } from '@angular/common'
 import { Component, inject, OnDestroy, OnInit } from '@angular/core'
+import { FormsModule } from '@angular/forms'
 import { NgbModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { DragulaModule, DragulaService } from 'ng2-dragula'
@@ -29,6 +30,7 @@ import { DragHerePlaceholderComponent } from '@/app/modules/accessories/drag-her
     DragHerePlaceholderComponent,
     TranslatePipe,
     SpinnerComponent,
+    FormsModule,
   ],
 })
 export class AccessoriesComponent implements OnInit, OnDestroy {
@@ -50,6 +52,8 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
   public readonly linkInsecure = '<a href="https://github.com/homebridge/homebridge-config-ui-x/wiki/Enabling-Accessory-Control" target="_blank"><i class="fa fa-external-link-alt primary-text"></i></a>'
   public hasPlugins = false
   public loading = true
+  public selectedBridge = ''
+  public availableBridges: string[] = []
 
   constructor() {
     const dragulaService = this.dragulaService
@@ -83,6 +87,11 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
 
     this.$accessories.start()
     this.checkForPlugins()
+
+    // Subscribe to accessory data to update available bridges
+    this.$accessories.accessoryData.subscribe(() => {
+      this.updateAvailableBridges()
+    })
   }
 
   public addRoom() {
@@ -160,5 +169,39 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
     } finally {
       this.loading = false
     }
+  }
+
+  /**
+   * Update the list of available bridges from the current accessories
+   */
+  private updateAvailableBridges() {
+    const bridges = new Set<string>()
+
+    this.$accessories.rooms.forEach((room) => {
+      room.services.forEach((service) => {
+        if (service.instance?.name) {
+          bridges.add(service.instance.name)
+        }
+      })
+    })
+
+    this.availableBridges = Array.from(bridges).sort()
+  }
+
+  /**
+   * Check if a service should be displayed based on current filters
+   */
+  public shouldDisplayService(service: any): boolean {
+    // Check hidden filter
+    if (this.hideHidden && service.hidden) {
+      return false
+    }
+
+    // Check bridge filter
+    if (this.selectedBridge && service.instance?.name !== this.selectedBridge) {
+      return false
+    }
+
+    return true
   }
 }

@@ -124,6 +124,8 @@
   "accessories.core.window_covering": "Window Covering",
   "accessories.custom_name": "カスタム名",
   "accessories.custom_type": "カスタムタイプ",
+  "accessories.filter_all_bridges": "All Bridges",
+  "accessories.filter_by_bridge": "Filter by Bridge",
   "accessories.hide_this_accessory": "このアクセサリを非表示",
   "accessories.message_must_use_insecure_mode": "アクセサリを操作するにはHomebridgeを非セキュアモードで起動する必要があります {{ link }}",
   "accessories.name": "名前",

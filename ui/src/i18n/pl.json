@@ -124,6 +124,8 @@
   "accessories.core.window_covering": "Window Covering",
   "accessories.custom_name": "Nazwa niestandardowa",
   "accessories.custom_type": "Typ niestandardowy",
+  "accessories.filter_all_bridges": "All Bridges",
+  "accessories.filter_by_bridge": "Filter by Bridge",
   "accessories.hide_this_accessory": "Ukryj to akcesorium",
   "accessories.message_must_use_insecure_mode": "Aby sterować swoimi akcesoriami bezpośrednio w panelu Homebridge musisz uruchomić Homebridge w trybie niezabezpieczonym {{ link }}.",
   "accessories.name": "Nazwa",

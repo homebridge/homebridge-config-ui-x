@@ -124,6 +124,8 @@
   "accessories.core.window_covering": "Window Covering",
   "accessories.custom_name": "Custom Name",
   "accessories.custom_type": "Custom Type",
+  "accessories.filter_all_bridges": "All Bridges",
+  "accessories.filter_by_bridge": "Filter by Bridge",
   "accessories.hide_this_accessory": "Bu aksesuarı gizle",
   "accessories.message_must_use_insecure_mode": "Aksesuarlarınızı kontrol etmek için Homebridge'i emniyetsiz modda çalıştırıyor olmalısınız {{ link }}.",
   "accessories.name": "Ad",

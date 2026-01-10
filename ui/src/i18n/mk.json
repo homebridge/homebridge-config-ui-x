@@ -124,6 +124,8 @@
   "accessories.core.window_covering": "Window Covering",
   "accessories.custom_name": "Custom Name",
   "accessories.custom_type": "Custom Type",
+  "accessories.filter_all_bridges": "All Bridges",
+  "accessories.filter_by_bridge": "Filter by Bridge",
   "accessories.hide_this_accessory": "Сокриј го овој уред",
   "accessories.message_must_use_insecure_mode": "За да ги контролирате Вашите уреди мора да го извршите Homebridge во insecure мод {{ link }}.",
   "accessories.name": "Име",

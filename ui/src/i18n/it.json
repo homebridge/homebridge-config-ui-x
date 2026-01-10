@@ -124,6 +124,8 @@
   "accessories.core.window_covering": "Copertura finestra",
   "accessories.custom_name": "Nome personalizzato",
   "accessories.custom_type": "Tipo personalizzato",
+  "accessories.filter_all_bridges": "All Bridges",
+  "accessories.filter_by_bridge": "Filter by Bridge",
   "accessories.hide_this_accessory": "Nascondi accessorio",
   "accessories.message_must_use_insecure_mode": "Per controllare i tuoi accessori devi avviare Homebridge in modalità non sicura {{ link }}.",
   "accessories.name": "Nome",

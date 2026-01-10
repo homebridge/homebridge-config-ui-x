@@ -124,6 +124,8 @@
   "accessories.core.window_covering": "Віконне покриття",
   "accessories.custom_name": "Користувацька назва",
   "accessories.custom_type": "Власний тип",
+  "accessories.filter_all_bridges": "All Bridges",
+  "accessories.filter_by_bridge": "Filter by Bridge",
   "accessories.hide_this_accessory": "Приховати цей аксесуар",
   "accessories.message_must_use_insecure_mode": "Щоб керувати своїми аксесуарами, Ви повинні запустити Homebridge в безпечному режимі {{ link }}.",
   "accessories.name": "Назва",

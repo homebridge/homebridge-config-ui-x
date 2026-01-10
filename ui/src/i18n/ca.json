@@ -124,6 +124,8 @@
   "accessories.core.window_covering": "Window Covering",
   "accessories.custom_name": "Custom Name",
   "accessories.custom_type": "Custom Type",
+  "accessories.filter_all_bridges": "All Bridges",
+  "accessories.filter_by_bridge": "Filter by Bridge",
   "accessories.hide_this_accessory": "Amaga aquest accessori",
   "accessories.message_must_use_insecure_mode": "Per controlar els teus accessoris has d'executar Homebridge en la manera insegur {{ link }}.",
   "accessories.name": "Nom",
