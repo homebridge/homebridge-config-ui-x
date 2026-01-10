@@ -7,7 +7,7 @@ index c60e09a..fbe485c 100644
                  !this.options.title.includes('*')) {
                  let required_asterisk_class = this.widgetStyles().__required_asterisk__ || 'text-danger';
 -                this.options.title += ` <strong class="${required_asterisk_class}">*</strong>`;
-+                this.options.title += ` <strong class="${required_asterisk_class}">*</strong>`;
++                this.options.title += ` <strong class="${required_asterisk_class}">&#9702;</strong>`;
              }
              if (layoutNode.type == 'optionfieldset') {
                  this.options.messageLocation = 'top';
