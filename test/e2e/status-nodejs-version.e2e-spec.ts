@@ -54,6 +54,7 @@ describe('StatusService - getNodeJsVersionInfo', () => {
 
     const configService = {
       ui: { disableServerMetricsMonitoring: true },
+      getNodeUpdatePolicy: () => 'all',
     } as unknown as ConfigService
 
     const pluginsService = {} as PluginsService
@@ -389,6 +390,205 @@ describe('StatusService - getNodeJsVersionInfo', () => {
       // Second call should use cache
       await statusService.getNodeJsVersionInfo()
       expect(spy).toHaveBeenCalledTimes(1)
+    })
+
+    it('should clear cache when clearNodeJsVersionCache is called', async () => {
+      const spy = vi.spyOn(httpService, 'get').mockReturnValue(of(mockHttpResponse(mockNodeVersions)) as any)
+
+      // First call
+      await statusService.getNodeJsVersionInfo()
+      expect(spy).toHaveBeenCalledTimes(1)
+
+      // Clear cache
+      statusService.clearNodeJsVersionCache()
+
+      // Third call should hit the API again
+      await statusService.getNodeJsVersionInfo()
+      expect(spy).toHaveBeenCalledTimes(2)
+    })
+  })
+
+  describe('Node Update Policy', () => {
+    it('should hide all updates when policy is "none"', async () => {
+      // Mock process.version to v20
+      Object.defineProperty(process, 'version', {
+        value: 'v20.19.0',
+        writable: true,
+        configurable: true,
+      })
+
+      // Create a new config service with 'none' policy
+      const configServiceNone = {
+        ui: { disableServerMetricsMonitoring: true },
+        getNodeUpdatePolicy: () => 'none',
+      } as unknown as ConfigService
+
+      const logger = {
+        log: vi.fn(),
+        warn: vi.fn(),
+        error: vi.fn(),
+        debug: vi.fn(),
+      } as unknown as Logger
+
+      const pluginsService = {} as PluginsService
+      const serverService = {} as ServerService
+      const homebridgeIpcService = {
+        on: vi.fn(),
+      } as unknown as HomebridgeIpcService
+
+      const testStatusService = new StatusService(
+        httpService,
+        logger,
+        configServiceNone,
+        pluginsService,
+        serverService,
+        homebridgeIpcService,
+      )
+
+      vi.spyOn(httpService, 'get').mockReturnValue(of(mockHttpResponse(mockNodeVersions)) as any)
+
+      const result = await testStatusService.getNodeJsVersionInfo() as NodeJsVersionInfo
+
+      expect(result.currentVersion).toBe('v20.19.0')
+      // latestVersion should still be calculated, but updateAvailable should be false
+      expect(result.updateAvailable).toBe(false)
+
+      // Restore original version
+      Object.defineProperty(process, 'version', {
+        value: originalProcessVersion,
+        writable: true,
+        configurable: true,
+      })
+    })
+
+    it('should hide major version updates when policy is "major"', async () => {
+      // Mock process.version to v20
+      Object.defineProperty(process, 'version', {
+        value: 'v20.19.0',
+        writable: true,
+        configurable: true,
+      })
+
+      // Create a new config service with 'major' policy
+      const configServiceMajor = {
+        ui: { disableServerMetricsMonitoring: true },
+        getNodeUpdatePolicy: () => 'major',
+      } as unknown as ConfigService
+
+      const logger = {
+        log: vi.fn(),
+        warn: vi.fn(),
+        error: vi.fn(),
+        debug: vi.fn(),
+      } as unknown as Logger
+
+      const pluginsService = {} as PluginsService
+      const serverService = {} as ServerService
+      const homebridgeIpcService = {
+        on: vi.fn(),
+      } as unknown as HomebridgeIpcService
+
+      const testStatusService = new StatusService(
+        httpService,
+        logger,
+        configServiceMajor,
+        pluginsService,
+        serverService,
+        homebridgeIpcService,
+      )
+
+      vi.spyOn(httpService, 'get').mockReturnValue(of(mockHttpResponse(mockNodeVersions)) as any)
+
+      const result = await testStatusService.getNodeJsVersionInfo() as NodeJsVersionInfo
+
+      expect(result.currentVersion).toBe('v20.19.0')
+      // Should hide the update to v24/v22 since they are major version updates
+      expect(result.updateAvailable).toBe(false)
+
+      // Restore original version
+      Object.defineProperty(process, 'version', {
+        value: originalProcessVersion,
+        writable: true,
+        configurable: true,
+      })
+    })
+
+    it('should show patch updates when policy is "major"', async () => {
+      // Mock process.version to an older v22 patch
+      Object.defineProperty(process, 'version', {
+        value: 'v22.12.0',
+        writable: true,
+        configurable: true,
+      })
+
+      // Create a new config service with 'major' policy
+      const configServiceMajor = {
+        ui: { disableServerMetricsMonitoring: true },
+        getNodeUpdatePolicy: () => 'major',
+      } as unknown as ConfigService
+
+      const logger = {
+        log: vi.fn(),
+        warn: vi.fn(),
+        error: vi.fn(),
+        debug: vi.fn(),
+      } as unknown as Logger
+
+      const pluginsService = {} as PluginsService
+      const serverService = {} as ServerService
+      const homebridgeIpcService = {
+        on: vi.fn(),
+      } as unknown as HomebridgeIpcService
+
+      const testStatusService = new StatusService(
+        httpService,
+        logger,
+        configServiceMajor,
+        pluginsService,
+        serverService,
+        homebridgeIpcService,
+      )
+
+      vi.spyOn(httpService, 'get').mockReturnValue(of(mockHttpResponse(mockNodeVersions)) as any)
+
+      const result = await testStatusService.getNodeJsVersionInfo() as NodeJsVersionInfo
+
+      expect(result.currentVersion).toBe('v22.12.0')
+      expect(result.latestVersion).toBe('v22.13.0')
+      // Should show the patch update since it's within the same major version
+      expect(result.updateAvailable).toBe(true)
+
+      // Restore original version
+      Object.defineProperty(process, 'version', {
+        value: originalProcessVersion,
+        writable: true,
+        configurable: true,
+      })
+    })
+
+    it('should show all updates when policy is "all" (default)', async () => {
+      // Mock process.version to v20
+      Object.defineProperty(process, 'version', {
+        value: 'v20.19.0',
+        writable: true,
+        configurable: true,
+      })
+
+      // Use the default config service with 'all' policy
+      vi.spyOn(httpService, 'get').mockReturnValue(of(mockHttpResponse(mockNodeVersions)) as any)
+
+      const result = await statusService.getNodeJsVersionInfo() as NodeJsVersionInfo
+
+      expect(result.currentVersion).toBe('v20.19.0')
+      // Should show major version updates
+      expect(result.updateAvailable).toBe(true)
+
+      // Restore original version
+      Object.defineProperty(process, 'version', {
+        value: originalProcessVersion,
+        writable: true,
+        configurable: true,
+      })
     })
   })
 })

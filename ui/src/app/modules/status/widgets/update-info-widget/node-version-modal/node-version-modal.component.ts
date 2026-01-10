@@ -42,11 +42,13 @@ export class NodeVersionModalComponent implements OnInit {
 
   public loading = true
   public installedPlugins: PluginNodeCheck[] = []
+  public hasNode24OrAbove: boolean = false
   public nodeUpdatePolicyControl = new FormControl<'all' | 'none' | 'major'>('all')
 
   public async ngOnInit() {
     // Initialize the node update policy value
     this.nodeUpdatePolicyControl.setValue(this.$settings.env.nodeUpdatePolicy || 'all')
+    this.hasNode24OrAbove = satisfies(this.nodeVersion, '>=24.0.0', { includePrerelease: true })
 
     // Watch for changes and update the backend
     this.nodeUpdatePolicyControl.valueChanges

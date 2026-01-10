@@ -81,10 +81,12 @@
           }
         </li>
       </ul>
-
       @if (plugin.installedVersion) {
-      <ul class="list-group list-group-box mt-3 mb-0">
-        <li class="list-group-item text-center">{{ 'plugins.manage.update_preferences' | translate }}</li>
+      <div class="list-group mt-3 mb-0">
+        <div class="list-group-item text-center">
+          {{ 'plugins.manage.notifications' | translate }}
+          <span class="badge badge-primary ms-1">{{ 'common.labels.beta' | translate }}</span>
+        </div>
         <button
           type="button"
           class="list-group-item d-flex align-items-center text-start"
@@ -92,18 +94,18 @@
         >
           <div class="me-3">
             <i
-              class="fas fa-arrow-alt-circle-up fa-fw fa-lg"
+              class="fas fa-bell fa-2x"
               [class.primary-text]="updatePreferenceControl.value === 'stable'"
               [class.grey-text]="updatePreferenceControl.value !== 'stable'"
             ></i>
           </div>
           <div class="flex-grow-1">
             <div>{{ 'plugins.manage.update_pref_stable' | translate }}</div>
-            <div class="text-muted small">{{ 'plugins.manage.update_pref_stable_desc' | translate }}</div>
+            <small class="grey-text">{{ 'plugins.manage.update_pref_stable_desc' | translate }}</small>
           </div>
           @if (updatePreferenceControl.value === 'stable') {
           <div class="ms-3">
-            <i class="fas fa-check-circle primary-text"></i>
+            <i class="fas fa-xl fa-check-circle primary-text"></i>
           </div>
           }
         </button>
@@ -114,18 +116,18 @@
         >
           <div class="me-3">
             <i
-              class="fas fa-vial fa-fw fa-lg"
+              class="fas fa-vial fa-2x"
               [class.primary-text]="updatePreferenceControl.value === 'beta'"
               [class.grey-text]="updatePreferenceControl.value !== 'beta'"
             ></i>
           </div>
           <div class="flex-grow-1">
             <div>{{ 'plugins.manage.update_pref_beta' | translate }}</div>
-            <div class="text-muted small">{{ 'plugins.manage.update_pref_beta_desc' | translate }}</div>
+            <small class="grey-text">{{ 'plugins.manage.update_pref_beta_desc' | translate }}</small>
           </div>
           @if (updatePreferenceControl.value === 'beta') {
           <div class="ms-3">
-            <i class="fas fa-check-circle primary-text"></i>
+            <i class="fas fa-xl fa-check-circle primary-text"></i>
           </div>
           }
         </button>
@@ -136,22 +138,22 @@
         >
           <div class="me-3">
             <i
-              class="fas fa-bell-slash fa-fw fa-lg"
+              class="fas fa-bell-slash fa-2x"
               [class.primary-text]="updatePreferenceControl.value === 'none'"
               [class.grey-text]="updatePreferenceControl.value !== 'none'"
             ></i>
           </div>
           <div class="flex-grow-1">
             <div>{{ 'plugins.manage.update_pref_none' | translate }}</div>
-            <div class="text-muted small">{{ 'plugins.manage.update_pref_none_desc' | translate }}</div>
+            <small class="grey-text">{{ 'plugins.manage.update_pref_none_desc' | translate }}</small>
           </div>
           @if (updatePreferenceControl.value === 'none') {
           <div class="ms-3">
-            <i class="fas fa-check-circle primary-text"></i>
+            <i class="fas fa-xl fa-check-circle primary-text"></i>
           </div>
           }
         </button>
-      </ul>
+      </div>
       }
     </div>
     }

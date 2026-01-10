@@ -329,7 +329,6 @@ export class SettingsComponent implements OnInit {
         'setting-lighting',
         'setting-menu',
         'setting-temp',
-        'setting-betas',
         'setting-wallpaper',
       ],
       startup: [
@@ -405,7 +404,6 @@ export class SettingsComponent implements OnInit {
       'setting-lighting': this.$translate.instant('settings.display.lighting_mode'),
       'setting-menu': this.$translate.instant('settings.display.menu_mode'),
       'setting-temp': this.$translate.instant('settings.display.temp_units'),
-      'setting-betas': this.$translate.instant('settings.display.show_betas'),
       'setting-wallpaper': this.$translate.instant('settings.display.wallpaper'),
 
       // Startup section

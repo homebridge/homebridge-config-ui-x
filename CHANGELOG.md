@@ -2,6 +2,21 @@
 
 All notable changes to `homebridge-config-ui-x` will be documented in this file. This project tries to adhere to [Semantic Versioning](http://semver.org/).
 
+## v5.14.1 (Unreleased)
+
+### UI Changes
+
+- feat: node update preferences + dev docs improvements (#2685) (@seidnerj)
+- fix disable plugin showing incorrect `keepOrphans` (#2692) (@copilot)
+- feat: add separate beta preferences for plugins (#2687) (@seidnerj)
+- further tweaks for node + plugin update preferences
+
+### Homebridge Dependencies
+
+- `@homebridge/hap-client` @ `v3.1.2`
+- `@homebridge/node-pty-prebuilt-multiarch` @ `v0.13.1`
+- `@homebridge/plugin-ui-utils` @ `v2.1.2`
+
 ## v5.14.0 (2026-01-02)
 
 Wishing all our users a very happy and fulfilling 2026! 🎉
