@@ -175,6 +175,8 @@ export class LogsComponent implements OnInit, OnDestroy, CanComponentDeactivate 
     // Update the terminal font size
     if (this.$log.term) {
       this.$log.term.options.fontSize = this.selectedFontSize
+      // Trigger resize event to ensure proper terminal rendering
+      this.resizeEvent.next(undefined)
     }
   }
 
