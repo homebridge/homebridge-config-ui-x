@@ -10,7 +10,7 @@ import { ValidationPipe } from '@nestjs/common'
 import { FastifyAdapter } from '@nestjs/platform-fastify'
 import { Test } from '@nestjs/testing'
 import { copy, readJson, writeJson } from 'fs-extra'
-import { authenticator } from 'otplib'
+import { generate } from 'otplib'
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from 'vitest'
 
 import { UsersModule } from '../../src/modules/users/users.module.js'
@@ -207,7 +207,7 @@ describe('UsersController (e2e)', () => {
       },
       payload: {
         name: 'admin',
-        username: 'admin', // try change to existing username
+        username: 'admin', // try change to the existing username
       },
     })
 
@@ -358,7 +358,7 @@ describe('UsersController (e2e)', () => {
 
     let authFile: UserDto[] = await readJson(authFilePath)
     const otpSecret = authFile[0].otpSecret
-    const code = authenticator.generate(otpSecret)
+    const code = await generate({ secret: otpSecret })
     const payload: UserActivateOtpDto = {
       code,
     }
@@ -391,8 +391,8 @@ describe('UsersController (e2e)', () => {
     expect(testLoginWithoutOtp.statusCode).toBe(412)
     expect(testLoginWithoutOtp.json().message).toBe('2FA Code Required')
 
-    // Generate a otp to test a login with
-    const otp = authenticator.generate(otpSecret)
+    // Generate an otp to test a login with
+    const otp = await generate({ secret: otpSecret })
 
     // check logins pass with valid otp
     const testLoginWithOtp = await app.inject({

@@ -19,6 +19,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 ### Other Changes
 
 - run angular migrations `ngclass-to-class` + `style`
+- upgrade `otplib` to `v13` + migrate code
 
 ### Homebridge Dependencies
 

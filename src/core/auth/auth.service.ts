@@ -14,7 +14,7 @@ import {
 import { JwtService } from '@nestjs/jwt'
 import { pathExists, readJson, writeJson } from 'fs-extra/esm'
 import NodeCache from 'node-cache'
-import { authenticator } from 'otplib'
+import { generateSecret, generateURI, verify } from 'otplib'
 
 import { UserDto } from '../../modules/users/users.dto.js'
 import { ConfigService } from '../config/config.service.js'
@@ -30,11 +30,6 @@ export class AuthService {
     @Inject(Logger) private readonly logger: Logger,
   ) {
     this.checkAuthFile()
-
-    // OTP options
-    authenticator.options = {
-      window: 1,
-    }
   }
 
   /**
@@ -57,7 +52,7 @@ export class AuthService {
         throw new HttpException('2FA Code Required', 412)
       }
 
-      if (user.otpActive && !this.verifyOtpToken(user, otp)) {
+      if (user.otpActive && !await this.verifyOtpToken(user, otp)) {
         throw new HttpException('2FA Code Invalid', 412)
       }
 
@@ -471,14 +466,18 @@ export class AuthService {
       throw new ForbiddenException('2FA has already been activated.')
     }
 
-    user.otpSecret = authenticator.generateSecret()
+    user.otpSecret = generateSecret()
 
     await this.saveUserFile(authfile)
     const appName = `Homebridge UI (${this.configService.instanceId.slice(0, 7)})`
 
     return {
       timestamp: new Date(),
-      otpauth: authenticator.keyuri(user.username, appName, user.otpSecret),
+      otpauth: generateURI({
+        issuer: appName,
+        label: user.username,
+        secret: user.otpSecret,
+      }),
     }
   }
 
@@ -497,7 +496,13 @@ export class AuthService {
       throw new BadRequestException('2FA has not been setup.')
     }
 
-    if (authenticator.verify({ token: code, secret: user.otpSecret })) {
+    const { valid } = await verify({
+      token: code,
+      secret: user.otpSecret,
+      epochTolerance: 30,
+    })
+
+    if (valid) {
       user.otpActive = true
       await this.saveUserFile(authfile)
       this.logger.warn(`Activated 2FA for ${user.username}.`)
@@ -534,7 +539,7 @@ export class AuthService {
   /**
    * Verify an OTP token for a user and prevent it being used more than once
    */
-  verifyOtpToken(user: UserDto, otp: string): boolean {
+  async verifyOtpToken(user: UserDto, otp: string): Promise<boolean> {
     const otpCacheKey = user.username + otp
 
     if (this.otpUsageCache.get(otpCacheKey)) {
@@ -542,7 +547,13 @@ export class AuthService {
       return false
     }
 
-    if (authenticator.verify({ token: otp, secret: user.otpSecret })) {
+    const { valid } = await verify({
+      token: otp,
+      secret: user.otpSecret,
+      epochTolerance: 30,
+    })
+
+    if (valid) {
       this.otpUsageCache.set(otpCacheKey, 'true')
       return true
     }
