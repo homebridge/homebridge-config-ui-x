@@ -20,7 +20,10 @@ export class DisablePluginComponent {
   @Input() keepOrphans = false
 
   public readonly keepOrphansName = `<code>${this.$translate.instant('settings.startup.keep_accessories')}</code>`
-  public readonly keepOrphansValue = `<code>${this.keepOrphans}</code>`
+
+  public get keepOrphansValue(): string {
+    return `<code>${this.keepOrphans}</code>`
+  }
 
   public dismissModal() {
     this.$activeModal.dismiss('Dismiss')
