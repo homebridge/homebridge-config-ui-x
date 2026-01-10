@@ -1,6 +1,6 @@
 import { HttpErrorResponse, HttpResponse } from '@angular/common/http'
 import { Component, ElementRef, HostListener, inject, OnDestroy, OnInit, signal, viewChild } from '@angular/core'
-import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms'
+import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { NgbModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { saveAs } from 'file-saver'
@@ -22,7 +22,7 @@ export interface CanComponentDeactivate {
   templateUrl: './logs.component.html',
   styleUrls: ['./logs.component.scss'],
   standalone: true,
-  imports: [NgbTooltip, TranslatePipe, ReactiveFormsModule],
+  imports: [NgbTooltip, TranslatePipe, ReactiveFormsModule, FormsModule],
 })
 export class LogsComponent implements OnInit, OnDestroy, CanComponentDeactivate {
   private $api = inject(ApiService)
@@ -45,6 +45,11 @@ export class LogsComponent implements OnInit, OnDestroy, CanComponentDeactivate 
   public form = new FormGroup({
     query: new FormControl<string>(''),
   })
+
+  // Font size options
+  public fontSizes = [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+  public selectedFontSize = 13
+  private readonly fontSizeStorageKey = 'logs-font-size'
 
   // Helper to check if search input is invalid
   public get searchInputInvalid(): boolean {
@@ -74,11 +79,20 @@ export class LogsComponent implements OnInit, OnDestroy, CanComponentDeactivate 
       }
     }
 
+    // Load font size from localStorage
+    const savedFontSize = window.localStorage.getItem(this.fontSizeStorageKey)
+    if (savedFontSize) {
+      const parsedSize = Number.parseInt(savedFontSize, 10)
+      if (this.fontSizes.includes(parsedSize)) {
+        this.selectedFontSize = parsedSize
+      }
+    }
+
     // Start the terminal
     this.$log.startTerminal(this.termTarget(), {
       allowProposedApi: true,
       allowTransparency: true,
-      fontSize: 13,
+      fontSize: this.selectedFontSize,
       lineHeight: 1.2,
     }, this.resizeEvent)
 
@@ -152,6 +166,16 @@ export class LogsComponent implements OnInit, OnDestroy, CanComponentDeactivate 
     this.showExitButton.set(false)
     this.$log.clearSearchFilter()
     this.$log.scrollToBottom()
+  }
+
+  public onFontSizeChange(): void {
+    // Save to localStorage
+    window.localStorage.setItem(this.fontSizeStorageKey, this.selectedFontSize.toString())
+
+    // Update the terminal font size
+    if (this.$log.term) {
+      this.$log.term.options.fontSize = this.selectedFontSize
+    }
   }
 
   public canDeactivate(nextUrl?: string): Promise<boolean> {

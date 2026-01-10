@@ -25,6 +25,32 @@
   }
 }
 
+.font-size-selector {
+  background-color: #111111 !important;
+  color: #999999 !important;
+  border: 1px solid #242424 !important;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+
+  @media (hover: hover) {
+    &:hover {
+      border: 1px solid #242424 !important;
+      color: #eeeeee !important;
+    }
+  }
+
+  &:focus {
+    border: 1px solid #242424 !important;
+    box-shadow: inherit !important;
+    color: #eeeeee !important;
+  }
+
+  option {
+    background-color: #111111;
+    color: #999999;
+  }
+}
+
 .search-bar {
   background-color: #111111 !important;
   color: #999999 !important;
