@@ -19,13 +19,7 @@
     </div>
     } @if (!loading) {
     <div class="text-center">
-      <img
-        [src]="plugin.icon"
-        (error)="handleIconError()"
-        alt=""
-        class="mb-3 plugin-icon-card"
-        aria-hidden="true"
-      />
+      <img [src]="plugin.icon" (error)="handleIconError()" alt="" class="mb-3 plugin-icon-card" aria-hidden="true" />
     </div>
     <ul class="mb-3">
       <li [innerHTML]="'child_bridge.about' | translate: { link: linkChildBridges }"></li>
@@ -106,11 +100,7 @@
               ? 'child_bridge.config.or_link'
               : 'child_bridge.config.use') | translate"
           />
-          <label
-            [for]="'toggleExternalBridgeInput_' + selectedBlock"
-            class="rendux-label"
-            aria-hidden="true"
-          ></label>
+          <label [for]="'toggleExternalBridgeInput_' + selectedBlock" class="rendux-label" aria-hidden="true"></label>
         </div>
       </li>
       } @if (currentlySelectedLink) {

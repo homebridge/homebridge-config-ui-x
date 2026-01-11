@@ -1,9 +1,4 @@
-<div
-  class="modal-content"
-  style="min-height: 300px"
-  role="presentation"
-  aria-describedby="uninstall-confirmation-desc"
->
+<div class="modal-content" style="min-height: 300px" role="presentation" aria-describedby="uninstall-confirmation-desc">
   <div class="modal-header">
     <h5 class="modal-title">{{ plugin.displayName || plugin.name }}</h5>
     <button
@@ -15,11 +10,7 @@
       [disabled]="uninstalling"
     ></button>
   </div>
-  <div
-    id="uninstall-confirmation-desc"
-    class="visually-hidden"
-    role="presentation"
-  >
+  <div id="uninstall-confirmation-desc" class="visually-hidden" role="presentation">
     {{ 'plugins.uninstall_remove_confirmation' | translate: { pluginName: plugin.displayName } }}
   </div>
 

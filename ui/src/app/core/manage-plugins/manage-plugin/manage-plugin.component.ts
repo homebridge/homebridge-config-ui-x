@@ -136,10 +136,14 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
 
   private applyXtermA11yPatches() {
     const host = this.termTarget as HTMLElement | undefined
-    if (!host) return
+    if (!host) {
+      return
+    }
 
     const xtermRoot = host.querySelector('.xterm') as HTMLElement | null
-    if (!xtermRoot) return
+    if (!xtermRoot) {
+      return
+    }
 
     const ta = xtermRoot.querySelector('textarea') as HTMLTextAreaElement | null
     if (ta) {
