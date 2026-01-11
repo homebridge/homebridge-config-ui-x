@@ -1,6 +1,6 @@
 import { Component, HostListener, inject, OnDestroy, OnInit } from '@angular/core'
 import { NgbModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap'
-import { TranslatePipe } from '@ngx-translate/core'
+import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { GridsterComponent, GridsterConfig, GridsterItem, GridsterItemComponent } from 'angular-gridster2'
 import { firstValueFrom, Subject } from 'rxjs'
 import { take } from 'rxjs/operators'
@@ -38,8 +38,14 @@ export class StatusComponent implements OnInit, OnDestroy {
   private $notification = inject(NotificationService)
   private $settings = inject(SettingsService)
   private $ws = inject(WsService)
+  private $translate = inject(TranslateService)
   private isUnlocked = false
   private io: IoNamespace
+
+  private actionTick = 0
+
+  private reorderAnnounceTimer: any = null
+  private reorderFocusDelayMs = 7000
 
   public isAdmin = this.$auth.user.admin
   public saveWidgetsEvent = new Subject()
@@ -52,8 +58,30 @@ export class StatusComponent implements OnInit, OnDestroy {
     showWidgetConfigure: (window.innerWidth < 576),
   }
 
+  public actionLiveMessage = ''
+
+  public reorderMode = false
+  public selectedReorderComponent: string | null = null
+
+  public get reorderComponents(): string[] {
+    return this.dashboard
+      .map((x: any) => x?.component)
+      .filter((c: any) => typeof c === 'string' && c.length > 0)
+  }
+
+  private speakAction(message: string) {
+    this.actionTick = (this.actionTick + 1) % 10
+    this.actionLiveMessage = `${message}${'\u200B'.repeat(this.actionTick)}`
+  }
+
+  private clearReorderAnnounceTimer() {
+    if (this.reorderAnnounceTimer) {
+      clearTimeout(this.reorderAnnounceTimer)
+      this.reorderAnnounceTimer = null
+    }
+  }
+
   public ngOnInit() {
-    // Set page title (status page should only show instance name)
     this.$settings.setPageTitle()
 
     this.currentYear = new Date().getFullYear()
@@ -88,8 +116,6 @@ export class StatusComponent implements OnInit, OnDestroy {
       this.consoleStatus = 'up'
     } else {
       this.consoleStatus = 'down'
-
-      // Get the dashboard layout when the server is up
       this.io.connected.pipe(take(1)).subscribe(() => {
         this.getLayout()
       })
@@ -105,21 +131,17 @@ export class StatusComponent implements OnInit, OnDestroy {
     })
 
     this.io.socket.on('homebridge-status', (data: HomebridgeStatusResponse) => {
-      // Check if client is up-to-date
       if (data.packageVersion && data.packageVersion !== this.$settings.uiVersion) {
         window.location.reload()
       }
     })
 
-    // This allows widgets to trigger a save to the grid layout
-    // E.g. when the order of the accessories in the accessories widget changes
     this.saveWidgetsEvent.subscribe({
       next: () => {
         this.gridChangedEvent()
       },
     })
 
-    // If raspberry pi, do a check for throttled
     if (this.$settings.env.runningOnRaspberryPi) {
       this.io.request('get-raspberry-pi-throttled-status').subscribe((throttled) => {
         this.$notification.raspberryPiThrottled.next(throttled)
@@ -132,7 +154,11 @@ export class StatusComponent implements OnInit, OnDestroy {
     this.options.resizable.enabled = false
     this.options.api.optionsChanged()
     this.isUnlocked = false
+
+    this.exitReorderMode(false, false)
+
     this.setLayout(this.dashboard)
+    this.speakAction('widgets locked, settings and re-ordering options hidden.')
   }
 
   public unlockLayout() {
@@ -141,9 +167,248 @@ export class StatusComponent implements OnInit, OnDestroy {
     this.options.api.optionsChanged()
     this.isUnlocked = true
     this.setLayout(this.dashboard)
+    this.speakAction('widgets unlocked, settings and re-ordering options available.')
+  }
+
+  public toggleReorderMode() {
+    if (!this.reorderMode) {
+      this.enterReorderMode()
+      return
+    }
+    this.exitReorderMode(true, true)
+  }
+
+  private enterReorderMode() {
+    this.sanitizeDashboard()
+    this.reorderMode = true
+
+    const list = this.reorderComponents
+    this.selectedReorderComponent = list[0] || null
+
+    this.speakAction(
+      'Reorder mode enabled. Tab and Shift Tab move between widgets. Up and Down arrows move the selected widget. Left arrow moves to top. Right arrow moves to bottom. Press Escape to exit reorder mode.',
+    )
+
+    this.clearReorderAnnounceTimer()
+
+    if (this.selectedReorderComponent) {
+      this.reorderAnnounceTimer = setTimeout(() => {
+        this.reorderAnnounceTimer = null
+        if (!this.reorderMode) return
+        if (!this.selectedReorderComponent) return
+        this.focusReorderItem(this.selectedReorderComponent)
+      }, this.reorderFocusDelayMs)
+    }
+  }
+
+  private exitReorderMode(apply: boolean, announce: boolean) {
+    this.clearReorderAnnounceTimer()
+
+    if (apply) {
+      this.applyReorderToDashboard()
+      this.gridChangedEvent()
+    }
+
+    this.reorderMode = false
+    this.selectedReorderComponent = null
+
+    if (announce) {
+      this.speakAction('Reorder mode disabled.')
+    }
+  }
+
+  private sanitizeDashboard() {
+    const before = this.dashboard.length
+    this.dashboard = (this.dashboard as any[]).filter((x) => x && typeof x.component === 'string' && x.component.length > 0)
+    const after = this.dashboard.length
+
+    if (after !== before && this.reorderMode) {
+      this.syncReorderState()
+    }
+  }
+
+  private syncReorderState() {
+    this.sanitizeDashboard()
+
+    const list = this.reorderComponents
+    if (!list.length) {
+      this.selectedReorderComponent = null
+      return
+    }
+
+    if (!this.selectedReorderComponent || !list.includes(this.selectedReorderComponent)) {
+      this.selectedReorderComponent = list[0]
+    }
+
+    if (this.reorderMode && this.selectedReorderComponent) {
+      setTimeout(() => this.focusReorderItem(this.selectedReorderComponent!), 0)
+    }
+  }
+
+  private applyReorderToDashboard() {
+    const list = this.reorderComponents
+    const byComponent = new Map<string, any>((this.dashboard as any[]).map((x) => [x.component, x]))
+
+    const reordered = list
+      .map((c) => byComponent.get(c))
+      .filter(Boolean)
+
+    for (let i = 0; i < reordered.length; i++) {
+      reordered[i].mobileOrder = i
+    }
+
+    this.dashboard = reordered
+  }
+
+  public getReorderPosition(component: string): number {
+    const list = this.reorderComponents
+    const idx = list.indexOf(component)
+    return idx > -1 ? idx + 1 : 1
+  }
+
+  public setSelectedReorderComponent(component: string) {
+    if (!this.reorderMode) return
+
+    const list = this.reorderComponents
+    if (!list.includes(component)) {
+      this.syncReorderState()
+      return
+    }
+
+    this.selectedReorderComponent = component
+  }
+
+  public getReorderItemAriaLabel(component: string): string {
+    const name = this.getWidgetDisplayName(component)
+    const list = this.reorderComponents
+    const pos = this.getReorderPosition(component)
+    const total = list.length || 1
+    return `${name}. Position ${pos} of ${total}.`
+  }
+
+  private focusReorderItem(component: string) {
+    const el = document.getElementById(`reorder-item-${component}`) as HTMLElement | null
+    if (el) el.focus()
+  }
+
+  private selectNext(prev: boolean) {
+    if (!this.reorderMode) return
+
+    const list = this.reorderComponents
+    if (!list.length) return
+
+    const current =
+      this.selectedReorderComponent && list.includes(this.selectedReorderComponent)
+        ? this.selectedReorderComponent
+        : list[0]
+
+    const idx = list.indexOf(current)
+    const nextIdx = prev
+      ? (idx - 1 + list.length) % list.length
+      : (idx + 1) % list.length
+
+    const nextComponent = list[nextIdx]
+    this.selectedReorderComponent = nextComponent
+
+    setTimeout(() => this.focusReorderItem(nextComponent), 0)
+  }
+
+  public onReorderKeydown(event: KeyboardEvent) {
+    if (!this.reorderMode) return
+
+    const key = event.key
+    const shift = event.shiftKey
+
+    let handled = true
+
+    if (key === 'Tab') {
+      this.selectNext(shift)
+    } else if (key === 'ArrowUp') {
+      this.moveSelectedBy(-1)
+    } else if (key === 'ArrowDown') {
+      this.moveSelectedBy(1)
+    } else if (key === 'ArrowLeft') {
+      this.moveSelectedToEdge('top')
+    } else if (key === 'ArrowRight') {
+      this.moveSelectedToEdge('bottom')
+    } else if (key === 'Escape') {
+      this.exitReorderMode(true, true)
+    } else {
+      handled = false
+    }
+
+    if (handled) {
+      event.preventDefault()
+      event.stopPropagation()
+    }
+  }
+
+  private moveSelectedBy(delta: number) {
+    const list = this.reorderComponents
+    if (!list.length) return
+
+    const selected =
+      this.selectedReorderComponent && list.includes(this.selectedReorderComponent)
+        ? this.selectedReorderComponent
+        : list[0]
+
+    const idx = list.indexOf(selected)
+    const target = idx + delta
+    if (target < 0 || target >= list.length) return
+
+    const byComponent = new Map<string, any>((this.dashboard as any[]).map((x) => [x.component, x]))
+    const newOrder = [...list]
+    newOrder.splice(idx, 1)
+    newOrder.splice(target, 0, selected)
+
+    this.dashboard = newOrder.map((c) => byComponent.get(c)).filter(Boolean)
+    this.selectedReorderComponent = selected
+
+    const name = this.getWidgetDisplayName(selected)
+    this.speakAction(`Moved ${name} to position ${target + 1} of ${newOrder.length}.`)
+
+    setTimeout(() => this.focusReorderItem(selected), 0)
+  }
+
+  private moveSelectedToEdge(edge: 'top' | 'bottom') {
+    const list = this.reorderComponents
+    if (!list.length) return
+
+    const selected =
+      this.selectedReorderComponent && list.includes(this.selectedReorderComponent)
+        ? this.selectedReorderComponent
+        : list[0]
+
+    const idx = list.indexOf(selected)
+    if (idx < 0) return
+
+    const byComponent = new Map<string, any>((this.dashboard as any[]).map((x) => [x.component, x]))
+    const newOrder = [...list]
+    newOrder.splice(idx, 1)
+
+    const target = edge === 'top' ? 0 : newOrder.length
+    newOrder.splice(target, 0, selected)
+
+    this.dashboard = newOrder.map((c) => byComponent.get(c)).filter(Boolean)
+    this.selectedReorderComponent = selected
+
+    const finalPos = edge === 'top' ? 1 : newOrder.length
+    const name = this.getWidgetDisplayName(selected)
+    this.speakAction(`Moved ${name} to ${edge}, position ${finalPos} of ${newOrder.length}.`)
+
+    setTimeout(() => this.focusReorderItem(selected), 0)
+  }
+
+  public manageWidgetByComponent(component: string) {
+    const item = (this.dashboard as any[]).find((x) => x?.component === component) as Widget | undefined
+    if (!item) return
+    this.manageWidget(item)
   }
 
   public addWidget() {
+    this.sanitizeDashboard()
+    this.syncReorderState()
+
     const ref = this.$modal.open(WidgetVisibilityComponent, {
       size: 'lg',
       backdrop: 'static',
@@ -155,15 +420,13 @@ export class StatusComponent implements OnInit, OnDestroy {
 
     ref.result
       .then((widget) => {
-        const index = this.dashboard.findIndex(x => x.component === widget.component)
+        const index = this.dashboard.findIndex((x: any) => x.component === widget.component)
         if (index > -1) {
-          // Widget already exists, remove it
           this.dashboard.splice(index, 1)
           this.gridChangedEvent()
           return
         }
 
-        // Add the widget
         const item: Widget = {
           x: undefined,
           y: undefined,
@@ -186,10 +449,58 @@ export class StatusComponent implements OnInit, OnDestroy {
 
         setTimeout(() => {
           const widgetElement = document.getElementById(widget.component)
-          widgetElement.scrollIntoView()
+          if (widgetElement) widgetElement.scrollIntoView()
         }, 500)
       })
-      .catch(() => { /* modal dismissed */ })
+      .catch(() => { })
+      .then(() => {
+        this.sanitizeDashboard()
+        this.syncReorderState()
+      })
+  }
+
+  private getWidgetDisplayName(component: string): string {
+    switch (component) {
+      case 'UpdateInfoWidgetComponent':
+        return this.$translate.instant('status.services.updates')
+      case 'WeatherWidgetComponent':
+        return this.$translate.instant('status.widget.weather.title_weather')
+      case 'AccessoriesWidgetComponent':
+        return this.$translate.instant('menu.label_accessories')
+      case 'BridgesWidgetComponent':
+        return this.$translate.instant('child_bridge.bridges')
+      case 'CpuWidgetComponent':
+        return this.$translate.instant('status.cpu.title_cpu')
+      case 'MemoryWidgetComponent':
+        return this.$translate.instant('status.memory.title_memory')
+      case 'NetworkWidgetComponent':
+        return this.$translate.instant('status.network.title_network')
+      case 'UptimeWidgetComponent':
+        return this.$translate.instant('status.uptime.title_uptime')
+      case 'SystemInfoWidgetComponent':
+        return this.$translate.instant('status.widget.info')
+      case 'HapQrcodeWidgetComponent':
+        return this.$translate.instant('status.widget.add.label_pairing_code')
+      case 'HomebridgeLogsWidgetComponent':
+        return this.$translate.instant('status.widget.homebridge_logs')
+      case 'TerminalWidgetComponent':
+        return `Homebridge ${this.$translate.instant('menu.docker.terminal')}`
+      case 'ClockWidgetComponent':
+        return this.$translate.instant('status.widget.clock')
+      default: {
+        const base = (component || '')
+          .replace(/WidgetComponent$/, '')
+          .replace(/Component$/, '')
+          .replace(/Widget$/, '')
+        const pretty = base.replace(/([a-z0-9])([A-Z])/g, '$1 $2').trim()
+        return pretty || component
+      }
+    }
+  }
+
+  public getWidgetSettingsAriaLabel(item: { component?: string }): string {
+    const name = this.getWidgetDisplayName(item?.component || '')
+    return `${name} settings`
   }
 
   public manageWidget(item: Widget) {
@@ -203,7 +514,7 @@ export class StatusComponent implements OnInit, OnDestroy {
         this.gridChangedEvent()
         item.$configureEvent.next()
       })
-      .catch(() => { /* modal dismissed */ })
+      .catch(() => { })
   }
 
   public openCreditsModal() {
@@ -214,6 +525,7 @@ export class StatusComponent implements OnInit, OnDestroy {
   }
 
   public ngOnDestroy() {
+    this.clearReorderAnnounceTimer()
     this.io.end()
     this.saveWidgetsEvent.complete()
   }
@@ -226,32 +538,31 @@ export class StatusComponent implements OnInit, OnDestroy {
 
       let saveNeeded = false
       this.setLayout(layout.map((item: GridsterItem) => {
-        // Renamed between v4.68.0 and v4.69.0
-        if (item.component === 'HomebridgeStatusWidgetComponent') {
-          item.component = 'UpdateInfoWidgetComponent'
+        if ((item as any).component === 'HomebridgeStatusWidgetComponent') {
+          ;(item as any).component = 'UpdateInfoWidgetComponent'
           saveNeeded = true
-        } else if (item.component === 'ChildBridgeWidgetComponent') {
-          item.component = 'BridgesWidgetComponent'
+        } else if ((item as any).component === 'ChildBridgeWidgetComponent') {
+          ;(item as any).component = 'BridgesWidgetComponent'
           saveNeeded = true
         }
 
-        // Hide terminal for non-admin users
-        if (item.component === 'TerminalWidgetComponent' && !this.isAdmin) {
+        if ((item as any).component === 'TerminalWidgetComponent' && !this.isAdmin) {
           return null
         }
 
-        // Hide items not in the list of available widgets
-        if (!AVAILABLE_WIDGETS.includes(item.component)) {
+        if (!AVAILABLE_WIDGETS.includes((item as any).component)) {
           return null
         }
 
-        // If accessory control is disabled (insecure mode is disabled), hide the accessories widget
-        if (item.component === 'AccessoriesWidgetComponent' && !this.$settings.env.enableAccessories) {
+        if ((item as any).component === 'AccessoriesWidgetComponent' && !this.$settings.env.enableAccessories) {
           return null
         }
 
         return item
       }).filter(Boolean))
+
+      this.sanitizeDashboard()
+      this.syncReorderState()
 
       if (saveNeeded) {
         this.gridChangedEvent()
@@ -260,14 +571,16 @@ export class StatusComponent implements OnInit, OnDestroy {
   }
 
   private setLayout(layout: GridsterItem[]) {
-    this.dashboard = layout.map((item) => {
-      // Preserve existing Subjects to maintain subscriptions, or create new ones if they don't exist
+    this.dashboard = layout.map((item: any) => {
       item.$resizeEvent = item.$resizeEvent || new Subject()
       item.$configureEvent = item.$configureEvent || new Subject()
       item.$saveWidgetsEvent = this.saveWidgetsEvent
       item.draggable = this.options.draggable.enabled
       return item
     })
+
+    this.sanitizeDashboard()
+    this.syncReorderState()
   }
 
   private resetLayout() {
@@ -283,17 +596,13 @@ export class StatusComponent implements OnInit, OnDestroy {
   }
 
   private async gridChangedEvent() {
-    // Sort the array to ensure mobile displays correctly
-    this.dashboard.sort((a: GridsterItem, b: GridsterItem) => a.mobileOrder - b.mobileOrder)
+    this.dashboard.sort((a: any, b: any) => (a.mobileOrder ?? 0) - (b.mobileOrder ?? 0))
 
-    // Remove private properties
-    const layout = this.dashboard.map((item) => {
-      // eslint-disable-next-line unused-imports/no-unused-vars
+    const layout = this.dashboard.map((item: any) => {
       const { $resizeEvent, $configureEvent, $saveWidgetsEvent, ...cleanItem } = item
       return cleanItem
     })
 
-    // Save to server
     try {
       await firstValueFrom(this.io.request('set-dashboard-layout', layout))
     } catch (e) {
@@ -302,11 +611,21 @@ export class StatusComponent implements OnInit, OnDestroy {
     }
   }
 
+  @HostListener('document:keydown', ['$event'])
+  onDocumentKeydown(event: KeyboardEvent) {
+    // When reorder mode is active, trap Tab navigation to prevent accidentally tabbing out of widget selection
+    if (this.reorderMode && event.key === 'Tab') {
+      event.preventDefault()
+      event.stopPropagation()
+      
+      // Forward to the reorder keyboard handler to move between widgets
+      this.selectNext(event.shiftKey)
+    }
+  }
+
   @HostListener('window:beforeunload', ['$event'])
   onBeforeUnload(event: BeforeUnloadEvent) {
-    // Check if any terminal widget needs to warn about navigation
-    const hasTerminalWidget = this.dashboard.some(item => item.component === 'TerminalWidgetComponent')
-
+    const hasTerminalWidget = this.dashboard.some((item: any) => item.component === 'TerminalWidgetComponent')
     if (hasTerminalWidget) {
       return this.$navigationGuard.handleBeforeUnload(event)
     }
@@ -314,13 +633,10 @@ export class StatusComponent implements OnInit, OnDestroy {
   }
 
   public canDeactivate(): Promise<boolean> | boolean {
-    // Check if any terminal widget needs to confirm navigation
-    const hasTerminalWidget = this.dashboard.some(item => item.component === 'TerminalWidgetComponent')
-
+    const hasTerminalWidget = this.dashboard.some((item: any) => item.component === 'TerminalWidgetComponent')
     if (!hasTerminalWidget) {
       return true
     }
-
     return this.$navigationGuard.canDeactivate()
   }
 }

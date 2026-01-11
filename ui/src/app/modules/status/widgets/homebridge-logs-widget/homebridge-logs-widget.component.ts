@@ -33,8 +33,12 @@ export class HomebridgeLogsWidgetComponent implements OnInit, OnDestroy {
 
   public terminalHeight = 200
   public theme: 'dark' | 'light' = 'dark'
+  public isExpanded = false
+
+  public contentId = ''
 
   public ngOnInit() {
+    this.contentId = `logs-content-${globalThis.crypto?.randomUUID?.() || Math.random().toString(36).slice(2)}`
     this.fontSize = this.widget.fontSize || 15
     this.fontWeight = Number.parseInt(this.widget.fontWeight || '400')
     if (this.$settings.actualLightingMode === 'dark') {
@@ -45,6 +49,8 @@ export class HomebridgeLogsWidgetComponent implements OnInit, OnDestroy {
     setTimeout(() => {
       this.$log.startTerminal(this.termTarget(), {
         cursorBlink: false,
+        screenReaderMode: true,
+        disableStdin: true,
         theme: this.theme !== 'light'
           ? {
               background: '#2b2b2b',
@@ -60,6 +66,35 @@ export class HomebridgeLogsWidgetComponent implements OnInit, OnDestroy {
         fontSize: this.fontSize,
         fontWeight: this.fontWeight,
       }, this.resizeEvent)
+
+      // Hide screen reader elements except the list
+      setTimeout(() => {
+        const logContainer = this.termTarget()?.nativeElement
+        if (logContainer) {
+          // Hide the textarea input
+          const textarea = logContainer.querySelector('textarea')
+          if (textarea) {
+            textarea.setAttribute('aria-hidden', 'true')
+            textarea.setAttribute('tabindex', '-1')
+          }
+          
+          // Hide the live region that duplicates all text
+          const liveRegion = logContainer.querySelector('[aria-live]')
+          if (liveRegion && !liveRegion.hasAttribute('role')) {
+            liveRegion.setAttribute('aria-hidden', 'true')
+          }
+          
+          // Hide any standalone text content that's not in the list
+          const screenReaderDiv = logContainer.querySelector('.xterm-accessibility')
+          if (screenReaderDiv) {
+            Array.from(screenReaderDiv.children).forEach((child: HTMLElement) => {
+              if (child.tagName !== 'UL' && !child.hasAttribute('role')) {
+                child.setAttribute('aria-hidden', 'true')
+              }
+            })
+          }
+        }
+      }, 100)
     })
 
     this.resizeEvent.subscribe({
@@ -110,6 +145,19 @@ export class HomebridgeLogsWidgetComponent implements OnInit, OnDestroy {
 
   public ngOnDestroy() {
     this.$log.destroyTerminal()
+  }
+
+  public toggleExpanded(event: Event) {
+    // Prevent drag handler from interfering
+    event.stopPropagation()
+    this.isExpanded = !this.isExpanded
+    
+    // Trigger resize when expanding to ensure terminal renders properly
+    if (this.isExpanded) {
+      setTimeout(() => {
+        this.resizeEvent.next(undefined)
+      }, 350) // Wait for animation to complete
+    }
   }
 
   private getTerminalHeight(): number {
