@@ -112,15 +112,17 @@ export class PluginConfigComponent implements OnInit {
     }
   }
 
-  public blockShown(event: string) {
-    this.show = event
+  public blockShown(event: any) {
+    const id = typeof event === 'string' ? event : event?.panelId
+    this.show = id || ''
     for (const block of this.pluginConfig) {
       block.name = block.config.name || block.name
     }
   }
 
-  public blockHidden(event: string) {
-    if (this.show === event) {
+  public blockHidden(event: any) {
+    const id = typeof event === 'string' ? event : event?.panelId
+    if (this.show === id) {
       this.show = ''
     }
   }

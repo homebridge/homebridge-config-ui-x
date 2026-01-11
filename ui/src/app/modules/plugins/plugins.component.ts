@@ -178,7 +178,14 @@ export class PluginsComponent implements OnInit, OnDestroy, CanComponentDeactiva
   }
 
   public onClearSearch() {
+    this.isSearchMode = false
+    this.form.setValue({ query: '' })
+    this.showExitButton = false
     this.loadInstalledPlugins()
+
+    setTimeout(() => {
+      this.searchInput?.nativeElement?.focus()
+    }, 0)
   }
 
   public onSubmit({ value }) {
@@ -205,7 +212,9 @@ export class PluginsComponent implements OnInit, OnDestroy, CanComponentDeactiva
       window.document.querySelector('body').classList.remove('bg-black')
       this.tab = 'main'
       this.showSearchBar = true
-      setTimeout(() => this.searchInput.nativeElement.focus(), 0)
+      setTimeout(() => {
+        this.searchInput?.nativeElement?.focus()
+      }, 0)
     }
   }
 

@@ -1,6 +1,6 @@
-<div class="modal-content">
+<div class="modal-content" role="dialog" aria-modal="true" aria-labelledby="plugin-logs-title">
   <div class="modal-header">
-    <h5 class="modal-title">{{ plugin.displayName || plugin.name }}</h5>
+    <h5 class="modal-title" id="plugin-logs-title">{{ plugin.displayName || plugin.name }}</h5>
     <button
       type="button"
       class="btn-close"
@@ -29,31 +29,37 @@
     <div class="text-center"></div>
     <div class="text-end">
       <button
+        type="button"
+        #downloadButton
         class="btn btn-primary"
         (click)="downloadLogFile()"
         [attr.aria-label]="'logs.title_download_log_file' | translate"
         [ngbTooltip]="'logs.title_download_log_file' | translate"
-        container="modal"
+        (shown)="suppressTooltipA11y(downloadButton)"
+        container="body"
         placement="top"
         [openDelay]="150"
         triggers="hover"
         [disabled]="midAction"
       >
-        <i class="fas fa-download"></i>
+        <i class="fas fa-download" aria-hidden="true"></i>
       </button>
       @if (childBridges.length) {
       <button
+        type="button"
+        #restartButton
         class="btn btn-danger ms-3"
         (click)="restartChildBridges()"
         [attr.aria-label]="(childBridges.length > 1 ? 'child_bridge.restart_plural' : 'child_bridge.restart') | translate"
         [ngbTooltip]="(childBridges.length > 1 ? 'child_bridge.restart_plural' : 'child_bridge.restart') | translate"
-        container="modal"
+        (shown)="suppressTooltipA11y(restartButton)"
+        container="body"
         placement="top"
         [openDelay]="150"
         triggers="hover"
         [disabled]="midAction"
       >
-        <i class="fas fa-power-off"></i>
+        <i class="fas fa-power-off" aria-hidden="true"></i>
       </button>
       }
     </div>

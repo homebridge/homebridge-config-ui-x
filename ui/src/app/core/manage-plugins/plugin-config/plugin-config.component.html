@@ -119,8 +119,14 @@
         triggers="hover"
       ></i>
       } @if (!schema.singular) {
-      <button type="button" class="btn btn-elegant me-2" data-dismiss="modal" (click)="addBlock()">
-        <i class="fa fa-plus"></i>
+      <button
+        type="button"
+        class="btn btn-elegant me-2"
+        data-dismiss="modal"
+        (click)="addBlock()"
+        [attr.aria-label]="'Add new item'"
+      >
+        <i class="fa fa-plus" aria-hidden="true"></i>
       </button>
       }
       <button
@@ -133,7 +139,7 @@
         @if (!saveInProgress) {
         <span>{{ 'form.button_save' | translate }}</span>
         } @if (saveInProgress) {
-        <i class="fas fa-circle-notch fa-spin"></i>
+        <i class="fas fa-circle-notch fa-spin" aria-hidden="true"></i>
         }
       </button>
     </div>

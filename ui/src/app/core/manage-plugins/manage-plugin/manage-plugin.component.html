@@ -9,7 +9,21 @@
       (click)="dismissModal()"
     ></button>
   </div>
-  <div [hidden]="!onlineUpdateOk || actionComplete || releaseNotesShow" id="plugin-log-output" class="modal-body"></div>
+  <div class="visually-hidden" role="status" aria-live="polite" aria-atomic="true">
+    {{ actionLiveMessage }}
+  </div>
+
+  <div
+    id="plugin-terminal-wrapper"
+    [attr.aria-hidden]="terminalAriaHidden ? 'true' : null"
+  >
+    <div
+      [hidden]="!onlineUpdateOk || actionComplete || releaseNotesShow"
+      id="plugin-log-output"
+      class="modal-body"
+      tabindex="-1"
+    ></div>
+  </div>
   @if (actionComplete) {
   <div class="modal-body plugin-modal-body">
     @if (justUpdatedPlugin) {

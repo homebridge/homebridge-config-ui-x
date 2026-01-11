@@ -13,9 +13,9 @@
             <div class="ms-auto">
               <!-- update available -->
               @if (plugin.installedVersion && plugin.updateAvailable && !childBridgeRestartInProgress) {
-              <a
-                href="javascript:void(0)"
-                class="card-link"
+              <button
+                type="button"
+                class="card-link btn btn-link p-0 text-decoration-none"
                 (click)="checkAndUpdatePlugin()"
                 container="body"
                 [openDelay]="150"
@@ -26,16 +26,17 @@
                 <i
                   class="far fa-arrow-alt-circle-up primary-text fa-lg fa-fade ms-3"
                   style="--fa-animation-duration: 2s"
+                  aria-hidden="true"
                 ></i>
-              </a>
+              </button>
               }
               <!-- // -->
               <!-- switch to scoped available -->
               @if (plugin.installedVersion && plugin.newHbScope?.switch === plugin.installedVersion &&
               !childBridgeRestartInProgress) {
-              <a
-                href="javascript:void(0)"
-                class="card-link"
+              <button
+                type="button"
+                class="card-link btn btn-link p-0 text-decoration-none"
                 (click)="switchToScoped()"
                 container="body"
                 [openDelay]="150"
@@ -46,17 +47,18 @@
                 <i
                   class="fas fa-arrow-right-arrow-left primary-text fa-lg fa-fade ms-3"
                   style="--fa-animation-duration: 2s"
+                  aria-hidden="true"
                 ></i>
-              </a>
+              </button>
               }
               <!-- // -->
               <!-- installed, not configured -->
               @if (plugin.installedVersion && (!plugin.newHbScope || plugin.newHbScope.switch !==
               plugin.installedVersion) && !plugin.updateAvailable && !plugin.isConfigured &&
               !childBridgeRestartInProgress && !plugin.disabled) {
-              <a
-                href="javascript:void(0)"
-                class="card-link"
+              <button
+                type="button"
+                class="card-link btn btn-link p-0 text-decoration-none"
                 (click)="openSettings()"
                 [ngbTooltip]="'plugins.button_set_up' | translate"
                 container="body"
@@ -64,17 +66,21 @@
                 triggers="hover"
                 [attr.aria-label]="'plugins.button_set_up' | translate"
               >
-                <i class="fas fa-sliders primary-text fa-lg fa-fade ms-3" style="--fa-animation-duration: 2s"></i>
-              </a>
+                <i
+                  class="fas fa-sliders primary-text fa-lg fa-fade ms-3"
+                  style="--fa-animation-duration: 2s"
+                  aria-hidden="true"
+                ></i>
+              </button>
               }
               <!-- // -->
               <!-- installed, configured, not setup as child bridge although recommended -->
               @if (plugin.installedVersion && (!plugin.newHbScope || plugin.newHbScope.switch !==
               plugin.installedVersion) && !plugin.updateAvailable && plugin.isConfigured && !plugin.hasChildBridges &&
               !plugin.disabled && plugin.recommendChildBridge && !childBridgeRestartInProgress) {
-              <a
-                href="javascript:void(0)"
-                class="card-link"
+              <button
+                type="button"
+                class="card-link btn btn-link p-0 text-decoration-none"
                 (click)="openBridgeSettings()"
                 [ngbTooltip]="'child_bridge.setup' | translate"
                 container="body"
@@ -85,8 +91,9 @@
                 <i
                   class="icon-button fas fa-bridge primary-text fa-lg fa-fade ms-3"
                   style="--fa-animation-duration: 2s"
+                  aria-hidden="true"
                 ></i>
-              </a>
+              </button>
               }
               <!-- // -->
               <!-- installed, configured, setup as child bridge, not paired with homekit -->
@@ -94,9 +101,9 @@
               plugin.installedVersion) && !plugin.updateAvailable && plugin.isConfigured && plugin.hasChildBridges &&
               !childBridgeRestartInProgress && plugin.hasChildBridgesUnpaired && childBridgeStatus === 'ok' &&
               !plugin.disabled) {
-              <a
-                href="javascript:void(0)"
-                class="card-link"
+              <button
+                type="button"
+                class="card-link btn btn-link p-0 text-decoration-none"
                 (click)="openBridgeSettings()"
                 [ngbTooltip]="'child_bridge.bridge_connect' | translate"
                 container="body"
@@ -107,12 +114,17 @@
                 <i
                   class="icon-button fas fa-qrcode primary-text fa-lg fa-fade ms-3"
                   style="--fa-animation-duration: 2s"
+                  aria-hidden="true"
                 ></i>
-              </a>
+              </button>
               }
               <!-- // -->
               <!-- restart in progress spinner -->
-              <i [hidden]="!childBridgeRestartInProgress" class="fas fa-circle-notch fa-spin fa-lg grey-text ms-3"></i>
+              <i
+                [hidden]="!childBridgeRestartInProgress"
+                class="fas fa-circle-notch fa-spin fa-lg grey-text ms-3"
+                aria-hidden="true"
+              ></i>
               <!-- // -->
               <!-- child bridge status (good status is not shown) -->
               @if (plugin.installedVersion && (!plugin.newHbScope || plugin.newHbScope.switch !==
@@ -134,29 +146,40 @@
           <!-- // -->
           <!-- plugin npm name/info modal -->
           <p class="card-text mb-2 text-truncate">
-            <a href="javascript:void(0)" (click)="pluginInfoModal(plugin)" class="card-link">
+            <button
+              type="button"
+              class="card-link btn btn-link p-0 text-decoration-none"
+              (click)="pluginInfoModal(plugin)"
+              aria-label="Plugin Info"
+            >
               <i
                 class="fas fa-shield-alt fa-lg me-1"
+                aria-hidden="true"
                 [ngClass]="{
                   'purple-text': plugin.isHbScoped,
                   'green-text': !plugin.isHbScoped && (plugin.verifiedPlugin || plugin.verifiedPlusPlugin),
                   'orange-text': !plugin.isHbScoped && !plugin.verifiedPlugin && !plugin.verifiedPlusPlugin,
                 }"
               ></i>
-              <span class="grey-text">{{ plugin.name }}</span>
-            </a>
+              <span class="grey-text" aria-hidden="true">{{ plugin.name }}</span>
+            </button>
           </p>
           <!-- // -->
           <!-- plugin author and donate modal -->
           <p class="card-text mb-2">
             @if ((plugin.verifiedPlugin || plugin.verifiedPlusPlugin) && plugin.funding) {
-            <a href="javascript:void(0)" class="card-link" (click)="openFundingModal(plugin)">
-              <i class="fas fa-heart fa-lg me-1 pink-text"></i>
-              <span class="grey-text">&#64;{{ plugin.author }}</span>
-            </a>
+            <button
+              type="button"
+              class="card-link btn btn-link p-0 text-decoration-none"
+              (click)="openFundingModal(plugin)"
+              [attr.aria-label]="'plugins.donate.tile_donate_to' | translate: { author: plugin.author }"
+            >
+              <i class="fas fa-heart fa-lg me-1 pink-text" aria-hidden="true"></i>
+              <span class="grey-text" aria-hidden="true">&#64;{{ plugin.author }}</span>
+            </button>
             } @if (!((plugin.verifiedPlugin || plugin.verifiedPlusPlugin) && plugin.funding)) {
             <span class="grey-text">
-              <i class="fas fa-heart fa-lg me-1" style="opacity: 0.5"></i>&#64;{{ plugin.author }}
+              <i class="fas fa-heart fa-lg me-1" style="opacity: 0.5" aria-hidden="true"></i>&#64;{{ plugin.author }}
             </span>
             }
           </p>
@@ -185,53 +208,69 @@
             <div class="ms-auto">
               <!-- icon for child bridge restart -->
               @if (!plugin.disabled && plugin.hasChildBridges && childBridgeStatus === 'ok') {
-              <a
-                href="javascript:void(0)"
+              <button
+                type="button"
+                class="card-link btn btn-link p-0 text-decoration-none"
                 (click)="doChildBridgeAction('restart')"
-                class="card-link"
                 container="body"
                 [openDelay]="150"
                 triggers="hover"
                 [ngbTooltip]="(setChildBridges.length > 1 ? 'child_bridge.restart_plural' : 'child_bridge.restart') | translate"
+                [attr.aria-label]="(setChildBridges.length > 1 ? 'child_bridge.restart_plural' : 'child_bridge.restart') | translate"
               >
-                <i class="fas fa-lg fa-power-off ms-3"></i>
-              </a>
+                <i class="fas fa-lg fa-power-off ms-3" aria-hidden="true"></i>
+              </button>
               }
               <!-- // -->
               <!-- icon for plugin disabled -->
               @if (plugin.installedVersion && plugin.disabled) {
-              <a href="javascript:void(0)" (click)="enablePlugin(plugin)" class="card-link red-text">
+              <button
+                type="button"
+                class="card-link btn btn-link p-0 text-decoration-none red-text"
+                (click)="enablePlugin(plugin)"
+                [attr.aria-label]="'plugins.status_disabled' | translate"
+              >
                 <i
                   class="far fa-pause-circle fa-lg"
+                  aria-hidden="true"
                   [ngbTooltip]="'plugins.status_disabled' | translate"
                   container="body"
                   [openDelay]="150"
                   triggers="hover"
                 ></i>
-              </a>
+              </button>
               }
               <!-- // -->
               <!-- icon for plugin not installed, to download -->
               @if (plugin.publicPackage && !plugin.installedVersion) {
-              <a href="javascript:void(0)" (click)="installAlternateVersion()">
-                <i class="far fa-arrow-alt-circle-down fa-lg"></i>
-              </a>
+              <button
+                type="button"
+                class="card-link btn btn-link p-0 text-decoration-none"
+                (click)="installAlternateVersion()"
+                container="body"
+                [openDelay]="150"
+                triggers="hover"
+                [ngbTooltip]="'Install ' + plugin.displayName"
+                [attr.aria-label]="'Install ' + plugin.displayName"
+              >
+                <i class="far fa-arrow-alt-circle-down fa-lg" aria-hidden="true"></i>
+              </button>
               }
               <!-- // -->
               @if (plugin.installedVersion) {
               <span ngbDropdown placement="left" class="d-inline-block ms-3 mt-auto">
                 <!-- icon to expand dropdown -->
-                <a
-                  class="card-link text-decoration-none mt-auto"
-                  href="javascript:void(0)"
+                <button
+                  type="button"
+                  class="card-link btn btn-link p-0 text-decoration-none mt-auto"
                   style="outline: none"
-                  [attr.aria-label]="'Plugin Actions Dropdown'"
+                  [attr.aria-label]="'Plugin Actions'"
                   ngbDropdownToggle
                 >
-                  <i class="fa-solid fa-ellipsis-v fa-lg"></i>
-                </a>
+                  <i class="fa-solid fa-ellipsis-v fa-lg" aria-hidden="true"></i>
+                </button>
                 <!-- // -->
-                <div ngbDropdownMenu aria-labelledby="Plugin Actions Dropdown">
+                <div ngbDropdownMenu>
                   <!-- plugin config -->
                   <button ngbDropdownItem (click)="openSettings()">
                     <i class="fas fa-sliders"></i>

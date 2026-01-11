@@ -12,14 +12,18 @@
       type="button"
       class="btn btn-elegant my-0 me-2"
       (click)="showSearch()"
+      [hidden]="!installedPlugins.length && !showSearchBar"
       container="body"
       placement="bottom"
       [openDelay]="150"
       triggers="hover"
       [ngbTooltip]="'form.search' | translate"
       [attr.aria-label]="'form.search' | translate"
+      [attr.aria-expanded]="showSearchBar"
+      aria-controls="plugin-search-region"
     >
-      <i class="fas{{ showSearchBar ? ' primary-text' : '' }} fa-search"></i>
+      <i class="fas{{ showSearchBar ? ' primary-text' : '' }} fa-search" aria-hidden="true"></i>
+      <span class="visually-hidden">{{ 'form.search' | translate }}</span>
     </button>
     <button
       type="button"
@@ -32,7 +36,7 @@
       [ngbTooltip]="'plugins.stats' | translate"
       [attr.aria-label]="'plugins.stats' | translate"
     >
-      <i class="fas{{ tab === 'stats' ? ' primary-text' : '' }} fa-sliders"></i>
+      <i class="fas{{ tab === 'stats' ? ' primary-text' : '' }} fa-sliders" aria-hidden="true"></i>
     </button>
     }
     <button
@@ -41,13 +45,13 @@
       (click)="openSupport()"
       [attr.aria-label]="'support.title' | translate"
     >
-      <i class="fa fa-question-circle-o"></i>
+      <i class="fa fa-question-circle-o" aria-hidden="true"></i>
     </button>
   </div>
 </div>
 
 @if (tab === 'main') { @if (showSearchBar) {
-<div class="row">
+<div class="row" id="plugin-search-region">
   <div class="col-md-12">
     <form novalidate (ngSubmit)="onSubmit(form)" [formGroup]="form">
       <input
@@ -56,6 +60,7 @@
         #searchInput
         [placeholder]="'plugins.placeholder_search_plugin' | translate"
         formControlName="query"
+        [attr.aria-label]="'plugins.placeholder_search_plugin' | translate"
       />
       @if (showExitButton) {
       <button
@@ -65,6 +70,7 @@
         [attr.aria-label]="'form.button_clear' | translate"
       >
         <i class="fas fa-square-xmark" aria-hidden="true"></i>
+        <span class="visually-hidden">{{ 'form.button_clear' | translate }}</span>
       </button>
       }
     </form>
@@ -77,7 +83,7 @@
     <app-plugin-card [plugin]="plugin" [childBridges]="getPluginChildBridges(plugin)" />
   </div>
   } @if (installedPlugins.length === 0 && !loading && !mainError) {
-  <div class="alert alert-info mt-4 text-center w-100">
+  <div class="alert alert-info mt-4 text-center w-100" role="status" [attr.aria-live]="'polite'">
     <i
       class="fas primary-text my-3"
       style="font-size: 75px"
@@ -85,6 +91,7 @@
         'fa-magnifying-glass': !showExitButton,
         'fa-exclamation-circle': showExitButton,
       }"
+      aria-hidden="true"
     ></i>
     <p>{{ (showExitButton ? 'plugins.placeholder_search_none' : 'plugins.placeholder_search_first') | translate }}</p>
   </div>
@@ -95,7 +102,11 @@
   <div class="mb-2">
     <code
       >https://developers.homebridge.io/analytics
-      <a href="https://developers.homebridge.io/analytics" target="_blank"><i class="fa fa-external-link"></i></a
+      <a
+        href="https://developers.homebridge.io/analytics"
+        target="_blank"
+        [attr.aria-label]="'Open Homebridge analytics in new tab'"
+        ><i class="fa fa-external-link" aria-hidden="true"></i></a
     ></code>
   </div>
   <div class="small grey-text">{{ 'plugins.stats_note' | translate }}</div>
@@ -106,6 +117,7 @@
   id="stats-iframe"
   sandbox="allow-scripts allow-same-origin allow-popups"
   referrerpolicy="no-referrer"
+  title="Homebridge plugin analytics"
 >
 </iframe>
 }

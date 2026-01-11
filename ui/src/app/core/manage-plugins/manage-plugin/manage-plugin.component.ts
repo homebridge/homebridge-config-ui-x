@@ -59,7 +59,7 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
   private $ws = inject(WsService)
   private io: IoNamespace
   private toastSuccess: string
-  private term = new Terminal()
+  private term = new Terminal({ screenReaderMode: true })
   private termTarget: HTMLElement
   private fitAddon = new FitAddon()
   private webLinksAddon = new WebLinksAddon()
@@ -87,10 +87,10 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
   public presentTenseVerb: string
   public pastTenseVerb: string
   public onlineUpdateOk: boolean
-  public readonly iconStar = '<i class="fas fa-star orange-text"></i>'
-  public readonly iconThumbsUp = '<i class="fas fa-thumbs-up orange-text"></i>'
-  public readonly iconCoffee = '<i class="fas fa-coffee pink-text"></i>'
-  public readonly iconHeart = '<i class="fas fa-heart pink-text"></i>'
+  public readonly iconStar = '<span role="img" aria-label="star"><i class="fas fa-star orange-text" aria-hidden="true"></i></span>'
+  public readonly iconThumbsUp = '<span role="img" aria-label="thumbs up"><i class="fas fa-thumbs-up orange-text" aria-hidden="true"></i></span>'
+  public readonly iconCoffee = '<span role="img" aria-label="coffee"><i class="fas fa-coffee pink-text" aria-hidden="true"></i></span>'
+  public readonly iconHeart = '<span role="img" aria-label="heart"><i class="fas fa-heart pink-text" aria-hidden="true"></i></span>'
   public supportMessageKey: string
   public donationLink: string
   public versionNotes: string
@@ -102,9 +102,61 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
   public releaseNotesTab: number = 1
   public downloadingBackup = false
 
+  public actionLiveMessage = ''
+  public terminalAriaHidden = false
+  private restoreTerminalTimer: any = null
+
   constructor() {
     this.term.loadAddon(this.fitAddon)
     this.term.loadAddon(this.webLinksAddon)
+  }
+
+  private setRestartToken() {
+    try {
+      sessionStorage.setItem('hb_restart_requested', '1')
+      sessionStorage.setItem('hb_restart_token', String(Date.now()))
+    } catch { }
+  }
+
+  private speakAction(message: string, suppressTerminalMs = 2000) {
+    this.terminalAriaHidden = true
+    this.actionLiveMessage = ''
+    setTimeout(() => {
+      this.actionLiveMessage = message
+    }, 0)
+
+    if (this.restoreTerminalTimer) {
+      clearTimeout(this.restoreTerminalTimer)
+    }
+
+    this.restoreTerminalTimer = setTimeout(() => {
+      this.terminalAriaHidden = false
+    }, suppressTerminalMs)
+  }
+
+  private applyXtermA11yPatches() {
+    const host = this.termTarget as HTMLElement | undefined
+    if (!host) return
+
+    const xtermRoot = host.querySelector('.xterm') as HTMLElement | null
+    if (!xtermRoot) return
+
+    const ta = xtermRoot.querySelector('textarea') as HTMLTextAreaElement | null
+    if (ta) {
+      ta.disabled = true
+      ta.setAttribute('aria-hidden', 'true')
+      ta.setAttribute('tabindex', '-1')
+      ta.setAttribute('readonly', 'true')
+      if (document.activeElement === ta) {
+        ta.blur()
+      }
+    }
+
+    const lives = Array.from(xtermRoot.querySelectorAll('[aria-live]')) as HTMLElement[]
+    for (const el of lives) {
+      el.setAttribute('aria-live', 'off')
+      el.setAttribute('aria-atomic', 'false')
+    }
   }
 
   public ngOnInit() {
@@ -120,6 +172,7 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
 
     this.io.socket.on('stdout', (data: string | Uint8Array) => {
       this.term.write(data)
+      this.applyXtermA11yPatches()
       const dataCleaned = data
         .toString()
         .replace(/\x1B\[(\d{1,3}(;\d{1,2})?)?[mGK]/g, '') // eslint-disable-line no-control-regex
@@ -129,12 +182,18 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
       }
     })
 
+    this.applyXtermA11yPatches()
+    setTimeout(() => this.applyXtermA11yPatches(), 0)
+    setTimeout(() => this.applyXtermA11yPatches(), 50)
+    setTimeout(() => this.applyXtermA11yPatches(), 250)
+
     this.toastSuccess = this.$translate.instant('toast.title_success')
 
     this.onlineUpdateOk = !(['homebridge', 'homebridge-config-ui-x'].includes(this.pluginName) && this.$settings.env.platform === 'win32')
 
     switch (this.action) {
       case 'Install':
+        this.speakAction(`Installing ${this.pluginDisplayName || this.pluginName}.`, 4000)
         void this.install()
         if (this.targetVersion === this.installedVersion) {
           this.presentTenseVerb = this.$translate.instant('plugins.manage.reinstall')
@@ -145,6 +204,7 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
         }
         break
       case 'Uninstall':
+        this.speakAction(`Uninstalling ${this.pluginDisplayName || this.pluginName}.`, 4000)
         this.uninstall()
         this.presentTenseVerb = this.$translate.instant('plugins.manage.uninstall')
         this.pastTenseVerb = this.$translate.instant('plugins.manage.uninstalled')
@@ -196,7 +256,7 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
       if (donationUrl) {
         const isKofi = /ko-?fi/i.test(donationUrl)
         this.supportMessageKey = isKofi ? 'plugins.manage.support_kofi' : 'plugins.manage.support_donate'
-        this.donationLink = `<a href="${donationUrl}" target="_blank" rel="noopener noreferrer"><i class="fas fa-external-link-alt primary-text"></i></a>`
+        this.donationLink = `<a href="${donationUrl}" target="_blank" rel="noopener noreferrer"><i class="fas fa-external-link-alt primary-text" aria-hidden="true"></i></a>`
       }
     }
   }
@@ -216,6 +276,8 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
       return this.upgradeHomebridge()
     }
 
+    this.speakAction(`Updating ${this.pluginDisplayName || this.pluginName}.`, 4000)
+
     this.io.request('update', {
       name: this.pluginName,
       version: this.targetVersion,
@@ -225,6 +287,7 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
       next: async () => {
         // Updating the UI needs a restart straight away
         if (this.pluginName === 'homebridge-config-ui-x') {
+          this.setRestartToken()
           this.$api.put('/platform-tools/hb-service/set-full-service-restart-flag', {}).subscribe({
             next: () => {
               window.location.href = '/restart'
@@ -244,17 +307,20 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
         }
         this.actionComplete = true
         this.justUpdatedPlugin = true
+        this.speakAction(`${this.pluginDisplayName || this.pluginName} updated, restart to apply changes.`, 3000)
         void this.$router.navigate(['/plugins'])
       },
       error: (error) => {
         this.actionFailed = true
         console.error(error)
+        this.speakAction(`${this.pluginDisplayName || this.pluginName} update failed, check logs or terminal output for details.`, 3000)
         this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
       },
     })
   }
 
   public onRestartHomebridgeClick(): void {
+    this.setRestartToken()
     void this.$router.navigate(['/restart'])
     this.$activeModal.close()
   }
@@ -299,7 +365,14 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
   }
 
   public ngOnDestroy() {
+    if (this.restoreTerminalTimer) {
+      clearTimeout(this.restoreTerminalTimer)
+      this.restoreTerminalTimer = null
+    }
     this.io.end()
+    try {
+      this.term.dispose()
+    } catch { }
   }
 
   public dismissModal() {
@@ -361,6 +434,7 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
     }).subscribe({
       next: async () => {
         this.$toastr.success(`${this.pastTenseVerb} ${this.pluginName}`, this.toastSuccess)
+        this.speakAction(`${this.pluginDisplayName || this.pluginName} installed, restart to apply changes.`, 3000)
 
         // Trigger refresh of the plugin list in the background
         if (this.onRefreshPluginList) {
@@ -371,17 +445,24 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
         try {
           const installedPlugins = await firstValueFrom(this.$api.get('/plugins'))
           const installedPlugin = installedPlugins.find((x: any) => x.name === this.pluginName)
-          this.$activeModal.close({ action: 'just-installed', plugin: installedPlugin })
+          setTimeout(() => {
+            this.$activeModal.close({ action: 'just-installed', plugin: installedPlugin })
+          }, 3000)
         } catch (error) {
           console.error('Failed to fetch updated plugin data:', error)
-          this.$activeModal.close({ action: 'just-installed', pluginName: this.pluginName })
+          setTimeout(() => {
+            this.$activeModal.close({ action: 'just-installed', pluginName: this.pluginName })
+          }, 3000)
         }
       },
       error: (error) => {
         this.actionFailed = true
         console.error(error)
-        void this.$router.navigate(['/plugins'])
+        this.speakAction(`${this.pluginDisplayName || this.pluginName} install failed. See logs or terminal output for details.`, 3000)
         this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+        setTimeout(() => {
+          void this.$router.navigate(['/plugins'])
+        }, 3000)
       },
     })
   }
@@ -393,16 +474,20 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
       termRows: this.term.rows,
     }).subscribe({
       next: () => {
-        this.$activeModal.close()
-        void this.$router.navigate(['/plugins'])
-        this.$modal.open(RestartHomebridgeComponent, {
-          size: 'lg',
-          backdrop: 'static',
-        })
+        this.speakAction(`${this.pluginDisplayName || this.pluginName} uninstalled, restart to apply changes.`, 3000)
+        setTimeout(() => {
+          this.$activeModal.close()
+          void this.$router.navigate(['/plugins'])
+          this.$modal.open(RestartHomebridgeComponent, {
+            size: 'lg',
+            backdrop: 'static',
+          })
+        }, 3000)
       },
       error: (error) => {
         this.actionFailed = true
         console.error(error)
+        this.speakAction(`${this.pluginDisplayName || this.pluginName} uninstall failed. See logs or terminal output for details.`, 3000)
         this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
       },
     })
@@ -427,6 +512,7 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
 
     if (res === 'update') {
       // Continue selected, so update homebridge
+      this.speakAction('Updating Homebridge.', 4000)
       this.io.request('homebridge-update', {
         version: this.targetVersion,
         termCols: this.term.cols,
@@ -447,6 +533,7 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
         error: (error) => {
           this.actionFailed = true
           console.error(error)
+          this.speakAction('Homebridge update failed. Check logs or terminal output for details.', 3000)
           this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
           this.$activeModal.close()
         },

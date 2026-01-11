@@ -128,6 +128,15 @@ export class PluginLogsComponent implements OnInit, OnDestroy {
     this.$log.destroyTerminal()
   }
 
+  public suppressTooltipA11y(target: HTMLElement) {
+    setTimeout(() => {
+      target.removeAttribute('aria-describedby')
+      document.querySelectorAll('.tooltip[role="tooltip"]').forEach((tooltip) => {
+        tooltip.setAttribute('aria-hidden', 'true')
+      })
+    })
+  }
+
   public dismissModal() {
     this.$activeModal.dismiss('Dismiss')
   }
@@ -137,7 +146,38 @@ export class PluginLogsComponent implements OnInit, OnDestroy {
     this.$api.get(`/config-editor/plugin/${encodeURIComponent(this.plugin.name)}`).subscribe({
       next: (result) => {
         this.pluginAlias = this.plugin.name === 'homebridge-config-ui-x' ? 'Homebridge UI' : (result[0]?.name || this.plugin.name)
-        this.$log.startTerminal(this.termTarget(), {}, this.resizeEvent, this.pluginAlias)
+        this.$log.startTerminal(
+          this.termTarget(),
+          { screenReaderMode: true, disableStdin: true },
+          this.resizeEvent,
+          this.pluginAlias,
+        )
+        setTimeout(() => {
+          const logContainer = this.termTarget()?.nativeElement
+          if (!logContainer) {
+            return
+          }
+
+          const textarea = logContainer.querySelector('textarea')
+          if (textarea) {
+            textarea.setAttribute('aria-hidden', 'true')
+            textarea.setAttribute('tabindex', '-1')
+          }
+
+          const liveRegion = logContainer.querySelector('[aria-live]')
+          if (liveRegion && !liveRegion.hasAttribute('role')) {
+            liveRegion.setAttribute('aria-hidden', 'true')
+          }
+
+          const screenReaderDiv = logContainer.querySelector('.xterm-accessibility')
+          if (screenReaderDiv) {
+            Array.from(screenReaderDiv.children).forEach((child: HTMLElement) => {
+              if (child.tagName !== 'UL' && !child.hasAttribute('role')) {
+                child.setAttribute('aria-hidden', 'true')
+              }
+            })
+          }
+        }, 100)
       },
       error: (error) => {
         console.error(error)

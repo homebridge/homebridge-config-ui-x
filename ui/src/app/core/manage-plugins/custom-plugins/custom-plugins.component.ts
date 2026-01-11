@@ -81,7 +81,6 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
       this.isFirstSave = true
     }
 
-    // Start accessory subscription
     if (this.io.connected) {
       this.io.socket.emit('start', this.plugin.name)
       setTimeout(() => {
@@ -135,9 +134,6 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
     this.formIsValid = $event
   }
 
-  /**
-   * Fired when the form changes with a boolean indicating if the form is valid
-   */
   public formValidEvent(isValid: boolean) {
     this.formValid = isValid
   }
@@ -148,16 +144,12 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
       const newConfig = await firstValueFrom(this.$api.post(`/config-editor/plugin/${encodeURIComponent(this.plugin.name)}`, this.pluginConfig))
       this.saveInProgress = false
       if (exit) {
-        // Possible child bridge setup recommendation if the plugin is not Homebridge UI
-        // If it is the first time configuring the plugin, then offer to set up a child bridge straight away
         if (this.isFirstSave && this.$settings.env.recommendChildBridges && newConfig[0]?.platform) {
-          // Close the modal and open the child bridge setup modal
           this.$activeModal.close()
           void this.$plugin.bridgeSettings(this.plugin, true)
           return
         }
 
-        // This will show the child bridge restart modal if needed, otherwise the full restart homebridge modal
         this.$activeModal.close()
         await this.$cb.openCorrectRestartModalForPlugin(this.plugin.name)
       }
@@ -182,8 +174,11 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
 
   private loadUi() {
     this.iframe = this.customPluginUiElementTarget().nativeElement as HTMLIFrameElement
-    this.iframe.src = `${environment.api.base + this.basePath
-    }/index.html?origin=${encodeURIComponent(location.origin)}&v=${encodeURIComponent(this.plugin.installedVersion)}`
+
+    this.iframe.style.height = '60vh'
+    this.iframe.style.minHeight = '320px'
+
+    this.iframe.src = `${environment.api.base + this.basePath}/index.html?origin=${encodeURIComponent(location.origin)}&v=${encodeURIComponent(this.plugin.installedVersion)}`
   }
 
   private handleMessage = (e: MessageEvent) => {
@@ -222,7 +217,7 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
           break
         }
         case 'schema.show': {
-          void this.formEnd() // do not show other forms at the same time
+          void this.formEnd()
           this.showSchemaForm = true
           break
         }
@@ -231,7 +226,7 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
           break
         }
         case 'form.create': {
-          this.showSchemaForm = false // hide the schema generated form
+          this.showSchemaForm = false
           void this.formCreate(e.data.formId, e.data.schema, e.data.data, e.data.submitButton, e.data.cancelButton)
           break
         }
@@ -297,18 +292,15 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
   }
 
   private handleUpdateConfig(event: MessageEvent, pluginConfig: Array<any>) {
-    // Only refresh the schema form if it's actually visible
     if (this.showSchemaForm) {
       this.schemaFormRefreshSubject.next(undefined)
     }
 
-    // Ensure the update contains an array
     if (!Array.isArray(pluginConfig)) {
       this.$toastr.error(this.$translate.instant('plugins.config.must_be_array'), this.$translate.instant('toast.title_error'))
       return this.requestResponse(event, { message: this.$translate.instant('plugins.config.must_be_array') }, false)
     }
 
-    // Validate each block in the array
     for (const block of pluginConfig) {
       if (typeof block !== 'object' || Array.isArray(block)) {
         this.$toastr.error(this.$translate.instant('plugins.config.must_be_array_objects'), this.$translate.instant('toast.title_error'))
@@ -330,18 +322,15 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
   }
 
   private async injectDefaultStyles(event) {
-    // Fetch current theme
     const currentTheme = Array.from(window.document.body.classList).find(x => x.startsWith('config-ui-x-'))
     const darkMode = window.document.body.classList.contains('dark-mode')
 
-    // Set body class
     event.source.postMessage({ action: 'body-class', class: currentTheme }, event.origin)
     event.source.postMessage({ action: 'body-class', class: 'modal-content' }, event.origin)
     if (darkMode) {
       event.source.postMessage({ action: 'body-class', class: 'dark-mode' }, event.origin)
     }
 
-    // Use parent's linked style sheets
     const externalCss = Array.from(document.querySelectorAll('link'))
     for (const css of externalCss) {
       if (css.getAttribute('rel') === 'stylesheet') {
@@ -351,13 +340,11 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
       }
     }
 
-    // Use parent's inline css
     const inlineCss = Array.from(document.querySelectorAll('style'))
     for (const css of inlineCss) {
       event.source.postMessage({ action: 'inline-style', style: css.innerHTML }, event.origin)
     }
 
-    // Add custom css
     const customStyles = `
       body {
         height: unset !important;
@@ -379,10 +366,6 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
     this.pluginConfig = pluginConfig
   }
 
-  /**
-   * Called when changes are made to the schema form content
-   * These changes are emitted to the custom ui
-   */
   private schemaFormUpdated() {
     if (!this.iframe || !this.iframe.contentWindow) {
       return
@@ -402,10 +385,6 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
     }, environment.api.origin)
   }
 
-  /**
-   * Called when changes sent from the custom ui config
-   * Updates the schema form with the new values
-   */
   private schemaFormRefresh() {
     if (this.schemaFormRecentlyUpdated) {
       this.schemaFormRecentlyUpdated = false
@@ -422,11 +401,7 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
     }
   }
 
-  /**
-   * Create a new other-form
-   */
   private async formCreate(formId: string, schema, data, submitButton?: string, cancelButton?: string) {
-    // Need to clear out existing forms
     await this.formEnd()
 
     this.formId = formId
@@ -436,9 +411,6 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
     this.formCancelButtonLabel = cancelButton
   }
 
-  /**
-   * Removes the current other-form
-   */
   private async formEnd() {
     if (this.formId) {
       this.formId = undefined
@@ -450,9 +422,6 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
     }
   }
 
-  /**
-   * Called when an other-form type is updated
-   */
   private formUpdated(data) {
     this.iframe.contentWindow.postMessage({
       action: 'stream',
@@ -464,11 +433,6 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
     }, environment.api.origin)
   }
 
-  /**
-   * Fired when a custom form is cancelled or submitted
-   *
-   * @param formEvent
-   */
   private formActionEvent(formEvent: 'cancel' | 'submit') {
     this.iframe.contentWindow.postMessage({
       action: 'stream',
@@ -480,9 +444,6 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
     }, environment.api.origin)
   }
 
-  /**
-   * Handle the event to get a list of cached accessories
-   */
   private async handleGetCachedAccessories(event) {
     const cachedAccessories = await firstValueFrom(this.$api.get('/server/cached-accessories'))
     return this.requestResponse(event, cachedAccessories.filter(x => x.plugin === this.plugin.name))
