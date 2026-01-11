@@ -194,8 +194,12 @@ export class StatusComponent implements OnInit, OnDestroy {
     if (this.selectedReorderComponent) {
       this.reorderAnnounceTimer = setTimeout(() => {
         this.reorderAnnounceTimer = null
-        if (!this.reorderMode) return
-        if (!this.selectedReorderComponent) return
+        if (!this.reorderMode) {
+          return
+        }
+        if (!this.selectedReorderComponent) {
+          return
+        }
         this.focusReorderItem(this.selectedReorderComponent)
       }, this.reorderFocusDelayMs)
     }
@@ -219,7 +223,7 @@ export class StatusComponent implements OnInit, OnDestroy {
 
   private sanitizeDashboard() {
     const before = this.dashboard.length
-    this.dashboard = (this.dashboard as any[]).filter((x) => x && typeof x.component === 'string' && x.component.length > 0)
+    this.dashboard = (this.dashboard as any[]).filter(x => x && typeof x.component === 'string' && x.component.length > 0)
     const after = this.dashboard.length
 
     if (after !== before && this.reorderMode) {
@@ -247,10 +251,10 @@ export class StatusComponent implements OnInit, OnDestroy {
 
   private applyReorderToDashboard() {
     const list = this.reorderComponents
-    const byComponent = new Map<string, any>((this.dashboard as any[]).map((x) => [x.component, x]))
+    const byComponent = new Map<string, any>((this.dashboard as any[]).map(x => [x.component, x]))
 
     const reordered = list
-      .map((c) => byComponent.get(c))
+      .map(c => byComponent.get(c))
       .filter(Boolean)
 
     for (let i = 0; i < reordered.length; i++) {
@@ -267,7 +271,9 @@ export class StatusComponent implements OnInit, OnDestroy {
   }
 
   public setSelectedReorderComponent(component: string) {
-    if (!this.reorderMode) return
+    if (!this.reorderMode) {
+      return
+    }
 
     const list = this.reorderComponents
     if (!list.includes(component)) {
@@ -288,14 +294,20 @@ export class StatusComponent implements OnInit, OnDestroy {
 
   private focusReorderItem(component: string) {
     const el = document.getElementById(`reorder-item-${component}`) as HTMLElement | null
-    if (el) el.focus()
+    if (el) {
+      el.focus()
+    }
   }
 
   private selectNext(prev: boolean) {
-    if (!this.reorderMode) return
+    if (!this.reorderMode) {
+      return
+    }
 
     const list = this.reorderComponents
-    if (!list.length) return
+    if (!list.length) {
+      return
+    }
 
     const current =
       this.selectedReorderComponent && list.includes(this.selectedReorderComponent)
@@ -314,7 +326,9 @@ export class StatusComponent implements OnInit, OnDestroy {
   }
 
   public onReorderKeydown(event: KeyboardEvent) {
-    if (!this.reorderMode) return
+    if (!this.reorderMode) {
+      return
+    }
 
     const key = event.key
     const shift = event.shiftKey
@@ -345,7 +359,9 @@ export class StatusComponent implements OnInit, OnDestroy {
 
   private moveSelectedBy(delta: number) {
     const list = this.reorderComponents
-    if (!list.length) return
+    if (!list.length) {
+      return
+    }
 
     const selected =
       this.selectedReorderComponent && list.includes(this.selectedReorderComponent)
@@ -354,14 +370,16 @@ export class StatusComponent implements OnInit, OnDestroy {
 
     const idx = list.indexOf(selected)
     const target = idx + delta
-    if (target < 0 || target >= list.length) return
+    if (target < 0 || target >= list.length) {
+      return
+    }
 
-    const byComponent = new Map<string, any>((this.dashboard as any[]).map((x) => [x.component, x]))
+    const byComponent = new Map<string, any>((this.dashboard as any[]).map(x => [x.component, x]))
     const newOrder = [...list]
     newOrder.splice(idx, 1)
     newOrder.splice(target, 0, selected)
 
-    this.dashboard = newOrder.map((c) => byComponent.get(c)).filter(Boolean)
+    this.dashboard = newOrder.map(c => byComponent.get(c)).filter(Boolean)
     this.selectedReorderComponent = selected
 
     const name = this.getWidgetDisplayName(selected)
@@ -372,7 +390,9 @@ export class StatusComponent implements OnInit, OnDestroy {
 
   private moveSelectedToEdge(edge: 'top' | 'bottom') {
     const list = this.reorderComponents
-    if (!list.length) return
+    if (!list.length) {
+      return
+    }
 
     const selected =
       this.selectedReorderComponent && list.includes(this.selectedReorderComponent)
@@ -380,16 +400,18 @@ export class StatusComponent implements OnInit, OnDestroy {
         : list[0]
 
     const idx = list.indexOf(selected)
-    if (idx < 0) return
+    if (idx < 0) {
+      return
+    }
 
-    const byComponent = new Map<string, any>((this.dashboard as any[]).map((x) => [x.component, x]))
+    const byComponent = new Map<string, any>((this.dashboard as any[]).map(x => [x.component, x]))
     const newOrder = [...list]
     newOrder.splice(idx, 1)
 
     const target = edge === 'top' ? 0 : newOrder.length
     newOrder.splice(target, 0, selected)
 
-    this.dashboard = newOrder.map((c) => byComponent.get(c)).filter(Boolean)
+    this.dashboard = newOrder.map(c => byComponent.get(c)).filter(Boolean)
     this.selectedReorderComponent = selected
 
     const finalPos = edge === 'top' ? 1 : newOrder.length
@@ -400,8 +422,10 @@ export class StatusComponent implements OnInit, OnDestroy {
   }
 
   public manageWidgetByComponent(component: string) {
-    const item = (this.dashboard as any[]).find((x) => x?.component === component) as Widget | undefined
-    if (!item) return
+    const item = (this.dashboard as any[]).find(x => x?.component === component) as Widget | undefined
+    if (!item) {
+      return
+    }
     this.manageWidget(item)
   }
 
@@ -419,7 +443,7 @@ export class StatusComponent implements OnInit, OnDestroy {
     ref.componentInstance.unlockLayout = this.unlockLayout.bind(this)
 
     ref.result
-      .then((widget) => {
+      .then(widget => {
         const index = this.dashboard.findIndex((x: any) => x.component === widget.component)
         if (index > -1) {
           this.dashboard.splice(index, 1)

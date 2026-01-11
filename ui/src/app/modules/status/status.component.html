@@ -1,6 +1,4 @@
-<div class="visually-hidden" role="status" aria-atomic="true">
-  {{ actionLiveMessage }}
-</div>
+<div class="visually-hidden" role="status" aria-atomic="true">{{ actionLiveMessage }}</div>
 
 <div class="row mb-3">
   <div class="col-6">
@@ -66,88 +64,80 @@
 
   <div class="row flex-column flex-grow-1">
     @if (dashboard.length) {
+    @if (options.draggable.enabled && isAdmin) {
+    <div class="col-12 mb-2">
+      <button
+        type="button"
+        class="btn btn-elegant my-0"
+        (click)="toggleReorderMode()"
+        [attr.aria-pressed]="reorderMode"
+      >
+        {{ reorderMode ? 'Exit reorder mode' : 'Reorder widgets' }}
+      </button>
+    </div>
 
-      @if (options.draggable.enabled && isAdmin) {
-        <div class="col-12 mb-2">
+    @if (reorderMode) {
+    <div class="col-12 mb-3">
+      <ul
+        class="list-group list-group-box"
+        role="listbox"
+        aria-label="Reorder widgets"
+        [attr.aria-hidden]="reorderMode ? null : 'true'"
+      >
+        @for (component of reorderComponents; track component) {
+        <li
+          class="list-group-item d-flex justify-content-between align-items-center flex-wrap gap-2"
+          role="option"
+          [id]="'reorder-item-' + component"
+          [attr.tabindex]="component === selectedReorderComponent ? '0' : '-1'"
+          [attr.aria-selected]="component === selectedReorderComponent"
+          [attr.aria-label]="getReorderItemAriaLabel(component)"
+          (focus)="setSelectedReorderComponent(component)"
+          (keydown)="onReorderKeydown($event)"
+        >
+          <span class="text-start" aria-hidden="true">{{ getWidgetDisplayName(component) }}</span>
+
+          @if (options.draggable.enabled || page.showWidgetConfigure) {
           <button
             type="button"
-            class="btn btn-elegant my-0"
-            (click)="toggleReorderMode()"
-            [attr.aria-pressed]="reorderMode"
+            class="btn btn-link p-0"
+            (click)="manageWidgetByComponent(component)"
+            [attr.aria-label]="getWidgetSettingsAriaLabel({ component: component })"
+            [attr.aria-hidden]="reorderMode ? 'true' : null"
+            [attr.tabindex]="reorderMode ? '-1' : null"
           >
-            {{ reorderMode ? 'Exit reorder mode' : 'Reorder widgets' }}
+            <i class="fas fa-cog" aria-hidden="true"></i>
           </button>
+          }
+        </li>
+        }
+      </ul>
+    </div>
+    }
+    }
+
+    <gridster [options]="options" class="flex-grow-1 no-scrollbars py-0" [hidden]="consoleStatus === 'down'">
+      @for (item of dashboard; track item.component) {
+      @if (!(item.hideOnMobile && page.mobile)) {
+      <gridster-item class="widget-item" [item]="item" [id]="item.component">
+        <div class="gridster-item-content">
+          @if ((options.draggable.enabled || page.showWidgetConfigure) && !reorderMode) {
+          <button
+            type="button"
+            class="widget-control-button btn btn-link p-0"
+            (click)="manageWidget(item)"
+            [attr.aria-label]="getWidgetSettingsAriaLabel(item)"
+          >
+            <i class="fas fa-cog" aria-hidden="true"></i>
+          </button>
+          }
         </div>
 
-        @if (reorderMode) {
-          <div class="col-12 mb-3">
-            <ul
-              class="list-group list-group-box"
-              role="listbox"
-              aria-label="Reorder widgets"
-              [attr.aria-hidden]="reorderMode ? null : 'true'"
-            >
-              @for (component of reorderComponents; track component) {
-                <li
-                  class="list-group-item d-flex justify-content-between align-items-center flex-wrap gap-2"
-                  role="option"
-                  [id]="'reorder-item-' + component"
-                  [attr.tabindex]="component === selectedReorderComponent ? '0' : '-1'"
-                  [attr.aria-selected]="component === selectedReorderComponent"
-                  [attr.aria-label]="getReorderItemAriaLabel(component)"
-                  (focus)="setSelectedReorderComponent(component)"
-                  (keydown)="onReorderKeydown($event)"
-                >
-                  <span class="text-start" aria-hidden="true">
-                    {{ getWidgetDisplayName(component) }}
-                  </span>
-
-                  @if (options.draggable.enabled || page.showWidgetConfigure) {
-                    <button
-                      type="button"
-                      class="btn btn-link p-0"
-                      (click)="manageWidgetByComponent(component)"
-                      [attr.aria-label]="getWidgetSettingsAriaLabel({ component: component })"
-                      [attr.aria-hidden]="reorderMode ? 'true' : null"
-                      [attr.tabindex]="reorderMode ? '-1' : null"
-                    >
-                      <i class="fas fa-cog" aria-hidden="true"></i>
-                    </button>
-                  }
-                </li>
-              }
-            </ul>
-          </div>
-        }
+        <app-widgets [widget]="item" class="d-flex h-100 w-100" />
+      </gridster-item>
       }
-
-      <gridster
-        [options]="options"
-        class="flex-grow-1 no-scrollbars py-0"
-        [hidden]="consoleStatus === 'down'"
-      >
-        @for (item of dashboard; track item.component) {
-          @if (!(item.hideOnMobile && page.mobile)) {
-            <gridster-item class="widget-item" [item]="item" [id]="item.component">
-              <div class="gridster-item-content">
-                @if ((options.draggable.enabled || page.showWidgetConfigure) && !reorderMode) {
-                  <button
-                    type="button"
-                    class="widget-control-button btn btn-link p-0"
-                    (click)="manageWidget(item)"
-                    [attr.aria-label]="getWidgetSettingsAriaLabel(item)"
-                  >
-                    <i class="fas fa-cog" aria-hidden="true"></i>
-                  </button>
-                }
-              </div>
-
-              <app-widgets [widget]="item" class="d-flex h-100 w-100" />
-            </gridster-item>
-          }
-        }
-      </gridster>
-
+      }
+    </gridster>
     }
   </div>
 
