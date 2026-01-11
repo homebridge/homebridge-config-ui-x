@@ -56,6 +56,7 @@
         [placeholder]="'logs.placeholder_search_logs' | translate"
         formControlName="query"
         [class.is-invalid]="searchInputInvalid"
+        [attr.aria-expanded]="showSearchBar()"
       />
       @if (form.get('query')?.value) {
       <button

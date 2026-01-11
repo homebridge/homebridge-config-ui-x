@@ -77,6 +77,8 @@ export class LogsComponent implements OnInit, OnDestroy, CanComponentDeactivate 
     // Start the terminal
     this.$log.startTerminal(this.termTarget(), {
       allowProposedApi: true,
+      screenReaderMode: true,
+      disableStdin: true,
     }, this.resizeEvent)
 
     // Watch for changes in the search query
@@ -105,6 +107,32 @@ export class LogsComponent implements OnInit, OnDestroy, CanComponentDeactivate 
         this.$log.scrollToBottom()
       }
     })
+
+    // Hide screen reader elements except the list
+    setTimeout(() => {
+      const logContainer = this.termTarget()?.nativeElement
+      if (!logContainer) return
+
+      const textarea = logContainer.querySelector('textarea')
+      if (textarea) {
+        textarea.setAttribute('aria-hidden', 'true')
+        textarea.setAttribute('tabindex', '-1')
+      }
+
+      const liveRegion = logContainer.querySelector('[aria-live]')
+      if (liveRegion && !liveRegion.hasAttribute('role')) {
+        liveRegion.setAttribute('aria-hidden', 'true')
+      }
+
+      const screenReaderDiv = logContainer.querySelector('.xterm-accessibility')
+      if (screenReaderDiv) {
+        Array.from(screenReaderDiv.children).forEach((child: HTMLElement) => {
+          if (child.tagName !== 'UL' && !child.hasAttribute('role')) {
+            child.setAttribute('aria-hidden', 'true')
+          }
+        })
+      }
+    }, 100)
   }
 
   public showSearch(): void {

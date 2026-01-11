@@ -57,9 +57,9 @@
         [attr.aria-label]="'form.button_save' | translate"
       >
         @if (!saveInProgress) {
-        <i class="fas fa-floppy-disk"></i>
+        <i class="fas fa-floppy-disk" aria-hidden="true"></i>
         } @if (saveInProgress) {
-        <i class="fas fa-circle-notch fa-spin"></i>
+        <i class="fas fa-circle-notch fa-spin" aria-hidden="true"></i>
         }
       </button>
     </div>
