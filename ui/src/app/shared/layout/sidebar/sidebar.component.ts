@@ -4,6 +4,7 @@ import { NavigationEnd, NavigationStart, Router, RouterLink, RouterLinkActive } 
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { isStandalonePWA } from 'is-standalone-pwa'
+import { Subscription } from 'rxjs'
 
 import { AuthHelperService } from '@/app/core/auth/auth-helper.service'
 import { AuthService } from '@/app/core/auth/auth.service'
@@ -45,31 +46,70 @@ export class SidebarComponent implements OnInit, OnDestroy {
   public freezeMenu = false
   public isPwa = isStandalonePWA()
 
-  // Store listener references for proper cleanup
   private sidebarMouseEnterListener = () => this.openSidebar()
   private sidebarMouseLeaveListener = () => this.closeSidebar()
 
+  private resizeTimeout: any
+  private routerSub?: Subscription
+
+  private sidebarEl: HTMLElement | null = null
+  private mobileHeaderEl: HTMLElement | null = null
+  private contentEl: HTMLElement | null = null
+
+  private onWindowResize = () => {
+    clearTimeout(this.resizeTimeout)
+    this.resizeTimeout = setTimeout(() => {
+      this.cacheElements()
+      this.updateListeners()
+    }, 500)
+  }
+
+  private onDocumentTouchStart = (e: Event) => {
+    const sidebar = this.sidebarEl
+    const mobileHeader = this.mobileHeaderEl
+    const content = this.contentEl
+    const target = e.target as HTMLElement | null
+
+    if (!target) return
+
+    if (content && content.contains(target) && this.isExpanded) {
+      e.preventDefault()
+      this.toggleSidebar()
+      return
+    }
+
+    if (
+      sidebar
+      && mobileHeader
+      && !sidebar.contains(target)
+      && !mobileHeader.contains(target)
+      && this.isExpanded
+    ) {
+      e.preventDefault()
+      this.closeSidebar()
+    }
+  }
+
+  private onDocumentClick = (e: MouseEvent) => {
+    const sidebar = this.sidebarEl
+    const target = e.target as HTMLElement | null
+    if (!sidebar || !target) return
+
+    if (sidebar.contains(target) && e.clientX > 60) {
+      this.closeSidebar()
+    }
+  }
+
   constructor() {
     this.isMobile = window.innerWidth < 768
-    let resizeTimeout: any
-    window.addEventListener('resize', () => {
-      clearTimeout(resizeTimeout)
-      resizeTimeout = setTimeout(() => {
-        this.updateListeners()
-      }, 500)
-    })
+    window.addEventListener('resize', this.onWindowResize)
 
-    // Check authentication before navigation and ensure the menu closes when we navigate
-    this.$router.events.subscribe(async (event) => {
+    this.routerSub = this.$router.events.subscribe(async (event) => {
       if (event instanceof NavigationStart) {
-        // Check if using form auth and if the token is expired
         if (this.$settings.formAuth && event.url !== '/login') {
           const isAuthenticated = await this.$authHelper.isAuthenticated()
           if (!isAuthenticated) {
-            // Store the target route before redirecting
             window.sessionStorage.setItem('target_route', event.url)
-
-            // Prevent the navigation and redirect to the login page
             await this.$router.navigate(['/login'])
             return
           }
@@ -100,37 +140,8 @@ export class SidebarComponent implements OnInit, OnDestroy {
       this.formAuth = value
     })
 
-    // Declare element for event listeners
-    const sidebar = document.querySelector('.sidebar')
-    const mobileHeader = document.querySelector('.m-header')
-    const content = document.querySelector('.content')
-
-    if (this.isMobile) {
-      document.addEventListener('touchstart', (e: MouseEvent) => {
-        if (content.contains(e.target as HTMLElement) && this.isExpanded) {
-          e.preventDefault()
-          this.toggleSidebar()
-          return
-        }
-
-        if (!sidebar.contains(e.target as HTMLElement) && !mobileHeader.contains(e.target as HTMLElement) && this.isExpanded) {
-          e.preventDefault()
-          this.closeSidebar()
-        }
-      }, { passive: false })
-    } else {
-      this.updateListeners()
-
-      mobileHeader.addEventListener('mouseenter', this.sidebarMouseEnterListener, { passive: false })
-      mobileHeader.addEventListener('mouseleave', this.sidebarMouseLeaveListener, { passive: false })
-
-      document.addEventListener('click', (e: MouseEvent) => {
-        if (sidebar.contains(e.target as HTMLElement) && e.clientX > 60) {
-          this.closeSidebar()
-        }
-      }, { passive: false })
-    }
-
+    this.cacheElements()
+    this.updateListeners()
     this.updateContentStyles()
   }
 
@@ -171,9 +182,20 @@ export class SidebarComponent implements OnInit, OnDestroy {
   }
 
   public ngOnDestroy() {
-    // Clean up event listeners
-    document.removeEventListener('touchstart', () => {})
-    document.removeEventListener('click', () => {})
+    window.removeEventListener('resize', this.onWindowResize)
+    clearTimeout(this.resizeTimeout)
+
+    this.routerSub?.unsubscribe()
+
+    document.removeEventListener('touchstart', this.onDocumentTouchStart as any)
+    document.removeEventListener('click', this.onDocumentClick as any)
+
+    this.removeHoverListeners(this.sidebarEl)
+    this.removeHoverListeners(this.mobileHeaderEl)
+
+    this.sidebarEl = null
+    this.mobileHeaderEl = null
+    this.contentEl = null
   }
 
   public logout() {
@@ -195,7 +217,13 @@ export class SidebarComponent implements OnInit, OnDestroy {
   }
 
   private updateContentStyles() {
-    const content = document.querySelector('.content')
+    if (!this.contentEl) {
+      this.cacheElements()
+    }
+
+    const content = this.contentEl
+    if (!content) return
+
     if (this.isExpanded) {
       this.$renderer.setStyle(content, 'opacity', '20%')
       this.$renderer.setStyle(content, 'pointer-events', 'none')
@@ -207,18 +235,43 @@ export class SidebarComponent implements OnInit, OnDestroy {
     }
   }
 
+  private cacheElements() {
+    this.sidebarEl = document.querySelector('.sidebar') as HTMLElement | null
+    this.mobileHeaderEl = document.querySelector('.m-header') as HTMLElement | null
+    this.contentEl = document.querySelector('.content') as HTMLElement | null
+  }
+
+  private addHoverListeners(el: HTMLElement | null) {
+    if (!el) return
+    el.addEventListener('mouseenter', this.sidebarMouseEnterListener, { passive: false })
+    el.addEventListener('mouseleave', this.sidebarMouseLeaveListener, { passive: false })
+  }
+
+  private removeHoverListeners(el: HTMLElement | null) {
+    if (!el) return
+    el.removeEventListener('mouseenter', this.sidebarMouseEnterListener)
+    el.removeEventListener('mouseleave', this.sidebarMouseLeaveListener)
+  }
+
   private updateListeners() {
     this.isMobile = window.innerWidth < 768
-    const sidebar = document.querySelector('.sidebar')
 
-    // Remove existing listeners
-    sidebar.removeEventListener('mouseenter', this.sidebarMouseEnterListener)
-    sidebar.removeEventListener('mouseleave', this.sidebarMouseLeaveListener)
+    this.removeHoverListeners(this.sidebarEl)
+    this.removeHoverListeners(this.mobileHeaderEl)
 
-    // Add listeners based on mobile state and menu mode
-    if (this.isMobile || (!this.isMobile && this.$settings.menuMode !== 'freeze')) {
-      sidebar.addEventListener('mouseenter', this.sidebarMouseEnterListener, { passive: false })
-      sidebar.addEventListener('mouseleave', this.sidebarMouseLeaveListener, { passive: false })
+    document.removeEventListener('touchstart', this.onDocumentTouchStart as any)
+    document.removeEventListener('click', this.onDocumentClick as any)
+
+    if (this.isMobile) {
+      document.addEventListener('touchstart', this.onDocumentTouchStart as any, { passive: false })
+      return
     }
+
+    if (!this.isMobile && this.$settings.menuMode !== 'freeze') {
+      this.addHoverListeners(this.sidebarEl)
+      this.addHoverListeners(this.mobileHeaderEl)
+    }
+
+    document.addEventListener('click', this.onDocumentClick as any, { passive: false })
   }
 }
