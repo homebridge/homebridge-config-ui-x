@@ -139,7 +139,7 @@ export class SettingsService {
       }
     }
 
-    const iframes = window.document.querySelectorAll('iframe') as NodeListOf<HTMLIFrameElement>
+    const iframes = Array.from(window.document.querySelectorAll('iframe')) as HTMLIFrameElement[]
     iframes.forEach((iframe, index) => {
       const iframeOrigin = this.getIframeOrigin(iframe)
       const sameOrigin = !!iframeOrigin && iframeOrigin === window.location.origin

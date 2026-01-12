@@ -26,11 +26,7 @@
         : 'Navigation menu'
     "
   >
-    <div
-      class="hamburger-icon"
-      [ngClass]="{ 'hamburger-icon-cross': isExpanded }"
-      aria-hidden="true"
-    >
+    <div class="hamburger-icon" [ngClass]="{ 'hamburger-icon-cross': isExpanded }" aria-hidden="true">
       <span></span><span></span><span></span><span></span>
     </div>
   </button>
@@ -38,12 +34,7 @@
 
 <!-- DESKTOP: sidebar with navigation landmark -->
 @if (!isMobile) {
-<nav
-  class="sidebar"
-  [ngClass]="{ 'expanded': isExpanded }"
-  id="sidebar"
-  aria-label="Sidebar"
->
+<nav class="sidebar" [ngClass]="{ 'expanded': isExpanded }" id="sidebar" aria-label="Sidebar">
   <div class="header">
     <a tabindex="-1" aria-hidden="true">
       <img
@@ -94,11 +85,7 @@
         "
       >
         <div class="icon">
-          <i
-            class="fas fa-bolt fa-beat yellow-text"
-            style="--fa-beat-scale: 1.5"
-            aria-hidden="true"
-          ></i>
+          <i class="fas fa-bolt fa-beat yellow-text" style="--fa-beat-scale: 1.5" aria-hidden="true"></i>
         </div>
         <div class="title">{{ 'rpi.throttled.undervoltage_title' | translate }}</div>
       </button>
@@ -276,12 +263,7 @@
     <!-- Reload (PWA only) -->
     @if (isPwa) {
     <div class="link">
-      <button
-        type="button"
-        class="link-row"
-        (click)="reloadPage()"
-        [attr.aria-label]="'menu.reload' | translate"
-      >
+      <button type="button" class="link-row" (click)="reloadPage()" [attr.aria-label]="'menu.reload' | translate">
         <div class="icon">
           <i class="fa fa-refresh" aria-hidden="true"></i>
         </div>
@@ -293,12 +275,7 @@
     <!-- Logout (form auth only) -->
     @if (formAuth) {
     <div class="link">
-      <button
-        type="button"
-        class="link-row"
-        (click)="logout()"
-        [attr.aria-label]="'menu.tooltip_logout' | translate"
-      >
+      <button type="button" class="link-row" (click)="logout()" [attr.aria-label]="'menu.tooltip_logout' | translate">
         <div class="icon">
           <i class="fa fa-right-from-bracket" aria-hidden="true"></i>
         </div>
@@ -312,11 +289,7 @@
 
 <!-- MOBILE: sidebar without navigation landmark -->
 @if (isMobile) {
-<div
-  class="sidebar"
-  [ngClass]="{ 'expanded': isExpanded }"
-  id="sidebar"
->
+<div class="sidebar" [ngClass]="{ 'expanded': isExpanded }" id="sidebar">
   <div class="header">
     <a tabindex="-1" aria-hidden="true">
       <img
@@ -367,11 +340,7 @@
         "
       >
         <div class="icon">
-          <i
-            class="fas fa-bolt fa-beat yellow-text"
-            style="--fa-beat-scale: 1.5"
-            aria-hidden="true"
-          ></i>
+          <i class="fas fa-bolt fa-beat yellow-text" style="--fa-beat-scale: 1.5" aria-hidden="true"></i>
         </div>
         <div class="title">{{ 'rpi.throttled.undervoltage_title' | translate }}</div>
       </button>
@@ -549,12 +518,7 @@
     <!-- Reload (PWA only) -->
     @if (isPwa) {
     <div class="link">
-      <button
-        type="button"
-        class="link-row"
-        (click)="reloadPage()"
-        [attr.aria-label]="'menu.reload' | translate"
-      >
+      <button type="button" class="link-row" (click)="reloadPage()" [attr.aria-label]="'menu.reload' | translate">
         <div class="icon">
           <i class="fa fa-refresh" aria-hidden="true"></i>
         </div>
@@ -566,12 +530,7 @@
     <!-- Logout (form auth only) -->
     @if (formAuth) {
     <div class="link">
-      <button
-        type="button"
-        class="link-row"
-        (click)="logout()"
-        [attr.aria-label]="'menu.tooltip_logout' | translate"
-      >
+      <button type="button" class="link-row" (click)="logout()" [attr.aria-label]="'menu.tooltip_logout' | translate">
         <div class="icon">
           <i class="fa fa-right-from-bracket" aria-hidden="true"></i>
         </div>

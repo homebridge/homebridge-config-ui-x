@@ -1765,68 +1765,74 @@ export class SettingsComponent implements OnInit {
     })
   }
 
-private showRestartToast() {
-  if (this.restartToastIsShown) {
-    return
-  }
-  this.restartToastIsShown = true
-  const msg = this.$translate.instant('settings.changes.saved')
-  const html = `
+  private showRestartToast() {
+    if (this.restartToastIsShown) {
+      return
+    }
+    this.restartToastIsShown = true
+    const msg = this.$translate.instant('settings.changes.saved')
+    const html = `
     <div class="hb-restart-toast">
       <p class="hb-restart-toast-msg">${msg}</p>
     </div>
   `
-  const ref = this.$toastr.info(html, '', {
-    timeOut: 0,
-    disableTimeOut: true,
-    enableHtml: true,
-    tapToDismiss: false,
-    closeButton: true,
-    positionClass: 'toast-bottom-right',
-    toastClass: 'ngx-toastr hb-restart-toast-toast',
-  })
-  this.$settings.restartToastRef = ref
-  ref.onShown.subscribe(() => {
-    const container = document.getElementById('toast-container')
-    if (!container) return
-    const toastEl =
-      container.querySelector<HTMLElement>(`#toast-${ref.toastId}`)
-      || container
-    toastEl.setAttribute('role', 'alert')
-    toastEl.setAttribute('aria-live', 'assertive')
-    toastEl.setAttribute('aria-atomic', 'true')
-    const body = toastEl.querySelector<HTMLElement>('.toast-message')
-    const closeBtn = toastEl.querySelector<HTMLButtonElement>('.toast-close-button')
-    if (!body || !closeBtn) return
-    closeBtn.setAttribute('type', 'button')
-    closeBtn.setAttribute('aria-label', 'Close')
-    const msgEl = body.querySelector<HTMLElement>('.hb-restart-toast-msg')
-    if (!msgEl) return
-    const restartBtn = document.createElement('button')
-    restartBtn.type = 'button'
-    restartBtn.className = closeBtn.className
-    restartBtn.textContent = 'Restart Homebridge'
-    // Remove the aria-label - textContent already provides the accessible name
-    const activate = (ev: Event) => {
-      ev.preventDefault()
-      ev.stopPropagation()
-      void this.$router.navigate(['/restart'])
-      this.$toastr.clear(ref.toastId)
-    }
-    restartBtn.addEventListener('click', activate)
-    restartBtn.addEventListener('keydown', (ev: KeyboardEvent) => {
-      if (ev.key === 'Enter' || ev.key === ' ') {
-        activate(ev)
-      }
+    const ref = this.$toastr.info(html, '', {
+      timeOut: 0,
+      disableTimeOut: true,
+      enableHtml: true,
+      tapToDismiss: false,
+      closeButton: true,
+      positionClass: 'toast-bottom-right',
+      toastClass: 'ngx-toastr hb-restart-toast-toast',
     })
-    while (body.firstChild) {
-      body.removeChild(body.firstChild)
-    }
-    body.appendChild(msgEl)
-    body.appendChild(restartBtn)
-  })
-  ref.onHidden.subscribe(() => {
-    this.restartToastIsShown = false
-  })
-}
+    this.$settings.restartToastRef = ref
+    ref.onShown.subscribe(() => {
+      const container = document.getElementById('toast-container')
+      if (!container) {
+        return
+      }
+      const toastEl
+        = container.querySelector<HTMLElement>(`#toast-${ref.toastId}`)
+          || container
+      toastEl.setAttribute('role', 'alert')
+      toastEl.setAttribute('aria-live', 'assertive')
+      toastEl.setAttribute('aria-atomic', 'true')
+      const body = toastEl.querySelector<HTMLElement>('.toast-message')
+      const closeBtn = toastEl.querySelector<HTMLButtonElement>('.toast-close-button')
+      if (!body || !closeBtn) {
+        return
+      }
+      closeBtn.setAttribute('type', 'button')
+      closeBtn.setAttribute('aria-label', 'Close')
+      const msgEl = body.querySelector<HTMLElement>('.hb-restart-toast-msg')
+      if (!msgEl) {
+        return
+      }
+      const restartBtn = document.createElement('button')
+      restartBtn.type = 'button'
+      restartBtn.className = closeBtn.className
+      restartBtn.textContent = 'Restart Homebridge'
+      // Remove the aria-label - textContent already provides the accessible name
+      const activate = (ev: Event) => {
+        ev.preventDefault()
+        ev.stopPropagation()
+        void this.$router.navigate(['/restart'])
+        this.$toastr.clear(ref.toastId)
+      }
+      restartBtn.addEventListener('click', activate)
+      restartBtn.addEventListener('keydown', (ev: KeyboardEvent) => {
+        if (ev.key === 'Enter' || ev.key === ' ') {
+          activate(ev)
+        }
+      })
+      while (body.firstChild) {
+        body.removeChild(body.firstChild)
+      }
+      body.appendChild(msgEl)
+      body.appendChild(restartBtn)
+    })
+    ref.onHidden.subscribe(() => {
+      this.restartToastIsShown = false
+    })
+  }
 }

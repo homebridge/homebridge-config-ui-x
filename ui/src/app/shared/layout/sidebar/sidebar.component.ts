@@ -70,7 +70,9 @@ export class SidebarComponent implements OnInit, OnDestroy {
     const content = this.contentEl
     const target = e.target as HTMLElement | null
 
-    if (!target) return
+    if (!target) {
+      return
+    }
 
     if (content && content.contains(target) && this.isExpanded) {
       e.preventDefault()
@@ -93,7 +95,9 @@ export class SidebarComponent implements OnInit, OnDestroy {
   private onDocumentClick = (e: MouseEvent) => {
     const sidebar = this.sidebarEl
     const target = e.target as HTMLElement | null
-    if (!sidebar || !target) return
+    if (!sidebar || !target) {
+      return
+    }
 
     if (sidebar.contains(target) && e.clientX > 60) {
       this.closeSidebar()
@@ -222,7 +226,9 @@ export class SidebarComponent implements OnInit, OnDestroy {
     }
 
     const content = this.contentEl
-    if (!content) return
+    if (!content) {
+      return
+    }
 
     if (this.isExpanded) {
       this.$renderer.setStyle(content, 'opacity', '20%')
@@ -242,13 +248,17 @@ export class SidebarComponent implements OnInit, OnDestroy {
   }
 
   private addHoverListeners(el: HTMLElement | null) {
-    if (!el) return
+    if (!el) {
+      return
+    }
     el.addEventListener('mouseenter', this.sidebarMouseEnterListener, { passive: false })
     el.addEventListener('mouseleave', this.sidebarMouseLeaveListener, { passive: false })
   }
 
   private removeHoverListeners(el: HTMLElement | null) {
-    if (!el) return
+    if (!el) {
+      return
+    }
     el.removeEventListener('mouseenter', this.sidebarMouseEnterListener)
     el.removeEventListener('mouseleave', this.sidebarMouseLeaveListener)
   }
