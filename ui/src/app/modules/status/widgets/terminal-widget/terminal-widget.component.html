@@ -12,7 +12,7 @@
     class="drag-handler p-2"
     [ngClass]="{ 'widget-cursor': widget.draggable }"
   >
-    <div style="display: flex; align-items: center; gap: 8px;">
+    <div style="display: flex; align-items: center; gap: 8px">
       <span aria-hidden="true">▶</span>
       <span>Homebridge {{ 'menu.docker.terminal' | translate }}</span>
     </div>
@@ -34,10 +34,6 @@
     [attr.aria-hidden]="srExpanded ? null : 'true'"
     [attr.inert]="srExpanded ? null : ''"
   >
-    <div
-      #terminaloutput
-      class="terminal gridster-item-content w-100 h-100"
-      style="max-height: 100%"
-    ></div>
+    <div #terminaloutput class="terminal gridster-item-content w-100 h-100" style="max-height: 100%"></div>
   </div>
 </div>

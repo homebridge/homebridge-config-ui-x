@@ -92,10 +92,14 @@ export class TerminalWidgetComponent implements OnInit, AfterViewInit, OnDestroy
 
   private applyTerminalA11yState() {
     const host = this.termTarget()?.nativeElement as HTMLElement | undefined
-    if (!host) return
+    if (!host) {
+      return
+    }
 
     const ta = host.querySelector('textarea') as HTMLTextAreaElement | null
-    if (!ta) return
+    if (!ta) {
+      return
+    }
 
     if (this.srExpanded) {
       ta.disabled = false
@@ -113,10 +117,14 @@ export class TerminalWidgetComponent implements OnInit, AfterViewInit, OnDestroy
 
   private patchXtermLiveRegion() {
     const host = this.termTarget()?.nativeElement as HTMLElement | undefined
-    if (!host) return
+    if (!host) {
+      return
+    }
 
     const live = host.querySelector('[aria-live]') as HTMLElement | null
-    if (!live) return
+    if (!live) {
+      return
+    }
 
     live.setAttribute('role', 'status')
     live.setAttribute('aria-live', 'polite')
@@ -124,12 +132,18 @@ export class TerminalWidgetComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   private kickFocusOutOfCollapsedTerminal() {
-    if (this.srExpanded) return
+    if (this.srExpanded) {
+      return
+    }
 
     const host = this.termTarget()?.nativeElement as HTMLElement | undefined
-    if (!host) return
+    if (!host) {
+      return
+    }
 
-    if (!host.contains(document.activeElement)) return
+    if (!host.contains(document.activeElement)) {
+      return
+    }
 
     const title = this.titleElement()?.nativeElement as HTMLElement | undefined
     const btn = title?.querySelector('button') as HTMLElement | null

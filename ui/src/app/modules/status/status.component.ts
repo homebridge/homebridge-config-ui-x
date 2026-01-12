@@ -309,8 +309,8 @@ export class StatusComponent implements OnInit, OnDestroy {
       return
     }
 
-    const current =
-      this.selectedReorderComponent && list.includes(this.selectedReorderComponent)
+    const current
+      = this.selectedReorderComponent && list.includes(this.selectedReorderComponent)
         ? this.selectedReorderComponent
         : list[0]
 
@@ -363,8 +363,8 @@ export class StatusComponent implements OnInit, OnDestroy {
       return
     }
 
-    const selected =
-      this.selectedReorderComponent && list.includes(this.selectedReorderComponent)
+    const selected
+      = this.selectedReorderComponent && list.includes(this.selectedReorderComponent)
         ? this.selectedReorderComponent
         : list[0]
 
@@ -394,8 +394,8 @@ export class StatusComponent implements OnInit, OnDestroy {
       return
     }
 
-    const selected =
-      this.selectedReorderComponent && list.includes(this.selectedReorderComponent)
+    const selected
+      = this.selectedReorderComponent && list.includes(this.selectedReorderComponent)
         ? this.selectedReorderComponent
         : list[0]
 
@@ -443,7 +443,7 @@ export class StatusComponent implements OnInit, OnDestroy {
     ref.componentInstance.unlockLayout = this.unlockLayout.bind(this)
 
     ref.result
-      .then(widget => {
+      .then((widget) => {
         const index = this.dashboard.findIndex((x: any) => x.component === widget.component)
         if (index > -1) {
           this.dashboard.splice(index, 1)
@@ -473,7 +473,9 @@ export class StatusComponent implements OnInit, OnDestroy {
 
         setTimeout(() => {
           const widgetElement = document.getElementById(widget.component)
-          if (widgetElement) widgetElement.scrollIntoView()
+          if (widgetElement) {
+            widgetElement.scrollIntoView()
+          }
         }, 500)
       })
       .catch(() => { })
@@ -623,7 +625,10 @@ export class StatusComponent implements OnInit, OnDestroy {
     this.dashboard.sort((a: any, b: any) => (a.mobileOrder ?? 0) - (b.mobileOrder ?? 0))
 
     const layout = this.dashboard.map((item: any) => {
-      const { $resizeEvent, $configureEvent, $saveWidgetsEvent, ...cleanItem } = item
+      const cleanItem = { ...item }
+      delete cleanItem.$resizeEvent
+      delete cleanItem.$configureEvent
+      delete cleanItem.$saveWidgetsEvent
       return cleanItem
     })
 
@@ -641,7 +646,7 @@ export class StatusComponent implements OnInit, OnDestroy {
     if (this.reorderMode && event.key === 'Tab') {
       event.preventDefault()
       event.stopPropagation()
-      
+
       // Forward to the reorder keyboard handler to move between widgets
       this.selectNext(event.shiftKey)
     }

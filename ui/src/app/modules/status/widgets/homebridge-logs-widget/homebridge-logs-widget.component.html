@@ -35,17 +35,17 @@
       <span>{{ 'status.widget.homebridge_logs' | translate }}</span>
     </button>
   </div>
-  
-  <div 
+
+  <div
     [attr.id]="contentId"
-    [ngStyle]="{'height.px': isExpanded ? terminalHeight : 0}" 
+    [ngStyle]="{'height.px': isExpanded ? terminalHeight : 0}"
     [style.overflow]="isExpanded ? 'visible' : 'hidden'"
     [style.transition]="'height 0.3s ease-out'"
     class="p-2"
   >
-    <div 
-      #logoutput 
-      class="terminal gridster-item-content w-100 h-100" 
+    <div
+      #logoutput
+      class="terminal gridster-item-content w-100 h-100"
       style="max-height: 100%"
       [attr.aria-hidden]="!isExpanded"
     ></div>

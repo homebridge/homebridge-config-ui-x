@@ -216,11 +216,11 @@ export class BridgesWidgetComponent implements OnInit, OnDestroy {
     const currentStatus = this.homebridgeStatus?.status
 
     if (
-      this.homebridgeRestartRequested &&
-      !this.homebridgeAnnouncementPending &&
-      prevStatus === 'pending' &&
-      currentStatus &&
-      currentStatus !== 'pending'
+      this.homebridgeRestartRequested
+      && !this.homebridgeAnnouncementPending
+      && prevStatus === 'pending'
+      && currentStatus
+      && currentStatus !== 'pending'
     ) {
       // We are now handling this restart; don't schedule multiple announcements.
       this.homebridgeAnnouncementPending = true
@@ -280,11 +280,11 @@ export class BridgesWidgetComponent implements OnInit, OnDestroy {
     const key = bridge.username || bridge.name
 
     if (
-      this.childRestartRequested[key] &&
-      !this.childAnnouncementPending[key] &&
-      prevStatus === 'pending' &&
-      currentStatus &&
-      currentStatus !== 'pending'
+      this.childRestartRequested[key]
+      && !this.childAnnouncementPending[key]
+      && prevStatus === 'pending'
+      && currentStatus
+      && currentStatus !== 'pending'
     ) {
       this.childAnnouncementPending[key] = true
 
@@ -293,8 +293,8 @@ export class BridgesWidgetComponent implements OnInit, OnDestroy {
       }
 
       this.childAnnouncementTimeouts[key] = setTimeout(() => {
-        const latestBridge =
-          this.childBridges.find(b => b.username === bridge.username) || bridge
+        const latestBridge
+          = this.childBridges.find(b => b.username === bridge.username) || bridge
 
         const latestStatus = latestBridge.status
         if (!latestStatus || latestStatus === 'pending') {

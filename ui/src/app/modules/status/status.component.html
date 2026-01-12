@@ -6,65 +6,64 @@
   </div>
 
   @if (consoleStatus === 'up' && isAdmin) {
-    <div class="col-6 text-end">
+  <div class="col-6 text-end">
+    <button
+      type="button"
+      class="btn btn-elegant my-0 me-0"
+      [hidden]="!options.draggable.enabled && !page.showWidgetConfigure"
+      (click)="addWidget()"
+      container="body"
+      placement="bottom"
+      [openDelay]="150"
+      triggers="hover"
+      [ngbTooltip]="'status.widget.show_hide' | translate"
+      [attr.aria-label]="'status.widget.show_hide' | translate"
+    >
+      <i class="fas fa-eye-low-vision"></i>
+    </button>
+
+    <div class="btn-group d-none d-sm-inline-block">
       <button
         type="button"
-        class="btn btn-elegant my-0 me-0"
-        [hidden]="!options.draggable.enabled && !page.showWidgetConfigure"
-        (click)="addWidget()"
+        class="btn btn-elegant my-0 ms-2"
+        [disabled]="options.draggable.enabled"
+        (click)="unlockLayout()"
         container="body"
         placement="bottom"
         [openDelay]="150"
         triggers="hover"
-        [ngbTooltip]="'status.widget.show_hide' | translate"
-        [attr.aria-label]="'status.widget.show_hide' | translate"
+        [ngbTooltip]="'form.button_unlock' | translate"
+        [attr.aria-label]="'form.button_unlock' | translate"
       >
-        <i class="fas fa-eye-low-vision"></i>
+        <i class="fas fa-unlock"></i>
       </button>
 
-      <div class="btn-group d-none d-sm-inline-block">
-        <button
-          type="button"
-          class="btn btn-elegant my-0 ms-2"
-          [disabled]="options.draggable.enabled"
-          (click)="unlockLayout()"
-          container="body"
-          placement="bottom"
-          [openDelay]="150"
-          triggers="hover"
-          [ngbTooltip]="'form.button_unlock' | translate"
-          [attr.aria-label]="'form.button_unlock' | translate"
-        >
-          <i class="fas fa-unlock"></i>
-        </button>
-
-        <button
-          type="button"
-          class="btn btn-elegant my-0 me-0"
-          [disabled]="!options.draggable.enabled"
-          (click)="lockLayout()"
-          container="body"
-          placement="bottom"
-          [openDelay]="150"
-          triggers="hover"
-          [ngbTooltip]="'form.button_lock' | translate"
-          [attr.aria-label]="'form.button_lock' | translate"
-        >
-          <i class="fas fa-lock"></i>
-        </button>
-      </div>
+      <button
+        type="button"
+        class="btn btn-elegant my-0 me-0"
+        [disabled]="!options.draggable.enabled"
+        (click)="lockLayout()"
+        container="body"
+        placement="bottom"
+        [openDelay]="150"
+        triggers="hover"
+        [ngbTooltip]="'form.button_lock' | translate"
+        [attr.aria-label]="'form.button_lock' | translate"
+      >
+        <i class="fas fa-lock"></i>
+      </button>
     </div>
+  </div>
   }
 </div>
 
 <div class="status-container d-flex flex-column mt-0">
   @if (consoleStatus === 'down') {
-    <app-spinner />
+  <app-spinner />
   }
 
   <div class="row flex-column flex-grow-1">
-    @if (dashboard.length) {
-    @if (options.draggable.enabled && isAdmin) {
+    @if (dashboard.length) { @if (options.draggable.enabled && isAdmin) {
     <div class="col-12 mb-2">
       <button
         type="button"
@@ -113,12 +112,10 @@
         }
       </ul>
     </div>
-    }
-    }
+    } }
 
     <gridster [options]="options" class="flex-grow-1 no-scrollbars py-0" [hidden]="consoleStatus === 'down'">
-      @for (item of dashboard; track item.component) {
-      @if (!(item.hideOnMobile && page.mobile)) {
+      @for (item of dashboard; track item.component) { @if (!(item.hideOnMobile && page.mobile)) {
       <gridster-item class="widget-item" [item]="item" [id]="item.component">
         <div class="gridster-item-content">
           @if ((options.draggable.enabled || page.showWidgetConfigure) && !reorderMode) {
@@ -135,8 +132,7 @@
 
         <app-widgets [widget]="item" class="d-flex h-100 w-100" />
       </gridster-item>
-      }
-      }
+      } }
     </gridster>
     }
   </div>

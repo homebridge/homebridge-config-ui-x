@@ -31,7 +31,11 @@
           <span class="grey-text small">{{ dockerInfo.currentVersion }}</span>
 
           @if (dockerInfo.updateAvailable && isAdmin) { &middot;
-          <button type="button" class="btn btn-link p-0 text-decoration-none primary-text small" (click)="dockerUpdateModal()">
+          <button
+            type="button"
+            class="btn btn-link p-0 text-decoration-none primary-text small"
+            (click)="dockerUpdateModal()"
+          >
             {{'plugins.button_update' | translate }}
           </button>
           } }
@@ -57,8 +61,9 @@
                 type="button"
                 class="btn btn-link p-0 text-decoration-none card-link card-link-title"
                 (click)="installAlternateVersion(homebridgePkg)"
-                >Homebridge</button
               >
+                Homebridge
+              </button>
               } @else { Homebridge } @if (isHbV2Loaded && !isRunningHbV2 && isAdmin) {
               <button
                 type="button"
@@ -85,7 +90,11 @@
               } @if (homebridgePkg.installedVersion) {
               <span class="grey-text small">v{{ homebridgeVersion }}</span>
               @if (homebridgePkg.updateAvailable && isAdmin) { &middot;
-              <button type="button" class="btn btn-link p-0 text-decoration-none primary-text small" (click)="updatePackage(homebridgePkg)">
+              <button
+                type="button"
+                class="btn btn-link p-0 text-decoration-none primary-text small"
+                (click)="updatePackage(homebridgePkg)"
+              >
                 {{ 'plugins.button_update' | translate }}
               </button>
               } }
@@ -110,8 +119,9 @@
                 type="button"
                 class="btn btn-link p-0 text-decoration-none card-link card-link-title"
                 (click)="installAlternateVersion(homebridgeUiPkg)"
-                >Homebridge UI</button
               >
+                Homebridge UI
+              </button>
               } @else {
               <span>Homebridge UI</span>
               }
@@ -121,7 +131,11 @@
               } @if (homebridgeUiPkg.installedVersion) {
               <span class="grey-text small">v{{ packageVersion }}</span>
               @if (homebridgeUiPkg.updateAvailable && isAdmin) { &middot;
-              <button type="button" class="btn btn-link p-0 text-decoration-none primary-text small" (click)="updatePackage(homebridgeUiPkg)">
+              <button
+                type="button"
+                class="btn btn-link p-0 text-decoration-none primary-text small"
+                (click)="updatePackage(homebridgeUiPkg)"
+              >
                 {{ 'plugins.button_update' | translate }}
               </button>
               } }
@@ -149,7 +163,8 @@
                 type="button"
                 class="btn btn-link p-0 text-decoration-none card-link card-link-title"
                 (click)="nodeVersionModal(serverInfo.nodeVersion)"
-                >Node.js</button
+              >
+                Node.js</button
               >@if (widget.showNpmVersion && nodejsInfo.npmVersion) { &middot; npm }
               <br />
               @if (!nodejsStatusDone) {
@@ -201,8 +216,9 @@
             type="button"
             class="btn btn-link p-0 text-decoration-none card-link card-link-title"
             (click)="installAlternateVersion(homebridgePkg)"
-            >Homebridge</button
           >
+            Homebridge
+          </button>
           } @else { Homebridge } @if (isHbV2Loaded && !isRunningHbV2 && isAdmin) {
           <button
             type="button"
@@ -226,7 +242,11 @@
           } @if (homebridgePkg.installedVersion) {
           <span class="grey-text small">v{{ homebridgeVersion }}</span> @if (homebridgePkg.updateAvailable && isAdmin) {
           &middot;
-          <button type="button" class="btn btn-link p-0 text-decoration-none primary-text small" (click)="updatePackage(homebridgePkg)">
+          <button
+            type="button"
+            class="btn btn-link p-0 text-decoration-none primary-text small"
+            (click)="updatePackage(homebridgePkg)"
+          >
             {{ 'plugins.button_update' | translate }}
           </button>
           } }
@@ -251,8 +271,9 @@
             type="button"
             class="btn btn-link p-0 text-decoration-none card-link card-link-title"
             (click)="installAlternateVersion(homebridgeUiPkg)"
-            >Homebridge UI</button
           >
+            Homebridge UI
+          </button>
           } @else {
           <span>Homebridge UI</span>
           }
@@ -262,7 +283,11 @@
           } @if (homebridgeUiPkg.installedVersion) {
           <span class="grey-text small">v{{ packageVersion }}</span>
           @if (homebridgeUiPkg.updateAvailable && isAdmin) { &middot;
-          <button type="button" class="btn btn-link p-0 text-decoration-none primary-text small" (click)="updatePackage(homebridgeUiPkg)">
+          <button
+            type="button"
+            class="btn btn-link p-0 text-decoration-none primary-text small"
+            (click)="updatePackage(homebridgeUiPkg)"
+          >
             {{ 'plugins.button_update' | translate }}
           </button>
           } }
@@ -321,7 +346,8 @@
             type="button"
             class="btn btn-link p-0 text-decoration-none card-link card-link-title"
             (click)="nodeVersionModal(serverInfo.nodeVersion)"
-            >Node.js</button
+          >
+            Node.js</button
           >@if (widget.showNpmVersion && nodejsInfo.npmVersion) { &middot; npm }
           <br />
           @if (!nodejsStatusDone) {
@@ -332,11 +358,19 @@
             nodejsInfo.npmVersion }} }</span
           >
           @if (!widget.hideNodeInfo) { @if (nodejsInfo.updateAvailable && isAdmin) { &middot;
-          <button type="button" class="btn btn-link p-0 text-decoration-none primary-text small" (click)="nodeVersionModal(nodejsInfo.latestVersion)">
+          <button
+            type="button"
+            class="btn btn-link p-0 text-decoration-none primary-text small"
+            (click)="nodeVersionModal(nodejsInfo.latestVersion)"
+          >
             {{'plugins.button_update' | translate }}
           </button>
           } @if (nodejsInfo.showNodeUnsupportedWarning && !nodejsInfo.updateAvailable) { &middot;
-          <button type="button" class="btn btn-link p-0 text-decoration-none primary-text small" (click)="nodeVersionModal(serverInfo.nodeVersion)">
+          <button
+            type="button"
+            class="btn btn-link p-0 text-decoration-none primary-text small"
+            (click)="nodeVersionModal(serverInfo.nodeVersion)"
+          >
             {{ 'status.widget.info.node_unsupp' | translate }}
           </button>
           } } }

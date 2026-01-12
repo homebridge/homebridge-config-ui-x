@@ -77,13 +77,13 @@ export class HomebridgeLogsWidgetComponent implements OnInit, OnDestroy {
             textarea.setAttribute('aria-hidden', 'true')
             textarea.setAttribute('tabindex', '-1')
           }
-          
+
           // Hide the live region that duplicates all text
           const liveRegion = logContainer.querySelector('[aria-live]')
           if (liveRegion && !liveRegion.hasAttribute('role')) {
             liveRegion.setAttribute('aria-hidden', 'true')
           }
-          
+
           // Hide any standalone text content that's not in the list
           const screenReaderDiv = logContainer.querySelector('.xterm-accessibility')
           if (screenReaderDiv) {
@@ -151,7 +151,7 @@ export class HomebridgeLogsWidgetComponent implements OnInit, OnDestroy {
     // Prevent drag handler from interfering
     event.stopPropagation()
     this.isExpanded = !this.isExpanded
-    
+
     // Trigger resize when expanding to ensure terminal renders properly
     if (this.isExpanded) {
       setTimeout(() => {

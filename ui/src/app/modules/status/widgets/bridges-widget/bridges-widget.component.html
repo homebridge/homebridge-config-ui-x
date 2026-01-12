@@ -55,15 +55,8 @@
       <div class="align-self-center flex-child px-2">
         <span>{{ homebridgeStatus.name || 'Homebridge' }}</span>
         <span class="ms-1">
-          {{
-            isRestarting
-              ? 'restarting'
-              : (
-                  homebridgeStatus.status === 'down'
-                    ? ('status.services.label_not_running' | translate)
-                    : ('status.services.label_running' | translate)
-                )
-          }}
+          {{ isRestarting ? 'restarting' : ( homebridgeStatus.status === 'down' ? ('status.services.label_not_running' |
+          translate) : ('status.services.label_running' | translate) ) }}
         </span>
       </div>
 
@@ -129,15 +122,8 @@
       <div class="align-self-center flex-child px-2">
         <span>{{ bridge.name }}</span>
         <span class="ms-1">
-          {{
-            (bridge.restarting || isRestarting)
-              ? 'restarting'
-              : (
-                  bridge.status === 'down'
-                    ? ('status.services.label_not_running' | translate)
-                    : ('status.services.label_running' | translate)
-                )
-          }}
+          {{ (bridge.restarting || isRestarting) ? 'restarting' : ( bridge.status === 'down' ?
+          ('status.services.label_not_running' | translate) : ('status.services.label_running' | translate) ) }}
         </span>
       </div>
 
@@ -158,19 +144,13 @@
   <!-- ====================================== -->
 
   <!-- Homebridge live region -->
-  <span
-    aria-live="polite"
-    style="position:absolute; opacity:0; pointer-events:none;"
-  >
+  <span aria-live="polite" style="position: absolute; opacity: 0; pointer-events: none">
     {{ homebridgeLiveMessage }}
   </span>
 
   <!-- Child bridges live regions -->
   @for (bridge of childBridges; track bridge.username) {
-  <span
-    aria-live="polite"
-    style="position:absolute; opacity:0; pointer-events:none;"
-  >
+  <span aria-live="polite" style="position: absolute; opacity: 0; pointer-events: none">
     {{ childBridgeLiveMessages[bridge.username] || childBridgeLiveMessages[bridge.name] }}
   </span>
   }
