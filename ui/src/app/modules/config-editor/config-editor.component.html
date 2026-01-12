@@ -1,50 +1,74 @@
 <div class="flex-column d-flex align-items-stretch h-100">
   <div class="row">
     <div class="col-6">
-      <h3 class="primary-text m-0">{{ 'menu.config_json_editor' | translate }}</h3>
+      <h3 class="primary-text m-0">
+        {{ 'menu.config_json_editor' | translate }}
+      </h3>
     </div>
+
     <div class="col-6 text-end">
+      <!-- Native popup button (select) -->
+      <select
+        id="hb-editor-mode"
+        class="btn btn-elegant my-0 me-2"
+        [ngModel]="preferPlainTextEditor ? 'plain' : 'default'"
+        (ngModelChange)="setPlainTextEditor($event === 'plain')"
+        aria-label="Editor mode"
+      >
+        <option value="default">Default editor</option>
+        <option value="plain">Plain text editor</option>
+      </select>
+
       @if (originalConfig) {
-      <button
-        class="btn btn-danger waves-effect my-0 me-2"
-        (click)="onCancelRestore()"
-        [disabled]="saveInProgress"
-        container="body"
-        placement="bottom"
-        [openDelay]="150"
-        triggers="hover"
-        [ngbTooltip]="'form.button_cancel' | translate"
-        [attr.aria-label]="'form.button_cancel' | translate"
-      >
-        <i class="fas fa-times"></i>
-      </button>
-      } @if (!originalConfig) {
-      <button
-        class="btn btn-elegant waves-effect my-0 me-2"
-        (click)="onRestore()"
-        container="body"
-        placement="bottom"
-        [openDelay]="150"
-        triggers="hover"
-        [attr.aria-label]="'form.button_restore' | translate"
-        [ngbTooltip]="'form.button_restore' | translate"
-      >
-        <i class="fas fa-history"></i>
-      </button>
-      } @if (!isMobile && originalConfig) {
-      <button
-        class="btn btn-elegant waves-effect my-0 me-2"
-        (click)="toggleSideBySide()"
-        container="body"
-        placement="bottom"
-        [openDelay]="150"
-        triggers="hover"
-        [attr.aria-label]="(renderSideBySide ? 'config.restore.view_inline' : 'config.restore.view_side_by_side') | translate"
-        [ngbTooltip]="(renderSideBySide ? 'config.restore.view_inline' : 'config.restore.view_side_by_side') | translate"
-      >
-        <i class="fas" [class.fa-columns]="!renderSideBySide" [class.fa-bars]="renderSideBySide"></i>
-      </button>
+        <button
+          class="btn btn-danger waves-effect my-0 me-2"
+          (click)="onCancelRestore()"
+          [disabled]="saveInProgress"
+          container="body"
+          placement="bottom"
+          [openDelay]="150"
+          triggers="hover"
+          [ngbTooltip]="'form.button_cancel' | translate"
+          [attr.aria-label]="'form.button_cancel' | translate"
+        >
+          <i class="fas fa-times"></i>
+        </button>
       }
+
+      @if (!originalConfig) {
+        <button
+          class="btn btn-elegant waves-effect my-0 me-2"
+          (click)="onRestore()"
+          container="body"
+          placement="bottom"
+          [openDelay]="150"
+          triggers="hover"
+          [ngbTooltip]="'form.button_restore' | translate"
+          [attr.aria-label]="'form.button_restore' | translate"
+        >
+          <i class="fas fa-history"></i>
+        </button>
+      }
+
+      @if (!isMobile && originalConfig) {
+        <button
+          class="btn btn-elegant waves-effect my-0 me-2"
+          (click)="toggleSideBySide()"
+          container="body"
+          placement="bottom"
+          [openDelay]="150"
+          triggers="hover"
+          [ngbTooltip]="(renderSideBySide ? 'config.restore.view_inline' : 'config.restore.view_side_by_side') | translate"
+          [attr.aria-label]="(renderSideBySide ? 'config.restore.view_inline' : 'config.restore.view_side_by_side') | translate"
+        >
+          <i
+            class="fas"
+            [class.fa-columns]="!renderSideBySide"
+            [class.fa-bars]="renderSideBySide"
+          ></i>
+        </button>
+      }
+
       <button
         class="btn btn-elegant waves-effect my-0 me-0"
         (click)="onSave()"
@@ -57,43 +81,49 @@
         [attr.aria-label]="'form.button_save' | translate"
       >
         @if (!saveInProgress) {
-        <i class="fas fa-floppy-disk" aria-hidden="true"></i>
-        } @if (saveInProgress) {
-        <i class="fas fa-circle-notch fa-spin" aria-hidden="true"></i>
+          <i class="fas fa-floppy-disk"></i>
+        }
+        @if (saveInProgress) {
+          <i class="fas fa-spinner fa-pulse"></i>
         }
       </button>
     </div>
   </div>
 
-  @if (!isMobile && !originalConfig) {
-  <ngx-monaco-editor
-    class="flex-grow-1 h-100 w-100 mt-3 mb-0"
-    [options]="editorOptions"
-    [model]="monacoEditorModel"
-    (onInit)="onEditorInit($event)"
-    (keydown.control.s)="$event.preventDefault(); onSave()"
-    (keydown.meta.s)="$event.preventDefault(); onSave()"
-  />
-  } @if (!isMobile && originalConfig) {
-  <ngx-monaco-diff-editor
-    class="flex-grow-1 h-100 w-100 mt-3 mb-0"
-    [options]="editorOptions"
-    [originalModel]="diffOriginalModel"
-    [modifiedModel]="diffModifiedModel"
-    (onInit)="onInitDiffEditor($event)"
-    (keydown.control.s)="$event.preventDefault(); onSave()"
-    (keydown.meta.s)="$event.preventDefault(); onSave()"
-  />
-  } @if (isMobile) {
-  <textarea
-    wrap="off"
-    class="hb-plain-text-editor align-self-end h-100 w-100 my-3"
-    autocomplete="off"
-    autocorrect="off"
-    autocapitalize="off"
-    spellcheck="false"
-    [(ngModel)]="homebridgeConfig"
-  >
-  </textarea>
+  <!-- Editor area -->
+  @if (!preferPlainTextEditor && !isMobile && !originalConfig) {
+    <ngx-monaco-editor
+      class="flex-grow-1 h-100 w-100 mt-3 mb-0"
+      [options]="editorOptions"
+      [model]="monacoEditorModel"
+      (onInit)="onEditorInit($event)"
+      (keydown.control.s)="$event.preventDefault(); onSave()"
+      (keydown.meta.s)="$event.preventDefault(); onSave()"
+    />
+  }
+
+  @if (!preferPlainTextEditor && !isMobile && originalConfig) {
+    <ngx-monaco-diff-editor
+      class="flex-grow-1 h-100 w-100 mt-3 mb-0"
+      [options]="editorOptions"
+      [originalModel]="diffOriginalModel"
+      [modifiedModel]="diffModifiedModel"
+      (onInit)="onInitDiffEditor($event)"
+      (keydown.control.s)="$event.preventDefault(); onSave()"
+      (keydown.meta.s)="$event.preventDefault(); onSave()"
+    />
+  }
+
+  @if (preferPlainTextEditor || isMobile) {
+    <textarea
+      wrap="off"
+      class="hb-plain-text-editor align-self-end h-100 w-100 my-3"
+      autocomplete="off"
+      autocorrect="off"
+      autocapitalize="off"
+      spellcheck="false"
+      [(ngModel)]="homebridgeConfig"
+      aria-label="Homebridge config.JSON"
+    ></textarea>
   }
 </div>

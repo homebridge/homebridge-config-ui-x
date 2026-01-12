@@ -7,14 +7,20 @@
     <button
       class="btn btn-elegant my-0 me-2"
       (click)="showSearch()"
-      container="body"
-      placement="bottom"
-      [openDelay]="150"
-      triggers="hover"
-      [ngbTooltip]="'form.search' | translate"
       [attr.aria-label]="'form.search' | translate"
+      [attr.aria-expanded]="showSearchBar()"
+      aria-controls="logs-search-region"
     >
-      <i class="fas{{ showSearchBar() ? ' primary-text' : '' }} fa-search"></i>
+      <span
+        [ngbTooltip]="'form.search' | translate"
+        container="body"
+        placement="bottom"
+        [openDelay]="150"
+        triggers="hover"
+        aria-hidden="true"
+      >
+        <i class="fas{{ showSearchBar() ? ' primary-text' : '' }} fa-search"></i>
+      </span>
     </button>
     <button
       class="btn btn-elegant my-0 me-2"
@@ -45,7 +51,7 @@
 </div>
 
 @if (showSearchBar()) {
-<div class="row">
+<div class="row" id="logs-search-region">
   <div class="col-md-12">
     <form novalidate (ngSubmit)="onSubmit(form.value)" [formGroup]="form">
       <input
