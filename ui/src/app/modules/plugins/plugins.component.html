@@ -13,30 +13,39 @@
       class="btn btn-elegant my-0 me-2"
       (click)="showSearch()"
       [hidden]="!installedPlugins.length && !showSearchBar"
-      container="body"
-      placement="bottom"
-      [openDelay]="150"
-      triggers="hover"
-      [ngbTooltip]="'form.search' | translate"
       [attr.aria-label]="'form.search' | translate"
       [attr.aria-expanded]="showSearchBar"
       aria-controls="plugin-search-region"
     >
-      <i class="fas{{ showSearchBar ? ' primary-text' : '' }} fa-search" aria-hidden="true"></i>
-      <span class="visually-hidden">{{ 'form.search' | translate }}</span>
+      <span
+        [ngbTooltip]="'form.search' | translate"
+        container="body"
+        placement="bottom"
+        [openDelay]="150"
+        triggers="hover"
+        aria-hidden="true"
+      >
+        <i class="fas{{ showSearchBar ? ' primary-text' : '' }} fa-search" aria-hidden="true"></i>
+      </span>
     </button>
     <button
       type="button"
       class="btn btn-elegant my-0 me-2 d-none d-md-inline-block"
       (click)="showStats()"
-      container="body"
-      placement="bottom"
-      [openDelay]="150"
-      triggers="hover"
-      [ngbTooltip]="'plugins.stats' | translate"
       [attr.aria-label]="'plugins.stats' | translate"
+      [attr.aria-expanded]="tab === 'stats'"
+      aria-controls="stats-header stats-iframe"
     >
-      <i class="fas{{ tab === 'stats' ? ' primary-text' : '' }} fa-sliders" aria-hidden="true"></i>
+      <span
+        [ngbTooltip]="'plugins.stats' | translate"
+        container="body"
+        placement="bottom"
+        [openDelay]="150"
+        triggers="hover"
+        aria-hidden="true"
+      >
+        <i class="fas{{ tab === 'stats' ? ' primary-text' : '' }} fa-sliders" aria-hidden="true"></i>
+      </span>
     </button>
     }
     <button
@@ -70,7 +79,6 @@
         [attr.aria-label]="'form.button_clear' | translate"
       >
         <i class="fas fa-square-xmark" aria-hidden="true"></i>
-        <span class="visually-hidden">{{ 'form.button_clear' | translate }}</span>
       </button>
       }
     </form>
