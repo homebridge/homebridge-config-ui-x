@@ -137,7 +137,13 @@ hb-service start</pre
         @if (downloadingBackup) {
         <span class="mx-1"><i class="fa fa-circle-notch fa-spin"></i></span>
         } @else {
-        <a href="javascript:void(0)" (click)="downloadBackupFile()"><i class="fa fa-download mx-1"></i></a>
+        <a
+          href="javascript:void(0)"
+          (click)="downloadBackupFile()"
+          [attr.aria-label]="'form.button_download' | translate"
+        >
+          <i class="fa fa-download mx-1"></i>
+        </a>
         }
       </p>
       <p class="w-100 text-center mb-0 small grey-text">{{ 'plugins.manage.hb_restart' | translate }}</p>
