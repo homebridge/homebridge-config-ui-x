@@ -1109,7 +1109,9 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
   }
 
   private removePlatformsAndAccessories(config: HomebridgeConfig): Omit<HomebridgeConfig, 'platforms' | 'accessories'> {
-    const { accessories, platforms, ...rest } = config
+    const rest = { ...config }
+    delete rest.accessories
+    delete rest.platforms
     return rest
   }
 

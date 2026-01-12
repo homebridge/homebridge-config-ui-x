@@ -111,7 +111,9 @@ export class LogsComponent implements OnInit, OnDestroy, CanComponentDeactivate 
     // Hide screen reader elements except the list
     setTimeout(() => {
       const logContainer = this.termTarget()?.nativeElement
-      if (!logContainer) return
+      if (!logContainer) {
+        return
+      }
 
       const textarea = logContainer.querySelector('textarea')
       if (textarea) {

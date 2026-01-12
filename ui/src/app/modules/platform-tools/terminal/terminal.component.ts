@@ -55,10 +55,14 @@ export class TerminalComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private patchXtermLiveRegion() {
     const host = this.termTarget()?.nativeElement as HTMLElement | undefined
-    if (!host) return
+    if (!host) {
+      return
+    }
 
     const live = host.querySelector('[aria-live]') as HTMLElement | null
-    if (!live) return
+    if (!live) {
+      return
+    }
 
     live.setAttribute('role', 'status')
     live.setAttribute('aria-live', 'polite')
