@@ -235,6 +235,7 @@
   "config.hide_matter_pairing": "Hide Matter Pairing Alert",
   "config.hide_plugin_updates": "Hide Plugin Updates For",
   "config.no_restart": "未对 Homebridge 配置进行更改，无需重启。",
+  "config.restore.actions": "Restore Actions",
   "config.restore.confirm": "点击“保存”确认要恢复此备份。",
   "config.restore.copy_to_editor": "复制到编辑器",
   "config.restore.download": "将当前配置下载为 JSON 文件。",

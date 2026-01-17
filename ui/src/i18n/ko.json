@@ -235,6 +235,7 @@
   "config.hide_matter_pairing": "Hide Matter Pairing Alert",
   "config.hide_plugin_updates": "Hide Plugin Updates For",
   "config.no_restart": "A restart is not needed as no changes were made to the Homebridge configuration.",
+  "config.restore.actions": "Restore Actions",
   "config.restore.confirm": "이 백업을 복원하려면 저장을 클릭하세요.",
   "config.restore.copy_to_editor": "에디터에 복사",
   "config.restore.download": "Download your current configuration as a JSON file.",

@@ -235,6 +235,7 @@
   "config.hide_matter_pairing": "Сповіщення про сполучення Hide Matter",
   "config.hide_plugin_updates": "Приховати оновлення плагінів для",
   "config.no_restart": "Перезавантаження не потрібне, оскільки до конфігурації Homebridge не було внесено жодних змін.",
+  "config.restore.actions": "Restore Actions",
   "config.restore.confirm": "Натисніть «Зберегти», чтоб підтвердити, что Вы бажаєте відновити цю резервну копію.",
   "config.restore.copy_to_editor": "Копіювати в редактор",
   "config.restore.download": "Завантажте поточну конфігурацію у вигляді JSON файлу.",

@@ -235,6 +235,7 @@
   "config.hide_matter_pairing": "Hide Matter Pairing Alert",
   "config.hide_plugin_updates": "Hide Plugin Updates For",
   "config.no_restart": "Ponowne uruchomienie nie jest konieczne ponieważ nie wprowadzono żadnych zmian w konfiguracji Homebridge.",
+  "config.restore.actions": "Restore Actions",
   "config.restore.confirm": "Kliknij Zapisz, aby przywrócić backup.",
   "config.restore.copy_to_editor": "Kopiuj do edytora",
   "config.restore.download": "Pobierz bieżącą konfigurację jako plik JSON.",

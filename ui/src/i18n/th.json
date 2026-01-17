@@ -235,6 +235,7 @@
   "config.hide_matter_pairing": "ซ่อนการแจ้งเตือนการจับคู่ Matter",
   "config.hide_plugin_updates": "ซ่อนการอัปเดตปลั๊กอินสำหรับ",
   "config.no_restart": "ไม่จำเป็นต้องรีสตาร์ท เนื่องจากไม่มีการเปลี่ยนแปลงใดๆ เกิดขึ้นกับการกำหนดค่า Homebridge",
+  "config.restore.actions": "Restore Actions",
   "config.restore.confirm": "คลิกบันทึกเพื่อยืนยันว่าคุณต้องการกู้คืนข้อมูลสำรองนี้",
   "config.restore.copy_to_editor": "คัดลอกไปที่เครื่องมือแก้ไข",
   "config.restore.download": "ดาวน์โหลดการกำหนดค่าปัจจุบันของคุณเป็นไฟล์ JSON",

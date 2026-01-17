@@ -14,6 +14,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - run angular migrations `ngclass-to-class` + `style`
 - a11y: improvements to custom plugins modal (from #2677) (@rfiorentino1)
 - add bridge filter dropdown to accessories page
+- a11y: improvements to config restore modal (from #2677) (@rfiorentino1)
 
 ### Other Changes
 
