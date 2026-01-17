@@ -1,16 +1,20 @@
+import { NgTemplateOutlet } from '@angular/common'
 import { Component, inject, OnDestroy, OnInit } from '@angular/core'
-import { NgbModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap'
+import { FormsModule } from '@angular/forms'
+import { NgbDropdown, NgbDropdownItem, NgbDropdownMenu, NgbDropdownToggle, NgbModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { DragulaModule, DragulaService } from 'ng2-dragula'
 import { firstValueFrom, Subscription } from 'rxjs'
 
+import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
 import { AccessoriesService } from '@/app/core/accessories/accessories.service'
 import { AccessoryTileComponent } from '@/app/core/accessories/accessory-tile/accessory-tile.component'
 import { ApiService } from '@/app/core/api.service'
 import { AuthService } from '@/app/core/auth/auth.service'
 import { SpinnerComponent } from '@/app/core/components/spinner/spinner.component'
-import { MobileDetectService } from '@/app/core/mobile-detect.service'
+import { ChildBridgeStatusResponse } from '@/app/core/server.interfaces'
 import { SettingsService } from '@/app/core/settings.service'
+import { IoNamespace, WsService } from '@/app/core/ws.service'
 import { AccessorySupportComponent } from '@/app/modules/accessories/accessory-support/accessory-support.component'
 import { AddRoomComponent } from '@/app/modules/accessories/add-room/add-room.component'
 import { DragHerePlaceholderComponent } from '@/app/modules/accessories/drag-here-placeholder/drag-here-placeholder.component'
@@ -21,12 +25,18 @@ import { DragHerePlaceholderComponent } from '@/app/modules/accessories/drag-her
   styleUrls: ['./accessories.component.scss'],
   standalone: true,
   imports: [
+    NgTemplateOutlet,
     NgbTooltip,
+    NgbDropdown,
+    NgbDropdownToggle,
+    NgbDropdownMenu,
+    NgbDropdownItem,
     DragulaModule,
     AccessoryTileComponent,
     DragHerePlaceholderComponent,
     TranslatePipe,
     SpinnerComponent,
+    FormsModule,
   ],
 })
 export class AccessoriesComponent implements OnInit, OnDestroy {
@@ -37,9 +47,12 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
   private dragulaService = inject(DragulaService)
   private $modal = inject(NgbModal)
   private $settings = inject(SettingsService)
-  private $md = inject(MobileDetectService)
   private $translate = inject(TranslateService)
+  private $ws = inject(WsService)
   private orderSubscription: Subscription
+  private ioStatus: IoNamespace
+  private ioChild: IoNamespace
+  private bridgeUsernameToNameMap: Map<string, string> = new Map()
 
   public isAdmin = this.$auth.user.admin
   public enableAccessories = this.$settings.env.enableAccessories
@@ -48,11 +61,22 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
   public readonly linkInsecure = '<a href="https://github.com/homebridge/homebridge-config-ui-x/wiki/Enabling-Accessory-Control" target="_blank"><i class="fa fa-external-link-alt primary-text"></i></a>'
   public hasPlugins = false
   public loading = true
+  public selectedBridges: string[] | null = null
+  public availableBridges: string[] = []
+  public manageLayoutMode = false
+  private previousBridgeSelection: string[] | null = null
+
+  /**
+   * Computed property to check if filter UI should be shown
+   */
+  public get shouldShowFilters(): boolean {
+    return this.hasPlugins && !this.loading && this.availableBridges.length > 1
+  }
 
   constructor() {
     const dragulaService = this.dragulaService
 
-    this.isMobile = this.$md.detect.mobile()
+    this.isMobile = true
 
     // Disable drag and drop for everything except the room title
     dragulaService.createGroup('rooms-bag', {
@@ -70,8 +94,6 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
         this.$accessories.saveLayout()
       })
     })
-
-    this.isMobile = true
   }
 
   public ngOnInit() {
@@ -79,8 +101,16 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
     const title = this.$translate.instant('menu.label_accessories')
     this.$settings.setPageTitle(title)
 
-    this.$accessories.start()
-    this.checkForPlugins()
+    void this.$accessories.start()
+    void this.checkForPlugins()
+
+    // Set up WebSocket connections to get custom bridge names
+    this.setupBridgeNameMapping()
+
+    // Subscribe to accessory data to update available bridges
+    this.$accessories.accessoryData.subscribe(() => {
+      this.updateAvailableBridges()
+    })
   }
 
   public addRoom() {
@@ -146,6 +176,10 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
     this.orderSubscription.unsubscribe()
     this.dragulaService.destroy('rooms-bag')
     this.dragulaService.destroy('services-bag')
+
+    // Clean up WebSocket connections
+    this.ioStatus?.end()
+    this.ioChild?.end()
   }
 
   private async checkForPlugins() {
@@ -157,6 +191,254 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
       this.hasPlugins = true
     } finally {
       this.loading = false
+    }
+  }
+
+  /**
+   * Set up WebSocket connections to get custom bridge names from config
+   */
+  private setupBridgeNameMapping() {
+    // Connect to status namespace for main Homebridge instance
+    this.ioStatus = this.$ws.connectToNamespace('status')
+    this.ioStatus.connected.subscribe(() => {
+      this.ioStatus.socket.emit('monitor-server-status')
+    })
+
+    this.ioStatus.socket.on('homebridge-status', (data: any) => {
+      if (data.username) {
+        this.bridgeUsernameToNameMap.set(data.username, 'Homebridge')
+      }
+    })
+
+    // Connect to child-bridges namespace for child bridge instances
+    this.ioChild = this.$ws.connectToNamespace('child-bridges')
+    this.ioChild.connected.subscribe(() => {
+      this.ioChild.socket.emit('monitor-child-bridge-status')
+      this.fetchChildBridges()
+    })
+
+    this.ioChild.socket.on('child-bridge-status-update', (data: ChildBridgeStatusResponse) => {
+      this.bridgeUsernameToNameMap.set(data.username, data.name)
+    })
+  }
+
+  /**
+   * Fetch initial list of child bridges
+   */
+  private fetchChildBridges() {
+    this.ioChild.request('get-homebridge-child-bridge-status').subscribe((data: ChildBridgeStatusResponse[]) => {
+      data.forEach((bridge) => {
+        this.bridgeUsernameToNameMap.set(bridge.username, bridge.name)
+      })
+    })
+  }
+
+  /**
+   * Update the list of available bridges from the current accessories
+   * Uses custom names from config if available
+   */
+  private updateAvailableBridges() {
+    const bridges = new Set<string>()
+
+    this.$accessories.rooms.forEach((room) => {
+      room.services.forEach((service) => {
+        if (service.instance?.username) {
+          // Use custom name from mapping if available, otherwise fallback to instance.name
+          const customName = this.bridgeUsernameToNameMap.get(service.instance.username)
+          const bridgeName = customName || service.instance.name
+          if (bridgeName) {
+            bridges.add(bridgeName)
+          }
+        }
+      })
+    })
+
+    const newBridges = Array.from(bridges).sort((a, b) => {
+      // Sort with "Homebridge" first, then alphabetically
+      if (a === 'Homebridge') {
+        return -1
+      }
+      if (b === 'Homebridge') {
+        return 1
+      }
+      return a.localeCompare(b)
+    })
+
+    // Only update if the bridge list has changed
+    if (JSON.stringify(newBridges) !== JSON.stringify(this.availableBridges)) {
+      if (this.selectedBridges === null) {
+        // First initialization - select all bridges
+        this.selectedBridges = [...newBridges]
+      } else {
+        // Check if we were showing all bridges before the update
+        const wasShowingAll = this.selectedBridges.length === this.availableBridges.length
+          && this.availableBridges.length > 0
+
+        if (wasShowingAll) {
+          // If showing all, keep showing all even when new bridges appear
+          this.selectedBridges = [...newBridges]
+        } else {
+          // Remove any selected bridges that no longer exist, but don't add new ones
+          this.selectedBridges = this.selectedBridges.filter(bridge => newBridges.includes(bridge))
+        }
+      }
+
+      // Update available bridges after handling selection
+      this.availableBridges = newBridges
+    }
+  }
+
+  /**
+   * Check if a service should be displayed based on current filters
+   */
+  public shouldDisplayService(service: ServiceTypeX): boolean {
+    // Check hidden filter
+    if (this.hideHidden && service.hidden) {
+      return false
+    }
+
+    // In manage layout mode, show all accessories regardless of bridge filter
+    if (this.manageLayoutMode) {
+      return true
+    }
+
+    // Check bridge filter
+    if (service.instance?.username) {
+      // Use custom name from mapping if available, otherwise fallback to instance.name
+      const customName = this.bridgeUsernameToNameMap.get(service.instance.username)
+      const bridgeName = customName || service.instance.name
+
+      // If not initialized yet, show all
+      if (this.selectedBridges === null) {
+        return true
+      }
+
+      // If no bridges selected, show nothing
+      if (this.selectedBridges.length === 0) {
+        return false
+      }
+
+      // Show only if bridge is in selected list
+      if (bridgeName && !this.selectedBridges.includes(bridgeName)) {
+        return false
+      }
+    }
+
+    return true
+  }
+
+  /**
+   * Toggle a bridge in the filter
+   */
+  public toggleBridge(bridgeName: string) {
+    // If in manage layout mode, start fresh with just this bridge selected
+    if (this.manageLayoutMode) {
+      this.selectedBridges = [bridgeName]
+      this.manageLayoutMode = false
+      this.previousBridgeSelection = null
+
+      if (!this.isMobile) {
+        this.toggleLayoutLock()
+      }
+      return
+    }
+
+    // Normal toggle behavior when not in manage layout mode
+    if (!this.selectedBridges) {
+      this.selectedBridges = []
+    }
+
+    const index = this.selectedBridges.indexOf(bridgeName)
+    if (index === -1) {
+      this.selectedBridges.push(bridgeName)
+    } else {
+      this.selectedBridges.splice(index, 1)
+    }
+
+    if (!this.isMobile) {
+      this.toggleLayoutLock()
+    }
+  }
+
+  /**
+   * Check if a bridge is selected
+   */
+  public isBridgeSelected(bridgeName: string): boolean {
+    // In manage layout mode, no bridges should show as selected
+    if (this.manageLayoutMode) {
+      return false
+    }
+    return this.selectedBridges?.includes(bridgeName) ?? false
+  }
+
+  /**
+   * Toggle between all bridges and no bridges
+   */
+  public clearBridgeFilter() {
+    // If in manage layout mode, selecting "All Bridges" should select all
+    if (this.manageLayoutMode) {
+      this.selectedBridges = [...this.availableBridges]
+      this.manageLayoutMode = false
+      this.previousBridgeSelection = null
+
+      if (!this.isMobile) {
+        this.toggleLayoutLock()
+      }
+      return
+    }
+
+    // Normal toggle behavior when not in manage layout mode
+    // Initialize if null
+    if (this.selectedBridges === null) {
+      this.selectedBridges = []
+    }
+
+    if (this.isShowingAllBridges) {
+      // All bridges selected, so unselect everything
+      this.selectedBridges = []
+    } else {
+      // Not all bridges selected, so select all
+      this.selectedBridges = [...this.availableBridges]
+    }
+
+    if (!this.isMobile) {
+      this.toggleLayoutLock()
+    }
+  }
+
+  /**
+   * Check if all bridges are shown (all bridges selected)
+   */
+  public get isShowingAllBridges(): boolean {
+    return this.selectedBridges !== null
+      && this.selectedBridges.length === this.availableBridges.length
+      && this.availableBridges.length > 0
+      && !this.manageLayoutMode
+  }
+
+  /**
+   * Toggle manage layout mode
+   */
+  public toggleManageLayout() {
+    this.manageLayoutMode = !this.manageLayoutMode
+
+    if (this.manageLayoutMode) {
+      // Save current bridge selection
+      this.previousBridgeSelection = this.selectedBridges ? [...this.selectedBridges] : null
+
+      // Unlock layout
+      if (this.isMobile) {
+        this.toggleLayoutLock()
+      }
+    } else {
+      // Restore previous bridge selection when toggling off via the button
+      this.selectedBridges = this.previousBridgeSelection ? [...this.previousBridgeSelection] : null
+      this.previousBridgeSelection = null
+
+      // Lock layout when exiting manage mode
+      if (!this.isMobile) {
+        this.toggleLayoutLock()
+      }
     }
   }
 }

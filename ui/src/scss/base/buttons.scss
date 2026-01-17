@@ -89,3 +89,32 @@
     transition: background-color 0.25s;
   }
 }
+
+.dropdown-menu {
+  button.dropdown-item.active {
+    background-color: transparent !important;
+    color: #000000 !important;
+  }
+
+  button.dropdown-item.active:hover {
+    background-color: rgba(0, 0, 0, 0.05) !important;
+  }
+
+  button.dropdown-item:focus {
+    background-color: transparent !important;
+    outline: none !important;
+  }
+}
+
+[ngbDropdown] button[ngbDropdownToggle] {
+  &:focus,
+  &:active,
+  &.show {
+    background-color: color.adjust(#333333, $lightness: -5%) !important;
+    border-color: color.adjust(#333333, $lightness: -5%) !important;
+    color: #ffffff !important;
+    outline: none !important;
+    box-shadow: none !important;
+    transition: background-color 0.25s;
+  }
+}

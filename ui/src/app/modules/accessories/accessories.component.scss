@@ -19,3 +19,80 @@
 a:hover {
   text-decoration: none !important;
 }
+
+.bridge-filter-check {
+  display: inline-block;
+  width: 1.25rem;
+  margin-right: 0.5rem;
+  text-align: center;
+}
+
+:host ::ng-deep {
+  .dropdown-menu {
+    .dropdown-item {
+      &.d-flex {
+        padding: 0;
+
+        button.dropdown-item {
+          margin: 0;
+        }
+      }
+    }
+
+    .bridge-filter-header {
+      &:hover {
+        background-color: transparent !important;
+      }
+
+      button.dropdown-item {
+        &:hover {
+          background-color: rgba(0, 0, 0, 0.05) !important;
+        }
+
+        &.active:hover {
+          background-color: rgba(0, 0, 0, 0.05) !important;
+        }
+      }
+
+      .bridge-close-btn {
+        background-color: transparent !important;
+        opacity: 0.6;
+        transition: opacity 0.2s;
+        padding-left: 0.25rem !important;
+
+        &:hover {
+          opacity: 1;
+          background-color: transparent !important;
+        }
+
+        &:focus {
+          box-shadow: none !important;
+        }
+      }
+    }
+  }
+
+  [class*='config-ui-x-dark-mode'] & {
+    .dropdown-menu {
+      .bridge-filter-header {
+        button.dropdown-item {
+          &:hover {
+            background-color: #444444 !important;
+          }
+
+          &.active:hover {
+            background-color: #444444 !important;
+          }
+        }
+
+        .bridge-close-btn {
+          color: #9e9e9e !important;
+
+          &:hover {
+            color: #eeeeee !important;
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,19 +1,99 @@
-@if (enableAccessories) {
-<div class="row mb-3">
-  <div class="col-9 col-sm-6">
-    <h3 class="primary-text m-0">{{ 'menu.label_accessories' | translate }}</h3>
-  </div>
-  <div class="col-3 col-sm-6 text-end d-inline-block d-sm-none">
+<ng-template #bridgeFilterMenu let-dropdown="dropdown" let-showManageLayout="showManageLayout">
+  <div class="dropdown-item d-flex justify-content-between align-items-center px-0 bridge-filter-header">
+    <button
+      ngbDropdownItem
+      (click)="clearBridgeFilter()"
+      [class.active]="isShowingAllBridges"
+      class="flex-grow-1 border-0"
+    >
+      <span class="bridge-filter-check">
+        @if (isShowingAllBridges) {
+        <i class="fas fa-check primary-text"></i>
+        }
+      </span>
+      {{ 'accessories.filter_all_bridges' | translate }}
+    </button>
     <button
       type="button"
-      class="btn btn-elegant my-0 me-0"
-      (click)="openSupport()"
-      [attr.aria-label]="'support.title' | translate"
+      class="btn btn-sm btn-link text-secondary p-0 pe-2 bridge-close-btn"
+      (click)="dropdown.close()"
+      [attr.aria-label]="'form.button_close' | translate"
     >
-      <i class="fa fa-question-circle-o"></i>
+      <span class="badge badge-primary mx-1 text-lowercase">{{ 'common.labels.beta' | translate }}</span>
+      <i class="fas fa-times"></i>
     </button>
   </div>
-  <div class="col-3 col-sm-6 text-end d-none d-sm-inline-block">
+  <div class="dropdown-divider"></div>
+  @for (bridge of availableBridges; track bridge) {
+  <button ngbDropdownItem (click)="toggleBridge(bridge)" [class.active]="isBridgeSelected(bridge)">
+    <span class="bridge-filter-check">
+      @if (isBridgeSelected(bridge)) {
+      <i class="fas fa-check primary-text"></i>
+      }
+    </span>
+    {{ bridge }}
+  </button>
+  } @if (showManageLayout) {
+  <div class="dropdown-divider"></div>
+  <button ngbDropdownItem (click)="toggleManageLayout()" [class.active]="manageLayoutMode">
+    <span class="bridge-filter-check">
+      @if (manageLayoutMode) {
+      <i class="fas fa-check primary-text"></i>
+      }
+    </span>
+    {{ 'accessories.manage_layout' | translate }}
+  </button>
+  }
+</ng-template>
+
+<ng-template #bridgeFilterDropdown let-showManageLayout="showManageLayout" let-showTooltip="showTooltip">
+  <div ngbDropdown #dropdown="ngbDropdown" autoClose="outside" placement="bottom-end" class="d-inline-block me-2">
+    <button
+      type="button"
+      class="btn btn-elegant my-0"
+      ngbDropdownToggle
+      [attr.aria-label]="'accessories.filter_by_bridge' | translate"
+      [container]="showTooltip ? 'body' : null"
+      [placement]="showTooltip ? 'bottom' : null"
+      [openDelay]="showTooltip ? 150 : null"
+      [triggers]="showTooltip ? 'hover' : null"
+      [ngbTooltip]="showTooltip ? ('accessories.filter_by_bridge' | translate) : null"
+    >
+      <i class="fas fa-house"></i>
+    </button>
+    <div ngbDropdownMenu [attr.aria-labelledby]="'accessories.filter_by_bridge' | translate">
+      <ng-container
+        *ngTemplateOutlet="bridgeFilterMenu; context: { dropdown: dropdown, showManageLayout: showManageLayout }"
+      ></ng-container>
+    </div>
+  </div>
+</ng-template>
+
+<ng-template #supportButton>
+  <button
+    type="button"
+    class="btn btn-elegant my-0 me-0"
+    (click)="openSupport()"
+    [attr.aria-label]="'support.title' | translate"
+  >
+    <i class="fa fa-question-circle-o"></i>
+  </button>
+</ng-template>
+
+@if (enableAccessories) {
+<div class="row mb-3">
+  <div class="col-6">
+    <h3 class="primary-text m-0">{{ 'menu.label_accessories' | translate }}</h3>
+  </div>
+  <div class="col-6 text-end d-inline-block d-sm-none">
+    @if (shouldShowFilters) {
+    <ng-container
+      *ngTemplateOutlet="bridgeFilterDropdown; context: { showManageLayout: false, showTooltip: false }"
+    ></ng-container>
+    }
+    <ng-container *ngTemplateOutlet="supportButton"></ng-container>
+  </div>
+  <div class="col-6 text-end d-none d-sm-inline-block">
     @if (hasPlugins) {
     <button
       type="button"
@@ -49,45 +129,12 @@
       }"
       ></i>
     </button>
-    <div class="btn-group me-2" role="group">
-      <button
-        type="button"
-        class="btn btn-elegant my-0"
-        [disabled]="!isMobile"
-        (click)="toggleLayoutLock()"
-        container="body"
-        placement="bottom"
-        [openDelay]="150"
-        triggers="hover"
-        [ngbTooltip]="'form.button_unlock' | translate"
-        [attr.aria-label]="'form.button_unlock' | translate"
-      >
-        <i class="fas fa-unlock"></i>
-      </button>
-      <button
-        type="button"
-        class="btn btn-elegant my-0"
-        [disabled]="isMobile"
-        (click)="toggleLayoutLock()"
-        container="body"
-        placement="bottom"
-        [openDelay]="150"
-        triggers="hover"
-        [ngbTooltip]="'form.button_lock' | translate"
-        [attr.aria-label]="'form.button_lock' | translate"
-      >
-        <i class="fas fa-lock"></i>
-      </button>
-    </div>
+    } @if (shouldShowFilters) {
+    <ng-container
+      *ngTemplateOutlet="bridgeFilterDropdown; context: { showManageLayout: true, showTooltip: true }"
+    ></ng-container>
     }
-    <button
-      type="button"
-      class="btn btn-elegant my-0 me-0"
-      (click)="openSupport()"
-      [attr.aria-label]="'support.title' | translate"
-    >
-      <i class="fa fa-question-circle-o"></i>
-    </button>
+    <ng-container *ngTemplateOutlet="supportButton"></ng-container>
   </div>
 </div>
 @if (loading) {
@@ -113,7 +160,7 @@
         [dragula]="'services-bag'"
         [(dragulaModel)]="room.services"
       >
-        @for (service of room.services; track service) { @if (!hideHidden || !service.hidden) {
+        @for (service of room.services; track service) { @if (shouldDisplayService(service)) {
         <div class="accessory-item accessory-tab">
           <app-accessory-tile [service]="service" />
         </div>

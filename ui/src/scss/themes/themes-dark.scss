@@ -465,6 +465,30 @@
     .gradient {
       background: linear-gradient(130deg, $darkModePrimary, #4a266c, #2b2b2b);
     }
+
+    .dropdown-menu {
+      button.dropdown-item.active {
+        color: #eeeeee !important;
+      }
+
+      button.dropdown-item.active:hover {
+        background-color: #444444 !important;
+      }
+
+      button.dropdown-item:focus {
+        background-color: transparent !important;
+      }
+    }
+
+    [ngbDropdown] button[ngbDropdownToggle] {
+      &:focus,
+      &:active,
+      &.show {
+        background-color: color.adjust(#333333, $lightness: -5%) !important;
+        border-color: color.adjust(#333333, $lightness: -5%) !important;
+        color: #ffffff !important;
+      }
+    }
   }
 }
 
