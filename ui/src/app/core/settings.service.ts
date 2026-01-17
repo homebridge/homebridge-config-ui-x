@@ -1,3 +1,5 @@
+import type { ITerminalOptions } from '@xterm/xterm'
+
 import { inject, Injectable } from '@angular/core'
 import { Title } from '@angular/platform-browser'
 import { TranslateService } from '@ngx-translate/core'
@@ -22,6 +24,7 @@ export class SettingsService {
   private forbiddenKeys = ['__proto__', 'constructor', 'prototype']
 
   public restartToastRef: ActiveToast<any> = null
+  public terminalSettingsChanged = new Subject<{ fontSize?: number, fontWeight?: string, lightingMode?: 'light' | 'dark' }>()
 
   public env: EnvInterface = {} as EnvInterface
   public host: string
@@ -276,5 +279,90 @@ export class SettingsService {
    */
   public isFeatureEnabled(featureKey: string): boolean {
     return this.env.featureFlags?.[featureKey] ?? false
+  }
+
+  // Terminal configuration constants
+  private readonly TERMINAL_DEFAULTS = {
+    FONT_SIZE: 13,
+    FONT_WEIGHT: '400' as const,
+    LINE_HEIGHT: 1.2,
+  } as const
+
+  private readonly TERMINAL_COLORS = {
+    DARK: {
+      FULL_PAGE: '#000000',
+      WIDGET: '#2b2b2b',
+    },
+    LIGHT: {
+      BACKGROUND: '#00000000',
+      FOREGROUND: '#2b2b2b',
+      CURSOR: '#d2d2d2',
+      SELECTION: '#d2d2d2',
+    },
+  } as const
+
+  /**
+   * Get the effective terminal theme with override enforcement
+   * CRITICAL: Terminal theme MUST be dark when main lighting mode is dark
+   * This prevents light terminals in dark mode regardless of config settings
+   * @returns 'dark' or 'light' - always 'dark' if actualLightingMode is 'dark'
+   */
+  public getEffectiveTerminalLightingMode(): 'dark' | 'light' {
+    // HARD OVERRIDE: If user is in dark mode, terminal MUST be dark
+    if (this.actualLightingMode === 'dark') {
+      return 'dark'
+    }
+
+    // Only allow light terminal theme when in light mode
+    return this.env.terminal?.lightingMode || 'dark'
+  }
+
+  /**
+   * Get theme options for terminals
+   * @param isWidget Whether this is for a widget (uses #2b2b2b background in dark mode to match widget box)
+   * @returns Object with theme and allowTransparency settings
+   */
+  public getTerminalThemeOptions(isWidget = false): { theme: any, allowTransparency: boolean } {
+    const theme = this.getEffectiveTerminalLightingMode()
+
+    if (theme === 'light') {
+      return {
+        theme: {
+          background: this.TERMINAL_COLORS.LIGHT.BACKGROUND,
+          foreground: this.TERMINAL_COLORS.LIGHT.FOREGROUND,
+          cursor: this.TERMINAL_COLORS.LIGHT.CURSOR,
+          selectionBackground: this.TERMINAL_COLORS.LIGHT.SELECTION,
+        },
+        allowTransparency: true,
+      }
+    }
+
+    return {
+      theme: {
+        background: isWidget
+          ? this.TERMINAL_COLORS.DARK.WIDGET
+          : this.TERMINAL_COLORS.DARK.FULL_PAGE,
+      },
+      allowTransparency: false,
+    }
+  }
+
+  /**
+   * Get terminal options with global font settings applied
+   * @param overrides Optional overrides for terminal options
+   * @param isWidget Whether this is for a widget (uses #2b2b2b background in dark mode to match widget box)
+   * @returns ITerminalOptions with fontSize and fontWeight from global settings
+   */
+  public getTerminalOptions(overrides?: Partial<ITerminalOptions>, isWidget = false): ITerminalOptions {
+    const themeOptions = this.getTerminalThemeOptions(isWidget)
+    return {
+      fontSize: this.env.terminal?.fontSize || this.TERMINAL_DEFAULTS.FONT_SIZE,
+      fontWeight: this.env.terminal?.fontWeight || this.TERMINAL_DEFAULTS.FONT_WEIGHT,
+      lineHeight: this.TERMINAL_DEFAULTS.LINE_HEIGHT,
+      allowProposedApi: true,
+      theme: themeOptions.theme,
+      allowTransparency: themeOptions.allowTransparency,
+      ...overrides,
+    } as ITerminalOptions
   }
 }

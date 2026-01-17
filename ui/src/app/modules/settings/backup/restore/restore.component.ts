@@ -5,10 +5,11 @@ import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { FitAddon } from '@xterm/addon-fit'
 import { WebLinksAddon } from '@xterm/addon-web-links'
-import { Terminal } from '@xterm/xterm'
+import { ITerminalOptions, Terminal } from '@xterm/xterm'
 import { ToastrService } from 'ngx-toastr'
 
 import { ApiService } from '@/app/core/api.service'
+import { SettingsService } from '@/app/core/settings.service'
 import { IoNamespace, WsService } from '@/app/core/ws.service'
 import { BackupComponent } from '@/app/modules/settings/backup/backup.component'
 
@@ -22,6 +23,7 @@ export class RestoreComponent implements OnInit, OnDestroy {
   private $api = inject(ApiService)
   private $modal = inject(NgbModal)
   private $router = inject(Router)
+  private $settings = inject(SettingsService)
   private $toastr = inject(ToastrService)
   private $translate = inject(TranslateService)
   private $ws = inject(WsService)
@@ -43,17 +45,26 @@ export class RestoreComponent implements OnInit, OnDestroy {
   public restoreArchiveType: 'homebridge' | 'hbfx' = 'homebridge'
   public uploadPercent = 0
 
+  public get isLightTerminalTheme(): boolean {
+    return this.$settings.getEffectiveTerminalLightingMode() === 'light'
+  }
+
   public async ngOnInit() {
     this.io = this.$ws.connectToNamespace('backup')
     this.termTarget = document.getElementById('plugin-log-output')
+    // Modals need independent settings from page terminals
+    // Use terminal theme setting for text color to match terminal background
+    const terminalTheme = this.$settings.getEffectiveTerminalLightingMode()
     this.term = new Terminal({
-      theme: {
-        background: '#00000000',
-      },
-      allowProposedApi: true,
-      allowTransparency: true,
-      fontSize: 13,
+      fontSize: this.$settings.env.terminal?.fontSize || 13,
+      fontWeight: (this.$settings.env.terminal?.fontWeight || '400') as ITerminalOptions['fontWeight'],
       lineHeight: 1.2,
+      allowProposedApi: true,
+      theme: {
+        background: terminalTheme === 'light' ? '#00000000' : '#000000',
+        foreground: terminalTheme === 'light' ? '#333333' : '#eeeeee',
+      },
+      allowTransparency: terminalTheme === 'light',
     })
     this.term.loadAddon(this.fitAddon)
     this.term.loadAddon(this.webLinksAddon)

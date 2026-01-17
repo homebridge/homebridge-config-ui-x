@@ -152,5 +152,8 @@ export interface HomebridgeUiConfig {
     persistence?: boolean
     hideWarning?: boolean
     bufferSize?: number
+    fontSize?: string | number
+    fontWeight?: string | number
+    lightingMode?: 'light' | 'dark'
   }
 }

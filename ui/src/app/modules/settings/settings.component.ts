@@ -159,6 +159,27 @@ export class SettingsComponent implements OnInit {
   public uiTerminalBufferSizeIsInvalid = false
   public uiTerminalBufferSizeFormControl = new FormControl(globalThis.terminal.bufferSize)
 
+  public uiTerminalFontSizeIsSaving = false
+  public uiTerminalFontSizeFormControl = new FormControl(13)
+  public fontSizes = [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+
+  public uiTerminalFontWeightIsSaving = false
+  public uiTerminalFontWeightFormControl = new FormControl('400')
+  public fontWeights = ['100', '200', '300', '400', '500', '600', '700', '800', '900', 'bold', 'normal']
+
+  public uiTerminalLightingModeIsSaving = false
+  public uiTerminalLightingModeFormControl = new FormControl('dark')
+
+  // Only allow light theme when in light mode
+  public get terminalThemes(): string[] {
+    return this.$settings.actualLightingMode === 'light' ? ['light', 'dark'] : ['dark']
+  }
+
+  // Disable terminal theme dropdown when in dark mode (since terminal must be dark)
+  public get isTerminalLightingModeDisabled(): boolean {
+    return this.$settings.actualLightingMode === 'dark'
+  }
+
   public hbDebugIsSaving = false
   public hbDebugFormControl = new FormControl(false)
 
@@ -378,6 +399,9 @@ export class SettingsComponent implements OnInit {
         'setting-terminal-log-max',
         'setting-terminal-persistence',
         'setting-terminal-buffer',
+        'setting-terminal-font-size',
+        'setting-terminal-font-weight',
+        'setting-terminal-lighting-mode',
       ],
       security: [
         'setting-security-auth',
@@ -478,6 +502,9 @@ export class SettingsComponent implements OnInit {
       'setting-terminal-persistence': this.$translate.instant('settings.terminal.persistence'),
       'setting-terminal-warning': this.$translate.instant('settings.terminal.hide_warning'),
       'setting-terminal-buffer': this.$translate.instant('settings.terminal.buffer_size'),
+      'setting-terminal-font-size': this.$translate.instant('settings.terminal.font_size'),
+      'setting-terminal-font-weight': this.$translate.instant('settings.terminal.font_weight'),
+      'setting-terminal-lighting-mode': this.$translate.instant('settings.display.lighting_mode'),
 
       // Reset section
       'setting-reset-accessory-ind': this.$translate.instant('reset.accessory_ind.title'),
@@ -577,6 +604,52 @@ export class SettingsComponent implements OnInit {
     this.uiTerminalBufferSizeFormControl.valueChanges
       .pipe(debounceTime(1500))
       .subscribe((value: number) => this.uiTerminalBufferSizeSave(value))
+
+    // Validate and set terminal fontSize
+    const savedFontSize = this.$settings.env.terminal?.fontSize
+    if (savedFontSize !== undefined && (savedFontSize < 10 || savedFontSize > 20)) {
+      // Invalid value, delete it from config
+      this.deleteInvalidSetting('terminal.fontSize')
+      this.uiTerminalFontSizeFormControl.patchValue(13)
+    } else {
+      this.uiTerminalFontSizeFormControl.patchValue(savedFontSize || 13)
+    }
+    this.uiTerminalFontSizeFormControl.valueChanges
+      .pipe(debounceTime(750))
+      .subscribe((value: number) => this.uiTerminalFontSizeSave(value))
+
+    // Validate and set terminal fontWeight
+    const savedFontWeight = this.$settings.env.terminal?.fontWeight
+    if (savedFontWeight !== undefined && !this.fontWeights.includes(String(savedFontWeight))) {
+      // Invalid value, delete it from config
+      this.deleteInvalidSetting('terminal.fontWeight')
+      this.uiTerminalFontWeightFormControl.patchValue('400')
+    } else {
+      this.uiTerminalFontWeightFormControl.patchValue(savedFontWeight || '400')
+    }
+    this.uiTerminalFontWeightFormControl.valueChanges
+      .pipe(debounceTime(750))
+      .subscribe((value: string) => this.uiTerminalFontWeightSave(value))
+
+    // Validate and set terminal lighting mode
+    const savedLightingMode = this.$settings.env.terminal?.lightingMode
+
+    // Always show effective theme (enforces dark mode override)
+    const effectiveLightingMode = this.$settings.getEffectiveTerminalLightingMode()
+
+    // Always set form to effective theme (will be 'dark' if in dark mode)
+    this.uiTerminalLightingModeFormControl.patchValue(effectiveLightingMode)
+
+    // Reset to dark if invalid value or light theme in dark mode
+    const shouldReset = (savedLightingMode === 'light' && this.$settings.actualLightingMode === 'dark')
+      || (savedLightingMode !== undefined && !['light', 'dark'].includes(savedLightingMode))
+
+    if (shouldReset) {
+      this.resetTerminalLightingModeToDark()
+    }
+    this.uiTerminalLightingModeFormControl.valueChanges
+      .pipe(debounceTime(750))
+      .subscribe((value: string) => this.uiTerminalLightingModeSave(value))
 
     this.hbLogSizeFormControl.patchValue(this.$settings.env.log?.maxSize)
     this.hbLogSizeFormControl.valueChanges
@@ -1115,6 +1188,96 @@ export class SettingsComponent implements OnInit {
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
       this.uiTerminalBufferSizeIsSaving = false
     }
+  }
+
+  private async uiTerminalFontSizeSave(value: number) {
+    try {
+      this.uiTerminalFontSizeIsSaving = true
+      this.$settings.setEnvItem('terminal.fontSize', value)
+      await this.saveUiSettingChange('terminal.fontSize', value)
+      setTimeout(() => {
+        this.uiTerminalFontSizeIsSaving = false
+      }, 1000)
+
+      // Emit terminal settings change for live updates
+      this.$settings.terminalSettingsChanged.next({
+        fontSize: this.$settings.env.terminal?.fontSize,
+        fontWeight: this.$settings.env.terminal?.fontWeight,
+        lightingMode: this.$settings.getEffectiveTerminalLightingMode(),
+      })
+    } catch (error) {
+      console.error(error)
+      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      this.uiTerminalFontSizeIsSaving = false
+    }
+  }
+
+  private async uiTerminalFontWeightSave(value: string) {
+    try {
+      this.uiTerminalFontWeightIsSaving = true
+      this.$settings.setEnvItem('terminal.fontWeight', value)
+      await this.saveUiSettingChange('terminal.fontWeight', value)
+      setTimeout(() => {
+        this.uiTerminalFontWeightIsSaving = false
+      }, 1000)
+
+      // Emit terminal settings change for live updates
+      this.$settings.terminalSettingsChanged.next({
+        fontSize: this.$settings.env.terminal?.fontSize,
+        fontWeight: this.$settings.env.terminal?.fontWeight,
+        lightingMode: this.$settings.getEffectiveTerminalLightingMode(),
+      })
+    } catch (error) {
+      console.error(error)
+      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      this.uiTerminalFontWeightIsSaving = false
+    }
+  }
+
+  private async uiTerminalLightingModeSave(value: string) {
+    try {
+      this.uiTerminalLightingModeIsSaving = true
+
+      // Prevent light theme in dark mode
+      const finalValue = (value === 'light' && this.$settings.actualLightingMode === 'dark') ? 'dark' : value
+      if (finalValue !== value) {
+        // Reset form control if value was changed
+        this.uiTerminalLightingModeFormControl.patchValue(finalValue, { emitEvent: false })
+      }
+      this.$settings.setEnvItem('terminal.lightingMode', finalValue)
+      await this.saveUiSettingChange('terminal.lightingMode', finalValue)
+      setTimeout(() => {
+        this.uiTerminalLightingModeIsSaving = false
+      }, 1000)
+
+      // Emit terminal settings change for live updates
+      this.$settings.terminalSettingsChanged.next({
+        fontSize: this.$settings.env.terminal?.fontSize,
+        fontWeight: this.$settings.env.terminal?.fontWeight,
+        lightingMode: this.$settings.getEffectiveTerminalLightingMode(),
+      })
+    } catch (error) {
+      console.error(error)
+      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      this.uiTerminalLightingModeIsSaving = false
+    }
+  }
+
+  private async deleteInvalidSetting(key: string) {
+    try {
+      await firstValueFrom(this.$api.delete(`/config-editor/ui/${key}`))
+    } catch (error) {
+      console.error(`Failed to delete invalid setting ${key}:`, error)
+    }
+  }
+
+  /**
+   * Reset terminal lighting mode to dark (used when invalid value or light theme in dark mode)
+   */
+  private async resetTerminalLightingModeToDark(): Promise<void> {
+    this.$settings.setEnvItem('terminal.lightingMode', 'dark')
+    await this.deleteInvalidSetting('terminal.lightingMode')
+    await this.saveUiSettingChange('terminal.lightingMode', 'dark')
   }
 
   private async hbDebugSave(value: boolean) {

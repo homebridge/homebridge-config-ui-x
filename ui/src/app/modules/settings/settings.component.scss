@@ -12,3 +12,10 @@
     opacity: 0;
   }
 }
+
+// Completely disable interaction with terminal theme dropdown when in dark mode
+.disabled-no-interaction {
+  pointer-events: none !important;
+  cursor: not-allowed !important;
+  opacity: 0.6 !important;
+}

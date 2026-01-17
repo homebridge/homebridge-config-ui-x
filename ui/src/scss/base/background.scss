@@ -1,3 +1,12 @@
 .bg-black {
   background-color: #000000 !important;
 }
+
+.bg-white {
+  background-color: #ffffff !important;
+}
+
+// Smooth transitions for background color changes
+body.theme-transition {
+  transition: background-color 0.25s ease-in-out;
+}

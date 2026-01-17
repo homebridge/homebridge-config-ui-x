@@ -1,4 +1,4 @@
-<div class="modal-content">
+<div class="modal-content" [class.terminal-light-theme]="isLightTerminalTheme">
   <div class="modal-header">
     <h5 class="modal-title">{{ pluginDisplayName }}</h5>
     <button
@@ -9,7 +9,13 @@
       (click)="dismissModal()"
     ></button>
   </div>
-  <div [hidden]="!onlineUpdateOk || actionComplete || releaseNotesShow" id="plugin-log-output" class="modal-body"></div>
+  <div
+    [hidden]="!onlineUpdateOk || actionComplete || releaseNotesShow"
+    id="plugin-log-output"
+    class="modal-body"
+    [class.terminal-light-bg]="isLightTerminalTheme"
+    [class.terminal-dark-bg]="!isLightTerminalTheme"
+  ></div>
   @if (actionComplete) {
   <div class="modal-body plugin-modal-body">
     @if (justUpdatedPlugin) {

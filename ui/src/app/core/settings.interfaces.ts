@@ -77,6 +77,9 @@ export interface EnvInterface {
     persistence?: boolean
     hideWarning?: boolean
     bufferSize?: number
+    fontSize?: number
+    fontWeight?: string
+    lightingMode?: 'light' | 'dark'
   }
   homebridgePackagePath?: string
   disableServerMetricsMonitoring?: boolean

@@ -75,6 +75,14 @@
   }
 }
 
+.resp-select-width {
+  width: 100%;
+
+  @media (min-width: 768px) {
+    width: 300px;
+  }
+}
+
 .accordion {
   --bs-accordion-border-width: 0px;
 

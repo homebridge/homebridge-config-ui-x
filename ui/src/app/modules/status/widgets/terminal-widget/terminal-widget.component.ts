@@ -1,7 +1,7 @@
-import { AfterViewInit, Component, ElementRef, HostListener, inject, Input, OnDestroy, OnInit, viewChild } from '@angular/core'
+import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, HostListener, inject, Input, OnDestroy, OnInit, viewChild } from '@angular/core'
 import { TranslatePipe } from '@ngx-translate/core'
 import { ITerminalOptions } from '@xterm/xterm'
-import { Subject } from 'rxjs'
+import { Subject, Subscription } from 'rxjs'
 
 import { SettingsService } from '@/app/core/settings.service'
 import { TerminalNavigationGuardService } from '@/app/core/terminal-navigation-guard.service'
@@ -19,9 +19,11 @@ export class TerminalWidgetComponent implements OnInit, AfterViewInit, OnDestroy
   private $terminal = inject(TerminalService)
   private $settings = inject(SettingsService)
   private $navigationGuard = inject(TerminalNavigationGuardService)
-  private fontSize = 13
-  private fontWeight: ITerminalOptions['fontWeight'] = '400'
+  private $cdr = inject(ChangeDetectorRef)
   private visibilityChangeHandler: (() => void) | null = null
+  private terminalSettingsSubscription?: Subscription
+  private configureEventSubscription?: Subscription
+  private resizeEventSubscription?: Subscription
 
   readonly widgetContainerElement = viewChild<ElementRef>('widgetcontainer')
   readonly titleElement = viewChild<ElementRef>('terminaltitle')
@@ -32,7 +34,11 @@ export class TerminalWidgetComponent implements OnInit, AfterViewInit, OnDestroy
   @Input() configureEvent: Subject<any>
 
   public terminalHeight = 200
-  public theme: 'dark' | 'light' = 'dark'
+
+  public get theme(): 'dark' | 'light' {
+    // Always use effective theme to enforce dark mode override
+    return this.$settings.getEffectiveTerminalLightingMode()
+  }
 
   @HostListener('window:beforeunload', ['$event'])
   onBeforeUnload(event: BeforeUnloadEvent) {
@@ -62,32 +68,10 @@ export class TerminalWidgetComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   public ngOnInit() {
-    this.fontSize = this.widget.fontSize || 13
-    this.fontWeight = Number.parseInt(this.widget.fontWeight || '400', 10)
-    if (this.$settings.actualLightingMode === 'dark') {
-      this.widget.theme = 'dark'
-    }
-    this.theme = this.widget.theme || 'dark'
-
     setTimeout(() => {
-      const terminalOptions = {
+      const terminalOptions = this.$settings.getTerminalOptions({
         cursorBlink: false,
-        theme: this.theme !== 'light'
-          ? {
-              background: '#2b2b2b',
-            }
-          : {
-              background: '#00000000',
-              foreground: '#2b2b2b',
-              cursor: '#d2d2d2',
-              selectionBackground: '#d2d2d2',
-            },
-        allowProposedApi: true,
-        allowTransparency: true,
-        fontSize: this.fontSize,
-        fontWeight: this.fontWeight,
-        lineHeight: 1.2,
-      }
+      }, true)
 
       // If terminal is already ready, use reconnectTerminal for proper session management
       if (this.$terminal.isTerminalReady()) {
@@ -103,40 +87,42 @@ export class TerminalWidgetComponent implements OnInit, AfterViewInit, OnDestroy
       }
     })
 
-    this.resizeEvent.subscribe({
+    this.resizeEventSubscription = this.resizeEvent.subscribe({
       next: () => {
         this.terminalHeight = this.getTerminalHeight()
       },
     })
 
-    this.configureEvent.subscribe({
+    this.configureEventSubscription = this.configureEvent.subscribe({
       next: () => {
-        let changed = false
-        if (this.widget.fontSize !== this.fontSize) {
-          this.fontSize = this.widget.fontSize
-          this.$terminal.term.options.fontSize = this.widget.fontSize
-          changed = true
-        }
-        if (this.widget.fontWeight !== this.fontWeight) {
-          this.fontWeight = Number.parseInt(this.widget.fontWeight, 10)
-          this.$terminal.term.options.fontWeight = Number.parseInt(this.widget.fontWeight, 10)
-          changed = true
-        }
-        if (this.widget.theme !== this.theme) {
-          this.theme = this.widget.theme
-          this.$terminal.term.options.theme = this.theme !== 'light'
-            ? {
-                background: '#2b2b2b',
-              }
-            : {
-                background: 'transparent',
-                foreground: '#2b2b2b',
-                cursor: '#d2d2d2',
-                selectionBackground: '#d2d2d2',
-              }
-          changed = true
-        }
+        // Widget configuration changes would be handled here if needed
+      },
+    })
 
+    // Subscribe to global terminal settings changes
+    this.terminalSettingsSubscription = this.$settings.terminalSettingsChanged.subscribe({
+      next: (settings) => {
+        if (!this.$terminal.term) {
+          return
+        }
+        let changed = false
+        if (settings.fontSize && this.$terminal.term.options.fontSize !== settings.fontSize) {
+          this.$terminal.term.options.fontSize = settings.fontSize
+          changed = true
+        }
+        if (settings.fontWeight && this.$terminal.term.options.fontWeight !== settings.fontWeight) {
+          this.$terminal.term.options.fontWeight = settings.fontWeight as ITerminalOptions['fontWeight']
+          changed = true
+        }
+        if (settings.lightingMode !== undefined) {
+          const themeOptions = this.$settings.getTerminalThemeOptions(true)
+          this.$terminal.term.options.theme = themeOptions.theme
+          this.$terminal.term.options.allowTransparency = themeOptions.allowTransparency
+          changed = true
+
+          // Trigger change detection for template bindings (background color, etc.)
+          this.$cdr.markForCheck()
+        }
         if (changed) {
           this.resizeEvent.next(undefined)
           setTimeout(() => {
@@ -182,6 +168,11 @@ export class TerminalWidgetComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   public ngOnDestroy() {
+    // Clean up subscriptions
+    this.terminalSettingsSubscription?.unsubscribe()
+    this.configureEventSubscription?.unsubscribe()
+    this.resizeEventSubscription?.unsubscribe()
+
     // Clean up visibility change listener
     if (this.visibilityChangeHandler) {
       document.removeEventListener('visibilitychange', this.visibilityChangeHandler)

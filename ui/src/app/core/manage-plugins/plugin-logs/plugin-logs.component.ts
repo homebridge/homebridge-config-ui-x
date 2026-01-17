@@ -10,6 +10,7 @@ import { ApiService } from '@/app/core/api.service'
 import { ConfirmComponent } from '@/app/core/components/confirm/confirm.component'
 import { LogService } from '@/app/core/log.service'
 import { ChildBridge, Plugin } from '@/app/core/manage-plugins/manage-plugins.interfaces'
+import { SettingsService } from '@/app/core/settings.service'
 
 @Component({
   templateUrl: './plugin-logs.component.html',
@@ -21,6 +22,7 @@ export class PluginLogsComponent implements OnInit, OnDestroy {
   private $api = inject(ApiService)
   private $log = inject(LogService)
   private $modal = inject(NgbModal)
+  private $settings = inject(SettingsService)
   private $toastr = inject(ToastrService)
   private $translate = inject(TranslateService)
   private resizeEvent = new Subject<void>()
@@ -32,6 +34,10 @@ export class PluginLogsComponent implements OnInit, OnDestroy {
   readonly termTarget = viewChild<ElementRef>('pluginlogoutput')
 
   public midAction = false
+
+  public get isLightTerminalTheme(): boolean {
+    return this.$settings.getEffectiveTerminalLightingMode() === 'light'
+  }
 
   @HostListener('window:resize', ['$event'])
   onWindowResize() {
@@ -137,12 +143,7 @@ export class PluginLogsComponent implements OnInit, OnDestroy {
     this.$api.get(`/config-editor/plugin/${encodeURIComponent(this.plugin.name)}`).subscribe({
       next: (result) => {
         this.pluginAlias = this.plugin.name === 'homebridge-config-ui-x' ? 'Homebridge UI' : (result[0]?.name || this.plugin.name)
-        this.$log.startTerminal(this.termTarget(), {
-          allowProposedApi: true,
-          allowTransparency: true,
-          fontSize: 13,
-          lineHeight: 1.2,
-        }, this.resizeEvent, this.pluginAlias)
+        this.$log.startTerminal(this.termTarget(), this.$settings.getTerminalOptions(), this.resizeEvent, this.pluginAlias)
       },
       error: (error) => {
         console.error(error)
