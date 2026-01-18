@@ -9,6 +9,7 @@ export class ConvertMiredPipe implements PipeTransform {
     if (typeof mired !== 'number') {
       return mired
     }
+
     // Input a mired value and convert it to kelvin
     // Return a string like `500M | 2000K`
     const kelvin = 1000000 / mired

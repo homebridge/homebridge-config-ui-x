@@ -1,11 +1,11 @@
-import { Component, inject, OnInit } from '@angular/core'
+import { Component, inject, OnInit, signal } from '@angular/core'
 import { Router } from '@angular/router'
-import { NgbActiveModal, NgbAlert } from '@ng-bootstrap/ng-bootstrap'
+import { NgbAlert } from '@ng-bootstrap/ng-bootstrap/alert'
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
-import { firstValueFrom } from 'rxjs'
 
-import { ApiService } from '@/app/core/api.service'
+import { ApiService } from '@/app/core/communication/api.service'
 
 @Component({
   templateUrl: './remove-all-accessories.component.html',
@@ -16,47 +16,47 @@ import { ApiService } from '@/app/core/api.service'
   ],
 })
 export class RemoveAllAccessoriesComponent implements OnInit {
+  // Injected dependencies
   private $activeModal = inject(NgbActiveModal)
   private $api = inject(ApiService)
   private $router = inject(Router)
   private $toastr = inject(ToastrService)
   private $translate = inject(TranslateService)
 
-  public clicked: boolean = false
-  public cachedAccessories: any[] = []
+  // Signals
+  public clicked = signal(false)
+  public cachedAccessories = signal<any[]>([])
 
   public ngOnInit(): void {
-    this.loadCachedAccessories()
+    void this.loadCachedAccessories()
   }
 
-  public onResetCachedAccessoriesClick() {
-    this.clicked = true
-    return this.$api.put('/server/reset-cached-accessories', {}).subscribe({
-      next: () => {
-        this.$toastr.success(
-          this.$translate.instant('reset.delete_success'),
-          this.$translate.instant('toast.title_success'),
-        )
-        this.$activeModal.close()
-        void this.$router.navigate(['/restart'], {
-          queryParams: { restarting: true },
-        })
-      },
-      error: (error) => {
-        this.clicked = false
-        console.error(error)
-        this.$toastr.error(this.$translate.instant('reset.failed_to_reset'), this.$translate.instant('toast.title_error'))
-      },
-    })
+  public async onResetCachedAccessoriesClick(): Promise<void> {
+    this.clicked.set(true)
+    try {
+      await this.$api.put('/server/reset-cached-accessories', {})
+      this.$toastr.success(
+        this.$translate.instant('reset.delete_success'),
+        this.$translate.instant('toast.title_success'),
+      )
+      this.$activeModal.close()
+      void this.$router.navigate(['/restart'], {
+        queryParams: { restarting: true },
+      })
+    } catch (error) {
+      this.clicked.set(false)
+      console.error(error)
+      this.$toastr.error(this.$translate.instant('reset.failed_to_reset'), this.$translate.instant('toast.title_error'))
+    }
   }
 
-  public dismissModal() {
+  public dismissModal(): void {
     this.$activeModal.dismiss('Dismiss')
   }
 
-  private async loadCachedAccessories() {
+  private async loadCachedAccessories(): Promise<void> {
     try {
-      this.cachedAccessories = await firstValueFrom(this.$api.get('/server/cached-accessories'))
+      this.cachedAccessories.set(await this.$api.get('/server/cached-accessories'))
     } catch (error) {
       console.error(error)
       this.$toastr.error(this.$translate.instant('reset.error_message'), this.$translate.instant('toast.title_error'))

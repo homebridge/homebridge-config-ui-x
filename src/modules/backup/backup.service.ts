@@ -90,30 +90,32 @@ export class BackupService {
       await copy(storagePath, resolve(backupDir, 'storage'), {
         filter: async (filePath) => {
           // List of files not to include in the archive
-          if ([
-            'instance-backups', // scheduled backups
-            'nssm.exe', // windows hb-service
-            'homebridge.log', // hb-service
-            'logs', // docker
-            'node_modules', // docker
-            'startup.sh', // docker
-            '.docker.env', // docker
-            'docker-compose.yml', // docker
-            'pnpm-lock.yaml', // pnpm
-            'package.json', // npm
-            'package-lock.json', // npm
-            '.npmrc', // npm
-            '.npm', // npm
-            'FFmpeg', // ffmpeg
-            'fdk-aac', // ffmpeg
-            '.git', // git
-            'recordings', // homebridge-camera-ui recordings path
-            '.homebridge.sock', // homebridge ipc socket
-            '#recycle', // synology dsm recycle bin
-            '@eaDir', // synology dsm metadata
-            '.venv', // python venv
-            '.cache', // cache
-          ].includes(basename(filePath))) {
+          if (
+            [
+              'instance-backups', // scheduled backups
+              'nssm.exe', // windows hb-service
+              'homebridge.log', // hb-service
+              'logs', // docker
+              'node_modules', // docker
+              'startup.sh', // docker
+              '.docker.env', // docker
+              'docker-compose.yml', // docker
+              'pnpm-lock.yaml', // pnpm
+              'package.json', // npm
+              'package-lock.json', // npm
+              '.npmrc', // npm
+              '.npm', // npm
+              'FFmpeg', // ffmpeg
+              'fdk-aac', // ffmpeg
+              '.git', // git
+              'recordings', // homebridge-camera-ui recordings path
+              '.homebridge.sock', // homebridge ipc socket
+              '#recycle', // synology dsm recycle bin
+              '@eaDir', // synology dsm metadata
+              '.venv', // python venv
+              '.cache', // cache
+            ].includes(basename(filePath))
+          ) {
             return false
           }
 
@@ -654,12 +656,14 @@ export class BackupService {
     client.emit('stdout', yellow(`Restoring Homebridge storage to ${storagePath}\r\n`))
     await copy(resolve(this.restoreDirectory, 'etc'), resolve(storagePath), {
       filter: (filePath) => {
-        if ([
-          'access.json',
-          'dashboard.json',
-          'layout.json',
-          'config.json',
-        ].includes(basename(filePath))) {
+        if (
+          [
+            'access.json',
+            'dashboard.json',
+            'layout.json',
+            'config.json',
+          ].includes(basename(filePath))
+        ) {
           return false
         }
         client.emit('stdout', `Restoring ${basename(filePath)}\r\n`)

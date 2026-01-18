@@ -1,4 +1,4 @@
-import { Component, ElementRef, Input, OnChanges, viewChild } from '@angular/core'
+import { Component, ElementRef, input, OnChanges, viewChild } from '@angular/core'
 import { toString } from 'qrcode'
 
 @Component({
@@ -7,18 +7,18 @@ import { toString } from 'qrcode'
   standalone: true,
 })
 export class QrcodeComponent implements OnChanges {
-  @Input() data: string
+  data = input.required<string>()
 
   private readonly qrcodeElement = viewChild<ElementRef>('qrcode')
 
   public ngOnChanges(): void {
-    this.renderQrCode()
+    void this.renderQrCode()
   }
 
   private async renderQrCode() {
-    if (this.data) {
+    if (this.data()) {
       const qrcodeElement = this.qrcodeElement()
-      qrcodeElement.nativeElement.innerHTML = await toString(this.data, {
+      qrcodeElement.nativeElement.innerHTML = await toString(this.data(), {
         type: 'svg',
         margin: 0,
         color: {

@@ -1,8 +1,8 @@
-import { Component, inject, OnInit } from '@angular/core'
+import { Component, inject, OnInit, signal } from '@angular/core'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
 
-import { ApiService } from '@/app/core/api.service'
+import { ApiService } from '@/app/core/communication/api.service'
 
 @Component({
   templateUrl: './shutdown-linux.component.html',
@@ -10,19 +10,20 @@ import { ApiService } from '@/app/core/api.service'
   imports: [TranslatePipe],
 })
 export class ShutdownLinuxComponent implements OnInit {
+  // Injected dependencies
   private $api = inject(ApiService)
   private $toastr = inject(ToastrService)
   private $translate = inject(TranslateService)
 
-  public error: any = false
+  // Signals
+  public error = signal<string | false>(false)
 
-  public ngOnInit() {
-    this.$api.put('/platform-tools/linux/shutdown-host', {}).subscribe({
-      error: (error) => {
+  public ngOnInit(): void {
+    void this.$api.put('/platform-tools/linux/shutdown-host', {})
+      .catch((error) => {
         console.error(error)
-        this.error = this.$translate.instant('platform.linux.server_restart_error')
+        this.error.set(this.$translate.instant('platform.linux.server_restart_error'))
         this.$toastr.error(this.$translate.instant('platform.linux.server_restart_error'), this.$translate.instant('toast.title_error'))
-      },
-    })
+      })
   }
 }

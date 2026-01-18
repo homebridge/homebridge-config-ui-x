@@ -1,6 +1,8 @@
-import { Component, inject, Input } from '@angular/core'
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
+import { Component, inject } from '@angular/core'
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe } from '@ngx-translate/core'
+
+import { CONFIRM_MODAL_DATA } from '@/app/core/modal-data-tokens'
 
 @Component({
   templateUrl: './confirm.component.html',
@@ -8,21 +10,27 @@ import { TranslatePipe } from '@ngx-translate/core'
   imports: [TranslatePipe],
 })
 export class ConfirmComponent {
+  // Injected dependencies
   private $activeModal = inject(NgbActiveModal)
+  private modalData = inject(CONFIRM_MODAL_DATA)
 
-  @Input() title: string
-  @Input() message: string
-  @Input() message2?: string
-  @Input() message3?: string
-  @Input() confirmButtonLabel?: string
-  @Input() confirmButtonClass?: string
-  @Input() faIconClass?: string
+  // Public properties (from injected data)
+  public title = this.modalData.title
+  public message = this.modalData.message
+  public message2 = this.modalData.message2
+  public message3 = this.modalData.message3
+  public confirmButtonLabel = this.modalData.confirmButtonLabel
+  public confirmButtonClass = this.modalData.confirmButtonClass
+  public faIconClass = this.modalData.faIconClass
+  public ctaButtonLabel = this.modalData.ctaButtonLabel
+  public ctaButtonLink = this.modalData.ctaButtonLink
 
-  public dismissModal() {
+  // Public methods
+  public dismissModal(): void {
     this.$activeModal.dismiss('Dismiss')
   }
 
-  public closeModal() {
+  public closeModal(): void {
     this.$activeModal.close()
   }
 }

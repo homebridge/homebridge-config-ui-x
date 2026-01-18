@@ -1,13 +1,12 @@
-import { Component, inject, Input, OnDestroy, OnInit } from '@angular/core'
+import type { SliderControlConfig } from '@/app/core/accessories/accessories.interfaces'
+
+import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
 import { TranslatePipe } from '@ngx-translate/core'
 import { NouisliderComponent } from 'ng2-nouislider'
-import { Subject, Subscription } from 'rxjs'
-import { debounceTime } from 'rxjs/operators'
+import { Subject } from 'rxjs'
 
-import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
-import { AccessoriesService } from '@/app/core/accessories/accessories.service'
+import { BaseManageComponent } from '@/app/core/accessories/types/base-manage.component'
 
 @Component({
   templateUrl: './air-purifier.manage.component.html',
@@ -18,47 +17,37 @@ import { AccessoriesService } from '@/app/core/accessories/accessories.service'
     NouisliderComponent,
     TranslatePipe,
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AirPurifierManageComponent implements OnInit, OnDestroy {
-  private $activeModal = inject(NgbActiveModal)
-
-  @Input() public service: ServiceTypeX
-  @Input() public $accessories: AccessoriesService
-
-  private stateSubscription: Subscription
-
+export class AirPurifierManageComponent extends BaseManageComponent {
   public targetState: number
   public targetMode: number
   public targetModeValidValues: number[] = []
-  public targetRotationSpeed: any
-  public targetRotationSpeedChanged: Subject<string> = new Subject<string>()
+  public targetRotationSpeed: SliderControlConfig
+  public targetRotationSpeedChanged: Subject<number> = new Subject<number>()
 
-  constructor() {
-    this.targetRotationSpeedChanged
-      .pipe(debounceTime(500))
-      .subscribe(() => {
-        this.service.getCharacteristic('RotationSpeed').setValue(this.targetRotationSpeed.value)
+  protected setupComponent() {
+    this.createDebouncedSubscription(this.targetRotationSpeedChanged, () => {
+      void this.service.getCharacteristic('RotationSpeed').setValue(this.targetRotationSpeed.value)
 
-        // Turn the air purifier on or off when rotation speed is adjusted
-        if (this.targetRotationSpeed.value && !this.targetState) {
-          this.targetState = 1
-          if ('Active' in this.service.values) {
-            this.service.getCharacteristic('Active').setValue(1)
-          } else if ('On' in this.service.values) {
-            this.service.getCharacteristic('On').setValue(true)
-          }
-        } else if (!this.targetRotationSpeed.value && this.targetState) {
-          this.targetState = 0
-          if ('Active' in this.service.values) {
-            this.service.getCharacteristic('Active').setValue(0)
-          } else if ('On' in this.service.values) {
-            this.service.getCharacteristic('On').setValue(false)
-          }
+      // Turn the air purifier on or off when rotation speed is adjusted
+      if (this.targetRotationSpeed.value && !this.targetState) {
+        this.targetState = 1
+        if ('Active' in this.service.values) {
+          void this.service.getCharacteristic('Active').setValue(1)
+        } else if ('On' in this.service.values) {
+          void this.service.getCharacteristic('On').setValue(true)
         }
-      })
-  }
+      } else if (!this.targetRotationSpeed.value && this.targetState) {
+        this.targetState = 0
+        if ('Active' in this.service.values) {
+          void this.service.getCharacteristic('Active').setValue(0)
+        } else if ('On' in this.service.values) {
+          void this.service.getCharacteristic('On').setValue(false)
+        }
+      }
+    })
 
-  public ngOnInit() {
     this.targetState = 'Active' in this.service.values
       ? this.service.values.Active
       : (this.service.values.On ? 1 : 0)
@@ -67,70 +56,50 @@ export class AirPurifierManageComponent implements OnInit, OnDestroy {
       this.targetModeValidValues = this.service.getCharacteristic('TargetAirPurifierState').validValues as number[]
     }
     this.loadRotationSpeed()
-
-    // Subscribe to real-time accessory updates
-    if (this.$accessories) {
-      this.stateSubscription = this.$accessories.accessoryData.subscribe(() => {
-        this.targetState = 'Active' in this.service.values
-          ? this.service.values.Active
-          : (this.service.values.On ? 1 : 0)
-        this.targetMode = this.service.values.TargetAirPurifierState
-        if (this.targetRotationSpeed) {
-          this.targetRotationSpeed.value = this.service.getCharacteristic('RotationSpeed')?.value
-        }
-      })
-    }
   }
 
-  public ngOnDestroy() {
-    if (this.stateSubscription) {
-      this.stateSubscription.unsubscribe()
+  protected handleAccessoryUpdate() {
+    this.targetState = 'Active' in this.service.values
+      ? this.service.values.Active
+      : (this.service.values.On ? 1 : 0)
+    this.targetMode = this.service.values.TargetAirPurifierState
+    if (this.targetRotationSpeed) {
+      this.targetRotationSpeed.value = this.service.getCharacteristic('RotationSpeed')?.value as number
     }
   }
 
   public setTargetState(value: number, event: MouseEvent) {
     this.targetState = value
     if ('Active' in this.service.values) {
-      this.service.getCharacteristic('Active').setValue(this.targetState)
+      void this.service.getCharacteristic('Active').setValue(this.targetState)
     } else if ('On' in this.service.values) {
-      this.service.getCharacteristic('On').setValue(this.targetState === 1)
+      void this.service.getCharacteristic('On').setValue(this.targetState === 1)
     }
 
-    const target = event.target as HTMLButtonElement
-    target.blur()
+    this.blurTarget(event)
   }
 
   public setTargetMode(value: number, event: MouseEvent) {
     this.targetMode = value
-    this.service.getCharacteristic('TargetAirPurifierState').setValue(this.targetMode)
+    void this.service.getCharacteristic('TargetAirPurifierState').setValue(this.targetMode)
 
-    const target = event.target as HTMLButtonElement
-    target.blur()
+    this.blurTarget(event)
   }
 
   public onTargetRotationSpeedChange() {
     this.targetRotationSpeedChanged.next(this.targetRotationSpeed.value)
   }
 
-  public dismissModal() {
-    this.$activeModal.dismiss('Dismiss')
-  }
-
   private loadRotationSpeed() {
     const RotationSpeed = this.service.getCharacteristic('RotationSpeed')
     if (RotationSpeed) {
       this.targetRotationSpeed = {
-        value: RotationSpeed.value,
+        value: RotationSpeed.value as number,
         min: RotationSpeed.minValue,
         max: RotationSpeed.maxValue,
         step: RotationSpeed.minStep,
       }
-      setTimeout(() => {
-        const sliderElements = document.querySelectorAll('.noUi-target')
-        sliderElements.forEach((sliderElement: HTMLElement) => {
-          sliderElement.style.background = 'linear-gradient(to right, #add8e6, #416bdf)'
-        })
-      }, 10)
+      this.applySliderGradient('linear-gradient(to right, #add8e6, #416bdf)')
     }
   }
 }

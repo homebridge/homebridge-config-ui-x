@@ -1,12 +1,11 @@
-import { Component, inject, Input } from '@angular/core'
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
+import { Component, inject } from '@angular/core'
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
-import { firstValueFrom } from 'rxjs'
 
-import { ApiService } from '@/app/core/api.service'
-import { SettingsService } from '@/app/core/settings.service'
-import { ChildBridgeToRestart } from '@/app/modules/config-editor/config-editor.interfaces'
+import { ApiService } from '@/app/core/communication/api.service'
+import { RESTART_CHILD_BRIDGES_MODAL_DATA } from '@/app/core/modal-data-tokens'
+import { SettingsService } from '@/app/core/ui/settings.service'
 
 @Component({
   templateUrl: './restart-child-bridges.component.html',
@@ -14,20 +13,29 @@ import { ChildBridgeToRestart } from '@/app/modules/config-editor/config-editor.
   imports: [TranslatePipe],
 })
 export class RestartChildBridgesComponent {
+  // Injected dependencies
   private $activeModal = inject(NgbActiveModal)
   private $api = inject(ApiService)
   private $settings = inject(SettingsService)
   private $toastr = inject(ToastrService)
   private $translate = inject(TranslateService)
+  private modalData = inject(RESTART_CHILD_BRIDGES_MODAL_DATA)
 
+  // Public properties (from injected data)
+  public bridges = this.modalData.bridges
+
+  // Other public properties
   public isMatterSupported = this.$settings.isFeatureEnabled('matterSupport')
 
-  @Input() bridges: ChildBridgeToRestart[] = []
+  // Public methods
+  public async onRestartChildBridgeClick(): Promise<void> {
+    if (!this.bridges) {
+      return
+    }
 
-  public async onRestartChildBridgeClick() {
     try {
       for (const bridge of this.bridges) {
-        await firstValueFrom(this.$api.put(`/server/restart/${bridge.username}`, {}))
+        await this.$api.put(`/server/restart/${bridge.username}`, {})
       }
       this.$toastr.success(
         this.$translate.instant('plugins.manage.child_bridge_restart'),
@@ -41,7 +49,7 @@ export class RestartChildBridgesComponent {
     }
   }
 
-  public dismissModal() {
+  public dismissModal(): void {
     this.$activeModal.dismiss('Dismiss')
   }
 }

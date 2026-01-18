@@ -1,6 +1,6 @@
-import { Component, inject, Input } from '@angular/core'
+import { Component, inject } from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe } from '@ngx-translate/core'
 
 @Component({
@@ -11,7 +11,7 @@ import { TranslatePipe } from '@ngx-translate/core'
 export class AddRoomComponent {
   private $activeModal = inject(NgbActiveModal)
 
-  @Input() public roomName: string
+  public roomName: string = ''
 
   public dismissModal() {
     this.$activeModal.dismiss('Dismiss')

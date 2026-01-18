@@ -94,11 +94,11 @@
     <ng-container *ngTemplateOutlet="supportButton"></ng-container>
   </div>
   <div class="col-6 text-end d-none d-sm-inline-block">
-    @if (hasPlugins) {
+    @if (hasPlugins()) {
     <button
       type="button"
       class="btn btn-elegant my-0 me-2"
-      [hidden]="isMobile"
+      [hidden]="isMobile()"
       (click)="addRoom()"
       container="body"
       placement="bottom"
@@ -112,21 +112,21 @@
     <button
       type="button"
       class="btn btn-elegant my-0 me-2"
-      [hidden]="isMobile"
-      (click)="hideHidden = !hideHidden"
+      [hidden]="isMobile()"
+      (click)="hideHidden.set(!hideHidden())"
       container="body"
       placement="bottom"
       [openDelay]="150"
       triggers="hover"
-      [ngbTooltip]="hideHidden ? ('accessories.button_hidden_show' | translate) : ('accessories.button_hidden_hide' | translate)"
-      [attr.aria-label]="hideHidden ? ('accessories.button_hidden_show' | translate) : ('accessories.button_hidden_hide' | translate)"
+      [ngbTooltip]="hideHidden() ? ('accessories.button_hidden_show' | translate) : ('accessories.button_hidden_hide' | translate)"
+      [attr.aria-label]="hideHidden() ? ('accessories.button_hidden_show' | translate) : ('accessories.button_hidden_hide' | translate)"
     >
       <i
         class="fas"
         [class]="{
-        'fa-eye': !hideHidden,
-        'fa-eye-slash': hideHidden
-      }"
+          'fa-eye': !hideHidden(),
+          'fa-eye-slash': hideHidden()
+        }"
       ></i>
     </button>
     } @if (shouldShowFilters) {
@@ -137,16 +137,16 @@
     <ng-container *ngTemplateOutlet="supportButton"></ng-container>
   </div>
 </div>
-@if (loading) {
+@if (loading()) {
 <app-spinner />
-} @else { @if (hasPlugins) {
-<div [dragula]="'rooms-bag'" [(dragulaModel)]="$accessories.rooms">
-  @for (room of $accessories.rooms; track room) {
+} @else { @if (hasPlugins()) {
+<div [dragula]="'rooms-bag'" [(dragulaModel)]="rooms">
+  @for (room of rooms; track room.name) {
   <div>
-    @if (!isMobile || room.services.length) {
+    @if (!isMobile() || room.services.length) {
     <div class="row">
       <div class="col-md-12">
-        <h5 class="primary-text drag-handle room-title m-0 mb-1 mb-sm-0" [class.cursor-move]="!isMobile">
+        <h5 class="primary-text drag-handle room-title m-0 mb-1 mb-sm-0" [class.cursor-move]="!isMobile()">
           {{ room.name === 'Default Room' ? ('accessories.control.default_room' | translate) : room.name }}
         </h5>
       </div>
@@ -156,7 +156,7 @@
       @if (room.services.length) {
       <div
         class="col-md-12 d-flex flex-wrap noselect services-bag"
-        [class.justify-content-between]="isMobile"
+        [class.justify-content-between]="isMobile()"
         [dragula]="'services-bag'"
         [(dragulaModel)]="room.services"
       >
@@ -176,7 +176,7 @@
         <div style="height: 0" class="accessory-box invisible py-0 my-0"></div>
         <div style="height: 0" class="accessory-box invisible py-0 my-0"></div>
       </div>
-      } @if (!room.services.length && !isMobile) {
+      } @if (!room.services.length && !isMobile()) {
       <div class="col-md-12 d-flex flex-wrap noselect" [dragula]="'services-bag'" [(dragulaModel)]="room.services">
         <app-drag-here-placeholder class="no-drag" />
       </div>

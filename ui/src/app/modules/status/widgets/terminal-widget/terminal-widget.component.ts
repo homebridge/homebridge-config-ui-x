@@ -1,11 +1,24 @@
-import { AfterViewInit, ChangeDetectorRef, Component, ElementRef, HostListener, inject, Input, OnDestroy, OnInit, viewChild } from '@angular/core'
+import {
+  ChangeDetectorRef,
+  Component,
+  DestroyRef,
+  ElementRef,
+  HostListener,
+  inject,
+  input,
+  OnDestroy,
+  OnInit,
+  signal,
+  viewChild,
+} from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { TranslatePipe } from '@ngx-translate/core'
 import { ITerminalOptions } from '@xterm/xterm'
 import { Subject, Subscription } from 'rxjs'
 
-import { SettingsService } from '@/app/core/settings.service'
-import { TerminalNavigationGuardService } from '@/app/core/terminal-navigation-guard.service'
-import { TerminalService } from '@/app/core/terminal.service'
+import { SettingsService } from '@/app/core/ui/settings.service'
+import { TerminalNavigationGuardService } from '@/app/core/utilities/terminal-navigation-guard.service'
+import { TerminalService } from '@/app/core/utilities/terminal.service'
 import { Widget } from '@/app/modules/status/widgets/widgets.interfaces'
 
 @Component({
@@ -15,51 +28,48 @@ import { Widget } from '@/app/modules/status/widgets/widgets.interfaces'
     TranslatePipe,
   ],
 })
-export class TerminalWidgetComponent implements OnInit, AfterViewInit, OnDestroy {
+export class TerminalWidgetComponent implements OnInit, OnDestroy {
+  // Injected dependencies
+  private destroyRef = inject(DestroyRef)
   private $terminal = inject(TerminalService)
   private $settings = inject(SettingsService)
   private $navigationGuard = inject(TerminalNavigationGuardService)
   private $cdr = inject(ChangeDetectorRef)
-  private visibilityChangeHandler: (() => void) | null = null
-  private terminalSettingsSubscription?: Subscription
-  private configureEventSubscription?: Subscription
-  private resizeEventSubscription?: Subscription
 
+  // Signals
+  widget = input.required<Widget>()
   readonly widgetContainerElement = viewChild<ElementRef>('widgetcontainer')
   readonly titleElement = viewChild<ElementRef>('terminaltitle')
   readonly termTarget = viewChild<ElementRef>('terminaloutput')
+  public terminalHeight = signal<number>(200)
+  public theme = signal<'dark' | 'light'>('dark')
 
-  @Input() widget: Widget
-  @Input() resizeEvent: Subject<any>
-  @Input() configureEvent: Subject<any>
-
-  public terminalHeight = 200
-
-  public get theme(): 'dark' | 'light' {
-    // Always use effective theme to enforce dark mode override
-    return this.$settings.getEffectiveTerminalLightingMode()
-  }
+  // Other properties
+  private visibilityChangeHandler: (() => void) | null = null
+  private terminalSettingsSubscription?: Subscription
+  resizeEvent!: Subject<void> // Set directly by ComponentFactoryResolver
+  configureEvent!: Subject<void> // Set directly by ComponentFactoryResolver
 
   @HostListener('window:beforeunload', ['$event'])
-  onBeforeUnload(event: BeforeUnloadEvent) {
+  onBeforeUnload(event: BeforeUnloadEvent): void {
     // NOTE: This is a safeguard - the status component also handles beforeunload events
     // when terminal widgets are present, so this may not be strictly necessary
-    return this.$navigationGuard.handleBeforeUnload(event)
+    this.$navigationGuard.handleBeforeUnload(event)
   }
 
-  @HostListener('window:focus', ['$event'])
-  onWindowFocus() {
-    // Auto-focus terminal when user returns to this window
+  @HostListener('window:focus')
+  onWindowFocus(): void {
+    // Autofocus terminal when user returns to this window
     this.activateTerminal()
   }
 
-  @HostListener('click', ['$event'])
-  onClick() {
+  @HostListener('click')
+  onClick(): void {
     // Focus this terminal when clicked
     this.activateTerminal()
   }
 
-  private activateTerminal() {
+  private activateTerminal(): void {
     // Only focus if this terminal is ready and connected
     if (this.$terminal.isTerminalReady() && this.$terminal.term) {
       // Focus the actual terminal element for better UX
@@ -67,8 +77,13 @@ export class TerminalWidgetComponent implements OnInit, AfterViewInit, OnDestroy
     }
   }
 
-  public ngOnInit() {
-    setTimeout(() => {
+  public ngOnInit(): void {
+    // Use effective theme to enforce dark mode override when needed
+    this.theme.set(this.$settings.getEffectiveTerminalLightingMode())
+
+    // Defer terminal initialization to avoid NG0100
+    queueMicrotask(() => {
+      // Use global terminal settings from settings service
       const terminalOptions = this.$settings.getTerminalOptions({
         cursorBlink: false,
       }, true)
@@ -85,18 +100,23 @@ export class TerminalWidgetComponent implements OnInit, AfterViewInit, OnDestroy
       } else {
         this.$terminal.startTerminal(this.termTarget(), terminalOptions, this.resizeEvent)
       }
+
+      // Autofocus terminal when component is fully loaded
+      setTimeout(() => {
+        this.activateTerminal()
+      }, 100)
     })
 
-    this.resizeEventSubscription = this.resizeEvent.subscribe({
+    this.resizeEvent.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
-        this.terminalHeight = this.getTerminalHeight()
+        this.terminalHeight.set(this.getTerminalHeight())
       },
     })
 
-    this.configureEventSubscription = this.configureEvent.subscribe({
-      next: () => {
-        // Widget configuration changes would be handled here if needed
-      },
+    // Note: Widget-specific configuration (fontSize, fontWeight, theme) is not implemented
+    // Only global terminal settings via terminalSettingsSubscription are functional
+    this.configureEvent.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+      // Reserved for future widget-specific configuration if needed
     })
 
     // Subscribe to global terminal settings changes
@@ -131,20 +151,13 @@ export class TerminalWidgetComponent implements OnInit, AfterViewInit, OnDestroy
         }
       },
     })
-  }
-
-  public ngAfterViewInit() {
-    // Auto-focus terminal when component is fully loaded
-    setTimeout(() => {
-      this.activateTerminal()
-    }, 100)
 
     // Listen for visibility changes to focus terminal when tab becomes visible
     this.visibilityChangeHandler = this.onVisibilityChange.bind(this)
     document.addEventListener('visibilitychange', this.visibilityChangeHandler)
   }
 
-  private onVisibilityChange() {
+  private onVisibilityChange(): void {
     // When tab becomes visible, focus this terminal
     if (!document.hidden && this.$terminal.isTerminalReady()) {
       // Only focus if this terminal widget is actually visible on screen
@@ -167,11 +180,9 @@ export class TerminalWidgetComponent implements OnInit, AfterViewInit, OnDestroy
     return rect.width > 0 && rect.height > 0
   }
 
-  public ngOnDestroy() {
+  public ngOnDestroy(): void {
     // Clean up subscriptions
     this.terminalSettingsSubscription?.unsubscribe()
-    this.configureEventSubscription?.unsubscribe()
-    this.resizeEventSubscription?.unsubscribe()
 
     // Clean up visibility change listener
     if (this.visibilityChangeHandler) {

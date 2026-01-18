@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core'
+import { Component, input } from '@angular/core'
 
 import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
 
@@ -8,5 +8,5 @@ import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
   standalone: true,
 })
 export class MatterUnknownComponent {
-  @Input() public service: ServiceTypeX
+  public service = input.required<ServiceTypeX>()
 }

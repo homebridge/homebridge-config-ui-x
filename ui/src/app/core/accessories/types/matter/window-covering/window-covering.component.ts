@@ -1,9 +1,10 @@
-import { Component, inject, Input } from '@angular/core'
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
+import { Component, computed, createEnvironmentInjector, EnvironmentInjector, inject, input } from '@angular/core'
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe } from '@ngx-translate/core'
 
 import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
 import { AccessoriesService } from '@/app/core/accessories/accessories.service'
+import { ACCESSORY_MANAGE_MODAL_DATA } from '@/app/core/accessories/types/base-manage.component'
 import { getWindowCoveringPercentage, toggleWindowCovering } from '@/app/core/accessories/types/matter/matter-device.utils'
 import { WindowCoveringManageComponent } from '@/app/core/accessories/types/matter/window-covering/window-covering.manage.component'
 import { LongClickDirective } from '@/app/core/directives/long-click.directive'
@@ -20,49 +21,50 @@ import { LongClickDirective } from '@/app/core/directives/long-click.directive'
 })
 export class MatterWindowCoveringComponent {
   private $accessories = inject(AccessoriesService)
+  private injector = inject(EnvironmentInjector)
   private $modal = inject(NgbModal)
 
-  @Input() public service: ServiceTypeX
-  @Input() public readyForControl = false
+  public service = input.required<ServiceTypeX>()
+  public readyForControl = input<boolean>(false)
 
   public onClick() {
-    if (!this.readyForControl) {
+    if (!this.readyForControl()) {
       return
     }
 
-    toggleWindowCovering(this.service)
+    void toggleWindowCovering(this.service())
   }
 
   public onLongClick() {
-    if (!this.readyForControl) {
+    if (!this.readyForControl()) {
       return
     }
 
-    const ref = this.$modal.open(WindowCoveringManageComponent, {
+    const modalInjector = createEnvironmentInjector(
+      [{
+        provide: ACCESSORY_MANAGE_MODAL_DATA,
+        useValue: {
+          service: this.service(),
+          $accessories: this.$accessories,
+        },
+      }],
+      this.injector,
+    )
+
+    this.$modal.open(WindowCoveringManageComponent, {
       size: 'md',
       backdrop: 'static',
+      injector: modalInjector,
     })
-    ref.componentInstance.service = this.service
-    ref.componentInstance.$accessories = this.$accessories
   }
 
-  public get currentPosition(): number {
-    return getWindowCoveringPercentage(this.service)
-  }
+  public currentPosition = computed(() => getWindowCoveringPercentage(this.service()))
 
-  public get deviceType(): string {
-    return this.service.customType || this.service.deviceType || 'WindowCovering'
-  }
+  public deviceType = computed(() => this.service().customType || this.service().deviceType || 'WindowCovering')
 
-  public get isWindowCovering(): boolean {
-    return this.deviceType === 'WindowCovering'
-  }
+  public isWindowCovering = computed(() => this.deviceType() === 'WindowCovering')
 
-  public get isDoor(): boolean {
-    return this.deviceType === 'Door'
-  }
+  public isDoor = computed(() => this.deviceType() === 'Door')
 
-  public get isWindow(): boolean {
-    return this.deviceType === 'Window'
-  }
+  public isWindow = computed(() => this.deviceType() === 'Window')
 }

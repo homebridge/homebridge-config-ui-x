@@ -1,10 +1,11 @@
-import { Component, ElementRef, inject, Input, OnInit, viewChild } from '@angular/core'
+import { Component, DestroyRef, ElementRef, inject, OnDestroy, OnInit, signal, viewChild } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { TranslatePipe } from '@ngx-translate/core'
 import { Subject } from 'rxjs'
 
+import { IoNamespace, WsService } from '@/app/core/communication/ws.service'
 import { QrcodeComponent } from '@/app/core/components/qrcode/qrcode.component'
 import { HomebridgeStatusResponse } from '@/app/core/server.interfaces'
-import { IoNamespace, WsService } from '@/app/core/ws.service'
 
 @Component({
   templateUrl: './hap-qrcode-widget.component.html',
@@ -14,61 +15,81 @@ import { IoNamespace, WsService } from '@/app/core/ws.service'
     TranslatePipe,
   ],
 })
-export class HapQrcodeWidgetComponent implements OnInit {
+export class HapQrcodeWidgetComponent implements OnInit, OnDestroy {
+  // Injected dependencies
+  private destroyRef = inject(DestroyRef)
   private $ws = inject(WsService)
-  private io: IoNamespace
 
+  // Signals
   readonly pincodeElement = viewChild<ElementRef>('pincode')
   readonly qrcodeContainerElement = viewChild<ElementRef>('qrcodecontainer')
+  public paired = signal<boolean>(false)
+  public pin = signal<string>('')
+  public setupUri = signal<string | null>(null)
+  public qrCodeHeight = signal<number>(0)
+  public qrCodeWidth = signal<number>(0)
 
-  @Input() resizeEvent: Subject<any>
+  // Other properties
+  private io: IoNamespace
+  private statusHandler: (data: HomebridgeStatusResponse) => void
+  resizeEvent!: Subject<void> // Set directly by ComponentFactoryResolver
 
-  public paired: boolean = false
-  public pin = ''
-  public setupUri: string | null = null
-  public qrCodeHeight: number
-  public qrCodeWidth: number
-
-  public ngOnInit() {
+  public ngOnInit(): void {
     this.io = this.$ws.getExistingNamespace('status')
 
-    this.io.socket.on('homebridge-status', (data: HomebridgeStatusResponse) => {
-      this.pin = data.pin
-      this.paired = data.paired
+    this.statusHandler = (data: HomebridgeStatusResponse) => {
+      this.pin.set(data.pin)
+      this.paired.set(data.paired)
 
       if (data.setupUri) {
-        this.setupUri = data.setupUri
+        this.setupUri.set(data.setupUri)
       }
-    })
-
-    if (this.io.socket.connected) {
-      this.getPairingPin()
     }
 
+    this.io.socket.on('homebridge-status', this.statusHandler)
+
     // Subscribe to grid resize events
-    this.resizeEvent.subscribe({
-      next: () => {
-        this.resizeQrCode()
-      },
+    this.resizeEvent.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+      this.resizeQrCode()
     })
+
+    // Fetch initial data if already connected - defer to avoid NG0100
+    if (this.io.socket.connected) {
+      queueMicrotask(() => this.getPairingPin())
+    }
   }
 
-  private resizeQrCode() {
+  public ngOnDestroy(): void {
+    if (this.io && this.statusHandler) {
+      this.io.socket.off('homebridge-status', this.statusHandler)
+    }
+  }
+
+  private resizeQrCode(): void {
+    // Don't resize until we have data to display
+    if (!this.setupUri()) {
+      return
+    }
+
     const containerHeight = (this.qrcodeContainerElement().nativeElement as HTMLElement).offsetHeight
     const containerWidth = (this.qrcodeContainerElement().nativeElement as HTMLElement).offsetWidth
     const pinCodeHeight = (this.pincodeElement().nativeElement as HTMLElement).offsetHeight
 
-    this.qrCodeHeight = containerHeight - pinCodeHeight
-    this.qrCodeWidth = containerWidth > this.qrCodeHeight ? this.qrCodeHeight : containerWidth
+    const newHeight = containerHeight - pinCodeHeight
+    const newWidth = containerWidth > newHeight ? newHeight : containerWidth
+
+    this.qrCodeHeight.set(newHeight)
+    this.qrCodeWidth.set(newWidth)
   }
 
-  private getPairingPin() {
+  private getPairingPin(): void {
     this.io.request('get-homebridge-pairing-pin')
       .subscribe((data) => {
-        this.pin = data.pin
-        this.setupUri = data.setupUri
-        this.paired = data.paired
-        setTimeout(() => this.resizeQrCode(), 10)
+        this.pin.set(data.pin)
+        this.setupUri.set(data.setupUri)
+        this.paired.set(data.paired)
+        // Resize after data is set and DOM updates
+        requestAnimationFrame(() => this.resizeQrCode())
       })
   }
 }

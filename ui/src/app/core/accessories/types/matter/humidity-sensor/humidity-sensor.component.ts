@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core'
+import { Component, computed, input } from '@angular/core'
 import { TranslatePipe } from '@ngx-translate/core'
 
 import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
@@ -13,9 +13,7 @@ import { getHumiditySensorValue } from '@/app/core/accessories/types/matter/matt
   ],
 })
 export class MatterHumiditySensorComponent {
-  @Input() public service: ServiceTypeX
+  public service = input.required<ServiceTypeX>()
 
-  public get humidity(): number | null {
-    return getHumiditySensorValue(this.service)
-  }
+  public humidity = computed(() => getHumiditySensorValue(this.service()))
 }

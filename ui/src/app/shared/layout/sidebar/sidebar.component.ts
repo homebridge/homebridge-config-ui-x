@@ -1,16 +1,18 @@
 import { NgOptimizedImage } from '@angular/common'
-import { Component, inject, Input, OnDestroy, OnInit, Renderer2 } from '@angular/core'
+import { Component, createEnvironmentInjector, DestroyRef, EnvironmentInjector, inject, input, OnDestroy, OnInit, Renderer2, signal } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { NavigationEnd, NavigationStart, Router, RouterLink, RouterLinkActive } from '@angular/router'
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { isStandalonePWA } from 'is-standalone-pwa'
 import { ToastrService } from 'ngx-toastr'
 
 import { AuthHelperService } from '@/app/core/auth/auth-helper.service'
 import { AuthService } from '@/app/core/auth/auth.service'
+import { NotificationService } from '@/app/core/communication/notification.service'
 import { InformationComponent } from '@/app/core/components/information/information.component'
-import { NotificationService } from '@/app/core/notification.service'
-import { SettingsService } from '@/app/core/settings.service'
+import { INFORMATION_MODAL_DATA } from '@/app/core/modal-data-tokens'
+import { SettingsService } from '@/app/core/ui/settings.service'
 
 @Component({
   selector: 'app-sidebar',
@@ -25,6 +27,8 @@ import { SettingsService } from '@/app/core/settings.service'
   ],
 })
 export class SidebarComponent implements OnInit, OnDestroy {
+  private destroyRef = inject(DestroyRef)
+  private injector = inject(EnvironmentInjector)
   private $auth = inject(AuthService)
   private $authHelper = inject(AuthHelperService)
   private $settings = inject(SettingsService)
@@ -35,24 +39,27 @@ export class SidebarComponent implements OnInit, OnDestroy {
   private $toastr = inject(ToastrService)
   private $translate = inject(TranslateService)
 
-  @Input() isExpanded = false
+  initialIsExpanded = input<boolean>(false)
 
-  public formAuth = this.$settings.formAuth
+  public isExpanded = signal<boolean>(false)
+  public formAuth = signal<boolean>(this.$settings.formAuth)
   public isAdmin = this.$auth.user.admin
   public enableTerminalAccess = this.$settings.env.enableTerminalAccess
-  public rPiCurrentlyUnderVoltage = false
-  public rPiWasUnderVoltage = false
-  public legacyOtpToastShown = false
-  public isMobile: any = false
-  public freezeMenu = false
+  public rPiCurrentlyUnderVoltage = signal<boolean>(false)
+  public rPiWasUnderVoltage = signal<boolean>(false)
+  public legacyOtpToastShown = signal<boolean>(false)
+  public isMobile = signal<boolean>(false)
+  public freezeMenu = signal<boolean>(false)
   public isPwa = isStandalonePWA()
 
   // Store listener references for proper cleanup
   private sidebarMouseEnterListener = () => this.openSidebar()
   private sidebarMouseLeaveListener = () => this.closeSidebar()
+  private touchstartListener: (e: MouseEvent) => void
+  private clickListener: (e: MouseEvent) => void
 
   constructor() {
-    this.isMobile = window.innerWidth < 768
+    this.isMobile.set(window.innerWidth < 768)
     let resizeTimeout: any
     window.addEventListener('resize', () => {
       clearTimeout(resizeTimeout)
@@ -62,50 +69,63 @@ export class SidebarComponent implements OnInit, OnDestroy {
     })
 
     // Check authentication before navigation and ensure the menu closes when we navigate
-    this.$router.events.subscribe(async (event) => {
-      if (event instanceof NavigationStart) {
-        // Check if using form auth and if the token is expired
-        if (this.$settings.formAuth && event.url !== '/login') {
-          const isAuthenticated = await this.$authHelper.isAuthenticated()
-          if (!isAuthenticated) {
-            // Store the target route before redirecting
-            window.sessionStorage.setItem('target_route', event.url)
+    this.$router.events
+      .pipe(takeUntilDestroyed())
+      .subscribe(async (event) => {
+        if (event instanceof NavigationStart) {
+          // Check if using form auth and if the token is expired
+          if (this.$settings.formAuth && event.url !== '/login') {
+            const isAuthenticated = await this.$authHelper.isAuthenticated()
+            if (!isAuthenticated) {
+              // Store the target route before redirecting
+              window.sessionStorage.setItem('target_route', event.url)
 
-            // Prevent the navigation and redirect to the login page
-            await this.$router.navigate(['/login'])
-            return
+              // Prevent the navigation and redirect to the login page
+              await this.$router.navigate(['/login'])
+              return
+            }
           }
         }
-      }
 
-      if (event instanceof NavigationEnd) {
-        this.closeSidebar()
-        this.freezeMenu = true
-        setTimeout(() => {
-          this.freezeMenu = false
-        }, 750)
-      }
-    })
+        if (event instanceof NavigationEnd) {
+          // Defer to avoid NG0100 error
+          queueMicrotask(() => {
+            this.closeSidebar()
+            this.freezeMenu.set(true)
+            setTimeout(() => {
+              this.freezeMenu.set(false)
+            }, 750)
+          })
+        }
+      })
   }
 
   public ngOnInit() {
-    this.$notification.raspberryPiThrottled.subscribe((throttled) => {
-      if (throttled['Under Voltage']) {
-        this.rPiCurrentlyUnderVoltage = true
-      }
-      if (throttled['Under-voltage has occurred']) {
-        this.rPiWasUnderVoltage = true
-      }
-    })
+    this.isExpanded.set(this.initialIsExpanded())
 
-    this.$notification.formAuthEnabled.subscribe((value) => {
-      this.formAuth = value
-    })
+    this.$notification
+      .raspberryPiThrottled
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((throttled) => {
+        if (throttled['Under Voltage']) {
+          this.rPiCurrentlyUnderVoltage.set(true)
+        }
+        if (throttled['Under-voltage has occurred']) {
+          this.rPiWasUnderVoltage.set(true)
+        }
+      })
+
+    this.$notification
+      .formAuthEnabled
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((value) => {
+        this.formAuth.set(value)
+      })
 
     this.$notification.legacyOtpDetected.subscribe((detected) => {
       // Only show toast if detected is true and we haven't shown it yet
-      if (detected === true && !this.legacyOtpToastShown) {
-        this.legacyOtpToastShown = true
+      if (detected === true && !this.legacyOtpToastShown()) {
+        this.legacyOtpToastShown.set(true)
 
         // Delay the toast by 5 seconds to avoid overwhelming the user on page load
         setTimeout(() => {
@@ -130,56 +150,62 @@ export class SidebarComponent implements OnInit, OnDestroy {
     const mobileHeader = document.querySelector('.m-header')
     const content = document.querySelector('.content')
 
-    if (this.isMobile) {
-      document.addEventListener('touchstart', (e: MouseEvent) => {
-        if (content.contains(e.target as HTMLElement) && this.isExpanded) {
+    if (this.isMobile()) {
+      this.touchstartListener = (e: MouseEvent) => {
+        if (content.contains(e.target as HTMLElement) && this.isExpanded()) {
           e.preventDefault()
           this.toggleSidebar()
           return
         }
 
-        if (!sidebar.contains(e.target as HTMLElement) && !mobileHeader.contains(e.target as HTMLElement) && this.isExpanded) {
+        if (!sidebar.contains(e.target as HTMLElement) && !mobileHeader.contains(e.target as HTMLElement) && this.isExpanded()) {
           e.preventDefault()
           this.closeSidebar()
         }
-      }, { passive: false })
+      }
+      document.addEventListener('touchstart', this.touchstartListener, { passive: false })
     } else {
       this.updateListeners()
 
       mobileHeader.addEventListener('mouseenter', this.sidebarMouseEnterListener, { passive: false })
       mobileHeader.addEventListener('mouseleave', this.sidebarMouseLeaveListener, { passive: false })
 
-      document.addEventListener('click', (e: MouseEvent) => {
+      this.clickListener = (e: MouseEvent) => {
         if (sidebar.contains(e.target as HTMLElement) && e.clientX > 60) {
           this.closeSidebar()
         }
-      }, { passive: false })
+      }
+      document.addEventListener('click', this.clickListener, { passive: false })
     }
-
-    this.updateContentStyles()
   }
 
   public toggleSidebar() {
-    if (!this.freezeMenu) {
-      this.isExpanded = !this.isExpanded
+    if (!this.freezeMenu()) {
+      this.isExpanded.set(!this.isExpanded())
       this.updateContentStyles()
     }
   }
 
   public openUnderVoltageModal() {
-    const ref = this.$modal.open(InformationComponent, {
+    const injector = createEnvironmentInjector([{
+      provide: INFORMATION_MODAL_DATA,
+      useValue: {
+        title: this.$translate.instant('rpi.throttled.undervoltage_title'),
+        message: this.$translate.instant(this.rPiCurrentlyUnderVoltage()
+          ? 'rpi.throttled.currently_message'
+          : 'rpi.throttled.previously_message',
+        ),
+        ctaButtonLabel: this.$translate.instant('form.button_more_info'),
+        faIconClass: 'fas fa-bolt yellow-text',
+        ctaButtonLink: 'https://pimylifeup.com/raspberry-pi-low-voltage-warning',
+      },
+    }], this.injector)
+
+    this.$modal.open(InformationComponent, {
       size: 'lg',
       backdrop: 'static',
+      injector,
     })
-
-    ref.componentInstance.title = this.$translate.instant('rpi.throttled.undervoltage_title')
-    ref.componentInstance.message = this.$translate.instant(this.rPiCurrentlyUnderVoltage
-      ? 'rpi.throttled.currently_message'
-      : 'rpi.throttled.previously_message',
-    )
-    ref.componentInstance.ctaButtonLabel = this.$translate.instant('form.button_more_info')
-    ref.componentInstance.faIconClass = 'fas fa-bolt yellow-text'
-    ref.componentInstance.ctaButtonLink = 'https://pimylifeup.com/raspberry-pi-low-voltage-warning'
   }
 
   public handleKeydown(event: KeyboardEvent) {
@@ -197,8 +223,23 @@ export class SidebarComponent implements OnInit, OnDestroy {
 
   public ngOnDestroy() {
     // Clean up event listeners
-    document.removeEventListener('touchstart', () => {})
-    document.removeEventListener('click', () => {})
+    if (this.touchstartListener) {
+      document.removeEventListener('touchstart', this.touchstartListener)
+    }
+    if (this.clickListener) {
+      document.removeEventListener('click', this.clickListener)
+    }
+
+    const sidebar = document.querySelector('.sidebar')
+    const mobileHeader = document.querySelector('.m-header')
+    if (sidebar) {
+      sidebar.removeEventListener('mouseenter', this.sidebarMouseEnterListener)
+      sidebar.removeEventListener('mouseleave', this.sidebarMouseLeaveListener)
+    }
+    if (mobileHeader) {
+      mobileHeader.removeEventListener('mouseenter', this.sidebarMouseEnterListener)
+      mobileHeader.removeEventListener('mouseleave', this.sidebarMouseLeaveListener)
+    }
   }
 
   public logout() {
@@ -206,22 +247,22 @@ export class SidebarComponent implements OnInit, OnDestroy {
   }
 
   private openSidebar() {
-    if (!this.freezeMenu) {
-      this.isExpanded = true
+    if (!this.freezeMenu()) {
+      this.isExpanded.set(true)
       this.updateContentStyles()
     }
   }
 
   private closeSidebar() {
-    if (!this.freezeMenu) {
-      this.isExpanded = false
+    if (!this.freezeMenu()) {
+      this.isExpanded.set(false)
       this.updateContentStyles()
     }
   }
 
   private updateContentStyles() {
     const content = document.querySelector('.content')
-    if (this.isExpanded) {
+    if (this.isExpanded()) {
       this.$renderer.setStyle(content, 'opacity', '20%')
       this.$renderer.setStyle(content, 'pointer-events', 'none')
       this.$renderer.setStyle(content, 'overflow', 'hidden')
@@ -233,7 +274,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
   }
 
   private updateListeners() {
-    this.isMobile = window.innerWidth < 768
+    this.isMobile.set(window.innerWidth < 768)
     const sidebar = document.querySelector('.sidebar')
 
     // Remove existing listeners
@@ -241,7 +282,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
     sidebar.removeEventListener('mouseleave', this.sidebarMouseLeaveListener)
 
     // Add listeners based on mobile state and menu mode
-    if (this.isMobile || (!this.isMobile && this.$settings.menuMode !== 'freeze')) {
+    if (this.isMobile() || (!this.isMobile() && this.$settings.menuMode !== 'freeze')) {
       sidebar.addEventListener('mouseenter', this.sidebarMouseEnterListener, { passive: false })
       sidebar.addEventListener('mouseleave', this.sidebarMouseLeaveListener, { passive: false })
     }

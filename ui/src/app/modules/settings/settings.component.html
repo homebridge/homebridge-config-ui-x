@@ -9,12 +9,12 @@
       (click)="toggleSearch()"
       [attr.aria-label]="'form.search' | translate"
     >
-      <i class="fas{{ showSearchBar ? ' primary-text' : '' }} fa-search"></i>
+      <i class="fas{{ showSearchBar() ? ' primary-text' : '' }} fa-search"></i>
     </button>
   </div>
 </div>
 
-@if (showSearchBar) {
+@if (showSearchBar()) {
 <div class="row">
   <div class="col-md-12">
     <form novalidate>
@@ -23,11 +23,11 @@
         class="search-bar"
         #searchInput
         [placeholder]="'form.search' | translate"
-        [(ngModel)]="searchQuery"
-        (ngModelChange)="filterSettings()"
+        [ngModel]="searchQuery()"
+        (ngModelChange)="onSearchChange($event)"
         [ngModelOptions]="{standalone: true}"
       />
-      @if (searchQuery) {
+      @if (searchQuery()) {
       <button
         type="button"
         class="search-bar-clear"
@@ -40,27 +40,30 @@
     </form>
   </div>
 </div>
-} @if (loading) {
+} @if (loading()) {
 <app-spinner />
 } @else {
-<div class="settings-content" [class.theme-transitioning]="isThemeTransitioning">
+<div class="settings-content" [class.theme-transitioning]="isThemeTransitioning()">
   <! -- GENERAL SETTINGS - ->
   @if (isSectionVisible('general')) {
   <div class="my-4">
     <div
       role="button"
       tabindex="0"
-      [attr.aria-expanded]="showFields.general ? 'true' : 'false'"
+      [attr.aria-expanded]="showFields().general ? 'true' : 'false'"
       [attr.aria-controls]="'fieldsGeneral'"
       (click)="toggleSection('general')"
       class="mt-3 hover-pointer"
     >
       <h5 class="primary-text">
-        <i class="fa" [class]="{ 'fa-chevron-down': showFields.general, 'fa-chevron-right': !showFields.general }"></i>
+        <i
+          class="fa"
+          [class]="{ 'fa-chevron-down': showFields().general, 'fa-chevron-right': !showFields().general }"
+        ></i>
         {{ 'settings.general.title_general' | translate }}
       </h5>
     </div>
-    @if (showFields.general) {
+    @if (showFields().general) {
     <ul class="list-group list-group-box mt-2 mx-0" id="fieldsGeneral">
       @if (!isItemHidden('setting-name')) {
       <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
@@ -71,9 +74,9 @@
             type="text"
             [formControl]="hbNameFormControl"
             [attr.aria-label]="'settings.name' | translate"
-            [class.is-invalid]="hbNameIsInvalid"
+            [class.is-invalid]="hbNameIsInvalid()"
           />
-          @if (hbNameIsSaving) {
+          @if (hbNameIsSaving()) {
           <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
           }
         </div>
@@ -126,17 +129,20 @@
     <div
       role="button"
       tabindex="0"
-      [attr.aria-expanded]="showFields.display ? 'true' : 'false'"
+      [attr.aria-expanded]="showFields().display ? 'true' : 'false'"
       [attr.aria-controls]="'fieldsDisplay'"
       (click)="toggleSection('display')"
       class="mt-3 hover-pointer"
     >
       <h5 class="primary-text">
-        <i class="fa" [class]="{ 'fa-chevron-down': showFields.display, 'fa-chevron-right': !showFields.display }"></i>
+        <i
+          class="fa"
+          [class]="{ 'fa-chevron-down': showFields().display, 'fa-chevron-right': !showFields().display }"
+        ></i>
         {{ 'settings.general.title_display' | translate }}
       </h5>
     </div>
-    @if (showFields.display) {
+    @if (showFields().display) {
     <ul class="list-group list-group-box mt-2 mx-0" id="fieldsDisplay">
       @if (!isItemHidden('setting-lang')) {
       <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
@@ -173,7 +179,7 @@
             <option value="tr">Turkish (tr)</option>
             <option value="uk">Ukrainian (uk)</option>
           </select>
-          @if (uiLangIsSaving) {
+          @if (uiLangIsSaving()) {
           <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
           }
         </div>
@@ -197,7 +203,7 @@
             <option value="grey">{{ 'settings.display.grey' | translate }}</option>
             <option value="brown">{{ 'settings.display.brown' | translate }}</option>
           </select>
-          @if (uiThemeIsSaving) {
+          @if (uiThemeIsSaving()) {
           <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
           }
         </div>
@@ -211,7 +217,7 @@
             <option value="light">{{ 'settings.display.light' | translate }}</option>
             <option value="dark">{{ 'settings.display.dark' | translate }}</option>
           </select>
-          @if (uiLightIsSaving) {
+          @if (uiLightIsSaving()) {
           <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
           }
         </div>
@@ -224,7 +230,7 @@
             <option value="default">{{ 'settings.display.menu_default' | translate }}</option>
             <option value="freeze">{{ 'settings.display.menu_freeze' | translate }}</option>
           </select>
-          @if (uiMenuIsSaving) {
+          @if (uiMenuIsSaving()) {
           <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
           }
         </div>
@@ -237,7 +243,7 @@
             <option value="c">{{ 'settings.display.temp_units.c' | translate }}</option>
             <option value="f">{{ 'settings.display.temp_units.f' | translate }}</option>
           </select>
-          @if (uiTempIsSaving) {
+          @if (uiTempIsSaving()) {
           <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
           }
         </div>
@@ -266,17 +272,20 @@
     <div
       role="button"
       tabindex="0"
-      [attr.aria-expanded]="showFields.startup ? 'true' : 'false'"
+      [attr.aria-expanded]="showFields().startup ? 'true' : 'false'"
       [attr.aria-controls]="'fieldsStartup'"
       (click)="toggleSection('startup')"
       class="mt-3 hover-pointer"
     >
       <h5 class="primary-text">
-        <i class="fa" [class]="{ 'fa-chevron-down': showFields.startup, 'fa-chevron-right': !showFields.startup }"></i>
+        <i
+          class="fa"
+          [class]="{ 'fa-chevron-down': showFields().startup, 'fa-chevron-right': !showFields().startup }"
+        ></i>
         {{ 'settings.title_startup_options' | translate }}
       </h5>
     </div>
-    @if (showFields.startup) {
+    @if (showFields().startup) {
     <ul class="list-group list-group-box mb-4 mx-0" id="fieldsStartup">
       @if (!isItemHidden('setting-debug')) {
       <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
@@ -295,7 +304,7 @@
             />
             <label for="homebridgeDebugMode" class="rendux-label ms-3" style="min-width: 50px"></label>
           </div>
-          @if (hbDebugIsSaving) {
+          @if (hbDebugIsSaving()) {
           <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
           }
         </div>
@@ -317,7 +326,7 @@
             />
             <label for="homebridgeKeepOrphans" class="rendux-label ms-3" style="min-width: 50px"></label>
           </div>
-          @if (hbKeepIsSaving) {
+          @if (hbKeepIsSaving()) {
           <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
           }
         </div>
@@ -339,7 +348,7 @@
             />
             <label for="homebridgeInsecureMode" class="rendux-label ms-3" style="min-width: 50px"></label>
           </div>
-          @if (hbInsecureIsSaving) {
+          @if (hbInsecureIsSaving()) {
           <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
           }
         </div>
@@ -380,7 +389,7 @@
               [style.text-align]="'center'"
               maxlength="30"
             />
-            @if (scheduledRestartCronIsSaving) {
+            @if (scheduledRestartCronIsSaving()) {
             <i
               @fadeInOut
               class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
@@ -406,7 +415,7 @@
             />
             <label for="homebridgeMetrics" class="rendux-label ms-3" style="min-width: 50px"></label>
           </div>
-          @if (uiMetricsIsSaving) {
+          @if (uiMetricsIsSaving()) {
           <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
           }
         </div>
@@ -425,7 +434,7 @@
             [formControl]="hbPackageFormControl"
             [attr.aria-label]="'settings.network.hb_package' | translate"
           />
-          @if (hbPackageIsSaving) {
+          @if (hbPackageIsSaving()) {
           <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
           }
         </div>
@@ -444,7 +453,7 @@
             [formControl]="hbLinuxShutdownFormControl"
             [attr.aria-label]="'settings.linux.shutdown' | translate"
           />
-          @if (hbLinuxShutdownIsSaving) {
+          @if (hbLinuxShutdownIsSaving()) {
           <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
           }
         </div>
@@ -463,7 +472,7 @@
             [formControl]="hbLinuxRestartFormControl"
             [attr.aria-label]="'settings.linux.restart' | translate"
           />
-          @if (hbLinuxRestartIsSaving) {
+          @if (hbLinuxRestartIsSaving()) {
           <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
           }
         </div>
@@ -482,7 +491,7 @@
             [formControl]="uiTempFileFormControl"
             [attr.aria-label]="'settings.linux.temp' | translate"
           />
-          @if (uiTempFileIsSaving) {
+          @if (uiTempFileIsSaving()) {
           <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
           }
         </div>
@@ -503,7 +512,7 @@
             type="text"
             placeholder="HAP-NodeJS:Advertiser,HAP-NodeJS:Service"
           />
-          @if (hbEnvDebugIsSaving) {
+          @if (hbEnvDebugIsSaving()) {
           <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
           }
         </div>
@@ -521,7 +530,7 @@
             type="text"
             placeholder="--max-old-space-size=512 --max-http-header-size=8192"
           />
-          @if (hbEnvNodeIsSaving) {
+          @if (hbEnvNodeIsSaving()) {
           <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
           }
         </div>
@@ -553,24 +562,27 @@
     <div
       role="button"
       tabindex="0"
-      [attr.aria-expanded]="showFields.network ? 'true' : 'false'"
+      [attr.aria-expanded]="showFields().network ? 'true' : 'false'"
       [attr.aria-controls]="'fieldsNetwork'"
       (click)="toggleSection('network')"
       class="mt-3 hover-pointer"
     >
       <h5 class="primary-text">
-        <i class="fa" [class]="{ 'fa-chevron-down': showFields.network, 'fa-chevron-right': !showFields.network }"></i>
+        <i
+          class="fa"
+          [class]="{ 'fa-chevron-down': showFields().network, 'fa-chevron-right': !showFields().network }"
+        ></i>
         {{ 'settings.network.title_network' | translate }}
       </h5>
     </div>
-    @if (showFields.network) {
+    @if (showFields().network) {
     <ul class="list-group list-group-box mt-2 mx-0" id="fieldsNetwork">
       @if (!isItemHidden('setting-interfaces')) {
       <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
         <span class="pe-2">
           {{ 'settings.network.title_network_interfaces' | translate }}<br />
           <div class="small grey-text pe-2">{{ 'settings.network.message_network_interface' | translate }}</div>
-          @for (adapter of adaptersSelected; track adapter) {
+          @for (adapter of adaptersSelected(); track adapter) {
           <span
             class="badge badge-primary me-1"
             [class]="{ 'badge-danger': adapter.missing, 'badge-info': !adapter.missing }"
@@ -589,7 +601,7 @@
           class="btn btn-primary waves-effect m-0 ms-3 py-1"
           style="min-width: 50px"
           (click)="selectNetworkInterfaces()"
-          [disabled]="!adaptersAvailable.length"
+          [disabled]="!adaptersAvailable().length"
           [attr.aria-label]="'settings.network.title_network_interfaces' | translate"
         >
           <i class="fas fa-arrow-right"></i>
@@ -607,19 +619,19 @@
             [formControl]="hbMDnsFormControl"
             [attr.aria-label]="'settings.mdns_advertiser' | translate"
           >
-            @if (showAvahiMdnsOption) {
+            @if (showAvahiMdnsOption()) {
             <option value="avahi">Avahi ({{ 'settings.mdns_advertiser_rec' | translate }})</option>
             }
             <! -- ciao is recommended if avahi is not available - ->
             <option value="ciao">
-              Ciao {{ showAvahiMdnsOption ? '' : '(' + ('settings.mdns_advertiser_rec' | translate) + ')' }}
+              Ciao {{ showAvahiMdnsOption() ? '' : '(' + ('settings.mdns_advertiser_rec' | translate) + ')' }}
             </option>
             <option value="bonjour-hap">Bonjour HAP</option>
-            @if (showResolvedMdnsOption) {
+            @if (showResolvedMdnsOption()) {
             <option value="resolved">systemd-resolved ({{ 'settings.mdns_advertiser_exp' | translate }})</option>
             }
           </select>
-          @if (hbMDnsIsSaving) {
+          @if (hbMDnsIsSaving()) {
           <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
           }
         </div>
@@ -638,9 +650,9 @@
             max="65533"
             [formControl]="hbPortFormControl"
             [attr.aria-label]="'settings.network.port_hb' | translate"
-            [class.is-invalid]="hbPortIsInvalid"
+            [class.is-invalid]="hbPortIsInvalid()"
           />
-          @if (hbPortIsSaving) {
+          @if (hbPortIsSaving()) {
           <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
           }
         </div>
@@ -659,9 +671,9 @@
             max="65533"
             [formControl]="hbStartPortFormControl"
             [attr.aria-label]="'settings.network.port_start' | translate"
-            [class.is-invalid]="hbStartPortIsInvalid"
+            [class.is-invalid]="hbStartPortIsInvalid()"
           />
-          @if (hbStartPortIsSaving) {
+          @if (hbStartPortIsSaving()) {
           <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
           }
         </div>
@@ -680,9 +692,9 @@
             max="65533"
             [formControl]="hbEndPortFormControl"
             [attr.aria-label]="'settings.network.port_end' | translate"
-            [class.is-invalid]="hbEndPortIsInvalid"
+            [class.is-invalid]="hbEndPortIsInvalid()"
           />
-          @if (hbEndPortIsSaving) {
+          @if (hbEndPortIsSaving()) {
           <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
           }
         </div>
@@ -708,7 +720,7 @@
             placeholder="0.0.0.0"
             [attr.aria-label]="'settings.network.host' | translate"
           />
-          @if (uiHostIsSaving) {
+          @if (uiHostIsSaving()) {
           <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
           }
         </div>
@@ -734,7 +746,7 @@
             [formControl]="uiProxyHostFormControl"
             [attr.aria-label]="'settings.network.proxy' | translate"
           />
-          @if (uiProxyHostIsSaving) {
+          @if (uiProxyHostIsSaving()) {
           <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
           }
         </div>
@@ -760,9 +772,9 @@
             placeholder="8581"
             [formControl]="uiPortFormControl"
             [attr.aria-label]="'settings.network.port_ui' | translate"
-            [class.is-invalid]="uiPortIsInvalid"
+            [class.is-invalid]="uiPortIsInvalid()"
           />
-          @if (uiPortIsSaving) {
+          @if (uiPortIsSaving()) {
           <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
           }
         </div>
@@ -784,7 +796,7 @@
             />
             <label class="rendux-label ms-3" for="enableMdnsAdvertise" style="min-width: 50px"></label>
           </div>
-          @if (enableMdnsAdvertiseIsSaving) {
+          @if (enableMdnsAdvertiseIsSaving()) {
           <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
           }
         </div>
@@ -801,23 +813,26 @@
     <div
       role="button"
       tabindex="0"
-      [attr.aria-expanded]="showFields.matter ? 'true' : 'false'"
+      [attr.aria-expanded]="showFields().matter ? 'true' : 'false'"
       [attr.aria-controls]="'fieldsMatter'"
       (click)="toggleSection('matter')"
       class="mt-3 hover-pointer"
     >
       <h5 class="primary-text">
-        <i class="fa" [class]="{ 'fa-chevron-down': showFields.matter, 'fa-chevron-right': !showFields.matter }"></i>
+        <i
+          class="fa"
+          [class]="{ 'fa-chevron-down': showFields().matter, 'fa-chevron-right': !showFields().matter }"
+        ></i>
         {{ 'settings.matter.title' | translate }}
       </h5>
     </div>
-    @if (showFields.matter) {
+    @if (showFields().matter) {
     <p class="small grey-text mb-2 mx-0">{{ 'settings.matter.desc' | translate }}</p>
     <ul class="list-group list-group-box mt-2 mx-0" id="fieldsMatter">
       @if (!isItemHidden('setting-matter-enabled')) {
       <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
         <span>
-          {{ 'settings.matter.enabled' | translate }}
+          {{ 'common.labels.enabled' | translate }}
           <span class="badge badge-primary ms-1">{{ 'common.labels.beta' | translate }}</span><br />
           <small class="grey-text pe-2">{{ 'settings.matter.enabled_desc' | translate }}</small>
         </span>
@@ -828,11 +843,11 @@
               class="rendux-input"
               id="matterEnabled"
               [formControl]="matterEnabledFormControl"
-              [attr.aria-label]="'settings.matter.enabled' | translate"
+              [attr.aria-label]="'common.labels.enabled' | translate"
             />
             <label for="matterEnabled" class="rendux-label ms-3" style="min-width: 50px"></label>
           </div>
-          @if (matterEnabledIsSaving) {
+          @if (matterEnabledIsSaving()) {
           <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
           }
         </div>
@@ -852,9 +867,9 @@
             placeholder="5540"
             [formControl]="matterPortFormControl"
             [attr.aria-label]="'settings.matter.port' | translate"
-            [class.is-invalid]="matterPortIsInvalid"
+            [class.is-invalid]="matterPortIsInvalid()"
           />
-          @if (matterPortIsSaving) {
+          @if (matterPortIsSaving()) {
           <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
           }
         </div>
@@ -871,7 +886,7 @@
     <div
       role="button"
       tabindex="0"
-      [attr.aria-expanded]="showFields.terminal ? 'true' : 'false'"
+      [attr.aria-expanded]="showFields().terminal ? 'true' : 'false'"
       [attr.aria-controls]="'fieldsTerminal'"
       (click)="toggleSection('terminal')"
       class="mt-3 hover-pointer"
@@ -879,12 +894,12 @@
       <h5 class="primary-text">
         <i
           class="fa"
-          [class]="{ 'fa-chevron-down': showFields.terminal, 'fa-chevron-right': !showFields.terminal }"
+          [class]="{ 'fa-chevron-down': showFields().terminal, 'fa-chevron-right': !showFields().terminal }"
         ></i>
         {{ 'settings.network.title_terminal' | translate }}
       </h5>
     </div>
-    @if (showFields.terminal) {
+    @if (showFields().terminal) {
     <ul class="list-group list-group-box mt-2 mx-0" id="fieldsTerminal">
       @if (!isItemHidden('setting-terminal-log-max')) {
       <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
@@ -900,9 +915,9 @@
             placeholder="1000000"
             [formControl]="hbLogSizeFormControl"
             [attr.aria-label]="'settings.terminal.log_max' | translate"
-            [class.is-invalid]="hbLogSizeIsInvalid"
+            [class.is-invalid]="hbLogSizeIsInvalid()"
           />
-          @if (hbLogSizeIsSaving) {
+          @if (hbLogSizeIsSaving()) {
           <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
           }
         </div>
@@ -921,9 +936,9 @@
             placeholder="200000"
             [formControl]="hbLogTruncateFormControl"
             [attr.aria-label]="'settings.terminal.log_truncate' | translate"
-            [class.is-invalid]="hbLogTruncateIsInvalid"
+            [class.is-invalid]="hbLogTruncateIsInvalid()"
           />
-          @if (hbLogTruncateIsSaving) {
+          @if (hbLogTruncateIsSaving()) {
           <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
           }
         </div>
@@ -945,7 +960,7 @@
             />
             <label class="rendux-label ms-3" for="terminalPersistence" style="min-width: 50px"></label>
           </div>
-          @if (uiTerminalPersistenceIsSaving) {
+          @if (uiTerminalPersistenceIsSaving()) {
           <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
           }
         </div>
@@ -967,7 +982,7 @@
             />
             <label class="rendux-label ms-3" for="terminalHideWarning" style="min-width: 50px"></label>
           </div>
-          @if (uiTerminalHideWarningIsSaving) {
+          @if (uiTerminalHideWarningIsSaving()) {
           <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
           }
         </div>
@@ -987,9 +1002,9 @@
             step="10000"
             [formControl]="uiTerminalBufferSizeFormControl"
             [attr.aria-label]="'settings.terminal.buffer_size' | translate"
-            [class.is-invalid]="uiTerminalBufferSizeIsInvalid"
+            [class.is-invalid]="uiTerminalBufferSizeIsInvalid()"
           />
-          @if (uiTerminalBufferSizeIsSaving) {
+          @if (uiTerminalBufferSizeIsSaving()) {
           <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
           }
         </div>
@@ -1003,7 +1018,7 @@
           <small class="grey-text pe-2">{{ 'settings.terminal.theme_desc' | translate }}</small>
         </span>
         <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
-          @if (uiTerminalFontSizeIsSaving || uiTerminalFontWeightIsSaving || uiTerminalLightingModeIsSaving) {
+          @if (uiTerminalFontSizeIsSaving() || uiTerminalFontWeightIsSaving() || uiTerminalLightingModeIsSaving()) {
           <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
           }
           <div class="d-flex gap-2 order-1 order-md-2 resp-select-width">
@@ -1060,7 +1075,7 @@
     <div
       role="button"
       tabindex="0"
-      [attr.aria-expanded]="showFields.security ? 'true' : 'false'"
+      [attr.aria-expanded]="showFields().security ? 'true' : 'false'"
       [attr.aria-controls]="'fieldsSecurity'"
       (click)="toggleSection('security')"
       class="mt-3 hover-pointer"
@@ -1068,12 +1083,12 @@
       <h5 class="primary-text">
         <i
           class="fa"
-          [class]="{ 'fa-chevron-down': showFields.security, 'fa-chevron-right': !showFields.security }"
+          [class]="{ 'fa-chevron-down': showFields().security, 'fa-chevron-right': !showFields().security }"
         ></i>
         {{ 'settings.network.title_security' | translate }}
       </h5>
     </div>
-    @if (showFields.security) {
+    @if (showFields().security) {
     <ul class="list-group list-group-box mt-2 mx-0" id="fieldsSecurity">
       @if (!isItemHidden('setting-security-auth')) {
       <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
@@ -1092,7 +1107,7 @@
             />
             <label for="uiAuthForm" class="rendux-label ms-3" style="min-width: 50px"></label>
           </div>
-          @if (uiAuthIsSaving) {
+          @if (uiAuthIsSaving()) {
           <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
           }
         </div>
@@ -1114,7 +1129,7 @@
             />
             <label class="rendux-label ms-3" for="session-inactivity-based" style="min-width: 50px"></label>
           </div>
-          @if (uiSessionTimeoutInactivityBasedIsSaving) {
+          @if (uiSessionTimeoutInactivityBasedIsSaving()) {
           <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0"></i>
           }
         </div>
@@ -1137,7 +1152,7 @@
                 style="text-align: right"
                 [formControl]="uiSessionTimeoutDaysFormControl"
                 [attr.aria-label]="'settings.startup.session_days' | translate"
-                [class.is-invalid]="uiSessionTimeoutIsInvalid"
+                [class.is-invalid]="uiSessionTimeoutIsInvalid()"
               />
               <label class="ms-1 me-2 mb-0 text-nowrap grey-text small"
                 >{{ 'settings.startup.session_days' | translate }}</label
@@ -1153,7 +1168,7 @@
                 style="text-align: right"
                 [formControl]="uiSessionTimeoutHoursFormControl"
                 [attr.aria-label]="'settings.startup.session_hours' | translate"
-                [class.is-invalid]="uiSessionTimeoutIsInvalid"
+                [class.is-invalid]="uiSessionTimeoutIsInvalid()"
               />
               <label class="ms-1 me-2 mb-0 text-nowrap grey-text small"
                 >{{ 'settings.startup.session_hours' | translate }}</label
@@ -1169,22 +1184,24 @@
                 style="text-align: right"
                 [formControl]="uiSessionTimeoutMinutesFormControl"
                 [attr.aria-label]="'settings.startup.session_minutes' | translate"
-                [class.is-invalid]="uiSessionTimeoutIsInvalid"
+                [class.is-invalid]="uiSessionTimeoutIsInvalid()"
               />
               <label class="ms-1 me-2 mb-0 text-nowrap grey-text small"
                 >{{ 'settings.startup.session_minutes' | translate }}</label
               >
             </div>
           </div>
-          @if (uiSessionTimeoutIsSaving) {
+          @if (uiSessionTimeoutIsSaving()) {
           <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-md-1"></i>
           }
         </div>
       </li>
       } } @if (!isItemHidden('setting-security-https')) {
-      <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
-        <span>
-          {{ 'settings.security.https' | translate }}<br />
+      <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
+        <span class="pe-2">
+          {{ 'settings.security.https_enable' | translate }}
+          <span class="badge badge-primary ms-1">{{ 'common.labels.beta' | translate }}</span><br />
+          <small class="grey-text pe-2">{{ 'settings.security.https_enable_desc' | translate }}</small>
           @if (runningOnRaspbianImage) {
           <small class="grey-text pe-2">
             <span [innerHtml]="'settings.security.https_raspbian' | translate: { link: linkRaspbianSsl }"></span>
@@ -1198,212 +1215,22 @@
           </small>
           } }
         </span>
-        <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
-          <select
-            class="custom-select resp-select order-1 order-md-2"
-            [formControl]="uiSslTypeFormControl"
-            [attr.aria-label]="'settings.security.https' | translate"
-            [hidden]="runningOnRaspbianImage"
-          >
-            <option value="off">{{ 'accessories.control.off' | translate }}</option>
-            @if (!runningOnRaspbianImage) {
-            <option value="selfsigned">{{ 'settings.security.https_selfsigned' | translate }}</option>
-            }
-            <option value="keycert">{{ 'settings.security.https_keycert' | translate }}</option>
-            <option value="pfx">{{ 'settings.security.https_pfx' | translate }}</option>
-          </select>
-          @if (uiSslTypeFormControl.value !== 'off') {
-          <button
-            class="btn btn-elegant mx-2 py-1"
-            style="min-width: 50px"
-            type="button"
-            (click)="validateSsl()"
-            [attr.aria-label]="'settings.security.ssl_validate' | translate"
-            title="{{ 'settings.security.ssl_validate' | translate }}"
-          >
-            <i class="fas fa-check"></i>
-          </button>
-          }
-        </div>
-      </li>
-      } @if (this.uiSslTypeFormControl.value === 'selfsigned') {
-      <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
-        <span>
-          {{ 'settings.security.selfsigned_hostnames' | translate }}
-          <span class="badge badge-primary ms-1">{{ 'common.labels.beta' | translate }}</span><br />
-          <small class="grey-text pe-2">{{ 'settings.security.selfsigned_hostnames_desc' | translate }}</small>
-        </span>
-        @if (isPwa) {
-        <br /><small class="grey-text pe-2">
-          <i class="fas fa-exclamation-triangle red-text"></i>
-          {{ 'settings.warning_pwa' | translate }}
-        </small>
-        }
-        <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
-          <input
-            class="form-control custom-input resp-input order-1 order-md-2 font-monospace"
-            type="text"
-            placeholder="localhost, 127.0.0.1, homebridge.local"
-            [formControl]="uiSslSelfSignedHostnamesFormControl"
-            [attr.aria-label]="'settings.security.selfsigned_hostnames' | translate"
-          />
-          <button
-            class="btn btn-elegant m-0 waves-effect ms-2 py-1"
-            style="min-width: 50px"
-            type="button"
-            (click)="generateSelfSigned('keycert')"
-            [attr.aria-label]="'settings.security.selfsigned_generate_keycert' | translate"
-            title="{{ 'settings.security.selfsigned_generate_keycert' | translate }}"
-          >
-            <i class="fas fa-magic"></i>
-          </button>
-          <button
-            class="btn btn-elegant m-0 py-1 mx-2"
-            style="min-width: 50px"
-            type="button"
-            (click)="generateSelfSigned('selfsigned')"
-            [attr.aria-label]="'settings.security.selfsigned_generate_selfsigned' | translate"
-            title="{{ 'settings.security.selfsigned_generate_selfsigned' | translate }}"
-          >
-            <i class="fas fa-shield-alt"></i>
-          </button>
-          @if (uiSslSelfSignedHostnamesIsSaving) {
-          <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
-          }
+        <div class="d-flex align-items-center">
+          <div class="order-1 order-md-2">
+            <input
+              type="checkbox"
+              class="rendux-input"
+              id="httpsEnabled"
+              [checked]="runningOnRaspbianImage || uiSslTypeFormControl.value !== 'off'"
+              [disabled]="isPwa || runningOnRaspbianImage"
+              (click)="!isPwa && !runningOnRaspbianImage && openSslModal(); $event.preventDefault()"
+              [attr.aria-label]="'settings.security.https_enable' | translate"
+            />
+            <label for="httpsEnabled" class="rendux-label ms-3" style="min-width: 50px"></label>
+          </div>
         </div>
       </li>
       }
-      <! -- the following options should be hidden for raspbian - ->
-      @if (!runningOnRaspbianImage) { @if (this.uiSslTypeFormControl.value === 'keycert') {
-      <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
-        <span>{{ 'settings.security.key' | translate }}</span>
-        @if (isPwa) {
-        <br /><small class="grey-text pe-2">
-          <i class="fas fa-exclamation-triangle red-text"></i>
-          {{ 'settings.warning_pwa' | translate }}
-        </small>
-        }
-        <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center gap-2">
-          <button
-            class="btn btn-elegant m-0 py-1"
-            style="min-width: 50px"
-            type="button"
-            (click)="triggerKeyCertSelect()"
-            [attr.aria-label]="'settings.security.ssl_upload_keycert_aria' | translate"
-            title="{{ 'settings.security.ssl_upload_keycert_aria' | translate }}"
-          >
-            <i class="fas fa-upload"></i>
-          </button>
-          <input
-            #sslKeyCertInput
-            type="file"
-            multiple
-            (change)="onSslKeyCertChange(sslKeyCertInput.files)"
-            class="d-none"
-          />
-          <input
-            class="form-control custom-input resp-input order-1 order-md-2 font-monospace"
-            type="text"
-            placeholder="/Users/.../certs/server.key"
-            [formControl]="uiSslKeyFormControl"
-            [attr.aria-label]="'settings.security.key' | translate"
-          />
-          @if (uiSslKeyIsSaving) {
-          <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
-          }
-        </div>
-      </li>
-      @if (!isItemHidden('setting-security-cert')) {
-      <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
-        <span>{{ 'settings.security.cert' | translate }}</span>
-        @if (isPwa) {
-        <br /><small class="grey-text pe-2">
-          <i class="fas fa-exclamation-triangle red-text"></i>
-          {{ 'settings.warning_pwa' | translate }}
-        </small>
-        }
-        <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center gap-2">
-          <button
-            class="btn btn-elegant m-0"
-            style="min-width: 50px"
-            type="button"
-            (click)="triggerKeyCertSelect()"
-            [attr.aria-label]="'settings.security.ssl_upload_keycert_aria' | translate"
-            title="{{ 'settings.security.ssl_upload_keycert_aria' | translate }}"
-          >
-            <i class="fas fa-upload"></i>
-          </button>
-          <input
-            class="form-control custom-input resp-input order-1 order-md-2 font-monospace"
-            type="text"
-            placeholder="/Users/.../certs/server.crt"
-            [formControl]="uiSslCertFormControl"
-            [attr.aria-label]="'settings.security.cert' | translate"
-          />
-          @if (uiSslCertIsSaving) {
-          <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
-          }
-        </div>
-      </li>
-      } } @if (this.uiSslTypeFormControl.value === 'pfx') {
-      <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
-        <span>{{ 'settings.security.pfx' | translate }}</span>
-        @if (isPwa) {
-        <br /><small class="grey-text pe-2">
-          <i class="fas fa-exclamation-triangle red-text"></i>
-          {{ 'settings.warning_pwa' | translate }}
-        </small>
-        }
-        <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center gap-2">
-          <button
-            class="btn btn-elegant waves-effect m-0 py-1"
-            style="min-width: 50px"
-            type="button"
-            (click)="triggerPfxSelect()"
-            [attr.aria-label]="'settings.security.ssl_upload_pfx_aria' | translate"
-            title="{{ 'settings.security.ssl_upload_pfx_aria' | translate }}"
-          >
-            <i class="fas fa-upload"></i>
-          </button>
-          <input #sslPfxInput type="file" (change)="onSslPfxChange(sslPfxInput.files)" class="d-none" />
-          <input
-            class="form-control custom-input resp-input order-1 order-md-2 font-monospace"
-            type="text"
-            placeholder="/Users/.../certs/server.pfx"
-            [formControl]="uiSslPfxFormControl"
-            [attr.aria-label]="'settings.security.pfx' | translate"
-          />
-          @if (uiSslPfxIsSaving) {
-          <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
-          }
-        </div>
-      </li>
-      @if (!isItemHidden('setting-security-pass')) {
-      <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
-        <span>{{ 'settings.security.pass' | translate }}</span>
-        @if (isPwa) {
-        <br /><small class="grey-text pe-2">
-          <i class="fas fa-exclamation-triangle red-text"></i>
-          {{ 'settings.warning_pwa' | translate }}
-        </small>
-        }
-        <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
-          <input
-            class="form-control custom-input resp-input order-1 order-md-2 font-monospace"
-            [type]="showPfxPassphrase ? 'text' : 'password'"
-            placeholder="mypassphrase"
-            [formControl]="uiSslPassphraseFormControl"
-            [attr.aria-label]="'settings.security.pass' | translate"
-            (focus)="showPfxPassphrase = true"
-            (blur)="showPfxPassphrase = false"
-          />
-          @if (uiSslPassphraseIsSaving) {
-          <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
-          }
-        </div>
-      </li>
-      } } }
-      <! -- end of raspbian hidden options - ->
     </ul>
     }
   </div>
@@ -1415,17 +1242,17 @@
     <div
       role="button"
       tabindex="0"
-      [attr.aria-expanded]="showFields.cache ? 'true' : 'false'"
+      [attr.aria-expanded]="showFields().cache ? 'true' : 'false'"
       [attr.aria-controls]="'fieldsCache'"
       (click)="toggleSection('cache')"
       class="mt-3 hover-pointer"
     >
       <h5 class="primary-text">
-        <i class="fa" [class]="{ 'fa-chevron-down': showFields.cache, 'fa-chevron-right': !showFields.cache }"></i>
+        <i class="fa" [class]="{ 'fa-chevron-down': showFields().cache, 'fa-chevron-right': !showFields().cache }"></i>
         {{ 'menu.label_accessories' | translate }}
       </h5>
     </div>
-    @if (showFields.cache) {
+    @if (showFields().cache) {
     <p class="small grey-text mb-2 mx-0">{{ 'settings.cache.desc' | translate }}</p>
     <ul class="list-group list-group-box mb-4 mx-0" id="fieldsCache">
       @if (!isItemHidden('setting-accessory-debug')) {
@@ -1445,7 +1272,7 @@
             />
             <label for="accessoryDebug" class="rendux-label ms-3" style="min-width: 50px"></label>
           </div>
-          @if (uiAccDebugIsSaving) {
+          @if (uiAccDebugIsSaving()) {
           <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
           }
         </div>
@@ -1507,17 +1334,17 @@
     <div
       role="button"
       tabindex="0"
-      [attr.aria-expanded]="showFields.reset ? 'true' : 'false'"
+      [attr.aria-expanded]="showFields().reset ? 'true' : 'false'"
       [attr.aria-controls]="'fieldsReset'"
       (click)="toggleSection('reset')"
       class="mt-3 hover-pointer"
     >
       <h5 class="primary-text">
-        <i class="fa" [class]="{ 'fa-chevron-down': showFields.reset, 'fa-chevron-right': !showFields.reset }"></i>
+        <i class="fa" [class]="{ 'fa-chevron-down': showFields().reset, 'fa-chevron-right': !showFields().reset }"></i>
         {{ 'reset.bridges.title' | translate }}
       </h5>
     </div>
-    @if (showFields.reset) {
+    @if (showFields().reset) {
     <p class="small grey-text mb-2 mx-0">{{ 'reset.bridges.desc' | translate }}</p>
     <ul class="list-group list-group-box mt-2 mx-0" id="fieldsReset">
       @if (!isItemHidden('setting-reset-bridge-ind')) {

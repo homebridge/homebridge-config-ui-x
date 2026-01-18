@@ -2,22 +2,23 @@ import type { NetworkAdapterAvailable, NetworkAdapterSelected } from '@/app/modu
 
 import { animate, style, transition, trigger } from '@angular/animations'
 import { TitleCasePipe } from '@angular/common'
-import { ChangeDetectorRef, Component, ElementRef, inject, OnInit, ViewChild } from '@angular/core'
+import { afterNextRender, ChangeDetectorRef, Component, createEnvironmentInjector, DestroyRef, ElementRef, EnvironmentInjector, inject, OnInit, runInInjectionContext, signal, viewChild } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { FormControl, FormsModule, ReactiveFormsModule, UntypedFormControl } from '@angular/forms'
 import { Router, RouterLink } from '@angular/router'
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { isStandalonePWA } from 'is-standalone-pwa'
 import { ToastrService } from 'ngx-toastr'
-import { firstValueFrom } from 'rxjs'
 import { debounceTime } from 'rxjs/operators'
 
-import { ApiService } from '@/app/core/api.service'
+import { ApiService } from '@/app/core/communication/api.service'
+import { NotificationService } from '@/app/core/communication/notification.service'
 import { ConfirmComponent } from '@/app/core/components/confirm/confirm.component'
 import { SpinnerComponent } from '@/app/core/components/spinner/spinner.component'
-import { NotificationService } from '@/app/core/notification.service'
-import { SettingsService } from '@/app/core/settings.service'
-import { TerminalService } from '@/app/core/terminal.service'
+import { ACCESSORY_CONTROL_LISTS_MODAL_DATA, CONFIRM_MODAL_DATA, NETWORK_INTERFACES_MODAL_DATA, REMOVE_INDIVIDUAL_ACCESSORIES_MODAL_DATA } from '@/app/core/modal-data-tokens'
+import { SettingsService } from '@/app/core/ui/settings.service'
+import { TerminalService } from '@/app/core/utilities/terminal.service'
 import { AccessoryControlListsComponent } from '@/app/modules/settings/accessory-control-lists/accessory-control-lists.component'
 import { BackupComponent } from '@/app/modules/settings/backup/backup.component'
 import { RemoveAllAccessoriesComponent } from '@/app/modules/settings/remove-all-accessories/remove-all-accessories.component'
@@ -26,6 +27,7 @@ import { RemoveIndividualAccessoriesComponent } from '@/app/modules/settings/rem
 import { ResetAllBridgesComponent } from '@/app/modules/settings/reset-all-bridges/reset-all-bridges.component'
 import { ResetIndividualBridgesComponent } from '@/app/modules/settings/reset-individual-bridges/reset-individual-bridges.component'
 import { SelectNetworkInterfacesComponent } from '@/app/modules/settings/select-network-interfaces/select-network-interfaces.component'
+import { SslSettingsModalComponent } from '@/app/modules/settings/ssl-settings-modal/ssl-settings-modal.component'
 import { WallpaperComponent } from '@/app/modules/settings/wallpaper/wallpaper.component'
 
 @Component({
@@ -55,7 +57,6 @@ import { WallpaperComponent } from '@/app/modules/settings/wallpaper/wallpaper.c
         style({
           opacity: 0.01,
           height: '0px',
-          overflow: 'hidden',
           marginBottom: 0,
           transform: 'scale(0.97)',
         }),
@@ -73,7 +74,6 @@ import { WallpaperComponent } from '@/app/modules/settings/wallpaper/wallpaper.c
           marginBottom: 0,
           paddingTop: 0,
           paddingBottom: 0,
-          overflow: 'hidden',
           transform: 'scale(0.98)',
         })),
       ]),
@@ -81,10 +81,11 @@ import { WallpaperComponent } from '@/app/modules/settings/wallpaper/wallpaper.c
   ],
 })
 export class SettingsComponent implements OnInit {
-  @ViewChild('searchInput') searchInput!: ElementRef
-
+  // Injected dependencies
+  private destroyRef = inject(DestroyRef)
+  private injector = inject(EnvironmentInjector)
+  private cdr = inject(ChangeDetectorRef)
   private $api = inject(ApiService)
-  private $cdr = inject(ChangeDetectorRef)
   private $modal = inject(NgbModal)
   private $notification = inject(NotificationService)
   private $router = inject(Router)
@@ -92,13 +93,15 @@ export class SettingsComponent implements OnInit {
   private $terminal = inject(TerminalService)
   private $toastr = inject(ToastrService)
   private $translate = inject(TranslateService)
-  private restartToastIsShown = false
 
-  public showSearchBar = false
-  public searchQuery = ''
-  public isThemeTransitioning = false
+  readonly searchInput = viewChild<ElementRef>('searchInput')
 
-  public showFields = {
+  // Signals
+  public showSearchBar = signal(false)
+  public searchQuery = signal('')
+  public isThemeTransitioning = signal(false)
+
+  public showFields = signal({
     general: true,
     display: true,
     startup: true,
@@ -108,20 +111,17 @@ export class SettingsComponent implements OnInit {
     terminal: true,
     reset: true,
     cache: true,
-  }
+  })
 
   // Track which items are hidden by search
-  public hiddenItems: Record<string, boolean> = {}
+  public hiddenItems = signal<Record<string, boolean>>({})
 
-  public loading = true
+  public loading = signal(true)
   public debugFieldDesc = 'settings.startup.debug_desc_v1' // default, may be changed in ngOnInit
-  public showAvahiMdnsOption = false
-  public showResolvedMdnsOption = false
-  public adaptersAvailable: NetworkAdapterAvailable[] = []
-  public adaptersSelected: NetworkAdapterSelected[] = []
-  public showPfxPassphrase = false
-  @ViewChild('sslKeyCertInput') sslKeyCertInput!: ElementRef<HTMLInputElement>
-  @ViewChild('sslPfxInput') sslPfxInput!: ElementRef<HTMLInputElement>
+  public showAvahiMdnsOption = signal(false)
+  public showResolvedMdnsOption = signal(false)
+  public adaptersAvailable = signal<NetworkAdapterAvailable[]>([])
+  public adaptersSelected = signal<NetworkAdapterSelected[]>([])
   public runningInDocker = this.$settings.env.runningInDocker
   public runningOnRaspberryPi = this.$settings.env.runningOnRaspberryPi
   public runningOnRaspbianImage = this.$settings.env.runningOnRaspbianImage
@@ -130,44 +130,44 @@ export class SettingsComponent implements OnInit {
   public isMatterSupported = this.$settings.isFeatureEnabled('matterSupport')
   public isPwa = Boolean(isStandalonePWA())
 
-  public hbNameIsInvalid = false
-  public hbNameIsSaving = false
+  public hbNameIsInvalid = signal(false)
+  public hbNameIsSaving = signal(false)
   public hbNameFormControl = new FormControl('')
 
-  public uiLangIsSaving = false
+  public uiLangIsSaving = signal(false)
   public uiLangFormControl = new FormControl('')
 
-  public uiThemeIsSaving = false
+  public uiThemeIsSaving = signal(false)
   public uiThemeFormControl = new FormControl('')
 
-  public uiLightIsSaving = false
+  public uiLightIsSaving = signal(false)
   public uiLightFormControl = new FormControl('')
 
-  public uiMenuIsSaving = false
+  public uiMenuIsSaving = signal(false)
   public uiMenuFormControl = new FormControl('')
 
-  public uiTempIsSaving = false
+  public uiTempIsSaving = signal(false)
   public uiTempFormControl = new FormControl('')
 
-  public uiTerminalPersistenceIsSaving = false
+  public uiTerminalPersistenceIsSaving = signal(false)
   public uiTerminalPersistenceFormControl = new FormControl(false)
 
-  public uiTerminalHideWarningIsSaving = false
+  public uiTerminalHideWarningIsSaving = signal(false)
   public uiTerminalHideWarningFormControl = new FormControl(false)
 
-  public uiTerminalBufferSizeIsSaving = false
-  public uiTerminalBufferSizeIsInvalid = false
+  public uiTerminalBufferSizeIsSaving = signal(false)
+  public uiTerminalBufferSizeIsInvalid = signal(false)
   public uiTerminalBufferSizeFormControl = new FormControl(globalThis.terminal.bufferSize)
 
-  public uiTerminalFontSizeIsSaving = false
+  public uiTerminalFontSizeIsSaving = signal(false)
   public uiTerminalFontSizeFormControl = new FormControl(13)
   public fontSizes = [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
 
-  public uiTerminalFontWeightIsSaving = false
+  public uiTerminalFontWeightIsSaving = signal(false)
   public uiTerminalFontWeightFormControl = new FormControl('400')
   public fontWeights = ['100', '200', '300', '400', '500', '600', '700', '800', '900', 'bold', 'normal']
 
-  public uiTerminalLightingModeIsSaving = false
+  public uiTerminalLightingModeIsSaving = signal(false)
   public uiTerminalLightingModeFormControl = new FormControl('dark')
 
   // Only allow light theme when in light mode
@@ -180,175 +180,185 @@ export class SettingsComponent implements OnInit {
     return this.$settings.actualLightingMode === 'dark'
   }
 
-  public hbDebugIsSaving = false
+  public hbDebugIsSaving = signal(false)
   public hbDebugFormControl = new FormControl(false)
 
-  public hbInsecureIsSaving = false
+  public hbInsecureIsSaving = signal(false)
   public hbInsecureFormControl = new FormControl(false)
 
-  public hbKeepIsSaving = false
+  public hbKeepIsSaving = signal(false)
   public hbKeepFormControl = new FormControl(false)
 
-  public hbEnvDebugIsSaving = false
+  public hbEnvDebugIsSaving = signal(false)
   public hbEnvDebugFormControl = new FormControl('')
 
-  public hbEnvNodeIsSaving = false
+  public hbEnvNodeIsSaving = signal(false)
   public hbEnvNodeFormControl = new FormControl('')
 
-  public hbLogSizeIsInvalid = false
-  public hbLogSizeIsSaving = false
+  public hbLogSizeIsInvalid = signal(false)
+  public hbLogSizeIsSaving = signal(false)
   public hbLogSizeFormControl = new FormControl(-1)
 
-  public hbLogTruncateIsInvalid = false
-  public hbLogTruncateIsSaving = false
+  public hbLogTruncateIsInvalid = signal(false)
+  public hbLogTruncateIsSaving = signal(false)
   public hbLogTruncateFormControl = new FormControl(0)
 
-  public hbMDnsIsSaving = false
+  public hbMDnsIsSaving = signal(false)
   public hbMDnsFormControl = new FormControl('')
 
   public enableMdnsAdvertiseFormControl = new FormControl(false)
-  public enableMdnsAdvertiseIsSaving = false
+  public enableMdnsAdvertiseIsSaving = signal(false)
 
-  public hbPortIsInvalid = false
-  public hbPortIsSaving = false
+  public hbPortIsInvalid = signal(false)
+  public hbPortIsSaving = signal(false)
   public hbPortFormControl = new FormControl(0)
 
-  public uiPortIsInvalid = false
-  public uiPortIsSaving = false
+  public uiPortIsInvalid = signal(false)
+  public uiPortIsSaving = signal(false)
   public uiPortFormControl = new FormControl(0)
 
-  public hbStartPortIsInvalid = false
-  public hbStartPortIsSaving = false
+  public hbStartPortIsInvalid = signal(false)
+  public hbStartPortIsSaving = signal(false)
   public hbStartPortFormControl = new FormControl(0)
 
-  public hbEndPortIsInvalid = false
-  public hbEndPortIsSaving = false
+  public hbEndPortIsInvalid = signal(false)
+  public hbEndPortIsSaving = signal(false)
   public hbEndPortFormControl = new FormControl(0)
 
-  public uiHostIsSaving = false
+  public uiHostIsSaving = signal(false)
   public uiHostFormControl = new FormControl('')
 
-  public uiProxyHostIsSaving = false
+  public uiProxyHostIsSaving = signal(false)
   public uiProxyHostFormControl = new FormControl('')
 
-  public uiAuthIsSaving = false
+  public uiAuthIsSaving = signal(false)
   public uiAuthFormControl = new UntypedFormControl(true)
 
-  public uiSessionTimeoutIsInvalid = false
-  public uiSessionTimeoutIsSaving = false
+  public uiSessionTimeoutIsInvalid = signal(false)
+  public uiSessionTimeoutIsSaving = signal(false)
   public uiSessionTimeoutDaysFormControl = new FormControl(0)
   public uiSessionTimeoutHoursFormControl = new FormControl(8)
   public uiSessionTimeoutMinutesFormControl = new FormControl(0)
 
-  public uiSessionTimeoutInactivityBasedIsSaving = false
+  public uiSessionTimeoutInactivityBasedIsSaving = signal(false)
   public uiSessionTimeoutInactivityBasedFormControl = new FormControl(false)
 
   public uiSslTypeFormControl = new FormControl('off')
 
-  public uiSslKeyIsSaving = false
+  public uiSslKeyIsSaving = signal(false)
   public uiSslKeyFormControl = new FormControl('')
 
-  public uiSslCertIsSaving = false
+  public uiSslCertIsSaving = signal(false)
   public uiSslCertFormControl = new FormControl('')
 
-  public uiSslPfxIsSaving = false
+  public uiSslPfxIsSaving = signal(false)
   public uiSslPfxFormControl = new FormControl('')
 
-  public uiSslPassphraseIsSaving = false
+  public uiSslPassphraseIsSaving = signal(false)
   public uiSslPassphraseFormControl = new FormControl('')
 
-  public uiSslSelfSignedHostnamesIsSaving = false
+  public uiSslSelfSignedHostnamesIsSaving = signal(false)
   public uiSslSelfSignedHostnamesFormControl = new FormControl('')
 
-  public hbPackageIsSaving = false
+  public hbPackageIsSaving = signal(false)
   public hbPackageFormControl = new FormControl('')
 
-  public uiMetricsIsSaving = false
+  public uiMetricsIsSaving = signal(false)
   public uiMetricsFormControl = new FormControl(true)
 
-  public uiAccDebugIsSaving = false
+  public uiAccDebugIsSaving = signal(false)
   public uiAccDebugFormControl = new FormControl(false)
 
-  public uiTempFileIsSaving = false
+  public uiTempFileIsSaving = signal(false)
   public uiTempFileFormControl = new FormControl('')
 
-  public hbLinuxShutdownIsSaving = false
+  public hbLinuxShutdownIsSaving = signal(false)
   public hbLinuxShutdownFormControl = new FormControl('')
 
-  public hbLinuxRestartIsSaving = false
+  public hbLinuxRestartIsSaving = signal(false)
   public hbLinuxRestartFormControl = new FormControl('')
 
-  public scheduledRestartCronIsSaving = false
+  public scheduledRestartCronIsInvalid = signal(false)
+  public scheduledRestartCronIsSaving = signal(false)
   public scheduledRestartCronFormControl = new FormControl('')
 
-  public matterEnabledIsSaving = false
+  public matterEnabledIsSaving = signal(false)
   public matterEnabledFormControl = new FormControl(false)
 
-  public matterPortIsInvalid = false
-  public matterPortIsSaving = false
+  public matterPortIsInvalid = signal(false)
+  public matterPortIsSaving = signal(false)
   public matterPortFormControl = new FormControl(0)
 
+  // Other properties
   // Cache for Matter config values (in-memory only, for restoring after accidental disable)
   private matterConfigCache: { port?: number } = {}
+  public restartToastIsShown = false
 
   public readonly linkDebug = '<a href="https://github.com/homebridge/homebridge-config-ui-x/wiki/Debug-Common-Values" target="_blank" rel="noopener noreferrer"><i class="fa fa-external-link-alt primary-text"></i></a>'
   public readonly linkRaspbianSsl = '<a href="https://github.com/homebridge/homebridge-raspbian-image/wiki/SSL-HTTPS-Access" target="_blank" rel="noopener noreferrer"><i class="fa fa-external-link-alt primary-text"></i></a>'
   public readonly linkCron = '<a href="https://crontab.guru/" target="_blank" rel="noopener noreferrer"><i class="fa fa-external-link-alt primary-text"></i></a>'
 
-  public toggleSearch() {
-    this.showSearchBar = !this.showSearchBar
-    if (this.showSearchBar) {
-      // Focus on search input after a short delay
-      setTimeout(() => {
-        if (this.searchInput && this.searchInput.nativeElement) {
-          this.searchInput.nativeElement.focus()
-        }
-      }, 100)
+  public toggleSearch(): void {
+    this.showSearchBar.update(current => !current)
+    if (this.showSearchBar()) {
+      // Focus on search input after next render
+      runInInjectionContext(this.injector, () => {
+        afterNextRender(() => {
+          const input = this.searchInput()
+          if (input) {
+            input.nativeElement.focus()
+          }
+        })
+      })
     } else {
       // Clear search when hiding
       this.clearSearch()
     }
   }
 
-  public clearSearch() {
-    this.searchQuery = ''
+  public onSearchChange(value: string): void {
+    this.searchQuery.set(value)
     this.filterSettings()
   }
 
-  public filterSettings() {
-    // Clear all hidden items
-    this.hiddenItems = {}
+  public clearSearch(): void {
+    this.searchQuery.set('')
+    this.filterSettings()
+  }
 
-    if (!this.searchQuery) {
+  public filterSettings(): void {
+    // Clear all hidden items
+    this.hiddenItems.set({})
+
+    if (!this.searchQuery()) {
       // If no search query, show everything
       return
     }
 
-    const query = this.searchQuery.toLowerCase()
+    const query = this.searchQuery().toLowerCase()
     const itemsContent = this.getItemsContent()
 
     // Check each item and hide those that don't match
+    const newHiddenItems: Record<string, boolean> = {}
     Object.entries(itemsContent).forEach(([itemId, searchableText]) => {
       const matches = searchableText && searchableText.toLowerCase().includes(query)
       if (!matches) {
-        this.hiddenItems[itemId] = true
+        newHiddenItems[itemId] = true
       }
     })
-
-    // Trigger change detection manually
-    this.$cdr.detectChanges()
+    this.hiddenItems.set(newHiddenItems)
   }
 
   public isItemHidden(itemId: string): boolean {
-    const isHidden = !!this.hiddenItems[itemId]
-    if (this.searchQuery) { // Only log when searching
+    const isHidden = !!this.hiddenItems()[itemId]
+    if (this.searchQuery()) { // Only log when searching
     }
     return isHidden
   }
 
   public isSectionVisible(sectionName: string): boolean {
     // If no search query, all sections are visible
-    if (!this.searchQuery) {
+    if (!this.searchQuery()) {
       return true
     }
 
@@ -366,6 +376,7 @@ export class SettingsComponent implements OnInit {
         'setting-lighting',
         'setting-menu',
         'setting-temp',
+        'setting-betas',
         'setting-wallpaper',
       ],
       startup: [
@@ -399,9 +410,6 @@ export class SettingsComponent implements OnInit {
         'setting-terminal-log-max',
         'setting-terminal-persistence',
         'setting-terminal-buffer',
-        'setting-terminal-font-size',
-        'setting-terminal-font-weight',
-        'setting-terminal-lighting-mode',
       ],
       security: [
         'setting-security-auth',
@@ -450,6 +458,7 @@ export class SettingsComponent implements OnInit {
       'setting-lighting': this.$translate.instant('settings.display.lighting_mode'),
       'setting-menu': this.$translate.instant('settings.display.menu_mode'),
       'setting-temp': this.$translate.instant('settings.display.temp_units'),
+      'setting-betas': this.$translate.instant('settings.display.show_betas'),
       'setting-wallpaper': this.$translate.instant('settings.display.wallpaper'),
 
       // Startup section
@@ -478,8 +487,8 @@ export class SettingsComponent implements OnInit {
       'setting-mdns-advertise': this.$translate.instant('settings.network.mdns_advertise'),
 
       // Matter section
-      'setting-matter-enabled': this.$translate.instant('settings.matter.enabled'),
-      'setting-matter-port': this.$translate.instant('settings.matter.port'),
+      'setting-matter-enabled': `${this.$translate.instant('settings.matter.title')} ${this.$translate.instant('common.labels.enabled')} ${this.$translate.instant('settings.matter.enabled_desc')}`,
+      'setting-matter-port': `${this.$translate.instant('settings.matter.title')} ${this.$translate.instant('settings.matter.port')} ${this.$translate.instant('settings.matter.port_desc')}`,
 
       // Security section
       'setting-security-auth': this.$translate.instant('settings.security.auth'),
@@ -502,9 +511,6 @@ export class SettingsComponent implements OnInit {
       'setting-terminal-persistence': this.$translate.instant('settings.terminal.persistence'),
       'setting-terminal-warning': this.$translate.instant('settings.terminal.hide_warning'),
       'setting-terminal-buffer': this.$translate.instant('settings.terminal.buffer_size'),
-      'setting-terminal-font-size': this.$translate.instant('settings.terminal.font_size'),
-      'setting-terminal-font-weight': this.$translate.instant('settings.terminal.font_weight'),
-      'setting-terminal-lighting-mode': this.$translate.instant('settings.display.lighting_mode'),
 
       // Reset section
       'setting-reset-accessory-ind': this.$translate.instant('reset.accessory_ind.title'),
@@ -528,7 +534,11 @@ export class SettingsComponent implements OnInit {
     }
   }
 
-  public async ngOnInit() {
+  public ngOnInit(): void {
+    void this.initialize()
+  }
+
+  private async initialize(): Promise<void> {
     // Set page title
     const title = this.$translate.instant('menu.label_settings')
     this.$settings.setPageTitle(title)
@@ -540,9 +550,8 @@ export class SettingsComponent implements OnInit {
     await this.initNetworkingOptions()
     await this.initStartupSettings()
 
-    // Some settings might need to be disabled for some users
-    // (1) Disable some settings that can modify the URL from being changed from a PWA
-    //     This is to stop users from getting stuck if they change the port for example
+    // (2) Disable some settings that can modify the URL from being changed from a PWA
+    //     This is to stop users from getting stuck if they change the host or port
     if (this.isPwa) {
       this.uiPortFormControl.disable()
       this.uiHostFormControl.disable()
@@ -560,115 +569,103 @@ export class SettingsComponent implements OnInit {
       this.uiSslTypeFormControl.disable()
     }
 
-    this.hbNameFormControl.patchValue(this.$settings.env.homebridgeInstanceName)
+    this.hbNameFormControl.patchValue(this.$settings.env.homebridgeInstanceName, { emitEvent: false })
     this.hbNameFormControl.valueChanges
-      .pipe(debounceTime(1500))
+      .pipe(debounceTime(1500), takeUntilDestroyed(this.destroyRef))
       .subscribe((value: string) => this.hbNameSave(value))
 
-    this.uiLangFormControl.patchValue(this.$settings.env.lang)
+    this.uiLangFormControl.patchValue(this.$settings.env.lang, { emitEvent: false })
     this.uiLangFormControl.valueChanges
-      .pipe(debounceTime(750))
+      .pipe(debounceTime(750), takeUntilDestroyed(this.destroyRef))
       .subscribe((value: string) => this.uiLangSave(value))
 
-    this.uiThemeFormControl.patchValue(this.$settings.theme)
+    this.uiThemeFormControl.patchValue(this.$settings.theme, { emitEvent: false })
     this.uiThemeFormControl.valueChanges
-      .pipe(debounceTime(750))
+      .pipe(debounceTime(750), takeUntilDestroyed(this.destroyRef))
       .subscribe((value: string) => this.uiThemeSave(value))
 
-    this.uiLightFormControl.patchValue(this.$settings.lightingMode)
+    this.uiLightFormControl.patchValue(this.$settings.lightingMode, { emitEvent: false })
     this.uiLightFormControl.valueChanges
-      .pipe(debounceTime(750))
+      .pipe(debounceTime(750), takeUntilDestroyed(this.destroyRef))
       .subscribe((value: 'auto' | 'light' | 'dark') => this.uiLightSave(value))
 
-    this.uiMenuFormControl.patchValue(this.$settings.menuMode)
+    this.uiMenuFormControl.patchValue(this.$settings.menuMode, { emitEvent: false })
     this.uiMenuFormControl.valueChanges
-      .pipe(debounceTime(750))
+      .pipe(debounceTime(750), takeUntilDestroyed(this.destroyRef))
       .subscribe((value: 'default' | 'freeze') => this.uiMenuSave(value))
 
-    this.uiTempFormControl.patchValue(this.$settings.env.temperatureUnits)
+    this.uiTempFormControl.patchValue(this.$settings.env.temperatureUnits, { emitEvent: false })
     this.uiTempFormControl.valueChanges
-      .pipe(debounceTime(750))
+      .pipe(debounceTime(750), takeUntilDestroyed(this.destroyRef))
       .subscribe((value: string) => this.uiTempSave(value))
 
-    this.uiTerminalPersistenceFormControl.patchValue(this.$settings.env.terminal?.persistence)
+    this.uiTerminalPersistenceFormControl.patchValue(this.$settings.env.terminal?.persistence, { emitEvent: false })
     this.uiTerminalPersistenceFormControl.valueChanges
-      .pipe(debounceTime(750))
+      .pipe(debounceTime(750), takeUntilDestroyed(this.destroyRef))
       .subscribe((value: boolean) => this.uiTerminalPersistenceSave(value))
 
-    this.uiTerminalHideWarningFormControl.patchValue(this.$settings.env.terminal?.hideWarning)
+    this.uiTerminalHideWarningFormControl.patchValue(this.$settings.env.terminal?.hideWarning, { emitEvent: false })
     this.uiTerminalHideWarningFormControl.valueChanges
-      .pipe(debounceTime(750))
+      .pipe(debounceTime(750), takeUntilDestroyed(this.destroyRef))
       .subscribe((value: boolean) => this.uiTerminalHideWarningSave(value))
 
-    this.uiTerminalBufferSizeFormControl.patchValue(this.$settings.env.terminal?.bufferSize)
+    this.uiTerminalBufferSizeFormControl.patchValue(this.$settings.env.terminal?.bufferSize, { emitEvent: false })
     this.uiTerminalBufferSizeFormControl.valueChanges
-      .pipe(debounceTime(1500))
+      .pipe(debounceTime(1500), takeUntilDestroyed(this.destroyRef))
       .subscribe((value: number) => this.uiTerminalBufferSizeSave(value))
 
     // Validate and set terminal fontSize
     const savedFontSize = this.$settings.env.terminal?.fontSize
     if (savedFontSize !== undefined && (savedFontSize < 10 || savedFontSize > 20)) {
       // Invalid value, delete it from config
-      this.deleteInvalidSetting('terminal.fontSize')
-      this.uiTerminalFontSizeFormControl.patchValue(13)
+      void this.deleteInvalidSetting('terminal.fontSize')
+      this.uiTerminalFontSizeFormControl.patchValue(13, { emitEvent: false })
     } else {
-      this.uiTerminalFontSizeFormControl.patchValue(savedFontSize || 13)
+      this.uiTerminalFontSizeFormControl.patchValue(savedFontSize || 13, { emitEvent: false })
     }
     this.uiTerminalFontSizeFormControl.valueChanges
-      .pipe(debounceTime(750))
+      .pipe(debounceTime(750), takeUntilDestroyed(this.destroyRef))
       .subscribe((value: number) => this.uiTerminalFontSizeSave(value))
 
     // Validate and set terminal fontWeight
     const savedFontWeight = this.$settings.env.terminal?.fontWeight
     if (savedFontWeight !== undefined && !this.fontWeights.includes(String(savedFontWeight))) {
       // Invalid value, delete it from config
-      this.deleteInvalidSetting('terminal.fontWeight')
-      this.uiTerminalFontWeightFormControl.patchValue('400')
+      void this.deleteInvalidSetting('terminal.fontWeight')
+      this.uiTerminalFontWeightFormControl.patchValue('400', { emitEvent: false })
     } else {
-      this.uiTerminalFontWeightFormControl.patchValue(savedFontWeight || '400')
+      this.uiTerminalFontWeightFormControl.patchValue(savedFontWeight || '400', { emitEvent: false })
     }
     this.uiTerminalFontWeightFormControl.valueChanges
-      .pipe(debounceTime(750))
+      .pipe(debounceTime(750), takeUntilDestroyed(this.destroyRef))
       .subscribe((value: string) => this.uiTerminalFontWeightSave(value))
 
-    // Validate and set terminal lighting mode
-    const savedLightingMode = this.$settings.env.terminal?.lightingMode
-
-    // Always show effective theme (enforces dark mode override)
-    const effectiveLightingMode = this.$settings.getEffectiveTerminalLightingMode()
-
-    // Always set form to effective theme (will be 'dark' if in dark mode)
-    this.uiTerminalLightingModeFormControl.patchValue(effectiveLightingMode)
-
-    // Reset to dark if invalid value or light theme in dark mode
-    const shouldReset = (savedLightingMode === 'light' && this.$settings.actualLightingMode === 'dark')
-      || (savedLightingMode !== undefined && !['light', 'dark'].includes(savedLightingMode))
-
-    if (shouldReset) {
-      this.resetTerminalLightingModeToDark()
-    }
+    // Terminal lighting mode - default to dark, but allow light if main theme is light
+    const savedTerminalTheme = this.$settings.env.terminal?.lightingMode
+    const defaultTheme = this.$settings.actualLightingMode === 'light' ? (savedTerminalTheme || 'dark') : 'dark'
+    this.uiTerminalLightingModeFormControl.patchValue(defaultTheme, { emitEvent: false })
     this.uiTerminalLightingModeFormControl.valueChanges
-      .pipe(debounceTime(750))
+      .pipe(debounceTime(750), takeUntilDestroyed(this.destroyRef))
       .subscribe((value: string) => this.uiTerminalLightingModeSave(value))
 
-    this.hbLogSizeFormControl.patchValue(this.$settings.env.log?.maxSize)
+    this.hbLogSizeFormControl.patchValue(this.$settings.env.log?.maxSize, { emitEvent: false })
     this.hbLogSizeFormControl.valueChanges
-      .pipe(debounceTime(1500))
+      .pipe(debounceTime(1500), takeUntilDestroyed(this.destroyRef))
       .subscribe((value: number) => this.hbLogSizeSave(value))
 
-    this.hbLogTruncateFormControl.patchValue(this.$settings.env.log?.truncateSize)
+    this.hbLogTruncateFormControl.patchValue(this.$settings.env.log?.truncateSize, { emitEvent: false })
     this.hbLogTruncateFormControl.valueChanges
-      .pipe(debounceTime(1500))
+      .pipe(debounceTime(1500), takeUntilDestroyed(this.destroyRef))
       .subscribe((value: number) => this.hbLogTruncateSave(value))
 
-    this.uiPortFormControl.patchValue(this.$settings.env.port)
+    this.uiPortFormControl.patchValue(this.$settings.env.port, { emitEvent: false })
     this.uiPortFormControl.valueChanges
-      .pipe(debounceTime(1500))
+      .pipe(debounceTime(1500), takeUntilDestroyed(this.destroyRef))
       .subscribe((value: number) => this.uiPortSave(value))
 
-    this.uiAuthFormControl.patchValue(this.$settings.formAuth)
+    this.uiAuthFormControl.patchValue(this.$settings.formAuth, { emitEvent: false })
     this.uiAuthFormControl.valueChanges
-      .pipe(debounceTime(750))
+      .pipe(debounceTime(750), takeUntilDestroyed(this.destroyRef))
       .subscribe((value: boolean) => this.uiAuthSave(value))
 
     // Convert seconds to days, hours, minutes
@@ -677,168 +674,197 @@ export class SettingsComponent implements OnInit {
     const hours = Math.floor((sessionTimeoutSeconds % 86400) / 3600)
     const minutes = Math.floor((sessionTimeoutSeconds % 3600) / 60)
 
-    this.uiSessionTimeoutDaysFormControl.patchValue(days)
-    this.uiSessionTimeoutHoursFormControl.patchValue(hours)
-    this.uiSessionTimeoutMinutesFormControl.patchValue(minutes)
+    this.uiSessionTimeoutDaysFormControl.patchValue(days, { emitEvent: false })
+    this.uiSessionTimeoutHoursFormControl.patchValue(hours, { emitEvent: false })
+    this.uiSessionTimeoutMinutesFormControl.patchValue(minutes, { emitEvent: false })
 
     this.uiSessionTimeoutDaysFormControl.valueChanges
-      .pipe(debounceTime(750))
+      .pipe(debounceTime(750), takeUntilDestroyed(this.destroyRef))
       .subscribe(() => this.uiSessionTimeoutSaveFromFields())
 
     this.uiSessionTimeoutHoursFormControl.valueChanges
-      .pipe(debounceTime(750))
+      .pipe(debounceTime(750), takeUntilDestroyed(this.destroyRef))
       .subscribe(() => this.uiSessionTimeoutSaveFromFields())
 
     this.uiSessionTimeoutMinutesFormControl.valueChanges
-      .pipe(debounceTime(750))
+      .pipe(debounceTime(750), takeUntilDestroyed(this.destroyRef))
       .subscribe(() => this.uiSessionTimeoutSaveFromFields())
 
-    this.uiSessionTimeoutInactivityBasedFormControl.patchValue(this.$settings.sessionTimeoutInactivityBased || false)
+    this.uiSessionTimeoutInactivityBasedFormControl.patchValue(this.$settings.sessionTimeoutInactivityBased || false, { emitEvent: false })
     this.uiSessionTimeoutInactivityBasedFormControl.valueChanges
-      .pipe(debounceTime(750))
+      .pipe(debounceTime(750), takeUntilDestroyed(this.destroyRef))
       .subscribe((value: boolean) => this.uiSessionTimeoutInactivityBasedSave(value))
 
-    this.uiSslKeyFormControl.patchValue(this.$settings.env.ssl?.key || '')
+    this.uiSslKeyFormControl.patchValue(this.$settings.env.ssl?.key || '', { emitEvent: false })
     this.uiSslKeyFormControl.valueChanges
-      .pipe(debounceTime(1500))
+      .pipe(debounceTime(1500), takeUntilDestroyed(this.destroyRef))
       .subscribe((value: string) => this.uiSslKeySave(value))
 
-    this.uiSslCertFormControl.patchValue(this.$settings.env.ssl?.cert || '')
+    this.uiSslCertFormControl.patchValue(this.$settings.env.ssl?.cert || '', { emitEvent: false })
     this.uiSslCertFormControl.valueChanges
-      .pipe(debounceTime(1500))
+      .pipe(debounceTime(1500), takeUntilDestroyed(this.destroyRef))
       .subscribe((value: string) => this.uiSslCertSave(value))
 
-    this.uiSslPfxFormControl.patchValue(this.$settings.env.ssl?.pfx || '')
+    this.uiSslPfxFormControl.patchValue(this.$settings.env.ssl?.pfx || '', { emitEvent: false })
     this.uiSslPfxFormControl.valueChanges
-      .pipe(debounceTime(1500))
+      .pipe(debounceTime(1500), takeUntilDestroyed(this.destroyRef))
       .subscribe((value: string) => this.uiSslPfxSave(value))
 
-    this.uiSslPassphraseFormControl.patchValue(this.$settings.env.ssl?.passphrase || '')
+    this.uiSslPassphraseFormControl.patchValue(this.$settings.env.ssl?.passphrase || '', { emitEvent: false })
     this.uiSslPassphraseFormControl.valueChanges
-      .pipe(debounceTime(1500))
+      .pipe(debounceTime(1500), takeUntilDestroyed(this.destroyRef))
       .subscribe((value: string) => this.uiSslPassphraseSave(value))
 
     this.uiSslSelfSignedHostnamesFormControl.patchValue(
       this.$settings.env.ssl?.selfSignedHostnames?.join(', ') || 'localhost, 127.0.0.1',
+      { emitEvent: false },
     )
     this.uiSslSelfSignedHostnamesFormControl.valueChanges
-      .pipe(debounceTime(1500))
+      .pipe(debounceTime(1500), takeUntilDestroyed(this.destroyRef))
       .subscribe((value: string) => this.uiSslSelfSignedHostnamesSave(value))
 
     this.uiSslTypeFormControl.patchValue(
       this.$settings.env.ssl?.selfSigned
         ? 'selfsigned'
-        : this.uiSslKeyFormControl.value || this.uiSslCertFormControl.value
+        : this.$settings.env.ssl?.key || this.$settings.env.ssl?.cert
           ? 'keycert'
-          : (this.uiSslPfxFormControl.value || this.uiSslPassphraseFormControl.value) ? 'pfx' : 'off',
+          : (this.$settings.env.ssl?.pfx || this.$settings.env.ssl?.passphrase) ? 'pfx' : 'off',
+      { emitEvent: false },
     )
     this.uiSslTypeFormControl.valueChanges
-      .pipe(debounceTime(750))
+      .pipe(debounceTime(750), takeUntilDestroyed(this.destroyRef))
       .subscribe((value: string) => this.uiSslTypeSave(value))
 
-    this.uiHostFormControl.patchValue(this.$settings.host || '')
+    this.uiHostFormControl.patchValue(this.$settings.host || '', { emitEvent: false })
     this.uiHostFormControl.valueChanges
-      .pipe(debounceTime(1500))
+      .pipe(debounceTime(1500), takeUntilDestroyed(this.destroyRef))
       .subscribe((value: string) => this.uiHostSave(value))
 
-    this.uiProxyHostFormControl.patchValue(this.$settings.proxyHost || '')
+    this.uiProxyHostFormControl.patchValue(this.$settings.proxyHost || '', { emitEvent: false })
     this.uiProxyHostFormControl.valueChanges
-      .pipe(debounceTime(1500))
+      .pipe(debounceTime(1500), takeUntilDestroyed(this.destroyRef))
       .subscribe((value: string) => this.uiProxyHostSave(value))
 
-    this.hbPackageFormControl.patchValue(this.$settings.env.homebridgePackagePath || '')
+    this.hbPackageFormControl.patchValue(this.$settings.env.homebridgePackagePath || '', { emitEvent: false })
     this.hbPackageFormControl.valueChanges
-      .pipe(debounceTime(1500))
+      .pipe(debounceTime(1500), takeUntilDestroyed(this.destroyRef))
       .subscribe((value: string) => this.hbPackageSave(value))
 
-    this.uiMetricsFormControl.patchValue(!this.$settings.env.disableServerMetricsMonitoring)
+    this.uiMetricsFormControl.patchValue(!this.$settings.env.disableServerMetricsMonitoring, { emitEvent: false })
     this.uiMetricsFormControl.valueChanges
-      .pipe(debounceTime(750))
+      .pipe(debounceTime(750), takeUntilDestroyed(this.destroyRef))
       .subscribe((value: boolean) => this.uiMetricsSave(value))
 
-    this.enableMdnsAdvertiseFormControl.patchValue(this.$settings.env.enableMdnsAdvertise || false)
+    this.enableMdnsAdvertiseFormControl.patchValue(this.$settings.env.enableMdnsAdvertise || false, { emitEvent: false })
     this.enableMdnsAdvertiseFormControl.valueChanges
-      .pipe(debounceTime(750))
+      .pipe(debounceTime(750), takeUntilDestroyed(this.destroyRef))
       .subscribe((value: boolean) => this.enableMdnsAdvertiseSave(value))
 
-    this.uiAccDebugFormControl.patchValue(this.$settings.env.accessoryControl?.debug)
+    this.uiAccDebugFormControl.patchValue(this.$settings.env.accessoryControl?.debug, { emitEvent: false })
     this.uiAccDebugFormControl.valueChanges
-      .pipe(debounceTime(750))
+      .pipe(debounceTime(750), takeUntilDestroyed(this.destroyRef))
       .subscribe((value: boolean) => this.uiAccDebugSave(value))
 
-    this.uiTempFileFormControl.patchValue(this.$settings.env.temp)
+    this.uiTempFileFormControl.patchValue(this.$settings.env.temp, { emitEvent: false })
     this.uiTempFileFormControl.valueChanges
-      .pipe(debounceTime(1500))
+      .pipe(debounceTime(1500), takeUntilDestroyed(this.destroyRef))
       .subscribe((value: string) => this.uiTempFileSave(value))
 
-    this.hbLinuxShutdownFormControl.patchValue(this.$settings.env.linux?.shutdown)
+    this.hbLinuxShutdownFormControl.patchValue(this.$settings.env.linux?.shutdown, { emitEvent: false })
     this.hbLinuxShutdownFormControl.valueChanges
-      .pipe(debounceTime(1500))
+      .pipe(debounceTime(1500), takeUntilDestroyed(this.destroyRef))
       .subscribe((value: string) => this.hbLinuxShutdownSave(value))
 
-    this.hbLinuxRestartFormControl.patchValue(this.$settings.env.linux?.restart)
+    this.hbLinuxRestartFormControl.patchValue(this.$settings.env.linux?.restart, { emitEvent: false })
     this.hbLinuxRestartFormControl.valueChanges
-      .pipe(debounceTime(1500))
+      .pipe(debounceTime(1500), takeUntilDestroyed(this.destroyRef))
       .subscribe((value: string) => this.hbLinuxRestartSave(value))
 
-    this.scheduledRestartCronFormControl.patchValue(this.$settings.env.scheduledRestartCron || '')
+    this.scheduledRestartCronFormControl.patchValue(this.$settings.env.scheduledRestartCron || '', { emitEvent: false })
     this.scheduledRestartCronFormControl.valueChanges
-      .pipe(debounceTime(1500))
+      .pipe(debounceTime(1500), takeUntilDestroyed(this.destroyRef))
       .subscribe((value: string) => this.scheduledRestartCronSave(value))
 
     await this.initMatterSettings()
 
-    this.loading = false
+    this.loading.set(false)
   }
 
-  public openBackupModal() {
+  public openBackupModal(): void {
     this.$modal.open(BackupComponent, {
       size: 'lg',
       backdrop: 'static',
     })
   }
 
-  public openConfigBackup() {
+  public openConfigBackup(): void {
     // Go to /config?action=restore
-    void this.$router.navigate(['/config'], { queryParams: { action: 'restore' } })
+    void this.$router.navigate(['/config'], {
+      queryParams: { action: 'restore' },
+    })
   }
 
-  public openWallpaperModal() {
+  public openWallpaperModal(): void {
     this.$modal.open(WallpaperComponent, {
       size: 'lg',
       backdrop: 'static',
     })
   }
 
-  public resetHomebridgeState() {
+  public async openSslModal(): Promise<void> {
+    const modalRef = this.$modal.open(SslSettingsModalComponent, {
+      size: 'lg',
+      backdrop: 'static',
+    })
+
+    try {
+      // Modal returns the selected mode when saved successfully
+      const newSslType = await modalRef.result
+      // Update form control without emitting events, then manually trigger change detection
+      this.uiSslTypeFormControl.patchValue(newSslType, { emitEvent: false })
+      this.cdr.detectChanges()
+      // Show the global restart toast since SSL changes require a restart
+      this.showRestartToast()
+    } catch (error) {
+      // Modal was dismissed without saving, do nothing
+    }
+  }
+
+  public resetHomebridgeState(): void {
     this.$modal.open(ResetAllBridgesComponent, {
       size: 'lg',
       backdrop: 'static',
     })
   }
 
-  public unpairAccessory() {
+  public unpairAccessory(): void {
     this.$modal.open(ResetIndividualBridgesComponent, {
       size: 'lg',
       backdrop: 'static',
     })
   }
 
-  public removeAllCachedAccessories() {
+  public removeAllCachedAccessories(): void {
     this.$modal.open(RemoveAllAccessoriesComponent, {
       size: 'lg',
       backdrop: 'static',
     })
   }
 
-  public async accessoryUiControl() {
+  public async accessoryUiControl(): Promise<void> {
     try {
+      const injector = createEnvironmentInjector([{
+        provide: ACCESSORY_CONTROL_LISTS_MODAL_DATA,
+        useValue: {
+          existingBlacklist: this.$settings.env.accessoryControl?.instanceBlacklist || [],
+        },
+      }], this.injector)
+
       const ref = this.$modal.open(AccessoryControlListsComponent, {
         size: 'lg',
         backdrop: 'static',
+        injector,
       })
-
-      ref.componentInstance.existingBlacklist = this.$settings.env.accessoryControl?.instanceBlacklist || []
 
       await ref.result
       this.showRestartToast()
@@ -850,33 +876,47 @@ export class SettingsComponent implements OnInit {
     }
   }
 
-  public removeSingleCachedAccessories() {
+  public removeSingleCachedAccessories(): void {
+    const injector = createEnvironmentInjector([{
+      provide: REMOVE_INDIVIDUAL_ACCESSORIES_MODAL_DATA,
+      useValue: {
+        selectedBridge: '',
+      },
+    }], this.injector)
+
     this.$modal.open(RemoveIndividualAccessoriesComponent, {
       size: 'lg',
       backdrop: 'static',
+      injector,
     })
   }
 
-  public removeBridgeAccessories() {
+  public removeBridgeAccessories(): void {
     this.$modal.open(RemoveBridgeAccessoriesComponent, {
       size: 'lg',
       backdrop: 'static',
     })
   }
 
-  public async selectNetworkInterfaces() {
+  public async selectNetworkInterfaces(): Promise<void> {
+    const injector = createEnvironmentInjector([{
+      provide: NETWORK_INTERFACES_MODAL_DATA,
+      useValue: {
+        adaptersAvailable: this.adaptersAvailable(),
+        adaptersSelected: this.adaptersSelected(),
+      },
+    }], this.injector)
+
     const ref = this.$modal.open(SelectNetworkInterfacesComponent, {
       size: 'lg',
       backdrop: 'static',
+      injector,
     })
-
-    ref.componentInstance.adaptersAvailable = this.adaptersAvailable
-    ref.componentInstance.adaptersSelected = this.adaptersSelected
 
     try {
       const adapters: string[] = await ref.result
       this.buildBridgeNetworkAdapterList(adapters)
-      await firstValueFrom(this.$api.put('/server/network-interfaces/bridge', { adapters }))
+      await this.$api.put('/server/network-interfaces/bridge', { adapters })
       this.showRestartToast()
     } catch (error) {
       if (error !== 'Dismiss') {
@@ -886,37 +926,37 @@ export class SettingsComponent implements OnInit {
     }
   }
 
-  public toggleSection(section: string) {
-    this.showFields[section] = !this.showFields[section]
+  public toggleSection(section: string): void {
+    this.showFields.set({ ...this.showFields(), [section]: !this.showFields()[section] })
   }
 
-  private async initStartupSettings() {
+  private async initStartupSettings(): Promise<void> {
     try {
-      const startupSettingsData = await firstValueFrom(this.$api.get('/platform-tools/hb-service/homebridge-startup-settings'))
+      const startupSettingsData = await this.$api.get('/platform-tools/hb-service/homebridge-startup-settings')
 
-      this.hbDebugFormControl.patchValue(startupSettingsData.HOMEBRIDGE_DEBUG)
+      this.hbDebugFormControl.patchValue(startupSettingsData.HOMEBRIDGE_DEBUG, { emitEvent: false })
       this.hbDebugFormControl.valueChanges
-        .pipe(debounceTime(750))
+        .pipe(debounceTime(750), takeUntilDestroyed(this.destroyRef))
         .subscribe((value: boolean) => this.hbDebugSave(value))
 
-      this.hbInsecureFormControl.patchValue(startupSettingsData.HOMEBRIDGE_INSECURE)
+      this.hbInsecureFormControl.patchValue(startupSettingsData.HOMEBRIDGE_INSECURE, { emitEvent: false })
       this.hbInsecureFormControl.valueChanges
-        .pipe(debounceTime(750))
+        .pipe(debounceTime(750), takeUntilDestroyed(this.destroyRef))
         .subscribe((value: boolean) => this.hbInsecureSave(value))
 
-      this.hbKeepFormControl.patchValue(startupSettingsData.HOMEBRIDGE_KEEP_ORPHANS)
+      this.hbKeepFormControl.patchValue(startupSettingsData.HOMEBRIDGE_KEEP_ORPHANS, { emitEvent: false })
       this.hbKeepFormControl.valueChanges
-        .pipe(debounceTime(750))
+        .pipe(debounceTime(750), takeUntilDestroyed(this.destroyRef))
         .subscribe((value: boolean) => this.hbKeepSave(value))
 
-      this.hbEnvDebugFormControl.patchValue(startupSettingsData.ENV_DEBUG)
+      this.hbEnvDebugFormControl.patchValue(startupSettingsData.ENV_DEBUG, { emitEvent: false })
       this.hbEnvDebugFormControl.valueChanges
-        .pipe(debounceTime(1500))
+        .pipe(debounceTime(1500), takeUntilDestroyed(this.destroyRef))
         .subscribe((value: string) => this.hbEnvDebugSave(value))
 
-      this.hbEnvNodeFormControl.patchValue(startupSettingsData.ENV_NODE_OPTIONS)
+      this.hbEnvNodeFormControl.patchValue(startupSettingsData.ENV_NODE_OPTIONS, { emitEvent: false })
       this.hbEnvNodeFormControl.valueChanges
-        .pipe(debounceTime(1500))
+        .pipe(debounceTime(1500), takeUntilDestroyed(this.destroyRef))
         .subscribe((value: string) => this.hbEnvNodeSave(value))
     } catch (error) {
       console.error(error)
@@ -924,7 +964,7 @@ export class SettingsComponent implements OnInit {
     }
   }
 
-  private async initNetworkingOptions() {
+  private async initNetworkingOptions(): Promise<void> {
     try {
       await this.getNetworkSettings()
       const onLinux = (
@@ -934,8 +974,8 @@ export class SettingsComponent implements OnInit {
         || this.$settings.env.runningInPackageMode
       )
       if (onLinux) {
-        this.showAvahiMdnsOption = true
-        this.showResolvedMdnsOption = true
+        this.showAvahiMdnsOption.set(true)
+        this.showResolvedMdnsOption.set(true)
       }
     } catch (error) {
       console.error(error)
@@ -943,92 +983,92 @@ export class SettingsComponent implements OnInit {
     }
   }
 
-  private async getNetworkSettings() {
-    return Promise.all([
-      firstValueFrom(this.$api.get('/server/network-interfaces/system')),
-      firstValueFrom(this.$api.get('/server/network-interfaces/bridge')),
-      firstValueFrom(this.$api.get('/server/mdns-advertiser')),
-      firstValueFrom(this.$api.get('/server/port')),
-      firstValueFrom(this.$api.get('/server/ports')),
-    ]).then(([system, adapters, mdnsAdvertiser, port, ports]: [NetworkAdapterAvailable[], string[], { advertiser: string }, { port: number }, { start?: number, end?: number }]) => {
-      this.adaptersAvailable = system
-      this.buildBridgeNetworkAdapterList(adapters)
+  private async getNetworkSettings(): Promise<void> {
+    const [system, adapters, mdnsAdvertiser, port, ports] = await Promise.all([
+      this.$api.get<NetworkAdapterAvailable[]>('/server/network-interfaces/system'),
+      this.$api.get<string[]>('/server/network-interfaces/bridge'),
+      this.$api.get<{ advertiser: string }>('/server/mdns-advertiser'),
+      this.$api.get<{ port: number }>('/server/port'),
+      this.$api.get<{ start?: number, end?: number }>('/server/ports'),
+    ])
 
-      this.hbMDnsFormControl.patchValue(mdnsAdvertiser.advertiser)
-      this.hbMDnsFormControl.valueChanges
-        .pipe(debounceTime(750))
-        .subscribe((value: string) => this.hbMDnsSave(value))
+    this.adaptersAvailable.set(system)
+    this.buildBridgeNetworkAdapterList(adapters)
 
-      this.hbPortFormControl.patchValue(port.port)
-      this.hbPortFormControl.valueChanges
-        .pipe(debounceTime(1500))
-        .subscribe((port: number) => this.hbPortSave(port))
+    this.hbMDnsFormControl.patchValue(mdnsAdvertiser.advertiser, { emitEvent: false })
+    this.hbMDnsFormControl.valueChanges
+      .pipe(debounceTime(750), takeUntilDestroyed(this.destroyRef))
+      .subscribe((value: string) => this.hbMDnsSave(value))
 
-      this.hbStartPortFormControl.patchValue(ports.start)
-      this.hbStartPortFormControl.valueChanges
-        .pipe(debounceTime(1500))
-        .subscribe((port: number) => this.hbStartPortSave(port))
+    this.hbPortFormControl.patchValue(port.port, { emitEvent: false })
+    this.hbPortFormControl.valueChanges
+      .pipe(debounceTime(1500), takeUntilDestroyed(this.destroyRef))
+      .subscribe((port: number) => this.hbPortSave(port))
 
-      this.hbEndPortFormControl.patchValue(ports.end)
-      this.hbEndPortFormControl.valueChanges
-        .pipe(debounceTime(1500))
-        .subscribe((port: number) => this.hbEndPortSave(port))
-    })
+    this.hbStartPortFormControl.patchValue(ports.start, { emitEvent: false })
+    this.hbStartPortFormControl.valueChanges
+      .pipe(debounceTime(1500), takeUntilDestroyed(this.destroyRef))
+      .subscribe((port: number) => this.hbStartPortSave(port))
+
+    this.hbEndPortFormControl.patchValue(ports.end, { emitEvent: false })
+    this.hbEndPortFormControl.valueChanges
+      .pipe(debounceTime(1500), takeUntilDestroyed(this.destroyRef))
+      .subscribe((port: number) => this.hbEndPortSave(port))
   }
 
-  private async saveUiSettingChange(key: string, value: any) {
+  private async saveUiSettingChange(key: string, value: unknown): Promise<void> {
     // Save the new property to the config file
     try {
-      await firstValueFrom(this.$api.put('/config-editor/ui', { key, value }))
+      await this.$api.put('/config-editor/ui', { key, value })
     } catch (error) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
     }
   }
 
-  private async hbNameSave(value: string) {
+  private async hbNameSave(value: string): Promise<void> {
     // https://github.com/homebridge/HAP-NodeJS/blob/ee41309fd9eac383cdcace39f4f6f6a3d54396f3/src/lib/util/checkName.ts#L12
     if (!value || !(/^[\p{L}\p{N}][\p{L}\p{N} ']*[\p{L}\p{N}]$/u).test(value)) {
-      this.hbNameIsInvalid = true
+      this.hbNameIsInvalid.set(true)
       return
     }
 
     try {
-      this.hbNameIsSaving = true
-      await firstValueFrom(this.$api.put('/server/name', { name: value }))
+      this.hbNameIsSaving.set(true)
+      await this.$api.put('/server/name', { name: value })
       this.$settings.setEnvItem('homebridgeInstanceName', value)
-      this.hbNameIsInvalid = false
+      this.hbNameIsInvalid.set(false)
       setTimeout(() => {
-        this.hbNameIsSaving = false
+        this.hbNameIsSaving.set(false)
       }, 1000)
     } catch (error) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
-      this.hbNameIsSaving = false
+      this.hbNameIsSaving.set(false)
     }
   }
 
-  private async uiLangSave(value: string) {
+  private async uiLangSave(value: string): Promise<void> {
     try {
-      this.uiLangIsSaving = true
+      this.uiLangIsSaving.set(true)
       this.$settings.setLang(value)
       await this.saveUiSettingChange('lang', value)
       setTimeout(() => {
-        this.uiLangIsSaving = false
+        this.uiLangIsSaving.set(false)
       }, 1000)
     } catch (error) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
-      this.uiLangIsSaving = false
+      this.uiLangIsSaving.set(false)
     }
   }
 
-  private async uiThemeSave(value: string) {
+  private async uiThemeSave(value: string): Promise<void> {
     try {
-      this.uiThemeIsSaving = true
+      this.uiThemeIsSaving.set(true)
 
       // Start fade-out animation
-      this.isThemeTransitioning = true
+      this.isThemeTransitioning.set(true)
 
       // Wait for fade-out to complete
       await new Promise(resolve => setTimeout(resolve, 250))
@@ -1039,25 +1079,25 @@ export class SettingsComponent implements OnInit {
 
       // Wait for background transition to start, then fade content back in
       await new Promise(resolve => setTimeout(resolve, 100))
-      this.isThemeTransitioning = false
+      this.isThemeTransitioning.set(false)
 
       setTimeout(() => {
-        this.uiThemeIsSaving = false
+        this.uiThemeIsSaving.set(false)
       }, 1000)
     } catch (error) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
-      this.uiThemeIsSaving = false
-      this.isThemeTransitioning = false
+      this.uiThemeIsSaving.set(false)
+      this.isThemeTransitioning.set(false)
     }
   }
 
-  private async uiLightSave(value: 'auto' | 'light' | 'dark') {
+  private async uiLightSave(value: 'auto' | 'light' | 'dark'): Promise<void> {
     try {
-      this.uiLightIsSaving = true
+      this.uiLightIsSaving.set(true)
 
       // Start fade-out animation
-      this.isThemeTransitioning = true
+      this.isThemeTransitioning.set(true)
 
       // Wait for fade-out to complete
       await new Promise(resolve => setTimeout(resolve, 250))
@@ -1068,512 +1108,473 @@ export class SettingsComponent implements OnInit {
 
       // Wait for background transition to start, then fade content back in
       await new Promise(resolve => setTimeout(resolve, 100))
-      this.isThemeTransitioning = false
+      this.isThemeTransitioning.set(false)
 
       setTimeout(() => {
-        this.uiLightIsSaving = false
+        this.uiLightIsSaving.set(false)
       }, 1000)
     } catch (error) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
-      this.uiLightIsSaving = false
-      this.isThemeTransitioning = false
+      this.uiLightIsSaving.set(false)
+      this.isThemeTransitioning.set(false)
     }
   }
 
-  private async uiMenuSave(value: 'default' | 'freeze') {
+  private async uiMenuSave(value: 'default' | 'freeze'): Promise<void> {
     try {
-      this.uiMenuIsSaving = true
+      this.uiMenuIsSaving.set(true)
       this.$settings.setMenuMode(value)
       await this.saveUiSettingChange('menuMode', value)
       window.location.reload()
     } catch (error) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
-      this.uiMenuIsSaving = false
+      this.uiMenuIsSaving.set(false)
     }
   }
 
-  private async uiTempSave(value: string) {
+  private async uiTempSave(value: string): Promise<void> {
     try {
-      this.uiTempIsSaving = true
+      this.uiTempIsSaving.set(true)
       this.$settings.setEnvItem('temperatureUnits', value)
       await this.saveUiSettingChange('tempUnits', value)
       setTimeout(() => {
-        this.uiTempIsSaving = false
+        this.uiTempIsSaving.set(false)
       }, 1000)
     } catch (error) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
-      this.uiTempIsSaving = false
+      this.uiTempIsSaving.set(false)
     }
   }
 
-  private async uiTerminalPersistenceSave(value: boolean) {
+  private async uiTerminalPersistenceSave(value: boolean): Promise<void> {
     // If turning off persistence and there's an active session, show confirmation
     if (!value && this.$terminal.hasActiveSession()) {
+      const injector = createEnvironmentInjector([{
+        provide: CONFIRM_MODAL_DATA,
+        useValue: {
+          title: this.$translate.instant('settings.terminal.persistence_confirm_title'),
+          message: this.$translate.instant('settings.terminal.persistence_confirm_message'),
+          message2: this.$translate.instant('common.phrases.are_you_sure'),
+          confirmButtonLabel: this.$translate.instant('form.button_continue'),
+          confirmButtonClass: 'btn-primary',
+          faIconClass: 'fas fa-exclamation-triangle text-warning',
+        },
+      }], this.injector)
+
       const ref = this.$modal.open(ConfirmComponent, {
         size: 'lg',
         backdrop: 'static',
+        injector,
       })
-
-      ref.componentInstance.title = this.$translate.instant('settings.terminal.persistence_confirm_title')
-      ref.componentInstance.message = this.$translate.instant('settings.terminal.persistence_confirm_message')
-      ref.componentInstance.message2 = this.$translate.instant('common.phrases.are_you_sure')
-      ref.componentInstance.confirmButtonLabel = this.$translate.instant('form.button_continue')
-      ref.componentInstance.confirmButtonClass = 'btn-primary'
-      ref.componentInstance.faIconClass = 'fas fa-exclamation-triangle text-warning'
 
       try {
         // An error will throw if the user cancels the modal
         await ref.result
       } catch {
-        // User cancelled, revert the form control value
+        // User canceled, revert the form control value
         this.uiTerminalPersistenceFormControl.patchValue(true, { emitEvent: false })
         return
       }
     }
 
     try {
-      this.uiTerminalPersistenceIsSaving = true
+      this.uiTerminalPersistenceIsSaving.set(true)
 
       // If persistence is being turned off, clean up any existing session completely
       if (!value) {
-        this.$terminal.destroyPersistentSession()
+        void this.$terminal.destroyPersistentSession()
       }
 
       this.$settings.setEnvItem('terminal.persistence', value)
       await this.saveUiSettingChange('terminal.persistence', value)
       setTimeout(() => {
-        this.uiTerminalPersistenceIsSaving = false
+        this.uiTerminalPersistenceIsSaving.set(false)
       }, 1000)
     } catch (error) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
-      this.uiTerminalPersistenceIsSaving = false
+      this.uiTerminalPersistenceIsSaving.set(false)
     }
   }
 
-  private async uiTerminalHideWarningSave(value: boolean) {
+  private async uiTerminalHideWarningSave(value: boolean): Promise<void> {
     try {
-      this.uiTerminalHideWarningIsSaving = true
+      this.uiTerminalHideWarningIsSaving.set(true)
       this.$settings.setEnvItem('terminal.hideWarning', value)
       await this.saveUiSettingChange('terminal.hideWarning', value)
       setTimeout(() => {
-        this.uiTerminalHideWarningIsSaving = false
+        this.uiTerminalHideWarningIsSaving.set(false)
       }, 1000)
     } catch (error) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
-      this.uiTerminalHideWarningIsSaving = false
+      this.uiTerminalHideWarningIsSaving.set(false)
     }
   }
 
-  private async uiTerminalBufferSizeSave(value: number) {
+  private async uiTerminalBufferSizeSave(value: number): Promise<void> {
     if (value && (typeof value !== 'number' || value < 0 || Number.isInteger(value) === false)) {
-      this.uiTerminalBufferSizeIsInvalid = true
+      this.uiTerminalBufferSizeIsInvalid.set(true)
       return
     }
 
     try {
-      this.uiTerminalBufferSizeIsSaving = true
+      this.uiTerminalBufferSizeIsSaving.set(true)
       this.$settings.setEnvItem('terminal.bufferSize', value)
       await this.saveUiSettingChange('terminal.bufferSize', value)
-      this.uiTerminalBufferSizeIsInvalid = false
+      this.uiTerminalBufferSizeIsInvalid.set(false)
       setTimeout(() => {
-        this.uiTerminalBufferSizeIsSaving = false
+        this.uiTerminalBufferSizeIsSaving.set(false)
       }, 1000)
     } catch (error) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
-      this.uiTerminalBufferSizeIsSaving = false
+      this.uiTerminalBufferSizeIsSaving.set(false)
     }
   }
 
-  private async uiTerminalFontSizeSave(value: number) {
+  private async uiTerminalFontSizeSave(value: number): Promise<void> {
     try {
-      this.uiTerminalFontSizeIsSaving = true
+      this.uiTerminalFontSizeIsSaving.set(true)
       this.$settings.setEnvItem('terminal.fontSize', value)
       await this.saveUiSettingChange('terminal.fontSize', value)
       setTimeout(() => {
-        this.uiTerminalFontSizeIsSaving = false
+        this.uiTerminalFontSizeIsSaving.set(false)
       }, 1000)
-
-      // Emit terminal settings change for live updates
-      this.$settings.terminalSettingsChanged.next({
-        fontSize: this.$settings.env.terminal?.fontSize,
-        fontWeight: this.$settings.env.terminal?.fontWeight,
-        lightingMode: this.$settings.getEffectiveTerminalLightingMode(),
-      })
     } catch (error) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
-      this.uiTerminalFontSizeIsSaving = false
+      this.uiTerminalFontSizeIsSaving.set(false)
     }
   }
 
-  private async uiTerminalFontWeightSave(value: string) {
+  private async uiTerminalFontWeightSave(value: string): Promise<void> {
     try {
-      this.uiTerminalFontWeightIsSaving = true
+      this.uiTerminalFontWeightIsSaving.set(true)
       this.$settings.setEnvItem('terminal.fontWeight', value)
       await this.saveUiSettingChange('terminal.fontWeight', value)
       setTimeout(() => {
-        this.uiTerminalFontWeightIsSaving = false
+        this.uiTerminalFontWeightIsSaving.set(false)
       }, 1000)
-
-      // Emit terminal settings change for live updates
-      this.$settings.terminalSettingsChanged.next({
-        fontSize: this.$settings.env.terminal?.fontSize,
-        fontWeight: this.$settings.env.terminal?.fontWeight,
-        lightingMode: this.$settings.getEffectiveTerminalLightingMode(),
-      })
     } catch (error) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
-      this.uiTerminalFontWeightIsSaving = false
+      this.uiTerminalFontWeightIsSaving.set(false)
     }
   }
 
-  private async uiTerminalLightingModeSave(value: string) {
+  private async uiTerminalLightingModeSave(value: string): Promise<void> {
     try {
-      this.uiTerminalLightingModeIsSaving = true
-
-      // Prevent light theme in dark mode
-      const finalValue = (value === 'light' && this.$settings.actualLightingMode === 'dark') ? 'dark' : value
-      if (finalValue !== value) {
-        // Reset form control if value was changed
-        this.uiTerminalLightingModeFormControl.patchValue(finalValue, { emitEvent: false })
-      }
-      this.$settings.setEnvItem('terminal.lightingMode', finalValue)
-      await this.saveUiSettingChange('terminal.lightingMode', finalValue)
+      this.uiTerminalLightingModeIsSaving.set(true)
+      this.$settings.setEnvItem('terminal.lightingMode', value)
+      await this.saveUiSettingChange('terminal.lightingMode', value)
       setTimeout(() => {
-        this.uiTerminalLightingModeIsSaving = false
+        this.uiTerminalLightingModeIsSaving.set(false)
       }, 1000)
-
-      // Emit terminal settings change for live updates
-      this.$settings.terminalSettingsChanged.next({
-        fontSize: this.$settings.env.terminal?.fontSize,
-        fontWeight: this.$settings.env.terminal?.fontWeight,
-        lightingMode: this.$settings.getEffectiveTerminalLightingMode(),
-      })
     } catch (error) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
-      this.uiTerminalLightingModeIsSaving = false
+      this.uiTerminalLightingModeIsSaving.set(false)
     }
   }
 
-  private async deleteInvalidSetting(key: string) {
+  private async hbDebugSave(value: boolean): Promise<void> {
     try {
-      await firstValueFrom(this.$api.delete(`/config-editor/ui/${key}`))
-    } catch (error) {
-      console.error(`Failed to delete invalid setting ${key}:`, error)
-    }
-  }
-
-  /**
-   * Reset terminal lighting mode to dark (used when invalid value or light theme in dark mode)
-   */
-  private async resetTerminalLightingModeToDark(): Promise<void> {
-    this.$settings.setEnvItem('terminal.lightingMode', 'dark')
-    await this.deleteInvalidSetting('terminal.lightingMode')
-    await this.saveUiSettingChange('terminal.lightingMode', 'dark')
-  }
-
-  private async hbDebugSave(value: boolean) {
-    try {
-      this.hbDebugIsSaving = true
-      await firstValueFrom(this.$api.put('/platform-tools/hb-service/homebridge-startup-settings', {
+      this.hbDebugIsSaving.set(true)
+      await this.$api.put('/platform-tools/hb-service/homebridge-startup-settings', {
         HOMEBRIDGE_DEBUG: value,
         HOMEBRIDGE_KEEP_ORPHANS: this.hbKeepFormControl.value,
         HOMEBRIDGE_INSECURE: this.hbInsecureFormControl.value,
         ENV_DEBUG: this.hbEnvDebugFormControl.value,
         ENV_NODE_OPTIONS: this.hbEnvNodeFormControl.value,
-      }))
+      })
       setTimeout(() => {
-        this.hbDebugIsSaving = false
-        this.$api.put('/platform-tools/hb-service/set-full-service-restart-flag', {}).subscribe({
-          next: () => this.showRestartToast(),
-          error: (error) => {
+        this.hbDebugIsSaving.set(false)
+        this.$api.put('/platform-tools/hb-service/set-full-service-restart-flag', {})
+          .catch(error => console.error(error))
+          .finally(() => this.showRestartToast())
+          .catch((error) => {
             console.error(error)
             this.showRestartToast()
-          },
-        })
+          })
       }, 1000)
     } catch (error) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
-      this.hbDebugIsSaving = false
+      this.hbDebugIsSaving.set(false)
     }
   }
 
-  private async hbInsecureSave(value: boolean) {
+  private async hbInsecureSave(value: boolean): Promise<void> {
     try {
-      this.hbInsecureIsSaving = true
-      await firstValueFrom(this.$api.put('/platform-tools/hb-service/homebridge-startup-settings', {
+      this.hbInsecureIsSaving.set(true)
+      await this.$api.put('/platform-tools/hb-service/homebridge-startup-settings', {
         HOMEBRIDGE_DEBUG: this.hbDebugFormControl.value,
         HOMEBRIDGE_KEEP_ORPHANS: this.hbKeepFormControl.value,
         HOMEBRIDGE_INSECURE: value,
         ENV_DEBUG: this.hbEnvDebugFormControl.value,
         ENV_NODE_OPTIONS: this.hbEnvNodeFormControl.value,
-      }))
+      })
       setTimeout(() => {
-        this.hbInsecureIsSaving = false
-        this.$api.put('/platform-tools/hb-service/set-full-service-restart-flag', {}).subscribe({
-          next: () => this.showRestartToast(),
-          error: (error) => {
+        this.hbInsecureIsSaving.set(false)
+        this.$api.put('/platform-tools/hb-service/set-full-service-restart-flag', {})
+          .catch(error => console.error(error))
+          .finally(() => this.showRestartToast())
+          .catch((error) => {
             console.error(error)
             this.showRestartToast()
-          },
-        })
+          })
       }, 1000)
     } catch (error) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
-      this.hbInsecureIsSaving = false
+      this.hbInsecureIsSaving.set(false)
     }
   }
 
-  private async hbKeepSave(value: boolean) {
+  private async hbKeepSave(value: boolean): Promise<void> {
     try {
-      this.hbKeepIsSaving = true
-      await firstValueFrom(this.$api.put('/platform-tools/hb-service/homebridge-startup-settings', {
+      this.hbKeepIsSaving.set(true)
+      await this.$api.put('/platform-tools/hb-service/homebridge-startup-settings', {
         HOMEBRIDGE_DEBUG: this.hbDebugFormControl.value,
         HOMEBRIDGE_KEEP_ORPHANS: value,
         HOMEBRIDGE_INSECURE: this.hbInsecureFormControl.value,
         ENV_DEBUG: this.hbEnvDebugFormControl.value,
         ENV_NODE_OPTIONS: this.hbEnvNodeFormControl.value,
-      }))
+      })
       this.$settings.setKeepOrphans(value)
       setTimeout(() => {
-        this.hbKeepIsSaving = false
-        this.$api.put('/platform-tools/hb-service/set-full-service-restart-flag', {}).subscribe({
-          next: () => this.showRestartToast(),
-          error: (error) => {
+        this.hbKeepIsSaving.set(false)
+        this.$api.put('/platform-tools/hb-service/set-full-service-restart-flag', {})
+          .catch(error => console.error(error))
+          .finally(() => this.showRestartToast())
+          .catch((error) => {
             console.error(error)
             this.showRestartToast()
-          },
-        })
+          })
       }, 1000)
     } catch (error) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
-      this.hbKeepIsSaving = false
+      this.hbKeepIsSaving.set(false)
     }
   }
 
-  private async hbEnvDebugSave(value: string) {
+  private async hbEnvDebugSave(value: string): Promise<void> {
     try {
-      this.hbEnvDebugIsSaving = true
-      await firstValueFrom(this.$api.put('/platform-tools/hb-service/homebridge-startup-settings', {
+      this.hbEnvDebugIsSaving.set(true)
+      await this.$api.put('/platform-tools/hb-service/homebridge-startup-settings', {
         HOMEBRIDGE_DEBUG: this.hbDebugFormControl.value,
         HOMEBRIDGE_KEEP_ORPHANS: this.hbKeepFormControl.value,
         HOMEBRIDGE_INSECURE: this.hbInsecureFormControl.value,
         ENV_DEBUG: value,
         ENV_NODE_OPTIONS: this.hbEnvNodeFormControl.value,
-      }))
+      })
       setTimeout(() => {
-        this.hbEnvDebugIsSaving = false
-        this.$api.put('/platform-tools/hb-service/set-full-service-restart-flag', {}).subscribe({
-          next: () => this.showRestartToast(),
-          error: (error) => {
+        this.hbEnvDebugIsSaving.set(false)
+        this.$api.put('/platform-tools/hb-service/set-full-service-restart-flag', {})
+          .catch(error => console.error(error))
+          .finally(() => this.showRestartToast())
+          .catch((error) => {
             console.error(error)
             this.showRestartToast()
-          },
-        })
+          })
       }, 1000)
     } catch (error) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
-      this.hbEnvDebugIsSaving = false
+      this.hbEnvDebugIsSaving.set(false)
     }
   }
 
-  private async hbEnvNodeSave(value: string) {
+  private async hbEnvNodeSave(value: string): Promise<void> {
     try {
-      this.hbEnvNodeIsSaving = true
-      await firstValueFrom(this.$api.put('/platform-tools/hb-service/homebridge-startup-settings', {
+      this.hbEnvNodeIsSaving.set(true)
+      await this.$api.put('/platform-tools/hb-service/homebridge-startup-settings', {
         HOMEBRIDGE_DEBUG: this.hbDebugFormControl.value,
         HOMEBRIDGE_KEEP_ORPHANS: this.hbKeepFormControl.value,
         HOMEBRIDGE_INSECURE: this.hbInsecureFormControl.value,
         ENV_DEBUG: this.hbEnvDebugFormControl.value,
         ENV_NODE_OPTIONS: value,
-      }))
+      })
       setTimeout(() => {
-        this.hbEnvNodeIsSaving = false
-        this.$api.put('/platform-tools/hb-service/set-full-service-restart-flag', {}).subscribe({
-          next: () => this.showRestartToast(),
-          error: (error) => {
+        this.hbEnvNodeIsSaving.set(false)
+        this.$api.put('/platform-tools/hb-service/set-full-service-restart-flag', {})
+          .catch(error => console.error(error))
+          .finally(() => this.showRestartToast())
+          .catch((error) => {
             console.error(error)
             this.showRestartToast()
-          },
-        })
+          })
       }, 1000)
     } catch (error) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
-      this.hbEnvNodeIsSaving = false
+      this.hbEnvNodeIsSaving.set(false)
     }
   }
 
-  private async hbLogSizeSave(value: number) {
+  private async hbLogSizeSave(value: number): Promise<void> {
     if (value && (typeof value !== 'number' || value < -1 || Number.isInteger(value) === false)) {
-      this.hbLogSizeIsInvalid = true
+      this.hbLogSizeIsInvalid.set(true)
       return
     }
 
     try {
-      this.hbLogSizeIsSaving = true
+      this.hbLogSizeIsSaving.set(true)
       this.$settings.setEnvItem('log.maxSize', value)
       if (!value || value === -1) {
         // If the value is -1, we set the log.maxSize to undefined
         // This will remove the setting from the config file
         await this.saveUiSettingChange('log.truncateSize', null)
-        this.hbLogTruncateIsInvalid = false
+        this.hbLogTruncateIsInvalid.set(false)
       }
       await this.saveUiSettingChange('log.maxSize', value)
-      this.hbLogSizeIsInvalid = false
+      this.hbLogSizeIsInvalid.set(false)
       setTimeout(() => {
-        this.hbLogSizeIsSaving = false
+        this.hbLogSizeIsSaving.set(false)
         this.showRestartToast()
       }, 1000)
     } catch (error) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
-      this.hbLogSizeIsSaving = false
+      this.hbLogSizeIsSaving.set(false)
     }
   }
 
-  private async hbLogTruncateSave(value: number) {
+  private async hbLogTruncateSave(value: number): Promise<void> {
     if (value && (typeof value !== 'number' || value < 0 || Number.isInteger(value) === false)) {
-      this.hbLogTruncateIsInvalid = true
+      this.hbLogTruncateIsInvalid.set(true)
       return
     }
 
     try {
-      this.hbLogTruncateIsSaving = true
+      this.hbLogTruncateIsSaving.set(true)
       this.$settings.setEnvItem('log.truncateSize', value)
       await this.saveUiSettingChange('log.truncateSize', value)
-      this.hbLogTruncateIsInvalid = false
+      this.hbLogTruncateIsInvalid.set(false)
       setTimeout(() => {
-        this.hbLogTruncateIsSaving = false
+        this.hbLogTruncateIsSaving.set(false)
         this.showRestartToast()
       }, 1000)
     } catch (error) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
-      this.hbLogTruncateIsSaving = false
+      this.hbLogTruncateIsSaving.set(false)
     }
   }
 
-  private async hbMDnsSave(value: string) {
+  private async hbMDnsSave(value: string): Promise<void> {
     try {
-      this.hbMDnsIsSaving = true
-      await firstValueFrom(this.$api.put('/server/mdns-advertiser', { advertiser: value }))
+      this.hbMDnsIsSaving.set(true)
+      await this.$api.put('/server/mdns-advertiser', { advertiser: value })
       setTimeout(() => {
-        this.hbMDnsIsSaving = false
+        this.hbMDnsIsSaving.set(false)
         this.showRestartToast()
       }, 1000)
     } catch (error) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
-      this.hbMDnsIsSaving = false
+      this.hbMDnsIsSaving.set(false)
     }
   }
 
-  private async hbPortSave(value: number) {
+  private async hbPortSave(value: number): Promise<void> {
     if (value === this.uiPortFormControl.value) {
-      this.hbPortIsInvalid = true
+      this.hbPortIsInvalid.set(true)
       return
     }
 
     try {
-      this.hbPortIsSaving = true
-      await firstValueFrom(this.$api.put('/server/port', { port: value }))
-      this.hbPortIsInvalid = false
+      this.hbPortIsSaving.set(true)
+      await this.$api.put('/server/port', { port: value })
+      this.hbPortIsInvalid.set(false)
       setTimeout(() => {
-        this.hbPortIsSaving = false
+        this.hbPortIsSaving.set(false)
         this.showRestartToast()
       }, 1000)
     } catch (error) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
-      this.hbPortIsSaving = false
+      this.hbPortIsSaving.set(false)
     }
   }
 
-  private async hbStartPortSave(value: number) {
+  private async hbStartPortSave(value: number): Promise<void> {
     try {
-      this.hbStartPortIsSaving = true
-      await firstValueFrom(this.$api.put('/server/ports', { start: value, end: this.hbEndPortFormControl.value }))
-      this.hbStartPortIsInvalid = false
+      this.hbStartPortIsSaving.set(true)
+      await this.$api.put('/server/ports', { start: value, end: this.hbEndPortFormControl.value })
+      this.hbStartPortIsInvalid.set(false)
       setTimeout(() => {
-        this.hbStartPortIsSaving = false
+        this.hbStartPortIsSaving.set(false)
         this.showRestartToast()
       }, 1000)
     } catch (error) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
-      this.hbStartPortIsSaving = false
+      this.hbStartPortIsSaving.set(false)
     }
   }
 
-  private async hbEndPortSave(value: number) {
+  private async hbEndPortSave(value: number): Promise<void> {
     try {
-      this.hbEndPortIsSaving = true
-      await firstValueFrom(this.$api.put('/server/ports', { start: this.hbStartPortFormControl.value, end: value }))
-      this.hbEndPortIsInvalid = false
+      this.hbEndPortIsSaving.set(true)
+      await this.$api.put('/server/ports', { start: this.hbStartPortFormControl.value, end: value })
+      this.hbEndPortIsInvalid.set(false)
       setTimeout(() => {
-        this.hbEndPortIsSaving = false
+        this.hbEndPortIsSaving.set(false)
         this.showRestartToast()
       }, 1000)
     } catch (error) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
-      this.hbEndPortIsSaving = false
+      this.hbEndPortIsSaving.set(false)
     }
   }
 
-  private async uiPortSave(value: number) {
+  private async uiPortSave(value: number): Promise<void> {
     if (!value || typeof value !== 'number' || value < 1025 || value > 65533 || Number.isInteger(value) === false || value === this.hbPortFormControl.value) {
-      this.uiPortIsInvalid = true
+      this.uiPortIsInvalid.set(true)
       return
     }
 
     try {
-      this.uiPortIsSaving = true
+      this.uiPortIsSaving.set(true)
       this.$settings.setEnvItem('port', value)
       await this.saveUiSettingChange('port', value)
-      this.uiPortIsInvalid = false
+      this.uiPortIsInvalid.set(false)
       setTimeout(() => {
-        this.uiPortIsSaving = false
+        this.uiPortIsSaving.set(false)
         this.showRestartToast()
       }, 1000)
     } catch (error) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
-      this.uiPortIsSaving = false
+      this.uiPortIsSaving.set(false)
     }
   }
 
-  private async uiAuthSave(value: boolean) {
+  private async uiAuthSave(value: boolean): Promise<void> {
     try {
-      this.uiAuthIsSaving = true
+      this.uiAuthIsSaving.set(true)
       this.$settings.setItem('formAuth', value)
       await this.saveUiSettingChange('auth', value ? 'form' : 'none')
       this.$notification.formAuthEnabled.next(value)
       setTimeout(() => {
-        this.uiAuthIsSaving = false
+        this.uiAuthIsSaving.set(false)
         this.showRestartToast()
       }, 1000)
     } catch (error) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
-      this.uiAuthIsSaving = false
+      this.uiAuthIsSaving.set(false)
     }
   }
 
-  private async uiSessionTimeoutSaveFromFields() {
+  private async uiSessionTimeoutSaveFromFields(): Promise<void> {
     const days = this.uiSessionTimeoutDaysFormControl.value || 0
     const hours = this.uiSessionTimeoutHoursFormControl.value || 0
     const minutes = this.uiSessionTimeoutMinutesFormControl.value || 0
@@ -1584,7 +1585,7 @@ export class SettingsComponent implements OnInit {
       || typeof hours !== 'number' || hours < 0 || hours > 23 || !Number.isInteger(hours)
       || typeof minutes !== 'number' || minutes < 0 || minutes > 59 || !Number.isInteger(minutes)
     ) {
-      this.uiSessionTimeoutIsInvalid = true
+      this.uiSessionTimeoutIsInvalid.set(true)
       return
     }
 
@@ -1593,168 +1594,125 @@ export class SettingsComponent implements OnInit {
 
     // Validate total: minimum 10 minutes (600 seconds), maximum 1000 days (86400000 seconds)
     if (totalSeconds < 600 || totalSeconds > 86400000) {
-      this.uiSessionTimeoutIsInvalid = true
+      this.uiSessionTimeoutIsInvalid.set(true)
       return
     }
 
     try {
-      this.uiSessionTimeoutIsSaving = true
+      this.uiSessionTimeoutIsSaving.set(true)
       this.$settings.setItem('sessionTimeout', totalSeconds)
       await this.saveUiSettingChange('sessionTimeout', totalSeconds)
-      this.uiSessionTimeoutIsInvalid = false
+      this.uiSessionTimeoutIsInvalid.set(false)
       setTimeout(() => {
-        this.uiSessionTimeoutIsSaving = false
+        this.uiSessionTimeoutIsSaving.set(false)
         this.showRestartToast()
       }, 1000)
     } catch (error) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
-      this.uiSessionTimeoutIsSaving = false
+      this.uiSessionTimeoutIsSaving.set(false)
     }
   }
 
-  private async uiSessionTimeoutInactivityBasedSave(value: boolean) {
+  private async uiSessionTimeoutInactivityBasedSave(value: boolean): Promise<void> {
     try {
-      this.uiSessionTimeoutInactivityBasedIsSaving = true
+      this.uiSessionTimeoutInactivityBasedIsSaving.set(true)
       this.$settings.setItem('sessionTimeoutInactivityBased', value)
       await this.saveUiSettingChange('sessionTimeoutInactivityBased', value)
       setTimeout(() => {
-        this.uiSessionTimeoutInactivityBasedIsSaving = false
+        this.uiSessionTimeoutInactivityBasedIsSaving.set(false)
         this.showRestartToast()
       }, 1000)
     } catch (error) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
-      this.uiSessionTimeoutInactivityBasedIsSaving = false
+      this.uiSessionTimeoutInactivityBasedIsSaving.set(false)
     }
   }
 
-  private async uiSslKeySave(value: string) {
+  private async uiSslKeySave(value: string): Promise<void> {
     try {
-      this.uiSslKeyIsSaving = true
+      this.uiSslKeyIsSaving.set(true)
       this.$settings.setEnvItem('ssl.key', value)
       await this.saveUiSettingChange('ssl.key', value)
       setTimeout(() => {
-        this.uiSslKeyIsSaving = false
+        this.uiSslKeyIsSaving.set(false)
         this.showRestartToast()
       }, 1000)
     } catch (error) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
-      this.uiSslKeyIsSaving = false
+      this.uiSslKeyIsSaving.set(false)
     }
   }
 
-  private async uiSslCertSave(value: string) {
+  private async uiSslCertSave(value: string): Promise<void> {
     try {
-      this.uiSslCertIsSaving = true
+      this.uiSslCertIsSaving.set(true)
       this.$settings.setEnvItem('ssl.cert', value)
       await this.saveUiSettingChange('ssl.cert', value)
       setTimeout(() => {
-        this.uiSslCertIsSaving = false
+        this.uiSslCertIsSaving.set(false)
         this.showRestartToast()
       }, 1000)
     } catch (error) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
-      this.uiSslCertIsSaving = false
+      this.uiSslCertIsSaving.set(false)
     }
   }
 
-  private async uiSslPfxSave(value: string) {
+  private async uiSslPfxSave(value: string): Promise<void> {
     try {
-      this.uiSslPfxIsSaving = true
+      this.uiSslPfxIsSaving.set(true)
       this.$settings.setEnvItem('ssl.pfx', value)
       await this.saveUiSettingChange('ssl.pfx', value)
       setTimeout(() => {
-        this.uiSslPfxIsSaving = false
+        this.uiSslPfxIsSaving.set(false)
         this.showRestartToast()
       }, 1000)
     } catch (error) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
-      this.uiSslPfxIsSaving = false
+      this.uiSslPfxIsSaving.set(false)
     }
   }
 
-  private async uiSslPassphraseSave(value: string) {
+  private async uiSslPassphraseSave(value: string): Promise<void> {
     try {
-      this.uiSslPassphraseIsSaving = true
+      this.uiSslPassphraseIsSaving.set(true)
       this.$settings.setEnvItem('ssl.passphrase', value)
       await this.saveUiSettingChange('ssl.passphrase', value)
       setTimeout(() => {
-        this.uiSslPassphraseIsSaving = false
+        this.uiSslPassphraseIsSaving.set(false)
         this.showRestartToast()
       }, 1000)
     } catch (error) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
-      this.uiSslPassphraseIsSaving = false
+      this.uiSslPassphraseIsSaving.set(false)
     }
   }
 
-  private async uiSslSelfSignedHostnamesSave(value: string) {
+  private async uiSslSelfSignedHostnamesSave(value: string): Promise<void> {
     try {
-      this.uiSslSelfSignedHostnamesIsSaving = true
+      this.uiSslSelfSignedHostnamesIsSaving.set(true)
       // Convert comma-separated string to array, trim whitespace
       const hostnames = value.split(',').map(h => h.trim()).filter(h => h.length > 0)
       this.$settings.setEnvItem('ssl.selfSignedHostnames', hostnames)
       await this.saveUiSettingChange('ssl.selfSignedHostnames', hostnames)
       setTimeout(() => {
-        this.uiSslSelfSignedHostnamesIsSaving = false
+        this.uiSslSelfSignedHostnamesIsSaving.set(false)
         this.showRestartToast()
       }, 1000)
     } catch (error) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
-      this.uiSslSelfSignedHostnamesIsSaving = false
+      this.uiSslSelfSignedHostnamesIsSaving.set(false)
     }
   }
 
-  // Generate a self-signed certificate and optionally switch to keycert mode using generated files
-  generateSelfSigned(mode: 'keycert' | 'selfsigned' = 'keycert') {
-    const raw = this.uiSslSelfSignedHostnamesFormControl.value || ''
-    const hostnames = String(raw)
-      .split(',')
-      .map(s => s.trim())
-      .filter(s => !!s)
-    const body: any = { hostnames, mode }
-    this.$api.post('/server/ssl/selfsigned/generate', body).subscribe({
-      next: (res: any) => {
-        if (mode === 'keycert') {
-          if (res?.keyPath) {
-            this.$settings.setEnvItem('ssl.key', res.keyPath)
-            this.uiSslKeyFormControl.patchValue(res.keyPath, { emitEvent: false })
-          }
-          if (res?.certPath) {
-            this.$settings.setEnvItem('ssl.cert', res.certPath)
-            this.uiSslCertFormControl.patchValue(res.certPath, { emitEvent: false })
-          }
-          this.$settings.setEnvItem('ssl.selfSigned', false)
-          this.uiSslTypeFormControl.patchValue('keycert', { emitEvent: true })
-          this.$toastr.success(
-            this.$translate.instant('settings.security.selfsigned_generate_success_keycert'),
-            this.$translate.instant('toast.title_success'),
-          )
-        } else {
-          this.$settings.setEnvItem('ssl.selfSigned', true)
-          this.$settings.setEnvItem('ssl.selfSignedHostnames', hostnames)
-          this.uiSslTypeFormControl.patchValue('selfsigned', { emitEvent: true })
-          this.$toastr.success(
-            this.$translate.instant('settings.security.selfsigned_generate_success_selfsigned'),
-            this.$translate.instant('toast.title_success'),
-          )
-        }
-        this.showRestartToast()
-      },
-      error: (err) => {
-        console.error(err)
-        this.$toastr.error(err.error?.message || err.message, this.$translate.instant('toast.title_error'))
-      },
-    })
-  }
-
-  private async uiSslTypeSave(value: string) {
+  private async uiSslTypeSave(value: string): Promise<void> {
     switch (value) {
       case 'keycert':
         this.uiSslPfxFormControl.patchValue('', { emitEvent: false })
@@ -1806,90 +1764,90 @@ export class SettingsComponent implements OnInit {
     }
   }
 
-  private async uiHostSave(value: string) {
+  private async uiHostSave(value: string): Promise<void> {
     try {
-      this.uiHostIsSaving = true
+      this.uiHostIsSaving.set(true)
       this.$settings.setItem('host', value)
       await this.saveUiSettingChange('host', value)
       setTimeout(() => {
-        this.uiHostIsSaving = false
+        this.uiHostIsSaving.set(false)
         this.showRestartToast()
       }, 1000)
     } catch (error) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
-      this.uiHostIsSaving = false
+      this.uiHostIsSaving.set(false)
     }
   }
 
-  private async uiProxyHostSave(value: string) {
+  private async uiProxyHostSave(value: string): Promise<void> {
     try {
-      this.uiProxyHostIsSaving = true
+      this.uiProxyHostIsSaving.set(true)
       this.$settings.setItem('proxyHost', value)
       await this.saveUiSettingChange('proxyHost', value)
       setTimeout(() => {
-        this.uiProxyHostIsSaving = false
+        this.uiProxyHostIsSaving.set(false)
         this.showRestartToast()
       }, 1000)
     } catch (error) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
-      this.uiProxyHostIsSaving = false
+      this.uiProxyHostIsSaving.set(false)
     }
   }
 
-  private async hbPackageSave(value: string) {
+  private async hbPackageSave(value: string): Promise<void> {
     try {
-      this.hbPackageIsSaving = true
+      this.hbPackageIsSaving.set(true)
       this.$settings.setEnvItem('homebridgePackagePath', value)
       await this.saveUiSettingChange('homebridgePackagePath', value)
       setTimeout(() => {
-        this.hbPackageIsSaving = false
+        this.hbPackageIsSaving.set(false)
         this.showRestartToast()
       }, 1000)
     } catch (error) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
-      this.hbPackageIsSaving = false
+      this.hbPackageIsSaving.set(false)
     }
   }
 
-  private async uiMetricsSave(value: boolean) {
+  private async uiMetricsSave(value: boolean): Promise<void> {
     try {
-      this.uiMetricsIsSaving = true
+      this.uiMetricsIsSaving.set(true)
       this.$settings.setEnvItem('disableServerMetricsMonitoring', !value)
       await this.saveUiSettingChange('disableServerMetricsMonitoring', !value)
       setTimeout(() => {
-        this.uiMetricsIsSaving = false
-        this.$api.put('/platform-tools/hb-service/set-full-service-restart-flag', {}).subscribe({
-          next: () => this.showRestartToast(),
-          error: (error) => {
+        this.uiMetricsIsSaving.set(false)
+        this.$api.put('/platform-tools/hb-service/set-full-service-restart-flag', {})
+          .catch(error => console.error(error))
+          .finally(() => this.showRestartToast())
+          .catch((error) => {
             console.error(error)
             this.showRestartToast()
-          },
-        })
+          })
       }, 1000)
     } catch (error) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
-      this.uiMetricsIsSaving = false
+      this.uiMetricsIsSaving.set(false)
     }
   }
 
-  private async enableMdnsAdvertiseSave(value: boolean) {
+  private async enableMdnsAdvertiseSave(value: boolean): Promise<void> {
     try {
-      this.enableMdnsAdvertiseIsSaving = true
+      this.enableMdnsAdvertiseIsSaving.set(true)
       this.$settings.setEnvItem('enableMdnsAdvertise', value)
       await this.saveUiSettingChange('enableMdnsAdvertise', value)
       setTimeout(() => {
-        this.enableMdnsAdvertiseIsSaving = false
-        this.$api.put('/platform-tools/hb-service/set-full-service-restart-flag', {}).subscribe({
-          next: () => this.showRestartToast(),
-          error: (error) => {
+        this.enableMdnsAdvertiseIsSaving.set(false)
+        this.$api.put('/platform-tools/hb-service/set-full-service-restart-flag', {})
+          .catch(error => console.error(error))
+          .finally(() => this.showRestartToast())
+          .catch((error) => {
             console.error(error)
             this.showRestartToast()
-          },
-        })
+          })
       }, 1000)
     } catch (error) {
       console.error(error)
@@ -1897,130 +1855,164 @@ export class SettingsComponent implements OnInit {
     }
   }
 
-  private async uiAccDebugSave(value: boolean) {
+  private async uiAccDebugSave(value: boolean): Promise<void> {
     try {
-      this.uiAccDebugIsSaving = true
+      this.uiAccDebugIsSaving.set(true)
       this.$settings.setEnvItem('accessoryControl.debug', value)
       await this.saveUiSettingChange('accessoryControl.debug', value)
       setTimeout(() => {
-        this.uiAccDebugIsSaving = false
+        this.uiAccDebugIsSaving.set(false)
         this.showRestartToast()
       }, 1000)
     } catch (error) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
-      this.uiAccDebugIsSaving = false
+      this.uiAccDebugIsSaving.set(false)
     }
   }
 
-  private async uiTempFileSave(value: string) {
+  private async uiTempFileSave(value: string): Promise<void> {
     try {
-      this.uiTempFileIsSaving = true
+      this.uiTempFileIsSaving.set(true)
       this.$settings.setEnvItem('temp', value)
       await this.saveUiSettingChange('temp', value)
       setTimeout(() => {
-        this.uiTempFileIsSaving = false
-        this.$api.put('/platform-tools/hb-service/set-full-service-restart-flag', {}).subscribe({
-          next: () => this.showRestartToast(),
-          error: (error) => {
+        this.uiTempFileIsSaving.set(false)
+        this.$api.put('/platform-tools/hb-service/set-full-service-restart-flag', {})
+          .catch(error => console.error(error))
+          .finally(() => this.showRestartToast())
+          .catch((error) => {
             console.error(error)
             this.showRestartToast()
-          },
-        })
+          })
       }, 1000)
     } catch (error) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
-      this.uiTempFileIsSaving = false
+      this.uiTempFileIsSaving.set(false)
     }
   }
 
-  private async hbLinuxShutdownSave(value: string) {
+  private async hbLinuxShutdownSave(value: string): Promise<void> {
     try {
-      this.hbLinuxShutdownIsSaving = true
+      this.hbLinuxShutdownIsSaving.set(true)
       this.$settings.setEnvItem('linux.shutdown', value)
       await this.saveUiSettingChange('linux.shutdown', value)
       setTimeout(() => {
-        this.hbLinuxShutdownIsSaving = false
-        this.$api.put('/platform-tools/hb-service/set-full-service-restart-flag', {}).subscribe({
-          next: () => this.showRestartToast(),
-          error: (error) => {
+        this.hbLinuxShutdownIsSaving.set(false)
+        this.$api.put('/platform-tools/hb-service/set-full-service-restart-flag', {})
+          .catch(error => console.error(error))
+          .finally(() => this.showRestartToast())
+          .catch((error) => {
             console.error(error)
             this.showRestartToast()
-          },
-        })
+          })
       }, 1000)
     } catch (error) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
-      this.hbLinuxShutdownIsSaving = false
+      this.hbLinuxShutdownIsSaving.set(false)
     }
   }
 
-  private async hbLinuxRestartSave(value: string) {
+  private async hbLinuxRestartSave(value: string): Promise<void> {
     try {
-      this.hbLinuxRestartIsSaving = true
+      this.hbLinuxRestartIsSaving.set(true)
       this.$settings.setEnvItem('linux.restart', value)
       await this.saveUiSettingChange('linux.restart', value)
       setTimeout(() => {
-        this.hbLinuxRestartIsSaving = false
-        this.$api.put('/platform-tools/hb-service/set-full-service-restart-flag', {}).subscribe({
-          next: () => this.showRestartToast(),
-          error: (error) => {
+        this.hbLinuxRestartIsSaving.set(false)
+        this.$api.put('/platform-tools/hb-service/set-full-service-restart-flag', {})
+          .catch(error => console.error(error))
+          .finally(() => this.showRestartToast())
+          .catch((error) => {
             console.error(error)
             this.showRestartToast()
-          },
-        })
+          })
       }, 1000)
     } catch (error) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
-      this.hbLinuxRestartIsSaving = false
+      this.hbLinuxRestartIsSaving.set(false)
     }
   }
 
-  private async scheduledRestartCronSave(value: string) {
+  private validateCronExpression(cron: string): boolean {
+    // Empty is valid (disables scheduled restart)
+    if (!cron || !cron.trim()) {
+      return true
+    }
+
+    // Must have exactly 5 fields: minute hour day month weekday
+    const fields = cron.trim().split(/\s+/)
+    if (fields.length !== 5) {
+      return false
+    }
+
+    // Each field can contain: numbers, *, -, /, and ,
+    const cronFieldPattern = /^[\d*,\-/]+$/
+
+    return fields.every(field => cronFieldPattern.test(field))
+  }
+
+  private async scheduledRestartCronSave(value: string): Promise<void> {
+    // Validate cron expression
+    if (!this.validateCronExpression(value)) {
+      this.scheduledRestartCronIsInvalid.set(true)
+      return
+    }
+
+    this.scheduledRestartCronIsInvalid.set(false)
+
     try {
-      this.scheduledRestartCronIsSaving = true
+      this.scheduledRestartCronIsSaving.set(true)
       // Convert empty string to null
       const cronValue = value?.trim() ? value : null
       this.$settings.setEnvItem('scheduledRestartCron', cronValue)
-      await firstValueFrom(this.$api.put('/config-editor/ui', { key: 'scheduledRestartCron', value: cronValue }))
+      await this.$api.put('/config-editor/ui', { key: 'scheduledRestartCron', value: cronValue })
       setTimeout(() => {
-        this.scheduledRestartCronIsSaving = false
-        this.$api.put('/platform-tools/hb-service/set-full-service-restart-flag', {}).subscribe({
-          next: () => this.showRestartToast(),
-          error: (error) => {
+        this.scheduledRestartCronIsSaving.set(false)
+        this.$api.put('/platform-tools/hb-service/set-full-service-restart-flag', {})
+          .catch(error => console.error(error))
+          .finally(() => this.showRestartToast())
+          .catch((error) => {
             console.error(error)
             this.showRestartToast()
-          },
-        })
+          })
       }, 1000)
     } catch (error) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
-      this.scheduledRestartCronIsSaving = false
+      this.scheduledRestartCronIsSaving.set(false)
     }
   }
 
-  private async initMatterSettings() {
+  private async deleteInvalidSetting(key: string) {
     try {
-      const matterConfig = await firstValueFrom(this.$api.get('/config-editor/matter'))
+      await this.$api.delete(`/config-editor/ui/${key}`)
+    } catch (error) {
+      console.error(`Failed to delete invalid setting ${key}:`, error)
+    }
+  }
+
+  private async initMatterSettings(): Promise<void> {
+    try {
+      const matterConfig = await this.$api.get('/config-editor/matter')
 
       // null means Matter is disabled, {} or {port, name} means Matter is enabled
       const isEnabled = matterConfig !== null
 
       if (isEnabled) {
         // Matter is enabled - populate fields with config values
-        this.matterPortFormControl.patchValue(matterConfig.port || '')
+        this.matterPortFormControl.patchValue(matterConfig.port || '', { emitEvent: false })
       } else {
         // Matter is disabled - set default values but don't show fields
-        this.matterPortFormControl.patchValue(0)
+        this.matterPortFormControl.patchValue(0, { emitEvent: false })
       }
 
       // Subscribe to form changes
       this.matterPortFormControl.valueChanges
-        .pipe(debounceTime(1500))
+        .pipe(debounceTime(1500), takeUntilDestroyed(this.destroyRef))
         .subscribe((value: number) => this.matterPortSave(value))
 
       // Set enabled state
@@ -2036,64 +2028,62 @@ export class SettingsComponent implements OnInit {
     }
   }
 
-  private async matterPortSave(value: number) {
+  private async matterPortSave(value: number): Promise<void> {
     // Port is optional - if empty/null/undefined, just save without validation
     if (!value && value !== 0) {
       // Empty value is valid (optional field)
       try {
-        this.matterPortIsSaving = true
-        this.matterPortIsInvalid = false
-        await firstValueFrom(this.$api.put('/config-editor/matter', {
+        this.matterPortIsSaving.set(true)
+        this.matterPortIsInvalid.set(false)
+        await this.$api.put('/config-editor/matter', {
           port: undefined,
-        }))
+        })
         setTimeout(() => {
-          this.matterPortIsSaving = false
+          this.matterPortIsSaving.set(false)
           this.showRestartToast()
         }, 1000)
       } catch (error) {
         console.error(error)
         this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
-        this.matterPortIsSaving = false
+        this.matterPortIsSaving.set(false)
       }
       return
     }
 
     // If a value is provided, validate it
     if (typeof value !== 'number' || value < 1024 || value > 65535 || Number.isInteger(value) === false) {
-      this.matterPortIsInvalid = true
-      this.$cdr.detectChanges()
+      this.matterPortIsInvalid.set(true)
       return
     }
 
     // Check for reserved ports
     if ([5353, 8080, 8443].includes(value)) {
-      this.matterPortIsInvalid = true
-      this.$cdr.detectChanges()
+      this.matterPortIsInvalid.set(true)
       this.$toastr.error('Port 5353, 8080, and 8443 are reserved and cannot be used', this.$translate.instant('toast.title_error'))
       return
     }
 
     try {
-      this.matterPortIsSaving = true
-      this.matterPortIsInvalid = false
-      await firstValueFrom(this.$api.put('/config-editor/matter', {
+      this.matterPortIsSaving.set(true)
+      this.matterPortIsInvalid.set(false)
+      await this.$api.put('/config-editor/matter', {
         port: value,
-      }))
+      })
       setTimeout(() => {
-        this.matterPortIsSaving = false
+        this.matterPortIsSaving.set(false)
         this.showRestartToast()
       }, 1000)
     } catch (error) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
-      this.matterPortIsSaving = false
-      this.matterPortIsInvalid = true
+      this.matterPortIsSaving.set(false)
+      this.matterPortIsInvalid.set(true)
     }
   }
 
-  private async matterEnabledSave(value: boolean) {
+  private async matterEnabledSave(value: boolean): Promise<void> {
     try {
-      this.matterEnabledIsSaving = true
+      this.matterEnabledIsSaving.set(true)
       if (value) {
         // When enabling, restore cached port if it exists, otherwise query for available port
         let port: number | undefined
@@ -2104,8 +2094,8 @@ export class SettingsComponent implements OnInit {
         } else {
           // First time enabling - get an available Matter port from the server
           try {
-            const portResponse = await firstValueFrom(this.$api.get('/server/port/new/matter'))
-            port = portResponse.port
+            const portResponse = await this.$api.get('/server/port/new/matter')
+            port = portResponse!.port
           } catch (error) {
             console.error('Failed to get Matter port, using fallback', error)
             // Fallback to Matter port range if API call fails
@@ -2113,9 +2103,9 @@ export class SettingsComponent implements OnInit {
           }
         }
 
-        await firstValueFrom(this.$api.put('/config-editor/matter', {
+        await this.$api.put('/config-editor/matter', {
           port,
-        }))
+        })
 
         // Update the form value
         if (port !== undefined) {
@@ -2126,22 +2116,28 @@ export class SettingsComponent implements OnInit {
         this.matterConfigCache = { port }
 
         setTimeout(() => {
-          this.matterEnabledIsSaving = false
+          this.matterEnabledIsSaving.set(false)
           this.showRestartToast()
         }, 1000)
       } else {
         // When disabling, show confirmation modal
+        const injector = createEnvironmentInjector([{
+          provide: CONFIRM_MODAL_DATA,
+          useValue: {
+            title: 'Disable Matter',
+            message: 'Disabling Matter will delete all Matter bridge files. This action cannot be undone.',
+            message2: 'Are you sure you want to continue?',
+            confirmButtonLabel: 'Continue',
+            confirmButtonClass: 'btn-danger',
+            faIconClass: 'fas fa-exclamation-triangle text-warning',
+          },
+        }], this.injector)
+
         const ref = this.$modal.open(ConfirmComponent, {
           size: 'lg',
           backdrop: 'static',
+          injector,
         })
-
-        ref.componentInstance.title = 'Disable Matter'
-        ref.componentInstance.message = 'Disabling Matter will delete all Matter bridge files. This action cannot be undone.'
-        ref.componentInstance.message2 = 'Are you sure you want to continue?'
-        ref.componentInstance.confirmButtonLabel = 'Continue'
-        ref.componentInstance.confirmButtonClass = 'btn-danger'
-        ref.componentInstance.faIconClass = 'fas fa-exclamation-triangle text-warning'
 
         try {
           // Wait for user confirmation
@@ -2159,21 +2155,21 @@ export class SettingsComponent implements OnInit {
             this.restartToastIsShown = false
           }
 
-          this.$router.navigate(['/restart'], {
+          void this.$router.navigate(['/restart'], {
             queryParams: { alreadyRestarting: 'true' },
           })
-          await firstValueFrom(this.$api.delete('/config-editor/matter'))
+          await this.$api.delete('/config-editor/matter')
         } catch (error) {
           if (error === 'Dismiss') {
-            // User cancelled - revert the toggle
+            // User canceled - revert the toggle
             this.matterEnabledFormControl.patchValue(true, { emitEvent: false })
-            this.matterEnabledIsSaving = false
+            this.matterEnabledIsSaving.set(false)
           } else {
             // Actual error - show error message and revert toggle
             console.error(error)
             this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
             this.matterEnabledFormControl.patchValue(true, { emitEvent: false })
-            this.matterEnabledIsSaving = false
+            this.matterEnabledIsSaving.set(false)
           }
         }
       }
@@ -2181,18 +2177,18 @@ export class SettingsComponent implements OnInit {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
       this.matterEnabledFormControl.patchValue(value, { emitEvent: false })
-      this.matterEnabledIsSaving = false
+      this.matterEnabledIsSaving.set(false)
     }
   }
 
   private buildBridgeNetworkAdapterList(adapters: string[]) {
     if (!adapters.length) {
-      this.adaptersSelected = []
+      this.adaptersSelected.set([])
       return
     }
 
-    this.adaptersSelected = adapters.map((interfaceName) => {
-      const i = this.adaptersAvailable.find(x => x.iface === interfaceName)
+    this.adaptersSelected.set(adapters.map((interfaceName) => {
+      const i = this.adaptersAvailable().find(x => x.iface === interfaceName)
       if (i) {
         return {
           iface: i.iface,
@@ -2208,7 +2204,7 @@ export class SettingsComponent implements OnInit {
           missing: true,
         }
       }
-    })
+    }))
   }
 
   private showRestartToast() {
@@ -2227,104 +2223,12 @@ export class SettingsComponent implements OnInit {
       )
 
       if (this.$settings.restartToastRef && this.$settings.restartToastRef.onTap) {
-        this.$settings.restartToastRef.onTap.subscribe(() => {
-          void this.$router.navigate(['/restart'])
-        })
+        this.$settings.restartToastRef.onTap
+          .pipe(takeUntilDestroyed(this.destroyRef))
+          .subscribe(() => {
+            void this.$router.navigate(['/restart'])
+          })
       }
     }
-  }
-
-  // SSL Uploads (Key+Cert and PFX)
-  public triggerKeyCertSelect() {
-    if (this.sslKeyCertInput?.nativeElement) {
-      this.sslKeyCertInput.nativeElement.value = ''
-      this.sslKeyCertInput.nativeElement.click()
-    }
-  }
-
-  public onSslKeyCertChange(files: FileList | null) {
-    if (!files || files.length === 0) {
-      return
-    }
-    // Allow multiple selection; send all to the server which will detect key vs cert
-    const formData = new FormData()
-    Array.from(files).forEach((f: File) => {
-      formData.append('files', f, f.name)
-    })
-
-    this.$api.post('/server/ssl/keycert', formData).subscribe({
-      next: (res: any) => {
-        // Update settings and form controls
-        if (res?.keyPath) {
-          this.$settings.setEnvItem('ssl.key', res.keyPath)
-          this.uiSslKeyFormControl.patchValue(res.keyPath, { emitEvent: false })
-        }
-        if (res?.certPath) {
-          this.$settings.setEnvItem('ssl.cert', res.certPath)
-          this.uiSslCertFormControl.patchValue(res.certPath, { emitEvent: false })
-        }
-        this.$settings.setEnvItem('ssl.selfSigned', false)
-        this.uiSslTypeFormControl.patchValue('keycert', { emitEvent: true })
-        this.$toastr.success(this.$translate.instant('settings.security.ssl_upload_success_keycert'), this.$translate.instant('toast.title_success'))
-        this.showRestartToast()
-      },
-      error: (error) => {
-        console.error(error)
-        this.$toastr.error(error.error?.message || error.message, this.$translate.instant('toast.title_error'))
-      },
-    })
-  }
-
-  public triggerPfxSelect() {
-    if (this.sslPfxInput?.nativeElement) {
-      this.sslPfxInput.nativeElement.value = ''
-      this.sslPfxInput.nativeElement.click()
-    }
-  }
-
-  public onSslPfxChange(files: FileList | null) {
-    if (!files || files.length === 0) {
-      return
-    }
-    const formData = new FormData()
-    formData.append('pfx', files[0], files[0].name)
-    if (this.uiSslPassphraseFormControl.value) {
-      formData.append('passphrase', this.uiSslPassphraseFormControl.value)
-    }
-
-    this.$api.post('/server/ssl/pfx', formData).subscribe({
-      next: (res: any) => {
-        if (res?.pfxPath) {
-          this.$settings.setEnvItem('ssl.pfx', res.pfxPath)
-          this.uiSslPfxFormControl.patchValue(res.pfxPath, { emitEvent: false })
-        }
-        // Keep user's passphrase in the form and config (server also saved it)
-        this.$settings.setEnvItem('ssl.selfSigned', false)
-        this.uiSslTypeFormControl.patchValue('pfx', { emitEvent: true })
-        this.$toastr.success(this.$translate.instant('settings.security.ssl_upload_success_pfx'), this.$translate.instant('toast.title_success'))
-        this.showRestartToast()
-      },
-      error: (error) => {
-        console.error(error)
-        this.$toastr.error(error.error?.message || error.message, this.$translate.instant('toast.title_error'))
-      },
-    })
-  }
-
-  public validateSsl() {
-    this.$api.post('/server/ssl/validate', {}).subscribe({
-      next: (res: any) => {
-        if (res?.valid) {
-          this.$toastr.success(res?.details || this.$translate.instant('settings.security.ssl_validate_success'), this.$translate.instant('toast.title_success'))
-        } else {
-          const msg = res?.details || this.$translate.instant('settings.security.ssl_validate_error')
-          this.$toastr.error(msg, this.$translate.instant('toast.title_error'))
-        }
-      },
-      error: (error) => {
-        console.error(error)
-        this.$toastr.error(error.error?.message || error.message, this.$translate.instant('toast.title_error'))
-      },
-    })
   }
 }

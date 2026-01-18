@@ -1,17 +1,19 @@
 import { HttpEventType, HttpResponse } from '@angular/common/http'
-import { Component, inject, Input, OnDestroy, OnInit } from '@angular/core'
+import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core'
 import { Router } from '@angular/router'
-import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap'
+import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { FitAddon } from '@xterm/addon-fit'
 import { WebLinksAddon } from '@xterm/addon-web-links'
 import { ITerminalOptions, Terminal } from '@xterm/xterm'
 import { ToastrService } from 'ngx-toastr'
 
-import { ApiService } from '@/app/core/api.service'
-import { SettingsService } from '@/app/core/settings.service'
-import { IoNamespace, WsService } from '@/app/core/ws.service'
+import { ApiService } from '@/app/core/communication/api.service'
+import { IoNamespace, WsService } from '@/app/core/communication/ws.service'
+import { RESTORE_MODAL_DATA } from '@/app/core/modal-data-tokens'
+import { SettingsService } from '@/app/core/ui/settings.service'
 import { BackupComponent } from '@/app/modules/settings/backup/backup.component'
+import { ScheduledBackup } from '@/app/modules/settings/backup/backup.interfaces'
 
 @Component({
   templateUrl: './restore.component.html',
@@ -19,6 +21,7 @@ import { BackupComponent } from '@/app/modules/settings/backup/backup.component'
   imports: [TranslatePipe],
 })
 export class RestoreComponent implements OnInit, OnDestroy {
+  // Injected dependencies
   private $activeModal = inject(NgbActiveModal)
   private $api = inject(ApiService)
   private $modal = inject(NgbModal)
@@ -27,31 +30,41 @@ export class RestoreComponent implements OnInit, OnDestroy {
   private $toastr = inject(ToastrService)
   private $translate = inject(TranslateService)
   private $ws = inject(WsService)
+  private modalData = inject(RESTORE_MODAL_DATA)
+
+  // Public properties (from injected data)
+  public setupWizardRestore = this.modalData.setupWizardRestore ?? false
+  public selectedBackup: ScheduledBackup | null = this.modalData.selectedBackup ?? null
+
+  // Signals
+  public clicked = signal(false)
+  public selectedFile = signal<File | null>(null)
+  public restoreInProgress = signal(false)
+  public restoreStarted = signal(false)
+  public restoreFailed = signal(false)
+  public restoreArchiveType = signal<'homebridge' | 'hbfx'>('homebridge')
+  public uploadPercent = signal(0)
+
+  // Other properties
   private io: IoNamespace
   private term: Terminal
   private termTarget: HTMLElement
   private fitAddon = new FitAddon()
   private webLinksAddon = new WebLinksAddon()
-
-  @Input() setupWizardRestore = false
-  @Input() selectedBackup: { id: any, fileName: string } = null
-
-  public clicked = false
   public maxFileSizeText = globalThis.backup.maxBackupSizeText
-  public selectedFile: File
-  public restoreInProgress = false
-  public restoreStarted = false
-  public restoreFailed = false
-  public restoreArchiveType: 'homebridge' | 'hbfx' = 'homebridge'
-  public uploadPercent = 0
 
   public get isLightTerminalTheme(): boolean {
     return this.$settings.getEffectiveTerminalLightingMode() === 'light'
   }
 
-  public async ngOnInit() {
+  public ngOnInit(): void {
+    void this.initialize()
+  }
+
+  private async initialize(): Promise<void> {
     this.io = this.$ws.connectToNamespace('backup')
     this.termTarget = document.getElementById('plugin-log-output')
+
     // Modals need independent settings from page terminals
     // Use terminal theme setting for text color to match terminal background
     const terminalTheme = this.$settings.getEffectiveTerminalLightingMode()
@@ -65,6 +78,7 @@ export class RestoreComponent implements OnInit, OnDestroy {
         foreground: terminalTheme === 'light' ? '#333333' : '#eeeeee',
       },
       allowTransparency: terminalTheme === 'light',
+      screenReaderMode: true,
     })
     this.term.loadAddon(this.fitAddon)
     this.term.loadAddon(this.webLinksAddon)
@@ -76,50 +90,51 @@ export class RestoreComponent implements OnInit, OnDestroy {
     })
 
     if (this.setupWizardRestore) {
-      this.restoreStarted = true
-      this.restoreInProgress = true
-      this.startRestore()
+      this.restoreStarted.set(true)
+      this.restoreInProgress.set(true)
+      void this.startRestore()
     }
   }
 
-  public onRestoreBackupClick() {
+  public onRestoreBackupClick(): void {
     if (this.selectedBackup) {
       // Prepopulated with a backup from the backup modal
-      this.restoreScheduledBackup()
+      void this.restoreScheduledBackup()
     } else {
       // Restore from uploaded file
-      if (this.restoreArchiveType === 'homebridge') {
-        this.uploadHomebridgeArchive()
-      } else if (this.restoreArchiveType === 'hbfx') {
-        this.uploadHbfxArchive()
+      if (this.restoreArchiveType() === 'homebridge') {
+        void this.uploadHomebridgeArchive()
+      } else if (this.restoreArchiveType() === 'hbfx') {
+        void this.uploadHbfxArchive()
       }
     }
   }
 
-  public handleRestoreFileInput(files: FileList) {
-    if (files.length) {
-      this.selectedFile = files[0]
-      if (this.selectedFile.name.endsWith('.hbfx')) {
-        this.restoreArchiveType = 'hbfx'
+  public handleRestoreFileInput(event: Event): void {
+    const files = (event.target as HTMLInputElement).files
+    if (files?.length) {
+      this.selectedFile.set(files[0])
+      if (this.selectedFile()?.name.endsWith('.hbfx')) {
+        this.restoreArchiveType.set('hbfx')
       } else {
-        this.restoreArchiveType = 'homebridge'
+        this.restoreArchiveType.set('homebridge')
       }
     } else {
-      delete this.selectedFile
+      this.selectedFile.set(null)
     }
   }
 
-  public postBackupRestart() {
-    this.$api.put('/backup/restart', {}).subscribe({
-      next: () => {
-        this.$activeModal.close(true)
-        void this.$router.navigate(['/'])
-      },
-      error: () => {},
-    })
+  public async postBackupRestart(): Promise<void> {
+    try {
+      await this.$api.put('/backup/restart', {})
+      this.$activeModal.close(true)
+      void this.$router.navigate(['/'])
+    } catch {
+      /* do nothing */
+    }
   }
 
-  public reopenBackupModal() {
+  public reopenBackupModal(): void {
     this.$activeModal.dismiss()
     this.$modal.open(BackupComponent, {
       size: 'lg',
@@ -127,113 +142,109 @@ export class RestoreComponent implements OnInit, OnDestroy {
     })
   }
 
-  public ngOnDestroy() {
+  public ngOnDestroy(): void {
     this.io.end()
   }
 
-  public dismissModal() {
+  public dismissModal(): void {
     this.$activeModal.dismiss('Dismiss')
   }
 
-  private uploadHomebridgeArchive() {
+  private async uploadHomebridgeArchive(): Promise<void> {
     this.term.reset()
-    this.clicked = true
+    this.clicked.set(true)
     const formData: FormData = new FormData()
-    formData.append('restoreArchive', this.selectedFile, this.selectedFile.name)
-    this.$api.post('/backup/restore', formData).subscribe({
-      next: () => {
-        this.restoreStarted = true
-        this.restoreInProgress = true
-        setTimeout(() => {
-          this.startRestore()
-        }, 500)
-        this.clicked = false
-      },
-      error: (error) => {
-        console.error(error)
-        this.$toastr.error(error.error?.message || this.$translate.instant('backup.restore_failed'), this.$translate.instant('toast.title_error'))
-        this.clicked = false
-      },
-    })
+    formData.append('restoreArchive', this.selectedFile(), this.selectedFile()?.name)
+    try {
+      await this.$api.post('/backup/restore', formData)
+      this.restoreStarted.set(true)
+      this.restoreInProgress.set(true)
+      setTimeout(() => {
+        void this.startRestore()
+      }, 500)
+    } catch (error) {
+      console.error(error)
+      this.$toastr.error(error.error?.message || this.$translate.instant('backup.restore_failed'), this.$translate.instant('toast.title_error'))
+    } finally {
+      this.clicked.set(false)
+    }
   }
 
-  private async restoreScheduledBackup() {
+  private async restoreScheduledBackup(): Promise<void> {
     this.term.reset()
-    this.clicked = true
-    this.$api.post(`/backup/scheduled-backups/${this.selectedBackup.id}/restore`, {}).subscribe({
-      next: () => {
-        this.restoreStarted = true
-        this.restoreInProgress = true
-        setTimeout(() => {
-          this.startRestore()
-        }, 500)
-        this.clicked = false
-      },
-      error: (error) => {
-        console.error(error)
-        this.$toastr.error(error.error?.message || this.$translate.instant('backup.restore_failed'), this.$translate.instant('toast.title_error'))
-        this.clicked = false
-      },
-    })
+    this.clicked.set(true)
+    try {
+      await this.$api.post(`/backup/scheduled-backups/${this.selectedBackup.id}/restore`, {})
+      this.restoreStarted.set(true)
+      this.restoreInProgress.set(true)
+      setTimeout(() => {
+        void this.startRestore()
+      }, 500)
+    } catch (error) {
+      console.error(error)
+      this.$toastr.error(error.error?.message || this.$translate.instant('backup.restore_failed'), this.$translate.instant('toast.title_error'))
+    } finally {
+      this.clicked.set(false)
+    }
   }
 
-  private async startRestore() {
-    this.io.request('do-restore').subscribe({
-      next: () => {
-        this.restoreInProgress = false
-        this.$toastr.success(this.$translate.instant('backup.backup_restored'), this.$translate.instant('toast.title_success'))
-        if (this.setupWizardRestore) {
-          this.postBackupRestart()
-        }
-      },
-      error: (error) => {
-        this.restoreFailed = true
-        console.error(error)
-        this.$toastr.error(this.$translate.instant('backup.restore_failed'), this.$translate.instant('toast.title_error'))
-      },
-    })
+  private async startRestore(): Promise<void> {
+    this.io.request('do-restore')
+      .subscribe({
+        next: () => {
+          this.restoreInProgress.set(false)
+          this.$toastr.success(this.$translate.instant('backup.backup_restored'), this.$translate.instant('toast.title_success'))
+          if (this.setupWizardRestore) {
+            this.postBackupRestart()
+          }
+        },
+        error: (error) => {
+          this.restoreFailed.set(true)
+          console.error(error)
+          this.$toastr.error(this.$translate.instant('backup.restore_failed'), this.$translate.instant('toast.title_error'))
+        },
+      })
   }
 
-  private uploadHbfxArchive() {
+  private async uploadHbfxArchive(): Promise<void> {
     this.term.reset()
-    this.clicked = true
+    this.clicked.set(true)
     const formData: FormData = new FormData()
-    formData.append('restoreArchive', this.selectedFile, this.selectedFile.name)
-    this.$api.post('/backup/restore/hbfx', formData, {
-      reportProgress: true,
-      observe: 'events',
-    }).subscribe({
-      next: (event) => {
-        if (event.type === HttpEventType.UploadProgress) {
-          this.uploadPercent = Math.round(100 * event.loaded / event.total)
-        } else if (event instanceof HttpResponse) {
-          this.restoreStarted = true
-          this.restoreInProgress = true
-          setTimeout(() => {
-            this.startHbfxRestore()
-          }, 500)
-          this.clicked = false
-        }
-      },
-      error: (error) => {
-        this.clicked = false
-        console.error(error)
-        this.$toastr.error(error.error?.message || this.$translate.instant('backup.restore_failed'), this.$translate.instant('toast.title_error'))
-      },
-    })
+    formData.append('restoreArchive', this.selectedFile(), this.selectedFile()?.name)
+    try {
+      const event = await this.$api.post('/backup/restore/hbfx', formData, {
+        reportProgress: true,
+        observe: 'events',
+      })
+      if (event.type === HttpEventType.UploadProgress) {
+        this.uploadPercent.set(Math.round(100 * event.loaded / event.total))
+      } else if (event instanceof HttpResponse) {
+        this.restoreStarted.set(true)
+        this.restoreInProgress.set(true)
+        setTimeout(() => {
+          void this.startHbfxRestore()
+        }, 500)
+      }
+    } catch (error) {
+      console.error(error)
+      this.$toastr.error(error.error?.message || this.$translate.instant('backup.restore_failed'), this.$translate.instant('toast.title_error'))
+    } finally {
+      this.clicked.set(false)
+    }
   }
 
-  private async startHbfxRestore() {
-    this.io.request('do-restore-hbfx').subscribe({
-      next: () => {
-        this.restoreInProgress = false
-        this.$toastr.success(this.$translate.instant('backup.backup_restored'), this.$translate.instant('toast.title_success'))
-      },
-      error: (error) => {
-        this.restoreFailed = true
-        console.error(error)
-        this.$toastr.error(this.$translate.instant('backup.restore_failed'), this.$translate.instant('toast.title_error'))
-      },
-    })
+  private async startHbfxRestore(): Promise<void> {
+    this.io.request('do-restore-hbfx')
+      .subscribe({
+        next: () => {
+          this.restoreInProgress.set(false)
+          this.$toastr.success(this.$translate.instant('backup.backup_restored'), this.$translate.instant('toast.title_success'))
+        },
+        error: (error) => {
+          this.restoreFailed.set(true)
+          console.error(error)
+          this.$toastr.error(this.$translate.instant('backup.restore_failed'), this.$translate.instant('toast.title_error'))
+        },
+      })
   }
 }

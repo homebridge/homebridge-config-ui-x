@@ -1,4 +1,4 @@
-import { AfterViewInit, Directive, ElementRef, inject, Input, OnDestroy } from '@angular/core'
+import { AfterViewInit, Directive, ElementRef, inject, input, OnDestroy } from '@angular/core'
 import { JsonSchemaFormComponent } from '@ng-formworks/core'
 import { cloneDeep, merge, uniqueId } from 'lodash-es'
 
@@ -13,7 +13,7 @@ export class JsonSchemaFormPatchDirective implements AfterViewInit, OnDestroy {
   private observer?: MutationObserver
   private patchingInProgress = false
 
-  @Input() jsfPatch = false
+  readonly jsfPatch = input(false)
 
   constructor() {
     const jsonSchemaForm = this.jsonSchemaForm
@@ -25,7 +25,7 @@ export class JsonSchemaFormPatchDirective implements AfterViewInit, OnDestroy {
 
     jsonSchemaForm.jsf.buildLayout = (widgetLibrary: any) => {
       buildLayoutOriginal(widgetLibrary)
-      if (jsonSchemaForm.jsf.formValues && this.jsfPatch) {
+      if (jsonSchemaForm.jsf.formValues && this.jsfPatch()) {
         return this.fixNestedArrayLayout(
           jsonSchemaForm.jsf.layout,
           jsonSchemaForm.jsf.formValues,

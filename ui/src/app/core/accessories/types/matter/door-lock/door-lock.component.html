@@ -1,9 +1,9 @@
 <div
   class="accessory-box"
   [class]="{
-    'accessory-on': lockState !== 1,
-    'unlocked': lockState === 2,
-    'jammed': lockState === 0
+    'accessory-on': lockState() !== 1,
+    'unlocked': lockState() === 2,
+    'jammed': lockState() === 0
   }"
   (shortClick)="onClick()"
   (longClick)="onLongClick()"
@@ -48,12 +48,14 @@
         />
       </svg>
     </div>
-    <div class="accessory-label mt-auto">{{ service.customName || service.serviceName || service.displayName }}</div>
-    @if (lockState === 1) {
+    <div class="accessory-label mt-auto">
+      {{ service().customName || service().serviceName || service().displayName }}
+    </div>
+    @if (lockState() === 1) {
     <div class="accessory-label grey-text">{{ 'accessories.control.locked' | translate }}</div>
-    } @else if (lockState === 2) {
+    } @else if (lockState() === 2) {
     <div class="accessory-label red-text">{{ 'accessories.control.unlocked' | translate }}</div>
-    } @else if (lockState === 0) {
+    } @else if (lockState() === 0) {
     <div class="accessory-label red-text">{{ 'accessories.control.jammed' | translate }}</div>
     }
   </div>

@@ -1,13 +1,14 @@
-import { Component, inject, Input, OnDestroy, OnInit } from '@angular/core'
+import type { ServiceTypeX, SliderControlConfig } from '@/app/core/accessories/accessories.interfaces'
+
+import { ChangeDetectionStrategy, Component } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { FormsModule } from '@angular/forms'
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
 import { TranslatePipe } from '@ngx-translate/core'
 import { NouisliderComponent } from 'ng2-nouislider'
-import { Subject, Subscription } from 'rxjs'
-import { debounceTime, distinctUntilChanged } from 'rxjs/operators'
+import { Subject, timer } from 'rxjs'
+import { distinctUntilChanged, takeUntil } from 'rxjs/operators'
 
-import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
-import { AccessoriesService } from '@/app/core/accessories/accessories.service'
+import { BaseManageComponent } from '@/app/core/accessories/types/base-manage.component'
 import { DurationPipe } from '@/app/core/pipes/duration.pipe'
 
 @Component({
@@ -19,22 +20,17 @@ import { DurationPipe } from '@/app/core/pipes/duration.pipe'
     TranslatePipe,
     DurationPipe,
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LockMechanismManageComponent implements OnInit, OnDestroy {
-  private $activeModal = inject(NgbActiveModal)
-  private lockTimeout: any
+export class LockMechanismManageComponent extends BaseManageComponent {
+  private cancelLockTimer$ = new Subject<void>()
 
-  @Input() public service: ServiceTypeX
-  @Input() public $accessories: AccessoriesService
+  public serviceManagement: ServiceTypeX
+  public targetMode: number
+  public targetLockManagementAutoSecurityTimeout: SliderControlConfig
+  public targetLockManagementAutoSecurityTimeoutChanged: Subject<number> = new Subject<number>()
 
-  private stateSubscription: Subscription
-
-  public serviceManagement: any
-  public targetMode: any
-  public targetLockManagementAutoSecurityTimeout: any
-  public targetLockManagementAutoSecurityTimeoutChanged: Subject<string> = new Subject<string>()
-
-  public ngOnInit() {
+  protected setupComponent() {
     this.targetMode = this.service.values.LockTargetState
 
     if (this.service.linkedServices) {
@@ -44,78 +40,69 @@ export class LockMechanismManageComponent implements OnInit, OnDestroy {
     if (this.serviceManagement) {
       this.targetLockManagementAutoSecurityTimeoutChanged
         .pipe(
-          debounceTime(300),
           distinctUntilChanged(),
         )
         .subscribe(() => {
-          this.serviceManagement.getCharacteristic('LockManagementAutoSecurityTimeout').setValue(this.targetLockManagementAutoSecurityTimeout.value)
+          void this.serviceManagement.getCharacteristic('LockManagementAutoSecurityTimeout').setValue(this.targetLockManagementAutoSecurityTimeout.value)
         })
+
+      this.createDebouncedSubscription(
+        this.targetLockManagementAutoSecurityTimeoutChanged,
+        () => {
+          void this.serviceManagement.getCharacteristic('LockManagementAutoSecurityTimeout').setValue(this.targetLockManagementAutoSecurityTimeout.value)
+        },
+        300,
+      )
 
       this.loadTargetLockManagementAutoSecurityTimeout()
     }
-
-    // Subscribe to real-time accessory updates
-    if (this.$accessories) {
-      this.stateSubscription = this.$accessories.accessoryData.subscribe(() => {
-        this.targetMode = this.service.values.LockTargetState
-        if (this.targetLockManagementAutoSecurityTimeout && this.serviceManagement) {
-          this.targetLockManagementAutoSecurityTimeout.value = this.serviceManagement.getCharacteristic('LockManagementAutoSecurityTimeout')?.value
-        }
-      })
-    }
   }
 
-  public ngOnDestroy() {
-    if (this.stateSubscription) {
-      this.stateSubscription.unsubscribe()
+  protected handleAccessoryUpdate() {
+    this.targetMode = this.service.values.LockTargetState
+    if (this.targetLockManagementAutoSecurityTimeout && this.serviceManagement) {
+      this.targetLockManagementAutoSecurityTimeout.value = this.serviceManagement.getCharacteristic('LockManagementAutoSecurityTimeout')?.value as number
     }
   }
 
   public setTargetMode(value: number, event: MouseEvent) {
     this.targetMode = value
-    this.service.getCharacteristic('LockTargetState').setValue(this.targetMode)
+    void this.service.getCharacteristic('LockTargetState').setValue(this.targetMode)
 
-    // Clear the existing timeout if it exists
-    if (this.lockTimeout) {
-      clearTimeout(this.lockTimeout)
-      this.lockTimeout = null
-    }
+    // Cancel any existing lock timer
+    this.cancelLockTimer$.next()
 
     // If the target mode is 0 (unlocked), and there is a targetLockManagementAutoSecurityTimeout.value, set a new timeout
     if (this.targetMode === 0 && this.targetLockManagementAutoSecurityTimeout?.value > 0) {
-      this.lockTimeout = setTimeout(() => {
-        this.targetMode = 1
-      }, (this.targetLockManagementAutoSecurityTimeout.value + 0.3) * 1000)
+      timer((this.targetLockManagementAutoSecurityTimeout.value + 0.3) * 1000)
+        .pipe(
+          takeUntil(this.cancelLockTimer$),
+          takeUntilDestroyed(this.destroyRef),
+        )
+        .subscribe(() => {
+          this.targetMode = 1
+          this.cdr.markForCheck()
+        })
     }
 
-    const target = event.target as HTMLButtonElement
-    target.blur()
+    this.blurTarget(event)
   }
 
   public onLockManagementAutoSecurityTimeoutStateChange() {
     this.targetLockManagementAutoSecurityTimeoutChanged.next(this.targetLockManagementAutoSecurityTimeout.value)
   }
 
-  public dismissModal() {
-    this.$activeModal.dismiss('Dismiss')
-  }
-
   private loadTargetLockManagementAutoSecurityTimeout() {
     const TargetLockManagementAutoSecurityTimeout = this.serviceManagement.getCharacteristic('LockManagementAutoSecurityTimeout')
     if (TargetLockManagementAutoSecurityTimeout) {
       this.targetLockManagementAutoSecurityTimeout = {
-        value: TargetLockManagementAutoSecurityTimeout.value || 0,
+        value: (TargetLockManagementAutoSecurityTimeout.value as number) || 0,
         min: TargetLockManagementAutoSecurityTimeout.minValue || 0,
         max: TargetLockManagementAutoSecurityTimeout.maxValue || 3600,
         step: TargetLockManagementAutoSecurityTimeout.minStep || 10,
       }
 
-      setTimeout(() => {
-        const sliderElements = document.querySelectorAll('.noUi-target')
-        sliderElements.forEach((sliderElement: HTMLElement) => {
-          sliderElement.style.background = 'linear-gradient(to right, #ffffff, #ffd966, #ff0000)'
-        })
-      }, 10)
+      this.applySliderGradient('linear-gradient(to right, #ffffff, #ffd966, #ff0000)')
     }
   }
 }

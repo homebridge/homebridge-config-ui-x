@@ -1,11 +1,12 @@
-import { ChangeDetectorRef, Component, inject, Input, OnInit } from '@angular/core'
+import { Component, inject, OnInit, signal } from '@angular/core'
 import { AbstractControl, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
 
-import { ApiService } from '@/app/core/api.service'
 import { AuthService } from '@/app/core/auth/auth.service'
+import { ApiService } from '@/app/core/communication/api.service'
+import { USER_MODAL_DATA } from '@/app/core/modal-data-tokens'
 import { User } from '@/app/modules/users/users.interface'
 
 @Component({
@@ -18,17 +19,22 @@ import { User } from '@/app/modules/users/users.interface'
   ],
 })
 export class UsersEditComponent implements OnInit {
+  // Injected dependencies
   private $activeModal = inject(NgbActiveModal)
   private $api = inject(ApiService)
   private $auth = inject(AuthService)
-  private $cdr = inject(ChangeDetectorRef)
   private $toastr = inject(ToastrService)
   private $translate = inject(TranslateService)
+  private modalData = inject(USER_MODAL_DATA)
+
+  // Public properties (from injected data)
+  public user = this.modalData.user
+
+  // Signals
+  public isCurrentUser = signal(false)
+
+  // Other properties
   private initialFormValue: Partial<User> = {}
-
-  @Input() user: User
-
-  public isCurrentUser = false
   public form = new FormGroup({
     username: new FormControl('', [Validators.required]),
     name: new FormControl('', [Validators.required]),
@@ -37,28 +43,31 @@ export class UsersEditComponent implements OnInit {
     admin: new FormControl(true),
   }, this.matchPassword)
 
-  public ngOnInit() {
-    this.isCurrentUser = this.$auth.user.username === this.user.username
+  public ngOnInit(): void {
+    if (!this.user) {
+      return
+    }
+    this.isCurrentUser.set(this.$auth.user.username === this.user.username)
     this.form.patchValue(this.user)
     this.initialFormValue = this.form.getRawValue()
-    this.form.valueChanges.subscribe(() => this.$cdr.detectChanges())
   }
 
-  public onSubmit({ value }: { value: Partial<User> }) {
-    this.$api.patch(`/users/${this.user.id}`, value).subscribe({
-      next: () => {
-        this.$activeModal.close()
-        this.$toastr.success(this.$translate.instant('users.toast_updated_user'), this.$translate.instant('toast.title_success'))
+  public async onSubmit({ value }: { value: Partial<User> }): Promise<void> {
+    if (!this.user) {
+      return
+    }
+    try {
+      await this.$api.patch(`/users/${this.user.id}`, value)
+      this.$activeModal.close()
+      this.$toastr.success(this.$translate.instant('users.toast_updated_user'), this.$translate.instant('toast.title_success'))
 
-        if (this.isCurrentUser && value.username !== this.$auth.user.username) {
-          this.$auth.logout()
-        }
-      },
-      error: (error) => {
-        console.error(error)
-        this.$toastr.error(error.error?.message || this.$translate.instant('users.toast_failed_to_add_user'), this.$translate.instant('toast.title_error'))
-      },
-    })
+      if (this.isCurrentUser() && value.username !== this.$auth.user.username) {
+        this.$auth.logout()
+      }
+    } catch (error) {
+      console.error(error)
+      this.$toastr.error(error.error?.message || this.$translate.instant('users.toast_failed_to_add_user'), this.$translate.instant('toast.title_error'))
+    }
   }
 
   public isFormUnchanged(): boolean {
@@ -68,17 +77,17 @@ export class UsersEditComponent implements OnInit {
     return JSON.stringify(this.form.getRawValue()) === JSON.stringify(this.initialFormValue)
   }
 
-  public dismissModal() {
+  public dismissModal(): void {
     this.$activeModal.dismiss('Dismiss')
   }
 
-  private matchPassword(abstractControl: AbstractControl) {
-    const password = abstractControl.get('password').value
-    const passwordConfirm = abstractControl.get('passwordConfirm').value
+  private matchPassword(abstractControl: AbstractControl): { [key: string]: boolean } | null {
+    const password = abstractControl.get('password')?.value
+    const passwordConfirm = abstractControl.get('passwordConfirm')?.value
     if (password !== passwordConfirm) {
-      abstractControl.get('passwordConfirm').setErrors({ matchPassword: true })
-    } else {
-      return null
+      abstractControl.get('passwordConfirm')?.setErrors({ matchPassword: true })
+      return { matchPassword: true }
     }
+    return null
   }
 }

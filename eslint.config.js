@@ -2,9 +2,31 @@ import antfu from '@antfu/eslint-config'
 
 export default antfu(
   {
-    ignores: ['dist', 'info', 'ui/.angular'],
+    ignores: ['dist', 'info', 'ui/.angular', '.github/npm-version-script-esm.js'],
+    typescript: true,
+    angular: true,
+    formatters: {
+      css: true,
+      html: true,
+      markdown: true,
+      svg: true,
+    },
+    rules: {
+      'markdown/require-alt-text': 'off',
+    },
+  },
+  {
+    // JS/TS-specific rules (these crash on non-JS SourceCode objects like markdown)
+    files: ['**/*.?([cm])[jt]s?(x)'],
     rules: {
       'curly': ['error', 'all'],
+      'jsdoc/check-alignment': 'error',
+      'jsdoc/check-line-alignment': 'error',
+      'jsdoc/no-bad-blocks': 'error',
+      'jsdoc/no-blank-block-descriptions': 'error',
+      'jsdoc/require-asterisk-prefix': 'error',
+      // 'jsdoc/require-description-complete-sentence': 'error',
+      'jsdoc/require-hyphen-before-param-description': 'error',
       'no-undef': 'error',
       'perfectionist/sort-exports': 'error',
       'perfectionist/sort-imports': [
@@ -34,14 +56,6 @@ export default antfu(
       'ts/consistent-type-imports': 'off',
       'unicorn/no-useless-spread': 'error',
       'unused-imports/no-unused-vars': ['error', { caughtErrors: 'none' }],
-    },
-    typescript: true,
-    angular: true,
-    formatters: {
-      css: true,
-      // html: true,
-      markdown: true,
-      svg: true,
     },
   },
 )

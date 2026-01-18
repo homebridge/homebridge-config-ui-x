@@ -2,9 +2,8 @@ import { inject, Injectable } from '@angular/core'
 import { TranslateService } from '@ngx-translate/core'
 import { saveAs } from 'file-saver'
 import { ToastrService } from 'ngx-toastr'
-import { firstValueFrom } from 'rxjs'
 
-import { ApiService } from '@/app/core/api.service'
+import { ApiService } from '@/app/core/communication/api.service'
 
 @Injectable({
   providedIn: 'root',
@@ -15,10 +14,10 @@ export class BackupService {
   private $translate = inject(TranslateService)
 
   public async downloadBackup(): Promise<void> {
-    const res = await firstValueFrom(this.$api.get('/backup/download', {
+    const res = await this.$api.get('/backup/download', {
       observe: 'response',
       responseType: 'blob',
-    }))
+    })
     const archiveName = res.headers.get('File-Name') || 'homebridge-backup.tar.gz'
     const sizeInBytes = res.body.size
     if (sizeInBytes > globalThis.backup.maxBackupSize) {

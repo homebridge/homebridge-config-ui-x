@@ -1,13 +1,13 @@
 import { TitleCasePipe } from '@angular/common'
-import { Component, inject, OnInit } from '@angular/core'
+import { Component, inject, OnInit, signal } from '@angular/core'
 import { Router } from '@angular/router'
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
-import { firstValueFrom } from 'rxjs'
 
-import { ApiService } from '@/app/core/api.service'
-import { SettingsService } from '@/app/core/settings.service'
+import { ApiService } from '@/app/core/communication/api.service'
+import { SettingsService } from '@/app/core/ui/settings.service'
+import { Pairing } from '@/app/modules/settings/settings.interfaces'
 
 @Component({
   templateUrl: './reset-individual-bridges.component.html',
@@ -18,6 +18,7 @@ import { SettingsService } from '@/app/core/settings.service'
   ],
 })
 export class ResetIndividualBridgesComponent implements OnInit {
+  // Injected dependencies
   private $activeModal = inject(NgbActiveModal)
   private $api = inject(ApiService)
   private $router = inject(Router)
@@ -25,62 +26,63 @@ export class ResetIndividualBridgesComponent implements OnInit {
   private $toastr = inject(ToastrService)
   private $translate = inject(TranslateService)
 
-  public clicked: boolean = false
-  public pairingsNonChild: any[] = []
-  public pairingsChildActive: any[] = []
-  public pairingsChildStale: any[] = []
-  public toDelete: { id: string, resetPairingInfo: boolean }[] = []
+  // Signals
+  public clicked = signal(false)
+  public pairingsNonChild = signal<any[]>([])
+  public pairingsChildActive = signal<any[]>([])
+  public pairingsChildStale = signal<any[]>([])
+  public toDelete = signal<{ id: string, resetPairingInfo: boolean }[]>([])
+
+  // Other properties
   public isMatterSupported = this.$settings.isFeatureEnabled('matterSupport')
 
   public ngOnInit(): void {
-    this.loadPairings()
+    void this.loadPairings()
   }
 
-  public toggleList(id: string, resetPairingInfo: boolean = false) {
-    if (this.toDelete.some((item: { id: string }) => item.id === id)) {
-      this.toDelete = this.toDelete.filter((item: { id: string, resetPairingInfo: boolean }) => item.id !== id)
+  public toggleList(id: string, resetPairingInfo: boolean = false): void {
+    if (this.toDelete().some((item: { id: string }) => item.id === id)) {
+      this.toDelete.set(this.toDelete().filter((item: { id: string, resetPairingInfo: boolean }) => item.id !== id))
     } else {
-      this.toDelete.push({ id, resetPairingInfo })
+      this.toDelete.update(list => [...list, { id, resetPairingInfo }])
     }
   }
 
-  public isInList(id: string) {
-    return this.toDelete.some((item: { id: string }) => item.id === id)
+  public isInList(id: string): boolean {
+    return this.toDelete().some((item: { id: string }) => item.id === id)
   }
 
-  public removeBridges() {
-    this.clicked = true
-    return this.$api.delete('/server/pairings', {
-      body: this.toDelete,
-    }).subscribe({
-      next: () => {
-        this.$activeModal.close()
-        void this.$router.navigate(['/restart'], {
-          queryParams: { restarting: true },
-        })
-        this.$toastr.success(this.$translate.instant('reset.bridge_ind.done'), this.$translate.instant('toast.title_success'))
-      },
-      error: (error) => {
-        this.clicked = false
-        console.error(error)
-        this.$toastr.error(this.$translate.instant('reset.bridge_ind.fail'), this.$translate.instant('toast.title_error'))
-      },
-    })
+  public async removeBridges(): Promise<void> {
+    this.clicked.set(true)
+    try {
+      await this.$api.delete('/server/pairings', {
+        body: this.toDelete(),
+      })
+      this.$activeModal.close()
+      void this.$router.navigate(['/restart'], {
+        queryParams: { restarting: true },
+      })
+      this.$toastr.success(this.$translate.instant('reset.bridge_ind.done'), this.$translate.instant('toast.title_success'))
+    } catch (error) {
+      this.clicked.set(false)
+      console.error(error)
+      this.$toastr.error(this.$translate.instant('reset.bridge_ind.fail'), this.$translate.instant('toast.title_error'))
+    }
   }
 
-  public dismissModal() {
+  public dismissModal(): void {
     this.$activeModal.dismiss('Dismiss')
   }
 
-  private async loadPairings() {
+  private async loadPairings(): Promise<void> {
     try {
-      const pairings = (await firstValueFrom(this.$api.get('/server/pairings')))
+      const pairings = (await this.$api.get('/server/pairings'))
         .filter((pairing: any) => !pairing._main)
-        .sort((a, b) => a.name.localeCompare(b.name))
+        .sort((a: Pairing, b: Pairing) => a.name.localeCompare(b.name))
 
-      this.pairingsChildActive = pairings.filter((pairing: any) => pairing._category === 'bridge' && !pairing._couldBeStale)
-      this.pairingsNonChild = pairings.filter((pairing: any) => pairing._category !== 'bridge')
-      this.pairingsChildStale = pairings.filter((pairing: any) => pairing._category === 'bridge' && pairing._couldBeStale)
+      this.pairingsChildActive.set(pairings.filter((pairing: any) => pairing._category === 'bridge' && !pairing._couldBeStale))
+      this.pairingsNonChild.set(pairings.filter((pairing: any) => pairing._category !== 'bridge'))
+      this.pairingsChildStale.set(pairings.filter((pairing: any) => pairing._category === 'bridge' && pairing._couldBeStale))
     } catch (error) {
       console.error(error)
       this.$toastr.error(this.$translate.instant('settings.unpair_bridge.load_error'), this.$translate.instant('toast.title_error'))

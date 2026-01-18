@@ -96,6 +96,7 @@ export class PluginsService {
   private pluginListRetryTimeout: NodeJS.Timeout
 
   private hiddenPlugins: string[] = []
+  private hiddenScopes: string[] = []
   private unmaintainedPlugins: string[] = []
   private pluginIcons: { [key: string]: string } = {}
   private pluginAuthors: { [key: string]: string } = {}
@@ -322,8 +323,7 @@ export class PluginsService {
       return 'exactName'
     }
     // The keywords or name contain all the search terms
-    if (searchTerms.every(term => keywordsSet.has(term))
-      || searchTerms.every(term => nameTermsSet.has(term))) {
+    if (searchTerms.every(term => keywordsSet.has(term)) || searchTerms.every(term => nameTermsSet.has(term))) {
       return 'exactKeyword'
     }
     if (
@@ -350,7 +350,7 @@ export class PluginsService {
 
     if (
       (normalizedQuery.startsWith('homebridge-') || this.isScopedPlugin(normalizedQuery))
-      && !this.hiddenPlugins.includes(normalizedQuery)
+      && !this.isHiddenPlugin(normalizedQuery)
     ) {
       if (
         !this.installedPlugins.find(x => x.name === normalizedQuery)
@@ -372,12 +372,10 @@ export class PluginsService {
       throw new InternalServerErrorException(`Failed to search the npm registry as ${e.message}, see logs.`)
     }
 
-    const hiddenPluginsSet = new Set(this.hiddenPlugins)
-
     const plugins: HomebridgePlugin[] = searchResults.objects
       .filter(x =>
         (x.package.name.startsWith('homebridge-') || this.isScopedPlugin(x.package.name))
-        && !hiddenPluginsSet.has(x.package.name),
+        && !this.isHiddenPlugin(x.package.name),
       )
       .map((pkg) => {
         const isInstalled = this.installedPlugins.find(x => x.name === pkg.package.name)
@@ -1671,6 +1669,14 @@ export class PluginsService {
   }
 
   /**
+   * Check if a plugin is hidden, either by exact name or by scope prefix
+   */
+  private isHiddenPlugin(name: string): boolean {
+    return this.hiddenPlugins.includes(name)
+      || this.hiddenScopes.some(scope => name.startsWith(scope))
+  }
+
+  /**
    * Helper function to work out where npm is
    */
   private getNpmPath() {
@@ -2103,6 +2109,7 @@ export class PluginsService {
       this.verifiedPlusPlugins = []
       this.pluginIcons = {}
       this.hiddenPlugins = []
+      this.hiddenScopes = []
       this.unmaintainedPlugins = []
       this.pluginAuthors = {}
       this.pluginNames = {}
@@ -2115,7 +2122,11 @@ export class PluginsService {
           this.pluginIcons[key] = `icons/${plugin.i}.png`
         }
         if (plugin.h) {
-          this.hiddenPlugins.push(key)
+          if (key.endsWith('/')) {
+            this.hiddenScopes.push(key)
+          } else {
+            this.hiddenPlugins.push(key)
+          }
         }
         if (plugin.u) {
           this.unmaintainedPlugins.push(key)

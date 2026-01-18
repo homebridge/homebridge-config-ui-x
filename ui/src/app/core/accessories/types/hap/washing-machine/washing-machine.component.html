@@ -1,7 +1,7 @@
 <div
   class="accessory-box"
-  [class.accessory-on]="service.values.On || service.values.Active"
-  [style.cursor]="readyForControl ? 'pointer' : 'default'"
+  [class.accessory-on]="service().values?.On || service().values?.Active"
+  [style.cursor]="readyForControl() ? 'pointer' : 'default'"
   (shortClick)="onClick()"
   tabindex="0"
 >
@@ -38,10 +38,10 @@
         <circle cx="15.5" cy="17" r="6.5" stroke="#7f7f7f" fill="none" stroke-width="1.2" />
       </svg>
     </div>
-    <div class="accessory-label mt-auto">{{ service.customName || service.serviceName }}</div>
+    <div class="accessory-label mt-auto">{{ service().customName || service().serviceName }}</div>
     <div
       class="accessory-label grey-text"
-      [innerText]="((service.values.On || service.values.Active) ? 'accessories.control.on' : 'accessories.control.off') | translate"
+      [innerText]="((service().values?.On || service().values?.Active) ? 'accessories.control.on' : 'accessories.control.off') | translate"
     ></div>
   </div>
 </div>

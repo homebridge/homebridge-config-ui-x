@@ -3,13 +3,14 @@
 // `ng build --env=prod` then `environment.prod.ts` will be used instead.
 // The list of which env maps to which file can be found in `.angular-cli.json`.
 
+import packageJson from '../../../package.json'
+
 // Use current hostname to avoid CORS issues when accessing from non-localhost (e.g., local IP)
 const backendHost = typeof window !== 'undefined' ? window.location.hostname : 'localhost'
 const backendUrl = `http://${backendHost}:8581`
 
 export const environment = {
-  // eslint-disable-next-line ts/no-require-imports
-  serverTarget: require('../../../package.json').version,
+  serverTarget: packageJson.version,
   production: false,
   api: {
     base: `${backendUrl}/api`,

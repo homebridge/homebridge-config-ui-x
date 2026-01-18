@@ -1,5 +1,5 @@
 <div class="flex-column d-flex align-items-stretch h-100 w-100 pb-1">
-  <div class="drag-handler p-2" [class.widget-cursor]="widget.draggable">
+  <div class="drag-handler p-2" [class.widget-cursor]="widget().draggable">
     {{ 'status.memory.title_memory' | translate }}
   </div>
   <canvas
@@ -15,7 +15,7 @@
     <div class="d-flex justify-content-around flex-wrap w-100">
       <div class="text-center widget-value-parent-wrap">
         <div class="widget-value mb-0">
-          @if (totalMemory !== undefined) { {{ totalMemory | number:'1.0-2' }} GB } @else {
+          @if (totalMemory() !== undefined) { {{ totalMemory() | number:'1.0-2' }} GB } @else {
           <i class="fas fa-circle-notch fa-spin"></i>
           }
         </div>
@@ -23,7 +23,7 @@
       </div>
       <div class="text-center widget-value-parent-wrap">
         <div class="widget-value mb-0">
-          @if (freeMemory !== undefined) { {{ freeMemory | number:'1.0-2' }} GB } @else {
+          @if (freeMemory() !== undefined) { {{ freeMemory() | number:'1.0-2' }} GB } @else {
           <i class="fas fa-circle-notch fa-spin"></i>
           }
         </div>

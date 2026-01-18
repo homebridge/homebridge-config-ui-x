@@ -1,7 +1,7 @@
-import { Component, inject, OnInit } from '@angular/core'
+import { Component, inject, OnInit, signal } from '@angular/core'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 
-import { SettingsService } from '@/app/core/settings.service'
+import { SettingsService } from '@/app/core/ui/settings.service'
 import { environment } from '@/environments/environment'
 
 @Component({
@@ -12,15 +12,20 @@ import { environment } from '@/environments/environment'
   ],
 })
 export class SupportComponent implements OnInit {
+  // Injected dependencies
   private $settings = inject(SettingsService)
   private $translate = inject(TranslateService)
-  private swaggerEndpoint = '/swagger'
-  public showFields = {
+
+  // Signals
+  public showFields = signal({
     general: true,
     dev: true,
-  }
+  })
 
-  public ngOnInit() {
+  // Other properties
+  private swaggerEndpoint = '/swagger'
+
+  public ngOnInit(): void {
     // Set page title
     const title = this.$translate.instant('support.title')
     this.$settings.setPageTitle(title)
@@ -33,7 +38,10 @@ export class SupportComponent implements OnInit {
       : `${environment.api.origin}${this.swaggerEndpoint}`
   }
 
-  public toggleSection(section: string) {
-    this.showFields[section] = !this.showFields[section]
+  public toggleSection(section: string): void {
+    this.showFields.update(fields => ({
+      ...fields,
+      [section]: !fields[section],
+    }))
   }
 }

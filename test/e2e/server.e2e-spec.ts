@@ -19,7 +19,7 @@ import { ConfigService } from '../../src/core/config/config.service.js'
 import { ServerModule } from '../../src/modules/server/server.module.js'
 import { ServerService } from '../../src/modules/server/server.service.js'
 
-import '../../src/globalDefaults'
+import '../../src/global-defaults'
 
 describe('ServerController (e2e)', () => {
   let app: NestFastifyApplication

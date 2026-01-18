@@ -1,23 +1,26 @@
 import { DatePipe } from '@angular/common'
-import { Component, inject, Input, OnInit } from '@angular/core'
-import { NgbDropdown, NgbDropdownButtonItem, NgbDropdownItem, NgbDropdownMenu, NgbDropdownToggle, NgbModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap'
+import { Component, createEnvironmentInjector, effect, EnvironmentInjector, inject, input, OnInit, signal } from '@angular/core'
+import { NgbDropdown, NgbDropdownButtonItem, NgbDropdownItem, NgbDropdownMenu, NgbDropdownToggle } from '@ng-bootstrap/ng-bootstrap/dropdown'
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
+import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap/tooltip'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
 import { firstValueFrom } from 'rxjs'
 
-import { ApiService } from '@/app/core/api.service'
 import { AuthService } from '@/app/core/auth/auth.service'
+import { ApiService } from '@/app/core/communication/api.service'
+import { IoNamespace, WsService } from '@/app/core/communication/ws.service'
 import { ConfirmComponent } from '@/app/core/components/confirm/confirm.component'
 import { RestartHomebridgeComponent } from '@/app/core/components/restart-homebridge/restart-homebridge.component'
-import { DisablePluginComponent } from '@/app/core/manage-plugins/disable-plugin/disable-plugin.component'
-import { DonateComponent } from '@/app/core/manage-plugins/donate/donate.component'
-import { ChildBridge, Plugin } from '@/app/core/manage-plugins/manage-plugins.interfaces'
-import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service'
-import { PluginLogsComponent } from '@/app/core/manage-plugins/plugin-logs/plugin-logs.component'
-import { MobileDetectService } from '@/app/core/mobile-detect.service'
-import { SettingsService } from '@/app/core/settings.service'
-import { IoNamespace, WsService } from '@/app/core/ws.service'
-import { PluginInfoComponent } from '@/app/modules/plugins/plugin-card/plugin-info/plugin-info.component'
+import { CONFIRM_MODAL_DATA, DISABLE_PLUGIN_MODAL_DATA, PLUGIN_LOGS_MODAL_DATA, PLUGIN_MODAL_DATA } from '@/app/core/modal-data-tokens'
+import { DisablePluginComponent } from '@/app/core/plugins/disable-plugin/disable-plugin.component'
+import { DonateComponent } from '@/app/core/plugins/donate/donate.component'
+import { ChildBridge, Plugin } from '@/app/core/plugins/manage-plugins.interfaces'
+import { ManagePluginsService } from '@/app/core/plugins/manage-plugins.service'
+import { PluginInfoComponent } from '@/app/core/plugins/plugin-info/plugin-info.component'
+import { PluginLogsComponent } from '@/app/core/plugins/plugin-logs/plugin-logs.component'
+import { SettingsService } from '@/app/core/ui/settings.service'
+import { MobileDetectService } from '@/app/core/utilities/mobile-detect.service'
 
 @Component({
   selector: 'app-plugin-card',
@@ -35,6 +38,8 @@ import { PluginInfoComponent } from '@/app/modules/plugins/plugin-card/plugin-in
   ],
 })
 export class PluginCardComponent implements OnInit {
+  // Injected dependencies
+  private injector = inject(EnvironmentInjector)
   private $api = inject(ApiService)
   private $auth = inject(AuthService)
   private $md = inject(MobileDetectService)
@@ -44,86 +49,112 @@ export class PluginCardComponent implements OnInit {
   private $toastr = inject(ToastrService)
   private $translate = inject(TranslateService)
   private $ws = inject(WsService)
+
+  // Inputs
+  plugin = input.required<Plugin>()
+  childBridges = input.required<ChildBridge[]>()
+
+  // Other properties
   private io: IoNamespace
+  public readonly defaultIcon = 'assets/hb-icon.png'
+  public readonly isAdmin = this.$auth.user.admin
 
-  @Input() plugin: Plugin
+  // Signals
+  public hasChildBridges = signal(false)
+  public allChildBridgesStopped = signal(false)
+  public childBridgeStatus = signal('pending')
+  public childBridgeRestartInProgress = signal(false)
+  public isMobile = signal<string>('')
+  public setChildBridges = signal<ChildBridge[]>([])
 
-  public hasChildBridges = false
-  public allChildBridgesStopped = false
-  public childBridgeStatus = 'pending'
-  public childBridgeRestartInProgress = false
-  public defaultIcon = 'assets/hb-icon.png'
-  public isMobile: string
-  public setChildBridges: ChildBridge[] = []
-  public isAdmin = this.$auth.user.admin
+  constructor() {
+    // Use effect to react to childBridges changes
+    effect(() => {
+      const childBridges = this.childBridges()
+      this.hasChildBridges.set(childBridges.length > 0)
+      this.allChildBridgesStopped.set(childBridges.every(x => x.manuallyStopped === true))
 
-  // eslint-disable-next-line accessor-pairs
-  @Input() set childBridges(childBridges: ChildBridge[]) {
-    this.hasChildBridges = childBridges.length > 0
-    this.allChildBridgesStopped = childBridges.every(x => x.manuallyStopped === true)
-    if (this.hasChildBridges) {
-      // Get the "worse" status of all child bridges and use that for colour icon
-      if (childBridges.some(x => x.status === 'down')) {
-        this.childBridgeStatus = 'down'
-      } else if (childBridges.some(x => x.status === 'pending')) {
-        this.childBridgeStatus = 'pending'
-      } else if (childBridges.some(x => x.status === 'ok')) {
-        this.childBridgeStatus = 'ok'
+      if (this.hasChildBridges()) {
+        // Get the "worse" status of all child bridges and use that for color icon
+        if (childBridges.some(x => x.status === 'down')) {
+          this.childBridgeStatus.set('down')
+        } else if (childBridges.some(x => x.status === 'pending')) {
+          this.childBridgeStatus.set('pending')
+        } else if (childBridges.some(x => x.status === 'ok')) {
+          this.childBridgeStatus.set('ok')
+        }
       }
-    }
 
-    this.setChildBridges = childBridges
+      this.setChildBridges.set(childBridges)
+    })
   }
 
   public ngOnInit(): void {
-    this.isMobile = this.$md.detect.mobile()
+    this.isMobile.set(this.$md.detect.mobile())
     this.io = this.$ws.getExistingNamespace('child-bridges')
 
-    if (this.isMobile && this.plugin.displayName.toLowerCase().startsWith('homebridge ')) {
-      this.plugin.displayName = this.plugin.displayName.replace(/^homebridge /i, '')
+    if (this.isMobile() && this.plugin().displayName.toLowerCase().startsWith('homebridge ')) {
+      this.plugin().displayName = this.plugin().displayName.replace(/^homebridge /i, '')
     }
 
-    if (!this.plugin.icon) {
-      this.plugin.icon = this.defaultIcon
+    if (!this.plugin().icon) {
+      this.plugin().icon = this.defaultIcon
     }
   }
 
   public openFundingModal(plugin: Plugin) {
-    const ref = this.$modal.open(DonateComponent, {
+    const injector = createEnvironmentInjector([{
+      provide: PLUGIN_MODAL_DATA,
+      useValue: { plugin },
+    }], this.injector)
+
+    this.$modal.open(DonateComponent, {
       size: 'lg',
       backdrop: 'static',
+      injector,
     })
-    ref.componentInstance.plugin = plugin
   }
 
   public pluginInfoModal(plugin: Plugin) {
-    const ref = this.$modal.open(PluginInfoComponent, {
+    const injector = createEnvironmentInjector([{
+      provide: PLUGIN_MODAL_DATA,
+      useValue: { plugin },
+    }], this.injector)
+
+    this.$modal.open(PluginInfoComponent, {
       size: 'lg',
       backdrop: 'static',
+      injector,
     })
-    ref.componentInstance.plugin = plugin
   }
 
-  public disablePlugin(plugin: Plugin) {
+  public async disablePlugin(plugin: Plugin): Promise<void> {
+    const injector = createEnvironmentInjector([{
+      provide: DISABLE_PLUGIN_MODAL_DATA,
+      useValue: {
+        pluginName: plugin.displayName || plugin.name,
+        isConfigured: plugin.isConfigured,
+        isConfiguredDynamicPlatform: plugin.isConfiguredDynamicPlatform,
+        keepOrphans: this.$settings.keepOrphans,
+      },
+    }], this.injector)
+
     const ref = this.$modal.open(DisablePluginComponent, {
       size: 'lg',
       backdrop: 'static',
+      injector,
     })
 
-    ref.componentInstance.pluginName = plugin.displayName
-    ref.componentInstance.isConfigured = plugin.isConfigured
-    ref.componentInstance.isConfiguredDynamicPlatform = plugin.isConfiguredDynamicPlatform
-    ref.componentInstance.keepOrphans = this.$settings.keepOrphans
-
-    ref.result.then(async () => {
+    try {
+      await ref.result
       try {
-        await firstValueFrom(this.$api.put(`/config-editor/plugin/${encodeURIComponent(plugin.name)}/disable`, {}))
         // Mark as disabled
+        await this.$api.put(`/config-editor/plugin/${encodeURIComponent(plugin.name)}/disable`, {})
         plugin.disabled = true
 
         // Stop all child bridges
-        if (this.hasChildBridges) {
-          this.doChildBridgeAction('stop')
+        if (this.hasChildBridges()) {
+          void this.doChildBridgeAction('stop')
         }
         this.$modal.open(RestartHomebridgeComponent, {
           size: 'lg',
@@ -133,29 +164,38 @@ export class PluginCardComponent implements OnInit {
         console.error(error)
         this.$toastr.error(this.$translate.instant('plugins.disable.error'), this.$translate.instant('toast.title_error'))
       }
-    })
+    } catch {
+      // Modal dismissed, do nothing
+    }
   }
 
-  public enablePlugin(plugin: Plugin) {
+  public async enablePlugin(plugin: Plugin): Promise<void> {
+    const injector = createEnvironmentInjector([{
+      provide: CONFIRM_MODAL_DATA,
+      useValue: {
+        title: plugin.name,
+        message: this.$translate.instant('plugins.manage.confirm_enable', { pluginName: plugin.displayName }),
+        confirmButtonLabel: this.$translate.instant('plugins.manage.enable'),
+        faIconClass: 'fa-circle-play primary-text',
+      },
+    }], this.injector)
+
     const ref = this.$modal.open(ConfirmComponent, {
       size: 'lg',
       backdrop: 'static',
+      injector,
     })
 
-    ref.componentInstance.title = plugin.name
-    ref.componentInstance.message = this.$translate.instant('plugins.manage.confirm_enable', { pluginName: plugin.displayName })
-    ref.componentInstance.confirmButtonLabel = this.$translate.instant('plugins.manage.enable')
-    ref.componentInstance.faIconClass = 'fa-circle-play primary-text'
-
-    ref.result.then(async () => {
+    try {
+      await ref.result
       try {
-        await firstValueFrom(this.$api.put(`/config-editor/plugin/${encodeURIComponent(plugin.name)}/enable`, {}))
+        await this.$api.put(`/config-editor/plugin/${encodeURIComponent(plugin.name)}/enable`, {})
 
         // Mark as enabled
         plugin.disabled = false
 
         // Start all child bridges
-        if (this.hasChildBridges) {
+        if (this.hasChildBridges()) {
           await this.doChildBridgeAction('start')
         }
         this.$modal.open(RestartHomebridgeComponent, {
@@ -166,69 +206,77 @@ export class PluginCardComponent implements OnInit {
         console.error(error)
         this.$toastr.error(this.$translate.instant('plugins.enable.error'), this.$translate.instant('toast.title_error'))
       }
-    })
+    } catch {
+      // Modal dismissed, do nothing
+    }
   }
 
-  public viewPluginLog() {
-    const ref = this.$modal.open(PluginLogsComponent, {
+  public viewPluginLog(): void {
+    const injector = createEnvironmentInjector([{
+      provide: PLUGIN_LOGS_MODAL_DATA,
+      useValue: {
+        plugin: this.plugin(),
+        childBridges: this.setChildBridges(),
+      },
+    }], this.injector)
+
+    this.$modal.open(PluginLogsComponent, {
       size: 'xl',
       backdrop: 'static',
+      injector,
     })
-
-    ref.componentInstance.plugin = this.plugin
-    ref.componentInstance.childBridges = this.setChildBridges
   }
 
-  public async doChildBridgeAction(action: 'stop' | 'start' | 'restart') {
-    this.childBridgeRestartInProgress = true
+  public async doChildBridgeAction(action: 'stop' | 'start' | 'restart'): Promise<void> {
+    this.childBridgeRestartInProgress.set(true)
     try {
-      for (const bridge of this.setChildBridges) {
+      for (const bridge of this.setChildBridges()) {
         await firstValueFrom(this.io.request(`${action}-child-bridge`, bridge.username))
       }
     } catch (error) {
       console.error(error)
       this.$toastr.error(this.$translate.instant('plugins.bridge.action_error', { action }), this.$translate.instant('toast.title_error'))
-      this.childBridgeRestartInProgress = false
+      this.childBridgeRestartInProgress.set(false)
     } finally {
       setTimeout(() => {
-        this.childBridgeRestartInProgress = false
+        this.childBridgeRestartInProgress.set(false)
       }, action === 'restart' ? 12000 : action === 'stop' ? 6000 : 1000)
     }
   }
 
-  public handleIconError() {
-    this.plugin.icon = this.defaultIcon
+  public handleIconError(): void {
+    this.plugin().icon = this.defaultIcon
   }
 
-  public checkAndUpdatePlugin() {
-    void this.$plugin.checkAndUpdatePlugin(this.plugin, this.plugin.latestVersion)
+  public checkAndUpdatePlugin(): void {
+    void this.$plugin.checkAndUpdatePlugin(this.plugin(), this.plugin().latestVersion)
   }
 
-  public openSettings() {
-    void this.$plugin.settings(this.plugin)
+  public openSettings(): void {
+    void this.$plugin.settings(this.plugin())
   }
 
-  public openBridgeSettings() {
-    void this.$plugin.bridgeSettings(this.plugin)
+  public openBridgeSettings(): void {
+    void this.$plugin.bridgeSettings(this.plugin())
   }
 
-  public switchToScoped() {
-    void this.$plugin.switchToScoped(this.plugin)
+  public switchToScoped(): void {
+    void this.$plugin.switchToScoped(this.plugin())
   }
 
-  public installAlternateVersion() {
-    void this.$plugin.installAlternateVersion(this.plugin)
+  public installAlternateVersion(): void {
+    void this.$plugin.installAlternateVersion(this.plugin())
   }
 
-  public openJsonEditor() {
-    void this.$plugin.jsonEditor(this.plugin)
+  public openJsonEditor(): void {
+    void this.$plugin.jsonEditor(this.plugin())
   }
 
-  public uninstallPlugin() {
-    this.$plugin.uninstallPlugin(this.plugin, this.setChildBridges)
+  public uninstallPlugin(): void {
+    this.$plugin.uninstallPlugin(this.plugin(), this.setChildBridges())
   }
 
-  public resetChildBridges() {
-    void this.$plugin.resetChildBridges(this.setChildBridges)
+  public resetChildBridges(): void {
+    void this.$plugin.resetChildBridges(this.setChildBridges())
   }
 }

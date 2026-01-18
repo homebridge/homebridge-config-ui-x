@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core'
+import { Component, computed, input } from '@angular/core'
 import { TranslatePipe } from '@ngx-translate/core'
 
 import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
@@ -7,25 +7,22 @@ import { controlDevice, getDeviceActiveState } from '@/app/core/accessories/type
 @Component({
   selector: 'app-on-off-light',
   templateUrl: './on-off-light.component.html',
-  styleUrls: ['./on-off-light.component.scss'],
   standalone: true,
   imports: [
     TranslatePipe,
   ],
 })
 export class OnOffLightComponent {
-  @Input() public service: ServiceTypeX
-  @Input() public readyForControl = false
+  public service = input.required<ServiceTypeX>()
+  public readyForControl = input<boolean>(false)
 
   public onClick() {
-    if (!this.readyForControl) {
+    if (!this.readyForControl()) {
       return
     }
 
-    controlDevice(this.service)
+    controlDevice(this.service())
   }
 
-  public get isOn(): boolean {
-    return getDeviceActiveState(this.service)
-  }
+  public isOn = computed(() => getDeviceActiveState(this.service()))
 }

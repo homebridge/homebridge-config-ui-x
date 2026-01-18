@@ -37,8 +37,7 @@
       [step]="targetBrightness.step"
       [(ngModel)]="targetBrightness.value"
       (ngModelChange)="onBrightnessStateChange()"
-    >
-    </nouislider>
+    />
     <h6 class="mt-4">
       {{ 'accessories.control.color_temperature' | translate }}: {{ targetColorTemperature.mired | convertMired }}
     </h6>
@@ -48,8 +47,7 @@
       [step]="targetColorTemperature.step"
       [(ngModel)]="targetColorTemperature.value"
       (ngModelChange)="onColorTemperatureStateChange()"
-    >
-    </nouislider>
+    />
   </div>
   <div class="modal-footer"></div>
 </div>

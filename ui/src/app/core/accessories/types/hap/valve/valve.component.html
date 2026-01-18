@@ -1,13 +1,13 @@
 <div
   class="accessory-box"
-  [class.accessory-on]="service.values.Active || service.values.On"
-  [style.cursor]="readyForControl ? 'pointer' : 'default'"
+  [class.accessory-on]="service().values?.Active || service().values?.On"
+  [style.cursor]="readyForControl() ? 'pointer' : 'default'"
   (longClick)="onLongClick()"
   (shortClick)="onClick()"
   tabindex="0"
 >
   <div class="d-flex flex-column h-100">
-    @if (service.values.ValveType === 0 || !service.values.ValveType) {
+    @if (service().values?.ValveType === 0 || !service().values?.ValveType) {
     <div [attr.aria-label]="'accessories.core.generic_valve' | translate" class="accessory-svg">
       <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
         <! -- top twister - ->
@@ -29,7 +29,7 @@
         <circle class="drop drop-bottom" fill="#1976d2" fill-opacity="0" cx="29" cy="29" r="1.5" />
       </svg>
     </div>
-    } @else if (service.values.ValveType === 1) {
+    } @else if (service().values?.ValveType === 1) {
     <div [attr.aria-label]="'accessories.core.irrigation_valve' | translate" class="accessory-svg">
       <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
         <! -- small drops, left to right - ->
@@ -62,7 +62,7 @@
         />
       </svg>
     </div>
-    } @else if (service.values.ValveType === 2) {
+    } @else if (service().values?.ValveType === 2) {
     <div [attr.aria-label]="'accessories.core.shower_head_valve' | translate" class="accessory-svg">
       <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
         <! -- top horizontal pipe - ->
@@ -91,7 +91,7 @@
         <circle class="drop drop-bottom" fill="#1976d2" fill-opacity="0" cx="24" cy="28" r="0.75" />
       </svg>
     </div>
-    } @else if (service.values.ValveType === 3) {
+    } @else if (service().values?.ValveType === 3) {
     <div [attr.aria-label]="'accessories.core.faucet_valve' | translate" class="accessory-svg">
       <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
         <! -- sink - ->
@@ -130,11 +130,11 @@
     </div>
     }
     <div class="accessory-label mt-auto">
-      {{ service.customName || service.values.ConfiguredName || service.serviceName }}
+      {{ service().customName || service().values?.ConfiguredName || service().serviceName }}
     </div>
-    @if (service.values.Active && remainingDuration) {
+    @if (service().values?.Active && remainingDuration) {
     <div class="accessory-label grey-text">{{ remainingDuration }}</div>
-    } @else if ((service.values.Active && !remainingDuration) || service.values.On) {
+    } @else if ((service().values?.Active && !remainingDuration) || service().values?.On) {
     <div class="accessory-label grey-text">{{ 'accessories.control.running' | translate }}</div>
     } @else {
     <div class="accessory-label grey-text">{{ 'accessories.control.off' | translate }}</div>

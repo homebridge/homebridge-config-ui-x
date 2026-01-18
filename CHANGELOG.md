@@ -219,11 +219,16 @@ Wishing all our users a very happy and fulfilling 2026! 🎉
 - use `curly': ['error', 'all']` eslint rule
 - dependency updates
 
+### ⚠️ Browser Support
+
+- Updated minimum browser requirements to align with Angular 21:
+  - now targeting the last 2 versions of Chrome, Edge, Firefox and Safari
+
 ### Homebridge Dependencies
 
 - `@homebridge/hap-client` @ `v3.1.2`
 - `@homebridge/node-pty-prebuilt-multiarch` @ `v0.13.1`
-- `@homebridge/plugin-ui-utils` @ `v2.1.2`
+- `@homebridge/plugin-ui-utils` @ `v2.1.3-beta.0`
 
 ## v5.12.0 (2025-12-15)
 

@@ -35,7 +35,7 @@ export class SslCertGeneratorService {
 
   /**
    * Generate or load a self-signed certificate
-   * @param hostnames Optional array of hostnames to include in the certificate
+   * @param hostnames - Optional array of hostnames to include in the certificate
    */
   async generateOrLoadCertificate(hostnames: string[] = ['localhost']): Promise<SslCertificateData> {
     // Check if certificate already exists
@@ -56,7 +56,7 @@ export class SslCertGeneratorService {
 
   /**
    * Generate a new self-signed certificate
-   * @param hostnames Array of hostnames to include in the certificate
+   * @param hostnames - Array of hostnames to include in the certificate
    */
   public async generateCertificate(hostnames: string[]): Promise<SslCertificateData> {
     this.logger.log('Generating self-signed certificate...')

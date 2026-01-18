@@ -2,12 +2,12 @@
   <div class="col-6">
     <h3 class="primary-text m-0">{{ 'menu.label_status' | translate }}</h3>
   </div>
-  @if (consoleStatus === 'up' && isAdmin) {
+  @if (consoleStatus() === 'up' && isAdmin) {
   <div class="col-6 text-end">
     <button
       type="button"
       class="btn btn-elegant my-0 me-0"
-      [hidden]="!options.draggable.enabled && !page.showWidgetConfigure"
+      [hidden]="!options.draggable.enabled && !page().showWidgetConfigure"
       (click)="addWidget()"
       container="body"
       placement="bottom"
@@ -52,19 +52,24 @@
   }
 </div>
 <div class="status-container d-flex flex-column mt-0">
-  @if (consoleStatus === 'down') {
+  @if (consoleStatus() === 'down') {
   <app-spinner />
   }
   <div class="row flex-column flex-grow-1">
-    @if (dashboard.length) {
-    <gridster [options]="options" class="flex-grow-1 no-scrollbars py-0" [hidden]="consoleStatus === 'down'">
-      @for (item of dashboard; track item) { @if (!(item.hideOnMobile && page.mobile)) {
+    @if (dashboard().length) {
+    <gridster [options]="options" class="flex-grow-1 no-scrollbars py-0" [hidden]="consoleStatus() === 'down'">
+      @for (item of dashboard(); track item) { @if (!(item.hideOnMobile && page().mobile)) {
       <gridster-item class="widget-item" [item]="item" [id]="item.component">
         <div class="gridster-item-content">
-          @if (options.draggable.enabled || page.showWidgetConfigure) {
-          <div class="widget-control-button" (click)="manageWidget(item)">
-            <i class="fas fa-cog"></i>
-          </div>
+          @if (options.draggable.enabled || page().showWidgetConfigure) {
+          <button
+            type="button"
+            class="widget-control-button"
+            (click)="manageWidget(item)"
+            [attr.aria-label]="'status.widget.title_manage_widget' | translate"
+          >
+            <i class="fas fa-cog" aria-hidden="true"></i>
+          </button>
           }
         </div>
         <app-widgets [widget]="item" class="d-flex h-100 w-100" />
@@ -91,7 +96,14 @@
           Homebridge UI
         </a>
         &middot;
-        <a class="grey-text" href="javascript: void(0);" (click)="openCreditsModal()"> <i class="fas fa-heart"></i></a>
+        <button
+          type="button"
+          class="icon-button-reset grey-text"
+          (click)="openCreditsModal()"
+          [attr.aria-label]="'status.credits.title' | translate"
+        >
+          <i class="fas fa-heart" aria-hidden="true"></i>
+        </button>
       </small>
       <! -- The above copyright notice shall be included and displayed on all copies or substantial portions of this software. - ->
     </div>

@@ -50,7 +50,13 @@
     </div>
     <div class="text-center"></div>
     <div class="text-end">
-      <button type="button" class="btn btn-primary" data-bs-dismiss="modal" [disabled]="isUnchanged" (click)="submit()">
+      <button
+        type="button"
+        class="btn btn-primary"
+        data-bs-dismiss="modal"
+        [disabled]="isUnchanged()"
+        (click)="submit()"
+      >
         {{ 'form.button_save' | translate }}
       </button>
     </div>

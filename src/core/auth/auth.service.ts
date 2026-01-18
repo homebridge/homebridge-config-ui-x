@@ -152,7 +152,7 @@ export class AuthService {
 
   /**
    * Refresh an existing token to extend the session
-   * @param user the current user payload from the JWT
+   * @param user - the current user payload from the JWT
    */
   async refreshToken(user: any): Promise<any> {
     // Validate that the user still exists and has the same permissions
@@ -192,7 +192,7 @@ export class AuthService {
   /**
    * Validate User
    * All information about the user we need is stored in the payload
-   * @param payload the decoded, verified jwt payload
+   * @param payload - the decoded, verified jwt payload
    */
   async validateUser(payload: any): Promise<any> {
     return payload
@@ -311,7 +311,7 @@ export class AuthService {
 
   /**
    * Returns all the users
-   * @param strip if true, remove the users salt and hashed password from the response
+   * @param strip - if true, remove the users salt and hashed password from the response
    */
   async getUsers(strip?: boolean): Promise<UserDto[]> {
     const users: UserDto[] = await readJson(this.configService.authPath)

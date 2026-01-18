@@ -73,8 +73,7 @@ yarn.lock
 
 # test directories
 test/.homebridge*
-
+info
 
 # AI agents
 .claude
-info

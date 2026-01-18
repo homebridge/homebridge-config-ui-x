@@ -63,7 +63,7 @@
       [step]="1"
       [(ngModel)]="targetHue.value"
       (ngModelChange)="onHueStateChange()"
-      [class]="{ 'mb-1': isAdaptiveLightingEnabled, '': !isAdaptiveLightingEnabled }"
+      [class.mb-1]="isAdaptiveLightingEnabled"
     />
     @if (isAdaptiveLightingEnabled) {
     <div class="d-flex text-center mt-0 mb-1">
@@ -77,7 +77,7 @@
       [step]="1"
       [(ngModel)]="targetSaturation.value"
       (ngModelChange)="onSaturationStateChange()"
-      [class]="{ 'mb-1': isAdaptiveLightingEnabled, '': !isAdaptiveLightingEnabled }"
+      [class.mb-1]="isAdaptiveLightingEnabled"
     />
     @if (isAdaptiveLightingEnabled) {
     <div class="d-flex text-center mt-0 mb-1">
@@ -93,7 +93,7 @@
       [step]="targetColorTemperature.step"
       [(ngModel)]="targetColorTemperature.value"
       (ngModelChange)="onColorTemperatureStateChange()"
-      [class]="{ 'mb-1': isAdaptiveLightingEnabled, '': !isAdaptiveLightingEnabled }"
+      [class.mb-1]="isAdaptiveLightingEnabled"
     />
     @if (isAdaptiveLightingEnabled) {
     <div class="d-flex text-center mt-0 mb-1">

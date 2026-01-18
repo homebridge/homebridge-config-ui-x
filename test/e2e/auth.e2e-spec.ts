@@ -14,7 +14,7 @@ import { AuthModule } from '../../src/core/auth/auth.module.js'
 import { AuthService } from '../../src/core/auth/auth.service.js'
 import { ConfigService } from '../../src/core/config/config.service.js'
 
-import '../../src/globalDefaults'
+import '../../src/global-defaults'
 
 describe('AuthController (e2e)', () => {
   let app: NestFastifyApplication

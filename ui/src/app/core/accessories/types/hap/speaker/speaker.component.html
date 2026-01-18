@@ -1,11 +1,11 @@
 <div
   class="accessory-box"
   [class]="{
-    'accessory-on': 'Active' in service.values
-      ? service.values.Active
-      : ('CurrentMediaState' in service.values ? [0, 1].includes(service.values.CurrentMediaState) : 'Mute' in service.values && 'Volume' in service.values ? !service.values.Mute && service.values.Volume > 0 : 'Mute' in service.values && !service.values.Mute),
-    'paused': 'CurrentMediaState' in service.values && service.values.CurrentMediaState === 1,
-    'muted': 'Mute' in service.values && service.values.Mute,
+    'accessory-on': 'Active' in service().values
+      ? service().values?.Active
+      : ('CurrentMediaState' in service().values ? [0, 1].includes(service().values?.CurrentMediaState) : 'Mute' in service().values && 'Volume' in service().values ? !service().values?.Mute && service().values?.Volume > 0 : 'Mute' in service().values && !service().values?.Mute),
+    'paused': 'CurrentMediaState' in service().values && service().values?.CurrentMediaState === 1,
+    'muted': 'Mute' in service().values && service().values?.Mute,
   }"
   [style.cursor]="readyForControl ? 'pointer' : 'default'"
   (longClick)="onLongClick()"
@@ -63,21 +63,21 @@
         />
       </svg>
     </div>
-    <div class="accessory-label mt-auto">{{ service.customName || service.serviceName }}</div>
-    @if ('CurrentMediaState' in service.values) {
+    <div class="accessory-label mt-auto">{{ service().customName || service().serviceName }}</div>
+    @if ('CurrentMediaState' in service().values) {
     <div class="accessory-label grey-text">
-      @switch (service.values.CurrentMediaState) { @case (0) { {{ 'accessories.control.play' | translate }} } @case (1)
-      { {{ 'accessories.control.pause' | translate }} } @case (2) { {{ 'accessories.control.stop' | translate }} }} @if
-      ('Mute' in service.values && service.values.Mute) { &middot; {{ 'accessories.control.mute' | translate }} } @else
-      { @if ('Volume' in service.values) { &middot; {{ service.values.Volume }}% } }
+      @switch (service().values?.CurrentMediaState) { @case (0) { {{ 'accessories.control.play' | translate }} } @case
+      (1) { {{ 'accessories.control.pause' | translate }} } @case (2) { {{ 'accessories.control.stop' | translate }} }}
+      @if ('Mute' in service().values && service().values?.Mute) { &middot; {{ 'accessories.control.mute' | translate }}
+      } @else { @if ('Volume' in service().values) { &middot; {{ service().values?.Volume }}% } }
     </div>
-    } @else if ('Active' in service.values && !service.values.Active) {
+    } @else if ('Active' in service().values && !service().values?.Active) {
     <div class="accessory-label grey-text" [innerText]="'accessories.control.off' | translate"></div>
-    } @else if ('Mute' in service.values && service.values.Mute) {
+    } @else if ('Mute' in service().values && service().values?.Mute) {
     <div class="accessory-label grey-text" [innerText]="'accessories.control.mute' | translate"></div>
-    } @else if ('Volume' in service.values) {
-    <div class="accessory-label grey-text">{{ service.values.Volume }}%</div>
-    } @else if (['Speaker', 'SmartSpeaker'].includes(service.customType || service.type)) {
+    } @else if ('Volume' in service().values) {
+    <div class="accessory-label grey-text">{{ service().values?.Volume }}%</div>
+    } @else if (['Speaker', 'SmartSpeaker'].includes(service().customType || service().type)) {
     <div class="accessory-label grey-text">{{ 'accessories.control.on' | translate }}</div>
     } @else {
     <div class="accessory-label grey-text">{{ 'accessories.control.speaker' | translate }}</div>

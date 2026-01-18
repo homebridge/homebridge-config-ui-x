@@ -1,4 +1,4 @@
-import { ApplicationRef, Component, ComponentFactoryResolver, ElementRef, EmbeddedViewRef, inject, Injector, Input, OnDestroy, OnInit } from '@angular/core'
+import { ApplicationRef, Component, ComponentFactoryResolver, ElementRef, EmbeddedViewRef, inject, Injector, input, OnDestroy, OnInit } from '@angular/core'
 
 import { AccessoriesWidgetComponent } from '@/app/modules/status/widgets/accessories-widget/accessories-widget.component'
 import { BridgesWidgetComponent } from '@/app/modules/status/widgets/bridges-widget/bridges-widget.component'
@@ -40,10 +40,13 @@ export const AVAILABLE_WIDGETS = [
   standalone: true,
 })
 export class WidgetsComponent implements OnInit, OnDestroy {
+  // Injected dependencies
   private appRef = inject(ApplicationRef)
   private componentFactoryResolver = inject(ComponentFactoryResolver)
   private el = inject(ElementRef)
   private injector = inject(Injector)
+
+  // Other properties
   private componentRef: any
   private availableWidgets = {
     HapQrcodeWidgetComponent,
@@ -62,31 +65,31 @@ export class WidgetsComponent implements OnInit, OnDestroy {
     BridgesWidgetComponent,
   }
 
-  @Input() widget: Widget
+  widget = input.required<Widget>()
 
-  public ngOnInit() {
-    if (Object.prototype.hasOwnProperty.call(this.availableWidgets, this.widget.component)) {
-      this.load(this.availableWidgets[this.widget.component])
+  public ngOnInit(): void {
+    if (Object.prototype.hasOwnProperty.call(this.availableWidgets, this.widget().component)) {
+      this.load(this.availableWidgets[this.widget().component])
     }
   }
 
-  public ngOnDestroy() {
+  public ngOnDestroy(): void {
     if (this.componentRef) {
-      this.widget.$resizeEvent.complete()
-      this.widget.$configureEvent.complete()
+      this.widget().$resizeEvent.complete()
+      this.widget().$configureEvent.complete()
       this.componentRef.destroy()
     }
   }
 
-  private load(component: any) {
+  private load(component: any): void {
     // 1. Create a component reference from the component
     this.componentRef = this.componentFactoryResolver
       .resolveComponentFactory(component)
       .create(this.injector)
 
     // 2. Pass the though things
-    this.componentRef.instance.resizeEvent = this.widget.$resizeEvent
-    this.componentRef.instance.configureEvent = this.widget.$configureEvent
+    this.componentRef.instance.resizeEvent = this.widget().$resizeEvent
+    this.componentRef.instance.configureEvent = this.widget().$configureEvent
     this.componentRef.instance.widget = this.widget
 
     // 3. Get DOM element from component

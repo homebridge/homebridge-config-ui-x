@@ -23,7 +23,7 @@ import { SpaFilter } from './core/spa/spa.filter.js'
 import './env-setup.js'
 import 'reflect-metadata'
 import './self-check.js'
-import './globalDefaults.js'
+import './global-defaults.js'
 
 export { HomebridgeIpcService } from './core/homebridge-ipc/homebridge-ipc.service.js'
 

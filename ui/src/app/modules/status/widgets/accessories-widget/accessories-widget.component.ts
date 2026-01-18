@@ -1,12 +1,12 @@
-import { Component, inject, Input, OnDestroy, OnInit } from '@angular/core'
+import { Component, DestroyRef, inject, input, OnDestroy, OnInit, signal } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { TranslatePipe } from '@ngx-translate/core'
 import { DragulaModule, DragulaService } from 'ng2-dragula'
-import { Subscription } from 'rxjs'
 
 import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
 import { AccessoriesService } from '@/app/core/accessories/accessories.service'
 import { AccessoryTileComponent } from '@/app/core/accessories/accessory-tile/accessory-tile.component'
-import { MobileDetectService } from '@/app/core/mobile-detect.service'
+import { MobileDetectService } from '@/app/core/utilities/mobile-detect.service'
 import { Widget } from '@/app/modules/status/widgets/widgets.interfaces'
 
 @Component({
@@ -19,41 +19,44 @@ import { Widget } from '@/app/modules/status/widgets/widgets.interfaces'
   ],
 })
 export class AccessoriesWidgetComponent implements OnInit, OnDestroy {
+  // Injected dependencies
+  private destroyRef = inject(DestroyRef)
   private $accessories = inject(AccessoriesService)
   private $dragula = inject(DragulaService)
   private $md = inject(MobileDetectService)
-  private accessoryDataSubscription: Subscription
-  private layoutSubscription: Subscription
-  private orderSubscription: Subscription
 
-  @Input() widget: Widget
-
-  public isMobile: any = false
-  public dashboardAccessories: ServiceTypeX[] = []
-  public loaded = false
+  // Signals
+  widget = input.required<Widget>()
+  public dashboardAccessories = signal<ServiceTypeX[]>([])
+  public loaded = signal<boolean>(false)
+  public isMobile = signal(false)
 
   constructor() {
     const $dragula = this.$dragula
 
-    this.isMobile = this.$md.detect.mobile()
+    this.isMobile.set(!!this.$md.detect.mobile())
 
     // Disable drag and drop for the .no-drag class
     $dragula.createGroup('widget-accessories-bag', {
-      moves: el => !this.isMobile && !el.classList.contains('no-drag'),
+      moves: el => !this.isMobile() && !el.classList.contains('no-drag'),
     })
 
     // Save the room and service layout
-    this.orderSubscription = $dragula.drop().subscribe(() => {
-      setTimeout(() => {
-        this.widget.accessoryOrder = this.dashboardAccessories.map(x => x.uniqueId)
-        this.widget.$saveWidgetsEvent.next(undefined)
+    $dragula.drop()
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        this.widget().accessoryOrder = this.dashboardAccessories().map(x => x.uniqueId)
+        this.widget().$saveWidgetsEvent.next(undefined)
       })
-    })
   }
 
-  public async ngOnInit() {
+  public ngOnInit(): void {
+    void this.initialize()
+  }
+
+  private async initialize(): Promise<void> {
     // Subscribe to accessory data events
-    this.accessoryDataSubscription = this.$accessories.accessoryData.subscribe(() => {
+    this.$accessories.accessoryData.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
       this.getDashboardAccessories()
     })
 
@@ -61,25 +64,22 @@ export class AccessoriesWidgetComponent implements OnInit, OnDestroy {
     await this.$accessories.start()
 
     // Subscribe to layout events
-    this.layoutSubscription = this.$accessories.layoutSaved.subscribe({
+    this.$accessories.layoutSaved.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
         this.getDashboardAccessories()
       },
     })
   }
 
-  public ngOnDestroy() {
+  public ngOnDestroy(): void {
     this.$accessories.stop()
-    this.layoutSubscription.unsubscribe()
-    this.orderSubscription.unsubscribe()
-    this.accessoryDataSubscription.unsubscribe()
     this.$dragula.destroy('widget-accessories-bag')
   }
 
-  private getDashboardAccessories() {
+  private getDashboardAccessories(): void {
     const dashboardAccessories = []
 
-    for (const room of this.$accessories.rooms) {
+    for (const room of this.$accessories.rooms()) {
       for (const accessory of room.services) {
         if (accessory.onDashboard) {
           dashboardAccessories.push(accessory)
@@ -87,10 +87,10 @@ export class AccessoriesWidgetComponent implements OnInit, OnDestroy {
       }
     }
 
-    if (this.widget.accessoryOrder && this.widget.accessoryOrder.length) {
+    if (this.widget().accessoryOrder && this.widget().accessoryOrder.length) {
       dashboardAccessories.sort((a, b) => {
-        const posA = this.widget.accessoryOrder.findIndex((s: any) => s === a.uniqueId)
-        const posB = this.widget.accessoryOrder.findIndex((s: any) => s === b.uniqueId)
+        const posA = this.widget().accessoryOrder.findIndex((s: any) => s === a.uniqueId)
+        const posB = this.widget().accessoryOrder.findIndex((s: any) => s === b.uniqueId)
         if (posA < posB) {
           return -1
         } else if (posA > posB) {
@@ -100,7 +100,7 @@ export class AccessoriesWidgetComponent implements OnInit, OnDestroy {
       })
     }
 
-    this.dashboardAccessories = dashboardAccessories
-    this.loaded = true
+    this.dashboardAccessories.set(dashboardAccessories)
+    this.loaded.set(true)
   }
 }

@@ -1,13 +1,16 @@
-import { Component, inject, Input, OnDestroy, OnInit } from '@angular/core'
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, inject, OnInit } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { FormsModule } from '@angular/forms'
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe } from '@ngx-translate/core'
 import { NouisliderComponent } from 'ng2-nouislider'
-import { Subject, Subscription } from 'rxjs'
+import { ToastrService } from 'ngx-toastr'
+import { Subject } from 'rxjs'
 import { debounceTime } from 'rxjs/operators'
 
 import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
 import { AccessoriesService } from '@/app/core/accessories/accessories.service'
+import { ACCESSORY_MANAGE_MODAL_DATA } from '@/app/core/accessories/types/base-manage.component'
 import { getWindowCoveringPercentage, setWindowCoveringPosition } from '@/app/core/accessories/types/matter/matter-device.utils'
 
 @Component({
@@ -18,12 +21,20 @@ import { getWindowCoveringPercentage, setWindowCoveringPosition } from '@/app/co
     FormsModule,
     TranslatePipe,
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class WindowCoveringManageComponent implements OnInit, OnDestroy {
-  private $activeModal = inject(NgbActiveModal)
+export class WindowCoveringManageComponent implements OnInit {
+  protected destroyRef = inject(DestroyRef)
+  protected $activeModal = inject(NgbActiveModal)
+  protected cdr = inject(ChangeDetectorRef)
+  private $toastr = inject(ToastrService)
 
-  @Input() public service: ServiceTypeX
-  @Input() public $accessories: AccessoriesService
+  // Inject modal data using modern DI pattern
+  private modalData = inject(ACCESSORY_MANAGE_MODAL_DATA)
+
+  // Public properties for component use (accessed by templates)
+  public service!: ServiceTypeX
+  public $accessories!: AccessoriesService
 
   public targetPositionChanged: Subject<number> = new Subject<number>()
   public targetPosition: {
@@ -33,39 +44,87 @@ export class WindowCoveringManageComponent implements OnInit, OnDestroy {
     step: number
   }
 
-  private stateSubscription: Subscription
-
-  constructor() {
-    this.targetPositionChanged
-      .pipe(debounceTime(500))
-      .subscribe(() => {
-        setWindowCoveringPosition(this.service, this.targetPosition.value)
-      })
-  }
-
   public ngOnInit() {
-    this.loadTargetPosition()
+    // Null safety check
+    if (!this.modalData.service || !this.modalData.$accessories) {
+      console.error('WindowCoveringManageComponent: service or $accessories not provided')
+      this.$activeModal.dismiss('Missing required data')
+      return
+    }
 
-    // Subscribe to state changes to update modal in real-time
-    this.stateSubscription = this.$accessories.accessoryData.subscribe(() => {
-      if (this.targetPosition) {
-        this.targetPosition.value = getWindowCoveringPercentage(this.service)
-      }
-    })
-  }
+    // Store in public properties (same object references)
+    this.service = this.modalData.service
+    this.$accessories = this.modalData.$accessories
 
-  public onTargetPositionChange() {
-    this.targetPositionChanged.next(this.targetPosition.value)
+    this.setupComponent()
+    this.subscribeToAccessoryUpdates()
   }
 
   public dismissModal() {
     this.$activeModal.dismiss('Dismiss')
   }
 
-  public ngOnDestroy() {
-    if (this.stateSubscription) {
-      this.stateSubscription.unsubscribe()
+  private setupComponent() {
+    this.loadTargetPosition()
+
+    // Subscribe to target position changes with debounce
+    this.createDebouncedSubscription(
+      this.targetPositionChanged,
+      async () => {
+        const previousPosition = getWindowCoveringPercentage(this.service)
+        try {
+          await setWindowCoveringPosition(this.service, this.targetPosition.value)
+        } catch (error) {
+          this.$toastr.error('Failed to set window covering position', 'Error')
+          // Revert to previous value on error
+          this.targetPosition.value = previousPosition
+          this.cdr.markForCheck()
+        }
+      },
+    )
+  }
+
+  private subscribeToAccessoryUpdates() {
+    if (this.$accessories) {
+      this.$accessories.accessoryData.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+        // Update service reference to get latest data (zoneless Angular compatibility)
+        const updatedService = this.$accessories.accessories.services.find(s => s.uniqueId === this.service.uniqueId)
+        if (updatedService) {
+          this.service = updatedService
+        }
+        this.handleAccessoryUpdate()
+        this.cdr.markForCheck()
+      })
     }
+  }
+
+  private handleAccessoryUpdate() {
+    if (this.targetPosition) {
+      this.targetPosition.value = getWindowCoveringPercentage(this.service)
+    }
+  }
+
+  public onTargetPositionChange() {
+    this.targetPositionChanged.next(this.targetPosition.value)
+  }
+
+  private createDebouncedSubscription<T>(
+    subject$: Subject<T>,
+    callback: (value: T) => void,
+    debounceMs: number = 500,
+  ) {
+    subject$
+      .pipe(debounceTime(debounceMs), takeUntilDestroyed(this.destroyRef))
+      .subscribe(callback)
+  }
+
+  private applySliderGradient(gradient: string, selector: string = '.noUi-target') {
+    requestAnimationFrame(() => {
+      const sliderElements = document.querySelectorAll<HTMLElement>(selector)
+      sliderElements.forEach((sliderElement) => {
+        sliderElement.style.background = gradient
+      })
+    })
   }
 
   private loadTargetPosition() {
@@ -76,12 +135,7 @@ export class WindowCoveringManageComponent implements OnInit, OnDestroy {
       step: 1,
     }
 
-    setTimeout(() => {
-      const sliderElements = document.querySelectorAll('.noUi-target')
-      sliderElements.forEach((sliderElement: HTMLElement) => {
-        sliderElement.style.background = 'linear-gradient(to right, #242424, #ffd6aa)'
-      })
-    }, 10)
+    this.applySliderGradient('linear-gradient(to right, #242424, #ffd6aa)')
   }
 
   public get currentPosition(): number {

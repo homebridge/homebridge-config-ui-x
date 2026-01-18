@@ -1,13 +1,12 @@
-import { Component, inject, Input, OnDestroy, OnInit } from '@angular/core'
+import type { SliderControlConfig } from '@/app/core/accessories/accessories.interfaces'
+
+import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
 import { TranslatePipe } from '@ngx-translate/core'
 import { NouisliderComponent } from 'ng2-nouislider'
-import { Subject, Subscription } from 'rxjs'
-import { debounceTime } from 'rxjs/operators'
+import { Subject } from 'rxjs'
 
-import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
-import { AccessoriesService } from '@/app/core/accessories/accessories.service'
+import { BaseManageComponent } from '@/app/core/accessories/types/base-manage.component'
 import { DurationPipe } from '@/app/core/pipes/duration.pipe'
 
 @Component({
@@ -19,60 +18,39 @@ import { DurationPipe } from '@/app/core/pipes/duration.pipe'
     TranslatePipe,
     DurationPipe,
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ValveManageComponent implements OnInit, OnDestroy {
-  private $activeModal = inject(NgbActiveModal)
+export class ValveManageComponent extends BaseManageComponent {
+  public targetMode: boolean
+  public targetSetDuration: SliderControlConfig
+  public targetSetDurationChanged: Subject<number> = new Subject<number>()
 
-  @Input() public service: ServiceTypeX
-  @Input() public $accessories: AccessoriesService
+  protected setupComponent() {
+    this.createDebouncedSubscription(this.targetSetDurationChanged, () => {
+      void this.service.getCharacteristic('SetDuration').setValue(this.targetSetDuration.value)
+    })
 
-  public targetMode: any
-  public targetSetDuration: any
-  public targetSetDurationChanged: Subject<string> = new Subject<string>()
-  private stateSubscription: Subscription
-
-  constructor() {
-    this.targetSetDurationChanged
-      .pipe(debounceTime(500))
-      .subscribe(() => {
-        this.service.getCharacteristic('SetDuration').setValue(this.targetSetDuration.value)
-      })
-  }
-
-  public ngOnInit() {
     this.targetMode = this.service.values.Active
 
     this.loadTargetSetDuration()
+  }
 
-    // Subscribe to state changes to update modal in real-time
-    this.stateSubscription = this.$accessories.accessoryData.subscribe(() => {
-      this.targetMode = this.service.values.Active
-      if (this.targetSetDuration && 'SetDuration' in this.service.values) {
-        this.targetSetDuration.value = this.service.getCharacteristic('SetDuration').value
-      }
-    })
+  protected handleAccessoryUpdate() {
+    this.targetMode = this.service.values.Active
+    if (this.targetSetDuration && 'SetDuration' in this.service.values) {
+      this.targetSetDuration.value = this.service.getCharacteristic('SetDuration').value as number
+    }
   }
 
   public setTargetMode(value: boolean, event: MouseEvent) {
     this.targetMode = value
-    this.service.getCharacteristic('Active').setValue(this.targetMode)
+    void this.service.getCharacteristic('Active').setValue(this.targetMode)
 
-    const target = event.target as HTMLButtonElement
-    target.blur()
+    this.blurTarget(event)
   }
 
   public onSetDurationStateChange() {
     this.targetSetDurationChanged.next(this.targetSetDuration.value)
-  }
-
-  public dismissModal() {
-    this.$activeModal.dismiss('Dismiss')
-  }
-
-  public ngOnDestroy() {
-    if (this.stateSubscription) {
-      this.stateSubscription.unsubscribe()
-    }
   }
 
   private loadTargetSetDuration() {
@@ -80,18 +58,13 @@ export class ValveManageComponent implements OnInit, OnDestroy {
 
     if (TargetSetDuration) {
       this.targetSetDuration = {
-        value: TargetSetDuration.value,
+        value: TargetSetDuration.value as number,
         min: TargetSetDuration.minValue,
         max: TargetSetDuration.maxValue,
         step: TargetSetDuration.minStep,
       }
 
-      setTimeout(() => {
-        const sliderElement = document.querySelectorAll('.noUi-target')[0] as HTMLElement
-        if (sliderElement) {
-          sliderElement.style.background = 'linear-gradient(to right, #add8e6, #416bdf)'
-        }
-      }, 10)
+      this.applySliderGradient('linear-gradient(to right, #add8e6, #416bdf)', '.noUi-target')
     }
   }
 }

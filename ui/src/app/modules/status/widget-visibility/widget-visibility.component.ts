@@ -1,9 +1,10 @@
-import { Component, inject, Input, OnInit } from '@angular/core'
+import { Component, inject, OnInit, signal } from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 
-import { SettingsService } from '@/app/core/settings.service'
+import { WIDGET_VISIBILITY_MODAL_DATA } from '@/app/core/modal-data-tokens'
+import { SettingsService } from '@/app/core/ui/settings.service'
 import { Widget } from '@/app/modules/status/widgets/widgets.interfaces'
 
 @Component({
@@ -15,18 +16,20 @@ import { Widget } from '@/app/modules/status/widgets/widgets.interfaces'
   ],
 })
 export class WidgetVisibilityComponent implements OnInit {
+  // Injected dependencies
   private $activeModal = inject(NgbActiveModal)
   private $settings = inject(SettingsService)
   private $translate = inject(TranslateService)
+  private modalData = inject(WIDGET_VISIBILITY_MODAL_DATA)
 
-  @Input() dashboard: any
-  @Input() resetLayout: () => void
-  @Input() lockLayout: () => void
-  @Input() unlockLayout: () => void
+  // Public properties for component use
+  public dashboard = this.modalData.dashboard
+  public resetLayout = this.modalData.resetLayout
 
-  public availableWidgets = []
+  // Signals
+  public availableWidgets = signal<any[]>([])
 
-  public ngOnInit() {
+  public ngOnInit(): void {
     const allWidgets = [
       {
         name: this.$translate.instant('status.services.updates'),
@@ -147,25 +150,25 @@ export class WidgetVisibilityComponent implements OnInit {
         hideOnMobile: true,
       },
     ]
-    this.availableWidgets = allWidgets
+    this.availableWidgets.set(allWidgets
       .filter(x => !x.hidden)
       .sort((a, b) => a.name.localeCompare(b.name))
       .map(x => ({
         ...x,
         shown: this.dashboard.some((i: any) => i.component === x.component),
-      }))
+      })))
   }
 
-  public selectWidget(widget: Widget) {
+  public selectWidget(widget: Widget): void {
     this.$activeModal.close(widget)
   }
 
-  public doResetLayout() {
+  public doResetLayout(): void {
     this.resetLayout()
     this.$activeModal.dismiss()
   }
 
-  public dismissModal() {
+  public dismissModal(): void {
     this.$activeModal.dismiss('Dismiss')
   }
 }

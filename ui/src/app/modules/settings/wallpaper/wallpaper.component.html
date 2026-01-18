@@ -7,7 +7,7 @@
       data-bs-dismiss="modal"
       [attr.aria-label]="'form.button_close' | translate"
       (click)="dismissModal()"
-      [disabled]="clicked"
+      [disabled]="clicked()"
     ></button>
   </div>
   <div class="modal-body">
@@ -20,10 +20,10 @@
       <li>{{ 'settings.display.wallpaper_rule2' | translate }}</li>
     </ul>
     <div class="mb-3 text-center">
-      @if (wallpaperUrl) {
+      @if (wallpaperUrl()) {
       <div class="position-relative d-inline-block">
         <img
-          [src]="wallpaperUrl"
+          [src]="wallpaperUrl()"
           class="img-fluid rounded mx-auto d-block"
           alt="Current Wallpaper"
           style="height: 200px"
@@ -47,7 +47,7 @@
         id="wallpaper"
         class="form-control"
         #wallpaperInput
-        (change)="onFileChange($event.target.files)"
+        (change)="onFileChange($event)"
         accept="image/*"
       />
     </div>
@@ -59,7 +59,7 @@
         class="btn btn-elegant"
         data-bs-dismiss="modal"
         (click)="dismissModal()"
-        [disabled]="clicked"
+        [disabled]="clicked()"
       >
         {{ 'form.button_close' | translate }}
       </button>
@@ -71,7 +71,7 @@
         class="btn btn-primary"
         data-bs-dismiss="modal"
         (click)="saveWallpaper()"
-        [disabled]="(wallpaperUrl === originalWallpaperUrl) || clicked"
+        [disabled]="(wallpaperUrl() === originalWallpaperUrl()) || clicked()"
       >
         {{ 'form.button_save' | translate }}
       </button>

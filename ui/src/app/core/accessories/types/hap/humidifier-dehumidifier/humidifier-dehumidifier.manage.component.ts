@@ -1,15 +1,12 @@
 import type { CharacteristicType } from '@homebridge/hap-client'
 
-import { Component, inject, Input, OnDestroy, OnInit } from '@angular/core'
+import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
 import { TranslatePipe } from '@ngx-translate/core'
 import { NouisliderComponent } from 'ng2-nouislider'
-import { Subject, Subscription } from 'rxjs'
-import { debounceTime, distinctUntilChanged } from 'rxjs/operators'
+import { Subject } from 'rxjs'
 
-import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
-import { AccessoriesService } from '@/app/core/accessories/accessories.service'
+import { BaseManageComponent } from '@/app/core/accessories/types/base-manage.component'
 
 @Component({
   templateUrl: './humidifier-dehumidifier.manage.component.html',
@@ -19,15 +16,10 @@ import { AccessoriesService } from '@/app/core/accessories/accessories.service'
     NouisliderComponent,
     TranslatePipe,
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class HumidifierDehumidifierManageComponent implements OnInit, OnDestroy {
-  private $activeModal = inject(NgbActiveModal)
-
-  @Input() public service: ServiceTypeX
-  @Input() public type: 'humidifier' | 'dehumidifier'
-  @Input() public $accessories: AccessoriesService
-
-  private stateSubscription: Subscription
+export class HumidifierDehumidifierManageComponent extends BaseManageComponent {
+  public type: 'humidifier' | 'dehumidifier' | undefined
 
   public targetState: number
   public targetMode: number
@@ -42,36 +34,35 @@ export class HumidifierDehumidifierManageComponent implements OnInit, OnDestroy 
   public targetRotationSpeed: any
   public targetRotationSpeedChanged: Subject<string> = new Subject<string>()
 
-  constructor() {
-    this.targetHumidityChanged
-      .pipe(debounceTime(500))
-      .subscribe(() => {
-        if (this.RelativeHumidityHumidifierThreshold) {
-          this.service.getCharacteristic('RelativeHumidityHumidifierThreshold').setValue(this.targetHumidifierHumidity)
-        }
-        if (this.RelativeHumidityDehumidifierThreshold) {
-          this.service.getCharacteristic('RelativeHumidityDehumidifierThreshold').setValue(this.targetDehumidifierHumidity)
-        }
-      })
+  protected setupComponent() {
+    this.createDebouncedSubscription(this.targetHumidityChanged, () => {
+      if (this.RelativeHumidityHumidifierThreshold) {
+        void this.service.getCharacteristic('RelativeHumidityHumidifierThreshold').setValue(this.targetHumidifierHumidity)
+      }
+      if (this.RelativeHumidityDehumidifierThreshold) {
+        void this.service.getCharacteristic('RelativeHumidityDehumidifierThreshold').setValue(this.targetDehumidifierHumidity)
+      }
+    })
 
-    this.targetRotationSpeedChanged
-      .pipe(
-        debounceTime(500),
-        distinctUntilChanged(),
-      )
-      .subscribe(() => {
-        if (this.serviceFan) {
-          this.serviceFan.getCharacteristic('RotationSpeed').setValue(this.targetRotationSpeed.value)
-        }
-      })
-  }
+    this.createDebouncedSubscription(this.targetRotationSpeedChanged, () => {
+      if (this.serviceFan) {
+        void this.serviceFan.getCharacteristic('RotationSpeed').setValue(this.targetRotationSpeed.value)
+      }
+    })
 
-  public ngOnInit() {
     this.targetState = this.service.values.Active
     this.targetMode = this.service.values.TargetHumidifierDehumidifierState
     this.RelativeHumidityDehumidifierThreshold = this.service.getCharacteristic('RelativeHumidityDehumidifierThreshold')
     this.RelativeHumidityHumidifierThreshold = this.service.getCharacteristic('RelativeHumidityHumidifierThreshold')
     this.targetStateValidValues = this.service.getCharacteristic('TargetHumidifierDehumidifierState').validValues as number[]
+
+    // Derive type from valid target states: humidify-only, dehumidify-only, or dual
+    if (this.targetStateValidValues.includes(1) && !this.targetStateValidValues.includes(2)) {
+      this.type = 'humidifier'
+    } else if (this.targetStateValidValues.includes(2) && !this.targetStateValidValues.includes(1)) {
+      this.type = 'dehumidifier'
+    }
+
     this.loadTargetHumidity()
 
     // Check for a linked Fan/Fanv2 service (combined from same physical device)
@@ -83,31 +74,22 @@ export class HumidifierDehumidifierManageComponent implements OnInit, OnDestroy 
       this.loadRotationSpeed()
     }
 
-    this.applySliderGradient()
-
-    // Subscribe to real-time accessory updates
-    if (this.$accessories) {
-      this.stateSubscription = this.$accessories.accessoryData.subscribe(() => {
-        this.targetState = this.service.values.Active
-        this.targetMode = this.service.values.TargetHumidifierDehumidifierState
-        this.targetDehumidifierHumidity = this.service.getCharacteristic('RelativeHumidityDehumidifierThreshold')?.value as number
-        this.targetHumidifierHumidity = this.service.getCharacteristic('RelativeHumidityHumidifierThreshold')?.value as number
-        this.autoHumidity = [this.targetHumidifierHumidity, this.targetDehumidifierHumidity]
-
-        if (this.targetRotationSpeed && this.serviceFan) {
-          this.targetRotationSpeed.value = this.serviceFan.getCharacteristic('RotationSpeed')?.value
-        }
-
-        // Apply gradient when mode changes externally
-        this.applySliderGradient()
-      })
-    }
+    this.applyAllGradients()
   }
 
-  public ngOnDestroy() {
-    if (this.stateSubscription) {
-      this.stateSubscription.unsubscribe()
+  protected handleAccessoryUpdate() {
+    this.targetState = this.service.values.Active
+    this.targetMode = this.service.values.TargetHumidifierDehumidifierState
+    this.targetDehumidifierHumidity = this.service.getCharacteristic('RelativeHumidityDehumidifierThreshold')?.value as number
+    this.targetHumidifierHumidity = this.service.getCharacteristic('RelativeHumidityHumidifierThreshold')?.value as number
+    this.autoHumidity = [this.targetHumidifierHumidity, this.targetDehumidifierHumidity]
+
+    if (this.targetRotationSpeed && this.serviceFan) {
+      this.targetRotationSpeed.value = this.serviceFan.getCharacteristic('RotationSpeed')?.value
     }
+
+    // Apply gradient when mode changes externally
+    this.applyAllGradients()
   }
 
   private loadTargetHumidity() {
@@ -118,24 +100,22 @@ export class HumidifierDehumidifierManageComponent implements OnInit, OnDestroy 
 
   public setTargetState(value: number, event: MouseEvent) {
     this.targetState = value
-    this.service.getCharacteristic('Active').setValue(this.targetState)
+    void this.service.getCharacteristic('Active').setValue(this.targetState)
     this.loadTargetHumidity()
-    this.applySliderGradient()
+    this.applyAllGradients()
 
-    const target = event.target as HTMLButtonElement
-    target.blur()
+    this.blurTarget(event)
   }
 
   public setTargetMode(value: number, event: MouseEvent) {
     this.targetMode = value
-    this.service.getCharacteristic('TargetHumidifierDehumidifierState').setValue(this.targetMode)
+    void this.service.getCharacteristic('TargetHumidifierDehumidifierState').setValue(this.targetMode)
     this.loadTargetHumidity()
 
-    const target = event.target as HTMLButtonElement
-    target.blur()
+    this.blurTarget(event)
 
     // Apply gradient to the new slider after it's created
-    this.applySliderGradient()
+    this.applyAllGradients()
   }
 
   public onHumidityStateChange() {
@@ -151,10 +131,6 @@ export class HumidifierDehumidifierManageComponent implements OnInit, OnDestroy 
 
   public onTargetRotationSpeedChange() {
     this.targetRotationSpeedChanged.next(this.targetRotationSpeed.value)
-  }
-
-  public dismissModal() {
-    this.$activeModal.dismiss('Dismiss')
   }
 
   private loadRotationSpeed() {
@@ -187,17 +163,13 @@ export class HumidifierDehumidifierManageComponent implements OnInit, OnDestroy 
     }
   }
 
-  private applySliderGradient() {
-    setTimeout(() => {
-      const humiditySliders = document.querySelectorAll('.humidity-slider .noUi-target')
-      humiditySliders.forEach((sliderElement: HTMLElement) => {
-        sliderElement.style.background = 'linear-gradient(to left, rgb(80, 80, 179), rgb(173, 216, 230), rgb(255, 185, 120), rgb(139, 90, 60))'
-      })
-
-      const fanSliders = document.querySelectorAll('.fan-slider .noUi-target')
-      fanSliders.forEach((sliderElement: HTMLElement) => {
-        sliderElement.style.background = this.getFanSliderGradient()
-      })
-    }, 10)
+  private applyAllGradients() {
+    this.applySliderGradient(
+      'linear-gradient(to left, rgb(80, 80, 179), rgb(173, 216, 230), rgb(255, 185, 120), rgb(139, 90, 60))',
+      '.humidity-slider .noUi-target',
+    )
+    if (this.serviceFan) {
+      this.applySliderGradient(this.getFanSliderGradient(), '.fan-slider .noUi-target')
+    }
   }
 }
