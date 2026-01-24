@@ -14,9 +14,11 @@
       <div class="text-center mb-3">
         <i class="fas fa-user-pen primary-text" style="font-size: 75px"></i>
       </div>
-      <ul class="list-group list-group-box mb-0">
+      <ul class="list-group list-group-box mb-0" [style.opacity]="deleteMode() ? '0.25' : '1'">
         <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
-          <label for="form-username" class="mb-2 mb-md-0 w-100 w-md-50">{{ 'users.label_username' | translate }}</label>
+          <label for="form-username" class="mb-2 mb-md-0 w-100 w-md-50">
+            {{ 'users.label_username' | translate }}<app-required-indicator />
+          </label>
           <div class="text-start text-md-end w-100 w-md-50">
             <input
               formControlName="username"
@@ -25,12 +27,15 @@
               autocomplete="off"
               autocapitalize="none"
               class="form-control custom-input"
+              [class.is-invalid]="form.controls.username.touched && form.controls.username.invalid"
               [attr.aria-label]="'users.label_username' | translate"
             />
           </div>
         </li>
         <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
-          <label for="form-name" class="mb-2 mb-md-0 w-100 w-md-50">{{ 'users.label_full_name' | translate }}</label>
+          <label for="form-name" class="mb-2 mb-md-0 w-100 w-md-50">
+            {{ 'users.label_full_name' | translate }}<app-required-indicator />
+          </label>
           <div class="text-start text-md-end w-100 w-md-50">
             <input
               formControlName="name"
@@ -38,12 +43,15 @@
               id="form-name"
               autocomplete="name"
               class="form-control custom-input"
+              [class.is-invalid]="form.controls.name.touched && form.controls.name.invalid"
               [attr.aria-label]="'users.label_full_name' | translate"
             />
           </div>
         </li>
         <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
-          <label for="form-pass" class="mb-2 mb-md-0 w-100 w-md-50">{{ 'users.label_new_password' | translate }}</label>
+          <label for="form-pass" class="mb-2 mb-md-0 w-100 w-md-50">
+            {{ 'users.label_new_password' | translate }}@if (form.controls.password.value) {<app-required-indicator />}
+          </label>
           <div class="text-start text-md-end w-100 w-md-50">
             <input
               formControlName="password"
@@ -51,16 +59,16 @@
               autocomplete="new-password"
               id="form-pass"
               class="form-control custom-input"
-              [class.is-invalid]="form.controls.password.dirty && form.controls.password.errors"
+              [class.is-invalid]="form.controls.password.touched && form.controls.password.invalid"
               [attr.aria-label]="'users.label_new_password' | translate"
             />
           </div>
         </li>
         @if (form.controls.password.value) {
         <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
-          <label for="form-pass-confirm" class="mb-2 mb-md-0 w-100 w-md-50"
-            >{{ 'users.label_confirm_password' | translate }}</label
-          >
+          <label for="form-pass-confirm" class="mb-2 mb-md-0 w-100 w-md-50">
+            {{ 'users.label_confirm_password' | translate }}<app-required-indicator />
+          </label>
           <div class="text-start text-md-end w-100 w-md-50">
             <input
               formControlName="passwordConfirm"
@@ -68,14 +76,14 @@
               autocomplete="new-password"
               id="form-pass-confirm"
               class="form-control custom-input"
-              [class.is-invalid]="form.controls.passwordConfirm.dirty && form.controls.passwordConfirm.errors"
+              [class.is-invalid]="form.controls.passwordConfirm.touched && form.controls.passwordConfirm.invalid"
               [attr.aria-label]="'users.label_confirm_password' | translate"
             />
           </div>
         </li>
         }
         <li class="list-group-item d-flex justify-content-between align-items-center flex-row pb-2">
-          <span class="text-start">{{ 'users.label_admin_user' | translate }}</span>
+          <span class="text-start"> {{ 'users.label_admin_user' | translate }}<app-required-indicator /> </span>
           <div class="text-end grey-text d-flex align-items-center">
             <input
               type="checkbox"
@@ -88,6 +96,11 @@
           </div>
         </li>
       </ul>
+      @if (deleteMode()) {
+      <div class="alert alert-warning mt-3 mb-0">
+        <div class="text-center">{{ 'common.phrases.are_you_sure' | translate }}</div>
+      </div>
+      }
     </div>
     <div class="modal-footer justify-content-between">
       <div class="text-start">
@@ -97,8 +110,22 @@
       </div>
       <div class="text-center"></div>
       <div class="text-end">
-        <button class="btn btn-primary" type="submit" [disabled]="!form.valid || isFormUnchanged()">
-          {{ 'form.button_save' | translate }}
+        <button
+          type="button"
+          class="btn btn-elegant me-2"
+          (click)="toggleDeleteMode($event)"
+          [disabled]="!canDelete()"
+          [attr.aria-label]="'users.button_delete_user' | translate"
+        >
+          <i [class]="deleteMode() ? 'fas fa-undo' : 'fas fa-trash'"></i>
+        </button>
+        <button
+          type="submit"
+          class="btn"
+          [class]="deleteMode() ? 'btn-danger' : 'btn-primary'"
+          [disabled]="!deleteMode() && (!form.valid || isFormUnchanged())"
+        >
+          {{ (deleteMode() ? 'form.button_delete' : 'form.button_save') | translate }}
         </button>
       </div>
     </div>

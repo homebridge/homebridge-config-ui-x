@@ -3,11 +3,10 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { ActivatedRoute } from '@angular/router'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
-import { ToastrService } from 'ngx-toastr'
 
 import { AuthService } from '@/app/core/auth/auth.service'
 import { ApiService } from '@/app/core/communication/api.service'
-import { USER_MODAL_DATA } from '@/app/core/modal-data-tokens'
+import { ADD_USER_MODAL_DATA, USER_MODAL_DATA } from '@/app/core/modal-data-tokens'
 import { SettingsService } from '@/app/core/ui/settings.service'
 import { Users2faDisableComponent } from '@/app/modules/users/users-2fa-disable/users-2fa-disable.component'
 import { Users2faEnableComponent } from '@/app/modules/users/users-2fa-enable/users-2fa-enable.component'
@@ -33,7 +32,6 @@ export class UsersComponent implements OnInit {
   private $modal = inject(NgbModal)
   private $route = inject(ActivatedRoute)
   private $settings = inject(SettingsService)
-  private $toastr = inject(ToastrService)
   private $translate = inject(TranslateService)
 
   // Signals
@@ -61,9 +59,17 @@ export class UsersComponent implements OnInit {
   }
 
   public async openAddNewUser(): Promise<void> {
+    const injector = createEnvironmentInjector([{
+      provide: ADD_USER_MODAL_DATA,
+      useValue: {
+        existingUsers: this.homebridgeUsers(),
+      },
+    }], this.injector)
+
     const ref = this.$modal.open(UsersAddComponent, {
       size: 'lg',
       backdrop: 'static',
+      injector,
     })
 
     try {
@@ -79,6 +85,7 @@ export class UsersComponent implements OnInit {
       provide: USER_MODAL_DATA,
       useValue: {
         user,
+        existingUsers: this.homebridgeUsers(),
       },
     }], this.injector)
 
@@ -93,17 +100,6 @@ export class UsersComponent implements OnInit {
       void this.reloadUsers()
     } catch {
       // Modal dismissed, do nothing
-    }
-  }
-
-  public async deleteUser(id: number): Promise<void> {
-    try {
-      await this.$api.delete(`/users/${id}`)
-      this.$toastr.success(this.$translate.instant('users.toast_user_deleted'), this.$translate.instant('toast.title_success'))
-      void this.reloadUsers()
-    } catch (error) {
-      console.error(error)
-      this.$toastr.error(error.error?.message || this.$translate.instant('users.toast_failed_to_delete_user'), this.$translate.instant('toast.title_error'))
     }
   }
 

@@ -259,10 +259,8 @@
   "form.button_continue": "Продолжить",
   "form.button_delete": "Удалить",
   "form.button_delete_all": "Delete All",
-  "form.button_disable": "Отключить",
   "form.button_download": "Скачать",
   "form.button_edit": "Редактировать",
-  "form.button_enable": "Включить",
   "form.button_lock": "Заблокировать",
   "form.button_more_info": "Дополнительная информация",
   "form.button_remove": "Удалить",
@@ -802,7 +800,6 @@
   "users.setup_2fa_disable_success": "Двухфакторная аутентификация отключена.",
   "users.setup_2fa_enable": "Включить 2FA",
   "users.setup_2fa_enable_error": "Ошибка при включении 2FA",
-  "users.setup_2fa_enabled_success": "Двухфакторная аутентификация включена.",
   "users.setup_2fa_enter_code": "Введите код из приложения-аутентификатора:",
   "users.setup_2fa_scan_qr_code": "Отсканируйте QR-код ниже в вашем приложении-аутентификаторе:",
   "users.setup_2fa_scan_qr_manual": "If you cannot scan the QR code, you can enter the following secret key manually:",
@@ -814,11 +811,6 @@
   "users.title_add_user": "Добавить пользователя",
   "users.title_edit_user": "Редактировать пользователя",
   "users.title_users": "Пользователи",
-  "users.toast_added_new_user": "Новый пользователь добавлен",
-  "users.toast_failed_to_add_user": "Не удалось добавить пользователя",
-  "users.toast_failed_to_delete_user": "Не удалось удалить пользователя",
   "users.toast_legacy_otp_message": "Your 2FA secret is outdated. Click here to go to the Users page where you can disable and re-enable 2FA to upgrade your security.",
-  "users.toast_legacy_otp_title": "Outdated 2FA Secret",
-  "users.toast_updated_user": "Пользователь обновлён",
-  "users.toast_user_deleted": "Пользователь удалён"
+  "users.toast_legacy_otp_title": "Outdated 2FA Secret"
 }

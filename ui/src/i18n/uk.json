@@ -259,10 +259,8 @@
   "form.button_continue": "Продовжити",
   "form.button_delete": "Видалити",
   "form.button_delete_all": "Видалити все",
-  "form.button_disable": "Вимкнути",
   "form.button_download": "Завантажити",
   "form.button_edit": "Редагувати",
-  "form.button_enable": "Увімкнути",
   "form.button_lock": "Заблокувати",
   "form.button_more_info": "Більше інформації",
   "form.button_remove": "Видалити",
@@ -802,7 +800,6 @@
   "users.setup_2fa_disable_success": "Двофакторна аутентифікація вимкнена.",
   "users.setup_2fa_enable": "Увімкнути 2FA",
   "users.setup_2fa_enable_error": "Під час налаштування 2FA сталася помилка",
-  "users.setup_2fa_enabled_success": "Двофакторна аутентифікація увімкнена.",
   "users.setup_2fa_enter_code": "Введіть код з Вашого додатку для аутентифікації:",
   "users.setup_2fa_scan_qr_code": "Відскануйте QR-код нижче за допомогою Вашого додатку для аутентифікації:",
   "users.setup_2fa_scan_qr_manual": "Якщо Ви не можете відсканувати QR-код, Ви можете ввести наступний секретний ключ вручну:",
@@ -814,11 +811,6 @@
   "users.title_add_user": "Додати користувача",
   "users.title_edit_user": "Профіль користувача",
   "users.title_users": "Користувачі",
-  "users.toast_added_new_user": "Нового користувача додано",
-  "users.toast_failed_to_add_user": "Не вдалося додати користувача",
-  "users.toast_failed_to_delete_user": "Не вдалося видалити користувача",
   "users.toast_legacy_otp_message": "Ваш секретний код 2FA застарів. Натисніть тут, щоб перейти на сторінку \"Користувачі\", де ви можете вимкнути та знову ввімкнути 2FA для підвищення безпеки.",
-  "users.toast_legacy_otp_title": "Застарілий секретний код 2FA",
-  "users.toast_updated_user": "Дані користувача оновлено",
-  "users.toast_user_deleted": "Користувача видалено"
+  "users.toast_legacy_otp_title": "Застарілий секретний код 2FA"
 }

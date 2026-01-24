@@ -259,10 +259,8 @@
   "form.button_continue": "ดำเนินการต่อ",
   "form.button_delete": "ลบ",
   "form.button_delete_all": "ลบทั้งหมด",
-  "form.button_disable": "ปิดการใช้งาน",
   "form.button_download": "ดาวน์โหลด",
   "form.button_edit": "แก้ไข",
-  "form.button_enable": "เปิดการใช้งาน",
   "form.button_lock": "ล๊อค",
   "form.button_more_info": "ข้อมูลเพิ่มเติม",
   "form.button_remove": "ลบ",
@@ -802,7 +800,6 @@
   "users.setup_2fa_disable_success": "ปิดใช้งานการรับรองความถูกต้องด้วยสองปัจจัยแล้ว",
   "users.setup_2fa_enable": "เปิดใช้งาน 2FA",
   "users.setup_2fa_enable_error": "เกิดข้อผิดพลาดในการตั้งค่า 2FA",
-  "users.setup_2fa_enabled_success": "เปิดใช้งานการรับรองความถูกต้องด้วยสองปัจจัยแล้ว",
   "users.setup_2fa_enter_code": "ป้อนรหัสจากแอปตรวจสอบสิทธิ์ของคุณ :",
   "users.setup_2fa_scan_qr_code": "สแกนโค้ด QR ด้านล่างด้วยแอพตรวจสอบสิทธิ์ของคุณ :",
   "users.setup_2fa_scan_qr_manual": "หากคุณไม่สามารถสแกนรหัส QR ได้ คุณสามารถป้อนรหัสความลับต่อไปนี้ด้วยตนเอง:",
@@ -814,11 +811,6 @@
   "users.title_add_user": "เพิ่มผู้ใช้",
   "users.title_edit_user": "แก้ไขผู้ใช้",
   "users.title_users": "ผู้ใช้",
-  "users.toast_added_new_user": "เพิ่มผู้ใช้ใหม่",
-  "users.toast_failed_to_add_user": "เพิ่มผู้ใช้ไม่สำเร็จ",
-  "users.toast_failed_to_delete_user": "ลบผู้ใช้ไม่สำเร็จ",
   "users.toast_legacy_otp_message": "Your 2FA secret is outdated. Click here to go to the Users page where you can disable and re-enable 2FA to upgrade your security.",
-  "users.toast_legacy_otp_title": "Outdated 2FA Secret",
-  "users.toast_updated_user": "อัปเดตผู้ใช้แล้ว",
-  "users.toast_user_deleted": "ลบผู้ใช้แล้ว"
+  "users.toast_legacy_otp_title": "Outdated 2FA Secret"
 }

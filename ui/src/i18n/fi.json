@@ -259,10 +259,8 @@
   "form.button_continue": "Jatka",
   "form.button_delete": "Poista",
   "form.button_delete_all": "Delete All",
-  "form.button_disable": "Poista käytöstä",
   "form.button_download": "Lataa",
   "form.button_edit": "Muokkaa",
-  "form.button_enable": "Ota käyttöön",
   "form.button_lock": "Lukitse",
   "form.button_more_info": "Lisää tietoa",
   "form.button_remove": "Poista",
@@ -802,7 +800,6 @@
   "users.setup_2fa_disable_success": "Kaksivaiheinen tunnistautuminen on poistettu käytöstä.",
   "users.setup_2fa_enable": "Ota käyttöön 2FA",
   "users.setup_2fa_enable_error": "Tapahtui virhe 2FA:n käyttöönotossa",
-  "users.setup_2fa_enabled_success": "Kaksivaiheinen tunnistautuminen on otettu käyttöön.",
   "users.setup_2fa_enter_code": "Syötä authenticator sovelluksesi koodi:",
   "users.setup_2fa_scan_qr_code": "Lue alapuolinen QR koodi authenticator sovelluksellasi:",
   "users.setup_2fa_scan_qr_manual": "If you cannot scan the QR code, you can enter the following secret key manually:",
@@ -814,11 +811,6 @@
   "users.title_add_user": "Lisää käyttäjä",
   "users.title_edit_user": "Muokkaa käyttäjää",
   "users.title_users": "Käyttäjät",
-  "users.toast_added_new_user": "Uusi käyttäjä lisätty",
-  "users.toast_failed_to_add_user": "Käyttäjän lisäys epäonnistui",
-  "users.toast_failed_to_delete_user": "Käyttäjän poisto epäonnistui",
   "users.toast_legacy_otp_message": "Your 2FA secret is outdated. Click here to go to the Users page where you can disable and re-enable 2FA to upgrade your security.",
-  "users.toast_legacy_otp_title": "Outdated 2FA Secret",
-  "users.toast_updated_user": "Käyttäjä päivitetty",
-  "users.toast_user_deleted": "Käyttäjä poistettu"
+  "users.toast_legacy_otp_title": "Outdated 2FA Secret"
 }

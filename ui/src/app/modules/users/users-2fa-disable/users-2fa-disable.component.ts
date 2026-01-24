@@ -54,7 +54,7 @@ export class Users2faDisableComponent {
         // Silently fail - the stale flag will be cleared on next login
         console.error('Failed to refresh session after disabling 2FA:', err)
       }
-    } catch (error) {
+    } catch {
       this.formGroup.setValue({ password: '' })
       this.invalidCredentials.set(true)
     }

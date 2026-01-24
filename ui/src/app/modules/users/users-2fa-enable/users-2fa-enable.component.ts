@@ -67,7 +67,6 @@ export class Users2faEnableComponent implements OnInit {
   public async enable2fa(): Promise<void> {
     try {
       await this.$api.post('/users/otp/activate', this.formGroup.value)
-      this.$toastr.success(this.$translate.instant('users.setup_2fa_enabled_success'), this.$translate.instant('toast.title_success'))
       this.$activeModal.close()
     } catch (error) {
       console.error(error)

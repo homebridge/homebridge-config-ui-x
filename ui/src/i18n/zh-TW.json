@@ -259,10 +259,8 @@
   "form.button_continue": "Continue",
   "form.button_delete": "刪除",
   "form.button_delete_all": "Delete All",
-  "form.button_disable": "停用",
   "form.button_download": "下載",
   "form.button_edit": "編輯",
-  "form.button_enable": "啟用",
   "form.button_lock": "上鎖",
   "form.button_more_info": "更多資訊",
   "form.button_remove": "移除",
@@ -802,7 +800,6 @@
   "users.setup_2fa_disable_success": "雙重驗證已關閉。",
   "users.setup_2fa_enable": "開啟雙重驗證",
   "users.setup_2fa_enable_error": "An error occurred setting up 2FA",
-  "users.setup_2fa_enabled_success": "雙重驗證已開啟。",
   "users.setup_2fa_enter_code": "輸入驗證 App 所顯示之驗證碼：",
   "users.setup_2fa_scan_qr_code": "以驗證 App 掃描下方 QR 碼：",
   "users.setup_2fa_scan_qr_manual": "If you cannot scan the QR code, you can enter the following secret key manually:",
@@ -814,11 +811,6 @@
   "users.title_add_user": "新增使用者",
   "users.title_edit_user": "編輯使用者",
   "users.title_users": "使用者",
-  "users.toast_added_new_user": "已新增新使用者",
-  "users.toast_failed_to_add_user": "新增使用者失敗",
-  "users.toast_failed_to_delete_user": "刪除使用者失敗",
   "users.toast_legacy_otp_message": "Your 2FA secret is outdated. Click here to go to the Users page where you can disable and re-enable 2FA to upgrade your security.",
-  "users.toast_legacy_otp_title": "Outdated 2FA Secret",
-  "users.toast_updated_user": "使用者資料已更新",
-  "users.toast_user_deleted": "使用者已刪除"
+  "users.toast_legacy_otp_title": "Outdated 2FA Secret"
 }

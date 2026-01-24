@@ -259,10 +259,8 @@
   "form.button_continue": "Doorgaan",
   "form.button_delete": "Verwijderen",
   "form.button_delete_all": "Delete All",
-  "form.button_disable": "Deactiveren",
   "form.button_download": "Downloaden",
   "form.button_edit": "Bewerken",
-  "form.button_enable": "Activeren",
   "form.button_lock": "Vergrendelen",
   "form.button_more_info": "Meer Informatie",
   "form.button_remove": "Verwijderen",
@@ -802,7 +800,6 @@
   "users.setup_2fa_disable_success": "Twee factor authenticatie is uitgeschakeld.",
   "users.setup_2fa_enable": "Schakel 2FA in",
   "users.setup_2fa_enable_error": "Er is een fout opgetreden bij het instellen van 2FA",
-  "users.setup_2fa_enabled_success": "Twee factor authenticatie is ingeschakeld.",
   "users.setup_2fa_enter_code": "Voer de code in van uw authenticator app:",
   "users.setup_2fa_scan_qr_code": "Scan de QR code hieronder met uw authenticator app:",
   "users.setup_2fa_scan_qr_manual": "If you cannot scan the QR code, you can enter the following secret key manually:",
@@ -814,11 +811,6 @@
   "users.title_add_user": "Gebruiker toevoegen",
   "users.title_edit_user": "Gebruiker wijzigen",
   "users.title_users": "Gebruikers",
-  "users.toast_added_new_user": "Nieuwe gebruiker toegevoegd",
-  "users.toast_failed_to_add_user": "Kon gebruiker niet toevoegen",
-  "users.toast_failed_to_delete_user": "Kon gebruiker niet verwijderen",
   "users.toast_legacy_otp_message": "Your 2FA secret is outdated. Click here to go to the Users page where you can disable and re-enable 2FA to upgrade your security.",
-  "users.toast_legacy_otp_title": "Outdated 2FA Secret",
-  "users.toast_updated_user": "Gebruiker Bijgewerkt",
-  "users.toast_user_deleted": "Gebruiker Verwijderd"
+  "users.toast_legacy_otp_title": "Outdated 2FA Secret"
 }
