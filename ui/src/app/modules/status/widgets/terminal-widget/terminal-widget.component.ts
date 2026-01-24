@@ -1,4 +1,3 @@
-import { NgClass, NgStyle } from '@angular/common'
 import { AfterViewInit, Component, ElementRef, HostListener, inject, Input, OnDestroy, OnInit, viewChild } from '@angular/core'
 import { TranslatePipe } from '@ngx-translate/core'
 import { ITerminalOptions } from '@xterm/xterm'
@@ -13,8 +12,6 @@ import { Widget } from '@/app/modules/status/widgets/widgets.interfaces'
   templateUrl: './terminal-widget.component.html',
   standalone: true,
   imports: [
-    NgClass,
-    NgStyle,
     TranslatePipe,
   ],
 })

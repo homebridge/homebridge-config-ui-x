@@ -1,6 +1,6 @@
 <div
   class="accessory-box"
-  [ngClass]="{ 'accessory-on': service.values.TargetHeatingCoolingState > 0 }"
+  [class.accessory-on]="service.values.TargetHeatingCoolingState > 0"
   [style.cursor]="readyForControl ? 'pointer' : 'default'"
   (longClick)="onClick()"
   (shortClick)="onClick()"

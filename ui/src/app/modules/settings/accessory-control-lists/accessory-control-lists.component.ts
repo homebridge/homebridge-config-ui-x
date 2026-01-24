@@ -1,4 +1,4 @@
-import { NgClass, TitleCasePipe } from '@angular/common'
+import { TitleCasePipe } from '@angular/common'
 import { Component, inject, Input, OnInit } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { NgbActiveModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap'
@@ -13,7 +13,6 @@ import { SettingsService } from '@/app/core/settings.service'
   templateUrl: './accessory-control-lists.component.html',
   standalone: true,
   imports: [
-    NgClass,
     TranslatePipe,
     FormsModule,
     TitleCasePipe,

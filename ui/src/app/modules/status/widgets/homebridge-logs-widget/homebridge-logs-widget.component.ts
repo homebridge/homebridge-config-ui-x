@@ -1,4 +1,3 @@
-import { NgClass, NgStyle } from '@angular/common'
 import { Component, ElementRef, inject, Input, OnDestroy, OnInit, viewChild } from '@angular/core'
 import { TranslatePipe } from '@ngx-translate/core'
 import { ITerminalOptions } from '@xterm/xterm'
@@ -12,8 +11,6 @@ import { Widget } from '@/app/modules/status/widgets/widgets.interfaces'
   templateUrl: './homebridge-logs-widget.component.html',
   standalone: true,
   imports: [
-    NgClass,
-    NgStyle,
     TranslatePipe,
   ],
 })

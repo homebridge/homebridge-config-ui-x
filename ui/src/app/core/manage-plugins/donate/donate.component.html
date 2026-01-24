@@ -20,7 +20,7 @@
     <ul class="list-group list-group-box">
       @for (option of fundingOptions; track option) {
       <li class="list-group-item">
-        <i [ngClass]="getIconClass(option.type)" class="me-2 primary-text fa-xl"></i>
+        <i [class]="getIconClass(option.type)" class="me-2 primary-text fa-xl"></i>
         <a [href]="option.url" target="_blank" rel="noopener noreferrer" class="text-break-all">{{ option.url }}</a>
       </li>
       }

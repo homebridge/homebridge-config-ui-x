@@ -1,7 +1,5 @@
 <div class="flex-column d-flex align-items-stretch h-100 w-100 pb-1">
-  <div class="drag-handler p-2" [ngClass]="{ 'widget-cursor': widget.draggable }">
-    {{ 'status.cpu.title_cpu' | translate }}
-  </div>
+  <div class="drag-handler p-2" [class.widget-cursor]="widget.draggable">{{ 'status.cpu.title_cpu' | translate }}</div>
   <canvas
     class="widget-chart h-100 w-100"
     baseChart

@@ -1,4 +1,3 @@
-import { NgClass } from '@angular/common'
 import { Component, inject, Input, OnInit } from '@angular/core'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
 import { TranslatePipe } from '@ngx-translate/core'
@@ -10,7 +9,6 @@ import { Plugin, PluginFundingOption } from '@/app/core/manage-plugins/manage-pl
   styleUrls: ['./donate.component.scss'],
   standalone: true,
   imports: [
-    NgClass,
     TranslatePipe,
   ],
 })

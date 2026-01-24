@@ -1,4 +1,3 @@
-import { NgClass } from '@angular/common'
 import { Component, Input } from '@angular/core'
 import { TranslatePipe } from '@ngx-translate/core'
 
@@ -11,7 +10,6 @@ import { getWaterLeakState } from '@/app/core/accessories/types/matter/matter-de
   styleUrls: ['./water-leak-detector.component.scss'],
   standalone: true,
   imports: [
-    NgClass,
     TranslatePipe,
   ],
 })

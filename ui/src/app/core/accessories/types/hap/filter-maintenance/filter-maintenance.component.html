@@ -1,13 +1,13 @@
 <div
-  [ngClass]="{
-    'replace': service.values.FilterChangeIndication === 1 || service.values.FilterLifeLevel < 10,
-    'dirty': service.values.FilterChangeIndication !== 1 && service.values.FilterLifeLevel < 50,
-  }"
-  [style.cursor]="readyForControl ? 'pointer' : 'default'"
   class="accessory-box"
   (longClick)="onClick()"
   (shortClick)="onClick()"
   tabindex="0"
+  [class]="{
+    'replace': service.values.FilterChangeIndication === 1 || service.values.FilterLifeLevel < 10,
+    'dirty': service.values.FilterChangeIndication !== 1 && service.values.FilterLifeLevel < 50,
+  }"
+  [style.cursor]="readyForControl ? 'pointer' : 'default'"
 >
   <div class="d-flex flex-column h-100">
     <div [attr.aria-label]="'accessories.core.filter_maintenance' | translate" class="accessory-svg">
@@ -63,7 +63,7 @@
     </div>
     <div class="accessory-label mt-auto">{{ service.customName || service.serviceName }}</div>
     <div class="accessory-label grey-text">
-      <span [ngClass]="{ 'red-text': service.values.FilterChangeIndication === 1 }">
+      <span [class.red-text]="service.values.FilterChangeIndication === 1">
         {{ service.values.FilterLifeLevel }}%
       </span>
       @if (service.values.FilterChangeIndication === 1) { &middot;

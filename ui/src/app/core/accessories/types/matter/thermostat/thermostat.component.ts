@@ -1,4 +1,4 @@
-import { DecimalPipe, NgClass, UpperCasePipe } from '@angular/common'
+import { DecimalPipe, UpperCasePipe } from '@angular/common'
 import { Component, inject, Input } from '@angular/core'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
 import { TranslatePipe } from '@ngx-translate/core'
@@ -17,7 +17,6 @@ import { SettingsService } from '@/app/core/settings.service'
   standalone: true,
   imports: [
     LongClickDirective,
-    NgClass,
     DecimalPipe,
     TranslatePipe,
     ConvertTempPipe,

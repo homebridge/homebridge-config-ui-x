@@ -1,7 +1,7 @@
 <div
   class="login-container gradient d-flex align-items-start justify-content-center"
-  [ngStyle]="{ 'background': backgroundStyle }"
-  [ngClass]="{ 'anim': !backgroundStyle }"
+  [style.background]="backgroundStyle"
+  [class.anim]="!backgroundStyle"
 >
   <div class="w-100 login-card d-flex py-4 flex-column">
     <img
@@ -28,9 +28,7 @@
           tabindex="1"
           class="form-control custom-input"
           [placeholder]="'users.label_username' | translate"
-          [ngClass]="{
-            'is-invalid': form.controls.username.dirty && form.controls.username.errors
-          }"
+          [class.is-invalid]="form.controls.username.dirty && form.controls.username.errors"
           required
         />
       </div>
@@ -45,9 +43,7 @@
           tabindex="2"
           class="form-control custom-input"
           [placeholder]="'users.label_password' | translate"
-          [ngClass]="{
-            'is-invalid': form.controls.password.dirty && form.controls.password.errors
-          }"
+          [class.is-invalid]="form.controls.password.dirty && form.controls.password.errors"
           required
         />
       </div>

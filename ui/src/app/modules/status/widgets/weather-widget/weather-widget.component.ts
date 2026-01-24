@@ -1,4 +1,4 @@
-import { DecimalPipe, NgClass, TitleCasePipe, UpperCasePipe } from '@angular/common'
+import { DecimalPipe, TitleCasePipe, UpperCasePipe } from '@angular/common'
 import { HttpClient, HttpParams } from '@angular/common/http'
 import { Component, inject, Input, OnDestroy, OnInit } from '@angular/core'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
@@ -15,7 +15,6 @@ import { environment } from '@/environments/environment'
   templateUrl: './weather-widget.component.html',
   standalone: true,
   imports: [
-    NgClass,
     DecimalPipe,
     TitleCasePipe,
     TranslatePipe,

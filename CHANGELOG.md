@@ -11,6 +11,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - promote scheduled cron feature from beta
 - promote advertise via mdns feature from beta
 - promote inactivity based session from beta
+- run angular migrations `ngclass-to-class` + `style`
 
 ### Other Changes
 

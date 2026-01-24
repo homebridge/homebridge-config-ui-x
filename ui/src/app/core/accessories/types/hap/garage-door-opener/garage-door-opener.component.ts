@@ -1,4 +1,3 @@
-import { NgClass } from '@angular/common'
 import { Component, Input } from '@angular/core'
 import { TranslatePipe } from '@ngx-translate/core'
 
@@ -12,7 +11,6 @@ import { LongClickDirective } from '@/app/core/directives/long-click.directive'
   standalone: true,
   imports: [
     LongClickDirective,
-    NgClass,
     TranslatePipe,
   ],
 })

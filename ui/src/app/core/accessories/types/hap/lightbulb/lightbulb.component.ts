@@ -1,4 +1,3 @@
-import { NgClass } from '@angular/common'
 import { Component, inject, Input, OnDestroy, OnInit } from '@angular/core'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
 import { TranslatePipe } from '@ngx-translate/core'
@@ -16,7 +15,6 @@ import { LongClickDirective } from '@/app/core/directives/long-click.directive'
   standalone: true,
   imports: [
     LongClickDirective,
-    NgClass,
     TranslatePipe,
   ],
 })

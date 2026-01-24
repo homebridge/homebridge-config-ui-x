@@ -64,10 +64,12 @@
               } @if (!schema?.singular) {
               <i
                 class="fa fa-xl"
-                [ngClass]="{
-                  'fa-circle-check green-text': formBlocksValid[$index],
-                  'fa-circle-exclamation red-text': strictValidation && !formBlocksValid[$index],
-                  'fa-circle-exclamation orange-text': !strictValidation && !formBlocksValid[$index]
+                [class]="{
+                  'fa-circle-check': formBlocksValid[$index],
+                  'green-text': formBlocksValid[$index],
+                  'fa-circle-exclamation': !formBlocksValid[$index],
+                  'red-text': strictValidation && !formBlocksValid[$index],
+                  'orange-text': !strictValidation && !formBlocksValid[$index]
                 }"
                 [ngbTooltip]="(formBlocksValid[$index] ? 'form.label_valid' : (strictValidation ? 'form.label_invalid_strict' : 'form.label_invalid')) | translate"
                 container="modal"
@@ -115,10 +117,12 @@
       @if (canConfigure) { @if (schema?.singular) {
       <i
         class="fa fa-xl me-2"
-        [ngClass]="{
-            'fa-circle-check green-text': formIsValid,
-            'fa-circle-exclamation red-text': strictValidation && !formIsValid,
-            'fa-circle-exclamation orange-text': !strictValidation && !formIsValid
+        [class]="{
+            'fa-circle-check': formIsValid,
+            'green-text': formIsValid,
+            'fa-circle-exclamation': !formIsValid,
+            'red-text': strictValidation && !formIsValid,
+            'orange-text': !strictValidation && !formIsValid
           }"
         [ngbTooltip]="(formIsValid ? 'form.label_valid' : (strictValidation ? 'form.label_invalid_strict' : 'form.label_invalid')) | translate"
         container="modal"

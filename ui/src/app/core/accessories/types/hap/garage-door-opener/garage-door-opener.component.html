@@ -1,6 +1,6 @@
 <div
   class="accessory-box"
-  [ngClass]="{
+  [class]="{
     'accessory-on': service.values.ObstructionDetected
       || [0, 2, 3, 4].includes(service.values.CurrentDoorState)
       || service.values.On

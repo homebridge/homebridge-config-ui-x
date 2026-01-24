@@ -1,4 +1,3 @@
-import { NgClass } from '@angular/common'
 import { Component, inject, Input } from '@angular/core'
 import { TranslatePipe } from '@ngx-translate/core'
 
@@ -13,7 +12,6 @@ import { SettingsService } from '@/app/core/settings.service'
   standalone: true,
   imports: [
     LongClickDirective,
-    NgClass,
     TranslatePipe,
   ],
 })
