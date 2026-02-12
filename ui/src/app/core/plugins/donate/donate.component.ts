@@ -83,7 +83,7 @@ export class DonateComponent implements OnInit {
         return 'fab fa-patreon'
       case 'kofi':
       case 'ko-fi':
-        return 'fas fa-coffee'
+        return 'fab fa-ko-fi'
       default:
         return 'fas fa-link'
     }
