@@ -10,6 +10,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - upgrade `xterm` to `v6` + style improvements
 - added option: global terminal/log window settings
 - use new font-awesome `ko-fi` icon for donate modal
+- improve search term matching on settings page
 
 ### Homebridge Dependencies
 

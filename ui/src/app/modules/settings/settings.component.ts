@@ -116,6 +116,75 @@ export class SettingsComponent implements OnInit {
   // Track which items are hidden by search
   public hiddenItems = signal<Record<string, boolean>>({})
 
+  // Define which items belong to which section
+  private sectionItems: Record<string, string[]> = {
+    general: [
+      'setting-name',
+      'setting-backup',
+      'setting-restore',
+      'setting-users',
+    ],
+    display: [
+      'setting-lang',
+      'setting-theme',
+      'setting-lighting',
+      'setting-menu',
+      'setting-temp',
+      'setting-wallpaper',
+    ],
+    startup: [
+      'setting-debug',
+      'setting-insecure',
+      'setting-security-control',
+      'setting-keep',
+      'setting-scheduled-restart',
+      'setting-metrics-startup',
+      'setting-package-path',
+      'setting-linux-restart',
+      'setting-env-debug-manual',
+      'setting-env-node',
+    ],
+    network: [
+      'setting-interfaces',
+      'setting-mdns',
+      'setting-port-hb',
+      'setting-port-range',
+      'setting-port-end',
+      'setting-network-host',
+      'setting-network-proxy',
+      'setting-ui-port-network',
+      'setting-mdns-advertise',
+    ],
+    matter: [
+      'setting-matter-enabled',
+      'setting-matter-port',
+    ],
+    terminal: [
+      'setting-terminal-log-max',
+      'setting-terminal-persistence',
+      'setting-terminal-buffer',
+      'setting-terminal-font-size',
+      'setting-terminal-font-weight',
+      'setting-terminal-lighting-mode',
+    ],
+    security: [
+      'setting-security-auth',
+      'setting-session-inactivity',
+      'setting-security-session',
+      'setting-security-https',
+    ],
+    cache: [
+      'setting-accessory-debug',
+      'setting-reset-accessory-ind',
+      'setting-reset-bridge-accessories',
+      'setting-reset-accessory-all',
+    ],
+    reset: [
+      'setting-reset-bridge-ind',
+      'setting-reset-bridge-all',
+    ],
+  }
+
   public loading = signal(true)
   public debugFieldDesc = 'settings.startup.debug_desc_v1' // default, may be changed in ngOnInit
   public showAvahiMdnsOption = signal(false)
@@ -337,10 +406,27 @@ export class SettingsComponent implements OnInit {
 
     const query = this.searchQuery().toLowerCase()
     const itemsContent = this.getItemsContent()
+    const sectionContent = this.getSectionContent()
+
+    // Determine which sections match by title or description
+    const matchedSections = new Set<string>()
+    for (const [sectionName, searchableText] of Object.entries(sectionContent)) {
+      if (searchableText.toLowerCase().includes(query)) {
+        matchedSections.add(sectionName)
+      }
+    }
 
     // Check each item and hide those that don't match
     const newHiddenItems: Record<string, boolean> = {}
     Object.entries(itemsContent).forEach(([itemId, searchableText]) => {
+      // If this item belongs to a section that matched, keep it visible
+      const belongsToMatchedSection = Object.entries(this.sectionItems).some(
+        ([sectionName, items]) => matchedSections.has(sectionName) && items.includes(itemId),
+      )
+      if (belongsToMatchedSection) {
+        return
+      }
+
       const matches = searchableText && searchableText.toLowerCase().includes(query)
       if (!matches) {
         newHiddenItems[itemId] = true
@@ -362,85 +448,28 @@ export class SettingsComponent implements OnInit {
       return true
     }
 
-    // Define which items belong to which section
-    const sectionItems: Record<string, string[]> = {
-      general: [
-        'setting-name',
-        'setting-backup',
-        'setting-restore',
-        'setting-users',
-      ],
-      display: [
-        'setting-lang',
-        'setting-theme',
-        'setting-lighting',
-        'setting-menu',
-        'setting-temp',
-        'setting-betas',
-        'setting-wallpaper',
-      ],
-      startup: [
-        'setting-debug',
-        'setting-insecure',
-        'setting-security-control',
-        'setting-keep',
-        'setting-scheduled-restart',
-        'setting-metrics-startup',
-        'setting-package-path',
-        'setting-linux-restart',
-        'setting-env-debug-manual',
-        'setting-env-node',
-      ],
-      network: [
-        'setting-interfaces',
-        'setting-mdns',
-        'setting-port-hb',
-        'setting-port-range',
-        'setting-port-end',
-        'setting-network-host',
-        'setting-network-proxy',
-        'setting-ui-port-network',
-        'setting-mdns-advertise',
-      ],
-      matter: [
-        'setting-matter-enabled',
-        'setting-matter-port',
-      ],
-      terminal: [
-        'setting-terminal-log-max',
-        'setting-terminal-persistence',
-        'setting-terminal-buffer',
-      ],
-      security: [
-        'setting-security-auth',
-        'setting-session-inactivity',
-        'setting-security-session',
-        'setting-security-https',
-        'setting-security-cert',
-        'setting-security-pass',
-        'setting-security-selfsigned-hostnames',
-        'setting-security-control',
-      ],
-      cache: [
-        'setting-accessory-debug',
-        'setting-reset-accessory-ind',
-        'setting-reset-bridge-accessories',
-        'setting-reset-accessory-all',
-      ],
-      reset: [
-        'setting-reset-bridge-ind',
-        'setting-reset-bridge-all',
-      ],
-    }
-
     // Get the items for this section
-    const items = sectionItems[sectionName]
+    const items = this.sectionItems[sectionName]
     if (!items) {
       return true // If section not defined, show it by default
     }
 
     // Check if at least one item in the section is visible
     return items.some(itemId => !this.isItemHidden(itemId))
+  }
+
+  private getSectionContent(): Record<string, string> {
+    return {
+      general: this.$translate.instant('settings.general.title_general'),
+      display: this.$translate.instant('settings.general.title_display'),
+      startup: this.$translate.instant('settings.title_startup_options'),
+      network: this.$translate.instant('settings.network.title_network'),
+      matter: `${this.$translate.instant('settings.matter.title')} ${this.$translate.instant('settings.matter.desc')}`,
+      terminal: this.$translate.instant('settings.network.title_terminal'),
+      security: this.$translate.instant('settings.network.title_security'),
+      cache: `${this.$translate.instant('menu.label_accessories')} ${this.$translate.instant('settings.cache.desc')}`,
+      reset: `${this.$translate.instant('reset.bridges.title')} ${this.$translate.instant('reset.bridges.desc')}`,
+    }
   }
 
   private getItemsContent(): Record<string, string> {
@@ -458,7 +487,6 @@ export class SettingsComponent implements OnInit {
       'setting-lighting': this.$translate.instant('settings.display.lighting_mode'),
       'setting-menu': this.$translate.instant('settings.display.menu_mode'),
       'setting-temp': this.$translate.instant('settings.display.temp_units'),
-      'setting-betas': this.$translate.instant('settings.display.show_betas'),
       'setting-wallpaper': this.$translate.instant('settings.display.wallpaper'),
 
       // Startup section
@@ -511,6 +539,9 @@ export class SettingsComponent implements OnInit {
       'setting-terminal-persistence': this.$translate.instant('settings.terminal.persistence'),
       'setting-terminal-warning': this.$translate.instant('settings.terminal.hide_warning'),
       'setting-terminal-buffer': this.$translate.instant('settings.terminal.buffer_size'),
+      'setting-terminal-font-size': this.$translate.instant('settings.terminal.theme'),
+      'setting-terminal-font-weight': this.$translate.instant('settings.terminal.theme'),
+      'setting-terminal-lighting-mode': this.$translate.instant('settings.terminal.theme'),
 
       // Reset section
       'setting-reset-accessory-ind': this.$translate.instant('reset.accessory_ind.title'),
