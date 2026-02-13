@@ -53,6 +53,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 
 - improvements for homebridge v2
 - add a link to unmaintained plugins in dev support
+- add more entries to the credits modal
 
 ### Other Changes
 
