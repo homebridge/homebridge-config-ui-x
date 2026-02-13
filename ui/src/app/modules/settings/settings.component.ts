@@ -117,6 +117,79 @@ export class SettingsComponent implements OnInit {
   // Track which items are hidden by search
   public hiddenItems = signal<Record<string, boolean>>({})
 
+  // Define which items belong to which section
+  private sectionItems: Record<string, string[]> = {
+    general: [
+      'setting-name',
+      'setting-backup',
+      'setting-restore',
+      'setting-users',
+    ],
+    display: [
+      'setting-lang',
+      'setting-theme',
+      'setting-lighting',
+      'setting-menu',
+      'setting-temp',
+      'setting-wallpaper',
+    ],
+    startup: [
+      'setting-debug',
+      'setting-keep',
+      'setting-insecure',
+      'setting-security-control',
+      'setting-scheduled-restart',
+      'setting-metrics-startup',
+      'setting-package-path',
+      'setting-linux-shutdown',
+      'setting-linux-restart',
+      'setting-linux-temp',
+      'setting-env-debug-manual',
+      'setting-env-node',
+      'setting-docker-startup',
+    ],
+    network: [
+      'setting-interfaces',
+      'setting-mdns',
+      'setting-port-hb',
+      'setting-port-range',
+      'setting-network-host',
+      'setting-network-proxy',
+      'setting-ui-port-network',
+      'setting-mdns-advertise',
+    ],
+    matter: [
+      'setting-matter-enabled',
+      'setting-matter-port',
+    ],
+    terminal: [
+      'setting-terminal-log-max',
+      'setting-terminal-log-truncate',
+      'setting-terminal-persistence',
+      'setting-terminal-warning',
+      'setting-terminal-buffer',
+      'setting-terminal-font-size',
+      'setting-terminal-font-weight',
+      'setting-terminal-lighting-mode',
+    ],
+    security: [
+      'setting-security-auth',
+      'setting-session-inactivity',
+      'setting-security-session',
+      'setting-security-https',
+    ],
+    cache: [
+      'setting-accessory-debug',
+      'setting-reset-accessory-ind',
+      'setting-reset-bridge-accessories',
+      'setting-reset-accessory-all',
+    ],
+    reset: [
+      'setting-reset-bridge-ind',
+      'setting-reset-bridge-all',
+    ],
+  }
+
   public loading = signal(true)
   public debugFieldDesc = 'settings.startup.debug_desc_v1' // default, may be changed in ngOnInit
   public showAvahiMdnsOption = signal(false)
@@ -338,10 +411,27 @@ export class SettingsComponent implements OnInit {
 
     const query = this.searchQuery().toLowerCase()
     const itemsContent = this.getItemsContent()
+    const sectionContent = this.getSectionContent()
+
+    // Determine which sections match by title or description
+    const matchedSections = new Set<string>()
+    for (const [sectionName, searchableText] of Object.entries(sectionContent)) {
+      if (searchableText.toLowerCase().includes(query)) {
+        matchedSections.add(sectionName)
+      }
+    }
 
     // Check each item and hide those that don't match
     const newHiddenItems: Record<string, boolean> = {}
     Object.entries(itemsContent).forEach(([itemId, searchableText]) => {
+      // If this item belongs to a section that matched, keep it visible
+      const belongsToMatchedSection = Object.entries(this.sectionItems).some(
+        ([sectionName, items]) => matchedSections.has(sectionName) && items.includes(itemId),
+      )
+      if (belongsToMatchedSection) {
+        return
+      }
+
       const matches = searchableText && searchableText.toLowerCase().includes(query)
       if (!matches) {
         newHiddenItems[itemId] = true
@@ -363,79 +453,8 @@ export class SettingsComponent implements OnInit {
       return true
     }
 
-    // Define which items belong to which section
-    const sectionItems: Record<string, string[]> = {
-      general: [
-        'setting-name',
-        'setting-backup',
-        'setting-restore',
-        'setting-users',
-      ],
-      display: [
-        'setting-lang',
-        'setting-theme',
-        'setting-lighting',
-        'setting-menu',
-        'setting-temp',
-        'setting-betas',
-        'setting-wallpaper',
-      ],
-      startup: [
-        'setting-debug',
-        'setting-insecure',
-        'setting-security-control',
-        'setting-keep',
-        'setting-scheduled-restart',
-        'setting-metrics-startup',
-        'setting-package-path',
-        'setting-linux-restart',
-        'setting-env-debug-manual',
-        'setting-env-node',
-      ],
-      network: [
-        'setting-interfaces',
-        'setting-mdns',
-        'setting-port-hb',
-        'setting-port-range',
-        'setting-port-end',
-        'setting-network-host',
-        'setting-network-proxy',
-        'setting-ui-port-network',
-        'setting-mdns-advertise',
-      ],
-      matter: [
-        'setting-matter-enabled',
-        'setting-matter-port',
-      ],
-      terminal: [
-        'setting-terminal-log-max',
-        'setting-terminal-persistence',
-        'setting-terminal-buffer',
-      ],
-      security: [
-        'setting-security-auth',
-        'setting-session-inactivity',
-        'setting-security-session',
-        'setting-security-https',
-        'setting-security-cert',
-        'setting-security-pass',
-        'setting-security-selfsigned-hostnames',
-        'setting-security-control',
-      ],
-      cache: [
-        'setting-accessory-debug',
-        'setting-reset-accessory-ind',
-        'setting-reset-bridge-accessories',
-        'setting-reset-accessory-all',
-      ],
-      reset: [
-        'setting-reset-bridge-ind',
-        'setting-reset-bridge-all',
-      ],
-    }
-
     // Get the items for this section
-    const items = sectionItems[sectionName]
+    const items = this.sectionItems[sectionName]
     if (!items) {
       return true // If section not defined, show it by default
     }
@@ -444,8 +463,22 @@ export class SettingsComponent implements OnInit {
     return items.some(itemId => !this.isItemHidden(itemId))
   }
 
+  private getSectionContent(): Record<string, string> {
+    return {
+      general: this.$translate.instant('settings.general.title_general'),
+      display: this.$translate.instant('settings.general.title_display'),
+      startup: this.$translate.instant('settings.title_startup_options'),
+      network: this.$translate.instant('settings.network.title_network'),
+      matter: `${this.$translate.instant('settings.matter.title')} ${this.$translate.instant('settings.matter.desc')}`,
+      terminal: this.$translate.instant('settings.network.title_terminal'),
+      security: this.$translate.instant('settings.network.title_security'),
+      cache: `${this.$translate.instant('menu.label_accessories')} ${this.$translate.instant('settings.cache.desc')}`,
+      reset: `${this.$translate.instant('reset.bridges.title')} ${this.$translate.instant('reset.bridges.desc')}`,
+    }
+  }
+
   private getItemsContent(): Record<string, string> {
-    // Map each setting item to its translated text
+    // Map each setting item to its translated text (must match sectionItems)
     return {
       // General section
       'setting-name': this.$translate.instant('settings.name'),
@@ -459,79 +492,62 @@ export class SettingsComponent implements OnInit {
       'setting-lighting': this.$translate.instant('settings.display.lighting_mode'),
       'setting-menu': this.$translate.instant('settings.display.menu_mode'),
       'setting-temp': this.$translate.instant('settings.display.temp_units'),
-      'setting-betas': this.$translate.instant('settings.display.show_betas'),
       'setting-wallpaper': this.$translate.instant('settings.display.wallpaper'),
 
       // Startup section
       'setting-debug': this.$translate.instant('settings.startup.debug'),
-      'setting-insecure': this.$translate.instant('settings.startup.insecure'),
       'setting-keep': this.$translate.instant('settings.startup.keep_accessories'),
+      'setting-insecure': this.$translate.instant('settings.startup.insecure'),
+      'setting-security-control': this.$translate.instant('settings.security.ui_control'),
       'setting-scheduled-restart': this.$translate.instant('settings.startup.scheduled_restart'),
       'setting-metrics-startup': this.$translate.instant('settings.startup.metrics'),
-      'setting-env-debug': this.$translate.instant('settings.startup.env_debug'),
+      'setting-package-path': this.$translate.instant('settings.network.hb_package'),
+      'setting-linux-shutdown': this.$translate.instant('settings.linux.shutdown'),
+      'setting-linux-restart': this.$translate.instant('settings.linux.restart'),
+      'setting-linux-temp': this.$translate.instant('settings.linux.temp'),
       'setting-env-debug-manual': 'DEBUG',
-      'setting-env-node': this.$translate.instant('settings.startup.env_node_options'),
-      'setting-log-size': this.$translate.instant('settings.startup.log_length'),
-      'setting-log-truncate': this.$translate.instant('settings.startup.truncate_log'),
-      'setting-package-path': this.$translate.instant('settings.startup.homebridge_package_path'),
+      'setting-env-node': 'NODE OPTIONS',
+      'setting-docker-startup': this.$translate.instant('menu.docker.startup_script'),
 
       // Network section
-      'setting-mdns': this.$translate.instant('settings.mdns_advertiser'),
       'setting-interfaces': this.$translate.instant('settings.network.title_network_interfaces'),
+      'setting-mdns': this.$translate.instant('settings.mdns_advertiser'),
       'setting-port-hb': this.$translate.instant('settings.network.port_hb'),
-      'setting-port-bridge': this.$translate.instant('settings.network.port.bridge'),
-      'setting-port-range': this.$translate.instant('settings.network.port.start'),
-      'setting-port-end': this.$translate.instant('settings.network.port.end'),
+      'setting-port-range': this.$translate.instant('settings.network.port_range'),
       'setting-network-host': this.$translate.instant('settings.network.host'),
       'setting-network-proxy': this.$translate.instant('settings.network.proxy'),
       'setting-ui-port-network': this.$translate.instant('settings.network.port_ui'),
       'setting-mdns-advertise': this.$translate.instant('settings.network.mdns_advertise'),
 
       // Matter section
-      'setting-matter-enabled': `${this.$translate.instant('settings.matter.title')} ${this.$translate.instant('common.labels.enabled')} ${this.$translate.instant('settings.matter.enabled_desc')}`,
-      'setting-matter-port': `${this.$translate.instant('settings.matter.title')} ${this.$translate.instant('settings.matter.port')} ${this.$translate.instant('settings.matter.port_desc')}`,
-
-      // Security section
-      'setting-security-auth': this.$translate.instant('settings.security.auth'),
-      'setting-security-session': this.$translate.instant('settings.startup.session'),
-      'setting-security-https': this.$translate.instant('settings.security.https'),
-      'setting-security-cert': this.$translate.instant('settings.security.cert'),
-      'setting-security-pass': this.$translate.instant('settings.security.pass'),
-      'setting-security-selfsigned-hostnames': this.$translate.instant('settings.security.selfsigned_hostnames'),
-      'setting-security-control': this.$translate.instant('settings.security.ui_control'),
-      'setting-ui-port': this.$translate.instant('settings.security.webui_port'),
-      'setting-ui-host': this.$translate.instant('settings.security.webui_host'),
-      'setting-ui-auth': this.$translate.instant('settings.security.webui_auth'),
-      'setting-session-timeout': this.$translate.instant('settings.security.session_timeout'),
-      'setting-session-inactivity': this.$translate.instant('settings.startup.session_inactivity_based'),
-      'setting-proxy': this.$translate.instant('settings.security.webui_proxy_host'),
-      'setting-ssl': this.$translate.instant('settings.security.ssl_key'),
+      'setting-matter-enabled': `${this.$translate.instant('common.labels.enabled')} ${this.$translate.instant('settings.matter.enabled_desc')}`,
+      'setting-matter-port': `${this.$translate.instant('settings.matter.port')} ${this.$translate.instant('settings.matter.port_desc')}`,
 
       // Terminal section
       'setting-terminal-log-max': this.$translate.instant('settings.terminal.log_max'),
+      'setting-terminal-log-truncate': this.$translate.instant('settings.terminal.log_truncate'),
       'setting-terminal-persistence': this.$translate.instant('settings.terminal.persistence'),
-      'setting-terminal-warning': this.$translate.instant('settings.terminal.hide_warning'),
+      'setting-terminal-warning': this.$translate.instant('settings.terminal.warning'),
       'setting-terminal-buffer': this.$translate.instant('settings.terminal.buffer_size'),
+      'setting-terminal-font-size': this.$translate.instant('settings.terminal.theme'),
+      'setting-terminal-font-weight': this.$translate.instant('settings.terminal.theme'),
+      'setting-terminal-lighting-mode': this.$translate.instant('settings.terminal.theme'),
 
-      // Reset section
+      // Security section
+      'setting-security-auth': this.$translate.instant('settings.security.auth'),
+      'setting-session-inactivity': this.$translate.instant('settings.startup.session_inactivity_based'),
+      'setting-security-session': this.$translate.instant('settings.startup.session'),
+      'setting-security-https': this.$translate.instant('settings.security.https_enable'),
+
+      // Cache section
+      'setting-accessory-debug': this.$translate.instant('settings.accessory.debug'),
       'setting-reset-accessory-ind': this.$translate.instant('reset.accessory_ind.title'),
       'setting-reset-bridge-accessories': this.$translate.instant('reset.bridge_accessories.title'),
       'setting-reset-accessory-all': this.$translate.instant('reset.accessory_all.title'),
+
+      // Reset section
       'setting-reset-bridge-ind': this.$translate.instant('reset.bridge_ind.title'),
       'setting-reset-bridge-all': this.$translate.instant('reset.bridge_all.title'),
-      'setting-reset-state': this.$translate.instant('settings.reset.reset_homebridge_state'),
-      'setting-unpair': this.$translate.instant('settings.reset.unpair_bridges'),
-      'setting-metrics': this.$translate.instant('settings.reset.enable_metrics'),
-      'setting-accessory-control': this.$translate.instant('settings.reset.control_panel'),
-      'setting-accessory-debug': this.$translate.instant('settings.accessory.debug'),
-      'setting-temp-files': this.$translate.instant('settings.reset.temp_files'),
-      'setting-linux-shutdown': this.$translate.instant('settings.reset.linux_shutdown'),
-      'setting-linux-restart': this.$translate.instant('settings.reset.linux_restart'),
-
-      // Cache section
-      'setting-cache-all': this.$translate.instant('settings.cache.title_clear_cache'),
-      'setting-cache-bridge': this.$translate.instant('settings.cache.title_clear_bridge_cache'),
-      'setting-cache-accessories': this.$translate.instant('settings.cache.title_clear_cached_accessories'),
     }
   }
 

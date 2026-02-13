@@ -672,8 +672,8 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
                     default: 52100,
                     minimum: 1025,
                     maximum: 65534,
-                    title: this.$translate.instant('settings.network.port_start'),
-                    description: this.$translate.instant('settings.network.port_start_desc'),
+                    title: this.$translate.instant('settings.network.port_range'),
+                    description: this.$translate.instant('settings.network.port_range_desc'),
                   },
                   end: {
                     type: 'number',
