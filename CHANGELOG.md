@@ -11,6 +11,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - added option: global terminal/log window settings
 - use new font-awesome `ko-fi` icon for donate modal
 - improve search term matching on settings page
+- avoid an infinite spinner on session expiry
 
 ### Homebridge Dependencies
 

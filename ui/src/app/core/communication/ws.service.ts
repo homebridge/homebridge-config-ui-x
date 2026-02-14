@@ -19,6 +19,7 @@ export class WsService {
   private $auth = inject(AuthService)
 
   private namespaceConnectionCache = {}
+  private isHandlingAuthError = false
 
   /**
    * Wrapper function to reuse the same connection
@@ -86,6 +87,15 @@ export class WsService {
       },
     })
 
+    // Handle server-initiated disconnects (e.g. WsGuard rejecting an expired token).
+    // Socket.io does NOT auto-reconnect for server disconnects, so without this
+    // the UI would show an infinite spinner.
+    socket.on('disconnect', (reason: string) => {
+      if (reason === 'io server disconnect') {
+        this.handleConnectionAuthError()
+      }
+    })
+
     const request = (resource: string, payload: any): Observable<any> => new Observable((observer) => {
       socket.emit(resource, payload, (resp: any) => {
         if (typeof resp === 'object' && resp.error) {
@@ -101,5 +111,28 @@ export class WsService {
       socket,
       request,
     }
+  }
+
+  /**
+   * Handle a WebSocket auth error by attempting to refresh the session.
+   * If refresh succeeds, reload to reconnect sockets with the new token.
+   * If refresh fails (401), the HTTP interceptor will handle logout.
+   */
+  private handleConnectionAuthError() {
+    if (this.isHandlingAuthError) {
+      return
+    }
+    this.isHandlingAuthError = true
+
+    this.$auth.refreshSession()
+      .then(() => {
+        // Token refreshed successfully, reload to reconnect sockets with new token
+        window.location.reload()
+      })
+      .catch(() => {
+        // Refresh failed — if it was a 401, the HTTP interceptor already handles
+        // logout + reload. For other errors, explicitly logout.
+        this.$auth.logout()
+      })
   }
 }

@@ -100,6 +100,7 @@ export class AuthService {
     try {
       if (this.$jwtHelper.isTokenExpired(token, this.$settings.serverTimeOffset)) {
         this.logout()
+        return false
       }
       this.user = this.$jwtHelper.decodeToken(token)
       this.token = token

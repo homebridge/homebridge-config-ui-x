@@ -1,7 +1,8 @@
-import { provideHttpClient, withFetch, withInterceptorsFromDi } from '@angular/common/http'
+import { provideHttpClient, withFetch, withInterceptors, withInterceptorsFromDi } from '@angular/common/http'
 import { importProvidersFrom } from '@angular/core'
 import { JwtModule } from '@auth0/angular-jwt'
 
+import { authInterceptor } from '@/app/core/auth/auth.interceptor'
 import { tokenGetter } from '@/app/core/auth/token-getter'
 import { environment } from '@/environments/environment'
 
@@ -11,7 +12,7 @@ import { environment } from '@/environments/environment'
  */
 export function provideAppHttpClient() {
   return [
-    provideHttpClient(withFetch(), withInterceptorsFromDi()),
+    provideHttpClient(withFetch(), withInterceptors([authInterceptor]), withInterceptorsFromDi()),
     importProvidersFrom(
       JwtModule.forRoot({
         config: {
