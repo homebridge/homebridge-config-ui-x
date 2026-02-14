@@ -53,11 +53,11 @@ export class SwitchToScopedComponent implements OnInit, OnDestroy {
       theme: {
         background: '#00000000',
         foreground: this.$settings.actualLightingMode === 'light' ? '#333333' : '#eeeeee',
-        cursor: '#d2d2d2',
-        selectionBackground: '#d2d2d2',
       },
-      allowTransparency: true,
       allowProposedApi: true,
+      allowTransparency: true,
+      fontSize: 13,
+      lineHeight: 1.2,
     })
     this.term.loadAddon(this.fitAddon)
     this.term.loadAddon(this.webLinksAddon)
