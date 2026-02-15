@@ -21,7 +21,7 @@ export interface Plugin {
   installedVersion: string
   isConfigured: boolean
   isConfiguredDynamicPlatform: boolean
-  isHbMaintained: boolean
+  isUnmaintained: boolean
   isHbScoped: boolean
   lastUpdated?: string
   latestVersion: string

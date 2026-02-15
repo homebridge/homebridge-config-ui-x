@@ -96,7 +96,7 @@ export class PluginsService {
   private pluginListRetryTimeout: NodeJS.Timeout
 
   private hiddenPlugins: string[] = []
-  private maintainedPlugins: string[] = []
+  private unmaintainedPlugins: string[] = []
   private pluginIcons: { [key: string]: string } = {}
   private pluginAuthors: { [key: string]: string } = {}
   private pluginNames: { [key: string]: string } = {}
@@ -300,7 +300,7 @@ export class PluginsService {
 
   private getPluginKeywords(plugin: any): string[] {
     return Array.isArray(plugin.keywords)
-      ? plugin.keywords.map(k => k.toLowerCase())
+      ? plugin.keywords.map((k: string) => k.toLowerCase())
       : []
   }
 
@@ -409,7 +409,7 @@ export class PluginsService {
           icon: this.pluginIcons[pkg.package.name] ? `${this.pluginListUrl}${this.pluginIcons[pkg.package.name]}` : null,
           isHbScoped: pkg.package.name.startsWith('@homebridge-plugins/'),
           newHbScope: this.newScopePlugins[pkg.package.name],
-          isHbMaintained: this.maintainedPlugins.includes(pkg.package.name),
+          isUnmaintained: this.unmaintainedPlugins.includes(pkg.package.name),
         }
       })
 
@@ -483,7 +483,7 @@ export class PluginsService {
         icon: this.pluginIcons[pkg.name],
         isHbScoped: pkg.name.startsWith('@homebridge-plugins/'),
         newHbScope: this.newScopePlugins[pkg.name],
-        isHbMaintained: this.maintainedPlugins.includes(pkg.name),
+        isUnmaintained: this.unmaintainedPlugins.includes(pkg.name),
       } as HomebridgePlugin
 
       // It's not installed; finish building the response
@@ -507,7 +507,7 @@ export class PluginsService {
         : null
       plugin.isHbScoped = pkg.name.startsWith('@homebridge-plugins/')
       plugin.newHbScope = this.newScopePlugins[pkg.name]
-      plugin.isHbMaintained = this.maintainedPlugins.includes(pkg.name)
+      plugin.isUnmaintained = this.unmaintainedPlugins.includes(pkg.name)
 
       return [this.fixDisplayName(plugin)]
     } catch (e) {
@@ -524,7 +524,7 @@ export class PluginsService {
    * @param pluginAction
    * @param client
    */
-  async manageUi(action: 'install' | 'uninstall', pluginAction: PluginActionDto, client: EventEmitter) {
+  private async manageUi(action: 'install' | 'uninstall', pluginAction: PluginActionDto, client: EventEmitter) {
     // Prevent uninstalling self
     if (action === 'uninstall') {
       throw new Error('Cannot uninstall the Homebridge UI.')
@@ -971,7 +971,7 @@ export class PluginsService {
         : null,
       isHbScoped: pkgJson.name.startsWith('@homebridge-plugins/'),
       newHbScope: this.newScopePlugins[pkgJson.name],
-      isHbMaintained: this.maintainedPlugins.includes(pkgJson.name),
+      isUnmaintained: this.unmaintainedPlugins.includes(pkgJson.name),
       installedVersion: pkgJson.version || '0.0.1',
       globalInstall: (uiModule.path !== this.configService.customPluginPath),
       settingsSchema: await pathExists(resolve(uiModule.path, pkgJson.name, 'config.schema.json')),
@@ -1812,7 +1812,7 @@ export class PluginsService {
         : null,
       isHbScoped: pkgJson.name.startsWith('@homebridge-plugins/'),
       newHbScope: this.newScopePlugins[pkgJson.name],
-      isHbMaintained: this.maintainedPlugins.includes(pkgJson.name),
+      isUnmaintained: this.unmaintainedPlugins.includes(pkgJson.name),
       installedVersion: installPath ? (pkgJson.version || '0.0.1') : null,
       globalInstall: (installPath !== this.configService.customPluginPath),
       settingsSchema: await pathExists(resolve(installPath, pkgJson.name, 'config.schema.json')),
@@ -2103,7 +2103,7 @@ export class PluginsService {
       this.verifiedPlusPlugins = []
       this.pluginIcons = {}
       this.hiddenPlugins = []
-      this.maintainedPlugins = []
+      this.unmaintainedPlugins = []
       this.pluginAuthors = {}
       this.pluginNames = {}
       this.pluginChangelogs = {}
@@ -2117,8 +2117,8 @@ export class PluginsService {
         if (plugin.h) {
           this.hiddenPlugins.push(key)
         }
-        if (plugin.m) {
-          this.maintainedPlugins.push(key)
+        if (plugin.u) {
+          this.unmaintainedPlugins.push(key)
         }
         if (plugin.a) {
           this.pluginAuthors[key] = plugin.a

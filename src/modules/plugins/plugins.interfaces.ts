@@ -33,7 +33,7 @@ export interface HomebridgePlugin {
   }
   funding?: NpmFunding
   isHbScoped?: boolean
-  isHbMaintained?: boolean
+  isUnmaintained?: boolean
   newHbScope?: {
     from: string
     to: string
@@ -182,12 +182,12 @@ export interface PluginListItem {
   c?: string // changelog path
   h?: 1 // hidden
   i?: string // icon
-  m?: 1 // maintained
   a?: string // author
   n?: string // name
   s?: PluginListNewScopeItem // has new scope
   v?: 1 // verified
   p?: 1 // verified plus
+  u?: 1 // unmaintained
 }
 
 export interface PluginListData {

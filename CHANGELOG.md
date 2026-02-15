@@ -12,6 +12,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 ### Other Changes
 
 - fixed installing plugins from backup restore
+- update types for github plugin lists
 
 ### Homebridge Dependencies
 
