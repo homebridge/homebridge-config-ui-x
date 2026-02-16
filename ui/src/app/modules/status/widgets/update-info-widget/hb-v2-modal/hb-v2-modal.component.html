@@ -64,11 +64,11 @@
       <li class="list-group-item d-flex justify-content-between align-items-center">
         <div class="me-3">
           <img
-            [src]="plugin.icon"
-            (error)="handleIconError(plugin)"
             alt=""
             aria-hidden="true"
             class="plugin-icon-small"
+            [src]="plugin.icon"
+            (error)="handleIconError(plugin)"
           />
         </div>
         <div class="text-start flex-grow-1">{{ plugin.displayName }}</div>
@@ -97,8 +97,8 @@
         type="button"
         class="btn btn-elegant"
         data-bs-dismiss="modal"
-        (click)="closeModal('Dismiss')"
         [attr.aria-label]="'form.button_close' | translate"
+        (click)="closeModal('Dismiss')"
       >
         {{ 'form.button_close' | translate }}
       </button>
@@ -110,8 +110,8 @@
         type="button"
         class="btn btn-elegant"
         data-bs-dismiss="modal"
-        (click)="closeModal('Dismiss')"
         [attr.aria-label]="'form.button_close' | translate"
+        (click)="closeModal('Dismiss')"
       >
         {{ 'form.button_close' | translate }}
       </button>
@@ -120,10 +120,10 @@
     <div class="text-end">
       @if (isUpdating) {
       <button
-        [disabled]="loading()"
         type="button"
         class="btn btn-primary"
         data-bs-dismiss="modal"
+        [disabled]="loading()"
         (click)="closeModal('update')"
       >
         {{ 'form.button_continue' | translate }}

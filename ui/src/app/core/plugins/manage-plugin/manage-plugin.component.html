@@ -10,9 +10,9 @@
     ></button>
   </div>
   <div
-    [hidden]="!onlineUpdateOk() || actionComplete() || releaseNotesShow()"
     id="plugin-log-output"
     class="modal-body"
+    [hidden]="!onlineUpdateOk() || actionComplete() || releaseNotesShow()"
     [class.terminal-light-bg]="isLightTerminalTheme"
     [class.terminal-dark-bg]="!isLightTerminalTheme"
   ></div>
@@ -39,13 +39,13 @@
     <div class="mb-3 text-center">
       <i
         class="fas primary-text"
+        style="font-size: 75px"
         [class]="{
           'fa-arrow-alt-circle-down': action === 'Install',
           'fa-code-compare': action === 'Update' && installedVersion,
           'fa-arrow-alt-circle-up': action === 'Update' && !installedVersion,
           'fa-trash': action === 'Uninstall',
         }"
-        style="font-size: 75px"
       ></i>
     </div>
     <ul class="mb-3">
@@ -63,13 +63,13 @@ hb-service start</pre
     <div class="mb-3 text-center">
       <i
         class="far primary-text"
+        style="font-size: 75px"
         [class]="{
           'fa-arrow-alt-circle-down': action === 'Install' && !installedVersion,
           'fa-code-compare': action === 'Install' && installedVersion,
           'fa-arrow-alt-circle-up': action === 'Update',
           'fa-trash': action === 'Uninstall',
         }"
-        style="font-size: 75px"
       ></i>
     </div>
     @if (latestVersion) {
@@ -80,13 +80,13 @@ hb-service start</pre
     </h5>
     }
     <ul
-      ngbNav
       #nav="ngbNav"
+      ngbNav
+      class="nav-tabs px-0"
       [activeId]="releaseNotesTab()"
       (activeIdChange)="releaseNotesTab.set($event)"
-      class="nav-tabs px-0"
     >
-      <li [ngbNavItem]="1" class="w-50 m-0">
+      <li class="w-50 m-0" [ngbNavItem]="1">
         <button ngbNavLink class="w-100 release-tab">{{ 'plugins.manage.notes' | translate }}</button>
         <ng-template ngbNavContent>
           <div class="alert release-notes p-3 pb-1 my-0">
@@ -111,7 +111,7 @@ hb-service start</pre
           </div>
         </ng-template>
       </li>
-      <li [ngbNavItem]="2" class="w-50 m-0">
+      <li class="w-50 m-0" [ngbNavItem]="2">
         <button ngbNavLink class="w-100 release-tab">{{ 'plugins.manage.changelog' | translate }}</button>
         <ng-template ngbNavContent>
           <div class="alert release-notes p-3 pb-1 my-0" style="border-top-left-radius: 0; border-top-right-radius: 0">
@@ -131,7 +131,7 @@ hb-service start</pre
         </ng-template>
       </li>
     </ul>
-    <div [ngbNavOutlet]="nav" class="mt-2"></div>
+    <div class="mt-2" [ngbNavOutlet]="nav"></div>
 
     @if (['homebridge', 'homebridge-config-ui-x'].includes(pluginName)) {
     <div class="mt-4 mb-0">
@@ -155,8 +155,8 @@ hb-service start</pre
         type="button"
         class="btn btn-elegant"
         data-bs-dismiss="modal"
-        (click)="backToVersionModal && !actionComplete() ? goBack() : dismissModal()"
         [attr.aria-label]="(backToVersionModal && !actionComplete() ? 'form.button_back' : 'form.button_close') | translate"
+        (click)="backToVersionModal && !actionComplete() ? goBack() : dismissModal()"
       >
         {{ (backToVersionModal && !actionComplete() ? 'form.button_back' : 'form.button_close') | translate }}
       </button>
@@ -168,8 +168,8 @@ hb-service start</pre
         type="button"
         class="btn btn-elegant"
         data-bs-dismiss="modal"
-        (click)="dismissModal()"
         [attr.aria-label]="'form.button_close' | translate"
+        (click)="dismissModal()"
       >
         {{ 'form.button_close' | translate }}
       </button>

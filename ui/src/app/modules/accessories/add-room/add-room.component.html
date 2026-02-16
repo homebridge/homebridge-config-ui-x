@@ -43,9 +43,9 @@
               type="checkbox"
               class="rendux-input mb-0"
               formControlName="isDefault"
-              (keyup.enter)="closeModal()"
               [disabled]="noExistingRooms"
               [attr.aria-label]="'accessories.control.default_room' | translate"
+              (keyup.enter)="closeModal()"
             />
             <label for="form-default" class="rendux-label ms-3"></label>
           </div>

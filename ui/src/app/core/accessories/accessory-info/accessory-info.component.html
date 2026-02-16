@@ -21,12 +21,12 @@
         <label for="form-name" class="mb-2 mb-md-0 w-100 w-md-50">{{ 'accessories.custom_name' | translate }}</label>
         <div class="text-start text-md-end w-100 w-md-50">
           <input
-            [ngModel]="localService.customName || localService.serviceName"
-            (ngModelChange)="localService.customName = $event"
             type="text"
             id="form-name"
             autocomplete="off"
             class="form-control custom-input"
+            [ngModel]="localService.customName || localService.serviceName"
+            (ngModelChange)="localService.customName = $event"
           />
         </div>
       </li>
@@ -51,10 +51,10 @@
           <input
             type="checkbox"
             class="rendux-input"
-            [(ngModel)]="localService.hidden"
-            (ngModelChange)="onHiddenChange()"
             id="hide-accessory"
             [attr.aria-label]="'accessories.hide_this_accessory' | translate"
+            [(ngModel)]="localService.hidden"
+            (ngModelChange)="onHiddenChange()"
           />
           <label for="hide-accessory" class="rendux-label ms-3" aria-hidden="true"></label>
         </div>
@@ -66,10 +66,10 @@
           <input
             type="checkbox"
             class="rendux-input mb-0"
-            [(ngModel)]="localService.onDashboard"
-            (ngModelChange)="onDashboardChange()"
             id="show-on-dashboard"
             [attr.aria-label]="'accessories.show_on_dashboard' | translate"
+            [(ngModel)]="localService.onDashboard"
+            (ngModelChange)="onDashboardChange()"
           />
           <label for="show-on-dashboard" class="rendux-label ms-3" aria-hidden="true"></label>
         </div>
@@ -115,8 +115,8 @@
           <span
             class="hover-pointer"
             style="white-space: nowrap"
-            (click)="toggleDetailsVisibility(characteristic)"
             [attr.aria-expanded]="isDetailsVisible[characteristic.uuid]"
+            (click)="toggleDetailsVisibility(characteristic)"
             >{{ characteristic.description }}</span
           >
           } @else { <span style="white-space: nowrap">{{ characteristic.description }}</span> } @if
@@ -180,8 +180,8 @@
           'validValues' in characteristic) {
           <span
             class="hover-pointer"
-            (click)="toggleDetailsVisibility(characteristic)"
             [attr.aria-expanded]="isDetailsVisible[characteristic.uuid]"
+            (click)="toggleDetailsVisibility(characteristic)"
             >{{ characteristic.description }}</span
           >
           } @else { {{ characteristic.description }} } @if (isDetailsVisible[characteristic.uuid]) {
@@ -322,9 +322,9 @@
         <span class="text-start" aria-hidden="true">{{ 'accessories.button_remove' | translate }}</span>
         <button
           type="button"
-          (click)="removeSingleCachedAccessories()"
           class="btn btn-primary m-0 ms-3 py-1"
           [attr.aria-label]="'accessories.button_remove' | translate"
+          (click)="removeSingleCachedAccessories()"
         >
           <i class="fas fa-arrow-right" aria-hidden="true"></i>
         </button>
@@ -339,8 +339,8 @@
         type="button"
         class="btn btn-elegant"
         data-bs-dismiss="modal"
-        (click)="dismissModal()"
         [attr.aria-label]="'form.button_close' | translate"
+        (click)="dismissModal()"
       >
         {{ 'form.button_close' | translate }}
       </button>

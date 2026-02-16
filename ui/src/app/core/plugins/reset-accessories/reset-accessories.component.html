@@ -6,8 +6,8 @@
       class="btn-close"
       data-bs-dismiss="modal"
       [attr.aria-label]="'form.button_close' | translate"
-      (click)="dismissModal()"
       [disabled]="clicked()"
+      (click)="dismissModal()"
     ></button>
   </div>
   <div class="modal-body">
@@ -45,10 +45,10 @@
         </span>
         <button
           class="btn btn-danger m-0 ms-3"
-          (click)="toggleList(item._id, item._protocol)"
           [disabled]="clicked()"
           [class]="{ 'btn-danger': !isInList(item._id, item._protocol), 'btn-elegant': isInList(item._id, item._protocol) }"
           [attr.aria-label]="'form.button_delete' | translate"
+          (click)="toggleList(item._id, item._protocol)"
         >
           <i
             class="fas"
@@ -72,8 +72,8 @@
         type="button"
         class="btn btn-elegant"
         data-bs-dismiss="modal"
-        (click)="dismissModal()"
         [disabled]="clicked()"
+        (click)="dismissModal()"
       >
         {{ 'form.button_close' | translate }}
       </button>

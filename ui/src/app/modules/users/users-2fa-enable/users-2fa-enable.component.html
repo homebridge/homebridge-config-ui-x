@@ -20,7 +20,7 @@
       }
     </ul>
     @if (timeDiffError()) {
-    <ngb-alert type="error" [dismissible]="false" class="mb-0">
+    <ngb-alert type="error" class="mb-0" [dismissible]="false">
       <p class="fw-bold mb-1">{{ 'users.setup_2fa_cannot_setup_2fa' | translate }}</p>
       <p class="mb-0">{{ 'users.setup_2fa_server_time_out' | translate: {timeDiffError: timeDiffError()} }}</p>
     </ngb-alert>
@@ -28,7 +28,7 @@
     <ul class="list-group list-group-box mb-0">
       <li class="list-group-item text-center">
         <div class="text-center w-100 d-flex justify-content-center my-2">
-          <app-qrcode [data]="otpString()" class="mx-auto" style="width: 175px; height: 175px" />
+          <app-qrcode class="mx-auto" style="width: 175px; height: 175px" [data]="otpString()" />
         </div>
         @if (otpSecret()) {
         <div class="grey-text small mt-0 mb-1">
@@ -51,11 +51,11 @@
             type="text"
             class="form-control custom-input"
             placeholder="eg. 123456"
-            [formControl]="formGroup.controls.code"
             autocomplete="one-time-code"
             autocapitalize="none"
             inputmode="numeric"
             pattern="[0-9]*"
+            [formControl]="formGroup.controls.code"
           />
         </div>
       </li>
@@ -69,8 +69,8 @@
         type="button"
         class="btn btn-elegant"
         data-bs-dismiss="modal"
-        (click)="dismissModal()"
         [attr.aria-label]="'form.button_close' | translate"
+        (click)="dismissModal()"
       >
         {{ 'form.button_close' | translate }}
       </button>
@@ -82,8 +82,8 @@
         type="button"
         class="btn btn-elegant"
         data-bs-dismiss="modal"
-        (click)="dismissModal()"
         [attr.aria-label]="'form.button_close' | translate"
+        (click)="dismissModal()"
       >
         {{ 'form.button_close' | translate }}
       </button>
@@ -95,8 +95,8 @@
         type="button"
         class="btn btn-primary"
         data-bs-dismiss="modal"
-        (click)="enable2fa()"
         [disabled]="formGroup.invalid"
+        (click)="enable2fa()"
       >
         {{ 'form.button_continue' | translate }}
       </button>

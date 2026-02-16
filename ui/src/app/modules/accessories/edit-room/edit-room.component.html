@@ -75,17 +75,17 @@
         <button
           type="button"
           class="btn btn-elegant me-2"
-          (click)="toggleDeleteMode($event)"
           [disabled]="isOnlyRoom()"
           [attr.aria-label]="'accessories.button_delete_room' | translate"
+          (click)="toggleDeleteMode($event)"
         >
           <i [class]="deleteMode() ? 'fas fa-undo' : 'fas fa-trash'"></i>
         </button>
         <button
           type="submit"
           class="btn"
-          [class]="deleteMode() ? 'btn-danger' : 'btn-primary'"
           data-bs-dismiss="modal"
+          [class]="deleteMode() ? 'btn-danger' : 'btn-primary'"
           [disabled]="!deleteMode() && (roomForm.invalid || isFormUnchanged())"
         >
           {{ (deleteMode() ? 'form.button_delete' : 'form.button_save') | translate }}

@@ -31,7 +31,7 @@
       </li>
     </ul>
     @if (invalidCredentials() && !formGroup.controls.password.value) {
-    <ngb-alert type="error" [dismissible]="false" class="mt-3 mb-0">
+    <ngb-alert type="error" class="mt-3 mb-0" [dismissible]="false">
       <p class="mb-0">{{ 'login.invalid_password' | translate }}</p>
     </ngb-alert>
     }
@@ -42,8 +42,8 @@
         type="button"
         class="btn btn-elegant"
         data-bs-dismiss="modal"
-        (click)="dismissModal()"
         [attr.aria-label]="'form.button_close' | translate"
+        (click)="dismissModal()"
       >
         {{ 'form.button_close' | translate }}
       </button>
@@ -54,8 +54,8 @@
         type="button"
         class="btn btn-danger"
         data-bs-dismiss="modal"
-        (click)="disable2fa()"
         [disabled]="formGroup.invalid"
+        (click)="disable2fa()"
       >
         {{ 'form.button_continue' | translate }}
       </button>

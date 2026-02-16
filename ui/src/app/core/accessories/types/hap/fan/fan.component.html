@@ -1,15 +1,15 @@
 <div
   class="accessory-box"
+  tabindex="0"
   [class.accessory-on]="service().values.On || service().values.Active"
   [style.cursor]="readyForControl() ? 'pointer' : 'default'"
   (longClick)="onLongClick()"
   (shortClick)="onClick()"
-  tabindex="0"
 >
   <div class="d-flex flex-column h-100">
     <div
-      [attr.aria-label]="'accessories.core.fan' | translate"
       class="accessory-svg"
+      [attr.aria-label]="'accessories.core.fan' | translate"
       [class]="{
         'spin': (service().values?.On || service().values?.Active) && (!hasRotationDirection || (hasRotationDirection && service().values?.RotationDirection === 0)),
         'spin-counter': (service().values?.On || service().values?.Active) && hasRotationDirection && service().values?.RotationDirection === 1,

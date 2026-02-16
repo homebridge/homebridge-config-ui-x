@@ -13,6 +13,10 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - improve search term matching on settings page
 - avoid an infinite spinner on session expiry
 
+### Other Changes
+
+- lint: apply `angular-template/attributes-order`
+
 ### Homebridge Dependencies
 
 - `@homebridge/hap-client` @ `v3.3.0`

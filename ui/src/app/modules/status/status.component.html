@@ -7,14 +7,14 @@
     <button
       type="button"
       class="btn btn-elegant my-0 me-0"
-      [hidden]="!options.draggable.enabled && !page().showWidgetConfigure"
-      (click)="addWidget()"
       container="body"
       placement="bottom"
-      [openDelay]="150"
       triggers="hover"
+      [hidden]="!options.draggable.enabled && !page().showWidgetConfigure"
+      [openDelay]="150"
       [ngbTooltip]="'status.widget.show_hide' | translate"
       [attr.aria-label]="'status.widget.show_hide' | translate"
+      (click)="addWidget()"
     >
       <i class="fas fa-eye-low-vision"></i>
     </button>
@@ -22,28 +22,28 @@
       <button
         type="button"
         class="btn btn-elegant my-0 ms-2"
-        [disabled]="options.draggable.enabled"
-        (click)="unlockLayout()"
         container="body"
         placement="bottom"
-        [openDelay]="150"
         triggers="hover"
+        [disabled]="options.draggable.enabled"
+        [openDelay]="150"
         [ngbTooltip]="'form.button_unlock' | translate"
         [attr.aria-label]="'form.button_unlock' | translate"
+        (click)="unlockLayout()"
       >
         <i class="fas fa-unlock"></i>
       </button>
       <button
         type="button"
         class="btn btn-elegant my-0 me-0"
-        [disabled]="!options.draggable.enabled"
-        (click)="lockLayout()"
         container="body"
         placement="bottom"
-        [openDelay]="150"
         triggers="hover"
+        [disabled]="!options.draggable.enabled"
+        [openDelay]="150"
         [ngbTooltip]="'form.button_lock' | translate"
         [attr.aria-label]="'form.button_lock' | translate"
+        (click)="lockLayout()"
       >
         <i class="fas fa-lock"></i>
       </button>
@@ -57,7 +57,7 @@
   }
   <div class="row flex-column flex-grow-1">
     @if (dashboard().length) {
-    <gridster [options]="options" class="flex-grow-1 no-scrollbars py-0" [hidden]="consoleStatus() === 'down'">
+    <gridster class="flex-grow-1 no-scrollbars py-0" [options]="options" [hidden]="consoleStatus() === 'down'">
       @for (item of dashboard(); track item) { @if (!(item.hideOnMobile && page().mobile)) {
       <gridster-item class="widget-item" [item]="item" [id]="item.component">
         <div class="gridster-item-content">
@@ -65,14 +65,14 @@
           <button
             type="button"
             class="widget-control-button"
-            (click)="manageWidget(item)"
             [attr.aria-label]="'status.widget.title_manage_widget' | translate"
+            (click)="manageWidget(item)"
           >
             <i class="fas fa-cog" aria-hidden="true"></i>
           </button>
           }
         </div>
-        <app-widgets [widget]="item" class="d-flex h-100 w-100" />
+        <app-widgets class="d-flex h-100 w-100" [widget]="item" />
       </gridster-item>
       } }
     </gridster>
@@ -99,8 +99,8 @@
         <button
           type="button"
           class="icon-button-reset grey-text"
-          (click)="openCreditsModal()"
           [attr.aria-label]="'status.credits.title' | translate"
+          (click)="openCreditsModal()"
         >
           <i class="fas fa-heart" aria-hidden="true"></i>
         </button>

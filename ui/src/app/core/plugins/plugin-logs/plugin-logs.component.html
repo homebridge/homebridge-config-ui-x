@@ -6,8 +6,8 @@
       class="btn-close"
       data-bs-dismiss="modal"
       [attr.aria-label]="'form.button_close' | translate"
-      (click)="dismissModal()"
       [disabled]="midAction()"
+      (click)="dismissModal()"
     ></button>
   </div>
   <div class="modal-body d-flex flex-row flex-grow-1 w-100 p-0">
@@ -24,9 +24,9 @@
         type="button"
         class="btn btn-elegant"
         data-bs-dismiss="modal"
-        (click)="dismissModal()"
         [attr.aria-label]="'form.button_close' | translate"
         [disabled]="midAction()"
+        (click)="dismissModal()"
       >
         {{ 'form.button_close' | translate }}
       </button>
@@ -35,28 +35,28 @@
     <div class="text-end">
       <button
         class="btn btn-primary"
-        (click)="downloadLogFile()"
-        [attr.aria-label]="'logs.title_download_log_file' | translate"
-        [ngbTooltip]="'logs.title_download_log_file' | translate"
         container="modal"
         placement="top"
-        [openDelay]="150"
         triggers="hover"
+        [attr.aria-label]="'logs.title_download_log_file' | translate"
+        [ngbTooltip]="'logs.title_download_log_file' | translate"
+        [openDelay]="150"
         [disabled]="midAction()"
+        (click)="downloadLogFile()"
       >
         <i class="fas fa-download"></i>
       </button>
       @if (childBridges.length) {
       <button
         class="btn btn-danger ms-3"
-        (click)="restartChildBridges()"
-        [attr.aria-label]="(childBridges.length > 1 ? 'child_bridge.restart_plural' : 'child_bridge.restart') | translate"
-        [ngbTooltip]="(childBridges.length > 1 ? 'child_bridge.restart_plural' : 'child_bridge.restart') | translate"
         container="modal"
         placement="top"
-        [openDelay]="150"
         triggers="hover"
+        [attr.aria-label]="(childBridges.length > 1 ? 'child_bridge.restart_plural' : 'child_bridge.restart') | translate"
+        [ngbTooltip]="(childBridges.length > 1 ? 'child_bridge.restart_plural' : 'child_bridge.restart') | translate"
+        [openDelay]="150"
         [disabled]="midAction()"
+        (click)="restartChildBridges()"
       >
         <i class="fas fa-power-off"></i>
       </button>

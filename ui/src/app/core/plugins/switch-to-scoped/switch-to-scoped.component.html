@@ -6,8 +6,8 @@
       class="btn-close"
       data-bs-dismiss="modal"
       [attr.aria-label]="'form.button_close' | translate"
-      (click)="dismissModal()"
       [disabled]="installing() || uninstalling() || restarting()"
+      (click)="dismissModal()"
     ></button>
   </div>
   <div class="modal-body">
@@ -91,8 +91,8 @@ hb-service start</pre
     }
     <div
       class="mb-0"
-      [hidden]="!onlineUpdateOk() || failure()"
       id="plugin-output"
+      [hidden]="!onlineUpdateOk() || failure()"
       [class.terminal-dark-bg]="!isLightTerminalTheme"
       [class.terminal-light-bg]="isLightTerminalTheme"
     ></div>
@@ -104,9 +104,9 @@ hb-service start</pre
         type="button"
         class="btn btn-elegant"
         data-bs-dismiss="modal"
-        (click)="dismissModal()"
         [attr.aria-label]="'form.button_close' | translate"
         [disabled]="installing() || uninstalling() || restarting()"
+        (click)="dismissModal()"
       >
         {{ 'form.button_close' | translate }}
       </button>
@@ -118,9 +118,9 @@ hb-service start</pre
         type="button"
         class="btn btn-elegant"
         data-bs-dismiss="modal"
-        (click)="dismissModal()"
         [attr.aria-label]="'form.button_close' | translate"
         [disabled]="installing() || uninstalling() || restarting()"
+        (click)="dismissModal()"
       >
         {{ 'form.button_close' | translate }}
       </button>
@@ -132,8 +132,8 @@ hb-service start</pre
         type="button"
         class="btn btn-primary"
         data-bs-dismiss="modal"
-        (click)="doSwitch()"
         [disabled]="installing() || uninstalling() || restarting() || !onlineUpdateOk() || failure()"
+        (click)="doSwitch()"
       >
         @if (!installing() && !uninstalling() && !restarting()) {
         <span>{{ 'form.button_continue' | translate }}</span>

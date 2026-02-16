@@ -6,8 +6,8 @@
       class="btn-close"
       data-bs-dismiss="modal"
       [attr.aria-label]="'form.button_close' | translate"
-      (click)="dismissModal()"
       [disabled]="clicked() || deleting()"
+      (click)="dismissModal()"
     ></button>
   </div>
   <div class="modal-body">
@@ -28,9 +28,9 @@
         <button
           type="button"
           class="btn btn-primary m-0 ms-3 py-1"
-          (click)="downloadCurrentConfig()"
           [disabled]="clicked() || deleting()"
           [attr.aria-label]="'form.button_download' | translate"
+          (click)="downloadCurrentConfig()"
         >
           <span class="visually-hidden" aria-hidden="true">{{ 'form.button_download' | translate }}</span>
           <i class="fas fa-arrow-right" aria-hidden="true"></i>
@@ -51,41 +51,41 @@
         </span>
         <span style="display: flex; flex-wrap: nowrap">
           <button
-            (click)="restore(backup.id)"
-            [disabled]="clicked() || deleting()"
             class="btn btn-primary m-0 ms-3 py-1"
-            [ngbTooltip]="'config.restore.copy_to_editor' | translate"
             placement="bottom"
             container="modal"
-            [openDelay]="150"
             triggers="hover"
+            [disabled]="clicked() || deleting()"
+            [ngbTooltip]="'config.restore.copy_to_editor' | translate"
+            [openDelay]="150"
             [attr.aria-label]="'config.restore.copy_to_editor' | translate"
+            (click)="restore(backup.id)"
           >
             <i class="fas fa-history"></i>
           </button>
           <button
             class="btn btn-primary m-0 ms-2"
-            (click)="download(backup.id)"
-            [disabled]="clicked() || deleting()"
-            [ngbTooltip]="'form.button_download' | translate"
             placement="bottom"
             container="modal"
-            [openDelay]="150"
             triggers="hover"
+            [disabled]="clicked() || deleting()"
+            [ngbTooltip]="'form.button_download' | translate"
+            [openDelay]="150"
             [attr.aria-label]="'form.button_download' | translate"
+            (click)="download(backup.id)"
           >
             <i class="fas fa-download"></i>
           </button>
           <button
             class="btn btn-danger m-0 ms-2"
-            (click)="delete(backup.id)"
-            [disabled]="clicked() || deleting()"
-            [ngbTooltip]="'form.button_delete' | translate"
             placement="bottom"
             container="modal"
-            [openDelay]="150"
             triggers="hover"
+            [disabled]="clicked() || deleting()"
+            [ngbTooltip]="'form.button_delete' | translate"
+            [openDelay]="150"
             [attr.aria-label]="'form.button_delete' | translate"
+            (click)="delete(backup.id)"
           >
             <i
               class="fas"
@@ -107,14 +107,14 @@
         <span style="display: flex; flex-wrap: nowrap">
           <button
             class="btn btn-danger m-0 ms-2"
-            (click)="deleteAllBackups()"
-            [disabled]="clicked() || deleting()"
-            [ngbTooltip]="'form.button_delete_all' | translate"
             placement="bottom"
             container="modal"
-            [openDelay]="150"
             triggers="hover"
+            [disabled]="clicked() || deleting()"
+            [ngbTooltip]="'form.button_delete_all' | translate"
+            [openDelay]="150"
             [attr.aria-label]="'form.button_delete_all' | translate"
+            (click)="deleteAllBackups()"
           >
             <i
               class="fas"
@@ -137,9 +137,9 @@
         type="button"
         class="btn btn-elegant"
         data-bs-dismiss="modal"
-        (click)="dismissModal()"
         [disabled]="clicked() || deleting()"
         [attr.aria-label]="'form.button_close' | translate"
+        (click)="dismissModal()"
       >
         {{ 'form.button_close' | translate }}
       </button>

@@ -6,8 +6,8 @@
       class="btn-close"
       data-bs-dismiss="modal"
       [attr.aria-label]="'form.button_close' | translate"
-      (click)="dismissModal()"
       [disabled]="uninstalling()"
+      (click)="dismissModal()"
     ></button>
   </div>
   <div class="modal-body">
@@ -54,16 +54,16 @@
       </ul>
     </ul>
     @if (shouldShowCleanupAlert) {
-    <ngb-alert type="info" [dismissible]="false" class="mt-4">
+    <ngb-alert type="info" class="mt-4" [dismissible]="false">
       @if (hasChildBridges()) { {{ 'plugins.uninstall_cleanup_child_bridge' | translate }} } @else { {{
       'plugins.uninstall_cleanup_main_bridge' | translate }} }
     </ngb-alert>
     } } } @if (isConfigured() && (!pluginAlias() || !pluginType())) {
-    <ngb-alert type="info" [dismissible]="false" class="mt-4">
+    <ngb-alert type="info" class="mt-4" [dismissible]="false">
       {{ 'plugins.uninstall_remove_config_required' | translate }}
     </ngb-alert>
     }
-    <ngb-alert type="warning" [dismissible]="false" class="mt-4 mb-0">
+    <ngb-alert type="warning" class="mt-4 mb-0" [dismissible]="false">
       <p class="mb-0">{{ 'plugins.uninstall_remove_confirmation' | translate: { pluginName: plugin?.displayName } }}</p>
     </ngb-alert>
     }
@@ -74,9 +74,9 @@
         type="button"
         class="btn btn-elegant"
         data-bs-dismiss="modal"
-        (click)="dismissModal()"
         [attr.aria-label]="'form.button_close' | translate"
         [disabled]="uninstalling()"
+        (click)="dismissModal()"
       >
         {{ 'form.button_close' | translate }}
       </button>
@@ -87,8 +87,8 @@
         type="button"
         class="btn btn-danger"
         data-bs-dismiss="modal"
-        (click)="doUninstall()"
         [disabled]="loading() || uninstalling()"
+        (click)="doUninstall()"
       >
         @if (!uninstalling()) { {{ 'plugins.manage.uninstall' | translate }} } @if (uninstalling()) {
         <i class="fas fa-circle-notch fa-spin"></i>

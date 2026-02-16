@@ -1,16 +1,16 @@
 <div
   class="accessory-box"
-  (longClick)="onClick()"
-  (shortClick)="onClick()"
   tabindex="0"
   [class]="{
     'replace': service().values?.FilterChangeIndication === 1 || service().values?.FilterLifeLevel < 10,
     'dirty': service().values?.FilterChangeIndication !== 1 && service().values?.FilterLifeLevel < 50,
   }"
   [style.cursor]="readyForControl ? 'pointer' : 'default'"
+  (longClick)="onClick()"
+  (shortClick)="onClick()"
 >
   <div class="d-flex flex-column h-100">
-    <div [attr.aria-label]="'accessories.core.filter_maintenance' | translate" class="accessory-svg">
+    <div class="accessory-svg" [attr.aria-label]="'accessories.core.filter_maintenance' | translate">
       <svg width="32px" height="32px" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
         <! -- top outer ellipse - ->
         <ellipse

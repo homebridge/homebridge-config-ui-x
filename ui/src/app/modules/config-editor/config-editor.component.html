@@ -7,54 +7,54 @@
       @if (originalConfig()) {
       <button
         class="btn btn-danger waves-effect my-0 me-2"
-        (click)="onCancelRestore()"
-        [disabled]="saveInProgress()"
         container="body"
         placement="bottom"
-        [openDelay]="150"
         triggers="hover"
+        [disabled]="saveInProgress()"
+        [openDelay]="150"
         [ngbTooltip]="'form.button_cancel' | translate"
         [attr.aria-label]="'form.button_cancel' | translate"
+        (click)="onCancelRestore()"
       >
         <i class="fas fa-times"></i>
       </button>
       } @if (!originalConfig()) {
       <button
         class="btn btn-elegant waves-effect my-0 me-2"
-        (click)="onRestore()"
         container="body"
         placement="bottom"
-        [openDelay]="150"
         triggers="hover"
+        [openDelay]="150"
         [attr.aria-label]="'form.button_restore' | translate"
         [ngbTooltip]="'form.button_restore' | translate"
+        (click)="onRestore()"
       >
         <i class="fas fa-history"></i>
       </button>
       } @if (!isMobile() && originalConfig()) {
       <button
         class="btn btn-elegant waves-effect my-0 me-2"
-        (click)="toggleSideBySide()"
         container="body"
         placement="bottom"
-        [openDelay]="150"
         triggers="hover"
+        [openDelay]="150"
         [attr.aria-label]="(renderSideBySide() ? 'config.restore.view_inline' : 'config.restore.view_side_by_side') | translate"
         [ngbTooltip]="(renderSideBySide() ? 'config.restore.view_inline' : 'config.restore.view_side_by_side') | translate"
+        (click)="toggleSideBySide()"
       >
         <i class="fas" [class.fa-columns]="!renderSideBySide()" [class.fa-bars]="renderSideBySide()"></i>
       </button>
       }
       <button
         class="btn btn-elegant waves-effect my-0 me-0"
-        (click)="onSave()"
-        [disabled]="saveInProgress()"
         container="body"
         placement="bottom"
-        [openDelay]="150"
         triggers="hover"
+        [disabled]="saveInProgress()"
+        [openDelay]="150"
         [ngbTooltip]="'form.button_save' | translate"
         [attr.aria-label]="'form.button_save' | translate"
+        (click)="onSave()"
       >
         @if (!saveInProgress()) {
         <i class="fas fa-floppy-disk"></i>

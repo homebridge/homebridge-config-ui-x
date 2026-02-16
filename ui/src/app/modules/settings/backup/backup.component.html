@@ -6,8 +6,8 @@
       class="btn-close"
       data-bs-dismiss="modal"
       [attr.aria-label]="'form.button_close' | translate"
-      (click)="dismissModal()"
       [disabled]="clicked() || deleting()"
+      (click)="dismissModal()"
     ></button>
   </div>
   <div class="modal-body">
@@ -67,9 +67,9 @@
         </div>
         <button
           class="btn btn-primary m-0 ms-3 py-1"
-          (click)="onDownloadBackupClick()"
           [disabled]="clicked()"
           [attr.aria-label]="'backup.backup_now' | translate"
+          (click)="onDownloadBackupClick()"
         >
           <i
             class="fas"
@@ -89,9 +89,9 @@
         </div>
         <button
           class="btn btn-primary m-0 ms-3 py-1"
-          (click)="onCreateBackupClick()"
           [disabled]="clicked()"
           [attr.aria-label]="'backup.backup_now' | translate"
+          (click)="onCreateBackupClick()"
         >
           <i
             class="fas"
@@ -111,9 +111,9 @@
         </div>
         <button
           class="btn btn-primary m-0 ms-3 py-1"
-          (click)="restore(null)"
           [attr.aria-label]="'backup.restore_now' | translate"
           [disabled]="clicked()"
+          (click)="restore(null)"
         >
           <i class="fas fa-arrow-right"></i>
         </button>
@@ -127,18 +127,18 @@
       @for (backup of scheduledBackups(); track backup) {
       <li class="list-group-item d-flex justify-content-between align-items-center">
         <span>
-          <span [ngbTooltip]="backup.fileName" container="modal" [openDelay]="150" triggers="hover">
+          <span container="modal" triggers="hover" [ngbTooltip]="backup.fileName" [openDelay]="150">
             {{ backup.timestamp | date:'mediumDate' }}
           </span>
           <br />
           <small class="grey-text">
             {{ backup.timestamp | date:'shortTime' }} &middot; @if (backup.size > maxBackupSize) {
             <span
-              [ngbTooltip]="'backup.backup_exceeds_max_size' | translate: { backupSize: backup.size + 'MB', maxBackupSizeText: maxBackupSizeText }"
               container="modal"
-              [openDelay]="150"
               triggers="hover"
               class="red-text"
+              [ngbTooltip]="'backup.backup_exceeds_max_size' | translate: { backupSize: backup.size + 'MB', maxBackupSizeText: maxBackupSizeText }"
+              [openDelay]="150"
             >
               <i class="fas fa-exclamation-circle"></i>
               {{ backup.size }}MB
@@ -151,40 +151,40 @@
         <span style="display: flex; flex-wrap: nowrap">
           <button
             class="btn btn-primary m-0 ms-3 py-1"
-            (click)="restore(backup)"
-            [disabled]="clicked() || deleting() || backup.size > maxBackupSize"
-            [ngbTooltip]="'form.button_restore' | translate"
             placement="bottom"
             container="modal"
-            [openDelay]="150"
             triggers="hover"
+            [disabled]="clicked() || deleting() || backup.size > maxBackupSize"
+            [ngbTooltip]="'form.button_restore' | translate"
+            [openDelay]="150"
             [attr.aria-label]="'form.button_restore' | translate"
+            (click)="restore(backup)"
           >
             <i class="fas fa-history"></i>
           </button>
           <button
             class="btn btn-primary m-0 ms-2"
-            (click)="download(backup)"
-            [disabled]="clicked() || deleting()"
-            [ngbTooltip]="'form.button_download' | translate"
             placement="bottom"
             container="modal"
-            [openDelay]="150"
             triggers="hover"
+            [disabled]="clicked() || deleting()"
+            [ngbTooltip]="'form.button_download' | translate"
+            [openDelay]="150"
             [attr.aria-label]="'form.button_download' | translate"
+            (click)="download(backup)"
           >
             <i class="fas fa-download"></i>
           </button>
           <button
             class="btn btn-danger m-0 ms-2"
-            (click)="delete(backup)"
-            [disabled]="clicked() || deleting()"
-            [ngbTooltip]="'form.button_delete' | translate"
             placement="bottom"
             container="modal"
-            [openDelay]="150"
             triggers="hover"
+            [disabled]="clicked() || deleting()"
+            [ngbTooltip]="'form.button_delete' | translate"
+            [openDelay]="150"
             [attr.aria-label]="'form.button_delete' | translate"
+            (click)="delete(backup)"
           >
             <i
               class="fas"
@@ -209,8 +209,8 @@
         type="button"
         class="btn btn-elegant"
         data-bs-dismiss="modal"
-        (click)="dismissModal()"
         [disabled]="clicked() || deleting()"
+        (click)="dismissModal()"
       >
         {{ 'form.button_close' | translate }}
       </button>

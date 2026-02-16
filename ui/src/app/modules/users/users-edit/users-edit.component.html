@@ -1,5 +1,5 @@
 <div class="modal-content">
-  <form novalidate (ngSubmit)="onSubmit(form)" [formGroup]="form">
+  <form novalidate [formGroup]="form" (ngSubmit)="onSubmit(form)">
     <div class="modal-header">
       <h5 class="modal-title">{{ 'users.title_edit_user' | translate }}</h5>
       <button
@@ -113,9 +113,9 @@
         <button
           type="button"
           class="btn btn-elegant me-2"
-          (click)="toggleDeleteMode($event)"
           [disabled]="!canDelete()"
           [attr.aria-label]="'users.button_delete_user' | translate"
+          (click)="toggleDeleteMode($event)"
         >
           <i [class]="deleteMode() ? 'fas fa-undo' : 'fas fa-trash'"></i>
         </button>

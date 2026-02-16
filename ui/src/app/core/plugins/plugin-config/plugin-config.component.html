@@ -6,8 +6,8 @@
       class="btn-close"
       data-bs-dismiss="modal"
       [attr.aria-label]="'form.button_close' | translate"
-      (click)="dismissModal()"
       [disabled]="saveInProgress()"
+      (click)="dismissModal()"
     ></button>
   </div>
   <div class="modal-body pb-0">
@@ -20,8 +20,8 @@
     <div ngbAccordion [closeOthers]="true" (show)="blockShown($event)" (hide)="blockHidden($event)">
       @for (block of pluginConfig(); track block; let i = $index) {
       <div
-        [ngbAccordionItem]="block.__uuid__"
         class="card"
+        [ngbAccordionItem]="block.__uuid__"
         [collapsed]="show() !== block.__uuid__"
         [id]="block.__uuid__"
       >
@@ -32,12 +32,12 @@
               @if (plugin.name !== 'homebridge-config-ui-x' && show() === block.__uuid__) {
               <button
                 class="btn btn-danger ms-2"
-                (click)="removeBlock(block.__uuid__)"
-                [ngbTooltip]="'form.button_delete' | translate"
                 container="modal"
                 placement="left"
-                [openDelay]="150"
                 triggers="hover"
+                [ngbTooltip]="'form.button_delete' | translate"
+                [openDelay]="150"
+                (click)="removeBlock(block.__uuid__)"
               >
                 <i class="fa fa-trash"></i>
               </button>
@@ -45,26 +45,26 @@
               <button
                 class="btn btn-primary ms-2 me-2"
                 ngbAccordionToggle
-                [ngbTooltip]="'form.button_edit' | translate"
                 container="modal"
                 placement="left"
-                [openDelay]="150"
                 triggers="hover"
+                [ngbTooltip]="'form.button_edit' | translate"
+                [openDelay]="150"
               >
                 <i class="fa fa-edit"></i>
               </button>
               <i
                 class="fa fa-xl"
+                container="modal"
+                placement="left"
+                triggers="hover"
                 [class.fa-circle-check]="formBlocksValid()[i] === true"
                 [class.green-text]="formBlocksValid()[i] === true"
                 [class.fa-circle-exclamation]="formBlocksValid()[i] === false"
                 [class.red-text]="strictValidation() && formBlocksValid()[i] === false"
                 [class.orange-text]="!strictValidation() && formBlocksValid()[i] === false"
                 [ngbTooltip]="(formBlocksValid()[i] ? 'form.label_valid' : (strictValidation() ? 'form.label_invalid_strict' : 'form.label_invalid')) | translate"
-                container="modal"
-                placement="left"
                 [openDelay]="150"
-                triggers="hover"
               ></i>
             </div>
           </div>
@@ -101,8 +101,8 @@
         type="button"
         class="btn btn-elegant"
         data-bs-dismiss="modal"
-        (click)="closeModal()"
         [disabled]="saveInProgress()"
+        (click)="closeModal()"
       >
         {{ 'form.button_close' | translate }}
       </button>
@@ -112,6 +112,9 @@
       @if (schema.singular) {
       <i
         class="fa fa-xl me-2"
+        container="modal"
+        placement="top"
+        triggers="hover"
         [class]="{
           'fa-circle-check': formIsValid(),
           'green-text': formIsValid(),
@@ -120,10 +123,7 @@
           'orange-text': !strictValidation() && !formIsValid()
         }"
         [ngbTooltip]="(formIsValid() ? 'form.label_valid' : (strictValidation() ? 'form.label_invalid_strict' : 'form.label_invalid')) | translate"
-        container="modal"
-        placement="top"
         [openDelay]="150"
-        triggers="hover"
       ></i>
       } @if (!schema.singular) {
       <button type="button" class="btn btn-elegant me-2" data-dismiss="modal" (click)="addBlock()">
@@ -134,8 +134,8 @@
         type="button"
         class="btn btn-primary"
         data-bs-dismiss="modal"
-        (click)="save()"
         [disabled]="saveInProgress() || (!formIsValid() && strictValidation())"
+        (click)="save()"
       >
         @if (!saveInProgress()) {
         <span>{{ 'form.button_save' | translate }}</span>

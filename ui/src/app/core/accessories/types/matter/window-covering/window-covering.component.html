@@ -1,14 +1,14 @@
 <div
   class="accessory-box"
+  tabindex="0"
   [class.accessory-on]="currentPosition() > 0"
   (longClick)="onLongClick()"
   (shortClick)="onClick()"
-  tabindex="0"
 >
   <div class="d-flex flex-column h-100">
     <! -- Window Covering Icon - ->
     @if (isWindowCovering()) {
-    <div [attr.aria-label]="'accessories.core.window_covering' | translate" class="accessory-svg">
+    <div class="accessory-svg" [attr.aria-label]="'accessories.core.window_covering' | translate">
       <svg width="32px" height="32px" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
         <! -- outer frame - ->
         <rect x="1" y="0.8" width="30" height="30.2" rx="0.5" stroke="#7f7f7f" fill="none" stroke-width="1.5" />
@@ -51,7 +51,7 @@
     }
     <! -- Door Icon - ->
     @if (isDoor()) {
-    <div [attr.aria-label]="'accessories.core.door' | translate" class="accessory-svg">
+    <div class="accessory-svg" [attr.aria-label]="'accessories.core.door' | translate">
       <svg width="32px" height="32px" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
         <! -- outer frame - ->
         <rect x="7.8" y="0.8" width="16.4" height="30.2" rx="0.5" stroke="#7f7f7f" fill="none" stroke-width="1.5" />
@@ -109,7 +109,7 @@
     }
     <! -- Window Icon - ->
     @if (isWindow()) {
-    <div [attr.aria-label]="'accessories.core.window' | translate" class="accessory-svg">
+    <div class="accessory-svg" [attr.aria-label]="'accessories.core.window' | translate">
       <svg width="32px" height="32px" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
         <! -- outer frame - ->
         <rect x="1" y="0.8" width="30" height="30.2" rx="0.5" stroke="#7f7f7f" fill="none" stroke-width="1.5" />

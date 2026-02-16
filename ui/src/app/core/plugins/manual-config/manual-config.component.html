@@ -6,8 +6,8 @@
       class="btn-close"
       data-bs-dismiss="modal"
       [attr.aria-label]="'form.button_close' | translate"
-      (click)="closeModal()"
       [disabled]="saveInProgress()"
+      (click)="closeModal()"
     ></button>
   </div>
   <div class="modal-body pb-0">
@@ -29,8 +29,8 @@
     <div ngbAccordion [closeOthers]="true">
       @for (block of pluginConfig(); track block) {
       <div
-        [ngbAccordionItem]="'configBlock.' + $index"
         class="card"
+        [ngbAccordionItem]="'configBlock.' + $index"
         [collapsed]="show() !== 'configBlock.' + $index"
         [id]="'configBlock.' + $index"
       >
@@ -41,11 +41,11 @@
               @if (!schema?.singular || pluginConfig().length > 1) { @if (show() === 'configBlock.' + $index) {
               <button
                 class="btn btn-danger m-0 ms-2"
-                (click)="removeBlock($index)"
-                [ngbTooltip]="'form.button_delete' | translate"
                 container="modal"
-                [openDelay]="150"
                 triggers="hover"
+                [ngbTooltip]="'form.button_delete' | translate"
+                [openDelay]="150"
+                (click)="removeBlock($index)"
               >
                 <i class="fa fa-trash"></i>
               </button>
@@ -53,17 +53,20 @@
               <button
                 class="btn btn-primary m-0 ms-2 me-2"
                 ngbAccordionToggle
-                (click)="editBlock($index)"
-                [ngbTooltip]="'form.button_edit' | translate"
                 container="modal"
-                [openDelay]="150"
                 triggers="hover"
+                [ngbTooltip]="'form.button_edit' | translate"
+                [openDelay]="150"
+                (click)="editBlock($index)"
               >
                 <i class="fa fa-edit"></i>
               </button>
               } @if (!schema?.singular) {
               <i
                 class="fa fa-xl"
+                container="modal"
+                placement="left"
+                triggers="hover"
                 [class]="{
                   'fa-circle-check': formBlocksValid()[$index],
                   'green-text': formBlocksValid()[$index],
@@ -72,10 +75,7 @@
                   'orange-text': !strictValidation() && !formBlocksValid()[$index]
                 }"
                 [ngbTooltip]="(formBlocksValid()[$index] ? 'form.label_valid' : (strictValidation() ? 'form.label_invalid_strict' : 'form.label_invalid')) | translate"
-                container="modal"
-                placement="left"
                 [openDelay]="150"
-                triggers="hover"
               ></i>
               }
             </div>
@@ -107,8 +107,8 @@
         type="button"
         class="btn btn-elegant"
         data-bs-dismiss="modal"
-        (click)="closeModal()"
         [disabled]="saveInProgress()"
+        (click)="closeModal()"
       >
         {{ 'form.button_close' | translate }}
       </button>
@@ -118,6 +118,9 @@
       @if (canConfigure()) { @if (schema?.singular) {
       <i
         class="fa fa-xl me-2"
+        container="modal"
+        placement="top"
+        triggers="hover"
         [class]="{
             'fa-circle-check': formIsValid(),
             'green-text': formIsValid(),
@@ -126,10 +129,7 @@
             'orange-text': !strictValidation() && !formIsValid()
           }"
         [ngbTooltip]="(formIsValid() ? 'form.label_valid' : (strictValidation() ? 'form.label_invalid_strict' : 'form.label_invalid')) | translate"
-        container="modal"
-        placement="top"
         [openDelay]="150"
-        triggers="hover"
       ></i>
       } @if (!schema?.singular) {
       <button type="button" class="btn btn-elegant me-2" data-bs-dismiss="modal" (click)="addBlock()">
@@ -140,8 +140,8 @@
         type="button"
         class="btn btn-primary"
         data-bs-dismiss="modal"
-        (click)="save()"
         [disabled]="saveInProgress() || (!formIsValid() && strictValidation())"
+        (click)="save()"
       >
         @if (!saveInProgress()) { {{ 'form.button_save' | translate }} } @if (saveInProgress()) {
         <i class="fas fa-circle-notch fa-spin"></i>

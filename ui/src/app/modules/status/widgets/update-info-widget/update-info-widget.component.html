@@ -7,8 +7,8 @@
     <div class="hb-status-item d-flex flex-column mb-1" style="min-width: max(25%, 200px)">
       <div
         class="d-flex ps-3 py-1 align-items-center cursor-pointer"
-        (click)="toggleDockerExpand()"
         style="cursor: pointer"
+        (click)="toggleDockerExpand()"
       >
         <div class="mb-0 d-flex align-items-center">
           @if (!dockerStatusDone()) {
@@ -29,7 +29,7 @@
           <span class="grey-text small">{{ dockerInfo().currentVersion }}</span>
 
           @if (dockerInfo().updateAvailable && isAdmin) { &middot;
-          <a href="javascript:void(0)" (click)="dockerUpdateModal()" class="primary-text small">
+          <a href="javascript:void(0)" class="primary-text small" (click)="dockerUpdateModal()">
             {{'plugins.button_update' | translate }}
           </a>
           } }
@@ -47,21 +47,21 @@
               @if (homebridgePkg().installedVersion) { @if (isAdmin) {
               <a
                 href="javascript:void(0)"
-                (click)="installAlternateVersion(homebridgePkg())"
                 class="card-link card-link-title"
+                (click)="installAlternateVersion(homebridgePkg())"
                 >Homebridge</a
               >
               } @else { Homebridge } @if (isHbV2Loaded() && !isRunningHbV2() && isAdmin) {
               <a
                 href="javascript:void(0)"
                 class="ms-1"
-                (click)="readyForV2Modal()"
                 ngbTooltip="Homebridge v2 Readiness"
                 container="body"
-                [openDelay]="150"
                 triggers="hover"
                 placement="top"
                 aria-label="Homebridge v2 Readiness"
+                [openDelay]="150"
+                (click)="readyForV2Modal()"
               >
                 <i
                   class="fas fa-info-circle"
@@ -77,7 +77,7 @@
               } @if (homebridgePkg().installedVersion) {
               <span class="grey-text small">v{{ homebridgeVersion }}</span>
               @if (homebridgePkg().updateAvailable && isAdmin) { &middot;
-              <a href="javascript:void(0)" (click)="updatePackage(homebridgePkg())" class="primary-text small">
+              <a href="javascript:void(0)" class="primary-text small" (click)="updatePackage(homebridgePkg())">
                 {{ 'plugins.button_update' | translate }}
               </a>
               } }
@@ -94,8 +94,8 @@
               @if (homebridgeUiPkg().installedVersion && isAdmin) {
               <a
                 href="javascript:void(0)"
-                (click)="installAlternateVersion(homebridgeUiPkg())"
                 class="card-link card-link-title"
+                (click)="installAlternateVersion(homebridgeUiPkg())"
                 >Homebridge UI</a
               >
               } @else {
@@ -107,7 +107,7 @@
               } @if (homebridgeUiPkg().installedVersion) {
               <span class="grey-text small">v{{ packageVersion }}</span>
               @if (homebridgeUiPkg().updateAvailable && isAdmin) { &middot;
-              <a href="javascript:void(0)" (click)="updatePackage(homebridgeUiPkg())" class="primary-text small">
+              <a href="javascript:void(0)" class="primary-text small" (click)="updatePackage(homebridgeUiPkg())">
                 {{ 'plugins.button_update' | translate }}
               </a>
               } }
@@ -123,8 +123,8 @@
             <div class="align-self-center px-3">
               <a
                 href="javascript:void(0)"
-                (click)="nodeVersionModal(serverInfo()!.nodeVersion)"
                 class="card-link card-link-title"
+                (click)="nodeVersionModal(serverInfo()!.nodeVersion)"
                 >Node.js</a
               >@if (widget().showNpmVersion && nodejsInfo()!.npmVersion) { &middot; npm }
               <br />
@@ -138,16 +138,16 @@
               @if (nodejsInfo().updateAvailable && isAdmin) { &middot;
               <a
                 href="javascript:void(0)"
-                (click)="nodeVersionModal(nodejsInfo()!.latestVersion)"
                 class="primary-text small"
+                (click)="nodeVersionModal(nodejsInfo()!.latestVersion)"
               >
                 {{'plugins.button_update' | translate }}
               </a>
               } @if (nodejsInfo()!.showNodeUnsupportedWarning && !nodejsInfo()!.updateAvailable) { &middot;
               <a
                 href="javascript:void(0)"
-                (click)="nodeVersionModal(serverInfo()!.nodeVersion)"
                 class="primary-text small"
+                (click)="nodeVersionModal(serverInfo()!.nodeVersion)"
               >
                 {{ 'status.widget.info.node_unsupp' | translate }}
               </a>
@@ -169,8 +169,8 @@
           @if (homebridgePkg().installedVersion) { @if (isAdmin) {
           <a
             href="javascript:void(0)"
-            (click)="installAlternateVersion(homebridgePkg())"
             class="card-link card-link-title"
+            (click)="installAlternateVersion(homebridgePkg())"
             >Homebridge</a
           >
           } @else { Homebridge } @if (isHbV2Loaded() && !isRunningHbV2() && isAdmin && homebridgeUpdatePolicy !== 'none'
@@ -178,13 +178,13 @@
           <a
             href="javascript:void(0)"
             class="ms-1"
-            (click)="readyForV2Modal()"
             ngbTooltip="Homebridge v2 Readiness"
             container="body"
-            [openDelay]="150"
             triggers="hover"
             placement="top"
             aria-label="Homebridge v2 Readiness"
+            [openDelay]="150"
+            (click)="readyForV2Modal()"
           >
             <i class="fas fa-info-circle" [class]="{ 'green-text': isHbV2Ready(), 'orange-text': !isHbV2Ready() }"></i>
           </a>
@@ -197,7 +197,7 @@
           } @if (homebridgePkg().installedVersion) {
           <span class="grey-text small">v{{ homebridgeVersion }}</span> @if (homebridgePkg().updateAvailable && isAdmin)
           { &middot;
-          <a href="javascript:void(0)" (click)="updatePackage(homebridgePkg())" class="primary-text small">
+          <a href="javascript:void(0)" class="primary-text small" (click)="updatePackage(homebridgePkg())">
             {{ 'plugins.button_update' | translate }}
           </a>
           } }
@@ -214,8 +214,8 @@
           @if (homebridgeUiPkg().installedVersion && isAdmin) {
           <a
             href="javascript:void(0)"
-            (click)="installAlternateVersion(homebridgeUiPkg())"
             class="card-link card-link-title"
+            (click)="installAlternateVersion(homebridgeUiPkg())"
             >Homebridge UI</a
           >
           } @else {
@@ -227,7 +227,7 @@
           } @if (homebridgeUiPkg().installedVersion) {
           <span class="grey-text small">v{{ packageVersion }}</span>
           @if (homebridgeUiPkg().updateAvailable && isAdmin) { &middot;
-          <a href="javascript:void(0)" (click)="updatePackage(homebridgeUiPkg())" class="primary-text small">
+          <a href="javascript:void(0)" class="primary-text small" (click)="updatePackage(homebridgeUiPkg())">
             {{ 'plugins.button_update' | translate }}
           </a>
           } }
@@ -268,8 +268,8 @@
         <div class="align-self-center px-3">
           <a
             href="javascript:void(0)"
-            (click)="nodeVersionModal(serverInfo()!.nodeVersion)"
             class="card-link card-link-title"
+            (click)="nodeVersionModal(serverInfo()!.nodeVersion)"
             >Node.js</a
           >@if (widget().showNpmVersion && nodejsInfo()!.npmVersion) { &middot; npm }
           <br />
@@ -283,13 +283,13 @@
           @if (nodejsInfo().updateAvailable && isAdmin) { &middot;
           <a
             href="javascript:void(0)"
-            (click)="nodeVersionModal(nodejsInfo()!.latestVersion)"
             class="primary-text small"
+            (click)="nodeVersionModal(nodejsInfo()!.latestVersion)"
           >
             {{'plugins.button_update' | translate }}
           </a>
           } @if (nodejsInfo()!.showNodeUnsupportedWarning && !nodejsInfo()!.updateAvailable) { &middot;
-          <a href="javascript:void(0)" (click)="nodeVersionModal(serverInfo()!.nodeVersion)" class="primary-text small">
+          <a href="javascript:void(0)" class="primary-text small" (click)="nodeVersionModal(serverInfo()!.nodeVersion)">
             {{ 'status.widget.info.node_unsupp' | translate }}
           </a>
           } }

@@ -6,8 +6,8 @@
       class="btn-close"
       data-bs-dismiss="modal"
       [attr.aria-label]="'form.button_close' | translate"
-      (click)="dismissModal()"
       [disabled]="clicked()"
+      (click)="dismissModal()"
     ></button>
   </div>
   <div class="modal-body">
@@ -24,11 +24,11 @@
           <small class="grey-text">
             <i
               class="fas fa-link"
-              [ngbTooltip]="(mainPairing()._isPaired ? 'status.widget.qr_paired' : 'status.widget.qr_unpaired') | translate"
               container="body"
-              [openDelay]="150"
               triggers="hover"
               placement="left"
+              [ngbTooltip]="(mainPairing()._isPaired ? 'status.widget.qr_paired' : 'status.widget.qr_unpaired') | translate"
+              [openDelay]="150"
               [class]="{
                 'green-text': mainPairing()._isPaired,
                 'grey-text': !mainPairing()._isPaired
@@ -44,8 +44,8 @@
             id="controlMainBridge"
             [checked]="!isInList(mainPairing()._username)"
             [disabled]="clicked()"
-            (click)="toggleList(mainPairing()._username)"
             [attr.aria-label]="'plugins.manage.hide_updates' | translate"
+            (click)="toggleList(mainPairing()._username)"
           />
           <label for="controlMainBridge" class="rendux-label ms-3"></label>
         </div>
@@ -58,11 +58,11 @@
           <small class="grey-text">
             <i
               class="fas fa-link"
-              [ngbTooltip]="(item._isPaired ? 'status.widget.qr_paired' : 'status.widget.qr_unpaired') | translate"
               container="body"
-              [openDelay]="150"
               triggers="hover"
               placement="left"
+              [ngbTooltip]="(item._isPaired ? 'status.widget.qr_paired' : 'status.widget.qr_unpaired') | translate"
+              [openDelay]="150"
               [class]="{
                 'green-text': item._isPaired,
                 'grey-text': !item._isPaired
@@ -78,10 +78,10 @@
             [id]="'hidePluginUpdates_' + item._username"
             [checked]="!isInList(item._username)"
             [disabled]="clicked()"
-            (click)="toggleList(item._username)"
             [attr.aria-label]="('form.button_allow' | translate) + ' ' + item.name"
+            (click)="toggleList(item._username)"
           />
-          <label [for]="'hidePluginUpdates_' + item._username" class="rendux-label ms-3"></label>
+          <label class="rendux-label ms-3" [for]="'hidePluginUpdates_' + item._username"></label>
         </div>
       </li>
       }
@@ -93,8 +93,8 @@
         type="button"
         class="btn btn-elegant"
         data-bs-dismiss="modal"
-        (click)="dismissModal()"
         [disabled]="clicked()"
+        (click)="dismissModal()"
       >
         {{ 'form.button_close' | translate }}
       </button>

@@ -26,8 +26,8 @@
         type="button"
         class="btn btn-elegant"
         data-bs-dismiss="modal"
-        (click)="dismissModal()"
         [attr.aria-label]="'form.button_cancel' | translate"
+        (click)="dismissModal()"
       >
         {{ 'form.button_cancel' | translate }}
       </button>
@@ -36,8 +36,8 @@
     <div class="text-end">
       @if (confirmButtonLabel) {
       <button
-        type="button"
         class="btn {{ confirmButtonClass || 'btn-primary' }}"
+        type="button"
         data-bs-dismiss="modal"
         (click)="closeModal()"
       >

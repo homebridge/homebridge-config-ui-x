@@ -1,5 +1,5 @@
 <div class="modal-content">
-  <form novalidate (ngSubmit)="onSubmit(form)" [formGroup]="form">
+  <form novalidate [formGroup]="form" (ngSubmit)="onSubmit(form)">
     <div class="modal-header">
       <h5 class="modal-title">{{ 'users.title_add_user' | translate }}</h5>
       <button

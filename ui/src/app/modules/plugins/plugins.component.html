@@ -11,26 +11,26 @@
     <button
       type="button"
       class="btn btn-elegant my-0 me-2"
-      (click)="showSearch()"
       container="body"
       placement="bottom"
-      [openDelay]="150"
       triggers="hover"
+      [openDelay]="150"
       [ngbTooltip]="'form.search' | translate"
       [attr.aria-label]="'form.search' | translate"
+      (click)="showSearch()"
     >
       <i class="fas{{ showSearchBar() ? ' primary-text' : '' }} fa-search"></i>
     </button>
     <button
       type="button"
       class="btn btn-elegant my-0 me-2 d-none d-md-inline-block"
-      (click)="showStats()"
       container="body"
       placement="bottom"
-      [openDelay]="150"
       triggers="hover"
+      [openDelay]="150"
       [ngbTooltip]="'plugins.stats' | translate"
       [attr.aria-label]="'plugins.stats' | translate"
+      (click)="showStats()"
     >
       <i class="fas{{ tab() === 'stats' ? ' primary-text' : '' }} fa-sliders"></i>
     </button>
@@ -38,8 +38,8 @@
     <button
       type="button"
       class="btn btn-elegant my-0 me-0"
-      (click)="openSupport()"
       [attr.aria-label]="'support.title' | translate"
+      (click)="openSupport()"
     >
       <i class="fa fa-question-circle-o"></i>
     </button>
@@ -49,20 +49,20 @@
 @if (tab() === 'main') { @if (showSearchBar()) {
 <div class="row">
   <div class="col-md-12">
-    <form novalidate (ngSubmit)="onSubmit(form)" [formGroup]="form">
+    <form novalidate [formGroup]="form" (ngSubmit)="onSubmit(form)">
       <input
+        #searchInput
         type="text"
         class="search-bar"
-        #searchInput
-        [placeholder]="'plugins.placeholder_search_plugin' | translate"
         formControlName="query"
+        [placeholder]="'plugins.placeholder_search_plugin' | translate"
       />
       @if (form.get('query')?.value) {
       <button
         type="button"
         class="search-bar-clear"
-        (click)="onClearSearch()"
         [attr.aria-label]="'form.button_clear' | translate"
+        (click)="onClearSearch()"
       >
         <i class="fas fa-square-xmark" aria-hidden="true"></i>
       </button>

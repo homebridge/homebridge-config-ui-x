@@ -37,7 +37,7 @@
       <li>{{ 'plugins.manage.confirm_disable_accessory_2' | translate }}</li>
     </ul>
     } }
-    <ngb-alert type="warning" [dismissible]="false" class="mb-0">
+    <ngb-alert type="warning" class="mb-0" [dismissible]="false">
       <p class="w-100 text-center mb-0">
         {{ 'plugins.manage.confirm_disable' | translate: { pluginName: pluginName } }}
       </p>
@@ -49,8 +49,8 @@
         type="button"
         class="btn btn-elegant"
         data-bs-dismiss="modal"
-        (click)="dismissModal()"
         [attr.aria-label]="'form.button_close' | translate"
+        (click)="dismissModal()"
       >
         {{ 'form.button_close' | translate }}
       </button>

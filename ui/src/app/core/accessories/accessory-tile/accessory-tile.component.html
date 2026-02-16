@@ -4,8 +4,8 @@
   <button
     type="button"
     class="manage-accessory-button"
-    (click)="$accessories.showAccessoryInformation(service())"
     [attr.aria-label]="('form.button_edit' | translate) + ' ' + (service().customName || service().serviceName)"
+    (click)="$accessories.showAccessoryInformation(service())"
   >
     <i class="fas fa-bars grey-text" aria-hidden="true"></i>
   </button>
@@ -13,8 +13,8 @@
   <button
     type="button"
     class="refreshing-accessory-button"
-    (click)="$accessories.showAccessoryInformation(service())"
     [attr.aria-label]="('form.button_edit' | translate) + ' ' + (service().customName || service().serviceName)"
+    (click)="$accessories.showAccessoryInformation(service())"
   >
     <i class="fas fa-circle-notch fa-spin grey-text" aria-hidden="true"></i>
   </button>
@@ -121,19 +121,19 @@
     {{ 'accessories.core.outlet' | translate }}
   </app-outlet>
   } @case ('Fan') {
-  <app-fan [service]="service()" [readyForControl]="$accessories.hapReadyForControl" class="w-100">
+  <app-fan class="w-100" [service]="service()" [readyForControl]="$accessories.hapReadyForControl">
     {{ 'accessories.core.fan' | translate }}
   </app-fan>
   } @case ('Fanv2') {
-  <app-fan [service]="service()" [readyForControl]="$accessories.hapReadyForControl" class="w-100">
+  <app-fan class="w-100" [service]="service()" [readyForControl]="$accessories.hapReadyForControl">
     {{ 'accessories.core.fan' | translate }}
   </app-fan>
   } @case ('AirPurifier') {
-  <app-air-purifier [service]="service()" [readyForControl]="$accessories.hapReadyForControl" class="w-100">
+  <app-air-purifier class="w-100" [service]="service()" [readyForControl]="$accessories.hapReadyForControl">
     {{ 'accessories.core.air_purifier' | translate }}
   </app-air-purifier>
   } @case ('AccessCode') {
-  <app-access-code [service]="service()" [readyForControl]="$accessories.hapReadyForControl" class="w-100">
+  <app-access-code class="w-100" [service]="service()" [readyForControl]="$accessories.hapReadyForControl">
     {{ 'accessories.core.access_code' | translate }}
   </app-access-code>
   } @case ('Lightbulb') {

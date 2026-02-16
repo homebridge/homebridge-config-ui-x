@@ -16,10 +16,10 @@
       <div
         class="progress-bar progress-bar-striped bg-success"
         role="progressbar"
-        [style.width]="progress() + '%'"
-        [attr.aria-valuenow]="progress()"
         aria-valuemin="0"
         aria-valuemax="100"
+        [style.width]="progress() + '%'"
+        [attr.aria-valuenow]="progress()"
         [class.progress-bar-animated]="loading() || restoreUploading()"
       ></div>
     </div>
@@ -39,7 +39,7 @@
       <h4 class="mb-3 text-center">{{ 'setup.create_account' | translate }}</h4>
       <div class="mb-4 small grey-text text-center">{{ 'setup_wizard_create_info' | translate }}</div>
       <div class="w-100">
-        <form novalidate (ngSubmit)="createFirstUser()" [formGroup]="createUserForm">
+        <form novalidate [formGroup]="createUserForm" (ngSubmit)="createFirstUser()">
           <div class="input-group mb-4">
             <span class="input-group-text custom-input"><i class="fas fa-user primary-text fa-lg"></i></span>
             <input
@@ -50,13 +50,13 @@
               autocapitalize="none"
               tabindex="1"
               class="form-control custom-input"
+              required
               [readonly]="loading()"
               [class]="{
                 'is-valid': (createUserForm.controls.username.dirty) && createUserForm.controls.username.valid,
                 'is-invalid': (createUserForm.controls.username.dirty) && createUserForm.controls.username.invalid
               }"
               [placeholder]="'users.label_username' | translate"
-              required
             />
           </div>
           <div class="input-group mb-4">
@@ -68,13 +68,13 @@
               autocomplete="new-password"
               tabindex="2"
               class="form-control custom-input"
+              required
               [readonly]="loading()"
               [class]="{
                 'is-valid': (createUserForm.controls.password.dirty) && createUserForm.controls.password.valid,
                 'is-invalid': (createUserForm.controls.password.dirty) && createUserForm.controls.password.errors
               }"
               [placeholder]="'users.label_password' | translate"
-              required
             />
           </div>
           <div class="input-group mb-4">
@@ -86,13 +86,13 @@
               autocomplete="new-password"
               tabindex="2"
               class="form-control custom-input"
+              required
               [readonly]="loading()"
               [class]="{
                 'is-valid': (createUserForm.controls.passwordConfirm.dirty) && createUserForm.controls.passwordConfirm.valid,
                 'is-invalid': (createUserForm.controls.passwordConfirm.dirty) && createUserForm.controls.passwordConfirm.errors
               }"
               [placeholder]="'users.label_confirm_password' | translate"
-              required
             />
           </div>
           <div class="mt-3 w-100 d-flex justify-content-between">
@@ -134,8 +134,8 @@
         <button
           type="button"
           class="btn btn-primary me-0"
-          (click)="onRestoreBackupClick()"
           [disabled]="restoreUploading() || !selectedFile()"
+          (click)="onRestoreBackupClick()"
         >
           @if (restoreUploading()) {
           <i class="fas fa-circle-notch fa-spin"></i>

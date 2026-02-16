@@ -2,9 +2,9 @@
   <div class="dropdown-item d-flex justify-content-between align-items-center px-0 bridge-filter-header">
     <button
       ngbDropdownItem
-      (click)="clearBridgeFilter()"
-      [class.active]="isShowingAllBridges"
       class="flex-grow-1 border-0"
+      [class.active]="isShowingAllBridges"
+      (click)="clearBridgeFilter()"
     >
       <span class="bridge-filter-check">
         @if (isShowingAllBridges) {
@@ -16,8 +16,8 @@
     <button
       type="button"
       class="btn btn-sm btn-link text-secondary p-0 pe-2 bridge-close-btn"
-      (click)="dropdown.close()"
       [attr.aria-label]="'form.button_close' | translate"
+      (click)="dropdown.close()"
     >
       <span class="badge badge-primary mx-1 text-lowercase">{{ 'common.labels.beta' | translate }}</span>
       <i class="fas fa-times"></i>
@@ -25,7 +25,7 @@
   </div>
   <div class="dropdown-divider"></div>
   @for (bridge of availableBridges; track bridge) {
-  <button ngbDropdownItem (click)="toggleBridge(bridge)" [class.active]="isBridgeSelected(bridge)">
+  <button ngbDropdownItem [class.active]="isBridgeSelected(bridge)" (click)="toggleBridge(bridge)">
     <span class="bridge-filter-check">
       @if (isBridgeSelected(bridge)) {
       <i class="fas fa-check primary-text"></i>
@@ -35,7 +35,7 @@
   </button>
   } @if (showManageLayout) {
   <div class="dropdown-divider"></div>
-  <button ngbDropdownItem (click)="toggleManageLayout()" [class.active]="manageLayoutMode">
+  <button ngbDropdownItem [class.active]="manageLayoutMode" (click)="toggleManageLayout()">
     <span class="bridge-filter-check">
       @if (manageLayoutMode) {
       <i class="fas fa-check primary-text"></i>
@@ -47,7 +47,7 @@
 </ng-template>
 
 <ng-template #bridgeFilterDropdown let-showManageLayout="showManageLayout" let-showTooltip="showTooltip">
-  <div ngbDropdown #dropdown="ngbDropdown" autoClose="outside" placement="bottom-end" class="d-inline-block me-2">
+  <div #dropdown="ngbDropdown" ngbDropdown autoClose="outside" placement="bottom-end" class="d-inline-block me-2">
     <button
       type="button"
       class="btn btn-elegant my-0"
@@ -73,8 +73,8 @@
   <button
     type="button"
     class="btn btn-elegant my-0 me-0"
-    (click)="openSupport()"
     [attr.aria-label]="'support.title' | translate"
+    (click)="openSupport()"
   >
     <i class="fa fa-question-circle-o"></i>
   </button>
@@ -98,28 +98,28 @@
     <button
       type="button"
       class="btn btn-elegant my-0 me-2"
-      [hidden]="isMobile()"
-      (click)="addRoom()"
       container="body"
       placement="bottom"
-      [openDelay]="150"
       triggers="hover"
+      [hidden]="isMobile()"
+      [openDelay]="150"
       [ngbTooltip]="'accessories.button_add_room' | translate"
       [attr.aria-label]="'accessories.button_add_room' | translate"
+      (click)="addRoom()"
     >
       <i class="fas fa-folder-plus"></i>
     </button>
     <button
       type="button"
       class="btn btn-elegant my-0 me-2"
-      [hidden]="isMobile()"
-      (click)="hideHidden.set(!hideHidden())"
       container="body"
       placement="bottom"
-      [openDelay]="150"
       triggers="hover"
+      [hidden]="isMobile()"
+      [openDelay]="150"
       [ngbTooltip]="hideHidden() ? ('accessories.button_hidden_show' | translate) : ('accessories.button_hidden_hide' | translate)"
       [attr.aria-label]="hideHidden() ? ('accessories.button_hidden_show' | translate) : ('accessories.button_hidden_hide' | translate)"
+      (click)="hideHidden.set(!hideHidden())"
     >
       <i
         class="fas"
@@ -152,15 +152,15 @@
         <button
           type="button"
           class="btn btn-elegant ms-2"
-          (click)="editRoom($index)"
           container="body"
           placement="bottom"
-          [openDelay]="150"
           triggers="hover"
+          [openDelay]="150"
           [ngbTooltip]="'accessories.button_edit_room' | translate"
           [attr.aria-label]="'accessories.button_edit_room' | translate"
           [style.visibility]="isMobile() ? 'hidden' : 'visible'"
           [style.pointer-events]="isMobile() ? 'none' : 'auto'"
+          (click)="editRoom($index)"
         >
           <i class="fas fa-cog"></i>
         </button>

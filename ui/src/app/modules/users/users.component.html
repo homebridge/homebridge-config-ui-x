@@ -5,16 +5,16 @@
   <div class="col-6 text-end">
     <button
       class="btn btn-elegant waves-effect m-0 me-2"
-      (click)="openAddNewUser()"
       [attr.aria-label]="'users.button_add_user' | translate"
+      (click)="openAddNewUser()"
     >
       <i class="fas fa-user-plus"></i>
     </button>
     <button
       type="button"
       class="btn btn-elegant my-0 me-0"
-      (click)="openSupport()"
       [attr.aria-label]="'support.title' | translate"
+      (click)="openSupport()"
     >
       <i class="fa fa-question-circle-o"></i>
     </button>
@@ -42,11 +42,11 @@
         </div>
         <div class="d-flex flex-row justify-content-between">
           @if (user.admin) { @if (user.otpActive) {
-          <button class="btn btn-elegant m-0" (click)="disable2fa(user)" [disabled]="user.username !== username">
+          <button class="btn btn-elegant m-0" [disabled]="user.username !== username" (click)="disable2fa(user)">
             {{ 'users.setup_2fa_disable' | translate }}
           </button>
           } @else {
-          <button class="btn btn-primary m-0" (click)="setup2fa(user)" [disabled]="user.username !== username">
+          <button class="btn btn-primary m-0" [disabled]="user.username !== username" (click)="setup2fa(user)">
             {{ 'users.setup_2fa' | translate }}
           </button>
           } } @else {
@@ -55,8 +55,8 @@
           <div>
             <button
               class="btn btn-elegant m-0"
-              (click)="openEditUser(user)"
               [attr.aria-label]="'form.button_edit' | translate"
+              (click)="openEditUser(user)"
             >
               <i class="fas fa-user-pen"></i>
             </button>

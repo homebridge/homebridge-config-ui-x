@@ -6,8 +6,8 @@
     <button
       type="button"
       class="btn btn-elegant my-0 me-0"
-      (click)="toggleSearch()"
       [attr.aria-label]="'form.search' | translate"
+      (click)="toggleSearch()"
     >
       <i class="fas{{ showSearchBar() ? ' primary-text' : '' }} fa-search"></i>
     </button>
@@ -19,20 +19,20 @@
   <div class="col-md-12">
     <form novalidate>
       <input
+        #searchInput
         type="text"
         class="search-bar"
-        #searchInput
         [placeholder]="'form.search' | translate"
         [ngModel]="searchQuery()"
-        (ngModelChange)="onSearchChange($event)"
         [ngModelOptions]="{standalone: true}"
+        (ngModelChange)="onSearchChange($event)"
       />
       @if (searchQuery()) {
       <button
         type="button"
         class="search-bar-clear"
-        (click)="clearSearch()"
         [attr.aria-label]="'form.button_clear' | translate"
+        (click)="clearSearch()"
       >
         <i class="fas fa-square-xmark" aria-hidden="true"></i>
       </button>
@@ -50,10 +50,10 @@
     <div
       role="button"
       tabindex="0"
+      class="mt-3 hover-pointer"
       [attr.aria-expanded]="showFields().general ? 'true' : 'false'"
       [attr.aria-controls]="'fieldsGeneral'"
       (click)="toggleSection('general')"
-      class="mt-3 hover-pointer"
     >
       <h5 class="primary-text">
         <i
@@ -87,8 +87,8 @@
         <button
           class="btn btn-primary waves-effect m-0 ms-3 py-1"
           style="min-width: 50px"
-          (click)="openBackupModal()"
           [attr.aria-label]="'backup.title_backup' | translate"
+          (click)="openBackupModal()"
         >
           <i class="fas fa-arrow-right"></i>
         </button>
@@ -99,8 +99,8 @@
         <button
           class="btn btn-primary waves-effect m-0 ms-3 py-1"
           style="min-width: 50px"
-          (click)="openConfigBackup()"
           [attr.aria-label]="'config.restore.title' | translate"
+          (click)="openConfigBackup()"
         >
           <i class="fas fa-arrow-right"></i>
         </button>
@@ -129,10 +129,10 @@
     <div
       role="button"
       tabindex="0"
+      class="mt-3 hover-pointer"
       [attr.aria-expanded]="showFields().display ? 'true' : 'false'"
       [attr.aria-controls]="'fieldsDisplay'"
       (click)="toggleSection('display')"
-      class="mt-3 hover-pointer"
     >
       <h5 class="primary-text">
         <i
@@ -254,8 +254,8 @@
         <button
           class="btn btn-primary waves-effect m-0 ms-3 py-1"
           style="min-width: 50px"
-          (click)="openWallpaperModal()"
           [attr.aria-label]="'settings.display.wallpaper' | translate"
+          (click)="openWallpaperModal()"
         >
           <i class="fas fa-arrow-right"></i>
         </button>
@@ -272,10 +272,10 @@
     <div
       role="button"
       tabindex="0"
+      class="mt-3 hover-pointer"
       [attr.aria-expanded]="showFields().startup ? 'true' : 'false'"
       [attr.aria-controls]="'fieldsStartup'"
       (click)="toggleSection('startup')"
-      class="mt-3 hover-pointer"
     >
       <h5 class="primary-text">
         <i
@@ -362,8 +362,8 @@
         <button
           class="btn btn-primary waves-effect m-0 ms-3 py-1"
           style="min-width: 50px"
-          (click)="accessoryUiControl()"
           [attr.aria-label]="'settings.security.ui_control' | translate"
+          (click)="accessoryUiControl()"
         >
           <i class="fas fa-arrow-right"></i>
         </button>
@@ -383,11 +383,11 @@
               class="form-control custom-input resp-input order-1 order-md-2 font-monospace"
               type="text"
               placeholder="mm hh dd MM ww"
+              maxlength="30"
               [formControl]="scheduledRestartCronFormControl"
               [attr.aria-label]="'settings.startup.scheduled_restart' | translate"
               [style.letter-spacing]="'0.15em'"
               [style.text-align]="'center'"
-              maxlength="30"
             />
             @if (scheduledRestartCronIsSaving()) {
             <i
@@ -508,9 +508,9 @@
         <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
           <input
             class="form-control custom-input resp-input order-1 order-md-2 font-monospace"
-            [formControl]="hbEnvDebugFormControl"
             type="text"
             placeholder="HAP-NodeJS:Advertiser,HAP-NodeJS:Service"
+            [formControl]="hbEnvDebugFormControl"
           />
           @if (hbEnvDebugIsSaving()) {
           <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
@@ -526,9 +526,9 @@
         <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
           <input
             class="form-control custom-input resp-input order-1 order-md-2 font-monospace"
-            [formControl]="hbEnvNodeFormControl"
             type="text"
             placeholder="--max-old-space-size=512 --max-http-header-size=8192"
+            [formControl]="hbEnvNodeFormControl"
           />
           @if (hbEnvNodeIsSaving()) {
           <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
@@ -562,10 +562,10 @@
     <div
       role="button"
       tabindex="0"
+      class="mt-3 hover-pointer"
       [attr.aria-expanded]="showFields().network ? 'true' : 'false'"
       [attr.aria-controls]="'fieldsNetwork'"
       (click)="toggleSection('network')"
-      class="mt-3 hover-pointer"
     >
       <h5 class="primary-text">
         <i
@@ -600,9 +600,9 @@
         <button
           class="btn btn-primary waves-effect m-0 ms-3 py-1"
           style="min-width: 50px"
-          (click)="selectNetworkInterfaces()"
           [disabled]="!adaptersAvailable().length"
           [attr.aria-label]="'settings.network.title_network_interfaces' | translate"
+          (click)="selectNetworkInterfaces()"
         >
           <i class="fas fa-arrow-right"></i>
         </button>
@@ -716,8 +716,8 @@
             class="form-control custom-input resp-input order-1 order-md-2 font-monospace"
             type="text"
             pattern="^[^{}/:\\s]+(?::\d+)?$"
-            [formControl]="uiHostFormControl"
             placeholder="0.0.0.0"
+            [formControl]="uiHostFormControl"
             [attr.aria-label]="'settings.network.host' | translate"
           />
           @if (uiHostIsSaving()) {
@@ -813,10 +813,10 @@
     <div
       role="button"
       tabindex="0"
+      class="mt-3 hover-pointer"
       [attr.aria-expanded]="showFields().matter ? 'true' : 'false'"
       [attr.aria-controls]="'fieldsMatter'"
       (click)="toggleSection('matter')"
-      class="mt-3 hover-pointer"
     >
       <h5 class="primary-text">
         <i
@@ -886,10 +886,10 @@
     <div
       role="button"
       tabindex="0"
+      class="mt-3 hover-pointer"
       [attr.aria-expanded]="showFields().terminal ? 'true' : 'false'"
       [attr.aria-controls]="'fieldsTerminal'"
       (click)="toggleSection('terminal')"
-      class="mt-3 hover-pointer"
     >
       <h5 class="primary-text">
         <i
@@ -1075,10 +1075,10 @@
     <div
       role="button"
       tabindex="0"
+      class="mt-3 hover-pointer"
       [attr.aria-expanded]="showFields().security ? 'true' : 'false'"
       [attr.aria-controls]="'fieldsSecurity'"
       (click)="toggleSection('security')"
-      class="mt-3 hover-pointer"
     >
       <h5 class="primary-text">
         <i
@@ -1223,8 +1223,8 @@
               id="httpsEnabled"
               [checked]="runningOnRaspbianImage || uiSslTypeFormControl.value !== 'off'"
               [disabled]="isPwa || runningOnRaspbianImage"
-              (click)="!isPwa && !runningOnRaspbianImage && openSslModal(); $event.preventDefault()"
               [attr.aria-label]="'settings.security.https_enable' | translate"
+              (click)="!isPwa && !runningOnRaspbianImage && openSslModal(); $event.preventDefault()"
             />
             <label for="httpsEnabled" class="rendux-label ms-3" style="min-width: 50px"></label>
           </div>
@@ -1242,10 +1242,10 @@
     <div
       role="button"
       tabindex="0"
+      class="mt-3 hover-pointer"
       [attr.aria-expanded]="showFields().cache ? 'true' : 'false'"
       [attr.aria-controls]="'fieldsCache'"
       (click)="toggleSection('cache')"
-      class="mt-3 hover-pointer"
     >
       <h5 class="primary-text">
         <i class="fa" [class]="{ 'fa-chevron-down': showFields().cache, 'fa-chevron-right': !showFields().cache }"></i>
@@ -1286,8 +1286,8 @@
         <button
           class="btn btn-primary waves-effect m-0 ms-3 py-1"
           style="min-width: 50px"
-          (click)="removeSingleCachedAccessories()"
           [attr.aria-label]="'reset.accessory_ind.title' | translate"
+          (click)="removeSingleCachedAccessories()"
         >
           <i class="fas fa-arrow-right"></i>
         </button>
@@ -1301,8 +1301,8 @@
         <button
           class="btn btn-primary waves-effect m-0 ms-3 py-1"
           style="min-width: 50px"
-          (click)="removeBridgeAccessories()"
           [attr.aria-label]="'reset.accessory_all.title' | translate"
+          (click)="removeBridgeAccessories()"
         >
           <i class="fas fa-arrow-right"></i>
         </button>
@@ -1316,8 +1316,8 @@
         <button
           class="btn btn-primary waves-effect m-0 ms-3 py-1"
           style="min-width: 50px"
-          (click)="removeAllCachedAccessories()"
           [attr.aria-label]="'reset.accessory_all.title' | translate"
+          (click)="removeAllCachedAccessories()"
         >
           <i class="fas fa-arrow-right"></i>
         </button>
@@ -1334,10 +1334,10 @@
     <div
       role="button"
       tabindex="0"
+      class="mt-3 hover-pointer"
       [attr.aria-expanded]="showFields().reset ? 'true' : 'false'"
       [attr.aria-controls]="'fieldsReset'"
       (click)="toggleSection('reset')"
-      class="mt-3 hover-pointer"
     >
       <h5 class="primary-text">
         <i class="fa" [class]="{ 'fa-chevron-down': showFields().reset, 'fa-chevron-right': !showFields().reset }"></i>
@@ -1356,8 +1356,8 @@
         <button
           class="btn btn-primary waves-effect m-0 ms-3 py-1"
           style="min-width: 50px"
-          (click)="unpairAccessory()"
           [attr.aria-label]="'reset.bridge_ind.title' | translate"
+          (click)="unpairAccessory()"
         >
           <i class="fas fa-arrow-right"></i>
         </button>
@@ -1371,8 +1371,8 @@
         <button
           class="btn btn-primary waves-effect m-0 ms-3 py-1"
           style="min-width: 50px"
-          (click)="resetHomebridgeState()"
           [attr.aria-label]="'reset.bridge_all.title' | translate"
+          (click)="resetHomebridgeState()"
         >
           <i class="fas fa-arrow-right"></i>
         </button>

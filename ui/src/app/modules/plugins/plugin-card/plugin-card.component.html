@@ -1,7 +1,7 @@
 <div class="card card-body mb-3">
   <div class="d-flex flex-row justify-content-between">
     <div class="d-flex flex-column me-3 align-items-center justify-content-between">
-      <img [src]="plugin().icon" (error)="handleIconError()" alt="Plugin Icon" class="plugin-icon-card mb-3" />
+      <img alt="Plugin Icon" class="plugin-icon-card mb-3" [src]="plugin().icon" (error)="handleIconError()" />
     </div>
     <div class="d-flex flex-column justify-content-between" style="min-width: calc(100% - 80px)">
       <div class="d-flex flex-row align-items-end">
@@ -16,12 +16,12 @@
               <a
                 href="javascript:void(0)"
                 class="card-link"
-                (click)="checkAndUpdatePlugin()"
                 container="body"
-                [openDelay]="150"
                 triggers="hover"
+                [openDelay]="150"
                 [ngbTooltip]="'plugins.button_update' | translate"
                 [attr.aria-label]="'plugins.button_update' | translate"
+                (click)="checkAndUpdatePlugin()"
               >
                 <i
                   class="far fa-arrow-alt-circle-up primary-text fa-lg fa-fade ms-3"
@@ -36,12 +36,12 @@
               <a
                 href="javascript:void(0)"
                 class="card-link"
-                (click)="switchToScoped()"
                 container="body"
-                [openDelay]="150"
                 triggers="hover"
+                [openDelay]="150"
                 [ngbTooltip]="'plugins.manage.scoped.switch' | translate"
                 [attr.aria-label]="'plugins.manage.scoped.switch' | translate"
+                (click)="switchToScoped()"
               >
                 <i
                   class="fas fa-arrow-right-arrow-left primary-text fa-lg fa-fade ms-3"
@@ -57,12 +57,12 @@
               <a
                 href="javascript:void(0)"
                 class="card-link"
-                (click)="openSettings()"
-                [ngbTooltip]="'plugins.button_set_up' | translate"
                 container="body"
-                [openDelay]="150"
                 triggers="hover"
+                [ngbTooltip]="'plugins.button_set_up' | translate"
+                [openDelay]="150"
                 [attr.aria-label]="'plugins.button_set_up' | translate"
+                (click)="openSettings()"
               >
                 <i class="fas fa-sliders primary-text fa-lg fa-fade ms-3" style="--fa-animation-duration: 2s"></i>
               </a>
@@ -76,12 +76,12 @@
               <a
                 href="javascript:void(0)"
                 class="card-link"
-                (click)="openBridgeSettings()"
-                [ngbTooltip]="'child_bridge.setup' | translate"
                 container="body"
-                [openDelay]="150"
                 triggers="hover"
+                [ngbTooltip]="'child_bridge.setup' | translate"
+                [openDelay]="150"
                 [attr.aria-label]="'child_bridge.setup' | translate"
+                (click)="openBridgeSettings()"
               >
                 <i
                   class="icon-button fas fa-bridge primary-text fa-lg fa-fade ms-3"
@@ -98,12 +98,12 @@
               <a
                 href="javascript:void(0)"
                 class="card-link"
-                (click)="openBridgeSettings()"
-                [ngbTooltip]="'child_bridge.bridge_connect' | translate"
                 container="body"
-                [openDelay]="150"
                 triggers="hover"
+                [ngbTooltip]="'child_bridge.bridge_connect' | translate"
+                [openDelay]="150"
                 [attr.aria-label]="'child_bridge.bridge_connect' | translate"
+                (click)="openBridgeSettings()"
               >
                 <i
                   class="icon-button fas fa-qrcode primary-text fa-lg fa-fade ms-3"
@@ -114,8 +114,8 @@
               <! -- // - ->
               <! -- restart in progress spinner - ->
               <i
-                [hidden]="!childBridgeRestartInProgress()"
                 class="fas fa-circle-notch fa-spin fa-lg grey-text ms-3"
+                [hidden]="!childBridgeRestartInProgress()"
               ></i>
               <! -- // - ->
               <! -- child bridge status (good status is not shown) - ->
@@ -140,7 +140,7 @@
           <! -- // - ->
           <! -- plugin npm name/info modal - ->
           <p class="card-text mb-2 text-truncate">
-            <a href="javascript:void(0)" (click)="pluginInfoModal(plugin())" class="card-link">
+            <a href="javascript:void(0)" class="card-link" (click)="pluginInfoModal(plugin())">
               <i
                 class="fas fa-shield-alt fa-lg me-1"
                 [class]="{
@@ -193,12 +193,12 @@
               @if (!plugin().disabled && plugin().hasChildBridges && childBridgeStatus() === 'ok') {
               <a
                 href="javascript:void(0)"
-                (click)="doChildBridgeAction('restart')"
                 class="card-link"
                 container="body"
-                [openDelay]="150"
                 triggers="hover"
+                [openDelay]="150"
                 [ngbTooltip]="(setChildBridges().length > 1 ? 'child_bridge.restart_plural' : 'child_bridge.restart') | translate"
+                (click)="doChildBridgeAction('restart')"
               >
                 <i class="fas fa-lg fa-power-off ms-3"></i>
               </a>
@@ -206,13 +206,13 @@
               <! -- // - ->
               <! -- icon for plugin disabled - ->
               @if (plugin().installedVersion && plugin().disabled) {
-              <a href="javascript:void(0)" (click)="enablePlugin(plugin())" class="card-link red-text">
+              <a href="javascript:void(0)" class="card-link red-text" (click)="enablePlugin(plugin())">
                 <i
                   class="far fa-pause-circle fa-lg"
-                  [ngbTooltip]="'common.labels.disabled' | translate"
                   container="body"
-                  [openDelay]="150"
                   triggers="hover"
+                  [ngbTooltip]="'common.labels.disabled' | translate"
+                  [openDelay]="150"
                 ></i>
               </a>
               }
@@ -231,8 +231,8 @@
                   class="card-link text-decoration-none mt-auto"
                   href="javascript:void(0)"
                   style="outline: none"
-                  [attr.aria-label]="'Plugin Actions Dropdown'"
                   ngbDropdownToggle
+                  [attr.aria-label]="'Plugin Actions Dropdown'"
                 >
                   <i class="fa-solid fa-ellipsis-v fa-lg"></i>
                 </a>

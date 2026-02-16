@@ -61,9 +61,9 @@
       [min]="0"
       [max]="360"
       [step]="1"
+      [class.mb-1]="isAdaptiveLightingEnabled"
       [(ngModel)]="targetHue.value"
       (ngModelChange)="onHueStateChange()"
-      [class.mb-1]="isAdaptiveLightingEnabled"
     />
     @if (isAdaptiveLightingEnabled) {
     <div class="d-flex text-center mt-0 mb-1">
@@ -75,9 +75,9 @@
       [min]="0"
       [max]="100"
       [step]="1"
+      [class.mb-1]="isAdaptiveLightingEnabled"
       [(ngModel)]="targetSaturation.value"
       (ngModelChange)="onSaturationStateChange()"
-      [class.mb-1]="isAdaptiveLightingEnabled"
     />
     @if (isAdaptiveLightingEnabled) {
     <div class="d-flex text-center mt-0 mb-1">
@@ -91,9 +91,9 @@
       [min]="targetColorTemperature.min"
       [max]="targetColorTemperature.max"
       [step]="targetColorTemperature.step"
+      [class.mb-1]="isAdaptiveLightingEnabled"
       [(ngModel)]="targetColorTemperature.value"
       (ngModelChange)="onColorTemperatureStateChange()"
-      [class.mb-1]="isAdaptiveLightingEnabled"
     />
     @if (isAdaptiveLightingEnabled) {
     <div class="d-flex text-center mt-0 mb-1">

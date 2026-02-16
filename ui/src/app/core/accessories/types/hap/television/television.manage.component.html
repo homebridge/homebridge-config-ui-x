@@ -13,8 +13,8 @@
     @if (hasActive) {
     <div
       class="btn-group-vertical d-flex justify-content-center mb-4 p-0"
-      [class]="{ 'mb-4': sourceList.length, 'mb-0': !sourceList.length }"
       role="group"
+      [class]="{ 'mb-4': sourceList.length, 'mb-0': !sourceList.length }"
       [attr.aria-label]="'accessories.control.mode_control' | translate"
     >
       <button type="button" class="btn mb-0 mx-0 p-3 btn-control" (click)="setActive(0, $event)">

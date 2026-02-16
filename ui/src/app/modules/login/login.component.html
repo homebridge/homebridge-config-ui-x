@@ -12,7 +12,7 @@
       width="100"
       priority="true"
     />
-    <form novalidate (ngSubmit)="onSubmit()" [formGroup]="form">
+    <form novalidate [formGroup]="form" (ngSubmit)="onSubmit()">
       <h4 class="mb-4 text-center">{{ 'setup.welcome_to_homebridge' | translate }}</h4>
       @if (!twoFactorCodeRequired()) {
       <div class="input-group mb-4">
@@ -27,9 +27,9 @@
           autocapitalize="none"
           tabindex="1"
           class="form-control custom-input"
+          required
           [placeholder]="'users.label_username' | translate"
           [class.is-invalid]="form.controls.username.dirty && form.controls.username.errors"
-          required
         />
       </div>
       <div class="input-group mb-4">
@@ -42,9 +42,9 @@
           autocomplete="current-password"
           tabindex="2"
           class="form-control custom-input"
+          required
           [placeholder]="'users.label_password' | translate"
           [class.is-invalid]="form.controls.password.dirty && form.controls.password.errors"
-          required
         />
       </div>
       } @if (twoFactorCodeRequired()) {

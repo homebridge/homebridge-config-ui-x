@@ -6,8 +6,8 @@
       class="btn-close"
       data-bs-dismiss="modal"
       [attr.aria-label]="'form.button_close' | translate"
-      (click)="dismissModal()"
       [disabled]="restoreInProgress()"
+      (click)="dismissModal()"
     ></button>
   </div>
   @if (!restoreStarted() && !setupWizardRestore) {
@@ -22,7 +22,7 @@
       <li>{{ 'backup.restore_warning' | translate }}</li>
     </ul>
     @if (selectedBackup) {
-    <input class="form-control custom-input" type="text" [value]="selectedBackup.fileName" disabled />
+    <input class="form-control custom-input" type="text" disabled [value]="selectedBackup.fileName" />
     } @if (!selectedBackup) {
     <input
       type="file"
@@ -36,9 +36,9 @@
   }
 
   <div
-    [hidden]="!restoreStarted()"
     id="plugin-log-output"
     class="modal-body"
+    [hidden]="!restoreStarted()"
     [class.terminal-light-bg]="isLightTerminalTheme"
     [class.terminal-dark-bg]="!isLightTerminalTheme"
   ></div>
@@ -51,9 +51,9 @@
         type="button"
         class="btn btn-elegant"
         data-bs-dismiss="modal"
-        (click)="dismissModal()"
         [attr.aria-label]="'form.button_close' | translate"
         [disabled]="clicked()"
+        (click)="dismissModal()"
       >
         {{ 'form.button_close' | translate }}
       </button>
@@ -62,9 +62,9 @@
         type="button"
         class="btn btn-elegant"
         data-bs-dismiss="modal"
-        (click)="reopenBackupModal()"
         [attr.aria-label]="'form.button_back' | translate"
         [disabled]="clicked()"
+        (click)="reopenBackupModal()"
       >
         {{ 'form.button_back' | translate }}
       </button>
@@ -76,8 +76,8 @@
         type="button"
         class="btn btn-primary"
         data-bs-dismiss="modal"
-        (click)="onRestoreBackupClick()"
         [disabled]="(!selectedBackup && !selectedFile()) || clicked()"
+        (click)="onRestoreBackupClick()"
       >
         @if (clicked()) {
         <span>

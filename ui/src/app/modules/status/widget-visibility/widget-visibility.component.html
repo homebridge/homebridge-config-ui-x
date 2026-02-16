@@ -25,10 +25,10 @@
             class="rendux-input"
             [checked]="widget.shown"
             [id]="'widget' + widget.name"
-            (click)="selectWidget(widget)"
             [attr.aria-label]="('form.button_show' | translate) + ' ' + widget.name"
+            (click)="selectWidget(widget)"
           />
-          <label [for]="'widget' + widget.name" class="rendux-label ms-3"></label>
+          <label class="rendux-label ms-3" [for]="'widget' + widget.name"></label>
         </span>
       </li>
       }
@@ -44,9 +44,9 @@
         </div>
         <button
           class="btn btn-danger m-0 ms-3 py-1"
-          (click)="doResetLayout()"
-          [attr.aria-label]="'form.button_reset' | translate"
           data-bs-dismiss="modal"
+          [attr.aria-label]="'form.button_reset' | translate"
+          (click)="doResetLayout()"
         >
           <i class="fas fa-arrow-right"></i>
         </button>
@@ -60,8 +60,8 @@
         type="button"
         class="btn btn-elegant"
         data-bs-dismiss="modal"
-        (click)="dismissModal()"
         [attr.aria-label]="'form.button_close' | translate"
+        (click)="dismissModal()"
       >
         {{ 'form.button_close' | translate }}
       </button>

@@ -4,7 +4,7 @@
       <h3 class="primary-text m-0 font-monospace">startup.sh</h3>
     </div>
     <div class="col-6 text-end">
-      <button class="btn btn-primary waves-effect m-0" (click)="onSave()" [disabled]="saveInProgress()">
+      <button class="btn btn-primary waves-effect m-0" [disabled]="saveInProgress()" (click)="onSave()">
         @if (saveInProgress()) {
         <i class="fas fa-circle-notch fa-spin"></i>
         } @else {

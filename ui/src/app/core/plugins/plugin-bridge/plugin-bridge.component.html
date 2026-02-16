@@ -7,8 +7,8 @@
       class="btn-close"
       data-bs-dismiss="modal"
       [attr.aria-label]="'form.button_close' | translate"
-      (click)="closeModal()"
       [disabled]="saveInProgress()"
+      (click)="closeModal()"
     ></button>
     }
   </div>
@@ -19,7 +19,7 @@
     </div>
     } @if (!loading()) {
     <div class="text-center">
-      <img [src]="plugin.icon" (error)="handleIconError()" alt="Plugin Icon" class="mb-3 plugin-icon-card" />
+      <img alt="Plugin Icon" class="mb-3 plugin-icon-card" [src]="plugin.icon" (error)="handleIconError()" />
     </div>
     <ul class="mb-3">
       <li [innerHTML]="'child_bridge.about' | translate: { link: linkChildBridges }"></li>
@@ -61,9 +61,9 @@
         >
         <div class="text-start text-md-end w-100 w-md-50">
           <select
+            #bridgeLinkSelect
             class="custom-select"
             id="bridgeLink"
-            #bridgeLinkSelect
             (change)="onLinkBridgeChange(bridgeLinkSelect.value)"
           >
             <option [value]="">{{ 'child_bridge.config.select_existing' | translate }}</option>
@@ -98,7 +98,7 @@
             [checked]="enabledBlocks()[selectedBlock()]"
             (change)="toggleExternalBridge(configBlocks()[selectedBlock()], !enabledBlocks()[selectedBlock()], selectedBlock())"
           />
-          <label [for]="'toggleExternalBridgeInput_' + selectedBlock()" class="rendux-label"></label>
+          <label class="rendux-label" [for]="'toggleExternalBridgeInput_' + selectedBlock()"></label>
         </div>
       </li>
       } @if (currentlySelectedLink()) {
@@ -136,8 +136,8 @@
           <input
             type="text"
             class="form-control custom-input"
-            [(ngModel)]="configBlocks()[selectedBlock()]._bridge.name"
             [class.is-invalid]="getHapNameValidationError(selectedBlock())"
+            [(ngModel)]="configBlocks()[selectedBlock()]._bridge.name"
           />
         </div>
       </li>
@@ -189,11 +189,11 @@
             type="text"
             class="form-control custom-input font-monospace"
             placeholder="mm hh dd MM ww"
+            maxlength="30"
             [value]="getScheduledRestartCron(configBlocks()[selectedBlock()]._bridge?.username)"
-            (input)="onScheduledRestartCronChange($any($event.target).value, configBlocks()[selectedBlock()]._bridge?.username)"
             [style.letter-spacing]="'0.15em'"
             [style.text-align]="'center'"
-            maxlength="30"
+            (input)="onScheduledRestartCronChange($any($event.target).value, configBlocks()[selectedBlock()]._bridge?.username)"
           />
         </div>
       </li>
@@ -205,10 +205,10 @@
             type="checkbox"
             class="rendux-input"
             [id]="'homebridgeDebugMode_' + selectedBlock()"
-            [(ngModel)]="configBlocks()[selectedBlock()]._bridge.debugModeEnabled"
             [attr.aria-label]="'settings.startup.debug' | translate"
+            [(ngModel)]="configBlocks()[selectedBlock()]._bridge.debugModeEnabled"
           />
-          <label [for]="'homebridgeDebugMode_' + selectedBlock()" class="rendux-label"></label>
+          <label class="rendux-label" [for]="'homebridgeDebugMode_' + selectedBlock()"></label>
         </div>
       </li>
       }
@@ -224,8 +224,8 @@
           <input
             type="text"
             class="form-control custom-input font-monospace"
-            [(ngModel)]="configBlocks()[selectedBlock()]._bridge.env.DEBUG"
             placeholder="HAP-NodeJS:Advertiser,HAP-NodeJS:Service"
+            [(ngModel)]="configBlocks()[selectedBlock()]._bridge.env.DEBUG"
           />
         </div>
       </li>
@@ -238,8 +238,8 @@
           <input
             type="text"
             class="form-control custom-input font-monospace"
-            [(ngModel)]="configBlocks()[selectedBlock()]._bridge.env.NODE_OPTIONS"
             placeholder="--max-old-space-size=512 --max-http-header-size=8192"
+            [(ngModel)]="configBlocks()[selectedBlock()]._bridge.env.NODE_OPTIONS"
           />
         </div>
       </li>
@@ -258,12 +258,12 @@
           <input
             type="checkbox"
             class="rendux-input"
+            style="pointer-events: none"
             [id]="'toggleHapInput_' + selectedBlock()"
             [checked]="true"
             [disabled]="true"
-            style="pointer-events: none"
           />
-          <label [for]="'toggleHapInput_' + selectedBlock()" class="rendux-label" style="cursor: not-allowed"></label>
+          <label class="rendux-label" style="cursor: not-allowed" [for]="'toggleHapInput_' + selectedBlock()"></label>
         </div>
       </li>
 
@@ -286,9 +286,9 @@
       <li class="list-group-item text-center">
         <div class="w-100 d-flex flex-column text-center">
           <app-qrcode
-            [data]="deviceInfo().get(configBlocks()[selectedBlock()]._bridge?.username)?.['_setupCode']"
             class="mx-auto"
             style="width: 175px; height: 175px"
+            [data]="deviceInfo().get(configBlocks()[selectedBlock()]._bridge?.username)?.['_setupCode']"
           />
           <p class="mx-auto mt-3 mb-1 font-monospace">
             {{ deviceInfo().get(configBlocks()[selectedBlock()]._bridge?.username)?.['pincode'] }}
@@ -318,10 +318,10 @@
             class="rendux-input"
             [id]="'toggleHideHapUnpairing_' + selectedBlock()"
             [checked]="isUnpairingHidden(configBlocks()[selectedBlock()]._bridge?.username, 'hap')"
-            (change)="toggleHideUnpairing(configBlocks()[selectedBlock()]._bridge?.username, 'hap')"
             [attr.aria-label]="'child_bridge.config.hide_pairing_alert' | translate"
+            (change)="toggleHideUnpairing(configBlocks()[selectedBlock()]._bridge?.username, 'hap')"
           />
-          <label [for]="'toggleHideHapUnpairing_' + selectedBlock()" class="rendux-label"></label>
+          <label class="rendux-label" [for]="'toggleHideHapUnpairing_' + selectedBlock()"></label>
         </div>
       </li>
       } }
@@ -333,10 +333,10 @@
           <input
             type="number"
             class="form-control custom-input font-monospace"
-            [(ngModel)]="configBlocks()[selectedBlock()]._bridge.port"
-            [class.is-invalid]="getHapPortValidationError(selectedBlock())"
             min="1025"
             max="65533"
+            [class.is-invalid]="getHapPortValidationError(selectedBlock())"
+            [(ngModel)]="configBlocks()[selectedBlock()]._bridge.port"
           />
         </div>
       </li>
@@ -359,7 +359,7 @@
             [checked]="matterEnabledBlocks()[selectedBlock()]"
             (change)="toggleMatterBridge(configBlocks()[selectedBlock()], !matterEnabledBlocks()[selectedBlock()], selectedBlock())"
           />
-          <label [for]="'toggleMatterBridgeInput_' + selectedBlock()" class="rendux-label"></label>
+          <label class="rendux-label" [for]="'toggleMatterBridgeInput_' + selectedBlock()"></label>
         </div>
       </li>
 
@@ -377,9 +377,9 @@
       <li class="list-group-item text-center">
         <div class="w-100 d-flex flex-column text-center">
           <app-qrcode
-            [data]="matterDeviceInfo().get(configBlocks()[selectedBlock()]._bridge?.username)?.setupUri"
             class="mx-auto"
             style="width: 175px; height: 175px"
+            [data]="matterDeviceInfo().get(configBlocks()[selectedBlock()]._bridge?.username)?.setupUri"
           />
           <p class="mx-auto mt-3 mb-1 font-monospace">
             {{ matterDeviceInfo().get(configBlocks()[selectedBlock()]._bridge?.username)?.pin }}
@@ -409,10 +409,10 @@
             class="rendux-input"
             [id]="'toggleHideMatterUnpairing_' + selectedBlock()"
             [checked]="isUnpairingHidden(configBlocks()[selectedBlock()]._bridge?.username, 'matter')"
-            (change)="toggleHideUnpairing(configBlocks()[selectedBlock()]._bridge?.username, 'matter')"
             [attr.aria-label]="'child_bridge.config.hide_pairing_alert' | translate"
+            (change)="toggleHideUnpairing(configBlocks()[selectedBlock()]._bridge?.username, 'matter')"
           />
-          <label [for]="'toggleHideMatterUnpairing_' + selectedBlock()" class="rendux-label"></label>
+          <label class="rendux-label" [for]="'toggleHideMatterUnpairing_' + selectedBlock()"></label>
         </div>
       </li>
       } } @if (matterDeviceInfo().get(configBlocks()[selectedBlock()]._bridge?.username) &&
@@ -441,15 +441,15 @@
             min="1024"
             max="65535"
             placeholder="e.g. 5540"
-            [(ngModel)]="configBlocks()[selectedBlock()]._bridge.matter.port"
             [class.is-invalid]="getMatterPortValidationError(selectedBlock())"
+            [(ngModel)]="configBlocks()[selectedBlock()]._bridge.matter.port"
           />
         </div>
       </li>
       }
     </ul>
     } } } @if (deleteBridges().length || deleteMatterBridges().length) {
-    <ngb-alert type="error" [dismissible]="false" class="mt-3 mb-0">
+    <ngb-alert type="error" class="mt-3 mb-0" [dismissible]="false">
       <p>
         {{ 'child_bridge.confirm_delete_1' | translate }} @if (deletingPairedBridge()) { {{
         'child_bridge.confirm_delete_2' | translate }} }
@@ -495,8 +495,8 @@
         type="button"
         class="btn btn-elegant"
         data-bs-dismiss="modal"
-        (click)="closeModal()"
         [disabled]="saveInProgress()"
+        (click)="closeModal()"
       >
         {{ 'form.button_close' | translate }}
       </button>
@@ -507,8 +507,8 @@
       <button
         type="button"
         class="btn btn-primary"
-        (click)="save()"
         [disabled]="saveInProgress() || hasValidationErrors"
+        (click)="save()"
       >
         {{ 'form.button_save' | translate }} @if (saveInProgress()) {
         <i class="fas fa-circle-notch fa-spin"></i>
@@ -525,8 +525,8 @@
       <button
         type="button"
         class="btn btn-primary"
-        (click)="save()"
         [disabled]="saveInProgress() || loading() || hasValidationErrors"
+        (click)="save()"
       >
         @if (!saveInProgress()) { {{ 'form.button_save' | translate }} } @if (saveInProgress()) {
         <i class="fas fa-circle-notch fa-spin"></i>

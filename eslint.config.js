@@ -115,8 +115,8 @@ export default antfu(
     files: ['ui/**/*.html'],
     rules: {
       ...config.rules,
-      // 'angular-template/alt-text': 'error',
-      // 'angular-template/attributes-order': 'error',
+      'angular-template/alt-text': 'error',
+      'angular-template/attributes-order': 'error',
       // 'angular-template/banana-in-box': 'error',
       // 'angular-template/button-has-type': 'error',
       // 'angular-template/click-events-have-key-events': 'error',

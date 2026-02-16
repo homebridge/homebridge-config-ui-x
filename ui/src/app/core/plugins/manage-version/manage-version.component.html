@@ -38,8 +38,8 @@
           <button
             type="button"
             class="btn btn-primary m-0 ms-3 py-1"
-            (click)="doInstall(version.version)"
             [attr.aria-label]="(plugin?.installedVersion === version.version ? ('plugins.manage.reinstall' | translate) : ('plugins.manage.install' | translate)) + ' v' + version.version"
+            (click)="doInstall(version.version)"
           >
             @if (plugin?.installedVersion === version.version) {
             <i class="fas fa-rotate-right"></i>
@@ -56,8 +56,8 @@
             <select
               class="custom-select w-100 font-monospace"
               style="font-size: 0.875rem"
-              [(ngModel)]="versionSelect"
               [attr.aria-label]="'plugins.manage.all_versions' | translate"
+              [(ngModel)]="versionSelect"
             >
               @for (version of versions(); track version) {
               <option [value]="version.version" [selected]="versionSelect === version.version">
@@ -70,8 +70,8 @@
           <button
             type="button"
             class="btn btn-primary m-0 ms-3 py-1"
-            (click)="doInstall(versionSelect)"
             [attr.aria-label]="(plugin?.installedVersion === versionSelect ? ('plugins.manage.reinstall' | translate) : ('plugins.manage.install' | translate))  + ' v' + versionSelect"
+            (click)="doInstall(versionSelect)"
           >
             @if (plugin?.installedVersion === versionSelect) {
             <i class="fas fa-rotate-right"></i>
@@ -95,16 +95,16 @@
               type="radio"
               name="updatePreference"
               value="all"
-              [formControl]="updatePreferenceControl"
               class="visually-hidden"
+              [formControl]="updatePreferenceControl"
               [attr.aria-label]="'plugins.manage.notifications_all' | translate"
             />
             <div class="me-3">
               <i
                 class="fas fa-bell fa-2x"
+                aria-hidden="true"
                 [class.primary-text]="updatePreferenceControl.value === 'all'"
                 [class.grey-text]="updatePreferenceControl.value !== 'all'"
-                aria-hidden="true"
               ></i>
             </div>
             <div class="flex-grow-1">
@@ -124,16 +124,16 @@
               type="radio"
               name="updatePreference"
               value="beta"
-              [formControl]="updatePreferenceControl"
               class="visually-hidden"
+              [formControl]="updatePreferenceControl"
               [attr.aria-label]="'plugins.manage.notifications_beta' | translate"
             />
             <div class="me-3">
               <i
                 class="fas fa-vial fa-2x"
+                aria-hidden="true"
                 [class.primary-text]="updatePreferenceControl.value === 'beta'"
                 [class.grey-text]="updatePreferenceControl.value !== 'beta'"
-                aria-hidden="true"
               ></i>
             </div>
             <div class="flex-grow-1">
@@ -154,16 +154,16 @@
               type="radio"
               name="updatePreference"
               value="major"
-              [formControl]="updatePreferenceControl"
               class="visually-hidden"
+              [formControl]="updatePreferenceControl"
               [attr.aria-label]="'plugins.manage.notifications_major' | translate"
             />
             <div class="me-3">
               <i
                 class="far fa-bell fa-fw fa-2x"
+                aria-hidden="true"
                 [class.primary-text]="updatePreferenceControl.value === 'major'"
                 [class.grey-text]="updatePreferenceControl.value !== 'major'"
-                aria-hidden="true"
               ></i>
             </div>
             <div class="flex-grow-1">
@@ -184,16 +184,16 @@
               type="radio"
               name="updatePreference"
               value="none"
-              [formControl]="updatePreferenceControl"
               class="visually-hidden"
+              [formControl]="updatePreferenceControl"
               [attr.aria-label]="'plugins.manage.notifications_none' | translate"
             />
             <div class="me-3">
               <i
                 class="fas fa-bell-slash fa-2x"
+                aria-hidden="true"
                 [class.primary-text]="updatePreferenceControl.value === 'none'"
                 [class.grey-text]="updatePreferenceControl.value !== 'none'"
-                aria-hidden="true"
               ></i>
             </div>
             <div class="flex-grow-1">

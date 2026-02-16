@@ -20,8 +20,8 @@
     <ul class="list-group list-group-box">
       @for (option of fundingOptions(); track option) {
       <li class="list-group-item d-flex align-items-center">
-        <i [class]="getIconClass(option.type)" class="me-3 my-4 primary-text fa-2xl"></i>
-        <a [href]="option.url" target="_blank" rel="noopener noreferrer" class="text-break-all fs-6">{{ option.url }}</a>
+        <i class="me-3 my-4 primary-text fa-2xl" [class]="getIconClass(option.type)"></i>
+        <a target="_blank" rel="noopener noreferrer" class="text-break-all fs-6" [href]="option.url">{{ option.url }}</a>
       </li>
       }
     </ul>
@@ -33,8 +33,8 @@
         type="button"
         class="btn btn-elegant"
         data-bs-dismiss="modal"
-        (click)="dismissModal()"
         [attr.aria-label]="'form.button_close' | translate"
+        (click)="dismissModal()"
       >
         {{ 'form.button_close' | translate }}
       </button>

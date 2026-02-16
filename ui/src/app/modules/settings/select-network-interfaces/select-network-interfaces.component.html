@@ -29,7 +29,7 @@
             [(ngModel)]="adapter.selected"
             (ngModelChange)="onAdapterSelectionChange()"
           />
-          <label [for]="'adapter' + adapter.iface" class="rendux-label ms-3"></label>
+          <label class="rendux-label ms-3" [for]="'adapter' + adapter.iface"></label>
         </span>
       </li>
       }
@@ -42,8 +42,8 @@
         type="button"
         class="btn btn-elegant"
         data-bs-dismiss="modal"
-        (click)="closeAndReset()"
         [attr.aria-label]="'form.button_close' | translate"
+        (click)="closeAndReset()"
       >
         {{ 'form.button_close' | translate }}
       </button>

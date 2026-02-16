@@ -1,12 +1,12 @@
 <div
   class="m-header text-end"
-  (click)="toggleSidebar()"
   tabindex="0"
   role="button"
-  (keydown)="handleKeydown($event)"
   [attr.aria-expanded]="isExpanded() ? 'true' : 'false'"
   [attr.aria-controls]="'sidebar'"
   [attr.aria-label]="'menu.sidebar.aria_menu' | translate"
+  (click)="toggleSidebar()"
+  (keydown)="handleKeydown($event)"
 >
   <span class="me-2 d-block d-lg-none" style="font-size: 0.9rem; color: #dddddd"></span>
   <a [routerLink]="['/']" [attr.aria-label]="'menu.label_status' | translate">
@@ -21,8 +21,8 @@
   </div>
 </div>
 
-<div class="sidebar" [class.expanded]="isExpanded()" role="navigation" id="sidebar">
-  <div class="header" (click)="toggleSidebar()" tabindex="0" role="button" (keydown)="handleKeydown($event)">
+<div class="sidebar" role="navigation" id="sidebar" [class.expanded]="isExpanded()">
+  <div class="header" tabindex="0" role="button" (click)="toggleSidebar()" (keydown)="handleKeydown($event)">
     <a [routerLink]="['/']" [attr.aria-label]="'menu.label_status' | translate">
       <img style="height: 35px; width: 35px" ngSrc="assets/homebridge-logo.svg" alt="HB Logo" height="35" width="35" />
       <div class="hb-logo-text">Homebridge</div>
@@ -32,12 +32,12 @@
     <div class="link">
       <div
         class="link-row"
+        role="menuitem"
+        tabindex="0"
         [routerLink]="['/']"
         [routerLinkActive]="'active'"
         [routerLinkActiveOptions]="{exact: true}"
         [attr.aria-label]="'menu.label_status' | translate"
-        role="menuitem"
-        tabindex="0"
         (keydown)="handleKeydown($event)"
       >
         <div class="icon"><i class="fa fa-house"></i></div>
@@ -49,10 +49,10 @@
     <div class="link">
       <div
         class="link-row"
-        (click)="openUnderVoltageModal()"
-        [attr.aria-label]="('rpi.throttled.undervoltage_title' | translate) + ' - ' + ('rpi.throttled.undervoltage_description' | translate)"
         role="menuitem"
         tabindex="0"
+        [attr.aria-label]="('rpi.throttled.undervoltage_title' | translate) + ' - ' + ('rpi.throttled.undervoltage_description' | translate)"
+        (click)="openUnderVoltageModal()"
         (keydown)="handleKeydown($event)"
       >
         <div class="icon"><i class="fas fa-bolt fa-beat yellow-text" style="--fa-beat-scale: 1.5"></i></div>
@@ -64,11 +64,11 @@
     <div class="link">
       <div
         class="link-row"
+        role="menuitem"
+        tabindex="0"
         [routerLink]="['/plugins']"
         [routerLinkActive]="'active'"
         [attr.aria-label]="'menu.label_plugins' | translate"
-        role="menuitem"
-        tabindex="0"
         (keydown)="handleKeydown($event)"
       >
         <div class="icon"><i class="fa fa-plug"></i></div>
@@ -79,11 +79,11 @@
     <div class="link">
       <div
         class="link-row"
+        role="menuitem"
+        tabindex="0"
         [routerLink]="['/accessories']"
         [routerLinkActive]="'active'"
         [attr.aria-label]="'menu.label_accessories' | translate"
-        role="menuitem"
-        tabindex="0"
         (keydown)="handleKeydown($event)"
       >
         <div class="icon"><i class="fa fa-lightbulb"></i></div>
@@ -94,11 +94,11 @@
     <div class="link">
       <div
         class="link-row"
+        role="menuitem"
+        tabindex="0"
         [routerLink]="['/logs']"
         [routerLinkActive]="'active'"
         [attr.aria-label]="'menu.linux.label_logs' | translate"
-        role="menuitem"
-        tabindex="0"
         (keydown)="handleKeydown($event)"
       >
         <div class="icon"><i class="fa fa-wave-square"></i></div>
@@ -110,11 +110,11 @@
     <div class="link">
       <div
         class="link-row"
+        role="menuitem"
+        tabindex="0"
         [routerLink]="['/platform-tools/terminal']"
         [routerLinkActive]="'active'"
         [attr.aria-label]="'menu.linux.label_terminal' | translate"
-        role="menuitem"
-        tabindex="0"
         (keydown)="handleKeydown($event)"
       >
         <div class="icon"><i class="fa fa-terminal"></i></div>
@@ -125,11 +125,11 @@
     <div class="link">
       <div
         class="link-row"
+        role="menuitem"
+        tabindex="0"
         [routerLink]="['/config']"
         [routerLinkActive]="'active'"
         [attr.aria-label]="'menu.config_json_editor' | translate"
-        role="menuitem"
-        tabindex="0"
         (keydown)="handleKeydown($event)"
       >
         <div class="icon"><i class="fa fa-code"></i></div>
@@ -140,11 +140,11 @@
     <div class="link">
       <div
         class="link-row"
+        role="menuitem"
+        tabindex="0"
         [routerLink]="['/settings']"
         [routerLinkActive]="'active'"
         [attr.aria-label]="'menu.label_settings' | translate"
-        role="menuitem"
-        tabindex="0"
         (keydown)="handleKeydown($event)"
       >
         <div class="icon"><i class="fa fa-cog"></i></div>
@@ -156,11 +156,11 @@
     <div class="link">
       <div
         class="link-row"
+        role="menuitem"
+        tabindex="0"
         [routerLink]="['/support']"
         [routerLinkActive]="'active'"
         [attr.aria-label]="'support.title' | translate"
-        role="menuitem"
-        tabindex="0"
         (keydown)="handleKeydown($event)"
       >
         <div class="icon"><i class="fa fa-question-circle-o"></i></div>
@@ -172,11 +172,11 @@
     <div class="link">
       <div
         class="link-row"
+        role="menuitem"
+        tabindex="0"
         [routerLink]="['/power-options']"
         [routerLinkActive]="'active'"
         [attr.aria-label]="'menu.restart.title' | translate"
-        role="menuitem"
-        tabindex="0"
         (keydown)="handleKeydown($event)"
       >
         <div class="icon"><i class="fa fa-power-off"></i></div>
@@ -187,10 +187,10 @@
     <div class="link">
       <div
         class="link-row"
-        (click)="reloadPage()"
-        [attr.aria-label]="'menu.reload' | translate"
         role="menuitem"
         tabindex="0"
+        [attr.aria-label]="'menu.reload' | translate"
+        (click)="reloadPage()"
         (keydown)="handleKeydown($event)"
       >
         <div class="icon"><i class="fa fa-refresh"></i></div>
@@ -201,10 +201,10 @@
     <div class="link">
       <div
         class="link-row"
-        (click)="logout()"
-        [attr.aria-label]="'menu.tooltip_logout' | translate"
         role="menuitem"
         tabindex="0"
+        [attr.aria-label]="'menu.tooltip_logout' | translate"
+        (click)="logout()"
         (keydown)="handleKeydown($event)"
       >
         <div class="icon"><i class="fa fa-right-from-bracket"></i></div>

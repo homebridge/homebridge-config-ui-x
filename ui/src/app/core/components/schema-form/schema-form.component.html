@@ -1,6 +1,8 @@
 <ng-container>
   @if (configSchema().schema) {
   <json-schema-form
+    framework="bootstrap-5"
+    class="ng-bs5-validate"
     [jsfPatch]="configSchema().fixArrays"
     [options]="jsonFormOptions"
     [schema]="configSchema().schema"
@@ -8,11 +10,9 @@
     [layout]="configSchema().layout"
     [form]="configSchema().form"
     [data]="currentData()"
-    framework="bootstrap-5"
+    [language]="language()"
     (onChanges)="onChanges($event)"
     (isValid)="validChange($event)"
-    [language]="language()"
-    class="ng-bs5-validate"
   />
   }
 </ng-container>

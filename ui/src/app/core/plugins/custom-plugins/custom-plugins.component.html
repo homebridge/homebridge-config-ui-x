@@ -6,8 +6,8 @@
       class="btn-close"
       data-bs-dismiss="modal"
       [attr.aria-label]="'form.button_close' | translate"
-      (click)="dismissModal()"
       [disabled]="saveInProgress()"
+      (click)="dismissModal()"
     ></button>
   </div>
   <div class="modal-body pb-0" style="min-height: 110px">
@@ -18,9 +18,9 @@
     }
 
     <iframe
+      #custompluginui
       width="100%"
       height="1px;"
-      #custompluginui
       style="border: 0"
       sandbox="allow-same-origin allow-scripts allow-popups allow-popups-to-escape-sandbox allow-downloads allow-forms"
       [attr.title]="'plugins.button_settings' | translate"
@@ -47,7 +47,7 @@
           {{ formCancelButtonLabel() }}
         </button>
         } @if (formSubmitButtonLabel()) {
-        <button class="btn btn-primary" (click)="formActionSubject.next('submit')" [disabled]="!formValid()">
+        <button class="btn btn-primary" [disabled]="!formValid()" (click)="formActionSubject.next('submit')">
           {{ formSubmitButtonLabel() }}
         </button>
         }
@@ -65,8 +65,8 @@
         type="button"
         class="btn btn-elegant"
         data-bs-dismiss="modal"
-        (click)="dismissModal()"
         [disabled]="saveInProgress()"
+        (click)="dismissModal()"
       >
         {{ 'form.button_close' | translate }}
       </button>
@@ -76,6 +76,9 @@
       @if (!saveButtonDisabled()) {
       <i
         class="fa fa-xl me-2"
+        container="modal"
+        placement="top"
+        triggers="hover"
         [class]="{
           'fa-circle-check': formIsValid(),
           'green-text': formIsValid(),
@@ -84,18 +87,15 @@
           'orange-text': !strictValidation() && !formIsValid()
         }"
         [ngbTooltip]="(formIsValid() ? 'form.label_valid' : (strictValidation() ? 'form.label_invalid_strict' : 'form.label_invalid')) | translate"
-        container="modal"
-        placement="top"
         [openDelay]="150"
-        triggers="hover"
       ></i>
       }
       <button
         type="button"
         class="btn btn-primary"
         data-bs-dismiss="modal"
-        (click)="savePluginConfig(true)"
         [disabled]="saveInProgress() || saveButtonDisabled()"
+        (click)="savePluginConfig(true)"
       >
         @if (!saveInProgress()) { {{ 'form.button_save' | translate }} } @if (saveInProgress()) {
         <i class="fas fa-circle-notch fa-spin"></i>

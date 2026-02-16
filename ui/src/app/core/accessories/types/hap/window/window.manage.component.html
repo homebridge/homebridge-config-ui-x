@@ -21,12 +21,12 @@
     </div>
     <h6 class="mt-4">{{ 'accessories.control.target' | translate }}: {{ targetPosition.value }}%</h6>
     <nouislider
+      class="mb-1"
       [min]="targetPosition.min"
       [max]="targetPosition.max"
       [step]="targetPosition.step"
       [(ngModel)]="targetPosition.value"
       (ngModelChange)="onTargetPositionChange()"
-      class="mb-1"
     />
     <div class="d-flex justify-content-between align-items-center mt-0 mb-1">
       <span class="grey-text small">{{ 'accessories.control.closed' | translate }}</span>
@@ -36,12 +36,12 @@
       {{ 'accessories.control.current' | translate }}: {{ this.service.getCharacteristic('CurrentPosition').value }}%
     </h6>
     <nouislider
+      class="mb-1"
       [min]="0"
       [max]="100"
       [step]="1"
       [disabled]="true"
       [(ngModel)]="this.service.getCharacteristic('CurrentPosition').value"
-      class="mb-1"
     />
     <div class="d-flex justify-content-between align-items-center mt-0 mb-1">
       <span class="grey-text small">{{ 'accessories.control.closed' | translate }}</span>

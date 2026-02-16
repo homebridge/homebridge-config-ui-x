@@ -39,16 +39,16 @@
             type="radio"
             name="nodeUpdatePolicy"
             value="all"
-            [formControl]="nodeUpdatePolicyControl"
             class="visually-hidden"
+            [formControl]="nodeUpdatePolicyControl"
             [attr.aria-label]="'plugins.manage.notifications_all' | translate"
           />
           <div class="me-3">
             <i
               class="fas fa-bell fa-2x"
+              aria-hidden="true"
               [class.primary-text]="nodeUpdatePolicyControl.value === 'all'"
               [class.grey-text]="nodeUpdatePolicyControl.value !== 'all'"
-              aria-hidden="true"
             ></i>
           </div>
           <div class="flex-grow-1">
@@ -68,16 +68,16 @@
             type="radio"
             name="nodeUpdatePolicy"
             value="major"
-            [formControl]="nodeUpdatePolicyControl"
             class="visually-hidden"
+            [formControl]="nodeUpdatePolicyControl"
             [attr.aria-label]="'plugins.manage.notifications_major' | translate"
           />
           <div class="me-3">
             <i
               class="far fa-bell fa-fw fa-2x"
+              aria-hidden="true"
               [class.primary-text]="nodeUpdatePolicyControl.value === 'major'"
               [class.grey-text]="nodeUpdatePolicyControl.value !== 'major'"
-              aria-hidden="true"
             ></i>
           </div>
           <div class="flex-grow-1">
@@ -97,16 +97,16 @@
             type="radio"
             name="nodeUpdatePolicy"
             value="none"
-            [formControl]="nodeUpdatePolicyControl"
             class="visually-hidden"
+            [formControl]="nodeUpdatePolicyControl"
             [attr.aria-label]="'plugins.manage.notifications_none' | translate"
           />
           <div class="me-3">
             <i
               class="far fa-bell-slash fa-2x"
+              aria-hidden="true"
               [class.primary-text]="nodeUpdatePolicyControl.value === 'none'"
               [class.grey-text]="nodeUpdatePolicyControl.value !== 'none'"
-              aria-hidden="true"
             ></i>
           </div>
           <div class="flex-grow-1">
@@ -149,11 +149,11 @@
       <li class="list-group-item d-flex justify-content-between align-items-center">
         <div class="me-3">
           <img
-            [src]="plugin.icon"
-            (error)="handleIconError(plugin)"
             alt=""
             aria-hidden="true"
             class="plugin-icon-small"
+            [src]="plugin.icon"
+            (error)="handleIconError(plugin)"
           />
         </div>
         <div class="text-start flex-grow-1">
@@ -182,8 +182,8 @@
         type="button"
         class="btn btn-elegant"
         data-bs-dismiss="modal"
-        (click)="dismissModal()"
         [attr.aria-label]="'form.button_close' | translate"
+        (click)="dismissModal()"
       >
         {{ 'form.button_close' | translate }}
       </button>

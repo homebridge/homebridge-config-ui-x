@@ -1,6 +1,6 @@
-<div class="accessory-box" [class.accessory-on]="isOn()" (longClick)="onClick()" (shortClick)="onClick()" tabindex="0">
+<div class="accessory-box" tabindex="0" [class.accessory-on]="isOn()" (longClick)="onClick()" (shortClick)="onClick()">
   <div class="d-flex flex-column h-100">
-    <div [attr.aria-label]="'accessories.core.thermostat' | translate" class="accessory-svg">
+    <div class="accessory-svg" [attr.aria-label]="'accessories.core.thermostat' | translate">
       <svg width="32px" height="32px" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <linearGradient id="coolingGradient" x1="0" y1="1" x2="0" y2="0">

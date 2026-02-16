@@ -6,8 +6,8 @@
       class="btn-close"
       data-bs-dismiss="modal"
       [attr.aria-label]="'form.button_close' | translate"
-      (click)="dismissModal()"
       [disabled]="clicked()"
+      (click)="dismissModal()"
     ></button>
   </div>
   <div class="modal-body">
@@ -42,10 +42,10 @@
         </span>
         <button
           class="btn btn-danger m-0 ms-3"
-          (click)="toggleList(item._id, false)"
           [disabled]="clicked()"
           [class]="{ 'btn-danger': !isInList(item._id), 'btn-elegant': isInList(item._id) }"
           [attr.aria-label]="'form.button_unpair' | translate"
+          (click)="toggleList(item._id, false)"
         >
           <i
             class="fas"
@@ -83,10 +83,10 @@
         </span>
         <button
           class="btn btn-danger m-0 ms-3"
-          (click)="toggleList(item._id, true)"
           [disabled]="clicked()"
           [class]="{ 'btn-danger': !isInList(item._id), 'btn-elegant': isInList(item._id) }"
           [attr.aria-label]="'form.button_unpair' | translate"
+          (click)="toggleList(item._id, true)"
         >
           <i
             class="fas"
@@ -124,10 +124,10 @@
         </span>
         <button
           class="btn btn-danger m-0 ms-3"
-          (click)="toggleList(item._id, false)"
           [disabled]="clicked()"
           [class]="{ 'btn-danger': !isInList(item._id), 'btn-elegant': isInList(item._id) }"
           [attr.aria-label]="'form.button_unpair' | translate"
+          (click)="toggleList(item._id, false)"
         >
           <i
             class="fas"
@@ -151,8 +151,8 @@
         type="button"
         class="btn btn-elegant"
         data-bs-dismiss="modal"
-        (click)="dismissModal()"
         [disabled]="clicked()"
+        (click)="dismissModal()"
       >
         {{ 'form.button_close' | translate }}
       </button>
