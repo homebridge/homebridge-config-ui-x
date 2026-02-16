@@ -1,4 +1,4 @@
-<div class="accessory-box" tabindex="0" [class.accessory-on]="isOn()" (click)="onClick()">
+<div class="accessory-box" tabindex="0" [class.accessory-on]="isOn()" (click)="onClick()" (keydown.enter)="onClick()">
   <div class="d-flex flex-column h-100">
     <div class="accessory-svg" [attr.aria-label]="'accessories.core.outlet' | translate">
       <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">

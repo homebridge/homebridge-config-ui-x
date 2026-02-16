@@ -17,6 +17,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 
 - lint: apply `angular-template/attributes-order`
 - lint: apply `format/prettier` to angular html files
+- lint: apply `angular-template/click-events-have-key-events`
 
 ### Homebridge Dependencies
 

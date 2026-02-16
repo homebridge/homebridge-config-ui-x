@@ -124,7 +124,7 @@ export default antfu(
       'angular-template/attributes-order': 'error',
       'angular-template/banana-in-box': 'error',
       'angular-template/button-has-type': 'error',
-      // 'angular-template/click-events-have-key-events': 'error',
+      'angular-template/click-events-have-key-events': 'error',
       // 'angular-template/conditional-complexity': 'error',
       // 'angular-template/cyclomatic-complexity': 'error',
       // 'angular-template/elements-content': 'error',

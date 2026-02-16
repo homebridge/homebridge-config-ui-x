@@ -7,8 +7,11 @@
       <div class="hb-status-item d-flex flex-column mb-1" style="min-width: max(25%, 200px)">
         <div
           class="d-flex ps-3 py-1 align-items-center cursor-pointer"
+          role="button"
+          tabindex="0"
           style="cursor: pointer"
           (click)="toggleDockerExpand()"
+          (keydown.enter)="toggleDockerExpand()"
         >
           <div class="mb-0 d-flex align-items-center">
             @if (!dockerStatusDone()) {

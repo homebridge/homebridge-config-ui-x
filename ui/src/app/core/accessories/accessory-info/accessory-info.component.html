@@ -127,9 +127,12 @@
               ) {
                 <span
                   class="hover-pointer"
+                  role="button"
+                  tabindex="0"
                   style="white-space: nowrap"
                   [attr.aria-expanded]="isDetailsVisible[characteristic.uuid]"
                   (click)="toggleDetailsVisibility(characteristic)"
+                  (keydown.enter)="toggleDetailsVisibility(characteristic)"
                   >{{ characteristic.description }}</span
                 >
               } @else {
@@ -244,8 +247,11 @@
               ) {
                 <span
                   class="hover-pointer"
+                  role="button"
+                  tabindex="0"
                   [attr.aria-expanded]="isDetailsVisible[characteristic.uuid]"
                   (click)="toggleDetailsVisibility(characteristic)"
+                  (keydown.enter)="toggleDetailsVisibility(characteristic)"
                   >{{ characteristic.description }}</span
                 >
               } @else {
