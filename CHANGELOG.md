@@ -16,6 +16,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 ### Other Changes
 
 - lint: apply `angular-template/attributes-order`
+- lint: apply `format/prettier` to angular html files
 
 ### Homebridge Dependencies
 

@@ -11,205 +11,220 @@
   </div>
   <div class="modal-body d-flex flex-row flex-grow-1 w-100">
     @if (loading()) {
-    <div class="w-100 text-center primary-text my-5 w-100">
-      <i class="fa fa-circle-notch fa-spin" style="font-size: 75px"></i>
-    </div>
+      <div class="w-100 text-center primary-text my-5 w-100">
+        <i class="fa fa-circle-notch fa-spin" style="font-size: 75px"></i>
+      </div>
     } @else {
-    <div class="w-100 text-center">
-      @if (plugin?.installedVersion) {
-      <i class="fas fa-code-compare primary-text mb-3" style="font-size: 75px"></i>
-      <h6 class="mb-3">{{ 'plugins.manage.select_version' | translate }}</h6>
-      <p class="mb-3">
-        {{ 'plugins.status_installed' | translate }}:
-        <span class="font-monospace">v{{ plugin?.installedVersion }}</span>
-      </p>
-      } @else {
-      <i class="far fa-arrow-alt-circle-down primary-text mb-3" style="font-size: 75px"></i>
-      <h6 class="mb-3">{{ 'plugins.manage.select_version' | translate }}</h6>
-      }
-      <ul class="list-group list-group-box mb-0">
-        @for (version of versionsWithTags(); track version) {
-        <li class="list-group-item d-flex justify-content-between align-items-center">
-          <span class="text-start">
-            {{ version.tag }}
-            <br />
-            <small class="grey-text font-monospace">v{{ version.version }}</small>
-          </span>
-          <button
-            type="button"
-            class="btn btn-primary m-0 ms-3 py-1"
-            [attr.aria-label]="(plugin?.installedVersion === version.version ? ('plugins.manage.reinstall' | translate) : ('plugins.manage.install' | translate)) + ' v' + version.version"
-            (click)="doInstall(version.version)"
-          >
-            @if (plugin?.installedVersion === version.version) {
-            <i class="fas fa-rotate-right"></i>
-            } @else {
-            <i class="fas fa-arrow-alt-circle-down"></i>
-            }
-          </button>
-        </li>
+      <div class="w-100 text-center">
+        @if (plugin?.installedVersion) {
+          <i class="fas fa-code-compare primary-text mb-3" style="font-size: 75px"></i>
+          <h6 class="mb-3">{{ 'plugins.manage.select_version' | translate }}</h6>
+          <p class="mb-3">
+            {{ 'plugins.status_installed' | translate }}:
+            <span class="font-monospace">v{{ plugin?.installedVersion }}</span>
+          </p>
+        } @else {
+          <i class="far fa-arrow-alt-circle-down primary-text mb-3" style="font-size: 75px"></i>
+          <h6 class="mb-3">{{ 'plugins.manage.select_version' | translate }}</h6>
         }
-        <li class="list-group-item d-flex justify-content-between align-items-center">
-          <div class="text-start" style="min-width: 50%">
-            {{ 'plugins.manage.all_versions' | translate }}
-            <br />
-            <select
-              class="custom-select w-100 font-monospace"
-              style="font-size: 0.875rem"
-              [attr.aria-label]="'plugins.manage.all_versions' | translate"
-              [(ngModel)]="versionSelect"
-            >
-              @for (version of versions(); track version) {
-              <option [value]="version.version" [selected]="versionSelect === version.version">
-                v{{ version.version }} @if (version.version === plugin?.installedVersion) { ✓ }
-              </option>
-              }
-            </select>
-          </div>
-          @if (versionSelect) {
-          <button
-            type="button"
-            class="btn btn-primary m-0 ms-3 py-1"
-            [attr.aria-label]="(plugin?.installedVersion === versionSelect ? ('plugins.manage.reinstall' | translate) : ('plugins.manage.install' | translate))  + ' v' + versionSelect"
-            (click)="doInstall(versionSelect)"
-          >
-            @if (plugin?.installedVersion === versionSelect) {
-            <i class="fas fa-rotate-right"></i>
-            } @else {
-            <i class="fas fa-arrow-alt-circle-down"></i>
-            }
-          </button>
+        <ul class="list-group list-group-box mb-0">
+          @for (version of versionsWithTags(); track version) {
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+              <span class="text-start">
+                {{ version.tag }}
+                <br />
+                <small class="grey-text font-monospace">v{{ version.version }}</small>
+              </span>
+              <button
+                type="button"
+                class="btn btn-primary m-0 ms-3 py-1"
+                [attr.aria-label]="
+                  (plugin?.installedVersion === version.version
+                    ? ('plugins.manage.reinstall' | translate)
+                    : ('plugins.manage.install' | translate)) +
+                  ' v' +
+                  version.version
+                "
+                (click)="doInstall(version.version)"
+              >
+                @if (plugin?.installedVersion === version.version) {
+                  <i class="fas fa-rotate-right"></i>
+                } @else {
+                  <i class="fas fa-arrow-alt-circle-down"></i>
+                }
+              </button>
+            </li>
           }
-        </li>
-      </ul>
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <div class="text-start" style="min-width: 50%">
+              {{ 'plugins.manage.all_versions' | translate }}
+              <br />
+              <select
+                class="custom-select w-100 font-monospace"
+                style="font-size: 0.875rem"
+                [attr.aria-label]="'plugins.manage.all_versions' | translate"
+                [(ngModel)]="versionSelect"
+              >
+                @for (version of versions(); track version) {
+                  <option [value]="version.version" [selected]="versionSelect === version.version">
+                    v{{ version.version }}
+                    @if (version.version === plugin?.installedVersion) {
+                      ✓
+                    }
+                  </option>
+                }
+              </select>
+            </div>
+            @if (versionSelect) {
+              <button
+                type="button"
+                class="btn btn-primary m-0 ms-3 py-1"
+                [attr.aria-label]="
+                  (plugin?.installedVersion === versionSelect
+                    ? ('plugins.manage.reinstall' | translate)
+                    : ('plugins.manage.install' | translate)) +
+                  ' v' +
+                  versionSelect
+                "
+                (click)="doInstall(versionSelect)"
+              >
+                @if (plugin?.installedVersion === versionSelect) {
+                  <i class="fas fa-rotate-right"></i>
+                } @else {
+                  <i class="fas fa-arrow-alt-circle-down"></i>
+                }
+              </button>
+            }
+          </li>
+        </ul>
 
-      @if (plugin?.installedVersion) {
-      <ul
-        class="list-group list-group-box mt-3 mb-0"
-        role="radiogroup"
-        [attr.aria-label]="'plugins.manage.notifications' | translate"
-      >
-        <li class="list-group-item text-start">
-          <label class="d-flex align-items-center w-100 mb-0" style="cursor: pointer">
-            <input
-              type="radio"
-              name="updatePreference"
-              value="all"
-              class="visually-hidden"
-              [formControl]="updatePreferenceControl"
-              [attr.aria-label]="'plugins.manage.notifications_all' | translate"
-            />
-            <div class="me-3">
-              <i
-                class="fas fa-bell fa-2x"
-                aria-hidden="true"
-                [class.primary-text]="updatePreferenceControl.value === 'all'"
-                [class.grey-text]="updatePreferenceControl.value !== 'all'"
-              ></i>
-            </div>
-            <div class="flex-grow-1">
-              <div aria-hidden="true">{{ 'plugins.manage.notifications_all' | translate }}</div>
-              <small class="grey-text">{{ 'plugins.manage.notifications_all_desc' | translate }}</small>
-            </div>
-            @if (updatePreferenceControl.value === 'all') {
-            <div class="ms-3">
-              <i class="fas fa-xl fa-check-circle primary-text" aria-hidden="true"></i>
-            </div>
+        @if (plugin?.installedVersion) {
+          <ul
+            class="list-group list-group-box mt-3 mb-0"
+            role="radiogroup"
+            [attr.aria-label]="'plugins.manage.notifications' | translate"
+          >
+            <li class="list-group-item text-start">
+              <label class="d-flex align-items-center w-100 mb-0" style="cursor: pointer">
+                <input
+                  type="radio"
+                  name="updatePreference"
+                  value="all"
+                  class="visually-hidden"
+                  [formControl]="updatePreferenceControl"
+                  [attr.aria-label]="'plugins.manage.notifications_all' | translate"
+                />
+                <div class="me-3">
+                  <i
+                    class="fas fa-bell fa-2x"
+                    aria-hidden="true"
+                    [class.primary-text]="updatePreferenceControl.value === 'all'"
+                    [class.grey-text]="updatePreferenceControl.value !== 'all'"
+                  ></i>
+                </div>
+                <div class="flex-grow-1">
+                  <div aria-hidden="true">{{ 'plugins.manage.notifications_all' | translate }}</div>
+                  <small class="grey-text">{{ 'plugins.manage.notifications_all_desc' | translate }}</small>
+                </div>
+                @if (updatePreferenceControl.value === 'all') {
+                  <div class="ms-3">
+                    <i class="fas fa-xl fa-check-circle primary-text" aria-hidden="true"></i>
+                  </div>
+                }
+              </label>
+            </li>
+            <li class="list-group-item text-start">
+              <label class="d-flex align-items-center w-100 mb-0" style="cursor: pointer">
+                <input
+                  type="radio"
+                  name="updatePreference"
+                  value="beta"
+                  class="visually-hidden"
+                  [formControl]="updatePreferenceControl"
+                  [attr.aria-label]="'plugins.manage.notifications_beta' | translate"
+                />
+                <div class="me-3">
+                  <i
+                    class="fas fa-vial fa-2x"
+                    aria-hidden="true"
+                    [class.primary-text]="updatePreferenceControl.value === 'beta'"
+                    [class.grey-text]="updatePreferenceControl.value !== 'beta'"
+                  ></i>
+                </div>
+                <div class="flex-grow-1">
+                  <div aria-hidden="true">{{ 'plugins.manage.notifications_beta' | translate }}</div>
+                  <small class="grey-text">{{ 'plugins.manage.notifications_beta_desc' | translate }}</small>
+                </div>
+                @if (updatePreferenceControl.value === 'beta') {
+                  <div class="ms-3">
+                    <i class="fas fa-xl fa-check-circle primary-text" aria-hidden="true"></i>
+                  </div>
+                }
+              </label>
+            </li>
+            @if (plugin.name === 'homebridge' || plugin.name === 'homebridge-config-ui-x') {
+              <li class="list-group-item text-start">
+                <label class="d-flex align-items-center w-100 mb-0" style="cursor: pointer">
+                  <input
+                    type="radio"
+                    name="updatePreference"
+                    value="major"
+                    class="visually-hidden"
+                    [formControl]="updatePreferenceControl"
+                    [attr.aria-label]="'plugins.manage.notifications_major' | translate"
+                  />
+                  <div class="me-3">
+                    <i
+                      class="far fa-bell fa-fw fa-2x"
+                      aria-hidden="true"
+                      [class.primary-text]="updatePreferenceControl.value === 'major'"
+                      [class.grey-text]="updatePreferenceControl.value !== 'major'"
+                    ></i>
+                  </div>
+                  <div class="flex-grow-1">
+                    <div aria-hidden="true">{{ 'plugins.manage.notifications_major' | translate }}</div>
+                    <small class="grey-text">{{ 'plugins.manage.notifications_major_desc' | translate }}</small>
+                  </div>
+                  @if (updatePreferenceControl.value === 'major') {
+                    <div class="ms-3">
+                      <i class="fas fa-xl fa-check-circle primary-text" aria-hidden="true"></i>
+                    </div>
+                  }
+                </label>
+              </li>
             }
-          </label>
-        </li>
-        <li class="list-group-item text-start">
-          <label class="d-flex align-items-center w-100 mb-0" style="cursor: pointer">
-            <input
-              type="radio"
-              name="updatePreference"
-              value="beta"
-              class="visually-hidden"
-              [formControl]="updatePreferenceControl"
-              [attr.aria-label]="'plugins.manage.notifications_beta' | translate"
-            />
-            <div class="me-3">
-              <i
-                class="fas fa-vial fa-2x"
-                aria-hidden="true"
-                [class.primary-text]="updatePreferenceControl.value === 'beta'"
-                [class.grey-text]="updatePreferenceControl.value !== 'beta'"
-              ></i>
-            </div>
-            <div class="flex-grow-1">
-              <div aria-hidden="true">{{ 'plugins.manage.notifications_beta' | translate }}</div>
-              <small class="grey-text">{{ 'plugins.manage.notifications_beta_desc' | translate }}</small>
-            </div>
-            @if (updatePreferenceControl.value === 'beta') {
-            <div class="ms-3">
-              <i class="fas fa-xl fa-check-circle primary-text" aria-hidden="true"></i>
-            </div>
-            }
-          </label>
-        </li>
-        @if (plugin.name === 'homebridge' || plugin.name === 'homebridge-config-ui-x') {
-        <li class="list-group-item text-start">
-          <label class="d-flex align-items-center w-100 mb-0" style="cursor: pointer">
-            <input
-              type="radio"
-              name="updatePreference"
-              value="major"
-              class="visually-hidden"
-              [formControl]="updatePreferenceControl"
-              [attr.aria-label]="'plugins.manage.notifications_major' | translate"
-            />
-            <div class="me-3">
-              <i
-                class="far fa-bell fa-fw fa-2x"
-                aria-hidden="true"
-                [class.primary-text]="updatePreferenceControl.value === 'major'"
-                [class.grey-text]="updatePreferenceControl.value !== 'major'"
-              ></i>
-            </div>
-            <div class="flex-grow-1">
-              <div aria-hidden="true">{{ 'plugins.manage.notifications_major' | translate }}</div>
-              <small class="grey-text">{{ 'plugins.manage.notifications_major_desc' | translate }}</small>
-            </div>
-            @if (updatePreferenceControl.value === 'major') {
-            <div class="ms-3">
-              <i class="fas fa-xl fa-check-circle primary-text" aria-hidden="true"></i>
-            </div>
-            }
-          </label>
-        </li>
+            <li class="list-group-item text-start">
+              <label class="d-flex align-items-center w-100 mb-0" style="cursor: pointer">
+                <input
+                  type="radio"
+                  name="updatePreference"
+                  value="none"
+                  class="visually-hidden"
+                  [formControl]="updatePreferenceControl"
+                  [attr.aria-label]="'plugins.manage.notifications_none' | translate"
+                />
+                <div class="me-3">
+                  <i
+                    class="fas fa-bell-slash fa-2x"
+                    aria-hidden="true"
+                    [class.primary-text]="updatePreferenceControl.value === 'none'"
+                    [class.grey-text]="updatePreferenceControl.value !== 'none'"
+                  ></i>
+                </div>
+                <div class="flex-grow-1">
+                  <div aria-hidden="true">{{ 'plugins.manage.notifications_none' | translate }}</div>
+                  <small class="grey-text">{{ 'plugins.manage.notifications_none_desc' | translate }}</small>
+                </div>
+                @if (updatePreferenceControl.value === 'none') {
+                  <div class="ms-3">
+                    <i class="fas fa-xl fa-check-circle primary-text" aria-hidden="true"></i>
+                  </div>
+                }
+              </label>
+            </li>
+          </ul>
         }
-        <li class="list-group-item text-start">
-          <label class="d-flex align-items-center w-100 mb-0" style="cursor: pointer">
-            <input
-              type="radio"
-              name="updatePreference"
-              value="none"
-              class="visually-hidden"
-              [formControl]="updatePreferenceControl"
-              [attr.aria-label]="'plugins.manage.notifications_none' | translate"
-            />
-            <div class="me-3">
-              <i
-                class="fas fa-bell-slash fa-2x"
-                aria-hidden="true"
-                [class.primary-text]="updatePreferenceControl.value === 'none'"
-                [class.grey-text]="updatePreferenceControl.value !== 'none'"
-              ></i>
-            </div>
-            <div class="flex-grow-1">
-              <div aria-hidden="true">{{ 'plugins.manage.notifications_none' | translate }}</div>
-              <small class="grey-text">{{ 'plugins.manage.notifications_none_desc' | translate }}</small>
-            </div>
-            @if (updatePreferenceControl.value === 'none') {
-            <div class="ms-3">
-              <i class="fas fa-xl fa-check-circle primary-text" aria-hidden="true"></i>
-            </div>
-            }
-          </label>
-        </li>
-      </ul>
-      }
-    </div>
+      </div>
     }
   </div>
   <div class="modal-footer justify-content-between">

@@ -27,11 +27,13 @@
               container="body"
               triggers="hover"
               placement="left"
-              [ngbTooltip]="(mainPairing()._isPaired ? 'status.widget.qr_paired' : 'status.widget.qr_unpaired') | translate"
+              [ngbTooltip]="
+                (mainPairing()._isPaired ? 'status.widget.qr_paired' : 'status.widget.qr_unpaired') | translate
+              "
               [openDelay]="150"
               [class]="{
                 'green-text': mainPairing()._isPaired,
-                'grey-text': !mainPairing()._isPaired
+                'grey-text': !mainPairing()._isPaired,
               }"
             ></i>
             &middot; <span class="font-monospace">{{ mainPairing()._username }}</span> &middot; Homebridge
@@ -51,39 +53,40 @@
         </div>
       </li>
       @for (item of pairings(); track item) {
-      <li class="list-group-item d-flex justify-content-between align-items-center flex-row pb-2">
-        <div class="text-start">
-          {{ item.name }}
-          <br />
-          <small class="grey-text">
-            <i
-              class="fas fa-link"
-              container="body"
-              triggers="hover"
-              placement="left"
-              [ngbTooltip]="(item._isPaired ? 'status.widget.qr_paired' : 'status.widget.qr_unpaired') | translate"
-              [openDelay]="150"
-              [class]="{
-                'green-text': item._isPaired,
-                'grey-text': !item._isPaired
-              }"
-            ></i>
-            &middot; <span class="font-monospace">{{ item._username }}</span> &middot; {{ item._category | titlecase }}
-          </small>
-        </div>
-        <div class="text-end grey-text d-flex align-items-center">
-          <input
-            type="checkbox"
-            class="rendux-input"
-            [id]="'hidePluginUpdates_' + item._username"
-            [checked]="!isInList(item._username)"
-            [disabled]="clicked()"
-            [attr.aria-label]="('form.button_allow' | translate) + ' ' + item.name"
-            (click)="toggleList(item._username)"
-          />
-          <label class="rendux-label ms-3" [for]="'hidePluginUpdates_' + item._username"></label>
-        </div>
-      </li>
+        <li class="list-group-item d-flex justify-content-between align-items-center flex-row pb-2">
+          <div class="text-start">
+            {{ item.name }}
+            <br />
+            <small class="grey-text">
+              <i
+                class="fas fa-link"
+                container="body"
+                triggers="hover"
+                placement="left"
+                [ngbTooltip]="(item._isPaired ? 'status.widget.qr_paired' : 'status.widget.qr_unpaired') | translate"
+                [openDelay]="150"
+                [class]="{
+                  'green-text': item._isPaired,
+                  'grey-text': !item._isPaired,
+                }"
+              ></i>
+              &middot; <span class="font-monospace">{{ item._username }}</span> &middot;
+              {{ item._category | titlecase }}
+            </small>
+          </div>
+          <div class="text-end grey-text d-flex align-items-center">
+            <input
+              type="checkbox"
+              class="rendux-input"
+              [id]="'hidePluginUpdates_' + item._username"
+              [checked]="!isInList(item._username)"
+              [disabled]="clicked()"
+              [attr.aria-label]="('form.button_allow' | translate) + ' ' + item.name"
+              (click)="toggleList(item._username)"
+            />
+            <label class="rendux-label ms-3" [for]="'hidePluginUpdates_' + item._username"></label>
+          </div>
+        </li>
       }
     </ul>
   </div>
@@ -108,8 +111,11 @@
         [disabled]="!blacklistHasUpdated || clicked()"
         (click)="updateBlacklist()"
       >
-        @if (!clicked()) { {{ 'form.button_save' | translate }} } @if (clicked()) {
-        <i class="fas fa-circle-notch fa-spin"></i>
+        @if (!clicked()) {
+          {{ 'form.button_save' | translate }}
+        }
+        @if (clicked()) {
+          <i class="fas fa-circle-notch fa-spin"></i>
         }
       </button>
     </div>

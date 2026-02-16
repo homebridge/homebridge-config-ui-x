@@ -32,14 +32,14 @@
     </div>
 
     @if (targetSpeed) {
-    <h6 class="mt-4">{{ 'accessories.control.rotation_speed' | translate }}: {{ targetSpeed.value }}%</h6>
-    <nouislider
-      [min]="targetSpeed.min"
-      [max]="targetSpeed.max"
-      [step]="targetSpeed.step"
-      [(ngModel)]="targetSpeed.value"
-      (ngModelChange)="onTargetSpeedChange()"
-    />
+      <h6 class="mt-4">{{ 'accessories.control.rotation_speed' | translate }}: {{ targetSpeed.value }}%</h6>
+      <nouislider
+        [min]="targetSpeed.min"
+        [max]="targetSpeed.max"
+        [step]="targetSpeed.step"
+        [(ngModel)]="targetSpeed.value"
+        (ngModelChange)="onTargetSpeedChange()"
+      />
     }
   </div>
   <div class="modal-footer"></div>

@@ -49,19 +49,20 @@
         </li>
       </ul>
       @if (deleteMode()) {
-      <div class="alert alert-warning mt-3 mb-0">
-        <div class="text-center">
-          {{ 'common.phrases.are_you_sure' | translate }}
-          <br />
-          <ul class="d-inline-block text-start mb-0">
-            @if (targetRoomName()) {
-            <li>{{ 'accessories.delete_room_move_accessories' | translate: { roomName: targetRoomName() } }}</li>
-            } @if (isDefault && newDefaultRoomName()) {
-            <li>{{ 'accessories.delete_room_new_default' | translate: { roomName: newDefaultRoomName() } }}</li>
-            }
-          </ul>
+        <div class="alert alert-warning mt-3 mb-0">
+          <div class="text-center">
+            {{ 'common.phrases.are_you_sure' | translate }}
+            <br />
+            <ul class="d-inline-block text-start mb-0">
+              @if (targetRoomName()) {
+                <li>{{ 'accessories.delete_room_move_accessories' | translate: { roomName: targetRoomName() } }}</li>
+              }
+              @if (isDefault && newDefaultRoomName()) {
+                <li>{{ 'accessories.delete_room_new_default' | translate: { roomName: newDefaultRoomName() } }}</li>
+              }
+            </ul>
+          </div>
         </div>
-      </div>
       }
     </div>
     <div class="modal-footer justify-content-between">

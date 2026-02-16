@@ -93,7 +93,10 @@
     <div class="accessory-label mt-auto">{{ service().customName || service().serviceName }}</div>
     <div
       class="accessory-label grey-text"
-      [innerText]="((service().values?.On || service().values?.Active) ? 'accessories.control.on' : 'accessories.control.off') | translate"
+      [innerText]="
+        (service().values?.On || service().values?.Active ? 'accessories.control.on' : 'accessories.control.off')
+          | translate
+      "
     ></div>
   </div>
 </div>

@@ -44,8 +44,11 @@
         [disabled]="clicked()"
         (click)="onResetHomebridgeAccessoryClick()"
       >
-        @if (!clicked()) { {{ 'form.button_reset' | translate }} } @if (clicked()) {
-        <i class="fas fa-circle-notch fa-spin"></i>
+        @if (!clicked()) {
+          {{ 'form.button_reset' | translate }}
+        }
+        @if (clicked()) {
+          <i class="fas fa-circle-notch fa-spin"></i>
         }
       </button>
     </div>

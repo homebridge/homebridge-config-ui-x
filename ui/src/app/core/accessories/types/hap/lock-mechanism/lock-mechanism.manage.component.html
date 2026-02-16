@@ -32,17 +32,21 @@
     </div>
 
     @if (serviceManagement) {
-    <h6 class="mt-4">
-      {{ 'accessories.control.lock_auto' | translate }}: {{ targetLockManagementAutoSecurityTimeout.value === 0 ?
-      '&infin;' : (targetLockManagementAutoSecurityTimeout.value | duration) }}
-    </h6>
-    <nouislider
-      [min]="targetLockManagementAutoSecurityTimeout.min"
-      [max]="targetLockManagementAutoSecurityTimeout.max"
-      [step]="10"
-      [(ngModel)]="targetLockManagementAutoSecurityTimeout.value"
-      (ngModelChange)="onLockManagementAutoSecurityTimeoutStateChange()"
-    />
+      <h6 class="mt-4">
+        {{ 'accessories.control.lock_auto' | translate }}:
+        {{
+          targetLockManagementAutoSecurityTimeout.value === 0
+            ? '&infin;'
+            : (targetLockManagementAutoSecurityTimeout.value | duration)
+        }}
+      </h6>
+      <nouislider
+        [min]="targetLockManagementAutoSecurityTimeout.min"
+        [max]="targetLockManagementAutoSecurityTimeout.max"
+        [step]="10"
+        [(ngModel)]="targetLockManagementAutoSecurityTimeout.value"
+        (ngModelChange)="onLockManagementAutoSecurityTimeoutStateChange()"
+      />
     }
   </div>
   <div class="modal-footer"></div>

@@ -18,13 +18,19 @@
     <i
       class="fas fa-shield-alt mb-3"
       style="font-size: 48px"
-      [class]="{ 'orange-text': !plugin.verifiedPlugin && !plugin.verifiedPlusPlugin, 'grey-text': plugin.verifiedPlugin || plugin.verifiedPlusPlugin }"
+      [class]="{
+        'orange-text': !plugin.verifiedPlugin && !plugin.verifiedPlusPlugin,
+        'grey-text': plugin.verifiedPlugin || plugin.verifiedPlusPlugin,
+      }"
       [style.opacity]="!plugin.verifiedPlugin && !plugin.verifiedPlusPlugin ? 1 : 0.25"
     ></i>
     <i
       class="fas fa-shield-alt mb-3"
       style="font-size: 48px"
-      [class]="{ 'green-text': !plugin.isHbScoped && (plugin.verifiedPlugin || plugin.verifiedPlusPlugin), 'grey-text': plugin.isHbScoped || (!plugin.verifiedPlugin && !plugin.verifiedPlusPlugin) }"
+      [class]="{
+        'green-text': !plugin.isHbScoped && (plugin.verifiedPlugin || plugin.verifiedPlusPlugin),
+        'grey-text': plugin.isHbScoped || (!plugin.verifiedPlugin && !plugin.verifiedPlusPlugin),
+      }"
       [style.opacity]="!plugin.isHbScoped && (plugin.verifiedPlugin || plugin.verifiedPlusPlugin) ? 1 : 0.25"
     ></i>
     <i
@@ -34,15 +40,17 @@
       [style.opacity]="plugin.isHbScoped ? 1 : 0.25"
     ></i>
     @if (plugin.isHbScoped) {
-    <h6 class="mb-2">{{ 'plugins.manage.scoped_subtitle' | translate }}</h6>
-    <p class="mb-1 grey-text">{{ 'plugins.manage.scoped_message' | translate }}</p>
-    <p class="mb-1 grey-text">{{ 'plugins.manage.verified_message' | translate }}</p>
-    } @if (!plugin.isHbScoped && (plugin.verifiedPlugin || plugin.verifiedPlusPlugin)) {
-    <h6 class="mb-2">{{ 'plugins.manage.verified_subtitle' | translate }}</h6>
-    <p class="mb-1 grey-text">{{ 'plugins.manage.verified_message' | translate }}</p>
-    } @if (!plugin.verifiedPlugin && !plugin.verifiedPlusPlugin) {
-    <h6 class="mb-2">{{ 'plugins.manage.unverified_subtitle' | translate }}</h6>
-    <p class="mb-1 grey-text">{{ 'plugins.manage.unverified_message' | translate }}</p>
+      <h6 class="mb-2">{{ 'plugins.manage.scoped_subtitle' | translate }}</h6>
+      <p class="mb-1 grey-text">{{ 'plugins.manage.scoped_message' | translate }}</p>
+      <p class="mb-1 grey-text">{{ 'plugins.manage.verified_message' | translate }}</p>
+    }
+    @if (!plugin.isHbScoped && (plugin.verifiedPlugin || plugin.verifiedPlusPlugin)) {
+      <h6 class="mb-2">{{ 'plugins.manage.verified_subtitle' | translate }}</h6>
+      <p class="mb-1 grey-text">{{ 'plugins.manage.verified_message' | translate }}</p>
+    }
+    @if (!plugin.verifiedPlugin && !plugin.verifiedPlusPlugin) {
+      <h6 class="mb-2">{{ 'plugins.manage.unverified_subtitle' | translate }}</h6>
+      <p class="mb-1 grey-text">{{ 'plugins.manage.unverified_message' | translate }}</p>
     }
     <p
       class="mb-0 grey-text"
@@ -52,28 +60,28 @@
   <div class="modal-footer justify-content-between">
     <div class="text-start">
       @if (plugin.links.homepage || plugin.links.npm) {
-      <button type="button" class="btn btn-elegant" data-bs-dismiss="modal" (click)="dismissModal()">
-        {{ 'form.button_close' | translate }}
-      </button>
+        <button type="button" class="btn btn-elegant" data-bs-dismiss="modal" (click)="dismissModal()">
+          {{ 'form.button_close' | translate }}
+        </button>
       }
     </div>
     <div class="text-center">
       @if (!plugin.links.homepage && !plugin.links.npm) {
-      <button type="button" class="btn btn-elegant" data-bs-dismiss="modal" (click)="dismissModal()">
-        {{ 'form.button_close' | translate }}
-      </button>
+        <button type="button" class="btn btn-elegant" data-bs-dismiss="modal" (click)="dismissModal()">
+          {{ 'form.button_close' | translate }}
+        </button>
       }
     </div>
     <div class="text-end">
       @if (plugin.links.homepage || plugin.links.npm) {
-      <a
-        class="btn btn-primary text-decoration-none"
-        target="_blank"
-        rel="noopener noreferrer"
-        [href]="plugin.links.homepage || plugin.links.npm"
-      >
-        {{ 'plugins.button_homepage' | translate }} <i class="fas fa-external-link-alt"></i>
-      </a>
+        <a
+          class="btn btn-primary text-decoration-none"
+          target="_blank"
+          rel="noopener noreferrer"
+          [href]="plugin.links.homepage || plugin.links.npm"
+        >
+          {{ 'plugins.button_homepage' | translate }} <i class="fas fa-external-link-alt"></i>
+        </a>
       }
     </div>
   </div>

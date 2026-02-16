@@ -59,6 +59,11 @@ export default antfu(
     },
   },
 )
+  .override('antfu/formatter/html', config => ({
+    ...config,
+    files: config.files,
+    ignores: ['ui/**/*.html'],
+  }))
   .override('antfu/angular/rules/ts', config => ({
     ...config,
     files: ['ui/**/*.ts'],
@@ -117,8 +122,8 @@ export default antfu(
       ...config.rules,
       'angular-template/alt-text': 'error',
       'angular-template/attributes-order': 'error',
-      // 'angular-template/banana-in-box': 'error',
-      // 'angular-template/button-has-type': 'error',
+      'angular-template/banana-in-box': 'error',
+      'angular-template/button-has-type': 'error',
       // 'angular-template/click-events-have-key-events': 'error',
       // 'angular-template/conditional-complexity': 'error',
       // 'angular-template/cyclomatic-complexity': 'error',
@@ -153,5 +158,15 @@ export default antfu(
       // 'angular-template/table-scope': 'error',
       // 'angular-template/use-track-by-function': 'error',
       // 'angular-template/valid-aria': 'error',
+      'format/prettier': ['error', {
+        parser: 'angular',
+        endOfLine: 'auto',
+        printWidth: 120,
+        semi: false,
+        singleQuote: true,
+        tabWidth: 2,
+        trailingComma: 'all',
+        useTabs: false,
+      }],
     },
   }))

@@ -15,16 +15,20 @@
     <div class="d-flex justify-content-around flex-wrap w-100">
       <div class="text-center widget-value-parent-wrap">
         <div class="widget-value mb-0">
-          @if (totalMemory() !== undefined) { {{ totalMemory() | number:'1.0-2' }} GB } @else {
-          <i class="fas fa-circle-notch fa-spin"></i>
+          @if (totalMemory() !== undefined) {
+            {{ totalMemory() | number: '1.0-2' }} GB
+          } @else {
+            <i class="fas fa-circle-notch fa-spin"></i>
           }
         </div>
         <div class="widget-value-label grey-text">{{ 'status.memory.label_total' | translate }}</div>
       </div>
       <div class="text-center widget-value-parent-wrap">
         <div class="widget-value mb-0">
-          @if (freeMemory() !== undefined) { {{ freeMemory() | number:'1.0-2' }} GB } @else {
-          <i class="fas fa-circle-notch fa-spin"></i>
+          @if (freeMemory() !== undefined) {
+            {{ freeMemory() | number: '1.0-2' }} GB
+          } @else {
+            <i class="fas fa-circle-notch fa-spin"></i>
           }
         </div>
         <div class="widget-value-label grey-text">{{ 'status.memory.label_available' | translate }}</div>

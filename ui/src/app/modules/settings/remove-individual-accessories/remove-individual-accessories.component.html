@@ -12,119 +12,133 @@
   </div>
   <div class="modal-body">
     @if (!accessoriesExist()) {
-    <div class="text-center mb-3">
-      <i class="fas fa-circle-check primary-text" style="font-size: 75px"></i>
-    </div>
-    <p class="mb-0 text-center">{{ 'reset.no_accessories' | translate }}</p>
-    } @if (accessoriesExist()) {
-    <div class="text-center mb-3">
-      <i class="fas fa-network-wired primary-text" style="font-size: 75px"></i>
-    </div>
-    <ul class="mb-3">
-      <li>{{ 'reset.accessory_ind.list_1' | translate }}</li>
-      <li>{{ 'reset.accessory_ind.list_2' | translate }}</li>
-      <li>{{ 'reset.accessory_ind.list_3' | translate }}</li>
-    </ul>
-    <ul class="list-group list-group-box mb-0">
-      @if (pairings().length > 1) {
-      <li class="list-group-item text-center grey-text small">{{ 'form.label.changes_kept' | translate }}</li>
-      <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
-        <label for="bridgeSelect" class="mb-2 mb-md-0 w-100 w-md-50"
-          >{{ 'reset.accessory_ind.bridge' | translate }}</label
-        >
-        <div class="text-start text-md-end w-100 w-md-50">
-          <select
-            class="custom-select"
-            id="bridgeSelect"
-            [(ngModel)]="selectedBridge"
-            (change)="onBridgeChange($event)"
-          >
-            @for (bridge of pairings(); track bridge) {
-            <option [value]="bridge._id">{{ bridge.name }} ({{ bridge._username }})</option>
-            }
-          </select>
-        </div>
-      </li>
-      } @if (pairings().length === 1) {
-      <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
-        <label class="mb-2 mb-md-0 w-100 w-md-50">{{ 'reset.accessory_ind.bridge' | translate }}</label>
-        <div class="text-start text-md-end w-100 w-md-50 grey-text font-monospace">
-          {{ getCurrentlySelectedBridge() }}
-        </div>
-      </li>
-      } @for (item of selectedBridgeAccessories(); track item) {
-      <li class="list-group-item d-flex justify-content-between align-items-center">
-        <span class="me-3">
-          <i
-            class="fas fa-lg"
-            [class]="{
-              'fa-matter': item.$protocol === 'matter',
-              'fa-hap': item.$protocol !== 'matter'
-            }"
-          ></i>
-        </span>
-        <span class="flex-grow-1">
-          {{ item.displayName }}
-          <br />
-          <small><span class="font-monospace grey-text">{{ item.UUID || item.uuid }}</span></small>
-        </span>
-        <button
-          class="btn btn-danger m-0 ms-3"
-          [disabled]="clicked()"
-          [class]="{ 'btn-danger': !isInList(item.UUID || item.uuid, item.$cacheFile, item.$protocol), 'btn-elegant': isInList(item.UUID || item.uuid, item.$cacheFile, item.$protocol) }"
-          [attr.aria-label]="'form.button_delete' | translate"
-          (click)="toggleList(item.UUID || item.uuid, item.$cacheFile, item.$protocol, item.$deviceId)"
-        >
-          <i
-            class="fas"
-            [class]="{
-              'fa-trash': !isInList(item.UUID || item.uuid, item.$cacheFile, item.$protocol),
-              'fa-undo': isInList(item.UUID || item.uuid, item.$cacheFile, item.$protocol) && !clicked(),
-              'fa-circle-notch': isInList(item.UUID || item.uuid, item.$cacheFile, item.$protocol) && clicked(),
-              'fa-spin': isInList(item.UUID || item.uuid, item.$cacheFile, item.$protocol) && clicked()
-            }"
-          ></i>
-        </button>
-      </li>
-      }
-    </ul>
+      <div class="text-center mb-3">
+        <i class="fas fa-circle-check primary-text" style="font-size: 75px"></i>
+      </div>
+      <p class="mb-0 text-center">{{ 'reset.no_accessories' | translate }}</p>
+    }
+    @if (accessoriesExist()) {
+      <div class="text-center mb-3">
+        <i class="fas fa-network-wired primary-text" style="font-size: 75px"></i>
+      </div>
+      <ul class="mb-3">
+        <li>{{ 'reset.accessory_ind.list_1' | translate }}</li>
+        <li>{{ 'reset.accessory_ind.list_2' | translate }}</li>
+        <li>{{ 'reset.accessory_ind.list_3' | translate }}</li>
+      </ul>
+      <ul class="list-group list-group-box mb-0">
+        @if (pairings().length > 1) {
+          <li class="list-group-item text-center grey-text small">{{ 'form.label.changes_kept' | translate }}</li>
+          <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
+            <label for="bridgeSelect" class="mb-2 mb-md-0 w-100 w-md-50">{{
+              'reset.accessory_ind.bridge' | translate
+            }}</label>
+            <div class="text-start text-md-end w-100 w-md-50">
+              <select
+                class="custom-select"
+                id="bridgeSelect"
+                [(ngModel)]="selectedBridge"
+                (change)="onBridgeChange($event)"
+              >
+                @for (bridge of pairings(); track bridge) {
+                  <option [value]="bridge._id">{{ bridge.name }} ({{ bridge._username }})</option>
+                }
+              </select>
+            </div>
+          </li>
+        }
+        @if (pairings().length === 1) {
+          <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
+            <label class="mb-2 mb-md-0 w-100 w-md-50">{{ 'reset.accessory_ind.bridge' | translate }}</label>
+            <div class="text-start text-md-end w-100 w-md-50 grey-text font-monospace">
+              {{ getCurrentlySelectedBridge() }}
+            </div>
+          </li>
+        }
+        @for (item of selectedBridgeAccessories(); track item) {
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <span class="me-3">
+              <i
+                class="fas fa-lg"
+                [class]="{
+                  'fa-matter': item.$protocol === 'matter',
+                  'fa-hap': item.$protocol !== 'matter',
+                }"
+              ></i>
+            </span>
+            <span class="flex-grow-1">
+              {{ item.displayName }}
+              <br />
+              <small
+                ><span class="font-monospace grey-text">{{ item.UUID || item.uuid }}</span></small
+              >
+            </span>
+            <button
+              type="button"
+              class="btn btn-danger m-0 ms-3"
+              [disabled]="clicked()"
+              [class]="{
+                'btn-danger': !isInList(item.UUID || item.uuid, item.$cacheFile, item.$protocol),
+                'btn-elegant': isInList(item.UUID || item.uuid, item.$cacheFile, item.$protocol),
+              }"
+              [attr.aria-label]="'form.button_delete' | translate"
+              (click)="toggleList(item.UUID || item.uuid, item.$cacheFile, item.$protocol, item.$deviceId)"
+            >
+              <i
+                class="fas"
+                [class]="{
+                  'fa-trash': !isInList(item.UUID || item.uuid, item.$cacheFile, item.$protocol),
+                  'fa-undo': isInList(item.UUID || item.uuid, item.$cacheFile, item.$protocol) && !clicked(),
+                  'fa-circle-notch': isInList(item.UUID || item.uuid, item.$cacheFile, item.$protocol) && clicked(),
+                  'fa-spin': isInList(item.UUID || item.uuid, item.$cacheFile, item.$protocol) && clicked(),
+                }"
+              ></i>
+            </button>
+          </li>
+        }
+      </ul>
     }
   </div>
   <div class="modal-footer justify-content-between">
     <div class="text-start">
       @if (accessoriesExist()) {
-      <button
-        type="button"
-        class="btn btn-elegant"
-        data-bs-dismiss="modal"
-        [disabled]="clicked()"
-        (click)="dismissModal()"
-      >
-        {{ 'form.button_close' | translate }}
-      </button>
+        <button
+          type="button"
+          class="btn btn-elegant"
+          data-bs-dismiss="modal"
+          [disabled]="clicked()"
+          (click)="dismissModal()"
+        >
+          {{ 'form.button_close' | translate }}
+        </button>
       }
     </div>
     <div class="text-center">
       @if (!accessoriesExist()) {
-      <button type="button" class="btn btn-elegant" data-bs-dismiss="modal" (click)="dismissModal()">
-        {{ 'form.button_close' | translate }}
-      </button>
+        <button type="button" class="btn btn-elegant" data-bs-dismiss="modal" (click)="dismissModal()">
+          {{ 'form.button_close' | translate }}
+        </button>
       }
     </div>
     <div class="text-end">
       @if (accessoriesExist()) {
-      <button
-        type="button"
-        class="btn btn-danger"
-        data-bs-dismiss="modal"
-        [disabled]="!toDelete().length || clicked()"
-        (click)="removeAccessories()"
-      >
-        @if (!clicked()) { {{ 'form.button_remove' | translate }} @if (toDelete().length > 0) { ({{ toDelete().length
-        }}) } } @if (clicked()) {
-        <i class="fas fa-circle-notch fa-spin"></i>
-        }
-      </button>
+        <button
+          type="button"
+          class="btn btn-danger"
+          data-bs-dismiss="modal"
+          [disabled]="!toDelete().length || clicked()"
+          (click)="removeAccessories()"
+        >
+          @if (!clicked()) {
+            {{ 'form.button_remove' | translate }}
+            @if (toDelete().length > 0) {
+              ({{ toDelete().length }})
+            }
+          }
+          @if (clicked()) {
+            <i class="fas fa-circle-notch fa-spin"></i>
+          }
+        </button>
       }
     </div>
   </div>

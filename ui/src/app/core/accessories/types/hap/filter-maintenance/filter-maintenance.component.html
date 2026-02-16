@@ -2,8 +2,8 @@
   class="accessory-box"
   tabindex="0"
   [class]="{
-    'replace': service().values?.FilterChangeIndication === 1 || service().values?.FilterLifeLevel < 10,
-    'dirty': service().values?.FilterChangeIndication !== 1 && service().values?.FilterLifeLevel < 50,
+    replace: service().values?.FilterChangeIndication === 1 || service().values?.FilterLifeLevel < 10,
+    dirty: service().values?.FilterChangeIndication !== 1 && service().values?.FilterLifeLevel < 50,
   }"
   [style.cursor]="readyForControl ? 'pointer' : 'default'"
   (longClick)="onClick()"
@@ -66,8 +66,9 @@
       <span [class.red-text]="service().values?.FilterChangeIndication === 1">
         {{ service().values?.FilterLifeLevel }}%
       </span>
-      @if (service().values?.FilterChangeIndication === 1) { &middot;
-      <span class="red-text">{{ 'accessories.control.replace' | translate }}</span>
+      @if (service().values?.FilterChangeIndication === 1) {
+        &middot;
+        <span class="red-text">{{ 'accessories.control.replace' | translate }}</span>
       }
     </div>
   </div>

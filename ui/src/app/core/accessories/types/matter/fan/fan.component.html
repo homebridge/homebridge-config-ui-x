@@ -26,12 +26,12 @@
       {{ service().customName || service().serviceName || service().displayName }}
     </div>
     @if (isOn() && fanSpeed() > 0) {
-    <div class="accessory-label grey-text">{{ fanSpeed() }}%</div>
+      <div class="accessory-label grey-text">{{ fanSpeed() }}%</div>
     } @else {
-    <div
-      class="accessory-label grey-text"
-      [innerText]="(isOn() ? 'accessories.control.on' : 'accessories.control.off') | translate"
-    ></div>
+      <div
+        class="accessory-label grey-text"
+        [innerText]="(isOn() ? 'accessories.control.on' : 'accessories.control.off') | translate"
+      ></div>
     }
   </div>
 </div>

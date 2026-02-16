@@ -1,5 +1,5 @@
 @if (loading()) {
-<app-spinner />
+  <app-spinner />
 }
 
 <div class="row mb-3">
@@ -8,32 +8,32 @@
   </div>
   <div class="col-6 text-end">
     @if (isAdmin) {
-    <button
-      type="button"
-      class="btn btn-elegant my-0 me-2"
-      container="body"
-      placement="bottom"
-      triggers="hover"
-      [openDelay]="150"
-      [ngbTooltip]="'form.search' | translate"
-      [attr.aria-label]="'form.search' | translate"
-      (click)="showSearch()"
-    >
-      <i class="fas{{ showSearchBar() ? ' primary-text' : '' }} fa-search"></i>
-    </button>
-    <button
-      type="button"
-      class="btn btn-elegant my-0 me-2 d-none d-md-inline-block"
-      container="body"
-      placement="bottom"
-      triggers="hover"
-      [openDelay]="150"
-      [ngbTooltip]="'plugins.stats' | translate"
-      [attr.aria-label]="'plugins.stats' | translate"
-      (click)="showStats()"
-    >
-      <i class="fas{{ tab() === 'stats' ? ' primary-text' : '' }} fa-sliders"></i>
-    </button>
+      <button
+        type="button"
+        class="btn btn-elegant my-0 me-2"
+        container="body"
+        placement="bottom"
+        triggers="hover"
+        [openDelay]="150"
+        [ngbTooltip]="'form.search' | translate"
+        [attr.aria-label]="'form.search' | translate"
+        (click)="showSearch()"
+      >
+        <i class="fas{{ showSearchBar() ? ' primary-text' : '' }} fa-search"></i>
+      </button>
+      <button
+        type="button"
+        class="btn btn-elegant my-0 me-2 d-none d-md-inline-block"
+        container="body"
+        placement="bottom"
+        triggers="hover"
+        [openDelay]="150"
+        [ngbTooltip]="'plugins.stats' | translate"
+        [attr.aria-label]="'plugins.stats' | translate"
+        (click)="showStats()"
+      >
+        <i class="fas{{ tab() === 'stats' ? ' primary-text' : '' }} fa-sliders"></i>
+      </button>
     }
     <button
       type="button"
@@ -46,66 +46,74 @@
   </div>
 </div>
 
-@if (tab() === 'main') { @if (showSearchBar()) {
-<div class="row">
-  <div class="col-md-12">
-    <form novalidate [formGroup]="form" (ngSubmit)="onSubmit(form)">
-      <input
-        #searchInput
-        type="text"
-        class="search-bar"
-        formControlName="query"
-        [placeholder]="'plugins.placeholder_search_plugin' | translate"
-      />
-      @if (form.get('query')?.value) {
-      <button
-        type="button"
-        class="search-bar-clear"
-        [attr.aria-label]="'form.button_clear' | translate"
-        (click)="onClearSearch()"
-      >
-        <i class="fas fa-square-xmark" aria-hidden="true"></i>
-      </button>
-      }
-    </form>
-  </div>
-</div>
-} @if (!loading()) {
-<div class="d-flex flex-wrap justify-content-between">
-  @for (plugin of installedPlugins(); track plugin) {
-  <div class="hb-plugin-space-between">
-    <app-plugin-card [plugin]="plugin" [childBridges]="getPluginChildBridges(plugin)" />
-  </div>
-  } @if (installedPlugins().length === 0 && !loading() && !mainError()) {
-  <div class="alert alert-info mt-4 text-center w-100">
-    <i
-      class="fas primary-text my-3"
-      style="font-size: 75px"
-      [class]="{
-        'fa-magnifying-glass': !showExitButton(),
-        'fa-exclamation-circle': showExitButton(),
-      }"
-    ></i>
-    <p>{{ (showExitButton() ? 'plugins.placeholder_search_none' : 'plugins.placeholder_search_first') | translate }}</p>
-  </div>
+@if (tab() === 'main') {
+  @if (showSearchBar()) {
+    <div class="row">
+      <div class="col-md-12">
+        <form novalidate [formGroup]="form" (ngSubmit)="onSubmit(form)">
+          <input
+            #searchInput
+            type="text"
+            class="search-bar"
+            formControlName="query"
+            [placeholder]="'plugins.placeholder_search_plugin' | translate"
+          />
+          @if (form.get('query')?.value) {
+            <button
+              type="button"
+              class="search-bar-clear"
+              [attr.aria-label]="'form.button_clear' | translate"
+              (click)="onClearSearch()"
+            >
+              <i class="fas fa-square-xmark" aria-hidden="true"></i>
+            </button>
+          }
+        </form>
+      </div>
+    </div>
   }
-</div>
-} } @else if (tab() === 'stats') {
-<div class="w-100 py-3 hb-stats-header text-white text-center" id="stats-header">
-  <div class="mb-2">
-    <code
-      >https://developers.homebridge.io/analytics
-      <a href="https://developers.homebridge.io/analytics" target="_blank"><i class="fa fa-external-link"></i></a
-    ></code>
+  @if (!loading()) {
+    <div class="d-flex flex-wrap justify-content-between">
+      @for (plugin of installedPlugins(); track plugin) {
+        <div class="hb-plugin-space-between">
+          <app-plugin-card [plugin]="plugin" [childBridges]="getPluginChildBridges(plugin)" />
+        </div>
+      }
+      @if (installedPlugins().length === 0 && !loading() && !mainError()) {
+        <div class="alert alert-info mt-4 text-center w-100">
+          <i
+            class="fas primary-text my-3"
+            style="font-size: 75px"
+            [class]="{
+              'fa-magnifying-glass': !showExitButton(),
+              'fa-exclamation-circle': showExitButton(),
+            }"
+          ></i>
+          <p>
+            {{
+              (showExitButton() ? 'plugins.placeholder_search_none' : 'plugins.placeholder_search_first') | translate
+            }}
+          </p>
+        </div>
+      }
+    </div>
+  }
+} @else if (tab() === 'stats') {
+  <div class="w-100 py-3 hb-stats-header text-white text-center" id="stats-header">
+    <div class="mb-2">
+      <code
+        >https://developers.homebridge.io/analytics
+        <a href="https://developers.homebridge.io/analytics" target="_blank"><i class="fa fa-external-link"></i></a
+      ></code>
+    </div>
+    <div class="small grey-text">{{ 'plugins.stats_note' | translate }}</div>
   </div>
-  <div class="small grey-text">{{ 'plugins.stats_note' | translate }}</div>
-</div>
-<iframe
-  src="https://developers.homebridge.io/analytics/"
-  class="hb-stats"
-  id="stats-iframe"
-  sandbox="allow-scripts allow-same-origin allow-popups"
-  referrerpolicy="no-referrer"
->
-</iframe>
+  <iframe
+    src="https://developers.homebridge.io/analytics/"
+    class="hb-stats"
+    id="stats-iframe"
+    sandbox="allow-scripts allow-same-origin allow-popups"
+    referrerpolicy="no-referrer"
+  >
+  </iframe>
 }

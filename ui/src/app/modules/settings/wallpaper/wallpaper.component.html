@@ -21,24 +21,25 @@
     </ul>
     <div class="mb-3 text-center">
       @if (wallpaperUrl()) {
-      <div class="position-relative d-inline-block">
-        <img
-          class="img-fluid rounded mx-auto d-block"
-          alt="Current Wallpaper"
-          style="height: 200px"
-          [src]="wallpaperUrl()"
-        />
-        <button
-          class="btn btn-danger position-absolute"
-          style="top: 10px; right: 10px"
-          [attr.aria-label]="'form.button_delete' | translate"
-          (click)="clearWallpaper()"
-        >
-          <i class="fas fa-trash"></i>
-        </button>
-      </div>
+        <div class="position-relative d-inline-block">
+          <img
+            class="img-fluid rounded mx-auto d-block"
+            alt="Current Wallpaper"
+            style="height: 200px"
+            [src]="wallpaperUrl()"
+          />
+          <button
+            type="button"
+            class="btn btn-danger position-absolute"
+            style="top: 10px; right: 10px"
+            [attr.aria-label]="'form.button_delete' | translate"
+            (click)="clearWallpaper()"
+          >
+            <i class="fas fa-trash"></i>
+          </button>
+        </div>
       } @else {
-      <div class="gradient anim rounded" style="height: 200px; width: 350px; margin: 0 auto"></div>
+        <div class="gradient anim rounded" style="height: 200px; width: 350px; margin: 0 auto"></div>
       }
     </div>
     <div class="mb-0">
@@ -70,7 +71,7 @@
         type="button"
         class="btn btn-primary"
         data-bs-dismiss="modal"
-        [disabled]="(wallpaperUrl() === originalWallpaperUrl()) || clicked()"
+        [disabled]="wallpaperUrl() === originalWallpaperUrl() || clicked()"
         (click)="saveWallpaper()"
       >
         {{ 'form.button_save' | translate }}

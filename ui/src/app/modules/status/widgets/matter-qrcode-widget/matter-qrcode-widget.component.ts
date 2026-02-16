@@ -44,27 +44,7 @@ export class MatterQrcodeWidgetComponent implements OnInit, OnDestroy {
 
     // Listen to homebridge-status events for unified status updates
     this.statusHandler = (data: HomebridgeStatusResponse) => {
-      // Extract Matter info from unified status
-      if (data.matter) {
-        this.matterEnabled.set(data.matter.enabled)
-        if (data.matter.enabled) {
-          this.pin.set(data.matter.pin || this.pin())
-          this.commissioned.set(data.matter.commissioned || false)
-          this.setupUri.set(data.matter.setupUri || null)
-          this.enabled.set(true)
-        } else {
-          this.pin.set(this.$translate.instant('status.services.label_not_enabled'))
-          this.setupUri.set(null)
-          this.commissioned.set(false)
-        }
-      } else {
-        // No Matter info means Matter is not configured
-        this.matterEnabled.set(false)
-        this.pin.set(this.$translate.instant('status.services.label_not_enabled'))
-        this.setupUri.set(null)
-        this.commissioned.set(false)
-      }
-      this.loading.set(false)
+      this.applyMatterStatus(data)
     }
 
     this.io.socket.on('homebridge-status', this.statusHandler)
@@ -103,33 +83,34 @@ export class MatterQrcodeWidgetComponent implements OnInit, OnDestroy {
     this.qrCodeWidth.set(newWidth)
   }
 
+  private applyMatterStatus(data: HomebridgeStatusResponse): void {
+    if (data.matter) {
+      this.matterEnabled.set(data.matter.enabled)
+      if (data.matter.enabled) {
+        this.pin.set(data.matter.pin || this.pin())
+        this.commissioned.set(data.matter.commissioned || false)
+        this.setupUri.set(data.matter.setupUri || null)
+        this.enabled.set(true)
+      } else {
+        this.pin.set(this.$translate.instant('status.services.matter_not_enabled'))
+        this.setupUri.set(null)
+        this.commissioned.set(false)
+      }
+    } else {
+      this.matterEnabled.set(false)
+      this.pin.set(this.$translate.instant('status.services.matter_not_enabled'))
+      this.setupUri.set(null)
+      this.commissioned.set(false)
+    }
+    this.loading.set(false)
+  }
+
   private getMatterInfo(): void {
     // Request homebridge pairing pin which includes Matter info
     this.io.request('get-homebridge-pairing-pin')
       .subscribe({
         next: (data) => {
-          // Extract Matter info from unified response
-          if (data.matter) {
-            this.matterEnabled.set(data.matter.enabled)
-            if (data.matter.enabled) {
-              this.pin.set(data.matter.pin || this.pin())
-              this.commissioned.set(data.matter.commissioned || false)
-              this.setupUri.set(data.matter.setupUri || null)
-              this.enabled.set(true)
-            } else {
-              this.pin.set(this.$translate.instant('status.services.label_not_enabled'))
-              this.setupUri.set(null)
-              this.commissioned.set(false)
-            }
-          } else {
-            // No Matter info means Matter is not configured
-            this.matterEnabled.set(false)
-            this.pin.set(this.$translate.instant('status.services.label_not_enabled'))
-            this.setupUri.set(null)
-            this.commissioned.set(false)
-          }
-
-          this.loading.set(false)
+          this.applyMatterStatus(data)
           // Resize after data is set and DOM updates
           requestAnimationFrame(() => this.resizeQrCode())
         },

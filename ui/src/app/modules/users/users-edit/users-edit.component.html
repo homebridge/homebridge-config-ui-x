@@ -50,7 +50,10 @@
         </li>
         <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
           <label for="form-pass" class="mb-2 mb-md-0 w-100 w-md-50">
-            {{ 'users.label_new_password' | translate }}@if (form.controls.password.value) {<app-required-indicator />}
+            {{ 'users.label_new_password' | translate }}
+            @if (form.controls.password.value) {
+              <app-required-indicator />
+            }
           </label>
           <div class="text-start text-md-end w-100 w-md-50">
             <input
@@ -65,22 +68,22 @@
           </div>
         </li>
         @if (form.controls.password.value) {
-        <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
-          <label for="form-pass-confirm" class="mb-2 mb-md-0 w-100 w-md-50">
-            {{ 'users.label_confirm_password' | translate }}<app-required-indicator />
-          </label>
-          <div class="text-start text-md-end w-100 w-md-50">
-            <input
-              formControlName="passwordConfirm"
-              type="password"
-              autocomplete="new-password"
-              id="form-pass-confirm"
-              class="form-control custom-input"
-              [class.is-invalid]="form.controls.passwordConfirm.touched && form.controls.passwordConfirm.invalid"
-              [attr.aria-label]="'users.label_confirm_password' | translate"
-            />
-          </div>
-        </li>
+          <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
+            <label for="form-pass-confirm" class="mb-2 mb-md-0 w-100 w-md-50">
+              {{ 'users.label_confirm_password' | translate }}<app-required-indicator />
+            </label>
+            <div class="text-start text-md-end w-100 w-md-50">
+              <input
+                formControlName="passwordConfirm"
+                type="password"
+                autocomplete="new-password"
+                id="form-pass-confirm"
+                class="form-control custom-input"
+                [class.is-invalid]="form.controls.passwordConfirm.touched && form.controls.passwordConfirm.invalid"
+                [attr.aria-label]="'users.label_confirm_password' | translate"
+              />
+            </div>
+          </li>
         }
         <li class="list-group-item d-flex justify-content-between align-items-center flex-row pb-2">
           <span class="text-start"> {{ 'users.label_admin_user' | translate }}<app-required-indicator /> </span>
@@ -97,9 +100,9 @@
         </li>
       </ul>
       @if (deleteMode()) {
-      <div class="alert alert-warning mt-3 mb-0">
-        <div class="text-center">{{ 'common.phrases.are_you_sure' | translate }}</div>
-      </div>
+        <div class="alert alert-warning mt-3 mb-0">
+          <div class="text-center">{{ 'common.phrases.are_you_sure' | translate }}</div>
+        </div>
       }
     </div>
     <div class="modal-footer justify-content-between">

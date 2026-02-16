@@ -4,84 +4,107 @@
     <table class="table table-sm table-borderless gridster-item-content">
       <tbody>
         @if ('homebridgeRunningInSynologyPackage' in serverInfo()) {
-        <tr>
-          <th scope="row" class="text-nowrap">{{ 'status.widget.info.os' | translate }}</th>
-          @if (!serverInfo().homebridgeRunningInSynologyPackage) {
-          <td class="grey-text">
-            @switch (serverInfo().os.platform) { @case ('darwin') { {{ serverInfo().os.distro }} {{
-            serverInfo().os.codename }} ({{ serverInfo().os.release }}) } @case ('win32') { {{ serverInfo().os.distro }}
-            } @default { {{ serverInfo().os.distro }} {{ serverInfo().os.codename | titlecase }} ({{
-            serverInfo().os.release }}) } }
-          </td>
-          } @if (serverInfo().homebridgeRunningInSynologyPackage) {
-          <td class="grey-text">Synology DSM</td>
-          }
-        </tr>
-        <tr>
-          <th scope="row" class="text-nowrap">{{ 'status.widget.info.arch' | translate }}</th>
-          <td class="grey-text">
-            {{ serverInfo().os.arch }} ({{ arch64bitList.includes(serverInfo().os.arch) ? '64-bit' : '32-bit' }})
-          </td>
-        </tr>
-        } @if (serverInfo().network.ip4) {
-        <tr>
-          <th scope="row" class="text-nowrap">
-            {{ 'status.widget.info.ipv4' | translate }} ({{ serverInfo().network.iface }})
-          </th>
-          <td class="grey-text">{{ serverInfo().network.ip4 }}</td>
-        </tr>
-        } @if (serverInfo().network.ip6) {
-        <tr>
-          <th scope="row" class="text-nowrap">
-            {{ 'status.widget.info.ipv6' | translate }} ({{ serverInfo().network.iface }})
-          </th>
-          <td class="grey-text">{{ serverInfo().network.ip6 }}</td>
-        </tr>
-        } @if (serverInfo().os.hostname) {
-        <tr>
-          <th scope="row" class="text-nowrap">{{ 'status.widget.info.hostname' | translate }}</th>
-          <td class="grey-text">{{ serverInfo().os.hostname }}</td>
-        </tr>
-        } @if ('serviceUser' in serverInfo()) {
-        <tr>
-          <th scope="row" class="text-nowrap">{{ 'status.widget.info.service_user' | translate }}</th>
-          <td class="grey-text">{{ serverInfo().serviceUser }}</td>
-        </tr>
-        } @if ('installPath' in nodejsInfo()) {
-        <tr>
-          <th scope="row" class="text-nowrap">{{ 'status.widget.info.nodejs_path' | translate }}</th>
-          <td class="grey-text">{{ nodejsInfo().installPath }}</td>
-        </tr>
-        } @if ('homebridgeStoragePath' in serverInfo()) {
-        <tr>
-          <th scope="row" class="text-nowrap">{{ 'status.widget.info.storage_path' | translate }}</th>
-          <td class="grey-text">{{ serverInfo().homebridgeStoragePath }}</td>
-        </tr>
-        } @if ('homebridgeConfigJsonPath' in serverInfo()) {
-        <tr>
-          <th scope="row" class="text-nowrap">{{ 'status.widget.info.config_path' | translate }}</th>
-          <td class="grey-text">{{ serverInfo().homebridgeConfigJsonPath }}</td>
-        </tr>
-        } @if ('homebridgeCustomPluginPath' in serverInfo() || 'homebridgePluginPath' in serverInfo()) {
-        <tr>
-          <th scope="row" class="text-nowrap">{{ 'status.widget.info.plugin_path' | translate }}</th>
-          <td class="grey-text">{{ serverInfo().homebridgeCustomPluginPath || serverInfo().homebridgePluginPath }}</td>
-        </tr>
-        } @if (serverInfo().time.timezone) {
-        <tr>
-          <th scope="row" class="text-nowrap">{{ 'status.widget.info.timezone' | translate }}</th>
-          <td class="grey-text">{{ serverInfo().time.timezone }}</td>
-        </tr>
-        } @if (serverInfo().homebridgeRunningInDocker) {
-        <tr>
-          <th scope="row" class="text-nowrap">{{ 'status.widget.info.docker' | translate }}</th>
-          <td class="text-nowrap grey-text">{{ 'status.widget.info.yes' | translate }}</td>
-        </tr>
-        } @if (serverInfo().homebridgeRunningInSynologyPackage) {
-        <tr>
-          <th scope="row" class="text-nowrap">{{ 'status.widget.info.synology_package' | translate }}</th>
-          <td class="text-nowrap grey-text">{{ 'status.widget.info.yes' | translate }}</td>
-        </tr>
+          <tr>
+            <th scope="row" class="text-nowrap">{{ 'status.widget.info.os' | translate }}</th>
+            @if (!serverInfo().homebridgeRunningInSynologyPackage) {
+              <td class="grey-text">
+                @switch (serverInfo().os.platform) {
+                  @case ('darwin') {
+                    {{ serverInfo().os.distro }} {{ serverInfo().os.codename }} ({{ serverInfo().os.release }})
+                  }
+                  @case ('win32') {
+                    {{ serverInfo().os.distro }}
+                  }
+                  @default {
+                    {{ serverInfo().os.distro }} {{ serverInfo().os.codename | titlecase }} ({{
+                      serverInfo().os.release
+                    }})
+                  }
+                }
+              </td>
+            }
+            @if (serverInfo().homebridgeRunningInSynologyPackage) {
+              <td class="grey-text">Synology DSM</td>
+            }
+          </tr>
+          <tr>
+            <th scope="row" class="text-nowrap">{{ 'status.widget.info.arch' | translate }}</th>
+            <td class="grey-text">
+              {{ serverInfo().os.arch }} ({{ arch64bitList.includes(serverInfo().os.arch) ? '64-bit' : '32-bit' }})
+            </td>
+          </tr>
+        }
+        @if (serverInfo().network.ip4) {
+          <tr>
+            <th scope="row" class="text-nowrap">
+              {{ 'status.widget.info.ipv4' | translate }} ({{ serverInfo().network.iface }})
+            </th>
+            <td class="grey-text">{{ serverInfo().network.ip4 }}</td>
+          </tr>
+        }
+        @if (serverInfo().network.ip6) {
+          <tr>
+            <th scope="row" class="text-nowrap">
+              {{ 'status.widget.info.ipv6' | translate }} ({{ serverInfo().network.iface }})
+            </th>
+            <td class="grey-text">{{ serverInfo().network.ip6 }}</td>
+          </tr>
+        }
+        @if (serverInfo().os.hostname) {
+          <tr>
+            <th scope="row" class="text-nowrap">{{ 'status.widget.info.hostname' | translate }}</th>
+            <td class="grey-text">{{ serverInfo().os.hostname }}</td>
+          </tr>
+        }
+        @if ('serviceUser' in serverInfo()) {
+          <tr>
+            <th scope="row" class="text-nowrap">{{ 'status.widget.info.service_user' | translate }}</th>
+            <td class="grey-text">{{ serverInfo().serviceUser }}</td>
+          </tr>
+        }
+        @if ('installPath' in nodejsInfo()) {
+          <tr>
+            <th scope="row" class="text-nowrap">{{ 'status.widget.info.nodejs_path' | translate }}</th>
+            <td class="grey-text">{{ nodejsInfo().installPath }}</td>
+          </tr>
+        }
+        @if ('homebridgeStoragePath' in serverInfo()) {
+          <tr>
+            <th scope="row" class="text-nowrap">{{ 'status.widget.info.storage_path' | translate }}</th>
+            <td class="grey-text">{{ serverInfo().homebridgeStoragePath }}</td>
+          </tr>
+        }
+        @if ('homebridgeConfigJsonPath' in serverInfo()) {
+          <tr>
+            <th scope="row" class="text-nowrap">{{ 'status.widget.info.config_path' | translate }}</th>
+            <td class="grey-text">{{ serverInfo().homebridgeConfigJsonPath }}</td>
+          </tr>
+        }
+        @if ('homebridgeCustomPluginPath' in serverInfo() || 'homebridgePluginPath' in serverInfo()) {
+          <tr>
+            <th scope="row" class="text-nowrap">{{ 'status.widget.info.plugin_path' | translate }}</th>
+            <td class="grey-text">
+              {{ serverInfo().homebridgeCustomPluginPath || serverInfo().homebridgePluginPath }}
+            </td>
+          </tr>
+        }
+        @if (serverInfo().time.timezone) {
+          <tr>
+            <th scope="row" class="text-nowrap">{{ 'status.widget.info.timezone' | translate }}</th>
+            <td class="grey-text">{{ serverInfo().time.timezone }}</td>
+          </tr>
+        }
+        @if (serverInfo().homebridgeRunningInDocker) {
+          <tr>
+            <th scope="row" class="text-nowrap">{{ 'status.widget.info.docker' | translate }}</th>
+            <td class="text-nowrap grey-text">{{ 'status.widget.info.yes' | translate }}</td>
+          </tr>
+        }
+        @if (serverInfo().homebridgeRunningInSynologyPackage) {
+          <tr>
+            <th scope="row" class="text-nowrap">{{ 'status.widget.info.synology_package' | translate }}</th>
+            <td class="text-nowrap grey-text">{{ 'status.widget.info.yes' | translate }}</td>
+          </tr>
         }
       </tbody>
     </table>

@@ -11,28 +11,29 @@
     ></button>
   </div>
   @if (!restoreStarted() && !setupWizardRestore) {
-  <div class="modal-body">
-    <div class="text-center mb-3">
-      <i class="fas fa-hard-drive primary-text" style="font-size: 75px"></i>
+    <div class="modal-body">
+      <div class="text-center mb-3">
+        <i class="fas fa-hard-drive primary-text" style="font-size: 75px"></i>
+      </div>
+      <ul class="mb-3">
+        <li>{{ 'backup.restore_help_one' | translate }}</li>
+        <li>{{ 'backup.restore_help_two' | translate }}</li>
+        <li>{{ 'backup.restore_max_size' | translate: { maxBackupSizeText: maxFileSizeText } }}</li>
+        <li>{{ 'backup.restore_warning' | translate }}</li>
+      </ul>
+      @if (selectedBackup) {
+        <input class="form-control custom-input" type="text" disabled [value]="selectedBackup.fileName" />
+      }
+      @if (!selectedBackup) {
+        <input
+          type="file"
+          class="form-control"
+          id="restoreFileUpload"
+          accept="application/gzip, .gz, .hbfx"
+          (change)="handleRestoreFileInput($event)"
+        />
+      }
     </div>
-    <ul class="mb-3">
-      <li>{{ 'backup.restore_help_one' | translate }}</li>
-      <li>{{ 'backup.restore_help_two' | translate }}</li>
-      <li>{{ 'backup.restore_max_size' | translate: { maxBackupSizeText: maxFileSizeText } }}</li>
-      <li>{{ 'backup.restore_warning' | translate }}</li>
-    </ul>
-    @if (selectedBackup) {
-    <input class="form-control custom-input" type="text" disabled [value]="selectedBackup.fileName" />
-    } @if (!selectedBackup) {
-    <input
-      type="file"
-      class="form-control"
-      id="restoreFileUpload"
-      accept="application/gzip, .gz, .hbfx"
-      (change)="handleRestoreFileInput($event)"
-    />
-    }
-  </div>
   }
 
   <div
@@ -44,66 +45,74 @@
   ></div>
 
   @if (!restoreStarted() || restoreFailed() === true) {
-  <div class="modal-footer justify-content-between">
-    <div class="text-start">
-      @if (setupWizardRestore) {
-      <button
-        type="button"
-        class="btn btn-elegant"
-        data-bs-dismiss="modal"
-        [attr.aria-label]="'form.button_close' | translate"
-        [disabled]="clicked()"
-        (click)="dismissModal()"
-      >
-        {{ 'form.button_close' | translate }}
-      </button>
-      } @if (!setupWizardRestore) {
-      <button
-        type="button"
-        class="btn btn-elegant"
-        data-bs-dismiss="modal"
-        [attr.aria-label]="'form.button_back' | translate"
-        [disabled]="clicked()"
-        (click)="reopenBackupModal()"
-      >
-        {{ 'form.button_back' | translate }}
-      </button>
-      }
-    </div>
-    <div class="text-center"></div>
-    <div class="text-end">
-      <button
-        type="button"
-        class="btn btn-primary"
-        data-bs-dismiss="modal"
-        [disabled]="(!selectedBackup && !selectedFile()) || clicked()"
-        (click)="onRestoreBackupClick()"
-      >
-        @if (clicked()) {
-        <span>
-          @if (!uploadPercent() || uploadPercent() === 100) {
-          <i class="fa fa-circle-notch fa-spin"></i>
-          } @if (uploadPercent() && uploadPercent() !== 100) {
-          <span>{{ uploadPercent() }}% - </span>
-          } @if (uploadPercent() === 100) {
-          <span>{{ 'backup.label_extracting' | translate }}</span>
-          } @if (uploadPercent() !== 100) {
-          <span>{{ 'backup.label_uploading' | translate }}</span>
+    <div class="modal-footer justify-content-between">
+      <div class="text-start">
+        @if (setupWizardRestore) {
+          <button
+            type="button"
+            class="btn btn-elegant"
+            data-bs-dismiss="modal"
+            [attr.aria-label]="'form.button_close' | translate"
+            [disabled]="clicked()"
+            (click)="dismissModal()"
+          >
+            {{ 'form.button_close' | translate }}
+          </button>
+        }
+        @if (!setupWizardRestore) {
+          <button
+            type="button"
+            class="btn btn-elegant"
+            data-bs-dismiss="modal"
+            [attr.aria-label]="'form.button_back' | translate"
+            [disabled]="clicked()"
+            (click)="reopenBackupModal()"
+          >
+            {{ 'form.button_back' | translate }}
+          </button>
+        }
+      </div>
+      <div class="text-center"></div>
+      <div class="text-end">
+        <button
+          type="button"
+          class="btn btn-primary"
+          data-bs-dismiss="modal"
+          [disabled]="(!selectedBackup && !selectedFile()) || clicked()"
+          (click)="onRestoreBackupClick()"
+        >
+          @if (clicked()) {
+            <span>
+              @if (!uploadPercent() || uploadPercent() === 100) {
+                <i class="fa fa-circle-notch fa-spin"></i>
+              }
+              @if (uploadPercent() && uploadPercent() !== 100) {
+                <span>{{ uploadPercent() }}% - </span>
+              }
+              @if (uploadPercent() === 100) {
+                <span>{{ 'backup.label_extracting' | translate }}</span>
+              }
+              @if (uploadPercent() !== 100) {
+                <span>{{ 'backup.label_uploading' | translate }}</span>
+              }
+            </span>
           }
-        </span>
-        } @if (!clicked()) { {{ 'form.button_restore' | translate }} }
-      </button>
+          @if (!clicked()) {
+            {{ 'form.button_restore' | translate }}
+          }
+        </button>
+      </div>
     </div>
-  </div>
-  } @if (!restoreInProgress() && restoreStarted()) {
-  <div class="modal-footer justify-content-between">
-    <div class="text-start"></div>
-    <div class="text-center">
-      <button type="button" class="btn btn-primary" data-bs-dismiss="modal" (click)="postBackupRestart()">
-        {{ 'menu.hbrestart.title' | translate }}
-      </button>
+  }
+  @if (!restoreInProgress() && restoreStarted()) {
+    <div class="modal-footer justify-content-between">
+      <div class="text-start"></div>
+      <div class="text-center">
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal" (click)="postBackupRestart()">
+          {{ 'menu.hbrestart.title' | translate }}
+        </button>
+      </div>
+      <div class="text-end"></div>
     </div>
-    <div class="text-end"></div>
-  </div>
   }
 </div>

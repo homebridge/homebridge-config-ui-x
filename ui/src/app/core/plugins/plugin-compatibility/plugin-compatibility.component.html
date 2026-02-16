@@ -12,112 +12,145 @@
   <div class="modal-body">
     <! -- plugins - ->
     @if (plugin && !['homebridge', 'homebridge-config-ui-x'].includes(plugin.name)) {
-    <div class="text-center mb-3">
-      <i
-        class="{{ action === 'install' ? 'far fa-arrow-alt-circle-down' : ( action === 'update' ? 'far fa-arrow-alt-circle-up' : 'fas fa-code-compare') }} primary-text"
-        style="font-size: 75px"
-      ></i>
-    </div>
-    <ul class="list-group list-group-box mb-3 text-start">
-      @if (!isValidNode) {
-      <li class="list-group-item d-flex justify-content-between align-items-center">
-        <div class="me-3">
-          <i class="fas fa-exclamation-circle orange-text fa-xl"></i>
-        </div>
-        <div class="text-start flex-grow-1">
-          {{ 'plugins.compat.node_too_low' | translate: { pluginName: plugin.displayName, minVersion: nodeMinVersion,
-          installedVersion: nodeInstalledVersion } }}
-        </div>
-      </li>
-      } @if (!isValidHb) {
-      <li class="list-group-item d-flex justify-content-between align-items-center">
-        <div class="me-3">
-          <i class="fas fa-exclamation-circle orange-text fa-xl"></i>
-        </div>
-        <div class="text-start flex-grow-1">
-          {{ 'plugins.compat.hb_too_low' | translate: { pluginName: plugin.displayName, minVersion: hbMinVersion,
-          installedVersion: hbInstalledVersion } }}
-        </div>
-      </li>
-      }
-    </ul>
-    <ngb-alert type="warning" class="mb-0" [dismissible]="false">
-      <p class="text-center mb-0">{{ 'common.phrases.are_you_sure' | translate }}</p>
-    </ngb-alert>
+      <div class="text-center mb-3">
+        <i
+          class="{{
+            action === 'install'
+              ? 'far fa-arrow-alt-circle-down'
+              : action === 'update'
+                ? 'far fa-arrow-alt-circle-up'
+                : 'fas fa-code-compare'
+          }} primary-text"
+          style="font-size: 75px"
+        ></i>
+      </div>
+      <ul class="list-group list-group-box mb-3 text-start">
+        @if (!isValidNode) {
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <div class="me-3">
+              <i class="fas fa-exclamation-circle orange-text fa-xl"></i>
+            </div>
+            <div class="text-start flex-grow-1">
+              {{
+                'plugins.compat.node_too_low'
+                  | translate
+                    : {
+                        pluginName: plugin.displayName,
+                        minVersion: nodeMinVersion,
+                        installedVersion: nodeInstalledVersion,
+                      }
+              }}
+            </div>
+          </li>
+        }
+        @if (!isValidHb) {
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <div class="me-3">
+              <i class="fas fa-exclamation-circle orange-text fa-xl"></i>
+            </div>
+            <div class="text-start flex-grow-1">
+              {{
+                'plugins.compat.hb_too_low'
+                  | translate
+                    : { pluginName: plugin.displayName, minVersion: hbMinVersion, installedVersion: hbInstalledVersion }
+              }}
+            </div>
+          </li>
+        }
+      </ul>
+      <ngb-alert type="warning" class="mb-0" [dismissible]="false">
+        <p class="text-center mb-0">{{ 'common.phrases.are_you_sure' | translate }}</p>
+      </ngb-alert>
     }
 
     <! -- homebridge - ->
     @if (plugin && plugin.name === 'homebridge') {
-    <div class="text-center mb-3">
-      <i class="fab fa-node-js primary-text" style="font-size: 75px"></i>
-    </div>
-    <ul class="list-group list-group-box mb-3 text-start">
-      <li class="list-group-item d-flex justify-content-between align-items-center">
-        <div class="me-3">
-          <i class="fas fa-exclamation-circle orange-text fa-xl"></i>
-        </div>
-        <div class="text-start flex-grow-1">
-          {{ 'plugins.compat.hb_node_too_low' | translate: { minVersion: nodeMinVersion, installedVersion:
-          nodeInstalledVersion, latestVersion: plugin.latestVersion, packageName: 'Homebridge' } }}
-        </div>
-      </li>
-    </ul>
-    <ngb-alert type="warning" class="mb-0" [dismissible]="false">
-      <p class="text-center mb-1">{{ 'plugins.compat.node_first' | translate: { packageName: 'Homebridge' } }}</p>
-      <p class="text-center mb-0">
-        <a href="https://homebridge.io/w/JTKEF" target="_blank" rel="noopener noreferrer">
-          {{ 'plugins.compat.node_link' | translate }} <i class="fa fa-external-link-alt"></i>
-        </a>
-      </p>
-    </ngb-alert>
+      <div class="text-center mb-3">
+        <i class="fab fa-node-js primary-text" style="font-size: 75px"></i>
+      </div>
+      <ul class="list-group list-group-box mb-3 text-start">
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          <div class="me-3">
+            <i class="fas fa-exclamation-circle orange-text fa-xl"></i>
+          </div>
+          <div class="text-start flex-grow-1">
+            {{
+              'plugins.compat.hb_node_too_low'
+                | translate
+                  : {
+                      minVersion: nodeMinVersion,
+                      installedVersion: nodeInstalledVersion,
+                      latestVersion: plugin.latestVersion,
+                      packageName: 'Homebridge',
+                    }
+            }}
+          </div>
+        </li>
+      </ul>
+      <ngb-alert type="warning" class="mb-0" [dismissible]="false">
+        <p class="text-center mb-1">{{ 'plugins.compat.node_first' | translate: { packageName: 'Homebridge' } }}</p>
+        <p class="text-center mb-0">
+          <a href="https://homebridge.io/w/JTKEF" target="_blank" rel="noopener noreferrer">
+            {{ 'plugins.compat.node_link' | translate }} <i class="fa fa-external-link-alt"></i>
+          </a>
+        </p>
+      </ngb-alert>
     }
 
     <! -- homebridge ui - ->
     @if (plugin && plugin.name === 'homebridge-config-ui-x') {
-    <div class="text-center mb-3">
-      <i class="fab fa-node-js primary-text" style="font-size: 75px"></i>
-    </div>
-    <ul class="list-group list-group-box mb-3 text-start">
-      <li class="list-group-item d-flex justify-content-between align-items-center">
-        <div class="me-3">
-          <i class="fas fa-exclamation-circle orange-text fa-xl"></i>
-        </div>
-        <div class="text-start flex-grow-1">
-          {{ 'plugins.compat.hb_node_too_low' | translate: { minVersion: nodeMinVersion, installedVersion:
-          nodeInstalledVersion, latestVersion: plugin.latestVersion, packageName: 'Homebridge UI' } }}
-        </div>
-      </li>
-    </ul>
-    <ngb-alert type="warning" class="mb-0" [dismissible]="false">
-      <p class="text-center mb-1">{{ 'plugins.compat.node_first' | translate: { packageName: 'Homebridge UI' } }}</p>
-      <p class="text-center mb-0">
-        <a href="https://homebridge.io/w/JTKEF" target="_blank" rel="noopener noreferrer">
-          {{ 'plugins.compat.node_link' | translate }} <i class="fa fa-external-link-alt"></i>
-        </a>
-      </p>
-    </ngb-alert>
+      <div class="text-center mb-3">
+        <i class="fab fa-node-js primary-text" style="font-size: 75px"></i>
+      </div>
+      <ul class="list-group list-group-box mb-3 text-start">
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          <div class="me-3">
+            <i class="fas fa-exclamation-circle orange-text fa-xl"></i>
+          </div>
+          <div class="text-start flex-grow-1">
+            {{
+              'plugins.compat.hb_node_too_low'
+                | translate
+                  : {
+                      minVersion: nodeMinVersion,
+                      installedVersion: nodeInstalledVersion,
+                      latestVersion: plugin.latestVersion,
+                      packageName: 'Homebridge UI',
+                    }
+            }}
+          </div>
+        </li>
+      </ul>
+      <ngb-alert type="warning" class="mb-0" [dismissible]="false">
+        <p class="text-center mb-1">{{ 'plugins.compat.node_first' | translate: { packageName: 'Homebridge UI' } }}</p>
+        <p class="text-center mb-0">
+          <a href="https://homebridge.io/w/JTKEF" target="_blank" rel="noopener noreferrer">
+            {{ 'plugins.compat.node_link' | translate }} <i class="fa fa-external-link-alt"></i>
+          </a>
+        </p>
+      </ngb-alert>
     }
   </div>
   <div class="modal-footer justify-content-between">
     <div class="text-start">
       @if (plugin && !['homebridge', 'homebridge-config-ui-x'].includes(plugin.name)) {
-      <button type="button" class="btn btn-elegant" data-bs-dismiss="modal" (click)="dismissModal()">
-        {{ 'form.button_close' | translate }}
-      </button>
+        <button type="button" class="btn btn-elegant" data-bs-dismiss="modal" (click)="dismissModal()">
+          {{ 'form.button_close' | translate }}
+        </button>
       }
     </div>
     <div class="text-center">
       @if (plugin && ['homebridge', 'homebridge-config-ui-x'].includes(plugin.name)) {
-      <button type="button" class="btn btn-elegant" data-bs-dismiss="modal" (click)="dismissModal()">
-        {{ 'form.button_close' | translate }}
-      </button>
+        <button type="button" class="btn btn-elegant" data-bs-dismiss="modal" (click)="dismissModal()">
+          {{ 'form.button_close' | translate }}
+        </button>
       }
     </div>
     <div class="text-end">
       @if (plugin && !['homebridge', 'homebridge-config-ui-x'].includes(plugin.name)) {
-      <button type="button" class="btn btn-danger" data-bs-dismiss="modal" (click)="closeModal()">
-        {{ 'form.button_continue' | translate }}
-      </button>
+        <button type="button" class="btn btn-danger" data-bs-dismiss="modal" (click)="closeModal()">
+          {{ 'form.button_continue' | translate }}
+        </button>
       }
     </div>
   </div>

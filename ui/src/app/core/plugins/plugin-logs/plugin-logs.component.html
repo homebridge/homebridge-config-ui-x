@@ -34,6 +34,7 @@
     <div class="text-center"></div>
     <div class="text-end">
       <button
+        type="button"
         class="btn btn-primary"
         container="modal"
         placement="top"
@@ -47,19 +48,22 @@
         <i class="fas fa-download"></i>
       </button>
       @if (childBridges.length) {
-      <button
-        class="btn btn-danger ms-3"
-        container="modal"
-        placement="top"
-        triggers="hover"
-        [attr.aria-label]="(childBridges.length > 1 ? 'child_bridge.restart_plural' : 'child_bridge.restart') | translate"
-        [ngbTooltip]="(childBridges.length > 1 ? 'child_bridge.restart_plural' : 'child_bridge.restart') | translate"
-        [openDelay]="150"
-        [disabled]="midAction()"
-        (click)="restartChildBridges()"
-      >
-        <i class="fas fa-power-off"></i>
-      </button>
+        <button
+          type="button"
+          class="btn btn-danger ms-3"
+          container="modal"
+          placement="top"
+          triggers="hover"
+          [attr.aria-label]="
+            (childBridges.length > 1 ? 'child_bridge.restart_plural' : 'child_bridge.restart') | translate
+          "
+          [ngbTooltip]="(childBridges.length > 1 ? 'child_bridge.restart_plural' : 'child_bridge.restart') | translate"
+          [openDelay]="150"
+          [disabled]="midAction()"
+          (click)="restartChildBridges()"
+        >
+          <i class="fas fa-power-off"></i>
+        </button>
       }
     </div>
   </div>

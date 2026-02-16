@@ -31,9 +31,9 @@
       </li>
     </ul>
     @if (invalidCredentials() && !formGroup.controls.password.value) {
-    <ngb-alert type="error" class="mt-3 mb-0" [dismissible]="false">
-      <p class="mb-0">{{ 'login.invalid_password' | translate }}</p>
-    </ngb-alert>
+      <ngb-alert type="error" class="mt-3 mb-0" [dismissible]="false">
+        <p class="mb-0">{{ 'login.invalid_password' | translate }}</p>
+      </ngb-alert>
     }
   </div>
   <div class="modal-footer justify-content-between">

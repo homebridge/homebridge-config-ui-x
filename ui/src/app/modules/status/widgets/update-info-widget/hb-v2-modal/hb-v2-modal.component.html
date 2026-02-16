@@ -11,123 +11,130 @@
   </div>
   <div class="modal-body">
     @if (loading()) {
-    <div class="w-100 text-center primary-text">
-      <i class="fa fa-circle-notch fa-spin" style="font-size: 75px"></i>
-    </div>
+      <div class="w-100 text-center primary-text">
+        <i class="fa fa-circle-notch fa-spin" style="font-size: 75px"></i>
+      </div>
     } @else {
-    <div class="text-center mb-3">
-      <img ngSrc="assets/hb-icon.png" alt="" class="plugin-icon-card" height="100" width="100" />
-    </div>
-    @if (allPluginsSupported()) {
-    <p class="text-center">All your plugins are marked as compatible with Homebridge v2.</p>
-    } @if (!allPluginsSupported()) {
-    <p class="text-center">
-      Some of your plugins are not explicitly marked as compatible with Homebridge v2. This does
-      <span class="fw-bold">not</span> necessarily mean that they won't work. We just can't guarantee that they will.
-    </p>
-    <p class="text-center">
-      For more information about this update, please see the
-      <a href="https://github.com/homebridge/homebridge/wiki/Updating-To-Homebridge-v2.0" target="_blank">wiki page</a>.
-    </p>
-    @if (isUpdating) {
-    <p class="text-center">To ignore this warning and continue with the update, click continue below.</p>
-    } }
-    <ul class="list-group list-group-box mb-0">
-      <li class="list-group-item d-flex justify-content-between align-items-center">
-        @if (nodeReady()) {
-        <div class="text-start flex-grow-1">
-          Node.js Version<br />
-          <span class="grey-text">{{ 'status.readiness.node_yes' | translate: { app: 'Homebridge v2' } }}</span>
-        </div>
-        <div class="ms-3">
-          <i class="fas fa-check-circle green-text fa-xl"></i>
-        </div>
-        } @else {
-        <div class="text-start flex-grow-1">
-          Node.js Version<br />
-          <span class="grey-text">{{ 'status.readiness.node_no' | translate: { app: 'Homebridge v2' } }}</span><br />
-          <a
-            href="https://github.com/homebridge/homebridge/wiki/How-To-Update-Node.js"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="small"
-          >
-            {{ 'plugins.compat.node_link' | translate }} <i class="fa fa-external-link-alt"></i>
-          </a>
-        </div>
-        <div class="ms-3">
-          <i class="fas fa-exclamation-circle orange-text fa-xl"></i>
-        </div>
-        }
-      </li>
-      @for (plugin of installedPlugins(); track plugin) {
-      <li class="list-group-item d-flex justify-content-between align-items-center">
-        <div class="me-3">
-          <img
-            alt=""
-            aria-hidden="true"
-            class="plugin-icon-small"
-            [src]="plugin.icon"
-            (error)="handleIconError(plugin)"
-          />
-        </div>
-        <div class="text-start flex-grow-1">{{ plugin.displayName }}</div>
-        <div class="ms-3">
-          @if (plugin.hb2Ready === 'supported') {
-          <i
-            class="fas fa-check-circle green-text fa-xl"
-            aria-label="The developer has specifically marked this plugin as compatible with Homebridge v2."
-          ></i>
-          } @if (plugin.hb2Ready === 'unknown') {
-          <i
-            class="fas fa-question-circle orange-text fa-xl"
-            aria-label="The developer has not specifically marked this plugin as compatible with Homebridge v2, but it may still work."
-          ></i>
-          }
-        </div>
-      </li>
+      <div class="text-center mb-3">
+        <img ngSrc="assets/hb-icon.png" alt="" class="plugin-icon-card" height="100" width="100" />
+      </div>
+      @if (allPluginsSupported()) {
+        <p class="text-center">All your plugins are marked as compatible with Homebridge v2.</p>
       }
-    </ul>
+      @if (!allPluginsSupported()) {
+        <p class="text-center">
+          Some of your plugins are not explicitly marked as compatible with Homebridge v2. This does
+          <span class="fw-bold">not</span> necessarily mean that they won't work. We just can't guarantee that they
+          will.
+        </p>
+        <p class="text-center">
+          For more information about this update, please see the
+          <a href="https://github.com/homebridge/homebridge/wiki/Updating-To-Homebridge-v2.0" target="_blank"
+            >wiki page</a
+          >.
+        </p>
+        @if (isUpdating) {
+          <p class="text-center">To ignore this warning and continue with the update, click continue below.</p>
+        }
+      }
+      <ul class="list-group list-group-box mb-0">
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          @if (nodeReady()) {
+            <div class="text-start flex-grow-1">
+              Node.js Version<br />
+              <span class="grey-text">{{ 'status.readiness.node_yes' | translate: { app: 'Homebridge v2' } }}</span>
+            </div>
+            <div class="ms-3">
+              <i class="fas fa-check-circle green-text fa-xl"></i>
+            </div>
+          } @else {
+            <div class="text-start flex-grow-1">
+              Node.js Version<br />
+              <span class="grey-text">{{ 'status.readiness.node_no' | translate: { app: 'Homebridge v2' } }}</span
+              ><br />
+              <a
+                href="https://github.com/homebridge/homebridge/wiki/How-To-Update-Node.js"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="small"
+              >
+                {{ 'plugins.compat.node_link' | translate }} <i class="fa fa-external-link-alt"></i>
+              </a>
+            </div>
+            <div class="ms-3">
+              <i class="fas fa-exclamation-circle orange-text fa-xl"></i>
+            </div>
+          }
+        </li>
+        @for (plugin of installedPlugins(); track plugin) {
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <div class="me-3">
+              <img
+                alt=""
+                aria-hidden="true"
+                class="plugin-icon-small"
+                [src]="plugin.icon"
+                (error)="handleIconError(plugin)"
+              />
+            </div>
+            <div class="text-start flex-grow-1">{{ plugin.displayName }}</div>
+            <div class="ms-3">
+              @if (plugin.hb2Ready === 'supported') {
+                <i
+                  class="fas fa-check-circle green-text fa-xl"
+                  aria-label="The developer has specifically marked this plugin as compatible with Homebridge v2."
+                ></i>
+              }
+              @if (plugin.hb2Ready === 'unknown') {
+                <i
+                  class="fas fa-question-circle orange-text fa-xl"
+                  aria-label="The developer has not specifically marked this plugin as compatible with Homebridge v2, but it may still work."
+                ></i>
+              }
+            </div>
+          </li>
+        }
+      </ul>
     }
   </div>
   <div class="modal-footer justify-content-between">
     <div class="text-start">
       @if (isUpdating) {
-      <button
-        type="button"
-        class="btn btn-elegant"
-        data-bs-dismiss="modal"
-        [attr.aria-label]="'form.button_close' | translate"
-        (click)="closeModal('Dismiss')"
-      >
-        {{ 'form.button_close' | translate }}
-      </button>
+        <button
+          type="button"
+          class="btn btn-elegant"
+          data-bs-dismiss="modal"
+          [attr.aria-label]="'form.button_close' | translate"
+          (click)="closeModal('Dismiss')"
+        >
+          {{ 'form.button_close' | translate }}
+        </button>
       }
     </div>
     <div class="text-center">
       @if (!isUpdating) {
-      <button
-        type="button"
-        class="btn btn-elegant"
-        data-bs-dismiss="modal"
-        [attr.aria-label]="'form.button_close' | translate"
-        (click)="closeModal('Dismiss')"
-      >
-        {{ 'form.button_close' | translate }}
-      </button>
+        <button
+          type="button"
+          class="btn btn-elegant"
+          data-bs-dismiss="modal"
+          [attr.aria-label]="'form.button_close' | translate"
+          (click)="closeModal('Dismiss')"
+        >
+          {{ 'form.button_close' | translate }}
+        </button>
       }
     </div>
     <div class="text-end">
       @if (isUpdating) {
-      <button
-        type="button"
-        class="btn btn-primary"
-        data-bs-dismiss="modal"
-        [disabled]="loading()"
-        (click)="closeModal('update')"
-      >
-        {{ 'form.button_continue' | translate }}
-      </button>
+        <button
+          type="button"
+          class="btn btn-primary"
+          data-bs-dismiss="modal"
+          [disabled]="loading()"
+          (click)="closeModal('update')"
+        >
+          {{ 'form.button_continue' | translate }}
+        </button>
       }
     </div>
   </div>

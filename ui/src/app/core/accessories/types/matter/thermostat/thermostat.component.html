@@ -54,17 +54,20 @@
           stroke-width="0.75"
           fill-opacity="0.5"
           [attr.fill]="
-            (systemMode() === 3)
+            systemMode() === 3
               ? 'url(#coolingGradient)'
-              : (systemMode() === 4)
+              : systemMode() === 4
                 ? 'url(#heatingGradient)'
-                : (systemMode() === 1 ? '#42d672' : '#7b7b7b')"
+                : systemMode() === 1
+                  ? '#42d672'
+                  : '#7b7b7b'
+          "
         />
         <! -- current temperature - ->
         @if (currentTemperature() !== null) {
-        <text x="16" y="13" font-size="8" text-anchor="middle" fill="#7f7f7f" font-family="Arial, sans-serif">
-          {{ currentTemperature() | convertTemp | number: '1.0-1'}}&deg;{{ temperatureUnits | uppercase }}
-        </text>
+          <text x="16" y="13" font-size="8" text-anchor="middle" fill="#7f7f7f" font-family="Arial, sans-serif">
+            {{ currentTemperature() | convertTemp | number: '1.0-1' }}&deg;{{ temperatureUnits | uppercase }}
+          </text>
         }
       </svg>
     </div>
@@ -73,9 +76,15 @@
     </div>
 
     <div class="accessory-label grey-text">
-      @if (systemMode() === 0) { {{ 'accessories.control.off' | translate }} } @else if (systemMode() === 3) {
-      {{'accessories.control.cool' | translate }} } @else if (systemMode() === 4) { {{'accessories.control.heat' |
-      translate }} } @else if (systemMode() === 1) { {{'accessories.control.auto' | translate }} }
+      @if (systemMode() === 0) {
+        {{ 'accessories.control.off' | translate }}
+      } @else if (systemMode() === 3) {
+        {{ 'accessories.control.cool' | translate }}
+      } @else if (systemMode() === 4) {
+        {{ 'accessories.control.heat' | translate }}
+      } @else if (systemMode() === 1) {
+        {{ 'accessories.control.auto' | translate }}
+      }
     </div>
   </div>
 </div>

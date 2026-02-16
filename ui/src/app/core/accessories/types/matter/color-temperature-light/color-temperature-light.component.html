@@ -13,7 +13,13 @@
           stroke="#7f7f7f"
           stroke-width="1.5"
           d="M8 21c-2.8-2.2-4.5-5.4-4.5-9 0-6.1 5-11 11.5-11S27.5 5.9 27.5 12c0 3.5-1.7 6.7-4.5 8.9-1.2 1-1.8 4.8-3 7.3-.9 2-2.2 2.7-4.5 2.7s-3.6-.7-4.5-2.7c-1.2-2.5-1.8-6.3-3-7.3z"
-          [attr.fill]="isOn() ? $colour.kelvinToHex($colour.miredToKelvin(service().clusters?.colorControl?.colorTemperatureMireds || 250)) : 'none'"
+          [attr.fill]="
+            isOn()
+              ? $colour.kelvinToHex(
+                  $colour.miredToKelvin(service().clusters?.colorControl?.colorTemperatureMireds || 250)
+                )
+              : 'none'
+          "
           [attr.fill-opacity]="0.25 + (brightness() / 100) * 0.5"
         />
         <! -- top inner line - ->

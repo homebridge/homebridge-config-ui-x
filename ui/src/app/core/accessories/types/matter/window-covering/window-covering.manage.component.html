@@ -12,9 +12,13 @@
   <div class="modal-body text-center px-5">
     <div class="d-flex justify-content-center mb-0 p-0">
       <div class="mb-0 mx-0 p-3 btn-read w-100">
-        @if (currentPosition === 0) { {{ 'accessories.control.closed' | translate }} } @else if (currentPosition ===
-        100) { {{ 'accessories.control.open' | translate }} } @else { {{ 'accessories.control.open' | translate }} {{
-        currentPosition }}% }
+        @if (currentPosition === 0) {
+          {{ 'accessories.control.closed' | translate }}
+        } @else if (currentPosition === 100) {
+          {{ 'accessories.control.open' | translate }}
+        } @else {
+          {{ 'accessories.control.open' | translate }} {{ currentPosition }}%
+        }
       </div>
     </div>
     <h6 class="mt-4">{{ 'accessories.control.target' | translate }}: {{ targetPosition.value }}%</h6>

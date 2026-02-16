@@ -32,17 +32,17 @@
     </div>
 
     @if (targetSetDuration) {
-    <h6>
-      {{ 'accessories.control.set_duration' | translate }}: {{ targetSetDuration.value === 0 ? '&infin;' :
-      (targetSetDuration.value | duration) }}
-    </h6>
-    <nouislider
-      [min]="targetSetDuration.min"
-      [max]="targetSetDuration.max"
-      [step]="15"
-      [(ngModel)]="targetSetDuration.value"
-      (ngModelChange)="onSetDurationStateChange()"
-    />
+      <h6>
+        {{ 'accessories.control.set_duration' | translate }}:
+        {{ targetSetDuration.value === 0 ? '&infin;' : (targetSetDuration.value | duration) }}
+      </h6>
+      <nouislider
+        [min]="targetSetDuration.min"
+        [max]="targetSetDuration.max"
+        [step]="15"
+        [(ngModel)]="targetSetDuration.value"
+        (ngModelChange)="onSetDurationStateChange()"
+      />
     }
   </div>
   <div class="modal-footer"></div>

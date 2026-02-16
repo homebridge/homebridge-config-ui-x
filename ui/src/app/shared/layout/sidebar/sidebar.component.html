@@ -36,7 +36,7 @@
         tabindex="0"
         [routerLink]="['/']"
         [routerLinkActive]="'active'"
-        [routerLinkActiveOptions]="{exact: true}"
+        [routerLinkActiveOptions]="{ exact: true }"
         [attr.aria-label]="'menu.label_status' | translate"
         (keydown)="handleKeydown($event)"
       >
@@ -46,19 +46,23 @@
     </div>
 
     @if (rPiWasUnderVoltage() || rPiCurrentlyUnderVoltage()) {
-    <div class="link">
-      <div
-        class="link-row"
-        role="menuitem"
-        tabindex="0"
-        [attr.aria-label]="('rpi.throttled.undervoltage_title' | translate) + ' - ' + ('rpi.throttled.undervoltage_description' | translate)"
-        (click)="openUnderVoltageModal()"
-        (keydown)="handleKeydown($event)"
-      >
-        <div class="icon"><i class="fas fa-bolt fa-beat yellow-text" style="--fa-beat-scale: 1.5"></i></div>
-        <div class="title">{{ 'rpi.throttled.undervoltage_title' | translate }}</div>
+      <div class="link">
+        <div
+          class="link-row"
+          role="menuitem"
+          tabindex="0"
+          [attr.aria-label]="
+            ('rpi.throttled.undervoltage_title' | translate) +
+            ' - ' +
+            ('rpi.throttled.undervoltage_description' | translate)
+          "
+          (click)="openUnderVoltageModal()"
+          (keydown)="handleKeydown($event)"
+        >
+          <div class="icon"><i class="fas fa-bolt fa-beat yellow-text" style="--fa-beat-scale: 1.5"></i></div>
+          <div class="title">{{ 'rpi.throttled.undervoltage_title' | translate }}</div>
+        </div>
       </div>
-    </div>
     }
 
     <div class="link">
@@ -107,50 +111,52 @@
     </div>
 
     @if (enableTerminalAccess && isAdmin) {
-    <div class="link">
-      <div
-        class="link-row"
-        role="menuitem"
-        tabindex="0"
-        [routerLink]="['/platform-tools/terminal']"
-        [routerLinkActive]="'active'"
-        [attr.aria-label]="'menu.linux.label_terminal' | translate"
-        (keydown)="handleKeydown($event)"
-      >
-        <div class="icon"><i class="fa fa-terminal"></i></div>
-        <div class="title">{{ 'menu.linux.label_terminal' | translate }}</div>
+      <div class="link">
+        <div
+          class="link-row"
+          role="menuitem"
+          tabindex="0"
+          [routerLink]="['/platform-tools/terminal']"
+          [routerLinkActive]="'active'"
+          [attr.aria-label]="'menu.linux.label_terminal' | translate"
+          (keydown)="handleKeydown($event)"
+        >
+          <div class="icon"><i class="fa fa-terminal"></i></div>
+          <div class="title">{{ 'menu.linux.label_terminal' | translate }}</div>
+        </div>
       </div>
-    </div>
-    } @if (isAdmin) {
-    <div class="link">
-      <div
-        class="link-row"
-        role="menuitem"
-        tabindex="0"
-        [routerLink]="['/config']"
-        [routerLinkActive]="'active'"
-        [attr.aria-label]="'menu.config_json_editor' | translate"
-        (keydown)="handleKeydown($event)"
-      >
-        <div class="icon"><i class="fa fa-code"></i></div>
-        <div class="title">{{ 'menu.config_json_editor' | translate }}</div>
+    }
+    @if (isAdmin) {
+      <div class="link">
+        <div
+          class="link-row"
+          role="menuitem"
+          tabindex="0"
+          [routerLink]="['/config']"
+          [routerLinkActive]="'active'"
+          [attr.aria-label]="'menu.config_json_editor' | translate"
+          (keydown)="handleKeydown($event)"
+        >
+          <div class="icon"><i class="fa fa-code"></i></div>
+          <div class="title">{{ 'menu.config_json_editor' | translate }}</div>
+        </div>
       </div>
-    </div>
-    } @if (isAdmin) {
-    <div class="link">
-      <div
-        class="link-row"
-        role="menuitem"
-        tabindex="0"
-        [routerLink]="['/settings']"
-        [routerLinkActive]="'active'"
-        [attr.aria-label]="'menu.label_settings' | translate"
-        (keydown)="handleKeydown($event)"
-      >
-        <div class="icon"><i class="fa fa-cog"></i></div>
-        <div class="title">{{ 'menu.label_settings' | translate }}</div>
+    }
+    @if (isAdmin) {
+      <div class="link">
+        <div
+          class="link-row"
+          role="menuitem"
+          tabindex="0"
+          [routerLink]="['/settings']"
+          [routerLinkActive]="'active'"
+          [attr.aria-label]="'menu.label_settings' | translate"
+          (keydown)="handleKeydown($event)"
+        >
+          <div class="icon"><i class="fa fa-cog"></i></div>
+          <div class="title">{{ 'menu.label_settings' | translate }}</div>
+        </div>
       </div>
-    </div>
     }
 
     <div class="link">
@@ -169,48 +175,50 @@
     </div>
 
     @if (isAdmin) {
-    <div class="link">
-      <div
-        class="link-row"
-        role="menuitem"
-        tabindex="0"
-        [routerLink]="['/power-options']"
-        [routerLinkActive]="'active'"
-        [attr.aria-label]="'menu.restart.title' | translate"
-        (keydown)="handleKeydown($event)"
-      >
-        <div class="icon"><i class="fa fa-power-off"></i></div>
-        <div class="title">{{ 'menu.restart.title' | translate }}</div>
+      <div class="link">
+        <div
+          class="link-row"
+          role="menuitem"
+          tabindex="0"
+          [routerLink]="['/power-options']"
+          [routerLinkActive]="'active'"
+          [attr.aria-label]="'menu.restart.title' | translate"
+          (keydown)="handleKeydown($event)"
+        >
+          <div class="icon"><i class="fa fa-power-off"></i></div>
+          <div class="title">{{ 'menu.restart.title' | translate }}</div>
+        </div>
       </div>
-    </div>
-    } @if (isPwa) {
-    <div class="link">
-      <div
-        class="link-row"
-        role="menuitem"
-        tabindex="0"
-        [attr.aria-label]="'menu.reload' | translate"
-        (click)="reloadPage()"
-        (keydown)="handleKeydown($event)"
-      >
-        <div class="icon"><i class="fa fa-refresh"></i></div>
-        <div class="title">{{ 'menu.reload' | translate }}</div>
+    }
+    @if (isPwa) {
+      <div class="link">
+        <div
+          class="link-row"
+          role="menuitem"
+          tabindex="0"
+          [attr.aria-label]="'menu.reload' | translate"
+          (click)="reloadPage()"
+          (keydown)="handleKeydown($event)"
+        >
+          <div class="icon"><i class="fa fa-refresh"></i></div>
+          <div class="title">{{ 'menu.reload' | translate }}</div>
+        </div>
       </div>
-    </div>
-    } @if (formAuth()) {
-    <div class="link">
-      <div
-        class="link-row"
-        role="menuitem"
-        tabindex="0"
-        [attr.aria-label]="'menu.tooltip_logout' | translate"
-        (click)="logout()"
-        (keydown)="handleKeydown($event)"
-      >
-        <div class="icon"><i class="fa fa-right-from-bracket"></i></div>
-        <div class="title">{{ 'menu.tooltip_logout' | translate }}</div>
+    }
+    @if (formAuth()) {
+      <div class="link">
+        <div
+          class="link-row"
+          role="menuitem"
+          tabindex="0"
+          [attr.aria-label]="'menu.tooltip_logout' | translate"
+          (click)="logout()"
+          (keydown)="handleKeydown($event)"
+        >
+          <div class="icon"><i class="fa fa-right-from-bracket"></i></div>
+          <div class="title">{{ 'menu.tooltip_logout' | translate }}</div>
+        </div>
       </div>
-    </div>
     }
   </div>
 </div>

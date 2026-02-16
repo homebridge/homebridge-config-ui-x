@@ -2,10 +2,12 @@
   class="accessory-box"
   tabindex="0"
   [class]="{
-    'accessory-on': ('LockCurrentState' in service().values && service().values?.LockCurrentState !== 1) || service().values?.On === 1,
-    'unlocked': service().values?.LockCurrentState === 0  || service().values?.On === 1,
-    'jammed': service().values?.LockCurrentState === 2,
-    'error': service().values?.LockCurrentState === 3,
+    'accessory-on':
+      ('LockCurrentState' in service().values && service().values?.LockCurrentState !== 1) ||
+      service().values?.On === 1,
+    unlocked: service().values?.LockCurrentState === 0 || service().values?.On === 1,
+    jammed: service().values?.LockCurrentState === 2,
+    error: service().values?.LockCurrentState === 3,
   }"
   [style.cursor]="readyForControl ? 'pointer' : 'default'"
   (shortClick)="onClick()"
@@ -52,15 +54,18 @@
     </div>
     <div class="accessory-label mt-auto">{{ service().customName || service().serviceName }}</div>
     @if (service().values?.LockCurrentState < 2) {
-    <div
-      class="accessory-label grey-text"
-      [innerText]="(service().values?.LockCurrentState ? 'accessories.control.locked' : 'accessories.control.unlocked') | translate"
-      [class]="{ 'red-text': !service().values?.LockCurrentState, 'grey-text': service().values?.LockCurrentState }"
-    ></div>
+      <div
+        class="accessory-label grey-text"
+        [innerText]="
+          (service().values?.LockCurrentState ? 'accessories.control.locked' : 'accessories.control.unlocked')
+            | translate
+        "
+        [class]="{ 'red-text': !service().values?.LockCurrentState, 'grey-text': service().values?.LockCurrentState }"
+      ></div>
     } @else if (service().values?.LockCurrentState === 2) {
-    <div class="accessory-label red-text">{{ 'accessories.control.jammed' | translate }}</div>
+      <div class="accessory-label red-text">{{ 'accessories.control.jammed' | translate }}</div>
     } @else if (service().values?.LockCurrentState === 3) {
-    <div class="accessory-label red-text">{{ 'accessories.control.unknown' | translate }}</div>
+      <div class="accessory-label red-text">{{ 'accessories.control.unknown' | translate }}</div>
     }
   </div>
 </div>

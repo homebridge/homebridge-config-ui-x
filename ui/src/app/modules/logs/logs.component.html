@@ -3,76 +3,79 @@
     <h3 class="primary-text m-0">{{ 'menu.linux.label_logs' | translate }}</h3>
   </div>
   @if (isAdmin) {
-  <div class="col-6 text-end">
-    <button
-      class="btn btn-elegant my-0 me-2"
-      container="body"
-      placement="bottom"
-      triggers="hover"
-      [openDelay]="150"
-      [ngbTooltip]="'form.search' | translate"
-      [attr.aria-label]="'form.search' | translate"
-      (click)="showSearch()"
-    >
-      <i class="fas{{ showSearchBar() ? ' primary-text' : '' }} fa-search"></i>
-    </button>
-    <button
-      class="btn btn-elegant my-0 me-2"
-      container="body"
-      placement="bottom"
-      triggers="hover"
-      [openDelay]="150"
-      [ngbTooltip]="'form.button_download' | translate"
-      [attr.aria-label]="'form.button_download' | translate"
-      (click)="downloadLogFile()"
-    >
-      <i class="fas fa-download"></i>
-    </button>
-    <button
-      class="btn btn-elegant my-0 me-0"
-      container="body"
-      placement="bottom"
-      triggers="hover"
-      [openDelay]="150"
-      [ngbTooltip]="'form.button_delete' | translate"
-      [attr.aria-label]="'form.button_delete' | translate"
-      (click)="truncateLogFile()"
-    >
-      <i class="fas fa-trash-alt"></i>
-    </button>
-  </div>
+    <div class="col-6 text-end">
+      <button
+        type="button"
+        class="btn btn-elegant my-0 me-2"
+        container="body"
+        placement="bottom"
+        triggers="hover"
+        [openDelay]="150"
+        [ngbTooltip]="'form.search' | translate"
+        [attr.aria-label]="'form.search' | translate"
+        (click)="showSearch()"
+      >
+        <i class="fas{{ showSearchBar() ? ' primary-text' : '' }} fa-search"></i>
+      </button>
+      <button
+        type="button"
+        class="btn btn-elegant my-0 me-2"
+        container="body"
+        placement="bottom"
+        triggers="hover"
+        [openDelay]="150"
+        [ngbTooltip]="'form.button_download' | translate"
+        [attr.aria-label]="'form.button_download' | translate"
+        (click)="downloadLogFile()"
+      >
+        <i class="fas fa-download"></i>
+      </button>
+      <button
+        type="button"
+        class="btn btn-elegant my-0 me-0"
+        container="body"
+        placement="bottom"
+        triggers="hover"
+        [openDelay]="150"
+        [ngbTooltip]="'form.button_delete' | translate"
+        [attr.aria-label]="'form.button_delete' | translate"
+        (click)="truncateLogFile()"
+      >
+        <i class="fas fa-trash-alt"></i>
+      </button>
+    </div>
   }
 </div>
 
 @if (showSearchBar()) {
-<div class="row">
-  <div class="col-md-12">
-    <form novalidate [formGroup]="form" (ngSubmit)="onSubmit(form.value)">
-      <input
-        #searchInput
-        type="text"
-        id="logs-search"
-        class="search-bar"
-        formControlName="query"
-        [class.search-bar-light]="terminalTheme === 'light'"
-        [placeholder]="'logs.placeholder_search_logs' | translate"
-        [class.is-invalid]="searchInputInvalid"
-      />
-      @if (form.get('query')?.value) {
-      <button
-        type="button"
-        class="search-bar-clear"
-        [attr.aria-label]="'form.button_clear' | translate"
-        (click)="onClearSearch()"
-      >
-        <i class="fas fa-square-xmark" aria-hidden="true"></i>
-      </button>
-      } @else {
-      <span class="search-bar-badge badge badge-primary badge-beta">{{ 'common.labels.beta' | translate }}</span>
-      }
-    </form>
+  <div class="row">
+    <div class="col-md-12">
+      <form novalidate [formGroup]="form" (ngSubmit)="onSubmit(form.value)">
+        <input
+          #searchInput
+          type="text"
+          id="logs-search"
+          class="search-bar"
+          formControlName="query"
+          [class.search-bar-light]="terminalTheme === 'light'"
+          [placeholder]="'logs.placeholder_search_logs' | translate"
+          [class.is-invalid]="searchInputInvalid"
+        />
+        @if (form.get('query')?.value) {
+          <button
+            type="button"
+            class="search-bar-clear"
+            [attr.aria-label]="'form.button_clear' | translate"
+            (click)="onClearSearch()"
+          >
+            <i class="fas fa-square-xmark" aria-hidden="true"></i>
+          </button>
+        } @else {
+          <span class="search-bar-badge badge badge-primary badge-beta">{{ 'common.labels.beta' | translate }}</span>
+        }
+      </form>
+    </div>
   </div>
-</div>
 }
 
 <div

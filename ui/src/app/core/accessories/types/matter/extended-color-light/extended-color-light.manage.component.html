@@ -39,16 +39,16 @@
       (ngModelChange)="onBrightnessStateChange()"
     />
     @if (supportsColorTemperature) {
-    <h6 class="mt-4">
-      {{ 'accessories.control.color_temperature' | translate }}: {{ targetColorTemperature.mired | convertMired }}
-    </h6>
-    <nouislider
-      [min]="targetColorTemperature.min"
-      [max]="targetColorTemperature.max"
-      [step]="targetColorTemperature.step"
-      [(ngModel)]="targetColorTemperature.value"
-      (ngModelChange)="onColorTemperatureStateChange()"
-    />
+      <h6 class="mt-4">
+        {{ 'accessories.control.color_temperature' | translate }}: {{ targetColorTemperature.mired | convertMired }}
+      </h6>
+      <nouislider
+        [min]="targetColorTemperature.min"
+        [max]="targetColorTemperature.max"
+        [step]="targetColorTemperature.step"
+        [(ngModel)]="targetColorTemperature.value"
+        (ngModelChange)="onColorTemperatureStateChange()"
+      />
     }
     <h6 class="mt-3">{{ 'accessories.control.hue' | translate }}: {{ huePercentage }}%</h6>
     <nouislider

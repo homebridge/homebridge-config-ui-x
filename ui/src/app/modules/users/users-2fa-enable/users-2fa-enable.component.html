@@ -16,90 +16,91 @@
     <ul class="mb-3">
       <li>{{ 'users.setup_2fa_warning' | translate }}</li>
       @if (!timeDiffError()) {
-      <li>{{ 'users.setup_2fa_scan_qr_code' | translate }}</li>
+        <li>{{ 'users.setup_2fa_scan_qr_code' | translate }}</li>
       }
     </ul>
     @if (timeDiffError()) {
-    <ngb-alert type="error" class="mb-0" [dismissible]="false">
-      <p class="fw-bold mb-1">{{ 'users.setup_2fa_cannot_setup_2fa' | translate }}</p>
-      <p class="mb-0">{{ 'users.setup_2fa_server_time_out' | translate: {timeDiffError: timeDiffError()} }}</p>
-    </ngb-alert>
-    } @if (!timeDiffError()) {
-    <ul class="list-group list-group-box mb-0">
-      <li class="list-group-item text-center">
-        <div class="text-center w-100 d-flex justify-content-center my-2">
-          <app-qrcode class="mx-auto" style="width: 175px; height: 175px" [data]="otpString()" />
-        </div>
-        @if (otpSecret()) {
-        <div class="grey-text small mt-0 mb-1">
-          {{ 'users.setup_2fa_scan_qr_manual' | translate }}<br />
-          {{ otpSecret() }}
-          <a href="javascript:void(0)" class="ms-1 text-primary" (click)="copySecretToClipboard()">
-            @if (secretCopied()) {
-            <i class="fas fa-check green-text"></i>
-            } @else {
-            <i class="fas fa-copy"></i>
-            }
-          </a>
-        </div>
-        }
-      </li>
-      <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
-        <label class="mb-2 mb-md-0 w-100 w-md-50">{{ 'users.setup_2fa_enter_code' | translate }}</label>
-        <div class="text-start text-md-end w-100 w-md-50">
-          <input
-            type="text"
-            class="form-control custom-input"
-            placeholder="eg. 123456"
-            autocomplete="one-time-code"
-            autocapitalize="none"
-            inputmode="numeric"
-            pattern="[0-9]*"
-            [formControl]="formGroup.controls.code"
-          />
-        </div>
-      </li>
-    </ul>
+      <ngb-alert type="error" class="mb-0" [dismissible]="false">
+        <p class="fw-bold mb-1">{{ 'users.setup_2fa_cannot_setup_2fa' | translate }}</p>
+        <p class="mb-0">{{ 'users.setup_2fa_server_time_out' | translate: { timeDiffError: timeDiffError() } }}</p>
+      </ngb-alert>
+    }
+    @if (!timeDiffError()) {
+      <ul class="list-group list-group-box mb-0">
+        <li class="list-group-item text-center">
+          <div class="text-center w-100 d-flex justify-content-center my-2">
+            <app-qrcode class="mx-auto" style="width: 175px; height: 175px" [data]="otpString()" />
+          </div>
+          @if (otpSecret()) {
+            <div class="grey-text small mt-0 mb-1">
+              {{ 'users.setup_2fa_scan_qr_manual' | translate }}<br />
+              {{ otpSecret() }}
+              <a href="javascript:void(0)" class="ms-1 text-primary" (click)="copySecretToClipboard()">
+                @if (secretCopied()) {
+                  <i class="fas fa-check green-text"></i>
+                } @else {
+                  <i class="fas fa-copy"></i>
+                }
+              </a>
+            </div>
+          }
+        </li>
+        <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
+          <label class="mb-2 mb-md-0 w-100 w-md-50">{{ 'users.setup_2fa_enter_code' | translate }}</label>
+          <div class="text-start text-md-end w-100 w-md-50">
+            <input
+              type="text"
+              class="form-control custom-input"
+              placeholder="eg. 123456"
+              autocomplete="one-time-code"
+              autocapitalize="none"
+              inputmode="numeric"
+              pattern="[0-9]*"
+              [formControl]="formGroup.controls.code"
+            />
+          </div>
+        </li>
+      </ul>
     }
   </div>
   <div class="modal-footer justify-content-between">
     <div class="text-start">
       @if (!timeDiffError()) {
-      <button
-        type="button"
-        class="btn btn-elegant"
-        data-bs-dismiss="modal"
-        [attr.aria-label]="'form.button_close' | translate"
-        (click)="dismissModal()"
-      >
-        {{ 'form.button_close' | translate }}
-      </button>
+        <button
+          type="button"
+          class="btn btn-elegant"
+          data-bs-dismiss="modal"
+          [attr.aria-label]="'form.button_close' | translate"
+          (click)="dismissModal()"
+        >
+          {{ 'form.button_close' | translate }}
+        </button>
       }
     </div>
     <div class="text-center">
       @if (timeDiffError()) {
-      <button
-        type="button"
-        class="btn btn-elegant"
-        data-bs-dismiss="modal"
-        [attr.aria-label]="'form.button_close' | translate"
-        (click)="dismissModal()"
-      >
-        {{ 'form.button_close' | translate }}
-      </button>
+        <button
+          type="button"
+          class="btn btn-elegant"
+          data-bs-dismiss="modal"
+          [attr.aria-label]="'form.button_close' | translate"
+          (click)="dismissModal()"
+        >
+          {{ 'form.button_close' | translate }}
+        </button>
       }
     </div>
     <div class="text-end">
       @if (!timeDiffError()) {
-      <button
-        type="button"
-        class="btn btn-primary"
-        data-bs-dismiss="modal"
-        [disabled]="formGroup.invalid"
-        (click)="enable2fa()"
-      >
-        {{ 'form.button_continue' | translate }}
-      </button>
+        <button
+          type="button"
+          class="btn btn-primary"
+          data-bs-dismiss="modal"
+          [disabled]="formGroup.invalid"
+          (click)="enable2fa()"
+        >
+          {{ 'form.button_continue' | translate }}
+        </button>
       }
     </div>
   </div>

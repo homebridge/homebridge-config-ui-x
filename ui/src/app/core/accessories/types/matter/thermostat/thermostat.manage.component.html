@@ -11,19 +11,15 @@
   </div>
   <div class="modal-body text-center px-5">
     @if (currentTemperature !== null) {
-    <h6 class="mt-2 mb-4 fs-4">
-      <i
-        class="fas fa-temperature-full"
-        [style.color]="
-            targetMode === 3
-              ? '#1e8bbd'
-              : targetMode === 4
-                ? '#e69533'
-                : (targetMode === 1 ? '#42d672' : '#7b7b7b')
+      <h6 class="mt-2 mb-4 fs-4">
+        <i
+          class="fas fa-temperature-full"
+          [style.color]="
+            targetMode === 3 ? '#1e8bbd' : targetMode === 4 ? '#e69533' : targetMode === 1 ? '#42d672' : '#7b7b7b'
           "
-      ></i
-      >{{ currentTemperature | convertTemp | number: '1.0-1' }}°{{ temperatureUnits | uppercase }}
-    </h6>
+        ></i
+        >{{ currentTemperature | convertTemp | number: '1.0-1' }}°{{ temperatureUnits | uppercase }}
+      </h6>
     }
     <div
       class="btn-group-vertical d-flex justify-content-center mb-0 p-0"
@@ -62,48 +58,51 @@
 
     <! -- Auto mode - both heating and cooling - ->
     @if (targetMode === 1) {
-    <h6 class="mt-4 mb-1">
-      {{ 'accessories.control.threshold_auto' | translate }}: {{ autoTemp[0] | convertTemp | number: '1.0-1' }}&deg;{{
-      temperatureUnits | uppercase }} - {{ autoTemp[1] | convertTemp | number: '1.0-1' }}&deg;{{ temperatureUnits |
-      uppercase }}
-    </h6>
-    <nouislider
-      [min]="minHeatSetpoint"
-      [max]="maxCoolSetpoint"
-      [step]="0.5"
-      [(ngModel)]="autoTemp"
-      (ngModelChange)="onAutoTempChange()"
-    />
+      <h6 class="mt-4 mb-1">
+        {{ 'accessories.control.threshold_auto' | translate }}: {{ autoTemp[0] | convertTemp | number: '1.0-1' }}&deg;{{
+          temperatureUnits | uppercase
+        }}
+        - {{ autoTemp[1] | convertTemp | number: '1.0-1' }}&deg;{{ temperatureUnits | uppercase }}
+      </h6>
+      <nouislider
+        [min]="minHeatSetpoint"
+        [max]="maxCoolSetpoint"
+        [step]="0.5"
+        [(ngModel)]="autoTemp"
+        (ngModelChange)="onAutoTempChange()"
+      />
     }
 
     <! -- Heat mode - only heating setpoint - ->
     @if (targetMode === 4) {
-    <h6 class="mt-4">
-      {{ 'accessories.control.target' | translate }}: {{ targetHeatingTemp | convertTemp | number: '1.0-1' }}&deg;{{
-      temperatureUnits | uppercase }}
-    </h6>
-    <nouislider
-      [min]="minHeatSetpoint"
-      [max]="maxHeatSetpoint"
-      [step]="0.5"
-      [(ngModel)]="targetHeatingTemp"
-      (ngModelChange)="onHeatingTempChange()"
-    />
+      <h6 class="mt-4">
+        {{ 'accessories.control.target' | translate }}: {{ targetHeatingTemp | convertTemp | number: '1.0-1' }}&deg;{{
+          temperatureUnits | uppercase
+        }}
+      </h6>
+      <nouislider
+        [min]="minHeatSetpoint"
+        [max]="maxHeatSetpoint"
+        [step]="0.5"
+        [(ngModel)]="targetHeatingTemp"
+        (ngModelChange)="onHeatingTempChange()"
+      />
     }
 
     <! -- Cool mode - only cooling setpoint - ->
     @if (targetMode === 3) {
-    <h6 class="mt-4">
-      {{ 'accessories.control.target' | translate }}: {{ targetCoolingTemp | convertTemp | number: '1.0-1' }}&deg;{{
-      temperatureUnits | uppercase }}
-    </h6>
-    <nouislider
-      [min]="minCoolSetpoint"
-      [max]="maxCoolSetpoint"
-      [step]="0.5"
-      [(ngModel)]="targetCoolingTemp"
-      (ngModelChange)="onCoolingTempChange()"
-    />
+      <h6 class="mt-4">
+        {{ 'accessories.control.target' | translate }}: {{ targetCoolingTemp | convertTemp | number: '1.0-1' }}&deg;{{
+          temperatureUnits | uppercase
+        }}
+      </h6>
+      <nouislider
+        [min]="minCoolSetpoint"
+        [max]="maxCoolSetpoint"
+        [step]="0.5"
+        [(ngModel)]="targetCoolingTemp"
+        (ngModelChange)="onCoolingTempChange()"
+      />
     }
   </div>
   <div class="modal-footer"></div>
