@@ -634,13 +634,13 @@ export class PluginsService {
       pluginAction.version = await this.getNpmModuleLatestVersion(pluginAction.name)
     }
 
+    // Grab a list of any installed plugins
+    await this.getInstalledPlugins()
+
     // Set the default install path
     let installPath = this.configService.customPluginPath
       ? this.configService.customPluginPath
       : this.installedPlugins.find(x => x.name === this.configService.name).installPath
-
-    // Check if the plugin is already installed
-    await this.getInstalledPlugins()
 
     // Check if the plugin is currently installed
     const existingPlugin = this.installedPlugins.find(x => x.name === pluginAction.name)
