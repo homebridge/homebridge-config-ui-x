@@ -221,7 +221,7 @@
                     [style.text-align]="'center'"
                     (input)="
                       onScheduledRestartCronChange(
-                        $any($event.target).value,
+                        asInputElement($event.target).value,
                         configBlocks()[selectedBlock()]._bridge?.username
                       )
                     "

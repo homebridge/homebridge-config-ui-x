@@ -1016,6 +1016,10 @@ export class PluginBridgeComponent implements OnInit {
   /**
    * Update scheduled restart cron locally (will be saved when modal is saved)
    */
+  public asInputElement(target: EventTarget | null): HTMLInputElement {
+    return target as HTMLInputElement
+  }
+
   public onScheduledRestartCronChange(value: string, username: string): void {
     if (!username) {
       return
