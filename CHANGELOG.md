@@ -10,6 +10,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - improve loading spinner on backup restore
 - promote scheduled cron feature from beta
 - promote advertise via mdns feature from beta
+- promote inactivity based session from beta
 
 ### Other Changes
 
