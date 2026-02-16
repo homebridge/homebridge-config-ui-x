@@ -6,13 +6,13 @@
       class="btn-close"
       data-bs-dismiss="modal"
       [attr.aria-label]="'form.button_close' | translate"
-      (click)="dismissModal()"
       [disabled]="clicked()"
+      (click)="dismissModal()"
     ></button>
   </div>
   <div class="modal-body">
     <div class="text-center mb-3">
-      <i class="fas fa-image primary-text" style="font-size: 75px"></i>
+      <i class="fas fa-image primary-text icon-xl"></i>
     </div>
     <ul class="mb-3">
       <li>{{ 'settings.display.wallpaper_intro' | translate }}</li>
@@ -21,34 +21,33 @@
     </ul>
     <div class="mb-3 text-center">
       @if (wallpaperUrl()) {
-      <div class="position-relative d-inline-block">
-        <img
-          [src]="wallpaperUrl()"
-          class="img-fluid rounded mx-auto d-block"
-          alt="Current Wallpaper"
-          style="height: 200px"
-        />
-        <button
-          class="btn btn-danger position-absolute"
-          style="top: 10px; right: 10px"
-          (click)="clearWallpaper()"
-          [attr.aria-label]="'form.button_delete' | translate"
-        >
-          <i class="fas fa-trash"></i>
-        </button>
-      </div>
+        <div class="position-relative d-inline-block">
+          <img
+            class="img-fluid rounded mx-auto d-block wallpaper-preview"
+            alt="Current Wallpaper"
+            [src]="wallpaperUrl()"
+          />
+          <button
+            type="button"
+            class="btn btn-danger position-absolute wallpaper-delete-btn"
+            [attr.aria-label]="'form.button_delete' | translate"
+            (click)="clearWallpaper()"
+          >
+            <i class="fas fa-trash"></i>
+          </button>
+        </div>
       } @else {
-      <div class="gradient anim rounded" style="height: 200px; width: 350px; margin: 0 auto"></div>
+        <div class="gradient anim rounded wallpaper-placeholder"></div>
       }
     </div>
     <div class="mb-0">
       <input
+        #wallpaperInput
         type="file"
         id="wallpaper"
         class="form-control"
-        #wallpaperInput
-        (change)="onFileChange($event)"
         accept="image/*"
+        (change)="onFileChange($event)"
       />
     </div>
   </div>
@@ -58,8 +57,8 @@
         type="button"
         class="btn btn-elegant"
         data-bs-dismiss="modal"
-        (click)="dismissModal()"
         [disabled]="clicked()"
+        (click)="dismissModal()"
       >
         {{ 'form.button_close' | translate }}
       </button>
@@ -70,8 +69,8 @@
         type="button"
         class="btn btn-primary"
         data-bs-dismiss="modal"
+        [disabled]="wallpaperUrl() === originalWallpaperUrl() || clicked()"
         (click)="saveWallpaper()"
-        [disabled]="(wallpaperUrl() === originalWallpaperUrl()) || clicked()"
       >
         {{ 'form.button_save' | translate }}
       </button>

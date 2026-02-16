@@ -1,4 +1,4 @@
-import { Component, ElementRef, inject, OnInit, signal, viewChild } from '@angular/core'
+import { ChangeDetectionStrategy, Component, ElementRef, inject, OnInit, signal, viewChild } from '@angular/core'
 import { ReactiveFormsModule } from '@angular/forms'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
@@ -9,10 +9,12 @@ import { SettingsService } from '@/app/core/ui/settings.service'
 import { environment } from '@/environments/environment'
 
 @Component({
-  templateUrl: './wallpaper.component.html',
-  styleUrls: ['./wallpaper.component.scss'],
-  standalone: true,
+  selector: 'app-wallpaper',
   imports: [ReactiveFormsModule, TranslatePipe],
+  standalone: true,
+  templateUrl: './wallpaper.component.html',
+  styleUrl: './wallpaper.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WallpaperComponent implements OnInit {
   // Injected dependencies
@@ -24,10 +26,10 @@ export class WallpaperComponent implements OnInit {
 
   // Signals
   readonly wallpaperInput = viewChild<ElementRef>('wallpaperInput')
-  public clicked = signal(false)
-  public selectedFile = signal<File | null>(null)
-  public wallpaperUrl = signal<string | null>(null)
-  public originalWallpaperUrl = signal<string | null>(null)
+  public readonly clicked = signal(false)
+  public readonly selectedFile = signal<File | null>(null)
+  public readonly wallpaperUrl = signal<string | null>(null)
+  public readonly originalWallpaperUrl = signal<string | null>(null)
 
   // Other properties
   public maxFileSizeText = globalThis.backup.maxBackupSizeText

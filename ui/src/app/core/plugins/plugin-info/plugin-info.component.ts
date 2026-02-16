@@ -1,14 +1,16 @@
-import { Component, computed, inject, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe } from '@ngx-translate/core'
 
 import { PLUGIN_MODAL_DATA } from '@/app/core/modal-data-tokens'
 
 @Component({
-  templateUrl: './plugin-info.component.html',
-  styleUrls: ['./plugin-info.component.scss'],
-  standalone: true,
+  selector: 'app-plugin-info',
   imports: [TranslatePipe],
+  standalone: true,
+  templateUrl: './plugin-info.component.html',
+  styleUrl: './plugin-info.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PluginInfoComponent {
   // Injected dependencies
@@ -19,8 +21,8 @@ export class PluginInfoComponent {
   public plugin = this.modalData.plugin
 
   // Signals
-  private iconError = signal(false)
-  public pluginIcon = computed(() => {
+  private readonly iconError = signal(false)
+  public readonly pluginIcon = computed(() => {
     return (this.plugin?.icon && !this.iconError()) ? this.plugin.icon : this.defaultIcon
   })
 

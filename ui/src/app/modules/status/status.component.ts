@@ -1,4 +1,4 @@
-import { Component, createEnvironmentInjector, EnvironmentInjector, HostListener, inject, OnDestroy, OnInit, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, createEnvironmentInjector, EnvironmentInjector, inject, OnDestroy, OnInit, signal } from '@angular/core'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap/tooltip'
 import { TranslatePipe } from '@ngx-translate/core'
@@ -20,9 +20,7 @@ import { AVAILABLE_WIDGETS, WidgetsComponent } from '@/app/modules/status/widget
 import { Widget } from '@/app/modules/status/widgets/widgets.interfaces'
 
 @Component({
-  templateUrl: './status.component.html',
-  styleUrls: ['./status.component.scss'],
-  standalone: true,
+  selector: 'app-status',
   imports: [
     NgbTooltip,
     SpinnerComponent,
@@ -31,6 +29,13 @@ import { Widget } from '@/app/modules/status/widgets/widgets.interfaces'
     WidgetsComponent,
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './status.component.html',
+  styleUrl: './status.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    '(window:beforeunload)': 'onBeforeUnload($event)',
+  },
 })
 export class StatusComponent implements OnInit, OnDestroy {
   private injector = inject(EnvironmentInjector)
@@ -40,17 +45,17 @@ export class StatusComponent implements OnInit, OnDestroy {
   private $notification = inject(NotificationService)
   private $settings = inject(SettingsService)
   private $ws = inject(WsService)
-  private isUnlocked = signal(false)
+  private readonly isUnlocked = signal(false)
   private io: IoNamespace
 
   public isAdmin = this.$auth.user.admin
   public isMatterSupported = this.$settings.isFeatureEnabled('matterSupport')
   public saveWidgetsEvent = new Subject()
   public options: GridsterConfig
-  public dashboard = signal<Array<GridsterItemConfig>>([])
-  public consoleStatus = signal<'up' | 'down'>('down')
+  public readonly dashboard = signal<Array<GridsterItemConfig>>([])
+  public readonly consoleStatus = signal<'up' | 'down'>('down')
   public currentYear: number
-  public page = signal({
+  public readonly page = signal({
     mobile: (window.innerWidth < 1024),
     showWidgetConfigure: (window.innerWidth < 576),
   })
@@ -364,7 +369,6 @@ export class StatusComponent implements OnInit, OnDestroy {
     }
   }
 
-  @HostListener('window:beforeunload', ['$event'])
   onBeforeUnload(event: BeforeUnloadEvent) {
     // Check if any terminal widget needs to warn about navigation
     const hasTerminalWidget = this.dashboard().some(item => item.component === 'TerminalWidgetComponent')

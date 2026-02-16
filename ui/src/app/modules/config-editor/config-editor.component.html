@@ -5,96 +5,107 @@
     </div>
     <div class="col-6 text-end">
       @if (originalConfig()) {
-      <button
-        class="btn btn-danger waves-effect my-0 me-2"
-        (click)="onCancelRestore()"
-        [disabled]="saveInProgress()"
-        container="body"
-        placement="bottom"
-        [openDelay]="150"
-        triggers="hover"
-        [ngbTooltip]="'form.button_cancel' | translate"
-        [attr.aria-label]="'form.button_cancel' | translate"
-      >
-        <i class="fas fa-times"></i>
-      </button>
-      } @if (!originalConfig()) {
-      <button
-        class="btn btn-elegant waves-effect my-0 me-2"
-        (click)="onRestore()"
-        container="body"
-        placement="bottom"
-        [openDelay]="150"
-        triggers="hover"
-        [attr.aria-label]="'form.button_restore' | translate"
-        [ngbTooltip]="'form.button_restore' | translate"
-      >
-        <i class="fas fa-history"></i>
-      </button>
-      } @if (!isMobile() && originalConfig()) {
-      <button
-        class="btn btn-elegant waves-effect my-0 me-2"
-        (click)="toggleSideBySide()"
-        container="body"
-        placement="bottom"
-        [openDelay]="150"
-        triggers="hover"
-        [attr.aria-label]="(renderSideBySide() ? 'config.restore.view_inline' : 'config.restore.view_side_by_side') | translate"
-        [ngbTooltip]="(renderSideBySide() ? 'config.restore.view_inline' : 'config.restore.view_side_by_side') | translate"
-      >
-        <i class="fas" [class.fa-columns]="!renderSideBySide()" [class.fa-bars]="renderSideBySide()"></i>
-      </button>
+        <button
+          type="button"
+          class="btn btn-danger waves-effect my-0 me-2"
+          container="body"
+          placement="bottom"
+          triggers="hover"
+          [disabled]="saveInProgress()"
+          [openDelay]="150"
+          [ngbTooltip]="'form.button_cancel' | translate"
+          [attr.aria-label]="'form.button_cancel' | translate"
+          (click)="onCancelRestore()"
+        >
+          <i class="fas fa-times"></i>
+        </button>
+      } @else {
+        <button
+          type="button"
+          class="btn btn-elegant waves-effect my-0 me-2"
+          container="body"
+          placement="bottom"
+          triggers="hover"
+          [openDelay]="150"
+          [attr.aria-label]="'form.button_restore' | translate"
+          [ngbTooltip]="'form.button_restore' | translate"
+          (click)="onRestore()"
+        >
+          <i class="fas fa-history"></i>
+        </button>
+      }
+      @if (!isMobile() && originalConfig()) {
+        <button
+          type="button"
+          class="btn btn-elegant waves-effect my-0 me-2"
+          container="body"
+          placement="bottom"
+          triggers="hover"
+          [openDelay]="150"
+          [attr.aria-label]="
+            (renderSideBySide() ? 'config.restore.view_inline' : 'config.restore.view_side_by_side') | translate
+          "
+          [ngbTooltip]="
+            (renderSideBySide() ? 'config.restore.view_inline' : 'config.restore.view_side_by_side') | translate
+          "
+          (click)="toggleSideBySide()"
+        >
+          <i class="fas" [class.fa-columns]="!renderSideBySide()" [class.fa-bars]="renderSideBySide()"></i>
+        </button>
       }
       <button
+        type="button"
         class="btn btn-elegant waves-effect my-0 me-0"
-        (click)="onSave()"
-        [disabled]="saveInProgress()"
         container="body"
         placement="bottom"
-        [openDelay]="150"
         triggers="hover"
+        [disabled]="saveInProgress()"
+        [openDelay]="150"
         [ngbTooltip]="'form.button_save' | translate"
         [attr.aria-label]="'form.button_save' | translate"
+        (click)="onSave()"
       >
         @if (!saveInProgress()) {
-        <i class="fas fa-floppy-disk"></i>
-        } @if (saveInProgress()) {
-        <i class="fas fa-circle-notch fa-spin"></i>
+          <i class="fas fa-floppy-disk"></i>
+        } @else {
+          <i class="fas fa-circle-notch fa-spin"></i>
         }
       </button>
     </div>
   </div>
 
   @if (!isMobile() && !originalConfig()) {
-  <ngx-monaco-editor
-    class="flex-grow-1 h-100 w-100 mt-3 mb-0"
-    [options]="editorOptions"
-    [model]="monacoEditorModel"
-    (onInit)="onEditorInit($event)"
-    (keydown.control.s)="$event.preventDefault(); onSave()"
-    (keydown.meta.s)="$event.preventDefault(); onSave()"
-  />
-  } @if (!isMobile() && originalConfig()) {
-  <ngx-monaco-diff-editor
-    class="flex-grow-1 h-100 w-100 mt-3 mb-0"
-    [options]="editorOptions"
-    [originalModel]="diffOriginalModel"
-    [modifiedModel]="diffModifiedModel"
-    (onInit)="onInitDiffEditor($event)"
-    (keydown.control.s)="$event.preventDefault(); onSave()"
-    (keydown.meta.s)="$event.preventDefault(); onSave()"
-  />
-  } @if (isMobile()) {
-  <textarea
-    wrap="off"
-    class="hb-plain-text-editor align-self-end h-100 w-100 my-3"
-    autocomplete="off"
-    autocorrect="off"
-    autocapitalize="off"
-    spellcheck="false"
-    [ngModel]="homebridgeConfig()"
-    (ngModelChange)="homebridgeConfig.set($event)"
-  >
-  </textarea>
+    <ngx-monaco-editor
+      class="flex-grow-1 h-100 w-100 mt-3 mb-0"
+      [options]="editorOptions"
+      [model]="monacoEditorModel"
+      (onInit)="onEditorInit($event)"
+      (keydown.control.s)="$event.preventDefault(); onSave()"
+      (keydown.meta.s)="$event.preventDefault(); onSave()"
+    />
+  }
+  @if (!isMobile() && originalConfig()) {
+    <ngx-monaco-diff-editor
+      class="flex-grow-1 h-100 w-100 mt-3 mb-0"
+      [options]="editorOptions"
+      [originalModel]="diffOriginalModel"
+      [modifiedModel]="diffModifiedModel"
+      (onInit)="onInitDiffEditor($event)"
+      (keydown.control.s)="$event.preventDefault(); onSave()"
+      (keydown.meta.s)="$event.preventDefault(); onSave()"
+    />
+  }
+  @if (isMobile()) {
+    <textarea
+      wrap="off"
+      class="hb-plain-text-editor align-self-end h-100 w-100 my-3"
+      autocomplete="off"
+      autocorrect="off"
+      autocapitalize="off"
+      spellcheck="false"
+      [ngModel]="homebridgeConfig()"
+      (ngModelChange)="homebridgeConfig.set($event)"
+    >
+    </textarea>
   }
 </div>

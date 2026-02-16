@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe } from '@ngx-translate/core'
@@ -6,12 +6,14 @@ import { TranslatePipe } from '@ngx-translate/core'
 import { NETWORK_INTERFACES_MODAL_DATA } from '@/app/core/modal-data-tokens'
 
 @Component({
-  templateUrl: './select-network-interfaces.component.html',
-  standalone: true,
+  selector: 'app-select-network-interfaces',
   imports: [
     FormsModule,
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './select-network-interfaces.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SelectNetworkInterfacesComponent implements OnInit {
   // Injected dependencies
@@ -23,7 +25,7 @@ export class SelectNetworkInterfacesComponent implements OnInit {
   public adaptersSelected = this.modalData.adaptersSelected
 
   // Signals
-  public isUnchanged = signal(true)
+  public readonly isUnchanged = signal(true)
 
   // Other properties
   private adaptersOriginal: string[] = []

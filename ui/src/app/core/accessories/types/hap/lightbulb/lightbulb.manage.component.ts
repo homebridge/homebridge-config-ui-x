@@ -23,14 +23,15 @@ export const LIGHTBULB_ADAPTIVE_LIGHTING = new InjectionToken<BehaviorSubject<bo
 )
 
 @Component({
-  templateUrl: './lightbulb.manage.component.html',
-  standalone: true,
+  selector: 'app-lightbulb-manage',
   imports: [
     FormsModule,
     NouisliderComponent,
     TranslatePipe,
     ConvertMiredPipe,
   ],
+  standalone: true,
+  templateUrl: './lightbulb.manage.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LightbulbManageComponent extends BaseManageComponent {

@@ -12,14 +12,15 @@ import { BaseManageComponent } from '@/app/core/accessories/types/base-manage.co
 import { DurationPipe } from '@/app/core/pipes/duration.pipe'
 
 @Component({
-  templateUrl: './lock-mechanism.manage.component.html',
-  standalone: true,
+  selector: 'app-lock-mechanism-manage',
   imports: [
     FormsModule,
     NouisliderComponent,
     TranslatePipe,
     DurationPipe,
   ],
+  standalone: true,
+  templateUrl: './lock-mechanism.manage.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LockMechanismManageComponent extends BaseManageComponent {

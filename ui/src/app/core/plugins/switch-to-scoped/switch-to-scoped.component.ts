@@ -1,4 +1,4 @@
-import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit, signal } from '@angular/core'
 import { Router } from '@angular/router'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
@@ -16,12 +16,14 @@ import { RE_ANSI } from '@/app/core/regex.constants'
 import { SettingsService } from '@/app/core/ui/settings.service'
 
 @Component({
-  templateUrl: './switch-to-scoped.component.html',
-  styleUrls: ['./switch-to-scoped.component.scss'],
-  standalone: true,
+  selector: 'app-switch-to-scoped',
   imports: [
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './switch-to-scoped.component.html',
+  styleUrl: './switch-to-scoped.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SwitchToScopedComponent implements OnInit, OnDestroy {
   // Injected dependencies
@@ -38,13 +40,13 @@ export class SwitchToScopedComponent implements OnInit, OnDestroy {
   public plugin = this.modalData.plugin
 
   // Signals
-  public installing = signal(false)
-  public installed = signal(false)
-  public uninstalling = signal(false)
-  public uninstalled = signal(false)
-  public restarting = signal(false)
-  public failure = signal<string>('')
-  public onlineUpdateOk = signal(false)
+  public readonly installing = signal(false)
+  public readonly installed = signal(false)
+  public readonly uninstalling = signal(false)
+  public readonly uninstalled = signal(false)
+  public readonly restarting = signal(false)
+  public readonly failure = signal<string>('')
+  public readonly onlineUpdateOk = signal(false)
 
   // Other properties
   private io: IoNamespace

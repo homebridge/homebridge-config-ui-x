@@ -1,19 +1,24 @@
 <div
   class="accessory-box"
+  tabindex="0"
   [class.accessory-on]="service().values.On || service().values.Active"
-  [style.cursor]="readyForControl() ? 'pointer' : 'default'"
+  [class.cursor-pointer]="readyForControl()"
   (longClick)="onLongClick()"
   (shortClick)="onClick()"
-  tabindex="0"
 >
   <div class="d-flex flex-column h-100">
     <div
-      [attr.aria-label]="'accessories.core.fan' | translate"
       class="accessory-svg"
-      [class]="{
-        'spin': (service().values?.On || service().values?.Active) && (!hasRotationDirection || (hasRotationDirection && service().values?.RotationDirection === 0)),
-        'spin-counter': (service().values?.On || service().values?.Active) && hasRotationDirection && service().values?.RotationDirection === 1,
-      }"
+      [attr.aria-label]="'accessories.core.fan' | translate"
+      [class.spin]="
+        (service().values?.On || service().values?.Active) &&
+        (!hasRotationDirection || (hasRotationDirection && service().values?.RotationDirection === 0))
+      "
+      [class.spin-counter]="
+        (service().values?.On || service().values?.Active) &&
+        hasRotationDirection &&
+        service().values?.RotationDirection === 1
+      "
     >
       <svg width="32px" height="32px" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
         <! -- fan icon - ->
@@ -32,12 +37,15 @@
     </div>
     <div class="accessory-label mt-auto">{{ service().customName || service().serviceName }}</div>
     @if (service().values?.On && service().values?.RotationSpeed) {
-    <div class="accessory-label grey-text">{{ service().values?.RotationSpeed }}{{ rotationSpeedUnit }}</div>
+      <div class="accessory-label grey-text">{{ service().values?.RotationSpeed }}{{ rotationSpeedUnit }}</div>
     } @else {
-    <div
-      class="accessory-label grey-text"
-      [innerText]="((service().values?.On || service().values?.Active) ? 'accessories.control.on' : 'accessories.control.off') | translate"
-    ></div>
+      <div
+        class="accessory-label grey-text"
+        [innerText]="
+          (service().values?.On || service().values?.Active ? 'accessories.control.on' : 'accessories.control.off')
+            | translate
+        "
+      ></div>
     }
   </div>
 </div>

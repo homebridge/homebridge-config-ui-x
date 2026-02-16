@@ -1,6 +1,6 @@
 import type { VersionData } from '@/app/core/plugins/manage-plugins.interfaces'
 
-import { Component, inject, OnInit, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core'
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
@@ -14,13 +14,16 @@ import { HomebridgeUpdatePolicy } from '@/app/core/settings.interfaces'
 import { SettingsService } from '@/app/core/ui/settings.service'
 
 @Component({
-  templateUrl: './manage-version.component.html',
-  standalone: true,
+  selector: 'app-manage-version',
   imports: [
     FormsModule,
     TranslatePipe,
     ReactiveFormsModule,
   ],
+  standalone: true,
+  templateUrl: './manage-version.component.html',
+  styleUrl: './manage-version.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ManageVersionComponent implements OnInit {
   // Injected dependencies
@@ -37,10 +40,10 @@ export class ManageVersionComponent implements OnInit {
   public onSettingsChange = this.modalData.onSettingsChange
 
   // Signals
-  private _versionSelect = signal<string>('')
-  public loading = signal(true)
-  public versions = signal<Array<VersionData>>([])
-  public versionsWithTags = signal<Array<{ version: string, tag: string }>>([])
+  private readonly _versionSelect = signal<string>('')
+  public readonly loading = signal(true)
+  public readonly versions = signal<Array<VersionData>>([])
+  public readonly versionsWithTags = signal<Array<{ version: string, tag: string }>>([])
 
   // Getter/setter for ngModel binding
   get versionSelect(): string {

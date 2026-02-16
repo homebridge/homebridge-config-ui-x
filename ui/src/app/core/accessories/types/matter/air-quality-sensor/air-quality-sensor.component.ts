@@ -1,21 +1,22 @@
 import type { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
 
-import { Component, computed, input } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core'
 import { TranslatePipe } from '@ngx-translate/core'
 
 import { getAirQualityValue } from '@/app/core/accessories/types/matter/matter-device.utils'
 
 @Component({
   selector: 'app-matter-air-quality-sensor',
-  templateUrl: './air-quality-sensor.component.html',
-  styleUrls: ['./air-quality-sensor.component.scss'],
-  standalone: true,
   imports: [TranslatePipe],
+  standalone: true,
+  templateUrl: './air-quality-sensor.component.html',
+  styleUrl: './air-quality-sensor.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatterAirQualitySensorComponent {
-  public service = input.required<ServiceTypeX>()
+  public readonly service = input.required<ServiceTypeX>()
 
   public labels = ['Unknown', 'Good', 'Fair', 'Moderate', 'Poor', 'Very Poor', 'Extremely Poor']
 
-  public airQuality = computed(() => getAirQualityValue(this.service()))
+  public readonly airQuality = computed(() => getAirQualityValue(this.service()))
 }

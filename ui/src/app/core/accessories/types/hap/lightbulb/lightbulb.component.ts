@@ -1,4 +1,16 @@
-import { Component, createEnvironmentInjector, DestroyRef, EnvironmentInjector, inject, input, OnDestroy, OnInit, signal, StaticProvider } from '@angular/core'
+import {
+  ChangeDetectionStrategy,
+  Component,
+  createEnvironmentInjector,
+  DestroyRef,
+  EnvironmentInjector,
+  inject,
+  input,
+  OnDestroy,
+  OnInit,
+  signal,
+  StaticProvider,
+} from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe } from '@ngx-translate/core'
@@ -13,12 +25,13 @@ import { ColourService } from '@/app/core/utilities/colour.service'
 
 @Component({
   selector: 'app-lightbulb',
-  templateUrl: './lightbulb.component.html',
-  standalone: true,
   imports: [
     LongClickDirective,
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './lightbulb.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LightbulbComponent implements OnInit, OnDestroy {
   private destroyRef = inject(DestroyRef)
@@ -29,11 +42,11 @@ export class LightbulbComponent implements OnInit, OnDestroy {
 
   public $colour = inject(ColourService)
 
-  public service = input.required<ServiceTypeX>()
-  public readyForControl = input<boolean>(false)
+  public readonly service = input.required<ServiceTypeX>()
+  public readonly readyForControl = input<boolean>(false)
 
-  public hasAdaptiveLighting = signal(false)
-  public isAdaptiveLightingEnabled = signal(false)
+  public readonly hasAdaptiveLighting = signal(false)
+  public readonly isAdaptiveLightingEnabled = signal(false)
   public isAdaptiveLightingEnabled$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false)
 
   public ngOnInit() {
@@ -44,6 +57,50 @@ export class LightbulbComponent implements OnInit, OnDestroy {
     if (this.intervalId) {
       clearInterval(this.intervalId)
     }
+  }
+
+  public getBulbFill(): string {
+    const values = this.service().values
+    if (!(values?.On || values?.Active)) {
+      return 'none'
+    }
+
+    if ('Hue' in values) {
+      return `hsl(${values?.Hue}, ${values?.Saturation}%, 50%)`
+    }
+
+    if ('ColorTemperature' in values) {
+      return this.$colour.kelvinToHsl(this.$colour.miredToKelvin(values?.ColorTemperature))
+    }
+    return '#ffcf55'
+  }
+
+  public getBrightnessLabel(): string {
+    const values = this.service().values
+    if (!values?.On) {
+      return ''
+    }
+
+    let label = `${values?.Brightness}%`
+    if (this.hasAdaptiveLighting()) {
+      const cls = this.isAdaptiveLightingEnabled() ? 'on-text' : 'grey-text'
+      label += ` &middot; <i class='fa fa-sun ${cls}'></i>`
+    }
+
+    return label
+  }
+
+  public getOnOffLabel(): string {
+    const values = this.service().values
+    const isOn = values?.On || values?.Active
+    if (!isOn) {
+      return ''
+    }
+    if (this.hasAdaptiveLighting()) {
+      const cls = this.isAdaptiveLightingEnabled() ? 'on-text' : 'grey-text'
+      return ` &middot; <i class='fa fa-sun ${cls}'></i>`
+    }
+    return ''
   }
 
   public onClick() {

@@ -9,13 +9,14 @@ import { Subject } from 'rxjs'
 import { BaseManageComponent } from '@/app/core/accessories/types/base-manage.component'
 
 @Component({
-  templateUrl: './humidifier-dehumidifier.manage.component.html',
-  standalone: true,
+  selector: 'app-humidifier-dehumidifier-manage',
   imports: [
     FormsModule,
     NouisliderComponent,
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './humidifier-dehumidifier.manage.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HumidifierDehumidifierManageComponent extends BaseManageComponent {
@@ -90,6 +91,25 @@ export class HumidifierDehumidifierManageComponent extends BaseManageComponent {
 
     // Apply gradient when mode changes externally
     this.applyAllGradients()
+  }
+
+  public getStatusClass(): string {
+    const values = this.service.values
+    const isActive = values?.Active || values?.On
+    const isHumidifying = (values?.CurrentHumidifierDehumidifierState === 2 && values?.Active === 1)
+      || (this.type === 'humidifier' && isActive)
+    const isDehumidifying = (values?.CurrentHumidifierDehumidifierState === 3 && values?.Active === 1)
+      || (this.type === 'dehumidifier' && isActive)
+
+    if (isHumidifying) {
+      return 'status-color-cooling'
+    }
+
+    if (isDehumidifying) {
+      return 'status-color-heating'
+    }
+
+    return isActive ? 'status-color-active' : 'status-color-inactive'
   }
 
   private loadTargetHumidity() {

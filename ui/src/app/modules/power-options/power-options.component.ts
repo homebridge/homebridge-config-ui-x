@@ -1,4 +1,4 @@
-import { Component, createEnvironmentInjector, EnvironmentInjector, inject, OnInit, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, createEnvironmentInjector, EnvironmentInjector, inject, OnInit, signal } from '@angular/core'
 import { Router } from '@angular/router'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap/tooltip'
@@ -11,12 +11,14 @@ import { CONFIRM_MODAL_DATA } from '@/app/core/modal-data-tokens'
 import { SettingsService } from '@/app/core/ui/settings.service'
 
 @Component({
-  templateUrl: './power-options.component.html',
-  standalone: true,
+  selector: 'app-power-options',
   imports: [
     NgbTooltip,
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './power-options.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PowerOptionsComponent implements OnInit {
   private injector = inject(EnvironmentInjector)
@@ -28,8 +30,8 @@ export class PowerOptionsComponent implements OnInit {
   private $translate = inject(TranslateService)
 
   // Signals
-  public canShutdownRestartHost = signal(this.$settings.env.canShutdownRestartHost)
-  public runningInDocker = signal(this.$settings.env.runningInDocker)
+  public readonly canShutdownRestartHost = signal(this.$settings.env.canShutdownRestartHost)
+  public readonly runningInDocker = signal(this.$settings.env.runningInDocker)
 
   public ngOnInit() {
     // Set page title

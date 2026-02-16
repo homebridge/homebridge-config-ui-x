@@ -1,4 +1,4 @@
-import { Component, createEnvironmentInjector, EnvironmentInjector, inject, OnDestroy, OnInit, Renderer2, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, createEnvironmentInjector, EnvironmentInjector, inject, OnDestroy, OnInit, Renderer2, signal } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { ActivatedRoute, Router } from '@angular/router'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
@@ -38,8 +38,7 @@ declare global {
 }
 
 @Component({
-  templateUrl: './config-editor.component.html',
-  standalone: true,
+  selector: 'app-config-editor',
   imports: [
     NgbTooltip,
     EditorComponent,
@@ -47,6 +46,9 @@ declare global {
     FormsModule,
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './config-editor.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ConfigEditorComponent implements OnInit, OnDestroy {
   private injector = inject(EnvironmentInjector)
@@ -69,16 +71,16 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
   private isDebugModeEnabled = this.$settings.isFeatureEnabled('childBridgeDebugMode')
   private isMatterSupported = this.$settings.isFeatureEnabled('matterSupport')
 
-  public homebridgeConfig = signal<string>('')
-  public originalConfig = signal<string>('')
-  public saveInProgress = signal(false)
-  public isMobile = signal<boolean>(false)
+  public readonly homebridgeConfig = signal<string>('')
+  public readonly originalConfig = signal<string>('')
+  public readonly saveInProgress = signal(false)
+  public readonly isMobile = signal<boolean>(false)
   public monacoEditor: any
   public editorOptions: any
   public monacoEditorModel: NgxEditorModel
   public diffOriginalModel: DiffEditorModel
   public diffModifiedModel: DiffEditorModel
-  public renderSideBySide = signal(false)
+  public readonly renderSideBySide = signal(false)
 
   constructor() {
     this.isMobile.set(!!this.$md.detect.mobile())

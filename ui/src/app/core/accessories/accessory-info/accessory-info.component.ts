@@ -32,8 +32,7 @@ import { ServiceToTranslationStringPipe } from '@/app/core/pipes/service-to-tran
 import { RemoveIndividualAccessoriesComponent } from '@/app/modules/settings/remove-individual-accessories/remove-individual-accessories.component'
 
 @Component({
-  templateUrl: './accessory-info.component.html',
-  standalone: true,
+  selector: 'app-accessory-info',
   imports: [
     FormsModule,
     KeyValuePipe,
@@ -43,6 +42,8 @@ import { RemoveIndividualAccessoriesComponent } from '@/app/modules/settings/rem
     ConvertMiredPipe,
     ServiceToTranslationStringPipe,
   ],
+  standalone: true,
+  templateUrl: './accessory-info.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AccessoryInfoComponent implements OnInit, OnDestroy {
@@ -134,8 +135,8 @@ export class AccessoryInfoComponent implements OnInit, OnDestroy {
   public customTypeList: Array<ServiceTypeX['type']> = []
   public isMatterAccessory = false
   public clusterInfo: Array<{ name: string, attributes: unknown }> = []
-  public uniqueIdCopied = signal(false)
-  public uuidCopied = signal(false)
+  public readonly uniqueIdCopied = signal(false)
+  public readonly uuidCopied = signal(false)
 
   public ngOnInit() {
     // Extract values from signals to local properties

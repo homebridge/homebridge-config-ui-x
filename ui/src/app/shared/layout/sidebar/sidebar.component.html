@@ -1,16 +1,16 @@
 <div
   class="m-header text-end"
-  (click)="toggleSidebar()"
   tabindex="0"
   role="button"
-  (keydown)="handleKeydown($event)"
   [attr.aria-expanded]="isExpanded() ? 'true' : 'false'"
   [attr.aria-controls]="'sidebar'"
   [attr.aria-label]="'menu.sidebar.aria_menu' | translate"
+  (click)="toggleSidebar()"
+  (keydown)="handleKeydown($event)"
 >
-  <span class="me-2 d-block d-lg-none" style="font-size: 0.9rem; color: #dddddd"></span>
+  <span class="me-2 d-block d-lg-none m-header-label"></span>
   <a [routerLink]="['/']" [attr.aria-label]="'menu.label_status' | translate">
-    <img style="height: 35px; width: 35px" ngSrc="assets/homebridge-logo.svg" alt="HB Logo" height="35" width="35" />
+    <img class="hb-logo-img" ngSrc="assets/homebridge-logo.svg" alt="HB Logo" height="35" width="35" />
     <div class="hb-logo-text-mobile">Homebridge</div>
   </a>
   <div class="hamburger-icon" [class.hamburger-icon-cross]="isExpanded()">
@@ -21,10 +21,10 @@
   </div>
 </div>
 
-<div class="sidebar" [class.expanded]="isExpanded()" role="navigation" id="sidebar">
-  <div class="header" (click)="toggleSidebar()" tabindex="0" role="button" (keydown)="handleKeydown($event)">
+<div class="sidebar" role="navigation" id="sidebar" [class.expanded]="isExpanded()">
+  <div class="header" tabindex="0" role="button" (click)="toggleSidebar()" (keydown)="handleKeydown($event)">
     <a [routerLink]="['/']" [attr.aria-label]="'menu.label_status' | translate">
-      <img style="height: 35px; width: 35px" ngSrc="assets/homebridge-logo.svg" alt="HB Logo" height="35" width="35" />
+      <img class="hb-logo-img" ngSrc="assets/homebridge-logo.svg" alt="HB Logo" height="35" width="35" />
       <div class="hb-logo-text">Homebridge</div>
     </a>
   </div>
@@ -32,12 +32,12 @@
     <div class="link">
       <div
         class="link-row"
-        [routerLink]="['/']"
-        [routerLinkActive]="'active'"
-        [routerLinkActiveOptions]="{exact: true}"
-        [attr.aria-label]="'menu.label_status' | translate"
         role="menuitem"
         tabindex="0"
+        routerLinkActive="active"
+        [routerLink]="['/']"
+        [routerLinkActiveOptions]="{ exact: true }"
+        [attr.aria-label]="'menu.label_status' | translate"
         (keydown)="handleKeydown($event)"
       >
         <div class="icon"><i class="fa fa-house"></i></div>
@@ -46,29 +46,29 @@
     </div>
 
     @if (rPiWasUnderVoltage() || rPiCurrentlyUnderVoltage()) {
-    <div class="link">
-      <div
-        class="link-row"
-        (click)="openUnderVoltageModal()"
-        [attr.aria-label]="('rpi.throttled.undervoltage_title' | translate) + ' - ' + ('rpi.throttled.undervoltage_description' | translate)"
-        role="menuitem"
-        tabindex="0"
-        (keydown)="handleKeydown($event)"
-      >
-        <div class="icon"><i class="fas fa-bolt fa-beat yellow-text" style="--fa-beat-scale: 1.5"></i></div>
-        <div class="title">{{ 'rpi.throttled.undervoltage_title' | translate }}</div>
+      <div class="link">
+        <div
+          class="link-row"
+          role="menuitem"
+          tabindex="0"
+          [attr.aria-label]="`${('rpi.throttled.undervoltage_title' | translate)} - ${('rpi.throttled.undervoltage_description' | translate)}`"
+          (click)="openUnderVoltageModal()"
+          (keydown)="handleKeydown($event)"
+        >
+          <div class="icon"><i class="fas fa-bolt fa-beat yellow-text fa-beat-scale-lg"></i></div>
+          <div class="title">{{ 'rpi.throttled.undervoltage_title' | translate }}</div>
+        </div>
       </div>
-    </div>
     }
 
     <div class="link">
       <div
         class="link-row"
-        [routerLink]="['/plugins']"
-        [routerLinkActive]="'active'"
-        [attr.aria-label]="'menu.label_plugins' | translate"
         role="menuitem"
         tabindex="0"
+        routerLinkActive="active"
+        [routerLink]="['/plugins']"
+        [attr.aria-label]="'menu.label_plugins' | translate"
         (keydown)="handleKeydown($event)"
       >
         <div class="icon"><i class="fa fa-plug"></i></div>
@@ -79,11 +79,11 @@
     <div class="link">
       <div
         class="link-row"
-        [routerLink]="['/accessories']"
-        [routerLinkActive]="'active'"
-        [attr.aria-label]="'menu.label_accessories' | translate"
         role="menuitem"
         tabindex="0"
+        routerLinkActive="active"
+        [routerLink]="['/accessories']"
+        [attr.aria-label]="'menu.label_accessories' | translate"
         (keydown)="handleKeydown($event)"
       >
         <div class="icon"><i class="fa fa-lightbulb"></i></div>
@@ -94,11 +94,11 @@
     <div class="link">
       <div
         class="link-row"
-        [routerLink]="['/logs']"
-        [routerLinkActive]="'active'"
-        [attr.aria-label]="'menu.linux.label_logs' | translate"
         role="menuitem"
         tabindex="0"
+        routerLinkActive="active"
+        [routerLink]="['/logs']"
+        [attr.aria-label]="'menu.linux.label_logs' | translate"
         (keydown)="handleKeydown($event)"
       >
         <div class="icon"><i class="fa fa-wave-square"></i></div>
@@ -107,60 +107,62 @@
     </div>
 
     @if (enableTerminalAccess && isAdmin) {
-    <div class="link">
-      <div
-        class="link-row"
-        [routerLink]="['/platform-tools/terminal']"
-        [routerLinkActive]="'active'"
-        [attr.aria-label]="'menu.linux.label_terminal' | translate"
-        role="menuitem"
-        tabindex="0"
-        (keydown)="handleKeydown($event)"
-      >
-        <div class="icon"><i class="fa fa-terminal"></i></div>
-        <div class="title">{{ 'menu.linux.label_terminal' | translate }}</div>
+      <div class="link">
+        <div
+          class="link-row"
+          role="menuitem"
+          tabindex="0"
+          routerLinkActive="active"
+          [routerLink]="['/platform-tools/terminal']"
+          [attr.aria-label]="'menu.linux.label_terminal' | translate"
+          (keydown)="handleKeydown($event)"
+        >
+          <div class="icon"><i class="fa fa-terminal"></i></div>
+          <div class="title">{{ 'menu.linux.label_terminal' | translate }}</div>
+        </div>
       </div>
-    </div>
-    } @if (isAdmin) {
-    <div class="link">
-      <div
-        class="link-row"
-        [routerLink]="['/config']"
-        [routerLinkActive]="'active'"
-        [attr.aria-label]="'menu.config_json_editor' | translate"
-        role="menuitem"
-        tabindex="0"
-        (keydown)="handleKeydown($event)"
-      >
-        <div class="icon"><i class="fa fa-code"></i></div>
-        <div class="title">{{ 'menu.config_json_editor' | translate }}</div>
+    }
+    @if (isAdmin) {
+      <div class="link">
+        <div
+          class="link-row"
+          role="menuitem"
+          tabindex="0"
+          routerLinkActive="active"
+          [routerLink]="['/config']"
+          [attr.aria-label]="'menu.config_json_editor' | translate"
+          (keydown)="handleKeydown($event)"
+        >
+          <div class="icon"><i class="fa fa-code"></i></div>
+          <div class="title">{{ 'menu.config_json_editor' | translate }}</div>
+        </div>
       </div>
-    </div>
-    } @if (isAdmin) {
-    <div class="link">
-      <div
-        class="link-row"
-        [routerLink]="['/settings']"
-        [routerLinkActive]="'active'"
-        [attr.aria-label]="'menu.label_settings' | translate"
-        role="menuitem"
-        tabindex="0"
-        (keydown)="handleKeydown($event)"
-      >
-        <div class="icon"><i class="fa fa-cog"></i></div>
-        <div class="title">{{ 'menu.label_settings' | translate }}</div>
+    }
+    @if (isAdmin) {
+      <div class="link">
+        <div
+          class="link-row"
+          role="menuitem"
+          tabindex="0"
+          routerLinkActive="active"
+          [routerLink]="['/settings']"
+          [attr.aria-label]="'menu.label_settings' | translate"
+          (keydown)="handleKeydown($event)"
+        >
+          <div class="icon"><i class="fa fa-cog"></i></div>
+          <div class="title">{{ 'menu.label_settings' | translate }}</div>
+        </div>
       </div>
-    </div>
     }
 
     <div class="link">
       <div
         class="link-row"
-        [routerLink]="['/support']"
-        [routerLinkActive]="'active'"
-        [attr.aria-label]="'support.title' | translate"
         role="menuitem"
         tabindex="0"
+        routerLinkActive="active"
+        [routerLink]="['/support']"
+        [attr.aria-label]="'support.title' | translate"
         (keydown)="handleKeydown($event)"
       >
         <div class="icon"><i class="fa fa-question-circle-o"></i></div>
@@ -169,48 +171,50 @@
     </div>
 
     @if (isAdmin) {
-    <div class="link">
-      <div
-        class="link-row"
-        [routerLink]="['/power-options']"
-        [routerLinkActive]="'active'"
-        [attr.aria-label]="'menu.restart.title' | translate"
-        role="menuitem"
-        tabindex="0"
-        (keydown)="handleKeydown($event)"
-      >
-        <div class="icon"><i class="fa fa-power-off"></i></div>
-        <div class="title">{{ 'menu.restart.title' | translate }}</div>
+      <div class="link">
+        <div
+          class="link-row"
+          role="menuitem"
+          tabindex="0"
+          routerLinkActive="active"
+          [routerLink]="['/power-options']"
+          [attr.aria-label]="'menu.restart.title' | translate"
+          (keydown)="handleKeydown($event)"
+        >
+          <div class="icon"><i class="fa fa-power-off"></i></div>
+          <div class="title">{{ 'menu.restart.title' | translate }}</div>
+        </div>
       </div>
-    </div>
-    } @if (isPwa) {
-    <div class="link">
-      <div
-        class="link-row"
-        (click)="reloadPage()"
-        [attr.aria-label]="'menu.reload' | translate"
-        role="menuitem"
-        tabindex="0"
-        (keydown)="handleKeydown($event)"
-      >
-        <div class="icon"><i class="fa fa-refresh"></i></div>
-        <div class="title">{{ 'menu.reload' | translate }}</div>
+    }
+    @if (isPwa) {
+      <div class="link">
+        <div
+          class="link-row"
+          role="menuitem"
+          tabindex="0"
+          [attr.aria-label]="'menu.reload' | translate"
+          (click)="reloadPage()"
+          (keydown)="handleKeydown($event)"
+        >
+          <div class="icon"><i class="fa fa-refresh"></i></div>
+          <div class="title">{{ 'menu.reload' | translate }}</div>
+        </div>
       </div>
-    </div>
-    } @if (formAuth()) {
-    <div class="link">
-      <div
-        class="link-row"
-        (click)="logout()"
-        [attr.aria-label]="'menu.tooltip_logout' | translate"
-        role="menuitem"
-        tabindex="0"
-        (keydown)="handleKeydown($event)"
-      >
-        <div class="icon"><i class="fa fa-right-from-bracket"></i></div>
-        <div class="title">{{ 'menu.tooltip_logout' | translate }}</div>
+    }
+    @if (formAuth()) {
+      <div class="link">
+        <div
+          class="link-row"
+          role="menuitem"
+          tabindex="0"
+          [attr.aria-label]="'menu.tooltip_logout' | translate"
+          (click)="logout()"
+          (keydown)="handleKeydown($event)"
+        >
+          <div class="icon"><i class="fa fa-right-from-bracket"></i></div>
+          <div class="title">{{ 'menu.tooltip_logout' | translate }}</div>
+        </div>
       </div>
-    </div>
     }
   </div>
 </div>

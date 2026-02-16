@@ -8,20 +8,21 @@ import { BaseChartDirective } from 'ng2-charts'
 import { BaseChartWidgetComponent } from '@/app/modules/status/widgets/base-chart-widget.component'
 
 @Component({
-  templateUrl: './memory-widget.component.html',
-  styleUrls: ['./memory-widget.component.scss'],
-  standalone: true,
+  selector: 'app-memory-widget',
   imports: [
     BaseChartDirective,
     DecimalPipe,
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './memory-widget.component.html',
+  styleUrl: './memory-widget.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MemoryWidgetComponent extends BaseChartWidgetComponent {
   // Signals
-  public totalMemory = signal<number>(0)
-  public freeMemory = signal<number>(0)
+  public readonly totalMemory = signal<number>(0)
+  public readonly freeMemory = signal<number>(0)
 
   protected fetchData(): void {
     this.io.request('get-server-memory-info').subscribe((data: MemoryWidgetData) => {

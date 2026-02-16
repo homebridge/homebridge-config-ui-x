@@ -1,14 +1,15 @@
 <ng-template #bridgeFilterMenu let-dropdown="dropdown" let-showManageLayout="showManageLayout">
   <div class="dropdown-item d-flex justify-content-between align-items-center px-0 bridge-filter-header">
     <button
+      type="button"
       ngbDropdownItem
-      (click)="clearBridgeFilter()"
-      [class.active]="isShowingAllBridges"
       class="flex-grow-1 border-0"
+      [class.active]="isShowingAllBridges"
+      (click)="clearBridgeFilter()"
     >
       <span class="bridge-filter-check">
         @if (isShowingAllBridges) {
-        <i class="fas fa-check primary-text"></i>
+          <i class="fas fa-check primary-text"></i>
         }
       </span>
       {{ 'accessories.filter_all_bridges' | translate }}
@@ -16,8 +17,8 @@
     <button
       type="button"
       class="btn btn-sm btn-link text-secondary p-0 pe-2 bridge-close-btn"
-      (click)="dropdown.close()"
       [attr.aria-label]="'form.button_close' | translate"
+      (click)="dropdown.close()"
     >
       <span class="badge badge-primary mx-1 text-lowercase">{{ 'common.labels.beta' | translate }}</span>
       <i class="fas fa-times"></i>
@@ -25,38 +26,41 @@
   </div>
   <div class="dropdown-divider"></div>
   @for (bridge of availableBridges; track bridge) {
-  <button ngbDropdownItem (click)="toggleBridge(bridge)" [class.active]="isBridgeSelected(bridge)">
-    <span class="bridge-filter-check">
-      @if (isBridgeSelected(bridge)) {
-      <i class="fas fa-check primary-text"></i>
-      }
-    </span>
-    {{ bridge }}
-  </button>
-  } @if (showManageLayout) {
-  <div class="dropdown-divider"></div>
-  <button ngbDropdownItem (click)="toggleManageLayout()" [class.active]="manageLayoutMode">
-    <span class="bridge-filter-check">
-      @if (manageLayoutMode) {
-      <i class="fas fa-check primary-text"></i>
-      }
-    </span>
-    {{ 'accessories.manage_layout' | translate }}
-  </button>
+    <button type="button" ngbDropdownItem [class.active]="isBridgeSelected(bridge)" (click)="toggleBridge(bridge)">
+      <span class="bridge-filter-check">
+        @if (isBridgeSelected(bridge)) {
+          <i class="fas fa-check primary-text"></i>
+        }
+      </span>
+      {{ bridge }}
+    </button>
+  }
+  @if (showManageLayout) {
+    @if (availableBridges.length) {
+      <div class="dropdown-divider"></div>
+    }
+    <button type="button" ngbDropdownItem [class.active]="manageLayoutMode" (click)="toggleManageLayout()">
+      <span class="bridge-filter-check">
+        @if (manageLayoutMode) {
+          <i class="fas fa-check primary-text"></i>
+        }
+      </span>
+      {{ 'accessories.manage_layout' | translate }}
+    </button>
   }
 </ng-template>
 
 <ng-template #bridgeFilterDropdown let-showManageLayout="showManageLayout" let-showTooltip="showTooltip">
-  <div ngbDropdown #dropdown="ngbDropdown" autoClose="outside" placement="bottom-end" class="d-inline-block me-2">
+  <div #dropdown="ngbDropdown" ngbDropdown autoClose="outside" placement="bottom-end" class="d-inline-block me-2">
     <button
       type="button"
       class="btn btn-elegant my-0"
       ngbDropdownToggle
       [attr.aria-label]="'accessories.filter_by_bridge' | translate"
-      [container]="showTooltip ? 'body' : null"
-      [placement]="showTooltip ? 'bottom' : null"
-      [openDelay]="showTooltip ? 150 : null"
-      [triggers]="showTooltip ? 'hover' : null"
+      [container]="showTooltip ? 'body' : ''"
+      [placement]="showTooltip ? 'bottom' : ''"
+      [openDelay]="showTooltip ? 150 : 0"
+      [triggers]="showTooltip ? 'hover' : ''"
       [ngbTooltip]="showTooltip ? ('accessories.filter_by_bridge' | translate) : null"
     >
       <i class="fas fa-house"></i>
@@ -64,7 +68,7 @@
     <div ngbDropdownMenu [attr.aria-labelledby]="'accessories.filter_by_bridge' | translate">
       <ng-container
         *ngTemplateOutlet="bridgeFilterMenu; context: { dropdown: dropdown, showManageLayout: showManageLayout }"
-      ></ng-container>
+      />
     </div>
   </div>
 </ng-template>
@@ -73,163 +77,178 @@
   <button
     type="button"
     class="btn btn-elegant my-0 me-0"
-    (click)="openSupport()"
     [attr.aria-label]="'support.title' | translate"
+    (click)="openSupport()"
   >
     <i class="fa fa-question-circle-o"></i>
   </button>
 </ng-template>
 
 @if (enableAccessories) {
-<div class="row mb-3">
-  <div class="col-6">
-    <h3 class="primary-text m-0">{{ 'menu.label_accessories' | translate }}</h3>
-  </div>
-  <div class="col-6 text-end d-inline-block d-sm-none">
-    @if (shouldShowFilters) {
-    <ng-container
-      *ngTemplateOutlet="bridgeFilterDropdown; context: { showManageLayout: false, showTooltip: false }"
-    ></ng-container>
-    }
-    <ng-container *ngTemplateOutlet="supportButton"></ng-container>
-  </div>
-  <div class="col-6 text-end d-none d-sm-inline-block">
-    @if (hasPlugins()) {
-    <button
-      type="button"
-      class="btn btn-elegant my-0 me-2"
-      [hidden]="isMobile()"
-      (click)="addRoom()"
-      container="body"
-      placement="bottom"
-      [openDelay]="150"
-      triggers="hover"
-      [ngbTooltip]="'accessories.button_add_room' | translate"
-      [attr.aria-label]="'accessories.button_add_room' | translate"
-    >
-      <i class="fas fa-folder-plus"></i>
-    </button>
-    <button
-      type="button"
-      class="btn btn-elegant my-0 me-2"
-      [hidden]="isMobile()"
-      (click)="hideHidden.set(!hideHidden())"
-      container="body"
-      placement="bottom"
-      [openDelay]="150"
-      triggers="hover"
-      [ngbTooltip]="hideHidden() ? ('accessories.button_hidden_show' | translate) : ('accessories.button_hidden_hide' | translate)"
-      [attr.aria-label]="hideHidden() ? ('accessories.button_hidden_show' | translate) : ('accessories.button_hidden_hide' | translate)"
-    >
-      <i
-        class="fas"
-        [class]="{
-          'fa-eye': !hideHidden(),
-          'fa-eye-slash': hideHidden()
-        }"
-      ></i>
-    </button>
-    } @if (shouldShowFilters) {
-    <ng-container
-      *ngTemplateOutlet="bridgeFilterDropdown; context: { showManageLayout: true, showTooltip: true }"
-    ></ng-container>
-    }
-    <ng-container *ngTemplateOutlet="supportButton"></ng-container>
-  </div>
-</div>
-@if (loading()) {
-<app-spinner />
-} @else { @if (hasPlugins()) {
-<div [dragula]="'rooms-bag'" [(dragulaModel)]="rooms">
-  @for (room of rooms; track room.name) {
-  <div>
-    @if (!isMobile() || room.services.length) {
-    <div class="row">
-      <div class="col-md-12 d-flex align-items-center">
-        <h5 class="primary-text drag-handle room-title m-0 mb-1 mb-sm-0 flex-grow-1" [class.cursor-move]="!isMobile()">
-          {{ room.name }}
-        </h5>
+  <div class="row mb-3">
+    <div class="col-6">
+      <h3 class="primary-text m-0">{{ 'menu.label_accessories' | translate }}</h3>
+    </div>
+    <div class="col-6 text-end d-inline-block d-sm-none">
+      @if (shouldShowFilters()) {
+        <ng-container
+          *ngTemplateOutlet="bridgeFilterDropdown; context: { showManageLayout: false, showTooltip: false }"
+        />
+      }
+      <ng-container *ngTemplateOutlet="supportButton" />
+    </div>
+    <div class="col-6 text-end d-none d-sm-inline-block">
+      @if (hasPlugins()) {
         <button
           type="button"
-          class="btn btn-elegant ms-2"
-          (click)="editRoom($index)"
+          class="btn btn-elegant my-0 me-2"
           container="body"
           placement="bottom"
-          [openDelay]="150"
           triggers="hover"
-          [ngbTooltip]="'accessories.button_edit_room' | translate"
-          [attr.aria-label]="'accessories.button_edit_room' | translate"
-          [style.visibility]="isMobile() ? 'hidden' : 'visible'"
-          [style.pointer-events]="isMobile() ? 'none' : 'auto'"
+          [hidden]="isMobile()"
+          [openDelay]="150"
+          [ngbTooltip]="'accessories.button_add_room' | translate"
+          [attr.aria-label]="'accessories.button_add_room' | translate"
+          (click)="addRoom()"
         >
-          <i class="fas fa-cog"></i>
+          <i class="fas fa-folder-plus"></i>
         </button>
-      </div>
+        <button
+          type="button"
+          class="btn btn-elegant my-0 me-2"
+          container="body"
+          placement="bottom"
+          triggers="hover"
+          [hidden]="isMobile()"
+          [openDelay]="150"
+          [ngbTooltip]="
+            hideHidden()
+              ? ('accessories.button_hidden_show' | translate)
+              : ('accessories.button_hidden_hide' | translate)
+          "
+          [attr.aria-label]="
+            hideHidden()
+              ? ('accessories.button_hidden_show' | translate)
+              : ('accessories.button_hidden_hide' | translate)
+          "
+          (click)="hideHidden.set(!hideHidden())"
+        >
+          <i class="fas" [class.fa-eye]="!hideHidden()" [class.fa-eye-slash]="hideHidden()"></i>
+        </button>
+      }
+      @if (shouldShowFilters()) {
+        <ng-container
+          *ngTemplateOutlet="bridgeFilterDropdown; context: { showManageLayout: true, showTooltip: true }"
+        />
+      }
+      <ng-container *ngTemplateOutlet="supportButton" />
     </div>
-    }
-    <div class="row mb-4">
-      @if (room.services.length) {
-      <div
-        class="col-md-12 d-flex flex-wrap noselect services-bag"
-        [class.justify-content-between]="isMobile()"
-        [dragula]="'services-bag'"
-        [(dragulaModel)]="room.services"
-      >
-        @for (service of room.services; track service) { @if (shouldDisplayService(service)) {
-        <div class="accessory-item accessory-tab">
-          <app-accessory-tile [service]="service" />
+  </div>
+  @if (loading()) {
+    <app-spinner />
+  } @else {
+    @if (hasPlugins()) {
+      <div dragula="rooms-bag" [(dragulaModel)]="rooms">
+        @for (room of rooms; track room.name) {
+          <div>
+            @if (!isMobile() || room.services.length) {
+              <div class="row">
+                <div class="col-md-12 d-flex align-items-center">
+                  <h5
+                    class="primary-text drag-handle room-title m-0 mb-1 mb-sm-0 flex-grow-1"
+                    [class.cursor-move]="!isMobile()"
+                  >
+                    {{ room.name }}
+                  </h5>
+                  <button
+                    type="button"
+                    class="btn btn-elegant ms-2"
+                    container="body"
+                    placement="bottom"
+                    triggers="hover"
+                    [openDelay]="150"
+                    [ngbTooltip]="'accessories.button_edit_room' | translate"
+                    [attr.aria-label]="'accessories.button_edit_room' | translate"
+                    [class.edit-room-hidden]="isMobile()"
+                    (click)="editRoom($index)"
+                  >
+                    <i class="fas fa-cog"></i>
+                  </button>
+                </div>
+              </div>
+            }
+            <div class="row mb-4">
+              @if (room.services.length) {
+                <div
+                  class="col-md-12 d-flex flex-wrap noselect services-bag"
+                  dragula="services-bag"
+                  [class.justify-content-between]="isMobile()"
+                  [(dragulaModel)]="room.services"
+                >
+                  @for (service of room.services; track service) {
+                    @if (shouldDisplayService(service)) {
+                      <div class="accessory-item accessory-tab">
+                        <app-accessory-tile [service]="service" />
+                      </div>
+                    }
+                  }
+                  <div class="accessory-box accessory-box-placeholder"></div>
+                  <div class="accessory-box accessory-box-placeholder"></div>
+                  <div class="accessory-box accessory-box-placeholder"></div>
+                  <div class="accessory-box accessory-box-placeholder"></div>
+                  <div class="accessory-box accessory-box-placeholder"></div>
+                  <div class="accessory-box accessory-box-placeholder"></div>
+                  <div class="accessory-box accessory-box-placeholder"></div>
+                  <div class="accessory-box accessory-box-placeholder"></div>
+                  <div class="accessory-box accessory-box-placeholder"></div>
+                  <div class="accessory-box accessory-box-placeholder"></div>
+                </div>
+              }
+              @if (!room.services.length && !isMobile()) {
+                <div
+                  class="col-md-12 d-flex flex-wrap noselect"
+                  dragula="services-bag"
+                  [(dragulaModel)]="room.services"
+                >
+                  <app-drag-here-placeholder class="no-drag" />
+                </div>
+              }
+            </div>
+          </div>
+        }
+      </div>
+    } @else {
+      <div class="col-12 text-center">
+        <div class="alert alert-warning p-5" role="alert">
+          <div class="text-center mb-3">
+            <i class="fas fa-plug primary-text icon-xl"></i>
+          </div>
+          <h5 class="mb-3 mt-0">{{ 'accessories.no_plugins.title' | translate }}</h5>
+          <p class="mb-0 small">{{ 'accessories.no_plugins.message_1' | translate }}</p>
+          <p class="mb-0 small mt-2">{{ 'accessories.no_plugins.message_2' | translate }}</p>
         </div>
-        } }
-        <div style="height: 0" class="accessory-box invisible py-0 my-0"></div>
-        <div style="height: 0" class="accessory-box invisible py-0 my-0"></div>
-        <div style="height: 0" class="accessory-box invisible py-0 my-0"></div>
-        <div style="height: 0" class="accessory-box invisible py-0 my-0"></div>
-        <div style="height: 0" class="accessory-box invisible py-0 my-0"></div>
-        <div style="height: 0" class="accessory-box invisible py-0 my-0"></div>
-        <div style="height: 0" class="accessory-box invisible py-0 my-0"></div>
-        <div style="height: 0" class="accessory-box invisible py-0 my-0"></div>
-        <div style="height: 0" class="accessory-box invisible py-0 my-0"></div>
-        <div style="height: 0" class="accessory-box invisible py-0 my-0"></div>
       </div>
-      } @if (!room.services.length && !isMobile()) {
-      <div class="col-md-12 d-flex flex-wrap noselect" [dragula]="'services-bag'" [(dragulaModel)]="room.services">
-        <app-drag-here-placeholder class="no-drag" />
-      </div>
-      }
-    </div>
-  </div>
+    }
   }
-</div>
 } @else {
-<div class="col-12 text-center">
-  <div class="alert alert-warning p-5" role="alert">
-    <div class="text-center mb-3">
-      <i class="fas fa-plug primary-text" style="font-size: 75px"></i>
+  <div class="row">
+    <div class="col-12">
+      <h3 class="primary-text m-0 mb-3">{{ 'menu.label_accessories' | translate }}</h3>
     </div>
-    <h5 class="mb-3 mt-0">{{ 'accessories.no_plugins.title' | translate }}</h5>
-    <p class="mb-0 small">{{ 'accessories.no_plugins.message_1' | translate }}</p>
-    <p class="mb-0 small mt-2">{{ 'accessories.no_plugins.message_2' | translate }}</p>
-  </div>
-</div>
-} } } @else {
-<div class="row">
-  <div class="col-12">
-    <h3 class="primary-text m-0 mb-3">{{ 'menu.label_accessories' | translate }}</h3>
-  </div>
-  <div class="col-12 text-center">
-    <div class="alert alert-warning p-4" role="alert">
-      <div class="text-center mb-3">
-        <i class="fas fa-lightbulb primary-text" style="font-size: 75px"></i>
+    <div class="col-12 text-center">
+      <div class="alert alert-warning p-4" role="alert">
+        <div class="text-center mb-3">
+          <i class="fas fa-lightbulb primary-text icon-xl"></i>
+        </div>
+        <h5 class="mb-3 mt-0">{{ 'accessories.control_disabled' | translate }}</h5>
+        <p
+          class="mb-0 small"
+          [innerHTML]="'accessories.message_must_use_insecure_mode' | translate: { link: linkInsecure }"
+        ></p>
+        @if (isAdmin) {
+          <p class="mt-2 mb-0 small">{{ 'accessories.settings_link' | translate }}</p>
+        }
       </div>
-      <h5 class="mb-3 mt-0">{{ 'accessories.control_disabled' | translate }}</h5>
-      <p
-        class="mb-0 small"
-        [innerHTML]="'accessories.message_must_use_insecure_mode' | translate: { link: linkInsecure }"
-      ></p>
-      @if (isAdmin) {
-      <p class="mt-2 mb-0 small">{{ 'accessories.settings_link' | translate }}</p>
-      }
     </div>
   </div>
-</div>
 }

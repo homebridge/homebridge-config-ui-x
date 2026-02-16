@@ -1,4 +1,4 @@
-import { Component, computed, input } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core'
 import { TranslatePipe } from '@ngx-translate/core'
 
 import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
@@ -6,15 +6,16 @@ import { getWaterLeakState } from '@/app/core/accessories/types/matter/matter-de
 
 @Component({
   selector: 'app-matter-water-leak-detector',
-  templateUrl: './water-leak-detector.component.html',
-  styleUrls: ['./water-leak-detector.component.scss'],
-  standalone: true,
   imports: [
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './water-leak-detector.component.html',
+  styleUrl: './water-leak-detector.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatterWaterLeakDetectorComponent {
-  public service = input.required<ServiceTypeX>()
+  public readonly service = input.required<ServiceTypeX>()
 
-  public isLeaking = computed(() => getWaterLeakState(this.service()))
+  public readonly isLeaking = computed(() => getWaterLeakState(this.service()))
 }

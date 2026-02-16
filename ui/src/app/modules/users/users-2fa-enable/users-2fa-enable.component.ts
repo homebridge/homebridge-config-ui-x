@@ -1,5 +1,5 @@
 /* global NodeJS */
-import { Component, inject, OnInit, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { NgbAlert } from '@ng-bootstrap/ng-bootstrap/alert'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal'
@@ -9,18 +9,23 @@ import { ToastrService } from 'ngx-toastr'
 
 import { ApiService } from '@/app/core/communication/api.service'
 import { QrcodeComponent } from '@/app/core/components/qrcode/qrcode.component'
+import { RequiredIndicatorComponent } from '@/app/core/components/required-indicator/required-indicator.component'
 import { USER_MODAL_DATA } from '@/app/core/modal-data-tokens'
 
 @Component({
-  templateUrl: './users-2fa-enable.component.html',
-  standalone: true,
+  selector: 'app-users-2fa-enable',
   imports: [
     NgbAlert,
     QrcodeComponent,
     FormsModule,
     ReactiveFormsModule,
     TranslatePipe,
+    RequiredIndicatorComponent,
   ],
+  standalone: true,
+  templateUrl: './users-2fa-enable.component.html',
+  styleUrl: './users-2fa-enable.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Users2faEnableComponent implements OnInit {
   // Injected dependencies
@@ -34,10 +39,10 @@ export class Users2faEnableComponent implements OnInit {
   public user = this.modalData.user
 
   // Signals
-  public timeDiffError = signal<number | null>(null)
-  public otpString = signal<string | undefined>(undefined)
-  public otpSecret = signal<string | undefined>(undefined)
-  public secretCopied = signal(false)
+  public readonly timeDiffError = signal<number | null>(null)
+  public readonly otpString = signal<string | undefined>(undefined)
+  public readonly otpSecret = signal<string | undefined>(undefined)
+  public readonly secretCopied = signal(false)
 
   // Other properties
   private copyTimeout: NodeJS.Timeout | null = null

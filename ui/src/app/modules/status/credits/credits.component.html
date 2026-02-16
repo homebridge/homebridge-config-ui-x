@@ -11,7 +11,7 @@
   </div>
   <div class="modal-body align-items-center w-100 pb-0">
     <div class="w-100 text-center primary-text mb-3">
-      <i class="fas fa-heart" style="font-size: 75px"></i>
+      <i class="fas fa-heart icon-xl"></i>
     </div>
     <h5>Homebridge</h5>
     <ul>
@@ -33,7 +33,11 @@
         The <span class="font-monospace">hb-service</span> utility was created by
         <a href="https://github.com/oznu" target="_blank" rel="noopener noreferrer">oznu</a>.
       </li>
-      <li>We are grateful to <a href="https://github.com/homebridge/homebridge/graphs/contributors">all contributors</a> of Homebridge since its first commit in December 2014.</li>
+      <li>
+        We are grateful to
+        <a href="https://github.com/homebridge/homebridge/graphs/contributors">all contributors</a> of Homebridge since
+        its first commit in December 2014.
+      </li>
     </ul>
     <h5>Homebridge UI</h5>
     <ul>
@@ -42,9 +46,15 @@
         <a href="https://github.com/oznu" target="_blank" rel="noopener noreferrer">oznu</a>.
       </li>
       <li>
-        Thanks to <a href="https://github.com/rfiorentino1" target="_blank" rel="noopener noreferrer">rfiorentino1</a> for their contributions to improving the accessibility of the UI.
+        Thanks to
+        <a href="https://github.com/rfiorentino1" target="_blank" rel="noopener noreferrer">rfiorentino1</a> for their
+        contributions to improving the accessibility of the UI.
       </li>
-      <li>We are grateful to <a href="https://github.com/homebridge/homebridge-config-ui-x/graphs/contributors">all contributors</a> of the Homebridge UI since its first commit in July 2017.</li>
+      <li>
+        We are grateful to
+        <a href="https://github.com/homebridge/homebridge-config-ui-x/graphs/contributors">all contributors</a> of the
+        Homebridge UI since its first commit in July 2017.
+      </li>
     </ul>
     <h5>{{ 'status.credits.translations' | translate }}</h5>
     <ul>
@@ -55,8 +65,8 @@
             <li>
               {{ translator.language }}:
               <a target="_blank" rel="noopener noreferrer" [href]="`https://github.com/${translator.github}`">{{
-                  translator.github
-                }}</a>
+                translator.github
+              }}</a>
             </li>
           }
         </ul>
@@ -81,8 +91,8 @@
         type="button"
         class="btn btn-elegant"
         data-bs-dismiss="modal"
-        (click)="dismissModal()"
         [attr.aria-label]="'form.button_close' | translate"
+        (click)="dismissModal()"
       >
         {{ 'form.button_close' | translate }}
       </button>

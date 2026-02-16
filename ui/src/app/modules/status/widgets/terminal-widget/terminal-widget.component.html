@@ -1,17 +1,12 @@
 <div
   #widgetcontainer
   class="flex-column d-flex align-items-stretch h-100 w-100"
-  [style.background-color]="theme() === 'dark' ? '#2b2b2b' : ''"
+  [class.widget-container-dark]="theme() === 'dark'"
 >
-  <div
-    #terminaltitle
-    [style.color]="theme() === 'dark' ? '#ffffff' : ''"
-    [style.background-color]="theme() === 'dark' ? '#2b2b2b': ''"
-    class="drag-handler p-2"
-  >
+  <div #terminaltitle class="drag-handler p-2" [class.terminal-title-dark]="theme() === 'dark'">
     Homebridge {{ 'menu.docker.terminal' | translate }}
   </div>
-  <div [style.height.px]="terminalHeight()" class="p-2">
-    <div #terminaloutput class="terminal gridster-item-content w-100 h-100" style="max-height: 100%"></div>
+  <div class="p-2" [style.height.px]="terminalHeight()">
+    <div #terminaloutput class="terminal gridster-item-content w-100 h-100 terminal-max-height"></div>
   </div>
 </div>

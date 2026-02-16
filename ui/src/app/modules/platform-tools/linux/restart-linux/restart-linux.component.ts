@@ -1,4 +1,4 @@
-import { Component, DestroyRef, inject, OnDestroy, OnInit, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnDestroy, OnInit, signal } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { Router } from '@angular/router'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
@@ -11,10 +11,12 @@ import { HomebridgeStatusResponse } from '@/app/core/server.interfaces'
 import { SettingsService } from '@/app/core/ui/settings.service'
 
 @Component({
-  templateUrl: './restart-linux.component.html',
-  styleUrls: ['./restart-linux.component.scss'],
-  standalone: true,
+  selector: 'app-restart-linux',
   imports: [TranslatePipe],
+  standalone: true,
+  templateUrl: './restart-linux.component.html',
+  styleUrl: './restart-linux.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RestartLinuxComponent implements OnInit, OnDestroy {
   // Injected dependencies
@@ -30,8 +32,8 @@ export class RestartLinuxComponent implements OnInit, OnDestroy {
   private io: IoNamespace
 
   // Signals
-  public timeout = signal(false)
-  public error = signal<string | false>(false)
+  public readonly timeout = signal(false)
+  public readonly error = signal<string | false>(false)
 
   public ngOnInit(): void {
     void this.initialize()

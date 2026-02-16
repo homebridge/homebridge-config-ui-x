@@ -6,13 +6,13 @@
       class="btn-close"
       data-bs-dismiss="modal"
       [attr.aria-label]="'form.button_close' | translate"
-      (click)="dismissModal()"
       [disabled]="clicked() || deleting()"
+      (click)="dismissModal()"
     ></button>
   </div>
   <div class="modal-body">
     <div class="text-center mb-3">
-      <i class="fas fa-history primary-text" style="font-size: 75px" aria-hidden="true"></i>
+      <i class="fas fa-history primary-text icon-xl" aria-hidden="true"></i>
     </div>
     <ul class="mb-3">
       <li>{{ 'config.restore.help_1' | translate }}</li>
@@ -28,9 +28,9 @@
         <button
           type="button"
           class="btn btn-primary m-0 ms-3 py-1"
-          (click)="downloadCurrentConfig()"
           [disabled]="clicked() || deleting()"
           [attr.aria-label]="'form.button_download' | translate"
+          (click)="downloadCurrentConfig()"
         >
           <span class="visually-hidden" aria-hidden="true">{{ 'form.button_download' | translate }}</span>
           <i class="fas fa-arrow-right" aria-hidden="true"></i>
@@ -38,96 +38,96 @@
       </li>
     </ul>
     @if (loading()) {
-    <div class="text-center primary-text">
-      <i class="fa fa-circle-notch fa-spin mt-3" style="font-size: 75px" aria-hidden="true"></i>
-    </div>
+      <div class="text-center primary-text">
+        <i class="fa fa-circle-notch fa-spin mt-3 icon-xl" aria-hidden="true"></i>
+      </div>
     } @else if (backupList().length) {
-    <ul class="list-group list-group-box mt-3">
-      @for (backup of backupList(); track backup) {
-      <li class="list-group-item d-flex justify-content-between align-items-center">
-        <span>
-          {{ backup.timestamp | date:'mediumDate' }}<br />
-          <span class="grey-text small">{{ backup.timestamp | date:'shortTime' }}</span>
-        </span>
-        <span style="display: flex; flex-wrap: nowrap">
-          <button
-            (click)="restore(backup.id)"
-            [disabled]="clicked() || deleting()"
-            class="btn btn-primary m-0 ms-3 py-1"
-            [ngbTooltip]="'config.restore.copy_to_editor' | translate"
-            placement="bottom"
-            container="modal"
-            [openDelay]="150"
-            triggers="hover"
-            [attr.aria-label]="'config.restore.copy_to_editor' | translate"
-          >
-            <i class="fas fa-history"></i>
-          </button>
-          <button
-            class="btn btn-primary m-0 ms-2"
-            (click)="download(backup.id)"
-            [disabled]="clicked() || deleting()"
-            [ngbTooltip]="'form.button_download' | translate"
-            placement="bottom"
-            container="modal"
-            [openDelay]="150"
-            triggers="hover"
-            [attr.aria-label]="'form.button_download' | translate"
-          >
-            <i class="fas fa-download"></i>
-          </button>
-          <button
-            class="btn btn-danger m-0 ms-2"
-            (click)="delete(backup.id)"
-            [disabled]="clicked() || deleting()"
-            [ngbTooltip]="'form.button_delete' | translate"
-            placement="bottom"
-            container="modal"
-            [openDelay]="150"
-            triggers="hover"
-            [attr.aria-label]="'form.button_delete' | translate"
-          >
-            <i
-              class="fas"
-              [class]="{
-                'fa-trash': backup.id !== deleting(),
-                'fa-circle-notch': backup.id === deleting(),
-                'fa-spin': backup.id === deleting()
-              }"
-            ></i>
-          </button>
-        </span>
-      </li>
-      }
-      <li class="list-group-item d-flex justify-content-between align-items-center">
-        <span>
-          {{ 'form.button_delete_all' | translate }}<br />
-          <span class="grey-text small">{{ 'common.labels.no_confirmation' | translate }}</span>
-        </span>
-        <span style="display: flex; flex-wrap: nowrap">
-          <button
-            class="btn btn-danger m-0 ms-2"
-            (click)="deleteAllBackups()"
-            [disabled]="clicked() || deleting()"
-            [ngbTooltip]="'form.button_delete_all' | translate"
-            placement="bottom"
-            container="modal"
-            [openDelay]="150"
-            triggers="hover"
-            [attr.aria-label]="'form.button_delete_all' | translate"
-          >
-            <i
-              class="fas"
-              [class]="{
-                'fa-trash': 'all' !== deleting(),
-                'fa-circle-notch': 'all' === deleting(),
-                'fa-spin': 'all' === deleting()
-              }"
-            ></i>
-          </button>
-        </span>
-      </li>
-    </ul>
+      <ul class="list-group list-group-box mt-3">
+        @for (backup of backupList(); track backup) {
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <span>
+              {{ backup.timestamp | date: 'mediumDate' }}<br />
+              <span class="grey-text small">{{ backup.timestamp | date: 'shortTime' }}</span>
+            </span>
+            <span class="d-flex flex-nowrap">
+              <button
+                type="button"
+                class="btn btn-primary m-0 ms-3 py-1"
+                placement="bottom"
+                container="modal"
+                triggers="hover"
+                [disabled]="clicked() || deleting()"
+                [ngbTooltip]="'config.restore.copy_to_editor' | translate"
+                [openDelay]="150"
+                [attr.aria-label]="'config.restore.copy_to_editor' | translate"
+                (click)="restore(backup.id)"
+              >
+                <i class="fas fa-history"></i>
+              </button>
+              <button
+                type="button"
+                class="btn btn-primary m-0 ms-2"
+                placement="bottom"
+                container="modal"
+                triggers="hover"
+                [disabled]="clicked() || deleting()"
+                [ngbTooltip]="'form.button_download' | translate"
+                [openDelay]="150"
+                [attr.aria-label]="'form.button_download' | translate"
+                (click)="download(backup.id)"
+              >
+                <i class="fas fa-download"></i>
+              </button>
+              <button
+                type="button"
+                class="btn btn-danger m-0 ms-2"
+                placement="bottom"
+                container="modal"
+                triggers="hover"
+                [disabled]="clicked() || deleting()"
+                [ngbTooltip]="'form.button_delete' | translate"
+                [openDelay]="150"
+                [attr.aria-label]="'form.button_delete' | translate"
+                (click)="delete(backup.id)"
+              >
+                <i
+                  class="fas"
+                  [class.fa-trash]="backup.id !== deleting()"
+                  [class.fa-circle-notch]="backup.id === deleting()"
+                  [class.fa-spin]="backup.id === deleting()"
+                ></i>
+              </button>
+            </span>
+          </li>
+        }
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          <span>
+            {{ 'form.button_delete_all' | translate }}<br />
+            <span class="grey-text small">{{ 'common.labels.no_confirmation' | translate }}</span>
+          </span>
+          <span class="d-flex flex-nowrap">
+            <button
+              type="button"
+              class="btn btn-danger m-0 ms-2"
+              placement="bottom"
+              container="modal"
+              triggers="hover"
+              [disabled]="clicked() || deleting()"
+              [ngbTooltip]="'form.button_delete_all' | translate"
+              [openDelay]="150"
+              [attr.aria-label]="'form.button_delete_all' | translate"
+              (click)="deleteAllBackups()"
+            >
+              <i
+                class="fas"
+                [class.fa-trash]="'all' !== deleting()"
+                [class.fa-circle-notch]="'all' === deleting()"
+                [class.fa-spin]="'all' === deleting()"
+              ></i>
+            </button>
+          </span>
+        </li>
+      </ul>
     }
   </div>
   <div class="modal-footer justify-content-between">
@@ -137,9 +137,9 @@
         type="button"
         class="btn btn-elegant"
         data-bs-dismiss="modal"
-        (click)="dismissModal()"
         [disabled]="clicked() || deleting()"
         [attr.aria-label]="'form.button_close' | translate"
+        (click)="dismissModal()"
       >
         {{ 'form.button_close' | translate }}
       </button>

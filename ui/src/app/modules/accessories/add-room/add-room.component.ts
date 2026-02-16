@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core'
 import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe } from '@ngx-translate/core'
@@ -7,9 +7,11 @@ import { RequiredIndicatorComponent } from '@/app/core/components/required-indic
 import { ADD_ROOM_MODAL_DATA } from '@/app/modules/accessories/modal-data-tokens'
 
 @Component({
-  templateUrl: './add-room.component.html',
-  standalone: true,
+  selector: 'app-add-room',
   imports: [ReactiveFormsModule, TranslatePipe, RequiredIndicatorComponent],
+  standalone: true,
+  templateUrl: './add-room.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AddRoomComponent implements OnInit {
   private $activeModal = inject(NgbActiveModal)

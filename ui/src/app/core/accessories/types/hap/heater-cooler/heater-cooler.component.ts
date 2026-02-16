@@ -1,5 +1,14 @@
 import { DecimalPipe, UpperCasePipe } from '@angular/common'
-import { Component, createEnvironmentInjector, EnvironmentInjector, inject, input, OnInit, signal } from '@angular/core'
+import {
+  ChangeDetectionStrategy,
+  Component,
+  createEnvironmentInjector,
+  EnvironmentInjector,
+  inject,
+  input,
+  OnInit,
+  signal,
+} from '@angular/core'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe } from '@ngx-translate/core'
 
@@ -13,8 +22,6 @@ import { SettingsService } from '@/app/core/ui/settings.service'
 
 @Component({
   selector: 'app-heater-cooler',
-  templateUrl: './heater-cooler.component.html',
-  standalone: true,
   imports: [
     LongClickDirective,
     DecimalPipe,
@@ -22,6 +29,9 @@ import { SettingsService } from '@/app/core/ui/settings.service'
     ConvertTempPipe,
     UpperCasePipe,
   ],
+  standalone: true,
+  templateUrl: './heater-cooler.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HeaterCoolerComponent implements OnInit {
   private $modal = inject(NgbModal)
@@ -29,17 +39,36 @@ export class HeaterCoolerComponent implements OnInit {
   private $settings = inject(SettingsService)
   private $accessories = inject(AccessoriesService)
 
-  public service = input.required<ServiceTypeX>()
-  public readyForControl = input<boolean>(false)
-  public type = input<'heater' | 'cooler'>()
+  public readonly service = input.required<ServiceTypeX>()
+  public readonly readyForControl = input<boolean>(false)
+  public readonly type = input<'heater' | 'cooler'>()
 
   public temperatureUnits = this.$settings.env.temperatureUnits
-  public hasHeating = signal(false)
-  public hasCooling = signal(false)
+  public readonly hasHeating = signal(false)
+  public readonly hasCooling = signal(false)
 
   public ngOnInit() {
     this.hasHeating.set('HeatingThresholdTemperature' in this.service().values)
     this.hasCooling.set('CoolingThresholdTemperature' in this.service().values)
+  }
+
+  public getStatusFill(): string {
+    const values = this.service().values
+    const isActive = values?.Active || values?.On
+    const isCooling = (values?.CurrentHeaterCoolerState === 3 && values?.Active === 1)
+      || (this.type() === 'cooler' && isActive)
+    const isHeating = (values?.CurrentHeaterCoolerState === 2 && values?.Active === 1)
+      || (this.type() === 'heater' && isActive)
+
+    if (isCooling) {
+      return 'url(#coolingGradient)'
+    }
+
+    if (isHeating) {
+      return 'url(#heatingGradient)'
+    }
+
+    return isActive ? '#42d672' : '#7b7b7b'
   }
 
   public onClick() {

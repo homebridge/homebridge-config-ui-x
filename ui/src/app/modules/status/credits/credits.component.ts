@@ -1,11 +1,13 @@
-import { Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe } from '@ngx-translate/core'
 
 @Component({
-  templateUrl: './credits.component.html',
-  standalone: true,
+  selector: 'app-credits',
   imports: [TranslatePipe],
+  standalone: true,
+  templateUrl: './credits.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CreditsComponent {
   // Injected dependencies

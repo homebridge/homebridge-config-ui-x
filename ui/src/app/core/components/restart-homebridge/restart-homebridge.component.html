@@ -12,7 +12,7 @@
     ></button>
   </div>
   <div class="modal-body text-center">
-    <i class="fas fa-power-off primary-text mb-3" style="font-size: 75px"></i>
+    <i class="fas fa-power-off primary-text mb-3 icon-xl"></i>
     <p class="mb-0">{{ 'plugins.settings.restart_required' | translate }}</p>
   </div>
   <div class="modal-footer justify-content-between">
@@ -21,8 +21,8 @@
         type="button"
         class="btn btn-elegant"
         data-bs-dismiss="modal"
-        (click)="dismissModal()"
         [attr.aria-label]="'form.button_close' | translate"
+        (click)="dismissModal()"
       >
         {{ 'form.button_close' | translate }}
       </button>

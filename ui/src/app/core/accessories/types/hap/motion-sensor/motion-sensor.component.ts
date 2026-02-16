@@ -1,17 +1,18 @@
-import { Component, input } from '@angular/core'
+import { ChangeDetectionStrategy, Component, input } from '@angular/core'
 import { TranslatePipe } from '@ngx-translate/core'
 
 import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
 
 @Component({
   selector: 'app-motion-sensor',
-  templateUrl: './motion-sensor.component.html',
-  styleUrls: ['./motion-sensor.component.scss'],
-  standalone: true,
   imports: [
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './motion-sensor.component.html',
+  styleUrl: './motion-sensor.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MotionSensorComponent {
-  public service = input.required<ServiceTypeX>()
+  public readonly service = input.required<ServiceTypeX>()
 }

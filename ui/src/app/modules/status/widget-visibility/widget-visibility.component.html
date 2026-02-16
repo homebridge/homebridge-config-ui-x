@@ -11,28 +11,28 @@
   </div>
   <div class="modal-body">
     @if (availableWidgets().length) {
-    <ul class="list-group list-group-box mb-4">
-      <li class="list-group-item text-center grey-text small">
-        <span [innerHTML]="'status.widget.account_1' | translate"></span><br />
-        <span [innerHTML]="'status.widget.account_2' | translate"></span>
-      </li>
-      @for (widget of availableWidgets(); track widget) {
-      <li class="list-group-item d-flex justify-content-between align-items-center">
-        <span style="word-break: break-all">{{ widget.name }}</span>
-        <span>
-          <input
-            type="checkbox"
-            class="rendux-input"
-            [checked]="widget.shown"
-            [id]="'widget' + widget.name"
-            (click)="selectWidget(widget)"
-            [attr.aria-label]="('form.button_show' | translate) + ' ' + widget.name"
-          />
-          <label [for]="'widget' + widget.name" class="rendux-label ms-3"></label>
-        </span>
-      </li>
-      }
-    </ul>
+      <ul class="list-group list-group-box mb-4">
+        <li class="list-group-item text-center grey-text small">
+          <span [innerHTML]="'status.widget.account_1' | translate"></span><br />
+          <span [innerHTML]="'status.widget.account_2' | translate"></span>
+        </li>
+        @for (widget of availableWidgets(); track widget) {
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <span class="text-break-all">{{ widget.name }}</span>
+            <span>
+              <input
+                type="checkbox"
+                class="rendux-input"
+                [checked]="widget.shown"
+                [id]="`widget${widget.name}`"
+                [attr.aria-label]="`${('form.button_show' | translate)} ${widget.name}`"
+                (click)="selectWidget(widget)"
+              />
+              <label class="rendux-label ms-3" [for]="`widget${widget.name}`"></label>
+            </span>
+          </li>
+        }
+      </ul>
     }
 
     <ul class="list-group list-group-box mb-0">
@@ -43,10 +43,11 @@
           <small class="grey-text">{{ 'status.widget.reset' | translate }}</small>
         </div>
         <button
+          type="button"
           class="btn btn-danger m-0 ms-3 py-1"
-          (click)="doResetLayout()"
-          [attr.aria-label]="'form.button_reset' | translate"
           data-bs-dismiss="modal"
+          [attr.aria-label]="'form.button_reset' | translate"
+          (click)="doResetLayout()"
         >
           <i class="fas fa-arrow-right"></i>
         </button>
@@ -60,8 +61,8 @@
         type="button"
         class="btn btn-elegant"
         data-bs-dismiss="modal"
-        (click)="dismissModal()"
         [attr.aria-label]="'form.button_close' | translate"
+        (click)="dismissModal()"
       >
         {{ 'form.button_close' | translate }}
       </button>

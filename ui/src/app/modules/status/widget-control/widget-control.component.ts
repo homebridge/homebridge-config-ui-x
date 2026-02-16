@@ -1,6 +1,6 @@
 import { DatePipe } from '@angular/common'
 import { HttpClient, HttpParams } from '@angular/common/http'
-import { Component, inject, OnInit, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { NgbTypeahead } from '@ng-bootstrap/ng-bootstrap/typeahead'
@@ -23,14 +23,16 @@ import { ServerInfo, Widget } from '@/app/modules/status/widgets/widgets.interfa
 import { environment } from '@/environments/environment'
 
 @Component({
-  templateUrl: './widget-control.component.html',
-  standalone: true,
+  selector: 'app-widget-control',
   imports: [
     FormsModule,
     NgbTypeahead,
     DatePipe,
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './widget-control.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WidgetControlComponent implements OnInit {
   // Injected dependencies
@@ -46,10 +48,10 @@ export class WidgetControlComponent implements OnInit {
   public widget = this.modalData.widget
 
   // Signals
-  public searching = signal<boolean>(false)
-  public serverInfo = signal<ServerInfo | null>(null)
-  public networkInterfaces = signal<string[]>([])
-  public isLightMode = signal<boolean>(false)
+  public readonly searching = signal<boolean>(false)
+  public readonly serverInfo = signal<ServerInfo | null>(null)
+  public readonly networkInterfaces = signal<string[]>([])
+  public readonly isLightMode = signal<boolean>(false)
 
   // Other properties
   private io: IoNamespace

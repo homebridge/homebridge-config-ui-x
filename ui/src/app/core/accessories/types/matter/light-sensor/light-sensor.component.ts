@@ -1,5 +1,5 @@
 import { DecimalPipe } from '@angular/common'
-import { Component, computed, input } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core'
 import { TranslatePipe } from '@ngx-translate/core'
 
 import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
@@ -7,15 +7,16 @@ import { getLightSensorIlluminance } from '@/app/core/accessories/types/matter/m
 
 @Component({
   selector: 'app-matter-light-sensor',
-  templateUrl: './light-sensor.component.html',
-  standalone: true,
   imports: [
     DecimalPipe,
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './light-sensor.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatterLightSensorComponent {
-  public service = input.required<ServiceTypeX>()
+  public readonly service = input.required<ServiceTypeX>()
 
-  public illuminance = computed(() => getLightSensorIlluminance(this.service()))
+  public readonly illuminance = computed(() => getLightSensorIlluminance(this.service()))
 }

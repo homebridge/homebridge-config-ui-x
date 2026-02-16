@@ -1,4 +1,12 @@
-import { Component, createEnvironmentInjector, EnvironmentInjector, inject, input, OnInit } from '@angular/core'
+import {
+  ChangeDetectionStrategy,
+  Component,
+  createEnvironmentInjector,
+  EnvironmentInjector,
+  inject,
+  input,
+  OnInit,
+} from '@angular/core'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe } from '@ngx-translate/core'
 
@@ -10,21 +18,22 @@ import { LongClickDirective } from '@/app/core/directives/long-click.directive'
 
 @Component({
   selector: 'app-fan',
-  templateUrl: './fan.component.html',
-  styleUrls: ['./fan.component.scss'],
-  standalone: true,
   imports: [
     LongClickDirective,
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './fan.component.html',
+  styleUrl: './fan.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FanComponent implements OnInit {
   private $accessories = inject(AccessoriesService)
   private injector = inject(EnvironmentInjector)
   private $modal = inject(NgbModal)
 
-  public service = input.required<ServiceTypeX>()
-  public readyForControl = input<boolean>(false)
+  public readonly service = input.required<ServiceTypeX>()
+  public readonly readyForControl = input<boolean>(false)
 
   public rotationSpeedUnit = ''
   public hasRotationDirection = false

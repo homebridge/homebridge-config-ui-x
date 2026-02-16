@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
@@ -8,12 +8,14 @@ import { SettingsService } from '@/app/core/ui/settings.service'
 import { Widget } from '@/app/modules/status/widgets/widgets.interfaces'
 
 @Component({
-  templateUrl: './widget-visibility.component.html',
-  standalone: true,
+  selector: 'app-widget-visibility',
   imports: [
     TranslatePipe,
     FormsModule,
   ],
+  standalone: true,
+  templateUrl: './widget-visibility.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WidgetVisibilityComponent implements OnInit {
   // Injected dependencies
@@ -27,7 +29,7 @@ export class WidgetVisibilityComponent implements OnInit {
   public resetLayout = this.modalData.resetLayout
 
   // Signals
-  public availableWidgets = signal<any[]>([])
+  public readonly availableWidgets = signal<any[]>([])
 
   public ngOnInit(): void {
     const allWidgets = [

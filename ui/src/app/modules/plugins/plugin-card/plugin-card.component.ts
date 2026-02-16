@@ -1,5 +1,5 @@
 import { DatePipe } from '@angular/common'
-import { Component, createEnvironmentInjector, effect, EnvironmentInjector, inject, input, OnInit, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, createEnvironmentInjector, effect, EnvironmentInjector, inject, input, OnInit, signal } from '@angular/core'
 import { NgbDropdown, NgbDropdownButtonItem, NgbDropdownItem, NgbDropdownMenu, NgbDropdownToggle } from '@ng-bootstrap/ng-bootstrap/dropdown'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap/tooltip'
@@ -25,8 +25,6 @@ import { MobileDetectService } from '@/app/core/utilities/mobile-detect.service'
 
 @Component({
   selector: 'app-plugin-card',
-  templateUrl: './plugin-card.component.html',
-  standalone: true,
   imports: [
     NgbTooltip,
     NgbDropdown,
@@ -37,6 +35,10 @@ import { MobileDetectService } from '@/app/core/utilities/mobile-detect.service'
     DatePipe,
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './plugin-card.component.html',
+  styleUrl: './plugin-card.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PluginCardComponent implements OnInit {
   // Injected dependencies
@@ -52,8 +54,8 @@ export class PluginCardComponent implements OnInit {
   private $ws = inject(WsService)
 
   // Inputs
-  plugin = input.required<Plugin>()
-  childBridges = input.required<ChildBridge[]>()
+  readonly plugin = input.required<Plugin>()
+  readonly childBridges = input.required<ChildBridge[]>()
 
   // Other properties
   private io: IoNamespace
@@ -61,12 +63,12 @@ export class PluginCardComponent implements OnInit {
   public readonly isAdmin = this.$auth.user.admin
 
   // Signals
-  public hasChildBridges = signal(false)
-  public allChildBridgesStopped = signal(false)
-  public childBridgeStatus = signal('pending')
-  public childBridgeRestartInProgress = signal(false)
-  public isMobile = signal<string>('')
-  public setChildBridges = signal<ChildBridge[]>([])
+  public readonly hasChildBridges = signal(false)
+  public readonly allChildBridgesStopped = signal(false)
+  public readonly childBridgeStatus = signal('pending')
+  public readonly childBridgeRestartInProgress = signal(false)
+  public readonly isMobile = signal<string>('')
+  public readonly setChildBridges = signal<ChildBridge[]>([])
 
   constructor() {
     // Use effect to react to childBridges changes

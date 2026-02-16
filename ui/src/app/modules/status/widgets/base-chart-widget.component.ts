@@ -13,6 +13,7 @@ import { Widget } from '@/app/modules/status/widgets/widgets.interfaces'
  * Extracts common functionality for chart initialization, data management, and interval handling
  */
 @Component({
+  selector: 'app-base-chart-widget',
   template: '',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -22,7 +23,7 @@ export abstract class BaseChartWidgetComponent implements OnInit, OnDestroy {
   protected $ws = inject(WsService)
 
   // Signals
-  public widget = input.required<Widget>()
+  public readonly widget = input.required<Widget>()
   readonly chart = viewChild(BaseChartDirective)
   readonly widgetBackground = viewChild<ElementRef>('widgetbackground')
 

@@ -1,13 +1,15 @@
-import { Component, inject, OnInit, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
 
 import { ApiService } from '@/app/core/communication/api.service'
 
 @Component({
-  templateUrl: './shutdown-linux.component.html',
-  standalone: true,
+  selector: 'app-shutdown-linux',
   imports: [TranslatePipe],
+  standalone: true,
+  templateUrl: './shutdown-linux.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ShutdownLinuxComponent implements OnInit {
   // Injected dependencies
@@ -16,7 +18,7 @@ export class ShutdownLinuxComponent implements OnInit {
   private $translate = inject(TranslateService)
 
   // Signals
-  public error = signal<string | false>(false)
+  public readonly error = signal<string | false>(false)
 
   public ngOnInit(): void {
     void this.$api.put('/platform-tools/linux/shutdown-host', {})

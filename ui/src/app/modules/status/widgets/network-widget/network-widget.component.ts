@@ -8,21 +8,22 @@ import { BaseChartDirective } from 'ng2-charts'
 import { BaseChartWidgetComponent } from '@/app/modules/status/widgets/base-chart-widget.component'
 
 @Component({
-  templateUrl: './network-widget.component.html',
-  styleUrls: ['./network-widget.component.scss'],
-  standalone: true,
+  selector: 'app-network-widget',
   imports: [
     BaseChartDirective,
     DecimalPipe,
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './network-widget.component.html',
+  styleUrl: './network-widget.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NetworkWidgetComponent extends BaseChartWidgetComponent {
   // Signals
-  public interface = signal<string>('')
-  public receivedPerSec = signal<number>(0)
-  public sentPerSec = signal<number>(0)
+  public readonly interface = signal<string>('')
+  public readonly receivedPerSec = signal<number>(0)
+  public readonly sentPerSec = signal<number>(0)
 
   protected fetchData(): void {
     this.io.request('get-server-network-info', { netInterfaces: [this.widget().networkInterface] }).subscribe((data: NetworkWidgetData) => {

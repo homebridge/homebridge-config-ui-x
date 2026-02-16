@@ -11,17 +11,7 @@
   </div>
   <div class="modal-body text-center px-5">
     <h6 class="mt-2 mb-4 fs-4">
-      <i
-        class="fas fa-temperature-full"
-        [style.color]="
-          (service.values?.CurrentHumidifierDehumidifierState === 2 && service.values?.Active === 1) || (type ==='humidifier' && (service.values?.Active || service.values?.On))
-            ? '#1e8bbd'
-            : (service.values?.CurrentHumidifierDehumidifierState === 3 && service.values?.Active === 1) || (type ==='dehumidifier' && (service.values?.Active || service.values?.On))
-              ? '#e69533'
-              : (service.values?.Active || service.values?.On ? '#42d672' : '#7b7b7b')
-        "
-      ></i
-      >{{ service.values?.CurrentRelativeHumidity }}%
+      <i [class]="`fas fa-temperature-full ${getStatusClass()}`"></i>{{ service.values?.CurrentRelativeHumidity }}%
     </h6>
     <div
       class="btn-group-vertical d-flex justify-content-center mb-4 p-0"
@@ -30,104 +20,110 @@
     >
       <button type="button" class="btn mb-0 mx-0 p-3 btn-control" (click)="setTargetState(0, $event)">
         <div class="float-start primary-text">
-          <i class="fas fa-xl" [class]="{ 'fa-check-circle': targetState === 0, 'fa-blank': targetState !== 0 }"></i>
+          <i class="fas fa-xl" [class.fa-check-circle]="targetState === 0" [class.fa-blank]="targetState !== 0"></i>
         </div>
         {{ 'accessories.control.off' | translate }}
         <div class="float-end"><i class="fas fa-xl fa-blank"></i></div>
       </button>
       <button type="button" class="btn mb-0 mx-0 p-3 btn-control" (click)="setTargetState(1, $event)">
         <div class="float-start primary-text">
-          <i class="fas fa-xl" [class]="{ 'fa-check-circle': targetState === 1, 'fa-blank': targetState !== 1 }"></i>
+          <i class="fas fa-xl" [class.fa-check-circle]="targetState === 1" [class.fa-blank]="targetState !== 1"></i>
         </div>
         {{ 'accessories.control.on' | translate }}
         <div class="float-end"><i class="fas fa-xl fa-blank"></i></div>
       </button>
     </div>
     @if (targetStateValidValues.length) {
-    <h6 class="mt-4">{{ 'accessories.control.mode' | translate }}</h6>
-    <div
-      class="btn-group-vertical d-flex justify-content-center mb-0 p-0"
-      role="group"
-      [attr.aria-label]="'accessories.control.mode_control' | translate"
-    >
-      @if (targetStateValidValues.includes(0)) {
-      <button type="button" class="btn mb-0 mx-0 p-3 btn-control" (click)="setTargetMode(0, $event)">
-        <div class="float-start primary-text">
-          <i class="fas fa-xl" [class]="{ 'fa-check-circle': targetMode === 0, 'fa-blank': targetMode !== 0 }"></i>
+      <h6 class="mt-4">{{ 'accessories.control.mode' | translate }}</h6>
+      <div
+        class="btn-group-vertical d-flex justify-content-center mb-0 p-0"
+        role="group"
+        [attr.aria-label]="'accessories.control.mode_control' | translate"
+      >
+        @if (targetStateValidValues.includes(0)) {
+          <button type="button" class="btn mb-0 mx-0 p-3 btn-control" (click)="setTargetMode(0, $event)">
+            <div class="float-start primary-text">
+              <i class="fas fa-xl" [class.fa-check-circle]="targetMode === 0" [class.fa-blank]="targetMode !== 0"></i>
+            </div>
+            {{ 'accessories.control.auto' | translate }}
+            <div class="float-end"><i class="fas fa-xl fa-blank"></i></div>
+          </button>
+        }
+        @if (targetStateValidValues.includes(1)) {
+          <button type="button" class="btn mb-0 mx-0 p-3 btn-control" (click)="setTargetMode(1, $event)">
+            <div class="float-start primary-text">
+              <i class="fas fa-xl" [class.fa-check-circle]="targetMode === 1" [class.fa-blank]="targetMode !== 1"></i>
+            </div>
+            {{ 'accessories.control.humidify' | translate }}
+            <div class="float-end"><i class="fas fa-xl fa-blank"></i></div>
+          </button>
+        }
+        @if (targetStateValidValues.includes(2)) {
+          <button type="button" class="btn mb-0 mx-0 p-3 btn-control" (click)="setTargetMode(2, $event)">
+            <div class="float-start primary-text">
+              <i class="fas fa-xl" [class.fa-check-circle]="targetMode === 2" [class.fa-blank]="targetMode !== 2"></i>
+            </div>
+            {{ 'accessories.control.dehumidify' | translate }}
+            <div class="float-end"><i class="fas fa-xl fa-blank"></i></div>
+          </button>
+        }
+      </div>
+    }
+    @if (targetStateValidValues.includes(0)) {
+      @if (RelativeHumidityHumidifierThreshold && RelativeHumidityDehumidifierThreshold) {
+        <h6 class="mt-4">
+          {{ 'accessories.control.target_auto' | translate }}: {{ autoHumidity[0] }}% - {{ autoHumidity[1] }}%
+        </h6>
+        <div class="humidity-slider">
+          <nouislider
+            [min]="RelativeHumidityHumidifierThreshold.minValue"
+            [max]="RelativeHumidityDehumidifierThreshold.maxValue"
+            [step]="RelativeHumidityDehumidifierThreshold.minStep"
+            [(ngModel)]="autoHumidity"
+            (ngModelChange)="onAutoHumidityStateChange()"
+          />
         </div>
-        {{ 'accessories.control.auto' | translate }}
-        <div class="float-end"><i class="fas fa-xl fa-blank"></i></div>
-      </button>
-      } @if (targetStateValidValues.includes(1)) {
-      <button type="button" class="btn mb-0 mx-0 p-3 btn-control" (click)="setTargetMode(1, $event)">
-        <div class="float-start primary-text">
-          <i class="fas fa-xl" [class]="{ 'fa-check-circle': targetMode === 1, 'fa-blank': targetMode !== 1 }"></i>
+      } @else if (RelativeHumidityHumidifierThreshold && !RelativeHumidityDehumidifierThreshold) {
+        <h6 class="mt-4">{{ 'accessories.control.target_auto' | translate }}: {{ targetHumidifierHumidity }}%</h6>
+        <div class="humidity-slider">
+          <nouislider
+            [min]="RelativeHumidityHumidifierThreshold.minValue"
+            [max]="RelativeHumidityHumidifierThreshold.maxValue"
+            [step]="RelativeHumidityHumidifierThreshold.minStep"
+            [(ngModel)]="targetHumidifierHumidity"
+            (ngModelChange)="onHumidityStateChange()"
+          />
         </div>
-        {{ 'accessories.control.humidify' | translate }}
-        <div class="float-end"><i class="fas fa-xl fa-blank"></i></div>
-      </button>
-      } @if (targetStateValidValues.includes(2)) {
-      <button type="button" class="btn mb-0 mx-0 p-3 btn-control" (click)="setTargetMode(2, $event)">
-        <div class="float-start primary-text">
-          <i class="fas fa-xl" [class]="{ 'fa-check-circle': targetMode === 2, 'fa-blank': targetMode !== 2 }"></i>
+      } @else if (!RelativeHumidityHumidifierThreshold && RelativeHumidityDehumidifierThreshold) {
+        <h6 class="mt-4">{{ 'accessories.control.target_auto' | translate }}: {{ targetDehumidifierHumidity }}%</h6>
+        <div class="humidity-slider">
+          <nouislider
+            [min]="RelativeHumidityDehumidifierThreshold.minValue"
+            [max]="RelativeHumidityDehumidifierThreshold.maxValue"
+            [step]="RelativeHumidityDehumidifierThreshold.minStep"
+            [(ngModel)]="targetDehumidifierHumidity"
+            (ngModelChange)="onHumidityStateChange()"
+          />
         </div>
-        {{ 'accessories.control.dehumidify' | translate }}
-        <div class="float-end"><i class="fas fa-xl fa-blank"></i></div>
-      </button>
       }
-    </div>
-    } @if (targetStateValidValues.includes(0)) { @if (RelativeHumidityHumidifierThreshold &&
-    RelativeHumidityDehumidifierThreshold) {
-    <h6 class="mt-4">
-      {{ 'accessories.control.target_auto' | translate }}: {{ autoHumidity[0] }}% - {{ autoHumidity[1] }}%
-    </h6>
-    <div class="humidity-slider">
-      <nouislider
-        [min]="RelativeHumidityHumidifierThreshold.minValue"
-        [max]="RelativeHumidityDehumidifierThreshold.maxValue"
-        [step]="RelativeHumidityDehumidifierThreshold.minStep"
-        [(ngModel)]="autoHumidity"
-        (ngModelChange)="onAutoHumidityStateChange()"
-      />
-    </div>
-    } @else if (RelativeHumidityHumidifierThreshold && !RelativeHumidityDehumidifierThreshold) {
-    <h6 class="mt-4">{{ 'accessories.control.target_auto' | translate }}: {{ targetHumidifierHumidity }}%</h6>
-    <div class="humidity-slider">
-      <nouislider
-        [min]="RelativeHumidityHumidifierThreshold.minValue"
-        [max]="RelativeHumidityHumidifierThreshold.maxValue"
-        [step]="RelativeHumidityHumidifierThreshold.minStep"
-        [(ngModel)]="targetHumidifierHumidity"
-        (ngModelChange)="onHumidityStateChange()"
-      />
-    </div>
-    } @else if (!RelativeHumidityHumidifierThreshold && RelativeHumidityDehumidifierThreshold) {
-    <h6 class="mt-4">{{ 'accessories.control.target_auto' | translate }}: {{ targetDehumidifierHumidity }}%</h6>
-    <div class="humidity-slider">
-      <nouislider
-        [min]="RelativeHumidityDehumidifierThreshold.minValue"
-        [max]="RelativeHumidityDehumidifierThreshold.maxValue"
-        [step]="RelativeHumidityDehumidifierThreshold.minStep"
-        [(ngModel)]="targetDehumidifierHumidity"
-        (ngModelChange)="onHumidityStateChange()"
-      />
-    </div>
-    } }
+    }
 
     @if (targetRotationSpeed) {
-    <h6 class="mt-4">
-      {{ 'accessories.control.rotation_speed' | translate }}: {{ targetRotationSpeed.value }}@if
-      (targetRotationSpeed.unit === 'percentage') {%}
-    </h6>
-    <div class="fan-slider">
-      <nouislider
-        [min]="targetRotationSpeed.min"
-        [max]="targetRotationSpeed.max"
-        [step]="targetRotationSpeed.step"
-        [(ngModel)]="targetRotationSpeed.value"
-        (ngModelChange)="onTargetRotationSpeedChange()"
-      />
-    </div>
+      <h6 class="mt-4">
+        {{ 'accessories.control.rotation_speed' | translate }}: {{ targetRotationSpeed.value }}
+        @if (targetRotationSpeed.unit === 'percentage') {
+          %
+        }
+      </h6>
+      <div class="fan-slider">
+        <nouislider
+          [min]="targetRotationSpeed.min"
+          [max]="targetRotationSpeed.max"
+          [step]="targetRotationSpeed.step"
+          [(ngModel)]="targetRotationSpeed.value"
+          (ngModelChange)="onTargetRotationSpeedChange()"
+        />
+      </div>
     }
   </div>
   <div class="modal-footer"></div>

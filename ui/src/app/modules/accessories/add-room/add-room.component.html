@@ -12,8 +12,8 @@
       ></button>
     </div>
     <div class="modal-body">
-      <div class="text-center mb-3">
-        <i class="fas fa-folder-plus primary-text" style="font-size: 75px"></i>
+      <div class="text-center mb-4">
+        <i class="fas fa-folder-plus primary-text icon-xl"></i>
       </div>
       <ul class="list-group list-group-box mb-0">
         <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
@@ -25,7 +25,6 @@
               id="form-name"
               autocomplete="off"
               type="text"
-              autofocus
               class="form-control custom-input"
               formControlName="roomName"
               [attr.aria-label]="'accessories.room_name' | translate"
@@ -43,9 +42,9 @@
               type="checkbox"
               class="rendux-input mb-0"
               formControlName="isDefault"
-              (keyup.enter)="closeModal()"
               [disabled]="noExistingRooms"
               [attr.aria-label]="'accessories.control.default_room' | translate"
+              (keyup.enter)="closeModal()"
             />
             <label for="form-default" class="rendux-label ms-3"></label>
           </div>

@@ -10,11 +10,12 @@ import { ACCESSORY_MANAGE_MODAL_DATA } from '@/app/core/accessories/types/base-m
 import { getDoorLockState, setDoorLockState } from '@/app/core/accessories/types/matter/matter-device.utils'
 
 @Component({
-  templateUrl: './door-lock.manage.component.html',
-  standalone: true,
+  selector: 'app-door-lock-manage',
   imports: [
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './door-lock.manage.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DoorLockManageComponent implements OnInit {

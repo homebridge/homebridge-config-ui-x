@@ -1,13 +1,15 @@
-import { Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe } from '@ngx-translate/core'
 
 import { CONFIRM_MODAL_DATA } from '@/app/core/modal-data-tokens'
 
 @Component({
-  templateUrl: './confirm.component.html',
-  standalone: true,
+  selector: 'app-confirm',
   imports: [TranslatePipe],
+  standalone: true,
+  templateUrl: './confirm.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ConfirmComponent {
   // Injected dependencies

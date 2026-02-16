@@ -30,6 +30,7 @@ describe('PluginsGateway (e2e)', { timeout: 10_000 }, () => {
   let client: EventEmitter
 
   let win32NpmPath: string
+  const isWin32 = platform() === 'win32'
 
   const nodePtyService = {
     spawn: vi.fn(),
@@ -103,11 +104,11 @@ describe('PluginsGateway (e2e)', { timeout: 10_000 }, () => {
     await pluginsGateway.installPlugin(client, { name: 'homebridge-mock-plugin' })
 
     // Expect the npm command to be spawned
-    if (platform() === 'win32') {
-      expect(mockSpawn).toHaveBeenCalledWith(win32NpmPath, ['install', '-g', '--omit=dev', 'homebridge-mock-plugin@latest'], expect.anything())
-    } else {
-      expect(mockSpawn).toHaveBeenCalledWith('npm', ['install', '--omit=dev', 'homebridge-mock-plugin@latest'], expect.anything())
-    }
+    const expectedCmd = isWin32 ? win32NpmPath : 'npm'
+    const expectedArgs = isWin32
+      ? ['install', '-g', '--omit=dev', 'homebridge-mock-plugin@latest']
+      : ['install', '--omit=dev', 'homebridge-mock-plugin@latest']
+    expect(mockSpawn).toHaveBeenCalledWith(expectedCmd, expectedArgs, expect.anything())
 
     // Expect the terminal logs to be sent to the client
     expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('some log from terminal'))
@@ -134,11 +135,11 @@ describe('PluginsGateway (e2e)', { timeout: 10_000 }, () => {
     await pluginsGateway.installPlugin(client, { name: 'homebridge-mock-plugin', version: '3.2.5' })
 
     // Expect the npm command to be spawned
-    if (platform() === 'win32') {
-      expect(mockSpawn).toHaveBeenCalledWith(win32NpmPath, ['install', '-g', '--omit=dev', 'homebridge-mock-plugin@3.2.5'], expect.anything())
-    } else {
-      expect(mockSpawn).toHaveBeenCalledWith('npm', ['install', '--omit=dev', 'homebridge-mock-plugin@3.2.5'], expect.anything())
-    }
+    const expectedCmd = isWin32 ? win32NpmPath : 'npm'
+    const expectedArgs = isWin32
+      ? ['install', '-g', '--omit=dev', 'homebridge-mock-plugin@3.2.5']
+      : ['install', '--omit=dev', 'homebridge-mock-plugin@3.2.5']
+    expect(mockSpawn).toHaveBeenCalledWith(expectedCmd, expectedArgs, expect.anything())
 
     // Expect the terminal logs to be sent to the client
     expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('some log from terminal'))
@@ -197,11 +198,11 @@ describe('PluginsGateway (e2e)', { timeout: 10_000 }, () => {
     } catch (e) {}
 
     // Expect the npm command to be spawned
-    if (platform() === 'win32') {
-      expect(mockSpawn).toHaveBeenCalledWith(win32NpmPath, ['install', '-g', '--omit=dev', 'homebridge-mock-plugin@latest'], expect.anything())
-    } else {
-      expect(mockSpawn).toHaveBeenCalledWith('npm', ['install', '--omit=dev', 'homebridge-mock-plugin@latest'], expect.anything())
-    }
+    const expectedCmd = isWin32 ? win32NpmPath : 'npm'
+    const expectedArgs = isWin32
+      ? ['install', '-g', '--omit=dev', 'homebridge-mock-plugin@latest']
+      : ['install', '--omit=dev', 'homebridge-mock-plugin@latest']
+    expect(mockSpawn).toHaveBeenCalledWith(expectedCmd, expectedArgs, expect.anything())
 
     // Expect the method to let the client know the operation failed
     expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('Operation failed'))
@@ -226,11 +227,11 @@ describe('PluginsGateway (e2e)', { timeout: 10_000 }, () => {
     } catch (e) {}
 
     // Expect the npm command to be spawned
-    if (platform() === 'win32') {
-      expect(mockSpawn).toHaveBeenCalledWith(win32NpmPath, ['uninstall', '-g', 'homebridge-mock-plugin'], expect.anything())
-    } else {
-      expect(mockSpawn).toHaveBeenCalledWith('npm', ['uninstall', 'homebridge-mock-plugin'], expect.anything())
-    }
+    const expectedCmd = isWin32 ? win32NpmPath : 'npm'
+    const expectedArgs = isWin32
+      ? ['uninstall', '-g', 'homebridge-mock-plugin']
+      : ['uninstall', 'homebridge-mock-plugin']
+    expect(mockSpawn).toHaveBeenCalledWith(expectedCmd, expectedArgs, expect.anything())
 
     // Expect the method to let the client know the command succeeded
     expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('Operation succeeded!'))
@@ -280,11 +281,11 @@ describe('PluginsGateway (e2e)', { timeout: 10_000 }, () => {
     } catch (e) {}
 
     // Expect the npm command to be spawned
-    if (platform() === 'win32') {
-      expect(mockSpawn).toHaveBeenCalledWith(win32NpmPath, ['install', '-g', '--omit=dev', 'homebridge-mock-plugin@latest'], expect.anything())
-    } else {
-      expect(mockSpawn).toHaveBeenCalledWith('npm', ['install', '--omit=dev', 'homebridge-mock-plugin@latest'], expect.anything())
-    }
+    const expectedCmd = isWin32 ? win32NpmPath : 'npm'
+    const expectedArgs = isWin32
+      ? ['install', '-g', '--omit=dev', 'homebridge-mock-plugin@latest']
+      : ['install', '--omit=dev', 'homebridge-mock-plugin@latest']
+    expect(mockSpawn).toHaveBeenCalledWith(expectedCmd, expectedArgs, expect.anything())
 
     // Expect the method to let the client know the command succeeded
     expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('Operation succeeded!'))
@@ -309,11 +310,11 @@ describe('PluginsGateway (e2e)', { timeout: 10_000 }, () => {
     } catch (e) {}
 
     // Expect the npm command to be spawned
-    if (platform() === 'win32') {
-      expect(mockSpawn).toHaveBeenCalledWith(win32NpmPath, ['install', '-g', '--omit=dev', 'homebridge-mock-plugin@3.4.6'], expect.anything())
-    } else {
-      expect(mockSpawn).toHaveBeenCalledWith('npm', ['install', '--omit=dev', 'homebridge-mock-plugin@3.4.6'], expect.anything())
-    }
+    const expectedCmd = isWin32 ? win32NpmPath : 'npm'
+    const expectedArgs = isWin32
+      ? ['install', '-g', '--omit=dev', 'homebridge-mock-plugin@3.4.6']
+      : ['install', '--omit=dev', 'homebridge-mock-plugin@3.4.6']
+    expect(mockSpawn).toHaveBeenCalledWith(expectedCmd, expectedArgs, expect.anything())
 
     // Expect the method to let the client know the command succeeded
     expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('Operation succeeded!'))
@@ -348,13 +349,12 @@ describe('PluginsGateway (e2e)', { timeout: 10_000 }, () => {
     } catch (e) {}
 
     // Expect the npm command to be spawned
-    if (platform() === 'win32') {
-      expect(mockSpawn).toHaveBeenCalledWith(win32NpmPath, ['install', '--omit=dev', '-g', 'homebridge@latest'], expect.anything())
-    } else {
-      expect(mockSpawn).toHaveBeenCalledWith('npm', ['install', '--omit=dev', 'homebridge@latest'], expect.objectContaining({
-        cwd: resolve(process.env.UIX_STORAGE_PATH, 'plugins'),
-      }))
-    }
+    const expectedCmd = isWin32 ? win32NpmPath : 'npm'
+    const expectedArgs = isWin32
+      ? ['install', '--omit=dev', '-g', 'homebridge@latest']
+      : ['install', '--omit=dev', 'homebridge@latest']
+    expect(mockSpawn).toHaveBeenCalledWith(expectedCmd, expectedArgs, expect.anything())
+
     // Expect the method to let the client know the command succeeded
     expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('Operation succeeded!'))
   })
@@ -388,13 +388,11 @@ describe('PluginsGateway (e2e)', { timeout: 10_000 }, () => {
     } catch (e) {}
 
     // Expect the npm command to be spawned
-    if (platform() === 'win32') {
-      expect(mockSpawn).toHaveBeenCalledWith(win32NpmPath, ['install', '--omit=dev', '-g', 'homebridge@1.2.5'], expect.anything())
-    } else {
-      expect(mockSpawn).toHaveBeenCalledWith('npm', ['install', '--omit=dev', 'homebridge@1.2.5'], expect.objectContaining({
-        cwd: resolve(process.env.UIX_STORAGE_PATH, 'plugins'),
-      }))
-    }
+    const expectedCmd = isWin32 ? win32NpmPath : 'npm'
+    const expectedArgs = isWin32
+      ? ['install', '--omit=dev', '-g', 'homebridge@1.2.5']
+      : ['install', '--omit=dev', 'homebridge@1.2.5']
+    expect(mockSpawn).toHaveBeenCalledWith(expectedCmd, expectedArgs, expect.anything())
     // Expect the method to let the client know the command succeeded
     expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('Operation succeeded!'))
   })

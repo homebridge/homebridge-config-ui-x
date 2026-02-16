@@ -1,6 +1,6 @@
 import { DecimalPipe, TitleCasePipe, UpperCasePipe } from '@angular/common'
 import { HttpClient, HttpParams } from '@angular/common/http'
-import { Component, DestroyRef, inject, input, OnInit, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, input, OnInit, signal } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import dayjs from 'dayjs'
@@ -13,8 +13,7 @@ import { OpenWeatherMapResponse, Widget } from '@/app/modules/status/widgets/wid
 import { environment } from '@/environments/environment'
 
 @Component({
-  templateUrl: './weather-widget.component.html',
-  standalone: true,
+  selector: 'app-weather-widget',
   imports: [
     DecimalPipe,
     TitleCasePipe,
@@ -22,6 +21,9 @@ import { environment } from '@/environments/environment'
     ConvertTempPipe,
     UpperCasePipe,
   ],
+  standalone: true,
+  templateUrl: './weather-widget.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WeatherWidgetComponent implements OnInit {
   // Injected dependencies
@@ -32,8 +34,8 @@ export class WeatherWidgetComponent implements OnInit {
   private $ws = inject(WsService)
 
   // Signals
-  widget = input.required<Widget>()
-  public currentWeather = signal<OpenWeatherMapResponse | null>(null)
+  readonly widget = input.required<Widget>()
+  public readonly currentWeather = signal<OpenWeatherMapResponse | null>(null)
 
   // Other properties
   private io: IoNamespace

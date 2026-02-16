@@ -1,4 +1,12 @@
-import { Component, computed, createEnvironmentInjector, EnvironmentInjector, inject, input } from '@angular/core'
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  createEnvironmentInjector,
+  EnvironmentInjector,
+  inject,
+  input,
+} from '@angular/core'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe } from '@ngx-translate/core'
 
@@ -11,21 +19,22 @@ import { LongClickDirective } from '@/app/core/directives/long-click.directive'
 
 @Component({
   selector: 'app-matter-fan',
-  templateUrl: './fan.component.html',
-  styleUrls: ['./fan.component.scss'],
-  standalone: true,
   imports: [
     LongClickDirective,
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './fan.component.html',
+  styleUrl: './fan.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatterFanComponent {
   private $accessories = inject(AccessoriesService)
   private injector = inject(EnvironmentInjector)
   private $modal = inject(NgbModal)
 
-  public service = input.required<ServiceTypeX>()
-  public readyForControl = input<boolean>(false)
+  public readonly service = input.required<ServiceTypeX>()
+  public readonly readyForControl = input<boolean>(false)
 
   public onClick() {
     if (!this.readyForControl()) {
@@ -58,7 +67,7 @@ export class MatterFanComponent {
     })
   }
 
-  public isOn = computed(() => isFanOn(this.service()))
+  public readonly isOn = computed(() => isFanOn(this.service()))
 
-  public fanSpeed = computed(() => getFanPercentSetting(this.service()))
+  public readonly fanSpeed = computed(() => getFanPercentSetting(this.service()))
 }

@@ -1,4 +1,12 @@
-import { Component, createEnvironmentInjector, EnvironmentInjector, inject, input, OnInit } from '@angular/core'
+import {
+  ChangeDetectionStrategy,
+  Component,
+  createEnvironmentInjector,
+  EnvironmentInjector,
+  inject,
+  input,
+  OnInit,
+} from '@angular/core'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe } from '@ngx-translate/core'
 
@@ -10,21 +18,22 @@ import { LongClickDirective } from '@/app/core/directives/long-click.directive'
 
 @Component({
   selector: 'app-humidifier-dehumidifier',
-  templateUrl: './humidifier-dehumidifier.component.html',
-  standalone: true,
   imports: [
     LongClickDirective,
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './humidifier-dehumidifier.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HumidifierDehumidifierComponent implements OnInit {
   private $accessories = inject(AccessoriesService)
   private injector = inject(EnvironmentInjector)
   private $modal = inject(NgbModal)
 
-  public service = input.required<ServiceTypeX>()
-  public readyForControl = input<boolean>(false)
-  public type = input<'humidifier' | 'dehumidifier'>()
+  public readonly service = input.required<ServiceTypeX>()
+  public readonly readyForControl = input<boolean>(false)
+  public readonly type = input<'humidifier' | 'dehumidifier'>()
 
   public hasHumidifier: boolean = false
   public hasDehumidifier: boolean = false
@@ -32,6 +41,25 @@ export class HumidifierDehumidifierComponent implements OnInit {
   public ngOnInit() {
     this.hasHumidifier = 'RelativeHumidityHumidifierThreshold' in this.service().values
     this.hasDehumidifier = 'RelativeHumidityDehumidifierThreshold' in this.service().values
+  }
+
+  public getStatusFill(): string {
+    const values = this.service().values
+    const isActive = values?.Active || values?.On
+    const isHumidifying = (values?.CurrentHumidifierDehumidifierState === 2 && values?.Active === 1)
+      || (this.type() === 'humidifier' && isActive)
+    const isDehumidifying = (values?.CurrentHumidifierDehumidifierState === 3 && values?.Active === 1)
+      || (this.type() === 'dehumidifier' && isActive)
+
+    if (isHumidifying) {
+      return 'url(#humidifyingGradient)'
+    }
+
+    if (isDehumidifying) {
+      return 'url(#dehumidifyingGradient)'
+    }
+
+    return isActive ? '#42d672' : '#7b7b7b'
   }
 
   public onClick() {

@@ -1,4 +1,4 @@
-import { ApplicationRef, Component, ComponentFactoryResolver, ElementRef, EmbeddedViewRef, inject, Injector, input, OnDestroy, OnInit } from '@angular/core'
+import { ApplicationRef, ChangeDetectionStrategy, Component, ComponentFactoryResolver, ElementRef, EmbeddedViewRef, inject, Injector, input, OnDestroy, OnInit } from '@angular/core'
 
 import { AccessoriesWidgetComponent } from '@/app/modules/status/widgets/accessories-widget/accessories-widget.component'
 import { BridgesWidgetComponent } from '@/app/modules/status/widgets/bridges-widget/bridges-widget.component'
@@ -36,8 +36,9 @@ export const AVAILABLE_WIDGETS = [
 
 @Component({
   selector: 'app-widgets',
-  template: '',
   standalone: true,
+  template: '',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WidgetsComponent implements OnInit, OnDestroy {
   // Injected dependencies
@@ -65,7 +66,7 @@ export class WidgetsComponent implements OnInit, OnDestroy {
     BridgesWidgetComponent,
   }
 
-  widget = input.required<Widget>()
+  readonly widget = input.required<Widget>()
 
   public ngOnInit(): void {
     if (Object.hasOwn(this.availableWidgets, this.widget().component)) {

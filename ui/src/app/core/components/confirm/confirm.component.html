@@ -11,13 +11,14 @@
   </div>
   <div class="modal-body text-center">
     @if (faIconClass) {
-    <i class="fas {{ faIconClass }} mb-3" style="font-size: 75px"></i>
+      <i [class]="`fas ${faIconClass} mb-3 icon-xl`"></i>
     }
     <p class="mb-0 text-center" [innerHTML]="message"></p>
     @if (message2) {
-    <p class="mt-2 mb-0 text-center" [innerHTML]="message2"></p>
-    } @if (message3) {
-    <p class="mt-2 mb-0 text-center" [innerHTML]="message3"></p>
+      <p class="mt-2 mb-0 text-center" [innerHTML]="message2"></p>
+    }
+    @if (message3) {
+      <p class="mt-2 mb-0 text-center" [innerHTML]="message3"></p>
     }
   </div>
   <div class="modal-footer justify-content-between">
@@ -26,8 +27,8 @@
         type="button"
         class="btn btn-elegant"
         data-bs-dismiss="modal"
-        (click)="dismissModal()"
         [attr.aria-label]="'form.button_cancel' | translate"
+        (click)="dismissModal()"
       >
         {{ 'form.button_cancel' | translate }}
       </button>
@@ -35,14 +36,14 @@
     <div class="text-center"></div>
     <div class="text-end">
       @if (confirmButtonLabel) {
-      <button
-        type="button"
-        class="btn {{ confirmButtonClass || 'btn-primary' }}"
-        data-bs-dismiss="modal"
-        (click)="closeModal()"
-      >
-        {{ confirmButtonLabel }}
-      </button>
+        <button
+          type="button"
+          data-bs-dismiss="modal"
+          [class]="`btn ${confirmButtonClass || 'btn-primary'}`"
+          (click)="closeModal()"
+        >
+          {{ confirmButtonLabel }}
+        </button>
       }
     </div>
   </div>

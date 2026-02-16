@@ -1,4 +1,4 @@
-import { Component, effect, inject, input, OnDestroy, OnInit, output, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, effect, inject, input, OnDestroy, OnInit, output, signal } from '@angular/core'
 import { JsonSchemaFormModule } from '@ng-formworks/core'
 
 import { JsonSchemaFormPatchDirective } from '@/app/core/directives/json-schema-form-patch.directive'
@@ -6,26 +6,27 @@ import { SettingsService } from '@/app/core/ui/settings.service'
 
 @Component({
   selector: 'app-schema-form',
-  templateUrl: './schema-form.component.html',
-  standalone: true,
   imports: [
     JsonSchemaFormModule,
     JsonSchemaFormPatchDirective,
   ],
+  standalone: true,
+  templateUrl: './schema-form.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SchemaFormComponent implements OnInit, OnDestroy {
   private $settings = inject(SettingsService)
   private availableLanguages = ['de', 'en', 'es', 'fr', 'it', 'pt', 'zh']
 
-  configSchema = input.required<any>()
-  data = input.required<any>()
+  readonly configSchema = input.required<any>()
+  readonly data = input.required<any>()
 
   readonly dataChange = output<any>()
   readonly dataChanged = output<any>()
   readonly isValid = output<boolean>()
 
-  public currentData = signal<any>(null)
-  public language = signal('en')
+  public readonly currentData = signal<any>(null)
+  public readonly language = signal('en')
   public jsonFormOptions = {
     addSubmit: false,
     loadExternalAssets: false,

@@ -1,4 +1,4 @@
-import { Component, computed, DestroyRef, inject, OnDestroy, OnInit, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, DestroyRef, inject, OnDestroy, OnInit, signal } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { Router } from '@angular/router'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
@@ -11,12 +11,14 @@ import { HomebridgeStatusResponse } from '@/app/core/server.interfaces'
 import { SettingsService } from '@/app/core/ui/settings.service'
 
 @Component({
-  templateUrl: './restart.component.html',
-  styleUrls: ['./restart.component.scss'],
-  standalone: true,
+  selector: 'app-restart',
   imports: [
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './restart.component.html',
+  styleUrl: './restart.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RestartComponent implements OnInit, OnDestroy {
   // Injected dependencies
@@ -29,18 +31,18 @@ export class RestartComponent implements OnInit, OnDestroy {
   private destroyRef = inject(DestroyRef)
 
   // Signals
-  public uiOnline = signal(false)
-  public error = signal<string | false>(false)
-  public resp = signal<Record<string, unknown>>({})
-  public timeout = signal(false)
+  public readonly uiOnline = signal(false)
+  public readonly error = signal<string | false>(false)
+  public readonly resp = signal<Record<string, unknown>>({})
+  public readonly timeout = signal(false)
 
   // Computed signals for icon classes
-  public uiIcon = computed(() => this.uiOnline() ? 'far fa-check-circle' : 'fas fa-circle-notch fa-spin')
-  public serviceIcon = computed(() => this.uiOnline() ? 'fas fa-circle-notch fa-spin' : 'far fa-circle')
+  public readonly uiIcon = computed(() => this.uiOnline() ? 'far fa-check-circle' : 'fas fa-circle-notch fa-spin')
+  public readonly serviceIcon = computed(() => this.uiOnline() ? 'fas fa-circle-notch fa-spin' : 'far fa-circle')
 
   // Other properties
   private io: IoNamespace
-  private statusCheckActive = signal(false)
+  private readonly statusCheckActive = signal(false)
 
   // Lifecycle
   public ngOnInit(): void {

@@ -31,6 +31,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - angular `v20` to `v21` code migration
 - add new component for required field indicator
 - improve search term matching on settings page
+- lint: apply `angular/template` rules
 
 ### Homebridge Dependencies
 

@@ -1,4 +1,4 @@
-import { Component, DestroyRef, ElementRef, inject, OnDestroy, OnInit, signal, viewChild } from '@angular/core'
+import { ChangeDetectionStrategy, Component, DestroyRef, ElementRef, inject, OnDestroy, OnInit, signal, viewChild } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { TranslatePipe } from '@ngx-translate/core'
 import { Subject } from 'rxjs'
@@ -8,12 +8,15 @@ import { QrcodeComponent } from '@/app/core/components/qrcode/qrcode.component'
 import { HomebridgeStatusResponse } from '@/app/core/server.interfaces'
 
 @Component({
-  templateUrl: './hap-qrcode-widget.component.html',
-  standalone: true,
+  selector: 'app-hap-qrcode-widget',
   imports: [
     QrcodeComponent,
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './hap-qrcode-widget.component.html',
+  styleUrl: './hap-qrcode-widget.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HapQrcodeWidgetComponent implements OnInit, OnDestroy {
   // Injected dependencies
@@ -23,11 +26,11 @@ export class HapQrcodeWidgetComponent implements OnInit, OnDestroy {
   // Signals
   readonly pincodeElement = viewChild<ElementRef>('pincode')
   readonly qrcodeContainerElement = viewChild<ElementRef>('qrcodecontainer')
-  public paired = signal<boolean>(false)
-  public pin = signal<string>('')
-  public setupUri = signal<string | null>(null)
-  public qrCodeHeight = signal<number>(0)
-  public qrCodeWidth = signal<number>(0)
+  public readonly paired = signal<boolean>(false)
+  public readonly pin = signal<string>('')
+  public readonly setupUri = signal<string | null>(null)
+  public readonly qrCodeHeight = signal<number>(0)
+  public readonly qrCodeWidth = signal<number>(0)
 
   // Other properties
   private io: IoNamespace

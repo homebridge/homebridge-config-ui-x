@@ -1,4 +1,4 @@
-import { Component, computed, inject, OnInit, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core'
 import { AbstractControl, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
@@ -11,14 +11,16 @@ import { USER_MODAL_DATA } from '@/app/core/modal-data-tokens'
 import { User } from '@/app/modules/users/users.interface'
 
 @Component({
-  templateUrl: './users-edit.component.html',
-  standalone: true,
+  selector: 'app-users-edit',
   imports: [
     FormsModule,
     ReactiveFormsModule,
     TranslatePipe,
     RequiredIndicatorComponent,
   ],
+  standalone: true,
+  templateUrl: './users-edit.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UsersEditComponent implements OnInit {
   // Injected dependencies
@@ -34,8 +36,8 @@ export class UsersEditComponent implements OnInit {
   public existingUsers: User[] = this.modalData.existingUsers || []
 
   // Signals
-  public isCurrentUser = signal(false)
-  public deleteMode = signal(false)
+  public readonly isCurrentUser = signal(false)
+  public readonly deleteMode = signal(false)
 
   // Other properties
   private initialFormValue: Partial<User> = {}
@@ -48,7 +50,7 @@ export class UsersEditComponent implements OnInit {
   }, this.matchPassword)
 
   // Computed signals
-  public isLastAdmin = computed(() => {
+  public readonly isLastAdmin = computed(() => {
     // Check if this user is an admin and there are no other admins
     if (!this.user?.admin) {
       return false
@@ -57,7 +59,7 @@ export class UsersEditComponent implements OnInit {
     return adminCount <= 1
   })
 
-  public canDelete = computed(() => {
+  public readonly canDelete = computed(() => {
     // Cannot delete if it's the current user or the last admin
     return !this.isCurrentUser() && !this.isLastAdmin()
   })

@@ -1,4 +1,4 @@
-import { Component, createEnvironmentInjector, DestroyRef, EnvironmentInjector, inject, input, OnInit, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, createEnvironmentInjector, DestroyRef, EnvironmentInjector, inject, input, OnInit, signal } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { RouterLink } from '@angular/router'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
@@ -27,14 +27,16 @@ import {
 import { environment } from '@/environments/environment'
 
 @Component({
-  templateUrl: './update-info-widget.component.html',
-  styleUrls: ['./update-info-widget.component.scss'],
-  standalone: true,
+  selector: 'app-update-info-widget',
   imports: [
     TranslatePipe,
     RouterLink,
     NgbTooltip,
   ],
+  standalone: true,
+  templateUrl: './update-info-widget.component.html',
+  styleUrl: './update-info-widget.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UpdateInfoWidgetComponent implements OnInit {
   // Injected dependencies
@@ -50,19 +52,19 @@ export class UpdateInfoWidgetComponent implements OnInit {
   private $ws = inject(WsService)
 
   // Signals
-  widget = input.required<Widget>()
-  public homebridgePkg = signal<Plugin>({} as Plugin)
-  public homebridgeUiPkg = signal<Plugin>({} as Plugin)
-  public homebridgePluginStatus = signal<Plugin[]>([])
-  public homebridgePluginStatusDone = signal<boolean>(false)
-  public nodejsInfo = signal<NodeJsInfo | null>(null)
-  public nodejsStatusDone = signal<boolean>(false)
-  public serverInfo = signal<ServerInfo | null>(null)
-  public isRunningHbV2 = signal<boolean>(false)
-  public isHbV2Loaded = signal<boolean>(false)
-  public isHbV2Ready = signal<boolean>(false)
-  public dockerStatusDone = signal<boolean>(false)
-  public dockerInfo = signal<DockerDetails>({
+  readonly widget = input.required<Widget>()
+  public readonly homebridgePkg = signal<Plugin>({} as Plugin)
+  public readonly homebridgeUiPkg = signal<Plugin>({} as Plugin)
+  public readonly homebridgePluginStatus = signal<Plugin[]>([])
+  public readonly homebridgePluginStatusDone = signal<boolean>(false)
+  public readonly nodejsInfo = signal<NodeJsInfo | null>(null)
+  public readonly nodejsStatusDone = signal<boolean>(false)
+  public readonly serverInfo = signal<ServerInfo | null>(null)
+  public readonly isRunningHbV2 = signal<boolean>(false)
+  public readonly isHbV2Loaded = signal<boolean>(false)
+  public readonly isHbV2Ready = signal<boolean>(false)
+  public readonly dockerStatusDone = signal<boolean>(false)
+  public readonly dockerInfo = signal<DockerDetails>({
     latestVersion: null,
     latestReleaseBody: '',
     updateAvailable: false,
@@ -181,99 +183,60 @@ export class UpdateInfoWidgetComponent implements OnInit {
     void this.$plugin.upgradeHomebridge(pkg, pkg.latestVersion)
   }
 
-  public getHomebridgeIconClass() {
+  public getHomebridgeIconClass(): string {
     if (!this.homebridgePkg().installedVersion) {
-      return {
-        'fa-circle-notch': true,
-        'fa-spin': true,
-        'primary-text': true,
-      }
+      return 'fa-circle-notch fa-spin primary-text'
     }
 
     if (this.homebridgeUpdatePolicy === 'none' || (this.homebridgeUpdatePolicy === 'major' && !this.homebridgePkg().updateAvailable)) {
-      return {
-        'fa-circle': true,
-        'green-text': true,
-      }
+      return 'fa-circle green-text'
     }
 
-    return {
-      'fa-check-circle': !this.homebridgePkg().updateAvailable,
-      'green-text': !this.homebridgePkg().updateAvailable,
-      'fa-arrow-alt-circle-up': this.homebridgePkg().updateAvailable,
-      'orange-text': this.homebridgePkg().updateAvailable,
-    }
+    return this.homebridgePkg().updateAvailable
+      ? 'fa-arrow-alt-circle-up orange-text'
+      : 'fa-check-circle green-text'
   }
 
-  public getHomebridgeUiIconClass() {
+  public getHomebridgeUiIconClass(): string {
     if (!this.homebridgeUiPkg().installedVersion) {
-      return {
-        'fa-circle-notch': true,
-        'fa-spin': true,
-        'primary-text': true,
-      }
+      return 'fa-circle-notch fa-spin primary-text'
     }
 
     if (this.homebridgeUiUpdatePolicy === 'none' || (this.homebridgeUiUpdatePolicy === 'major' && !this.homebridgeUiPkg().updateAvailable)) {
-      return {
-        'fa-circle': true,
-        'green-text': true,
-      }
+      return 'fa-circle green-text'
     }
 
-    return {
-      'fa-check-circle': !this.homebridgeUiPkg().updateAvailable,
-      'green-text': !this.homebridgeUiPkg().updateAvailable,
-      'fa-arrow-alt-circle-up': this.homebridgeUiPkg().updateAvailable,
-      'orange-text': this.homebridgeUiPkg().updateAvailable,
-    }
+    return this.homebridgeUiPkg().updateAvailable
+      ? 'fa-arrow-alt-circle-up orange-text'
+      : 'fa-check-circle green-text'
   }
 
-  public getPluginsIconClass() {
+  public getPluginsIconClass(): string {
     if (!this.homebridgePluginStatusDone()) {
-      return {
-        'fa-circle-notch': true,
-        'fa-spin': true,
-        'primary-text': true,
-      }
+      return 'fa-circle-notch fa-spin primary-text'
     }
-    return {
-      'fa-arrow-alt-circle-up': this.homebridgePluginStatus().length,
-      'orange-text': this.homebridgePluginStatus().length,
-      'fa-check-circle': !this.homebridgePluginStatus().length,
-      'green-text': !this.homebridgePluginStatus().length,
-    }
+
+    return this.homebridgePluginStatus().length
+      ? 'fa-arrow-alt-circle-up orange-text'
+      : 'fa-check-circle green-text'
   }
 
-  public getNodejsIconClass() {
+  public getNodejsIconClass(): string {
     if (!this.nodejsStatusDone()) {
-      return {
-        'fa-circle-notch': true,
-        'fa-spin': true,
-        'primary-text': true,
-      }
+      return 'fa-circle-notch fa-spin primary-text'
     }
 
     if (this.nodeUpdatePolicy === 'none' || (this.nodeUpdatePolicy === 'major' && !this.nodejsInfo().updateAvailable)) {
-      return {
-        'fa-circle': true,
-        'green-text': true,
-      }
+      return 'fa-circle green-text'
     }
 
     if (this.nodejsInfo().showNodeUnsupportedWarning) {
-      return {
-        'fa-exclamation-circle': true,
-        'orange-text': true,
-      }
+      return 'fa-exclamation-circle orange-text'
     }
 
-    return {
-      'fa-arrow-alt-circle-up': this.nodejsInfo().updateAvailable,
-      'orange-text': this.nodejsInfo().updateAvailable,
-      'fa-check-circle': !this.nodejsInfo().updateAvailable,
-      'green-text': !this.nodejsInfo().updateAvailable,
-    }
+    return this.nodejsInfo().updateAvailable
+      ? 'fa-arrow-alt-circle-up orange-text'
+      : 'fa-check-circle green-text'
   }
 
   private async checkHomebridgeVersion(): Promise<void> {

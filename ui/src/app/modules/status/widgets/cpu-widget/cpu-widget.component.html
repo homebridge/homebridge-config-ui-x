@@ -15,20 +15,23 @@
     <div class="d-flex justify-content-around flex-wrap w-100">
       <div class="text-center widget-value-parent-wrap">
         <div class="widget-value mb-0">
-          @if (currentLoad() !== undefined) { {{ currentLoad() | number:'1.0-0' }}% } @else {
-          <i class="fas fa-circle-notch fa-spin"></i>
+          @if (currentLoad() !== undefined) {
+            {{ currentLoad() | number: '1.0-0' }}%
+          } @else {
+            <i class="fas fa-circle-notch fa-spin"></i>
           }
         </div>
         <div class="widget-value-label grey-text">{{ 'status.cpu.load' | translate }}</div>
       </div>
       @if (cpuTemperature().main > 0) {
-      <div class="text-center widget-value-parent-wrap">
-        <div class="widget-value mb-0">
-          {{ cpuTemperature().main | convertTemp: temperatureUnits | number:'1.0-0' }}&deg;{{ temperatureUnits |
-          uppercase }}
+        <div class="text-center widget-value-parent-wrap">
+          <div class="widget-value mb-0">
+            {{ cpuTemperature().main | convertTemp: temperatureUnits | number: '1.0-0' }}&deg;{{
+              temperatureUnits | uppercase
+            }}
+          </div>
+          <div class="widget-value-label grey-text">{{ 'status.cpu.temp' | translate }}</div>
         </div>
-        <div class="widget-value-label grey-text">{{ 'status.cpu.temp' | translate }}</div>
-      </div>
       }
     </div>
   </div>

@@ -1,4 +1,4 @@
-import { Component, ElementRef, inject, OnDestroy, OnInit, signal, viewChild } from '@angular/core'
+import { ChangeDetectionStrategy, Component, ElementRef, inject, OnDestroy, OnInit, signal, viewChild } from '@angular/core'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap/tooltip'
 import { Bootstrap5FrameworkModule } from '@ng-formworks/bootstrap5'
@@ -17,15 +17,17 @@ import { ChildBridgesService } from '@/app/core/utilities/child-bridges.service'
 import { environment } from '@/environments/environment'
 
 @Component({
-  templateUrl: './custom-plugins.component.html',
-  styleUrls: ['./custom-plugins.component.scss'],
-  standalone: true,
+  selector: 'app-custom-plugins',
   imports: [
     SchemaFormComponent,
     Bootstrap5FrameworkModule,
     NgbTooltip,
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './custom-plugins.component.html',
+  styleUrl: './custom-plugins.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CustomPluginsComponent implements OnInit, OnDestroy {
   // 1. Injected Dependencies
@@ -48,23 +50,23 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
   public pluginConfig: Record<string, unknown>[] = this.modalData.pluginConfig ?? []
 
   // 4. Other Signals
-  public pluginAlias = signal<string>('')
-  public pluginType = signal<'platform' | 'accessory'>('platform')
-  public loading = signal(true)
-  public saveInProgress = signal(false)
-  public pluginSpinner = signal(false)
-  public saveButtonDisabled = signal(false)
-  public uiLoaded = signal(false)
-  public showSchemaForm = signal(false)
-  public formId = signal<string | undefined>(undefined)
-  public formSchema = signal<unknown>(undefined)
-  public formData = signal<unknown>(undefined)
-  public formSubmitButtonLabel = signal<string | undefined>(undefined)
-  public formCancelButtonLabel = signal<string | undefined>(undefined)
-  public formValid = signal(true)
-  public isFirstSave = signal(false)
-  public formIsValid = signal(true)
-  public strictValidation = signal(false)
+  public readonly pluginAlias = signal<string>('')
+  public readonly pluginType = signal<'platform' | 'accessory'>('platform')
+  public readonly loading = signal(true)
+  public readonly saveInProgress = signal(false)
+  public readonly pluginSpinner = signal(false)
+  public readonly saveButtonDisabled = signal(false)
+  public readonly uiLoaded = signal(false)
+  public readonly showSchemaForm = signal(false)
+  public readonly formId = signal<string | undefined>(undefined)
+  public readonly formSchema = signal<unknown>(undefined)
+  public readonly formData = signal<unknown>(undefined)
+  public readonly formSubmitButtonLabel = signal<string | undefined>(undefined)
+  public readonly formCancelButtonLabel = signal<string | undefined>(undefined)
+  public readonly formValid = signal(true)
+  public readonly isFirstSave = signal(false)
+  public readonly formIsValid = signal(true)
+  public readonly strictValidation = signal(false)
 
   // 5. Other Properties
   private io!: IoNamespace

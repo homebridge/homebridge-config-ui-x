@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core'
 import { FormControl, ReactiveFormsModule } from '@angular/forms'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
@@ -15,13 +15,15 @@ import { InstalledPlugin } from '@/app/modules/status/widgets/update-info-widget
 import { PluginNodeCheck } from '@/app/modules/status/widgets/widgets.interfaces'
 
 @Component({
-  templateUrl: './node-version-modal.component.html',
-  standalone: true,
+  selector: 'app-node-version-modal',
   imports: [
     TranslatePipe,
     NgxMdModule,
     ReactiveFormsModule,
   ],
+  standalone: true,
+  templateUrl: './node-version-modal.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NodeVersionModalComponent implements OnInit {
   private $activeModal = inject(NgbActiveModal)
@@ -46,8 +48,8 @@ export class NodeVersionModalComponent implements OnInit {
   public statusIo = this.modalData.statusIo
 
   // Signals
-  public loading = signal(true)
-  public installedPlugins = signal<PluginNodeCheck[]>([])
+  public readonly loading = signal(true)
+  public readonly installedPlugins = signal<PluginNodeCheck[]>([])
 
   // Other properties
   public hasNode24OrAbove = false

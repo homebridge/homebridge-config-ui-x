@@ -10,9 +10,7 @@ import { SettingsService } from '@/app/core/ui/settings.service'
 import { BaseChartWidgetComponent } from '@/app/modules/status/widgets/base-chart-widget.component'
 
 @Component({
-  templateUrl: './cpu-widget.component.html',
-  styleUrls: ['./cpu-widget.component.scss'],
-  standalone: true,
+  selector: 'app-cpu-widget',
   imports: [
     BaseChartDirective,
     UpperCasePipe,
@@ -20,6 +18,9 @@ import { BaseChartWidgetComponent } from '@/app/modules/status/widgets/base-char
     TranslatePipe,
     ConvertTempPipe,
   ],
+  standalone: true,
+  templateUrl: './cpu-widget.component.html',
+  styleUrl: './cpu-widget.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CpuWidgetComponent extends BaseChartWidgetComponent {
@@ -27,8 +28,8 @@ export class CpuWidgetComponent extends BaseChartWidgetComponent {
   private $settings = inject(SettingsService)
 
   // Signals
-  public cpuTemperature = signal<CpuWidgetData['cpuTemperature']>({})
-  public currentLoad = signal<number>(0)
+  public readonly cpuTemperature = signal<CpuWidgetData['cpuTemperature']>({})
+  public readonly currentLoad = signal<number>(0)
 
   // Other properties
   public temperatureUnits = this.$settings.env.temperatureUnits

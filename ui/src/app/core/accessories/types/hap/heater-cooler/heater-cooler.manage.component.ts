@@ -12,8 +12,7 @@ import { ConvertTempPipe } from '@/app/core/pipes/convert-temp.pipe'
 import { SettingsService } from '@/app/core/ui/settings.service'
 
 @Component({
-  templateUrl: './heater-cooler.manage.component.html',
-  standalone: true,
+  selector: 'app-heater-cooler-manage',
   imports: [
     FormsModule,
     NouisliderComponent,
@@ -22,6 +21,8 @@ import { SettingsService } from '@/app/core/ui/settings.service'
     ConvertTempPipe,
     UpperCasePipe,
   ],
+  standalone: true,
+  templateUrl: './heater-cooler.manage.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HeaterCoolerManageComponent extends BaseManageComponent {
@@ -99,6 +100,25 @@ export class HeaterCoolerManageComponent extends BaseManageComponent {
 
     // Apply gradient when mode changes externally
     this.applyAllGradients()
+  }
+
+  public getStatusClass(): string {
+    const values = this.service.values
+    const isActive = values?.Active || values?.On
+    const isCooling = (values?.CurrentHeaterCoolerState === 3 && values?.Active === 1)
+      || (this.type === 'cooler' && isActive)
+    const isHeating = (values?.CurrentHeaterCoolerState === 2 && values?.Active === 1)
+      || (this.type === 'heater' && isActive)
+
+    if (isCooling) {
+      return 'status-color-cooling'
+    }
+
+    if (isHeating) {
+      return 'status-color-heating'
+    }
+
+    return isActive ? 'status-color-active' : 'status-color-inactive'
   }
 
   public setTargetState(value: number, event: MouseEvent) {

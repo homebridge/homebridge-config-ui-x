@@ -1,6 +1,6 @@
 <div class="modal-content">
   <div class="modal-header">
-    <h5 class="modal-title">{{ 'plugins.donate.tile_donate_to' | translate: { author: '@' + authorName() } }}</h5>
+    <h5 class="modal-title">{{ 'plugins.donate.tile_donate_to' | translate: { author: `@${authorName()}` } }}</h5>
     <button
       type="button"
       class="btn-close"
@@ -11,7 +11,7 @@
   </div>
   <div class="modal-body">
     <div class="text-center pink-text mb-3">
-      <i class="fas fa-heart" style="font-size: 75px"></i>
+      <i class="fas fa-heart icon-xl"></i>
     </div>
     <ul class="mb-3">
       <li>{{ 'plugins.donate.message_1' | translate }}</li>
@@ -19,10 +19,12 @@
     </ul>
     <ul class="list-group list-group-box">
       @for (option of fundingOptions(); track option) {
-      <li class="list-group-item d-flex align-items-center">
-        <i [class]="getIconClass(option.type)" class="me-3 my-4 primary-text fa-2xl"></i>
-        <a [href]="option.url" target="_blank" rel="noopener noreferrer" class="text-break-all fs-6">{{ option.url }}</a>
-      </li>
+        <li class="list-group-item d-flex align-items-center">
+          <i [class]="`me-3 my-4 primary-text fa-2xl ${getIconClass(option.type)}`"></i>
+          <a target="_blank" rel="noopener noreferrer" class="text-break-all fs-6" [href]="option.url">{{
+            option.url
+          }}</a>
+        </li>
       }
     </ul>
   </div>
@@ -33,8 +35,8 @@
         type="button"
         class="btn btn-elegant"
         data-bs-dismiss="modal"
-        (click)="dismissModal()"
         [attr.aria-label]="'form.button_close' | translate"
+        (click)="dismissModal()"
       >
         {{ 'form.button_close' | translate }}
       </button>

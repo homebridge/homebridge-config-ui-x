@@ -1,5 +1,5 @@
 import { HttpResponse } from '@angular/common/http'
-import { Component, createEnvironmentInjector, DestroyRef, ElementRef, EnvironmentInjector, HostListener, inject, OnDestroy, OnInit, signal, viewChild } from '@angular/core'
+import { ChangeDetectionStrategy, Component, createEnvironmentInjector, DestroyRef, ElementRef, EnvironmentInjector, inject, OnDestroy, OnInit, signal, viewChild } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
@@ -23,10 +23,15 @@ export interface CanComponentDeactivate {
 }
 
 @Component({
-  templateUrl: './logs.component.html',
-  styleUrls: ['./logs.component.scss'],
-  standalone: true,
+  selector: 'app-logs',
   imports: [NgbTooltip, TranslatePipe, ReactiveFormsModule],
+  standalone: true,
+  templateUrl: './logs.component.html',
+  styleUrl: './logs.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    '(window:resize)': 'onWindowResize()',
+  },
 })
 export class LogsComponent implements OnInit, OnDestroy, CanComponentDeactivate {
   private destroyRef = inject(DestroyRef)
@@ -45,8 +50,8 @@ export class LogsComponent implements OnInit, OnDestroy, CanComponentDeactivate 
   private resizeEvent = new Subject<void>()
 
   public isAdmin = this.$auth.user.admin
-  public showSearchBar = signal(false)
-  public showExitButton = signal(false)
+  public readonly showSearchBar = signal(false)
+  public readonly showExitButton = signal(false)
   public terminalTheme: 'light' | 'dark' = 'dark'
   public form = new FormGroup({
     query: new FormControl<string>(''),
@@ -58,7 +63,6 @@ export class LogsComponent implements OnInit, OnDestroy, CanComponentDeactivate 
     return query.length > 0 && query.length < 3
   }
 
-  @HostListener('window:resize')
   onWindowResize() {
     this.resizeEvent.next(undefined)
   }

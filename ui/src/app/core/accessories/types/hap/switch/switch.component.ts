@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core'
+import { ChangeDetectionStrategy, Component, input } from '@angular/core'
 import { TranslatePipe } from '@ngx-translate/core'
 
 import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
@@ -6,17 +6,26 @@ import { LongClickDirective } from '@/app/core/directives/long-click.directive'
 
 @Component({
   selector: 'app-switch',
-  templateUrl: './switch.component.html',
-  styleUrls: ['./switch.component.scss'],
-  standalone: true,
   imports: [
     LongClickDirective,
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './switch.component.html',
+  styleUrl: './switch.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SwitchComponent {
-  public service = input.required<ServiceTypeX>()
-  public readyForControl = input<boolean>(false)
+  public readonly service = input.required<ServiceTypeX>()
+  public readonly readyForControl = input<boolean>(false)
+
+  public isOn(): boolean {
+    const values = this.service().values
+    return !!(values?.On
+      || values?.Active
+      || ('LockTargetState' in values && !values?.LockTargetState)
+      || ('CurrentDoorState' in values && [0, 2].includes(values?.CurrentDoorState)))
+  }
 
   public onClick() {
     if (!this.readyForControl()) {

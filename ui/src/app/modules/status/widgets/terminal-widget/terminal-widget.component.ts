@@ -1,9 +1,9 @@
 import {
+  ChangeDetectionStrategy,
   ChangeDetectorRef,
   Component,
   DestroyRef,
   ElementRef,
-  HostListener,
   inject,
   input,
   OnDestroy,
@@ -22,11 +22,19 @@ import { TerminalService } from '@/app/core/utilities/terminal.service'
 import { Widget } from '@/app/modules/status/widgets/widgets.interfaces'
 
 @Component({
-  templateUrl: './terminal-widget.component.html',
-  standalone: true,
+  selector: 'app-terminal-widget',
   imports: [
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './terminal-widget.component.html',
+  styleUrl: './terminal-widget.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    '(window:beforeunload)': 'onBeforeUnload($event)',
+    '(window:focus)': 'onWindowFocus()',
+    '(click)': 'onClick()',
+  },
 })
 export class TerminalWidgetComponent implements OnInit, OnDestroy {
   // Injected dependencies
@@ -37,12 +45,12 @@ export class TerminalWidgetComponent implements OnInit, OnDestroy {
   private $cdr = inject(ChangeDetectorRef)
 
   // Signals
-  widget = input.required<Widget>()
+  readonly widget = input.required<Widget>()
   readonly widgetContainerElement = viewChild<ElementRef>('widgetcontainer')
   readonly titleElement = viewChild<ElementRef>('terminaltitle')
   readonly termTarget = viewChild<ElementRef>('terminaloutput')
-  public terminalHeight = signal<number>(200)
-  public theme = signal<'dark' | 'light'>('dark')
+  public readonly terminalHeight = signal<number>(200)
+  public readonly theme = signal<'dark' | 'light'>('dark')
 
   // Other properties
   private visibilityChangeHandler: (() => void) | null = null
@@ -50,20 +58,17 @@ export class TerminalWidgetComponent implements OnInit, OnDestroy {
   resizeEvent!: Subject<void> // Set directly by ComponentFactoryResolver
   configureEvent!: Subject<void> // Set directly by ComponentFactoryResolver
 
-  @HostListener('window:beforeunload', ['$event'])
   onBeforeUnload(event: BeforeUnloadEvent): void {
     // NOTE: This is a safeguard - the status component also handles beforeunload events
     // when terminal widgets are present, so this may not be strictly necessary
     this.$navigationGuard.handleBeforeUnload(event)
   }
 
-  @HostListener('window:focus')
   onWindowFocus(): void {
     // Autofocus terminal when user returns to this window
     this.activateTerminal()
   }
 
-  @HostListener('click')
   onClick(): void {
     // Focus this terminal when clicked
     this.activateTerminal()

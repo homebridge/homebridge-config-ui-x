@@ -1,5 +1,5 @@
 import { NgTemplateOutlet } from '@angular/common'
-import { Component, createEnvironmentInjector, EnvironmentInjector, inject, OnDestroy, OnInit, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, createEnvironmentInjector, EnvironmentInjector, inject, OnDestroy, OnInit, signal } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { FormsModule } from '@angular/forms'
 import { NgbDropdown, NgbDropdownItem, NgbDropdownMenu, NgbDropdownToggle } from '@ng-bootstrap/ng-bootstrap/dropdown'
@@ -26,9 +26,6 @@ import { ADD_ROOM_MODAL_DATA, EDIT_ROOM_MODAL_DATA } from '@/app/modules/accesso
 
 @Component({
   selector: 'app-accessories',
-  templateUrl: './accessories.component.html',
-  styleUrls: ['./accessories.component.scss'],
-  standalone: true,
   imports: [
     NgTemplateOutlet,
     NgbTooltip,
@@ -43,6 +40,10 @@ import { ADD_ROOM_MODAL_DATA, EDIT_ROOM_MODAL_DATA } from '@/app/modules/accesso
     SpinnerComponent,
     FormsModule,
   ],
+  standalone: true,
+  templateUrl: './accessories.component.html',
+  styleUrl: './accessories.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AccessoriesComponent implements OnInit, OnDestroy {
   protected $accessories = inject(AccessoriesService)
@@ -66,11 +67,11 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
 
   public isAdmin = this.$auth.user.admin
   public enableAccessories = this.$settings.env.enableAccessories
-  public isMobile = signal<boolean | string>(false)
-  public hideHidden = signal(true)
+  public readonly isMobile = signal<boolean | string>(false)
+  public readonly hideHidden = signal(true)
   public readonly linkInsecure = '<a href="https://github.com/homebridge/homebridge-config-ui-x/wiki/Enabling-Accessory-Control" target="_blank"><i class="fa fa-external-link-alt primary-text"></i></a>'
-  public hasPlugins = signal(false)
-  public loading = signal(true)
+  public readonly hasPlugins = signal(false)
+  public readonly loading = signal(true)
   public manageLayoutMode = false
   private previousBridgeSelection: string[] | null = null
 

@@ -233,8 +233,7 @@ export class JsonSchemaFormPatchDirective implements AfterViewInit, OnDestroy {
 
   private isFieldsetExpanded(fieldset: HTMLElement) {
     const controls = fieldset.querySelectorAll('input, select, textarea, button, a')
-    for (let i = 0; i < controls.length; i += 1) {
-      const el = controls[i]
+    for (const el of controls) {
       const h = el as HTMLElement
       if (this.isVisiblyRendered(h)) {
         if (h.tagName.toLowerCase() === 'legend') {

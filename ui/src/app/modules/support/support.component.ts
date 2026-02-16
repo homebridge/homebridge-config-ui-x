@@ -1,15 +1,17 @@
-import { Component, inject, OnInit, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 
 import { SettingsService } from '@/app/core/ui/settings.service'
 import { environment } from '@/environments/environment'
 
 @Component({
-  templateUrl: './support.component.html',
-  standalone: true,
+  selector: 'app-support',
   imports: [
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './support.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SupportComponent implements OnInit {
   // Injected dependencies
@@ -17,7 +19,7 @@ export class SupportComponent implements OnInit {
   private $translate = inject(TranslateService)
 
   // Signals
-  public showFields = signal({
+  public readonly showFields = signal({
     general: true,
     dev: true,
   })

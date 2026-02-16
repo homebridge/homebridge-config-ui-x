@@ -1,4 +1,4 @@
-import { Component, DestroyRef, inject, input, OnDestroy, OnInit, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, input, OnDestroy, OnInit, signal } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap/tooltip'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
@@ -13,13 +13,15 @@ import { SettingsService } from '@/app/core/ui/settings.service'
 import { ChildBridgeWithUIState, Widget } from '@/app/modules/status/widgets/widgets.interfaces'
 
 @Component({
-  templateUrl: './bridges-widget.component.html',
-  styleUrls: ['./bridges-widget.component.scss'],
-  standalone: true,
+  selector: 'app-bridges-widget',
   imports: [
     NgbTooltip,
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './bridges-widget.component.html',
+  styleUrl: './bridges-widget.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BridgesWidgetComponent implements OnInit, OnDestroy {
   // Injected dependencies
@@ -32,10 +34,10 @@ export class BridgesWidgetComponent implements OnInit, OnDestroy {
   private $ws = inject(WsService)
 
   // Signals
-  widget = input.required<Widget>()
-  public homebridgeStatus = signal<Partial<HomebridgeStatusResponse & { name?: string }> | null>(null)
-  public childBridges = signal<ChildBridgeWithUIState[]>([])
-  public isRestarting = signal<boolean>(false)
+  readonly widget = input.required<Widget>()
+  public readonly homebridgeStatus = signal<Partial<HomebridgeStatusResponse & { name?: string }> | null>(null)
+  public readonly childBridges = signal<ChildBridgeWithUIState[]>([])
+  public readonly isRestarting = signal<boolean>(false)
 
   // Other properties
   private ioMain: IoNamespace

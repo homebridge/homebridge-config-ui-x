@@ -1,12 +1,13 @@
-import { Component, input } from '@angular/core'
+import { ChangeDetectionStrategy, Component, input } from '@angular/core'
 
 import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
 
 @Component({
   selector: 'app-unknown',
-  templateUrl: './unknown.component.html',
   standalone: true,
+  templateUrl: './unknown.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UnknownComponent {
-  public service = input.required<ServiceTypeX>()
+  public readonly service = input.required<ServiceTypeX>()
 }

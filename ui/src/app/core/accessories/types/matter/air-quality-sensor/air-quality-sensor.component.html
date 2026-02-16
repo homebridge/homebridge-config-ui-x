@@ -1,14 +1,12 @@
 <div
   class="accessory-box"
-  [class]="{
-    'accessory-on': airQuality() === 5,
-    'fill-red': airQuality() === 5,
-    'fill-orange': [3, 4].includes(airQuality()),
-    'fill-green': [1, 2].includes(airQuality()),
-  }"
+  [class.accessory-on]="airQuality() === 5"
+  [class.fill-red]="airQuality() === 5"
+  [class.fill-orange]="[3, 4].includes(airQuality())"
+  [class.fill-green]="[1, 2].includes(airQuality())"
 >
   <div class="d-flex flex-column h-100">
-    <div [attr.aria-label]="'accessories.core.air_quality_sensor' | translate" class="accessory-svg">
+    <div class="accessory-svg" [attr.aria-label]="'accessories.core.air_quality_sensor' | translate">
       <svg width="32px" height="32px" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
         <! -- outer casing - ->
         <rect x="3.5" y="1" width="25" height="30" rx="3" stroke="#7f7f7f" fill="none" stroke-width="1.2" />
@@ -38,13 +36,7 @@
       </svg>
     </div>
     <div class="accessory-label mt-auto">{{ service().customName || service().displayName }}</div>
-    <div
-      class="accessory-label"
-      [class]="{
-        'grey-text': airQuality() < 5,
-        'red-text': airQuality() === 5,
-      }"
-    >
+    <div class="accessory-label" [class.grey-text]="airQuality() < 5" [class.red-text]="airQuality() === 5">
       {{ labels[airQuality() || 0] }}
     </div>
   </div>

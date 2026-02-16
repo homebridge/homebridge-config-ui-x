@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, OnInit } from '@angular/core'
 import { NgbAlert } from '@ng-bootstrap/ng-bootstrap/alert'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe } from '@ngx-translate/core'
@@ -8,9 +8,12 @@ import { PLUGIN_COMPATIBILITY_MODAL_DATA } from '@/app/core/modal-data-tokens'
 import { SettingsService } from '@/app/core/ui/settings.service'
 
 @Component({
-  templateUrl: './plugin-compatibility.component.html',
-  standalone: true,
+  selector: 'app-plugin-compatibility',
   imports: [TranslatePipe, NgbAlert],
+  standalone: true,
+  templateUrl: './plugin-compatibility.component.html',
+  styleUrl: './plugin-compatibility.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PluginCompatibilityComponent implements OnInit {
   // Injected dependencies

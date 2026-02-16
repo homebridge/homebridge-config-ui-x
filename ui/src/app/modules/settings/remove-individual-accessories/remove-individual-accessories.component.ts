@@ -1,6 +1,6 @@
 import type { CachedAccessory, Pairing } from '@/app/modules/settings/settings.interfaces'
 
-import { Component, inject, OnInit, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { Router } from '@angular/router'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal'
@@ -13,12 +13,14 @@ import { RE_CHAR_PAIRS } from '@/app/core/regex.constants'
 import { SettingsService } from '@/app/core/ui/settings.service'
 
 @Component({
-  templateUrl: './remove-individual-accessories.component.html',
-  standalone: true,
+  selector: 'app-remove-individual-accessories',
   imports: [
     TranslatePipe,
     FormsModule,
   ],
+  standalone: true,
+  templateUrl: './remove-individual-accessories.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RemoveIndividualAccessoriesComponent implements OnInit {
   // Injected dependencies
@@ -34,12 +36,12 @@ export class RemoveIndividualAccessoriesComponent implements OnInit {
   public selectedBridge = this.modalData.selectedBridge
 
   // Signals
-  public pairings = signal<Pairing[]>([])
-  public clicked = signal(false)
-  public currentSelectedBridge = signal('')
-  public selectedBridgeAccessories = signal<CachedAccessory[]>([])
-  public accessoriesExist = signal(false)
-  public toDelete = signal<{ cacheFile?: string, uuid: string, protocol: 'hap' | 'matter', deviceId?: string }[]>([])
+  public readonly pairings = signal<Pairing[]>([])
+  public readonly clicked = signal(false)
+  public readonly currentSelectedBridge = signal('')
+  public readonly selectedBridgeAccessories = signal<CachedAccessory[]>([])
+  public readonly accessoriesExist = signal(false)
+  public readonly toDelete = signal<{ cacheFile?: string, uuid: string, protocol: 'hap' | 'matter', deviceId?: string }[]>([])
 
   // Other properties
   private isMatterSupported = this.$settings.isFeatureEnabled('matterSupport')

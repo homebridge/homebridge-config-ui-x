@@ -1,4 +1,4 @@
-import { Component, createEnvironmentInjector, EnvironmentInjector, inject, OnInit, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, createEnvironmentInjector, EnvironmentInjector, inject, OnInit, signal } from '@angular/core'
 import { Router, RouterOutlet } from '@angular/router'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslateService } from '@ngx-translate/core'
@@ -15,13 +15,14 @@ import { environment } from '@/environments/environment'
 
 @Component({
   selector: 'app-layout',
-  templateUrl: './layout.component.html',
-  styleUrls: ['./layout.component.scss'],
-  standalone: true,
   imports: [
     SidebarComponent,
     RouterOutlet,
   ],
+  standalone: true,
+  templateUrl: './layout.component.html',
+  styleUrl: './layout.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LayoutComponent implements OnInit {
   // Injected dependencies
@@ -37,7 +38,7 @@ export class LayoutComponent implements OnInit {
   private io: IoNamespace
 
   // Signals
-  public sidebarExpanded = signal(false)
+  public readonly sidebarExpanded = signal(false)
 
   public ngOnInit(): void {
     this.io = this.$ws.connectToNamespace('app')

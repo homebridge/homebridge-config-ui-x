@@ -1,13 +1,13 @@
 <div
   class="accessory-box"
+  tabindex="0"
   [class.accessory-on]="service().values?.Active || service().values?.On"
-  [style.cursor]="readyForControl() ? 'pointer' : 'default'"
+  [class.cursor-pointer]="readyForControl()"
   (longClick)="onLongClick()"
   (shortClick)="onClick()"
-  tabindex="0"
 >
   <div class="d-flex flex-column h-100">
-    <div [attr.aria-label]="'accessories.core.television' | translate" class="accessory-svg">
+    <div class="accessory-svg" [attr.aria-label]="'accessories.core.television' | translate">
       <svg width="32px" height="32px" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
         <! -- stand - ->
         <line
@@ -39,11 +39,11 @@
       {{ service().customName || service().values?.ConfiguredName || service().serviceName }}
     </div>
     @if (service().values?.On || service().values?.Active) {
-    <div class="accessory-label grey-text">
-      {{ channelList[service().values?.ActiveIdentifier] || ('accessories.control.on' | translate) }}
-    </div>
+      <div class="accessory-label grey-text">
+        {{ channelList[service().values?.ActiveIdentifier] || ('accessories.control.on' | translate) }}
+      </div>
     } @else {
-    <div class="accessory-label grey-text">{{ 'accessories.control.off' | translate }}</div>
+      <div class="accessory-label grey-text">{{ 'accessories.control.off' | translate }}</div>
     }
   </div>
 </div>

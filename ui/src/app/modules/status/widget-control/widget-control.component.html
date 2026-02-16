@@ -18,183 +18,232 @@
             type="checkbox"
             class="rendux-input"
             id="hideOnMobile"
-            [(ngModel)]="widget.hideOnMobile"
             [attr.aria-label]="'status.widget.hide_on_mobile' | translate"
+            [(ngModel)]="widget.hideOnMobile"
           />
           <label for="hideOnMobile" class="rendux-label ms-3"></label>
         </div>
       </li>
-      @switch (widget.component) { @case ('UpdateInfoWidgetComponent') {
-      <li class="list-group-item d-flex justify-content-between align-items-center flex-row pb-2">
-        <span class="text-start">{{ 'status.widget.hide_npm' | translate }}</span>
-        <div class="text-end grey-text d-flex align-items-center">
-          <input
-            type="checkbox"
-            class="rendux-input"
-            id="showNpmVersion"
-            [(ngModel)]="widget.showNpmVersion"
-            [attr.aria-label]="'status.widget.hide_npm' | translate"
-          />
-          <label for="showNpmVersion" class="rendux-label ms-3"></label>
-        </div>
-      </li>
-      @if (serverInfo() && serverInfo().homebridgeRunningInDocker) {
-      <li class="list-group-item d-flex justify-content-between align-items-center flex-row pb-2">
-        <span class="text-start">{{ 'status.widget.expand_docker' | translate }}</span>
-        <div class="text-end grey-text d-flex align-items-center">
-          <input
-            type="checkbox"
-            class="rendux-input"
-            id="dockerExpanded"
-            [(ngModel)]="widget.dockerExpanded"
-            [attr.aria-label]="'status.widget.expand_docker' | translate"
-          />
-          <label for="dockerExpanded" class="rendux-label ms-3"></label>
-        </div>
-      </li>
-      } } @case ('WeatherWidgetComponent') {
-      <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
-        <label for="city-search-input" class="mb-2 mb-md-0 w-100 w-md-50">
-          {{ 'status.widget.weather.label_search_for_your_city' | translate }}
-        </label>
-        <div class="text-start text-md-end w-100 w-md-50">
-          <div class="input-group">
-            <span class="input-group-text custom-input" id="">
-              <i
-                class="fas"
-                [class]="{
-                  'fa-city': !searching(),
-                  'fa-circle-notch': searching(),
-                  'fa-spin': searching()
-                 }"
-              ></i>
-            </span>
-            <input
-              id="city-search-input"
-              type="text"
-              class="form-control custom-input"
-              [ngbTypeahead]="searchCountryCodes"
-              [resultFormatter]="searchCountryCodeFormatter"
-              [inputFormatter]="searchCountryCodeFormatter"
-              [editable]="false"
-              [(ngModel)]="widget.location"
-            />
-          </div>
-        </div>
-      </li>
-      <li class="list-group-item muted grey-text text-center">
-        {{ 'status.widget.weather.provider' | translate: { openWeather: 'OpenWeather' } }}
-      </li>
-      } @case ('ClockWidgetComponent') {
-      <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
-        <label class="mb-2 mb-md-0 w-100 w-md-50">{{ 'status.widget.clock_timeformat' | translate }}</label>
-        <div class="text-start text-md-end w-100 w-md-50">
-          <select class="custom-select" [(ngModel)]="widget.timeFormat">
-            @for (timeFormat of timeFormats; track timeFormat) {
-            <option [value]="timeFormat">{{ currentDate | date:timeFormat }}</option>
-            }
-          </select>
-        </div>
-      </li>
-      <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
-        <label class="mb-2 mb-md-0 w-100 w-md-50">{{ 'status.widget.clock_dateformat' | translate }}</label>
-        <div class="text-start text-md-end w-100 w-md-50">
-          <select class="custom-select" [(ngModel)]="widget.dateFormat">
-            @for (dateFormat of dateFormats; track dateFormat) {
-            <option [value]="dateFormat">{{ currentDate | date:dateFormat }}</option>
-            }
-          </select>
-        </div>
-      </li>
-      } @case ('CpuWidgetComponent') {
-      <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
-        <label class="mb-2 mb-md-0 w-100 w-md-50">{{ 'status.widget.network.refresh_interval' | translate }}</label>
-        <div class="text-start text-md-end w-100 w-md-50">
-          <div class="input-group">
-            <input
-              type="number"
-              class="form-control custom-input"
-              [(ngModel)]="widget.refreshInterval"
-              min="1"
-              max="60"
-            />
-            <span class="input-group-text custom-input">{{ 'status.widget.network.seconds' | translate }}</span>
-          </div>
-        </div>
-      </li>
-      <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
-        <label class="mb-2 mb-md-0 w-100 w-md-50">{{ 'status.widget.network.history_items' | translate }}</label>
-        <div class="text-start text-md-end w-100 w-md-50">
-          <div class="input-group">
-            <input type="number" class="form-control custom-input" [(ngModel)]="widget.historyItems" min="1" max="60" />
-            <span class="input-group-text custom-input">{{ 'status.widget.network.items' | translate }}</span>
-          </div>
-        </div>
-      </li>
-      } @case ('MemoryWidgetComponent') {
-      <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
-        <label class="mb-2 mb-md-0 w-100 w-md-50">{{ 'status.widget.network.refresh_interval' | translate }}</label>
-        <div class="text-start text-md-end w-100 w-md-50">
-          <div class="input-group">
-            <input
-              type="number"
-              class="form-control custom-input"
-              [(ngModel)]="widget.refreshInterval"
-              min="1"
-              max="60"
-            />
-            <span class="input-group-text custom-input">{{ 'status.widget.network.seconds' | translate }}</span>
-          </div>
-        </div>
-      </li>
-      <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
-        <label class="mb-2 mb-md-0 w-100 w-md-50">{{ 'status.widget.network.history_items' | translate }}</label>
-        <div class="text-start text-md-end w-100 w-md-50">
-          <div class="input-group">
-            <input type="number" class="form-control custom-input" [(ngModel)]="widget.historyItems" min="1" max="60" />
-            <span class="input-group-text custom-input">{{ 'status.widget.network.items' | translate }}</span>
-          </div>
-        </div>
-      </li>
-      } @case ('NetworkWidgetComponent') {
-      <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
-        <label class="mb-2 mb-md-0 w-100 w-md-50">{{ 'status.widget.network.network_interface' | translate }}</label>
-        <div class="text-start text-md-end w-100 w-md-50">
-          @if (networkInterfaces().length) {
-          <select class="custom-select" [(ngModel)]="widget.networkInterface">
-            @for (networkInterface of networkInterfaces(); track networkInterface) {
-            <option [value]="networkInterface">{{ networkInterface }}</option>
-            }
-          </select>
-          } @if (!networkInterfaces().length) {
-          <span class="grey-text">{{ 'status.widget.network.none_selected' | translate }}</span> }
-        </div>
-      </li>
-      <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
-        <label class="mb-2 mb-md-0 w-100 w-md-50">{{ 'status.widget.network.refresh_interval' | translate }}</label>
-        <div class="text-start text-md-end w-100 w-md-50">
-          <div class="input-group">
-            <input
-              type="number"
-              class="form-control custom-input"
-              [(ngModel)]="widget.refreshInterval"
-              min="1"
-              max="60"
-            />
-            <span class="input-group-text custom-input">{{ 'status.widget.network.seconds' | translate }}</span>
-          </div>
-        </div>
-      </li>
-      <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
-        <label class="mb-2 mb-md-0 w-100 w-md-50">{{ 'status.widget.network.history_items' | translate }}</label>
-        <div class="text-start text-md-end w-100 w-md-50">
-          <div class="input-group">
-            <input type="number" class="form-control custom-input" [(ngModel)]="widget.historyItems" min="1" max="60" />
-            <span class="input-group-text custom-input">{{ 'status.widget.network.items' | translate }}</span>
-          </div>
-        </div>
-      </li>
-      } }
+      @switch (widget.component) {
+        @case ('UpdateInfoWidgetComponent') {
+          <li class="list-group-item d-flex justify-content-between align-items-center flex-row pb-2">
+            <span class="text-start">{{ 'status.widget.hide_npm' | translate }}</span>
+            <div class="text-end grey-text d-flex align-items-center">
+              <input
+                type="checkbox"
+                class="rendux-input"
+                id="showNpmVersion"
+                [attr.aria-label]="'status.widget.hide_npm' | translate"
+                [(ngModel)]="widget.showNpmVersion"
+              />
+              <label for="showNpmVersion" class="rendux-label ms-3"></label>
+            </div>
+          </li>
+          @if (serverInfo() && serverInfo().homebridgeRunningInDocker) {
+            <li class="list-group-item d-flex justify-content-between align-items-center flex-row pb-2">
+              <span class="text-start">{{ 'status.widget.expand_docker' | translate }}</span>
+              <div class="text-end grey-text d-flex align-items-center">
+                <input
+                  type="checkbox"
+                  class="rendux-input"
+                  id="dockerExpanded"
+                  [attr.aria-label]="'status.widget.expand_docker' | translate"
+                  [(ngModel)]="widget.dockerExpanded"
+                />
+                <label for="dockerExpanded" class="rendux-label ms-3"></label>
+              </div>
+            </li>
+          }
+        }
+        @case ('WeatherWidgetComponent') {
+          <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
+            <label for="city-search-input" class="mb-2 mb-md-0 w-100 w-md-50">
+              {{ 'status.widget.weather.label_search_for_your_city' | translate }}
+            </label>
+            <div class="text-start text-md-end w-100 w-md-50">
+              <div class="input-group">
+                <span class="input-group-text custom-input" id="">
+                  <i
+                    class="fas"
+                    [class.fa-city]="!searching()"
+                    [class.fa-circle-notch]="searching()"
+                    [class.fa-spin]="searching()"
+                  ></i>
+                </span>
+                <input
+                  id="city-search-input"
+                  type="text"
+                  class="form-control custom-input"
+                  [ngbTypeahead]="searchCountryCodes"
+                  [resultFormatter]="searchCountryCodeFormatter"
+                  [inputFormatter]="searchCountryCodeFormatter"
+                  [editable]="false"
+                  [(ngModel)]="widget.location"
+                />
+              </div>
+            </div>
+          </li>
+          <li class="list-group-item muted grey-text text-center">
+            {{ 'status.widget.weather.provider' | translate: { openWeather: 'OpenWeather' } }}
+          </li>
+        }
+        @case ('ClockWidgetComponent') {
+          <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
+            <label for="clock-time-format" class="mb-2 mb-md-0 w-100 w-md-50">{{
+              'status.widget.clock_timeformat' | translate
+            }}</label>
+            <div class="text-start text-md-end w-100 w-md-50">
+              <select id="clock-time-format" class="custom-select" [(ngModel)]="widget.timeFormat">
+                @for (timeFormat of timeFormats; track timeFormat) {
+                  <option [value]="timeFormat">{{ currentDate | date: timeFormat }}</option>
+                }
+              </select>
+            </div>
+          </li>
+          <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
+            <label for="clock-date-format" class="mb-2 mb-md-0 w-100 w-md-50">{{
+              'status.widget.clock_dateformat' | translate
+            }}</label>
+            <div class="text-start text-md-end w-100 w-md-50">
+              <select id="clock-date-format" class="custom-select" [(ngModel)]="widget.dateFormat">
+                @for (dateFormat of dateFormats; track dateFormat) {
+                  <option [value]="dateFormat">{{ currentDate | date: dateFormat }}</option>
+                }
+              </select>
+            </div>
+          </li>
+        }
+        @case ('CpuWidgetComponent') {
+          <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
+            <label for="cpu-refresh-interval" class="mb-2 mb-md-0 w-100 w-md-50">{{
+              'status.widget.network.refresh_interval' | translate
+            }}</label>
+            <div class="text-start text-md-end w-100 w-md-50">
+              <div class="input-group">
+                <input
+                  id="cpu-refresh-interval"
+                  type="number"
+                  class="form-control custom-input"
+                  min="1"
+                  max="60"
+                  [(ngModel)]="widget.refreshInterval"
+                />
+                <span class="input-group-text custom-input">{{ 'status.widget.network.seconds' | translate }}</span>
+              </div>
+            </div>
+          </li>
+          <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
+            <label for="cpu-history-items" class="mb-2 mb-md-0 w-100 w-md-50">{{
+              'status.widget.network.history_items' | translate
+            }}</label>
+            <div class="text-start text-md-end w-100 w-md-50">
+              <div class="input-group">
+                <input
+                  id="cpu-history-items"
+                  type="number"
+                  class="form-control custom-input"
+                  min="1"
+                  max="60"
+                  [(ngModel)]="widget.historyItems"
+                />
+                <span class="input-group-text custom-input">{{ 'status.widget.network.items' | translate }}</span>
+              </div>
+            </div>
+          </li>
+        }
+        @case ('MemoryWidgetComponent') {
+          <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
+            <label for="memory-refresh-interval" class="mb-2 mb-md-0 w-100 w-md-50">{{
+              'status.widget.network.refresh_interval' | translate
+            }}</label>
+            <div class="text-start text-md-end w-100 w-md-50">
+              <div class="input-group">
+                <input
+                  id="memory-refresh-interval"
+                  type="number"
+                  class="form-control custom-input"
+                  min="1"
+                  max="60"
+                  [(ngModel)]="widget.refreshInterval"
+                />
+                <span class="input-group-text custom-input">{{ 'status.widget.network.seconds' | translate }}</span>
+              </div>
+            </div>
+          </li>
+          <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
+            <label for="memory-history-items" class="mb-2 mb-md-0 w-100 w-md-50">{{
+              'status.widget.network.history_items' | translate
+            }}</label>
+            <div class="text-start text-md-end w-100 w-md-50">
+              <div class="input-group">
+                <input
+                  id="memory-history-items"
+                  type="number"
+                  class="form-control custom-input"
+                  min="1"
+                  max="60"
+                  [(ngModel)]="widget.historyItems"
+                />
+                <span class="input-group-text custom-input">{{ 'status.widget.network.items' | translate }}</span>
+              </div>
+            </div>
+          </li>
+        }
+        @case ('NetworkWidgetComponent') {
+          <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
+            <label for="network-interface" class="mb-2 mb-md-0 w-100 w-md-50">{{
+              'status.widget.network.network_interface' | translate
+            }}</label>
+            <div class="text-start text-md-end w-100 w-md-50">
+              @if (networkInterfaces().length) {
+                <select id="network-interface" class="custom-select" [(ngModel)]="widget.networkInterface">
+                  @for (networkInterface of networkInterfaces(); track networkInterface) {
+                    <option [value]="networkInterface">{{ networkInterface }}</option>
+                  }
+                </select>
+              } @else {
+                <span class="grey-text">{{ 'status.widget.network.none_selected' | translate }}</span>
+              }
+            </div>
+          </li>
+          <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
+            <label for="network-refresh-interval" class="mb-2 mb-md-0 w-100 w-md-50">{{
+              'status.widget.network.refresh_interval' | translate
+            }}</label>
+            <div class="text-start text-md-end w-100 w-md-50">
+              <div class="input-group">
+                <input
+                  id="network-refresh-interval"
+                  type="number"
+                  class="form-control custom-input"
+                  min="1"
+                  max="60"
+                  [(ngModel)]="widget.refreshInterval"
+                />
+                <span class="input-group-text custom-input">{{ 'status.widget.network.seconds' | translate }}</span>
+              </div>
+            </div>
+          </li>
+          <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
+            <label for="network-history-items" class="mb-2 mb-md-0 w-100 w-md-50">{{
+              'status.widget.network.history_items' | translate
+            }}</label>
+            <div class="text-start text-md-end w-100 w-md-50">
+              <div class="input-group">
+                <input
+                  id="network-history-items"
+                  type="number"
+                  class="form-control custom-input"
+                  min="1"
+                  max="60"
+                  [(ngModel)]="widget.historyItems"
+                />
+                <span class="input-group-text custom-input">{{ 'status.widget.network.items' | translate }}</span>
+              </div>
+            </div>
+          </li>
+        }
+      }
     </ul>
   </div>
   <div class="modal-footer justify-content-between">
@@ -203,8 +252,8 @@
         type="button"
         class="btn btn-elegant"
         data-bs-dismiss="modal"
-        (click)="dismissModal()"
         [attr.aria-label]="'form.button_close' | translate"
+        (click)="dismissModal()"
       >
         {{ 'form.button_close' | translate }}
       </button>

@@ -1,12 +1,12 @@
 <div
   class="accessory-box"
-  [class.accessory-on]="service().values?.On || service().values?.Active"
-  [style.cursor]="readyForControl() ? 'pointer' : 'default'"
-  (shortClick)="onClick()"
   tabindex="0"
+  [class.accessory-on]="service().values?.On || service().values?.Active"
+  [class.cursor-pointer]="readyForControl()"
+  (shortClick)="onClick()"
 >
   <div class="d-flex flex-column h-100">
-    <div [attr.aria-label]="'accessories.core.robot_vacuum' | translate" class="accessory-svg">
+    <div class="accessory-svg" [attr.aria-label]="'accessories.core.robot_vacuum' | translate">
       <svg width="32px" height="32px" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <! -- clip lines to above the machine - ->
@@ -41,13 +41,7 @@
           <line x1="30" y1="16" x2="31.5" y2="18.5" stroke="#7f7f7f" stroke-width="1" />
           <line x1="30" y1="16" x2="31.5" y2="14" stroke="#7f7f7f" stroke-width="1" />
         </g>
-        <g
-          class="motion-lines"
-          style="display: none"
-          clip-path="url(#motionClip)"
-          stroke="#7f7f7f"
-          stroke-linecap="round"
-        >
+        <g class="motion-lines" clip-path="url(#motionClip)" stroke="#7f7f7f" stroke-linecap="round">
           <! -- left line - ->
           <line x1="12" y1="8" x2="12" y2="14" stroke-width="2.1" opacity="0">
             <animate attributeName="y1" values="8;0" dur="3s" begin="0.3s" repeatCount="indefinite" />
@@ -93,7 +87,10 @@
     <div class="accessory-label mt-auto">{{ service().customName || service().serviceName }}</div>
     <div
       class="accessory-label grey-text"
-      [innerText]="((service().values?.On || service().values?.Active) ? 'accessories.control.on' : 'accessories.control.off') | translate"
+      [innerText]="
+        (service().values?.On || service().values?.Active ? 'accessories.control.on' : 'accessories.control.off')
+          | translate
+      "
     ></div>
   </div>
 </div>

@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
@@ -8,9 +8,12 @@ import { RESTART_CHILD_BRIDGES_MODAL_DATA } from '@/app/core/modal-data-tokens'
 import { SettingsService } from '@/app/core/ui/settings.service'
 
 @Component({
-  templateUrl: './restart-child-bridges.component.html',
-  standalone: true,
+  selector: 'app-restart-child-bridges',
   imports: [TranslatePipe],
+  standalone: true,
+  templateUrl: './restart-child-bridges.component.html',
+  styleUrl: './restart-child-bridges.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RestartChildBridgesComponent {
   // Injected dependencies

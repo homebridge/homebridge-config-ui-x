@@ -6,120 +6,174 @@
     class="d-flex flex-wrap w-100 mt-0 justify-content-start gridster-item-content overflow-auto no-scrollbars align-items-center"
   >
     <! -- Main Bridge - ->
-    <div class="hb-status-item d-flex flex-row w-100 px-3 mt-2 mb-1" style="min-width: max(25%, 225px)">
+    <div class="hb-status-item hb-status-item-quarter d-flex flex-row w-100 px-3 mt-2 mb-1">
       <div class="hb-status-icon d-flex align-items-center">
         <i
           class="fas fa-hap fa-sm"
-          [class]="{
-            'green-text': homebridgeStatus()?.status === 'ok' && !isRestarting(),
-            'text-warning': homebridgeStatus()?.status === 'pending' || isRestarting(),
-            'red-text': homebridgeStatus()?.status === 'down' && !isRestarting()
-          }"
           container="body"
           placement="right"
-          [openDelay]="150"
           triggers="hover"
-          [ngbTooltip]="(homebridgeStatus()?.status === 'down' && !isRestarting() ? 'status.services.label_not_running' : 'status.services.label_running') | translate"
-          [attr.aria-label]="(homebridgeStatus()?.status === 'down' && !isRestarting() ? 'status.services.label_not_running' : 'status.services.label_running') | translate"
+          [class.green-text]="homebridgeStatus()?.status === 'ok' && !isRestarting()"
+          [class.text-warning]="homebridgeStatus()?.status === 'pending' || isRestarting()"
+          [class.red-text]="homebridgeStatus()?.status === 'down' && !isRestarting()"
+          [openDelay]="150"
+          [ngbTooltip]="
+            (homebridgeStatus()?.status === 'down' && !isRestarting()
+              ? 'status.services.hap_not_running'
+              : 'status.services.hap_running'
+            ) | translate
+          "
+          [attr.aria-label]="
+            (homebridgeStatus()?.status === 'down' && !isRestarting()
+              ? 'status.services.hap_not_running'
+              : 'status.services.hap_running'
+            ) | translate
+          "
         ></i>
         @if (isMatterSupported) {
-        <i
-          class="fas fa-matter fa-sm ms-2"
-          [class]="{
-            'green-text': homebridgeStatus()?.matter?.enabled && homebridgeStatus()?.status === 'ok' && !isRestarting(),
-            'text-warning': homebridgeStatus()?.matter?.enabled && (homebridgeStatus()?.status === 'pending' || isRestarting()),
-            'red-text': homebridgeStatus()?.matter?.enabled && homebridgeStatus()?.status === 'down' && !isRestarting(),
-            'grey-text': !homebridgeStatus()?.matter?.enabled
-          }"
-          [style.opacity]="!homebridgeStatus()?.matter?.enabled ? '0.25' : '1'"
-          container="body"
-          placement="right"
-          [openDelay]="150"
-          triggers="hover"
-          [ngbTooltip]="(homebridgeStatus()?.matter?.enabled ? (homebridgeStatus()?.status === 'down' && !isRestarting() ? 'status.services.label_not_running' : 'status.services.label_running') : 'status.services.label_not_enabled') | translate"
-          [attr.aria-label]="(homebridgeStatus()?.matter?.enabled ? (homebridgeStatus()?.status === 'down' && !isRestarting() ? 'status.services.label_not_running' : 'status.services.label_running') : 'status.services.label_not_enabled') | translate"
-        ></i>
+          <i
+            class="fas fa-matter fa-sm ms-2"
+            container="body"
+            placement="right"
+            triggers="hover"
+            [class.green-text]="
+              homebridgeStatus()?.matter?.enabled && homebridgeStatus()?.status === 'ok' && !isRestarting()
+            "
+            [class.text-warning]="
+              homebridgeStatus()?.matter?.enabled && (homebridgeStatus()?.status === 'pending' || isRestarting())
+            "
+            [class.red-text]="
+              homebridgeStatus()?.matter?.enabled && homebridgeStatus()?.status === 'down' && !isRestarting()
+            "
+            [class.grey-text]="!homebridgeStatus()?.matter?.enabled"
+            [class.opacity-muted]="!homebridgeStatus()?.matter?.enabled"
+            [openDelay]="150"
+            [ngbTooltip]="
+              (homebridgeStatus()?.matter?.enabled
+                ? homebridgeStatus()?.status === 'down' && !isRestarting()
+                  ? 'status.services.matter_not_running'
+                  : 'status.services.matter_running'
+                : 'status.services.matter_not_enabled'
+              ) | translate
+            "
+            [attr.aria-label]="
+              (homebridgeStatus()?.matter?.enabled
+                ? homebridgeStatus()?.status === 'down' && !isRestarting()
+                  ? 'status.services.hap_not_running'
+                  : 'status.services.hap_running'
+                : 'status.services.hap_not_enabled'
+              ) | translate
+            "
+          ></i>
         }
       </div>
       <div class="align-self-center flex-child px-2">{{ homebridgeStatus()?.name || 'Homebridge' }}</div>
       <div class="grey-text ms-auto d-flex align-items-center">
         @if (homebridgeStatus()?.status !== 'pending' && !isRestarting() && isAdmin) {
-        <button
-          type="button"
-          class="icon-button-reset"
-          (click)="restartHomebridge()"
-          [ngbTooltip]="'menu.tooltip_restart' | translate"
-          [attr.aria-label]="'menu.tooltip_restart' | translate"
-          container="body"
-          [openDelay]="150"
-          triggers="hover"
-          placement="left"
-        >
-          <i class="fas fa-power-off" aria-hidden="true"></i>
-        </button>
-        } @if (homebridgeStatus()?.status === 'pending' || isRestarting()) {
-        <i class="fas fa-circle-notch fa-spin"></i>
+          <button
+            type="button"
+            class="icon-button-reset"
+            container="body"
+            triggers="hover"
+            placement="left"
+            [ngbTooltip]="'menu.tooltip_restart' | translate"
+            [attr.aria-label]="'menu.tooltip_restart' | translate"
+            [openDelay]="150"
+            (click)="restartHomebridge()"
+          >
+            <i class="fas fa-power-off" aria-hidden="true"></i>
+          </button>
+        }
+        @if (homebridgeStatus()?.status === 'pending' || isRestarting()) {
+          <i class="fas fa-circle-notch fa-spin"></i>
         }
       </div>
     </div>
     <! -- Child Bridges - ->
     @for (bridge of childBridges(); track bridge.username) {
-    <div class="hb-status-item d-flex flex-row w-100 px-3 mt-2 mb-1" style="min-width: max(25%, 225px)">
-      <div class="hb-status-icon d-flex align-items-center">
-        <i
-          class="fas fa-hap fa-sm"
-          [class]="{
-            'green-text': bridge.status === 'ok' && !bridge.restarting && !isRestarting(),
-            'text-warning': bridge.status === 'pending' || bridge.restarting || isRestarting(),
-            'red-text': bridge.status === 'down' && !bridge.restarting && !isRestarting()
-          }"
-          container="body"
-          placement="right"
-          [openDelay]="150"
-          triggers="hover"
-          [ngbTooltip]="(bridge.status === 'down' && !bridge.restarting && !isRestarting() ? 'status.services.label_not_running' : 'status.services.label_running') | translate"
-          [attr.aria-label]="(bridge.status === 'down' && !bridge.restarting && !isRestarting() ? 'status.services.label_not_running' : 'status.services.label_running') | translate"
-        ></i>
-        @if (isMatterSupported) {
-        <i
-          class="fas fa-matter fa-sm ms-2"
-          [class]="{
-            'green-text': bridge.matterConfig && bridge.status === 'ok' && !bridge.restarting && !isRestarting(),
-            'text-warning': bridge.matterConfig && (bridge.status === 'pending' || bridge.restarting || isRestarting()),
-            'red-text': bridge.matterConfig && bridge.status === 'down' && !bridge.restarting && !isRestarting(),
-            'grey-text': !bridge.matterConfig
-          }"
-          [style.opacity]="!bridge.matterConfig ? '0.25' : '1'"
-          container="body"
-          placement="right"
-          [openDelay]="150"
-          triggers="hover"
-          [ngbTooltip]="(bridge.matterConfig ? (bridge.status === 'down' && !bridge.restarting && !isRestarting() ? 'status.services.label_not_running' : 'status.services.label_running') : 'status.services.label_not_enabled') | translate"
-          [attr.aria-label]="(bridge.matterConfig ? (bridge.status === 'down' && !bridge.restarting && !isRestarting() ? 'status.services.label_not_running' : 'status.services.label_running') : 'status.services.label_not_enabled') | translate"
-        ></i>
-        }
+      <div class="hb-status-item hb-status-item-quarter d-flex flex-row w-100 px-3 mt-2 mb-1">
+        <div class="hb-status-icon d-flex align-items-center">
+          <i
+            class="fas fa-hap fa-sm"
+            container="body"
+            placement="right"
+            triggers="hover"
+            [class.green-text]="bridge.status === 'ok' && !bridge.restarting && !isRestarting()"
+            [class.text-warning]="bridge.status === 'pending' || bridge.restarting || isRestarting()"
+            [class.red-text]="bridge.status === 'down' && !bridge.restarting && !isRestarting()"
+            [openDelay]="150"
+            [ngbTooltip]="
+              (bridge.status === 'down' && !bridge.restarting && !isRestarting()
+                ? 'status.services.hap_not_running'
+                : 'status.services.hap_running'
+              ) | translate
+            "
+            [attr.aria-label]="
+              (bridge.status === 'down' && !bridge.restarting && !isRestarting()
+                ? 'status.services.hap_not_running'
+                : 'status.services.hap_running'
+              ) | translate
+            "
+          ></i>
+          @if (isMatterSupported) {
+            <i
+              class="fas fa-matter fa-sm ms-2"
+              container="body"
+              placement="right"
+              triggers="hover"
+              [class.green-text]="
+                bridge.matterConfig && bridge.status === 'ok' && !bridge.restarting && !isRestarting()
+              "
+              [class.text-warning]="
+                bridge.matterConfig && (bridge.status === 'pending' || bridge.restarting || isRestarting())
+              "
+              [class.red-text]="
+                bridge.matterConfig && bridge.status === 'down' && !bridge.restarting && !isRestarting()
+              "
+              [class.grey-text]="!bridge.matterConfig"
+              [class.opacity-muted]="!bridge.matterConfig"
+              [openDelay]="150"
+              [ngbTooltip]="
+                (bridge.matterConfig
+                  ? bridge.status === 'down' && !bridge.restarting && !isRestarting()
+                    ? 'status.services.matter_not_running'
+                    : 'status.services.matter_running'
+                  : 'status.services.matter_not_enabled'
+                ) | translate
+              "
+              [attr.aria-label]="
+                (bridge.matterConfig
+                  ? bridge.status === 'down' && !bridge.restarting && !isRestarting()
+                    ? 'status.services.matter_not_running'
+                    : 'status.services.matter_running'
+                  : 'status.services.matter_not_enabled'
+                ) | translate
+              "
+            ></i>
+          }
+        </div>
+        <div class="align-self-center flex-child px-2">{{ bridge.name }}</div>
+        <div class="grey-text ms-auto d-flex align-items-center">
+          @if (bridge.status !== 'pending' && !bridge.restarting && !isRestarting() && isAdmin) {
+            <button
+              type="button"
+              class="icon-button-reset"
+              container="body"
+              triggers="hover"
+              placement="left"
+              [ngbTooltip]="'menu.tooltip_restart' | translate"
+              [attr.aria-label]="'menu.tooltip_restart' | translate"
+              [openDelay]="150"
+              (click)="restartChildBridge(bridge)"
+            >
+              <i class="fas fa-power-off" aria-hidden="true"></i>
+            </button>
+          }
+          @if (bridge.status === 'pending' || bridge.restarting || isRestarting()) {
+            <i class="fas fa-circle-notch fa-spin"></i>
+          }
+        </div>
       </div>
-      <div class="align-self-center flex-child px-2">{{ bridge.name }}</div>
-      <div class="grey-text ms-auto d-flex align-items-center">
-        @if (bridge.status !== 'pending' && !bridge.restarting && !isRestarting() && isAdmin) {
-        <button
-          type="button"
-          class="icon-button-reset"
-          (click)="restartChildBridge(bridge)"
-          [ngbTooltip]="'menu.tooltip_restart' | translate"
-          [attr.aria-label]="'menu.tooltip_restart' | translate"
-          container="body"
-          [openDelay]="150"
-          triggers="hover"
-          placement="left"
-        >
-          <i class="fas fa-power-off" aria-hidden="true"></i>
-        </button>
-        } @if (bridge.status === 'pending' || bridge.restarting || isRestarting()) {
-        <i class="fas fa-circle-notch fa-spin"></i>
-        }
-      </div>
-    </div>
     }
   </div>
 </div>

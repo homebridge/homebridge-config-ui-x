@@ -1,4 +1,12 @@
-import { Component, computed, createEnvironmentInjector, EnvironmentInjector, inject, input } from '@angular/core'
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  createEnvironmentInjector,
+  EnvironmentInjector,
+  inject,
+  input,
+} from '@angular/core'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe } from '@ngx-translate/core'
 
@@ -11,20 +19,21 @@ import { LongClickDirective } from '@/app/core/directives/long-click.directive'
 
 @Component({
   selector: 'app-extended-color-light',
-  templateUrl: './extended-color-light.component.html',
-  standalone: true,
   imports: [
     LongClickDirective,
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './extended-color-light.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ExtendedColorLightComponent {
   private $accessories = inject(AccessoriesService)
   private injector = inject(EnvironmentInjector)
   private $modal = inject(NgbModal)
 
-  public service = input.required<ServiceTypeX>()
-  public readyForControl = input<boolean>(false)
+  public readonly service = input.required<ServiceTypeX>()
+  public readonly readyForControl = input<boolean>(false)
 
   public onClick() {
     if (!this.readyForControl()) {
@@ -56,15 +65,15 @@ export class ExtendedColorLightComponent {
     })
   }
 
-  public isOn = computed(() => getDeviceActiveState(this.service()))
+  public readonly isOn = computed(() => getDeviceActiveState(this.service()))
 
-  public brightness = computed(() => getBrightnessPercentage(this.service()))
+  public readonly brightness = computed(() => getBrightnessPercentage(this.service()))
 
   /**
    * Get the light color for the icon
    * Converts Matter HSV (hue 0-254, saturation 0-254) to CSS color
    */
-  public lightColor = computed(() => {
+  public readonly lightColor = computed(() => {
     const hue = getHue(this.service())
     const saturation = getSaturation(this.service())
 

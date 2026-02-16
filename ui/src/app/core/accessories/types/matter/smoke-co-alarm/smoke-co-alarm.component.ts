@@ -1,4 +1,4 @@
-import { Component, computed, input } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core'
 import { TranslatePipe } from '@ngx-translate/core'
 
 import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
@@ -6,15 +6,16 @@ import { isSmokeCoAlarmTriggered } from '@/app/core/accessories/types/matter/mat
 
 @Component({
   selector: 'app-matter-smoke-co-alarm',
-  templateUrl: './smoke-co-alarm.component.html',
-  styleUrls: ['./smoke-co-alarm.component.scss'],
-  standalone: true,
   imports: [
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './smoke-co-alarm.component.html',
+  styleUrl: './smoke-co-alarm.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatterSmokeCoAlarmComponent {
-  public service = input.required<ServiceTypeX>()
+  public readonly service = input.required<ServiceTypeX>()
 
-  public isTriggered = computed(() => isSmokeCoAlarmTriggered(this.service()))
+  public readonly isTriggered = computed(() => isSmokeCoAlarmTriggered(this.service()))
 }

@@ -1,6 +1,6 @@
 <div class="accessory-box" [class.accessory-on]="service().values?.InUse">
   <div class="d-flex flex-column h-100">
-    <div [attr.aria-label]="'accessories.core.irrigation_system' | translate" class="accessory-svg">
+    <div class="accessory-svg" [attr.aria-label]="'accessories.core.irrigation_system' | translate">
       <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
         <! -- water tank - ->
         <rect
@@ -74,9 +74,9 @@
       {{ service().customName || service().values?.ConfiguredName || service().serviceName }}
     </div>
     @if (service().values?.InUse) {
-    <div class="accessory-label grey-text">{{ 'accessories.control.running' | translate }}</div>
+      <div class="accessory-label grey-text">{{ 'accessories.control.running' | translate }}</div>
     } @else {
-    <div class="accessory-label grey-text">{{ 'accessories.control.off' | translate }}</div>
+      <div class="accessory-label grey-text">{{ 'accessories.control.off' | translate }}</div>
     }
   </div>
 </div>

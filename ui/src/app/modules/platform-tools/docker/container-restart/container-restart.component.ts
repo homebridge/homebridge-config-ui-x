@@ -1,4 +1,4 @@
-import { Component, DestroyRef, inject, OnDestroy, OnInit, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnDestroy, OnInit, signal } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { Router } from '@angular/router'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
@@ -11,10 +11,12 @@ import { HomebridgeStatusResponse } from '@/app/core/server.interfaces'
 import { SettingsService } from '@/app/core/ui/settings.service'
 
 @Component({
-  templateUrl: './container-restart.component.html',
-  styleUrls: ['./container-restart.component.scss'],
-  standalone: true,
+  selector: 'app-container-restart',
   imports: [TranslatePipe],
+  standalone: true,
+  templateUrl: './container-restart.component.html',
+  styleUrl: './container-restart.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ContainerRestartComponent implements OnInit, OnDestroy {
   // Injected dependencies
@@ -30,8 +32,8 @@ export class ContainerRestartComponent implements OnInit, OnDestroy {
   private io: IoNamespace
 
   // Signals
-  public timeout = signal(false)
-  public error = signal<string | false>(false)
+  public readonly timeout = signal(false)
+  public readonly error = signal<string | false>(false)
 
   // Constants
   public readonly command = '<span class="font-monospace">--restart=always</span>'

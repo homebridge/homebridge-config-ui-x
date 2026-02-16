@@ -5,16 +5,17 @@ import { TranslatePipe } from '@ngx-translate/core'
 import { BaseManageComponent } from '@/app/core/accessories/types/base-manage.component'
 
 @Component({
-  templateUrl: './television.manage.component.html',
-  standalone: true,
+  selector: 'app-television-manage',
   imports: [
     FormsModule,
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './television.manage.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TelevisionManageComponent extends BaseManageComponent {
-  public inputList = input.required<Record<number, string>>()
+  public readonly inputList = input.required<Record<number, string>>()
 
   public hasActive: boolean = false
   public sourceList: { identifier: number, name: string }[] = []

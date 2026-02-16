@@ -1,5 +1,5 @@
 import { HttpEventType, HttpResponse } from '@angular/common/http'
-import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit, signal } from '@angular/core'
 import { Router } from '@angular/router'
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
@@ -16,9 +16,11 @@ import { BackupComponent } from '@/app/modules/settings/backup/backup.component'
 import { ScheduledBackup } from '@/app/modules/settings/backup/backup.interfaces'
 
 @Component({
-  templateUrl: './restore.component.html',
-  standalone: true,
+  selector: 'app-restore',
   imports: [TranslatePipe],
+  standalone: true,
+  templateUrl: './restore.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RestoreComponent implements OnInit, OnDestroy {
   // Injected dependencies
@@ -37,13 +39,13 @@ export class RestoreComponent implements OnInit, OnDestroy {
   public selectedBackup: ScheduledBackup | null = this.modalData.selectedBackup ?? null
 
   // Signals
-  public clicked = signal(false)
-  public selectedFile = signal<File | null>(null)
-  public restoreInProgress = signal(false)
-  public restoreStarted = signal(false)
-  public restoreFailed = signal(false)
-  public restoreArchiveType = signal<'homebridge' | 'hbfx'>('homebridge')
-  public uploadPercent = signal(0)
+  public readonly clicked = signal(false)
+  public readonly selectedFile = signal<File | null>(null)
+  public readonly restoreInProgress = signal(false)
+  public readonly restoreStarted = signal(false)
+  public readonly restoreFailed = signal(false)
+  public readonly restoreArchiveType = signal<'homebridge' | 'hbfx'>('homebridge')
+  public readonly uploadPercent = signal(0)
 
   // Other properties
   private io: IoNamespace

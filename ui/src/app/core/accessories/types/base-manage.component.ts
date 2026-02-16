@@ -26,6 +26,7 @@ export const ACCESSORY_MANAGE_MODAL_DATA = new InjectionToken<AccessoryManageMod
  * Uses modern Angular DI pattern instead of @Input() for modal data
  */
 @Component({
+  selector: 'app-base-manage',
   template: '',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

@@ -14,13 +14,14 @@ import { ACCESSORY_MANAGE_MODAL_DATA } from '@/app/core/accessories/types/base-m
 import { getFanPercentSetting, isFanOn, setFanSpeed } from '@/app/core/accessories/types/matter/matter-device.utils'
 
 @Component({
-  templateUrl: './fan.manage.component.html',
-  standalone: true,
+  selector: 'app-fan-manage',
   imports: [
     FormsModule,
     NouisliderComponent,
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './fan.manage.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatterFanManageComponent implements OnInit {

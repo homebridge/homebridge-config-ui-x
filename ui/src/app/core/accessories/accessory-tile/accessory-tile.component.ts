@@ -1,4 +1,4 @@
-import { Component, inject, input } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core'
 import { TranslatePipe } from '@ngx-translate/core'
 
 import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
@@ -64,8 +64,6 @@ import { MatterWindowCoveringComponent } from '@/app/core/accessories/types/matt
 
 @Component({
   selector: 'app-accessory-tile',
-  templateUrl: './accessory-tile.component.html',
-  standalone: true,
   imports: [
     SwitchComponent,
     ThermostatComponent,
@@ -127,9 +125,12 @@ import { MatterWindowCoveringComponent } from '@/app/core/accessories/types/matt
     TranslatePipe,
     AccessCodeComponent,
   ],
+  standalone: true,
+  templateUrl: './accessory-tile.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AccessoryTileComponent {
   $accessories = inject(AccessoriesService)
 
-  public service = input.required<ServiceTypeX>()
+  public readonly service = input.required<ServiceTypeX>()
 }

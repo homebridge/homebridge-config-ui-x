@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core'
 import { Router } from '@angular/router'
 import { NgbAlert } from '@ng-bootstrap/ng-bootstrap/alert'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal'
@@ -8,12 +8,14 @@ import { ToastrService } from 'ngx-toastr'
 import { ApiService } from '@/app/core/communication/api.service'
 
 @Component({
-  templateUrl: './remove-all-accessories.component.html',
-  standalone: true,
+  selector: 'app-remove-all-accessories',
   imports: [
     NgbAlert,
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './remove-all-accessories.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RemoveAllAccessoriesComponent implements OnInit {
   // Injected dependencies
@@ -24,8 +26,8 @@ export class RemoveAllAccessoriesComponent implements OnInit {
   private $translate = inject(TranslateService)
 
   // Signals
-  public clicked = signal(false)
-  public cachedAccessories = signal<any[]>([])
+  public readonly clicked = signal(false)
+  public readonly cachedAccessories = signal<any[]>([])
 
   public ngOnInit(): void {
     void this.loadCachedAccessories()

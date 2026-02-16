@@ -1,12 +1,14 @@
-import { Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { Router } from '@angular/router'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe } from '@ngx-translate/core'
 
 @Component({
-  templateUrl: './restart-homebridge.component.html',
-  standalone: true,
+  selector: 'app-restart-homebridge',
   imports: [TranslatePipe],
+  standalone: true,
+  templateUrl: './restart-homebridge.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RestartHomebridgeComponent {
   private $activeModal = inject(NgbActiveModal)

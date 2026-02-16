@@ -1,0 +1,67 @@
+// Shared utility classes
+
+// Icon sizes (modal headers)
+.icon-xl {
+  font-size: 75px;
+}
+
+.icon-lg {
+  font-size: 48px;
+}
+
+// Text overflow
+.text-break-all {
+  word-break: break-all;
+}
+
+// Cursor states
+.cursor-pointer {
+  cursor: pointer;
+}
+
+.cursor-not-allowed {
+  cursor: not-allowed;
+}
+
+// Width utilities (not in Bootstrap)
+.w-85 {
+  width: 85%;
+}
+
+// Centered narrow container
+.container-narrow {
+  max-width: 1000px;
+  margin: auto;
+}
+
+// Min-width utilities
+.min-w-50 {
+  min-width: 50px;
+}
+
+// Opacity states
+.opacity-muted {
+  opacity: 0.25;
+}
+
+// Status indicator colors (for temperature/humidity icons)
+.status-color-cooling {
+  color: #1e8bbd;
+}
+
+.status-color-heating {
+  color: #e69533;
+}
+
+.status-color-active {
+  color: #42d672;
+}
+
+.status-color-inactive {
+  color: #7b7b7b;
+}
+
+// FontAwesome animation overrides
+.fa-spin-slow {
+  --fa-animation-duration: 2s;
+}

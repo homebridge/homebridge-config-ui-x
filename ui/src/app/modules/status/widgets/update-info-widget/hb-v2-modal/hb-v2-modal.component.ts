@@ -1,5 +1,5 @@
 import { NgOptimizedImage } from '@angular/common'
-import { Component, inject, OnInit, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
@@ -14,12 +14,14 @@ import { PluginNodeCheck } from '@/app/modules/status/widgets'
 import { InstalledPlugin } from '@/app/modules/status/widgets/update-info-widget/hb-v2-modal/hb-v2-modal.interfaces'
 
 @Component({
-  templateUrl: './hb-v2-modal.component.html',
-  standalone: true,
+  selector: 'app-hb-v2-modal',
   imports: [
     TranslatePipe,
     NgOptimizedImage,
   ],
+  standalone: true,
+  templateUrl: './hb-v2-modal.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HbV2ModalComponent implements OnInit {
   private $activeModal = inject(NgbActiveModal)
@@ -39,10 +41,10 @@ export class HbV2ModalComponent implements OnInit {
   public defaultIcon = 'assets/hb-icon.png'
 
   // Signals
-  public loading = signal(true)
-  public installedPlugins = signal<InstalledPlugin[]>([])
-  public allPluginsSupported = signal(true)
-  public nodeReady = signal(false)
+  public readonly loading = signal(true)
+  public readonly installedPlugins = signal<InstalledPlugin[]>([])
+  public readonly allPluginsSupported = signal(true)
+  public readonly nodeReady = signal(false)
 
   public ngOnInit(): void {
     void this.initialize()

@@ -9,13 +9,14 @@ import { Subject } from 'rxjs'
 import { BaseManageComponent } from '@/app/core/accessories/types/base-manage.component'
 
 @Component({
-  templateUrl: './microphone.manage.component.html',
-  standalone: true,
+  selector: 'app-microphone-manage',
   imports: [
     FormsModule,
     NouisliderComponent,
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './microphone.manage.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MicrophoneManageComponent extends BaseManageComponent {

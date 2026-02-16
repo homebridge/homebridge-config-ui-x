@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe } from '@ngx-translate/core'
 
@@ -6,12 +6,14 @@ import { PLUGIN_MODAL_DATA } from '@/app/core/modal-data-tokens'
 import { PluginFundingOption } from '@/app/core/plugins/manage-plugins.interfaces'
 
 @Component({
-  templateUrl: './donate.component.html',
-  styleUrls: ['./donate.component.scss'],
-  standalone: true,
+  selector: 'app-donate',
   imports: [
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './donate.component.html',
+  styleUrl: './donate.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DonateComponent implements OnInit {
   // Injected dependencies
@@ -22,8 +24,8 @@ export class DonateComponent implements OnInit {
   public plugin = this.modalData.plugin
 
   // Signals
-  public fundingOptions = signal<PluginFundingOption[]>([])
-  public authorName = signal<string>('')
+  public readonly fundingOptions = signal<PluginFundingOption[]>([])
+  public readonly authorName = signal<string>('')
 
   public ngOnInit(): void {
     void this.initialize()

@@ -1,5 +1,5 @@
 import { DatePipe } from '@angular/common'
-import { Component, inject, OnInit, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core'
 import { ReactiveFormsModule } from '@angular/forms'
 import { Router } from '@angular/router'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal'
@@ -13,14 +13,16 @@ import { CONFIG_RESTORE_MODAL_DATA } from '@/app/core/modal-data-tokens'
 import { ConfigRestoreBackup } from '@/app/modules/config-editor/config-editor.interfaces'
 
 @Component({
-  templateUrl: './config-restore.component.html',
-  standalone: true,
+  selector: 'app-config-restore',
   imports: [
     DatePipe,
     TranslatePipe,
     NgbTooltip,
     ReactiveFormsModule,
   ],
+  standalone: true,
+  templateUrl: './config-restore.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ConfigRestoreComponent implements OnInit {
   // Injected dependencies
@@ -36,10 +38,10 @@ export class ConfigRestoreComponent implements OnInit {
   public fromSettings = this.modalData.fromSettings ?? false
 
   // Other signals
-  public loading = signal(true)
-  public backupList = signal<ConfigRestoreBackup[]>([])
-  public clicked = signal(false)
-  public deleting = signal<string | null>(null)
+  public readonly loading = signal(true)
+  public readonly backupList = signal<ConfigRestoreBackup[]>([])
+  public readonly clicked = signal(false)
+  public readonly deleting = signal<string | null>(null)
 
   public ngOnInit(): void {
     void this.getConfigBackups()

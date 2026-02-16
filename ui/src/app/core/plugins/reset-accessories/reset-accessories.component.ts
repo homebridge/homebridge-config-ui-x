@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core'
 import { Router } from '@angular/router'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
@@ -11,11 +11,14 @@ import { ResetAccessoriesDeleteItem, ResetAccessoriesPairing } from '@/app/core/
 import { SettingsService } from '@/app/core/ui/settings.service'
 
 @Component({
-  templateUrl: './reset-accessories.component.html',
-  standalone: true,
+  selector: 'app-reset-accessories',
   imports: [
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './reset-accessories.component.html',
+  styleUrl: './reset-accessories.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ResetAccessoriesComponent implements OnInit {
   // 1. Injected Dependencies
@@ -31,9 +34,9 @@ export class ResetAccessoriesComponent implements OnInit {
   public childBridges: ChildBridge[] = this.modalData.childBridges ?? []
 
   // 3. Signals
-  public clicked = signal(false)
-  public pairings = signal<ResetAccessoriesPairing[]>([])
-  public toDelete = signal<ResetAccessoriesDeleteItem[]>([])
+  public readonly clicked = signal(false)
+  public readonly pairings = signal<ResetAccessoriesPairing[]>([])
+  public readonly toDelete = signal<ResetAccessoriesDeleteItem[]>([])
 
   // 4. Other Properties
   public readonly isMatterSupported = this.$settings.isFeatureEnabled('matterSupport')

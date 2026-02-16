@@ -4,14 +4,15 @@
       <div class="text-center qr-code-container w-100 h-100 p-3">
         <div class="w-100 h-100">
           @if (setupUri()) {
-          <app-qrcode [data]="setupUri()" class="mx-auto" />
+            <app-qrcode class="mx-auto" [data]="setupUri()" />
           } @else {
-          <div class="d-flex align-items-center justify-content-center w-100 h-100" style="min-height: 200px">
-            @if (loading()) {<i class="fas fa-circle-notch fa-spin fa-2xl grey-text"></i> } @else if (!enabled()) {<i
-              class="fas fa-matter grey-text fa-2xl"
-            ></i>
-            }
-          </div>
+            <div class="d-flex align-items-center justify-content-center w-100 h-100 qr-loading-container">
+              @if (loading()) {
+                <i class="fas fa-circle-notch fa-spin fa-2xl grey-text"></i>
+              } @else if (!enabled()) {
+                <i class="fas fa-matter grey-text fa-2xl"></i>
+              }
+            </div>
           }
         </div>
       </div>
@@ -21,19 +22,16 @@
         <span class="font-monospace">{{ pin() }}</span>
       </p>
       <p class="grey-text mb-1 small">
-        <i class="fas fa-matter"></i> Matter @if (pin() && enabled()) { &middot;
-        <i
-          class="fas fa-link"
-          [class]="{
-            'green-text': commissioned(),
-            'grey-text': !commissioned()
-          }"
-        ></i>
-        {{ (commissioned() ? 'status.widget.qr_paired' : 'status.widget.qr_unpaired') | translate }} @if
-        (!commissioned()) {
-        <br />
-        <small>{{ 'status.code_scan' | translate }}</small>
-        } }
+        <i class="fas fa-matter"></i> Matter
+        @if (pin() && enabled()) {
+          &middot;
+          <i class="fas fa-link" [class.green-text]="commissioned()" [class.grey-text]="!commissioned()"></i>
+          {{ (commissioned() ? 'status.widget.qr_paired' : 'status.widget.qr_unpaired') | translate }}
+          @if (!commissioned()) {
+            <br />
+            <small>{{ 'status.code_scan' | translate }}</small>
+          }
+        }
       </p>
     </div>
   </div>

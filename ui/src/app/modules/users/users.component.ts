@@ -1,4 +1,4 @@
-import { Component, createEnvironmentInjector, DestroyRef, EnvironmentInjector, inject, OnInit, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, createEnvironmentInjector, DestroyRef, EnvironmentInjector, inject, OnInit, signal } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { ActivatedRoute } from '@angular/router'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
@@ -17,11 +17,12 @@ import { User } from '@/app/modules/users/users.interface'
 
 @Component({
   selector: 'app-users',
-  templateUrl: './users.component.html',
-  standalone: true,
   imports: [
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './users.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UsersComponent implements OnInit {
   // Injected dependencies
@@ -35,7 +36,7 @@ export class UsersComponent implements OnInit {
   private $translate = inject(TranslateService)
 
   // Signals
-  public homebridgeUsers = signal<User[]>([])
+  public readonly homebridgeUsers = signal<User[]>([])
 
   // Other properties
   public username = this.$auth.user.username

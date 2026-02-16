@@ -7,13 +7,14 @@ import { Subject } from 'rxjs'
 import { BaseManageComponent } from '@/app/core/accessories/types/base-manage.component'
 
 @Component({
-  templateUrl: './door.manage.component.html',
-  standalone: true,
+  selector: 'app-door-manage',
   imports: [
     NouisliderComponent,
     FormsModule,
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './door.manage.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DoorManageComponent extends BaseManageComponent {

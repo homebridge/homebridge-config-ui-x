@@ -1,5 +1,5 @@
 import { TitleCasePipe } from '@angular/common'
-import { Component, inject, OnInit, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core'
 import { Router } from '@angular/router'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
@@ -10,12 +10,15 @@ import { SettingsService } from '@/app/core/ui/settings.service'
 import { Pairing } from '@/app/modules/settings/settings.interfaces'
 
 @Component({
-  templateUrl: './reset-individual-bridges.component.html',
-  standalone: true,
+  selector: 'app-reset-individual-bridges',
   imports: [
     TitleCasePipe,
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './reset-individual-bridges.component.html',
+  styleUrl: './reset-individual-bridges.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ResetIndividualBridgesComponent implements OnInit {
   // Injected dependencies
@@ -27,11 +30,11 @@ export class ResetIndividualBridgesComponent implements OnInit {
   private $translate = inject(TranslateService)
 
   // Signals
-  public clicked = signal(false)
-  public pairingsNonChild = signal<any[]>([])
-  public pairingsChildActive = signal<any[]>([])
-  public pairingsChildStale = signal<any[]>([])
-  public toDelete = signal<{ id: string, resetPairingInfo: boolean }[]>([])
+  public readonly clicked = signal(false)
+  public readonly pairingsNonChild = signal<any[]>([])
+  public readonly pairingsChildActive = signal<any[]>([])
+  public readonly pairingsChildStale = signal<any[]>([])
+  public readonly toDelete = signal<{ id: string, resetPairingInfo: boolean }[]>([])
 
   // Other properties
   public isMatterSupported = this.$settings.isFeatureEnabled('matterSupport')

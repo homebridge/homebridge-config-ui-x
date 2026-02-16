@@ -1,5 +1,5 @@
 <div class="modal-content">
-  <form novalidate (ngSubmit)="onSubmit(form)" [formGroup]="form">
+  <form novalidate [formGroup]="form" (ngSubmit)="onSubmit(form)">
     <div class="modal-header">
       <h5 class="modal-title">{{ 'users.title_add_user' | translate }}</h5>
       <button
@@ -11,8 +11,8 @@
       ></button>
     </div>
     <div class="modal-body">
-      <div class="text-center mb-3">
-        <i class="fas fa-user-plus primary-text" style="font-size: 75px"></i>
+      <div class="text-center mb-4">
+        <i class="fas fa-user-plus primary-text icon-xl"></i>
       </div>
       <ul class="list-group list-group-box mb-0">
         <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
@@ -24,7 +24,6 @@
               formControlName="username"
               type="text"
               id="form-username"
-              autofocus
               autocomplete="username"
               autocapitalize="none"
               class="form-control custom-input"
@@ -82,7 +81,7 @@
           </div>
         </li>
         <li class="list-group-item d-flex justify-content-between align-items-center flex-row pb-2">
-          <span class="text-start"> {{ 'users.label_admin_user' | translate }}<app-required-indicator /> </span>
+          <span class="text-start">{{ 'users.label_admin_user' | translate }}<app-required-indicator /></span>
           <div class="text-end grey-text d-flex align-items-center">
             <input
               formControlName="admin"

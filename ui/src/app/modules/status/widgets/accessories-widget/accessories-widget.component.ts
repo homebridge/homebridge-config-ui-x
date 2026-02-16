@@ -1,4 +1,4 @@
-import { Component, DestroyRef, inject, input, OnDestroy, OnInit, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, input, OnDestroy, OnInit, signal } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { TranslatePipe } from '@ngx-translate/core'
 import { DragulaModule, DragulaService } from 'ng2-dragula'
@@ -10,13 +10,15 @@ import { MobileDetectService } from '@/app/core/utilities/mobile-detect.service'
 import { Widget } from '@/app/modules/status/widgets/widgets.interfaces'
 
 @Component({
-  templateUrl: './accessories-widget.component.html',
-  standalone: true,
+  selector: 'app-accessories-widget',
   imports: [
     DragulaModule,
     AccessoryTileComponent,
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './accessories-widget.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AccessoriesWidgetComponent implements OnInit, OnDestroy {
   // Injected dependencies
@@ -26,10 +28,10 @@ export class AccessoriesWidgetComponent implements OnInit, OnDestroy {
   private $md = inject(MobileDetectService)
 
   // Signals
-  widget = input.required<Widget>()
-  public dashboardAccessories = signal<ServiceTypeX[]>([])
-  public loaded = signal<boolean>(false)
-  public isMobile = signal(false)
+  readonly widget = input.required<Widget>()
+  public readonly dashboardAccessories = signal<ServiceTypeX[]>([])
+  public readonly loaded = signal<boolean>(false)
+  public readonly isMobile = signal(false)
 
   constructor() {
     const $dragula = this.$dragula

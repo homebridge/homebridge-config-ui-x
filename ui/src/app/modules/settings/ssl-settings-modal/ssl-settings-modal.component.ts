@@ -1,6 +1,6 @@
 import type { SslKeyCertResponse, SslPfxResponse } from '@/app/modules/settings/settings.interfaces'
 
-import { Component, computed, DestroyRef, ElementRef, inject, OnInit, signal, viewChild } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, DestroyRef, ElementRef, inject, OnInit, signal, viewChild } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { FormControl, ReactiveFormsModule } from '@angular/forms'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal'
@@ -11,9 +11,11 @@ import { ApiService } from '@/app/core/communication/api.service'
 import { SettingsService } from '@/app/core/ui/settings.service'
 
 @Component({
-  templateUrl: './ssl-settings-modal.component.html',
-  standalone: true,
+  selector: 'app-ssl-settings-modal',
   imports: [TranslatePipe, ReactiveFormsModule],
+  standalone: true,
+  templateUrl: './ssl-settings-modal.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SslSettingsModalComponent implements OnInit {
   // Injected dependencies
@@ -30,9 +32,9 @@ export class SslSettingsModalComponent implements OnInit {
   readonly pfxInput = viewChild<ElementRef<HTMLInputElement>>('pfxInput')
 
   // Signals
-  public selectedMode = signal<'off' | 'selfsigned' | 'keycert' | 'pfx'>('off')
-  public isSaving = signal(false)
-  public isUnchanged = signal(true)
+  public readonly selectedMode = signal<'off' | 'selfsigned' | 'keycert' | 'pfx'>('off')
+  public readonly isSaving = signal(false)
+  public readonly isUnchanged = signal(true)
 
   // Form controls
   public sslModeControl = new FormControl<'off' | 'selfsigned' | 'keycert' | 'pfx'>('off', { nonNullable: true })
@@ -43,7 +45,7 @@ export class SslSettingsModalComponent implements OnInit {
   public passphraseControl = new FormControl<string>('', { nonNullable: true })
 
   // Computed validation
-  public isFormInvalid = computed(() => {
+  public readonly isFormInvalid = computed(() => {
     const mode = this.selectedMode()
 
     switch (mode) {

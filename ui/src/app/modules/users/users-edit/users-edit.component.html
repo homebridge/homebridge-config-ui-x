@@ -1,5 +1,5 @@
 <div class="modal-content">
-  <form novalidate (ngSubmit)="onSubmit(form)" [formGroup]="form">
+  <form novalidate [formGroup]="form" (ngSubmit)="onSubmit(form)">
     <div class="modal-header">
       <h5 class="modal-title">{{ 'users.title_edit_user' | translate }}</h5>
       <button
@@ -11,10 +11,15 @@
       ></button>
     </div>
     <div class="modal-body">
-      <div class="text-center mb-3">
-        <i class="fas fa-user-pen primary-text" style="font-size: 75px"></i>
+      <div class="text-center mb-4">
+        <i class="fas fa-user-pen primary-text icon-xl"></i>
       </div>
-      <ul class="list-group list-group-box mb-0" [style.opacity]="deleteMode() ? '0.25' : '1'">
+      <ul
+        class="list-group list-group-box"
+        [class.opacity-muted]="deleteMode()"
+        [class.mb-0]="!deleteMode()"
+        [class.mb-4]="deleteMode()"
+      >
         <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
           <label for="form-username" class="mb-2 mb-md-0 w-100 w-md-50">
             {{ 'users.label_username' | translate }}<app-required-indicator />
@@ -50,7 +55,10 @@
         </li>
         <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
           <label for="form-pass" class="mb-2 mb-md-0 w-100 w-md-50">
-            {{ 'users.label_new_password' | translate }}@if (form.controls.password.value) {<app-required-indicator />}
+            {{ 'users.label_new_password' | translate }}
+            @if (form.controls.password.value) {
+              <app-required-indicator />
+            }
           </label>
           <div class="text-start text-md-end w-100 w-md-50">
             <input
@@ -65,25 +73,25 @@
           </div>
         </li>
         @if (form.controls.password.value) {
-        <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
-          <label for="form-pass-confirm" class="mb-2 mb-md-0 w-100 w-md-50">
-            {{ 'users.label_confirm_password' | translate }}<app-required-indicator />
-          </label>
-          <div class="text-start text-md-end w-100 w-md-50">
-            <input
-              formControlName="passwordConfirm"
-              type="password"
-              autocomplete="new-password"
-              id="form-pass-confirm"
-              class="form-control custom-input"
-              [class.is-invalid]="form.controls.passwordConfirm.touched && form.controls.passwordConfirm.invalid"
-              [attr.aria-label]="'users.label_confirm_password' | translate"
-            />
-          </div>
-        </li>
+          <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
+            <label for="form-pass-confirm" class="mb-2 mb-md-0 w-100 w-md-50">
+              {{ 'users.label_confirm_password' | translate }}<app-required-indicator />
+            </label>
+            <div class="text-start text-md-end w-100 w-md-50">
+              <input
+                formControlName="passwordConfirm"
+                type="password"
+                autocomplete="new-password"
+                id="form-pass-confirm"
+                class="form-control custom-input"
+                [class.is-invalid]="form.controls.passwordConfirm.touched && form.controls.passwordConfirm.invalid"
+                [attr.aria-label]="'users.label_confirm_password' | translate"
+              />
+            </div>
+          </li>
         }
         <li class="list-group-item d-flex justify-content-between align-items-center flex-row pb-2">
-          <span class="text-start"> {{ 'users.label_admin_user' | translate }}<app-required-indicator /> </span>
+          <span class="text-start">{{ 'users.label_admin_user' | translate }}<app-required-indicator /></span>
           <div class="text-end grey-text d-flex align-items-center">
             <input
               type="checkbox"
@@ -97,9 +105,9 @@
         </li>
       </ul>
       @if (deleteMode()) {
-      <div class="alert alert-warning mt-3 mb-0">
-        <div class="text-center">{{ 'common.phrases.are_you_sure' | translate }}</div>
-      </div>
+        <div class="alert alert-warning mb-0">
+          <div class="text-center">{{ 'common.phrases.are_you_sure' | translate }}</div>
+        </div>
       }
     </div>
     <div class="modal-footer justify-content-between">
@@ -113,16 +121,15 @@
         <button
           type="button"
           class="btn btn-elegant me-2"
-          (click)="toggleDeleteMode($event)"
           [disabled]="!canDelete()"
           [attr.aria-label]="'users.button_delete_user' | translate"
+          (click)="toggleDeleteMode($event)"
         >
           <i [class]="deleteMode() ? 'fas fa-undo' : 'fas fa-trash'"></i>
         </button>
         <button
           type="submit"
-          class="btn"
-          [class]="deleteMode() ? 'btn-danger' : 'btn-primary'"
+          [class]="`btn ${deleteMode() ? 'btn-danger' : 'btn-primary'}`"
           [disabled]="!deleteMode() && (!form.valid || isFormUnchanged())"
         >
           {{ (deleteMode() ? 'form.button_delete' : 'form.button_save') | translate }}

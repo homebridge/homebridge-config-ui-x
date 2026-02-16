@@ -6,100 +6,103 @@
       class="btn-close"
       data-bs-dismiss="modal"
       [attr.aria-label]="'form.button_close' | translate"
-      (click)="dismissModal()"
       [disabled]="clicked()"
+      (click)="dismissModal()"
     ></button>
   </div>
   <div class="modal-body">
     @if (pairings().length === 0) {
-    <div class="text-center mb-3">
-      <i class="fas fa-circle-check primary-text" style="font-size: 75px"></i>
-    </div>
-    <p class="mb-0 text-center">{{ 'reset.bridge_accessories.empty' | translate }}</p>
-    } @if (pairings().length > 0) {
-    <div class="text-center mb-3">
-      <i class="fas fa-broom primary-text" style="font-size: 75px"></i>
-    </div>
-    <ul class="mb-3">
-      <li>{{ 'reset.bridge_accessories.list_1' | translate }}</li>
-      <li>{{ 'reset.clear_cache_single.list_3' | translate }}</li>
-      <li>{{ 'reset.bridge_accessories.list_2' | translate }}</li>
-    </ul>
-    <ul class="list-group list-group-box">
-      @for (item of pairings(); track item) {
-      <li class="list-group-item d-flex justify-content-between align-items-center">
-        <span class="me-3">
-          <i
-            class="fas fa-lg"
-            [class]="{
-              'fa-matter': item._protocol === 'matter',
-              'fa-hap': item._protocol !== 'matter'
-            }"
-          ></i>
-        </span>
-        <span class="flex-grow-1">
-          {{ item.name }}
-          <br />
-          <small class="grey-text">
-            <span class="font-monospace">{{ item._username }}</span>
-          </small>
-        </span>
-        <button
-          class="btn btn-danger m-0 ms-3"
-          (click)="toggleList(item._id, item._protocol)"
-          [disabled]="clicked()"
-          [class]="{ 'btn-danger': !isInList(item._id, item._protocol), 'btn-elegant': isInList(item._id, item._protocol) }"
-          [attr.aria-label]="'form.button_delete' | translate"
-        >
-          <i
-            class="fas"
-            [class]="{
-              'fa-broom': !isInList(item._id, item._protocol),
-              'fa-undo': isInList(item._id, item._protocol) && !clicked(),
-              'fa-circle-notch': isInList(item._id, item._protocol) && clicked(),
-              'fa-spin': isInList(item._id, item._protocol) && clicked()
-            }"
-          ></i>
-        </button>
-      </li>
-      }
-    </ul>
+      <div class="text-center mb-3">
+        <i class="fas fa-circle-check primary-text icon-xl"></i>
+      </div>
+      <p class="mb-0 text-center">{{ 'reset.bridge_accessories.empty' | translate }}</p>
+    } @else {
+      <div class="text-center mb-3">
+        <i class="fas fa-broom primary-text icon-xl"></i>
+      </div>
+      <ul class="mb-3">
+        <li>{{ 'reset.bridge_accessories.list_1' | translate }}</li>
+        <li>{{ 'reset.clear_cache_single.list_3' | translate }}</li>
+        <li>{{ 'reset.bridge_accessories.list_2' | translate }}</li>
+      </ul>
+      <ul class="list-group list-group-box">
+        @for (item of pairings(); track item) {
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <span class="me-3">
+              <i
+                class="fas fa-lg"
+                [class.fa-matter]="item._protocol === 'matter'"
+                [class.fa-hap]="item._protocol !== 'matter'"
+              ></i>
+            </span>
+            <span class="flex-grow-1">
+              {{ item.name }}
+              <br />
+              <small class="grey-text">
+                <span class="font-monospace">{{ item._username }}</span>
+              </small>
+            </span>
+            <button
+              type="button"
+              class="btn m-0 ms-3"
+              [disabled]="clicked()"
+              [class.btn-danger]="!isInList(item._id, item._protocol)"
+              [class.btn-elegant]="isInList(item._id, item._protocol)"
+              [attr.aria-label]="'form.button_delete' | translate"
+              (click)="toggleList(item._id, item._protocol)"
+            >
+              <i
+                class="fas"
+                [class.fa-broom]="!isInList(item._id, item._protocol)"
+                [class.fa-undo]="isInList(item._id, item._protocol) && !clicked()"
+                [class.fa-circle-notch]="isInList(item._id, item._protocol) && clicked()"
+                [class.fa-spin]="isInList(item._id, item._protocol) && clicked()"
+              ></i>
+            </button>
+          </li>
+        }
+      </ul>
     }
   </div>
   <div class="modal-footer justify-content-between">
     <div class="text-start">
       @if (pairings().length > 0) {
-      <button
-        type="button"
-        class="btn btn-elegant"
-        data-bs-dismiss="modal"
-        (click)="dismissModal()"
-        [disabled]="clicked()"
-      >
-        {{ 'form.button_close' | translate }}
-      </button>
+        <button
+          type="button"
+          class="btn btn-elegant"
+          data-bs-dismiss="modal"
+          [disabled]="clicked()"
+          (click)="dismissModal()"
+        >
+          {{ 'form.button_close' | translate }}
+        </button>
       }
     </div>
     <div class="text-center">
       @if (pairings().length === 0) {
-      <button type="button" class="btn btn-elegant" data-bs-dismiss="modal" (click)="dismissModal()">
-        {{ 'form.button_close' | translate }}
-      </button>
+        <button type="button" class="btn btn-elegant" data-bs-dismiss="modal" (click)="dismissModal()">
+          {{ 'form.button_close' | translate }}
+        </button>
       }
     </div>
     <div class="text-end">
       @if (pairings().length > 0) {
-      <button
-        type="button"
-        class="btn btn-danger"
-        data-bs-dismiss="modal"
-        [disabled]="!toDelete().length || clicked()"
-        (click)="cleanBridges()"
-      >
-        @if (clicked()) {
-        <i class="fas fa-circle-notch fa-spin"></i>
-        } @else { {{ 'form.button_remove' | translate }} @if (toDelete().length > 0) { ({{ toDelete().length }}) } }
-      </button>
+        <button
+          type="button"
+          class="btn btn-danger"
+          data-bs-dismiss="modal"
+          [disabled]="!toDelete().length || clicked()"
+          (click)="cleanBridges()"
+        >
+          @if (clicked()) {
+            <i class="fas fa-circle-notch fa-spin"></i>
+          } @else {
+            {{ 'form.button_remove' | translate }}
+            @if (toDelete().length > 0) {
+              ({{ toDelete().length }})
+            }
+          }
+        </button>
       }
     </div>
   </div>

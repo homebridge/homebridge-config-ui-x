@@ -5,9 +5,10 @@ import { TranslatePipe } from '@ngx-translate/core'
 import { BaseManageComponent } from '@/app/core/accessories/types/base-manage.component'
 
 @Component({
-  templateUrl: './security-system.manage.component.html',
-  standalone: true,
+  selector: 'app-security-system-manage',
   imports: [FormsModule, TranslatePipe],
+  standalone: true,
+  templateUrl: './security-system.manage.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SecuritySystemManageComponent extends BaseManageComponent {

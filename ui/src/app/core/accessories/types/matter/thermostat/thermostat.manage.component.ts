@@ -25,8 +25,7 @@ import { ConvertTempPipe } from '@/app/core/pipes/convert-temp.pipe'
 import { SettingsService } from '@/app/core/ui/settings.service'
 
 @Component({
-  templateUrl: './thermostat.manage.component.html',
-  standalone: true,
+  selector: 'app-thermostat-manage',
   imports: [
     FormsModule,
     NouisliderComponent,
@@ -35,6 +34,8 @@ import { SettingsService } from '@/app/core/ui/settings.service'
     ConvertTempPipe,
     UpperCasePipe,
   ],
+  standalone: true,
+  templateUrl: './thermostat.manage.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatterThermostatManageComponent implements OnInit {
@@ -187,6 +188,22 @@ export class MatterThermostatManageComponent implements OnInit {
 
     // Apply gradient when mode changes externally
     this.applySliderGradient('linear-gradient(to right, rgb(80, 80, 179), rgb(173, 216, 230), rgb(255, 185, 120), rgb(139, 90, 60))')
+  }
+
+  public getStatusClass(): string {
+    if (this.targetMode === 3) {
+      return 'status-color-cooling'
+    }
+
+    if (this.targetMode === 4) {
+      return 'status-color-heating'
+    }
+
+    if (this.targetMode === 1) {
+      return 'status-color-active'
+    }
+
+    return 'status-color-inactive'
   }
 
   public async setTargetMode(value: number, event: MouseEvent) {

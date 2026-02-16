@@ -1,5 +1,5 @@
 import { TitleCasePipe } from '@angular/common'
-import { Component, DestroyRef, inject, input, OnInit, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, input, OnInit, signal } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { TranslatePipe } from '@ngx-translate/core'
 
@@ -7,13 +7,15 @@ import { IoNamespace, WsService } from '@/app/core/communication/ws.service'
 import { NodeJsInfo, ServerInfo, Widget } from '@/app/modules/status/widgets/widgets.interfaces'
 
 @Component({
-  templateUrl: './system-info-widget.component.html',
-  styleUrls: ['./system-info-widget.component.scss'],
-  standalone: true,
+  selector: 'app-system-info-widget',
   imports: [
     TitleCasePipe,
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './system-info-widget.component.html',
+  styleUrl: './system-info-widget.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SystemInfoWidgetComponent implements OnInit {
   // Injected dependencies
@@ -21,9 +23,9 @@ export class SystemInfoWidgetComponent implements OnInit {
   private $ws = inject(WsService)
 
   // Signals
-  widget = input.required<Widget>()
-  public serverInfo = signal<ServerInfo>({ network: {}, os: {}, time: {} } as ServerInfo)
-  public nodejsInfo = signal<NodeJsInfo>({} as NodeJsInfo)
+  readonly widget = input.required<Widget>()
+  public readonly serverInfo = signal<ServerInfo>({ network: {}, os: {}, time: {} } as ServerInfo)
+  public readonly nodejsInfo = signal<NodeJsInfo>({} as NodeJsInfo)
 
   // Other properties
   private io: IoNamespace

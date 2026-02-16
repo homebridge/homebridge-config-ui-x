@@ -21,29 +21,33 @@
         <label for="form-name" class="mb-2 mb-md-0 w-100 w-md-50">{{ 'accessories.custom_name' | translate }}</label>
         <div class="text-start text-md-end w-100 w-md-50">
           <input
-            [ngModel]="localService.customName || localService.serviceName"
-            (ngModelChange)="localService.customName = $event"
             type="text"
             id="form-name"
             autocomplete="off"
             class="form-control custom-input"
+            [ngModel]="localService.customName || localService.serviceName"
+            (ngModelChange)="localService.customName = $event"
           />
         </div>
       </li>
       @if (customTypeList.length) {
-      <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
-        <label for="custom-type" class="mb-2 mb-md-0 w-100 w-md-50">{{ 'accessories.custom_type' | translate }}</label>
-        <div class="text-start text-md-end w-100 w-md-50">
-          <select id="custom-type" class="custom-select" [(ngModel)]="localService.customType">
-            @for (customType of customTypeList.sort(); track customType) {
-            <option [value]="customType">
-              {{ (customType | serviceToTranslationString) | translate }} @if (isDefaultType(customType)) { ({{
-              'settings.display.menu_default' | translate }}) }
-            </option>
-            }
-          </select>
-        </div>
-      </li>
+        <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
+          <label for="custom-type" class="mb-2 mb-md-0 w-100 w-md-50">{{
+            'accessories.custom_type' | translate
+          }}</label>
+          <div class="text-start text-md-end w-100 w-md-50">
+            <select id="custom-type" class="custom-select" [(ngModel)]="localService.customType">
+              @for (customType of customTypeList.sort(); track customType) {
+                <option [value]="customType">
+                  {{ customType | serviceToTranslationString | translate }}
+                  @if (isDefaultType(customType)) {
+                    ({{ 'settings.display.menu_default' | translate }})
+                  }
+                </option>
+              }
+            </select>
+          </div>
+        </li>
       }
       <li class="list-group-item d-flex justify-content-between align-items-center flex-row pb-2">
         <span class="text-start" aria-hidden="true">{{ 'accessories.hide_this_accessory' | translate }}</span>
@@ -51,179 +55,289 @@
           <input
             type="checkbox"
             class="rendux-input"
-            [(ngModel)]="localService.hidden"
-            (ngModelChange)="onHiddenChange()"
             id="hide-accessory"
             [attr.aria-label]="'accessories.hide_this_accessory' | translate"
+            [(ngModel)]="localService.hidden"
+            (ngModelChange)="onHiddenChange()"
           />
           <label for="hide-accessory" class="rendux-label ms-3" aria-hidden="true"></label>
         </div>
       </li>
       @if (!localService.hidden) {
-      <li class="list-group-item d-flex justify-content-between align-items-center flex-row pb-2">
-        <span class="text-start" aria-hidden="true">{{ 'accessories.show_on_dashboard' | translate }}</span>
-        <div class="text-end grey-text d-flex align-items-center">
-          <input
-            type="checkbox"
-            class="rendux-input mb-0"
-            [(ngModel)]="localService.onDashboard"
-            (ngModelChange)="onDashboardChange()"
-            id="show-on-dashboard"
-            [attr.aria-label]="'accessories.show_on_dashboard' | translate"
-          />
-          <label for="show-on-dashboard" class="rendux-label ms-3" aria-hidden="true"></label>
-        </div>
-      </li>
+        <li class="list-group-item d-flex justify-content-between align-items-center flex-row pb-2">
+          <span class="text-start" aria-hidden="true">{{ 'accessories.show_on_dashboard' | translate }}</span>
+          <div class="text-end grey-text d-flex align-items-center">
+            <input
+              type="checkbox"
+              class="rendux-input mb-0"
+              id="show-on-dashboard"
+              [attr.aria-label]="'accessories.show_on_dashboard' | translate"
+              [(ngModel)]="localService.onDashboard"
+              (ngModelChange)="onDashboardChange()"
+            />
+            <label for="show-on-dashboard" class="rendux-label ms-3" aria-hidden="true"></label>
+          </div>
+        </li>
       }
     </ul>
     <ul class="list-group list-group-box mb-3">
       @if (isMatterAccessory) {
-      <li class="list-group-item">
-        <h6 class="mb-0 text-center">{{ 'accessories.service_info' | translate }}</h6>
-      </li>
-      @for (cluster of clusterInfo; track cluster.name) {
-      <li class="list-group-item">
-        <span class="fw-bold">{{ cluster.name | prettify }}</span>
-      </li>
-      @for (attr of cluster.attributes | keyvalue; track attr.key) {
-      <li
-        class="list-group-item d-flex justify-content-between align-items-start align-items-md-center flex-column flex-md-row"
-      >
-        <span class="text-start me-2">{{ attr.key | prettify }}</span>
-        <span class="text-start text-md-end grey-text font-monospace">
-          @if (typeof attr.value === 'object') {<small>{{ JSON.stringify(attr.value, null, 2) }}</small> } @else { {{
-          attr.value }} }
-        </span>
-      </li>
-      } } } @else {
-      <li class="list-group-item">
-        <h6 class="mb-0 text-center">{{ 'accessories.service_info' | translate }}</h6>
-      </li>
-      <li class="list-group-item d-flex justify-content-between align-items-left flex-column flex-md-row">
-        <span class="text-start">{{ 'accessories.service' | translate }}</span>
-        <span class="text-start text-md-end grey-text font-monospace">{{ localService.humanType }}</span>
-      </li>
-      <li class="list-group-item d-flex justify-content-between align-items-left flex-column flex-md-row">
-        <span class="text-start">{{ 'accessories.name' | translate }}</span>
-        <span class="text-start text-md-end grey-text font-monospace">{{ localService.serviceName }}</span>
-      </li>
-      @for (characteristic of localService.serviceCharacteristics; track characteristic) {
-      <li class="list-group-item d-flex justify-content-between align-items-left flex-column flex-md-row">
-        <span class="me-3">
-          @if ('minStep' in characteristic || 'minValue' in characteristic || 'maxValue' in characteristic ||
-          'validValues' in characteristic) {
-          <span
-            class="hover-pointer"
-            style="white-space: nowrap"
-            (click)="toggleDetailsVisibility(characteristic)"
-            [attr.aria-expanded]="isDetailsVisible[characteristic.uuid]"
-            >{{ characteristic.description }}</span
-          >
-          } @else { <span style="white-space: nowrap">{{ characteristic.description }}</span> } @if
-          (isDetailsVisible[characteristic.uuid]) {
-          <div class="grey-text m-0 p-0 font-monospace">
-            @if ('minStep' in characteristic) {
-            <div>Step: {{ characteristic.minStep }}</div>
-            } @if ('minValue' in characteristic) {
-            <div>Min: {{ characteristic.minValue }}</div>
-            } @if ('maxValue' in characteristic) {
-            <div>Max: {{ characteristic.maxValue }}</div>
-            } @if ('validValues' in characteristic) {
-            <div>
-              Valid: @for (value of characteristic.validValues; track value; let last = $last) { {{ value }} @if (!last)
-              { &middot; } }
-            </div>
-            }
-          </div>
+        <li class="list-group-item">
+          <h6 class="mb-0 text-center">{{ 'accessories.service_info' | translate }}</h6>
+        </li>
+        @for (cluster of clusterInfo; track cluster.name) {
+          <li class="list-group-item">
+            <span class="fw-bold">{{ cluster.name | prettify }}</span>
+          </li>
+          @for (attr of cluster.attributes | keyvalue; track attr.key) {
+            <li
+              class="list-group-item d-flex justify-content-between align-items-start align-items-md-center flex-column flex-md-row"
+            >
+              <span class="text-start me-2">{{ attr.key | prettify }}</span>
+              <span class="text-start text-md-end grey-text font-monospace">
+                @if (typeof attr.value === 'object') {
+                  <small>{{ JSON.stringify(attr.value, null, 2) }}</small>
+                } @else {
+                  {{ attr.value }}
+                }
+              </span>
+            </li>
           }
-          <div class="d-block d-md-none font-monospace grey-text" style="word-break: break-all">
-            @if (isDetailsVisible[characteristic.uuid]) { Value: } @switch (characteristic.unit) { @case ('percentage')
-            { {{ characteristic.value }}% } @case ('celsius') { {{ Number(characteristic.value) | convertTemp }}&deg; }
-            @default { @switch (characteristic.type) { @case ('ColorTemperature') { {{ characteristic.value |
-            convertMired }} } @default { {{ characteristic.value }} } } } } @if
-            (enums[characteristic.type]?.[characteristic.value]) { ({{ enums[characteristic.type][characteristic.value]
-            | prettify }}) } @else if (characteristic.format === 'bool') { ({{ (characteristic.value ?
-            'status.widget.info.yes' : 'status.widget.info.no') | translate }}) }
-          </div>
-        </span>
-        <span
-          class="text-start text-md-end grey-text font-monospace d-none d-md-block align-content-center"
-          style="word-break: break-all"
-        >
-          @switch (characteristic.unit) { @case ('percentage') { {{ characteristic.value }}% } @case ('celsius') { {{
-          Number(characteristic.value) | convertTemp }}&deg; } @default { @switch (characteristic.type) { @case
-          ('ColorTemperature') { {{ characteristic.value | convertMired }} } @default { {{ characteristic.value }} } } }
-          } @if (enums[characteristic.type]?.[characteristic.value]) { ({{
-          enums[characteristic.type][characteristic.value] | prettify }}) } @else if (characteristic.format === 'bool')
-          { ({{ (characteristic.value ? 'status.widget.info.yes' : 'status.widget.info.no') | translate }}) }
-        </span>
-      </li>
-      } }
-    </ul>
-    @for (extraService of extraServices; track extraService) {
-    <ul class="list-group list-group-box mb-3">
-      <li class="list-group-item">
-        <h6 class="mb-0 text-center">{{ 'accessories.service_info' | translate }}</h6>
-      </li>
-      <li class="list-group-item d-flex justify-content-between align-items-left flex-column flex-md-row">
-        <span class="text-start">{{ 'accessories.service' | translate }}</span>
-        <span class="text-start text-md-end grey-text font-monospace">{{ extraService.humanType }}</span>
-      </li>
-      <li class="list-group-item d-flex justify-content-between align-items-left flex-column flex-md-row">
-        <span class="text-start">{{ 'accessories.name' | translate }}</span>
-        <span class="text-start text-md-end grey-text font-monospace">{{ extraService.serviceName }}</span>
-      </li>
-      @for (characteristic of extraService.serviceCharacteristics; track characteristic) {
-      <li class="list-group-item d-flex justify-content-between align-items-left flex-column flex-md-row">
-        <span>
-          @if ('minStep' in characteristic || 'minValue' in characteristic || 'maxValue' in characteristic ||
-          'validValues' in characteristic) {
-          <span
-            class="hover-pointer"
-            (click)="toggleDetailsVisibility(characteristic)"
-            [attr.aria-expanded]="isDetailsVisible[characteristic.uuid]"
-            >{{ characteristic.description }}</span
-          >
-          } @else { {{ characteristic.description }} } @if (isDetailsVisible[characteristic.uuid]) {
-          <div class="grey-text m-0 p-0 font-monospace">
-            @if ('minStep' in characteristic) {
-            <div>Step: {{ characteristic.minStep }}</div>
-            } @if ('minValue' in characteristic) {
-            <div>Min: {{ characteristic.minValue }}</div>
-            } @if ('maxValue' in characteristic) {
-            <div>Max: {{ characteristic.maxValue }}</div>
-            } @if ('validValues' in characteristic) {
-            <div>
-              Valid: @for (value of characteristic.validValues; track value; let last = $last) { {{ value }} @if (!last)
-              { &middot; } }
-            </div>
-            }
-          </div>
-          }
-          <div class="d-block d-md-none font-monospace grey-text" style="word-break: break-all">
-            @if (isDetailsVisible[characteristic.uuid]) { Value: } @switch (characteristic.unit) { @case ('percentage')
-            { {{ characteristic.value }}% } @case ('celsius') { {{ Number(characteristic.value) | convertTemp }}&deg; }
-            @default { @switch (characteristic.type) { @case ('ColorTemperature') { {{ characteristic.value |
-            convertMired }} } @default { {{ characteristic.value }} } } } } @if
-            (enums[characteristic.type]?.[characteristic.value]) { ({{ enums[characteristic.type][characteristic.value]
-            | prettify }}) } @else if (characteristic.format === 'bool') { ({{ (characteristic.value ?
-            'status.widget.info.yes' : 'status.widget.info.no') | translate }}) }
-          </div>
-        </span>
-        <span
-          class="text-start text-md-end grey-text font-monospace d-none d-md-block align-content-center"
-          style="word-break: break-all"
-        >
-          @switch (characteristic.unit) { @case ('percentage') { {{ characteristic.value }}% } @case ('celsius') { {{
-          Number(characteristic.value) | convertTemp }}&deg; } @default { @switch (characteristic.type) { @case
-          ('ColorTemperature') { {{ characteristic.value | convertMired }} } @default { {{ characteristic.value }} } } }
-          } @if (enums[characteristic.type]?.[characteristic.value]) { ({{
-          enums[characteristic.type][characteristic.value] | prettify }}) } @else if (characteristic.format === 'bool')
-          { ({{ (characteristic.value ? 'status.widget.info.yes' : 'status.widget.info.no') | translate }}) }
-        </span>
-      </li>
+        }
+      } @else {
+        <li class="list-group-item">
+          <h6 class="mb-0 text-center">{{ 'accessories.service_info' | translate }}</h6>
+        </li>
+        <li class="list-group-item d-flex justify-content-between align-items-left flex-column flex-md-row">
+          <span class="text-start">{{ 'accessories.service' | translate }}</span>
+          <span class="text-start text-md-end grey-text font-monospace">{{ localService.humanType }}</span>
+        </li>
+        <li class="list-group-item d-flex justify-content-between align-items-left flex-column flex-md-row">
+          <span class="text-start">{{ 'accessories.name' | translate }}</span>
+          <span class="text-start text-md-end grey-text font-monospace">{{ localService.serviceName }}</span>
+        </li>
+        @for (characteristic of localService.serviceCharacteristics; track characteristic) {
+          <li class="list-group-item d-flex justify-content-between align-items-left flex-column flex-md-row">
+            <span class="me-3">
+              @if (
+                'minStep' in characteristic ||
+                'minValue' in characteristic ||
+                'maxValue' in characteristic ||
+                'validValues' in characteristic
+              ) {
+                <span
+                  class="hover-pointer text-nowrap"
+                  role="button"
+                  tabindex="0"
+                  [attr.aria-expanded]="isDetailsVisible[characteristic.uuid]"
+                  (click)="toggleDetailsVisibility(characteristic)"
+                  (keydown.enter)="toggleDetailsVisibility(characteristic)"
+                  >{{ characteristic.description }}</span
+                >
+              } @else {
+                <span class="text-nowrap">{{ characteristic.description }}</span>
+              }
+              @if (isDetailsVisible[characteristic.uuid]) {
+                <div class="grey-text m-0 p-0 font-monospace">
+                  @if ('minStep' in characteristic) {
+                    <div>Step: {{ characteristic.minStep }}</div>
+                  }
+                  @if ('minValue' in characteristic) {
+                    <div>Min: {{ characteristic.minValue }}</div>
+                  }
+                  @if ('maxValue' in characteristic) {
+                    <div>Max: {{ characteristic.maxValue }}</div>
+                  }
+                  @if ('validValues' in characteristic) {
+                    <div>
+                      Valid:
+                      @for (value of characteristic.validValues; track value; let last = $last) {
+                        {{ value }}
+                        @if (!last) {
+                          &middot;
+                        }
+                      }
+                    </div>
+                  }
+                </div>
+              }
+              <div class="d-block d-md-none font-monospace grey-text text-break-all">
+                @if (isDetailsVisible[characteristic.uuid]) {
+                  Value:
+                }
+                @switch (characteristic.unit) {
+                  @case ('percentage') {
+                    {{ characteristic.value }}%
+                  }
+                  @case ('celsius') {
+                    {{ Number(characteristic.value) | convertTemp }}&deg;
+                  }
+                  @default {
+                    @switch (characteristic.type) {
+                      @case ('ColorTemperature') {
+                        {{ characteristic.value | convertMired }}
+                      }
+                      @default {
+                        {{ characteristic.value }}
+                      }
+                    }
+                  }
+                }
+                @if (enums[characteristic.type]?.[characteristic.value]) {
+                  ({{ enums[characteristic.type][characteristic.value] | prettify }})
+                } @else if (characteristic.format === 'bool') {
+                  ({{ (characteristic.value ? 'status.widget.info.yes' : 'status.widget.info.no') | translate }})
+                }
+              </div>
+            </span>
+            <span
+              class="text-start text-md-end grey-text font-monospace d-none d-md-block align-content-center text-break-all"
+            >
+              @switch (characteristic.unit) {
+                @case ('percentage') {
+                  {{ characteristic.value }}%
+                }
+                @case ('celsius') {
+                  {{ Number(characteristic.value) | convertTemp }}&deg;
+                }
+                @default {
+                  @switch (characteristic.type) {
+                    @case ('ColorTemperature') {
+                      {{ characteristic.value | convertMired }}
+                    }
+                    @default {
+                      {{ characteristic.value }}
+                    }
+                  }
+                }
+              }
+              @if (enums[characteristic.type]?.[characteristic.value]) {
+                ({{ enums[characteristic.type][characteristic.value] | prettify }})
+              } @else if (characteristic.format === 'bool') {
+                ({{ (characteristic.value ? 'status.widget.info.yes' : 'status.widget.info.no') | translate }})
+              }
+            </span>
+          </li>
+        }
       }
     </ul>
+    @for (extraService of extraServices; track extraService) {
+      <ul class="list-group list-group-box mb-3">
+        <li class="list-group-item">
+          <h6 class="mb-0 text-center">{{ 'accessories.service_info' | translate }}</h6>
+        </li>
+        <li class="list-group-item d-flex justify-content-between align-items-left flex-column flex-md-row">
+          <span class="text-start">{{ 'accessories.service' | translate }}</span>
+          <span class="text-start text-md-end grey-text font-monospace">{{ extraService.humanType }}</span>
+        </li>
+        <li class="list-group-item d-flex justify-content-between align-items-left flex-column flex-md-row">
+          <span class="text-start">{{ 'accessories.name' | translate }}</span>
+          <span class="text-start text-md-end grey-text font-monospace">{{ extraService.serviceName }}</span>
+        </li>
+        @for (characteristic of extraService.serviceCharacteristics; track characteristic) {
+          <li class="list-group-item d-flex justify-content-between align-items-left flex-column flex-md-row">
+            <span>
+              @if (
+                'minStep' in characteristic ||
+                'minValue' in characteristic ||
+                'maxValue' in characteristic ||
+                'validValues' in characteristic
+              ) {
+                <span
+                  class="hover-pointer"
+                  role="button"
+                  tabindex="0"
+                  [attr.aria-expanded]="isDetailsVisible[characteristic.uuid]"
+                  (click)="toggleDetailsVisibility(characteristic)"
+                  (keydown.enter)="toggleDetailsVisibility(characteristic)"
+                  >{{ characteristic.description }}</span
+                >
+              } @else {
+                {{ characteristic.description }}
+              }
+              @if (isDetailsVisible[characteristic.uuid]) {
+                <div class="grey-text m-0 p-0 font-monospace">
+                  @if ('minStep' in characteristic) {
+                    <div>Step: {{ characteristic.minStep }}</div>
+                  }
+                  @if ('minValue' in characteristic) {
+                    <div>Min: {{ characteristic.minValue }}</div>
+                  }
+                  @if ('maxValue' in characteristic) {
+                    <div>Max: {{ characteristic.maxValue }}</div>
+                  }
+                  @if ('validValues' in characteristic) {
+                    <div>
+                      Valid:
+                      @for (value of characteristic.validValues; track value; let last = $last) {
+                        {{ value }}
+                        @if (!last) {
+                          &middot;
+                        }
+                      }
+                    </div>
+                  }
+                </div>
+              }
+              <div class="d-block d-md-none font-monospace grey-text text-break-all">
+                @if (isDetailsVisible[characteristic.uuid]) {
+                  Value:
+                }
+                @switch (characteristic.unit) {
+                  @case ('percentage') {
+                    {{ characteristic.value }}%
+                  }
+                  @case ('celsius') {
+                    {{ Number(characteristic.value) | convertTemp }}&deg;
+                  }
+                  @default {
+                    @switch (characteristic.type) {
+                      @case ('ColorTemperature') {
+                        {{ characteristic.value | convertMired }}
+                      }
+                      @default {
+                        {{ characteristic.value }}
+                      }
+                    }
+                  }
+                }
+                @if (enums[characteristic.type]?.[characteristic.value]) {
+                  ({{ enums[characteristic.type][characteristic.value] | prettify }})
+                } @else if (characteristic.format === 'bool') {
+                  ({{ (characteristic.value ? 'status.widget.info.yes' : 'status.widget.info.no') | translate }})
+                }
+              </div>
+            </span>
+            <span
+              class="text-start text-md-end grey-text font-monospace d-none d-md-block align-content-center text-break-all"
+            >
+              @switch (characteristic.unit) {
+                @case ('percentage') {
+                  {{ characteristic.value }}%
+                }
+                @case ('celsius') {
+                  {{ Number(characteristic.value) | convertTemp }}&deg;
+                }
+                @default {
+                  @switch (characteristic.type) {
+                    @case ('ColorTemperature') {
+                      {{ characteristic.value | convertMired }}
+                    }
+                    @default {
+                      {{ characteristic.value }}
+                    }
+                  }
+                }
+              }
+              @if (enums[characteristic.type]?.[characteristic.value]) {
+                ({{ enums[characteristic.type][characteristic.value] | prettify }})
+              } @else if (characteristic.format === 'bool') {
+                ({{ (characteristic.value ? 'status.widget.info.yes' : 'status.widget.info.no') | translate }})
+              }
+            </span>
+          </li>
+        }
+      </ul>
     }
     <ul class="list-group list-group-box mb-0">
       <li class="list-group-item">
@@ -236,99 +350,105 @@
         </span>
       </li>
       @if (matchedCachedAccessory) {
-      <li class="list-group-item d-flex justify-content-between align-items-left flex-column flex-md-row">
-        <span class="text-start">{{ 'accessories.plugin' | translate }}</span>
-        <span class="text-start text-md-end grey-text font-monospace">{{ matchedCachedAccessory.plugin }}</span>
-      </li>
-      @if (matchedCachedAccessory.platform) {
-      <li class="list-group-item d-flex justify-content-between align-items-left flex-column flex-md-row">
-        <span class="text-start">{{ 'child_bridge.config.platform' | translate }}</span>
-        <span class="text-start text-md-end grey-text font-monospace">{{ matchedCachedAccessory.platform }}</span>
-      </li>
-      } @if (matchedCachedAccessory.accessory) {
-      <li class="list-group-item d-flex justify-content-between align-items-left flex-column flex-md-row">
-        <span class="text-start">{{ 'child_bridge.config.accessory' | translate }}</span>
-        <span class="text-start text-md-end grey-text font-monospace">{{ matchedCachedAccessory.accessory }}</span>
-      </li>
-      } } @for (information of accessoryInformation; track information) {
-      <li class="list-group-item d-flex justify-content-between align-items-left flex-column flex-md-row">
-        <span class="text-start">{{ information.key }}</span>
-        <span class="text-start text-md-end grey-text font-monospace">{{ information.value }}</span>
-      </li>
-      } @if (isMatterAccessory) {
-      <li class="list-group-item d-flex justify-content-between align-items-left flex-column flex-md-row">
-        <span class="text-start">Bridge</span>
-        <span class="text-start text-md-end grey-text font-monospace">{{ localService.instance.name }}</span>
-      </li>
+        <li class="list-group-item d-flex justify-content-between align-items-left flex-column flex-md-row">
+          <span class="text-start">{{ 'accessories.plugin' | translate }}</span>
+          <span class="text-start text-md-end grey-text font-monospace">{{ matchedCachedAccessory.plugin }}</span>
+        </li>
+        @if (matchedCachedAccessory.platform) {
+          <li class="list-group-item d-flex justify-content-between align-items-left flex-column flex-md-row">
+            <span class="text-start">{{ 'child_bridge.config.platform' | translate }}</span>
+            <span class="text-start text-md-end grey-text font-monospace">{{ matchedCachedAccessory.platform }}</span>
+          </li>
+        }
+        @if (matchedCachedAccessory.accessory) {
+          <li class="list-group-item d-flex justify-content-between align-items-left flex-column flex-md-row">
+            <span class="text-start">{{ 'child_bridge.config.accessory' | translate }}</span>
+            <span class="text-start text-md-end grey-text font-monospace">{{ matchedCachedAccessory.accessory }}</span>
+          </li>
+        }
+      }
+      @for (information of accessoryInformation; track information) {
+        <li class="list-group-item d-flex justify-content-between align-items-left flex-column flex-md-row">
+          <span class="text-start">{{ information.key }}</span>
+          <span class="text-start text-md-end grey-text font-monospace">{{ information.value }}</span>
+        </li>
+      }
+      @if (isMatterAccessory) {
+        <li class="list-group-item d-flex justify-content-between align-items-left flex-column flex-md-row">
+          <span class="text-start">Bridge</span>
+          <span class="text-start text-md-end grey-text font-monospace">{{ localService.instance.name }}</span>
+        </li>
       }
       <li class="list-group-item d-flex justify-content-between align-items-left flex-column flex-md-row">
         <span class="text-start">{{ 'users.label_username' | translate }}</span>
         <span class="text-start text-md-end grey-text font-monospace">{{ localService.instance.username }}</span>
       </li>
       @if (matchedCachedAccessory) {
-      <li class="list-group-item d-flex justify-content-between align-items-left flex-column flex-md-row">
-        <span class="text-start">{{ 'child_bridge.config.name' | translate }}</span>
-        <span class="text-start text-md-end grey-text font-monospace">{{ matchedCachedAccessory.bridge }}</span>
-      </li>
-      } @if (!isMatterAccessory) {
-      <li class="list-group-item d-flex justify-content-between align-items-left flex-column flex-md-row">
-        <span class="text-start">{{ 'accessories.bridge_ip' | translate }}</span>
-        <span class="text-start text-md-end grey-text font-monospace">{{ localService.instance.ipAddress }}</span>
-      </li>
-      <li class="list-group-item d-flex justify-content-between align-items-left flex-column flex-md-row">
-        <span class="text-start">{{ 'accessories.bridge_port' | translate }}</span>
-        <span class="text-start text-md-end grey-text font-monospace">{{ localService.instance.port }}</span>
-      </li>
-      <li class="list-group-item d-flex justify-content-between align-items-left flex-column flex-md-row">
-        <span class="text-start align-self-md-center" style="white-space: nowrap">HAP UID</span>
-        <span
-          class="text-start text-md-end grey-text font-monospace d-flex justify-content-between align-items-center ms-md-2"
-        >
-          <span style="word-break: break-all">{{ service.uniqueId }}</span>
-          <a href="javascript:void(0)" class="ms-2 text-primary flex-shrink-0" (click)="copyUniqueIdToClipboard()">
-            @if (uniqueIdCopied()) {
-            <i class="fas fa-check green-text"></i>
-            } @else {
-            <i class="fas fa-copy"></i>
-            }
-          </a>
-        </span>
-      </li>
-      <li class="list-group-item d-flex justify-content-between align-items-left flex-column flex-md-row">
-        <span class="text-start font-monospace">aid</span>
-        <span class="text-start text-md-end grey-text font-monospace">{{ localService.aid }}</span>
-      </li>
-      <li class="list-group-item d-flex justify-content-between align-items-left flex-column flex-md-row">
-        <span class="text-start font-monospace">iid</span>
-        <span class="text-start text-md-end grey-text font-monospace">{{ localService.iid }}</span>
-      </li>
-      } @if (matchedCachedAccessory) {
-      <li class="list-group-item d-flex justify-content-between align-items-left flex-column flex-md-row">
-        <span class="text-start align-self-md-center font-monospace" style="white-space: nowrap">UUID</span>
-        <span
-          class="text-start text-md-end grey-text font-monospace d-flex justify-content-between align-items-center ms-md-2"
-        >
-          <span style="word-break: break-all">{{ matchedCachedAccessory.UUID }}</span>
-          <a href="javascript:void(0)" class="ms-2 text-primary flex-shrink-0" (click)="copyUUIDToClipboard()">
-            @if (uuidCopied()) {
-            <i class="fas fa-check green-text"></i>
-            } @else {
-            <i class="fas fa-copy"></i>
-            }
-          </a>
-        </span>
-      </li>
-      <li class="list-group-item d-flex justify-content-between align-items-center">
-        <span class="text-start" aria-hidden="true">{{ 'accessories.button_remove' | translate }}</span>
-        <button
-          type="button"
-          (click)="removeSingleCachedAccessories()"
-          class="btn btn-primary m-0 ms-3 py-1"
-          [attr.aria-label]="'accessories.button_remove' | translate"
-        >
-          <i class="fas fa-arrow-right" aria-hidden="true"></i>
-        </button>
-      </li>
+        <li class="list-group-item d-flex justify-content-between align-items-left flex-column flex-md-row">
+          <span class="text-start">{{ 'child_bridge.config.name' | translate }}</span>
+          <span class="text-start text-md-end grey-text font-monospace">{{ matchedCachedAccessory.bridge }}</span>
+        </li>
+      }
+      @if (!isMatterAccessory) {
+        <li class="list-group-item d-flex justify-content-between align-items-left flex-column flex-md-row">
+          <span class="text-start">{{ 'accessories.bridge_ip' | translate }}</span>
+          <span class="text-start text-md-end grey-text font-monospace">{{ localService.instance.ipAddress }}</span>
+        </li>
+        <li class="list-group-item d-flex justify-content-between align-items-left flex-column flex-md-row">
+          <span class="text-start">{{ 'accessories.bridge_port' | translate }}</span>
+          <span class="text-start text-md-end grey-text font-monospace">{{ localService.instance.port }}</span>
+        </li>
+        <li class="list-group-item d-flex justify-content-between align-items-left flex-column flex-md-row">
+          <span class="text-start align-self-md-center text-nowrap">HAP UID</span>
+          <span
+            class="text-start text-md-end grey-text font-monospace d-flex justify-content-between align-items-center ms-md-2"
+          >
+            <span class="text-break-all">{{ service.uniqueId }}</span>
+            <a href="javascript:void(0)" class="ms-2 text-primary flex-shrink-0" (click)="copyUniqueIdToClipboard()">
+              @if (uniqueIdCopied()) {
+                <i class="fas fa-check green-text"></i>
+              } @else {
+                <i class="fas fa-copy"></i>
+              }
+            </a>
+          </span>
+        </li>
+        <li class="list-group-item d-flex justify-content-between align-items-left flex-column flex-md-row">
+          <span class="text-start font-monospace">aid</span>
+          <span class="text-start text-md-end grey-text font-monospace">{{ localService.aid }}</span>
+        </li>
+        <li class="list-group-item d-flex justify-content-between align-items-left flex-column flex-md-row">
+          <span class="text-start font-monospace">iid</span>
+          <span class="text-start text-md-end grey-text font-monospace">{{ localService.iid }}</span>
+        </li>
+      }
+      @if (matchedCachedAccessory) {
+        <li class="list-group-item d-flex justify-content-between align-items-left flex-column flex-md-row">
+          <span class="text-start align-self-md-center font-monospace text-nowrap">UUID</span>
+          <span
+            class="text-start text-md-end grey-text font-monospace d-flex justify-content-between align-items-center ms-md-2"
+          >
+            <span class="text-break-all">{{ matchedCachedAccessory.UUID }}</span>
+            <a href="javascript:void(0)" class="ms-2 text-primary flex-shrink-0" (click)="copyUUIDToClipboard()">
+              @if (uuidCopied()) {
+                <i class="fas fa-check green-text"></i>
+              } @else {
+                <i class="fas fa-copy"></i>
+              }
+            </a>
+          </span>
+        </li>
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          <span class="text-start" aria-hidden="true">{{ 'accessories.button_remove' | translate }}</span>
+          <button
+            type="button"
+            class="btn btn-primary m-0 ms-3 py-1"
+            [attr.aria-label]="'accessories.button_remove' | translate"
+            (click)="removeSingleCachedAccessories()"
+          >
+            <i class="fas fa-arrow-right" aria-hidden="true"></i>
+          </button>
+        </li>
       }
     </ul>
   </div>
@@ -339,8 +459,8 @@
         type="button"
         class="btn btn-elegant"
         data-bs-dismiss="modal"
-        (click)="dismissModal()"
         [attr.aria-label]="'form.button_close' | translate"
+        (click)="dismissModal()"
       >
         {{ 'form.button_close' | translate }}
       </button>

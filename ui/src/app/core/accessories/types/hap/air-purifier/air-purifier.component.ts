@@ -1,4 +1,4 @@
-import { Component, createEnvironmentInjector, EnvironmentInjector, inject, input, OnInit } from '@angular/core'
+import { ChangeDetectionStrategy, Component, createEnvironmentInjector, EnvironmentInjector, inject, input, OnInit } from '@angular/core'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe } from '@ngx-translate/core'
 
@@ -10,13 +10,14 @@ import { LongClickDirective } from '@/app/core/directives/long-click.directive'
 
 @Component({
   selector: 'app-air-purifier',
-  templateUrl: './air-purifier.component.html',
-  styleUrls: ['./air-purifier.component.scss'],
-  standalone: true,
   imports: [
     LongClickDirective,
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './air-purifier.component.html',
+  styleUrl: './air-purifier.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AirPurifierComponent implements OnInit {
   private $accessories = inject(AccessoriesService)
@@ -24,13 +25,31 @@ export class AirPurifierComponent implements OnInit {
   private $modal = inject(NgbModal)
   private hasTargetValidValues = false
 
-  public service = input.required<ServiceTypeX>()
-  public readyForControl = input<boolean>(false)
+  public readonly service = input.required<ServiceTypeX>()
+  public readonly readyForControl = input<boolean>(false)
 
   public ngOnInit() {
     if ('TargetAirPurifierState' in this.service().values) {
       this.hasTargetValidValues = this.service().getCharacteristic('TargetAirPurifierState').validValues.length > 0
     }
+  }
+
+  public isOn(): boolean {
+    const values = this.service().values
+    return !!(
+      (values?.Active && !('CurrentAirPurifierState' in values))
+      || (values?.Active && 'CurrentAirPurifierState' in values && values?.CurrentAirPurifierState !== 0)
+      || values?.On
+    )
+  }
+
+  public isPurifying(): boolean {
+    const values = this.service().values
+    return !!(
+      (values?.Active && !('CurrentAirPurifierState' in values))
+      || (values?.Active && 'CurrentAirPurifierState' in values && values?.CurrentAirPurifierState === 2)
+      || values?.On
+    )
   }
 
   public onClick() {

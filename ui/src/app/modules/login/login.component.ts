@@ -1,5 +1,5 @@
 import { NgOptimizedImage } from '@angular/common'
-import { Component, DestroyRef, ElementRef, inject, OnInit, signal, viewChild } from '@angular/core'
+import { ChangeDetectionStrategy, Component, DestroyRef, ElementRef, inject, OnInit, signal, viewChild } from '@angular/core'
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { Router } from '@angular/router'
@@ -12,15 +12,17 @@ import { SettingsService } from '@/app/core/ui/settings.service'
 import { environment } from '@/environments/environment'
 
 @Component({
-  templateUrl: './login.component.html',
-  styleUrls: ['./login.component.scss'],
-  standalone: true,
+  selector: 'app-login',
   imports: [
     FormsModule,
     ReactiveFormsModule,
     TranslatePipe,
     NgOptimizedImage,
   ],
+  standalone: true,
+  templateUrl: './login.component.html',
+  styleUrl: './login.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoginComponent implements OnInit {
   private destroyRef = inject(DestroyRef)
@@ -39,11 +41,11 @@ export class LoginComponent implements OnInit {
   readonly usernameInput = viewChild<ElementRef>('username')
   readonly otpInput = viewChild<ElementRef>('otp')
 
-  public backgroundStyle = signal<string>('')
-  public invalidCredentials = signal(false)
-  public invalid2faCode = signal(false)
-  public twoFactorCodeRequired = signal(false)
-  public inProgress = signal(false)
+  public readonly backgroundStyle = signal<string>('')
+  public readonly invalidCredentials = signal(false)
+  public readonly invalid2faCode = signal(false)
+  public readonly twoFactorCodeRequired = signal(false)
+  public readonly inProgress = signal(false)
 
   // Initialize form as property with all controls (including OTP for 2FA)
   // OTP validators are added dynamically when 2FA is required
@@ -54,7 +56,7 @@ export class LoginComponent implements OnInit {
   })
 
   // Create signal for form validity state
-  public formInvalid = toSignal(
+  public readonly formInvalid = toSignal(
     this.form.statusChanges.pipe(
       startWith(this.form.status),
       map(() => this.form.invalid),

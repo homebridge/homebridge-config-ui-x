@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core'
 import { Router } from '@angular/router'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
@@ -9,11 +9,13 @@ import { SettingsService } from '@/app/core/ui/settings.service'
 import { Pairing } from '@/app/modules/settings/settings.interfaces'
 
 @Component({
-  templateUrl: './remove-bridge-accessories.component.html',
-  standalone: true,
+  selector: 'app-remove-bridge-accessories',
   imports: [
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './remove-bridge-accessories.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RemoveBridgeAccessoriesComponent implements OnInit {
   // Injected dependencies
@@ -25,9 +27,9 @@ export class RemoveBridgeAccessoriesComponent implements OnInit {
   private $translate = inject(TranslateService)
 
   // Signals
-  public clicked = signal(false)
-  public pairings = signal<any[]>([])
-  public toDelete = signal<{ id: string, protocol: 'hap' | 'matter' }[]>([])
+  public readonly clicked = signal(false)
+  public readonly pairings = signal<any[]>([])
+  public readonly toDelete = signal<{ id: string, protocol: 'hap' | 'matter' }[]>([])
 
   // Other properties
   private isMatterSupported = this.$settings.isFeatureEnabled('matterSupport')

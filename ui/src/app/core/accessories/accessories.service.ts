@@ -51,7 +51,7 @@ export class AccessoriesService {
   public availableBridges: string[] = []
   public selectedBridges: string[] | null = null
   public bridgeUsernameToNameMap: Map<string, string> = new Map()
-  public rooms = signal<Array<{
+  public readonly rooms = signal<Array<{
     name: string
     isDefault?: boolean
     services: ServiceTypeX[]

@@ -9,13 +9,14 @@ import { Subject } from 'rxjs'
 import { BaseManageComponent } from '@/app/core/accessories/types/base-manage.component'
 
 @Component({
-  templateUrl: './doorbell.manage.component.html',
-  standalone: true,
+  selector: 'app-doorbell-manage',
   imports: [
     FormsModule,
     NouisliderComponent,
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './doorbell.manage.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DoorbellManageComponent extends BaseManageComponent {

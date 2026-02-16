@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { saveAs } from 'file-saver'
 import { ToastrService } from 'ngx-toastr'
@@ -7,11 +7,12 @@ import { ApiService } from '@/app/core/communication/api.service'
 
 @Component({
   selector: 'app-homebridge-deconz',
-  templateUrl: './homebridge-deconz.component.html',
-  standalone: true,
   imports: [
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './homebridge-deconz.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HomebridgeDeconzComponent {
   private $api = inject(ApiService)

@@ -1,4 +1,4 @@
-import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit, signal } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { ActivatedRoute } from '@angular/router'
 import { TranslateService } from '@ngx-translate/core'
@@ -10,12 +10,14 @@ import { SettingsService } from '@/app/core/ui/settings.service'
 import { MobileDetectService } from '@/app/core/utilities/mobile-detect.service'
 
 @Component({
-  templateUrl: './startup-script.component.html',
-  standalone: true,
+  selector: 'app-startup-script',
   imports: [
     EditorComponent,
     FormsModule,
   ],
+  standalone: true,
+  templateUrl: './startup-script.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StartupScriptComponent implements OnInit, OnDestroy {
   // Injected dependencies
@@ -35,9 +37,9 @@ export class StartupScriptComponent implements OnInit, OnDestroy {
   public monacoEditorModel: NgxEditorModel
 
   // Signals
-  public startupScript = signal<string>('')
-  public saveInProgress = signal(false)
-  public isMobile = signal(false)
+  public readonly startupScript = signal<string>('')
+  public readonly saveInProgress = signal(false)
+  public readonly isMobile = signal(false)
 
   constructor() {
     this.isMobile.set(!!this.$md.detect.mobile())

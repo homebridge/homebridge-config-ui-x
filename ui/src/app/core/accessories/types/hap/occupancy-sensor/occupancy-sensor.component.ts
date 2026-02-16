@@ -1,17 +1,18 @@
-import { Component, input } from '@angular/core'
+import { ChangeDetectionStrategy, Component, input } from '@angular/core'
 import { TranslatePipe } from '@ngx-translate/core'
 
 import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
 
 @Component({
   selector: 'app-occupancy-sensor',
-  templateUrl: './occupancy-sensor.component.html',
-  styleUrls: ['./occupancy-sensor.component.scss'],
-  standalone: true,
   imports: [
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './occupancy-sensor.component.html',
+  styleUrl: './occupancy-sensor.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OccupancySensorComponent {
-  public service = input.required<ServiceTypeX>()
+  public readonly service = input.required<ServiceTypeX>()
 }

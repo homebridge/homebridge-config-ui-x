@@ -1,5 +1,5 @@
 import { DecimalPipe, UpperCasePipe } from '@angular/common'
-import { Component, computed, createEnvironmentInjector, EnvironmentInjector, inject, input } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, createEnvironmentInjector, EnvironmentInjector, inject, input } from '@angular/core'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe } from '@ngx-translate/core'
 
@@ -14,8 +14,6 @@ import { SettingsService } from '@/app/core/ui/settings.service'
 
 @Component({
   selector: 'app-matter-thermostat',
-  templateUrl: './thermostat.component.html',
-  standalone: true,
   imports: [
     LongClickDirective,
     DecimalPipe,
@@ -23,6 +21,9 @@ import { SettingsService } from '@/app/core/ui/settings.service'
     ConvertTempPipe,
     UpperCasePipe,
   ],
+  standalone: true,
+  templateUrl: './thermostat.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatterThermostatComponent {
   private $modal = inject(NgbModal)
@@ -30,8 +31,8 @@ export class MatterThermostatComponent {
   private $settings = inject(SettingsService)
   private $accessories = inject(AccessoriesService)
 
-  public service = input.required<ServiceTypeX>()
-  public readyForControl = input<boolean>(false)
+  public readonly service = input.required<ServiceTypeX>()
+  public readonly readyForControl = input<boolean>(false)
 
   public temperatureUnits = this.$settings.env.temperatureUnits
 
@@ -58,9 +59,26 @@ export class MatterThermostatComponent {
     })
   }
 
-  public isOn = computed(() => isThermostatOn(this.service()))
+  public getStatusFill(): string {
+    const mode = this.systemMode()
+    if (mode === 3) {
+      return 'url(#coolingGradient)'
+    }
 
-  public systemMode = computed(() => getThermostatSystemMode(this.service()))
+    if (mode === 4) {
+      return 'url(#heatingGradient)'
+    }
 
-  public currentTemperature = computed(() => getThermostatLocalTemperature(this.service()))
+    if (mode === 1) {
+      return '#42d672'
+    }
+
+    return '#7b7b7b'
+  }
+
+  public readonly isOn = computed(() => isThermostatOn(this.service()))
+
+  public readonly systemMode = computed(() => getThermostatSystemMode(this.service()))
+
+  public readonly currentTemperature = computed(() => getThermostatLocalTemperature(this.service()))
 }

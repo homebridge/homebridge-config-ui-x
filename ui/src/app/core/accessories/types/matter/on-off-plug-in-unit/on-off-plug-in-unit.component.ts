@@ -1,4 +1,4 @@
-import { Component, computed, inject, input } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core'
 import { TranslatePipe } from '@ngx-translate/core'
 
 import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
@@ -7,18 +7,19 @@ import { SettingsService } from '@/app/core/ui/settings.service'
 
 @Component({
   selector: 'app-on-off-plug-in-unit',
-  templateUrl: './on-off-plug-in-unit.component.html',
-  styleUrls: ['./on-off-plug-in-unit.component.scss'],
-  standalone: true,
   imports: [
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './on-off-plug-in-unit.component.html',
+  styleUrl: './on-off-plug-in-unit.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OnOffPlugInUnitComponent {
   private $settings = inject(SettingsService)
 
-  public service = input.required<ServiceTypeX>()
-  public readyForControl = input<boolean>(false)
+  public readonly service = input.required<ServiceTypeX>()
+  public readonly readyForControl = input<boolean>(false)
 
   public browserLang = this.$settings.browserLang
 
@@ -30,5 +31,5 @@ export class OnOffPlugInUnitComponent {
     controlDevice(this.service())
   }
 
-  public isOn = computed(() => getDeviceActiveState(this.service()))
+  public readonly isOn = computed(() => getDeviceActiveState(this.service()))
 }

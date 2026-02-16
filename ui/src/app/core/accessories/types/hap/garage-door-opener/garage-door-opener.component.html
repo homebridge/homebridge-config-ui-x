@@ -1,23 +1,23 @@
 <div
   class="accessory-box"
-  [class]="{
-    'accessory-on': service().values?.ObstructionDetected
-      || [0, 2, 3, 4].includes(service().values?.CurrentDoorState)
-      || service().values?.On
-      || service().values?.Active,
-    'opening': service().values?.CurrentDoorState === 2 && !service().values?.ObstructionDetected,
-    'open': service().values?.CurrentDoorState === 0 && !service().values?.ObstructionDetected,
-    'closing': service().values?.CurrentDoorState === 3 && !service().values?.ObstructionDetected,
-    'closed': service().values?.CurrentDoorState === 1 && !service().values?.ObstructionDetected,
-    'stopped': service().values?.CurrentDoorState === 4 && !service().values?.ObstructionDetected,
-    'obstructed': service().values?.ObstructionDetected,
-  }"
-  [style.cursor]="readyForControl ? 'pointer' : 'default'"
-  (shortClick)="onClick()"
   tabindex="0"
+  [class.accessory-on]="
+    service().values?.ObstructionDetected ||
+    [0, 2, 3, 4].includes(service().values?.CurrentDoorState) ||
+    service().values?.On ||
+    service().values?.Active
+  "
+  [class.opening]="service().values?.CurrentDoorState === 2 && !service().values?.ObstructionDetected"
+  [class.open]="service().values?.CurrentDoorState === 0 && !service().values?.ObstructionDetected"
+  [class.closing]="service().values?.CurrentDoorState === 3 && !service().values?.ObstructionDetected"
+  [class.closed]="service().values?.CurrentDoorState === 1 && !service().values?.ObstructionDetected"
+  [class.stopped]="service().values?.CurrentDoorState === 4 && !service().values?.ObstructionDetected"
+  [class.obstructed]="service().values?.ObstructionDetected"
+  [class.cursor-pointer]="readyForControl()"
+  (shortClick)="onClick()"
 >
   <div class="d-flex flex-column h-100">
-    <div [attr.aria-label]="'accessories.core.garage_door_opener' | translate" class="accessory-svg">
+    <div class="accessory-svg" [attr.aria-label]="'accessories.core.garage_door_opener' | translate">
       <svg width="32px" height="32px" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
         <! -- circle in roof - ->
         <circle
@@ -132,21 +132,31 @@
     <div class="accessory-label mt-auto">{{ service().customName || service().serviceName }}</div>
 
     @if (service().values?.ObstructionDetected) {
-    <div class="accessory-label red-text">{{ 'accessories.control.obstructed' | translate }}</div>
-    } @else if ('CurrentDoorState' in service().values) { @switch (service().values?.CurrentDoorState) {@case (0) {
-    <div class="accessory-label red-text">{{ 'accessories.control.open' | translate }}</div>
-    } @case (1) {
-    <div class="accessory-label grey-text">{{ 'accessories.control.closed' | translate }}</div>
-    } @case (2) {
-    <div class="accessory-label red-text">{{ 'accessories.control.opening' | translate }}...</div>
-    } @case (3) {
-    <div class="accessory-label red-text">{{ 'accessories.control.closing' | translate }}...</div>
-    } @case (4) {
-    <div class="accessory-label red-text">{{ 'accessories.control.stopped' | translate }}</div>
-    } } } @else { @if (service().values?.On || service().values?.Active) {
-    <div class="accessory-label red-text">{{ 'accessories.control.open' | translate }}</div>
+      <div class="accessory-label red-text">{{ 'accessories.control.obstructed' | translate }}</div>
+    } @else if ('CurrentDoorState' in service().values) {
+      @switch (service().values?.CurrentDoorState) {
+        @case (0) {
+          <div class="accessory-label red-text">{{ 'accessories.control.open' | translate }}</div>
+        }
+        @case (1) {
+          <div class="accessory-label grey-text">{{ 'accessories.control.closed' | translate }}</div>
+        }
+        @case (2) {
+          <div class="accessory-label red-text">{{ 'accessories.control.opening' | translate }}...</div>
+        }
+        @case (3) {
+          <div class="accessory-label red-text">{{ 'accessories.control.closing' | translate }}...</div>
+        }
+        @case (4) {
+          <div class="accessory-label red-text">{{ 'accessories.control.stopped' | translate }}</div>
+        }
+      }
     } @else {
-    <div class="accessory-label grey-text">{{ 'accessories.control.closed' | translate }}</div>
-    } }
+      @if (service().values?.On || service().values?.Active) {
+        <div class="accessory-label red-text">{{ 'accessories.control.open' | translate }}</div>
+      } @else {
+        <div class="accessory-label grey-text">{{ 'accessories.control.closed' | translate }}</div>
+      }
+    }
   </div>
 </div>

@@ -1,5 +1,12 @@
 import { DecimalPipe, UpperCasePipe } from '@angular/common'
-import { Component, createEnvironmentInjector, EnvironmentInjector, inject, input } from '@angular/core'
+import {
+  ChangeDetectionStrategy,
+  Component,
+  createEnvironmentInjector,
+  EnvironmentInjector,
+  inject,
+  input,
+} from '@angular/core'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe } from '@ngx-translate/core'
 
@@ -13,8 +20,6 @@ import { SettingsService } from '@/app/core/ui/settings.service'
 
 @Component({
   selector: 'app-thermostat',
-  templateUrl: './thermostat.component.html',
-  standalone: true,
   imports: [
     LongClickDirective,
     DecimalPipe,
@@ -22,6 +27,9 @@ import { SettingsService } from '@/app/core/ui/settings.service'
     ConvertTempPipe,
     UpperCasePipe,
   ],
+  standalone: true,
+  templateUrl: './thermostat.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ThermostatComponent {
   private $modal = inject(NgbModal)
@@ -29,10 +37,28 @@ export class ThermostatComponent {
   private $settings = inject(SettingsService)
   private $accessories = inject(AccessoriesService)
 
-  public service = input.required<ServiceTypeX>()
-  public readyForControl = input<boolean>(false)
+  public readonly service = input.required<ServiceTypeX>()
+  public readonly readyForControl = input<boolean>(false)
 
   public temperatureUnits = this.$settings.env.temperatureUnits
+
+  public getStatusFill(): string {
+    const state = this.service().values?.CurrentHeatingCoolingState
+    const target = this.service().values?.TargetHeatingCoolingState
+    if (state === 2) {
+      return 'url(#coolingGradient)'
+    }
+
+    if (state === 1) {
+      return 'url(#heatingGradient)'
+    }
+
+    if (target === 3) {
+      return '#42d672'
+    }
+
+    return '#7b7b7b'
+  }
 
   public onClick() {
     if (!this.readyForControl()) {

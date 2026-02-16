@@ -9,13 +9,14 @@ import { Subject } from 'rxjs'
 import { BaseManageComponent } from '@/app/core/accessories/types/base-manage.component'
 
 @Component({
-  templateUrl: './fan.manage.component.html',
-  standalone: true,
+  selector: 'app-fan-manage',
   imports: [
     FormsModule,
     NouisliderComponent,
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './fan.manage.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FanManageComponent extends BaseManageComponent {

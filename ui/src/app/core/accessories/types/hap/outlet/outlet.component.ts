@@ -1,4 +1,4 @@
-import { Component, inject, input } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core'
 import { TranslatePipe } from '@ngx-translate/core'
 
 import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
@@ -7,21 +7,30 @@ import { SettingsService } from '@/app/core/ui/settings.service'
 
 @Component({
   selector: 'app-outlet',
-  templateUrl: './outlet.component.html',
-  styleUrls: ['./outlet.component.scss'],
-  standalone: true,
   imports: [
     LongClickDirective,
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './outlet.component.html',
+  styleUrl: './outlet.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OutletComponent {
   private $settings = inject(SettingsService)
 
-  public service = input.required<ServiceTypeX>()
-  public readyForControl = input<boolean>(false)
+  public readonly service = input.required<ServiceTypeX>()
+  public readonly readyForControl = input<boolean>(false)
 
   public browserLang = this.$settings.browserLang
+
+  public isOn(): boolean {
+    const values = this.service().values
+    return !!(values?.On
+      || values?.Active
+      || ('LockTargetState' in values && !values?.LockTargetState)
+      || ('CurrentDoorState' in values && [0, 2].includes(values?.CurrentDoorState)))
+  }
 
   public onClick() {
     if (!this.readyForControl()) {

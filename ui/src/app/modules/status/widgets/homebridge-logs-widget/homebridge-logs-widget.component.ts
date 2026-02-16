@@ -1,4 +1,4 @@
-import { ChangeDetectorRef, Component, DestroyRef, ElementRef, inject, input, OnDestroy, OnInit, signal, viewChild } from '@angular/core'
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, ElementRef, inject, input, OnDestroy, OnInit, signal, viewChild } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { TranslatePipe } from '@ngx-translate/core'
 import { ITerminalOptions } from '@xterm/xterm'
@@ -9,11 +9,14 @@ import { LogService } from '@/app/core/utilities/log.service'
 import { Widget } from '@/app/modules/status/widgets/widgets.interfaces'
 
 @Component({
-  templateUrl: './homebridge-logs-widget.component.html',
-  standalone: true,
+  selector: 'app-homebridge-logs-widget',
   imports: [
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './homebridge-logs-widget.component.html',
+  styleUrl: './homebridge-logs-widget.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HomebridgeLogsWidgetComponent implements OnInit, OnDestroy {
   // Injected dependencies
@@ -23,12 +26,12 @@ export class HomebridgeLogsWidgetComponent implements OnInit, OnDestroy {
   private $cdr = inject(ChangeDetectorRef)
 
   // Signals
-  widget = input.required<Widget>()
+  readonly widget = input.required<Widget>()
   readonly widgetContainerElement = viewChild<ElementRef>('widgetcontainer')
   readonly titleElement = viewChild<ElementRef>('terminaltitle')
   readonly termTarget = viewChild<ElementRef>('logoutput')
-  public terminalHeight = signal<number>(200)
-  public theme = signal<'dark' | 'light'>('dark')
+  public readonly terminalHeight = signal<number>(200)
+  public readonly theme = signal<'dark' | 'light'>('dark')
 
   // Other properties
   private initialized = false

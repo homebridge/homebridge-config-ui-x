@@ -8,6 +8,19 @@
   }
 }
 
+.hb-status-item-docker {
+  min-width: max(25%, 200px);
+}
+
+.hb-status-item-docker-child {
+  min-width: 200px;
+  flex: 1 0 auto;
+}
+
+.hb-status-item-quarter {
+  min-width: max(25%, 225px);
+}
+
 ::ng-deep body.dark-mode {
   .card-link-title {
     color: #ffffff !important;

@@ -1,5 +1,5 @@
 import { TitleCasePipe } from '@angular/common'
-import { Component, inject, OnInit, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap/tooltip'
@@ -12,14 +12,16 @@ import { SettingsService } from '@/app/core/ui/settings.service'
 import { Pairing } from '@/app/modules/settings/accessory-control-lists/accessory-control-lists.interfaces'
 
 @Component({
-  templateUrl: './accessory-control-lists.component.html',
-  standalone: true,
+  selector: 'app-accessory-control-lists',
   imports: [
     TranslatePipe,
     FormsModule,
     TitleCasePipe,
     NgbTooltip,
   ],
+  standalone: true,
+  templateUrl: './accessory-control-lists.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AccessoryControlListsComponent implements OnInit {
   // Injected dependencies
@@ -31,9 +33,9 @@ export class AccessoryControlListsComponent implements OnInit {
   private modalData = inject(ACCESSORY_CONTROL_LISTS_MODAL_DATA)
 
   // Signals
-  public clicked = signal(false)
-  public mainPairing = signal<Pairing | undefined>(undefined)
-  public pairings = signal<Pairing[]>([])
+  public readonly clicked = signal(false)
+  public readonly mainPairing = signal<Pairing | undefined>(undefined)
+  public readonly pairings = signal<Pairing[]>([])
 
   // Other properties
   private originalBlacklist: string[] = []

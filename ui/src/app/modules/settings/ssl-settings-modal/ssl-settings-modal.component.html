@@ -18,21 +18,21 @@
     >
       <! -- Option: Off - ->
       <li class="list-group-item text-start">
-        <label class="d-flex align-items-center w-100 mb-0" style="cursor: pointer">
+        <label class="d-flex align-items-center w-100 mb-0 cursor-pointer">
           <input
             type="radio"
             name="sslMode"
             value="off"
-            [formControl]="sslModeControl"
             class="visually-hidden"
+            [formControl]="sslModeControl"
             [attr.aria-label]="'settings.security.ssl_mode_off' | translate"
           />
           <div class="me-3">
             <i
               class="fas fa-ban fa-2x"
+              aria-hidden="true"
               [class.primary-text]="selectedMode() === 'off'"
               [class.grey-text]="selectedMode() !== 'off'"
-              aria-hidden="true"
             ></i>
           </div>
           <div class="flex-grow-1">
@@ -40,28 +40,28 @@
             <small class="grey-text">{{ 'settings.security.ssl_mode_off_desc' | translate }}</small>
           </div>
           @if (selectedMode() === 'off') {
-          <i class="fas fa-check-circle primary-text fa-xl" aria-hidden="true"></i>
+            <i class="fas fa-check-circle primary-text fa-xl" aria-hidden="true"></i>
           }
         </label>
       </li>
 
       <! -- Option: Self-Signed - ->
       <li class="list-group-item text-start">
-        <label class="d-flex align-items-center w-100 mb-0" style="cursor: pointer">
+        <label class="d-flex align-items-center w-100 mb-0 cursor-pointer">
           <input
             type="radio"
             name="sslMode"
             value="selfsigned"
-            [formControl]="sslModeControl"
             class="visually-hidden"
+            [formControl]="sslModeControl"
             [attr.aria-label]="'settings.security.ssl_mode_selfsigned' | translate"
           />
           <div class="me-3">
             <i
               class="fas fa-shield-alt fa-2x"
+              aria-hidden="true"
               [class.primary-text]="selectedMode() === 'selfsigned'"
               [class.grey-text]="selectedMode() !== 'selfsigned'"
-              aria-hidden="true"
             ></i>
           </div>
           <div class="flex-grow-1">
@@ -69,28 +69,28 @@
             <small class="grey-text">{{ 'settings.security.ssl_mode_selfsigned_desc' | translate }}</small>
           </div>
           @if (selectedMode() === 'selfsigned') {
-          <i class="fas fa-check-circle primary-text fa-xl" aria-hidden="true"></i>
+            <i class="fas fa-check-circle primary-text fa-xl" aria-hidden="true"></i>
           }
         </label>
       </li>
 
       <! -- Option: Key + Cert - ->
       <li class="list-group-item text-start">
-        <label class="d-flex align-items-center w-100 mb-0" style="cursor: pointer">
+        <label class="d-flex align-items-center w-100 mb-0 cursor-pointer">
           <input
             type="radio"
             name="sslMode"
             value="keycert"
-            [formControl]="sslModeControl"
             class="visually-hidden"
+            [formControl]="sslModeControl"
             [attr.aria-label]="'settings.security.ssl_mode_keycert' | translate"
           />
           <div class="me-3">
             <i
               class="fas fa-key fa-2x"
+              aria-hidden="true"
               [class.primary-text]="selectedMode() === 'keycert'"
               [class.grey-text]="selectedMode() !== 'keycert'"
-              aria-hidden="true"
             ></i>
           </div>
           <div class="flex-grow-1">
@@ -98,28 +98,28 @@
             <small class="grey-text">{{ 'settings.security.ssl_mode_keycert_desc' | translate }}</small>
           </div>
           @if (selectedMode() === 'keycert') {
-          <i class="fas fa-check-circle primary-text fa-xl" aria-hidden="true"></i>
+            <i class="fas fa-check-circle primary-text fa-xl" aria-hidden="true"></i>
           }
         </label>
       </li>
 
       <! -- Option: PFX - ->
       <li class="list-group-item text-start">
-        <label class="d-flex align-items-center w-100 mb-0" style="cursor: pointer">
+        <label class="d-flex align-items-center w-100 mb-0 cursor-pointer">
           <input
             type="radio"
             name="sslMode"
             value="pfx"
-            [formControl]="sslModeControl"
             class="visually-hidden"
+            [formControl]="sslModeControl"
             [attr.aria-label]="'settings.security.ssl_mode_pfx' | translate"
           />
           <div class="me-3">
             <i
               class="fas fa-certificate fa-2x"
+              aria-hidden="true"
               [class.primary-text]="selectedMode() === 'pfx'"
               [class.grey-text]="selectedMode() !== 'pfx'"
-              aria-hidden="true"
             ></i>
           </div>
           <div class="flex-grow-1">
@@ -127,7 +127,7 @@
             <small class="grey-text">{{ 'settings.security.ssl_mode_pfx_desc' | translate }}</small>
           </div>
           @if (selectedMode() === 'pfx') {
-          <i class="fas fa-check-circle primary-text fa-xl" aria-hidden="true"></i>
+            <i class="fas fa-check-circle primary-text fa-xl" aria-hidden="true"></i>
           }
         </label>
       </li>
@@ -135,70 +135,73 @@
 
     <! -- Configuration Section (shown based on selected mode) - ->
     @if (selectedMode() === 'selfsigned') {
-    <ul class="list-group list-group-box mt-4 mb-0">
-      <li class="list-group-item">
-        {{ 'settings.security.selfsigned_hostnames' | translate }}
-        <input
-          type="text"
-          class="form-control font-monospace"
-          placeholder="localhost, 127.0.0.1, homebridge.local"
-          [formControl]="hostnamesControl"
-        />
-        <small class="form-text grey-text">{{ 'settings.security.selfsigned_hostnames_desc' | translate }}</small>
-      </li>
-    </ul>
-    } @if (selectedMode() === 'keycert') {
-    <ul class="list-group list-group-box mt-4 mb-0">
-      <li class="list-group-item">
-        {{ 'settings.security.key' | translate }}
-        <input type="file" class="form-control" accept=".pem,.key" (change)="onKeyChange($event)" #keyInput />
-        @if (keyPathControl.value) {
-        <small class="form-text grey-text font-monospace">{{ keyPathControl.value }}</small>
-        }
-      </li>
-      <li class="list-group-item">
-        {{ 'settings.security.cert' | translate }}
-        <input type="file" class="form-control" accept=".pem,.crt" (change)="onCertChange($event)" #certInput />
-        @if (certPathControl.value) {
-        <small class="form-text grey-text font-monospace">{{ certPathControl.value }}</small>
-        }
-      </li>
-    </ul>
-    } @if (selectedMode() === 'pfx') {
-    <ul class="list-group list-group-box mt-4 mb-0">
-      <li class="list-group-item">
-        {{ 'settings.security.pfx' | translate }}
-        <input type="file" class="form-control" accept=".pfx,.p12" (change)="onPfxChange($event)" #pfxInput />
-        @if (pfxPathControl.value) {
-        <small class="form-text grey-text font-monospace">{{ pfxPathControl.value }}</small>
-        }
-      </li>
-      <li class="list-group-item">
-        {{ 'settings.security.pass' | translate }}
-        <input
-          type="password"
-          class="form-control font-monospace"
-          placeholder="••••••••"
-          [formControl]="passphraseControl"
-        />
-        <small class="form-text grey-text">{{ 'settings.security.pass_optional' | translate }}</small>
-      </li>
-    </ul>
+      <ul class="list-group list-group-box mt-4 mb-0">
+        <li class="list-group-item">
+          {{ 'settings.security.selfsigned_hostnames' | translate }}
+          <input
+            type="text"
+            class="form-control font-monospace"
+            placeholder="localhost, 127.0.0.1, homebridge.local"
+            [formControl]="hostnamesControl"
+          />
+          <small class="form-text grey-text">{{ 'settings.security.selfsigned_hostnames_desc' | translate }}</small>
+        </li>
+      </ul>
+    }
+    @if (selectedMode() === 'keycert') {
+      <ul class="list-group list-group-box mt-4 mb-0">
+        <li class="list-group-item">
+          {{ 'settings.security.key' | translate }}
+          <input #keyInput type="file" class="form-control" accept=".pem,.key" (change)="onKeyChange($event)" />
+          @if (keyPathControl.value) {
+            <small class="form-text grey-text font-monospace">{{ keyPathControl.value }}</small>
+          }
+        </li>
+        <li class="list-group-item">
+          {{ 'settings.security.cert' | translate }}
+          <input #certInput type="file" class="form-control" accept=".pem,.crt" (change)="onCertChange($event)" />
+          @if (certPathControl.value) {
+            <small class="form-text grey-text font-monospace">{{ certPathControl.value }}</small>
+          }
+        </li>
+      </ul>
+    }
+    @if (selectedMode() === 'pfx') {
+      <ul class="list-group list-group-box mt-4 mb-0">
+        <li class="list-group-item">
+          {{ 'settings.security.pfx' | translate }}
+          <input #pfxInput type="file" class="form-control" accept=".pfx,.p12" (change)="onPfxChange($event)" />
+          @if (pfxPathControl.value) {
+            <small class="form-text grey-text font-monospace">{{ pfxPathControl.value }}</small>
+          }
+        </li>
+        <li class="list-group-item">
+          {{ 'settings.security.pass' | translate }}
+          <input
+            type="password"
+            class="form-control font-monospace"
+            placeholder="••••••••"
+            [formControl]="passphraseControl"
+          />
+          <small class="form-text grey-text">{{ 'settings.security.pass_optional' | translate }}</small>
+        </li>
+      </ul>
     }
   </div>
   <div class="modal-footer justify-content-between">
-    <button type="button" class="btn btn-elegant" (click)="dismissModal()" [disabled]="isSaving()">
+    <button type="button" class="btn btn-elegant" [disabled]="isSaving()" (click)="dismissModal()">
       {{ 'form.button_close' | translate }}
     </button>
     <button
       type="button"
       class="btn btn-primary"
-      (click)="saveConfiguration()"
       [disabled]="isSaving() || isUnchanged() || isFormInvalid()"
+      (click)="saveConfiguration()"
     >
       @if (isSaving()) {
-      <i class="fas fa-spinner fa-spin me-2"></i>
-      } {{ 'form.button_save' | translate }}
+        <i class="fas fa-spinner fa-spin me-2"></i>
+      }
+      {{ 'form.button_save' | translate }}
     </button>
   </div>
 </div>

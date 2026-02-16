@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { NgbAlert } from '@ng-bootstrap/ng-bootstrap/alert'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal'
@@ -8,16 +8,21 @@ import { ToastrService } from 'ngx-toastr'
 import { AuthService } from '@/app/core/auth/auth.service'
 import { ApiService } from '@/app/core/communication/api.service'
 import { NotificationService } from '@/app/core/communication/notification.service'
+import { RequiredIndicatorComponent } from '@/app/core/components/required-indicator/required-indicator.component'
 
 @Component({
-  templateUrl: './users-2fa-disable.component.html',
-  standalone: true,
+  selector: 'app-users-2fa-disable',
   imports: [
     FormsModule,
     ReactiveFormsModule,
     TranslatePipe,
     NgbAlert,
+    RequiredIndicatorComponent,
   ],
+  standalone: true,
+  templateUrl: './users-2fa-disable.component.html',
+  styleUrl: './users-2fa-disable.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Users2faDisableComponent {
   // Injected dependencies
@@ -29,7 +34,7 @@ export class Users2faDisableComponent {
   private $translate = inject(TranslateService)
 
   // Signals
-  public invalidCredentials = signal(false)
+  public readonly invalidCredentials = signal(false)
 
   // Other properties
   public formGroup = new FormGroup({

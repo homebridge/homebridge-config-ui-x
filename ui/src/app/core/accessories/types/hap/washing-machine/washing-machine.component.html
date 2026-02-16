@@ -1,12 +1,12 @@
 <div
   class="accessory-box"
-  [class.accessory-on]="service().values?.On || service().values?.Active"
-  [style.cursor]="readyForControl() ? 'pointer' : 'default'"
-  (shortClick)="onClick()"
   tabindex="0"
+  [class.accessory-on]="service().values?.On || service().values?.Active"
+  [class.cursor-pointer]="readyForControl()"
+  (shortClick)="onClick()"
 >
   <div class="d-flex flex-column h-100">
-    <div [attr.aria-label]="'accessories.core.washing_machine' | translate" class="accessory-svg">
+    <div class="accessory-svg" [attr.aria-label]="'accessories.core.washing_machine' | translate">
       <svg width="32px" height="32px" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
         <! -- outer casing - ->
         <rect x="3" y="1" width="25" height="30" rx="2" stroke="#7f7f7f" fill="none" stroke-width="1.2" />
@@ -41,7 +41,10 @@
     <div class="accessory-label mt-auto">{{ service().customName || service().serviceName }}</div>
     <div
       class="accessory-label grey-text"
-      [innerText]="((service().values?.On || service().values?.Active) ? 'accessories.control.on' : 'accessories.control.off') | translate"
+      [innerText]="
+        (service().values?.On || service().values?.Active ? 'accessories.control.on' : 'accessories.control.off')
+          | translate
+      "
     ></div>
   </div>
 </div>

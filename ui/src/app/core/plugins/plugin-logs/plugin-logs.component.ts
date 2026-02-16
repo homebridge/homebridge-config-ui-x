@@ -1,5 +1,5 @@
 import { HttpErrorResponse, HttpResponse } from '@angular/common/http'
-import { Component, createEnvironmentInjector, ElementRef, EnvironmentInjector, HostListener, inject, OnDestroy, OnInit, signal, viewChild } from '@angular/core'
+import { ChangeDetectionStrategy, Component, createEnvironmentInjector, ElementRef, EnvironmentInjector, inject, OnDestroy, OnInit, signal, viewChild } from '@angular/core'
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap/tooltip'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
@@ -19,9 +19,14 @@ const RE_ANSI = /\x1B\[(\d{1,3}(;\d{1,2})?)?[mGK]/g
 const RE_BRACKET_TAG = /36m\[.*?\]/
 
 @Component({
-  templateUrl: './plugin-logs.component.html',
-  standalone: true,
+  selector: 'app-plugin-logs',
   imports: [TranslatePipe, NgbTooltip],
+  standalone: true,
+  templateUrl: './plugin-logs.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  host: {
+    '(window:resize)': 'onWindowResize()',
+  },
 })
 export class PluginLogsComponent implements OnInit, OnDestroy {
   // Injected dependencies
@@ -43,7 +48,7 @@ export class PluginLogsComponent implements OnInit, OnDestroy {
   public childBridges: ChildBridge[] = this.modalData.childBridges ?? []
 
   // Signals
-  public midAction = signal(false)
+  public readonly midAction = signal(false)
 
   // Other properties
   private resizeEvent = new Subject<void>()
@@ -62,8 +67,6 @@ export class PluginLogsComponent implements OnInit, OnDestroy {
     this.$log.destroyTerminal()
   }
 
-  // HostListener
-  @HostListener('window:resize')
   onWindowResize(): void {
     this.resizeEvent.next(undefined)
   }

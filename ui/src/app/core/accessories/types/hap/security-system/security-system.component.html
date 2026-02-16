@@ -1,19 +1,17 @@
 <div
   class="accessory-box"
-  [class]="{
-    'accessory-on': service().values?.SecuritySystemCurrentState !== 3,
-    'home': service().values?.SecuritySystemCurrentState === 0,
-    'away': service().values?.SecuritySystemCurrentState === 1,
-    'night': service().values?.SecuritySystemCurrentState === 2,
-    'triggered': service().values?.SecuritySystemCurrentState === 4,
-  }"
-  [style.cursor]="readyForControl ? 'pointer' : 'default'"
+  tabindex="0"
+  [class.accessory-on]="service().values?.SecuritySystemCurrentState !== 3"
+  [class.home]="service().values?.SecuritySystemCurrentState === 0"
+  [class.away]="service().values?.SecuritySystemCurrentState === 1"
+  [class.night]="service().values?.SecuritySystemCurrentState === 2"
+  [class.triggered]="service().values?.SecuritySystemCurrentState === 4"
+  [class.cursor-pointer]="readyForControl()"
   (longClick)="onClick()"
   (shortClick)="onClick()"
-  tabindex="0"
 >
   <div class="d-flex flex-column h-100">
-    <div [attr.aria-label]="'accessories.core.security_system' | translate" class="accessory-svg">
+    <div class="accessory-svg" [attr.aria-label]="'accessories.core.security_system' | translate">
       <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
         <! -- siren dome - ->
         <path
@@ -33,16 +31,22 @@
       </svg>
     </div>
     <div class="accessory-label mt-auto">{{ service().customName || service().serviceName }}</div>
-    @switch (service().values?.SecuritySystemCurrentState) { @case (0) {
-    <div class="accessory-label grey-text">{{ 'accessories.control.home' | translate }}</div>
-    } @case (1) {
-    <div class="accessory-label grey-text">{{ 'accessories.control.away' | translate }}</div>
-    } @case (2) {
-    <div class="accessory-label grey-text">{{ 'accessories.control.night' | translate }}</div>
-    } @case (3) {
-    <div class="accessory-label red-text">{{ 'accessories.control.off' | translate }}</div>
-    } @case (4) {
-    <div class="accessory-label red-text">{{ 'accessories.control.triggered' | translate }}</div>
-    } }
+    @switch (service().values?.SecuritySystemCurrentState) {
+      @case (0) {
+        <div class="accessory-label grey-text">{{ 'accessories.control.home' | translate }}</div>
+      }
+      @case (1) {
+        <div class="accessory-label grey-text">{{ 'accessories.control.away' | translate }}</div>
+      }
+      @case (2) {
+        <div class="accessory-label grey-text">{{ 'accessories.control.night' | translate }}</div>
+      }
+      @case (3) {
+        <div class="accessory-label red-text">{{ 'accessories.control.off' | translate }}</div>
+      }
+      @case (4) {
+        <div class="accessory-label red-text">{{ 'accessories.control.triggered' | translate }}</div>
+      }
+    }
   </div>
 </div>

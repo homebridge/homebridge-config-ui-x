@@ -1,13 +1,15 @@
-import { Component, ElementRef, input, OnChanges, viewChild } from '@angular/core'
+import { ChangeDetectionStrategy, Component, ElementRef, input, OnChanges, viewChild } from '@angular/core'
 import { toString } from 'qrcode'
 
 @Component({
   selector: 'app-qrcode',
-  templateUrl: './qrcode.component.html',
   standalone: true,
+  templateUrl: './qrcode.component.html',
+  styleUrl: './qrcode.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class QrcodeComponent implements OnChanges {
-  data = input.required<string>()
+  readonly data = input.required<string>()
 
   private readonly qrcodeElement = viewChild<ElementRef>('qrcode')
 

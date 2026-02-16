@@ -6,22 +6,22 @@
       class="btn-close"
       data-bs-dismiss="modal"
       [attr.aria-label]="'form.button_close' | translate"
-      (click)="dismissModal()"
       [disabled]="saveInProgress()"
+      (click)="dismissModal()"
     ></button>
   </div>
-  <div class="modal-body pb-0" style="min-height: 110px">
+  <div class="modal-body pb-0 modal-body-min-height">
     @if (loading()) {
-    <div class="text-center primary-text my-5 w-100">
-      <i class="fa fa-circle-notch fa-spin" style="font-size: 75px"></i>
-    </div>
+      <div class="text-center primary-text my-5 w-100">
+        <i class="fa fa-circle-notch fa-spin icon-xl"></i>
+      </div>
     }
 
     <iframe
+      #custompluginui
       width="100%"
       height="1px;"
-      #custompluginui
-      style="border: 0"
+      class="plugin-iframe"
       sandbox="allow-same-origin allow-scripts allow-popups allow-popups-to-escape-sandbox allow-downloads allow-forms"
       [attr.title]="'plugins.button_settings' | translate"
       [attr.aria-label]="'plugins.button_settings' | translate"
@@ -29,34 +29,42 @@
     </iframe>
 
     @if (uiLoaded() && pluginConfig.length && schema.singular && showSchemaForm()) {
-    <div class="card card-body">
-      <app-schema-form [configSchema]="schema" [(data)]="pluginConfig[0]" (isValid)="onIsValid($event)" />
-    </div>
-    } @if (formId()) {
-    <div class="card card-body">
-      <app-schema-form
-        [configSchema]="formSchema()"
-        [data]="formData()"
-        (dataChange)="formData.set($event)"
-        (dataChanged)="formUpdatedSubject.next($event)"
-        (isValid)="formValidEvent($event)"
-      />
-      <div class="text-end custom-form-action-buttons">
-        @if (formCancelButtonLabel()) {
-        <button class="btn btn-elegant" (click)="formActionSubject.next('cancel')">
-          {{ formCancelButtonLabel() }}
-        </button>
-        } @if (formSubmitButtonLabel()) {
-        <button class="btn btn-primary" (click)="formActionSubject.next('submit')" [disabled]="!formValid()">
-          {{ formSubmitButtonLabel() }}
-        </button>
-        }
+      <div class="card card-body">
+        <app-schema-form [configSchema]="schema" [(data)]="pluginConfig[0]" (isValid)="onIsValid($event)" />
       </div>
-    </div>
-    } @if (pluginSpinner()) {
-    <div class="loading-overlay text-center primary-text d-flex align-items-center justify-content-center">
-      <i class="fa fa-circle-notch fa-spin" style="font-size: 75px"></i>
-    </div>
+    }
+    @if (formId()) {
+      <div class="card card-body">
+        <app-schema-form
+          [configSchema]="formSchema()"
+          [data]="formData()"
+          (dataChange)="formData.set($event)"
+          (dataChanged)="formUpdatedSubject.next($event)"
+          (isValid)="formValidEvent($event)"
+        />
+        <div class="text-end custom-form-action-buttons">
+          @if (formCancelButtonLabel()) {
+            <button class="btn btn-elegant" type="button" (click)="formActionSubject.next('cancel')">
+              {{ formCancelButtonLabel() }}
+            </button>
+          }
+          @if (formSubmitButtonLabel()) {
+            <button
+              class="btn btn-primary"
+              type="button"
+              [disabled]="!formValid()"
+              (click)="formActionSubject.next('submit')"
+            >
+              {{ formSubmitButtonLabel() }}
+            </button>
+          }
+        </div>
+      </div>
+    }
+    @if (pluginSpinner()) {
+      <div class="loading-overlay text-center primary-text d-flex align-items-center justify-content-center">
+        <i class="fa fa-circle-notch fa-spin icon-xl"></i>
+      </div>
     }
   </div>
   <div class="modal-footer justify-content-between">
@@ -65,8 +73,8 @@
         type="button"
         class="btn btn-elegant"
         data-bs-dismiss="modal"
-        (click)="dismissModal()"
         [disabled]="saveInProgress()"
+        (click)="dismissModal()"
       >
         {{ 'form.button_close' | translate }}
       </button>
@@ -74,31 +82,38 @@
     <div class="text-center"></div>
     <div class="text-end d-flex align-items-center justify-content-end">
       @if (!saveButtonDisabled()) {
-      <i
-        class="fa fa-xl me-2"
-        [class]="{
-          'fa-circle-check': formIsValid(),
-          'green-text': formIsValid(),
-          'fa-circle-exclamation': !formIsValid(),
-          'red-text': strictValidation() && !formIsValid(),
-          'orange-text': !strictValidation() && !formIsValid()
-        }"
-        [ngbTooltip]="(formIsValid() ? 'form.label_valid' : (strictValidation() ? 'form.label_invalid_strict' : 'form.label_invalid')) | translate"
-        container="modal"
-        placement="top"
-        [openDelay]="150"
-        triggers="hover"
-      ></i>
+        <i
+          class="fa fa-xl me-2"
+          container="modal"
+          placement="top"
+          triggers="hover"
+          [class.fa-circle-check]="formIsValid()"
+          [class.green-text]="formIsValid()"
+          [class.fa-circle-exclamation]="!formIsValid()"
+          [class.red-text]="strictValidation() && !formIsValid()"
+          [class.orange-text]="!strictValidation() && !formIsValid()"
+          [ngbTooltip]="
+            (formIsValid()
+              ? 'form.label_valid'
+              : strictValidation()
+                ? 'form.label_invalid_strict'
+                : 'form.label_invalid'
+            ) | translate
+          "
+          [openDelay]="150"
+        ></i>
       }
       <button
         type="button"
         class="btn btn-primary"
         data-bs-dismiss="modal"
-        (click)="savePluginConfig(true)"
         [disabled]="saveInProgress() || saveButtonDisabled()"
+        (click)="savePluginConfig(true)"
       >
-        @if (!saveInProgress()) { {{ 'form.button_save' | translate }} } @if (saveInProgress()) {
-        <i class="fas fa-circle-notch fa-spin"></i>
+        @if (!saveInProgress()) {
+          {{ 'form.button_save' | translate }}
+        } @else {
+          <i class="fas fa-circle-notch fa-spin"></i>
         }
       </button>
     </div>

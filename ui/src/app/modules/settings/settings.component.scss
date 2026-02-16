@@ -63,3 +63,19 @@ form {
     color: #a0a0a0;
   }
 }
+
+// Cron input styling
+.cron-input {
+  letter-spacing: 0.15em;
+  text-align: center;
+}
+
+// Right-aligned text input
+.text-end-input {
+  text-align: right;
+}
+
+// Minimum width for buttons and labels
+.min-w-50 {
+  min-width: 50px;
+}

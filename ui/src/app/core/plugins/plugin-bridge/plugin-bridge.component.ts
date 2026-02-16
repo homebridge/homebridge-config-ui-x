@@ -3,7 +3,7 @@ import type { BridgeConfig } from '@/app/core/settings.interfaces'
 
 import type { PluginBridgeAccessoryLink, PluginBridgeDeleteBridge, PluginBridgeMatterBridge } from './plugin-bridge.interfaces'
 
-import { Component, inject, OnInit, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { Router } from '@angular/router'
 import { NgbAlert } from '@ng-bootstrap/ng-bootstrap/alert'
@@ -30,15 +30,17 @@ import {
 import { SettingsService } from '@/app/core/ui/settings.service'
 
 @Component({
-  templateUrl: './plugin-bridge.component.html',
-  styleUrls: ['./plugin-bridge.component.scss'],
-  standalone: true,
+  selector: 'app-plugin-bridge',
   imports: [
     FormsModule,
     NgbAlert,
     QrcodeComponent,
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './plugin-bridge.component.html',
+  styleUrl: './plugin-bridge.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PluginBridgeComponent implements OnInit {
   // 1. Injected Dependencies
@@ -58,34 +60,34 @@ export class PluginBridgeComponent implements OnInit {
   public justInstalled = this.modalData.justInstalled ?? false
 
   // 3. Signals
-  public loading = signal(true)
-  public canConfigure = signal(true)
-  public saveInProgress = signal(false)
-  public configBlocks = signal<any[]>([])
-  public selectedBlock = signal<string>('0')
-  public isPlatform = signal<boolean>(false)
-  public enabledBlocks = signal<Record<number, boolean>>({})
-  public matterEnabledBlocks = signal<Record<number, boolean>>({})
+  public readonly loading = signal(true)
+  public readonly canConfigure = signal(true)
+  public readonly saveInProgress = signal(false)
+  public readonly configBlocks = signal<any[]>([])
+  public readonly selectedBlock = signal<string>('0')
+  public readonly isPlatform = signal<boolean>(false)
+  public readonly enabledBlocks = signal<Record<number, boolean>>({})
+  public readonly matterEnabledBlocks = signal<Record<number, boolean>>({})
 
   // 6. Other Properties
   private matterExplicitlyDisabledBeforeChildBridge: Set<number> = new Set()
   private bridgeConfigs = new Map<string, BridgeConfig>()
   private originalScheduledRestartCrons = new Map<string, string | null>()
   private originalHideAlerts = new Map<string, { hideHapAlert?: boolean, hideMatterAlert?: boolean }>()
-  public bridgeCache = signal<Map<number, Record<string, any>>>(new Map())
-  public originalBridges = signal<any[]>([])
-  public deviceInfo = signal<Map<string, DeviceInfo | false>>(new Map())
-  public matterBridgeCache = signal<Map<number, Record<string, any>>>(new Map())
-  public originalMatterBridges = signal<any[]>([])
-  public matterDeviceInfo = signal<Map<string, any>>(new Map())
-  public deleteMatterBridges = signal<PluginBridgeMatterBridge[]>([])
-  public canShowBridgeDebug = signal<boolean>(false)
-  public deleteBridges = signal<PluginBridgeDeleteBridge[]>([])
-  public deletingPairedBridge = signal<boolean>(false)
-  public accessoryBridgeLinks = signal<PluginBridgeAccessoryLink[]>([])
-  public bridgesAvailableForLink = signal<PluginBridgeAccessoryLink[]>([])
-  public currentlySelectedLink = signal<PluginBridgeAccessoryLink | null>(null)
-  public currentBridgeHasLinks = signal<boolean>(false)
+  public readonly bridgeCache = signal<Map<number, Record<string, any>>>(new Map())
+  public readonly originalBridges = signal<any[]>([])
+  public readonly deviceInfo = signal<Map<string, DeviceInfo | false>>(new Map())
+  public readonly matterBridgeCache = signal<Map<number, Record<string, any>>>(new Map())
+  public readonly originalMatterBridges = signal<any[]>([])
+  public readonly matterDeviceInfo = signal<Map<string, any>>(new Map())
+  public readonly deleteMatterBridges = signal<PluginBridgeMatterBridge[]>([])
+  public readonly canShowBridgeDebug = signal<boolean>(false)
+  public readonly deleteBridges = signal<PluginBridgeDeleteBridge[]>([])
+  public readonly deletingPairedBridge = signal<boolean>(false)
+  public readonly accessoryBridgeLinks = signal<PluginBridgeAccessoryLink[]>([])
+  public readonly bridgesAvailableForLink = signal<PluginBridgeAccessoryLink[]>([])
+  public readonly currentlySelectedLink = signal<PluginBridgeAccessoryLink | null>(null)
+  public readonly currentBridgeHasLinks = signal<boolean>(false)
   public isMatterSupported = this.$settings.isFeatureEnabled('matterSupport')
   public readonly defaultIcon = 'assets/hb-icon.png'
   public readonly linkChildBridges = '<a href="https://github.com/homebridge/homebridge/wiki/Child-Bridges" target="_blank"><i class="fas fa-external-link-alt primary-text"></i></a>'
@@ -1025,6 +1027,10 @@ export class PluginBridgeComponent implements OnInit {
   /**
    * Update scheduled restart cron locally (will be saved when modal is saved)
    */
+  public asInputElement(target: EventTarget | null): HTMLInputElement {
+    return target as HTMLInputElement
+  }
+
   public onScheduledRestartCronChange(value: string, username: string): void {
     if (!username) {
       return

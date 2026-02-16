@@ -109,10 +109,6 @@
               "src/scss/styles.scss"
             ],
             "allowedCommonJsDependencies": [
-              "@homebridge/hap-client/dist/hap-types",
-              "@xterm/addon-fit",
-              "@xterm/addon-web-links",
-              "@xterm/xterm",
               "ajv/dist/2019",
               "ajv-formats",
               "ajv-keywords",

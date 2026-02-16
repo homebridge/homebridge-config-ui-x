@@ -13,8 +13,7 @@ import { ConvertTempPipe } from '@/app/core/pipes/convert-temp.pipe'
 import { SettingsService } from '@/app/core/ui/settings.service'
 
 @Component({
-  templateUrl: './thermostat.manage.component.html',
-  standalone: true,
+  selector: 'app-thermostat-manage',
   imports: [
     FormsModule,
     NouisliderComponent,
@@ -23,6 +22,8 @@ import { SettingsService } from '@/app/core/ui/settings.service'
     ConvertTempPipe,
     UpperCasePipe,
   ],
+  standalone: true,
+  templateUrl: './thermostat.manage.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ThermostatManageComponent extends BaseManageComponent {
@@ -81,6 +82,24 @@ export class ThermostatManageComponent extends BaseManageComponent {
 
     // Apply gradient when mode changes externally
     this.applyThermostatGradient()
+  }
+
+  public getStatusClass(): string {
+    const state = this.service.values?.CurrentHeatingCoolingState
+    const target = this.service.values?.TargetHeatingCoolingState
+    if (state === 2) {
+      return 'status-color-cooling'
+    }
+
+    if (state === 1) {
+      return 'status-color-heating'
+    }
+
+    if (target === 3) {
+      return 'status-color-active'
+    }
+
+    return 'status-color-inactive'
   }
 
   public setTargetMode(value: number, event: MouseEvent) {

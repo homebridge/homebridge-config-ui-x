@@ -1,18 +1,26 @@
 <div class="accessory-box" [class.accessory-on]="service().values?.ChargingState === 1">
   <div class="d-flex flex-column h-100">
-    <div [attr.aria-label]="'accessories.core.battery' | translate" class="accessory-svg">
+    <div class="accessory-svg" [attr.aria-label]="'accessories.core.battery' | translate">
       <svg width="32px" height="32px" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
         <! -- filler colour - ->
         <rect
           x="1"
           y="5"
-          [attr.width]="Math.round(29 / 100 * (service().values?.BatteryLevel || 0))"
           height="13"
           rx="2"
           stroke="none"
-          [attr.fill]="service().values?.ChargingState === 1 ? '#4caf50' : (service().values?.StatusLowBattery === 1 ? '#e69533' : '#808080')"
-          [attr.fill-opacity]="service().values?.ChargingState === 1 ? '0.5' : (service().values?.StatusLowBattery === 1 ? '0.5' : '1')"
           stroke-width="0"
+          [attr.width]="Math.round((29 / 100) * (service().values?.BatteryLevel || 0))"
+          [attr.fill]="
+            service().values?.ChargingState === 1
+              ? '#4caf50'
+              : service().values?.StatusLowBattery === 1
+                ? '#e69533'
+                : '#808080'
+          "
+          [attr.fill-opacity]="
+            service().values?.ChargingState === 1 ? '0.5' : service().values?.StatusLowBattery === 1 ? '0.5' : '1'
+          "
         />
 
         <! -- battery outline - ->
@@ -30,12 +38,21 @@
 
     <div class="accessory-label mt-auto">{{ service().customName || service().serviceName }}</div>
     <div class="accessory-label grey-text">
-      @if (service().values?.ChargingState === 0) { {{ 'accessories.control.battery_notcharging' | translate }} } @else
-      { @if (service().values?.ChargingState === 1) { {{ 'accessories.control.battery_charging' | translate }} } @else {
-      @if (service().values?.ChargingState === 2) { {{ 'accessories.control.battery_notchargeable' | translate }} }
-      @else if (service().values?.StatusLowBattery === 1 || service().values?.BatteryLevel === 0) {
-      <span class="red-text">{{ 'accessories.control.battery_low' | translate }}</span>} @else { {{
-      'accessories.control.battery_charged' | translate }} } } }
+      @if (service().values?.ChargingState === 0) {
+        {{ 'accessories.control.battery_notcharging' | translate }}
+      } @else {
+        @if (service().values?.ChargingState === 1) {
+          {{ 'accessories.control.battery_charging' | translate }}
+        } @else {
+          @if (service().values?.ChargingState === 2) {
+            {{ 'accessories.control.battery_notchargeable' | translate }}
+          } @else if (service().values?.StatusLowBattery === 1 || service().values?.BatteryLevel === 0) {
+            <span class="red-text">{{ 'accessories.control.battery_low' | translate }}</span>
+          } @else {
+            {{ 'accessories.control.battery_charged' | translate }}
+          }
+        }
+      }
     </div>
   </div>
 </div>

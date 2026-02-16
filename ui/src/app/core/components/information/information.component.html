@@ -11,51 +11,58 @@
   </div>
   <div class="modal-body text-center">
     @if (faIconClass) {
-    <i class="fas {{ faIconClass }} mb-3" style="font-size: 75px"></i>
-    } @if (subtitle) {
-    <h5 class="mb-3" [innerHTML]="subtitle"></h5>
+      <i [class]="`fas ${faIconClass} mb-3 icon-xl`"></i>
+    }
+    @if (subtitle) {
+      <h5 class="mb-3" [innerHTML]="subtitle"></h5>
     }
     <p class="mb-0" [innerHTML]="message"></p>
     @if (message2) {
-    <p class="mb-0 mt-3" [innerHTML]="message2"></p>
-    } @if (markdownMessage2) {
-    <div class="alert p-3 mt-3">
-      <markdown class="plugin-md" [data]="markdownMessage2" />
-    </div>
+      <p class="mb-0 mt-3" [innerHTML]="message2"></p>
+    }
+    @if (markdownMessage2) {
+      <div class="alert p-3 mt-3">
+        <markdown class="plugin-md" [data]="markdownMessage2" />
+      </div>
     }
   </div>
   <div class="modal-footer justify-content-between">
     <div class="text-start">
       @if (ctaButtonLink) {
-      <button
-        type="button"
-        class="btn btn-elegant"
-        data-bs-dismiss="modal"
-        (click)="dismissModal()"
-        [attr.aria-label]="'form.button_close' | translate"
-      >
-        {{ 'form.button_close' | translate }}
-      </button>
+        <button
+          type="button"
+          class="btn btn-elegant"
+          data-bs-dismiss="modal"
+          [attr.aria-label]="'form.button_close' | translate"
+          (click)="dismissModal()"
+        >
+          {{ 'form.button_close' | translate }}
+        </button>
       }
     </div>
     <div class="text-center">
       @if (!ctaButtonLink) {
-      <button
-        type="button"
-        class="btn btn-elegant"
-        data-bs-dismiss="modal"
-        (click)="dismissModal()"
-        [attr.aria-label]="'form.button_close' | translate"
-      >
-        {{ 'form.button_close' | translate }}
-      </button>
+        <button
+          type="button"
+          class="btn btn-elegant"
+          data-bs-dismiss="modal"
+          [attr.aria-label]="'form.button_close' | translate"
+          (click)="dismissModal()"
+        >
+          {{ 'form.button_close' | translate }}
+        </button>
       }
     </div>
     <div class="text-end">
       @if (ctaButtonLink) {
-      <a class="btn btn-primary text-decoration-none" target="_blank" [href]="ctaButtonLink" rel="noopener noreferrer">
-        {{ ctaButtonLabel }} <i class="fas fa-external-link-alt"></i>
-      </a>
+        <a
+          class="btn btn-primary text-decoration-none"
+          target="_blank"
+          rel="noopener noreferrer"
+          [href]="ctaButtonLink"
+        >
+          {{ ctaButtonLabel }} <i class="fas fa-external-link-alt"></i>
+        </a>
       }
     </div>
   </div>

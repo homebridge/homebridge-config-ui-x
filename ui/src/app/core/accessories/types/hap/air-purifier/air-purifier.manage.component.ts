@@ -9,14 +9,15 @@ import { Subject } from 'rxjs'
 import { BaseManageComponent } from '@/app/core/accessories/types/base-manage.component'
 
 @Component({
-  templateUrl: './air-purifier.manage.component.html',
-  styleUrls: ['./air-purifier.component.scss'],
-  standalone: true,
+  selector: 'app-air-purifier-manage',
   imports: [
     FormsModule,
     NouisliderComponent,
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './air-purifier.manage.component.html',
+  styleUrl: './air-purifier.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AirPurifierManageComponent extends BaseManageComponent {

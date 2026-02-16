@@ -17,14 +17,15 @@ import { ConvertMiredPipe } from '@/app/core/pipes/convert-mired.pipe'
 import { ColourService } from '@/app/core/utilities/colour.service'
 
 @Component({
-  templateUrl: './color-temperature-light.manage.component.html',
-  standalone: true,
+  selector: 'app-color-temperature-light-manage',
   imports: [
     FormsModule,
     NouisliderComponent,
     TranslatePipe,
     ConvertMiredPipe,
   ],
+  standalone: true,
+  templateUrl: './color-temperature-light.manage.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ColorTemperatureLightManageComponent implements OnInit {

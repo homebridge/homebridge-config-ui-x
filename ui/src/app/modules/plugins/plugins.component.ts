@@ -1,4 +1,4 @@
-import { Component, DestroyRef, ElementRef, inject, OnDestroy, OnInit, signal, viewChild } from '@angular/core'
+import { ChangeDetectionStrategy, Component, DestroyRef, ElementRef, inject, OnDestroy, OnInit, signal, viewChild } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { NavigationEnd, Router, Event as RouterEvent } from '@angular/router'
@@ -24,9 +24,7 @@ export interface CanComponentDeactivate {
 }
 
 @Component({
-  templateUrl: './plugins.component.html',
-  styleUrls: ['./plugins.component.scss'],
-  standalone: true,
+  selector: 'app-plugins',
   imports: [
     SpinnerComponent,
     FormsModule,
@@ -35,6 +33,10 @@ export interface CanComponentDeactivate {
     TranslatePipe,
     NgbTooltip,
   ],
+  standalone: true,
+  templateUrl: './plugins.component.html',
+  styleUrl: './plugins.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 
 export class PluginsComponent implements OnInit, OnDestroy, CanComponentDeactivate {
@@ -54,16 +56,16 @@ export class PluginsComponent implements OnInit, OnDestroy, CanComponentDeactiva
   readonly searchInput = viewChild<ElementRef>('searchInput')
 
   // Signals
-  public mainError = signal(false)
-  public loading = signal(true)
-  public tab = signal<'main' | 'stats'>('main')
-  public installedPlugins = signal<Plugin[]>([])
-  public childBridges = signal<ChildBridge[]>([])
-  public showSearchBar = signal(false)
-  public showExitButton = signal(false)
+  public readonly mainError = signal(false)
+  public readonly loading = signal(true)
+  public readonly tab = signal<'main' | 'stats'>('main')
+  public readonly installedPlugins = signal<Plugin[]>([])
+  public readonly childBridges = signal<ChildBridge[]>([])
+  public readonly showSearchBar = signal(false)
+  public readonly showExitButton = signal(false)
 
   // Other properties
-  private isSearchMode = signal(false)
+  private readonly isSearchMode = signal(false)
   private io: IoNamespace
   public readonly isAdmin = this.$auth.user.admin
   public form = new FormGroup({
