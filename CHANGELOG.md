@@ -16,6 +16,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 
 - fixed installing plugins from backup restore
 - update types for github plugin lists
+- list angular eslint rules in config for the future
 
 ### Homebridge Dependencies
 

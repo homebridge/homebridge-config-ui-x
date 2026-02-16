@@ -126,7 +126,7 @@ export class SetupWizardComponent implements OnInit {
       this.io = this.$ws.connectToNamespace('backup')
       const outputBox = document.getElementById('output')
       let spinnerElement: HTMLDivElement | null = null
-      const ansiRegex = /\x1B\[[\d;]*[a-zA-Z]/g // eslint-disable-line no-control-regex
+      const ansiRegex = /\x1B\[[\d;]*[a-z]/gi // eslint-disable-line no-control-regex
       this.io.socket.on('stdout', (data) => {
         const lines = data.split(/[\r\n]+/)
         lines.forEach((line: string) => {
