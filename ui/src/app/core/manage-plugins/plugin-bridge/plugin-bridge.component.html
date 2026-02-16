@@ -177,8 +177,7 @@
       @if (!justInstalled) {
       <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
         <label class="mb-2 mb-md-0 w-100 w-md-50">
-          {{ 'settings.startup.scheduled_restart' | translate }}
-          <span class="badge badge-primary ms-1">{{ 'common.labels.beta' | translate }}</span><br />
+          {{ 'settings.startup.scheduled_restart' | translate }}<br />
           <small
             class="grey-text"
             [innerHtml]="'settings.startup.scheduled_restart_desc' | translate: { link: linkCron }"

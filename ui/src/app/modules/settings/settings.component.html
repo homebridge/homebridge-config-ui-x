@@ -371,8 +371,7 @@
       } @if (!isItemHidden('setting-scheduled-restart')) {
       <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
         <span>
-          {{ 'settings.startup.scheduled_restart' | translate }}
-          <span class="badge badge-primary ms-1">{{ 'common.labels.beta' | translate }}</span><br />
+          {{ 'settings.startup.scheduled_restart' | translate }}<br />
           <small class="grey-text pe-2">
             <span [innerHtml]="'settings.startup.scheduled_restart_desc' | translate: { link: linkCron }"></span>
             {{'settings.startup.scheduled_restart_desc_2' | translate }}
