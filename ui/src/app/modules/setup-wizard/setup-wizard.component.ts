@@ -125,13 +125,32 @@ export class SetupWizardComponent implements OnInit {
       // start restore
       this.io = this.$ws.connectToNamespace('backup')
       const outputBox = document.getElementById('output')
+      let spinnerElement: HTMLDivElement | null = null
+      const ansiRegex = /\x1B\[[\d;]*[a-zA-Z]/g // eslint-disable-line no-control-regex
       this.io.socket.on('stdout', (data) => {
-        const lines = data.split('\n\r')
+        const lines = data.split(/[\r\n]+/)
         lines.forEach((line: string) => {
-          if (line && !/^[⠇⠏⠋⠙⠹⠸]+$/.test(line)) { // Ignore lines with invalid characters
+          if (!line) {
+            return
+          }
+          const cleanLine = line.replace(ansiRegex, '').trim()
+          if (!cleanLine) {
+            return
+          }
+          const isSpinner = /^[⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏]/.test(cleanLine)
+          if (isSpinner) {
+            if (!spinnerElement) {
+              spinnerElement = document.createElement('div')
+              outputBox.appendChild(spinnerElement)
+            }
+            spinnerElement.textContent = cleanLine
+          } else {
+            if (spinnerElement) {
+              spinnerElement.remove()
+              spinnerElement = null
+            }
             const lineElement = document.createElement('div')
-            const regex = /\x1B\[(\d{1,2}(;\d{1,2})?)?[mGK]/g // eslint-disable-line no-control-regex
-            lineElement.innerHTML = line.replace(regex, '')
+            lineElement.innerHTML = cleanLine
             if (line.includes('[0;31m')) {
               lineElement.classList.add('red-text')
             } else if (line.includes('[0;32m')) {
@@ -142,8 +161,8 @@ export class SetupWizardComponent implements OnInit {
               lineElement.classList.add('cyan-text')
             }
             outputBox.appendChild(lineElement)
-            outputBox.scrollTop = outputBox.scrollHeight
           }
+          outputBox.scrollTop = outputBox.scrollHeight
         })
       })
       this.restoreStarted = true

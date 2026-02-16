@@ -7,6 +7,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 ### UI Changes
 
 - updates to the `uk.json` language file (#2724) (@xrust83)
+- improve loading spinner on backup restore
 
 ### Other Changes
 
