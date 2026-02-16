@@ -46,6 +46,50 @@ export class LightbulbComponent implements OnInit, OnDestroy {
     }
   }
 
+  public getBulbFill(): string {
+    const values = this.service().values
+    if (!(values?.On || values?.Active)) {
+      return 'none'
+    }
+
+    if ('Hue' in values) {
+      return `hsl(${values?.Hue}, ${values?.Saturation}%, 50%)`
+    }
+
+    if ('ColorTemperature' in values) {
+      return this.$colour.kelvinToHsl(this.$colour.miredToKelvin(values?.ColorTemperature))
+    }
+    return '#ffcf55'
+  }
+
+  public getBrightnessLabel(): string {
+    const values = this.service().values
+    if (!values?.On) {
+      return ''
+    }
+
+    let label = `${values?.Brightness}%`
+    if (this.hasAdaptiveLighting()) {
+      const cls = this.isAdaptiveLightingEnabled() ? 'on-text' : 'grey-text'
+      label += ` &middot; <i class='fa fa-sun ${cls}'></i>`
+    }
+
+    return label
+  }
+
+  public getOnOffLabel(): string {
+    const values = this.service().values
+    const isOn = values?.On || values?.Active
+    if (!isOn) {
+      return ''
+    }
+    if (this.hasAdaptiveLighting()) {
+      const cls = this.isAdaptiveLightingEnabled() ? 'on-text' : 'grey-text'
+      return ` &middot; <i class='fa fa-sun ${cls}'></i>`
+    }
+    return ''
+  }
+
   public onClick() {
     if (!this.readyForControl()) {
       return

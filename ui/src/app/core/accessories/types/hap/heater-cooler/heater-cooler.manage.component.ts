@@ -101,6 +101,25 @@ export class HeaterCoolerManageComponent extends BaseManageComponent {
     this.applyAllGradients()
   }
 
+  public getStatusColor(): string {
+    const values = this.service.values
+    const isActive = values?.Active || values?.On
+    const isCooling = (values?.CurrentHeaterCoolerState === 3 && values?.Active === 1)
+      || (this.type === 'cooler' && isActive)
+    const isHeating = (values?.CurrentHeaterCoolerState === 2 && values?.Active === 1)
+      || (this.type === 'heater' && isActive)
+
+    if (isCooling) {
+      return '#1e8bbd'
+    }
+
+    if (isHeating) {
+      return '#e69533'
+    }
+
+    return isActive ? '#42d672' : '#7b7b7b'
+  }
+
   public setTargetState(value: number, event: MouseEvent) {
     this.targetState = value
     void this.service.getCharacteristic('Active').setValue(this.targetState)

@@ -34,6 +34,25 @@ export class HumidifierDehumidifierComponent implements OnInit {
     this.hasDehumidifier = 'RelativeHumidityDehumidifierThreshold' in this.service().values
   }
 
+  public getStatusFill(): string {
+    const values = this.service().values
+    const isActive = values?.Active || values?.On
+    const isHumidifying = (values?.CurrentHumidifierDehumidifierState === 2 && values?.Active === 1)
+      || (this.type() === 'humidifier' && isActive)
+    const isDehumidifying = (values?.CurrentHumidifierDehumidifierState === 3 && values?.Active === 1)
+      || (this.type() === 'dehumidifier' && isActive)
+
+    if (isHumidifying) {
+      return 'url(#humidifyingGradient)'
+    }
+
+    if (isDehumidifying) {
+      return 'url(#dehumidifyingGradient)'
+    }
+
+    return isActive ? '#42d672' : '#7b7b7b'
+  }
+
   public onClick() {
     if (!this.readyForControl()) {
       return

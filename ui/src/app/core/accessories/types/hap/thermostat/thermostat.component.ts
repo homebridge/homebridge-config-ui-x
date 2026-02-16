@@ -34,6 +34,24 @@ export class ThermostatComponent {
 
   public temperatureUnits = this.$settings.env.temperatureUnits
 
+  public getStatusFill(): string {
+    const state = this.service().values?.CurrentHeatingCoolingState
+    const target = this.service().values?.TargetHeatingCoolingState
+    if (state === 2) {
+      return 'url(#coolingGradient)'
+    }
+
+    if (state === 1) {
+      return 'url(#heatingGradient)'
+    }
+
+    if (target === 3) {
+      return '#42d672'
+    }
+
+    return '#7b7b7b'
+  }
+
   public onClick() {
     if (!this.readyForControl()) {
       return

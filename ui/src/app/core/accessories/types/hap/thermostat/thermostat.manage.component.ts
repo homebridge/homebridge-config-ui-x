@@ -83,6 +83,24 @@ export class ThermostatManageComponent extends BaseManageComponent {
     this.applyThermostatGradient()
   }
 
+  public getStatusColor(): string {
+    const state = this.service.values?.CurrentHeatingCoolingState
+    const target = this.service.values?.TargetHeatingCoolingState
+    if (state === 2) {
+      return '#1e8bbd'
+    }
+
+    if (state === 1) {
+      return '#e69533'
+    }
+
+    if (target === 3) {
+      return '#42d672'
+    }
+
+    return '#7b7b7b'
+  }
+
   public setTargetMode(value: number, event: MouseEvent) {
     this.targetMode = value
     void this.service.getCharacteristic('TargetHeatingCoolingState').setValue(this.targetMode)

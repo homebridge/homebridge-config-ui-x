@@ -58,6 +58,23 @@ export class MatterThermostatComponent {
     })
   }
 
+  public getStatusFill(): string {
+    const mode = this.systemMode()
+    if (mode === 3) {
+      return 'url(#coolingGradient)'
+    }
+
+    if (mode === 4) {
+      return 'url(#heatingGradient)'
+    }
+
+    if (mode === 1) {
+      return '#42d672'
+    }
+
+    return '#7b7b7b'
+  }
+
   public isOn = computed(() => isThermostatOn(this.service()))
 
   public systemMode = computed(() => getThermostatSystemMode(this.service()))

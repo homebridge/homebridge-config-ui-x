@@ -18,6 +18,14 @@ export class SwitchComponent {
   public service = input.required<ServiceTypeX>()
   public readyForControl = input<boolean>(false)
 
+  public isOn(): boolean {
+    const values = this.service().values
+    return !!(values?.On
+      || values?.Active
+      || ('LockTargetState' in values && !values?.LockTargetState)
+      || ('CurrentDoorState' in values && [0, 2].includes(values?.CurrentDoorState)))
+  }
+
   public onClick() {
     if (!this.readyForControl()) {
       return

@@ -42,6 +42,25 @@ export class HeaterCoolerComponent implements OnInit {
     this.hasCooling.set('CoolingThresholdTemperature' in this.service().values)
   }
 
+  public getStatusFill(): string {
+    const values = this.service().values
+    const isActive = values?.Active || values?.On
+    const isCooling = (values?.CurrentHeaterCoolerState === 3 && values?.Active === 1)
+      || (this.type() === 'cooler' && isActive)
+    const isHeating = (values?.CurrentHeaterCoolerState === 2 && values?.Active === 1)
+      || (this.type() === 'heater' && isActive)
+
+    if (isCooling) {
+      return 'url(#coolingGradient)'
+    }
+
+    if (isHeating) {
+      return 'url(#heatingGradient)'
+    }
+
+    return isActive ? '#42d672' : '#7b7b7b'
+  }
+
   public onClick() {
     if (!this.readyForControl()) {
       return

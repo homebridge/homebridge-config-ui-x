@@ -12,12 +12,7 @@
   <div class="modal-body text-center px-5">
     @if (currentTemperature !== null) {
       <h6 class="mt-2 mb-4 fs-4">
-        <i
-          class="fas fa-temperature-full"
-          [style.color]="
-            targetMode === 3 ? '#1e8bbd' : targetMode === 4 ? '#e69533' : targetMode === 1 ? '#42d672' : '#7b7b7b'
-          "
-        ></i
+        <i class="fas fa-temperature-full" [style.color]="getStatusColor()"></i
         >{{ currentTemperature | convertTemp | number: '1.0-1' }}°{{ temperatureUnits | uppercase }}
       </h6>
     }

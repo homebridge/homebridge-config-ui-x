@@ -92,6 +92,25 @@ export class HumidifierDehumidifierManageComponent extends BaseManageComponent {
     this.applyAllGradients()
   }
 
+  public getStatusColor(): string {
+    const values = this.service.values
+    const isActive = values?.Active || values?.On
+    const isHumidifying = (values?.CurrentHumidifierDehumidifierState === 2 && values?.Active === 1)
+      || (this.type === 'humidifier' && isActive)
+    const isDehumidifying = (values?.CurrentHumidifierDehumidifierState === 3 && values?.Active === 1)
+      || (this.type === 'dehumidifier' && isActive)
+
+    if (isHumidifying) {
+      return '#1e8bbd'
+    }
+
+    if (isDehumidifying) {
+      return '#e69533'
+    }
+
+    return isActive ? '#42d672' : '#7b7b7b'
+  }
+
   private loadTargetHumidity() {
     this.targetDehumidifierHumidity = this.service.getCharacteristic('RelativeHumidityDehumidifierThreshold')?.value as number
     this.targetHumidifierHumidity = this.service.getCharacteristic('RelativeHumidityHumidifierThreshold')?.value as number

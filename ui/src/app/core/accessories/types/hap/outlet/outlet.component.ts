@@ -23,6 +23,14 @@ export class OutletComponent {
 
   public browserLang = this.$settings.browserLang
 
+  public isOn(): boolean {
+    const values = this.service().values
+    return !!(values?.On
+      || values?.Active
+      || ('LockTargetState' in values && !values?.LockTargetState)
+      || ('CurrentDoorState' in values && [0, 2].includes(values?.CurrentDoorState)))
+  }
+
   public onClick() {
     if (!this.readyForControl()) {
       return

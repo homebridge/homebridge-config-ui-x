@@ -53,15 +53,7 @@
           stroke="#7f7f7f"
           stroke-width="0.75"
           fill-opacity="0.5"
-          [attr.fill]="
-            systemMode() === 3
-              ? 'url(#coolingGradient)'
-              : systemMode() === 4
-                ? 'url(#heatingGradient)'
-                : systemMode() === 1
-                  ? '#42d672'
-                  : '#7b7b7b'
-          "
+          [attr.fill]="getStatusFill()"
         />
         <! -- current temperature - ->
         @if (currentTemperature() !== null) {

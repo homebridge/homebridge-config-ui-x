@@ -66,17 +66,7 @@
           stroke="#7f7f7f"
           stroke-width="1.2"
           fill-opacity="0.5"
-          [attr.fill]="
-            (service().values?.CurrentHeaterCoolerState === 3 && service().values?.Active === 1) ||
-            (type() === 'cooler' && (service().values?.Active || service().values?.On))
-              ? 'url(#coolingGradient)'
-              : (service().values?.CurrentHeaterCoolerState === 2 && service().values?.Active === 1) ||
-                  (type() === 'heater' && (service().values?.Active || service().values?.On))
-                ? 'url(#heatingGradient)'
-                : service().values?.Active || service().values?.On
-                  ? '#42d672'
-                  : '#7b7b7b'
-          "
+          [attr.fill]="getStatusFill()"
         />
         <! -- current temperature - ->
         @if ('CurrentTemperature' in service().values) {

@@ -61,15 +61,7 @@
           stroke="#7f7f7f"
           stroke-width="0.75"
           fill-opacity="0.5"
-          [attr.fill]="
-            service().values?.CurrentHeatingCoolingState === 2
-              ? 'url(#coolingGradient)'
-              : service().values?.CurrentHeatingCoolingState === 1
-                ? 'url(#heatingGradient)'
-                : service().values?.TargetHeatingCoolingState === 3
-                  ? '#42d672'
-                  : '#7b7b7b'
-          "
+          [attr.fill]="getStatusFill()"
         />
         <! -- current temperature - ->
         @if ('CurrentTemperature' in service().values) {
