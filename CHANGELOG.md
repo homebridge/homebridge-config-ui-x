@@ -20,6 +20,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - lint: apply `angular-template/click-events-have-key-events`
 - lint: apply `angular-template/conditional-complexity`
 - lint: apply `angular-template/no-any`
+- lint: apply `angular-template/no-autofocus`
 
 ### Homebridge Dependencies
 

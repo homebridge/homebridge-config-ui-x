@@ -134,7 +134,7 @@ export default antfu(
       'angular-template/label-has-associated-control': 'off',
       'angular-template/mouse-events-have-key-events': 'error',
       'angular-template/no-any': 'error',
-      // 'angular-template/no-autofocus': 'error',
+      'angular-template/no-autofocus': 'error',
       // 'angular-template/no-call-expression': 'error',
       // 'angular-template/no-distracting-elements': 'error',
       // 'angular-template/no-duplicate-attributes': 'error',
