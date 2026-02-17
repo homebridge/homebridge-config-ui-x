@@ -15,8 +15,7 @@
       <div class="text-center primary-text my-5 w-100">
         <i class="fa fa-circle-notch fa-spin" style="font-size: 75px"></i>
       </div>
-    }
-    @if (!loading()) {
+    } @else {
       <div class="text-center mb-0">
         <i class="fas fa-trash primary-text" style="font-size: 75px"></i>
       </div>
@@ -105,8 +104,7 @@
       >
         @if (!uninstalling()) {
           {{ 'plugins.manage.uninstall' | translate }}
-        }
-        @if (uninstalling()) {
+        } @else {
           <i class="fas fa-circle-notch fa-spin"></i>
         }
       </button>

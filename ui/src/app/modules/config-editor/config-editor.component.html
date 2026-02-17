@@ -19,8 +19,7 @@
         >
           <i class="fas fa-times"></i>
         </button>
-      }
-      @if (!originalConfig()) {
+      } @else {
         <button
           type="button"
           class="btn btn-elegant waves-effect my-0 me-2"
@@ -68,8 +67,7 @@
       >
         @if (!saveInProgress()) {
           <i class="fas fa-floppy-disk"></i>
-        }
-        @if (saveInProgress()) {
+        } @else {
           <i class="fas fa-circle-notch fa-spin"></i>
         }
       </button>

@@ -20,8 +20,7 @@
       </div>
       @if (allPluginsSupported()) {
         <p class="text-center">All your plugins are marked as compatible with Homebridge v2.</p>
-      }
-      @if (!allPluginsSupported()) {
+      } @else {
         <p class="text-center">
           Some of your plugins are not explicitly marked as compatible with Homebridge v2. This does
           <span class="fw-bold">not</span> necessarily mean that they won't work. We just can't guarantee that they

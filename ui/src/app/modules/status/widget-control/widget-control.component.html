@@ -185,8 +185,7 @@
                     <option [value]="networkInterface">{{ networkInterface }}</option>
                   }
                 </select>
-              }
-              @if (!networkInterfaces().length) {
+              } @else {
                 <span class="grey-text">{{ 'status.widget.network.none_selected' | translate }}</span>
               }
             </div>

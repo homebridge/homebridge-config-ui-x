@@ -24,8 +24,7 @@
         <p class="fw-bold mb-1">{{ 'users.setup_2fa_cannot_setup_2fa' | translate }}</p>
         <p class="mb-0">{{ 'users.setup_2fa_server_time_out' | translate: { timeDiffError: timeDiffError() } }}</p>
       </ngb-alert>
-    }
-    @if (!timeDiffError()) {
+    } @else {
       <ul class="list-group list-group-box mb-0">
         <li class="list-group-item text-center">
           <div class="text-center w-100 d-flex justify-content-center my-2">

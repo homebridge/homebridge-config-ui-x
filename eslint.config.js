@@ -144,7 +144,7 @@ export default antfu(
       'angular-template/no-negated-async': 'error',
       'angular-template/no-nested-tags': 'error',
       'angular-template/no-positive-tabindex': 'error',
-      // 'angular-template/prefer-at-else': 'error',
+      'angular-template/prefer-at-else': 'error',
       // 'angular-template/prefer-at-empty': 'error',
       // 'angular-template/prefer-built-in-pipes': 'error',
       // 'angular-template/prefer-class-binding': 'error',

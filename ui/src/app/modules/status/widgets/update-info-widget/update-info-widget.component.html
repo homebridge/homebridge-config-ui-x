@@ -16,12 +16,10 @@
           <div class="mb-0 d-flex align-items-center">
             @if (!dockerStatusDone()) {
               <i class="fas fa-lg fa-circle-notch fa-spin primary-text"></i>
-            }
-            @if (dockerStatusDone()) {
+            } @else {
               @if (dockerInfo().updateAvailable) {
                 <i class="fas fa-lg fa-arrow-alt-circle-up orange-text"></i>
-              }
-              @if (!dockerInfo().updateAvailable) {
+              } @else {
                 <i class="fas fa-lg fa-check-circle green-text"></i>
               }
             }
@@ -32,8 +30,7 @@
             <br />
             @if (!dockerStatusDone()) {
               <span class="grey-text small">{{ 'status.homebridge.checking' | translate }}</span>
-            }
-            @if (dockerStatusDone()) {
+            } @else {
               <span class="grey-text small">{{ dockerInfo().currentVersion }}</span>
 
               @if (dockerInfo().updateAvailable && isAdmin) {
@@ -84,15 +81,13 @@
                         ></i>
                       </a>
                     }
-                  }
-                  @if (!homebridgePkg().installedVersion) {
+                  } @else {
                     <span>Homebridge</span>
                   }
                   <br />
                   @if (!homebridgePkg().installedVersion) {
                     <span class="grey-text small">{{ 'status.homebridge.checking' | translate }}</span>
-                  }
-                  @if (homebridgePkg().installedVersion) {
+                  } @else {
                     <span class="grey-text small">v{{ homebridgeVersion }}</span>
                     @if (homebridgePkg().updateAvailable && isAdmin) {
                       &middot;
@@ -124,8 +119,7 @@
                   <br />
                   @if (!homebridgeUiPkg().installedVersion) {
                     <span class="grey-text small">{{ 'status.homebridge.checking' | translate }}</span>
-                  }
-                  @if (homebridgeUiPkg().installedVersion) {
+                  } @else {
                     <span class="grey-text small">v{{ packageVersion }}</span>
                     @if (homebridgeUiPkg().updateAvailable && isAdmin) {
                       &middot;
@@ -160,8 +154,7 @@
                   <br />
                   @if (!nodejsStatusDone()) {
                     <span class="grey-text small">{{ 'status.homebridge.checking' | translate }}</span>
-                  }
-                  @if (nodejsStatusDone()) {
+                  } @else {
                     <span class="grey-text small"
                       >{{ serverInfo()!.nodeVersion }}
                       @if (widget().showNpmVersion && nodejsInfo()!.npmVersion) {
@@ -240,15 +233,13 @@
                   ></i>
                 </a>
               }
-            }
-            @if (!homebridgePkg().installedVersion) {
+            } @else {
               <span>Homebridge</span>
             }
             <br />
             @if (!homebridgePkg().installedVersion) {
               <span class="grey-text small">{{ 'status.homebridge.checking' | translate }}</span>
-            }
-            @if (homebridgePkg().installedVersion) {
+            } @else {
               <span class="grey-text small">v{{ homebridgeVersion }}</span>
               @if (homebridgePkg().updateAvailable && isAdmin) {
                 &middot;
@@ -280,8 +271,7 @@
             <br />
             @if (!homebridgeUiPkg().installedVersion) {
               <span class="grey-text small">{{ 'status.homebridge.checking' | translate }}</span>
-            }
-            @if (homebridgeUiPkg().installedVersion) {
+            } @else {
               <span class="grey-text small">v{{ packageVersion }}</span>
               @if (homebridgeUiPkg().updateAvailable && isAdmin) {
                 &middot;
@@ -307,12 +297,10 @@
           <br />
           @if (!homebridgePluginStatusDone()) {
             <span class="grey-text small">{{ 'status.homebridge.checking' | translate }}</span>
-          }
-          @if (homebridgePluginStatusDone()) {
+          } @else {
             @if (!homebridgePluginStatus().length) {
               <span class="grey-text small">{{ 'status.homebridge.up_to_date' | translate }}</span>
-            }
-            @if (homebridgePluginStatus().length) {
+            } @else {
               @if (isAdmin) {
                 <a routerLink="/plugins" class="primary-text small">{{ 'plugins.button_update' | translate }}</a>
               } @else {
@@ -343,8 +331,7 @@
             <br />
             @if (!nodejsStatusDone()) {
               <span class="grey-text small">{{ 'status.homebridge.checking' | translate }}</span>
-            }
-            @if (nodejsStatusDone()) {
+            } @else {
               <span class="grey-text small"
                 >{{ serverInfo()!.nodeVersion }}
                 @if (widget().showNpmVersion && nodejsInfo()!.npmVersion) {

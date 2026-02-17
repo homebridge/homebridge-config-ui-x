@@ -46,8 +46,7 @@
             [class.is-invalid]="form.controls.password.dirty && form.controls.password.errors"
           />
         </div>
-      }
-      @if (twoFactorCodeRequired()) {
+      } @else {
         <div class="input-group mb-4">
           <span class="input-group-text custom-input"><i class="fas fa-key primary-text fa-lg"></i></span>
           <input

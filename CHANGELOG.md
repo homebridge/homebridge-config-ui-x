@@ -24,6 +24,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - lint: apply `angular-template/no-duplicate-attributes`
 - lint: apply `angular-template/no-interpolation-in-attributes`
 - lint: apply `angular-template/no-positive-tabindex`
+- lint: apply `angular-template/prefer-at-else`
 
 ### Homebridge Dependencies
 

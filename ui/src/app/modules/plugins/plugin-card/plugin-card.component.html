@@ -355,7 +355,7 @@
                         }
                         <! -- // - ->
                         <! -- child bridge start - ->
-                        @if (allChildBridgesStopped()) {
+                        @else {
                           <button type="button" ngbDropdownItem (click)="doChildBridgeAction('start')">
                             <i class="fas fa-play"></i>
                             {{

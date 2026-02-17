@@ -46,8 +46,7 @@
       >
         @if (!clicked()) {
           {{ 'form.button_reset' | translate }}
-        }
-        @if (clicked()) {
+        } @else {
           <i class="fas fa-circle-notch fa-spin"></i>
         }
       </button>

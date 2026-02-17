@@ -112,8 +112,7 @@
       >
         @if (!saveInProgress()) {
           {{ 'form.button_save' | translate }}
-        }
-        @if (saveInProgress()) {
+        } @else {
           <i class="fas fa-circle-notch fa-spin"></i>
         }
       </button>

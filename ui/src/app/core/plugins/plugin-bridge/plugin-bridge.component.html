@@ -17,8 +17,7 @@
       <div class="text-center primary-text my-5 w-100">
         <i class="fa fa-circle-notch fa-spin" style="font-size: 75px"></i>
       </div>
-    }
-    @if (!loading()) {
+    } @else {
       <div class="text-center">
         <img alt="Plugin Icon" class="mb-3 plugin-icon-card" [src]="plugin.icon" (error)="handleIconError()" />
       </div>
@@ -100,8 +99,7 @@
                 {{ 'child_bridge.config.prevent' | translate }}
               </div>
             </li>
-          }
-          @if (!currentBridgeHasLinks()) {
+          } @else {
             <li class="list-group-item d-flex justify-content-between align-items-center flex-row pb-2">
               <span class="text-start">
                 {{ (currentlySelectedLink() ? 'child_bridge.config.or_link' : 'child_bridge.config.use') | translate }}
@@ -611,13 +609,11 @@
           >
             @if (!saveInProgress()) {
               {{ 'form.button_save' | translate }}
-            }
-            @if (saveInProgress()) {
+            } @else {
               <i class="fas fa-circle-notch fa-spin"></i>
             }
           </button>
-        }
-        @if (!configBlocks().length) {
+        } @else {
           <button type="button" class="btn btn-primary" data-bs-dismiss="modal" (click)="openPluginConfig()">
             {{ 'plugins.button_settings' | translate }}
           </button>

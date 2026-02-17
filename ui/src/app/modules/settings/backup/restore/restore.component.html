@@ -23,8 +23,7 @@
       </ul>
       @if (selectedBackup) {
         <input class="form-control custom-input" type="text" disabled [value]="selectedBackup.fileName" />
-      }
-      @if (!selectedBackup) {
+      } @else {
         <input
           type="file"
           class="form-control"
@@ -58,8 +57,7 @@
           >
             {{ 'form.button_close' | translate }}
           </button>
-        }
-        @if (!setupWizardRestore) {
+        } @else {
           <button
             type="button"
             class="btn btn-elegant"
@@ -91,13 +89,11 @@
               }
               @if (uploadPercent() === 100) {
                 <span>{{ 'backup.label_extracting' | translate }}</span>
-              }
-              @if (uploadPercent() !== 100) {
+              } @else {
                 <span>{{ 'backup.label_uploading' | translate }}</span>
               }
             </span>
-          }
-          @if (!clicked()) {
+          } @else {
             {{ 'form.button_restore' | translate }}
           }
         </button>

@@ -16,8 +16,7 @@
         <i class="fas fa-circle-check primary-text" style="font-size: 75px"></i>
       </div>
       <p class="mb-0 text-center">{{ 'reset.no_accessories' | translate }}</p>
-    }
-    @if (accessoriesExist()) {
+    } @else {
       <div class="text-center mb-3">
         <i class="fas fa-network-wired primary-text" style="font-size: 75px"></i>
       </div>
@@ -128,8 +127,7 @@
             @if (toDelete().length > 0) {
               ({{ toDelete().length }})
             }
-          }
-          @if (clicked()) {
+          } @else {
             <i class="fas fa-circle-notch fa-spin"></i>
           }
         </button>

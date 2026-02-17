@@ -183,8 +183,7 @@
             @if (toDelete().length > 0) {
               ({{ toDelete().length }})
             }
-          }
-          @if (clicked()) {
+          } @else {
             <i class="fas fa-circle-notch fa-spin"></i>
           }
         </button>

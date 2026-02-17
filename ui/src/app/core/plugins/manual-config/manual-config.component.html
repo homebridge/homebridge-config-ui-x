@@ -149,8 +149,7 @@
             "
             [openDelay]="150"
           ></i>
-        }
-        @if (!schema?.singular) {
+        } @else {
           <button type="button" class="btn btn-elegant me-2" data-bs-dismiss="modal" (click)="addBlock()">
             <i class="fa fa-plus"></i>
           </button>
@@ -164,13 +163,11 @@
         >
           @if (!saveInProgress()) {
             {{ 'form.button_save' | translate }}
-          }
-          @if (saveInProgress()) {
+          } @else {
             <i class="fas fa-circle-notch fa-spin"></i>
           }
         </button>
-      }
-      @if (!canConfigure()) {
+      } @else {
         <button class="btn btn-primary" type="button" (click)="openFullConfigEditor()">
           {{ 'plugins.settings.label_open_config_editor' | translate }}
         </button>

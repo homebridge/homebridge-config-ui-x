@@ -1132,8 +1132,7 @@
                     }
                   </div>
                 </li>
-              }
-              @if (uiTerminalPersistenceFormControl.value) {
+              } @else {
                 @if (!isItemHidden('setting-terminal-buffer')) {
                   <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
                     <div class="d-flex flex-column">

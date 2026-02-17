@@ -109,8 +109,7 @@
       >
         @if (!clicked()) {
           {{ 'form.button_save' | translate }}
-        }
-        @if (clicked()) {
+        } @else {
           <i class="fas fa-circle-notch fa-spin"></i>
         }
       </button>

@@ -20,8 +20,7 @@
       <li [innerHTML]="'plugins.manage.scoped.info_2' | translate: { link: moreInfo }"></li>
       @if (onlineUpdateOk()) {
         <li>{{ 'plugins.manage.scoped.process' | translate }}</li>
-      }
-      @if (!onlineUpdateOk()) {
+      } @else {
         <li [innerHTML]="'plugins.manage.scoped.windows' | translate"></li>
         <li>{{ 'plugins.manage.manual_update_command' | translate }}</li>
       }

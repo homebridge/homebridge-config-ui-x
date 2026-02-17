@@ -160,8 +160,7 @@
                     <i class="fas fa-exclamation-circle"></i>
                     {{ backup.size }}MB
                   </span>
-                }
-                @if (backup.size <= maxBackupSize) {
+                } @else {
                   <span>{{ backup.size }}MB</span>
                 }
               </small>

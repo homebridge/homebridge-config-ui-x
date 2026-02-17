@@ -141,8 +141,7 @@
           "
           [openDelay]="150"
         ></i>
-      }
-      @if (!schema.singular) {
+      } @else {
         <button type="button" class="btn btn-elegant me-2" data-dismiss="modal" (click)="addBlock()">
           <i class="fa fa-plus"></i>
         </button>
@@ -156,8 +155,7 @@
       >
         @if (!saveInProgress()) {
           <span>{{ 'form.button_save' | translate }}</span>
-        }
-        @if (saveInProgress()) {
+        } @else {
           <i class="fas fa-circle-notch fa-spin"></i>
         }
       </button>

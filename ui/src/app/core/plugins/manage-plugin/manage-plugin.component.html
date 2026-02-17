@@ -32,8 +32,7 @@
           ></p>
           @if (childBridges().length === 0) {
             <p class="text-center mb-0">{{ 'plugins.settings.restart_required' | translate }}</p>
-          }
-          @if (childBridges().length > 0) {
+          } @else {
             <p class="text-center mb-0">{{ 'restart.child_bridges' | translate }}</p>
           }
         }
