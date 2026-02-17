@@ -49,8 +49,8 @@
                   [ngModel]="selectedBlock()"
                   (ngModelChange)="selectedBlock.set($event); onBlockChange($event)"
                 >
-                  @for (block of configBlocks(); track block; let i = $index) {
-                    <option [value]="i">{{ block.name || block.platform || block.accessory }}</option>
+                  @for (block of configBlocks(); track block) {
+                    <option [value]="$index">{{ block.name || block.platform || block.accessory }}</option>
                   }
                 </select>
               </div>

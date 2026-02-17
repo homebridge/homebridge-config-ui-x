@@ -18,7 +18,7 @@
     <! -- MULTIPLE CONFIG BLOCKS- ->
     @if (pluginConfig().length && !schema.singular) {
       <div ngbAccordion [closeOthers]="true" (show)="blockShown($event)" (hide)="blockHidden($event)">
-        @for (block of pluginConfig(); track block; let i = $index) {
+        @for (block of pluginConfig(); track block) {
           <div
             class="card"
             [ngbAccordionItem]="block.__uuid__"
@@ -80,7 +80,11 @@
             </div>
             <div ngbAccordionCollapse>
               <div ngbAccordionBody class="card-body">
-                <app-schema-form [configSchema]="schema" [(data)]="block.config" (isValid)="onIsValid($event, i)" />
+                <app-schema-form
+                  [configSchema]="schema"
+                  [(data)]="block.config"
+                  (isValid)="onIsValid($event, $index)"
+                />
               </div>
             </div>
           </div>

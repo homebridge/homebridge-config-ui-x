@@ -40,7 +40,7 @@
               <div class="d-flex align-items-center justify-content-between">
                 <h5 class="m-0 py-2 ps-1">{{ block.name || pluginAlias() }}</h5>
                 <div>
-                  @if (!schema?.singular || pluginConfig().length > 1) {
+                  @if (!schema?.singular || $count > 1) {
                     @if (show() === 'configBlock.' + $index) {
                       <button
                         type="button"
