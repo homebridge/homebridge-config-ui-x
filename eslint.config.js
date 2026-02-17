@@ -131,7 +131,7 @@ export default antfu(
       'angular-template/eqeqeq': 'error',
       'angular-template/i18n': 'off',
       'angular-template/interactive-supports-focus': 'error',
-      'angular-template/label-has-associated-control': 'off',
+      'angular-template/label-has-associated-control': 'error',
       'angular-template/mouse-events-have-key-events': 'error',
       'angular-template/no-any': 'error',
       'angular-template/no-autofocus': 'error',

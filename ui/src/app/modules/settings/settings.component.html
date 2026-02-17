@@ -1320,11 +1320,12 @@
                           max="365"
                           placeholder="0"
                           style="text-align: right"
+                          id="session-timeout-days"
                           [formControl]="uiSessionTimeoutDaysFormControl"
                           [attr.aria-label]="'settings.startup.session_days' | translate"
                           [class.is-invalid]="uiSessionTimeoutIsInvalid()"
                         />
-                        <label class="ms-1 me-2 mb-0 text-nowrap grey-text small">{{
+                        <label for="session-timeout-days" class="ms-1 me-2 mb-0 text-nowrap grey-text small">{{
                           'settings.startup.session_days' | translate
                         }}</label>
                       </div>
@@ -1336,11 +1337,12 @@
                           max="23"
                           placeholder="8"
                           style="text-align: right"
+                          id="session-timeout-hours"
                           [formControl]="uiSessionTimeoutHoursFormControl"
                           [attr.aria-label]="'settings.startup.session_hours' | translate"
                           [class.is-invalid]="uiSessionTimeoutIsInvalid()"
                         />
-                        <label class="ms-1 me-2 mb-0 text-nowrap grey-text small">{{
+                        <label for="session-timeout-hours" class="ms-1 me-2 mb-0 text-nowrap grey-text small">{{
                           'settings.startup.session_hours' | translate
                         }}</label>
                       </div>
@@ -1352,11 +1354,12 @@
                           max="59"
                           placeholder="0"
                           style="text-align: right"
+                          id="session-timeout-minutes"
                           [formControl]="uiSessionTimeoutMinutesFormControl"
                           [attr.aria-label]="'settings.startup.session_minutes' | translate"
                           [class.is-invalid]="uiSessionTimeoutIsInvalid()"
                         />
-                        <label class="ms-1 me-2 mb-0 text-nowrap grey-text small">{{
+                        <label for="session-timeout-minutes" class="ms-1 me-2 mb-0 text-nowrap grey-text small">{{
                           'settings.startup.session_minutes' | translate
                         }}</label>
                       </div>

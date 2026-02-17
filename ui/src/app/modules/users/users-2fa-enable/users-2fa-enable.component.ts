@@ -9,6 +9,7 @@ import { ToastrService } from 'ngx-toastr'
 
 import { ApiService } from '@/app/core/communication/api.service'
 import { QrcodeComponent } from '@/app/core/components/qrcode/qrcode.component'
+import { RequiredIndicatorComponent } from '@/app/core/components/required-indicator/required-indicator.component'
 import { USER_MODAL_DATA } from '@/app/core/modal-data-tokens'
 
 @Component({
@@ -19,6 +20,7 @@ import { USER_MODAL_DATA } from '@/app/core/modal-data-tokens'
     FormsModule,
     ReactiveFormsModule,
     TranslatePipe,
+    RequiredIndicatorComponent,
   ],
   standalone: true,
   templateUrl: './users-2fa-enable.component.html',

@@ -18,9 +18,12 @@
     </ul>
     <ul class="list-group list-group-box mb-0">
       <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
-        <label class="mb-2 mb-md-0 w-100 w-md-50">{{ 'users.label_password' | translate }}</label>
+        <label for="disable-2fa-password" class="mb-2 mb-md-0 w-100 w-md-50">
+          {{ 'users.label_password' | translate }}<app-required-indicator />
+        </label>
         <div class="text-start text-md-end w-100 w-md-50">
           <input
+            id="disable-2fa-password"
             class="form-control custom-input"
             type="password"
             autocomplete="current-password"

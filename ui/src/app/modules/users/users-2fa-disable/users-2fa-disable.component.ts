@@ -8,6 +8,7 @@ import { ToastrService } from 'ngx-toastr'
 import { AuthService } from '@/app/core/auth/auth.service'
 import { ApiService } from '@/app/core/communication/api.service'
 import { NotificationService } from '@/app/core/communication/notification.service'
+import { RequiredIndicatorComponent } from '@/app/core/components/required-indicator/required-indicator.component'
 
 @Component({
   selector: 'app-users-2fa-disable',
@@ -16,6 +17,7 @@ import { NotificationService } from '@/app/core/communication/notification.servi
     ReactiveFormsModule,
     TranslatePipe,
     NgbAlert,
+    RequiredIndicatorComponent,
   ],
   standalone: true,
   templateUrl: './users-2fa-disable.component.html',

@@ -89,9 +89,11 @@
         }
         @case ('ClockWidgetComponent') {
           <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
-            <label class="mb-2 mb-md-0 w-100 w-md-50">{{ 'status.widget.clock_timeformat' | translate }}</label>
+            <label for="clock-time-format" class="mb-2 mb-md-0 w-100 w-md-50">{{
+              'status.widget.clock_timeformat' | translate
+            }}</label>
             <div class="text-start text-md-end w-100 w-md-50">
-              <select class="custom-select" [(ngModel)]="widget.timeFormat">
+              <select id="clock-time-format" class="custom-select" [(ngModel)]="widget.timeFormat">
                 @for (timeFormat of timeFormats; track timeFormat) {
                   <option [value]="timeFormat">{{ currentDate | date: timeFormat }}</option>
                 }
@@ -99,9 +101,11 @@
             </div>
           </li>
           <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
-            <label class="mb-2 mb-md-0 w-100 w-md-50">{{ 'status.widget.clock_dateformat' | translate }}</label>
+            <label for="clock-date-format" class="mb-2 mb-md-0 w-100 w-md-50">{{
+              'status.widget.clock_dateformat' | translate
+            }}</label>
             <div class="text-start text-md-end w-100 w-md-50">
-              <select class="custom-select" [(ngModel)]="widget.dateFormat">
+              <select id="clock-date-format" class="custom-select" [(ngModel)]="widget.dateFormat">
                 @for (dateFormat of dateFormats; track dateFormat) {
                   <option [value]="dateFormat">{{ currentDate | date: dateFormat }}</option>
                 }
@@ -111,10 +115,13 @@
         }
         @case ('CpuWidgetComponent') {
           <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
-            <label class="mb-2 mb-md-0 w-100 w-md-50">{{ 'status.widget.network.refresh_interval' | translate }}</label>
+            <label for="cpu-refresh-interval" class="mb-2 mb-md-0 w-100 w-md-50">{{
+              'status.widget.network.refresh_interval' | translate
+            }}</label>
             <div class="text-start text-md-end w-100 w-md-50">
               <div class="input-group">
                 <input
+                  id="cpu-refresh-interval"
                   type="number"
                   class="form-control custom-input"
                   min="1"
@@ -126,10 +133,13 @@
             </div>
           </li>
           <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
-            <label class="mb-2 mb-md-0 w-100 w-md-50">{{ 'status.widget.network.history_items' | translate }}</label>
+            <label for="cpu-history-items" class="mb-2 mb-md-0 w-100 w-md-50">{{
+              'status.widget.network.history_items' | translate
+            }}</label>
             <div class="text-start text-md-end w-100 w-md-50">
               <div class="input-group">
                 <input
+                  id="cpu-history-items"
                   type="number"
                   class="form-control custom-input"
                   min="1"
@@ -143,10 +153,13 @@
         }
         @case ('MemoryWidgetComponent') {
           <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
-            <label class="mb-2 mb-md-0 w-100 w-md-50">{{ 'status.widget.network.refresh_interval' | translate }}</label>
+            <label for="memory-refresh-interval" class="mb-2 mb-md-0 w-100 w-md-50">{{
+              'status.widget.network.refresh_interval' | translate
+            }}</label>
             <div class="text-start text-md-end w-100 w-md-50">
               <div class="input-group">
                 <input
+                  id="memory-refresh-interval"
                   type="number"
                   class="form-control custom-input"
                   min="1"
@@ -158,10 +171,13 @@
             </div>
           </li>
           <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
-            <label class="mb-2 mb-md-0 w-100 w-md-50">{{ 'status.widget.network.history_items' | translate }}</label>
+            <label for="memory-history-items" class="mb-2 mb-md-0 w-100 w-md-50">{{
+              'status.widget.network.history_items' | translate
+            }}</label>
             <div class="text-start text-md-end w-100 w-md-50">
               <div class="input-group">
                 <input
+                  id="memory-history-items"
                   type="number"
                   class="form-control custom-input"
                   min="1"
@@ -175,12 +191,12 @@
         }
         @case ('NetworkWidgetComponent') {
           <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
-            <label class="mb-2 mb-md-0 w-100 w-md-50">{{
+            <label for="network-interface" class="mb-2 mb-md-0 w-100 w-md-50">{{
               'status.widget.network.network_interface' | translate
             }}</label>
             <div class="text-start text-md-end w-100 w-md-50">
               @if (networkInterfaces().length) {
-                <select class="custom-select" [(ngModel)]="widget.networkInterface">
+                <select id="network-interface" class="custom-select" [(ngModel)]="widget.networkInterface">
                   @for (networkInterface of networkInterfaces(); track networkInterface) {
                     <option [value]="networkInterface">{{ networkInterface }}</option>
                   }
@@ -191,10 +207,13 @@
             </div>
           </li>
           <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
-            <label class="mb-2 mb-md-0 w-100 w-md-50">{{ 'status.widget.network.refresh_interval' | translate }}</label>
+            <label for="network-refresh-interval" class="mb-2 mb-md-0 w-100 w-md-50">{{
+              'status.widget.network.refresh_interval' | translate
+            }}</label>
             <div class="text-start text-md-end w-100 w-md-50">
               <div class="input-group">
                 <input
+                  id="network-refresh-interval"
                   type="number"
                   class="form-control custom-input"
                   min="1"
@@ -206,10 +225,13 @@
             </div>
           </li>
           <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
-            <label class="mb-2 mb-md-0 w-100 w-md-50">{{ 'status.widget.network.history_items' | translate }}</label>
+            <label for="network-history-items" class="mb-2 mb-md-0 w-100 w-md-50">{{
+              'status.widget.network.history_items' | translate
+            }}</label>
             <div class="text-start text-md-end w-100 w-md-50">
               <div class="input-group">
                 <input
+                  id="network-history-items"
                   type="number"
                   class="form-control custom-input"
                   min="1"

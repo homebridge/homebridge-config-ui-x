@@ -45,9 +45,12 @@
           }
         </li>
         <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
-          <label class="mb-2 mb-md-0 w-100 w-md-50">{{ 'users.setup_2fa_enter_code' | translate }}</label>
+          <label for="enable-2fa-code" class="mb-2 mb-md-0 w-100 w-md-50">
+            {{ 'users.setup_2fa_enter_code' | translate }}<app-required-indicator />
+          </label>
           <div class="text-start text-md-end w-100 w-md-50">
             <input
+              id="enable-2fa-code"
               type="text"
               class="form-control custom-input"
               placeholder="eg. 123456"

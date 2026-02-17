@@ -36,6 +36,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - lint: apply `angular/prefer-signals`
 - lint: apply `angular/sort-keys-in-type-decorator`
 - lint: apply `angular/use-component-selector`
+- lint: apply `angular-template/label-has-associated-control`
 
 ### Homebridge Dependencies
 
