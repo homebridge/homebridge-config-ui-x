@@ -26,6 +26,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - lint: apply `angular-template/no-positive-tabindex`
 - lint: apply `angular-template/prefer-at-else`
 - lint: apply `angular-template/prefer-contextual-for-variables`
+- lint: apply `angular-template/prefer-self-closing-tags`
 
 ### Homebridge Dependencies
 

@@ -66,7 +66,7 @@
     <div ngbDropdownMenu [attr.aria-labelledby]="'accessories.filter_by_bridge' | translate">
       <ng-container
         *ngTemplateOutlet="bridgeFilterMenu; context: { dropdown: dropdown, showManageLayout: showManageLayout }"
-      ></ng-container>
+      />
     </div>
   </div>
 </ng-template>
@@ -91,9 +91,9 @@
       @if (shouldShowFilters) {
         <ng-container
           *ngTemplateOutlet="bridgeFilterDropdown; context: { showManageLayout: false, showTooltip: false }"
-        ></ng-container>
+        />
       }
-      <ng-container *ngTemplateOutlet="supportButton"></ng-container>
+      <ng-container *ngTemplateOutlet="supportButton" />
     </div>
     <div class="col-6 text-end d-none d-sm-inline-block">
       @if (hasPlugins()) {
@@ -137,9 +137,9 @@
       @if (shouldShowFilters) {
         <ng-container
           *ngTemplateOutlet="bridgeFilterDropdown; context: { showManageLayout: true, showTooltip: true }"
-        ></ng-container>
+        />
       }
-      <ng-container *ngTemplateOutlet="supportButton"></ng-container>
+      <ng-container *ngTemplateOutlet="supportButton" />
     </div>
   </div>
   @if (loading()) {
