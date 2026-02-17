@@ -1,4 +1,12 @@
-import { Component, createEnvironmentInjector, EnvironmentInjector, inject, input, OnInit } from '@angular/core'
+import {
+  ChangeDetectionStrategy,
+  Component,
+  createEnvironmentInjector,
+  EnvironmentInjector,
+  inject,
+  input,
+  OnInit,
+} from '@angular/core'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe } from '@ngx-translate/core'
 
@@ -9,6 +17,7 @@ import { HumidifierDehumidifierManageComponent } from '@/app/core/accessories/ty
 import { LongClickDirective } from '@/app/core/directives/long-click.directive'
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-humidifier-dehumidifier',
   templateUrl: './humidifier-dehumidifier.component.html',
   standalone: true,

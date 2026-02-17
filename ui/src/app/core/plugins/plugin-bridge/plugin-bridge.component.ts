@@ -3,7 +3,7 @@ import type { BridgeConfig } from '@/app/core/settings.interfaces'
 
 import type { PluginBridgeAccessoryLink, PluginBridgeDeleteBridge, PluginBridgeMatterBridge } from './plugin-bridge.interfaces'
 
-import { Component, inject, OnInit, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { Router } from '@angular/router'
 import { NgbAlert } from '@ng-bootstrap/ng-bootstrap/alert'
@@ -20,6 +20,7 @@ import { ManagePluginsService } from '@/app/core/plugins/manage-plugins.service'
 import { SettingsService } from '@/app/core/ui/settings.service'
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './plugin-bridge.component.html',
   styleUrl: './plugin-bridge.component.scss',
   standalone: true,

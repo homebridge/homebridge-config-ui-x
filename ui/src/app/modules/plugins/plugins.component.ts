@@ -1,4 +1,4 @@
-import { Component, DestroyRef, ElementRef, inject, OnDestroy, OnInit, signal, viewChild } from '@angular/core'
+import { ChangeDetectionStrategy, Component, DestroyRef, ElementRef, inject, OnDestroy, OnInit, signal, viewChild } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { NavigationEnd, Router, Event as RouterEvent } from '@angular/router'
@@ -24,6 +24,7 @@ export interface CanComponentDeactivate {
 }
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './plugins.component.html',
   styleUrl: './plugins.component.scss',
   standalone: true,

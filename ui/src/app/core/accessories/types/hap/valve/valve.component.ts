@@ -1,4 +1,13 @@
-import { Component, createEnvironmentInjector, DestroyRef, EnvironmentInjector, inject, input, OnInit } from '@angular/core'
+import {
+  ChangeDetectionStrategy,
+  Component,
+  createEnvironmentInjector,
+  DestroyRef,
+  EnvironmentInjector,
+  inject,
+  input,
+  OnInit,
+} from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe } from '@ngx-translate/core'
@@ -12,6 +21,7 @@ import { ValveManageComponent } from '@/app/core/accessories/types/hap/valve/val
 import { LongClickDirective } from '@/app/core/directives/long-click.directive'
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-valve',
   templateUrl: './valve.component.html',
   styleUrl: './valve.component.scss',

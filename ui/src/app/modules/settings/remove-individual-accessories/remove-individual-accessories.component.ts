@@ -1,6 +1,6 @@
 import type { CachedAccessory, Pairing } from '@/app/modules/settings/settings.interfaces'
 
-import { Component, inject, OnInit, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { Router } from '@angular/router'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal'
@@ -12,6 +12,7 @@ import { REMOVE_INDIVIDUAL_ACCESSORIES_MODAL_DATA } from '@/app/core/modal-data-
 import { SettingsService } from '@/app/core/ui/settings.service'
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './remove-individual-accessories.component.html',
   standalone: true,
   imports: [

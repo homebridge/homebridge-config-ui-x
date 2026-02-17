@@ -1,6 +1,6 @@
 import { DecimalPipe, TitleCasePipe, UpperCasePipe } from '@angular/common'
 import { HttpClient, HttpParams } from '@angular/common/http'
-import { Component, DestroyRef, inject, input, OnInit, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, input, OnInit, signal } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import dayjs from 'dayjs'
@@ -13,6 +13,7 @@ import { OpenWeatherMapResponse, Widget } from '@/app/modules/status/widgets/wid
 import { environment } from '@/environments/environment'
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './weather-widget.component.html',
   standalone: true,
   imports: [

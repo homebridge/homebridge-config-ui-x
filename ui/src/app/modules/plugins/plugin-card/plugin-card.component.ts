@@ -1,5 +1,5 @@
 import { DatePipe } from '@angular/common'
-import { Component, createEnvironmentInjector, effect, EnvironmentInjector, inject, input, OnInit, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, createEnvironmentInjector, effect, EnvironmentInjector, inject, input, OnInit, signal } from '@angular/core'
 import { NgbDropdown, NgbDropdownButtonItem, NgbDropdownItem, NgbDropdownMenu, NgbDropdownToggle } from '@ng-bootstrap/ng-bootstrap/dropdown'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap/tooltip'
@@ -23,6 +23,7 @@ import { SettingsService } from '@/app/core/ui/settings.service'
 import { MobileDetectService } from '@/app/core/utilities/mobile-detect.service'
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-plugin-card',
   templateUrl: './plugin-card.component.html',
   standalone: true,

@@ -1,4 +1,4 @@
-import { Component, inject, input } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core'
 import { TranslatePipe } from '@ngx-translate/core'
 
 import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
@@ -63,6 +63,7 @@ import { MatterWaterLeakDetectorComponent } from '@/app/core/accessories/types/m
 import { MatterWindowCoveringComponent } from '@/app/core/accessories/types/matter/window-covering/window-covering.component'
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-accessory-tile',
   templateUrl: './accessory-tile.component.html',
   standalone: true,

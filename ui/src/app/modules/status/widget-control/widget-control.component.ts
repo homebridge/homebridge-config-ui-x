@@ -1,6 +1,6 @@
 import { DatePipe } from '@angular/common'
 import { HttpClient, HttpParams } from '@angular/common/http'
-import { Component, inject, OnInit, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { NgbTypeahead } from '@ng-bootstrap/ng-bootstrap/typeahead'
@@ -23,6 +23,7 @@ import { ServerInfo, Widget } from '@/app/modules/status/widgets/widgets.interfa
 import { environment } from '@/environments/environment'
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './widget-control.component.html',
   standalone: true,
   imports: [

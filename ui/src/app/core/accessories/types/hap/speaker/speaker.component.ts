@@ -1,4 +1,11 @@
-import { Component, createEnvironmentInjector, EnvironmentInjector, inject, input } from '@angular/core'
+import {
+  ChangeDetectionStrategy,
+  Component,
+  createEnvironmentInjector,
+  EnvironmentInjector,
+  inject,
+  input,
+} from '@angular/core'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe } from '@ngx-translate/core'
 
@@ -9,6 +16,7 @@ import { SpeakerManageComponent } from '@/app/core/accessories/types/hap/speaker
 import { LongClickDirective } from '@/app/core/directives/long-click.directive'
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-speaker',
   templateUrl: './speaker.component.html',
   styleUrl: './speaker.component.scss',

@@ -1,4 +1,4 @@
-import { Component, computed, createEnvironmentInjector, EnvironmentInjector, inject, input } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, createEnvironmentInjector, EnvironmentInjector, inject, input } from '@angular/core'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe } from '@ngx-translate/core'
 
@@ -10,6 +10,7 @@ import { RoboticVacuumCleanerManageComponent } from '@/app/core/accessories/type
 import { LongClickDirective } from '@/app/core/directives/long-click.directive'
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-robotic-vacuum-cleaner',
   templateUrl: './robotic-vacuum-cleaner.component.html',
   styleUrl: './robotic-vacuum-cleaner.component.scss',

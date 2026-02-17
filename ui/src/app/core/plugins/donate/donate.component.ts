@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe } from '@ngx-translate/core'
 
@@ -6,6 +6,7 @@ import { PLUGIN_MODAL_DATA } from '@/app/core/modal-data-tokens'
 import { PluginFundingOption } from '@/app/core/plugins/manage-plugins.interfaces'
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './donate.component.html',
   styleUrl: './donate.component.scss',
   standalone: true,

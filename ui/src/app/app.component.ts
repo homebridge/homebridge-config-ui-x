@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { RouterOutlet } from '@angular/router'
 import { TranslateService } from '@ngx-translate/core'
@@ -6,6 +6,7 @@ import { TranslateService } from '@ngx-translate/core'
 import { SettingsService } from '@/app/core/ui/settings.service'
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-root',
   templateUrl: './app.component.html',
   standalone: true,

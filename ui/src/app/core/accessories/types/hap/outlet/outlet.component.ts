@@ -1,4 +1,4 @@
-import { Component, inject, input } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core'
 import { TranslatePipe } from '@ngx-translate/core'
 
 import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
@@ -6,6 +6,7 @@ import { LongClickDirective } from '@/app/core/directives/long-click.directive'
 import { SettingsService } from '@/app/core/ui/settings.service'
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-outlet',
   templateUrl: './outlet.component.html',
   styleUrl: './outlet.component.scss',

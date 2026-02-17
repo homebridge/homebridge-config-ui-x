@@ -1,4 +1,16 @@
-import { Component, createEnvironmentInjector, DestroyRef, EnvironmentInjector, inject, input, OnDestroy, OnInit, signal, StaticProvider } from '@angular/core'
+import {
+  ChangeDetectionStrategy,
+  Component,
+  createEnvironmentInjector,
+  DestroyRef,
+  EnvironmentInjector,
+  inject,
+  input,
+  OnDestroy,
+  OnInit,
+  signal,
+  StaticProvider,
+} from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe } from '@ngx-translate/core'
@@ -12,6 +24,7 @@ import { LongClickDirective } from '@/app/core/directives/long-click.directive'
 import { ColourService } from '@/app/core/utilities/colour.service'
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-lightbulb',
   templateUrl: './lightbulb.component.html',
   standalone: true,

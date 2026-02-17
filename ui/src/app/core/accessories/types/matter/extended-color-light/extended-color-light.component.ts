@@ -1,4 +1,12 @@
-import { Component, computed, createEnvironmentInjector, EnvironmentInjector, inject, input } from '@angular/core'
+import {
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  createEnvironmentInjector,
+  EnvironmentInjector,
+  inject,
+  input,
+} from '@angular/core'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe } from '@ngx-translate/core'
 
@@ -10,6 +18,7 @@ import { getBrightnessPercentage, getDeviceActiveState, getHue, getSaturation, t
 import { LongClickDirective } from '@/app/core/directives/long-click.directive'
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-extended-color-light',
   templateUrl: './extended-color-light.component.html',
   standalone: true,

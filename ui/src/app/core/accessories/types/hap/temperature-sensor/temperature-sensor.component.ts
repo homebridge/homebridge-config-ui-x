@@ -1,5 +1,5 @@
 import { DecimalPipe, UpperCasePipe } from '@angular/common'
-import { Component, inject, input } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, input } from '@angular/core'
 import { TranslatePipe } from '@ngx-translate/core'
 
 import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
@@ -7,6 +7,7 @@ import { ConvertTempPipe } from '@/app/core/pipes/convert-temp.pipe'
 import { SettingsService } from '@/app/core/ui/settings.service'
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-temperature-sensor',
   templateUrl: './temperature-sensor.component.html',
   styleUrl: './temperature-sensor.component.scss',

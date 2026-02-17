@@ -1,4 +1,11 @@
-import { Component, createEnvironmentInjector, EnvironmentInjector, inject, input } from '@angular/core'
+import {
+  ChangeDetectionStrategy,
+  Component,
+  createEnvironmentInjector,
+  EnvironmentInjector,
+  inject,
+  input,
+} from '@angular/core'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe } from '@ngx-translate/core'
 
@@ -9,6 +16,7 @@ import { LockMechanismManageComponent } from '@/app/core/accessories/types/hap/l
 import { LongClickDirective } from '@/app/core/directives/long-click.directive'
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-lock-mechanism',
   templateUrl: './lock-mechanism.component.html',
   styleUrl: './lock-mechanism.component.scss',

@@ -1,6 +1,6 @@
 import type { PluginConfigBlock } from '@/app/core/plugins/manage-plugins.interfaces'
 
-import { Component, inject, OnInit, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core'
 import {
   NgbAccordionBody,
   NgbAccordionCollapse,
@@ -28,6 +28,7 @@ import { SettingsService } from '@/app/core/ui/settings.service'
 import { ChildBridgesService } from '@/app/core/utilities/child-bridges.service'
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './plugin-config.component.html',
   styleUrl: './plugin-config.component.scss',
   standalone: true,

@@ -1,10 +1,11 @@
-import { Component, effect, inject, input, OnDestroy, OnInit, output, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, effect, inject, input, OnDestroy, OnInit, output, signal } from '@angular/core'
 import { JsonSchemaFormModule } from '@ng-formworks/core'
 
 import { JsonSchemaFormPatchDirective } from '@/app/core/directives/json-schema-form-patch.directive'
 import { SettingsService } from '@/app/core/ui/settings.service'
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-schema-form',
   templateUrl: './schema-form.component.html',
   standalone: true,

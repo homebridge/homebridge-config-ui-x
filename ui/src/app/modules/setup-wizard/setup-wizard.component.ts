@@ -1,5 +1,5 @@
 import { NgOptimizedImage } from '@angular/common'
-import { Component, inject, OnInit, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core'
 import { AbstractControl, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { Title } from '@angular/platform-browser'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
@@ -13,6 +13,7 @@ import { SettingsService } from '@/app/core/ui/settings.service'
 import { environment } from '@/environments/environment'
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './setup-wizard.component.html',
   styleUrl: './setup-wizard.component.scss',
   imports: [

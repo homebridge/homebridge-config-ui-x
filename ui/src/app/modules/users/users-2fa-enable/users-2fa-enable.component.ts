@@ -1,5 +1,5 @@
 /* global NodeJS */
-import { Component, inject, OnInit, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { NgbAlert } from '@ng-bootstrap/ng-bootstrap/alert'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal'
@@ -12,6 +12,7 @@ import { QrcodeComponent } from '@/app/core/components/qrcode/qrcode.component'
 import { USER_MODAL_DATA } from '@/app/core/modal-data-tokens'
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './users-2fa-enable.component.html',
   standalone: true,
   imports: [

@@ -1,10 +1,11 @@
-import { Component, computed, inject, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe } from '@ngx-translate/core'
 
 import { PLUGIN_MODAL_DATA } from '@/app/core/modal-data-tokens'
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './plugin-info.component.html',
   styleUrl: './plugin-info.component.scss',
   standalone: true,

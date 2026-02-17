@@ -1,8 +1,9 @@
-import { Component } from '@angular/core'
+import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { NgbAlert } from '@ng-bootstrap/ng-bootstrap/alert'
 import { TranslatePipe } from '@ngx-translate/core'
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-support-banner',
   templateUrl: './support-banner.component.html',
   standalone: true,

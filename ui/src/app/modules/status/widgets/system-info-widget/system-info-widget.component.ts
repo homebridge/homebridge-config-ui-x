@@ -1,5 +1,5 @@
 import { TitleCasePipe } from '@angular/common'
-import { Component, DestroyRef, inject, input, OnInit, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, input, OnInit, signal } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { TranslatePipe } from '@ngx-translate/core'
 
@@ -7,6 +7,7 @@ import { IoNamespace, WsService } from '@/app/core/communication/ws.service'
 import { NodeJsInfo, ServerInfo, Widget } from '@/app/modules/status/widgets/widgets.interfaces'
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './system-info-widget.component.html',
   styleUrl: './system-info-widget.component.scss',
   standalone: true,

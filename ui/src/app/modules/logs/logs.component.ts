@@ -1,5 +1,5 @@
 import { HttpResponse } from '@angular/common/http'
-import { Component, createEnvironmentInjector, DestroyRef, ElementRef, EnvironmentInjector, inject, OnDestroy, OnInit, signal, viewChild } from '@angular/core'
+import { ChangeDetectionStrategy, Component, createEnvironmentInjector, DestroyRef, ElementRef, EnvironmentInjector, inject, OnDestroy, OnInit, signal, viewChild } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
@@ -22,6 +22,7 @@ export interface CanComponentDeactivate {
 }
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './logs.component.html',
   styleUrl: './logs.component.scss',
   standalone: true,

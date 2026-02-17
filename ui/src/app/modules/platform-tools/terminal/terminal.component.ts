@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, inject, OnDestroy, OnInit, viewChild } from '@angular/core'
+import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, inject, OnDestroy, OnInit, viewChild } from '@angular/core'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { Subject } from 'rxjs'
 
@@ -7,6 +7,7 @@ import { TerminalNavigationGuardService } from '@/app/core/utilities/terminal-na
 import { TerminalService } from '@/app/core/utilities/terminal.service'
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './terminal.component.html',
   styleUrl: './terminal.component.scss',
   standalone: true,

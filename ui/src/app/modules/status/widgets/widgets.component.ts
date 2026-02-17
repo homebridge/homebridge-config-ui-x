@@ -1,4 +1,4 @@
-import { ApplicationRef, Component, ComponentFactoryResolver, ElementRef, EmbeddedViewRef, inject, Injector, input, OnDestroy, OnInit } from '@angular/core'
+import { ApplicationRef, ChangeDetectionStrategy, Component, ComponentFactoryResolver, ElementRef, EmbeddedViewRef, inject, Injector, input, OnDestroy, OnInit } from '@angular/core'
 
 import { AccessoriesWidgetComponent } from '@/app/modules/status/widgets/accessories-widget/accessories-widget.component'
 import { BridgesWidgetComponent } from '@/app/modules/status/widgets/bridges-widget/bridges-widget.component'
@@ -35,6 +35,7 @@ export const AVAILABLE_WIDGETS = [
 ] as const
 
 @Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-widgets',
   template: '',
   standalone: true,
