@@ -18,7 +18,7 @@ export class SupportComponent implements OnInit {
   private $translate = inject(TranslateService)
 
   // Signals
-  public showFields = signal({
+  public readonly showFields = signal({
     general: true,
     dev: true,
   })

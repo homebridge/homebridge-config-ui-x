@@ -24,8 +24,8 @@ export class DoorComponent {
   private injector = inject(EnvironmentInjector)
   private $modal = inject(NgbModal)
 
-  public service = input.required<ServiceTypeX>()
-  public readyForControl = input<boolean>(false)
+  public readonly service = input.required<ServiceTypeX>()
+  public readonly readyForControl = input<boolean>(false)
 
   public onClick() {
     if (!this.readyForControl()) {

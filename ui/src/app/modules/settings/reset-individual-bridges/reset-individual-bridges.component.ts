@@ -28,11 +28,11 @@ export class ResetIndividualBridgesComponent implements OnInit {
   private $translate = inject(TranslateService)
 
   // Signals
-  public clicked = signal(false)
-  public pairingsNonChild = signal<any[]>([])
-  public pairingsChildActive = signal<any[]>([])
-  public pairingsChildStale = signal<any[]>([])
-  public toDelete = signal<{ id: string, resetPairingInfo: boolean }[]>([])
+  public readonly clicked = signal(false)
+  public readonly pairingsNonChild = signal<any[]>([])
+  public readonly pairingsChildActive = signal<any[]>([])
+  public readonly pairingsChildStale = signal<any[]>([])
+  public readonly toDelete = signal<{ id: string, resetPairingInfo: boolean }[]>([])
 
   // Other properties
   public isMatterSupported = this.$settings.isFeatureEnabled('matterSupport')

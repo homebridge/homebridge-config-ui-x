@@ -18,15 +18,15 @@ export class SchemaFormComponent implements OnInit, OnDestroy {
   private $settings = inject(SettingsService)
   private availableLanguages = ['de', 'en', 'es', 'fr', 'it', 'pt', 'zh']
 
-  configSchema = input.required<any>()
-  data = input.required<any>()
+  readonly configSchema = input.required<any>()
+  readonly data = input.required<any>()
 
   readonly dataChange = output<any>()
   readonly dataChanged = output<any>()
   readonly isValid = output<boolean>()
 
-  public currentData = signal<any>(null)
-  public language = signal('en')
+  public readonly currentData = signal<any>(null)
+  public readonly language = signal('en')
   public jsonFormOptions = {
     addSubmit: false,
     loadExternalAssets: false,

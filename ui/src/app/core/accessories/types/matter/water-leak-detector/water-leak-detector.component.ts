@@ -15,7 +15,7 @@ import { getWaterLeakState } from '@/app/core/accessories/types/matter/matter-de
   ],
 })
 export class MatterWaterLeakDetectorComponent {
-  public service = input.required<ServiceTypeX>()
+  public readonly service = input.required<ServiceTypeX>()
 
-  public isLeaking = computed(() => getWaterLeakState(this.service()))
+  public readonly isLeaking = computed(() => getWaterLeakState(this.service()))
 }

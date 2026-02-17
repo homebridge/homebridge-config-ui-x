@@ -29,8 +29,8 @@ export class PowerOptionsComponent implements OnInit {
   private $translate = inject(TranslateService)
 
   // Signals
-  public canShutdownRestartHost = signal(this.$settings.env.canShutdownRestartHost)
-  public runningInDocker = signal(this.$settings.env.runningInDocker)
+  public readonly canShutdownRestartHost = signal(this.$settings.env.canShutdownRestartHost)
+  public readonly runningInDocker = signal(this.$settings.env.runningInDocker)
 
   public ngOnInit() {
     // Set page title

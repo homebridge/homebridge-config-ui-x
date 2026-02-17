@@ -66,7 +66,7 @@ export class WidgetsComponent implements OnInit, OnDestroy {
     BridgesWidgetComponent,
   }
 
-  widget = input.required<Widget>()
+  readonly widget = input.required<Widget>()
 
   public ngOnInit(): void {
     if (Object.prototype.hasOwnProperty.call(this.availableWidgets, this.widget().component)) {

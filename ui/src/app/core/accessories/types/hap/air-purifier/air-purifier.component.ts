@@ -25,8 +25,8 @@ export class AirPurifierComponent implements OnInit {
   private $modal = inject(NgbModal)
   private hasTargetValidValues = false
 
-  public service = input.required<ServiceTypeX>()
-  public readyForControl = input<boolean>(false)
+  public readonly service = input.required<ServiceTypeX>()
+  public readonly readyForControl = input<boolean>(false)
 
   public ngOnInit() {
     if ('TargetAirPurifierState' in this.service().values) {

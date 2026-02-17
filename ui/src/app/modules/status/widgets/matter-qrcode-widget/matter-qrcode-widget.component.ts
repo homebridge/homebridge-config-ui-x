@@ -25,14 +25,14 @@ export class MatterQrcodeWidgetComponent implements OnInit, OnDestroy {
   // Signals
   readonly pincodeElement = viewChild<ElementRef>('pincodeMatter')
   readonly qrcodeContainerElement = viewChild<ElementRef>('qrcodecontainerMatter')
-  public enabled = signal<boolean>(false)
-  public loading = signal<boolean>(true)
-  public commissioned = signal<boolean>(false)
-  public matterEnabled = signal<boolean>(false)
-  public pin = signal<string>('')
-  public setupUri = signal<string | null>(null)
-  public qrCodeHeight = signal<number>(0)
-  public qrCodeWidth = signal<number>(0)
+  public readonly enabled = signal<boolean>(false)
+  public readonly loading = signal<boolean>(true)
+  public readonly commissioned = signal<boolean>(false)
+  public readonly matterEnabled = signal<boolean>(false)
+  public readonly pin = signal<string>('')
+  public readonly setupUri = signal<string | null>(null)
+  public readonly qrCodeHeight = signal<number>(0)
+  public readonly qrCodeWidth = signal<number>(0)
 
   // Other properties
   private io: IoNamespace

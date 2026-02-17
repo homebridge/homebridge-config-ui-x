@@ -16,8 +16,8 @@ export class ClockWidgetComponent implements OnInit {
   private destroyRef = inject(DestroyRef)
 
   // Signals
-  widget = input.required<Widget>()
-  public currentTime = signal<Date>(new Date())
+  readonly widget = input.required<Widget>()
+  public readonly currentTime = signal<Date>(new Date())
 
   public ngOnInit(): void {
     if (!this.widget().timeFormat) {

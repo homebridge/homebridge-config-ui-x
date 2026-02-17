@@ -22,9 +22,9 @@ export class SystemInfoWidgetComponent implements OnInit {
   private $ws = inject(WsService)
 
   // Signals
-  widget = input.required<Widget>()
-  public serverInfo = signal<ServerInfo>({ network: {}, os: {}, time: {} } as ServerInfo)
-  public nodejsInfo = signal<NodeJsInfo>({} as NodeJsInfo)
+  readonly widget = input.required<Widget>()
+  public readonly serverInfo = signal<ServerInfo>({ network: {}, os: {}, time: {} } as ServerInfo)
+  public readonly nodejsInfo = signal<NodeJsInfo>({} as NodeJsInfo)
 
   // Other properties
   private io: IoNamespace

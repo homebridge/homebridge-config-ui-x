@@ -15,7 +15,7 @@ import { getOccupancySensorState } from '@/app/core/accessories/types/matter/mat
   ],
 })
 export class MatterOccupancySensorComponent {
-  public service = input.required<ServiceTypeX>()
+  public readonly service = input.required<ServiceTypeX>()
 
-  public isOccupied = computed(() => getOccupancySensorState(this.service()))
+  public readonly isOccupied = computed(() => getOccupancySensorState(this.service()))
 }

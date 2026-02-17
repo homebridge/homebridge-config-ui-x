@@ -15,7 +15,7 @@ import { getContactSensorState } from '@/app/core/accessories/types/matter/matte
   ],
 })
 export class MatterContactSensorComponent {
-  public service = input.required<ServiceTypeX>()
+  public readonly service = input.required<ServiceTypeX>()
 
-  public isOpen = computed(() => getContactSensorState(this.service()))
+  public readonly isOpen = computed(() => getContactSensorState(this.service()))
 }

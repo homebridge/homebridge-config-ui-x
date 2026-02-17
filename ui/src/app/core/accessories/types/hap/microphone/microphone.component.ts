@@ -30,8 +30,8 @@ export class MicrophoneComponent {
   private injector = inject(EnvironmentInjector)
   private $modal = inject(NgbModal)
 
-  public service = input.required<ServiceTypeX>()
-  public readyForControl = input<boolean>(false)
+  public readonly service = input.required<ServiceTypeX>()
+  public readonly readyForControl = input<boolean>(false)
 
   public isOn(): boolean {
     const values = this.service().values

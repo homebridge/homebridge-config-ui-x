@@ -32,8 +32,8 @@ export class ExtendedColorLightComponent {
   private injector = inject(EnvironmentInjector)
   private $modal = inject(NgbModal)
 
-  public service = input.required<ServiceTypeX>()
-  public readyForControl = input<boolean>(false)
+  public readonly service = input.required<ServiceTypeX>()
+  public readonly readyForControl = input<boolean>(false)
 
   public onClick() {
     if (!this.readyForControl()) {
@@ -65,15 +65,15 @@ export class ExtendedColorLightComponent {
     })
   }
 
-  public isOn = computed(() => getDeviceActiveState(this.service()))
+  public readonly isOn = computed(() => getDeviceActiveState(this.service()))
 
-  public brightness = computed(() => getBrightnessPercentage(this.service()))
+  public readonly brightness = computed(() => getBrightnessPercentage(this.service()))
 
   /**
    * Get the light color for the icon
    * Converts Matter HSV (hue 0-254, saturation 0-254) to CSS color
    */
-  public lightColor = computed(() => {
+  public readonly lightColor = computed(() => {
     const hue = getHue(this.service())
     const saturation = getSaturation(this.service())
 

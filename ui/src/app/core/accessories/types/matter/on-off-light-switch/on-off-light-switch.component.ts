@@ -14,8 +14,8 @@ import { controlDevice, getDeviceActiveState } from '@/app/core/accessories/type
   ],
 })
 export class OnOffLightSwitchComponent {
-  public service = input.required<ServiceTypeX>()
-  public readyForControl = input<boolean>(false)
+  public readonly service = input.required<ServiceTypeX>()
+  public readonly readyForControl = input<boolean>(false)
 
   public onClick() {
     if (!this.readyForControl()) {
@@ -25,5 +25,5 @@ export class OnOffLightSwitchComponent {
     controlDevice(this.service())
   }
 
-  public isOn = computed(() => getDeviceActiveState(this.service()))
+  public readonly isOn = computed(() => getDeviceActiveState(this.service()))
 }

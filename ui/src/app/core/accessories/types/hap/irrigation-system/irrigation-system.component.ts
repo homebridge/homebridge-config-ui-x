@@ -14,5 +14,5 @@ import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
   ],
 })
 export class IrrigationSystemComponent {
-  public service = input.required<ServiceTypeX>()
+  public readonly service = input.required<ServiceTypeX>()
 }

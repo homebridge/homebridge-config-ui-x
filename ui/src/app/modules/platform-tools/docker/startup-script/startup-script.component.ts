@@ -36,9 +36,9 @@ export class StartupScriptComponent implements OnInit, OnDestroy {
   public monacoEditorModel: NgxEditorModel
 
   // Signals
-  public startupScript = signal<string>('')
-  public saveInProgress = signal(false)
-  public isMobile = signal(false)
+  public readonly startupScript = signal<string>('')
+  public readonly saveInProgress = signal(false)
+  public readonly isMobile = signal(false)
 
   constructor() {
     this.isMobile.set(!!this.$md.detect.mobile())

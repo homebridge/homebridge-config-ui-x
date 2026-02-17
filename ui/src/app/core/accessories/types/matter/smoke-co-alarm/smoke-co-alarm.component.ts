@@ -15,7 +15,7 @@ import { isSmokeCoAlarmTriggered } from '@/app/core/accessories/types/matter/mat
   ],
 })
 export class MatterSmokeCoAlarmComponent {
-  public service = input.required<ServiceTypeX>()
+  public readonly service = input.required<ServiceTypeX>()
 
-  public isTriggered = computed(() => isSmokeCoAlarmTriggered(this.service()))
+  public readonly isTriggered = computed(() => isSmokeCoAlarmTriggered(this.service()))
 }

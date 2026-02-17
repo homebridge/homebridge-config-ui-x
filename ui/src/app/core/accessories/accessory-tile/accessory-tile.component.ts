@@ -132,5 +132,5 @@ import { MatterWindowCoveringComponent } from '@/app/core/accessories/types/matt
 export class AccessoryTileComponent {
   $accessories = inject(AccessoriesService)
 
-  public service = input.required<ServiceTypeX>()
+  public readonly service = input.required<ServiceTypeX>()
 }

@@ -31,8 +31,8 @@ export class ContainerRestartComponent implements OnInit, OnDestroy {
   private io: IoNamespace
 
   // Signals
-  public timeout = signal(false)
-  public error = signal<string | false>(false)
+  public readonly timeout = signal(false)
+  public readonly error = signal<string | false>(false)
 
   // Constants
   public readonly command = '<span class="font-monospace">--restart=always</span>'

@@ -75,22 +75,22 @@ export class ManualConfigComponent implements OnInit, OnDestroy {
   private isDebugModeEnabled = this.$settings.isFeatureEnabled('childBridgeDebugMode')
   private isMatterSupported = this.$settings.isFeatureEnabled('matterSupport')
 
-  public pluginAlias = signal<string>('')
-  public pluginType = signal<'platform' | 'accessory' | null>(null)
-  public loading = signal(true)
-  public canConfigure = signal(false)
-  public show = signal<string>('')
-  public pluginConfig = signal<Record<string, unknown>[]>([])
-  public currentBlock = signal<string | undefined>(undefined)
-  public currentBlockIndex = signal<number | null>(null)
-  public saveInProgress = signal(false)
-  public isFirstSave = signal(false)
+  public readonly pluginAlias = signal<string>('')
+  public readonly pluginType = signal<'platform' | 'accessory' | null>(null)
+  public readonly loading = signal(true)
+  public readonly canConfigure = signal(false)
+  public readonly show = signal<string>('')
+  public readonly pluginConfig = signal<Record<string, unknown>[]>([])
+  public readonly currentBlock = signal<string | undefined>(undefined)
+  public readonly currentBlockIndex = signal<number | null>(null)
+  public readonly saveInProgress = signal(false)
+  public readonly isFirstSave = signal(false)
   public monacoEditor: any
 
   // Validation properties
-  public formBlocksValid = signal<{ [key: number]: boolean }>({})
-  public formIsValid = signal(true)
-  public strictValidation = signal(false)
+  public readonly formBlocksValid = signal<{ [key: number]: boolean }>({})
+  public readonly formIsValid = signal(true)
+  public readonly strictValidation = signal(false)
   public editorOptions: any
 
   // 6. Getters

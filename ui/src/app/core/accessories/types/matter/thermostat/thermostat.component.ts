@@ -31,8 +31,8 @@ export class MatterThermostatComponent {
   private $settings = inject(SettingsService)
   private $accessories = inject(AccessoriesService)
 
-  public service = input.required<ServiceTypeX>()
-  public readyForControl = input<boolean>(false)
+  public readonly service = input.required<ServiceTypeX>()
+  public readonly readyForControl = input<boolean>(false)
 
   public temperatureUnits = this.$settings.env.temperatureUnits
 
@@ -76,9 +76,9 @@ export class MatterThermostatComponent {
     return '#7b7b7b'
   }
 
-  public isOn = computed(() => isThermostatOn(this.service()))
+  public readonly isOn = computed(() => isThermostatOn(this.service()))
 
-  public systemMode = computed(() => getThermostatSystemMode(this.service()))
+  public readonly systemMode = computed(() => getThermostatSystemMode(this.service()))
 
-  public currentTemperature = computed(() => getThermostatLocalTemperature(this.service()))
+  public readonly currentTemperature = computed(() => getThermostatLocalTemperature(this.service()))
 }

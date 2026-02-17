@@ -35,8 +35,8 @@ export class UsersEditComponent implements OnInit {
   public existingUsers: User[] = this.modalData.existingUsers || []
 
   // Signals
-  public isCurrentUser = signal(false)
-  public deleteMode = signal(false)
+  public readonly isCurrentUser = signal(false)
+  public readonly deleteMode = signal(false)
 
   // Other properties
   private initialFormValue: Partial<User> = {}
@@ -49,7 +49,7 @@ export class UsersEditComponent implements OnInit {
   }, this.matchPassword)
 
   // Computed signals
-  public isLastAdmin = computed(() => {
+  public readonly isLastAdmin = computed(() => {
     // Check if this user is an admin and there are no other admins
     if (!this.user?.admin) {
       return false
@@ -58,7 +58,7 @@ export class UsersEditComponent implements OnInit {
     return adminCount <= 1
   })
 
-  public canDelete = computed(() => {
+  public readonly canDelete = computed(() => {
     // Cannot delete if it's the current user or the last admin
     return !this.isCurrentUser() && !this.isLastAdmin()
   })

@@ -14,9 +14,9 @@ import { getAirQualityValue } from '@/app/core/accessories/types/matter/matter-d
   imports: [TranslatePipe],
 })
 export class MatterAirQualitySensorComponent {
-  public service = input.required<ServiceTypeX>()
+  public readonly service = input.required<ServiceTypeX>()
 
   public labels = ['Unknown', 'Good', 'Fair', 'Moderate', 'Poor', 'Very Poor', 'Extremely Poor']
 
-  public airQuality = computed(() => getAirQualityValue(this.service()))
+  public readonly airQuality = computed(() => getAirQualityValue(this.service()))
 }

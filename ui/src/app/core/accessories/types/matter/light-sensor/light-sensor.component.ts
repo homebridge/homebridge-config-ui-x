@@ -16,7 +16,7 @@ import { getLightSensorIlluminance } from '@/app/core/accessories/types/matter/m
   ],
 })
 export class MatterLightSensorComponent {
-  public service = input.required<ServiceTypeX>()
+  public readonly service = input.required<ServiceTypeX>()
 
-  public illuminance = computed(() => getLightSensorIlluminance(this.service()))
+  public readonly illuminance = computed(() => getLightSensorIlluminance(this.service()))
 }

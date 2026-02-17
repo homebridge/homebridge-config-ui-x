@@ -35,10 +35,10 @@ export class Users2faEnableComponent implements OnInit {
   public user = this.modalData.user
 
   // Signals
-  public timeDiffError = signal<number | null>(null)
-  public otpString = signal<string | undefined>(undefined)
-  public otpSecret = signal<string | undefined>(undefined)
-  public secretCopied = signal(false)
+  public readonly timeDiffError = signal<number | null>(null)
+  public readonly otpString = signal<string | undefined>(undefined)
+  public readonly otpSecret = signal<string | undefined>(undefined)
+  public readonly secretCopied = signal(false)
 
   // Other properties
   private copyTimeout: NodeJS.Timeout | null = null

@@ -134,8 +134,8 @@ export class AccessoryInfoComponent implements OnInit, OnDestroy {
   public customTypeList: Array<ServiceTypeX['type']> = []
   public isMatterAccessory = false
   public clusterInfo: Array<{ name: string, attributes: unknown }> = []
-  public uniqueIdCopied = signal(false)
-  public uuidCopied = signal(false)
+  public readonly uniqueIdCopied = signal(false)
+  public readonly uuidCopied = signal(false)
 
   public ngOnInit() {
     // Extract values from signals to local properties

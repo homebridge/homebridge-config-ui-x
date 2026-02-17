@@ -42,12 +42,12 @@ export class BackupComponent implements OnInit {
   private injector = inject(EnvironmentInjector)
 
   // Signals
-  public clicked = signal(false)
-  public scheduledBackups = signal<ScheduledBackup[]>([])
-  public backupTime = signal<string>('')
-  public deleting = signal<string | null>(null)
-  public currentSettingEnabled = signal(false)
-  public currentSettingPath = signal('')
+  public readonly clicked = signal(false)
+  public readonly scheduledBackups = signal<ScheduledBackup[]>([])
+  public readonly backupTime = signal<string>('')
+  public readonly deleting = signal<string | null>(null)
+  public readonly currentSettingEnabled = signal(false)
+  public readonly currentSettingPath = signal('')
 
   // Other public properties
   public enabledFormControl = new FormControl(false)

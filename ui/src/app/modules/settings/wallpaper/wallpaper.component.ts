@@ -25,10 +25,10 @@ export class WallpaperComponent implements OnInit {
 
   // Signals
   readonly wallpaperInput = viewChild<ElementRef>('wallpaperInput')
-  public clicked = signal(false)
-  public selectedFile = signal<File | null>(null)
-  public wallpaperUrl = signal<string | null>(null)
-  public originalWallpaperUrl = signal<string | null>(null)
+  public readonly clicked = signal(false)
+  public readonly selectedFile = signal<File | null>(null)
+  public readonly wallpaperUrl = signal<string | null>(null)
+  public readonly originalWallpaperUrl = signal<string | null>(null)
 
   // Other properties
   public maxFileSizeText = globalThis.backup.maxBackupSizeText

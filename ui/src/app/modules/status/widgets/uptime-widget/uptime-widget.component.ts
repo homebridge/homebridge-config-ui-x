@@ -18,9 +18,9 @@ export class UptimeWidgetComponent implements OnInit {
   private $ws = inject(WsService)
 
   // Signals
-  widget = input.required<Widget>()
-  public serverUptime = signal<string>('')
-  public processUptime = signal<string>('')
+  readonly widget = input.required<Widget>()
+  public readonly serverUptime = signal<string>('')
+  public readonly processUptime = signal<string>('')
 
   // Other properties
   private io: IoNamespace

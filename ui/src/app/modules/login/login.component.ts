@@ -40,11 +40,11 @@ export class LoginComponent implements OnInit {
   readonly usernameInput = viewChild<ElementRef>('username')
   readonly otpInput = viewChild<ElementRef>('otp')
 
-  public backgroundStyle = signal<string>('')
-  public invalidCredentials = signal(false)
-  public invalid2faCode = signal(false)
-  public twoFactorCodeRequired = signal(false)
-  public inProgress = signal(false)
+  public readonly backgroundStyle = signal<string>('')
+  public readonly invalidCredentials = signal(false)
+  public readonly invalid2faCode = signal(false)
+  public readonly twoFactorCodeRequired = signal(false)
+  public readonly inProgress = signal(false)
 
   // Initialize form as property with all controls (including OTP for 2FA)
   // OTP validators are added dynamically when 2FA is required
@@ -55,7 +55,7 @@ export class LoginComponent implements OnInit {
   })
 
   // Create signal for form validity state
-  public formInvalid = toSignal(
+  public readonly formInvalid = toSignal(
     this.form.statusChanges.pipe(
       startWith(this.form.status),
       map(() => this.form.invalid),

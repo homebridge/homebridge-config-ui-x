@@ -37,10 +37,10 @@ export class ConfigRestoreComponent implements OnInit {
   public fromSettings = this.modalData.fromSettings ?? false
 
   // Other signals
-  public loading = signal(true)
-  public backupList = signal<ConfigRestoreBackup[]>([])
-  public clicked = signal(false)
-  public deleting = signal<string | null>(null)
+  public readonly loading = signal(true)
+  public readonly backupList = signal<ConfigRestoreBackup[]>([])
+  public readonly clicked = signal(false)
+  public readonly deleting = signal<string | null>(null)
 
   public ngOnInit(): void {
     void this.getConfigBackups()

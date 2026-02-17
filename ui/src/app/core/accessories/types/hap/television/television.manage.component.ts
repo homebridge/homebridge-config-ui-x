@@ -14,7 +14,7 @@ import { BaseManageComponent } from '@/app/core/accessories/types/base-manage.co
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TelevisionManageComponent extends BaseManageComponent {
-  public inputList = input.required<Record<number, string>>()
+  public readonly inputList = input.required<Record<number, string>>()
 
   public hasActive: boolean = false
   public sourceList: { identifier: number, name: string }[] = []

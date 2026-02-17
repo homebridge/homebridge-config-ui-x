@@ -8,7 +8,7 @@ import { toString } from 'qrcode'
   standalone: true,
 })
 export class QrcodeComponent implements OnChanges {
-  data = input.required<string>()
+  readonly data = input.required<string>()
 
   private readonly qrcodeElement = viewChild<ElementRef>('qrcode')
 

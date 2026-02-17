@@ -48,8 +48,8 @@ export class LogsComponent implements OnInit, OnDestroy, CanComponentDeactivate 
   private resizeEvent = new Subject<void>()
 
   public isAdmin = this.$auth.user.admin
-  public showSearchBar = signal(false)
-  public showExitButton = signal(false)
+  public readonly showSearchBar = signal(false)
+  public readonly showExitButton = signal(false)
   public terminalTheme: 'light' | 'dark' = 'dark'
   public form = new FormGroup({
     query: new FormControl<string>(''),

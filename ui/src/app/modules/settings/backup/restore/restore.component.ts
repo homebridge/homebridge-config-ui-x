@@ -38,13 +38,13 @@ export class RestoreComponent implements OnInit, OnDestroy {
   public selectedBackup: ScheduledBackup | null = this.modalData.selectedBackup ?? null
 
   // Signals
-  public clicked = signal(false)
-  public selectedFile = signal<File | null>(null)
-  public restoreInProgress = signal(false)
-  public restoreStarted = signal(false)
-  public restoreFailed = signal(false)
-  public restoreArchiveType = signal<'homebridge' | 'hbfx'>('homebridge')
-  public uploadPercent = signal(0)
+  public readonly clicked = signal(false)
+  public readonly selectedFile = signal<File | null>(null)
+  public readonly restoreInProgress = signal(false)
+  public readonly restoreStarted = signal(false)
+  public readonly restoreFailed = signal(false)
+  public readonly restoreArchiveType = signal<'homebridge' | 'hbfx'>('homebridge')
+  public readonly uploadPercent = signal(0)
 
   // Other properties
   private io: IoNamespace

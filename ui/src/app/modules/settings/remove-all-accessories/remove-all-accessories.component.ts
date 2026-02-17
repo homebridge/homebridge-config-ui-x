@@ -25,8 +25,8 @@ export class RemoveAllAccessoriesComponent implements OnInit {
   private $translate = inject(TranslateService)
 
   // Signals
-  public clicked = signal(false)
-  public cachedAccessories = signal<any[]>([])
+  public readonly clicked = signal(false)
+  public readonly cachedAccessories = signal<any[]>([])
 
   public ngOnInit(): void {
     void this.loadCachedAccessories()

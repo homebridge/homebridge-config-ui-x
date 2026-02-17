@@ -14,7 +14,7 @@ import { getHumiditySensorValue } from '@/app/core/accessories/types/matter/matt
   ],
 })
 export class MatterHumiditySensorComponent {
-  public service = input.required<ServiceTypeX>()
+  public readonly service = input.required<ServiceTypeX>()
 
-  public humidity = computed(() => getHumiditySensorValue(this.service()))
+  public readonly humidity = computed(() => getHumiditySensorValue(this.service()))
 }

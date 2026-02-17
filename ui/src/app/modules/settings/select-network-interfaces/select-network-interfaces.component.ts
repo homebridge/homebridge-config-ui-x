@@ -24,7 +24,7 @@ export class SelectNetworkInterfacesComponent implements OnInit {
   public adaptersSelected = this.modalData.adaptersSelected
 
   // Signals
-  public isUnchanged = signal(true)
+  public readonly isUnchanged = signal(true)
 
   // Other properties
   private adaptersOriginal: string[] = []

@@ -40,10 +40,10 @@ export class HbV2ModalComponent implements OnInit {
   public defaultIcon = 'assets/hb-icon.png'
 
   // Signals
-  public loading = signal(true)
-  public installedPlugins = signal<InstalledPlugin[]>([])
-  public allPluginsSupported = signal(true)
-  public nodeReady = signal(false)
+  public readonly loading = signal(true)
+  public readonly installedPlugins = signal<InstalledPlugin[]>([])
+  public readonly allPluginsSupported = signal(true)
+  public readonly nodeReady = signal(false)
 
   public ngOnInit(): void {
     void this.initialize()

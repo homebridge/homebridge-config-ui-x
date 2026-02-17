@@ -36,7 +36,7 @@ export class UsersComponent implements OnInit {
   private $translate = inject(TranslateService)
 
   // Signals
-  public homebridgeUsers = signal<User[]>([])
+  public readonly homebridgeUsers = signal<User[]>([])
 
   // Other properties
   public username = this.$auth.user.username

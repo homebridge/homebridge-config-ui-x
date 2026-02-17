@@ -32,9 +32,9 @@ export class ResetAccessoriesComponent implements OnInit {
   public childBridges: ChildBridge[] = this.modalData.childBridges ?? []
 
   // 3. Signals
-  public clicked = signal(false)
-  public pairings = signal<ResetAccessoriesPairing[]>([])
-  public toDelete = signal<ResetAccessoriesDeleteItem[]>([])
+  public readonly clicked = signal(false)
+  public readonly pairings = signal<ResetAccessoriesPairing[]>([])
+  public readonly toDelete = signal<ResetAccessoriesDeleteItem[]>([])
 
   // 4. Other Properties
   public readonly isMatterSupported = this.$settings.isFeatureEnabled('matterSupport')

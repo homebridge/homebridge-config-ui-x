@@ -44,17 +44,17 @@ export class StatusComponent implements OnInit, OnDestroy {
   private $notification = inject(NotificationService)
   private $settings = inject(SettingsService)
   private $ws = inject(WsService)
-  private isUnlocked = signal(false)
+  private readonly isUnlocked = signal(false)
   private io: IoNamespace
 
   public isAdmin = this.$auth.user.admin
   public isMatterSupported = this.$settings.isFeatureEnabled('matterSupport')
   public saveWidgetsEvent = new Subject()
   public options: GridsterConfig
-  public dashboard = signal<Array<GridsterItemConfig>>([])
-  public consoleStatus = signal<'up' | 'down'>('down')
+  public readonly dashboard = signal<Array<GridsterItemConfig>>([])
+  public readonly consoleStatus = signal<'up' | 'down'>('down')
   public currentYear: number
-  public page = signal({
+  public readonly page = signal({
     mobile: (window.innerWidth < 1024),
     showWidgetConfigure: (window.innerWidth < 576),
   })

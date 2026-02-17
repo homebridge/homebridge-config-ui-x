@@ -25,8 +25,8 @@ export class MatterWindowCoveringComponent {
   private injector = inject(EnvironmentInjector)
   private $modal = inject(NgbModal)
 
-  public service = input.required<ServiceTypeX>()
-  public readyForControl = input<boolean>(false)
+  public readonly service = input.required<ServiceTypeX>()
+  public readonly readyForControl = input<boolean>(false)
 
   public onClick() {
     if (!this.readyForControl()) {
@@ -59,13 +59,13 @@ export class MatterWindowCoveringComponent {
     })
   }
 
-  public currentPosition = computed(() => getWindowCoveringPercentage(this.service()))
+  public readonly currentPosition = computed(() => getWindowCoveringPercentage(this.service()))
 
-  public deviceType = computed(() => this.service().customType || this.service().deviceType || 'WindowCovering')
+  public readonly deviceType = computed(() => this.service().customType || this.service().deviceType || 'WindowCovering')
 
-  public isWindowCovering = computed(() => this.deviceType() === 'WindowCovering')
+  public readonly isWindowCovering = computed(() => this.deviceType() === 'WindowCovering')
 
-  public isDoor = computed(() => this.deviceType() === 'Door')
+  public readonly isDoor = computed(() => this.deviceType() === 'Door')
 
-  public isWindow = computed(() => this.deviceType() === 'Window')
+  public readonly isWindow = computed(() => this.deviceType() === 'Window')
 }

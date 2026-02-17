@@ -17,7 +17,7 @@ import { SettingsService } from '@/app/core/ui/settings.service'
 export class TemperatureSensorComponent {
   private $settings = inject(SettingsService)
 
-  public service = input.required<ServiceTypeX>()
+  public readonly service = input.required<ServiceTypeX>()
 
   public temperatureUnits = this.$settings.env.temperatureUnits
 }

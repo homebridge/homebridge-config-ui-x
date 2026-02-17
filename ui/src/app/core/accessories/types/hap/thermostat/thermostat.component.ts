@@ -37,8 +37,8 @@ export class ThermostatComponent {
   private $settings = inject(SettingsService)
   private $accessories = inject(AccessoriesService)
 
-  public service = input.required<ServiceTypeX>()
-  public readyForControl = input<boolean>(false)
+  public readonly service = input.required<ServiceTypeX>()
+  public readonly readyForControl = input<boolean>(false)
 
   public temperatureUnits = this.$settings.env.temperatureUnits
 

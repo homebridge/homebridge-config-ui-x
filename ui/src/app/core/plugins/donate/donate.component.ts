@@ -23,8 +23,8 @@ export class DonateComponent implements OnInit {
   public plugin = this.modalData.plugin
 
   // Signals
-  public fundingOptions = signal<PluginFundingOption[]>([])
-  public authorName = signal<string>('')
+  public readonly fundingOptions = signal<PluginFundingOption[]>([])
+  public readonly authorName = signal<string>('')
 
   public ngOnInit(): void {
     void this.initialize()

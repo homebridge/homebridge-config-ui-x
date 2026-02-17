@@ -33,8 +33,8 @@ export class MatterDoorLockComponent {
   private injector = inject(EnvironmentInjector)
   private $modal = inject(NgbModal)
 
-  public service = input.required<ServiceTypeX>()
-  public readyForControl = input<boolean>(false)
+  public readonly service = input.required<ServiceTypeX>()
+  public readonly readyForControl = input<boolean>(false)
 
   public onClick() {
     if (!this.readyForControl()) {
@@ -66,5 +66,5 @@ export class MatterDoorLockComponent {
     })
   }
 
-  public lockState = computed(() => getDoorLockState(this.service()))
+  public readonly lockState = computed(() => getDoorLockState(this.service()))
 }

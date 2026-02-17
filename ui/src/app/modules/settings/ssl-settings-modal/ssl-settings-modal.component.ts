@@ -31,9 +31,9 @@ export class SslSettingsModalComponent implements OnInit {
   readonly pfxInput = viewChild<ElementRef<HTMLInputElement>>('pfxInput')
 
   // Signals
-  public selectedMode = signal<'off' | 'selfsigned' | 'keycert' | 'pfx'>('off')
-  public isSaving = signal(false)
-  public isUnchanged = signal(true)
+  public readonly selectedMode = signal<'off' | 'selfsigned' | 'keycert' | 'pfx'>('off')
+  public readonly isSaving = signal(false)
+  public readonly isUnchanged = signal(true)
 
   // Form controls
   public sslModeControl = new FormControl<'off' | 'selfsigned' | 'keycert' | 'pfx'>('off', { nonNullable: true })
@@ -44,7 +44,7 @@ export class SslSettingsModalComponent implements OnInit {
   public passphraseControl = new FormControl<string>('', { nonNullable: true })
 
   // Computed validation
-  public isFormInvalid = computed(() => {
+  public readonly isFormInvalid = computed(() => {
     const mode = this.selectedMode()
 
     switch (mode) {

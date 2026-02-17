@@ -31,8 +31,8 @@ export class RestartLinuxComponent implements OnInit, OnDestroy {
   private io: IoNamespace
 
   // Signals
-  public timeout = signal(false)
-  public error = signal<string | false>(false)
+  public readonly timeout = signal(false)
+  public readonly error = signal<string | false>(false)
 
   public ngOnInit(): void {
     void this.initialize()

@@ -30,18 +30,18 @@ export class RestartComponent implements OnInit, OnDestroy {
   private destroyRef = inject(DestroyRef)
 
   // Signals
-  public uiOnline = signal(false)
-  public error = signal<string | false>(false)
-  public resp = signal<Record<string, unknown>>({})
-  public timeout = signal(false)
+  public readonly uiOnline = signal(false)
+  public readonly error = signal<string | false>(false)
+  public readonly resp = signal<Record<string, unknown>>({})
+  public readonly timeout = signal(false)
 
   // Computed signals for icon classes
-  public uiIcon = computed(() => this.uiOnline() ? 'far fa-check-circle' : 'fas fa-circle-notch fa-spin')
-  public serviceIcon = computed(() => this.uiOnline() ? 'fas fa-circle-notch fa-spin' : 'far fa-circle')
+  public readonly uiIcon = computed(() => this.uiOnline() ? 'far fa-check-circle' : 'fas fa-circle-notch fa-spin')
+  public readonly serviceIcon = computed(() => this.uiOnline() ? 'fas fa-circle-notch fa-spin' : 'far fa-circle')
 
   // Other properties
   private io: IoNamespace
-  private statusCheckActive = signal(false)
+  private readonly statusCheckActive = signal(false)
 
   // Lifecycle
   public ngOnInit(): void {

@@ -62,11 +62,11 @@ export class SettingsComponent implements OnInit {
   readonly searchInput = viewChild<ElementRef>('searchInput')
 
   // Signals
-  public showSearchBar = signal(false)
-  public searchQuery = signal('')
-  public isThemeTransitioning = signal(false)
+  public readonly showSearchBar = signal(false)
+  public readonly searchQuery = signal('')
+  public readonly isThemeTransitioning = signal(false)
 
-  public showFields = signal({
+  public readonly showFields = signal({
     general: true,
     display: true,
     startup: true,
@@ -79,7 +79,7 @@ export class SettingsComponent implements OnInit {
   })
 
   // Track which items are hidden by search
-  public hiddenItems = signal<Record<string, boolean>>({})
+  public readonly hiddenItems = signal<Record<string, boolean>>({})
 
   // Define which items belong to which section
   private sectionItems: Record<string, string[]> = {
@@ -150,12 +150,12 @@ export class SettingsComponent implements OnInit {
     ],
   }
 
-  public loading = signal(true)
+  public readonly loading = signal(true)
   public debugFieldDesc = 'settings.startup.debug_desc_v1' // default, may be changed in ngOnInit
-  public showAvahiMdnsOption = signal(false)
-  public showResolvedMdnsOption = signal(false)
-  public adaptersAvailable = signal<NetworkAdapterAvailable[]>([])
-  public adaptersSelected = signal<NetworkAdapterSelected[]>([])
+  public readonly showAvahiMdnsOption = signal(false)
+  public readonly showResolvedMdnsOption = signal(false)
+  public readonly adaptersAvailable = signal<NetworkAdapterAvailable[]>([])
+  public readonly adaptersSelected = signal<NetworkAdapterSelected[]>([])
   public runningInDocker = this.$settings.env.runningInDocker
   public runningOnRaspberryPi = this.$settings.env.runningOnRaspberryPi
   public runningOnRaspbianImage = this.$settings.env.runningOnRaspbianImage
@@ -164,44 +164,44 @@ export class SettingsComponent implements OnInit {
   public isMatterSupported = this.$settings.isFeatureEnabled('matterSupport')
   public isPwa = Boolean(isStandalonePWA())
 
-  public hbNameIsInvalid = signal(false)
-  public hbNameIsSaving = signal(false)
+  public readonly hbNameIsInvalid = signal(false)
+  public readonly hbNameIsSaving = signal(false)
   public hbNameFormControl = new FormControl('')
 
-  public uiLangIsSaving = signal(false)
+  public readonly uiLangIsSaving = signal(false)
   public uiLangFormControl = new FormControl('')
 
-  public uiThemeIsSaving = signal(false)
+  public readonly uiThemeIsSaving = signal(false)
   public uiThemeFormControl = new FormControl('')
 
-  public uiLightIsSaving = signal(false)
+  public readonly uiLightIsSaving = signal(false)
   public uiLightFormControl = new FormControl('')
 
-  public uiMenuIsSaving = signal(false)
+  public readonly uiMenuIsSaving = signal(false)
   public uiMenuFormControl = new FormControl('')
 
-  public uiTempIsSaving = signal(false)
+  public readonly uiTempIsSaving = signal(false)
   public uiTempFormControl = new FormControl('')
 
-  public uiTerminalPersistenceIsSaving = signal(false)
+  public readonly uiTerminalPersistenceIsSaving = signal(false)
   public uiTerminalPersistenceFormControl = new FormControl(false)
 
-  public uiTerminalHideWarningIsSaving = signal(false)
+  public readonly uiTerminalHideWarningIsSaving = signal(false)
   public uiTerminalHideWarningFormControl = new FormControl(false)
 
-  public uiTerminalBufferSizeIsSaving = signal(false)
-  public uiTerminalBufferSizeIsInvalid = signal(false)
+  public readonly uiTerminalBufferSizeIsSaving = signal(false)
+  public readonly uiTerminalBufferSizeIsInvalid = signal(false)
   public uiTerminalBufferSizeFormControl = new FormControl(globalThis.terminal.bufferSize)
 
-  public uiTerminalFontSizeIsSaving = signal(false)
+  public readonly uiTerminalFontSizeIsSaving = signal(false)
   public uiTerminalFontSizeFormControl = new FormControl(13)
   public fontSizes = [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
 
-  public uiTerminalFontWeightIsSaving = signal(false)
+  public readonly uiTerminalFontWeightIsSaving = signal(false)
   public uiTerminalFontWeightFormControl = new FormControl('400')
   public fontWeights = ['100', '200', '300', '400', '500', '600', '700', '800', '900', 'bold', 'normal']
 
-  public uiTerminalLightingModeIsSaving = signal(false)
+  public readonly uiTerminalLightingModeIsSaving = signal(false)
   public uiTerminalLightingModeFormControl = new FormControl('dark')
 
   // Only allow light theme when in light mode
@@ -214,113 +214,113 @@ export class SettingsComponent implements OnInit {
     return this.$settings.actualLightingMode === 'dark'
   }
 
-  public hbDebugIsSaving = signal(false)
+  public readonly hbDebugIsSaving = signal(false)
   public hbDebugFormControl = new FormControl(false)
 
-  public hbInsecureIsSaving = signal(false)
+  public readonly hbInsecureIsSaving = signal(false)
   public hbInsecureFormControl = new FormControl(false)
 
-  public hbKeepIsSaving = signal(false)
+  public readonly hbKeepIsSaving = signal(false)
   public hbKeepFormControl = new FormControl(false)
 
-  public hbEnvDebugIsSaving = signal(false)
+  public readonly hbEnvDebugIsSaving = signal(false)
   public hbEnvDebugFormControl = new FormControl('')
 
-  public hbEnvNodeIsSaving = signal(false)
+  public readonly hbEnvNodeIsSaving = signal(false)
   public hbEnvNodeFormControl = new FormControl('')
 
-  public hbLogSizeIsInvalid = signal(false)
-  public hbLogSizeIsSaving = signal(false)
+  public readonly hbLogSizeIsInvalid = signal(false)
+  public readonly hbLogSizeIsSaving = signal(false)
   public hbLogSizeFormControl = new FormControl(-1)
 
-  public hbLogTruncateIsInvalid = signal(false)
-  public hbLogTruncateIsSaving = signal(false)
+  public readonly hbLogTruncateIsInvalid = signal(false)
+  public readonly hbLogTruncateIsSaving = signal(false)
   public hbLogTruncateFormControl = new FormControl(0)
 
-  public hbMDnsIsSaving = signal(false)
+  public readonly hbMDnsIsSaving = signal(false)
   public hbMDnsFormControl = new FormControl('')
 
   public enableMdnsAdvertiseFormControl = new FormControl(false)
-  public enableMdnsAdvertiseIsSaving = signal(false)
+  public readonly enableMdnsAdvertiseIsSaving = signal(false)
 
-  public hbPortIsInvalid = signal(false)
-  public hbPortIsSaving = signal(false)
+  public readonly hbPortIsInvalid = signal(false)
+  public readonly hbPortIsSaving = signal(false)
   public hbPortFormControl = new FormControl(0)
 
-  public uiPortIsInvalid = signal(false)
-  public uiPortIsSaving = signal(false)
+  public readonly uiPortIsInvalid = signal(false)
+  public readonly uiPortIsSaving = signal(false)
   public uiPortFormControl = new FormControl(0)
 
-  public hbStartPortIsInvalid = signal(false)
-  public hbStartPortIsSaving = signal(false)
+  public readonly hbStartPortIsInvalid = signal(false)
+  public readonly hbStartPortIsSaving = signal(false)
   public hbStartPortFormControl = new FormControl(0)
 
-  public hbEndPortIsInvalid = signal(false)
-  public hbEndPortIsSaving = signal(false)
+  public readonly hbEndPortIsInvalid = signal(false)
+  public readonly hbEndPortIsSaving = signal(false)
   public hbEndPortFormControl = new FormControl(0)
 
-  public uiHostIsSaving = signal(false)
+  public readonly uiHostIsSaving = signal(false)
   public uiHostFormControl = new FormControl('')
 
-  public uiProxyHostIsSaving = signal(false)
+  public readonly uiProxyHostIsSaving = signal(false)
   public uiProxyHostFormControl = new FormControl('')
 
-  public uiAuthIsSaving = signal(false)
+  public readonly uiAuthIsSaving = signal(false)
   public uiAuthFormControl = new UntypedFormControl(true)
 
-  public uiSessionTimeoutIsInvalid = signal(false)
-  public uiSessionTimeoutIsSaving = signal(false)
+  public readonly uiSessionTimeoutIsInvalid = signal(false)
+  public readonly uiSessionTimeoutIsSaving = signal(false)
   public uiSessionTimeoutDaysFormControl = new FormControl(0)
   public uiSessionTimeoutHoursFormControl = new FormControl(8)
   public uiSessionTimeoutMinutesFormControl = new FormControl(0)
 
-  public uiSessionTimeoutInactivityBasedIsSaving = signal(false)
+  public readonly uiSessionTimeoutInactivityBasedIsSaving = signal(false)
   public uiSessionTimeoutInactivityBasedFormControl = new FormControl(false)
 
   public uiSslTypeFormControl = new FormControl('off')
 
-  public uiSslKeyIsSaving = signal(false)
+  public readonly uiSslKeyIsSaving = signal(false)
   public uiSslKeyFormControl = new FormControl('')
 
-  public uiSslCertIsSaving = signal(false)
+  public readonly uiSslCertIsSaving = signal(false)
   public uiSslCertFormControl = new FormControl('')
 
-  public uiSslPfxIsSaving = signal(false)
+  public readonly uiSslPfxIsSaving = signal(false)
   public uiSslPfxFormControl = new FormControl('')
 
-  public uiSslPassphraseIsSaving = signal(false)
+  public readonly uiSslPassphraseIsSaving = signal(false)
   public uiSslPassphraseFormControl = new FormControl('')
 
-  public uiSslSelfSignedHostnamesIsSaving = signal(false)
+  public readonly uiSslSelfSignedHostnamesIsSaving = signal(false)
   public uiSslSelfSignedHostnamesFormControl = new FormControl('')
 
-  public hbPackageIsSaving = signal(false)
+  public readonly hbPackageIsSaving = signal(false)
   public hbPackageFormControl = new FormControl('')
 
-  public uiMetricsIsSaving = signal(false)
+  public readonly uiMetricsIsSaving = signal(false)
   public uiMetricsFormControl = new FormControl(true)
 
-  public uiAccDebugIsSaving = signal(false)
+  public readonly uiAccDebugIsSaving = signal(false)
   public uiAccDebugFormControl = new FormControl(false)
 
-  public uiTempFileIsSaving = signal(false)
+  public readonly uiTempFileIsSaving = signal(false)
   public uiTempFileFormControl = new FormControl('')
 
-  public hbLinuxShutdownIsSaving = signal(false)
+  public readonly hbLinuxShutdownIsSaving = signal(false)
   public hbLinuxShutdownFormControl = new FormControl('')
 
-  public hbLinuxRestartIsSaving = signal(false)
+  public readonly hbLinuxRestartIsSaving = signal(false)
   public hbLinuxRestartFormControl = new FormControl('')
 
-  public scheduledRestartCronIsInvalid = signal(false)
-  public scheduledRestartCronIsSaving = signal(false)
+  public readonly scheduledRestartCronIsInvalid = signal(false)
+  public readonly scheduledRestartCronIsSaving = signal(false)
   public scheduledRestartCronFormControl = new FormControl('')
 
-  public matterEnabledIsSaving = signal(false)
+  public readonly matterEnabledIsSaving = signal(false)
   public matterEnabledFormControl = new FormControl(false)
 
-  public matterPortIsInvalid = signal(false)
-  public matterPortIsSaving = signal(false)
+  public readonly matterPortIsInvalid = signal(false)
+  public readonly matterPortIsSaving = signal(false)
   public matterPortFormControl = new FormControl(0)
 
   // Other properties

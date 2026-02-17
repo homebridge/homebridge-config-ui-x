@@ -47,8 +47,8 @@ export class NodeVersionModalComponent implements OnInit {
   public statusIo = this.modalData.statusIo
 
   // Signals
-  public loading = signal(true)
-  public installedPlugins = signal<PluginNodeCheck[]>([])
+  public readonly loading = signal(true)
+  public readonly installedPlugins = signal<PluginNodeCheck[]>([])
 
   // Other properties
   public hasNode24OrAbove = false

@@ -32,9 +32,9 @@ export class AccessoryControlListsComponent implements OnInit {
   private modalData = inject(ACCESSORY_CONTROL_LISTS_MODAL_DATA)
 
   // Signals
-  public clicked = signal(false)
-  public mainPairing = signal<Pairing | undefined>(undefined)
-  public pairings = signal<Pairing[]>([])
+  public readonly clicked = signal(false)
+  public readonly mainPairing = signal<Pairing | undefined>(undefined)
+  public readonly pairings = signal<Pairing[]>([])
 
   // Other properties
   private originalBlacklist: string[] = []

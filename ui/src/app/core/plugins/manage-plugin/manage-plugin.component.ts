@@ -75,28 +75,28 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
   public backToVersionModal = this.modalData.backToVersionModal ?? null
 
   // Signals
-  public targetVersionPretty = signal('')
-  public actionComplete = signal(false)
-  public actionFailed = signal(false)
-  public justUpdatedPlugin = signal(false)
-  public updateToBeta = signal(false)
-  public childBridges = signal<ChildBridge[]>([])
-  public pastTenseVerb = signal('')
-  public onlineUpdateOk = signal(false)
-  public versionNotes = signal('')
-  public versionNotesLoaded = signal(false)
-  public versionNotesShow = signal(false)
-  public fullChangelog = signal('')
-  public fullChangelogLoaded = signal(false)
-  public releaseNotesShow = signal(false)
-  public isConfigured = signal(this.initialIsConfigured)
-  public supportMessageKey = signal('')
-  public donationLink = signal('')
-  public downloadingBackup = signal(false)
+  public readonly targetVersionPretty = signal('')
+  public readonly actionComplete = signal(false)
+  public readonly actionFailed = signal(false)
+  public readonly justUpdatedPlugin = signal(false)
+  public readonly updateToBeta = signal(false)
+  public readonly childBridges = signal<ChildBridge[]>([])
+  public readonly pastTenseVerb = signal('')
+  public readonly onlineUpdateOk = signal(false)
+  public readonly versionNotes = signal('')
+  public readonly versionNotesLoaded = signal(false)
+  public readonly versionNotesShow = signal(false)
+  public readonly fullChangelog = signal('')
+  public readonly fullChangelogLoaded = signal(false)
+  public readonly releaseNotesShow = signal(false)
+  public readonly isConfigured = signal(this.initialIsConfigured)
+  public readonly supportMessageKey = signal('')
+  public readonly donationLink = signal('')
+  public readonly downloadingBackup = signal(false)
 
   // Other public properties
-  public presentTenseVerb = signal('')
-  public releaseNotesTab = signal(1)
+  public readonly presentTenseVerb = signal('')
+  public readonly releaseNotesTab = signal(1)
   public readonly iconStar = '<i class="fas fa-star orange-text"></i>'
   public readonly iconThumbsUp = '<i class="fas fa-thumbs-up orange-text"></i>'
   public readonly iconCoffee = '<i class="fas fa-coffee pink-text"></i>'

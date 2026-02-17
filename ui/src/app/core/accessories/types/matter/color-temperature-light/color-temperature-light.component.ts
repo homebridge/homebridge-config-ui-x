@@ -34,8 +34,8 @@ export class ColorTemperatureLightComponent {
   private $modal = inject(NgbModal)
   public $colour = inject(ColourService)
 
-  public service = input.required<ServiceTypeX>()
-  public readyForControl = input<boolean>(false)
+  public readonly service = input.required<ServiceTypeX>()
+  public readonly readyForControl = input<boolean>(false)
 
   public onClick() {
     if (!this.readyForControl()) {
@@ -67,9 +67,9 @@ export class ColorTemperatureLightComponent {
     })
   }
 
-  public isOn = computed(() => getDeviceActiveState(this.service()))
+  public readonly isOn = computed(() => getDeviceActiveState(this.service()))
 
-  public brightness = computed(() => getBrightnessPercentage(this.service()))
+  public readonly brightness = computed(() => getBrightnessPercentage(this.service()))
 
   protected readonly Math = Math
 }

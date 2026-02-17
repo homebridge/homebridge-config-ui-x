@@ -25,8 +25,8 @@ export class RoboticVacuumCleanerComponent {
   private injector = inject(EnvironmentInjector)
   private $modal = inject(NgbModal)
 
-  public service = input.required<ServiceTypeX>()
-  public readyForControl = input<boolean>(false)
+  public readonly service = input.required<ServiceTypeX>()
+  public readonly readyForControl = input<boolean>(false)
 
   public onClick() {
     if (!this.readyForControl()) {
@@ -60,9 +60,9 @@ export class RoboticVacuumCleanerComponent {
     })
   }
 
-  public isActive = computed(() => getDeviceActiveState(this.service()))
+  public readonly isActive = computed(() => getDeviceActiveState(this.service()))
 
-  public statusText = computed(() => getDeviceStatusText(this.service()))
+  public readonly statusText = computed(() => getDeviceStatusText(this.service()))
 
-  public canShowModal = computed(() => !isOnOffDevice(this.service()))
+  public readonly canShowModal = computed(() => !isOnOffDevice(this.service()))
 }

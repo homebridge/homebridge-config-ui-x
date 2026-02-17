@@ -38,10 +38,10 @@ export class ManageVersionComponent implements OnInit {
   public onSettingsChange = this.modalData.onSettingsChange
 
   // Signals
-  private _versionSelect = signal<string>('')
-  public loading = signal(true)
-  public versions = signal<Array<VersionData>>([])
-  public versionsWithTags = signal<Array<{ version: string, tag: string }>>([])
+  private readonly _versionSelect = signal<string>('')
+  public readonly loading = signal(true)
+  public readonly versions = signal<Array<VersionData>>([])
+  public readonly versionsWithTags = signal<Array<{ version: string, tag: string }>>([])
 
   // Getter/setter for ngModel binding
   get versionSelect(): string {

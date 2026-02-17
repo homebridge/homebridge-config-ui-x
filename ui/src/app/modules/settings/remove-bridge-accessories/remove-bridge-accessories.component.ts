@@ -26,9 +26,9 @@ export class RemoveBridgeAccessoriesComponent implements OnInit {
   private $translate = inject(TranslateService)
 
   // Signals
-  public clicked = signal(false)
-  public pairings = signal<any[]>([])
-  public toDelete = signal<{ id: string, protocol: 'hap' | 'matter' }[]>([])
+  public readonly clicked = signal(false)
+  public readonly pairings = signal<any[]>([])
+  public readonly toDelete = signal<{ id: string, protocol: 'hap' | 'matter' }[]>([])
 
   // Other properties
   private isMatterSupported = this.$settings.isFeatureEnabled('matterSupport')

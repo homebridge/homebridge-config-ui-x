@@ -27,8 +27,8 @@ export class CpuWidgetComponent extends BaseChartWidgetComponent {
   private $settings = inject(SettingsService)
 
   // Signals
-  public cpuTemperature = signal<CpuWidgetData['cpuTemperature']>({})
-  public currentLoad = signal<number>(0)
+  public readonly cpuTemperature = signal<CpuWidgetData['cpuTemperature']>({})
+  public readonly currentLoad = signal<number>(0)
 
   // Other properties
   public temperatureUnits = this.$settings.env.temperatureUnits

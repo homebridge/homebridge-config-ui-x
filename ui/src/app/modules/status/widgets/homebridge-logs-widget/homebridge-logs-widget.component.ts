@@ -24,12 +24,12 @@ export class HomebridgeLogsWidgetComponent implements OnInit, OnDestroy {
   private $cdr = inject(ChangeDetectorRef)
 
   // Signals
-  widget = input.required<Widget>()
+  readonly widget = input.required<Widget>()
   readonly widgetContainerElement = viewChild<ElementRef>('widgetcontainer')
   readonly titleElement = viewChild<ElementRef>('terminaltitle')
   readonly termTarget = viewChild<ElementRef>('logoutput')
-  public terminalHeight = signal<number>(200)
-  public theme = signal<'dark' | 'light'>('dark')
+  public readonly terminalHeight = signal<number>(200)
+  public readonly theme = signal<'dark' | 'light'>('dark')
 
   // Other properties
   private initialized = false

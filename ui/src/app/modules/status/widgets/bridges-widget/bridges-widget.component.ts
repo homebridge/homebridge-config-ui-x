@@ -33,10 +33,10 @@ export class BridgesWidgetComponent implements OnInit, OnDestroy {
   private $ws = inject(WsService)
 
   // Signals
-  widget = input.required<Widget>()
-  public homebridgeStatus = signal<Partial<HomebridgeStatusResponse & { name?: string }> | null>(null)
-  public childBridges = signal<ChildBridgeWithUIState[]>([])
-  public isRestarting = signal<boolean>(false)
+  readonly widget = input.required<Widget>()
+  public readonly homebridgeStatus = signal<Partial<HomebridgeStatusResponse & { name?: string }> | null>(null)
+  public readonly childBridges = signal<ChildBridgeWithUIState[]>([])
+  public readonly isRestarting = signal<boolean>(false)
 
   // Other properties
   private ioMain: IoNamespace

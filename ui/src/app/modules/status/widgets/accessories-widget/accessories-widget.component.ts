@@ -27,10 +27,10 @@ export class AccessoriesWidgetComponent implements OnInit, OnDestroy {
   private $md = inject(MobileDetectService)
 
   // Signals
-  widget = input.required<Widget>()
-  public dashboardAccessories = signal<ServiceTypeX[]>([])
-  public loaded = signal<boolean>(false)
-  public isMobile = signal(false)
+  readonly widget = input.required<Widget>()
+  public readonly dashboardAccessories = signal<ServiceTypeX[]>([])
+  public readonly loaded = signal<boolean>(false)
+  public readonly isMobile = signal(false)
 
   constructor() {
     const $dragula = this.$dragula

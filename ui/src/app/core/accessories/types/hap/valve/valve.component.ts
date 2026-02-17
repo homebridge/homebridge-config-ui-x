@@ -37,8 +37,8 @@ export class ValveComponent implements OnInit {
   private $accessories = inject(AccessoriesService)
   private $modal = inject(NgbModal)
 
-  public service = input.required<ServiceTypeX>()
-  public readyForControl = input<boolean>(false)
+  public readonly service = input.required<ServiceTypeX>()
+  public readonly readyForControl = input<boolean>(false)
 
   public secondsActive = 0
   public remainingDuration: string

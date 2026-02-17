@@ -24,11 +24,11 @@ export class HapQrcodeWidgetComponent implements OnInit, OnDestroy {
   // Signals
   readonly pincodeElement = viewChild<ElementRef>('pincode')
   readonly qrcodeContainerElement = viewChild<ElementRef>('qrcodecontainer')
-  public paired = signal<boolean>(false)
-  public pin = signal<string>('')
-  public setupUri = signal<string | null>(null)
-  public qrCodeHeight = signal<number>(0)
-  public qrCodeWidth = signal<number>(0)
+  public readonly paired = signal<boolean>(false)
+  public readonly pin = signal<string>('')
+  public readonly setupUri = signal<string | null>(null)
+  public readonly qrCodeHeight = signal<number>(0)
+  public readonly qrCodeWidth = signal<number>(0)
 
   // Other properties
   private io: IoNamespace

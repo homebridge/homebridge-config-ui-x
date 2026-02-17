@@ -40,17 +40,17 @@ export class SidebarComponent implements OnInit, OnDestroy {
   private $toastr = inject(ToastrService)
   private $translate = inject(TranslateService)
 
-  initialIsExpanded = input<boolean>(false)
+  readonly initialIsExpanded = input<boolean>(false)
 
-  public isExpanded = signal<boolean>(false)
-  public formAuth = signal<boolean>(this.$settings.formAuth)
+  public readonly isExpanded = signal<boolean>(false)
+  public readonly formAuth = signal<boolean>(this.$settings.formAuth)
   public isAdmin = this.$auth.user.admin
   public enableTerminalAccess = this.$settings.env.enableTerminalAccess
-  public rPiCurrentlyUnderVoltage = signal<boolean>(false)
-  public rPiWasUnderVoltage = signal<boolean>(false)
-  public legacyOtpToastShown = signal<boolean>(false)
-  public isMobile = signal<boolean>(false)
-  public freezeMenu = signal<boolean>(false)
+  public readonly rPiCurrentlyUnderVoltage = signal<boolean>(false)
+  public readonly rPiWasUnderVoltage = signal<boolean>(false)
+  public readonly legacyOtpToastShown = signal<boolean>(false)
+  public readonly isMobile = signal<boolean>(false)
+  public readonly freezeMenu = signal<boolean>(false)
   public isPwa = isStandalonePWA()
 
   // Store listener references for proper cleanup

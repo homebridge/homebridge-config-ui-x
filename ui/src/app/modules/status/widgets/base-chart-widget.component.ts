@@ -22,7 +22,7 @@ export abstract class BaseChartWidgetComponent implements OnInit, OnDestroy {
   protected $ws = inject(WsService)
 
   // Signals
-  public widget = input.required<Widget>()
+  public readonly widget = input.required<Widget>()
   readonly chart = viewChild(BaseChartDirective)
   readonly widgetBackground = viewChild<ElementRef>('widgetbackground')
 

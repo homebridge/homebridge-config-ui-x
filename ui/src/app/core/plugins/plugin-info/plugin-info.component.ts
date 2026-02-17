@@ -20,8 +20,8 @@ export class PluginInfoComponent {
   public plugin = this.modalData.plugin
 
   // Signals
-  private iconError = signal(false)
-  public pluginIcon = computed(() => {
+  private readonly iconError = signal(false)
+  public readonly pluginIcon = computed(() => {
     return (this.plugin?.icon && !this.iconError()) ? this.plugin.icon : this.defaultIcon
   })
 

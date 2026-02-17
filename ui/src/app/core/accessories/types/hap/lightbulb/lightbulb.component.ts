@@ -42,11 +42,11 @@ export class LightbulbComponent implements OnInit, OnDestroy {
 
   public $colour = inject(ColourService)
 
-  public service = input.required<ServiceTypeX>()
-  public readyForControl = input<boolean>(false)
+  public readonly service = input.required<ServiceTypeX>()
+  public readonly readyForControl = input<boolean>(false)
 
-  public hasAdaptiveLighting = signal(false)
-  public isAdaptiveLightingEnabled = signal(false)
+  public readonly hasAdaptiveLighting = signal(false)
+  public readonly isAdaptiveLightingEnabled = signal(false)
   public isAdaptiveLightingEnabled$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false)
 
   public ngOnInit() {

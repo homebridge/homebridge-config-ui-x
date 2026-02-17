@@ -38,13 +38,13 @@ export class SwitchToScopedComponent implements OnInit, OnDestroy {
   public plugin = this.modalData.plugin
 
   // Signals
-  public installing = signal(false)
-  public installed = signal(false)
-  public uninstalling = signal(false)
-  public uninstalled = signal(false)
-  public restarting = signal(false)
-  public failure = signal<string>('')
-  public onlineUpdateOk = signal(false)
+  public readonly installing = signal(false)
+  public readonly installed = signal(false)
+  public readonly uninstalling = signal(false)
+  public readonly uninstalled = signal(false)
+  public readonly restarting = signal(false)
+  public readonly failure = signal<string>('')
+  public readonly onlineUpdateOk = signal(false)
 
   // Other properties
   private io: IoNamespace

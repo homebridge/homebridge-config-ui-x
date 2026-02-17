@@ -28,7 +28,7 @@ export class WidgetVisibilityComponent implements OnInit {
   public resetLayout = this.modalData.resetLayout
 
   // Signals
-  public availableWidgets = signal<any[]>([])
+  public readonly availableWidgets = signal<any[]>([])
 
   public ngOnInit(): void {
     const allWidgets = [

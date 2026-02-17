@@ -16,8 +16,8 @@ import { LongClickDirective } from '@/app/core/directives/long-click.directive'
   ],
 })
 export class SwitchComponent {
-  public service = input.required<ServiceTypeX>()
-  public readyForControl = input<boolean>(false)
+  public readonly service = input.required<ServiceTypeX>()
+  public readonly readyForControl = input<boolean>(false)
 
   public isOn(): boolean {
     const values = this.service().values

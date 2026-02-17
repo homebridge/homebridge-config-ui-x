@@ -38,7 +38,7 @@ export class LayoutComponent implements OnInit {
   private io: IoNamespace
 
   // Signals
-  public sidebarExpanded = signal(false)
+  public readonly sidebarExpanded = signal(false)
 
   public ngOnInit(): void {
     this.io = this.$ws.connectToNamespace('app')

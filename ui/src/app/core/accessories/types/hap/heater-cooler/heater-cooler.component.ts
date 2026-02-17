@@ -39,13 +39,13 @@ export class HeaterCoolerComponent implements OnInit {
   private $settings = inject(SettingsService)
   private $accessories = inject(AccessoriesService)
 
-  public service = input.required<ServiceTypeX>()
-  public readyForControl = input<boolean>(false)
-  public type = input<'heater' | 'cooler'>()
+  public readonly service = input.required<ServiceTypeX>()
+  public readonly readyForControl = input<boolean>(false)
+  public readonly type = input<'heater' | 'cooler'>()
 
   public temperatureUnits = this.$settings.env.temperatureUnits
-  public hasHeating = signal(false)
-  public hasCooling = signal(false)
+  public readonly hasHeating = signal(false)
+  public readonly hasCooling = signal(false)
 
   public ngOnInit() {
     this.hasHeating.set('HeatingThresholdTemperature' in this.service().values)

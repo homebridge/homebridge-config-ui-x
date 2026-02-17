@@ -30,7 +30,7 @@ export class Users2faDisableComponent {
   private $translate = inject(TranslateService)
 
   // Signals
-  public invalidCredentials = signal(false)
+  public readonly invalidCredentials = signal(false)
 
   // Other properties
   public formGroup = new FormGroup({

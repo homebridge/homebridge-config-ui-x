@@ -51,19 +51,19 @@ export class UpdateInfoWidgetComponent implements OnInit {
   private $ws = inject(WsService)
 
   // Signals
-  widget = input.required<Widget>()
-  public homebridgePkg = signal<Plugin>({} as Plugin)
-  public homebridgeUiPkg = signal<Plugin>({} as Plugin)
-  public homebridgePluginStatus = signal<Plugin[]>([])
-  public homebridgePluginStatusDone = signal<boolean>(false)
-  public nodejsInfo = signal<NodeJsInfo | null>(null)
-  public nodejsStatusDone = signal<boolean>(false)
-  public serverInfo = signal<ServerInfo | null>(null)
-  public isRunningHbV2 = signal<boolean>(false)
-  public isHbV2Loaded = signal<boolean>(false)
-  public isHbV2Ready = signal<boolean>(false)
-  public dockerStatusDone = signal<boolean>(false)
-  public dockerInfo = signal<DockerDetails>({
+  readonly widget = input.required<Widget>()
+  public readonly homebridgePkg = signal<Plugin>({} as Plugin)
+  public readonly homebridgeUiPkg = signal<Plugin>({} as Plugin)
+  public readonly homebridgePluginStatus = signal<Plugin[]>([])
+  public readonly homebridgePluginStatusDone = signal<boolean>(false)
+  public readonly nodejsInfo = signal<NodeJsInfo | null>(null)
+  public readonly nodejsStatusDone = signal<boolean>(false)
+  public readonly serverInfo = signal<ServerInfo | null>(null)
+  public readonly isRunningHbV2 = signal<boolean>(false)
+  public readonly isHbV2Loaded = signal<boolean>(false)
+  public readonly isHbV2Ready = signal<boolean>(false)
+  public readonly dockerStatusDone = signal<boolean>(false)
+  public readonly dockerInfo = signal<DockerDetails>({
     latestVersion: null,
     latestReleaseBody: '',
     updateAvailable: false,

@@ -18,8 +18,8 @@ import { SettingsService } from '@/app/core/ui/settings.service'
 export class OnOffPlugInUnitComponent {
   private $settings = inject(SettingsService)
 
-  public service = input.required<ServiceTypeX>()
-  public readyForControl = input<boolean>(false)
+  public readonly service = input.required<ServiceTypeX>()
+  public readonly readyForControl = input<boolean>(false)
 
   public browserLang = this.$settings.browserLang
 
@@ -31,5 +31,5 @@ export class OnOffPlugInUnitComponent {
     controlDevice(this.service())
   }
 
-  public isOn = computed(() => getDeviceActiveState(this.service()))
+  public readonly isOn = computed(() => getDeviceActiveState(this.service()))
 }

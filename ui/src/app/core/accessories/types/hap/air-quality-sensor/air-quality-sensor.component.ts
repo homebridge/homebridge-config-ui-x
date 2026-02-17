@@ -12,7 +12,7 @@ import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
   imports: [TranslatePipe],
 })
 export class AirQualitySensorComponent {
-  public service = input.required<ServiceTypeX>()
+  public readonly service = input.required<ServiceTypeX>()
 
   public labels = ['Unknown', 'Excellent', 'Good', 'Fair', 'Inferior', 'Poor']
 }

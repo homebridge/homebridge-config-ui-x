@@ -67,11 +67,11 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
 
   public isAdmin = this.$auth.user.admin
   public enableAccessories = this.$settings.env.enableAccessories
-  public isMobile = signal<boolean | string>(false)
-  public hideHidden = signal(true)
+  public readonly isMobile = signal<boolean | string>(false)
+  public readonly hideHidden = signal(true)
   public readonly linkInsecure = '<a href="https://github.com/homebridge/homebridge-config-ui-x/wiki/Enabling-Accessory-Control" target="_blank"><i class="fa fa-external-link-alt primary-text"></i></a>'
-  public hasPlugins = signal(false)
-  public loading = signal(true)
+  public readonly hasPlugins = signal(false)
+  public readonly loading = signal(true)
   public manageLayoutMode = false
   private previousBridgeSelection: string[] | null = null
 

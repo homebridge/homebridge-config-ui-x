@@ -20,8 +20,8 @@ import { BaseChartWidgetComponent } from '@/app/modules/status/widgets/base-char
 })
 export class MemoryWidgetComponent extends BaseChartWidgetComponent {
   // Signals
-  public totalMemory = signal<number>(0)
-  public freeMemory = signal<number>(0)
+  public readonly totalMemory = signal<number>(0)
+  public readonly freeMemory = signal<number>(0)
 
   protected fetchData(): void {
     this.io.request('get-server-memory-info').subscribe((data: MemoryWidgetData) => {

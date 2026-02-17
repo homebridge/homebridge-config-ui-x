@@ -69,16 +69,16 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
   private isDebugModeEnabled = this.$settings.isFeatureEnabled('childBridgeDebugMode')
   private isMatterSupported = this.$settings.isFeatureEnabled('matterSupport')
 
-  public homebridgeConfig = signal<string>('')
-  public originalConfig = signal<string>('')
-  public saveInProgress = signal(false)
-  public isMobile = signal<boolean>(false)
+  public readonly homebridgeConfig = signal<string>('')
+  public readonly originalConfig = signal<string>('')
+  public readonly saveInProgress = signal(false)
+  public readonly isMobile = signal<boolean>(false)
   public monacoEditor: any
   public editorOptions: any
   public monacoEditorModel: NgxEditorModel
   public diffOriginalModel: DiffEditorModel
   public diffModifiedModel: DiffEditorModel
-  public renderSideBySide = signal(false)
+  public readonly renderSideBySide = signal(false)
 
   constructor() {
     this.isMobile.set(!!this.$md.detect.mobile())

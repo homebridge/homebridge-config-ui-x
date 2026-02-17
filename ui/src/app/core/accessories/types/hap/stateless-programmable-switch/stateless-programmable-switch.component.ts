@@ -12,5 +12,5 @@ import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
   imports: [TranslatePipe],
 })
 export class StatelessProgrammableSwitchComponent {
-  public service = input.required<ServiceTypeX>()
+  public readonly service = input.required<ServiceTypeX>()
 }

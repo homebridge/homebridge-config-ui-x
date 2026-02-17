@@ -43,7 +43,7 @@ export class PluginLogsComponent implements OnInit, OnDestroy {
   public childBridges: ChildBridge[] = this.modalData.childBridges ?? []
 
   // Signals
-  public midAction = signal(false)
+  public readonly midAction = signal(false)
 
   // Other properties
   private resizeEvent = new Subject<void>()

@@ -25,7 +25,7 @@ export class ResetAllBridgesComponent {
   private $translate = inject(TranslateService)
 
   // Signals
-  public clicked = signal(false)
+  public readonly clicked = signal(false)
 
   public async onResetHomebridgeAccessoryClick(): Promise<void> {
     this.clicked.set(true)

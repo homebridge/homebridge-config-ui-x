@@ -34,15 +34,15 @@ export class SetupWizardComponent implements OnInit {
   private $ws = inject(WsService)
 
   // Signals
-  public step = signal<'welcome' | 'create-account' | 'setup-complete' | 'restore-backup' | 'restoring' | 'restarting' | 'restore-complete'>('welcome')
-  public backgroundStyle = signal<string | undefined>(undefined)
-  public progress = signal(1)
-  public restoreInProgress = signal(false)
-  public restoreStarted = signal(false)
-  public restoreFailed = signal(false)
-  public loading = signal(false)
-  public selectedFile = signal<File | undefined>(undefined)
-  public restoreUploading = signal(false)
+  public readonly step = signal<'welcome' | 'create-account' | 'setup-complete' | 'restore-backup' | 'restoring' | 'restarting' | 'restore-complete'>('welcome')
+  public readonly backgroundStyle = signal<string | undefined>(undefined)
+  public readonly progress = signal(1)
+  public readonly restoreInProgress = signal(false)
+  public readonly restoreStarted = signal(false)
+  public readonly restoreFailed = signal(false)
+  public readonly loading = signal(false)
+  public readonly selectedFile = signal<File | undefined>(undefined)
+  public readonly restoreUploading = signal(false)
 
   // Other properties
   private io: IoNamespace

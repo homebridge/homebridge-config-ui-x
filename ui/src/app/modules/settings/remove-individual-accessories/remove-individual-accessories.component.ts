@@ -34,12 +34,12 @@ export class RemoveIndividualAccessoriesComponent implements OnInit {
   public selectedBridge = this.modalData.selectedBridge
 
   // Signals
-  public pairings = signal<Pairing[]>([])
-  public clicked = signal(false)
-  public currentSelectedBridge = signal('')
-  public selectedBridgeAccessories = signal<CachedAccessory[]>([])
-  public accessoriesExist = signal(false)
-  public toDelete = signal<{ cacheFile?: string, uuid: string, protocol: 'hap' | 'matter', deviceId?: string }[]>([])
+  public readonly pairings = signal<Pairing[]>([])
+  public readonly clicked = signal(false)
+  public readonly currentSelectedBridge = signal('')
+  public readonly selectedBridgeAccessories = signal<CachedAccessory[]>([])
+  public readonly accessoriesExist = signal(false)
+  public readonly toDelete = signal<{ cacheFile?: string, uuid: string, protocol: 'hap' | 'matter', deviceId?: string }[]>([])
 
   // Other properties
   private isMatterSupported = this.$settings.isFeatureEnabled('matterSupport')

@@ -17,7 +17,7 @@ export class ShutdownLinuxComponent implements OnInit {
   private $translate = inject(TranslateService)
 
   // Signals
-  public error = signal<string | false>(false)
+  public readonly error = signal<string | false>(false)
 
   public ngOnInit(): void {
     void this.$api.put('/platform-tools/linux/shutdown-host', {})

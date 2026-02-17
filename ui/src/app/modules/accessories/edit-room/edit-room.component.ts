@@ -21,8 +21,8 @@ export class EditRoomComponent implements OnInit {
   public existingRooms: Array<{ name: string, isDefault?: boolean }> = this.data.existingRooms
   public currentRoomIndex: number = this.data.currentRoomIndex
 
-  public deleteMode = signal(false)
-  public formWasInvalid = signal(false)
+  public readonly deleteMode = signal(false)
+  public readonly formWasInvalid = signal(false)
 
   private initialFormValue: { roomName: string | null, isDefault: boolean | null } = { roomName: null, isDefault: null }
 
@@ -71,9 +71,9 @@ export class EditRoomComponent implements OnInit {
     return isDuplicate ? { duplicateRoom: true } : null
   }
 
-  public isOnlyRoom = computed(() => this.existingRooms.length === 1)
+  public readonly isOnlyRoom = computed(() => this.existingRooms.length === 1)
 
-  public targetRoomName = computed(() => {
+  public readonly targetRoomName = computed(() => {
     if (this.isDefault) {
       // If deleting default room, accessories go to the first other room (which will become new default)
       const otherRooms = this.existingRooms.filter((_, index) => index !== this.currentRoomIndex)
@@ -85,7 +85,7 @@ export class EditRoomComponent implements OnInit {
     }
   })
 
-  public newDefaultRoomName = computed(() => {
+  public readonly newDefaultRoomName = computed(() => {
     // Only relevant if current room is default
     if (!this.isDefault) {
       return ''

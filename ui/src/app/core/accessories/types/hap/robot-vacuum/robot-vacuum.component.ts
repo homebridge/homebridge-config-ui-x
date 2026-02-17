@@ -16,8 +16,8 @@ import { LongClickDirective } from '@/app/core/directives/long-click.directive'
   ],
 })
 export class RobotVacuumComponent {
-  public service = input.required<ServiceTypeX>()
-  public readyForControl = input<boolean>(false)
+  public readonly service = input.required<ServiceTypeX>()
+  public readonly readyForControl = input<boolean>(false)
 
   public onClick() {
     if (!this.readyForControl()) {

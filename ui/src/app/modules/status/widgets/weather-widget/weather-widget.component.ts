@@ -33,8 +33,8 @@ export class WeatherWidgetComponent implements OnInit {
   private $ws = inject(WsService)
 
   // Signals
-  widget = input.required<Widget>()
-  public currentWeather = signal<OpenWeatherMapResponse | null>(null)
+  readonly widget = input.required<Widget>()
+  public readonly currentWeather = signal<OpenWeatherMapResponse | null>(null)
 
   // Other properties
   private io: IoNamespace

@@ -65,15 +65,15 @@ export class PluginConfigComponent implements OnInit {
   public schema = this.modalData.schema
 
   // Signals
-  public pluginConfig = signal<PluginConfigBlock[]>([])
-  public show = signal('')
-  public saveInProgress = signal(false)
-  public formBlocksValid = signal<{ [key: number]: boolean }>({})
-  public formIsValid = signal(true)
-  public strictValidation = signal(false)
-  public pluginAlias = signal<string>('')
-  public pluginType = signal<'platform' | 'accessory'>('platform')
-  public isFirstSave = signal(false)
+  public readonly pluginConfig = signal<PluginConfigBlock[]>([])
+  public readonly show = signal('')
+  public readonly saveInProgress = signal(false)
+  public readonly formBlocksValid = signal<{ [key: number]: boolean }>({})
+  public readonly formIsValid = signal(true)
+  public readonly strictValidation = signal(false)
+  public readonly pluginAlias = signal<string>('')
+  public readonly pluginType = signal<'platform' | 'accessory'>('platform')
+  public readonly isFirstSave = signal(false)
 
   // Other public properties
   public form: Record<string, unknown> = {}

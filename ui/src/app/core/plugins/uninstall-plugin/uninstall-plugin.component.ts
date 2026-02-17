@@ -42,15 +42,15 @@ export class UninstallPluginComponent implements OnInit {
   public keepOrphansValue = `<code>false</code>`
 
   // 4. Signals
-  public loading = signal(true)
-  public uninstalling = signal(false)
-  public removeConfig = signal(true)
-  public removeChildBridges = signal(true)
-  public hasChildBridges = signal(false)
-  public isConfigured = signal(false)
-  public isConfiguredDynamicPlatform = signal(false)
-  public pluginType = signal<'platform' | 'accessory' | null>(null)
-  public pluginAlias = signal<string | null>(null)
+  public readonly loading = signal(true)
+  public readonly uninstalling = signal(false)
+  public readonly removeConfig = signal(true)
+  public readonly removeChildBridges = signal(true)
+  public readonly hasChildBridges = signal(false)
+  public readonly isConfigured = signal(false)
+  public readonly isConfiguredDynamicPlatform = signal(false)
+  public readonly pluginType = signal<'platform' | 'accessory' | null>(null)
+  public readonly pluginAlias = signal<string | null>(null)
 
   // 7. Lifecycle Hooks
   public ngOnInit(): void {

@@ -47,10 +47,10 @@ export class WidgetControlComponent implements OnInit {
   public widget = this.modalData.widget
 
   // Signals
-  public searching = signal<boolean>(false)
-  public serverInfo = signal<ServerInfo | null>(null)
-  public networkInterfaces = signal<string[]>([])
-  public isLightMode = signal<boolean>(false)
+  public readonly searching = signal<boolean>(false)
+  public readonly serverInfo = signal<ServerInfo | null>(null)
+  public readonly networkInterfaces = signal<string[]>([])
+  public readonly isLightMode = signal<boolean>(false)
 
   // Other properties
   private io: IoNamespace
