@@ -8,10 +8,10 @@ import { RESTART_CHILD_BRIDGES_MODAL_DATA } from '@/app/core/modal-data-tokens'
 import { SettingsService } from '@/app/core/ui/settings.service'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './restart-child-bridges.component.html',
-  standalone: true,
   imports: [TranslatePipe],
+  standalone: true,
+  templateUrl: './restart-child-bridges.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RestartChildBridgesComponent {
   // Injected dependencies

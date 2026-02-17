@@ -9,12 +9,12 @@ import { AccessoriesService } from '@/app/core/accessories/accessories.service'
 import { ACCESSORY_MANAGE_MODAL_DATA } from '@/app/core/accessories/types/base-manage.component'
 
 @Component({
-  templateUrl: './robotic-vacuum-cleaner.manage.component.html',
-  styleUrl: './robotic-vacuum-cleaner.manage.component.scss',
-  standalone: true,
   imports: [
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './robotic-vacuum-cleaner.manage.component.html',
+  styleUrl: './robotic-vacuum-cleaner.manage.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RoboticVacuumCleanerManageComponent implements OnInit {

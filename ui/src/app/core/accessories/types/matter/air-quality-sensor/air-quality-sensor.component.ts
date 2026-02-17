@@ -6,12 +6,12 @@ import { TranslatePipe } from '@ngx-translate/core'
 import { getAirQualityValue } from '@/app/core/accessories/types/matter/matter-device.utils'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-matter-air-quality-sensor',
+  imports: [TranslatePipe],
+  standalone: true,
   templateUrl: './air-quality-sensor.component.html',
   styleUrl: './air-quality-sensor.component.scss',
-  standalone: true,
-  imports: [TranslatePipe],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatterAirQualitySensorComponent {
   public readonly service = input.required<ServiceTypeX>()

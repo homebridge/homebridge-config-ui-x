@@ -11,10 +11,10 @@ import { ApiService } from '@/app/core/communication/api.service'
 import { SettingsService } from '@/app/core/ui/settings.service'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './ssl-settings-modal.component.html',
-  standalone: true,
   imports: [TranslatePipe, ReactiveFormsModule],
+  standalone: true,
+  templateUrl: './ssl-settings-modal.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SslSettingsModalComponent implements OnInit {
   // Injected dependencies

@@ -12,8 +12,6 @@ import { ConvertTempPipe } from '@/app/core/pipes/convert-temp.pipe'
 import { SettingsService } from '@/app/core/ui/settings.service'
 
 @Component({
-  templateUrl: './heater-cooler.manage.component.html',
-  standalone: true,
   imports: [
     FormsModule,
     NouisliderComponent,
@@ -22,6 +20,8 @@ import { SettingsService } from '@/app/core/ui/settings.service'
     ConvertTempPipe,
     UpperCasePipe,
   ],
+  standalone: true,
+  templateUrl: './heater-cooler.manage.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HeaterCoolerManageComponent extends BaseManageComponent {

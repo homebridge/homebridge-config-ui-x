@@ -5,15 +5,15 @@ import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
 import { LongClickDirective } from '@/app/core/directives/long-click.directive'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-switch',
-  templateUrl: './switch.component.html',
-  styleUrl: './switch.component.scss',
-  standalone: true,
   imports: [
     LongClickDirective,
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './switch.component.html',
+  styleUrl: './switch.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SwitchComponent {
   public readonly service = input.required<ServiceTypeX>()

@@ -16,15 +16,15 @@ import { LockMechanismManageComponent } from '@/app/core/accessories/types/hap/l
 import { LongClickDirective } from '@/app/core/directives/long-click.directive'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-lock-mechanism',
-  templateUrl: './lock-mechanism.component.html',
-  styleUrl: './lock-mechanism.component.scss',
-  standalone: true,
   imports: [
     LongClickDirective,
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './lock-mechanism.component.html',
+  styleUrl: './lock-mechanism.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LockMechanismComponent {
   private $accessories = inject(AccessoriesService)

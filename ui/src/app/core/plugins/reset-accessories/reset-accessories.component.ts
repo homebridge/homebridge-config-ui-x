@@ -11,12 +11,12 @@ import { ResetAccessoriesDeleteItem, ResetAccessoriesPairing } from '@/app/core/
 import { SettingsService } from '@/app/core/ui/settings.service'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './reset-accessories.component.html',
-  standalone: true,
   imports: [
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './reset-accessories.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ResetAccessoriesComponent implements OnInit {
   // 1. Injected Dependencies

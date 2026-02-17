@@ -28,10 +28,6 @@ import { SettingsService } from '@/app/core/ui/settings.service'
 import { ChildBridgesService } from '@/app/core/utilities/child-bridges.service'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './plugin-config.component.html',
-  styleUrl: './plugin-config.component.scss',
-  standalone: true,
   imports: [
     NgxMdModule,
     PluginsMarkdownDirective,
@@ -48,6 +44,10 @@ import { ChildBridgesService } from '@/app/core/utilities/child-bridges.service'
     InterpolateMdPipe,
     NgbAccordionToggle,
   ],
+  standalone: true,
+  templateUrl: './plugin-config.component.html',
+  styleUrl: './plugin-config.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PluginConfigComponent implements OnInit {
   // Injected dependencies

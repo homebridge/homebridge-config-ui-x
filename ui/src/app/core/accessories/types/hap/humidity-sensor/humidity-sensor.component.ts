@@ -4,14 +4,14 @@ import { TranslatePipe } from '@ngx-translate/core'
 import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-humidity-sensor',
-  templateUrl: './humidity-sensor.component.html',
-  styleUrl: './humidity-sensor.component.scss',
-  standalone: true,
   imports: [
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './humidity-sensor.component.html',
+  styleUrl: './humidity-sensor.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HumiditySensorComponent {
   public readonly service = input.required<ServiceTypeX>()

@@ -15,14 +15,14 @@ import { InstalledPlugin } from '@/app/modules/status/widgets/update-info-widget
 import { PluginNodeCheck } from '@/app/modules/status/widgets/widgets.interfaces'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './node-version-modal.component.html',
-  standalone: true,
   imports: [
     TranslatePipe,
     NgxMdModule,
     ReactiveFormsModule,
   ],
+  standalone: true,
+  templateUrl: './node-version-modal.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NodeVersionModalComponent implements OnInit {
   private $activeModal = inject(NgbActiveModal)

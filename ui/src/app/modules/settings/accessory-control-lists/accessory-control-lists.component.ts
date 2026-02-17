@@ -12,15 +12,15 @@ import { SettingsService } from '@/app/core/ui/settings.service'
 import { Pairing } from '@/app/modules/settings/accessory-control-lists/accessory-control-lists.interfaces'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './accessory-control-lists.component.html',
-  standalone: true,
   imports: [
     TranslatePipe,
     FormsModule,
     TitleCasePipe,
     NgbTooltip,
   ],
+  standalone: true,
+  templateUrl: './accessory-control-lists.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AccessoryControlListsComponent implements OnInit {
   // Injected dependencies

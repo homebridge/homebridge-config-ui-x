@@ -17,15 +17,15 @@ import { TelevisionManageComponent } from '@/app/core/accessories/types/hap/tele
 import { LongClickDirective } from '@/app/core/directives/long-click.directive'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-television',
-  templateUrl: './television.component.html',
-  styleUrl: './television.component.scss',
-  standalone: true,
   imports: [
     LongClickDirective,
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './television.component.html',
+  styleUrl: './television.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TelevisionComponent implements OnInit {
   private $accessories = inject(AccessoriesService)

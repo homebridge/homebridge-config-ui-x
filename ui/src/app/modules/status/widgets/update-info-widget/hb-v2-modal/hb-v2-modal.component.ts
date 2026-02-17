@@ -14,13 +14,13 @@ import { PluginNodeCheck } from '@/app/modules/status/widgets'
 import { InstalledPlugin } from '@/app/modules/status/widgets/update-info-widget/hb-v2-modal/hb-v2-modal.interfaces'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './hb-v2-modal.component.html',
-  standalone: true,
   imports: [
     TranslatePipe,
     NgOptimizedImage,
   ],
+  standalone: true,
+  templateUrl: './hb-v2-modal.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HbV2ModalComponent implements OnInit {
   private $activeModal = inject(NgbActiveModal)

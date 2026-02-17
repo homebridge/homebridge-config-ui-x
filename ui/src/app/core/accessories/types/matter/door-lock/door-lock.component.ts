@@ -18,15 +18,15 @@ import { getDoorLockState, toggleDoorLock } from '@/app/core/accessories/types/m
 import { LongClickDirective } from '@/app/core/directives/long-click.directive'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-matter-door-lock',
-  templateUrl: './door-lock.component.html',
-  styleUrl: './door-lock.component.scss',
-  standalone: true,
   imports: [
     LongClickDirective,
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './door-lock.component.html',
+  styleUrl: './door-lock.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatterDoorLockComponent {
   private $accessories = inject(AccessoriesService)

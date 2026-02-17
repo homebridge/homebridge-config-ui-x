@@ -18,14 +18,14 @@ import { getBrightnessPercentage, getDeviceActiveState, toggleDimmableLight } fr
 import { LongClickDirective } from '@/app/core/directives/long-click.directive'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-dimmable-light',
-  templateUrl: './dimmable-light.component.html',
-  standalone: true,
   imports: [
     LongClickDirective,
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './dimmable-light.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DimmableLightComponent {
   private $accessories = inject(AccessoriesService)

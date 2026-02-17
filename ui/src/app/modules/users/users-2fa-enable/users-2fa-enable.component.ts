@@ -12,9 +12,6 @@ import { QrcodeComponent } from '@/app/core/components/qrcode/qrcode.component'
 import { USER_MODAL_DATA } from '@/app/core/modal-data-tokens'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './users-2fa-enable.component.html',
-  standalone: true,
   imports: [
     NgbAlert,
     QrcodeComponent,
@@ -22,6 +19,9 @@ import { USER_MODAL_DATA } from '@/app/core/modal-data-tokens'
     ReactiveFormsModule,
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './users-2fa-enable.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Users2faEnableComponent implements OnInit {
   // Injected dependencies

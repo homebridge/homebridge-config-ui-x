@@ -12,13 +12,13 @@ import { REMOVE_INDIVIDUAL_ACCESSORIES_MODAL_DATA } from '@/app/core/modal-data-
 import { SettingsService } from '@/app/core/ui/settings.service'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './remove-individual-accessories.component.html',
-  standalone: true,
   imports: [
     TranslatePipe,
     FormsModule,
   ],
+  standalone: true,
+  templateUrl: './remove-individual-accessories.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RemoveIndividualAccessoriesComponent implements OnInit {
   // Injected dependencies

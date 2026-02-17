@@ -9,15 +9,15 @@ import { AirPurifierManageComponent } from '@/app/core/accessories/types/hap/air
 import { LongClickDirective } from '@/app/core/directives/long-click.directive'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-air-purifier',
-  templateUrl: './air-purifier.component.html',
-  styleUrl: './air-purifier.component.scss',
-  standalone: true,
   imports: [
     LongClickDirective,
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './air-purifier.component.html',
+  styleUrl: './air-purifier.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AirPurifierComponent implements OnInit {
   private $accessories = inject(AccessoriesService)

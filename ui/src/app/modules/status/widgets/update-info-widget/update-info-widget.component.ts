@@ -27,15 +27,15 @@ import {
 import { environment } from '@/environments/environment'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './update-info-widget.component.html',
-  styleUrl: './update-info-widget.component.scss',
-  standalone: true,
   imports: [
     TranslatePipe,
     RouterLink,
     NgbTooltip,
   ],
+  standalone: true,
+  templateUrl: './update-info-widget.component.html',
+  styleUrl: './update-info-widget.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UpdateInfoWidgetComponent implements OnInit {
   // Injected dependencies

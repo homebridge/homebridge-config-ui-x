@@ -17,14 +17,14 @@ import { ConvertMiredPipe } from '@/app/core/pipes/convert-mired.pipe'
 import { ColourService } from '@/app/core/utilities/colour.service'
 
 @Component({
-  templateUrl: './extended-color-light.manage.component.html',
-  standalone: true,
   imports: [
     FormsModule,
     NouisliderComponent,
     TranslatePipe,
     ConvertMiredPipe,
   ],
+  standalone: true,
+  templateUrl: './extended-color-light.manage.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ExtendedColorLightManageComponent implements OnInit {

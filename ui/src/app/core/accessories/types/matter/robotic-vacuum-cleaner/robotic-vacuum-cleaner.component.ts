@@ -10,15 +10,15 @@ import { RoboticVacuumCleanerManageComponent } from '@/app/core/accessories/type
 import { LongClickDirective } from '@/app/core/directives/long-click.directive'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-robotic-vacuum-cleaner',
-  templateUrl: './robotic-vacuum-cleaner.component.html',
-  styleUrl: './robotic-vacuum-cleaner.component.scss',
-  standalone: true,
   imports: [
     LongClickDirective,
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './robotic-vacuum-cleaner.component.html',
+  styleUrl: './robotic-vacuum-cleaner.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RoboticVacuumCleanerComponent {
   private $accessories = inject(AccessoriesService)

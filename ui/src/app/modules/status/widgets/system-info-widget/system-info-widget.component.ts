@@ -7,14 +7,14 @@ import { IoNamespace, WsService } from '@/app/core/communication/ws.service'
 import { NodeJsInfo, ServerInfo, Widget } from '@/app/modules/status/widgets/widgets.interfaces'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './system-info-widget.component.html',
-  styleUrl: './system-info-widget.component.scss',
-  standalone: true,
   imports: [
     TitleCasePipe,
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './system-info-widget.component.html',
+  styleUrl: './system-info-widget.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SystemInfoWidgetComponent implements OnInit {
   // Injected dependencies

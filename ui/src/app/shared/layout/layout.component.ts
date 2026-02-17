@@ -14,15 +14,15 @@ import { SidebarComponent } from '@/app/shared/layout/sidebar/sidebar.component'
 import { environment } from '@/environments/environment'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-layout',
-  templateUrl: './layout.component.html',
-  styleUrl: './layout.component.scss',
-  standalone: true,
   imports: [
     SidebarComponent,
     RouterOutlet,
   ],
+  standalone: true,
+  templateUrl: './layout.component.html',
+  styleUrl: './layout.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LayoutComponent implements OnInit {
   // Injected dependencies

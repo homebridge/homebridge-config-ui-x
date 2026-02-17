@@ -5,12 +5,12 @@ import { TranslatePipe } from '@ngx-translate/core'
 import { BaseManageComponent } from '@/app/core/accessories/types/base-manage.component'
 
 @Component({
-  templateUrl: './television.manage.component.html',
-  standalone: true,
   imports: [
     FormsModule,
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './television.manage.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TelevisionManageComponent extends BaseManageComponent {

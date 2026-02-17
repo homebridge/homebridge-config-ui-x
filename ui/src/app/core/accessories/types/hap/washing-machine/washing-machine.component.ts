@@ -5,15 +5,15 @@ import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
 import { LongClickDirective } from '@/app/core/directives/long-click.directive'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-washing-machine',
-  templateUrl: './washing-machine.component.html',
-  styleUrl: './washing-machine.component.scss',
-  standalone: true,
   imports: [
     LongClickDirective,
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './washing-machine.component.html',
+  styleUrl: './washing-machine.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WashingMachineComponent {
   public readonly service = input.required<ServiceTypeX>()

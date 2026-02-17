@@ -13,9 +13,6 @@ import { OpenWeatherMapResponse, Widget } from '@/app/modules/status/widgets/wid
 import { environment } from '@/environments/environment'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './weather-widget.component.html',
-  standalone: true,
   imports: [
     DecimalPipe,
     TitleCasePipe,
@@ -23,6 +20,9 @@ import { environment } from '@/environments/environment'
     ConvertTempPipe,
     UpperCasePipe,
   ],
+  standalone: true,
+  templateUrl: './weather-widget.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WeatherWidgetComponent implements OnInit {
   // Injected dependencies

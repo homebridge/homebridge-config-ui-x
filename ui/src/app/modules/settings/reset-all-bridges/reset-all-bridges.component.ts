@@ -8,13 +8,13 @@ import { ToastrService } from 'ngx-toastr'
 import { ApiService } from '@/app/core/communication/api.service'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './reset-all-bridges.component.html',
-  standalone: true,
   imports: [
     NgbAlert,
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './reset-all-bridges.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ResetAllBridgesComponent {
   // Injected dependencies

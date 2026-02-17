@@ -11,13 +11,13 @@ import { CONFIRM_MODAL_DATA } from '@/app/core/modal-data-tokens'
 import { SettingsService } from '@/app/core/ui/settings.service'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './power-options.component.html',
-  standalone: true,
   imports: [
     NgbTooltip,
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './power-options.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PowerOptionsComponent implements OnInit {
   private injector = inject(EnvironmentInjector)

@@ -14,13 +14,13 @@ import { ACCESSORY_MANAGE_MODAL_DATA } from '@/app/core/accessories/types/base-m
 import { getWindowCoveringPercentage, setWindowCoveringPosition } from '@/app/core/accessories/types/matter/matter-device.utils'
 
 @Component({
-  templateUrl: './window-covering.manage.component.html',
-  standalone: true,
   imports: [
     NouisliderComponent,
     FormsModule,
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './window-covering.manage.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WindowCoveringManageComponent implements OnInit {

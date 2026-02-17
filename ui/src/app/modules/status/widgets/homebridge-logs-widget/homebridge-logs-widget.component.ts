@@ -9,12 +9,12 @@ import { LogService } from '@/app/core/utilities/log.service'
 import { Widget } from '@/app/modules/status/widgets/widgets.interfaces'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './homebridge-logs-widget.component.html',
-  standalone: true,
   imports: [
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './homebridge-logs-widget.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HomebridgeLogsWidgetComponent implements OnInit, OnDestroy {
   // Injected dependencies

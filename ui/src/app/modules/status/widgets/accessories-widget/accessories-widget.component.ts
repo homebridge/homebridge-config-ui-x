@@ -10,14 +10,14 @@ import { MobileDetectService } from '@/app/core/utilities/mobile-detect.service'
 import { Widget } from '@/app/modules/status/widgets/widgets.interfaces'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './accessories-widget.component.html',
-  standalone: true,
   imports: [
     DragulaModule,
     AccessoryTileComponent,
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './accessories-widget.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AccessoriesWidgetComponent implements OnInit, OnDestroy {
   // Injected dependencies

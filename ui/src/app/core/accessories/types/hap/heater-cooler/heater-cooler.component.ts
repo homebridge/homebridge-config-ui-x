@@ -21,10 +21,7 @@ import { ConvertTempPipe } from '@/app/core/pipes/convert-temp.pipe'
 import { SettingsService } from '@/app/core/ui/settings.service'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-heater-cooler',
-  templateUrl: './heater-cooler.component.html',
-  standalone: true,
   imports: [
     LongClickDirective,
     DecimalPipe,
@@ -32,6 +29,9 @@ import { SettingsService } from '@/app/core/ui/settings.service'
     ConvertTempPipe,
     UpperCasePipe,
   ],
+  standalone: true,
+  templateUrl: './heater-cooler.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HeaterCoolerComponent implements OnInit {
   private $modal = inject(NgbModal)

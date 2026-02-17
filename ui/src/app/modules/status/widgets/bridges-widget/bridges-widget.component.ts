@@ -13,14 +13,14 @@ import { SettingsService } from '@/app/core/ui/settings.service'
 import { ChildBridgeWithUIState, Widget } from '@/app/modules/status/widgets/widgets.interfaces'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './bridges-widget.component.html',
-  styleUrl: './bridges-widget.component.scss',
-  standalone: true,
   imports: [
     NgbTooltip,
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './bridges-widget.component.html',
+  styleUrl: './bridges-widget.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BridgesWidgetComponent implements OnInit, OnDestroy {
   // Injected dependencies

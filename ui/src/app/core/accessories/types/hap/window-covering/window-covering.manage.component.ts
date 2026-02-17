@@ -7,13 +7,13 @@ import { Subject } from 'rxjs'
 import { BaseManageComponent } from '@/app/core/accessories/types/base-manage.component'
 
 @Component({
-  templateUrl: './window-covering.manage.component.html',
-  standalone: true,
   imports: [
     NouisliderComponent,
     FormsModule,
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './window-covering.manage.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WindowCoveringManageComponent extends BaseManageComponent {

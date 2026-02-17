@@ -6,15 +6,15 @@ import { LongClickDirective } from '@/app/core/directives/long-click.directive'
 import { SettingsService } from '@/app/core/ui/settings.service'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-outlet',
-  templateUrl: './outlet.component.html',
-  styleUrl: './outlet.component.scss',
-  standalone: true,
   imports: [
     LongClickDirective,
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './outlet.component.html',
+  styleUrl: './outlet.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OutletComponent {
   private $settings = inject(SettingsService)

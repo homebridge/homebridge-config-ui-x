@@ -17,14 +17,14 @@ import { HumidifierDehumidifierManageComponent } from '@/app/core/accessories/ty
 import { LongClickDirective } from '@/app/core/directives/long-click.directive'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-humidifier-dehumidifier',
-  templateUrl: './humidifier-dehumidifier.component.html',
-  standalone: true,
   imports: [
     LongClickDirective,
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './humidifier-dehumidifier.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HumidifierDehumidifierComponent implements OnInit {
   private $accessories = inject(AccessoriesService)

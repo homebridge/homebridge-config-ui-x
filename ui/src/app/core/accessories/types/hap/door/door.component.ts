@@ -9,15 +9,15 @@ import { DoorManageComponent } from '@/app/core/accessories/types/hap/door/door.
 import { LongClickDirective } from '@/app/core/directives/long-click.directive'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-door',
-  templateUrl: './door.component.html',
-  styleUrl: './door.component.scss',
-  standalone: true,
   imports: [
     LongClickDirective,
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './door.component.html',
+  styleUrl: './door.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DoorComponent {
   private $accessories = inject(AccessoriesService)

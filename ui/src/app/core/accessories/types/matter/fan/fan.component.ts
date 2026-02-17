@@ -18,15 +18,15 @@ import { getFanPercentSetting, isFanOn, toggleFan } from '@/app/core/accessories
 import { LongClickDirective } from '@/app/core/directives/long-click.directive'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-matter-fan',
-  templateUrl: './fan.component.html',
-  styleUrl: './fan.component.scss',
-  standalone: true,
   imports: [
     LongClickDirective,
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './fan.component.html',
+  styleUrl: './fan.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatterFanComponent {
   private $accessories = inject(AccessoriesService)

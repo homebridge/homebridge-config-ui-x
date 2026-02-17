@@ -22,11 +22,11 @@ export interface CanComponentDeactivate {
 }
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [NgbTooltip, TranslatePipe, ReactiveFormsModule],
+  standalone: true,
   templateUrl: './logs.component.html',
   styleUrl: './logs.component.scss',
-  standalone: true,
-  imports: [NgbTooltip, TranslatePipe, ReactiveFormsModule],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     '(window:resize)': 'onWindowResize()',
   },

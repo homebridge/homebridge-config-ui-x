@@ -7,10 +7,10 @@ import { IoNamespace, WsService } from '@/app/core/communication/ws.service'
 import { Widget } from '@/app/modules/status/widgets/widgets.interfaces'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './uptime-widget.component.html',
-  standalone: true,
   imports: [TranslatePipe],
+  standalone: true,
+  templateUrl: './uptime-widget.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UptimeWidgetComponent implements OnInit {
   // Injected dependencies

@@ -8,14 +8,14 @@ import { BaseChartDirective } from 'ng2-charts'
 import { BaseChartWidgetComponent } from '@/app/modules/status/widgets/base-chart-widget.component'
 
 @Component({
-  templateUrl: './network-widget.component.html',
-  styleUrl: './network-widget.component.scss',
-  standalone: true,
   imports: [
     BaseChartDirective,
     DecimalPipe,
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './network-widget.component.html',
+  styleUrl: './network-widget.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NetworkWidgetComponent extends BaseChartWidgetComponent {

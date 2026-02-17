@@ -13,10 +13,7 @@ import { ConvertTempPipe } from '@/app/core/pipes/convert-temp.pipe'
 import { SettingsService } from '@/app/core/ui/settings.service'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-matter-thermostat',
-  templateUrl: './thermostat.component.html',
-  standalone: true,
   imports: [
     LongClickDirective,
     DecimalPipe,
@@ -24,6 +21,9 @@ import { SettingsService } from '@/app/core/ui/settings.service'
     ConvertTempPipe,
     UpperCasePipe,
   ],
+  standalone: true,
+  templateUrl: './thermostat.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatterThermostatComponent {
   private $modal = inject(NgbModal)

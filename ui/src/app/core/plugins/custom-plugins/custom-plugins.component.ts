@@ -17,16 +17,16 @@ import { ChildBridgesService } from '@/app/core/utilities/child-bridges.service'
 import { environment } from '@/environments/environment'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './custom-plugins.component.html',
-  styleUrl: './custom-plugins.component.scss',
-  standalone: true,
   imports: [
     SchemaFormComponent,
     Bootstrap5FrameworkModule,
     NgbTooltip,
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './custom-plugins.component.html',
+  styleUrl: './custom-plugins.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CustomPluginsComponent implements OnInit, OnDestroy {
   // 1. Injected Dependencies

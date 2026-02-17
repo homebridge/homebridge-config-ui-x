@@ -8,13 +8,13 @@ import { ToastrService } from 'ngx-toastr'
 import { ApiService } from '@/app/core/communication/api.service'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './remove-all-accessories.component.html',
-  standalone: true,
   imports: [
     NgbAlert,
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './remove-all-accessories.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RemoveAllAccessoriesComponent implements OnInit {
   // Injected dependencies

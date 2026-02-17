@@ -34,10 +34,6 @@ declare global {
 }
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './manual-config.component.html',
-  styleUrl: './manual-config.component.scss',
-  standalone: true,
   imports: [
     NgbAccordionDirective,
     NgbAccordionItem,
@@ -53,6 +49,10 @@ declare global {
     NgxMdModule,
     PluginsMarkdownDirective,
   ],
+  standalone: true,
+  templateUrl: './manual-config.component.html',
+  styleUrl: './manual-config.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ManualConfigComponent implements OnInit, OnDestroy {
   // 1. Injected dependencies

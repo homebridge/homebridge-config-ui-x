@@ -11,11 +11,11 @@ import { HomebridgeStatusResponse } from '@/app/core/server.interfaces'
 import { SettingsService } from '@/app/core/ui/settings.service'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [TranslatePipe],
+  standalone: true,
   templateUrl: './restart-linux.component.html',
   styleUrl: './restart-linux.component.scss',
-  standalone: true,
-  imports: [TranslatePipe],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RestartLinuxComponent implements OnInit, OnDestroy {
   // Injected dependencies

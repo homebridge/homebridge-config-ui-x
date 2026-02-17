@@ -4,14 +4,14 @@ import { TranslatePipe } from '@ngx-translate/core'
 import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-motion-sensor',
-  templateUrl: './motion-sensor.component.html',
-  styleUrl: './motion-sensor.component.scss',
-  standalone: true,
   imports: [
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './motion-sensor.component.html',
+  styleUrl: './motion-sensor.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MotionSensorComponent {
   public readonly service = input.required<ServiceTypeX>()

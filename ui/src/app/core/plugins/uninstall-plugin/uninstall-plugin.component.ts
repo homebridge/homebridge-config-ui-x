@@ -11,14 +11,14 @@ import { ManagePluginComponent } from '@/app/core/plugins/manage-plugin/manage-p
 import { ChildBridge } from '@/app/core/plugins/manage-plugins.interfaces'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './uninstall-plugin.component.html',
-  standalone: true,
   imports: [
     FormsModule,
     NgbAlert,
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './uninstall-plugin.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UninstallPluginComponent implements OnInit {
   // 1. Injected Dependencies

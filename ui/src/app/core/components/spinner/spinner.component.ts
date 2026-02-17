@@ -1,10 +1,10 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-spinner',
+  standalone: true,
   templateUrl: './spinner.component.html',
   styleUrl: './spinner.component.scss',
-  standalone: true,
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SpinnerComponent {}

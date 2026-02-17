@@ -5,13 +5,13 @@ import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
 import { getHumiditySensorValue } from '@/app/core/accessories/types/matter/matter-device.utils'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-matter-humidity-sensor',
-  templateUrl: './humidity-sensor.component.html',
-  standalone: true,
   imports: [
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './humidity-sensor.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatterHumiditySensorComponent {
   public readonly service = input.required<ServiceTypeX>()

@@ -5,12 +5,12 @@ import { SettingsService } from '@/app/core/ui/settings.service'
 import { environment } from '@/environments/environment'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './support.component.html',
-  standalone: true,
   imports: [
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './support.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SupportComponent implements OnInit {
   // Injected dependencies

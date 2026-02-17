@@ -16,15 +16,15 @@ import { WindowManageComponent } from '@/app/core/accessories/types/hap/window/w
 import { LongClickDirective } from '@/app/core/directives/long-click.directive'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-window',
-  templateUrl: './window.component.html',
-  styleUrl: './window.component.scss',
-  standalone: true,
   imports: [
     LongClickDirective,
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './window.component.html',
+  styleUrl: './window.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WindowComponent {
   private $accessories = inject(AccessoriesService)

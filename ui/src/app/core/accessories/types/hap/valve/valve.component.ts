@@ -21,15 +21,15 @@ import { ValveManageComponent } from '@/app/core/accessories/types/hap/valve/val
 import { LongClickDirective } from '@/app/core/directives/long-click.directive'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-valve',
-  templateUrl: './valve.component.html',
-  styleUrl: './valve.component.scss',
-  standalone: true,
   imports: [
     LongClickDirective,
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './valve.component.html',
+  styleUrl: './valve.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ValveComponent implements OnInit {
   private destroyRef = inject(DestroyRef)

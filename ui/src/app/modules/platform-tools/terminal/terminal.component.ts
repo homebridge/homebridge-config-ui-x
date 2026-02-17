@@ -7,11 +7,11 @@ import { TerminalNavigationGuardService } from '@/app/core/utilities/terminal-na
 import { TerminalService } from '@/app/core/utilities/terminal.service'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [TranslatePipe],
+  standalone: true,
   templateUrl: './terminal.component.html',
   styleUrl: './terminal.component.scss',
-  standalone: true,
-  imports: [TranslatePipe],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     '(window:resize)': 'onWindowResize()',
     '(window:beforeunload)': 'onBeforeUnload($event)',

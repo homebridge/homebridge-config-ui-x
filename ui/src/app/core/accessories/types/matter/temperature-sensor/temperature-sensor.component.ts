@@ -8,11 +8,11 @@ import { ConvertTempPipe } from '@/app/core/pipes/convert-temp.pipe'
 import { SettingsService } from '@/app/core/ui/settings.service'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-matter-temperature-sensor',
-  templateUrl: './temperature-sensor.component.html',
-  standalone: true,
   imports: [DecimalPipe, ConvertTempPipe, UpperCasePipe, TranslatePipe],
+  standalone: true,
+  templateUrl: './temperature-sensor.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatterTemperatureSensorComponent {
   private $settings = inject(SettingsService)

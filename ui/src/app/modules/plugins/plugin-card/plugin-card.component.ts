@@ -23,10 +23,7 @@ import { SettingsService } from '@/app/core/ui/settings.service'
 import { MobileDetectService } from '@/app/core/utilities/mobile-detect.service'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-plugin-card',
-  templateUrl: './plugin-card.component.html',
-  standalone: true,
   imports: [
     NgbTooltip,
     NgbDropdown,
@@ -37,6 +34,9 @@ import { MobileDetectService } from '@/app/core/utilities/mobile-detect.service'
     DatePipe,
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './plugin-card.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PluginCardComponent implements OnInit {
   // Injected dependencies

@@ -24,14 +24,14 @@ import { LongClickDirective } from '@/app/core/directives/long-click.directive'
 import { ColourService } from '@/app/core/utilities/colour.service'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-lightbulb',
-  templateUrl: './lightbulb.component.html',
-  standalone: true,
   imports: [
     LongClickDirective,
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './lightbulb.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LightbulbComponent implements OnInit, OnDestroy {
   private destroyRef = inject(DestroyRef)

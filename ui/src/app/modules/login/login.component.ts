@@ -12,16 +12,16 @@ import { SettingsService } from '@/app/core/ui/settings.service'
 import { environment } from '@/environments/environment'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './login.component.html',
-  styleUrl: './login.component.scss',
-  standalone: true,
   imports: [
     FormsModule,
     ReactiveFormsModule,
     TranslatePipe,
     NgOptimizedImage,
   ],
+  standalone: true,
+  templateUrl: './login.component.html',
+  styleUrl: './login.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LoginComponent implements OnInit {
   private destroyRef = inject(DestroyRef)

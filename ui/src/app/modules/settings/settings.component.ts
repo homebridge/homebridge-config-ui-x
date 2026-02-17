@@ -31,10 +31,6 @@ import { SslSettingsModalComponent } from '@/app/modules/settings/ssl-settings-m
 import { WallpaperComponent } from '@/app/modules/settings/wallpaper/wallpaper.component'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './settings.component.html',
-  styleUrl: './settings.component.scss',
-  standalone: true,
   imports: [
     RouterLink,
     FormsModule,
@@ -43,6 +39,10 @@ import { WallpaperComponent } from '@/app/modules/settings/wallpaper/wallpaper.c
     TranslatePipe,
     SpinnerComponent,
   ],
+  standalone: true,
+  templateUrl: './settings.component.html',
+  styleUrl: './settings.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   animations: settingsAnimations,
 })
 export class SettingsComponent implements OnInit {

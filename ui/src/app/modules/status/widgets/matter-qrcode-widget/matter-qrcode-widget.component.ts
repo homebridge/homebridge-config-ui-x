@@ -8,13 +8,13 @@ import { QrcodeComponent } from '@/app/core/components/qrcode/qrcode.component'
 import { HomebridgeStatusResponse } from '@/app/core/server.interfaces'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './matter-qrcode-widget.component.html',
-  standalone: true,
   imports: [
     QrcodeComponent,
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './matter-qrcode-widget.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatterQrcodeWidgetComponent implements OnInit, OnDestroy {
   // Injected dependencies

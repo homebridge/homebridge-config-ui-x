@@ -6,13 +6,13 @@ import { PLUGIN_MODAL_DATA } from '@/app/core/modal-data-tokens'
 import { PluginFundingOption } from '@/app/core/plugins/manage-plugins.interfaces'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './donate.component.html',
-  styleUrl: './donate.component.scss',
-  standalone: true,
   imports: [
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './donate.component.html',
+  styleUrl: './donate.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DonateComponent implements OnInit {
   // Injected dependencies

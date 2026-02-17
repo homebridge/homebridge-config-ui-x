@@ -10,9 +10,6 @@ import { SettingsService } from '@/app/core/ui/settings.service'
 import { BaseChartWidgetComponent } from '@/app/modules/status/widgets/base-chart-widget.component'
 
 @Component({
-  templateUrl: './cpu-widget.component.html',
-  styleUrl: './cpu-widget.component.scss',
-  standalone: true,
   imports: [
     BaseChartDirective,
     UpperCasePipe,
@@ -20,6 +17,9 @@ import { BaseChartWidgetComponent } from '@/app/modules/status/widgets/base-char
     TranslatePipe,
     ConvertTempPipe,
   ],
+  standalone: true,
+  templateUrl: './cpu-widget.component.html',
+  styleUrl: './cpu-widget.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CpuWidgetComponent extends BaseChartWidgetComponent {

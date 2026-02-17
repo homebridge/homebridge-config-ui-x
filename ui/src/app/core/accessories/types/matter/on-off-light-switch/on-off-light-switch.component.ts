@@ -5,13 +5,13 @@ import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
 import { controlDevice, getDeviceActiveState } from '@/app/core/accessories/types/matter/matter-device.utils'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-on-off-light-switch',
-  templateUrl: './on-off-light-switch.component.html',
-  standalone: true,
   imports: [
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './on-off-light-switch.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OnOffLightSwitchComponent {
   public readonly service = input.required<ServiceTypeX>()

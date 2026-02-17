@@ -16,15 +16,15 @@ import { SpeakerManageComponent } from '@/app/core/accessories/types/hap/speaker
 import { LongClickDirective } from '@/app/core/directives/long-click.directive'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-speaker',
-  templateUrl: './speaker.component.html',
-  styleUrl: './speaker.component.scss',
-  standalone: true,
   imports: [
     LongClickDirective,
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './speaker.component.html',
+  styleUrl: './speaker.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SpeakerComponent {
   private $accessories = inject(AccessoriesService)

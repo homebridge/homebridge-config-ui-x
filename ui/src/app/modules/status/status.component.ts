@@ -20,10 +20,6 @@ import { AVAILABLE_WIDGETS, WidgetsComponent } from '@/app/modules/status/widget
 import { Widget } from '@/app/modules/status/widgets/widgets.interfaces'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './status.component.html',
-  styleUrl: './status.component.scss',
-  standalone: true,
   imports: [
     NgbTooltip,
     SpinnerComponent,
@@ -32,6 +28,10 @@ import { Widget } from '@/app/modules/status/widgets/widgets.interfaces'
     WidgetsComponent,
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './status.component.html',
+  styleUrl: './status.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     '(window:beforeunload)': 'onBeforeUnload($event)',
   },

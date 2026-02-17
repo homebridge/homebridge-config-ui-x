@@ -9,11 +9,11 @@ import { SettingsService } from '@/app/core/ui/settings.service'
 import { environment } from '@/environments/environment'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [ReactiveFormsModule, TranslatePipe],
+  standalone: true,
   templateUrl: './wallpaper.component.html',
   styleUrl: './wallpaper.component.scss',
-  standalone: true,
-  imports: [ReactiveFormsModule, TranslatePipe],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WallpaperComponent implements OnInit {
   // Injected dependencies

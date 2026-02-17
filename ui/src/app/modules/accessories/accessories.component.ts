@@ -25,11 +25,7 @@ import { EditRoomComponent } from '@/app/modules/accessories/edit-room/edit-room
 import { ADD_ROOM_MODAL_DATA, EDIT_ROOM_MODAL_DATA } from '@/app/modules/accessories/modal-data-tokens'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-accessories',
-  templateUrl: './accessories.component.html',
-  styleUrl: './accessories.component.scss',
-  standalone: true,
   imports: [
     NgTemplateOutlet,
     NgbTooltip,
@@ -44,6 +40,10 @@ import { ADD_ROOM_MODAL_DATA, EDIT_ROOM_MODAL_DATA } from '@/app/modules/accesso
     SpinnerComponent,
     FormsModule,
   ],
+  standalone: true,
+  templateUrl: './accessories.component.html',
+  styleUrl: './accessories.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AccessoriesComponent implements OnInit, OnDestroy {
   protected $accessories = inject(AccessoriesService)

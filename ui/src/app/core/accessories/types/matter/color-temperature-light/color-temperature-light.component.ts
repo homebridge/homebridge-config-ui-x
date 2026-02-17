@@ -19,14 +19,14 @@ import { LongClickDirective } from '@/app/core/directives/long-click.directive'
 import { ColourService } from '@/app/core/utilities/colour.service'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-color-temperature-light',
-  templateUrl: './color-temperature-light.component.html',
-  standalone: true,
   imports: [
     LongClickDirective,
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './color-temperature-light.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ColorTemperatureLightComponent {
   private $accessories = inject(AccessoriesService)

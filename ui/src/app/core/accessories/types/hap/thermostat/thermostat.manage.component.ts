@@ -13,8 +13,6 @@ import { ConvertTempPipe } from '@/app/core/pipes/convert-temp.pipe'
 import { SettingsService } from '@/app/core/ui/settings.service'
 
 @Component({
-  templateUrl: './thermostat.manage.component.html',
-  standalone: true,
   imports: [
     FormsModule,
     NouisliderComponent,
@@ -23,6 +21,8 @@ import { SettingsService } from '@/app/core/ui/settings.service'
     ConvertTempPipe,
     UpperCasePipe,
   ],
+  standalone: true,
+  templateUrl: './thermostat.manage.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ThermostatManageComponent extends BaseManageComponent {

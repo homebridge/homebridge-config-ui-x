@@ -10,13 +10,13 @@ import { SettingsService } from '@/app/core/ui/settings.service'
 import { MobileDetectService } from '@/app/core/utilities/mobile-detect.service'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './startup-script.component.html',
-  standalone: true,
   imports: [
     EditorComponent,
     FormsModule,
   ],
+  standalone: true,
+  templateUrl: './startup-script.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class StartupScriptComponent implements OnInit, OnDestroy {
   // Injected dependencies

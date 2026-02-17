@@ -7,14 +7,14 @@ import { PluginsMarkdownDirective } from '@/app/core/directives/plugins.markdown
 import { INFORMATION_MODAL_DATA } from '@/app/core/modal-data-tokens'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './information.component.html',
-  standalone: true,
   imports: [
     TranslatePipe,
     NgxMdModule,
     PluginsMarkdownDirective,
   ],
+  standalone: true,
+  templateUrl: './information.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class InformationComponent {
   // Injected dependencies

@@ -13,15 +13,15 @@ import { CONFIG_RESTORE_MODAL_DATA } from '@/app/core/modal-data-tokens'
 import { ConfigRestoreBackup } from '@/app/modules/config-editor/config-editor.interfaces'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './config-restore.component.html',
-  standalone: true,
   imports: [
     DatePipe,
     TranslatePipe,
     NgbTooltip,
     ReactiveFormsModule,
   ],
+  standalone: true,
+  templateUrl: './config-restore.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ConfigRestoreComponent implements OnInit {
   // Injected dependencies

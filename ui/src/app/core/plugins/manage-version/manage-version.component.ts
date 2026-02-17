@@ -14,14 +14,14 @@ import { HomebridgeUpdatePolicy } from '@/app/core/settings.interfaces'
 import { SettingsService } from '@/app/core/ui/settings.service'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './manage-version.component.html',
-  standalone: true,
   imports: [
     FormsModule,
     TranslatePipe,
     ReactiveFormsModule,
   ],
+  standalone: true,
+  templateUrl: './manage-version.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ManageVersionComponent implements OnInit {
   // Injected dependencies

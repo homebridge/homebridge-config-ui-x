@@ -8,10 +8,10 @@ import { PLUGIN_COMPATIBILITY_MODAL_DATA } from '@/app/core/modal-data-tokens'
 import { SettingsService } from '@/app/core/ui/settings.service'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './plugin-compatibility.component.html',
-  standalone: true,
   imports: [TranslatePipe, NgbAlert],
+  standalone: true,
+  templateUrl: './plugin-compatibility.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PluginCompatibilityComponent implements OnInit {
   // Injected dependencies

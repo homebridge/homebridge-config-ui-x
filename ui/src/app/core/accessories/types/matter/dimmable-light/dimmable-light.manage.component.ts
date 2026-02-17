@@ -15,13 +15,13 @@ import { MatterBrightness } from '@/app/core/accessories/types/matter/matter-dev
 import { getBrightnessLevel, getOnOffState, levelToPercentage } from '@/app/core/accessories/types/matter/matter-device.utils'
 
 @Component({
-  templateUrl: './dimmable-light.manage.component.html',
-  standalone: true,
   imports: [
     FormsModule,
     NouisliderComponent,
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './dimmable-light.manage.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DimmableLightManageComponent implements OnInit {

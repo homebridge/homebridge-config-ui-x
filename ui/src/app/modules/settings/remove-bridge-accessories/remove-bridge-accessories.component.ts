@@ -9,12 +9,12 @@ import { SettingsService } from '@/app/core/ui/settings.service'
 import { Pairing } from '@/app/modules/settings/settings.interfaces'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './remove-bridge-accessories.component.html',
-  standalone: true,
   imports: [
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './remove-bridge-accessories.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RemoveBridgeAccessoriesComponent implements OnInit {
   // Injected dependencies

@@ -20,16 +20,16 @@ import { ManagePluginsService } from '@/app/core/plugins/manage-plugins.service'
 import { SettingsService } from '@/app/core/ui/settings.service'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './plugin-bridge.component.html',
-  styleUrl: './plugin-bridge.component.scss',
-  standalone: true,
   imports: [
     FormsModule,
     NgbAlert,
     QrcodeComponent,
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './plugin-bridge.component.html',
+  styleUrl: './plugin-bridge.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PluginBridgeComponent implements OnInit {
   // 1. Injected Dependencies

@@ -8,13 +8,13 @@ import { SettingsService } from '@/app/core/ui/settings.service'
 import { Widget } from '@/app/modules/status/widgets/widgets.interfaces'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './widget-visibility.component.html',
-  standalone: true,
   imports: [
     TranslatePipe,
     FormsModule,
   ],
+  standalone: true,
+  templateUrl: './widget-visibility.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WidgetVisibilityComponent implements OnInit {
   // Injected dependencies

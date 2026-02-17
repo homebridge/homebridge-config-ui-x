@@ -5,15 +5,15 @@ import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
 import { LongClickDirective } from '@/app/core/directives/long-click.directive'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-garage-door-opener',
-  templateUrl: './garage-door-opener.component.html',
-  styleUrl: './garage-door-opener.component.scss',
-  standalone: true,
   imports: [
     LongClickDirective,
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './garage-door-opener.component.html',
+  styleUrl: './garage-door-opener.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class GarageDoorOpenerComponent {
   public readonly service = input.required<ServiceTypeX>()

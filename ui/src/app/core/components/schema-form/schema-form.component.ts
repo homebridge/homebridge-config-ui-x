@@ -5,14 +5,14 @@ import { JsonSchemaFormPatchDirective } from '@/app/core/directives/json-schema-
 import { SettingsService } from '@/app/core/ui/settings.service'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-schema-form',
-  templateUrl: './schema-form.component.html',
-  standalone: true,
   imports: [
     JsonSchemaFormModule,
     JsonSchemaFormPatchDirective,
   ],
+  standalone: true,
+  templateUrl: './schema-form.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SchemaFormComponent implements OnInit, OnDestroy {
   private $settings = inject(SettingsService)

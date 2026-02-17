@@ -5,10 +5,10 @@ import { TranslatePipe } from '@ngx-translate/core'
 import { SupportBannerComponent } from '@/app/core/components/support-banner/support-banner.component'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './users-support.component.html',
-  standalone: true,
   imports: [TranslatePipe, SupportBannerComponent],
+  standalone: true,
+  templateUrl: './users-support.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UsersSupportComponent {
   // Injected dependencies

@@ -10,15 +10,15 @@ import { ADD_USER_MODAL_DATA } from '@/app/core/modal-data-tokens'
 import { User } from '@/app/modules/users/users.interface'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './users-add.component.html',
-  standalone: true,
   imports: [
     FormsModule,
     ReactiveFormsModule,
     TranslatePipe,
     RequiredIndicatorComponent,
   ],
+  standalone: true,
+  templateUrl: './users-add.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UsersAddComponent implements OnInit {
   // Injected dependencies

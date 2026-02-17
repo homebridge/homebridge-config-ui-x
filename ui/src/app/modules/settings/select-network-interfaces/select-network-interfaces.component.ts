@@ -6,13 +6,13 @@ import { TranslatePipe } from '@ngx-translate/core'
 import { NETWORK_INTERFACES_MODAL_DATA } from '@/app/core/modal-data-tokens'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './select-network-interfaces.component.html',
-  standalone: true,
   imports: [
     FormsModule,
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './select-network-interfaces.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SelectNetworkInterfacesComponent implements OnInit {
   // Injected dependencies

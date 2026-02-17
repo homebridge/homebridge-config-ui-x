@@ -6,11 +6,11 @@ import { TranslateService } from '@ngx-translate/core'
 import { SettingsService } from '@/app/core/ui/settings.service'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-root',
-  templateUrl: './app.component.html',
-  standalone: true,
   imports: [RouterOutlet],
+  standalone: true,
+  templateUrl: './app.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppComponent {
   private $translate = inject(TranslateService)

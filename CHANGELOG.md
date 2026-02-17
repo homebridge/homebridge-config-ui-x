@@ -34,6 +34,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - lint: apply `angular/prefer-host-metadata-property`
 - lint: apply `angular/prefer-on-push-component-change-detection`
 - lint: apply `angular/prefer-signals`
+- lint: apply `angular/sort-keys-in-type-decorator`
 
 ### Homebridge Dependencies
 

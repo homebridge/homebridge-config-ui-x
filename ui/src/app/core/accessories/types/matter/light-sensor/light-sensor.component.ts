@@ -6,14 +6,14 @@ import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
 import { getLightSensorIlluminance } from '@/app/core/accessories/types/matter/matter-device.utils'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-matter-light-sensor',
-  templateUrl: './light-sensor.component.html',
-  standalone: true,
   imports: [
     DecimalPipe,
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './light-sensor.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatterLightSensorComponent {
   public readonly service = input.required<ServiceTypeX>()

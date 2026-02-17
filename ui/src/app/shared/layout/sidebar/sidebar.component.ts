@@ -15,17 +15,17 @@ import { INFORMATION_MODAL_DATA } from '@/app/core/modal-data-tokens'
 import { SettingsService } from '@/app/core/ui/settings.service'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-sidebar',
-  templateUrl: './sidebar.component.html',
-  styleUrl: './sidebar.component.scss',
-  standalone: true,
   imports: [
     RouterLink,
     NgOptimizedImage,
     RouterLinkActive,
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './sidebar.component.html',
+  styleUrl: './sidebar.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SidebarComponent implements OnInit, OnDestroy {
   private destroyRef = inject(DestroyRef)

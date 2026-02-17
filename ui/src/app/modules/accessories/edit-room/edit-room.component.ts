@@ -7,10 +7,10 @@ import { RequiredIndicatorComponent } from '@/app/core/components/required-indic
 import { EDIT_ROOM_MODAL_DATA } from '@/app/modules/accessories/modal-data-tokens'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './edit-room.component.html',
-  standalone: true,
   imports: [ReactiveFormsModule, TranslatePipe, RequiredIndicatorComponent],
+  standalone: true,
+  templateUrl: './edit-room.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EditRoomComponent implements OnInit {
   private $activeModal = inject(NgbActiveModal)

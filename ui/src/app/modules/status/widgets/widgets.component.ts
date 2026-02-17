@@ -35,10 +35,10 @@ export const AVAILABLE_WIDGETS = [
 ] as const
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-widgets',
-  template: '',
   standalone: true,
+  template: '',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WidgetsComponent implements OnInit, OnDestroy {
   // Injected dependencies

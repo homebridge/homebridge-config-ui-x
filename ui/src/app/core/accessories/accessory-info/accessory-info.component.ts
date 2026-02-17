@@ -32,8 +32,6 @@ import { ServiceToTranslationStringPipe } from '@/app/core/pipes/service-to-tran
 import { RemoveIndividualAccessoriesComponent } from '@/app/modules/settings/remove-individual-accessories/remove-individual-accessories.component'
 
 @Component({
-  templateUrl: './accessory-info.component.html',
-  standalone: true,
   imports: [
     FormsModule,
     KeyValuePipe,
@@ -43,6 +41,8 @@ import { RemoveIndividualAccessoriesComponent } from '@/app/modules/settings/rem
     ConvertMiredPipe,
     ServiceToTranslationStringPipe,
   ],
+  standalone: true,
+  templateUrl: './accessory-info.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AccessoryInfoComponent implements OnInit, OnDestroy {

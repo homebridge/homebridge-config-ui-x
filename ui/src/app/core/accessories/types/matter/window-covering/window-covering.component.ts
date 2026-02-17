@@ -10,15 +10,15 @@ import { WindowCoveringManageComponent } from '@/app/core/accessories/types/matt
 import { LongClickDirective } from '@/app/core/directives/long-click.directive'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-matter-window-covering',
-  templateUrl: './window-covering.component.html',
-  styleUrl: './window-covering.component.scss',
-  standalone: true,
   imports: [
     LongClickDirective,
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './window-covering.component.html',
+  styleUrl: './window-covering.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatterWindowCoveringComponent {
   private $accessories = inject(AccessoriesService)

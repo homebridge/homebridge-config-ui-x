@@ -5,11 +5,11 @@ import { TranslatePipe } from '@ngx-translate/core'
 import { PLUGIN_MODAL_DATA } from '@/app/core/modal-data-tokens'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [TranslatePipe],
+  standalone: true,
   templateUrl: './plugin-info.component.html',
   styleUrl: './plugin-info.component.scss',
-  standalone: true,
-  imports: [TranslatePipe],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PluginInfoComponent {
   // Injected dependencies

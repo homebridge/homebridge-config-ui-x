@@ -5,14 +5,14 @@ import { TranslatePipe } from '@ngx-translate/core'
 import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-light-sensor',
-  templateUrl: './light-sensor.component.html',
-  standalone: true,
   imports: [
     DecimalPipe,
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './light-sensor.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LightSensorComponent {
   public readonly service = input.required<ServiceTypeX>()

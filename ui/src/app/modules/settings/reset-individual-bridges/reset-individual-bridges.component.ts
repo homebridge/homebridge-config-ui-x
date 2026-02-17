@@ -10,13 +10,13 @@ import { SettingsService } from '@/app/core/ui/settings.service'
 import { Pairing } from '@/app/modules/settings/settings.interfaces'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './reset-individual-bridges.component.html',
-  standalone: true,
   imports: [
     TitleCasePipe,
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './reset-individual-bridges.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ResetIndividualBridgesComponent implements OnInit {
   // Injected dependencies

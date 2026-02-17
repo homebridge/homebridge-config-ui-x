@@ -13,15 +13,15 @@ import { SettingsService } from '@/app/core/ui/settings.service'
 import { environment } from '@/environments/environment'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './setup-wizard.component.html',
-  styleUrl: './setup-wizard.component.scss',
   imports: [
     TranslatePipe,
     NgOptimizedImage,
     FormsModule,
     ReactiveFormsModule,
   ],
+  templateUrl: './setup-wizard.component.html',
+  styleUrl: './setup-wizard.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SetupWizardComponent implements OnInit {
   // Injected dependencies

@@ -18,15 +18,15 @@ import { BackupService } from '@/app/modules/settings/backup/backup.service'
 import { RestoreComponent } from '@/app/modules/settings/backup/restore/restore.component'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './backup.component.html',
-  standalone: true,
   imports: [
     NgbTooltip,
     DatePipe,
     TranslatePipe,
     ReactiveFormsModule,
   ],
+  standalone: true,
+  templateUrl: './backup.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BackupComponent implements OnInit {
   // Injected dependencies

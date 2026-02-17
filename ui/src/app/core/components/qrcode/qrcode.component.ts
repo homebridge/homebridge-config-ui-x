@@ -2,10 +2,10 @@ import { ChangeDetectionStrategy, Component, ElementRef, input, OnChanges, viewC
 import { toString } from 'qrcode'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-qrcode',
-  templateUrl: './qrcode.component.html',
   standalone: true,
+  templateUrl: './qrcode.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class QrcodeComponent implements OnChanges {
   readonly data = input.required<string>()

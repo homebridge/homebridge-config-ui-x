@@ -29,10 +29,6 @@ import { BackupService } from '@/app/modules/settings/backup/backup.service'
 import { HbV2ModalComponent } from '@/app/modules/status/widgets/update-info-widget/hb-v2-modal/hb-v2-modal.component'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './manage-plugin.component.html',
-  styleUrl: './manage-plugin.component.scss',
-  standalone: true,
   imports: [
     NgxMdModule,
     PluginsMarkdownDirective,
@@ -43,6 +39,10 @@ import { HbV2ModalComponent } from '@/app/modules/status/widgets/update-info-wid
     NgbNavContent,
     NgbNavLinkButton,
   ],
+  standalone: true,
+  templateUrl: './manage-plugin.component.html',
+  styleUrl: './manage-plugin.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 
 export class ManagePluginComponent implements OnInit, OnDestroy {

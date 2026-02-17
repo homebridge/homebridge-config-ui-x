@@ -22,12 +22,12 @@ import { TerminalService } from '@/app/core/utilities/terminal.service'
 import { Widget } from '@/app/modules/status/widgets/widgets.interfaces'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './terminal-widget.component.html',
-  standalone: true,
   imports: [
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './terminal-widget.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     '(window:beforeunload)': 'onBeforeUnload($event)',
     '(window:focus)': 'onWindowFocus()',

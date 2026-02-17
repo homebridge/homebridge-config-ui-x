@@ -16,10 +16,10 @@ import { BackupComponent } from '@/app/modules/settings/backup/backup.component'
 import { ScheduledBackup } from '@/app/modules/settings/backup/backup.interfaces'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './restore.component.html',
-  standalone: true,
   imports: [TranslatePipe],
+  standalone: true,
+  templateUrl: './restore.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RestoreComponent implements OnInit, OnDestroy {
   // Injected dependencies

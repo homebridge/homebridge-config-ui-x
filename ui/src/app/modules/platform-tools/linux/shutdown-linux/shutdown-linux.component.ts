@@ -5,10 +5,10 @@ import { ToastrService } from 'ngx-toastr'
 import { ApiService } from '@/app/core/communication/api.service'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './shutdown-linux.component.html',
-  standalone: true,
   imports: [TranslatePipe],
+  standalone: true,
+  templateUrl: './shutdown-linux.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ShutdownLinuxComponent implements OnInit {
   // Injected dependencies

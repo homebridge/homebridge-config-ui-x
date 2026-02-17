@@ -37,9 +37,6 @@ declare global {
 }
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './config-editor.component.html',
-  standalone: true,
   imports: [
     NgbTooltip,
     EditorComponent,
@@ -47,6 +44,9 @@ declare global {
     FormsModule,
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './config-editor.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ConfigEditorComponent implements OnInit, OnDestroy {
   private injector = inject(EnvironmentInjector)

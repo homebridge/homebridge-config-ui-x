@@ -6,13 +6,13 @@ import { ToastrService } from 'ngx-toastr'
 import { ApiService } from '@/app/core/communication/api.service'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-homebridge-deconz',
-  templateUrl: './homebridge-deconz.component.html',
-  standalone: true,
   imports: [
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './homebridge-deconz.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HomebridgeDeconzComponent {
   private $api = inject(ApiService)

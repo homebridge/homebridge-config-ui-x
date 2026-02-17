@@ -6,10 +6,10 @@ import { interval } from 'rxjs'
 import { Widget } from '@/app/modules/status/widgets/widgets.interfaces'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './clock-widget.component.html',
-  standalone: true,
   imports: [DatePipe],
+  standalone: true,
+  templateUrl: './clock-widget.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ClockWidgetComponent implements OnInit {
   // Injected dependencies

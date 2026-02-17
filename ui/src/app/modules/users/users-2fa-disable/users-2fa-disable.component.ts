@@ -10,15 +10,15 @@ import { ApiService } from '@/app/core/communication/api.service'
 import { NotificationService } from '@/app/core/communication/notification.service'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './users-2fa-disable.component.html',
-  standalone: true,
   imports: [
     FormsModule,
     ReactiveFormsModule,
     TranslatePipe,
     NgbAlert,
   ],
+  standalone: true,
+  templateUrl: './users-2fa-disable.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Users2faDisableComponent {
   // Injected dependencies

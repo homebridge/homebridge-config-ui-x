@@ -18,14 +18,14 @@ import { getBrightnessPercentage, getDeviceActiveState, getHue, getSaturation, t
 import { LongClickDirective } from '@/app/core/directives/long-click.directive'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-extended-color-light',
-  templateUrl: './extended-color-light.component.html',
-  standalone: true,
   imports: [
     LongClickDirective,
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './extended-color-light.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ExtendedColorLightComponent {
   private $accessories = inject(AccessoriesService)

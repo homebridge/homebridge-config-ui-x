@@ -4,12 +4,12 @@ import { TranslatePipe } from '@ngx-translate/core'
 import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-air-quality-sensor',
+  imports: [TranslatePipe],
+  standalone: true,
   templateUrl: './air-quality-sensor.component.html',
   styleUrl: './air-quality-sensor.component.scss',
-  standalone: true,
-  imports: [TranslatePipe],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AirQualitySensorComponent {
   public readonly service = input.required<ServiceTypeX>()

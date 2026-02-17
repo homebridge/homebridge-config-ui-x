@@ -63,10 +63,7 @@ import { MatterWaterLeakDetectorComponent } from '@/app/core/accessories/types/m
 import { MatterWindowCoveringComponent } from '@/app/core/accessories/types/matter/window-covering/window-covering.component'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-accessory-tile',
-  templateUrl: './accessory-tile.component.html',
-  standalone: true,
   imports: [
     SwitchComponent,
     ThermostatComponent,
@@ -128,6 +125,9 @@ import { MatterWindowCoveringComponent } from '@/app/core/accessories/types/matt
     TranslatePipe,
     AccessCodeComponent,
   ],
+  standalone: true,
+  templateUrl: './accessory-tile.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AccessoryTileComponent {
   $accessories = inject(AccessoriesService)

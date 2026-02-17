@@ -6,13 +6,13 @@ import { NouisliderComponent } from 'ng2-nouislider'
 import { BaseManageComponent } from '@/app/core/accessories/types/base-manage.component'
 
 @Component({
-  templateUrl: './filter-maintenance.manage.component.html',
-  standalone: true,
   imports: [
     FormsModule,
     NouisliderComponent,
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './filter-maintenance.manage.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FilterMaintenanceManageComponent extends BaseManageComponent {

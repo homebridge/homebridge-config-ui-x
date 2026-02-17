@@ -23,15 +23,15 @@ import { ServerInfo, Widget } from '@/app/modules/status/widgets/widgets.interfa
 import { environment } from '@/environments/environment'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './widget-control.component.html',
-  standalone: true,
   imports: [
     FormsModule,
     NgbTypeahead,
     DatePipe,
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './widget-control.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WidgetControlComponent implements OnInit {
   // Injected dependencies

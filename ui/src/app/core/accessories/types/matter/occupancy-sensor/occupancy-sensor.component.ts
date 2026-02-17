@@ -5,14 +5,14 @@ import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
 import { getOccupancySensorState } from '@/app/core/accessories/types/matter/matter-device.utils'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-matter-occupancy-sensor',
-  templateUrl: './occupancy-sensor.component.html',
-  styleUrl: './occupancy-sensor.component.scss',
-  standalone: true,
   imports: [
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './occupancy-sensor.component.html',
+  styleUrl: './occupancy-sensor.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatterOccupancySensorComponent {
   public readonly service = input.required<ServiceTypeX>()

@@ -15,13 +15,13 @@ import { SWITCH_TO_SCOPED_MODAL_DATA } from '@/app/core/modal-data-tokens'
 import { SettingsService } from '@/app/core/ui/settings.service'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './switch-to-scoped.component.html',
-  styleUrl: './switch-to-scoped.component.scss',
-  standalone: true,
   imports: [
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './switch-to-scoped.component.html',
+  styleUrl: './switch-to-scoped.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SwitchToScopedComponent implements OnInit, OnDestroy {
   // Injected dependencies

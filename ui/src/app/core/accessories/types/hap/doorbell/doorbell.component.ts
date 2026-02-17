@@ -16,14 +16,14 @@ import { DoorbellManageComponent } from '@/app/core/accessories/types/hap/doorbe
 import { LongClickDirective } from '@/app/core/directives/long-click.directive'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-doorbell',
-  templateUrl: './doorbell.component.html',
-  standalone: true,
   imports: [
     LongClickDirective,
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './doorbell.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DoorbellComponent {
   private $accessories = inject(AccessoriesService)

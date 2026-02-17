@@ -6,14 +6,14 @@ import { controlDevice, getDeviceActiveState } from '@/app/core/accessories/type
 import { SettingsService } from '@/app/core/ui/settings.service'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-on-off-plug-in-unit',
-  templateUrl: './on-off-plug-in-unit.component.html',
-  styleUrl: './on-off-plug-in-unit.component.scss',
-  standalone: true,
   imports: [
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './on-off-plug-in-unit.component.html',
+  styleUrl: './on-off-plug-in-unit.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OnOffPlugInUnitComponent {
   private $settings = inject(SettingsService)

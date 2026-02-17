@@ -16,13 +16,13 @@ import { UsersSupportComponent } from '@/app/modules/users/users-support/users-s
 import { User } from '@/app/modules/users/users.interface'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-users',
-  templateUrl: './users.component.html',
-  standalone: true,
   imports: [
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './users.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UsersComponent implements OnInit {
   // Injected dependencies

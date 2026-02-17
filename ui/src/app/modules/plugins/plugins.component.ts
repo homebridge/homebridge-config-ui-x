@@ -24,10 +24,6 @@ export interface CanComponentDeactivate {
 }
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './plugins.component.html',
-  styleUrl: './plugins.component.scss',
-  standalone: true,
   imports: [
     SpinnerComponent,
     FormsModule,
@@ -36,6 +32,10 @@ export interface CanComponentDeactivate {
     TranslatePipe,
     NgbTooltip,
   ],
+  standalone: true,
+  templateUrl: './plugins.component.html',
+  styleUrl: './plugins.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 
 export class PluginsComponent implements OnInit, OnDestroy, CanComponentDeactivate {

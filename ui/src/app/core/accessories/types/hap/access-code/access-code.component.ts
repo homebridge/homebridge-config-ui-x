@@ -4,13 +4,13 @@ import { TranslatePipe } from '@ngx-translate/core'
 import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-access-code',
-  templateUrl: './access-code.component.html',
-  standalone: true,
   imports: [
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './access-code.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AccessCodeComponent {
   public readonly service = input.required<ServiceTypeX>()

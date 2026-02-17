@@ -16,15 +16,15 @@ import { FilterMaintenanceManageComponent } from '@/app/core/accessories/types/h
 import { LongClickDirective } from '@/app/core/directives/long-click.directive'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-filter-maintenance',
-  templateUrl: './filter-maintenance.component.html',
-  styleUrl: './filter-maintenance.component.scss',
-  standalone: true,
   imports: [
     TranslatePipe,
     LongClickDirective,
   ],
+  standalone: true,
+  templateUrl: './filter-maintenance.component.html',
+  styleUrl: './filter-maintenance.component.scss',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FilterMaintenanceComponent {
   private $accessories = inject(AccessoriesService)

@@ -16,14 +16,14 @@ import { MicrophoneManageComponent } from '@/app/core/accessories/types/hap/micr
 import { LongClickDirective } from '@/app/core/directives/long-click.directive'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-microphone',
-  templateUrl: './microphone.component.html',
-  standalone: true,
   imports: [
     LongClickDirective,
     TranslatePipe,
   ],
+  standalone: true,
+  templateUrl: './microphone.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MicrophoneComponent {
   private $accessories = inject(AccessoriesService)

@@ -15,10 +15,10 @@ import { SettingsService } from '@/app/core/ui/settings.service'
 import { LogService } from '@/app/core/utilities/log.service'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
-  templateUrl: './plugin-logs.component.html',
-  standalone: true,
   imports: [TranslatePipe, NgbTooltip],
+  standalone: true,
+  templateUrl: './plugin-logs.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     '(window:resize)': 'onWindowResize()',
   },

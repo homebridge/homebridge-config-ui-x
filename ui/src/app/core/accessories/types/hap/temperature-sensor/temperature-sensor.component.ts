@@ -7,12 +7,12 @@ import { ConvertTempPipe } from '@/app/core/pipes/convert-temp.pipe'
 import { SettingsService } from '@/app/core/ui/settings.service'
 
 @Component({
-  changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-temperature-sensor',
+  imports: [DecimalPipe, ConvertTempPipe, UpperCasePipe, TranslatePipe],
+  standalone: true,
   templateUrl: './temperature-sensor.component.html',
   styleUrl: './temperature-sensor.component.scss',
-  standalone: true,
-  imports: [DecimalPipe, ConvertTempPipe, UpperCasePipe, TranslatePipe],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TemperatureSensorComponent {
   private $settings = inject(SettingsService)
