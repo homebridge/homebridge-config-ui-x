@@ -1,9 +1,18 @@
 /* global NodeJS */
-import { Directive, HostListener, input, OnDestroy, output } from '@angular/core'
+import { Directive, input, OnDestroy, output } from '@angular/core'
 
 @Directive({
   selector: '[shortClick], [longClick]',
   standalone: true,
+  host: {
+    '(keyup.enter)': 'onEnter($event)',
+    '(mouseup)': 'onMouseUp($event)',
+    '(touchend)': 'onTouchEnd($event)',
+    '(touchstart)': 'onMouseDown($event)',
+    '(mousedown)': 'onMouseDown($event)',
+    '(mousemove)': 'onMouseMove()',
+    '(touchmove)': 'onMouseMove()',
+  },
 })
 export class LongClickDirective implements OnDestroy {
   private downTimeout: NodeJS.Timeout
@@ -16,12 +25,10 @@ export class LongClickDirective implements OnDestroy {
   public readonly longClick = output<MouseEvent | TouchEvent>()
   public readonly shortClick = output<MouseEvent | KeyboardEvent | TouchEvent>()
 
-  @HostListener('keyup.enter', ['$event'])
   public onEnter(event: KeyboardEvent) {
     this.shortClick.emit(event)
   }
 
-  @HostListener('mouseup', ['$event'])
   public onMouseUp(event: MouseEvent): void {
     if (!this.touchInProgress && !this.isSyntheticEvent()) {
       clearTimeout(this.downTimeout)
@@ -32,7 +39,6 @@ export class LongClickDirective implements OnDestroy {
     }
   }
 
-  @HostListener('touchend', ['$event'])
   public onTouchEnd(event: TouchEvent): void {
     clearTimeout(this.downTimeout)
 
@@ -46,8 +52,6 @@ export class LongClickDirective implements OnDestroy {
     }, 150)
   }
 
-  @HostListener('touchstart', ['$event'])
-  @HostListener('mousedown', ['$event'])
   public onMouseDown(event: MouseEvent | TouchEvent): void {
     // Check for touch event by looking for touches property instead of instanceof
     if ('touches' in event) {
@@ -82,8 +86,6 @@ export class LongClickDirective implements OnDestroy {
     }
   }
 
-  @HostListener('mousemove')
-  @HostListener('touchmove')
   public onMouseMove(): void {
     this.done = true
     clearTimeout(this.downTimeout)

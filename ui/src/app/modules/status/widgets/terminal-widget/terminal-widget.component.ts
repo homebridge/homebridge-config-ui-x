@@ -3,7 +3,7 @@ import {
   Component,
   DestroyRef,
   ElementRef,
-  HostListener,
+
   inject,
   input,
   OnDestroy,
@@ -27,6 +27,11 @@ import { Widget } from '@/app/modules/status/widgets/widgets.interfaces'
   imports: [
     TranslatePipe,
   ],
+  host: {
+    '(window:beforeunload)': 'onBeforeUnload($event)',
+    '(window:focus)': 'onWindowFocus()',
+    '(click)': 'onClick()',
+  },
 })
 export class TerminalWidgetComponent implements OnInit, OnDestroy {
   // Injected dependencies
@@ -50,20 +55,17 @@ export class TerminalWidgetComponent implements OnInit, OnDestroy {
   resizeEvent!: Subject<void> // Set directly by ComponentFactoryResolver
   configureEvent!: Subject<void> // Set directly by ComponentFactoryResolver
 
-  @HostListener('window:beforeunload', ['$event'])
   onBeforeUnload(event: BeforeUnloadEvent): void {
     // NOTE: This is a safeguard - the status component also handles beforeunload events
     // when terminal widgets are present, so this may not be strictly necessary
     this.$navigationGuard.handleBeforeUnload(event)
   }
 
-  @HostListener('window:focus')
   onWindowFocus(): void {
     // Autofocus terminal when user returns to this window
     this.activateTerminal()
   }
 
-  @HostListener('click')
   onClick(): void {
     // Focus this terminal when clicked
     this.activateTerminal()

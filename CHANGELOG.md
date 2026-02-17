@@ -31,6 +31,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - lint: apply `angular-template/prefer-template-literal`
 - lint: apply `angular/component-max-inline-declarations`
 - lint: apply `angular/consistent-component-styles`
+- lint: apply `angular/prefer-host-metadata-property`
 
 ### Homebridge Dependencies
 

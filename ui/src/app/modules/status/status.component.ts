@@ -1,4 +1,4 @@
-import { Component, createEnvironmentInjector, EnvironmentInjector, HostListener, inject, OnDestroy, OnInit, signal } from '@angular/core'
+import { Component, createEnvironmentInjector, EnvironmentInjector, inject, OnDestroy, OnInit, signal } from '@angular/core'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap/tooltip'
 import { TranslatePipe } from '@ngx-translate/core'
@@ -31,6 +31,9 @@ import { Widget } from '@/app/modules/status/widgets/widgets.interfaces'
     WidgetsComponent,
     TranslatePipe,
   ],
+  host: {
+    '(window:beforeunload)': 'onBeforeUnload($event)',
+  },
 })
 export class StatusComponent implements OnInit, OnDestroy {
   private injector = inject(EnvironmentInjector)
@@ -354,7 +357,6 @@ export class StatusComponent implements OnInit, OnDestroy {
     }
   }
 
-  @HostListener('window:beforeunload', ['$event'])
   onBeforeUnload(event: BeforeUnloadEvent) {
     // Check if any terminal widget needs to warn about navigation
     const hasTerminalWidget = this.dashboard().some(item => item.component === 'TerminalWidgetComponent')

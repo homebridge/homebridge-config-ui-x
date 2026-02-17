@@ -1,5 +1,5 @@
 import { HttpErrorResponse, HttpResponse } from '@angular/common/http'
-import { Component, createEnvironmentInjector, ElementRef, EnvironmentInjector, HostListener, inject, OnDestroy, OnInit, signal, viewChild } from '@angular/core'
+import { Component, createEnvironmentInjector, ElementRef, EnvironmentInjector, inject, OnDestroy, OnInit, signal, viewChild } from '@angular/core'
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap/tooltip'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
@@ -18,6 +18,9 @@ import { LogService } from '@/app/core/utilities/log.service'
   templateUrl: './plugin-logs.component.html',
   standalone: true,
   imports: [TranslatePipe, NgbTooltip],
+  host: {
+    '(window:resize)': 'onWindowResize()',
+  },
 })
 export class PluginLogsComponent implements OnInit, OnDestroy {
   // Injected dependencies
@@ -58,8 +61,6 @@ export class PluginLogsComponent implements OnInit, OnDestroy {
     this.$log.destroyTerminal()
   }
 
-  // HostListener
-  @HostListener('window:resize')
   onWindowResize(): void {
     this.resizeEvent.next(undefined)
   }

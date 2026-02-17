@@ -1,5 +1,5 @@
 import { HttpResponse } from '@angular/common/http'
-import { Component, createEnvironmentInjector, DestroyRef, ElementRef, EnvironmentInjector, HostListener, inject, OnDestroy, OnInit, signal, viewChild } from '@angular/core'
+import { Component, createEnvironmentInjector, DestroyRef, ElementRef, EnvironmentInjector, inject, OnDestroy, OnInit, signal, viewChild } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
@@ -26,6 +26,9 @@ export interface CanComponentDeactivate {
   styleUrl: './logs.component.scss',
   standalone: true,
   imports: [NgbTooltip, TranslatePipe, ReactiveFormsModule],
+  host: {
+    '(window:resize)': 'onWindowResize()',
+  },
 })
 export class LogsComponent implements OnInit, OnDestroy, CanComponentDeactivate {
   private destroyRef = inject(DestroyRef)
@@ -57,7 +60,6 @@ export class LogsComponent implements OnInit, OnDestroy, CanComponentDeactivate 
     return query.length > 0 && query.length < 3
   }
 
-  @HostListener('window:resize')
   onWindowResize() {
     this.resizeEvent.next(undefined)
   }

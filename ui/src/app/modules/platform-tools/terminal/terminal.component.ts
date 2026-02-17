@@ -1,4 +1,4 @@
-import { AfterViewInit, Component, ElementRef, HostListener, inject, OnDestroy, OnInit, viewChild } from '@angular/core'
+import { AfterViewInit, Component, ElementRef, inject, OnDestroy, OnInit, viewChild } from '@angular/core'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { Subject } from 'rxjs'
 
@@ -11,6 +11,12 @@ import { TerminalService } from '@/app/core/utilities/terminal.service'
   styleUrl: './terminal.component.scss',
   standalone: true,
   imports: [TranslatePipe],
+  host: {
+    '(window:resize)': 'onWindowResize()',
+    '(window:beforeunload)': 'onBeforeUnload($event)',
+    '(window:focus)': 'onWindowFocus()',
+    '(click)': 'onClick()',
+  },
 })
 export class TerminalComponent implements OnInit, AfterViewInit, OnDestroy {
   private $terminal = inject(TerminalService)
@@ -23,23 +29,19 @@ export class TerminalComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private visibilityChangeHandler: (() => void) | null = null
 
-  @HostListener('window:resize')
   onWindowResize() {
     this.resizeEvent.next(undefined)
   }
 
-  @HostListener('window:beforeunload', ['$event'])
   onBeforeUnload(event: BeforeUnloadEvent) {
     return this.$navigationGuard.handleBeforeUnload(event)
   }
 
-  @HostListener('window:focus')
   onWindowFocus() {
     // Autofocus terminal when user returns to this window
     this.activateTerminal()
   }
 
-  @HostListener('click')
   onClick() {
     // Focus this terminal when clicked
     this.activateTerminal()
