@@ -13,6 +13,7 @@ import { ConvertTempPipe } from '@/app/core/pipes/convert-temp.pipe'
 import { SettingsService } from '@/app/core/ui/settings.service'
 
 @Component({
+  selector: 'app-thermostat-manage',
   imports: [
     FormsModule,
     NouisliderComponent,

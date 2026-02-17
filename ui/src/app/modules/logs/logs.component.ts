@@ -22,6 +22,7 @@ export interface CanComponentDeactivate {
 }
 
 @Component({
+  selector: 'app-logs',
   imports: [NgbTooltip, TranslatePipe, ReactiveFormsModule],
   standalone: true,
   templateUrl: './logs.component.html',

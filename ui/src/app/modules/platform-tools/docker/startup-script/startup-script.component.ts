@@ -10,6 +10,7 @@ import { SettingsService } from '@/app/core/ui/settings.service'
 import { MobileDetectService } from '@/app/core/utilities/mobile-detect.service'
 
 @Component({
+  selector: 'app-startup-script',
   imports: [
     EditorComponent,
     FormsModule,

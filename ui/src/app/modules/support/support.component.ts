@@ -5,6 +5,7 @@ import { SettingsService } from '@/app/core/ui/settings.service'
 import { environment } from '@/environments/environment'
 
 @Component({
+  selector: 'app-support',
   imports: [
     TranslatePipe,
   ],

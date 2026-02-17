@@ -23,6 +23,7 @@ import { ServerInfo, Widget } from '@/app/modules/status/widgets/widgets.interfa
 import { environment } from '@/environments/environment'
 
 @Component({
+  selector: 'app-widget-control',
   imports: [
     FormsModule,
     NgbTypeahead,

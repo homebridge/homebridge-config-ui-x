@@ -28,6 +28,7 @@ import { SettingsService } from '@/app/core/ui/settings.service'
 import { ChildBridgesService } from '@/app/core/utilities/child-bridges.service'
 
 @Component({
+  selector: 'app-plugin-config',
   imports: [
     NgxMdModule,
     PluginsMarkdownDirective,

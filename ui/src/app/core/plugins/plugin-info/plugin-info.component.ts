@@ -5,6 +5,7 @@ import { TranslatePipe } from '@ngx-translate/core'
 import { PLUGIN_MODAL_DATA } from '@/app/core/modal-data-tokens'
 
 @Component({
+  selector: 'app-plugin-info',
   imports: [TranslatePipe],
   standalone: true,
   templateUrl: './plugin-info.component.html',

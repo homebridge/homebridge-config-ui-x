@@ -13,6 +13,7 @@ import { SettingsService } from '@/app/core/ui/settings.service'
 import { environment } from '@/environments/environment'
 
 @Component({
+  selector: 'app-setup-wizard',
   imports: [
     TranslatePipe,
     NgOptimizedImage,

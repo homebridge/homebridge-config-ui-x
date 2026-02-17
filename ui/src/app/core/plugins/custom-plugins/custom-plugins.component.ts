@@ -17,6 +17,7 @@ import { ChildBridgesService } from '@/app/core/utilities/child-bridges.service'
 import { environment } from '@/environments/environment'
 
 @Component({
+  selector: 'app-custom-plugins',
   imports: [
     SchemaFormComponent,
     Bootstrap5FrameworkModule,

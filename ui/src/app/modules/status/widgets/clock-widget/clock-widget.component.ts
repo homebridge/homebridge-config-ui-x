@@ -6,6 +6,7 @@ import { interval } from 'rxjs'
 import { Widget } from '@/app/modules/status/widgets/widgets.interfaces'
 
 @Component({
+  selector: 'app-clock-widget',
   imports: [DatePipe],
   standalone: true,
   templateUrl: './clock-widget.component.html',

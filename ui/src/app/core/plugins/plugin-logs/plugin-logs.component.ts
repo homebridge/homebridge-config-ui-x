@@ -15,6 +15,7 @@ import { SettingsService } from '@/app/core/ui/settings.service'
 import { LogService } from '@/app/core/utilities/log.service'
 
 @Component({
+  selector: 'app-plugin-logs',
   imports: [TranslatePipe, NgbTooltip],
   standalone: true,
   templateUrl: './plugin-logs.component.html',

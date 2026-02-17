@@ -34,6 +34,7 @@ declare global {
 }
 
 @Component({
+  selector: 'app-manual-config',
   imports: [
     NgbAccordionDirective,
     NgbAccordionItem,

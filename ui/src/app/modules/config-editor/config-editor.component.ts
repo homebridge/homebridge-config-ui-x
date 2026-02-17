@@ -37,6 +37,7 @@ declare global {
 }
 
 @Component({
+  selector: 'app-config-editor',
   imports: [
     NgbTooltip,
     EditorComponent,

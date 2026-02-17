@@ -8,6 +8,7 @@ import { PLUGIN_COMPATIBILITY_MODAL_DATA } from '@/app/core/modal-data-tokens'
 import { SettingsService } from '@/app/core/ui/settings.service'
 
 @Component({
+  selector: 'app-plugin-compatibility',
   imports: [TranslatePipe, NgbAlert],
   standalone: true,
   templateUrl: './plugin-compatibility.component.html',

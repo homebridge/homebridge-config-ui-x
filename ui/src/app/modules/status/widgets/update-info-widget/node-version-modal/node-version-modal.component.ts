@@ -15,6 +15,7 @@ import { InstalledPlugin } from '@/app/modules/status/widgets/update-info-widget
 import { PluginNodeCheck } from '@/app/modules/status/widgets/widgets.interfaces'
 
 @Component({
+  selector: 'app-node-version-modal',
   imports: [
     TranslatePipe,
     NgxMdModule,

@@ -10,6 +10,7 @@ import { ACCESSORY_MANAGE_MODAL_DATA } from '@/app/core/accessories/types/base-m
 import { getDoorLockState, setDoorLockState } from '@/app/core/accessories/types/matter/matter-device.utils'
 
 @Component({
+  selector: 'app-door-lock-manage',
   imports: [
     TranslatePipe,
   ],

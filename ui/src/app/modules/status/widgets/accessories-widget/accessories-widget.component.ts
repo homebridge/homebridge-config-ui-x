@@ -10,6 +10,7 @@ import { MobileDetectService } from '@/app/core/utilities/mobile-detect.service'
 import { Widget } from '@/app/modules/status/widgets/widgets.interfaces'
 
 @Component({
+  selector: 'app-accessories-widget',
   imports: [
     DragulaModule,
     AccessoryTileComponent,

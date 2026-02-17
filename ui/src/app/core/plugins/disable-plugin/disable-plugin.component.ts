@@ -6,6 +6,7 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { DISABLE_PLUGIN_MODAL_DATA } from '@/app/core/modal-data-tokens'
 
 @Component({
+  selector: 'app-disable-plugin',
   imports: [
     NgbAlert,
     TranslatePipe,

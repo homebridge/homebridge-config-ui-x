@@ -6,6 +6,7 @@ import { PLUGIN_MODAL_DATA } from '@/app/core/modal-data-tokens'
 import { PluginFundingOption } from '@/app/core/plugins/manage-plugins.interfaces'
 
 @Component({
+  selector: 'app-donate',
   imports: [
     TranslatePipe,
   ],

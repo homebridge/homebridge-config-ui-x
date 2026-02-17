@@ -7,6 +7,7 @@ import { Subject } from 'rxjs'
 import { BaseManageComponent } from '@/app/core/accessories/types/base-manage.component'
 
 @Component({
+  selector: 'app-door-manage',
   imports: [
     NouisliderComponent,
     FormsModule,

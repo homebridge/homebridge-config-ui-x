@@ -7,6 +7,7 @@ import { PluginsMarkdownDirective } from '@/app/core/directives/plugins.markdown
 import { INFORMATION_MODAL_DATA } from '@/app/core/modal-data-tokens'
 
 @Component({
+  selector: 'app-information',
   imports: [
     TranslatePipe,
     NgxMdModule,

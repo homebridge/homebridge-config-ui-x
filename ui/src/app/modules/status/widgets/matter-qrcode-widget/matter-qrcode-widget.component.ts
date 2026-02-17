@@ -8,6 +8,7 @@ import { QrcodeComponent } from '@/app/core/components/qrcode/qrcode.component'
 import { HomebridgeStatusResponse } from '@/app/core/server.interfaces'
 
 @Component({
+  selector: 'app-matter-qrcode-widget',
   imports: [
     QrcodeComponent,
     TranslatePipe,

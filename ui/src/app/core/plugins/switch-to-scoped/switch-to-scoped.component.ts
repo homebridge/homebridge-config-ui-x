@@ -15,6 +15,7 @@ import { SWITCH_TO_SCOPED_MODAL_DATA } from '@/app/core/modal-data-tokens'
 import { SettingsService } from '@/app/core/ui/settings.service'
 
 @Component({
+  selector: 'app-switch-to-scoped',
   imports: [
     TranslatePipe,
   ],

@@ -55,6 +55,7 @@
               autocapitalize="none"
               inputmode="numeric"
               pattern="[0-9]*"
+              [class.is-invalid]="formGroup.controls.code.touched && formGroup.controls.code.invalid"
               [formControl]="formGroup.controls.code"
             />
           </div>

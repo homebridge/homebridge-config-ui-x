@@ -12,6 +12,7 @@ import { SettingsService } from '@/app/core/ui/settings.service'
 import { Pairing } from '@/app/modules/settings/accessory-control-lists/accessory-control-lists.interfaces'
 
 @Component({
+  selector: 'app-accessory-control-lists',
   imports: [
     TranslatePipe,
     FormsModule,

@@ -10,6 +10,7 @@ import { SettingsService } from '@/app/core/ui/settings.service'
 import { BaseChartWidgetComponent } from '@/app/modules/status/widgets/base-chart-widget.component'
 
 @Component({
+  selector: 'app-cpu-widget',
   imports: [
     BaseChartDirective,
     UpperCasePipe,

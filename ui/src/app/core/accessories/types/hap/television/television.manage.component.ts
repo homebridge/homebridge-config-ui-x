@@ -5,6 +5,7 @@ import { TranslatePipe } from '@ngx-translate/core'
 import { BaseManageComponent } from '@/app/core/accessories/types/base-manage.component'
 
 @Component({
+  selector: 'app-television-manage',
   imports: [
     FormsModule,
     TranslatePipe,

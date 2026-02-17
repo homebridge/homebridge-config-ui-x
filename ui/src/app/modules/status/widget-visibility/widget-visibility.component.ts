@@ -8,6 +8,7 @@ import { SettingsService } from '@/app/core/ui/settings.service'
 import { Widget } from '@/app/modules/status/widgets/widgets.interfaces'
 
 @Component({
+  selector: 'app-widget-visibility',
   imports: [
     TranslatePipe,
     FormsModule,

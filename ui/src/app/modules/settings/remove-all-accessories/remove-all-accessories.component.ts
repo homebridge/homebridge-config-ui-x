@@ -8,6 +8,7 @@ import { ToastrService } from 'ngx-toastr'
 import { ApiService } from '@/app/core/communication/api.service'
 
 @Component({
+  selector: 'app-remove-all-accessories',
   imports: [
     NgbAlert,
     TranslatePipe,

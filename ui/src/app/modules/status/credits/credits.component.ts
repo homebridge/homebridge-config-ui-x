@@ -3,6 +3,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe } from '@ngx-translate/core'
 
 @Component({
+  selector: 'app-credits',
   imports: [TranslatePipe],
   standalone: true,
   templateUrl: './credits.component.html',

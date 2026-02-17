@@ -24,6 +24,7 @@
             class="form-control custom-input"
             type="password"
             autocomplete="current-password"
+            [class.is-invalid]="formGroup.controls.password.touched && formGroup.controls.password.invalid"
             [formControl]="formGroup.controls['password']"
             [placeholder]="'users.label_password' | translate"
           />

@@ -16,6 +16,7 @@ import { BackupComponent } from '@/app/modules/settings/backup/backup.component'
 import { ScheduledBackup } from '@/app/modules/settings/backup/backup.interfaces'
 
 @Component({
+  selector: 'app-restore',
   imports: [TranslatePipe],
   standalone: true,
   templateUrl: './restore.component.html',

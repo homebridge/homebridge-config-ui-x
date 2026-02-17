@@ -7,6 +7,7 @@ import { RequiredIndicatorComponent } from '@/app/core/components/required-indic
 import { EDIT_ROOM_MODAL_DATA } from '@/app/modules/accessories/modal-data-tokens'
 
 @Component({
+  selector: 'app-edit-room',
   imports: [ReactiveFormsModule, TranslatePipe, RequiredIndicatorComponent],
   standalone: true,
   templateUrl: './edit-room.component.html',

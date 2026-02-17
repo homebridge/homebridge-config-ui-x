@@ -9,6 +9,7 @@ import { LogService } from '@/app/core/utilities/log.service'
 import { Widget } from '@/app/modules/status/widgets/widgets.interfaces'
 
 @Component({
+  selector: 'app-homebridge-logs-widget',
   imports: [
     TranslatePipe,
   ],

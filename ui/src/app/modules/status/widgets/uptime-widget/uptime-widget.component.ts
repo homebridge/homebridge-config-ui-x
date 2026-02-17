@@ -7,6 +7,7 @@ import { IoNamespace, WsService } from '@/app/core/communication/ws.service'
 import { Widget } from '@/app/modules/status/widgets/widgets.interfaces'
 
 @Component({
+  selector: 'app-uptime-widget',
   imports: [TranslatePipe],
   standalone: true,
   templateUrl: './uptime-widget.component.html',

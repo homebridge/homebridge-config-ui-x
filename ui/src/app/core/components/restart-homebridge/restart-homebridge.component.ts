@@ -4,6 +4,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe } from '@ngx-translate/core'
 
 @Component({
+  selector: 'app-restart-homebridge',
   imports: [TranslatePipe],
   standalone: true,
   templateUrl: './restart-homebridge.component.html',

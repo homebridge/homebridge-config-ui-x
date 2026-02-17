@@ -6,6 +6,7 @@ import { TranslatePipe } from '@ngx-translate/core'
 import { NETWORK_INTERFACES_MODAL_DATA } from '@/app/core/modal-data-tokens'
 
 @Component({
+  selector: 'app-select-network-interfaces',
   imports: [
     FormsModule,
     TranslatePipe,

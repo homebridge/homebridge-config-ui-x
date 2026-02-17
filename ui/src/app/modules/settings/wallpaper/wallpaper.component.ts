@@ -9,6 +9,7 @@ import { SettingsService } from '@/app/core/ui/settings.service'
 import { environment } from '@/environments/environment'
 
 @Component({
+  selector: 'app-wallpaper',
   imports: [ReactiveFormsModule, TranslatePipe],
   standalone: true,
   templateUrl: './wallpaper.component.html',

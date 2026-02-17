@@ -12,6 +12,7 @@ import { QrcodeComponent } from '@/app/core/components/qrcode/qrcode.component'
 import { USER_MODAL_DATA } from '@/app/core/modal-data-tokens'
 
 @Component({
+  selector: 'app-users-2fa-enable',
   imports: [
     NgbAlert,
     QrcodeComponent,

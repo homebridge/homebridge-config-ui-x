@@ -11,6 +11,7 @@ import { ResetAccessoriesDeleteItem, ResetAccessoriesPairing } from '@/app/core/
 import { SettingsService } from '@/app/core/ui/settings.service'
 
 @Component({
+  selector: 'app-reset-accessories',
   imports: [
     TranslatePipe,
   ],

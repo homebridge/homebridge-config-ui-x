@@ -11,6 +11,7 @@ import { ApiService } from '@/app/core/communication/api.service'
 import { SettingsService } from '@/app/core/ui/settings.service'
 
 @Component({
+  selector: 'app-ssl-settings-modal',
   imports: [TranslatePipe, ReactiveFormsModule],
   standalone: true,
   templateUrl: './ssl-settings-modal.component.html',

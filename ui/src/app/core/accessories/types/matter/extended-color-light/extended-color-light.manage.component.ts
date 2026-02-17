@@ -17,6 +17,7 @@ import { ConvertMiredPipe } from '@/app/core/pipes/convert-mired.pipe'
 import { ColourService } from '@/app/core/utilities/colour.service'
 
 @Component({
+  selector: 'app-extended-color-light-manage',
   imports: [
     FormsModule,
     NouisliderComponent,

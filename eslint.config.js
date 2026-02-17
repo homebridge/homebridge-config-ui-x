@@ -107,12 +107,12 @@ export default antfu(
       'angular/require-localize-metadata': 'error',
       'angular/runtime-localize': 'error',
       'angular/sort-keys-in-type-decorator': 'error',
-      // 'angular/sort-lifecycle-methods': 'error',
-      // 'angular/use-component-selector': 'error',
-      // 'angular/use-component-view-encapsulation': 'error',
-      // 'angular/use-injectable-provided-in': 'error',
-      // 'angular/use-lifecycle-interface': 'error',
-      // 'angular/use-pipe-transform-interface': 'error',
+      'angular/sort-lifecycle-methods': 'error',
+      'angular/use-component-selector': 'error',
+      'angular/use-component-view-encapsulation': 'error',
+      'angular/use-injectable-provided-in': 'error',
+      'angular/use-lifecycle-interface': 'error',
+      'angular/use-pipe-transform-interface': 'error',
     },
   }))
   .override('antfu/angular/rules/template', config => ({

@@ -14,6 +14,7 @@ import { PluginNodeCheck } from '@/app/modules/status/widgets'
 import { InstalledPlugin } from '@/app/modules/status/widgets/update-info-widget/hb-v2-modal/hb-v2-modal.interfaces'
 
 @Component({
+  selector: 'app-hb-v2-modal',
   imports: [
     TranslatePipe,
     NgOptimizedImage,

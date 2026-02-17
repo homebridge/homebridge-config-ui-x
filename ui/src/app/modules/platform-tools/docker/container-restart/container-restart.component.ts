@@ -11,6 +11,7 @@ import { HomebridgeStatusResponse } from '@/app/core/server.interfaces'
 import { SettingsService } from '@/app/core/ui/settings.service'
 
 @Component({
+  selector: 'app-container-restart',
   imports: [TranslatePipe],
   standalone: true,
   templateUrl: './container-restart.component.html',

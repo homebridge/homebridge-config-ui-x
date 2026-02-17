@@ -8,6 +8,7 @@ import { RESTART_CHILD_BRIDGES_MODAL_DATA } from '@/app/core/modal-data-tokens'
 import { SettingsService } from '@/app/core/ui/settings.service'
 
 @Component({
+  selector: 'app-restart-child-bridges',
   imports: [TranslatePipe],
   standalone: true,
   templateUrl: './restart-child-bridges.component.html',

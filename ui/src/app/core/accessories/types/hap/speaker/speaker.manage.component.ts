@@ -9,6 +9,7 @@ import { Subject } from 'rxjs'
 import { BaseManageComponent } from '@/app/core/accessories/types/base-manage.component'
 
 @Component({
+  selector: 'app-speaker-manage',
   imports: [
     FormsModule,
     NouisliderComponent,

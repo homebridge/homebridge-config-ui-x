@@ -6,6 +6,7 @@ import { NouisliderComponent } from 'ng2-nouislider'
 import { BaseManageComponent } from '@/app/core/accessories/types/base-manage.component'
 
 @Component({
+  selector: 'app-filter-maintenance-manage',
   imports: [
     FormsModule,
     NouisliderComponent,

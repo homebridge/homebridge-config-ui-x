@@ -8,6 +8,7 @@ import { BaseChartDirective } from 'ng2-charts'
 import { BaseChartWidgetComponent } from '@/app/modules/status/widgets/base-chart-widget.component'
 
 @Component({
+  selector: 'app-network-widget',
   imports: [
     BaseChartDirective,
     DecimalPipe,

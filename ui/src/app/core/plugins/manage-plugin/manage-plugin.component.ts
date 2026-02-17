@@ -29,6 +29,7 @@ import { BackupService } from '@/app/modules/settings/backup/backup.service'
 import { HbV2ModalComponent } from '@/app/modules/status/widgets/update-info-widget/hb-v2-modal/hb-v2-modal.component'
 
 @Component({
+  selector: 'app-manage-plugin',
   imports: [
     NgxMdModule,
     PluginsMarkdownDirective,

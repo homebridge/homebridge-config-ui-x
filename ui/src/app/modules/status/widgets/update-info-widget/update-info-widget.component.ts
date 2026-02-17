@@ -27,6 +27,7 @@ import {
 import { environment } from '@/environments/environment'
 
 @Component({
+  selector: 'app-update-info-widget',
   imports: [
     TranslatePipe,
     RouterLink,

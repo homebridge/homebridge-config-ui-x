@@ -13,6 +13,7 @@ import { CONFIG_RESTORE_MODAL_DATA } from '@/app/core/modal-data-tokens'
 import { ConfigRestoreBackup } from '@/app/modules/config-editor/config-editor.interfaces'
 
 @Component({
+  selector: 'app-config-restore',
   imports: [
     DatePipe,
     TranslatePipe,

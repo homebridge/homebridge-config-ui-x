@@ -7,6 +7,7 @@ import { TerminalNavigationGuardService } from '@/app/core/utilities/terminal-na
 import { TerminalService } from '@/app/core/utilities/terminal.service'
 
 @Component({
+  selector: 'app-terminal',
   imports: [TranslatePipe],
   standalone: true,
   templateUrl: './terminal.component.html',

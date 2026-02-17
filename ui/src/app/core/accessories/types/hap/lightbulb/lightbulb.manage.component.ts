@@ -23,6 +23,7 @@ export const LIGHTBULB_ADAPTIVE_LIGHTING = new InjectionToken<BehaviorSubject<bo
 )
 
 @Component({
+  selector: 'app-lightbulb-manage',
   imports: [
     FormsModule,
     NouisliderComponent,

@@ -7,6 +7,7 @@ import { IoNamespace, WsService } from '@/app/core/communication/ws.service'
 import { NodeJsInfo, ServerInfo, Widget } from '@/app/modules/status/widgets/widgets.interfaces'
 
 @Component({
+  selector: 'app-system-info-widget',
   imports: [
     TitleCasePipe,
     TranslatePipe,

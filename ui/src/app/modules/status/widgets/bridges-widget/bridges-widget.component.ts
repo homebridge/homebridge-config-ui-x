@@ -13,6 +13,7 @@ import { SettingsService } from '@/app/core/ui/settings.service'
 import { ChildBridgeWithUIState, Widget } from '@/app/modules/status/widgets/widgets.interfaces'
 
 @Component({
+  selector: 'app-bridges-widget',
   imports: [
     NgbTooltip,
     TranslatePipe,

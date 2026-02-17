@@ -18,6 +18,7 @@ import { BackupService } from '@/app/modules/settings/backup/backup.service'
 import { RestoreComponent } from '@/app/modules/settings/backup/restore/restore.component'
 
 @Component({
+  selector: 'app-backup',
   imports: [
     NgbTooltip,
     DatePipe,

@@ -11,6 +11,7 @@ import { USER_MODAL_DATA } from '@/app/core/modal-data-tokens'
 import { User } from '@/app/modules/users/users.interface'
 
 @Component({
+  selector: 'app-users-edit',
   imports: [
     FormsModule,
     ReactiveFormsModule,

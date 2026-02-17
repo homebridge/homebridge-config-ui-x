@@ -13,6 +13,7 @@ import { Widget } from '@/app/modules/status/widgets/widgets.interfaces'
  * Extracts common functionality for chart initialization, data management, and interval handling
  */
 @Component({
+  selector: 'app-base-chart-widget',
   template: '',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })

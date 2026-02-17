@@ -9,6 +9,7 @@ import { AccessoriesService } from '@/app/core/accessories/accessories.service'
 import { ACCESSORY_MANAGE_MODAL_DATA } from '@/app/core/accessories/types/base-manage.component'
 
 @Component({
+  selector: 'app-robotic-vacuum-cleaner-manage',
   imports: [
     TranslatePipe,
   ],

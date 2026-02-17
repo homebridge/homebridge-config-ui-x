@@ -10,6 +10,7 @@ import { SettingsService } from '@/app/core/ui/settings.service'
 import { Pairing } from '@/app/modules/settings/settings.interfaces'
 
 @Component({
+  selector: 'app-reset-individual-bridges',
   imports: [
     TitleCasePipe,
     TranslatePipe,

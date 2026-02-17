@@ -10,6 +10,7 @@ import { BaseManageComponent } from '@/app/core/accessories/types/base-manage.co
 import { DurationPipe } from '@/app/core/pipes/duration.pipe'
 
 @Component({
+  selector: 'app-valve-manage',
   imports: [
     FormsModule,
     NouisliderComponent,

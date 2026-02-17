@@ -22,6 +22,7 @@ import { TerminalService } from '@/app/core/utilities/terminal.service'
 import { Widget } from '@/app/modules/status/widgets/widgets.interfaces'
 
 @Component({
+  selector: 'app-terminal-widget',
   imports: [
     TranslatePipe,
   ],

@@ -20,6 +20,7 @@ import { ManagePluginsService } from '@/app/core/plugins/manage-plugins.service'
 import { SettingsService } from '@/app/core/ui/settings.service'
 
 @Component({
+  selector: 'app-plugin-bridge',
   imports: [
     FormsModule,
     NgbAlert,

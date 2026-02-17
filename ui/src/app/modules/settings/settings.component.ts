@@ -31,6 +31,7 @@ import { SslSettingsModalComponent } from '@/app/modules/settings/ssl-settings-m
 import { WallpaperComponent } from '@/app/modules/settings/wallpaper/wallpaper.component'
 
 @Component({
+  selector: 'app-settings',
   imports: [
     RouterLink,
     FormsModule,

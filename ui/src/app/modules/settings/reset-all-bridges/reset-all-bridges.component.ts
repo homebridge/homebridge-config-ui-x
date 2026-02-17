@@ -8,6 +8,7 @@ import { ToastrService } from 'ngx-toastr'
 import { ApiService } from '@/app/core/communication/api.service'
 
 @Component({
+  selector: 'app-reset-all-bridges',
   imports: [
     NgbAlert,
     TranslatePipe,

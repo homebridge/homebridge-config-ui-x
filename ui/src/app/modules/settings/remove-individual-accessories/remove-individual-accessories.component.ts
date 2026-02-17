@@ -12,6 +12,7 @@ import { REMOVE_INDIVIDUAL_ACCESSORIES_MODAL_DATA } from '@/app/core/modal-data-
 import { SettingsService } from '@/app/core/ui/settings.service'
 
 @Component({
+  selector: 'app-remove-individual-accessories',
   imports: [
     TranslatePipe,
     FormsModule,

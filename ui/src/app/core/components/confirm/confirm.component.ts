@@ -5,6 +5,7 @@ import { TranslatePipe } from '@ngx-translate/core'
 import { CONFIRM_MODAL_DATA } from '@/app/core/modal-data-tokens'
 
 @Component({
+  selector: 'app-confirm',
   imports: [TranslatePipe],
   standalone: true,
   templateUrl: './confirm.component.html',

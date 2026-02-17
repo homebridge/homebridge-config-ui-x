@@ -5,6 +5,7 @@ import { ToastrService } from 'ngx-toastr'
 import { ApiService } from '@/app/core/communication/api.service'
 
 @Component({
+  selector: 'app-shutdown-linux',
   imports: [TranslatePipe],
   standalone: true,
   templateUrl: './shutdown-linux.component.html',

@@ -5,6 +5,7 @@ import { TranslatePipe } from '@ngx-translate/core'
 import { BaseManageComponent } from '@/app/core/accessories/types/base-manage.component'
 
 @Component({
+  selector: 'app-security-system-manage',
   imports: [FormsModule, TranslatePipe],
   standalone: true,
   templateUrl: './security-system.manage.component.html',

@@ -32,6 +32,7 @@ import { ServiceToTranslationStringPipe } from '@/app/core/pipes/service-to-tran
 import { RemoveIndividualAccessoriesComponent } from '@/app/modules/settings/remove-individual-accessories/remove-individual-accessories.component'
 
 @Component({
+  selector: 'app-accessory-info',
   imports: [
     FormsModule,
     KeyValuePipe,

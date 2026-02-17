@@ -13,6 +13,7 @@ import { OpenWeatherMapResponse, Widget } from '@/app/modules/status/widgets/wid
 import { environment } from '@/environments/environment'
 
 @Component({
+  selector: 'app-weather-widget',
   imports: [
     DecimalPipe,
     TitleCasePipe,

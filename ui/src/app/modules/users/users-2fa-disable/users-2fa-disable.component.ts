@@ -10,6 +10,7 @@ import { ApiService } from '@/app/core/communication/api.service'
 import { NotificationService } from '@/app/core/communication/notification.service'
 
 @Component({
+  selector: 'app-users-2fa-disable',
   imports: [
     FormsModule,
     ReactiveFormsModule,

@@ -14,6 +14,7 @@ import { HomebridgeUpdatePolicy } from '@/app/core/settings.interfaces'
 import { SettingsService } from '@/app/core/ui/settings.service'
 
 @Component({
+  selector: 'app-manage-version',
   imports: [
     FormsModule,
     TranslatePipe,

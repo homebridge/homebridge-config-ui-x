@@ -15,6 +15,7 @@ import { MatterBrightness } from '@/app/core/accessories/types/matter/matter-dev
 import { getBrightnessLevel, getOnOffState, levelToPercentage } from '@/app/core/accessories/types/matter/matter-device.utils'
 
 @Component({
+  selector: 'app-dimmable-light-manage',
   imports: [
     FormsModule,
     NouisliderComponent,

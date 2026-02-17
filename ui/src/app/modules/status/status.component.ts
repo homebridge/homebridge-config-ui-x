@@ -20,6 +20,7 @@ import { AVAILABLE_WIDGETS, WidgetsComponent } from '@/app/modules/status/widget
 import { Widget } from '@/app/modules/status/widgets/widgets.interfaces'
 
 @Component({
+  selector: 'app-status',
   imports: [
     NgbTooltip,
     SpinnerComponent,

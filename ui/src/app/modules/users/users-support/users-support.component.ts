@@ -5,6 +5,7 @@ import { TranslatePipe } from '@ngx-translate/core'
 import { SupportBannerComponent } from '@/app/core/components/support-banner/support-banner.component'
 
 @Component({
+  selector: 'app-users-support',
   imports: [TranslatePipe, SupportBannerComponent],
   standalone: true,
   templateUrl: './users-support.component.html',

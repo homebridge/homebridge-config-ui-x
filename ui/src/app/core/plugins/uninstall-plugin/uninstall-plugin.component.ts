@@ -11,6 +11,7 @@ import { ManagePluginComponent } from '@/app/core/plugins/manage-plugin/manage-p
 import { ChildBridge } from '@/app/core/plugins/manage-plugins.interfaces'
 
 @Component({
+  selector: 'app-uninstall-plugin',
   imports: [
     FormsModule,
     NgbAlert,

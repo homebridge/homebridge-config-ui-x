@@ -24,6 +24,7 @@ export interface CanComponentDeactivate {
 }
 
 @Component({
+  selector: 'app-plugins',
   imports: [
     SpinnerComponent,
     FormsModule,
