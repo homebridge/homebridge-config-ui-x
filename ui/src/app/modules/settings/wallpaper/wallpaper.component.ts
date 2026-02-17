@@ -10,7 +10,7 @@ import { environment } from '@/environments/environment'
 
 @Component({
   templateUrl: './wallpaper.component.html',
-  styleUrls: ['./wallpaper.component.scss'],
+  styleUrl: './wallpaper.component.scss',
   standalone: true,
   imports: [ReactiveFormsModule, TranslatePipe],
 })

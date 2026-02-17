@@ -30,6 +30,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - lint: apply `angular-template/prefer-static-string-properties`
 - lint: apply `angular-template/prefer-template-literal`
 - lint: apply `angular/component-max-inline-declarations`
+- lint: apply `angular/consistent-component-styles`
 
 ### Homebridge Dependencies
 

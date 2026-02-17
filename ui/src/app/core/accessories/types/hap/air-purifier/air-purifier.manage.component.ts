@@ -10,7 +10,7 @@ import { BaseManageComponent } from '@/app/core/accessories/types/base-manage.co
 
 @Component({
   templateUrl: './air-purifier.manage.component.html',
-  styleUrls: ['./air-purifier.component.scss'],
+  styleUrl: './air-purifier.component.scss',
   standalone: true,
   imports: [
     FormsModule,

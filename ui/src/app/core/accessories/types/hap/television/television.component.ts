@@ -11,7 +11,7 @@ import { LongClickDirective } from '@/app/core/directives/long-click.directive'
 @Component({
   selector: 'app-television',
   templateUrl: './television.component.html',
-  styleUrls: ['./television.component.scss'],
+  styleUrl: './television.component.scss',
   standalone: true,
   imports: [
     LongClickDirective,

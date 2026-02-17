@@ -7,7 +7,7 @@ import { getWaterLeakState } from '@/app/core/accessories/types/matter/matter-de
 @Component({
   selector: 'app-matter-water-leak-detector',
   templateUrl: './water-leak-detector.component.html',
-  styleUrls: ['./water-leak-detector.component.scss'],
+  styleUrl: './water-leak-detector.component.scss',
   standalone: true,
   imports: [
     TranslatePipe,

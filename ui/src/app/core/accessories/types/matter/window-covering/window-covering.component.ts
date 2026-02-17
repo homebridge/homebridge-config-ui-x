@@ -12,7 +12,7 @@ import { LongClickDirective } from '@/app/core/directives/long-click.directive'
 @Component({
   selector: 'app-matter-window-covering',
   templateUrl: './window-covering.component.html',
-  styleUrls: ['./window-covering.component.scss'],
+  styleUrl: './window-covering.component.scss',
   standalone: true,
   imports: [
     LongClickDirective,

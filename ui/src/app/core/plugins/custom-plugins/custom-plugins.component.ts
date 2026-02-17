@@ -18,7 +18,7 @@ import { environment } from '@/environments/environment'
 
 @Component({
   templateUrl: './custom-plugins.component.html',
-  styleUrls: ['./custom-plugins.component.scss'],
+  styleUrl: './custom-plugins.component.scss',
   standalone: true,
   imports: [
     SchemaFormComponent,

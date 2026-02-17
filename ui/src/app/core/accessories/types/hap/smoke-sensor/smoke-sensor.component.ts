@@ -6,7 +6,7 @@ import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
 @Component({
   selector: 'app-smoke-sensor',
   templateUrl: './smoke-sensor.component.html',
-  styleUrls: ['./smoke-sensor.component.scss'],
+  styleUrl: './smoke-sensor.component.scss',
   standalone: true,
   imports: [
     TranslatePipe,

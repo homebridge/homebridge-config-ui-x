@@ -17,7 +17,7 @@ import { SettingsService } from '@/app/core/ui/settings.service'
 @Component({
   selector: 'app-sidebar',
   templateUrl: './sidebar.component.html',
-  styleUrls: ['./sidebar.component.scss'],
+  styleUrl: './sidebar.component.scss',
   standalone: true,
   imports: [
     RouterLink,

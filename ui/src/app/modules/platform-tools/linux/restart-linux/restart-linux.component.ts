@@ -12,7 +12,7 @@ import { SettingsService } from '@/app/core/ui/settings.service'
 
 @Component({
   templateUrl: './restart-linux.component.html',
-  styleUrls: ['./restart-linux.component.scss'],
+  styleUrl: './restart-linux.component.scss',
   standalone: true,
   imports: [TranslatePipe],
 })

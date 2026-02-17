@@ -21,7 +21,7 @@ import { Widget } from '@/app/modules/status/widgets/widgets.interfaces'
 
 @Component({
   templateUrl: './status.component.html',
-  styleUrls: ['./status.component.scss'],
+  styleUrl: './status.component.scss',
   standalone: true,
   imports: [
     NgbTooltip,

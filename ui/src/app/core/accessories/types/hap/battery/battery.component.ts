@@ -6,7 +6,7 @@ import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
 @Component({
   selector: 'app-battery',
   templateUrl: './battery.component.html',
-  styleUrls: ['./battery.component.scss'],
+  styleUrl: './battery.component.scss',
   standalone: true,
   imports: [
     TranslatePipe,

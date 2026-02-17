@@ -6,7 +6,7 @@ import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
 @Component({
   selector: 'app-irrigation-system',
   templateUrl: './irrigation-system.component.html',
-  styleUrls: ['./irrigation-system.component.scss'],
+  styleUrl: './irrigation-system.component.scss',
   standalone: true,
   imports: [
     TranslatePipe,

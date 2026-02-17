@@ -16,7 +16,7 @@ import { SettingsService } from '@/app/core/ui/settings.service'
 
 @Component({
   templateUrl: './switch-to-scoped.component.html',
-  styleUrls: ['./switch-to-scoped.component.scss'],
+  styleUrl: './switch-to-scoped.component.scss',
   standalone: true,
   imports: [
     TranslatePipe,

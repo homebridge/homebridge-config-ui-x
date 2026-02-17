@@ -8,7 +8,7 @@ import { NodeJsInfo, ServerInfo, Widget } from '@/app/modules/status/widgets/wid
 
 @Component({
   templateUrl: './system-info-widget.component.html',
-  styleUrls: ['./system-info-widget.component.scss'],
+  styleUrl: './system-info-widget.component.scss',
   standalone: true,
   imports: [
     TitleCasePipe,

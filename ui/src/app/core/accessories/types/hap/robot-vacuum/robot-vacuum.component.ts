@@ -7,7 +7,7 @@ import { LongClickDirective } from '@/app/core/directives/long-click.directive'
 @Component({
   selector: 'app-robot-vacuum',
   templateUrl: './robot-vacuum.component.html',
-  styleUrls: ['./robot-vacuum.component.scss'],
+  styleUrl: './robot-vacuum.component.scss',
   standalone: true,
   imports: [
     LongClickDirective,

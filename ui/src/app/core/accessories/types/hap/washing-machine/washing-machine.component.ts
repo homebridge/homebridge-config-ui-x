@@ -7,7 +7,7 @@ import { LongClickDirective } from '@/app/core/directives/long-click.directive'
 @Component({
   selector: 'app-washing-machine',
   templateUrl: './washing-machine.component.html',
-  styleUrls: ['./washing-machine.component.scss'],
+  styleUrl: './washing-machine.component.scss',
   standalone: true,
   imports: [
     LongClickDirective,

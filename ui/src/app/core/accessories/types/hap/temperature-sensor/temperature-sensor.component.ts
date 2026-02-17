@@ -9,7 +9,7 @@ import { SettingsService } from '@/app/core/ui/settings.service'
 @Component({
   selector: 'app-temperature-sensor',
   templateUrl: './temperature-sensor.component.html',
-  styleUrls: ['./temperature-sensor.component.scss'],
+  styleUrl: './temperature-sensor.component.scss',
   standalone: true,
   imports: [DecimalPipe, ConvertTempPipe, UpperCasePipe, TranslatePipe],
 })

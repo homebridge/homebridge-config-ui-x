@@ -7,7 +7,7 @@ import { getContactSensorState } from '@/app/core/accessories/types/matter/matte
 @Component({
   selector: 'app-matter-contact-sensor',
   templateUrl: './contact-sensor.component.html',
-  styleUrls: ['./contact-sensor.component.scss'],
+  styleUrl: './contact-sensor.component.scss',
   standalone: true,
   imports: [
     TranslatePipe,

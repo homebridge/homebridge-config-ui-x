@@ -8,7 +8,7 @@ import { TerminalService } from '@/app/core/utilities/terminal.service'
 
 @Component({
   templateUrl: './terminal.component.html',
-  styleUrls: ['./terminal.component.scss'],
+  styleUrl: './terminal.component.scss',
   standalone: true,
   imports: [TranslatePipe],
 })

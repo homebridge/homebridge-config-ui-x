@@ -12,7 +12,7 @@ import { LongClickDirective } from '@/app/core/directives/long-click.directive'
 @Component({
   selector: 'app-robotic-vacuum-cleaner',
   templateUrl: './robotic-vacuum-cleaner.component.html',
-  styleUrls: ['./robotic-vacuum-cleaner.component.scss'],
+  styleUrl: './robotic-vacuum-cleaner.component.scss',
   standalone: true,
   imports: [
     LongClickDirective,

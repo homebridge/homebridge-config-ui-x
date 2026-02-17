@@ -6,7 +6,7 @@ import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
 @Component({
   selector: 'app-occupancy-sensor',
   templateUrl: './occupancy-sensor.component.html',
-  styleUrls: ['./occupancy-sensor.component.scss'],
+  styleUrl: './occupancy-sensor.component.scss',
   standalone: true,
   imports: [
     TranslatePipe,

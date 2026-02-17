@@ -32,7 +32,7 @@ import { WallpaperComponent } from '@/app/modules/settings/wallpaper/wallpaper.c
 
 @Component({
   templateUrl: './settings.component.html',
-  styleUrls: ['./settings.component.scss'],
+  styleUrl: './settings.component.scss',
   standalone: true,
   imports: [
     RouterLink,

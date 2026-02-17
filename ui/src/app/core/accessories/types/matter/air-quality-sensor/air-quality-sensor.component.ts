@@ -8,7 +8,7 @@ import { getAirQualityValue } from '@/app/core/accessories/types/matter/matter-d
 @Component({
   selector: 'app-matter-air-quality-sensor',
   templateUrl: './air-quality-sensor.component.html',
-  styleUrls: ['./air-quality-sensor.component.scss'],
+  styleUrl: './air-quality-sensor.component.scss',
   standalone: true,
   imports: [TranslatePipe],
 })

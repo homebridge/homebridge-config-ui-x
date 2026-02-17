@@ -9,7 +9,7 @@ import { BaseChartWidgetComponent } from '@/app/modules/status/widgets/base-char
 
 @Component({
   templateUrl: './memory-widget.component.html',
-  styleUrls: ['./memory-widget.component.scss'],
+  styleUrl: './memory-widget.component.scss',
   standalone: true,
   imports: [
     BaseChartDirective,

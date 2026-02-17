@@ -35,7 +35,7 @@ declare global {
 
 @Component({
   templateUrl: './manual-config.component.html',
-  styleUrls: ['./manual-config.component.scss'],
+  styleUrl: './manual-config.component.scss',
   standalone: true,
   imports: [
     NgbAccordionDirective,

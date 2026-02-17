@@ -6,7 +6,7 @@ import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
 @Component({
   selector: 'app-motion-sensor',
   templateUrl: './motion-sensor.component.html',
-  styleUrls: ['./motion-sensor.component.scss'],
+  styleUrl: './motion-sensor.component.scss',
   standalone: true,
   imports: [
     TranslatePipe,

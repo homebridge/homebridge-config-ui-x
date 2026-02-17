@@ -25,7 +25,7 @@ export interface CanComponentDeactivate {
 
 @Component({
   templateUrl: './plugins.component.html',
-  styleUrls: ['./plugins.component.scss'],
+  styleUrl: './plugins.component.scss',
   standalone: true,
   imports: [
     SpinnerComponent,

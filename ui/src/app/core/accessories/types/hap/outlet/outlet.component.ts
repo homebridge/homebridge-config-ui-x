@@ -8,7 +8,7 @@ import { SettingsService } from '@/app/core/ui/settings.service'
 @Component({
   selector: 'app-outlet',
   templateUrl: './outlet.component.html',
-  styleUrls: ['./outlet.component.scss'],
+  styleUrl: './outlet.component.scss',
   standalone: true,
   imports: [
     LongClickDirective,

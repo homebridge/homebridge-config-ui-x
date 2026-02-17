@@ -7,7 +7,7 @@ import { LongClickDirective } from '@/app/core/directives/long-click.directive'
 @Component({
   selector: 'app-switch',
   templateUrl: './switch.component.html',
-  styleUrls: ['./switch.component.scss'],
+  styleUrl: './switch.component.scss',
   standalone: true,
   imports: [
     LongClickDirective,

@@ -11,7 +11,7 @@ import { BaseChartWidgetComponent } from '@/app/modules/status/widgets/base-char
 
 @Component({
   templateUrl: './cpu-widget.component.html',
-  styleUrls: ['./cpu-widget.component.scss'],
+  styleUrl: './cpu-widget.component.scss',
   standalone: true,
   imports: [
     BaseChartDirective,

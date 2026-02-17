@@ -14,7 +14,7 @@ import { LongClickDirective } from '@/app/core/directives/long-click.directive'
 @Component({
   selector: 'app-valve',
   templateUrl: './valve.component.html',
-  styleUrls: ['./valve.component.scss'],
+  styleUrl: './valve.component.scss',
   standalone: true,
   imports: [
     LongClickDirective,

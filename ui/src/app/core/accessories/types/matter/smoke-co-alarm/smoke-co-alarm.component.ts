@@ -7,7 +7,7 @@ import { isSmokeCoAlarmTriggered } from '@/app/core/accessories/types/matter/mat
 @Component({
   selector: 'app-matter-smoke-co-alarm',
   templateUrl: './smoke-co-alarm.component.html',
-  styleUrls: ['./smoke-co-alarm.component.scss'],
+  styleUrl: './smoke-co-alarm.component.scss',
   standalone: true,
   imports: [
     TranslatePipe,

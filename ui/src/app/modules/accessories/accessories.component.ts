@@ -27,7 +27,7 @@ import { ADD_ROOM_MODAL_DATA, EDIT_ROOM_MODAL_DATA } from '@/app/modules/accesso
 @Component({
   selector: 'app-accessories',
   templateUrl: './accessories.component.html',
-  styleUrls: ['./accessories.component.scss'],
+  styleUrl: './accessories.component.scss',
   standalone: true,
   imports: [
     NgTemplateOutlet,

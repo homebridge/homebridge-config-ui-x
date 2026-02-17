@@ -16,7 +16,7 @@ import { environment } from '@/environments/environment'
 @Component({
   selector: 'app-layout',
   templateUrl: './layout.component.html',
-  styleUrls: ['./layout.component.scss'],
+  styleUrl: './layout.component.scss',
   standalone: true,
   imports: [
     SidebarComponent,

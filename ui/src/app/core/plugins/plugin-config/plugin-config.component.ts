@@ -29,7 +29,7 @@ import { ChildBridgesService } from '@/app/core/utilities/child-bridges.service'
 
 @Component({
   templateUrl: './plugin-config.component.html',
-  styleUrls: ['./plugin-config.component.scss'],
+  styleUrl: './plugin-config.component.scss',
   standalone: true,
   imports: [
     NgxMdModule,

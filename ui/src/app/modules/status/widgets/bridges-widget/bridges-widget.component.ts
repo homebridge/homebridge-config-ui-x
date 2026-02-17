@@ -14,7 +14,7 @@ import { ChildBridgeWithUIState, Widget } from '@/app/modules/status/widgets/wid
 
 @Component({
   templateUrl: './bridges-widget.component.html',
-  styleUrls: ['./bridges-widget.component.scss'],
+  styleUrl: './bridges-widget.component.scss',
   standalone: true,
   imports: [
     NgbTooltip,

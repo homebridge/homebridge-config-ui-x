@@ -8,7 +8,7 @@ import { SettingsService } from '@/app/core/ui/settings.service'
 @Component({
   selector: 'app-on-off-plug-in-unit',
   templateUrl: './on-off-plug-in-unit.component.html',
-  styleUrls: ['./on-off-plug-in-unit.component.scss'],
+  styleUrl: './on-off-plug-in-unit.component.scss',
   standalone: true,
   imports: [
     TranslatePipe,

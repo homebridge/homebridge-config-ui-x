@@ -28,7 +28,7 @@ import { environment } from '@/environments/environment'
 
 @Component({
   templateUrl: './update-info-widget.component.html',
-  styleUrls: ['./update-info-widget.component.scss'],
+  styleUrl: './update-info-widget.component.scss',
   standalone: true,
   imports: [
     TranslatePipe,

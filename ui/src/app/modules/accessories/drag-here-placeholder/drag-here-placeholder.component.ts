@@ -4,7 +4,7 @@ import { TranslatePipe } from '@ngx-translate/core'
 @Component({
   selector: 'app-drag-here-placeholder',
   templateUrl: './drag-here-placeholder.component.html',
-  styleUrls: ['./drag-here-placeholder.component.scss'],
+  styleUrl: './drag-here-placeholder.component.scss',
   standalone: true,
   imports: [TranslatePipe],
 })

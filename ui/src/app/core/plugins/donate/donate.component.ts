@@ -7,7 +7,7 @@ import { PluginFundingOption } from '@/app/core/plugins/manage-plugins.interface
 
 @Component({
   templateUrl: './donate.component.html',
-  styleUrls: ['./donate.component.scss'],
+  styleUrl: './donate.component.scss',
   standalone: true,
   imports: [
     TranslatePipe,

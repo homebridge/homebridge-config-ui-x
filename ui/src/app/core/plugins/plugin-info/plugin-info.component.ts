@@ -6,7 +6,7 @@ import { PLUGIN_MODAL_DATA } from '@/app/core/modal-data-tokens'
 
 @Component({
   templateUrl: './plugin-info.component.html',
-  styleUrls: ['./plugin-info.component.scss'],
+  styleUrl: './plugin-info.component.scss',
   standalone: true,
   imports: [TranslatePipe],
 })

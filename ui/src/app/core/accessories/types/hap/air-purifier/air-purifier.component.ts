@@ -11,7 +11,7 @@ import { LongClickDirective } from '@/app/core/directives/long-click.directive'
 @Component({
   selector: 'app-air-purifier',
   templateUrl: './air-purifier.component.html',
-  styleUrls: ['./air-purifier.component.scss'],
+  styleUrl: './air-purifier.component.scss',
   standalone: true,
   imports: [
     LongClickDirective,

@@ -9,7 +9,7 @@ import { BaseChartWidgetComponent } from '@/app/modules/status/widgets/base-char
 
 @Component({
   templateUrl: './network-widget.component.html',
-  styleUrls: ['./network-widget.component.scss'],
+  styleUrl: './network-widget.component.scss',
   standalone: true,
   imports: [
     BaseChartDirective,

@@ -30,7 +30,7 @@ import { HbV2ModalComponent } from '@/app/modules/status/widgets/update-info-wid
 
 @Component({
   templateUrl: './manage-plugin.component.html',
-  styleUrls: ['./manage-plugin.component.scss'],
+  styleUrl: './manage-plugin.component.scss',
   standalone: true,
   imports: [
     NgxMdModule,

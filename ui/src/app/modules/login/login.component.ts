@@ -13,7 +13,7 @@ import { environment } from '@/environments/environment'
 
 @Component({
   templateUrl: './login.component.html',
-  styleUrls: ['./login.component.scss'],
+  styleUrl: './login.component.scss',
   standalone: true,
   imports: [
     FormsModule,

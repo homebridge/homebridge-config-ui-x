@@ -10,7 +10,7 @@ import { ACCESSORY_MANAGE_MODAL_DATA } from '@/app/core/accessories/types/base-m
 
 @Component({
   templateUrl: './robotic-vacuum-cleaner.manage.component.html',
-  styleUrls: ['./robotic-vacuum-cleaner.manage.component.scss'],
+  styleUrl: './robotic-vacuum-cleaner.manage.component.scss',
   standalone: true,
   imports: [
     TranslatePipe,

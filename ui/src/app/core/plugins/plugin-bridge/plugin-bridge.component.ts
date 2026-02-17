@@ -21,7 +21,7 @@ import { SettingsService } from '@/app/core/ui/settings.service'
 
 @Component({
   templateUrl: './plugin-bridge.component.html',
-  styleUrls: ['./plugin-bridge.component.scss'],
+  styleUrl: './plugin-bridge.component.scss',
   standalone: true,
   imports: [
     FormsModule,

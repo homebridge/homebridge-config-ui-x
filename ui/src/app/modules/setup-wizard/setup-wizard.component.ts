@@ -14,7 +14,7 @@ import { environment } from '@/environments/environment'
 
 @Component({
   templateUrl: './setup-wizard.component.html',
-  styleUrls: ['./setup-wizard.component.scss'],
+  styleUrl: './setup-wizard.component.scss',
   imports: [
     TranslatePipe,
     NgOptimizedImage,

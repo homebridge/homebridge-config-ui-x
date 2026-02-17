@@ -23,7 +23,7 @@ export interface CanComponentDeactivate {
 
 @Component({
   templateUrl: './logs.component.html',
-  styleUrls: ['./logs.component.scss'],
+  styleUrl: './logs.component.scss',
   standalone: true,
   imports: [NgbTooltip, TranslatePipe, ReactiveFormsModule],
 })
