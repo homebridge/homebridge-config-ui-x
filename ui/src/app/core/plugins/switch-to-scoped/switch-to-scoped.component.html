@@ -40,15 +40,13 @@ hb-service start</pre
           <li>
             <i
               class="fa"
-              [class]="{
-                'fa-circle-o': !installing() && !installed() && !failure(),
-                'fa-circle-notch': installing(),
-                'fa-spin': installing(),
-                'fa-check-circle': installed() && !failure(),
-                'green-text': installed() && !failure(),
-                'fa-times-circle': !installed() && failure(),
-                'red-text': !installed() && failure(),
-              }"
+              [class.fa-circle-o]="!installing() && !installed() && !failure()"
+              [class.fa-circle-notch]="installing()"
+              [class.fa-spin]="installing()"
+              [class.fa-check-circle]="installed() && !failure()"
+              [class.green-text]="installed() && !failure()"
+              [class.fa-times-circle]="!installed() && failure()"
+              [class.red-text]="!installed() && failure()"
             ></i>
             {{ 'plugins.manage.install' | translate }}
             <span class="font-monospace">{{ plugin.newHbScope.to }}</span>
@@ -56,15 +54,13 @@ hb-service start</pre
           <li>
             <i
               class="fa"
-              [class]="{
-                'fa-circle-o': !uninstalling() && !uninstalled() && !failure(),
-                'fa-circle-notch': uninstalling(),
-                'fa-spin': uninstalling(),
-                'fa-check-circle': uninstalled() && !failure(),
-                'green-text': uninstalled() && !failure(),
-                'fa-times-circle': !uninstalled() && failure(),
-                'red-text': !uninstalled() && failure(),
-              }"
+              [class.fa-circle-o]="!uninstalling() && !uninstalled() && !failure()"
+              [class.fa-circle-notch]="uninstalling()"
+              [class.fa-spin]="uninstalling()"
+              [class.fa-check-circle]="uninstalled() && !failure()"
+              [class.green-text]="uninstalled() && !failure()"
+              [class.fa-times-circle]="!uninstalled() && failure()"
+              [class.red-text]="!uninstalled() && failure()"
             ></i>
             {{ 'plugins.manage.uninstall' | translate }}
             <span class="font-monospace">{{ plugin.newHbScope.from }}</span>
@@ -72,13 +68,11 @@ hb-service start</pre
           <li>
             <i
               class="fa"
-              [class]="{
-                'fa-circle-o': !restarting() && !failure(),
-                'fa-circle-notch': restarting(),
-                'fa-spin': restarting(),
-                'fa-times-circle': failure(),
-                'red-text': failure(),
-              }"
+              [class.fa-circle-o]="!restarting() && !failure()"
+              [class.fa-circle-notch]="restarting()"
+              [class.fa-spin]="restarting()"
+              [class.fa-times-circle]="failure()"
+              [class.red-text]="failure()"
             ></i>
             {{ 'menu.hbrestart.title' | translate }}
           </li>

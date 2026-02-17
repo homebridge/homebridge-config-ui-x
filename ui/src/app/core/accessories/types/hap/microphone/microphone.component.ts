@@ -25,6 +25,20 @@ export class MicrophoneComponent {
   public service = input.required<ServiceTypeX>()
   public readyForControl = input<boolean>(false)
 
+  public isOn(): boolean {
+    const values = this.service().values
+    if ('Active' in values) {
+      return !!values?.Active
+    }
+    if ('CurrentMediaState' in values) {
+      return [0, 1].includes(values?.CurrentMediaState)
+    }
+    if ('Mute' in values && 'Volume' in values) {
+      return !values?.Mute && values?.Volume > 0
+    }
+    return 'Mute' in values && !values?.Mute
+  }
+
   public onClick() {
     if (!this.readyForControl()) {
       return

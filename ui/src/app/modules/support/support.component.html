@@ -12,10 +12,7 @@
     (click)="toggleSection('general')"
   >
     <h5 class="primary-text">
-      <i
-        class="fa"
-        [class]="{ 'fa-chevron-down': showFields().general, 'fa-chevron-right': !showFields().general }"
-      ></i>
+      <i class="fa" [class.fa-chevron-down]="showFields().general" [class.fa-chevron-right]="!showFields().general"></i>
       {{ 'support.links.title' | translate }}
     </h5>
   </div>
@@ -98,7 +95,7 @@
     (click)="toggleSection('dev')"
   >
     <h5 class="primary-text">
-      <i class="fa" [class]="{ 'fa-chevron-down': showFields().dev, 'fa-chevron-right': !showFields().dev }"></i>
+      <i class="fa" [class.fa-chevron-down]="showFields().dev" [class.fa-chevron-right]="!showFields().dev"></i>
       {{ 'support.dev.title' | translate }}
     </h5>
   </div>

@@ -65,11 +65,9 @@
                 <span class="input-group-text custom-input" id="">
                   <i
                     class="fas"
-                    [class]="{
-                      'fa-city': !searching(),
-                      'fa-circle-notch': searching(),
-                      'fa-spin': searching(),
-                    }"
+                    [class.fa-city]="!searching()"
+                    [class.fa-circle-notch]="searching()"
+                    [class.fa-spin]="searching()"
                   ></i>
                 </span>
                 <input

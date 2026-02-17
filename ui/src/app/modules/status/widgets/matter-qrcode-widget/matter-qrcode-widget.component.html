@@ -25,13 +25,7 @@
         <i class="fas fa-matter"></i> Matter
         @if (pin() && enabled()) {
           &middot;
-          <i
-            class="fas fa-link"
-            [class]="{
-              'green-text': commissioned(),
-              'grey-text': !commissioned(),
-            }"
-          ></i>
+          <i class="fas fa-link" [class.green-text]="commissioned()" [class.grey-text]="!commissioned()"></i>
           {{ (commissioned() ? 'status.widget.qr_paired' : 'status.widget.qr_unpaired') | translate }}
           @if (!commissioned()) {
             <br />

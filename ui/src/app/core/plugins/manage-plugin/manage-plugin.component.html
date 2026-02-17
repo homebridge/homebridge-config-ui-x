@@ -46,12 +46,10 @@
         <i
           class="fas primary-text"
           style="font-size: 75px"
-          [class]="{
-            'fa-arrow-alt-circle-down': action === 'Install',
-            'fa-code-compare': action === 'Update' && installedVersion,
-            'fa-arrow-alt-circle-up': action === 'Update' && !installedVersion,
-            'fa-trash': action === 'Uninstall',
-          }"
+          [class.fa-arrow-alt-circle-down]="action === 'Install'"
+          [class.fa-code-compare]="action === 'Update' && installedVersion"
+          [class.fa-arrow-alt-circle-up]="action === 'Update' && !installedVersion"
+          [class.fa-trash]="action === 'Uninstall'"
         ></i>
       </div>
       <ul class="mb-3">
@@ -71,12 +69,10 @@ hb-service start</pre
         <i
           class="far primary-text"
           style="font-size: 75px"
-          [class]="{
-            'fa-arrow-alt-circle-down': action === 'Install' && !installedVersion,
-            'fa-code-compare': action === 'Install' && installedVersion,
-            'fa-arrow-alt-circle-up': action === 'Update',
-            'fa-trash': action === 'Uninstall',
-          }"
+          [class.fa-arrow-alt-circle-down]="action === 'Install' && !installedVersion"
+          [class.fa-code-compare]="action === 'Install' && installedVersion"
+          [class.fa-arrow-alt-circle-up]="action === 'Update'"
+          [class.fa-trash]="action === 'Uninstall'"
         ></i>
       </div>
       @if (latestVersion) {

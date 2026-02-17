@@ -33,6 +33,24 @@ export class AirPurifierComponent implements OnInit {
     }
   }
 
+  public isOn(): boolean {
+    const values = this.service().values
+    return !!(
+      (values?.Active && !('CurrentAirPurifierState' in values))
+      || (values?.Active && 'CurrentAirPurifierState' in values && values?.CurrentAirPurifierState !== 0)
+      || values?.On
+    )
+  }
+
+  public isPurifying(): boolean {
+    const values = this.service().values
+    return !!(
+      (values?.Active && !('CurrentAirPurifierState' in values))
+      || (values?.Active && 'CurrentAirPurifierState' in values && values?.CurrentAirPurifierState === 2)
+      || values?.On
+    )
+  }
+
   public onClick() {
     if (!this.readyForControl()) {
       return

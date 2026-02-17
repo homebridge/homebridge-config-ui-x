@@ -52,10 +52,8 @@
                 class="form-control custom-input"
                 required
                 [readonly]="loading()"
-                [class]="{
-                  'is-valid': createUserForm.controls.username.dirty && createUserForm.controls.username.valid,
-                  'is-invalid': createUserForm.controls.username.dirty && createUserForm.controls.username.invalid,
-                }"
+                [class.is-valid]="createUserForm.controls.username.dirty && createUserForm.controls.username.valid"
+                [class.is-invalid]="createUserForm.controls.username.dirty && createUserForm.controls.username.invalid"
                 [placeholder]="'users.label_username' | translate"
               />
             </div>
@@ -70,10 +68,8 @@
                 class="form-control custom-input"
                 required
                 [readonly]="loading()"
-                [class]="{
-                  'is-valid': createUserForm.controls.password.dirty && createUserForm.controls.password.valid,
-                  'is-invalid': createUserForm.controls.password.dirty && createUserForm.controls.password.errors,
-                }"
+                [class.is-valid]="createUserForm.controls.password.dirty && createUserForm.controls.password.valid"
+                [class.is-invalid]="createUserForm.controls.password.dirty && createUserForm.controls.password.errors"
                 [placeholder]="'users.label_password' | translate"
               />
             </div>
@@ -88,12 +84,12 @@
                 class="form-control custom-input"
                 required
                 [readonly]="loading()"
-                [class]="{
-                  'is-valid':
-                    createUserForm.controls.passwordConfirm.dirty && createUserForm.controls.passwordConfirm.valid,
-                  'is-invalid':
-                    createUserForm.controls.passwordConfirm.dirty && createUserForm.controls.passwordConfirm.errors,
-                }"
+                [class.is-valid]="
+                  createUserForm.controls.passwordConfirm.dirty && createUserForm.controls.passwordConfirm.valid
+                "
+                [class.is-invalid]="
+                  createUserForm.controls.passwordConfirm.dirty && createUserForm.controls.passwordConfirm.errors
+                "
                 [placeholder]="'users.label_confirm_password' | translate"
               />
             </div>

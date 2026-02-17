@@ -126,13 +126,11 @@
           container="modal"
           placement="top"
           triggers="hover"
-          [class]="{
-            'fa-circle-check': formIsValid(),
-            'green-text': formIsValid(),
-            'fa-circle-exclamation': !formIsValid(),
-            'red-text': strictValidation() && !formIsValid(),
-            'orange-text': !strictValidation() && !formIsValid(),
-          }"
+          [class.fa-circle-check]="formIsValid()"
+          [class.green-text]="formIsValid()"
+          [class.fa-circle-exclamation]="!formIsValid()"
+          [class.red-text]="strictValidation() && !formIsValid()"
+          [class.orange-text]="!strictValidation() && !formIsValid()"
           [ngbTooltip]="
             (formIsValid()
               ? 'form.label_valid'

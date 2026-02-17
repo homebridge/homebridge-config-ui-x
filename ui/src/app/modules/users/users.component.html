@@ -30,13 +30,7 @@
             <span class="me-auto my-0">
               <h4>{{ user.name }}</h4>
               <h5 class="small text-truncate grey-text">
-                <i
-                  class="fas"
-                  [class]="{
-                    'fa-user-secret': user.admin,
-                    'fa-user': !user.admin,
-                  }"
-                ></i>
+                <i class="fas" [class.fa-user-secret]="user.admin" [class.fa-user]="!user.admin"></i>
                 {{ user.username }}
               </h5>
             </span>

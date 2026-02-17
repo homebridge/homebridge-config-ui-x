@@ -1,13 +1,11 @@
 <div
   class="accessory-box"
   tabindex="0"
-  [class]="{
-    'accessory-on': service().values?.SecuritySystemCurrentState !== 3,
-    home: service().values?.SecuritySystemCurrentState === 0,
-    away: service().values?.SecuritySystemCurrentState === 1,
-    night: service().values?.SecuritySystemCurrentState === 2,
-    triggered: service().values?.SecuritySystemCurrentState === 4,
-  }"
+  [class.accessory-on]="service().values?.SecuritySystemCurrentState !== 3"
+  [class.home]="service().values?.SecuritySystemCurrentState === 0"
+  [class.away]="service().values?.SecuritySystemCurrentState === 1"
+  [class.night]="service().values?.SecuritySystemCurrentState === 2"
+  [class.triggered]="service().values?.SecuritySystemCurrentState === 4"
   [style.cursor]="readyForControl ? 'pointer' : 'default'"
   (longClick)="onClick()"
   (shortClick)="onClick()"

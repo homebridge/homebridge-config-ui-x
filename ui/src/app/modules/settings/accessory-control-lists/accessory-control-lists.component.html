@@ -31,10 +31,8 @@
                 (mainPairing()._isPaired ? 'status.widget.qr_paired' : 'status.widget.qr_unpaired') | translate
               "
               [openDelay]="150"
-              [class]="{
-                'green-text': mainPairing()._isPaired,
-                'grey-text': !mainPairing()._isPaired,
-              }"
+              [class.green-text]="mainPairing()._isPaired"
+              [class.grey-text]="!mainPairing()._isPaired"
             ></i>
             &middot; <span class="font-monospace">{{ mainPairing()._username }}</span> &middot; Homebridge
           </small>
@@ -65,10 +63,8 @@
                 placement="left"
                 [ngbTooltip]="(item._isPaired ? 'status.widget.qr_paired' : 'status.widget.qr_unpaired') | translate"
                 [openDelay]="150"
-                [class]="{
-                  'green-text': item._isPaired,
-                  'grey-text': !item._isPaired,
-                }"
+                [class.green-text]="item._isPaired"
+                [class.grey-text]="!item._isPaired"
               ></i>
               &middot; <span class="font-monospace">{{ item._username }}</span> &middot;
               {{ item._category | titlecase }}

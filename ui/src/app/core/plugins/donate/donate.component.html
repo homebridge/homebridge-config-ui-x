@@ -20,7 +20,7 @@
     <ul class="list-group list-group-box">
       @for (option of fundingOptions(); track option) {
         <li class="list-group-item d-flex align-items-center">
-          <i class="me-3 my-4 primary-text fa-2xl" [class]="getIconClass(option.type)"></i>
+          <i [class]="'me-3 my-4 primary-text fa-2xl ' + getIconClass(option.type)"></i>
           <a target="_blank" rel="noopener noreferrer" class="text-break-all fs-6" [href]="option.url">{{
             option.url
           }}</a>

@@ -88,11 +88,9 @@
         >
           <i
             class="fas"
-            [class]="{
-              'fa-arrow-right': !clicked(),
-              'fa-circle-notch': clicked(),
-              'fa-spin': clicked(),
-            }"
+            [class.fa-arrow-right]="!clicked()"
+            [class.fa-circle-notch]="clicked()"
+            [class.fa-spin]="clicked()"
           ></i>
         </button>
       </li>
@@ -111,11 +109,9 @@
         >
           <i
             class="fas"
-            [class]="{
-              'fa-arrow-right': !clicked(),
-              'fa-circle-notch': clicked(),
-              'fa-spin': clicked(),
-            }"
+            [class.fa-arrow-right]="!clicked()"
+            [class.fa-circle-notch]="clicked()"
+            [class.fa-spin]="clicked()"
           ></i>
         </button>
       </li>
@@ -213,11 +209,9 @@
               >
                 <i
                   class="fas"
-                  [class]="{
-                    'fa-trash': backup.id !== deleting(),
-                    'fa-circle-notch': backup.id === deleting(),
-                    'fa-spin': backup.id === deleting(),
-                  }"
+                  [class.fa-trash]="backup.id !== deleting()"
+                  [class.fa-circle-notch]="backup.id === deleting()"
+                  [class.fa-spin]="backup.id === deleting()"
                 ></i>
               </button>
             </span>

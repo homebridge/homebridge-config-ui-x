@@ -33,7 +33,8 @@
           <div class="float-start primary-text">
             <i
               class="fas fa-xl"
-              [class]="{ 'fa-check-circle': targetMode === 3, 'fa-blank': targetMode !== 3 }"
+              [class.fa-check-circle]="targetMode === 3"
+              [class.fa-blank]="targetMode !== 3"
               [style.opacity]="service.values?.SecuritySystemCurrentState === 4 ? 0.25 : 1"
             ></i>
           </div>
@@ -46,7 +47,8 @@
           <div class="float-start primary-text">
             <i
               class="fas fa-xl"
-              [class]="{ 'fa-check-circle': targetMode === 0, 'fa-blank': targetMode !== 0 }"
+              [class.fa-check-circle]="targetMode === 0"
+              [class.fa-blank]="targetMode !== 0"
               [style.opacity]="service.values?.SecuritySystemCurrentState === 4 ? 0.25 : 1"
             ></i>
           </div>
@@ -59,7 +61,8 @@
           <div class="float-start primary-text">
             <i
               class="fas fa-xl"
-              [class]="{ 'fa-check-circle': targetMode === 1, 'fa-blank': targetMode !== 1 }"
+              [class.fa-check-circle]="targetMode === 1"
+              [class.fa-blank]="targetMode !== 1"
               [style.opacity]="service.values?.SecuritySystemCurrentState === 4 ? 0.25 : 1"
             ></i>
           </div>
@@ -72,7 +75,8 @@
           <div class="float-start primary-text">
             <i
               class="fas fa-xl"
-              [class]="{ 'fa-check-circle': targetMode === 2, 'fa-blank': targetMode !== 2 }"
+              [class.fa-check-circle]="targetMode === 2"
+              [class.fa-blank]="targetMode !== 2"
               [style.opacity]="service.values?.SecuritySystemCurrentState === 4 ? 0.25 : 1"
             ></i>
           </div>

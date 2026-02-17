@@ -92,11 +92,9 @@
               >
                 <i
                   class="fas"
-                  [class]="{
-                    'fa-trash': backup.id !== deleting(),
-                    'fa-circle-notch': backup.id === deleting(),
-                    'fa-spin': backup.id === deleting(),
-                  }"
+                  [class.fa-trash]="backup.id !== deleting()"
+                  [class.fa-circle-notch]="backup.id === deleting()"
+                  [class.fa-spin]="backup.id === deleting()"
                 ></i>
               </button>
             </span>
@@ -122,11 +120,9 @@
             >
               <i
                 class="fas"
-                [class]="{
-                  'fa-trash': 'all' !== deleting(),
-                  'fa-circle-notch': 'all' === deleting(),
-                  'fa-spin': 'all' === deleting(),
-                }"
+                [class.fa-trash]="'all' !== deleting()"
+                [class.fa-circle-notch]="'all' === deleting()"
+                [class.fa-spin]="'all' === deleting()"
               ></i>
             </button>
           </span>

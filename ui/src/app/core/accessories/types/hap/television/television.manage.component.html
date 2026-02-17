@@ -14,14 +14,16 @@
       <div
         class="btn-group-vertical d-flex justify-content-center mb-4 p-0"
         role="group"
-        [class]="{ 'mb-4': sourceList.length, 'mb-0': !sourceList.length }"
+        [class.mb-4]="sourceList.length"
+        [class.mb-0]="!sourceList.length"
         [attr.aria-label]="'accessories.control.mode_control' | translate"
       >
         <button type="button" class="btn mb-0 mx-0 p-3 btn-control" (click)="setActive(0, $event)">
           <div class="float-start primary-text">
             <i
               class="fas fa-xl"
-              [class]="{ 'fa-check-circle': service.values?.Active === 0, 'fa-blank': service.values?.Active !== 0 }"
+              [class.fa-check-circle]="service.values?.Active === 0"
+              [class.fa-blank]="service.values?.Active !== 0"
             ></i>
           </div>
           {{ 'accessories.control.off' | translate }}
@@ -31,7 +33,8 @@
           <div class="float-start primary-text">
             <i
               class="fas fa-xl"
-              [class]="{ 'fa-check-circle': service.values?.Active === 1, 'fa-blank': service.values?.Active !== 1 }"
+              [class.fa-check-circle]="service.values?.Active === 1"
+              [class.fa-blank]="service.values?.Active !== 1"
             ></i>
           </div>
           {{ 'accessories.control.on' | translate }}
@@ -53,10 +56,8 @@
             <div class="float-start primary-text">
               <i
                 class="fas fa-xl"
-                [class]="{
-                  'fa-check-circle': service.values?.ActiveIdentifier === source.identifier,
-                  'fa-blank': service.values?.ActiveIdentifier !== source.identifier,
-                }"
+                [class.fa-check-circle]="service.values?.ActiveIdentifier === source.identifier"
+                [class.fa-blank]="service.values?.ActiveIdentifier !== source.identifier"
               ></i>
             </div>
             {{ source.name }}

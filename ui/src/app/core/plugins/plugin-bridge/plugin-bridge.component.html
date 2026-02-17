@@ -337,14 +337,12 @@
                   <p class="grey-text mx-auto small mb-1" style="max-width: 400px">
                     <i
                       class="fas fa-link"
-                      [class]="{
-                        'green-text': deviceInfo().get(configBlocks()[selectedBlock()]._bridge?.username)?.[
-                          '_isPaired'
-                        ],
-                        'grey-text': !deviceInfo().get(configBlocks()[selectedBlock()]._bridge?.username)?.[
-                          '_isPaired'
-                        ],
-                      }"
+                      [class.green-text]="
+                        deviceInfo().get(configBlocks()[selectedBlock()]._bridge?.username)?.['_isPaired']
+                      "
+                      [class.grey-text]="
+                        !deviceInfo().get(configBlocks()[selectedBlock()]._bridge?.username)?.['_isPaired']
+                      "
                     ></i>
                     {{
                       (deviceInfo().get(configBlocks()[selectedBlock()]._bridge?.username)?.['_isPaired']
@@ -446,12 +444,12 @@
                       <p class="grey-text mx-auto small mb-1" style="max-width: 400px">
                         <i
                           class="fas fa-link"
-                          [class]="{
-                            'green-text': matterDeviceInfo().get(configBlocks()[selectedBlock()]._bridge?.username)
-                              ?.commissioned,
-                            'grey-text': !matterDeviceInfo().get(configBlocks()[selectedBlock()]._bridge?.username)
-                              ?.commissioned,
-                          }"
+                          [class.green-text]="
+                            matterDeviceInfo().get(configBlocks()[selectedBlock()]._bridge?.username)?.commissioned
+                          "
+                          [class.grey-text]="
+                            !matterDeviceInfo().get(configBlocks()[selectedBlock()]._bridge?.username)?.commissioned
+                          "
                         ></i>
                         {{
                           (matterDeviceInfo().get(configBlocks()[selectedBlock()]._bridge?.username)?.commissioned

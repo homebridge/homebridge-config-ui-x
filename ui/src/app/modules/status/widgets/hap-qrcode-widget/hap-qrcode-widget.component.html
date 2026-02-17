@@ -21,13 +21,7 @@
         <i class="fas fa-hap"></i> HAP
         @if (pin()) {
           &middot;
-          <i
-            class="fas fa-link"
-            [class]="{
-              'green-text': paired(),
-              'grey-text': !paired(),
-            }"
-          ></i>
+          <i class="fas fa-link" [class.green-text]="paired()" [class.grey-text]="!paired()"></i>
           {{ (paired() ? 'status.widget.qr_paired' : 'status.widget.qr_unpaired') | translate }}
           @if (!paired()) {
             <br />

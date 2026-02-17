@@ -60,10 +60,8 @@
             <span class="me-3">
               <i
                 class="fas fa-lg"
-                [class]="{
-                  'fa-matter': item.$protocol === 'matter',
-                  'fa-hap': item.$protocol !== 'matter',
-                }"
+                [class.fa-matter]="item.$protocol === 'matter'"
+                [class.fa-hap]="item.$protocol !== 'matter'"
               ></i>
             </span>
             <span class="flex-grow-1">
@@ -77,21 +75,17 @@
               type="button"
               class="btn btn-danger m-0 ms-3"
               [disabled]="clicked()"
-              [class]="{
-                'btn-danger': !isInList(item.UUID || item.uuid, item.$cacheFile, item.$protocol),
-                'btn-elegant': isInList(item.UUID || item.uuid, item.$cacheFile, item.$protocol),
-              }"
+              [class.btn-danger]="!isInList(item.UUID || item.uuid, item.$cacheFile, item.$protocol)"
+              [class.btn-elegant]="isInList(item.UUID || item.uuid, item.$cacheFile, item.$protocol)"
               [attr.aria-label]="'form.button_delete' | translate"
               (click)="toggleList(item.UUID || item.uuid, item.$cacheFile, item.$protocol, item.$deviceId)"
             >
               <i
                 class="fas"
-                [class]="{
-                  'fa-trash': !isInList(item.UUID || item.uuid, item.$cacheFile, item.$protocol),
-                  'fa-undo': isInList(item.UUID || item.uuid, item.$cacheFile, item.$protocol) && !clicked(),
-                  'fa-circle-notch': isInList(item.UUID || item.uuid, item.$cacheFile, item.$protocol) && clicked(),
-                  'fa-spin': isInList(item.UUID || item.uuid, item.$cacheFile, item.$protocol) && clicked(),
-                }"
+                [class.fa-trash]="!isInList(item.UUID || item.uuid, item.$cacheFile, item.$protocol)"
+                [class.fa-undo]="isInList(item.UUID || item.uuid, item.$cacheFile, item.$protocol) && !clicked()"
+                [class.fa-circle-notch]="isInList(item.UUID || item.uuid, item.$cacheFile, item.$protocol) && clicked()"
+                [class.fa-spin]="isInList(item.UUID || item.uuid, item.$cacheFile, item.$protocol) && clicked()"
               ></i>
             </button>
           </li>

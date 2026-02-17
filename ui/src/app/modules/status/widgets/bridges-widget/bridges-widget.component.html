@@ -13,11 +13,9 @@
           container="body"
           placement="right"
           triggers="hover"
-          [class]="{
-            'green-text': homebridgeStatus()?.status === 'ok' && !isRestarting(),
-            'text-warning': homebridgeStatus()?.status === 'pending' || isRestarting(),
-            'red-text': homebridgeStatus()?.status === 'down' && !isRestarting(),
-          }"
+          [class.green-text]="homebridgeStatus()?.status === 'ok' && !isRestarting()"
+          [class.text-warning]="homebridgeStatus()?.status === 'pending' || isRestarting()"
+          [class.red-text]="homebridgeStatus()?.status === 'down' && !isRestarting()"
           [openDelay]="150"
           [ngbTooltip]="
             (homebridgeStatus()?.status === 'down' && !isRestarting()
@@ -38,15 +36,16 @@
             container="body"
             placement="right"
             triggers="hover"
-            [class]="{
-              'green-text':
-                homebridgeStatus()?.matter?.enabled && homebridgeStatus()?.status === 'ok' && !isRestarting(),
-              'text-warning':
-                homebridgeStatus()?.matter?.enabled && (homebridgeStatus()?.status === 'pending' || isRestarting()),
-              'red-text':
-                homebridgeStatus()?.matter?.enabled && homebridgeStatus()?.status === 'down' && !isRestarting(),
-              'grey-text': !homebridgeStatus()?.matter?.enabled,
-            }"
+            [class.green-text]="
+              homebridgeStatus()?.matter?.enabled && homebridgeStatus()?.status === 'ok' && !isRestarting()
+            "
+            [class.text-warning]="
+              homebridgeStatus()?.matter?.enabled && (homebridgeStatus()?.status === 'pending' || isRestarting())
+            "
+            [class.red-text]="
+              homebridgeStatus()?.matter?.enabled && homebridgeStatus()?.status === 'down' && !isRestarting()
+            "
+            [class.grey-text]="!homebridgeStatus()?.matter?.enabled"
             [style.opacity]="!homebridgeStatus()?.matter?.enabled ? '0.25' : '1'"
             [openDelay]="150"
             [ngbTooltip]="
@@ -99,11 +98,9 @@
             container="body"
             placement="right"
             triggers="hover"
-            [class]="{
-              'green-text': bridge.status === 'ok' && !bridge.restarting && !isRestarting(),
-              'text-warning': bridge.status === 'pending' || bridge.restarting || isRestarting(),
-              'red-text': bridge.status === 'down' && !bridge.restarting && !isRestarting(),
-            }"
+            [class.green-text]="bridge.status === 'ok' && !bridge.restarting && !isRestarting()"
+            [class.text-warning]="bridge.status === 'pending' || bridge.restarting || isRestarting()"
+            [class.red-text]="bridge.status === 'down' && !bridge.restarting && !isRestarting()"
             [openDelay]="150"
             [ngbTooltip]="
               (bridge.status === 'down' && !bridge.restarting && !isRestarting()
@@ -124,13 +121,16 @@
               container="body"
               placement="right"
               triggers="hover"
-              [class]="{
-                'green-text': bridge.matterConfig && bridge.status === 'ok' && !bridge.restarting && !isRestarting(),
-                'text-warning':
-                  bridge.matterConfig && (bridge.status === 'pending' || bridge.restarting || isRestarting()),
-                'red-text': bridge.matterConfig && bridge.status === 'down' && !bridge.restarting && !isRestarting(),
-                'grey-text': !bridge.matterConfig,
-              }"
+              [class.green-text]="
+                bridge.matterConfig && bridge.status === 'ok' && !bridge.restarting && !isRestarting()
+              "
+              [class.text-warning]="
+                bridge.matterConfig && (bridge.status === 'pending' || bridge.restarting || isRestarting())
+              "
+              [class.red-text]="
+                bridge.matterConfig && bridge.status === 'down' && !bridge.restarting && !isRestarting()
+              "
+              [class.grey-text]="!bridge.matterConfig"
               [style.opacity]="!bridge.matterConfig ? '0.25' : '1'"
               [openDelay]="150"
               [ngbTooltip]="

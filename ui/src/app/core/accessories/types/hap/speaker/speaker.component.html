@@ -1,18 +1,9 @@
 <div
   class="accessory-box"
   tabindex="0"
-  [class]="{
-    'accessory-on':
-      'Active' in service().values
-        ? service().values?.Active
-        : 'CurrentMediaState' in service().values
-          ? [0, 1].includes(service().values?.CurrentMediaState)
-          : 'Mute' in service().values && 'Volume' in service().values
-            ? !service().values?.Mute && service().values?.Volume > 0
-            : 'Mute' in service().values && !service().values?.Mute,
-    paused: 'CurrentMediaState' in service().values && service().values?.CurrentMediaState === 1,
-    muted: 'Mute' in service().values && service().values?.Mute,
-  }"
+  [class.accessory-on]="isOn()"
+  [class.paused]="'CurrentMediaState' in service().values && service().values?.CurrentMediaState === 1"
+  [class.muted]="'Mute' in service().values && service().values?.Mute"
   [style.cursor]="readyForControl ? 'pointer' : 'default'"
   (longClick)="onLongClick()"
   (shortClick)="onClick()"

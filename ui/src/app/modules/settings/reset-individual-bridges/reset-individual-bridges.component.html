@@ -45,18 +45,17 @@
                 type="button"
                 class="btn btn-danger m-0 ms-3"
                 [disabled]="clicked()"
-                [class]="{ 'btn-danger': !isInList(item._id), 'btn-elegant': isInList(item._id) }"
+                [class.btn-danger]="!isInList(item._id)"
+                [class.btn-elegant]="isInList(item._id)"
                 [attr.aria-label]="'form.button_unpair' | translate"
                 (click)="toggleList(item._id, false)"
               >
                 <i
                   class="fas"
-                  [class]="{
-                    'fa-refresh': !isInList(item._id),
-                    'fa-undo': isInList(item._id) && !clicked(),
-                    'fa-circle-notch': isInList(item._id) && clicked(),
-                    'fa-spin': isInList(item._id) && clicked(),
-                  }"
+                  [class.fa-refresh]="!isInList(item._id)"
+                  [class.fa-undo]="isInList(item._id) && !clicked()"
+                  [class.fa-circle-notch]="isInList(item._id) && clicked()"
+                  [class.fa-spin]="isInList(item._id) && clicked()"
                 ></i>
               </button>
             </li>
@@ -88,18 +87,17 @@
                 type="button"
                 class="btn btn-danger m-0 ms-3"
                 [disabled]="clicked()"
-                [class]="{ 'btn-danger': !isInList(item._id), 'btn-elegant': isInList(item._id) }"
+                [class.btn-danger]="!isInList(item._id)"
+                [class.btn-elegant]="isInList(item._id)"
                 [attr.aria-label]="'form.button_unpair' | translate"
                 (click)="toggleList(item._id, true)"
               >
                 <i
                   class="fas"
-                  [class]="{
-                    'fa-refresh': !isInList(item._id),
-                    'fa-undo': isInList(item._id) && !clicked(),
-                    'fa-circle-notch': isInList(item._id) && clicked(),
-                    'fa-spin': isInList(item._id) && clicked(),
-                  }"
+                  [class.fa-refresh]="!isInList(item._id)"
+                  [class.fa-undo]="isInList(item._id) && !clicked()"
+                  [class.fa-circle-notch]="isInList(item._id) && clicked()"
+                  [class.fa-spin]="isInList(item._id) && clicked()"
                 ></i>
               </button>
             </li>
@@ -131,18 +129,17 @@
                 type="button"
                 class="btn btn-danger m-0 ms-3"
                 [disabled]="clicked()"
-                [class]="{ 'btn-danger': !isInList(item._id), 'btn-elegant': isInList(item._id) }"
+                [class.btn-danger]="!isInList(item._id)"
+                [class.btn-elegant]="isInList(item._id)"
                 [attr.aria-label]="'form.button_unpair' | translate"
                 (click)="toggleList(item._id, false)"
               >
                 <i
                   class="fas"
-                  [class]="{
-                    'fa-trash': !isInList(item._id),
-                    'fa-undo': isInList(item._id) && !clicked(),
-                    'fa-circle-notch': isInList(item._id) && clicked(),
-                    'fa-spin': isInList(item._id) && clicked(),
-                  }"
+                  [class.fa-trash]="!isInList(item._id)"
+                  [class.fa-undo]="isInList(item._id) && !clicked()"
+                  [class.fa-circle-notch]="isInList(item._id) && clicked()"
+                  [class.fa-spin]="isInList(item._id) && clicked()"
                 ></i>
               </button>
             </li>

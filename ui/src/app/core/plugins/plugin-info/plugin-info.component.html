@@ -18,25 +18,22 @@
     <i
       class="fas fa-shield-alt mb-3"
       style="font-size: 48px"
-      [class]="{
-        'orange-text': !plugin.verifiedPlugin && !plugin.verifiedPlusPlugin,
-        'grey-text': plugin.verifiedPlugin || plugin.verifiedPlusPlugin,
-      }"
+      [class.orange-text]="!plugin.verifiedPlugin && !plugin.verifiedPlusPlugin"
+      [class.grey-text]="plugin.verifiedPlugin || plugin.verifiedPlusPlugin"
       [style.opacity]="!plugin.verifiedPlugin && !plugin.verifiedPlusPlugin ? 1 : 0.25"
     ></i>
     <i
       class="fas fa-shield-alt mb-3"
       style="font-size: 48px"
-      [class]="{
-        'green-text': !plugin.isHbScoped && (plugin.verifiedPlugin || plugin.verifiedPlusPlugin),
-        'grey-text': plugin.isHbScoped || (!plugin.verifiedPlugin && !plugin.verifiedPlusPlugin),
-      }"
+      [class.green-text]="!plugin.isHbScoped && (plugin.verifiedPlugin || plugin.verifiedPlusPlugin)"
+      [class.grey-text]="plugin.isHbScoped || (!plugin.verifiedPlugin && !plugin.verifiedPlusPlugin)"
       [style.opacity]="!plugin.isHbScoped && (plugin.verifiedPlugin || plugin.verifiedPlusPlugin) ? 1 : 0.25"
     ></i>
     <i
       class="fas fa-shield-alt mb-3"
       style="font-size: 48px"
-      [class]="{ 'purple-text': plugin.isHbScoped, 'grey-text': !plugin.isHbScoped }"
+      [class.purple-text]="plugin.isHbScoped"
+      [class.grey-text]="!plugin.isHbScoped"
       [style.opacity]="plugin.isHbScoped ? 1 : 0.25"
     ></i>
     @if (plugin.isHbScoped) {

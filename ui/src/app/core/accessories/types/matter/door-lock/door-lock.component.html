@@ -1,11 +1,9 @@
 <div
   class="accessory-box"
   tabindex="0"
-  [class]="{
-    'accessory-on': lockState() !== 1,
-    unlocked: lockState() === 2,
-    jammed: lockState() === 0,
-  }"
+  [class.accessory-on]="lockState() !== 1"
+  [class.unlocked]="lockState() === 2"
+  [class.jammed]="lockState() === 0"
   (shortClick)="onClick()"
   (longClick)="onLongClick()"
 >

@@ -1,20 +1,8 @@
 <div
   class="accessory-box"
   tabindex="0"
-  [class]="{
-    'accessory-on':
-      (service().values?.Active && !('CurrentAirPurifierState' in service().values)) ||
-      (service().values?.Active &&
-        'CurrentAirPurifierState' in service().values &&
-        service().values?.CurrentAirPurifierState !== 0) ||
-      service().values?.On,
-    purifying:
-      (service().values?.Active && !('CurrentAirPurifierState' in service().values)) ||
-      (service().values?.Active &&
-        'CurrentAirPurifierState' in service().values &&
-        service().values?.CurrentAirPurifierState === 2) ||
-      service().values?.On,
-  }"
+  [class.accessory-on]="isOn()"
+  [class.purifying]="isPurifying()"
   [style.cursor]="readyForControl ? 'pointer' : 'default'"
   (longClick)="onLongClick()"
   (shortClick)="onClick()"

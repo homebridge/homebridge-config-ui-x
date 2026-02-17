@@ -181,99 +181,60 @@ export class UpdateInfoWidgetComponent implements OnInit {
     void this.$plugin.upgradeHomebridge(pkg, pkg.latestVersion)
   }
 
-  public getHomebridgeIconClass() {
+  public getHomebridgeIconClass(): string {
     if (!this.homebridgePkg().installedVersion) {
-      return {
-        'fa-circle-notch': true,
-        'fa-spin': true,
-        'primary-text': true,
-      }
+      return 'fa-circle-notch fa-spin primary-text'
     }
 
     if (this.homebridgeUpdatePolicy === 'none' || (this.homebridgeUpdatePolicy === 'major' && !this.homebridgePkg().updateAvailable)) {
-      return {
-        'fa-circle': true,
-        'green-text': true,
-      }
+      return 'fa-circle green-text'
     }
 
-    return {
-      'fa-check-circle': !this.homebridgePkg().updateAvailable,
-      'green-text': !this.homebridgePkg().updateAvailable,
-      'fa-arrow-alt-circle-up': this.homebridgePkg().updateAvailable,
-      'orange-text': this.homebridgePkg().updateAvailable,
-    }
+    return this.homebridgePkg().updateAvailable
+      ? 'fa-arrow-alt-circle-up orange-text'
+      : 'fa-check-circle green-text'
   }
 
-  public getHomebridgeUiIconClass() {
+  public getHomebridgeUiIconClass(): string {
     if (!this.homebridgeUiPkg().installedVersion) {
-      return {
-        'fa-circle-notch': true,
-        'fa-spin': true,
-        'primary-text': true,
-      }
+      return 'fa-circle-notch fa-spin primary-text'
     }
 
     if (this.homebridgeUiUpdatePolicy === 'none' || (this.homebridgeUiUpdatePolicy === 'major' && !this.homebridgeUiPkg().updateAvailable)) {
-      return {
-        'fa-circle': true,
-        'green-text': true,
-      }
+      return 'fa-circle green-text'
     }
 
-    return {
-      'fa-check-circle': !this.homebridgeUiPkg().updateAvailable,
-      'green-text': !this.homebridgeUiPkg().updateAvailable,
-      'fa-arrow-alt-circle-up': this.homebridgeUiPkg().updateAvailable,
-      'orange-text': this.homebridgeUiPkg().updateAvailable,
-    }
+    return this.homebridgeUiPkg().updateAvailable
+      ? 'fa-arrow-alt-circle-up orange-text'
+      : 'fa-check-circle green-text'
   }
 
-  public getPluginsIconClass() {
+  public getPluginsIconClass(): string {
     if (!this.homebridgePluginStatusDone()) {
-      return {
-        'fa-circle-notch': true,
-        'fa-spin': true,
-        'primary-text': true,
-      }
+      return 'fa-circle-notch fa-spin primary-text'
     }
-    return {
-      'fa-arrow-alt-circle-up': this.homebridgePluginStatus().length,
-      'orange-text': this.homebridgePluginStatus().length,
-      'fa-check-circle': !this.homebridgePluginStatus().length,
-      'green-text': !this.homebridgePluginStatus().length,
-    }
+
+    return this.homebridgePluginStatus().length
+      ? 'fa-arrow-alt-circle-up orange-text'
+      : 'fa-check-circle green-text'
   }
 
-  public getNodejsIconClass() {
+  public getNodejsIconClass(): string {
     if (!this.nodejsStatusDone()) {
-      return {
-        'fa-circle-notch': true,
-        'fa-spin': true,
-        'primary-text': true,
-      }
+      return 'fa-circle-notch fa-spin primary-text'
     }
 
     if (this.nodeUpdatePolicy === 'none' || (this.nodeUpdatePolicy === 'major' && !this.nodejsInfo().updateAvailable)) {
-      return {
-        'fa-circle': true,
-        'green-text': true,
-      }
+      return 'fa-circle green-text'
     }
 
     if (this.nodejsInfo().showNodeUnsupportedWarning) {
-      return {
-        'fa-exclamation-circle': true,
-        'orange-text': true,
-      }
+      return 'fa-exclamation-circle orange-text'
     }
 
-    return {
-      'fa-arrow-alt-circle-up': this.nodejsInfo().updateAvailable,
-      'orange-text': this.nodejsInfo().updateAvailable,
-      'fa-check-circle': !this.nodejsInfo().updateAvailable,
-      'green-text': !this.nodejsInfo().updateAvailable,
-    }
+    return this.nodejsInfo().updateAvailable
+      ? 'fa-arrow-alt-circle-up orange-text'
+      : 'fa-check-circle green-text'
   }
 
   private async checkHomebridgeVersion(): Promise<void> {

@@ -131,13 +131,7 @@
           "
           (click)="hideHidden.set(!hideHidden())"
         >
-          <i
-            class="fas"
-            [class]="{
-              'fa-eye': !hideHidden(),
-              'fa-eye-slash': hideHidden(),
-            }"
-          ></i>
+          <i class="fas" [class.fa-eye]="!hideHidden()" [class.fa-eye-slash]="hideHidden()"></i>
         </button>
       }
       @if (shouldShowFilters) {

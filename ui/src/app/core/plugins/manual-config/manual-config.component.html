@@ -73,13 +73,11 @@
                       container="modal"
                       placement="left"
                       triggers="hover"
-                      [class]="{
-                        'fa-circle-check': formBlocksValid()[$index],
-                        'green-text': formBlocksValid()[$index],
-                        'fa-circle-exclamation': !formBlocksValid()[$index],
-                        'red-text': strictValidation() && !formBlocksValid()[$index],
-                        'orange-text': !strictValidation() && !formBlocksValid()[$index],
-                      }"
+                      [class.fa-circle-check]="formBlocksValid()[$index]"
+                      [class.green-text]="formBlocksValid()[$index]"
+                      [class.fa-circle-exclamation]="!formBlocksValid()[$index]"
+                      [class.red-text]="strictValidation() && !formBlocksValid()[$index]"
+                      [class.orange-text]="!strictValidation() && !formBlocksValid()[$index]"
                       [ngbTooltip]="
                         (formBlocksValid()[$index]
                           ? 'form.label_valid'
@@ -136,13 +134,11 @@
             container="modal"
             placement="top"
             triggers="hover"
-            [class]="{
-              'fa-circle-check': formIsValid(),
-              'green-text': formIsValid(),
-              'fa-circle-exclamation': !formIsValid(),
-              'red-text': strictValidation() && !formIsValid(),
-              'orange-text': !strictValidation() && !formIsValid(),
-            }"
+            [class.fa-circle-check]="formIsValid()"
+            [class.green-text]="formIsValid()"
+            [class.fa-circle-exclamation]="!formIsValid()"
+            [class.red-text]="strictValidation() && !formIsValid()"
+            [class.orange-text]="!strictValidation() && !formIsValid()"
             [ngbTooltip]="
               (formIsValid()
                 ? 'form.label_valid'

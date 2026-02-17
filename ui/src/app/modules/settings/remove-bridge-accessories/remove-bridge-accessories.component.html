@@ -32,10 +32,8 @@
             <span class="me-3">
               <i
                 class="fas fa-lg"
-                [class]="{
-                  'fa-matter': item._protocol === 'matter',
-                  'fa-hap': item._protocol !== 'matter',
-                }"
+                [class.fa-matter]="item._protocol === 'matter'"
+                [class.fa-hap]="item._protocol !== 'matter'"
               ></i>
             </span>
             <span class="flex-grow-1">
@@ -47,23 +45,19 @@
             </span>
             <button
               type="button"
-              class="btn btn-danger m-0 ms-3"
+              class="btn m-0 ms-3"
               [disabled]="clicked()"
-              [class]="{
-                'btn-danger': !isInList(item._id, item._protocol),
-                'btn-elegant': isInList(item._id, item._protocol),
-              }"
+              [class.btn-danger]="!isInList(item._id, item._protocol)"
+              [class.btn-elegant]="isInList(item._id, item._protocol)"
               [attr.aria-label]="'form.button_delete' | translate"
               (click)="toggleList(item._id, item._protocol)"
             >
               <i
                 class="fas"
-                [class]="{
-                  'fa-broom': !isInList(item._id, item._protocol),
-                  'fa-undo': isInList(item._id, item._protocol) && !clicked(),
-                  'fa-circle-notch': isInList(item._id, item._protocol) && clicked(),
-                  'fa-spin': isInList(item._id, item._protocol) && clicked(),
-                }"
+                [class.fa-broom]="!isInList(item._id, item._protocol)"
+                [class.fa-undo]="isInList(item._id, item._protocol) && !clicked()"
+                [class.fa-circle-notch]="isInList(item._id, item._protocol) && clicked()"
+                [class.fa-spin]="isInList(item._id, item._protocol) && clicked()"
               ></i>
             </button>
           </li>

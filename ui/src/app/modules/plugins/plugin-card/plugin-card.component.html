@@ -153,12 +153,10 @@
                 ) {
                   <i
                     class="fas fa-lg ms-3"
-                    [class]="{
-                      'fa-bridge-circle-exclamation': childBridgeStatus() === 'pending',
-                      'orange-text': childBridgeStatus() === 'pending',
-                      'fa-bridge-circle-xmark': childBridgeStatus() === 'down',
-                      'red-text': childBridgeStatus() === 'down',
-                    }"
+                    [class.fa-bridge-circle-exclamation]="childBridgeStatus() === 'pending'"
+                    [class.orange-text]="childBridgeStatus() === 'pending'"
+                    [class.fa-bridge-circle-xmark]="childBridgeStatus() === 'down'"
+                    [class.red-text]="childBridgeStatus() === 'down'"
                   ></i>
                 }
                 <! -- // - ->
@@ -171,11 +169,9 @@
             <a href="javascript:void(0)" class="card-link" (click)="pluginInfoModal(plugin())">
               <i
                 class="fas fa-shield-alt fa-lg me-1"
-                [class]="{
-                  'purple-text': plugin().isHbScoped,
-                  'green-text': !plugin().isHbScoped && (plugin().verifiedPlugin || plugin().verifiedPlusPlugin),
-                  'orange-text': !plugin().isHbScoped && !plugin().verifiedPlugin && !plugin().verifiedPlusPlugin,
-                }"
+                [class.purple-text]="plugin().isHbScoped"
+                [class.green-text]="!plugin().isHbScoped && (plugin().verifiedPlugin || plugin().verifiedPlusPlugin)"
+                [class.orange-text]="!plugin().isHbScoped && !plugin().verifiedPlugin && !plugin().verifiedPlusPlugin"
               ></i>
               <span class="grey-text">{{ plugin().name }}</span>
             </a>

@@ -59,7 +59,8 @@
           <h5 class="primary-text">
             <i
               class="fa"
-              [class]="{ 'fa-chevron-down': showFields().general, 'fa-chevron-right': !showFields().general }"
+              [class.fa-chevron-down]="showFields().general"
+              [class.fa-chevron-right]="!showFields().general"
             ></i>
             {{ 'settings.general.title_general' | translate }}
           </h5>
@@ -146,7 +147,8 @@
           <h5 class="primary-text">
             <i
               class="fa"
-              [class]="{ 'fa-chevron-down': showFields().display, 'fa-chevron-right': !showFields().display }"
+              [class.fa-chevron-down]="showFields().display"
+              [class.fa-chevron-right]="!showFields().display"
             ></i>
             {{ 'settings.general.title_display' | translate }}
           </h5>
@@ -310,7 +312,8 @@
           <h5 class="primary-text">
             <i
               class="fa"
-              [class]="{ 'fa-chevron-down': showFields().startup, 'fa-chevron-right': !showFields().startup }"
+              [class.fa-chevron-down]="showFields().startup"
+              [class.fa-chevron-right]="!showFields().startup"
             ></i>
             {{ 'settings.title_startup_options' | translate }}
           </h5>
@@ -645,7 +648,8 @@
           <h5 class="primary-text">
             <i
               class="fa"
-              [class]="{ 'fa-chevron-down': showFields().network, 'fa-chevron-right': !showFields().network }"
+              [class.fa-chevron-down]="showFields().network"
+              [class.fa-chevron-right]="!showFields().network"
             ></i>
             {{ 'settings.network.title_network' | translate }}
           </h5>
@@ -660,7 +664,8 @@
                   @for (adapter of adaptersSelected(); track adapter) {
                     <span
                       class="badge badge-primary me-1"
-                      [class]="{ 'badge-danger': adapter.missing, 'badge-info': !adapter.missing }"
+                      [class.badge-danger]="adapter.missing"
+                      [class.badge-info]="!adapter.missing"
                     >
                       @if (adapter.missing) {
                         <i class="fas fa-exclamation-triangle"></i>
@@ -933,7 +938,8 @@
           <h5 class="primary-text">
             <i
               class="fa"
-              [class]="{ 'fa-chevron-down': showFields().matter, 'fa-chevron-right': !showFields().matter }"
+              [class.fa-chevron-down]="showFields().matter"
+              [class.fa-chevron-right]="!showFields().matter"
             ></i>
             {{ 'settings.matter.title' | translate }}
           </h5>
@@ -1016,7 +1022,8 @@
           <h5 class="primary-text">
             <i
               class="fa"
-              [class]="{ 'fa-chevron-down': showFields().terminal, 'fa-chevron-right': !showFields().terminal }"
+              [class.fa-chevron-down]="showFields().terminal"
+              [class.fa-chevron-right]="!showFields().terminal"
             ></i>
             {{ 'settings.network.title_terminal' | translate }}
           </h5>
@@ -1238,7 +1245,8 @@
           <h5 class="primary-text">
             <i
               class="fa"
-              [class]="{ 'fa-chevron-down': showFields().security, 'fa-chevron-right': !showFields().security }"
+              [class.fa-chevron-down]="showFields().security"
+              [class.fa-chevron-right]="!showFields().security"
             ></i>
             {{ 'settings.network.title_security' | translate }}
           </h5>
@@ -1422,7 +1430,8 @@
           <h5 class="primary-text">
             <i
               class="fa"
-              [class]="{ 'fa-chevron-down': showFields().cache, 'fa-chevron-right': !showFields().cache }"
+              [class.fa-chevron-down]="showFields().cache"
+              [class.fa-chevron-right]="!showFields().cache"
             ></i>
             {{ 'menu.label_accessories' | translate }}
           </h5>
@@ -1526,7 +1535,8 @@
           <h5 class="primary-text">
             <i
               class="fa"
-              [class]="{ 'fa-chevron-down': showFields().reset, 'fa-chevron-right': !showFields().reset }"
+              [class.fa-chevron-down]="showFields().reset"
+              [class.fa-chevron-right]="!showFields().reset"
             ></i>
             {{ 'reset.bridges.title' | translate }}
           </h5>

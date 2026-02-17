@@ -84,10 +84,8 @@
           <i
             class="fas primary-text my-3"
             style="font-size: 75px"
-            [class]="{
-              'fa-magnifying-glass': !showExitButton(),
-              'fa-exclamation-circle': showExitButton(),
-            }"
+            [class.fa-magnifying-glass]="!showExitButton()"
+            [class.fa-exclamation-circle]="showExitButton()"
           ></i>
           <p>
             {{
