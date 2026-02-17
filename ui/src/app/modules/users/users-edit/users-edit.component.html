@@ -124,7 +124,7 @@
         </button>
         <button
           type="submit"
-          [class]="'btn ' + (deleteMode() ? 'btn-danger' : 'btn-primary')"
+          [class]="`btn ${deleteMode() ? 'btn-danger' : 'btn-primary'}`"
           [disabled]="!deleteMode() && (!form.valid || isFormUnchanged())"
         >
           {{ (deleteMode() ? 'form.button_delete' : 'form.button_save') | translate }}

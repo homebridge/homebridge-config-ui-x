@@ -15,7 +15,7 @@
         [attr.aria-label]="'form.search' | translate"
         (click)="showSearch()"
       >
-        <i [class]="'fas fa-search' + (showSearchBar() ? ' primary-text' : '')"></i>
+        <i [class]="`fas fa-search${showSearchBar() ? ' primary-text' : ''}`"></i>
       </button>
       <button
         type="button"

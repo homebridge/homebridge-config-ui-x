@@ -15,7 +15,7 @@
       <div class="d-flex flex-column w-100">
         <div class="weather-now d-flex flex-column align-items-center text-center">
           <h1>
-            <i [class]="'primary-text ' + getWeatherIconClass()"></i>
+            <i [class]="`primary-text ${getWeatherIconClass()}`"></i>
           </h1>
           <h3>{{ currentWeather().weather[0].description | titlecase }}</h3>
           <h2>

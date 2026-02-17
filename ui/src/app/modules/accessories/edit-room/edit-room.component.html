@@ -84,7 +84,7 @@
         <button
           type="submit"
           data-bs-dismiss="modal"
-          [class]="'btn ' + (deleteMode() ? 'btn-danger' : 'btn-primary')"
+          [class]="`btn ${deleteMode() ? 'btn-danger' : 'btn-primary'}`"
           [disabled]="!deleteMode() && (roomForm.invalid || isFormUnchanged())"
         >
           {{ (deleteMode() ? 'form.button_delete' : 'form.button_save') | translate }}

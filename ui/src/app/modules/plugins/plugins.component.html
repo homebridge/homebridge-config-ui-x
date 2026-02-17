@@ -19,7 +19,7 @@
         [attr.aria-label]="'form.search' | translate"
         (click)="showSearch()"
       >
-        <i [class]="'fas fa-search' + (showSearchBar() ? ' primary-text' : '')"></i>
+        <i [class]="`fas fa-search${showSearchBar() ? ' primary-text' : ''}`"></i>
       </button>
       <button
         type="button"
@@ -32,7 +32,7 @@
         [attr.aria-label]="'plugins.stats' | translate"
         (click)="showStats()"
       >
-        <i [class]="'fas fa-sliders' + (tab() === 'stats' ? ' primary-text' : '')"></i>
+        <i [class]="`fas fa-sliders${tab() === 'stats' ? ' primary-text' : ''}`"></i>
       </button>
     }
     <button

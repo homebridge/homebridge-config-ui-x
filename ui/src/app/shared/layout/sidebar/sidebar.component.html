@@ -51,11 +51,7 @@
           class="link-row"
           role="menuitem"
           tabindex="0"
-          [attr.aria-label]="
-            ('rpi.throttled.undervoltage_title' | translate) +
-            ' - ' +
-            ('rpi.throttled.undervoltage_description' | translate)
-          "
+          [attr.aria-label]="`${('rpi.throttled.undervoltage_title' | translate)} - ${('rpi.throttled.undervoltage_description' | translate)}`"
           (click)="openUnderVoltageModal()"
           (keydown)="handleKeydown($event)"
         >

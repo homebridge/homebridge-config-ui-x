@@ -26,11 +26,11 @@
             <input
               type="checkbox"
               class="rendux-input"
-              [id]="'adapter' + adapter.iface"
+              [id]="`adapter${adapter.iface}`"
               [(ngModel)]="adapter.selected"
               (ngModelChange)="onAdapterSelectionChange()"
             />
-            <label class="rendux-label ms-3" [for]="'adapter' + adapter.iface"></label>
+            <label class="rendux-label ms-3" [for]="`adapter${adapter.iface}`"></label>
           </span>
         </li>
       }

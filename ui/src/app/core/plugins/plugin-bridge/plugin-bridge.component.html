@@ -108,7 +108,7 @@
                 <input
                   type="checkbox"
                   class="rendux-input"
-                  [id]="'toggleExternalBridgeInput_' + selectedBlock()"
+                  [id]="`toggleExternalBridgeInput_${selectedBlock()}`"
                   [checked]="enabledBlocks()[selectedBlock()]"
                   (change)="
                     toggleExternalBridge(
@@ -118,7 +118,7 @@
                     )
                   "
                 />
-                <label class="rendux-label" [for]="'toggleExternalBridgeInput_' + selectedBlock()"></label>
+                <label class="rendux-label" [for]="`toggleExternalBridgeInput_${selectedBlock()}`"></label>
               </div>
             </li>
           }
@@ -233,11 +233,11 @@
                     <input
                       type="checkbox"
                       class="rendux-input"
-                      [id]="'homebridgeDebugMode_' + selectedBlock()"
+                      [id]="`homebridgeDebugMode_${selectedBlock()}`"
                       [attr.aria-label]="'settings.startup.debug' | translate"
                       [(ngModel)]="configBlocks()[selectedBlock()]._bridge.debugModeEnabled"
                     />
-                    <label class="rendux-label" [for]="'homebridgeDebugMode_' + selectedBlock()"></label>
+                    <label class="rendux-label" [for]="`homebridgeDebugMode_${selectedBlock()}`"></label>
                   </div>
                 </li>
               }
@@ -289,14 +289,14 @@
                   type="checkbox"
                   class="rendux-input"
                   style="pointer-events: none"
-                  [id]="'toggleHapInput_' + selectedBlock()"
+                  [id]="`toggleHapInput_${selectedBlock()}`"
                   [checked]="true"
                   [disabled]="true"
                 />
                 <label
                   class="rendux-label"
                   style="cursor: not-allowed"
-                  [for]="'toggleHapInput_' + selectedBlock()"
+                  [for]="`toggleHapInput_${selectedBlock()}`"
                 ></label>
               </div>
             </li>
@@ -361,12 +361,12 @@
                     <input
                       type="checkbox"
                       class="rendux-input"
-                      [id]="'toggleHideHapUnpairing_' + selectedBlock()"
+                      [id]="`toggleHideHapUnpairing_${selectedBlock()}`"
                       [checked]="isUnpairingHidden(configBlocks()[selectedBlock()]._bridge?.username, 'hap')"
                       [attr.aria-label]="'child_bridge.config.hide_pairing_alert' | translate"
                       (change)="toggleHideUnpairing(configBlocks()[selectedBlock()]._bridge?.username, 'hap')"
                     />
-                    <label class="rendux-label" [for]="'toggleHideHapUnpairing_' + selectedBlock()"></label>
+                    <label class="rendux-label" [for]="`toggleHideHapUnpairing_${selectedBlock()}`"></label>
                   </div>
                 </li>
               }
@@ -401,7 +401,7 @@
                   <input
                     type="checkbox"
                     class="rendux-input"
-                    [id]="'toggleMatterBridgeInput_' + selectedBlock()"
+                    [id]="`toggleMatterBridgeInput_${selectedBlock()}`"
                     [checked]="matterEnabledBlocks()[selectedBlock()]"
                     (change)="
                       toggleMatterBridge(
@@ -411,7 +411,7 @@
                       )
                     "
                   />
-                  <label class="rendux-label" [for]="'toggleMatterBridgeInput_' + selectedBlock()"></label>
+                  <label class="rendux-label" [for]="`toggleMatterBridgeInput_${selectedBlock()}`"></label>
                 </div>
               </li>
 
@@ -468,12 +468,12 @@
                         <input
                           type="checkbox"
                           class="rendux-input"
-                          [id]="'toggleHideMatterUnpairing_' + selectedBlock()"
+                          [id]="`toggleHideMatterUnpairing_${selectedBlock()}`"
                           [checked]="isUnpairingHidden(configBlocks()[selectedBlock()]._bridge?.username, 'matter')"
                           [attr.aria-label]="'child_bridge.config.hide_pairing_alert' | translate"
                           (change)="toggleHideUnpairing(configBlocks()[selectedBlock()]._bridge?.username, 'matter')"
                         />
-                        <label class="rendux-label" [for]="'toggleHideMatterUnpairing_' + selectedBlock()"></label>
+                        <label class="rendux-label" [for]="`toggleHideMatterUnpairing_${selectedBlock()}`"></label>
                       </div>
                     </li>
                   }

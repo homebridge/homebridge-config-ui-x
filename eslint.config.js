@@ -153,7 +153,7 @@ export default antfu(
       'angular-template/prefer-ngsrc': 'off',
       'angular-template/prefer-self-closing-tags': 'error',
       'angular-template/prefer-static-string-properties': 'error',
-      // 'angular-template/prefer-template-literal': 'error',
+      'angular-template/prefer-template-literal': 'error',
       // 'angular-template/role-has-required-aria': 'error',
       // 'angular-template/table-scope': 'error',
       // 'angular-template/use-track-by-function': 'error',
@@ -168,5 +168,6 @@ export default antfu(
         trailingComma: 'all',
         useTabs: false,
       }],
+      'style/no-multiple-empty-lines': 'off',
     },
   }))

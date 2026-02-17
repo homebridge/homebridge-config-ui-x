@@ -6,7 +6,7 @@
     <button
       type="button"
       class="manage-accessory-button"
-      [attr.aria-label]="('form.button_edit' | translate) + ' ' + (service().customName || service().serviceName)"
+      [attr.aria-label]="`${('form.button_edit' | translate)} ${service().customName || service().serviceName}`"
       (click)="$accessories.showAccessoryInformation(service())"
     >
       <i class="fas fa-bars grey-text" aria-hidden="true"></i>
@@ -15,7 +15,7 @@
     <button
       type="button"
       class="refreshing-accessory-button"
-      [attr.aria-label]="('form.button_edit' | translate) + ' ' + (service().customName || service().serviceName)"
+      [attr.aria-label]="`${('form.button_edit' | translate)} ${service().customName || service().serviceName}`"
       (click)="$accessories.showAccessoryInformation(service())"
     >
       <i class="fas fa-circle-notch fa-spin grey-text" aria-hidden="true"></i>

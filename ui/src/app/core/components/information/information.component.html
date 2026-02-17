@@ -11,7 +11,7 @@
   </div>
   <div class="modal-body text-center">
     @if (faIconClass) {
-      <i style="font-size: 75px" [class]="'fas ' + faIconClass + ' mb-3'"></i>
+      <i style="font-size: 75px" [class]="`fas ${faIconClass} mb-3`"></i>
     }
     @if (subtitle) {
       <h5 class="mb-3" [innerHTML]="subtitle"></h5>

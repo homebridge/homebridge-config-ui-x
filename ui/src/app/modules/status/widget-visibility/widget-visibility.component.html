@@ -24,11 +24,11 @@
                 type="checkbox"
                 class="rendux-input"
                 [checked]="widget.shown"
-                [id]="'widget' + widget.name"
-                [attr.aria-label]="('form.button_show' | translate) + ' ' + widget.name"
+                [id]="`widget${widget.name}`"
+                [attr.aria-label]="`${('form.button_show' | translate)} ${widget.name}`"
                 (click)="selectWidget(widget)"
               />
-              <label class="rendux-label ms-3" [for]="'widget' + widget.name"></label>
+              <label class="rendux-label ms-3" [for]="`widget${widget.name}`"></label>
             </span>
           </li>
         }

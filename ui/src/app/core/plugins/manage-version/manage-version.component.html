@@ -38,13 +38,11 @@
               <button
                 type="button"
                 class="btn btn-primary m-0 ms-3 py-1"
-                [attr.aria-label]="
-                  (plugin?.installedVersion === version.version
+                [attr.aria-label]="`${
+                  plugin?.installedVersion === version.version
                     ? ('plugins.manage.reinstall' | translate)
-                    : ('plugins.manage.install' | translate)) +
-                  ' v' +
-                  version.version
-                "
+                    : ('plugins.manage.install' | translate)
+                } v${version.version}`"
                 (click)="doInstall(version.version)"
               >
                 @if (plugin?.installedVersion === version.version) {
@@ -79,13 +77,11 @@
               <button
                 type="button"
                 class="btn btn-primary m-0 ms-3 py-1"
-                [attr.aria-label]="
-                  (plugin?.installedVersion === versionSelect
+                [attr.aria-label]="`${
+                  plugin?.installedVersion === versionSelect
                     ? ('plugins.manage.reinstall' | translate)
-                    : ('plugins.manage.install' | translate)) +
-                  ' v' +
-                  versionSelect
-                "
+                    : ('plugins.manage.install' | translate)
+                } v${versionSelect}`"
                 (click)="doInstall(versionSelect)"
               >
                 @if (plugin?.installedVersion === versionSelect) {

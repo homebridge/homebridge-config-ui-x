@@ -28,6 +28,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - lint: apply `angular-template/prefer-contextual-for-variables`
 - lint: apply `angular-template/prefer-self-closing-tags`
 - lint: apply `angular-template/prefer-static-string-properties`
+- lint: apply `angular-template/prefer-template-literal`
 
 ### Homebridge Dependencies
 

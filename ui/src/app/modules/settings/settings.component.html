@@ -9,7 +9,7 @@
       [attr.aria-label]="'form.search' | translate"
       (click)="toggleSearch()"
     >
-      <i [class]="'fas fa-search' + (showSearchBar() ? ' primary-text' : '')"></i>
+      <i [class]="`fas fa-search${showSearchBar() ? ' primary-text' : ''}`"></i>
     </button>
   </div>
 </div>
@@ -708,7 +708,7 @@
                     }
                     <! -- ciao is recommended if avahi is not available - ->
                     <option value="ciao">
-                      Ciao {{ showAvahiMdnsOption() ? '' : '(' + ('settings.mdns_advertiser_rec' | translate) + ')' }}
+                      Ciao {{ showAvahiMdnsOption() ? '' : `(${('settings.mdns_advertiser_rec' | translate)})` }}
                     </option>
                     <option value="bonjour-hap">Bonjour HAP</option>
                     @if (showResolvedMdnsOption()) {

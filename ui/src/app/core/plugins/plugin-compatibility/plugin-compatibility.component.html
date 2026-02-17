@@ -15,13 +15,13 @@
       <div class="text-center mb-3">
         <i
           style="font-size: 75px"
-          [class]="
-            (action === 'install'
+          [class]="`${
+            action === 'install'
               ? 'far fa-arrow-alt-circle-down'
               : action === 'update'
                 ? 'far fa-arrow-alt-circle-up'
-                : 'fas fa-code-compare') + ' primary-text'
-          "
+                : 'fas fa-code-compare'
+          } primary-text`"
         ></i>
       </div>
       <ul class="list-group list-group-box mb-3 text-start">

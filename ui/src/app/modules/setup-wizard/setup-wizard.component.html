@@ -18,7 +18,7 @@
         role="progressbar"
         aria-valuemin="0"
         aria-valuemax="100"
-        [style.width]="progress() + '%'"
+        [style.width]="`${progress()}%`"
         [attr.aria-valuenow]="progress()"
         [class.progress-bar-animated]="loading() || restoreUploading()"
       ></div>

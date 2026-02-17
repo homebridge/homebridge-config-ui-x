@@ -32,16 +32,16 @@
         @for (block of pluginConfig(); track block) {
           <div
             class="card"
-            [ngbAccordionItem]="'configBlock.' + $index"
-            [collapsed]="show() !== 'configBlock.' + $index"
-            [id]="'configBlock.' + $index"
+            [ngbAccordionItem]="`configBlock.${$index}`"
+            [collapsed]="show() !== `configBlock.${$index}`"
+            [id]="`configBlock.${$index}`"
           >
             <div ngbAccordionHeader class="card-header">
               <div class="d-flex align-items-center justify-content-between">
                 <h5 class="m-0 py-2 ps-1">{{ block.name || pluginAlias() }}</h5>
                 <div>
                   @if (!schema?.singular || $count > 1) {
-                    @if (show() === 'configBlock.' + $index) {
+                    @if (show() === `configBlock.${$index}`) {
                       <button
                         type="button"
                         class="btn btn-danger m-0 ms-2"
