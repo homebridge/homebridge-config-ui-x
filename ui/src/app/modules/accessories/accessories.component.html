@@ -146,7 +146,7 @@
     <app-spinner />
   } @else {
     @if (hasPlugins()) {
-      <div [dragula]="'rooms-bag'" [(dragulaModel)]="rooms">
+      <div dragula="rooms-bag" [(dragulaModel)]="rooms">
         @for (room of rooms; track room.name) {
           <div>
             @if (!isMobile() || room.services.length) {
@@ -180,8 +180,8 @@
               @if (room.services.length) {
                 <div
                   class="col-md-12 d-flex flex-wrap noselect services-bag"
+                  dragula="services-bag"
                   [class.justify-content-between]="isMobile()"
-                  [dragula]="'services-bag'"
                   [(dragulaModel)]="room.services"
                 >
                   @for (service of room.services; track service) {
@@ -206,7 +206,7 @@
               @if (!room.services.length && !isMobile()) {
                 <div
                   class="col-md-12 d-flex flex-wrap noselect"
-                  [dragula]="'services-bag'"
+                  dragula="services-bag"
                   [(dragulaModel)]="room.services"
                 >
                   <app-drag-here-placeholder class="no-drag" />

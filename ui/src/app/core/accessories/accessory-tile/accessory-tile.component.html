@@ -300,12 +300,12 @@
         </app-heater-cooler>
       }
       @case ('Heater') {
-        <app-heater-cooler [service]="service()" [type]="'heater'" [readyForControl]="$accessories.hapReadyForControl">
+        <app-heater-cooler type="heater" [service]="service()" [readyForControl]="$accessories.hapReadyForControl">
           {{ 'accessories.core.heater' | translate }}
         </app-heater-cooler>
       }
       @case ('Cooler') {
-        <app-heater-cooler [service]="service()" [type]="'cooler'" [readyForControl]="$accessories.hapReadyForControl">
+        <app-heater-cooler type="cooler" [service]="service()" [readyForControl]="$accessories.hapReadyForControl">
           {{ 'accessories.core.cooler' | translate }}
         </app-heater-cooler>
       }
@@ -316,8 +316,8 @@
       }
       @case ('Humidifier') {
         <app-humidifier-dehumidifier
+          type="humidifier"
           [service]="service()"
-          [type]="'humidifier'"
           [readyForControl]="$accessories.hapReadyForControl"
         >
           {{ 'accessories.core.humidifier' | translate }}
@@ -325,8 +325,8 @@
       }
       @case ('Dehumidifier') {
         <app-humidifier-dehumidifier
+          type="dehumidifier"
           [service]="service()"
-          [type]="'dehumidifier'"
           [readyForControl]="$accessories.hapReadyForControl"
         >
           {{ 'accessories.core.dehumidifier' | translate }}

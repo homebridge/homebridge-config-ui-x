@@ -5,7 +5,7 @@
   @if (dashboardAccessories().length) {
     <div
       class="d-flex flex-wrap gridster-item-content"
-      [dragula]="'widget-accessories-bag'"
+      dragula="widget-accessories-bag"
       [dragulaModel]="dashboardAccessories()"
       (dragulaModelChange)="dashboardAccessories.set($event)"
     >
