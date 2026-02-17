@@ -22,6 +22,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - lint: apply `angular-template/no-any`
 - lint: apply `angular-template/no-autofocus`
 - lint: apply `angular-template/no-duplicate-attributes`
+- lint: apply `angular-template/no-interpolation-in-attributes`
 
 ### Homebridge Dependencies
 

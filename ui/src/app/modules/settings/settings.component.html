@@ -9,7 +9,7 @@
       [attr.aria-label]="'form.search' | translate"
       (click)="toggleSearch()"
     >
-      <i class="fas{{ showSearchBar() ? ' primary-text' : '' }} fa-search"></i>
+      <i [class]="'fas fa-search' + (showSearchBar() ? ' primary-text' : '')"></i>
     </button>
   </div>
 </div>

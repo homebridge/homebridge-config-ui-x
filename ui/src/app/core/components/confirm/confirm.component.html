@@ -11,7 +11,7 @@
   </div>
   <div class="modal-body text-center">
     @if (faIconClass) {
-      <i class="fas {{ faIconClass }} mb-3" style="font-size: 75px"></i>
+      <i style="font-size: 75px" [class]="'fas ' + faIconClass + ' mb-3'"></i>
     }
     <p class="mb-0 text-center" [innerHTML]="message"></p>
     @if (message2) {
@@ -37,9 +37,9 @@
     <div class="text-end">
       @if (confirmButtonLabel) {
         <button
-          class="btn {{ confirmButtonClass || 'btn-primary' }}"
           type="button"
           data-bs-dismiss="modal"
+          [class]="'btn ' + (confirmButtonClass || 'btn-primary')"
           (click)="closeModal()"
         >
           {{ confirmButtonLabel }}
