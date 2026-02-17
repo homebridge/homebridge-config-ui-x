@@ -24,7 +24,7 @@
             id="form-username"
             autocomplete="username"
             autocapitalize="none"
-            tabindex="1"
+            tabindex="0"
             class="form-control custom-input"
             required
             [placeholder]="'users.label_username' | translate"
@@ -39,7 +39,7 @@
             type="password"
             id="form-pass"
             autocomplete="current-password"
-            tabindex="2"
+            tabindex="0"
             class="form-control custom-input"
             required
             [placeholder]="'users.label_password' | translate"
@@ -59,7 +59,7 @@
             autocapitalize="none"
             inputmode="numeric"
             pattern="[0-9]*"
-            tabindex="1"
+            tabindex="0"
             class="form-control custom-input"
             [placeholder]="'login.label_2fa_code' | translate"
           />
@@ -88,7 +88,7 @@
         </div>
       }
       <div class="text-center">
-        <button tabindex="3" id="submit-button" class="btn btn-primary mb-2" type="submit" [disabled]="formInvalid()">
+        <button tabindex="0" id="submit-button" class="btn btn-primary mb-2" type="submit" [disabled]="formInvalid()">
           {{ 'form.button_continue' | translate }}
         </button>
       </div>
