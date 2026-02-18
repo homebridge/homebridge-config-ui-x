@@ -13,12 +13,12 @@
   <div class="modal-body">
     @if (pairingsChildActive().length === 0 && pairingsChildStale().length === 0 && pairingsNonChild().length === 0) {
       <div class="text-center mb-3">
-        <i class="fas fa-circle-check primary-text" style="font-size: 75px"></i>
+        <i class="fas fa-circle-check primary-text icon-xl"></i>
       </div>
       <p class="text-center mb-0">{{ 'reset.bridges.empty' | translate }}</p>
     }
     @if (pairingsChildActive().length > 0 || pairingsChildStale().length > 0 || pairingsNonChild().length > 0) {
-      <div class="text-center mb-3"><i class="fas fa-bridge primary-text" style="font-size: 75px"></i></div>
+      <div class="text-center mb-3"><i class="fas fa-bridge primary-text icon-xl"></i></div>
       @if (pairingsNonChild().length > 0) {
         <ul class="list-group list-group-box mt-3 mb-0">
           <li class="list-group-item">
@@ -29,8 +29,8 @@
             <li class="list-group-item d-flex justify-content-between align-items-center">
               <span class="me-3">
                 @if (isMatterSupported) {
-                  <i class="fas fa-lg fa-hap me-2" [style.opacity]="item._matterOnly ? '0.25' : '1'"></i>
-                  <i class="fas fa-lg fa-matter" [style.opacity]="item._matter ? '1' : '0.25'"></i>
+                  <i class="fas fa-lg fa-hap me-2" [class.opacity-muted]="item._matterOnly"></i>
+                  <i class="fas fa-lg fa-matter" [class.opacity-muted]="!item._matter"></i>
                 } @else {
                   <i class="fas fa-lg fa-hap"></i>
                 }
@@ -73,7 +73,7 @@
               <span class="me-3">
                 @if (isMatterSupported) {
                   <i class="fas fa-lg fa-hap me-2"></i>
-                  <i class="fas fa-lg fa-matter" [style.opacity]="item._matter ? '1' : '0.25'"></i>
+                  <i class="fas fa-lg fa-matter" [class.opacity-muted]="!item._matter"></i>
                 } @else {
                   <i class="fas fa-lg fa-hap"></i>
                 }
@@ -115,7 +115,7 @@
               <span class="me-3">
                 @if (isMatterSupported) {
                   <i class="fas fa-lg fa-hap me-2"></i>
-                  <i class="fas fa-lg fa-matter" [style.opacity]="item._matter ? '1' : '0.25'"></i>
+                  <i class="fas fa-lg fa-matter" [class.opacity-muted]="!item._matter"></i>
                 } @else {
                   <i class="fas fa-lg fa-hap"></i>
                 }

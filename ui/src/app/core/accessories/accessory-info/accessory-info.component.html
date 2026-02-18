@@ -126,17 +126,16 @@
                 'validValues' in characteristic
               ) {
                 <span
-                  class="hover-pointer"
+                  class="hover-pointer text-nowrap"
                   role="button"
                   tabindex="0"
-                  style="white-space: nowrap"
                   [attr.aria-expanded]="isDetailsVisible[characteristic.uuid]"
                   (click)="toggleDetailsVisibility(characteristic)"
                   (keydown.enter)="toggleDetailsVisibility(characteristic)"
                   >{{ characteristic.description }}</span
                 >
               } @else {
-                <span style="white-space: nowrap">{{ characteristic.description }}</span>
+                <span class="text-nowrap">{{ characteristic.description }}</span>
               }
               @if (isDetailsVisible[characteristic.uuid]) {
                 <div class="grey-text m-0 p-0 font-monospace">
@@ -162,7 +161,7 @@
                   }
                 </div>
               }
-              <div class="d-block d-md-none font-monospace grey-text" style="word-break: break-all">
+              <div class="d-block d-md-none font-monospace grey-text text-break-all">
                 @if (isDetailsVisible[characteristic.uuid]) {
                   Value:
                 }
@@ -192,8 +191,7 @@
               </div>
             </span>
             <span
-              class="text-start text-md-end grey-text font-monospace d-none d-md-block align-content-center"
-              style="word-break: break-all"
+              class="text-start text-md-end grey-text font-monospace d-none d-md-block align-content-center text-break-all"
             >
               @switch (characteristic.unit) {
                 @case ('percentage') {
@@ -281,7 +279,7 @@
                   }
                 </div>
               }
-              <div class="d-block d-md-none font-monospace grey-text" style="word-break: break-all">
+              <div class="d-block d-md-none font-monospace grey-text text-break-all">
                 @if (isDetailsVisible[characteristic.uuid]) {
                   Value:
                 }
@@ -311,8 +309,7 @@
               </div>
             </span>
             <span
-              class="text-start text-md-end grey-text font-monospace d-none d-md-block align-content-center"
-              style="word-break: break-all"
+              class="text-start text-md-end grey-text font-monospace d-none d-md-block align-content-center text-break-all"
             >
               @switch (characteristic.unit) {
                 @case ('percentage') {
@@ -402,11 +399,11 @@
           <span class="text-start text-md-end grey-text font-monospace">{{ localService.instance.port }}</span>
         </li>
         <li class="list-group-item d-flex justify-content-between align-items-left flex-column flex-md-row">
-          <span class="text-start align-self-md-center" style="white-space: nowrap">HAP UID</span>
+          <span class="text-start align-self-md-center text-nowrap">HAP UID</span>
           <span
             class="text-start text-md-end grey-text font-monospace d-flex justify-content-between align-items-center ms-md-2"
           >
-            <span style="word-break: break-all">{{ service.uniqueId }}</span>
+            <span class="text-break-all">{{ service.uniqueId }}</span>
             <a href="javascript:void(0)" class="ms-2 text-primary flex-shrink-0" (click)="copyUniqueIdToClipboard()">
               @if (uniqueIdCopied()) {
                 <i class="fas fa-check green-text"></i>
@@ -427,11 +424,11 @@
       }
       @if (matchedCachedAccessory) {
         <li class="list-group-item d-flex justify-content-between align-items-left flex-column flex-md-row">
-          <span class="text-start align-self-md-center font-monospace" style="white-space: nowrap">UUID</span>
+          <span class="text-start align-self-md-center font-monospace text-nowrap">UUID</span>
           <span
             class="text-start text-md-end grey-text font-monospace d-flex justify-content-between align-items-center ms-md-2"
           >
-            <span style="word-break: break-all">{{ matchedCachedAccessory.UUID }}</span>
+            <span class="text-break-all">{{ matchedCachedAccessory.UUID }}</span>
             <a href="javascript:void(0)" class="ms-2 text-primary flex-shrink-0" (click)="copyUUIDToClipboard()">
               @if (uuidCopied()) {
                 <i class="fas fa-check green-text"></i>

@@ -4,7 +4,7 @@
   [class.accessory-on]="isOn()"
   [class.paused]="'CurrentMediaState' in service().values && service().values?.CurrentMediaState === 1"
   [class.muted]="'Mute' in service().values && service().values?.Mute"
-  [style.cursor]="readyForControl ? 'pointer' : 'default'"
+  [class.cursor-pointer]="readyForControl()"
   (longClick)="onLongClick()"
   (shortClick)="onClick()"
 >

@@ -26,11 +26,11 @@ export function getRvcOperationalState(service: ServiceTypeX): RvcOperationalSta
 }
 
 /**
- * Check if RVC is active (running or paused)
+ * Check if RVC is active (running, paused, or seeking charger)
  */
 export function isRvcActive(service: ServiceTypeX): boolean {
   const state = getRvcOperationalState(service)
-  return state === RvcOperationalState.Running || state === RvcOperationalState.Paused
+  return state === RvcOperationalState.Running || state === RvcOperationalState.Paused || state === RvcOperationalState.SeekingCharger
 }
 
 /**

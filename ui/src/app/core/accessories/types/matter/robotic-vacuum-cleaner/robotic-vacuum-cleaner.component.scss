@@ -1,5 +1,21 @@
-.accessory-box.accessory-on {
-  .motion-lines {
-    display: block !important;
+.motion-lines {
+  display: none;
+
+  &.is-running {
+    display: block;
+  }
+}
+
+.is-charging {
+  animation: charging-pulse 5s ease-in-out infinite;
+}
+
+@keyframes charging-pulse {
+  0%,
+  100% {
+    fill-opacity: 0.3;
+  }
+  50% {
+    fill-opacity: 0.8;
   }
 }

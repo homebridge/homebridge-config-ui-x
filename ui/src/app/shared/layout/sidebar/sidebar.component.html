@@ -8,9 +8,9 @@
   (click)="toggleSidebar()"
   (keydown)="handleKeydown($event)"
 >
-  <span class="me-2 d-block d-lg-none" style="font-size: 0.9rem; color: #dddddd"></span>
+  <span class="me-2 d-block d-lg-none m-header-label"></span>
   <a [routerLink]="['/']" [attr.aria-label]="'menu.label_status' | translate">
-    <img style="height: 35px; width: 35px" ngSrc="assets/homebridge-logo.svg" alt="HB Logo" height="35" width="35" />
+    <img class="hb-logo-img" ngSrc="assets/homebridge-logo.svg" alt="HB Logo" height="35" width="35" />
     <div class="hb-logo-text-mobile">Homebridge</div>
   </a>
   <div class="hamburger-icon" [class.hamburger-icon-cross]="isExpanded()">
@@ -24,7 +24,7 @@
 <div class="sidebar" role="navigation" id="sidebar" [class.expanded]="isExpanded()">
   <div class="header" tabindex="0" role="button" (click)="toggleSidebar()" (keydown)="handleKeydown($event)">
     <a [routerLink]="['/']" [attr.aria-label]="'menu.label_status' | translate">
-      <img style="height: 35px; width: 35px" ngSrc="assets/homebridge-logo.svg" alt="HB Logo" height="35" width="35" />
+      <img class="hb-logo-img" ngSrc="assets/homebridge-logo.svg" alt="HB Logo" height="35" width="35" />
       <div class="hb-logo-text">Homebridge</div>
     </a>
   </div>
@@ -55,7 +55,7 @@
           (click)="openUnderVoltageModal()"
           (keydown)="handleKeydown($event)"
         >
-          <div class="icon"><i class="fas fa-bolt fa-beat yellow-text" style="--fa-beat-scale: 1.5"></i></div>
+          <div class="icon"><i class="fas fa-bolt fa-beat yellow-text fa-beat-scale-lg"></i></div>
           <div class="title">{{ 'rpi.throttled.undervoltage_title' | translate }}</div>
         </div>
       </div>

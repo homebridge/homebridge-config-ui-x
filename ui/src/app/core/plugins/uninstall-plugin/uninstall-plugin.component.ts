@@ -19,6 +19,7 @@ import { ChildBridge } from '@/app/core/plugins/manage-plugins.interfaces'
   ],
   standalone: true,
   templateUrl: './uninstall-plugin.component.html',
+  styleUrl: './uninstall-plugin.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UninstallPluginComponent implements OnInit {

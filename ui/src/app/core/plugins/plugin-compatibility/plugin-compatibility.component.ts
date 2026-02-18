@@ -12,6 +12,7 @@ import { SettingsService } from '@/app/core/ui/settings.service'
   imports: [TranslatePipe, NgbAlert],
   standalone: true,
   templateUrl: './plugin-compatibility.component.html',
+  styleUrl: './plugin-compatibility.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PluginCompatibilityComponent implements OnInit {

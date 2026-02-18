@@ -17,6 +17,7 @@ import { Pairing } from '@/app/modules/settings/settings.interfaces'
   ],
   standalone: true,
   templateUrl: './reset-individual-bridges.component.html',
+  styleUrl: './reset-individual-bridges.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ResetIndividualBridgesComponent implements OnInit {

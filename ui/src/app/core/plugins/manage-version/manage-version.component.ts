@@ -22,6 +22,7 @@ import { SettingsService } from '@/app/core/ui/settings.service'
   ],
   standalone: true,
   templateUrl: './manage-version.component.html',
+  styleUrl: './manage-version.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ManageVersionComponent implements OnInit {

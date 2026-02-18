@@ -24,6 +24,7 @@ import { USER_MODAL_DATA } from '@/app/core/modal-data-tokens'
   ],
   standalone: true,
   templateUrl: './users-2fa-enable.component.html',
+  styleUrl: './users-2fa-enable.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Users2faEnableComponent implements OnInit {

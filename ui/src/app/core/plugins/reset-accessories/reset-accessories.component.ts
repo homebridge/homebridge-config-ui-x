@@ -17,6 +17,7 @@ import { SettingsService } from '@/app/core/ui/settings.service'
   ],
   standalone: true,
   templateUrl: './reset-accessories.component.html',
+  styleUrl: './reset-accessories.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ResetAccessoriesComponent implements OnInit {

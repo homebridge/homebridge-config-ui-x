@@ -28,6 +28,7 @@ import { Widget } from '@/app/modules/status/widgets/widgets.interfaces'
   ],
   standalone: true,
   templateUrl: './terminal-widget.component.html',
+  styleUrl: './terminal-widget.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     '(window:beforeunload)': 'onBeforeUnload($event)',

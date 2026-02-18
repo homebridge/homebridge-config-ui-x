@@ -12,11 +12,11 @@
   <div class="modal-body">
     @if (loading()) {
       <div class="w-100 text-center primary-text text-center">
-        <i class="fa fa-circle-notch fa-spin" style="font-size: 75px"></i>
+        <i class="fa fa-circle-notch fa-spin icon-xl"></i>
       </div>
     } @else {
       <div class="text-center">
-        <i class="fas fab fa-node-js primary-text mb-3" style="font-size: 75px"></i>
+        <i class="fas fab fa-node-js primary-text mb-3 icon-xl"></i>
         <h5 class="mb-3">
           {{ nodeVersion }}
           @if (latestVersion !== nodeVersion) {
@@ -42,7 +42,7 @@
           {{ 'plugins.manage.notifications' | translate }}
         </div>
         <li class="list-group-item text-start">
-          <label class="d-flex align-items-center w-100 mb-0" style="cursor: pointer">
+          <label class="d-flex align-items-center w-100 mb-0 cursor-pointer">
             <input
               type="radio"
               name="nodeUpdatePolicy"
@@ -71,7 +71,7 @@
           </label>
         </li>
         <li class="list-group-item text-start">
-          <label class="d-flex align-items-center w-100 mb-0" style="cursor: pointer">
+          <label class="d-flex align-items-center w-100 mb-0 cursor-pointer">
             <input
               type="radio"
               name="nodeUpdatePolicy"
@@ -100,7 +100,7 @@
           </label>
         </li>
         <li class="list-group-item text-start">
-          <label class="d-flex align-items-center w-100 mb-0" style="cursor: pointer">
+          <label class="d-flex align-items-center w-100 mb-0 cursor-pointer">
             <input
               type="radio"
               name="nodeUpdatePolicy"

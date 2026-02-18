@@ -15,6 +15,7 @@ import { HomebridgeStatusResponse } from '@/app/core/server.interfaces'
   ],
   standalone: true,
   templateUrl: './matter-qrcode-widget.component.html',
+  styleUrl: './matter-qrcode-widget.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatterQrcodeWidgetComponent implements OnInit, OnDestroy {

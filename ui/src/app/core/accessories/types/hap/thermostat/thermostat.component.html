@@ -2,7 +2,7 @@
   class="accessory-box"
   tabindex="0"
   [class.accessory-on]="service().values?.TargetHeatingCoolingState > 0"
-  [style.cursor]="readyForControl() ? 'pointer' : 'default'"
+  [class.cursor-pointer]="readyForControl()"
   (longClick)="onClick()"
   (shortClick)="onClick()"
 >

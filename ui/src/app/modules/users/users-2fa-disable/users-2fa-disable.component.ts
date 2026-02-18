@@ -21,6 +21,7 @@ import { RequiredIndicatorComponent } from '@/app/core/components/required-indic
   ],
   standalone: true,
   templateUrl: './users-2fa-disable.component.html',
+  styleUrl: './users-2fa-disable.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Users2faDisableComponent {

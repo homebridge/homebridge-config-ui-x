@@ -11,8 +11,7 @@
   </div>
   <div class="modal-body text-center px-5">
     <h6 class="mt-2 mb-4 fs-4">
-      <i class="fas fa-temperature-full" [style.color]="getStatusColor()"></i
-      >{{ service.values?.CurrentRelativeHumidity }}%
+      <i [class]="`fas fa-temperature-full ${getStatusClass()}`"></i>{{ service.values?.CurrentRelativeHumidity }}%
     </h6>
     <div
       class="btn-group-vertical d-flex justify-content-center mb-4 p-0"

@@ -12,19 +12,19 @@
   <div class="modal-body d-flex flex-row flex-grow-1 w-100">
     @if (loading()) {
       <div class="w-100 text-center primary-text my-5 w-100">
-        <i class="fa fa-circle-notch fa-spin" style="font-size: 75px"></i>
+        <i class="fa fa-circle-notch fa-spin icon-xl"></i>
       </div>
     } @else {
       <div class="w-100 text-center">
         @if (plugin?.installedVersion) {
-          <i class="fas fa-code-compare primary-text mb-3" style="font-size: 75px"></i>
+          <i class="fas fa-code-compare primary-text mb-3 icon-xl"></i>
           <h6 class="mb-3">{{ 'plugins.manage.select_version' | translate }}</h6>
           <p class="mb-3">
             {{ 'plugins.status_installed' | translate }}:
             <span class="font-monospace">v{{ plugin?.installedVersion }}</span>
           </p>
         } @else {
-          <i class="far fa-arrow-alt-circle-down primary-text mb-3" style="font-size: 75px"></i>
+          <i class="far fa-arrow-alt-circle-down primary-text mb-3 icon-xl"></i>
           <h6 class="mb-3">{{ 'plugins.manage.select_version' | translate }}</h6>
         }
         <ul class="list-group list-group-box mb-0">
@@ -54,12 +54,11 @@
             </li>
           }
           <li class="list-group-item d-flex justify-content-between align-items-center">
-            <div class="text-start" style="min-width: 50%">
+            <div class="text-start min-w-50">
               {{ 'plugins.manage.all_versions' | translate }}
               <br />
               <select
-                class="custom-select w-100 font-monospace"
-                style="font-size: 0.875rem"
+                class="custom-select w-100 font-monospace version-select"
                 [attr.aria-label]="'plugins.manage.all_versions' | translate"
                 [(ngModel)]="versionSelect"
               >
@@ -101,7 +100,7 @@
             [attr.aria-label]="'plugins.manage.notifications' | translate"
           >
             <li class="list-group-item text-start">
-              <label class="d-flex align-items-center w-100 mb-0" style="cursor: pointer">
+              <label class="d-flex align-items-center w-100 mb-0 cursor-pointer">
                 <input
                   type="radio"
                   name="updatePreference"
@@ -130,7 +129,7 @@
               </label>
             </li>
             <li class="list-group-item text-start">
-              <label class="d-flex align-items-center w-100 mb-0" style="cursor: pointer">
+              <label class="d-flex align-items-center w-100 mb-0 cursor-pointer">
                 <input
                   type="radio"
                   name="updatePreference"
@@ -160,7 +159,7 @@
             </li>
             @if (plugin.name === 'homebridge' || plugin.name === 'homebridge-config-ui-x') {
               <li class="list-group-item text-start">
-                <label class="d-flex align-items-center w-100 mb-0" style="cursor: pointer">
+                <label class="d-flex align-items-center w-100 mb-0 cursor-pointer">
                   <input
                     type="radio"
                     name="updatePreference"
@@ -190,7 +189,7 @@
               </li>
             }
             <li class="list-group-item text-start">
-              <label class="d-flex align-items-center w-100 mb-0" style="cursor: pointer">
+              <label class="d-flex align-items-center w-100 mb-0 cursor-pointer">
                 <input
                   type="radio"
                   name="updatePreference"

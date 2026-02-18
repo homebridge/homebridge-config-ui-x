@@ -3,7 +3,7 @@
   tabindex="0"
   [class.accessory-on]="isOn()"
   [class.purifying]="isPurifying()"
-  [style.cursor]="readyForControl ? 'pointer' : 'default'"
+  [class.cursor-pointer]="readyForControl()"
   (longClick)="onLongClick()"
   (shortClick)="onClick()"
 >

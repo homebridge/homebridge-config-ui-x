@@ -1,4 +1,4 @@
-<div class="modal-content" style="min-height: 300px">
+<div class="modal-content modal-min-height">
   <div class="modal-header">
     <h5 class="modal-title">{{ 'plugins.compat.title' | translate }}</h5>
     <button
@@ -14,14 +14,13 @@
     @if (plugin && !['homebridge', 'homebridge-config-ui-x'].includes(plugin.name)) {
       <div class="text-center mb-3">
         <i
-          style="font-size: 75px"
           [class]="`${
             action === 'install'
               ? 'far fa-arrow-alt-circle-down'
               : action === 'update'
                 ? 'far fa-arrow-alt-circle-up'
                 : 'fas fa-code-compare'
-          } primary-text`"
+          } primary-text icon-xl`"
         ></i>
       </div>
       <ul class="list-group list-group-box mb-3 text-start">
@@ -66,7 +65,7 @@
     <! -- homebridge - ->
     @if (plugin && plugin.name === 'homebridge') {
       <div class="text-center mb-3">
-        <i class="fab fa-node-js primary-text" style="font-size: 75px"></i>
+        <i class="fab fa-node-js primary-text icon-xl"></i>
       </div>
       <ul class="list-group list-group-box mb-3 text-start">
         <li class="list-group-item d-flex justify-content-between align-items-center">
@@ -100,7 +99,7 @@
     <! -- homebridge ui - ->
     @if (plugin && plugin.name === 'homebridge-config-ui-x') {
       <div class="text-center mb-3">
-        <i class="fab fa-node-js primary-text" style="font-size: 75px"></i>
+        <i class="fab fa-node-js primary-text icon-xl"></i>
       </div>
       <ul class="list-group list-group-box mb-3 text-start">
         <li class="list-group-item d-flex justify-content-between align-items-center">

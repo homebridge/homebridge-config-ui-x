@@ -13,7 +13,7 @@
   <div class="modal-body pb-0">
     @if (loading()) {
       <div class="text-center primary-text my-5 w-100">
-        <i class="fa fa-circle-notch fa-spin" style="font-size: 75px"></i>
+        <i class="fa fa-circle-notch fa-spin icon-xl"></i>
       </div>
     }
     @if (!loading() && !canConfigure()) {
@@ -93,7 +93,7 @@
               </div>
             </div>
             <div ngbAccordionCollapse>
-              <div ngbAccordionBody class="card-body p-0" style="height: 400px">
+              <div ngbAccordionBody class="card-body p-0 editor-body">
                 <ngx-monaco-editor
                   class="flex-grow-1 h-100 w-100 mb-0 pb-0"
                   [options]="editorOptions"

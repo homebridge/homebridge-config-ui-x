@@ -5,6 +5,7 @@ import { toString } from 'qrcode'
   selector: 'app-qrcode',
   standalone: true,
   templateUrl: './qrcode.component.html',
+  styleUrl: './qrcode.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class QrcodeComponent implements OnChanges {

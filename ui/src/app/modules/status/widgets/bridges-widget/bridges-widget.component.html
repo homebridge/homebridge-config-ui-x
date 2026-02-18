@@ -6,7 +6,7 @@
     class="d-flex flex-wrap w-100 mt-0 justify-content-start gridster-item-content overflow-auto no-scrollbars align-items-center"
   >
     <! -- Main Bridge - ->
-    <div class="hb-status-item d-flex flex-row w-100 px-3 mt-2 mb-1" style="min-width: max(25%, 225px)">
+    <div class="hb-status-item hb-status-item-quarter d-flex flex-row w-100 px-3 mt-2 mb-1">
       <div class="hb-status-icon d-flex align-items-center">
         <i
           class="fas fa-hap fa-sm"
@@ -46,7 +46,7 @@
               homebridgeStatus()?.matter?.enabled && homebridgeStatus()?.status === 'down' && !isRestarting()
             "
             [class.grey-text]="!homebridgeStatus()?.matter?.enabled"
-            [style.opacity]="!homebridgeStatus()?.matter?.enabled ? '0.25' : '1'"
+            [class.opacity-muted]="!homebridgeStatus()?.matter?.enabled"
             [openDelay]="150"
             [ngbTooltip]="
               (homebridgeStatus()?.matter?.enabled
@@ -91,7 +91,7 @@
     </div>
     <! -- Child Bridges - ->
     @for (bridge of childBridges(); track bridge.username) {
-      <div class="hb-status-item d-flex flex-row w-100 px-3 mt-2 mb-1" style="min-width: max(25%, 225px)">
+      <div class="hb-status-item hb-status-item-quarter d-flex flex-row w-100 px-3 mt-2 mb-1">
         <div class="hb-status-icon d-flex align-items-center">
           <i
             class="fas fa-hap fa-sm"
@@ -131,7 +131,7 @@
                 bridge.matterConfig && bridge.status === 'down' && !bridge.restarting && !isRestarting()
               "
               [class.grey-text]="!bridge.matterConfig"
-              [style.opacity]="!bridge.matterConfig ? '0.25' : '1'"
+              [class.opacity-muted]="!bridge.matterConfig"
               [openDelay]="150"
               [ngbTooltip]="
                 (bridge.matterConfig

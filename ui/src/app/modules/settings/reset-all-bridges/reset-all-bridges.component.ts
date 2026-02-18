@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject, signal } from '@angular/core'
 import { Router } from '@angular/router'
-import { NgbAlert } from '@ng-bootstrap/ng-bootstrap/alert'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
@@ -10,7 +9,6 @@ import { ApiService } from '@/app/core/communication/api.service'
 @Component({
   selector: 'app-reset-all-bridges',
   imports: [
-    NgbAlert,
     TranslatePipe,
   ],
   standalone: true,
@@ -27,6 +25,12 @@ export class ResetAllBridgesComponent {
 
   // Signals
   public readonly clicked = signal(false)
+  public readonly confirmMode = signal(false)
+
+  public toggleConfirmMode(event: MouseEvent): void {
+    this.confirmMode.set(!this.confirmMode())
+    ;(event.target as HTMLElement).blur()
+  }
 
   public async onResetHomebridgeAccessoryClick(): Promise<void> {
     this.clicked.set(true)

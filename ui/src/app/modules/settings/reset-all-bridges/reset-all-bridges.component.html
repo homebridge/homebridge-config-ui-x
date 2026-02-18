@@ -11,16 +11,20 @@
     ></button>
   </div>
   <div class="modal-body">
-    <div class="text-center mb-3"><i class="fas fa-bridge primary-text" style="font-size: 75px"></i></div>
-    <ul class="mb-3">
+    <div class="text-center mb-4"><i class="fas fa-bridge primary-text icon-xl"></i></div>
+    <ul [class.opacity-muted]="confirmMode()" [class.mb-0]="!confirmMode()" [class.mb-4]="confirmMode()">
       <li>{{ 'reset.bridge_all.list_1' | translate }}</li>
       <li>{{ 'reset.bridge_all.list_2' | translate }}</li>
       <li>{{ 'reset.bridge_all.list_3' | translate }}</li>
       <li>{{ 'reset.bridge_all.list_4' | translate }}</li>
     </ul>
-    <ngb-alert type="error" class="mb-0" [dismissible]="false">
-      <p class="text-center mb-0">{{ 'reset.action_is_irreversible' | translate }}</p>
-    </ngb-alert>
+    @if (confirmMode()) {
+      <div class="alert alert-warning mb-0">
+        <div class="text-center">
+          {{ 'reset.action_is_irreversible' | translate }}
+        </div>
+      </div>
+    }
   </div>
   <div class="modal-footer justify-content-between">
     <div class="text-start">
@@ -37,19 +41,28 @@
     </div>
     <div class="text-center"></div>
     <div class="text-end">
-      <button
-        type="button"
-        class="btn btn-danger"
-        data-bs-dismiss="modal"
-        [disabled]="clicked()"
-        (click)="onResetHomebridgeAccessoryClick()"
-      >
-        @if (!clicked()) {
-          {{ 'form.button_reset' | translate }}
-        } @else {
-          <i class="fas fa-circle-notch fa-spin"></i>
-        }
-      </button>
+      @if (confirmMode()) {
+        <button type="button" class="btn btn-elegant me-2" [disabled]="clicked()" (click)="toggleConfirmMode($event)">
+          <i class="fas fa-undo"></i>
+        </button>
+        <button
+          type="button"
+          class="btn btn-danger"
+          data-bs-dismiss="modal"
+          [disabled]="clicked()"
+          (click)="onResetHomebridgeAccessoryClick()"
+        >
+          @if (!clicked()) {
+            {{ 'form.button_reset' | translate }}
+          } @else {
+            <i class="fas fa-circle-notch fa-spin"></i>
+          }
+        </button>
+      } @else {
+        <button type="button" class="btn btn-primary" (click)="toggleConfirmMode($event)">
+          {{ 'form.button_continue' | translate }}
+        </button>
+      }
     </div>
   </div>
 </div>

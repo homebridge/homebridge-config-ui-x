@@ -13,7 +13,7 @@
   [class.closed]="service().values?.CurrentDoorState === 1 && !service().values?.ObstructionDetected"
   [class.stopped]="service().values?.CurrentDoorState === 4 && !service().values?.ObstructionDetected"
   [class.obstructed]="service().values?.ObstructionDetected"
-  [style.cursor]="readyForControl ? 'pointer' : 'default'"
+  [class.cursor-pointer]="readyForControl()"
   (shortClick)="onClick()"
 >
   <div class="d-flex flex-column h-100">

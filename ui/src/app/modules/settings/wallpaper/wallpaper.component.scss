@@ -4,6 +4,21 @@
   animation: gradient 20s ease infinite;
 }
 
+.wallpaper-preview {
+  height: 200px;
+}
+
+.wallpaper-delete-btn {
+  top: 10px;
+  right: 10px;
+}
+
+.wallpaper-placeholder {
+  height: 200px;
+  width: 350px;
+  margin: 0 auto;
+}
+
 @keyframes gradient {
   0% {
     background-position: 0 50%;

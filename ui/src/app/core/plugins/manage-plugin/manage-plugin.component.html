@@ -20,7 +20,7 @@
     <div class="modal-body plugin-modal-body">
       @if (justUpdatedPlugin()) {
         <div class="mb-3 text-center">
-          <i class="far fa-check-circle primary-text" style="font-size: 75px"></i>
+          <i class="far fa-check-circle primary-text icon-xl"></i>
         </div>
         <h5 class="text-center mb-3">{{ pastTenseVerb() }}: {{ pluginDisplayName }} ({{ targetVersionPretty() }})</h5>
         @if (!isDisabled) {
@@ -43,8 +43,7 @@
     <div class="modal-body">
       <div class="mb-3 text-center">
         <i
-          class="fas primary-text"
-          style="font-size: 75px"
+          class="fas primary-text icon-xl"
           [class.fa-arrow-alt-circle-down]="action === 'Install'"
           [class.fa-code-compare]="action === 'Update' && installedVersion"
           [class.fa-arrow-alt-circle-up]="action === 'Update' && !installedVersion"
@@ -66,8 +65,7 @@ hb-service start</pre
     <div class="modal-body plugin-modal-body">
       <div class="mb-3 text-center">
         <i
-          class="far primary-text"
-          style="font-size: 75px"
+          class="far primary-text icon-xl"
           [class.fa-arrow-alt-circle-down]="action === 'Install' && !installedVersion"
           [class.fa-code-compare]="action === 'Install' && installedVersion"
           [class.fa-arrow-alt-circle-up]="action === 'Update'"
@@ -95,7 +93,7 @@ hb-service start</pre
             <div class="alert release-notes p-3 pb-1 my-0">
               @if (action === 'Update' && !versionNotesLoaded()) {
                 <div class="w-100 text-center primary-text mt-3 mb-4">
-                  <i class="fa fa-circle-notch fa-spin" style="font-size: 75px"></i>
+                  <i class="fa fa-circle-notch fa-spin icon-xl"></i>
                 </div>
               } @else {
                 @if (versionNotes()) {
@@ -132,13 +130,10 @@ hb-service start</pre
             {{ 'plugins.manage.changelog' | translate }}
           </button>
           <ng-template ngbNavContent>
-            <div
-              class="alert release-notes p-3 pb-1 my-0"
-              style="border-top-left-radius: 0; border-top-right-radius: 0"
-            >
+            <div class="alert release-notes p-3 pb-1 my-0">
               @if (action === 'Update' && !fullChangelogLoaded()) {
                 <div class="w-100 text-center primary-text mt-3 mb-4">
-                  <i class="fa fa-circle-notch fa-spin" style="font-size: 75px"></i>
+                  <i class="fa fa-circle-notch fa-spin icon-xl"></i>
                 </div>
               } @else {
                 @if (fullChangelog()) {

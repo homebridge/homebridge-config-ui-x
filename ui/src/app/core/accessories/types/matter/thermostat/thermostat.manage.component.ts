@@ -190,20 +190,20 @@ export class MatterThermostatManageComponent implements OnInit {
     this.applySliderGradient('linear-gradient(to right, rgb(80, 80, 179), rgb(173, 216, 230), rgb(255, 185, 120), rgb(139, 90, 60))')
   }
 
-  public getStatusColor(): string {
+  public getStatusClass(): string {
     if (this.targetMode === 3) {
-      return '#1e8bbd'
+      return 'status-color-cooling'
     }
 
     if (this.targetMode === 4) {
-      return '#e69533'
+      return 'status-color-heating'
     }
 
     if (this.targetMode === 1) {
-      return '#42d672'
+      return 'status-color-active'
     }
 
-    return '#7b7b7b'
+    return 'status-color-inactive'
   }
 
   public async setTargetMode(value: number, event: MouseEvent) {

@@ -6,7 +6,7 @@
           @if (setupUri()) {
             <app-qrcode class="mx-auto" [data]="setupUri()" />
           } @else {
-            <div class="d-flex align-items-center justify-content-center w-100 h-100" style="min-height: 200px">
+            <div class="d-flex align-items-center justify-content-center w-100 h-100 qr-loading-container">
               <i class="fas fa-circle-notch fa-spin fa-2xl grey-text"></i>
             </div>
           }

@@ -12,6 +12,7 @@ import { SettingsService } from '@/app/core/ui/settings.service'
   imports: [TranslatePipe],
   standalone: true,
   templateUrl: './restart-child-bridges.component.html',
+  styleUrl: './restart-child-bridges.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RestartChildBridgesComponent {

@@ -16,25 +16,22 @@
     <p class="grey-text mb-1 font-monospace">&#64;{{ plugin.author }}</p>
     <p class="mb-3">{{ plugin.description }}</p>
     <i
-      class="fas fa-shield-alt mb-3"
-      style="font-size: 48px"
+      class="fas fa-shield-alt mb-3 shield-icon"
       [class.orange-text]="!plugin.verifiedPlugin && !plugin.verifiedPlusPlugin"
       [class.grey-text]="plugin.verifiedPlugin || plugin.verifiedPlusPlugin"
-      [style.opacity]="!plugin.verifiedPlugin && !plugin.verifiedPlusPlugin ? 1 : 0.25"
+      [class.opacity-muted]="plugin.verifiedPlugin || plugin.verifiedPlusPlugin"
     ></i>
     <i
-      class="fas fa-shield-alt mb-3"
-      style="font-size: 48px"
+      class="fas fa-shield-alt mb-3 shield-icon"
       [class.green-text]="!plugin.isHbScoped && (plugin.verifiedPlugin || plugin.verifiedPlusPlugin)"
       [class.grey-text]="plugin.isHbScoped || (!plugin.verifiedPlugin && !plugin.verifiedPlusPlugin)"
-      [style.opacity]="!plugin.isHbScoped && (plugin.verifiedPlugin || plugin.verifiedPlusPlugin) ? 1 : 0.25"
+      [class.opacity-muted]="plugin.isHbScoped || (!plugin.verifiedPlugin && !plugin.verifiedPlusPlugin)"
     ></i>
     <i
-      class="fas fa-shield-alt mb-3"
-      style="font-size: 48px"
+      class="fas fa-shield-alt mb-3 shield-icon"
       [class.purple-text]="plugin.isHbScoped"
       [class.grey-text]="!plugin.isHbScoped"
-      [style.opacity]="plugin.isHbScoped ? 1 : 0.25"
+      [class.opacity-muted]="!plugin.isHbScoped"
     ></i>
     @if (plugin.isHbScoped) {
       <h6 class="mb-2">{{ 'plugins.manage.scoped_subtitle' | translate }}</h6>

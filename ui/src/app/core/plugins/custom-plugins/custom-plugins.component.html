@@ -10,10 +10,10 @@
       (click)="dismissModal()"
     ></button>
   </div>
-  <div class="modal-body pb-0" style="min-height: 110px">
+  <div class="modal-body pb-0 modal-body-min-height">
     @if (loading()) {
       <div class="text-center primary-text my-5 w-100">
-        <i class="fa fa-circle-notch fa-spin" style="font-size: 75px"></i>
+        <i class="fa fa-circle-notch fa-spin icon-xl"></i>
       </div>
     }
 
@@ -21,7 +21,7 @@
       #custompluginui
       width="100%"
       height="1px;"
-      style="border: 0"
+      class="plugin-iframe"
       sandbox="allow-same-origin allow-scripts allow-popups allow-popups-to-escape-sandbox allow-downloads allow-forms"
       [attr.title]="'plugins.button_settings' | translate"
       [attr.aria-label]="'plugins.button_settings' | translate"
@@ -63,7 +63,7 @@
     }
     @if (pluginSpinner()) {
       <div class="loading-overlay text-center primary-text d-flex align-items-center justify-content-center">
-        <i class="fa fa-circle-notch fa-spin" style="font-size: 75px"></i>
+        <i class="fa fa-circle-notch fa-spin icon-xl"></i>
       </div>
     }
   </div>

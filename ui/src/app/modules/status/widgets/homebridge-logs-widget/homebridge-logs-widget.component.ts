@@ -15,6 +15,7 @@ import { Widget } from '@/app/modules/status/widgets/widgets.interfaces'
   ],
   standalone: true,
   templateUrl: './homebridge-logs-widget.component.html',
+  styleUrl: './homebridge-logs-widget.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HomebridgeLogsWidgetComponent implements OnInit, OnDestroy {

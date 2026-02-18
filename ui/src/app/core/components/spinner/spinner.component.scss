@@ -26,6 +26,11 @@
   overflow: visible;
 }
 
+.spinner-svg {
+  margin: auto;
+  display: block;
+}
+
 @keyframes spinner-rotate {
   0% {
     transform: rotate(0deg);

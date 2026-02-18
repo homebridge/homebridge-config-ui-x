@@ -16,6 +16,11 @@
   cursor: move;
 }
 
+.edit-room-hidden {
+  visibility: hidden;
+  pointer-events: none;
+}
+
 a:hover {
   text-decoration: none !important;
 }

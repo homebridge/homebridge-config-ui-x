@@ -11,10 +11,15 @@
       ></button>
     </div>
     <div class="modal-body">
-      <div class="text-center mb-3">
-        <i class="fas fa-user-pen primary-text" style="font-size: 75px"></i>
+      <div class="text-center mb-4">
+        <i class="fas fa-user-pen primary-text icon-xl"></i>
       </div>
-      <ul class="list-group list-group-box mb-0" [style.opacity]="deleteMode() ? '0.25' : '1'">
+      <ul
+        class="list-group list-group-box"
+        [class.opacity-muted]="deleteMode()"
+        [class.mb-0]="!deleteMode()"
+        [class.mb-4]="deleteMode()"
+      >
         <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
           <label for="form-username" class="mb-2 mb-md-0 w-100 w-md-50">
             {{ 'users.label_username' | translate }}<app-required-indicator />
@@ -86,7 +91,7 @@
           </li>
         }
         <li class="list-group-item d-flex justify-content-between align-items-center flex-row pb-2">
-          <span class="text-start"> {{ 'users.label_admin_user' | translate }}<app-required-indicator /> </span>
+          <span class="text-start">{{ 'users.label_admin_user' | translate }}<app-required-indicator /></span>
           <div class="text-end grey-text d-flex align-items-center">
             <input
               type="checkbox"
@@ -100,7 +105,7 @@
         </li>
       </ul>
       @if (deleteMode()) {
-        <div class="alert alert-warning mt-3 mb-0">
+        <div class="alert alert-warning mb-0">
           <div class="text-center">{{ 'common.phrases.are_you_sure' | translate }}</div>
         </div>
       }

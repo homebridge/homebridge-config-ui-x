@@ -139,7 +139,7 @@ export default antfu(
       'angular-template/no-distracting-elements': 'error',
       'angular-template/no-duplicate-attributes': 'error',
       'angular-template/no-empty-control-flow': 'error',
-      'angular-template/no-inline-styles': 'off',
+      'angular-template/no-inline-styles': ['error', { allowBindToStyle: true }],
       'angular-template/no-interpolation-in-attributes': 'error',
       'angular-template/no-negated-async': 'error',
       'angular-template/no-nested-tags': 'error',

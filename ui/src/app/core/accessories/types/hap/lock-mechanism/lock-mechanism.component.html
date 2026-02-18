@@ -7,7 +7,7 @@
   [class.unlocked]="service().values?.LockCurrentState === 0 || service().values?.On === 1"
   [class.jammed]="service().values?.LockCurrentState === 2"
   [class.error]="service().values?.LockCurrentState === 3"
-  [style.cursor]="readyForControl ? 'pointer' : 'default'"
+  [class.cursor-pointer]="readyForControl()"
   (shortClick)="onClick()"
   (longClick)="onLongClick()"
 >

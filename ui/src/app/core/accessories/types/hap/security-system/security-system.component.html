@@ -6,7 +6,7 @@
   [class.away]="service().values?.SecuritySystemCurrentState === 1"
   [class.night]="service().values?.SecuritySystemCurrentState === 2"
   [class.triggered]="service().values?.SecuritySystemCurrentState === 4"
-  [style.cursor]="readyForControl ? 'pointer' : 'default'"
+  [class.cursor-pointer]="readyForControl()"
   (longClick)="onClick()"
   (shortClick)="onClick()"
 >

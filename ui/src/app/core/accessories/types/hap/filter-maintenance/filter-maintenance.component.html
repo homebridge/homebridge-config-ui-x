@@ -3,7 +3,7 @@
   tabindex="0"
   [class.replace]="service().values?.FilterChangeIndication === 1 || service().values?.FilterLifeLevel < 10"
   [class.dirty]="service().values?.FilterChangeIndication !== 1 && service().values?.FilterLifeLevel < 50"
-  [style.cursor]="readyForControl ? 'pointer' : 'default'"
+  [class.cursor-pointer]="readyForControl()"
   (longClick)="onClick()"
   (shortClick)="onClick()"
 >

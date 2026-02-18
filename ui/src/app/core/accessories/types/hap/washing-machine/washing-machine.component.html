@@ -2,7 +2,7 @@
   class="accessory-box"
   tabindex="0"
   [class.accessory-on]="service().values?.On || service().values?.Active"
-  [style.cursor]="readyForControl() ? 'pointer' : 'default'"
+  [class.cursor-pointer]="readyForControl()"
   (shortClick)="onClick()"
 >
   <div class="d-flex flex-column h-100">

@@ -3,7 +3,7 @@
     <div class="d-flex flex-column me-3 align-items-center justify-content-between">
       <img alt="Plugin Icon" class="plugin-icon-card mb-3" [src]="plugin().icon" (error)="handleIconError()" />
     </div>
-    <div class="d-flex flex-column justify-content-between" style="min-width: calc(100% - 80px)">
+    <div class="d-flex flex-column justify-content-between plugin-content">
       <div class="d-flex flex-row align-items-end">
         <div class="d-flex flex-column w-100">
           <! -- plugin name and right 'action' icon - ->
@@ -23,10 +23,7 @@
                     [attr.aria-label]="'plugins.button_update' | translate"
                     (click)="checkAndUpdatePlugin()"
                   >
-                    <i
-                      class="far fa-arrow-alt-circle-up primary-text fa-lg fa-fade ms-3"
-                      style="--fa-animation-duration: 2s"
-                    ></i>
+                    <i class="far fa-arrow-alt-circle-up primary-text fa-lg fa-fade fa-spin-slow ms-3"></i>
                   </a>
                 }
                 <! -- // - ->
@@ -46,10 +43,7 @@
                     [attr.aria-label]="'plugins.manage.scoped.switch' | translate"
                     (click)="switchToScoped()"
                   >
-                    <i
-                      class="fas fa-arrow-right-arrow-left primary-text fa-lg fa-fade ms-3"
-                      style="--fa-animation-duration: 2s"
-                    ></i>
+                    <i class="fas fa-arrow-right-arrow-left primary-text fa-lg fa-fade fa-spin-slow ms-3"></i>
                   </a>
                 }
                 <! -- // - ->
@@ -72,7 +66,7 @@
                     [attr.aria-label]="'plugins.button_set_up' | translate"
                     (click)="openSettings()"
                   >
-                    <i class="fas fa-sliders primary-text fa-lg fa-fade ms-3" style="--fa-animation-duration: 2s"></i>
+                    <i class="fas fa-sliders primary-text fa-lg fa-fade fa-spin-slow ms-3"></i>
                   </a>
                 }
                 <! -- // - ->
@@ -97,10 +91,7 @@
                     [attr.aria-label]="'child_bridge.setup' | translate"
                     (click)="openBridgeSettings()"
                   >
-                    <i
-                      class="icon-button fas fa-bridge primary-text fa-lg fa-fade ms-3"
-                      style="--fa-animation-duration: 2s"
-                    ></i>
+                    <i class="icon-button fas fa-bridge primary-text fa-lg fa-fade fa-spin-slow ms-3"></i>
                   </a>
                 }
                 <! -- // - ->
@@ -126,10 +117,7 @@
                     [attr.aria-label]="'child_bridge.bridge_connect' | translate"
                     (click)="openBridgeSettings()"
                   >
-                    <i
-                      class="icon-button fas fa-qrcode primary-text fa-lg fa-fade ms-3"
-                      style="--fa-animation-duration: 2s"
-                    ></i>
+                    <i class="icon-button fas fa-qrcode primary-text fa-lg fa-fade fa-spin-slow ms-3"></i>
                   </a>
                 }
                 <! -- // - ->
@@ -187,7 +175,7 @@
             }
             @if (!((plugin().verifiedPlugin || plugin().verifiedPlusPlugin) && plugin().funding)) {
               <span class="grey-text">
-                <i class="fas fa-heart fa-lg me-1" style="opacity: 0.5"></i>&#64;{{ plugin().author }}
+                <i class="fas fa-heart fa-lg me-1 heart-muted"></i>&#64;{{ plugin().author }}
               </span>
             }
           </p>
@@ -258,9 +246,8 @@
                   <span ngbDropdown placement="left" class="d-inline-block ms-3 mt-auto">
                     <! -- icon to expand dropdown - ->
                     <a
-                      class="card-link text-decoration-none mt-auto"
+                      class="card-link text-decoration-none mt-auto dropdown-toggle-no-outline"
                       href="javascript:void(0)"
-                      style="outline: none"
                       ngbDropdownToggle
                       [attr.aria-label]="'Plugin Actions Dropdown'"
                     >

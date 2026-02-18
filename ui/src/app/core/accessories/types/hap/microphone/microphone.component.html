@@ -3,7 +3,7 @@
   tabindex="0"
   [class.accessory-on]="isOn()"
   [class.paused]="'CurrentMediaState' in service().values && service().values?.CurrentMediaState === 1"
-  [style.cursor]="readyForControl ? 'pointer' : 'default'"
+  [class.cursor-pointer]="readyForControl()"
   (longClick)="onLongClick()"
   (shortClick)="onClick()"
 >

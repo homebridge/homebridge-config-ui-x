@@ -10,7 +10,7 @@
     ></button>
   </div>
   <div class="modal-body text-center">
-    <i class="fas fa-power-off primary-text mb-3" style="font-size: 75px"></i>
+    <i class="fas fa-power-off primary-text mb-3 icon-xl"></i>
     <p class="w-100">{{ 'restart.child_bridge_list' | translate }}</p>
     <div class="text-center">
       <ul class="list-group list-group-box mb-0 w-75 mx-auto">
@@ -19,7 +19,7 @@
             <span class="me-3">
               @if (isMatterSupported) {
                 <i class="fas fa-lg fa-hap me-2"></i>
-                <i class="fas fa-lg fa-matter" [style.opacity]="bridge.matterSerialNumber ? '1' : '0.25'"></i>
+                <i class="fas fa-lg fa-matter" [class.opacity-muted]="!bridge.matterSerialNumber"></i>
               } @else {
                 <i class="fas fa-hap"></i>
               }

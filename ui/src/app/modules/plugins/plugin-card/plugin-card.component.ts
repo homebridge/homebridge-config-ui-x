@@ -36,6 +36,7 @@ import { MobileDetectService } from '@/app/core/utilities/mobile-detect.service'
   ],
   standalone: true,
   templateUrl: './plugin-card.component.html',
+  styleUrl: './plugin-card.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class PluginCardComponent implements OnInit {

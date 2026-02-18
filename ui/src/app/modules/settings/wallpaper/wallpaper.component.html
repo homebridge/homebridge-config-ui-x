@@ -12,7 +12,7 @@
   </div>
   <div class="modal-body">
     <div class="text-center mb-3">
-      <i class="fas fa-image primary-text" style="font-size: 75px"></i>
+      <i class="fas fa-image primary-text icon-xl"></i>
     </div>
     <ul class="mb-3">
       <li>{{ 'settings.display.wallpaper_intro' | translate }}</li>
@@ -23,15 +23,13 @@
       @if (wallpaperUrl()) {
         <div class="position-relative d-inline-block">
           <img
-            class="img-fluid rounded mx-auto d-block"
+            class="img-fluid rounded mx-auto d-block wallpaper-preview"
             alt="Current Wallpaper"
-            style="height: 200px"
             [src]="wallpaperUrl()"
           />
           <button
             type="button"
-            class="btn btn-danger position-absolute"
-            style="top: 10px; right: 10px"
+            class="btn btn-danger position-absolute wallpaper-delete-btn"
             [attr.aria-label]="'form.button_delete' | translate"
             (click)="clearWallpaper()"
           >
@@ -39,7 +37,7 @@
           </button>
         </div>
       } @else {
-        <div class="gradient anim rounded" style="height: 200px; width: 350px; margin: 0 auto"></div>
+        <div class="gradient anim rounded wallpaper-placeholder"></div>
       }
     </div>
     <div class="mb-0">

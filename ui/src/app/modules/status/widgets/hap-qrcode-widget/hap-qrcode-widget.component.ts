@@ -15,6 +15,7 @@ import { HomebridgeStatusResponse } from '@/app/core/server.interfaces'
   ],
   standalone: true,
   templateUrl: './hap-qrcode-widget.component.html',
+  styleUrl: './hap-qrcode-widget.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HapQrcodeWidgetComponent implements OnInit, OnDestroy {

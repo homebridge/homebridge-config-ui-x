@@ -17,6 +17,29 @@
   padding: 20px;
 }
 
+.cron-input {
+  letter-spacing: 0.15em;
+  text-align: center;
+}
+
+.hap-toggle-disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pointer-events-none {
+  pointer-events: none;
+}
+
+.qr-code-size {
+  width: 175px;
+  height: 175px;
+}
+
+.qr-code-info {
+  max-width: 400px;
+}
+
 ::ng-deep {
   body.dark-mode,
   [class*='config-ui-x-dark-mode'] {
