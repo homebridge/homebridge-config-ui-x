@@ -25,6 +25,7 @@ export class AccessoriesService {
   private accessoryCache: any[] = []
   private pairingCache: any[] = []
   private customAttributesApplied = new Set<string>()
+  private combinedServiceIds = new Set<string>()
   private io: IoNamespace
   private hiddenTypes = [
     'InputSource',
@@ -83,6 +84,7 @@ export class AccessoriesService {
     this.rooms = []
     this.accessories = { services: [] }
     this.customAttributesApplied.clear()
+    this.combinedServiceIds.clear()
     delete this.accessoryLayout
     delete this.originalLayout
   }
@@ -117,6 +119,7 @@ export class AccessoriesService {
     // Subscribe to accessory events
     this.io.socket.on('accessories-data', (data: ServiceType[]) => {
       this.parseServices(data)
+      this.combineRelatedServices()
       this.generateHelpers()
       this.sortIntoRooms()
 
@@ -356,8 +359,8 @@ export class AccessoriesService {
     const hiddenTypesSet = new Set(this.hiddenTypes)
 
     this.accessories.services.forEach((service) => {
-      // Don't put hidden types into rooms
-      if (hiddenTypesSet.has(service.type)) {
+      // Don't put hidden types or combined services into rooms
+      if (hiddenTypesSet.has(service.type) || this.combinedServiceIds.has(service.uniqueId)) {
         return
       }
 
@@ -590,6 +593,73 @@ export class AccessoriesService {
         service.linkedServices = {}
       }
       service.linkedServices[lockManagement.iid] = lockManagement
+    }
+  }
+
+  private attachFanToHeaterCooler(service: ServiceType) {
+    const heaterCoolers: ServiceType[] = []
+    const fans: ServiceType[] = []
+
+    for (const serv of this.accessories.services) {
+      if (serv.accessoryInformation.Name === service.accessoryInformation.Name && serv.accessoryInformation['Serial Number'] === service.accessoryInformation['Serial Number']) {
+        if (serv.type === 'HeaterCooler') {
+          heaterCoolers.push(serv)
+        } else if (serv.type === 'Fan' || serv.type === 'Fanv2') {
+          fans.push(serv)
+        }
+      }
+    }
+
+    if (heaterCoolers.length === 1 && fans.length === 1) {
+      const fan = fans[0]
+
+      if (!service.linkedServices) {
+        service.linkedServices = {}
+      }
+      service.linkedServices[fan.iid] = fan
+      this.combinedServiceIds.add(fan.uniqueId)
+    }
+  }
+
+  private attachFanToHumidifierDehumidifier(service: ServiceType) {
+    const humidifierDehumidifiers: ServiceType[] = []
+    const fans: ServiceType[] = []
+
+    for (const serv of this.accessories.services) {
+      if (serv.accessoryInformation.Name === service.accessoryInformation.Name && serv.accessoryInformation['Serial Number'] === service.accessoryInformation['Serial Number']) {
+        if (serv.type === 'HumidifierDehumidifier') {
+          humidifierDehumidifiers.push(serv)
+        } else if (serv.type === 'Fan' || serv.type === 'Fanv2') {
+          fans.push(serv)
+        }
+      }
+    }
+
+    if (humidifierDehumidifiers.length === 1 && fans.length === 1) {
+      const fan = fans[0]
+
+      if (!service.linkedServices) {
+        service.linkedServices = {}
+      }
+      service.linkedServices[fan.iid] = fan
+      this.combinedServiceIds.add(fan.uniqueId)
+    }
+  }
+
+  private combineRelatedServices() {
+    this.combinedServiceIds.clear()
+
+    for (const service of this.accessories.services) {
+      if (service.type === 'HeaterCooler') {
+        this.attachFanToHeaterCooler(service)
+      } else if (service.type === 'HumidifierDehumidifier') {
+        this.attachFanToHumidifierDehumidifier(service)
+      }
+    }
+
+    // Remove combined fan services from rooms in case they were added before combination was detected
+    for (const room of this.rooms) {
+      room.services = room.services.filter(s => !this.combinedServiceIds.has(s.uniqueId))
     }
   }
 }

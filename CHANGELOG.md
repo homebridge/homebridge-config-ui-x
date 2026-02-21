@@ -16,6 +16,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - add bridge filter dropdown to accessories page
 - a11y: improvements to config restore modal (from #2677) (@rfiorentino1)
 - a11y: improvements to terminal component (from #2677) (@rfiorentino1)
+- merge accessory combos of fan+heater/humidifier (see #2713)
 
 ### Other Changes
 
