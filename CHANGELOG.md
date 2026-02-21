@@ -2,7 +2,7 @@
 
 All notable changes to `homebridge-config-ui-x` will be documented in this file. This project tries to adhere to [Semantic Versioning](http://semver.org/).
 
-## v5.17.1 (Unreleased)
+## v5.18.0 (2026-02-22)
 
 ### UI Changes
 
