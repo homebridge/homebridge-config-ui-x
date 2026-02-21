@@ -72,10 +72,9 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
   private io!: IoNamespace
   private basePath = ''
   private iframe!: HTMLIFrameElement
-  private schemaFormRecentlyRefreshed = false
   private destroy$ = new Subject<void>()
+  public schemaFormData: Record<string, unknown> = {}
   public schemaFormUpdatedSubject = new Subject<unknown>()
-  private schemaFormRefreshSubject = new Subject<unknown>()
   public formUpdatedSubject = new Subject<unknown>()
   public formActionSubject = new Subject<'cancel' | 'submit'>()
 
@@ -98,16 +97,19 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
       this.isFirstSave.set(true)
     }
 
+    // Create a shallow copy for the schema form so it doesn't mutate pluginConfig[0] directly.
+    // The form strips non-schema fields (like platform, id) from its data object in-place.
+    // By giving it a copy, we preserve extra fields in pluginConfig[0] and merge back on change.
+    if (this.pluginConfig[0]) {
+      this.schemaFormData = { ...this.pluginConfig[0] }
+    }
+
     this.io = this.$ws.connectToNamespace('plugins/settings-ui')
     this.basePath = `/plugins/settings-ui/${encodeURIComponent(plugin.name)}`
 
     void this.initialize()
 
     // Set up subscriptions with proper cleanup
-    this.schemaFormRefreshSubject
-      .pipe(debounceTime(250), takeUntil(this.destroy$))
-      .subscribe(this.schemaFormRefresh.bind(this))
-
     this.schemaFormUpdatedSubject
       .pipe(debounceTime(250), skip(1), takeUntil(this.destroy$))
       .subscribe(() => {
@@ -135,7 +137,6 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
       this.io.end()
     }
 
-    this.schemaFormRefreshSubject.complete()
     this.schemaFormUpdatedSubject.complete()
     this.formUpdatedSubject.complete()
     this.formActionSubject.complete()
@@ -157,6 +158,12 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
     const plugin = this.plugin
     if (!plugin) {
       return
+    }
+
+    // Ensure pluginConfig[0] has the latest schema form data before saving,
+    // in case the debounced merge hasn't run yet.
+    if (this.pluginConfig[0] && this.showSchemaForm()) {
+      this.pluginConfig[0] = this.deepMergeConfig(this.pluginConfig[0], this.schemaFormData) as Record<string, unknown>
     }
 
     this.saveInProgress.set(true)
@@ -248,7 +255,9 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
           break
         }
         case 'config.save': {
-          this.requestResponse(e, this.savePluginConfig())
+          this.savePluginConfig()
+            .then(() => this.requestResponse(e, null))
+            .catch(err => this.requestResponse(e, { message: err?.message ?? 'Failed to save' }, false))
           break
         }
         case 'config.update': {
@@ -357,16 +366,8 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
       }
     }
 
-    // Always apply the update, then only refresh the schema form if data actually changed
-    const before = JSON.stringify(this.pluginConfig)
     this.updateConfigBlocks(pluginConfig)
-    const after = JSON.stringify(this.pluginConfig)
-
-    if (this.showSchemaForm() && before !== after) {
-      this.schemaFormRefreshSubject.next(undefined)
-    }
-
-    return this.requestResponse(event, this.getConfigBlocks())
+    return this.requestResponse(event, this.pluginConfig)
   }
 
   private requestResponse(event: MessageEvent, data: unknown, success = true): void {
@@ -445,44 +446,72 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Deep merge that overlays `update` onto `existing`, preserving keys
+   * from `existing` that are not present in `update`.
+   * For arrays, merges element-by-element by index.
+   */
+  private deepMergeConfig(existing: unknown, update: unknown): unknown {
+    if (update === null || update === undefined || typeof update !== 'object') {
+      return update
+    }
+
+    if (existing === null || existing === undefined || typeof existing !== 'object') {
+      return update
+    }
+
+    if (Array.isArray(update)) {
+      if (!Array.isArray(existing)) {
+        return update
+      }
+      return update.map((item, i) => {
+        if (i < existing.length) {
+          return this.deepMergeConfig(existing[i], item)
+        }
+        return item
+      })
+    }
+
+    const result: Record<string, unknown> = {}
+
+    // Preserve keys from existing that aren't in update (extra fields like "id")
+    for (const key of Object.keys(existing as Record<string, unknown>)) {
+      if (!(key in (update as Record<string, unknown>))) {
+        result[key] = (existing as Record<string, unknown>)[key]
+      }
+    }
+
+    // Merge keys from update recursively
+    for (const key of Object.keys(update as Record<string, unknown>)) {
+      result[key] = this.deepMergeConfig(
+        (existing as Record<string, unknown>)[key],
+        (update as Record<string, unknown>)[key],
+      )
+    }
+
+    return result
+  }
+
+  /**
    * Called when changes are made to the schema form content
-   * These changes are emitted to the custom ui
+   * Deep merges the form data (which only contains schema fields) into
+   * pluginConfig[0] (which may contain extra fields set by the plugin),
+   * then emits the full config to the custom ui iframe.
    */
   private schemaFormUpdated(): void {
     if (!this.iframe || !this.iframe.contentWindow) {
       return
     }
 
-    if (this.schemaFormRecentlyRefreshed) {
-      this.schemaFormRecentlyRefreshed = false
-      return
+    // Deep merge schema form data into pluginConfig[0], preserving extra fields at all levels
+    if (this.pluginConfig[0]) {
+      this.pluginConfig[0] = this.deepMergeConfig(this.pluginConfig[0], this.schemaFormData) as Record<string, unknown>
     }
 
-    // No need to update pluginConfig - two-way binding handles it in-place
-    // Just notify the iframe about the change
     this.iframe.contentWindow.postMessage({
       action: 'stream',
       event: 'configChanged',
-      data: this.pluginConfig,
+      data: this.getConfigBlocks(),
     }, environment.api.origin)
-  }
-
-  /**
-   * Called when changes sent from the custom ui config
-   * Updates the schema form with the new values
-   */
-  private schemaFormRefresh(): void {
-    this.schemaFormRecentlyRefreshed = true
-
-    if (this.showSchemaForm()) {
-      // Toggle the form to refresh it
-      this.showSchemaForm.set(false)
-
-      // Use a microtask to re-enable on the next tick
-      queueMicrotask(() => {
-        this.showSchemaForm.set(true)
-      })
-    }
   }
 
   /**
@@ -517,7 +546,7 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
    * Called when an other-form type is updated
    */
   private formUpdated(data: unknown): void {
-    this.iframe.contentWindow.postMessage({
+    this.iframe.contentWindow?.postMessage({
       action: 'stream',
       event: this.formId(),
       data: {
@@ -531,7 +560,7 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
    * Fired when a custom form is canceled or submitted
    */
   private formActionEvent(formEvent: 'cancel' | 'submit'): void {
-    this.iframe.contentWindow.postMessage({
+    this.iframe.contentWindow?.postMessage({
       action: 'stream',
       event: this.formId(),
       data: {

@@ -30,7 +30,12 @@
 
     @if (uiLoaded() && pluginConfig.length && schema.singular && showSchemaForm()) {
       <div class="card card-body">
-        <app-schema-form [configSchema]="schema" [(data)]="pluginConfig[0]" (isValid)="onIsValid($event)" />
+        <app-schema-form
+          [configSchema]="schema"
+          [(data)]="schemaFormData"
+          (dataChanged)="schemaFormUpdatedSubject.next($event)"
+          (isValid)="onIsValid($event)"
+        />
       </div>
     }
     @if (formId()) {
