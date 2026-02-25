@@ -1,0 +1,193 @@
+/**
+ * Consolidated Matter type definitions
+ */
+
+// --- Config types ---
+
+/**
+ * Matter configuration interface
+ */
+export interface MatterConfig {
+  port?: number
+}
+
+// --- Accessories types ---
+
+/**
+ * Represents a Matter event from the IPC service
+ */
+export type MatterEvent
+  = | { type: 'accessoriesData', correlationId?: string, data: MatterAccessoriesResponse }
+    | { type: 'accessoryUpdate', correlationId?: string, data: MatterStateUpdate }
+    | { type: 'accessoryAdded', correlationId?: string, data: MatterAccessoryInfo }
+    | { type: 'accessoryRemoved', correlationId?: string, data: MatterAccessoryInfo }
+    | { type: 'accessoryControlResponse', correlationId?: string, data: MatterControlResponse }
+    | { type: 'accessoryInfo', correlationId?: string, data: MatterAccessoryInfo }
+
+/**
+ * Response from getMatterAccessories IPC call
+ */
+export interface MatterAccessoriesResponse {
+  accessories?: MatterAccessory[]
+  error?: string
+}
+
+/**
+ * Raw Matter accessory data from IPC
+ */
+export interface MatterAccessory {
+  uuid: string
+  displayName: string
+  deviceType: string
+  clusters: Record<string, Record<string, unknown>>
+  manufacturer?: string
+  model?: string
+  serialNumber?: string
+  firmwareRevision?: string
+  bridge?: {
+    name?: string
+    username?: string
+  }
+  plugin?: string
+  platform?: string
+  commissioned?: boolean
+  fabricCount?: number
+  fabrics?: MatterFabric[]
+  parts?: MatterAccessoryPart[]
+}
+
+/**
+ * Part of a composed Matter accessory
+ */
+export interface MatterAccessoryPart {
+  id: string
+  displayName: string
+  deviceType: string
+  clusters: Record<string, Record<string, unknown>>
+}
+
+/**
+ * Matter accessory info response
+ */
+export interface MatterAccessoryInfo extends MatterAccessory {
+  error?: string
+}
+
+/**
+ * Transformed Matter service for the UI
+ */
+export interface MatterService {
+  uniqueId: string
+  uuid: string
+  serviceName: string
+  displayName: string
+  deviceType: string
+  clusters: Record<string, Record<string, unknown>>
+  partId?: string
+  protocol: 'matter'
+  instance: {
+    name: string
+    username: string
+  }
+  accessoryInformation: {
+    'Name': string
+    'Manufacturer': string
+    'Model': string
+    'Serial Number': string
+    'Firmware Revision': string
+  }
+  bridge?: {
+    name?: string
+    username?: string
+  }
+  plugin?: string
+  platform?: string
+  commissioned?: boolean
+  fabricCount?: number
+  fabrics?: MatterFabric[]
+  aid: 0
+  iid: 0
+}
+
+/**
+ * Matter state update event
+ */
+export interface MatterStateUpdate {
+  uuid: string
+  cluster: string
+  state: Record<string, unknown>
+  partId?: string
+}
+
+/**
+ * Minimal representation of a Matter fabric
+ */
+export interface MatterFabric {
+  fabricIndex: number
+  label?: string
+  vendorId?: number
+  fabricId?: number
+  nodeId?: number
+}
+
+/**
+ * Matter control response
+ */
+export interface MatterControlResponse {
+  success: boolean
+  error?: string
+}
+
+/**
+ * Matter control request
+ */
+export interface MatterControlRequest {
+  uniqueId: string
+  cluster: string
+  attributes: Record<string, unknown>
+}
+
+/**
+ * Stored Matter accessory as read from disk (accessories.json)
+ */
+export interface StoredMatterAccessory {
+  uuid: string
+  displayName?: string
+  plugin?: string
+  manufacturer?: string
+  model?: string
+  serialNumber?: string
+  /** Bridge device ID (12 hex chars) — added at read time */
+  $deviceId?: string
+  /** Protocol marker — added at read time */
+  $protocol?: 'matter'
+  [key: string]: unknown
+}
+
+// --- Status types ---
+
+export interface HomebridgeStatusMatterUpdate {
+  enabled: boolean
+  port?: number
+  setupUri?: string
+  pin?: string
+  serialNumber?: string
+  commissioned?: boolean
+  deviceCount?: number
+}
+
+// --- Network overview types ---
+
+/**
+ * A single row in the network overview table
+ */
+export interface NetworkOverviewEntry {
+  service: string
+  port: number
+  protocol: string
+  bridge: string
+  status: string
+  matterPort?: number
+  commissioned?: boolean
+  deviceCount?: number
+}

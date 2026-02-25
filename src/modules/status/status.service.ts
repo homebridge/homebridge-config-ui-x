@@ -2,6 +2,8 @@
 import type { Subscription } from 'rxjs'
 import type { Systeminformation } from 'systeminformation'
 
+import type { HomebridgeStatusMatterUpdate } from '../../core/matter/matter.interfaces.js'
+
 import { exec, execSync } from 'node:child_process'
 import { readFile } from 'node:fs/promises'
 import { cpus, loadavg, platform, userInfo } from 'node:os'
@@ -37,7 +39,6 @@ import {
   DockerReleaseInfo,
   HomebridgeStatsResponse,
   HomebridgeStatus,
-  HomebridgeStatusMatterUpdate,
   HomebridgeStatusUpdate,
 } from './status.interfaces.js'
 
@@ -94,6 +95,11 @@ export class StatusService {
 
     this.homebridgeIpcService.on('serverStatusUpdate', (data: HomebridgeStatusUpdate) => {
       this.homebridgeStatus = data.status
+
+      if (data.status === HomebridgeStatus.DOWN) {
+        // Reset Matter info when Homebridge goes down
+        this.matterInfo = { enabled: false }
+      }
 
       if (data?.setupUri) {
         this.serverService.setupCode = data.setupUri

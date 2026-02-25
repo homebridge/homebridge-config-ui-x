@@ -10,12 +10,12 @@ import {
   AccessoryConfig,
   HomebridgeConfig,
   HomebridgeUiBridgeConfig,
-  MatterConfig,
   PlatformConfig,
 } from '../../core/config/config.interfaces.js'
 import { ConfigService } from '../../core/config/config.service.js'
 import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.service.js'
 import { Logger } from '../../core/logger/logger.service.js'
+import { MatterConfig } from '../../core/matter/matter.interfaces.js'
 import { SchedulerService } from '../../core/scheduler/scheduler.service.js'
 import { PluginsService } from '../plugins/plugins.service.js'
 

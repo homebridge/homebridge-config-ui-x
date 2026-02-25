@@ -39,6 +39,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - lint: apply `angular-template/label-has-associated-control`
 - lint: apply `angular-template/no-inline-styles`
 - fix: preserve plugin-set fields in `configChanged` events
+- consolidate matter interfaces
 
 ### Homebridge Dependencies
 
