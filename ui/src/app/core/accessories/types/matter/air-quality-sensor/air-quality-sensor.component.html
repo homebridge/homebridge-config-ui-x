@@ -1,9 +1,11 @@
 <div
   class="accessory-box"
+  appLongClick
   [class.accessory-on]="airQuality() === 5"
   [class.fill-red]="airQuality() === 5"
   [class.fill-orange]="[3, 4].includes(airQuality())"
   [class.fill-green]="[1, 2].includes(airQuality())"
+  (longClick)="onLongClick()"
 >
   <div class="d-flex flex-column h-100">
     <div class="accessory-svg" [attr.aria-label]="'accessories.core.air_quality_sensor' | translate">
@@ -37,7 +39,7 @@
     </div>
     <div class="accessory-label mt-auto">{{ service().customName || service().displayName }}</div>
     <div class="accessory-label" [class.grey-text]="airQuality() < 5" [class.red-text]="airQuality() === 5">
-      {{ labels[airQuality() || 0] }}
+      {{ labels[airQuality() || 0] | translate }}
     </div>
   </div>
 </div>
