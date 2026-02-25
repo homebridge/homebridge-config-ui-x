@@ -17,6 +17,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - improvements to add/edit/delete user forms and ui
 - use new font-awesome `ko-fi` icon for donate modal
 - add more entries to the credits modal
+- update remove all accessories component
 
 ### Other Changes
 
