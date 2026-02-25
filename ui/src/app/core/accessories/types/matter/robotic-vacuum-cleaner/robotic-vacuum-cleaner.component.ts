@@ -31,7 +31,6 @@ export class RoboticVacuumCleanerComponent {
 
   public onClick() {
     if (!this.readyForControl()) {
-      console.warn('Robotic vacuum: Not ready for control')
       return
     }
 

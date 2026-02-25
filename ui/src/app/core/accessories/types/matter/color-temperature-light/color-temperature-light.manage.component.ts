@@ -1,16 +1,11 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, inject, OnInit } from '@angular/core'
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe } from '@ngx-translate/core'
 import { NouisliderComponent } from 'ng2-nouislider'
 import { ToastrService } from 'ngx-toastr'
 import { Subject } from 'rxjs'
-import { debounceTime } from 'rxjs/operators'
 
-import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
-import { AccessoriesService } from '@/app/core/accessories/accessories.service'
-import { ACCESSORY_MANAGE_MODAL_DATA } from '@/app/core/accessories/types/base-manage.component'
+import { BaseManageComponent } from '@/app/core/accessories/types/base-manage.component'
 import { MatterBrightness, MatterColorTemperature } from '@/app/core/accessories/types/matter/matter-device.constants'
 import { getBrightnessLevel, getColorTemperatureMireds, getOnOffState, levelToPercentage } from '@/app/core/accessories/types/matter/matter-device.utils'
 import { ConvertMiredPipe } from '@/app/core/pipes/convert-mired.pipe'
@@ -28,19 +23,9 @@ import { ColourService } from '@/app/core/utilities/colour.service'
   templateUrl: './color-temperature-light.manage.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ColorTemperatureLightManageComponent implements OnInit {
-  protected destroyRef = inject(DestroyRef)
-  protected $activeModal = inject(NgbActiveModal)
-  protected cdr = inject(ChangeDetectorRef)
+export class ColorTemperatureLightManageComponent extends BaseManageComponent {
   private $colour = inject(ColourService)
   private $toastr = inject(ToastrService)
-
-  // Inject modal data using modern DI pattern
-  private modalData = inject(ACCESSORY_MANAGE_MODAL_DATA)
-
-  // Public properties for component use (accessed by templates)
-  public service!: ServiceTypeX
-  public $accessories!: AccessoriesService
 
   public targetMode: boolean
   public targetBrightness: { value: number, min: number, max: number, step: number }
@@ -49,27 +34,7 @@ export class ColorTemperatureLightManageComponent implements OnInit {
   public targetColorTemperatureChanged: Subject<number> = new Subject<number>()
   public sliderIndex: number = 0
 
-  public ngOnInit() {
-    // Null safety check
-    if (!this.modalData.service || !this.modalData.$accessories) {
-      console.error('ColorTemperatureLightManageComponent: service or $accessories not provided')
-      this.$activeModal.dismiss('Missing required data')
-      return
-    }
-
-    // Store in public properties (same object references)
-    this.service = this.modalData.service
-    this.$accessories = this.modalData.$accessories
-
-    this.setupComponent()
-    this.subscribeToAccessoryUpdates()
-  }
-
-  public dismissModal() {
-    this.$activeModal.dismiss('Dismiss')
-  }
-
-  private setupComponent() {
+  protected setupComponent() {
     this.createDebouncedSubscription(
       this.targetBrightnessChanged,
       async () => {
@@ -130,21 +95,7 @@ export class ColorTemperatureLightManageComponent implements OnInit {
     this.loadTargetColorTemperature()
   }
 
-  private subscribeToAccessoryUpdates() {
-    if (this.$accessories) {
-      this.$accessories.accessoryData.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
-        // Update service reference to get latest data (zoneless Angular compatibility)
-        const updatedService = this.$accessories.accessories.services.find(s => s.uniqueId === this.service.uniqueId)
-        if (updatedService) {
-          this.service = updatedService
-        }
-        this.handleAccessoryUpdate()
-        this.cdr.markForCheck()
-      })
-    }
-  }
-
-  private handleAccessoryUpdate() {
+  protected handleAccessoryUpdate() {
     this.targetMode = getOnOffState(this.service)
     this.targetBrightness.value = getBrightnessLevel(this.service)
 
@@ -196,30 +147,6 @@ export class ColorTemperatureLightManageComponent implements OnInit {
     const miredValue = this.$colour.kelvinToMired(this.targetColorTemperature.value)
     this.targetColorTemperature.mired = miredValue
     this.targetColorTemperatureChanged.next(miredValue)
-  }
-
-  private createDebouncedSubscription<T>(
-    subject$: Subject<T>,
-    callback: (value: T) => void,
-    debounceMs: number = 500,
-  ) {
-    subject$
-      .pipe(debounceTime(debounceMs), takeUntilDestroyed(this.destroyRef))
-      .subscribe(callback)
-  }
-
-  private applySliderGradient(gradient: string, selector: string = '.noUi-target') {
-    requestAnimationFrame(() => {
-      const sliderElements = document.querySelectorAll<HTMLElement>(selector)
-      sliderElements.forEach((sliderElement) => {
-        sliderElement.style.background = gradient
-      })
-    })
-  }
-
-  protected blurTarget(event: MouseEvent) {
-    const target = event.target as HTMLButtonElement
-    target.blur()
   }
 
   private loadTargetBrightness() {
