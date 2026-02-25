@@ -13,7 +13,7 @@ import { Tail } from 'tail'
 
 import { ConfigService } from '../../core/config/config.service.js'
 import { NodePtyService } from '../../core/node-pty/node-pty.service.js'
-import { LogTermSize } from './log.interfaces.js'
+import { TermSize } from '../platform-tools/terminal/terminal.interfaces.js'
 
 @Injectable()
 export class LogService {
@@ -55,7 +55,7 @@ export class LogService {
    * @param client
    * @param size
    */
-  public connect(client: EventEmitter, size: LogTermSize) {
+  public connect(client: EventEmitter, size: TermSize) {
     this.ending = false
 
     if (!satisfies(process.version, `>=${this.configService.minimumNodeVersion}`)) {
@@ -82,7 +82,7 @@ export class LogService {
    * @param client
    * @param size
    */
-  private tailLog(client: EventEmitter, size: LogTermSize) {
+  private tailLog(client: EventEmitter, size: TermSize) {
     const command = [...this.command]
 
     // Spawn the process that will output the logs

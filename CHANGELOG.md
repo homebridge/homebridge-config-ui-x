@@ -41,6 +41,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix: preserve plugin-set fields in `configChanged` events
 - consolidate matter interfaces
 - extract docker interfaces
+- delete unused log interfaces
 
 ### Homebridge Dependencies
 
