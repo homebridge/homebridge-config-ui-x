@@ -40,6 +40,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - lint: apply `angular-template/no-inline-styles`
 - fix: preserve plugin-set fields in `configChanged` events
 - consolidate matter interfaces
+- extract docker interfaces
 
 ### Homebridge Dependencies
 
