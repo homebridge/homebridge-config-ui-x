@@ -64,6 +64,20 @@ form {
   }
 }
 
+// HAP always-on toggle
+.hap-toggle-disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pointer-events-none {
+  pointer-events: none;
+}
+
+.cursor-not-allowed {
+  cursor: not-allowed;
+}
+
 // Cron input styling
 .cron-input {
   letter-spacing: 0.15em;

@@ -7,6 +7,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 ### UI Changes
 
 - info widget - remove margin on small table (#2727) (@dnicolson)
+- feat: settings UI reorganization
 - upgrade `xterm` to `v6` + style improvements
 - added option: global terminal/log window settings
 - use new font-awesome `ko-fi` icon for donate modal

@@ -289,12 +289,68 @@
                 </button>
               </li>
             }
+            @if (
+              !isItemHidden('setting-terminal-font-size') ||
+              !isItemHidden('setting-terminal-font-weight') ||
+              !isItemHidden('setting-terminal-lighting-mode')
+            ) {
+              <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+                <span>{{ 'settings.terminal.theme' | translate }}</span>
+                <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
+                  @if (
+                    uiTerminalFontSizeIsSaving() || uiTerminalFontWeightIsSaving() || uiTerminalLightingModeIsSaving()
+                  ) {
+                    <i
+                      @fadeInOut
+                      class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
+                    ></i>
+                  }
+                  <div class="d-flex gap-2 order-1 order-md-2 resp-select-width">
+                    <div class="d-flex flex-column flex-fill">
+                      <select
+                        class="custom-select w-100"
+                        [formControl]="uiTerminalFontSizeFormControl"
+                        [attr.aria-label]="'settings.terminal.font_size' | translate"
+                      >
+                        @for (size of fontSizes; track size) {
+                          <option [value]="size">{{ size }}</option>
+                        }
+                      </select>
+                    </div>
+                    <div class="d-flex flex-column flex-fill">
+                      <select
+                        class="custom-select w-100"
+                        [formControl]="uiTerminalFontWeightFormControl"
+                        [attr.aria-label]="'settings.terminal.font_weight' | translate"
+                      >
+                        @for (weight of fontWeights; track weight) {
+                          <option [value]="weight">{{ weight }}</option>
+                        }
+                      </select>
+                    </div>
+                    <div class="d-flex flex-column flex-fill">
+                      <select
+                        class="custom-select terminal-theme-select w-100"
+                        [formControl]="uiTerminalLightingModeFormControl"
+                        [attr.aria-label]="'settings.display.lighting_mode' | translate"
+                        [disabled]="isTerminalLightingModeDisabled"
+                        [class.disabled-no-interaction]="isTerminalLightingModeDisabled"
+                      >
+                        @for (theme of terminalThemes; track theme) {
+                          <option [value]="theme">{{ theme === 'light' ? 'Light' : 'Dark' }}</option>
+                        }
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </li>
+            }
           </ul>
         }
       </div>
     }
 
-    <! -- STARTUP/ENV OPTIONS - ->
+    <! -- HOMEBRIDGE SETTINGS - ->
     @if (isSectionVisible('startup')) {
       <div class="my-4">
         <div
@@ -311,37 +367,11 @@
               [class.fa-chevron-down]="showFields().startup"
               [class.fa-chevron-right]="!showFields().startup"
             ></i>
-            {{ 'settings.title_startup_options' | translate }}
+            {{ 'settings.title_homebridge' | translate }}
           </h5>
         </div>
         @if (showFields().startup) {
           <ul class="list-group list-group-box mb-4 mx-0" id="fieldsStartup">
-            @if (!isItemHidden('setting-debug')) {
-              <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
-                <span>
-                  {{ 'settings.startup.debug' | translate }} <code>-D</code><br />
-                  <small class="grey-text pe-2">{{ debugFieldDesc | translate }}</small>
-                </span>
-                <div class="d-flex align-items-center">
-                  <div class="order-1 order-md-2">
-                    <input
-                      type="checkbox"
-                      class="rendux-input"
-                      id="homebridgeDebugMode"
-                      [formControl]="hbDebugFormControl"
-                      [attr.aria-label]="'settings.startup.debug' | translate"
-                    />
-                    <label for="homebridgeDebugMode" class="rendux-label ms-3 min-w-50"></label>
-                  </div>
-                  @if (hbDebugIsSaving()) {
-                    <i
-                      @fadeInOut
-                      class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
-                    ></i>
-                  }
-                </div>
-              </li>
-            }
             @if (!isItemHidden('setting-keep')) {
               <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
                 <span>
@@ -366,48 +396,6 @@
                     ></i>
                   }
                 </div>
-              </li>
-            }
-            @if (!isItemHidden('setting-insecure')) {
-              <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
-                <span>
-                  {{ 'settings.startup.insecure' | translate }} <code>-I</code><br />
-                  <small class="grey-text pe-2">{{ 'settings.startup.insecure_desc' | translate }}</small>
-                </span>
-                <div class="d-flex align-items-center">
-                  <div class="order-1 order-md-2">
-                    <input
-                      type="checkbox"
-                      class="rendux-input"
-                      id="homebridgeInsecureMode"
-                      [formControl]="hbInsecureFormControl"
-                      [attr.aria-label]="'settings.startup.insecure' | translate"
-                    />
-                    <label for="homebridgeInsecureMode" class="rendux-label ms-3 min-w-50"></label>
-                  </div>
-                  @if (hbInsecureIsSaving()) {
-                    <i
-                      @fadeInOut
-                      class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
-                    ></i>
-                  }
-                </div>
-              </li>
-            }
-            @if (!isItemHidden('setting-security-control') && hbInsecureFormControl.value) {
-              <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
-                <span class="pe-2">
-                  {{ 'settings.security.ui_control' | translate }}<br />
-                  <small class="grey-text pe-2">{{ 'settings.security.ui_control_desc' | translate }}</small>
-                </span>
-                <button
-                  type="button"
-                  class="btn btn-primary waves-effect m-0 ms-3 py-1 min-w-50"
-                  [attr.aria-label]="'settings.security.ui_control' | translate"
-                  (click)="accessoryUiControl()"
-                >
-                  <i class="fas fa-arrow-right"></i>
-                </button>
               </li>
             }
             @if (!isItemHidden('setting-scheduled-restart')) {
@@ -441,24 +429,129 @@
                 </div>
               </li>
             }
-            @if (!isItemHidden('setting-metrics-startup')) {
+            @if (!isItemHidden('setting-interfaces')) {
               <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
-                <span>
-                  {{ 'settings.startup.metrics' | translate }}<br />
-                  <small class="grey-text pe-2">{{ 'settings.startup.metrics_desc' | translate }}</small>
+                <span class="pe-2">
+                  {{ 'settings.network.title_network_interfaces' | translate }}<br />
+                  <div class="small grey-text pe-2">{{ 'settings.network.message_network_interface' | translate }}</div>
+                  @for (adapter of adaptersSelected(); track adapter) {
+                    <span
+                      class="badge badge-primary me-1"
+                      [class.badge-danger]="adapter.missing"
+                      [class.badge-info]="!adapter.missing"
+                    >
+                      @if (adapter.missing) {
+                        <i class="fas fa-exclamation-triangle"></i>
+                      }
+                      {{ adapter.iface }}:
+                      <span class="fw-normal">{{
+                        adapter.missing
+                          ? ('settings.mdns_advertiser_not_connected' | translate)
+                          : adapter.ip4 || adapter.ip6
+                      }}</span>
+                    </span>
+                  }
                 </span>
-                <div class="d-flex align-items-center">
-                  <div class="order-1 order-md-2">
-                    <input
-                      type="checkbox"
-                      class="rendux-input"
-                      id="homebridgeMetrics"
-                      [formControl]="uiMetricsFormControl"
-                      [attr.aria-label]="'settings.startup.metrics' | translate"
-                    />
-                    <label for="homebridgeMetrics" class="rendux-label ms-3 min-w-50"></label>
-                  </div>
-                  @if (uiMetricsIsSaving()) {
+                <button
+                  type="button"
+                  class="btn btn-primary waves-effect m-0 ms-3 py-1 min-w-50"
+                  [disabled]="!adaptersAvailable().length"
+                  [attr.aria-label]="'settings.network.title_network_interfaces' | translate"
+                  (click)="selectNetworkInterfaces()"
+                >
+                  <i class="fas fa-arrow-right"></i>
+                </button>
+              </li>
+            }
+            @if (!isItemHidden('setting-terminal-log-max')) {
+              <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+                <span>
+                  {{ 'settings.terminal.log_max' | translate }}<br />
+                  <small class="grey-text pe-2">{{ 'settings.terminal.log_max_desc' | translate }}</small>
+                </span>
+                <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
+                  <input
+                    class="form-control custom-input resp-input order-1 order-md-2 font-monospace"
+                    type="number"
+                    min="-1"
+                    placeholder="1000000"
+                    [formControl]="hbLogSizeFormControl"
+                    [attr.aria-label]="'settings.terminal.log_max' | translate"
+                    [class.is-invalid]="hbLogSizeIsInvalid()"
+                  />
+                  @if (hbLogSizeIsSaving()) {
+                    <i
+                      @fadeInOut
+                      class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
+                    ></i>
+                  }
+                </div>
+              </li>
+            }
+            @if (hbLogSizeFormControl.value > 0) {
+              <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+                <span>
+                  {{ 'settings.terminal.log_truncate' | translate }}<br />
+                  <small class="grey-text pe-2">{{ 'settings.terminal.log_truncate_desc' | translate }}</small>
+                </span>
+                <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
+                  <input
+                    class="form-control custom-input resp-input order-1 order-md-2 font-monospace"
+                    type="number"
+                    min="0"
+                    placeholder="200000"
+                    [formControl]="hbLogTruncateFormControl"
+                    [attr.aria-label]="'settings.terminal.log_truncate' | translate"
+                    [class.is-invalid]="hbLogTruncateIsInvalid()"
+                  />
+                  @if (hbLogTruncateIsSaving()) {
+                    <i
+                      @fadeInOut
+                      class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
+                    ></i>
+                  }
+                </div>
+              </li>
+            }
+            @if (!isItemHidden('setting-env-debug-manual')) {
+              <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+                <span>
+                  <span class="font-monospace">DEBUG</span><br />
+                  <small
+                    class="grey-text pe-2"
+                    [innerHTML]="'settings.service.debug_tooltip' | translate: { link: linkDebug }"
+                  ></small>
+                </span>
+                <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
+                  <input
+                    class="form-control custom-input resp-input order-1 order-md-2 font-monospace"
+                    type="text"
+                    placeholder="HAP-NodeJS:Advertiser,HAP-NodeJS:Service"
+                    [formControl]="hbEnvDebugFormControl"
+                  />
+                  @if (hbEnvDebugIsSaving()) {
+                    <i
+                      @fadeInOut
+                      class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
+                    ></i>
+                  }
+                </div>
+              </li>
+            }
+            @if (!isItemHidden('setting-env-node')) {
+              <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+                <span>
+                  <span class="font-monospace">NODE_OPTIONS</span><br />
+                  <small class="grey-text pe-2">{{ 'settings.service.node_tooltip' | translate }}</small>
+                </span>
+                <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
+                  <input
+                    class="form-control custom-input resp-input order-1 order-md-2 font-monospace"
+                    type="text"
+                    placeholder="--max-old-space-size=512 --max-http-header-size=8192"
+                    [formControl]="hbEnvNodeFormControl"
+                  />
+                  @if (hbEnvNodeIsSaving()) {
                     <i
                       @fadeInOut
                       class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
@@ -488,6 +581,17 @@
                     ></i>
                   }
                 </div>
+              </li>
+            }
+            @if (!isItemHidden('setting-port-overview')) {
+              <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
+                <span>
+                  {{ 'settings.ports.title' | translate }}<br />
+                  <small class="grey-text pe-2">{{ 'settings.ports.desc' | translate }}</small>
+                </span>
+                <button type="button" class="btn btn-primary btn-sm" (click)="openPortOverviewModal()">
+                  <i class="fas fa-arrow-right"></i>
+                </button>
               </li>
             }
             @if (platform === 'linux') {
@@ -559,53 +663,6 @@
                 </li>
               }
             }
-            @if (!isItemHidden('setting-env-debug-manual')) {
-              <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
-                <span>
-                  <span class="font-monospace">DEBUG</span><br />
-                  <small
-                    class="grey-text pe-2"
-                    [innerHTML]="'settings.service.debug_tooltip' | translate: { link: linkDebug }"
-                  ></small>
-                </span>
-                <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
-                  <input
-                    class="form-control custom-input resp-input order-1 order-md-2 font-monospace"
-                    type="text"
-                    placeholder="HAP-NodeJS:Advertiser,HAP-NodeJS:Service"
-                    [formControl]="hbEnvDebugFormControl"
-                  />
-                  @if (hbEnvDebugIsSaving()) {
-                    <i
-                      @fadeInOut
-                      class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
-                    ></i>
-                  }
-                </div>
-              </li>
-            }
-            @if (!isItemHidden('setting-env-node')) {
-              <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
-                <span>
-                  <span class="font-monospace">NODE_OPTIONS</span><br />
-                  <small class="grey-text pe-2">{{ 'settings.service.node_tooltip' | translate }}</small>
-                </span>
-                <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
-                  <input
-                    class="form-control custom-input resp-input order-1 order-md-2 font-monospace"
-                    type="text"
-                    placeholder="--max-old-space-size=512 --max-http-header-size=8192"
-                    [formControl]="hbEnvNodeFormControl"
-                  />
-                  @if (hbEnvNodeIsSaving()) {
-                    <i
-                      @fadeInOut
-                      class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
-                    ></i>
-                  }
-                </div>
-              </li>
-            }
             @if (runningInDocker) {
               <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
                 <span>
@@ -626,7 +683,7 @@
       </div>
     }
 
-    <! -- NETWORK SETTINGS - ->
+    <! -- HOMEBRIDGE UI SETTINGS - ->
     @if (isSectionVisible('network')) {
       <div class="my-4">
         <div
@@ -643,155 +700,11 @@
               [class.fa-chevron-down]="showFields().network"
               [class.fa-chevron-right]="!showFields().network"
             ></i>
-            {{ 'settings.network.title_network' | translate }}
+            {{ 'settings.network.title_homebridge_ui' | translate }}
           </h5>
         </div>
         @if (showFields().network) {
           <ul class="list-group list-group-box mt-2 mx-0" id="fieldsNetwork">
-            @if (!isItemHidden('setting-interfaces')) {
-              <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
-                <span class="pe-2">
-                  {{ 'settings.network.title_network_interfaces' | translate }}<br />
-                  <div class="small grey-text pe-2">{{ 'settings.network.message_network_interface' | translate }}</div>
-                  @for (adapter of adaptersSelected(); track adapter) {
-                    <span
-                      class="badge badge-primary me-1"
-                      [class.badge-danger]="adapter.missing"
-                      [class.badge-info]="!adapter.missing"
-                    >
-                      @if (adapter.missing) {
-                        <i class="fas fa-exclamation-triangle"></i>
-                      }
-                      {{ adapter.iface }}:
-                      <span class="fw-normal">{{
-                        adapter.missing
-                          ? ('settings.mdns_advertiser_not_connected' | translate)
-                          : adapter.ip4 || adapter.ip6
-                      }}</span>
-                    </span>
-                  }
-                </span>
-                <button
-                  type="button"
-                  class="btn btn-primary waves-effect m-0 ms-3 py-1 min-w-50"
-                  [disabled]="!adaptersAvailable().length"
-                  [attr.aria-label]="'settings.network.title_network_interfaces' | translate"
-                  (click)="selectNetworkInterfaces()"
-                >
-                  <i class="fas fa-arrow-right"></i>
-                </button>
-              </li>
-            }
-            @if (!isItemHidden('setting-mdns')) {
-              <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
-                <span>
-                  {{ 'settings.mdns_advertiser' | translate }}<br />
-                  <small class="grey-text pe-2">{{ 'settings.mdns_advertiser_help' | translate }}</small>
-                </span>
-                <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
-                  <select
-                    class="custom-select resp-select order-1 order-md-2"
-                    [formControl]="hbMDnsFormControl"
-                    [attr.aria-label]="'settings.mdns_advertiser' | translate"
-                  >
-                    @if (showAvahiMdnsOption()) {
-                      <option value="avahi">Avahi ({{ 'settings.mdns_advertiser_rec' | translate }})</option>
-                    }
-                    <! -- ciao is recommended if avahi is not available - ->
-                    <option value="ciao">
-                      Ciao {{ showAvahiMdnsOption() ? '' : `(${('settings.mdns_advertiser_rec' | translate)})` }}
-                    </option>
-                    <option value="bonjour-hap">Bonjour HAP</option>
-                    @if (showResolvedMdnsOption()) {
-                      <option value="resolved">
-                        systemd-resolved ({{ 'settings.mdns_advertiser_exp' | translate }})
-                      </option>
-                    }
-                  </select>
-                  @if (hbMDnsIsSaving()) {
-                    <i
-                      @fadeInOut
-                      class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
-                    ></i>
-                  }
-                </div>
-              </li>
-            }
-            @if (!isItemHidden('setting-port-hb')) {
-              <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
-                <span>
-                  {{ 'settings.network.port_hb' | translate }}<br />
-                  <small class="grey-text pe-2">{{ 'settings.network.port_hb_desc' | translate }}</small>
-                </span>
-                <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
-                  <input
-                    class="form-control custom-input resp-input order-1 order-md-2 font-monospace"
-                    type="number"
-                    min="1025"
-                    max="65533"
-                    [formControl]="hbPortFormControl"
-                    [attr.aria-label]="'settings.network.port_hb' | translate"
-                    [class.is-invalid]="hbPortIsInvalid()"
-                  />
-                  @if (hbPortIsSaving()) {
-                    <i
-                      @fadeInOut
-                      class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
-                    ></i>
-                  }
-                </div>
-              </li>
-            }
-            @if (!isItemHidden('setting-port-range')) {
-              <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
-                <span>
-                  {{ 'settings.network.port_start' | translate }}<br />
-                  <small class="grey-text pe-2">{{ 'settings.network.port_start_desc' | translate }}</small>
-                </span>
-                <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
-                  <input
-                    class="form-control custom-input resp-input order-1 order-md-2 font-monospace"
-                    type="number"
-                    min="1025"
-                    max="65533"
-                    [formControl]="hbStartPortFormControl"
-                    [attr.aria-label]="'settings.network.port_start' | translate"
-                    [class.is-invalid]="hbStartPortIsInvalid()"
-                  />
-                  @if (hbStartPortIsSaving()) {
-                    <i
-                      @fadeInOut
-                      class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
-                    ></i>
-                  }
-                </div>
-              </li>
-            }
-            @if (!isItemHidden('setting-port-end')) {
-              <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
-                <span>
-                  {{ 'settings.network.port_end' | translate }}<br />
-                  <small class="grey-text pe-2">{{ 'settings.network.port_end_desc' | translate }}</small>
-                </span>
-                <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
-                  <input
-                    class="form-control custom-input resp-input order-1 order-md-2 font-monospace"
-                    type="number"
-                    min="1025"
-                    max="65533"
-                    [formControl]="hbEndPortFormControl"
-                    [attr.aria-label]="'settings.network.port_end' | translate"
-                    [class.is-invalid]="hbEndPortIsInvalid()"
-                  />
-                  @if (hbEndPortIsSaving()) {
-                    <i
-                      @fadeInOut
-                      class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
-                    ></i>
-                  }
-                </div>
-              </li>
-            }
             @if (!isItemHidden('setting-network-host')) {
               <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
                 <span>
@@ -910,54 +823,24 @@
                 </div>
               </li>
             }
-          </ul>
-        }
-      </div>
-    }
-
-    <! -- MATTER SETTINGS - ->
-    @if (isMatterSupported && isSectionVisible('matter')) {
-      <div class="my-4">
-        <div
-          role="button"
-          tabindex="0"
-          class="mt-3 hover-pointer"
-          [attr.aria-expanded]="showFields().matter ? 'true' : 'false'"
-          [attr.aria-controls]="'fieldsMatter'"
-          (click)="toggleSection('matter')"
-        >
-          <h5 class="primary-text">
-            <i
-              class="fa"
-              [class.fa-chevron-down]="showFields().matter"
-              [class.fa-chevron-right]="!showFields().matter"
-            ></i>
-            {{ 'settings.matter.title' | translate }}
-          </h5>
-        </div>
-        @if (showFields().matter) {
-          <p class="small grey-text mb-2 mx-0">{{ 'settings.matter.desc' | translate }}</p>
-          <ul class="list-group list-group-box mt-2 mx-0" id="fieldsMatter">
-            @if (!isItemHidden('setting-matter-enabled')) {
+            @if (!isItemHidden('setting-metrics-startup')) {
               <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
                 <span>
-                  {{ 'common.labels.enabled' | translate }}
-                  <span class="badge badge-primary ms-1">{{ 'common.labels.beta' | translate }}</span
-                  ><br />
-                  <small class="grey-text pe-2">{{ 'settings.matter.enabled_desc' | translate }}</small>
+                  {{ 'settings.startup.metrics' | translate }}<br />
+                  <small class="grey-text pe-2">{{ 'settings.startup.metrics_desc' | translate }}</small>
                 </span>
                 <div class="d-flex align-items-center">
                   <div class="order-1 order-md-2">
                     <input
                       type="checkbox"
                       class="rendux-input"
-                      id="matterEnabled"
-                      [formControl]="matterEnabledFormControl"
-                      [attr.aria-label]="'common.labels.enabled' | translate"
+                      id="homebridgeMetrics"
+                      [formControl]="uiMetricsFormControl"
+                      [attr.aria-label]="'settings.startup.metrics' | translate"
                     />
-                    <label for="matterEnabled" class="rendux-label ms-3 min-w-50"></label>
+                    <label for="homebridgeMetrics" class="rendux-label ms-3 min-w-50"></label>
                   </div>
-                  @if (matterEnabledIsSaving()) {
+                  @if (uiMetricsIsSaving()) {
                     <i
                       @fadeInOut
                       class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
@@ -966,78 +849,24 @@
                 </div>
               </li>
             }
-            @if (matterEnabledFormControl.value) {
-              @if (!isItemHidden('setting-matter-port')) {
-                <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
-                  <span>
-                    {{ 'settings.matter.port' | translate }}<br />
-                    <small class="grey-text pe-2">{{ 'settings.matter.port_desc' | translate }}</small>
-                  </span>
-                  <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
+            @if (!isItemHidden('setting-insecure')) {
+              <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
+                <span>
+                  {{ 'settings.startup.insecure' | translate }} <code>-I</code><br />
+                  <small class="grey-text pe-2">{{ 'settings.startup.insecure_desc' | translate }}</small>
+                </span>
+                <div class="d-flex align-items-center">
+                  <div class="order-1 order-md-2">
                     <input
-                      class="form-control custom-input resp-input order-1 order-md-2 font-monospace"
-                      type="number"
-                      min="1024"
-                      max="65535"
-                      placeholder="5540"
-                      [formControl]="matterPortFormControl"
-                      [attr.aria-label]="'settings.matter.port' | translate"
-                      [class.is-invalid]="matterPortIsInvalid()"
+                      type="checkbox"
+                      class="rendux-input"
+                      id="homebridgeInsecureMode"
+                      [formControl]="hbInsecureFormControl"
+                      [attr.aria-label]="'settings.startup.insecure' | translate"
                     />
-                    @if (matterPortIsSaving()) {
-                      <i
-                        @fadeInOut
-                        class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
-                      ></i>
-                    }
+                    <label for="homebridgeInsecureMode" class="rendux-label ms-3 min-w-50"></label>
                   </div>
-                </li>
-              }
-            }
-          </ul>
-        }
-      </div>
-    }
-
-    <! -- LOGGING & TERMINAL SETTINGS - ->
-    @if (isSectionVisible('terminal')) {
-      <div class="my-4">
-        <div
-          role="button"
-          tabindex="0"
-          class="mt-3 hover-pointer"
-          [attr.aria-expanded]="showFields().terminal ? 'true' : 'false'"
-          [attr.aria-controls]="'fieldsTerminal'"
-          (click)="toggleSection('terminal')"
-        >
-          <h5 class="primary-text">
-            <i
-              class="fa"
-              [class.fa-chevron-down]="showFields().terminal"
-              [class.fa-chevron-right]="!showFields().terminal"
-            ></i>
-            {{ 'settings.network.title_terminal' | translate }}
-          </h5>
-        </div>
-        @if (showFields().terminal) {
-          <ul class="list-group list-group-box mt-2 mx-0" id="fieldsTerminal">
-            @if (!isItemHidden('setting-terminal-log-max')) {
-              <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
-                <span>
-                  {{ 'settings.terminal.log_max' | translate }}<br />
-                  <small class="grey-text pe-2">{{ 'settings.terminal.log_max_desc' | translate }}</small>
-                </span>
-                <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
-                  <input
-                    class="form-control custom-input resp-input order-1 order-md-2 font-monospace"
-                    type="number"
-                    min="-1"
-                    placeholder="1000000"
-                    [formControl]="hbLogSizeFormControl"
-                    [attr.aria-label]="'settings.terminal.log_max' | translate"
-                    [class.is-invalid]="hbLogSizeIsInvalid()"
-                  />
-                  @if (hbLogSizeIsSaving()) {
+                  @if (hbInsecureIsSaving()) {
                     <i
                       @fadeInOut
                       class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
@@ -1046,29 +875,20 @@
                 </div>
               </li>
             }
-            @if (hbLogSizeFormControl.value > 0) {
-              <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
-                <span>
-                  {{ 'settings.terminal.log_truncate' | translate }}<br />
-                  <small class="grey-text pe-2">{{ 'settings.terminal.log_truncate_desc' | translate }}</small>
+            @if (!isItemHidden('setting-security-control') && hbInsecureFormControl.value) {
+              <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
+                <span class="pe-2">
+                  {{ 'settings.security.ui_control' | translate }}<br />
+                  <small class="grey-text pe-2">{{ 'settings.security.ui_control_desc' | translate }}</small>
                 </span>
-                <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
-                  <input
-                    class="form-control custom-input resp-input order-1 order-md-2 font-monospace"
-                    type="number"
-                    min="0"
-                    placeholder="200000"
-                    [formControl]="hbLogTruncateFormControl"
-                    [attr.aria-label]="'settings.terminal.log_truncate' | translate"
-                    [class.is-invalid]="hbLogTruncateIsInvalid()"
-                  />
-                  @if (hbLogTruncateIsSaving()) {
-                    <i
-                      @fadeInOut
-                      class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
-                    ></i>
-                  }
-                </div>
+                <button
+                  type="button"
+                  class="btn btn-primary waves-effect m-0 ms-3 py-1 min-w-50"
+                  [attr.aria-label]="'settings.security.ui_control' | translate"
+                  (click)="accessoryUiControl()"
+                >
+                  <i class="fas fa-arrow-right"></i>
+                </button>
               </li>
             }
             @if (enableTerminalAccess) {
@@ -1152,94 +972,6 @@
                 }
               }
             }
-            @if (
-              !isItemHidden('setting-terminal-font-size') ||
-              !isItemHidden('setting-terminal-font-weight') ||
-              !isItemHidden('setting-terminal-lighting-mode')
-            ) {
-              <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
-                <span>
-                  {{ 'settings.terminal.theme' | translate }}
-                  <span class="badge badge-primary ms-1">{{ 'common.labels.beta' | translate }}</span
-                  ><br />
-                  <small class="grey-text pe-2">{{ 'settings.terminal.theme_desc' | translate }}</small>
-                </span>
-                <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
-                  @if (
-                    uiTerminalFontSizeIsSaving() || uiTerminalFontWeightIsSaving() || uiTerminalLightingModeIsSaving()
-                  ) {
-                    <i
-                      @fadeInOut
-                      class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
-                    ></i>
-                  }
-                  <div class="d-flex gap-2 order-1 order-md-2 resp-select-width">
-                    <div class="d-flex flex-column flex-fill">
-                      <select
-                        class="custom-select w-100"
-                        [formControl]="uiTerminalFontSizeFormControl"
-                        [attr.aria-label]="'settings.terminal.font_size' | translate"
-                      >
-                        @for (size of fontSizes; track size) {
-                          <option [value]="size">{{ size }}</option>
-                        }
-                      </select>
-                    </div>
-                    <div class="d-flex flex-column flex-fill">
-                      <select
-                        class="custom-select w-100"
-                        [formControl]="uiTerminalFontWeightFormControl"
-                        [attr.aria-label]="'settings.terminal.font_weight' | translate"
-                      >
-                        @for (weight of fontWeights; track weight) {
-                          <option [value]="weight">{{ weight }}</option>
-                        }
-                      </select>
-                    </div>
-                    <div class="d-flex flex-column flex-fill">
-                      <select
-                        class="custom-select terminal-theme-select w-100"
-                        [formControl]="uiTerminalLightingModeFormControl"
-                        [attr.aria-label]="'settings.display.lighting_mode' | translate"
-                        [disabled]="isTerminalLightingModeDisabled"
-                        [class.disabled-no-interaction]="isTerminalLightingModeDisabled"
-                      >
-                        @for (theme of terminalThemes; track theme) {
-                          <option [value]="theme">{{ theme === 'light' ? 'Light' : 'Dark' }}</option>
-                        }
-                      </select>
-                    </div>
-                  </div>
-                </div>
-              </li>
-            }
-          </ul>
-        }
-      </div>
-    }
-
-    <! -- SECURITY SETTINGS - ->
-    @if (isSectionVisible('security')) {
-      <div class="my-4">
-        <div
-          role="button"
-          tabindex="0"
-          class="mt-3 hover-pointer"
-          [attr.aria-expanded]="showFields().security ? 'true' : 'false'"
-          [attr.aria-controls]="'fieldsSecurity'"
-          (click)="toggleSection('security')"
-        >
-          <h5 class="primary-text">
-            <i
-              class="fa"
-              [class.fa-chevron-down]="showFields().security"
-              [class.fa-chevron-right]="!showFields().security"
-            ></i>
-            {{ 'settings.network.title_security' | translate }}
-          </h5>
-        </div>
-        @if (showFields().security) {
-          <ul class="list-group list-group-box mt-2 mx-0" id="fieldsSecurity">
             @if (!isItemHidden('setting-security-auth')) {
               <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
                 <span>
@@ -1394,6 +1126,302 @@
                       (click)="!isPwa && !runningOnRaspbianImage && openSslModal(); $event.preventDefault()"
                     />
                     <label for="httpsEnabled" class="rendux-label ms-3 min-w-50"></label>
+                  </div>
+                </div>
+              </li>
+            }
+          </ul>
+        }
+      </div>
+    }
+
+    <! -- HAP SETTINGS - ->
+    @if (isSectionVisible('hap')) {
+      <div class="my-4">
+        <div
+          role="button"
+          tabindex="0"
+          class="mt-3 hover-pointer"
+          [attr.aria-expanded]="showFields().hap ? 'true' : 'false'"
+          [attr.aria-controls]="'fieldsHap'"
+          (click)="toggleSection('hap')"
+        >
+          <h5 class="primary-text">
+            <i class="fa" [class.fa-chevron-down]="showFields().hap" [class.fa-chevron-right]="!showFields().hap"></i>
+            {{ 'settings.hap.title' | translate }}
+          </h5>
+        </div>
+        @if (showFields().hap) {
+          <ul class="list-group list-group-box mt-2 mx-0" id="fieldsHap">
+            @if (!isItemHidden('setting-hap-enabled')) {
+              <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
+                <span>
+                  {{ 'common.labels.enabled' | translate }}<br />
+                  <small class="grey-text pe-2">{{ 'settings.hap.enabled_desc' | translate }}</small>
+                </span>
+                <div class="d-flex align-items-center hap-toggle-disabled">
+                  <div class="order-1 order-md-2">
+                    <input
+                      type="checkbox"
+                      class="rendux-input pointer-events-none"
+                      id="hapEnabled"
+                      [checked]="true"
+                      [disabled]="true"
+                      [attr.aria-label]="'common.labels.enabled' | translate"
+                    />
+                    <label for="hapEnabled" class="rendux-label ms-3 min-w-50 cursor-not-allowed"></label>
+                  </div>
+                </div>
+              </li>
+            }
+            @if (!isItemHidden('setting-debug')) {
+              <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
+                <span>
+                  {{ 'settings.startup.debug' | translate }} <code>-D</code><br />
+                  <small class="grey-text pe-2">{{ debugFieldDesc | translate }}</small>
+                </span>
+                <div class="d-flex align-items-center">
+                  <div class="order-1 order-md-2">
+                    <input
+                      type="checkbox"
+                      class="rendux-input"
+                      id="homebridgeDebugMode"
+                      [formControl]="hbDebugFormControl"
+                      [attr.aria-label]="'settings.startup.debug' | translate"
+                    />
+                    <label for="homebridgeDebugMode" class="rendux-label ms-3 min-w-50"></label>
+                  </div>
+                  @if (hbDebugIsSaving()) {
+                    <i
+                      @fadeInOut
+                      class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
+                    ></i>
+                  }
+                </div>
+              </li>
+            }
+            @if (!isItemHidden('setting-mdns')) {
+              <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+                <span>
+                  {{ 'settings.mdns_advertiser' | translate }}<br />
+                  <small class="grey-text pe-2">{{ 'settings.mdns_advertiser_help' | translate }}</small>
+                </span>
+                <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
+                  <select
+                    class="custom-select resp-select order-1 order-md-2"
+                    [formControl]="hbMDnsFormControl"
+                    [attr.aria-label]="'settings.mdns_advertiser' | translate"
+                  >
+                    @if (showAvahiMdnsOption()) {
+                      <option value="avahi">Avahi ({{ 'settings.mdns_advertiser_rec' | translate }})</option>
+                    }
+                    <! -- ciao is recommended if avahi is not available - ->
+                    <option value="ciao">
+                      Ciao {{ showAvahiMdnsOption() ? '' : `(${('settings.mdns_advertiser_rec' | translate)})` }}
+                    </option>
+                    <option value="bonjour-hap">Bonjour HAP</option>
+                    @if (showResolvedMdnsOption()) {
+                      <option value="resolved">
+                        systemd-resolved ({{ 'settings.mdns_advertiser_exp' | translate }})
+                      </option>
+                    }
+                  </select>
+                  @if (hbMDnsIsSaving()) {
+                    <i
+                      @fadeInOut
+                      class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
+                    ></i>
+                  }
+                </div>
+              </li>
+            }
+            @if (!isItemHidden('setting-port-hb')) {
+              <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+                <span>
+                  {{ 'settings.network.port_hb' | translate }}<br />
+                  <small class="grey-text pe-2">{{ 'settings.network.port_hb_desc' | translate }}</small>
+                </span>
+                <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
+                  <input
+                    class="form-control custom-input resp-input order-1 order-md-2 font-monospace"
+                    type="number"
+                    min="1025"
+                    max="65533"
+                    [formControl]="hbPortFormControl"
+                    [attr.aria-label]="'settings.network.port_hb' | translate"
+                    [class.is-invalid]="hbPortIsInvalid()"
+                  />
+                  @if (hbPortIsSaving()) {
+                    <i
+                      @fadeInOut
+                      class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
+                    ></i>
+                  }
+                </div>
+              </li>
+            }
+            @if (!isItemHidden('setting-port-range') || !isItemHidden('setting-port-end')) {
+              <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+                <span>
+                  {{ 'settings.network.port_range' | translate }}<br />
+                  <small class="grey-text pe-2">{{ 'settings.network.port_range_desc' | translate }}</small>
+                </span>
+                <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
+                  @if (hbStartPortIsSaving() || hbEndPortIsSaving()) {
+                    <i
+                      @fadeInOut
+                      class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
+                    ></i>
+                  }
+                  <div class="d-flex gap-2 order-1 order-md-2 resp-select-width">
+                    <div class="d-flex flex-column flex-fill">
+                      <input
+                        class="form-control custom-input w-100 font-monospace"
+                        type="number"
+                        min="1025"
+                        max="65533"
+                        [formControl]="hbStartPortFormControl"
+                        [attr.aria-label]="'settings.network.port_start' | translate"
+                        [class.is-invalid]="hbStartPortIsInvalid()"
+                      />
+                    </div>
+                    <div class="d-flex flex-column flex-fill">
+                      <input
+                        class="form-control custom-input w-100 font-monospace"
+                        type="number"
+                        min="1025"
+                        max="65533"
+                        [formControl]="hbEndPortFormControl"
+                        [attr.aria-label]="'settings.network.port_end' | translate"
+                        [class.is-invalid]="hbEndPortIsInvalid()"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </li>
+            }
+          </ul>
+        }
+      </div>
+    }
+
+    <! -- MATTER SETTINGS - ->
+    @if (isMatterSupported && isSectionVisible('matter')) {
+      <div class="my-4">
+        <div
+          role="button"
+          tabindex="0"
+          class="mt-3 hover-pointer"
+          [attr.aria-expanded]="showFields().matter ? 'true' : 'false'"
+          [attr.aria-controls]="'fieldsMatter'"
+          (click)="toggleSection('matter')"
+        >
+          <h5 class="primary-text">
+            <i
+              class="fa"
+              [class.fa-chevron-down]="showFields().matter"
+              [class.fa-chevron-right]="!showFields().matter"
+            ></i>
+            {{ 'settings.matter.title' | translate }}
+          </h5>
+        </div>
+        @if (showFields().matter) {
+          <p class="small grey-text mb-2 mx-0">{{ 'settings.matter.desc' | translate }}</p>
+          <ul class="list-group list-group-box mt-2 mx-0" id="fieldsMatter">
+            @if (!isItemHidden('setting-matter-enabled')) {
+              <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
+                <span>
+                  {{ 'common.labels.enabled' | translate }}
+                  <span class="badge badge-primary ms-1">{{ 'common.labels.beta' | translate }}</span
+                  ><br />
+                  <small class="grey-text pe-2">{{ 'settings.matter.enabled_desc' | translate }}</small>
+                </span>
+                <div class="d-flex align-items-center">
+                  <div class="order-1 order-md-2">
+                    <input
+                      type="checkbox"
+                      class="rendux-input"
+                      id="matterEnabled"
+                      [formControl]="matterEnabledFormControl"
+                      [attr.aria-label]="'common.labels.enabled' | translate"
+                    />
+                    <label for="matterEnabled" class="rendux-label ms-3 min-w-50"></label>
+                  </div>
+                  @if (matterEnabledIsSaving()) {
+                    <i
+                      @fadeInOut
+                      class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
+                    ></i>
+                  }
+                </div>
+              </li>
+            }
+            @if (matterEnabledFormControl.value) {
+              @if (!isItemHidden('setting-matter-port')) {
+                <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+                  <span>
+                    {{ 'settings.matter.port' | translate }}<br />
+                    <small class="grey-text pe-2">{{ 'settings.matter.port_desc' | translate }}</small>
+                  </span>
+                  <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
+                    <input
+                      class="form-control custom-input resp-input order-1 order-md-2 font-monospace"
+                      type="number"
+                      min="1024"
+                      max="65535"
+                      placeholder="5540"
+                      [formControl]="matterPortFormControl"
+                      [attr.aria-label]="'settings.matter.port' | translate"
+                      [class.is-invalid]="matterPortIsInvalid()"
+                    />
+                    @if (matterPortIsSaving()) {
+                      <i
+                        @fadeInOut
+                        class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
+                      ></i>
+                    }
+                  </div>
+                </li>
+              }
+            }
+            @if (!isItemHidden('setting-matter-port-range-start') || !isItemHidden('setting-matter-port-range-end')) {
+              <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+                <span>
+                  {{ 'settings.matter.port_range' | translate }}<br />
+                  <small class="grey-text pe-2">{{ 'settings.matter.port_range_desc' | translate }}</small>
+                </span>
+                <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
+                  @if (matterPortRangeStartIsSaving() || matterPortRangeEndIsSaving()) {
+                    <i
+                      @fadeInOut
+                      class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
+                    ></i>
+                  }
+                  <div class="d-flex gap-2 order-1 order-md-2 resp-select-width">
+                    <div class="d-flex flex-column flex-fill">
+                      <input
+                        class="form-control custom-input w-100 font-monospace"
+                        type="number"
+                        min="1024"
+                        max="65535"
+                        placeholder="5530"
+                        [formControl]="matterPortRangeStartFormControl"
+                        [attr.aria-label]="'settings.matter.port_range_start' | translate"
+                        [class.is-invalid]="matterPortRangeStartIsInvalid()"
+                      />
+                    </div>
+                    <div class="d-flex flex-column flex-fill">
+                      <input
+                        class="form-control custom-input w-100 font-monospace"
+                        type="number"
+                        min="1024"
+                        max="65535"
+                        placeholder="5541"
+                        [formControl]="matterPortRangeEndFormControl"
+                        [attr.aria-label]="'settings.matter.port_range_end' | translate"
+                        [class.is-invalid]="matterPortRangeEndIsInvalid()"
+                      />
+                    </div>
                   </div>
                 </div>
               </li>

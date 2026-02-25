@@ -20,6 +20,7 @@ import { SettingsService } from '@/app/core/ui/settings.service'
 import { TerminalService } from '@/app/core/utilities/terminal.service'
 import { AccessoryControlListsComponent } from '@/app/modules/settings/accessory-control-lists/accessory-control-lists.component'
 import { BackupComponent } from '@/app/modules/settings/backup/backup.component'
+import { PortOverviewModalComponent } from '@/app/modules/settings/port-overview-modal/port-overview-modal.component'
 import { RemoveAllAccessoriesComponent } from '@/app/modules/settings/remove-all-accessories/remove-all-accessories.component'
 import { RemoveBridgeAccessoriesComponent } from '@/app/modules/settings/remove-bridge-accessories/remove-bridge-accessories.component'
 import { RemoveIndividualAccessoriesComponent } from '@/app/modules/settings/remove-individual-accessories/remove-individual-accessories.component'
@@ -72,9 +73,8 @@ export class SettingsComponent implements OnInit {
     display: true,
     startup: true,
     network: true,
+    hap: true,
     matter: true,
-    security: true,
-    terminal: true,
     reset: true,
     cache: true,
   })
@@ -97,47 +97,49 @@ export class SettingsComponent implements OnInit {
       'setting-menu',
       'setting-temp',
       'setting-wallpaper',
-    ],
-    startup: [
-      'setting-debug',
-      'setting-insecure',
-      'setting-security-control',
-      'setting-keep',
-      'setting-scheduled-restart',
-      'setting-metrics-startup',
-      'setting-package-path',
-      'setting-linux-restart',
-      'setting-env-debug-manual',
-      'setting-env-node',
-    ],
-    network: [
-      'setting-interfaces',
-      'setting-mdns',
-      'setting-port-hb',
-      'setting-port-range',
-      'setting-port-end',
-      'setting-network-host',
-      'setting-network-proxy',
-      'setting-ui-port-network',
-      'setting-mdns-advertise',
-    ],
-    matter: [
-      'setting-matter-enabled',
-      'setting-matter-port',
-    ],
-    terminal: [
-      'setting-terminal-log-max',
-      'setting-terminal-persistence',
-      'setting-terminal-buffer',
       'setting-terminal-font-size',
       'setting-terminal-font-weight',
       'setting-terminal-lighting-mode',
     ],
-    security: [
+    startup: [
+      'setting-keep',
+      'setting-scheduled-restart',
+      'setting-interfaces',
+      'setting-terminal-log-max',
+      'setting-env-debug-manual',
+      'setting-env-node',
+      'setting-package-path',
+      'setting-linux-restart',
+      'setting-port-overview',
+    ],
+    network: [
+      'setting-ui-port-network',
+      'setting-network-host',
+      'setting-network-proxy',
+      'setting-insecure',
+      'setting-security-control',
+      'setting-mdns-advertise',
+      'setting-metrics-startup',
+      'setting-terminal-persistence',
+      'setting-terminal-buffer',
       'setting-security-auth',
       'setting-session-inactivity',
       'setting-security-session',
       'setting-security-https',
+    ],
+    hap: [
+      'setting-hap-enabled',
+      'setting-debug',
+      'setting-mdns',
+      'setting-port-hb',
+      'setting-port-range',
+      'setting-port-end',
+    ],
+    matter: [
+      'setting-matter-enabled',
+      'setting-matter-port',
+      'setting-matter-port-range-start',
+      'setting-matter-port-range-end',
     ],
     cache: [
       'setting-accessory-debug',
@@ -324,6 +326,14 @@ export class SettingsComponent implements OnInit {
   public readonly matterPortIsSaving = signal(false)
   public matterPortFormControl = new FormControl(0)
 
+  public readonly matterPortRangeStartIsInvalid = signal(false)
+  public readonly matterPortRangeStartIsSaving = signal(false)
+  public matterPortRangeStartFormControl = new FormControl<number | null>(null)
+
+  public readonly matterPortRangeEndIsInvalid = signal(false)
+  public readonly matterPortRangeEndIsSaving = signal(false)
+  public matterPortRangeEndFormControl = new FormControl<number | null>(null)
+
   // Other properties
   // Cache for Matter config values (in-memory only, for restoring after accidental disable)
   private matterConfigCache: { port?: number } = {}
@@ -428,11 +438,10 @@ export class SettingsComponent implements OnInit {
     return {
       general: this.$translate.instant('settings.general.title_general'),
       display: this.$translate.instant('settings.general.title_display'),
-      startup: this.$translate.instant('settings.title_startup_options'),
-      network: this.$translate.instant('settings.network.title_network'),
+      startup: this.$translate.instant('settings.title_homebridge'),
+      network: this.$translate.instant('settings.network.title_homebridge_ui'),
+      hap: this.$translate.instant('settings.hap.title'),
       matter: `${this.$translate.instant('settings.matter.title')} ${this.$translate.instant('settings.matter.desc')}`,
-      terminal: this.$translate.instant('settings.network.title_terminal'),
-      security: this.$translate.instant('settings.network.title_security'),
       cache: `${this.$translate.instant('menu.label_accessories')} ${this.$translate.instant('settings.cache.desc')}`,
       reset: `${this.$translate.instant('reset.bridges.title')} ${this.$translate.instant('reset.bridges.desc')}`,
     }
@@ -455,43 +464,56 @@ export class SettingsComponent implements OnInit {
       'setting-temp': this.$translate.instant('settings.display.temp_units'),
       'setting-wallpaper': this.$translate.instant('settings.display.wallpaper'),
 
-      // Startup section
-      'setting-debug': this.$translate.instant('settings.startup.debug'),
-      'setting-insecure': this.$translate.instant('settings.startup.insecure'),
+      // Homebridge section
       'setting-keep': this.$translate.instant('settings.startup.keep_accessories'),
       'setting-scheduled-restart': this.$translate.instant('settings.startup.scheduled_restart'),
-      'setting-metrics-startup': this.$translate.instant('settings.startup.metrics'),
+      'setting-interfaces': this.$translate.instant('settings.network.title_network_interfaces'),
+      'setting-terminal-log-max': this.$translate.instant('settings.terminal.log_max'),
       'setting-env-debug': this.$translate.instant('settings.startup.env_debug'),
       'setting-env-debug-manual': 'DEBUG',
       'setting-env-node': this.$translate.instant('settings.startup.env_node_options'),
       'setting-log-size': this.$translate.instant('settings.startup.log_length'),
       'setting-log-truncate': this.$translate.instant('settings.startup.truncate_log'),
       'setting-package-path': this.$translate.instant('settings.startup.homebridge_package_path'),
+      'setting-port-overview': `${this.$translate.instant('settings.ports.title')} ${this.$translate.instant('settings.ports.desc')}`,
 
-      // Network section
-      'setting-mdns': this.$translate.instant('settings.mdns_advertiser'),
-      'setting-interfaces': this.$translate.instant('settings.network.title_network_interfaces'),
-      'setting-port-hb': this.$translate.instant('settings.network.port_hb'),
-      'setting-port-bridge': this.$translate.instant('settings.network.port.bridge'),
-      'setting-port-range': this.$translate.instant('settings.network.port.start'),
-      'setting-port-end': this.$translate.instant('settings.network.port.end'),
+      // Homebridge UI section
+      'setting-ui-port-network': this.$translate.instant('settings.network.port_ui'),
       'setting-network-host': this.$translate.instant('settings.network.host'),
       'setting-network-proxy': this.$translate.instant('settings.network.proxy'),
-      'setting-ui-port-network': this.$translate.instant('settings.network.port_ui'),
+      'setting-insecure': this.$translate.instant('settings.startup.insecure'),
+      'setting-security-control': this.$translate.instant('settings.security.ui_control'),
       'setting-mdns-advertise': this.$translate.instant('settings.network.mdns_advertise'),
+      'setting-metrics-startup': this.$translate.instant('settings.startup.metrics'),
+      'setting-terminal-persistence': this.$translate.instant('settings.terminal.persistence'),
+      'setting-terminal-warning': this.$translate.instant('settings.terminal.hide_warning'),
+      'setting-terminal-buffer': this.$translate.instant('settings.terminal.buffer_size'),
+      'setting-terminal-font-size': this.$translate.instant('settings.terminal.theme'),
+      'setting-terminal-font-weight': this.$translate.instant('settings.terminal.theme'),
+      'setting-terminal-lighting-mode': this.$translate.instant('settings.terminal.theme'),
+
+      // HAP section
+      'setting-hap-enabled': `${this.$translate.instant('common.labels.enabled')} ${this.$translate.instant('settings.hap.enabled_desc')}`,
+      'setting-debug': this.$translate.instant('settings.startup.debug'),
+      'setting-mdns': this.$translate.instant('settings.mdns_advertiser'),
+      'setting-port-hb': this.$translate.instant('settings.network.port_hb'),
+      'setting-port-bridge': this.$translate.instant('settings.network.port.bridge'),
+      'setting-port-range': `${this.$translate.instant('settings.network.port_range')} ${this.$translate.instant('settings.network.port_range_desc')}`,
+      'setting-port-end': `${this.$translate.instant('settings.network.port_range')} ${this.$translate.instant('settings.network.port_range_desc')}`,
 
       // Matter section
       'setting-matter-enabled': `${this.$translate.instant('settings.matter.title')} ${this.$translate.instant('common.labels.enabled')} ${this.$translate.instant('settings.matter.enabled_desc')}`,
       'setting-matter-port': `${this.$translate.instant('settings.matter.title')} ${this.$translate.instant('settings.matter.port')} ${this.$translate.instant('settings.matter.port_desc')}`,
+      'setting-matter-port-range-start': `${this.$translate.instant('settings.matter.port_range')} ${this.$translate.instant('settings.matter.port_range_desc')}`,
+      'setting-matter-port-range-end': `${this.$translate.instant('settings.matter.port_range')} ${this.$translate.instant('settings.matter.port_range_desc')}`,
 
-      // Security section
+      // Security items (part of Homebridge UI section)
       'setting-security-auth': this.$translate.instant('settings.security.auth'),
       'setting-security-session': this.$translate.instant('settings.startup.session'),
       'setting-security-https': this.$translate.instant('settings.security.https'),
       'setting-security-cert': this.$translate.instant('settings.security.cert'),
       'setting-security-pass': this.$translate.instant('settings.security.pass'),
       'setting-security-selfsigned-hostnames': this.$translate.instant('settings.security.selfsigned_hostnames'),
-      'setting-security-control': this.$translate.instant('settings.security.ui_control'),
       'setting-ui-port': this.$translate.instant('settings.security.webui_port'),
       'setting-ui-host': this.$translate.instant('settings.security.webui_host'),
       'setting-ui-auth': this.$translate.instant('settings.security.webui_auth'),
@@ -499,15 +521,6 @@ export class SettingsComponent implements OnInit {
       'setting-session-inactivity': this.$translate.instant('settings.startup.session_inactivity_based'),
       'setting-proxy': this.$translate.instant('settings.security.webui_proxy_host'),
       'setting-ssl': this.$translate.instant('settings.security.ssl_key'),
-
-      // Terminal section
-      'setting-terminal-log-max': this.$translate.instant('settings.terminal.log_max'),
-      'setting-terminal-persistence': this.$translate.instant('settings.terminal.persistence'),
-      'setting-terminal-warning': this.$translate.instant('settings.terminal.hide_warning'),
-      'setting-terminal-buffer': this.$translate.instant('settings.terminal.buffer_size'),
-      'setting-terminal-font-size': this.$translate.instant('settings.terminal.theme'),
-      'setting-terminal-font-weight': this.$translate.instant('settings.terminal.theme'),
-      'setting-terminal-lighting-mode': this.$translate.instant('settings.terminal.theme'),
 
       // Reset section
       'setting-reset-accessory-ind': this.$translate.instant('reset.accessory_ind.title'),
@@ -2017,11 +2030,37 @@ export class SettingsComponent implements OnInit {
 
       // Subscribe to toggle changes
       this.matterEnabledFormControl.valueChanges.subscribe((value: boolean) => this.matterEnabledSave(value))
+
+      // Load matter port range (always, even when disabled - applies to child bridges)
+      try {
+        const portRange = await this.$api.get<{ start?: number, end?: number }>('/config-editor/matter/ports')
+        this.matterPortRangeStartFormControl.patchValue(portRange.start ?? null, { emitEvent: false })
+        this.matterPortRangeEndFormControl.patchValue(portRange.end ?? null, { emitEvent: false })
+      } catch {
+        // Port range not configured yet - leave defaults
+      }
+
+      this.matterPortRangeStartFormControl.valueChanges
+        .pipe(debounceTime(1500), takeUntilDestroyed(this.destroyRef))
+        .subscribe((value: number) => this.matterPortRangeStartSave(value))
+
+      this.matterPortRangeEndFormControl.valueChanges
+        .pipe(debounceTime(1500), takeUntilDestroyed(this.destroyRef))
+        .subscribe((value: number) => this.matterPortRangeEndSave(value))
     } catch (error) {
       console.error(error)
       // Don't show error toast - Matter might not be configured yet
       // Subscribe to toggle changes even if config doesn't exist yet
       this.matterEnabledFormControl.valueChanges.subscribe((value: boolean) => this.matterEnabledSave(value))
+
+      // Still subscribe to port range changes even if matter config fetch failed
+      this.matterPortRangeStartFormControl.valueChanges
+        .pipe(debounceTime(1500), takeUntilDestroyed(this.destroyRef))
+        .subscribe((value: number) => this.matterPortRangeStartSave(value))
+
+      this.matterPortRangeEndFormControl.valueChanges
+        .pipe(debounceTime(1500), takeUntilDestroyed(this.destroyRef))
+        .subscribe((value: number) => this.matterPortRangeEndSave(value))
     }
   }
 
@@ -2122,7 +2161,7 @@ export class SettingsComponent implements OnInit {
           provide: CONFIRM_MODAL_DATA,
           useValue: {
             title: 'Disable Matter',
-            message: 'Disabling Matter will delete all Matter bridge files. This action cannot be undone.',
+            message: 'Disabling Matter will delete the Matter storage files for the main bridge. Child bridge Matter files will not be affected. This action cannot be undone.',
             message2: 'Are you sure you want to continue?',
             confirmButtonLabel: 'Continue',
             confirmButtonClass: 'btn-danger',
@@ -2176,6 +2215,61 @@ export class SettingsComponent implements OnInit {
       this.matterEnabledFormControl.patchValue(value, { emitEvent: false })
       this.matterEnabledIsSaving.set(false)
     }
+  }
+
+  private async matterPortRangeStartSave(value: number): Promise<void> {
+    if (value !== null && (typeof value !== 'number' || value < 1024 || value > 65535 || !Number.isInteger(value))) {
+      this.matterPortRangeStartIsInvalid.set(true)
+      return
+    }
+
+    try {
+      this.matterPortRangeStartIsSaving.set(true)
+      this.matterPortRangeStartIsInvalid.set(false)
+      await this.$api.put('/config-editor/matter/ports', {
+        start: value || undefined,
+        end: this.matterPortRangeEndFormControl.value || undefined,
+      })
+      setTimeout(() => {
+        this.matterPortRangeStartIsSaving.set(false)
+        this.showRestartToast()
+      }, 1000)
+    } catch (error) {
+      console.error(error)
+      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      this.matterPortRangeStartIsSaving.set(false)
+    }
+  }
+
+  private async matterPortRangeEndSave(value: number): Promise<void> {
+    if (value !== null && (typeof value !== 'number' || value < 1024 || value > 65535 || !Number.isInteger(value))) {
+      this.matterPortRangeEndIsInvalid.set(true)
+      return
+    }
+
+    try {
+      this.matterPortRangeEndIsSaving.set(true)
+      this.matterPortRangeEndIsInvalid.set(false)
+      await this.$api.put('/config-editor/matter/ports', {
+        start: this.matterPortRangeStartFormControl.value || undefined,
+        end: value || undefined,
+      })
+      setTimeout(() => {
+        this.matterPortRangeEndIsSaving.set(false)
+        this.showRestartToast()
+      }, 1000)
+    } catch (error) {
+      console.error(error)
+      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      this.matterPortRangeEndIsSaving.set(false)
+    }
+  }
+
+  public openPortOverviewModal(): void {
+    this.$modal.open(PortOverviewModalComponent, {
+      size: 'lg',
+      backdrop: 'static',
+    })
   }
 
   private buildBridgeNetworkAdapterList(adapters: string[]) {
