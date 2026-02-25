@@ -40,6 +40,13 @@
   max-width: 400px;
 }
 
+.global-env-prefix {
+  opacity: 0.7;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 ::ng-deep {
   body.dark-mode,
   [class*='config-ui-x-dark-mode'] {

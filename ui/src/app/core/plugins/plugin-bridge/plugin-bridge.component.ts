@@ -58,6 +58,9 @@ export class PluginBridgeComponent implements OnInit {
   public readonly isPlatform = signal<boolean>(false)
   public readonly enabledBlocks = signal<Record<number, boolean>>({})
   public readonly matterEnabledBlocks = signal<Record<number, boolean>>({})
+  public readonly showAdvanced = signal(false)
+  public readonly globalDebug = signal<string>('')
+  public readonly globalNodeOptions = signal<string>('')
 
   // 6. Other Properties
   private matterExplicitlyDisabledBeforeChildBridge: Set<number> = new Set()
@@ -160,7 +163,7 @@ export class PluginBridgeComponent implements OnInit {
   // 9. Private Methods
   private async initialize(): Promise<void> {
     try {
-      await Promise.all([this.getPluginType(), this.loadPluginConfig(), this.loadBridgeConfigs()])
+      await Promise.all([this.getPluginType(), this.loadPluginConfig(), this.loadBridgeConfigs(), this.loadGlobalStartupSettings()])
       this.canShowBridgeDebug.set(this.$settings.isFeatureEnabled('childBridgeDebugMode'))
     } catch (error) {
       console.error('Failed to initialize:', error)
@@ -960,6 +963,16 @@ export class PluginBridgeComponent implements OnInit {
         hideHapAlert: bridge.hideHapAlert,
         hideMatterAlert: bridge.hideMatterAlert,
       })
+    }
+  }
+
+  private async loadGlobalStartupSettings(): Promise<void> {
+    try {
+      const data = await this.$api.get('/platform-tools/hb-service/homebridge-startup-settings')
+      this.globalDebug.set(data.ENV_DEBUG || '')
+      this.globalNodeOptions.set(data.ENV_NODE_OPTIONS || '')
+    } catch {
+      // Non-critical - prefix just won't show
     }
   }
 

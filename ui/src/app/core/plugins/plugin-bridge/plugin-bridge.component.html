@@ -168,123 +168,153 @@
                 />
               </div>
             </li>
-            <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
-              <label for="bridge-manufacturer" class="mb-2 mb-md-0 w-100 w-md-50">{{
-                'child_bridge.config.manufacturer' | translate
-              }}</label>
-              <div class="text-start text-md-end w-100 w-md-50">
-                <input
-                  id="bridge-manufacturer"
-                  type="text"
-                  class="form-control custom-input"
-                  [placeholder]="'form.optional' | translate"
-                  [(ngModel)]="configBlocks()[selectedBlock()]._bridge['manufacturer']"
-                />
-              </div>
+            <li
+              role="button"
+              tabindex="0"
+              class="list-group-item d-flex justify-content-between align-items-center flex-row cursor-pointer"
+              [attr.aria-expanded]="showAdvanced() ? 'true' : 'false'"
+              (click)="showAdvanced.set(!showAdvanced())"
+              (keyup.enter)="showAdvanced.set(!showAdvanced())"
+            >
+              <span class="text-start">{{ 'common.labels.advanced' | translate }}</span>
+              <i
+                class="fa grey-text"
+                [class.fa-chevron-left]="!showAdvanced()"
+                [class.fa-chevron-down]="showAdvanced()"
+              ></i>
             </li>
-            <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
-              <label for="bridge-model" class="mb-2 mb-md-0 w-100 w-md-50">{{
-                'child_bridge.config.model' | translate
-              }}</label>
-              <div class="text-start text-md-end w-100 w-md-50">
-                <input
-                  id="bridge-model"
-                  type="text"
-                  class="form-control custom-input"
-                  [placeholder]="'form.optional' | translate"
-                  [(ngModel)]="configBlocks()[selectedBlock()]._bridge.model"
-                />
-              </div>
-            </li>
-            <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
-              <label for="bridge-firmware" class="mb-2 mb-md-0 w-100 w-md-50">{{
-                'child_bridge.config.firmware' | translate
-              }}</label>
-              <div class="text-start text-md-end w-100 w-md-50">
-                <input
-                  id="bridge-firmware"
-                  type="text"
-                  class="form-control custom-input"
-                  [class.font-monospace]="configBlocks()[selectedBlock()]._bridge.firmwareRevision"
-                  [placeholder]="'form.optional' | translate"
-                  [(ngModel)]="configBlocks()[selectedBlock()]._bridge.firmwareRevision"
-                />
-              </div>
-            </li>
-            @if (!justInstalled) {
+            @if (showAdvanced()) {
               <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
-                <label for="bridge-scheduled-restart" class="mb-2 mb-md-0 w-100 w-md-50">
-                  {{ 'settings.startup.scheduled_restart' | translate }}<br />
-                  <small
-                    class="grey-text"
-                    [innerHtml]="'settings.startup.scheduled_restart_desc' | translate: { link: linkCron }"
-                  ></small>
-                </label>
-                <div class="text-start text-md-end w-100 w-md-50 d-flex flex-column align-items-end">
+                <label for="bridge-manufacturer" class="mb-2 mb-md-0 w-100 w-md-50">{{
+                  'child_bridge.config.manufacturer' | translate
+                }}</label>
+                <div class="text-start text-md-end w-100 w-md-50">
                   <input
-                    id="bridge-scheduled-restart"
+                    id="bridge-manufacturer"
                     type="text"
-                    class="form-control custom-input font-monospace cron-input"
-                    placeholder="mm hh dd MM ww"
-                    maxlength="30"
-                    [value]="getScheduledRestartCron(configBlocks()[selectedBlock()]._bridge?.username)"
-                    (input)="
-                      onScheduledRestartCronChange(
-                        asInputElement($event.target).value,
-                        configBlocks()[selectedBlock()]._bridge?.username
-                      )
-                    "
+                    class="form-control custom-input"
+                    [placeholder]="'form.optional' | translate"
+                    [(ngModel)]="configBlocks()[selectedBlock()]._bridge['manufacturer']"
                   />
                 </div>
               </li>
-              @if (canShowBridgeDebug()) {
-                <li class="list-group-item d-flex justify-content-between align-items-center flex-row pb-2">
-                  <span class="text-start">{{ 'child_bridge.config.debug' | translate }} <code>-D</code></span>
-                  <div class="text-end grey-text d-flex align-items-center">
+              <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
+                <label for="bridge-model" class="mb-2 mb-md-0 w-100 w-md-50">{{
+                  'child_bridge.config.model' | translate
+                }}</label>
+                <div class="text-start text-md-end w-100 w-md-50">
+                  <input
+                    id="bridge-model"
+                    type="text"
+                    class="form-control custom-input"
+                    [placeholder]="'form.optional' | translate"
+                    [(ngModel)]="configBlocks()[selectedBlock()]._bridge.model"
+                  />
+                </div>
+              </li>
+              <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
+                <label for="bridge-firmware" class="mb-2 mb-md-0 w-100 w-md-50">{{
+                  'child_bridge.config.firmware' | translate
+                }}</label>
+                <div class="text-start text-md-end w-100 w-md-50">
+                  <input
+                    id="bridge-firmware"
+                    type="text"
+                    class="form-control custom-input"
+                    [class.font-monospace]="configBlocks()[selectedBlock()]._bridge.firmwareRevision"
+                    [placeholder]="'form.optional' | translate"
+                    [(ngModel)]="configBlocks()[selectedBlock()]._bridge.firmwareRevision"
+                  />
+                </div>
+              </li>
+              @if (!justInstalled) {
+                <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
+                  <label for="bridge-scheduled-restart" class="mb-2 mb-md-0 w-100 w-md-50">
+                    {{ 'settings.startup.scheduled_restart' | translate }}<br />
+                    <small
+                      class="grey-text"
+                      [innerHtml]="'settings.startup.scheduled_restart_desc' | translate: { link: linkCron }"
+                    ></small>
+                  </label>
+                  <div class="text-start text-md-end w-100 w-md-50 d-flex flex-column align-items-end">
                     <input
-                      type="checkbox"
-                      class="rendux-input"
-                      [id]="`homebridgeDebugMode_${selectedBlock()}`"
-                      [attr.aria-label]="'settings.startup.debug' | translate"
-                      [(ngModel)]="configBlocks()[selectedBlock()]._bridge.debugModeEnabled"
+                      id="bridge-scheduled-restart"
+                      type="text"
+                      class="form-control custom-input font-monospace cron-input"
+                      placeholder="mm hh dd MM ww"
+                      maxlength="30"
+                      [value]="getScheduledRestartCron(configBlocks()[selectedBlock()]._bridge?.username)"
+                      (input)="
+                        onScheduledRestartCronChange(
+                          asInputElement($event.target).value,
+                          configBlocks()[selectedBlock()]._bridge?.username
+                        )
+                      "
                     />
-                    <label class="rendux-label" [for]="`homebridgeDebugMode_${selectedBlock()}`"></label>
+                  </div>
+                </li>
+                @if (canShowBridgeDebug()) {
+                  <li class="list-group-item d-flex justify-content-between align-items-center flex-row pb-2">
+                    <span class="text-start"
+                      >{{ 'child_bridge.config.debug' | translate }} <code>-D</code><br />
+                      <small class="grey-text">{{ 'child_bridge.config.debug_desc' | translate }}</small></span
+                    >
+                    <div class="text-end grey-text d-flex align-items-center">
+                      <input
+                        type="checkbox"
+                        class="rendux-input"
+                        [id]="`homebridgeDebugMode_${selectedBlock()}`"
+                        [attr.aria-label]="'settings.startup.debug' | translate"
+                        [(ngModel)]="configBlocks()[selectedBlock()]._bridge.debugModeEnabled"
+                      />
+                      <label class="rendux-label" [for]="`homebridgeDebugMode_${selectedBlock()}`"></label>
+                    </div>
+                  </li>
+                }
+                <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
+                  <label for="bridge-debug" class="mb-2 mb-md-0 w-100 w-md-50">
+                    <span class="font-monospace">DEBUG</span><br />
+                    <small
+                      class="grey-text"
+                      [innerHTML]="'settings.service.debug_tooltip_child' | translate: { link: linkDebug }"
+                    ></small>
+                  </label>
+                  <div class="text-start text-md-end w-100 w-md-50">
+                    @if (globalDebug()) {
+                      <small class="d-block text-start text-white font-monospace mb-1 global-env-prefix">
+                        {{ globalDebug() }},
+                      </small>
+                    }
+                    <input
+                      id="bridge-debug"
+                      type="text"
+                      class="form-control custom-input font-monospace"
+                      placeholder="HAP-NodeJS:Advertiser,HAP-NodeJS:Service"
+                      [(ngModel)]="configBlocks()[selectedBlock()]._bridge.env.DEBUG"
+                    />
+                  </div>
+                </li>
+                <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
+                  <label for="bridge-node-options" class="mb-2 mb-md-0 w-100 w-md-50">
+                    <span class="font-monospace">NODE_OPTIONS</span><br />
+                    <small class="grey-text">{{ 'settings.service.node_tooltip_child' | translate }}</small>
+                  </label>
+                  <div class="text-start text-md-end w-100 w-md-50">
+                    @if (globalNodeOptions()) {
+                      <small class="d-block text-start text-white font-monospace mb-1 global-env-prefix">
+                        {{ globalNodeOptions() }}
+                      </small>
+                    }
+                    <input
+                      id="bridge-node-options"
+                      type="text"
+                      class="form-control custom-input font-monospace"
+                      placeholder="--max-old-space-size=512 --max-http-header-size=8192"
+                      [(ngModel)]="configBlocks()[selectedBlock()]._bridge.env.NODE_OPTIONS"
+                    />
                   </div>
                 </li>
               }
-              <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
-                <label for="bridge-debug" class="mb-2 mb-md-0 w-100 w-md-50">
-                  <span class="font-monospace">DEBUG</span><br />
-                  <small
-                    class="grey-text"
-                    [innerHTML]="'settings.service.debug_tooltip' | translate: { link: linkDebug }"
-                  ></small>
-                </label>
-                <div class="text-start text-md-end w-100 w-md-50">
-                  <input
-                    id="bridge-debug"
-                    type="text"
-                    class="form-control custom-input font-monospace"
-                    placeholder="HAP-NodeJS:Advertiser,HAP-NodeJS:Service"
-                    [(ngModel)]="configBlocks()[selectedBlock()]._bridge.env.DEBUG"
-                  />
-                </div>
-              </li>
-              <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
-                <label for="bridge-node-options" class="mb-2 mb-md-0 w-100 w-md-50">
-                  <span class="font-monospace">NODE_OPTIONS</span><br />
-                  <small class="grey-text">{{ 'settings.service.node_tooltip' | translate }}</small>
-                </label>
-                <div class="text-start text-md-end w-100 w-md-50">
-                  <input
-                    id="bridge-node-options"
-                    type="text"
-                    class="form-control custom-input font-monospace"
-                    placeholder="--max-old-space-size=512 --max-http-header-size=8192"
-                    [(ngModel)]="configBlocks()[selectedBlock()]._bridge.env.NODE_OPTIONS"
-                  />
-                </div>
-              </li>
             }
           }
         </ul>
@@ -381,9 +411,10 @@
 
             <! -- HAP Configuration Fields - ->
             <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
-              <label for="bridge-hap-port" class="mb-2 mb-md-0 w-100 w-md-50">{{
-                'child_bridge.config.port' | translate
-              }}</label>
+              <label for="bridge-hap-port" class="mb-2 mb-md-0 w-100 w-md-50"
+                >{{ 'child_bridge.config.port' | translate }}<br />
+                <small class="grey-text">{{ 'child_bridge.config.hap_port_desc' | translate }}</small></label
+              >
               <div class="text-start text-md-end w-100 w-md-50">
                 <input
                   id="bridge-hap-port"
@@ -509,9 +540,10 @@
 
                 <! -- Matter Configuration Fields - ->
                 <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
-                  <label for="bridge-matter-port" class="mb-2 mb-md-0 w-100 w-md-50">{{
-                    'child_bridge.config.port' | translate
-                  }}</label>
+                  <label for="bridge-matter-port" class="mb-2 mb-md-0 w-100 w-md-50"
+                    >{{ 'child_bridge.config.port' | translate }}<br />
+                    <small class="grey-text">{{ 'child_bridge.config.matter_port_desc' | translate }}</small></label
+                  >
                   <div class="text-start text-md-end w-100 w-md-50">
                     <input
                       id="bridge-matter-port"

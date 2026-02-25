@@ -276,19 +276,6 @@
                 </div>
               </li>
             }
-            @if (!isItemHidden('setting-wallpaper')) {
-              <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
-                <span class="pe-2">{{ 'settings.display.wallpaper' | translate }}</span>
-                <button
-                  type="button"
-                  class="btn btn-primary waves-effect m-0 ms-3 py-1 min-w-50"
-                  [attr.aria-label]="'settings.display.wallpaper' | translate"
-                  (click)="openWallpaperModal()"
-                >
-                  <i class="fas fa-arrow-right"></i>
-                </button>
-              </li>
-            }
             @if (
               !isItemHidden('setting-terminal-font-size') ||
               !isItemHidden('setting-terminal-font-weight') ||
@@ -343,6 +330,19 @@
                     </div>
                   </div>
                 </div>
+              </li>
+            }
+            @if (!isItemHidden('setting-wallpaper')) {
+              <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
+                <span class="pe-2">{{ 'settings.display.wallpaper' | translate }}</span>
+                <button
+                  type="button"
+                  class="btn btn-primary waves-effect m-0 ms-3 py-1 min-w-50"
+                  [attr.aria-label]="'settings.display.wallpaper' | translate"
+                  (click)="openWallpaperModal()"
+                >
+                  <i class="fas fa-arrow-right"></i>
+                </button>
               </li>
             }
           </ul>
