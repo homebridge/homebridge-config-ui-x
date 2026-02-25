@@ -32,7 +32,7 @@ export class PluginsSettingsUiService {
   /**
    * Serve Custom HTML Assets for a plugin
    */
-  async serveCustomUiAsset(reply, pluginName: string, assetPath: string, origin: string, version?: string) {
+  async serveCustomUiAsset(reply, pluginName: string, assetPath: string, origin: string, version?: string, lang?: string) {
     try {
       if (!assetPath) {
         assetPath = 'index.html'
@@ -45,7 +45,7 @@ export class PluginsSettingsUiService {
       }
 
       const pluginUi: HomebridgePluginUiMetadata = (this.pluginUiMetadataCache.get(pluginName) as any)
-        || (await this.getPluginUiMetadata(pluginName))
+        || (await this.getPluginUiMetadata(pluginName, lang))
 
       const safeSuffix = normalize(assetPath).replace(/^(\.\.(\/|\\|$))+/, '')
       const filePath = join(pluginUi.publicPath, safeSuffix)
@@ -87,9 +87,9 @@ export class PluginsSettingsUiService {
   /**
    * Resolve the path for the custom plugin ui, and store it in the cache
    */
-  async getPluginUiMetadata(pluginName: string): Promise<HomebridgePluginUiMetadata> {
+  async getPluginUiMetadata(pluginName: string, lang?: string): Promise<HomebridgePluginUiMetadata> {
     try {
-      const pluginUi = await this.pluginsService.getPluginUiMetadata(pluginName)
+      const pluginUi = await this.pluginsService.getPluginUiMetadata(pluginName, lang)
       this.pluginUiMetadataCache.set(pluginName, pluginUi)
       this.pluginUiLastVersionCache.set(pluginName, pluginUi.plugin.installedVersion)
       return pluginUi

@@ -1,4 +1,4 @@
-import { Controller, Get, Inject, Param, Query, Res } from '@nestjs/common'
+import { Controller, Get, Inject, Param, Query, Req, Res } from '@nestjs/common'
 import { ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger'
 
 import { PluginsSettingsUiService } from './plugins-settings-ui.service.js'
@@ -13,7 +13,8 @@ export class PluginsSettingsUiController {
   @Get('/:pluginName/*')
   @ApiOperation({ summary: 'Returns the HTML assets for a plugin\'s custom UI' })
   @ApiParam({ name: 'pluginName', type: 'string' })
-  async serveCustomUiAsset(@Res() reply, @Param('pluginName') pluginName, @Param('*') file, @Query('origin') origin: string, @Query('v') v?: string) {
-    return await this.pluginSettingsUiService.serveCustomUiAsset(reply, pluginName, file, origin, v)
+  async serveCustomUiAsset(@Req() req, @Res() reply, @Param('pluginName') pluginName, @Param('*') file, @Query('origin') origin: string, @Query('v') v?: string) {
+    const lang = req.headers['accept-language']?.split(',')[0].trim()
+    return await this.pluginSettingsUiService.serveCustomUiAsset(reply, pluginName, file, origin, v, lang)
   }
 }
