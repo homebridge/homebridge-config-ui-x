@@ -795,6 +795,74 @@ export class ConfigEditorService {
   }
 
   /**
+   * Get the Matter port range configuration
+   */
+  public async getMatterPortRange(): Promise<{ start?: number, end?: number }> {
+    const config = await this.getConfigFile()
+    return {
+      start: config.matterPorts?.start,
+      end: config.matterPorts?.end,
+    }
+  }
+
+  /**
+   * Set the Matter port range configuration
+   */
+  public async setMatterPortRange(value: { start?: number, end?: number }): Promise<void> {
+    this.validateMatterPortRange(value)
+
+    let config = await this.getConfigFile()
+
+    // Clean null values
+    if (value.start === null || value.start === undefined) {
+      delete value.start
+    }
+    if (value.end === null || value.end === undefined) {
+      delete value.end
+    }
+
+    // Remove matterPorts if neither start nor end is specified
+    if (!value.start && !value.end) {
+      delete config.matterPorts
+    } else {
+      config.matterPorts = {}
+      if (value.start) {
+        config.matterPorts.start = value.start
+      }
+      if (value.end) {
+        config.matterPorts.end = value.end
+      }
+    }
+
+    // Bring matterPorts after ports in config ordering
+    const { bridge, ports, matterPorts, ...rest } = config
+    config = matterPorts
+      ? (ports ? { bridge, ports, matterPorts, ...rest } : { bridge, matterPorts, ...rest })
+      : (ports ? { bridge, ports, ...rest } : { bridge, ...rest })
+
+    await this.updateConfigFile(config)
+  }
+
+  /**
+   * Validate the Matter port range configuration
+   */
+  private validateMatterPortRange(value: { start?: number, end?: number }): void {
+    if (value.start !== null && value.start !== undefined) {
+      if (typeof value.start !== 'number' || value.start < 1025 || value.start > 65533) {
+        throw new BadRequestException('Matter port range start must be a number between 1025 and 65533.')
+      }
+    }
+    if (value.end !== null && value.end !== undefined) {
+      if (typeof value.end !== 'number' || value.end < 1025 || value.end > 65533) {
+        throw new BadRequestException('Matter port range end must be a number between 1025 and 65533.')
+      }
+    }
+    if (value.start && value.end && value.start >= value.end) {
+      throw new BadRequestException('Matter port range start must be less than end.')
+    }
+  }
+
+  /**
    * Get the Matter configuration from config.bridge.matter
    * Returns null if Matter is not configured (disabled)
    */

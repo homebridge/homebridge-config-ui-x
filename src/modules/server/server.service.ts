@@ -1049,10 +1049,9 @@ export class ServerService {
    * @throws InternalServerErrorException if no ports are available in the range
    */
   public async lookupUnusedMatterPort(): Promise<{ port: number }> {
-    const min = 5530
-    const max = 5541
-
     const config = await this.configEditorService.getConfigFile()
+    const min = config.matterPorts?.start ?? 5530
+    const max = config.matterPorts?.end ?? 5541
 
     // Collect used matter ports into a set
     const usedMatterPorts = new Set<number>()
@@ -1080,7 +1079,7 @@ export class ServerService {
       }
     }
 
-    throw new InternalServerErrorException('No available ports in the Matter port range (5530-5541)')
+    throw new InternalServerErrorException(`No available ports in the Matter port range (${min}-${max})`)
   }
 
   /**

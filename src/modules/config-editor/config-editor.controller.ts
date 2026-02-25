@@ -226,6 +226,21 @@ export class ConfigEditorController {
   }
 
   @UseGuards(AdminGuard)
+  @ApiOperation({ summary: 'Get the Matter port range configuration.' })
+  @Get('/matter/ports')
+  getMatterPortRange() {
+    return this.configEditorService.getMatterPortRange()
+  }
+
+  @UseGuards(AdminGuard)
+  @ApiOperation({ summary: 'Set the Matter port range configuration.' })
+  @ApiBody({ description: 'Object with start and end properties.', type: 'json', isArray: false })
+  @Put('/matter/ports')
+  setMatterPortRange(@Body() body: { start?: number, end?: number }) {
+    return this.configEditorService.setMatterPortRange(body)
+  }
+
+  @UseGuards(AdminGuard)
   @ApiOperation({
     summary: 'Get Matter Configuration',
     description: 'Returns the Matter configuration object for the main Homebridge bridge.',

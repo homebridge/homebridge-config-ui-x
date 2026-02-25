@@ -64,6 +64,10 @@ export interface HomebridgeConfig {
     start?: number
     end?: number
   }
+  matterPorts?: {
+    start?: number
+    end?: number
+  }
   platforms?: PlatformConfig[]
   accessories?: AccessoryConfig[]
   plugins?: string[]
