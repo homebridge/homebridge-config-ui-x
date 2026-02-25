@@ -5,6 +5,7 @@
  * between the UI and homebridge core.
  * Child bridges can have both HAP and optional Matter functionality.
  */
+import { MatterConfig } from '../../core/matter/matter.interfaces.js'
 
 export type BridgeStatus = 'pending' | 'ok' | 'down'
 
@@ -48,9 +49,7 @@ export interface ChildBridgeMetadata {
   manuallyStopped: boolean
 
   /** Matter configuration */
-  matterConfig?: {
-    port?: number
-  }
+  matterConfig?: MatterConfig
 
   /** Matter identifier (filesystem storage key) */
   matterIdentifier?: string

@@ -2,6 +2,7 @@ import type { MultipartFile } from '@fastify/multipart'
 import type { Systeminformation } from 'systeminformation'
 
 import type { AccessoryConfig, HomebridgeConfig, PlatformConfig } from '../../core/config/config.interfaces.js'
+import type { NetworkOverviewEntry, StoredMatterAccessory } from '../../core/matter/matter.interfaces.js'
 
 import { Buffer } from 'node:buffer'
 import { exec, spawn } from 'node:child_process'
@@ -37,6 +38,7 @@ import {
   RE_CACHED_ACCESSORIES_EXACT,
   RE_CERTIFICATE,
   RE_CHAR_PAIRS,
+  RE_COLON,
   RE_DEVICE_ID,
   RE_HEX_12,
   RE_HEX_ANY,
@@ -68,8 +70,18 @@ export class ServerService {
     @Inject(HomebridgeIpcService) private readonly homebridgeIpcService: HomebridgeIpcService,
     @Inject(Logger) private readonly logger: Logger,
   ) {
-    this.accessoryId = this.configService.homebridgeConfig.bridge.username.split(':').join('')
+    this.accessoryId = ServerService.macToHex(this.configService.homebridgeConfig.bridge.username)
     this.accessoryInfoPath = join(this.configService.storagePath, 'persist', `AccessoryInfo.${this.accessoryId}.json`)
+  }
+
+  /** Convert a MAC address to a hex string: `'0E:3C:22:18:EC:79'` → `'0E3C2218EC79'` */
+  private static macToHex(mac: string): string {
+    return mac.split(':').join('').toUpperCase()
+  }
+
+  /** Convert a hex string to MAC address format: `'0E3C2218EC79'` → `'0E:3C:22:18:EC:79'` */
+  private static hexToMac(hex: string): string {
+    return hex.match(RE_CHAR_PAIRS)?.join(':').toUpperCase() || hex.toUpperCase()
   }
 
   /**
@@ -96,15 +108,15 @@ export class ServerService {
       }
     }
 
-    // Clean Matter storage
+    // Clean Matter cached accessories only (preserve commissioning state)
     if (protocol === 'matter' || protocol === 'both') {
-      const deviceId = id.split(':').join('').toUpperCase()
+      const matterDeviceId = ServerService.macToHex(id)
       const matterDir = resolve(this.configService.storagePath, 'matter')
-      const matterPath = resolve(matterDir, deviceId)
+      const matterAccessoriesPath = resolve(matterDir, matterDeviceId, 'accessories.json')
 
-      if (matterPath.startsWith(matterDir) && await pathExists(matterPath)) {
-        await remove(matterPath)
-        this.logger.warn(`Bridge ${id} Matter accessory removal: removed Matter bridge storage at ${matterPath}.`)
+      if (matterAccessoriesPath.startsWith(matterDir) && await pathExists(matterAccessoriesPath)) {
+        await unlink(matterAccessoriesPath)
+        this.logger.warn(`Bridge ${id} Matter accessory removal: removed ${matterAccessoriesPath}.`)
       }
     }
   }
@@ -121,14 +133,14 @@ export class ServerService {
     const identifierCache = resolve(persistPath, `IdentifierCache.${id}.json`)
 
     // Handle both formats: with colons (0E:3C:22:18:EC:79) and without (0E3C2218EC79)
-    const deviceId = id.includes(':') ? id.split(':').join('').toUpperCase() : id.toUpperCase()
+    const deviceId = id.includes(':') ? ServerService.macToHex(id) : id.toUpperCase()
     const matterDir = resolve(this.configService.storagePath, 'matter')
     const matterPath = resolve(matterDir, deviceId)
 
     try {
       // Format username with colons if not already present
       const configFile = await this.configEditorService.getConfigFile()
-      const username = id.includes(':') ? id.toUpperCase() : id.match(RE_CHAR_PAIRS)?.join(':').toUpperCase() || id.toUpperCase()
+      const username = id.includes(':') ? id.toUpperCase() : ServerService.hexToMac(id)
 
       // Check if the original username is in the access list, if so, update it to the new username
       const uiConfig = configFile.platforms.find(x => x.platform === 'config')
@@ -275,7 +287,7 @@ export class ServerService {
     if (uiConfig.accessoryControl?.instanceBlacklist?.includes(oldUsername.toUpperCase())) {
       // Remove the old username from the blacklist, add the new one, and sort the blacklist alphabetically
       uiConfig.accessoryControl.instanceBlacklist = [...uiConfig.accessoryControl.instanceBlacklist
-        .filter((x: string) => x.toUpperCase() !== oldUsername.toUpperCase()), ...configFile.bridge.pin]
+        .filter((x: string) => x.toUpperCase() !== oldUsername.toUpperCase()), ...configFile.bridge.username]
         .sort((a: string, b: string) => a.localeCompare(b))
     }
 
@@ -284,18 +296,17 @@ export class ServerService {
     // Save the config file
     await this.configEditorService.updateConfigFile(configFile)
 
-    // Remove accessories and persist directories
+    // Remove accessories, persist, and all matter directories
     await remove(resolve(this.configService.storagePath, 'accessories'))
     await remove(resolve(this.configService.storagePath, 'persist'))
 
-    const deviceId = oldUsername.split(':').join('').toUpperCase()
-    const matterPath = join(this.configService.storagePath, 'matter', deviceId)
-    if (await pathExists(matterPath)) {
-      await remove(matterPath)
-      this.logger.warn(`Bridge ${oldUsername} reset: removed Matter bridge storage at ${matterPath}.`)
+    const matterDir = join(this.configService.storagePath, 'matter')
+    if (await pathExists(matterDir)) {
+      await remove(matterDir)
+      this.logger.warn('Homebridge bridge reset: removed all Matter storage.')
     }
 
-    this.logger.log('Homebridge bridge reset: accessories and persist directories were removed.')
+    this.logger.log('Homebridge bridge reset: accessories, persist, and matter directories were removed.')
   }
 
   /**
@@ -328,7 +339,7 @@ export class ServerService {
    * @returns Array of Matter external accessory devices
    * @private
    */
-  private async getMatterExternalAccessories(hapDevices: any[]): Promise<any[]> {
+  private async getMatterExternalAccessories(hapDevices: { _id: string }[]): Promise<Record<string, unknown>[]> {
     const matterPath = join(this.configService.storagePath, 'matter')
 
     // Check if matter directory exists
@@ -339,7 +350,7 @@ export class ServerService {
     const matterDirs = (await readdir(matterPath))
       .filter(x => x.match(RE_HEX_12)) // Match 12 hex character device IDs
 
-    const matterExternalDevices = []
+    const matterExternalDevices: Record<string, unknown>[] = []
 
     for (const deviceId of matterDirs) {
       try {
@@ -351,7 +362,7 @@ export class ServerService {
         }
 
         // Check if this is the main bridge
-        const mainBridgeId = this.configService.homebridgeConfig.bridge.username.split(':').join('').toUpperCase()
+        const mainBridgeId = ServerService.macToHex(this.configService.homebridgeConfig.bridge.username)
         if (deviceId.toUpperCase() === mainBridgeId) {
           // This is the main bridge, skip it
           continue
@@ -378,14 +389,23 @@ export class ServerService {
         const commissioningPath = join(matterPath, deviceId, 'commissioning.json')
         let commissioned = false
         if (await pathExists(commissioningPath)) {
-          const commissioningInfo = await readJson(commissioningPath)
-          commissioned = commissioningInfo.commissioned || false
+          try {
+            const commissioningInfo = await readJson(commissioningPath)
+            commissioned = commissioningInfo.commissioned || false
+          } catch (parseError) {
+            this.logger.warn(`Malformed commissioning.json at ${commissioningPath}, removing corrupted file`)
+            try {
+              await remove(commissioningPath)
+            } catch (removeError) {
+              this.logger.warn(`Failed to remove corrupted commissioning.json: ${removeError.message}`)
+            }
+          }
         }
 
         // Create a device object similar to HAP devices
-        const device: any = {
+        const device: Record<string, unknown> = {
           _id: deviceId,
-          _username: deviceId.match(RE_CHAR_PAIRS)?.join(':').toUpperCase() || deviceId, // Format as MAC address
+          _username: ServerService.hexToMac(deviceId), // Format as MAC address
           _main: false,
           _category: 'other', // Matter external accessories don't have HAP categories
           _matter: true,
@@ -428,7 +448,7 @@ export class ServerService {
       configFile = await this.configEditorService.getConfigFile()
     }
 
-    const username = deviceId.match(RE_CHAR_PAIRS).join(':')
+    const username = ServerService.hexToMac(deviceId)
     const isMain = this.configService.homebridgeConfig.bridge.username.toUpperCase() === username.toUpperCase()
     const pluginBlock = [...configFile.accessories, ...configFile.platforms, { _bridge: configFile.bridge }]
       .find((block: any) => block._bridge?.username?.toUpperCase() === username.toUpperCase())
@@ -495,10 +515,15 @@ export class ServerService {
       throw new BadRequestException('Invalid device ID.')
     }
 
+    // 1. Shutdown first to prevent Homebridge from reacting to partial config
+    this.logger.warn(`Shutting down Homebridge before removing Matter config for bridge ${id}...`)
+    await this.homebridgeIpcService.restartAndWaitForClose()
+
+    // 2. Update config
     try {
       const configFile = await this.configEditorService.getConfigFile()
       // Format username with colons if not already present
-      const username = id.includes(':') ? id.toUpperCase() : id.match(RE_CHAR_PAIRS)?.join(':').toUpperCase() || id.toUpperCase()
+      const username = id.includes(':') ? id.toUpperCase() : ServerService.hexToMac(id)
 
       // Find the child bridge plugin block
       const pluginBlocks = ([
@@ -533,14 +558,8 @@ export class ServerService {
       throw new InternalServerErrorException(`Failed to remove Matter configuration: ${e.message}`)
     }
 
-    this.logger.warn(`Shutting down Homebridge before removing Matter storage for bridge ${id}...`)
-
-    // Wait for homebridge to stop
-    await this.homebridgeIpcService.restartAndWaitForClose()
-
-    // Delete the Matter storage directory
-    // Handle both formats: with colons (0E:3C:22:18:EC:79) and without (0E3C2218EC79)
-    const deviceId = id.includes(':') ? id.split(':').join('').toUpperCase() : id.toUpperCase()
+    // 3. Delete storage
+    const deviceId = id.includes(':') ? ServerService.macToHex(id) : id.toUpperCase()
     const matterPath = join(this.configService.storagePath, 'matter', deviceId)
 
     if (await pathExists(matterPath)) {
@@ -738,12 +757,18 @@ export class ServerService {
         }
       }
 
-      // Remove all Matter storage directories
+      // Remove Matter cached accessories only (preserve commissioning state)
       const matterDir = join(this.configService.storagePath, 'matter')
       if (await pathExists(matterDir)) {
         this.logger.log('Clearing all Matter cached accessories...')
-        await remove(matterDir)
-        this.logger.warn(`Removed Matter storage directory at ${matterDir}.`)
+        const matterBridges = (await readdir(matterDir)).filter(x => x.match(RE_HEX_12))
+        for (const deviceId of matterBridges) {
+          const accessoriesPath = join(matterDir, deviceId, 'accessories.json')
+          if (await pathExists(accessoriesPath)) {
+            await unlink(accessoriesPath)
+            this.logger.warn(`Removed Matter cached accessories for bridge ${deviceId}.`)
+          }
+        }
       }
     } catch (e) {
       this.logger.error(`Failed to clear all cached accessories at ${cachedAccessoriesPath} as ${e.message}.`)
@@ -758,7 +783,7 @@ export class ServerService {
    * Returns all Matter accessories from all bridges
    * @returns Array of Matter accessories with metadata ($deviceId and $protocol)
    */
-  public async getMatterAccessories(): Promise<any[]> {
+  public async getMatterAccessories(): Promise<StoredMatterAccessory[]> {
     const matterDir = join(this.configService.storagePath, 'matter')
 
     // Check if matter directory exists
@@ -767,9 +792,9 @@ export class ServerService {
     }
 
     const matterBridges = (await readdir(matterDir))
-      .filter(x => x.match(RE_HEX_ANY)) // Match bridge device IDs
+      .filter(x => x.match(RE_HEX_ANY)) // Match 12-char bridge device IDs
 
-    const matterAccessories = []
+    const matterAccessories: StoredMatterAccessory[] = []
 
     await Promise.all(matterBridges.map(async (deviceId) => {
       try {
@@ -812,7 +837,7 @@ export class ServerService {
     // Wait for homebridge to stop
     await this.homebridgeIpcService.restartAndWaitForClose()
 
-    const matterAccessories = await readJson(matterAccessoriesPath) as Array<any>
+    const matterAccessories = await readJson(matterAccessoriesPath) as StoredMatterAccessory[]
     const accessoryIndex = matterAccessories.findIndex(x => x.uuid === uuid)
 
     if (accessoryIndex > -1) {
@@ -858,7 +883,7 @@ export class ServerService {
           continue
         }
 
-        const matterAccessories = await readJson(matterAccessoriesPath) as Array<any>
+        const matterAccessories = await readJson(matterAccessoriesPath) as StoredMatterAccessory[]
 
         for (const { uuid } of bridgeAccessories) {
           try {
@@ -1056,10 +1081,9 @@ export class ServerService {
    * @throws InternalServerErrorException if no ports are available in the range
    */
   public async lookupUnusedMatterPort(): Promise<{ port: number }> {
-    const min = 5530
-    const max = 5541
-
     const config = await this.configEditorService.getConfigFile()
+    const min = config.matterPorts?.start ?? 5530
+    const max = config.matterPorts?.end ?? 5541
 
     // Collect used matter ports into a set
     const usedMatterPorts = new Set<number>()
@@ -1087,7 +1111,7 @@ export class ServerService {
       }
     }
 
-    throw new InternalServerErrorException('No available ports in the Matter port range (5530-5541)')
+    throw new InternalServerErrorException(`No available ports in the Matter port range (${min}-${max})`)
   }
 
   /**
@@ -1204,6 +1228,134 @@ export class ServerService {
 
     // 5. Save the config file
     await this.configEditorService.updateConfigFile(config)
+  }
+
+  /**
+   * Get a unified network overview of all port assignments, Matter diagnostics, and detect conflicts
+   */
+  public async getNetworkOverview(): Promise<{ entries: NetworkOverviewEntry[], conflicts: string[] }> {
+    const config = await this.configEditorService.getConfigFile()
+    const entries: NetworkOverviewEntry[] = []
+    const portMap = new Map<number, string[]>()
+    const matterDir = join(this.configService.storagePath, 'matter')
+
+    const trackPort = (port: number, label: string, protocol: string) => {
+      if (!port) {
+        return
+      }
+      if (!portMap.has(port)) {
+        portMap.set(port, [])
+      }
+      portMap.get(port).push(`${label} (${protocol})`)
+    }
+
+    const readMatterDiagnostics = async (username: string): Promise<{ commissioned: boolean, deviceCount: number }> => {
+      const deviceId = username.replace(RE_COLON, '').toUpperCase()
+      let commissioned = false
+      let deviceCount = 0
+
+      if (await pathExists(matterDir)) {
+        const commissioningPath = join(matterDir, deviceId, 'commissioning.json')
+        if (await pathExists(commissioningPath)) {
+          try {
+            const info = await readJson(commissioningPath)
+            commissioned = info.commissioned || false
+          } catch {
+            // Corrupted file, default to false
+          }
+        }
+
+        const accessoriesPath = join(matterDir, deviceId, 'accessories.json')
+        if (await pathExists(accessoriesPath)) {
+          try {
+            const accessories = await readJson(accessoriesPath)
+            deviceCount = Array.isArray(accessories) ? accessories.length : 0
+          } catch {
+            // Corrupted file, default to 0
+          }
+        }
+      }
+
+      return { commissioned, deviceCount }
+    }
+
+    // Main bridge
+    const mainBridgeName = config.bridge.name || 'Homebridge'
+    const mainEntry: NetworkOverviewEntry = {
+      service: 'Homebridge',
+      port: config.bridge.port,
+      protocol: 'HAP',
+      bridge: mainBridgeName,
+      status: 'ok',
+    }
+    trackPort(config.bridge.port, mainBridgeName, 'HAP')
+
+    if (config.bridge.matter?.port) {
+      mainEntry.matterPort = config.bridge.matter.port
+      trackPort(config.bridge.matter.port, mainBridgeName, 'Matter')
+      const diag = await readMatterDiagnostics(config.bridge.username)
+      mainEntry.commissioned = diag.commissioned
+      mainEntry.deviceCount = diag.deviceCount
+    }
+    entries.push(mainEntry)
+
+    // Child bridges
+    for (const block of [...(config.accessories || []), ...(config.platforms || [])] as (AccessoryConfig | PlatformConfig)[]) {
+      if (block._bridge) {
+        const bridgeName = block._bridge.name || block.name || ('platform' in block ? block.platform : block.accessory)
+        const entry: NetworkOverviewEntry = {
+          service: bridgeName,
+          port: block._bridge.port || 0,
+          protocol: 'HAP',
+          bridge: bridgeName,
+          status: 'ok',
+        }
+        if (block._bridge.port) {
+          trackPort(block._bridge.port, bridgeName, 'HAP')
+        }
+
+        if (block._bridge.matter?.port && !('accessory' in block)) {
+          entry.matterPort = block._bridge.matter.port
+          trackPort(block._bridge.matter.port, bridgeName, 'Matter')
+          const diag = await readMatterDiagnostics(block._bridge.username)
+          entry.commissioned = diag.commissioned
+          entry.deviceCount = diag.deviceCount
+        }
+        entries.push(entry)
+      }
+    }
+
+    // UI port
+    const uiConfig = config.platforms?.find(x => x.platform === 'config')
+    const uiPort = uiConfig?.port || this.configService.ui.port
+    entries.push({
+      service: 'Config UI',
+      port: uiPort,
+      protocol: 'UI',
+      bridge: 'UI',
+      status: 'ok',
+    })
+    trackPort(uiPort, 'UI', 'UI')
+
+    // Detect conflicts
+    const conflicts: string[] = []
+    for (const [port, services] of portMap) {
+      if (services.length > 1) {
+        conflicts.push(`Port ${port} is used by: ${services.join(', ')}`)
+      }
+    }
+
+    // Mark conflicting ports
+    for (const entry of entries) {
+      if (portMap.get(entry.port)?.length > 1) {
+        entry.status = 'conflict'
+      }
+      if (entry.matterPort && portMap.get(entry.matterPort)?.length > 1) {
+        entry.status = 'conflict'
+      }
+    }
+
+    return { entries, conflicts }
   }
 
   /**

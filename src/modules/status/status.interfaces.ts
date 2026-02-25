@@ -1,17 +1,9 @@
+import type { HomebridgeStatusMatterUpdate } from '../../core/matter/matter.interfaces.js'
+
 export enum HomebridgeStatus {
   OK = 'ok',
   PENDING = 'pending',
   DOWN = 'down',
-}
-
-export interface HomebridgeStatusMatterUpdate {
-  enabled: boolean
-  port?: number
-  setupUri?: string
-  pin?: string
-  serialNumber?: string
-  commissioned?: boolean
-  deviceCount?: number
 }
 
 export interface HomebridgeStatusUpdate {
@@ -21,23 +13,7 @@ export interface HomebridgeStatusUpdate {
   name?: string
   username?: string
   pin?: string
-  matter: HomebridgeStatusMatterUpdate
-}
-
-export interface DockerRelease {
-  tag_name: string
-  published_at: string
-  prerelease: boolean
-  body: string
-}
-
-export interface DockerReleaseInfo {
-  version: string
-  publishedAt: string
-  isPrerelease: boolean
-  isTest: boolean
-  testTag: 'beta' | 'test' | null
-  isLatestStable: boolean
+  matter?: HomebridgeStatusMatterUpdate
 }
 
 export interface HomebridgeStatsResponse {
@@ -48,5 +24,5 @@ export interface HomebridgeStatsResponse {
   paired: boolean
   packageVersion: string
   status: HomebridgeStatus
-  matter: HomebridgeStatusMatterUpdate
+  matter?: HomebridgeStatusMatterUpdate
 }

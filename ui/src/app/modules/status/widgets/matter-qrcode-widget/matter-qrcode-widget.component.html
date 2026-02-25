@@ -19,18 +19,24 @@
     </div>
     <div #pincodeMatter class="text-center w-100 mt-auto gridster-item-content">
       <p class="mb-1">
-        <span class="font-monospace">{{ pin() }}</span>
+        @if (pin()) {
+          <span class="font-monospace">{{ pin() }}</span>
+        }
       </p>
       <p class="grey-text mb-1 small">
-        <i class="fas fa-matter"></i> Matter
-        @if (pin() && enabled()) {
-          &middot;
-          <i class="fas fa-link" [class.green-text]="commissioned()" [class.grey-text]="!commissioned()"></i>
-          {{ (commissioned() ? 'status.widget.qr_paired' : 'status.widget.qr_unpaired') | translate }}
-          @if (!commissioned()) {
-            <br />
-            <small>{{ 'status.code_scan' | translate }}</small>
+        <i class="fas fa-matter"></i>
+        @if (enabled()) {
+          @if (pin()) {
+            Matter &middot;
+            <i class="fas fa-link" [class.green-text]="commissioned()" [class.grey-text]="!commissioned()"></i>
+            {{ (commissioned() ? 'status.widget.qr_paired' : 'status.widget.qr_unpaired') | translate }}
+            @if (!commissioned()) {
+              <br />
+              <small>{{ 'status.code_scan' | translate }}</small>
+            }
           }
+        } @else {
+          {{ 'status.services.matter_not_enabled' | translate }}
         }
       </p>
     </div>

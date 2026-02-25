@@ -1,5 +1,7 @@
 import type { Buffer } from 'node:buffer'
 
+import { MatterConfig } from '../matter/matter.interfaces.js'
+
 export interface StartupConfig {
   host?: '::' | '0.0.0.0' | string
   httpsOptions?: {
@@ -24,9 +26,7 @@ interface PluginChildBridge {
     DEBUG?: string
     NODE_OPTIONS?: string
   }
-  matter?: {
-    port?: number
-  }
+  matter?: MatterConfig
 }
 
 export interface PlatformConfig {
@@ -54,9 +54,7 @@ export interface HomebridgeConfig {
     manufacturer?: string
     model?: string
     firmwareRevision?: string
-    matter?: {
-      port?: number
-    }
+    matter?: MatterConfig
   }
   mdns?: {
     interface?: string | string[]
@@ -66,17 +64,14 @@ export interface HomebridgeConfig {
     start?: number
     end?: number
   }
+  matterPorts?: {
+    start?: number
+    end?: number
+  }
   platforms?: PlatformConfig[]
   accessories?: AccessoryConfig[]
   plugins?: string[]
   disabledPlugins?: string[]
-}
-
-/**
- * Matter configuration interface
- */
-export interface MatterConfig {
-  port?: number
 }
 
 /**

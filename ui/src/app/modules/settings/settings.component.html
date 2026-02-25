@@ -283,7 +283,12 @@
               !isItemHidden('setting-terminal-lighting-mode')
             ) {
               <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
-                <span>{{ 'settings.terminal.theme' | translate }}</span>
+                <span>
+                  {{ 'settings.terminal.theme' | translate }}
+                  <span class="badge badge-primary ms-1">{{ 'common.labels.beta' | translate }}</span
+                  ><br />
+                  <small class="grey-text pe-2">{{ 'settings.terminal.theme_desc' | translate }}</small>
+                </span>
                 <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
                   @if (
                     uiTerminalFontSizeIsSaving() || uiTerminalFontWeightIsSaving() || uiTerminalLightingModeIsSaving()
@@ -781,6 +786,32 @@
                 </div>
               </li>
             }
+            @if (!isItemHidden('setting-mdns-advertise')) {
+              <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
+                <span>
+                  {{ 'settings.network.mdns_advertise' | translate }}<br />
+                  <small class="grey-text pe-2">{{ 'settings.network.mdns_advertise_help' | translate }}</small>
+                </span>
+                <div class="d-flex align-items-center">
+                  <div class="order-1 order-md-2">
+                    <input
+                      type="checkbox"
+                      class="rendux-input"
+                      id="enableMdnsAdvertise"
+                      [formControl]="enableMdnsAdvertiseFormControl"
+                      [attr.aria-label]="'settings.network.mdns_advertise' | translate"
+                    />
+                    <label class="rendux-label ms-3 min-w-50" for="enableMdnsAdvertise"></label>
+                  </div>
+                  @if (enableMdnsAdvertiseIsSaving()) {
+                    <i
+                      @fadeInOut
+                      class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
+                    ></i>
+                  }
+                </div>
+              </li>
+            }
             @if (!isItemHidden('setting-port-hb')) {
               <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
                 <span>
@@ -936,30 +967,14 @@
                 </div>
               </li>
             }
-            @if (!isItemHidden('setting-mdns-advertise')) {
+            @if (isMatterSupported && !isItemHidden('setting-port-overview')) {
               <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
                 <span>
-                  {{ 'settings.network.mdns_advertise' | translate }}<br />
-                  <small class="grey-text pe-2">{{ 'settings.network.mdns_advertise_help' | translate }}</small>
+                  {{ 'settings.ports.title' | translate }}
                 </span>
-                <div class="d-flex align-items-center">
-                  <div class="order-1 order-md-2">
-                    <input
-                      type="checkbox"
-                      class="rendux-input"
-                      id="enableMdnsAdvertise"
-                      [formControl]="enableMdnsAdvertiseFormControl"
-                      [attr.aria-label]="'settings.network.mdns_advertise' | translate"
-                    />
-                    <label class="rendux-label ms-3 min-w-50" for="enableMdnsAdvertise"></label>
-                  </div>
-                  @if (enableMdnsAdvertiseIsSaving()) {
-                    <i
-                      @fadeInOut
-                      class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
-                    ></i>
-                  }
-                </div>
+                <button type="button" class="btn btn-primary waves-effect" (click)="openPortOverview()">
+                  <i class="fas fa-arrow-right"></i>
+                </button>
               </li>
             }
           </ul>
@@ -1045,6 +1060,44 @@
                   </div>
                 </li>
               }
+            }
+            @if (!isItemHidden('setting-matter-port-range')) {
+              <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+                <span>
+                  {{ 'settings.network.port_range' | translate }}<br />
+                  <small class="grey-text pe-2">{{ 'settings.matter.port_range_desc' | translate }}</small>
+                </span>
+                <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
+                  @if (matterStartPortIsSaving() || matterEndPortIsSaving()) {
+                    <i
+                      @fadeInOut
+                      class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
+                    ></i>
+                  }
+                  <div class="d-flex gap-2 order-1 order-md-2 resp-select-width">
+                    <input
+                      class="form-control custom-input font-monospace flex-fill"
+                      type="number"
+                      min="1025"
+                      max="65533"
+                      placeholder="5530"
+                      [formControl]="matterStartPortFormControl"
+                      [attr.aria-label]="'settings.network.port_range' | translate"
+                      [class.is-invalid]="matterStartPortIsInvalid()"
+                    />
+                    <input
+                      class="form-control custom-input font-monospace flex-fill"
+                      type="number"
+                      min="1025"
+                      max="65533"
+                      placeholder="5541"
+                      [formControl]="matterEndPortFormControl"
+                      [attr.aria-label]="'settings.network.port_range' | translate"
+                      [class.is-invalid]="matterEndPortIsInvalid()"
+                    />
+                  </div>
+                </div>
+              </li>
             }
           </ul>
         }

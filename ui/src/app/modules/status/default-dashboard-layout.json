@@ -2,7 +2,7 @@
   {
     "component": "UpdateInfoWidgetComponent",
     "x": 0,
-    "y": 6,
+    "y": 0,
     "cols": 4,
     "rows": 6,
     "mobileOrder": 10,
@@ -78,9 +78,9 @@
     "draggable": true
   },
   {
-    "component": "HapQrcodeWidgetComponent",
+    "component": "MatterQrcodeWidgetComponent",
     "x": 0,
-    "y": 0,
+    "y": 12,
     "cols": 4,
     "rows": 6,
     "mobileOrder": 100,
@@ -88,11 +88,20 @@
     "draggable": true
   },
   {
-    "component": "HomebridgeLogsWidgetComponent",
     "x": 0,
+    "y": 6,
+    "component": "HapQrcodeWidgetComponent",
+    "cols": 4,
+    "rows": 6,
+    "mobileOrder": 100,
+    "draggable": true
+  },
+  {
+    "component": "HomebridgeLogsWidgetComponent",
+    "x": 4,
     "y": 12,
-    "cols": 20,
-    "rows": 7,
+    "cols": 16,
+    "rows": 6,
     "mobileOrder": 1000,
     "hideOnMobile": true,
     "draggable": true

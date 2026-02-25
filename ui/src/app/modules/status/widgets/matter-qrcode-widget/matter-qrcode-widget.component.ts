@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, DestroyRef, ElementRef, inject, OnDestroy, OnInit, signal, viewChild } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
-import { TranslatePipe, TranslateService } from '@ngx-translate/core'
+import { TranslatePipe } from '@ngx-translate/core'
 import { Subject } from 'rxjs'
 
 import { IoNamespace, WsService } from '@/app/core/communication/ws.service'
@@ -21,7 +21,6 @@ import { HomebridgeStatusResponse } from '@/app/core/server.interfaces'
 export class MatterQrcodeWidgetComponent implements OnInit, OnDestroy {
   // Injected dependencies
   private destroyRef = inject(DestroyRef)
-  private $translate = inject(TranslateService)
   private $ws = inject(WsService)
 
   // Signals
@@ -30,7 +29,6 @@ export class MatterQrcodeWidgetComponent implements OnInit, OnDestroy {
   public readonly enabled = signal<boolean>(false)
   public readonly loading = signal<boolean>(true)
   public readonly commissioned = signal<boolean>(false)
-  public readonly matterEnabled = signal<boolean>(false)
   public readonly pin = signal<string>('')
   public readonly setupUri = signal<string | null>(null)
   public readonly qrCodeHeight = signal<number>(0)
@@ -88,20 +86,18 @@ export class MatterQrcodeWidgetComponent implements OnInit, OnDestroy {
 
   private applyMatterStatus(data: HomebridgeStatusResponse): void {
     if (data.matter) {
-      this.matterEnabled.set(data.matter.enabled)
+      this.enabled.set(data.matter.enabled)
       if (data.matter.enabled) {
         this.pin.set(data.matter.pin || this.pin())
         this.commissioned.set(data.matter.commissioned || false)
         this.setupUri.set(data.matter.setupUri || null)
-        this.enabled.set(true)
       } else {
-        this.pin.set(this.$translate.instant('status.services.matter_not_enabled'))
         this.setupUri.set(null)
         this.commissioned.set(false)
       }
     } else {
-      this.matterEnabled.set(false)
-      this.pin.set(this.$translate.instant('status.services.matter_not_enabled'))
+      this.enabled.set(false)
+      this.pin.set('')
       this.setupUri.set(null)
       this.commissioned.set(false)
     }

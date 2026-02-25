@@ -166,11 +166,11 @@ export function getRvcStatusText(service: ServiceTypeX): string {
     case RvcOperationalState.Paused:
       return 'accessories.control.paused'
     case RvcOperationalState.SeekingCharger:
-      return 'Seeking Charger'
+      return 'accessories.control.seeking_charger'
     case RvcOperationalState.Charging:
-      return 'Charging'
+      return 'accessories.control.charging'
     case RvcOperationalState.Docked:
-      return 'Docked'
+      return 'accessories.control.docked'
     case RvcOperationalState.Stopped:
     default:
       return 'accessories.control.stopped'
@@ -603,7 +603,7 @@ export async function setFanSpeed(service: ServiceTypeX, percent: number): Promi
  * Matter stores temperature in hundredths of °C
  */
 export function getThermostatLocalTemperature(service: ServiceTypeX): number | null {
-  const temp = service.clusters?.thermostat?.externalMeasuredIndoorTemperature
+  const temp = service.clusters?.thermostat?.localTemperature
   if (temp === null || temp === undefined) {
     return null
   }
@@ -705,4 +705,146 @@ export async function setThermostatCoolingSetpoint(service: ServiceTypeX, temper
     console.error('Failed to set cooling setpoint:', error)
     throw error
   }
+}
+
+// ============================================================================
+// Air Quality Concentration Utility Functions
+// ============================================================================
+
+/**
+ * Get PM2.5 concentration value (µg/m³)
+ */
+export function getPm25Value(service: ServiceTypeX): number | null {
+  return service.clusters?.pm25ConcentrationMeasurement?.measuredValue ?? null
+}
+
+/**
+ * Get PM10 concentration value (µg/m³)
+ */
+export function getPm10Value(service: ServiceTypeX): number | null {
+  return service.clusters?.pm10ConcentrationMeasurement?.measuredValue ?? null
+}
+
+/**
+ * Get Carbon Monoxide concentration value (ppm)
+ */
+export function getCarbonMonoxideValue(service: ServiceTypeX): number | null {
+  return (service.clusters as any)?.carbonMonoxideConcentrationMeasurement?.measuredValue ?? null
+}
+
+/**
+ * Get Nitrogen Dioxide concentration value (ppb)
+ */
+export function getNitrogenDioxideValue(service: ServiceTypeX): number | null {
+  return (service.clusters as any)?.nitrogenDioxideConcentrationMeasurement?.measuredValue ?? null
+}
+
+/**
+ * Get Ozone concentration value (ppb)
+ */
+export function getOzoneValue(service: ServiceTypeX): number | null {
+  return (service.clusters as any)?.ozoneConcentrationMeasurement?.measuredValue ?? null
+}
+
+/**
+ * Check if any concentration data is available
+ */
+export function hasConcentrationData(service: ServiceTypeX): boolean {
+  return getPm25Value(service) !== null
+    || getPm10Value(service) !== null
+    || getCarbonMonoxideValue(service) !== null
+    || getNitrogenDioxideValue(service) !== null
+    || getOzoneValue(service) !== null
+}
+
+/**
+ * Get the unit for a concentration cluster
+ * measurementUnit: 0 = PPM, 1 = PPB, 2 = PPT, 3 = mg/m³, 4 = µg/m³
+ */
+export function getConcentrationUnit(service: ServiceTypeX, clusterName: string): string {
+  const cluster = (service.clusters as any)?.[clusterName]
+  if (cluster?.measurementUnit !== undefined) {
+    switch (cluster.measurementUnit) {
+      case 0: return 'ppm'
+      case 1: return 'ppb'
+      case 2: return 'ppt'
+      case 3: return 'mg/m³'
+      case 4: return 'µg/m³'
+    }
+  }
+  // Defaults based on cluster type
+  if (clusterName.includes('pm25') || clusterName.includes('pm10')) {
+    return 'µg/m³'
+  }
+  if (clusterName.includes('carbonMonoxide')) {
+    return 'ppm'
+  }
+  return 'ppb' // NO2 and Ozone
+}
+
+// ============================================================================
+// RVC Service Area & Clean Mode Utility Functions
+// ============================================================================
+
+/**
+ * Check if the device has a ServiceArea cluster
+ */
+export function hasServiceAreaCluster(service: ServiceTypeX): boolean {
+  return !!service.clusters?.serviceArea
+}
+
+/**
+ * Check if the device has an RvcCleanMode cluster
+ */
+export function hasCleanModeCluster(service: ServiceTypeX): boolean {
+  return !!service.clusters?.rvcCleanMode
+}
+
+/**
+ * Get service areas with names
+ */
+export function getServiceAreas(service: ServiceTypeX): Array<{ areaId: number, name: string }> {
+  const areas = service.clusters?.serviceArea?.supportedAreas
+  if (!Array.isArray(areas)) {
+    return []
+  }
+  return areas.map(area => ({
+    areaId: area.areaId,
+    name: area.areaInfo?.locationName || `Area ${area.areaId}`,
+  }))
+}
+
+/**
+ * Get the selected area IDs
+ */
+export function getSelectedAreas(service: ServiceTypeX): number[] {
+  return service.clusters?.serviceArea?.selectedAreas ?? []
+}
+
+/**
+ * Get the current area being serviced
+ */
+export function getCurrentArea(service: ServiceTypeX): number | null {
+  return service.clusters?.serviceArea?.currentArea ?? null
+}
+
+/**
+ * Get area progress information
+ */
+export function getAreaProgress(service: ServiceTypeX): Array<{ areaId: number, status: number }> {
+  return service.clusters?.serviceArea?.progress ?? []
+}
+
+/**
+ * Get supported clean modes
+ */
+export function getCleanModes(service: ServiceTypeX): Array<{ label: string, mode: number }> {
+  return service.clusters?.rvcCleanMode?.supportedModes ?? []
+}
+
+/**
+ * Get the current clean mode
+ */
+export function getCurrentCleanMode(service: ServiceTypeX): number {
+  return service.clusters?.rvcCleanMode?.currentMode ?? 0
 }

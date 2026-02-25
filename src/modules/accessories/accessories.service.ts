@@ -1,17 +1,7 @@
 import type { ServiceType } from '@homebridge/hap-client'
 import type { Socket } from 'socket.io'
 
-import type {
-  AccessoryControlMessage,
-  MatterAccessoriesResponse,
-  MatterAccessory,
-  MatterAccessoryInfo,
-  MatterAccessoryPart,
-  MatterControlResponse,
-  MatterEvent,
-  MatterService,
-  MatterStateUpdate,
-} from './accessories.interfaces.js'
+import type { AccessoryControlMessage } from './accessories.interfaces.js'
 
 import { join } from 'node:path'
 
@@ -23,6 +13,16 @@ import NodeCache from 'node-cache'
 import { ConfigService } from '../../core/config/config.service.js'
 import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.service.js'
 import { Logger } from '../../core/logger/logger.service.js'
+import {
+  MatterAccessoriesResponse,
+  MatterAccessory,
+  MatterAccessoryInfo,
+  MatterAccessoryPart,
+  MatterControlResponse,
+  MatterEvent,
+  MatterService,
+  MatterStateUpdate,
+} from '../../core/matter/matter.interfaces.js'
 
 @Injectable()
 export class AccessoriesService {
@@ -85,7 +85,7 @@ export class AccessoriesService {
       client.emit('hap-accessories-ready-for-control')
       client.emit('accessories-data', hapServices)
 
-      // Load Matter accessories (may be slower due to IPC)
+      // Load Matter accessories (maybe slower due to IPC)
       const matterServices = await this.loadMatterAccessories()
 
       // Emit Matter ready
@@ -252,8 +252,8 @@ export class AccessoriesService {
       const { uuid, partId } = this.parseMatterUniqueId(uniqueId)
 
       // Request detailed info via IPC using unified Matter event channel
-      const response = await this.waitForMatterEvent<MatterAccessoryInfo>('accessoryInfo', () => {
-        this.homebridgeIpcService.sendMessage('getMatterAccessoryInfo', { uuid })
+      const response = await this.waitForMatterEvent<MatterAccessoryInfo>('accessoryInfo', (correlationId) => {
+        this.homebridgeIpcService.sendMessage('getMatterAccessoryInfo', { uuid, correlationId })
       })
 
       if (response.error) {
@@ -420,27 +420,59 @@ export class AccessoriesService {
 
   /**
    * Wait for a specific Matter event type
-   * Matter events use a unified 'matterEvent' channel with different types
+   * Matter events use a unified 'matterEvent' channel with different types.
+   * Uses a correlationId to avoid cross-talk between concurrent requests.
+   * Retries once on timeout (10s per attempt).
    */
-  private async waitForMatterEvent<T = unknown>(eventType: string, sendRequest: () => void): Promise<T> {
+  private async waitForMatterEvent<T = unknown>(eventType: string, sendRequest: (correlationId: string) => void): Promise<T> {
+    try {
+      return await this.attemptMatterEvent<T>(eventType, sendRequest, 10000)
+    } catch {
+      this.logger.warn(`Matter IPC request '${eventType}' timed out, retrying...`)
+      try {
+        return await this.attemptMatterEvent<T>(eventType, sendRequest, 10000)
+      } catch (retryError) {
+        this.logger.error(`Matter IPC request '${eventType}' failed after retry`)
+        throw retryError
+      }
+    }
+  }
+
+  /**
+   * Single attempt to wait for a Matter event with the given timeout
+   */
+  private async attemptMatterEvent<T = unknown>(eventType: string, sendRequest: (correlationId: string) => void, timeoutMs: number): Promise<T> {
+    const correlationId = `${eventType}-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`
+
     return new Promise((resolve, reject) => {
       const actionTimeout = setTimeout(() => {
         // eslint-disable-next-line ts/no-use-before-define
         this.homebridgeIpcService.removeListener('matterEvent', listener)
+        this.homebridgeIpcService.setMaxListeners(this.homebridgeIpcService.getMaxListeners() - 1)
         reject(new Error('The Homebridge service did not respond'))
-      }, 3000)
+      }, timeoutMs)
 
       const listener = (event: MatterEvent) => {
-        // Only resolve if this is the event type we're waiting for
-        if (event.type === eventType) {
+        // Match on both event type and correlationId to prevent cross-talk
+        if (event.type === eventType && (!event.correlationId || event.correlationId === correlationId)) {
           clearTimeout(actionTimeout)
           this.homebridgeIpcService.removeListener('matterEvent', listener)
+          this.homebridgeIpcService.setMaxListeners(this.homebridgeIpcService.getMaxListeners() - 1)
           resolve(event.data as T)
         }
       }
 
+      this.homebridgeIpcService.setMaxListeners(this.homebridgeIpcService.getMaxListeners() + 1)
       this.homebridgeIpcService.on('matterEvent', listener)
-      sendRequest()
+
+      try {
+        sendRequest(correlationId)
+      } catch (e) {
+        clearTimeout(actionTimeout)
+        this.homebridgeIpcService.removeListener('matterEvent', listener)
+        this.homebridgeIpcService.setMaxListeners(this.homebridgeIpcService.getMaxListeners() - 1)
+        reject(e)
+      }
     })
   }
 
@@ -470,18 +502,12 @@ export class AccessoriesService {
       this.matterUpdateListener = (event: MatterEvent) => {
         switch (event.type) {
           case 'accessoryUpdate':
-            // Handle state updates
-            if (event.data && 'uuid' in event.data && 'cluster' in event.data) {
-              this.handleMatterStateUpdate(event.data as MatterStateUpdate)
-            }
+            this.handleMatterStateUpdate(event.data)
             break
 
           case 'accessoryAdded':
           case 'accessoryRemoved':
-            // Handle accessories added/removed events
-            if (event.data && 'uuid' in event.data) {
-              this.logger.debug(`Matter accessory ${event.type}: ${(event.data as { uuid: string }).uuid} - triggering reload`)
-            }
+            this.logger.debug(`Matter accessory ${event.type}: ${event.data.uuid} - triggering reload`)
             // Trigger a reload of only Matter accessories for all connected clients
             for (const client of this.activeClients) {
               client.emit('matter-accessories-reload-required')
@@ -544,8 +570,8 @@ export class AccessoriesService {
 
     try {
       // Request Matter accessories via IPC using unified Matter event channel
-      const response = await this.waitForMatterEvent<MatterAccessoriesResponse>('accessoriesData', () => {
-        this.homebridgeIpcService.sendMessage('getMatterAccessories', {})
+      const response = await this.waitForMatterEvent<MatterAccessoriesResponse>('accessoriesData', (correlationId) => {
+        this.homebridgeIpcService.sendMessage('getMatterAccessories', { correlationId })
       })
 
       if (response.error) {
@@ -582,7 +608,7 @@ export class AccessoriesService {
       this.matterAccessories = matterServices
       return matterServices
     } catch (error) {
-      this.logger.debug('Failed to load Matter accessories:', error)
+      this.logger.warn('Failed to load Matter accessories:', error)
       return []
     }
   }
@@ -595,9 +621,7 @@ export class AccessoriesService {
     const displayName = part
       ? `${accessory.displayName} - ${part.displayName}`
       : accessory.displayName
-    const uniqueId = part
-      ? `matter:${accessory.uuid}:${part.id}`
-      : `matter:${accessory.uuid}`
+    const uniqueId = this.buildMatterUniqueId(accessory.uuid, part?.id)
 
     const deviceType = part?.deviceType || accessory.deviceType
 
@@ -679,13 +703,14 @@ export class AccessoriesService {
       const bridgeUsername = accessory?.bridge?.username
 
       // Send control command via IPC using unified Matter event channel
-      const response = await this.waitForMatterEvent<MatterControlResponse>('accessoryControlResponse', () => {
+      const response = await this.waitForMatterEvent<MatterControlResponse>('accessoryControlResponse', (correlationId) => {
         this.homebridgeIpcService.sendMessage('matterAccessoryControl', {
           uuid,
           cluster: control.cluster,
           attributes: control.attributes,
           bridgeUsername,
           partId,
+          correlationId,
         })
       })
 

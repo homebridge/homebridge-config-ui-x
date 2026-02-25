@@ -10,12 +10,12 @@ import {
   AccessoryConfig,
   HomebridgeConfig,
   HomebridgeUiBridgeConfig,
-  MatterConfig,
   PlatformConfig,
 } from '../../core/config/config.interfaces.js'
 import { ConfigService } from '../../core/config/config.service.js'
 import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.service.js'
 import { Logger } from '../../core/logger/logger.service.js'
+import { MatterConfig } from '../../core/matter/matter.interfaces.js'
 import { RE_COLON, RE_CONFIG_BACKUP, RE_PIN, RE_PLUGIN_NAME, RE_USERNAME } from '../../core/regex.constants.js'
 import { SchedulerService } from '../../core/scheduler/scheduler.service.js'
 import { PluginsService } from '../plugins/plugins.service.js'
@@ -794,6 +794,74 @@ export class ConfigEditorService {
   }
 
   /**
+   * Get the Matter port range configuration
+   */
+  public async getMatterPortRange(): Promise<{ start?: number, end?: number }> {
+    const config = await this.getConfigFile()
+    return {
+      start: config.matterPorts?.start,
+      end: config.matterPorts?.end,
+    }
+  }
+
+  /**
+   * Set the Matter port range configuration
+   */
+  public async setMatterPortRange(value: { start?: number, end?: number }): Promise<void> {
+    this.validateMatterPortRange(value)
+
+    let config = await this.getConfigFile()
+
+    // Clean null values
+    if (value.start === null || value.start === undefined) {
+      delete value.start
+    }
+    if (value.end === null || value.end === undefined) {
+      delete value.end
+    }
+
+    // Remove matterPorts if neither start nor end is specified
+    if (!value.start && !value.end) {
+      delete config.matterPorts
+    } else {
+      config.matterPorts = {}
+      if (value.start) {
+        config.matterPorts.start = value.start
+      }
+      if (value.end) {
+        config.matterPorts.end = value.end
+      }
+    }
+
+    // Bring matterPorts after ports in config ordering
+    const { bridge, ports, matterPorts, ...rest } = config
+    config = matterPorts
+      ? (ports ? { bridge, ports, matterPorts, ...rest } : { bridge, matterPorts, ...rest })
+      : (ports ? { bridge, ports, ...rest } : { bridge, ...rest })
+
+    await this.updateConfigFile(config)
+  }
+
+  /**
+   * Validate the Matter port range configuration
+   */
+  private validateMatterPortRange(value: { start?: number, end?: number }): void {
+    if (value.start !== null && value.start !== undefined) {
+      if (typeof value.start !== 'number' || value.start < 1025 || value.start > 65533) {
+        throw new BadRequestException('Matter port range start must be a number between 1025 and 65533.')
+      }
+    }
+    if (value.end !== null && value.end !== undefined) {
+      if (typeof value.end !== 'number' || value.end < 1025 || value.end > 65533) {
+        throw new BadRequestException('Matter port range end must be a number between 1025 and 65533.')
+      }
+    }
+    if (value.start && value.end && value.start >= value.end) {
+      throw new BadRequestException('Matter port range start must be less than end.')
+    }
+  }
+
+  /**
    * Get the Matter configuration from config.bridge.matter
    * Returns null if Matter is not configured (disabled)
    */
@@ -822,15 +890,18 @@ export class ConfigEditorService {
    */
   public async deleteMatterConfig(): Promise<void> {
     const config = await this.getConfigFile()
+    const deviceId = config.bridge.username.replace(RE_COLON, '').toUpperCase()
+
+    // 1. Shutdown first to prevent Homebridge from reacting to partial config
+    await this.homebridgeIpcService.restartAndWaitForClose()
+
+    // 2. Update config
     delete config.bridge.matter
     await this.updateConfigFile(config)
 
-    // Delete the folder for this Matter bridge
-    const deviceId = config.bridge.username.replace(RE_COLON, '').toUpperCase()
+    // 3. Delete storage
     const matterPath = join(this.configService.storagePath, 'matter', deviceId)
     if (await pathExists(matterPath)) {
-      // Wait for homebridge to stop
-      await this.homebridgeIpcService.restartAndWaitForClose()
       await remove(matterPath)
       this.logger.warn(`Bridge ${deviceId} reset: removed Matter bridge storage at ${matterPath}.`)
     }

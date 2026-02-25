@@ -21,6 +21,7 @@ import { SettingsService } from '@/app/core/ui/settings.service'
 import { TerminalService } from '@/app/core/utilities/terminal.service'
 import { AccessoryControlListsComponent } from '@/app/modules/settings/accessory-control-lists/accessory-control-lists.component'
 import { BackupComponent } from '@/app/modules/settings/backup/backup.component'
+import { PortOverviewModalComponent } from '@/app/modules/settings/port-overview-modal/port-overview-modal.component'
 import { RemoveAllAccessoriesComponent } from '@/app/modules/settings/remove-all-accessories/remove-all-accessories.component'
 import { RemoveBridgeAccessoriesComponent } from '@/app/modules/settings/remove-bridge-accessories/remove-bridge-accessories.component'
 import { RemoveIndividualAccessoriesComponent } from '@/app/modules/settings/remove-individual-accessories/remove-individual-accessories.component'
@@ -120,16 +121,18 @@ export class SettingsComponent implements OnInit {
     network: [
       'setting-interfaces',
       'setting-mdns',
+      'setting-mdns-advertise',
       'setting-port-hb',
       'setting-port-range',
       'setting-network-host',
       'setting-network-proxy',
       'setting-ui-port-network',
-      'setting-mdns-advertise',
+      'setting-port-overview',
     ],
     matter: [
       'setting-matter-enabled',
       'setting-matter-port',
+      'setting-matter-port-range',
     ],
     terminal: [
       'setting-terminal-log-max',
@@ -329,6 +332,14 @@ export class SettingsComponent implements OnInit {
   public readonly matterPortIsSaving = signal(false)
   public matterPortFormControl = new FormControl(0)
 
+  public readonly matterStartPortIsInvalid = signal(false)
+  public readonly matterStartPortIsSaving = signal(false)
+  public matterStartPortFormControl = new FormControl(0)
+
+  public readonly matterEndPortIsInvalid = signal(false)
+  public readonly matterEndPortIsSaving = signal(false)
+  public matterEndPortFormControl = new FormControl(0)
+
   // Other properties
   // Cache for Matter config values (in-memory only, for restoring after accidental disable)
   private matterConfigCache: { port?: number } = {}
@@ -481,16 +492,18 @@ export class SettingsComponent implements OnInit {
       // Network section
       'setting-interfaces': this.$translate.instant('settings.network.title_network_interfaces'),
       'setting-mdns': this.$translate.instant('settings.mdns_advertiser'),
+      'setting-mdns-advertise': this.$translate.instant('settings.network.mdns_advertise'),
       'setting-port-hb': this.$translate.instant('settings.network.port_hb'),
       'setting-port-range': this.$translate.instant('settings.network.port_range'),
       'setting-network-host': this.$translate.instant('settings.network.host'),
       'setting-network-proxy': this.$translate.instant('settings.network.proxy'),
       'setting-ui-port-network': this.$translate.instant('settings.network.port_ui'),
-      'setting-mdns-advertise': this.$translate.instant('settings.network.mdns_advertise'),
+      'setting-port-overview': this.$translate.instant('settings.ports.title'),
 
       // Matter section
       'setting-matter-enabled': `${this.$translate.instant('common.labels.enabled')} ${this.$translate.instant('settings.matter.enabled_desc')}`,
       'setting-matter-port': `${this.$translate.instant('settings.matter.port')} ${this.$translate.instant('settings.matter.port_desc')}`,
+      'setting-matter-port-range': `${this.$translate.instant('settings.network.port_range')} ${this.$translate.instant('settings.matter.port_range_desc')}`,
 
       // Terminal section
       'setting-terminal-log-max': this.$translate.instant('settings.terminal.log_max'),
@@ -910,6 +923,13 @@ export class SettingsComponent implements OnInit {
         this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
       }
     }
+  }
+
+  public openPortOverview(): void {
+    this.$modal.open(PortOverviewModalComponent, {
+      size: 'lg',
+      backdrop: 'static',
+    })
   }
 
   public toggleSection(section: string): void {
@@ -1489,10 +1509,19 @@ export class SettingsComponent implements OnInit {
   }
 
   private async hbStartPortSave(value: number): Promise<void> {
+    if (value && (typeof value !== 'number' || !Number.isInteger(value) || value < 1025 || value > 65533)) {
+      this.hbStartPortIsInvalid.set(true)
+      return
+    }
+    const end = this.hbEndPortFormControl.value
+    if (value && end && value >= end) {
+      this.hbStartPortIsInvalid.set(true)
+      return
+    }
     try {
       this.hbStartPortIsSaving.set(true)
-      await this.$api.put('/server/ports', { start: value, end: this.hbEndPortFormControl.value })
       this.hbStartPortIsInvalid.set(false)
+      await this.$api.put('/server/ports', { start: value || undefined, end: end || undefined })
       setTimeout(() => {
         this.hbStartPortIsSaving.set(false)
         this.showRestartToast()
@@ -1501,14 +1530,24 @@ export class SettingsComponent implements OnInit {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
       this.hbStartPortIsSaving.set(false)
+      this.hbStartPortIsInvalid.set(true)
     }
   }
 
   private async hbEndPortSave(value: number): Promise<void> {
+    if (value && (typeof value !== 'number' || !Number.isInteger(value) || value < 1025 || value > 65533)) {
+      this.hbEndPortIsInvalid.set(true)
+      return
+    }
+    const start = this.hbStartPortFormControl.value
+    if (value && start && start >= value) {
+      this.hbEndPortIsInvalid.set(true)
+      return
+    }
     try {
       this.hbEndPortIsSaving.set(true)
-      await this.$api.put('/server/ports', { start: this.hbStartPortFormControl.value, end: value })
       this.hbEndPortIsInvalid.set(false)
+      await this.$api.put('/server/ports', { start: start || undefined, end: value || undefined })
       setTimeout(() => {
         this.hbEndPortIsSaving.set(false)
         this.showRestartToast()
@@ -1517,6 +1556,7 @@ export class SettingsComponent implements OnInit {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
       this.hbEndPortIsSaving.set(false)
+      this.hbEndPortIsInvalid.set(true)
     }
   }
 
@@ -1979,7 +2019,10 @@ export class SettingsComponent implements OnInit {
 
   private async initMatterSettings(): Promise<void> {
     try {
-      const matterConfig = await this.$api.get('/config-editor/matter')
+      const [matterConfig, matterPorts] = await Promise.all([
+        this.$api.get('/config-editor/matter'),
+        this.$api.get<{ start?: number, end?: number }>('/config-editor/matter/ports'),
+      ])
 
       // null means Matter is disabled, {} or {port, name} means Matter is enabled
       const isEnabled = matterConfig !== null
@@ -1996,6 +2039,17 @@ export class SettingsComponent implements OnInit {
       this.matterPortFormControl.valueChanges
         .pipe(debounceTime(1500), takeUntilDestroyed(this.destroyRef))
         .subscribe((value: number) => this.matterPortSave(value))
+
+      // Matter port range
+      this.matterStartPortFormControl.patchValue(matterPorts.start, { emitEvent: false })
+      this.matterStartPortFormControl.valueChanges
+        .pipe(debounceTime(1500), takeUntilDestroyed(this.destroyRef))
+        .subscribe((value: number) => this.matterStartPortSave(value))
+
+      this.matterEndPortFormControl.patchValue(matterPorts.end, { emitEvent: false })
+      this.matterEndPortFormControl.valueChanges
+        .pipe(debounceTime(1500), takeUntilDestroyed(this.destroyRef))
+        .subscribe((value: number) => this.matterEndPortSave(value))
 
       // Set enabled state
       this.matterEnabledFormControl.patchValue(isEnabled, { emitEvent: false })
@@ -2063,6 +2117,58 @@ export class SettingsComponent implements OnInit {
     }
   }
 
+  private async matterStartPortSave(value: number): Promise<void> {
+    if (value && (typeof value !== 'number' || !Number.isInteger(value) || value < 1025 || value > 65533)) {
+      this.matterStartPortIsInvalid.set(true)
+      return
+    }
+    const end = this.matterEndPortFormControl.value
+    if (value && end && value >= end) {
+      this.matterStartPortIsInvalid.set(true)
+      return
+    }
+    try {
+      this.matterStartPortIsSaving.set(true)
+      this.matterStartPortIsInvalid.set(false)
+      await this.$api.put('/config-editor/matter/ports', { start: value || undefined, end: end || undefined })
+      setTimeout(() => {
+        this.matterStartPortIsSaving.set(false)
+        this.showRestartToast()
+      }, 1000)
+    } catch (error) {
+      console.error(error)
+      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      this.matterStartPortIsSaving.set(false)
+      this.matterStartPortIsInvalid.set(true)
+    }
+  }
+
+  private async matterEndPortSave(value: number): Promise<void> {
+    if (value && (typeof value !== 'number' || !Number.isInteger(value) || value < 1025 || value > 65533)) {
+      this.matterEndPortIsInvalid.set(true)
+      return
+    }
+    const start = this.matterStartPortFormControl.value
+    if (value && start && start >= value) {
+      this.matterEndPortIsInvalid.set(true)
+      return
+    }
+    try {
+      this.matterEndPortIsSaving.set(true)
+      this.matterEndPortIsInvalid.set(false)
+      await this.$api.put('/config-editor/matter/ports', { start: start || undefined, end: value || undefined })
+      setTimeout(() => {
+        this.matterEndPortIsSaving.set(false)
+        this.showRestartToast()
+      }, 1000)
+    } catch (error) {
+      console.error(error)
+      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      this.matterEndPortIsSaving.set(false)
+      this.matterEndPortIsInvalid.set(true)
+    }
+  }
+
   private async matterEnabledSave(value: boolean): Promise<void> {
     try {
       this.matterEnabledIsSaving.set(true)
@@ -2106,10 +2212,10 @@ export class SettingsComponent implements OnInit {
         const injector = createEnvironmentInjector([{
           provide: CONFIRM_MODAL_DATA,
           useValue: {
-            title: 'Disable Matter',
-            message: 'Disabling Matter will delete all Matter bridge files. This action cannot be undone.',
-            message2: 'Are you sure you want to continue?',
-            confirmButtonLabel: 'Continue',
+            title: this.$translate.instant('settings.matter.disable'),
+            message: this.$translate.instant('settings.matter.disable_desc'),
+            message2: this.$translate.instant('common.phrases.are_you_sure'),
+            confirmButtonLabel: this.$translate.instant('form.button_continue'),
             confirmButtonClass: 'btn-danger',
             faIconClass: 'fas fa-exclamation-triangle text-warning',
           },

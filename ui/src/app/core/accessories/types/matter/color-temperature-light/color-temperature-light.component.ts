@@ -70,6 +70,4 @@ export class ColorTemperatureLightComponent {
   public readonly isOn = computed(() => getDeviceActiveState(this.service()))
 
   public readonly brightness = computed(() => getBrightnessPercentage(this.service()))
-
-  protected readonly Math = Math
 }
