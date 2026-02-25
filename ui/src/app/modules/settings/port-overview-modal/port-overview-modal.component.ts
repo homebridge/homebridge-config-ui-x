@@ -1,0 +1,56 @@
+import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core'
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal'
+import { TranslatePipe, TranslateService } from '@ngx-translate/core'
+import { ToastrService } from 'ngx-toastr'
+
+import { ApiService } from '@/app/core/communication/api.service'
+
+interface NetworkOverviewEntry {
+  service: string
+  port: number
+  protocol: string
+  bridge: string
+  status: string
+  matterPort?: number
+  commissioned?: boolean
+  deviceCount?: number
+}
+
+@Component({
+  selector: 'app-port-overview-modal',
+  imports: [TranslatePipe],
+  standalone: true,
+  templateUrl: './port-overview-modal.component.html',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+})
+export class PortOverviewModalComponent implements OnInit {
+  private $activeModal = inject(NgbActiveModal)
+  private $api = inject(ApiService)
+  private $toastr = inject(ToastrService)
+  private $translate = inject(TranslateService)
+
+  public readonly loading = signal(true)
+  public readonly entries = signal<NetworkOverviewEntry[]>([])
+  public readonly conflicts = signal<string[]>([])
+
+  public ngOnInit(): void {
+    void this.loadData()
+  }
+
+  private async loadData(): Promise<void> {
+    try {
+      const data = await this.$api.get('/server/network/overview')
+      this.entries.set(data.entries)
+      this.conflicts.set(data.conflicts)
+    } catch (error) {
+      console.error(error)
+      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+    } finally {
+      this.loading.set(false)
+    }
+  }
+
+  public dismissModal(): void {
+    this.$activeModal.dismiss('Dismiss')
+  }
+}
