@@ -72,14 +72,50 @@
 </ng-template>
 
 <ng-template #supportButton>
-  <button
-    type="button"
-    class="btn btn-elegant my-0 me-0"
-    [attr.aria-label]="'support.title' | translate"
-    (click)="openSupport()"
-  >
-    <i class="fa fa-question-circle-o"></i>
-  </button>
+  <div ngbDropdown placement="bottom-end" class="d-inline-block">
+    <button
+      type="button"
+      class="btn btn-elegant my-0 me-0 position-relative"
+      ngbDropdownToggle
+      [attr.aria-label]="'accessories.protocol_status' | translate"
+    >
+      <i class="fa fa-question-circle-o"></i>
+      @if (hasStatusIndicator) {
+        <span
+          class="position-absolute top-0 start-100 translate-middle p-1 bg-warning border border-light rounded-circle status-badge-offset"
+        >
+          <span class="visually-hidden">{{ 'accessories.protocol_status' | translate }}</span>
+        </span>
+      }
+    </button>
+    <div ngbDropdownMenu>
+      <div class="px-3 py-2 dropdown-item-text">
+        <div class="d-flex align-items-center mb-2">
+          <span
+            class="status-dot-lg me-2"
+            [class.bg-success]="hapStatus === 'running'"
+            [class.bg-danger]="hapStatus === 'not-running'"
+          ></span>
+          <i class="fas fa-hap me-2"></i>
+          <span>{{ `accessories.status_${hapStatus}` | translate }}</span>
+        </div>
+        <div class="d-flex align-items-center">
+          <span
+            class="status-dot-lg me-2"
+            [class.bg-success]="matterStatus === 'running'"
+            [class.bg-danger]="matterStatus === 'not-running'"
+            [class.bg-secondary]="matterStatus === 'not-enabled'"
+          ></span>
+          <i class="fas fa-matter me-2" [class.opacity-muted]="matterStatus === 'not-enabled'"></i>
+          <span>{{ `accessories.status_${matterStatus}` | translate }}</span>
+        </div>
+      </div>
+      <div class="dropdown-divider"></div>
+      <button type="button" ngbDropdownItem (click)="openSupport()">
+        <i class="fa fa-question-circle-o me-2"></i>{{ 'support.title' | translate }}
+      </button>
+    </div>
+  </div>
 </ng-template>
 
 @if (enableAccessories) {

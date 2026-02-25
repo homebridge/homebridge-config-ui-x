@@ -614,6 +614,12 @@ export class AccessoriesService {
 
             return {
               attributes: clusters[clusterName],
+              /**
+               * Fire-and-forget: emits a WebSocket message and resolves immediately.
+               * The promise never rejects; errors are not surfaced to callers.
+               * Try/catch blocks around setAttributes calls are therefore no-ops for
+               * transport errors but kept for documentation and future-proofing.
+               */
               setAttributes: (attributes: Record<string, unknown>) => new Promise<void>((resolve) => {
                 if (!this.matterReadyForControl) {
                   console.warn('Matter control attempted but not ready for control:', {

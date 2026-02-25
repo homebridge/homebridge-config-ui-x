@@ -19,6 +19,9 @@ const __dirname = dirname(__filename)
 const projectDir = resolve(dirname(__dirname), 'ui/src')
 
 const ignoreKeys = [
+  'accessories.status_not-enabled', // this is dynamically generated
+  'accessories.status_not-running', // this is dynamically generated
+  'accessories.status_running', // this is dynamically generated
   'plugins.settings.custom.homebridge-gsh.label_account_linked', // used in google-gsh plugin config
   'plugins.settings.custom.homebridge-gsh.label_link_account', // used in google-gsh plugin config
   'plugins.settings.custom.homebridge-gsh.message_about', // used in google-gsh plugin config

@@ -67,6 +67,7 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
 
   public isAdmin = this.$auth.user.admin
   public enableAccessories = this.$settings.env.enableAccessories
+  public isMatterSupported = this.$settings.isFeatureEnabled('matterSupport')
   public readonly isMobile = signal<boolean | string>(false)
   public readonly hideHidden = signal(true)
   public readonly linkInsecure = '<a href="https://github.com/homebridge/homebridge-config-ui-x/wiki/Enabling-Accessory-Control" target="_blank"><i class="fa fa-external-link-alt primary-text"></i></a>'
@@ -318,6 +319,21 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
       const invisibleItems = document.querySelectorAll('.invisible')
       invisibleItems.forEach(item => item.remove())
     }
+  }
+
+  public get hapStatus(): string {
+    return this.$accessories.hapReadyForControl ? 'running' : 'not-running'
+  }
+
+  public get matterStatus(): string {
+    if (!this.isMatterSupported) {
+      return 'not-enabled'
+    }
+    return this.$accessories.matterReadyForControl ? 'running' : 'not-running'
+  }
+
+  public get hasStatusIndicator(): boolean {
+    return this.hapStatus !== 'running' || (this.isMatterSupported && this.matterStatus !== 'running')
   }
 
   public openSupport(): void {

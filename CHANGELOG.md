@@ -11,6 +11,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - feat: port overview modal
 - feat: matter device management improvements
 - feat: air quality sensor matter device
+- accessories UI updates
 - upgrade `xterm` to `v6` + style improvements
 - added option: global terminal/log window settings
 - use new font-awesome `ko-fi` icon for donate modal
