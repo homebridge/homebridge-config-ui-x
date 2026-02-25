@@ -823,15 +823,18 @@ export class ConfigEditorService {
    */
   public async deleteMatterConfig(): Promise<void> {
     const config = await this.getConfigFile()
+    const deviceId = config.bridge.username.replace(/:/g, '').toUpperCase()
+
+    // 1. Shutdown first to prevent Homebridge from reacting to partial config
+    await this.homebridgeIpcService.restartAndWaitForClose()
+
+    // 2. Update config
     delete config.bridge.matter
     await this.updateConfigFile(config)
 
-    // Delete the folder for this Matter bridge
-    const deviceId = config.bridge.username.replace(/:/g, '').toUpperCase()
+    // 3. Delete storage
     const matterPath = join(this.configService.storagePath, 'matter', deviceId)
     if (await pathExists(matterPath)) {
-      // Wait for homebridge to stop
-      await this.homebridgeIpcService.restartAndWaitForClose()
       await remove(matterPath)
       this.logger.warn(`Bridge ${deviceId} reset: removed Matter bridge storage at ${matterPath}.`)
     }

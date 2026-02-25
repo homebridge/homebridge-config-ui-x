@@ -42,6 +42,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - consolidate matter interfaces
 - extract docker interfaces
 - delete unused log interfaces
+- fix: improve matter bridge management
 
 ### Homebridge Dependencies
 
