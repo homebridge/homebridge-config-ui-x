@@ -223,6 +223,13 @@ export class ServerController {
   }
 
   @UseGuards(AdminGuard)
+  @ApiOperation({ summary: 'Get a unified network overview of all port assignments, Matter diagnostics, and conflict detection.' })
+  @Get('/network/overview')
+  getNetworkOverview() {
+    return this.serverService.getNetworkOverview()
+  }
+
+  @UseGuards(AdminGuard)
   @ApiOperation({ summary: 'Return a random, unused port.' })
   @Get('/port/new')
   lookupUnusedPort() {

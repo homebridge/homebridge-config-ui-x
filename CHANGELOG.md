@@ -44,6 +44,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - delete unused log interfaces
 - fix: improve matter bridge management
 - feat: matter port range configuration
+- feat: network port overview API
 
 ### Homebridge Dependencies
 

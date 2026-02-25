@@ -2,7 +2,7 @@ import type { MultipartFile } from '@fastify/multipart'
 import type { Systeminformation } from 'systeminformation'
 
 import type { AccessoryConfig, HomebridgeConfig, PlatformConfig } from '../../core/config/config.interfaces.js'
-import type { StoredMatterAccessory } from '../../core/matter/matter.interfaces.js'
+import type { NetworkOverviewEntry, StoredMatterAccessory } from '../../core/matter/matter.interfaces.js'
 
 import { Buffer } from 'node:buffer'
 import { exec, spawn } from 'node:child_process'
@@ -1196,6 +1196,134 @@ export class ServerService {
 
     // 5. Save the config file
     await this.configEditorService.updateConfigFile(config)
+  }
+
+  /**
+   * Get a unified network overview of all port assignments, Matter diagnostics, and detect conflicts
+   */
+  public async getNetworkOverview(): Promise<{ entries: NetworkOverviewEntry[], conflicts: string[] }> {
+    const config = await this.configEditorService.getConfigFile()
+    const entries: NetworkOverviewEntry[] = []
+    const portMap = new Map<number, string[]>()
+    const matterDir = join(this.configService.storagePath, 'matter')
+
+    const trackPort = (port: number, label: string, protocol: string) => {
+      if (!port) {
+        return
+      }
+      if (!portMap.has(port)) {
+        portMap.set(port, [])
+      }
+      portMap.get(port).push(`${label} (${protocol})`)
+    }
+
+    const readMatterDiagnostics = async (username: string): Promise<{ commissioned: boolean, deviceCount: number }> => {
+      const deviceId = username.replace(/:/g, '').toUpperCase()
+      let commissioned = false
+      let deviceCount = 0
+
+      if (await pathExists(matterDir)) {
+        const commissioningPath = join(matterDir, deviceId, 'commissioning.json')
+        if (await pathExists(commissioningPath)) {
+          try {
+            const info = await readJson(commissioningPath)
+            commissioned = info.commissioned || false
+          } catch {
+            // Corrupted file, default to false
+          }
+        }
+
+        const accessoriesPath = join(matterDir, deviceId, 'accessories.json')
+        if (await pathExists(accessoriesPath)) {
+          try {
+            const accessories = await readJson(accessoriesPath)
+            deviceCount = Array.isArray(accessories) ? accessories.length : 0
+          } catch {
+            // Corrupted file, default to 0
+          }
+        }
+      }
+
+      return { commissioned, deviceCount }
+    }
+
+    // Main bridge
+    const mainBridgeName = config.bridge.name || 'Homebridge'
+    const mainEntry: NetworkOverviewEntry = {
+      service: 'Homebridge',
+      port: config.bridge.port,
+      protocol: 'HAP',
+      bridge: mainBridgeName,
+      status: 'ok',
+    }
+    trackPort(config.bridge.port, mainBridgeName, 'HAP')
+
+    if (config.bridge.matter?.port) {
+      mainEntry.matterPort = config.bridge.matter.port
+      trackPort(config.bridge.matter.port, mainBridgeName, 'Matter')
+      const diag = await readMatterDiagnostics(config.bridge.username)
+      mainEntry.commissioned = diag.commissioned
+      mainEntry.deviceCount = diag.deviceCount
+    }
+    entries.push(mainEntry)
+
+    // Child bridges
+    for (const block of [...(config.accessories || []), ...(config.platforms || [])] as (AccessoryConfig | PlatformConfig)[]) {
+      if (block._bridge) {
+        const bridgeName = block._bridge.name || block.name || ('platform' in block ? block.platform : block.accessory)
+        const entry: NetworkOverviewEntry = {
+          service: bridgeName,
+          port: block._bridge.port || 0,
+          protocol: 'HAP',
+          bridge: bridgeName,
+          status: 'ok',
+        }
+        if (block._bridge.port) {
+          trackPort(block._bridge.port, bridgeName, 'HAP')
+        }
+
+        if (block._bridge.matter?.port && !('accessory' in block)) {
+          entry.matterPort = block._bridge.matter.port
+          trackPort(block._bridge.matter.port, bridgeName, 'Matter')
+          const diag = await readMatterDiagnostics(block._bridge.username)
+          entry.commissioned = diag.commissioned
+          entry.deviceCount = diag.deviceCount
+        }
+        entries.push(entry)
+      }
+    }
+
+    // UI port
+    const uiConfig = config.platforms?.find(x => x.platform === 'config')
+    const uiPort = uiConfig?.port || this.configService.ui.port
+    entries.push({
+      service: 'Config UI',
+      port: uiPort,
+      protocol: 'UI',
+      bridge: 'UI',
+      status: 'ok',
+    })
+    trackPort(uiPort, 'UI', 'UI')
+
+    // Detect conflicts
+    const conflicts: string[] = []
+    for (const [port, services] of portMap) {
+      if (services.length > 1) {
+        conflicts.push(`Port ${port} is used by: ${services.join(', ')}`)
+      }
+    }
+
+    // Mark conflicting ports
+    for (const entry of entries) {
+      if (portMap.get(entry.port)?.length > 1) {
+        entry.status = 'conflict'
+      }
+      if (entry.matterPort && portMap.get(entry.matterPort)?.length > 1) {
+        entry.status = 'conflict'
+      }
+    }
+
+    return { entries, conflicts }
   }
 
   /**
