@@ -6,6 +6,7 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
 
 import { ApiService } from '@/app/core/communication/api.service'
+import { SettingsService } from '@/app/core/ui/settings.service'
 
 @Component({
   selector: 'app-remove-all-accessories',
@@ -22,6 +23,7 @@ export class RemoveAllAccessoriesComponent implements OnInit {
   private $activeModal = inject(NgbActiveModal)
   private $api = inject(ApiService)
   private $router = inject(Router)
+  private $settings = inject(SettingsService)
   private $toastr = inject(ToastrService)
   private $translate = inject(TranslateService)
 
@@ -58,7 +60,19 @@ export class RemoveAllAccessoriesComponent implements OnInit {
 
   private async loadCachedAccessories(): Promise<void> {
     try {
-      this.cachedAccessories.set(await this.$api.get('/server/cached-accessories'))
+      const hapAccessories: any[] = await this.$api.get('/server/cached-accessories')
+
+      // Also fetch Matter accessories if Matter support is enabled
+      let matterAccessories: any[] = []
+      if (this.$settings.isFeatureEnabled('matterSupport')) {
+        try {
+          matterAccessories = await this.$api.get('/server/matter-accessories')
+        } catch {
+          // Matter endpoint may not be available — ignore
+        }
+      }
+
+      this.cachedAccessories.set([...hapAccessories, ...matterAccessories])
     } catch (error) {
       console.error(error)
       this.$toastr.error(this.$translate.instant('reset.error_message'), this.$translate.instant('toast.title_error'))

@@ -13,6 +13,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - feat: air quality sensor matter device
 - accessories UI updates
 - update plugin bridge component
+- update remove all accessories component
 - upgrade `xterm` to `v6` + style improvements
 - added option: global terminal/log window settings
 - use new font-awesome `ko-fi` icon for donate modal
