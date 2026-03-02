@@ -23,63 +23,66 @@ import localeSv from '@angular/common/locales/sv'
 import localeTh from '@angular/common/locales/th'
 import localeTr from '@angular/common/locales/tr'
 import localeUk from '@angular/common/locales/uk'
+import localeVi from '@angular/common/locales/vi'
 import localeZhCn from '@angular/common/locales/zh-Hans'
 import localeZhTw from '@angular/common/locales/zh-Hant'
 
 registerLocaleData(localeEn)
-registerLocaleData(localeDe)
-registerLocaleData(localeFr)
-registerLocaleData(localePl)
-registerLocaleData(localeCs)
-registerLocaleData(localeRu)
+registerLocaleData(localeBg)
+registerLocaleData(localeCa)
 registerLocaleData(localeZhCn)
 registerLocaleData(localeZhTw)
+registerLocaleData(localeCs)
+registerLocaleData(localeFr)
+registerLocaleData(localeDe)
 registerLocaleData(localeHu)
-registerLocaleData(localeJa)
-registerLocaleData(localeEs)
-registerLocaleData(localeNl)
-registerLocaleData(localeTr)
-registerLocaleData(localeIt)
-registerLocaleData(localeBg)
-registerLocaleData(localeSv)
-registerLocaleData(localeNo)
-registerLocaleData(localeSl)
-registerLocaleData(localePt)
 registerLocaleData(localeId)
-registerLocaleData(localeCa)
+registerLocaleData(localeHE)
+registerLocaleData(localeIt)
+registerLocaleData(localeJa)
 registerLocaleData(localeKo)
 registerLocaleData(localeMk)
+registerLocaleData(localeNl)
+registerLocaleData(localeNo)
+registerLocaleData(localePl)
+registerLocaleData(localePt)
+registerLocaleData(localeRu)
+registerLocaleData(localeSl)
+registerLocaleData(localeEs)
+registerLocaleData(localeSv)
 registerLocaleData(localeTh)
+registerLocaleData(localeTr)
 registerLocaleData(localeUk)
-registerLocaleData(localeHE)
+registerLocaleData(localeVi)
 
 export const supportedLocales = {
   'en': 'en',
-  'de': 'de',
-  'fi': 'fi',
-  'fr': 'fr',
-  'pl': 'pl',
-  'cs': 'cs',
-  'ru': 'ru',
+  'bg': 'bg',
+  'ca': 'ca',
   'zh-CN': 'zh-Hans', // Chinese Simplified -> zh-cn -> zh-Hans
   'zh-TW': 'zh-Hant', // Chinese Traditional -> zh-tw -> zh-Hant
+  'cs': 'cs',
+  'fi': 'fi',
+  'fr': 'fr',
+  'de': 'de',
   'hu': 'hu',
-  'ja': 'ja',
-  'es': 'es',
-  'nl': 'nl',
-  'tr': 'tr',
-  'it': 'it',
-  'bg': 'bg',
-  'sl': 'sl',
-  'sv': 'sv',
-  'no': 'nb', // Norwegian -> no -> nb
-  'pt': 'pt',
-  'pt-BR': 'pt',
   'id': 'id',
-  'ca': 'ca',
+  'he': 'he',
+  'it': 'it',
+  'ja': 'ja',
   'ko': 'ko',
   'mk': 'mk',
+  'nl': 'nl',
+  'no': 'nb', // Norwegian -> no -> nb
+  'pl': 'pl',
+  'pt': 'pt',
+  'pt-BR': 'pt',
+  'ru': 'ru',
+  'sl': 'sl',
+  'es': 'es',
+  'sv': 'sv',
   'th': 'th',
+  'tr': 'tr',
   'uk': 'uk',
-  'he': 'he',
+  'vi': 'vi',
 }

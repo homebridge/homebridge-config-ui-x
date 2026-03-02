@@ -2,6 +2,20 @@
 
 All notable changes to `homebridge-config-ui-x` will be documented in this file. This project tries to adhere to [Semantic Versioning](http://semver.org/).
 
+## v5.18.1 (Pending Release)
+
+### UI Changes
+
+- info widget - remove margin on small table (#2727) (@dnicolson)
+- create the `vi.json` language file (@khanhnd88)
+  - 🗺️ The Homebridge UI is now available in 29 different languages!
+
+### Homebridge Dependencies
+
+- `@homebridge/hap-client` @ `v3.3.0`
+- `@homebridge/node-pty-prebuilt-multiarch` @ `v0.13.1`
+- `@homebridge/plugin-ui-utils` @ `v2.2.0`
+
 ## v5.18.0 (2026-02-22)
 
 ### UI Changes

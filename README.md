@@ -9,7 +9,7 @@
 [![npm](https://img.shields.io/npm/v/homebridge-config-ui-x/beta?label=beta)](https://www.npmjs.com/package/homebridge-config-ui-x)
 [![npm](https://img.shields.io/npm/dt/homebridge-config-ui-x?label=downloads)](https://www.npmjs.com/package/homebridge-config-ui-x)
 
-:gb: :de: :fr: :poland: :czech_republic: :ru: :cn: :hungary: :jp: :es: :netherlands: :tr: :it: :bulgaria: :sweden: :norway: :finland: :slovenia: :brazil: :portugal: :indonesia: :kr: :macedonia: :thailand: :israel: :ukraine:
+:gb: :bulgaria: :cn: :taiwan: :czech_republic: :finland: :fr: :de: :hungary: :indonesia: :israel: :it: :jp: :kr: :macedonia: :netherlands: :norway: :poland: :portugal: :brazil: :ru: :slovenia: :es: :sweden: :thailand: :tr: :ukraine: :vietnam:
 
 </span>
 
