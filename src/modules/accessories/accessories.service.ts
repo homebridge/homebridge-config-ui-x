@@ -143,7 +143,7 @@ export class AccessoriesService {
     const monitor = await this.hapClient.monitorCharacteristics()
 
     const updateHandler = (data: ServiceType | MatterService) => {
-      client.emit('accessories-data', data)
+      client.emit('accessories-data', [data])
     }
     monitor.on('service-update', updateHandler)
 
