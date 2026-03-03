@@ -1511,9 +1511,9 @@ export class ServerService {
 
   /**
    * Generate a self-signed certificate now and optionally set it as the active key/cert in config.
-   * @param options object containing self-signed generation options
-   * @param options.hostnames optional list of hostnames / IPs for Subject Alternative Name
-   * @param options.mode 'keycert' to use generated files as ssl.key/cert, or 'selfsigned' to enable self-signed mode
+   * @param options - object containing self-signed generation options
+   * @param options.hostnames - optional list of hostnames / IPs for Subject Alternative Name
+   * @param options.mode - 'keycert' to use generated files as ssl.key/cert, or 'selfsigned' to enable self-signed mode
    */
   public async generateSelfSignedCertificate(
     options: { hostnames?: string[], mode?: 'keycert' | 'selfsigned' } = {},

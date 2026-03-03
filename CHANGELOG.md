@@ -9,12 +9,13 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - info widget - remove margin on small table (#2727) (@dnicolson)
 - create the `vi.json` language file (@khanhnd88)
   - 🗺️ The Homebridge UI is now available in 29 different languages!
+- dependency + lint updates
 
 ### Homebridge Dependencies
 
-- `@homebridge/hap-client` @ `v3.3.0`
+- `@homebridge/hap-client` @ `v3.4.0`
 - `@homebridge/node-pty-prebuilt-multiarch` @ `v0.13.1`
-- `@homebridge/plugin-ui-utils` @ `v2.2.0`
+- `@homebridge/plugin-ui-utils` @ `v2.2.1`
 
 ## v5.18.0 (2026-02-22)
 

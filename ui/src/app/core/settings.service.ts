@@ -271,7 +271,7 @@ export class SettingsService {
 
   /**
    * Check if a specific feature is enabled based on feature flags
-   * @param featureKey The feature flag key to check
+   * @param featureKey - The feature flag key to check
    * @returns true if the feature is enabled, false otherwise
    */
   public isFeatureEnabled(featureKey: string): boolean {
