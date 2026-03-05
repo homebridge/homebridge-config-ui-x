@@ -259,10 +259,8 @@
   "form.button_continue": "Continue",
   "form.button_delete": "Apagar",
   "form.button_delete_all": "Delete All",
-  "form.button_disable": "Disable",
   "form.button_download": "Descarregar",
   "form.button_edit": "Editar",
-  "form.button_enable": "Enable",
   "form.button_lock": "Lock",
   "form.button_more_info": "More Info",
   "form.button_remove": "Remove",
@@ -802,7 +800,6 @@
   "users.setup_2fa_disable_success": "A autenticação em dois fatores foi desativada.",
   "users.setup_2fa_enable": "Ativar 2FA",
   "users.setup_2fa_enable_error": "An error occurred setting up 2FA",
-  "users.setup_2fa_enabled_success": "A autenticação em dois fatores foi ativada.",
   "users.setup_2fa_enter_code": "Introduza o código da aplicação de autenticação:",
   "users.setup_2fa_scan_qr_code": "Leia o QR Code abaixo com a aplicação de autenticação:",
   "users.setup_2fa_scan_qr_manual": "If you cannot scan the QR code, you can enter the following secret key manually:",
@@ -814,11 +811,6 @@
   "users.title_add_user": "Adicionar Utilizador",
   "users.title_edit_user": "Editar Utilizador",
   "users.title_users": "Utilizadores",
-  "users.toast_added_new_user": "Novo Utilizador Adicionado",
-  "users.toast_failed_to_add_user": "Falha ao Adicionar Utilizador",
-  "users.toast_failed_to_delete_user": "Falha ao Eliminar Utilizador",
   "users.toast_legacy_otp_message": "Your 2FA secret is outdated. Click here to go to the Users page where you can disable and re-enable 2FA to upgrade your security.",
-  "users.toast_legacy_otp_title": "Outdated 2FA Secret",
-  "users.toast_updated_user": "Utilizador Atualizado",
-  "users.toast_user_deleted": "Utilizador Eliminado"
+  "users.toast_legacy_otp_title": "Outdated 2FA Secret"
 }

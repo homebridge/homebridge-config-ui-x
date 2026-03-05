@@ -259,10 +259,8 @@
   "form.button_continue": "Continue",
   "form.button_delete": "Radera",
   "form.button_delete_all": "Delete All",
-  "form.button_disable": "Inaktivera",
   "form.button_download": "Ladda ner",
   "form.button_edit": "Redigera",
-  "form.button_enable": "Aktivera",
   "form.button_lock": "Lås",
   "form.button_more_info": "Mer info",
   "form.button_remove": "Ta bort",
@@ -802,7 +800,6 @@
   "users.setup_2fa_disable_success": "Tvåfaktorsautentisering har inaktiverats.",
   "users.setup_2fa_enable": "Aktivera 2FA",
   "users.setup_2fa_enable_error": "An error occurred setting up 2FA",
-  "users.setup_2fa_enabled_success": "Tvåfaktorsautentisering har aktiverats.",
   "users.setup_2fa_enter_code": "Ange koden från din autentiseringsapp:",
   "users.setup_2fa_scan_qr_code": "Skanna QR-koden nedan med din autentiseringsapp:",
   "users.setup_2fa_scan_qr_manual": "If you cannot scan the QR code, you can enter the following secret key manually:",
@@ -814,11 +811,6 @@
   "users.title_add_user": "Lägg till användare",
   "users.title_edit_user": "Redigera användare",
   "users.title_users": "Användare",
-  "users.toast_added_new_user": "Lagt till ny användare",
-  "users.toast_failed_to_add_user": "Det gick inte att lägga till användare",
-  "users.toast_failed_to_delete_user": "Det gick inte att radera användaren",
   "users.toast_legacy_otp_message": "Your 2FA secret is outdated. Click here to go to the Users page where you can disable and re-enable 2FA to upgrade your security.",
-  "users.toast_legacy_otp_title": "Outdated 2FA Secret",
-  "users.toast_updated_user": "Användare uppdaterad",
-  "users.toast_user_deleted": "Användaren raderad"
+  "users.toast_legacy_otp_title": "Outdated 2FA Secret"
 }

@@ -259,10 +259,8 @@
   "form.button_continue": "Weiter",
   "form.button_delete": "Löschen",
   "form.button_delete_all": "Alle löschen",
-  "form.button_disable": "Deaktivieren",
   "form.button_download": "Download",
   "form.button_edit": "Bearbeiten",
-  "form.button_enable": "Aktivieren",
   "form.button_lock": "Sperren",
   "form.button_more_info": "Mehr Informationen",
   "form.button_remove": "Entfernen",
@@ -802,7 +800,6 @@
   "users.setup_2fa_disable_success": "Zwei-Faktor-Authentifizierung wurde deaktiviert.",
   "users.setup_2fa_enable": "2FA aktivieren",
   "users.setup_2fa_enable_error": "Beim Einrichten von 2FA ist ein Fehler aufgetreten",
-  "users.setup_2fa_enabled_success": "Zwei-Faktor-Authentifizierung wurde aktiviert.",
   "users.setup_2fa_enter_code": "Gib den Code deiner Authentifikator-App ein:",
   "users.setup_2fa_scan_qr_code": "Scanne den unten stehenden QR-Code mit deiner Authentifikator-App:",
   "users.setup_2fa_scan_qr_manual": "Wenn du den QR-Code nicht scannen kannst, kannst du den folgenden geheimen Schlüssel manuell eingeben:",
@@ -814,11 +811,6 @@
   "users.title_add_user": "Benutzer hinzufügen",
   "users.title_edit_user": "Benutzer bearbeiten",
   "users.title_users": "Benutzer",
-  "users.toast_added_new_user": "Neuen Benutzer hinzugefügt",
-  "users.toast_failed_to_add_user": "Fehler beim Hinzufügen des Benutzers",
-  "users.toast_failed_to_delete_user": "Fehler beim Löschen des Benutzers",
   "users.toast_legacy_otp_message": "Your 2FA secret is outdated. Click here to go to the Users page where you can disable and re-enable 2FA to upgrade your security.",
-  "users.toast_legacy_otp_title": "Outdated 2FA Secret",
-  "users.toast_updated_user": "Benutzer aktualisiert",
-  "users.toast_user_deleted": "Benutzer gelöscht"
+  "users.toast_legacy_otp_title": "Outdated 2FA Secret"
 }

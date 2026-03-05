@@ -259,10 +259,8 @@
   "form.button_continue": "Melanjutkan",
   "form.button_delete": "Hapus",
   "form.button_delete_all": "Delete All",
-  "form.button_disable": "Nonaktifkan",
   "form.button_download": "Unduh",
   "form.button_edit": "Ubah",
-  "form.button_enable": "Aktifkan",
   "form.button_lock": "Kunci",
   "form.button_more_info": "Info Lebih Lanjut",
   "form.button_remove": "Hapus",
@@ -802,7 +800,6 @@
   "users.setup_2fa_disable_success": "Otentikasi dua faktor (2FA) telah dinonaktifkan.",
   "users.setup_2fa_enable": "Aktifkan 2FA",
   "users.setup_2fa_enable_error": "An error occurred setting up 2FA",
-  "users.setup_2fa_enabled_success": "Otentikasi dua faktor (2FA) telah diaktifkan.",
   "users.setup_2fa_enter_code": "Masukkan kode dari aplikasi autentikator anda:",
   "users.setup_2fa_scan_qr_code": "Pindai kode QR di bawah ini dengan aplikasi autentikator anda:",
   "users.setup_2fa_scan_qr_manual": "If you cannot scan the QR code, you can enter the following secret key manually:",
@@ -814,11 +811,6 @@
   "users.title_add_user": "Tambah Pengguna",
   "users.title_edit_user": "Ubah Pengguna",
   "users.title_users": "Pengguna",
-  "users.toast_added_new_user": "Menambahkan Pengguna Baru",
-  "users.toast_failed_to_add_user": "Gagal Menambah Pengguna",
-  "users.toast_failed_to_delete_user": "Gagal Menghapus Pengguna",
   "users.toast_legacy_otp_message": "Your 2FA secret is outdated. Click here to go to the Users page where you can disable and re-enable 2FA to upgrade your security.",
-  "users.toast_legacy_otp_title": "Outdated 2FA Secret",
-  "users.toast_updated_user": "Pengguna yang Diperbarui",
-  "users.toast_user_deleted": "Pengguna Dihapus"
+  "users.toast_legacy_otp_title": "Outdated 2FA Secret"
 }

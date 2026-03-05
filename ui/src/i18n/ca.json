@@ -259,10 +259,8 @@
   "form.button_continue": "Continuar",
   "form.button_delete": "Eliminar",
   "form.button_delete_all": "Delete All",
-  "form.button_disable": "Desactivar",
   "form.button_download": "Descarregar",
   "form.button_edit": "Editar",
-  "form.button_enable": "Activar",
   "form.button_lock": "Bloquejar",
   "form.button_more_info": "Més Informació",
   "form.button_remove": "Eliminar",
@@ -802,7 +800,6 @@
   "users.setup_2fa_disable_success": "2FA desactivada.",
   "users.setup_2fa_enable": "Activar 2FA",
   "users.setup_2fa_enable_error": "An error occurred setting up 2FA",
-  "users.setup_2fa_enabled_success": "2FA activada.",
   "users.setup_2fa_enter_code": "Ingressa el codi de la teva aplicació d'autenticació:",
   "users.setup_2fa_scan_qr_code": "Escaneja el següent Codi QR amb la teva aplicació d'autenticació:",
   "users.setup_2fa_scan_qr_manual": "If you cannot scan the QR code, you can enter the following secret key manually:",
@@ -814,11 +811,6 @@
   "users.title_add_user": "Afegir usuari",
   "users.title_edit_user": "Editar usuari",
   "users.title_users": "Usuaris",
-  "users.toast_added_new_user": "Nou usuari afegit",
-  "users.toast_failed_to_add_user": "Error a l'afegir l'usuari",
-  "users.toast_failed_to_delete_user": "Error a l'eliminar l'usuari",
   "users.toast_legacy_otp_message": "Your 2FA secret is outdated. Click here to go to the Users page where you can disable and re-enable 2FA to upgrade your security.",
-  "users.toast_legacy_otp_title": "Outdated 2FA Secret",
-  "users.toast_updated_user": "Usuari actualitzat",
-  "users.toast_user_deleted": "Usuari eliminat"
+  "users.toast_legacy_otp_title": "Outdated 2FA Secret"
 }

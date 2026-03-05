@@ -259,10 +259,8 @@
   "form.button_continue": "Continue",
   "form.button_delete": "Izbriši",
   "form.button_delete_all": "Delete All",
-  "form.button_disable": "Disable",
   "form.button_download": "Prenesi",
   "form.button_edit": "Uredi",
-  "form.button_enable": "Enable",
   "form.button_lock": "Lock",
   "form.button_more_info": "More Info",
   "form.button_remove": "Remove",
@@ -802,7 +800,6 @@
   "users.setup_2fa_disable_success": "Dvofaktorska overitev je onemogočena.",
   "users.setup_2fa_enable": "Omogoči 2FA",
   "users.setup_2fa_enable_error": "An error occurred setting up 2FA",
-  "users.setup_2fa_enabled_success": "Omogočeno je dvofaktorsko preverjanje pristnosti.",
   "users.setup_2fa_enter_code": "Vnesite kodo iz aplikacije za preverjanje pristnosti:",
   "users.setup_2fa_scan_qr_code": "Spodnjo kodo QR optično preberite z aplikacijo za preverjanje pristnosti:",
   "users.setup_2fa_scan_qr_manual": "If you cannot scan the QR code, you can enter the following secret key manually:",
@@ -814,11 +811,6 @@
   "users.title_add_user": "Dodaj uporabnika",
   "users.title_edit_user": "Urejanje uporabnika",
   "users.title_users": "Uporabniki",
-  "users.toast_added_new_user": "Dodan nov uporabnik",
-  "users.toast_failed_to_add_user": "Uporabnika ni bilo mogoče dodati",
-  "users.toast_failed_to_delete_user": "Ni bil omogoče izbrisati uporabnika",
   "users.toast_legacy_otp_message": "Your 2FA secret is outdated. Click here to go to the Users page where you can disable and re-enable 2FA to upgrade your security.",
-  "users.toast_legacy_otp_title": "Outdated 2FA Secret",
-  "users.toast_updated_user": "Posodobljeni uporabnik",
-  "users.toast_user_deleted": "Uporabnik je izbrisan"
+  "users.toast_legacy_otp_title": "Outdated 2FA Secret"
 }

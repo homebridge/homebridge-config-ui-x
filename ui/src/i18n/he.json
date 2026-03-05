@@ -259,10 +259,8 @@
   "form.button_continue": "המשך",
   "form.button_delete": "מחק",
   "form.button_delete_all": "Delete All",
-  "form.button_disable": "השבת",
   "form.button_download": "הורד",
   "form.button_edit": "ערוך",
-  "form.button_enable": "הפעל",
   "form.button_lock": "נעל",
   "form.button_more_info": "מידע נוסף",
   "form.button_remove": "הסר",
@@ -802,7 +800,6 @@
   "users.setup_2fa_disable_success": "אימות דו שלבי בוטל בהצלחה",
   "users.setup_2fa_enable": "הפעל אבטחה דו שלבית",
   "users.setup_2fa_enable_error": "אירעה שגיאה בהגדרת אבטחה דו שלבית",
-  "users.setup_2fa_enabled_success": "אימות די שלבי הופעל בהצלחה",
   "users.setup_2fa_enter_code": "הכנס את הקוד מאפליקצית האימות שלך",
   "users.setup_2fa_scan_qr_code": "סרוק את קוד הקיו אר מאפליקצית האימות שלך:",
   "users.setup_2fa_scan_qr_manual": "If you cannot scan the QR code, you can enter the following secret key manually:",
@@ -814,11 +811,6 @@
   "users.title_add_user": "הוסף משתמש",
   "users.title_edit_user": "ערוך משתמש",
   "users.title_users": "משתמשים",
-  "users.toast_added_new_user": "הוספת משתמש חדש",
-  "users.toast_failed_to_add_user": "כשלון בהוספת משתמש",
-  "users.toast_failed_to_delete_user": "כשלון במחיקת משתמש",
   "users.toast_legacy_otp_message": "Your 2FA secret is outdated. Click here to go to the Users page where you can disable and re-enable 2FA to upgrade your security.",
-  "users.toast_legacy_otp_title": "Outdated 2FA Secret",
-  "users.toast_updated_user": "משתמש עודכן",
-  "users.toast_user_deleted": "משתמש נמחק"
+  "users.toast_legacy_otp_title": "Outdated 2FA Secret"
 }

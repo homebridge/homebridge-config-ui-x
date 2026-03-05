@@ -14,6 +14,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - upgrade `xterm` to `v6` + style improvements
 - added option: global terminal/log window settings
 - improvements to add/edit/remove accessory ui rooms
+- improvements to add/edit/delete user forms and ui
 
 ### Other Changes
 

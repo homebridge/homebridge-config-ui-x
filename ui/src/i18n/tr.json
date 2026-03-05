@@ -259,10 +259,8 @@
   "form.button_continue": "Continue",
   "form.button_delete": "Sil",
   "form.button_delete_all": "Delete All",
-  "form.button_disable": "Disable",
   "form.button_download": "İndir",
   "form.button_edit": "Düzenle",
-  "form.button_enable": "Enable",
   "form.button_lock": "Lock",
   "form.button_more_info": "More Info",
   "form.button_remove": "Remove",
@@ -802,7 +800,6 @@
   "users.setup_2fa_disable_success": "İki aşamalı doğrulama devre dışı bırakıldı.",
   "users.setup_2fa_enable": "2AD'yi Etkinleştir",
   "users.setup_2fa_enable_error": "An error occurred setting up 2FA",
-  "users.setup_2fa_enabled_success": "İki aşamalı doğrulama etkinleştirildi.",
   "users.setup_2fa_enter_code": "Doğrulama uygulamanızdaki kodu girin:",
   "users.setup_2fa_scan_qr_code": "Doğrulama uygulamanızla aşağıdaki QR kodu tarayın:",
   "users.setup_2fa_scan_qr_manual": "If you cannot scan the QR code, you can enter the following secret key manually:",
@@ -814,11 +811,6 @@
   "users.title_add_user": "Kullanıcı Ekle",
   "users.title_edit_user": "Kullanıcıyı Düzenle",
   "users.title_users": "Kullanıcılar",
-  "users.toast_added_new_user": "Yeni Kullanıcı Eklendi",
-  "users.toast_failed_to_add_user": "Kullanıcı Eklenemedi",
-  "users.toast_failed_to_delete_user": "Kullanıcı Silinemedi",
   "users.toast_legacy_otp_message": "Your 2FA secret is outdated. Click here to go to the Users page where you can disable and re-enable 2FA to upgrade your security.",
-  "users.toast_legacy_otp_title": "Outdated 2FA Secret",
-  "users.toast_updated_user": "Kullanıcı Güncellendi",
-  "users.toast_user_deleted": "Kullanıcı Silindi"
+  "users.toast_legacy_otp_title": "Outdated 2FA Secret"
 }

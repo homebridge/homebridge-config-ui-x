@@ -17,8 +17,7 @@
       <ul class="list-group list-group-box mb-0" [style.opacity]="deleteMode() ? '0.25' : '1'">
         <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
           <label for="form-name" class="mb-2 mb-md-0 w-100 w-md-50">
-            {{ 'accessories.room_name' | translate }}
-            <app-required-indicator />
+            {{ 'accessories.room_name' | translate }}<app-required-indicator />
           </label>
           <div class="text-start text-md-end w-100 w-md-50">
             <input
@@ -34,8 +33,7 @@
         </li>
         <li class="list-group-item d-flex justify-content-between align-items-center flex-row pb-2">
           <span class="text-start">
-            {{ 'accessories.control.default_room' | translate }}
-            <app-required-indicator />
+            {{ 'accessories.control.default_room' | translate }}<app-required-indicator />
           </span>
           <div class="text-end grey-text d-flex align-items-center">
             <input

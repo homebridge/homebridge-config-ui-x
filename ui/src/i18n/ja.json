@@ -259,10 +259,8 @@
   "form.button_continue": "続行",
   "form.button_delete": "削除",
   "form.button_delete_all": "すべて削除",
-  "form.button_disable": "無効化",
   "form.button_download": "ダウンロード",
   "form.button_edit": "編集",
-  "form.button_enable": "有効化",
   "form.button_lock": "ロック",
   "form.button_more_info": "詳細情報",
   "form.button_remove": "削除",
@@ -802,7 +800,6 @@
   "users.setup_2fa_disable_success": "二段階認証を無効にしました。",
   "users.setup_2fa_enable": "二段階認証を有効化",
   "users.setup_2fa_enable_error": "二段階認証設定中にエラーが発生しました",
-  "users.setup_2fa_enabled_success": "二段階認証を有効にしました。",
   "users.setup_2fa_enter_code": "認証アプリのコードを入力してください",
   "users.setup_2fa_scan_qr_code": "以下のQRコードを認証アプリでスキャンしてください。",
   "users.setup_2fa_scan_qr_manual": "QRコードをスキャンできない場合は次のシークレットキーを手動で入力してください:",
@@ -814,11 +811,6 @@
   "users.title_add_user": "ユーザーを追加",
   "users.title_edit_user": "ユーザーを編集",
   "users.title_users": "ユーザー",
-  "users.toast_added_new_user": "新しいユーザーを追加しました",
-  "users.toast_failed_to_add_user": "ユーザー追加に失敗しました",
-  "users.toast_failed_to_delete_user": "ユーザー削除に失敗しました",
   "users.toast_legacy_otp_message": "Your 2FA secret is outdated. Click here to go to the Users page where you can disable and re-enable 2FA to upgrade your security.",
-  "users.toast_legacy_otp_title": "Outdated 2FA Secret",
-  "users.toast_updated_user": "ユーザーを更新しました",
-  "users.toast_user_deleted": "ユーザーを削除しました"
+  "users.toast_legacy_otp_title": "Outdated 2FA Secret"
 }

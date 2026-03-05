@@ -259,10 +259,8 @@
   "form.button_continue": "Tiếp tục",
   "form.button_delete": "Xóa",
   "form.button_delete_all": "Xóa tất cả",
-  "form.button_disable": "Vô hiệu hóa",
   "form.button_download": "Tải xuống",
   "form.button_edit": "Chỉnh sửa",
-  "form.button_enable": "Bật",
   "form.button_lock": "Khóa",
   "form.button_more_info": "Thông tin thêm",
   "form.button_remove": "Gỡ bỏ",
@@ -802,7 +800,6 @@
   "users.setup_2fa_disable_success": "Đã tắt xác thực hai yếu tố.",
   "users.setup_2fa_enable": "Bật 2FA",
   "users.setup_2fa_enable_error": "Đã xảy ra lỗi khi thiết lập 2FA",
-  "users.setup_2fa_enabled_success": "Đã bật xác thực hai yếu tố.",
   "users.setup_2fa_enter_code": "Nhập mã từ ứng dụng xác thực của bạn:",
   "users.setup_2fa_scan_qr_code": "Quét mã QR bên dưới bằng ứng dụng xác thực của bạn:",
   "users.setup_2fa_scan_qr_manual": "Nếu không thể quét mã QR, bạn có thể nhập thủ công khóa bí mật sau:",
@@ -814,11 +811,6 @@
   "users.title_add_user": "Thêm người dùng",
   "users.title_edit_user": "Chỉnh sửa người dùng",
   "users.title_users": "Người dùng",
-  "users.toast_added_new_user": "Đã thêm người dùng mới",
-  "users.toast_failed_to_add_user": "Không thể thêm người dùng",
-  "users.toast_failed_to_delete_user": "Không thể xóa người dùng",
   "users.toast_legacy_otp_message": "Khóa bí mật 2FA của bạn đã lỗi thời. Nhấp vào đây để đến trang Người dùng, nơi bạn có thể tắt và bật lại 2FA để nâng cấp bảo mật.",
-  "users.toast_legacy_otp_title": "Khóa bí mật 2FA lỗi thời",
-  "users.toast_updated_user": "Đã cập nhật người dùng",
-  "users.toast_user_deleted": "Đã xóa người dùng"
+  "users.toast_legacy_otp_title": "Khóa bí mật 2FA lỗi thời"
 }
