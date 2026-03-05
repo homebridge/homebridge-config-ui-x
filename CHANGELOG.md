@@ -25,6 +25,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - chore: refresh some screenshots in `screenshots` folder
 - fix: add `username`/`password` attributes to login form
 - angular `v20` to `v21` code migration
+- add new component for required field indicator
 
 ### Homebridge Dependencies
 
