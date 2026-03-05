@@ -76,5 +76,6 @@ export default antfu(
     files: ['ui/**/*.html'],
     rules: {
       ...config.rules,
+      'style/no-multiple-empty-lines': 'off',
     },
   }))

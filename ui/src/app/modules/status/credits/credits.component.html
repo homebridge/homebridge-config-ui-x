@@ -33,6 +33,7 @@
         The <span class="font-monospace">hb-service</span> utility was created by
         <a href="https://github.com/oznu" target="_blank" rel="noopener noreferrer">oznu</a>.
       </li>
+      <li>We are grateful to <a href="https://github.com/homebridge/homebridge/graphs/contributors">all contributors</a> of Homebridge since its first commit in December 2014.</li>
     </ul>
     <h5>Homebridge UI</h5>
     <ul>
@@ -40,17 +41,24 @@
         Homebridge UI was originally created by
         <a href="https://github.com/oznu" target="_blank" rel="noopener noreferrer">oznu</a>.
       </li>
+      <li>
+        Thanks to <a href="https://github.com/rfiorentino1" target="_blank" rel="noopener noreferrer">rfiorentino1</a> for their contributions to improving the accessibility of the UI.
+      </li>
+      <li>We are grateful to <a href="https://github.com/homebridge/homebridge-config-ui-x/graphs/contributors">all contributors</a> of the Homebridge UI since its first commit in July 2017.</li>
     </ul>
     <h5>{{ 'status.credits.translations' | translate }}</h5>
     <ul>
       <li>
         {{ 'status.credits.translations_thanks' | translate }}
         <ul class="mt-1">
-          <li>Finnish: <a href="https://github.com/l1500s" target="_blank" rel="noopener noreferrer">l1500s</a></li>
-          <li>Hebrew: <a href="https://github.com/seidnerj" target="_blank" rel="noopener noreferrer">seidnerj</a></li>
-          <li>Polish: <a href="https://github.com/mkz212" target="_blank" rel="noopener noreferrer">mkz212</a></li>
-          <li>Thai: <a href="https://github.com/tomzt" target="_blank" rel="noopener noreferrer">tomzt</a></li>
-          <li>Ukrainian: <a href="https://github.com/xrust83" target="_blank" rel="noopener noreferrer">xrust83</a></li>
+          @for (translator of translators; track translator.github) {
+            <li>
+              {{ translator.language }}:
+              <a target="_blank" rel="noopener noreferrer" [href]="`https://github.com/${translator.github}`">{{
+                  translator.github
+                }}</a>
+            </li>
+          }
         </ul>
       </li>
     </ul>
