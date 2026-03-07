@@ -74,9 +74,6 @@ export interface Widget {
   x: number
   y: number
   accessoryOrder?: string[] // accessory widget
-  fontSize?: number // homebridge logs widget, terminal widget
-  fontWeight?: string // homebridge logs widget, terminal widget
-  theme?: 'light' | 'dark' // homebridge logs widget, terminal widget
   timeFormat?: string // clock widget
   dateFormat?: string // clock widget
   refreshInterval?: number // cpu widget, memory widget, disk widget, network widget

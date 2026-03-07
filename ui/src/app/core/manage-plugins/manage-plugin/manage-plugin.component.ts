@@ -12,7 +12,7 @@ import {
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { FitAddon } from '@xterm/addon-fit'
 import { WebLinksAddon } from '@xterm/addon-web-links'
-import { Terminal } from '@xterm/xterm'
+import { ITerminalOptions, Terminal } from '@xterm/xterm'
 import { saveAs } from 'file-saver'
 import { NgxMdModule } from 'ngx-md'
 import { ToastrService } from 'ngx-toastr'
@@ -101,15 +101,24 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
   public releaseNotesTab: number = 1
   public downloadingBackup = false
 
+  public get isLightTerminalTheme(): boolean {
+    return this.$settings.getEffectiveTerminalLightingMode() === 'light'
+  }
+
   constructor() {
+    // Modals need independent settings from page terminals
+    // Use terminal theme setting for text color to match terminal background
+    const terminalTheme = this.$settings.getEffectiveTerminalLightingMode()
     this.term = new Terminal({
-      theme: {
-        background: '#00000000',
-      },
-      allowProposedApi: true,
-      allowTransparency: true,
-      fontSize: 13,
+      fontSize: this.$settings.env.terminal?.fontSize || 13,
+      fontWeight: (this.$settings.env.terminal?.fontWeight || '400') as ITerminalOptions['fontWeight'],
       lineHeight: 1.2,
+      allowProposedApi: true,
+      theme: {
+        background: terminalTheme === 'light' ? '#00000000' : '#000000',
+        foreground: terminalTheme === 'light' ? '#333333' : '#eeeeee',
+      },
+      allowTransparency: terminalTheme === 'light',
     })
     this.term.loadAddon(this.fitAddon)
     this.term.loadAddon(this.webLinksAddon)

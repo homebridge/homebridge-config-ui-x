@@ -62,25 +62,33 @@ export class LogsComponent implements OnInit, OnDestroy, CanComponentDeactivate 
     const title = this.$translate.instant('menu.linux.label_logs')
     this.$settings.setPageTitle(title)
 
-    // Set body bg color
-    window.document.querySelector('body').classList.add('bg-black')
+    // Get terminal theme (light or dark) - enforces dark mode override
+    const terminalTheme = this.$settings.getEffectiveTerminalLightingMode()
 
-    // Add light-mode class for animations (only in light mode)
-    if (this.$settings.actualLightingMode === 'light') {
-      window.document.querySelector('body').classList.add('light-mode')
+    // Set body bg color based on terminal theme
+    if (terminalTheme === 'dark') {
+      window.document.querySelector('body').classList.add('bg-black')
+    } else {
+      window.document.querySelector('body').classList.add('bg-white')
+    }
+
+    // Add transition class only when main theme is light AND terminal theme is dark
+    // This creates smooth transitions when light mode users navigate to dark terminal pages
+    const needsTransition = (
+      this.$settings.actualLightingMode === 'light'
+      && terminalTheme === 'dark'
+    )
+
+    if (needsTransition) {
+      window.document.querySelector('body').classList.add('theme-transition')
       const terminal = this.termTarget()?.nativeElement
       if (terminal) {
-        terminal.classList.add('light-mode')
+        terminal.classList.add('theme-transition')
       }
     }
 
     // Start the terminal
-    this.$log.startTerminal(this.termTarget(), {
-      allowProposedApi: true,
-      allowTransparency: true,
-      fontSize: 13,
-      lineHeight: 1.2,
-    }, this.resizeEvent)
+    this.$log.startTerminal(this.termTarget(), this.$settings.getTerminalOptions(), this.resizeEvent)
 
     // Watch for changes in the search query
     this.valueChangesSubscription = this.form.get('query')?.valueChanges.pipe(
@@ -155,23 +163,33 @@ export class LogsComponent implements OnInit, OnDestroy, CanComponentDeactivate 
   }
 
   public canDeactivate(nextUrl?: string): Promise<boolean> {
-    // If in dark mode, no animations needed - navigate immediately
-    if (this.$settings.actualLightingMode !== 'light') {
+    // Get terminal theme - enforces dark mode override
+    const terminalTheme = this.$settings.getEffectiveTerminalLightingMode()
+
+    // Check if transition is needed (only when main theme is light AND terminal theme is dark)
+    const needsTransition = (
+      this.$settings.actualLightingMode === 'light'
+      && terminalTheme === 'dark'
+    )
+
+    // If no transition needed, navigate immediately
+    if (!needsTransition) {
       window.document.querySelector('body').classList.remove('bg-black')
+      window.document.querySelector('body').classList.remove('bg-white')
       return Promise.resolve(true)
     }
 
-    // Hide search bar immediately to avoid seeing black search bar on white background
+    // Hide search bar immediately to avoid background color mismatch
     if (this.showSearchBar()) {
       this.showSearchBar.set(false)
     }
 
-    // Remove light-mode class from body
-    window.document.querySelector('body').classList.remove('light-mode')
+    // Remove theme-transition class from body
+    window.document.querySelector('body').classList.remove('theme-transition')
 
     return new Promise((resolve) => {
-      // Check if we're navigating to another black-background page
-      const stayingBlack = nextUrl && (
+      // Check if we're navigating to another page with the same terminal theme
+      const stayingSameTheme = nextUrl && (
         nextUrl.includes('/platform-tools/terminal')
         || nextUrl.includes('/logs')
       )
@@ -182,8 +200,8 @@ export class LogsComponent implements OnInit, OnDestroy, CanComponentDeactivate 
         terminal.classList.add('fade-out')
       }
 
-      if (stayingBlack) {
-        // Just fade out the terminal, keep background black
+      if (stayingSameTheme) {
+        // Just fade out the terminal, keep background the same
         setTimeout(() => {
           resolve(true)
         }, 250)
@@ -192,6 +210,7 @@ export class LogsComponent implements OnInit, OnDestroy, CanComponentDeactivate 
         setTimeout(() => {
           // Remove body bg color to trigger background transition
           window.document.querySelector('body').classList.remove('bg-black')
+          window.document.querySelector('body').classList.remove('bg-white')
         }, 250)
 
         // Wait for both animations to complete before allowing navigation

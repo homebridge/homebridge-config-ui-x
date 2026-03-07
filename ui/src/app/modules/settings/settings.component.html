@@ -995,7 +995,61 @@
           }
         </div>
       </li>
-      } } }
+      } } } @if (!isItemHidden('setting-terminal-font-size') || !isItemHidden('setting-terminal-font-weight') ||
+      !isItemHidden('setting-terminal-lighting-mode')) {
+      <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+        <span>
+          {{ 'settings.terminal.theme' | translate }}
+          <span class="badge badge-primary ms-1">{{ 'common.labels.beta' | translate }}</span><br />
+          <small class="grey-text pe-2">{{ 'settings.terminal.theme_desc' | translate }}</small>
+        </span>
+        <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
+          @if (uiTerminalFontSizeIsSaving || uiTerminalFontWeightIsSaving || uiTerminalLightingModeIsSaving) {
+          <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"></i>
+          }
+          <div class="d-flex gap-2 order-1 order-md-2 resp-select-width">
+            <div class="d-flex flex-column flex-fill">
+              <select
+                class="custom-select"
+                style="width: 100%"
+                [formControl]="uiTerminalFontSizeFormControl"
+                [attr.aria-label]="'settings.terminal.font_size' | translate"
+              >
+                @for (size of fontSizes; track size) {
+                <option [value]="size">{{ size }}</option>
+                }
+              </select>
+            </div>
+            <div class="d-flex flex-column flex-fill">
+              <select
+                class="custom-select"
+                style="width: 100%"
+                [formControl]="uiTerminalFontWeightFormControl"
+                [attr.aria-label]="'settings.terminal.font_weight' | translate"
+              >
+                @for (weight of fontWeights; track weight) {
+                <option [value]="weight">{{ weight }}</option>
+                }
+              </select>
+            </div>
+            <div class="d-flex flex-column flex-fill">
+              <select
+                class="custom-select terminal-theme-select"
+                style="width: 100%"
+                [formControl]="uiTerminalLightingModeFormControl"
+                [attr.aria-label]="'settings.display.lighting_mode' | translate"
+                [disabled]="isTerminalLightingModeDisabled"
+                [class.disabled-no-interaction]="isTerminalLightingModeDisabled"
+              >
+                @for (theme of terminalThemes; track theme) {
+                <option [value]="theme">{{ theme === 'light' ? 'Light' : 'Dark' }}</option>
+                }
+              </select>
+            </div>
+          </div>
+        </div>
+      </li>
+      }
     </ul>
     }
   </div>

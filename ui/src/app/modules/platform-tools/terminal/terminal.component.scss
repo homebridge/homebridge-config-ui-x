@@ -1,9 +1,9 @@
-// Smooth transition for body background color change (light mode only)
-::ng-deep body.light-mode {
+// Smooth transition for body background color change when terminal theme differs from main theme
+::ng-deep body.theme-transition {
   transition: background-color 0.25s ease-in-out;
 }
 
-#docker-terminal.light-mode {
+#docker-terminal.theme-transition {
   opacity: 0;
   animation: fadeIn 0.25s ease-in-out 0.25s forwards;
 

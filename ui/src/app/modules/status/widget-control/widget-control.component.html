@@ -85,69 +85,7 @@
       <li class="list-group-item muted grey-text text-center">
         {{ 'status.widget.weather.provider' | translate: { openWeather: 'OpenWeather' } }}
       </li>
-      } @case ('HomebridgeLogsWidgetComponent') {
-      <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
-        <label class="mb-2 mb-md-0 w-100 w-md-50">{{ 'status.widget.font_size' | translate }}</label>
-        <div class="text-start text-md-end w-100 w-md-50">
-          <select class="custom-select" [(ngModel)]="widget.fontSize">
-            @for (size of fontSizes; track size) {
-            <option [value]="size">{{ size }}</option>
-            }
-          </select>
-        </div>
-      </li>
-      <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
-        <label class="mb-2 mb-md-0 w-100 w-md-50">{{ 'status.widget.font_weight' | translate }}</label>
-        <div class="text-start text-md-end w-100 w-md-50">
-          <select class="custom-select" [(ngModel)]="widget.fontWeight">
-            @for (weight of fontWeights; track weight) {
-            <option [value]="weight">{{ weight }}</option>
-            }
-          </select>
-        </div>
-      </li>
-      @if (this.isLightMode) {
-      <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
-        <label class="mb-2 mb-md-0 w-100 w-md-50">{{ 'settings.display.lighting_mode' | translate }}</label>
-        <div class="text-start text-md-end w-100 w-md-50">
-          <select class="custom-select" [(ngModel)]="widget.theme">
-            <option value="dark">{{ 'settings.display.dark' | translate }}</option>
-            <option value="light">{{ 'settings.display.light' | translate }}</option>
-          </select>
-        </div>
-      </li>
-      } } @case ('TerminalWidgetComponent') {
-      <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
-        <label class="mb-2 mb-md-0 w-100 w-md-50">{{ 'status.widget.font_size' | translate }}</label>
-        <div class="text-start text-md-end w-100 w-md-50">
-          <select class="custom-select" [(ngModel)]="widget.fontSize">
-            @for (size of fontSizes; track size) {
-            <option [value]="size">{{ size }}</option>
-            }
-          </select>
-        </div>
-      </li>
-      <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
-        <label class="mb-2 mb-md-0 w-100 w-md-50">{{ 'status.widget.font_weight' | translate }}</label>
-        <div class="text-start text-md-end w-100 w-md-50">
-          <select class="custom-select" [(ngModel)]="widget.fontWeight">
-            @for (weight of fontWeights; track weight) {
-            <option [value]="weight">{{ weight }}</option>
-            }
-          </select>
-        </div>
-      </li>
-      @if (this.isLightMode) {
-      <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
-        <label class="mb-2 mb-md-0 w-100 w-md-50">{{ 'settings.display.lighting_mode' | translate }}</label>
-        <div class="text-start text-md-end w-100 w-md-50">
-          <select class="custom-select" [(ngModel)]="widget.theme">
-            <option value="dark">{{ 'settings.display.dark' | translate }}</option>
-            <option value="light">{{ 'settings.display.light' | translate }}</option>
-          </select>
-        </div>
-      </li>
-      } } @case ('ClockWidgetComponent') {
+      } @case ('ClockWidgetComponent') {
       <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
         <label class="mb-2 mb-md-0 w-100 w-md-50">{{ 'status.widget.clock_timeformat' | translate }}</label>
         <div class="text-start text-md-end w-100 w-md-50">

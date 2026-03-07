@@ -1,7 +1,7 @@
-import { Component, ElementRef, inject, Input, OnDestroy, OnInit, viewChild } from '@angular/core'
+import { ChangeDetectorRef, Component, ElementRef, inject, Input, OnDestroy, OnInit, viewChild } from '@angular/core'
 import { TranslatePipe } from '@ngx-translate/core'
 import { ITerminalOptions } from '@xterm/xterm'
-import { Subject } from 'rxjs'
+import { Subject, Subscription } from 'rxjs'
 
 import { LogService } from '@/app/core/log.service'
 import { SettingsService } from '@/app/core/settings.service'
@@ -17,8 +17,10 @@ import { Widget } from '@/app/modules/status/widgets/widgets.interfaces'
 export class HomebridgeLogsWidgetComponent implements OnInit, OnDestroy {
   private $log = inject(LogService)
   private $settings = inject(SettingsService)
-  private fontSize = 13
-  private fontWeight: ITerminalOptions['fontWeight'] = '400'
+  private $cdr = inject(ChangeDetectorRef)
+  private terminalSettingsSubscription?: Subscription
+  private configureEventSubscription?: Subscription
+  private resizeEventSubscription?: Subscription
 
   readonly widgetContainerElement = viewChild<ElementRef>('widgetcontainer')
   readonly titleElement = viewChild<ElementRef>('terminaltitle')
@@ -29,71 +31,55 @@ export class HomebridgeLogsWidgetComponent implements OnInit, OnDestroy {
   @Input() configureEvent: Subject<any>
 
   public terminalHeight = 200
-  public theme: 'dark' | 'light' = 'dark'
+
+  public get theme(): 'dark' | 'light' {
+    // Always use effective theme to enforce dark mode override
+    return this.$settings.getEffectiveTerminalLightingMode()
+  }
 
   public ngOnInit() {
-    this.fontSize = this.widget.fontSize || 13
-    this.fontWeight = Number.parseInt(this.widget.fontWeight || '400')
-    if (this.$settings.actualLightingMode === 'dark') {
-      this.widget.theme = 'dark'
-    }
-    this.theme = this.widget.theme || 'dark'
-
     setTimeout(() => {
-      this.$log.startTerminal(this.termTarget(), {
+      this.$log.startTerminal(this.termTarget(), this.$settings.getTerminalOptions({
         cursorBlink: false,
-        theme: this.theme !== 'light'
-          ? {
-              background: '#2b2b2b',
-            }
-          : {
-              background: '#00000000',
-              foreground: '#2b2b2b',
-              cursor: '#d2d2d2',
-              selectionBackground: '#d2d2d2',
-            },
-        allowProposedApi: true,
-        allowTransparency: true,
-        fontSize: this.fontSize,
-        fontWeight: this.fontWeight,
-        lineHeight: 1.2,
-      }, this.resizeEvent)
+      }, true), this.resizeEvent)
     })
 
-    this.resizeEvent.subscribe({
+    this.resizeEventSubscription = this.resizeEvent.subscribe({
       next: () => {
         this.terminalHeight = this.getTerminalHeight()
       },
     })
 
-    this.configureEvent.subscribe({
+    this.configureEventSubscription = this.configureEvent.subscribe({
       next: () => {
-        let changed = false
-        if (this.widget.fontSize !== this.fontSize) {
-          this.fontSize = this.widget.fontSize
-          this.$log.term.options.fontSize = this.widget.fontSize
-          changed = true
-        }
-        if (this.widget.fontWeight !== this.fontWeight) {
-          this.fontWeight = Number.parseInt(this.widget.fontWeight, 10)
-          this.$log.term.options.fontWeight = Number.parseInt(this.widget.fontWeight, 10)
-          changed = true
-        }
-        if (this.widget.theme !== this.theme) {
-          this.theme = this.widget.theme
-          this.$log.term.options.theme = this.theme !== 'light'
-            ? {
-                background: '#2b2b2b',
-              }
-            : {
-                background: '#00000000',
-                foreground: '#2b2b2b',
-                cursor: '#d2d2d2',
-                selectionBackground: '#d2d2d2',
-              }
-          changed = true
-        }
+        // Widget configuration changes would be handled here if needed
+      },
+    })
 
+    // Subscribe to global terminal settings changes
+    this.terminalSettingsSubscription = this.$settings.terminalSettingsChanged.subscribe({
+      next: (settings) => {
+        if (!this.$log.term) {
+          return
+        }
+        let changed = false
+        if (settings.fontSize && this.$log.term.options.fontSize !== settings.fontSize) {
+          this.$log.term.options.fontSize = settings.fontSize
+          changed = true
+        }
+        if (settings.fontWeight && this.$log.term.options.fontWeight !== settings.fontWeight) {
+          this.$log.term.options.fontWeight = settings.fontWeight as ITerminalOptions['fontWeight']
+          changed = true
+        }
+        if (settings.lightingMode !== undefined) {
+          const themeOptions = this.$settings.getTerminalThemeOptions(true)
+          this.$log.term.options.theme = themeOptions.theme
+          this.$log.term.options.allowTransparency = themeOptions.allowTransparency
+          changed = true
+
+          // Trigger change detection for template bindings (background color, etc.)
+          this.$cdr.markForCheck()
+        }
         if (changed) {
           this.resizeEvent.next(undefined)
           setTimeout(() => {
@@ -105,6 +91,9 @@ export class HomebridgeLogsWidgetComponent implements OnInit, OnDestroy {
   }
 
   public ngOnDestroy() {
+    this.terminalSettingsSubscription?.unsubscribe()
+    this.configureEventSubscription?.unsubscribe()
+    this.resizeEventSubscription?.unsubscribe()
     this.$log.destroyTerminal()
   }
 

@@ -74,15 +74,28 @@ export class TerminalComponent implements OnInit, AfterViewInit, OnDestroy {
     const title = this.$translate.instant('menu.linux.label_terminal')
     this.$settings.setPageTitle(title)
 
-    // Set body bg color
-    window.document.querySelector('body').classList.add('bg-black')
+    // Get terminal theme (light or dark) - enforces dark mode override
+    const terminalTheme = this.$settings.getEffectiveTerminalLightingMode()
 
-    // Add light-mode class for animations (only in light mode)
-    if (this.$settings.actualLightingMode === 'light') {
-      window.document.querySelector('body').classList.add('light-mode')
+    // Set body bg color based on terminal theme
+    if (terminalTheme === 'dark') {
+      window.document.querySelector('body').classList.add('bg-black')
+    } else {
+      window.document.querySelector('body').classList.add('bg-white')
+    }
+
+    // Add transition class only when main theme is light AND terminal theme is dark
+    // This creates smooth transitions when light mode users navigate to dark terminal pages
+    const needsTransition = (
+      this.$settings.actualLightingMode === 'light'
+      && terminalTheme === 'dark'
+    )
+
+    if (needsTransition) {
+      window.document.querySelector('body').classList.add('theme-transition')
       const terminal = this.termTarget()?.nativeElement
       if (terminal) {
-        terminal.classList.add('light-mode')
+        terminal.classList.add('theme-transition')
       }
     }
 
@@ -95,23 +108,17 @@ export class TerminalComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Start or reconnect to the terminal based on current persistence state
     if (this.$settings.env.terminal?.persistence && this.$terminal.hasActiveSession()) {
-      this.$terminal.reconnectTerminal(this.termTarget(), {
-        allowProposedApi: true,
-        allowTransparency: true,
-        fontSize: 13,
-        lineHeight: 1.2,
-      }, this.resizeEvent)
+      this.$terminal.reconnectTerminal(this.termTarget(), this.$settings.getTerminalOptions({
+        screenReaderMode: true,
+      }), this.resizeEvent)
     } else {
       // If persistence is disabled but there's still an active session, destroy it first
       if (!this.$settings.env.terminal?.persistence && this.$terminal.hasActiveSession()) {
         this.$terminal.destroyPersistentSession()
       }
-      this.$terminal.startTerminal(this.termTarget(), {
-        allowProposedApi: true,
-        allowTransparency: true,
-        fontSize: 13,
-        lineHeight: 1.2,
-      }, this.resizeEvent)
+      this.$terminal.startTerminal(this.termTarget(), this.$settings.getTerminalOptions({
+        screenReaderMode: true,
+      }), this.resizeEvent)
     }
 
     // Set focus to the terminal after a delay to ensure it's initialized
@@ -147,17 +154,27 @@ export class TerminalComponent implements OnInit, AfterViewInit, OnDestroy {
       return guardResult
     }
 
-    // If in dark mode, no animations needed - navigate immediately
-    if (this.$settings.actualLightingMode !== 'light') {
+    // Get terminal theme - enforces dark mode override
+    const terminalTheme = this.$settings.getEffectiveTerminalLightingMode()
+
+    // Check if transition is needed (only when main theme is light AND terminal theme is dark)
+    const needsTransition = (
+      this.$settings.actualLightingMode === 'light'
+      && terminalTheme === 'dark'
+    )
+
+    // If no transition needed, navigate immediately
+    if (!needsTransition) {
       window.document.querySelector('body').classList.remove('bg-black')
+      window.document.querySelector('body').classList.remove('bg-white')
       return Promise.resolve(true)
     }
 
-    // Remove light-mode class from body
-    window.document.querySelector('body').classList.remove('light-mode')
+    // Remove theme-transition class from body
+    window.document.querySelector('body').classList.remove('theme-transition')
 
-    // Check if we're navigating to another black-background page
-    const stayingBlack = nextUrl && (
+    // Check if we're navigating to another page with the same terminal theme
+    const stayingSameTheme = nextUrl && (
       nextUrl.includes('/platform-tools/terminal')
       || nextUrl.includes('/logs')
     )
@@ -170,8 +187,8 @@ export class TerminalComponent implements OnInit, AfterViewInit, OnDestroy {
         terminal.classList.add('fade-out')
       }
 
-      if (stayingBlack) {
-        // Just fade out the terminal, keep background black
+      if (stayingSameTheme) {
+        // Just fade out the terminal, keep background the same
         setTimeout(() => {
           resolve(true)
         }, 250)
@@ -180,6 +197,7 @@ export class TerminalComponent implements OnInit, AfterViewInit, OnDestroy {
         setTimeout(() => {
           // Remove body bg color to trigger background transition
           window.document.querySelector('body').classList.remove('bg-black')
+          window.document.querySelector('body').classList.remove('bg-white')
         }, 250)
 
         // Wait for both animations to complete before allowing navigation

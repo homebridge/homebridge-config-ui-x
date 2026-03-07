@@ -1,6 +1,5 @@
 #plugin-log-output {
   min-height: 400px;
-  background-color: #000000;
   padding: 5px 5px 5px 5px;
   overflow: hidden;
 }
@@ -17,4 +16,49 @@
 // https://github.com/xtermjs/xterm.js/pull/4979/files
 .terminal .xterm-rows span {
   pointer-events: none;
+}
+
+// Terminal theme styles for modals
+.terminal-light-bg {
+  background-color: #ffffff !important;
+  border: 1px solid rgba(0, 0, 0, 0.125) !important;
+  padding: 0.5rem !important;
+}
+
+.terminal-dark-bg {
+  background-color: #000000 !important;
+  padding: 0 !important;
+}
+
+// Terminal light theme modal styling
+.terminal-light-theme {
+  .modal-header {
+    background-color: #ffffff !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.125) !important;
+  }
+
+  .modal-title {
+    color: #000000 !important;
+  }
+
+  .modal-footer {
+    background-color: #ffffff !important;
+    border-top: 1px solid rgba(0, 0, 0, 0.125) !important;
+  }
+
+  .btn-elegant {
+    color: #ffffff !important;
+    background-color: #6c757d !important;
+    border-color: #6c757d !important;
+
+    &:hover,
+    &:focus {
+      background-color: #5a6268 !important;
+      border-color: #545b62 !important;
+    }
+  }
+
+  .btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%);
+  }
 }

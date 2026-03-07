@@ -44,10 +44,6 @@ export class WidgetControlComponent implements OnInit {
   // Weather
   public searching: boolean
 
-  // Terminal
-  public fontSizes = [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
-  public fontWeights = ['100', '200', '300', '400', '500', '600', '700', '800', '900', 'bold', 'normal']
-
   // Clock
   public currentDate = new Date()
   public timeFormats = [
@@ -102,17 +98,6 @@ export class WidgetControlComponent implements OnInit {
   public async ngOnInit() {
     this.io = this.$ws.getExistingNamespace('status')
     this.isLightMode = this.$settings.actualLightingMode === 'light'
-    if (this.widget.component === 'HomebridgeLogsWidgetComponent' || this.widget.component === 'TerminalWidgetComponent') {
-      if (!this.widget.fontWeight) {
-        this.widget.fontWeight = '400'
-      }
-      if (!this.widget.fontSize) {
-        this.widget.fontSize = 15
-      }
-      if (!this.widget.theme) {
-        this.widget.theme = 'dark'
-      }
-    }
     if (this.widget.component === 'NetworkWidgetComponent') {
       // Get a list of active network interfaces from the settings
       firstValueFrom(this.$api.get('/server/network-interfaces/bridge')).then((adapters) => {
