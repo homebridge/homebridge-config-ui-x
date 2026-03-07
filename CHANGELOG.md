@@ -4,6 +4,10 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 
 ## v5.20.1 (Pending Release)
 
+### UI Changes
+
+- upgrade `xterm` to `v6` + style improvements
+
 ### Other Changes
 
 - fix: prioritise scoped plugins in plugin search results

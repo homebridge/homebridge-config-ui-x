@@ -162,12 +162,13 @@ th {
 }
 
 .adjust-for-mobile {
-  height: calc(100% - 30px);
+  height: calc(100% - 32px);
   width: calc(100% + 17px);
   overflow: hidden;
 
   @media (max-width: 767px) {
     height: calc(100% - 60px);
+    width: calc(100% + 16px);
   }
 }
 

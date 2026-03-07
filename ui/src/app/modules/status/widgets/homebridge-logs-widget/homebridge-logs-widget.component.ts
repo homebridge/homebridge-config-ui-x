@@ -17,7 +17,7 @@ import { Widget } from '@/app/modules/status/widgets/widgets.interfaces'
 export class HomebridgeLogsWidgetComponent implements OnInit, OnDestroy {
   private $log = inject(LogService)
   private $settings = inject(SettingsService)
-  private fontSize = 15
+  private fontSize = 13
   private fontWeight: ITerminalOptions['fontWeight'] = '400'
 
   readonly widgetContainerElement = viewChild<ElementRef>('widgetcontainer')
@@ -32,7 +32,7 @@ export class HomebridgeLogsWidgetComponent implements OnInit, OnDestroy {
   public theme: 'dark' | 'light' = 'dark'
 
   public ngOnInit() {
-    this.fontSize = this.widget.fontSize || 15
+    this.fontSize = this.widget.fontSize || 13
     this.fontWeight = Number.parseInt(this.widget.fontWeight || '400')
     if (this.$settings.actualLightingMode === 'dark') {
       this.widget.theme = 'dark'
@@ -52,10 +52,11 @@ export class HomebridgeLogsWidgetComponent implements OnInit, OnDestroy {
               cursor: '#d2d2d2',
               selectionBackground: '#d2d2d2',
             },
-        allowTransparency: this.theme === 'light',
         allowProposedApi: true,
+        allowTransparency: true,
         fontSize: this.fontSize,
         fontWeight: this.fontWeight,
+        lineHeight: 1.2,
       }, this.resizeEvent)
     })
 
@@ -90,8 +91,6 @@ export class HomebridgeLogsWidgetComponent implements OnInit, OnDestroy {
                 cursor: '#d2d2d2',
                 selectionBackground: '#d2d2d2',
               }
-          this.$log.term.options.allowTransparency = true
-          this.$log.term.options.allowProposedApi = true
           changed = true
         }
 
