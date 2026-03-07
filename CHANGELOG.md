@@ -36,6 +36,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - add new component for required field indicator
 - improve search term matching on settings page
 - lint: apply `angular/template` rules
+- prioritise scoped plugins in plugin search results
 
 ### Homebridge Dependencies
 
