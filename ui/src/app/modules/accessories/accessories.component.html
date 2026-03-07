@@ -185,7 +185,7 @@
                   [class.justify-content-between]="isMobile()"
                   [(dragulaModel)]="room.services"
                 >
-                  @for (service of room.services; track service) {
+                  @for (service of room.services; track service.uniqueId) {
                     @if (shouldDisplayService(service)) {
                       <div class="accessory-item accessory-tab">
                         <app-accessory-tile [service]="service" />

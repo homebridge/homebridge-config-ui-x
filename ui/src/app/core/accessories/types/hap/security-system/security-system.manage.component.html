@@ -12,9 +12,12 @@
   <div class="modal-body text-center px-5">
     <div class="d-flex justify-content-center mb-4 p-0">
       <div class="mb-0 mx-0 p-3 btn-read w-100" [class.text-danger]="service.values?.SecuritySystemCurrentState === 4">
-        {{ 'menu.label_status' | translate }}:
         @if (service.values?.SecuritySystemCurrentState === 4) {
           {{ 'accessories.control.triggered' | translate }}
+        } @else if (isArming) {
+          {{ 'accessories.control.arming' | translate }}...
+        } @else if (isDisarming) {
+          {{ 'accessories.control.disarming' | translate }}...
         } @else if (service.values?.SecuritySystemCurrentState === 3) {
           {{ 'accessories.control.off' | translate }}
         } @else {

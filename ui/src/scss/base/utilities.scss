@@ -61,6 +61,21 @@
   color: #7b7b7b;
 }
 
+// Status indicator dots
+.status-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.status-dot-lg {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
 // FontAwesome animation overrides
 .fa-spin-slow {
   --fa-animation-duration: 2s;

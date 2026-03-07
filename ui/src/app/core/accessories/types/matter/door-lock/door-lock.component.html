@@ -4,6 +4,7 @@
   [class.accessory-on]="lockState() !== 1"
   [class.unlocked]="lockState() === 2"
   [class.jammed]="lockState() === 0"
+  [class.cursor-pointer]="readyForControl()"
   (shortClick)="onClick()"
   (longClick)="onLongClick()"
 >

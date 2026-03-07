@@ -10,6 +10,21 @@
     ></button>
   </div>
   <div class="modal-body text-center px-5">
+    <div class="d-flex justify-content-center mb-4 p-0">
+      <div class="mb-0 mx-0 p-3 btn-read w-100">
+        @switch (currentMode) {
+          @case (0) {
+            {{ 'accessories.control.stopped' | translate }}
+          }
+          @case (2) {
+            {{ 'accessories.control.paused' | translate }}
+          }
+          @case (1) {
+            {{ 'accessories.control.cleaning' | translate }}
+          }
+        }
+      </div>
+    </div>
     <div
       class="btn-group-vertical d-flex justify-content-center mb-0 p-0"
       role="group"
@@ -19,7 +34,7 @@
         <div class="float-start primary-text">
           <i class="fas fa-xl" [class.fa-check-circle]="currentMode === 0" [class.fa-blank]="currentMode !== 0"></i>
         </div>
-        {{ 'accessories.control.stopped' | translate }}
+        {{ 'accessories.control.stop' | translate }}
         <div class="float-end"><i class="fas fa-xl fa-blank"></i></div>
       </button>
       <button
@@ -31,21 +46,20 @@
         <div class="float-start primary-text">
           <i class="fas fa-xl" [class.fa-check-circle]="currentMode === 2" [class.fa-blank]="currentMode !== 2"></i>
         </div>
-        {{ 'accessories.control.paused' | translate }}
+        {{ 'accessories.control.pause' | translate }}
         <div class="float-end"><i class="fas fa-xl fa-blank"></i></div>
       </button>
       <button type="button" class="btn mb-0 mx-0 p-3 btn-control" (click)="setMode(1, $event)">
         <div class="float-start primary-text">
           <i class="fas fa-xl" [class.fa-check-circle]="currentMode === 1" [class.fa-blank]="currentMode !== 1"></i>
         </div>
-        {{ 'accessories.control.cleaning' | translate }}
+        {{ 'accessories.control.clean' | translate }}
         <div class="float-end"><i class="fas fa-xl fa-blank"></i></div>
       </button>
     </div>
 
     @if (hasCleanMode && cleanModes.length > 0) {
-      <hr />
-      <h6 class="text-muted mb-3">{{ 'accessories.control.clean_mode' | translate }}</h6>
+      <h6 class="mt-4">{{ 'accessories.control.clean_mode' | translate }}</h6>
       <div
         class="btn-group-vertical d-flex justify-content-center mb-0 p-0"
         role="group"
@@ -68,29 +82,32 @@
     }
 
     @if (hasServiceArea && areas.length > 0) {
-      <hr />
-      <h6 class="text-muted mb-3">{{ 'accessories.control.service_areas' | translate }}</h6>
-      <ul class="list-group list-group-flush text-start">
+      <h6 class="mt-4">{{ 'accessories.control.service_areas' | translate }}</h6>
+      <div
+        class="btn-group-vertical d-flex justify-content-center mb-0 p-0"
+        role="group"
+        [attr.aria-label]="'accessories.control.service_areas' | translate"
+      >
         @for (area of areas; track area.areaId) {
-          <li class="list-group-item d-flex justify-content-between align-items-center px-0">
-            <div class="form-check">
-              <input
-                type="checkbox"
-                class="form-check-input"
-                [id]="`area-${area.areaId}`"
-                [checked]="isAreaSelected(area.areaId)"
-                (change)="toggleAreaSelection(area.areaId)"
-              />
-              <label class="form-check-label" [for]="`area-${area.areaId}`">
-                {{ area.name }}
-              </label>
+          <button type="button" class="btn mb-0 mx-0 p-3 btn-control" (click)="toggleAreaSelection(area.areaId)">
+            <div class="float-start primary-text">
+              <i
+                class="fas fa-xl"
+                [class.fa-check-circle]="isAreaSelected(area.areaId)"
+                [class.fa-blank]="!isAreaSelected(area.areaId)"
+              ></i>
             </div>
-            @if (currentAreaId === area.areaId) {
-              <span class="badge bg-primary">{{ 'accessories.control.cleaning' | translate }}</span>
-            }
-          </li>
+            {{ area.name }}
+            <div class="float-end">
+              @if (currentAreaId === area.areaId) {
+                <span class="badge bg-primary">{{ 'accessories.control.cleaning' | translate }}</span>
+              } @else {
+                <i class="fas fa-xl fa-blank"></i>
+              }
+            </div>
+          </button>
         }
-      </ul>
+      </div>
     }
   </div>
   <div class="modal-footer"></div>

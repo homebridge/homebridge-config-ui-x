@@ -1,21 +1,24 @@
 import type { ServiceType } from '@homebridge/hap-client'
 
+export interface AccessoryLayoutService {
+  uniqueId: string
+  nameBasedUniqueId?: string
+  aid: number
+  iid: number
+  uuid: string
+  name: string
+  serial: string
+  bridge: string
+  customName?: string
+  customType?: string
+  hidden?: boolean
+  onDashboard?: boolean
+}
+
 export type AccessoryLayout = {
   name: string
   isDefault?: boolean
-  services: Array<{
-    aid: number
-    iid: number
-    uuid: string
-    uniqueId: string
-    name: string
-    serial: string
-    bridge: string
-    customName?: string
-    customType?: string
-    hidden?: boolean
-    onDashboard?: boolean
-  }>
+  services: AccessoryLayoutService[]
 }[]
 
 /**

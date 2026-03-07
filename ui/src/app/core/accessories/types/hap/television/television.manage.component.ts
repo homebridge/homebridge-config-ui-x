@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core'
+import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { TranslatePipe } from '@ngx-translate/core'
 
@@ -15,8 +15,6 @@ import { BaseManageComponent } from '@/app/core/accessories/types/base-manage.co
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TelevisionManageComponent extends BaseManageComponent {
-  public readonly inputList = input.required<Record<number, string>>()
-
   public hasActive: boolean = false
   public sourceList: { identifier: number, name: string }[] = []
 
@@ -25,13 +23,15 @@ export class TelevisionManageComponent extends BaseManageComponent {
       this.hasActive = true
     }
 
-    if (Object.keys(this.inputList).length) {
-      Object.entries(this.inputList).forEach(([identifier, name]) => {
-        this.sourceList.push({
-          identifier: Number.parseInt(identifier, 10),
-          name,
-        })
-      })
+    if (this.service.linkedServices) {
+      for (const [, inputService] of Object.entries(this.service.linkedServices)) {
+        if (inputService.type === 'InputSource') {
+          this.sourceList.push({
+            identifier: inputService.values.Identifier,
+            name: inputService.values.ConfiguredName || `Input ${inputService.values.Identifier}`,
+          })
+        }
+      }
     }
   }
 

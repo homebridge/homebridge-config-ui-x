@@ -105,8 +105,18 @@
             temperatureUnits | uppercase
           }}
         }
+      } @else if (service().values?.TargetHeaterCoolerState === 1 && hasHeating()) {
+        <i class="fa fas fa-bullseye"></i>
+        {{ service().values?.HeatingThresholdTemperature | convertTemp | number: '1.0-1' }}&deg;{{
+          temperatureUnits | uppercase
+        }}
       } @else if (service().values?.TargetHeaterCoolerState === 1) {
         {{ 'accessories.control.heat' | translate }}
+      } @else if (service().values?.TargetHeaterCoolerState === 2 && hasCooling()) {
+        <i class="fa fas fa-bullseye"></i>
+        {{ service().values?.CoolingThresholdTemperature | convertTemp | number: '1.0-1' }}&deg;{{
+          temperatureUnits | uppercase
+        }}
       } @else if (service().values?.TargetHeaterCoolerState === 2) {
         {{ 'accessories.control.cool' | translate }}
       } @else {

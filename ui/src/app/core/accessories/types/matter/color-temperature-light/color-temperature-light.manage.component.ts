@@ -32,7 +32,6 @@ export class ColorTemperatureLightManageComponent extends BaseManageComponent {
   public targetBrightnessChanged: Subject<number> = new Subject<number>()
   public targetColorTemperature: { value: number, mired: number, min: number, max: number, step: number }
   public targetColorTemperatureChanged: Subject<number> = new Subject<number>()
-  public sliderIndex: number = 0
 
   protected setupComponent() {
     this.createDebouncedSubscription(
@@ -159,8 +158,7 @@ export class ColorTemperatureLightManageComponent extends BaseManageComponent {
       step: 1,
     }
 
-    this.applySliderGradient('linear-gradient(to right, #242424, #ffd6aa)', `.noUi-target:nth-of-type(${this.sliderIndex + 1})`)
-    this.sliderIndex += 1
+    this.applySliderGradient('linear-gradient(to right, #242424, #ffd6aa)', '.brightness-slider .noUi-target')
   }
 
   private loadTargetColorTemperature() {
@@ -177,7 +175,7 @@ export class ColorTemperatureLightManageComponent extends BaseManageComponent {
 
     const minHsl = this.$colour.kelvinToHsl(this.targetColorTemperature.min)
     const maxHsl = this.$colour.kelvinToHsl(this.targetColorTemperature.max)
-    this.applySliderGradient(`linear-gradient(to right, ${minHsl}, ${maxHsl})`, `.noUi-target:nth-of-type(${this.sliderIndex + 1})`)
+    this.applySliderGradient(`linear-gradient(to right, ${minHsl}, ${maxHsl})`, '.color-temp-slider .noUi-target')
   }
 
   public get brightnessPercentage(): number {

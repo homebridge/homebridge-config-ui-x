@@ -31,41 +31,49 @@
       </button>
     </div>
     <h6 class="mt-4">{{ 'accessories.control.brightness' | translate }}: {{ brightnessPercentage }}%</h6>
-    <nouislider
-      [min]="targetBrightness.min"
-      [max]="targetBrightness.max"
-      [step]="targetBrightness.step"
-      [(ngModel)]="targetBrightness.value"
-      (ngModelChange)="onBrightnessStateChange()"
-    />
+    <div class="brightness-slider">
+      <nouislider
+        [min]="targetBrightness.min"
+        [max]="targetBrightness.max"
+        [step]="targetBrightness.step"
+        [(ngModel)]="targetBrightness.value"
+        (ngModelChange)="onBrightnessStateChange()"
+      />
+    </div>
     @if (supportsColorTemperature) {
       <h6 class="mt-4">
         {{ 'accessories.control.color_temperature' | translate }}: {{ targetColorTemperature.mired | convertMired }}
       </h6>
-      <nouislider
-        [min]="targetColorTemperature.min"
-        [max]="targetColorTemperature.max"
-        [step]="targetColorTemperature.step"
-        [(ngModel)]="targetColorTemperature.value"
-        (ngModelChange)="onColorTemperatureStateChange()"
-      />
+      <div class="color-temp-slider">
+        <nouislider
+          [min]="targetColorTemperature.min"
+          [max]="targetColorTemperature.max"
+          [step]="targetColorTemperature.step"
+          [(ngModel)]="targetColorTemperature.value"
+          (ngModelChange)="onColorTemperatureStateChange()"
+        />
+      </div>
     }
     <h6 class="mt-3">{{ 'accessories.control.hue' | translate }}: {{ huePercentage }}%</h6>
-    <nouislider
-      [min]="targetHue.min"
-      [max]="targetHue.max"
-      [step]="targetHue.step"
-      [(ngModel)]="targetHue.value"
-      (ngModelChange)="onHueStateChange()"
-    />
+    <div class="hue-slider">
+      <nouislider
+        [min]="targetHue.min"
+        [max]="targetHue.max"
+        [step]="targetHue.step"
+        [(ngModel)]="targetHue.value"
+        (ngModelChange)="onHueStateChange()"
+      />
+    </div>
     <h6 class="mt-3">{{ 'accessories.control.saturation' | translate }}: {{ saturationPercentage }}%</h6>
-    <nouislider
-      [min]="targetSaturation.min"
-      [max]="targetSaturation.max"
-      [step]="targetSaturation.step"
-      [(ngModel)]="targetSaturation.value"
-      (ngModelChange)="onSaturationStateChange()"
-    />
+    <div class="saturation-slider">
+      <nouislider
+        [min]="targetSaturation.min"
+        [max]="targetSaturation.max"
+        [step]="targetSaturation.step"
+        [(ngModel)]="targetSaturation.value"
+        (ngModelChange)="onSaturationStateChange()"
+      />
+    </div>
   </div>
   <div class="modal-footer"></div>
 </div>

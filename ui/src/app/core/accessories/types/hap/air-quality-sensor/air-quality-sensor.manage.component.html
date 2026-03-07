@@ -17,39 +17,45 @@
         [class.bg-warning]="[3, 4].includes(airQuality)"
         [class.bg-danger]="airQuality >= 5"
       >
-        {{ labels[airQuality || 0] | translate }}
+        {{ labels[airQuality || 0] }}
       </span>
     </div>
-    @if (hasConcentration) {
+    @if (hasReadings) {
       <ul class="list-group list-group-box mb-0">
         @if (pm25 !== null) {
           <li class="list-group-item d-flex justify-content-between align-items-center">
             <span>{{ 'accessories.control.pm25' | translate }}</span>
-            <span class="grey-text">{{ pm25 }} {{ pm25Unit }}</span>
+            <span class="grey-text">{{ pm25 }} µg/m³</span>
           </li>
         }
         @if (pm10 !== null) {
           <li class="list-group-item d-flex justify-content-between align-items-center">
             <span>{{ 'accessories.control.pm10' | translate }}</span>
-            <span class="grey-text">{{ pm10 }} {{ pm10Unit }}</span>
-          </li>
-        }
-        @if (co !== null) {
-          <li class="list-group-item d-flex justify-content-between align-items-center">
-            <span>{{ 'accessories.control.carbon_monoxide' | translate }}</span>
-            <span class="grey-text">{{ co }} {{ coUnit }}</span>
-          </li>
-        }
-        @if (no2 !== null) {
-          <li class="list-group-item d-flex justify-content-between align-items-center">
-            <span>{{ 'accessories.control.nitrogen_dioxide' | translate }}</span>
-            <span class="grey-text">{{ no2 }} {{ no2Unit }}</span>
+            <span class="grey-text">{{ pm10 }} µg/m³</span>
           </li>
         }
         @if (ozone !== null) {
           <li class="list-group-item d-flex justify-content-between align-items-center">
             <span>{{ 'accessories.control.ozone' | translate }}</span>
-            <span class="grey-text">{{ ozone }} {{ ozoneUnit }}</span>
+            <span class="grey-text">{{ ozone }} µg/m³</span>
+          </li>
+        }
+        @if (no2 !== null) {
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <span>{{ 'accessories.control.nitrogen_dioxide' | translate }}</span>
+            <span class="grey-text">{{ no2 }} µg/m³</span>
+          </li>
+        }
+        @if (so2 !== null) {
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <span>{{ 'accessories.control.sulphur_dioxide' | translate }}</span>
+            <span class="grey-text">{{ so2 }} µg/m³</span>
+          </li>
+        }
+        @if (voc !== null) {
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <span>{{ 'accessories.control.voc' | translate }}</span>
+            <span class="grey-text">{{ voc }} µg/m³</span>
           </li>
         }
       </ul>

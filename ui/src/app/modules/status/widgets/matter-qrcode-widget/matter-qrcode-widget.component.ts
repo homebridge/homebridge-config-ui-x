@@ -46,6 +46,7 @@ export class MatterQrcodeWidgetComponent implements OnInit, OnDestroy {
     // Listen to homebridge-status events for unified status updates
     this.statusHandler = (data: HomebridgeStatusResponse) => {
       this.applyMatterStatus(data)
+      requestAnimationFrame(() => this.resizeQrCode())
     }
 
     this.io.socket.on('homebridge-status', this.statusHandler)
@@ -68,11 +69,6 @@ export class MatterQrcodeWidgetComponent implements OnInit, OnDestroy {
   }
 
   private resizeQrCode(): void {
-    // Don't resize until we have data to display
-    if (!this.setupUri()) {
-      return
-    }
-
     const containerHeight = (this.qrcodeContainerElement().nativeElement as HTMLElement).offsetHeight
     const containerWidth = (this.qrcodeContainerElement().nativeElement as HTMLElement).offsetWidth
     const pinCodeHeight = (this.pincodeElement().nativeElement as HTMLElement).offsetHeight

@@ -716,6 +716,19 @@ export class AccessoriesService {
 
       if (!response.success) {
         client.emit('accessory-control-failure', response.error || 'Matter control failed')
+        return
+      }
+
+      // Update local cluster state and notify all clients, mirroring handleMatterStateUpdate
+      if (accessory?.clusters?.[control.cluster]) {
+        accessory.clusters[control.cluster] = {
+          ...accessory.clusters[control.cluster],
+          ...control.attributes,
+        }
+
+        for (const c of this.activeClients) {
+          c.emit('accessories-data', [accessory])
+        }
       }
     } catch (error) {
       this.logger.error('Matter control failed:', error)

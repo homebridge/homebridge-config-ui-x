@@ -10,32 +10,15 @@
   svg {
     .c-blinds {
       transition: height 3s ease;
-      height: 27.6px;
+      height: calc(27.6px - 27.3px * var(--position, 0));
     }
 
     .c-light {
       transition:
         y 3s ease,
         height 3s ease;
-      y: 29.9px;
-      height: 0;
-    }
-  }
-
-  .accessory-on {
-    svg {
-      .c-blinds {
-        transition: height 3s ease;
-        height: 0.3px;
-      }
-
-      .c-light {
-        transition:
-          y 3s ease,
-          height 3s ease;
-        y: 2.65px;
-        height: 27.3px;
-      }
+      y: calc(29.9px - 27.25px * var(--position, 0));
+      height: calc(27.3px * var(--position, 0));
     }
   }
 }

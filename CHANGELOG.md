@@ -20,6 +20,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - update remove all accessories component
 - improvements to matter components
 - feat: air quality sensor matter device
+- accessory tile + modal improvements/fixes
 
 ### Other Changes
 

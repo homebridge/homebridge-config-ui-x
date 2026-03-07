@@ -1,4 +1,11 @@
-<div class="accessory-box" tabindex="0" [class.accessory-on]="isOn()" (click)="onClick()" (keydown.enter)="onClick()">
+<div
+  class="accessory-box"
+  tabindex="0"
+  [class.accessory-on]="isOn()"
+  [class.cursor-pointer]="readyForControl()"
+  (click)="onClick()"
+  (keydown.enter)="onClick()"
+>
   <div class="d-flex flex-column h-100">
     <div class="accessory-svg" [attr.aria-label]="'accessories.core.lightbulb' | translate">
       <svg width="32px" height="32px" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">

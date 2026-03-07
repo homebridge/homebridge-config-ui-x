@@ -14,8 +14,9 @@ import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
 import { AccessoriesService } from '@/app/core/accessories/accessories.service'
 import { ACCESSORY_MANAGE_MODAL_DATA } from '@/app/core/accessories/types/base-manage.component'
 import { ExtendedColorLightManageComponent } from '@/app/core/accessories/types/matter/extended-color-light/extended-color-light.manage.component'
-import { getBrightnessPercentage, getDeviceActiveState, getHue, getSaturation, toggleDimmableLight } from '@/app/core/accessories/types/matter/matter-device.utils'
+import { getBrightnessPercentage, getColorMode, getColorTemperatureMireds, getDeviceActiveState, getHue, getSaturation, toggleDimmableLight } from '@/app/core/accessories/types/matter/matter-device.utils'
 import { LongClickDirective } from '@/app/core/directives/long-click.directive'
+import { ColourService } from '@/app/core/utilities/colour.service'
 
 @Component({
   selector: 'app-extended-color-light',
@@ -31,6 +32,7 @@ export class ExtendedColorLightComponent {
   private $accessories = inject(AccessoriesService)
   private injector = inject(EnvironmentInjector)
   private $modal = inject(NgbModal)
+  private $colour = inject(ColourService)
 
   public readonly service = input.required<ServiceTypeX>()
   public readonly readyForControl = input<boolean>(false)
@@ -71,9 +73,18 @@ export class ExtendedColorLightComponent {
 
   /**
    * Get the light color for the icon
-   * Converts Matter HSV (hue 0-254, saturation 0-254) to CSS color
+   * Uses color temperature when in CT mode (colorMode=2), otherwise hue/saturation
    */
   public readonly lightColor = computed(() => {
+    const colorMode = getColorMode(this.service())
+
+    // Color temperature mode
+    if (colorMode === 2) {
+      const mireds = getColorTemperatureMireds(this.service())
+      return this.$colour.kelvinToHex(this.$colour.miredToKelvin(mireds))
+    }
+
+    // Hue/Saturation mode
     const hue = getHue(this.service())
     const saturation = getSaturation(this.service())
 

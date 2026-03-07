@@ -51,7 +51,6 @@ export class LightbulbManageComponent extends BaseManageComponent {
   public targetColorTemperatureChanged: Subject<number> = new Subject<number>()
   public hasAdaptiveLighting: boolean = false
   public isAdaptiveLightingEnabled: boolean = false
-  public sliderIndex: number = 0
 
   protected setupComponent() {
     this.createDebouncedSubscription(this.targetBrightnessChanged, () => {
@@ -122,14 +121,7 @@ export class LightbulbManageComponent extends BaseManageComponent {
 
   public onHueStateChange() {
     this.targetHueChanged.next(this.targetHue.value)
-
-    const sliderElement = document.querySelectorAll('.noUi-target')[this.sliderIndex - 1] as HTMLElement
-    if (sliderElement) {
-      const hue = this.targetHue.value
-      sliderElement.style.background = `linear-gradient(to right,
-        hsl(${hue}, 0%, 50%),
-        hsl(${hue}, 100%, 50%))`
-    }
+    this.applySaturationGradient()
   }
 
   public onSaturationStateChange() {
@@ -151,8 +143,7 @@ export class LightbulbManageComponent extends BaseManageComponent {
         max: TargetBrightness.maxValue,
         step: TargetBrightness.minStep,
       }
-      this.applySliderGradient('linear-gradient(to right, #242424, #ffd6aa)', `.noUi-target:nth-of-type(${this.sliderIndex + 1})`)
-      this.sliderIndex += 1
+      this.applySliderGradient('linear-gradient(to right, #242424, #ffd6aa)', '.brightness-slider .noUi-target')
     }
   }
 
@@ -170,8 +161,7 @@ export class LightbulbManageComponent extends BaseManageComponent {
         hsl(180, 100%, 50%),
         hsl(240, 100%, 50%),
         hsl(300, 100%, 50%),
-        hsl(360, 100%, 50%))`, `.noUi-target:nth-of-type(${this.sliderIndex + 1})`)
-      this.sliderIndex += 1
+        hsl(360, 100%, 50%))`, '.hue-slider .noUi-target')
     }
   }
 
@@ -182,11 +172,7 @@ export class LightbulbManageComponent extends BaseManageComponent {
         value: Saturation.value as number,
       }
 
-      const hue = this.targetHue.value || 0
-      this.applySliderGradient(`linear-gradient(to right,
-        hsl(${hue}, 0%, 50%),
-        hsl(${hue}, 100%, 50%))`, `.noUi-target:nth-of-type(${this.sliderIndex + 1})`)
-      this.sliderIndex += 1
+      this.applySaturationGradient()
     }
   }
 
@@ -204,7 +190,7 @@ export class LightbulbManageComponent extends BaseManageComponent {
 
       const minHsl = this.$colour.kelvinToHsl(this.targetColorTemperature.min)
       const maxHsl = this.$colour.kelvinToHsl(this.targetColorTemperature.max)
-      this.applySliderGradient(`linear-gradient(to right, ${minHsl}, ${maxHsl})`, `.noUi-target:nth-of-type(${this.sliderIndex + 1})`)
+      this.applySliderGradient(`linear-gradient(to right, ${minHsl}, ${maxHsl})`, '.color-temp-slider .noUi-target')
 
       if (this.isAdaptiveLightingEnabled$) {
         this.hasAdaptiveLighting = true
@@ -214,5 +200,12 @@ export class LightbulbManageComponent extends BaseManageComponent {
           })
       }
     }
+  }
+
+  private applySaturationGradient() {
+    const hue = this.targetHue?.value || 0
+    this.applySliderGradient(`linear-gradient(to right,
+      hsl(${hue}, 0%, 50%),
+      hsl(${hue}, 100%, 50%))`, '.saturation-slider .noUi-target')
   }
 }

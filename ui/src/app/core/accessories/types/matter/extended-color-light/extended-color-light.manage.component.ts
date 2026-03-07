@@ -36,7 +36,6 @@ export class ExtendedColorLightManageComponent extends BaseManageComponent {
   public targetHueChanged: Subject<number> = new Subject<number>()
   public targetSaturation: { value: number, min: number, max: number, step: number }
   public targetSaturationChanged: Subject<number> = new Subject<number>()
-  public sliderIndex: number = 0
 
   protected setupComponent() {
     this.createDebouncedSubscription(
@@ -239,8 +238,7 @@ export class ExtendedColorLightManageComponent extends BaseManageComponent {
       step: 1,
     }
 
-    this.applySliderGradient('linear-gradient(to right, #242424, #ffd6aa)', `.noUi-target:nth-of-type(${this.sliderIndex + 1})`)
-    this.sliderIndex += 1
+    this.applySliderGradient('linear-gradient(to right, #242424, #ffd6aa)', '.brightness-slider .noUi-target')
   }
 
   private loadTargetColorTemperature() {
@@ -257,8 +255,7 @@ export class ExtendedColorLightManageComponent extends BaseManageComponent {
 
     const minHsl = this.$colour.kelvinToHsl(this.targetColorTemperature.min)
     const maxHsl = this.$colour.kelvinToHsl(this.targetColorTemperature.max)
-    this.applySliderGradient(`linear-gradient(to right, ${minHsl}, ${maxHsl})`, `.noUi-target:nth-of-type(${this.sliderIndex + 1})`)
-    this.sliderIndex += 1
+    this.applySliderGradient(`linear-gradient(to right, ${minHsl}, ${maxHsl})`, '.color-temp-slider .noUi-target')
   }
 
   private loadTargetHueSaturation() {
@@ -280,13 +277,10 @@ export class ExtendedColorLightManageComponent extends BaseManageComponent {
     }
 
     // Style the hue slider with a rainbow gradient
-    this.applySliderGradient('linear-gradient(to right, hsl(0, 100%, 50%), hsl(60, 100%, 50%), hsl(120, 100%, 50%), hsl(180, 100%, 50%), hsl(240, 100%, 50%), hsl(300, 100%, 50%), hsl(360, 100%, 50%))', `.noUi-target:nth-of-type(${this.sliderIndex + 1})`)
-    this.sliderIndex += 1
+    this.applySliderGradient('linear-gradient(to right, hsl(0, 100%, 50%), hsl(60, 100%, 50%), hsl(120, 100%, 50%), hsl(180, 100%, 50%), hsl(240, 100%, 50%), hsl(300, 100%, 50%), hsl(360, 100%, 50%))', '.hue-slider .noUi-target')
 
     // Style the saturation slider from white to current hue
-    const hDegrees = (currentHue / 254) * 360
-    this.applySliderGradient(`linear-gradient(to right, hsl(${hDegrees}, 0%, 50%), hsl(${hDegrees}, 100%, 50%))`, `.noUi-target:nth-of-type(${this.sliderIndex + 1})`)
-    this.sliderIndex += 1
+    this.updateSaturationSliderGradient()
   }
 
   public get brightnessPercentage(): number {
@@ -309,11 +303,7 @@ export class ExtendedColorLightManageComponent extends BaseManageComponent {
    * Update the saturation slider gradient to match the current hue
    */
   private updateSaturationSliderGradient() {
-    // Calculate saturation slider index based on whether color temp is supported
-    // Order: brightness, [colorTemp?], hue, saturation
-    const saturationSliderIndex = this.supportsColorTemperature ? 3 : 2
-
     const hDegrees = (this.targetHue.value / 254) * 360
-    this.applySliderGradient(`linear-gradient(to right, hsl(${hDegrees}, 0%, 50%), hsl(${hDegrees}, 100%, 50%))`, `.noUi-target:nth-of-type(${saturationSliderIndex + 1})`)
+    this.applySliderGradient(`linear-gradient(to right, hsl(${hDegrees}, 0%, 50%), hsl(${hDegrees}, 100%, 50%))`, '.saturation-slider .noUi-target')
   }
 }

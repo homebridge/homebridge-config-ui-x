@@ -1,10 +1,10 @@
 <div
   class="accessory-box"
   tabindex="0"
-  [class.accessory-on]="service().values?.SecuritySystemCurrentState !== 3"
-  [class.home]="service().values?.SecuritySystemCurrentState === 0"
-  [class.away]="service().values?.SecuritySystemCurrentState === 1"
-  [class.night]="service().values?.SecuritySystemCurrentState === 2"
+  [class.accessory-on]="service().values?.SecuritySystemCurrentState !== 3 || isDisarming()"
+  [class.home]="service().values?.SecuritySystemCurrentState === 0 && !isArming()"
+  [class.away]="service().values?.SecuritySystemCurrentState === 1 && !isArming()"
+  [class.night]="service().values?.SecuritySystemCurrentState === 2 && !isArming()"
   [class.triggered]="service().values?.SecuritySystemCurrentState === 4"
   [class.cursor-pointer]="readyForControl()"
   (longClick)="onClick()"
@@ -31,21 +31,27 @@
       </svg>
     </div>
     <div class="accessory-label mt-auto">{{ service().customName || service().serviceName }}</div>
-    @switch (service().values?.SecuritySystemCurrentState) {
-      @case (0) {
-        <div class="accessory-label grey-text">{{ 'accessories.control.home' | translate }}</div>
-      }
-      @case (1) {
-        <div class="accessory-label grey-text">{{ 'accessories.control.away' | translate }}</div>
-      }
-      @case (2) {
-        <div class="accessory-label grey-text">{{ 'accessories.control.night' | translate }}</div>
-      }
-      @case (3) {
-        <div class="accessory-label red-text">{{ 'accessories.control.off' | translate }}</div>
-      }
-      @case (4) {
-        <div class="accessory-label red-text">{{ 'accessories.control.triggered' | translate }}</div>
+    @if (isArming()) {
+      <div class="accessory-label red-text">{{ 'accessories.control.arming' | translate }}...</div>
+    } @else if (isDisarming()) {
+      <div class="accessory-label grey-text">{{ 'accessories.control.disarming' | translate }}...</div>
+    } @else {
+      @switch (service().values?.SecuritySystemCurrentState) {
+        @case (0) {
+          <div class="accessory-label grey-text">{{ 'accessories.control.home' | translate }}</div>
+        }
+        @case (1) {
+          <div class="accessory-label grey-text">{{ 'accessories.control.away' | translate }}</div>
+        }
+        @case (2) {
+          <div class="accessory-label grey-text">{{ 'accessories.control.night' | translate }}</div>
+        }
+        @case (3) {
+          <div class="accessory-label red-text">{{ 'accessories.control.off' | translate }}</div>
+        }
+        @case (4) {
+          <div class="accessory-label red-text">{{ 'accessories.control.triggered' | translate }}</div>
+        }
       }
     }
   </div>

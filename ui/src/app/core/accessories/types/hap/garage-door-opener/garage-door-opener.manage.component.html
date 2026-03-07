@@ -1,0 +1,59 @@
+<div class="modal-content">
+  <div class="modal-header">
+    <h5 class="modal-title" [innerText]="service.customName || service.serviceName"></h5>
+    <button
+      type="button"
+      class="btn-close"
+      data-bs-dismiss="modal"
+      [attr.aria-label]="'form.button_close' | translate"
+      (click)="dismissModal()"
+    ></button>
+  </div>
+  <div class="modal-body text-center px-5">
+    <div class="d-flex justify-content-center mb-4 p-0">
+      <div class="mb-0 mx-0 p-3 btn-read w-100">
+        @switch (service.values?.CurrentDoorState) {
+          @case (0) {
+            {{ 'accessories.control.open' | translate }}
+          }
+          @case (1) {
+            {{ 'accessories.control.closed' | translate }}
+          }
+          @case (2) {
+            {{ 'accessories.control.opening' | translate }}...
+          }
+          @case (3) {
+            {{ 'accessories.control.closing' | translate }}...
+          }
+          @case (4) {
+            {{ 'accessories.control.stopped' | translate }}
+          }
+        }
+        @if (service.values?.ObstructionDetected) {
+          ({{ 'accessories.control.obstructed' | translate }})
+        }
+      </div>
+    </div>
+    <div
+      class="btn-group-vertical d-flex justify-content-center mb-0 p-0"
+      role="group"
+      [attr.aria-label]="'accessories.control.state_control' | translate"
+    >
+      <button type="button" class="btn mb-0 mx-0 p-3 btn-control" (click)="setTargetState(0, $event)">
+        <div class="float-start primary-text">
+          <i class="fas fa-xl" [class.fa-check-circle]="targetState === 0" [class.fa-blank]="targetState !== 0"></i>
+        </div>
+        {{ 'accessories.control.open' | translate }}
+        <div class="float-end"><i class="fas fa-xl fa-blank"></i></div>
+      </button>
+      <button type="button" class="btn mb-0 mx-0 p-3 btn-control" (click)="setTargetState(1, $event)">
+        <div class="float-start primary-text">
+          <i class="fas fa-xl" [class.fa-check-circle]="targetState === 1" [class.fa-blank]="targetState !== 1"></i>
+        </div>
+        {{ 'accessories.control.close' | translate }}
+        <div class="float-end"><i class="fas fa-xl fa-blank"></i></div>
+      </button>
+    </div>
+  </div>
+  <div class="modal-footer"></div>
+</div>

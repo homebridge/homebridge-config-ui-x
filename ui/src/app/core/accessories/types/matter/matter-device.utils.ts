@@ -272,6 +272,14 @@ export function hasColorTemperature(service: ServiceTypeX): boolean {
 }
 
 /**
+ * Get the current color mode
+ * 0 = Hue/Saturation, 1 = Enhanced Hue/Saturation (XY), 2 = Color Temperature
+ */
+export function getColorMode(service: ServiceTypeX): number {
+  return service.clusters?.colorControl?.colorMode ?? 0
+}
+
+/**
  * Get the current hue value (0-254)
  */
 export function getHue(service: ServiceTypeX): number {
@@ -604,6 +612,7 @@ export async function setFanSpeed(service: ServiceTypeX, percent: number): Promi
  */
 export function getThermostatLocalTemperature(service: ServiceTypeX): number | null {
   const temp = service.clusters?.thermostat?.localTemperature
+    ?? service.clusters?.thermostat?.externalMeasuredIndoorTemperature
   if (temp === null || temp === undefined) {
     return null
   }

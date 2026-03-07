@@ -74,6 +74,92 @@
     }
   }
 
+  .opening.from-stopped {
+    svg {
+      .line7,
+      .line8,
+      .line9,
+      .line10,
+      .line11,
+      .line12,
+      .line13,
+      .line14 {
+        animation: none !important;
+        opacity: 0;
+      }
+
+      .line6 {
+        animation-delay: 0s !important;
+      }
+
+      .line5 {
+        animation-delay: 0.714s !important;
+      }
+
+      .line4 {
+        animation-delay: 1.428s !important;
+      }
+
+      .line3 {
+        animation-delay: 2.142s !important;
+      }
+
+      .line2 {
+        animation-delay: 2.856s !important;
+      }
+
+      .line1 {
+        animation-delay: 3.57s !important;
+      }
+    }
+  }
+
+  .closing.from-stopped {
+    svg {
+      .line1,
+      .line2,
+      .line3,
+      .line4,
+      .line5,
+      .line6 {
+        animation: none !important;
+        opacity: 1;
+      }
+
+      .line7 {
+        animation-delay: 0s !important;
+      }
+
+      .line8 {
+        animation-delay: 0.714s !important;
+      }
+
+      .line9 {
+        animation-delay: 1.428s !important;
+      }
+
+      .line10 {
+        animation-delay: 2.142s !important;
+      }
+
+      .line11 {
+        animation-delay: 2.856s !important;
+      }
+
+      .line12 {
+        animation-delay: 3.57s !important;
+      }
+
+      .line13 {
+        animation-delay: 4.284s !important;
+      }
+
+      .line14 {
+        animation-delay: 4.998s !important;
+      }
+    }
+  }
+
   .open {
     .window {
       fill: #d32f2f !important;
@@ -198,23 +284,12 @@
     @keyframes flash {
       0%,
       100% {
-        fill-opacity: 0.5;
+        opacity: 1;
       }
 
       50% {
-        fill-opacity: 0.1;
+        opacity: 0.2;
       }
-    }
-
-    .line7,
-    .line8,
-    .line9,
-    .line10,
-    .line11,
-    .line12,
-    .line13,
-    .line14 {
-      opacity: 0;
     }
   }
 }

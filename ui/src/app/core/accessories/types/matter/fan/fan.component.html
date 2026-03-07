@@ -2,6 +2,7 @@
   class="accessory-box"
   tabindex="0"
   [class.accessory-on]="isOn()"
+  [class.cursor-pointer]="readyForControl()"
   (longClick)="onLongClick()"
   (shortClick)="onClick()"
 >

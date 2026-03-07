@@ -8,7 +8,7 @@ import { ToastrService } from 'ngx-toastr'
 import { firstValueFrom, Subject } from 'rxjs'
 import { takeUntil } from 'rxjs/operators'
 
-import { AccessoryLayout, ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
+import { AccessoryLayout, AccessoryLayoutService, ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
 import { AccessoryInfoComponent } from '@/app/core/accessories/accessory-info/accessory-info.component'
 import { AuthService } from '@/app/core/auth/auth.service'
 import { ApiService } from '@/app/core/communication/api.service'
@@ -33,13 +33,13 @@ export class AccessoriesService {
   private combinedServiceIds = new Set<string>()
   private io: IoNamespace
   private stop$ = new Subject<void>()
-  private hiddenTypes = [
+  private hiddenTypes = new Set([
     'InputSource',
     'LockManagement',
     'CameraRTPStreamManagement',
     'ProtocolInformation',
     'NFCAccess',
-  ]
+  ])
 
   public layoutSaved = new Subject()
   public accessoryData = new Subject()
@@ -209,16 +209,17 @@ export class AccessoriesService {
       isDefault: room.isDefault,
       services: room.services.map(service => ({
         uniqueId: service.uniqueId,
+        nameBasedUniqueId: service.nameBasedUniqueId || undefined,
         name: service.serviceName,
-        serial: service.accessoryInformation['Serial Number'],
-        bridge: service.instance.username,
+        serial: service.accessoryInformation?.['Serial Number'],
+        bridge: service.instance?.username,
         aid: service.aid,
         iid: service.iid,
         uuid: service.uuid,
-        customName: service.customName || undefined,
-        customType: service.customType || undefined,
-        hidden: service.hidden || undefined,
-        onDashboard: service.onDashboard || undefined,
+        customName: (service as ServiceTypeX).customName || undefined,
+        customType: (service as ServiceTypeX).customType || undefined,
+        hidden: (service as ServiceTypeX).hidden || undefined,
+        onDashboard: (service as ServiceTypeX).onDashboard || undefined,
       })),
     }))
 
@@ -274,26 +275,55 @@ export class AccessoriesService {
   }
 
   /**
-   * Check if a cached service matches a discovered service
-   * Handles different matching logic for HAP vs Matter accessories
+   * Check if a cached service matches a discovered service.
+   *
+   * Matching priority:
+   * 1. nameBasedUniqueId (stable across sessions, available from hap-client)
+   * 2. uniqueId (stable within a session, may change between sessions)
+   * 3. Fallback: name + serial + bridge + uuid (legacy layouts without nameBasedUniqueId)
+   *
+   * Matter accessories use uniqueId + bridge matching only.
    */
-  private servicesMatch(cachedService: any, discoveredService: any): boolean {
+  private servicesMatch(cachedService: AccessoryLayoutService, discoveredService: any): boolean {
     const isMatterAccessory = discoveredService.protocol === 'matter' || discoveredService.uniqueId?.startsWith('matter:')
     if (isMatterAccessory) {
-      // Matter-specific matching: uuid + bridge
       return cachedService.uniqueId === discoveredService.uniqueId
         && cachedService.bridge === (discoveredService.instance?.username || discoveredService.bridge)
-    } else {
-      // HAP-specific matching: primary match - by uniqueId
-      if (cachedService.uniqueId === discoveredService.uniqueId) {
-        return true
-      }
-
-      return cachedService.name === (discoveredService.serviceName || discoveredService.name)
-        && cachedService.serial === (discoveredService.accessoryInformation?.['Serial Number'] || discoveredService.serial)
-        && cachedService.bridge === (discoveredService.instance?.username || discoveredService.bridge)
-        && cachedService.uuid === discoveredService.uuid
     }
+
+    // Primary match: nameBasedUniqueId (stable across sessions)
+    if (cachedService.nameBasedUniqueId && discoveredService.nameBasedUniqueId) {
+      return cachedService.nameBasedUniqueId === discoveredService.nameBasedUniqueId
+    }
+
+    // Secondary match: uniqueId
+    if (cachedService.uniqueId === discoveredService.uniqueId) {
+      return true
+    }
+
+    // Fallback: multi-field match for legacy layouts without nameBasedUniqueId
+    return cachedService.name === (discoveredService.serviceName || discoveredService.name)
+      && cachedService.serial === (discoveredService.accessoryInformation?.['Serial Number'] || discoveredService.serial)
+      && cachedService.bridge === (discoveredService.instance?.username || discoveredService.bridge)
+      && cachedService.uuid === discoveredService.uuid
+  }
+
+  /**
+   * Find a cached service in the layout that matches a discovered service.
+   * Returns the cached service and the room it belongs to, or null if not found.
+   */
+  private findInLayout(service: ServiceType): { room: AccessoryLayout[number], service: AccessoryLayoutService } | null {
+    for (const room of this.accessoryLayout) {
+      for (const cachedService of room.services) {
+        if (!cachedService.name) {
+          continue
+        }
+        if (this.servicesMatch(cachedService, service)) {
+          return { room, service: cachedService }
+        }
+      }
+    }
+    return null
   }
 
   /**
@@ -307,54 +337,37 @@ export class AccessoriesService {
     // Create the merged layout starting with current rooms
     const mergedLayout: AccessoryLayout = JSON.parse(JSON.stringify(currentLayout))
 
-    // Track which services have been matched
-    const matchedOriginalServices = new Set<string>()
+    // Track which original services have been matched to a discovered service
+    const matchedOriginalKeys = new Set<string>()
 
-    // First pass: Apply custom properties from original layout to discovered services
-    // This includes both uniqueId matches and fallback matches
-    mergedLayout.forEach((room) => {
-      room.services.forEach((discoveredService) => {
-        let matchedOriginalService = null
-
-        // Try to find matching service in original layout
+    // First pass: find all original services that match a discovered service
+    for (const room of mergedLayout) {
+      for (const discoveredService of room.services) {
         for (const originalRoom of this.originalLayout) {
           for (const originalService of originalRoom.services) {
-            // Skip services without name (cleanup old cache files)
             if (!originalService.name) {
               continue
             }
-
-            // Use helper method to check if services match
             if (this.servicesMatch(originalService, discoveredService)) {
-              matchedOriginalService = originalService
+              matchedOriginalKeys.add(this.getServiceKey(originalService))
               break
             }
           }
-          if (matchedOriginalService) {
+          if (matchedOriginalKeys.has(this.getServiceKey(discoveredService))) {
             break
           }
         }
+      }
+    }
 
-        // If we found a match, just track it - don't override custom properties
-        // The discoveredService already has the correct values from the current session
-        if (matchedOriginalService) {
-          // Mark this original service as matched
-          matchedOriginalServices.add(matchedOriginalService.uniqueId)
+    // Second pass: add unmatched services from original layout (truly undiscovered services)
+    for (const originalRoom of this.originalLayout) {
+      for (const originalService of originalRoom.services) {
+        if (matchedOriginalKeys.has(this.getServiceKey(originalService))) {
+          continue
         }
-      })
-    })
-
-    // Second pass: Add unmatched services from original layout (truly undiscovered services)
-    this.originalLayout.forEach((originalRoom) => {
-      originalRoom.services.forEach((originalService) => {
-        // Skip if this service was already matched to a discovered service
-        if (matchedOriginalServices.has(originalService.uniqueId)) {
-          return
-        }
-
-        // Skip services without a name - this cleans up old cache files that don't have names
         if (!originalService.name) {
-          return
+          continue
         }
 
         // Find the room for this undiscovered service
@@ -364,15 +377,15 @@ export class AccessoriesService {
         // Move undiscovered services to the default room instead of recreating the deleted room
         if (!targetRoom) {
           targetRoom = mergedLayout.find(room => room.isDefault)
-          // If no default room exists, skip this service (shouldn't happen but safety check)
           if (!targetRoom) {
-            return
+            continue
           }
         }
 
         // Add the undiscovered service with its preserved custom information
         targetRoom.services.push({
           uniqueId: originalService.uniqueId,
+          nameBasedUniqueId: originalService.nameBasedUniqueId,
           name: originalService.name,
           bridge: originalService.bridge,
           serial: originalService.serial,
@@ -384,14 +397,20 @@ export class AccessoriesService {
           hidden: originalService.hidden,
           onDashboard: originalService.onDashboard,
         })
-      })
-    })
+      }
+    }
 
     // Keep rooms that either have services OR were in the current layout (user-created empty rooms)
-    // This filters out rooms that only existed in originalLayout with undiscovered services
     return mergedLayout.filter(room =>
       room.services.length > 0 || currentLayout.some(r => r.name === room.name),
     )
+  }
+
+  /**
+   * Get a stable key for a service, preferring nameBasedUniqueId
+   */
+  private getServiceKey(service: any): string {
+    return service.nameBasedUniqueId || service.uniqueId
   }
 
   /**
@@ -428,11 +447,9 @@ export class AccessoriesService {
    * Sort the accessories into their rooms
    */
   private sortIntoRooms() {
-    const hiddenTypesSet = new Set(this.hiddenTypes)
-
     this.accessories.services.forEach((service) => {
       // Don't put hidden types or combined services into rooms
-      if (hiddenTypesSet.has(service.type) || this.combinedServiceIds.has(service.uniqueId)) {
+      if (this.hiddenTypes.has(service.type) || this.combinedServiceIds.has(service.uniqueId)) {
         return
       }
 
@@ -450,31 +467,22 @@ export class AccessoriesService {
 
       // Not in an active room, perhaps the service is in the layout cache
       if (!inRoom) {
-        let inCache = null
-        let serviceCache = null
+        const cached = this.findInLayout(service)
 
-        // Try to find the service in cache using the same matching logic as mergeWithUndiscoveredServices
-        for (const room of this.accessoryLayout) {
-          serviceCache = room.services.find(s => this.servicesMatch(s, service))
-          if (serviceCache) {
-            inCache = room
-            break
-          }
-        }
-
-        if (inCache && serviceCache) {
+        if (cached) {
           // Apply custom attributes from cache before adding to room
-          if (serviceCache.customType) {
-            (service as ServiceTypeX).customType = serviceCache.customType
+          const serviceX = service as ServiceTypeX
+          if (cached.service.customType) {
+            serviceX.customType = cached.service.customType
           }
-          if (serviceCache.customName) {
-            (service as ServiceTypeX).customName = serviceCache.customName
+          if (cached.service.customName) {
+            serviceX.customName = cached.service.customName
           }
-          if (serviceCache.hidden) {
-            (service as ServiceTypeX).hidden = serviceCache.hidden
+          if (cached.service.hidden) {
+            serviceX.hidden = cached.service.hidden
           }
-          if (serviceCache.onDashboard) {
-            (service as ServiceTypeX).onDashboard = serviceCache.onDashboard
+          if (cached.service.onDashboard) {
+            serviceX.onDashboard = cached.service.onDashboard
           }
 
           // Mark that custom attributes have been applied to this accessory
@@ -482,7 +490,7 @@ export class AccessoriesService {
 
           // Add to the correct room using signal update
           this.rooms.update(current => current.map(r =>
-            r.name === inCache.name
+            r.name === cached.room.name
               ? { ...r, services: [...r.services, service] }
               : r,
           ))
@@ -491,11 +499,8 @@ export class AccessoriesService {
           this.customAttributesApplied.add(service.uniqueId)
 
           // New accessory add to the default room
-          // First try to find a room with isDefault: true, then fall back to room named "Default Room"
-          let defaultRoom = this.rooms().find(r => r.isDefault === true)
-          if (!defaultRoom) {
-            defaultRoom = this.rooms().find(r => r.name === 'Default Room')
-          }
+          const defaultRoom = this.rooms().find(r => r.isDefault === true)
+            || this.rooms().find(r => r.name === 'Default Room')
 
           if (defaultRoom) {
             this.rooms.update(current => current.map(r =>
@@ -516,21 +521,19 @@ export class AccessoriesService {
   }
 
   /**
-   * Order the rooms on the screen
+   * Order the services within each room based on the cached layout positions
    */
   private orderRooms() {
-    // Order the services within each room using immutable update
     this.rooms.update(current => current.map((room) => {
       const roomCache = this.accessoryLayout.find(r => r.name === room.name)
+      if (!roomCache) {
+        return room
+      }
+
       const sortedServices = room.services.toSorted((a, b) => {
-        const posA = roomCache.services.findIndex(s => s.uniqueId === a.uniqueId)
-        const posB = roomCache.services.findIndex(s => s.uniqueId === b.uniqueId)
-        if (posA < posB) {
-          return -1
-        } else if (posA > posB) {
-          return 1
-        }
-        return 0
+        const posA = roomCache.services.findIndex(s => this.servicesMatch(s, a))
+        const posB = roomCache.services.findIndex(s => this.servicesMatch(s, b))
+        return posA - posB
       })
       return { ...room, services: sortedServices }
     }))
@@ -558,35 +561,31 @@ export class AccessoriesService {
    */
   private applyCustomAttributes() {
     this.rooms().forEach((room) => {
-      const roomCache = this.accessoryLayout.find(r => r.name === room.name)
-      if (!roomCache) {
-        return
-      }
-
       room.services.forEach((service) => {
         // Skip if we've already applied custom attributes to this accessory
         if (this.customAttributesApplied.has(service.uniqueId)) {
           return
         }
 
-        const serviceCache = roomCache.services.find(s => s.uniqueId === service.uniqueId)
-        if (!serviceCache) {
+        // Use servicesMatch to find the cached service across any room in the layout
+        const cached = this.findInLayout(service)
+        if (!cached) {
           return
         }
 
         // Only apply the custom properties we care about, not all properties
         const serviceX = service as ServiceTypeX
-        if (serviceCache.customType) {
-          serviceX.customType = serviceCache.customType
+        if (cached.service.customType) {
+          serviceX.customType = cached.service.customType
         }
-        if (serviceCache.customName) {
-          serviceX.customName = serviceCache.customName
+        if (cached.service.customName) {
+          serviceX.customName = cached.service.customName
         }
-        if (serviceCache.hidden) {
-          serviceX.hidden = serviceCache.hidden
+        if (cached.service.hidden) {
+          serviceX.hidden = cached.service.hidden
         }
-        if (serviceCache.onDashboard) {
-          serviceX.onDashboard = serviceCache.onDashboard
+        if (cached.service.onDashboard) {
+          serviceX.onDashboard = cached.service.onDashboard
         }
 
         // Mark this accessory as processed
@@ -614,6 +613,12 @@ export class AccessoriesService {
 
             return {
               attributes: clusters[clusterName],
+              /**
+               * Fire-and-forget: emits a WebSocket message and resolves immediately.
+               * The promise never rejects; errors are not surfaced to callers.
+               * Try/catch blocks around setAttributes calls are therefore no-ops for
+               * transport errors but kept for documentation and future-proofing.
+               */
               setAttributes: (attributes: Record<string, unknown>) => new Promise<void>((resolve) => {
                 if (!this.matterReadyForControl) {
                   console.warn('Matter control attempted but not ready for control:', {
@@ -621,8 +626,7 @@ export class AccessoriesService {
                     uniqueId: service.uniqueId,
                     cluster: clusterName,
                   })
-                  resolve(undefined)
-                  return
+                  return resolve(undefined)
                 }
 
                 this.io.socket.emit('accessory-control', {
@@ -649,7 +653,7 @@ export class AccessoriesService {
 
             characteristic.setValue = (value: number | string | boolean) => new Promise((resolve) => {
               if (!this.hapReadyForControl) {
-                resolve(undefined)
+                return resolve(undefined)
               }
 
               this.io.socket.emit('accessory-control', {
@@ -671,16 +675,24 @@ export class AccessoriesService {
     })
   }
 
+  /**
+   * Check if two services belong to the same physical accessory
+   * (same name, serial number, and bridge instance)
+   */
+  private isSameAccessory(a: ServiceType, b: ServiceType): boolean {
+    return a.accessoryInformation.Name === b.accessoryInformation.Name
+      && a.accessoryInformation['Serial Number'] === b.accessoryInformation['Serial Number']
+      && a.instance.username === b.instance.username
+  }
+
   private attachLockManagementToMechanism(service: ServiceType) {
-    // Find the corresponding LockManagement service
     const lockMechanisms: ServiceType[] = []
     const lockManagements: ServiceType[] = []
 
-    // This is a bit of a hack to find matching services for a specific accessory
     for (const serv of this.accessories.services) {
-      if (serv.type === 'LockMechanism' && serv.accessoryInformation.Name === service.accessoryInformation.Name && serv.accessoryInformation['Serial Number'] === service.accessoryInformation['Serial Number']) {
+      if (serv.type === 'LockMechanism' && this.isSameAccessory(serv, service)) {
         lockMechanisms.push(serv)
-      } else if (serv.type === 'LockManagement' && serv.accessoryInformation.Name === service.accessoryInformation.Name && serv.accessoryInformation['Serial Number'] === service.accessoryInformation['Serial Number']) {
+      } else if (serv.type === 'LockManagement' && this.isSameAccessory(serv, service)) {
         lockManagements.push(serv)
       }
     }
@@ -700,7 +712,7 @@ export class AccessoriesService {
     const fans: ServiceType[] = []
 
     for (const serv of this.accessories.services) {
-      if (serv.accessoryInformation.Name === service.accessoryInformation.Name && serv.accessoryInformation['Serial Number'] === service.accessoryInformation['Serial Number']) {
+      if (this.isSameAccessory(serv, service)) {
         if (serv.type === 'HeaterCooler') {
           heaterCoolers.push(serv)
         } else if (serv.type === 'Fan' || serv.type === 'Fanv2') {
@@ -725,7 +737,7 @@ export class AccessoriesService {
     const fans: ServiceType[] = []
 
     for (const serv of this.accessories.services) {
-      if (serv.accessoryInformation.Name === service.accessoryInformation.Name && serv.accessoryInformation['Serial Number'] === service.accessoryInformation['Serial Number']) {
+      if (this.isSameAccessory(serv, service)) {
         if (serv.type === 'HumidifierDehumidifier') {
           humidifierDehumidifiers.push(serv)
         } else if (serv.type === 'Fan' || serv.type === 'Fanv2') {
@@ -756,9 +768,10 @@ export class AccessoriesService {
       }
     }
 
-    // Remove combined fan services from rooms in case they were added before combination was detected
-    for (const room of this.rooms()) {
-      room.services = room.services.filter(s => !this.combinedServiceIds.has(s.uniqueId))
-    }
+    // Remove combined fan services from rooms using immutable signal update
+    this.rooms.update(current => current.map(room => ({
+      ...room,
+      services: room.services.filter(s => !this.combinedServiceIds.has(s.uniqueId)),
+    })))
   }
 }

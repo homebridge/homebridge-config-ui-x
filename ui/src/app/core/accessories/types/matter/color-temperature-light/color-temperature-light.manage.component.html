@@ -31,23 +31,27 @@
       </button>
     </div>
     <h6 class="mt-4">{{ 'accessories.control.brightness' | translate }}: {{ brightnessPercentage }}%</h6>
-    <nouislider
-      [min]="targetBrightness.min"
-      [max]="targetBrightness.max"
-      [step]="targetBrightness.step"
-      [(ngModel)]="targetBrightness.value"
-      (ngModelChange)="onBrightnessStateChange()"
-    />
+    <div class="brightness-slider">
+      <nouislider
+        [min]="targetBrightness.min"
+        [max]="targetBrightness.max"
+        [step]="targetBrightness.step"
+        [(ngModel)]="targetBrightness.value"
+        (ngModelChange)="onBrightnessStateChange()"
+      />
+    </div>
     <h6 class="mt-4">
       {{ 'accessories.control.color_temperature' | translate }}: {{ targetColorTemperature.mired | convertMired }}
     </h6>
-    <nouislider
-      [min]="targetColorTemperature.min"
-      [max]="targetColorTemperature.max"
-      [step]="targetColorTemperature.step"
-      [(ngModel)]="targetColorTemperature.value"
-      (ngModelChange)="onColorTemperatureStateChange()"
-    />
+    <div class="color-temp-slider">
+      <nouislider
+        [min]="targetColorTemperature.min"
+        [max]="targetColorTemperature.max"
+        [step]="targetColorTemperature.step"
+        [(ngModel)]="targetColorTemperature.value"
+        (ngModelChange)="onColorTemperatureStateChange()"
+      />
+    </div>
   </div>
   <div class="modal-footer"></div>
 </div>

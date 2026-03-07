@@ -3,6 +3,7 @@
   tabindex="0"
   [class.accessory-on]="service().values?.CurrentPosition"
   [class.cursor-pointer]="readyForControl()"
+  [style.--position]="(service().values?.CurrentPosition ?? 0) / 100"
   (longClick)="onLongClick()"
   (shortClick)="onClick()"
 >

@@ -105,14 +105,16 @@
         } @else if (!hasHumidifier && hasDehumidifier) {
           <i class="fa fas fa-bullseye"></i> {{ service().values?.RelativeHumidityDehumidifierThreshold }}%
         }
+      } @else if (service().values?.TargetHumidifierDehumidifierState === 1 && hasHumidifier) {
+        <i class="fa fas fa-bullseye"></i> {{ service().values?.RelativeHumidityHumidifierThreshold }}%
       } @else if (service().values?.TargetHumidifierDehumidifierState === 1) {
         {{ 'accessories.control.humidify' | translate }}
+      } @else if (service().values?.TargetHumidifierDehumidifierState === 2 && hasDehumidifier) {
+        <i class="fa fas fa-bullseye"></i> {{ service().values?.RelativeHumidityDehumidifierThreshold }}%
+      } @else if (service().values?.TargetHumidifierDehumidifierState === 2) {
+        {{ 'accessories.control.dehumidify' | translate }}
       } @else {
-        @if (service().values?.TargetHumidifierDehumidifierState === 2) {
-          {{ 'accessories.control.dehumidify' | translate }}
-        } @else {
-          {{ 'accessories.control.on' | translate }}
-        }
+        {{ 'accessories.control.on' | translate }}
       }
     </div>
   </div>

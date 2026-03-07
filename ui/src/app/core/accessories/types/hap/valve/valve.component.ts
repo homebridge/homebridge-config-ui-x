@@ -7,6 +7,7 @@ import {
   inject,
   input,
   OnInit,
+  signal,
 } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
@@ -41,7 +42,7 @@ export class ValveComponent implements OnInit {
   public readonly readyForControl = input<boolean>(false)
 
   public secondsActive = 0
-  public remainingDuration: string
+  public readonly remainingDuration = signal('')
   private remainingDurationInterval = interval(1000).pipe(filter(() => this.isActive()))
 
   public ngOnInit() {
@@ -104,11 +105,11 @@ export class ValveComponent implements OnInit {
         this.secondsActive++
         const remainingSeconds = this.service().getCharacteristic('RemainingDuration').value as number - this.secondsActive
         if (remainingSeconds > 0) {
-          this.remainingDuration = remainingSeconds < 3600
+          this.remainingDuration.set(remainingSeconds < 3600
             ? new Date(remainingSeconds * 1000).toISOString().substring(14, 19)
-            : new Date(remainingSeconds * 1000).toISOString().substring(11, 19)
+            : new Date(remainingSeconds * 1000).toISOString().substring(11, 19))
         } else {
-          this.remainingDuration = ''
+          this.remainingDuration.set('')
         }
       })
   }
@@ -116,7 +117,7 @@ export class ValveComponent implements OnInit {
   private resetRemainingDuration() {
     this.secondsActive = 0
     if (this.service().getCharacteristic('RemainingDuration')) {
-      this.remainingDuration = ''
+      this.remainingDuration.set('')
     }
   }
 }

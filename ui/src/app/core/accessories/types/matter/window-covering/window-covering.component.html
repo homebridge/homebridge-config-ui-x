@@ -2,6 +2,8 @@
   class="accessory-box"
   tabindex="0"
   [class.accessory-on]="currentPosition() > 0"
+  [class.cursor-pointer]="readyForControl()"
+  [style.--position]="currentPosition() / 100"
   (longClick)="onLongClick()"
   (shortClick)="onClick()"
 >

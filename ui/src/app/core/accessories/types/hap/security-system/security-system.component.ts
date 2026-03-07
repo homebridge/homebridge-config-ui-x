@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   createEnvironmentInjector,
   EnvironmentInjector,
   inject,
@@ -33,6 +34,18 @@ export class SecuritySystemComponent {
 
   public readonly service = input.required<ServiceTypeX>()
   public readonly readyForControl = input<boolean>(false)
+
+  public readonly isArming = computed(() => {
+    const current = this.service().values?.SecuritySystemCurrentState
+    const target = this.service().values?.SecuritySystemTargetState
+    return current !== target && target !== 3 && current !== 4
+  })
+
+  public readonly isDisarming = computed(() => {
+    const current = this.service().values?.SecuritySystemCurrentState
+    const target = this.service().values?.SecuritySystemTargetState
+    return current !== target && target === 3 && current !== 4
+  })
 
   public onClick() {
     if (!this.readyForControl()) {
