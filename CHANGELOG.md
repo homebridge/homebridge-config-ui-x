@@ -37,6 +37,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - improve search term matching on settings page
 - lint: apply `angular/template` rules
 - prioritise scoped plugins in plugin search results
+- `configChanged` events keep `updatePluginConfig`() changes
 
 ### Homebridge Dependencies
 

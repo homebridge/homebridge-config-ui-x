@@ -357,12 +357,14 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
       }
     }
 
-    // Always apply the update, then only refresh the schema form if data actually changed
-    const before = JSON.stringify(this.pluginConfig)
     this.updateConfigBlocks(pluginConfig)
-    const after = JSON.stringify(this.pluginConfig)
 
-    if (this.showSchemaForm() && before !== after) {
+    // Create a new reference for pluginConfig[0] so the schema form's effect()
+    // detects the change and updates the form with the new values.
+    // Without this, Object.assign in updateConfigBlocks mutates in-place (same reference),
+    // and the form's effect() ignores the update since lastDataReference === newData.
+    if (this.pluginConfig[0] && this.showSchemaForm()) {
+      this.pluginConfig[0] = { ...this.pluginConfig[0] }
       this.schemaFormRefreshSubject.next(undefined)
     }
 
