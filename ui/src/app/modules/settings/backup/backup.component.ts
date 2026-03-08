@@ -56,9 +56,6 @@ export class BackupComponent implements OnInit {
   public maxBackupSize = globalThis.backup.maxBackupSize
   public maxBackupSizeText = globalThis.backup.maxBackupSizeText
 
-  // Private properties
-  private restartToastIsShown = false
-
   // Lifecycle hooks
   public ngOnInit(): void {
     void this.getScheduledBackups()
@@ -198,9 +195,8 @@ export class BackupComponent implements OnInit {
   }
 
   private showRestartToast(): void {
-    if (!this.restartToastIsShown) {
-      this.restartToastIsShown = true
-      const ref = this.$toastr.info(
+    if (!this.$settings.restartToastRef) {
+      this.$settings.restartToastRef = this.$toastr.info(
         this.$translate.instant('settings.changes.saved'),
         this.$translate.instant('menu.hbrestart.title'),
         {
@@ -212,11 +208,16 @@ export class BackupComponent implements OnInit {
         },
       )
 
-      if (ref && ref.onTap) {
-        ref.onTap
-          .pipe(takeUntilDestroyed(this.destroyRef))
+      if (this.$settings.restartToastRef) {
+        this.$settings.restartToastRef.onTap
+          ?.pipe(takeUntilDestroyed(this.destroyRef))
           .subscribe(() => {
             void this.$router.navigate(['/restart'])
+          })
+        this.$settings.restartToastRef.onHidden
+          ?.pipe(takeUntilDestroyed(this.destroyRef))
+          .subscribe(() => {
+            this.$settings.restartToastRef = null
           })
       }
     }

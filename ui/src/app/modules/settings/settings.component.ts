@@ -343,8 +343,6 @@ export class SettingsComponent implements OnInit {
   // Other properties
   // Cache for Matter config values (in-memory only, for restoring after accidental disable)
   private matterConfigCache: { port?: number } = {}
-  public restartToastIsShown = false
-
   public readonly linkDebug = '<a href="https://github.com/homebridge/homebridge-config-ui-x/wiki/Debug-Common-Values" target="_blank" rel="noopener noreferrer"><i class="fa fa-external-link-alt primary-text"></i></a>'
   public readonly linkRaspbianSsl = '<a href="https://github.com/homebridge/homebridge-raspbian-image/wiki/SSL-HTTPS-Access" target="_blank" rel="noopener noreferrer"><i class="fa fa-external-link-alt primary-text"></i></a>'
   public readonly linkCron = '<a href="https://crontab.guru/" target="_blank" rel="noopener noreferrer"><i class="fa fa-external-link-alt primary-text"></i></a>'
@@ -2240,7 +2238,6 @@ export class SettingsComponent implements OnInit {
           if (this.$settings.restartToastRef) {
             this.$toastr.clear(this.$settings.restartToastRef.toastId)
             this.$settings.restartToastRef = null
-            this.restartToastIsShown = false
           }
 
           void this.$router.navigate(['/restart'], {
@@ -2296,8 +2293,7 @@ export class SettingsComponent implements OnInit {
   }
 
   private showRestartToast() {
-    if (!this.restartToastIsShown) {
-      this.restartToastIsShown = true
+    if (!this.$settings.restartToastRef) {
       this.$settings.restartToastRef = this.$toastr.info(
         this.$translate.instant('settings.changes.saved'),
         this.$translate.instant('menu.hbrestart.title'),
@@ -2310,11 +2306,16 @@ export class SettingsComponent implements OnInit {
         },
       )
 
-      if (this.$settings.restartToastRef && this.$settings.restartToastRef.onTap) {
+      if (this.$settings.restartToastRef) {
         this.$settings.restartToastRef.onTap
-          .pipe(takeUntilDestroyed(this.destroyRef))
+          ?.pipe(takeUntilDestroyed(this.destroyRef))
           .subscribe(() => {
             void this.$router.navigate(['/restart'])
+          })
+        this.$settings.restartToastRef.onHidden
+          ?.pipe(takeUntilDestroyed(this.destroyRef))
+          .subscribe(() => {
+            this.$settings.restartToastRef = null
           })
       }
     }

@@ -38,6 +38,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - lint: apply `angular/template` rules
 - prioritise scoped plugins in plugin search results
 - `configChanged` events keep `updatePluginConfig`() changes
+- fix duplicate restart modals showing + not hiding
 
 ### Homebridge Dependencies
 
