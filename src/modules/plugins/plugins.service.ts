@@ -1422,6 +1422,16 @@ export class PluginsService {
             latestVersion,
           }
         } catch (e) {
+          const changelog = await firstValueFrom(this.httpService.get(`https://raw.githubusercontent.com/${match[1]}/${match[2]}/HEAD/CHANGELOG.md`))
+          if (changelog.status === 200) {
+            return {
+              name: null,
+              notes: null,
+              changelog: changelog.data,
+              latestVersion,
+            }
+          }
+
           throw new NotFoundException()
         }
       }
