@@ -21,6 +21,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - improvements to matter components
 - feat: air quality sensor matter device
 - accessory tile + modal improvements/fixes
+- improve keyboard loading on terminals
 
 ### Other Changes
 

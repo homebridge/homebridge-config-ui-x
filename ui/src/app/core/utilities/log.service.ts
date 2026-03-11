@@ -44,8 +44,8 @@ export class LogService {
     this.fitAddon = new FitAddon()
     this.webLinksAddon = new WebLinksAddon()
 
-    // Create a terminal instance
-    this.term = new Terminal(termOpts)
+    // Create a terminal instance (always read-only)
+    this.term = new Terminal({ ...termOpts, disableStdin: true })
 
     // Load addons
     this.term.loadAddon(this.fitAddon)

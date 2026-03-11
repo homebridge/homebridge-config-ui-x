@@ -34,6 +34,8 @@ import { Widget } from '@/app/modules/status/widgets/widgets.interfaces'
     '(window:beforeunload)': 'onBeforeUnload($event)',
     '(window:focus)': 'onWindowFocus()',
     '(click)': 'onClick()',
+    '(touchstart)': 'onTouchStart($event)',
+    '(touchend)': 'onTouchEnd($event)',
   },
 })
 export class TerminalWidgetComponent implements OnInit, OnDestroy {
@@ -65,21 +67,19 @@ export class TerminalWidgetComponent implements OnInit, OnDestroy {
   }
 
   onWindowFocus(): void {
-    // Autofocus terminal when user returns to this window
-    this.activateTerminal()
+    this.$terminal.activateTerminal()
   }
 
   onClick(): void {
-    // Focus this terminal when clicked
-    this.activateTerminal()
+    this.$terminal.activateTerminal()
   }
 
-  private activateTerminal(): void {
-    // Only focus if this terminal is ready and connected
-    if (this.$terminal.isTerminalReady() && this.$terminal.term) {
-      // Focus the actual terminal element for better UX
-      this.$terminal.term.focus()
-    }
+  onTouchStart(event: TouchEvent): void {
+    this.$terminal.onTouchStart(event)
+  }
+
+  onTouchEnd(event: TouchEvent): void {
+    this.$terminal.onTouchEnd(event)
   }
 
   public ngOnInit(): void {
@@ -108,7 +108,7 @@ export class TerminalWidgetComponent implements OnInit, OnDestroy {
 
       // Autofocus terminal when component is fully loaded
       setTimeout(() => {
-        this.activateTerminal()
+        this.$terminal.activateTerminal()
       }, 100)
     })
 
@@ -168,7 +168,7 @@ export class TerminalWidgetComponent implements OnInit, OnDestroy {
       // Only focus if this terminal widget is actually visible on screen
       if (this.isTerminalWidgetVisible()) {
         setTimeout(() => {
-          this.activateTerminal()
+          this.$terminal.activateTerminal()
         }, 100)
       }
     }

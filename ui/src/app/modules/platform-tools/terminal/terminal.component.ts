@@ -18,6 +18,8 @@ import { TerminalService } from '@/app/core/utilities/terminal.service'
     '(window:beforeunload)': 'onBeforeUnload($event)',
     '(window:focus)': 'onWindowFocus()',
     '(click)': 'onClick()',
+    '(touchstart)': 'onTouchStart($event)',
+    '(touchend)': 'onTouchEnd($event)',
   },
 })
 export class TerminalComponent implements OnInit, AfterViewInit, OnDestroy {
@@ -40,21 +42,19 @@ export class TerminalComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   onWindowFocus() {
-    // Autofocus terminal when user returns to this window
-    this.activateTerminal()
+    this.$terminal.activateTerminal()
   }
 
   onClick() {
-    // Focus this terminal when clicked
-    this.activateTerminal()
+    this.$terminal.activateTerminal()
   }
 
-  private activateTerminal(): void {
-    // Only focus if this terminal is ready and connected
-    if (this.$terminal.isTerminalReady() && this.$terminal.term) {
-      // Focus the actual terminal element for better UX
-      this.$terminal.term.focus()
-    }
+  onTouchStart(event: TouchEvent) {
+    this.$terminal.onTouchStart(event)
+  }
+
+  onTouchEnd(event: TouchEvent) {
+    this.$terminal.onTouchEnd(event)
   }
 
   private patchXtermLiveRegion(): void {
@@ -128,7 +128,7 @@ export class TerminalComponent implements OnInit, AfterViewInit, OnDestroy {
     // Set focus to the terminal after next render to ensure it's initialized
     requestAnimationFrame(() => {
       this.patchXtermLiveRegion()
-      this.activateTerminal()
+      this.$terminal.activateTerminal()
     })
   }
 
@@ -144,7 +144,7 @@ export class TerminalComponent implements OnInit, AfterViewInit, OnDestroy {
     if (!document.hidden && this.$terminal.isTerminalReady()) {
       requestAnimationFrame(() => {
         this.patchXtermLiveRegion()
-        this.activateTerminal()
+        this.$terminal.activateTerminal()
       })
     }
   }

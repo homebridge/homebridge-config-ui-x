@@ -105,6 +105,30 @@ export class TerminalService {
     return this.term && !this.isInitializing
   }
 
+  public activateTerminal(): void {
+    if (this.isTerminalReady() && this.term) {
+      this.term.focus()
+    }
+  }
+
+  private touchStartY: number | null = null
+
+  public onTouchStart(event: TouchEvent): void {
+    this.touchStartY = event.touches[0].clientY
+  }
+
+  public onTouchEnd(event: TouchEvent): void {
+    if (this.touchStartY === null) {
+      return
+    }
+    const deltaY = Math.abs(event.changedTouches[0].clientY - this.touchStartY)
+    this.touchStartY = null
+    // Only focus if the finger barely moved (tap, not scroll)
+    if (deltaY < 10) {
+      this.activateTerminal()
+    }
+  }
+
   public reconnectTerminal(targetElement: ElementRef, termOpts: ITerminalOptions = {}, elementResize?: Subject<any>): boolean {
     if (this.isInitializing) {
       return false
@@ -117,17 +141,16 @@ export class TerminalService {
 
     // Reuse existing connection if still active
     if (this.io && this.io.socket && this.io.socket.connected) {
-      // Create a new terminal instance for the UI
-      this.term = new Terminal(termOpts)
-
-      // Load addons
+      // Create addons
       this.fitAddon = new FitAddon()
       this.webLinksAddon = new WebLinksAddon()
 
-      setTimeout(() => {
-        this.term.loadAddon(this.fitAddon)
-        this.term.loadAddon(this.webLinksAddon)
-      })
+      // Create a new terminal instance for the UI
+      this.term = new Terminal(termOpts)
+
+      // Load addons before open
+      this.term.loadAddon(this.fitAddon)
+      this.term.loadAddon(this.webLinksAddon)
 
       // Create a subject to listen for resize events
       this.resize = new Subject()
@@ -137,7 +160,6 @@ export class TerminalService {
 
       // Fit to the element
       setTimeout(() => {
-        this.fitAddon.activate(this.term)
         this.fitAddon.fit()
       })
 
@@ -220,17 +242,16 @@ export class TerminalService {
     // Connect to the websocket endpoint
     this.io = this.$ws.connectToNamespace('platform-tools/terminal')
 
+    // Create addons
+    this.fitAddon = new FitAddon()
+    this.webLinksAddon = new WebLinksAddon()
+
     // Create a terminal instance
     this.term = new Terminal(termOpts)
 
-    // Load addons
-    setTimeout(() => {
-      this.term.loadAddon(this.fitAddon)
-      this.term.loadAddon(this.webLinksAddon)
-    })
-
-    this.fitAddon = new FitAddon()
-    this.webLinksAddon = new WebLinksAddon()
+    // Load addons before open
+    this.term.loadAddon(this.fitAddon)
+    this.term.loadAddon(this.webLinksAddon)
 
     // Create a subject to listen for resize events
     this.resize = new Subject()
@@ -240,7 +261,6 @@ export class TerminalService {
 
     // Fit to the element
     setTimeout(() => {
-      this.fitAddon.activate(this.term)
       this.fitAddon.fit()
     })
 

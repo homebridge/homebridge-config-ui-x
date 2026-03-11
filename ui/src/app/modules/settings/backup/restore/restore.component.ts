@@ -5,7 +5,7 @@ import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { FitAddon } from '@xterm/addon-fit'
 import { WebLinksAddon } from '@xterm/addon-web-links'
-import { ITerminalOptions, Terminal } from '@xterm/xterm'
+import { Terminal } from '@xterm/xterm'
 import { ToastrService } from 'ngx-toastr'
 
 import { ApiService } from '@/app/core/communication/api.service'
@@ -67,21 +67,7 @@ export class RestoreComponent implements OnInit, OnDestroy {
     this.io = this.$ws.connectToNamespace('backup')
     this.termTarget = document.getElementById('plugin-log-output')
 
-    // Modals need independent settings from page terminals
-    // Use terminal theme setting for text color to match terminal background
-    const terminalTheme = this.$settings.getEffectiveTerminalLightingMode()
-    this.term = new Terminal({
-      fontSize: this.$settings.env.terminal?.fontSize || 13,
-      fontWeight: (this.$settings.env.terminal?.fontWeight || '400') as ITerminalOptions['fontWeight'],
-      lineHeight: 1.2,
-      allowProposedApi: true,
-      theme: {
-        background: terminalTheme === 'light' ? '#00000000' : '#000000',
-        foreground: terminalTheme === 'light' ? '#333333' : '#eeeeee',
-      },
-      allowTransparency: terminalTheme === 'light',
-      screenReaderMode: true,
-    })
+    this.term = new Terminal(this.$settings.getTerminalOptions({ disableStdin: true }, true))
     this.term.loadAddon(this.fitAddon)
     this.term.loadAddon(this.webLinksAddon)
     this.term.open(this.termTarget)
