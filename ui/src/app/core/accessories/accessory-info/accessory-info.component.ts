@@ -138,6 +138,12 @@ export class AccessoryInfoComponent implements OnInit, OnDestroy {
   public readonly uniqueIdCopied = signal(false)
   public readonly uuidCopied = signal(false)
 
+  // Original values to restore on dismiss
+  private originalCustomName: string | undefined
+  private originalCustomType: ServiceTypeX['type'] | undefined
+  private originalHidden: boolean | undefined
+  private originalOnDashboard: boolean | undefined
+
   public ngOnInit() {
     // Extract values from signals to local properties
     const accessoryCache = this.accessoryCache
@@ -209,6 +215,12 @@ export class AccessoryInfoComponent implements OnInit, OnDestroy {
         this.localService.customType = this.localService.type
       }
     }
+
+    // Save original values so we can restore on dismiss
+    this.originalCustomName = this.localService.customName
+    this.originalCustomType = this.localService.customType
+    this.originalHidden = this.localService.hidden
+    this.originalOnDashboard = this.localService.onDashboard
   }
 
   // Public methods
@@ -250,7 +262,28 @@ export class AccessoryInfoComponent implements OnInit, OnDestroy {
   }
 
   public dismissModal() {
+    // Restore original values when dismissing without saving
+    this.localService.customName = this.originalCustomName
+    this.localService.customType = this.originalCustomType
+    this.localService.hidden = this.originalHidden
+    this.localService.onDashboard = this.originalOnDashboard
     this.$activeModal.dismiss('Dismiss')
+  }
+
+  public saveModal() {
+    this.$activeModal.close({
+      customName: this.localService.customName,
+      customType: this.localService.customType,
+      hidden: this.localService.hidden,
+      onDashboard: this.localService.onDashboard,
+    })
+  }
+
+  public isFormUnchanged(): boolean {
+    return this.localService.customName === this.originalCustomName
+      && this.localService.customType === this.originalCustomType
+      && this.localService.hidden === this.originalHidden
+      && this.localService.onDashboard === this.originalOnDashboard
   }
 
   public onHiddenChange(): void {

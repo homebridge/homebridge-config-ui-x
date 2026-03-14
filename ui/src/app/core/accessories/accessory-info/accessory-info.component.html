@@ -453,8 +453,7 @@
     </ul>
   </div>
   <div class="modal-footer justify-content-between">
-    <div class="text-start"></div>
-    <div class="text-center">
+    <div class="text-start">
       <button
         type="button"
         class="btn btn-elegant"
@@ -465,6 +464,17 @@
         {{ 'form.button_close' | translate }}
       </button>
     </div>
-    <div class="text-end"></div>
+    <div class="text-center"></div>
+    <div class="text-end">
+      <button
+        type="button"
+        class="btn btn-primary"
+        [attr.aria-label]="'form.button_save' | translate"
+        [disabled]="isFormUnchanged()"
+        (click)="saveModal()"
+      >
+        {{ 'form.button_save' | translate }}
+      </button>
+    </div>
   </div>
 </div>

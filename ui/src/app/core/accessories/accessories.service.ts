@@ -94,11 +94,26 @@ export class AccessoriesService {
     })
 
     try {
-      await ref.result
-    } catch {
-      // Modal dismissed
-    } finally {
+      const result = await ref.result
+
+      // Apply saved values to the current service object in the room
+      // The original service reference may have been replaced by an accessories-data
+      // event during the modal close animation, so find the current one by uniqueId
+      const currentService = this.rooms()
+        .flatMap(r => r.services)
+        .find(s => s.uniqueId === service.uniqueId) as ServiceTypeX | undefined
+
+      const target = currentService || service
+      target.customName = result.customName
+      target.customType = result.customType
+      target.hidden = result.hidden
+      target.onDashboard = result.onDashboard
+
       this.saveLayout()
+      // Trigger rooms signal update so OnPush components re-render
+      this.rooms.update(rooms => [...rooms])
+    } catch {
+      // Modal dismissed - do not save
     }
 
     return false
