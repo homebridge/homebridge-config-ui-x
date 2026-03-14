@@ -40,6 +40,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - prioritise scoped plugins in plugin search results
 - `configChanged` events keep `updatePluginConfig`() changes
 - fix duplicate restart modals showing + not hiding
+- refresh users screenshot in `screenshots` folder
 
 ### Homebridge Dependencies
 
