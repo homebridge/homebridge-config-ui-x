@@ -16,6 +16,16 @@ import { UptimeWidgetComponent } from '@/app/modules/status/widgets/uptime-widge
 import { WeatherWidgetComponent } from '@/app/modules/status/widgets/weather-widget/weather-widget.component'
 import { Widget } from '@/app/modules/status/widgets/widgets.interfaces'
 
+// Widgets that have additional settings beyond visibility (shown in widget-control modal)
+export const WIDGETS_WITH_SETTINGS = [
+  'UpdateInfoWidgetComponent',
+  'WeatherWidgetComponent',
+  'ClockWidgetComponent',
+  'CpuWidgetComponent',
+  'MemoryWidgetComponent',
+  'NetworkWidgetComponent',
+] as const
+
 // Export available widget component names for filtering in status component
 export const AVAILABLE_WIDGETS = [
   'HapQrcodeWidgetComponent',

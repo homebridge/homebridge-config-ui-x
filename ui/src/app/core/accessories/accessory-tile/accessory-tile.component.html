@@ -6,10 +6,16 @@
     <button
       type="button"
       class="manage-accessory-button"
+      [class.accessory-hidden-indicator]="service().hidden"
       [attr.aria-label]="`${('form.button_edit' | translate)} ${service().customName || service().serviceName}`"
       (click)="$accessories.showAccessoryInformation(service())"
     >
-      <i class="fas fa-bars grey-text" aria-hidden="true"></i>
+      @if (service().hidden) {
+        <i class="fas fa-eye-slash grey-text accessory-hidden-icon" aria-hidden="true"></i>
+        <i class="fas fa-bars grey-text accessory-hidden-hover-icon" aria-hidden="true"></i>
+      } @else {
+        <i class="fas fa-bars grey-text" aria-hidden="true"></i>
+      }
     </button>
   } @else {
     <button

@@ -23,6 +23,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - accessory tile + modal improvements/fixes
 - improve keyboard loading on terminals
 - apply save button to accessory info modal
+- bring widget mobile visibility into visibility modal
 
 ### Other Changes
 

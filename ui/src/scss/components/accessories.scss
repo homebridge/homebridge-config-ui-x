@@ -146,6 +146,34 @@
   .manage-accessory-button {
     opacity: 0;
 
+    .accessory-hidden-icon,
+    .accessory-hidden-hover-icon {
+      display: inline-block;
+      width: 1em;
+      text-align: center;
+    }
+
+    .accessory-hidden-hover-icon {
+      display: none;
+    }
+
+    &.accessory-hidden-indicator {
+      opacity: 0.5;
+
+      @media (hover: hover) {
+        &:hover,
+        &:active {
+          .accessory-hidden-icon {
+            display: none;
+          }
+
+          .accessory-hidden-hover-icon {
+            display: inline;
+          }
+        }
+      }
+    }
+
     @media (hover: hover) {
       &:active,
       &:hover {

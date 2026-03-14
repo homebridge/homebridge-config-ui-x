@@ -59,10 +59,13 @@
     @if (dashboard().length) {
       <gridster class="flex-grow-1 no-scrollbars py-0" [options]="options" [hidden]="consoleStatus() === 'down'">
         @for (item of dashboard(); track item) {
-          @if (!(item.hideOnMobile && page().mobile)) {
+          @if (!(item.hideOnMobile && page().mobile) && !(item.hideOnDesktop && !page().mobile)) {
             <gridster-item class="widget-item" [item]="item" [id]="item.component">
               <div class="gridster-item-content">
-                @if (options.draggable.enabled || page().showWidgetConfigure) {
+                @if (
+                  (options.draggable.enabled || page().showWidgetConfigure) &&
+                  widgetsWithSettings.includes(item.component)
+                ) {
                   <button
                     type="button"
                     class="widget-control-button"

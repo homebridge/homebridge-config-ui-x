@@ -15,8 +15,8 @@ import { SettingsService } from '@/app/core/ui/settings.service'
 import { TerminalNavigationGuardService } from '@/app/core/utilities/terminal-navigation-guard.service'
 import { CreditsComponent } from '@/app/modules/status/credits/credits.component'
 import { WidgetControlComponent } from '@/app/modules/status/widget-control/widget-control.component'
-import { WidgetVisibilityComponent } from '@/app/modules/status/widget-visibility/widget-visibility.component'
-import { AVAILABLE_WIDGETS, WidgetsComponent } from '@/app/modules/status/widgets/widgets.component'
+import { WidgetVisibilityComponent, WidgetVisibilityEntry } from '@/app/modules/status/widget-visibility/widget-visibility.component'
+import { AVAILABLE_WIDGETS, WIDGETS_WITH_SETTINGS, WidgetsComponent } from '@/app/modules/status/widgets/widgets.component'
 import { Widget } from '@/app/modules/status/widgets/widgets.interfaces'
 
 @Component({
@@ -59,6 +59,8 @@ export class StatusComponent implements OnInit, OnDestroy {
     mobile: (window.innerWidth < 1024),
     showWidgetConfigure: (window.innerWidth < 576),
   })
+
+  public widgetsWithSettings: readonly string[] = WIDGETS_WITH_SETTINGS
 
   public ngOnInit() {
     // Set page title (status page should only show instance name)
@@ -172,43 +174,49 @@ export class StatusComponent implements OnInit, OnDestroy {
     })
 
     try {
-      const widget = await ref.result
-      const currentDashboard = this.dashboard()
-      const index = currentDashboard.findIndex(x => x.component === widget.component)
-      if (index > -1) {
-        // Widget already exists, remove it
-        const updated = [...currentDashboard]
-        updated.splice(index, 1)
-        this.dashboard.set(updated)
-        void this.gridChangedEvent()
-        return
+      const entries: WidgetVisibilityEntry[] = await ref.result
+      const currentDashboard = [...this.dashboard()]
+
+      for (const entry of entries) {
+        const existingIndex = currentDashboard.findIndex(x => x.component === entry.component)
+        const visibleAnywhere = entry.showOnDesktop || entry.showOnMobile
+
+        if (visibleAnywhere && existingIndex === -1) {
+          // Widget needs to be in dashboard but isn't — add it
+          // Place at the bottom of the grid so it doesn't disrupt existing layout
+          const maxY = currentDashboard.reduce((max, item) => Math.max(max, (item.y ?? 0) + (item.rows ?? 0)), 0)
+          currentDashboard.push({
+            x: 0,
+            y: maxY,
+            component: entry.component,
+            cols: entry.cols,
+            rows: entry.rows,
+            mobileOrder: entry.mobileOrder,
+            hideOnDesktop: entry.hideOnDesktop,
+            hideOnMobile: entry.hideOnMobile,
+            $resizeEvent: new Subject(),
+            $configureEvent: new Subject(),
+            $saveWidgetsEvent: this.saveWidgetsEvent,
+            draggable: this.options.draggable.enabled,
+          })
+        } else if (!visibleAnywhere && existingIndex > -1) {
+          // Widget hidden on both desktop and mobile — remove it
+          currentDashboard.splice(existingIndex, 1)
+        } else if (visibleAnywhere && existingIndex > -1) {
+          // Widget exists — update visibility flags
+          currentDashboard[existingIndex] = {
+            ...currentDashboard[existingIndex],
+            hideOnDesktop: entry.hideOnDesktop,
+            hideOnMobile: entry.hideOnMobile,
+            $resizeEvent: currentDashboard[existingIndex].$resizeEvent,
+            $configureEvent: currentDashboard[existingIndex].$configureEvent,
+            $saveWidgetsEvent: currentDashboard[existingIndex].$saveWidgetsEvent,
+          }
+        }
       }
 
-      // Add the widget
-      const item: Widget = {
-        x: undefined,
-        y: undefined,
-        component: widget.component,
-        cols: widget.cols,
-        rows: widget.rows,
-        mobileOrder: widget.mobileOrder,
-        hideOnMobile: widget.hideOnMobile,
-        $resizeEvent: new Subject(),
-        $configureEvent: new Subject(),
-        $saveWidgetsEvent: this.saveWidgetsEvent,
-        draggable: this.options.draggable.enabled,
-      }
-
-      this.dashboard.set([...currentDashboard, item])
-
-      if (widget.requiresConfig) {
-        void this.manageWidget(item)
-      }
-
-      setTimeout(() => {
-        const widgetElement = document.getElementById(widget.component)
-        widgetElement.scrollIntoView()
-      }, 500)
+      this.dashboard.set(currentDashboard)
+      void this.gridChangedEvent()
     } catch {
       // Modal dismissed, do nothing
     }

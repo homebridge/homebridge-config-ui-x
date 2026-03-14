@@ -5,7 +5,19 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 
 import { WIDGET_VISIBILITY_MODAL_DATA } from '@/app/core/modal-data-tokens'
 import { SettingsService } from '@/app/core/ui/settings.service'
-import { Widget } from '@/app/modules/status/widgets/widgets.interfaces'
+
+export interface WidgetVisibilityEntry {
+  name: string
+  component: string
+  showOnDesktop: boolean
+  showOnMobile: boolean
+  cols: number
+  rows: number
+  mobileOrder: number
+  hideOnDesktop: boolean
+  hideOnMobile: boolean
+  requiresConfig?: boolean
+}
 
 @Component({
   selector: 'app-widget-visibility',
@@ -29,7 +41,10 @@ export class WidgetVisibilityComponent implements OnInit {
   public resetLayout = this.modalData.resetLayout
 
   // Signals
-  public readonly availableWidgets = signal<any[]>([])
+  public readonly availableWidgets = signal<WidgetVisibilityEntry[]>([])
+
+  // Original state for change detection
+  private originalState: { showOnDesktop: boolean, showOnMobile: boolean }[] = []
 
   public ngOnInit(): void {
     const allWidgets = [
@@ -57,7 +72,6 @@ export class WidgetVisibilityComponent implements OnInit {
         cols: 7,
         rows: 9,
         mobileOrder: 30,
-        hideOnMobile: false,
       },
       {
         name: this.$translate.instant('child_bridge.bridges'),
@@ -132,7 +146,6 @@ export class WidgetVisibilityComponent implements OnInit {
         cols: 7,
         rows: 6,
         mobileOrder: 1000,
-        hideOnMobile: true,
       },
       {
         name: `Homebridge ${this.$translate.instant('menu.docker.terminal')}`,
@@ -141,7 +154,6 @@ export class WidgetVisibilityComponent implements OnInit {
         cols: 7,
         rows: 6,
         mobileOrder: 1000,
-        hideOnMobile: true,
       },
       {
         name: this.$translate.instant('status.widget.clock'),
@@ -149,20 +161,66 @@ export class WidgetVisibilityComponent implements OnInit {
         cols: 5,
         rows: 3,
         mobileOrder: 23,
-        hideOnMobile: true,
       },
     ]
-    this.availableWidgets.set(allWidgets
+
+    const entries: WidgetVisibilityEntry[] = allWidgets
       .filter(x => !x.hidden)
       .sort((a, b) => a.name.localeCompare(b.name))
-      .map(x => ({
-        ...x,
-        shown: this.dashboard.some((i: any) => i.component === x.component),
-      })))
+      .map((x) => {
+        const dashboardItem = this.dashboard.find((i: any) => i.component === x.component)
+        const isInDashboard = !!dashboardItem
+        const hideOnDesktop = isInDashboard ? (dashboardItem.hideOnDesktop ?? false) : true
+        const hideOnMobile = isInDashboard ? (dashboardItem.hideOnMobile ?? false) : true
+        return {
+          name: x.name,
+          component: x.component,
+          showOnDesktop: !hideOnDesktop,
+          showOnMobile: !hideOnMobile,
+          cols: x.cols,
+          rows: x.rows,
+          mobileOrder: x.mobileOrder,
+          hideOnDesktop,
+          hideOnMobile,
+          requiresConfig: x.requiresConfig,
+        }
+      })
+
+    this.availableWidgets.set(entries)
+    this.originalState = entries.map(e => ({ showOnDesktop: e.showOnDesktop, showOnMobile: e.showOnMobile }))
   }
 
-  public selectWidget(widget: Widget): void {
-    this.$activeModal.close(widget)
+  public toggleDesktop(widget: WidgetVisibilityEntry): void {
+    const widgets = this.availableWidgets()
+    const index = widgets.findIndex(w => w.component === widget.component)
+    const updated = [...widgets]
+    updated[index] = { ...updated[index], showOnDesktop: !updated[index].showOnDesktop }
+    this.availableWidgets.set(updated)
+  }
+
+  public toggleMobile(widget: WidgetVisibilityEntry): void {
+    const widgets = this.availableWidgets()
+    const index = widgets.findIndex(w => w.component === widget.component)
+    const updated = [...widgets]
+    updated[index] = { ...updated[index], showOnMobile: !updated[index].showOnMobile }
+    this.availableWidgets.set(updated)
+  }
+
+  public isFormUnchanged(): boolean {
+    const current = this.availableWidgets()
+    return current.every((w, i) =>
+      w.showOnDesktop === this.originalState[i].showOnDesktop
+      && w.showOnMobile === this.originalState[i].showOnMobile,
+    )
+  }
+
+  public saveModal(): void {
+    const result = this.availableWidgets().map(w => ({
+      ...w,
+      hideOnDesktop: !w.showOnDesktop,
+      hideOnMobile: !w.showOnMobile,
+    }))
+    this.$activeModal.close(result)
   }
 
   public doResetLayout(): void {

@@ -121,6 +121,7 @@ export interface Widget {
   cols: number
   component: string
   draggable: boolean
+  hideOnDesktop: boolean
   hideOnMobile: boolean
   mobileOrder: number
   rows: number

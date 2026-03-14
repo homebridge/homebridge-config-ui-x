@@ -287,8 +287,9 @@ export class AccessoryInfoComponent implements OnInit, OnDestroy {
   }
 
   public onHiddenChange(): void {
-    // Mark for check to update the view when hidden state changes
-    // This is necessary with OnPush change detection
+    if (this.localService.hidden) {
+      this.localService.onDashboard = false
+    }
     this.$cdr.markForCheck()
   }
 
