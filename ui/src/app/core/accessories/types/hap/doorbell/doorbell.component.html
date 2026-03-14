@@ -21,13 +21,13 @@
       <div class="accessory-label grey-text">
         @switch (service().values?.CurrentMediaState) {
           @case (0) {
-            {{ 'accessories.control.play' | translate }}
+            {{ 'accessories.control.playing' | translate }}
           }
           @case (1) {
-            {{ 'accessories.control.pause' | translate }}
+            {{ 'accessories.control.paused' | translate }}
           }
           @case (2) {
-            {{ 'accessories.control.stop' | translate }}
+            {{ 'accessories.control.stopped' | translate }}
           }
         }
         @if ('Mute' in service().values && service().values?.Mute) {

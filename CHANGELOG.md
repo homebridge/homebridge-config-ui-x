@@ -43,6 +43,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - `configChanged` events keep `updatePluginConfig`() changes
 - fix duplicate restart modals showing + not hiding
 - refresh users screenshot in `screenshots` folder
+- use state labels for `CurrentMediaState`
 
 ### Homebridge Dependencies
 
