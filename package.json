@@ -89,7 +89,7 @@
     "@nestjs/core": "11.1.15",
     "@nestjs/jwt": "11.0.2",
     "@nestjs/passport": "11.0.5",
-    "@nestjs/platform-fastify": "11.1.15",
+    "@nestjs/platform-fastify": "11.1.16",
     "@nestjs/platform-socket.io": "11.1.15",
     "@nestjs/swagger": "11.2.6",
     "@nestjs/websockets": "11.1.15",
