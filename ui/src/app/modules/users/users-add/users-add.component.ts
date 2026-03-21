@@ -34,11 +34,11 @@ export class UsersAddComponent implements OnInit {
 
   // Other properties
   public form = new FormGroup({
-    username: new FormControl('', [Validators.required]),
-    name: new FormControl('', [Validators.required]),
-    password: new FormControl('', [Validators.compose([Validators.required, Validators.minLength(4)])]),
-    passwordConfirm: new FormControl('', [Validators.required]),
-    admin: new FormControl(true),
+    username: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
+    name: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
+    password: new FormControl('', { nonNullable: true, validators: [Validators.required, Validators.minLength(4)] }),
+    passwordConfirm: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
+    admin: new FormControl(true, { nonNullable: true }),
   }, this.matchPassword)
 
   public ngOnInit(): void {
@@ -51,7 +51,7 @@ export class UsersAddComponent implements OnInit {
     try {
       await this.$api.post('/users', value)
       this.$activeModal.close()
-    } catch (error) {
+    } catch (error: any) {
       this.$toastr.error(error.error?.message || error.message, this.$translate.instant('toast.title_error'))
     }
   }
@@ -60,7 +60,7 @@ export class UsersAddComponent implements OnInit {
     this.$activeModal.dismiss('Dismiss')
   }
 
-  private duplicateUsernameValidator(control: FormControl): { [key: string]: boolean } | null {
+  private duplicateUsernameValidator(control: AbstractControl): { [key: string]: boolean } | null {
     if (!control.value) {
       return null
     }

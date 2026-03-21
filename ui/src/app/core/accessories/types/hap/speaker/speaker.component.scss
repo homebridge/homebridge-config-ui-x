@@ -1,50 +1,48 @@
-::ng-deep {
-  .accessory-on:not(.paused):not(.muted) {
-    svg {
-      .wave-inner {
-        animation: pulse-inner 2s infinite;
+.accessory-on:not(.paused):not(.muted) {
+  svg {
+    .wave-inner {
+      animation: pulse-inner 2s infinite;
+    }
+
+    .wave-outer {
+      animation: pulse-outer 2s infinite;
+    }
+
+    @keyframes pulse-inner {
+      0% {
+        stroke-opacity: 0.5;
       }
 
-      .wave-outer {
-        animation: pulse-outer 2s infinite;
+      50% {
+        stroke-opacity: 1;
       }
 
-      @keyframes pulse-inner {
-        0% {
-          stroke-opacity: 0.5;
-        }
+      100% {
+        stroke-opacity: 0.5;
+      }
+    }
 
-        50% {
-          stroke-opacity: 1;
-        }
-
-        100% {
-          stroke-opacity: 0.5;
-        }
+    @keyframes pulse-outer {
+      0% {
+        stroke-opacity: 0.3;
       }
 
-      @keyframes pulse-outer {
-        0% {
-          stroke-opacity: 0.3;
-        }
+      50% {
+        stroke-opacity: 0.8;
+      }
 
-        50% {
-          stroke-opacity: 0.8;
-        }
-
-        100% {
-          stroke-opacity: 0.3;
-        }
+      100% {
+        stroke-opacity: 0.3;
       }
     }
   }
+}
 
-  body.dark-mode {
-    div.accessory-box:not(.accessory-on) {
-      svg {
-        .inner {
-          fill: #2b2b2b !important; // Dark mode inner circle color
-        }
+body.dark-mode {
+  div.accessory-box:not(.accessory-on) {
+    svg {
+      .inner {
+        fill: #2b2b2b !important; // Dark mode inner circle color
       }
     }
   }

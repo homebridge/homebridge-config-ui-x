@@ -24,27 +24,27 @@ export class SettingsService {
   private forbiddenKeys = ['__proto__', 'constructor', 'prototype']
   private serverTimeToastCleanup$ = new Subject<void>()
 
-  public restartToastRef: ActiveToast<any> = null
+  public restartToastRef: ActiveToast<any> | null = null
   public terminalSettingsChanged = new Subject<{ fontSize?: number, fontWeight?: string, lightingMode?: 'light' | 'dark' }>()
 
   public env: EnvInterface = {} as EnvInterface
-  public host: string
-  public proxyHost: string
+  public host!: string
+  public proxyHost!: string
   public formAuth = true
   public sessionTimeout = 28800
   public sessionTimeoutInactivityBased = false
-  public uiVersion: string
-  public theme: string
-  public lightingMode: 'auto' | 'light' | 'dark'
-  public currentLightingMode: 'auto' | 'light' | 'dark'
-  public actualLightingMode: 'light' | 'dark'
-  public browserLightingMode: 'light' | 'dark'
-  public menuMode: 'default' | 'freeze'
-  public keepOrphans: boolean
-  public wallpaper: string
+  public uiVersion!: string
+  public theme!: string
+  public lightingMode!: 'auto' | 'light' | 'dark'
+  public currentLightingMode!: 'auto' | 'light' | 'dark'
+  public actualLightingMode!: 'light' | 'dark'
+  public browserLightingMode!: 'light' | 'dark'
+  public menuMode!: 'default' | 'freeze'
+  public keepOrphans!: boolean
+  public wallpaper!: string
   public serverTimeOffset = 0
   public rtl = false // set true if current translation is RLT
-  public browserLang: string // set by the browser language
+  public browserLang!: string // set by the browser language
   public onSettingsLoaded = this.settingsLoadedSubject.pipe(first())
   public settingsLoaded = false
   public readonly themeList = [
@@ -73,8 +73,8 @@ export class SettingsService {
     this.sessionTimeout = data.sessionTimeout
     this.sessionTimeoutInactivityBased = data.sessionTimeoutInactivityBased
     this.env = data.env
-    this.host = data.host
-    this.proxyHost = data.proxyHost
+    this.host = data.host!
+    this.proxyHost = data.proxyHost!
     this.lightingMode = data.lightingMode
     this.wallpaper = data.wallpaper
     this.setLightingMode(this.lightingMode, 'user')
@@ -84,10 +84,10 @@ export class SettingsService {
     this.setTitle(this.env.homebridgeInstanceName)
     this.checkServerTime(data.serverTimestamp)
     this.setUiVersion(data.env.packageVersion)
-    this.setLang(this.env.lang)
+    this.setLang(this.env.lang!)
     this.settingsLoaded = true
     this.settingsLoadedSubject.next(undefined)
-    this.browserLang = this.$translate.getBrowserCultureLang()
+    this.browserLang = this.$translate.getBrowserCultureLang()!
   }
 
   public setBrowserLightingMode(lighting: 'light' | 'dark') {
@@ -119,7 +119,7 @@ export class SettingsService {
     }
 
     // Grab the body element
-    const bodySelector = window.document.querySelector('body')
+    const bodySelector = window.document.querySelector('body')!
 
     // Remove all existing theme classes
     bodySelector.classList.remove(`config-ui-x-${this.theme}`)
@@ -176,7 +176,7 @@ export class SettingsService {
           }
 
           // Notify iframe Angular app
-          iframe.contentWindow.postMessage(
+          iframe.contentWindow?.postMessage(
             { type: 'theme-update', isDark: this.actualLightingMode === 'dark', theme },
             window.location.origin,
           )
@@ -205,14 +205,14 @@ export class SettingsService {
   }
 
   public setItem(key: string, value: any) {
-    this[key] = value
+    (this as Record<string, any>)[key] = value
   }
 
   public setEnvItem(key: string, value: any) {
     // If the key contains a dot, we assume it's a nested property
     if (key.includes('.')) {
       const keys = key.split('.')
-      let current = this.env
+      let current: Record<string, any> = this.env
       for (let i = 0; i < keys.length - 1; i += 1) {
         if (this.forbiddenKeys.includes(keys[i])) {
           return
@@ -222,11 +222,11 @@ export class SettingsService {
         }
         current = current[keys[i]]
       }
-      if (!this.forbiddenKeys.includes(keys.at(-1))) {
-        current[keys.at(-1)] = value
+      if (!this.forbiddenKeys.includes(keys.at(-1)!)) {
+        current[keys.at(-1)!] = value
       }
     } else {
-      this.env[key] = value
+      (this.env as Record<string, any>)[key] = value
     }
   }
 

@@ -29,7 +29,7 @@ export class ContainerRestartComponent implements OnInit, OnDestroy {
   private destroyRef = inject(DestroyRef)
 
   // Other properties
-  private io: IoNamespace
+  private io!: IoNamespace
 
   // Signals
   public readonly timeout = signal(false)
@@ -46,7 +46,7 @@ export class ContainerRestartComponent implements OnInit, OnDestroy {
     this.io = this.$ws.connectToNamespace('status')
 
     // Subscribe for reconnections
-    this.io.connected.subscribe(() => {
+    this.io.connected!.subscribe(() => {
       this.io.socket.emit('monitor-server-status')
       void this.$settings.getAppSettings().catch(() => { /* do nothing */ })
     })
@@ -68,7 +68,7 @@ export class ContainerRestartComponent implements OnInit, OnDestroy {
   }
 
   public ngOnDestroy() {
-    this.io.end()
+    this.io.end?.()
   }
 
   private checkIfServerUp() {

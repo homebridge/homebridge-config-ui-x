@@ -49,9 +49,9 @@ export class SwitchToScopedComponent implements OnInit, OnDestroy {
   public readonly onlineUpdateOk = signal(false)
 
   // Other properties
-  private io: IoNamespace
+  private io!: IoNamespace
   private term: Terminal
-  private termTarget: HTMLElement
+  private termTarget!: HTMLElement
   private fitAddon = new FitAddon()
   private webLinksAddon = new WebLinksAddon()
   private errorLog = ''
@@ -64,7 +64,7 @@ export class SwitchToScopedComponent implements OnInit, OnDestroy {
   }
 
   constructor() {
-    this.term = new Terminal(this.$settings.getTerminalOptions({ disableStdin: true }, true))
+    this.term = new Terminal(this.$settings.getTerminalOptions({ disableStdin: true }))
     this.term.loadAddon(this.fitAddon)
     this.term.loadAddon(this.webLinksAddon)
   }
@@ -72,7 +72,7 @@ export class SwitchToScopedComponent implements OnInit, OnDestroy {
   public ngOnInit(): void {
     this.onlineUpdateOk.set(this.$settings.env.platform !== 'win32')
     this.io = this.$ws.connectToNamespace('plugins')
-    this.termTarget = document.getElementById('plugin-output')
+    this.termTarget = document.getElementById('plugin-output')!
     this.term.open(this.termTarget)
     this.fitAddon.fit()
 
@@ -156,7 +156,7 @@ export class SwitchToScopedComponent implements OnInit, OnDestroy {
   }
 
   public ngOnDestroy(): void {
-    this.io.end()
+    this.io.end?.()
     this.term.dispose()
   }
 

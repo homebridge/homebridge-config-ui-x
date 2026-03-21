@@ -1,5 +1,5 @@
 import { NgOptimizedImage } from '@angular/common'
-import { ChangeDetectionStrategy, Component, createEnvironmentInjector, DestroyRef, EnvironmentInjector, inject, input, OnDestroy, OnInit, Renderer2, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, createEnvironmentInjector, effect, EnvironmentInjector, inject, input, OnDestroy, OnInit, Renderer2, signal } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { NavigationEnd, NavigationStart, Router, RouterLink, RouterLinkActive } from '@angular/router'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
@@ -28,7 +28,6 @@ import { SettingsService } from '@/app/core/ui/settings.service'
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SidebarComponent implements OnInit, OnDestroy {
-  private destroyRef = inject(DestroyRef)
   private injector = inject(EnvironmentInjector)
   private $auth = inject(AuthService)
   private $authHelper = inject(AuthHelperService)
@@ -56,11 +55,52 @@ export class SidebarComponent implements OnInit, OnDestroy {
   // Store listener references for proper cleanup
   private sidebarMouseEnterListener = () => this.openSidebar()
   private sidebarMouseLeaveListener = () => this.closeSidebar()
-  private touchstartListener: (e: MouseEvent) => void
-  private clickListener: (e: MouseEvent) => void
+  private touchstartListener!: (e: TouchEvent) => void
+  private clickListener!: (e: MouseEvent) => void
 
   constructor() {
     this.isMobile.set(window.innerWidth < 768)
+
+    effect(() => {
+      const throttled = this.$notification.raspberryPiThrottled()
+      if (throttled['Under Voltage']) {
+        this.rPiCurrentlyUnderVoltage.set(true)
+      }
+      if (throttled['Under-voltage has occurred']) {
+        this.rPiWasUnderVoltage.set(true)
+      }
+    })
+
+    effect(() => {
+      const value = this.$notification.formAuthEnabled()
+      if (value !== null) {
+        this.formAuth.set(value)
+      }
+    })
+
+    effect(() => {
+      const detected = this.$notification.legacyOtpDetected()
+      // Only show toast if detected is true and we haven't shown it yet
+      if (detected && !this.legacyOtpToastShown()) {
+        this.legacyOtpToastShown.set(true)
+
+        // Delay the toast to avoid overwhelming the user on page load
+        setTimeout(() => {
+          const toast = this.$toastr.warning(
+            this.$translate.instant('users.toast_legacy_otp_message'),
+            this.$translate.instant('users.toast_legacy_otp_title'),
+            {
+              timeOut: 0,
+              tapToDismiss: true,
+              disableTimeOut: true,
+            },
+          )
+          toast.onTap.subscribe(() => {
+            void this.$router.navigate(['/users'])
+          })
+        }, 3000)
+      }
+    })
     let resizeTimeout: any
     window.addEventListener('resize', () => {
       clearTimeout(resizeTimeout)
@@ -104,55 +144,13 @@ export class SidebarComponent implements OnInit, OnDestroy {
   public ngOnInit() {
     this.isExpanded.set(this.initialIsExpanded())
 
-    this.$notification
-      .raspberryPiThrottled
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((throttled) => {
-        if (throttled['Under Voltage']) {
-          this.rPiCurrentlyUnderVoltage.set(true)
-        }
-        if (throttled['Under-voltage has occurred']) {
-          this.rPiWasUnderVoltage.set(true)
-        }
-      })
-
-    this.$notification
-      .formAuthEnabled
-      .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((value) => {
-        this.formAuth.set(value)
-      })
-
-    this.$notification.legacyOtpDetected.subscribe((detected) => {
-      // Only show toast if detected is true and we haven't shown it yet
-      if (detected === true && !this.legacyOtpToastShown()) {
-        this.legacyOtpToastShown.set(true)
-
-        // Delay the toast by 5 seconds to avoid overwhelming the user on page load
-        setTimeout(() => {
-          const toast = this.$toastr.warning(
-            this.$translate.instant('users.toast_legacy_otp_message'),
-            this.$translate.instant('users.toast_legacy_otp_title'),
-            {
-              timeOut: 0,
-              tapToDismiss: true,
-              disableTimeOut: true,
-            },
-          )
-          toast.onTap.subscribe(() => {
-            void this.$router.navigate(['/users'])
-          })
-        }, 3000)
-      }
-    })
-
     // Declare element for event listeners
-    const sidebar = document.querySelector('.sidebar')
-    const mobileHeader = document.querySelector('.m-header')
-    const content = document.querySelector('.content')
+    const sidebar = document.querySelector('.sidebar')!
+    const mobileHeader = document.querySelector('.m-header')!
+    const content = document.querySelector('.content')!
 
     if (this.isMobile()) {
-      this.touchstartListener = (e: MouseEvent) => {
+      this.touchstartListener = (e: TouchEvent) => {
         if (content.contains(e.target as HTMLElement) && this.isExpanded()) {
           e.preventDefault()
           this.toggleSidebar()
@@ -212,7 +210,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
   public handleKeydown(event: KeyboardEvent) {
     if (event.key === 'Enter') {
       const target = event.target as HTMLElement
-      if (['menuitem', 'button'].includes(target.getAttribute('role'))) {
+      if (['menuitem', 'button'].includes(target.getAttribute('role')!)) {
         target.click()
       }
     }
@@ -276,7 +274,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
 
   private updateListeners() {
     this.isMobile.set(window.innerWidth < 768)
-    const sidebar = document.querySelector('.sidebar')
+    const sidebar = document.querySelector('.sidebar')!
 
     // Remove existing listeners
     sidebar.removeEventListener('mouseenter', this.sidebarMouseEnterListener)

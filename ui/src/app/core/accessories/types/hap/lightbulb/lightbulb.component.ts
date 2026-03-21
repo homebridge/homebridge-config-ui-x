@@ -6,7 +6,6 @@ import {
   EnvironmentInjector,
   inject,
   input,
-  OnDestroy,
   OnInit,
   signal,
   StaticProvider,
@@ -14,7 +13,7 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe } from '@ngx-translate/core'
-import { BehaviorSubject } from 'rxjs'
+import { interval, startWith, Subject, switchMap } from 'rxjs'
 
 import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
 import { AccessoriesService } from '@/app/core/accessories/accessories.service'
@@ -33,12 +32,12 @@ import { ColourService } from '@/app/core/utilities/colour.service'
   templateUrl: './lightbulb.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LightbulbComponent implements OnInit, OnDestroy {
+export class LightbulbComponent implements OnInit {
   private destroyRef = inject(DestroyRef)
   private injector = inject(EnvironmentInjector)
   private $accessories = inject(AccessoriesService)
   private $modal = inject(NgbModal)
-  private intervalId: any
+  private pollingRate$ = new Subject<number>()
 
   public $colour = inject(ColourService)
 
@@ -47,16 +46,9 @@ export class LightbulbComponent implements OnInit, OnDestroy {
 
   public readonly hasAdaptiveLighting = signal(false)
   public readonly isAdaptiveLightingEnabled = signal(false)
-  public isAdaptiveLightingEnabled$: BehaviorSubject<boolean> = new BehaviorSubject<boolean>(false)
 
   public ngOnInit() {
     this.loadAdaptiveLighting()
-  }
-
-  public ngOnDestroy() {
-    if (this.intervalId) {
-      clearInterval(this.intervalId)
-    }
   }
 
   public getBulbFill(): string {
@@ -109,14 +101,14 @@ export class LightbulbComponent implements OnInit, OnDestroy {
     }
 
     if ('On' in this.service().values) {
-      void this.service().getCharacteristic('On').setValue(!this.service().values.On)
+      void this.service().getCharacteristic!('On').setValue!(!this.service().values.On)
     } else if ('Active' in this.service().values) {
-      void this.service().getCharacteristic('Active').setValue(this.service().values.Active ? 0 : 1)
+      void this.service().getCharacteristic!('Active').setValue!(this.service().values.Active ? 0 : 1)
     }
 
     // Set the brightness to max if on 0% when turned on
     if ('Brightness' in this.service().values && !this.service().values.On && !this.service().values.Brightness) {
-      this.service().values.Brightness = this.service().getCharacteristic('Brightness').maxValue
+      this.service().values.Brightness = this.service().getCharacteristic!('Brightness').maxValue
     }
   }
 
@@ -141,7 +133,7 @@ export class LightbulbComponent implements OnInit, OnDestroy {
       if (this.hasAdaptiveLighting()) {
         providers.push({
           provide: LIGHTBULB_ADAPTIVE_LIGHTING,
-          useValue: this.isAdaptiveLightingEnabled$,
+          useValue: this.isAdaptiveLightingEnabled,
         })
       }
 
@@ -155,30 +147,16 @@ export class LightbulbComponent implements OnInit, OnDestroy {
 
       // Handle adaptive lighting interval management
       if (this.hasAdaptiveLighting()) {
-        // User has opened the modal, so we now want to run the interval every 3 seconds
-        if (this.intervalId) {
-          clearInterval(this.intervalId)
-        }
-        this.intervalId = setInterval(() => {
-          this.isAdaptiveLightingEnabled$.next(!!this.service().values.CharacteristicValueActiveTransitionCount)
-        }, 3000)
-        const subscription = this.isAdaptiveLightingEnabled$.subscribe((value) => {
-          this.isAdaptiveLightingEnabled.set(value)
-        })
+        // Switch to fast polling (every 3 seconds) while modal is open
+        this.pollingRate$.next(3000)
 
-        // Clear the interval and subscription when the modal is closed and reset to the original interval
+        // Reset to slow polling when the modal is closed
         try {
           await ref.result
         } catch {
           // Modal dismissed
         } finally {
-          if (this.intervalId) {
-            clearInterval(this.intervalId)
-          }
-          subscription.unsubscribe()
-          this.intervalId = setInterval(() => {
-            this.isAdaptiveLightingEnabled$.next(!!this.service().values.CharacteristicValueActiveTransitionCount)
-          }, 30000)
+          this.pollingRate$.next(30000)
         }
       }
     }
@@ -187,15 +165,15 @@ export class LightbulbComponent implements OnInit, OnDestroy {
   private loadAdaptiveLighting() {
     if ('CharacteristicValueActiveTransitionCount' in this.service().values) {
       this.hasAdaptiveLighting.set(true)
-      this.isAdaptiveLightingEnabled$.next(!!this.service().values.CharacteristicValueActiveTransitionCount)
-      this.intervalId = setInterval(() => {
-        this.isAdaptiveLightingEnabled$.next(!!this.service().values.CharacteristicValueActiveTransitionCount)
-      }, 30000)
-      this.isAdaptiveLightingEnabled$
-        .pipe(takeUntilDestroyed(this.destroyRef))
-        .subscribe((value) => {
-          this.isAdaptiveLightingEnabled.set(value)
-        })
+      this.isAdaptiveLightingEnabled.set(!!this.service().values.CharacteristicValueActiveTransitionCount)
+
+      this.pollingRate$.pipe(
+        startWith(30000),
+        switchMap(rate => interval(rate)),
+        takeUntilDestroyed(this.destroyRef),
+      ).subscribe(() => {
+        this.isAdaptiveLightingEnabled.set(!!this.service().values.CharacteristicValueActiveTransitionCount)
+      })
     }
   }
 

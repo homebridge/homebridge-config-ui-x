@@ -29,12 +29,12 @@ export class StartupScriptComponent implements OnInit, OnDestroy {
   private $translate = inject(TranslateService)
 
   // Other properties
-  private lastHeight: number
-  private visualViewPortEventCallback: () => void
+  private lastHeight!: number
+  private visualViewPortEventCallback!: () => void
   public options: any = { printMargin: false }
   public monacoEditor: any
   public editorOptions: any
-  public monacoEditorModel: NgxEditorModel
+  public monacoEditorModel!: NgxEditorModel
 
   // Signals
   public readonly startupScript = signal<string>('')
@@ -60,7 +60,7 @@ export class StartupScriptComponent implements OnInit, OnDestroy {
       this.$md.disableTouchMove()
     }
 
-    this.$route.data.subscribe((data: { startupScript: { script: string } }) => {
+    this.$route.data.subscribe((data) => {
       this.startupScript.set(data.startupScript.script)
     })
 
@@ -113,7 +113,7 @@ export class StartupScriptComponent implements OnInit, OnDestroy {
         this.$translate.instant('platform.docker.restart_required'),
         this.$translate.instant('platform.docker.script_saved'),
       )
-    } catch (error) {
+    } catch (error: any) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
     }
@@ -133,18 +133,18 @@ export class StartupScriptComponent implements OnInit, OnDestroy {
   }
 
   private visualViewPortChanged() {
-    if (this.lastHeight < window.visualViewport.height) {
+    if (this.lastHeight < window.visualViewport!.height) {
       (document.activeElement as HTMLElement).blur()
     }
 
-    if (window.visualViewport.height < window.innerHeight) {
+    if (window.visualViewport!.height < window.innerHeight) {
       // Keyboard may have opened
       this.$md.enableTouchMove()
-      this.lastHeight = window.visualViewport.height
-    } else if (window.visualViewport.height === window.innerHeight) {
+      this.lastHeight = window.visualViewport!.height
+    } else if (window.visualViewport!.height === window.innerHeight) {
       // Keyboard is closed
       this.$md.disableTouchMove()
-      this.lastHeight = window.visualViewport.height
+      this.lastHeight = window.visualViewport!.height
     }
   }
 }

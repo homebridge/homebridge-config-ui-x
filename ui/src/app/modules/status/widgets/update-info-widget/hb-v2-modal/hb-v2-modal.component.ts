@@ -30,7 +30,7 @@ export class HbV2ModalComponent implements OnInit {
   private $toastr = inject(ToastrService)
   private $translate = inject(TranslateService)
   private $ws = inject(WsService)
-  private io: IoNamespace
+  private io!: IoNamespace
 
   // Inject modal data
   private modalData = inject(HB_V2_MODAL_DATA)
@@ -63,7 +63,7 @@ export class HbV2ModalComponent implements OnInit {
     try {
       const { nodeVersion } = await firstValueFrom(this.io.request('get-homebridge-server-info'))
       this.nodeReady.set(satisfies(nodeVersion, '>=22'))
-    } catch (error) {
+    } catch (error: any) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
     }
@@ -72,7 +72,7 @@ export class HbV2ModalComponent implements OnInit {
   private async loadInstalledPlugins() {
     this.installedPlugins.set([])
     this.loading.set(true)
-    const homebridgeVersion = this.$settings.env.homebridgeVersion.split('.')[0]
+    const homebridgeVersion = this.$settings.env.homebridgeVersion!.split('.')[0]
 
     try {
       const installedPlugins = await this.$api.get('/plugins')

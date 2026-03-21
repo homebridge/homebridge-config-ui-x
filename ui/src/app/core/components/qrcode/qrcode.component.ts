@@ -20,6 +20,10 @@ export class QrcodeComponent implements OnChanges {
   private async renderQrCode() {
     if (this.data()) {
       const qrcodeElement = this.qrcodeElement()
+      if (!qrcodeElement) {
+        return
+      }
+
       qrcodeElement.nativeElement.innerHTML = await toString(this.data(), {
         type: 'svg',
         margin: 0,

@@ -38,7 +38,7 @@ export class WeatherWidgetComponent implements OnInit {
   public readonly currentWeather = signal<OpenWeatherMapResponse | null>(null)
 
   // Other properties
-  private io: IoNamespace
+  private io!: IoNamespace
   public temperatureUnits = this.$settings.env.temperatureUnits
   configureEvent!: Subject<any> // Set directly by ComponentFactoryResolver
 
@@ -46,12 +46,12 @@ export class WeatherWidgetComponent implements OnInit {
     this.io = this.$ws.getExistingNamespace('status')
 
     // Set up reconnection handler
-    this.io.connected.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+    this.io.connected!.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
       this.getCurrentWeather()
     })
 
     // Set up configure event handler
-    this.configureEvent.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+    this.configureEvent?.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
       this.getCurrentWeather()
     })
 
@@ -107,6 +107,8 @@ export class WeatherWidgetComponent implements OnInit {
         return 'fas fa-smog'
       case '50n': // mist night
         return 'fas fa-smog'
+      default:
+        return 'fas fa-cloud'
     }
   }
 
@@ -115,12 +117,12 @@ export class WeatherWidgetComponent implements OnInit {
    * Cache for 20 minutes to prevent repeat requests
    */
   private getCurrentWeather(): void {
-    if (!this.widget().location || !this.widget().location.id) {
+    if (!this.widget().location || !this.widget().location!.id) {
       return
     }
 
     try {
-      const cacheItem = localStorage.getItem(`weather-${this.widget().location.id}`)
+      const cacheItem = localStorage.getItem(`weather-${this.widget().location!.id}`)
       if (cacheItem) {
         const weatherCache = JSON.parse(cacheItem) as OpenWeatherMapResponse
         if (weatherCache.timestamp && dayjs().diff(dayjs(weatherCache.timestamp), 'minute') < 20) {
@@ -133,7 +135,7 @@ export class WeatherWidgetComponent implements OnInit {
     this.$http.get<OpenWeatherMapResponse>('https://api.openweathermap.org/data/2.5/weather', {
       params: new HttpParams({
         fromObject: {
-          id: this.widget().location.id,
+          id: this.widget().location!.id,
           appid: environment.owm.appid,
           units: 'metric',
           lang: this.$translate.getCurrentLang(),
@@ -145,7 +147,7 @@ export class WeatherWidgetComponent implements OnInit {
         timestamp: new Date().toISOString(),
       }
       this.currentWeather.set(weatherData)
-      localStorage.setItem(`weather-${this.widget().location.id}`, JSON.stringify(weatherData))
+      localStorage.setItem(`weather-${this.widget().location!.id}`, JSON.stringify(weatherData))
     })
   }
 }

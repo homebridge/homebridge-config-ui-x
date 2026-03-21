@@ -26,16 +26,16 @@ import { DurationPipe } from '@/app/core/pipes/duration.pipe'
 export class LockMechanismManageComponent extends BaseManageComponent {
   private cancelLockTimer$ = new Subject<void>()
 
-  public serviceManagement: ServiceTypeX
-  public targetMode: number
-  public targetLockManagementAutoSecurityTimeout: SliderControlConfig
+  public serviceManagement!: ServiceTypeX
+  public targetMode!: number
+  public targetLockManagementAutoSecurityTimeout!: SliderControlConfig
   public targetLockManagementAutoSecurityTimeoutChanged: Subject<number> = new Subject<number>()
 
   protected setupComponent() {
     this.targetMode = this.service.values.LockTargetState
 
     if (this.service.linkedServices) {
-      this.serviceManagement = Object.values(this.service.linkedServices).find(service => service.type === 'LockManagement')
+      this.serviceManagement = Object.values(this.service.linkedServices).find(service => service.type === 'LockManagement') as ServiceTypeX
     }
 
     if (this.serviceManagement) {
@@ -44,13 +44,13 @@ export class LockMechanismManageComponent extends BaseManageComponent {
           distinctUntilChanged(),
         )
         .subscribe(() => {
-          void this.serviceManagement.getCharacteristic('LockManagementAutoSecurityTimeout').setValue(this.targetLockManagementAutoSecurityTimeout.value)
+          void this.serviceManagement.getCharacteristic!('LockManagementAutoSecurityTimeout').setValue!(this.targetLockManagementAutoSecurityTimeout.value)
         })
 
       this.createDebouncedSubscription(
         this.targetLockManagementAutoSecurityTimeoutChanged,
         () => {
-          void this.serviceManagement.getCharacteristic('LockManagementAutoSecurityTimeout').setValue(this.targetLockManagementAutoSecurityTimeout.value)
+          void this.serviceManagement.getCharacteristic!('LockManagementAutoSecurityTimeout').setValue!(this.targetLockManagementAutoSecurityTimeout.value)
         },
         300,
       )
@@ -62,13 +62,13 @@ export class LockMechanismManageComponent extends BaseManageComponent {
   protected handleAccessoryUpdate() {
     this.targetMode = this.service.values.LockTargetState
     if (this.targetLockManagementAutoSecurityTimeout && this.serviceManagement) {
-      this.targetLockManagementAutoSecurityTimeout.value = this.serviceManagement.getCharacteristic('LockManagementAutoSecurityTimeout')?.value as number
+      this.targetLockManagementAutoSecurityTimeout.value = this.serviceManagement.getCharacteristic!('LockManagementAutoSecurityTimeout')?.value as number
     }
   }
 
   public setTargetMode(value: number, event: MouseEvent) {
     this.targetMode = value
-    void this.service.getCharacteristic('LockTargetState').setValue(this.targetMode)
+    void this.service.getCharacteristic!('LockTargetState').setValue!(this.targetMode)
 
     // Cancel any existing lock timer
     this.cancelLockTimer$.next()
@@ -94,7 +94,7 @@ export class LockMechanismManageComponent extends BaseManageComponent {
   }
 
   private loadTargetLockManagementAutoSecurityTimeout() {
-    const TargetLockManagementAutoSecurityTimeout = this.serviceManagement.getCharacteristic('LockManagementAutoSecurityTimeout')
+    const TargetLockManagementAutoSecurityTimeout = this.serviceManagement.getCharacteristic!('LockManagementAutoSecurityTimeout')
     if (TargetLockManagementAutoSecurityTimeout) {
       this.targetLockManagementAutoSecurityTimeout = {
         value: (TargetLockManagementAutoSecurityTimeout.value as number) || 0,

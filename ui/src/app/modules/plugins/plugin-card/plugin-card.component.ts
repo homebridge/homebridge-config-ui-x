@@ -58,7 +58,7 @@ export class PluginCardComponent implements OnInit {
   readonly childBridges = input.required<ChildBridge[]>()
 
   // Other properties
-  private io: IoNamespace
+  private io!: IoNamespace
   public readonly defaultIcon = 'assets/hb-icon.png'
   public readonly isAdmin = this.$auth.user.admin
 
@@ -93,7 +93,7 @@ export class PluginCardComponent implements OnInit {
   }
 
   public ngOnInit(): void {
-    this.isMobile.set(this.$md.detect.mobile())
+    this.isMobile.set(this.$md.detect.mobile() || '')
     this.io = this.$ws.getExistingNamespace('child-bridges')
 
     if (this.isMobile() && this.plugin().displayName.toLowerCase().startsWith('homebridge ')) {

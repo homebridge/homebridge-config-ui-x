@@ -27,7 +27,7 @@ export class MemoryWidgetComponent extends BaseChartWidgetComponent {
   protected fetchData(): void {
     this.io.request('get-server-memory-info').subscribe((data: MemoryWidgetData) => {
       this.updateData(data)
-      this.chart().update()
+      this.chart()!.update()
     })
   }
 

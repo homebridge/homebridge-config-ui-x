@@ -33,6 +33,7 @@ export class JsonSchemaFormPatchDirective implements AfterViewInit, OnDestroy {
           jsonSchemaForm.jsf.formValues,
         )
       }
+      return jsonSchemaForm.jsf.layout
     }
   }
 
@@ -444,7 +445,7 @@ export class JsonSchemaFormPatchDirective implements AfterViewInit, OnDestroy {
     }
 
     const role = el.getAttribute('role')
-    return role && ['button', 'link', 'menuitem', 'tab', 'option'].includes(role)
+    return role != null && ['button', 'link', 'menuitem', 'tab', 'option'].includes(role)
   }
 
   private patchBasicControlNames(root: HTMLElement) {

@@ -270,7 +270,7 @@ export class PluginBridgeComponent implements OnInit {
 
       // If the plugin has just been installed, and there are no existing bridges, enable all blocks
       if (this.justInstalled && this.bridgeCache().size === 0) {
-        loadedConfigBlocks.forEach((block, index) => {
+        loadedConfigBlocks.forEach((block: any, index: number) => {
           this.enabledBlocks.update(current => ({ ...current, [index]: true }))
           void this.toggleExternalBridge(block, true, index.toString())
         })

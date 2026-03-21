@@ -13,10 +13,10 @@ import { RE_ANSI_SIMPLE, RE_BRACKET_TAG } from '@/app/core/regex.constants'
 })
 export class LogService {
   private $ws = inject(WsService)
-  private io: IoNamespace
-  private fitAddon: FitAddon
-  private webLinksAddon: WebLinksAddon
-  private resize: Subject<{ cols: number, rows: number }>
+  private io!: IoNamespace
+  private fitAddon!: FitAddon
+  private webLinksAddon!: WebLinksAddon
+  private resize!: Subject<{ cols: number, rows: number }>
   private elementResize: Subject<void> | undefined
   private pluginName: string | undefined
   private searchFilter: string | null = null
@@ -24,7 +24,7 @@ export class LogService {
   private readonly maxBufferSize = 1000 // Maximum number of log chunks to keep in buffer
   private destroy$ = new Subject<void>()
 
-  public term: Terminal
+  public term!: Terminal
 
   public startTerminal(
     targetElement: ElementRef,
@@ -63,7 +63,7 @@ export class LogService {
     })
 
     // Start the terminal session when the socket is connected
-    this.io.connected
+    this.io.connected!
       .pipe(takeUntil(this.destroy$))
       .subscribe(() => {
         this.term.reset()
@@ -224,7 +224,7 @@ export class LogService {
     }
 
     if (this.io) {
-      this.io.end()
+      this.io.end!()
     }
 
     if (this.term) {

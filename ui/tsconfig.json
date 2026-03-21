@@ -3,7 +3,6 @@
   "compileOnSave": false,
   "compilerOptions": {
     "target": "es2023",
-    "experimentalDecorators": true,
     "baseUrl": "./",
     "module": "es2022",
     "moduleResolution": "bundler",
@@ -13,11 +12,17 @@
       ]
     },
     "resolveJsonModule": true,
+    "strict": true,
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitReturns": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
     "declaration": false,
     "importHelpers": true,
     "outDir": "./dist/out-tsc",
     "sourceMap": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true
   },
   "angularCompilerOptions": {
     "disableTypeScriptVersionCheck": true,

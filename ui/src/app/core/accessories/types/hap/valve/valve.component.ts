@@ -43,7 +43,7 @@ export class ValveComponent implements OnInit {
 
   public secondsActive = 0
   public readonly remainingDuration = signal('')
-  private remainingDurationInterval = interval(1000).pipe(filter(() => this.isActive()))
+  private readonly remainingDurationInterval = interval(1000).pipe(filter(() => this.isActive()))
 
   public ngOnInit() {
     // Set up the RemainingDuration countdown handlers, if the valve has the RemainingDuration Characteristic
@@ -58,9 +58,9 @@ export class ValveComponent implements OnInit {
     }
 
     if ('Active' in this.service().values) {
-      void this.service().getCharacteristic('Active').setValue(this.service().values.Active ? 0 : 1)
+      void this.service().getCharacteristic!('Active').setValue!(this.service().values.Active ? 0 : 1)
     } else if ('On' in this.service().values) {
-      void this.service().getCharacteristic('On').setValue(!this.service().values.On)
+      void this.service().getCharacteristic!('On').setValue!(!this.service().values.On)
     }
   }
 
@@ -103,7 +103,7 @@ export class ValveComponent implements OnInit {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => {
         this.secondsActive++
-        const remainingSeconds = this.service().getCharacteristic('RemainingDuration').value as number - this.secondsActive
+        const remainingSeconds = this.service().getCharacteristic!('RemainingDuration').value as number - this.secondsActive
         if (remainingSeconds > 0) {
           this.remainingDuration.set(remainingSeconds < 3600
             ? new Date(remainingSeconds * 1000).toISOString().substring(14, 19)
@@ -116,7 +116,7 @@ export class ValveComponent implements OnInit {
 
   private resetRemainingDuration() {
     this.secondsActive = 0
-    if (this.service().getCharacteristic('RemainingDuration')) {
+    if (this.service().getCharacteristic?.('RemainingDuration')) {
       this.remainingDuration.set('')
     }
   }

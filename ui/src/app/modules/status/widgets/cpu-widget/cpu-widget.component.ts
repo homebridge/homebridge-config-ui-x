@@ -37,7 +37,7 @@ export class CpuWidgetComponent extends BaseChartWidgetComponent {
   protected fetchData(): void {
     this.io.request('get-server-cpu-info').subscribe((data: CpuWidgetData) => {
       this.updateData(data)
-      this.chart().update()
+      this.chart()!.update()
     })
   }
 

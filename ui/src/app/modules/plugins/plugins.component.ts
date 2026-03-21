@@ -66,7 +66,7 @@ export class PluginsComponent implements OnInit, OnDestroy, CanComponentDeactiva
 
   // Other properties
   private readonly isSearchMode = signal(false)
-  private io: IoNamespace
+  private io!: IoNamespace
   public readonly isAdmin = this.$auth.user.admin
   public form = new FormGroup({
     query: new FormControl<string>(''),
@@ -88,7 +88,7 @@ export class PluginsComponent implements OnInit, OnDestroy, CanComponentDeactiva
     this.io = this.$ws.connectToNamespace('child-bridges')
 
     // Subscribe to connection events for reconnections
-    this.io.connected.subscribe(() => {
+    this.io.connected!.subscribe(() => {
       void this.initialize()
     })
 
@@ -125,7 +125,7 @@ export class PluginsComponent implements OnInit, OnDestroy, CanComponentDeactiva
     this.showExitButton.set(true)
 
     try {
-      const data = await this.$api.get<Plugin[]>(`/plugins/search/${encodeURIComponent(this.form.value.query)}`)
+      const data = await this.$api.get<Plugin[]>(`/plugins/search/${encodeURIComponent(this.form.value.query!)}`)
 
       // Some filtering in regard to the changeover to scoped plugins
       // A plugin may have two versions, like homebridge-foo and @homebridge-plugins/homebridge-foo
@@ -171,7 +171,7 @@ export class PluginsComponent implements OnInit, OnDestroy, CanComponentDeactiva
     }
   }
 
-  public onSubmit({ value }): void {
+  public onSubmit({ value }: { value: { query: string } }): void {
     if (!value.query.length) {
       // Close search mode if in search mode
       if (this.isSearchMode()) {
@@ -209,13 +209,13 @@ export class PluginsComponent implements OnInit, OnDestroy, CanComponentDeactiva
     if (this.tab() === 'stats') {
       // In dark mode, no animations needed
       if (this.$settings.actualLightingMode !== 'light') {
-        window.document.querySelector('body').classList.remove('bg-black')
+        window.document.querySelector('body')!.classList.remove('bg-black')
         this.tab.set('main')
         return
       }
 
       // Remove light-mode class from body
-      window.document.querySelector('body').classList.remove('light-mode')
+      window.document.querySelector('body')!.classList.remove('light-mode')
 
       // Fade out stats before switching to main
       const statsHeader = document.getElementById('stats-header')
@@ -229,7 +229,7 @@ export class PluginsComponent implements OnInit, OnDestroy, CanComponentDeactiva
       // Wait for fade-out animation (250ms)
       setTimeout(() => {
         // Remove body bg color to trigger background transition
-        window.document.querySelector('body').classList.remove('bg-black')
+        window.document.querySelector('body')!.classList.remove('bg-black')
 
         // Wait for background transition before switching tab
         setTimeout(() => {
@@ -238,13 +238,13 @@ export class PluginsComponent implements OnInit, OnDestroy, CanComponentDeactiva
       }, 250)
     } else {
       // Set body bg color
-      window.document.querySelector('body').classList.add('bg-black')
+      window.document.querySelector('body')!.classList.add('bg-black')
       this.tab.set('stats')
       this.showSearchBar.set(false)
 
       // Add light-mode class for animations (only in light mode)
       if (this.$settings.actualLightingMode === 'light') {
-        window.document.querySelector('body').classList.add('light-mode')
+        window.document.querySelector('body')!.classList.add('light-mode')
         setTimeout(() => {
           const statsHeader = document.getElementById('stats-header')
           const statsIframe = document.getElementById('stats-iframe')
@@ -272,12 +272,12 @@ export class PluginsComponent implements OnInit, OnDestroy, CanComponentDeactiva
 
     // If in dark mode, no animations needed - navigate immediately
     if (this.$settings.actualLightingMode !== 'light') {
-      window.document.querySelector('body').classList.remove('bg-black')
+      window.document.querySelector('body')!.classList.remove('bg-black')
       return Promise.resolve(true)
     }
 
     // Remove light-mode class from body
-    window.document.querySelector('body').classList.remove('light-mode')
+    window.document.querySelector('body')!.classList.remove('light-mode')
 
     // Check if we're navigating to another black-background page
     const stayingBlack = nextUrl && (
@@ -304,7 +304,7 @@ export class PluginsComponent implements OnInit, OnDestroy, CanComponentDeactiva
         // Wait for fade-out animation (250ms) and body background transition (250ms)
         setTimeout(() => {
           // Remove body bg color to trigger background transition
-          window.document.querySelector('body').classList.remove('bg-black')
+          window.document.querySelector('body')!.classList.remove('bg-black')
         }, 250)
 
         // Wait for both animations to complete before allowing navigation
@@ -317,9 +317,9 @@ export class PluginsComponent implements OnInit, OnDestroy, CanComponentDeactiva
 
   public ngOnDestroy() {
     // Clean up light-mode class
-    window.document.querySelector('body').classList.remove('light-mode')
+    window.document.querySelector('body')!.classList.remove('light-mode')
 
-    this.io.end()
+    this.io?.end?.()
   }
 
   public getPluginChildBridges(plugin: Plugin): ChildBridge[] {
@@ -412,6 +412,7 @@ export class PluginsComponent implements OnInit, OnDestroy, CanComponentDeactiva
       const message = error instanceof Error ? error.message : this.$translate.instant('plugins.toast_failed_to_load_plugins')
       this.$toastr.error(message, this.$translate.instant('toast.title_error'))
       this.mainError.set(true)
+      return undefined
     } finally {
       this.loading.set(false)
     }

@@ -14,7 +14,7 @@ export const configEditorResolver: ResolveFn<string | undefined> = async () => {
   try {
     const json = await $api.get('/config-editor')
     return JSON.stringify(json, null, 4)
-  } catch (error) {
+  } catch (error: any) {
     console.error(error)
     $toastr.error(error.message, $translate.instant('toast.title_error'))
     void $router.navigate(['/'])

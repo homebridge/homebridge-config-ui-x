@@ -1,10 +1,8 @@
-::ng-deep {
-  a {
-    &.grey-text {
-      @media (hover: hover) {
-        &:hover {
-          text-decoration: underline;
-        }
+a {
+  &.grey-text {
+    @media (hover: hover) {
+      &:hover {
+        text-decoration: underline;
       }
     }
   }

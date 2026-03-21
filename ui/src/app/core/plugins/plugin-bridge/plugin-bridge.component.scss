@@ -46,12 +46,3 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
-
-::ng-deep {
-  body.dark-mode,
-  [class*='config-ui-x-dark-mode'] {
-    .qr-code-placeholder {
-      background-color: #1a1a1a;
-    }
-  }
-}

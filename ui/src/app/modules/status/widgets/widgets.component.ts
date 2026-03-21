@@ -80,7 +80,7 @@ export class WidgetsComponent implements OnInit, OnDestroy {
 
   public ngOnInit(): void {
     if (Object.hasOwn(this.availableWidgets, this.widget().component)) {
-      this.load(this.availableWidgets[this.widget().component])
+      this.load((this.availableWidgets as Record<string, any>)[this.widget().component])
     }
   }
 

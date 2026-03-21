@@ -52,7 +52,7 @@ export class PluginLogsComponent implements OnInit, OnDestroy {
 
   // Other properties
   private resizeEvent = new Subject<void>()
-  private pluginAlias: string
+  private pluginAlias!: string
 
   public get isLightTerminalTheme(): boolean {
     return this.$settings.getEffectiveTerminalLightingMode() === 'light'
@@ -176,7 +176,7 @@ export class PluginLogsComponent implements OnInit, OnDestroy {
         return
       }
       this.pluginAlias = this.plugin.name === 'homebridge-config-ui-x' ? 'Homebridge UI' : (result[0]?.name || this.plugin.name)
-      this.$log.startTerminal(this.termTarget(), this.$settings.getTerminalOptions(), this.resizeEvent, this.pluginAlias)
+      this.$log.startTerminal(this.termTarget()!, this.$settings.getTerminalOptions(), this.resizeEvent, this.pluginAlias)
     } catch (error) {
       console.error(error)
       const message = error instanceof Error ? (error as any).error?.message || error.message : this.$translate.instant('toast.title_error')

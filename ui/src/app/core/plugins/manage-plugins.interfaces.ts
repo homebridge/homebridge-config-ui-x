@@ -99,5 +99,5 @@ export interface VersionData {
   engines?: {
     homebridge?: string
     node?: string
-  }
+  } | null
 }

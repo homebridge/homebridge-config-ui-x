@@ -61,8 +61,8 @@ export class SchemaFormComponent implements OnInit, OnDestroy {
 
   public ngOnInit(): void {
     // Use 'en' by default, unless the user's language is available
-    const userLanguage = this.$settings.env.lang.split('-')[0]
-    if (this.availableLanguages.includes(userLanguage)) {
+    const userLanguage = this.$settings.env.lang?.split('-')[0]
+    if (userLanguage && this.availableLanguages.includes(userLanguage)) {
       this.language.set(userLanguage)
     }
   }

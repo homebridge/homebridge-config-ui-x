@@ -28,7 +28,7 @@ export class SystemInfoWidgetComponent implements OnInit {
   public readonly nodejsInfo = signal<NodeJsInfo>({} as NodeJsInfo)
 
   // Other properties
-  private io: IoNamespace
+  private io!: IoNamespace
   public arch64bitList = [
     'x64',
     'amd64',
@@ -47,7 +47,7 @@ export class SystemInfoWidgetComponent implements OnInit {
   public ngOnInit(): void {
     this.io = this.$ws.getExistingNamespace('status')
 
-    this.io.connected.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+    this.io.connected!.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
       this.getSystemInfo()
     })
 

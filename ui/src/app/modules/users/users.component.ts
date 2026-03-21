@@ -49,8 +49,8 @@ export class UsersComponent implements OnInit {
 
     this.$route.data
       .pipe(takeUntilDestroyed(this.destroyRef))
-      .subscribe((data: { homebridgeUsers: User[] }) => {
-        this.homebridgeUsers.set(data.homebridgeUsers)
+      .subscribe((data: { homebridgeUsers?: User[] }) => {
+        this.homebridgeUsers.set(data.homebridgeUsers ?? [])
       })
   }
 

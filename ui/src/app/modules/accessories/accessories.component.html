@@ -25,7 +25,7 @@
     </button>
   </div>
   <div class="dropdown-divider"></div>
-  @for (bridge of availableBridges; track bridge) {
+  @for (bridge of availableBridges(); track bridge) {
     <button type="button" ngbDropdownItem [class.active]="isBridgeSelected(bridge)" (click)="toggleBridge(bridge)">
       <span class="bridge-filter-check">
         @if (isBridgeSelected(bridge)) {
@@ -36,7 +36,7 @@
     </button>
   }
   @if (showManageLayout) {
-    @if (availableBridges.length) {
+    @if (availableBridges().length) {
       <div class="dropdown-divider"></div>
     }
     <button type="button" ngbDropdownItem [class.active]="manageLayoutMode" (click)="toggleManageLayout()">

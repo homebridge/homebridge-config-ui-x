@@ -1,8 +1,3 @@
-// Smooth transition for body background color change when terminal theme differs from main theme
-::ng-deep body.theme-transition {
-  transition: background-color 0.25s ease-in-out;
-}
-
 #log-output.theme-transition {
   opacity: 0;
   animation: fadeIn 0.25s ease-in-out 0.25s forwards;

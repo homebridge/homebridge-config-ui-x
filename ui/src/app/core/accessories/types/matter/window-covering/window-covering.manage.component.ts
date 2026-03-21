@@ -23,7 +23,7 @@ export class WindowCoveringManageComponent extends BaseManageComponent {
   private $toastr = inject(ToastrService)
 
   public targetPositionChanged: Subject<number> = new Subject<number>()
-  public targetPosition: {
+  public targetPosition!: {
     value: number
     min: number
     max: number

@@ -24,12 +24,12 @@ export class UptimeWidgetComponent implements OnInit {
   public readonly processUptime = signal<string>('')
 
   // Other properties
-  private io: IoNamespace
+  private io!: IoNamespace
 
   public ngOnInit(): void {
     this.io = this.$ws.getExistingNamespace('status')
 
-    this.io.connected.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+    this.io.connected!.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
       this.getServerUptimeInfo()
     })
 

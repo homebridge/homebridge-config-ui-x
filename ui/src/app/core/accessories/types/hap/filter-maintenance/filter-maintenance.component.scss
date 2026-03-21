@@ -1,25 +1,23 @@
-::ng-deep {
-  .dirty {
-    svg {
-      .status {
-        fill: #e69533 !important;
-      }
+.dirty {
+  svg {
+    .status {
+      fill: #e69533 !important;
     }
   }
+}
 
-  .replace {
-    svg {
-      .status {
-        fill: #d32f2f !important;
-      }
+.replace {
+  svg {
+    .status {
+      fill: #d32f2f !important;
     }
   }
+}
 
-  body.dark-mode {
-    svg {
-      .back {
-        fill: #2b2b2b !important;
-      }
+body.dark-mode {
+  svg {
+    .back {
+      fill: #2b2b2b !important;
     }
   }
 }

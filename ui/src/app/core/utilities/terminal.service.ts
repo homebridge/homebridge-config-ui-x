@@ -14,16 +14,16 @@ import { IoNamespace, WsService } from '@/app/core/communication/ws.service'
 export class TerminalService {
   private $ws = inject(WsService)
   private $api = inject(ApiService)
-  private io: IoNamespace
-  private fitAddon: FitAddon
-  private webLinksAddon: WebLinksAddon
-  private resize: Subject<any>
+  private io!: IoNamespace
+  private fitAddon!: FitAddon
+  private webLinksAddon!: WebLinksAddon
+  private resize!: Subject<any>
   private elementResize: Subject<any> | undefined
   private dataDisposable: IDisposable | null = null
   private isInitializing = false
   private hasUserTyped = false
   private destroy$ = new Subject<void>()
-  public term: Terminal
+  public term!: Terminal
 
   public destroyTerminal() {
     // Complete all subscriptions
@@ -35,11 +35,11 @@ export class TerminalService {
       this.dataDisposable = null
     }
     if (this.io) {
-      this.io.end()
+      this.io.end!()
     }
     if (this.term) {
       this.term.dispose()
-      this.term = null
+      this.term = null as any
     }
     if (this.resize) {
       this.resize.complete()
@@ -223,9 +223,10 @@ export class TerminalService {
       })
 
       this.isInitializing = false
+      return true
     } else {
       // No active connection, start fresh
-      this.startTerminal(targetElement, termOpts, elementResize)
+      return this.startTerminal(targetElement, termOpts, elementResize)
     }
   }
 
@@ -265,7 +266,7 @@ export class TerminalService {
     })
 
     // Start the terminal session when the socket is connected
-    this.io.connected
+    this.io.connected!
       .pipe(
         debounceTime(200),
         takeUntil(this.destroy$),

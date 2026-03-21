@@ -28,10 +28,10 @@ export class PluginCompatibilityComponent implements OnInit {
   public action = this.modalData.action ?? null
 
   // Other properties
-  public nodeMinVersion: SemVer
-  public nodeInstalledVersion: string
-  public hbMinVersion: SemVer
-  public hbInstalledVersion: string
+  public nodeMinVersion!: SemVer | null
+  public nodeInstalledVersion!: string
+  public hbMinVersion!: SemVer | null
+  public hbInstalledVersion!: string
 
   public ngOnInit(): void {
     const plugin = this.plugin
@@ -44,7 +44,7 @@ export class PluginCompatibilityComponent implements OnInit {
     this.nodeMinVersion = minVersion(plugin.updateEngines?.node)
     this.nodeInstalledVersion = this.$settings.env.nodeVersion
     this.hbMinVersion = minVersion(plugin.updateEngines?.homebridge)
-    this.hbInstalledVersion = this.$settings.env.homebridgeVersion
+    this.hbInstalledVersion = this.$settings.env.homebridgeVersion!
   }
 
   public dismissModal(): void {

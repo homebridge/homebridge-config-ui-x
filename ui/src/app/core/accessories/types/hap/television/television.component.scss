@@ -1,20 +1,12 @@
-::ng-deep {
-  body.dark-mode {
+.accessory-on {
+  svg {
     .screen {
-      fill: #2b2b2b;
-      stroke: #7f7f7f;
+      animation: color-change 3s infinite alternate; // Apply color animation
     }
-  }
-  .accessory-on {
-    svg {
-      .screen {
-        animation: color-change 3s infinite alternate; // Apply color animation
-      }
 
-      .stand {
-        stroke: #7f7f7f;
-        stroke-opacity: 1;
-      }
+    .stand {
+      stroke: #7f7f7f;
+      stroke-opacity: 1;
     }
   }
 }

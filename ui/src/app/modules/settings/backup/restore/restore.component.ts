@@ -48,12 +48,12 @@ export class RestoreComponent implements OnInit, OnDestroy {
   public readonly uploadPercent = signal(0)
 
   // Other properties
-  private io: IoNamespace
-  private term: Terminal
-  private termTarget: HTMLElement
+  private io!: IoNamespace
+  private term!: Terminal
+  private termTarget!: HTMLElement
   private fitAddon = new FitAddon()
   private webLinksAddon = new WebLinksAddon()
-  public maxFileSizeText = globalThis.backup.maxBackupSizeText
+  public maxFileSizeText: string = globalThis.backup.maxBackupSizeText
 
   public get isLightTerminalTheme(): boolean {
     return this.$settings.getEffectiveTerminalLightingMode() === 'light'
@@ -65,9 +65,9 @@ export class RestoreComponent implements OnInit, OnDestroy {
 
   private async initialize(): Promise<void> {
     this.io = this.$ws.connectToNamespace('backup')
-    this.termTarget = document.getElementById('plugin-log-output')
+    this.termTarget = document.getElementById('plugin-log-output')!
 
-    this.term = new Terminal(this.$settings.getTerminalOptions({ disableStdin: true }, true))
+    this.term = new Terminal(this.$settings.getTerminalOptions({ disableStdin: true }))
     this.term.loadAddon(this.fitAddon)
     this.term.loadAddon(this.webLinksAddon)
     this.term.open(this.termTarget)
@@ -131,7 +131,7 @@ export class RestoreComponent implements OnInit, OnDestroy {
   }
 
   public ngOnDestroy(): void {
-    this.io.end()
+    this.io.end!()
   }
 
   public dismissModal(): void {
@@ -142,7 +142,7 @@ export class RestoreComponent implements OnInit, OnDestroy {
     this.term.reset()
     this.clicked.set(true)
     const formData: FormData = new FormData()
-    formData.append('restoreArchive', this.selectedFile(), this.selectedFile()?.name)
+    formData.append('restoreArchive', this.selectedFile()!, this.selectedFile()?.name)
     try {
       await this.$api.post('/backup/restore', formData)
       this.restoreStarted.set(true)
@@ -150,7 +150,7 @@ export class RestoreComponent implements OnInit, OnDestroy {
       setTimeout(() => {
         void this.startRestore()
       }, 500)
-    } catch (error) {
+    } catch (error: any) {
       console.error(error)
       this.$toastr.error(error.error?.message || this.$translate.instant('backup.restore_failed'), this.$translate.instant('toast.title_error'))
     } finally {
@@ -162,13 +162,13 @@ export class RestoreComponent implements OnInit, OnDestroy {
     this.term.reset()
     this.clicked.set(true)
     try {
-      await this.$api.post(`/backup/scheduled-backups/${this.selectedBackup.id}/restore`, {})
+      await this.$api.post(`/backup/scheduled-backups/${this.selectedBackup!.id}/restore`, {})
       this.restoreStarted.set(true)
       this.restoreInProgress.set(true)
       setTimeout(() => {
         void this.startRestore()
       }, 500)
-    } catch (error) {
+    } catch (error: any) {
       console.error(error)
       this.$toastr.error(error.error?.message || this.$translate.instant('backup.restore_failed'), this.$translate.instant('toast.title_error'))
     } finally {
@@ -198,14 +198,14 @@ export class RestoreComponent implements OnInit, OnDestroy {
     this.term.reset()
     this.clicked.set(true)
     const formData: FormData = new FormData()
-    formData.append('restoreArchive', this.selectedFile(), this.selectedFile()?.name)
+    formData.append('restoreArchive', this.selectedFile()!, this.selectedFile()?.name)
     try {
       const event = await this.$api.post('/backup/restore/hbfx', formData, {
         reportProgress: true,
         observe: 'events',
       })
       if (event.type === HttpEventType.UploadProgress) {
-        this.uploadPercent.set(Math.round(100 * event.loaded / event.total))
+        this.uploadPercent.set(Math.round(100 * event.loaded / event.total!))
       } else if (event instanceof HttpResponse) {
         this.restoreStarted.set(true)
         this.restoreInProgress.set(true)
@@ -213,7 +213,7 @@ export class RestoreComponent implements OnInit, OnDestroy {
           void this.startHbfxRestore()
         }, 500)
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error(error)
       this.$toastr.error(error.error?.message || this.$translate.instant('backup.restore_failed'), this.$translate.instant('toast.title_error'))
     } finally {

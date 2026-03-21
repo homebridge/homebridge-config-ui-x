@@ -128,7 +128,7 @@ export class AccessoryInfoComponent implements OnInit, OnDestroy {
   public localPairingCache: PairingInfo[] = []
   public localService!: ServiceTypeX
   public isDetailsVisible: { [key: string]: boolean } = {}
-  public accessoryInformation: Array<{ key: string, value: string | number | undefined }>
+  public accessoryInformation!: Array<{ key: string, value: string | number | undefined }>
   public extraServices: ServiceTypeX[] = []
   public matchedCachedAccessory: MatchedCachedAccessory = null
   public enums = Enums
@@ -168,7 +168,7 @@ export class AccessoryInfoComponent implements OnInit, OnDestroy {
     if (this.isMatterAccessory) {
       // For Matter accessories, use deviceType to build custom type list from matterCustomTypeList
       this.customTypeList = [
-        ...new Set(this.matterCustomTypeList.filter(types => types.includes(this.localService.deviceType)).flat()),
+        ...new Set(this.matterCustomTypeList.filter(types => this.localService.deviceType && types.includes(this.localService.deviceType)).flat()),
       ]
 
       // For Matter accessories, use displayName and handle cluster info
@@ -386,6 +386,8 @@ export class AccessoryInfoComponent implements OnInit, OnDestroy {
         }
       }
     }
+
+    return null
   }
 
   // Protected readonly properties

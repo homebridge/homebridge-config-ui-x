@@ -19,7 +19,7 @@ export class BackupService {
       responseType: 'blob',
     })
     const archiveName = res.headers.get('File-Name') || 'homebridge-backup.tar.gz'
-    const sizeInBytes = res.body.size
+    const sizeInBytes = res.body!.size
     if (sizeInBytes > globalThis.backup.maxBackupSize) {
       const message = this.$translate.instant('backup.backup_exceeds_max_size', {
         maxBackupSizeText: globalThis.backup.maxBackupSizeText,
@@ -27,6 +27,6 @@ export class BackupService {
       })
       this.$toastr.warning(message, this.$translate.instant('toast.title_warning'))
     }
-    saveAs(res.body, archiveName)
+    saveAs(res.body!, archiveName)
   }
 }

@@ -52,7 +52,7 @@ export class ConfigRestoreComponent implements OnInit {
       const data = await this.$api.get('/config-editor/backups')
       this.loading.set(false)
       this.backupList.set(data)
-    } catch (error) {
+    } catch (error: any) {
       this.loading.set(false)
       console.error(error)
       this.$toastr.error(error.error?.message || error.message, this.$translate.instant('toast.title_error'))
@@ -73,7 +73,7 @@ export class ConfigRestoreComponent implements OnInit {
       const fileName = `config-backup-${backupId}.json`
       saveAs(blob, fileName)
       this.clicked.set(false)
-    } catch (error) {
+    } catch (error: any) {
       this.clicked.set(false)
       this.$toastr.error(error.error?.message || error.message, this.$translate.instant('toast.title_error'))
       console.error(error)
@@ -96,7 +96,7 @@ export class ConfigRestoreComponent implements OnInit {
       await this.$api.delete(`/config-editor/backups/${backupId}`)
       await this.getConfigBackups()
       this.deleting.set(null)
-    } catch (error) {
+    } catch (error: any) {
       this.deleting.set(null)
       this.$toastr.error(error.error?.message || error.message, this.$translate.instant('toast.title_error'))
       console.error(error)
@@ -110,7 +110,7 @@ export class ConfigRestoreComponent implements OnInit {
       this.$toastr.success(this.$translate.instant('config.restore.toast_backups_deleted'), this.$translate.instant('toast.title_success'))
       this.backupList.set([])
       this.deleting.set(null)
-    } catch (error) {
+    } catch (error: any) {
       this.$toastr.error(error.error?.message || error.message, this.$translate.instant('toast.title_error'))
       console.error(error)
       this.deleting.set(null)

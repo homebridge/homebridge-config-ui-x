@@ -71,7 +71,7 @@ export class UpdateInfoWidgetComponent implements OnInit {
   })
 
   // Other properties
-  private io: IoNamespace
+  private io!: IoNamespace
   public packageVersion = this.$settings.env.packageVersion
   public homebridgeVersion = this.$settings.env.homebridgeVersion
   public isAdmin = this.$auth.user.admin
@@ -86,7 +86,7 @@ export class UpdateInfoWidgetComponent implements OnInit {
     this.homebridgeUpdatePolicy = this.$settings.env.homebridgeUpdatePolicy || 'all'
 
     // Set up reconnection handler
-    this.io.connected.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+    this.io.connected!.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
       queueMicrotask(() => this.loadAllData())
     })
 
@@ -226,15 +226,15 @@ export class UpdateInfoWidgetComponent implements OnInit {
       return 'fa-circle-notch fa-spin primary-text'
     }
 
-    if (this.nodeUpdatePolicy === 'none' || (this.nodeUpdatePolicy === 'major' && !this.nodejsInfo().updateAvailable)) {
+    if (this.nodeUpdatePolicy === 'none' || (this.nodeUpdatePolicy === 'major' && !this.nodejsInfo()?.updateAvailable)) {
       return 'fa-circle green-text'
     }
 
-    if (this.nodejsInfo().showNodeUnsupportedWarning) {
+    if (this.nodejsInfo()?.showNodeUnsupportedWarning) {
       return 'fa-exclamation-circle orange-text'
     }
 
-    return this.nodejsInfo().updateAvailable
+    return this.nodejsInfo()?.updateAvailable
       ? 'fa-arrow-alt-circle-up orange-text'
       : 'fa-check-circle green-text'
   }
@@ -248,7 +248,7 @@ export class UpdateInfoWidgetComponent implements OnInit {
       this.$settings.env.homebridgeVersion = response.installedVersion
       this.homebridgeUpdatePolicy = this.$settings.env.homebridgeUpdatePolicy || 'all'
       this.isRunningHbV2.set(response.installedVersion.startsWith('2.'))
-    } catch (error) {
+    } catch (error: any) {
       console.error(error)
       this.$toastr.error(
         error.message,
@@ -269,7 +269,7 @@ export class UpdateInfoWidgetComponent implements OnInit {
       // No additional filtering needed here
       this.nodejsInfo.set(nodejsInfo)
       this.nodejsStatusDone.set(true)
-    } catch (error) {
+    } catch (error: any) {
       console.error(error)
       this.$toastr.error(
         error.message,
@@ -288,7 +288,7 @@ export class UpdateInfoWidgetComponent implements OnInit {
       }
 
       this.homebridgeUiPkg.set(response)
-    } catch (error) {
+    } catch (error: any) {
       console.error(error)
       this.$toastr.error(
         error.message,
@@ -304,7 +304,7 @@ export class UpdateInfoWidgetComponent implements OnInit {
       this.homebridgePluginStatus.set(outOfDatePlugins
         .filter((x: any) => x.name !== 'homebridge-config-ui-x' && !this.$settings.env.plugins?.hideUpdatesFor?.includes(x.name)))
       this.homebridgePluginStatusDone.set(true)
-    } catch (error) {
+    } catch (error: any) {
       console.error(error)
       this.$toastr.error(
         error.message,
@@ -318,7 +318,7 @@ export class UpdateInfoWidgetComponent implements OnInit {
       try {
         this.dockerInfo.set(await firstValueFrom(this.io.request('docker-version-check')))
         this.dockerStatusDone.set(true)
-      } catch (error) {
+      } catch (error: any) {
         console.error(error)
         this.$toastr.error(
           error.message,

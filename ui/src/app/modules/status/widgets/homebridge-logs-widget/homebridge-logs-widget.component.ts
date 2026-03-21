@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, Elem
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { TranslatePipe } from '@ngx-translate/core'
 import { ITerminalOptions } from '@xterm/xterm'
-import { Subject, Subscription } from 'rxjs'
+import { Subject } from 'rxjs'
 
 import { SettingsService } from '@/app/core/ui/settings.service'
 import { LogService } from '@/app/core/utilities/log.service'
@@ -37,14 +37,13 @@ export class HomebridgeLogsWidgetComponent implements OnInit, OnDestroy {
   private initialized = false
   resizeEvent!: Subject<void> // Set directly by ComponentFactoryResolver
   configureEvent!: Subject<void> // Set directly by ComponentFactoryResolver
-  private terminalSettingsSubscription?: Subscription
 
   public ngOnInit(): void {
     // Use effective theme to enforce dark mode override when needed
     this.theme.set(this.$settings.getEffectiveTerminalLightingMode())
     setTimeout(() => {
       // Use global terminal settings from settings service
-      this.$log.startTerminal(this.termTarget(), this.$settings.getTerminalOptions({
+      this.$log.startTerminal(this.termTarget()!, this.$settings.getTerminalOptions({
         cursorBlink: false,
       }, true), this.resizeEvent)
 
@@ -71,8 +70,8 @@ export class HomebridgeLogsWidgetComponent implements OnInit, OnDestroy {
       // Reserved for future widget-specific configuration if needed
     })
 
-    // Subscribe to global terminal settings changes (Angular 20 feature)
-    this.terminalSettingsSubscription = this.$settings.terminalSettingsChanged.subscribe({
+    // Subscribe to global terminal settings changes
+    this.$settings.terminalSettingsChanged.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (settings) => {
         if (!this.$log.term) {
           return
@@ -106,13 +105,12 @@ export class HomebridgeLogsWidgetComponent implements OnInit, OnDestroy {
   }
 
   public ngOnDestroy(): void {
-    this.terminalSettingsSubscription?.unsubscribe()
     this.$log.destroyTerminal()
   }
 
   private getTerminalHeight(): number {
-    const widgetContainerHeight = (this.widgetContainerElement().nativeElement as HTMLElement).offsetHeight
-    const titleHeight = (this.titleElement().nativeElement as HTMLElement).offsetHeight
+    const widgetContainerHeight = (this.widgetContainerElement()!.nativeElement as HTMLElement).offsetHeight
+    const titleHeight = (this.titleElement()!.nativeElement as HTMLElement).offsetHeight
     return widgetContainerHeight - titleHeight
   }
 }

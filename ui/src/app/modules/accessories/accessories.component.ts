@@ -1,5 +1,5 @@
 import { NgTemplateOutlet } from '@angular/common'
-import { ChangeDetectionStrategy, Component, createEnvironmentInjector, EnvironmentInjector, inject, OnDestroy, OnInit, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, createEnvironmentInjector, EnvironmentInjector, inject, OnDestroy, OnInit, signal } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { FormsModule } from '@angular/forms'
 import { NgbDropdown, NgbDropdownItem, NgbDropdownMenu, NgbDropdownToggle } from '@ng-bootstrap/ng-bootstrap/dropdown'
@@ -57,8 +57,8 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
   private $settings = inject(SettingsService)
   private $translate = inject(TranslateService)
   private $ws = inject(WsService)
-  private ioStatus: IoNamespace
-  private ioChild: IoNamespace
+  private ioStatus!: IoNamespace
+  private ioChild!: IoNamespace
 
   // Getter for persisted bridge name mapping from service
   private get bridgeUsernameToNameMap(): Map<string, string> {
@@ -75,29 +75,16 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
   public manageLayoutMode = false
   private previousBridgeSelection: string[] | null = null
 
-  // Getters/setters for persisted properties from service (persist across navigation)
-  public get availableBridges(): string[] {
-    return this.$accessories.availableBridges
-  }
-
-  public set availableBridges(value: string[]) {
-    this.$accessories.availableBridges = value
-  }
-
-  public get selectedBridges(): string[] | null {
-    return this.$accessories.selectedBridges
-  }
-
-  public set selectedBridges(value: string[] | null) {
-    this.$accessories.selectedBridges = value
-  }
+  // Signal references for persisted properties from service (persist across navigation)
+  public readonly availableBridges = this.$accessories.availableBridges
+  public readonly selectedBridges = this.$accessories.selectedBridges
 
   /**
    * Computed property to check if filter UI should be shown
    */
-  public get shouldShowFilters(): boolean {
-    return this.hasPlugins() && !this.loading() && this.availableBridges.length > 0
-  }
+  public readonly shouldShowFilters = computed(() =>
+    this.hasPlugins() && !this.loading() && this.availableBridges().length > 0,
+  )
 
   // Getter/setter for dragula two-way binding
   public get rooms(): Array<{ name: string, isDefault?: boolean, services: ServiceTypeX[] }> {
@@ -111,16 +98,16 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
   constructor() {
     const dragulaService = this.dragulaService
 
-    this.isMobile.set(this.$md.detect.mobile())
+    this.isMobile.set(this.$md.detect.mobile() || false)
 
     // Disable drag and drop for everything except the room title
     dragulaService.createGroup('rooms-bag', {
-      moves: (_el, _container, handle) => !this.isMobile() && handle.classList.contains('drag-handle'),
+      moves: (_el, _container, handle) => !this.isMobile() && !!handle?.classList.contains('drag-handle'),
     })
 
     // Disable drag and drop for the .no-drag class
     dragulaService.createGroup('services-bag', {
-      moves: el => !this.isMobile() && !el.classList.contains('no-drag'),
+      moves: el => !this.isMobile() && !el?.classList.contains('no-drag'),
     })
 
     // Save the room and service layout
@@ -141,8 +128,9 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
     this.$settings.setPageTitle(title)
 
     // Initialize selectedBridges if null or empty - default to showing all bridges
-    if ((this.selectedBridges === null || this.selectedBridges.length === 0) && this.availableBridges.length > 0) {
-      this.selectedBridges = [...this.availableBridges]
+    const selected = this.selectedBridges()
+    if ((selected === null || selected.length === 0) && this.availableBridges().length > 0) {
+      this.selectedBridges.set([...this.availableBridges()])
     }
 
     void this.$accessories.start()
@@ -290,7 +278,7 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
       // Update the room
       this.$accessories.rooms.update(current => current.map((r, idx) =>
         idx === roomIndex
-          ? { ...r, name: result.name, isDefault: result.isDefault }
+          ? { ...r, name: result.name!, isDefault: result.isDefault ?? false }
           : r,
       ))
 
@@ -331,12 +319,12 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
     this.$accessories.stop()
 
     // Destroy drag and drop bags
-    this.dragulaService.destroy('rooms-bag')
-    this.dragulaService.destroy('services-bag')
+    this.dragulaService.destroy?.('rooms-bag')
+    this.dragulaService.destroy?.('services-bag')
 
     // Clean up WebSocket connections
-    this.ioStatus?.end()
-    this.ioChild?.end()
+    this.ioStatus?.end?.()
+    this.ioChild?.end?.()
   }
 
   private async checkForPlugins(): Promise<void> {
@@ -357,7 +345,7 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
   private setupBridgeNameMapping(): void {
     // Connect to status namespace for main Homebridge instance
     this.ioStatus = this.$ws.connectToNamespace('status')
-    this.ioStatus.connected.subscribe(() => {
+    this.ioStatus.connected!.subscribe(() => {
       this.ioStatus.socket.emit('monitor-server-status')
     })
 
@@ -374,7 +362,7 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
 
     // Connect to child-bridges namespace for child bridge instances
     this.ioChild = this.$ws.connectToNamespace('child-bridges')
-    this.ioChild.connected.subscribe(() => {
+    this.ioChild.connected!.subscribe(() => {
       this.ioChild.socket.emit('monitor-child-bridge-status')
       this.fetchChildBridges()
     })
@@ -434,29 +422,31 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
 
     // Only update if the bridge list has changed AND is not fewer bridges than before
     // This prevents race condition where WebSocket bridge names haven't loaded yet
-    const shouldUpdate = JSON.stringify(newBridges) !== JSON.stringify(this.availableBridges)
-      && newBridges.length >= this.availableBridges.length
+    const currentAvailable = this.availableBridges()
+    const currentSelected = this.selectedBridges()
+    const shouldUpdate = JSON.stringify(newBridges) !== JSON.stringify(currentAvailable)
+      && newBridges.length >= currentAvailable.length
 
     if (shouldUpdate) {
-      if (this.selectedBridges === null || this.selectedBridges.length === 0) {
+      if (currentSelected === null || currentSelected.length === 0) {
         // First initialization or no bridges selected - select all bridges by default
-        this.selectedBridges = [...newBridges]
+        this.selectedBridges.set([...newBridges])
       } else {
         // Check if we were showing all bridges before the update
-        const wasShowingAll = this.selectedBridges.length === this.availableBridges.length
-          && this.availableBridges.length > 0
+        const wasShowingAll = currentSelected.length === currentAvailable.length
+          && currentAvailable.length > 0
 
         if (wasShowingAll) {
           // If showing all, keep showing all even when new bridges appear
-          this.selectedBridges = [...newBridges]
+          this.selectedBridges.set([...newBridges])
         } else {
           // Remove any selected bridges that no longer exist, but don't add new ones
-          this.selectedBridges = this.selectedBridges.filter(bridge => newBridges.includes(bridge))
+          this.selectedBridges.set(currentSelected.filter(bridge => newBridges.includes(bridge)))
         }
       }
 
       // Update available bridges after handling selection
-      this.availableBridges = newBridges
+      this.availableBridges.set(newBridges)
     }
   }
 
@@ -480,18 +470,20 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
       const customName = this.bridgeUsernameToNameMap.get(service.instance.username)
       const bridgeName = customName || service.instance.name
 
+      const selected = this.selectedBridges()
+
       // If not initialized yet, show all
-      if (this.selectedBridges === null) {
+      if (selected === null) {
         return true
       }
 
       // If no bridges selected, show nothing
-      if (this.selectedBridges.length === 0) {
+      if (selected.length === 0) {
         return false
       }
 
       // Show only if bridge is in selected list
-      if (bridgeName && !this.selectedBridges.includes(bridgeName)) {
+      if (bridgeName && !selected.includes(bridgeName)) {
         return false
       }
     }
@@ -505,7 +497,7 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
   public toggleBridge(bridgeName: string): void {
     // If in manage layout mode, start fresh with just this bridge selected
     if (this.manageLayoutMode) {
-      this.selectedBridges = [bridgeName]
+      this.selectedBridges.set([bridgeName])
       this.manageLayoutMode = false
       this.previousBridgeSelection = null
 
@@ -516,15 +508,12 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
     }
 
     // Normal toggle behavior when not in manage layout mode
-    if (!this.selectedBridges) {
-      this.selectedBridges = []
-    }
-
-    const index = this.selectedBridges.indexOf(bridgeName)
+    const current = this.selectedBridges() ?? []
+    const index = current.indexOf(bridgeName)
     if (index === -1) {
-      this.selectedBridges.push(bridgeName)
+      this.selectedBridges.set([...current, bridgeName])
     } else {
-      this.selectedBridges.splice(index, 1)
+      this.selectedBridges.set(current.filter((_, i) => i !== index))
     }
 
     if (!this.isMobile()) {
@@ -540,7 +529,7 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
     if (this.manageLayoutMode) {
       return false
     }
-    return this.selectedBridges?.includes(bridgeName) ?? false
+    return this.selectedBridges()?.includes(bridgeName) ?? false
   }
 
   /**
@@ -549,7 +538,7 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
   public clearBridgeFilter(): void {
     // If in manage layout mode, selecting "All Bridges" should select all
     if (this.manageLayoutMode) {
-      this.selectedBridges = [...this.availableBridges]
+      this.selectedBridges.set([...this.availableBridges()])
       this.manageLayoutMode = false
       this.previousBridgeSelection = null
 
@@ -559,18 +548,12 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
       return
     }
 
-    // Normal toggle behavior when not in manage layout mode
-    // Initialize if null
-    if (this.selectedBridges === null) {
-      this.selectedBridges = []
-    }
-
     if (this.isShowingAllBridges) {
       // All bridges selected, so unselect everything
-      this.selectedBridges = []
+      this.selectedBridges.set([])
     } else {
       // Not all bridges selected, so select all
-      this.selectedBridges = [...this.availableBridges]
+      this.selectedBridges.set([...this.availableBridges()])
     }
 
     if (!this.isMobile()) {
@@ -582,9 +565,11 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
    * Check if all bridges are shown (all bridges selected)
    */
   public get isShowingAllBridges(): boolean {
-    return this.selectedBridges !== null
-      && this.selectedBridges.length === this.availableBridges.length
-      && this.availableBridges.length > 0
+    const selected = this.selectedBridges()
+    const available = this.availableBridges()
+    return selected !== null
+      && selected.length === available.length
+      && available.length > 0
       && !this.manageLayoutMode
   }
 
@@ -596,7 +581,8 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
 
     if (this.manageLayoutMode) {
       // Save current bridge selection
-      this.previousBridgeSelection = this.selectedBridges ? [...this.selectedBridges] : null
+      const current = this.selectedBridges()
+      this.previousBridgeSelection = current ? [...current] : null
 
       // Unlock layout
       if (this.isMobile()) {
@@ -604,7 +590,7 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
       }
     } else {
       // Restore previous bridge selection when toggling off via the button
-      this.selectedBridges = this.previousBridgeSelection ? [...this.previousBridgeSelection] : null
+      this.selectedBridges.set(this.previousBridgeSelection ? [...this.previousBridgeSelection] : null)
       this.previousBridgeSelection = null
 
       // Lock layout when exiting manage mode

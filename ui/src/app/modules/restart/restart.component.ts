@@ -41,7 +41,7 @@ export class RestartComponent implements OnInit, OnDestroy {
   public readonly serviceIcon = computed(() => this.uiOnline() ? 'fas fa-circle-notch fa-spin' : 'far fa-circle')
 
   // Other properties
-  private io: IoNamespace
+  private io!: IoNamespace
   private readonly statusCheckActive = signal(false)
 
   // Lifecycle
@@ -49,7 +49,7 @@ export class RestartComponent implements OnInit, OnDestroy {
     this.io = this.$ws.connectToNamespace('status')
 
     // Subscribe for reconnections
-    this.io.connected.subscribe(() => {
+    this.io.connected!.subscribe(() => {
       this.io.socket.emit('monitor-server-status')
       this.$settings.getAppSettings().catch(() => { /* do nothing */ })
     })
@@ -86,7 +86,7 @@ export class RestartComponent implements OnInit, OnDestroy {
   }
 
   public ngOnDestroy(): void {
-    this.io.end()
+    this.io.end?.()
     this.statusCheckActive.set(false)
   }
 

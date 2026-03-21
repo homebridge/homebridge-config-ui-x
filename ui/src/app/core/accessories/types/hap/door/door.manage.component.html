@@ -16,7 +16,7 @@
           @if (service.values?.CurrentPosition === 0) {
             {{ 'accessories.control.closed' | translate }}
           } @else {
-            {{ 'accessories.control.open' | translate }} {{ this.service.getCharacteristic('CurrentPosition').value }}%
+            {{ 'accessories.control.open' | translate }} {{ this.service.getCharacteristic!('CurrentPosition').value }}%
           }
         } @else if (service.values?.PositionState === 1) {
           {{ 'accessories.control.opening' | translate }}...
@@ -39,7 +39,7 @@
       <span class="grey-text small">{{ 'accessories.control.open' | translate }}</span>
     </div>
     <h6 class="mt-4">
-      {{ 'accessories.control.current' | translate }}: {{ this.service.getCharacteristic('CurrentPosition').value }}%
+      {{ 'accessories.control.current' | translate }}: {{ this.service.getCharacteristic!('CurrentPosition').value }}%
     </h6>
     <nouislider
       class="mb-1"
@@ -47,7 +47,7 @@
       [max]="100"
       [step]="1"
       [disabled]="true"
-      [(ngModel)]="this.service.getCharacteristic('CurrentPosition').value"
+      [(ngModel)]="this.service.getCharacteristic!('CurrentPosition').value"
     />
     <div class="d-flex justify-content-between align-items-center mt-0 mb-1">
       <span class="grey-text small">{{ 'accessories.control.closed' | translate }}</span>

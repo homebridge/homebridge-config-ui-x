@@ -3,12 +3,13 @@ import type {
   SimpleValueControlConfig,
   SliderControlConfig,
 } from '@/app/core/accessories/accessories.interfaces'
+import type { Signal } from '@angular/core'
 
 import { ChangeDetectionStrategy, Component, inject, InjectionToken } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { TranslatePipe } from '@ngx-translate/core'
 import { NouisliderComponent } from 'ng2-nouislider'
-import { BehaviorSubject, Subject } from 'rxjs'
+import { Subject } from 'rxjs'
 
 import { BaseManageComponent } from '@/app/core/accessories/types/base-manage.component'
 import { ConvertMiredPipe } from '@/app/core/pipes/convert-mired.pipe'
@@ -17,7 +18,7 @@ import { ColourService } from '@/app/core/utilities/colour.service'
 /**
  * Injection token for lightbulb-specific modal data (optional)
  */
-export const LIGHTBULB_ADAPTIVE_LIGHTING = new InjectionToken<BehaviorSubject<boolean> | undefined>(
+export const LIGHTBULB_ADAPTIVE_LIGHTING = new InjectionToken<Signal<boolean> | undefined>(
   'LightbulbAdaptiveLighting',
   { factory: () => undefined },
 )
@@ -38,44 +39,43 @@ export class LightbulbManageComponent extends BaseManageComponent {
   private $colour = inject(ColourService)
 
   // Inject lightbulb-specific data (optional)
-  public isAdaptiveLightingEnabled$ = inject(LIGHTBULB_ADAPTIVE_LIGHTING)
+  public adaptiveLightingSignal = inject(LIGHTBULB_ADAPTIVE_LIGHTING)
+  public hasAdaptiveLighting = !!this.adaptiveLightingSignal
 
-  public targetMode: boolean
-  public targetBrightness: SliderControlConfig
+  public targetMode!: boolean
+  public targetBrightness!: SliderControlConfig
   public targetBrightnessChanged: Subject<number> = new Subject<number>()
-  public targetHue: SimpleValueControlConfig
+  public targetHue!: SimpleValueControlConfig
   public targetHueChanged: Subject<number> = new Subject<number>()
-  public targetSaturation: SimpleValueControlConfig
+  public targetSaturation!: SimpleValueControlConfig
   public targetSaturationChanged: Subject<number> = new Subject<number>()
-  public targetColorTemperature: ColorTemperatureControlConfig
+  public targetColorTemperature!: ColorTemperatureControlConfig
   public targetColorTemperatureChanged: Subject<number> = new Subject<number>()
-  public hasAdaptiveLighting: boolean = false
-  public isAdaptiveLightingEnabled: boolean = false
 
   protected setupComponent() {
     this.createDebouncedSubscription(this.targetBrightnessChanged, () => {
-      void this.service.getCharacteristic('Brightness').setValue(this.targetBrightness.value)
+      void this.service.getCharacteristic!('Brightness').setValue!(this.targetBrightness.value)
 
       // Turn the bulb on or off when brightness is adjusted
       if (this.targetBrightness.value && !this.service.values.On) {
         this.targetMode = true
-        void this.service.getCharacteristic('On').setValue(this.targetMode)
+        void this.service.getCharacteristic!('On').setValue!(this.targetMode)
       } else if (!this.targetBrightness.value && this.service.values.On) {
         this.targetMode = false
-        void this.service.getCharacteristic('On').setValue(this.targetMode)
+        void this.service.getCharacteristic!('On').setValue!(this.targetMode)
       }
     })
 
     this.createDebouncedSubscription(this.targetHueChanged, () => {
-      void this.service.getCharacteristic('Hue').setValue(this.targetHue.value)
+      void this.service.getCharacteristic!('Hue').setValue!(this.targetHue.value)
     })
 
     this.createDebouncedSubscription(this.targetSaturationChanged, () => {
-      void this.service.getCharacteristic('Saturation').setValue(this.targetSaturation.value)
+      void this.service.getCharacteristic!('Saturation').setValue!(this.targetSaturation.value)
     })
 
     this.createDebouncedSubscription(this.targetColorTemperatureChanged, (miredValue) => {
-      void this.service.getCharacteristic('ColorTemperature').setValue(miredValue)
+      void this.service.getCharacteristic!('ColorTemperature').setValue!(miredValue)
     })
 
     this.targetMode = this.service.values.On
@@ -88,16 +88,16 @@ export class LightbulbManageComponent extends BaseManageComponent {
   protected handleAccessoryUpdate() {
     this.targetMode = this.service.values.On
     if (this.targetBrightness) {
-      this.targetBrightness.value = this.service.getCharacteristic('Brightness')?.value as number
+      this.targetBrightness.value = this.service.getCharacteristic!('Brightness').value as number
     }
     if (this.targetHue) {
-      this.targetHue.value = this.service.getCharacteristic('Hue')?.value as number
+      this.targetHue.value = this.service.getCharacteristic!('Hue').value as number
     }
     if (this.targetSaturation) {
-      this.targetSaturation.value = this.service.getCharacteristic('Saturation')?.value as number
+      this.targetSaturation.value = this.service.getCharacteristic!('Saturation').value as number
     }
     if (this.targetColorTemperature) {
-      const colorTempValue = this.service.getCharacteristic('ColorTemperature')?.value as number
+      const colorTempValue = this.service.getCharacteristic!('ColorTemperature').value as number
       this.targetColorTemperature.value = this.$colour.miredToKelvin(colorTempValue)
       this.targetColorTemperature.mired = colorTempValue
     }
@@ -105,11 +105,11 @@ export class LightbulbManageComponent extends BaseManageComponent {
 
   public setTargetMode(value: boolean, event: MouseEvent) {
     this.targetMode = value
-    void this.service.getCharacteristic('On').setValue(this.targetMode)
+    void this.service.getCharacteristic!('On').setValue!(this.targetMode)
 
     // Set the brightness to max if on 0% when turned on
     if (this.targetMode && this.targetBrightness && !this.targetBrightness.value) {
-      this.targetBrightness.value = this.service.getCharacteristic('Brightness').maxValue
+      this.targetBrightness.value = this.service.getCharacteristic!('Brightness').maxValue as number
     }
 
     this.blurTarget(event)
@@ -135,7 +135,7 @@ export class LightbulbManageComponent extends BaseManageComponent {
   }
 
   private loadTargetBrightness() {
-    const TargetBrightness = this.service.getCharacteristic('Brightness')
+    const TargetBrightness = this.service.getCharacteristic!('Brightness')
     if (TargetBrightness) {
       this.targetBrightness = {
         value: TargetBrightness.value as number,
@@ -148,7 +148,7 @@ export class LightbulbManageComponent extends BaseManageComponent {
   }
 
   private loadTargetHue() {
-    const Hue = this.service.getCharacteristic('Hue')
+    const Hue = this.service.getCharacteristic!('Hue')
     if (Hue) {
       this.targetHue = {
         value: Hue.value as number,
@@ -166,7 +166,7 @@ export class LightbulbManageComponent extends BaseManageComponent {
   }
 
   private loadTargetSaturation() {
-    const Saturation = this.service.getCharacteristic('Saturation')
+    const Saturation = this.service.getCharacteristic!('Saturation')
     if (Saturation) {
       this.targetSaturation = {
         value: Saturation.value as number,
@@ -177,28 +177,20 @@ export class LightbulbManageComponent extends BaseManageComponent {
   }
 
   private loadTargetColorTemperature() {
-    const TargetColorTemperature = this.service.getCharacteristic('ColorTemperature')
+    const TargetColorTemperature = this.service.getCharacteristic!('ColorTemperature')
     if (TargetColorTemperature) {
       // Here, the min and max are switched because mired and kelvin are inversely related
       this.targetColorTemperature = {
         value: this.$colour.miredToKelvin(TargetColorTemperature.value as number),
         mired: TargetColorTemperature.value as number,
-        min: this.$colour.miredToKelvin(TargetColorTemperature.maxValue),
-        max: this.$colour.miredToKelvin(TargetColorTemperature.minValue),
+        min: this.$colour.miredToKelvin(TargetColorTemperature.maxValue as number),
+        max: this.$colour.miredToKelvin(TargetColorTemperature.minValue as number),
         step: TargetColorTemperature.minStep,
       }
 
-      const minHsl = this.$colour.kelvinToHsl(this.targetColorTemperature.min)
-      const maxHsl = this.$colour.kelvinToHsl(this.targetColorTemperature.max)
+      const minHsl = this.$colour.kelvinToHsl(this.targetColorTemperature.min!)
+      const maxHsl = this.$colour.kelvinToHsl(this.targetColorTemperature.max!)
       this.applySliderGradient(`linear-gradient(to right, ${minHsl}, ${maxHsl})`, '.color-temp-slider .noUi-target')
-
-      if (this.isAdaptiveLightingEnabled$) {
-        this.hasAdaptiveLighting = true
-        this.isAdaptiveLightingEnabled$
-          .subscribe((value) => {
-            this.isAdaptiveLightingEnabled = value
-          })
-      }
     }
   }
 

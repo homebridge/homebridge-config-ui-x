@@ -53,11 +53,11 @@ export class MicrophoneComponent {
     }
 
     if ('Active' in this.service().values) {
-      void this.service().getCharacteristic('Active').setValue(this.service().values.Active === 0 ? 1 : 0)
+      void this.service().getCharacteristic!('Active').setValue!(this.service().values.Active === 0 ? 1 : 0)
     } else if ('TargetMediaState' in this.service().values) {
-      void this.service().getCharacteristic('TargetMediaState').setValue(this.service().values.TargetMediaState === 0 ? 1 : 0)
+      void this.service().getCharacteristic!('TargetMediaState').setValue!(this.service().values.TargetMediaState === 0 ? 1 : 0)
     } else if ('Mute' in this.service().values) {
-      void this.service().getCharacteristic('Mute').setValue(!this.service().values.Mute)
+      void this.service().getCharacteristic!('Mute').setValue!(!this.service().values.Mute)
     }
   }
 

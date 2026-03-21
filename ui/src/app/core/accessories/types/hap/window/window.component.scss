@@ -1,43 +1,41 @@
-::ng-deep {
-  svg {
-    .outline-left {
-      transition: width 3s ease;
-      x: 2.8px;
-      width: calc(12.4px - 10px * var(--position, 0));
-    }
+svg {
+  .outline-left {
+    transition: width 3s ease;
+    x: 2.8px;
+    width: calc(12.4px - 10px * var(--position, 0));
+  }
 
-    .divider-left {
-      transition: width 3s ease;
-      x: 3.66px;
-      width: calc(10.68px - 10px * var(--position, 0));
-    }
+  .divider-left {
+    transition: width 3s ease;
+    x: 3.66px;
+    width: calc(10.68px - 10px * var(--position, 0));
+  }
 
-    .handle-left {
-      transition: x 3s ease;
-      x: calc(15.16px - 10px * var(--position, 0));
-      width: 0.1px;
-    }
+  .handle-left {
+    transition: x 3s ease;
+    x: calc(15.16px - 10px * var(--position, 0));
+    width: 0.1px;
+  }
 
-    .outline-right {
-      transition:
-        x 3s ease,
-        width 3s ease;
-      x: calc(16.8px + 10px * var(--position, 0));
-      width: calc(12.4px - 10px * var(--position, 0));
-    }
+  .outline-right {
+    transition:
+      x 3s ease,
+      width 3s ease;
+    x: calc(16.8px + 10px * var(--position, 0));
+    width: calc(12.4px - 10px * var(--position, 0));
+  }
 
-    .divider-right {
-      transition:
-        x 3s ease,
-        width 3s ease;
-      x: calc(17.66px + 10px * var(--position, 0));
-      width: calc(10.68px - 10px * var(--position, 0));
-    }
+  .divider-right {
+    transition:
+      x 3s ease,
+      width 3s ease;
+    x: calc(17.66px + 10px * var(--position, 0));
+    width: calc(10.68px - 10px * var(--position, 0));
+  }
 
-    .handle-right {
-      transition: x 3s ease;
-      x: calc(16.76px + 10px * var(--position, 0));
-      width: 0.1px;
-    }
+  .handle-right {
+    transition: x 3s ease;
+    x: calc(16.76px + 10px * var(--position, 0));
+    width: 0.1px;
   }
 }

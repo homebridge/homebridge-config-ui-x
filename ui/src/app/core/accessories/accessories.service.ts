@@ -31,7 +31,7 @@ export class AccessoriesService {
   private pairingCache: any[] = []
   private customAttributesApplied = new Set<string>()
   private combinedServiceIds = new Set<string>()
-  private io: IoNamespace
+  private io!: IoNamespace
   private stop$ = new Subject<void>()
   private hiddenTypes = new Set([
     'InputSource',
@@ -46,10 +46,10 @@ export class AccessoriesService {
   public hapReadyForControl = false
   public matterReadyForControl = false
   public accessories: { services: ServiceType[] } = { services: [] }
-  public accessoryLayout: AccessoryLayout
-  private originalLayout: AccessoryLayout
-  public availableBridges: string[] = []
-  public selectedBridges: string[] | null = null
+  public accessoryLayout!: AccessoryLayout
+  private originalLayout!: AccessoryLayout
+  public readonly availableBridges = signal<string[]>([])
+  public readonly selectedBridges = signal<string[] | null>(null)
   public bridgeUsernameToNameMap: Map<string, string> = new Map()
   public readonly rooms = signal<Array<{
     name: string
@@ -127,13 +127,13 @@ export class AccessoriesService {
     this.stop$.next()
     this.stop$.complete()
 
-    this.io.end()
+    this.io?.end?.()
     this.rooms.set([])
     this.accessories = { services: [] }
     this.customAttributesApplied.clear()
     this.combinedServiceIds.clear()
-    delete this.accessoryLayout
-    delete this.originalLayout
+    this.accessoryLayout = undefined as any
+    this.originalLayout = undefined as any
 
     // Reset for next session
     this.stop$ = new Subject<void>()
@@ -153,7 +153,7 @@ export class AccessoriesService {
     await this.loadLayout()
 
     // Subscribe for reconnections
-    this.io.connected
+    this.io.connected!
       .pipe(takeUntil(this.stop$))
       .subscribe(() => {
         this.io.socket.emit('get-accessories')
@@ -246,7 +246,7 @@ export class AccessoriesService {
 
     // Merge with undiscovered services from original layout to preserve custom information
     // This will add back rooms that exist in the original layout even if they have no discovered services
-    this.accessoryLayout = this.mergeWithUndiscoveredServices(currentLayout)
+    this.accessoryLayout = this.mergeWithUndiscoveredServices(currentLayout as AccessoryLayout)
 
     // Send update request to server
     this.io.request('save-layout', { user: this.$auth.user.username, layout: this.accessoryLayout })
@@ -285,7 +285,7 @@ export class AccessoriesService {
     this.rooms.set(this.accessoryLayout.map(room => ({
       name: room.name,
       isDefault: room.isDefault,
-      services: [],
+      services: [] as ServiceTypeX[],
     })))
   }
 
@@ -451,7 +451,7 @@ export class AccessoriesService {
         // Replace the object instead of mutating it
         this.accessories.services[existingIndex] = service
         // Clear from customAttributesApplied Set so attributes get re-applied to the new object
-        this.customAttributesApplied.delete(service.uniqueId)
+        this.customAttributesApplied.delete(service.uniqueId!)
       } else {
         this.accessories.services.push(service)
       }
@@ -464,7 +464,7 @@ export class AccessoriesService {
   private sortIntoRooms() {
     this.accessories.services.forEach((service) => {
       // Don't put hidden types or combined services into rooms
-      if (this.hiddenTypes.has(service.type) || this.combinedServiceIds.has(service.uniqueId)) {
+      if (this.hiddenTypes.has(service.type) || this.combinedServiceIds.has(service.uniqueId!)) {
         return
       }
 
@@ -472,8 +472,8 @@ export class AccessoriesService {
       if (service.linked) {
         service.linkedServices = {}
         service.linked.forEach((iid) => {
-          service.linkedServices[iid] = this.accessories.services.find(s => s.aid === service.aid && s.iid === iid
-            && s.instance.username === service.instance.username)
+          service.linkedServices![iid] = this.accessories.services.find(s => s.aid === service.aid && s.iid === iid
+            && s.instance.username === service.instance.username)!
         })
       }
 
@@ -501,7 +501,7 @@ export class AccessoriesService {
           }
 
           // Mark that custom attributes have been applied to this accessory
-          this.customAttributesApplied.add(service.uniqueId)
+          this.customAttributesApplied.add(service.uniqueId!)
 
           // Add to the correct room using signal update
           this.rooms.update(current => current.map(r =>
@@ -511,7 +511,7 @@ export class AccessoriesService {
           ))
         } else {
           // Mark as processed (even though no custom attributes to apply)
-          this.customAttributesApplied.add(service.uniqueId)
+          this.customAttributesApplied.add(service.uniqueId!)
 
           // New accessory add to the default room
           const defaultRoom = this.rooms().find(r => r.isDefault === true)
@@ -578,7 +578,7 @@ export class AccessoriesService {
     this.rooms().forEach((room) => {
       room.services.forEach((service) => {
         // Skip if we've already applied custom attributes to this accessory
-        if (this.customAttributesApplied.has(service.uniqueId)) {
+        if (this.customAttributesApplied.has(service.uniqueId!)) {
           return
         }
 
@@ -604,7 +604,7 @@ export class AccessoriesService {
         }
 
         // Mark this accessory as processed
-        this.customAttributesApplied.add(service.uniqueId)
+        this.customAttributesApplied.add(service.uniqueId!)
       })
     })
   }
@@ -659,14 +659,14 @@ export class AccessoriesService {
       } else {
         // HAP accessories use characteristic-based control
         if (!service.getCharacteristic) {
-          service.getCharacteristic = (type: string) => {
+          service.getCharacteristic = ((type: string) => {
             const characteristic = service.serviceCharacteristics.find(x => x.type === type)
 
             if (!characteristic) {
               return null
             }
 
-            characteristic.setValue = (value: number | string | boolean) => new Promise((resolve) => {
+            characteristic.setValue = ((value: number | string | boolean) => new Promise<void>((resolve) => {
               if (!this.hapReadyForControl) {
                 return resolve(undefined)
               }
@@ -681,10 +681,10 @@ export class AccessoriesService {
                 },
               })
               return resolve(undefined)
-            })
+            })) as any
 
             return characteristic
-          }
+          }) as any
         }
       }
     })
@@ -743,7 +743,7 @@ export class AccessoriesService {
         service.linkedServices = {}
       }
       service.linkedServices[fan.iid] = fan
-      this.combinedServiceIds.add(fan.uniqueId)
+      this.combinedServiceIds.add(fan.uniqueId!)
     }
   }
 
@@ -768,7 +768,7 @@ export class AccessoriesService {
         service.linkedServices = {}
       }
       service.linkedServices[fan.iid] = fan
-      this.combinedServiceIds.add(fan.uniqueId)
+      this.combinedServiceIds.add(fan.uniqueId!)
     }
   }
 
@@ -786,7 +786,7 @@ export class AccessoriesService {
     // Remove combined fan services from rooms using immutable signal update
     this.rooms.update(current => current.map(room => ({
       ...room,
-      services: room.services.filter(s => !this.combinedServiceIds.has(s.uniqueId)),
+      services: room.services.filter(s => !this.combinedServiceIds.has(s.uniqueId!)),
     })))
   }
 }

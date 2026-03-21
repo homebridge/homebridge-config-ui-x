@@ -18,38 +18,38 @@
     </ul>
 
     <ul class="list-group list-group-box mt-3 mb-0">
-      <li class="list-group-item d-flex justify-content-between align-items-center flex-row pb-2">
-        <div class="text-start">
-          {{ mainPairing().name }}<br />
-          <small class="grey-text">
-            <i
-              class="fas fa-link"
-              container="body"
-              triggers="hover"
-              placement="left"
-              [ngbTooltip]="
-                (mainPairing()._isPaired ? 'status.widget.qr_paired' : 'status.widget.qr_unpaired') | translate
-              "
-              [openDelay]="150"
-              [class.green-text]="mainPairing()._isPaired"
-              [class.grey-text]="!mainPairing()._isPaired"
-            ></i>
-            &middot; <span class="font-monospace">{{ mainPairing()._username }}</span> &middot; Homebridge
-          </small>
-        </div>
-        <div class="text-end grey-text d-flex align-items-center">
-          <input
-            type="checkbox"
-            class="rendux-input"
-            id="controlMainBridge"
-            [checked]="!isInList(mainPairing()._username)"
-            [disabled]="clicked()"
-            [attr.aria-label]="'plugins.manage.hide_updates' | translate"
-            (click)="toggleList(mainPairing()._username)"
-          />
-          <label for="controlMainBridge" class="rendux-label ms-3"></label>
-        </div>
-      </li>
+      @if (mainPairing(); as mp) {
+        <li class="list-group-item d-flex justify-content-between align-items-center flex-row pb-2">
+          <div class="text-start">
+            {{ mp.name }}<br />
+            <small class="grey-text">
+              <i
+                class="fas fa-link"
+                container="body"
+                triggers="hover"
+                placement="left"
+                [ngbTooltip]="(mp._isPaired ? 'status.widget.qr_paired' : 'status.widget.qr_unpaired') | translate"
+                [openDelay]="150"
+                [class.green-text]="mp._isPaired"
+                [class.grey-text]="!mp._isPaired"
+              ></i>
+              &middot; <span class="font-monospace">{{ mp._username }}</span> &middot; Homebridge
+            </small>
+          </div>
+          <div class="text-end grey-text d-flex align-items-center">
+            <input
+              type="checkbox"
+              class="rendux-input"
+              id="controlMainBridge"
+              [checked]="!isInList(mp._username!)"
+              [disabled]="clicked()"
+              [attr.aria-label]="'plugins.manage.hide_updates' | translate"
+              (click)="toggleList(mp._username!)"
+            />
+            <label for="controlMainBridge" class="rendux-label ms-3"></label>
+          </div>
+        </li>
+      }
       @for (item of pairings(); track item) {
         <li class="list-group-item d-flex justify-content-between align-items-center flex-row pb-2">
           <div class="text-start">

@@ -140,21 +140,21 @@ export class RemoveIndividualAccessoriesComponent implements OnInit {
       const results = await Promise.all(requests)
       const cachedAccessories = results[0]
       const matterAccessories = this.isMatterSupported ? results[1] : []
-      const pairings = this.isMatterSupported ? results[2] : results[1]
+      const pairings: Pairing[] = this.isMatterSupported ? results[2] : results[1]
 
-      const pairingMap = new Map<string, Pairing>(pairings.map((pairing: Pairing) => [pairing._id, { ...pairing, accessories: [] }]))
+      const pairingMap = new Map<string, Pairing>(pairings.map((pairing: Pairing) => [pairing._id, { ...pairing, accessories: [] as CachedAccessory[] }]))
 
       // Process HAP accessories
       cachedAccessories
         .sort((a: CachedAccessory, b: CachedAccessory) => a.displayName.localeCompare(b.displayName))
         .forEach((accessory: CachedAccessory) => {
           const mainPairing = pairings.find((pairing: Pairing) => pairing._main)
-          const bridge = accessory.$cacheFile?.split('.')?.[1] || mainPairing._id
+          const bridge = accessory.$cacheFile?.split('.')?.[1] || mainPairing!._id
           if (!this.selectedBridge || this.selectedBridge === bridge) {
             if (!pairingMap.has(bridge)) {
               pairingMap.set(bridge, {
                 _id: bridge,
-                _username: bridge.match(RE_CHAR_PAIRS).join(':'),
+                _username: bridge.match(RE_CHAR_PAIRS)!.join(':'),
                 name: this.$translate.instant('reset.accessory_ind.unknown'),
                 accessories: [],
               })
@@ -169,12 +169,12 @@ export class RemoveIndividualAccessoriesComponent implements OnInit {
         matterAccessories
           .sort((a: CachedAccessory, b: CachedAccessory) => a.displayName.localeCompare(b.displayName))
           .forEach((accessory: CachedAccessory) => {
-            const bridge = accessory.$deviceId
+            const bridge = accessory.$deviceId!
             if (!this.selectedBridge || this.selectedBridge === bridge) {
               if (!pairingMap.has(bridge)) {
                 pairingMap.set(bridge, {
                   _id: bridge,
-                  _username: bridge.match(RE_CHAR_PAIRS).join(':'),
+                  _username: bridge.match(RE_CHAR_PAIRS)!.join(':'),
                   name: this.$translate.instant('reset.accessory_ind.unknown'),
                   accessories: [],
                 })

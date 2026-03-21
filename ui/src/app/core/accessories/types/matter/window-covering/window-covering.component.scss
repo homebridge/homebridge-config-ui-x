@@ -1,87 +1,76 @@
-::ng-deep {
-  body.dark-mode {
-    .c-blinds {
-      fill: #2b2b2b;
-      stroke: #2b2b2b;
-      stroke-opacity: 0.8;
-      fill-opacity: 0.8;
-    }
+// Window Covering styles
+svg {
+  .c-blinds {
+    transition: height 3s ease;
+    height: calc(27.6px - 27.3px * var(--position, 0));
   }
 
-  // Window Covering styles
-  svg {
-    .c-blinds {
-      transition: height 3s ease;
-      height: calc(27.6px - 27.3px * var(--position, 0));
-    }
+  .c-light {
+    transition:
+      y 3s ease,
+      height 3s ease;
+    y: calc(29.9px - 27.25px * var(--position, 0));
+    height: calc(27.3px * var(--position, 0));
+  }
+}
 
-    .c-light {
-      transition:
-        y 3s ease,
-        height 3s ease;
-      y: calc(29.9px - 27.25px * var(--position, 0));
-      height: calc(27.3px * var(--position, 0));
-    }
+// Door styles
+svg {
+  .outline {
+    transition: width 3s ease;
+    width: calc(12.8px - 9px * var(--position, 0));
   }
 
-  // Door styles
-  svg {
-    .outline {
-      transition: width 3s ease;
-      width: calc(12.8px - 9px * var(--position, 0));
-    }
-
-    .panel {
-      transition: width 3s ease;
-      width: calc(9.6px - 9px * var(--position, 0));
-    }
-
-    .handle {
-      opacity: calc(1 - var(--position, 0));
-      transition: opacity 3s ease;
-    }
+  .panel {
+    transition: width 3s ease;
+    width: calc(9.6px - 9px * var(--position, 0));
   }
 
-  // Window styles
-  svg {
-    .outline-left {
-      transition: width 3s ease;
-      x: 2.8px;
-      width: calc(12.4px - 10px * var(--position, 0));
-    }
+  .handle {
+    opacity: calc(1 - var(--position, 0));
+    transition: opacity 3s ease;
+  }
+}
 
-    .divider-left {
-      transition: width 3s ease;
-      x: 3.66px;
-      width: calc(10.68px - 10px * var(--position, 0));
-    }
+// Window styles
+svg {
+  .outline-left {
+    transition: width 3s ease;
+    x: 2.8px;
+    width: calc(12.4px - 10px * var(--position, 0));
+  }
 
-    .handle-left {
-      transition: x 3s ease;
-      x: calc(15.16px - 10px * var(--position, 0));
-      width: 0.1px;
-    }
+  .divider-left {
+    transition: width 3s ease;
+    x: 3.66px;
+    width: calc(10.68px - 10px * var(--position, 0));
+  }
 
-    .outline-right {
-      transition:
-        x 3s ease,
-        width 3s ease;
-      x: calc(16.8px + 10px * var(--position, 0));
-      width: calc(12.4px - 10px * var(--position, 0));
-    }
+  .handle-left {
+    transition: x 3s ease;
+    x: calc(15.16px - 10px * var(--position, 0));
+    width: 0.1px;
+  }
 
-    .divider-right {
-      transition:
-        x 3s ease,
-        width 3s ease;
-      x: calc(17.66px + 10px * var(--position, 0));
-      width: calc(10.68px - 10px * var(--position, 0));
-    }
+  .outline-right {
+    transition:
+      x 3s ease,
+      width 3s ease;
+    x: calc(16.8px + 10px * var(--position, 0));
+    width: calc(12.4px - 10px * var(--position, 0));
+  }
 
-    .handle-right {
-      transition: x 3s ease;
-      x: calc(16.76px + 10px * var(--position, 0));
-      width: 0.1px;
-    }
+  .divider-right {
+    transition:
+      x 3s ease,
+      width 3s ease;
+    x: calc(17.66px + 10px * var(--position, 0));
+    width: calc(10.68px - 10px * var(--position, 0));
+  }
+
+  .handle-right {
+    transition: x 3s ease;
+    x: calc(16.76px + 10px * var(--position, 0));
+    width: 0.1px;
   }
 }

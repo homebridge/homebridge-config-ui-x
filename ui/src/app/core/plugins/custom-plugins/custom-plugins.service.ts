@@ -14,7 +14,7 @@ export class CustomPluginsService {
   private $api = inject(ApiService)
   private $modal = inject(NgbModal)
 
-  public plugins = {}
+  public plugins: Record<string, any> = {}
 
   async openSettings(plugin: Plugin, schema: any) {
     const pluginConfig = await this.loadPluginConfig(plugin.name)

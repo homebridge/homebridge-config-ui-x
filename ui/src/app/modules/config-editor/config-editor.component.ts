@@ -62,10 +62,10 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
   private $settings = inject(SettingsService)
   private $toastr = inject(ToastrService)
   private $translate = inject(TranslateService)
-  private editorDecorations = []
-  private lastHeight: number
-  private visualViewPortEventCallback: () => void
-  private latestSavedConfig: HomebridgeConfig
+  private editorDecorations: string[] = []
+  private lastHeight!: number
+  private visualViewPortEventCallback!: () => void
+  private latestSavedConfig!: HomebridgeConfig
   private childBridgesToRestart: ChildBridgeToRestart[] = []
   private hbPendingRestart = false
   private isDebugModeEnabled = this.$settings.isFeatureEnabled('childBridgeDebugMode')
@@ -77,9 +77,9 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
   public readonly isMobile = signal<boolean>(false)
   public monacoEditor: any
   public editorOptions: any
-  public monacoEditorModel: NgxEditorModel
-  public diffOriginalModel: DiffEditorModel
-  public diffModifiedModel: DiffEditorModel
+  public monacoEditorModel!: NgxEditorModel
+  public diffOriginalModel!: DiffEditorModel
+  public diffModifiedModel!: DiffEditorModel
   public readonly renderSideBySide = signal(false)
 
   constructor() {
@@ -121,7 +121,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
       this.$md.disableTouchMove()
     }
 
-    this.$route.data.subscribe((data: { config: string }) => {
+    this.$route.data.subscribe((data) => {
       this.homebridgeConfig.set(data.config)
       this.latestSavedConfig = JSON.parse(data.config)
 
@@ -1287,18 +1287,18 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
   }
 
   private visualViewPortChanged() {
-    if (this.lastHeight < window.visualViewport.height) {
+    if (this.lastHeight < window.visualViewport!.height) {
       (document.activeElement as HTMLElement).blur()
     }
 
-    if (window.visualViewport.height < window.innerHeight) {
+    if (window.visualViewport!.height < window.innerHeight) {
       // Keyboard may have opened
       this.$md.enableTouchMove()
-      this.lastHeight = window.visualViewport.height
-    } else if (window.visualViewport.height === window.innerHeight) {
+      this.lastHeight = window.visualViewport!.height
+    } else if (window.visualViewport!.height === window.innerHeight) {
       // Keyboard is closed
       this.$md.disableTouchMove()
-      this.lastHeight = window.visualViewport.height
+      this.lastHeight = window.visualViewport!.height
     }
   }
 
@@ -1331,7 +1331,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
   private removeEmptyBridges(entries: (PlatformConfig | AccessoryConfig)[]): PluginChildBridge[] {
     return entries
       .filter((p: PlatformConfig | AccessoryConfig) => p._bridge && Object.keys(p._bridge).length > 0)
-      .map((p: PlatformConfig | AccessoryConfig) => p._bridge)
+      .map((p: PlatformConfig | AccessoryConfig) => p._bridge!)
   }
 
   private validateBridgesEqual(a: PluginChildBridge[], b: PluginChildBridge[]): boolean {
@@ -1488,22 +1488,22 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
       const data: ChildBridge[] = await this.$api.get('/status/homebridge/child-bridges')
 
       // Match up the changed entries with the child bridges
-      changedEntries.forEach((entry: PlatformConfig | AccessoryConfig) => {
+      for (const entry of changedEntries) {
         // Grab the username from the _bridge key, uppercase it, and find the matching child bridge
-        const configUsername = entry._bridge.username.toUpperCase()
+        const configUsername = entry._bridge!.username.toUpperCase()
         const childBridge = data.find(({ username }) => username === configUsername)
         if (childBridge) {
           if (!this.childBridgesToRestart.some((b: ChildBridgeToRestart) => b.username === childBridge.username)) {
             this.childBridgesToRestart.push({
               name: childBridge.name,
               username: childBridge.username,
-              matterSerialNumber: childBridge.matterSerialNumber,
+              matterSerialNumber: childBridge.matterSerialNumber!,
             })
           }
         } else {
           return 'full' // child bridge not found, need full restart
         }
-      })
+      }
 
       return 'child' // child bridge restart is sufficient
     } catch (error) {

@@ -29,7 +29,7 @@ export class LoginComponent implements OnInit {
   private $auth = inject(AuthService)
   private $router = inject(Router)
   private $settings = inject(SettingsService)
-  private targetRoute: string
+  private targetRoute!: string
   private validNonAdminRoutes = [
     '/accessories',
     '/plugins',
@@ -113,7 +113,7 @@ export class LoginComponent implements OnInit {
       }
       void this.$router.navigateByUrl(this.targetRoute)
       window.sessionStorage.removeItem('target_route')
-    } catch (error) {
+    } catch (error: any) {
       if (error.status === 412) {
         // Enable 2FA: add validators to the OTP control
         const otpControl = this.form.controls.otp

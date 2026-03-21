@@ -32,7 +32,7 @@ a:hover {
   text-align: center;
 }
 
-:host ::ng-deep {
+:host {
   .dropdown-menu {
     .dropdown-item {
       &.d-flex {

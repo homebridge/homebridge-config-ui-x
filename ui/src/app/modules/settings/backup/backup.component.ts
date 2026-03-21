@@ -53,8 +53,8 @@ export class BackupComponent implements OnInit {
   // Other public properties
   public enabledFormControl = new FormControl(false)
   public pathFormControl = new FormControl('')
-  public maxBackupSize = globalThis.backup.maxBackupSize
-  public maxBackupSizeText = globalThis.backup.maxBackupSizeText
+  public maxBackupSize: number = globalThis.backup.maxBackupSize
+  public maxBackupSizeText: string = globalThis.backup.maxBackupSizeText
 
   // Lifecycle hooks
   public ngOnInit(): void {
@@ -70,14 +70,14 @@ export class BackupComponent implements OnInit {
     this.enabledFormControl.valueChanges
       .pipe(debounceTime(500), takeUntilDestroyed(this.destroyRef))
       .subscribe(async (value) => {
-        this.currentSettingEnabled.set(value)
+        this.currentSettingEnabled.set(value ?? false)
         await this.saveUiSettingChange('scheduledBackupDisable', !this.currentSettingEnabled())
       })
 
     this.pathFormControl.valueChanges
       .pipe(debounceTime(1500), takeUntilDestroyed(this.destroyRef))
       .subscribe(async (value) => {
-        this.currentSettingPath.set(value)
+        this.currentSettingPath.set(value ?? '')
         await this.saveUiSettingChange('scheduledBackupPath', this.currentSettingPath())
       })
   }
@@ -87,7 +87,7 @@ export class BackupComponent implements OnInit {
     try {
       const res = await this.$api.get(`/backup/scheduled-backups/${backup.id}`, { observe: 'response', responseType: 'blob' })
       const archiveName = backup.fileName || 'homebridge-backup.tar.gz'
-      const sizeInBytes = res.body.size
+      const sizeInBytes = res.body!.size
       if (sizeInBytes > this.maxBackupSize) {
         const message = this.$translate.instant('backup.backup_exceeds_max_size', {
           maxBackupSizeText: this.maxBackupSizeText,
@@ -95,7 +95,7 @@ export class BackupComponent implements OnInit {
         })
         this.$toastr.warning(message, this.$translate.instant('toast.title_warning'))
       }
-      saveAs(res.body, archiveName)
+      saveAs(res.body!, archiveName)
     } catch (error) {
       console.error(error)
       this.$toastr.error(this.$translate.instant('backup.backup_download_failed'), this.$translate.instant('toast.title_error'))
@@ -137,7 +137,7 @@ export class BackupComponent implements OnInit {
     try {
       await this.$backup.downloadBackup()
       this.clicked.set(false)
-    } catch (error) {
+    } catch (error: any) {
       this.clicked.set(false)
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
@@ -149,7 +149,7 @@ export class BackupComponent implements OnInit {
     try {
       await this.$api.post('/backup', {})
       void this.getScheduledBackups()
-    } catch (error) {
+    } catch (error: any) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
     } finally {
@@ -170,7 +170,7 @@ export class BackupComponent implements OnInit {
       this.$settings.setEnvItem(key, value)
 
       this.showRestartToast()
-    } catch (error) {
+    } catch (error: any) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
     }

@@ -18,9 +18,9 @@ export class AuthService {
   private $notification = inject(NotificationService)
   private $settings = inject(SettingsService)
 
-  public token: string
-  public user: UserInterface = {}
-  private logoutTimer: NodeJS.Timeout
+  public token: string | null = null
+  public user: UserInterface = {} as UserInterface
+  private logoutTimer!: NodeJS.Timeout
   private lastRefreshTime: number = Date.now()
   private isRefreshing: boolean = false
 
@@ -49,7 +49,7 @@ export class AuthService {
   }
 
   public logout() {
-    this.user = null
+    this.user = {} as UserInterface
     this.token = null
     clearTimeout(this.logoutTimer)
     window.localStorage.removeItem(environment.jwt.tokenKey)
@@ -76,7 +76,7 @@ export class AuthService {
 
     try {
       return await this.$api.get('/auth/check')
-    } catch (err) {
+    } catch (err: any) {
       if (err.status === 401) {
         // Token is no longer valid on server side, perform logout
         console.warn('Current token is not valid on server')
@@ -101,13 +101,13 @@ export class AuthService {
       if (this.$jwtHelper.isTokenExpired(token, this.$settings.serverTimeOffset)) {
         this.logout()
       }
-      this.user = this.$jwtHelper.decodeToken(token)
+      this.user = this.$jwtHelper.decodeToken(token) ?? ({} as UserInterface)
       this.token = token
       this.setLogoutTimer()
 
       // Check if user has legacy OTP secret and emit notification
       if (this.user.otpLegacySecret) {
-        this.$notification.legacyOtpDetected.next(true)
+        this.$notification.legacyOtpDetected.set(true)
       }
 
       return true
@@ -120,7 +120,7 @@ export class AuthService {
 
   private setLogoutTimer() {
     clearTimeout(this.logoutTimer)
-    if (!this.$jwtHelper.isTokenExpired(this.token, this.$settings.serverTimeOffset)) {
+    if (this.token && !this.$jwtHelper.isTokenExpired(this.token, this.$settings.serverTimeOffset)) {
       // Use sessionTimeout as inactivity timeout
       const inactivityTimeout = this.$settings.sessionTimeout * 1000 // Convert to milliseconds
 

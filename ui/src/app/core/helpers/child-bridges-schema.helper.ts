@@ -1,5 +1,11 @@
 import { TranslateService } from '@ngx-translate/core'
 
+export interface ChildBridgeSchemaOptions {
+  isDebugModeEnabled: boolean
+  isMatterSupported: boolean
+  isPlatformPlugin?: boolean
+}
+
 /**
  * Creates the JSON schema definition for child bridge configuration
  * @param translate - The translation service for localized strings
@@ -9,7 +15,7 @@ import { TranslateService } from '@ngx-translate/core'
  * @param options.isPlatformPlugin - Whether the plugin is platform-based (Matter only works with platform plugins)
  * @returns Child bridge schema object
  */
-export function createChildBridgeSchema(translate: TranslateService, { isDebugModeEnabled, isMatterSupported, isPlatformPlugin = true }) {
+export function createChildBridgeSchema(translate: TranslateService, { isDebugModeEnabled, isMatterSupported, isPlatformPlugin = true }: ChildBridgeSchemaOptions) {
   return {
     type: 'object',
     required: ['username'],

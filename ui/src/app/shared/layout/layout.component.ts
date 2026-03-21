@@ -35,7 +35,7 @@ export class LayoutComponent implements OnInit {
   private $ws = inject(WsService)
 
   // Other properties
-  private io: IoNamespace
+  private io!: IoNamespace
 
   // Signals
   public readonly sidebarExpanded = signal(false)

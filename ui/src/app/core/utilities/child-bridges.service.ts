@@ -60,7 +60,7 @@ export class ChildBridgesService {
     try {
       const data: ChildBridge[] = await this.$api.get('/status/homebridge/child-bridges') as ChildBridge[]
       return data.filter(bridge => pluginName === bridge.plugin)
-    } catch (error) {
+    } catch (error: any) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
       return []

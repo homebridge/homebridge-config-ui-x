@@ -61,7 +61,7 @@ export interface HomebridgeConfig {
 export interface ChildBridgeToRestart {
   name: string
   username: string
-  matterSerialNumber: string
+  matterSerialNumber?: string
 }
 
 export interface ConfigRestoreBackup {

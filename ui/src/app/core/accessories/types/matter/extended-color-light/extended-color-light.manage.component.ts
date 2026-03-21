@@ -27,14 +27,14 @@ export class ExtendedColorLightManageComponent extends BaseManageComponent {
   private $colour = inject(ColourService)
   private $toastr = inject(ToastrService)
 
-  public targetMode: boolean
-  public targetBrightness: { value: number, min: number, max: number, step: number }
+  public targetMode!: boolean
+  public targetBrightness!: { value: number, min: number, max: number, step: number }
   public targetBrightnessChanged: Subject<number> = new Subject<number>()
-  public targetColorTemperature: { value: number, mired: number, min: number, max: number, step: number }
+  public targetColorTemperature!: { value: number, mired: number, min: number, max: number, step: number }
   public targetColorTemperatureChanged: Subject<number> = new Subject<number>()
-  public targetHue: { value: number, min: number, max: number, step: number }
+  public targetHue!: { value: number, min: number, max: number, step: number }
   public targetHueChanged: Subject<number> = new Subject<number>()
-  public targetSaturation: { value: number, min: number, max: number, step: number }
+  public targetSaturation!: { value: number, min: number, max: number, step: number }
   public targetSaturationChanged: Subject<number> = new Subject<number>()
 
   protected setupComponent() {

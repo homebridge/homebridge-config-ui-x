@@ -56,12 +56,12 @@ export class AccessoryControlListsComponent implements OnInit {
     this.originalBlacklist = [...this.updatedBlacklist]
 
     try {
-      const pairings = await this.$api.get('/server/pairings')
-      this.mainPairing.set(pairings.find(p => p._main))
+      const pairings: Pairing[] = await this.$api.get('/server/pairings')
+      this.mainPairing.set(pairings.find((p: Pairing) => p._main))
       this.pairings.set(pairings
-        .filter(p => !p._main)
-        .sort((a, b) => a.name.localeCompare(b.name)))
-    } catch (error) {
+        .filter((p: Pairing) => !p._main)
+        .sort((a: Pairing, b: Pairing) => a.name.localeCompare(b.name)))
+    } catch (error: any) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
       this.$activeModal.close()
@@ -89,7 +89,7 @@ export class AccessoryControlListsComponent implements OnInit {
       })
       this.$settings.setEnvItem('accessoryControl.instanceBlacklist', this.updatedBlacklist)
       this.$activeModal.close()
-    } catch (error) {
+    } catch (error: any) {
       this.clicked.set(false)
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))

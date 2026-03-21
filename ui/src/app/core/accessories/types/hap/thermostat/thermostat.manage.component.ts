@@ -29,39 +29,39 @@ import { SettingsService } from '@/app/core/ui/settings.service'
 export class ThermostatManageComponent extends BaseManageComponent {
   private $settings = inject(SettingsService)
 
-  public targetMode: number
-  public targetTemperature: SliderControlConfig
+  public targetMode!: number
+  public targetTemperature!: SliderControlConfig
   public targetTemperatureChanged: Subject<number> = new Subject<number>()
   public targetThresholdChanged: Subject<undefined> = new Subject<undefined>()
   public targetStateValidValues: number[] = []
-  public CoolingThresholdTemperature: CharacteristicType
-  public HeatingThresholdTemperature: CharacteristicType
-  public targetCoolingTemp: number
-  public targetHeatingTemp: number
-  public autoTemp: [number, number]
+  public CoolingThresholdTemperature!: CharacteristicType
+  public HeatingThresholdTemperature!: CharacteristicType
+  public targetCoolingTemp!: number
+  public targetHeatingTemp!: number
+  public autoTemp!: [number, number]
   public hasHumidity: boolean = false
   public temperatureUnits = this.$settings.env.temperatureUnits
 
   protected setupComponent() {
     this.createDebouncedSubscription(this.targetTemperatureChanged, () => {
-      void this.service.getCharacteristic('TargetTemperature').setValue(this.targetTemperature.value)
+      void this.service.getCharacteristic!('TargetTemperature').setValue!(this.targetTemperature.value)
     })
 
     this.createDebouncedSubscription(this.targetThresholdChanged, () => {
       if (this.HeatingThresholdTemperature) {
-        void this.service.getCharacteristic('HeatingThresholdTemperature').setValue(this.targetHeatingTemp)
+        void this.service.getCharacteristic!('HeatingThresholdTemperature').setValue!(this.targetHeatingTemp)
       }
       if (this.CoolingThresholdTemperature) {
-        void this.service.getCharacteristic('CoolingThresholdTemperature').setValue(this.targetCoolingTemp)
+        void this.service.getCharacteristic!('CoolingThresholdTemperature').setValue!(this.targetCoolingTemp)
       }
     })
 
     this.targetMode = this.service.values.TargetHeatingCoolingState
-    this.CoolingThresholdTemperature = this.service.getCharacteristic('CoolingThresholdTemperature')
-    this.HeatingThresholdTemperature = this.service.getCharacteristic('HeatingThresholdTemperature')
-    this.targetStateValidValues = this.service.getCharacteristic('TargetHeatingCoolingState').validValues as number[]
+    this.CoolingThresholdTemperature = this.service.getCharacteristic!('CoolingThresholdTemperature')
+    this.HeatingThresholdTemperature = this.service.getCharacteristic!('HeatingThresholdTemperature')
+    this.targetStateValidValues = this.service.getCharacteristic!('TargetHeatingCoolingState').validValues as number[]
     this.loadTargetTemperature()
-    if (this.service.getCharacteristic('CurrentRelativeHumidity')) {
+    if (this.service.getCharacteristic!('CurrentRelativeHumidity')) {
       this.hasHumidity = true
     }
     this.applyThermostatGradient()
@@ -70,13 +70,13 @@ export class ThermostatManageComponent extends BaseManageComponent {
   protected handleAccessoryUpdate() {
     this.targetMode = this.service.values.TargetHeatingCoolingState
     if (this.targetTemperature) {
-      this.targetTemperature.value = this.service.getCharacteristic('TargetTemperature').value as number
+      this.targetTemperature.value = this.service.getCharacteristic!('TargetTemperature').value as number
     }
     if (this.CoolingThresholdTemperature) {
-      this.targetCoolingTemp = this.service.getCharacteristic('CoolingThresholdTemperature').value as number
+      this.targetCoolingTemp = this.service.getCharacteristic!('CoolingThresholdTemperature').value as number
     }
     if (this.HeatingThresholdTemperature) {
-      this.targetHeatingTemp = this.service.getCharacteristic('HeatingThresholdTemperature').value as number
+      this.targetHeatingTemp = this.service.getCharacteristic!('HeatingThresholdTemperature').value as number
     }
     this.autoTemp = [this.targetHeatingTemp, this.targetCoolingTemp]
 
@@ -104,7 +104,7 @@ export class ThermostatManageComponent extends BaseManageComponent {
 
   public setTargetMode(value: number, event: MouseEvent) {
     this.targetMode = value
-    void this.service.getCharacteristic('TargetHeatingCoolingState').setValue(this.targetMode)
+    void this.service.getCharacteristic!('TargetHeatingCoolingState').setValue!(this.targetMode)
 
     this.blurTarget(event)
 
@@ -128,15 +128,15 @@ export class ThermostatManageComponent extends BaseManageComponent {
   }
 
   private loadTargetTemperature() {
-    const TargetTemperature = this.service.getCharacteristic('TargetTemperature')
+    const TargetTemperature = this.service.getCharacteristic!('TargetTemperature')
     this.targetTemperature = {
       value: TargetTemperature.value as number,
       min: TargetTemperature.minValue,
       max: TargetTemperature.maxValue,
       step: TargetTemperature.minStep || 0.5,
     }
-    this.targetCoolingTemp = this.service.getCharacteristic('CoolingThresholdTemperature')?.value as number
-    this.targetHeatingTemp = this.service.getCharacteristic('HeatingThresholdTemperature')?.value as number
+    this.targetCoolingTemp = this.service.getCharacteristic!('CoolingThresholdTemperature')?.value as number
+    this.targetHeatingTemp = this.service.getCharacteristic!('HeatingThresholdTemperature')?.value as number
     this.autoTemp = [this.targetHeatingTemp, this.targetCoolingTemp]
   }
 

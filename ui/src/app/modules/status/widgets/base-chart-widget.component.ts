@@ -28,12 +28,12 @@ export abstract class BaseChartWidgetComponent implements OnInit, OnDestroy {
   readonly widgetBackground = viewChild<ElementRef>('widgetbackground')
 
   // Other properties
-  protected io: IoNamespace
+  protected io!: IoNamespace
   protected stopInterval$ = new Subject<void>()
   public resizeEvent!: Subject<void> // Set directly by ComponentFactoryResolver
   public configureEvent!: Subject<void> // Set directly by ComponentFactoryResolver
-  public refreshInterval: number
-  public historyItems: number
+  public refreshInterval!: number
+  public historyItems!: number
   public lineChartLabels: string[] = []
   public lineChartType: ChartConfiguration['type'] = 'line'
   public lineChartData: ChartConfiguration['data'] = {
@@ -77,13 +77,13 @@ export abstract class BaseChartWidgetComponent implements OnInit, OnDestroy {
     this.io = this.$ws.getExistingNamespace('status')
 
     // Lookup the chart color based on the current theme
-    const userColor = getComputedStyle(this.widgetBackground().nativeElement).backgroundColor
+    const userColor = getComputedStyle(this.widgetBackground()!.nativeElement).backgroundColor
     if (userColor) {
-      this.lineChartOptions.elements.line.backgroundColor = userColor
-      this.lineChartOptions.elements.line.borderColor = userColor
+      this.lineChartOptions!.elements!.line!.backgroundColor = userColor
+      this.lineChartOptions!.elements!.line!.borderColor = userColor
     }
 
-    this.io.connected.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+    this.io.connected!.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
       this.fetchData()
     })
 
@@ -112,8 +112,8 @@ export abstract class BaseChartWidgetComponent implements OnInit, OnDestroy {
     if (!this.widget().historyItems) {
       this.widget().historyItems = 60
     }
-    this.refreshInterval = Math.min(60, Math.max(1, this.widget().refreshInterval))
-    this.historyItems = Math.min(60, Math.max(1, this.widget().historyItems))
+    this.refreshInterval = Math.min(60, Math.max(1, this.widget().refreshInterval!))
+    this.historyItems = Math.min(60, Math.max(1, this.widget().historyItems!))
 
     interval(this.refreshInterval * 1000)
       .pipe(
@@ -161,10 +161,10 @@ export abstract class BaseChartWidgetComponent implements OnInit, OnDestroy {
   }
 
   protected shiftChartData(): void {
-    const newItems = {}
-    Object.keys(this.lineChartData.datasets[0].data).forEach((key, index, array) => {
+    const newItems: Record<string, number> = {}
+    Object.keys(this.lineChartData.datasets[0].data).forEach((key: string, index: number, array: string[]) => {
       if (index + 1 < array.length) {
-        newItems[key] = this.lineChartData.datasets[0].data[array[index + 1]]
+        newItems[key] = (this.lineChartData.datasets[0].data as unknown as Record<string, number>)[array[index + 1]]
       }
     })
 

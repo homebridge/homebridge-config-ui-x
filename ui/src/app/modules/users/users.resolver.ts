@@ -13,7 +13,7 @@ export const usersResolver: ResolveFn<any> = async () => {
 
   try {
     return await $api.get('/users')
-  } catch (error) {
+  } catch (error: any) {
     console.error(error)
     $toastr.error(error.message, $translate.instant('toast.title_error'))
     void $router.navigate(['/'])

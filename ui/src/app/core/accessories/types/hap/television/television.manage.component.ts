@@ -42,13 +42,13 @@ export class TelevisionManageComponent extends BaseManageComponent {
   }
 
   public setActive(value: number, event: MouseEvent) {
-    void this.service.getCharacteristic('Active').setValue(value)
+    void this.service.getCharacteristic!('Active')!.setValue!(value)
 
     this.blurTarget(event)
   }
 
   public setInput(value: number | string, event: MouseEvent) {
-    void this.service.getCharacteristic('ActiveIdentifier').setValue(value)
+    void this.service.getCharacteristic!('ActiveIdentifier')!.setValue!(value)
 
     this.blurTarget(event)
   }

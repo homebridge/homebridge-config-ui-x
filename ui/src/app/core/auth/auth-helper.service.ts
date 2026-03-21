@@ -20,19 +20,19 @@ export class AuthHelperService {
     if (!token) {
       // Token was removed, clear auth state and invalidate cache
       this.$auth.token = null
-      this.$auth.user = {}
+      this.$auth.user = {} as any
       this.$tokenCache.invalidateCache()
       return false
     }
 
     // Validate token and check if still logged in
     try {
-      const isLoggedIn = this.$auth.isLoggedIn()
+      const isLoggedIn = !!this.$auth.isLoggedIn()
 
       // If token is expired on client side, clear it immediately
       if (!isLoggedIn) {
         this.$auth.token = null
-        this.$auth.user = {}
+        this.$auth.user = {} as any
         this.$tokenCache.invalidateCache()
       }
 

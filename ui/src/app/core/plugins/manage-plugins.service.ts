@@ -46,7 +46,7 @@ export class ManagePluginsService {
   private pluginListRefreshSubject = new Subject<void>()
   public onPluginListRefresh = this.pluginListRefreshSubject.asObservable()
 
-  async installPlugin(plugin: Plugin, targetVersion: string, backToVersionModal: Plugin = null) {
+  async installPlugin(plugin: Plugin, targetVersion: string, backToVersionModal: Plugin | null = null) {
     const injector = createEnvironmentInjector([{
       provide: MANAGE_PLUGIN_MODAL_DATA,
       useValue: {
@@ -123,7 +123,7 @@ export class ManagePluginsService {
     await this.updatePlugin(plugin, targetVersion)
   }
 
-  async updatePlugin(plugin: Plugin, targetVersion: string, backToVersionModal: Plugin = null) {
+  async updatePlugin(plugin: Plugin, targetVersion: string, backToVersionModal: Plugin | null = null) {
     const injector = createEnvironmentInjector([{
       provide: MANAGE_PLUGIN_MODAL_DATA,
       useValue: {
@@ -359,15 +359,15 @@ export class ManagePluginsService {
 
     try {
       // Check Node.js version from the `package.engines` of the plugin being installed/updated
-      if (plugin.updateEngines?.node && lt(this.$settings.env.nodeVersion, minVersion(plugin.updateEngines.node))) {
+      if (plugin.updateEngines?.node && lt(this.$settings.env.nodeVersion, minVersion(plugin.updateEngines.node)!)) {
         isValidNode = false
       }
 
       // Check Homebridge version from the `package.engines` of the plugin being installed/updated
-      if (plugin.updateEngines?.homebridge && lt(this.$settings.env.homebridgeVersion, minVersion(plugin.updateEngines.homebridge))) {
+      if (plugin.updateEngines?.homebridge && this.$settings.env.homebridgeVersion && lt(this.$settings.env.homebridgeVersion, minVersion(plugin.updateEngines.homebridge)!)) {
         isValidHb = false
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
       return false

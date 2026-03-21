@@ -566,47 +566,47 @@ export class SettingsComponent implements OnInit {
     this.hbNameFormControl.patchValue(this.$settings.env.homebridgeInstanceName, { emitEvent: false })
     this.hbNameFormControl.valueChanges
       .pipe(debounceTime(1500), takeUntilDestroyed(this.destroyRef))
-      .subscribe((value: string) => this.hbNameSave(value))
+      .subscribe(value => this.hbNameSave(value!))
 
     this.uiLangFormControl.patchValue(this.$settings.env.lang, { emitEvent: false })
     this.uiLangFormControl.valueChanges
       .pipe(debounceTime(750), takeUntilDestroyed(this.destroyRef))
-      .subscribe((value: string) => this.uiLangSave(value))
+      .subscribe(value => this.uiLangSave(value!))
 
     this.uiThemeFormControl.patchValue(this.$settings.theme, { emitEvent: false })
     this.uiThemeFormControl.valueChanges
       .pipe(debounceTime(750), takeUntilDestroyed(this.destroyRef))
-      .subscribe((value: string) => this.uiThemeSave(value))
+      .subscribe(value => this.uiThemeSave(value!))
 
     this.uiLightFormControl.patchValue(this.$settings.lightingMode, { emitEvent: false })
     this.uiLightFormControl.valueChanges
       .pipe(debounceTime(750), takeUntilDestroyed(this.destroyRef))
-      .subscribe((value: 'auto' | 'light' | 'dark') => this.uiLightSave(value))
+      .subscribe(value => this.uiLightSave(value as 'auto' | 'light' | 'dark'))
 
     this.uiMenuFormControl.patchValue(this.$settings.menuMode, { emitEvent: false })
     this.uiMenuFormControl.valueChanges
       .pipe(debounceTime(750), takeUntilDestroyed(this.destroyRef))
-      .subscribe((value: 'default' | 'freeze') => this.uiMenuSave(value))
+      .subscribe(value => this.uiMenuSave(value as 'default' | 'freeze'))
 
     this.uiTempFormControl.patchValue(this.$settings.env.temperatureUnits, { emitEvent: false })
     this.uiTempFormControl.valueChanges
       .pipe(debounceTime(750), takeUntilDestroyed(this.destroyRef))
-      .subscribe((value: string) => this.uiTempSave(value))
+      .subscribe(value => this.uiTempSave(value!))
 
-    this.uiTerminalPersistenceFormControl.patchValue(this.$settings.env.terminal?.persistence, { emitEvent: false })
+    this.uiTerminalPersistenceFormControl.patchValue(this.$settings.env.terminal?.persistence ?? null, { emitEvent: false })
     this.uiTerminalPersistenceFormControl.valueChanges
       .pipe(debounceTime(750), takeUntilDestroyed(this.destroyRef))
-      .subscribe((value: boolean) => this.uiTerminalPersistenceSave(value))
+      .subscribe(value => this.uiTerminalPersistenceSave(value!))
 
-    this.uiTerminalHideWarningFormControl.patchValue(this.$settings.env.terminal?.hideWarning, { emitEvent: false })
+    this.uiTerminalHideWarningFormControl.patchValue(this.$settings.env.terminal?.hideWarning ?? null, { emitEvent: false })
     this.uiTerminalHideWarningFormControl.valueChanges
       .pipe(debounceTime(750), takeUntilDestroyed(this.destroyRef))
-      .subscribe((value: boolean) => this.uiTerminalHideWarningSave(value))
+      .subscribe(value => this.uiTerminalHideWarningSave(value!))
 
-    this.uiTerminalBufferSizeFormControl.patchValue(this.$settings.env.terminal?.bufferSize, { emitEvent: false })
+    this.uiTerminalBufferSizeFormControl.patchValue(this.$settings.env.terminal?.bufferSize ?? null, { emitEvent: false })
     this.uiTerminalBufferSizeFormControl.valueChanges
       .pipe(debounceTime(1500), takeUntilDestroyed(this.destroyRef))
-      .subscribe((value: number) => this.uiTerminalBufferSizeSave(value))
+      .subscribe(value => this.uiTerminalBufferSizeSave(value!))
 
     // Validate and set terminal fontSize
     const savedFontSize = this.$settings.env.terminal?.fontSize
@@ -619,7 +619,7 @@ export class SettingsComponent implements OnInit {
     }
     this.uiTerminalFontSizeFormControl.valueChanges
       .pipe(debounceTime(750), takeUntilDestroyed(this.destroyRef))
-      .subscribe((value: number) => this.uiTerminalFontSizeSave(value))
+      .subscribe(value => this.uiTerminalFontSizeSave(value!))
 
     // Validate and set terminal fontWeight
     const savedFontWeight = this.$settings.env.terminal?.fontWeight
@@ -632,7 +632,7 @@ export class SettingsComponent implements OnInit {
     }
     this.uiTerminalFontWeightFormControl.valueChanges
       .pipe(debounceTime(750), takeUntilDestroyed(this.destroyRef))
-      .subscribe((value: string) => this.uiTerminalFontWeightSave(value))
+      .subscribe(value => this.uiTerminalFontWeightSave(value!))
 
     // Terminal lighting mode - default to dark, but allow light if main theme is light
     const savedTerminalTheme = this.$settings.env.terminal?.lightingMode
@@ -643,27 +643,27 @@ export class SettingsComponent implements OnInit {
     }
     this.uiTerminalLightingModeFormControl.valueChanges
       .pipe(debounceTime(750), takeUntilDestroyed(this.destroyRef))
-      .subscribe((value: string) => this.uiTerminalLightingModeSave(value))
+      .subscribe(value => this.uiTerminalLightingModeSave(value!))
 
-    this.hbLogSizeFormControl.patchValue(this.$settings.env.log?.maxSize, { emitEvent: false })
+    this.hbLogSizeFormControl.patchValue(this.$settings.env.log?.maxSize ?? null, { emitEvent: false })
     this.hbLogSizeFormControl.valueChanges
       .pipe(debounceTime(1500), takeUntilDestroyed(this.destroyRef))
-      .subscribe((value: number) => this.hbLogSizeSave(value))
+      .subscribe(value => this.hbLogSizeSave(value!))
 
-    this.hbLogTruncateFormControl.patchValue(this.$settings.env.log?.truncateSize, { emitEvent: false })
+    this.hbLogTruncateFormControl.patchValue(this.$settings.env.log?.truncateSize ?? null, { emitEvent: false })
     this.hbLogTruncateFormControl.valueChanges
       .pipe(debounceTime(1500), takeUntilDestroyed(this.destroyRef))
-      .subscribe((value: number) => this.hbLogTruncateSave(value))
+      .subscribe(value => this.hbLogTruncateSave(value!))
 
     this.uiPortFormControl.patchValue(this.$settings.env.port, { emitEvent: false })
     this.uiPortFormControl.valueChanges
       .pipe(debounceTime(1500), takeUntilDestroyed(this.destroyRef))
-      .subscribe((value: number) => this.uiPortSave(value))
+      .subscribe(value => this.uiPortSave(value!))
 
     this.uiAuthFormControl.patchValue(this.$settings.formAuth, { emitEvent: false })
     this.uiAuthFormControl.valueChanges
       .pipe(debounceTime(750), takeUntilDestroyed(this.destroyRef))
-      .subscribe((value: boolean) => this.uiAuthSave(value))
+      .subscribe(value => this.uiAuthSave(value!))
 
     // Convert seconds to days, hours, minutes
     const sessionTimeoutSeconds = this.$settings.sessionTimeout
@@ -690,27 +690,27 @@ export class SettingsComponent implements OnInit {
     this.uiSessionTimeoutInactivityBasedFormControl.patchValue(this.$settings.sessionTimeoutInactivityBased || false, { emitEvent: false })
     this.uiSessionTimeoutInactivityBasedFormControl.valueChanges
       .pipe(debounceTime(750), takeUntilDestroyed(this.destroyRef))
-      .subscribe((value: boolean) => this.uiSessionTimeoutInactivityBasedSave(value))
+      .subscribe(value => this.uiSessionTimeoutInactivityBasedSave(value!))
 
     this.uiSslKeyFormControl.patchValue(this.$settings.env.ssl?.key || '', { emitEvent: false })
     this.uiSslKeyFormControl.valueChanges
       .pipe(debounceTime(1500), takeUntilDestroyed(this.destroyRef))
-      .subscribe((value: string) => this.uiSslKeySave(value))
+      .subscribe(value => this.uiSslKeySave(value!))
 
     this.uiSslCertFormControl.patchValue(this.$settings.env.ssl?.cert || '', { emitEvent: false })
     this.uiSslCertFormControl.valueChanges
       .pipe(debounceTime(1500), takeUntilDestroyed(this.destroyRef))
-      .subscribe((value: string) => this.uiSslCertSave(value))
+      .subscribe(value => this.uiSslCertSave(value!))
 
     this.uiSslPfxFormControl.patchValue(this.$settings.env.ssl?.pfx || '', { emitEvent: false })
     this.uiSslPfxFormControl.valueChanges
       .pipe(debounceTime(1500), takeUntilDestroyed(this.destroyRef))
-      .subscribe((value: string) => this.uiSslPfxSave(value))
+      .subscribe(value => this.uiSslPfxSave(value!))
 
     this.uiSslPassphraseFormControl.patchValue(this.$settings.env.ssl?.passphrase || '', { emitEvent: false })
     this.uiSslPassphraseFormControl.valueChanges
       .pipe(debounceTime(1500), takeUntilDestroyed(this.destroyRef))
-      .subscribe((value: string) => this.uiSslPassphraseSave(value))
+      .subscribe(value => this.uiSslPassphraseSave(value!))
 
     this.uiSslSelfSignedHostnamesFormControl.patchValue(
       this.$settings.env.ssl?.selfSignedHostnames?.join(', ') || 'localhost, 127.0.0.1',
@@ -718,7 +718,7 @@ export class SettingsComponent implements OnInit {
     )
     this.uiSslSelfSignedHostnamesFormControl.valueChanges
       .pipe(debounceTime(1500), takeUntilDestroyed(this.destroyRef))
-      .subscribe((value: string) => this.uiSslSelfSignedHostnamesSave(value))
+      .subscribe(value => this.uiSslSelfSignedHostnamesSave(value!))
 
     this.uiSslTypeFormControl.patchValue(
       this.$settings.env.ssl?.selfSigned
@@ -730,57 +730,57 @@ export class SettingsComponent implements OnInit {
     )
     this.uiSslTypeFormControl.valueChanges
       .pipe(debounceTime(750), takeUntilDestroyed(this.destroyRef))
-      .subscribe((value: string) => this.uiSslTypeSave(value))
+      .subscribe(value => this.uiSslTypeSave(value!))
 
     this.uiHostFormControl.patchValue(this.$settings.host || '', { emitEvent: false })
     this.uiHostFormControl.valueChanges
       .pipe(debounceTime(1500), takeUntilDestroyed(this.destroyRef))
-      .subscribe((value: string) => this.uiHostSave(value))
+      .subscribe(value => this.uiHostSave(value!))
 
     this.uiProxyHostFormControl.patchValue(this.$settings.proxyHost || '', { emitEvent: false })
     this.uiProxyHostFormControl.valueChanges
       .pipe(debounceTime(1500), takeUntilDestroyed(this.destroyRef))
-      .subscribe((value: string) => this.uiProxyHostSave(value))
+      .subscribe(value => this.uiProxyHostSave(value!))
 
     this.hbPackageFormControl.patchValue(this.$settings.env.homebridgePackagePath || '', { emitEvent: false })
     this.hbPackageFormControl.valueChanges
       .pipe(debounceTime(1500), takeUntilDestroyed(this.destroyRef))
-      .subscribe((value: string) => this.hbPackageSave(value))
+      .subscribe(value => this.hbPackageSave(value!))
 
     this.uiMetricsFormControl.patchValue(!this.$settings.env.disableServerMetricsMonitoring, { emitEvent: false })
     this.uiMetricsFormControl.valueChanges
       .pipe(debounceTime(750), takeUntilDestroyed(this.destroyRef))
-      .subscribe((value: boolean) => this.uiMetricsSave(value))
+      .subscribe(value => this.uiMetricsSave(value!))
 
     this.enableMdnsAdvertiseFormControl.patchValue(this.$settings.env.enableMdnsAdvertise || false, { emitEvent: false })
     this.enableMdnsAdvertiseFormControl.valueChanges
       .pipe(debounceTime(750), takeUntilDestroyed(this.destroyRef))
-      .subscribe((value: boolean) => this.enableMdnsAdvertiseSave(value))
+      .subscribe(value => this.enableMdnsAdvertiseSave(value!))
 
-    this.uiAccDebugFormControl.patchValue(this.$settings.env.accessoryControl?.debug, { emitEvent: false })
+    this.uiAccDebugFormControl.patchValue(this.$settings.env.accessoryControl?.debug ?? null, { emitEvent: false })
     this.uiAccDebugFormControl.valueChanges
       .pipe(debounceTime(750), takeUntilDestroyed(this.destroyRef))
-      .subscribe((value: boolean) => this.uiAccDebugSave(value))
+      .subscribe(value => this.uiAccDebugSave(value!))
 
-    this.uiTempFileFormControl.patchValue(this.$settings.env.temp, { emitEvent: false })
+    this.uiTempFileFormControl.patchValue(this.$settings.env.temp ?? null, { emitEvent: false })
     this.uiTempFileFormControl.valueChanges
       .pipe(debounceTime(1500), takeUntilDestroyed(this.destroyRef))
-      .subscribe((value: string) => this.uiTempFileSave(value))
+      .subscribe(value => this.uiTempFileSave(value!))
 
-    this.hbLinuxShutdownFormControl.patchValue(this.$settings.env.linux?.shutdown, { emitEvent: false })
+    this.hbLinuxShutdownFormControl.patchValue(this.$settings.env.linux?.shutdown ?? null, { emitEvent: false })
     this.hbLinuxShutdownFormControl.valueChanges
       .pipe(debounceTime(1500), takeUntilDestroyed(this.destroyRef))
-      .subscribe((value: string) => this.hbLinuxShutdownSave(value))
+      .subscribe(value => this.hbLinuxShutdownSave(value!))
 
-    this.hbLinuxRestartFormControl.patchValue(this.$settings.env.linux?.restart, { emitEvent: false })
+    this.hbLinuxRestartFormControl.patchValue(this.$settings.env.linux?.restart ?? null, { emitEvent: false })
     this.hbLinuxRestartFormControl.valueChanges
       .pipe(debounceTime(1500), takeUntilDestroyed(this.destroyRef))
-      .subscribe((value: string) => this.hbLinuxRestartSave(value))
+      .subscribe(value => this.hbLinuxRestartSave(value!))
 
     this.scheduledRestartCronFormControl.patchValue(this.$settings.env.scheduledRestartCron || '', { emitEvent: false })
     this.scheduledRestartCronFormControl.valueChanges
       .pipe(debounceTime(1500), takeUntilDestroyed(this.destroyRef))
-      .subscribe((value: string) => this.scheduledRestartCronSave(value))
+      .subscribe(value => this.scheduledRestartCronSave(value!))
 
     await this.initMatterSettings()
 
@@ -822,7 +822,7 @@ export class SettingsComponent implements OnInit {
       this.cdr.detectChanges()
       // Show the global restart toast since SSL changes require a restart
       this.showRestartToast()
-    } catch (error) {
+    } catch (error: any) {
       // Modal was dismissed without saving, do nothing
     }
   }
@@ -865,7 +865,7 @@ export class SettingsComponent implements OnInit {
 
       await ref.result
       this.showRestartToast()
-    } catch (error) {
+    } catch (error: any) {
       if (error !== 'Dismiss') {
         console.error(error)
         this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
@@ -915,7 +915,7 @@ export class SettingsComponent implements OnInit {
       this.buildBridgeNetworkAdapterList(adapters)
       await this.$api.put('/server/network-interfaces/bridge', { adapters })
       this.showRestartToast()
-    } catch (error) {
+    } catch (error: any) {
       if (error !== 'Dismiss') {
         console.error(error)
         this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
@@ -930,7 +930,7 @@ export class SettingsComponent implements OnInit {
     })
   }
 
-  public toggleSection(section: string): void {
+  public toggleSection(section: keyof ReturnType<typeof this.showFields>): void {
     this.showFields.set({ ...this.showFields(), [section]: !this.showFields()[section] })
   }
 
@@ -941,28 +941,28 @@ export class SettingsComponent implements OnInit {
       this.hbDebugFormControl.patchValue(startupSettingsData.HOMEBRIDGE_DEBUG, { emitEvent: false })
       this.hbDebugFormControl.valueChanges
         .pipe(debounceTime(750), takeUntilDestroyed(this.destroyRef))
-        .subscribe((value: boolean) => this.hbDebugSave(value))
+        .subscribe(value => this.hbDebugSave(value!))
 
       this.hbInsecureFormControl.patchValue(startupSettingsData.HOMEBRIDGE_INSECURE, { emitEvent: false })
       this.hbInsecureFormControl.valueChanges
         .pipe(debounceTime(750), takeUntilDestroyed(this.destroyRef))
-        .subscribe((value: boolean) => this.hbInsecureSave(value))
+        .subscribe(value => this.hbInsecureSave(value!))
 
       this.hbKeepFormControl.patchValue(startupSettingsData.HOMEBRIDGE_KEEP_ORPHANS, { emitEvent: false })
       this.hbKeepFormControl.valueChanges
         .pipe(debounceTime(750), takeUntilDestroyed(this.destroyRef))
-        .subscribe((value: boolean) => this.hbKeepSave(value))
+        .subscribe(value => this.hbKeepSave(value!))
 
       this.hbEnvDebugFormControl.patchValue(startupSettingsData.ENV_DEBUG, { emitEvent: false })
       this.hbEnvDebugFormControl.valueChanges
         .pipe(debounceTime(1500), takeUntilDestroyed(this.destroyRef))
-        .subscribe((value: string) => this.hbEnvDebugSave(value))
+        .subscribe(value => this.hbEnvDebugSave(value!))
 
       this.hbEnvNodeFormControl.patchValue(startupSettingsData.ENV_NODE_OPTIONS, { emitEvent: false })
       this.hbEnvNodeFormControl.valueChanges
         .pipe(debounceTime(1500), takeUntilDestroyed(this.destroyRef))
-        .subscribe((value: string) => this.hbEnvNodeSave(value))
-    } catch (error) {
+        .subscribe(value => this.hbEnvNodeSave(value!))
+    } catch (error: any) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
     }
@@ -981,7 +981,7 @@ export class SettingsComponent implements OnInit {
         this.showAvahiMdnsOption.set(true)
         this.showResolvedMdnsOption.set(true)
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
     }
@@ -1002,29 +1002,29 @@ export class SettingsComponent implements OnInit {
     this.hbMDnsFormControl.patchValue(mdnsAdvertiser.advertiser, { emitEvent: false })
     this.hbMDnsFormControl.valueChanges
       .pipe(debounceTime(750), takeUntilDestroyed(this.destroyRef))
-      .subscribe((value: string) => this.hbMDnsSave(value))
+      .subscribe(value => this.hbMDnsSave(value!))
 
     this.hbPortFormControl.patchValue(port.port, { emitEvent: false })
     this.hbPortFormControl.valueChanges
       .pipe(debounceTime(1500), takeUntilDestroyed(this.destroyRef))
-      .subscribe((port: number) => this.hbPortSave(port))
+      .subscribe(port => this.hbPortSave(port!))
 
-    this.hbStartPortFormControl.patchValue(ports.start, { emitEvent: false })
+    this.hbStartPortFormControl.patchValue(ports.start ?? null, { emitEvent: false })
     this.hbStartPortFormControl.valueChanges
       .pipe(debounceTime(1500), takeUntilDestroyed(this.destroyRef))
-      .subscribe((port: number) => this.hbStartPortSave(port))
+      .subscribe(port => this.hbStartPortSave(port!))
 
-    this.hbEndPortFormControl.patchValue(ports.end, { emitEvent: false })
+    this.hbEndPortFormControl.patchValue(ports.end ?? null, { emitEvent: false })
     this.hbEndPortFormControl.valueChanges
       .pipe(debounceTime(1500), takeUntilDestroyed(this.destroyRef))
-      .subscribe((port: number) => this.hbEndPortSave(port))
+      .subscribe(port => this.hbEndPortSave(port!))
   }
 
   private async saveUiSettingChange(key: string, value: unknown): Promise<void> {
     // Save the new property to the config file
     try {
       await this.$api.put('/config-editor/ui', { key, value })
-    } catch (error) {
+    } catch (error: any) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
     }
@@ -1044,7 +1044,7 @@ export class SettingsComponent implements OnInit {
       setTimeout(() => {
         this.hbNameIsSaving.set(false)
       }, 1000)
-    } catch (error) {
+    } catch (error: any) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
       this.hbNameIsSaving.set(false)
@@ -1059,7 +1059,7 @@ export class SettingsComponent implements OnInit {
       setTimeout(() => {
         this.uiLangIsSaving.set(false)
       }, 1000)
-    } catch (error) {
+    } catch (error: any) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
       this.uiLangIsSaving.set(false)
@@ -1087,7 +1087,7 @@ export class SettingsComponent implements OnInit {
       setTimeout(() => {
         this.uiThemeIsSaving.set(false)
       }, 1000)
-    } catch (error) {
+    } catch (error: any) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
       this.uiThemeIsSaving.set(false)
@@ -1116,7 +1116,7 @@ export class SettingsComponent implements OnInit {
       setTimeout(() => {
         this.uiLightIsSaving.set(false)
       }, 1000)
-    } catch (error) {
+    } catch (error: any) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
       this.uiLightIsSaving.set(false)
@@ -1130,7 +1130,7 @@ export class SettingsComponent implements OnInit {
       this.$settings.setMenuMode(value)
       await this.saveUiSettingChange('menuMode', value)
       window.location.reload()
-    } catch (error) {
+    } catch (error: any) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
       this.uiMenuIsSaving.set(false)
@@ -1145,7 +1145,7 @@ export class SettingsComponent implements OnInit {
       setTimeout(() => {
         this.uiTempIsSaving.set(false)
       }, 1000)
-    } catch (error) {
+    } catch (error: any) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
       this.uiTempIsSaving.set(false)
@@ -1196,7 +1196,7 @@ export class SettingsComponent implements OnInit {
       setTimeout(() => {
         this.uiTerminalPersistenceIsSaving.set(false)
       }, 1000)
-    } catch (error) {
+    } catch (error: any) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
       this.uiTerminalPersistenceIsSaving.set(false)
@@ -1211,7 +1211,7 @@ export class SettingsComponent implements OnInit {
       setTimeout(() => {
         this.uiTerminalHideWarningIsSaving.set(false)
       }, 1000)
-    } catch (error) {
+    } catch (error: any) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
       this.uiTerminalHideWarningIsSaving.set(false)
@@ -1232,7 +1232,7 @@ export class SettingsComponent implements OnInit {
       setTimeout(() => {
         this.uiTerminalBufferSizeIsSaving.set(false)
       }, 1000)
-    } catch (error) {
+    } catch (error: any) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
       this.uiTerminalBufferSizeIsSaving.set(false)
@@ -1247,7 +1247,7 @@ export class SettingsComponent implements OnInit {
       setTimeout(() => {
         this.uiTerminalFontSizeIsSaving.set(false)
       }, 1000)
-    } catch (error) {
+    } catch (error: any) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
       this.uiTerminalFontSizeIsSaving.set(false)
@@ -1262,7 +1262,7 @@ export class SettingsComponent implements OnInit {
       setTimeout(() => {
         this.uiTerminalFontWeightIsSaving.set(false)
       }, 1000)
-    } catch (error) {
+    } catch (error: any) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
       this.uiTerminalFontWeightIsSaving.set(false)
@@ -1277,7 +1277,7 @@ export class SettingsComponent implements OnInit {
       setTimeout(() => {
         this.uiTerminalLightingModeIsSaving.set(false)
       }, 1000)
-    } catch (error) {
+    } catch (error: any) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
       this.uiTerminalLightingModeIsSaving.set(false)
@@ -1304,7 +1304,7 @@ export class SettingsComponent implements OnInit {
             this.showRestartToast()
           })
       }, 1000)
-    } catch (error) {
+    } catch (error: any) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
       this.hbDebugIsSaving.set(false)
@@ -1331,7 +1331,7 @@ export class SettingsComponent implements OnInit {
             this.showRestartToast()
           })
       }, 1000)
-    } catch (error) {
+    } catch (error: any) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
       this.hbInsecureIsSaving.set(false)
@@ -1359,7 +1359,7 @@ export class SettingsComponent implements OnInit {
             this.showRestartToast()
           })
       }, 1000)
-    } catch (error) {
+    } catch (error: any) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
       this.hbKeepIsSaving.set(false)
@@ -1386,7 +1386,7 @@ export class SettingsComponent implements OnInit {
             this.showRestartToast()
           })
       }, 1000)
-    } catch (error) {
+    } catch (error: any) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
       this.hbEnvDebugIsSaving.set(false)
@@ -1413,7 +1413,7 @@ export class SettingsComponent implements OnInit {
             this.showRestartToast()
           })
       }, 1000)
-    } catch (error) {
+    } catch (error: any) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
       this.hbEnvNodeIsSaving.set(false)
@@ -1441,7 +1441,7 @@ export class SettingsComponent implements OnInit {
         this.hbLogSizeIsSaving.set(false)
         this.showRestartToast()
       }, 1000)
-    } catch (error) {
+    } catch (error: any) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
       this.hbLogSizeIsSaving.set(false)
@@ -1463,7 +1463,7 @@ export class SettingsComponent implements OnInit {
         this.hbLogTruncateIsSaving.set(false)
         this.showRestartToast()
       }, 1000)
-    } catch (error) {
+    } catch (error: any) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
       this.hbLogTruncateIsSaving.set(false)
@@ -1478,7 +1478,7 @@ export class SettingsComponent implements OnInit {
         this.hbMDnsIsSaving.set(false)
         this.showRestartToast()
       }, 1000)
-    } catch (error) {
+    } catch (error: any) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
       this.hbMDnsIsSaving.set(false)
@@ -1499,7 +1499,7 @@ export class SettingsComponent implements OnInit {
         this.hbPortIsSaving.set(false)
         this.showRestartToast()
       }, 1000)
-    } catch (error) {
+    } catch (error: any) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
       this.hbPortIsSaving.set(false)
@@ -1524,7 +1524,7 @@ export class SettingsComponent implements OnInit {
         this.hbStartPortIsSaving.set(false)
         this.showRestartToast()
       }, 1000)
-    } catch (error) {
+    } catch (error: any) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
       this.hbStartPortIsSaving.set(false)
@@ -1550,7 +1550,7 @@ export class SettingsComponent implements OnInit {
         this.hbEndPortIsSaving.set(false)
         this.showRestartToast()
       }, 1000)
-    } catch (error) {
+    } catch (error: any) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
       this.hbEndPortIsSaving.set(false)
@@ -1573,7 +1573,7 @@ export class SettingsComponent implements OnInit {
         this.uiPortIsSaving.set(false)
         this.showRestartToast()
       }, 1000)
-    } catch (error) {
+    } catch (error: any) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
       this.uiPortIsSaving.set(false)
@@ -1585,12 +1585,12 @@ export class SettingsComponent implements OnInit {
       this.uiAuthIsSaving.set(true)
       this.$settings.setItem('formAuth', value)
       await this.saveUiSettingChange('auth', value ? 'form' : 'none')
-      this.$notification.formAuthEnabled.next(value)
+      this.$notification.formAuthEnabled.set(value)
       setTimeout(() => {
         this.uiAuthIsSaving.set(false)
         this.showRestartToast()
       }, 1000)
-    } catch (error) {
+    } catch (error: any) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
       this.uiAuthIsSaving.set(false)
@@ -1630,7 +1630,7 @@ export class SettingsComponent implements OnInit {
         this.uiSessionTimeoutIsSaving.set(false)
         this.showRestartToast()
       }, 1000)
-    } catch (error) {
+    } catch (error: any) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
       this.uiSessionTimeoutIsSaving.set(false)
@@ -1646,7 +1646,7 @@ export class SettingsComponent implements OnInit {
         this.uiSessionTimeoutInactivityBasedIsSaving.set(false)
         this.showRestartToast()
       }, 1000)
-    } catch (error) {
+    } catch (error: any) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
       this.uiSessionTimeoutInactivityBasedIsSaving.set(false)
@@ -1662,7 +1662,7 @@ export class SettingsComponent implements OnInit {
         this.uiSslKeyIsSaving.set(false)
         this.showRestartToast()
       }, 1000)
-    } catch (error) {
+    } catch (error: any) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
       this.uiSslKeyIsSaving.set(false)
@@ -1678,7 +1678,7 @@ export class SettingsComponent implements OnInit {
         this.uiSslCertIsSaving.set(false)
         this.showRestartToast()
       }, 1000)
-    } catch (error) {
+    } catch (error: any) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
       this.uiSslCertIsSaving.set(false)
@@ -1694,7 +1694,7 @@ export class SettingsComponent implements OnInit {
         this.uiSslPfxIsSaving.set(false)
         this.showRestartToast()
       }, 1000)
-    } catch (error) {
+    } catch (error: any) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
       this.uiSslPfxIsSaving.set(false)
@@ -1710,7 +1710,7 @@ export class SettingsComponent implements OnInit {
         this.uiSslPassphraseIsSaving.set(false)
         this.showRestartToast()
       }, 1000)
-    } catch (error) {
+    } catch (error: any) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
       this.uiSslPassphraseIsSaving.set(false)
@@ -1728,7 +1728,7 @@ export class SettingsComponent implements OnInit {
         this.uiSslSelfSignedHostnamesIsSaving.set(false)
         this.showRestartToast()
       }, 1000)
-    } catch (error) {
+    } catch (error: any) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
       this.uiSslSelfSignedHostnamesIsSaving.set(false)
@@ -1796,7 +1796,7 @@ export class SettingsComponent implements OnInit {
         this.uiHostIsSaving.set(false)
         this.showRestartToast()
       }, 1000)
-    } catch (error) {
+    } catch (error: any) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
       this.uiHostIsSaving.set(false)
@@ -1812,7 +1812,7 @@ export class SettingsComponent implements OnInit {
         this.uiProxyHostIsSaving.set(false)
         this.showRestartToast()
       }, 1000)
-    } catch (error) {
+    } catch (error: any) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
       this.uiProxyHostIsSaving.set(false)
@@ -1828,7 +1828,7 @@ export class SettingsComponent implements OnInit {
         this.hbPackageIsSaving.set(false)
         this.showRestartToast()
       }, 1000)
-    } catch (error) {
+    } catch (error: any) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
       this.hbPackageIsSaving.set(false)
@@ -1850,7 +1850,7 @@ export class SettingsComponent implements OnInit {
             this.showRestartToast()
           })
       }, 1000)
-    } catch (error) {
+    } catch (error: any) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
       this.uiMetricsIsSaving.set(false)
@@ -1872,7 +1872,7 @@ export class SettingsComponent implements OnInit {
             this.showRestartToast()
           })
       }, 1000)
-    } catch (error) {
+    } catch (error: any) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
     }
@@ -1887,7 +1887,7 @@ export class SettingsComponent implements OnInit {
         this.uiAccDebugIsSaving.set(false)
         this.showRestartToast()
       }, 1000)
-    } catch (error) {
+    } catch (error: any) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
       this.uiAccDebugIsSaving.set(false)
@@ -1909,7 +1909,7 @@ export class SettingsComponent implements OnInit {
             this.showRestartToast()
           })
       }, 1000)
-    } catch (error) {
+    } catch (error: any) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
       this.uiTempFileIsSaving.set(false)
@@ -1931,7 +1931,7 @@ export class SettingsComponent implements OnInit {
             this.showRestartToast()
           })
       }, 1000)
-    } catch (error) {
+    } catch (error: any) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
       this.hbLinuxShutdownIsSaving.set(false)
@@ -1953,7 +1953,7 @@ export class SettingsComponent implements OnInit {
             this.showRestartToast()
           })
       }, 1000)
-    } catch (error) {
+    } catch (error: any) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
       this.hbLinuxRestartIsSaving.set(false)
@@ -2000,7 +2000,7 @@ export class SettingsComponent implements OnInit {
             this.showRestartToast()
           })
       }, 1000)
-    } catch (error) {
+    } catch (error: any) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
       this.scheduledRestartCronIsSaving.set(false)
@@ -2010,7 +2010,7 @@ export class SettingsComponent implements OnInit {
   private async deleteInvalidSetting(key: string) {
     try {
       await this.$api.delete(`/config-editor/ui/${key}`)
-    } catch (error) {
+    } catch (error: any) {
       console.error(`Failed to delete invalid setting ${key}:`, error)
     }
   }
@@ -2036,29 +2036,29 @@ export class SettingsComponent implements OnInit {
       // Subscribe to form changes
       this.matterPortFormControl.valueChanges
         .pipe(debounceTime(1500), takeUntilDestroyed(this.destroyRef))
-        .subscribe((value: number) => this.matterPortSave(value))
+        .subscribe(value => this.matterPortSave(value!))
 
       // Matter port range
-      this.matterStartPortFormControl.patchValue(matterPorts.start, { emitEvent: false })
+      this.matterStartPortFormControl.patchValue(matterPorts.start ?? null, { emitEvent: false })
       this.matterStartPortFormControl.valueChanges
         .pipe(debounceTime(1500), takeUntilDestroyed(this.destroyRef))
-        .subscribe((value: number) => this.matterStartPortSave(value))
+        .subscribe(value => this.matterStartPortSave(value!))
 
-      this.matterEndPortFormControl.patchValue(matterPorts.end, { emitEvent: false })
+      this.matterEndPortFormControl.patchValue(matterPorts.end ?? null, { emitEvent: false })
       this.matterEndPortFormControl.valueChanges
         .pipe(debounceTime(1500), takeUntilDestroyed(this.destroyRef))
-        .subscribe((value: number) => this.matterEndPortSave(value))
+        .subscribe(value => this.matterEndPortSave(value!))
 
       // Set enabled state
       this.matterEnabledFormControl.patchValue(isEnabled, { emitEvent: false })
 
       // Subscribe to toggle changes
-      this.matterEnabledFormControl.valueChanges.subscribe((value: boolean) => this.matterEnabledSave(value))
-    } catch (error) {
+      this.matterEnabledFormControl.valueChanges.subscribe(value => this.matterEnabledSave(value!))
+    } catch (error: any) {
       console.error(error)
       // Don't show error toast - Matter might not be configured yet
       // Subscribe to toggle changes even if config doesn't exist yet
-      this.matterEnabledFormControl.valueChanges.subscribe((value: boolean) => this.matterEnabledSave(value))
+      this.matterEnabledFormControl.valueChanges.subscribe(value => this.matterEnabledSave(value!))
     }
   }
 
@@ -2076,7 +2076,7 @@ export class SettingsComponent implements OnInit {
           this.matterPortIsSaving.set(false)
           this.showRestartToast()
         }, 1000)
-      } catch (error) {
+      } catch (error: any) {
         console.error(error)
         this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
         this.matterPortIsSaving.set(false)
@@ -2107,7 +2107,7 @@ export class SettingsComponent implements OnInit {
         this.matterPortIsSaving.set(false)
         this.showRestartToast()
       }, 1000)
-    } catch (error) {
+    } catch (error: any) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
       this.matterPortIsSaving.set(false)
@@ -2133,7 +2133,7 @@ export class SettingsComponent implements OnInit {
         this.matterStartPortIsSaving.set(false)
         this.showRestartToast()
       }, 1000)
-    } catch (error) {
+    } catch (error: any) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
       this.matterStartPortIsSaving.set(false)
@@ -2159,7 +2159,7 @@ export class SettingsComponent implements OnInit {
         this.matterEndPortIsSaving.set(false)
         this.showRestartToast()
       }, 1000)
-    } catch (error) {
+    } catch (error: any) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
       this.matterEndPortIsSaving.set(false)
@@ -2182,7 +2182,7 @@ export class SettingsComponent implements OnInit {
           try {
             const portResponse = await this.$api.get('/server/port/new/matter')
             port = portResponse!.port
-          } catch (error) {
+          } catch (error: any) {
             console.error('Failed to get Matter port, using fallback', error)
             // Fallback to Matter port range if API call fails
             port = Math.floor(Math.random() * (5541 - 5530 + 1) + 5530)
@@ -2244,7 +2244,7 @@ export class SettingsComponent implements OnInit {
             queryParams: { alreadyRestarting: 'true' },
           })
           await this.$api.delete('/config-editor/matter')
-        } catch (error) {
+        } catch (error: any) {
           if (error === 'Dismiss') {
             // User canceled - revert the toggle
             this.matterEnabledFormControl.patchValue(true, { emitEvent: false })
@@ -2258,7 +2258,7 @@ export class SettingsComponent implements OnInit {
           }
         }
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
       this.matterEnabledFormControl.patchValue(value, { emitEvent: false })

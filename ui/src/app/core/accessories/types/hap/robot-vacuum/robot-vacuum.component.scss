@@ -2,12 +2,10 @@
   display: none;
 }
 
-::ng-deep {
-  .accessory-on {
-    svg {
-      .motion-lines {
-        display: inline !important;
-      }
+.accessory-on {
+  svg {
+    .motion-lines {
+      display: inline !important;
     }
   }
 }

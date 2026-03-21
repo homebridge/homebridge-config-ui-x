@@ -1,25 +1,23 @@
-::ng-deep {
-  .accessory-on {
-    svg {
-      .air-line {
-        stroke: #d32f2f;
-        animation: flash 1s infinite;
+.accessory-on {
+  svg {
+    .air-line {
+      stroke: #d32f2f;
+      animation: flash 1s infinite;
+    }
+
+    .type {
+      fill: #d32f2f;
+      animation: flash 1s infinite;
+    }
+
+    @keyframes flash {
+      0%,
+      100% {
+        opacity: 1;
       }
 
-      .type {
-        fill: #d32f2f;
-        animation: flash 1s infinite;
-      }
-
-      @keyframes flash {
-        0%,
-        100% {
-          opacity: 1;
-        }
-
-        50% {
-          opacity: 0.2;
-        }
+      50% {
+        opacity: 0.2;
       }
     }
   }

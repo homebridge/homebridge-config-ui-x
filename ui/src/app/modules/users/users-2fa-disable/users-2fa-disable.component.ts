@@ -50,7 +50,7 @@ export class Users2faDisableComponent {
       this.$toastr.success(this.$translate.instant('users.setup_2fa_disable_success'), this.$translate.instant('toast.title_success'))
 
       // Clear the legacy OTP notification immediately
-      this.$notification.legacyOtpDetected.next(false)
+      this.$notification.legacyOtpDetected.set(false)
 
       // Force a token refresh to get updated user data without otpLegacySecret flag
       try {

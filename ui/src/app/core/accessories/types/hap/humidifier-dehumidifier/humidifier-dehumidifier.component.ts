@@ -68,9 +68,9 @@ export class HumidifierDehumidifierComponent implements OnInit {
     }
 
     if ('Active' in this.service().values) {
-      void this.service().getCharacteristic('Active').setValue(this.service().values.Active ? 0 : 1)
+      void this.service().getCharacteristic!('Active').setValue!(this.service().values.Active ? 0 : 1)
     } else if ('On' in this.service().values) {
-      void this.service().getCharacteristic('On').setValue(!this.service().values.On)
+      void this.service().getCharacteristic!('On').setValue!(!this.service().values.On)
     }
   }
 

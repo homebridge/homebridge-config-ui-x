@@ -1,268 +1,80 @@
-::ng-deep {
-  .opening {
-    svg {
-      .window {
-        fill: #ff9800 !important;
-        fill-opacity: 0.5 !important;
-      }
-
-      .line {
-        animation: fade-out 0.5s ease-in-out forwards;
-      }
-
-      .line1 {
-        animation-delay: 9.282s;
-      }
-
-      .line2 {
-        animation-delay: 8.568s;
-      }
-
-      .line3 {
-        animation-delay: 7.854s;
-      }
-
-      .line4 {
-        animation-delay: 7.14s;
-      }
-
-      .line5 {
-        animation-delay: 6.426s;
-      }
-
-      .line6 {
-        animation-delay: 5.712s;
-      }
-
-      .line7 {
-        animation-delay: 4.998s;
-      }
-
-      .line8 {
-        animation-delay: 4.284s;
-      }
-
-      .line9 {
-        animation-delay: 3.57s;
-      }
-
-      .line10 {
-        animation-delay: 2.856s;
-      }
-
-      .line11 {
-        animation-delay: 2.142s;
-      }
-
-      .line12 {
-        animation-delay: 1.428s;
-      }
-
-      .line13 {
-        animation-delay: 0.714s;
-      }
-
-      .line14 {
-        animation-delay: 0s;
-      }
-
-      @keyframes fade-out {
-        to {
-          opacity: 0;
-        }
-      }
-    }
-  }
-
-  .opening.from-stopped {
-    svg {
-      .line7,
-      .line8,
-      .line9,
-      .line10,
-      .line11,
-      .line12,
-      .line13,
-      .line14 {
-        animation: none !important;
-        opacity: 0;
-      }
-
-      .line6 {
-        animation-delay: 0s !important;
-      }
-
-      .line5 {
-        animation-delay: 0.714s !important;
-      }
-
-      .line4 {
-        animation-delay: 1.428s !important;
-      }
-
-      .line3 {
-        animation-delay: 2.142s !important;
-      }
-
-      .line2 {
-        animation-delay: 2.856s !important;
-      }
-
-      .line1 {
-        animation-delay: 3.57s !important;
-      }
-    }
-  }
-
-  .closing.from-stopped {
-    svg {
-      .line1,
-      .line2,
-      .line3,
-      .line4,
-      .line5,
-      .line6 {
-        animation: none !important;
-        opacity: 1;
-      }
-
-      .line7 {
-        animation-delay: 0s !important;
-      }
-
-      .line8 {
-        animation-delay: 0.714s !important;
-      }
-
-      .line9 {
-        animation-delay: 1.428s !important;
-      }
-
-      .line10 {
-        animation-delay: 2.142s !important;
-      }
-
-      .line11 {
-        animation-delay: 2.856s !important;
-      }
-
-      .line12 {
-        animation-delay: 3.57s !important;
-      }
-
-      .line13 {
-        animation-delay: 4.284s !important;
-      }
-
-      .line14 {
-        animation-delay: 4.998s !important;
-      }
-    }
-  }
-
-  .open {
+.opening {
+  svg {
     .window {
-      fill: #d32f2f !important;
+      fill: #ff9800 !important;
       fill-opacity: 0.5 !important;
     }
 
     .line {
-      opacity: 0;
+      animation: fade-out 0.5s ease-in-out forwards;
     }
-  }
 
-  .closing {
-    svg {
-      .window {
-        fill: #ff9800 !important;
-        fill-opacity: 0.5 !important;
-      }
+    .line1 {
+      animation-delay: 9.282s;
+    }
 
-      .line {
+    .line2 {
+      animation-delay: 8.568s;
+    }
+
+    .line3 {
+      animation-delay: 7.854s;
+    }
+
+    .line4 {
+      animation-delay: 7.14s;
+    }
+
+    .line5 {
+      animation-delay: 6.426s;
+    }
+
+    .line6 {
+      animation-delay: 5.712s;
+    }
+
+    .line7 {
+      animation-delay: 4.998s;
+    }
+
+    .line8 {
+      animation-delay: 4.284s;
+    }
+
+    .line9 {
+      animation-delay: 3.57s;
+    }
+
+    .line10 {
+      animation-delay: 2.856s;
+    }
+
+    .line11 {
+      animation-delay: 2.142s;
+    }
+
+    .line12 {
+      animation-delay: 1.428s;
+    }
+
+    .line13 {
+      animation-delay: 0.714s;
+    }
+
+    .line14 {
+      animation-delay: 0s;
+    }
+
+    @keyframes fade-out {
+      to {
         opacity: 0;
-        animation: fade-in 0.5s ease-in-out forwards;
-      }
-
-      .line1 {
-        animation-delay: 0s;
-      }
-
-      .line2 {
-        animation-delay: 0.714s;
-      }
-
-      .line3 {
-        animation-delay: 1.428s;
-      }
-
-      .line4 {
-        animation-delay: 2.142s;
-      }
-
-      .line5 {
-        animation-delay: 2.856s;
-      }
-
-      .line6 {
-        animation-delay: 3.57s;
-      }
-
-      .line7 {
-        animation-delay: 4.284s;
-      }
-
-      .line8 {
-        animation-delay: 4.998s;
-      }
-
-      .line9 {
-        animation-delay: 5.712s;
-      }
-
-      .line10 {
-        animation-delay: 6.426s;
-      }
-
-      .line11 {
-        animation-delay: 7.14s;
-      }
-
-      .line12 {
-        animation-delay: 7.854s;
-      }
-
-      .line13 {
-        animation-delay: 8.568s;
-      }
-
-      .line14 {
-        animation-delay: 9.282s;
-      }
-
-      @keyframes fade-in {
-        to {
-          opacity: 1;
-        }
       }
     }
   }
+}
 
-  .closed {
-    .window {
-      fill: #4caf50 !important;
-      fill-opacity: 0.5 !important;
-    }
-
-    .line {
-      opacity: 1;
-    }
-  }
-
-  .stopped {
-    .window {
-      fill: #d32f2f !important;
-    }
-
+.opening.from-stopped {
+  svg {
     .line7,
     .line8,
     .line9,
@@ -271,25 +83,211 @@
     .line12,
     .line13,
     .line14 {
+      animation: none !important;
       opacity: 0;
     }
-  }
 
-  .obstructed {
-    .window {
-      animation: flash 2s infinite;
-      fill: #d32f2f !important;
+    .line6 {
+      animation-delay: 0s !important;
     }
 
-    @keyframes flash {
-      0%,
-      100% {
+    .line5 {
+      animation-delay: 0.714s !important;
+    }
+
+    .line4 {
+      animation-delay: 1.428s !important;
+    }
+
+    .line3 {
+      animation-delay: 2.142s !important;
+    }
+
+    .line2 {
+      animation-delay: 2.856s !important;
+    }
+
+    .line1 {
+      animation-delay: 3.57s !important;
+    }
+  }
+}
+
+.closing.from-stopped {
+  svg {
+    .line1,
+    .line2,
+    .line3,
+    .line4,
+    .line5,
+    .line6 {
+      animation: none !important;
+      opacity: 1;
+    }
+
+    .line7 {
+      animation-delay: 0s !important;
+    }
+
+    .line8 {
+      animation-delay: 0.714s !important;
+    }
+
+    .line9 {
+      animation-delay: 1.428s !important;
+    }
+
+    .line10 {
+      animation-delay: 2.142s !important;
+    }
+
+    .line11 {
+      animation-delay: 2.856s !important;
+    }
+
+    .line12 {
+      animation-delay: 3.57s !important;
+    }
+
+    .line13 {
+      animation-delay: 4.284s !important;
+    }
+
+    .line14 {
+      animation-delay: 4.998s !important;
+    }
+  }
+}
+
+.open {
+  .window {
+    fill: #d32f2f !important;
+    fill-opacity: 0.5 !important;
+  }
+
+  .line {
+    opacity: 0;
+  }
+}
+
+.closing {
+  svg {
+    .window {
+      fill: #ff9800 !important;
+      fill-opacity: 0.5 !important;
+    }
+
+    .line {
+      opacity: 0;
+      animation: fade-in 0.5s ease-in-out forwards;
+    }
+
+    .line1 {
+      animation-delay: 0s;
+    }
+
+    .line2 {
+      animation-delay: 0.714s;
+    }
+
+    .line3 {
+      animation-delay: 1.428s;
+    }
+
+    .line4 {
+      animation-delay: 2.142s;
+    }
+
+    .line5 {
+      animation-delay: 2.856s;
+    }
+
+    .line6 {
+      animation-delay: 3.57s;
+    }
+
+    .line7 {
+      animation-delay: 4.284s;
+    }
+
+    .line8 {
+      animation-delay: 4.998s;
+    }
+
+    .line9 {
+      animation-delay: 5.712s;
+    }
+
+    .line10 {
+      animation-delay: 6.426s;
+    }
+
+    .line11 {
+      animation-delay: 7.14s;
+    }
+
+    .line12 {
+      animation-delay: 7.854s;
+    }
+
+    .line13 {
+      animation-delay: 8.568s;
+    }
+
+    .line14 {
+      animation-delay: 9.282s;
+    }
+
+    @keyframes fade-in {
+      to {
         opacity: 1;
       }
+    }
+  }
+}
 
-      50% {
-        opacity: 0.2;
-      }
+.closed {
+  .window {
+    fill: #4caf50 !important;
+    fill-opacity: 0.5 !important;
+  }
+
+  .line {
+    opacity: 1;
+  }
+}
+
+.stopped {
+  .window {
+    fill: #d32f2f !important;
+  }
+
+  .line7,
+  .line8,
+  .line9,
+  .line10,
+  .line11,
+  .line12,
+  .line13,
+  .line14 {
+    opacity: 0;
+  }
+}
+
+.obstructed {
+  .window {
+    animation: flash 2s infinite;
+    fill: #d32f2f !important;
+  }
+
+  @keyframes flash {
+    0%,
+    100% {
+      opacity: 1;
+    }
+
+    50% {
+      opacity: 0.2;
     }
   }
 }

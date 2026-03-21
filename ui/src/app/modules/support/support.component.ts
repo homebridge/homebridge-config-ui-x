@@ -40,7 +40,7 @@ export class SupportComponent implements OnInit {
       : `${environment.api.origin}${this.swaggerEndpoint}`
   }
 
-  public toggleSection(section: string): void {
+  public toggleSection(section: keyof ReturnType<typeof this.showFields>): void {
     this.showFields.update(fields => ({
       ...fields,
       [section]: !fields[section],

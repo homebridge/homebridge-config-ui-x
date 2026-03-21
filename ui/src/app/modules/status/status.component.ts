@@ -46,15 +46,15 @@ export class StatusComponent implements OnInit, OnDestroy {
   private $settings = inject(SettingsService)
   private $ws = inject(WsService)
   private readonly isUnlocked = signal(false)
-  private io: IoNamespace
+  private io!: IoNamespace
 
   public isAdmin = this.$auth.user.admin
   public isMatterSupported = this.$settings.isFeatureEnabled('matterSupport')
   public saveWidgetsEvent = new Subject()
-  public options: GridsterConfig
+  public options!: GridsterConfig
   public readonly dashboard = signal<Array<GridsterItemConfig>>([])
   public readonly consoleStatus = signal<'up' | 'down'>('down')
-  public currentYear: number
+  public currentYear!: number
   public readonly page = signal({
     mobile: (window.innerWidth < 1024),
     showWidgetConfigure: (window.innerWidth < 576),
@@ -94,7 +94,7 @@ export class StatusComponent implements OnInit, OnDestroy {
     }
 
     // Subscribe for reconnections
-    this.io.connected.subscribe(() => {
+    this.io.connected!.subscribe(() => {
       this.consoleStatus.set('up')
       this.io.socket.emit('monitor-server-status')
       this.getLayout()
@@ -131,7 +131,7 @@ export class StatusComponent implements OnInit, OnDestroy {
     // If raspberry pi, do a check for throttled
     if (this.$settings.env.runningOnRaspberryPi) {
       this.io.request('get-raspberry-pi-throttled-status').subscribe((throttled) => {
-        this.$notification.raspberryPiThrottled.next(throttled)
+        this.$notification.raspberryPiThrottled.set(throttled)
       })
     }
   }
@@ -197,7 +197,7 @@ export class StatusComponent implements OnInit, OnDestroy {
             $resizeEvent: new Subject(),
             $configureEvent: new Subject(),
             $saveWidgetsEvent: this.saveWidgetsEvent,
-            draggable: this.options.draggable.enabled,
+            draggable: this.options.draggable!.enabled,
           })
         } else if (!visibleAnywhere && existingIndex > -1) {
           // Widget hidden on both desktop and mobile — remove it
@@ -269,7 +269,7 @@ export class StatusComponent implements OnInit, OnDestroy {
   }
 
   public ngOnDestroy() {
-    this.io.end()
+    this.io.end!()
     this.saveWidgetsEvent.complete()
   }
 
@@ -327,7 +327,7 @@ export class StatusComponent implements OnInit, OnDestroy {
       $resizeEvent: item.$resizeEvent || new Subject(),
       $configureEvent: item.$configureEvent || new Subject(),
       $saveWidgetsEvent: this.saveWidgetsEvent,
-      draggable: this.options.draggable.enabled,
+      draggable: this.options.draggable!.enabled,
     })))
   }
 

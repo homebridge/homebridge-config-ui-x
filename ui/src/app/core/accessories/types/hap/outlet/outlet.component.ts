@@ -26,10 +26,14 @@ export class OutletComponent {
 
   public isOn(): boolean {
     const values = this.service().values
-    return !!(values?.On
-      || values?.Active
-      || ('LockTargetState' in values && !values?.LockTargetState)
-      || ('CurrentDoorState' in values && [0, 2].includes(values?.CurrentDoorState)))
+    if (!values) {
+      return false
+    }
+
+    return !!(values.On
+      || values.Active
+      || ('LockTargetState' in values && !values.LockTargetState)
+      || ('CurrentDoorState' in values && [0, 2].includes(values.CurrentDoorState)))
   }
 
   public onClick() {
@@ -38,13 +42,13 @@ export class OutletComponent {
     }
 
     if ('On' in this.service().values) {
-      void this.service().getCharacteristic('On').setValue(!this.service().values.On)
+      void this.service().getCharacteristic!('On').setValue!(!this.service().values.On)
     } else if ('Active' in this.service().values) {
-      void this.service().getCharacteristic('Active').setValue(this.service().values.Active ? 0 : 1)
+      void this.service().getCharacteristic!('Active').setValue!(this.service().values.Active ? 0 : 1)
     } else if ('LockTargetState' in this.service().values) {
-      void this.service().getCharacteristic('LockTargetState').setValue(this.service().values.LockTargetState ? 0 : 1)
+      void this.service().getCharacteristic!('LockTargetState').setValue!(this.service().values.LockTargetState ? 0 : 1)
     } else if ('TargetDoorState' in this.service().values) {
-      void this.service().getCharacteristic('TargetDoorState').setValue(this.service().values.TargetDoorState ? 0 : 1)
+      void this.service().getCharacteristic!('TargetDoorState').setValue!(this.service().values.TargetDoorState ? 0 : 1)
     }
   }
 }

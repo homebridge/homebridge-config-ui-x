@@ -44,6 +44,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix duplicate restart modals showing + not hiding
 - refresh users screenshot in `screenshots` folder
 - use state labels for `CurrentMediaState`
+- enable `strict` mode in `./ui` tsconfig + code fixes
 
 ### Homebridge Dependencies
 

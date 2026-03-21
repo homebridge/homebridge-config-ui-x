@@ -28,20 +28,22 @@ export class GarageDoorOpenerComponent {
   public readonly readyForControl = input<boolean>(false)
 
   public readonly fromStopped = signal(false)
-  private lastDoorState: number | undefined
-  private lastMovingDirection: number | undefined
+  private lastDoorState: number | undefined = undefined
+  private lastMovingDirection: number | undefined = undefined
 
-  private stateTracker = effect(() => {
-    const currentState = this.service().values?.CurrentDoorState
-    if (currentState !== this.lastDoorState) {
-      const wasStopped = this.lastDoorState === 4
-      this.fromStopped.set(wasStopped && (currentState === 2 || currentState === 3))
-      if (currentState === 2 || currentState === 3) {
-        this.lastMovingDirection = currentState
+  constructor() {
+    effect(() => {
+      const currentState = this.service().values?.CurrentDoorState
+      if (currentState !== this.lastDoorState) {
+        const wasStopped = this.lastDoorState === 4
+        this.fromStopped.set(wasStopped && (currentState === 2 || currentState === 3))
+        if (currentState === 2 || currentState === 3) {
+          this.lastMovingDirection = currentState
+        }
+        this.lastDoorState = currentState
       }
-      this.lastDoorState = currentState
-    }
-  })
+    })
+  }
 
   public onClick() {
     if (!this.readyForControl()) {
@@ -57,16 +59,16 @@ export class GarageDoorOpenerComponent {
       // If Current is Stopped, reverse the last moving direction
       if (currentState === 4) {
         // Was Closing -> Open, was Opening -> Close
-        void this.service().getCharacteristic('TargetDoorState').setValue(this.lastMovingDirection === 3 ? 0 : 1)
+        void this.service().getCharacteristic!('TargetDoorState').setValue!(this.lastMovingDirection === 3 ? 0 : 1)
       } else if (currentState === 1 || currentState === 3) {
-        void this.service().getCharacteristic('TargetDoorState').setValue(0)
+        void this.service().getCharacteristic!('TargetDoorState').setValue!(0)
       } else {
-        void this.service().getCharacteristic('TargetDoorState').setValue(1)
+        void this.service().getCharacteristic!('TargetDoorState').setValue!(1)
       }
     } else if ('On' in this.service().values) {
-      void this.service().getCharacteristic('On').setValue(!this.service().values.On)
+      void this.service().getCharacteristic!('On').setValue!(!this.service().values.On)
     } else if ('Active' in this.service().values) {
-      void this.service().getCharacteristic('Active').setValue(!this.service().values.Active)
+      void this.service().getCharacteristic!('Active').setValue!(!this.service().values.Active)
     }
   }
 

@@ -4,7 +4,7 @@ import { AbstractControl, FormControl, FormGroup, FormsModule, ReactiveFormsModu
 import { Title } from '@angular/platform-browser'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
-import { firstValueFrom } from 'rxjs'
+import { firstValueFrom, interval } from 'rxjs'
 
 import { AuthService } from '@/app/core/auth/auth.service'
 import { ApiService } from '@/app/core/communication/api.service'
@@ -47,10 +47,10 @@ export class SetupWizardComponent implements OnInit {
   public readonly restoreUploading = signal(false)
 
   // Other properties
-  private io: IoNamespace
+  private io!: IoNamespace
   public createUserForm = new FormGroup({
     username: new FormControl('', [Validators.required]),
-    password: new FormControl('', [Validators.compose([Validators.required, Validators.minLength(4)])]),
+    password: new FormControl('', [Validators.required, Validators.minLength(4)]),
     passwordConfirm: new FormControl('', [Validators.required]),
   }, this.matchPassword)
 
@@ -92,7 +92,7 @@ export class SetupWizardComponent implements OnInit {
         password: payload.password,
       })
       this.step.set('setup-complete')
-    } catch (error) {
+    } catch (error: any) {
       this.loading.set(false)
       this.progress.set(50)
       console.error(error)
@@ -124,14 +124,14 @@ export class SetupWizardComponent implements OnInit {
 
       // upload archive
       const formData: FormData = new FormData()
-      const selectedFile = this.selectedFile()
+      const selectedFile = this.selectedFile()!
       formData.append('restoreArchive', selectedFile, selectedFile.name)
       await this.$api.post('/backup/restore', formData)
       this.progress.set(70)
 
       // start restore
       this.io = this.$ws.connectToNamespace('backup')
-      const outputBox = document.getElementById('output')
+      const outputBox = document.getElementById('output')!
       let spinnerElement: HTMLDivElement | null = null
       this.io.socket.on('stdout', (data) => {
         const lines = data.split(RE_NEWLINE)
@@ -204,18 +204,18 @@ export class SetupWizardComponent implements OnInit {
       await new Promise(resolve => setTimeout(resolve, 3000))
       this.progress.set(99)
 
-      const checkHomebridgeInterval = setInterval(async () => {
+      const sub = interval(1000).subscribe(async () => {
         try {
           await this.$api.get('/auth/settings')
-          clearInterval(checkHomebridgeInterval)
+          sub.unsubscribe()
           this.progress.set(100)
           this.restoreUploading.set(false)
           this.step.set('restore-complete')
-        } catch (error) {
+        } catch {
           // not up yet
         }
-      }, 1000)
-    } catch (error) {
+      })
+    } catch (error: any) {
       console.error(error)
       this.restoreUploading.set(false)
       this.restoreFailed.set(true)
@@ -224,7 +224,7 @@ export class SetupWizardComponent implements OnInit {
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
     } finally {
       if (this.io) {
-        this.io.end()
+        this.io.end?.()
       }
     }
   }
@@ -241,10 +241,11 @@ export class SetupWizardComponent implements OnInit {
   }
 
   private matchPassword(AC: AbstractControl) {
-    const password = AC.get('password').value
-    const passwordConfirm = AC.get('passwordConfirm').value
+    const password = AC.get('password')!.value
+    const passwordConfirm = AC.get('passwordConfirm')!.value
     if (password !== passwordConfirm) {
-      AC.get('passwordConfirm').setErrors({ matchPassword: true })
+      AC.get('passwordConfirm')!.setErrors({ matchPassword: true })
+      return { matchPassword: true }
     } else {
       return null
     }

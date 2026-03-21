@@ -13,7 +13,7 @@ import { BaseManageComponent } from '@/app/core/accessories/types/base-manage.co
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class GarageDoorOpenerManageComponent extends BaseManageComponent {
-  public targetState: number
+  public targetState!: number
   private lastMovingDirection: number | undefined
 
   protected setupComponent() {
@@ -39,7 +39,7 @@ export class GarageDoorOpenerManageComponent extends BaseManageComponent {
   }
 
   public setTargetState(value: number, event: MouseEvent) {
-    void this.service.getCharacteristic('TargetDoorState').setValue(value)
+    void this.service.getCharacteristic!('TargetDoorState')!.setValue!(value)
 
     this.blurTarget(event)
   }

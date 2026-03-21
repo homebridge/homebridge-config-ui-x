@@ -77,9 +77,9 @@ export class LogsComponent implements OnInit, OnDestroy, CanComponentDeactivate 
 
     // Set body bg color based on terminal theme
     if (this.terminalTheme === 'dark') {
-      window.document.querySelector('body').classList.add('bg-black')
+      window.document.querySelector('body')!.classList.add('bg-black')
     } else {
-      window.document.querySelector('body').classList.add('bg-white')
+      window.document.querySelector('body')!.classList.add('bg-white')
     }
 
     // Add transition class only when main theme is light AND terminal theme is dark
@@ -90,7 +90,7 @@ export class LogsComponent implements OnInit, OnDestroy, CanComponentDeactivate 
     )
 
     if (needsTransition) {
-      window.document.querySelector('body').classList.add('theme-transition')
+      window.document.querySelector('body')!.classList.add('theme-transition')
       const terminal = this.termTarget()?.nativeElement
       if (terminal) {
         terminal.classList.add('theme-transition')
@@ -98,7 +98,7 @@ export class LogsComponent implements OnInit, OnDestroy, CanComponentDeactivate 
     }
 
     // Start the terminal
-    this.$log.startTerminal(this.termTarget(), this.$settings.getTerminalOptions(), this.resizeEvent)
+    this.$log.startTerminal(this.termTarget()!, this.$settings.getTerminalOptions(), this.resizeEvent)
 
     // Watch for changes in the search query
     this.form.get('query')?.valueChanges.pipe(
@@ -185,8 +185,8 @@ export class LogsComponent implements OnInit, OnDestroy, CanComponentDeactivate 
 
     // If no transition needed, navigate immediately
     if (!needsTransition) {
-      window.document.querySelector('body').classList.remove('bg-black')
-      window.document.querySelector('body').classList.remove('bg-white')
+      window.document.querySelector('body')!.classList.remove('bg-black')
+      window.document.querySelector('body')!.classList.remove('bg-white')
       return Promise.resolve(true)
     }
 
@@ -196,7 +196,7 @@ export class LogsComponent implements OnInit, OnDestroy, CanComponentDeactivate 
     }
 
     // Remove theme-transition class from body
-    window.document.querySelector('body').classList.remove('theme-transition')
+    window.document.querySelector('body')!.classList.remove('theme-transition')
 
     return new Promise((resolve) => {
       // Check if we're navigating to another page with the same terminal theme
@@ -220,8 +220,8 @@ export class LogsComponent implements OnInit, OnDestroy, CanComponentDeactivate 
         // Wait for fade-out animation (250ms) and body background transition (250ms)
         setTimeout(() => {
           // Remove body bg color to trigger background transition
-          window.document.querySelector('body').classList.remove('bg-black')
-          window.document.querySelector('body').classList.remove('bg-white')
+          window.document.querySelector('body')!.classList.remove('bg-black')
+          window.document.querySelector('body')!.classList.remove('bg-white')
         }, 250)
 
         // Wait for both animations to complete before allowing navigation
@@ -234,7 +234,7 @@ export class LogsComponent implements OnInit, OnDestroy, CanComponentDeactivate 
 
   public ngOnDestroy() {
     // Clean up light-mode class
-    window.document.querySelector('body').classList.remove('light-mode')
+    window.document.querySelector('body')!.classList.remove('light-mode')
 
     // Complete resize subject
     this.resizeEvent.complete()
@@ -268,7 +268,7 @@ export class LogsComponent implements OnInit, OnDestroy, CanComponentDeactivate 
         // If search is active, filter the log content
         const searchFilter = this.$log.getSearchFilter()
         if (searchFilter) {
-          const logText = await res.body.text()
+          const logText = await res.body!.text()
           const filteredLines = logText.split('\n').filter((line: string) => {
             const cleanLine = line.replace(RE_ANSI_SIMPLE, '').toLowerCase()
             return cleanLine.includes(searchFilter.toLowerCase())
@@ -276,7 +276,7 @@ export class LogsComponent implements OnInit, OnDestroy, CanComponentDeactivate 
           const filteredBlob = new Blob([filteredLines.join('\n')], { type: 'text/plain' })
           saveAs(filteredBlob, 'homebridge.log.txt')
         } else {
-          saveAs(res.body, 'homebridge.log.txt')
+          saveAs(res.body!, 'homebridge.log.txt')
         }
       } catch (err) {
         let message: string | undefined

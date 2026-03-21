@@ -1,11 +1,10 @@
-import { Injectable } from '@angular/core'
-import { BehaviorSubject, Subject } from 'rxjs'
+import { Injectable, signal } from '@angular/core'
 
 @Injectable({
   providedIn: 'root',
 })
 export class NotificationService {
-  readonly raspberryPiThrottled: Subject<Record<string, boolean>> = new Subject()
-  readonly formAuthEnabled: Subject<boolean> = new Subject()
-  readonly legacyOtpDetected: BehaviorSubject<boolean> = new BehaviorSubject(false)
+  readonly raspberryPiThrottled = signal<Record<string, boolean>>({})
+  readonly formAuthEnabled = signal<boolean | null>(null)
+  readonly legacyOtpDetected = signal(false)
 }

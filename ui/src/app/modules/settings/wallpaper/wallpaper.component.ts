@@ -32,7 +32,7 @@ export class WallpaperComponent implements OnInit {
   public readonly originalWallpaperUrl = signal<string | null>(null)
 
   // Other properties
-  public maxFileSizeText = globalThis.backup.maxBackupSizeText
+  public maxFileSizeText: string = globalThis.backup.maxBackupSizeText
 
   public ngOnInit(): void {
     if (this.$settings.env.customWallpaperHash) {
@@ -49,7 +49,7 @@ export class WallpaperComponent implements OnInit {
       reader.onload = (e: any) => {
         this.wallpaperUrl.set(e.target.result)
       }
-      reader.readAsDataURL(this.selectedFile())
+      reader.readAsDataURL(this.selectedFile()!)
     } else {
       this.selectedFile.set(null)
       this.wallpaperUrl.set(this.originalWallpaperUrl())
@@ -61,7 +61,7 @@ export class WallpaperComponent implements OnInit {
     try {
       if (this.selectedFile()) {
         const formData: FormData = new FormData()
-        formData.append('wallpaper', this.selectedFile(), this.selectedFile()?.name)
+        formData.append('wallpaper', this.selectedFile()!, this.selectedFile()?.name)
         await this.$api.post('/server/wallpaper', formData)
         this.$settings.setItem('wallpaper', `ui-wallpaper.${this.selectedFile()?.name.split('.').pop()}`)
         this.$activeModal.close()
@@ -70,7 +70,7 @@ export class WallpaperComponent implements OnInit {
         await this.$api.delete('/server/wallpaper')
         this.$activeModal.close()
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error(error)
       this.$toastr.error(error.error?.message, this.$translate.instant('toast.title_error'))
       this.clicked.set(false)

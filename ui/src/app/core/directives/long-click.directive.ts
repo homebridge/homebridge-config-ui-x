@@ -17,7 +17,7 @@ import { RE_IPAD_IPHONE_IPOD, RE_NON_SAFARI, RE_SAFARI } from '@/app/core/regex.
   },
 })
 export class LongClickDirective implements OnDestroy {
-  private downTimeout: NodeJS.Timeout
+  private downTimeout!: NodeJS.Timeout
   private done = false
   private touchInProgress = false
   private touchStartTime = 0

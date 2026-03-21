@@ -40,8 +40,8 @@ export class BridgesWidgetComponent implements OnInit, OnDestroy {
   public readonly isRestarting = signal<boolean>(false)
 
   // Other properties
-  private ioMain: IoNamespace
-  private ioChild: IoNamespace
+  private ioMain!: IoNamespace
+  private ioChild!: IoNamespace
   public isAdmin = this.$auth.user.admin
   public isMatterSupported = this.$settings.isFeatureEnabled('matterSupport')
 
@@ -59,7 +59,7 @@ export class BridgesWidgetComponent implements OnInit, OnDestroy {
       }
     })
 
-    this.ioMain.connected.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+    this.ioMain.connected!.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
       this.getHomebridgeStatus()
     })
 
@@ -69,7 +69,7 @@ export class BridgesWidgetComponent implements OnInit, OnDestroy {
 
     this.ioChild = this.$ws.connectToNamespace('child-bridges')
 
-    this.ioChild.connected.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+    this.ioChild.connected!.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
       this.getChildBridgeMetadata()
       this.ioChild.socket.emit('monitor-child-bridge-status')
     })
@@ -147,10 +147,10 @@ export class BridgesWidgetComponent implements OnInit, OnDestroy {
 
   public ngOnDestroy(): void {
     if (this.ioMain) {
-      this.ioMain.end()
+      this.ioMain.end?.()
     }
     if (this.ioChild) {
-      this.ioChild.end()
+      this.ioChild.end?.()
     }
   }
 

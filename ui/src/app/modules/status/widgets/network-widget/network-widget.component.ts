@@ -34,7 +34,7 @@ export class NetworkWidgetComponent extends BaseChartWidgetComponent {
         this.interface.set(data.net.iface)
         this.lineChartData.datasets[0].data = { ...[] }
         this.lineChartLabels = []
-        this.chart().update()
+        this.chart()!.update()
       }
 
       this.receivedPerSec.set((data.net.rx_sec / 1024 / 1024) * 8)
@@ -46,7 +46,7 @@ export class NetworkWidgetComponent extends BaseChartWidgetComponent {
       }
 
       this.updateData(data)
-      this.chart().update()
+      this.chart()!.update()
     })
   }
 

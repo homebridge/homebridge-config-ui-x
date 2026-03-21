@@ -31,15 +31,15 @@ export class HeaterCoolerManageComponent extends BaseManageComponent {
   public type: 'heater' | 'cooler' | undefined
 
   public temperatureUnits = this.$settings.env.temperatureUnits
-  public targetState: number
-  public targetMode: number
+  public targetState!: number
+  public targetMode!: number
   public targetTemperatureChanged: Subject<any> = new Subject<any>()
   public targetStateValidValues: number[] = []
-  public CoolingThresholdTemperature: CharacteristicType
-  public HeatingThresholdTemperature: CharacteristicType
-  public targetCoolingTemp: number
-  public targetHeatingTemp: number
-  public autoTemp: [number, number]
+  public CoolingThresholdTemperature!: CharacteristicType
+  public HeatingThresholdTemperature!: CharacteristicType
+  public targetCoolingTemp!: number
+  public targetHeatingTemp!: number
+  public autoTemp!: [number, number]
   public serviceFan: any
   public targetRotationSpeed: any
   public targetRotationSpeedChanged: Subject<string> = new Subject<string>()
@@ -47,10 +47,10 @@ export class HeaterCoolerManageComponent extends BaseManageComponent {
   protected setupComponent() {
     this.createDebouncedSubscription(this.targetTemperatureChanged, () => {
       if (this.HeatingThresholdTemperature) {
-        void this.service.getCharacteristic('HeatingThresholdTemperature').setValue(this.targetHeatingTemp)
+        void this.service.getCharacteristic!('HeatingThresholdTemperature').setValue!(this.targetHeatingTemp)
       }
       if (this.CoolingThresholdTemperature) {
-        void this.service.getCharacteristic('CoolingThresholdTemperature').setValue(this.targetCoolingTemp)
+        void this.service.getCharacteristic!('CoolingThresholdTemperature').setValue!(this.targetCoolingTemp)
       }
     })
 
@@ -62,9 +62,9 @@ export class HeaterCoolerManageComponent extends BaseManageComponent {
 
     this.targetState = this.service.values.Active
     this.targetMode = this.service.values.TargetHeaterCoolerState
-    this.CoolingThresholdTemperature = this.service.getCharacteristic('CoolingThresholdTemperature')
-    this.HeatingThresholdTemperature = this.service.getCharacteristic('HeatingThresholdTemperature')
-    this.targetStateValidValues = this.service.getCharacteristic('TargetHeaterCoolerState').validValues as number[]
+    this.CoolingThresholdTemperature = this.service.getCharacteristic!('CoolingThresholdTemperature')
+    this.HeatingThresholdTemperature = this.service.getCharacteristic!('HeatingThresholdTemperature')
+    this.targetStateValidValues = this.service.getCharacteristic!('TargetHeaterCoolerState').validValues as number[]
 
     // Derive type from valid target states: heat-only, cool-only, or dual
     if (this.targetStateValidValues.includes(1) && !this.targetStateValidValues.includes(2)) {
@@ -90,8 +90,8 @@ export class HeaterCoolerManageComponent extends BaseManageComponent {
   protected handleAccessoryUpdate() {
     this.targetState = this.service.values.Active
     this.targetMode = this.service.values.TargetHeaterCoolerState
-    this.targetCoolingTemp = this.service.getCharacteristic('CoolingThresholdTemperature')?.value as number
-    this.targetHeatingTemp = this.service.getCharacteristic('HeatingThresholdTemperature')?.value as number
+    this.targetCoolingTemp = this.service.getCharacteristic!('CoolingThresholdTemperature')?.value as number
+    this.targetHeatingTemp = this.service.getCharacteristic!('HeatingThresholdTemperature')?.value as number
     this.autoTemp = [this.targetHeatingTemp, this.targetCoolingTemp]
 
     if (this.targetRotationSpeed && this.serviceFan) {
@@ -123,7 +123,7 @@ export class HeaterCoolerManageComponent extends BaseManageComponent {
 
   public setTargetState(value: number, event: MouseEvent) {
     this.targetState = value
-    void this.service.getCharacteristic('Active').setValue(this.targetState)
+    void this.service.getCharacteristic!('Active').setValue!(this.targetState)
     this.loadTargetTemperature()
     this.applyAllGradients()
 
@@ -132,7 +132,7 @@ export class HeaterCoolerManageComponent extends BaseManageComponent {
 
   public setTargetMode(value: number, event: MouseEvent) {
     this.targetMode = value
-    void this.service.getCharacteristic('TargetHeaterCoolerState').setValue(this.targetMode)
+    void this.service.getCharacteristic!('TargetHeaterCoolerState').setValue!(this.targetMode)
     this.loadTargetTemperature()
 
     this.blurTarget(event)
@@ -170,8 +170,8 @@ export class HeaterCoolerManageComponent extends BaseManageComponent {
   }
 
   private loadTargetTemperature() {
-    this.targetCoolingTemp = this.service.getCharacteristic('CoolingThresholdTemperature')?.value as number
-    this.targetHeatingTemp = this.service.getCharacteristic('HeatingThresholdTemperature')?.value as number
+    this.targetCoolingTemp = this.service.getCharacteristic!('CoolingThresholdTemperature')?.value as number
+    this.targetHeatingTemp = this.service.getCharacteristic!('HeatingThresholdTemperature')?.value as number
     this.autoTemp = [this.targetHeatingTemp, this.targetCoolingTemp]
   }
 

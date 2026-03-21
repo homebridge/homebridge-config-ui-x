@@ -20,29 +20,29 @@ import { BaseManageComponent } from '@/app/core/accessories/types/base-manage.co
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class FanManageComponent extends BaseManageComponent {
-  public targetMode: boolean
-  public targetRotationSpeed: SliderControlConfig
+  public targetMode!: boolean
+  public targetRotationSpeed!: SliderControlConfig
   public targetRotationSpeedChanged: Subject<number> = new Subject<number>()
   public hasRotationDirection = false
 
   protected setupComponent() {
     this.createDebouncedSubscription(this.targetRotationSpeedChanged, () => {
-      void this.service.getCharacteristic('RotationSpeed').setValue(this.targetRotationSpeed.value)
+      void this.service.getCharacteristic!('RotationSpeed').setValue!(this.targetRotationSpeed.value)
 
       // Turn the fan on or off when rotation speed is adjusted
       if (this.targetRotationSpeed.value && !this.targetMode) {
         this.targetMode = true
         if ('On' in this.service.values) {
-          void this.service.getCharacteristic('On').setValue(this.targetMode)
+          void this.service.getCharacteristic!('On').setValue!(this.targetMode)
         } else if ('Active' in this.service.values) {
-          void this.service.getCharacteristic('Active').setValue(this.targetMode ? 1 : 0)
+          void this.service.getCharacteristic!('Active').setValue!(this.targetMode ? 1 : 0)
         }
       } else if (!this.targetRotationSpeed.value && this.targetMode) {
         this.targetMode = false
         if ('On' in this.service.values) {
-          void this.service.getCharacteristic('On').setValue(this.targetMode)
+          void this.service.getCharacteristic!('On').setValue!(this.targetMode)
         } else if ('Active' in this.service.values) {
-          void this.service.getCharacteristic('Active').setValue(this.targetMode ? 1 : 0)
+          void this.service.getCharacteristic!('Active').setValue!(this.targetMode ? 1 : 0)
         }
       }
     })
@@ -63,7 +63,7 @@ export class FanManageComponent extends BaseManageComponent {
       ? this.service.values.On
       : this.service.values.Active === 1
     if (this.targetRotationSpeed) {
-      this.targetRotationSpeed.value = this.service.getCharacteristic('RotationSpeed')?.value as number
+      this.targetRotationSpeed.value = this.service.getCharacteristic!('RotationSpeed')?.value as number
     }
   }
 
@@ -71,14 +71,14 @@ export class FanManageComponent extends BaseManageComponent {
     this.targetMode = value
 
     if ('On' in this.service.values) {
-      void this.service.getCharacteristic('On').setValue(this.targetMode)
+      void this.service.getCharacteristic!('On').setValue!(this.targetMode)
     } else if ('Active' in this.service.values) {
-      void this.service.getCharacteristic('Active').setValue(this.targetMode ? 1 : 0)
+      void this.service.getCharacteristic!('Active').setValue!(this.targetMode ? 1 : 0)
     }
 
     // Set the rotation speed to max if on 0% when turned on
     if (this.targetMode && this.targetRotationSpeed && !this.targetRotationSpeed.value) {
-      this.targetRotationSpeed.value = this.service.getCharacteristic('RotationSpeed').maxValue
+      this.targetRotationSpeed.value = this.service.getCharacteristic!('RotationSpeed').maxValue as number
     }
 
     this.blurTarget(event)
@@ -89,13 +89,13 @@ export class FanManageComponent extends BaseManageComponent {
   }
 
   public setRotationDirection(value: number, event: MouseEvent) {
-    void this.service.getCharacteristic('RotationDirection').setValue(value)
+    void this.service.getCharacteristic!('RotationDirection').setValue!(value)
 
     this.blurTarget(event)
   }
 
   private loadRotationSpeed() {
-    const RotationSpeed = this.service.getCharacteristic('RotationSpeed')
+    const RotationSpeed = this.service.getCharacteristic!('RotationSpeed')
 
     if (RotationSpeed) {
       this.targetRotationSpeed = {

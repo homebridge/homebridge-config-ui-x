@@ -54,8 +54,8 @@ export class WidgetControlComponent implements OnInit {
   public readonly isLightMode = signal<boolean>(false)
 
   // Other properties
-  private io: IoNamespace
-  private originalWidget: Widget
+  private io!: IoNamespace
+  private originalWidget!: Widget
   public currentDate = new Date()
   public timeFormats = [
     'h:mm a',
@@ -82,12 +82,12 @@ export class WidgetControlComponent implements OnInit {
     'EEEE, MMM d',
   ]
 
-  public searchCountryCodes = (text$: Observable<string>) => text$.pipe(
+  public searchCountryCodes = (text$: Observable<string>): Observable<any[]> => text$.pipe(
     debounceTime(300),
     distinctUntilChanged(),
     tap(() => this.searching.set(true)),
-    switchMap(term => term.length < 3
-      ? []
+    switchMap((term: string) => term.length < 3
+      ? of([])
       : this.findOpenWeatherMapCity(term).pipe(
           catchError(() => {
             this.searching.set(false)

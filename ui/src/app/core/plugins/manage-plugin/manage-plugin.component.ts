@@ -109,10 +109,10 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
   public readonly iconHeart = '<i class="fas fa-heart pink-text"></i>'
 
   // Private properties
-  private io: IoNamespace
-  private toastSuccess: string
+  private io!: IoNamespace
+  private toastSuccess!: string
   private term: Terminal
-  private termTarget: HTMLElement
+  private termTarget!: HTMLElement
   private fitAddon = new FitAddon()
   private webLinksAddon = new WebLinksAddon()
   private errorLog = ''
@@ -122,7 +122,7 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
   }
 
   constructor() {
-    this.term = new Terminal(this.$settings.getTerminalOptions({ disableStdin: true }, true))
+    this.term = new Terminal(this.$settings.getTerminalOptions({ disableStdin: true }))
     this.term.loadAddon(this.fitAddon)
     this.term.loadAddon(this.webLinksAddon)
   }
@@ -139,7 +139,7 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
     )
 
     this.io = this.$ws.connectToNamespace('plugins')
-    this.termTarget = document.getElementById('plugin-log-output')
+    this.termTarget = document.getElementById('plugin-log-output')!
     this.term.open(this.termTarget)
     this.fitAddon.fit()
 
@@ -227,7 +227,7 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
   }
 
   public ngOnDestroy(): void {
-    this.io.end()
+    this.io.end?.()
   }
 
   // Public methods

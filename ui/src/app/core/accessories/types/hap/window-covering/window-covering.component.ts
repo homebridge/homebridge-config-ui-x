@@ -40,9 +40,9 @@ export class WindowCoveringComponent {
     }
 
     if (this.service().values.TargetPosition) {
-      void this.service().getCharacteristic('TargetPosition').setValue(0)
+      void this.service().getCharacteristic!('TargetPosition').setValue!(0)
     } else {
-      void this.service().getCharacteristic('TargetPosition').setValue(100)
+      void this.service().getCharacteristic!('TargetPosition').setValue!(100)
     }
   }
 

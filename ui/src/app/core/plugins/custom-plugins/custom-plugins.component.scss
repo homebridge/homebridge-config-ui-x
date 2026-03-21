@@ -25,12 +25,6 @@
   background-color: rgba(255, 255, 255, 0.7);
 }
 
-::ng-deep body.dark-mode {
-  .loading-overlay {
-    background-color: rgba(36, 36, 36, 0.7);
-  }
-}
-
 .custom-form-action-buttons {
   button:last-child {
     margin-right: 2px;

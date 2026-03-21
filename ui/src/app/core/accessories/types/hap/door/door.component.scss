@@ -1,18 +1,16 @@
-::ng-deep {
-  svg {
-    .outline {
-      transition: width 3s ease;
-      width: calc(12.8px - 9px * var(--position, 0));
-    }
+svg {
+  .outline {
+    transition: width 3s ease;
+    width: calc(12.8px - 9px * var(--position, 0));
+  }
 
-    .panel {
-      transition: width 3s ease;
-      width: calc(9.6px - 9px * var(--position, 0));
-    }
+  .panel {
+    transition: width 3s ease;
+    width: calc(9.6px - 9px * var(--position, 0));
+  }
 
-    .handle {
-      opacity: calc(1 - var(--position, 0));
-      transition: opacity 3s ease;
-    }
+  .handle {
+    opacity: calc(1 - var(--position, 0));
+    transition: opacity 3s ease;
   }
 }

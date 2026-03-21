@@ -33,8 +33,8 @@ export class HapQrcodeWidgetComponent implements OnInit, OnDestroy {
   public readonly qrCodeWidth = signal<number>(0)
 
   // Other properties
-  private io: IoNamespace
-  private statusHandler: (data: HomebridgeStatusResponse) => void
+  private io!: IoNamespace
+  private statusHandler!: (data: HomebridgeStatusResponse) => void
   resizeEvent!: Subject<void> // Set directly by ComponentFactoryResolver
 
   public ngOnInit(): void {
@@ -74,9 +74,9 @@ export class HapQrcodeWidgetComponent implements OnInit, OnDestroy {
       return
     }
 
-    const containerHeight = (this.qrcodeContainerElement().nativeElement as HTMLElement).offsetHeight
-    const containerWidth = (this.qrcodeContainerElement().nativeElement as HTMLElement).offsetWidth
-    const pinCodeHeight = (this.pincodeElement().nativeElement as HTMLElement).offsetHeight
+    const containerHeight = (this.qrcodeContainerElement()!.nativeElement as HTMLElement).offsetHeight
+    const containerWidth = (this.qrcodeContainerElement()!.nativeElement as HTMLElement).offsetWidth
+    const pinCodeHeight = (this.pincodeElement()!.nativeElement as HTMLElement).offsetHeight
 
     const newHeight = containerHeight - pinCodeHeight
     const newWidth = containerWidth > newHeight ? newHeight : containerWidth

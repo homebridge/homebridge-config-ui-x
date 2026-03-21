@@ -40,13 +40,13 @@ export class UsersEditComponent implements OnInit {
   public readonly deleteMode = signal(false)
 
   // Other properties
-  private initialFormValue: Partial<User> = {}
+  private initialFormValue: Record<string, any> = {}
   public form = new FormGroup({
-    username: new FormControl('', [Validators.required]),
-    name: new FormControl('', [Validators.required]),
-    password: new FormControl('', [Validators.minLength(4)]),
-    passwordConfirm: new FormControl(''),
-    admin: new FormControl(true),
+    username: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
+    name: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
+    password: new FormControl('', { nonNullable: true, validators: [Validators.minLength(4)] }),
+    passwordConfirm: new FormControl('', { nonNullable: true }),
+    admin: new FormControl(true, { nonNullable: true }),
   }, this.matchPassword)
 
   // Computed signals
@@ -92,7 +92,7 @@ export class UsersEditComponent implements OnInit {
       try {
         await this.$api.delete(`/users/${this.user.id}`)
         this.$activeModal.close()
-      } catch (error) {
+      } catch (error: any) {
         console.error(error)
         this.$toastr.error(error.error?.message || error.message, this.$translate.instant('toast.title_error'))
       }
@@ -106,7 +106,7 @@ export class UsersEditComponent implements OnInit {
       if (this.isCurrentUser() && value.username !== this.$auth.user.username) {
         this.$auth.logout()
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error(error)
       this.$toastr.error(error.error?.message || error.message, this.$translate.instant('toast.title_error'))
     }
@@ -138,7 +138,7 @@ export class UsersEditComponent implements OnInit {
     return JSON.stringify(this.form.getRawValue()) === JSON.stringify(this.initialFormValue)
   }
 
-  private duplicateUsernameValidator(control: FormControl): { [key: string]: boolean } | null {
+  private duplicateUsernameValidator(control: AbstractControl): { [key: string]: boolean } | null {
     if (!control.value) {
       return null
     }

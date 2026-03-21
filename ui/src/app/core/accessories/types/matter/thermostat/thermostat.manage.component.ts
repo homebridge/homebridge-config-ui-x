@@ -38,10 +38,10 @@ export class MatterThermostatManageComponent extends BaseManageComponent {
   private $settings = inject(SettingsService)
   private $toastr = inject(ToastrService)
 
-  public targetMode: number
-  public targetHeatingTemp: number
-  public targetCoolingTemp: number
-  public autoTemp: [number, number]
+  public targetMode!: number
+  public targetHeatingTemp!: number
+  public targetCoolingTemp!: number
+  public autoTemp!: [number, number]
   public temperatureUnits = this.$settings.env.temperatureUnits
 
   private heatingTempChanged: Subject<number> = new Subject<number>()

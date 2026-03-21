@@ -23,7 +23,7 @@
         </div>
         <div class="widget-value-label grey-text">{{ 'status.cpu.load' | translate }}</div>
       </div>
-      @if (cpuTemperature().main > 0) {
+      @if (cpuTemperature()?.main > 0) {
         <div class="text-center widget-value-parent-wrap">
           <div class="widget-value mb-0">
             {{ cpuTemperature().main | convertTemp: temperatureUnits | number: '1.0-0' }}&deg;{{

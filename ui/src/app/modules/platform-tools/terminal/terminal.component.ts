@@ -83,9 +83,9 @@ export class TerminalComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Set body bg color based on terminal theme
     if (terminalTheme === 'dark') {
-      window.document.querySelector('body').classList.add('bg-black')
+      window.document.querySelector('body')!.classList.add('bg-black')
     } else {
-      window.document.querySelector('body').classList.add('bg-white')
+      window.document.querySelector('body')!.classList.add('bg-white')
     }
 
     // Add transition class only when main theme is light AND terminal theme is dark
@@ -96,7 +96,7 @@ export class TerminalComponent implements OnInit, AfterViewInit, OnDestroy {
     )
 
     if (needsTransition) {
-      window.document.querySelector('body').classList.add('theme-transition')
+      window.document.querySelector('body')!.classList.add('theme-transition')
       const terminal = this.termTarget()?.nativeElement
       if (terminal) {
         terminal.classList.add('theme-transition')
@@ -112,7 +112,7 @@ export class TerminalComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // Start or reconnect to the terminal based on current persistence state
     if (this.$settings.env.terminal?.persistence && this.$terminal.hasActiveSession()) {
-      this.$terminal.reconnectTerminal(this.termTarget(), this.$settings.getTerminalOptions({
+      this.$terminal.reconnectTerminal(this.termTarget()!, this.$settings.getTerminalOptions({
         screenReaderMode: true,
       }), this.resizeEvent)
     } else {
@@ -120,7 +120,7 @@ export class TerminalComponent implements OnInit, AfterViewInit, OnDestroy {
       if (!this.$settings.env.terminal?.persistence && this.$terminal.hasActiveSession()) {
         void this.$terminal.destroyPersistentSession()
       }
-      this.$terminal.startTerminal(this.termTarget(), this.$settings.getTerminalOptions({
+      this.$terminal.startTerminal(this.termTarget()!, this.$settings.getTerminalOptions({
         screenReaderMode: true,
       }), this.resizeEvent)
     }
@@ -169,13 +169,13 @@ export class TerminalComponent implements OnInit, AfterViewInit, OnDestroy {
 
     // If no transition needed, navigate immediately
     if (!needsTransition) {
-      window.document.querySelector('body').classList.remove('bg-black')
-      window.document.querySelector('body').classList.remove('bg-white')
+      window.document.querySelector('body')!.classList.remove('bg-black')
+      window.document.querySelector('body')!.classList.remove('bg-white')
       return Promise.resolve(true)
     }
 
     // Remove theme-transition class from body
-    window.document.querySelector('body').classList.remove('theme-transition')
+    window.document.querySelector('body')!.classList.remove('theme-transition')
 
     // Check if we're navigating to another page with the same terminal theme
     const stayingSameTheme = nextUrl && (
@@ -200,8 +200,8 @@ export class TerminalComponent implements OnInit, AfterViewInit, OnDestroy {
         // Wait for fade-out animation (250ms) and body background transition (250ms)
         setTimeout(() => {
           // Remove body bg color to trigger background transition
-          window.document.querySelector('body').classList.remove('bg-black')
-          window.document.querySelector('body').classList.remove('bg-white')
+          window.document.querySelector('body')!.classList.remove('bg-black')
+          window.document.querySelector('body')!.classList.remove('bg-white')
         }, 250)
 
         // Wait for both animations to complete before allowing navigation
@@ -219,10 +219,10 @@ export class TerminalComponent implements OnInit, AfterViewInit, OnDestroy {
     }
 
     // Clean up theme-transition class
-    window.document.querySelector('body').classList.remove('theme-transition')
-    window.document.querySelector('body').classList.remove('light-mode')
-    window.document.querySelector('body').classList.remove('bg-black')
-    window.document.querySelector('body').classList.remove('bg-white')
+    window.document.querySelector('body')!.classList.remove('theme-transition')
+    window.document.querySelector('body')!.classList.remove('light-mode')
+    window.document.querySelector('body')!.classList.remove('bg-black')
+    window.document.querySelector('body')!.classList.remove('bg-white')
 
     // Use persistence setting to determine behavior
     if (this.$settings.env.terminal?.persistence) {

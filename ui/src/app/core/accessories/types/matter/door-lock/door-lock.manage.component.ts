@@ -18,7 +18,7 @@ import { getDoorLockState, setDoorLockState } from '@/app/core/accessories/types
 export class DoorLockManageComponent extends BaseManageComponent {
   private $toastr = inject(ToastrService)
 
-  public targetMode: number
+  public targetMode!: number
 
   protected setupComponent() {
     this.targetMode = getDoorLockState(this.service)

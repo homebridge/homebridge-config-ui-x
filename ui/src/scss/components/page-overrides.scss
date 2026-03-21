@@ -1,0 +1,79 @@
+/* Body-level overrides extracted from component styles (::ng-deep removal) */
+
+/* Terminal & Logs pages - smooth background transition */
+body.theme-transition {
+  transition: background-color 0.25s ease-in-out;
+}
+
+/* Plugins page */
+body.light-mode {
+  transition: background-color 0.25s ease-in-out;
+}
+
+/* Login page */
+body.login-page {
+  overflow: scroll !important;
+}
+
+body.dark-mode .login-card {
+  background-color: #2b2b2b;
+  color: #ffffff;
+}
+
+/* Setup wizard page */
+body.setup-wizard-page {
+  overflow: scroll !important;
+}
+
+body.dark-mode .setup-card {
+  background-color: #2b2b2b;
+  color: #ffffff;
+}
+
+/* Settings page */
+body.settings-page {
+  transition: background-color 0.5s ease-in-out;
+}
+
+/* System info widget */
+body.dark-mode .system-info-link {
+  color: #ffffff !important;
+}
+
+/* Update info widget */
+body.dark-mode .card-link-title {
+  color: #ffffff !important;
+}
+
+/* Manual config modal */
+body.dark-mode .no-padding-card-body .card-body {
+  background-color: #1e1e1e;
+}
+
+/* Custom plugins */
+body.dark-mode .loading-overlay {
+  background-color: rgba(36, 36, 36, 0.7);
+}
+
+/* Plugin bridge - dark mode QR code placeholder */
+body.dark-mode,
+[class*='config-ui-x-dark-mode'] {
+  .qr-code-placeholder {
+    background-color: #2b2b2b;
+  }
+}
+
+/* Accessory dark mode fills */
+body.dark-mode {
+  .c-blinds {
+    fill: #2b2b2b;
+    stroke: #2b2b2b;
+    stroke-opacity: 0.8;
+    fill-opacity: 0.8;
+  }
+
+  .screen {
+    fill: #2b2b2b;
+    stroke: #7f7f7f;
+  }
+}

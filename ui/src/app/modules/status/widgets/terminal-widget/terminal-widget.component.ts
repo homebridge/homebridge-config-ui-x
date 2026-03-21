@@ -14,7 +14,7 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { TranslatePipe } from '@ngx-translate/core'
 import { ITerminalOptions } from '@xterm/xterm'
-import { Subject, Subscription } from 'rxjs'
+import { Subject } from 'rxjs'
 
 import { SettingsService } from '@/app/core/ui/settings.service'
 import { TerminalNavigationGuardService } from '@/app/core/utilities/terminal-navigation-guard.service'
@@ -56,7 +56,6 @@ export class TerminalWidgetComponent implements OnInit, OnDestroy {
 
   // Other properties
   private visibilityChangeHandler: (() => void) | null = null
-  private terminalSettingsSubscription?: Subscription
   resizeEvent!: Subject<void> // Set directly by ComponentFactoryResolver
   configureEvent!: Subject<void> // Set directly by ComponentFactoryResolver
 
@@ -95,15 +94,15 @@ export class TerminalWidgetComponent implements OnInit, OnDestroy {
 
       // If terminal is already ready, use reconnectTerminal for proper session management
       if (this.$terminal.isTerminalReady()) {
-        this.$terminal.reconnectTerminal(this.termTarget(), terminalOptions, this.resizeEvent)
+        this.$terminal.reconnectTerminal(this.termTarget()!, terminalOptions, this.resizeEvent)
         return
       }
 
       // Start or reconnect to the terminal
       if (this.$settings.env.terminal?.persistence && this.$terminal.hasActiveSession()) {
-        this.$terminal.reconnectTerminal(this.termTarget(), terminalOptions, this.resizeEvent)
+        this.$terminal.reconnectTerminal(this.termTarget()!, terminalOptions, this.resizeEvent)
       } else {
-        this.$terminal.startTerminal(this.termTarget(), terminalOptions, this.resizeEvent)
+        this.$terminal.startTerminal(this.termTarget()!, terminalOptions, this.resizeEvent)
       }
 
       // Autofocus terminal when component is fully loaded
@@ -125,7 +124,7 @@ export class TerminalWidgetComponent implements OnInit, OnDestroy {
     })
 
     // Subscribe to global terminal settings changes
-    this.terminalSettingsSubscription = this.$settings.terminalSettingsChanged.subscribe({
+    this.$settings.terminalSettingsChanged.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: (settings) => {
         if (!this.$terminal.term) {
           return
@@ -186,9 +185,6 @@ export class TerminalWidgetComponent implements OnInit, OnDestroy {
   }
 
   public ngOnDestroy(): void {
-    // Clean up subscriptions
-    this.terminalSettingsSubscription?.unsubscribe()
-
     // Clean up visibility change listener
     if (this.visibilityChangeHandler) {
       document.removeEventListener('visibilitychange', this.visibilityChangeHandler)
@@ -207,8 +203,8 @@ export class TerminalWidgetComponent implements OnInit, OnDestroy {
   }
 
   private getTerminalHeight(): number {
-    const widgetContainerHeight = (this.widgetContainerElement().nativeElement as HTMLElement).offsetHeight
-    const titleHeight = (this.titleElement().nativeElement as HTMLElement).offsetHeight
+    const widgetContainerHeight = (this.widgetContainerElement()!.nativeElement as HTMLElement).offsetHeight
+    const titleHeight = (this.titleElement()!.nativeElement as HTMLElement).offsetHeight
     return widgetContainerHeight - titleHeight
   }
 }

@@ -1,20 +1,18 @@
-::ng-deep {
-  .accessory-on {
-    svg {
-      .handle {
-        fill: #1976d2;
-        fill-opacity: 0.5;
-        transform-origin: 48% 53%;
-        animation: rotate-handle 2s linear infinite;
+.accessory-on {
+  svg {
+    .handle {
+      fill: #1976d2;
+      fill-opacity: 0.5;
+      transform-origin: 48% 53%;
+      animation: rotate-handle 2s linear infinite;
 
-        @keyframes rotate-handle {
-          0% {
-            transform: rotate(0deg);
-          }
+      @keyframes rotate-handle {
+        0% {
+          transform: rotate(0deg);
+        }
 
-          100% {
-            transform: rotate(360deg);
-          }
+        100% {
+          transform: rotate(360deg);
         }
       }
     }

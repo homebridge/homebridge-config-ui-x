@@ -22,8 +22,8 @@ import { getFanPercentSetting, isFanOn, setFanSpeed } from '@/app/core/accessori
 export class MatterFanManageComponent extends BaseManageComponent {
   private $toastr = inject(ToastrService)
 
-  public targetMode: boolean
-  public targetSpeed: {
+  public targetMode!: boolean
+  public targetSpeed!: {
     value: number
     min: number
     max: number

@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core'
-import { FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
+import { AbstractControl, FormControl, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe } from '@ngx-translate/core'
 
@@ -53,7 +53,7 @@ export class EditRoomComponent implements OnInit {
     }
   }
 
-  private duplicateRoomNameValidator(control: FormControl): { [key: string]: boolean } | null {
+  private duplicateRoomNameValidator(control: AbstractControl): { [key: string]: boolean } | null {
     if (!control.value) {
       return null
     }

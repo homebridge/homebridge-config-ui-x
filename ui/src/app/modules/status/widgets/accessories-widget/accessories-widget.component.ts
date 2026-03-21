@@ -40,14 +40,14 @@ export class AccessoriesWidgetComponent implements OnInit, OnDestroy {
 
     // Disable drag and drop for the .no-drag class
     $dragula.createGroup('widget-accessories-bag', {
-      moves: el => !this.isMobile() && !el.classList.contains('no-drag'),
+      moves: el => !this.isMobile() && !el!.classList.contains('no-drag'),
     })
 
     // Save the room and service layout
     $dragula.drop()
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => {
-        this.widget().accessoryOrder = this.dashboardAccessories().map(x => x.uniqueId)
+        this.widget().accessoryOrder = this.dashboardAccessories().map(x => x.uniqueId) as string[]
         this.widget().$saveWidgetsEvent.next(undefined)
       })
   }
@@ -89,10 +89,10 @@ export class AccessoriesWidgetComponent implements OnInit, OnDestroy {
       }
     }
 
-    if (this.widget().accessoryOrder && this.widget().accessoryOrder.length) {
+    if (this.widget().accessoryOrder && this.widget().accessoryOrder!.length) {
       dashboardAccessories.sort((a, b) => {
-        const posA = this.widget().accessoryOrder.findIndex((s: any) => s === a.uniqueId)
-        const posB = this.widget().accessoryOrder.findIndex((s: any) => s === b.uniqueId)
+        const posA = this.widget().accessoryOrder!.findIndex((s: any) => s === a.uniqueId)
+        const posB = this.widget().accessoryOrder!.findIndex((s: any) => s === b.uniqueId)
         if (posA < posB) {
           return -1
         } else if (posA > posB) {

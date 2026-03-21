@@ -21,30 +21,30 @@ import { BaseManageComponent } from '@/app/core/accessories/types/base-manage.co
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AirPurifierManageComponent extends BaseManageComponent {
-  public targetState: number
-  public targetMode: number
+  public targetState!: number
+  public targetMode!: number
   public targetModeValidValues: number[] = []
-  public targetRotationSpeed: SliderControlConfig
+  public targetRotationSpeed!: SliderControlConfig
   public targetRotationSpeedChanged: Subject<number> = new Subject<number>()
 
   protected setupComponent() {
     this.createDebouncedSubscription(this.targetRotationSpeedChanged, () => {
-      void this.service.getCharacteristic('RotationSpeed').setValue(this.targetRotationSpeed.value)
+      void this.service.getCharacteristic!('RotationSpeed').setValue!(this.targetRotationSpeed.value)
 
       // Turn the air purifier on or off when rotation speed is adjusted
       if (this.targetRotationSpeed.value && !this.targetState) {
         this.targetState = 1
         if ('Active' in this.service.values) {
-          void this.service.getCharacteristic('Active').setValue(1)
+          void this.service.getCharacteristic!('Active').setValue!(1)
         } else if ('On' in this.service.values) {
-          void this.service.getCharacteristic('On').setValue(true)
+          void this.service.getCharacteristic!('On').setValue!(true)
         }
       } else if (!this.targetRotationSpeed.value && this.targetState) {
         this.targetState = 0
         if ('Active' in this.service.values) {
-          void this.service.getCharacteristic('Active').setValue(0)
+          void this.service.getCharacteristic!('Active').setValue!(0)
         } else if ('On' in this.service.values) {
-          void this.service.getCharacteristic('On').setValue(false)
+          void this.service.getCharacteristic!('On').setValue!(false)
         }
       }
     })
@@ -54,7 +54,7 @@ export class AirPurifierManageComponent extends BaseManageComponent {
       : (this.service.values.On ? 1 : 0)
     this.targetMode = this.service.values.TargetAirPurifierState
     if ('TargetAirPurifierState' in this.service.values) {
-      this.targetModeValidValues = this.service.getCharacteristic('TargetAirPurifierState').validValues as number[]
+      this.targetModeValidValues = this.service.getCharacteristic!('TargetAirPurifierState').validValues as number[]
     }
     this.loadRotationSpeed()
   }
@@ -65,16 +65,16 @@ export class AirPurifierManageComponent extends BaseManageComponent {
       : (this.service.values.On ? 1 : 0)
     this.targetMode = this.service.values.TargetAirPurifierState
     if (this.targetRotationSpeed) {
-      this.targetRotationSpeed.value = this.service.getCharacteristic('RotationSpeed')?.value as number
+      this.targetRotationSpeed.value = this.service.getCharacteristic!('RotationSpeed')?.value as number
     }
   }
 
   public setTargetState(value: number, event: MouseEvent) {
     this.targetState = value
     if ('Active' in this.service.values) {
-      void this.service.getCharacteristic('Active').setValue(this.targetState)
+      void this.service.getCharacteristic!('Active').setValue!(this.targetState)
     } else if ('On' in this.service.values) {
-      void this.service.getCharacteristic('On').setValue(this.targetState === 1)
+      void this.service.getCharacteristic!('On').setValue!(this.targetState === 1)
     }
 
     this.blurTarget(event)
@@ -82,7 +82,7 @@ export class AirPurifierManageComponent extends BaseManageComponent {
 
   public setTargetMode(value: number, event: MouseEvent) {
     this.targetMode = value
-    void this.service.getCharacteristic('TargetAirPurifierState').setValue(this.targetMode)
+    void this.service.getCharacteristic!('TargetAirPurifierState').setValue!(this.targetMode)
 
     this.blurTarget(event)
   }
@@ -92,7 +92,7 @@ export class AirPurifierManageComponent extends BaseManageComponent {
   }
 
   private loadRotationSpeed() {
-    const RotationSpeed = this.service.getCharacteristic('RotationSpeed')
+    const RotationSpeed = this.service.getCharacteristic!('RotationSpeed')
     if (RotationSpeed) {
       this.targetRotationSpeed = {
         value: RotationSpeed.value as number,

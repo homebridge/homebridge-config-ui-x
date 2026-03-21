@@ -220,7 +220,7 @@ export class PluginConfigComponent implements OnInit {
       if (plugin.name === 'homebridge-hue' && this.pluginConfig().length) {
         this.homebridgeHueFix(this.pluginConfig()[0].config)
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error(error)
       const message = error?.error?.message || this.$translate.instant('plugins.config.load_error')
       this.$toastr.error(message, this.$translate.instant('toast.title_error'))

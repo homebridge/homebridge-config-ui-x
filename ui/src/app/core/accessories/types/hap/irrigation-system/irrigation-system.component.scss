@@ -1,25 +1,23 @@
-::ng-deep {
-  .accessory-on {
-    svg {
-      .field {
-        fill: #4caf50;
+.accessory-on {
+  svg {
+    .field {
+      fill: #4caf50;
+    }
+
+    .pipe {
+      animation: pulse 5s infinite;
+    }
+
+    @keyframes pulse {
+      0%,
+      100% {
+        stroke: #7f7f7f;
+        stroke-opacity: 0.5;
       }
 
-      .pipe {
-        animation: pulse 5s infinite;
-      }
-
-      @keyframes pulse {
-        0%,
-        100% {
-          stroke: #7f7f7f;
-          stroke-opacity: 0.5;
-        }
-
-        50% {
-          stroke: #1976d2;
-          stroke-opacity: 1;
-        }
+      50% {
+        stroke: #1976d2;
+        stroke-opacity: 1;
       }
     }
   }

@@ -1,8 +1,3 @@
-// Smooth transition for body background color change (light mode only)
-::ng-deep body.light-mode {
-  transition: background-color 0.25s ease-in-out;
-}
-
 form {
   position: relative;
 }

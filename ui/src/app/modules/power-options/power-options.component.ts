@@ -56,7 +56,7 @@ export class PowerOptionsComponent implements OnInit {
     try {
       await this.$api.put('/platform-tools/hb-service/set-full-service-restart-flag', {})
       void this.$router.navigate(['/restart'])
-    } catch (error) {
+    } catch (error: any) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
     }

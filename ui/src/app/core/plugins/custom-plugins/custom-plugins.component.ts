@@ -1,10 +1,11 @@
-import { ChangeDetectionStrategy, Component, ElementRef, inject, OnDestroy, OnInit, signal, viewChild } from '@angular/core'
+import { ChangeDetectionStrategy, Component, DestroyRef, ElementRef, inject, OnDestroy, OnInit, signal, viewChild } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap/tooltip'
 import { Bootstrap5FrameworkModule } from '@ng-formworks/bootstrap5'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
-import { Subject, takeUntil } from 'rxjs'
+import { Subject } from 'rxjs'
 import { debounceTime, skip } from 'rxjs/operators'
 
 import { ApiService } from '@/app/core/communication/api.service'
@@ -73,7 +74,7 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
   private basePath = ''
   private iframe!: HTMLIFrameElement
   private schemaFormRecentlyRefreshed = false
-  private destroy$ = new Subject<void>()
+  private destroyRef = inject(DestroyRef)
   public schemaFormUpdatedSubject = new Subject<unknown>()
   private schemaFormRefreshSubject = new Subject<unknown>()
   public formUpdatedSubject = new Subject<unknown>()
@@ -105,21 +106,21 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
 
     // Set up subscriptions with proper cleanup
     this.schemaFormRefreshSubject
-      .pipe(debounceTime(250), takeUntil(this.destroy$))
+      .pipe(debounceTime(250), takeUntilDestroyed(this.destroyRef))
       .subscribe(this.schemaFormRefresh.bind(this))
 
     this.schemaFormUpdatedSubject
-      .pipe(debounceTime(250), skip(1), takeUntil(this.destroy$))
+      .pipe(debounceTime(250), skip(1), takeUntilDestroyed(this.destroyRef))
       .subscribe(() => {
         this.schemaFormUpdated()
       })
 
     this.formUpdatedSubject
-      .pipe(debounceTime(100), skip(1), takeUntil(this.destroy$))
+      .pipe(debounceTime(100), skip(1), takeUntilDestroyed(this.destroyRef))
       .subscribe(this.formUpdated.bind(this))
 
     this.formActionSubject
-      .pipe(takeUntil(this.destroy$))
+      .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(this.formActionEvent.bind(this))
 
     window.addEventListener('message', this.handleMessage, false)
@@ -128,11 +129,8 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
   public ngOnDestroy(): void {
     window.removeEventListener('message', this.handleMessage)
 
-    this.destroy$.next()
-    this.destroy$.complete()
-
     if (this.io) {
-      this.io.end()
+      this.io.end?.()
     }
 
     this.schemaFormRefreshSubject.complete()
@@ -200,12 +198,12 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
 
     this.io.socket.on('response', (data) => {
       data.action = 'response'
-      this.iframe.contentWindow.postMessage(data, environment.api.origin)
+      this.iframe.contentWindow!.postMessage(data, environment.api.origin)
     })
 
     this.io.socket.on('stream', (data) => {
       data.action = 'stream'
-      this.iframe.contentWindow.postMessage(data, environment.api.origin)
+      this.iframe.contentWindow!.postMessage(data, environment.api.origin)
     })
 
     this.io.socket.on('ready', () => {
@@ -399,7 +397,7 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
     for (const css of externalCss) {
       if (css.getAttribute('rel') === 'stylesheet') {
         const srcHref = css.getAttribute('href')
-        const href = document.baseURI + (srcHref.startsWith('/') ? srcHref.substring(1) : srcHref)
+        const href = document.baseURI + (srcHref!.startsWith('/') ? srcHref!.substring(1) : srcHref)
         sourceWindow.postMessage({ action: 'link-element', href, rel: 'stylesheet' }, event.origin)
       }
     }
@@ -462,7 +460,7 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
 
     // No need to update pluginConfig - two-way binding handles it in-place
     // Just notify the iframe about the change
-    this.iframe.contentWindow.postMessage({
+    this.iframe.contentWindow!.postMessage({
       action: 'stream',
       event: 'configChanged',
       data: this.pluginConfig,
@@ -519,7 +517,7 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
    * Called when an other-form type is updated
    */
   private formUpdated(data: unknown): void {
-    this.iframe.contentWindow.postMessage({
+    this.iframe.contentWindow!.postMessage({
       action: 'stream',
       event: this.formId(),
       data: {
@@ -533,7 +531,7 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
    * Fired when a custom form is canceled or submitted
    */
   private formActionEvent(formEvent: 'cancel' | 'submit'): void {
-    this.iframe.contentWindow.postMessage({
+    this.iframe.contentWindow!.postMessage({
       action: 'stream',
       event: this.formId(),
       data: {
@@ -554,7 +552,7 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
 
     try {
       const cachedAccessories = await this.$api.get('/server/cached-accessories')
-      return this.requestResponse(event, cachedAccessories.filter(x => (x as { plugin: string }).plugin === plugin.name))
+      return this.requestResponse(event, (cachedAccessories as { plugin: string }[]).filter(x => x.plugin === plugin.name))
     } catch (error) {
       console.error('Failed to get cached accessories:', error)
       this.$toastr.error(this.$translate.instant('toast.title_error'))
@@ -572,7 +570,7 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
 
     try {
       const cachedMatterAccessories = await this.$api.get('/server/matter-accessories')
-      return this.requestResponse(event, cachedMatterAccessories.filter(x => (x as { plugin: string }).plugin === plugin.name))
+      return this.requestResponse(event, (cachedMatterAccessories as { plugin: string }[]).filter(x => x.plugin === plugin.name))
     } catch (error) {
       console.error('Failed to get cached Matter accessories:', error)
       this.$toastr.error(this.$translate.instant('toast.title_error'))

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, inject, OnInit, signal } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
@@ -206,13 +206,13 @@ export class WidgetVisibilityComponent implements OnInit {
     this.availableWidgets.set(updated)
   }
 
-  public isFormUnchanged(): boolean {
+  public readonly isFormUnchanged = computed(() => {
     const current = this.availableWidgets()
     return current.every((w, i) =>
       w.showOnDesktop === this.originalState[i].showOnDesktop
       && w.showOnMobile === this.originalState[i].showOnMobile,
     )
-  }
+  })
 
   public saveModal(): void {
     const result = this.availableWidgets().map(w => ({

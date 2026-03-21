@@ -1,8 +1,3 @@
-// Smooth transition for body background color when lighting mode changes
-::ng-deep body {
-  transition: background-color 0.5s ease-in-out;
-}
-
 // Fade out/in animation for content during theme change
 .settings-content {
   opacity: 1;

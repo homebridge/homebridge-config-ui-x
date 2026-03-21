@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, inject, OnDestroy, OnInit, signal } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { Router } from '@angular/router'
 import {
@@ -94,10 +94,10 @@ export class ManualConfigComponent implements OnInit, OnDestroy {
   public readonly strictValidation = signal(false)
   public editorOptions: any
 
-  // 6. Getters
-  get arrayKey(): string {
-    return this.pluginType() === 'accessory' ? 'accessories' : 'platforms'
-  }
+  // 6. Computed
+  public readonly arrayKey = computed(() =>
+    this.pluginType() === 'accessory' ? 'accessories' : 'platforms',
+  )
 
   // 7. Lifecycle
   public ngOnInit(): void {
@@ -533,11 +533,11 @@ export class ManualConfigComponent implements OnInit, OnDestroy {
       // Fix the object if the user pasted an example that included the "accessories" or "platforms" array
       if (
         !typedBlock[this.pluginType()!]
-        && Array.isArray(typedBlock[this.arrayKey])
-        && (typedBlock[this.arrayKey] as unknown[]).length
+        && Array.isArray(typedBlock[this.arrayKey()])
+        && (typedBlock[this.arrayKey()] as unknown[]).length
         && Object.keys(typedBlock).length === 1
       ) {
-        typedBlock = (typedBlock[this.arrayKey] as Record<string, unknown>[])[0]
+        typedBlock = (typedBlock[this.arrayKey()] as Record<string, unknown>[])[0]
       }
 
       // Accessory types need a valid name

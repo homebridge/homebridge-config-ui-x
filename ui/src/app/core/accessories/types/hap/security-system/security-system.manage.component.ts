@@ -12,14 +12,14 @@ import { BaseManageComponent } from '@/app/core/accessories/types/base-manage.co
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SecuritySystemManageComponent extends BaseManageComponent {
-  public targetMode: number
+  public targetMode!: number
   public targetModeValidValues: number[] = []
   public isArming = false
   public isDisarming = false
 
   protected setupComponent() {
     this.targetMode = this.service.values.SecuritySystemTargetState
-    this.targetModeValidValues = this.service.getCharacteristic('SecuritySystemTargetState').validValues as number[]
+    this.targetModeValidValues = this.service.getCharacteristic!('SecuritySystemTargetState')!.validValues as number[]
     this.updateTransitionState()
   }
 
@@ -37,7 +37,7 @@ export class SecuritySystemManageComponent extends BaseManageComponent {
 
   public setTargetMode(value: number, event: MouseEvent) {
     this.targetMode = value
-    void this.service.getCharacteristic('SecuritySystemTargetState').setValue(this.targetMode)
+    void this.service.getCharacteristic!('SecuritySystemTargetState')!.setValue!(this.targetMode)
 
     this.blurTarget(event)
   }

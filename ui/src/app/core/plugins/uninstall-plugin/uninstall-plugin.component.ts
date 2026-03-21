@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, createEnvironmentInjector, EnvironmentInjector, inject, OnInit, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, createEnvironmentInjector, EnvironmentInjector, inject, OnInit, signal } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { NgbAlert } from '@ng-bootstrap/ng-bootstrap/alert'
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
@@ -123,23 +123,23 @@ export class UninstallPluginComponent implements OnInit {
     this.removeChildBridges.set(this.removeConfig())
   }
 
-  public get settingTranslationKey(): string {
+  public readonly settingTranslationKey = computed(() => {
     // For dynamic platforms with keepOrphans=true, show override message when removing config
     if (this.isConfiguredDynamicPlatform() && this.keepOrphans && this.removeConfig()) {
       return 'plugins.manage.confirm_disable_setting_override'
     }
     return 'plugins.manage.confirm_disable_setting'
-  }
+  })
 
-  public get shouldShowCleanupAlert(): boolean {
+  public readonly shouldShowCleanupAlert = computed(() =>
     // Only show cleanup alert if accessories are being removed from cache
-    return !(this.keepOrphans && this.isConfiguredDynamicPlatform() && !this.removeConfig())
-  }
+    !(this.keepOrphans && this.isConfiguredDynamicPlatform() && !this.removeConfig()),
+  )
 
-  public get willKeepAccessoriesInCache(): boolean {
+  public readonly willKeepAccessoriesInCache = computed(() =>
     // Accessories kept in cache only when: keepOrphans=true, dynamic platform, and NOT removing config
-    return this.keepOrphans && this.isConfiguredDynamicPlatform() && !this.removeConfig()
-  }
+    this.keepOrphans && this.isConfiguredDynamicPlatform() && !this.removeConfig(),
+  )
 
   // 9. Private Methods
   private async initialize(): Promise<void> {

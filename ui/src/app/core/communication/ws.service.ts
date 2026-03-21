@@ -18,7 +18,7 @@ export interface IoNamespace {
 export class WsService {
   private $auth = inject(AuthService)
 
-  private namespaceConnectionCache = {}
+  private namespaceConnectionCache: Record<string, IoNamespace> = {}
 
   /**
    * Wrapper function to reuse the same connection
@@ -32,19 +32,19 @@ export class WsService {
 
       // Broadcast to subscribers that the connection is ready
       if (io.socket.connected) {
-        io.connected.next(undefined)
+        io.connected!.next(undefined)
       }
 
       // Watch for re-connections, and broadcast
       io.socket.on('connect', () => {
-        io.connected.next(undefined)
+        io.connected!.next(undefined)
       })
 
       // Define end function
       io.end = () => {
         io.socket.emit('end')
         io.socket.removeAllListeners()
-        io.connected.complete()
+        io.connected!.complete()
       }
 
       return this.namespaceConnectionCache[namespace]
@@ -55,14 +55,14 @@ export class WsService {
 
       // Wait for the connection and broadcast when ready
       io.socket.on('connect', () => {
-        io.connected.next(undefined)
+        io.connected!.next(undefined)
       })
 
       // Define end function
       io.end = () => {
         io.socket.emit('end')
         io.socket.removeAllListeners()
-        io.connected.complete()
+        io.connected!.complete()
       }
 
       // Cache the connection

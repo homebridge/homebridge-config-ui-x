@@ -42,7 +42,7 @@ export class PortOverviewModalComponent implements OnInit {
       const data = await this.$api.get('/server/network/overview')
       this.entries.set(data.entries)
       this.conflicts.set(data.conflicts)
-    } catch (error) {
+    } catch (error: any) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
     } finally {

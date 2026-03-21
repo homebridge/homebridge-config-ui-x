@@ -20,13 +20,13 @@ import { BaseManageComponent } from '@/app/core/accessories/types/base-manage.co
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SpeakerManageComponent extends BaseManageComponent {
-  public targetMode: boolean
-  public targetVolume: SliderControlConfig
+  public targetMode!: boolean
+  public targetVolume!: SliderControlConfig
   public targetVolumeChanged: Subject<number> = new Subject<number>()
 
   protected setupComponent() {
     this.createDebouncedSubscription(this.targetVolumeChanged, () => {
-      void this.service.getCharacteristic('Volume').setValue(this.targetVolume.value)
+      void this.service.getCharacteristic!('Volume').setValue!(this.targetVolume.value)
     })
 
     this.targetMode = this.service.values.Mute
@@ -36,25 +36,25 @@ export class SpeakerManageComponent extends BaseManageComponent {
   protected handleAccessoryUpdate() {
     this.targetMode = this.service.values.Mute
     if (this.targetVolume && 'Volume' in this.service.values) {
-      this.targetVolume.value = this.service.getCharacteristic('Volume').value as number
+      this.targetVolume.value = this.service.getCharacteristic!('Volume').value as number
     }
   }
 
   public setTargetMode(value: boolean, event: MouseEvent) {
     this.targetMode = value
-    void this.service.getCharacteristic('Mute').setValue(this.targetMode)
+    void this.service.getCharacteristic!('Mute').setValue!(this.targetMode)
 
     this.blurTarget(event)
   }
 
   public setActive(value: number, event: MouseEvent) {
-    void this.service.getCharacteristic('Active').setValue(value)
+    void this.service.getCharacteristic!('Active').setValue!(value)
 
     this.blurTarget(event)
   }
 
   public setTargetState(value: number, event: MouseEvent) {
-    void this.service.getCharacteristic('TargetMediaState').setValue(value)
+    void this.service.getCharacteristic!('TargetMediaState').setValue!(value)
 
     this.blurTarget(event)
   }
@@ -64,7 +64,7 @@ export class SpeakerManageComponent extends BaseManageComponent {
   }
 
   private loadTargetVolume() {
-    const TargetVolume = this.service.getCharacteristic('Volume')
+    const TargetVolume = this.service.getCharacteristic!('Volume')
     if (TargetVolume) {
       this.targetVolume = {
         value: TargetVolume.value as number,

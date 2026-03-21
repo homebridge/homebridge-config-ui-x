@@ -13,7 +13,7 @@ export const startupScriptResolver: ResolveFn<any> = async () => {
 
   try {
     return await $api.get('/platform-tools/docker/startup-script')
-  } catch (error) {
+  } catch (error: any) {
     console.error(error)
     $toastr.error(error.message, $translate.instant('toast.title_error'))
     void $router.navigate(['/'])

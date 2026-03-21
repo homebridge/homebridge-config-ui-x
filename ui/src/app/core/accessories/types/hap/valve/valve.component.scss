@@ -1,78 +1,76 @@
-::ng-deep {
-  .accessory-on {
-    svg {
-      .grass {
-        stroke: #4caf50 !important;
+.accessory-on {
+  svg {
+    .grass {
+      stroke: #4caf50 !important;
+    }
+
+    .drop {
+      fill-opacity: 0.5;
+    }
+
+    .drop-in {
+      animation: blink 1.5s infinite;
+    }
+
+    .drop-out {
+      animation: blink 1.5s infinite;
+      animation-delay: 0.75s;
+    }
+
+    @keyframes blink {
+      0%,
+      100% {
+        opacity: 1;
       }
 
-      .drop {
-        fill-opacity: 0.5;
+      50% {
+        opacity: 0;
+      }
+    }
+
+    .drop-top {
+      animation: blink 1.5s infinite;
+    }
+
+    .drop-middle {
+      animation: blink 1.5s infinite;
+      animation-delay: 0.5s;
+    }
+
+    .drop-bottom {
+      animation: blink 1.5s infinite;
+      animation-delay: 1s;
+    }
+
+    @keyframes blink {
+      0%,
+      100% {
+        opacity: 1;
       }
 
-      .drop-in {
-        animation: blink 1.5s infinite;
+      50% {
+        opacity: 0;
+      }
+    }
+
+    @keyframes blink-on-off {
+      0%,
+      100% {
+        opacity: 1;
       }
 
-      .drop-out {
-        animation: blink 1.5s infinite;
-        animation-delay: 0.75s;
+      50% {
+        opacity: 0.5;
       }
+    }
 
-      @keyframes blink {
-        0%,
-        100% {
-          opacity: 1;
-        }
+    .stream {
+      stroke-opacity: 0.5;
+      animation: blink-on-off 4s infinite;
+    }
 
-        50% {
-          opacity: 0;
-        }
-      }
-
-      .drop-top {
-        animation: blink 1.5s infinite;
-      }
-
-      .drop-middle {
-        animation: blink 1.5s infinite;
-        animation-delay: 0.5s;
-      }
-
-      .drop-bottom {
-        animation: blink 1.5s infinite;
-        animation-delay: 1s;
-      }
-
-      @keyframes blink {
-        0%,
-        100% {
-          opacity: 1;
-        }
-
-        50% {
-          opacity: 0;
-        }
-      }
-
-      @keyframes blink-on-off {
-        0%,
-        100% {
-          opacity: 1;
-        }
-
-        50% {
-          opacity: 0.5;
-        }
-      }
-
-      .stream {
-        stroke-opacity: 0.5;
-        animation: blink-on-off 4s infinite;
-      }
-
-      .sink {
-        fill: #1976d2;
-      }
+    .sink {
+      fill: #1976d2;
     }
   }
 }

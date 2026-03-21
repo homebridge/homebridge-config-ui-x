@@ -1,24 +1,14 @@
-::ng-deep {
-  body.dark-mode {
-    .c-blinds {
-      fill: #2b2b2b;
-      stroke: #2b2b2b;
-      stroke-opacity: 0.8;
-      fill-opacity: 0.8;
-    }
+svg {
+  .c-blinds {
+    transition: height 3s ease;
+    height: calc(27.6px - 27.3px * var(--position, 0));
   }
-  svg {
-    .c-blinds {
-      transition: height 3s ease;
-      height: calc(27.6px - 27.3px * var(--position, 0));
-    }
 
-    .c-light {
-      transition:
-        y 3s ease,
-        height 3s ease;
-      y: calc(29.9px - 27.25px * var(--position, 0));
-      height: calc(27.3px * var(--position, 0));
-    }
+  .c-light {
+    transition:
+      y 3s ease,
+      height 3s ease;
+    y: calc(29.9px - 27.25px * var(--position, 0));
+    height: calc(27.3px * var(--position, 0));
   }
 }

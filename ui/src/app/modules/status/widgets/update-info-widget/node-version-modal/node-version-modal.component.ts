@@ -64,7 +64,7 @@ export class NodeVersionModalComponent implements OnInit {
     // Watch for changes and update the backend
     this.nodeUpdatePolicyControl.valueChanges
       .pipe(debounceTime(500), distinctUntilChanged())
-      .subscribe(value => void this.updateNodeUpdatePolicy(value))
+      .subscribe(value => void this.updateNodeUpdatePolicy(value!))
 
     void this.initialize()
   }

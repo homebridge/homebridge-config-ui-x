@@ -20,9 +20,3 @@
 .hb-status-item-quarter {
   min-width: max(25%, 225px);
 }
-
-::ng-deep body.dark-mode {
-  .card-link-title {
-    color: #ffffff !important;
-  }
-}

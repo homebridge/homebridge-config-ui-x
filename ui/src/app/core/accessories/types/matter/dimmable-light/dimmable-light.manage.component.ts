@@ -23,8 +23,8 @@ import { getBrightnessLevel, getOnOffState, levelToPercentage } from '@/app/core
 export class DimmableLightManageComponent extends BaseManageComponent {
   private $toastr = inject(ToastrService)
 
-  public targetMode: boolean
-  public targetBrightness: { value: number, min: number, max: number, step: number }
+  public targetMode!: boolean
+  public targetBrightness!: { value: number, min: number, max: number, step: number }
   public targetBrightnessChanged: Subject<number> = new Subject<number>()
 
   protected setupComponent() {

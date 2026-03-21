@@ -42,7 +42,7 @@ export class FanComponent implements OnInit {
     // Find the unit for the rotation speed
     if ('RotationSpeed' in this.service().values) {
       const RotationSpeed = this.service().serviceCharacteristics.find(c => c.type === 'RotationSpeed')
-      if (RotationSpeed.unit === 'percentage') {
+      if (RotationSpeed?.unit === 'percentage') {
         this.rotationSpeedUnit = '%'
       }
     }
@@ -57,14 +57,14 @@ export class FanComponent implements OnInit {
     }
 
     if ('On' in this.service().values) {
-      void this.service().getCharacteristic('On').setValue(!this.service().values.On)
+      void this.service().getCharacteristic!('On').setValue!(!this.service().values.On)
     } else if ('Active' in this.service().values) {
-      void this.service().getCharacteristic('Active').setValue(this.service().values.Active ? 0 : 1)
+      void this.service().getCharacteristic!('Active').setValue!(this.service().values.Active ? 0 : 1)
     }
 
     // Set the rotation speed to max if on 0% when turned on
     if ('RotationSpeed' in this.service().values && !this.service().values.On && !this.service().values.RotationSpeed) {
-      this.service().values.RotationSpeed = this.service().getCharacteristic('RotationSpeed').maxValue
+      this.service().values.RotationSpeed = this.service().getCharacteristic!('RotationSpeed').maxValue
     }
   }
 
