@@ -19,6 +19,8 @@ import { SettingsService } from '@/app/core/settings.service'
 import { IoNamespace, WsService } from '@/app/core/ws.service'
 import { PluginInfoComponent } from '@/app/modules/plugins/plugin-card/plugin-info/plugin-info.component'
 
+const RE_HOMEBRIDGE_PREFIX = /^homebridge /i
+
 @Component({
   selector: 'app-plugin-card',
   templateUrl: './plugin-card.component.html',
@@ -80,7 +82,7 @@ export class PluginCardComponent implements OnInit {
     this.io = this.$ws.getExistingNamespace('child-bridges')
 
     if (this.isMobile && this.plugin.displayName.toLowerCase().startsWith('homebridge ')) {
-      this.plugin.displayName = this.plugin.displayName.replace(/^homebridge /i, '')
+      this.plugin.displayName = this.plugin.displayName.replace(RE_HOMEBRIDGE_PREFIX, '')
     }
 
     if (!this.plugin.icon) {

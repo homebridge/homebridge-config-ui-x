@@ -5,6 +5,8 @@ import { Inject, Injectable } from '@nestjs/common'
 import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.service.js'
 import { AccessoriesService } from '../accessories/accessories.service.js'
 
+const RE_PAIR = /.{1,2}/g
+
 @Injectable()
 export class ChildBridgesService {
   constructor(
@@ -58,7 +60,7 @@ export class ChildBridgesService {
    */
   public stopStartRestartChildBridge(event: 'startChildBridge' | 'stopChildBridge' | 'restartChildBridge', deviceId: string) {
     if (deviceId.length === 12) {
-      deviceId = deviceId.match(/.{1,2}/g).join(':')
+      deviceId = deviceId.match(RE_PAIR).join(':')
     }
 
     this.homebridgeIpcService.sendMessage(event, deviceId)

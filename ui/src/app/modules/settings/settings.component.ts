@@ -28,6 +28,8 @@ import { ResetIndividualBridgesComponent } from '@/app/modules/settings/reset-in
 import { SelectNetworkInterfacesComponent } from '@/app/modules/settings/select-network-interfaces/select-network-interfaces.component'
 import { WallpaperComponent } from '@/app/modules/settings/wallpaper/wallpaper.component'
 
+const RE_VALID_NAME = /^[\p{L}\p{N}][\p{L}\p{N} ']*[\p{L}\p{N}]$/u
+
 @Component({
   templateUrl: './settings.component.html',
   styleUrls: ['./settings.component.scss'],
@@ -915,7 +917,7 @@ export class SettingsComponent implements OnInit {
 
   private async hbNameSave(value: string) {
     // https://github.com/homebridge/HAP-NodeJS/blob/ee41309fd9eac383cdcace39f4f6f6a3d54396f3/src/lib/util/checkName.ts#L12
-    if (!value || !(/^[\p{L}\p{N}][\p{L}\p{N} ']*[\p{L}\p{N}]$/u).test(value)) {
+    if (!value || !RE_VALID_NAME.test(value)) {
       this.hbNameIsInvalid = true
       return
     }
@@ -2085,9 +2087,9 @@ export class SettingsComponent implements OnInit {
     }
     // Allow multiple selection; send all to the server which will detect key vs cert
     const formData = new FormData()
-    Array.from(files).forEach((f: File) => {
-      formData.append('files', f, f.name)
-    })
+    for (let i = 0; i < files.length; i += 1) {
+      formData.append('files', files[i], files[i].name)
+    }
 
     this.$api.post('/server/ssl/keycert', formData).subscribe({
       next: (res: any) => {

@@ -16,6 +16,8 @@ import { ConfigService } from '../../src/core/config/config.service.js'
 
 import '../../src/globalDefaults'
 
+const RE_JWT = /^[\w-]+\.[\w-]+\.[\w-]+$/
+
 describe('AuthController (e2e)', () => {
   let app: NestFastifyApplication
 
@@ -234,7 +236,7 @@ describe('AuthController (e2e)', () => {
     expect(res.json()).toHaveProperty('token_type', 'Bearer')
     expect(res.json()).toHaveProperty('expires_in')
     // Verify the token is valid (length and structure) - JWT uses base64url which includes - and _ chars
-    expect(res.json().access_token).toMatch(/^[\w-]+\.[\w-]+\.[\w-]+$/)
+    expect(res.json().access_token).toMatch(RE_JWT)
   })
 
   it('POST /auth/refresh (invalid token)', async () => {

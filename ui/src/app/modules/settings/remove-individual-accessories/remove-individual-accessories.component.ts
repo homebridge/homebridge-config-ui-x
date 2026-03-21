@@ -11,6 +11,8 @@ import { firstValueFrom } from 'rxjs'
 import { ApiService } from '@/app/core/api.service'
 import { SettingsService } from '@/app/core/settings.service'
 
+const RE_PAIR = /.{1,2}/g
+
 @Component({
   templateUrl: './remove-individual-accessories.component.html',
   standalone: true,
@@ -140,7 +142,7 @@ export class RemoveIndividualAccessoriesComponent implements OnInit {
             if (!pairingMap.has(bridge)) {
               pairingMap.set(bridge, {
                 _id: bridge,
-                _username: bridge.match(/.{1,2}/g).join(':'),
+                _username: bridge.match(RE_PAIR).join(':'),
                 name: this.$translate.instant('reset.accessory_ind.unknown'),
                 accessories: [],
               })
@@ -160,7 +162,7 @@ export class RemoveIndividualAccessoriesComponent implements OnInit {
               if (!pairingMap.has(bridge)) {
                 pairingMap.set(bridge, {
                   _id: bridge,
-                  _username: bridge.match(/.{1,2}/g).join(':'),
+                  _username: bridge.match(RE_PAIR).join(':'),
                   name: this.$translate.instant('reset.accessory_ind.unknown'),
                   accessories: [],
                 })
@@ -172,7 +174,7 @@ export class RemoveIndividualAccessoriesComponent implements OnInit {
           })
       }
 
-      this.pairings = Array.from(pairingMap.values())
+      this.pairings = [...pairingMap.values()]
         .filter((pairing: Pairing) => pairing.accessories.length > 0)
         .sort((a, b) => {
           if (a._main && !b._main) {

@@ -105,7 +105,7 @@ describe('mDNS Service (e2e)', () => {
         })
 
         // Timeout after 2 seconds
-        setTimeout(() => resolve(null), 2000)
+        setTimeout(resolve, 2000, null)
       })
 
       await discoveryPromise
@@ -252,7 +252,7 @@ describe('mDNS Service (e2e)', () => {
 
       // Publish multiple services
       const services = []
-      for (let i = 0; i < 3; i++) {
+      for (let i = 0; i < 3; i += 1) {
         const service = bonjour.publish({
           name: `Test Service ${i}`,
           type: 'http',

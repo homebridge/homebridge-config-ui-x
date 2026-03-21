@@ -13,6 +13,9 @@ import { Plugin } from '@/app/core/manage-plugins/manage-plugins.interfaces'
 import { SettingsService } from '@/app/core/settings.service'
 import { IoNamespace, WsService } from '@/app/core/ws.service'
 
+// eslint-disable-next-line no-control-regex
+const RE_ANSI = /\x1B\[(\d{1,3}(;\d{1,2})?)?[mGK]/g
+
 @Component({
   templateUrl: './switch-to-scoped.component.html',
   styleUrls: ['./switch-to-scoped.component.scss'],
@@ -74,7 +77,7 @@ export class SwitchToScopedComponent implements OnInit, OnDestroy {
       this.term.write(data)
       const dataCleaned = data
         .toString()
-        .replace(/\x1B\[(\d{1,3}(;\d{1,2})?)?[mGK]/g, '') // eslint-disable-line no-control-regex
+        .replace(RE_ANSI, '')
         .trimEnd()
       if (dataCleaned) {
         this.errorLog += `${dataCleaned}\r\n`

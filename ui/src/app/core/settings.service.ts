@@ -218,8 +218,8 @@ export class SettingsService {
         }
         current = current[keys[i]]
       }
-      if (!this.forbiddenKeys.includes(keys[keys.length - 1])) {
-        current[keys[keys.length - 1]] = value
+      if (!this.forbiddenKeys.includes(keys.at(-1))) {
+        current[keys.at(-1)] = value
       }
     } else {
       this.env[key] = value

@@ -393,7 +393,7 @@ export class PluginsComponent implements OnInit, OnDestroy, CanComponentDeactiva
             // Adds some extra properties to the plugin object for the plugin card
             const configBlocks = await firstValueFrom(this.$api.get(`/config-editor/plugin/${encodeURIComponent(plugin.name)}`))
             plugin.isConfigured = configBlocks.length > 0
-            plugin.isConfiguredDynamicPlatform = plugin.isConfigured && Object.prototype.hasOwnProperty.call(configBlocks[0], 'platform')
+            plugin.isConfiguredDynamicPlatform = plugin.isConfigured && Object.hasOwn(configBlocks[0], 'platform')
 
             plugin.recommendChildBridge = plugin.isConfigured
               && this.$settings.env.recommendChildBridges

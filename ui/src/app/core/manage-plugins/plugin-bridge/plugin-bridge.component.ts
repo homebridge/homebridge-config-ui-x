@@ -16,6 +16,15 @@ import { Plugin } from '@/app/core/manage-plugins/manage-plugins.interfaces'
 import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service'
 import { SettingsService } from '@/app/core/settings.service'
 
+const RE_NON_ALNUM = /[^a-z0-9]/gi
+const RE_CONSECUTIVE_DASHES = /-+/g
+const RE_LEADING_TRAILING_DASH = /^-|-$/g
+const RE_COLON = /:/g
+const RE_INVALID_HAP_NAME_CHARS = /[^\p{L}\p{N} ']/gu
+const RE_LEADING_TRAILING_SPACE_APOSTROPHE = /^[ ']+|[ ']+$/g
+const RE_LEADING_TRAILING_NON_ALNUM_UNICODE = /^[^\p{L}\p{N}]+|[^\p{L}\p{N}]+$/gu
+const RE_HAP_NAME_PATTERN = /^[\p{L}\p{N}][\p{L}\p{N} ']*[\p{L}\p{N}]$/u
+
 @Component({
   templateUrl: './plugin-bridge.component.html',
   styleUrls: ['./plugin-bridge.component.scss'],
@@ -91,7 +100,7 @@ export class PluginBridgeComponent implements OnInit {
 
     // Bridges available for link can only be accessory blocks
     if (this.configBlocks[Number(index)].accessory) {
-      for (const [i, bridge] of Array.from(this.bridgeCache.entries())) {
+      for (const [i, bridge] of this.bridgeCache.entries()) {
         // Only include bridges that are enabled and not marked for deletion
         if (this.enabledBlocks[i] && !this.deleteBridges.some(b => b.id === bridge.username)) {
           if (i < Number(index)) {
@@ -155,7 +164,7 @@ export class PluginBridgeComponent implements OnInit {
 
         if (block._bridge && block._bridge.username) {
           // For accessory plugin blocks, the username might be the same as a previous block
-          const existingBridgeEntry = Array.from(this.bridgeCache.entries()).find(([, bridge]) => bridge.username === block._bridge.username)
+          const existingBridgeEntry = [...this.bridgeCache.entries()].find(([, bridge]) => bridge.username === block._bridge.username)
           const existingBridgeIndex = existingBridgeEntry ? existingBridgeEntry[0] : -1
           const existingBridge = existingBridgeEntry ? existingBridgeEntry[1] : undefined
           if (existingBridge) {
@@ -224,7 +233,7 @@ export class PluginBridgeComponent implements OnInit {
 
       // Initialize bridges available for link
       if (this.configBlocks[Number(this.selectedBlock)]?.accessory) {
-        for (const [i, bridge] of Array.from(this.bridgeCache.entries())) {
+        for (const [i, bridge] of this.bridgeCache.entries()) {
           if (this.enabledBlocks[i] && !this.deleteBridges.some(b => b.id === bridge.username)) {
             if (i < Number(this.selectedBlock)) {
               this.bridgesAvailableForLink.push({
@@ -292,7 +301,7 @@ export class PluginBridgeComponent implements OnInit {
 
         // Remove from Matter deletion list since we're restoring it
         if (block._bridge.username) {
-          const identifier = block._bridge.username.replace(/[^a-z0-9]/gi, '-').replace(/-+/g, '-').replace(/^-|-$/g, '')
+          const identifier = block._bridge.username.replace(RE_NON_ALNUM, '-').replace(RE_CONSECUTIVE_DASHES, '-').replace(RE_LEADING_TRAILING_DASH, '')
           this.deleteMatterBridges = this.deleteMatterBridges.filter(b => b.identifier !== identifier)
         }
       }
@@ -339,7 +348,7 @@ export class PluginBridgeComponent implements OnInit {
 
         // Check if Matter was already disabled by the user before we disabled the child bridge
         if (block._bridge?.username) {
-          const identifier = block._bridge.username.replace(/[^a-z0-9]/gi, '-').replace(/-+/g, '-').replace(/^-|-$/g, '')
+          const identifier = block._bridge.username.replace(RE_NON_ALNUM, '-').replace(RE_CONSECUTIVE_DASHES, '-').replace(RE_LEADING_TRAILING_DASH, '')
           const matterAlreadyDisabled = this.deleteMatterBridges.some(b => b.identifier === identifier)
 
           if (matterAlreadyDisabled) {
@@ -356,7 +365,7 @@ export class PluginBridgeComponent implements OnInit {
           )
 
           if (wasOriginallyEnabled) {
-            const identifier = block._bridge.username.replace(/[^a-z0-9]/gi, '-').replace(/-+/g, '-').replace(/^-|-$/g, '')
+            const identifier = block._bridge.username.replace(RE_NON_ALNUM, '-').replace(RE_CONSECUTIVE_DASHES, '-').replace(RE_LEADING_TRAILING_DASH, '')
             // Avoid duplicates
             if (!this.deleteMatterBridges.some(b => b.identifier === identifier)) {
               // Store name before deleting block._bridge
@@ -416,7 +425,7 @@ export class PluginBridgeComponent implements OnInit {
 
   private async getDeviceInfo(username: string) {
     try {
-      this.deviceInfo.set(username, await firstValueFrom(this.$api.get(`/server/pairings/${username.replace(/:/g, '')}`)))
+      this.deviceInfo.set(username, await firstValueFrom(this.$api.get(`/server/pairings/${username.replace(RE_COLON, '')}`)))
     } catch (error) {
       console.error(error)
       this.deviceInfo.set(username, false)
@@ -433,13 +442,13 @@ export class PluginBridgeComponent implements OnInit {
     }
 
     // Remove any characters that aren't letters, numbers, spaces, or apostrophes
-    let sanitized = name.replace(/[^\p{L}\p{N} ']/gu, '')
+    let sanitized = name.replace(RE_INVALID_HAP_NAME_CHARS, '')
 
     // Remove leading/trailing spaces and apostrophes
-    sanitized = sanitized.replace(/^[ ']+|[ ']+$/g, '')
+    sanitized = sanitized.replace(RE_LEADING_TRAILING_SPACE_APOSTROPHE, '')
 
     // Ensure it starts and ends with letter or number by removing invalid start/end chars
-    sanitized = sanitized.replace(/^[^\p{L}\p{N}]+|[^\p{L}\p{N}]+$/gu, '')
+    sanitized = sanitized.replace(RE_LEADING_TRAILING_NON_ALNUM_UNICODE, '')
 
     return sanitized
   }
@@ -514,7 +523,7 @@ export class PluginBridgeComponent implements OnInit {
 
       // If this was marked for deletion, remove it from the delete list
       if (block._bridge.username) {
-        const identifier = block._bridge.username.replace(/[^a-z0-9]/gi, '-').replace(/-+/g, '-').replace(/^-|-$/g, '')
+        const identifier = block._bridge.username.replace(RE_NON_ALNUM, '-').replace(RE_CONSECUTIVE_DASHES, '-').replace(RE_LEADING_TRAILING_DASH, '')
         this.deleteMatterBridges = this.deleteMatterBridges.filter(b => b.identifier !== identifier)
 
         // Also clear the "explicitly disabled" tracking flag since user is now enabling Matter
@@ -557,7 +566,7 @@ export class PluginBridgeComponent implements OnInit {
 
         if (wasOriginallyEnabled) {
           // Sanitize username to create identifier (same logic as backend)
-          const identifier = block._bridge.username.replace(/[^a-z0-9]/gi, '-').replace(/-+/g, '-').replace(/^-|-$/g, '')
+          const identifier = block._bridge.username.replace(RE_NON_ALNUM, '-').replace(RE_CONSECUTIVE_DASHES, '-').replace(RE_LEADING_TRAILING_DASH, '')
           // Get name from block._bridge (still available at this point)
           const name = block._bridge.name || this.plugin.displayName || this.plugin.name
           this.deleteMatterBridges.push({
@@ -606,8 +615,7 @@ export class PluginBridgeComponent implements OnInit {
     const name = block._bridge.name
     // HAP name validation: must start and end with letter/number, can contain letters, numbers, spaces, and apostrophes
     // https://github.com/homebridge/HAP-NodeJS/blob/ee41309fd9eac383cdcace39f4f6f6a3d54396f3/src/lib/util/checkName.ts#L12
-    const hapNamePattern = /^[\p{L}\p{N}][\p{L}\p{N} ']*[\p{L}\p{N}]$/u
-    return !hapNamePattern.test(name)
+    return !RE_HAP_NAME_PATTERN.test(name)
   }
 
   public getHapPortValidationError(index: string): boolean {
@@ -700,7 +708,7 @@ export class PluginBridgeComponent implements OnInit {
       // Delete unused bridges, so no bridges are orphaned
       for (const bridge of this.deleteBridges) {
         try {
-          await firstValueFrom(this.$api.delete(`/server/pairings/${bridge.id.replace(/:/g, '')}`))
+          await firstValueFrom(this.$api.delete(`/server/pairings/${bridge.id.replace(RE_COLON, '')}`))
         } catch (error) {
           console.error(error)
           this.$toastr.error(this.$translate.instant('settings.reset_bridge.error'), this.$translate.instant('toast.title_error'))
@@ -714,7 +722,7 @@ export class PluginBridgeComponent implements OnInit {
       )
       for (const matterBridge of matterBridgesToDelete) {
         try {
-          const deviceId = matterBridge.username.replace(/:/g, '')
+          const deviceId = matterBridge.username.replace(RE_COLON, '')
           await firstValueFrom(this.$api.delete(`/server/pairings/${deviceId}/matter`))
         } catch (error) {
           console.error(error)

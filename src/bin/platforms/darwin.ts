@@ -115,10 +115,11 @@ export class DarwinInstaller extends BasePlatform {
       const targetNodeVersion = execSync('node -v').toString('utf8').trim()
 
       const npmGlobalPath = execSync('/bin/echo -n "$(npm -g prefix)/lib/node_modules"', {
-        env: Object.assign({
+        env: {
           npm_config_loglevel: 'silent',
           npm_update_notifier: 'false',
-        }, process.env),
+          ...process.env,
+        },
       }).toString('utf8')
 
       execSync('npm rebuild --unsafe-perm', {
@@ -291,10 +292,11 @@ export class DarwinInstaller extends BasePlatform {
    */
   private async checkGlobalNpmAccess() {
     const npmGlobalPath = execSync('/bin/echo -n "$(npm -g prefix)/lib/node_modules"', {
-      env: Object.assign({
+      env: {
         npm_config_loglevel: 'silent',
         npm_update_notifier: 'false',
-      }, process.env),
+        ...process.env,
+      },
     }).toString('utf8')
     const { uid, gid } = await this.getId()
 

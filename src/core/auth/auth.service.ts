@@ -287,7 +287,7 @@ export class AuthService {
     try {
       const authfile: UserDto[] = await readJson(this.configService.authPath)
       // There must be at least one admin user
-      if (!authfile.find(x => x.admin === true)) {
+      if (!authfile.some(x => x.admin === true)) {
         this.configService.setupWizardComplete = false
       }
     } catch (e) {
@@ -360,7 +360,7 @@ export class AuthService {
     }
 
     // Check a user with the same username does not already exist
-    if (authfile.find(x => x.username.toLowerCase() === newUser.username.toLowerCase())) {
+    if (authfile.some(x => x.username.toLowerCase() === newUser.username.toLowerCase())) {
       throw new ConflictException(`User with username '${newUser.username}' already exists.`)
     }
 
@@ -414,7 +414,7 @@ export class AuthService {
     }
 
     if (user.username !== update.username) {
-      if (authfile.find(x => x.username.toLowerCase() === update.username.toLowerCase())) {
+      if (authfile.some(x => x.username.toLowerCase() === update.username.toLowerCase())) {
         throw new ConflictException(`User with username '${update.username}' already exists.`)
       }
 

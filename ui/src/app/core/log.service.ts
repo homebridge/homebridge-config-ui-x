@@ -7,6 +7,10 @@ import { debounceTime } from 'rxjs/operators'
 
 import { IoNamespace, WsService } from '@/app/core/ws.service'
 
+// eslint-disable-next-line no-control-regex, unicorn/escape-case
+const RE_ANSI = /\x1b\[[0-9;]*m/g
+const RE_BRACKET_TAG = /36m\[.*?\]/
+
 @Injectable({
   providedIn: 'root',
 })
@@ -91,7 +95,7 @@ export class LogService {
           }
 
           if (includeNextLine) {
-            if (line.match(/36m\[.*?\]/)) {
+            if (RE_BRACKET_TAG.test(line)) {
               includeNextLine = false
             } else {
               this.term.write(`${line}\n\r`)
@@ -168,8 +172,7 @@ export class LogService {
       return true
     }
     // Strip ANSI color codes before searching
-    // eslint-disable-next-line no-control-regex, unicorn/escape-case
-    const cleanLine = line.replace(/\x1b\[[0-9;]*m/g, '').toLowerCase()
+    const cleanLine = line.replace(RE_ANSI, '').toLowerCase()
     return cleanLine.includes(this.searchFilter)
   }
 

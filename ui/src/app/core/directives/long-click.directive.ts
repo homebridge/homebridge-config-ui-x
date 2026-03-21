@@ -1,6 +1,10 @@
 /* global NodeJS */
 import { Directive, HostListener, Input, OnDestroy, output } from '@angular/core'
 
+const RE_IPAD_IPHONE_IPOD = /iPad|iPhone|iPod/
+const RE_SAFARI = /Safari/
+const RE_NON_SAFARI = /Chrome|CriOS|FxiOS|EdgiOS/
+
 @Directive({
   selector: '[shortClick], [longClick]',
   standalone: true,
@@ -96,7 +100,7 @@ export class LongClickDirective implements OnDestroy {
 
   private isSafariMobile(): boolean {
     const userAgent = navigator.userAgent
-    return /iPad|iPhone|iPod/.test(userAgent) && /Safari/.test(userAgent) && !/Chrome|CriOS|FxiOS|EdgiOS/.test(userAgent)
+    return RE_IPAD_IPHONE_IPOD.test(userAgent) && RE_SAFARI.test(userAgent) && !RE_NON_SAFARI.test(userAgent)
   }
 
   public ngOnDestroy() {

@@ -11,6 +11,10 @@ import { ConfirmComponent } from '@/app/core/components/confirm/confirm.componen
 import { LogService } from '@/app/core/log.service'
 import { ChildBridge, Plugin } from '@/app/core/manage-plugins/manage-plugins.interfaces'
 
+// eslint-disable-next-line no-control-regex
+const RE_ANSI = /\x1B\[(\d{1,3}(;\d{1,2})?)?[mGK]/g
+const RE_BRACKET_TAG = /36m\[.*?\]/
+
 @Component({
   templateUrl: './plugin-logs.component.html',
   standalone: true,
@@ -88,18 +92,16 @@ export class PluginLogsComponent implements OnInit, OnDestroy {
               }
 
               if (includeNextLine) {
-                if (line.match(/36m\[.*?\]/)) {
+                if (RE_BRACKET_TAG.test(line)) {
                   includeNextLine = false
                 } else {
-                  // eslint-disable-next-line no-control-regex
-                  finalOutput += `${line.replace(/\x1B\[(\d{1,3}(;\d{1,2})?)?[mGK]/g, '')}\r\n`
+                  finalOutput += `${line.replace(RE_ANSI, '')}\r\n`
                   return
                 }
               }
 
               if (line.includes(`36m[${this.pluginAlias}]`)) {
-                // eslint-disable-next-line no-control-regex
-                finalOutput += `${line.replace(/\x1B\[(\d{1,3}(;\d{1,2})?)?[mGK]/g, '')}\r\n`
+                finalOutput += `${line.replace(RE_ANSI, '')}\r\n`
                 includeNextLine = true
               }
             })

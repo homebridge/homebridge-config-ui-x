@@ -127,7 +127,7 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
         }
 
         // Duplicate room name
-        if (this.$accessories.rooms.find(r => r.name === roomName)) {
+        if (this.$accessories.rooms.some(r => r.name === roomName)) {
           return
         }
 
@@ -253,7 +253,7 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
       })
     })
 
-    const newBridges = Array.from(bridges).sort((a, b) => {
+    const newBridges = [...bridges].toSorted((a, b) => {
       // Sort with "Homebridge" first, then alphabetically
       if (a === 'Homebridge') {
         return -1

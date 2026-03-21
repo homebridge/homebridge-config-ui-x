@@ -9,6 +9,8 @@ import { ApiService } from '@/app/core/api.service'
 import { ManagePluginComponent } from '@/app/core/manage-plugins/manage-plugin/manage-plugin.component'
 import { ChildBridge, Plugin } from '@/app/core/manage-plugins/manage-plugins.interfaces'
 
+const RE_COLON = /:/g
+
 @Component({
   templateUrl: './uninstall-plugin.component.html',
   standalone: true,
@@ -84,7 +86,7 @@ export class UninstallPluginComponent implements OnInit {
     // Remove the child bridges if exists and specified by the user
     if (this.hasChildBridges && this.removeChildBridges) {
       try {
-        await Promise.all(this.childBridges.map(childBridge => this.removeChildBridge(childBridge.username.replace(/:/g, ''))))
+        await Promise.all(this.childBridges.map(childBridge => this.removeChildBridge(childBridge.username.replace(RE_COLON, ''))))
       } catch (error) {
         console.error(error)
       }

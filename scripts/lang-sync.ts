@@ -97,14 +97,14 @@ async function main() {
     if (lang !== 'en.json') {
       // Find any keys in the main file that are not in the translation file, and add
       for (const [key, value] of Object.entries(main)) {
-        if (!Object.prototype.hasOwnProperty.call(translationStrings, key)) {
+        if (!Object.hasOwn(translationStrings, key)) {
           translationStrings[key] = value
         }
       }
 
       // Find any keys in the translation file that are not in the main file, and remove
       for (const key of Object.keys(translationStrings)) {
-        if (!Object.prototype.hasOwnProperty.call(main, key)) {
+        if (!Object.hasOwn(main, key)) {
           delete translationStrings[key]
         }
       }

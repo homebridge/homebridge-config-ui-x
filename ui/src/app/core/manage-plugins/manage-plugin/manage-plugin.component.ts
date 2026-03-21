@@ -29,6 +29,11 @@ import { IoNamespace, WsService } from '@/app/core/ws.service'
 import { BackupService } from '@/app/modules/settings/backup/backup.service'
 import { HbV2ModalComponent } from '@/app/modules/status/widgets/update-info-widget/hb-v2-modal/hb-v2-modal.component'
 
+// eslint-disable-next-line no-control-regex
+const RE_ANSI = /\x1B\[(\d{1,3}(;\d{1,2})?)?[mGK]/g
+const RE_STARTS_WITH_DIGIT = /^\d/
+const RE_KOFI = /ko-?fi/i
+
 @Component({
   templateUrl: './manage-plugin.component.html',
   styleUrls: ['./manage-plugin.component.scss'],
@@ -109,7 +114,7 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
     // Check if the latest version is a numerical version
     this.targetVersionPretty = this.targetVersion === 'latest'
       ? `v${this.latestVersion}`
-      : (/^\d/.test(this.targetVersion) ? `v${this.targetVersion}` : this.targetVersion)
+      : (RE_STARTS_WITH_DIGIT.test(this.targetVersion) ? `v${this.targetVersion}` : this.targetVersion)
 
     this.io = this.$ws.connectToNamespace('plugins')
     this.termTarget = document.getElementById('plugin-log-output')
@@ -120,7 +125,7 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
       this.term.write(data)
       const dataCleaned = data
         .toString()
-        .replace(/\x1B\[(\d{1,3}(;\d{1,2})?)?[mGK]/g, '') // eslint-disable-line no-control-regex
+        .replace(RE_ANSI, '')
         .trimEnd()
       if (dataCleaned) {
         this.errorLog += `${dataCleaned}\r\n`
@@ -192,7 +197,7 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
       }
 
       if (donationUrl) {
-        const isKofi = /ko-?fi/i.test(donationUrl)
+        const isKofi = RE_KOFI.test(donationUrl)
         this.supportMessageKey = isKofi ? 'plugins.manage.support_kofi' : 'plugins.manage.support_donate'
         this.donationLink = `<a href="${donationUrl}" target="_blank" rel="noopener noreferrer"><i class="fas fa-external-link-alt primary-text"></i></a>`
       }

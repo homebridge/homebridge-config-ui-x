@@ -332,7 +332,13 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
 
   private async injectDefaultStyles(event) {
     // Fetch current theme
-    const currentTheme = Array.from(window.document.body.classList).find(x => x.startsWith('config-ui-x-'))
+    let currentTheme: string | undefined
+    for (let i = 0; i < window.document.body.classList.length; i += 1) {
+      if (window.document.body.classList[i].startsWith('config-ui-x-')) {
+        currentTheme = window.document.body.classList[i]
+        break
+      }
+    }
     const darkMode = window.document.body.classList.contains('dark-mode')
 
     // Set body class
@@ -343,8 +349,9 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
     }
 
     // Use parent's linked style sheets
-    const externalCss = Array.from(document.querySelectorAll('link'))
-    for (const css of externalCss) {
+    const externalCss = document.querySelectorAll('link')
+    for (let i = 0; i < externalCss.length; i += 1) {
+      const css = externalCss[i]
       if (css.getAttribute('rel') === 'stylesheet') {
         const srcHref = css.getAttribute('href')
         const href = document.baseURI + (srcHref.startsWith('/') ? srcHref.substring(1) : srcHref)
@@ -353,9 +360,9 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
     }
 
     // Use parent's inline css
-    const inlineCss = Array.from(document.querySelectorAll('style'))
-    for (const css of inlineCss) {
-      event.source.postMessage({ action: 'inline-style', style: css.innerHTML }, event.origin)
+    const inlineCss = document.querySelectorAll('style')
+    for (let i = 0; i < inlineCss.length; i += 1) {
+      event.source.postMessage({ action: 'inline-style', style: inlineCss[i].innerHTML }, event.origin)
     }
 
     // Add custom css

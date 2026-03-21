@@ -19,6 +19,12 @@ import { Logger } from '../../core/logger/logger.service.js'
 import { SchedulerService } from '../../core/scheduler/scheduler.service.js'
 import { PluginsService } from '../plugins/plugins.service.js'
 
+const RE_USERNAME = /^(?:[0-9A-F]{2}:){5}[0-9A-F]{2}$/i
+const RE_PIN = /^\d{3}-\d{2}-\d{3}$/
+const RE_COLON = /:/g
+const RE_PLUGIN_NAME = /^(?:@[\w-]+(?:\.[\w-]+)*\/)?homebridge-[\w-]+$/i
+const RE_CONFIG_BACKUP = /^config.json.\d{09,15}/
+
 @Injectable()
 export class ConfigEditorService {
   constructor(
@@ -111,9 +117,8 @@ export class ConfigEditorService {
     }
 
     // Ensure the username matches the required pattern
-    const usernamePattern = /^(?:[0-9A-F]{2}:){5}[0-9A-F]{2}$/i
-    if (!usernamePattern.test(config.bridge.username)) {
-      if (usernamePattern.test(this.configService.homebridgeConfig.bridge.username)) {
+    if (!RE_USERNAME.test(config.bridge.username)) {
+      if (RE_USERNAME.test(this.configService.homebridgeConfig.bridge.username)) {
         config.bridge.username = this.configService.homebridgeConfig.bridge.username
       } else {
         config.bridge.username = this.generateUsername()
@@ -126,9 +131,8 @@ export class ConfigEditorService {
     }
 
     // Ensure the pin matches the required pattern
-    const pinPattern = /^\d{3}-\d{2}-\d{3}$/
-    if (!pinPattern.test(config.bridge.pin)) {
-      if (pinPattern.test(this.configService.homebridgeConfig.bridge.pin)) {
+    if (!RE_PIN.test(config.bridge.pin)) {
+      if (RE_PIN.test(this.configService.homebridgeConfig.bridge.pin)) {
         config.bridge.pin = this.configService.homebridgeConfig.bridge.pin
       } else {
         config.bridge.pin = this.generatePin()
@@ -137,7 +141,7 @@ export class ConfigEditorService {
 
     // Ensure the bridge.name exists and is a string
     if (!config.bridge.name || typeof config.bridge.name !== 'string') {
-      config.bridge.name = `Homebridge ${config.bridge.username.substring(config.bridge.username.length - 5).replace(/:/g, '')}`
+      config.bridge.name = `Homebridge ${config.bridge.username.substring(config.bridge.username.length - 5).replace(RE_COLON, '')}`
     }
 
     // Ensure accessories is an array
@@ -371,7 +375,7 @@ export class ConfigEditorService {
         }
       }
 
-      const finalProperty = properties[properties.length - 1]
+      const finalProperty = properties.at(-1)
       if (!forbiddenKeys.includes(finalProperty)) {
         // 3. Update the final property
         current[finalProperty] = value
@@ -400,7 +404,7 @@ export class ConfigEditorService {
       pluginConfig.accessoryControl = {}
     }
     pluginConfig.accessoryControl.instanceBlacklist = (value || [])
-      .filter(x => typeof x === 'string' && x.trim() !== '' && /^(?:[A-F0-9]{2}:){5}[A-F0-9]{2}$/i.test(x.trim()))
+      .filter(x => typeof x === 'string' && x.trim() !== '' && RE_USERNAME.test(x.trim()))
       .map(x => x.trim().toUpperCase())
       .sort((a, b) => a.localeCompare(b))
 
@@ -434,7 +438,7 @@ export class ConfigEditorService {
       pluginConfig.plugins = {}
     }
     pluginConfig.plugins.hideUpdatesFor = (value || [])
-      .filter(x => typeof x === 'string' && x.trim() !== '' && /^(?:@[\w-]+(?:\.[\w-]+)*\/)?homebridge-[\w-]+$/i.test(x.trim()))
+      .filter(x => typeof x === 'string' && x.trim() !== '' && RE_PLUGIN_NAME.test(x.trim()))
       .map(x => x.trim().toLowerCase())
 
     // 3. Clean and save the UI config block
@@ -448,7 +452,7 @@ export class ConfigEditorService {
    */
   public async getBridge(username: string): Promise<HomebridgeUiBridgeConfig | null> {
     // Validate username format
-    if (!username || !/^[0-9A-F]{2}(?::[0-9A-F]{2}){5}$/i.test(username.trim())) {
+    if (!username || !RE_USERNAME.test(username.trim())) {
       return null
     }
 
@@ -481,7 +485,7 @@ export class ConfigEditorService {
    */
   private async updateBridgeProperty(username: string, property: string, value: any): Promise<void> {
     // Validate username format
-    if (!username || !/^[0-9A-F]{2}(?::[0-9A-F]{2}){5}$/i.test(username.trim())) {
+    if (!username || !RE_USERNAME.test(username.trim())) {
       throw new NotFoundException('Invalid bridge username format')
     }
 
@@ -592,7 +596,7 @@ export class ConfigEditorService {
     const dirContents = await readdir(this.configService.configBackupPath)
 
     return dirContents
-      .filter(x => x.match(/^config.json.\d{09,15}/))
+      .filter(x => x.match(RE_CONFIG_BACKUP))
       .sort()
       .reverse()
       .map((x) => {
@@ -697,7 +701,7 @@ export class ConfigEditorService {
       const dirContents = await readdir(this.configService.storagePath)
 
       const backups = dirContents
-        .filter(x => x.match(/^config.json.\d{09,15}/))
+        .filter(x => x.match(RE_CONFIG_BACKUP))
         .sort()
         .reverse()
 
@@ -827,7 +831,7 @@ export class ConfigEditorService {
     await this.updateConfigFile(config)
 
     // Delete the folder for this Matter bridge
-    const deviceId = config.bridge.username.replace(/:/g, '').toUpperCase()
+    const deviceId = config.bridge.username.replace(RE_COLON, '').toUpperCase()
     const matterPath = join(this.configService.storagePath, 'matter', deviceId)
     if (await pathExists(matterPath)) {
       // Wait for homebridge to stop

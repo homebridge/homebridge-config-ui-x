@@ -17,6 +17,9 @@ import { ConfigService } from '../../../core/config/config.service.js'
 import { Logger } from '../../../core/logger/logger.service.js'
 import { PluginsService } from '../../plugins/plugins.service.js'
 
+const RE_PATH_TRAVERSAL = /^(\.\.(\/|\\|$))+/
+const RE_STATIC_ASSET_EXT = /^.*\.(?:jpe?g|gif|png|svg|ttf|woff2|css)$/i
+
 @Injectable()
 export class PluginsSettingsUiService {
   private pluginUiMetadataCache = new NodeCache({ stdTTL: 86400 })
@@ -47,7 +50,7 @@ export class PluginsSettingsUiService {
       const pluginUi: HomebridgePluginUiMetadata = (this.pluginUiMetadataCache.get(pluginName) as any)
         || (await this.getPluginUiMetadata(pluginName))
 
-      const safeSuffix = normalize(assetPath).replace(/^(\.\.(\/|\\|$))+/, '')
+      const safeSuffix = normalize(assetPath).replace(RE_PATH_TRAVERSAL, '')
       const filePath = join(pluginUi.publicPath, safeSuffix)
 
       if (!filePath.startsWith(resolve(pluginUi.publicPath))) {
@@ -72,7 +75,7 @@ export class PluginsSettingsUiService {
 
       if (await pathExists(filePath)) {
         return reply.sendFile(basename(filePath), dirname(filePath))
-      } else if (fallbackPath.match(/^.*\.(jpe?g|gif|png|svg|ttf|woff2|css)$/i) && await pathExists(fallbackPath)) {
+      } else if (RE_STATIC_ASSET_EXT.test(fallbackPath) && await pathExists(fallbackPath)) {
         return reply.sendFile(basename(fallbackPath), dirname(fallbackPath))
       } else {
         this.loggerService.warn(`[${pluginName}] asset not found: ${assetPath}.`)
@@ -173,7 +176,7 @@ export class PluginsSettingsUiService {
     }
 
     // Pass all env vars to server side script
-    const childEnv = Object.assign({}, process.env)
+    const childEnv = { ...process.env }
     childEnv.HOMEBRIDGE_STORAGE_PATH = this.configService.storagePath
     childEnv.HOMEBRIDGE_CONFIG_PATH = this.configService.configPath
     childEnv.HOMEBRIDGE_UI_VERSION = this.configService.package.version

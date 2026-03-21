@@ -43,6 +43,11 @@ import {
 
 const execAsync = promisify(exec)
 
+const RE_BETA_DATE = /^beta-\d{4}-\d{2}-\d{2}$/i
+const RE_TEST_DATE = /^test-\d{4}-\d{2}-\d{2}$/i
+const RE_TRAILING_DATE = /\d{4}-\d{2}-\d{2}$/
+const RE_STABLE_DATE = /^\d{4}-\d{2}-\d{2}$/
+
 @Injectable()
 export class StatusService {
   private statusCache = new NodeCache({ stdTTL: 3600 })
@@ -649,13 +654,13 @@ export class StatusService {
         if (lowerCurrentVersion.startsWith('beta-')) {
           // Current version is beta; select latest beta version
           targetReleases = releases
-            .filter(release => release.testTag === 'beta' && /^beta-\d{4}-\d{2}-\d{2}$/i.test(release.version))
+            .filter(release => release.testTag === 'beta' && RE_BETA_DATE.test(release.version))
             .sort((a, b) => b.version.localeCompare(a.version)) // Sort by date descending
           latestVersion = targetReleases[0]?.version || null
         } else if (lowerCurrentVersion.startsWith('test-')) {
           // Current version is test; select latest test version
           targetReleases = releases
-            .filter(release => release.testTag === 'test' && /^test-\d{4}-\d{2}-\d{2}$/i.test(release.version))
+            .filter(release => release.testTag === 'test' && RE_TEST_DATE.test(release.version))
             .sort((a, b) => b.version.localeCompare(a.version)) // Sort by date descending
           latestVersion = targetReleases[0]?.version || null
         } else {
@@ -666,10 +671,9 @@ export class StatusService {
 
         if (currentVersion && latestVersion) {
           // Compare versions as dates if they match the expected format
-          const dateRegex = /\d{4}-\d{2}-\d{2}$/
-          if (dateRegex.test(currentVersion) && dateRegex.test(latestVersion)) {
-            const currentDate = new Date(currentVersion.match(dateRegex)![0])
-            const latestDate = new Date(latestVersion.match(dateRegex)![0])
+          if (RE_TRAILING_DATE.test(currentVersion) && RE_TRAILING_DATE.test(latestVersion)) {
+            const currentDate = new Date(currentVersion.match(RE_TRAILING_DATE)![0])
+            const latestDate = new Date(latestVersion.match(RE_TRAILING_DATE)![0])
             updateAvailable = latestDate > currentDate
           } else {
             // Fallback to string comparison
@@ -732,7 +736,7 @@ export class StatusService {
 
       // Find the latest stable release by sorting YYYY-MM-DD tags
       const stableReleases = data
-        .filter(release => /^\d{4}-\d{2}-\d{2}$/.test(release.tag_name)) // Stable: YYYY-MM-DD
+        .filter(release => RE_STABLE_DATE.test(release.tag_name)) // Stable: YYYY-MM-DD
         .sort((a, b) => b.tag_name.localeCompare(a.tag_name)) // Sort descending (most recent first)
       const latestStableTag = stableReleases[0]?.tag_name || null
 

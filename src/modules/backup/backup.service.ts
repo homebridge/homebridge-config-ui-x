@@ -36,6 +36,9 @@ import { PluginsService } from '../plugins/plugins.service.js'
 
 const pump = promisify(pipeline)
 
+const RE_COLON = /:/g
+const RE_BACKUP_FILENAME = /^homebridge-backup-[0-9A-Za-z]{12}.\d{09,15}.tar.gz/
+
 @Injectable()
 export class BackupService {
   private restoreDirectory: string
@@ -75,9 +78,9 @@ export class BackupService {
    */
   private async createBackup() {
     // Prepare a temp working directory
-    const instanceId = this.configService.homebridgeConfig.bridge.username.replace(/:/g, '')
+    const instanceId = this.configService.homebridgeConfig.bridge.username.replace(RE_COLON, '')
     const backupDir = await mkdtemp(join(tmpdir(), 'homebridge-backup-'))
-    const backupFileName = `homebridge-backup-${instanceId}.${new Date().getTime().toString()}.tar.gz`
+    const backupFileName = `homebridge-backup-${instanceId}.${Date.now().toString()}.tar.gz`
     const backupPath = resolve(backupDir, backupFileName)
 
     this.logger.log(`Creating temporary backup archive at ${backupPath}.`)
@@ -212,7 +215,7 @@ export class BackupService {
       const { backupDir, backupPath, instanceId } = await this.createBackup()
       await copy(backupPath, resolve(
         this.configService.instanceBackupPath,
-        `homebridge-backup-${instanceId}.${new Date().getTime().toString()}.tar.gz`,
+        `homebridge-backup-${instanceId}.${Date.now().toString()}.tar.gz`,
       ))
       await remove(resolve(backupDir))
     } catch (e) {
@@ -258,7 +261,7 @@ export class BackupService {
 
       const dirContents = await readdir(this.configService.instanceBackupPath, { withFileTypes: true })
       return dirContents
-        .filter(x => x.isFile() && x.name.match(/^homebridge-backup-[0-9A-Za-z]{12}.\d{09,15}.tar.gz/))
+        .filter(x => x.isFile() && x.name.match(RE_BACKUP_FILENAME))
         .map((x) => {
           const split = x.name.split('.')
           const instanceId = split[0].split('-')[2]
@@ -387,7 +390,7 @@ export class BackupService {
 
       await copy(backupPath, resolve(
         this.configService.instanceBackupPath,
-        `homebridge-backup-${instanceId}.${new Date().getTime().toString()}.tar.gz`,
+        `homebridge-backup-${instanceId}.${Date.now().toString()}.tar.gz`,
       ))
 
       await remove(resolve(backupDir))
@@ -729,7 +732,7 @@ export class BackupService {
     }))
 
     // Correct bridge name
-    targetConfig.bridge.name = `Homebridge ${targetConfig.bridge.username.substring(targetConfig.bridge.username.length - 5).replace(/:/g, '')}`
+    targetConfig.bridge.name = `Homebridge ${targetConfig.bridge.username.substring(targetConfig.bridge.username.length - 5).replace(RE_COLON, '')}`
 
     // Check the bridge.bind config contains valid interface names
     if (targetConfig.bridge.bind) {

@@ -2,6 +2,11 @@ import { AfterViewInit, Directive, ElementRef, inject, Input, OnDestroy } from '
 import { JsonSchemaFormComponent } from '@ng-formworks/core'
 import { cloneDeep, merge, uniqueId } from 'lodash-es'
 
+const RE_LEADING_SYMBOLS = /^[\s\uF0D7\uF0D8\uF0A7\uF0A8]+/g
+const RE_TRAILING_CLICKABLE = /\s+clickable\s*$/i
+const RE_WHITESPACE = /\s+/g
+const RE_SLASH = /\//
+
 @Directive({
   selector: '[jsfPatch]',
   standalone: true,
@@ -231,7 +236,8 @@ export class JsonSchemaFormPatchDirective implements AfterViewInit, OnDestroy {
 
   private isFieldsetExpanded(fieldset: HTMLElement) {
     const controls = fieldset.querySelectorAll('input, select, textarea, button, a')
-    for (const el of Array.from(controls)) {
+    for (let i = 0; i < controls.length; i += 1) {
+      const el = controls[i]
       const h = el as HTMLElement
       if (this.isVisiblyRendered(h)) {
         if (h.tagName.toLowerCase() === 'legend') {
@@ -304,8 +310,8 @@ export class JsonSchemaFormPatchDirective implements AfterViewInit, OnDestroy {
   }
 
   private cleanSectionTitle(raw: string) {
-    let t = (raw || '').replace(/^[\s\uF0D7\uF0D8\uF0A7\uF0A8]+/g, '').trim()
-    t = t.replace(/\s+clickable\s*$/i, '').trim()
+    let t = (raw || '').replace(RE_LEADING_SYMBOLS, '').trim()
+    t = t.replace(RE_TRAILING_CLICKABLE, '').trim()
     if (t.length > 80) {
       t = t.slice(0, 80).trim()
     }
@@ -372,33 +378,34 @@ export class JsonSchemaFormPatchDirective implements AfterViewInit, OnDestroy {
 
       const parent = control.parentElement
       if (parent) {
-        Array.from(parent.children).forEach((sibling) => {
+        for (let i = 0; i < parent.children.length; i += 1) {
+          const sibling = parent.children[i]
           if (!(sibling instanceof HTMLElement)) {
-            return
+            continue
           }
           if (sibling === control) {
-            return
+            continue
           }
           if (labelEl && sibling === labelEl) {
-            return
+            continue
           }
           if (sibling.hasAttribute('data-jsf-a11y-hidden')) {
-            return
+            continue
           }
           if (this.isInteractiveElement(sibling)) {
-            return
+            continue
           }
 
           const siblingText = (sibling.textContent || '').trim()
           if (!siblingText) {
-            return
+            continue
           }
 
           if (siblingText === labelText) {
             sibling.setAttribute('aria-hidden', 'true')
             sibling.setAttribute('data-jsf-a11y-hidden', 'true')
           }
-        })
+        }
       }
     })
   }
@@ -409,7 +416,7 @@ export class JsonSchemaFormPatchDirective implements AfterViewInit, OnDestroy {
     }
 
     return (labelEl.textContent || '')
-      .replace(/\s+/g, ' ')
+      .replace(RE_WHITESPACE, ' ')
       .trim()
   }
 
@@ -501,7 +508,7 @@ export class JsonSchemaFormPatchDirective implements AfterViewInit, OnDestroy {
         .flatMap(x => x.items)
         .filter(x => x.dataType === 'array' || x.arrayItem)
 
-      const allItems = configItems.concat(nestedItems)
+      const allItems = [...configItems, ...nestedItems]
       allItems.filter(x => x.dataType === 'array' || x.arrayItem).forEach((item) => {
         this.fixNestedArray(item, formData, refPointer)
       })
@@ -554,7 +561,7 @@ export class JsonSchemaFormPatchDirective implements AfterViewInit, OnDestroy {
   private getDataFromPointer(data: any, dataPointer: string) {
     let value = data
 
-    dataPointer.substring(1).split(/\//).filter(x => x !== '-').forEach((key: string) => {
+    dataPointer.substring(1).split(RE_SLASH).filter(x => x !== '-').forEach((key: string) => {
       try {
         value = value[key]
       } catch {

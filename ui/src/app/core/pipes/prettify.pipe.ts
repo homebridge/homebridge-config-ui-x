@@ -1,5 +1,9 @@
 import { Pipe, PipeTransform } from '@angular/core'
 
+const RE_UNDERSCORE = /_/g
+const RE_CAMEL_CASE = /([a-z])([A-Z])/g
+const RE_WORD_START = /\b\w/g
+
 @Pipe({
   name: 'prettify',
   standalone: true,
@@ -18,10 +22,10 @@ export class PrettifyPipe implements PipeTransform {
     // colorTempPhysicalMaxMireds => Color Temp Physical Max Mireds
 
     return value
-      .replace(/_/g, ' ') // replace underscores with spaces
-      .replace(/([a-z])([A-Z])/g, '$1 $2') // add space before capital letters
+      .replace(RE_UNDERSCORE, ' ') // replace underscores with spaces
+      .replace(RE_CAMEL_CASE, '$1 $2') // add space before capital letters
       .toLowerCase() // convert everything to lowercase first
-      .replace(/\b\w/g, match => match.toUpperCase()) // capitalize first letter of each word
+      .replace(RE_WORD_START, match => match.toUpperCase()) // capitalize first letter of each word
       .trim() // remove leading/trailing spaces
   }
 }

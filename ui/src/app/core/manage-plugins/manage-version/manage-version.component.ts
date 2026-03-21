@@ -185,7 +185,7 @@ export class ManageVersionComponent implements OnInit {
         }
 
         // In the case the plugin has an installed version that is not in the versions list, add it
-        if (this.plugin.installedVersion && !this.versions.find(x => x.version === this.plugin.installedVersion)) {
+        if (this.plugin.installedVersion && !this.versions.some(x => x.version === this.plugin.installedVersion)) {
           this.versions.push({
             version: this.plugin.installedVersion,
             engines: this.plugin.engines || null,
@@ -203,7 +203,7 @@ export class ManageVersionComponent implements OnInit {
           return aOrder - bOrder
         })
 
-        if (!this.versions.find(x => x.version === this.versionSelect) && result.tags.latest) {
+        if (!this.versions.some(x => x.version === this.versionSelect) && result.tags.latest) {
           this.versionSelect = result.tags.latest
         }
 

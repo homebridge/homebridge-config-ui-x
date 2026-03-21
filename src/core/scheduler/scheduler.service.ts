@@ -7,6 +7,8 @@ import { ConfigService } from '../config/config.service.js'
 import { HomebridgeIpcService } from '../homebridge-ipc/homebridge-ipc.service.js'
 import { Logger } from '../logger/logger.service.js'
 
+const RE_COLON = /:/g
+
 @Injectable()
 export class SchedulerService implements OnModuleInit {
   public readonly scheduleJob = scheduleJob
@@ -79,7 +81,7 @@ export class SchedulerService implements OnModuleInit {
         const childBridgeCron = bridgeConfig?.scheduledRestartCron
 
         if (childBridgeCron && childBridgeCron.trim()) {
-          const deviceId = bridge.username.replace(/:/g, '').toUpperCase()
+          const deviceId = bridge.username.replace(RE_COLON, '').toUpperCase()
           const name = `restart-child-${deviceId}`
           try {
             this.scheduleJob(name, childBridgeCron, () => {

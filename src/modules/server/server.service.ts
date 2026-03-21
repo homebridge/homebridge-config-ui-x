@@ -38,6 +38,17 @@ import { HomebridgeMdnsSettingDto } from './server.dto.js'
 
 const pump = promisify(pipeline)
 
+const RE_CHAR_PAIRS = /.{1,2}/g
+const RE_ACCESSORY_INFO_FILE = /AccessoryInfo\.([A-Fa-f0-9]+)\.json$/
+const RE_HEX_12 = /^[A-F0-9]{12}$/
+const RE_CACHED_ACCESSORIES_EXACT = /^cachedAccessories\.([A-F,0-9]+)$/
+const RE_CACHED_ACCESSORIES = /cachedAccessories\.([A-F,0-9]+)/
+const RE_HEX_ANY = /^[A-F0-9]+$/
+const RE_HYPHEN = /-/g
+const RE_VALID_NAME = /^[\p{L}\p{N}][\p{L}\p{N} ']*[\p{L}\p{N}]$/u
+const RE_PRIVATE_KEY = /-----BEGIN (?:RSA |EC )?PRIVATE KEY-----/
+const RE_CERTIFICATE = /-----BEGIN CERTIFICATE-----/
+
 @Injectable()
 export class ServerService {
   private serverServiceCache = new NodeCache({ stdTTL: 300 })
@@ -113,7 +124,7 @@ export class ServerService {
     try {
       // Format username with colons if not already present
       const configFile = await this.configEditorService.getConfigFile()
-      const username = id.includes(':') ? id.toUpperCase() : id.match(/.{1,2}/g)?.join(':').toUpperCase() || id.toUpperCase()
+      const username = id.includes(':') ? id.toUpperCase() : id.match(RE_CHAR_PAIRS)?.join(':').toUpperCase() || id.toUpperCase()
 
       // Check if the original username is in the access list, if so, update it to the new username
       const uiConfig = configFile.platforms.find(x => x.platform === 'config')
@@ -162,8 +173,7 @@ export class ServerService {
 
           // Add the new username to the blacklist if it was previously there
           if (blacklistChanged) {
-            uiConfig.accessoryControl.instanceBlacklist = uiConfig.accessoryControl.instanceBlacklist
-              .concat(pluginBlock._bridge.username)
+            uiConfig.accessoryControl.instanceBlacklist = [...uiConfig.accessoryControl.instanceBlacklist, ...pluginBlock._bridge.username]
           }
 
           // Add an entry to the bridges list mirroring the new username and original object
@@ -260,9 +270,8 @@ export class ServerService {
     const uiConfig = configFile.platforms.find(x => x.platform === 'config')
     if (uiConfig.accessoryControl?.instanceBlacklist?.includes(oldUsername.toUpperCase())) {
       // Remove the old username from the blacklist, add the new one, and sort the blacklist alphabetically
-      uiConfig.accessoryControl.instanceBlacklist = uiConfig.accessoryControl.instanceBlacklist
-        .filter((x: string) => x.toUpperCase() !== oldUsername.toUpperCase())
-        .concat(configFile.bridge.pin)
+      uiConfig.accessoryControl.instanceBlacklist = [...uiConfig.accessoryControl.instanceBlacklist
+        .filter((x: string) => x.toUpperCase() !== oldUsername.toUpperCase()), ...configFile.bridge.pin]
         .sort((a: string, b: string) => a.localeCompare(b))
     }
 
@@ -292,7 +301,7 @@ export class ServerService {
     const persistPath = join(this.configService.storagePath, 'persist')
 
     const devices = (await readdir(persistPath))
-      .filter(x => x.match(/AccessoryInfo\.([A-Fa-f0-9]+)\.json$/))
+      .filter(x => x.match(RE_ACCESSORY_INFO_FILE))
 
     const configFile = await this.configEditorService.getConfigFile()
 
@@ -324,7 +333,7 @@ export class ServerService {
     }
 
     const matterDirs = (await readdir(matterPath))
-      .filter(x => x.match(/^[A-F0-9]{12}$/)) // Match 12 hex character device IDs
+      .filter(x => x.match(RE_HEX_12)) // Match 12 hex character device IDs
 
     const matterExternalDevices = []
 
@@ -372,7 +381,7 @@ export class ServerService {
         // Create a device object similar to HAP devices
         const device: any = {
           _id: deviceId,
-          _username: deviceId.match(/.{1,2}/g)?.join(':').toUpperCase() || deviceId, // Format as MAC address
+          _username: deviceId.match(RE_CHAR_PAIRS)?.join(':').toUpperCase() || deviceId, // Format as MAC address
           _main: false,
           _category: 'other', // Matter external accessories don't have HAP categories
           _matter: true,
@@ -415,11 +424,9 @@ export class ServerService {
       configFile = await this.configEditorService.getConfigFile()
     }
 
-    const username = deviceId.match(/.{1,2}/g).join(':')
+    const username = deviceId.match(RE_CHAR_PAIRS).join(':')
     const isMain = this.configService.homebridgeConfig.bridge.username.toUpperCase() === username.toUpperCase()
-    const pluginBlock = configFile.accessories
-      .concat(configFile.platforms)
-      .concat([{ _bridge: configFile.bridge }])
+    const pluginBlock = [...configFile.accessories, ...configFile.platforms, { _bridge: configFile.bridge }]
       .find((block: any) => block._bridge?.username?.toUpperCase() === username.toUpperCase())
 
     try {
@@ -479,7 +486,7 @@ export class ServerService {
     try {
       const configFile = await this.configEditorService.getConfigFile()
       // Format username with colons if not already present
-      const username = id.includes(':') ? id.toUpperCase() : id.match(/.{1,2}/g)?.join(':').toUpperCase() || id.toUpperCase()
+      const username = id.includes(':') ? id.toUpperCase() : id.match(RE_CHAR_PAIRS)?.join(':').toUpperCase() || id.toUpperCase()
 
       // Find the child bridge plugin block
       const pluginBlocks = ([
@@ -595,7 +602,7 @@ export class ServerService {
     const cachedAccessoriesDir = join(this.configService.storagePath, 'accessories')
 
     const cachedAccessoryFiles = (await readdir(cachedAccessoriesDir))
-      .filter(x => x.match(/^cachedAccessories\.([A-F,0-9]+)$/) || x === 'cachedAccessories')
+      .filter(x => x.match(RE_CACHED_ACCESSORIES_EXACT) || x === 'cachedAccessories')
 
     const cachedAccessories = []
 
@@ -687,7 +694,7 @@ export class ServerService {
   public async deleteAllCachedAccessories() {
     const cachedAccessoriesDir = join(this.configService.storagePath, 'accessories')
     const cachedAccessoryPaths = (await readdir(cachedAccessoriesDir))
-      .filter(x => x.match(/cachedAccessories\.([A-F,0-9]+)/) || x === 'cachedAccessories' || x === '.cachedAccessories.bak')
+      .filter(x => x.match(RE_CACHED_ACCESSORIES) || x === 'cachedAccessories' || x === '.cachedAccessories.bak')
       .map(x => resolve(cachedAccessoriesDir, x))
 
     const cachedAccessoriesPath = resolve(this.configService.storagePath, 'accessories', 'cachedAccessories')
@@ -736,7 +743,7 @@ export class ServerService {
     }
 
     const matterBridges = (await readdir(matterDir))
-      .filter(x => x.match(/^[A-F0-9]+$/)) // Match bridge device IDs
+      .filter(x => x.match(RE_HEX_ANY)) // Match bridge device IDs
 
     const matterAccessories = []
 
@@ -874,7 +881,7 @@ export class ServerService {
    */
   private generateSetupCode(accessoryInfo: any): string {
     const buffer = Buffer.allocUnsafe(8)
-    let valueLow = Number.parseInt(accessoryInfo.pincode.replace(/-/g, ''), 10)
+    let valueLow = Number.parseInt(accessoryInfo.pincode.replace(RE_HYPHEN, ''), 10)
     const valueHigh = accessoryInfo.category >> 1
 
     valueLow |= 1 << 28 // Supports IP;
@@ -1095,7 +1102,7 @@ export class ServerService {
    */
   public async setHomebridgeName(name: string): Promise<void> {
     // https://github.com/homebridge/HAP-NodeJS/blob/ee41309fd9eac383cdcace39f4f6f6a3d54396f3/src/lib/util/checkName.ts#L12
-    if (!name || !(/^[\p{L}\p{N}][\p{L}\p{N} ']*[\p{L}\p{N}]$/u).test(name)) {
+    if (!name || !RE_VALID_NAME.test(name)) {
       throw new BadRequestException('Invalid name')
     }
 
@@ -1307,9 +1314,9 @@ export class ServerService {
       }
       const buf = await readStreamToBuffer(f.file as unknown as Readable)
       const text = buf.toString('utf8')
-      if (/-----BEGIN (?:RSA |EC )?PRIVATE KEY-----/.test(text)) {
+      if (RE_PRIVATE_KEY.test(text)) {
         keyPem = buf
-      } else if (/-----BEGIN CERTIFICATE-----/.test(text)) {
+      } else if (RE_CERTIFICATE.test(text)) {
         // Some uploads may contain a full chain; we’ll accept as cert bundle
         certPem = buf
       } else if (f.fieldname === 'key') {

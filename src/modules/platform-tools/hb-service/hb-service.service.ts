@@ -10,6 +10,9 @@ import { ConfigService } from '../../../core/config/config.service.js'
 import { Logger } from '../../../core/logger/logger.service.js'
 import { HbServiceStartupSettings } from './hb-service.dto.js'
 
+// eslint-disable-next-line no-control-regex
+const RE_ANSI_COLOUR = /\x1B\[(\d{1,3}(;\d{1,2})?)?[mGK]/g
+
 @Injectable()
 export class HbServiceService {
   private readonly hbServiceSettingsPath: string
@@ -98,8 +101,7 @@ export class HbServiceService {
 
     const removeColour = new Transform({
       transform(chunk, _encoding, callback) {
-        // eslint-disable-next-line no-control-regex
-        callback(null, chunk.toString().replace(/\x1B\[(\d{1,3}(;\d{1,2})?)?[mGK]/g, ''))
+        callback(null, chunk.toString().replace(RE_ANSI_COLOUR, ''))
       },
     })
 

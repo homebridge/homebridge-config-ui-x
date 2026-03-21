@@ -54,6 +54,17 @@ const { orderBy, uniq } = _
 const require = createRequire(import.meta.url)
 const module = require('node:module')
 
+// Pre-compiled static regex constants
+const RE_HYPHEN_GLOBAL = /-/g
+const RE_WORD_SEQUENCE = /\w\S*/g
+const RE_ENCODED_AT = /%40/g
+const RE_HYPHEN = /-/
+const RE_WHITESPACE = /\s+/
+const RE_URL_WITH_OPTIONAL_PAREN = /\(?(?:https?|ftp):\/\/[\n\S]+/g
+const RE_URL = /(?:https?|ftp):\/\/[\n\S]+/g
+const RE_GITHUB_REPO = /https:\/\/github.com\/([^/]+)\/([^/#]+)/
+const RE_NON_NUMERIC_DOT = /[^0-9.]/g
+
 @Injectable()
 export class PluginsService {
   private static readonly PLUGIN_IDENTIFIER_PATTERN = /^(@[\w-]+(\.[\w-]+)*\/)?homebridge-[\w-]+$/
@@ -163,8 +174,8 @@ export class PluginsService {
    */
   private fixDisplayName(plugin: HomebridgePlugin): HomebridgePlugin {
     plugin.displayName = plugin.displayName || (plugin.name.charAt(0) === '@' ? plugin.name.split('/')[1] : plugin.name)
-      .replace(/-/g, ' ')
-      .replace(/\w\S*/g, (txt: string) => txt.charAt(0).toUpperCase() + txt.substring(1).toLowerCase())
+      .replace(RE_HYPHEN_GLOBAL, ' ')
+      .replace(RE_WORD_SEQUENCE, (txt: string) => txt.charAt(0).toUpperCase() + txt.substring(1).toLowerCase())
     return plugin
   }
 
@@ -262,7 +273,7 @@ export class PluginsService {
       const fromCache = this.npmPluginCache.get(`lookup-${pluginName}`)
 
       const pkg: INpmRegistryModule = fromCache || (await firstValueFrom((
-        this.httpService.get(`https://registry.npmjs.org/${encodeURIComponent(pluginName).replace(/%40/g, '@')}`, {
+        this.httpService.get(`https://registry.npmjs.org/${encodeURIComponent(pluginName).replace(RE_ENCODED_AT, '@')}`, {
           headers: {
             accept: 'application/vnd.npm.install-v1+json', // only return minimal information
           },
@@ -310,7 +321,7 @@ export class PluginsService {
     const pluginDescription = (plugin.description || '').toLowerCase()
 
     // Separator: '-' character, only get the terms from the plugin name, ignoring any scope
-    const nameTerms = this.extractTerms(pluginName.substring(pluginName.lastIndexOf('/') + 1), /-/)
+    const nameTerms = this.extractTerms(pluginName.substring(pluginName.lastIndexOf('/') + 1), RE_HYPHEN)
 
     // Convert arrays to Sets for faster lookup
     const searchTermsSet = new Set(searchTerms)
@@ -345,7 +356,7 @@ export class PluginsService {
       await this.getInstalledPlugins()
     }
 
-    const searchTerms = this.extractTerms(query, /\s+/) // Separator: whitespace (spaces, tabs and new lines) characters
+    const searchTerms = this.extractTerms(query, RE_WHITESPACE) // Separator: whitespace (spaces, tabs and new lines) characters
     const normalizedQuery = searchTerms.length > 0 ? searchTerms.join(' ') : 'homebridge'
 
     if (
@@ -353,7 +364,7 @@ export class PluginsService {
       && !this.hiddenPlugins.includes(normalizedQuery)
     ) {
       if (
-        !this.installedPlugins.find(x => x.name === normalizedQuery)
+        !this.installedPlugins.some(x => x.name === normalizedQuery)
         && Object.keys(this.newScopePlugins).includes(normalizedQuery)
       ) {
         return await this.searchNpmRegistrySingle(`@homebridge-plugins/${normalizedQuery}`)
@@ -400,7 +411,7 @@ export class PluginsService {
           installedVersion: null,
           latestVersion: pkg.package.version,
           lastUpdated: pkg.package.date,
-          description: (pkg.package.description || pkg.package.name).replace(/\(?(?:https?|ftp):\/\/[\n\S]+/g, '').trim(),
+          description: (pkg.package.description || pkg.package.name).replace(RE_URL_WITH_OPTIONAL_PAREN, '').trim(),
           keywords: pkg.package.keywords || [],
           links: pkg.package.links,
           author: this.pluginAuthors[pkg.package.name] || (pkg.package.publisher ? pkg.package.publisher.username : null),
@@ -448,7 +459,7 @@ export class PluginsService {
       const fromCache = this.npmPluginCache.get(`lookup-${query}`)
 
       const pkg: INpmRegistryModule = fromCache || (await firstValueFrom((
-        this.httpService.get(`https://registry.npmjs.org/${encodeURIComponent(query).replace(/%40/g, '@')}`)),
+        this.httpService.get(`https://registry.npmjs.org/${encodeURIComponent(query).replace(RE_ENCODED_AT, '@')}`)),
       )).data
 
       if (!fromCache) {
@@ -476,7 +487,7 @@ export class PluginsService {
         name: pkg.name,
         private: false,
         description: (pkg.description)
-          ? pkg.description.replace(/(?:https?|ftp):\/\/[\n\S]+/g, '').trim()
+          ? pkg.description.replace(RE_URL, '').trim()
           : pkg.name,
         verifiedPlugin: this.verifiedPlugins.includes(pkg.name),
         verifiedPlusPlugin: this.verifiedPlusPlugins.includes(pkg.name),
@@ -962,7 +973,7 @@ export class PluginsService {
       displayName: pkgJson.displayName || this.pluginNames[pkgJson.name],
       private: pkgJson.private || false,
       description: (pkgJson.description)
-        ? pkgJson.description.replace(/(?:https?|ftp):\/\/[\n\S]+/g, '').trim()
+        ? pkgJson.description.replace(RE_URL, '').trim()
         : pkgJson.name,
       verifiedPlugin: this.verifiedPlugins.includes(pkgJson.name),
       verifiedPlusPlugin: this.verifiedPlusPlugins.includes(pkgJson.name),
@@ -1340,7 +1351,7 @@ export class PluginsService {
     let latestVersion: string | null = null
     try {
       const pkg: INpmRegistryModule = (await firstValueFrom((
-        this.httpService.get(`https://registry.npmjs.org/${encodeURIComponent(pluginName).replace(/%40/g, '@')}`)),
+        this.httpService.get(`https://registry.npmjs.org/${encodeURIComponent(pluginName).replace(RE_ENCODED_AT, '@')}`)),
       )).data
 
       latestVersion = pkg['dist-tags'] ? pkg['dist-tags'].latest : null
@@ -1384,8 +1395,8 @@ export class PluginsService {
         }
 
         // Make sure the repo is GitHub
-        const repoMatch = plugin.links.homepage?.match(/https:\/\/github.com\/([^/]+)\/([^/#]+)/)
-        const bugsMatch = plugin.links.bugs?.match(/https:\/\/github.com\/([^/]+)\/([^/#]+)/)
+        const repoMatch = plugin.links.homepage?.match(RE_GITHUB_REPO)
+        const bugsMatch = plugin.links.bugs?.match(RE_GITHUB_REPO)
         let match: RegExpMatchArray | null = repoMatch
         if (!repoMatch) {
           if (!bugsMatch) {
@@ -1399,7 +1410,7 @@ export class PluginsService {
           const latestTag = release.data.tag_name
 
           // The latest npm version may not match the latest GitHub release
-          const isReleaseMatch = latestVersion?.replace(/[^0-9.]/g, '').includes(release.data.tag_name?.replace(/[^0-9.]/g, ''))
+          const isReleaseMatch = latestVersion?.replace(RE_NON_NUMERIC_DOT, '').includes(release.data.tag_name?.replace(RE_NON_NUMERIC_DOT, ''))
 
           // The plugin may have a custom changelog path from this.pluginChangelogs[pkg.package.name]
           const changelogPath = this.pluginChangelogs[pluginName] || ''
@@ -1540,7 +1551,7 @@ export class PluginsService {
         }
       }
 
-      return Array.from(usernamesSet)
+      return [...usernamesSet]
     } catch (e) {
       this.logger.error(`Failed to get child bridge usernames for ${pluginName}: ${e.message}`)
       return []
@@ -1721,10 +1732,10 @@ export class PluginsService {
       }
     } else {
       // In ESM, require.main is not available, so we use Module._nodeModulePaths instead
-      paths = paths.concat(module._nodeModulePaths(dirname(require.resolve.paths('.')?.[0] || process.cwd())))
+      paths = [...paths, ...module._nodeModulePaths(dirname(require.resolve.paths('.')?.[0] || process.cwd()))]
 
       if (process.env.NODE_PATH) {
-        paths = process.env.NODE_PATH.split(delimiter).filter(p => !!p).concat(paths)
+        paths = [...process.env.NODE_PATH.split(delimiter).filter(p => !!p), ...paths]
       } else {
         // Default paths for non-windows systems
         if ((platform() !== 'win32')) {
@@ -1752,10 +1763,11 @@ export class PluginsService {
       paths.push(join(process.env.APPDATA, 'npm/node_modules'))
     } else {
       paths.push(execSync('/bin/echo -n "$(npm -g prefix)/lib/node_modules"', {
-        env: Object.assign({
+        env: {
           npm_config_loglevel: 'silent',
           npm_update_notifier: 'false',
-        }, process.env),
+          ...process.env,
+        },
       }).toString('utf8'))
     }
     return paths
@@ -1813,7 +1825,7 @@ export class PluginsService {
       displayName: pkgJson.displayName || this.pluginNames[pkgJson.name],
       private: pkgJson.private || false,
       description: (pkgJson.description)
-        ? pkgJson.description.replace(/(?:https?|ftp):\/\/[\n\S]+/g, '').trim()
+        ? pkgJson.description.replace(RE_URL, '').trim()
         : pkgJson.name,
       verifiedPlugin: this.verifiedPlugins.includes(pkgJson.name),
       verifiedPlusPlugin: this.verifiedPlusPlugins.includes(pkgJson.name),
@@ -1862,7 +1874,7 @@ export class PluginsService {
 
       // Restore from cache, or load from npm
       const pkg: IPackageJson = fromCache || (
-        await firstValueFrom(this.httpService.get(`https://registry.npmjs.org/${encodeURIComponent(plugin.name).replace(/%40/g, '@')}/latest`))
+        await firstValueFrom(this.httpService.get(`https://registry.npmjs.org/${encodeURIComponent(plugin.name).replace(RE_ENCODED_AT, '@')}/latest`))
       ).data
 
       plugin.latestVersion = pkg.version

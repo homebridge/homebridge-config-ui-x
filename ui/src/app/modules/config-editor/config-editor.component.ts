@@ -26,6 +26,8 @@ import {
 } from '@/app/modules/config-editor/config-editor.interfaces'
 import { ConfigRestoreComponent } from '@/app/modules/config-editor/config-restore/config-restore.component'
 
+const RE_USERNAME = /^(?:[0-9A-F]{2}:){5}[0-9A-F]{2}$/i
+
 declare const monaco: any
 
 declare global {
@@ -254,7 +256,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
       // Basic validation of homebridge config spec
       if (typeof (config.bridge) !== 'object') {
         this.$toastr.error(this.$translate.instant('config.config_bridge_missing'), this.$translate.instant('toast.title_error'))
-      } else if (!/^(?:[0-9A-F]{2}:){5}[0-9A-F]{2}$/i.test(config.bridge.username)) {
+      } else if (!RE_USERNAME.test(config.bridge.username)) {
         this.$toastr.error(this.$translate.instant('config.config_username_error'), this.$translate.instant('toast.title_error'))
       } else if (config.accessories && !Array.isArray(config.accessories)) {
         this.$toastr.error(this.$translate.instant('config.config_accessory_must_be_array'), this.$translate.instant('toast.title_error'))
@@ -1273,8 +1275,8 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
     if (a.length !== b.length) {
       return false
     }
-    const sortedA = [...a].sort()
-    const sortedB = [...b].sort()
+    const sortedA = a.toSorted()
+    const sortedB = b.toSorted()
     return sortedA.every((val, idx) => val === sortedB[idx])
   }
 

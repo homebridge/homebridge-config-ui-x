@@ -82,7 +82,7 @@ export class ValveComponent implements OnInit, OnDestroy {
 
   private setupRemainingDurationCounter() {
     this.remainingDurationSubscription = this.remainingDurationInterval.subscribe(() => {
-      this.secondsActive++
+      this.secondsActive += 1
       const remainingSeconds = this.service.getCharacteristic('RemainingDuration').value as number - this.secondsActive
       if (remainingSeconds > 0) {
         this.remainingDuration = remainingSeconds < 3600

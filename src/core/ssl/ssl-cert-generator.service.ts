@@ -11,6 +11,9 @@ import forge from 'node-forge'
 
 import { Logger } from '../logger/logger.service.js'
 
+const RE_IPV4 = /^(?:\d{1,3}\.){3}\d{1,3}$/
+const RE_IPV6 = /^(?:[0-9a-f]{0,4}:){2,7}[0-9a-f]{0,4}$/i
+
 interface SslCertificateData {
   privateKey: Buffer
   certificate: Buffer
@@ -113,7 +116,7 @@ export class SslCertGeneratorService {
           name: 'subjectAltName',
           altNames: hostnames.map((hostname) => {
             // Check if hostname is an IP address
-            if (/^(?:\d{1,3}\.){3}\d{1,3}$/.test(hostname) || /^(?:[0-9a-f]{0,4}:){2,7}[0-9a-f]{0,4}$/i.test(hostname)) {
+            if (RE_IPV4.test(hostname) || RE_IPV6.test(hostname)) {
               return {
                 type: 7, // IP
                 ip: hostname,

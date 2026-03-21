@@ -41,6 +41,12 @@ process.title = 'hb-service'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
+const RE_SERVICE_NAME = /^[a-z0-9-]+$/i
+const RE_COLON = /:/g
+const RE_SCOPED = /^(@[^/]+\/[^@/]+)(?:@([^/]+))?(\/.*)?$/
+const RE_NON_SCOPED = /^([^@/]+)(?:@([^/]+))?(\/.*)?$/
+const RE_PLUGIN_NAME = /^(?:@[\w-]+(?:\.[\w-]+)*\/)?homebridge-[\w-]+$/
+
 export class HomebridgeServiceHelper {
   public action: 'install' | 'uninstall' | 'start' | 'stop' | 'restart' | 'rebuild' | 'run' | 'add' | 'remove' | 'logs' | 'view' | 'update-node' | 'before-start' | 'status'
   public selfPath = __filename
@@ -247,7 +253,7 @@ export class HomebridgeServiceHelper {
    */
   private setEnv() {
     // Ensure service name is valid
-    if (!this.serviceName.match(/^[a-z0-9-]+$/i)) {
+    if (!RE_SERVICE_NAME.test(this.serviceName)) {
       this.logger('Service name must not contain spaces or special characters.', 'fail')
       process.exit(1)
     }
@@ -574,10 +580,11 @@ export class HomebridgeServiceHelper {
   private async getNpmGlobalModulesDirectory() {
     try {
       const npmPrefix = execSync('npm -g prefix', {
-        env: Object.assign({
+        env: {
           npm_config_loglevel: 'silent',
           npm_update_notifier: 'false',
-        }, process.env),
+          ...process.env,
+        },
       }).toString('utf8').trim()
       return platform() === 'win32' ? join(npmPrefix, 'node_modules') : join(npmPrefix, 'lib', 'node_modules')
     } catch (e) {
@@ -815,7 +822,7 @@ export class HomebridgeServiceHelper {
         await writeJson(process.env.UIX_CONFIG_PATH, currentConfig, { spaces: 4 })
       }
     } catch (e) {
-      const backupFile = resolve(this.storagePath, `config.json.invalid.${new Date().getTime().toString()}`)
+      const backupFile = resolve(this.storagePath, `config.json.invalid.${Date.now().toString()}`)
       this.logger(`${process.env.UIX_CONFIG_PATH} does not contain valid JSON.`, 'warn')
       this.logger(`Invalid config.json file has been backed up to ${backupFile}.`, 'warn')
       await rename(process.env.UIX_CONFIG_PATH, backupFile)
@@ -851,7 +858,7 @@ export class HomebridgeServiceHelper {
   private async generateBridgeConfig() {
     const username = this.generateUsername()
     const port = await this.generatePort()
-    const name = `Homebridge ${username.substring(username.length - 5).replace(/:/g, '')}`
+    const name = `Homebridge ${username.substring(username.length - 5).replace(RE_COLON, '')}`
     const pin = this.generatePin()
     const advertiser = await this.isAvahiDaemonRunning() ? 'avahi' : 'bonjour-hap'
 
@@ -1295,9 +1302,6 @@ export class HomebridgeServiceHelper {
    * Based on: https://github.com/egoist/parse-package-name
    */
   private parseNpmPackageString(input: string) {
-    const RE_SCOPED = /^(@[^/]+\/[^@/]+)(?:@([^/]+))?(\/.*)?$/
-    const RE_NON_SCOPED = /^([^@/]+)(?:@([^/]+))?(\/.*)?$/
-
     const m = RE_SCOPED.exec(input) || RE_NON_SCOPED.exec(input)
 
     if (!m) {
@@ -1327,14 +1331,14 @@ export class HomebridgeServiceHelper {
     }
 
     const action: 'add' | 'remove' = args[0]
-    const target = this.parseNpmPackageString(args[args.length - 1])
+    const target = this.parseNpmPackageString(args.at(-1))
 
     if (!target.name) {
       this.logger('Invalid plugin name.', 'fail')
       process.exit(1)
     }
 
-    if (!target.name.match(/^(@[\w-]+(\.[\w-]+)*\/)?homebridge-[\w-]+$/)) {
+    if (!RE_PLUGIN_NAME.test(target.name)) {
       this.logger('Invalid plugin name.', 'fail')
       process.exit(1)
     }

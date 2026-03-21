@@ -1,5 +1,8 @@
 import { Pipe, PipeTransform } from '@angular/core'
 
+const RE_FIRST_UPPER = /^([A-Z])/
+const RE_UPPER = /([A-Z])/g
+
 @Pipe({
   name: 'serviceToTranslationString',
   standalone: true,
@@ -11,8 +14,8 @@ export class ServiceToTranslationStringPipe implements PipeTransform {
     }
     // Replace capital letters (except the first) with _ + lowercase
     const service = value
-      .replace(/^([A-Z])/, match => match.toLowerCase())
-      .replace(/([A-Z])/g, match => `_${match.toLowerCase()}`)
+      .replace(RE_FIRST_UPPER, match => match.toLowerCase())
+      .replace(RE_UPPER, match => `_${match.toLowerCase()}`)
     return `accessories.core.${service}`
   }
 }

@@ -65,7 +65,7 @@ export class WidgetsComponent implements OnInit, OnDestroy {
   @Input() widget: Widget
 
   public ngOnInit() {
-    if (Object.prototype.hasOwnProperty.call(this.availableWidgets, this.widget.component)) {
+    if (Object.hasOwn(this.availableWidgets, this.widget.component)) {
       this.load(this.availableWidgets[this.widget.component])
     }
   }

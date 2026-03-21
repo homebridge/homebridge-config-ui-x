@@ -12,6 +12,11 @@ import { SettingsService } from '@/app/core/settings.service'
 import { IoNamespace, WsService } from '@/app/core/ws.service'
 import { environment } from '@/environments/environment'
 
+// eslint-disable-next-line no-control-regex
+const RE_ANSI = /\x1B\[[\d;]*[a-z]/gi
+const RE_NEWLINE = /[\r\n]+/
+const RE_SPINNER = /^[⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏]/
+
 @Component({
   templateUrl: './setup-wizard.component.html',
   styleUrls: ['./setup-wizard.component.scss'],
@@ -124,18 +129,17 @@ export class SetupWizardComponent implements OnInit {
       this.io = this.$ws.connectToNamespace('backup')
       const outputBox = document.getElementById('output')
       let spinnerElement: HTMLDivElement | null = null
-      const ansiRegex = /\x1B\[[\d;]*[a-z]/gi // eslint-disable-line no-control-regex
       this.io.socket.on('stdout', (data) => {
-        const lines = data.split(/[\r\n]+/)
+        const lines = data.split(RE_NEWLINE)
         lines.forEach((line: string) => {
           if (!line) {
             return
           }
-          const cleanLine = line.replace(ansiRegex, '').trim()
+          const cleanLine = line.replace(RE_ANSI, '').trim()
           if (!cleanLine) {
             return
           }
-          const isSpinner = /^[⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏]/.test(cleanLine)
+          const isSpinner = RE_SPINNER.test(cleanLine)
           if (isSpinner) {
             if (!spinnerElement) {
               spinnerElement = document.createElement('div')

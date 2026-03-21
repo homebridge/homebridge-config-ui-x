@@ -41,6 +41,8 @@ import { PluginsService } from '../../src/modules/plugins/plugins.service.js'
 
 import '../../src/globalDefaults'
 
+const RE_COLON = /:/g
+
 vi.spyOn(globalThis.console, 'error')
 
 // Function code taken from http://blog.tompawlak.org/how-to-generate-random-values-nodejs-javascript
@@ -182,7 +184,7 @@ describe('BackupController (e2e)', { timeout: 10_000 }, () => {
       dayjs().subtract(1, 'day').toDate(),
     ]
 
-    const instanceId = configService.homebridgeConfig.bridge.username.replace(/:/g, '')
+    const instanceId = configService.homebridgeConfig.bridge.username.replace(RE_COLON, '')
 
     for (const fakeBackupDate of backupDates) {
       const backupFileName = `homebridge-backup-${instanceId}.${fakeBackupDate.getTime().toString()}.tar.gz`
