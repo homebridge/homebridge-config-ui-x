@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core'
+import { Component, computed, input } from '@angular/core'
 import { TranslatePipe } from '@ngx-translate/core'
 
 import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
@@ -14,9 +14,7 @@ import { getWaterLeakState } from '@/app/core/accessories/types/matter/matter-de
   ],
 })
 export class MatterWaterLeakDetectorComponent {
-  @Input() public service: ServiceTypeX
+  public service = input.required<ServiceTypeX>()
 
-  public get isLeaking(): boolean {
-    return getWaterLeakState(this.service)
-  }
+  public isLeaking = computed(() => getWaterLeakState(this.service()))
 }

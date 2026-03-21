@@ -2,9 +2,9 @@ import { AfterViewInit, Component, ElementRef, HostListener, inject, OnDestroy, 
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { Subject } from 'rxjs'
 
-import { SettingsService } from '@/app/core/settings.service'
-import { TerminalNavigationGuardService } from '@/app/core/terminal-navigation-guard.service'
-import { TerminalService } from '@/app/core/terminal.service'
+import { SettingsService } from '@/app/core/ui/settings.service'
+import { TerminalNavigationGuardService } from '@/app/core/utilities/terminal-navigation-guard.service'
+import { TerminalService } from '@/app/core/utilities/terminal.service'
 
 @Component({
   templateUrl: './terminal.component.html',
@@ -23,7 +23,7 @@ export class TerminalComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private visibilityChangeHandler: (() => void) | null = null
 
-  @HostListener('window:resize', ['$event'])
+  @HostListener('window:resize')
   onWindowResize() {
     this.resizeEvent.next(undefined)
   }
@@ -33,19 +33,19 @@ export class TerminalComponent implements OnInit, AfterViewInit, OnDestroy {
     return this.$navigationGuard.handleBeforeUnload(event)
   }
 
-  @HostListener('window:focus', ['$event'])
+  @HostListener('window:focus')
   onWindowFocus() {
     // Autofocus terminal when user returns to this window
     this.activateTerminal()
   }
 
-  @HostListener('click', ['$event'])
+  @HostListener('click')
   onClick() {
     // Focus this terminal when clicked
     this.activateTerminal()
   }
 
-  private activateTerminal() {
+  private activateTerminal(): void {
     // Only focus if this terminal is ready and connected
     if (this.$terminal.isTerminalReady() && this.$terminal.term) {
       // Focus the actual terminal element for better UX
@@ -53,7 +53,7 @@ export class TerminalComponent implements OnInit, AfterViewInit, OnDestroy {
     }
   }
 
-  private patchXtermLiveRegion() {
+  private patchXtermLiveRegion(): void {
     const host = this.termTarget()?.nativeElement as HTMLElement | undefined
     if (!host) {
       return
@@ -69,7 +69,7 @@ export class TerminalComponent implements OnInit, AfterViewInit, OnDestroy {
     live.setAttribute('aria-atomic', 'true')
   }
 
-  public ngOnInit() {
+  public ngOnInit(): void {
     // Set page title
     const title = this.$translate.instant('menu.linux.label_terminal')
     this.$settings.setPageTitle(title)
@@ -114,43 +114,43 @@ export class TerminalComponent implements OnInit, AfterViewInit, OnDestroy {
     } else {
       // If persistence is disabled but there's still an active session, destroy it first
       if (!this.$settings.env.terminal?.persistence && this.$terminal.hasActiveSession()) {
-        this.$terminal.destroyPersistentSession()
+        void this.$terminal.destroyPersistentSession()
       }
       this.$terminal.startTerminal(this.termTarget(), this.$settings.getTerminalOptions({
         screenReaderMode: true,
       }), this.resizeEvent)
     }
 
-    // Set focus to the terminal after a delay to ensure it's initialized
-    setTimeout(() => {
+    // Set focus to the terminal after next render to ensure it's initialized
+    requestAnimationFrame(() => {
       this.patchXtermLiveRegion()
       this.activateTerminal()
-    }, 100)
+    })
   }
 
-  public ngAfterViewInit() {
+  public ngAfterViewInit(): void {
     this.visibilityChangeHandler = this.onVisibilityChange.bind(this)
     document.addEventListener('visibilitychange', this.visibilityChangeHandler)
 
     setTimeout(() => this.patchXtermLiveRegion(), 0)
   }
 
-  private onVisibilityChange() {
+  private onVisibilityChange(): void {
     // When tab becomes visible, focus this terminal
     if (!document.hidden && this.$terminal.isTerminalReady()) {
-      setTimeout(() => {
+      requestAnimationFrame(() => {
         this.patchXtermLiveRegion()
         this.activateTerminal()
-      }, 100)
+      })
     }
   }
 
-  public canDeactivate(nextUrl?: string): Promise<boolean> | boolean {
+  public async canDeactivate(nextUrl?: string): Promise<boolean> {
     // Check if navigation guard allows deactivation
-    const guardResult = this.$navigationGuard.canDeactivate()
+    const guardResult = await this.$navigationGuard.canDeactivate()
 
     // If guard blocks navigation, return immediately
-    if (guardResult === false || (guardResult instanceof Promise && guardResult.then)) {
+    if (guardResult === false) {
       return guardResult
     }
 
@@ -208,7 +208,7 @@ export class TerminalComponent implements OnInit, AfterViewInit, OnDestroy {
     })
   }
 
-  public ngOnDestroy() {
+  public ngOnDestroy(): void {
     if (this.visibilityChangeHandler) {
       document.removeEventListener('visibilitychange', this.visibilityChangeHandler)
       this.visibilityChangeHandler = null
@@ -226,7 +226,7 @@ export class TerminalComponent implements OnInit, AfterViewInit, OnDestroy {
       this.$terminal.detachTerminal()
     } else {
       // Destroy the terminal completely and ensure any persistent session is destroyed
-      this.$terminal.destroyPersistentSession()
+      void this.$terminal.destroyPersistentSession()
     }
   }
 }

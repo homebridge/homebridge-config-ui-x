@@ -10,8 +10,8 @@
     ></button>
   </div>
   <div class="modal-body">
-    @if (loading) {
-    <div class="text-center primary-text my-5 w-100">
+    @if (loading()) {
+    <div class="w-100 text-center primary-text text-center">
       <i class="fa fa-circle-notch fa-spin" style="font-size: 75px"></i>
     </div>
     } @else {
@@ -27,67 +27,100 @@
       <li>{{ 'status.widget.info.node_unsupp_message' | translate }}</li>
       }
     </ul>
-    <div class="list-group list-group-box mt-3 mb-0">
-      <div class="list-group-item text-center">{{ 'plugins.manage.notifications' | translate }}</div>
-      <button type="button" class="list-group-item d-flex align-items-center text-start" (click)="selectPolicy('all')">
-        <div class="me-3">
-          <i
-            class="fas fa-bell fa-2x"
-            [class.primary-text]="nodeUpdatePolicyControl.value === 'all'"
-            [class.grey-text]="nodeUpdatePolicyControl.value !== 'all'"
-          ></i>
-        </div>
-        <div class="flex-grow-1">
-          <div>{{ 'plugins.manage.notifications_all' | translate }}</div>
-          <small class="grey-text">{{ 'plugins.manage.notifications_all_desc' | translate }}</small>
-        </div>
-        @if (nodeUpdatePolicyControl.value === 'all') {
-        <div class="ms-3">
-          <i class="fas fa-xl fa-check-circle primary-text"></i>
-        </div>
-        }
-      </button>
-      <button
-        type="button"
-        class="list-group-item d-flex align-items-center text-start"
-        (click)="selectPolicy('major')"
-      >
-        <div class="me-3">
-          <i
-            class="far fa-bell fa-fw fa-2x"
-            [class.primary-text]="nodeUpdatePolicyControl.value === 'major'"
-            [class.grey-text]="nodeUpdatePolicyControl.value !== 'major'"
-          ></i>
-        </div>
-        <div class="flex-grow-1">
-          <div>{{ 'plugins.manage.notifications_major' | translate }}</div>
-          <small class="grey-text">{{ 'plugins.manage.notifications_major_desc' | translate }}</small>
-        </div>
-        @if (nodeUpdatePolicyControl.value === 'major') {
-        <div class="ms-3">
-          <i class="fas fa-xl fa-check-circle primary-text"></i>
-        </div>
-        }
-      </button>
-      <button type="button" class="list-group-item d-flex align-items-center text-start" (click)="selectPolicy('none')">
-        <div class="me-3">
-          <i
-            class="far fa-bell-slash fa-2x"
-            [class.primary-text]="nodeUpdatePolicyControl.value === 'none'"
-            [class.grey-text]="nodeUpdatePolicyControl.value !== 'none'"
-          ></i>
-        </div>
-        <div class="flex-grow-1">
-          <div>{{ 'plugins.manage.notifications_none' | translate }}</div>
-          <small class="grey-text">{{ 'plugins.manage.notifications_none_desc' | translate }}</small>
-        </div>
-        @if (nodeUpdatePolicyControl.value === 'none') {
-        <div class="ms-3">
-          <i class="fas fa-xl fa-check-circle primary-text"></i>
-        </div>
-        }
-      </button>
-    </div>
+    <ul
+      class="list-group list-group-box mt-3 mb-0"
+      role="radiogroup"
+      [attr.aria-label]="'plugins.manage.notifications' | translate"
+    >
+      <div class="list-group-item text-center" aria-hidden="true">{{ 'plugins.manage.notifications' | translate }}</div>
+      <li class="list-group-item text-start">
+        <label class="d-flex align-items-center w-100 mb-0" style="cursor: pointer">
+          <input
+            type="radio"
+            name="nodeUpdatePolicy"
+            value="all"
+            [formControl]="nodeUpdatePolicyControl"
+            class="visually-hidden"
+            [attr.aria-label]="'plugins.manage.notifications_all' | translate"
+          />
+          <div class="me-3">
+            <i
+              class="fas fa-bell fa-2x"
+              [class.primary-text]="nodeUpdatePolicyControl.value === 'all'"
+              [class.grey-text]="nodeUpdatePolicyControl.value !== 'all'"
+              aria-hidden="true"
+            ></i>
+          </div>
+          <div class="flex-grow-1">
+            <div aria-hidden="true">{{ 'plugins.manage.notifications_all' | translate }}</div>
+            <small class="grey-text">{{ 'plugins.manage.notifications_all_desc' | translate }}</small>
+          </div>
+          @if (nodeUpdatePolicyControl.value === 'all') {
+          <div class="ms-3">
+            <i class="fas fa-xl fa-check-circle primary-text" aria-hidden="true"></i>
+          </div>
+          }
+        </label>
+      </li>
+      <li class="list-group-item text-start">
+        <label class="d-flex align-items-center w-100 mb-0" style="cursor: pointer">
+          <input
+            type="radio"
+            name="nodeUpdatePolicy"
+            value="major"
+            [formControl]="nodeUpdatePolicyControl"
+            class="visually-hidden"
+            [attr.aria-label]="'plugins.manage.notifications_major' | translate"
+          />
+          <div class="me-3">
+            <i
+              class="far fa-bell fa-fw fa-2x"
+              [class.primary-text]="nodeUpdatePolicyControl.value === 'major'"
+              [class.grey-text]="nodeUpdatePolicyControl.value !== 'major'"
+              aria-hidden="true"
+            ></i>
+          </div>
+          <div class="flex-grow-1">
+            <div aria-hidden="true">{{ 'plugins.manage.notifications_major' | translate }}</div>
+            <small class="grey-text">{{ 'plugins.manage.notifications_major_desc' | translate }}</small>
+          </div>
+          @if (nodeUpdatePolicyControl.value === 'major') {
+          <div class="ms-3">
+            <i class="fas fa-xl fa-check-circle primary-text" aria-hidden="true"></i>
+          </div>
+          }
+        </label>
+      </li>
+      <li class="list-group-item text-start">
+        <label class="d-flex align-items-center w-100 mb-0" style="cursor: pointer">
+          <input
+            type="radio"
+            name="nodeUpdatePolicy"
+            value="none"
+            [formControl]="nodeUpdatePolicyControl"
+            class="visually-hidden"
+            [attr.aria-label]="'plugins.manage.notifications_none' | translate"
+          />
+          <div class="me-3">
+            <i
+              class="far fa-bell-slash fa-2x"
+              [class.primary-text]="nodeUpdatePolicyControl.value === 'none'"
+              [class.grey-text]="nodeUpdatePolicyControl.value !== 'none'"
+              aria-hidden="true"
+            ></i>
+          </div>
+          <div class="flex-grow-1">
+            <div aria-hidden="true">{{ 'plugins.manage.notifications_none' | translate }}</div>
+            <small class="grey-text">{{ 'plugins.manage.notifications_none_desc' | translate }}</small>
+          </div>
+          @if (nodeUpdatePolicyControl.value === 'none') {
+          <div class="ms-3">
+            <i class="fas fa-xl fa-check-circle primary-text" aria-hidden="true"></i>
+          </div>
+          }
+        </label>
+      </li>
+    </ul>
     @if (!hasNode24OrAbove) {
     <ul class="list-group list-group-box mt-3 mb-0">
       <li class="list-group-item text-center">{{ 'status.widget.info.node_major' | translate }}</li>
@@ -109,10 +142,10 @@
         </div>
       </li>
     </ul>
-    } @if (installedPlugins.length) {
+    } @if (installedPlugins().length) {
     <ul class="list-group list-group-box mt-3 mb-0">
       <li class="list-group-item text-center">{{ 'menu.label_plugins' | translate }}</li>
-      @for (plugin of installedPlugins; track plugin) {
+      @for (plugin of installedPlugins(); track plugin) {
       <li class="list-group-item d-flex justify-content-between align-items-center">
         <div class="me-3">
           <img

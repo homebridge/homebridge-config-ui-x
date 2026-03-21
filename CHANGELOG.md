@@ -4,6 +4,11 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 
 ## v5.20.1 (Pending Release)
 
+### ⚠️ Browser Support
+
+- Updated minimum browser requirements to align with Angular 21:
+  - now targeting the last 2 versions of Chrome, Edge, Firefox and Safari
+
 ### UI Changes
 
 - upgrade `xterm` to `v6` + style improvements
@@ -19,12 +24,13 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - chore: consolidate regex into shared file (frontend)
 - chore: refresh some screenshots in `screenshots` folder
 - fix: add `username`/`password` attributes to login form
+- angular `v20` to `v21` code migration
 
 ### Homebridge Dependencies
 
-- `@homebridge/hap-client` @ `v4.0.1`
+- `@homebridge/hap-client` @ `v4.0.2`
 - `@homebridge/node-pty-prebuilt-multiarch` @ `v0.13.1`
-- `@homebridge/plugin-ui-utils` @ `v2.2.2`
+- `@homebridge/plugin-ui-utils` @ `v2.2.3`
 
 ## v5.20.0 (2026-03-21)
 

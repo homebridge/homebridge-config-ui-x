@@ -1,10 +1,11 @@
-import { ChangeDetectorRef, Component, ElementRef, inject, Input, OnDestroy, OnInit, viewChild } from '@angular/core'
+import { ChangeDetectorRef, Component, DestroyRef, ElementRef, inject, input, OnDestroy, OnInit, signal, viewChild } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { TranslatePipe } from '@ngx-translate/core'
 import { ITerminalOptions } from '@xterm/xterm'
 import { Subject, Subscription } from 'rxjs'
 
-import { LogService } from '@/app/core/log.service'
-import { SettingsService } from '@/app/core/settings.service'
+import { SettingsService } from '@/app/core/ui/settings.service'
+import { LogService } from '@/app/core/utilities/log.service'
 import { Widget } from '@/app/modules/status/widgets/widgets.interfaces'
 
 @Component({
@@ -15,48 +16,59 @@ import { Widget } from '@/app/modules/status/widgets/widgets.interfaces'
   ],
 })
 export class HomebridgeLogsWidgetComponent implements OnInit, OnDestroy {
+  // Injected dependencies
+  private destroyRef = inject(DestroyRef)
   private $log = inject(LogService)
   private $settings = inject(SettingsService)
   private $cdr = inject(ChangeDetectorRef)
-  private terminalSettingsSubscription?: Subscription
-  private configureEventSubscription?: Subscription
-  private resizeEventSubscription?: Subscription
 
+  // Signals
+  widget = input.required<Widget>()
   readonly widgetContainerElement = viewChild<ElementRef>('widgetcontainer')
   readonly titleElement = viewChild<ElementRef>('terminaltitle')
   readonly termTarget = viewChild<ElementRef>('logoutput')
+  public terminalHeight = signal<number>(200)
+  public theme = signal<'dark' | 'light'>('dark')
 
-  @Input() widget: Widget
-  @Input() resizeEvent: Subject<any>
-  @Input() configureEvent: Subject<any>
+  // Other properties
+  private initialized = false
+  resizeEvent!: Subject<void> // Set directly by ComponentFactoryResolver
+  configureEvent!: Subject<void> // Set directly by ComponentFactoryResolver
+  private terminalSettingsSubscription?: Subscription
 
-  public terminalHeight = 200
-
-  public get theme(): 'dark' | 'light' {
-    // Always use effective theme to enforce dark mode override
-    return this.$settings.getEffectiveTerminalLightingMode()
-  }
-
-  public ngOnInit() {
+  public ngOnInit(): void {
+    // Use effective theme to enforce dark mode override when needed
+    this.theme.set(this.$settings.getEffectiveTerminalLightingMode())
     setTimeout(() => {
+      // Use global terminal settings from settings service
       this.$log.startTerminal(this.termTarget(), this.$settings.getTerminalOptions({
         cursorBlink: false,
       }, true), this.resizeEvent)
+
+      // Mark as initialized after terminal setup completes
+      this.initialized = true
+
+      // Trigger initial resize to calculate height and fit terminal
+      setTimeout(() => {
+        this.resizeEvent.next()
+      }, 100)
     })
 
-    this.resizeEventSubscription = this.resizeEvent.subscribe({
-      next: () => {
-        this.terminalHeight = this.getTerminalHeight()
-      },
+    this.resizeEvent.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+      // Skip resize updates until component is fully initialized
+      if (!this.initialized) {
+        return
+      }
+      this.terminalHeight.set(this.getTerminalHeight())
     })
 
-    this.configureEventSubscription = this.configureEvent.subscribe({
-      next: () => {
-        // Widget configuration changes would be handled here if needed
-      },
+    // Note: Widget-specific configuration (fontSize, fontWeight, theme) is not implemented
+    // Only global terminal settings via terminalSettingsSubscription are functional
+    this.configureEvent.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+      // Reserved for future widget-specific configuration if needed
     })
 
-    // Subscribe to global terminal settings changes
+    // Subscribe to global terminal settings changes (Angular 20 feature)
     this.terminalSettingsSubscription = this.$settings.terminalSettingsChanged.subscribe({
       next: (settings) => {
         if (!this.$log.term) {
@@ -90,10 +102,8 @@ export class HomebridgeLogsWidgetComponent implements OnInit, OnDestroy {
     })
   }
 
-  public ngOnDestroy() {
+  public ngOnDestroy(): void {
     this.terminalSettingsSubscription?.unsubscribe()
-    this.configureEventSubscription?.unsubscribe()
-    this.resizeEventSubscription?.unsubscribe()
     this.$log.destroyTerminal()
   }
 

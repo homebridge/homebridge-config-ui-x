@@ -146,10 +146,7 @@ export class LinuxInstaller extends BasePlatform {
    * Find failed npm install temporary directories and attempt to remove them
    */
   public async beforeStart() {
-    if ([
-      '/usr/local/lib/node_modules',
-      '/usr/lib/node_modules',
-    ].includes(dirname(process.env.UIX_BASE_PATH))) {
+    if (['/usr/local/lib/node_modules', '/usr/lib/node_modules'].includes(dirname(process.env.UIX_BASE_PATH))) {
       // systemd has a 90-second default timeout in the pre-start jobs
       // Terminate this task after 60 seconds to be safe
       setTimeout(() => {

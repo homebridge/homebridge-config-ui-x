@@ -1,5 +1,5 @@
 /* global NodeJS */
-import { Directive, HostListener, Input, OnDestroy, output } from '@angular/core'
+import { Directive, HostListener, input, OnDestroy, output } from '@angular/core'
 
 import { RE_IPAD_IPHONE_IPOD, RE_NON_SAFARI, RE_SAFARI } from '@/app/core/regex.constants'
 
@@ -13,7 +13,7 @@ export class LongClickDirective implements OnDestroy {
   private touchInProgress = false
   private touchStartTime = 0
 
-  @Input() public duration = 350
+  public readonly duration = input(350)
 
   public readonly longClick = output<MouseEvent | TouchEvent>()
   public readonly shortClick = output<MouseEvent | KeyboardEvent | TouchEvent>()
@@ -66,7 +66,7 @@ export class LongClickDirective implements OnDestroy {
           this.done = true
           this.longClick.emit(event)
         }
-      }, this.duration)
+      }, this.duration())
       return
     }
 
@@ -79,13 +79,13 @@ export class LongClickDirective implements OnDestroy {
             this.done = true
             this.longClick.emit(event)
           }
-        }, this.duration)
+        }, this.duration())
       }
     }
   }
 
-  @HostListener('mousemove', ['$event'])
-  @HostListener('touchmove', ['$event'])
+  @HostListener('mousemove')
+  @HostListener('touchmove')
   public onMouseMove(): void {
     this.done = true
     clearTimeout(this.downTimeout)

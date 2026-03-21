@@ -1,25 +1,22 @@
-import { inject, Injectable } from '@angular/core'
-import { Resolve, Router } from '@angular/router'
+import { inject } from '@angular/core'
+import { ResolveFn, Router } from '@angular/router'
 import { TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
-import { firstValueFrom } from 'rxjs'
 
-import { ApiService } from '@/app/core/api.service'
+import { ApiService } from '@/app/core/communication/api.service'
 
-@Injectable()
-export class StartupScriptResolver implements Resolve<any> {
-  private $api = inject(ApiService)
-  private $router = inject(Router)
-  private $toastr = inject(ToastrService)
-  private $translate = inject(TranslateService)
+export const startupScriptResolver: ResolveFn<any> = async () => {
+  const $api = inject(ApiService)
+  const $router = inject(Router)
+  const $toastr = inject(ToastrService)
+  const $translate = inject(TranslateService)
 
-  public async resolve() {
-    try {
-      return await firstValueFrom(this.$api.get('/platform-tools/docker/startup-script'))
-    } catch (error) {
-      console.error(error)
-      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
-      void this.$router.navigate(['/'])
-    }
+  try {
+    return await $api.get('/platform-tools/docker/startup-script')
+  } catch (error) {
+    console.error(error)
+    $toastr.error(error.message, $translate.instant('toast.title_error'))
+    void $router.navigate(['/'])
+    return undefined
   }
 }

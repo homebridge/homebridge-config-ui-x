@@ -1,8 +1,9 @@
-import { Component, inject, Input, OnDestroy, OnInit } from '@angular/core'
+import { Component, DestroyRef, inject, input, OnInit, signal } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { TranslatePipe } from '@ngx-translate/core'
-import { interval, Subscription } from 'rxjs'
+import { interval } from 'rxjs'
 
-import { IoNamespace, WsService } from '@/app/core/ws.service'
+import { IoNamespace, WsService } from '@/app/core/communication/ws.service'
 import { Widget } from '@/app/modules/status/widgets/widgets.interfaces'
 
 @Component({
@@ -10,45 +11,46 @@ import { Widget } from '@/app/modules/status/widgets/widgets.interfaces'
   standalone: true,
   imports: [TranslatePipe],
 })
-export class UptimeWidgetComponent implements OnInit, OnDestroy {
+export class UptimeWidgetComponent implements OnInit {
+  // Injected dependencies
+  private destroyRef = inject(DestroyRef)
   private $ws = inject(WsService)
+
+  // Signals
+  widget = input.required<Widget>()
+  public serverUptime = signal<string>('')
+  public processUptime = signal<string>('')
+
+  // Other properties
   private io: IoNamespace
-  private intervalSubscription: Subscription
 
-  @Input() widget: Widget
-
-  public serverUptime: string
-  public processUptime: string
-
-  public ngOnInit() {
+  public ngOnInit(): void {
     this.io = this.$ws.getExistingNamespace('status')
-    this.io.connected.subscribe(async () => {
+
+    this.io.connected.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
       this.getServerUptimeInfo()
     })
 
-    if (this.io.socket.connected) {
-      this.getServerUptimeInfo()
-    }
-
-    this.intervalSubscription = interval(11000).subscribe(() => {
+    interval(11000).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
       if (this.io.socket.connected) {
         this.getServerUptimeInfo()
       }
     })
+
+    // Fetch initial data if already connected
+    if (this.io.socket.connected) {
+      this.getServerUptimeInfo()
+    }
   }
 
-  public ngOnDestroy() {
-    this.intervalSubscription.unsubscribe()
-  }
-
-  private getServerUptimeInfo() {
+  private getServerUptimeInfo(): void {
     this.io.request('get-server-uptime-info').subscribe((data) => {
-      this.serverUptime = this.humaniseDuration(data.time.uptime)
-      this.processUptime = this.humaniseDuration(data.processUptime)
+      this.serverUptime.set(this.humaniseDuration(data.time.uptime))
+      this.processUptime.set(this.humaniseDuration(data.processUptime))
     })
   }
 
-  private humaniseDuration(seconds: number) {
+  private humaniseDuration(seconds: number): string {
     if (seconds < 50) {
       return '< 1m'
     }

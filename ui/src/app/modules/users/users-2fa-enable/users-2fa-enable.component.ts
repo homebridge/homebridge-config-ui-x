@@ -1,14 +1,15 @@
 /* global NodeJS */
-import { Component, inject, Input, OnInit } from '@angular/core'
+import { Component, inject, OnInit, signal } from '@angular/core'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
-import { NgbActiveModal, NgbAlert } from '@ng-bootstrap/ng-bootstrap'
+import { NgbAlert } from '@ng-bootstrap/ng-bootstrap/alert'
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import dayjs from 'dayjs'
 import { ToastrService } from 'ngx-toastr'
 
-import { ApiService } from '@/app/core/api.service'
+import { ApiService } from '@/app/core/communication/api.service'
 import { QrcodeComponent } from '@/app/core/components/qrcode/qrcode.component'
-import { User } from '@/app/modules/users/users.interface'
+import { USER_MODAL_DATA } from '@/app/core/modal-data-tokens'
 
 @Component({
   templateUrl: './users-2fa-enable.component.html',
@@ -22,75 +23,85 @@ import { User } from '@/app/modules/users/users.interface'
   ],
 })
 export class Users2faEnableComponent implements OnInit {
+  // Injected dependencies
   private $activeModal = inject(NgbActiveModal)
   private $api = inject(ApiService)
   private $toastr = inject(ToastrService)
   private $translate = inject(TranslateService)
+  private modalData = inject(USER_MODAL_DATA)
+
+  // Public properties (from injected data)
+  public user = this.modalData.user
+
+  // Signals
+  public timeDiffError = signal<number | null>(null)
+  public otpString = signal<string | undefined>(undefined)
+  public otpSecret = signal<string | undefined>(undefined)
+  public secretCopied = signal(false)
+
+  // Other properties
   private copyTimeout: NodeJS.Timeout | null = null
-
-  @Input() public user: User
-
-  public timeDiffError: number | null = null
-  public otpString: string
-  public otpSecret: string
-  public secretCopied = false
   public formGroup = new FormGroup({
     code: new FormControl('', [Validators.required, Validators.minLength(6), Validators.maxLength(6)]),
   })
 
   public ngOnInit(): void {
-    this.$api.post('/users/otp/setup', {}).subscribe({
-      next: (data) => {
-        this.checkTimeDiff(data.timestamp)
-        if (!this.timeDiffError) {
-          this.otpString = data.otpauth
-          this.otpSecret = (new URL(this.otpString)).searchParams.get('secret') || ''
-        }
-      },
-      error: (error) => {
-        this.$activeModal.dismiss()
-        console.error(error)
-        this.$toastr.error(this.$translate.instant('users.setup_2fa_enable_error'), this.$translate.instant('toast.title_error'))
-      },
-    })
+    void this.initialize()
   }
 
-  public enable2fa() {
-    this.$api.post('/users/otp/activate', this.formGroup.value).subscribe({
-      next: () => {
-        this.$toastr.success(this.$translate.instant('users.setup_2fa_enabled_success'), this.$translate.instant('toast.title_success'))
-        this.$activeModal.close()
-      },
-      error: (error) => {
-        console.error(error)
-        this.$toastr.error(this.$translate.instant('users.setup_2fa_activate_error'), this.$translate.instant('toast.title_error'))
-      },
-    })
+  private async initialize(): Promise<void> {
+    try {
+      const data = await this.$api.post('/users/otp/setup', {})
+      this.checkTimeDiff(data.timestamp)
+      if (!this.timeDiffError()) {
+        this.otpString.set(data.otpauth)
+        this.otpSecret.set((new URL(data.otpauth)).searchParams.get('secret') || '')
+      }
+    } catch (error) {
+      this.$activeModal.dismiss()
+      console.error(error)
+      this.$toastr.error(this.$translate.instant('users.setup_2fa_enable_error'), this.$translate.instant('toast.title_error'))
+    }
+  }
+
+  public async enable2fa(): Promise<void> {
+    try {
+      await this.$api.post('/users/otp/activate', this.formGroup.value)
+      this.$toastr.success(this.$translate.instant('users.setup_2fa_enabled_success'), this.$translate.instant('toast.title_success'))
+      this.$activeModal.close()
+    } catch (error) {
+      console.error(error)
+      this.$toastr.error(this.$translate.instant('users.setup_2fa_activate_error'), this.$translate.instant('toast.title_error'))
+    }
   }
 
   public async copySecretToClipboard(): Promise<void> {
-    await navigator.clipboard.writeText(this.otpSecret)
-    this.secretCopied = true
+    const secret = this.otpSecret()
+    if (!secret) {
+      return
+    }
+    await navigator.clipboard.writeText(secret)
+    this.secretCopied.set(true)
 
     if (this.copyTimeout) {
       clearTimeout(this.copyTimeout)
     }
 
     this.copyTimeout = setTimeout(() => {
-      this.secretCopied = false
+      this.secretCopied.set(false)
     }, 3000)
   }
 
-  public dismissModal() {
+  public dismissModal(): void {
     this.$activeModal.dismiss('Dismiss')
   }
 
-  private checkTimeDiff(timestamp: string) {
+  private checkTimeDiff(timestamp: string): void {
     const diffMs = dayjs(timestamp).diff(new Date(), 'millisecond')
     if (diffMs < -5000 || diffMs > 5000) {
-      this.timeDiffError = diffMs
+      this.timeDiffError.set(diffMs)
     } else {
-      this.timeDiffError = null
+      this.timeDiffError.set(null)
     }
   }
 }

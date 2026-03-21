@@ -52,6 +52,7 @@
         type="text"
         id="logs-search"
         class="search-bar"
+        [class.search-bar-light]="terminalTheme === 'light'"
         #searchInput
         [placeholder]="'logs.placeholder_search_logs' | translate"
         formControlName="query"

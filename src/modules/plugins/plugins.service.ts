@@ -334,8 +334,7 @@ export class PluginsService {
       return 'exactName'
     }
     // The keywords or name contain all the search terms
-    if (searchTerms.every(term => keywordsSet.has(term))
-      || searchTerms.every(term => nameTermsSet.has(term))) {
+    if (searchTerms.every(term => keywordsSet.has(term)) || searchTerms.every(term => nameTermsSet.has(term))) {
       return 'exactKeyword'
     }
     if (
@@ -362,7 +361,7 @@ export class PluginsService {
 
     if (
       (normalizedQuery.startsWith('homebridge-') || this.isScopedPlugin(normalizedQuery))
-      && !this.hiddenPlugins.includes(normalizedQuery)
+      && !this.isHiddenPlugin(normalizedQuery)
     ) {
       if (
         !this.installedPlugins.some(x => x.name === normalizedQuery)
@@ -384,12 +383,10 @@ export class PluginsService {
       throw new InternalServerErrorException(`Failed to search the npm registry as ${e.message}, see logs.`)
     }
 
-    const hiddenPluginsSet = new Set(this.hiddenPlugins)
-
     const plugins: HomebridgePlugin[] = searchResults.objects
       .filter(x =>
         (x.package.name.startsWith('homebridge-') || this.isScopedPlugin(x.package.name))
-        && !hiddenPluginsSet.has(x.package.name),
+        && !this.isHiddenPlugin(x.package.name),
       )
       .map((pkg) => {
         const isInstalled = this.installedPlugins.find(x => x.name === pkg.package.name)

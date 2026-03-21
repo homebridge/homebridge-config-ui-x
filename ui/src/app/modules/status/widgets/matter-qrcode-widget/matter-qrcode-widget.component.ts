@@ -1,10 +1,11 @@
-import { Component, ElementRef, inject, Input, OnInit, viewChild } from '@angular/core'
+import { Component, DestroyRef, ElementRef, inject, OnDestroy, OnInit, signal, viewChild } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { Subject } from 'rxjs'
 
+import { IoNamespace, WsService } from '@/app/core/communication/ws.service'
 import { QrcodeComponent } from '@/app/core/components/qrcode/qrcode.component'
 import { HomebridgeStatusResponse } from '@/app/core/server.interfaces'
-import { IoNamespace, WsService } from '@/app/core/ws.service'
 
 @Component({
   templateUrl: './matter-qrcode-widget.component.html',
@@ -14,105 +15,123 @@ import { IoNamespace, WsService } from '@/app/core/ws.service'
     TranslatePipe,
   ],
 })
-export class MatterQrcodeWidgetComponent implements OnInit {
+export class MatterQrcodeWidgetComponent implements OnInit, OnDestroy {
+  // Injected dependencies
+  private destroyRef = inject(DestroyRef)
   private $translate = inject(TranslateService)
   private $ws = inject(WsService)
-  private io: IoNamespace
 
+  // Signals
   readonly pincodeElement = viewChild<ElementRef>('pincodeMatter')
   readonly qrcodeContainerElement = viewChild<ElementRef>('qrcodecontainerMatter')
+  public enabled = signal<boolean>(false)
+  public loading = signal<boolean>(true)
+  public commissioned = signal<boolean>(false)
+  public matterEnabled = signal<boolean>(false)
+  public pin = signal<string>('')
+  public setupUri = signal<string | null>(null)
+  public qrCodeHeight = signal<number>(0)
+  public qrCodeWidth = signal<number>(0)
 
-  @Input() resizeEvent: Subject<any>
+  // Other properties
+  private io: IoNamespace
+  private statusHandler: (data: HomebridgeStatusResponse) => void
+  resizeEvent!: Subject<void> // Set directly by ComponentFactoryResolver
 
-  public enabled = false
-  public loading = true
-  public commissioned: boolean = false
-  public matterEnabled: boolean = false
-  public pin = ''
-  public setupUri: string | null = null
-  public qrCodeHeight: number
-  public qrCodeWidth: number
-
-  public ngOnInit() {
+  public ngOnInit(): void {
     // Use existing status namespace instead of matter-bridges
     this.io = this.$ws.getExistingNamespace('status')
-    this.resizeQrCode()
 
     // Listen to homebridge-status events for unified status updates
-    this.io.socket.on('homebridge-status', (data: HomebridgeStatusResponse) => {
+    this.statusHandler = (data: HomebridgeStatusResponse) => {
       // Extract Matter info from unified status
       if (data.matter) {
-        this.matterEnabled = data.matter.enabled
+        this.matterEnabled.set(data.matter.enabled)
         if (data.matter.enabled) {
-          this.pin = data.matter.pin || this.pin
-          this.commissioned = data.matter.commissioned || false
-          this.setupUri = data.matter.setupUri || null
-          this.enabled = true
+          this.pin.set(data.matter.pin || this.pin())
+          this.commissioned.set(data.matter.commissioned || false)
+          this.setupUri.set(data.matter.setupUri || null)
+          this.enabled.set(true)
         } else {
-          this.pin = this.$translate.instant('status.services.label_not_enabled')
-          this.setupUri = null
-          this.commissioned = false
+          this.pin.set(this.$translate.instant('status.services.label_not_enabled'))
+          this.setupUri.set(null)
+          this.commissioned.set(false)
         }
       } else {
         // No Matter info means Matter is not configured
-        this.matterEnabled = false
-        this.pin = this.$translate.instant('status.services.label_not_enabled')
-        this.setupUri = null
-        this.commissioned = false
+        this.matterEnabled.set(false)
+        this.pin.set(this.$translate.instant('status.services.label_not_enabled'))
+        this.setupUri.set(null)
+        this.commissioned.set(false)
       }
-      this.loading = false
-    })
-
-    // Get initial Matter info if connected
-    if (this.io.socket.connected) {
-      this.getMatterInfo()
+      this.loading.set(false)
     }
 
+    this.io.socket.on('homebridge-status', this.statusHandler)
+
     // Subscribe to grid resize events
-    this.resizeEvent.subscribe({
-      next: () => {
-        this.resizeQrCode()
-      },
+    this.resizeEvent.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+      this.resizeQrCode()
     })
+
+    // Fetch initial data if already connected - defer to avoid NG0100
+    if (this.io.socket.connected) {
+      queueMicrotask(() => this.getMatterInfo())
+    }
   }
 
-  private resizeQrCode() {
+  public ngOnDestroy(): void {
+    if (this.io && this.statusHandler) {
+      this.io.socket.off('homebridge-status', this.statusHandler)
+    }
+  }
+
+  private resizeQrCode(): void {
+    // Don't resize until we have data to display
+    if (!this.setupUri()) {
+      return
+    }
+
     const containerHeight = (this.qrcodeContainerElement().nativeElement as HTMLElement).offsetHeight
     const containerWidth = (this.qrcodeContainerElement().nativeElement as HTMLElement).offsetWidth
     const pinCodeHeight = (this.pincodeElement().nativeElement as HTMLElement).offsetHeight
 
-    this.qrCodeHeight = containerHeight - pinCodeHeight
-    this.qrCodeWidth = containerWidth > this.qrCodeHeight ? this.qrCodeHeight : containerWidth
+    const newHeight = containerHeight - pinCodeHeight
+    const newWidth = containerWidth > newHeight ? newHeight : containerWidth
+
+    this.qrCodeHeight.set(newHeight)
+    this.qrCodeWidth.set(newWidth)
   }
 
-  private getMatterInfo() {
+  private getMatterInfo(): void {
     // Request homebridge pairing pin which includes Matter info
     this.io.request('get-homebridge-pairing-pin')
       .subscribe({
         next: (data) => {
           // Extract Matter info from unified response
           if (data.matter) {
-            this.matterEnabled = data.matter.enabled
+            this.matterEnabled.set(data.matter.enabled)
             if (data.matter.enabled) {
-              this.pin = data.matter.pin || this.pin
-              this.commissioned = data.matter.commissioned || false
-              this.setupUri = data.matter.setupUri || null
-              this.enabled = true
+              this.pin.set(data.matter.pin || this.pin())
+              this.commissioned.set(data.matter.commissioned || false)
+              this.setupUri.set(data.matter.setupUri || null)
+              this.enabled.set(true)
             } else {
-              this.pin = this.$translate.instant('status.services.label_not_enabled')
-              this.setupUri = null
-              this.commissioned = false
+              this.pin.set(this.$translate.instant('status.services.label_not_enabled'))
+              this.setupUri.set(null)
+              this.commissioned.set(false)
             }
           } else {
             // No Matter info means Matter is not configured
-            this.matterEnabled = false
-            this.pin = this.$translate.instant('status.services.label_not_enabled')
-            this.setupUri = null
-            this.commissioned = false
+            this.matterEnabled.set(false)
+            this.pin.set(this.$translate.instant('status.services.label_not_enabled'))
+            this.setupUri.set(null)
+            this.commissioned.set(false)
           }
 
-          this.loading = false
-          setTimeout(() => this.resizeQrCode(), 10)
+          this.loading.set(false)
+          // Resize after data is set and DOM updates
+          requestAnimationFrame(() => this.resizeQrCode())
         },
       })
   }

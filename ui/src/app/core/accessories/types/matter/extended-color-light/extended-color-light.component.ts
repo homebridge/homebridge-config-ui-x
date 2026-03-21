@@ -1,9 +1,10 @@
-import { Component, inject, Input } from '@angular/core'
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap'
+import { Component, computed, createEnvironmentInjector, EnvironmentInjector, inject, input } from '@angular/core'
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe } from '@ngx-translate/core'
 
 import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
 import { AccessoriesService } from '@/app/core/accessories/accessories.service'
+import { ACCESSORY_MANAGE_MODAL_DATA } from '@/app/core/accessories/types/base-manage.component'
 import { ExtendedColorLightManageComponent } from '@/app/core/accessories/types/matter/extended-color-light/extended-color-light.manage.component'
 import { getBrightnessPercentage, getDeviceActiveState, getHue, getSaturation, toggleDimmableLight } from '@/app/core/accessories/types/matter/matter-device.utils'
 import { LongClickDirective } from '@/app/core/directives/long-click.directive'
@@ -11,7 +12,6 @@ import { LongClickDirective } from '@/app/core/directives/long-click.directive'
 @Component({
   selector: 'app-extended-color-light',
   templateUrl: './extended-color-light.component.html',
-  styleUrls: ['./extended-color-light.component.scss'],
   standalone: true,
   imports: [
     LongClickDirective,
@@ -20,46 +20,53 @@ import { LongClickDirective } from '@/app/core/directives/long-click.directive'
 })
 export class ExtendedColorLightComponent {
   private $accessories = inject(AccessoriesService)
+  private injector = inject(EnvironmentInjector)
   private $modal = inject(NgbModal)
 
-  @Input() public service: ServiceTypeX
-  @Input() public readyForControl = false
+  public service = input.required<ServiceTypeX>()
+  public readyForControl = input<boolean>(false)
 
   public onClick() {
-    if (!this.readyForControl) {
+    if (!this.readyForControl()) {
       return
     }
-    toggleDimmableLight(this.service)
+    void toggleDimmableLight(this.service())
   }
 
   public onLongClick() {
-    if (!this.readyForControl) {
+    if (!this.readyForControl()) {
       return
     }
 
-    const ref = this.$modal.open(ExtendedColorLightManageComponent, {
+    const modalInjector = createEnvironmentInjector(
+      [{
+        provide: ACCESSORY_MANAGE_MODAL_DATA,
+        useValue: {
+          service: this.service(),
+          $accessories: this.$accessories,
+        },
+      }],
+      this.injector,
+    )
+
+    this.$modal.open(ExtendedColorLightManageComponent, {
       size: 'md',
       backdrop: 'static',
+      injector: modalInjector,
     })
-    ref.componentInstance.service = this.service
-    ref.componentInstance.$accessories = this.$accessories
   }
 
-  public get isOn(): boolean {
-    return getDeviceActiveState(this.service)
-  }
+  public isOn = computed(() => getDeviceActiveState(this.service()))
 
-  public get brightness(): number {
-    return getBrightnessPercentage(this.service)
-  }
+  public brightness = computed(() => getBrightnessPercentage(this.service()))
 
   /**
    * Get the light color for the icon
    * Converts Matter HSV (hue 0-254, saturation 0-254) to CSS color
    */
-  public get lightColor(): string {
-    const hue = getHue(this.service)
-    const saturation = getSaturation(this.service)
+  public lightColor = computed(() => {
+    const hue = getHue(this.service())
+    const saturation = getSaturation(this.service())
 
     // Convert Matter values (0-254) to standard ranges
     const hDegrees = (hue / 254) * 360
@@ -67,5 +74,5 @@ export class ExtendedColorLightComponent {
 
     // Use HSL for CSS - full lightness for vibrant color
     return `hsl(${hDegrees}, ${sPercent}%, 50%)`
-  }
+  })
 }

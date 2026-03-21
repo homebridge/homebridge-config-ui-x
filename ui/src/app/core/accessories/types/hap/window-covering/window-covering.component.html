@@ -1,7 +1,7 @@
 <div
   class="accessory-box"
-  [class.accessory-on]="service.values.CurrentPosition"
-  [style.cursor]="readyForControl ? 'pointer' : 'default'"
+  [class.accessory-on]="service().values?.CurrentPosition"
+  [style.cursor]="readyForControl() ? 'pointer' : 'default'"
   (longClick)="onLongClick()"
   (shortClick)="onClick()"
   tabindex="0"
@@ -47,17 +47,17 @@
         />
       </svg>
     </div>
-    <div class="accessory-label mt-auto">{{ service.customName || service.serviceName }}</div>
-    @if (service.values.PositionState === 2) {
+    <div class="accessory-label mt-auto">{{ service().customName || service().serviceName }}</div>
+    @if (service().values?.PositionState === 2) {
     <div class="accessory-label grey-text">
-      @if (service.values.CurrentPosition === 0) { {{ 'accessories.control.closed' | translate }} } @if
-      (service.values.CurrentPosition > 0 && service.values.CurrentPosition < 100) { {{ 'accessories.control.open' |
-      translate }} {{ service.values.CurrentPosition }}% } @if (service.values.CurrentPosition === 100) { {{
+      @if (service().values?.CurrentPosition === 0) { {{ 'accessories.control.closed' | translate }} } @if
+      (service().values?.CurrentPosition > 0 && service().values?.CurrentPosition < 100) { {{ 'accessories.control.open'
+      | translate }} {{ service().values?.CurrentPosition }}% } @if (service().values?.CurrentPosition === 100) { {{
       'accessories.control.open' | translate }} }
     </div>
-    } @else if (service.values.PositionState === 1) {
+    } @else if (service().values?.PositionState === 1) {
     <div class="accessory-label red-text">{{ 'accessories.control.opening' | translate }}...</div>
-    } @else if (service.values.PositionState === 0) {
+    } @else if (service().values?.PositionState === 0) {
     <div class="accessory-label red-text">{{ 'accessories.control.closing' | translate }}...</div>
     }
   </div>

@@ -1,14 +1,15 @@
 import { DecimalPipe, TitleCasePipe, UpperCasePipe } from '@angular/common'
 import { HttpClient, HttpParams } from '@angular/common/http'
-import { Component, inject, Input, OnDestroy, OnInit } from '@angular/core'
+import { Component, DestroyRef, inject, input, OnInit, signal } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import dayjs from 'dayjs'
-import { interval, Subject, Subscription } from 'rxjs'
+import { interval, Subject } from 'rxjs'
 
+import { IoNamespace, WsService } from '@/app/core/communication/ws.service'
 import { ConvertTempPipe } from '@/app/core/pipes/convert-temp.pipe'
-import { SettingsService } from '@/app/core/settings.service'
-import { IoNamespace, WsService } from '@/app/core/ws.service'
-import { Widget } from '@/app/modules/status/widgets/widgets.interfaces'
+import { SettingsService } from '@/app/core/ui/settings.service'
+import { OpenWeatherMapResponse, Widget } from '@/app/modules/status/widgets/widgets.interfaces'
 import { environment } from '@/environments/environment'
 
 @Component({
@@ -22,50 +23,52 @@ import { environment } from '@/environments/environment'
     UpperCasePipe,
   ],
 })
-export class WeatherWidgetComponent implements OnInit, OnDestroy {
+export class WeatherWidgetComponent implements OnInit {
+  // Injected dependencies
+  private destroyRef = inject(DestroyRef)
   private $http = inject(HttpClient)
   private $settings = inject(SettingsService)
   private $translate = inject(TranslateService)
   private $ws = inject(WsService)
+
+  // Signals
+  widget = input.required<Widget>()
+  public currentWeather = signal<OpenWeatherMapResponse | null>(null)
+
+  // Other properties
   private io: IoNamespace
-  private intervalSubscription: Subscription
-
-  @Input() widget: Widget
-  @Input() configureEvent: Subject<any>
-
-  public currentWeather: any
   public temperatureUnits = this.$settings.env.temperatureUnits
+  configureEvent!: Subject<any> // Set directly by ComponentFactoryResolver
 
-  public ngOnInit() {
+  public ngOnInit(): void {
     this.io = this.$ws.getExistingNamespace('status')
-    this.io.connected.subscribe(async () => {
+
+    // Set up reconnection handler
+    this.io.connected.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
       this.getCurrentWeather()
     })
 
+    // Set up configure event handler
+    this.configureEvent.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+      this.getCurrentWeather()
+    })
+
+    // Set up periodic refresh
+    interval(1300000).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+      this.getCurrentWeather()
+    })
+
+    // Fetch initial data if already connected
     if (this.io.socket.connected) {
       this.getCurrentWeather()
     }
-
-    this.configureEvent.subscribe({
-      next: () => {
-        this.getCurrentWeather()
-      },
-    })
-
-    this.intervalSubscription = interval(1300000).subscribe(() => {
-      this.getCurrentWeather()
-    })
-  }
-
-  public ngOnDestroy() {
-    this.intervalSubscription.unsubscribe()
   }
 
   /**
    * Translate OpenWeatherMap icon codes into Font Awesome icons
    */
   public getWeatherIconClass(): string {
-    switch (this.currentWeather.weather[0].icon) {
+    switch (this.currentWeather()?.weather[0]?.icon) {
       case '01d': // clear day
         return 'far fa-sun'
       case '01n': // clear night
@@ -109,34 +112,38 @@ export class WeatherWidgetComponent implements OnInit, OnDestroy {
    * Get the current weather forecast from OpenWeatherMap
    * Cache for 20 minutes to prevent repeat requests
    */
-  private getCurrentWeather() {
-    if (!this.widget.location || !this.widget.location.id) {
+  private getCurrentWeather(): void {
+    if (!this.widget().location || !this.widget().location.id) {
       return
     }
 
     try {
-      const weatherCache = JSON.parse(localStorage.getItem(`weather-${this.widget.location.id}`))
-      if (weatherCache) {
-        if (dayjs().diff(dayjs(weatherCache.timestamp), 'minute') < 20) {
-          this.currentWeather = weatherCache
+      const cacheItem = localStorage.getItem(`weather-${this.widget().location.id}`)
+      if (cacheItem) {
+        const weatherCache = JSON.parse(cacheItem) as OpenWeatherMapResponse
+        if (weatherCache.timestamp && dayjs().diff(dayjs(weatherCache.timestamp), 'minute') < 20) {
+          this.currentWeather.set(weatherCache)
           return
         }
       }
     } catch (e) {}
 
-    this.$http.get('https://api.openweathermap.org/data/2.5/weather', {
+    this.$http.get<OpenWeatherMapResponse>('https://api.openweathermap.org/data/2.5/weather', {
       params: new HttpParams({
         fromObject: {
-          id: this.widget.location.id,
+          id: this.widget().location.id,
           appid: environment.owm.appid,
           units: 'metric',
           lang: this.$translate.getCurrentLang(),
         },
       }),
-    }).subscribe((data: any) => {
-      data.timestamp = new Date().toISOString()
-      this.currentWeather = data
-      localStorage.setItem(`weather-${this.widget.location.id}`, JSON.stringify(data))
+    }).subscribe((data) => {
+      const weatherData: OpenWeatherMapResponse = {
+        ...data,
+        timestamp: new Date().toISOString(),
+      }
+      this.currentWeather.set(weatherData)
+      localStorage.setItem(`weather-${this.widget().location.id}`, JSON.stringify(weatherData))
     })
   }
 }

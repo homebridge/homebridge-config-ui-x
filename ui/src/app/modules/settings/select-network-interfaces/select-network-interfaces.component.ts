@@ -1,9 +1,9 @@
-import type { NetworkAdapterAvailable, NetworkAdapterSelected } from '@/app/modules/settings/settings.interfaces'
-
-import { Component, inject, Input, OnInit } from '@angular/core'
+import { Component, inject, OnInit, signal } from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe } from '@ngx-translate/core'
+
+import { NETWORK_INTERFACES_MODAL_DATA } from '@/app/core/modal-data-tokens'
 
 @Component({
   templateUrl: './select-network-interfaces.component.html',
@@ -14,15 +14,21 @@ import { TranslatePipe } from '@ngx-translate/core'
   ],
 })
 export class SelectNetworkInterfacesComponent implements OnInit {
+  // Injected dependencies
   private $activeModal = inject(NgbActiveModal)
+  private modalData = inject(NETWORK_INTERFACES_MODAL_DATA)
+
+  // Public properties for component use
+  public adaptersAvailable = this.modalData.adaptersAvailable
+  public adaptersSelected = this.modalData.adaptersSelected
+
+  // Signals
+  public isUnchanged = signal(true)
+
+  // Other properties
   private adaptersOriginal: string[] = []
 
-  @Input() adaptersAvailable: NetworkAdapterAvailable[] = []
-  @Input() adaptersSelected: NetworkAdapterSelected[] = []
-
-  public isUnchanged = true
-
-  public ngOnInit() {
+  public ngOnInit(): void {
     // Set the `selected` property for each available adapter based on the selected adapters
     this.adaptersAvailable.forEach((adapter) => {
       adapter.selected = this.adaptersSelected.some(x => x.iface === adapter.iface)
@@ -31,23 +37,23 @@ export class SelectNetworkInterfacesComponent implements OnInit {
     this.adaptersOriginal = this.adaptersSelected.map(x => x.iface)
   }
 
-  public onAdapterSelectionChange() {
-    this.isUnchanged = this.adaptersOriginal.length === this.adaptersAvailable.filter(x => x.selected).length
-      && this.adaptersOriginal.every(original => this.adaptersAvailable.some(x => x.iface === original && x.selected))
+  public onAdapterSelectionChange(): void {
+    this.isUnchanged.set(this.adaptersOriginal.length === this.adaptersAvailable.filter(x => x.selected).length
+      && this.adaptersOriginal.every(original => this.adaptersAvailable.some(x => x.iface === original && x.selected)))
   }
 
-  public submit() {
+  public submit(): void {
     this.$activeModal.close(
       this.adaptersAvailable.filter(x => x.selected).map(x => x.iface),
     )
   }
 
-  public closeAndReset() {
+  public closeAndReset(): void {
     // Reset the selected adapters to the original state
     this.adaptersAvailable.forEach((adapter) => {
       adapter.selected = this.adaptersOriginal.includes(adapter.iface)
     })
-    this.isUnchanged = true
+    this.isUnchanged.set(true)
     this.$activeModal.dismiss('Dismiss')
   }
 }

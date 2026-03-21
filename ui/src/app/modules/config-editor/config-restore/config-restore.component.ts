@@ -1,14 +1,15 @@
 import { DatePipe } from '@angular/common'
-import { Component, inject, Input, OnInit } from '@angular/core'
+import { Component, inject, OnInit, signal } from '@angular/core'
 import { ReactiveFormsModule } from '@angular/forms'
 import { Router } from '@angular/router'
-import { NgbActiveModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap'
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal'
+import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap/tooltip'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { saveAs } from 'file-saver'
 import { ToastrService } from 'ngx-toastr'
-import { firstValueFrom } from 'rxjs'
 
-import { ApiService } from '@/app/core/api.service'
+import { ApiService } from '@/app/core/communication/api.service'
+import { CONFIG_RESTORE_MODAL_DATA } from '@/app/core/modal-data-tokens'
 import { ConfigRestoreBackup } from '@/app/modules/config-editor/config-editor.interfaces'
 
 @Component({
@@ -22,31 +23,35 @@ import { ConfigRestoreBackup } from '@/app/modules/config-editor/config-editor.i
   ],
 })
 export class ConfigRestoreComponent implements OnInit {
+  // Injected dependencies
   private $activeModal = inject(NgbActiveModal)
   private $api = inject(ApiService)
   private $router = inject(Router)
   private $toastr = inject(ToastrService)
   private $translate = inject(TranslateService)
+  private modalData = inject(CONFIG_RESTORE_MODAL_DATA)
 
-  @Input() currentConfig: string
-  @Input() fromSettings = false
+  // Public properties (from injected data)
+  public currentConfig = this.modalData.currentConfig
+  public fromSettings = this.modalData.fromSettings ?? false
 
-  public loading = true
-  public backupList: ConfigRestoreBackup[] = []
-  public clicked = false
-  public deleting: string | null = null
+  // Other signals
+  public loading = signal(true)
+  public backupList = signal<ConfigRestoreBackup[]>([])
+  public clicked = signal(false)
+  public deleting = signal<string | null>(null)
 
-  public ngOnInit() {
-    this.getConfigBackups()
+  public ngOnInit(): void {
+    void this.getConfigBackups()
   }
 
-  public async getConfigBackups() {
+  public async getConfigBackups(): Promise<void> {
     try {
-      const data = await firstValueFrom(this.$api.get('/config-editor/backups'))
-      this.loading = false
-      this.backupList = data
+      const data = await this.$api.get('/config-editor/backups')
+      this.loading.set(false)
+      this.backupList.set(data)
     } catch (error) {
-      this.loading = false
+      this.loading.set(false)
       console.error(error)
       this.$toastr.error(error.error?.message || error.message, this.$translate.instant('toast.title_error'))
       this.dismissModal()
@@ -57,23 +62,23 @@ export class ConfigRestoreComponent implements OnInit {
     return this.$activeModal.close(backupId)
   }
 
-  public async download(backupId: string) {
-    this.clicked = true
+  public async download(backupId: string): Promise<void> {
+    this.clicked.set(true)
     try {
-      const json = await firstValueFrom(this.$api.get(`/config-editor/backups/${backupId}`))
+      const json = await this.$api.get(`/config-editor/backups/${backupId}`)
       const formattedJson = JSON.stringify(json, null, 4)
       const blob = new Blob([formattedJson], { type: 'application/json' })
       const fileName = `config-backup-${backupId}.json`
       saveAs(blob, fileName)
-      this.clicked = false
+      this.clicked.set(false)
     } catch (error) {
-      this.clicked = false
+      this.clicked.set(false)
       this.$toastr.error(error.error?.message || error.message, this.$translate.instant('toast.title_error'))
       console.error(error)
     }
   }
 
-  public downloadCurrentConfig() {
+  public downloadCurrentConfig(): void {
     const dataStr = `data:text/json;charset=utf-8,${encodeURIComponent(this.currentConfig)}`
     const downloadAnchorNode = document.createElement('a')
     downloadAnchorNode.setAttribute('href', dataStr)
@@ -83,34 +88,34 @@ export class ConfigRestoreComponent implements OnInit {
     downloadAnchorNode.remove()
   }
 
-  public async delete(backupId: string) {
-    this.deleting = backupId
+  public async delete(backupId: string): Promise<void> {
+    this.deleting.set(backupId)
     try {
-      await firstValueFrom(this.$api.delete(`/config-editor/backups/${backupId}`))
+      await this.$api.delete(`/config-editor/backups/${backupId}`)
       await this.getConfigBackups()
-      this.deleting = null
+      this.deleting.set(null)
     } catch (error) {
-      this.deleting = null
+      this.deleting.set(null)
       this.$toastr.error(error.error?.message || error.message, this.$translate.instant('toast.title_error'))
       console.error(error)
     }
   }
 
-  public async deleteAllBackups() {
-    this.deleting = 'all'
+  public async deleteAllBackups(): Promise<void> {
+    this.deleting.set('all')
     try {
-      await firstValueFrom(this.$api.delete('/config-editor/backups'))
+      await this.$api.delete('/config-editor/backups')
       this.$toastr.success(this.$translate.instant('config.restore.toast_backups_deleted'), this.$translate.instant('toast.title_success'))
-      this.backupList = []
-      this.deleting = null
+      this.backupList.set([])
+      this.deleting.set(null)
     } catch (error) {
       this.$toastr.error(error.error?.message || error.message, this.$translate.instant('toast.title_error'))
       console.error(error)
-      this.deleting = null
+      this.deleting.set(null)
     }
   }
 
-  public dismissModal() {
+  public dismissModal(): void {
     if (this.fromSettings) {
       void this.$router.navigate(['/settings'])
     }

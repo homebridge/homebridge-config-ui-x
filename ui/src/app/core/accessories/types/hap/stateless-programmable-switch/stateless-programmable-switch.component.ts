@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core'
+import { Component, input } from '@angular/core'
 import { TranslatePipe } from '@ngx-translate/core'
 
 import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
@@ -11,5 +11,5 @@ import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
   imports: [TranslatePipe],
 })
 export class StatelessProgrammableSwitchComponent {
-  @Input() public service: ServiceTypeX
+  public service = input.required<ServiceTypeX>()
 }

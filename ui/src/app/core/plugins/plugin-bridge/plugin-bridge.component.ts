@@ -1,0 +1,1226 @@
+import type { DeviceInfo } from '@/app/core/plugins/manage-plugins.interfaces'
+import type { BridgeConfig } from '@/app/core/settings.interfaces'
+
+import type { PluginBridgeAccessoryLink, PluginBridgeDeleteBridge, PluginBridgeMatterBridge } from './plugin-bridge.interfaces'
+
+import { Component, inject, OnInit, signal } from '@angular/core'
+import { FormsModule } from '@angular/forms'
+import { Router } from '@angular/router'
+import { NgbAlert } from '@ng-bootstrap/ng-bootstrap/alert'
+import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
+import { TranslatePipe, TranslateService } from '@ngx-translate/core'
+import { ToastrService } from 'ngx-toastr'
+
+import { ApiService } from '@/app/core/communication/api.service'
+import { QrcodeComponent } from '@/app/core/components/qrcode/qrcode.component'
+import { RestartHomebridgeComponent } from '@/app/core/components/restart-homebridge/restart-homebridge.component'
+import { PLUGIN_BRIDGE_MODAL_DATA } from '@/app/core/modal-data-tokens'
+import { Plugin } from '@/app/core/plugins/manage-plugins.interfaces'
+import { ManagePluginsService } from '@/app/core/plugins/manage-plugins.service'
+import {
+  RE_COLON,
+  RE_CONSECUTIVE_DASHES,
+  RE_HAP_NAME_PATTERN,
+  RE_INVALID_HAP_NAME_CHARS,
+  RE_LEADING_TRAILING_DASH,
+  RE_LEADING_TRAILING_NON_ALNUM_UNICODE,
+  RE_LEADING_TRAILING_SPACE_APOSTROPHE,
+  RE_NON_ALNUM,
+} from '@/app/core/regex.constants'
+import { SettingsService } from '@/app/core/ui/settings.service'
+
+@Component({
+  templateUrl: './plugin-bridge.component.html',
+  styleUrls: ['./plugin-bridge.component.scss'],
+  standalone: true,
+  imports: [
+    FormsModule,
+    NgbAlert,
+    QrcodeComponent,
+    TranslatePipe,
+  ],
+})
+export class PluginBridgeComponent implements OnInit {
+  // 1. Injected Dependencies
+  private $activeModal = inject(NgbActiveModal)
+  private $api = inject(ApiService)
+  private $modal = inject(NgbModal)
+  private $plugin = inject(ManagePluginsService)
+  private $router = inject(Router)
+  private $settings = inject(SettingsService)
+  private $toastr = inject(ToastrService)
+  private $translate = inject(TranslateService)
+  private modalData = inject(PLUGIN_BRIDGE_MODAL_DATA)
+
+  // 2. Public properties (from injected data)
+  public plugin = this.modalData.plugin
+  public schema = this.modalData.schema
+  public justInstalled = this.modalData.justInstalled ?? false
+
+  // 3. Signals
+  public loading = signal(true)
+  public canConfigure = signal(true)
+  public saveInProgress = signal(false)
+  public configBlocks = signal<any[]>([])
+  public selectedBlock = signal<string>('0')
+  public isPlatform = signal<boolean>(false)
+  public enabledBlocks = signal<Record<number, boolean>>({})
+  public matterEnabledBlocks = signal<Record<number, boolean>>({})
+
+  // 6. Other Properties
+  private matterExplicitlyDisabledBeforeChildBridge: Set<number> = new Set()
+  private bridgeConfigs = new Map<string, BridgeConfig>()
+  private originalScheduledRestartCrons = new Map<string, string | null>()
+  private originalHideAlerts = new Map<string, { hideHapAlert?: boolean, hideMatterAlert?: boolean }>()
+  public bridgeCache = signal<Map<number, Record<string, any>>>(new Map())
+  public originalBridges = signal<any[]>([])
+  public deviceInfo = signal<Map<string, DeviceInfo | false>>(new Map())
+  public matterBridgeCache = signal<Map<number, Record<string, any>>>(new Map())
+  public originalMatterBridges = signal<any[]>([])
+  public matterDeviceInfo = signal<Map<string, any>>(new Map())
+  public deleteMatterBridges = signal<PluginBridgeMatterBridge[]>([])
+  public canShowBridgeDebug = signal<boolean>(false)
+  public deleteBridges = signal<PluginBridgeDeleteBridge[]>([])
+  public deletingPairedBridge = signal<boolean>(false)
+  public accessoryBridgeLinks = signal<PluginBridgeAccessoryLink[]>([])
+  public bridgesAvailableForLink = signal<PluginBridgeAccessoryLink[]>([])
+  public currentlySelectedLink = signal<PluginBridgeAccessoryLink | null>(null)
+  public currentBridgeHasLinks = signal<boolean>(false)
+  public isMatterSupported = this.$settings.isFeatureEnabled('matterSupport')
+  public readonly defaultIcon = 'assets/hb-icon.png'
+  public readonly linkChildBridges = '<a href="https://github.com/homebridge/homebridge/wiki/Child-Bridges" target="_blank"><i class="fas fa-external-link-alt primary-text"></i></a>'
+  public readonly linkDebug = '<a href="https://github.com/homebridge/homebridge-config-ui-x/wiki/Debug-Common-Values" target="_blank"><i class="fa fa-external-link-alt primary-text"></i></a>'
+  public readonly linkCron = '<a href="https://crontab.guru/" target="_blank" rel="noopener noreferrer"><i class="fa fa-external-link-alt primary-text"></i></a>'
+
+  // 7. Lifecycle Hooks
+  public ngOnInit(): void {
+    void this.initialize()
+  }
+
+  // 8. Public Methods
+  public handleIconError(): void {
+    if (this.plugin) {
+      this.plugin.icon = this.defaultIcon
+    }
+  }
+
+  public onBlockChange(index: string): void {
+    this.selectedBlock.set(index)
+    const configBlocks = this.configBlocks()
+    const enabledBlocks = this.enabledBlocks()
+
+    this.currentlySelectedLink.set(this.accessoryBridgeLinks().find(link => link.index === index) || null)
+    this.currentBridgeHasLinks.set(this.accessoryBridgeLinks().some(link => link.usesIndex === index))
+
+    // Build bridges available for link
+    const availableBridges: PluginBridgeAccessoryLink[] = []
+
+    // Bridges available for link can only be accessory blocks
+    if (configBlocks[Number(index)].accessory) {
+      for (const [i, bridge] of this.bridgeCache().entries()) {
+        // Only include bridges that are enabled and not marked for deletion
+        if (enabledBlocks[i] && !this.deleteBridges().some(b => b.id === bridge.username)) {
+          if (i < Number(index)) {
+            availableBridges.push({
+              index: i.toString(),
+              usesIndex: index,
+              name: bridge.name,
+              port: bridge.port,
+              username: bridge.username,
+            })
+          }
+        }
+      }
+    }
+
+    this.bridgesAvailableForLink.set(availableBridges)
+  }
+
+  public onLinkBridgeChange(username: string): void {
+    if (username) {
+      const configBlocks = this.configBlocks()
+      const selectedBlock = this.selectedBlock()
+
+      // Get the index of the first block in the config with this bridge username
+      const index = configBlocks.findIndex(block => block._bridge?.username === username)
+
+      // Update the accessoryBridgeLinks
+      this.accessoryBridgeLinks.update(current => [...current, {
+        index: selectedBlock,
+        usesIndex: index.toString(),
+        name: this.bridgeCache().get(index)?.name,
+        port: this.bridgeCache().get(index)?.port,
+        username,
+      }])
+
+      // Update currently selected link
+      this.currentlySelectedLink.set(this.accessoryBridgeLinks().find(link => link.index === selectedBlock) || null)
+      this.enabledBlocks.update(current => ({ ...current, [Number(selectedBlock)]: true }))
+
+      // Update this block with the bridge details
+      const block = configBlocks[Number(selectedBlock)]
+      block._bridge = {
+        username,
+      }
+    }
+  }
+
+  // 9. Private Methods
+  private async initialize(): Promise<void> {
+    try {
+      await Promise.all([this.getPluginType(), this.loadPluginConfig(), this.loadBridgeConfigs()])
+      this.canShowBridgeDebug.set(this.$settings.isFeatureEnabled('childBridgeDebugMode'))
+    } catch (error) {
+      console.error('Failed to initialize:', error)
+      const message = error instanceof Error ? error.message : 'Failed to initialize component'
+      this.$toastr.error(message, this.$translate.instant('toast.title_error'))
+    } finally {
+      this.loading.set(false)
+    }
+  }
+
+  private async getPluginType(): Promise<void> {
+    const plugin = this.plugin
+    if (!plugin) {
+      return
+    }
+
+    try {
+      const alias = await this.$api.get(`/plugins/alias/${encodeURIComponent(plugin.name)}`)
+      this.isPlatform.set(alias.pluginType === 'platform')
+    } catch (error) {
+      console.error(error)
+      const message = error instanceof Error ? error.message : 'Failed to load plugin type'
+      this.$toastr.error(message, this.$translate.instant('toast.title_error'))
+      this.$activeModal.close()
+    }
+  }
+
+  private async loadPluginConfig(): Promise<void> {
+    const plugin = this.plugin
+    if (!plugin) {
+      return
+    }
+
+    try {
+      const loadedConfigBlocks = await this.$api.get(`/config-editor/plugin/${encodeURIComponent(plugin.name)}`)
+      this.configBlocks.set(loadedConfigBlocks)
+
+      for (const [i, block] of loadedConfigBlocks.entries()) {
+        if (block._bridge) {
+          this.enabledBlocks.update(current => ({ ...current, [i]: true }))
+        }
+
+        if (block._bridge && block._bridge.username) {
+          // For accessory plugin blocks, the username might be the same as a previous block
+          const existingBridgeEntry = [...this.bridgeCache().entries()].find(([, bridge]) => bridge.username === block._bridge.username)
+          const existingBridgeIndex = existingBridgeEntry ? existingBridgeEntry[0] : -1
+          const existingBridge = existingBridgeEntry ? existingBridgeEntry[1] : undefined
+          if (existingBridge) {
+            block._bridge.env = {}
+            this.accessoryBridgeLinks.update(current => [...current, {
+              index: i.toString(),
+              usesIndex: existingBridgeIndex.toString(),
+              name: existingBridge.name,
+              port: existingBridge.port,
+              username: block._bridge.username,
+            }])
+          } else {
+            block._bridge.env = block._bridge.env || {}
+            this.bridgeCache.update(current => new Map(current).set(i, block._bridge))
+            await this.getDeviceInfo(block._bridge.username)
+
+            // If the bridge does not have a name in the config, then override it from the pairing
+            if (!block._bridge.name) {
+              const info = this.deviceInfo().get(block._bridge.username)
+              if (info) {
+                block._bridge.name = info.displayName
+              }
+            }
+            // Deep clone the bridge config to track original state
+            this.originalBridges.update(current => [...current, JSON.parse(JSON.stringify(block._bridge))])
+          }
+        }
+
+        // Check for Matter bridge configuration
+        // Matter is enabled if the matter object exists (not null/undefined)
+        if (block._bridge && block._bridge.matter) {
+          // Matter is only supported for platform-based plugins
+          if (block.accessory) {
+            // Strip Matter config from accessory-based plugins
+            delete block._bridge.matter
+          } else {
+            this.matterEnabledBlocks.update(current => ({ ...current, [i]: true }))
+
+            // Only cache port - name is now shared at _bridge level
+            this.matterBridgeCache.update(current => new Map(current).set(i, { port: block._bridge.matter.port }))
+            this.originalMatterBridges.update(current => [...current, { port: block._bridge.matter.port }])
+            // Use username as key, just like HAP
+            if (block._bridge.username) {
+              await this.getMatterCommissioningInfo(block._bridge.username)
+            }
+          }
+        }
+      }
+
+      // If the plugin has just been installed, and there are no existing bridges, enable all blocks
+      if (this.justInstalled && this.bridgeCache().size === 0) {
+        loadedConfigBlocks.forEach((block, index) => {
+          this.enabledBlocks.update(current => ({ ...current, [index]: true }))
+          void this.toggleExternalBridge(block, true, index.toString())
+        })
+      }
+
+      // Check if the currently selected bridge has any links
+      const currentBridgeLinks = this.accessoryBridgeLinks().find(link => link.username === this.bridgeCache().get(Number(this.selectedBlock()))?.username)
+      if (currentBridgeLinks) {
+        this.currentBridgeHasLinks.set(true)
+      }
+
+      // Initialize the currently selected link
+      const selectedBlock = this.selectedBlock()
+      const enabledBlocks = this.enabledBlocks()
+      this.currentlySelectedLink.set(this.accessoryBridgeLinks().find(link => link.index === selectedBlock) || null)
+
+      // Initialize bridges available for link
+      const availableBridges: PluginBridgeAccessoryLink[] = []
+      if (loadedConfigBlocks[Number(selectedBlock)]?.accessory) {
+        for (const [i, bridge] of this.bridgeCache().entries()) {
+          if (enabledBlocks[i] && !this.deleteBridges().some(b => b.id === bridge.username)) {
+            if (i < Number(selectedBlock)) {
+              availableBridges.push({
+                index: i.toString(),
+                usesIndex: selectedBlock,
+                name: bridge.name,
+                port: bridge.port,
+                username: bridge.username,
+              })
+            }
+          }
+        }
+      }
+      this.bridgesAvailableForLink.set(availableBridges)
+    } catch (error) {
+      this.canConfigure.set(false)
+      console.error(error)
+    }
+  }
+
+  public async toggleExternalBridge(block: any, enable: boolean, index: string): Promise<void> {
+    const plugin = this.plugin
+    if (!plugin) {
+      return
+    }
+    if (enable) {
+      const bridgeCache = this.bridgeCache().get(Number(index))
+      const matterCache = this.matterBridgeCache().get(Number(index))
+
+      // Always create HAP bridge configuration when HAP toggle is enabled
+      block._bridge = {
+        username: bridgeCache ? bridgeCache.username : this.generateUsername(),
+        port: await this.getUnusedPort(),
+        name: bridgeCache?.name || this.sanitizeBridgeName(plugin.displayName || plugin.name),
+        model: bridgeCache?.model,
+        manufacturer: bridgeCache?.manufacturer,
+        firmwareRevision: bridgeCache?.firmwareRevision,
+        debugModeEnabled: bridgeCache?.debugModeEnabled,
+        env: bridgeCache?.env || {},
+      }
+
+      // Restore Matter configuration if it was previously cached (cached means it was enabled before disabling)
+      // BUT only if the user didn't explicitly disable Matter before disabling the child bridge
+      if (matterCache && !this.matterExplicitlyDisabledBeforeChildBridge.has(Number(index))) {
+        // Only restore port - name is shared at _bridge level
+        // Use cached port if available, otherwise get a new Matter port
+        block._bridge.matter = {
+          port: matterCache.port ?? await this.getUnusedMatterPort(),
+        }
+
+        // Also restore the enabled state
+        this.matterEnabledBlocks.update(current => ({ ...current, [Number(index)]: true }))
+
+        // Restore Matter commissioning info
+        if (block._bridge.username) {
+          // Check if this bridge was originally enabled (has existing commissioning info on backend)
+          const wasOriginallyEnabled = this.originalMatterBridges().some(m =>
+            m.port === matterCache.port,
+          )
+
+          if (wasOriginallyEnabled) {
+            // Fetch full commissioning info from backend since it still exists
+            await this.getMatterCommissioningInfo(block._bridge.username)
+          } else {
+            // New Matter bridge - set partial commissioning info with allocated port
+            // No setupUri triggers "restart homebridge" message in template
+            this.matterDeviceInfo.update(current => new Map(current).set(block._bridge.username, { port: matterCache.port } as any))
+          }
+        }
+
+        // Remove from Matter deletion list since we're restoring it
+        if (block._bridge.username) {
+          const identifier = block._bridge.username.replace(RE_NON_ALNUM, '-').replace(RE_CONSECUTIVE_DASHES, '-').replace(RE_LEADING_TRAILING_DASH, '')
+          this.deleteMatterBridges.update(current => current.filter(b => b.identifier !== identifier))
+        }
+      }
+
+      if (this.deleteBridges().some(b => b.id === block._bridge.username)) {
+        this.deleteBridges.update(current => current.filter(b => b.id !== block._bridge.username))
+      }
+
+      // Clean up the tracking flag
+      this.matterExplicitlyDisabledBeforeChildBridge.delete(Number(index))
+
+      this.bridgeCache.update(current => new Map(current).set(Number(index), block._bridge))
+      await this.getDeviceInfo(block._bridge.username)
+
+      // Set enabled state to true
+      this.enabledBlocks.update(current => ({ ...current, [Number(index)]: true }))
+    } else {
+      // Set enabled state to false
+      this.enabledBlocks.update(current => ({ ...current, [Number(index)]: false }))
+
+      // Cache Matter configuration before deleting if Matter is enabled
+      if (block._bridge?.matter && this.matterEnabledBlocks()[Number(index)]) {
+        // Only cache port - name is shared at _bridge level
+        this.matterBridgeCache.update(current => new Map(current).set(Number(index), {
+          port: block._bridge.matter.port,
+        }))
+      }
+
+      // Check for linked bridges
+      if (this.accessoryBridgeLinks().some(link => link.index === index)) {
+        this.accessoryBridgeLinks.update(current => current.filter(link => link.index !== index))
+        this.currentlySelectedLink.set(null)
+      } else {
+        // Store unused child bridge id for deletion, so no bridges are orphaned
+        const originalBridge = this.originalBridges().find(b => b.username === block._bridge.username)
+        if (originalBridge) {
+          // Avoid duplicates
+          if (!this.deleteBridges().some(b => b.id === block._bridge.username)) {
+            const info = this.deviceInfo().get(block._bridge.username)
+            this.deleteBridges.update(current => [...current, {
+              id: block._bridge.username,
+              bridgeName: block._bridge.name || originalBridge.displayName,
+              paired: info ? info._isPaired : false,
+            }])
+          }
+        }
+
+        // Check if Matter was already disabled by the user before we disabled the child bridge
+        if (block._bridge?.username) {
+          const identifier = block._bridge.username.replace(RE_NON_ALNUM, '-').replace(RE_CONSECUTIVE_DASHES, '-').replace(RE_LEADING_TRAILING_DASH, '')
+          const matterAlreadyDisabled = this.deleteMatterBridges().some(b => b.identifier === identifier)
+
+          if (matterAlreadyDisabled) {
+            // User explicitly disabled Matter before disabling child bridge
+            // Track this so we don't restore Matter when re-enabling child bridge
+            this.matterExplicitlyDisabledBeforeChildBridge.add(Number(index))
+          }
+        }
+
+        // Also mark Matter for deletion if it was originally enabled AND not already in deletion list
+        if (block._bridge?.matter && block._bridge.username) {
+          const wasOriginallyEnabled = this.originalMatterBridges().some(m =>
+            m.port === block._bridge.matter.port,
+          )
+
+          if (wasOriginallyEnabled) {
+            const identifier = block._bridge.username.replace(RE_NON_ALNUM, '-').replace(RE_CONSECUTIVE_DASHES, '-').replace(RE_LEADING_TRAILING_DASH, '')
+            // Avoid duplicates
+            if (!this.deleteMatterBridges().some(b => b.identifier === identifier)) {
+              // Store name before deleting block._bridge
+              const name = block._bridge.name || plugin.displayName || plugin.name
+              this.deleteMatterBridges.update(current => [...current, {
+                username: block._bridge.username,
+                identifier,
+                name,
+              }])
+            }
+          }
+        }
+      }
+
+      // Also disable the Matter toggle state when disabling the child bridge
+      this.matterEnabledBlocks.update(current => ({ ...current, [Number(index)]: false }))
+
+      delete block._bridge
+    }
+
+    // Figure out if we are deleting at least one paired bridge
+    this.deletingPairedBridge.set(this.deleteBridges().some(b => b.paired))
+  }
+
+  /**
+   * Check if any validation errors exist across all enabled bridges
+   */
+  public get hasValidationErrors(): boolean {
+    const configBlocks = this.configBlocks()
+    const enabledBlocks = this.enabledBlocks()
+
+    for (const [index, block] of configBlocks.entries()) {
+      if (enabledBlocks[index] && block._bridge?.username) {
+        if (this.getHapNameValidationError(index.toString()) || this.getHapPortValidationError(index.toString())) {
+          return true
+        }
+      }
+    }
+    return false
+  }
+
+  private async getUnusedPort() {
+    try {
+      const lookup = await this.$api.get('/server/port/new')
+      return lookup.port
+    } catch (e) {
+      return Math.floor(Math.random() * (60000 - 30000 + 1) + 30000)
+    }
+  }
+
+  private async getUnusedMatterPort() {
+    try {
+      const lookup = await this.$api.get('/server/port/new/matter')
+      return lookup.port
+    } catch (e) {
+      // Fallback to Matter port range if API call fails
+      return Math.floor(Math.random() * (5541 - 5530 + 1) + 5530)
+    }
+  }
+
+  private async getDeviceInfo(username: string) {
+    try {
+      const data = await this.$api.get(`/server/pairings/${username.replace(RE_COLON, '')}`)
+      this.deviceInfo.update(current => new Map(current).set(username, data))
+    } catch (error) {
+      console.error(error)
+      this.deviceInfo.update(current => new Map(current).set(username, false))
+    }
+  }
+
+  /**
+   * Sanitize a bridge name to comply with HAP name validation rules
+   * Removes invalid characters and ensures name starts/ends with letter or number
+   */
+  private sanitizeBridgeName(name: string): string {
+    if (!name) {
+      return name
+    }
+
+    // Remove any characters that aren't letters, numbers, spaces, or apostrophes
+    let sanitized = name.replace(RE_INVALID_HAP_NAME_CHARS, '')
+
+    // Remove leading/trailing spaces and apostrophes
+    sanitized = sanitized.replace(RE_LEADING_TRAILING_SPACE_APOSTROPHE, '')
+
+    // Ensure it starts and ends with letter or number by removing invalid start/end chars
+    sanitized = sanitized.replace(RE_LEADING_TRAILING_NON_ALNUM_UNICODE, '')
+
+    return sanitized
+  }
+
+  private async getMatterCommissioningInfo(username: string) {
+    try {
+      // Get all child bridges from the status endpoint
+      const childBridges = await this.$api.get('/status/homebridge/child-bridges')
+
+      // Find the bridge matching this username
+      const bridge = childBridges.find((b: any) => b.username === username)
+
+      if (bridge && bridge.matterSetupUri) {
+        // Store the Matter commissioning info
+        this.matterDeviceInfo.update(current => new Map(current).set(username, {
+          setupUri: bridge.matterSetupUri,
+          pin: bridge.matterPin,
+          serialNumber: bridge.matterSerialNumber,
+          commissioned: bridge.matterCommissioned,
+          deviceCount: bridge.matterDeviceCount,
+          port: bridge.matterConfig?.port,
+        }))
+      } else {
+        // Bridge found but Matter not yet started, or QR code not available yet
+        // Set partial info so template knows to wait for restart
+        this.matterDeviceInfo.update(current => new Map(current).set(username, {
+          port: bridge?.matterConfig?.port,
+        } as any))
+      }
+    } catch (error) {
+      console.error(error)
+      // Set empty object so restart placeholder shows (instead of null which breaks template conditions)
+      this.matterDeviceInfo.update(current => new Map(current).set(username, {} as any))
+    }
+  }
+
+  public async toggleMatterBridge(block: any, enable: boolean, index: string): Promise<void> {
+    const plugin = this.plugin
+    if (!plugin) {
+      return
+    }
+
+    // Matter is only supported for platform-based plugins
+    if (block.accessory) {
+      this.matterEnabledBlocks.update(current => ({ ...current, [Number(index)]: false }))
+      return
+    }
+
+    if (enable) {
+      // Set enabled state to true
+      this.matterEnabledBlocks.update(current => ({ ...current, [Number(index)]: true }))
+
+      const matterCache = this.matterBridgeCache().get(Number(index))
+
+      // Create _bridge object if it doesn't exist (Matter-only case)
+      if (!block._bridge) {
+        block._bridge = {
+          env: {},
+        }
+      }
+
+      // Determine port for first-time enablement or restore from cache
+      let port: number | undefined
+
+      if (matterCache?.port) {
+        // Restore from cache
+        port = matterCache.port
+      } else {
+        // First time enabling - allocate a new Matter port
+        port = await this.getUnusedMatterPort()
+      }
+
+      // Only store port in matter config - name is now shared at _bridge level
+      block._bridge.matter = {
+        port,
+      }
+
+      // Update cache with current values (only port)
+      this.matterBridgeCache.update(current => new Map(current).set(Number(index), { port }))
+
+      // If this was marked for deletion, remove it from the delete list
+      if (block._bridge.username) {
+        const identifier = block._bridge.username.replace(RE_NON_ALNUM, '-').replace(RE_CONSECUTIVE_DASHES, '-').replace(RE_LEADING_TRAILING_DASH, '')
+        this.deleteMatterBridges.update(current => current.filter(b => b.identifier !== identifier))
+
+        // Also clear the "explicitly disabled" tracking flag since user is now enabling Matter
+        this.matterExplicitlyDisabledBeforeChildBridge.delete(Number(index))
+
+        // Check if this bridge was originally enabled (has existing commissioning info on backend)
+        const wasOriginallyEnabled = this.originalMatterBridges().some(m =>
+          m.port === port,
+        )
+
+        if (wasOriginallyEnabled) {
+          // Fetch full commissioning info from backend since it still exists
+          await this.getMatterCommissioningInfo(block._bridge.username)
+        } else {
+          // New Matter bridge - set partial commissioning info with allocated port
+          // No setupUri triggers "restart homebridge" message in template
+          this.matterDeviceInfo.update(current => new Map(current).set(block._bridge.username, { port } as any))
+        }
+      }
+    } else {
+      // Set enabled state to false
+      this.matterEnabledBlocks.update(current => ({ ...current, [Number(index)]: false }))
+
+      // Track for deletion if this was originally enabled
+      const wasOriginallyEnabled = this.originalMatterBridges().some(m =>
+        block._bridge?.matter && m.port === block._bridge.matter.port,
+      )
+
+      // Cache the current values before deleting (for potential restore) - only port
+      if (block._bridge && block._bridge.matter) {
+        this.matterBridgeCache.update(current => new Map(current).set(Number(index), {
+          port: block._bridge.matter.port,
+        }))
+        delete block._bridge.matter
+      }
+
+      // Clear commissioning info when disabling
+      if (block._bridge?.username) {
+        this.matterDeviceInfo.update(current => new Map(current).set(block._bridge.username, null))
+
+        if (wasOriginallyEnabled) {
+          // Sanitize username to create identifier (same logic as backend)
+          const identifier = block._bridge.username.replace(RE_NON_ALNUM, '-').replace(RE_CONSECUTIVE_DASHES, '-').replace(RE_LEADING_TRAILING_DASH, '')
+          // Get name from block._bridge (still available at this point)
+          const name = block._bridge.name || plugin.displayName || plugin.name
+          this.deleteMatterBridges.update(current => [...current, {
+            username: block._bridge.username,
+            identifier,
+            name,
+          }])
+        }
+      }
+
+      // Clean up if _bridge is now empty
+      if (block._bridge && Object.keys(block._bridge).length === 0) {
+        delete block._bridge
+      }
+    }
+  }
+
+  public getMatterPortValidationError(index: string): boolean {
+    const block = this.configBlocks()[Number(index)]
+    const port = block._bridge?.matter?.port
+
+    if (!port && port !== 0) {
+      return false // Empty is valid (optional)
+    }
+
+    if (typeof port !== 'number' || !Number.isInteger(port) || port < 1024 || port > 65535) {
+      return true
+    }
+
+    // Check for reserved ports
+    if ([5353, 8080, 8443].includes(port)) {
+      return true
+    }
+
+    // Check if Matter port conflicts with HAP port on same bridge
+    const hapPort = block._bridge?.port
+    return hapPort && port === hapPort
+  }
+
+  public getHapNameValidationError(index: string): boolean {
+    const block = this.configBlocks()[Number(index)]
+    if (!block._bridge?.name) {
+      return false // Empty is valid
+    }
+
+    const name = block._bridge.name
+    // HAP name validation: must start and end with letter/number, can contain letters, numbers, spaces, and apostrophes
+    // https://github.com/homebridge/HAP-NodeJS/blob/ee41309fd9eac383cdcace39f4f6f6a3d54396f3/src/lib/util/checkName.ts#L12
+    return !RE_HAP_NAME_PATTERN.test(name)
+  }
+
+  public getHapPortValidationError(index: string): boolean {
+    const configBlocks = this.configBlocks()
+    const enabledBlocks = this.enabledBlocks()
+    const block = configBlocks[Number(index)]
+    const port = block._bridge?.port
+
+    if (!port && port !== 0) {
+      return false // Empty is valid (optional - will be auto-allocated)
+    }
+
+    if (typeof port !== 'number' || !Number.isInteger(port) || port < 1025 || port > 65533) {
+      return true
+    }
+
+    // Check for port conflicts with other enabled bridges
+    for (const [i, otherBlock] of configBlocks.entries()) {
+      if (i.toString() !== index && enabledBlocks[i] && otherBlock._bridge?.port === port) {
+        return true
+      }
+    }
+
+    // Check if HAP port conflicts with Matter port on same bridge
+    const matterPort = block._bridge?.matter?.port
+    return matterPort && port === matterPort
+  }
+
+  private normalizeMatterConfig(block: any): void {
+    if (block._bridge?.matter) {
+      // Normalize port: convert empty/null to undefined
+      if (!block._bridge.matter.port && block._bridge.matter.port !== 0) {
+        block._bridge.matter.port = undefined
+      }
+
+      // If port is undefined, remove the matter config
+      if (block._bridge.matter.port === undefined) {
+        delete block._bridge.matter
+      }
+    }
+  }
+
+  public async save(): Promise<void> {
+    const plugin = this.plugin
+    if (!plugin) {
+      return
+    }
+
+    this.saveInProgress.set(true)
+
+    try {
+      const configBlocks = this.configBlocks()
+      const matterEnabledBlocks = this.matterEnabledBlocks()
+
+      // Validate HAP and Matter configs before saving
+      for (const [index, block] of configBlocks.entries()) {
+        // HAP validation
+        if (block._bridge?.username) {
+          if (this.getHapNameValidationError(index.toString())) {
+            this.$toastr.error(
+              this.$translate.instant('plugins.bridge.name_error'),
+              this.$translate.instant('toast.title_error'),
+            )
+            this.saveInProgress.set(false)
+            return
+          }
+
+          if (this.getHapPortValidationError(index.toString())) {
+            this.$toastr.error(
+              this.$translate.instant('plugins.bridge.port_error', {
+                type: 'HAP',
+              }),
+              this.$translate.instant('toast.title_error'),
+            )
+            this.saveInProgress.set(false)
+            return
+          }
+        }
+
+        // Matter validation (for both Matter-only and HAP+Matter)
+        if (matterEnabledBlocks[index]) {
+          if (this.getMatterPortValidationError(index.toString())) {
+            this.$toastr.error(
+              this.$translate.instant('plugins.bridge.port_error', {
+                type: 'Matter',
+              }),
+              this.$translate.instant('toast.title_error'),
+            )
+            this.saveInProgress.set(false)
+            return
+          }
+        }
+
+        // Normalize the matter config (trim strings, remove empty values)
+        this.normalizeMatterConfig(block)
+      }
+
+      await this.$api.post(`/config-editor/plugin/${encodeURIComponent(plugin.name)}`, configBlocks)
+
+      // Delete unused bridges, so no bridges are orphaned
+      for (const bridge of this.deleteBridges()) {
+        try {
+          await this.$api.delete(`/server/pairings/${bridge.id.replace(RE_COLON, '')}`)
+        } catch (error) {
+          console.error(error)
+          this.$toastr.error(this.$translate.instant('settings.reset_bridge.error'), this.$translate.instant('toast.title_error'))
+        }
+      }
+
+      // Delete unused Matter bridges (storage cleanup)
+      // Skip bridges that were already deleted via the HAP pairing endpoint above (it deletes Matter info too)
+      const matterBridgesToDelete = this.deleteMatterBridges().filter(
+        mb => !this.deleteBridges().some(b => b.id === mb.username),
+      )
+      for (const matterBridge of matterBridgesToDelete) {
+        try {
+          const deviceId = matterBridge.username.replace(RE_COLON, '')
+          await this.$api.delete(`/server/pairings/${deviceId}/matter`)
+        } catch (error) {
+          console.error(error)
+          this.$toastr.error(this.$translate.instant('settings.reset_bridge.error'), this.$translate.instant('toast.title_error'))
+        }
+      }
+
+      // Check what has changed
+      const cronHasChanged = this.hasScheduledRestartCronChanged()
+      const hideAlertsChanged = this.hasHideAlertsChanged()
+      const bridgeConfigChanged = this.hasBridgeConfigChanged()
+      const bridgesDeleted = this.deleteBridges().length > 0 || this.deleteMatterBridges().length > 0
+      const nothingChanged = !cronHasChanged && !hideAlertsChanged && !bridgeConfigChanged && !bridgesDeleted
+      const onlyHideAlertsChanged = hideAlertsChanged && !cronHasChanged && !bridgeConfigChanged && !bridgesDeleted
+
+      // Save hide alert settings only for bridges that changed and are not being deleted
+      for (const [username, bridgeConfig] of this.bridgeConfigs.entries()) {
+        // Skip bridges that are being deleted
+        if (this.deleteBridges().some(b => b.id === username)) {
+          continue
+        }
+
+        const original = this.originalHideAlerts.get(username)
+
+        const currentHapAlert = !!bridgeConfig.hideHapAlert
+        const currentMatterAlert = !!bridgeConfig.hideMatterAlert
+
+        // If no original, treat as false (default for new bridges)
+        const originalHapAlert = original ? !!original.hideHapAlert : false
+        const originalMatterAlert = original ? !!original.hideMatterAlert : false
+
+        try {
+          // Save hideHapAlert only if changed
+          if (currentHapAlert !== originalHapAlert) {
+            await this.saveHideAlert(username, 'hap', currentHapAlert)
+          }
+
+          // Save hideMatterAlert only if changed
+          if (currentMatterAlert !== originalMatterAlert) {
+            await this.saveHideAlert(username, 'matter', currentMatterAlert)
+          }
+        } catch (error) {
+          console.error(error)
+        }
+      }
+
+      // Save scheduled restart cron only for bridges that changed and are not being deleted
+      for (const [username, bridgeConfig] of this.bridgeConfigs.entries()) {
+        // Skip bridges that are being deleted
+        if (this.deleteBridges().some(b => b.id === username)) {
+          continue
+        }
+
+        const currentValue = bridgeConfig.scheduledRestartCron || null
+        const originalValue = this.originalScheduledRestartCrons.get(username) || null
+
+        // Normalize empty strings to null for comparison
+        const normalizedCurrent = currentValue === '' ? null : currentValue
+        const normalizedOriginal = originalValue === '' ? null : originalValue
+
+        if (normalizedCurrent !== normalizedOriginal) {
+          try {
+            await this.saveScheduledRestartCron(username, normalizedCurrent)
+          } catch (error) {
+            console.error(error)
+          }
+        }
+      }
+
+      // Set full service restart flag if cron changed
+      if (cronHasChanged) {
+        try {
+          await this.$api.put('/platform-tools/hb-service/set-full-service-restart-flag', {})
+        } catch (error) {
+          console.error(error)
+        }
+      }
+
+      // Close modal without restart if nothing changed
+      if (nothingChanged) {
+        this.$activeModal.close()
+      } else if (onlyHideAlertsChanged) {
+        // Close modal with 'refresh' result if only hide alerts changed
+        this.$activeModal.close('refresh')
+      } else {
+        // Show restart modal for any other changes
+        this.$activeModal.close()
+        this.$modal.open(RestartHomebridgeComponent, {
+          size: 'lg',
+          backdrop: 'static',
+        })
+      }
+    } catch (error) {
+      console.error(error)
+      const message = error instanceof Error ? error.message : 'Failed to save configuration'
+      this.$toastr.error(message, this.$translate.instant('toast.title_error'))
+    } finally {
+      this.saveInProgress.set(false)
+    }
+  }
+
+  public openPluginConfig(): void {
+    const plugin = this.plugin
+    if (!plugin) {
+      return
+    }
+
+    // Close the existing modal
+    this.$activeModal.close()
+
+    // Open the plugin config modal
+    void this.$plugin.settings({
+      name: plugin.name,
+      settingsSchema: true,
+      links: {},
+    } as Plugin)
+  }
+
+  private generateUsername() {
+    const hexDigits = '0123456789ABCDEF'
+    let username = '0E:'
+    for (let i = 0; i < 5; i += 1) {
+      username += hexDigits.charAt(Math.round(Math.random() * 15))
+      username += hexDigits.charAt(Math.round(Math.random() * 15))
+      if (i !== 4) {
+        username += ':'
+      }
+    }
+    return username
+  }
+
+  public openFullConfigEditor() {
+    void this.$router.navigate(['/config'])
+    this.$activeModal.close()
+  }
+
+  public dismissModal() {
+    this.$activeModal.dismiss('Dismiss')
+  }
+
+  public closeModal() {
+    this.$activeModal.close('Dismiss')
+  }
+
+  /**
+   * Load bridge configurations from settings
+   */
+  private async loadBridgeConfigs(): Promise<void> {
+    // Load from settings env which is already populated from the server
+    const bridges = this.$settings.env.bridges || []
+    this.bridgeConfigs.clear()
+    this.originalScheduledRestartCrons.clear()
+    this.originalHideAlerts.clear()
+    for (const bridge of bridges) {
+      const normalizedUsername = bridge.username.toUpperCase()
+      this.bridgeConfigs.set(normalizedUsername, bridge)
+      // Store original values for change detection
+      this.originalScheduledRestartCrons.set(normalizedUsername, bridge.scheduledRestartCron || null)
+      this.originalHideAlerts.set(normalizedUsername, {
+        hideHapAlert: bridge.hideHapAlert,
+        hideMatterAlert: bridge.hideMatterAlert,
+      })
+    }
+  }
+
+  /**
+   * Check if a specific bridge protocol alert is hidden
+   */
+  public isUnpairingHidden(username: string, protocol: 'hap' | 'matter'): boolean {
+    const bridge = this.bridgeConfigs.get(username.toUpperCase())
+    if (!bridge) {
+      return false
+    }
+    return protocol === 'hap' ? !!bridge.hideHapAlert : !!bridge.hideMatterAlert
+  }
+
+  /**
+   * Toggle hiding of unpairing alert for a specific bridge protocol (will be saved when modal is saved)
+   */
+  public toggleHideUnpairing(username: string, protocol: 'hap' | 'matter'): void {
+    const normalizedUsername = username.toUpperCase()
+    const currentValue = this.isUnpairingHidden(username, protocol)
+    const newValue = !currentValue
+
+    // Update local cache
+    let bridge = this.bridgeConfigs.get(normalizedUsername)
+    if (!bridge) {
+      bridge = { username: normalizedUsername }
+      this.bridgeConfigs.set(normalizedUsername, bridge)
+    }
+
+    if (protocol === 'hap') {
+      if (newValue) {
+        bridge.hideHapAlert = true
+      } else {
+        delete bridge.hideHapAlert
+      }
+    } else {
+      if (newValue) {
+        bridge.hideMatterAlert = true
+      } else {
+        delete bridge.hideMatterAlert
+      }
+    }
+  }
+
+  /**
+   * Get the scheduled restart cron for a specific bridge
+   */
+  public getScheduledRestartCron(username: string | undefined): string {
+    if (!username) {
+      return ''
+    }
+    const bridge = this.bridgeConfigs.get(username.toUpperCase())
+    return bridge?.scheduledRestartCron || ''
+  }
+
+  /**
+   * Update scheduled restart cron locally (will be saved when modal is saved)
+   */
+  public onScheduledRestartCronChange(value: string, username: string): void {
+    if (!username) {
+      return
+    }
+
+    const normalizedUsername = username.toUpperCase()
+    let bridge = this.bridgeConfigs.get(normalizedUsername)
+    if (!bridge) {
+      bridge = { username: normalizedUsername }
+      this.bridgeConfigs.set(normalizedUsername, bridge)
+    }
+
+    // Update local cache
+    const trimmedValue = value?.trim()
+    if (trimmedValue) {
+      bridge.scheduledRestartCron = trimmedValue
+    } else {
+      delete bridge.scheduledRestartCron
+    }
+  }
+
+  /**
+   * Check if scheduled restart cron has changed for any bridge
+   */
+  private hasScheduledRestartCronChanged(): boolean {
+    for (const [username, bridge] of this.bridgeConfigs.entries()) {
+      const currentValue = bridge.scheduledRestartCron || null
+      const originalValue = this.originalScheduledRestartCrons.get(username) || null
+
+      // Normalize empty strings to null for comparison
+      const normalizedCurrent = currentValue === '' ? null : currentValue
+      const normalizedOriginal = originalValue === '' ? null : originalValue
+
+      if (normalizedCurrent !== normalizedOriginal) {
+        return true
+      }
+    }
+    return false
+  }
+
+  /**
+   * Check if bridge configuration (not including hide alerts or cron) has changed
+   */
+  private hasBridgeConfigChanged(): boolean {
+    const configBlocks = this.configBlocks()
+
+    // Check if number of config blocks changed
+    if (configBlocks.length !== this.originalBridges().length) {
+      return true
+    }
+
+    // Check if any bridge config has changed
+    for (const [, block] of configBlocks.entries()) {
+      if (!block._bridge) {
+        continue
+      }
+
+      const original = this.originalBridges().find(b => b.username === block._bridge.username)
+      if (!original) {
+        // New bridge added
+        return true
+      }
+
+      // Check all bridge properties that require restart
+      if (block._bridge.name !== original.name) {
+        return true
+      }
+      if (block._bridge.port !== original.port) {
+        return true
+      }
+      if (block._bridge.model !== original.model) {
+        return true
+      }
+      if (block._bridge.manufacturer !== original.manufacturer) {
+        return true
+      }
+      if (block._bridge.firmwareRevision !== original.firmwareRevision) {
+        return true
+      }
+      if (block._bridge.debugModeEnabled !== original.debugModeEnabled) {
+        return true
+      }
+
+      // Check env variables
+      const currentEnv = block._bridge.env || {}
+      const originalEnv = original.env || {}
+      if (currentEnv.DEBUG !== originalEnv.DEBUG) {
+        return true
+      }
+      if (currentEnv.NODE_OPTIONS !== originalEnv.NODE_OPTIONS) {
+        return true
+      }
+
+      // Check Matter configuration
+      const hasMatter = !!block._bridge.matter
+      const hadMatter = !!original.matter
+      if (hasMatter !== hadMatter) {
+        return true
+      }
+      if (hasMatter && hadMatter) {
+        if (block._bridge.matter.port !== original.matter.port) {
+          return true
+        }
+      }
+    }
+
+    return false
+  }
+
+  /**
+   * Check if hide alerts have changed for any bridge
+   */
+  private hasHideAlertsChanged(): boolean {
+    for (const [username, bridge] of this.bridgeConfigs.entries()) {
+      const original = this.originalHideAlerts.get(username)
+
+      const currentHapAlert = !!bridge.hideHapAlert
+      const currentMatterAlert = !!bridge.hideMatterAlert
+
+      // If no original, treat as false (default for new bridges)
+      const originalHapAlert = original ? !!original.hideHapAlert : false
+      const originalMatterAlert = original ? !!original.hideMatterAlert : false
+
+      if (currentHapAlert !== originalHapAlert || currentMatterAlert !== originalMatterAlert) {
+        return true
+      }
+    }
+    return false
+  }
+
+  /**
+   * Update or add a bridge configuration in the local settings env
+   */
+  private updateLocalBridgeConfig(username: string, updates: Partial<BridgeConfig>): void {
+    const normalizedUsername = username.toUpperCase()
+    const bridges = this.$settings.env.bridges || []
+    const bridgeIndex = bridges.findIndex(b => b.username.toUpperCase() === normalizedUsername)
+
+    if (bridgeIndex !== -1) {
+      // Update existing bridge
+      Object.assign(bridges[bridgeIndex], updates)
+    } else {
+      // Add new bridge entry
+      bridges.push({
+        username: normalizedUsername,
+        ...updates,
+      })
+    }
+
+    this.$settings.env.bridges = bridges
+  }
+
+  /**
+   * Save hide alert setting for a specific bridge protocol
+   */
+  private async saveHideAlert(username: string, protocol: 'hap' | 'matter', value: boolean): Promise<void> {
+    const normalizedUsername = username.toUpperCase()
+    const endpoint = protocol === 'hap'
+      ? `/config-editor/ui/bridges/${encodeURIComponent(normalizedUsername)}/hide-hap-alert`
+      : `/config-editor/ui/bridges/${encodeURIComponent(normalizedUsername)}/hide-matter-alert`
+
+    try {
+      await this.$api.put(endpoint, { value })
+      this.updateLocalBridgeConfig(normalizedUsername, { hideHapAlert: value })
+    } catch (error) {
+      console.error(`Failed to update hide ${protocol} alert:`, error)
+      throw error
+    }
+  }
+
+  /**
+   * Save scheduled restart cron for a specific bridge
+   */
+  private async saveScheduledRestartCron(username: string, value: string | null): Promise<void> {
+    const normalizedUsername = username.toUpperCase()
+
+    try {
+      await this.$api.put(
+        `/config-editor/ui/bridges/${encodeURIComponent(normalizedUsername)}/scheduled-restart-cron`,
+        { value: value || null },
+      )
+
+      if (value) {
+        this.updateLocalBridgeConfig(normalizedUsername, { scheduledRestartCron: value })
+      } else {
+        // Remove the property if value is null
+        const bridges = this.$settings.env.bridges || []
+        const bridgeIndex = bridges.findIndex(b => b.username.toUpperCase() === normalizedUsername)
+        if (bridgeIndex !== -1) {
+          delete bridges[bridgeIndex].scheduledRestartCron
+          this.$settings.env.bridges = bridges
+        }
+      }
+    } catch (error) {
+      console.error('Failed to update scheduled restart cron:', error)
+      throw error
+    }
+  }
+}

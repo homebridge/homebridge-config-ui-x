@@ -1,4 +1,4 @@
-<div class="accessory-box" [class.accessory-on]="isOn" (longClick)="onClick()" (shortClick)="onClick()" tabindex="0">
+<div class="accessory-box" [class.accessory-on]="isOn()" (longClick)="onClick()" (shortClick)="onClick()" tabindex="0">
   <div class="d-flex flex-column h-100">
     <div [attr.aria-label]="'accessories.core.thermostat' | translate" class="accessory-svg">
       <svg width="32px" height="32px" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
@@ -54,26 +54,28 @@
           stroke-width="0.75"
           fill-opacity="0.5"
           [attr.fill]="
-            (systemMode === 3)
+            (systemMode() === 3)
               ? 'url(#coolingGradient)'
-              : (systemMode === 4)
+              : (systemMode() === 4)
                 ? 'url(#heatingGradient)'
-                : (systemMode === 1 ? '#42d672' : '#7b7b7b')"
+                : (systemMode() === 1 ? '#42d672' : '#7b7b7b')"
         />
         <! -- current temperature - ->
-        @if (currentTemperature !== null) {
+        @if (currentTemperature() !== null) {
         <text x="16" y="13" font-size="8" text-anchor="middle" fill="#7f7f7f" font-family="Arial, sans-serif">
-          {{ currentTemperature | convertTemp | number: '1.0-1'}}&deg;{{ temperatureUnits | uppercase }}
+          {{ currentTemperature() | convertTemp | number: '1.0-1'}}&deg;{{ temperatureUnits | uppercase }}
         </text>
         }
       </svg>
     </div>
-    <div class="accessory-label mt-auto">{{ service.customName || service.serviceName || service.displayName }}</div>
+    <div class="accessory-label mt-auto">
+      {{ service().customName || service().serviceName || service().displayName }}
+    </div>
 
     <div class="accessory-label grey-text">
-      @if (systemMode === 0) { {{ 'accessories.control.off' | translate }} } @else if (systemMode === 3) {
-      {{'accessories.control.cool' | translate }} } @else if (systemMode === 4) { {{'accessories.control.heat' |
-      translate }} } @else if (systemMode === 1) { {{'accessories.control.auto' | translate }} }
+      @if (systemMode() === 0) { {{ 'accessories.control.off' | translate }} } @else if (systemMode() === 3) {
+      {{'accessories.control.cool' | translate }} } @else if (systemMode() === 4) { {{'accessories.control.heat' |
+      translate }} } @else if (systemMode() === 1) { {{'accessories.control.auto' | translate }} }
     </div>
   </div>
 </div>

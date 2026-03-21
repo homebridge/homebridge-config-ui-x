@@ -55,5 +55,9 @@ export const RE_NON_SAFARI = /Chrome|CriOS|FxiOS|EdgiOS/
 export const RE_STARTS_WITH_DIGIT = /^\d/
 export const RE_KOFI = /ko-?fi/i
 
+// Scheduling
+export const RE_WHITESPACE_SINGLE = /\s+/
+export const RE_CRON_FIELD = /^[\d*,\-/]+$/
+
 // Setup wizard
 export const RE_SPINNER = /^[⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏]/

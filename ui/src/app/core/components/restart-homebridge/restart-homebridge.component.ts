@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core'
 import { Router } from '@angular/router'
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe } from '@ngx-translate/core'
 
 @Component({

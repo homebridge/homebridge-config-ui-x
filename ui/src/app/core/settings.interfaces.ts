@@ -2,7 +2,7 @@ export interface FeatureFlags {
   [key: string]: boolean
 }
 
-export type nodeUpdatePolicy = 'all' | 'major' | 'none'
+export type NodeUpdatePolicy = 'all' | 'major' | 'none'
 export type HomebridgeUpdatePolicy = 'all' | 'beta' | 'major' | 'none'
 export type HomebridgeUiUpdatePolicy = 'all' | 'beta' | 'major' | 'none'
 
@@ -63,7 +63,7 @@ export interface EnvInterface {
     hideUpdatesFor?: string[]
     showBetasFor?: string[]
   }
-  nodeUpdatePolicy?: nodeUpdatePolicy
+  nodeUpdatePolicy?: NodeUpdatePolicy
   homebridgeUpdatePolicy?: HomebridgeUpdatePolicy
   homebridgeUiUpdatePolicy?: HomebridgeUiUpdatePolicy
   scheduledRestartCron?: string | null

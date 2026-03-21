@@ -1,8 +1,9 @@
 import { TitleCasePipe } from '@angular/common'
-import { Component, inject, Input, OnInit } from '@angular/core'
+import { Component, DestroyRef, inject, input, OnInit, signal } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { TranslatePipe } from '@ngx-translate/core'
 
-import { IoNamespace, WsService } from '@/app/core/ws.service'
+import { IoNamespace, WsService } from '@/app/core/communication/ws.service'
 import { NodeJsInfo, ServerInfo, Widget } from '@/app/modules/status/widgets/widgets.interfaces'
 
 @Component({
@@ -15,13 +16,17 @@ import { NodeJsInfo, ServerInfo, Widget } from '@/app/modules/status/widgets/wid
   ],
 })
 export class SystemInfoWidgetComponent implements OnInit {
+  // Injected dependencies
+  private destroyRef = inject(DestroyRef)
   private $ws = inject(WsService)
+
+  // Signals
+  widget = input.required<Widget>()
+  public serverInfo = signal<ServerInfo>({ network: {}, os: {}, time: {} } as ServerInfo)
+  public nodejsInfo = signal<NodeJsInfo>({} as NodeJsInfo)
+
+  // Other properties
   private io: IoNamespace
-
-  @Input() widget: Widget
-
-  public serverInfo: ServerInfo = { network: {}, os: {}, time: {} } as ServerInfo
-  public nodejsInfo: NodeJsInfo = {} as NodeJsInfo
   public arch64bitList = [
     'x64',
     'amd64',
@@ -37,24 +42,26 @@ export class SystemInfoWidgetComponent implements OnInit {
     'sparc64',
   ]
 
-  public ngOnInit() {
+  public ngOnInit(): void {
     this.io = this.$ws.getExistingNamespace('status')
-    this.io.connected.subscribe(async () => {
+
+    this.io.connected.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
       this.getSystemInfo()
     })
 
+    // Fetch initial data if already connected
     if (this.io.socket.connected) {
       this.getSystemInfo()
     }
   }
 
-  private getSystemInfo() {
+  private getSystemInfo(): void {
     this.io.request('get-homebridge-server-info').subscribe((data) => {
-      this.serverInfo = data
+      this.serverInfo.set(data)
     })
 
     this.io.request('nodejs-version-check').subscribe((data) => {
-      this.nodejsInfo = data
+      this.nodejsInfo.set(data)
     })
   }
 }

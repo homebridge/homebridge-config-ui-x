@@ -24,19 +24,19 @@
       {{ 'menu.hbrestart.confirm_ui' | translate }}
     </button>
   </p>
-  @if (canShutdownRestartHost) {
+  @if (canShutdownRestartHost()) {
   <p class="w-100 text-center my-5">
     <button type="button" class="btn btn-primary p-3 my-0" style="width: 85%" (click)="restartServer()">
       {{ 'menu.linux.label_restart_server' | translate }}
     </button>
   </p>
-  } @if (canShutdownRestartHost) {
+  } @if (canShutdownRestartHost()) {
   <p class="w-100 text-center my-5">
     <button type="button" class="btn btn-primary p-3 my-0" style="width: 85%" (click)="shutdownServer()">
       {{ 'menu.linux.label_shutdown_server' | translate }}
     </button>
   </p>
-  } @if (runningInDocker) {
+  } @if (runningInDocker()) {
   <p class="w-100 text-center my-5">
     <button type="button" class="btn btn-primary p-3 my-0" style="width: 85%" (click)="dockerRestartContainer()">
       {{ 'menu.docker.restart_container' | translate }}

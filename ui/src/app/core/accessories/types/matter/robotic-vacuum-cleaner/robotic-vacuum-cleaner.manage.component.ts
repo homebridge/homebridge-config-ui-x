@@ -1,10 +1,12 @@
-import { Component, inject, Input, OnDestroy, OnInit } from '@angular/core'
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, inject, OnInit } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe } from '@ngx-translate/core'
-import { Subscription } from 'rxjs'
+import { ToastrService } from 'ngx-toastr'
 
 import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
 import { AccessoriesService } from '@/app/core/accessories/accessories.service'
+import { ACCESSORY_MANAGE_MODAL_DATA } from '@/app/core/accessories/types/base-manage.component'
 
 @Component({
   templateUrl: './robotic-vacuum-cleaner.manage.component.html',
@@ -13,29 +15,63 @@ import { AccessoriesService } from '@/app/core/accessories/accessories.service'
   imports: [
     TranslatePipe,
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class RoboticVacuumCleanerManageComponent implements OnInit, OnDestroy {
-  private $activeModal = inject(NgbActiveModal)
+export class RoboticVacuumCleanerManageComponent implements OnInit {
+  protected destroyRef = inject(DestroyRef)
+  protected $activeModal = inject(NgbActiveModal)
+  protected cdr = inject(ChangeDetectorRef)
+  private $toastr = inject(ToastrService)
 
-  @Input() public service: ServiceTypeX
-  @Input() public $accessories: AccessoriesService
+  // Inject modal data using modern DI pattern
+  private modalData = inject(ACCESSORY_MANAGE_MODAL_DATA)
+
+  // Public properties for component use (accessed by templates)
+  public service!: ServiceTypeX
+  public $accessories!: AccessoriesService
 
   public currentMode: number = 0
-  private stateSubscription: Subscription
 
   public ngOnInit() {
-    this.updateModeFromService()
+    // Null safety check
+    if (!this.modalData.service || !this.modalData.$accessories) {
+      console.error('RoboticVacuumCleanerManageComponent: service or $accessories not provided')
+      this.$activeModal.dismiss('Missing required data')
+      return
+    }
 
-    // Subscribe to state changes to update modal in real-time
-    this.stateSubscription = this.$accessories.accessoryData.subscribe(() => {
-      this.updateModeFromService()
-    })
+    // Store in public properties (same object references)
+    this.service = this.modalData.service
+    this.$accessories = this.modalData.$accessories
+
+    this.setupComponent()
+    this.subscribeToAccessoryUpdates()
   }
 
-  public ngOnDestroy() {
-    if (this.stateSubscription) {
-      this.stateSubscription.unsubscribe()
+  public dismissModal() {
+    this.$activeModal.dismiss('Dismiss')
+  }
+
+  private setupComponent() {
+    this.updateModeFromService()
+  }
+
+  private subscribeToAccessoryUpdates() {
+    if (this.$accessories) {
+      this.$accessories.accessoryData.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+        // Update service reference to get latest data (zoneless Angular compatibility)
+        const updatedService = this.$accessories.accessories.services.find(s => s.uniqueId === this.service.uniqueId)
+        if (updatedService) {
+          this.service = updatedService
+        }
+        this.handleAccessoryUpdate()
+        this.cdr.markForCheck()
+      })
     }
+  }
+
+  private handleAccessoryUpdate() {
+    this.updateModeFromService()
   }
 
   private updateModeFromService() {
@@ -55,52 +91,59 @@ export class RoboticVacuumCleanerManageComponent implements OnInit, OnDestroy {
     }
   }
 
-  public setMode(mode: number, event: MouseEvent) {
+  public async setMode(mode: number, event: MouseEvent) {
     // Prevent pausing when stopped
     if (mode === 2 && this.currentMode === 0) {
       return
     }
 
-    this.currentMode = mode
+    const previousMode = this.currentMode
 
-    // Control based on desired mode:
-    // Mode 0 = Stopped → Set runMode to Idle (0)
-    // Mode 1 = Cleaning → Set runMode to Cleaning (1)
-    // Mode 2 = Paused → Use pause command
+    try {
+      this.currentMode = mode
+      this.cdr.markForCheck()
 
-    if (mode === 0) {
-      // Stop → Set run mode to Idle
-      const runModeCluster = this.service.getCluster?.('rvcRunMode')
-      if (runModeCluster) {
-        runModeCluster.setAttributes({ currentMode: 0 }).catch((error) => {
-          console.error('Failed to stop robotic vacuum:', error)
-        })
+      // Control based on desired mode:
+      // Mode 0 = Stopped → Set runMode to Idle (0)
+      // Mode 1 = Cleaning → Set runMode to Cleaning (1)
+      // Mode 2 = Paused → Use pause command
+
+      if (mode === 0) {
+        // Stop → Set run mode to Idle
+        const runModeCluster = this.service.getCluster?.('rvcRunMode')
+        if (!runModeCluster) {
+          throw new Error('RvcRunMode cluster not found')
+        }
+        await runModeCluster.setAttributes({ currentMode: 0 })
+      } else if (mode === 1) {
+        // Cleaning → Set run mode to Cleaning
+        const runModeCluster = this.service.getCluster?.('rvcRunMode')
+        if (!runModeCluster) {
+          throw new Error('RvcRunMode cluster not found')
+        }
+        await runModeCluster.setAttributes({ currentMode: 1 })
+      } else if (mode === 2) {
+        // Pause → Use operational state
+        const cluster = this.service.getCluster?.('rvcOperationalState')
+        if (!cluster) {
+          throw new Error('RvcOperationalState cluster not found')
+        }
+        await cluster.setAttributes({ operationalState: 2 })
       }
-    } else if (mode === 1) {
-      // Cleaning → Set run mode to Cleaning
-      const runModeCluster = this.service.getCluster?.('rvcRunMode')
-      if (runModeCluster) {
-        runModeCluster.setAttributes({ currentMode: 1 }).catch((error) => {
-          console.error('Failed to start robotic vacuum:', error)
-        })
-      }
-    } else if (mode === 2) {
-      // Pause → Use operational state
-      const cluster = this.service.getCluster?.('rvcOperationalState')
-      if (cluster) {
-        cluster.setAttributes({ operationalState: 2 }).catch((error) => {
-          console.error('Failed to pause robotic vacuum:', error)
-        })
-      }
+
+      this.blurTarget(event)
+    } catch (error) {
+      const modeText = mode === 0 ? 'stop' : mode === 1 ? 'start' : 'pause'
+      this.$toastr.error(`Failed to ${modeText} robotic vacuum`, 'Error')
+      // Revert to previous state on error
+      this.currentMode = previousMode
+      this.cdr.markForCheck()
     }
-
-    // Blur the button to remove focus
-    const target = event.target as HTMLButtonElement
-    target.blur()
   }
 
-  public dismissModal() {
-    this.$activeModal.dismiss('Dismiss')
+  protected blurTarget(event: MouseEvent) {
+    const target = event.target as HTMLButtonElement
+    target.blur()
   }
 
   public get isPauseDisabled(): boolean {

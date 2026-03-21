@@ -1,6 +1,6 @@
-<div class="modal-content">
+<div class="modal-content" role="dialog" aria-modal="true" [attr.aria-labelledby]="'widget-control-modal-title'">
   <div class="modal-header">
-    <h5 class="modal-title">{{ 'status.widget.title_manage_widget' | translate }}</h5>
+    <h5 class="modal-title" id="widget-control-modal-title">{{ 'status.widget.title_manage_widget' | translate }}</h5>
     <button
       type="button"
       class="btn-close"
@@ -38,7 +38,7 @@
           <label for="showNpmVersion" class="rendux-label ms-3"></label>
         </div>
       </li>
-      @if (serverInfo && serverInfo.homebridgeRunningInDocker) {
+      @if (serverInfo() && serverInfo().homebridgeRunningInDocker) {
       <li class="list-group-item d-flex justify-content-between align-items-center flex-row pb-2">
         <span class="text-start">{{ 'status.widget.expand_docker' | translate }}</span>
         <div class="text-end grey-text d-flex align-items-center">
@@ -63,10 +63,10 @@
               <i
                 class="fas"
                 [class]="{
-                  'fa-circle-notch': searching,
-                  'fa-spin': searching,
-                  'fa-city': !searching,
-                }"
+                  'fa-city': !searching(),
+                  'fa-circle-notch': searching(),
+                  'fa-spin': searching()
+                 }"
               ></i>
             </span>
             <input
@@ -160,13 +160,13 @@
       <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
         <label class="mb-2 mb-md-0 w-100 w-md-50">{{ 'status.widget.network.network_interface' | translate }}</label>
         <div class="text-start text-md-end w-100 w-md-50">
-          @if (networkInterfaces.length) {
+          @if (networkInterfaces().length) {
           <select class="custom-select" [(ngModel)]="widget.networkInterface">
-            @for (networkInterface of networkInterfaces; track networkInterface) {
+            @for (networkInterface of networkInterfaces(); track networkInterface) {
             <option [value]="networkInterface">{{ networkInterface }}</option>
             }
           </select>
-          } @if (!networkInterfaces.length) {
+          } @if (!networkInterfaces().length) {
           <span class="grey-text">{{ 'status.widget.network.none_selected' | translate }}</span> }
         </div>
       </li>

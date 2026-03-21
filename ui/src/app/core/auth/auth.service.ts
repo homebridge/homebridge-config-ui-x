@@ -3,13 +3,15 @@ import { inject, Injectable } from '@angular/core'
 import { JwtHelperService } from '@auth0/angular-jwt'
 import { firstValueFrom } from 'rxjs'
 
-import { ApiService } from '@/app/core/api.service'
 import { UserInterface } from '@/app/core/auth/auth.interfaces'
-import { NotificationService } from '@/app/core/notification.service'
-import { SettingsService } from '@/app/core/settings.service'
+import { ApiService } from '@/app/core/communication/api.service'
+import { NotificationService } from '@/app/core/communication/notification.service'
+import { SettingsService } from '@/app/core/ui/settings.service'
 import { environment } from '@/environments/environment'
 
-@Injectable()
+@Injectable({
+  providedIn: 'root',
+})
 export class AuthService {
   private $api = inject(ApiService)
   private $jwtHelper = inject(JwtHelperService)
@@ -28,7 +30,7 @@ export class AuthService {
   }
 
   public async login(form: { username: string, password: string, ota?: string }) {
-    const resp = await firstValueFrom(this.$api.post('/auth/login', form))
+    const resp = await this.$api.post('/auth/login', form)
     if (!this.validateToken(resp.access_token)) {
       throw new Error('Invalid username or password.')
     }
@@ -37,7 +39,7 @@ export class AuthService {
   }
 
   public async noauth() {
-    const resp = await firstValueFrom(this.$api.post('/auth/noauth', {}))
+    const resp = await this.$api.post('/auth/noauth', {})
     if (!this.validateToken(resp.access_token)) {
       throw new Error('Invalid username or password.')
     } else {
@@ -73,7 +75,7 @@ export class AuthService {
     }
 
     try {
-      return await firstValueFrom(this.$api.get('/auth/check'))
+      return await this.$api.get('/auth/check')
     } catch (err) {
       if (err.status === 401) {
         // Token is no longer valid on server side, perform logout
@@ -177,7 +179,7 @@ export class AuthService {
     this.isRefreshing = true
 
     try {
-      const resp = await firstValueFrom(this.$api.post('/auth/refresh', {}))
+      const resp = await this.$api.post('/auth/refresh', {})
       if (resp.access_token) {
         this.token = resp.access_token
         window.localStorage.setItem(environment.jwt.tokenKey, resp.access_token)

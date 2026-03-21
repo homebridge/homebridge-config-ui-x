@@ -1,4 +1,4 @@
-<div class="accessory-box" [class.accessory-on]="isOn" (click)="onClick()" tabindex="0">
+<div class="accessory-box" [class.accessory-on]="isOn()" (click)="onClick()" tabindex="0">
   <div class="d-flex flex-column h-100">
     <div [attr.aria-label]="'accessories.core.outlet' | translate" class="accessory-svg">
       <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
@@ -35,10 +35,12 @@
         }
       </svg>
     </div>
-    <div class="accessory-label mt-auto">{{ service.customName || service.serviceName || service.displayName }}</div>
+    <div class="accessory-label mt-auto">
+      {{ service().customName || service().serviceName || service().displayName }}
+    </div>
     <div
       class="accessory-label grey-text"
-      [innerText]="(isOn ? 'accessories.control.on' : 'accessories.control.off') | translate"
+      [innerText]="(isOn() ? 'accessories.control.on' : 'accessories.control.off') | translate"
     ></div>
   </div>
 </div>

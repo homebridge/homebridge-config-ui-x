@@ -1581,8 +1581,8 @@ export class ServerService {
       uiConfigBlock.ssl.cert = certPath
       delete uiConfigBlock.ssl.pfx
       delete uiConfigBlock.ssl.passphrase
-      uiConfigBlock.ssl.selfSigned = false
-      uiConfigBlock.ssl.selfSignedHostnames = hostnames
+      delete uiConfigBlock.ssl.selfSigned
+      delete uiConfigBlock.ssl.selfSignedHostnames
     } else {
       // Keep using runtime self-signed mode on startup
       delete uiConfigBlock.ssl.key

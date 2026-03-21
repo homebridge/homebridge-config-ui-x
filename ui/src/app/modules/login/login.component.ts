@@ -1,13 +1,14 @@
 import { NgOptimizedImage } from '@angular/common'
-import { AfterViewChecked, ChangeDetectorRef, Component, ElementRef, inject, OnInit, viewChild } from '@angular/core'
+import { Component, DestroyRef, ElementRef, inject, OnInit, signal, viewChild } from '@angular/core'
+import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { Router } from '@angular/router'
 import { TranslatePipe } from '@ngx-translate/core'
 import { firstValueFrom } from 'rxjs'
-import { debounceTime } from 'rxjs/operators'
+import { debounceTime, map, startWith } from 'rxjs/operators'
 
 import { AuthService } from '@/app/core/auth/auth.service'
-import { SettingsService } from '@/app/core/settings.service'
+import { SettingsService } from '@/app/core/ui/settings.service'
 import { environment } from '@/environments/environment'
 
 @Component({
@@ -21,9 +22,9 @@ import { environment } from '@/environments/environment'
     NgOptimizedImage,
   ],
 })
-export class LoginComponent implements OnInit, AfterViewChecked {
+export class LoginComponent implements OnInit {
+  private destroyRef = inject(DestroyRef)
   private $auth = inject(AuthService)
-  private $cdr = inject(ChangeDetectorRef)
   private $router = inject(Router)
   private $settings = inject(SettingsService)
   private targetRoute: string
@@ -38,59 +39,67 @@ export class LoginComponent implements OnInit, AfterViewChecked {
   readonly usernameInput = viewChild<ElementRef>('username')
   readonly otpInput = viewChild<ElementRef>('otp')
 
-  public backgroundStyle: string
-  public invalidCredentials = false
-  public invalid2faCode = false
-  public twoFactorCodeRequired = false
-  public inProgress = false
-  public form: FormGroup<{
-    username: FormControl<string>
-    password: FormControl<string>
-    otp?: FormControl<string>
-  }>
+  public backgroundStyle = signal<string>('')
+  public invalidCredentials = signal(false)
+  public invalid2faCode = signal(false)
+  public twoFactorCodeRequired = signal(false)
+  public inProgress = signal(false)
+
+  // Initialize form as property with all controls (including OTP for 2FA)
+  // OTP validators are added dynamically when 2FA is required
+  public form = new FormGroup({
+    username: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
+    password: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
+    otp: new FormControl('', { nonNullable: true }),
+  })
+
+  // Create signal for form validity state
+  public formInvalid = toSignal(
+    this.form.statusChanges.pipe(
+      startWith(this.form.status),
+      map(() => this.form.invalid),
+    ),
+    { initialValue: this.form.invalid },
+  )
 
   public ngOnInit() {
-    this.form = new FormGroup({
-      username: new FormControl(''),
-      password: new FormControl(''),
-    })
-
-    this.form.valueChanges.pipe(debounceTime(500)).subscribe((changes) => {
-      const passwordInputValue = this.passwordInput()?.nativeElement.value
-      if (passwordInputValue && passwordInputValue !== changes.password) {
-        this.form.controls.password.setValue(passwordInputValue)
-      }
-    })
+    this.form.valueChanges
+      .pipe(
+        debounceTime(500),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe(() => {
+        const passwordInputValue = this.passwordInput()?.nativeElement.value
+        if (passwordInputValue && passwordInputValue !== this.form.controls.password.value) {
+          this.form.controls.password.setValue(passwordInputValue)
+        }
+      })
 
     this.targetRoute = window.sessionStorage.getItem('target_route') || ''
-    this.setBackground()
-  }
-
-  public ngAfterViewChecked(): void {
-    this.$cdr.detectChanges()
+    void this.setBackground()
   }
 
   public async onSubmit() {
-    this.invalidCredentials = false
-    this.invalid2faCode = false
-    this.inProgress = true
+    this.invalidCredentials.set(false)
+    this.invalid2faCode.set(false)
+    this.inProgress.set(true)
     document.getElementById('submit-button')?.blur()
 
     // Grab the values from the native element as they may be "populated" via autofill.
     const passwordInputValue = this.passwordInput()?.nativeElement.value
-    if (passwordInputValue && passwordInputValue !== this.form.get('password').value) {
+    if (passwordInputValue && passwordInputValue !== this.form.controls.password.value) {
       this.form.controls.password.setValue(passwordInputValue)
     }
 
     const usernameInputValue = this.usernameInput()?.nativeElement.value
-    if (usernameInputValue && usernameInputValue !== this.form.get('username').value) {
+    if (usernameInputValue && usernameInputValue !== this.form.controls.username.value) {
       this.form.controls.username.setValue(usernameInputValue)
     }
 
-    if (this.twoFactorCodeRequired) {
+    if (this.twoFactorCodeRequired()) {
       const otpInputValue = this.otpInput()?.nativeElement.value
-      if (otpInputValue && otpInputValue !== this.form.get('otp').value) {
-        this.form.controls.username.setValue(otpInputValue)
+      if (otpInputValue && otpInputValue !== this.form.controls.otp.value) {
+        this.form.controls.otp.setValue(otpInputValue)
       }
     }
 
@@ -104,25 +113,32 @@ export class LoginComponent implements OnInit, AfterViewChecked {
       window.sessionStorage.removeItem('target_route')
     } catch (error) {
       if (error.status === 412) {
-        if (!this.form.controls.otp) {
-          this.form.addControl('otp', new FormControl('', [
+        // Enable 2FA: add validators to the OTP control
+        const otpControl = this.form.controls.otp
+
+        if (!this.twoFactorCodeRequired()) {
+          // First time enabling 2FA - set validators
+          otpControl.setValidators([
             Validators.required,
             Validators.minLength(6),
             Validators.maxLength(6),
-          ]))
+          ])
+          otpControl.updateValueAndValidity()
         } else {
-          this.form.controls.otp.setErrors(['Invalid Code'])
-          this.invalid2faCode = true
+          // 2FA already enabled but code was invalid
+          otpControl.setErrors({ invalidCode: true })
+          this.invalid2faCode.set(true)
         }
-        this.twoFactorCodeRequired = true
+
+        this.twoFactorCodeRequired.set(true)
         setTimeout(() => {
-          document.getElementById('form-ota').focus()
+          document.getElementById('form-ota')?.focus()
         }, 100)
       } else {
-        this.invalidCredentials = true
+        this.invalidCredentials.set(true)
       }
     }
-    this.inProgress = false
+    this.inProgress.set(false)
   }
 
   private async setBackground() {
@@ -132,7 +148,7 @@ export class LoginComponent implements OnInit, AfterViewChecked {
 
     if (this.$settings.env.customWallpaperHash) {
       const backgroundImageUrl = `${environment.api.base}/auth/wallpaper/${this.$settings.env.customWallpaperHash}`
-      this.backgroundStyle = `url('${backgroundImageUrl}') center/cover`
+      this.backgroundStyle.set(`url('${backgroundImageUrl}') center/cover`)
     }
   }
 }

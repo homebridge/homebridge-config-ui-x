@@ -1,18 +1,15 @@
 import type { CharacteristicType } from '@homebridge/hap-client'
 
 import { DecimalPipe, UpperCasePipe } from '@angular/common'
-import { Component, inject, Input, OnDestroy, OnInit } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { FormsModule } from '@angular/forms'
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
 import { TranslatePipe } from '@ngx-translate/core'
 import { NouisliderComponent } from 'ng2-nouislider'
-import { Subject, Subscription } from 'rxjs'
-import { debounceTime, distinctUntilChanged } from 'rxjs/operators'
+import { Subject } from 'rxjs'
 
-import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
-import { AccessoriesService } from '@/app/core/accessories/accessories.service'
+import { BaseManageComponent } from '@/app/core/accessories/types/base-manage.component'
 import { ConvertTempPipe } from '@/app/core/pipes/convert-temp.pipe'
-import { SettingsService } from '@/app/core/settings.service'
+import { SettingsService } from '@/app/core/ui/settings.service'
 
 @Component({
   templateUrl: './heater-cooler.manage.component.html',
@@ -25,16 +22,12 @@ import { SettingsService } from '@/app/core/settings.service'
     ConvertTempPipe,
     UpperCasePipe,
   ],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class HeaterCoolerManageComponent implements OnInit, OnDestroy {
-  private $activeModal = inject(NgbActiveModal)
+export class HeaterCoolerManageComponent extends BaseManageComponent {
   private $settings = inject(SettingsService)
 
-  @Input() public service: ServiceTypeX
-  @Input() public type: 'heater' | 'cooler'
-  @Input() public $accessories: AccessoriesService
-
-  private stateSubscription: Subscription
+  public type: 'heater' | 'cooler' | undefined
 
   public temperatureUnits = this.$settings.env.temperatureUnits
   public targetState: number
@@ -50,36 +43,35 @@ export class HeaterCoolerManageComponent implements OnInit, OnDestroy {
   public targetRotationSpeed: any
   public targetRotationSpeedChanged: Subject<string> = new Subject<string>()
 
-  constructor() {
-    this.targetTemperatureChanged
-      .pipe(debounceTime(500))
-      .subscribe(() => {
-        if (this.HeatingThresholdTemperature) {
-          this.service.getCharacteristic('HeatingThresholdTemperature').setValue(this.targetHeatingTemp)
-        }
-        if (this.CoolingThresholdTemperature) {
-          this.service.getCharacteristic('CoolingThresholdTemperature').setValue(this.targetCoolingTemp)
-        }
-      })
+  protected setupComponent() {
+    this.createDebouncedSubscription(this.targetTemperatureChanged, () => {
+      if (this.HeatingThresholdTemperature) {
+        void this.service.getCharacteristic('HeatingThresholdTemperature').setValue(this.targetHeatingTemp)
+      }
+      if (this.CoolingThresholdTemperature) {
+        void this.service.getCharacteristic('CoolingThresholdTemperature').setValue(this.targetCoolingTemp)
+      }
+    })
 
-    this.targetRotationSpeedChanged
-      .pipe(
-        debounceTime(500),
-        distinctUntilChanged(),
-      )
-      .subscribe(() => {
-        if (this.serviceFan) {
-          this.serviceFan.getCharacteristic('RotationSpeed').setValue(this.targetRotationSpeed.value)
-        }
-      })
-  }
+    this.createDebouncedSubscription(this.targetRotationSpeedChanged, () => {
+      if (this.serviceFan) {
+        void this.serviceFan.getCharacteristic('RotationSpeed').setValue(this.targetRotationSpeed.value)
+      }
+    })
 
-  public ngOnInit() {
     this.targetState = this.service.values.Active
     this.targetMode = this.service.values.TargetHeaterCoolerState
     this.CoolingThresholdTemperature = this.service.getCharacteristic('CoolingThresholdTemperature')
     this.HeatingThresholdTemperature = this.service.getCharacteristic('HeatingThresholdTemperature')
     this.targetStateValidValues = this.service.getCharacteristic('TargetHeaterCoolerState').validValues as number[]
+
+    // Derive type from valid target states: heat-only, cool-only, or dual
+    if (this.targetStateValidValues.includes(1) && !this.targetStateValidValues.includes(2)) {
+      this.type = 'heater'
+    } else if (this.targetStateValidValues.includes(2) && !this.targetStateValidValues.includes(1)) {
+      this.type = 'cooler'
+    }
+
     this.loadTargetTemperature()
 
     // Check for a linked Fan/Fanv2 service (combined from same physical device)
@@ -91,53 +83,42 @@ export class HeaterCoolerManageComponent implements OnInit, OnDestroy {
       this.loadRotationSpeed()
     }
 
-    this.applySliderGradient()
-
-    // Subscribe to real-time accessory updates
-    if (this.$accessories) {
-      this.stateSubscription = this.$accessories.accessoryData.subscribe(() => {
-        this.targetState = this.service.values.Active
-        this.targetMode = this.service.values.TargetHeaterCoolerState
-        this.targetCoolingTemp = this.service.getCharacteristic('CoolingThresholdTemperature')?.value as number
-        this.targetHeatingTemp = this.service.getCharacteristic('HeatingThresholdTemperature')?.value as number
-        this.autoTemp = [this.targetHeatingTemp, this.targetCoolingTemp]
-
-        if (this.targetRotationSpeed && this.serviceFan) {
-          this.targetRotationSpeed.value = this.serviceFan.getCharacteristic('RotationSpeed')?.value
-        }
-
-        // Apply gradient when mode changes externally
-        this.applySliderGradient()
-      })
-    }
+    this.applyAllGradients()
   }
 
-  public ngOnDestroy() {
-    if (this.stateSubscription) {
-      this.stateSubscription.unsubscribe()
+  protected handleAccessoryUpdate() {
+    this.targetState = this.service.values.Active
+    this.targetMode = this.service.values.TargetHeaterCoolerState
+    this.targetCoolingTemp = this.service.getCharacteristic('CoolingThresholdTemperature')?.value as number
+    this.targetHeatingTemp = this.service.getCharacteristic('HeatingThresholdTemperature')?.value as number
+    this.autoTemp = [this.targetHeatingTemp, this.targetCoolingTemp]
+
+    if (this.targetRotationSpeed && this.serviceFan) {
+      this.targetRotationSpeed.value = this.serviceFan.getCharacteristic('RotationSpeed')?.value
     }
+
+    // Apply gradient when mode changes externally
+    this.applyAllGradients()
   }
 
   public setTargetState(value: number, event: MouseEvent) {
     this.targetState = value
-    this.service.getCharacteristic('Active').setValue(this.targetState)
+    void this.service.getCharacteristic('Active').setValue(this.targetState)
     this.loadTargetTemperature()
-    this.applySliderGradient()
+    this.applyAllGradients()
 
-    const target = event.target as HTMLButtonElement
-    target.blur()
+    this.blurTarget(event)
   }
 
   public setTargetMode(value: number, event: MouseEvent) {
     this.targetMode = value
-    this.service.getCharacteristic('TargetHeaterCoolerState').setValue(this.targetMode)
+    void this.service.getCharacteristic('TargetHeaterCoolerState').setValue(this.targetMode)
     this.loadTargetTemperature()
 
-    const target = event.target as HTMLButtonElement
-    target.blur()
+    this.blurTarget(event)
 
     // Apply gradient to the new slider after it's created
-    this.applySliderGradient()
+    this.applyAllGradients()
   }
 
   public onTemperatureStateChange() {
@@ -153,10 +134,6 @@ export class HeaterCoolerManageComponent implements OnInit, OnDestroy {
 
   public onTargetRotationSpeedChange() {
     this.targetRotationSpeedChanged.next(this.targetRotationSpeed.value)
-  }
-
-  public dismissModal() {
-    this.$activeModal.dismiss('Dismiss')
   }
 
   private loadRotationSpeed() {
@@ -195,17 +172,13 @@ export class HeaterCoolerManageComponent implements OnInit, OnDestroy {
     }
   }
 
-  private applySliderGradient() {
-    setTimeout(() => {
-      const tempSliders = document.querySelectorAll('.temp-slider .noUi-target')
-      tempSliders.forEach((sliderElement: HTMLElement) => {
-        sliderElement.style.background = 'linear-gradient(to right, rgb(80, 80, 179), rgb(173, 216, 230), rgb(255, 185, 120), rgb(139, 90, 60))'
-      })
-
-      const fanSliders = document.querySelectorAll('.fan-slider .noUi-target')
-      fanSliders.forEach((sliderElement: HTMLElement) => {
-        sliderElement.style.background = this.getFanSliderGradient()
-      })
-    }, 10)
+  private applyAllGradients() {
+    this.applySliderGradient(
+      'linear-gradient(to right, rgb(80, 80, 179), rgb(173, 216, 230), rgb(255, 185, 120), rgb(139, 90, 60))',
+      '.temp-slider .noUi-target',
+    )
+    if (this.serviceFan) {
+      this.applySliderGradient(this.getFanSliderGradient(), '.fan-slider .noUi-target')
+    }
   }
 }

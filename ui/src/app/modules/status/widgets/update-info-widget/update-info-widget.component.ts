@@ -1,18 +1,21 @@
-import { Component, inject, Input, OnInit } from '@angular/core'
+import { Component, createEnvironmentInjector, DestroyRef, EnvironmentInjector, inject, input, OnInit, signal } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { RouterLink } from '@angular/router'
-import { NgbModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap'
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
+import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap/tooltip'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
 import { firstValueFrom } from 'rxjs'
 
-import { ApiService } from '@/app/core/api.service'
 import { AuthService } from '@/app/core/auth/auth.service'
+import { ApiService } from '@/app/core/communication/api.service'
+import { IoNamespace, WsService } from '@/app/core/communication/ws.service'
 import { InformationComponent } from '@/app/core/components/information/information.component'
-import { Plugin } from '@/app/core/manage-plugins/manage-plugins.interfaces'
-import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service'
-import { HomebridgeUiUpdatePolicy, HomebridgeUpdatePolicy, nodeUpdatePolicy } from '@/app/core/settings.interfaces'
-import { SettingsService } from '@/app/core/settings.service'
-import { IoNamespace, WsService } from '@/app/core/ws.service'
+import { HB_V2_MODAL_DATA, INFORMATION_MODAL_DATA, NODE_VERSION_MODAL_DATA } from '@/app/core/modal-data-tokens'
+import { Plugin } from '@/app/core/plugins/manage-plugins.interfaces'
+import { ManagePluginsService } from '@/app/core/plugins/manage-plugins.service'
+import { HomebridgeUiUpdatePolicy, HomebridgeUpdatePolicy, NodeUpdatePolicy } from '@/app/core/settings.interfaces'
+import { SettingsService } from '@/app/core/ui/settings.service'
 import { HbV2ModalComponent } from '@/app/modules/status/widgets/update-info-widget/hb-v2-modal/hb-v2-modal.component'
 import { NodeVersionModalComponent } from '@/app/modules/status/widgets/update-info-widget/node-version-modal/node-version-modal.component'
 import {
@@ -34,6 +37,9 @@ import { environment } from '@/environments/environment'
   ],
 })
 export class UpdateInfoWidgetComponent implements OnInit {
+  // Injected dependencies
+  private destroyRef = inject(DestroyRef)
+  private injector = inject(EnvironmentInjector)
   private $api = inject(ApiService)
   private $auth = inject(AuthService)
   private $modal = inject(NgbModal)
@@ -42,68 +48,66 @@ export class UpdateInfoWidgetComponent implements OnInit {
   private $toastr = inject(ToastrService)
   private $translate = inject(TranslateService)
   private $ws = inject(WsService)
-  private io: IoNamespace
 
-  @Input() widget: Widget
-
-  public homebridgePkg: Plugin = {} as Plugin
-  public homebridgeUpdatePolicy: HomebridgeUpdatePolicy = 'all'
-
-  public homebridgeUiPkg: Plugin = {} as Plugin
-  public homebridgeUiUpdatePolicy: HomebridgeUiUpdatePolicy = 'all'
-
-  public homebridgePluginStatus: Plugin[] = []
-  public homebridgePluginStatusDone = false
-
-  public nodejsInfo: NodeJsInfo
-  public nodejsStatusDone = false
-  public nodeUpdatePolicy: nodeUpdatePolicy = 'all'
-
-  public serverInfo: ServerInfo
-  public isRunningHbV2 = false
-  public isHbV2Loaded = false
-  public isHbV2Ready = false
-  public packageVersion = this.$settings.env.packageVersion
-  public homebridgeVersion = this.$settings.env.homebridgeVersion
-  public isAdmin = this.$auth.user.admin
-  public dockerStatusDone = false as boolean
-  public dockerInfo: DockerDetails = {
+  // Signals
+  widget = input.required<Widget>()
+  public homebridgePkg = signal<Plugin>({} as Plugin)
+  public homebridgeUiPkg = signal<Plugin>({} as Plugin)
+  public homebridgePluginStatus = signal<Plugin[]>([])
+  public homebridgePluginStatusDone = signal<boolean>(false)
+  public nodejsInfo = signal<NodeJsInfo | null>(null)
+  public nodejsStatusDone = signal<boolean>(false)
+  public serverInfo = signal<ServerInfo | null>(null)
+  public isRunningHbV2 = signal<boolean>(false)
+  public isHbV2Loaded = signal<boolean>(false)
+  public isHbV2Ready = signal<boolean>(false)
+  public dockerStatusDone = signal<boolean>(false)
+  public dockerInfo = signal<DockerDetails>({
     latestVersion: null,
     latestReleaseBody: '',
     updateAvailable: false,
-  }
+  })
 
-  public async ngOnInit() {
+  // Other properties
+  private io: IoNamespace
+  public packageVersion = this.$settings.env.packageVersion
+  public homebridgeVersion = this.$settings.env.homebridgeVersion
+  public isAdmin = this.$auth.user.admin
+  public nodeUpdatePolicy: NodeUpdatePolicy = 'all'
+  public homebridgeUpdatePolicy: HomebridgeUpdatePolicy = 'all'
+  public homebridgeUiUpdatePolicy: HomebridgeUiUpdatePolicy = 'all'
+
+  public ngOnInit(): void {
     this.io = this.$ws.getExistingNamespace('status')
     this.nodeUpdatePolicy = this.$settings.env.nodeUpdatePolicy || 'all'
     this.homebridgeUiUpdatePolicy = this.$settings.env.homebridgeUiUpdatePolicy || 'all'
     this.homebridgeUpdatePolicy = this.$settings.env.homebridgeUpdatePolicy || 'all'
 
-    this.io.connected.subscribe(async () => {
-      await this.getNodeInfo()
-      await Promise.all([
-        this.checkHomebridgeVersion(),
-        this.checkHomebridgeUiVersion(),
-        this.getOutOfDatePlugins(),
-        this.getDockerInfo(),
-      ])
+    // Set up reconnection handler
+    this.io.connected.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+      queueMicrotask(() => this.loadAllData())
     })
 
+    // Fetch initial data if already connected - defer to avoid NG0100
     if (this.io.socket.connected) {
-      await this.getNodeInfo()
-      await Promise.all([
-        this.checkHomebridgeVersion(),
-        this.checkHomebridgeUiVersion(),
-        this.getOutOfDatePlugins(),
-        this.getDockerInfo(),
-      ])
+      queueMicrotask(() => this.loadAllData())
     }
+  }
+
+  private async loadAllData(): Promise<void> {
+    await this.getNodeInfo()
+    await Promise.all([
+      this.checkHomebridgeVersion(),
+      this.checkHomebridgeUiVersion(),
+      this.getOutOfDatePlugins(),
+      this.getDockerInfo(),
+    ])
 
     // The user on UI v5 will already have a compatible Node.js version
-    this.isHbV2Ready = true
+    this.isHbV2Ready.set(true)
 
-    if (!this.isRunningHbV2 && this.isAdmin) {
-      const installedPlugins = await firstValueFrom(this.$api.get('/plugins'))
+    if (!this.isRunningHbV2() && this.isAdmin) {
+      const installedPlugins = await this.$api.get('/plugins')
       const allHb2Ready = installedPlugins
         .filter((x: any) => x.name !== 'homebridge-config-ui-x')
         .every((x: any) => {
@@ -113,43 +117,56 @@ export class UpdateInfoWidgetComponent implements OnInit {
           )
         })
 
-      this.isHbV2Ready = this.isHbV2Ready && allHb2Ready
-      this.isHbV2Loaded = true
+      this.isHbV2Ready.set(this.isHbV2Ready() && allHb2Ready)
+      this.isHbV2Loaded.set(true)
     }
   }
 
-  public nodeVersionModal(compareVersion: string) {
-    const ref = this.$modal.open(NodeVersionModalComponent, {
+  public nodeVersionModal(compareVersion: string): void {
+    const injector = createEnvironmentInjector([{
+      provide: NODE_VERSION_MODAL_DATA,
+      useValue: {
+        nodeVersion: this.serverInfo()!.nodeVersion,
+        latestVersion: compareVersion,
+        showNodeUnsupportedWarning: this.nodejsInfo()!.showNodeUnsupportedWarning,
+        homebridgeRunningInSynologyPackage: this.serverInfo()!.homebridgeRunningInSynologyPackage,
+        homebridgeRunningInDocker: this.serverInfo()!.homebridgeRunningInDocker,
+        homebridgePkg: this.homebridgePkg(),
+        architecture: this.nodejsInfo()!.architecture,
+        supportsNodeJs24: this.nodejsInfo()!.supportsNodeJs24,
+        statusIo: this.io,
+        onUpdate: async () => {
+          // Reload to refresh the widget display
+          await this.getNodeInfo()
+        },
+      },
+    }], this.injector)
+
+    this.$modal.open(NodeVersionModalComponent, {
       size: 'lg',
       backdrop: 'static',
+      injector,
     })
-
-    ref.componentInstance.nodeVersion = this.serverInfo.nodeVersion
-    ref.componentInstance.latestVersion = compareVersion
-    ref.componentInstance.showNodeUnsupportedWarning = this.nodejsInfo.showNodeUnsupportedWarning
-    ref.componentInstance.homebridgeRunningInSynologyPackage = this.serverInfo.homebridgeRunningInSynologyPackage
-    ref.componentInstance.homebridgeRunningInDocker = this.serverInfo.homebridgeRunningInDocker
-    ref.componentInstance.homebridgePkg = this.homebridgePkg
-    ref.componentInstance.architecture = this.nodejsInfo.architecture
-    ref.componentInstance.supportsNodeJs24 = this.nodejsInfo.supportsNodeJs24
-    ref.componentInstance.statusIo = this.io
-    ref.componentInstance.onUpdate = async () => {
-      // Reload to refresh the widget display
-      await this.getNodeInfo()
-    }
   }
 
-  public readyForV2Modal() {
-    const ref = this.$modal.open(HbV2ModalComponent, {
+  public readyForV2Modal(): void {
+    const injector = createEnvironmentInjector([{
+      provide: HB_V2_MODAL_DATA,
+      useValue: {
+        isUpdating: false,
+        skipIfCompatible: false,
+      },
+    }], this.injector)
+
+    this.$modal.open(HbV2ModalComponent, {
       size: 'lg',
       backdrop: 'static',
+      injector,
     })
-    ref.componentInstance.isUpdating = false
-    ref.componentInstance.skipIfCompatible = false
   }
 
-  public installAlternateVersion(pkg: Plugin) {
-    // Pass a callback to refresh the widget when settings change
+  public installAlternateVersion(pkg: Plugin): void {
+    // Pass a callback to refresh the widget when settings change (Angular 20 feature)
     const onSettingsChange = async () => {
       if (pkg.name === 'homebridge') {
         await this.checkHomebridgeVersion()
@@ -157,15 +174,15 @@ export class UpdateInfoWidgetComponent implements OnInit {
         await this.checkHomebridgeUiVersion()
       }
     }
-    this.$plugin.installAlternateVersion(pkg, onSettingsChange)
+    void this.$plugin.installAlternateVersion(pkg, onSettingsChange)
   }
 
-  public updatePackage(pkg: Plugin) {
-    this.$plugin.upgradeHomebridge(pkg, pkg.latestVersion)
+  public updatePackage(pkg: Plugin): void {
+    void this.$plugin.upgradeHomebridge(pkg, pkg.latestVersion)
   }
 
   public getHomebridgeIconClass() {
-    if (!this.homebridgePkg.installedVersion) {
+    if (!this.homebridgePkg().installedVersion) {
       return {
         'fa-circle-notch': true,
         'fa-spin': true,
@@ -173,7 +190,7 @@ export class UpdateInfoWidgetComponent implements OnInit {
       }
     }
 
-    if (this.homebridgeUpdatePolicy === 'none' || (this.homebridgeUpdatePolicy === 'major' && !this.homebridgePkg.updateAvailable)) {
+    if (this.homebridgeUpdatePolicy === 'none' || (this.homebridgeUpdatePolicy === 'major' && !this.homebridgePkg().updateAvailable)) {
       return {
         'fa-circle': true,
         'green-text': true,
@@ -181,15 +198,15 @@ export class UpdateInfoWidgetComponent implements OnInit {
     }
 
     return {
-      'fa-check-circle': !this.homebridgePkg.updateAvailable,
-      'green-text': !this.homebridgePkg.updateAvailable,
-      'fa-arrow-alt-circle-up': this.homebridgePkg.updateAvailable,
-      'orange-text': this.homebridgePkg.updateAvailable,
+      'fa-check-circle': !this.homebridgePkg().updateAvailable,
+      'green-text': !this.homebridgePkg().updateAvailable,
+      'fa-arrow-alt-circle-up': this.homebridgePkg().updateAvailable,
+      'orange-text': this.homebridgePkg().updateAvailable,
     }
   }
 
   public getHomebridgeUiIconClass() {
-    if (!this.homebridgeUiPkg.installedVersion) {
+    if (!this.homebridgeUiPkg().installedVersion) {
       return {
         'fa-circle-notch': true,
         'fa-spin': true,
@@ -197,7 +214,7 @@ export class UpdateInfoWidgetComponent implements OnInit {
       }
     }
 
-    if (this.homebridgeUiUpdatePolicy === 'none' || (this.homebridgeUiUpdatePolicy === 'major' && !this.homebridgeUiPkg.updateAvailable)) {
+    if (this.homebridgeUiUpdatePolicy === 'none' || (this.homebridgeUiUpdatePolicy === 'major' && !this.homebridgeUiPkg().updateAvailable)) {
       return {
         'fa-circle': true,
         'green-text': true,
@@ -205,15 +222,15 @@ export class UpdateInfoWidgetComponent implements OnInit {
     }
 
     return {
-      'fa-check-circle': !this.homebridgeUiPkg.updateAvailable,
-      'green-text': !this.homebridgeUiPkg.updateAvailable,
-      'fa-arrow-alt-circle-up': this.homebridgeUiPkg.updateAvailable,
-      'orange-text': this.homebridgeUiPkg.updateAvailable,
+      'fa-check-circle': !this.homebridgeUiPkg().updateAvailable,
+      'green-text': !this.homebridgeUiPkg().updateAvailable,
+      'fa-arrow-alt-circle-up': this.homebridgeUiPkg().updateAvailable,
+      'orange-text': this.homebridgeUiPkg().updateAvailable,
     }
   }
 
   public getPluginsIconClass() {
-    if (!this.homebridgePluginStatusDone) {
+    if (!this.homebridgePluginStatusDone()) {
       return {
         'fa-circle-notch': true,
         'fa-spin': true,
@@ -221,15 +238,15 @@ export class UpdateInfoWidgetComponent implements OnInit {
       }
     }
     return {
-      'fa-arrow-alt-circle-up': this.homebridgePluginStatus.length,
-      'orange-text': this.homebridgePluginStatus.length,
-      'fa-check-circle': !this.homebridgePluginStatus.length,
-      'green-text': !this.homebridgePluginStatus.length,
+      'fa-arrow-alt-circle-up': this.homebridgePluginStatus().length,
+      'orange-text': this.homebridgePluginStatus().length,
+      'fa-check-circle': !this.homebridgePluginStatus().length,
+      'green-text': !this.homebridgePluginStatus().length,
     }
   }
 
   public getNodejsIconClass() {
-    if (!this.nodejsStatusDone) {
+    if (!this.nodejsStatusDone()) {
       return {
         'fa-circle-notch': true,
         'fa-spin': true,
@@ -237,14 +254,14 @@ export class UpdateInfoWidgetComponent implements OnInit {
       }
     }
 
-    if (this.nodeUpdatePolicy === 'none' || (this.nodeUpdatePolicy === 'major' && !this.nodejsInfo.updateAvailable)) {
+    if (this.nodeUpdatePolicy === 'none' || (this.nodeUpdatePolicy === 'major' && !this.nodejsInfo().updateAvailable)) {
       return {
         'fa-circle': true,
         'green-text': true,
       }
     }
 
-    if (this.nodejsInfo.showNodeUnsupportedWarning) {
+    if (this.nodejsInfo().showNodeUnsupportedWarning) {
       return {
         'fa-exclamation-circle': true,
         'orange-text': true,
@@ -252,21 +269,22 @@ export class UpdateInfoWidgetComponent implements OnInit {
     }
 
     return {
-      'fa-arrow-alt-circle-up': this.nodejsInfo.updateAvailable,
-      'orange-text': this.nodejsInfo.updateAvailable,
-      'fa-check-circle': !this.nodejsInfo.updateAvailable,
-      'green-text': !this.nodejsInfo.updateAvailable,
+      'fa-arrow-alt-circle-up': this.nodejsInfo().updateAvailable,
+      'orange-text': this.nodejsInfo().updateAvailable,
+      'fa-check-circle': !this.nodejsInfo().updateAvailable,
+      'green-text': !this.nodejsInfo().updateAvailable,
     }
   }
 
-  private async checkHomebridgeVersion() {
+  private async checkHomebridgeVersion(): Promise<void> {
     try {
       const response = await firstValueFrom(this.io.request('homebridge-version-check'))
-      this.homebridgePkg = response
-      this.homebridgePkg.displayName = 'Homebridge'
+      response.displayName = 'Homebridge'
+
+      this.homebridgePkg.set(response)
       this.$settings.env.homebridgeVersion = response.installedVersion
       this.homebridgeUpdatePolicy = this.$settings.env.homebridgeUpdatePolicy || 'all'
-      this.isRunningHbV2 = response.installedVersion.startsWith('2.')
+      this.isRunningHbV2.set(response.installedVersion.startsWith('2.'))
     } catch (error) {
       console.error(error)
       this.$toastr.error(
@@ -276,21 +294,18 @@ export class UpdateInfoWidgetComponent implements OnInit {
     }
   }
 
-  private async getNodeInfo() {
+  private async getNodeInfo(): Promise<void> {
     try {
-      this.serverInfo = await firstValueFrom(
-        this.io.request('get-homebridge-server-info'),
-      )
-      this.nodejsInfo = await firstValueFrom(
-        this.io.request('nodejs-version-check'),
-      )
+      this.serverInfo.set(await firstValueFrom(this.io.request('get-homebridge-server-info')))
+      const nodejsInfo = await firstValueFrom(this.io.request('nodejs-version-check'))
 
       // Refresh the policy from settings to ensure we have the latest value
       this.nodeUpdatePolicy = this.$settings.env.nodeUpdatePolicy || 'all'
 
       // Backend handles the policy logic and returns the appropriate version
       // No additional filtering needed here
-      this.nodejsStatusDone = true
+      this.nodejsInfo.set(nodejsInfo)
+      this.nodejsStatusDone.set(true)
     } catch (error) {
       console.error(error)
       this.$toastr.error(
@@ -300,17 +315,16 @@ export class UpdateInfoWidgetComponent implements OnInit {
     }
   }
 
-  private async checkHomebridgeUiVersion() {
+  private async checkHomebridgeUiVersion(): Promise<void> {
     try {
-      const response = await firstValueFrom(
-        this.io.request('homebridge-ui-version-check'),
-      )
-      this.homebridgeUiPkg = response
+      const response = await firstValueFrom(this.io.request('homebridge-ui-version-check'))
       this.$settings.env.homebridgeUiVersion = response.installedVersion
       this.homebridgeUiUpdatePolicy = this.$settings.env.homebridgeUiUpdatePolicy || 'all'
       if (!environment.production) {
-        this.homebridgeUiPkg.updateAvailable = false
+        response.updateAvailable = false
       }
+
+      this.homebridgeUiPkg.set(response)
     } catch (error) {
       console.error(error)
       this.$toastr.error(
@@ -320,17 +334,13 @@ export class UpdateInfoWidgetComponent implements OnInit {
     }
   }
 
-  private async getOutOfDatePlugins() {
+  private async getOutOfDatePlugins(): Promise<void> {
     try {
-      const outOfDatePlugins = await firstValueFrom(
-        this.io.request('get-out-of-date-plugins'),
-      )
-      this.homebridgePluginStatus = outOfDatePlugins.filter(
-        (x: any) =>
-          x.name !== 'homebridge-config-ui-x'
-          && !this.$settings.env.plugins?.hideUpdatesFor?.includes(x.name),
-      )
-      this.homebridgePluginStatusDone = true
+      const outOfDatePlugins = await firstValueFrom(this.io.request('get-out-of-date-plugins'))
+      // Filter out Homebridge UI and plugins with hide updates setting (Angular 20 feature)
+      this.homebridgePluginStatus.set(outOfDatePlugins
+        .filter((x: any) => x.name !== 'homebridge-config-ui-x' && !this.$settings.env.plugins?.hideUpdatesFor?.includes(x.name)))
+      this.homebridgePluginStatusDone.set(true)
     } catch (error) {
       console.error(error)
       this.$toastr.error(
@@ -340,13 +350,11 @@ export class UpdateInfoWidgetComponent implements OnInit {
     }
   }
 
-  private async getDockerInfo() {
-    if (this.serverInfo?.homebridgeRunningInDocker) {
+  private async getDockerInfo(): Promise<void> {
+    if (this.serverInfo() && this.serverInfo()!.homebridgeRunningInDocker) {
       try {
-        this.dockerInfo = await firstValueFrom(
-          this.io.request('docker-version-check'),
-        )
-        this.dockerStatusDone = true
+        this.dockerInfo.set(await firstValueFrom(this.io.request('docker-version-check')))
+        this.dockerStatusDone.set(true)
       } catch (error) {
         console.error(error)
         this.$toastr.error(
@@ -355,37 +363,36 @@ export class UpdateInfoWidgetComponent implements OnInit {
         )
       }
     } else {
-      this.dockerStatusDone = true
+      this.dockerStatusDone.set(true)
     }
   }
 
-  public toggleDockerExpand() {
-    this.widget.dockerExpanded = !this.widget.dockerExpanded
-    this.widget.$saveWidgetsEvent.next() // Trigger the save event
+  public toggleDockerExpand(): void {
+    this.widget().dockerExpanded = !this.widget().dockerExpanded
+    this.widget().$saveWidgetsEvent.next() // Trigger the save event
   }
 
-  public dockerUpdateModal() {
-    const ref = this.$modal.open(InformationComponent, {
+  public dockerUpdateModal(): void {
+    const dockerInfo = this.dockerInfo()
+    const injector = createEnvironmentInjector([{
+      provide: INFORMATION_MODAL_DATA,
+      useValue: {
+        title: this.$translate.instant('status.widget.info.docker_update_title'),
+        message: this.$translate.instant('status.widget.info.docker_update_message'),
+        markdownMessage2: dockerInfo.latestReleaseBody,
+        subtitle: (dockerInfo.currentVersion && dockerInfo.latestVersion)
+          ? `${dockerInfo.currentVersion} &rarr; ${dockerInfo.latestVersion}`
+          : this.$translate.instant('accessories.control.unknown'),
+        ctaButtonLabel: this.$translate.instant('form.button_more_info'),
+        faIconClass: 'fab fa-docker primary-text',
+        ctaButtonLink: 'https://github.com/homebridge/docker-homebridge/wiki/How-To-Update-Docker-Homebridge',
+      },
+    }], this.injector)
+
+    this.$modal.open(InformationComponent, {
       size: 'lg',
       backdrop: 'static',
+      injector,
     })
-
-    ref.componentInstance.title = this.$translate.instant(
-      'status.widget.info.docker_update_title',
-    )
-    ref.componentInstance.message = this.$translate.instant(
-      'status.widget.info.docker_update_message',
-    )
-    ref.componentInstance.markdownMessage2 = this.dockerInfo.latestReleaseBody
-    ref.componentInstance.subtitle
-      = this.dockerInfo.currentVersion && this.dockerInfo.latestVersion
-        ? `${this.dockerInfo.currentVersion} &rarr; ${this.dockerInfo.latestVersion}`
-        : this.$translate.instant('accessories.control.unknown')
-    ref.componentInstance.ctaButtonLabel = this.$translate.instant(
-      'form.button_more_info',
-    )
-    ref.componentInstance.faIconClass = 'fab fa-docker primary-text'
-    ref.componentInstance.ctaButtonLink
-      = 'https://github.com/homebridge/docker-homebridge/wiki/How-To-Update-Docker-Homebridge'
   }
 }

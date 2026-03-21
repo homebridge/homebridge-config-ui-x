@@ -36,34 +36,50 @@ export function isRvcActive(service: ServiceTypeX): boolean {
 /**
  * Control an RVC device by toggling its state (run/pause/resume)
  */
-export function controlRvcDevice(service: ServiceTypeX): void {
+export async function controlRvcDevice(service: ServiceTypeX): Promise<void> {
   const currentState = getRvcOperationalState(service)
 
   if (currentState === RvcOperationalState.Running) {
     // Running → Pause
     const cluster = service.getCluster?.('rvcOperationalState')
-    if (cluster) {
-      cluster.setAttributes({ operationalState: RvcOperationalState.Paused }).catch((error) => {
-        console.error('Failed to pause Matter robotic vacuum:', error)
-      })
+    if (!cluster) {
+      const error = new Error('RVC operational state cluster not found')
+      console.error(error.message)
+      throw error
+    }
+    try {
+      await cluster.setAttributes({ operationalState: RvcOperationalState.Paused })
+    } catch (error) {
+      console.error('Failed to pause Matter robotic vacuum:', error)
+      throw error
     }
   } else if (currentState === RvcOperationalState.Paused) {
     // Paused → Resume
     const cluster = service.getCluster?.('rvcOperationalState')
-    if (cluster) {
-      cluster.setAttributes({ operationalState: RvcOperationalState.Running }).catch((error) => {
-        console.error('Failed to resume Matter robotic vacuum:', error)
-      })
+    if (!cluster) {
+      const error = new Error('RVC operational state cluster not found')
+      console.error(error.message)
+      throw error
+    }
+    try {
+      await cluster.setAttributes({ operationalState: RvcOperationalState.Running })
+    } catch (error) {
+      console.error('Failed to resume Matter robotic vacuum:', error)
+      throw error
     }
   } else {
     // Stopped/Docked/Charging → Start cleaning via RvcRunMode
     const runModeCluster = service.getCluster?.('rvcRunMode')
-    if (runModeCluster) {
-      runModeCluster.setAttributes({ currentMode: RvcRunMode.Cleaning }).catch((error) => {
-        console.error('Failed to start Matter robotic vacuum:', error)
-      })
-    } else {
-      console.error('RvcRunMode cluster not found')
+    if (!runModeCluster) {
+      const error = new Error('RvcRunMode cluster not found')
+      console.error(error.message)
+      throw error
+    }
+    try {
+      await runModeCluster.setAttributes({ currentMode: RvcRunMode.Cleaning })
+    } catch (error) {
+      console.error('Failed to start Matter robotic vacuum:', error)
+      throw error
     }
   }
 }
@@ -71,15 +87,22 @@ export function controlRvcDevice(service: ServiceTypeX): void {
 /**
  * Control an OnOff device by toggling its state
  */
-export function controlOnOffDevice(service: ServiceTypeX): void {
+export async function controlOnOffDevice(service: ServiceTypeX): Promise<void> {
   const currentState = service.clusters?.onOff?.onOff ?? false
   const newState = !currentState
 
   const cluster = service.getCluster?.('onOff')
-  if (cluster) {
-    cluster.setAttributes({ onOff: newState }).catch((error) => {
-      console.error('Failed to control Matter device:', error)
-    })
+  if (!cluster) {
+    const error = new Error('OnOff cluster not found')
+    console.error(error.message)
+    throw error
+  }
+
+  try {
+    await cluster.setAttributes({ onOff: newState })
+  } catch (error) {
+    console.error('Failed to control Matter device:', error)
+    throw error
   }
 }
 
@@ -125,9 +148,9 @@ export function getDeviceActiveState(service: ServiceTypeX): boolean {
  */
 export function controlDevice(service: ServiceTypeX): void {
   if (isRvcDevice(service)) {
-    controlRvcDevice(service)
+    void controlRvcDevice(service)
   } else {
-    controlOnOffDevice(service)
+    void controlOnOffDevice(service)
   }
 }
 
@@ -195,16 +218,9 @@ export function levelToPercentage(level: number): number {
 }
 
 /**
- * Convert a percentage (0-100) to brightness level (0-254)
- */
-export function percentageToLevel(percentage: number): number {
-  return Math.round((percentage / 100) * MatterBrightness.Max)
-}
-
-/**
  * Toggle a dimmable light on/off
  */
-export function toggleDimmableLight(service: ServiceTypeX): void {
+export async function toggleDimmableLight(service: ServiceTypeX): Promise<void> {
   const brightness = getBrightnessLevel(service)
   const isOn = getOnOffState(service)
 
@@ -212,19 +228,31 @@ export function toggleDimmableLight(service: ServiceTypeX): void {
     // Turn off - use onOff cluster instead of levelControl
     // Setting level to 0 may be clamped to minLevel (usually 1), keeping light on
     const onOffCluster = service.getCluster?.('onOff')
-    if (onOffCluster) {
-      onOffCluster.setAttributes({ onOff: false }).catch((error) => {
-        console.error('Failed to turn Matter light off:', error)
-      })
+    if (!onOffCluster) {
+      const error = new Error('OnOff cluster not found')
+      console.error(error.message)
+      throw error
+    }
+    try {
+      await onOffCluster.setAttributes({ onOff: false })
+    } catch (error) {
+      console.error('Failed to turn Matter light off:', error)
+      throw error
     }
   } else {
     // Turn on - set to max if currently 0, otherwise restore previous level
     const targetLevel = brightness || MatterBrightness.Max
     const levelCluster = service.getCluster?.('levelControl')
-    if (levelCluster) {
-      levelCluster.setAttributes({ currentLevel: targetLevel }).catch((error) => {
-        console.error('Failed to turn Matter light on:', error)
-      })
+    if (!levelCluster) {
+      const error = new Error('LevelControl cluster not found')
+      console.error(error.message)
+      throw error
+    }
+    try {
+      await levelCluster.setAttributes({ currentLevel: targetLevel })
+    } catch (error) {
+      console.error('Failed to turn Matter light on:', error)
+      throw error
     }
   }
 }
@@ -241,14 +269,6 @@ export function getColorTemperatureMireds(service: ServiceTypeX): number {
  */
 export function hasColorTemperature(service: ServiceTypeX): boolean {
   return service.clusters?.colorControl?.colorTemperatureMireds !== undefined
-}
-
-/**
- * Check if a device supports hue/saturation color control
- */
-export function hasHueSaturation(service: ServiceTypeX): boolean {
-  const cluster = service.clusters?.colorControl
-  return cluster?.currentHue !== undefined || cluster?.currentSaturation !== undefined
 }
 
 /**
@@ -364,20 +384,6 @@ export function getAirQualityValue(service: ServiceTypeX): number {
   return service.clusters?.airQuality?.airQuality ?? 0
 }
 
-/**
- * Get PM2.5 concentration value (µg/m³)
- */
-export function getPM25Value(service: ServiceTypeX): number | null {
-  return service.clusters?.pm25ConcentrationMeasurement?.measuredValue ?? null
-}
-
-/**
- * Get PM10 concentration value (µg/m³)
- */
-export function getPM10Value(service: ServiceTypeX): number | null {
-  return service.clusters?.pm10ConcentrationMeasurement?.measuredValue ?? null
-}
-
 // ============================================================================
 // Door Lock Utility Functions
 // ============================================================================
@@ -391,52 +397,51 @@ export function getDoorLockState(service: ServiceTypeX): number {
 }
 
 /**
- * Check if door lock is locked
- */
-export function isDoorLocked(service: ServiceTypeX): boolean {
-  return getDoorLockState(service) === 1
-}
-
-/**
  * Toggle door lock state
  */
-export function toggleDoorLock(service: ServiceTypeX): void {
+export async function toggleDoorLock(service: ServiceTypeX): Promise<void> {
   const currentState = getDoorLockState(service)
   const cluster = service.getCluster?.('doorLock')
 
   if (!cluster) {
-    console.error('Door lock cluster not found')
-    return
+    const error = new Error('Door lock cluster not found')
+    console.error(error.message)
+    throw error
   }
 
-  if (currentState === 1) {
-    // Currently locked → unlock
-    cluster.setAttributes({ lockState: 2 }).catch((error) => {
-      console.error('Failed to unlock door:', error)
-    })
-  } else {
-    // Currently unlocked or not fully locked → lock
-    cluster.setAttributes({ lockState: 1 }).catch((error) => {
-      console.error('Failed to lock door:', error)
-    })
+  try {
+    if (currentState === 1) {
+      // Currently locked → unlock
+      await cluster.setAttributes({ lockState: 2 })
+    } else {
+      // Currently unlocked or not fully locked → lock
+      await cluster.setAttributes({ lockState: 1 })
+    }
+  } catch (error) {
+    console.error(`Failed to ${currentState === 1 ? 'unlock' : 'lock'} door:`, error)
+    throw error
   }
 }
 
 /**
  * Set door lock state directly
  */
-export function setDoorLockState(service: ServiceTypeX, locked: boolean): void {
+export async function setDoorLockState(service: ServiceTypeX, locked: boolean): Promise<void> {
   const cluster = service.getCluster?.('doorLock')
 
   if (!cluster) {
-    console.error('Door lock cluster not found')
-    return
+    const error = new Error('Door lock cluster not found')
+    console.error(error.message)
+    throw error
   }
 
   const targetState = locked ? 1 : 2
-  cluster.setAttributes({ lockState: targetState }).catch((error) => {
+  try {
+    await cluster.setAttributes({ lockState: targetState })
+  } catch (error) {
     console.error('Failed to set door lock state:', error)
-  })
+    throw error
+  }
 }
 
 // ============================================================================
@@ -449,13 +454,6 @@ export function setDoorLockState(service: ServiceTypeX, locked: boolean): void {
  */
 export function getWindowCoveringPosition(service: ServiceTypeX): number {
   return service.clusters?.windowCovering?.currentPositionLiftPercent100ths ?? 0
-}
-
-/**
- * Get target window covering position (0-10000, where 0=open, 10000=closed)
- */
-export function getWindowCoveringTargetPosition(service: ServiceTypeX): number {
-  return service.clusters?.windowCovering?.targetPositionLiftPercent100ths ?? 0
 }
 
 /**
@@ -489,39 +487,36 @@ export function getWindowCoveringPercentage(service: ServiceTypeX): number {
  * @param service - The service
  * @param percentage - Percentage open (0=closed, 100=open)
  */
-export function setWindowCoveringPosition(service: ServiceTypeX, percentage: number): void {
+export async function setWindowCoveringPosition(service: ServiceTypeX, percentage: number): Promise<void> {
   const cluster = service.getCluster?.('windowCovering')
 
   if (!cluster) {
-    console.error('Window covering cluster not found')
-    return
+    const error = new Error('Window covering cluster not found')
+    console.error(error.message)
+    throw error
   }
 
   const matterPosition = percentageToMatterPosition(percentage)
-  cluster.setAttributes({ targetPositionLiftPercent100ths: matterPosition }).catch((error) => {
+  try {
+    await cluster.setAttributes({ targetPositionLiftPercent100ths: matterPosition })
+  } catch (error) {
     console.error('Failed to set window covering position:', error)
-  })
+    throw error
+  }
 }
 
 /**
  * Toggle window covering (open if closed, close if open)
  */
-export function toggleWindowCovering(service: ServiceTypeX): void {
+export async function toggleWindowCovering(service: ServiceTypeX): Promise<void> {
   const currentPercentage = getWindowCoveringPercentage(service)
 
   // If more than 50% open, close it; otherwise open it
   if (currentPercentage > 50) {
-    setWindowCoveringPosition(service, 0) // Close
+    await setWindowCoveringPosition(service, 0) // Close
   } else {
-    setWindowCoveringPosition(service, 100) // Open
+    await setWindowCoveringPosition(service, 100) // Open
   }
-}
-
-/**
- * Check if window covering is open (more than 0%)
- */
-export function isWindowCoveringOpen(service: ServiceTypeX): boolean {
-  return getWindowCoveringPercentage(service) > 0
 }
 
 // ============================================================================
@@ -544,13 +539,6 @@ export function getFanPercentSetting(service: ServiceTypeX): number {
 }
 
 /**
- * Get current fan speed percentage (0-100)
- */
-export function getFanPercentCurrent(service: ServiceTypeX): number {
-  return service.clusters?.fanControl?.percentCurrent ?? 0
-}
-
-/**
  * Check if fan is on (mode > 0 or percent > 0)
  */
 export function isFanOn(service: ServiceTypeX): boolean {
@@ -562,42 +550,48 @@ export function isFanOn(service: ServiceTypeX): boolean {
 /**
  * Toggle fan on/off
  */
-export function toggleFan(service: ServiceTypeX): void {
+export async function toggleFan(service: ServiceTypeX): Promise<void> {
   const isOn = isFanOn(service)
   const cluster = service.getCluster?.('fanControl')
 
   if (!cluster) {
-    console.error('Fan control cluster not found')
-    return
+    const error = new Error('Fan control cluster not found')
+    console.error(error.message)
+    throw error
   }
 
-  if (isOn) {
-    // Turn off
-    cluster.setAttributes({ percentSetting: 0 }).catch((error) => {
-      console.error('Failed to turn fan off:', error)
-    })
-  } else {
-    // Turn on to 100%
-    cluster.setAttributes({ percentSetting: 100 }).catch((error) => {
-      console.error('Failed to turn fan on:', error)
-    })
+  try {
+    if (isOn) {
+      // Turn off
+      await cluster.setAttributes({ percentSetting: 0 })
+    } else {
+      // Turn on to 100%
+      await cluster.setAttributes({ percentSetting: 100 })
+    }
+  } catch (error) {
+    console.error(`Failed to turn fan ${isOn ? 'off' : 'on'}:`, error)
+    throw error
   }
 }
 
 /**
  * Set fan speed percentage (0-100)
  */
-export function setFanSpeed(service: ServiceTypeX, percent: number): void {
+export async function setFanSpeed(service: ServiceTypeX, percent: number): Promise<void> {
   const cluster = service.getCluster?.('fanControl')
 
   if (!cluster) {
-    console.error('Fan control cluster not found')
-    return
+    const error = new Error('Fan control cluster not found')
+    console.error(error.message)
+    throw error
   }
 
-  cluster.setAttributes({ percentSetting: percent }).catch((error) => {
+  try {
+    await cluster.setAttributes({ percentSetting: percent })
+  } catch (error) {
     console.error('Failed to set fan speed:', error)
-  })
+    throw error
+  }
 }
 
 // ============================================================================
@@ -650,17 +644,21 @@ export function isThermostatOn(service: ServiceTypeX): boolean {
 /**
  * Set thermostat system mode
  */
-export function setThermostatSystemMode(service: ServiceTypeX, mode: number): void {
+export async function setThermostatSystemMode(service: ServiceTypeX, mode: number): Promise<void> {
   const cluster = service.getCluster?.('thermostat')
 
   if (!cluster) {
-    console.error('Thermostat cluster not found')
-    return
+    const error = new Error('Thermostat cluster not found')
+    console.error(error.message)
+    throw error
   }
 
-  cluster.setAttributes({ systemMode: mode }).catch((error) => {
+  try {
+    await cluster.setAttributes({ systemMode: mode })
+  } catch (error) {
     console.error('Failed to set thermostat system mode:', error)
-  })
+    throw error
+  }
 }
 
 /**
@@ -668,18 +666,22 @@ export function setThermostatSystemMode(service: ServiceTypeX, mode: number): vo
  * @param service - The service
  * @param temperatureCelsius - Temperature in °C
  */
-export function setThermostatHeatingSetpoint(service: ServiceTypeX, temperatureCelsius: number): void {
+export async function setThermostatHeatingSetpoint(service: ServiceTypeX, temperatureCelsius: number): Promise<void> {
   const cluster = service.getCluster?.('thermostat')
 
   if (!cluster) {
-    console.error('Thermostat cluster not found')
-    return
+    const error = new Error('Thermostat cluster not found')
+    console.error(error.message)
+    throw error
   }
 
   const setpoint = Math.round(temperatureCelsius * 100)
-  cluster.setAttributes({ occupiedHeatingSetpoint: setpoint }).catch((error) => {
+  try {
+    await cluster.setAttributes({ occupiedHeatingSetpoint: setpoint })
+  } catch (error) {
     console.error('Failed to set heating setpoint:', error)
-  })
+    throw error
+  }
 }
 
 /**
@@ -687,16 +689,20 @@ export function setThermostatHeatingSetpoint(service: ServiceTypeX, temperatureC
  * @param service - The service
  * @param temperatureCelsius - Temperature in °C
  */
-export function setThermostatCoolingSetpoint(service: ServiceTypeX, temperatureCelsius: number): void {
+export async function setThermostatCoolingSetpoint(service: ServiceTypeX, temperatureCelsius: number): Promise<void> {
   const cluster = service.getCluster?.('thermostat')
 
   if (!cluster) {
-    console.error('Thermostat cluster not found')
-    return
+    const error = new Error('Thermostat cluster not found')
+    console.error(error.message)
+    throw error
   }
 
   const setpoint = Math.round(temperatureCelsius * 100)
-  cluster.setAttributes({ occupiedCoolingSetpoint: setpoint }).catch((error) => {
+  try {
+    await cluster.setAttributes({ occupiedCoolingSetpoint: setpoint })
+  } catch (error) {
     console.error('Failed to set cooling setpoint:', error)
-  })
+    throw error
+  }
 }

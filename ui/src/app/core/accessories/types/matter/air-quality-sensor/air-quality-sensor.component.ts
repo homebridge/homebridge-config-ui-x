@@ -1,6 +1,6 @@
 import type { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
 
-import { Component, Input } from '@angular/core'
+import { Component, computed, input } from '@angular/core'
 import { TranslatePipe } from '@ngx-translate/core'
 
 import { getAirQualityValue } from '@/app/core/accessories/types/matter/matter-device.utils'
@@ -13,11 +13,9 @@ import { getAirQualityValue } from '@/app/core/accessories/types/matter/matter-d
   imports: [TranslatePipe],
 })
 export class MatterAirQualitySensorComponent {
-  @Input() public service: ServiceTypeX
+  public service = input.required<ServiceTypeX>()
 
   public labels = ['Unknown', 'Good', 'Fair', 'Moderate', 'Poor', 'Very Poor', 'Extremely Poor']
 
-  public get airQuality(): number {
-    return getAirQualityValue(this.service)
-  }
+  public airQuality = computed(() => getAirQualityValue(this.service()))
 }

@@ -37,8 +37,7 @@
       [step]="targetBrightness.step"
       [(ngModel)]="targetBrightness.value"
       (ngModelChange)="onBrightnessStateChange()"
-    >
-    </nouislider>
+    />
     @if (supportsColorTemperature) {
     <h6 class="mt-4">
       {{ 'accessories.control.color_temperature' | translate }}: {{ targetColorTemperature.mired | convertMired }}
@@ -49,8 +48,7 @@
       [step]="targetColorTemperature.step"
       [(ngModel)]="targetColorTemperature.value"
       (ngModelChange)="onColorTemperatureStateChange()"
-    >
-    </nouislider>
+    />
     }
     <h6 class="mt-3">{{ 'accessories.control.hue' | translate }}: {{ huePercentage }}%</h6>
     <nouislider
@@ -59,8 +57,7 @@
       [step]="targetHue.step"
       [(ngModel)]="targetHue.value"
       (ngModelChange)="onHueStateChange()"
-    >
-    </nouislider>
+    />
     <h6 class="mt-3">{{ 'accessories.control.saturation' | translate }}: {{ saturationPercentage }}%</h6>
     <nouislider
       [min]="targetSaturation.min"
@@ -68,8 +65,7 @@
       [step]="targetSaturation.step"
       [(ngModel)]="targetSaturation.value"
       (ngModelChange)="onSaturationStateChange()"
-    >
-    </nouislider>
+    />
   </div>
   <div class="modal-footer"></div>
 </div>

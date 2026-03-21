@@ -1,5 +1,5 @@
 import { Component, inject } from '@angular/core'
-import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap'
+import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe } from '@ngx-translate/core'
 
 @Component({
@@ -8,9 +8,10 @@ import { TranslatePipe } from '@ngx-translate/core'
   imports: [TranslatePipe],
 })
 export class CreditsComponent {
+  // Injected dependencies
   private $activeModal = inject(NgbActiveModal)
 
-  public dismissModal() {
+  public dismissModal(): void {
     this.$activeModal.dismiss('Dismiss')
   }
 }

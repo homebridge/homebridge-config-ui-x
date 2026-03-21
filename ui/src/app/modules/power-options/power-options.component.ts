@@ -1,12 +1,14 @@
-import { Component, inject, OnInit } from '@angular/core'
+import { Component, createEnvironmentInjector, EnvironmentInjector, inject, OnInit, signal } from '@angular/core'
 import { Router } from '@angular/router'
-import { NgbModal, NgbTooltip } from '@ng-bootstrap/ng-bootstrap'
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
+import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap/tooltip'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
 
-import { ApiService } from '@/app/core/api.service'
+import { ApiService } from '@/app/core/communication/api.service'
 import { ConfirmComponent } from '@/app/core/components/confirm/confirm.component'
-import { SettingsService } from '@/app/core/settings.service'
+import { CONFIRM_MODAL_DATA } from '@/app/core/modal-data-tokens'
+import { SettingsService } from '@/app/core/ui/settings.service'
 
 @Component({
   templateUrl: './power-options.component.html',
@@ -17,6 +19,7 @@ import { SettingsService } from '@/app/core/settings.service'
   ],
 })
 export class PowerOptionsComponent implements OnInit {
+  private injector = inject(EnvironmentInjector)
   private $api = inject(ApiService)
   private $modal = inject(NgbModal)
   private $router = inject(Router)
@@ -24,8 +27,9 @@ export class PowerOptionsComponent implements OnInit {
   private $toastr = inject(ToastrService)
   private $translate = inject(TranslateService)
 
-  public canShutdownRestartHost = this.$settings.env.canShutdownRestartHost
-  public runningInDocker = this.$settings.env.runningInDocker
+  // Signals
+  public canShutdownRestartHost = signal(this.$settings.env.canShutdownRestartHost)
+  public runningInDocker = signal(this.$settings.env.runningInDocker)
 
   public ngOnInit() {
     // Set page title
@@ -45,17 +49,15 @@ export class PowerOptionsComponent implements OnInit {
     void this.$router.navigate(['/restart'])
   }
 
-  public restartHomebridgeService() {
+  public async restartHomebridgeService(): Promise<void> {
     this.closeRestartToast()
-    this.$api.put('/platform-tools/hb-service/set-full-service-restart-flag', {}).subscribe({
-      next: () => {
-        void this.$router.navigate(['/restart'])
-      },
-      error: (error) => {
-        console.error(error)
-        this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
-      },
-    })
+    try {
+      await this.$api.put('/platform-tools/hb-service/set-full-service-restart-flag', {})
+      void this.$router.navigate(['/restart'])
+    } catch (error) {
+      console.error(error)
+      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+    }
   }
 
   public restartServer() {
@@ -63,23 +65,31 @@ export class PowerOptionsComponent implements OnInit {
     void this.$router.navigate(['/platform-tools/linux/restart-server'])
   }
 
-  public shutdownServer() {
+  public async shutdownServer(): Promise<void> {
     this.closeRestartToast()
     // Confirmation dialog
+    const injector = createEnvironmentInjector([{
+      provide: CONFIRM_MODAL_DATA,
+      useValue: {
+        title: this.$translate.instant('menu.linux.label_shutdown_server'),
+        message: this.$translate.instant('menu.linux.label_shutdown_modal'),
+        confirmButtonLabel: this.$translate.instant('form.button_continue'),
+        faIconClass: 'fa fa-power-off primary-text',
+      },
+    }], this.injector)
+
     const ref = this.$modal.open(ConfirmComponent, {
       size: 'lg',
       backdrop: 'static',
+      injector,
     })
-    ref.componentInstance.title = this.$translate.instant('menu.linux.label_shutdown_server')
-    ref.componentInstance.message = this.$translate.instant('menu.linux.label_shutdown_modal')
-    ref.componentInstance.confirmButtonLabel = this.$translate.instant('form.button_continue')
-    ref.componentInstance.faIconClass = 'fa fa-power-off primary-text'
 
-    ref.result
-      .then(() => {
-        void this.$router.navigate(['/platform-tools/linux/shutdown-server'])
-      })
-      .catch(() => { /* do nothing */ })
+    try {
+      await ref.result
+      void this.$router.navigate(['/platform-tools/linux/shutdown-server'])
+    } catch {
+      // Modal dismissed, do nothing
+    }
   }
 
   public dockerRestartContainer() {

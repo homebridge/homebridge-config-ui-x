@@ -4,8 +4,8 @@
   (shortClick)="onClick()"
   tabindex="0"
   [class]="{
-    'replace': service.values.FilterChangeIndication === 1 || service.values.FilterLifeLevel < 10,
-    'dirty': service.values.FilterChangeIndication !== 1 && service.values.FilterLifeLevel < 50,
+    'replace': service().values?.FilterChangeIndication === 1 || service().values?.FilterLifeLevel < 10,
+    'dirty': service().values?.FilterChangeIndication !== 1 && service().values?.FilterLifeLevel < 50,
   }"
   [style.cursor]="readyForControl ? 'pointer' : 'default'"
 >
@@ -61,12 +61,12 @@
         <line x1="21" y1="6" x2="21" y2="8" stroke="#7f7f7f" stroke-width="1" />
       </svg>
     </div>
-    <div class="accessory-label mt-auto">{{ service.customName || service.serviceName }}</div>
+    <div class="accessory-label mt-auto">{{ service().customName || service().serviceName }}</div>
     <div class="accessory-label grey-text">
-      <span [class.red-text]="service.values.FilterChangeIndication === 1">
-        {{ service.values.FilterLifeLevel }}%
+      <span [class.red-text]="service().values?.FilterChangeIndication === 1">
+        {{ service().values?.FilterLifeLevel }}%
       </span>
-      @if (service.values.FilterChangeIndication === 1) { &middot;
+      @if (service().values?.FilterChangeIndication === 1) { &middot;
       <span class="red-text">{{ 'accessories.control.replace' | translate }}</span>
       }
     </div>

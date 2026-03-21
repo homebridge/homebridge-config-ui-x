@@ -1,6 +1,7 @@
+import packageJson from '../../../package.json'
+
 export const environment = {
-  // eslint-disable-next-line ts/no-require-imports
-  serverTarget: require('../../../package.json').version,
+  serverTarget: packageJson.version,
   production: true,
   socket: '',
   api: {

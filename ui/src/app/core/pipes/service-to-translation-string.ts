@@ -11,6 +11,7 @@ export class ServiceToTranslationStringPipe implements PipeTransform {
     if (typeof value !== 'string' || !value) {
       return value
     }
+
     // Replace capital letters (except the first) with _ + lowercase
     const service = value
       .replace(RE_FIRST_UPPER, match => match.toLowerCase())

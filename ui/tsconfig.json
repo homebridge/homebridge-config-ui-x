@@ -2,11 +2,7 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
-    "target": "es2022",
-    "lib": [
-      "es2023",
-      "dom"
-    ],
+    "target": "es2023",
     "experimentalDecorators": true,
     "baseUrl": "./",
     "module": "es2022",
@@ -16,6 +12,7 @@
         "src/*"
       ]
     },
+    "resolveJsonModule": true,
     "declaration": false,
     "importHelpers": true,
     "outDir": "./dist/out-tsc",

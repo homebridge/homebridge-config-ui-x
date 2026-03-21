@@ -15,27 +15,27 @@
     </div>
     <ul class="mb-3">
       <li>{{ 'users.setup_2fa_warning' | translate }}</li>
-      @if (!timeDiffError) {
+      @if (!timeDiffError()) {
       <li>{{ 'users.setup_2fa_scan_qr_code' | translate }}</li>
       }
     </ul>
-    @if (timeDiffError) {
+    @if (timeDiffError()) {
     <ngb-alert type="error" [dismissible]="false" class="mb-0">
       <p class="fw-bold mb-1">{{ 'users.setup_2fa_cannot_setup_2fa' | translate }}</p>
-      <p class="mb-0">{{ 'users.setup_2fa_server_time_out' | translate: {timeDiffError: timeDiffError} }}</p>
+      <p class="mb-0">{{ 'users.setup_2fa_server_time_out' | translate: {timeDiffError: timeDiffError()} }}</p>
     </ngb-alert>
-    } @if (!timeDiffError) {
+    } @if (!timeDiffError()) {
     <ul class="list-group list-group-box mb-0">
       <li class="list-group-item text-center">
         <div class="text-center w-100 d-flex justify-content-center my-2">
-          <app-qrcode [data]="otpString" class="mx-auto" style="width: 175px; height: 175px" />
+          <app-qrcode [data]="otpString()" class="mx-auto" style="width: 175px; height: 175px" />
         </div>
-        @if (otpSecret) {
+        @if (otpSecret()) {
         <div class="grey-text small mt-0 mb-1">
           {{ 'users.setup_2fa_scan_qr_manual' | translate }}<br />
-          {{ otpSecret }}
+          {{ otpSecret() }}
           <a href="javascript:void(0)" class="ms-1 text-primary" (click)="copySecretToClipboard()">
-            @if (secretCopied) {
+            @if (secretCopied()) {
             <i class="fas fa-check green-text"></i>
             } @else {
             <i class="fas fa-copy"></i>
@@ -64,7 +64,7 @@
   </div>
   <div class="modal-footer justify-content-between">
     <div class="text-start">
-      @if (!timeDiffError) {
+      @if (!timeDiffError()) {
       <button
         type="button"
         class="btn btn-elegant"
@@ -77,7 +77,7 @@
       }
     </div>
     <div class="text-center">
-      @if (timeDiffError) {
+      @if (timeDiffError()) {
       <button
         type="button"
         class="btn btn-elegant"
@@ -90,7 +90,7 @@
       }
     </div>
     <div class="text-end">
-      @if (!timeDiffError) {
+      @if (!timeDiffError()) {
       <button
         type="button"
         class="btn btn-primary"
