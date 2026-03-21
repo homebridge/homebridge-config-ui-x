@@ -3,7 +3,7 @@ import { KeyValuePipe } from '@angular/common'
 import { Component, inject, Input, OnDestroy, OnInit, signal, WritableSignal } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { CharacteristicType } from '@homebridge/hap-client'
-import { Enums } from '@homebridge/hap-client/dist/hap-types'
+import { Enums } from '@homebridge/hap-client/hap-types'
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap'
 import { TranslatePipe } from '@ngx-translate/core'
 

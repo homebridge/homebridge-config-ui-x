@@ -28,7 +28,7 @@ jobs:
       # # Code Coverage can only be used in a single run, not in a parallel run - Error: Bad response: 422 {"message":"Can't add a job to a build that is already closed. Build 6224987022 is closed. See docs.coveralls.io/parallel-builds","error":true}
       # # Coveralls only expects to create a report once per build
       runs_on: ${{ matrix.os }}
-      install_cmd: npm ci && cd ui && npm ci
+      install_cmd: npm i && cd ui && npm i
     secrets:
       token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -51,7 +51,7 @@ jobs:
       - uses: actions/setup-node@v6
         with:
           node-version: ${{ matrix.node-version }}
-      - run: npm ci
+      - run: npm i
       - run: npm run build:server
       - run: npm run test
 
@@ -93,4 +93,4 @@ jobs:
     needs: build_and_test
     uses: homebridge/.github/.github/workflows/eslint.yml@latest
     with:
-      install_cmd: npm ci && cd ui && npm ci
+      install_cmd: npm i && cd ui && npm i

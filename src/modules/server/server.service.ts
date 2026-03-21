@@ -14,7 +14,7 @@ import { pipeline, Readable } from 'node:stream'
 import { createSecureContext } from 'node:tls'
 import { promisify } from 'node:util'
 
-import { Categories } from '@homebridge/hap-client/dist/hap-types.js'
+import { Categories } from '@homebridge/hap-client/hap-types'
 import {
   BadRequestException,
   Inject,

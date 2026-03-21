@@ -12,17 +12,17 @@
     "postinstall": "patch-package"
   },
   "dependencies": {
-    "@angular/animations": "20.3.17",
-    "@angular/common": "20.3.17",
-    "@angular/compiler": "20.3.17",
-    "@angular/core": "20.3.17",
-    "@angular/forms": "20.3.17",
-    "@angular/localize": "20.3.17",
-    "@angular/platform-browser": "20.3.17",
-    "@angular/platform-browser-dynamic": "20.3.17",
-    "@angular/router": "20.3.17",
+    "@angular/animations": "20.3.18",
+    "@angular/common": "20.3.18",
+    "@angular/compiler": "20.3.18",
+    "@angular/core": "20.3.18",
+    "@angular/forms": "20.3.18",
+    "@angular/localize": "20.3.18",
+    "@angular/platform-browser": "20.3.18",
+    "@angular/platform-browser-dynamic": "20.3.18",
+    "@angular/router": "20.3.18",
     "@auth0/angular-jwt": "5.2.0",
-    "@homebridge/hap-client": "3.4.0",
+    "@homebridge/hap-client": "4.0.1",
     "@ng-bootstrap/ng-bootstrap": "19.0.1",
     "@ng-formworks/bootstrap5": "20.7.0",
     "@ng-formworks/core": "20.7.0",
@@ -34,7 +34,7 @@
     "angular-gridster2": "20.2.4",
     "bootstrap": "5.3.8",
     "chart.js": "4.5.1",
-    "dayjs": "1.11.19",
+    "dayjs": "1.11.20",
     "emoji-js": "3.9.0",
     "file-saver": "2.0.5",
     "is-standalone-pwa": "0.1.1",
@@ -56,16 +56,16 @@
     "zone.js": "0.15.1"
   },
   "devDependencies": {
-    "@angular/build": "^20.3.19",
-    "@angular/cli": "^20.3.19",
-    "@angular/compiler-cli": "^20.3.17",
-    "@angular/language-service": "^20.3.17",
+    "@angular/build": "^20.3.21",
+    "@angular/cli": "^20.3.21",
+    "@angular/compiler-cli": "^20.3.18",
+    "@angular/language-service": "^20.3.18",
     "@fortawesome/fontawesome-free": "^7.2.0",
-    "@homebridge/plugin-ui-utils": "^2.2.1",
+    "@homebridge/plugin-ui-utils": "^2.2.2",
     "@types/emoji-js": "^3.5.2",
     "@types/file-saver": "^2.0.7",
     "@types/lodash-es": "^4.17.12",
-    "@types/node": "^25.3.3",
+    "@types/node": "^25.5.0",
     "@types/qrcode": "^1.5.6",
     "@types/semver": "^7.7.1",
     "he": "^1.2.0",
@@ -75,12 +75,15 @@
     "typescript": "^5.9.3"
   },
   "overrides": {
-    "@angular/animations": "20.3.17",
+    "@angular/animations": "20.3.18",
     "@angular/cdk": "20.2.14",
-    "@angular/common": "20.3.17",
-    "@angular/core": "20.3.17",
+    "@angular/common": "20.3.18",
+    "@angular/core": "20.3.18",
     "ngx-monaco-editor-v2": {
-      "monaco-editor": "^0.55.1"
+      "monaco-editor": {
+        ".": "^0.55.1",
+        "dompurify": "^3.3.3"
+      }
     },
     "rxjs": "7.8.2"
   }

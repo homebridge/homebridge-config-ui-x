@@ -79,7 +79,7 @@ jobs:
     uses: homebridge/.github/.github/workflows/nodejs-build-and-test.yml@latest
     with:
       enable_coverage: true
-      install_cmd: npm ci && cd ui && npm ci
+      install_cmd: npm i && cd ui && npm i
     secrets:
       token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -95,7 +95,7 @@ jobs:
     with:
       enable_coverage: false
       runs_on: ${{ matrix.os }}
-      install_cmd: npm ci && cd ui && npm ci
+      install_cmd: npm i && cd ui && npm i
     secrets:
       token: ${{ secrets.GITHUB_TOKEN }}
 
@@ -127,7 +127,7 @@ jobs:
         run: npm install -g npm@latest
 
       - name: Install dependencies
-        run: npm ci && cd ui && npm ci
+        run: npm i && cd ui && npm i
 
       - name: Handle prerelease versioning
         if: needs.determine-release-type.outputs.release_type == 'beta' || needs.determine-release-type.outputs.release_type == 'alpha'
