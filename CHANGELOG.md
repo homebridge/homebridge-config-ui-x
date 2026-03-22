@@ -2,6 +2,18 @@
 
 All notable changes to `homebridge-config-ui-x` will be documented in this file. This project tries to adhere to [Semantic Versioning](http://semver.org/).
 
+## v5.20.1 (Pending Release)
+
+### Other Changes
+
+- fix: prioritise scoped plugins in plugin search results
+
+### Homebridge Dependencies
+
+- `@homebridge/hap-client` @ `v4.0.1`
+- `@homebridge/node-pty-prebuilt-multiarch` @ `v0.13.1`
+- `@homebridge/plugin-ui-utils` @ `v2.2.2`
+
 ## v5.20.0 (2026-03-21)
 
 ### UI Changes

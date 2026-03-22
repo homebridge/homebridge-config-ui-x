@@ -107,12 +107,14 @@ export class PluginsService {
   private pluginListRetryTimeout: NodeJS.Timeout
 
   private hiddenPlugins: string[] = []
+  private hiddenScopes: string[] = []
   private unmaintainedPlugins: string[] = []
   private pluginIcons: { [key: string]: string } = {}
   private pluginAuthors: { [key: string]: string } = {}
   private pluginNames: { [key: string]: string } = {}
   private pluginChangelogs: { [key: string]: string } = {}
   private newScopePlugins: { [key: string]: PluginListNewScopeItem } = {}
+  private scopedPluginNames: string[] = []
   private verifiedPlugins: string[] = []
   private verifiedPlusPlugins: string[] = []
 
@@ -424,6 +426,32 @@ export class PluginsService {
         }
       })
 
+    // Find scoped plugins from the plugin list that match search terms but weren't returned by npm
+    const resultNames = new Set(plugins.map(p => p.name))
+    const scopedLookups: Promise<HomebridgePlugin[]>[] = []
+
+    for (const name of this.scopedPluginNames) {
+      if (!resultNames.has(name) && !this.isHiddenPlugin(name)) {
+        // Extract the unscoped part after the scope prefix for matching
+        const unscopedName = name.substring(name.lastIndexOf('/') + 1).toLowerCase()
+        if (searchTerms.some(term => unscopedName.includes(term))) {
+          scopedLookups.push(this.searchNpmRegistrySingle(name).catch(() => []))
+        }
+      }
+    }
+
+    if (scopedLookups.length > 0) {
+      const scopedResults = await Promise.all(scopedLookups)
+      for (const results of scopedResults) {
+        for (const plugin of results) {
+          if (!resultNames.has(plugin.name)) {
+            plugins.push(plugin)
+            resultNames.add(plugin.name)
+          }
+        }
+      }
+    }
+
     const matchGroups = {
       exactName: [] as HomebridgePlugin[],
       exactKeyword: [] as HomebridgePlugin[],
@@ -438,13 +466,18 @@ export class PluginsService {
     }
 
     const orderPlugins = (arr: HomebridgePlugin[]) =>
-      orderBy(arr, ['isHbScoped', 'verifiedPlusPlugin', 'verifiedPlugin', 'lastUpdated'], ['desc', 'desc', 'desc'])
+      orderBy(arr, ['verifiedPlusPlugin', 'verifiedPlugin', 'lastUpdated'], ['desc', 'desc', 'desc'])
 
-    return [
-      ...orderPlugins(matchGroups.exactName),
-      ...orderPlugins(matchGroups.exactKeyword),
-      ...orderPlugins(matchGroups.partial),
+    // Separate scoped plugins so they always appear first
+    const allResults = [
+      ...matchGroups.exactName,
+      ...matchGroups.exactKeyword,
+      ...matchGroups.partial,
     ]
+    const scopedResults = allResults.filter(p => p.isHbScoped)
+    const unscopedResults = allResults.filter(p => !p.isHbScoped)
+
+    return [...orderPlugins(scopedResults), ...orderPlugins(unscopedResults)]
       .slice(0, 30)
       .map(plugin => this.fixDisplayName(plugin))
   }
@@ -1405,6 +1438,20 @@ export class PluginsService {
           match = bugsMatch
         }
 
+        // The plugin may have a custom changelog path from this.pluginChangelogs[pkg.package.name]
+        const changelogPath = this.pluginChangelogs[pluginName] || ''
+
+        // Helper to fetch a CHANGELOG.md from the repo, trying both cases
+        const fetchChangelog = async (ref: string): Promise<string | null> => {
+          for (const filename of ['CHANGELOG.md', 'changelog.md']) {
+            try {
+              const changelog = await firstValueFrom(this.httpService.get(`https://raw.githubusercontent.com/${match[1]}/${match[2]}/${ref}/${changelogPath}${filename}`))
+              return changelog.data
+            } catch {}
+          }
+          return null
+        }
+
         try {
           const release = await firstValueFrom(this.httpService.get(`https://api.github.com/repos/${match[1]}/${match[2]}/releases/latest`))
           const latestTag = release.data.tag_name
@@ -1412,19 +1459,7 @@ export class PluginsService {
           // The latest npm version may not match the latest GitHub release
           const isReleaseMatch = latestVersion?.replace(RE_NON_NUMERIC_DOT, '').includes(release.data.tag_name?.replace(RE_NON_NUMERIC_DOT, ''))
 
-          // The plugin may have a custom changelog path from this.pluginChangelogs[pkg.package.name]
-          const changelogPath = this.pluginChangelogs[pluginName] || ''
-          let changelogData = null
-
-          try {
-            const changelog = await firstValueFrom(this.httpService.get(`https://raw.githubusercontent.com/${match[1]}/${match[2]}/refs/tags/${latestTag}/${changelogPath}CHANGELOG.md`))
-            changelogData = changelog.data
-          } catch {
-            try {
-              const changelog = (await firstValueFrom(this.httpService.get(`https://raw.githubusercontent.com/${match[1]}/${match[2]}/refs/tags/${latestTag}/${changelogPath}changelog.md`))).data
-              changelogData = changelog.data
-            } catch {}
-          }
+          const changelogData = await fetchChangelog(`refs/tags/${latestTag}`)
 
           return {
             name: isReleaseMatch && release.data.tag_name ? release.data.tag_name : null,
@@ -1433,12 +1468,13 @@ export class PluginsService {
             latestVersion,
           }
         } catch (e) {
-          const changelog = await firstValueFrom(this.httpService.get(`https://raw.githubusercontent.com/${match[1]}/${match[2]}/HEAD/CHANGELOG.md`))
-          if (changelog.status === 200) {
+          // No releases found — fall back to fetching CHANGELOG.md from default branch
+          const changelogData = await fetchChangelog('HEAD')
+          if (changelogData) {
             return {
               name: null,
               notes: null,
-              changelog: changelog.data,
+              changelog: changelogData,
               latestVersion,
             }
           }
@@ -1689,6 +1725,13 @@ export class PluginsService {
    */
   private isScopedPlugin(name: string): boolean {
     return (name.charAt(0) === '@' && name.split('/').length > 0 && name.split('/')[1].indexOf('homebridge-') === 0)
+  }
+
+  /**
+   * Check if a plugin is hidden, either by exact name or by scope prefix
+   */
+  private isHiddenPlugin(name: string): boolean {
+    return this.hiddenPlugins.includes(name) || this.hiddenScopes.some(scope => name.startsWith(scope))
   }
 
   /**
@@ -2125,19 +2168,28 @@ export class PluginsService {
       this.verifiedPlusPlugins = []
       this.pluginIcons = {}
       this.hiddenPlugins = []
+      this.hiddenScopes = []
       this.unmaintainedPlugins = []
       this.pluginAuthors = {}
       this.pluginNames = {}
       this.pluginChangelogs = {}
       this.newScopePlugins = {}
+      this.scopedPluginNames = []
 
       Object.keys(pluginListData).forEach((key) => {
+        if (key.startsWith('@homebridge-plugins/')) {
+          this.scopedPluginNames.push(key)
+        }
         const plugin: PluginListItem = pluginListData[key]
         if (plugin.i) {
           this.pluginIcons[key] = `icons/${plugin.i}.png`
         }
         if (plugin.h) {
-          this.hiddenPlugins.push(key)
+          if (key.endsWith('/')) {
+            this.hiddenScopes.push(key)
+          } else {
+            this.hiddenPlugins.push(key)
+          }
         }
         if (plugin.u) {
           this.unmaintainedPlugins.push(key)
