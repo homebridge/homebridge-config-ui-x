@@ -10,9 +10,7 @@ import { ensureDir } from 'fs-extra/esm'
 import forge from 'node-forge'
 
 import { Logger } from '../logger/logger.service.js'
-
-const RE_IPV4 = /^(?:\d{1,3}\.){3}\d{1,3}$/
-const RE_IPV6 = /^(?:[0-9a-f]{0,4}:){2,7}[0-9a-f]{0,4}$/i
+import { RE_IPV4, RE_IPV6 } from '../regex.constants.js'
 
 interface SslCertificateData {
   privateKey: Buffer

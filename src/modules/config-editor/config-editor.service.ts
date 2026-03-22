@@ -16,14 +16,9 @@ import {
 import { ConfigService } from '../../core/config/config.service.js'
 import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.service.js'
 import { Logger } from '../../core/logger/logger.service.js'
+import { RE_COLON, RE_CONFIG_BACKUP, RE_PIN, RE_PLUGIN_NAME, RE_USERNAME } from '../../core/regex.constants.js'
 import { SchedulerService } from '../../core/scheduler/scheduler.service.js'
 import { PluginsService } from '../plugins/plugins.service.js'
-
-const RE_USERNAME = /^(?:[0-9A-F]{2}:){5}[0-9A-F]{2}$/i
-const RE_PIN = /^\d{3}-\d{2}-\d{3}$/
-const RE_COLON = /:/g
-const RE_PLUGIN_NAME = /^(?:@[\w-]+(?:\.[\w-]+)*\/)?homebridge-[\w-]+$/i
-const RE_CONFIG_BACKUP = /^config.json.\d{09,15}/
 
 @Injectable()
 export class ConfigEditorService {

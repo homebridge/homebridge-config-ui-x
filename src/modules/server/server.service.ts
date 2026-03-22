@@ -31,24 +31,25 @@ import { check as tcpCheck } from 'tcp-port-used'
 import { ConfigService } from '../../core/config/config.service.js'
 import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.service.js'
 import { Logger } from '../../core/logger/logger.service.js'
+import {
+  RE_ACCESSORY_INFO_FILE,
+  RE_CACHED_ACCESSORIES,
+  RE_CACHED_ACCESSORIES_EXACT,
+  RE_CERTIFICATE,
+  RE_CHAR_PAIRS,
+  RE_DEVICE_ID,
+  RE_HEX_12,
+  RE_HEX_ANY,
+  RE_HYPHEN_GLOBAL,
+  RE_PRIVATE_KEY,
+  RE_VALID_NAME,
+} from '../../core/regex.constants.js'
 import { SslCertGeneratorService } from '../../core/ssl/ssl-cert-generator.service.js'
 import { AccessoriesService } from '../accessories/accessories.service.js'
 import { ConfigEditorService } from '../config-editor/config-editor.service.js'
 import { HomebridgeMdnsSettingDto } from './server.dto.js'
 
 const pump = promisify(pipeline)
-
-const RE_CHAR_PAIRS = /.{1,2}/g
-const RE_ACCESSORY_INFO_FILE = /AccessoryInfo\.([A-Fa-f0-9]+)\.json$/
-const RE_DEVICE_ID = /^[0-9a-f]{2}(?::?[0-9a-f]{2}){5}$/i
-const RE_HEX_12 = /^[A-F0-9]{12}$/
-const RE_CACHED_ACCESSORIES_EXACT = /^cachedAccessories\.([A-F,0-9]+)$/
-const RE_CACHED_ACCESSORIES = /cachedAccessories\.([A-F,0-9]+)/
-const RE_HEX_ANY = /^[A-F0-9]+$/
-const RE_HYPHEN = /-/g
-const RE_VALID_NAME = /^[\p{L}\p{N}][\p{L}\p{N} ']*[\p{L}\p{N}]$/u
-const RE_PRIVATE_KEY = /-----BEGIN (?:RSA |EC )?PRIVATE KEY-----/
-const RE_CERTIFICATE = /-----BEGIN CERTIFICATE-----/
 
 @Injectable()
 export class ServerService {
@@ -904,7 +905,7 @@ export class ServerService {
    */
   private generateSetupCode(accessoryInfo: any): string {
     const buffer = Buffer.allocUnsafe(8)
-    let valueLow = Number.parseInt(accessoryInfo.pincode.replace(RE_HYPHEN, ''), 10)
+    let valueLow = Number.parseInt(accessoryInfo.pincode.replace(RE_HYPHEN_GLOBAL, ''), 10)
     const valueHigh = accessoryInfo.category >> 1
 
     valueLow |= 1 << 28 // Supports IP;

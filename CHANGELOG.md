@@ -10,6 +10,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix: validate `version` parameter type in `triggerUpdate`
 - fix: validate backup ID format to prevent path traversal
 - fix: validate device ID format to prevent path traversal
+- chore: consolidate regex into shared file (backend)
 
 ### Homebridge Dependencies
 

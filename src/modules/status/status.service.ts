@@ -30,6 +30,7 @@ import { ConfigService } from '../../core/config/config.service.js'
 import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.service.js'
 import { Logger } from '../../core/logger/logger.service.js'
 import { isNodeV24SupportedArchitecture } from '../../core/node-version.constants.js'
+import { RE_BETA_DATE, RE_STABLE_DATE, RE_TEST_DATE, RE_TRAILING_DATE } from '../../core/regex.constants.js'
 import { PluginsService } from '../plugins/plugins.service.js'
 import { ServerService } from '../server/server.service.js'
 import {
@@ -42,11 +43,6 @@ import {
 } from './status.interfaces.js'
 
 const execAsync = promisify(exec)
-
-const RE_BETA_DATE = /^beta-\d{4}-\d{2}-\d{2}$/i
-const RE_TEST_DATE = /^test-\d{4}-\d{2}-\d{2}$/i
-const RE_TRAILING_DATE = /\d{4}-\d{2}-\d{2}$/
-const RE_STABLE_DATE = /^\d{4}-\d{2}-\d{2}$/
 
 @Injectable()
 export class StatusService {

@@ -6,8 +6,7 @@ import { cancelJob, RecurrenceRule, scheduledJobs, scheduleJob } from 'node-sche
 import { ConfigService } from '../config/config.service.js'
 import { HomebridgeIpcService } from '../homebridge-ipc/homebridge-ipc.service.js'
 import { Logger } from '../logger/logger.service.js'
-
-const RE_COLON = /:/g
+import { RE_COLON } from '../regex.constants.js'
 
 @Injectable()
 export class SchedulerService implements OnModuleInit {

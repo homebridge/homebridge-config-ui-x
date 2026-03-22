@@ -31,14 +31,11 @@ import { HomebridgeConfig } from '../../core/config/config.interfaces.js'
 import { ConfigService } from '../../core/config/config.service.js'
 import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.service.js'
 import { Logger } from '../../core/logger/logger.service.js'
+import { RE_BACKUP_FILENAME, RE_BACKUP_ID, RE_COLON } from '../../core/regex.constants.js'
 import { SchedulerService } from '../../core/scheduler/scheduler.service.js'
 import { PluginsService } from '../plugins/plugins.service.js'
 
 const pump = promisify(pipeline)
-
-const RE_COLON = /:/g
-const RE_BACKUP_FILENAME = /^homebridge-backup-[0-9A-Za-z]{12}.\d{09,15}.tar.gz/
-const RE_BACKUP_ID = /^[0-9a-z]{12}\.\d{9,15}$/i
 
 @Injectable()
 export class BackupService {

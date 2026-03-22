@@ -45,6 +45,18 @@ import { ConfigService } from '../../core/config/config.service.js'
 import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.service.js'
 import { Logger } from '../../core/logger/logger.service.js'
 import { NodePtyService } from '../../core/node-pty/node-pty.service.js'
+import {
+  RE_ENCODED_AT,
+  RE_GITHUB_REPO,
+  RE_HYPHEN,
+  RE_HYPHEN_GLOBAL,
+  RE_NON_NUMERIC_DOT,
+  RE_PLUGIN_NAME,
+  RE_URL,
+  RE_URL_WITH_OPTIONAL_PAREN,
+  RE_WHITESPACE,
+  RE_WORD_SEQUENCE,
+} from '../../core/regex.constants.js'
 import { ChildBridgesService } from '../child-bridges/child-bridges.service.js'
 import { HomebridgeUpdateActionDto, PluginActionDto } from './plugins.dto.js'
 
@@ -54,21 +66,8 @@ const { orderBy, uniq } = _
 const require = createRequire(import.meta.url)
 const module = require('node:module')
 
-// Pre-compiled static regex constants
-const RE_HYPHEN_GLOBAL = /-/g
-const RE_WORD_SEQUENCE = /\w\S*/g
-const RE_ENCODED_AT = /%40/g
-const RE_HYPHEN = /-/
-const RE_WHITESPACE = /\s+/
-const RE_URL_WITH_OPTIONAL_PAREN = /\(?(?:https?|ftp):\/\/[\n\S]+/g
-const RE_URL = /(?:https?|ftp):\/\/[\n\S]+/g
-const RE_GITHUB_REPO = /https:\/\/github.com\/([^/]+)\/([^/#]+)/
-const RE_NON_NUMERIC_DOT = /[^0-9.]/g
-
 @Injectable()
 export class PluginsService {
-  private static readonly PLUGIN_IDENTIFIER_PATTERN = /^(@[\w-]+(\.[\w-]+)*\/)?homebridge-[\w-]+$/
-
   private _npm: Array<string> | undefined
   private _paths: Array<string> | undefined
 
@@ -253,7 +252,7 @@ export class PluginsService {
    * @param pluginName
    */
   public async lookupPlugin(pluginName: string): Promise<HomebridgePlugin> {
-    if (!PluginsService.PLUGIN_IDENTIFIER_PATTERN.test(pluginName)) {
+    if (!RE_PLUGIN_NAME.test(pluginName)) {
       throw new BadRequestException('Invalid plugin name.')
     }
 
@@ -267,7 +266,7 @@ export class PluginsService {
   }
 
   public async getAvailablePluginVersions(pluginName: string): Promise<HomebridgePluginVersions> {
-    if (!PluginsService.PLUGIN_IDENTIFIER_PATTERN.test(pluginName) && pluginName !== 'homebridge') {
+    if (!RE_PLUGIN_NAME.test(pluginName) && pluginName !== 'homebridge') {
       throw new BadRequestException('Invalid plugin name.')
     }
 
@@ -897,7 +896,7 @@ export class PluginsService {
           break
         }
         default: {
-          if (!PluginsService.PLUGIN_IDENTIFIER_PATTERN.test(name)) {
+          if (!RE_PLUGIN_NAME.test(name)) {
             throw new BadRequestException('Invalid package name. Must be "homebridge", "homebridge-config-ui-x", or a valid Homebridge plugin name.')
           }
 

@@ -15,10 +15,8 @@ import { firstValueFrom } from 'rxjs'
 
 import { ConfigService } from '../../../core/config/config.service.js'
 import { Logger } from '../../../core/logger/logger.service.js'
+import { RE_PATH_TRAVERSAL, RE_STATIC_ASSET_EXT } from '../../../core/regex.constants.js'
 import { PluginsService } from '../../plugins/plugins.service.js'
-
-const RE_PATH_TRAVERSAL = /^(\.\.(\/|\\|$))+/
-const RE_STATIC_ASSET_EXT = /^.*\.(?:jpe?g|gif|png|svg|ttf|woff2|css)$/i
 
 @Injectable()
 export class PluginsSettingsUiService {

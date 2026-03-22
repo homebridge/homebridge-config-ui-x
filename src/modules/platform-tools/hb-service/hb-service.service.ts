@@ -8,10 +8,8 @@ import { pathExists, readJson, writeJsonSync } from 'fs-extra/esm'
 
 import { ConfigService } from '../../../core/config/config.service.js'
 import { Logger } from '../../../core/logger/logger.service.js'
+import { RE_ANSI_COLOUR } from '../../../core/regex.constants.js'
 import { HbServiceStartupSettings } from './hb-service.dto.js'
-
-// eslint-disable-next-line no-control-regex
-const RE_ANSI_COLOUR = /\x1B\[(\d{1,3}(;\d{1,2})?)?[mGK]/g
 
 @Injectable()
 export class HbServiceService {

@@ -1,4 +1,4 @@
-const RE_DEV_SERVER_ORIGIN = /^https?:\/\/[^:]+:(?:4200|8080)$/
+import { RE_DEV_SERVER_ORIGIN } from './regex.constants.js'
 
 /**
  * Shared CORS configuration for HTTP and WebSocket connections

@@ -31,6 +31,7 @@ import { Tail } from 'tail'
 import { extract } from 'tar'
 import { check as tcpCheck } from 'tcp-port-used'
 
+import { RE_COLON, RE_NON_SCOPED, RE_PLUGIN_NAME, RE_SCOPED, RE_SERVICE_NAME } from '../core/regex.constants.js'
 import { DarwinInstaller } from './platforms/darwin.js'
 import { FreeBSDInstaller } from './platforms/freebsd.js'
 import { LinuxInstaller } from './platforms/linux.js'
@@ -40,12 +41,6 @@ process.title = 'hb-service'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
-
-const RE_SERVICE_NAME = /^[a-z0-9-]+$/i
-const RE_COLON = /:/g
-const RE_SCOPED = /^(@[^/]+\/[^@/]+)(?:@([^/]+))?(\/.*)?$/
-const RE_NON_SCOPED = /^([^@/]+)(?:@([^/]+))?(\/.*)?$/
-const RE_PLUGIN_NAME = /^(?:@[\w-]+(?:\.[\w-]+)*\/)?homebridge-[\w-]+$/
 
 export class HomebridgeServiceHelper {
   public action: 'install' | 'uninstall' | 'start' | 'stop' | 'restart' | 'rebuild' | 'run' | 'add' | 'remove' | 'logs' | 'view' | 'update-node' | 'before-start' | 'status'

@@ -3,9 +3,8 @@ import type { ChildBridgeMetadata } from './child-bridges.interfaces.js'
 import { Inject, Injectable } from '@nestjs/common'
 
 import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.service.js'
+import { RE_CHAR_PAIRS } from '../../core/regex.constants.js'
 import { AccessoriesService } from '../accessories/accessories.service.js'
-
-const RE_PAIR = /.{1,2}/g
 
 @Injectable()
 export class ChildBridgesService {
@@ -60,7 +59,7 @@ export class ChildBridgesService {
    */
   public stopStartRestartChildBridge(event: 'startChildBridge' | 'stopChildBridge' | 'restartChildBridge', deviceId: string) {
     if (deviceId.length === 12) {
-      deviceId = deviceId.match(RE_PAIR).join(':')
+      deviceId = deviceId.match(RE_CHAR_PAIRS).join(':')
     }
 
     this.homebridgeIpcService.sendMessage(event, deviceId)
