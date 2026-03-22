@@ -40,6 +40,7 @@ const pump = promisify(pipeline)
 
 const RE_CHAR_PAIRS = /.{1,2}/g
 const RE_ACCESSORY_INFO_FILE = /AccessoryInfo\.([A-Fa-f0-9]+)\.json$/
+const RE_DEVICE_ID = /^[0-9a-f]{2}(?::?[0-9a-f]{2}){5}$/i
 const RE_HEX_12 = /^[A-F0-9]{12}$/
 const RE_CACHED_ACCESSORIES_EXACT = /^cachedAccessories\.([A-F,0-9]+)$/
 const RE_CACHED_ACCESSORIES = /cachedAccessories\.([A-F,0-9]+)/
@@ -80,15 +81,15 @@ export class ServerService {
   private async deleteSingleDeviceAccessories(id: string, cachedAccessoriesDir: string, protocol: 'hap' | 'matter' | 'both' = 'both') {
     // Clean HAP accessories
     if (protocol === 'hap' || protocol === 'both') {
-      const cachedAccessories = join(cachedAccessoriesDir, `cachedAccessories.${id}`)
-      const cachedAccessoriesBackup = join(cachedAccessoriesDir, `.cachedAccessories.${id}.bak`)
+      const cachedAccessories = resolve(cachedAccessoriesDir, `cachedAccessories.${id}`)
+      const cachedAccessoriesBackup = resolve(cachedAccessoriesDir, `.cachedAccessories.${id}.bak`)
 
-      if (await pathExists(cachedAccessories)) {
+      if (cachedAccessories.startsWith(cachedAccessoriesDir) && await pathExists(cachedAccessories)) {
         await unlink(cachedAccessories)
         this.logger.warn(`Bridge ${id} HAP accessory removal: removed ${cachedAccessories}.`)
       }
 
-      if (await pathExists(cachedAccessoriesBackup)) {
+      if (cachedAccessoriesBackup.startsWith(cachedAccessoriesDir) && await pathExists(cachedAccessoriesBackup)) {
         await unlink(cachedAccessoriesBackup)
         this.logger.warn(`Bridge ${id} HAP accessory removal: removed ${cachedAccessoriesBackup}.`)
       }
@@ -97,9 +98,10 @@ export class ServerService {
     // Clean Matter storage
     if (protocol === 'matter' || protocol === 'both') {
       const deviceId = id.split(':').join('').toUpperCase()
-      const matterPath = join(this.configService.storagePath, 'matter', deviceId)
+      const matterDir = resolve(this.configService.storagePath, 'matter')
+      const matterPath = resolve(matterDir, deviceId)
 
-      if (await pathExists(matterPath)) {
+      if (matterPath.startsWith(matterDir) && await pathExists(matterPath)) {
         await remove(matterPath)
         this.logger.warn(`Bridge ${id} Matter accessory removal: removed Matter bridge storage at ${matterPath}.`)
       }
@@ -113,13 +115,14 @@ export class ServerService {
    * @private
    */
   private async deleteSingleDevicePairing(id: string, resetPairingInfo: boolean) {
-    const persistPath = join(this.configService.storagePath, 'persist')
-    const accessoryInfo = join(persistPath, `AccessoryInfo.${id}.json`)
-    const identifierCache = join(persistPath, `IdentifierCache.${id}.json`)
+    const persistPath = resolve(this.configService.storagePath, 'persist')
+    const accessoryInfo = resolve(persistPath, `AccessoryInfo.${id}.json`)
+    const identifierCache = resolve(persistPath, `IdentifierCache.${id}.json`)
 
     // Handle both formats: with colons (0E:3C:22:18:EC:79) and without (0E3C2218EC79)
     const deviceId = id.includes(':') ? id.split(':').join('').toUpperCase() : id.toUpperCase()
-    const matterPath = join(this.configService.storagePath, 'matter', deviceId)
+    const matterDir = resolve(this.configService.storagePath, 'matter')
+    const matterPath = resolve(matterDir, deviceId)
 
     try {
       // Format username with colons if not already present
@@ -200,17 +203,17 @@ export class ServerService {
       this.logger.error(`Failed to reset username and pin for child bridge ${id} as ${e.message}.`)
     }
 
-    if (await pathExists(accessoryInfo)) {
+    if (accessoryInfo.startsWith(persistPath) && await pathExists(accessoryInfo)) {
       await unlink(accessoryInfo)
       this.logger.warn(`Bridge ${id} reset: removed ${accessoryInfo}.`)
     }
 
-    if (await pathExists(identifierCache)) {
+    if (identifierCache.startsWith(persistPath) && await pathExists(identifierCache)) {
       await unlink(identifierCache)
       this.logger.warn(`Bridge ${id} reset: removed ${identifierCache}.`)
     }
 
-    if (await pathExists(matterPath)) {
+    if (matterPath.startsWith(matterDir) && await pathExists(matterPath)) {
       await remove(matterPath)
       this.logger.warn(`Bridge ${id} reset: removed Matter bridge storage at ${matterPath}.`)
     }
@@ -463,6 +466,10 @@ export class ServerService {
    * Remove a device pairing
    */
   public async deleteDevicePairing(id: string, resetPairingInfo: boolean) {
+    if (!RE_DEVICE_ID.test(id)) {
+      throw new BadRequestException('Invalid device ID.')
+    }
+
     this.logger.warn(`Shutting down Homebridge before resetting paired bridge ${id}...`)
 
     // Wait for homebridge to stop
@@ -483,6 +490,10 @@ export class ServerService {
    * @throws InternalServerErrorException if removal fails
    */
   public async deleteDeviceMatterConfig(id: string): Promise<{ ok: boolean }> {
+    if (!RE_DEVICE_ID.test(id)) {
+      throw new BadRequestException('Invalid device ID.')
+    }
+
     try {
       const configFile = await this.configEditorService.getConfigFile()
       // Format username with colons if not already present
@@ -543,6 +554,10 @@ export class ServerService {
    * Remove multiple device pairings
    */
   public async deleteDevicesPairing(bridges: { id: string, resetPairingInfo: boolean }[]) {
+    if (bridges.some(x => !RE_DEVICE_ID.test(x.id))) {
+      throw new BadRequestException('Invalid device ID.')
+    }
+
     this.logger.warn(`Shutting down Homebridge before resetting paired bridges ${bridges.map(x => x.id).join(', ')}...`)
 
     // Wait for homebridge to stop
@@ -564,6 +579,10 @@ export class ServerService {
    * Remove a device's accessories
    */
   public async deleteDeviceAccessories(id: string) {
+    if (!RE_DEVICE_ID.test(id)) {
+      throw new BadRequestException('Invalid device ID.')
+    }
+
     this.logger.warn(`Shutting down Homebridge before removing accessories for paired bridge ${id}...`)
 
     // Wait for homebridge to stop.
@@ -579,6 +598,10 @@ export class ServerService {
    * @param bridges - Array of bridge objects with id and optional protocol ('hap', 'matter', or 'both')
    */
   public async deleteDevicesAccessories(bridges: { id: string, protocol?: 'hap' | 'matter' | 'both' }[]): Promise<void> {
+    if (bridges.some(x => !RE_DEVICE_ID.test(x.id))) {
+      throw new BadRequestException('Invalid device ID.')
+    }
+
     this.logger.warn(`Shutting down Homebridge before removing accessories for paired bridges ${bridges.map(x => x.id).join(', ')}...`)
 
     // Wait for homebridge to stop.
