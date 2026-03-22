@@ -86,6 +86,8 @@ export class RestartComponent implements OnInit, OnDestroy {
           void this.$router.navigate(['/'])
         }
       })
+      // Request a fresh status in case the server restarted quickly and we missed the initial event
+      this.io.socket.emit('monitor-server-status')
     }, 7000)
 
     this.checkTimeout = setTimeout(() => {

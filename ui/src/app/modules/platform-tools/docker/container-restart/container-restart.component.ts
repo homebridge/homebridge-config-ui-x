@@ -70,6 +70,8 @@ export class ContainerRestartComponent implements OnInit, OnDestroy {
           void this.$router.navigate(['/'])
         }
       })
+      // Request a fresh status in case the container restarted quickly and we missed the initial event
+      this.io.socket.emit('monitor-server-status')
     }, 10000)
 
     this.checkTimeout = setTimeout(() => {
