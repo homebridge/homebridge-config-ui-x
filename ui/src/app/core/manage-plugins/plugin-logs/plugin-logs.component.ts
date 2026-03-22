@@ -10,10 +10,7 @@ import { ApiService } from '@/app/core/api.service'
 import { ConfirmComponent } from '@/app/core/components/confirm/confirm.component'
 import { LogService } from '@/app/core/log.service'
 import { ChildBridge, Plugin } from '@/app/core/manage-plugins/manage-plugins.interfaces'
-
-// eslint-disable-next-line no-control-regex
-const RE_ANSI = /\x1B\[(\d{1,3}(;\d{1,2})?)?[mGK]/g
-const RE_BRACKET_TAG = /36m\[.*?\]/
+import { RE_ANSI, RE_BRACKET_TAG } from '@/app/core/regex.constants'
 
 @Component({
   templateUrl: './plugin-logs.component.html',

@@ -24,15 +24,11 @@ import { PluginsMarkdownDirective } from '@/app/core/directives/plugins.markdown
 import { ChildBridge } from '@/app/core/manage-plugins/manage-plugins.interfaces'
 import { ManageVersionComponent } from '@/app/core/manage-plugins/manage-version/manage-version.component'
 import { PluginLogsComponent } from '@/app/core/manage-plugins/plugin-logs/plugin-logs.component'
+import { RE_ANSI, RE_KOFI, RE_STARTS_WITH_DIGIT } from '@/app/core/regex.constants'
 import { SettingsService } from '@/app/core/settings.service'
 import { IoNamespace, WsService } from '@/app/core/ws.service'
 import { BackupService } from '@/app/modules/settings/backup/backup.service'
 import { HbV2ModalComponent } from '@/app/modules/status/widgets/update-info-widget/hb-v2-modal/hb-v2-modal.component'
-
-// eslint-disable-next-line no-control-regex
-const RE_ANSI = /\x1B\[(\d{1,3}(;\d{1,2})?)?[mGK]/g
-const RE_STARTS_WITH_DIGIT = /^\d/
-const RE_KOFI = /ko-?fi/i
 
 @Component({
   templateUrl: './manage-plugin.component.html',

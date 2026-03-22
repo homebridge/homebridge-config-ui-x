@@ -16,6 +16,7 @@ import { ApiService } from '@/app/core/api.service'
 import { ConfirmComponent } from '@/app/core/components/confirm/confirm.component'
 import { SpinnerComponent } from '@/app/core/components/spinner/spinner.component'
 import { NotificationService } from '@/app/core/notification.service'
+import { RE_HAP_NAME_PATTERN } from '@/app/core/regex.constants'
 import { SettingsService } from '@/app/core/settings.service'
 import { TerminalService } from '@/app/core/terminal.service'
 import { AccessoryControlListsComponent } from '@/app/modules/settings/accessory-control-lists/accessory-control-lists.component'
@@ -27,8 +28,6 @@ import { ResetAllBridgesComponent } from '@/app/modules/settings/reset-all-bridg
 import { ResetIndividualBridgesComponent } from '@/app/modules/settings/reset-individual-bridges/reset-individual-bridges.component'
 import { SelectNetworkInterfacesComponent } from '@/app/modules/settings/select-network-interfaces/select-network-interfaces.component'
 import { WallpaperComponent } from '@/app/modules/settings/wallpaper/wallpaper.component'
-
-const RE_VALID_NAME = /^[\p{L}\p{N}][\p{L}\p{N} ']*[\p{L}\p{N}]$/u
 
 @Component({
   templateUrl: './settings.component.html',
@@ -916,8 +915,7 @@ export class SettingsComponent implements OnInit {
   }
 
   private async hbNameSave(value: string) {
-    // https://github.com/homebridge/HAP-NodeJS/blob/ee41309fd9eac383cdcace39f4f6f6a3d54396f3/src/lib/util/checkName.ts#L12
-    if (!value || !RE_VALID_NAME.test(value)) {
+    if (!value || !RE_HAP_NAME_PATTERN.test(value)) {
       this.hbNameIsInvalid = true
       return
     }

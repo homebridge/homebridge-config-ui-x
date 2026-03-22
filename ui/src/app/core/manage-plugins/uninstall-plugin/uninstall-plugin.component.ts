@@ -8,8 +8,7 @@ import { firstValueFrom } from 'rxjs'
 import { ApiService } from '@/app/core/api.service'
 import { ManagePluginComponent } from '@/app/core/manage-plugins/manage-plugin/manage-plugin.component'
 import { ChildBridge, Plugin } from '@/app/core/manage-plugins/manage-plugins.interfaces'
-
-const RE_COLON = /:/g
+import { RE_COLON } from '@/app/core/regex.constants'
 
 @Component({
   templateUrl: './uninstall-plugin.component.html',

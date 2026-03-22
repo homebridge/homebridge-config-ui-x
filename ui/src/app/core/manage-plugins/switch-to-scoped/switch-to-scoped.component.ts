@@ -10,11 +10,9 @@ import { ToastrService } from 'ngx-toastr'
 
 import { ApiService } from '@/app/core/api.service'
 import { Plugin } from '@/app/core/manage-plugins/manage-plugins.interfaces'
+import { RE_ANSI } from '@/app/core/regex.constants'
 import { SettingsService } from '@/app/core/settings.service'
 import { IoNamespace, WsService } from '@/app/core/ws.service'
-
-// eslint-disable-next-line no-control-regex
-const RE_ANSI = /\x1B\[(\d{1,3}(;\d{1,2})?)?[mGK]/g
 
 @Component({
   templateUrl: './switch-to-scoped.component.html',

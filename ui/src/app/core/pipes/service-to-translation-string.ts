@@ -1,7 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core'
 
-const RE_FIRST_UPPER = /^([A-Z])/
-const RE_UPPER = /([A-Z])/g
+import { RE_FIRST_UPPER, RE_UPPER } from '@/app/core/regex.constants'
 
 @Pipe({
   name: 'serviceToTranslationString',

@@ -2,10 +2,7 @@ import { AfterViewInit, Directive, ElementRef, inject, Input, OnDestroy } from '
 import { JsonSchemaFormComponent } from '@ng-formworks/core'
 import { cloneDeep, merge, uniqueId } from 'lodash-es'
 
-const RE_LEADING_SYMBOLS = /^[\s\uF0D7\uF0D8\uF0A7\uF0A8]+/g
-const RE_TRAILING_CLICKABLE = /\s+clickable\s*$/i
-const RE_WHITESPACE = /\s+/g
-const RE_SLASH = /\//
+import { RE_LEADING_SYMBOLS, RE_SLASH, RE_TRAILING_CLICKABLE, RE_WHITESPACE } from '@/app/core/regex.constants'
 
 @Directive({
   selector: '[jsfPatch]',

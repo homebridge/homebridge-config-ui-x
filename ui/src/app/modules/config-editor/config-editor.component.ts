@@ -16,6 +16,7 @@ import { createChildBridgeSchema } from '@/app/core/helpers/child-bridges-schema
 import { ChildBridge } from '@/app/core/manage-plugins/manage-plugins.interfaces'
 import { MobileDetectService } from '@/app/core/mobile-detect.service'
 import { MonacoEditorService } from '@/app/core/monaco-editor.service'
+import { RE_USERNAME } from '@/app/core/regex.constants'
 import { SettingsService } from '@/app/core/settings.service'
 import {
   AccessoryConfig,
@@ -25,8 +26,6 @@ import {
   PluginChildBridge,
 } from '@/app/modules/config-editor/config-editor.interfaces'
 import { ConfigRestoreComponent } from '@/app/modules/config-editor/config-restore/config-restore.component'
-
-const RE_USERNAME = /^(?:[0-9A-F]{2}:){5}[0-9A-F]{2}$/i
 
 declare const monaco: any
 

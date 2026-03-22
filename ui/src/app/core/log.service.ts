@@ -5,11 +5,8 @@ import { ITerminalOptions, Terminal } from '@xterm/xterm'
 import { Subject } from 'rxjs'
 import { debounceTime } from 'rxjs/operators'
 
+import { RE_ANSI_SIMPLE, RE_BRACKET_TAG } from '@/app/core/regex.constants'
 import { IoNamespace, WsService } from '@/app/core/ws.service'
-
-// eslint-disable-next-line no-control-regex, unicorn/escape-case
-const RE_ANSI = /\x1b\[[0-9;]*m/g
-const RE_BRACKET_TAG = /36m\[.*?\]/
 
 @Injectable({
   providedIn: 'root',
@@ -172,7 +169,7 @@ export class LogService {
       return true
     }
     // Strip ANSI color codes before searching
-    const cleanLine = line.replace(RE_ANSI, '').toLowerCase()
+    const cleanLine = line.replace(RE_ANSI_SIMPLE, '').toLowerCase()
     return cleanLine.includes(this.searchFilter)
   }
 

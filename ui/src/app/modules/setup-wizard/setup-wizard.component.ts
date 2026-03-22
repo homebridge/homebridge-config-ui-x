@@ -8,14 +8,10 @@ import { firstValueFrom } from 'rxjs'
 
 import { ApiService } from '@/app/core/api.service'
 import { AuthService } from '@/app/core/auth/auth.service'
+import { RE_ANSI_FULL, RE_NEWLINE, RE_SPINNER } from '@/app/core/regex.constants'
 import { SettingsService } from '@/app/core/settings.service'
 import { IoNamespace, WsService } from '@/app/core/ws.service'
 import { environment } from '@/environments/environment'
-
-// eslint-disable-next-line no-control-regex
-const RE_ANSI = /\x1B\[[\d;]*[a-z]/gi
-const RE_NEWLINE = /[\r\n]+/
-const RE_SPINNER = /^[⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏]/
 
 @Component({
   templateUrl: './setup-wizard.component.html',
@@ -135,7 +131,7 @@ export class SetupWizardComponent implements OnInit {
           if (!line) {
             return
           }
-          const cleanLine = line.replace(RE_ANSI, '').trim()
+          const cleanLine = line.replace(RE_ANSI_FULL, '').trim()
           if (!cleanLine) {
             return
           }

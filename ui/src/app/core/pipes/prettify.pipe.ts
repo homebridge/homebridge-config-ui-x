@@ -1,8 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core'
 
-const RE_UNDERSCORE = /_/g
-const RE_CAMEL_CASE = /([a-z])([A-Z])/g
-const RE_WORD_START = /\b\w/g
+import { RE_CAMEL_CASE, RE_UNDERSCORE, RE_WORD_START } from '@/app/core/regex.constants'
 
 @Pipe({
   name: 'prettify',

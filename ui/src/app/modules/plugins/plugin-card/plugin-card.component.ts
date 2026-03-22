@@ -15,11 +15,10 @@ import { ChildBridge, Plugin } from '@/app/core/manage-plugins/manage-plugins.in
 import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service'
 import { PluginLogsComponent } from '@/app/core/manage-plugins/plugin-logs/plugin-logs.component'
 import { MobileDetectService } from '@/app/core/mobile-detect.service'
+import { RE_HOMEBRIDGE_PREFIX } from '@/app/core/regex.constants'
 import { SettingsService } from '@/app/core/settings.service'
 import { IoNamespace, WsService } from '@/app/core/ws.service'
 import { PluginInfoComponent } from '@/app/modules/plugins/plugin-card/plugin-info/plugin-info.component'
-
-const RE_HOMEBRIDGE_PREFIX = /^homebridge /i
 
 @Component({
   selector: 'app-plugin-card',

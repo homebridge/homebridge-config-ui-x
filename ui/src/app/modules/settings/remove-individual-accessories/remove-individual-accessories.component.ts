@@ -9,9 +9,8 @@ import { ToastrService } from 'ngx-toastr'
 import { firstValueFrom } from 'rxjs'
 
 import { ApiService } from '@/app/core/api.service'
+import { RE_CHAR_PAIRS } from '@/app/core/regex.constants'
 import { SettingsService } from '@/app/core/settings.service'
-
-const RE_PAIR = /.{1,2}/g
 
 @Component({
   templateUrl: './remove-individual-accessories.component.html',
@@ -142,7 +141,7 @@ export class RemoveIndividualAccessoriesComponent implements OnInit {
             if (!pairingMap.has(bridge)) {
               pairingMap.set(bridge, {
                 _id: bridge,
-                _username: bridge.match(RE_PAIR).join(':'),
+                _username: bridge.match(RE_CHAR_PAIRS).join(':'),
                 name: this.$translate.instant('reset.accessory_ind.unknown'),
                 accessories: [],
               })
@@ -162,7 +161,7 @@ export class RemoveIndividualAccessoriesComponent implements OnInit {
               if (!pairingMap.has(bridge)) {
                 pairingMap.set(bridge, {
                   _id: bridge,
-                  _username: bridge.match(RE_PAIR).join(':'),
+                  _username: bridge.match(RE_CHAR_PAIRS).join(':'),
                   name: this.$translate.instant('reset.accessory_ind.unknown'),
                   accessories: [],
                 })

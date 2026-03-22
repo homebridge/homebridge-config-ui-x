@@ -1,6 +1,6 @@
 import { Pipe, PipeTransform } from '@angular/core'
 
-const RE_HOSTNAME_PLACEHOLDER = /\$\{\{HOSTNAME\}\}/g
+import { RE_HOSTNAME_PLACEHOLDER } from '@/app/core/regex.constants'
 
 @Pipe({
   name: 'interpolateMd',

@@ -14,16 +14,17 @@ import { QrcodeComponent } from '@/app/core/components/qrcode/qrcode.component'
 import { RestartHomebridgeComponent } from '@/app/core/components/restart-homebridge/restart-homebridge.component'
 import { Plugin } from '@/app/core/manage-plugins/manage-plugins.interfaces'
 import { ManagePluginsService } from '@/app/core/manage-plugins/manage-plugins.service'
+import {
+  RE_COLON,
+  RE_CONSECUTIVE_DASHES,
+  RE_HAP_NAME_PATTERN,
+  RE_INVALID_HAP_NAME_CHARS,
+  RE_LEADING_TRAILING_DASH,
+  RE_LEADING_TRAILING_NON_ALNUM_UNICODE,
+  RE_LEADING_TRAILING_SPACE_APOSTROPHE,
+  RE_NON_ALNUM,
+} from '@/app/core/regex.constants'
 import { SettingsService } from '@/app/core/settings.service'
-
-const RE_NON_ALNUM = /[^a-z0-9]/gi
-const RE_CONSECUTIVE_DASHES = /-+/g
-const RE_LEADING_TRAILING_DASH = /^-|-$/g
-const RE_COLON = /:/g
-const RE_INVALID_HAP_NAME_CHARS = /[^\p{L}\p{N} ']/gu
-const RE_LEADING_TRAILING_SPACE_APOSTROPHE = /^[ ']+|[ ']+$/g
-const RE_LEADING_TRAILING_NON_ALNUM_UNICODE = /^[^\p{L}\p{N}]+|[^\p{L}\p{N}]+$/gu
-const RE_HAP_NAME_PATTERN = /^[\p{L}\p{N}][\p{L}\p{N} ']*[\p{L}\p{N}]$/u
 
 @Component({
   templateUrl: './plugin-bridge.component.html',

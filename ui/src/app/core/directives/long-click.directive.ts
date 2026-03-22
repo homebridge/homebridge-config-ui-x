@@ -1,9 +1,7 @@
 /* global NodeJS */
 import { Directive, HostListener, Input, OnDestroy, output } from '@angular/core'
 
-const RE_IPAD_IPHONE_IPOD = /iPad|iPhone|iPod/
-const RE_SAFARI = /Safari/
-const RE_NON_SAFARI = /Chrome|CriOS|FxiOS|EdgiOS/
+import { RE_IPAD_IPHONE_IPOD, RE_NON_SAFARI, RE_SAFARI } from '@/app/core/regex.constants'
 
 @Directive({
   selector: '[shortClick], [longClick]',
