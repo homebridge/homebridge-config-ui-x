@@ -38,6 +38,7 @@ const pump = promisify(pipeline)
 
 const RE_COLON = /:/g
 const RE_BACKUP_FILENAME = /^homebridge-backup-[0-9A-Za-z]{12}.\d{09,15}.tar.gz/
+const RE_BACKUP_ID = /^[0-9a-z]{12}\.\d{9,15}$/i
 
 @Injectable()
 export class BackupService {
@@ -299,7 +300,14 @@ export class BackupService {
    * Downloads a scheduled backup .tar.gz
    */
   async getScheduledBackup(backupId: string): Promise<StreamableFile> {
+    if (!RE_BACKUP_ID.test(backupId)) {
+      throw new BadRequestException('Invalid backup ID.')
+    }
+
     const backupPath = resolve(this.configService.instanceBackupPath, `homebridge-backup-${backupId}.tar.gz`)
+    if (!backupPath.startsWith(this.configService.instanceBackupPath)) {
+      throw new BadRequestException('Invalid backup ID.')
+    }
 
     // Check the file exists
     if (!await pathExists(backupPath)) {
@@ -313,7 +321,14 @@ export class BackupService {
    * Removes a scheduled backup .tar.gz
    */
   async deleteScheduledBackup(backupId: string): Promise<void> {
+    if (!RE_BACKUP_ID.test(backupId)) {
+      throw new BadRequestException('Invalid backup ID.')
+    }
+
     const backupPath = resolve(this.configService.instanceBackupPath, `homebridge-backup-${backupId}.tar.gz`)
+    if (!backupPath.startsWith(this.configService.instanceBackupPath)) {
+      throw new BadRequestException('Invalid backup ID.')
+    }
 
     // Check the file exists
     if (!await pathExists(backupPath)) {
@@ -333,7 +348,14 @@ export class BackupService {
    * Restore a scheduled backup .tar.gz
    */
   async restoreScheduledBackup(backupId: string): Promise<void> {
+    if (!RE_BACKUP_ID.test(backupId)) {
+      throw new BadRequestException('Invalid backup ID.')
+    }
+
     const backupPath = resolve(this.configService.instanceBackupPath, `homebridge-backup-${backupId}.tar.gz`)
+    if (!backupPath.startsWith(this.configService.instanceBackupPath)) {
+      throw new BadRequestException('Invalid backup ID.')
+    }
 
     // Check the file exists
     if (!await pathExists(backupPath)) {

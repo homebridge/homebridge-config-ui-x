@@ -8,6 +8,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 
 - fix: prioritise scoped plugins in plugin search results
 - fix: validate `version` parameter type in `triggerUpdate`
+- fix: validate backup ID format to prevent path traversal
 
 ### Homebridge Dependencies
 

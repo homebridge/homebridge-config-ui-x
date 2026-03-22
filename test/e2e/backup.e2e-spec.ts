@@ -457,10 +457,23 @@ describe('BackupController (e2e)', { timeout: 10_000 }, () => {
     expect(res.headers['content-type']).toBe('application/octet-stream')
   })
 
-  it('GET /backup/scheduled-backups/:backupId (not found)', async () => {
+  it('GET /backup/scheduled-backups/:backupId (invalid format)', async () => {
     const res = await app.inject({
       method: 'GET',
       path: '/backup/scheduled-backups/xxxxxxxxxxxx',
+      headers: {
+        authorization,
+      },
+    })
+
+    expect(res.statusCode).toBe(400)
+    expect(res.headers['content-type']).not.toBe('application/octet-stream')
+  })
+
+  it('GET /backup/scheduled-backups/:backupId (not found)', async () => {
+    const res = await app.inject({
+      method: 'GET',
+      path: '/backup/scheduled-backups/0ACAC1AC01AC.1765432100000',
       headers: {
         authorization,
       },
