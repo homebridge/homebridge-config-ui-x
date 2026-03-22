@@ -870,6 +870,10 @@ export class PluginsService {
    * @returns Object containing operation status, package name, and version
    */
   public async triggerUpdate(name: string, version?: string): Promise<{ ok: boolean, name: string, version: string }> {
+    if (version !== undefined && typeof version !== 'string') {
+      throw new BadRequestException('Invalid version parameter.')
+    }
+
     // Get package information to validate it exists
     let targetVersion = version || 'latest'
 
@@ -1987,7 +1991,7 @@ export class PluginsService {
     await this.removeSynologyMetadata()
 
     let timeoutTimer: NodeJS.Timeout
-    command = command.filter(x => x.length)
+    command = command.map(x => String(x)).filter(x => x.length)
 
     // Sudo mode is requested in plugin config
     if (this.configService.ui.sudo) {

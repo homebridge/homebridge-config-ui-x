@@ -7,6 +7,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 ### Other Changes
 
 - fix: prioritise scoped plugins in plugin search results
+- fix: validate `version` parameter type in `triggerUpdate`
 
 ### Homebridge Dependencies
 
