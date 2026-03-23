@@ -13,6 +13,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - chore: consolidate regex into shared file (backend)
 - chore: consolidate regex into shared file (frontend)
 - chore: refresh some screenshots in `screenshots` folder
+- fix: add `username`/`password` attributes to login form
 
 ### Homebridge Dependencies
 
