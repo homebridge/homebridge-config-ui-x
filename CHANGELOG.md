@@ -2,12 +2,14 @@
 
 All notable changes to `homebridge-config-ui-x` will be documented in this file. This project tries to adhere to [Semantic Versioning](http://semver.org/).
 
-## v5.20.1 (Pending Release)
+## v5.21.0 (2026-03-30)
 
-### ⚠️ Browser Support
+### Important Notes
 
-- Updated minimum browser requirements to align with Angular 21:
-  - now targeting the last 2 versions of Chrome, Edge, Firefox and Safari
+- ⚠️ This is a large update with significant changes under the hood. While we have tested, if you are running a mission-critical Homebridge instance, consider waiting a few days after release before updating.
+  - You can report any issues you encounter on [GitHub](https://github.com/homebridge/homebridge-config-ui-x/issues), please check first as your issue may have already been reported.
+- ⚠️ Homebridge UI now supports the last two versions of Chrome, Edge, Firefox and Safari.
+  - This does not necessarily mean that the UI will not work on older browser versions.
 
 ### UI Changes
 
