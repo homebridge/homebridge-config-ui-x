@@ -45,6 +45,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - refresh users screenshot in `screenshots` folder
 - use state labels for `CurrentMediaState`
 - enable `strict` mode in `./ui` tsconfig + code fixes
+- fix: plugin config - sync data on array item removal
 
 ### Homebridge Dependencies
 
