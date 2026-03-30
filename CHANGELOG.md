@@ -2,6 +2,18 @@
 
 All notable changes to `homebridge-config-ui-x` will be documented in this file. This project tries to adhere to [Semantic Versioning](http://semver.org/).
 
+## v5.21.1 (Pending Release)
+
+### Other Changes
+
+- fix: plugin config - sync data on array item reorder
+
+### Homebridge Dependencies
+
+- `@homebridge/hap-client` @ `v4.0.2`
+- `@homebridge/node-pty-prebuilt-multiarch` @ `v0.13.1`
+- `@homebridge/plugin-ui-utils` @ `v2.2.3`
+
 ## v5.21.0 (2026-03-30)
 
 ### Important Notes
