@@ -252,7 +252,7 @@ export class FreeBSDInstaller extends BasePlatform {
   /**
    * Update Node.js
    */
-  public async updateNodejs(job: { target: string, rebuild: boolean }) { // eslint-disable-line unused-imports/no-unused-vars
+  public async updateNodejs(job: { target: string, rebuild: boolean }) {
     this.hbService.logger('Update Node.js using pkg manually.', 'fail')
     process.exit(1)
   }

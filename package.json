@@ -130,7 +130,7 @@
     "@angular-eslint/eslint-plugin": "^21.3.1",
     "@angular-eslint/eslint-plugin-template": "^21.3.1",
     "@angular-eslint/template-parser": "^21.3.1",
-    "@antfu/eslint-config": "^7.7.3",
+    "@antfu/eslint-config": "^8.0.0",
     "@nestjs/testing": "^11.1.17",
     "@prettier/plugin-xml": "^3.4.2",
     "@types/fs-extra": "^11.0.4",
@@ -156,14 +156,14 @@
   },
   "overrides": {
     "@nestjs/core": {
-      "path-to-regexp": "^8.4.0"
+      "path-to-regexp": "^8.4.1"
     },
     "@nestjs/platform-fastify": {
       "fastify": "5.8.4",
-      "path-to-regexp": "^8.4.0"
+      "path-to-regexp": "^8.4.1"
     },
     "@nestjs/swagger": {
-      "path-to-regexp": "^8.4.0"
+      "path-to-regexp": "^8.4.1"
     }
   },
   "maintainers": [

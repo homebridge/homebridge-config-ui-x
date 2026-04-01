@@ -7,6 +7,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 ### Other Changes
 
 - fix: plugin config - sync data on array item reorder
+- chore: bump `@antfu/eslint-config` from `v7` to `v8`
 
 ### Homebridge Dependencies
 

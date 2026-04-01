@@ -101,7 +101,7 @@ export class Win32Installer extends BasePlatform {
   /**
    * Rebuilds the Node.js modules for Homebridge UI
    */
-  public async rebuild(all = false) { // eslint-disable-line unused-imports/no-unused-vars
+  public async rebuild(all = false) {
     this.checkIsAdmin()
 
     try {

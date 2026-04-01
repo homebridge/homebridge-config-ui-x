@@ -37,7 +37,6 @@ export class BasePlatform {
     process.exit(0)
   }
 
-  // eslint-disable-next-line unused-imports/no-unused-vars
   public async rebuild(all = false): Promise<void> {
     this.hbService.logger('This command has not been implemented on this platform.', 'fail')
     process.exit(0)
@@ -55,11 +54,9 @@ export class BasePlatform {
     }
   }
 
-  // eslint-disable-next-line unused-imports/no-unused-vars
   public getPidOfPort(port: number): string | null {
     return null
   }
 
-  // eslint-disable-next-line unused-imports/no-unused-vars
   public async updateNodejs(job: { target: string, rebuild: boolean }): Promise<void> {}
 }

@@ -54,7 +54,7 @@ export default antfu(
       'style/quote-props': ['error', 'consistent-as-needed'],
       'ts/consistent-type-imports': 'off',
       'unicorn/no-useless-spread': 'error',
-      'unused-imports/no-unused-vars': ['error', { caughtErrors: 'none' }],
+      'unused-imports/no-unused-vars': ['error', { caughtErrors: 'none', args: 'none' }],
     },
   },
 )

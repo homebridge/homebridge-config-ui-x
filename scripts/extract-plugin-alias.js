@@ -1,5 +1,3 @@
-/* eslint-disable unused-imports/no-unused-vars */
-
 /**
  * This script "mocks" homebridge and is used to extract the plugin alias and type.
  */

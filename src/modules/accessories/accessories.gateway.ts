@@ -17,7 +17,7 @@ export class AccessoriesGateway {
   ) {}
 
   @SubscribeMessage('get-accessories')
-  connect(client: any, payload: any) { // eslint-disable-line unused-imports/no-unused-vars
+  connect(client: any, payload: any) {
     this.accessoriesService.connect(client)
   }
 
