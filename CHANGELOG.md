@@ -4,6 +4,10 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 
 ## v5.21.1 (Pending Release)
 
+### UI Changes
+
+- fix: matter icon conditions in reset accessories modal
+
 ### Other Changes
 
 - fix: plugin config - sync data on array item reorder

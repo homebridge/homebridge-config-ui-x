@@ -27,10 +27,7 @@
           <li class="list-group-item d-flex justify-content-between align-items-center">
             <span class="me-3">
               @if (isMatterSupported) {
-                <i
-                  class="fas fa-lg fa-hap me-2"
-                  [class.opacity-muted]="item._protocol === 'matter' && item._matterOnly"
-                ></i>
+                <i class="fas fa-lg fa-hap me-2" [class.opacity-muted]="item._protocol === 'matter'"></i>
                 <i class="fas fa-lg fa-matter" [class.opacity-muted]="item._protocol !== 'matter'"></i>
               } @else {
                 <i class="fas fa-lg fa-hap"></i>
