@@ -541,28 +541,22 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
     this.releaseNotesShow.set(true)
 
     try {
-      const reqChangelog = await this.$api.get(`/plugins/release/${encodeURIComponent(this.pluginName)}`)
+      const reqChangelog = await this.$api.get(`/plugins/release/${encodeURIComponent(this.pluginName)}`, {
+        params: { version: this.targetVersion },
+      })
       this.fullChangelog.set(reqChangelog.changelog)
 
       // Only update targetVersionPretty from changelog if we're targeting 'latest'
-      // Don't overwrite when explicitly targeting beta/alpha/test versions
       if (reqChangelog.latestVersion && this.targetVersion === 'latest') {
         this.targetVersionPretty.set(reqChangelog.latestVersion)
       }
 
-      const targetVer = this.targetVersion
-      const latestVer = this.latestVersion
-      // Only show release notes for stable versions, not for beta/alpha/test
-      const isPrerelease = ['beta', 'alpha', 'test', 'next'].includes(targetVer) || targetVer.includes('-')
-
-      if (!isPrerelease && (targetVer === 'latest' || targetVer === latestVer)) {
+      if (reqChangelog.notes) {
+        this.versionNotes.set(reqChangelog.notes)
         this.versionNotesShow.set(true)
-        if (reqChangelog.notes) {
-          this.versionNotes.set(reqChangelog.notes)
-        }
       } else {
-        this.versionNotesShow.set(false)
-        this.versionNotesLoaded.set(true)
+        const isPrerelease = ['beta', 'alpha', 'test', 'next'].includes(this.targetVersion) || this.targetVersion.includes('-')
+        this.versionNotesShow.set(!isPrerelease)
       }
     } catch (error) {
       console.error('Error loading release notes:', error)

@@ -55,6 +55,7 @@ export const RE_BACKUP_FILENAME = /^homebridge-backup-[0-9a-z]{12}.\d{09,15}.tar
 export const RE_BACKUP_ID = /^[0-9a-z]{12}\.\d{9,15}$/i
 
 // Version tags
+export const RE_PRERELEASE_TYPE = /-(beta|alpha|test)\b/
 export const RE_BETA_DATE = /^beta-\d{4}-\d{2}-\d{2}$/i
 export const RE_TEST_DATE = /^test-\d{4}-\d{2}-\d{2}$/i
 export const RE_TRAILING_DATE = /\d{4}-\d{2}-\d{2}$/
