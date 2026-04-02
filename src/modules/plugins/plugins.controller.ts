@@ -73,11 +73,12 @@ export class PluginsController {
   }
 
   @UseGuards(AdminGuard)
-  @ApiOperation({ summary: 'Get the latest GitHub release notes and latest changelog for a plugin.' })
+  @ApiOperation({ summary: 'Get the GitHub release notes and changelog for a specific version of a plugin.' })
   @ApiParam({ name: 'pluginName', type: 'string' })
+  @ApiQuery({ name: 'version', type: 'string', required: false, description: 'Target version or dist-tag (e.g. "1.2.3", "beta", "latest")' })
   @Get('release/:pluginName')
-  getPluginRelease(@Param('pluginName') pluginName) {
-    return this.pluginsService.getPluginRelease(pluginName)
+  getPluginRelease(@Param('pluginName') pluginName, @Query('version') version?: string) {
+    return this.pluginsService.getPluginRelease(pluginName, version)
   }
 
   @UseGuards(AdminGuard)

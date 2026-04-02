@@ -7,6 +7,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 ### UI Changes
 
 - fix: matter icon conditions in reset accessories modal
+- feat: show release notes for all plugin versions
 
 ### Other Changes
 

@@ -50,8 +50,8 @@ import {
   RE_GITHUB_REPO,
   RE_HYPHEN,
   RE_HYPHEN_GLOBAL,
-  RE_NON_NUMERIC_DOT,
   RE_PLUGIN_NAME,
+  RE_PRERELEASE_TYPE,
   RE_URL,
   RE_URL_WITH_OPTIONAL_PAREN,
   RE_WHITESPACE,
@@ -1377,32 +1377,98 @@ export class PluginsService {
   }
 
   /**
-   * Get the latest release notes from GitHub for a plugin
+   * Get the GitHub release notes and changelog for a specific version of a plugin
    * @param pluginName
+   * @param version - A specific semver (e.g. "1.2.3", "1.2.3-beta.8") or dist-tag (e.g. "latest", "beta")
    */
-  public async getPluginRelease(pluginName: string) {
+  public async getPluginRelease(pluginName: string, version?: string) {
     let latestVersion: string | null = null
+    let resolvedVersion: string | null = null
+
     try {
       const pkg: INpmRegistryModule = (await firstValueFrom((
         this.httpService.get(`https://registry.npmjs.org/${encodeURIComponent(pluginName).replace(RE_ENCODED_AT, '@')}`)),
       )).data
 
       latestVersion = pkg['dist-tags'] ? pkg['dist-tags'].latest : null
+
+      // Resolve the requested version
+      if (!version || version === 'latest') {
+        resolvedVersion = latestVersion
+      } else if (pkg['dist-tags']?.[version]) {
+        // version is a dist-tag name (e.g. "beta", "next") — resolve to its semver
+        resolvedVersion = pkg['dist-tags'][version]
+      } else {
+        // version is already a specific semver
+        resolvedVersion = version
+      }
     } catch (e) {
       throw new NotFoundException()
+    }
+
+    // Helper to fetch a GitHub release by tag, trying v-prefixed first then bare version
+    const fetchReleaseByVersion = async (owner: string, repo: string, ver: string) => {
+      for (const tag of [`v${ver}`, ver]) {
+        try {
+          const release = await firstValueFrom(this.httpService.get(`https://api.github.com/repos/${owner}/${repo}/releases/tags/${tag}`))
+          return release.data
+        } catch {}
+      }
+      return null
+    }
+
+    // Determine if this is a prerelease version (e.g. "1.2.3-beta.1") and extract the prerelease type
+    const prereleaseType = resolvedVersion?.match(RE_PRERELEASE_TYPE)?.[1] ?? null
+
+    // Helper to find the most recently updated branch containing a keyword (e.g. "beta")
+    const findPrereleaseBranch = async (owner: string, repo: string, keyword: string): Promise<string | null> => {
+      try {
+        const response = await firstValueFrom(this.httpService.get(`https://api.github.com/repos/${owner}/${repo}/branches`, {
+          params: { per_page: 100 },
+        }))
+        const matched = response.data.filter((b: any) => b.name.includes(keyword))
+        return matched.length > 0 ? matched.at(-1).name : null
+      } catch {}
+      return null
     }
 
     switch (pluginName) {
       case 'homebridge':
       case 'homebridge-config-ui-x': {
         try {
-          const release = await firstValueFrom(this.httpService.get(`https://api.github.com/repos/homebridge/${pluginName}/releases/latest`))
-          const tags = await firstValueFrom(this.httpService.get(`https://api.github.com/repos/homebridge/${pluginName}/tags`))
-          const changelog = await firstValueFrom(this.httpService.get(`https://raw.githubusercontent.com/homebridge/${pluginName}/refs/tags/${tags.data[0].name}/CHANGELOG.md`))
+          const tag = resolvedVersion ? `v${resolvedVersion}` : null
+          const release = tag
+            ? await firstValueFrom(this.httpService.get(`https://api.github.com/repos/homebridge/${pluginName}/releases/tags/${tag}`)).then(r => r.data).catch(() => null)
+            : null
+
+          // Fetch changelog: try prerelease branch first for beta/alpha/test, then tag, then HEAD
+          let changelogData: string | null = null
+          if (prereleaseType) {
+            const branch = await findPrereleaseBranch('homebridge', pluginName, prereleaseType)
+            if (branch) {
+              try {
+                const changelog = await firstValueFrom(this.httpService.get(`https://raw.githubusercontent.com/homebridge/${pluginName}/refs/heads/${branch}/CHANGELOG.md`))
+                changelogData = changelog.data
+              } catch {}
+            }
+          }
+          if (!changelogData && tag) {
+            try {
+              const changelog = await firstValueFrom(this.httpService.get(`https://raw.githubusercontent.com/homebridge/${pluginName}/refs/tags/${tag}/CHANGELOG.md`))
+              changelogData = changelog.data
+            } catch {}
+          }
+          if (!changelogData) {
+            try {
+              const changelog = await firstValueFrom(this.httpService.get(`https://raw.githubusercontent.com/homebridge/${pluginName}/HEAD/CHANGELOG.md`))
+              changelogData = changelog.data
+            } catch {}
+          }
+
           return {
-            name: release.data.name,
-            notes: release.data.body,
-            changelog: changelog.data,
+            name: release?.tag_name ?? null,
+            notes: release?.body ?? null,
+            changelog: changelogData,
             latestVersion,
           }
         } catch {
@@ -1453,23 +1519,43 @@ export class PluginsService {
         }
 
         try {
-          const release = await firstValueFrom(this.httpService.get(`https://api.github.com/repos/${match[1]}/${match[2]}/releases/latest`))
-          const latestTag = release.data.tag_name
+          const release = resolvedVersion
+            ? await fetchReleaseByVersion(match[1], match[2], resolvedVersion)
+            : null
 
-          // The latest npm version may not match the latest GitHub release
-          const isReleaseMatch = latestVersion?.replace(RE_NON_NUMERIC_DOT, '').includes(release.data.tag_name?.replace(RE_NON_NUMERIC_DOT, ''))
+          const releaseTag = release?.tag_name
 
-          const changelogData = await fetchChangelog(`refs/tags/${latestTag}`)
+          // For prerelease versions, try the matching branch first for the changelog
+          let changelogData: string | null = null
+          if (prereleaseType) {
+            const branch = await findPrereleaseBranch(match[1], match[2], prereleaseType)
+            if (branch) {
+              changelogData = await fetchChangelog(`refs/heads/${branch}`)
+            }
+          }
+          if (!changelogData) {
+            const changelogRef = releaseTag ? `refs/tags/${releaseTag}` : 'HEAD'
+            changelogData = await fetchChangelog(changelogRef)
+          }
 
           return {
-            name: isReleaseMatch && release.data.tag_name ? release.data.tag_name : null,
-            notes: isReleaseMatch && release.data.body ? release.data.body : null,
+            name: releaseTag ?? null,
+            notes: release?.body ?? null,
             changelog: changelogData,
             latestVersion,
           }
         } catch (e) {
-          // No releases found — fall back to fetching CHANGELOG.md from default branch
-          const changelogData = await fetchChangelog('HEAD')
+          // No releases found — try prerelease branch, then fall back to default branch
+          let changelogData: string | null = null
+          if (prereleaseType) {
+            const branch = await findPrereleaseBranch(match[1], match[2], prereleaseType)
+            if (branch) {
+              changelogData = await fetchChangelog(`refs/heads/${branch}`)
+            }
+          }
+          if (!changelogData) {
+            changelogData = await fetchChangelog('HEAD')
+          }
           if (changelogData) {
             return {
               name: null,
