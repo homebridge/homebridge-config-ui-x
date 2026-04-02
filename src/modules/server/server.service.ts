@@ -507,7 +507,6 @@ export class ServerService {
    * Removes the matter config from config.json and deletes the Matter storage directory
    * @param id - The bridge device ID (can be with or without colons)
    * @returns Success status object
-   * @throws NotFoundException if Matter configuration is not found
    * @throws InternalServerErrorException if removal fails
    */
   public async deleteDeviceMatterConfig(id: string): Promise<{ ok: boolean }> {
@@ -535,25 +534,21 @@ export class ServerService {
       const pluginBlock = pluginBlocks.find((block: any) => block._bridge?.matter)
 
       if (!pluginBlock) {
-        this.logger.error(`Failed to find Matter configuration for child bridge ${id}.`)
-        throw new NotFoundException(`Matter configuration not found for bridge ${id}`)
+        this.logger.warn(`Matter configuration already removed from config.json for child bridge ${id}, skipping config update.`)
+      } else {
+        // Validate that Matter should not be on accessory-based plugins
+        if ('accessory' in pluginBlock) {
+          this.logger.warn(`Removing Matter configuration from accessory-based plugin block for bridge ${id}. Matter is only supported for platform-based plugins.`)
+        }
+
+        // Remove the matter configuration from the bridge
+        delete pluginBlock._bridge.matter
+        this.logger.warn(`Bridge ${id} Matter configuration removed from config.json.`)
+
+        // Save the config file
+        await this.configEditorService.updateConfigFile(configFile)
       }
-
-      // Validate that Matter should not be on accessory-based plugins
-      if ('accessory' in pluginBlock) {
-        this.logger.warn(`Removing Matter configuration from accessory-based plugin block for bridge ${id}. Matter is only supported for platform-based plugins.`)
-      }
-
-      // Remove the matter configuration from the bridge
-      delete pluginBlock._bridge.matter
-      this.logger.warn(`Bridge ${id} Matter configuration removed from config.json.`)
-
-      // Save the config file
-      await this.configEditorService.updateConfigFile(configFile)
     } catch (e) {
-      if (e instanceof NotFoundException) {
-        throw e
-      }
       this.logger.error(`Failed to remove Matter configuration for child bridge ${id} as ${e.message}.`)
       throw new InternalServerErrorException(`Failed to remove Matter configuration: ${e.message}`)
     }

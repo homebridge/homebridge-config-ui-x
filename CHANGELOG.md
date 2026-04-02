@@ -13,6 +13,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix: plugin config - sync data on array item reorder
 - chore: bump `@antfu/eslint-config` from `v7` to `v8`
 - chore: bump `typescript` from `v5` to `v6` (backend)
+- fix: order of ops. deleting matter child bridge
 
 ### Homebridge Dependencies
 
