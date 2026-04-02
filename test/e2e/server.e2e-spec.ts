@@ -816,7 +816,7 @@ describe('ServerController (e2e)', () => {
     expect(await pathExists(matterPath)).toBe(false)
   })
 
-  it('DELETE /server/pairings/:deviceId/matter (should return 404 if Matter config not found)', async () => {
+  it('DELETE /server/pairings/:deviceId/matter (should return 204 if Matter config not found)', async () => {
     const config = await readJson(configService.configPath)
     config.platforms = [
       {
@@ -837,7 +837,7 @@ describe('ServerController (e2e)', () => {
       },
     })
 
-    expect(res.statusCode).toBe(404)
+    expect(res.statusCode).toBe(204)
   })
 
   it('DELETE /server/pairings/:deviceId/matter (should handle deviceId with colons)', async () => {
