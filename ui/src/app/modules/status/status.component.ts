@@ -52,7 +52,7 @@ export class StatusComponent implements OnInit, OnDestroy {
   public isMatterSupported = this.$settings.isFeatureEnabled('matterSupport')
   public saveWidgetsEvent = new Subject()
   public options!: GridsterConfig
-  public readonly dashboard = signal<Array<GridsterItemConfig>>([])
+  public readonly dashboard = signal<Widget[]>([])
   public readonly consoleStatus = signal<'up' | 'down'>('down')
   public currentYear!: number
   public readonly page = signal({
@@ -197,7 +197,7 @@ export class StatusComponent implements OnInit, OnDestroy {
             $resizeEvent: new Subject(),
             $configureEvent: new Subject(),
             $saveWidgetsEvent: this.saveWidgetsEvent,
-            draggable: this.options.draggable!.enabled,
+            draggable: this.options.draggable!.enabled!,
           })
         } else if (!visibleAnywhere && existingIndex > -1) {
           // Widget hidden on both desktop and mobile — remove it
@@ -327,8 +327,8 @@ export class StatusComponent implements OnInit, OnDestroy {
       $resizeEvent: item.$resizeEvent || new Subject(),
       $configureEvent: item.$configureEvent || new Subject(),
       $saveWidgetsEvent: this.saveWidgetsEvent,
-      draggable: this.options.draggable!.enabled,
-    })))
+      draggable: this.options.draggable!.enabled!,
+    }) as Widget))
   }
 
   private resetLayout() {
@@ -358,7 +358,7 @@ export class StatusComponent implements OnInit, OnDestroy {
   private async gridChangedEvent() {
     // Sort the array to ensure mobile displays correctly
     const currentDashboard = [...this.dashboard()]
-    currentDashboard.sort((a: GridsterItemConfig, b: GridsterItemConfig) => a.mobileOrder - b.mobileOrder)
+    currentDashboard.sort((a, b) => a.mobileOrder - b.mobileOrder)
     this.dashboard.set(currentDashboard)
 
     // Remove private properties

@@ -16,6 +16,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - chore: bump `typescript` from `v5` to `v6` (backend)
 - fix: order of ops. deleting matter child bridge
 - fix: restart page stuck when server restarts quickly
+- fix: various type fixes in angular `.html` files
 
 ### Homebridge Dependencies
 

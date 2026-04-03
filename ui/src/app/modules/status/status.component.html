@@ -10,7 +10,7 @@
         container="body"
         placement="bottom"
         triggers="hover"
-        [hidden]="!options.draggable.enabled && !page().showWidgetConfigure"
+        [hidden]="!options.draggable!.enabled && !page().showWidgetConfigure"
         [openDelay]="150"
         [ngbTooltip]="'status.widget.show_hide' | translate"
         [attr.aria-label]="'status.widget.show_hide' | translate"
@@ -25,7 +25,7 @@
           container="body"
           placement="bottom"
           triggers="hover"
-          [disabled]="options.draggable.enabled"
+          [disabled]="options.draggable!.enabled"
           [openDelay]="150"
           [ngbTooltip]="'form.button_unlock' | translate"
           [attr.aria-label]="'form.button_unlock' | translate"
@@ -39,7 +39,7 @@
           container="body"
           placement="bottom"
           triggers="hover"
-          [disabled]="!options.draggable.enabled"
+          [disabled]="!options.draggable!.enabled"
           [openDelay]="150"
           [ngbTooltip]="'form.button_lock' | translate"
           [attr.aria-label]="'form.button_lock' | translate"
@@ -63,7 +63,7 @@
             <gridster-item class="widget-item" [item]="item" [id]="item.component">
               <div class="gridster-item-content">
                 @if (
-                  (options.draggable.enabled || page().showWidgetConfigure) &&
+                  (options.draggable!.enabled || page().showWidgetConfigure) &&
                   widgetsWithSettings.includes(item.component)
                 ) {
                   <button
