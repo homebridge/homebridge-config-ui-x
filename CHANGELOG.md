@@ -18,6 +18,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix: order of ops. deleting matter child bridge
 - fix: restart page stuck when server restarts quickly
 - fix: various type fixes in angular `.html` files
+- fix: fall back to tarball when `nodesource` is on 32-bit `arm` (@copilot)
 
 ### Homebridge Dependencies
 

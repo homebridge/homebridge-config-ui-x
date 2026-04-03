@@ -281,8 +281,8 @@ export class LinuxInstaller extends BasePlatform {
       process.exit(1)
     }
 
-    if (targetPath === '/usr' && await pathExists('/etc/apt/sources.list.d/nodesource.list')) {
-      // Update from nodesource
+    if (targetPath === '/usr' && await pathExists('/etc/apt/sources.list.d/nodesource.list') && !this.is32BitArm()) {
+      // Update from nodesource (not supported on 32-bit ARM architectures)
       await this.updateNodeFromNodesource(job)
     } else {
       // Update from tarball
@@ -338,6 +338,27 @@ export class LinuxInstaller extends BasePlatform {
         + `Wanted: >=2.31. Installed: ${glibcVersion} - see https://homebridge.io/w/JJSun`, 'fail')
       process.exit(1)
     }
+  }
+
+  /**
+   * Returns true when running on a 32-bit ARM system.
+   * NodeSource does not carry packages for 32-bit ARM architectures, so the tarball
+   * method must be used instead.
+   */
+  private is32BitArm(): boolean {
+    try {
+      const uname = execSync('uname -m').toString().trim()
+      if (uname === 'armv7l' || uname === 'armv6l') {
+        return true
+      }
+      // aarch64 kernel can run a 32-bit userspace (e.g. Raspberry Pi 4B with 32-bit OS)
+      if (uname === 'aarch64' && execSync('getconf LONG_BIT').toString().trim() === '32') {
+        return true
+      }
+    } catch (e) {
+      // If we can't determine, assume it's not 32-bit ARM
+    }
+    return false
   }
 
   /**
