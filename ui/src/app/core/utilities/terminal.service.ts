@@ -338,5 +338,6 @@ export class TerminalService {
     })
     this.resize.next({ cols: this.term.cols, rows: this.term.rows })
     this.isInitializing = false
+    this.term.focus()
   }
 }
