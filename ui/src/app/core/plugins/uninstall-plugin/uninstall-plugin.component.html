@@ -39,7 +39,7 @@
           <ul class="mt-2 text-start">
             <li
               [innerHtml]="
-                settingTranslationKey
+                settingTranslationKey()
                   | translate
                     : {
                         setting: keepOrphansName,
@@ -48,7 +48,7 @@
               "
             ></li>
             <ul class="mb-0">
-              @if (willKeepAccessoriesInCache) {
+              @if (willKeepAccessoriesInCache()) {
                 <li>{{ 'plugins.manage.confirm_disable_platform_1' | translate }}</li>
                 <li>{{ 'plugins.manage.confirm_disable_platform_2' | translate }}</li>
               } @else {
@@ -57,7 +57,7 @@
               }
             </ul>
           </ul>
-          @if (shouldShowCleanupAlert) {
+          @if (shouldShowCleanupAlert()) {
             <ngb-alert type="info" class="mt-4" [dismissible]="false">
               @if (hasChildBridges()) {
                 {{ 'plugins.uninstall_cleanup_child_bridge' | translate }}

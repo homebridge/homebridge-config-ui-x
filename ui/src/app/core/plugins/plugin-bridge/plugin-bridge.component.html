@@ -61,7 +61,7 @@
         <ul class="list-group list-group-box mt-3 mb-0">
           <! -- Link Bridge Option - ->
           @if (
-            !configBlocks()[selectedBlock()]._bridge?.username &&
+            !configBlocks()[+selectedBlock()]._bridge?.username &&
             bridgesAvailableForLink().length &&
             !currentBridgeHasLinks()
           ) {
@@ -109,11 +109,11 @@
                   type="checkbox"
                   class="rendux-input"
                   [id]="`toggleExternalBridgeInput_${selectedBlock()}`"
-                  [checked]="enabledBlocks()[selectedBlock()]"
+                  [checked]="enabledBlocks()[+selectedBlock()]"
                   (change)="
                     toggleExternalBridge(
-                      configBlocks()[selectedBlock()],
-                      !enabledBlocks()[selectedBlock()],
+                      configBlocks()[+selectedBlock()],
+                      !enabledBlocks()[+selectedBlock()],
                       selectedBlock()
                     )
                   "
@@ -126,20 +126,20 @@
             <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
               <span class="mb-2 mb-md-0 w-100 w-md-50">{{ 'child_bridge.config.name' | translate }}</span>
               <div class="text-start text-md-end w-100 w-md-50 grey-text font-monospace">
-                {{ currentlySelectedLink().name }}
+                {{ currentlySelectedLink()?.name }}
               </div>
             </li>
           }
 
           <! -- Username Display (shown for both linked and enabled bridges) - ->
           @if (
-            (currentlySelectedLink() || configBlocks()[selectedBlock()]._bridge?.username) &&
+            (currentlySelectedLink() || configBlocks()[+selectedBlock()]._bridge?.username) &&
             (currentlySelectedLink() || !currentBridgeHasLinks())
           ) {
             <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
               <span class="mb-2 mb-md-0 w-100 w-md-50">{{ 'users.label_username' | translate }}</span>
               <div class="text-start text-md-end w-100 w-md-50 grey-text font-monospace">
-                {{ currentlySelectedLink()?.username || configBlocks()[selectedBlock()]._bridge?.username }}
+                {{ currentlySelectedLink()?.username || configBlocks()[+selectedBlock()]._bridge?.username }}
               </div>
             </li>
           }
@@ -147,13 +147,13 @@
             <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
               <span class="mb-2 mb-md-0 w-100 w-md-50">{{ 'child_bridge.config.port' | translate }}</span>
               <div class="text-start text-md-end w-100 w-md-50 grey-text font-monospace">
-                {{ currentlySelectedLink().port }}
+                {{ currentlySelectedLink()?.port }}
               </div>
             </li>
           }
 
           <! -- Name Field (shown only for enabled bridges, not linked) - ->
-          @if (!currentlySelectedLink() && configBlocks()[selectedBlock()]._bridge?.username) {
+          @if (!currentlySelectedLink() && configBlocks()[+selectedBlock()]._bridge?.username) {
             <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
               <label for="bridge-name" class="mb-2 mb-md-0 w-100 w-md-50">{{
                 'child_bridge.config.name' | translate
@@ -164,7 +164,7 @@
                   type="text"
                   class="form-control custom-input"
                   [class.is-invalid]="getHapNameValidationError(selectedBlock())"
-                  [(ngModel)]="configBlocks()[selectedBlock()]._bridge.name"
+                  [(ngModel)]="configBlocks()[+selectedBlock()]._bridge.name"
                 />
               </div>
             </li>
@@ -194,7 +194,7 @@
                     type="text"
                     class="form-control custom-input"
                     [placeholder]="'form.optional' | translate"
-                    [(ngModel)]="configBlocks()[selectedBlock()]._bridge['manufacturer']"
+                    [(ngModel)]="configBlocks()[+selectedBlock()]._bridge['manufacturer']"
                   />
                 </div>
               </li>
@@ -208,7 +208,7 @@
                     type="text"
                     class="form-control custom-input"
                     [placeholder]="'form.optional' | translate"
-                    [(ngModel)]="configBlocks()[selectedBlock()]._bridge.model"
+                    [(ngModel)]="configBlocks()[+selectedBlock()]._bridge.model"
                   />
                 </div>
               </li>
@@ -221,9 +221,9 @@
                     id="bridge-firmware"
                     type="text"
                     class="form-control custom-input"
-                    [class.font-monospace]="configBlocks()[selectedBlock()]._bridge.firmwareRevision"
+                    [class.font-monospace]="configBlocks()[+selectedBlock()]._bridge.firmwareRevision"
                     [placeholder]="'form.optional' | translate"
-                    [(ngModel)]="configBlocks()[selectedBlock()]._bridge.firmwareRevision"
+                    [(ngModel)]="configBlocks()[+selectedBlock()]._bridge.firmwareRevision"
                   />
                 </div>
               </li>
@@ -243,11 +243,11 @@
                       class="form-control custom-input font-monospace cron-input"
                       placeholder="mm hh dd MM ww"
                       maxlength="30"
-                      [value]="getScheduledRestartCron(configBlocks()[selectedBlock()]._bridge?.username)"
+                      [value]="getScheduledRestartCron(configBlocks()[+selectedBlock()]._bridge?.username)"
                       (input)="
                         onScheduledRestartCronChange(
                           asInputElement($event.target).value,
-                          configBlocks()[selectedBlock()]._bridge?.username
+                          configBlocks()[+selectedBlock()]._bridge?.username
                         )
                       "
                     />
@@ -265,7 +265,7 @@
                         class="rendux-input"
                         [id]="`homebridgeDebugMode_${selectedBlock()}`"
                         [attr.aria-label]="'settings.startup.debug' | translate"
-                        [(ngModel)]="configBlocks()[selectedBlock()]._bridge.debugModeEnabled"
+                        [(ngModel)]="configBlocks()[+selectedBlock()]._bridge.debugModeEnabled"
                       />
                       <label class="rendux-label" [for]="`homebridgeDebugMode_${selectedBlock()}`"></label>
                     </div>
@@ -290,7 +290,7 @@
                       type="text"
                       class="form-control custom-input font-monospace"
                       placeholder="HAP-NodeJS:Advertiser,HAP-NodeJS:Service"
-                      [(ngModel)]="configBlocks()[selectedBlock()]._bridge.env.DEBUG"
+                      [(ngModel)]="configBlocks()[+selectedBlock()]._bridge.env.DEBUG"
                     />
                   </div>
                 </li>
@@ -310,7 +310,7 @@
                       type="text"
                       class="form-control custom-input font-monospace"
                       placeholder="--max-old-space-size=512 --max-http-header-size=8192"
-                      [(ngModel)]="configBlocks()[selectedBlock()]._bridge.env.NODE_OPTIONS"
+                      [(ngModel)]="configBlocks()[+selectedBlock()]._bridge.env.NODE_OPTIONS"
                     />
                   </div>
                 </li>
@@ -320,7 +320,7 @@
         </ul>
 
         <! -- HOMEKIT (HAP) SECTION - Only shown when child bridge is enabled - ->
-        @if (!currentlySelectedLink() && configBlocks()[selectedBlock()]._bridge?.username) {
+        @if (!currentlySelectedLink() && configBlocks()[+selectedBlock()]._bridge?.username) {
           <ul class="list-group list-group-box mt-3 mb-0">
             <! -- HAP Header with Always-On Toggle - ->
             <li class="list-group-item d-flex justify-content-between align-items-center flex-row pb-2">
@@ -341,8 +341,8 @@
 
             <! -- HAP QR Code - ->
             @if (
-              configBlocks()[selectedBlock()]._bridge?.username &&
-              deviceInfo().get(configBlocks()[selectedBlock()]._bridge?.username) === false
+              configBlocks()[+selectedBlock()]._bridge?.username &&
+              deviceInfo().get(configBlocks()[+selectedBlock()]._bridge?.username) === false
             ) {
               <li class="list-group-item text-center">
                 <div class="w-100 d-flex flex-column text-center">
@@ -359,39 +359,57 @@
                 </div>
               </li>
             }
-            @if (deviceInfo().get(configBlocks()[selectedBlock()]._bridge?.username)) {
+            @if (deviceInfo().get(configBlocks()[+selectedBlock()]._bridge?.username)) {
               <li class="list-group-item text-center">
                 <div class="w-100 d-flex flex-column text-center">
                   <app-qrcode
                     class="mx-auto qr-code-size"
-                    [data]="deviceInfo().get(configBlocks()[selectedBlock()]._bridge?.username)?.['_setupCode']"
+                    [data]="
+                      (deviceInfo().get(configBlocks()[+selectedBlock()]._bridge?.username) || undefined)?.[
+                        '_setupCode'
+                      ] ?? ''
+                    "
                   />
                   <p class="mx-auto mt-3 mb-1 font-monospace">
-                    {{ deviceInfo().get(configBlocks()[selectedBlock()]._bridge?.username)?.['pincode'] }}
+                    {{
+                      (deviceInfo().get(configBlocks()[+selectedBlock()]._bridge?.username) || undefined)?.['pincode']
+                    }}
                   </p>
                   <p class="grey-text mx-auto small mb-1 qr-code-info">
                     <i
                       class="fas fa-link"
                       [class.green-text]="
-                        deviceInfo().get(configBlocks()[selectedBlock()]._bridge?.username)?.['_isPaired']
+                        (deviceInfo().get(configBlocks()[+selectedBlock()]._bridge?.username) || undefined)?.[
+                          '_isPaired'
+                        ]
                       "
                       [class.grey-text]="
-                        !deviceInfo().get(configBlocks()[selectedBlock()]._bridge?.username)?.['_isPaired']
+                        !(deviceInfo().get(configBlocks()[+selectedBlock()]._bridge?.username) || undefined)?.[
+                          '_isPaired'
+                        ]
                       "
                     ></i>
                     {{
-                      (deviceInfo().get(configBlocks()[selectedBlock()]._bridge?.username)?.['_isPaired']
+                      ((deviceInfo().get(configBlocks()[+selectedBlock()]._bridge?.username) || undefined)?.[
+                        '_isPaired'
+                      ]
                         ? 'status.widget.qr_paired'
                         : 'status.widget.qr_unpaired'
                       ) | translate
                     }}
-                    @if (!deviceInfo().get(configBlocks()[selectedBlock()]._bridge?.username)?.['_isPaired']) {
+                    @if (
+                      !(deviceInfo().get(configBlocks()[+selectedBlock()]._bridge?.username) || undefined)?.[
+                        '_isPaired'
+                      ]
+                    ) {
                       <span> &middot; {{ 'status.code_scan' | translate }}</span>
                     }
                   </p>
                 </div>
               </li>
-              @if (!deviceInfo().get(configBlocks()[selectedBlock()]._bridge?.username)?.['_isPaired']) {
+              @if (
+                !(deviceInfo().get(configBlocks()[+selectedBlock()]._bridge?.username) || undefined)?.['_isPaired']
+              ) {
                 <li class="list-group-item d-flex justify-content-between align-items-center flex-row pb-2">
                   <span class="text-start">{{ 'child_bridge.config.hide_pairing_alert' | translate }}</span>
                   <div class="text-end grey-text d-flex align-items-center">
@@ -399,9 +417,9 @@
                       type="checkbox"
                       class="rendux-input"
                       [id]="`toggleHideHapUnpairing_${selectedBlock()}`"
-                      [checked]="isUnpairingHidden(configBlocks()[selectedBlock()]._bridge?.username, 'hap')"
+                      [checked]="isUnpairingHidden(configBlocks()[+selectedBlock()]._bridge?.username, 'hap')"
                       [attr.aria-label]="'child_bridge.config.hide_pairing_alert' | translate"
-                      (change)="toggleHideUnpairing(configBlocks()[selectedBlock()]._bridge?.username, 'hap')"
+                      (change)="toggleHideUnpairing(configBlocks()[+selectedBlock()]._bridge?.username, 'hap')"
                     />
                     <label class="rendux-label" [for]="`toggleHideHapUnpairing_${selectedBlock()}`"></label>
                   </div>
@@ -423,14 +441,14 @@
                   min="1025"
                   max="65533"
                   [class.is-invalid]="getHapPortValidationError(selectedBlock())"
-                  [(ngModel)]="configBlocks()[selectedBlock()]._bridge.port"
+                  [(ngModel)]="configBlocks()[+selectedBlock()]._bridge.port"
                 />
               </div>
             </li>
           </ul>
 
           <! -- MATTER SECTION - Only shown when child bridge is enabled and plugin is platform-based - ->
-          @if (isMatterSupported && !configBlocks()[selectedBlock()].accessory) {
+          @if (isMatterSupported && !configBlocks()[+selectedBlock()].accessory) {
             <ul class="list-group list-group-box mt-3 mb-0">
               <! -- Matter Header with Toggle - ->
               <li class="list-group-item d-flex justify-content-between align-items-center flex-row pb-2">
@@ -443,11 +461,11 @@
                     type="checkbox"
                     class="rendux-input"
                     [id]="`toggleMatterBridgeInput_${selectedBlock()}`"
-                    [checked]="matterEnabledBlocks()[selectedBlock()]"
+                    [checked]="matterEnabledBlocks()[+selectedBlock()]"
                     (change)="
                       toggleMatterBridge(
-                        configBlocks()[selectedBlock()],
-                        !matterEnabledBlocks()[selectedBlock()],
+                        configBlocks()[+selectedBlock()],
+                        !matterEnabledBlocks()[+selectedBlock()],
                         selectedBlock()
                       )
                     "
@@ -458,9 +476,9 @@
 
               <! -- Matter Content (only when enabled) - ->
               @if (
-                matterEnabledBlocks()[selectedBlock()] &&
-                configBlocks()[selectedBlock()]._bridge?.matter &&
-                configBlocks()[selectedBlock()]._bridge?.username
+                matterEnabledBlocks()[+selectedBlock()] &&
+                configBlocks()[+selectedBlock()]._bridge?.matter &&
+                configBlocks()[+selectedBlock()]._bridge?.username
               ) {
                 <li class="list-group-item">
                   <ul class="grey-text small">
@@ -469,39 +487,41 @@
                   </ul>
                 </li>
                 <! -- Matter QR Code - ->
-                @if (matterDeviceInfo().get(configBlocks()[selectedBlock()]._bridge?.username)?.setupUri) {
+                @if (matterDeviceInfo().get(configBlocks()[+selectedBlock()]._bridge?.username)?.setupUri) {
                   <li class="list-group-item text-center">
                     <div class="w-100 d-flex flex-column text-center">
                       <app-qrcode
                         class="mx-auto qr-code-size"
-                        [data]="matterDeviceInfo().get(configBlocks()[selectedBlock()]._bridge?.username)?.setupUri"
+                        [data]="matterDeviceInfo().get(configBlocks()[+selectedBlock()]._bridge?.username)?.setupUri"
                       />
                       <p class="mx-auto mt-3 mb-1 font-monospace">
-                        {{ matterDeviceInfo().get(configBlocks()[selectedBlock()]._bridge?.username)?.pin }}
+                        {{ matterDeviceInfo().get(configBlocks()[+selectedBlock()]._bridge?.username)?.pin }}
                       </p>
                       <p class="grey-text mx-auto small mb-1 qr-code-info">
                         <i
                           class="fas fa-link"
                           [class.green-text]="
-                            matterDeviceInfo().get(configBlocks()[selectedBlock()]._bridge?.username)?.commissioned
+                            matterDeviceInfo().get(configBlocks()[+selectedBlock()]._bridge?.username)?.commissioned
                           "
                           [class.grey-text]="
-                            !matterDeviceInfo().get(configBlocks()[selectedBlock()]._bridge?.username)?.commissioned
+                            !matterDeviceInfo().get(configBlocks()[+selectedBlock()]._bridge?.username)?.commissioned
                           "
                         ></i>
                         {{
-                          (matterDeviceInfo().get(configBlocks()[selectedBlock()]._bridge?.username)?.commissioned
+                          (matterDeviceInfo().get(configBlocks()[+selectedBlock()]._bridge?.username)?.commissioned
                             ? 'status.widget.qr_paired'
                             : 'status.widget.qr_unpaired'
                           ) | translate
                         }}
-                        @if (!matterDeviceInfo().get(configBlocks()[selectedBlock()]._bridge?.username)?.commissioned) {
+                        @if (
+                          !matterDeviceInfo().get(configBlocks()[+selectedBlock()]._bridge?.username)?.commissioned
+                        ) {
                           <span> &middot; {{ 'status.code_scan' | translate }}</span>
                         }
                       </p>
                     </div>
                   </li>
-                  @if (!matterDeviceInfo().get(configBlocks()[selectedBlock()]._bridge?.username)?.commissioned) {
+                  @if (!matterDeviceInfo().get(configBlocks()[+selectedBlock()]._bridge?.username)?.commissioned) {
                     <li class="list-group-item d-flex justify-content-between align-items-center flex-row pb-2">
                       <span class="text-start">{{ 'child_bridge.config.hide_pairing_alert' | translate }}</span>
                       <div class="text-end grey-text d-flex align-items-center">
@@ -509,9 +529,9 @@
                           type="checkbox"
                           class="rendux-input"
                           [id]="`toggleHideMatterUnpairing_${selectedBlock()}`"
-                          [checked]="isUnpairingHidden(configBlocks()[selectedBlock()]._bridge?.username, 'matter')"
+                          [checked]="isUnpairingHidden(configBlocks()[+selectedBlock()]._bridge?.username, 'matter')"
                           [attr.aria-label]="'child_bridge.config.hide_pairing_alert' | translate"
-                          (change)="toggleHideUnpairing(configBlocks()[selectedBlock()]._bridge?.username, 'matter')"
+                          (change)="toggleHideUnpairing(configBlocks()[+selectedBlock()]._bridge?.username, 'matter')"
                         />
                         <label class="rendux-label" [for]="`toggleHideMatterUnpairing_${selectedBlock()}`"></label>
                       </div>
@@ -519,8 +539,8 @@
                   }
                 }
                 @if (
-                  matterDeviceInfo().get(configBlocks()[selectedBlock()]._bridge?.username) &&
-                  !matterDeviceInfo().get(configBlocks()[selectedBlock()]._bridge?.username)?.setupUri
+                  matterDeviceInfo().get(configBlocks()[+selectedBlock()]._bridge?.username) &&
+                  !matterDeviceInfo().get(configBlocks()[+selectedBlock()]._bridge?.username)?.setupUri
                 ) {
                   <li class="list-group-item text-center">
                     <div class="w-100 d-flex flex-column text-center">
@@ -553,7 +573,7 @@
                       max="65535"
                       placeholder="e.g. 5540"
                       [class.is-invalid]="getMatterPortValidationError(selectedBlock())"
-                      [(ngModel)]="configBlocks()[selectedBlock()]._bridge.matter.port"
+                      [(ngModel)]="configBlocks()[+selectedBlock()]._bridge.matter.port"
                     />
                   </div>
                 </li>
@@ -575,7 +595,7 @@
               @for (bridge of deleteBridges(); track bridge) {
                 <li>
                   <i class="fas fa-lg fa-hap me-1"></i>
-                  {{ bridge.bridgeName || deviceInfo().get(bridge.id)?.['displayName'] }}
+                  {{ bridge.bridgeName || (deviceInfo().get(bridge.id) || undefined)?.['displayName'] }}
                   <span class="grey-text"> &middot; </span>
                   <span class="grey-text font-monospace">{{ bridge.id }}</span>
                 </li>

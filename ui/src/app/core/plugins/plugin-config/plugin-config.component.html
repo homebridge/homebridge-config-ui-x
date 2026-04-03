@@ -60,13 +60,13 @@
                     container="modal"
                     placement="left"
                     triggers="hover"
-                    [class.fa-circle-check]="formBlocksValid()[i] === true"
-                    [class.green-text]="formBlocksValid()[i] === true"
-                    [class.fa-circle-exclamation]="formBlocksValid()[i] === false"
-                    [class.red-text]="strictValidation() && formBlocksValid()[i] === false"
-                    [class.orange-text]="!strictValidation() && formBlocksValid()[i] === false"
+                    [class.fa-circle-check]="formBlocksValid()[$index] === true"
+                    [class.green-text]="formBlocksValid()[$index] === true"
+                    [class.fa-circle-exclamation]="formBlocksValid()[$index] === false"
+                    [class.red-text]="strictValidation() && formBlocksValid()[$index] === false"
+                    [class.orange-text]="!strictValidation() && formBlocksValid()[$index] === false"
                     [ngbTooltip]="
-                      (formBlocksValid()[i]
+                      (formBlocksValid()[$index]
                         ? 'form.label_valid'
                         : strictValidation()
                           ? 'form.label_invalid_strict'

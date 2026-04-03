@@ -75,10 +75,10 @@
               type="checkbox"
               class="rendux-input"
               [id]="`hidePluginUpdates_${item._username}`"
-              [checked]="!isInList(item._username)"
+              [checked]="!isInList(item._username!)"
               [disabled]="clicked()"
               [attr.aria-label]="`${('form.button_allow' | translate)} ${item.name}`"
-              (click)="toggleList(item._username)"
+              (click)="toggleList(item._username!)"
             />
             <label class="rendux-label ms-3" [for]="`hidePluginUpdates_${item._username}`"></label>
           </div>

@@ -74,17 +74,19 @@
               type="button"
               class="btn btn-danger m-0 ms-3"
               [disabled]="clicked()"
-              [class.btn-danger]="!isInList(item.UUID || item.uuid, item.$cacheFile, item.$protocol)"
-              [class.btn-elegant]="isInList(item.UUID || item.uuid, item.$cacheFile, item.$protocol)"
+              [class.btn-danger]="!isInList((item.UUID || item.uuid)!, item.$cacheFile!, item.$protocol!)"
+              [class.btn-elegant]="isInList((item.UUID || item.uuid)!, item.$cacheFile!, item.$protocol!)"
               [attr.aria-label]="'form.button_delete' | translate"
-              (click)="toggleList(item.UUID || item.uuid, item.$cacheFile, item.$protocol, item.$deviceId)"
+              (click)="toggleList((item.UUID || item.uuid)!, item.$cacheFile!, item.$protocol!, item.$deviceId)"
             >
               <i
                 class="fas"
-                [class.fa-trash]="!isInList(item.UUID || item.uuid, item.$cacheFile, item.$protocol)"
-                [class.fa-undo]="isInList(item.UUID || item.uuid, item.$cacheFile, item.$protocol) && !clicked()"
-                [class.fa-circle-notch]="isInList(item.UUID || item.uuid, item.$cacheFile, item.$protocol) && clicked()"
-                [class.fa-spin]="isInList(item.UUID || item.uuid, item.$cacheFile, item.$protocol) && clicked()"
+                [class.fa-trash]="!isInList((item.UUID || item.uuid)!, item.$cacheFile!, item.$protocol!)"
+                [class.fa-undo]="isInList((item.UUID || item.uuid)!, item.$cacheFile!, item.$protocol!) && !clicked()"
+                [class.fa-circle-notch]="
+                  isInList((item.UUID || item.uuid)!, item.$cacheFile!, item.$protocol!) && clicked()
+                "
+                [class.fa-spin]="isInList((item.UUID || item.uuid)!, item.$cacheFile!, item.$protocol!) && clicked()"
               ></i>
             </button>
           </li>
