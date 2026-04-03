@@ -118,6 +118,9 @@ export class RestartComponent implements OnInit, OnDestroy {
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => {
         this.statusCheckActive.set(true)
+
+        // Request a fresh status in case the server restarted quickly and we missed the initial event
+        this.io.socket.emit('monitor-server-status')
       })
 
     // Set up timeout warning
