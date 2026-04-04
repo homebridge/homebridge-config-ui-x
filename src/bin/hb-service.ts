@@ -24,12 +24,12 @@ import { fileURLToPath } from 'node:url'
 import axios from 'axios'
 import { program } from 'commander'
 import { mkdirp, pathExists, pathExistsSync, readJson, readJsonSync, remove, writeJson } from 'fs-extra/esm'
+import { check as tcpCheck } from 'is-tcp-port-used'
 import ora from 'ora'
 import { gt, gte, parse } from 'semver'
 import { networkInterfaceDefault, networkInterfaces } from 'systeminformation'
 import { Tail } from 'tail'
 import { extract } from 'tar'
-import { check as tcpCheck } from 'tcp-port-used'
 
 import { RE_COLON, RE_NON_SCOPED, RE_PLUGIN_NAME, RE_SCOPED, RE_SERVICE_NAME } from '../core/regex.constants.js'
 import { DarwinInstaller } from './platforms/darwin.js'
@@ -696,7 +696,7 @@ export class HomebridgeServiceHelper {
    * Checks if the port is currently in use by another process
    */
   public async portCheck() {
-    const inUse = await tcpCheck(this.uiPort)
+    const inUse = await tcpCheck({ port: this.uiPort })
     if (inUse) {
       this.logger(`Port ${this.uiPort} is already in use by another process on this host.`, 'fail')
       this.logger('You can specify another port using the --port flag, e.g.:', 'fail')
@@ -942,7 +942,7 @@ export class HomebridgeServiceHelper {
     const randomPort = () => Math.floor(Math.random() * (52000 - 51000 + 1) + 51000)
 
     let port = randomPort()
-    while (await tcpCheck(port)) {
+    while (await tcpCheck({ port })) {
       port = randomPort()
     }
 
@@ -1000,7 +1000,7 @@ export class HomebridgeServiceHelper {
       }
 
       // Check if port is still in use
-      if (!await tcpCheck(Number.parseInt(currentConfig.bridge.port.toString(), 10))) {
+      if (!await tcpCheck({ port: Number.parseInt(currentConfig.bridge.port.toString(), 10) })) {
         return
       }
 

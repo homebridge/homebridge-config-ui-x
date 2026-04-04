@@ -102,6 +102,7 @@
     "dayjs": "1.11.20",
     "fastify": "5.8.4",
     "fs-extra": "11.3.4",
+    "is-tcp-port-used": "1.0.2",
     "jsonwebtoken": "9.0.3",
     "lodash": "4.17.23",
     "node-cache": "5.1.2",
@@ -118,7 +119,6 @@
     "systeminformation": "5.31.5",
     "tail": "2.2.6",
     "tar": "7.5.13",
-    "tcp-port-used": "1.0.2",
     "unzipper": "0.12.3"
   },
   "optionalDependencies": {
@@ -141,7 +141,6 @@
     "@types/passport-jwt": "^4.0.1",
     "@types/semver": "^7.7.1",
     "@types/tail": "^2.2.3",
-    "@types/tcp-port-used": "^1.0.4",
     "@types/unzipper": "^0.10.11",
     "@vitest/coverage-v8": "^4.1.2",
     "concurrently": "^9.2.1",

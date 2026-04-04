@@ -25,9 +25,9 @@ import {
   ServiceUnavailableException,
 } from '@nestjs/common'
 import { pathExists, readJson, remove, writeJson } from 'fs-extra/esm'
+import { check as tcpCheck } from 'is-tcp-port-used'
 import NodeCache from 'node-cache'
 import { networkInterfaces } from 'systeminformation'
-import { check as tcpCheck } from 'tcp-port-used'
 
 import { ConfigService } from '../../core/config/config.service.js'
 import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.service.js'
@@ -1067,7 +1067,7 @@ export class ServerService {
     const randomPort = () => Math.floor(Math.random() * (max - min + 1) + min)
 
     let port = randomPort()
-    while (await tcpCheck(port)) {
+    while (await tcpCheck({ port })) {
       port = randomPort()
     }
 
@@ -1106,7 +1106,7 @@ export class ServerService {
 
     // Find first available port
     for (let port = min; port <= max; port += 1) {
-      if (!usedMatterPorts.has(port) && !await tcpCheck(port)) {
+      if (!usedMatterPorts.has(port) && !await tcpCheck({ port })) {
         return { port }
       }
     }
