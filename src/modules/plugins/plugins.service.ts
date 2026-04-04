@@ -1741,7 +1741,7 @@ export class PluginsService {
       if ((await stat(join(requiredPath, scope))).isDirectory()) {
         const scopedModules = await readdir(join(requiredPath, scope))
         return scopedModules
-          .filter(x => x.startsWith('homebridge-'))
+          .filter(x => x.startsWith('homebridge-') && existsSync(join(requiredPath, scope, x, 'package.json')))
           .map((x) => {
             return {
               name: join(scope, x).split(sep).join('/'),
@@ -1771,11 +1771,14 @@ export class PluginsService {
           if (module.charAt(0) === '@') {
             allModules.push(...await this.getInstalledScopedModules(requiredPath, module))
           } else {
-            allModules.push({
-              name: module,
-              installPath: join(requiredPath, module),
-              path: requiredPath,
-            })
+            const modulePath = join(requiredPath, module)
+            if (existsSync(join(modulePath, 'package.json'))) {
+              allModules.push({
+                name: module,
+                installPath: modulePath,
+                path: requiredPath,
+              })
+            }
           }
         } catch (e) {
           this.logger.log(`Failed to parse ${module} in ${requiredPath} as ${e.message}.`)

@@ -19,6 +19,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix: restart page stuck when server restarts quickly
 - fix: various type fixes in angular `.html` files
 - fix: fall back to tarball when `nodesource` is on 32-bit `arm` (@copilot)
+- fix: skip plugin dirs missing `package.json` during discovery
 
 ### Homebridge Dependencies
 
