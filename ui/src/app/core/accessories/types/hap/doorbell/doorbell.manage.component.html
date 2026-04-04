@@ -113,9 +113,9 @@
     @if (targetVolume) {
       <h6 class="mt-4 mb-0">{{ 'accessories.control.speaker_volume' | translate }}: {{ targetVolume.value }}%</h6>
       <nouislider
-        [min]="targetVolume.min"
-        [max]="targetVolume.max"
-        [step]="targetVolume.step"
+        [min]="targetVolume.min!"
+        [max]="targetVolume.max!"
+        [step]="targetVolume.step!"
         [(ngModel)]="targetVolume.value"
         (ngModelChange)="onVolumeStateChange()"
       />

@@ -10,7 +10,6 @@ import { ApiService } from '@/app/core/communication/api.service'
 import { IoNamespace, WsService } from '@/app/core/communication/ws.service'
 import { HB_V2_MODAL_DATA } from '@/app/core/modal-data-tokens'
 import { SettingsService } from '@/app/core/ui/settings.service'
-import { PluginNodeCheck } from '@/app/modules/status/widgets'
 import { InstalledPlugin } from '@/app/modules/status/widgets/update-info-widget/hb-v2-modal/hb-v2-modal.interfaces'
 
 @Component({
@@ -103,7 +102,7 @@ export class HbV2ModalComponent implements OnInit {
     }
   }
 
-  public handleIconError(plugin: PluginNodeCheck) {
+  public handleIconError(plugin: InstalledPlugin) {
     plugin.icon = this.defaultIcon
   }
 

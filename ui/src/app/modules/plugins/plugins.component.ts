@@ -171,7 +171,7 @@ export class PluginsComponent implements OnInit, OnDestroy, CanComponentDeactiva
     }
   }
 
-  public onSubmit({ value }: { value: { query: string | null } }): void {
+  public onSubmit({ value }: { value: Partial<{ query: string | null }> }): void {
     if (!value.query?.length) {
       // Close search mode if in search mode
       if (this.isSearchMode()) {

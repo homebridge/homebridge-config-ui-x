@@ -17,9 +17,9 @@
           <h1>
             <i [class]="`primary-text ${getWeatherIconClass()}`"></i>
           </h1>
-          <h3>{{ currentWeather().weather[0].description | titlecase }}</h3>
+          <h3>{{ currentWeather()!.weather[0].description | titlecase }}</h3>
           <h2>
-            {{ currentWeather().main.temp | convertTemp | number: '1.0-0' }}&deg;{{ temperatureUnits | uppercase }}
+            {{ currentWeather()!.main.temp | convertTemp | number: '1.0-0' }}&deg;{{ temperatureUnits | uppercase }}
           </h2>
         </div>
       </div>

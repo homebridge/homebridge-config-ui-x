@@ -65,7 +65,7 @@
         <! -- current temperature - ->
         @if (currentTemperature() !== null) {
           <text x="16" y="13" font-size="8" text-anchor="middle" fill="#7f7f7f" font-family="Arial, sans-serif">
-            {{ currentTemperature() | convertTemp | number: '1.0-1' }}&deg;{{ temperatureUnits | uppercase }}
+            {{ currentTemperature()! | convertTemp | number: '1.0-1' }}&deg;{{ temperatureUnits | uppercase }}
           </text>
         }
       </svg>

@@ -39,7 +39,7 @@ export class LightbulbManageComponent extends BaseManageComponent {
   private $colour = inject(ColourService)
 
   // Inject lightbulb-specific data (optional)
-  public adaptiveLightingSignal = inject(LIGHTBULB_ADAPTIVE_LIGHTING)
+  public adaptiveLightingSignal = inject(LIGHTBULB_ADAPTIVE_LIGHTING)!
   public hasAdaptiveLighting = !!this.adaptiveLightingSignal
 
   public targetMode!: boolean

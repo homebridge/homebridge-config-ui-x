@@ -52,9 +52,9 @@
       <h6 class="mt-4">{{ 'accessories.control.brightness' | translate }}: {{ targetBrightness.value }}%</h6>
       <div class="brightness-slider">
         <nouislider
-          [min]="targetBrightness.min"
-          [max]="targetBrightness.max"
-          [step]="targetBrightness.step"
+          [min]="targetBrightness.min!"
+          [max]="targetBrightness.max!"
+          [step]="targetBrightness.step!"
           [(ngModel)]="targetBrightness.value"
           (ngModelChange)="onBrightnessStateChange()"
         />
@@ -102,9 +102,9 @@
       </h6>
       <div class="color-temp-slider">
         <nouislider
-          [min]="targetColorTemperature.min"
-          [max]="targetColorTemperature.max"
-          [step]="targetColorTemperature.step"
+          [min]="targetColorTemperature.min!"
+          [max]="targetColorTemperature.max!"
+          [step]="targetColorTemperature.step!"
           [class.mb-1]="adaptiveLightingSignal()"
           [(ngModel)]="targetColorTemperature.value"
           (ngModelChange)="onColorTemperatureStateChange()"

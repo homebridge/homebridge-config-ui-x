@@ -41,8 +41,8 @@
         }}
       </h6>
       <nouislider
-        [min]="targetLockManagementAutoSecurityTimeout.min"
-        [max]="targetLockManagementAutoSecurityTimeout.max"
+        [min]="targetLockManagementAutoSecurityTimeout.min!"
+        [max]="targetLockManagementAutoSecurityTimeout.max!"
         [step]="10"
         [(ngModel)]="targetLockManagementAutoSecurityTimeout.value"
         (ngModelChange)="onLockManagementAutoSecurityTimeoutStateChange()"

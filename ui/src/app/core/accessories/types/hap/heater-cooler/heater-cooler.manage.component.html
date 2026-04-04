@@ -78,9 +78,9 @@
       </h6>
       <div class="temp-slider">
         <nouislider
-          [min]="HeatingThresholdTemperature.minValue"
-          [max]="CoolingThresholdTemperature.maxValue"
-          [step]="CoolingThresholdTemperature.minStep"
+          [min]="HeatingThresholdTemperature.minValue!"
+          [max]="CoolingThresholdTemperature.maxValue!"
+          [step]="CoolingThresholdTemperature.minStep!"
           [(ngModel)]="autoTemp"
           (ngModelChange)="onAutoTemperatureStateChange()"
         />
@@ -94,9 +94,9 @@
       </h6>
       <div class="temp-slider">
         <nouislider
-          [min]="HeatingThresholdTemperature.minValue"
-          [max]="HeatingThresholdTemperature.maxValue"
-          [step]="HeatingThresholdTemperature.minStep"
+          [min]="HeatingThresholdTemperature.minValue!"
+          [max]="HeatingThresholdTemperature.maxValue!"
+          [step]="HeatingThresholdTemperature.minStep!"
           [(ngModel)]="targetHeatingTemp"
           (ngModelChange)="onTemperatureStateChange()"
         />
@@ -110,9 +110,9 @@
       </h6>
       <div class="temp-slider">
         <nouislider
-          [min]="CoolingThresholdTemperature.minValue"
-          [max]="CoolingThresholdTemperature.maxValue"
-          [step]="CoolingThresholdTemperature.minStep"
+          [min]="CoolingThresholdTemperature.minValue!"
+          [max]="CoolingThresholdTemperature.maxValue!"
+          [step]="CoolingThresholdTemperature.minStep!"
           [(ngModel)]="targetCoolingTemp"
           (ngModelChange)="onTemperatureStateChange()"
         />

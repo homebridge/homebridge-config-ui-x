@@ -21,6 +21,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix: fall back to tarball when `nodesource` is on 32-bit `arm` (@copilot)
 - fix: skip plugin dirs missing `package.json` during discovery
 - tests: add more backend tests; improve coverage to >50%
+- fix: enable `strictTemplates` and fix template type errors
 
 ### Homebridge Dependencies
 

@@ -70,9 +70,9 @@
         }
       </h6>
       <nouislider
-        [min]="targetRotationSpeed.min"
-        [max]="targetRotationSpeed.max"
-        [step]="targetRotationSpeed.step"
+        [min]="targetRotationSpeed.min!"
+        [max]="targetRotationSpeed.max!"
+        [step]="targetRotationSpeed.step!"
         [(ngModel)]="targetRotationSpeed.value"
         (ngModelChange)="onTargetRotationSpeedChange()"
       />

@@ -27,8 +27,8 @@ export class LongClickDirective implements OnDestroy {
   public readonly longClick = output<MouseEvent | TouchEvent>()
   public readonly shortClick = output<MouseEvent | KeyboardEvent | TouchEvent>()
 
-  public onEnter(event: KeyboardEvent) {
-    this.shortClick.emit(event)
+  public onEnter(event: Event) {
+    this.shortClick.emit(event as KeyboardEvent)
   }
 
   public onMouseUp(event: MouseEvent): void {

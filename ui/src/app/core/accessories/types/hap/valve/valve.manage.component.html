@@ -37,8 +37,8 @@
         {{ targetSetDuration.value === 0 ? '&infin;' : (targetSetDuration.value | duration) }}
       </h6>
       <nouislider
-        [min]="targetSetDuration.min"
-        [max]="targetSetDuration.max"
+        [min]="targetSetDuration.min!"
+        [max]="targetSetDuration.max!"
         [step]="15"
         [(ngModel)]="targetSetDuration.value"
         (ngModelChange)="onSetDurationStateChange()"

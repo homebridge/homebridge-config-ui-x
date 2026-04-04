@@ -60,9 +60,9 @@
     @if (targetRotationSpeed) {
       <h6 class="mt-4">{{ 'accessories.control.rotation_speed' | translate }}: {{ targetRotationSpeed.value }}%</h6>
       <nouislider
-        [min]="targetRotationSpeed.min"
-        [max]="targetRotationSpeed.max"
-        [step]="targetRotationSpeed.step"
+        [min]="targetRotationSpeed.min!"
+        [max]="targetRotationSpeed.max!"
+        [step]="targetRotationSpeed.step!"
         [(ngModel)]="targetRotationSpeed.value"
         (ngModelChange)="onTargetRotationSpeedChange()"
       />

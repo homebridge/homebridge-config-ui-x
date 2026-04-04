@@ -402,10 +402,10 @@
                       }
                       <! -- // - ->
                       <! -- report an issue link - ->
-                      @if (plugin().links?.bugs) {
+                      @if (plugin().links.bugs) {
                         <div class="dropdown-divider"></div>
                       }
-                      @if (plugin().links?.bugs) {
+                      @if (plugin().links.bugs) {
                         <a ngbDropdownItem rel="noopener noreferrer" target="_blank" [href]="plugin().links.bugs">
                           <i class="icon-button fa fa-question-circle-o"></i>
                           {{ 'support.links.issue' | translate }}

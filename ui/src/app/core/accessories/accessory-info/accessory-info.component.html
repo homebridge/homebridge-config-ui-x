@@ -183,8 +183,8 @@
                     }
                   }
                 }
-                @if (enums[characteristic.type]?.[characteristic.value]) {
-                  ({{ enums[characteristic.type][characteristic.value] | prettify }})
+                @if (getEnumLabel(characteristic.type, characteristic.value)) {
+                  ({{ getEnumLabel(characteristic.type, characteristic.value)! | prettify }})
                 } @else if (characteristic.format === 'bool') {
                   ({{ (characteristic.value ? 'status.widget.info.yes' : 'status.widget.info.no') | translate }})
                 }
@@ -211,8 +211,8 @@
                   }
                 }
               }
-              @if (enums[characteristic.type]?.[characteristic.value]) {
-                ({{ enums[characteristic.type][characteristic.value] | prettify }})
+              @if (getEnumLabel(characteristic.type, characteristic.value)) {
+                ({{ getEnumLabel(characteristic.type, characteristic.value)! | prettify }})
               } @else if (characteristic.format === 'bool') {
                 ({{ (characteristic.value ? 'status.widget.info.yes' : 'status.widget.info.no') | translate }})
               }
@@ -301,8 +301,8 @@
                     }
                   }
                 }
-                @if (enums[characteristic.type]?.[characteristic.value]) {
-                  ({{ enums[characteristic.type][characteristic.value] | prettify }})
+                @if (getEnumLabel(characteristic.type, characteristic.value)) {
+                  ({{ getEnumLabel(characteristic.type, characteristic.value)! | prettify }})
                 } @else if (characteristic.format === 'bool') {
                   ({{ (characteristic.value ? 'status.widget.info.yes' : 'status.widget.info.no') | translate }})
                 }
@@ -329,8 +329,8 @@
                   }
                 }
               }
-              @if (enums[characteristic.type]?.[characteristic.value]) {
-                ({{ enums[characteristic.type][characteristic.value] | prettify }})
+              @if (getEnumLabel(characteristic.type, characteristic.value)) {
+                ({{ getEnumLabel(characteristic.type, characteristic.value)! | prettify }})
               } @else if (characteristic.format === 'bool') {
                 ({{ (characteristic.value ? 'status.widget.info.yes' : 'status.widget.info.no') | translate }})
               }

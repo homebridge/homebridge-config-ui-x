@@ -131,12 +131,16 @@ export class AccessoryInfoComponent implements OnInit, OnDestroy {
   public accessoryInformation!: Array<{ key: string, value: string | number | undefined }>
   public extraServices: ServiceTypeX[] = []
   public matchedCachedAccessory: MatchedCachedAccessory = null
-  public enums = Enums
+  public enums: Record<string, Record<string, string>> = Enums as any
   public customTypeList: Array<ServiceTypeX['type']> = []
   public isMatterAccessory = false
-  public clusterInfo: Array<{ name: string, attributes: unknown }> = []
+  public clusterInfo: Array<{ name: string, attributes: Record<string, unknown> }> = []
   public readonly uniqueIdCopied = signal(false)
   public readonly uuidCopied = signal(false)
+
+  public getEnumLabel(type: string, value: string | number | boolean): string | undefined {
+    return this.enums[type]?.[String(value)]
+  }
 
   // Original values to restore on dismiss
   private originalCustomName: string | undefined
@@ -173,7 +177,7 @@ export class AccessoryInfoComponent implements OnInit, OnDestroy {
 
       // For Matter accessories, use displayName and handle cluster info
       const clusters = this.localService.clusters || {}
-      this.clusterInfo = Object.entries(clusters).map(([name, attributes]) => ({ name, attributes }))
+      this.clusterInfo = Object.entries(clusters).map(([name, attributes]) => ({ name, attributes: attributes as Record<string, unknown> }))
 
       // Build basic accessory information from Matter accessory
       // Start with the standard accessoryInformation from backend

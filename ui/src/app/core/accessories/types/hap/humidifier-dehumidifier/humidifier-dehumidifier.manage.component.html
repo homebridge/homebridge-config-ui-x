@@ -75,9 +75,9 @@
       </h6>
       <div class="humidity-slider">
         <nouislider
-          [min]="RelativeHumidityHumidifierThreshold.minValue"
-          [max]="RelativeHumidityDehumidifierThreshold.maxValue"
-          [step]="RelativeHumidityDehumidifierThreshold.minStep"
+          [min]="RelativeHumidityHumidifierThreshold.minValue!"
+          [max]="RelativeHumidityDehumidifierThreshold.maxValue!"
+          [step]="RelativeHumidityDehumidifierThreshold.minStep!"
           [(ngModel)]="autoHumidity"
           (ngModelChange)="onAutoHumidityStateChange()"
         />
@@ -91,9 +91,9 @@
       </h6>
       <div class="humidity-slider">
         <nouislider
-          [min]="RelativeHumidityHumidifierThreshold.minValue"
-          [max]="RelativeHumidityHumidifierThreshold.maxValue"
-          [step]="RelativeHumidityHumidifierThreshold.minStep"
+          [min]="RelativeHumidityHumidifierThreshold.minValue!"
+          [max]="RelativeHumidityHumidifierThreshold.maxValue!"
+          [step]="RelativeHumidityHumidifierThreshold.minStep!"
           [(ngModel)]="targetHumidifierHumidity"
           (ngModelChange)="onHumidityStateChange()"
         />
@@ -107,9 +107,9 @@
       </h6>
       <div class="humidity-slider">
         <nouislider
-          [min]="RelativeHumidityDehumidifierThreshold.minValue"
-          [max]="RelativeHumidityDehumidifierThreshold.maxValue"
-          [step]="RelativeHumidityDehumidifierThreshold.minStep"
+          [min]="RelativeHumidityDehumidifierThreshold.minValue!"
+          [max]="RelativeHumidityDehumidifierThreshold.maxValue!"
+          [step]="RelativeHumidityDehumidifierThreshold.minStep!"
           [(ngModel)]="targetDehumidifierHumidity"
           (ngModelChange)="onHumidityStateChange()"
         />

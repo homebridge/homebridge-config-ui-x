@@ -160,7 +160,7 @@
                         &middot; {{ nodejsInfo()!.npmVersion }}
                       }
                     </span>
-                    @if (nodejsInfo().updateAvailable && isAdmin) {
+                    @if (nodejsInfo()?.updateAvailable && isAdmin) {
                       &middot;
                       <a
                         href="javascript:void(0)"
@@ -337,7 +337,7 @@
                   &middot; {{ nodejsInfo()!.npmVersion }}
                 }
               </span>
-              @if (nodejsInfo().updateAvailable && isAdmin) {
+              @if (nodejsInfo()?.updateAvailable && isAdmin) {
                 &middot;
                 <a
                   href="javascript:void(0)"
