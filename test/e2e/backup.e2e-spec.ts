@@ -39,7 +39,7 @@ import { BackupModule } from '../../src/modules/backup/backup.module.js'
 import { BackupService } from '../../src/modules/backup/backup.service.js'
 import { PluginsService } from '../../src/modules/plugins/plugins.service.js'
 
-import '../../src/global-defaults'
+import '../../src/global-defaults.js'
 
 const RE_COLON = /:/g
 
@@ -121,6 +121,9 @@ describe('BackupController (e2e)', { timeout: 10_000 }, () => {
     pluginsService = app.get(PluginsService)
     configService = app.get(ConfigService)
     schedulerService = app.get(SchedulerService)
+
+    // Isolate plugin discovery to the test plugin path only
+    ;(pluginsService as any)._paths = [resolve(process.env.UIX_STORAGE_PATH, 'plugins/node_modules')]
   })
 
   beforeEach(async () => {
@@ -516,6 +519,173 @@ describe('BackupController (e2e)', { timeout: 10_000 }, () => {
     expect(res.statusCode).toBe(200)
     expect(res.json()).toHaveProperty('next')
     expect(res.json().next).toBe(false)
+  })
+
+  it('DELETE /backup/scheduled-backups/:backupId', async () => {
+    // Ensure we have a backup
+    await emptyDir(configService.instanceBackupPath)
+    await backupService.runScheduledBackupJob()
+
+    // List to get the ID
+    const listRes = (await app.inject({
+      method: 'GET',
+      path: '/backup/scheduled-backups',
+      headers: { authorization },
+    })).json()
+
+    expect(listRes).toHaveLength(1)
+    const backupId = listRes[0].id
+
+    // Delete it
+    const res = await app.inject({
+      method: 'DELETE',
+      path: `/backup/scheduled-backups/${backupId}`,
+      headers: { authorization },
+    })
+
+    expect(res.statusCode).toBe(200)
+
+    // Verify it's gone
+    const listRes2 = (await app.inject({
+      method: 'GET',
+      path: '/backup/scheduled-backups',
+      headers: { authorization },
+    })).json()
+
+    expect(listRes2).toHaveLength(0)
+  })
+
+  it('DELETE /backup/scheduled-backups/:backupId (not found)', async () => {
+    const res = await app.inject({
+      method: 'DELETE',
+      path: '/backup/scheduled-backups/0ACAC1AC01AC.1765432100000',
+      headers: { authorization },
+    })
+
+    expect(res.statusCode).toBe(404)
+  })
+
+  it('DELETE /backup/scheduled-backups/:backupId (invalid format)', async () => {
+    const res = await app.inject({
+      method: 'DELETE',
+      path: '/backup/scheduled-backups/xxxxxxxxxxxx',
+      headers: { authorization },
+    })
+
+    expect(res.statusCode).toBe(400)
+  })
+
+  it('POST /backup/scheduled-backups/:backupId/restore', async () => {
+    // Create a backup to restore from
+    await emptyDir(configService.instanceBackupPath)
+    await backupService.runScheduledBackupJob()
+
+    const listRes = (await app.inject({
+      method: 'GET',
+      path: '/backup/scheduled-backups',
+      headers: { authorization },
+    })).json()
+
+    const backupId = listRes[0].id
+
+    // Extract it to restore directory
+    const res = await app.inject({
+      method: 'POST',
+      path: `/backup/scheduled-backups/${backupId}/restore`,
+      headers: { authorization },
+    })
+
+    expect(res.statusCode).toBe(201)
+  })
+
+  it('POST /backup/scheduled-backups/:backupId/restore (not found)', async () => {
+    const res = await app.inject({
+      method: 'POST',
+      path: '/backup/scheduled-backups/0ACAC1AC01AC.1765432100000/restore',
+      headers: { authorization },
+    })
+
+    expect(res.statusCode).toBe(404)
+  })
+
+  it('POST /backup/scheduled-backups/:backupId/restore (invalid format)', async () => {
+    const res = await app.inject({
+      method: 'POST',
+      path: '/backup/scheduled-backups/xxxxxxxxxxxx/restore',
+      headers: { authorization },
+    })
+
+    expect(res.statusCode).toBe(400)
+  })
+
+  it('PUT /backup/restore/trigger (after scheduled restore extract)', async () => {
+    // The previous test extracted a backup to the restore directory
+    // Mock postBackupRestoreRestart to prevent actual process kill
+    postBackupRestoreRestartFn.mockReturnValue({ status: 0 })
+
+    const res = await app.inject({
+      method: 'PUT',
+      path: '/backup/restore/trigger',
+      headers: { authorization },
+    })
+
+    expect(res.statusCode).toBe(200)
+  })
+
+  describe('BackupGateway', () => {
+    let gwClient: EventEmitter
+
+    beforeEach(() => {
+      gwClient = new EventEmitter()
+      vi.spyOn(gwClient, 'emit')
+    })
+
+    it('do-restore should delegate to backupService.restoreFromBackup', async () => {
+      vi.spyOn(backupService, 'restoreFromBackup').mockResolvedValue({ status: 0 })
+
+      const result = await backupGateway.doRestore(gwClient)
+
+      expect(backupService.restoreFromBackup).toHaveBeenCalledWith(gwClient)
+      expect(result).toEqual({ status: 0 })
+    })
+
+    it('do-restore should emit error on failure', async () => {
+      vi.spyOn(backupService, 'restoreFromBackup').mockRejectedValue(new Error('restore failed'))
+
+      const result = await backupGateway.doRestore(gwClient)
+
+      expect(gwClient.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('restore failed'))
+      expect(result).toBeDefined()
+    })
+
+    it('do-restore-hbfx should delegate to backupService.restoreHbfxBackup', async () => {
+      vi.spyOn(backupService, 'restoreHbfxBackup').mockResolvedValue({ status: 0 })
+
+      const result = await backupGateway.doRestoreHbfx(gwClient)
+
+      expect(backupService.restoreHbfxBackup).toHaveBeenCalledWith(gwClient)
+      expect(result).toEqual({ status: 0 })
+    })
+
+    it('do-restore-hbfx should emit error on failure', async () => {
+      vi.spyOn(backupService, 'restoreHbfxBackup').mockRejectedValue(new Error('hbfx restore failed'))
+
+      const result = await backupGateway.doRestoreHbfx(gwClient)
+
+      expect(gwClient.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('hbfx restore failed'))
+      expect(result).toBeDefined()
+    })
+
+    it('do-restore should return WsException on error', async () => {
+      const error = new Error('unexpected error')
+      vi.spyOn(backupService, 'restoreFromBackup').mockRejectedValue(error)
+
+      const result = await backupGateway.doRestore(gwClient)
+
+      // The gateway should catch, log, emit red error, and return WsException
+      expect(gwClient.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('unexpected error'))
+      expect((result as any).error).toBeDefined()
+    })
   })
 
   afterAll(async () => {

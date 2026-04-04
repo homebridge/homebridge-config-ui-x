@@ -20,6 +20,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix: various type fixes in angular `.html` files
 - fix: fall back to tarball when `nodesource` is on 32-bit `arm` (@copilot)
 - fix: skip plugin dirs missing `package.json` during discovery
+- tests: add more backend tests; improve coverage to >50%
 
 ### Homebridge Dependencies
 

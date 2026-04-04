@@ -13,10 +13,12 @@ import { Test } from '@nestjs/testing'
 import { copy } from 'fs-extra'
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
+import { AuthModule } from '../../src/core/auth/auth.module.js'
 import { ConfigService } from '../../src/core/config/config.service.js'
 import { NodePtyService } from '../../src/core/node-pty/node-pty.service.js'
 import { TerminalGateway } from '../../src/modules/platform-tools/terminal/terminal.gateway.js'
 import { TerminalModule } from '../../src/modules/platform-tools/terminal/terminal.module.js'
+import { TerminalService } from '../../src/modules/platform-tools/terminal/terminal.service.js'
 
 // create mock websocket client
 class MockWsEventEmitter extends EventEmitter implements WsEventEmitter {
@@ -31,7 +33,9 @@ describe('PlatformToolsTerminal (e2e)', () => {
 
   let configService: ConfigService
   let terminalGateway: TerminalGateway
+  let terminalService: TerminalService
   let nodePtyService: NodePtyService
+  let authorization: string
   let client: WsEventEmitter
 
   const size = { cols: 80, rows: 24 }
@@ -60,7 +64,7 @@ describe('PlatformToolsTerminal (e2e)', () => {
     await copy(resolve(__dirname, '../mocks', '.uix-secrets'), secretsFilePath)
 
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [TerminalModule],
+      imports: [TerminalModule, AuthModule],
     }).compile()
 
     app = moduleFixture.createNestApplication<NestFastifyApplication>(new FastifyAdapter())
@@ -70,6 +74,7 @@ describe('PlatformToolsTerminal (e2e)', () => {
 
     configService = app.get(ConfigService)
     terminalGateway = app.get(TerminalGateway)
+    terminalService = app.get(TerminalService)
     nodePtyService = app.get(NodePtyService)
   })
 
@@ -159,6 +164,102 @@ describe('PlatformToolsTerminal (e2e)', () => {
     // Send stdin
     client.emit('resize', { cols: 20, rows: 25 })
     expect(mockTerm.resize).toHaveBeenCalledWith(20, 25)
+  })
+
+  describe('HTTP Endpoints', () => {
+    beforeEach(async () => {
+      authorization = `bearer ${(await app.inject({
+        method: 'POST',
+        path: '/auth/login',
+        payload: {
+          username: 'admin',
+          password: 'admin',
+        },
+      })).json().access_token}`
+    })
+
+    it('GET /platform-tools/terminal/has-persistent-session (no session)', async () => {
+      // Ensure no persistent session
+      terminalService.destroyPersistentSession()
+
+      const res = await app.inject({
+        method: 'GET',
+        path: '/platform-tools/terminal/has-persistent-session',
+        headers: {
+          authorization,
+        },
+      })
+
+      expect(res.statusCode).toBe(200)
+      expect(res.json().hasPersistentSession).toBe(false)
+    })
+
+    it('POST /platform-tools/terminal/destroy-persistent-session', async () => {
+      const res = await app.inject({
+        method: 'POST',
+        path: '/platform-tools/terminal/destroy-persistent-session',
+        headers: {
+          authorization,
+        },
+      })
+
+      expect(res.statusCode).toBe(201)
+      expect(res.json().success).toBe(true)
+    })
+  })
+
+  describe('Persistent Terminal', () => {
+    afterEach(() => {
+      // Clean up persistent terminal after each persistent test
+      terminalService.destroyPersistentSession()
+    })
+
+    it('should create persistent terminal when persistence is enabled', async () => {
+      configService.ui.terminal = { persistence: true, bufferSize: 10000 }
+
+      vi.spyOn(nodePtyService, 'spawn').mockReturnValue(mockTerm)
+
+      terminalGateway.startTerminalSession(client, size)
+
+      await new Promise(res => setTimeout(res, 100))
+
+      expect(nodePtyService.spawn).toHaveBeenCalled()
+      expect(terminalService.hasPersistentSession()).toBe(true)
+    })
+
+    it('should not kill terminal on client disconnect in persistent mode', async () => {
+      configService.ui.terminal = { persistence: true, bufferSize: 10000 }
+
+      vi.spyOn(nodePtyService, 'spawn').mockReturnValue(mockTerm)
+
+      terminalGateway.startTerminalSession(client, size)
+
+      await new Promise(res => setTimeout(res, 100))
+
+      // Disconnect client
+      client.emit('disconnect')
+
+      // Terminal should still be alive
+      expect(terminalService.hasPersistentSession()).toBe(true)
+      expect(mockTerm.kill).not.toHaveBeenCalled()
+    })
+
+    it('should destroy persistent session when destroyPersistentSession is called', async () => {
+      configService.ui.terminal = { persistence: true, bufferSize: 10000 }
+
+      vi.spyOn(nodePtyService, 'spawn').mockReturnValue(mockTerm)
+
+      terminalGateway.startTerminalSession(client, size)
+
+      await new Promise(res => setTimeout(res, 100))
+
+      expect(terminalService.hasPersistentSession()).toBe(true)
+
+      terminalService.destroyPersistentSession()
+
+      expect(terminalService.hasPersistentSession()).toBe(false)
+      expect(mockTerm.kill).toHaveBeenCalled()
+    })
   })
 
   afterAll(async () => {

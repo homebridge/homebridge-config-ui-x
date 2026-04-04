@@ -3,8 +3,8 @@ import type { TestingModule } from '@nestjs/testing'
 
 import type { HomebridgePlugin } from '../../src/modules/plugins/plugins.interfaces.js'
 
-import { writeFile } from 'node:fs/promises'
-import { resolve } from 'node:path'
+import { mkdir, writeFile } from 'node:fs/promises'
+import { join, resolve } from 'node:path'
 import process from 'node:process'
 
 import { HttpService } from '@nestjs/axios'
@@ -73,6 +73,9 @@ describe('PluginController (e2e)', () => {
     pluginsService = app.get<PluginsService>(PluginsService)
     homebridgeIpcService = app.get<HomebridgeIpcService>(HomebridgeIpcService)
     childBridgesService = app.get<ChildBridgesService>(ChildBridgesService)
+
+    // Isolate plugin discovery to the test plugin path only
+    ;(pluginsService as any)._paths = [pluginsPath]
   })
 
   beforeEach(async () => {
@@ -438,6 +441,8 @@ describe('PluginController (e2e)', () => {
   })
 
   it('POST /plugins/update/:pluginName (plugin with specific version)', async () => {
+    const managePluginSpy = vi.spyOn(pluginsService as any, 'managePlugin').mockResolvedValue(true)
+
     const res = await app.inject({
       method: 'POST',
       path: '/plugins/update/homebridge-mock-plugin?version=1.0.1',
@@ -450,9 +455,16 @@ describe('PluginController (e2e)', () => {
     expect(res.json().ok).toBe(true)
     expect(res.json().name).toBe('homebridge-mock-plugin')
     expect(res.json().version).toBe('1.0.1')
+
+    // Wait for the setImmediate callback to complete
+    await new Promise(resolve => setTimeout(resolve, 200))
+
+    managePluginSpy.mockRestore()
   })
 
   it('POST /plugins/update/:pluginName (plugin without version - latest)', async () => {
+    const managePluginSpy = vi.spyOn(pluginsService as any, 'managePlugin').mockResolvedValue(true)
+
     const res = await app.inject({
       method: 'POST',
       path: '/plugins/update/homebridge-mock-plugin',
@@ -466,9 +478,17 @@ describe('PluginController (e2e)', () => {
     expect(res.json().name).toBe('homebridge-mock-plugin')
     expect(res.json()).toHaveProperty('version')
     // Latest version should be resolved from package
+
+    // Wait for the setImmediate callback to complete
+    await new Promise(resolve => setTimeout(resolve, 200))
+
+    managePluginSpy.mockRestore()
   })
 
   it('POST /plugins/update/:pluginName (homebridge)', async () => {
+    const updateHomebridgeSpy = vi.spyOn(pluginsService as any, 'updateHomebridgePackage').mockResolvedValue(true)
+    const restartHomebridgeSpy = vi.spyOn(homebridgeIpcService, 'restartHomebridge').mockImplementation(() => {})
+
     const res = await app.inject({
       method: 'POST',
       path: '/plugins/update/homebridge',
@@ -481,9 +501,18 @@ describe('PluginController (e2e)', () => {
     expect(res.json().ok).toBe(true)
     expect(res.json().name).toBe('homebridge')
     expect(res.json()).toHaveProperty('version')
+
+    // Wait for the setImmediate callback to complete
+    await new Promise(resolve => setTimeout(resolve, 200))
+
+    updateHomebridgeSpy.mockRestore()
+    restartHomebridgeSpy.mockRestore()
   })
 
   it('POST /plugins/update/:pluginName (homebridge-config-ui-x)', async () => {
+    const managePluginSpy = vi.spyOn(pluginsService as any, 'managePlugin').mockResolvedValue(true)
+    const exitSpy = vi.spyOn(process, 'exit').mockImplementation(() => undefined as never)
+
     const res = await app.inject({
       method: 'POST',
       path: '/plugins/update/homebridge-config-ui-x?version=5.8.0',
@@ -496,6 +525,12 @@ describe('PluginController (e2e)', () => {
     expect(res.json().ok).toBe(true)
     expect(res.json().name).toBe('homebridge-config-ui-x')
     expect(res.json().version).toBe('5.8.0')
+
+    // Wait for the setImmediate callback to complete
+    await new Promise(resolve => setTimeout(resolve, 200))
+
+    managePluginSpy.mockRestore()
+    exitSpy.mockRestore()
   })
 
   it('POST /plugins/update/:pluginName (not installed)', async () => {
@@ -943,6 +978,68 @@ describe('PluginController (e2e)', () => {
       managePluginSpy.mockRestore()
       exitSpy.mockRestore()
       setTimeoutSpy.mockRestore()
+    })
+  })
+
+  describe('module discovery with broken directories', () => {
+    it('should skip modules without a package.json', async () => {
+      // Create a broken module directory (no package.json) alongside valid plugins
+      const brokenModulePath = join(pluginsPath, 'homebridge-broken-plugin')
+      await mkdir(brokenModulePath, { recursive: true })
+      // Only add a node_modules subfolder, no package.json — simulates a partial install
+      await mkdir(join(brokenModulePath, 'node_modules'), { recursive: true })
+
+      // Clear the installed plugins cache so discovery runs fresh
+      pluginsService.clearInstalledPluginsCache()
+
+      const res = await app.inject({
+        method: 'GET',
+        path: '/plugins',
+        headers: {
+          authorization,
+        },
+      })
+
+      expect(res.statusCode).toBe(200)
+
+      const plugins: HomebridgePlugin[] = res.json()
+      // The broken module should not appear in results
+      expect(plugins.find(x => x.name === 'homebridge-broken-plugin')).toBeUndefined()
+      // Valid plugins should still be found
+      expect(plugins.find(x => x.name === 'homebridge-mock-plugin')).toBeTruthy()
+
+      // Cleanup
+      await remove(brokenModulePath)
+    })
+
+    it('should skip scoped modules without a package.json', async () => {
+      // Create a broken scoped module directory
+      const scopePath = join(pluginsPath, '@test-scope')
+      const brokenScopedModulePath = join(scopePath, 'homebridge-broken-scoped')
+      await mkdir(brokenScopedModulePath, { recursive: true })
+      // No package.json inside
+
+      // Clear the installed plugins cache so discovery runs fresh
+      pluginsService.clearInstalledPluginsCache()
+
+      const res = await app.inject({
+        method: 'GET',
+        path: '/plugins',
+        headers: {
+          authorization,
+        },
+      })
+
+      expect(res.statusCode).toBe(200)
+
+      const plugins: HomebridgePlugin[] = res.json()
+      // The broken scoped module should not appear in results
+      expect(plugins.find(x => x.name === '@test-scope/homebridge-broken-scoped')).toBeUndefined()
+      // Valid plugins should still be found
+      expect(plugins.find(x => x.name === 'homebridge-mock-plugin')).toBeTruthy()
+
+      // Cleanup
+      await remove(scopePath)
     })
   })
 

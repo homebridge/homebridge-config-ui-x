@@ -12,6 +12,7 @@ import { copy } from 'fs-extra'
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { AuthModule } from '../../src/core/auth/auth.module.js'
+import { ConfigService } from '../../src/core/config/config.service.js'
 import { LinuxModule } from '../../src/modules/platform-tools/linux/linux.module.js'
 import { LinuxService } from '../../src/modules/platform-tools/linux/linux.service.js'
 
@@ -99,6 +100,64 @@ describe('PlatformToolsLinux (e2e)', () => {
 
     expect(res.statusCode).toBe(200)
     expect(shutdownHostFn).toHaveBeenCalled()
+  })
+
+  it('restartHost returns correct shape with default command', () => {
+    // Restore the real implementation
+    linuxService.restartHost = LinuxService.prototype.restartHost.bind(linuxService)
+
+    const result = linuxService.restartHost()
+
+    expect(result).toEqual({
+      ok: true,
+      command: ['sudo -n shutdown -r now'],
+    })
+  })
+
+  it('shutdownHost returns correct shape with default command', () => {
+    // Restore the real implementation
+    linuxService.shutdownHost = LinuxService.prototype.shutdownHost.bind(linuxService)
+
+    const result = linuxService.shutdownHost()
+
+    expect(result).toEqual({
+      ok: true,
+      command: ['sudo -n shutdown -h now'],
+    })
+  })
+
+  it('restartHost uses custom command from config', () => {
+    linuxService.restartHost = LinuxService.prototype.restartHost.bind(linuxService)
+
+    const configService = app.get(ConfigService)
+    configService.ui.linux = { restart: 'custom-restart-cmd' }
+
+    const result = linuxService.restartHost()
+
+    expect(result).toEqual({
+      ok: true,
+      command: ['custom-restart-cmd'],
+    })
+
+    // Cleanup
+    delete configService.ui.linux
+  })
+
+  it('shutdownHost uses custom command from config', () => {
+    linuxService.shutdownHost = LinuxService.prototype.shutdownHost.bind(linuxService)
+
+    const configService = app.get(ConfigService)
+    configService.ui.linux = { shutdown: 'custom-shutdown-cmd' }
+
+    const result = linuxService.shutdownHost()
+
+    expect(result).toEqual({
+      ok: true,
+      command: ['custom-shutdown-cmd'],
+    })
+
+    // Cleanup
+    delete configService.ui.linux
   })
 
   afterAll(async () => {

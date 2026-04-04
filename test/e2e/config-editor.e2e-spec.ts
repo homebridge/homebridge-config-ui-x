@@ -24,6 +24,7 @@ import {
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest'
 
 import { AuthModule } from '../../src/core/auth/auth.module.js'
+import { ConfigService } from '../../src/core/config/config.service.js'
 import { SchedulerService } from '../../src/core/scheduler/scheduler.service.js'
 import { ConfigEditorModule } from '../../src/modules/config-editor/config-editor.module.js'
 import { ConfigEditorService } from '../../src/modules/config-editor/config-editor.service.js'
@@ -1593,6 +1594,230 @@ describe('ConfigEditorController (e2e)', () => {
 
     expect(getRes.statusCode).toBe(200)
     expect(getRes.json()).toBe(null)
+  })
+
+  it('GET /config-editor/matter/ports (should return empty when not configured)', async () => {
+    // Ensure no matterPorts in config
+    const config: HomebridgeConfig = await readJson(configFilePath)
+    delete config.matterPorts
+    await writeJson(configFilePath, config)
+
+    const res = await app.inject({
+      method: 'GET',
+      path: '/config-editor/matter/ports',
+      headers: {
+        authorization,
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+    expect(res.json().start).toBeUndefined()
+    expect(res.json().end).toBeUndefined()
+  })
+
+  it('PUT /config-editor/matter/ports (should save and return valid port range)', async () => {
+    const putRes = await app.inject({
+      method: 'PUT',
+      path: '/config-editor/matter/ports',
+      headers: {
+        authorization,
+      },
+      payload: {
+        start: 5530,
+        end: 5541,
+      },
+    })
+
+    expect(putRes.statusCode).toBe(200)
+
+    const config: HomebridgeConfig = await readJson(configFilePath)
+    expect(config.matterPorts.start).toBe(5530)
+    expect(config.matterPorts.end).toBe(5541)
+
+    // Verify GET returns the saved values
+    const getRes = await app.inject({
+      method: 'GET',
+      path: '/config-editor/matter/ports',
+      headers: {
+        authorization,
+      },
+    })
+
+    expect(getRes.statusCode).toBe(200)
+    expect(getRes.json().start).toBe(5530)
+    expect(getRes.json().end).toBe(5541)
+  })
+
+  it('PUT /config-editor/matter/ports (should reject start >= end)', async () => {
+    const res = await app.inject({
+      method: 'PUT',
+      path: '/config-editor/matter/ports',
+      headers: {
+        authorization,
+      },
+      payload: {
+        start: 5541,
+        end: 5530,
+      },
+    })
+
+    expect(res.statusCode).toBe(400)
+  })
+
+  it('PUT /config-editor/matter/ports (should reject port out of range)', async () => {
+    const res = await app.inject({
+      method: 'PUT',
+      path: '/config-editor/matter/ports',
+      headers: {
+        authorization,
+      },
+      payload: {
+        start: 100,
+        end: 5541,
+      },
+    })
+
+    expect(res.statusCode).toBe(400)
+  })
+
+  it('PUT /config-editor/matter/ports (should reject port above max)', async () => {
+    const res = await app.inject({
+      method: 'PUT',
+      path: '/config-editor/matter/ports',
+      headers: {
+        authorization,
+      },
+      payload: {
+        start: 5530,
+        end: 70000,
+      },
+    })
+
+    expect(res.statusCode).toBe(400)
+  })
+
+  it('PUT /config-editor/matter/ports (should clear when both null)', async () => {
+    // First set a port range
+    await app.inject({
+      method: 'PUT',
+      path: '/config-editor/matter/ports',
+      headers: { authorization },
+      payload: { start: 5530, end: 5541 },
+    })
+
+    // Now clear it
+    const res = await app.inject({
+      method: 'PUT',
+      path: '/config-editor/matter/ports',
+      headers: {
+        authorization,
+      },
+      payload: {},
+    })
+
+    expect(res.statusCode).toBe(200)
+
+    const config: HomebridgeConfig = await readJson(configFilePath)
+    expect(config.matterPorts).toBeUndefined()
+  })
+
+  it('should refresh restart schedules from config', async () => {
+    // Cancel any existing restart jobs first
+    Object.keys(schedulerService.scheduledJobs)
+      .filter(name => name.startsWith('restart-'))
+      .forEach(name => schedulerService.cancelJob(name))
+
+    // Set up a config with scheduled restart crons
+    const configService = app.get(ConfigService)
+    configService.ui.scheduledRestartCron = '0 3 * * *'
+    configService.ui.bridges = [
+      { username: '0E:AA:BB:CC:DD:EE', scheduledRestartCron: '0 4 * * *' },
+    ]
+
+    const config: HomebridgeConfig = {
+      bridge: configService.homebridgeConfig.bridge,
+      platforms: [
+        {
+          platform: 'ExamplePlugin',
+          name: 'Test Plugin',
+          _bridge: {
+            username: '0E:AA:BB:CC:DD:EE',
+            port: 45678,
+          },
+        },
+      ],
+    }
+
+    await schedulerService.refreshRestartSchedules(config)
+
+    // Check that the main bridge restart job was created
+    expect(schedulerService.scheduledJobs).toHaveProperty('restart-homebridge')
+
+    // Check child bridge restart job
+    expect(schedulerService.scheduledJobs).toHaveProperty('restart-child-0EAABBCCDDEE')
+
+    // Clean up
+    schedulerService.cancelJob('restart-homebridge')
+    schedulerService.cancelJob('restart-child-0EAABBCCDDEE')
+    delete configService.ui.scheduledRestartCron
+    delete configService.ui.bridges
+  })
+
+  it('should handle refreshRestartSchedules with no cron configured', async () => {
+    // Cancel any existing restart jobs
+    Object.keys(schedulerService.scheduledJobs)
+      .filter(name => name.startsWith('restart-'))
+      .forEach(name => schedulerService.cancelJob(name))
+
+    // Reset to default config (no cron)
+    await copy(resolve(__dirname, '../mocks', 'config.json'), configFilePath)
+
+    await schedulerService.refreshRestartSchedules()
+
+    // No restart jobs should be scheduled
+    const restartJobs = Object.keys(schedulerService.scheduledJobs).filter(name => name.startsWith('restart-'))
+    expect(restartJobs).toHaveLength(0)
+  })
+
+  it('DELETE /config-editor/backups/:backupId (should delete specific backup)', async () => {
+    // First ensure we have backups by triggering a config save
+    await app.inject({
+      method: 'POST',
+      path: '/config-editor',
+      headers: { authorization },
+      payload: await readJson(configFilePath),
+    })
+
+    // List backups
+    const listRes = await app.inject({
+      method: 'GET',
+      path: '/config-editor/backups',
+      headers: { authorization },
+    })
+
+    const backups = listRes.json()
+    if (backups.length === 0) {
+      return
+    }
+
+    const backupId = backups[0].id
+
+    const res = await app.inject({
+      method: 'DELETE',
+      path: `/config-editor/backups/${backupId}`,
+      headers: { authorization },
+    })
+
+    expect(res.statusCode).toBe(200)
+
+    // Verify it was deleted
+    const listRes2 = await app.inject({
+      method: 'GET',
+      path: '/config-editor/backups',
+      headers: { authorization },
+    })
+
+    expect(listRes2.json().find(b => b.id === backupId)).toBeUndefined()
   })
 
   afterAll(async () => {

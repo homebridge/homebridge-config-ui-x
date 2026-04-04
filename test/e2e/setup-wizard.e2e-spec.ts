@@ -3,6 +3,7 @@ import type { TestingModule } from '@nestjs/testing'
 
 import type { UserDto } from '../../src/modules/users/users.dto.js'
 
+import { EventEmitter } from 'node:events'
 import { resolve } from 'node:path'
 import process from 'node:process'
 
@@ -10,9 +11,12 @@ import { ValidationPipe } from '@nestjs/common'
 import { FastifyAdapter } from '@nestjs/platform-fastify'
 import { Test } from '@nestjs/testing'
 import { copy, readJson, remove } from 'fs-extra'
-import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest'
+import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { ConfigService } from '../../src/core/config/config.service.js'
+import { Logger } from '../../src/core/logger/logger.service.js'
+import { BackupService } from '../../src/modules/backup/backup.service.js'
+import { SetupWizardGateway } from '../../src/modules/setup-wizard/setup-wizard.gateway.js'
 import { SetupWizardModule } from '../../src/modules/setup-wizard/setup-wizard.module.js'
 
 describe('SetupWizard (e2e)', () => {
@@ -193,6 +197,65 @@ describe('SetupWizard (e2e)', () => {
     })
 
     expect(res.statusCode).toBe(403)
+  })
+
+  describe('SetupWizardGateway (direct instantiation)', () => {
+    let setupWizardGateway: SetupWizardGateway
+    let mockBackupService: Partial<BackupService>
+    let client: EventEmitter
+
+    beforeEach(() => {
+      mockBackupService = {
+        restoreFromBackup: vi.fn(),
+        restoreHbfxBackup: vi.fn(),
+      }
+
+      const mockLogger = { error: vi.fn(), log: vi.fn(), warn: vi.fn(), debug: vi.fn() } as any
+
+      setupWizardGateway = new SetupWizardGateway(
+        mockBackupService as BackupService,
+        mockLogger as Logger,
+      )
+
+      client = new EventEmitter()
+      vi.spyOn(client, 'emit')
+    })
+
+    it('do-restore should delegate to backupService.restoreFromBackup', async () => {
+      (mockBackupService.restoreFromBackup as any).mockResolvedValue({ status: 0 })
+
+      const result = await setupWizardGateway.doRestore(client)
+
+      expect(mockBackupService.restoreFromBackup).toHaveBeenCalledWith(client)
+      expect(result).toEqual({ status: 0 })
+    })
+
+    it('do-restore should emit error on failure', async () => {
+      (mockBackupService.restoreFromBackup as any).mockRejectedValue(new Error('restore failed'))
+
+      const result = await setupWizardGateway.doRestore(client)
+
+      expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('restore failed'))
+      expect(result).toBeDefined()
+    })
+
+    it('do-restore-hbfx should delegate to backupService.restoreHbfxBackup', async () => {
+      (mockBackupService.restoreHbfxBackup as any).mockResolvedValue({ status: 0 })
+
+      const result = await setupWizardGateway.doRestoreHbfx(client)
+
+      expect(mockBackupService.restoreHbfxBackup).toHaveBeenCalledWith(client)
+      expect(result).toEqual({ status: 0 })
+    })
+
+    it('do-restore-hbfx should emit error on failure', async () => {
+      (mockBackupService.restoreHbfxBackup as any).mockRejectedValue(new Error('hbfx restore failed'))
+
+      const result = await setupWizardGateway.doRestoreHbfx(client)
+
+      expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('hbfx restore failed'))
+      expect(result).toBeDefined()
+    })
   })
 
   afterAll(async () => {

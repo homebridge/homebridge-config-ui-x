@@ -69,6 +69,9 @@ describe('PluginsGateway (e2e)', { timeout: 10_000 }, () => {
     pluginsService = app.get(PluginsService)
     pluginsGateway = app.get(PluginsGateway)
 
+    // Isolate plugin discovery to the test plugin path only
+    ;(pluginsService as any)._paths = [pluginsPath]
+
     win32NpmPath = (pluginsService as any).getNpmPath()[0]
   })
 

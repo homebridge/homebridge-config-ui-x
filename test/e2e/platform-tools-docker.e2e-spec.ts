@@ -8,7 +8,7 @@ import process from 'node:process'
 import { ValidationPipe } from '@nestjs/common'
 import { FastifyAdapter } from '@nestjs/platform-fastify'
 import { Test } from '@nestjs/testing'
-import { copy, readFile } from 'fs-extra'
+import { copy, readFile, remove } from 'fs-extra'
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { AuthModule } from '../../src/core/auth/auth.module.js'
@@ -121,6 +121,53 @@ describe('PlatformToolsDocker (e2e)', () => {
 
     expect(res.statusCode).toBe(200)
     expect(restartDockerContainerFn).toHaveBeenCalled()
+  })
+
+  it('GET /platform-tools/docker/startup-script (file missing)', async () => {
+    // Remove the startup script
+    await remove(startupFilePath)
+
+    const res = await app.inject({
+      method: 'GET',
+      path: '/platform-tools/docker/startup-script',
+      headers: {
+        authorization,
+      },
+    })
+
+    expect(res.statusCode).toBe(500)
+  })
+
+  it('PUT /platform-tools/docker/startup-script (empty script)', async () => {
+    const res = await app.inject({
+      method: 'PUT',
+      path: '/platform-tools/docker/startup-script',
+      headers: {
+        authorization,
+      },
+      payload: {
+        script: '',
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+    expect(await readFile(startupFilePath, 'utf8')).toEqual('')
+  })
+
+  it('PUT /platform-tools/docker/restart-container (return shape)', async () => {
+    // Don't mock restartDockerContainer for this test - test the real return value
+    dockerService.restartDockerContainer = vi.fn().mockResolvedValue({ ok: true, command: 'sudo kill 1' })
+
+    const res = await app.inject({
+      method: 'PUT',
+      path: '/platform-tools/docker/restart-container',
+      headers: {
+        authorization,
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+    expect(res.json()).toEqual({ ok: true, command: 'sudo kill 1' })
   })
 
   afterAll(async () => {

@@ -375,6 +375,43 @@ describe('AccessoriesController (e2e)', () => {
     expect(res.body).toContain('value should not be null or undefined')
   })
 
+  it('GET /accessories/layout (returns default room when user not in layout)', async () => {
+    const res = await app.inject({
+      method: 'GET',
+      path: '/accessories/layout',
+      headers: {
+        authorization,
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+    const layout = res.json()
+    expect(Array.isArray(layout)).toBe(true)
+    expect(layout).toHaveLength(1)
+    expect(layout[0].name).toBe('Default Room')
+    expect(layout[0].isDefault).toBe(true)
+  })
+
+  it('service.saveAccessoryLayout should save and return layout', async () => {
+    const layout = {
+      rooms: [{ name: 'Living Room', services: ['abc'] }],
+    }
+
+    const result = await accessoriesService.saveAccessoryLayout('admin', layout as any)
+    expect(result).toEqual(layout)
+
+    // Now getAccessoryLayout should return the saved layout
+    const loaded = await accessoriesService.getAccessoryLayout('admin')
+    expect(loaded).toEqual(layout)
+  })
+
+  it('service.resetInstancePool should not throw when insecure mode disabled', () => {
+    configService.homebridgeInsecureMode = false
+    // Should be a no-op when insecure mode is disabled
+    expect(() => accessoriesService.resetInstancePool()).not.toThrow()
+    configService.homebridgeInsecureMode = true
+  })
+
   afterAll(async () => {
     await app.close()
   })

@@ -14,7 +14,7 @@ import { AuthModule } from '../../src/core/auth/auth.module.js'
 import { AuthService } from '../../src/core/auth/auth.service.js'
 import { ConfigService } from '../../src/core/config/config.service.js'
 
-import '../../src/global-defaults'
+import '../../src/global-defaults.js'
 
 const RE_JWT = /^[\w-]+\.[\w-]+\.[\w-]+$/
 

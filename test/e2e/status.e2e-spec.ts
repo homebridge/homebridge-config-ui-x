@@ -15,7 +15,10 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vites
 
 import { AuthModule } from '../../src/core/auth/auth.module.js'
 import { HomebridgeIpcService } from '../../src/core/homebridge-ipc/homebridge-ipc.service.js'
+import { ChildBridgesService } from '../../src/modules/child-bridges/child-bridges.service.js'
+import { PluginsService } from '../../src/modules/plugins/plugins.service.js'
 import { StatusModule } from '../../src/modules/status/status.module.js'
+import { StatusService } from '../../src/modules/status/status.service.js'
 
 describe('StatusController (e2e)', () => {
   let app: NestFastifyApplication
@@ -221,6 +224,79 @@ describe('StatusController (e2e)', () => {
     const supportedArchitectures = ['x64', 'arm64', 'ppc64', 's390x']
     const expectedSupport = supportedArchitectures.includes(process.arch)
     expect(res.json().supportsNodeJs24).toBe(expectedSupport)
+  })
+
+  it('GET /status/homebridge/child-bridges', async () => {
+    const childBridgesService = app.get(ChildBridgesService)
+    vi.spyOn(childBridgesService, 'getChildBridges').mockResolvedValue([])
+
+    const res = await app.inject({
+      method: 'GET',
+      path: '/status/homebridge/child-bridges',
+      headers: {
+        authorization,
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+    expect(Array.isArray(res.json())).toBe(true)
+  })
+
+  it('GET /status/homebridge-version', async () => {
+    const pluginsService = app.get(PluginsService)
+    vi.spyOn(pluginsService, 'getHomebridgePackage').mockResolvedValue({
+      name: 'homebridge',
+      installedVersion: '1.7.0',
+      latestVersion: '1.8.0',
+      updateAvailable: true,
+    } as any)
+
+    const res = await app.inject({
+      method: 'GET',
+      path: '/status/homebridge-version',
+      headers: {
+        authorization,
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+    expect(res.json().name).toBe('homebridge')
+    expect(res.json().installedVersion).toBe('1.7.0')
+  })
+
+  it('GET /status/rpi/throttled (not on Raspberry Pi)', async () => {
+    const res = await app.inject({
+      method: 'GET',
+      path: '/status/rpi/throttled',
+      headers: {
+        authorization,
+      },
+    })
+
+    // Should return 400 since we're not on a Raspberry Pi
+    expect(res.statusCode).toBe(400)
+  })
+
+  it('GET /status/nodejs - handles network error gracefully', async () => {
+    // Clear the node version cache so the mock is actually hit
+    const statusService = app.get(StatusService)
+    statusService.clearNodeJsVersionCache()
+
+    vi.spyOn(httpService, 'get').mockImplementationOnce(() => {
+      throw new Error('Network error')
+    })
+
+    const res = await app.inject({
+      method: 'GET',
+      path: '/status/nodejs',
+      headers: {
+        authorization,
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+    expect(res.json().currentVersion).toBe(process.version)
+    expect(res.json().updateAvailable).toBe(false)
   })
 
   afterAll(async () => {

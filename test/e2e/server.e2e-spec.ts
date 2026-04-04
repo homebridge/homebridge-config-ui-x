@@ -16,10 +16,11 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vites
 
 import { AuthModule } from '../../src/core/auth/auth.module.js'
 import { ConfigService } from '../../src/core/config/config.service.js'
+import { ChildBridgesService } from '../../src/modules/child-bridges/child-bridges.service.js'
 import { ServerModule } from '../../src/modules/server/server.module.js'
 import { ServerService } from '../../src/modules/server/server.service.js'
 
-import '../../src/global-defaults'
+import '../../src/global-defaults.js'
 
 describe('ServerController (e2e)', () => {
   let app: NestFastifyApplication
@@ -31,6 +32,7 @@ describe('ServerController (e2e)', () => {
   let authorization: string
   let configService: ConfigService
   let serverService: ServerService
+  let childBridgesService: ChildBridgesService
 
   beforeAll(async () => {
     process.env.UIX_BASE_PATH = resolve(__dirname, '../../')
@@ -74,6 +76,7 @@ describe('ServerController (e2e)', () => {
 
     serverService = await app.get(ServerService)
     configService = await app.get(ConfigService)
+    childBridgesService = await app.get(ChildBridgesService)
   })
 
   beforeEach(async () => {
@@ -876,6 +879,391 @@ describe('ServerController (e2e)', () => {
 
     // Verify Matter storage was removed
     expect(await pathExists(matterPath)).toBe(false)
+  })
+
+  it('PUT /server/restart/:deviceId', async () => {
+    vi.spyOn(childBridgesService, 'restartChildBridge').mockReturnValue({ ok: true })
+
+    const res = await app.inject({
+      method: 'PUT',
+      path: '/server/restart/0EAABBCCDDEE',
+      headers: {
+        authorization,
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+    expect(childBridgesService.restartChildBridge).toHaveBeenCalledWith('0EAABBCCDDEE')
+  })
+
+  it('PUT /server/stop/:deviceId', async () => {
+    vi.spyOn(childBridgesService, 'stopChildBridge').mockReturnValue({ ok: true })
+
+    const res = await app.inject({
+      method: 'PUT',
+      path: '/server/stop/0EAABBCCDDEE',
+      headers: {
+        authorization,
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+    expect(childBridgesService.stopChildBridge).toHaveBeenCalledWith('0EAABBCCDDEE')
+  })
+
+  it('PUT /server/start/:deviceId', async () => {
+    vi.spyOn(childBridgesService, 'startChildBridge').mockReturnValue({ ok: true })
+
+    const res = await app.inject({
+      method: 'PUT',
+      path: '/server/start/0EAABBCCDDEE',
+      headers: {
+        authorization,
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+    expect(childBridgesService.startChildBridge).toHaveBeenCalledWith('0EAABBCCDDEE')
+  })
+
+  it('DELETE /server/cached-accessories (bulk)', async () => {
+    const cachedAccessories = await readJson(resolve(accessoriesPath, 'cachedAccessories'))
+    expect(cachedAccessories).toHaveLength(1)
+
+    const res = await app.inject({
+      method: 'DELETE',
+      path: '/server/cached-accessories',
+      headers: {
+        authorization,
+      },
+      payload: [{ uuid: cachedAccessories[0].UUID, cacheFile: 'cachedAccessories' }],
+    })
+
+    expect(res.statusCode).toBe(204)
+
+    const remaining = await readJson(resolve(accessoriesPath, 'cachedAccessories'))
+    expect(remaining).toHaveLength(0)
+  })
+
+  it('DELETE /server/pairings (bulk)', async () => {
+    const res = await app.inject({
+      method: 'DELETE',
+      path: '/server/pairings',
+      headers: {
+        authorization,
+      },
+      payload: [{ id: '67E41F0EA05D', resetPairingInfo: false }],
+    })
+
+    expect(res.statusCode).toBe(204)
+  })
+
+  it('DELETE /server/pairings/:deviceId/accessories', async () => {
+    const res = await app.inject({
+      method: 'DELETE',
+      path: '/server/pairings/67E41F0EA05D/accessories',
+      headers: {
+        authorization,
+      },
+    })
+
+    expect(res.statusCode).toBe(204)
+  })
+
+  it('DELETE /server/pairings/accessories (bulk)', async () => {
+    const res = await app.inject({
+      method: 'DELETE',
+      path: '/server/pairings/accessories',
+      headers: {
+        authorization,
+      },
+      payload: [{ id: '67E41F0EA05D' }],
+    })
+
+    expect(res.statusCode).toBe(204)
+  })
+
+  it('GET /server/network/overview', async () => {
+    const res = await app.inject({
+      method: 'GET',
+      path: '/server/network/overview',
+      headers: {
+        authorization,
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+    expect(res.json()).toHaveProperty('entries')
+    expect(res.json()).toHaveProperty('conflicts')
+    expect(Array.isArray(res.json().entries)).toBe(true)
+    expect(Array.isArray(res.json().conflicts)).toBe(true)
+    // Should at least have the main bridge and UI entries
+    expect(res.json().entries.length).toBeGreaterThanOrEqual(2)
+  })
+
+  it('PUT /server/name', async () => {
+    const res = await app.inject({
+      method: 'PUT',
+      path: '/server/name',
+      headers: {
+        authorization,
+      },
+      payload: {
+        name: 'My Homebridge',
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+
+    const config = await readJson(configService.configPath)
+    expect(config.bridge.name).toBe('My Homebridge')
+  })
+
+  it('PUT /server/name (invalid name)', async () => {
+    const res = await app.inject({
+      method: 'PUT',
+      path: '/server/name',
+      headers: {
+        authorization,
+      },
+      payload: {
+        name: '',
+      },
+    })
+
+    expect(res.statusCode).toBe(400)
+  })
+
+  it('GET /server/port', async () => {
+    const res = await app.inject({
+      method: 'GET',
+      path: '/server/port',
+      headers: {
+        authorization,
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+    expect(typeof res.json().port).toBe('number')
+  })
+
+  it('PUT /server/port', async () => {
+    const res = await app.inject({
+      method: 'PUT',
+      path: '/server/port',
+      headers: {
+        authorization,
+      },
+      payload: {
+        port: 51827,
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+
+    const config = await readJson(configService.configPath)
+    expect(config.bridge.port).toBe(51827)
+  })
+
+  it('PUT /server/port (invalid port)', async () => {
+    const res = await app.inject({
+      method: 'PUT',
+      path: '/server/port',
+      headers: {
+        authorization,
+      },
+      payload: {
+        port: 100,
+      },
+    })
+
+    expect(res.statusCode).toBe(400)
+  })
+
+  it('GET /server/ports', async () => {
+    const res = await app.inject({
+      method: 'GET',
+      path: '/server/ports',
+      headers: {
+        authorization,
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+    expect(typeof res.json()).toBe('object')
+  })
+
+  it('PUT /server/ports', async () => {
+    const res = await app.inject({
+      method: 'PUT',
+      path: '/server/ports',
+      headers: {
+        authorization,
+      },
+      payload: {
+        start: 30000,
+        end: 40000,
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+
+    const config = await readJson(configService.configPath)
+    expect(config.ports.start).toBe(30000)
+    expect(config.ports.end).toBe(40000)
+  })
+
+  it('PUT /server/ports (invalid - start >= end)', async () => {
+    const res = await app.inject({
+      method: 'PUT',
+      path: '/server/ports',
+      headers: {
+        authorization,
+      },
+      payload: {
+        start: 40000,
+        end: 30000,
+      },
+    })
+
+    expect(res.statusCode).toBe(400)
+  })
+
+  it('POST /server/ssl/validate (no SSL configured)', async () => {
+    // Reset config to have a proper platforms array with config platform
+    await copy(resolve(__dirname, '../mocks', 'config.json'), process.env.UIX_CONFIG_PATH)
+
+    const res = await app.inject({
+      method: 'POST',
+      path: '/server/ssl/validate',
+      headers: {
+        authorization,
+      },
+    })
+
+    expect(res.statusCode).toBe(201)
+    expect(res.json().valid).toBe(true)
+    expect(res.json().type).toBe('off')
+  })
+
+  it('POST /server/ssl/selfsigned/generate', async () => {
+    // Reset config to ensure config platform block exists
+    await copy(resolve(__dirname, '../mocks', 'config.json'), process.env.UIX_CONFIG_PATH)
+
+    const res = await app.inject({
+      method: 'POST',
+      path: '/server/ssl/selfsigned/generate',
+      headers: {
+        authorization,
+      },
+      payload: {
+        hostnames: ['localhost', '192.168.1.1'],
+        mode: 'keycert',
+      },
+    })
+
+    expect(res.statusCode).toBe(201)
+    expect(res.json().ok).toBe(true)
+    expect(res.json().type).toBe('generated')
+    expect(res.json().mode).toBe('keycert')
+    expect(res.json().keyPath).toBeDefined()
+    expect(res.json().certPath).toBeDefined()
+  })
+
+  it('POST /server/ssl/selfsigned/generate (selfsigned mode)', async () => {
+    // Reset config
+    await copy(resolve(__dirname, '../mocks', 'config.json'), process.env.UIX_CONFIG_PATH)
+
+    const res = await app.inject({
+      method: 'POST',
+      path: '/server/ssl/selfsigned/generate',
+      headers: {
+        authorization,
+      },
+      payload: {
+        mode: 'selfsigned',
+      },
+    })
+
+    expect(res.statusCode).toBe(201)
+    expect(res.json().ok).toBe(true)
+    expect(res.json().mode).toBe('selfsigned')
+
+    // Should have updated config
+    const config = await readJson(configService.configPath)
+    const uiBlock = config.platforms.find(x => x.platform === 'config')
+    expect(uiBlock.ssl.selfSigned).toBe(true)
+  })
+
+  it('POST /server/ssl/validate (after self-signed generated in keycert mode)', async () => {
+    // Reset config
+    await copy(resolve(__dirname, '../mocks', 'config.json'), process.env.UIX_CONFIG_PATH)
+
+    // First generate a self-signed cert in keycert mode
+    const genRes = await app.inject({
+      method: 'POST',
+      path: '/server/ssl/selfsigned/generate',
+      headers: {
+        authorization,
+      },
+      payload: {
+        hostnames: ['localhost'],
+        mode: 'keycert',
+      },
+    })
+
+    expect(genRes.statusCode).toBe(201)
+
+    // Now validate
+    const res = await app.inject({
+      method: 'POST',
+      path: '/server/ssl/validate',
+      headers: {
+        authorization,
+      },
+    })
+
+    expect(res.statusCode).toBe(201)
+    expect(res.json().valid).toBe(true)
+    expect(res.json().type).toBe('keycert')
+  })
+
+  it('POST /server/ssl/keycert (no files uploaded)', async () => {
+    await copy(resolve(__dirname, '../mocks', 'config.json'), process.env.UIX_CONFIG_PATH)
+
+    const payload = new FormData()
+
+    const headers = payload.getHeaders()
+    headers.authorization = authorization
+
+    const res = await app.inject({
+      method: 'POST',
+      path: '/server/ssl/keycert',
+      headers,
+      payload,
+    })
+
+    expect(res.statusCode).toBe(400)
+  })
+
+  it('POST /server/ssl/validate (selfsigned mode)', async () => {
+    await copy(resolve(__dirname, '../mocks', 'config.json'), process.env.UIX_CONFIG_PATH)
+
+    // Set selfsigned mode in config
+    const config = await readJson(configService.configPath)
+    const uiBlock = config.platforms.find(x => x.platform === 'config')
+    uiBlock.ssl = { selfSigned: true }
+    await writeJson(configService.configPath, config)
+
+    const res = await app.inject({
+      method: 'POST',
+      path: '/server/ssl/validate',
+      headers: { authorization },
+    })
+
+    expect(res.statusCode).toBe(201)
+    expect(res.json().valid).toBe(true)
+    expect(res.json().type).toBe('selfsigned')
   })
 
   afterAll(async () => {

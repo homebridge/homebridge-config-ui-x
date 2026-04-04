@@ -8,13 +8,16 @@ import { HttpService } from '@nestjs/axios'
 import { ValidationPipe } from '@nestjs/common'
 import { FastifyAdapter } from '@nestjs/platform-fastify'
 import { Test } from '@nestjs/testing'
+import { AxiosResponse, InternalAxiosRequestConfig } from 'axios'
 import { copy, ensureDir, remove, writeFile } from 'fs-extra'
+import { of } from 'rxjs'
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { AuthModule } from '../../src/core/auth/auth.module.js'
 import { PluginsSettingsUiModule } from '../../src/modules/custom-plugins/plugins-settings-ui/plugins-settings-ui.module.js'
+import { PluginsSettingsUiService } from '../../src/modules/custom-plugins/plugins-settings-ui/plugins-settings-ui.service.js'
 
-import '../../src/global-defaults'
+import '../../src/global-defaults.js'
 
 describe('PluginsSettingsUiController (e2e)', () => {
   let app: NestFastifyApplication
@@ -108,6 +111,130 @@ describe('PluginsSettingsUiController (e2e)', () => {
     })
 
     expect(res.statusCode).toBe(404)
+  })
+
+  it('GET /plugins/settings-ui/:plugin-name/../../../etc/passwd (path traversal blocked)', async () => {
+    const res = await app.inject({
+      method: 'GET',
+      path: '/plugins/settings-ui/homebridge-mock-plugin/../../../etc/passwd',
+    })
+
+    // Should not return 200 with file contents
+    expect(res.statusCode).not.toBe(200)
+  })
+
+  it('GET /plugins/settings-ui/:plugin-name/ (nonexistent plugin)', async () => {
+    const res = await app.inject({
+      method: 'GET',
+      path: '/plugins/settings-ui/homebridge-nonexistent-plugin/',
+    })
+
+    expect(res.statusCode).toBe(404)
+  })
+
+  it('GET /plugins/settings-ui/:plugin-name/nonexistent.html (missing file)', async () => {
+    const res = await app.inject({
+      method: 'GET',
+      path: '/plugins/settings-ui/homebridge-mock-plugin/nonexistent.html',
+    })
+
+    expect(res.statusCode).toBe(404)
+  })
+
+  it('GET /plugins/settings-ui/:plugin-name/ with version query param', async () => {
+    const res = await app.inject({
+      method: 'GET',
+      path: '/plugins/settings-ui/homebridge-mock-plugin/?v=1.0.0',
+    })
+
+    expect(res.statusCode).toBe(200)
+    expect(res.body).toContain('Hello World')
+  })
+
+  describe('PluginsSettingsUiService', () => {
+    let pluginsSettingsUiService: PluginsSettingsUiService
+
+    beforeEach(() => {
+      pluginsSettingsUiService = app.get(PluginsSettingsUiService)
+    })
+
+    it('startCustomUiHandler should emit ready with server:false when no server script', async () => {
+      const { EventEmitter } = await import('node:events')
+      const client = new EventEmitter()
+      const emitSpy = vi.spyOn(client, 'emit')
+
+      await pluginsSettingsUiService.startCustomUiHandler('homebridge-mock-plugin', client)
+
+      expect(emitSpy).toHaveBeenCalledWith('ready', { server: false })
+    })
+
+    it('getPluginUiMetadata should return metadata for valid plugin', async () => {
+      const metadata = await (pluginsSettingsUiService as any).getPluginUiMetadata('homebridge-mock-plugin')
+
+      expect(metadata).toHaveProperty('plugin')
+      expect(metadata).toHaveProperty('publicPath')
+      expect(metadata).toHaveProperty('serverPath')
+      expect(metadata.plugin.name).toBe('homebridge-mock-plugin')
+    })
+
+    it('getPluginUiMetadata should throw for nonexistent plugin', async () => {
+      await expect((pluginsSettingsUiService as any).getPluginUiMetadata('homebridge-nonexistent'))
+        .rejects
+        .toThrow()
+    })
+
+    it('serveAssetsFromDevServer should proxy content from dev server', async () => {
+      const response: AxiosResponse<any> = {
+        data: '<div>Dev content</div>',
+        headers: { 'content-type': 'text/html' },
+        config: { url: 'http://localhost:4200' } as InternalAxiosRequestConfig,
+        status: 200,
+        statusText: 'OK',
+      }
+
+      vi.spyOn(httpService, 'get').mockReturnValue(of(response) as any)
+
+      const mockReply = {
+        header: vi.fn(),
+        send: vi.fn(),
+        code: vi.fn().mockReturnThis(),
+      }
+
+      const pluginUi = {
+        devServer: 'http://localhost:4200',
+        plugin: { name: 'homebridge-mock-plugin' },
+        publicPath: '/fake/path',
+        serverPath: '/fake/path',
+      }
+
+      await pluginsSettingsUiService.serveAssetsFromDevServer(mockReply, pluginUi as any, 'index.html')
+
+      expect(mockReply.send).toHaveBeenCalledWith('<div>Dev content</div>')
+    })
+
+    it('serveAssetsFromDevServer should return 404 when dev server fails', async () => {
+      vi.spyOn(httpService, 'get').mockImplementation(() => {
+        throw new Error('Connection refused')
+      })
+
+      const mockReply = {
+        header: vi.fn(),
+        send: vi.fn(),
+        code: vi.fn().mockReturnThis(),
+      }
+
+      const pluginUi = {
+        devServer: 'http://localhost:9999',
+        plugin: { name: 'homebridge-mock-plugin' },
+        publicPath: '/fake/path',
+        serverPath: '/fake/path',
+      }
+
+      await pluginsSettingsUiService.serveAssetsFromDevServer(mockReply, pluginUi as any, 'index.html')
+
+      expect(mockReply.code).toHaveBeenCalledWith(404)
+      expect(mockReply.send).toHaveBeenCalledWith('Not Found')
+    })
   })
 
   afterAll(async () => {
