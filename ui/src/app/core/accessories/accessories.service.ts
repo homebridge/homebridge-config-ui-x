@@ -39,6 +39,7 @@ export class AccessoriesService {
     'CameraRTPStreamManagement',
     'ProtocolInformation',
     'NFCAccess',
+    'BridgedNode',
   ])
 
   public layoutSaved = new Subject()
@@ -464,7 +465,8 @@ export class AccessoriesService {
   private sortIntoRooms() {
     this.accessories.services.forEach((service) => {
       // Don't put hidden types or combined services into rooms
-      if (this.hiddenTypes.has(service.type) || this.combinedServiceIds.has(service.uniqueId!)) {
+      // Matter services use deviceType instead of type
+      if (this.hiddenTypes.has(service.type) || this.hiddenTypes.has((service as ServiceTypeX).deviceType!) || this.combinedServiceIds.has(service.uniqueId!)) {
         return
       }
 

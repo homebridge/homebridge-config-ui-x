@@ -22,6 +22,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix: skip plugin dirs missing `package.json` during discovery
 - tests: add more backend tests; improve coverage to >50%
 - fix: enable `strictTemplates` and fix template type errors
+- fix: hide `BridgeNode` matter devices on accessories page
 
 ### Homebridge Dependencies
 
