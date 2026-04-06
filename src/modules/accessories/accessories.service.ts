@@ -605,8 +605,22 @@ export class AccessoriesService {
       })
 
       this.logger.debug(`Transformed ${matterServices.length} Matter services (including parts)`)
-      this.matterAccessories = matterServices
-      return matterServices
+
+      // Apply instanceBlacklist filtering to Matter accessories
+      const blacklist = this.configService.ui.accessoryControl?.instanceBlacklist || []
+      const filteredServices = blacklist.length > 0
+        ? matterServices.filter((s) => {
+            if (blacklist.some(b => s.instance.username.toLowerCase() === b.toLowerCase())) {
+              this.logger.debug(`Matter accessory '${s.displayName}' filtered by instanceBlacklist (bridge: ${s.instance.username})`)
+              return false
+            }
+            return true
+          })
+        : matterServices
+
+      this.logger.debug(`${filteredServices.length} Matter services after blacklist filtering`)
+      this.matterAccessories = filteredServices
+      return filteredServices
     } catch (error) {
       this.logger.warn('Failed to load Matter accessories:', error)
       return []

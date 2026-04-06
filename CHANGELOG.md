@@ -44,6 +44,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix: unsubscribed observables in multiple components
 - fix: xterm not disposed on restore modal close
 - tests: add tests covering recent bug fixes
+- fix: accessory control list should filter matter
 
 ### Homebridge Dependencies
 

@@ -20,21 +20,31 @@
     <ul class="list-group list-group-box mt-3 mb-0">
       @if (mainPairing(); as mp) {
         <li class="list-group-item d-flex justify-content-between align-items-center flex-row pb-2">
-          <div class="text-start">
-            {{ mp.name }}<br />
-            <small class="grey-text">
-              <i
-                class="fas fa-link"
-                container="body"
-                triggers="hover"
-                placement="left"
-                [ngbTooltip]="(mp._isPaired ? 'status.widget.qr_paired' : 'status.widget.qr_unpaired') | translate"
-                [openDelay]="150"
-                [class.green-text]="mp._isPaired"
-                [class.grey-text]="!mp._isPaired"
-              ></i>
-              &middot; <span class="font-monospace">{{ mp._username }}</span> &middot; Homebridge
-            </small>
+          <div class="d-flex align-items-center text-start">
+            <span class="me-3">
+              @if (isMatterSupported) {
+                <i class="fas fa-lg fa-hap me-2" [class.opacity-muted]="mp._matterOnly"></i>
+                <i class="fas fa-lg fa-matter" [class.opacity-muted]="!mp._matter"></i>
+              } @else {
+                <i class="fas fa-lg fa-hap"></i>
+              }
+            </span>
+            <div>
+              {{ mp.name }}<br />
+              <small class="grey-text">
+                <i
+                  class="fas fa-link"
+                  container="body"
+                  triggers="hover"
+                  placement="left"
+                  [ngbTooltip]="(mp._isPaired ? 'status.widget.qr_paired' : 'status.widget.qr_unpaired') | translate"
+                  [openDelay]="150"
+                  [class.green-text]="mp._isPaired"
+                  [class.grey-text]="!mp._isPaired"
+                ></i>
+                &middot; <span class="font-monospace">{{ mp._username }}</span> &middot; Homebridge
+              </small>
+            </div>
           </div>
           <div class="text-end grey-text d-flex align-items-center">
             <input
@@ -52,23 +62,33 @@
       }
       @for (item of pairings(); track item) {
         <li class="list-group-item d-flex justify-content-between align-items-center flex-row pb-2">
-          <div class="text-start">
-            {{ item.name }}
-            <br />
-            <small class="grey-text">
-              <i
-                class="fas fa-link"
-                container="body"
-                triggers="hover"
-                placement="left"
-                [ngbTooltip]="(item._isPaired ? 'status.widget.qr_paired' : 'status.widget.qr_unpaired') | translate"
-                [openDelay]="150"
-                [class.green-text]="item._isPaired"
-                [class.grey-text]="!item._isPaired"
-              ></i>
-              &middot; <span class="font-monospace">{{ item._username }}</span> &middot;
-              {{ item._category | titlecase }}
-            </small>
+          <div class="d-flex align-items-center text-start">
+            <span class="me-3">
+              @if (isMatterSupported) {
+                <i class="fas fa-lg fa-hap me-2" [class.opacity-muted]="item._matterOnly"></i>
+                <i class="fas fa-lg fa-matter" [class.opacity-muted]="!item._matter"></i>
+              } @else {
+                <i class="fas fa-lg fa-hap"></i>
+              }
+            </span>
+            <div>
+              {{ item.name }}
+              <br />
+              <small class="grey-text">
+                <i
+                  class="fas fa-link"
+                  container="body"
+                  triggers="hover"
+                  placement="left"
+                  [ngbTooltip]="(item._isPaired ? 'status.widget.qr_paired' : 'status.widget.qr_unpaired') | translate"
+                  [openDelay]="150"
+                  [class.green-text]="item._isPaired"
+                  [class.grey-text]="!item._isPaired"
+                ></i>
+                &middot; <span class="font-monospace">{{ item._username }}</span> &middot;
+                {{ item._category | titlecase }}
+              </small>
+            </div>
           </div>
           <div class="text-end grey-text d-flex align-items-center">
             <input
