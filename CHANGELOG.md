@@ -36,6 +36,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix: missing translation fallback for non-english users
 - fix: path traversal in cached accessory deletion
 - fix: xss via `innerHTML` in setup wizard
+- fix: xss via plugin metadata in custom ui html
 
 ### Homebridge Dependencies
 
