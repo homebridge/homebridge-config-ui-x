@@ -954,7 +954,7 @@ export class ServerService {
    */
   public async getBridgePairingInformation() {
     if (!await pathExists(this.accessoryInfoPath)) {
-      return new ServiceUnavailableException('Pairing Information Not Available Yet')
+      throw new ServiceUnavailableException('Pairing Information Not Available Yet')
     }
 
     const accessoryInfo = await readJson(this.accessoryInfoPath)
