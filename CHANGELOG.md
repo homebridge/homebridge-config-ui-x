@@ -28,6 +28,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix: hide titles when matching items not rendered
 - chore: bump `typescript` from `v5` to `v6` (frontend)
 - chore: change typescript targets to `esnext`
+- fix: string spread corrupting accessory blacklist
 
 ### Homebridge Dependencies
 
