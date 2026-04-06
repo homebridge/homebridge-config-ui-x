@@ -247,7 +247,13 @@
     </div>
     <div class="text-center"></div>
     <div class="text-end">
-      <button type="button" class="btn btn-primary" data-bs-dismiss="modal" (click)="closeModal()">
+      <button
+        type="button"
+        class="btn btn-primary"
+        data-bs-dismiss="modal"
+        [disabled]="!hasChanges"
+        (click)="closeModal()"
+      >
         {{ 'form.button_save' | translate }}
       </button>
     </div>
