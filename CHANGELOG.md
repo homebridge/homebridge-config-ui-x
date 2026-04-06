@@ -26,10 +26,11 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix: enable `strictTemplates` and fix template type errors
 - fix: hide `BridgeNode` matter devices on accessories page
 - fix: hide titles when matching items not rendered
+- chore: bump `typescript` from `v5` to `v6` (frontend)
 
 ### Homebridge Dependencies
 
-- `@homebridge/hap-client` @ `v4.0.2`
+- `@homebridge/hap-client` @ `v4.0.3`
 - `@homebridge/node-pty-prebuilt-multiarch` @ `v0.13.1`
 - `@homebridge/plugin-ui-utils` @ `v2.2.3`
 
