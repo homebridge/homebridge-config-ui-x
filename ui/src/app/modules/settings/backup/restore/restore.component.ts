@@ -132,6 +132,7 @@ export class RestoreComponent implements OnInit, OnDestroy {
 
   public ngOnDestroy(): void {
     this.io.end!()
+    this.term?.dispose()
   }
 
   public dismissModal(): void {
