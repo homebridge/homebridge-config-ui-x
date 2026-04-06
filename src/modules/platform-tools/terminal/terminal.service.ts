@@ -158,7 +158,7 @@ export class TerminalService {
             TerminalService.terminalBuffer += data
 
             // Keep buffer size reasonable (configurable)
-            const maxBufferSize = this.configService.ui.terminal?.bufferSize
+            const maxBufferSize = this.configService.ui.terminal?.bufferSize || globalThis.terminal.bufferSize
             if (TerminalService.terminalBuffer.length > maxBufferSize) {
               TerminalService.terminalBuffer = TerminalService.terminalBuffer.slice(-maxBufferSize)
             }
