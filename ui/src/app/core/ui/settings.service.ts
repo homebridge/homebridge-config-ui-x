@@ -205,6 +205,9 @@ export class SettingsService {
   }
 
   public setItem(key: string, value: any) {
+    if (this.forbiddenKeys.includes(key)) {
+      return
+    }
     (this as Record<string, any>)[key] = value
   }
 
