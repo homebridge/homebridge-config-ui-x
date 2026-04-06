@@ -93,7 +93,7 @@ export class HbServiceService {
       throw new BadRequestException('Cannot read log file. Check the log file permissions.')
     }
 
-    if (shouldRemoveColour) {
+    if (!shouldRemoveColour) {
       return createReadStream(this.configService.ui.log.path, { encoding: 'utf8' })
     }
 
