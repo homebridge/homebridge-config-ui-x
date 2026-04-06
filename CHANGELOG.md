@@ -24,6 +24,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - tests: add more backend tests; improve coverage to >50%
 - fix: enable `strictTemplates` and fix template type errors
 - fix: hide `BridgeNode` matter devices on accessories page
+- fix: hide titles when matching items not rendered
 
 ### Homebridge Dependencies
 

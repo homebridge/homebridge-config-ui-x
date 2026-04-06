@@ -410,7 +410,53 @@ export class SettingsComponent implements OnInit {
         newHiddenItems[itemId] = true
       }
     })
+    // Also hide items whose non-search rendering conditions are false,
+    // so isSectionVisible correctly excludes items not in the DOM.
+    for (const itemId of this.getUnavailableItems()) {
+      newHiddenItems[itemId] = true
+    }
+
     this.hiddenItems.set(newHiddenItems)
+  }
+
+  /**
+   * Returns item IDs that are not currently rendered due to non-search
+   * template conditions (platform checks, dependent toggles, etc.).
+   */
+  private getUnavailableItems(): string[] {
+    const unavailable: string[] = []
+
+    if (this.platform !== 'linux') {
+      unavailable.push('setting-linux-shutdown', 'setting-linux-restart', 'setting-linux-temp')
+    } else if (!this.runningOnRaspberryPi) {
+      unavailable.push('setting-linux-temp')
+    }
+
+    if (!this.runningInDocker) {
+      unavailable.push('setting-docker-startup')
+    }
+
+    if (!this.matterEnabledFormControl.value) {
+      unavailable.push('setting-matter-port', 'setting-matter-port-range')
+    }
+
+    if (!(this.hbLogSizeFormControl.value! > 0)) {
+      unavailable.push('setting-terminal-log-truncate')
+    }
+
+    if (!this.enableTerminalAccess) {
+      unavailable.push('setting-terminal-persistence', 'setting-terminal-warning', 'setting-terminal-buffer')
+    } else if (this.uiTerminalPersistenceFormControl.value) {
+      unavailable.push('setting-terminal-warning')
+    } else {
+      unavailable.push('setting-terminal-buffer')
+    }
+
+    if (!this.uiAuthFormControl.value) {
+      unavailable.push('setting-session-inactivity', 'setting-security-session')
+    }
+
+    return unavailable
   }
 
   public isItemHidden(itemId: string): boolean {
