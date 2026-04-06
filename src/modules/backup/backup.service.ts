@@ -578,7 +578,7 @@ export class BackupService {
 
     // Check the bridge.bind config contains valid interface names
     if (restoredConfig.bridge.bind) {
-      this.checkBridgeBindConfig(restoredConfig)
+      await this.checkBridgeBindConfig(restoredConfig)
     }
 
     // Ensure platforms in an array
@@ -759,7 +759,7 @@ export class BackupService {
 
     // Check the bridge.bind config contains valid interface names
     if (targetConfig.bridge.bind) {
-      this.checkBridgeBindConfig(targetConfig)
+      await this.checkBridgeBindConfig(targetConfig)
     }
 
     // Add config ui platform
@@ -802,7 +802,7 @@ export class BackupService {
   /**
    * Checks the 'bridge.bind' options are valid for the current system when restoring.
    */
-  private checkBridgeBindConfig(restoredConfig: HomebridgeConfig) {
+  private async checkBridgeBindConfig(restoredConfig: HomebridgeConfig) {
     if (restoredConfig.bridge.bind) {
       // If it's a string, convert to an array
       if (typeof restoredConfig.bridge.bind === 'string') {
@@ -816,11 +816,12 @@ export class BackupService {
       }
 
       // Check each interface exists on the new host
-      const interfaces = networkInterfaces()
-      restoredConfig.bridge.bind = restoredConfig.bridge.bind.filter(x => interfaces[x])
+      const interfaces = await networkInterfaces()
+      const ifaceNames = interfaces.map(i => i.iface)
+      restoredConfig.bridge.bind = restoredConfig.bridge.bind.filter(x => ifaceNames.includes(x))
 
       // If empty delete
-      if (!restoredConfig.bridge.bind) {
+      if (!restoredConfig.bridge.bind.length) {
         delete restoredConfig.bridge.bind
       }
     }
