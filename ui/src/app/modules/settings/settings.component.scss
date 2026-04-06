@@ -74,3 +74,67 @@ form {
 .min-w-50 {
   min-width: 50px;
 }
+
+// Let the container's own border-radius clip content so that
+// visually-first/last items get rounded corners even when
+// DOM-first/last items are hidden by the search filter.
+.list-group-box {
+  overflow: hidden;
+}
+
+// ── smoothHide replacement: expand/collapse for settings rows ──
+.setting-row {
+  display: grid;
+  grid-template-rows: 1fr;
+  transition:
+    grid-template-rows 450ms cubic-bezier(0, 0, 0.2, 1),
+    opacity 450ms cubic-bezier(0, 0, 0.2, 1),
+    transform 450ms cubic-bezier(0, 0, 0.2, 1),
+    padding 450ms cubic-bezier(0, 0, 0.2, 1),
+    border-bottom-width 450ms cubic-bezier(0, 0, 0.2, 1);
+  opacity: 1;
+  transform: scale(1);
+
+  &.setting-hidden {
+    grid-template-rows: 0fr;
+    opacity: 0;
+    transform: scale(0.98);
+    padding: 0 !important;
+    border-bottom: 0 !important;
+    transition-duration: 150ms;
+    transition-timing-function: cubic-bezier(0.4, 0, 1, 1);
+  }
+}
+
+.setting-row-inner {
+  overflow: hidden;
+  min-height: 0;
+}
+
+// ── fadeInOut replacement: save indicator icons ──
+// Element enters DOM via @if, CSS keyframe handles the fade-in.
+// No leave animation — instant removal on save complete is fine UX.
+.save-indicator {
+  animation: fadeIn 750ms ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+// ── Respect reduced motion preference ──
+@media (prefers-reduced-motion: reduce) {
+  .setting-row {
+    transition: none;
+  }
+
+  .save-indicator {
+    animation: none;
+  }
+}

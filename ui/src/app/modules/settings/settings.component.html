@@ -67,8 +67,12 @@
         </div>
         @if (showFields().general) {
           <ul class="list-group list-group-box mt-2 mx-0" id="fieldsGeneral">
-            @if (!isItemHidden('setting-name')) {
-              <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+            <li
+              class="setting-row list-group-item"
+              [class.setting-hidden]="isItemHidden('setting-name')"
+              [attr.inert]="isItemHidden('setting-name') || null"
+            >
+              <div class="setting-row-inner d-block d-md-flex justify-content-between align-items-center">
                 <span>{{ 'settings.name' | translate }}</span>
                 <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
                   <input
@@ -80,15 +84,18 @@
                   />
                   @if (hbNameIsSaving()) {
                     <i
-                      @fadeInOut
-                      class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
+                      class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1 save-indicator"
                     ></i>
                   }
                 </div>
-              </li>
-            }
-            @if (!isItemHidden('setting-backup')) {
-              <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
+              </div>
+            </li>
+            <li
+              class="setting-row list-group-item"
+              [class.setting-hidden]="isItemHidden('setting-backup')"
+              [attr.inert]="isItemHidden('setting-backup') || null"
+            >
+              <div class="setting-row-inner d-flex justify-content-between align-items-center">
                 <span class="pe-2">{{ 'backup.title_backup' | translate }}</span>
                 <button
                   type="button"
@@ -98,10 +105,14 @@
                 >
                   <i class="fas fa-arrow-right"></i>
                 </button>
-              </li>
-            }
-            @if (!isItemHidden('setting-restore')) {
-              <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
+              </div>
+            </li>
+            <li
+              class="setting-row list-group-item"
+              [class.setting-hidden]="isItemHidden('setting-restore')"
+              [attr.inert]="isItemHidden('setting-restore') || null"
+            >
+              <div class="setting-row-inner d-flex justify-content-between align-items-center">
                 <span class="pe-2">{{ 'config.restore.title' | translate }}</span>
                 <button
                   type="button"
@@ -111,10 +122,14 @@
                 >
                   <i class="fas fa-arrow-right"></i>
                 </button>
-              </li>
-            }
-            @if (!isItemHidden('setting-users')) {
-              <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
+              </div>
+            </li>
+            <li
+              class="setting-row list-group-item"
+              [class.setting-hidden]="isItemHidden('setting-users')"
+              [attr.inert]="isItemHidden('setting-users') || null"
+            >
+              <div class="setting-row-inner d-flex justify-content-between align-items-center">
                 <span class="pe-2">{{ 'menu.tooltip_user_accounts' | translate }}</span>
                 <a
                   class="btn btn-primary waves-effect m-0 ms-3 py-1 min-w-50"
@@ -123,8 +138,8 @@
                 >
                   <i class="fas fa-arrow-right"></i>
                 </a>
-              </li>
-            }
+              </div>
+            </li>
           </ul>
         }
       </div>
@@ -152,8 +167,12 @@
         </div>
         @if (showFields().display) {
           <ul class="list-group list-group-box mt-2 mx-0" id="fieldsDisplay">
-            @if (!isItemHidden('setting-lang')) {
-              <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+            <li
+              class="setting-row list-group-item"
+              [class.setting-hidden]="isItemHidden('setting-lang')"
+              [attr.inert]="isItemHidden('setting-lang') || null"
+            >
+              <div class="setting-row-inner d-block d-md-flex justify-content-between align-items-center">
                 {{ 'settings.display.lang' | translate }}
                 <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
                   <select class="custom-select resp-select order-1 order-md-2" [formControl]="uiLangFormControl">
@@ -190,15 +209,18 @@
                   </select>
                   @if (uiLangIsSaving()) {
                     <i
-                      @fadeInOut
-                      class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
+                      class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1 save-indicator"
                     ></i>
                   }
                 </div>
-              </li>
-            }
-            @if (!isItemHidden('setting-theme')) {
-              <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+              </div>
+            </li>
+            <li
+              class="setting-row list-group-item"
+              [class.setting-hidden]="isItemHidden('setting-theme')"
+              [attr.inert]="isItemHidden('setting-theme') || null"
+            >
+              <div class="setting-row-inner d-block d-md-flex justify-content-between align-items-center">
                 {{ 'settings.display.theme' | translate }}
                 <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
                   <select class="custom-select resp-select order-1 order-md-2" [formControl]="uiThemeFormControl">
@@ -218,15 +240,18 @@
                   </select>
                   @if (uiThemeIsSaving()) {
                     <i
-                      @fadeInOut
-                      class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
+                      class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1 save-indicator"
                     ></i>
                   }
                 </div>
-              </li>
-            }
-            @if (!isItemHidden('setting-lighting')) {
-              <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+              </div>
+            </li>
+            <li
+              class="setting-row list-group-item"
+              [class.setting-hidden]="isItemHidden('setting-lighting')"
+              [attr.inert]="isItemHidden('setting-lighting') || null"
+            >
+              <div class="setting-row-inner d-block d-md-flex justify-content-between align-items-center">
                 {{ 'settings.display.lighting_mode' | translate }}
                 <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
                   <select class="custom-select resp-select order-1 order-md-2" [formControl]="uiLightFormControl">
@@ -236,15 +261,18 @@
                   </select>
                   @if (uiLightIsSaving()) {
                     <i
-                      @fadeInOut
-                      class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
+                      class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1 save-indicator"
                     ></i>
                   }
                 </div>
-              </li>
-            }
-            @if (!isItemHidden('setting-menu')) {
-              <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+              </div>
+            </li>
+            <li
+              class="setting-row list-group-item"
+              [class.setting-hidden]="isItemHidden('setting-menu')"
+              [attr.inert]="isItemHidden('setting-menu') || null"
+            >
+              <div class="setting-row-inner d-block d-md-flex justify-content-between align-items-center">
                 {{ 'settings.display.menu_mode' | translate }}
                 <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
                   <select class="custom-select resp-select order-1 order-md-2" [formControl]="uiMenuFormControl">
@@ -253,15 +281,18 @@
                   </select>
                   @if (uiMenuIsSaving()) {
                     <i
-                      @fadeInOut
-                      class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
+                      class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1 save-indicator"
                     ></i>
                   }
                 </div>
-              </li>
-            }
-            @if (!isItemHidden('setting-temp')) {
-              <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+              </div>
+            </li>
+            <li
+              class="setting-row list-group-item"
+              [class.setting-hidden]="isItemHidden('setting-temp')"
+              [attr.inert]="isItemHidden('setting-temp') || null"
+            >
+              <div class="setting-row-inner d-block d-md-flex justify-content-between align-items-center">
                 {{ 'settings.display.temp_units' | translate }}
                 <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
                   <select class="custom-select resp-select order-1 order-md-2" [formControl]="uiTempFormControl">
@@ -270,19 +301,30 @@
                   </select>
                   @if (uiTempIsSaving()) {
                     <i
-                      @fadeInOut
-                      class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
+                      class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1 save-indicator"
                     ></i>
                   }
                 </div>
-              </li>
-            }
-            @if (
-              !isItemHidden('setting-terminal-font-size') ||
-              !isItemHidden('setting-terminal-font-weight') ||
-              !isItemHidden('setting-terminal-lighting-mode')
-            ) {
-              <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+              </div>
+            </li>
+            <li
+              class="setting-row list-group-item"
+              [class.setting-hidden]="
+                !(
+                  !isItemHidden('setting-terminal-font-size') ||
+                  !isItemHidden('setting-terminal-font-weight') ||
+                  !isItemHidden('setting-terminal-lighting-mode')
+                )
+              "
+              [attr.inert]="
+                !(
+                  !isItemHidden('setting-terminal-font-size') ||
+                  !isItemHidden('setting-terminal-font-weight') ||
+                  !isItemHidden('setting-terminal-lighting-mode')
+                ) || null
+              "
+            >
+              <div class="setting-row-inner d-block d-md-flex justify-content-between align-items-center">
                 <span>
                   {{ 'settings.terminal.theme' | translate }}
                   <span class="badge badge-primary ms-1">{{ 'common.labels.beta' | translate }}</span
@@ -294,8 +336,7 @@
                     uiTerminalFontSizeIsSaving() || uiTerminalFontWeightIsSaving() || uiTerminalLightingModeIsSaving()
                   ) {
                     <i
-                      @fadeInOut
-                      class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
+                      class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1 save-indicator"
                     ></i>
                   }
                   <div class="d-flex gap-2 order-1 order-md-2 resp-select-width">
@@ -335,10 +376,14 @@
                     </div>
                   </div>
                 </div>
-              </li>
-            }
-            @if (!isItemHidden('setting-wallpaper')) {
-              <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
+              </div>
+            </li>
+            <li
+              class="setting-row list-group-item"
+              [class.setting-hidden]="isItemHidden('setting-wallpaper')"
+              [attr.inert]="isItemHidden('setting-wallpaper') || null"
+            >
+              <div class="setting-row-inner d-flex justify-content-between align-items-center">
                 <span class="pe-2">{{ 'settings.display.wallpaper' | translate }}</span>
                 <button
                   type="button"
@@ -348,8 +393,8 @@
                 >
                   <i class="fas fa-arrow-right"></i>
                 </button>
-              </li>
-            }
+              </div>
+            </li>
           </ul>
         }
       </div>
@@ -377,8 +422,12 @@
         </div>
         @if (showFields().startup) {
           <ul class="list-group list-group-box mb-4 mx-0" id="fieldsStartup">
-            @if (!isItemHidden('setting-debug')) {
-              <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
+            <li
+              class="setting-row list-group-item"
+              [class.setting-hidden]="isItemHidden('setting-debug')"
+              [attr.inert]="isItemHidden('setting-debug') || null"
+            >
+              <div class="setting-row-inner d-flex justify-content-between align-items-center">
                 <span>
                   {{ 'settings.startup.debug' | translate }} <code>-D</code><br />
                   <small class="grey-text pe-2">{{ debugFieldDesc | translate }}</small>
@@ -396,15 +445,18 @@
                   </div>
                   @if (hbDebugIsSaving()) {
                     <i
-                      @fadeInOut
-                      class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
+                      class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1 save-indicator"
                     ></i>
                   }
                 </div>
-              </li>
-            }
-            @if (!isItemHidden('setting-keep')) {
-              <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
+              </div>
+            </li>
+            <li
+              class="setting-row list-group-item"
+              [class.setting-hidden]="isItemHidden('setting-keep')"
+              [attr.inert]="isItemHidden('setting-keep') || null"
+            >
+              <div class="setting-row-inner d-flex justify-content-between align-items-center">
                 <span>
                   {{ 'settings.startup.keep_accessories' | translate }} <code>-K</code><br />
                   <small class="grey-text pe-2">{{ 'settings.startup.keep_accessories_desc' | translate }}</small>
@@ -422,15 +474,18 @@
                   </div>
                   @if (hbKeepIsSaving()) {
                     <i
-                      @fadeInOut
-                      class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
+                      class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1 save-indicator"
                     ></i>
                   }
                 </div>
-              </li>
-            }
-            @if (!isItemHidden('setting-insecure')) {
-              <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
+              </div>
+            </li>
+            <li
+              class="setting-row list-group-item"
+              [class.setting-hidden]="isItemHidden('setting-insecure')"
+              [attr.inert]="isItemHidden('setting-insecure') || null"
+            >
+              <div class="setting-row-inner d-flex justify-content-between align-items-center">
                 <span>
                   {{ 'settings.startup.insecure' | translate }} <code>-I</code><br />
                   <small class="grey-text pe-2">{{ 'settings.startup.insecure_desc' | translate }}</small>
@@ -448,15 +503,18 @@
                   </div>
                   @if (hbInsecureIsSaving()) {
                     <i
-                      @fadeInOut
-                      class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
+                      class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1 save-indicator"
                     ></i>
                   }
                 </div>
-              </li>
-            }
-            @if (!isItemHidden('setting-security-control') && hbInsecureFormControl.value) {
-              <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
+              </div>
+            </li>
+            <li
+              class="setting-row list-group-item"
+              [class.setting-hidden]="!(!isItemHidden('setting-security-control') && hbInsecureFormControl.value)"
+              [attr.inert]="!(!isItemHidden('setting-security-control') && hbInsecureFormControl.value) || null"
+            >
+              <div class="setting-row-inner d-flex justify-content-between align-items-center">
                 <span class="pe-2">
                   {{ 'settings.security.ui_control' | translate }}<br />
                   <small class="grey-text pe-2">{{ 'settings.security.ui_control_desc' | translate }}</small>
@@ -469,10 +527,14 @@
                 >
                   <i class="fas fa-arrow-right"></i>
                 </button>
-              </li>
-            }
-            @if (!isItemHidden('setting-scheduled-restart')) {
-              <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+              </div>
+            </li>
+            <li
+              class="setting-row list-group-item"
+              [class.setting-hidden]="isItemHidden('setting-scheduled-restart')"
+              [attr.inert]="isItemHidden('setting-scheduled-restart') || null"
+            >
+              <div class="setting-row-inner d-block d-md-flex justify-content-between align-items-center">
                 <span>
                   {{ 'settings.startup.scheduled_restart' | translate }}<br />
                   <small class="grey-text pe-2">
@@ -496,16 +558,19 @@
                     />
                     @if (scheduledRestartCronIsSaving()) {
                       <i
-                        @fadeInOut
-                        class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
+                        class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1 save-indicator"
                       ></i>
                     }
                   </div>
                 </div>
-              </li>
-            }
-            @if (!isItemHidden('setting-metrics-startup')) {
-              <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
+              </div>
+            </li>
+            <li
+              class="setting-row list-group-item"
+              [class.setting-hidden]="isItemHidden('setting-metrics-startup')"
+              [attr.inert]="isItemHidden('setting-metrics-startup') || null"
+            >
+              <div class="setting-row-inner d-flex justify-content-between align-items-center">
                 <span>
                   {{ 'settings.startup.metrics' | translate }}<br />
                   <small class="grey-text pe-2">{{ 'settings.startup.metrics_desc' | translate }}</small>
@@ -523,15 +588,18 @@
                   </div>
                   @if (uiMetricsIsSaving()) {
                     <i
-                      @fadeInOut
-                      class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
+                      class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1 save-indicator"
                     ></i>
                   }
                 </div>
-              </li>
-            }
-            @if (!isItemHidden('setting-package-path')) {
-              <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+              </div>
+            </li>
+            <li
+              class="setting-row list-group-item"
+              [class.setting-hidden]="isItemHidden('setting-package-path')"
+              [attr.inert]="isItemHidden('setting-package-path') || null"
+            >
+              <div class="setting-row-inner d-block d-md-flex justify-content-between align-items-center">
                 <span>
                   {{ 'settings.network.hb_package' | translate }}<br />
                   <small class="grey-text pe-2">{{ 'settings.network.hb_package_desc' | translate }}</small>
@@ -546,16 +614,19 @@
                   />
                   @if (hbPackageIsSaving()) {
                     <i
-                      @fadeInOut
-                      class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
+                      class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1 save-indicator"
                     ></i>
                   }
                 </div>
-              </li>
-            }
+              </div>
+            </li>
             @if (platform === 'linux') {
-              @if (!isItemHidden('setting-linux-shutdown')) {
-                <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+              <li
+                class="setting-row list-group-item"
+                [class.setting-hidden]="isItemHidden('setting-linux-shutdown')"
+                [attr.inert]="isItemHidden('setting-linux-shutdown') || null"
+              >
+                <div class="setting-row-inner d-block d-md-flex justify-content-between align-items-center">
                   <span>
                     {{ 'settings.linux.shutdown' | translate }}<br />
                     <small class="grey-text pe-2">{{ 'settings.linux.shutdown_desc' | translate }}</small>
@@ -570,15 +641,18 @@
                     />
                     @if (hbLinuxShutdownIsSaving()) {
                       <i
-                        @fadeInOut
-                        class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
+                        class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1 save-indicator"
                       ></i>
                     }
                   </div>
-                </li>
-              }
-              @if (!isItemHidden('setting-linux-restart')) {
-                <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+                </div>
+              </li>
+              <li
+                class="setting-row list-group-item"
+                [class.setting-hidden]="isItemHidden('setting-linux-restart')"
+                [attr.inert]="isItemHidden('setting-linux-restart') || null"
+              >
+                <div class="setting-row-inner d-block d-md-flex justify-content-between align-items-center">
                   <span>
                     {{ 'settings.linux.restart' | translate }}<br />
                     <small class="grey-text pe-2">{{ 'settings.linux.restart_desc' | translate }}</small>
@@ -593,16 +667,19 @@
                     />
                     @if (hbLinuxRestartIsSaving()) {
                       <i
-                        @fadeInOut
-                        class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
+                        class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1 save-indicator"
                       ></i>
                     }
                   </div>
-                </li>
-              }
+                </div>
+              </li>
               @if (runningOnRaspberryPi) {
-                @if (!isItemHidden('setting-linux-temp')) {
-                  <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+                <li
+                  class="setting-row list-group-item"
+                  [class.setting-hidden]="isItemHidden('setting-linux-temp')"
+                  [attr.inert]="isItemHidden('setting-linux-temp') || null"
+                >
+                  <div class="setting-row-inner d-block d-md-flex justify-content-between align-items-center">
                     <span>
                       {{ 'settings.linux.temp' | translate }}<br />
                       <small class="grey-text pe-2">{{ 'settings.linux.temp_desc' | translate }}</small>
@@ -617,17 +694,20 @@
                       />
                       @if (uiTempFileIsSaving()) {
                         <i
-                          @fadeInOut
-                          class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
+                          class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1 save-indicator"
                         ></i>
                       }
                     </div>
-                  </li>
-                }
+                  </div>
+                </li>
               }
             }
-            @if (!isItemHidden('setting-env-debug-manual')) {
-              <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+            <li
+              class="setting-row list-group-item"
+              [class.setting-hidden]="isItemHidden('setting-env-debug-manual')"
+              [attr.inert]="isItemHidden('setting-env-debug-manual') || null"
+            >
+              <div class="setting-row-inner d-block d-md-flex justify-content-between align-items-center">
                 <span>
                   <span class="font-monospace">DEBUG</span><br />
                   <small
@@ -644,15 +724,18 @@
                   />
                   @if (hbEnvDebugIsSaving()) {
                     <i
-                      @fadeInOut
-                      class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
+                      class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1 save-indicator"
                     ></i>
                   }
                 </div>
-              </li>
-            }
-            @if (!isItemHidden('setting-env-node')) {
-              <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+              </div>
+            </li>
+            <li
+              class="setting-row list-group-item"
+              [class.setting-hidden]="isItemHidden('setting-env-node')"
+              [attr.inert]="isItemHidden('setting-env-node') || null"
+            >
+              <div class="setting-row-inner d-block d-md-flex justify-content-between align-items-center">
                 <span>
                   <span class="font-monospace">NODE_OPTIONS</span><br />
                   <small class="grey-text pe-2">{{ 'settings.service.node_tooltip' | translate }}</small>
@@ -666,16 +749,19 @@
                   />
                   @if (hbEnvNodeIsSaving()) {
                     <i
-                      @fadeInOut
-                      class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
+                      class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1 save-indicator"
                     ></i>
                   }
                 </div>
-              </li>
-            }
+              </div>
+            </li>
             @if (runningInDocker) {
-              @if (!isItemHidden('setting-docker-startup')) {
-                <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
+              <li
+                class="setting-row list-group-item"
+                [class.setting-hidden]="isItemHidden('setting-docker-startup')"
+                [attr.inert]="isItemHidden('setting-docker-startup') || null"
+              >
+                <div class="setting-row-inner d-flex justify-content-between align-items-center">
                   <span>
                     {{ 'menu.docker.startup_script' | translate }}<br />
                     <small class="grey-text pe-2">{{ 'platform.docker.script_help' | translate }}</small>
@@ -687,8 +773,8 @@
                   >
                     <i class="fas fa-arrow-right"></i>
                   </a>
-                </li>
-              }
+                </div>
+              </li>
             }
           </ul>
         }
@@ -717,8 +803,12 @@
         </div>
         @if (showFields().network) {
           <ul class="list-group list-group-box mt-2 mx-0" id="fieldsNetwork">
-            @if (!isItemHidden('setting-interfaces')) {
-              <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
+            <li
+              class="setting-row list-group-item"
+              [class.setting-hidden]="isItemHidden('setting-interfaces')"
+              [attr.inert]="isItemHidden('setting-interfaces') || null"
+            >
+              <div class="setting-row-inner d-flex justify-content-between align-items-center">
                 <span class="pe-2">
                   {{ 'settings.network.title_network_interfaces' | translate }}<br />
                   <div class="small grey-text pe-2">{{ 'settings.network.message_network_interface' | translate }}</div>
@@ -749,10 +839,14 @@
                 >
                   <i class="fas fa-arrow-right"></i>
                 </button>
-              </li>
-            }
-            @if (!isItemHidden('setting-mdns')) {
-              <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+              </div>
+            </li>
+            <li
+              class="setting-row list-group-item"
+              [class.setting-hidden]="isItemHidden('setting-mdns')"
+              [attr.inert]="isItemHidden('setting-mdns') || null"
+            >
+              <div class="setting-row-inner d-block d-md-flex justify-content-between align-items-center">
                 <span>
                   {{ 'settings.mdns_advertiser' | translate }}<br />
                   <small class="grey-text pe-2">{{ 'settings.mdns_advertiser_help' | translate }}</small>
@@ -779,15 +873,18 @@
                   </select>
                   @if (hbMDnsIsSaving()) {
                     <i
-                      @fadeInOut
-                      class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
+                      class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1 save-indicator"
                     ></i>
                   }
                 </div>
-              </li>
-            }
-            @if (!isItemHidden('setting-mdns-advertise')) {
-              <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
+              </div>
+            </li>
+            <li
+              class="setting-row list-group-item"
+              [class.setting-hidden]="isItemHidden('setting-mdns-advertise')"
+              [attr.inert]="isItemHidden('setting-mdns-advertise') || null"
+            >
+              <div class="setting-row-inner d-flex justify-content-between align-items-center">
                 <span>
                   {{ 'settings.network.mdns_advertise' | translate }}<br />
                   <small class="grey-text pe-2">{{ 'settings.network.mdns_advertise_help' | translate }}</small>
@@ -805,15 +902,18 @@
                   </div>
                   @if (enableMdnsAdvertiseIsSaving()) {
                     <i
-                      @fadeInOut
-                      class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
+                      class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1 save-indicator"
                     ></i>
                   }
                 </div>
-              </li>
-            }
-            @if (!isItemHidden('setting-port-hb')) {
-              <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+              </div>
+            </li>
+            <li
+              class="setting-row list-group-item"
+              [class.setting-hidden]="isItemHidden('setting-port-hb')"
+              [attr.inert]="isItemHidden('setting-port-hb') || null"
+            >
+              <div class="setting-row-inner d-block d-md-flex justify-content-between align-items-center">
                 <span>
                   {{ 'settings.network.port_hb' | translate }}<br />
                   <small class="grey-text pe-2">{{ 'settings.network.port_hb_desc' | translate }}</small>
@@ -830,15 +930,18 @@
                   />
                   @if (hbPortIsSaving()) {
                     <i
-                      @fadeInOut
-                      class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
+                      class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1 save-indicator"
                     ></i>
                   }
                 </div>
-              </li>
-            }
-            @if (!isItemHidden('setting-port-range')) {
-              <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+              </div>
+            </li>
+            <li
+              class="setting-row list-group-item"
+              [class.setting-hidden]="isItemHidden('setting-port-range')"
+              [attr.inert]="isItemHidden('setting-port-range') || null"
+            >
+              <div class="setting-row-inner d-block d-md-flex justify-content-between align-items-center">
                 <span>
                   {{ 'settings.network.port_range' | translate }}<br />
                   <small class="grey-text pe-2">{{ 'settings.network.port_range_desc' | translate }}</small>
@@ -846,8 +949,7 @@
                 <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
                   @if (hbStartPortIsSaving() || hbEndPortIsSaving()) {
                     <i
-                      @fadeInOut
-                      class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
+                      class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1 save-indicator"
                     ></i>
                   }
                   <div class="d-flex gap-2 order-1 order-md-2 resp-select-width">
@@ -873,10 +975,14 @@
                     />
                   </div>
                 </div>
-              </li>
-            }
-            @if (!isItemHidden('setting-network-host')) {
-              <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+              </div>
+            </li>
+            <li
+              class="setting-row list-group-item"
+              [class.setting-hidden]="isItemHidden('setting-network-host')"
+              [attr.inert]="isItemHidden('setting-network-host') || null"
+            >
+              <div class="setting-row-inner d-block d-md-flex justify-content-between align-items-center">
                 <span>
                   {{ 'settings.network.host' | translate }}<br />
                   <small class="grey-text pe-2" [innerHtml]="'settings.network.host_desc' | translate"></small>
@@ -898,15 +1004,18 @@
                   />
                   @if (uiHostIsSaving()) {
                     <i
-                      @fadeInOut
-                      class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
+                      class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1 save-indicator"
                     ></i>
                   }
                 </div>
-              </li>
-            }
-            @if (!isItemHidden('setting-network-proxy')) {
-              <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+              </div>
+            </li>
+            <li
+              class="setting-row list-group-item"
+              [class.setting-hidden]="isItemHidden('setting-network-proxy')"
+              [attr.inert]="isItemHidden('setting-network-proxy') || null"
+            >
+              <div class="setting-row-inner d-block d-md-flex justify-content-between align-items-center">
                 <span>
                   {{ 'settings.network.proxy' | translate }}<br />
                   <small class="grey-text pe-2">{{ 'settings.network.proxy_desc' | translate }}</small>
@@ -928,15 +1037,18 @@
                   />
                   @if (uiProxyHostIsSaving()) {
                     <i
-                      @fadeInOut
-                      class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
+                      class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1 save-indicator"
                     ></i>
                   }
                 </div>
-              </li>
-            }
-            @if (!isItemHidden('setting-ui-port-network')) {
-              <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+              </div>
+            </li>
+            <li
+              class="setting-row list-group-item"
+              [class.setting-hidden]="isItemHidden('setting-ui-port-network')"
+              [attr.inert]="isItemHidden('setting-ui-port-network') || null"
+            >
+              <div class="setting-row-inner d-block d-md-flex justify-content-between align-items-center">
                 <span>
                   {{ 'settings.network.port_ui' | translate }}<br />
                   <small class="grey-text pe-2">{{ 'settings.network.port_ui_desc' | translate }}</small>
@@ -960,23 +1072,26 @@
                   />
                   @if (uiPortIsSaving()) {
                     <i
-                      @fadeInOut
-                      class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
+                      class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1 save-indicator"
                     ></i>
                   }
                 </div>
-              </li>
-            }
-            @if (isMatterSupported && !isItemHidden('setting-port-overview')) {
-              <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
+              </div>
+            </li>
+            <li
+              class="setting-row list-group-item"
+              [class.setting-hidden]="!(isMatterSupported && !isItemHidden('setting-port-overview'))"
+              [attr.inert]="!(isMatterSupported && !isItemHidden('setting-port-overview')) || null"
+            >
+              <div class="setting-row-inner d-flex justify-content-between align-items-center">
                 <span>
                   {{ 'settings.ports.title' | translate }}
                 </span>
                 <button type="button" class="btn btn-primary waves-effect" (click)="openPortOverview()">
                   <i class="fas fa-arrow-right"></i>
                 </button>
-              </li>
-            }
+              </div>
+            </li>
           </ul>
         }
       </div>
@@ -1005,8 +1120,12 @@
         @if (showFields().matter) {
           <p class="small grey-text mb-2 mx-0">{{ 'settings.matter.desc' | translate }}</p>
           <ul class="list-group list-group-box mt-2 mx-0" id="fieldsMatter">
-            @if (!isItemHidden('setting-matter-enabled')) {
-              <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
+            <li
+              class="setting-row list-group-item"
+              [class.setting-hidden]="isItemHidden('setting-matter-enabled')"
+              [attr.inert]="isItemHidden('setting-matter-enabled') || null"
+            >
+              <div class="setting-row-inner d-flex justify-content-between align-items-center">
                 <span>
                   {{ 'common.labels.enabled' | translate }}
                   <span class="badge badge-primary ms-1">{{ 'common.labels.beta' | translate }}</span
@@ -1026,16 +1145,19 @@
                   </div>
                   @if (matterEnabledIsSaving()) {
                     <i
-                      @fadeInOut
-                      class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
+                      class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1 save-indicator"
                     ></i>
                   }
                 </div>
-              </li>
-            }
+              </div>
+            </li>
             @if (matterEnabledFormControl.value) {
-              @if (!isItemHidden('setting-matter-port')) {
-                <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+              <li
+                class="setting-row list-group-item"
+                [class.setting-hidden]="isItemHidden('setting-matter-port')"
+                [attr.inert]="isItemHidden('setting-matter-port') || null"
+              >
+                <div class="setting-row-inner d-block d-md-flex justify-content-between align-items-center">
                   <span>
                     {{ 'settings.matter.port' | translate }}<br />
                     <small class="grey-text pe-2">{{ 'settings.matter.port_desc' | translate }}</small>
@@ -1053,16 +1175,19 @@
                     />
                     @if (matterPortIsSaving()) {
                       <i
-                        @fadeInOut
-                        class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
+                        class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1 save-indicator"
                       ></i>
                     }
                   </div>
-                </li>
-              }
+                </div>
+              </li>
             }
-            @if (!isItemHidden('setting-matter-port-range')) {
-              <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+            <li
+              class="setting-row list-group-item"
+              [class.setting-hidden]="isItemHidden('setting-matter-port-range')"
+              [attr.inert]="isItemHidden('setting-matter-port-range') || null"
+            >
+              <div class="setting-row-inner d-block d-md-flex justify-content-between align-items-center">
                 <span>
                   {{ 'settings.network.port_range' | translate }}<br />
                   <small class="grey-text pe-2">{{ 'settings.matter.port_range_desc' | translate }}</small>
@@ -1070,8 +1195,7 @@
                 <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
                   @if (matterStartPortIsSaving() || matterEndPortIsSaving()) {
                     <i
-                      @fadeInOut
-                      class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
+                      class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1 save-indicator"
                     ></i>
                   }
                   <div class="d-flex gap-2 order-1 order-md-2 resp-select-width">
@@ -1097,8 +1221,8 @@
                     />
                   </div>
                 </div>
-              </li>
-            }
+              </div>
+            </li>
           </ul>
         }
       </div>
@@ -1126,8 +1250,12 @@
         </div>
         @if (showFields().terminal) {
           <ul class="list-group list-group-box mt-2 mx-0" id="fieldsTerminal">
-            @if (!isItemHidden('setting-terminal-log-max')) {
-              <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+            <li
+              class="setting-row list-group-item"
+              [class.setting-hidden]="isItemHidden('setting-terminal-log-max')"
+              [attr.inert]="isItemHidden('setting-terminal-log-max') || null"
+            >
+              <div class="setting-row-inner d-block d-md-flex justify-content-between align-items-center">
                 <span>
                   {{ 'settings.terminal.log_max' | translate }}<br />
                   <small class="grey-text pe-2">{{ 'settings.terminal.log_max_desc' | translate }}</small>
@@ -1144,16 +1272,19 @@
                   />
                   @if (hbLogSizeIsSaving()) {
                     <i
-                      @fadeInOut
-                      class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
+                      class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1 save-indicator"
                     ></i>
                   }
                 </div>
-              </li>
-            }
+              </div>
+            </li>
             @if (hbLogSizeFormControl.value! > 0) {
-              @if (!isItemHidden('setting-terminal-log-truncate')) {
-                <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+              <li
+                class="setting-row list-group-item"
+                [class.setting-hidden]="isItemHidden('setting-terminal-log-truncate')"
+                [attr.inert]="isItemHidden('setting-terminal-log-truncate') || null"
+              >
+                <div class="setting-row-inner d-block d-md-flex justify-content-between align-items-center">
                   <span>
                     {{ 'settings.terminal.log_truncate' | translate }}<br />
                     <small class="grey-text pe-2">{{ 'settings.terminal.log_truncate_desc' | translate }}</small>
@@ -1170,17 +1301,20 @@
                     />
                     @if (hbLogTruncateIsSaving()) {
                       <i
-                        @fadeInOut
-                        class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
+                        class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1 save-indicator"
                       ></i>
                     }
                   </div>
-                </li>
-              }
+                </div>
+              </li>
             }
             @if (enableTerminalAccess) {
-              @if (!isItemHidden('setting-terminal-persistence')) {
-                <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
+              <li
+                class="setting-row list-group-item"
+                [class.setting-hidden]="isItemHidden('setting-terminal-persistence')"
+                [attr.inert]="isItemHidden('setting-terminal-persistence') || null"
+              >
+                <div class="setting-row-inner d-flex justify-content-between align-items-center">
                   <span>
                     {{ 'settings.terminal.persistence' | translate }}<br />
                     <small class="grey-text pe-2">{{ 'settings.terminal.persistence_help' | translate }}</small>
@@ -1198,16 +1332,19 @@
                     </div>
                     @if (uiTerminalPersistenceIsSaving()) {
                       <i
-                        @fadeInOut
-                        class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
+                        class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1 save-indicator"
                       ></i>
                     }
                   </div>
-                </li>
-              }
+                </div>
+              </li>
               @if (!uiTerminalPersistenceFormControl.value) {
-                @if (!isItemHidden('setting-terminal-warning')) {
-                  <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
+                <li
+                  class="setting-row list-group-item"
+                  [class.setting-hidden]="isItemHidden('setting-terminal-warning')"
+                  [attr.inert]="isItemHidden('setting-terminal-warning') || null"
+                >
+                  <div class="setting-row-inner d-flex justify-content-between align-items-center">
                     <span>
                       {{ 'settings.terminal.warning' | translate }}<br />
                       <small class="grey-text pe-2">{{ 'settings.terminal.warning_help' | translate }}</small>
@@ -1225,16 +1362,19 @@
                       </div>
                       @if (uiTerminalHideWarningIsSaving()) {
                         <i
-                          @fadeInOut
-                          class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
+                          class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1 save-indicator"
                         ></i>
                       }
                     </div>
-                  </li>
-                }
+                  </div>
+                </li>
               } @else {
-                @if (!isItemHidden('setting-terminal-buffer')) {
-                  <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+                <li
+                  class="setting-row list-group-item"
+                  [class.setting-hidden]="isItemHidden('setting-terminal-buffer')"
+                  [attr.inert]="isItemHidden('setting-terminal-buffer') || null"
+                >
+                  <div class="setting-row-inner d-block d-md-flex justify-content-between align-items-center">
                     <div class="d-flex flex-column">
                       <span>{{ 'settings.terminal.buffer_size' | translate }}</span>
                       <div class="small grey-text">{{ 'settings.terminal.buffer_size_help' | translate }}</div>
@@ -1252,13 +1392,12 @@
                       />
                       @if (uiTerminalBufferSizeIsSaving()) {
                         <i
-                          @fadeInOut
-                          class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
+                          class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1 save-indicator"
                         ></i>
                       }
                     </div>
-                  </li>
-                }
+                  </div>
+                </li>
               }
             }
           </ul>
@@ -1288,8 +1427,12 @@
         </div>
         @if (showFields().security) {
           <ul class="list-group list-group-box mt-2 mx-0" id="fieldsSecurity">
-            @if (!isItemHidden('setting-security-auth')) {
-              <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
+            <li
+              class="setting-row list-group-item"
+              [class.setting-hidden]="isItemHidden('setting-security-auth')"
+              [attr.inert]="isItemHidden('setting-security-auth') || null"
+            >
+              <div class="setting-row-inner d-flex justify-content-between align-items-center">
                 <span>
                   {{ 'settings.security.auth' | translate }}<br />
                   <small class="grey-text pe-2">{{ 'settings.security.auth_desc' | translate }}</small>
@@ -1307,16 +1450,19 @@
                   </div>
                   @if (uiAuthIsSaving()) {
                     <i
-                      @fadeInOut
-                      class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
+                      class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1 save-indicator"
                     ></i>
                   }
                 </div>
-              </li>
-            }
+              </div>
+            </li>
             @if (uiAuthFormControl.value) {
-              @if (!isItemHidden('setting-session-inactivity')) {
-                <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
+              <li
+                class="setting-row list-group-item"
+                [class.setting-hidden]="isItemHidden('setting-session-inactivity')"
+                [attr.inert]="isItemHidden('setting-session-inactivity') || null"
+              >
+                <div class="setting-row-inner d-flex justify-content-between align-items-center">
                   <span>
                     {{ 'settings.startup.session_inactivity_based' | translate }}<br />
                     <small class="grey-text pe-2">{{
@@ -1335,13 +1481,17 @@
                       <label class="rendux-label ms-3 min-w-50" for="session-inactivity-based"></label>
                     </div>
                     @if (uiSessionTimeoutInactivityBasedIsSaving()) {
-                      <i @fadeInOut class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0"></i>
+                      <i class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 save-indicator"></i>
                     }
                   </div>
-                </li>
-              }
-              @if (!isItemHidden('setting-security-session')) {
-                <li @smoothHide class="list-group-item d-block d-md-flex justify-content-between align-items-center">
+                </div>
+              </li>
+              <li
+                class="setting-row list-group-item"
+                [class.setting-hidden]="isItemHidden('setting-security-session')"
+                [attr.inert]="isItemHidden('setting-security-session') || null"
+              >
+                <div class="setting-row-inner d-block d-md-flex justify-content-between align-items-center">
                   <span>
                     {{ 'settings.startup.session' | translate }}<br />
                     <small class="grey-text pe-2">{{ 'settings.startup.session_desc' | translate }}</small>
@@ -1399,16 +1549,19 @@
                     </div>
                     @if (uiSessionTimeoutIsSaving()) {
                       <i
-                        @fadeInOut
-                        class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-md-1"
+                        class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-md-1 save-indicator"
                       ></i>
                     }
                   </div>
-                </li>
-              }
+                </div>
+              </li>
             }
-            @if (!isItemHidden('setting-security-https')) {
-              <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
+            <li
+              class="setting-row list-group-item"
+              [class.setting-hidden]="isItemHidden('setting-security-https')"
+              [attr.inert]="isItemHidden('setting-security-https') || null"
+            >
+              <div class="setting-row-inner d-flex justify-content-between align-items-center">
                 <span class="pe-2">
                   {{ 'settings.security.https_enable' | translate }}
                   <span class="badge badge-primary ms-1">{{ 'common.labels.beta' | translate }}</span
@@ -1444,8 +1597,8 @@
                     <label for="httpsEnabled" class="rendux-label ms-3 min-w-50"></label>
                   </div>
                 </div>
-              </li>
-            }
+              </div>
+            </li>
           </ul>
         }
       </div>
@@ -1474,8 +1627,12 @@
         @if (showFields().cache) {
           <p class="small grey-text mb-2 mx-0">{{ 'settings.cache.desc' | translate }}</p>
           <ul class="list-group list-group-box mb-4 mx-0" id="fieldsCache">
-            @if (!isItemHidden('setting-accessory-debug')) {
-              <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
+            <li
+              class="setting-row list-group-item"
+              [class.setting-hidden]="isItemHidden('setting-accessory-debug')"
+              [attr.inert]="isItemHidden('setting-accessory-debug') || null"
+            >
+              <div class="setting-row-inner d-flex justify-content-between align-items-center">
                 <span>
                   {{ 'settings.accessory.debug' | translate }}<br />
                   <small class="grey-text pe-2">{{ 'settings.accessory.debug_desc' | translate }}</small>
@@ -1493,15 +1650,18 @@
                   </div>
                   @if (uiAccDebugIsSaving()) {
                     <i
-                      @fadeInOut
-                      class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1"
+                      class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1 save-indicator"
                     ></i>
                   }
                 </div>
-              </li>
-            }
-            @if (!isItemHidden('setting-reset-accessory-ind')) {
-              <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
+              </div>
+            </li>
+            <li
+              class="setting-row list-group-item"
+              [class.setting-hidden]="isItemHidden('setting-reset-accessory-ind')"
+              [attr.inert]="isItemHidden('setting-reset-accessory-ind') || null"
+            >
+              <div class="setting-row-inner d-flex justify-content-between align-items-center">
                 <span class="pe-2">
                   {{ 'reset.accessory_ind.title' | translate }}<br />
                   <small class="grey-text pe-2">{{ 'reset.accessory_ind.desc' | translate }}</small>
@@ -1514,10 +1674,14 @@
                 >
                   <i class="fas fa-arrow-right"></i>
                 </button>
-              </li>
-            }
-            @if (!isItemHidden('setting-reset-bridge-accessories')) {
-              <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
+              </div>
+            </li>
+            <li
+              class="setting-row list-group-item"
+              [class.setting-hidden]="isItemHidden('setting-reset-bridge-accessories')"
+              [attr.inert]="isItemHidden('setting-reset-bridge-accessories') || null"
+            >
+              <div class="setting-row-inner d-flex justify-content-between align-items-center">
                 <span class="pe-2">
                   {{ 'reset.bridge_accessories.title' | translate }}<br />
                   <small class="grey-text pe-2">{{ 'reset.bridge_accessories.desc' | translate }}</small>
@@ -1530,10 +1694,14 @@
                 >
                   <i class="fas fa-arrow-right"></i>
                 </button>
-              </li>
-            }
-            @if (!isItemHidden('setting-reset-accessory-all')) {
-              <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
+              </div>
+            </li>
+            <li
+              class="setting-row list-group-item"
+              [class.setting-hidden]="isItemHidden('setting-reset-accessory-all')"
+              [attr.inert]="isItemHidden('setting-reset-accessory-all') || null"
+            >
+              <div class="setting-row-inner d-flex justify-content-between align-items-center">
                 <span class="pe-2">
                   {{ 'reset.accessory_all.title' | translate }}<br />
                   <small class="grey-text pe-2">{{ 'reset.accessory_all.desc' | translate }}</small>
@@ -1546,8 +1714,8 @@
                 >
                   <i class="fas fa-arrow-right"></i>
                 </button>
-              </li>
-            }
+              </div>
+            </li>
           </ul>
         }
       </div>
@@ -1576,8 +1744,12 @@
         @if (showFields().reset) {
           <p class="small grey-text mb-2 mx-0">{{ 'reset.bridges.desc' | translate }}</p>
           <ul class="list-group list-group-box mt-2 mx-0" id="fieldsReset">
-            @if (!isItemHidden('setting-reset-bridge-ind')) {
-              <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
+            <li
+              class="setting-row list-group-item"
+              [class.setting-hidden]="isItemHidden('setting-reset-bridge-ind')"
+              [attr.inert]="isItemHidden('setting-reset-bridge-ind') || null"
+            >
+              <div class="setting-row-inner d-flex justify-content-between align-items-center">
                 <span class="pe-2">
                   {{ 'reset.bridge_ind.title' | translate }}<br />
                   <small class="grey-text pe-2">{{ 'reset.bridge_ind.desc' | translate }}</small>
@@ -1590,10 +1762,14 @@
                 >
                   <i class="fas fa-arrow-right"></i>
                 </button>
-              </li>
-            }
-            @if (!isItemHidden('setting-reset-bridge-all')) {
-              <li @smoothHide class="list-group-item d-flex justify-content-between align-items-center">
+              </div>
+            </li>
+            <li
+              class="setting-row list-group-item"
+              [class.setting-hidden]="isItemHidden('setting-reset-bridge-all')"
+              [attr.inert]="isItemHidden('setting-reset-bridge-all') || null"
+            >
+              <div class="setting-row-inner d-flex justify-content-between align-items-center">
                 <span class="pe-2">
                   {{ 'reset.bridge_all.title' | translate | titlecase }}<br />
                   <small class="grey-text pe-2">{{ 'reset.bridge_all.desc' | translate }}</small>
@@ -1606,8 +1782,8 @@
                 >
                   <i class="fas fa-arrow-right"></i>
                 </button>
-              </li>
-            }
+              </div>
+            </li>
           </ul>
         }
       </div>

@@ -1,6 +1,5 @@
 import { provideZonelessChangeDetection } from '@angular/core'
 import { bootstrapApplication } from '@angular/platform-browser'
-import { provideAnimationsAsync } from '@angular/platform-browser/animations/async'
 
 import { AppComponent } from '@/app/app.component'
 import { provideAppHttpClient } from '@/app/core/providers/http.providers'
@@ -13,7 +12,6 @@ import '../../src/global-defaults'
 bootstrapApplication(AppComponent, {
   providers: [
     provideZonelessChangeDetection(),
-    provideAnimationsAsync(),
     provideAppRouting(),
     provideAppHttpClient(),
     provideAppTranslation(),

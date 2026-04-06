@@ -12,7 +12,6 @@
     "postinstall": "patch-package"
   },
   "dependencies": {
-    "@angular/animations": "21.2.7",
     "@angular/common": "21.2.7",
     "@angular/compiler": "21.2.7",
     "@angular/core": "21.2.7",

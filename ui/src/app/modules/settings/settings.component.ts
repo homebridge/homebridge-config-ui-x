@@ -28,7 +28,6 @@ import { RemoveIndividualAccessoriesComponent } from '@/app/modules/settings/rem
 import { ResetAllBridgesComponent } from '@/app/modules/settings/reset-all-bridges/reset-all-bridges.component'
 import { ResetIndividualBridgesComponent } from '@/app/modules/settings/reset-individual-bridges/reset-individual-bridges.component'
 import { SelectNetworkInterfacesComponent } from '@/app/modules/settings/select-network-interfaces/select-network-interfaces.component'
-import { settingsAnimations } from '@/app/modules/settings/settings.animations'
 import { SslSettingsModalComponent } from '@/app/modules/settings/ssl-settings-modal/ssl-settings-modal.component'
 import { WallpaperComponent } from '@/app/modules/settings/wallpaper/wallpaper.component'
 
@@ -46,7 +45,6 @@ import { WallpaperComponent } from '@/app/modules/settings/wallpaper/wallpaper.c
   templateUrl: './settings.component.html',
   styleUrl: './settings.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  animations: settingsAnimations,
 })
 export class SettingsComponent implements OnInit {
   // Injected dependencies
