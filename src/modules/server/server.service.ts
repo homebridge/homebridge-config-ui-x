@@ -9,7 +9,7 @@ import { exec, spawn } from 'node:child_process'
 import { createPrivateKey, createPublicKey, X509Certificate } from 'node:crypto'
 import { createWriteStream } from 'node:fs'
 import { readdir, unlink } from 'node:fs/promises'
-import { extname, join, resolve } from 'node:path'
+import { basename, extname, join, resolve } from 'node:path'
 import process from 'node:process'
 import { pipeline, Readable } from 'node:stream'
 import { createSecureContext } from 'node:tls'
@@ -659,7 +659,7 @@ export class ServerService {
    * Remove a single cached accessory
    */
   public async deleteCachedAccessory(uuid: string, cacheFile: string) {
-    cacheFile = cacheFile || 'cachedAccessories'
+    cacheFile = basename(cacheFile || 'cachedAccessories')
 
     const cachedAccessoriesPath = resolve(this.configService.storagePath, 'accessories', cacheFile)
 
@@ -696,7 +696,7 @@ export class ServerService {
 
     // Group accessories by cacheFile
     for (const { cacheFile, uuid } of accessories) {
-      const accessoryCacheFile = cacheFile || 'cachedAccessories'
+      const accessoryCacheFile = basename(cacheFile || 'cachedAccessories')
       if (!accessoriesByCacheFile.has(accessoryCacheFile)) {
         accessoriesByCacheFile.set(accessoryCacheFile, [])
       }
