@@ -121,9 +121,9 @@ export class ConfigService {
 
     if (this.runningInDocker) {
       this.setConfigForDocker()
+    } else {
+      this.setConfig()
     }
-
-    this.setConfig()
 
     if (!this.ui.port) {
       this.ui.port = 8080
