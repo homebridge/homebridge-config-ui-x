@@ -40,7 +40,7 @@ export class PortOverviewModalComponent implements OnInit {
   private async loadData(): Promise<void> {
     try {
       const data = await this.$api.get('/server/network/overview')
-      this.entries.set(data.entries)
+      this.entries.set(this.sortEntries(data.entries))
       this.conflicts.set(data.conflicts)
     } catch (error: any) {
       console.error(error)
@@ -48,6 +48,31 @@ export class PortOverviewModalComponent implements OnInit {
     } finally {
       this.loading.set(false)
     }
+  }
+
+  public displayName(entry: NetworkOverviewEntry): string {
+    if (entry.service === 'Config UI') {
+      return 'Homebridge UI'
+    }
+    return entry.bridge
+  }
+
+  private sortEntries(entries: NetworkOverviewEntry[]): NetworkOverviewEntry[] {
+    return entries.sort((a, b) => {
+      if (a.service === 'Homebridge') {
+        return -1
+      }
+      if (b.service === 'Homebridge') {
+        return 1
+      }
+      if (a.service === 'Config UI') {
+        return -1
+      }
+      if (b.service === 'Config UI') {
+        return 1
+      }
+      return a.bridge.localeCompare(b.bridge)
+    })
   }
 
   public dismissModal(): void {

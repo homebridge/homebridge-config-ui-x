@@ -10,6 +10,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - feat: show release notes for all plugin versions
 - fix: attempt to fix terminal cursor not focusing
 - refactor: replace `@angular/animations` with css transitions
+- feat: restyle port overview modal to match ui
 
 ### Other Changes
 

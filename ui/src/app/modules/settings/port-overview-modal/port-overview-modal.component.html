@@ -21,49 +21,44 @@
           {{ 'settings.ports.conflict_warning' | translate }}
         </div>
       }
-      @if (entries().length) {
-        <div class="table-responsive">
-          <table class="table table-sm table-bordered mb-0">
-            <thead>
-              <tr>
-                <th class="small">{{ 'settings.ports.bridge' | translate }}</th>
-                <th class="small">{{ 'settings.ports.hap_port' | translate }}</th>
-                <th class="small">{{ 'settings.ports.matter_port' | translate }}</th>
-                <th class="small">{{ 'settings.ports.commissioned' | translate }}</th>
-                <th class="small">{{ 'settings.ports.devices' | translate }}</th>
-                <th class="small">{{ 'settings.ports.status' | translate }}</th>
-              </tr>
-            </thead>
-            <tbody>
-              @for (entry of entries(); track entry) {
-                <tr>
-                  <td class="small">{{ entry.bridge }}</td>
-                  <td class="small font-monospace">{{ entry.port }}</td>
-                  <td class="small font-monospace">{{ entry.matterPort ?? '—' }}</td>
-                  <td class="small text-center">
-                    @if (entry.matterPort) {
-                      <span
-                        class="status-dot"
-                        [class.bg-success]="entry.commissioned"
-                        [class.bg-warning]="!entry.commissioned"
-                      ></span>
-                    } @else {
-                      —
-                    }
-                  </td>
-                  <td class="small">{{ entry.deviceCount ?? '—' }}</td>
-                  <td class="small text-center">
-                    <span
-                      class="status-dot"
-                      [class.bg-success]="entry.status === 'ok'"
-                      [class.bg-danger]="entry.status === 'conflict'"
-                    ></span>
-                  </td>
-                </tr>
+      @for (entry of entries(); track entry) {
+        <ul class="list-group list-group-box" [class.mb-3]="!$last" [class.mb-0]="$last">
+          <li class="list-group-item">
+            <h6 class="mb-0 text-center">{{ displayName(entry) }}</h6>
+          </li>
+          <li class="list-group-item d-flex justify-content-between align-items-center flex-column flex-md-row">
+            <span class="text-start">{{ 'settings.ports.status' | translate }}</span>
+            <span class="text-start text-md-end grey-text">
+              @if (entry.status === 'ok') {
+                <i class="fas fa-xl fa-check-circle primary-text" aria-hidden="true"></i>
+              } @else {
+                <i class="fas fa-xl fa-times-circle red-text" aria-hidden="true"></i>
               }
-            </tbody>
-          </table>
-        </div>
+            </span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between align-items-center flex-column flex-md-row">
+            <span class="text-start">{{ 'settings.ports.hap_port' | translate }}</span>
+            <span class="text-start text-md-end grey-text font-monospace">{{ entry.port }}</span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between align-items-center flex-column flex-md-row">
+            <span class="text-start">{{ 'settings.ports.matter_port' | translate }}</span>
+            <span class="text-start text-md-end grey-text font-monospace">{{ entry.matterPort ?? '—' }}</span>
+          </li>
+          <li class="list-group-item d-flex justify-content-between align-items-center flex-column flex-md-row">
+            <span class="text-start">{{ 'settings.ports.commissioned' | translate }}</span>
+            <span class="text-start text-md-end grey-text">
+              @if (entry.matterPort) {
+                @if (entry.commissioned) {
+                  <i class="fas fa-xl fa-check-circle primary-text" aria-hidden="true"></i>
+                } @else {
+                  <i class="fas fa-xl fa-times-circle red-text" aria-hidden="true"></i>
+                }
+              } @else {
+                <span class="font-monospace">—</span>
+              }
+            </span>
+          </li>
+        </ul>
       }
     }
   </div>
