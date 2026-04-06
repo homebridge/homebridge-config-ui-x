@@ -41,6 +41,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix: ssl passphrase exposed to frontend api
 - fix: `setItem` missing forbidden key validation
 - fix: terminal buffer growing unbounded without config
+- fix: expired token data set after `logout()`
 
 ### Homebridge Dependencies
 
