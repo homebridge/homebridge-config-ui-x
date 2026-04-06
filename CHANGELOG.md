@@ -35,6 +35,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix: duplicate viewport event listener in config editor
 - fix: missing translation fallback for non-english users
 - fix: path traversal in cached accessory deletion
+- fix: xss via `innerHTML` in setup wizard
 
 ### Homebridge Dependencies
 

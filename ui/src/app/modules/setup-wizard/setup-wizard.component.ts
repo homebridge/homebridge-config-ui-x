@@ -156,7 +156,7 @@ export class SetupWizardComponent implements OnInit {
               spinnerElement = null
             }
             const lineElement = document.createElement('div')
-            lineElement.innerHTML = cleanLine
+            lineElement.textContent = cleanLine
             if (line.includes('[0;31m')) {
               lineElement.classList.add('red-text')
             } else if (line.includes('[0;32m')) {
