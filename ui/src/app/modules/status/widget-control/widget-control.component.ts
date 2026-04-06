@@ -82,6 +82,22 @@ export class WidgetControlComponent implements OnInit {
     'EEEE, MMM d',
   ]
 
+  get hasChanges(): boolean {
+    if (!this.originalWidget) {
+      return false
+    }
+    const w = this.widget
+    const o = this.originalWidget
+    return w.showNpmVersion !== o.showNpmVersion
+      || w.dockerExpanded !== o.dockerExpanded
+      || w.location?.id !== o.location?.id
+      || w.timeFormat !== o.timeFormat
+      || w.dateFormat !== o.dateFormat
+      || w.refreshInterval !== o.refreshInterval
+      || w.historyItems !== o.historyItems
+      || w.networkInterface !== o.networkInterface
+  }
+
   public searchCountryCodes = (text$: Observable<string>): Observable<any[]> => text$.pipe(
     debounceTime(300),
     distinctUntilChanged(),
