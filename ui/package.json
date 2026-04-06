@@ -26,9 +26,9 @@
     "@ng-formworks/bootstrap5": "21.7.0",
     "@ng-formworks/core": "21.7.0",
     "@ngx-translate/core": "17.0.0",
-    "@xterm/addon-fit": "0.12.0-beta.196",
-    "@xterm/addon-web-links": "0.13.0-beta.196",
-    "@xterm/xterm": "6.1.0-beta.196",
+    "@xterm/addon-fit": "0.12.0-beta.197",
+    "@xterm/addon-web-links": "0.13.0-beta.197",
+    "@xterm/xterm": "6.1.0-beta.197",
     "ajv-keywords": "5.1.0",
     "angular-gridster2": "21.0.1",
     "bootstrap": "5.3.8",
@@ -70,16 +70,20 @@
     "monaco-editor": "^0.55.1",
     "patch-package": "^8.0.1",
     "ts-node": "^10.9.2",
-    "typescript": "^5.9.3"
+    "typescript": "^6.0.2"
   },
   "overrides": {
     "@angular/animations": "21.2.7",
+    "@angular/build": {
+      "vite": "^7.3.2"
+    },
     "@angular/common": "21.2.7",
     "@angular/compiler": "21.2.7",
     "@angular/core": "21.2.7",
     "lodash-es": "4.18.1",
     "monaco-editor": {
       "dompurify": "^3.3.3"
-    }
+    },
+    "typescript": "^6.0.2"
   }
 }

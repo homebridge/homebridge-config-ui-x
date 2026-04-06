@@ -3,12 +3,11 @@
   "compileOnSave": false,
   "compilerOptions": {
     "target": "es2023",
-    "baseUrl": "./",
     "module": "es2022",
     "moduleResolution": "bundler",
     "paths": {
       "@/*": [
-        "src/*"
+        "./src/*"
       ]
     },
     "resolveJsonModule": true,
