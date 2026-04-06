@@ -751,7 +751,7 @@ export class SettingsComponent implements OnInit {
       .pipe(debounceTime(1500), takeUntilDestroyed(this.destroyRef))
       .subscribe(value => this.uiSslPfxSave(value!))
 
-    this.uiSslPassphraseFormControl.patchValue(this.$settings.env.ssl?.passphrase || '', { emitEvent: false })
+    this.uiSslPassphraseFormControl.patchValue('', { emitEvent: false })
     this.uiSslPassphraseFormControl.valueChanges
       .pipe(debounceTime(1500), takeUntilDestroyed(this.destroyRef))
       .subscribe(value => this.uiSslPassphraseSave(value!))
@@ -769,7 +769,7 @@ export class SettingsComponent implements OnInit {
         ? 'selfsigned'
         : this.$settings.env.ssl?.key || this.$settings.env.ssl?.cert
           ? 'keycert'
-          : (this.$settings.env.ssl?.pfx || this.$settings.env.ssl?.passphrase) ? 'pfx' : 'off',
+          : (this.$settings.env.ssl?.pfx || this.$settings.env.ssl?.hasPassphrase) ? 'pfx' : 'off',
       { emitEvent: false },
     )
     this.uiSslTypeFormControl.valueChanges

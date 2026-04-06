@@ -51,7 +51,7 @@ export interface EnvInterface {
     key?: string
     cert?: string
     pfx?: string
-    passphrase?: string
+    hasPassphrase?: boolean
     selfSigned?: boolean
     selfSignedHostnames?: string[]
   }
