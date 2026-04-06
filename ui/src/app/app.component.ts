@@ -84,10 +84,9 @@ export class AppComponent {
       }),
     )
 
+    this.$translate.setFallbackLang('en')
     if (browserLang) {
       this.$translate.use(browserLang)
-    } else {
-      this.$translate.setFallbackLang('en')
     }
   }
 }
