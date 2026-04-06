@@ -2,7 +2,7 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
-    "target": "es2023",
+    "target": "esnext",
     "module": "es2022",
     "moduleResolution": "bundler",
     "paths": {
