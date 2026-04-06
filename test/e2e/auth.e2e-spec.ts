@@ -213,6 +213,30 @@ describe('AuthController (e2e)', () => {
     expect(res.json().env.homebridgeInstanceName).toBe('Homebridge Test')
   })
 
+  it('GET /auth/settings (authenticated - no passphrase leaked)', async () => {
+    const accessToken = (await app.inject({
+      method: 'POST',
+      path: '/auth/login',
+      payload: {
+        username: 'admin',
+        password: 'admin',
+      },
+    })).json().access_token
+
+    const res = await app.inject({
+      method: 'GET',
+      path: '/auth/settings',
+      headers: {
+        authorization: `bearer ${accessToken}`,
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+    // SSL settings should not expose passphrase value
+    const ssl = res.json().env.ssl ?? {}
+    expect(ssl).not.toHaveProperty('passphrase')
+  })
+
   it('POST /auth/refresh (valid token)', async () => {
     const accessToken = (await app.inject({
       method: 'POST',
