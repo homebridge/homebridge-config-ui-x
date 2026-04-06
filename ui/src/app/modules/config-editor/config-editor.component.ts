@@ -112,15 +112,6 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
       this.$md.disableTouchMove()
     }
 
-    // Capture viewport events
-    this.visualViewPortEventCallback = () => this.visualViewPortChanged()
-    this.lastHeight = window.innerHeight
-
-    if (window.visualViewport && !this.isMobile()) {
-      window.visualViewport.addEventListener('resize', this.visualViewPortEventCallback, true)
-      this.$md.disableTouchMove()
-    }
-
     this.$route.data.subscribe((data) => {
       this.homebridgeConfig.set(data.config)
       this.latestSavedConfig = JSON.parse(data.config)
