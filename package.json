@@ -86,7 +86,7 @@
     "@homebridge/node-pty-prebuilt-multiarch": "0.13.1",
     "@nestjs/axios": "4.0.1",
     "@nestjs/common": "11.1.17",
-    "@nestjs/core": "11.1.17",
+    "@nestjs/core": "11.1.18",
     "@nestjs/jwt": "11.0.2",
     "@nestjs/passport": "11.0.5",
     "@nestjs/platform-fastify": "11.1.17",
