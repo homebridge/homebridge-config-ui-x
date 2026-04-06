@@ -31,6 +31,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix: string spread corrupting accessory blacklist
 - fix: docker config overwritten by `setConfig()`
 - fix: `return` exceptions instead of `throw`
+- fix: inverted log colour removal logic
 
 ### Homebridge Dependencies
 
