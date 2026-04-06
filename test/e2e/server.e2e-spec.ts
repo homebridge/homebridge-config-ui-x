@@ -945,6 +945,29 @@ describe('ServerController (e2e)', () => {
     expect(remaining).toHaveLength(0)
   })
 
+  it('DELETE /server/cached-accessories (bulk - path traversal blocked)', async () => {
+    // Ensure the auth file exists before the test
+    const authFilePath = resolve(process.env.UIX_STORAGE_PATH, 'auth.json')
+    const authBefore = await readJson(authFilePath)
+    expect(authBefore).toBeDefined()
+
+    const res = await app.inject({
+      method: 'DELETE',
+      path: '/server/cached-accessories',
+      headers: {
+        authorization,
+      },
+      payload: [{ uuid: 'some-uuid', cacheFile: '../../auth.json' }],
+    })
+
+    // Should fail because basename('../../auth.json') = 'auth.json' won't exist in accessories dir
+    expect(res.statusCode).not.toBe(204)
+
+    // Auth file should be untouched
+    const authAfter = await readJson(authFilePath)
+    expect(authAfter).toEqual(authBefore)
+  })
+
   it('DELETE /server/pairings (bulk)', async () => {
     const res = await app.inject({
       method: 'DELETE',

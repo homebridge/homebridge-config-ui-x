@@ -171,6 +171,40 @@ describe('PlatformToolsHbService (e2e)', () => {
     expect(res.body).toEqual(sampleLogData)
   })
 
+  it('GET /platform-tools/hb-service/log/download (colour=no strips ANSI codes)', async () => {
+    const sampleLogData = '\u001B[0;32mgreen text\u001B[0m and \u001B[0;31mred text\u001B[0m'
+    await writeFile(logFilePath, sampleLogData)
+
+    const res = await app.inject({
+      method: 'GET',
+      path: '/platform-tools/hb-service/log/download?colour=no',
+      headers: {
+        authorization,
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+    expect(res.body).not.toContain('\u001B[')
+    expect(res.body).toContain('green text')
+    expect(res.body).toContain('red text')
+  })
+
+  it('GET /platform-tools/hb-service/log/download (colour=yes preserves ANSI codes)', async () => {
+    const sampleLogData = '\u001B[0;32mgreen text\u001B[0m'
+    await writeFile(logFilePath, sampleLogData)
+
+    const res = await app.inject({
+      method: 'GET',
+      path: '/platform-tools/hb-service/log/download?colour=yes',
+      headers: {
+        authorization,
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+    expect(res.body).toContain('\u001B[0;32m')
+  })
+
   it('GET /platform-tools/hb-service/log/download (with colour)', async () => {
     // Write some data to the log file
     const sampleLogData = ['line 1', 'line 2', 'line 3'].join('\n')

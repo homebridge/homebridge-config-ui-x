@@ -158,6 +158,21 @@ describe('PluginsSettingsUiController (e2e)', () => {
       pluginsSettingsUiService = app.get(PluginsSettingsUiService)
     })
 
+    it('buildIndexHtml should escape script-breaking characters in plugin metadata', async () => {
+      const maliciousPluginUi = {
+        plugin: { name: '</script><script>alert(1)</script>' },
+        publicPath: resolve(pluginsPath, 'homebridge-mock-plugin/homebridge-ui/public'),
+        serverPath: resolve(pluginsPath, 'homebridge-mock-plugin/homebridge-ui/server'),
+      }
+
+      const html = await pluginsSettingsUiService.buildIndexHtml(maliciousPluginUi as any, 'http://localhost:4200')
+
+      // The </script> should be escaped so it can't break out of the script tag
+      expect(html).not.toContain('</script><script>alert(1)</script>')
+      // The title should use HTML entities
+      expect(html).toContain('&lt;')
+    })
+
     it('startCustomUiHandler should emit ready with server:false when no server script', async () => {
       const { EventEmitter } = await import('node:events')
       const client = new EventEmitter()
