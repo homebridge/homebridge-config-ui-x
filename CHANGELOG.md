@@ -43,6 +43,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix: terminal buffer growing unbounded without config
 - fix: expired token data set after `logout()`
 - fix: unsubscribed observables in multiple components
+- fix: xterm not disposed on restore modal close
 
 ### Homebridge Dependencies
 
