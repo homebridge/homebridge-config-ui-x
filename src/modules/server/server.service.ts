@@ -189,7 +189,7 @@ export class ServerService {
 
           // Add the new username to the blacklist if it was previously there
           if (blacklistChanged) {
-            uiConfig.accessoryControl.instanceBlacklist = [...uiConfig.accessoryControl.instanceBlacklist, ...pluginBlock._bridge.username]
+            uiConfig.accessoryControl.instanceBlacklist = [...uiConfig.accessoryControl.instanceBlacklist, pluginBlock._bridge.username]
           }
 
           // Add an entry to the bridges list mirroring the new username and original object
@@ -287,7 +287,7 @@ export class ServerService {
     if (uiConfig.accessoryControl?.instanceBlacklist?.includes(oldUsername.toUpperCase())) {
       // Remove the old username from the blacklist, add the new one, and sort the blacklist alphabetically
       uiConfig.accessoryControl.instanceBlacklist = [...uiConfig.accessoryControl.instanceBlacklist
-        .filter((x: string) => x.toUpperCase() !== oldUsername.toUpperCase()), ...configFile.bridge.username]
+        .filter((x: string) => x.toUpperCase() !== oldUsername.toUpperCase()), configFile.bridge.username]
         .sort((a: string, b: string) => a.localeCompare(b))
     }
 
