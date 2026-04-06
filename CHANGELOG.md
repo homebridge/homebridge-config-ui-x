@@ -32,6 +32,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix: `return` exceptions instead of `throw`
 - fix: inverted log colour removal logic
 - fix: `networkInterfaces()` not awaited in backup restore
+- fix: duplicate viewport event listener in config editor
 
 ### Homebridge Dependencies
 
