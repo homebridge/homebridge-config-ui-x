@@ -53,7 +53,7 @@ export class HbServiceController {
   @Get('log/download')
   @ApiQuery({ name: 'colour', enum: ['yes', 'no'], required: false })
   downloadLogFile(@Query('colour') colour?: string) {
-    return this.hbServiceService.downloadLogFile((colour === 'yes'))
+    return this.hbServiceService.downloadLogFile((colour !== 'yes'))
   }
 
   @UseGuards(AdminGuard)
