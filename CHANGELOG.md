@@ -27,6 +27,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix: hide `BridgeNode` matter devices on accessories page
 - fix: hide titles when matching items not rendered
 - chore: bump `typescript` from `v5` to `v6` (frontend)
+- chore: change typescript targets to `esnext`
 
 ### Homebridge Dependencies
 
