@@ -138,12 +138,12 @@ export class PluginsSettingsUiService {
       <html>
         <head>
           <meta charset="utf-8">
-          <title>${pluginUi.plugin.name}</title>
+          <title>${pluginUi.plugin.name.replace(/</g, '&lt;')}</title>
           <meta name="viewport" content="width=device-width, initial-scale=1">
           <script>
           window._homebridge = {
-            plugin: ${JSON.stringify(pluginUi.plugin)},
-            serverEnv: ${JSON.stringify(this.configService.uiSettings(true))},
+            plugin: ${JSON.stringify(pluginUi.plugin).replace(/</g, '\\u003c')},
+            serverEnv: ${JSON.stringify(this.configService.uiSettings(true)).replace(/</g, '\\u003c')},
           };
           </script>
           <script src="${origin || 'http://localhost:4200'}/assets/plugin-ui-utils/ui.js?v=${this.configService.package.version}"></script>
