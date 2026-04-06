@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component, createEnvironmentInjector, EnvironmentInjector, inject, OnDestroy, OnInit, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, createEnvironmentInjector, DestroyRef, EnvironmentInjector, inject, OnDestroy, OnInit, signal } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap/tooltip'
 import { TranslatePipe } from '@ngx-translate/core'
@@ -38,6 +39,7 @@ import { Widget } from '@/app/modules/status/widgets/widgets.interfaces'
   },
 })
 export class StatusComponent implements OnInit, OnDestroy {
+  private destroyRef = inject(DestroyRef)
   private injector = inject(EnvironmentInjector)
   private $auth = inject(AuthService)
   private $modal = inject(NgbModal)
@@ -94,7 +96,7 @@ export class StatusComponent implements OnInit, OnDestroy {
     }
 
     // Subscribe for reconnections
-    this.io.connected!.subscribe(() => {
+    this.io.connected!.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
       this.consoleStatus.set('up')
       this.io.socket.emit('monitor-server-status')
       this.getLayout()
@@ -122,7 +124,7 @@ export class StatusComponent implements OnInit, OnDestroy {
 
     // This allows widgets to trigger a save to the grid layout
     // E.g. when the order of the accessories in the accessories widget changes
-    this.saveWidgetsEvent.subscribe({
+    this.saveWidgetsEvent.pipe(takeUntilDestroyed(this.destroyRef)).subscribe({
       next: () => {
         void this.gridChangedEvent()
       },
@@ -130,7 +132,7 @@ export class StatusComponent implements OnInit, OnDestroy {
 
     // If raspberry pi, do a check for throttled
     if (this.$settings.env.runningOnRaspberryPi) {
-      this.io.request('get-raspberry-pi-throttled-status').subscribe((throttled) => {
+      this.io.request('get-raspberry-pi-throttled-status').pipe(takeUntilDestroyed(this.destroyRef)).subscribe((throttled) => {
         this.$notification.raspberryPiThrottled.set(throttled)
       })
     }

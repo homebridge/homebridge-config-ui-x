@@ -1,5 +1,5 @@
 import { NgTemplateOutlet } from '@angular/common'
-import { ChangeDetectionStrategy, Component, computed, createEnvironmentInjector, EnvironmentInjector, inject, OnDestroy, OnInit, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, createEnvironmentInjector, DestroyRef, EnvironmentInjector, inject, OnDestroy, OnInit, signal } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { FormsModule } from '@angular/forms'
 import { NgbDropdown, NgbDropdownItem, NgbDropdownMenu, NgbDropdownToggle } from '@ng-bootstrap/ng-bootstrap/dropdown'
@@ -48,6 +48,7 @@ import { ADD_ROOM_MODAL_DATA, EDIT_ROOM_MODAL_DATA } from '@/app/modules/accesso
 export class AccessoriesComponent implements OnInit, OnDestroy {
   protected $accessories = inject(AccessoriesService)
 
+  private destroyRef = inject(DestroyRef)
   private $api = inject(ApiService)
   private $auth = inject(AuthService)
   private dragulaService = inject(DragulaService)
@@ -140,7 +141,7 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
     this.setupBridgeNameMapping()
 
     // Subscribe to accessory data to update available bridges
-    this.$accessories.accessoryData.subscribe(() => {
+    this.$accessories.accessoryData.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
       this.updateAvailableBridges()
     })
   }
@@ -345,7 +346,7 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
   private setupBridgeNameMapping(): void {
     // Connect to status namespace for main Homebridge instance
     this.ioStatus = this.$ws.connectToNamespace('status')
-    this.ioStatus.connected!.subscribe(() => {
+    this.ioStatus.connected!.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
       this.ioStatus.socket.emit('monitor-server-status')
     })
 
@@ -362,7 +363,7 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
 
     // Connect to child-bridges namespace for child bridge instances
     this.ioChild = this.$ws.connectToNamespace('child-bridges')
-    this.ioChild.connected!.subscribe(() => {
+    this.ioChild.connected!.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
       this.ioChild.socket.emit('monitor-child-bridge-status')
       this.fetchChildBridges()
     })
