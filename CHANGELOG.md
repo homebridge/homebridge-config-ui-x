@@ -42,6 +42,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix: `setItem` missing forbidden key validation
 - fix: terminal buffer growing unbounded without config
 - fix: expired token data set after `logout()`
+- fix: unsubscribed observables in multiple components
 
 ### Homebridge Dependencies
 
