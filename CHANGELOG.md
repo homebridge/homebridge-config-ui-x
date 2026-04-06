@@ -30,6 +30,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - chore: change typescript targets to `esnext`
 - fix: string spread corrupting accessory blacklist
 - fix: docker config overwritten by `setConfig()`
+- fix: `return` exceptions instead of `throw`
 
 ### Homebridge Dependencies
 

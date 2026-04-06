@@ -201,7 +201,7 @@ export class ConfigEditorService {
     ])
 
     if (!plugin.pluginAlias) {
-      return new BadRequestException('Plugin alias could not be determined.')
+      throw new BadRequestException('Plugin alias could not be determined.')
     }
 
     const arrayKey = plugin.pluginType === 'accessory' ? 'accessories' : 'platforms'
@@ -222,7 +222,7 @@ export class ConfigEditorService {
     ])
 
     if (!plugin.pluginAlias) {
-      return new BadRequestException('Plugin alias could not be determined.')
+      throw new BadRequestException('Plugin alias could not be determined.')
     }
 
     const arrayKey = plugin.pluginType === 'accessory' ? 'accessories' : 'platforms'
