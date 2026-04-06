@@ -38,6 +38,7 @@ export class AccessoryControlListsComponent implements OnInit {
   public readonly pairings = signal<Pairing[]>([])
 
   // Other properties
+  public isMatterSupported = this.$settings.isFeatureEnabled('matterSupport')
   private originalBlacklist: string[] = []
   private updatedBlacklist: string[] = []
 
