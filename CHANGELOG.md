@@ -40,6 +40,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix: xss via plugin metadata in custom ui html
 - fix: ssl passphrase exposed to frontend api
 - fix: `setItem` missing forbidden key validation
+- fix: terminal buffer growing unbounded without config
 
 ### Homebridge Dependencies
 
