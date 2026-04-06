@@ -88,7 +88,7 @@ export class PluginsComponent implements OnInit, OnDestroy, CanComponentDeactiva
     this.io = this.$ws.connectToNamespace('child-bridges')
 
     // Subscribe to connection events for reconnections
-    this.io.connected!.subscribe(() => {
+    this.io.connected!.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
       void this.initialize()
     })
 
