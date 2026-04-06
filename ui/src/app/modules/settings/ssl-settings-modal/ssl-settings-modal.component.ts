@@ -93,13 +93,13 @@ export class SslSettingsModalComponent implements OnInit {
     this.keyPathControl.patchValue(this.$settings.env.ssl?.key || '', { emitEvent: false })
     this.certPathControl.patchValue(this.$settings.env.ssl?.cert || '', { emitEvent: false })
     this.pfxPathControl.patchValue(this.$settings.env.ssl?.pfx || '', { emitEvent: false })
-    this.passphraseControl.patchValue(this.$settings.env.ssl?.passphrase || '', { emitEvent: false })
+    this.passphraseControl.patchValue('', { emitEvent: false })
     this.hostnamesControl.patchValue('localhost, 127.0.0.1', { emitEvent: false })
 
     // Determine current SSL mode
     const currentMode = this.keyPathControl.value || this.certPathControl.value
       ? 'keycert'
-      : (this.pfxPathControl.value || this.passphraseControl.value) ? 'pfx' : 'off'
+      : (this.pfxPathControl.value || this.$settings.env.ssl?.hasPassphrase) ? 'pfx' : 'off'
 
     this.selectedMode.set(currentMode)
     this.sslModeControl.patchValue(currentMode, { emitEvent: false })

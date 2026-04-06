@@ -208,7 +208,7 @@ export class ConfigService {
           key: this.ui.ssl?.key,
           cert: this.ui.ssl?.cert,
           pfx: this.ui.ssl?.pfx,
-          passphrase: this.ui.ssl?.passphrase,
+          hasPassphrase: Boolean(this.ui.ssl?.passphrase),
           selfSigned: this.ui.ssl?.selfSigned,
           selfSignedHostnames: this.ui.ssl?.selfSignedHostnames,
         },

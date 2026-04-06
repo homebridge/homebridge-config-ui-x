@@ -38,6 +38,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix: path traversal in cached accessory deletion
 - fix: xss via `innerHTML` in setup wizard
 - fix: xss via plugin metadata in custom ui html
+- fix: ssl passphrase exposed to frontend api
 
 ### Homebridge Dependencies
 
