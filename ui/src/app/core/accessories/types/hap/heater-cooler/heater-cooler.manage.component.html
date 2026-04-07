@@ -85,9 +85,7 @@
           (ngModelChange)="onAutoTemperatureStateChange()"
         />
       </div>
-    } @else if (
-      HeatingThresholdTemperature && (targetMode === 1 || (targetMode === 0 && !CoolingThresholdTemperature))
-    ) {
+    } @else if (HeatingThresholdTemperature && targetMode === 0 && !CoolingThresholdTemperature) {
       <h6 class="mt-4">
         {{ 'accessories.control.heating_threshold' | translate }}:
         {{ targetHeatingTemp | convertTemp | number: '1.0-1' }}&deg;{{ temperatureUnits | uppercase }}
@@ -101,9 +99,7 @@
           (ngModelChange)="onTemperatureStateChange()"
         />
       </div>
-    } @else if (
-      CoolingThresholdTemperature && (targetMode === 2 || (targetMode === 0 && !HeatingThresholdTemperature))
-    ) {
+    } @else if (CoolingThresholdTemperature && targetMode === 0 && !HeatingThresholdTemperature) {
       <h6 class="mt-4">
         {{ 'accessories.control.cooling_threshold' | translate }}:
         {{ targetCoolingTemp | convertTemp | number: '1.0-1' }}&deg;{{ temperatureUnits | uppercase }}

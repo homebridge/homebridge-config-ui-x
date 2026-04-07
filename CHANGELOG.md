@@ -12,6 +12,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - refactor: replace `@angular/animations` with css transitions
 - feat: restyle port overview modal to match ui
 - fix: hide humidity sliders when no auto (@copilot)
+- fix: hide threshold sliders when no auto mode (@copilot)
 
 ### Other Changes
 
