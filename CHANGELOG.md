@@ -11,6 +11,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix: attempt to fix terminal cursor not focusing
 - refactor: replace `@angular/animations` with css transitions
 - feat: restyle port overview modal to match ui
+- fix: hide humidity sliders when no auto (@copilot)
 
 ### Other Changes
 
