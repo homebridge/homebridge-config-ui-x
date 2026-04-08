@@ -121,9 +121,11 @@ export class ConfigService {
 
     if (this.runningInDocker) {
       this.setConfigForDocker()
-    } else {
-      this.setConfig()
     }
+
+    // This looks odd for Docker, but has been this way forever
+
+    this.setConfig()
 
     if (!this.ui.port) {
       this.ui.port = 8080
@@ -309,7 +311,7 @@ export class ConfigService {
   }
 
   /**
-   * Populate the required config
+   * Populate the required config for non-Docker environments
    */
   private setConfig() {
     this.homebridgeInsecureMode = Boolean(process.env.UIX_INSECURE_MODE === '1')
