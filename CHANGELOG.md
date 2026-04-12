@@ -46,6 +46,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - tests: add tests covering recent bug fixes
 - fix: accessory control list should filter matter
 - fix: widget options disable save on no changes
+- fix: hide humidity sliders when no auto mode
 
 ### Homebridge Dependencies
 
