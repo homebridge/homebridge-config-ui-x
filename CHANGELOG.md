@@ -47,6 +47,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix: accessory control list should filter matter
 - fix: widget options disable save on no changes
 - fix: hide humidity sliders when no auto mode
+- fix: hide heating sliders when no auto mode
 
 ### Homebridge Dependencies
 
