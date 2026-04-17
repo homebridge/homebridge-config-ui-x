@@ -81,7 +81,7 @@
   "dependencies": {
     "@fastify/helmet": "13.0.2",
     "@fastify/multipart": "9.4.0",
-    "@fastify/static": "9.0.0",
+    "@fastify/static": "9.1.1",
     "@homebridge/hap-client": "4.0.2",
     "@homebridge/node-pty-prebuilt-multiarch": "0.13.1",
     "@nestjs/axios": "4.0.1",
