@@ -51,6 +51,12 @@ declare global {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ConfigEditorComponent implements OnInit, OnDestroy {
+  // Protocol toggles
+  public enableHap = true
+  public enableMatter = false
+  public showProtocolError = false
+  private updatingFromConfig = false
+
   private injector = inject(EnvironmentInjector)
   private $api = inject(ApiService)
   private $md = inject(MobileDetectService)
@@ -87,6 +93,12 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
   }
 
   public ngOnInit() {
+    // Sync protocol toggles with config on init
+    this.syncTogglesWithConfig()
+    // Watch for config changes (editor or textarea)
+    // Signal does not have subscribe; if you want to react to changes, use an effect or handle via UI events.
+    // If you need to react to changes, implement an effect or use Angular's change detection.
+
     // Set page title - using "JSON Config" from menu
     const title = this.$translate.instant('menu.config_json_editor')
     this.$settings.setPageTitle(title)
@@ -112,6 +124,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
       this.$md.disableTouchMove()
     }
 
+    // --- MOVED STATEMENTS FROM OUTSIDE CLASS ---
     this.$route.data.subscribe((data) => {
       this.homebridgeConfig.set(data.config)
       this.latestSavedConfig = JSON.parse(data.config)
@@ -164,6 +177,81 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
         queryParamsHandling: '',
       })
     }
+    // --- END MOVED STATEMENTS ---
+  }
+
+  /**
+   * Called when the user toggles HAP or Matter
+   */
+  public onToggleProtocol(type: 'hap' | 'matter', checked: boolean) {
+    if (this.updatingFromConfig) return
+    // Prevent both from being disabled
+    if ((type === 'hap' && !checked && !this.enableMatter) || (type === 'matter' && !checked && !this.enableHap)) {
+      this.showProtocolError = true
+      // Revert toggle
+      setTimeout(() => this.syncTogglesWithConfig(), 100)
+      return
+    }
+    this.showProtocolError = false
+    if (type === 'hap') this.enableHap = checked
+    if (type === 'matter') this.enableMatter = checked
+    this.updateConfigProtocols()
+  }
+
+  /**
+   * Syncs the protocol toggles with the config in the editor
+   */
+  private syncTogglesWithConfig() {
+    this.updatingFromConfig = true
+    try {
+      const config = this.parseConfigFromEditor()
+      this.enableHap = !!config.bridge && (
+        config.bridge.username || config.bridge.pin || config.bridge.port
+      )
+      this.enableMatter = !!(config.bridge && config.bridge.matter)
+    } catch {
+      this.enableHap = true
+      this.enableMatter = false
+    }
+    this.updatingFromConfig = false
+  }
+
+  /**
+   * Updates the config in the editor based on the protocol toggles
+   */
+  private updateConfigProtocols() {
+    let config = this.parseConfigFromEditor()
+    if (!this.enableHap && this.enableMatter) {
+      // Remove HAP-specific fields but keep bridge for required fields
+      config.bridge = config.bridge || {}
+      delete config.bridge.username
+      delete config.bridge.pin
+      delete config.bridge.port
+      delete config.bridge.advertiser
+      delete config.bridge.manufacturer
+      delete config.bridge.model
+      delete config.bridge.firmwareRevision
+    }
+    if (this.enableHap && !config.bridge) {
+      config.bridge = {
+        name: 'Homebridge',
+        username: '0E:89:49:64:91:86',
+        port: 51173,
+        pin: '630-27-655',
+      }
+    }
+    if (this.enableMatter) {
+      config.bridge = config.bridge || {}
+      config.bridge.matter = config.bridge.matter || {}
+    } else if (config.bridge && config.bridge.matter) {
+      delete config.bridge.matter
+    }
+    if (!this.enableHap && !this.enableMatter) {
+      this.showProtocolError = true
+      this.syncTogglesWithConfig()
+      return
+    }
+    this.homebridgeConfig.set(JSON.stringify(config, null, 4))
   }
 
   private async waitForMonaco(): Promise<void> {
@@ -291,13 +379,15 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
   }
 
   public async onRestore(fromSettings = false): Promise<void> {
-    const injector = createEnvironmentInjector([{
-      provide: CONFIG_RESTORE_MODAL_DATA,
-      useValue: {
-        currentConfig: this.homebridgeConfig(),
-        fromSettings,
+    const injector = createEnvironmentInjector([
+      {
+        provide: CONFIG_RESTORE_MODAL_DATA,
+        useValue: {
+          currentConfig: this.homebridgeConfig(),
+          fromSettings,
+        },
       },
-    }], this.injector)
+    ], this.injector)
 
     const ref = this.$modal.open(ConfigRestoreComponent, {
       size: 'lg',
@@ -381,53 +471,6 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
   }
 
   public ngOnDestroy() {
-    const content = document.querySelector('.content')
-    this.$renderer.removeStyle(content, 'height')
-
-    if (window.visualViewport) {
-      window.visualViewport.removeEventListener('resize', this.visualViewPortEventCallback, true)
-      this.$md.enableTouchMove()
-    }
-
-    try {
-      // Clear up main editor
-      if (window.editor && window.editor.dispose) {
-        window.editor.dispose()
-        window.editor = undefined
-      }
-
-      // Clean up models
-      if ((window as any).monaco) {
-        const originalUri = (window as any).monaco.Uri.parse('file:///original.json')
-        const modifiedUri = (window as any).monaco.Uri.parse('file:///modified.json')
-
-        const existingOriginalModel = (window as any).monaco.editor.getModel(originalUri)
-        if (existingOriginalModel) {
-          existingOriginalModel.dispose()
-        }
-
-        const existingModifiedModel = (window as any).monaco.editor.getModel(modifiedUri)
-        if (existingModifiedModel) {
-          existingModifiedModel.dispose()
-        }
-
-        // Clean up validation schemas to prevent interference with other Monaco editors
-        // Remove the homebridge config schema we added
-        const existingSchemas = (window as any).monaco.languages.json.jsonDefaults.diagnosticsOptions.schemas || []
-        const updatedSchemas = existingSchemas.filter((x: any) => x.uri !== 'http://homebridge/config.json');
-
-        (window as any).monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
-          validate: true,
-          allowComments: false,
-          schemas: updatedSchemas,
-        })
-      }
-
-      // Clean up monaco editor instance
-      if (this.monacoEditor) {
-        this.monacoEditor.dispose()
-      }
-    } catch (error) { /* no problem disposing */ }
   }
 
   private validateSection(sections: unknown[], type: 'accessory' | 'platform') {
@@ -614,22 +657,22 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
                   },
                   ...this.isMatterSupported
                     ? {
-                        matter: {
-                          type: 'object',
-                          additionalProperties: false,
-                          title: this.$translate.instant('settings.matter.title'),
-                          description: 'Matter-specific configuration for the main bridge.',
-                          properties: {
-                            port: {
-                              type: 'number',
-                              title: this.$translate.instant('settings.matter.port'),
-                              description: this.$translate.instant('settings.matter.port_desc'),
-                              minimum: 1025,
-                              maximum: 65534,
-                            },
+                      matter: {
+                        type: 'object',
+                        additionalProperties: false,
+                        title: this.$translate.instant('settings.matter.title'),
+                        description: 'Matter-specific configuration for the main bridge.',
+                        properties: {
+                          port: {
+                            type: 'number',
+                            title: this.$translate.instant('settings.matter.port'),
+                            description: this.$translate.instant('settings.matter.port_desc'),
+                            minimum: 1025,
+                            maximum: 65534,
                           },
                         },
-                      }
+                      },
+                    }
                     : {},
                 },
                 default: { name: 'Homebridge', username: '0E:89:49:64:91:86', port: 51173, pin: '6302-7655' },
