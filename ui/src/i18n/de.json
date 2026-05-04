@@ -672,6 +672,7 @@
   "settings.security.ui_control": "Gerätesteuerungslisten",
   "settings.security.ui_control_desc": "Definiere, welche Bridges und gebrückten Geräte von der Homebridge UI gesteuert oder blockiert werden können.",
   "settings.security.ui_control_desc_2": "Erlaube der UI, die Geräte auf einer Bridge zu steuern, indem du den Schalter unten aktivierst.",
+  "settings.security.upload_both_files": "Both a private key and a certificate file must be selected before saving.",
   "settings.service.debug_tooltip": "Bei einigen Plugins musst du die Umgebungsvariable DEBUG setzen {{ link }}, um die Protokollierung auf Debug-Ebene zu aktivieren.",
   "settings.service.debug_tooltip_child": "Manche Plugins erfordern das Setzen der DEBUG-Umgebungsvariable {{ link }}, um Debug-Logging zu aktivieren. Dieser Wert wird mit der globalen DEBUG-Einstellung kombiniert.",
   "settings.service.node_tooltip": "Node.js-Laufzeitoptionen für den Homebridge-Prozess. Dies sollte leer bleiben, wenn du nicht weißt, was du tust.",

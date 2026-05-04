@@ -8,6 +8,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 
 - i18n: updates to the `de.json` language file (#2793) (@michi-onl)
 - feat: support disabling hap on main and child bridges
+- fix: ssl keycert upload requires both files at once
 
 ### Other Changes
 

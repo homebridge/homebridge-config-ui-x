@@ -672,6 +672,7 @@
   "settings.security.ui_control": "Liste controllo accessori",
   "settings.security.ui_control_desc": "Definisci quali bridge e accessori collegati possono essere controllati o bloccati dall'interfaccia utente di Homebridge.",
   "settings.security.ui_control_desc_2": "Permetti all'interfaccia utente di controllare gli accessori su un bridge attivando l'interruttore qui sotto.",
+  "settings.security.upload_both_files": "Both a private key and a certificate file must be selected before saving.",
   "settings.service.debug_tooltip": "Alcuni plugin richiedono di impostare la variabile d'ambiente DEBUG {{ link }} per abilitare i log di livello debug.",
   "settings.service.debug_tooltip_child": "Some plugins require you to set the DEBUG environment variable {{ link }} to enable debug level logging. This value is combined with the global DEBUG setting.",
   "settings.service.node_tooltip": "Opzioni runtime Node.js per questo processo. Questo dovrebbe essere lasciato vuoto a meno che tu non sappia cosa stai facendo.",
