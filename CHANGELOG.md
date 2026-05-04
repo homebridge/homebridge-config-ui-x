@@ -14,10 +14,11 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 
 - chore: bump minimum node version to v22.12.0
 - ci: bump version of `viperproject/create-nightly-release` to `v2` (@NorthernMan54)
+- chore: dependency updates
 
 ### Homebridge Dependencies
 
-- `@homebridge/hap-client` @ `v4.0.3`
+- `@homebridge/hap-client` @ `v4.0.4`
 - `@homebridge/node-pty-prebuilt-multiarch` @ `v0.13.1`
 - `@homebridge/plugin-ui-utils` @ `v2.2.3`
 
