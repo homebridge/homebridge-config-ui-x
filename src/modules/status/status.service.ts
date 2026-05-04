@@ -280,7 +280,14 @@ export class StatusService {
       pin: this.configService.homebridgeConfig.bridge.pin,
       setupUri: await this.serverService.getSetupCode(),
       paired: this.serverService.paired,
+      hap: this.getHapInfo(),
       matter: this.matterInfo,
+    }
+  }
+
+  private getHapInfo() {
+    return {
+      enabled: this.configService.homebridgeConfig.bridge.hap !== false,
     }
   }
 
@@ -297,6 +304,7 @@ export class StatusService {
       setupUri: this.serverService.setupCode,
       packageVersion: this.configService.package.version,
       paired: this.serverService.paired,
+      hap: this.getHapInfo(),
       matter: this.matterInfo,
     }
   }
@@ -343,6 +351,7 @@ export class StatusService {
       paired: this.serverService.paired,
       packageVersion: this.configService.package.version,
       status: await this.checkHomebridgeStatus(),
+      hap: this.getHapInfo(),
       matter: this.matterInfo,
     }
   }

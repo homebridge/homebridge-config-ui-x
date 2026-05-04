@@ -908,6 +908,44 @@ export class ConfigEditorService {
   }
 
   /**
+   * Get whether HAP is enabled on the main bridge.
+   * HAP is enabled by default; users opt out via `bridge.hap: false`.
+   */
+  public async getHapEnabled(): Promise<{ enabled: boolean }> {
+    const config = await this.getConfigFile()
+    return { enabled: config.bridge?.hap !== false }
+  }
+
+  /**
+   * Enable or disable HAP on the main bridge.
+   * Disabling requires `bridge.matter` to be configured (homebridge core
+   * rejects configs where neither protocol is enabled).
+   */
+  public async setHapEnabled(enabled: boolean): Promise<{ enabled: boolean }> {
+    const config = await this.getConfigFile()
+    if (!enabled) {
+      if (!config.bridge?.matter) {
+        throw new BadRequestException(
+          'At least one protocol (HAP or Matter) must be enabled. '
+          + 'Enable Matter on the main bridge before disabling HAP.',
+        )
+      }
+
+      // Shutdown first so the running server doesn't see a partial config
+      await this.homebridgeIpcService.restartAndWaitForClose()
+      config.bridge.hap = false
+      await this.updateConfigFile(config)
+    } else {
+      // Re-enable: omit the property by default
+      if (config.bridge?.hap === false) {
+        delete config.bridge.hap
+        await this.updateConfigFile(config)
+      }
+    }
+    return { enabled }
+  }
+
+  /**
    * Validate Matter configuration
    * @param matterConfig - The Matter configuration to validate
    * @throws BadRequestException if configuration is invalid

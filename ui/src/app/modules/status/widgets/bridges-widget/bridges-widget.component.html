@@ -13,22 +13,14 @@
           container="body"
           placement="right"
           triggers="hover"
-          [class.green-text]="homebridgeStatus()?.status === 'ok' && !isRestarting()"
-          [class.text-warning]="homebridgeStatus()?.status === 'pending' || isRestarting()"
-          [class.red-text]="homebridgeStatus()?.status === 'down' && !isRestarting()"
+          [class.green-text]="!isMainHapDisabled() && homebridgeStatus()?.status === 'ok' && !isRestarting()"
+          [class.text-warning]="!isMainHapDisabled() && (homebridgeStatus()?.status === 'pending' || isRestarting())"
+          [class.red-text]="!isMainHapDisabled() && homebridgeStatus()?.status === 'down' && !isRestarting()"
+          [class.grey-text]="isMainHapDisabled()"
+          [class.opacity-muted]="isMainHapDisabled()"
           [openDelay]="150"
-          [ngbTooltip]="
-            (homebridgeStatus()?.status === 'down' && !isRestarting()
-              ? 'status.services.hap_not_running'
-              : 'status.services.hap_running'
-            ) | translate
-          "
-          [attr.aria-label]="
-            (homebridgeStatus()?.status === 'down' && !isRestarting()
-              ? 'status.services.hap_not_running'
-              : 'status.services.hap_running'
-            ) | translate
-          "
+          [ngbTooltip]="mainHapTooltipKey() | translate"
+          [attr.aria-label]="mainHapTooltipKey() | translate"
         ></i>
         @if (isMatterSupported) {
           <i
@@ -98,22 +90,20 @@
             container="body"
             placement="right"
             triggers="hover"
-            [class.green-text]="bridge.status === 'ok' && !bridge.restarting && !isRestarting()"
-            [class.text-warning]="bridge.status === 'pending' || bridge.restarting || isRestarting()"
-            [class.red-text]="bridge.status === 'down' && !bridge.restarting && !isRestarting()"
+            [class.green-text]="
+              !isChildHapDisabled(bridge) && bridge.status === 'ok' && !bridge.restarting && !isRestarting()
+            "
+            [class.text-warning]="
+              !isChildHapDisabled(bridge) && (bridge.status === 'pending' || bridge.restarting || isRestarting())
+            "
+            [class.red-text]="
+              !isChildHapDisabled(bridge) && bridge.status === 'down' && !bridge.restarting && !isRestarting()
+            "
+            [class.grey-text]="isChildHapDisabled(bridge)"
+            [class.opacity-muted]="isChildHapDisabled(bridge)"
             [openDelay]="150"
-            [ngbTooltip]="
-              (bridge.status === 'down' && !bridge.restarting && !isRestarting()
-                ? 'status.services.hap_not_running'
-                : 'status.services.hap_running'
-              ) | translate
-            "
-            [attr.aria-label]="
-              (bridge.status === 'down' && !bridge.restarting && !isRestarting()
-                ? 'status.services.hap_not_running'
-                : 'status.services.hap_running'
-              ) | translate
-            "
+            [ngbTooltip]="childHapTooltipKey(bridge) | translate"
+            [attr.aria-label]="childHapTooltipKey(bridge) | translate"
           ></i>
           @if (isMatterSupported) {
             <i

@@ -67,6 +67,7 @@ export class PluginBridgeComponent implements OnInit {
   public readonly selectedBlock = signal<string>('0')
   public readonly isPlatform = signal<boolean>(false)
   public readonly enabledBlocks = signal<Record<number, boolean>>({})
+  public readonly hapEnabledBlocks = signal<Record<number, boolean>>({})
   public readonly matterEnabledBlocks = signal<Record<number, boolean>>({})
   public readonly showAdvanced = signal(false)
   public readonly globalDebug = signal<string>('')
@@ -214,6 +215,11 @@ export class PluginBridgeComponent implements OnInit {
       for (const [i, block] of loadedConfigBlocks.entries()) {
         if (block._bridge) {
           this.enabledBlocks.update(current => ({ ...current, [i]: true }))
+
+          // HAP is enabled by default; only `_bridge.hap === false` opts out.
+          // Accessory child bridges cannot disable HAP (no Matter alternative).
+          const hapEnabled = block.accessory ? true : block._bridge.hap !== false
+          this.hapEnabledBlocks.update(current => ({ ...current, [i]: hapEnabled }))
         }
 
         if (block._bridge && block._bridge.username) {
@@ -380,9 +386,13 @@ export class PluginBridgeComponent implements OnInit {
 
       // Set enabled state to true
       this.enabledBlocks.update(current => ({ ...current, [Number(index)]: true }))
+
+      // HAP defaults to on whenever a child bridge is enabled
+      this.hapEnabledBlocks.update(current => ({ ...current, [Number(index)]: true }))
     } else {
       // Set enabled state to false
       this.enabledBlocks.update(current => ({ ...current, [Number(index)]: false }))
+      this.hapEnabledBlocks.update(current => ({ ...current, [Number(index)]: false }))
 
       // Cache Matter configuration before deleting if Matter is enabled
       if (block._bridge?.matter && this.matterEnabledBlocks()[Number(index)]) {
@@ -554,7 +564,7 @@ export class PluginBridgeComponent implements OnInit {
     }
   }
 
-  public async toggleMatterBridge(block: any, enable: boolean, index: string): Promise<void> {
+  public async toggleMatterBridge(block: any, enable: boolean, index: string, event?: Event): Promise<void> {
     const plugin = this.plugin
     if (!plugin) {
       return
@@ -562,7 +572,19 @@ export class PluginBridgeComponent implements OnInit {
 
     // Matter is only supported for platform-based plugins
     if (block.accessory) {
+      this.syncCheckboxDom(event, false)
       this.matterEnabledBlocks.update(current => ({ ...current, [Number(index)]: false }))
+      return
+    }
+
+    // Refuse to disable Matter when HAP is also off — at least one protocol is required.
+    if (!enable && !this.hapEnabledBlocks()[Number(index)]) {
+      this.$toastr.info(
+        this.$translate.instant('child_bridge.config.disable_matter_requires_hap'),
+        this.$translate.instant('toast.title_notice'),
+      )
+      this.syncCheckboxDom(event, true)
+      this.matterEnabledBlocks.update(current => ({ ...current, [Number(index)]: true }))
       return
     }
 
@@ -661,6 +683,60 @@ export class PluginBridgeComponent implements OnInit {
     }
   }
 
+  public async toggleHapBridge(block: any, enable: boolean, index: string, event?: Event): Promise<void> {
+    const idx = Number(index)
+
+    // Accessory-style child bridges cannot disable HAP (no Matter alternative).
+    if (!enable && block.accessory) {
+      this.$toastr.error(
+        this.$translate.instant('child_bridge.config.hap_disabled_for_accessory'),
+        this.$translate.instant('toast.title_error'),
+      )
+      this.syncCheckboxDom(event, true)
+      this.hapEnabledBlocks.update(current => ({ ...current, [idx]: true }))
+      return
+    }
+
+    // Mutual exclusion: refuse to disable HAP unless Matter is enabled for this block.
+    if (!enable && !this.matterEnabledBlocks()[idx]) {
+      this.$toastr.info(
+        this.$translate.instant('child_bridge.config.disable_hap_requires_matter'),
+        this.$translate.instant('toast.title_notice'),
+      )
+      this.syncCheckboxDom(event, true)
+      this.hapEnabledBlocks.update(current => ({ ...current, [idx]: true }))
+      return
+    }
+
+    if (enable) {
+      this.hapEnabledBlocks.update(current => ({ ...current, [idx]: true }))
+
+      if (!block._bridge) {
+        block._bridge = { env: {} }
+      }
+
+      // Restore HAP defaults if missing (Matter-only bridge gaining HAP).
+      if (!block._bridge.username) {
+        block._bridge.username = this.generateUsername()
+      }
+      if (!block._bridge.port) {
+        block._bridge.port = await this.getUnusedPort()
+      }
+      if (!block._bridge.name && this.plugin) {
+        block._bridge.name = this.sanitizeBridgeName(this.plugin.displayName || this.plugin.name)
+      }
+
+      delete block._bridge.hap
+
+      this.bridgeCache.update(current => new Map(current).set(idx, block._bridge))
+      await this.getDeviceInfo(block._bridge.username)
+    } else {
+      this.hapEnabledBlocks.update(current => ({ ...current, [idx]: false }))
+      block._bridge = block._bridge || {}
+      block._bridge.hap = false
+    }
+  }
+
   public getMatterPortValidationError(index: string): boolean {
     const block = this.configBlocks()[Number(index)]
     const port = block._bridge?.matter?.port
@@ -686,10 +762,11 @@ export class PluginBridgeComponent implements OnInit {
   public getHapNameValidationError(index: string): boolean {
     const block = this.configBlocks()[Number(index)]
     if (!block._bridge?.name) {
-      return false // Empty is valid
+      return false // empty is valid
     }
 
     const name = block._bridge.name
+
     // HAP name validation: must start and end with letter/number, can contain letters, numbers, spaces, and apostrophes
     // https://github.com/homebridge/HAP-NodeJS/blob/ee41309fd9eac383cdcace39f4f6f6a3d54396f3/src/lib/util/checkName.ts#L12
     return !RE_HAP_NAME_PATTERN.test(name)
@@ -735,6 +812,30 @@ export class PluginBridgeComponent implements OnInit {
     }
   }
 
+  private normalizeHapConfig(block: any, hapEnabled: boolean | undefined): void {
+    if (!block._bridge) {
+      return
+    }
+    if (hapEnabled === false) {
+      block._bridge.hap = false
+    } else {
+      delete block._bridge.hap
+    }
+  }
+
+  // The checkbox uses one-way `[checked]` binding from a signal. When the user
+  // clicks, the browser flips the native `checked` flag before the (change)
+  // handler runs; if the handler then writes the same value back to the
+  // signal, Angular sees no diff and never re-syncs the DOM. Force the DOM
+  // back into the desired state on rejection paths so the toggle matches the
+  // signal.
+  private syncCheckboxDom(event: Event | undefined, checked: boolean): void {
+    const target = event?.target as HTMLInputElement | null | undefined
+    if (target) {
+      target.checked = checked
+    }
+  }
+
   public async save(): Promise<void> {
     const plugin = this.plugin
     if (!plugin) {
@@ -746,11 +847,23 @@ export class PluginBridgeComponent implements OnInit {
     try {
       const configBlocks = this.configBlocks()
       const matterEnabledBlocks = this.matterEnabledBlocks()
+      const hapEnabledBlocks = this.hapEnabledBlocks()
+      const enabledBlocks = this.enabledBlocks()
 
       // Validate HAP and Matter configs before saving
       for (const [index, block] of configBlocks.entries()) {
-        // HAP validation
-        if (block._bridge?.username) {
+        // At least one protocol must be on for any enabled child bridge
+        if (enabledBlocks[index] && !hapEnabledBlocks[index] && !matterEnabledBlocks[index]) {
+          this.$toastr.error(
+            this.$translate.instant('child_bridge.config.at_least_one_protocol'),
+            this.$translate.instant('toast.title_error'),
+          )
+          this.saveInProgress.set(false)
+          return
+        }
+
+        // HAP validation (only when HAP is enabled for this block)
+        if (block._bridge?.username && hapEnabledBlocks[index] !== false) {
           if (this.getHapNameValidationError(index.toString())) {
             this.$toastr.error(
               this.$translate.instant('plugins.bridge.name_error'),
@@ -788,6 +901,9 @@ export class PluginBridgeComponent implements OnInit {
 
         // Normalize the matter config (trim strings, remove empty values)
         this.normalizeMatterConfig(block)
+
+        // Normalize the hap flag — only persist `false`; omit when on
+        this.normalizeHapConfig(block, hapEnabledBlocks[index])
       }
 
       await this.$api.post(`/config-editor/plugin/${encodeURIComponent(plugin.name)}`, configBlocks)
@@ -1134,6 +1250,11 @@ export class PluginBridgeComponent implements OnInit {
         return true
       }
       if (currentEnv.NODE_OPTIONS !== originalEnv.NODE_OPTIONS) {
+        return true
+      }
+
+      // Check HAP disabled state — only `hap === false` is persisted; absent/true means enabled
+      if ((block._bridge.hap === false) !== (original.hap === false)) {
         return true
       }
 

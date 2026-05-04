@@ -76,6 +76,11 @@ export function createChildBridgeSchema(translate: TranslateService, { isDebugMo
             },
           }
         : {},
+      hap: {
+        type: 'boolean',
+        title: translate.instant('child_bridge.config.enable_hap'),
+        description: 'When false, HAP is not published for this child bridge. Requires Matter to be configured on the same bridge.',
+      },
       env: {
         type: 'object',
         additionalProperties: false,

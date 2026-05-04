@@ -7,7 +7,11 @@
             <app-qrcode class="mx-auto" [data]="setupUri()!" />
           } @else {
             <div class="d-flex align-items-center justify-content-center w-100 h-100 qr-loading-container">
-              <i class="fas fa-circle-notch fa-spin fa-2xl grey-text"></i>
+              @if (loading()) {
+                <i class="fas fa-circle-notch fa-spin fa-2xl grey-text"></i>
+              } @else if (!enabled()) {
+                <i class="fas fa-hap grey-text fa-2xl"></i>
+              }
             </div>
           }
         </div>
@@ -15,18 +19,25 @@
     </div>
     <div #pincode class="text-center w-100 mt-auto gridster-item-content">
       <p class="mb-1">
-        <span class="font-monospace">{{ pin() }}</span>
+        @if (pin()) {
+          <span class="font-monospace">{{ pin() }}</span>
+        }
       </p>
       <p class="grey-text mb-1 small">
-        <i class="fas fa-hap"></i> HAP
-        @if (pin()) {
-          &middot;
-          <i class="fas fa-link" [class.green-text]="paired()" [class.grey-text]="!paired()"></i>
-          {{ (paired() ? 'status.widget.qr_paired' : 'status.widget.qr_unpaired') | translate }}
-          @if (!paired()) {
-            <br />
-            <small>{{ 'status.code_scan' | translate }}</small>
+        <i class="fas fa-hap"></i>
+        @if (enabled()) {
+          HAP
+          @if (pin()) {
+            &middot;
+            <i class="fas fa-link" [class.green-text]="paired()" [class.grey-text]="!paired()"></i>
+            {{ (paired() ? 'status.widget.qr_paired' : 'status.widget.qr_unpaired') | translate }}
+            @if (!paired()) {
+              <br />
+              <small>{{ 'status.code_scan' | translate }}</small>
+            }
           }
+        } @else {
+          {{ 'status.services.hap_not_enabled' | translate }}
         }
       </p>
     </div>

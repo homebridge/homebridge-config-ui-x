@@ -48,6 +48,9 @@ export interface ChildBridgeMetadata {
   /** Manually stopped flag */
   manuallyStopped: boolean
 
+  /** HAP enabled flag — undefined or true means HAP is published, false means HAP is disabled for this bridge */
+  hap?: boolean
+
   /** Matter configuration */
   matterConfig?: MatterConfig
 

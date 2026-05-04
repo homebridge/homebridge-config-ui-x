@@ -44,9 +44,38 @@ export class BridgesWidgetComponent implements OnInit, OnDestroy {
   private ioChild!: IoNamespace
   public isAdmin = this.$auth.user.admin
   public isMatterSupported = this.$settings.isFeatureEnabled('matterSupport')
+  public isHapBridgeDisableSupported = this.$settings.isFeatureEnabled('hapBridgeDisable')
 
   public ngOnInit(): void {
     void this.initialize()
+  }
+
+  public childHapTooltipKey(bridge: ChildBridgeWithUIState): string {
+    if (this.isHapBridgeDisableSupported && bridge.hap === false) {
+      return 'status.services.hap_not_enabled'
+    }
+    if (bridge.status === 'down' && !bridge.restarting && !this.isRestarting()) {
+      return 'status.services.hap_not_running'
+    }
+    return 'status.services.hap_running'
+  }
+
+  public isChildHapDisabled(bridge: ChildBridgeWithUIState): boolean {
+    return this.isHapBridgeDisableSupported && bridge.hap === false
+  }
+
+  public isMainHapDisabled(): boolean {
+    return this.isHapBridgeDisableSupported && this.homebridgeStatus()?.hap?.enabled === false
+  }
+
+  public mainHapTooltipKey(): string {
+    if (this.isMainHapDisabled()) {
+      return 'status.services.hap_not_enabled'
+    }
+    if (this.homebridgeStatus()?.status === 'down' && !this.isRestarting()) {
+      return 'status.services.hap_not_running'
+    }
+    return 'status.services.hap_running'
   }
 
   private async initialize(): Promise<void> {

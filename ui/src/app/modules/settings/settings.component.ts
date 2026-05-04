@@ -72,6 +72,7 @@ export class SettingsComponent implements OnInit {
     display: true,
     startup: true,
     network: true,
+    hap: true,
     matter: true,
     security: true,
     terminal: true,
@@ -126,6 +127,9 @@ export class SettingsComponent implements OnInit {
       'setting-network-proxy',
       'setting-ui-port-network',
       'setting-port-overview',
+    ],
+    hap: [
+      'setting-hap-enabled',
     ],
     matter: [
       'setting-matter-enabled',
@@ -322,6 +326,9 @@ export class SettingsComponent implements OnInit {
   public readonly scheduledRestartCronIsInvalid = signal(false)
   public readonly scheduledRestartCronIsSaving = signal(false)
   public scheduledRestartCronFormControl = new FormControl('')
+
+  public readonly hapEnabledIsSaving = signal(false)
+  public hapEnabledFormControl = new FormControl(true)
 
   public readonly matterEnabledIsSaving = signal(false)
   public matterEnabledFormControl = new FormControl(false)
@@ -827,6 +834,7 @@ export class SettingsComponent implements OnInit {
       .subscribe(value => this.scheduledRestartCronSave(value!))
 
     await this.initMatterSettings()
+    await this.initHapSettings()
 
     this.loading.set(false)
   }
@@ -2212,6 +2220,16 @@ export class SettingsComponent implements OnInit {
   }
 
   private async matterEnabledSave(value: boolean): Promise<void> {
+    // Refuse to disable Matter unless HAP is enabled — at least one protocol is required
+    if (!value && !this.hapEnabledFormControl.value) {
+      this.$toastr.info(
+        this.$translate.instant('settings.matter.requires_hap'),
+        this.$translate.instant('toast.title_notice'),
+      )
+      this.matterEnabledFormControl.patchValue(true, { emitEvent: false })
+      return
+    }
+
     try {
       this.matterEnabledIsSaving.set(true)
       if (value) {
@@ -2307,6 +2325,89 @@ export class SettingsComponent implements OnInit {
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
       this.matterEnabledFormControl.patchValue(value, { emitEvent: false })
       this.matterEnabledIsSaving.set(false)
+    }
+  }
+
+  private async initHapSettings(): Promise<void> {
+    try {
+      const { enabled } = await this.$api.get<{ enabled: boolean }>('/config-editor/hap')
+      this.hapEnabledFormControl.patchValue(enabled, { emitEvent: false })
+    } catch (error: any) {
+      console.error(error)
+      // Fall back to enabled (default) — subscribe regardless so user can change it
+      this.hapEnabledFormControl.patchValue(true, { emitEvent: false })
+    }
+    this.hapEnabledFormControl.valueChanges.subscribe(value => this.hapEnabledSave(value!))
+  }
+
+  private async hapEnabledSave(value: boolean): Promise<void> {
+    // Refuse to disable HAP unless Matter is enabled — at least one protocol is required
+    if (!value && !this.matterEnabledFormControl.value) {
+      this.$toastr.info(
+        this.$translate.instant('settings.hap.requires_matter'),
+        this.$translate.instant('toast.title_notice'),
+      )
+      this.hapEnabledFormControl.patchValue(true, { emitEvent: false })
+      return
+    }
+
+    try {
+      this.hapEnabledIsSaving.set(true)
+      if (value) {
+        await this.$api.put('/config-editor/hap', { enabled: true })
+        setTimeout(() => {
+          this.hapEnabledIsSaving.set(false)
+          this.showRestartToast()
+        }, 1000)
+      } else {
+        // Disabling HAP — confirm first
+        const injector = createEnvironmentInjector([{
+          provide: CONFIRM_MODAL_DATA,
+          useValue: {
+            title: this.$translate.instant('settings.hap.disable'),
+            message: this.$translate.instant('settings.hap.disable_desc'),
+            message2: this.$translate.instant('common.phrases.are_you_sure'),
+            confirmButtonLabel: this.$translate.instant('form.button_continue'),
+            confirmButtonClass: 'btn-danger',
+            faIconClass: 'fas fa-exclamation-triangle text-warning',
+          },
+        }], this.injector)
+
+        const ref = this.$modal.open(ConfirmComponent, {
+          size: 'lg',
+          backdrop: 'static',
+          injector,
+        })
+
+        try {
+          await ref.result
+
+          if (this.$settings.restartToastRef) {
+            this.$toastr.clear(this.$settings.restartToastRef.toastId)
+            this.$settings.restartToastRef = null
+          }
+
+          void this.$router.navigate(['/restart'], {
+            queryParams: { alreadyRestarting: 'true' },
+          })
+          await this.$api.put('/config-editor/hap', { enabled: false })
+        } catch (error: any) {
+          if (error === 'Dismiss') {
+            this.hapEnabledFormControl.patchValue(true, { emitEvent: false })
+            this.hapEnabledIsSaving.set(false)
+          } else {
+            console.error(error)
+            this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+            this.hapEnabledFormControl.patchValue(true, { emitEvent: false })
+            this.hapEnabledIsSaving.set(false)
+          }
+        }
+      }
+    } catch (error: any) {
+      console.error(error)
+      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      this.hapEnabledFormControl.patchValue(!value, { emitEvent: false })
+      this.hapEnabledIsSaving.set(false)
     }
   }
 
