@@ -1097,6 +1097,66 @@
       </div>
     }
 
+    <! -- HAP SETTINGS - ->
+    @if (isMatterSupported && isSectionVisible('hap')) {
+      <div class="my-4">
+        <div
+          role="button"
+          tabindex="0"
+          class="mt-3 hover-pointer"
+          [attr.aria-expanded]="showFields().hap ? 'true' : 'false'"
+          [attr.aria-controls]="'fieldsHap'"
+          (click)="toggleSection('hap')"
+        >
+          <h5 class="primary-text">
+            <i class="fa" [class.fa-chevron-down]="showFields().hap" [class.fa-chevron-right]="!showFields().hap"></i>
+            {{ 'settings.hap.title' | translate }}
+          </h5>
+        </div>
+        @if (showFields().hap) {
+          <p class="small grey-text mb-2 mx-0">{{ 'settings.hap.desc' | translate }}</p>
+          <ul class="list-group list-group-box mt-2 mx-0" id="fieldsHap">
+            <li
+              class="setting-row list-group-item"
+              [class.setting-hidden]="isItemHidden('setting-hap-enabled')"
+              [attr.inert]="isItemHidden('setting-hap-enabled') || null"
+            >
+              <div class="setting-row-inner d-flex justify-content-between align-items-center">
+                <span>
+                  {{ 'common.labels.enabled' | translate }}<br />
+                  <small class="grey-text pe-2">{{ 'settings.hap.enabled_desc' | translate }}</small>
+                </span>
+                <div
+                  class="d-flex align-items-center"
+                  [title]="
+                    !matterEnabledFormControl.value && hapEnabledFormControl.value
+                      ? ('settings.hap.requires_matter' | translate)
+                      : ''
+                  "
+                >
+                  <div class="order-1 order-md-2">
+                    <input
+                      type="checkbox"
+                      class="rendux-input"
+                      id="hapEnabled"
+                      [formControl]="hapEnabledFormControl"
+                      [attr.aria-label]="'common.labels.enabled' | translate"
+                    />
+                    <label for="hapEnabled" class="rendux-label ms-3 min-w-50"></label>
+                  </div>
+                  @if (hapEnabledIsSaving()) {
+                    <i
+                      class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1 save-indicator"
+                    ></i>
+                  }
+                </div>
+              </div>
+            </li>
+          </ul>
+        }
+      </div>
+    }
+
     <! -- MATTER SETTINGS - ->
     @if (isMatterSupported && isSectionVisible('matter')) {
       <div class="my-4">
@@ -1132,7 +1192,14 @@
                   ><br />
                   <small class="grey-text pe-2">{{ 'settings.matter.enabled_desc' | translate }}</small>
                 </span>
-                <div class="d-flex align-items-center">
+                <div
+                  class="d-flex align-items-center"
+                  [title]="
+                    !hapEnabledFormControl.value && matterEnabledFormControl.value
+                      ? ('settings.matter.requires_hap' | translate)
+                      : ''
+                  "
+                >
                   <div class="order-1 order-md-2">
                     <input
                       type="checkbox"

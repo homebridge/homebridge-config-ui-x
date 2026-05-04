@@ -16,6 +16,10 @@ export interface HomebridgeStatusUpdate {
   matter?: HomebridgeStatusMatterUpdate
 }
 
+export interface HomebridgeStatusHapUpdate {
+  enabled: boolean
+}
+
 export interface HomebridgeStatsResponse {
   consolePort: number
   port: number
@@ -24,5 +28,6 @@ export interface HomebridgeStatsResponse {
   paired: boolean
   packageVersion: string
   status: HomebridgeStatus
+  hap?: HomebridgeStatusHapUpdate
   matter?: HomebridgeStatusMatterUpdate
 }

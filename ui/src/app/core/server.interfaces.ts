@@ -14,6 +14,10 @@ export interface HomebridgeStatusMatterUpdate {
   deviceCount?: number
 }
 
+export interface HomebridgeStatusHapUpdate {
+  enabled: boolean
+}
+
 export interface HomebridgeStatusResponse {
   consolePort: number
   port: number
@@ -22,6 +26,7 @@ export interface HomebridgeStatusResponse {
   paired: boolean
   packageVersion: string
   status: HomebridgeStatus
+  hap?: HomebridgeStatusHapUpdate
   matter?: HomebridgeStatusMatterUpdate
 }
 
@@ -58,6 +63,9 @@ export interface ChildBridgeStatusResponse {
 
   /** Manually stopped flag */
   manuallyStopped: boolean
+
+  /** HAP enabled flag — undefined or true means HAP is published, false means HAP is disabled for this bridge */
+  hap?: boolean
 
   /** Matter configuration */
   matterConfig?: {

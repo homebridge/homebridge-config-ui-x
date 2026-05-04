@@ -1283,6 +1283,147 @@ describe('ConfigEditorController (e2e)', () => {
     expect(config.bridge.matter).toEqual(matterConfig)
   })
 
+  it('GET /config-editor/hap (should return enabled=true when bridge.hap is unset)', async () => {
+    const res = await app.inject({
+      method: 'GET',
+      path: '/config-editor/hap',
+      headers: {
+        authorization,
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+    expect(res.json()).toEqual({ enabled: true })
+  })
+
+  it('GET /config-editor/hap (should return enabled=false when bridge.hap=false)', async () => {
+    // Pre-seed config with bridge.hap=false (and matter configured so it's a valid state)
+    const config: HomebridgeConfig = await readJson(configFilePath)
+    config.bridge.hap = false
+    config.bridge.matter = { port: 5540 }
+    await writeJson(configFilePath, config)
+
+    const res = await app.inject({
+      method: 'GET',
+      path: '/config-editor/hap',
+      headers: {
+        authorization,
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+    expect(res.json()).toEqual({ enabled: false })
+  })
+
+  it('GET /config-editor/hap (should return enabled=true when bridge.hap=true explicitly)', async () => {
+    const config: HomebridgeConfig = await readJson(configFilePath)
+    config.bridge.hap = true
+    await writeJson(configFilePath, config)
+
+    const res = await app.inject({
+      method: 'GET',
+      path: '/config-editor/hap',
+      headers: {
+        authorization,
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+    expect(res.json()).toEqual({ enabled: true })
+  })
+
+  it('PUT /config-editor/hap (should reject disabling HAP when Matter is not configured)', async () => {
+    // Default config has no bridge.matter — disabling HAP must be rejected
+    const res = await app.inject({
+      method: 'PUT',
+      path: '/config-editor/hap',
+      headers: {
+        authorization,
+      },
+      payload: { enabled: false },
+    })
+
+    expect(res.statusCode).toBe(400)
+    expect(res.body).toContain('At least one protocol')
+
+    // bridge.hap should not have been written
+    const config: HomebridgeConfig = await readJson(configFilePath)
+    expect(config.bridge.hap).toBeUndefined()
+  })
+
+  it('PUT /config-editor/hap (should persist bridge.hap=false when Matter is configured)', async () => {
+    // Configure Matter first so disabling HAP is valid
+    await app.inject({
+      method: 'PUT',
+      path: '/config-editor/matter',
+      headers: {
+        authorization,
+      },
+      payload: { port: 5540 },
+    })
+
+    const res = await app.inject({
+      method: 'PUT',
+      path: '/config-editor/hap',
+      headers: {
+        authorization,
+      },
+      payload: { enabled: false },
+    })
+
+    expect(res.statusCode).toBe(200)
+    expect(res.json()).toEqual({ enabled: false })
+
+    const config: HomebridgeConfig = await readJson(configFilePath)
+    expect(config.bridge.hap).toBe(false)
+    expect(config.bridge.matter).toEqual({ port: 5540 })
+  })
+
+  it('PUT /config-editor/hap (should delete the hap property when re-enabling)', async () => {
+    // Pre-seed: HAP disabled, Matter configured
+    const config: HomebridgeConfig = await readJson(configFilePath)
+    config.bridge.hap = false
+    config.bridge.matter = { port: 5540 }
+    await writeJson(configFilePath, config)
+
+    const res = await app.inject({
+      method: 'PUT',
+      path: '/config-editor/hap',
+      headers: {
+        authorization,
+      },
+      payload: { enabled: true },
+    })
+
+    expect(res.statusCode).toBe(200)
+    expect(res.json()).toEqual({ enabled: true })
+
+    // hap property should be removed (HAP enabled is the default — omit when on)
+    const updated: HomebridgeConfig = await readJson(configFilePath)
+    expect(updated.bridge.hap).toBeUndefined()
+  })
+
+  it('PUT /config-editor/hap (should be a no-op when enabling and already enabled)', async () => {
+    // Default state: bridge.hap unset (i.e. enabled by default)
+    const before: HomebridgeConfig = await readJson(configFilePath)
+    expect(before.bridge.hap).toBeUndefined()
+
+    const res = await app.inject({
+      method: 'PUT',
+      path: '/config-editor/hap',
+      headers: {
+        authorization,
+      },
+      payload: { enabled: true },
+    })
+
+    expect(res.statusCode).toBe(200)
+    expect(res.json()).toEqual({ enabled: true })
+
+    const after: HomebridgeConfig = await readJson(configFilePath)
+    expect(after.bridge.hap).toBeUndefined()
+  })
+
   it('GET/PUT /config-editor/ui/bridges/:username/scheduled-restart-cron (should handle scheduled restart cron)', async () => {
     const testUsername1 = '67:E4:1F:0E:A0:5D'
     const testUsername2 = '0E:02:9A:9D:44:45'

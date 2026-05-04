@@ -270,4 +270,25 @@ export class ConfigEditorController {
   deleteMatterConfig() {
     return this.configEditorService.deleteMatterConfig()
   }
+
+  @UseGuards(AdminGuard)
+  @ApiOperation({
+    summary: 'Get HAP enablement for the main bridge',
+    description: 'Returns whether HAP is published for the main Homebridge bridge. HAP is on by default and is opted out via `bridge.hap: false`.',
+  })
+  @Get('/hap')
+  getHapEnabled() {
+    return this.configEditorService.getHapEnabled()
+  }
+
+  @UseGuards(AdminGuard)
+  @ApiOperation({
+    summary: 'Enable or disable HAP for the main bridge',
+    description: 'Toggles `bridge.hap` for the main Homebridge bridge. Disabling requires `bridge.matter` to be configured.',
+  })
+  @ApiBody({ description: 'HAP enablement', type: 'json' })
+  @Put('/hap')
+  setHapEnabled(@Body() body: { enabled: boolean }) {
+    return this.configEditorService.setHapEnabled(body.enabled)
+  }
 }

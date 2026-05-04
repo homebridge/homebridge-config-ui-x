@@ -6,6 +6,7 @@ export interface PluginChildBridge {
   manufacturer?: string
   model?: string
   firmwareRevision?: string
+  hap?: boolean
   env?: {
     DEBUG?: string
     NODE_OPTIONS?: string
@@ -40,6 +41,7 @@ export interface HomebridgeConfig {
     manufacturer?: string
     model?: string
     firmwareRevision?: string
+    hap?: boolean
     matter?: {
       port?: number
     }
