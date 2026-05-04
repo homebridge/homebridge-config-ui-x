@@ -17,6 +17,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - ci: bump version of `viperproject/create-nightly-release` to `v2` (@NorthernMan54)
 - chore: dependency updates
 - docs: create claude info file
+- chore: update `engines.homebridge` for homebridge 2.0
 
 ### Homebridge Dependencies
 
