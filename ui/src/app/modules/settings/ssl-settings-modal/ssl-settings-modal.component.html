@@ -153,14 +153,18 @@
         <li class="list-group-item">
           {{ 'settings.security.key' | translate }}
           <input #keyInput type="file" class="form-control" accept=".pem,.key" (change)="onKeyChange($event)" />
-          @if (keyPathControl.value) {
+          @if (pendingKeyFile()) {
+            <small class="form-text primary-text font-monospace">{{ pendingKeyFile()?.name }}</small>
+          } @else if (keyPathControl.value) {
             <small class="form-text grey-text font-monospace">{{ keyPathControl.value }}</small>
           }
         </li>
         <li class="list-group-item">
           {{ 'settings.security.cert' | translate }}
           <input #certInput type="file" class="form-control" accept=".pem,.crt" (change)="onCertChange($event)" />
-          @if (certPathControl.value) {
+          @if (pendingCertFile()) {
+            <small class="form-text primary-text font-monospace">{{ pendingCertFile()?.name }}</small>
+          } @else if (certPathControl.value) {
             <small class="form-text grey-text font-monospace">{{ certPathControl.value }}</small>
           }
         </li>
@@ -171,7 +175,9 @@
         <li class="list-group-item">
           {{ 'settings.security.pfx' | translate }}
           <input #pfxInput type="file" class="form-control" accept=".pfx,.p12" (change)="onPfxChange($event)" />
-          @if (pfxPathControl.value) {
+          @if (pendingPfxFile()) {
+            <small class="form-text primary-text font-monospace">{{ pendingPfxFile()?.name }}</small>
+          } @else if (pfxPathControl.value) {
             <small class="form-text grey-text font-monospace">{{ pfxPathControl.value }}</small>
           }
         </li>

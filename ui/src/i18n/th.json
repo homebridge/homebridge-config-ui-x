@@ -672,6 +672,7 @@
   "settings.security.ui_control": "รายการควบคุมอุปกรณ์เสริม",
   "settings.security.ui_control_desc": "กำหนดว่าสะพานและอุปกรณ์เสริมที่มีสะพานใดบ้างที่สามารถควบคุมหรือบล็อคได้โดย Homebridge UI",
   "settings.security.ui_control_desc_2": "อนุญาตให้ UI ควบคุมอุปกรณ์เสริมบน bridge ได้โดยเปิดสวิตช์ด้านล่าง",
+  "settings.security.upload_both_files": "Both a private key and a certificate file must be selected before saving.",
   "settings.service.debug_tooltip": "ปลั๊กอินบางตัวต้องการให้คุณตั้งค่าตัวแปรสภาพแวดล้อม DEBUG {{ link }} เพื่อเปิดใช้งานการบันทึกระดับการดีบัก",
   "settings.service.debug_tooltip_child": "Some plugins require you to set the DEBUG environment variable {{ link }} to enable debug level logging. This value is combined with the global DEBUG setting.",
   "settings.service.node_tooltip": "ตัวเลือกรันไทม์ Node.js สำหรับกระบวนการ Homebridge ควรเว้นว่างไว้ ยกเว้นแต่คุณจะรู้ว่าคุณกำลังทำอะไรอยู่",

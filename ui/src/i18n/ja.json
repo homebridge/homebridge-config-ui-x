@@ -672,6 +672,7 @@
   "settings.security.ui_control": "アクセサリ制御リスト",
   "settings.security.ui_control_desc": "Homebridge UIから制御できるブリッジとアクセサリを定義します。",
   "settings.security.ui_control_desc_2": "下のスイッチを切り替えて、UIからブリッジ上のアクセサリを制御するかどうか設定します。",
+  "settings.security.upload_both_files": "Both a private key and a certificate file must be selected before saving.",
   "settings.service.debug_tooltip": "プラグインによってはDEBUG環境変数を設定してデバッグログを有効にする必要があります{{ link }}。",
   "settings.service.debug_tooltip_child": "Some plugins require you to set the DEBUG environment variable {{ link }} to enable debug level logging. This value is combined with the global DEBUG setting.",
   "settings.service.node_tooltip": "HomebridgeプロセスのNode.jsランタイムオプションです。不明な場合は空欄のままで問題ありません。",

@@ -672,6 +672,7 @@
   "settings.security.ui_control": "Контрольні списки аксесуарів",
   "settings.security.ui_control_desc": "Визначте, які мости та мостові аксесуари можуть керуватися або блокуватися за допомогою інтерфейсу користувача Homebridge.",
   "settings.security.ui_control_desc_2": "Дозвольте інтерфейсу користувача керувати аксесуарами на мосту, увімкнувши перемикач нижче.",
+  "settings.security.upload_both_files": "Both a private key and a certificate file must be selected before saving.",
   "settings.service.debug_tooltip": "Деякі плагіни вимагають встановлення змінного середовища DEBUG {{ link }}, щоб увімкнути ведення журналу на рівні налагодження.",
   "settings.service.debug_tooltip_child": "Some plugins require you to set the DEBUG environment variable {{ link }} to enable debug level logging. This value is combined with the global DEBUG setting.",
   "settings.service.node_tooltip": "Параметри середовища виконання Node.js для процесу Homebridge. Це має бути пустим, якщо Ви не знаєте, що робите.",

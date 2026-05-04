@@ -35,6 +35,9 @@ export class SslSettingsModalComponent implements OnInit {
   public readonly selectedMode = signal<'off' | 'selfsigned' | 'keycert' | 'pfx'>('off')
   public readonly isSaving = signal(false)
   public readonly isUnchanged = signal(true)
+  public readonly pendingKeyFile = signal<File | null>(null)
+  public readonly pendingCertFile = signal<File | null>(null)
+  public readonly pendingPfxFile = signal<File | null>(null)
 
   // Form controls
   public sslModeControl = new FormControl<'off' | 'selfsigned' | 'keycert' | 'pfx'>('off', { nonNullable: true })
@@ -55,15 +58,15 @@ export class SslSettingsModalComponent implements OnInit {
         return !hostnames
       }
       case 'keycert': {
-        // Both key and cert paths must be present
-        const keyPath = this.keyPathControl.value
-        const certPath = this.certPathControl.value
-        return !keyPath || !certPath
+        // Either both files are pending upload, or both paths are already saved
+        const hasKey = !!this.pendingKeyFile() || !!this.keyPathControl.value
+        const hasCert = !!this.pendingCertFile() || !!this.certPathControl.value
+        return !hasKey || !hasCert
       }
       case 'pfx': {
-        // PFX path must be present
-        const pfxPath = this.pfxPathControl.value
-        return !pfxPath
+        // PFX is either pending or already saved
+        const hasPfx = !!this.pendingPfxFile() || !!this.pfxPathControl.value
+        return !hasPfx
       }
       case 'off':
       default:
@@ -154,96 +157,29 @@ export class SslSettingsModalComponent implements OnInit {
         || currentConfig.certPath !== this.originalConfig.certPath
         || currentConfig.pfxPath !== this.originalConfig.pfxPath
         || currentConfig.passphrase !== this.originalConfig.passphrase
+        || !!this.pendingKeyFile()
+        || !!this.pendingCertFile()
+        || !!this.pendingPfxFile()
 
     this.isUnchanged.set(!hasChanges)
   }
 
-  public async onKeyChange(event: Event): Promise<void> {
+  public onKeyChange(event: Event): void {
     const files = (event.target as HTMLInputElement).files
-    if (!files || files.length === 0) {
-      return
-    }
-
-    this.isSaving.set(true)
-    try {
-      const formData: FormData = new FormData()
-      formData.append('uploads', files[0], files[0].name)
-
-      const res = await this.$api.post<SslKeyCertResponse>('/server/ssl/keycert', formData)
-      if (res?.keyPath) {
-        this.keyPathControl.patchValue(res.keyPath)
-        this.detectChanges()
-      }
-    } catch (err: any) {
-      console.error(err)
-      const errorMessage = err?.error?.message || err?.message || 'Unknown error'
-      this.$toastr.error(errorMessage, this.$translate.instant('toast.title_error'))
-    } finally {
-      this.isSaving.set(false)
-      const input = this.keyInput()
-      if (input) {
-        input.nativeElement.value = ''
-      }
-    }
+    this.pendingKeyFile.set(files && files.length > 0 ? files[0] : null)
+    this.detectChanges()
   }
 
-  public async onCertChange(event: Event): Promise<void> {
+  public onCertChange(event: Event): void {
     const files = (event.target as HTMLInputElement).files
-    if (!files || files.length === 0) {
-      return
-    }
-
-    this.isSaving.set(true)
-    try {
-      const formData: FormData = new FormData()
-      formData.append('uploads', files[0], files[0].name)
-
-      const res = await this.$api.post<SslKeyCertResponse>('/server/ssl/keycert', formData)
-      if (res?.certPath) {
-        this.certPathControl.patchValue(res.certPath)
-        this.detectChanges()
-      }
-    } catch (err: any) {
-      console.error(err)
-      const errorMessage = err?.error?.message || err?.message || 'Unknown error'
-      this.$toastr.error(errorMessage, this.$translate.instant('toast.title_error'))
-    } finally {
-      this.isSaving.set(false)
-      const input = this.certInput()
-      if (input) {
-        input.nativeElement.value = ''
-      }
-    }
+    this.pendingCertFile.set(files && files.length > 0 ? files[0] : null)
+    this.detectChanges()
   }
 
-  public async onPfxChange(event: Event): Promise<void> {
+  public onPfxChange(event: Event): void {
     const files = (event.target as HTMLInputElement).files
-    if (!files || files.length === 0) {
-      return
-    }
-
-    this.isSaving.set(true)
-    try {
-      const formData: FormData = new FormData()
-      formData.append('upload', files[0], files[0].name)
-
-      const res = await this.$api.post<SslPfxResponse>('/server/ssl/pfx', formData)
-      if (res?.pfxPath) {
-        this.pfxPathControl.patchValue(res.pfxPath)
-      }
-      this.selectedMode.set('pfx')
-      this.detectChanges()
-    } catch (err: any) {
-      console.error(err)
-      const errorMessage = err?.error?.message || err?.message || 'Unknown error'
-      this.$toastr.error(errorMessage, this.$translate.instant('toast.title_error'))
-    } finally {
-      this.isSaving.set(false)
-      const input = this.pfxInput()
-      if (input) {
-        input.nativeElement.value = ''
-      }
-    }
+    this.pendingPfxFile.set(files && files.length > 0 ? files[0] : null)
+    this.detectChanges()
   }
 
   public async saveConfiguration(): Promise<void> {
@@ -285,7 +221,29 @@ export class SslSettingsModalComponent implements OnInit {
           this.$activeModal.close('keycert')
           return
         }
-        case 'keycert':
+        case 'keycert': {
+          // Upload pending key+cert pair if either was newly selected
+          const pendingKey = this.pendingKeyFile()
+          const pendingCert = this.pendingCertFile()
+          if (pendingKey || pendingCert) {
+            if (!pendingKey || !pendingCert) {
+              throw new Error(this.$translate.instant('settings.security.upload_both_files'))
+            }
+            const formData = new FormData()
+            formData.append('uploads', pendingKey, pendingKey.name)
+            formData.append('uploads', pendingCert, pendingCert.name)
+            const res = await this.$api.post<SslKeyCertResponse>('/server/ssl/keycert', formData)
+            if (res?.keyPath) {
+              this.keyPathControl.patchValue(res.keyPath, { emitEvent: false })
+            }
+            if (res?.certPath) {
+              this.certPathControl.patchValue(res.certPath, { emitEvent: false })
+            }
+            this.pendingKeyFile.set(null)
+            this.pendingCertFile.set(null)
+            this.resetFileInput(this.keyInput())
+            this.resetFileInput(this.certInput())
+          }
           // Clear pfx settings
           changes['ssl.pfx'] = ''
           changes['ssl.passphrase'] = ''
@@ -293,8 +251,20 @@ export class SslSettingsModalComponent implements OnInit {
           changes['ssl.key'] = this.keyPathControl.value
           changes['ssl.cert'] = this.certPathControl.value
           break
-
-        case 'pfx':
+        }
+        case 'pfx': {
+          // Upload pending pfx if newly selected
+          const pendingPfx = this.pendingPfxFile()
+          if (pendingPfx) {
+            const formData = new FormData()
+            formData.append('upload', pendingPfx, pendingPfx.name)
+            const res = await this.$api.post<SslPfxResponse>('/server/ssl/pfx', formData)
+            if (res?.pfxPath) {
+              this.pfxPathControl.patchValue(res.pfxPath, { emitEvent: false })
+            }
+            this.pendingPfxFile.set(null)
+            this.resetFileInput(this.pfxInput())
+          }
           // Clear keycert settings
           changes['ssl.key'] = ''
           changes['ssl.cert'] = ''
@@ -302,6 +272,7 @@ export class SslSettingsModalComponent implements OnInit {
           changes['ssl.pfx'] = this.pfxPathControl.value
           changes['ssl.passphrase'] = this.passphraseControl.value
           break
+        }
       }
 
       // Save each setting individually using the same pattern as settings.component
@@ -323,5 +294,11 @@ export class SslSettingsModalComponent implements OnInit {
 
   public dismissModal(): void {
     this.$activeModal.dismiss('Dismiss')
+  }
+
+  private resetFileInput(input: ElementRef<HTMLInputElement> | undefined): void {
+    if (input) {
+      input.nativeElement.value = ''
+    }
   }
 }
