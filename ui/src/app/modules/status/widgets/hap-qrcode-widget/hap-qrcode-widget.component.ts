@@ -26,6 +26,8 @@ export class HapQrcodeWidgetComponent implements OnInit, OnDestroy {
   // Signals
   readonly pincodeElement = viewChild<ElementRef>('pincode')
   readonly qrcodeContainerElement = viewChild<ElementRef>('qrcodecontainer')
+  public readonly enabled = signal<boolean>(true)
+  public readonly loading = signal<boolean>(true)
   public readonly paired = signal<boolean>(false)
   public readonly pin = signal<string>('')
   public readonly setupUri = signal<string | null>(null)
@@ -41,12 +43,8 @@ export class HapQrcodeWidgetComponent implements OnInit, OnDestroy {
     this.io = this.$ws.getExistingNamespace('status')
 
     this.statusHandler = (data: HomebridgeStatusResponse) => {
-      this.pin.set(data.pin)
-      this.paired.set(data.paired)
-
-      if (data.setupUri) {
-        this.setupUri.set(data.setupUri)
-      }
+      this.applyHapStatus(data)
+      requestAnimationFrame(() => this.resizeQrCode())
     }
 
     this.io.socket.on('homebridge-status', this.statusHandler)
@@ -62,6 +60,24 @@ export class HapQrcodeWidgetComponent implements OnInit, OnDestroy {
     }
   }
 
+  private applyHapStatus(data: HomebridgeStatusResponse): void {
+    // HAP defaults to enabled when the status payload doesn't carry the flag
+    const hapEnabled = data.hap ? data.hap.enabled : true
+    this.enabled.set(hapEnabled)
+    if (hapEnabled) {
+      this.pin.set(data.pin)
+      this.paired.set(data.paired)
+      if (data.setupUri) {
+        this.setupUri.set(data.setupUri)
+      }
+    } else {
+      this.pin.set('')
+      this.paired.set(false)
+      this.setupUri.set(null)
+    }
+    this.loading.set(false)
+  }
+
   public ngOnDestroy(): void {
     if (this.io && this.statusHandler) {
       this.io.socket.off('homebridge-status', this.statusHandler)
@@ -69,11 +85,6 @@ export class HapQrcodeWidgetComponent implements OnInit, OnDestroy {
   }
 
   private resizeQrCode(): void {
-    // Don't resize until we have data to display
-    if (!this.setupUri()) {
-      return
-    }
-
     const containerHeight = (this.qrcodeContainerElement()!.nativeElement as HTMLElement).offsetHeight
     const containerWidth = (this.qrcodeContainerElement()!.nativeElement as HTMLElement).offsetWidth
     const pinCodeHeight = (this.pincodeElement()!.nativeElement as HTMLElement).offsetHeight
@@ -87,12 +98,12 @@ export class HapQrcodeWidgetComponent implements OnInit, OnDestroy {
 
   private getPairingPin(): void {
     this.io.request('get-homebridge-pairing-pin')
-      .subscribe((data) => {
-        this.pin.set(data.pin)
-        this.setupUri.set(data.setupUri)
-        this.paired.set(data.paired)
-        // Resize after data is set and DOM updates
-        requestAnimationFrame(() => this.resizeQrCode())
+      .subscribe({
+        next: (data) => {
+          this.applyHapStatus(data)
+          // Resize after data is set and DOM updates
+          requestAnimationFrame(() => this.resizeQrCode())
+        },
       })
   }
 }

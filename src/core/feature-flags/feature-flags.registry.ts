@@ -34,4 +34,9 @@ export const FEATURE_FLAGS: FeatureFlagDefinition[] = [
     description: 'Enables support for Matter bridges',
     range: '>=2.0.0-beta.71',
   },
+  {
+    key: 'hapBridgeDisable',
+    description: 'Enables disabling HAP per bridge (main and child) and reflects HAP status in widgets',
+    range: '^2.0.1-beta.0',
+  },
 ]
