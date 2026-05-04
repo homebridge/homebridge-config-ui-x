@@ -15,6 +15,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - chore: bump minimum node version to v22.12.0
 - ci: bump version of `viperproject/create-nightly-release` to `v2` (@NorthernMan54)
 - chore: dependency updates
+- docs: create claude info file
 
 ### Homebridge Dependencies
 
