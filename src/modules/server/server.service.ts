@@ -8,7 +8,7 @@ import { Buffer } from 'node:buffer'
 import { exec, spawn } from 'node:child_process'
 import { createPrivateKey, createPublicKey, X509Certificate } from 'node:crypto'
 import { createWriteStream } from 'node:fs'
-import { readdir, unlink } from 'node:fs/promises'
+import { readdir, readFile, unlink, writeFile } from 'node:fs/promises'
 import { basename, extname, join, resolve } from 'node:path'
 import process from 'node:process'
 import { pipeline, Readable } from 'node:stream'
@@ -24,7 +24,7 @@ import {
   NotFoundException,
   ServiceUnavailableException,
 } from '@nestjs/common'
-import { pathExists, readJson, remove, writeJson } from 'fs-extra/esm'
+import { ensureDir, pathExists, readJson, remove, writeJson } from 'fs-extra/esm'
 import NodeCache from 'node-cache'
 import { networkInterfaces } from 'systeminformation'
 import { check as tcpCheck } from 'tcp-port-used'
@@ -1443,8 +1443,9 @@ export class ServerService {
    * Upload a PEM key+cert pair, validate they match, save to storage, and update config
    */
   public async uploadSslKeyCert(req: any): Promise<{ ok: boolean, type: 'keycert', keyPath: string, certPath: string, details?: string }> {
-    // Accept both specific field names (key, cert) and a generic 'files' array; detect content by PEM headers
-    const parts = req.parts ? req.parts() : null
+    // Accept both specific field names (key, cert) and a generic 'files' array; detect content by PEM headers.
+    // Override the global `files: 1` multipart limit since this endpoint legitimately receives a key + cert pair (#2789).
+    const parts = req.parts ? req.parts({ limits: { files: 2 } }) : null
     const files: Array<{ fieldname: string, filename: string, mimetype: string, file: Readable, truncated?: boolean }> = []
 
     if (parts) {
@@ -1485,15 +1486,25 @@ export class ServerService {
       }
       const buf = await readStreamToBuffer(f.file as unknown as Readable)
       const text = buf.toString('utf8')
-      if (RE_PRIVATE_KEY.test(text)) {
+
+      // A single PEM may contain both a key and a cert (combined bundle); test each independently
+      // rather than as if/else, so one upload can populate both slots if needed
+      const hasKey = RE_PRIVATE_KEY.test(text)
+      const hasCert = RE_CERTIFICATE.test(text)
+      if (hasKey && !keyPem) {
         keyPem = buf
-      } else if (RE_CERTIFICATE.test(text)) {
-        // Some uploads may contain a full chain; we’ll accept as cert bundle
+      }
+      if (hasCert && !certPem) {
         certPem = buf
-      } else if (f.fieldname === 'key') {
-        keyPem = buf
-      } else if (f.fieldname === 'cert') {
-        certPem = buf
+      }
+
+      // Fall back to fieldname only when neither PEM marker is present (e.g. DER uploads).
+      if (!hasKey && !hasCert) {
+        if (f.fieldname === 'key' && !keyPem) {
+          keyPem = buf
+        } else if (f.fieldname === 'cert' && !certPem) {
+          certPem = buf
+        }
       }
     }
 
@@ -1525,7 +1536,6 @@ export class ServerService {
     const keyPath = join(sslDir, 'ui-ssl.key')
     const certPath = join(sslDir, 'ui-ssl.crt')
 
-    const { ensureDir, writeFile } = await import('fs-extra')
     await ensureDir(sslDir)
 
     // If existing files exist at these paths, overwrite them
@@ -1543,6 +1553,7 @@ export class ServerService {
     }
     uiConfigBlock.ssl.key = keyPath
     uiConfigBlock.ssl.cert = certPath
+
     // Clear pfx settings and selfSigned
     delete uiConfigBlock.ssl.pfx
     delete uiConfigBlock.ssl.passphrase
@@ -1612,7 +1623,6 @@ export class ServerService {
     // Save to storage
     const sslDir = join(this.configService.storagePath, 'ssl-certs')
     const pfxPath = join(sslDir, 'ui-ssl.pfx')
-    const { ensureDir, writeFile } = await import('fs-extra')
     await ensureDir(sslDir)
     await writeFile(pfxPath, pfxBuffer)
 
@@ -1627,6 +1637,7 @@ export class ServerService {
     }
     uiConfigBlock.ssl.pfx = pfxPath
     uiConfigBlock.ssl.passphrase = passphrase || ''
+
     // Clear other ssl modes
     delete uiConfigBlock.ssl.key
     delete uiConfigBlock.ssl.cert
@@ -1660,7 +1671,6 @@ export class ServerService {
 
     try {
       if (ssl.key && ssl.cert) {
-        const { readFile } = await import('fs-extra')
         const keyPem = await readFile(ssl.key)
         const certPem = await readFile(ssl.cert)
         const x509 = new X509Certificate(certPem)
@@ -1675,7 +1685,6 @@ export class ServerService {
       }
 
       if (ssl.pfx) {
-        const { readFile } = await import('fs-extra')
         const pfx = await readFile(ssl.pfx)
         createSecureContext({ pfx, passphrase: ssl.passphrase })
         return { ok: true, valid: true, type: 'pfx', details: 'PFX file and passphrase are valid.' }
