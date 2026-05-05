@@ -19,6 +19,7 @@ export class TerminalService {
   private static connectedClients: Set<WsEventEmitter> = new Set()
   private static dataListenerAttached = false
   private static terminalBuffer: string = ''
+  private static persistentAptHintInjected = false
   private instanceId: string
 
   constructor(
@@ -28,6 +29,22 @@ export class TerminalService {
   ) {
     this.instanceId = Math.random().toString(36).substring(2, 11)
     this.logger.debug(`TerminalService instance created: ${this.instanceId}`)
+  }
+
+  private shouldInjectAptPackageCommandHint(): boolean {
+    return this.configService.runningInPackageMode && !this.configService.runningInSynologyPackage
+  }
+
+  private getAptPackageCommandHintLine(): string {
+    return '\x1B[37mUpdate Homebridge APT package: \x1B[92mhb-service update-homebridge\x1B[0m\r\n'
+  }
+
+  private injectAptHintBeforeNodeUpdateLine(data: string): string {
+    if (!data.includes('Update Node.js:')) {
+      return data
+    }
+
+    return data.replace('Update Node.js:', `${this.getAptPackageCommandHintLine()}Update Node.js:`)
   }
 
   /**
@@ -83,9 +100,19 @@ export class TerminalService {
       env: process.env,
     })
 
+    let aptHintInjected = false
+
     // Write to the client
     term.onData((data) => {
-      client.emit('stdout', data)
+      let output = data
+
+      if (!aptHintInjected && this.shouldInjectAptPackageCommandHint()) {
+        const injectedOutput = this.injectAptHintBeforeNodeUpdateLine(data)
+        aptHintInjected = injectedOutput !== data
+        output = injectedOutput
+      }
+
+      client.emit('stdout', output)
     })
 
     // Let the client know when the session ends
@@ -146,16 +173,25 @@ export class TerminalService {
         cwd: this.configService.storagePath,
         env: process.env,
       })
+      TerminalService.persistentAptHintInjected = false
 
       // Set up the SINGLE data listener that routes to current client
       if (!TerminalService.dataListenerAttached) {
         this.logger.debug(`[${this.instanceId}] Attaching data listener`)
         TerminalService.persistentTerminal.onData((data) => {
           try {
+            let output = data
+
+            if (!TerminalService.persistentAptHintInjected && this.shouldInjectAptPackageCommandHint()) {
+              const injectedOutput = this.injectAptHintBeforeNodeUpdateLine(data)
+              TerminalService.persistentAptHintInjected = injectedOutput !== data
+              output = injectedOutput
+            }
+
             this.logger.debug(`[${this.instanceId}] Terminal output: ${data.length} characters`)
 
             // Add to buffer for future clients
-            TerminalService.terminalBuffer += data
+            TerminalService.terminalBuffer += output
 
             // Keep buffer size reasonable (configurable)
             const maxBufferSize = this.configService.ui.terminal?.bufferSize || globalThis.terminal.bufferSize
@@ -167,7 +203,7 @@ export class TerminalService {
               this.logger.debug(`[${this.instanceId}] Sending output to ${TerminalService.connectedClients.size} connected clients`)
               TerminalService.connectedClients.forEach((client) => {
                 try {
-                  client.emit('stdout', data)
+                  client.emit('stdout', output)
                 } catch (e) {
                   this.logger.error(`[${this.instanceId}] Error sending output to a client: ${e}`)
                   // Remove client if it's no longer valid
@@ -200,6 +236,7 @@ export class TerminalService {
         TerminalService.connectedClients.clear()
         TerminalService.dataListenerAttached = false
         TerminalService.terminalBuffer = ''
+        TerminalService.persistentAptHintInjected = false
       })
     } else {
       this.logger.debug(`[${this.instanceId}] Attaching to existing persistent terminal.`)
@@ -310,6 +347,9 @@ export class TerminalService {
 
     // Clear all connected clients
     TerminalService.connectedClients.clear()
+
+    // Reset apt hint insertion state
+    TerminalService.persistentAptHintInjected = false
 
     this.logger.debug(`[${this.instanceId}] Persistent terminal session destroyed`)
   }

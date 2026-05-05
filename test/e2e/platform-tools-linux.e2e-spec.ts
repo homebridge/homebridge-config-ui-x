@@ -24,6 +24,7 @@ describe('PlatformToolsLinux (e2e)', () => {
   let authorization: string
   let restartHostFn: Mock
   let shutdownHostFn: Mock
+  let updateAptPackageFn: Mock
   let linuxService: LinuxService
 
   beforeAll(async () => {
@@ -62,8 +63,10 @@ describe('PlatformToolsLinux (e2e)', () => {
     // Setup mock functions
     restartHostFn = vi.fn()
     shutdownHostFn = vi.fn()
+    updateAptPackageFn = vi.fn()
     linuxService.restartHost = restartHostFn as any
     linuxService.shutdownHost = shutdownHostFn as any
+    linuxService.updateAptPackage = updateAptPackageFn as any
 
     // Get auth token before each test
     authorization = `bearer ${(await app.inject({
@@ -102,6 +105,19 @@ describe('PlatformToolsLinux (e2e)', () => {
     expect(shutdownHostFn).toHaveBeenCalled()
   })
 
+  it('PUT /platform-tools/linux/update-apt-package', async () => {
+    const res = await app.inject({
+      method: 'PUT',
+      path: '/platform-tools/linux/update-apt-package',
+      headers: {
+        authorization,
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+    expect(updateAptPackageFn).toHaveBeenCalled()
+  })
+
   it('restartHost returns correct shape with default command', () => {
     // Restore the real implementation
     linuxService.restartHost = LinuxService.prototype.restartHost.bind(linuxService)
@@ -123,6 +139,24 @@ describe('PlatformToolsLinux (e2e)', () => {
     expect(result).toEqual({
       ok: true,
       command: ['sudo -n shutdown -h now'],
+    })
+  })
+
+  it('updateAptPackage returns correct shape with default command', () => {
+    // Restore the real implementation
+    linuxService.updateAptPackage = LinuxService.prototype.updateAptPackage.bind(linuxService)
+
+    const configService = app.get(ConfigService)
+    configService.runningInPackageMode = true
+
+    const result = linuxService.updateAptPackage()
+
+    expect(result).toEqual({
+      ok: true,
+      command: [
+        'sudo -n HOMEBRIDGE_CONFIG_UI_TERMINAL=0 /usr/bin/apt-get update',
+        'sudo -n HOMEBRIDGE_CONFIG_UI_TERMINAL=0 /usr/bin/apt-get install --only-upgrade -y homebridge',
+      ],
     })
   })
 

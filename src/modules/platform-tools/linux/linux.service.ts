@@ -1,6 +1,6 @@
 import { exec } from 'node:child_process'
 
-import { Inject, Injectable } from '@nestjs/common'
+import { BadRequestException, Inject, Injectable } from '@nestjs/common'
 
 import { ConfigService } from '../../../core/config/config.service.js'
 import { Logger } from '../../../core/logger/logger.service.js'
@@ -50,6 +50,32 @@ export class LinuxService {
         }
       })
     }, 500)
+
+    return { ok: true, command: cmd }
+  }
+
+  /**
+   * Update the homebridge apt package using a fixed command.
+   */
+  updateAptPackage() {
+    if (!this.configService.runningInPackageMode) {
+      throw new BadRequestException('This action is only available for apt package installs.')
+    }
+
+    const cmd = [
+      'sudo -n HOMEBRIDGE_CONFIG_UI_TERMINAL=0 /usr/bin/apt-get update',
+      'sudo -n HOMEBRIDGE_CONFIG_UI_TERMINAL=0 /usr/bin/apt-get install --only-upgrade -y homebridge',
+    ]
+
+    this.logger.warn(`Updating homebridge apt package with command ${cmd.join(' && ')}.`)
+
+    setTimeout(() => {
+      exec(cmd.join(' && '), (err) => {
+        if (err) {
+          this.logger.error(err.message)
+        }
+      })
+    }, 100)
 
     return { ok: true, command: cmd }
   }

@@ -27,4 +27,11 @@ export class LinuxController {
   shutdownHost() {
     return this.linuxServer.shutdownHost()
   }
+
+  @UseGuards(AdminGuard)
+  @ApiOperation({ summary: 'Update the homebridge apt package.' })
+  @Put('update-apt-package')
+  updateAptPackage() {
+    return this.linuxServer.updateAptPackage()
+  }
 }

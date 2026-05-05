@@ -1,6 +1,6 @@
 import type { EventEmitter } from 'node:events'
 
-import { exec } from 'node:child_process'
+import { exec, spawn } from 'node:child_process'
 import { createReadStream, existsSync } from 'node:fs'
 import { stat } from 'node:fs/promises'
 import { platform } from 'node:os'
@@ -85,60 +85,117 @@ export class LogService {
   private tailLog(client: EventEmitter, size: TermSize) {
     const command = [...this.command]
 
-    // Spawn the process that will output the logs
-    const term = this.nodePtyService.spawn(command.shift(), command, {
-      name: 'xterm-color',
-      cols: size.cols,
-      rows: size.rows,
-      cwd: this.configService.storagePath,
-      env: process.env,
-    })
+    // On Windows, avoid PTY for PowerShell to prevent ConPTY attach failures
+    if (platform() === 'win32') {
+      const proc = spawn(command[0], command.slice(1), {
+        windowsHide: true,
+        stdio: ['ignore', 'pipe', 'pipe'],
+        cwd: this.configService.storagePath,
+        env: process.env,
+      })
 
-    // Send stdout data from the process to the client
-    term.onData((data) => {
-      client.emit('stdout', data)
-    })
-
-    // Send an error message to the client if the log tailing process exits early
-    term.onExit((code) => {
-      try {
-        if (!this.ending) {
-          client.emit('stdout', '\n\r')
-          client.emit('stdout', red(`The log tail command ${command.join(' ')} exited with code ${code.exitCode}.\n\r`))
-          client.emit('stdout', red('Please check the command in your config.json is correct.\n\r\n\r'))
-          client.emit('stdout', cyan('See https://github.com/homebridge/homebridge-config-ui-x/wiki/Manual-Configuration#log-viewer-configuration for instructions.\r\n'))
+      // Send stdout data from the process to the client
+      proc.stdout?.on('data', (data) => {
+        try {
+          client.emit('stdout', data.toString('utf8').split('\n').join('\n\r'))
+        } catch (e) {
+          // The client socket probably closed
         }
-      } catch (e) {
-        // The client socket probably closed
+      })
+
+      // Send stderr data from the process to the client
+      proc.stderr?.on('data', (data) => {
+        try {
+          client.emit('stdout', data.toString('utf8').split('\n').join('\n\r'))
+        } catch (e) {
+          // The client socket probably closed
+        }
+      })
+
+      // Send an error message to the client if the log tailing process exits early
+      proc.on('exit', (code) => {
+        try {
+          if (!this.ending) {
+            client.emit('stdout', '\n\r')
+            client.emit('stdout', red(`The log tail command ${command.join(' ')} exited with code ${code}.\n\r`))
+            client.emit('stdout', red('Please check the command in your config.json is correct.\n\r\n\r'))
+            client.emit('stdout', cyan('See https://github.com/homebridge/homebridge-config-ui-x/wiki/Manual-Configuration#log-viewer-configuration for instructions.\r\n'))
+          }
+        } catch (e) {
+          // The client socket probably closed
+        }
+      })
+
+      // Cleanup on disconnect
+      const onEnd = () => {
+        this.ending = true
+
+        client.removeAllListeners('end')
+        client.removeAllListeners('disconnect')
+
+        try {
+          proc.kill()
+        } catch (e) {}
       }
-    })
 
-    // Handle resize events
-    client.on('resize', (resize: { rows: number, cols: number }) => {
-      try {
-        term.resize(resize.cols, resize.rows)
-      } catch (e) {}
-    })
+      client.on('end', onEnd.bind(this))
+      client.on('disconnect', onEnd.bind(this))
+    } else {
+      // PTY mode for non-Windows platforms
+      const term = this.nodePtyService.spawn(command.shift(), command, {
+        name: 'xterm-color',
+        cols: size.cols,
+        rows: size.rows,
+        cwd: this.configService.storagePath,
+        env: process.env,
+      })
 
-    // Cleanup on disconnect
-    const onEnd = () => {
-      this.ending = true
+      // Send stdout data from the process to the client
+      term.onData((data) => {
+        client.emit('stdout', data)
+      })
 
-      client.removeAllListeners('resize')
-      client.removeAllListeners('end')
-      client.removeAllListeners('disconnect')
+      // Send an error message to the client if the log tailing process exits early
+      term.onExit((code) => {
+        try {
+          if (!this.ending) {
+            client.emit('stdout', '\n\r')
+            client.emit('stdout', red(`The log tail command ${command.join(' ')} exited with code ${code.exitCode}.\n\r`))
+            client.emit('stdout', red('Please check the command in your config.json is correct.\n\r\n\r'))
+            client.emit('stdout', cyan('See https://github.com/homebridge/homebridge-config-ui-x/wiki/Manual-Configuration#log-viewer-configuration for instructions.\r\n'))
+          }
+        } catch (e) {
+          // The client socket probably closed
+        }
+      })
 
-      try {
-        term.kill()
-      } catch (e) {}
-      // Really make sure the log tail command is killed when using sudo mode
-      if (this.configService.ui.sudo && term && term.pid) {
-        exec(`sudo -n kill -9 ${term.pid}`)
+      // Handle resize events
+      client.on('resize', (resize: { rows: number, cols: number }) => {
+        try {
+          term.resize(resize.cols, resize.rows)
+        } catch (e) {}
+      })
+
+      // Cleanup on disconnect
+      const onEnd = () => {
+        this.ending = true
+
+        client.removeAllListeners('resize')
+        client.removeAllListeners('end')
+        client.removeAllListeners('disconnect')
+
+        try {
+          term.kill()
+        } catch (e) {}
+        // Really make sure the log tail command is killed when using sudo mode
+        if (this.configService.ui.sudo && term && term.pid) {
+          exec(`sudo -n kill -9 ${term.pid}`)
+        }
       }
+
+      client.on('end', onEnd.bind(this))
+      client.on('disconnect', onEnd.bind(this))
     }
-
-    client.on('end', onEnd.bind(this))
-    client.on('disconnect', onEnd.bind(this))
   }
 
   /**

@@ -304,6 +304,33 @@ export class LinuxInstaller extends BasePlatform {
   }
 
   /**
+   * Update Homebridge via apt package manager
+   */
+  public async updateHomebridgePackage() {
+    if (process.env.HOMEBRIDGE_APT_PACKAGE !== '1') {
+      this.hbService.logger('ERROR: This command is only available for apt package installs.', 'fail')
+      process.exit(1)
+    }
+
+    this.checkIsNotRoot()
+
+    try {
+      execSync('sudo -n HOMEBRIDGE_CONFIG_UI_TERMINAL=0 /usr/bin/apt-get update', {
+        stdio: 'inherit',
+      })
+
+      execSync('sudo -n HOMEBRIDGE_CONFIG_UI_TERMINAL=0 /usr/bin/apt-get install --only-upgrade -y homebridge', {
+        stdio: 'inherit',
+      })
+
+      this.hbService.logger('Homebridge apt package update complete.', 'succeed')
+    } catch (e) {
+      this.hbService.logger(`Failed to update Homebridge apt package: ${e.message}`, 'fail')
+      process.exit(1)
+    }
+  }
+
+  /**
    * Debian Version - Supplied GLIBC Version
    *
    *  9 - Stretch       2.24
@@ -594,7 +621,7 @@ export class LinuxInstaller extends BasePlatform {
     try {
       const npmPath = execSync('which npm').toString('utf8').trim()
       const shutdownPath = execSync('which shutdown').toString('utf8').trim()
-      const sudoersEntry = `${this.hbService.asUser}    ALL=(ALL) NOPASSWD:SETENV: ${shutdownPath}, ${npmPath}, /usr/bin/npm, /usr/local/bin/npm`
+      const sudoersEntry = `${this.hbService.asUser}    ALL=(ALL) NOPASSWD:SETENV: ${shutdownPath}, ${npmPath}, /usr/bin/npm, /usr/local/bin/npm, /usr/bin/apt-get update, /usr/bin/apt-get install --only-upgrade -y homebridge`
 
       // Check if the sudoers file already contains the entry
       const sudoers = readFileSync('/etc/sudoers', 'utf-8')
