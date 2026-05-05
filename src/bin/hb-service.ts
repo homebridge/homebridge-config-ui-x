@@ -43,7 +43,7 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
 export class HomebridgeServiceHelper {
-  public action: 'install' | 'uninstall' | 'start' | 'stop' | 'restart' | 'rebuild' | 'run' | 'add' | 'remove' | 'logs' | 'view' | 'update-node' | 'before-start' | 'status'
+  public action: 'install' | 'uninstall' | 'start' | 'stop' | 'restart' | 'rebuild' | 'run' | 'add' | 'remove' | 'logs' | 'view' | 'update-node' | 'update-homebridge' | 'before-start' | 'status'
   public selfPath = __filename
   public serviceName = 'Homebridge'
   public storagePath: string
@@ -191,6 +191,10 @@ export class HomebridgeServiceHelper {
         this.checkForNodejsUpdates(program.args.length === 2 ? program.args[1] : null)
         break
       }
+      case 'update-homebridge': {
+        this.installer.updateHomebridgePackage()
+        break
+      }
       case 'before-start': {
         this.installer.beforeStart()
         break
@@ -219,6 +223,7 @@ export class HomebridgeServiceHelper {
         console.log('    logs                             tails the homebridge service logs')
         console.log('    view                             views the homebridge service logs for 30 seconds')
         console.log('    update-node [version]            update Node.js')
+        console.log('    update-homebridge                update Homebridge apt package')
         console.log('\nSee the wiki for help with hb-service: https://homebridge.io/w/JTtHK \n')
 
         process.exit(1)

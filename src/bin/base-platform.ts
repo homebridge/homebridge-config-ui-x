@@ -59,4 +59,9 @@ export class BasePlatform {
   }
 
   public async updateNodejs(job: { target: string, rebuild: boolean }): Promise<void> {}
+
+  public async updateHomebridgePackage(): Promise<void> {
+    this.hbService.logger('This command has not been implemented on this platform.', 'fail')
+    process.exit(0)
+  }
 }
