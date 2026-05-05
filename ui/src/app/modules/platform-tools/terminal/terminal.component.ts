@@ -1,7 +1,9 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, inject, OnDestroy, OnInit, viewChild } from '@angular/core'
+import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, inject, OnDestroy, OnInit, signal, viewChild } from '@angular/core'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
+import { ToastrService } from 'ngx-toastr'
 import { Subject } from 'rxjs'
 
+import { ApiService } from '@/app/core/communication/api.service'
 import { SettingsService } from '@/app/core/ui/settings.service'
 import { TerminalNavigationGuardService } from '@/app/core/utilities/terminal-navigation-guard.service'
 import { TerminalService } from '@/app/core/utilities/terminal.service'
@@ -23,13 +25,17 @@ import { TerminalService } from '@/app/core/utilities/terminal.service'
   },
 })
 export class TerminalComponent implements OnInit, AfterViewInit, OnDestroy {
+  private $api = inject(ApiService)
   private $terminal = inject(TerminalService)
   private $settings = inject(SettingsService)
   private $navigationGuard = inject(TerminalNavigationGuardService)
   private $translate = inject(TranslateService)
+  private $toastr = inject(ToastrService)
   private resizeEvent = new Subject<void>()
 
   readonly termTarget = viewChild<ElementRef>('terminaloutput')
+  public readonly updatingAptPackage = signal(false)
+  public readonly runningInPackageMode = this.$settings.env.runningInPackageMode
 
   private visibilityChangeHandler: (() => void) | null = null
 
@@ -137,6 +143,30 @@ export class TerminalComponent implements OnInit, AfterViewInit, OnDestroy {
     document.addEventListener('visibilitychange', this.visibilityChangeHandler)
 
     setTimeout(() => this.patchXtermLiveRegion(), 0)
+  }
+
+  public async updateAptPackage() {
+    if (this.updatingAptPackage()) {
+      return
+    }
+
+    this.updatingAptPackage.set(true)
+
+    try {
+      await this.$api.put('/platform-tools/linux/update-apt-package', {})
+      this.$toastr.success(
+        this.$translate.instant('platform.terminal.update_apt_package_started'),
+        this.$translate.instant('toast.title_success'),
+      )
+    } catch (error) {
+      console.error(error)
+      this.$toastr.error(
+        this.$translate.instant('platform.terminal.update_apt_package_error'),
+        this.$translate.instant('toast.title_error'),
+      )
+    } finally {
+      this.updatingAptPackage.set(false)
+    }
   }
 
   private onVisibilityChange(): void {

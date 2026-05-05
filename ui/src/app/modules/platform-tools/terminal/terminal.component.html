@@ -3,6 +3,16 @@
     <h3 class="primary-text m-0">{{ 'menu.linux.label_terminal' | translate }}</h3>
   </div>
 </div>
+@if (runningInPackageMode) {
+<div class="row mb-3">
+  <div class="col-12">
+    <button type="button" class="btn btn-outline-primary" [disabled]="updatingAptPackage()"
+      (click)="updateAptPackage()">
+      {{ 'platform.terminal.update_apt_package' | translate }}
+    </button>
+  </div>
+</div>
+}
 <div class="flex-column d-flex align-items-stretch adjust-for-mobile">
   <div #terminaloutput id="docker-terminal" class="align-self-end w-100 h-100 mb-1"></div>
 </div>

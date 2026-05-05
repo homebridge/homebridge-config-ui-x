@@ -12,7 +12,7 @@ import { LinuxService } from './linux.service.js'
 export class LinuxController {
   constructor(
     @Inject(LinuxService) private readonly linuxServer: LinuxService,
-  ) {}
+  ) { }
 
   @UseGuards(AdminGuard)
   @ApiOperation({ summary: 'Restart the host server.' })
@@ -26,5 +26,12 @@ export class LinuxController {
   @Put('shutdown-host')
   shutdownHost() {
     return this.linuxServer.shutdownHost()
+  }
+
+  @UseGuards(AdminGuard)
+  @ApiOperation({ summary: 'Update the homebridge apt package.' })
+  @Put('update-apt-package')
+  updateAptPackage() {
+    return this.linuxServer.updateAptPackage()
   }
 }
