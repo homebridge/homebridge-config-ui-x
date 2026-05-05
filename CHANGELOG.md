@@ -18,6 +18,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - chore: dependency updates
 - docs: create claude info file
 - chore: update `engines.homebridge` for homebridge 2.0
+- fix: feature flags ignore homebridge prerelease versions
 
 ### Homebridge Dependencies
 

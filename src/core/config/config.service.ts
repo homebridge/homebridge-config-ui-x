@@ -434,7 +434,7 @@ export class ConfigService {
     FEATURE_FLAGS.forEach((flag) => {
       try {
         // Use semver to check if the current version satisfies the minimum version
-        featureFlags[flag.key] = satisfies(this.homebridgeVersion, flag.range)
+        featureFlags[flag.key] = satisfies(this.homebridgeVersion, flag.range, { includePrerelease: true })
       } catch (error) {
         // If there's an error parsing the version, disable the feature
         featureFlags[flag.key] = false
