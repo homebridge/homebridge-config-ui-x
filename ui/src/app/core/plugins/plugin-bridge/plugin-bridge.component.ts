@@ -1328,7 +1328,10 @@ export class PluginBridgeComponent implements OnInit {
 
     try {
       await this.$api.put(endpoint, { value })
-      this.updateLocalBridgeConfig(normalizedUsername, { hideHapAlert: value })
+      this.updateLocalBridgeConfig(
+        normalizedUsername,
+        protocol === 'hap' ? { hideHapAlert: value } : { hideMatterAlert: value },
+      )
     } catch (error) {
       console.error(`Failed to update hide ${protocol} alert:`, error)
       throw error
