@@ -7,6 +7,15 @@
 
 .services-bag {
   min-height: 170px;
+  justify-content: space-between;
+
+  // Pseudo-element soaks up the leftover space on the last partial row, so
+  // `justify-content: space-between` only stretches full rows (#2790).
+  &::after {
+    content: '';
+    flex: auto;
+  }
+
   @media (max-width: 575px) {
     min-height: initial;
   }

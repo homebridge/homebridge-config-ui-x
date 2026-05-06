@@ -11,6 +11,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix: ssl keycert upload requires both files at once
 - fix: remove beta badge - terminal theme + log search
 - feat: highlight matching accessory in remove-from-cache list
+- fix: accessory layout drag-drop reorders wrong tile
 
 ### Other Changes
 

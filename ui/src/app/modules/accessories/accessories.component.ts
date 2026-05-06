@@ -101,14 +101,15 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
 
     this.isMobile.set(this.$md.detect.mobile() || false)
 
-    // Disable drag and drop for everything except the room title
+    // Drag-and-drop is restricted to manage-layout mode, where filters are guaranteed off and the
+    // dragula model + DOM stay 1-to-1. Allowing drag while filters hide items causes the model
+    // splice to operate on the wrong indexes (#2790).
     dragulaService.createGroup('rooms-bag', {
-      moves: (_el, _container, handle) => !this.isMobile() && !!handle?.classList.contains('drag-handle'),
+      moves: (_el, _container, handle) => this.manageLayoutMode && !!handle?.classList.contains('drag-handle'),
     })
 
-    // Disable drag and drop for the .no-drag class
     dragulaService.createGroup('services-bag', {
-      moves: el => !this.isMobile() && !el?.classList.contains('no-drag'),
+      moves: el => this.manageLayoutMode && !el?.classList.contains('no-drag'),
     })
 
     // Save the room and service layout
@@ -292,21 +293,6 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
 
   public toggleLayoutLock(): void {
     this.isMobile.set(!this.isMobile())
-
-    if (this.isMobile()) {
-      const servicesBags = document.querySelectorAll('.services-bag')
-      servicesBags.forEach((servicesBag) => {
-        for (let i = 0; i < 10; i += 1) {
-          const invisibleDiv = document.createElement('div')
-          invisibleDiv.className = 'accessory-box invisible py-0 my-0'
-          invisibleDiv.style.height = '0'
-          servicesBag.appendChild(invisibleDiv)
-        }
-      })
-    } else {
-      const invisibleItems = document.querySelectorAll('.invisible')
-      invisibleItems.forEach(item => item.remove())
-    }
   }
 
   public openSupport(): void {
@@ -455,14 +441,16 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
    * Check if a service should be displayed based on current filters
    */
   public shouldDisplayService(service: ServiceTypeX): boolean {
+    // In manage layout mode, show ALL accessories so the dragula model and DOM stay 1-to-1 (#2790).
+    // Filtering inside the dragula container desynchronises model indexes from DOM indexes,
+    // which causes drops to move the wrong (unrelated) accessory.
+    if (this.manageLayoutMode) {
+      return true
+    }
+
     // Check hidden filter
     if (this.hideHidden() && service.hidden) {
       return false
-    }
-
-    // In manage layout mode, show all accessories regardless of bridge filter
-    if (this.manageLayoutMode) {
-      return true
     }
 
     // Check bridge filter

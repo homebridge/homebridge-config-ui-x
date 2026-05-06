@@ -182,7 +182,6 @@
                 <div
                   class="col-md-12 d-flex flex-wrap noselect services-bag"
                   dragula="services-bag"
-                  [class.justify-content-between]="isMobile()"
                   [(dragulaModel)]="room.services"
                 >
                   @for (service of room.services; track service.uniqueId) {
@@ -192,16 +191,18 @@
                       </div>
                     }
                   }
-                  <div class="accessory-box accessory-box-placeholder"></div>
-                  <div class="accessory-box accessory-box-placeholder"></div>
-                  <div class="accessory-box accessory-box-placeholder"></div>
-                  <div class="accessory-box accessory-box-placeholder"></div>
-                  <div class="accessory-box accessory-box-placeholder"></div>
-                  <div class="accessory-box accessory-box-placeholder"></div>
-                  <div class="accessory-box accessory-box-placeholder"></div>
-                  <div class="accessory-box accessory-box-placeholder"></div>
-                  <div class="accessory-box accessory-box-placeholder"></div>
-                  <div class="accessory-box accessory-box-placeholder"></div>
+                  @if (!manageLayoutMode) {
+                    <div class="accessory-box accessory-box-placeholder no-drag"></div>
+                    <div class="accessory-box accessory-box-placeholder no-drag"></div>
+                    <div class="accessory-box accessory-box-placeholder no-drag"></div>
+                    <div class="accessory-box accessory-box-placeholder no-drag"></div>
+                    <div class="accessory-box accessory-box-placeholder no-drag"></div>
+                    <div class="accessory-box accessory-box-placeholder no-drag"></div>
+                    <div class="accessory-box accessory-box-placeholder no-drag"></div>
+                    <div class="accessory-box accessory-box-placeholder no-drag"></div>
+                    <div class="accessory-box accessory-box-placeholder no-drag"></div>
+                    <div class="accessory-box accessory-box-placeholder no-drag"></div>
+                  }
                 </div>
               }
               @if (!room.services.length && !isMobile()) {
