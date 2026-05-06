@@ -26,7 +26,7 @@ export class InformationComponent {
   public title = this.modalData.title
   public subtitle = this.modalData.subtitle
   public message = this.modalData.message
-  public message2 = this.modalData.markdownMessage2
+  public message2 = '' // Intentionally empty to trigger markdown rendering to resolve #2798
   public ctaButtonLabel = this.modalData.ctaButtonLabel
   public ctaButtonLink = this.modalData.ctaButtonLink
   public faIconClass = this.modalData.faIconClass
