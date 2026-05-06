@@ -30,9 +30,12 @@ export class WsService {
       const io: IoNamespace = this.namespaceConnectionCache[namespace]
       io.connected = new Subject()
 
-      // Broadcast to subscribers that the connection is ready
+      // Broadcast to subscribers that the connection is ready. Defer the emission
+      // so callers (e.g. terminal/log services) have time to subscribe synchronously
+      // after this method returns — otherwise the `next` fires into an empty
+      // Subject and downstream code (like `startSession()`) never runs (#2761).
       if (io.socket.connected) {
-        io.connected!.next(undefined)
+        setTimeout(() => io.connected!.next(undefined))
       }
 
       // Watch for re-connections, and broadcast

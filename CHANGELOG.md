@@ -12,6 +12,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix: remove beta badge - terminal theme + log search
 - feat: highlight matching accessory in remove-from-cache list
 - fix: accessory layout drag-drop reorders wrong tile
+- fix: blank terminal on navigate-back after v5.21
 
 ### Other Changes
 
