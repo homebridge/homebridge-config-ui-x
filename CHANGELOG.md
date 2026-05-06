@@ -20,6 +20,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - chore: update `engines.homebridge` for homebridge 2.0
 - fix: feature flags ignore homebridge prerelease versions
 - fix: write `hideMatterAlert` to local cache on matter toggle
+- fix: configured `lang` ignored on refresh
 
 ### Homebridge Dependencies
 

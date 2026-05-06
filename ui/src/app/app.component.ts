@@ -85,7 +85,9 @@ export class AppComponent {
     )
 
     this.$translate.setFallbackLang('en')
-    if (browserLang) {
+
+    // Don't override a language already set by SettingsService
+    if (browserLang && !this.$translate.getCurrentLang()) {
       this.$translate.use(browserLang)
     }
   }
