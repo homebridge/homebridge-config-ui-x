@@ -17,9 +17,6 @@
       <h5 class="mb-3" [innerHTML]="subtitle"></h5>
     }
     <p class="mb-0" [innerHTML]="message"></p>
-    @if (message2) {
-      <p class="mb-0 mt-3" [innerHTML]="message2"></p>
-    }
     @if (markdownMessage2) {
       <div class="alert p-3 mt-3">
         <markdown class="plugin-md" [data]="markdownMessage2" />
