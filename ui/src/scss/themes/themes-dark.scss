@@ -550,6 +550,11 @@
         color: #ffffff !important;
       }
     }
+
+    .list-group-item-highlight {
+      background-color: rgba($darkModePrimary, 0.18) !important;
+      box-shadow: inset 3px 0 0 0 $darkModePrimary;
+    }
   }
 }
 

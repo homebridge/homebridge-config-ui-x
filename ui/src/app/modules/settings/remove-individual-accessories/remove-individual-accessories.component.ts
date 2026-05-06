@@ -34,6 +34,8 @@ export class RemoveIndividualAccessoriesComponent implements OnInit {
 
   // Public properties for component use
   public selectedBridge = this.modalData.selectedBridge
+  public highlightUuid = this.modalData.highlightUuid
+  public highlightCacheFile = this.modalData.highlightCacheFile
 
   // Signals
   public readonly pairings = signal<Pairing[]>([])
@@ -75,6 +77,14 @@ export class RemoveIndividualAccessoriesComponent implements OnInit {
 
   public isInList(id: string, cacheFile: string, protocol: 'hap' | 'matter'): boolean {
     return this.toDelete().some(item => item.uuid === id && item.cacheFile === cacheFile && item.protocol === protocol)
+  }
+
+  public shouldHighlight(uuid: string, cacheFile: string): boolean {
+    // Only highlight when there's more than one item to disambiguate from.
+    return !!this.highlightUuid
+      && this.selectedBridgeAccessories().length > 1
+      && uuid === this.highlightUuid
+      && cacheFile === this.highlightCacheFile
   }
 
   public async removeAccessories(): Promise<void> {
@@ -205,6 +215,11 @@ export class RemoveIndividualAccessoriesComponent implements OnInit {
         this.currentSelectedBridge.set(selectedBridgeId)
         this.accessoriesExist.set(true)
         this.selectedBridgeAccessories.set(this.pairings().find((pairing: Pairing) => pairing._id === selectedBridgeId)?.accessories || [])
+
+        // Wait for both Angular's @for render and the NgBootstrap modal fade-in (~150ms) before scrolling.
+        if (this.highlightUuid && this.selectedBridgeAccessories().length > 1) {
+          setTimeout(() => document.querySelector('.list-group-item-highlight')?.scrollIntoView({ block: 'center', behavior: 'smooth' }), 250)
+        }
       }
     } catch (error) {
       console.error(error)

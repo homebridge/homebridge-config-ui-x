@@ -10,6 +10,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - feat: support disabling hap on main and child bridges
 - fix: ssl keycert upload requires both files at once
 - fix: remove beta badge - terminal theme + log search
+- feat: highlight matching accessory in remove-from-cache list
 
 ### Other Changes
 

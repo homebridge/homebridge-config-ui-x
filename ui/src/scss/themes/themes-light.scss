@@ -309,6 +309,11 @@
     .release-tab {
       color: #333333 !important;
     }
+
+    .list-group-item-highlight {
+      background-color: rgba($primary, 0.12);
+      box-shadow: inset 3px 0 0 0 $primary;
+    }
   }
 }
 

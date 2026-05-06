@@ -240,6 +240,8 @@ export class AccessoryInfoComponent implements OnInit, OnDestroy {
       provide: REMOVE_INDIVIDUAL_ACCESSORIES_MODAL_DATA,
       useValue: {
         selectedBridge: this.localService.instance.username.replaceAll(':', ''),
+        highlightUuid: this.matchedCachedAccessory?.UUID,
+        highlightCacheFile: this.matchedCachedAccessory?.$cacheFile,
       },
     }], this.injector)
 

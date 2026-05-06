@@ -178,6 +178,8 @@ export const RESTORE_MODAL_DATA = new InjectionToken<RestoreModalData>('RestoreM
 // ===== Remove Individual Accessories =====
 export interface RemoveIndividualAccessoriesModalData {
   selectedBridge: string
+  highlightUuid?: string
+  highlightCacheFile?: string
 }
 
 export const REMOVE_INDIVIDUAL_ACCESSORIES_MODAL_DATA = new InjectionToken<RemoveIndividualAccessoriesModalData>('RemoveIndividualAccessoriesModalData')
