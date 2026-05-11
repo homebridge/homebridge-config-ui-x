@@ -92,11 +92,6 @@ export class PluginsComponent implements OnInit, OnDestroy, CanComponentDeactiva
       void this.initialize()
     })
 
-    // If already connected, initialize immediately
-    if (this.io.socket.connected) {
-      void this.initialize()
-    }
-
     this.io.socket.on('child-bridge-status-update', (data) => {
       const existingBridge = this.childBridges().find(x => x.username === data.username)
       if (existingBridge) {

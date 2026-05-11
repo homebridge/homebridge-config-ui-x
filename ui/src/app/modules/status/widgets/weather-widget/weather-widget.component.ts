@@ -59,11 +59,6 @@ export class WeatherWidgetComponent implements OnInit {
     interval(1300000).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
       this.getCurrentWeather()
     })
-
-    // Fetch initial data if already connected
-    if (this.io.socket.connected) {
-      this.getCurrentWeather()
-    }
   }
 
   /**

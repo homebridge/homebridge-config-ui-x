@@ -21,6 +21,7 @@ export class LogService {
   private useNative = false
   private ending = false
   private nativeTail: Tail
+  private activeClients = new WeakSet<EventEmitter>()
 
   constructor(
     @Inject(ConfigService) private readonly configService: ConfigService,
@@ -56,6 +57,16 @@ export class LogService {
    * @param size
    */
   public connect(client: EventEmitter, size: TermSize) {
+    // Guard against a single socket asking for a log stream twice. Without this,
+    // duplicate `tail-log` events attach two listeners to the shared native Tail
+    // / spawn two child processes, and every line is delivered to the client
+    // twice (see #2806). The matching `delete` happens in the per-method `onEnd`
+    // cleanups so we don't add extra `disconnect`/`end` listeners on the client.
+    if (this.activeClients.has(client)) {
+      return
+    }
+    this.activeClients.add(client)
+
     this.ending = false
 
     if (!satisfies(process.version, `>=${this.configService.minimumNodeVersion}`)) {
@@ -129,6 +140,7 @@ export class LogService {
       // Cleanup on disconnect
       const onEnd = () => {
         this.ending = true
+        this.activeClients.delete(client)
 
         client.removeAllListeners('end')
         client.removeAllListeners('disconnect')
@@ -179,6 +191,7 @@ export class LogService {
       // Cleanup on disconnect
       const onEnd = () => {
         this.ending = true
+        this.activeClients.delete(client)
 
         client.removeAllListeners('resize')
         client.removeAllListeners('end')
@@ -290,6 +303,7 @@ export class LogService {
     // Cleanup on disconnect
     const onEnd = () => {
       this.ending = true
+      this.activeClients.delete(client)
 
       // @ts-expect-error - TS2339: Property removeListener does not exist on type Tail
       this.nativeTail.removeListener('line', onLine)

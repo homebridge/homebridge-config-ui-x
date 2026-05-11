@@ -38,11 +38,6 @@ export class UptimeWidgetComponent implements OnInit {
         this.getServerUptimeInfo()
       }
     })
-
-    // Fetch initial data if already connected
-    if (this.io.socket.connected) {
-      this.getServerUptimeInfo()
-    }
   }
 
   private getServerUptimeInfo(): void {

@@ -89,11 +89,6 @@ export class UpdateInfoWidgetComponent implements OnInit {
     this.io.connected!.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
       queueMicrotask(() => this.loadAllData())
     })
-
-    // Fetch initial data if already connected - defer to avoid NG0100
-    if (this.io.socket.connected) {
-      queueMicrotask(() => this.loadAllData())
-    }
   }
 
   private async loadAllData(): Promise<void> {

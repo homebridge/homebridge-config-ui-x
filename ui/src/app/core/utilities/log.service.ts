@@ -62,7 +62,11 @@ export class LogService {
       this.fitAddon.fit()
     })
 
-    // Start the terminal session when the socket is connected
+    // Start the terminal session when the socket is connected.
+    // `IoNamespace.connected` is a ReplaySubject(1), so this subscription
+    // reliably fires for both fresh and cache-hit paths — do NOT also emit
+    // `tail-log` synchronously here, or the server will attach two log streams
+    // to this socket and every line is delivered twice (see #2806).
     this.io.connected!
       .pipe(takeUntil(this.destroy$))
       .subscribe(() => {
@@ -70,11 +74,6 @@ export class LogService {
         this.logBuffer = []
         this.io.socket.emit('tail-log', { cols: this.term.cols, rows: this.term.rows })
       })
-
-    // If already connected, emit the tail-log event immediately
-    if (this.io.socket.connected) {
-      this.io.socket.emit('tail-log', { cols: this.term.cols, rows: this.term.rows })
-    }
 
     // Handle disconnect events
     this.io.socket.on('disconnect', () => {

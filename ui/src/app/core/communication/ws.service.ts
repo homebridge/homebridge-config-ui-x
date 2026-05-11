@@ -1,12 +1,12 @@
 import { inject, Injectable } from '@angular/core'
-import { Observable, Subject } from 'rxjs'
+import { Observable, ReplaySubject } from 'rxjs'
 import { io as ioFn, Socket } from 'socket.io-client'
 
 import { AuthService } from '@/app/core/auth/auth.service'
 import { environment } from '@/environments/environment'
 
 export interface IoNamespace {
-  connected?: Subject<any>
+  connected?: ReplaySubject<void>
   socket: Socket
   request: (resource: string, payload?: string | Record<string, any> | Array<any>) => Observable<any>
   end?: () => void
@@ -21,26 +21,36 @@ export class WsService {
   private namespaceConnectionCache: Record<string, IoNamespace> = {}
 
   /**
-   * Wrapper function to reuse the same connection
+   * Wrapper function to reuse the same connection.
+   *
+   * `connected` is a `ReplaySubject(1)`: the most recent "socket is ready"
+   * emission is buffered so subscribers that attach synchronously after this
+   * method returns still receive it. This is what lets callers safely do:
+   *
+   *     io = $ws.connectToNamespace('foo')
+   *     io.connected.subscribe(() => io.socket.emit('start'))
+   *
+   * …without an additional `if (io.socket.connected) emit('start')` fallback —
+   * adding both makes the `emit` fire twice on cache-hit (see #2806).
+   *
    * @param namespace
    */
   public connectToNamespace(namespace: string): IoNamespace {
     if (this.namespaceConnectionCache[namespace]) {
       /* connection to namespace already exists */
       const io: IoNamespace = this.namespaceConnectionCache[namespace]
-      io.connected = new Subject()
+      io.connected = new ReplaySubject<void>(1)
 
-      // Broadcast to subscribers that the connection is ready. Defer the emission
-      // so callers (e.g. terminal/log services) have time to subscribe synchronously
-      // after this method returns — otherwise the `next` fires into an empty
-      // Subject and downstream code (like `startSession()`) never runs (#2761).
+      // If the socket is already connected, signal ready immediately — the
+      // ReplaySubject buffer ensures synchronously-attached subscribers receive
+      // this value once they subscribe.
       if (io.socket.connected) {
-        setTimeout(() => io.connected!.next(undefined))
+        io.connected.next()
       }
 
       // Watch for re-connections, and broadcast
       io.socket.on('connect', () => {
-        io.connected!.next(undefined)
+        io.connected!.next()
       })
 
       // Define end function
@@ -54,11 +64,11 @@ export class WsService {
     } else {
       /* first time connecting to namespace */
       const io = this.establishConnectionToNamespace(namespace)
-      io.connected = new Subject()
+      io.connected = new ReplaySubject<void>(1)
 
       // Wait for the connection and broadcast when ready
       io.socket.on('connect', () => {
-        io.connected!.next(undefined)
+        io.connected!.next()
       })
 
       // Define end function

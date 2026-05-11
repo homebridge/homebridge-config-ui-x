@@ -119,16 +119,6 @@ export class BridgesWidgetComponent implements OnInit, OnDestroy {
         }
       })
     })
-
-    // Fetch initial data if already connected
-    if (this.ioMain.socket.connected) {
-      void this.getHomebridgeStatus()
-    }
-
-    if (this.ioChild.socket.connected) {
-      this.getChildBridgeMetadata()
-      this.ioChild.socket.emit('monitor-child-bridge-status')
-    }
   }
 
   public async restartChildBridge(bridge: ChildBridgeWithUIState): Promise<void> {

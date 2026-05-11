@@ -336,11 +336,6 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
       this.ioStatus.socket.emit('monitor-server-status')
     })
 
-    // Fallback for cached connections where the connected event fires before subscription
-    if (this.ioStatus.socket.connected) {
-      this.ioStatus.socket.emit('monitor-server-status')
-    }
-
     this.ioStatus.socket.on('homebridge-status', (data: any) => {
       if (data.username) {
         this.bridgeUsernameToNameMap.set(data.username, 'Homebridge')
@@ -353,12 +348,6 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
       this.ioChild.socket.emit('monitor-child-bridge-status')
       this.fetchChildBridges()
     })
-
-    // Fallback for cached connections where the connected event fires before subscription
-    if (this.ioChild.socket.connected) {
-      this.ioChild.socket.emit('monitor-child-bridge-status')
-      this.fetchChildBridges()
-    }
 
     this.ioChild.socket.on('child-bridge-status-update', (data: ChildBridgeStatusResponse) => {
       this.bridgeUsernameToNameMap.set(data.username, data.name)

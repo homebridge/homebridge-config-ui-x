@@ -93,11 +93,6 @@ export abstract class BaseChartWidgetComponent implements OnInit, OnDestroy {
     this.configureEvent.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
       this.reinitializeWidget()
     })
-
-    // Fetch initial data if already connected
-    if (this.io.socket.connected) {
-      this.fetchData()
-    }
   }
 
   public ngOnDestroy(): void {

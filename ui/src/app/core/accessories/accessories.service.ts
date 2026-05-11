@@ -153,17 +153,14 @@ export class AccessoriesService {
     // Load the room layout first
     await this.loadLayout()
 
-    // Subscribe for reconnections
+    // Subscribe for reconnections — ReplaySubject(1) on `connected` ensures this
+    // fires both for fresh connections and when the namespace is reused while
+    // already connected, so no synchronous fallback is needed.
     this.io.connected!
       .pipe(takeUntil(this.stop$))
       .subscribe(() => {
         this.io.socket.emit('get-accessories')
       })
-
-    // Check if already connected and initialize immediately
-    if (this.io.socket.connected) {
-      this.io.socket.emit('get-accessories')
-    }
 
     // Subscribe to accessory events
     this.io.socket.on('accessories-data', (data: ServiceType[]) => {

@@ -95,21 +95,14 @@ export class StatusComponent implements OnInit, OnDestroy {
       displayGrid: 'none',
     }
 
-    // Subscribe for reconnections
+    // Subscribe for reconnections — fires once for cache-hit-while-connected
+    // and on every (re)connect thereafter. `consoleStatus` starts as 'down' and
+    // is flipped back to 'down' by the 'disconnect' handler below.
     this.io.connected!.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
       this.consoleStatus.set('up')
       this.io.socket.emit('monitor-server-status')
       this.getLayout()
     })
-
-    // Check if already connected and initialize immediately
-    if (this.io.socket.connected) {
-      this.consoleStatus.set('up')
-      this.io.socket.emit('monitor-server-status')
-      this.getLayout()
-    } else {
-      this.consoleStatus.set('down')
-    }
 
     this.io.socket.on('disconnect', () => {
       this.consoleStatus.set('down')

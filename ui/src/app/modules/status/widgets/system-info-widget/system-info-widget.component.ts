@@ -50,11 +50,6 @@ export class SystemInfoWidgetComponent implements OnInit {
     this.io.connected!.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
       this.getSystemInfo()
     })
-
-    // Fetch initial data if already connected
-    if (this.io.socket.connected) {
-      this.getSystemInfo()
-    }
   }
 
   private getSystemInfo(): void {

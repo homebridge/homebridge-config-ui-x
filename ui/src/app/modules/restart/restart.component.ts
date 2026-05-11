@@ -54,12 +54,6 @@ export class RestartComponent implements OnInit, OnDestroy {
       this.$settings.getAppSettings().catch(() => { /* do nothing */ })
     })
 
-    // Check if already connected and initialize immediately
-    if (this.io.socket.connected) {
-      this.io.socket.emit('monitor-server-status')
-      this.$settings.getAppSettings().catch(() => { /* do nothing */ })
-    }
-
     // Set up socket listener for homebridge status updates
     this.io.socket.on('homebridge-status', (data: HomebridgeStatusResponse) => {
       if (this.statusCheckActive()) {

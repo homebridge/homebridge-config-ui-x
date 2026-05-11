@@ -48,12 +48,6 @@ export class RestartLinuxComponent implements OnInit, OnDestroy {
       void this.$settings.getAppSettings().catch(() => { /* do nothing */ })
     })
 
-    // Check if already connected and initialize immediately
-    if (this.io.socket.connected) {
-      this.io.socket.emit('monitor-server-status')
-      void this.$settings.getAppSettings().catch(() => { /* do nothing */ })
-    }
-
     try {
       await this.$api.put('/platform-tools/linux/restart-host', {})
       this.checkIfServerUp()
