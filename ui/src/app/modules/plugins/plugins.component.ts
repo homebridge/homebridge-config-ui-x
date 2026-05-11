@@ -67,6 +67,11 @@ export class PluginsComponent implements OnInit, OnDestroy, CanComponentDeactiva
   // Other properties
   private readonly isSearchMode = signal(false)
   private io!: IoNamespace
+  // Dedupes concurrent loads — without this, the websocket-connected subscriber
+  // and the router NavigationEnd subscriber both fire `loadInstalledPlugins()`
+  // on a fresh mount, doubling the work and (worse) sometimes leaving the grid
+  // briefly rendered with metadata-less plugin objects (#2806-adjacent).
+  private inFlightLoad?: Promise<Plugin[] | undefined>
   public readonly isAdmin = this.$auth.user.admin
   public form = new FormGroup({
     query: new FormControl<string>(''),
@@ -115,8 +120,8 @@ export class PluginsComponent implements OnInit, OnDestroy, CanComponentDeactiva
   }
 
   public async search(): Promise<void> {
-    this.installedPlugins.set([])
     this.loading.set(true)
+    this.installedPlugins.set([])
     this.showExitButton.set(true)
 
     try {
@@ -128,24 +133,26 @@ export class PluginsComponent implements OnInit, OnDestroy, CanComponentDeactiva
       // If the user has the unscoped version installed, but not the scoped version, then hide the scoped version
       const hiddenPlugins = new Set<string>()
       const pluginMap = new Map(data.map((plugin: Plugin) => [plugin.name, plugin]))
-      this.installedPlugins.set(data
-        .reduce((acc: Plugin[], x: Plugin) => {
-          if (x.name === 'homebridge-config-ui-x' || hiddenPlugins.has(x.name)) {
-            return acc
-          }
-          if (x.newHbScope) {
-            const y = x.newHbScope.to
-            const yExists = pluginMap.has(y)
-            if (x.installedVersion || !yExists) {
-              hiddenPlugins.add(y)
-              acc.push(x)
-            }
-          } else {
+      const filtered = data.reduce((acc: Plugin[], x: Plugin) => {
+        if (x.name === 'homebridge-config-ui-x' || hiddenPlugins.has(x.name)) {
+          return acc
+        }
+        if (x.newHbScope) {
+          const y = x.newHbScope.to
+          const yExists = pluginMap.has(y)
+          if (x.installedVersion || !yExists) {
+            hiddenPlugins.add(y)
             acc.push(x)
           }
-          return acc
-        }, []))
-      await this.appendMetaInfo()
+        } else {
+          acc.push(x)
+        }
+        return acc
+      }, [])
+
+      // Populate metadata before publishing so cards render fully-formed.
+      await this.appendMetaInfo(filtered)
+      this.installedPlugins.set(filtered)
     } catch (error) {
       this.isSearchMode.set(false)
       console.error(error)
@@ -361,45 +368,36 @@ export class PluginsComponent implements OnInit, OnDestroy, CanComponentDeactiva
     }
   }
 
-  private async loadInstalledPlugins(): Promise<Plugin[] | undefined> {
+  private loadInstalledPlugins(): Promise<Plugin[] | undefined> {
+    // Share a single in-flight load across concurrent triggers (ws-connected
+    // subscribe + NavigationEnd both fire on a fresh mount).
+    if (this.inFlightLoad) {
+      return this.inFlightLoad
+    }
+    this.inFlightLoad = this.runLoadInstalledPlugins()
+      .finally(() => {
+        this.inFlightLoad = undefined
+      })
+    return this.inFlightLoad
+  }
+
+  private async runLoadInstalledPlugins(): Promise<Plugin[] | undefined> {
     this.form.setValue({ query: '' })
     this.showExitButton.set(false)
-    this.installedPlugins.set([])
     this.loading.set(true)
+    this.installedPlugins.set([])
     this.mainError.set(false)
 
     try {
       const installedPlugins = await this.$api.get<Plugin[]>('/plugins')
-      this.installedPlugins.set(installedPlugins.filter((x: Plugin) => x.name !== 'homebridge-config-ui-x'))
-      await this.appendMetaInfo()
+      const plugins = installedPlugins.filter((x: Plugin) => x.name !== 'homebridge-config-ui-x')
 
-      // Multi-criteria sorting
-      const sortedList = this.installedPlugins().sort((a, b) => {
-        // Priority 1: updateAvailable (=true)
-        // Priority 2: newHbScope (=true)
-        // Priority 3: disabled (=false)
-        // Priority 4: isConfigured (=false) - unconfigured plugins need setup
-        // Priority 5: hasChildBridgesUnpaired (=true) - unpaired bridges need pairing
-        // Priority 6: hasChildBridges (=false)
-        // Create sort keys for better performance
-        const aScore = (a.updateAvailable ? 1000 : 0)
-          + (a.newHbScope ? 100 : 0)
-          + (a.disabled ? -10 : 0)
-          + (a.isConfigured ? -20 : 0)
-          + (a.hasChildBridgesUnpaired ? 5 : 0)
-          + (a.hasChildBridges && this.$settings.env.recommendChildBridges ? -1 : 0)
+      // Populate per-plugin metadata BEFORE publishing to the signal so the
+      // grid never renders with `plugin.isConfigured === undefined`, which
+      // would flash the "needs setup" icon on every card (#2806-adjacent).
+      await this.appendMetaInfo(plugins)
 
-        const bScore = (b.updateAvailable ? 1000 : 0)
-          + (b.newHbScope ? 100 : 0)
-          + (b.disabled ? -10 : 0)
-          + (b.isConfigured ? -20 : 0)
-          + (b.hasChildBridgesUnpaired ? 5 : 0)
-          + (b.hasChildBridges && this.$settings.env.recommendChildBridges ? -1 : 0)
-
-        // Compare scores first, then fallback to name
-        return aScore !== bScore ? bScore - aScore : a.name.localeCompare(b.name)
-      })
-
+      const sortedList = this.sortPlugins(plugins)
       this.installedPlugins.set(sortedList)
       return sortedList
     } catch (error) {
@@ -413,13 +411,41 @@ export class PluginsComponent implements OnInit, OnDestroy, CanComponentDeactiva
     }
   }
 
-  private async appendMetaInfo(): Promise<void> {
+  private sortPlugins(plugins: Plugin[]): Plugin[] {
+    // Multi-criteria sorting
+    // Priority 1: updateAvailable (=true)
+    // Priority 2: newHbScope (=true)
+    // Priority 3: disabled (=false)
+    // Priority 4: isConfigured (=false) - unconfigured plugins need setup
+    // Priority 5: hasChildBridgesUnpaired (=true) - unpaired bridges need pairing
+    // Priority 6: hasChildBridges (=false)
+    return [...plugins].sort((a, b) => {
+      const aScore = (a.updateAvailable ? 1000 : 0)
+        + (a.newHbScope ? 100 : 0)
+        + (a.disabled ? -10 : 0)
+        + (a.isConfigured ? -20 : 0)
+        + (a.hasChildBridgesUnpaired ? 5 : 0)
+        + (a.hasChildBridges && this.$settings.env.recommendChildBridges ? -1 : 0)
+
+      const bScore = (b.updateAvailable ? 1000 : 0)
+        + (b.newHbScope ? 100 : 0)
+        + (b.disabled ? -10 : 0)
+        + (b.isConfigured ? -20 : 0)
+        + (b.hasChildBridgesUnpaired ? 5 : 0)
+        + (b.hasChildBridges && this.$settings.env.recommendChildBridges ? -1 : 0)
+
+      // Compare scores first, then fallback to name
+      return aScore !== bScore ? bScore - aScore : a.name.localeCompare(b.name)
+    })
+  }
+
+  private async appendMetaInfo(plugins: Plugin[]): Promise<void> {
     if (!this.isAdmin) {
       return
     }
 
     // Also get the current configuration for each plugin
-    await Promise.all(this.installedPlugins()
+    await Promise.all(plugins
       .filter(plugin => plugin.installedVersion)
       .map(async (plugin: Plugin) => {
         try {

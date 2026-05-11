@@ -14,6 +14,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix: accessory layout drag-drop reorders wrong tile
 - fix: blank terminal on navigate-back after v5.21
 - fix: repeated socket emits after navigating between pages
+- fix: plugin cards briefly flash "needs setup" icon when navigating
 
 ### Other Changes
 
