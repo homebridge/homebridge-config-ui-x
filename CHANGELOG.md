@@ -26,6 +26,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix: write `hideMatterAlert` to local cache on matter toggle
 - fix: configured `lang` ignored on refresh
 - fix: remove dead `message2` block from information modal
+- docs: factual touch-up of `README`
 
 ### Homebridge Dependencies
 

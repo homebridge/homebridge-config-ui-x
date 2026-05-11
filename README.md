@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://homebridge.io"><img src="https://raw.githubusercontent.com/homebridge/branding/latest/logos/homebridge-color-round-stylized.png" height="140"></a>
+  <a href="https://homebridge.io"><img src="https://raw.githubusercontent.com/homebridge/branding/latest/logos/homebridge-color-round-stylized.png" alt="Homebridge Logo" height="140"></a>
 </p>
 <span align="center">
 
@@ -13,20 +13,20 @@
 
 </span>
 
-**Homebridge UI** is a web based management tool for [Homebridge](https://github.com/homebridge/homebridge) that allows you to manage all aspects of your Homebridge setup.
+**Homebridge UI** is a web-based management tool for [Homebridge](https://github.com/homebridge/homebridge) that allows you to manage all aspects of your Homebridge setup.
 
 - Install and configure Homebridge plugins
 - Edit the Homebridge `config.json` with advanced JSON syntax checking and structure validation
-- Visual configuration for over 450 plugins (no manual config.json editing required)
+- Visual configuration for over 500 plugins (no manual config.json editing required)
 - Monitor your Homebridge server via a fully customisable widget-based dashboard
 - View the Homebridge logs
 - View and control Homebridge accessories
 - Restart Homebridge
-- Backup and Restore your Homebridge instance
+- Back up and Restore your Homebridge instance
 - Set up and manage your Homebridge plugins as [child bridges](https://github.com/homebridge/homebridge/wiki/Child-Bridges)
 - and more...
 
-Homebridge UI also provides a tool called [`hb-service`](https://github.com/homebridge/homebridge-config-ui-x/wiki/Homebridge-Service-Command) which makes it easy to set up Homebridge as a service on Linux/Raspbian, macOS and Windows 10.
+Homebridge UI also provides a tool called [`hb-service`](https://github.com/homebridge/homebridge-config-ui-x/wiki/Homebridge-Service-Command) which makes it easy to set up Homebridge as a service on Linux/Raspbian, macOS, FreeBSD and Windows.
 
 ## Installation Instructions
 
@@ -35,12 +35,12 @@ For detailed instructions on how to set up Node.js and Homebridge with Homebridg
 - <img src="https://user-images.githubusercontent.com/3979615/78118327-9853f200-7452-11ea-88aa-5e57ebcf3070.png" alt="homebridge-raspbian-image" height="16px" width="16px"/> [Setup Homebridge using the official Homebridge Raspberry Pi Image](https://github.com/homebridge/homebridge-raspbian-image/wiki/Getting-Started)
 - <img src="https://user-images.githubusercontent.com/3979615/59594350-07b45b80-9137-11e9-85fd-e75093ba91a4.png" alt="raspbian" height="16px" width="16px"/> [Setup Homebridge on a Raspberry Pi (Raspbian)](https://github.com/homebridge/homebridge/wiki/Install-Homebridge-on-Raspbian)
 - <img src="https://user-images.githubusercontent.com/3979615/59595664-93c78280-9139-11e9-83dc-4d6f9405e788.png" alt="linux" height="16px" width="16px"/> [Setup Homebridge on Debian or Ubuntu Linux](https://github.com/homebridge/homebridge/wiki/Install-Homebridge-on-Debian-or-Ubuntu-Linux)
-- <img src="https://user-images.githubusercontent.com/3979615/59593218-e0f52580-9134-11e9-8b77-585755af5d99.png" alt="windows" height="16px" width="16px"/> [Setup Homebridge on Windows 10](https://github.com/homebridge/homebridge/wiki/Install-Homebridge-on-Windows-10)
+- <img src="https://user-images.githubusercontent.com/3979615/59593218-e0f52580-9134-11e9-8b77-585755af5d99.png" alt="windows" height="16px" width="16px"/> [Setup Homebridge on Windows 10/11](https://github.com/homebridge/homebridge/wiki/Install-Homebridge-on-Windows-10)
 - <img src="https://user-images.githubusercontent.com/3979615/59594157-b015f000-9136-11e9-93cb-c9d9773ec9e8.png" alt="macos" height="16px" width="16px"/> [Setup Homebridge on macOS](https://github.com/homebridge/homebridge/wiki/Install-Homebridge-on-macOS)
 - <img src="https://user-images.githubusercontent.com/3979615/59594527-56fa8c00-9137-11e9-937b-32092dfcff41.png" alt="docker" height="16px" width="16px"/> [Setup Homebridge using Docker](https://github.com/homebridge/homebridge/wiki/Install-Homebridge-on-Docker)
 - <img src="https://user-images.githubusercontent.com/3979615/78118531-dc46f700-7452-11ea-95e5-977f79d1904f.png" alt="synology-dsm" height="16px" width="16px"/> [Setup Homebridge on a Synology NAS](https://github.com/homebridge/homebridge/wiki/Install-Homebridge-on-Synology-DSM)
 
-If your platform is not listed above, or you want to use your own service manager, see the [Manual Configuration](https://github.com/homebridge/homebridge-config-ui-x/wiki/Manual-Configuration) wiki article for instructions on setting up the Homebridge UI to run as a Homebridge plugin instead of a service.
+If your platform is not listed above, or you want to use your own service manager, see the [Manual Configuration](https://github.com/homebridge/homebridge-config-ui-x/wiki/Manual-Configuration) wiki article for instructions on installing and running `hb-service` manually.
 
 The default username is `admin` and the default password is `admin`.
 
@@ -56,11 +56,11 @@ This shows an overview of your Homebridge system. The dashboard is widget-based 
 
 ### Plugin Screen
 
-This shows you the currently installed plugins and allows you to install, configure, update and remove plugins.
+This shows you the currently installed plugins and allows you to install, configure, update, and remove plugins.
 
 ![Plugin](screenshots/homebridge-config-ui-x-darkmode-plugins.png)
 
-You can configure supported plugins using the graphical settings editor, or by editing the config JSON directly.
+You can configure supported plugins using the graphical settings editor or by editing the config JSON directly.
 
 ![Plugin Settings](screenshots/homebridge-config-ui-x-darkmode-alexa-settings.png)
 
@@ -104,7 +104,7 @@ HomeKit communities can also be found on both [Discord](https://discord.gg/RcV7f
 
 ## Limitations
 
-- One bridge can only expose 150 accessories due to a HomeKit limit. You can however run your plugins as a [Child Bridge](https://github.com/homebridge/homebridge/wiki/Child-Bridges) or run [Multiple Homebridge Instances](https://github.com/oznu/homebridge-config-ui-x/wiki/Homebridge-Service-Command#multiple-instances) to get around this limitation.
+- One bridge can only expose 150 accessories due to a HomeKit limit. You can, however, run your plugins as a [Child Bridge](https://github.com/homebridge/homebridge/wiki/Child-Bridges) or run [Multiple Homebridge Instances](https://github.com/homebridge/homebridge-config-ui-x/wiki/Homebridge-Service-Command#multiple-instances) to get around this limitation.
 - Once an accessory has been added to the Home app, changing its name via Homebridge won't be automatically reflected in iOS. You must change it via the Home app as well.
 
 ## Credits
