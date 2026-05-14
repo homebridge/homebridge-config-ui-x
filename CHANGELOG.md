@@ -7,6 +7,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 ### Other Changes
 
 - chore: drop `lodash` from backend deps
+- chore: replace `ngx-md` with a small in-house markdown component
 
 ### Homebridge Dependencies
 

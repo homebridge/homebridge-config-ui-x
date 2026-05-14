@@ -2,7 +2,6 @@ import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@ang
 import { FormControl, ReactiveFormsModule } from '@angular/forms'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
-import { NgxMdModule } from 'ngx-md'
 import { ToastrService } from 'ngx-toastr'
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators'
 import { satisfies } from 'semver'
@@ -18,7 +17,6 @@ import { PluginNodeCheck } from '@/app/modules/status/widgets/widgets.interfaces
   selector: 'app-node-version-modal',
   imports: [
     TranslatePipe,
-    NgxMdModule,
     ReactiveFormsModule,
   ],
   standalone: true,

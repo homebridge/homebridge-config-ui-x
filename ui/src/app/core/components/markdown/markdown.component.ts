@@ -1,24 +1,34 @@
-import { Directive, ElementRef, inject, OnInit } from '@angular/core'
+import { ChangeDetectionStrategy, Component, effect, ElementRef, inject, input } from '@angular/core'
 import { EmojiConvertor } from 'emoji-js'
+import { marked } from 'marked'
 
-@Directive({
+@Component({
   selector: 'markdown',
   standalone: true,
+  template: '',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class PluginsMarkdownDirective implements OnInit {
-  private el = inject(ElementRef)
+export class MarkdownComponent {
+  private static emoji = new EmojiConvertor()
 
-  public ngOnInit() {
-    const root = this.el.nativeElement as HTMLElement
+  private el = inject<ElementRef<HTMLElement>>(ElementRef)
 
-    const links = root.querySelectorAll('a')
-    links.forEach((a: HTMLAnchorElement) => {
+  public readonly data = input('')
+
+  constructor() {
+    effect(() => this.render(this.data()))
+  }
+
+  private render(source: string): void {
+    const root = this.el.nativeElement
+    root.innerHTML = marked.parse(source ?? '', { async: false }) as string
+
+    root.querySelectorAll('a').forEach((a) => {
       a.target = '_blank'
       a.rel = 'noopener noreferrer'
     })
 
-    const images = root.querySelectorAll('img')
-    images.forEach((img: HTMLImageElement) => {
+    root.querySelectorAll('img').forEach((img) => {
       const alt = img.getAttribute('alt')
       if (!alt || !alt.trim()) {
         img.setAttribute('alt', '')
@@ -27,13 +37,11 @@ export class PluginsMarkdownDirective implements OnInit {
       }
     })
 
-    const emoji = new EmojiConvertor()
-
     const walker = document.createTreeWalker(
       root,
       NodeFilter.SHOW_TEXT,
       (n: Node) => {
-        const p = n.parentElement as HTMLElement | null
+        const p = n.parentElement
         if (!p) {
           return NodeFilter.FILTER_REJECT
         }
@@ -56,7 +64,7 @@ export class PluginsMarkdownDirective implements OnInit {
       if (!original.includes(':')) {
         return
       }
-      const replaced = emoji.replace_colons(original)
+      const replaced = MarkdownComponent.emoji.replace_colons(original)
       if (replaced !== original) {
         t.nodeValue = replaced
       }
