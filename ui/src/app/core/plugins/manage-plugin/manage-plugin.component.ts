@@ -13,13 +13,12 @@ import { FitAddon } from '@xterm/addon-fit'
 import { WebLinksAddon } from '@xterm/addon-web-links'
 import { Terminal } from '@xterm/xterm'
 import { saveAs } from 'file-saver'
-import { NgxMdModule } from 'ngx-md'
 import { ToastrService } from 'ngx-toastr'
 
 import { ApiService } from '@/app/core/communication/api.service'
 import { IoNamespace, WsService } from '@/app/core/communication/ws.service'
+import { MarkdownComponent } from '@/app/core/components/markdown/markdown.component'
 import { RestartHomebridgeComponent } from '@/app/core/components/restart-homebridge/restart-homebridge.component'
-import { PluginsMarkdownDirective } from '@/app/core/directives/plugins.markdown.directive'
 import { HB_V2_MODAL_DATA, MANAGE_PLUGIN_MODAL_DATA, MANAGE_VERSION_MODAL_DATA, PLUGIN_LOGS_MODAL_DATA } from '@/app/core/modal-data-tokens'
 import { ChildBridge } from '@/app/core/plugins/manage-plugins.interfaces'
 import { ManageVersionComponent } from '@/app/core/plugins/manage-version/manage-version.component'
@@ -36,8 +35,7 @@ const RE_STARTS_WITH_DIGIT = /^\d/
 @Component({
   selector: 'app-manage-plugin',
   imports: [
-    NgxMdModule,
-    PluginsMarkdownDirective,
+    MarkdownComponent,
     TranslatePipe,
     NgbNavOutlet,
     NgbNav,

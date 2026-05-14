@@ -120,7 +120,6 @@
               "json5",
               "lodash",
               "mobile-detect",
-              "prismjs",
               "qrcode",
               "semver"
             ],

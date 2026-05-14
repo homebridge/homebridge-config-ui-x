@@ -1,17 +1,15 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe } from '@ngx-translate/core'
-import { NgxMdModule } from 'ngx-md'
 
-import { PluginsMarkdownDirective } from '@/app/core/directives/plugins.markdown.directive'
+import { MarkdownComponent } from '@/app/core/components/markdown/markdown.component'
 import { INFORMATION_MODAL_DATA } from '@/app/core/modal-data-tokens'
 
 @Component({
   selector: 'app-information',
   imports: [
     TranslatePipe,
-    NgxMdModule,
-    PluginsMarkdownDirective,
+    MarkdownComponent,
   ],
   standalone: true,
   templateUrl: './information.component.html',

@@ -13,12 +13,11 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap/tooltip'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import json5 from 'json5'
-import { NgxMdModule } from 'ngx-md'
 import { EditorComponent } from 'ngx-monaco-editor-v2'
 import { ToastrService } from 'ngx-toastr'
 
 import { ApiService } from '@/app/core/communication/api.service'
-import { PluginsMarkdownDirective } from '@/app/core/directives/plugins.markdown.directive'
+import { MarkdownComponent } from '@/app/core/components/markdown/markdown.component'
 import { createChildBridgeSchema } from '@/app/core/helpers/child-bridges-schema.helper'
 import { PLUGIN_MODAL_DATA } from '@/app/core/modal-data-tokens'
 import { InterpolateMdPipe } from '@/app/core/pipes/interpolate-md.pipe'
@@ -47,8 +46,7 @@ declare global {
     TranslatePipe,
     NgbAccordionToggle,
     InterpolateMdPipe,
-    NgxMdModule,
-    PluginsMarkdownDirective,
+    MarkdownComponent,
   ],
   standalone: true,
   templateUrl: './manual-config.component.html',

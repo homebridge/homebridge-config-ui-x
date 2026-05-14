@@ -12,13 +12,12 @@ import {
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap/tooltip'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
-import { NgxMdModule } from 'ngx-md'
 import { ToastrService } from 'ngx-toastr'
 import { v4 as uuid } from 'uuid'
 
 import { ApiService } from '@/app/core/communication/api.service'
+import { MarkdownComponent } from '@/app/core/components/markdown/markdown.component'
 import { SchemaFormComponent } from '@/app/core/components/schema-form/schema-form.component'
-import { PluginsMarkdownDirective } from '@/app/core/directives/plugins.markdown.directive'
 import { PLUGIN_MODAL_DATA } from '@/app/core/modal-data-tokens'
 import { InterpolateMdPipe } from '@/app/core/pipes/interpolate-md.pipe'
 import { HomebridgeDeconzComponent } from '@/app/core/plugins/custom-plugins/homebridge-deconz/homebridge-deconz.component'
@@ -30,8 +29,7 @@ import { ChildBridgesService } from '@/app/core/utilities/child-bridges.service'
 @Component({
   selector: 'app-plugin-config',
   imports: [
-    NgxMdModule,
-    PluginsMarkdownDirective,
+    MarkdownComponent,
     NgbAccordionDirective,
     NgbAccordionItem,
     NgbAccordionHeader,
