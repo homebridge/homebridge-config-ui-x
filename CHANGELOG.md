@@ -2,6 +2,18 @@
 
 All notable changes to `homebridge-config-ui-x` will be documented in this file. This project tries to adhere to [Semantic Versioning](http://semver.org/).
 
+## v5.23.1 (Pending Release)
+
+### Other Changes
+
+- chore: drop `lodash` from backend deps
+
+### Homebridge Dependencies
+
+- `@homebridge/hap-client` @ `v4.0.4`
+- `@homebridge/node-pty-prebuilt-multiarch` @ `v0.13.1`
+- `@homebridge/plugin-ui-utils` @ `v2.2.3`
+
 ## v5.23.0 (2026-05-12)
 
 ### UI Changes

@@ -8,15 +8,13 @@ import { stat } from 'node:fs/promises'
 import { homedir, platform, totalmem } from 'node:os'
 import { resolve } from 'node:path'
 import process from 'node:process'
+import { isDeepStrictEqual } from 'node:util'
 
 import { Injectable } from '@nestjs/common'
 import { pathExists, pathExistsSync, readJson, readJSONSync, readJsonSync, writeJsonSync } from 'fs-extra/esm'
-import _ from 'lodash'
 import { satisfies } from 'semver'
 
 import { FEATURE_FLAGS } from '../feature-flags/feature-flags.registry.js'
-
-const { isEqual } = _
 
 @Injectable()
 export class ConfigService {
@@ -264,7 +262,7 @@ export class ConfigService {
     }
 
     // If the ui or bridge config has changed, a restart is required
-    return !(isEqual(this.ui, this.uiFreeze) && isEqual(this.homebridgeConfig.bridge, this.bridgeFreeze))
+    return !(isDeepStrictEqual(this.ui, this.uiFreeze) && isDeepStrictEqual(this.homebridgeConfig.bridge, this.bridgeFreeze))
   }
 
   /**
