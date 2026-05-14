@@ -1,67 +1,67 @@
 version: 2
 updates:
   - package-ecosystem: npm
-    directory: "/"
+    directory: /
     schedule:
       interval: daily
-      time: "10:00"
+      time: '10:00'
     open-pull-requests-limit: 10
     labels:
-      - "dependencies"
+      - dependencies
     # Group related updates together (optional)
     groups:
       packages:
         patterns:
-          - "*"
+          - '*'
     # Automatically rebase PRs when conflicts occur
-    rebase-strategy: "auto"
+    rebase-strategy: auto
     # Commit message prefix
     commit-message:
-      prefix: "chore"
-      prefix-development: "chore"
-      include: "scope"
+      prefix: chore
+      prefix-development: chore
+      include: scope
 
   - package-ecosystem: npm
-    directory: "/ui"
+    directory: /ui
     schedule:
       interval: daily
-      time: "10:00"
+      time: '10:00'
     open-pull-requests-limit: 10
     labels:
-      - "dependencies"
+      - dependencies
     # Group related updates together (optional)
     groups:
       packages:
         patterns:
-          - "*"
+          - '*'
     # Automatically rebase PRs when conflicts occur
-    rebase-strategy: "auto"
+    rebase-strategy: auto
     # Commit message prefix
     commit-message:
-      prefix: "chore"
-      prefix-development: "chore"
-      include: "scope"
+      prefix: chore
+      prefix-development: chore
+      include: scope
 
-  - package-ecosystem: "github-actions"
-    directory: "/"
+  - package-ecosystem: github-actions
+    directory: /
     schedule:
-      interval: "daily"
-      time: "09:00"
+      interval: daily
+      time: '09:00'
     # Create PRs for out-of-date actions
     open-pull-requests-limit: 10
-    target-branch: "latest"
+    target-branch: latest
     # Add labels to PRs
     labels:
-      - "dependencies"
+      - dependencies
     # Group related updates together (optional)
     groups:
       actions:
         patterns:
-          - "*"
+          - '*'
     # Automatically rebase PRs when conflicts occur
-    rebase-strategy: "auto"
+    rebase-strategy: auto
     # Commit message prefix
     commit-message:
-      prefix: "chore"
-      prefix-development: "chore"
-      include: "scope"
+      prefix: chore
+      prefix-development: chore
+      include: scope
