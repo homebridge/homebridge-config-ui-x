@@ -35,7 +35,6 @@ import { BadRequestException, Inject, Injectable, InternalServerErrorException, 
 import axios from 'axios'
 import { cyan, green, red, yellow } from 'bash-color'
 import { createFile, ensureDir, pathExists, pathExistsSync, readJson, remove } from 'fs-extra/esm'
-import _ from 'lodash'
 import NodeCache from 'node-cache'
 import pLimit from 'p-limit'
 import { firstValueFrom } from 'rxjs'
@@ -59,8 +58,6 @@ import {
 } from '../../core/regex.constants.js'
 import { ChildBridgesService } from '../child-bridges/child-bridges.service.js'
 import { HomebridgeUpdateActionDto, PluginActionDto } from './plugins.dto.js'
-
-const { orderBy, uniq } = _
 
 // Create a require function for ESM compatibility
 const require = createRequire(import.meta.url)
@@ -462,7 +459,19 @@ export class PluginsService {
     }
 
     const orderPlugins = (arr: HomebridgePlugin[]) =>
-      orderBy(arr, ['verifiedPlusPlugin', 'verifiedPlugin', 'lastUpdated'], ['desc', 'desc', 'desc'])
+      [...arr].sort((a, b) => {
+        const aPlus = a.verifiedPlusPlugin ? 1 : 0
+        const bPlus = b.verifiedPlusPlugin ? 1 : 0
+        if (aPlus !== bPlus) {
+          return bPlus - aPlus
+        }
+        const aVerified = a.verifiedPlugin ? 1 : 0
+        const bVerified = b.verifiedPlugin ? 1 : 0
+        if (aVerified !== bVerified) {
+          return bVerified - aVerified
+        }
+        return (b.lastUpdated ?? '').localeCompare(a.lastUpdated ?? '')
+      })
 
     // Separate scoped plugins so they always appear first
     const allResults = [
@@ -1881,7 +1890,7 @@ export class PluginsService {
       paths = paths.filter(x => x !== join(process.env.UIX_BASE_PATH, 'node_modules'))
     }
     // Filter out duplicates and non-existent paths
-    return uniq(paths).filter((requiredPath) => {
+    return [...new Set(paths)].filter((requiredPath) => {
       return existsSync(requiredPath)
     })
   }
