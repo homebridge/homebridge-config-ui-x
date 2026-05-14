@@ -1,12 +1,24 @@
 import { importProvidersFrom } from '@angular/core'
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap'
 import { Bootstrap5FrameworkModule } from '@ng-formworks/bootstrap5'
-import { provideCharts, withDefaultRegisterables } from 'ng2-charts'
+import { CategoryScale, Filler, LinearScale, LineController, LineElement, PointElement } from 'chart.js'
+import { provideCharts } from 'ng2-charts'
 import { DragulaModule } from 'ng2-dragula'
 import { NgxMonacoEditorConfig, provideMonacoEditor } from 'ngx-monaco-editor-v2'
 import { provideToastr } from 'ngx-toastr'
 
 import { onMonacoLoad } from '@/app/core/ui/monaco-editor.service'
+
+// Status widgets only use filled line charts with hidden axes/legend/tooltips,
+// so register just the chart.js components they need instead of the full default set.
+const chartRegisterables = [
+  LineController,
+  LineElement,
+  PointElement,
+  Filler,
+  LinearScale,
+  CategoryScale,
+]
 
 const monacoBaseUrl = './assets/monaco/min/vs'
 
@@ -73,7 +85,7 @@ export function provideUiLibraries() {
       maxOpened: 2,
       positionClass: 'toast-bottom-right',
     }),
-    provideCharts(withDefaultRegisterables()),
+    provideCharts({ registerables: chartRegisterables }),
     provideMonacoEditor(monacoConfig),
   ]
 }
