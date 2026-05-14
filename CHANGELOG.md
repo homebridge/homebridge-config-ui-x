@@ -10,6 +10,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - chore: replace `ngx-md` with a small in-house markdown component
 - enable dependabot for dependency and github-action updates (#2811) (@NorthernMan54)
 - chore: register only the `chart.js` components the widgets use
+- chore: replace 168kb homebridge logo `svg` with 10kb `webp`
 
 ### Homebridge Dependencies
 
