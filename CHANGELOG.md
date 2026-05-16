@@ -4,6 +4,10 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 
 ## v5.23.1 (Pending Release)
 
+### UI Changes
+
+- chore: migrate v4-style font awesome icons to v6 syntax
+
 ### Other Changes
 
 - chore: drop `lodash` from backend deps

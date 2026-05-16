@@ -76,7 +76,7 @@ export class PowerOptionsComponent implements OnInit {
         title: this.$translate.instant('menu.linux.label_shutdown_server'),
         message: this.$translate.instant('menu.linux.label_shutdown_modal'),
         confirmButtonLabel: this.$translate.instant('form.button_continue'),
-        faIconClass: 'fa fa-power-off primary-text',
+        faIconClass: 'fas fa-power-off primary-text',
       },
     }], this.injector)
 

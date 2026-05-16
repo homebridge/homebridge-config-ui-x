@@ -12,7 +12,7 @@
   <div class="modal-body d-flex flex-row flex-grow-1 w-100">
     @if (loading()) {
       <div class="w-100 text-center primary-text my-5 w-100">
-        <i class="fa fa-circle-notch fa-spin icon-xl"></i>
+        <i class="fas fa-circle-notch fa-spin icon-xl"></i>
       </div>
     } @else {
       <div class="w-100 text-center">
@@ -170,7 +170,7 @@
                   />
                   <div class="me-3">
                     <i
-                      class="far fa-bell fa-fw fa-2x"
+                      class="far fa-bell fa-2x"
                       aria-hidden="true"
                       [class.primary-text]="updatePreferenceControl.value === 'major'"
                       [class.grey-text]="updatePreferenceControl.value !== 'major'"
