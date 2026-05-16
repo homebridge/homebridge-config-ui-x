@@ -47,7 +47,6 @@ jobs:
                   echo "* Error: Rate limit exceeded (429). Stopping the step." >&2
                   HAS_ERROR=2
                   break
-                exit 1
                 else
                   echo "* Error: failed to deprecate version $VERSION" >&2
                   HAS_ERROR=1

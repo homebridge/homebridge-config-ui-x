@@ -18,6 +18,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - chore: subset font awesome fonts to icons used in the ui
 - chore: patch `@ng-formworks` to import `lodash-es`
 - chore: replace `emoji-js` with a generated short-name lookup
+- chore: small fix in deprecate-past-releases workflow
 
 ### Homebridge Dependencies
 
