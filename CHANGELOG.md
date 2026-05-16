@@ -17,6 +17,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - chore: replace 168kb homebridge logo `svg` with 10kb `webp`
 - chore: subset font awesome fonts to icons used in the ui
 - chore: patch `@ng-formworks` to import `lodash-es`
+- chore: replace `emoji-js` with a generated short-name lookup
 
 ### Homebridge Dependencies
 

@@ -1,6 +1,15 @@
 import { ChangeDetectionStrategy, Component, effect, ElementRef, inject, input } from '@angular/core'
-import { EmojiConvertor } from 'emoji-js'
 import { marked } from 'marked'
+
+import emojiShortnames from './emoji-shortnames.json'
+
+// Same token shape emoji-js matched: `:name:` optionally trailed by a skin-tone modifier.
+const RE_EMOJI_COLONS = /:([\w+-]+):(?::skin-tone-[2-6]:)?/gi
+const EMOJI: Record<string, string> = emojiShortnames
+
+function replaceColons(text: string): string {
+  return text.replace(RE_EMOJI_COLONS, (match, name) => EMOJI[name] ?? match)
+}
 
 @Component({
   selector: 'markdown',
@@ -9,8 +18,6 @@ import { marked } from 'marked'
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MarkdownComponent {
-  private static emoji = new EmojiConvertor()
-
   private el = inject<ElementRef<HTMLElement>>(ElementRef)
 
   public readonly data = input('')
@@ -64,7 +71,7 @@ export class MarkdownComponent {
       if (!original.includes(':')) {
         return
       }
-      const replaced = MarkdownComponent.emoji.replace_colons(original)
+      const replaced = replaceColons(original)
       if (replaced !== original) {
         t.nodeValue = replaced
       }
