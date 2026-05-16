@@ -8,6 +8,7 @@
     "check": "npm install && npm outdated",
     "ng": "ng",
     "start": "ng serve --host 0.0.0.0",
+    "prebuild": "node ../scripts/fontawesome-subset.mjs",
     "build": "ng build --configuration production",
     "postinstall": "patch-package"
   },
@@ -66,6 +67,7 @@
     "@types/node": "^25.7.0",
     "@types/qrcode": "^1.5.6",
     "@types/semver": "^7.7.1",
+    "fontawesome-subset": "^4.6.0",
     "he": "^1.2.0",
     "monaco-editor": "^0.55.1",
     "patch-package": "^8.0.1",
