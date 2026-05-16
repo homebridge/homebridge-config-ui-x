@@ -21,10 +21,11 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - chore: replace `emoji-js` with a generated short-name lookup
 - chore: small fix in deprecate-past-releases workflow
 - chore: add some extra eslint rules for test files
+- chore: dependency updates
 
 ### Homebridge Dependencies
 
-- `@homebridge/hap-client` @ `v4.0.4`
+- `@homebridge/hap-client` @ `v4.0.5-beta`
 - `@homebridge/node-pty-prebuilt-multiarch` @ `v0.13.1`
 - `@homebridge/plugin-ui-utils` @ `v2.2.3`
 
