@@ -11,7 +11,7 @@ import { ValidationPipe } from '@nestjs/common'
 import { NestFactory } from '@nestjs/core'
 import { FastifyAdapter } from '@nestjs/platform-fastify'
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
-import { Bonjour } from 'bonjour-service'
+import Bonjour from 'bonjour-service'
 
 import { AppModule } from './app.module.js'
 import { ConfigService } from './core/config/config.service.js'
