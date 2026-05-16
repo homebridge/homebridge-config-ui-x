@@ -76,7 +76,7 @@ export class LightbulbComponent implements OnInit {
     let label = `${values?.Brightness}%`
     if (this.hasAdaptiveLighting()) {
       const cls = this.isAdaptiveLightingEnabled() ? 'on-text' : 'grey-text'
-      label += ` &middot; <i class='fa fa-sun ${cls}'></i>`
+      label += ` &middot; <i class='fas fa-sun ${cls}'></i>`
     }
 
     return label
@@ -90,7 +90,7 @@ export class LightbulbComponent implements OnInit {
     }
     if (this.hasAdaptiveLighting()) {
       const cls = this.isAdaptiveLightingEnabled() ? 'on-text' : 'grey-text'
-      return ` &middot; <i class='fa fa-sun ${cls}'></i>`
+      return ` &middot; <i class='fas fa-sun ${cls}'></i>`
     }
     return ''
   }

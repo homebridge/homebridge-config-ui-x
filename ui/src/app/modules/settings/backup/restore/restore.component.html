@@ -82,7 +82,7 @@
           @if (clicked()) {
             <span>
               @if (!uploadPercent() || uploadPercent() === 100) {
-                <i class="fa fa-circle-notch fa-spin"></i>
+                <i class="fas fa-circle-notch fa-spin"></i>
               }
               @if (uploadPercent() && uploadPercent() !== 100) {
                 <span>{{ uploadPercent() }}% - </span>

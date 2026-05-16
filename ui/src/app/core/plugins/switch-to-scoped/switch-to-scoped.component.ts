@@ -56,7 +56,7 @@ export class SwitchToScopedComponent implements OnInit, OnDestroy {
   private webLinksAddon = new WebLinksAddon()
   private errorLog = ''
 
-  public readonly moreInfo = '<a href="https://github.com/homebridge/plugins/wiki/Scoped-Plugins" target="_blank"><i class="fa fa-external-link-alt primary-text"></i></a>'
+  public readonly moreInfo = '<a href="https://github.com/homebridge/plugins/wiki/Scoped-Plugins" target="_blank"><i class="fas fa-up-right-from-square primary-text"></i></a>'
   public readonly prefix = '<span class="font-monospace">@homebridge-plugins/</span>'
 
   public get isLightTerminalTheme(): boolean {

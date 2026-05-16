@@ -12,7 +12,7 @@
   <div class="modal-body">
     @if (loading()) {
       <div class="w-100 text-center primary-text text-center">
-        <i class="fa fa-circle-notch fa-spin icon-xl"></i>
+        <i class="fas fa-circle-notch fa-spin icon-xl"></i>
       </div>
     } @else {
       <div class="text-center">
@@ -82,7 +82,7 @@
             />
             <div class="me-3">
               <i
-                class="far fa-bell fa-fw fa-2x"
+                class="far fa-bell fa-2x"
                 aria-hidden="true"
                 [class.primary-text]="nodeUpdatePolicyControl.value === 'major'"
                 [class.grey-text]="nodeUpdatePolicyControl.value !== 'major'"
