@@ -15,6 +15,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - enable dependabot for dependency and github-action updates (#2811) (@NorthernMan54)
 - chore: register only the `chart.js` components the widgets use
 - chore: replace 168kb homebridge logo `svg` with 10kb `webp`
+- chore: subset font awesome fonts to icons used in the ui
 
 ### Homebridge Dependencies
 

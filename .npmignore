@@ -12,7 +12,9 @@ nodemon.json
 nest-cli.json
 .vscode
 .github
+.claude
 scripts/lang-sync.ts
+scripts/fontawesome-subset.mjs
 test
 
 # Logs
