@@ -19,6 +19,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - chore: patch `@ng-formworks` to import `lodash-es`
 - chore: replace `emoji-js` with a generated short-name lookup
 - chore: small fix in deprecate-past-releases workflow
+- chore: add some extra eslint rules for test files
 
 ### Homebridge Dependencies
 
