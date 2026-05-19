@@ -7,6 +7,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 ### UI Changes
 
 - chore: migrate v4-style font awesome icons to v6 syntax
+- fix: linking accessory to shared child bridge fails protocol guard
 
 ### Other Changes
 
