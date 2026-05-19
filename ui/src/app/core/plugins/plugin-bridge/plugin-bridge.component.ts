@@ -162,6 +162,10 @@ export class PluginBridgeComponent implements OnInit {
       // Update currently selected link
       this.currentlySelectedLink.set(this.accessoryBridgeLinks().find(link => link.index === selectedBlock) || null)
       this.enabledBlocks.update(current => ({ ...current, [Number(selectedBlock)]: true }))
+      // Linked accessory blocks always ride HAP on the shared bridge (Matter is
+      // platform-only), so mark HAP enabled — otherwise the save-time
+      // "at least one protocol" guard wrongly rejects the linked block.
+      this.hapEnabledBlocks.update(current => ({ ...current, [Number(selectedBlock)]: true }))
 
       // Update this block with the bridge details
       const block = configBlocks[Number(selectedBlock)]
@@ -852,8 +856,12 @@ export class PluginBridgeComponent implements OnInit {
 
       // Validate HAP and Matter configs before saving
       for (const [index, block] of configBlocks.entries()) {
-        // At least one protocol must be on for any enabled child bridge
-        if (enabledBlocks[index] && !hapEnabledBlocks[index] && !matterEnabledBlocks[index]) {
+        // At least one protocol must be on for any enabled child bridge.
+        // Accessory blocks always use HAP (no Matter alternative), so treat
+        // HAP as on for them even if the signal was never set explicitly —
+        // e.g. when an accessory block is linked to a shared child bridge.
+        const hapOn = block.accessory ? true : !!hapEnabledBlocks[index]
+        if (enabledBlocks[index] && !hapOn && !matterEnabledBlocks[index]) {
           this.$toastr.error(
             this.$translate.instant('child_bridge.config.at_least_one_protocol'),
             this.$translate.instant('toast.title_error'),
