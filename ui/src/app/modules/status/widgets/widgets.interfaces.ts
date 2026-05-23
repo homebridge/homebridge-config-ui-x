@@ -138,6 +138,7 @@ export interface Widget {
   }
   showNpmVersion?: boolean // update info widget
   dockerExpanded?: boolean // update info widget
+  showToolbar?: boolean // homebridge logs widget
 }
 
 /**

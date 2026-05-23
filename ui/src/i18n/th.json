@@ -807,6 +807,7 @@
   "status.widget.show_hide": "แสดง/ซ่อนวิดเจ็ต",
   "status.widget.show_on_desktop": "Show On Desktop",
   "status.widget.show_on_mobile": "Show On Mobile",
+  "status.widget.show_toolbar": "Show Toolbar",
   "status.widget.title_manage_widget": "จัดการวิดเจ็ต",
   "status.widget.update_node_no": "{{ pluginName }} ไม่เข้ากันได้กับ Node {{ nodeVersion }}",
   "status.widget.update_node_unknown": "นักพัฒนาของ {{ pluginName }} ไม่ได้ระบุความเข้ากันได้ของเวอร์ชัน Node",

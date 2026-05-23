@@ -807,6 +807,7 @@
   "status.widget.show_hide": "表示/非表示",
   "status.widget.show_on_desktop": "Show On Desktop",
   "status.widget.show_on_mobile": "Show On Mobile",
+  "status.widget.show_toolbar": "Show Toolbar",
   "status.widget.title_manage_widget": "ウィジェット管理",
   "status.widget.update_node_no": "{{ pluginName }}はNode {{ nodeVersion }}と互換性がありません。",
   "status.widget.update_node_unknown": "{{ pluginName }}の開発者はNodeバージョン互換性を指定していません。",

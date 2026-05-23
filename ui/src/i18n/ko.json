@@ -807,6 +807,7 @@
   "status.widget.show_hide": "위젯 표시/숨기기",
   "status.widget.show_on_desktop": "Show On Desktop",
   "status.widget.show_on_mobile": "Show On Mobile",
+  "status.widget.show_toolbar": "Show Toolbar",
   "status.widget.title_manage_widget": "위젯 관리",
   "status.widget.update_node_no": "{{ pluginName }} is not compatible with Node {{ nodeVersion }}.",
   "status.widget.update_node_unknown": "The developer of {{ pluginName }} has not specified the Node version compatibility.",

@@ -3,9 +3,87 @@
   class="flex-column d-flex align-items-stretch h-100 w-100"
   [class.widget-container-dark]="theme() === 'dark'"
 >
-  <div #terminaltitle class="drag-handler p-2" [class.terminal-title-dark]="theme() === 'dark'">
-    {{ 'status.widget.homebridge_logs' | translate }}
+  <div
+    #terminaltitle
+    class="drag-handler d-flex align-items-center justify-content-between p-2"
+    [class.terminal-title-dark]="theme() === 'dark'"
+  >
+    <span>{{ 'status.widget.homebridge_logs' | translate }}</span>
+    @if (isAdmin && widget().showToolbar) {
+      <div class="d-flex gap-1 widget-toolbar" [class.with-gear]="widget().draggable">
+        <button
+          type="button"
+          class="widget-toolbar-button"
+          container="body"
+          placement="bottom"
+          triggers="hover"
+          [openDelay]="150"
+          [ngbTooltip]="'form.search' | translate"
+          [attr.aria-label]="'form.search' | translate"
+          (mousedown)="$event.stopPropagation()"
+          (touchstart)="$event.stopPropagation()"
+          (click)="showSearch()"
+        >
+          <i [class]="`fas fa-search${showSearchBar() ? ' primary-text' : ''}`"></i>
+        </button>
+        <button
+          type="button"
+          class="widget-toolbar-button"
+          container="body"
+          placement="bottom"
+          triggers="hover"
+          [openDelay]="150"
+          [ngbTooltip]="'form.button_download' | translate"
+          [attr.aria-label]="'form.button_download' | translate"
+          (mousedown)="$event.stopPropagation()"
+          (touchstart)="$event.stopPropagation()"
+          (click)="downloadLogFile()"
+        >
+          <i class="fas fa-download"></i>
+        </button>
+        <button
+          type="button"
+          class="widget-toolbar-button"
+          container="body"
+          placement="bottom"
+          triggers="hover"
+          [openDelay]="150"
+          [ngbTooltip]="'form.button_delete' | translate"
+          [attr.aria-label]="'form.button_delete' | translate"
+          (mousedown)="$event.stopPropagation()"
+          (touchstart)="$event.stopPropagation()"
+          (click)="truncateLogFile()"
+        >
+          <i class="fas fa-trash-alt"></i>
+        </button>
+      </div>
+    }
   </div>
+  @if (showSearchBar()) {
+    <div #searchcontainer class="position-relative px-2 pt-1">
+      <form novalidate [formGroup]="form" (ngSubmit)="onSubmit(form.value)">
+        <input
+          #searchInput
+          type="text"
+          class="search-bar"
+          formControlName="query"
+          [class.search-bar-light]="theme() === 'light'"
+          [placeholder]="'logs.placeholder_search_logs' | translate"
+          [class.is-invalid]="searchInputInvalid"
+        />
+        @if (form.get('query')?.value) {
+          <button
+            type="button"
+            class="search-bar-clear"
+            [attr.aria-label]="'form.button_clear' | translate"
+            (click)="onClearSearch()"
+          >
+            <i class="fas fa-square-xmark" aria-hidden="true"></i>
+          </button>
+        }
+      </form>
+    </div>
+  }
   <div class="p-2" [style.height.px]="terminalHeight()">
     <div #logoutput class="terminal gridster-item-content w-100 h-100 terminal-max-height"></div>
   </div>

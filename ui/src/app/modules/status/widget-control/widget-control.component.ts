@@ -96,6 +96,7 @@ export class WidgetControlComponent implements OnInit {
       || w.refreshInterval !== o.refreshInterval
       || w.historyItems !== o.historyItems
       || w.networkInterface !== o.networkInterface
+      || w.showToolbar !== o.showToolbar
   }
 
   public searchCountryCodes = (text$: Observable<string>): Observable<any[]> => text$.pipe(
