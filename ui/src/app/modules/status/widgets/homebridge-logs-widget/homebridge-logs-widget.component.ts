@@ -1,9 +1,18 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, ElementRef, inject, input, OnDestroy, OnInit, signal, viewChild } from '@angular/core'
+import { HttpResponse } from '@angular/common/http'
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, createEnvironmentInjector, DestroyRef, ElementRef, EnvironmentInjector, inject, input, OnDestroy, OnInit, signal, viewChild } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
-import { TranslatePipe } from '@ngx-translate/core'
+import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
+import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap/tooltip'
+import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { ITerminalOptions } from '@xterm/xterm'
+import { saveAs } from 'file-saver'
+import { ToastrService } from 'ngx-toastr'
 import { Subject } from 'rxjs'
 
+import { AuthService } from '@/app/core/auth/auth.service'
+import { ApiService } from '@/app/core/communication/api.service'
+import { ConfirmComponent } from '@/app/core/components/confirm/confirm.component'
+import { CONFIRM_MODAL_DATA } from '@/app/core/modal-data-tokens'
 import { SettingsService } from '@/app/core/ui/settings.service'
 import { LogService } from '@/app/core/utilities/log.service'
 import { Widget } from '@/app/modules/status/widgets/widgets.interfaces'
@@ -11,6 +20,7 @@ import { Widget } from '@/app/modules/status/widgets/widgets.interfaces'
 @Component({
   selector: 'app-homebridge-logs-widget',
   imports: [
+    NgbTooltip,
     TranslatePipe,
   ],
   standalone: true,
@@ -21,8 +31,14 @@ import { Widget } from '@/app/modules/status/widgets/widgets.interfaces'
 export class HomebridgeLogsWidgetComponent implements OnInit, OnDestroy {
   // Injected dependencies
   private destroyRef = inject(DestroyRef)
+  private injector = inject(EnvironmentInjector)
+  private $api = inject(ApiService)
+  private $auth = inject(AuthService)
   private $log = inject(LogService)
+  private $modal = inject(NgbModal)
   private $settings = inject(SettingsService)
+  private $toastr = inject(ToastrService)
+  private $translate = inject(TranslateService)
   private $cdr = inject(ChangeDetectorRef)
 
   // Signals
@@ -34,6 +50,7 @@ export class HomebridgeLogsWidgetComponent implements OnInit, OnDestroy {
   public readonly theme = signal<'dark' | 'light'>('dark')
 
   // Other properties
+  public isAdmin = this.$auth.user.admin
   private initialized = false
   resizeEvent!: Subject<void> // Set directly by ComponentFactoryResolver
   configureEvent!: Subject<void> // Set directly by ComponentFactoryResolver
@@ -106,6 +123,84 @@ export class HomebridgeLogsWidgetComponent implements OnInit, OnDestroy {
 
   public ngOnDestroy(): void {
     this.$log.destroyTerminal()
+  }
+
+  public async downloadLogFile(): Promise<void> {
+    const injector = createEnvironmentInjector([{
+      provide: CONFIRM_MODAL_DATA,
+      useValue: {
+        title: this.$translate.instant('logs.title_download_log_file'),
+        message: this.$translate.instant('logs.download_warning'),
+        confirmButtonLabel: this.$translate.instant('form.button_download'),
+        faIconClass: 'fas fa-user-secret primary-text',
+      },
+    }], this.injector)
+
+    const ref = this.$modal.open(ConfirmComponent, {
+      size: 'lg',
+      backdrop: 'static',
+      injector,
+    })
+
+    try {
+      await ref.result
+      try {
+        const res = await this.$api.get('/platform-tools/hb-service/log/download', { observe: 'response', responseType: 'blob' }) as HttpResponse<Blob>
+        saveAs(res.body!, 'homebridge.log.txt')
+      } catch (err) {
+        let message: string | undefined
+        try {
+          if (err && typeof err === 'object' && 'error' in err) {
+            const errorText = await (err as { error: Blob }).error.text()
+            message = JSON.parse(errorText).message
+          }
+        } catch (error) {
+          console.error(error)
+        }
+        this.$toastr.error(message || this.$translate.instant('logs.download.error'), this.$translate.instant('toast.title_error'))
+      }
+    } catch {
+      // Modal dismissed, do nothing
+    }
+  }
+
+  public async truncateLogFile(): Promise<void> {
+    const injector = createEnvironmentInjector([{
+      provide: CONFIRM_MODAL_DATA,
+      useValue: {
+        title: this.$translate.instant('logs.title_truncate_log_file'),
+        message: this.$translate.instant('logs.truncate_log_warning'),
+        confirmButtonLabel: this.$translate.instant('form.button_delete'),
+        confirmButtonClass: 'btn-danger',
+        faIconClass: 'fas fa-circle-exclamation primary-text',
+      },
+    }], this.injector)
+
+    const ref = this.$modal.open(ConfirmComponent, {
+      size: 'lg',
+      backdrop: 'static',
+      injector,
+    })
+
+    try {
+      await ref.result
+      try {
+        await this.$api.put('/platform-tools/hb-service/log/truncate', {})
+        this.$toastr.success(
+          this.$translate.instant('logs.log_file_truncated'),
+          this.$translate.instant('toast.title_success'),
+        )
+        this.$log.term.clear()
+      } catch (error) {
+        console.error(error)
+        const message = (error && typeof error === 'object' && 'error' in error && error.error && typeof error.error === 'object' && 'message' in error.error)
+          ? String(error.error.message)
+          : this.$translate.instant('logs.truncate.error')
+        this.$toastr.error(message, this.$translate.instant('toast.title_error'))
+      }
+    } catch {
+      // Modal dismissed, do nothing
+    }
   }
 
   private getTerminalHeight(): number {
