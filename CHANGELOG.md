@@ -8,6 +8,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 
 - chore: migrate v4-style font awesome icons to v6 syntax
 - fix: linking accessory to shared child bridge fails protocol guard
+- fix: restore autofocus on username field at login page load
 
 ### Other Changes
 
