@@ -807,6 +807,7 @@
   "status.widget.show_hide": "Показати/сховати віджети",
   "status.widget.show_on_desktop": "Show On Desktop",
   "status.widget.show_on_mobile": "Show On Mobile",
+  "status.widget.show_toolbar": "Show Toolbar",
   "status.widget.title_manage_widget": "Керування віджетом",
   "status.widget.update_node_no": "{{ pluginName }} не сумісний з вузлом {{ nodeVersion }}.",
   "status.widget.update_node_unknown": "Розробник {{ pluginName }} не вказав сумісність версій Node.",

@@ -288,6 +288,15 @@
       }
     }
 
+    .widget-toolbar-button {
+      @media (hover: hover) {
+        &:hover {
+          color: $darkModePrimary !important;
+          background-color: rgba(255, 255, 255, 0.1);
+        }
+      }
+    }
+
     .manage-accessory-button {
       @media (hover: hover) {
         &:hover i {

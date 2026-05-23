@@ -807,6 +807,7 @@
   "status.widget.show_hide": "Mostra/Nascondi Widget",
   "status.widget.show_on_desktop": "Show On Desktop",
   "status.widget.show_on_mobile": "Show On Mobile",
+  "status.widget.show_toolbar": "Show Toolbar",
   "status.widget.title_manage_widget": "Gestisci widget",
   "status.widget.update_node_no": "{{ pluginName }} non è compatibile con Node {{ nodeVersion }}.",
   "status.widget.update_node_unknown": "Lo sviluppatore di {{ pluginName }} non ha specificato la compatibilità con la versione di Node.",

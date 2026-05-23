@@ -807,6 +807,7 @@
   "status.widget.show_hide": "Show/Hide Widgets",
   "status.widget.show_on_desktop": "Show On Desktop",
   "status.widget.show_on_mobile": "Show On Mobile",
+  "status.widget.show_toolbar": "Show Toolbar",
   "status.widget.title_manage_widget": "Aracı Yönet",
   "status.widget.update_node_no": "{{ pluginName }} is not compatible with Node {{ nodeVersion }}.",
   "status.widget.update_node_unknown": "The developer of {{ pluginName }} has not specified the Node version compatibility.",

@@ -24,6 +24,7 @@ export const WIDGETS_WITH_SETTINGS = [
   'CpuWidgetComponent',
   'MemoryWidgetComponent',
   'NetworkWidgetComponent',
+  'HomebridgeLogsWidgetComponent',
 ] as const
 
 // Export available widget component names for filtering in status component

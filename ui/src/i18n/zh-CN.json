@@ -807,6 +807,7 @@
   "status.widget.show_hide": "显示/隐藏小组件",
   "status.widget.show_on_desktop": "Show On Desktop",
   "status.widget.show_on_mobile": "Show On Mobile",
+  "status.widget.show_toolbar": "Show Toolbar",
   "status.widget.title_manage_widget": "管理小组件",
   "status.widget.update_node_no": "{{ pluginName }} 与 Node {{ nodeVersion }} 不兼容。",
   "status.widget.update_node_unknown": "{{ pluginName }} 的开发者未指定与 Node 版本的兼容性。",

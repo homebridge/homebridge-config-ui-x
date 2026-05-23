@@ -154,6 +154,15 @@
       }
     }
 
+    .widget-toolbar-button {
+      @media (hover: hover) {
+        &:hover {
+          color: $primary !important;
+          background-color: rgba(0, 0, 0, 0.05);
+        }
+      }
+    }
+
     .manage-accessory-button {
       @media (hover: hover) {
         &:hover i {

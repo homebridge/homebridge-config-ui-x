@@ -100,6 +100,24 @@
             </div>
           </li>
         }
+        @case ('HomebridgeLogsWidgetComponent') {
+          <li class="list-group-item d-flex justify-content-between align-items-center flex-row pb-2">
+            <span class="text-start">
+              {{ 'status.widget.show_toolbar' | translate }}
+              <span class="badge badge-primary ms-1">{{ 'common.labels.beta' | translate }}</span>
+            </span>
+            <div class="text-end grey-text d-flex align-items-center">
+              <input
+                type="checkbox"
+                class="rendux-input"
+                id="showToolbar"
+                [attr.aria-label]="'status.widget.show_toolbar' | translate"
+                [(ngModel)]="widget.showToolbar"
+              />
+              <label for="showToolbar" class="rendux-label ms-3"></label>
+            </div>
+          </li>
+        }
         @case ('CpuWidgetComponent') {
           <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
             <label for="cpu-refresh-interval" class="mb-2 mb-md-0 w-100 w-md-50">{{

@@ -1,20 +1,12 @@
-import { HttpResponse } from '@angular/common/http'
-import { ChangeDetectionStrategy, Component, createEnvironmentInjector, DestroyRef, ElementRef, EnvironmentInjector, inject, OnDestroy, OnInit, signal, viewChild } from '@angular/core'
+import { ChangeDetectionStrategy, Component, DestroyRef, ElementRef, inject, OnDestroy, OnInit, signal, viewChild } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms'
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap/tooltip'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
-import { saveAs } from 'file-saver'
-import { ToastrService } from 'ngx-toastr'
 import { Observable, Subject } from 'rxjs'
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators'
 
 import { AuthService } from '@/app/core/auth/auth.service'
-import { ApiService } from '@/app/core/communication/api.service'
-import { ConfirmComponent } from '@/app/core/components/confirm/confirm.component'
-import { CONFIRM_MODAL_DATA } from '@/app/core/modal-data-tokens'
-import { RE_ANSI_SIMPLE } from '@/app/core/regex.constants'
 import { SettingsService } from '@/app/core/ui/settings.service'
 import { LogService } from '@/app/core/utilities/log.service'
 
@@ -35,13 +27,9 @@ export interface CanComponentDeactivate {
 })
 export class LogsComponent implements OnInit, OnDestroy, CanComponentDeactivate {
   private destroyRef = inject(DestroyRef)
-  private injector = inject(EnvironmentInjector)
-  private $api = inject(ApiService)
   private $auth = inject(AuthService)
   private $log = inject(LogService)
-  private $modal = inject(NgbModal)
   private $settings = inject(SettingsService)
-  private $toastr = inject(ToastrService)
   private $translate = inject(TranslateService)
 
   private readonly termTarget = viewChild<ElementRef>('logoutput')
@@ -243,94 +231,11 @@ export class LogsComponent implements OnInit, OnDestroy, CanComponentDeactivate 
     this.$log.destroyTerminal()
   }
 
-  public async downloadLogFile(): Promise<void> {
-    const injector = createEnvironmentInjector([{
-      provide: CONFIRM_MODAL_DATA,
-      useValue: {
-        title: this.$translate.instant('logs.title_download_log_file'),
-        message: this.$translate.instant('logs.download_warning'),
-        confirmButtonLabel: this.$translate.instant('form.button_download'),
-        faIconClass: 'fas fa-user-secret primary-text',
-      },
-    }], this.injector)
-
-    const ref = this.$modal.open(ConfirmComponent, {
-      size: 'lg',
-      backdrop: 'static',
-      injector,
-    })
-
-    try {
-      await ref.result
-      try {
-        const res = await this.$api.get('/platform-tools/hb-service/log/download', { observe: 'response', responseType: 'blob' }) as HttpResponse<Blob>
-
-        // If search is active, filter the log content
-        const searchFilter = this.$log.getSearchFilter()
-        if (searchFilter) {
-          const logText = await res.body!.text()
-          const filteredLines = logText.split('\n').filter((line: string) => {
-            const cleanLine = line.replace(RE_ANSI_SIMPLE, '').toLowerCase()
-            return cleanLine.includes(searchFilter.toLowerCase())
-          })
-          const filteredBlob = new Blob([filteredLines.join('\n')], { type: 'text/plain' })
-          saveAs(filteredBlob, 'homebridge.log.txt')
-        } else {
-          saveAs(res.body!, 'homebridge.log.txt')
-        }
-      } catch (err) {
-        let message: string | undefined
-        try {
-          if (err && typeof err === 'object' && 'error' in err) {
-            const errorText = await (err as { error: Blob }).error.text()
-            message = JSON.parse(errorText).message
-          }
-        } catch (error) {
-          console.error(error)
-        }
-        this.$toastr.error(message || this.$translate.instant('logs.download.error'), this.$translate.instant('toast.title_error'))
-      }
-    } catch {
-      // Modal dismissed, do nothing
-    }
+  public downloadLogFile(): Promise<void> {
+    return this.$log.downloadLogFile()
   }
 
-  public async truncateLogFile(): Promise<void> {
-    const injector = createEnvironmentInjector([{
-      provide: CONFIRM_MODAL_DATA,
-      useValue: {
-        title: this.$translate.instant('logs.title_truncate_log_file'),
-        message: this.$translate.instant('logs.truncate_log_warning'),
-        confirmButtonLabel: this.$translate.instant('form.button_delete'),
-        confirmButtonClass: 'btn-danger',
-        faIconClass: 'fas fa-circle-exclamation primary-text',
-      },
-    }], this.injector)
-
-    const ref = this.$modal.open(ConfirmComponent, {
-      size: 'lg',
-      backdrop: 'static',
-      injector,
-    })
-
-    try {
-      await ref.result
-      try {
-        await this.$api.put('/platform-tools/hb-service/log/truncate', {})
-        this.$toastr.success(
-          this.$translate.instant('logs.log_file_truncated'),
-          this.$translate.instant('toast.title_success'),
-        )
-        this.$log.term.clear()
-      } catch (error) {
-        console.error(error)
-        const message = (error && typeof error === 'object' && 'error' in error && error.error && typeof error.error === 'object' && 'message' in error.error)
-          ? String(error.error.message)
-          : this.$translate.instant('logs.truncate.error')
-        this.$toastr.error(message, this.$translate.instant('toast.title_error'))
-      }
-    } catch {
-      // Modal dismissed, do nothing
-    }
+  public truncateLogFile(): Promise<void> {
+    return this.$log.truncateLogFile()
   }
 }
