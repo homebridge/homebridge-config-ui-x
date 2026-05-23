@@ -1,7 +1,26 @@
+@let hasLux = ('CurrentAmbientLightLevel' in service().values);
+@let lux = service().values?.CurrentAmbientLightLevel;
+@let luxText = hasLux
+  ? ((lux < 1 ? (lux | number: '0.1-1') : (lux | number: '1.0-0')) + ' lux')
+  : ('accessories.control.no_data' | translate);
+
+@let srBaseName = (service().customName || service().serviceName || '').trim();
+@let srType = ('accessories.core.light_sensor' | translate);
+@let includeType = srBaseName.toLowerCase().indexOf(srType.toLowerCase()) === -1;
+
+@let srText =
+  srBaseName
+  + (includeType ? (', ' + srType) : '')
+  + ', '
+  + luxText;
+
 <div class="accessory-box">
+  <span class="visually-hidden" role="status" aria-live="polite" aria-atomic="true">
+    {{ srText }}
+  </span>
   <div class="d-flex flex-column h-100">
-    <div class="accessory-svg" [attr.aria-label]="'accessories.core.light_sensor' | translate">
-      <svg width="32px" height="32px" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+    <div class="accessory-svg" aria-hidden="true">
+      <svg width="32px" height="32px" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" focusable="false" aria-hidden="true">
         <! -- outer casing - ->
         <rect x="3.5" y="1" width="25" height="30" rx="3" stroke="#7f7f7f" fill="none" stroke-width="1.2" />
         <! -- sun outline - ->
@@ -32,14 +51,20 @@
         <line stroke-linecap="round" x1="25" y1="26" x2="25" y2="29" stroke="#7f7f7f" stroke-width="0.5" />
       </svg>
     </div>
-    <div class="accessory-label mt-auto">{{ service().customName || service().serviceName }}</div>
-    @if (service().values?.CurrentAmbientLightLevel < 1) {
-      <div class="accessory-label grey-text">
-        {{ service().values?.CurrentAmbientLightLevel | number: '0.1-1' }} lux
-      </div>
+    <div class="accessory-label mt-auto" aria-hidden="true">{{ service().customName || service().serviceName }}</div>
+    @if (hasLux) {
+      @if (lux < 1) {
+        <div class="accessory-label grey-text" aria-hidden="true">
+          {{ lux | number: '0.1-1' }} lux
+        </div>
+      } @else {
+        <div class="accessory-label grey-text" aria-hidden="true">
+          {{ lux | number: '1.0-0' }} lux
+        </div>
+      }
     } @else {
-      <div class="accessory-label grey-text">
-        {{ service().values?.CurrentAmbientLightLevel | number: '1.0-0' }} lux
+      <div class="accessory-label grey-text" aria-hidden="true">
+        {{ 'accessories.control.no_data' | translate }}
       </div>
     }
   </div>

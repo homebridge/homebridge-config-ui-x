@@ -1,7 +1,26 @@
-<div class="accessory-box" [class.accessory-on]="service().values?.MotionDetected">
+@let detected = !!service().values?.MotionDetected;
+
+@let stateText = detected
+  ? ('accessories.control.detected' | translate)
+  : ('accessories.control.not_detected' | translate);
+
+@let srBaseName = (service().customName || service().serviceName || '').trim();
+@let srType = ('accessories.core.motion_sensor' | translate);
+@let includeType = srBaseName.toLowerCase().indexOf(srType.toLowerCase()) === -1;
+
+@let srText =
+  srBaseName
+  + (includeType ? (', ' + srType) : '')
+  + ', '
+  + stateText;
+
+<div class="accessory-box" [class.accessory-on]="detected">
+  <span class="visually-hidden" role="status" aria-live="polite" aria-atomic="true">
+    {{ srText }}
+  </span>
   <div class="d-flex flex-column h-100">
-    <div class="accessory-svg" [attr.aria-label]="'accessories.core.motion_sensor' | translate">
-      <svg width="32px" height="32px" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+    <div class="accessory-svg" aria-hidden="true">
+      <svg width="32px" height="32px" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" focusable="false" aria-hidden="true">
         <! -- outer casing - ->
         <rect
           class="orange-outline"
@@ -82,11 +101,11 @@
         <line stroke-linecap="round" x1="25" y1="26" x2="25" y2="29" stroke="#7f7f7f" stroke-width="0.5" />
       </svg>
     </div>
-    <div class="accessory-label mt-auto">{{ service().customName || service().serviceName }}</div>
-    @if (service().values?.MotionDetected) {
-      <div class="accessory-label red-text">{{ 'accessories.control.detected' | translate }}</div>
+    <div class="accessory-label mt-auto" aria-hidden="true">{{ service().customName || service().serviceName }}</div>
+    @if (detected) {
+      <div class="accessory-label red-text" aria-hidden="true">{{ 'accessories.control.detected' | translate }}</div>
     } @else {
-      <div class="accessory-label grey-text">{{ 'accessories.control.not_detected' | translate }}</div>
+      <div class="accessory-label grey-text" aria-hidden="true">{{ 'accessories.control.not_detected' | translate }}</div>
     }
   </div>
 </div>
