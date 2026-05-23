@@ -1,5 +1,5 @@
 import { NgOptimizedImage } from '@angular/common'
-import { ChangeDetectionStrategy, Component, DestroyRef, ElementRef, inject, OnInit, signal, viewChild } from '@angular/core'
+import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, ElementRef, inject, OnInit, signal, viewChild } from '@angular/core'
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { Router } from '@angular/router'
@@ -24,7 +24,7 @@ import { environment } from '@/environments/environment'
   styleUrl: './login.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent implements OnInit, AfterViewInit {
   private destroyRef = inject(DestroyRef)
   private $auth = inject(AuthService)
   private $router = inject(Router)
@@ -79,6 +79,10 @@ export class LoginComponent implements OnInit {
 
     this.targetRoute = window.sessionStorage.getItem('target_route') || ''
     void this.setBackground()
+  }
+
+  public ngAfterViewInit() {
+    this.usernameInput()?.nativeElement.focus()
   }
 
   public async onSubmit() {
