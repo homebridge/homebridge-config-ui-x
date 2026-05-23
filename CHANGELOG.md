@@ -10,6 +10,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix: linking accessory to shared child bridge fails protocol guard
 - fix: restore autofocus on username field at login page load
 - feat: add toolbar with search/download/clear to Homebridge Logs widget
+- fix(accessories): add screen reader live regions to HAP sensor tiles
 
 ### Other Changes
 
