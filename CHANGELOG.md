@@ -32,6 +32,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(config-editor): add plain-text editor option for screen reader users
 - fix(status): add keyboard-driven widget reorder mode
 - fix(accessories): extend a11y pattern to 9 remaining matter types
+- fix(login): hide decorative icons from screen readers
 
 ### Other Changes
 
