@@ -36,6 +36,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(support): hide decorative icons and add keyboard activation to section headers
 - fix(accessories): hide decorative icons from screen readers
 - fix(users): hide decorative icons and make 2FA copy button accessible
+- fix(power-options): hide decorative power-off icon from screen readers
 
 ### Other Changes
 
