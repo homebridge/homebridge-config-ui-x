@@ -15,6 +15,7 @@ import { RestartChildBridgesComponent } from '@/app/core/components/restart-chil
 import { RestartHomebridgeComponent } from '@/app/core/components/restart-homebridge/restart-homebridge.component'
 import { createChildBridgeSchema } from '@/app/core/helpers/child-bridges-schema.helper'
 import { CONFIG_RESTORE_MODAL_DATA, RESTART_CHILD_BRIDGES_MODAL_DATA } from '@/app/core/modal-data-tokens'
+import { ChildBridge } from '@/app/core/plugins/manage-plugins.interfaces'
 import { RE_USERNAME } from '@/app/core/regex.constants'
 import { MonacoEditorService } from '@/app/core/ui/monaco-editor.service'
 import { SettingsService } from '@/app/core/ui/settings.service'
@@ -1296,9 +1297,15 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
 
   private async saveConfig(config: HomebridgeConfig) {
     try {
-      const data = await this.$api.post('/config-editor', config)
-      this.homebridgeConfig.set(JSON.stringify(data, null, 4))
-      await this.detectSavesChangesForRestart()
+      const response = await this.$api.post<{ config: HomebridgeConfig, restartRequired: boolean, affectedBridges: ChildBridge[] }>(
+        '/config-editor?include=restart-info',
+        config,
+      )
+      this.homebridgeConfig.set(JSON.stringify(response.config, null, 4))
+      // Phase 7: server returns affected bridges inline so we no longer
+      // need a follow-up /status/homebridge/child-bridges call to compute
+      // child-bridge restart targets.
+      await this.detectSavesChangesForRestart(response.affectedBridges)
     } catch (error) {
       console.error(error)
       this.$toastr.error(this.$translate.instant('config.failed_to_save_config'), this.$translate.instant('toast.title_error'))
@@ -1365,8 +1372,8 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
     }
   }
 
-  private async detectSavesChangesForRestart() {
-    const restartType = await this.determineRestartType()
+  private async detectSavesChangesForRestart(affectedBridges?: ChildBridge[]) {
+    const restartType = await this.determineRestartType(affectedBridges)
 
     if (restartType === 'full') {
       // If any of the keys inside the platforms[].entry where entry.platform === 'config' have changed, we need a full service restart
@@ -1380,7 +1387,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
     this.latestSavedConfig = JSON.parse(this.homebridgeConfig())
   }
 
-  private async determineRestartType(): Promise<'none' | 'child' | 'full'> {
+  private async determineRestartType(affectedBridges?: ChildBridge[]): Promise<'none' | 'child' | 'full'> {
     // If homebridge is pending a restart, we don't even need to start with these checks
     if (this.hbPendingRestart) {
       return 'full'
@@ -1477,7 +1484,12 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
     // At this point we have a list of the changed entries, and we know they all have a _bridge key
     // Now we can start to form a list of the child bridges that we can restart.
     try {
-      const data = await this.$childBridges.getAll()
+      // Phase 7: bridges come from the save response when available, so we
+      // skip the separate /status/homebridge/child-bridges fetch. Fall back
+      // to the service (which is cached) if a caller invoked this without
+      // bridges — keeps the older code path working for any call sites that
+      // run the diff outside of saveConfig.
+      const data = affectedBridges ?? await this.$childBridges.getAll()
 
       // Match up the changed entries with the child bridges
       for (const entry of changedEntries) {

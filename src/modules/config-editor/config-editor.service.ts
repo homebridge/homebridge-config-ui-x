@@ -18,7 +18,14 @@ import { Logger } from '../../core/logger/logger.service.js'
 import { MatterConfig } from '../../core/matter/matter.interfaces.js'
 import { RE_COLON, RE_CONFIG_BACKUP, RE_PIN, RE_PLUGIN_NAME, RE_USERNAME } from '../../core/regex.constants.js'
 import { SchedulerService } from '../../core/scheduler/scheduler.service.js'
+import { ChildBridgesService } from '../child-bridges/child-bridges.service.js'
 import { PluginsService } from '../plugins/plugins.service.js'
+
+export interface ConfigEditorRestartInfo<T> {
+  config: T
+  restartRequired: boolean
+  affectedBridges: Awaited<ReturnType<ChildBridgesService['getChildBridges']>>
+}
 
 @Injectable()
 export class ConfigEditorService {
@@ -28,6 +35,7 @@ export class ConfigEditorService {
     @Inject(SchedulerService) private readonly schedulerService: SchedulerService,
     @Inject(PluginsService) private readonly pluginsService: PluginsService,
     @Inject(HomebridgeIpcService) private readonly homebridgeIpcService: HomebridgeIpcService,
+    @Inject(ChildBridgesService) private readonly childBridgesService: ChildBridgesService,
   ) {
     this.start()
     this.scheduleConfigBackupCleanup()
@@ -604,6 +612,53 @@ export class ConfigEditorService {
     }
 
     return config.disabledPlugins
+  }
+
+  /**
+   * Compute the restart-info wrapper used by the mutation endpoints when
+   * the caller passes `?include=restart-info`. Pulls running child bridges
+   * via IPC and, for plugin-scoped mutations, filters to that plugin so
+   * the frontend can skip the follow-up `/status/homebridge/child-bridges`
+   * call it used to issue after every save.
+   */
+  private async buildRestartInfo<T>(payload: T, pluginName: string | null): Promise<ConfigEditorRestartInfo<T>> {
+    const allBridges = await this.childBridgesService.getChildBridges()
+    const affectedBridges = pluginName === null
+      ? allBridges
+      : allBridges.filter(bridge => bridge.plugin === pluginName)
+    return {
+      config: payload,
+      restartRequired: true,
+      affectedBridges,
+    }
+  }
+
+  /**
+   * `updateConfigFile` + restart-info wrapper. Used by the controller when
+   * the caller opts in via `?include=restart-info`.
+   */
+  public async updateConfigFileWithRestartInfo(config: HomebridgeConfig): Promise<ConfigEditorRestartInfo<HomebridgeConfig>> {
+    const saved = await this.updateConfigFile(config)
+    return this.buildRestartInfo(saved, null)
+  }
+
+  public async updateConfigForPluginWithRestartInfo(pluginName: string, pluginConfig: Record<string, any>[]): Promise<ConfigEditorRestartInfo<Record<string, any>[]>> {
+    const saved = await this.updateConfigForPlugin(pluginName, pluginConfig)
+    return this.buildRestartInfo(saved, pluginName)
+  }
+
+  public async disablePluginWithRestartInfo(pluginName: string): Promise<ConfigEditorRestartInfo<string[]>> {
+    // Capture this plugin's bridges before disabling — once disabled the
+    // child-bridge IPC may stop reporting them, and `affectedBridges` is
+    // exactly the set the frontend needs to restart/stop.
+    const affected = (await this.childBridgesService.getChildBridges()).filter(b => b.plugin === pluginName)
+    const disabledPlugins = await this.disablePlugin(pluginName)
+    return { config: disabledPlugins, restartRequired: true, affectedBridges: affected }
+  }
+
+  public async enablePluginWithRestartInfo(pluginName: string): Promise<ConfigEditorRestartInfo<string[]>> {
+    const disabledPlugins = await this.enablePlugin(pluginName)
+    return this.buildRestartInfo(disabledPlugins, pluginName)
   }
 
   /**

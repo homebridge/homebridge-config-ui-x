@@ -21,6 +21,7 @@ import { MarkdownComponent } from '@/app/core/components/markdown/markdown.compo
 import { createChildBridgeSchema } from '@/app/core/helpers/child-bridges-schema.helper'
 import { PLUGIN_MODAL_DATA } from '@/app/core/modal-data-tokens'
 import { InterpolateMdPipe } from '@/app/core/pipes/interpolate-md.pipe'
+import { ChildBridge } from '@/app/core/plugins/manage-plugins.interfaces'
 import { ManagePluginsService } from '@/app/core/plugins/manage-plugins.service'
 import { SettingsService } from '@/app/core/ui/settings.service'
 import { ChildBridgesService } from '@/app/core/utilities/child-bridges.service'
@@ -244,7 +245,11 @@ export class ManualConfigComponent implements OnInit, OnDestroy {
       if (!plugin) {
         return
       }
-      const newConfig = await this.$api.post(`/config-editor/plugin/${encodeURIComponent(plugin.name)}`, this.pluginConfig())
+      const response = await this.$api.post<{ config: any[], restartRequired: boolean, affectedBridges: ChildBridge[] }>(
+        `/config-editor/plugin/${encodeURIComponent(plugin.name)}?include=restart-info`,
+        this.pluginConfig(),
+      )
+      const newConfig = response.config
       this.$activeModal.close()
 
       // Possible child bridge setup recommendation if the plugin is not Homebridge UI
@@ -256,9 +261,11 @@ export class ManualConfigComponent implements OnInit, OnDestroy {
         return
       }
 
-      // This will show the child bridge restart modal if needed, otherwise the full restart homebridge modal
+      // This will show the child bridge restart modal if needed, otherwise the full restart homebridge modal.
+      // Phase 7: affected bridges come from the save response so we skip the
+      // follow-up /status/homebridge/child-bridges fetch.
       this.$activeModal.close()
-      await this.$cb.openCorrectRestartModalForPlugin(plugin.name)
+      this.$cb.openCorrectRestartModalWithBridges(response.affectedBridges)
     } catch (error) {
       console.error(error)
       this.$toastr.error(this.$translate.instant('config.failed_to_save_config'), this.$translate.instant('toast.title_error'))

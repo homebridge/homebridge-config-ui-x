@@ -13,6 +13,7 @@ import { ApiService } from '@/app/core/communication/api.service'
 import { IoNamespace, WsService } from '@/app/core/communication/ws.service'
 import { SchemaFormComponent } from '@/app/core/components/schema-form/schema-form.component'
 import { CUSTOM_PLUGINS_MODAL_DATA } from '@/app/core/modal-data-tokens'
+import { ChildBridge } from '@/app/core/plugins/manage-plugins.interfaces'
 import { ManagePluginsService } from '@/app/core/plugins/manage-plugins.service'
 import { SettingsService } from '@/app/core/ui/settings.service'
 import { ChildBridgesService } from '@/app/core/utilities/child-bridges.service'
@@ -161,7 +162,11 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
 
     this.saveInProgress.set(true)
     try {
-      const newConfig = await this.$api.post(`/config-editor/plugin/${encodeURIComponent(plugin.name)}`, this.pluginConfig)
+      const response = await this.$api.post<{ config: any[], restartRequired: boolean, affectedBridges: ChildBridge[] }>(
+        `/config-editor/plugin/${encodeURIComponent(plugin.name)}?include=restart-info`,
+        this.pluginConfig,
+      )
+      const newConfig = response.config
       this.saveInProgress.set(false)
 
       if (exit) {
@@ -174,9 +179,11 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
           return
         }
 
-        // This will show the child bridge restart modal if needed, otherwise the full restart homebridge modal
+        // This will show the child bridge restart modal if needed, otherwise the full restart homebridge modal.
+        // Phase 7: affected bridges arrive inline on the save response so we
+        // skip the follow-up /status/homebridge/child-bridges fetch.
         this.$activeModal.close()
-        await this.$cb.openCorrectRestartModalForPlugin(plugin.name)
+        this.$cb.openCorrectRestartModalWithBridges(response.affectedBridges)
       }
     } catch (error) {
       console.error(error)

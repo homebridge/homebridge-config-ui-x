@@ -30,6 +30,16 @@ export class ChildBridgesService {
    */
   public async openCorrectRestartModalForPlugin(pluginName: string) {
     const childBridges = await this.getChildBridgesForPlugin(pluginName)
+    this.openCorrectRestartModalWithBridges(childBridges)
+  }
+
+  /**
+   * Variant of `openCorrectRestartModalForPlugin` that uses a caller-supplied
+   * bridge list — the config-editor mutation endpoints now return
+   * `affectedBridges` inline (Phase 7), so callers no longer need to make
+   * a separate `/status/homebridge/child-bridges` round-trip.
+   */
+  public openCorrectRestartModalWithBridges(childBridges: ChildBridge[]) {
     if (childBridges.length) {
       const injector = createEnvironmentInjector([{
         provide: RESTART_CHILD_BRIDGES_MODAL_DATA,

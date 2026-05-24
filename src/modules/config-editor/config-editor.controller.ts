@@ -11,6 +11,7 @@ import {
   Patch,
   Post,
   Put,
+  Query,
   UseGuards,
 } from '@nestjs/common'
 import { AuthGuard } from '@nestjs/passport'
@@ -20,12 +21,17 @@ import {
   ApiOkResponse,
   ApiOperation,
   ApiParam,
+  ApiQuery,
   ApiTags,
 } from '@nestjs/swagger'
 
 import { AdminGuard } from '../../core/auth/guards/admin.guard.js'
 import { SetBridgeAlertDto, SetScheduledRestartCronDto } from './config-editor.dto.js'
 import { ConfigEditorService } from './config-editor.service.js'
+
+function includesRestartInfo(include: string | undefined): boolean {
+  return (include ?? '').split(',').map(s => s.trim()).includes('restart-info')
+}
 
 @ApiTags('Homebridge Config Editor')
 @ApiBearerAuth()
@@ -44,10 +50,23 @@ export class ConfigEditorController {
   }
 
   @UseGuards(AdminGuard)
-  @ApiOperation({ summary: 'Update the Homebridge `config.json` file.' })
+  @ApiOperation({
+    summary: 'Update the Homebridge `config.json` file.',
+    description: 'Pass `?include=restart-info` to receive `{ config, restartRequired, affectedBridges }` instead of the bare config — used by the editor to skip the follow-up `/status/homebridge/child-bridges` fetch after every save. Default response shape is unchanged.',
+  })
   @ApiBody({ description: 'Homebridge config.json', type: 'json', isArray: false })
+  @ApiQuery({
+    name: 'include',
+    type: 'string',
+    required: false,
+    description: 'Comma-separated extras. Supported: `restart-info`.',
+    example: 'restart-info',
+  })
   @Post()
-  updateConfig(@Body() body) {
+  updateConfig(@Body() body, @Query('include') include?: string) {
+    if (includesRestartInfo(include)) {
+      return this.configEditorService.updateConfigFileWithRestartInfo(body)
+    }
     return this.configEditorService.updateConfigFile(body)
   }
 
@@ -64,31 +83,63 @@ export class ConfigEditorController {
   @UseGuards(AdminGuard)
   @ApiOperation({
     summary: 'Replace the config for a specific plugin.',
-    description: 'An array of all config blocks for the plugin must be provided, missing blocks will be removed. Sending an empty array will remove all plugin config.',
+    description: 'An array of all config blocks for the plugin must be provided, missing blocks will be removed. Sending an empty array will remove all plugin config. Pass `?include=restart-info` to receive `{ config, restartRequired, affectedBridges }` with only this plugin\'s bridges in `affectedBridges` — the plugin settings modals use this to skip the follow-up `/status/homebridge/child-bridges` fetch.',
   })
   @Post('/plugin/:pluginName')
   @ApiBody({ description: 'Array of plugin config blocks', type: 'json', isArray: true })
-  updateConfigForPlugin(@Param('pluginName') pluginName: string, @Body() body) {
+  @ApiQuery({
+    name: 'include',
+    type: 'string',
+    required: false,
+    description: 'Comma-separated extras. Supported: `restart-info`.',
+    example: 'restart-info',
+  })
+  updateConfigForPlugin(@Param('pluginName') pluginName: string, @Body() body, @Query('include') include?: string) {
+    if (includesRestartInfo(include)) {
+      return this.configEditorService.updateConfigForPluginWithRestartInfo(pluginName, body)
+    }
     return this.configEditorService.updateConfigForPlugin(pluginName, body)
   }
 
   @UseGuards(AdminGuard)
   @ApiOperation({
     summary: 'Mark a plugin as disabled.',
+    description: 'Pass `?include=restart-info` to receive `{ config, restartRequired, affectedBridges }` where `config` is the updated `disabledPlugins` array. Default response shape is unchanged.',
   })
   @ApiParam({ name: 'pluginName', type: 'string' })
+  @ApiQuery({
+    name: 'include',
+    type: 'string',
+    required: false,
+    description: 'Comma-separated extras. Supported: `restart-info`.',
+    example: 'restart-info',
+  })
   @Put('plugin/:pluginName/disable')
-  disablePlugin(@Param('pluginName') pluginName) {
+  disablePlugin(@Param('pluginName') pluginName, @Query('include') include?: string) {
+    if (includesRestartInfo(include)) {
+      return this.configEditorService.disablePluginWithRestartInfo(pluginName)
+    }
     return this.configEditorService.disablePlugin(pluginName)
   }
 
   @UseGuards(AdminGuard)
   @ApiOperation({
     summary: 'Mark a plugin as enabled.',
+    description: 'Pass `?include=restart-info` to receive `{ config, restartRequired, affectedBridges }` where `config` is the updated `disabledPlugins` array. Default response shape is unchanged.',
   })
   @ApiParam({ name: 'pluginName', type: 'string' })
+  @ApiQuery({
+    name: 'include',
+    type: 'string',
+    required: false,
+    description: 'Comma-separated extras. Supported: `restart-info`.',
+    example: 'restart-info',
+  })
   @Put('plugin/:pluginName/enable')
-  enablePlugin(@Param('pluginName') pluginName) {
+  enablePlugin(@Param('pluginName') pluginName, @Query('include') include?: string) {
+    if (includesRestartInfo(include)) {
+      return this.configEditorService.enablePluginWithRestartInfo(pluginName)
+    }
     return this.configEditorService.enablePlugin(pluginName)
   }
 
