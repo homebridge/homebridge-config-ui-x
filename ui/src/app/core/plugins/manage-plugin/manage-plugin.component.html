@@ -17,7 +17,7 @@
     [class.terminal-dark-bg]="!isLightTerminalTheme"
   ></div>
   @if (actionComplete()) {
-    <div class="modal-body plugin-modal-body">
+    <div class="modal-body plugin-modal-body" role="status" aria-live="polite" aria-atomic="true">
       @if (justUpdatedPlugin()) {
         <div class="mb-3 text-center">
           <i class="far fa-check-circle primary-text icon-xl" aria-hidden="true"></i>

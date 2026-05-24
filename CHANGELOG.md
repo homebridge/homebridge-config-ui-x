@@ -18,6 +18,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(status): add aria-hidden to icons and convert anchors to buttons in dashboard widgets
 - fix(layout): mark active sidebar item and hide decorative icons
 - fix(settings): hide decorative icons and group backup actions for screen readers
+- fix(a11y): improve screen-reader announcements for xterm and plugin install completion
 
 ### Other Changes
 

@@ -81,6 +81,22 @@ export class TerminalWidgetComponent implements OnInit, OnDestroy {
     this.$terminal.onTouchEnd(event)
   }
 
+  private patchXtermLiveRegion(): void {
+    const host = this.termTarget()?.nativeElement as HTMLElement | undefined
+    if (!host) {
+      return
+    }
+
+    const live = host.querySelector('[aria-live]') as HTMLElement | null
+    if (!live) {
+      return
+    }
+
+    live.setAttribute('role', 'status')
+    live.setAttribute('aria-live', 'polite')
+    live.setAttribute('aria-atomic', 'true')
+  }
+
   public ngOnInit(): void {
     // Use effective theme to enforce dark mode override when needed
     this.theme.set(this.$settings.getEffectiveTerminalLightingMode())
@@ -107,6 +123,7 @@ export class TerminalWidgetComponent implements OnInit, OnDestroy {
 
       // Autofocus terminal when component is fully loaded
       setTimeout(() => {
+        this.patchXtermLiveRegion()
         this.$terminal.activateTerminal()
       }, 100)
     })
@@ -167,6 +184,7 @@ export class TerminalWidgetComponent implements OnInit, OnDestroy {
       // Only focus if this terminal widget is actually visible on screen
       if (this.isTerminalWidgetVisible()) {
         setTimeout(() => {
+          this.patchXtermLiveRegion()
           this.$terminal.activateTerminal()
         }, 100)
       }
