@@ -1,3 +1,4 @@
+import { Plugin } from '@/app/core/plugins/manage-plugins.interfaces'
 import { ChildBridgeStatusResponse } from '@/app/core/server.interfaces'
 
 export interface PluginNodeCheck {
@@ -61,6 +62,21 @@ export interface DockerDetails {
   latestVersion: string | null
   latestReleaseBody: string
   updateAvailable: boolean
+}
+
+/**
+ * Aggregated response for the dashboard "Update Info" widget.
+ * Returned by the `get-version-overview` WS event. Per-field null when
+ * the corresponding upstream call failed server-side.
+ */
+export interface VersionOverview {
+  serverInfo: ServerInfo | null
+  node: NodeJsInfo | null
+  homebridge: Plugin | null
+  homebridgeUi: Plugin | null
+  outOfDatePlugins: Plugin[]
+  docker: DockerDetails | null
+  hbV2Ready: boolean
 }
 
 /**

@@ -451,6 +451,76 @@ export class StatusService {
   }
 
   /**
+   * Aggregated payload for the dashboard "Update Info" widget.
+   * Replaces 6 separate WS calls + 1 HTTP call on widget load.
+   * Per-field null on rejection so a single upstream failure doesn't
+   * fail the whole call.
+   */
+  public async getVersionOverview() {
+    const [
+      serverInfoResult,
+      nodeResult,
+      homebridgeResult,
+      homebridgeUiResult,
+      outOfDatePluginsResult,
+      installedPluginsResult,
+    ] = await Promise.allSettled([
+      this.getHomebridgeServerInfo(),
+      this.getNodeVersionInfo(),
+      this.pluginsService.getHomebridgePackage(),
+      this.pluginsService.getHomebridgeUiPackage(),
+      this.pluginsService.getOutOfDatePlugins(),
+      this.pluginsService.getInstalledPlugins(),
+    ])
+
+    const settled = <T>(result: PromiseSettledResult<T>, label: string, fallback: T): T => {
+      if (result.status === 'fulfilled') {
+        return result.value
+      }
+      this.logger.error(`Failed to load ${label} for version overview as ${result.reason?.message ?? result.reason}.`)
+      return fallback
+    }
+
+    const serverInfo = settled(serverInfoResult, 'server info', null)
+    const node = settled(nodeResult, 'node version info', null)
+    const homebridge = settled(homebridgeResult, 'homebridge package', null)
+    const homebridgeUi = settled(homebridgeUiResult, 'homebridge-ui package', null)
+    const outOfDatePlugins = settled(outOfDatePluginsResult, 'out-of-date plugins', [])
+    const installedPlugins = settled(installedPluginsResult, 'installed plugins', [])
+
+    // hbV2Ready: every non-ui plugin's `engines.homebridge` accepts a v2 range.
+    // Cheap because installedPlugins is already memoised in PluginsService.
+    const hbV2Ready = installedPlugins
+      .filter(p => p.name !== 'homebridge-config-ui-x')
+      .every((p) => {
+        const hbEngines = p.engines?.homebridge?.split('||').map(s => s.trim()) || []
+        return hbEngines.some(v => v.startsWith('^2') || v.startsWith('>=2'))
+      })
+
+    // Only fetch docker details when actually running in docker (matches
+    // the frontend's previous gating). Done after the parallel batch so we
+    // can read serverInfo. Adds at most one extra round trip on docker.
+    let docker = null
+    if (serverInfo?.homebridgeRunningInDocker) {
+      try {
+        docker = await this.getDockerDetails()
+      } catch (e) {
+        this.logger.error(`Failed to load docker details for version overview as ${e.message}.`)
+      }
+    }
+
+    return {
+      serverInfo,
+      node,
+      homebridge,
+      homebridgeUi,
+      outOfDatePlugins,
+      docker,
+      hbV2Ready,
+    }
+  }
+
+  /**
    * Clear the Node.js version cache
    * Used when Node.js update policy changes
    */

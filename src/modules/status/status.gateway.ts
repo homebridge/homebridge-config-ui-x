@@ -96,6 +96,15 @@ export class StatusGateway {
     }
   }
 
+  @SubscribeMessage('get-version-overview')
+  async getVersionOverview() {
+    try {
+      return await this.statusService.getVersionOverview()
+    } catch (e) {
+      return new WsException(e.message)
+    }
+  }
+
   @SubscribeMessage('get-homebridge-server-info')
   async getHomebridgeServerInfo() {
     try {
