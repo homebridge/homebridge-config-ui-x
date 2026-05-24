@@ -1,3 +1,4 @@
+import { LowerCasePipe } from '@angular/common'
 import { ChangeDetectionStrategy, Component, computed, createEnvironmentInjector, EnvironmentInjector, inject, input } from '@angular/core'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe } from '@ngx-translate/core'
@@ -14,6 +15,7 @@ import { LongClickDirective } from '@/app/core/directives/long-click.directive'
   selector: 'app-robotic-vacuum-cleaner',
   imports: [
     LongClickDirective,
+    LowerCasePipe,
     TranslatePipe,
   ],
   standalone: true,

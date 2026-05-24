@@ -1,3 +1,4 @@
+import { LowerCasePipe } from '@angular/common'
 import {
   ChangeDetectionStrategy,
   Component,
@@ -21,6 +22,7 @@ import { LongClickDirective } from '@/app/core/directives/long-click.directive'
   selector: 'app-matter-fan',
   imports: [
     LongClickDirective,
+    LowerCasePipe,
     TranslatePipe,
   ],
   standalone: true,
