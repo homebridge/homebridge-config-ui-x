@@ -489,6 +489,7 @@
   "plugins.settings.restart_required": "אתחל את הומברידג' כדי להחיל את השינויים",
   "plugins.stats": "סטטיסטיקות תוסף",
   "plugins.stats_note": "לא ניתן להתקין תוספים מעמוד זה, זה סופק רק לעניין.",
+  "plugins.stats_open_in_new_tab": "Open Homebridge analytics in new tab",
   "plugins.status_installed": "מותקן",
   "plugins.support.list_1": "תוספי Homebridge הם אבני הבניין של Homebridge, המאפשרים לך להוסיף תמיכה לאביזרים ופלטפורמות חדשים. תוספים מוסיפים תומכה לתאורה חכמה, מצלמות, טלוויזיות וכו', עבור מותגים שלא תומכים באופן טבעי ב-HomeKit. לדוגמה, כדי להביא את פעמוני הדלת והמצלמות של Ring ל-HomeKit, אתה יכול להתקין את התוסף <code>homebridge-ring</code>.",
   "plugins.support.list_2": "תוספי Homebridge נוצרים על ידי תורמים ציבוריים בקהילת Homebridge, ולא קשורים באופן טיפוסי עם מתחזקי Homebridge, ולא עם יצרני האביזרים עצמם. אם יש לך שאלה על תוסף ספציפי, עליך לידע את מפתח התוסף דרך עמוד ה-GitHub של התוסף.",

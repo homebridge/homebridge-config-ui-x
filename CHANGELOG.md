@@ -19,6 +19,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(layout): mark active sidebar item and hide decorative icons
 - fix(settings): hide decorative icons and group backup actions for screen readers
 - fix(a11y): improve screen-reader announcements for xterm and plugin install completion
+- fix(plugins): tighten screen-reader coverage for plugins page and bridge modal
 
 ### Other Changes
 

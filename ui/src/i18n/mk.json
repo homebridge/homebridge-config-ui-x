@@ -489,6 +489,7 @@
   "plugins.settings.restart_required": "Рестартирајте го Homebridge за промените да бидат рефлектирани.",
   "plugins.stats": "Plugin Statistics",
   "plugins.stats_note": "Plugins cannot be installed from this page, this is provided just for interest.",
+  "plugins.stats_open_in_new_tab": "Open Homebridge analytics in new tab",
   "plugins.status_installed": "Инсталиран",
   "plugins.support.list_1": "Homebridge plugins are the building blocks of Homebridge, allowing you to add support for new accessories and platforms. Plugins add support for smart lights, cameras, TVs, etc, for brands that don't natively support HomeKit. For example, to bring your Ring doorbells and cameras into HomeKit, you can install the <code>homebridge-ring</code> plugin.",
   "plugins.support.list_2": "Homebridge plugins are created by public contributors in the Homebridge community, and are not typically associated with the Homebridge maintainers, nor with the manufacturers of the accessories themselves. If you have a question about a specific plugin, you should let the plugin developer know via the plugin's GitHub page.",

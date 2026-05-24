@@ -489,6 +489,7 @@
   "plugins.settings.restart_required": "Khởi động lại Homebridge để áp dụng thay đổi.",
   "plugins.stats": "Thống kê Plugin",
   "plugins.stats_note": "Không thể cài đặt plugin từ trang này, mục này chỉ mang tính tham khảo.",
+  "plugins.stats_open_in_new_tab": "Open Homebridge analytics in new tab",
   "plugins.status_installed": "Đã cài đặt",
   "plugins.support.list_1": "Plugin Homebridge là thành phần cốt lõi giúp bạn thêm hỗ trợ cho phụ kiện và nền tảng mới. Ví dụ, để đưa chuông cửa và camera Ring vào HomeKit, bạn có thể cài plugin <code>homebridge-ring</code>.",
   "plugins.support.list_2": "Plugin Homebridge được phát triển bởi cộng đồng và thường không liên quan trực tiếp đến đội ngũ duy trì Homebridge hoặc nhà sản xuất thiết bị.",

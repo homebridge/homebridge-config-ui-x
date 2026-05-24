@@ -489,6 +489,7 @@
   "plugins.settings.restart_required": "変更を適用するにはHomebridgeを再起動してください",
   "plugins.stats": "プラグイン統計",
   "plugins.stats_note": "このページからプラグインをインストールすることはできません。参考情報のみ提供します。",
+  "plugins.stats_open_in_new_tab": "Open Homebridge analytics in new tab",
   "plugins.status_installed": "インストール済み",
   "plugins.support.list_1": "HomebridgeプラグインはHomebridgeの機能を拡張し、新しいアクセサリやプラットフォームを追加します。これによりHomeKit非対応のスマートライトやカメラ、テレビ等のブランド製品をHomeKitで扱えます。例えばRing製品を追加するには<code>homebridge-ring</code>プラグインをインストールします。",
   "plugins.support.list_2": "プラグインはHomebridgeコミュニティの開発者が作成しており、Homebridgeメンテナーやアクセサリ製造元とは通常関係ありません。プラグインに関する質問はプラグインのGitHubページで開発者にお問い合わせください。",
