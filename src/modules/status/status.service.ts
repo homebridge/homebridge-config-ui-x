@@ -225,6 +225,27 @@ export class StatusService {
   }
 
   /**
+   * Aggregated init payload for the dashboard page — collapses the
+   * historical two-event load (`get-dashboard-layout` + an optional
+   * `get-raspberry-pi-throttled-status`) into a single WS round-trip.
+   * `rpiThrottled` is only attached when the host is actually a Raspberry
+   * Pi; non-Pi clients see `{ layout }` and the field is absent.
+   */
+  public async getDashboardInit(): Promise<{ layout: any, rpiThrottled?: Record<string, boolean> }> {
+    const layout = await this.getDashboardLayout()
+    if (!this.configService.runningOnRaspberryPi) {
+      return { layout }
+    }
+    try {
+      const rpiThrottled = await this.getRaspberryPiThrottledStatus()
+      return { layout, rpiThrottled }
+    } catch (e) {
+      this.logger.debug(`Failed to attach Raspberry Pi throttled status to dashboard init: ${e.message}.`)
+      return { layout }
+    }
+  }
+
+  /**
    * Saves the current dashboard layout
    */
   public async setDashboardLayout(layout: any) {

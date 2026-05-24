@@ -119,7 +119,7 @@ export class StatusComponent implements OnInit, OnDestroy {
     this.io.connected!.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
       this.consoleStatus.set('up')
       this.io.socket.emit('monitor-server-status')
-      this.getLayout()
+      this.loadDashboardInit()
     })
 
     this.io.socket.on('disconnect', () => {
@@ -140,13 +140,6 @@ export class StatusComponent implements OnInit, OnDestroy {
         void this.gridChangedEvent()
       },
     })
-
-    // If raspberry pi, do a check for throttled
-    if (this.$settings.env.runningOnRaspberryPi) {
-      this.io.request('get-raspberry-pi-throttled-status').pipe(takeUntilDestroyed(this.destroyRef)).subscribe((throttled) => {
-        this.$notification.raspberryPiThrottled.set(throttled)
-      })
-    }
   }
 
   public lockLayout() {
@@ -541,50 +534,63 @@ export class StatusComponent implements OnInit, OnDestroy {
     this.saveWidgetsEvent.complete()
   }
 
-  private getLayout() {
-    this.io.request('get-dashboard-layout').subscribe((layout) => {
-      if (!layout.length) {
-        return this.resetLayout()
+  /**
+   * Dashboard page init — one WS round-trip (`get-dashboard-init`) that
+   * returns the saved layout plus, on Raspberry Pi hosts, the throttled
+   * status. Replaces the historical `get-dashboard-layout` + conditional
+   * `get-raspberry-pi-throttled-status` pair.
+   */
+  private loadDashboardInit() {
+    this.io.request('get-dashboard-init').subscribe((response: any) => {
+      if (response?.rpiThrottled) {
+        this.$notification.raspberryPiThrottled.set(response.rpiThrottled)
       }
-
-      let saveNeeded = false
-      this.setLayout(layout.map((item: GridsterItemConfig) => {
-        // Renamed between v4.68.0 and v4.69.0
-        if (item.component === 'HomebridgeStatusWidgetComponent') {
-          item.component = 'UpdateInfoWidgetComponent'
-          saveNeeded = true
-        } else if (item.component === 'ChildBridgeWidgetComponent') {
-          item.component = 'BridgesWidgetComponent'
-          saveNeeded = true
-        }
-
-        // Hide terminal for non-admin users
-        if (item.component === 'TerminalWidgetComponent' && !this.isAdmin) {
-          return null
-        }
-
-        // Hide matter qr code if not supported
-        if (item.component === 'MatterQrcodeWidgetComponent' && !this.isMatterSupported) {
-          return null
-        }
-
-        // Hide items not in the list of available widgets
-        if (!AVAILABLE_WIDGETS.includes(item.component)) {
-          return null
-        }
-
-        // If accessory control is disabled (insecure mode is disabled), hide the accessories widget
-        if (item.component === 'AccessoriesWidgetComponent' && !this.$settings.env.enableAccessories) {
-          return null
-        }
-
-        return item
-      }).filter(Boolean))
-
-      if (saveNeeded) {
-        void this.gridChangedEvent()
-      }
+      this.applyDashboardLayout(response?.layout ?? [])
     })
+  }
+
+  private applyDashboardLayout(layout: any) {
+    if (!layout.length) {
+      return this.resetLayout()
+    }
+
+    let saveNeeded = false
+    this.setLayout(layout.map((item: GridsterItemConfig) => {
+      // Renamed between v4.68.0 and v4.69.0
+      if (item.component === 'HomebridgeStatusWidgetComponent') {
+        item.component = 'UpdateInfoWidgetComponent'
+        saveNeeded = true
+      } else if (item.component === 'ChildBridgeWidgetComponent') {
+        item.component = 'BridgesWidgetComponent'
+        saveNeeded = true
+      }
+
+      // Hide terminal for non-admin users
+      if (item.component === 'TerminalWidgetComponent' && !this.isAdmin) {
+        return null
+      }
+
+      // Hide matter qr code if not supported
+      if (item.component === 'MatterQrcodeWidgetComponent' && !this.isMatterSupported) {
+        return null
+      }
+
+      // Hide items not in the list of available widgets
+      if (!AVAILABLE_WIDGETS.includes(item.component)) {
+        return null
+      }
+
+      // If accessory control is disabled (insecure mode is disabled), hide the accessories widget
+      if (item.component === 'AccessoriesWidgetComponent' && !this.$settings.env.enableAccessories) {
+        return null
+      }
+
+      return item
+    }).filter(Boolean))
+
+    if (saveNeeded) {
+      void this.gridChangedEvent()
+    }
   }
 
   private setLayout(layout: GridsterItemConfig[]) {
