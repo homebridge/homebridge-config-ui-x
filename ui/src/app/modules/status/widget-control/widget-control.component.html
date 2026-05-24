@@ -14,7 +14,7 @@
       @switch (widget.component) {
         @case ('UpdateInfoWidgetComponent') {
           <li class="list-group-item d-flex justify-content-between align-items-center flex-row pb-2">
-            <span class="text-start">{{ 'status.widget.hide_npm' | translate }}</span>
+            <span class="text-start" aria-hidden="true">{{ 'status.widget.hide_npm' | translate }}</span>
             <div class="text-end grey-text d-flex align-items-center">
               <input
                 type="checkbox"
@@ -28,7 +28,7 @@
           </li>
           @if (serverInfo()?.homebridgeRunningInDocker) {
             <li class="list-group-item d-flex justify-content-between align-items-center flex-row pb-2">
-              <span class="text-start">{{ 'status.widget.expand_docker' | translate }}</span>
+              <span class="text-start" aria-hidden="true">{{ 'status.widget.expand_docker' | translate }}</span>
               <div class="text-end grey-text d-flex align-items-center">
                 <input
                   type="checkbox"
@@ -52,6 +52,7 @@
                 <span class="input-group-text custom-input" id="">
                   <i
                     class="fas"
+                    aria-hidden="true"
                     [class.fa-city]="!searching()"
                     [class.fa-circle-notch]="searching()"
                     [class.fa-spin]="searching()"
@@ -102,7 +103,7 @@
         }
         @case ('HomebridgeLogsWidgetComponent') {
           <li class="list-group-item d-flex justify-content-between align-items-center flex-row pb-2">
-            <span class="text-start">
+            <span class="text-start" aria-hidden="true">
               {{ 'status.widget.show_toolbar' | translate }}
               <span class="badge badge-primary ms-1">{{ 'common.labels.beta' | translate }}</span>
             </span>

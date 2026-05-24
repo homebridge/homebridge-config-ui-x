@@ -110,6 +110,21 @@
       }
     }
 
+    // Update-info widget links: keep <button class="btn btn-link card-link-title">
+    // matching the <a class="card-link card-link-title"> sibling. Bootstrap's
+    // .btn-link colour would otherwise tint the buttons (e.g. orange) while the
+    // anchor stays #000000. Mirrors the dark-mode rule in page-overrides.scss
+    // that already covers both element types via .card-link-title.
+    .card-link-title {
+      color: #000000;
+
+      @media (hover: hover) {
+        &:hover {
+          color: $primary !important;
+        }
+      }
+    }
+
     .icon-button {
       cursor: pointer;
       @media (hover: hover) {

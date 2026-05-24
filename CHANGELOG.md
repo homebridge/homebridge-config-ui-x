@@ -15,6 +15,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(plugins): improve screen reader support in plugin card, manage, uninstall, config modals (@rfiorentino1)
 - fix(plugins): include plugin name in info button label and convert donate anchor (@rfiorentino1)
 - chore(i18n): translate new plugin a11y labels (@rfiorentino1)
+- fix(status): add aria-hidden to icons and convert anchors to buttons in dashboard widgets (@rfiorentino1)
 
 ### Other Changes
 

@@ -13,6 +13,17 @@
   }
 }
 
+.btn-link {
+  text-transform: none;
+  vertical-align: baseline;
+  font-size: inherit;
+  line-height: inherit;
+
+  &.small {
+    font-size: 0.875em;
+  }
+}
+
 /* Prevent outlines around the close button when a modal opens */
 .btn-close:focus {
   outline: none;

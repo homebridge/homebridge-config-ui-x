@@ -172,6 +172,10 @@
 
     .btn-link {
       color: #9e9e9e !important;
+
+      &.primary-text {
+        color: $darkModePrimary !important;
+      }
     }
 
     .badge-primary {
@@ -239,6 +243,20 @@
       @media (hover: hover) {
         &:hover {
           text-decoration: underline;
+        }
+      }
+    }
+
+    // Update-info widget title links. The <a class="card-link card-link-title">
+    // Plugins link gets its hover colour from the a.card-link:hover rule above,
+    // but its siblings are now <button class="btn btn-link card-link-title"> and
+    // an element selector can't reach them. Cover both element types so every
+    // title link turns the theme colour on hover, mirroring the light theme's
+    // .card-link-title rule (base colour is set in page-overrides.scss).
+    .card-link-title {
+      @media (hover: hover) {
+        &:hover {
+          color: $darkModePrimary !important;
         }
       }
     }

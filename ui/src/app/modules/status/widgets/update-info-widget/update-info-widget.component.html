@@ -14,18 +14,18 @@
         >
           <div class="mb-0 d-flex align-items-center">
             @if (!dockerStatusDone()) {
-              <i class="fas fa-lg fa-circle-notch fa-spin primary-text"></i>
+              <i class="fas fa-lg fa-circle-notch fa-spin primary-text" aria-hidden="true"></i>
             } @else {
               @if (dockerInfo().updateAvailable) {
-                <i class="fas fa-lg fa-arrow-alt-circle-up orange-text"></i>
+                <i class="fas fa-lg fa-arrow-alt-circle-up orange-text" aria-hidden="true"></i>
               } @else {
-                <i class="fas fa-lg fa-check-circle green-text"></i>
+                <i class="fas fa-lg fa-check-circle green-text" aria-hidden="true"></i>
               }
             }
           </div>
           <div class="align-self-center px-3">
             Docker-Homebridge
-            <i class="fas fa-chevron-down ms-2" [class.fa-rotate-180]="!widget().dockerExpanded"></i>
+            <i class="fas fa-chevron-down ms-2" aria-hidden="true" [class.fa-rotate-180]="!widget().dockerExpanded"></i>
             <br />
             @if (!dockerStatusDone()) {
               <span class="grey-text small">{{ 'status.homebridge.checking' | translate }}</span>
@@ -34,9 +34,13 @@
 
               @if (dockerInfo().updateAvailable && isAdmin) {
                 &middot;
-                <a href="javascript:void(0)" class="primary-text small" (click)="dockerUpdateModal()">
+                <button
+                  type="button"
+                  class="btn btn-link p-0 text-decoration-none primary-text small"
+                  (click)="dockerUpdateModal()"
+                >
                   {{ 'plugins.button_update' | translate }}
-                </a>
+                </button>
               }
             }
           </div>
@@ -47,24 +51,25 @@
             <div class="hb-status-item hb-status-item-docker-child d-flex flex-row py-1">
               <div class="d-flex ps-3 py-1">
                 <div class="mb-0 d-flex align-items-center">
-                  <i [class]="`fas fa-lg ${getHomebridgeIconClass()}`"></i>
+                  <i aria-hidden="true" [class]="`fas fa-lg ${getHomebridgeIconClass()}`"></i>
                 </div>
                 <div class="align-self-center px-3">
                   @if (homebridgePkg().installedVersion) {
                     @if (isAdmin) {
-                      <a
-                        href="javascript:void(0)"
-                        class="card-link card-link-title"
+                      <button
+                        type="button"
+                        class="btn btn-link p-0 text-decoration-none card-link card-link-title"
                         (click)="installAlternateVersion(homebridgePkg())"
-                        >Homebridge</a
                       >
+                        Homebridge
+                      </button>
                     } @else {
                       Homebridge
                     }
                     @if (isHbV2Loaded() && !isRunningHbV2() && isAdmin) {
-                      <a
-                        href="javascript:void(0)"
-                        class="ms-1"
+                      <button
+                        type="button"
+                        class="btn btn-link p-0 text-decoration-none ms-1"
                         ngbTooltip="Homebridge v2 Readiness"
                         container="body"
                         triggers="hover"
@@ -75,10 +80,11 @@
                       >
                         <i
                           class="fas fa-info-circle"
+                          aria-hidden="true"
                           [class.green-text]="isHbV2Ready()"
                           [class.orange-text]="!isHbV2Ready()"
                         ></i>
-                      </a>
+                      </button>
                     }
                   } @else {
                     <span>Homebridge</span>
@@ -90,9 +96,13 @@
                     <span class="grey-text small">v{{ homebridgeVersion }}</span>
                     @if (homebridgePkg().updateAvailable && isAdmin) {
                       &middot;
-                      <a href="javascript:void(0)" class="primary-text small" (click)="updatePackage(homebridgePkg())">
+                      <button
+                        type="button"
+                        class="btn btn-link p-0 text-decoration-none primary-text small"
+                        (click)="updatePackage(homebridgePkg())"
+                      >
                         {{ 'plugins.button_update' | translate }}
-                      </a>
+                      </button>
                     }
                   }
                 </div>
@@ -102,16 +112,17 @@
             <div class="hb-status-item hb-status-item-docker-child d-flex flex-row py-1">
               <div class="d-flex ps-3 py-1">
                 <div class="mb-0 d-flex align-items-center">
-                  <i [class]="`fas fa-lg ${getHomebridgeUiIconClass()}`"></i>
+                  <i aria-hidden="true" [class]="`fas fa-lg ${getHomebridgeUiIconClass()}`"></i>
                 </div>
                 <div class="align-self-center px-3">
                   @if (homebridgeUiPkg().installedVersion && isAdmin) {
-                    <a
-                      href="javascript:void(0)"
-                      class="card-link card-link-title"
+                    <button
+                      type="button"
+                      class="btn btn-link p-0 text-decoration-none card-link card-link-title"
                       (click)="installAlternateVersion(homebridgeUiPkg())"
-                      >Homebridge UI</a
                     >
+                      Homebridge UI
+                    </button>
                   } @else {
                     <span>Homebridge UI</span>
                   }
@@ -122,13 +133,13 @@
                     <span class="grey-text small">v{{ packageVersion }}</span>
                     @if (homebridgeUiPkg().updateAvailable && isAdmin) {
                       &middot;
-                      <a
-                        href="javascript:void(0)"
-                        class="primary-text small"
+                      <button
+                        type="button"
+                        class="btn btn-link p-0 text-decoration-none primary-text small"
                         (click)="updatePackage(homebridgeUiPkg())"
                       >
                         {{ 'plugins.button_update' | translate }}
-                      </a>
+                      </button>
                     }
                   }
                 </div>
@@ -138,15 +149,16 @@
             <div class="hb-status-item hb-status-item-docker-child d-flex flex-row py-1">
               <div class="d-flex ps-3 py-1">
                 <div class="mb-0 d-flex align-items-center">
-                  <i [class]="`fas fa-lg ${getNodejsIconClass()}`"></i>
+                  <i aria-hidden="true" [class]="`fas fa-lg ${getNodejsIconClass()}`"></i>
                 </div>
                 <div class="align-self-center px-3">
-                  <a
-                    href="javascript:void(0)"
-                    class="card-link card-link-title"
+                  <button
+                    type="button"
+                    class="btn btn-link p-0 text-decoration-none card-link card-link-title"
                     (click)="nodeVersionModal(serverInfo()!.nodeVersion)"
-                    >Node.js</a
                   >
+                    Node.js
+                  </button>
                   @if (widget().showNpmVersion && nodejsInfo()!.npmVersion) {
                     &middot; npm
                   }
@@ -162,23 +174,23 @@
                     </span>
                     @if (nodejsInfo()?.updateAvailable && isAdmin) {
                       &middot;
-                      <a
-                        href="javascript:void(0)"
-                        class="primary-text small"
+                      <button
+                        type="button"
+                        class="btn btn-link p-0 text-decoration-none primary-text small"
                         (click)="nodeVersionModal(nodejsInfo()!.latestVersion)"
                       >
                         {{ 'plugins.button_update' | translate }}
-                      </a>
+                      </button>
                     }
                     @if (nodejsInfo()!.showNodeUnsupportedWarning && !nodejsInfo()!.updateAvailable) {
                       &middot;
-                      <a
-                        href="javascript:void(0)"
-                        class="primary-text small"
+                      <button
+                        type="button"
+                        class="btn btn-link p-0 text-decoration-none primary-text small"
                         (click)="nodeVersionModal(serverInfo()!.nodeVersion)"
                       >
                         {{ 'status.widget.info.node_unsupp' | translate }}
-                      </a>
+                      </button>
                     }
                   }
                 </div>
@@ -193,17 +205,18 @@
       <div class="hb-status-item hb-status-item-quarter d-flex flex-row mb-1">
         <div class="d-flex ps-3 py-1">
           <div class="mb-0 d-flex align-items-center">
-            <i [class]="`fas fa-lg ${getHomebridgeIconClass()}`"></i>
+            <i aria-hidden="true" [class]="`fas fa-lg ${getHomebridgeIconClass()}`"></i>
           </div>
           <div class="align-self-center px-3">
             @if (homebridgePkg().installedVersion) {
               @if (isAdmin) {
-                <a
-                  href="javascript:void(0)"
-                  class="card-link card-link-title"
+                <button
+                  type="button"
+                  class="btn btn-link p-0 text-decoration-none card-link card-link-title"
                   (click)="installAlternateVersion(homebridgePkg())"
-                  >Homebridge</a
                 >
+                  Homebridge
+                </button>
               } @else {
                 Homebridge
               }
@@ -214,9 +227,9 @@
                 homebridgeUpdatePolicy !== 'none' &&
                 homebridgeUpdatePolicy !== 'major'
               ) {
-                <a
-                  href="javascript:void(0)"
-                  class="ms-1"
+                <button
+                  type="button"
+                  class="btn btn-link p-0 text-decoration-none ms-1"
                   ngbTooltip="Homebridge v2 Readiness"
                   container="body"
                   triggers="hover"
@@ -227,10 +240,11 @@
                 >
                   <i
                     class="fas fa-info-circle"
+                    aria-hidden="true"
                     [class.green-text]="isHbV2Ready()"
                     [class.orange-text]="!isHbV2Ready()"
                   ></i>
-                </a>
+                </button>
               }
             } @else {
               <span>Homebridge</span>
@@ -242,9 +256,13 @@
               <span class="grey-text small">v{{ homebridgeVersion }}</span>
               @if (homebridgePkg().updateAvailable && isAdmin) {
                 &middot;
-                <a href="javascript:void(0)" class="primary-text small" (click)="updatePackage(homebridgePkg())">
+                <button
+                  type="button"
+                  class="btn btn-link p-0 text-decoration-none primary-text small"
+                  (click)="updatePackage(homebridgePkg())"
+                >
                   {{ 'plugins.button_update' | translate }}
-                </a>
+                </button>
               }
             }
           </div>
@@ -254,16 +272,17 @@
       <div class="hb-status-item hb-status-item-quarter d-flex flex-row mb-1">
         <div class="d-flex ps-3 py-1">
           <div class="mb-0 d-flex align-items-center">
-            <i [class]="`fas fa-lg ${getHomebridgeUiIconClass()}`"></i>
+            <i aria-hidden="true" [class]="`fas fa-lg ${getHomebridgeUiIconClass()}`"></i>
           </div>
           <div class="align-self-center px-3">
             @if (homebridgeUiPkg().installedVersion && isAdmin) {
-              <a
-                href="javascript:void(0)"
-                class="card-link card-link-title"
+              <button
+                type="button"
+                class="btn btn-link p-0 text-decoration-none card-link card-link-title"
                 (click)="installAlternateVersion(homebridgeUiPkg())"
-                >Homebridge UI</a
               >
+                Homebridge UI
+              </button>
             } @else {
               <span>Homebridge UI</span>
             }
@@ -274,9 +293,13 @@
               <span class="grey-text small">v{{ packageVersion }}</span>
               @if (homebridgeUiPkg().updateAvailable && isAdmin) {
                 &middot;
-                <a href="javascript:void(0)" class="primary-text small" (click)="updatePackage(homebridgeUiPkg())">
+                <button
+                  type="button"
+                  class="btn btn-link p-0 text-decoration-none primary-text small"
+                  (click)="updatePackage(homebridgeUiPkg())"
+                >
                   {{ 'plugins.button_update' | translate }}
-                </a>
+                </button>
               }
             }
           </div>
@@ -287,10 +310,10 @@
     <div class="hb-status-item hb-status-item-quarter d-flex flex-row mb-1">
       <div class="d-flex ps-3 py-1">
         <div class="mb-0 d-flex align-items-center">
-          <i [class]="`fas fa-lg ${getPluginsIconClass()}`"></i>
+          <i aria-hidden="true" [class]="`fas fa-lg ${getPluginsIconClass()}`"></i>
         </div>
         <div class="align-self-center px-3">
-          <a href="javascript:void(0)" routerLink="/plugins" class="card-link card-link-title">
+          <a routerLink="/plugins" class="card-link card-link-title">
             {{ 'menu.label_plugins' | translate }}
           </a>
           <br />
@@ -315,15 +338,16 @@
       <div class="hb-status-item hb-status-item-quarter d-flex flex-row mb-1">
         <div class="d-flex ps-3 py-1">
           <div class="mb-0 d-flex align-items-center">
-            <i [class]="`fas fa-lg ${getNodejsIconClass()}`"></i>
+            <i aria-hidden="true" [class]="`fas fa-lg ${getNodejsIconClass()}`"></i>
           </div>
           <div class="align-self-center px-3">
-            <a
-              href="javascript:void(0)"
-              class="card-link card-link-title"
+            <button
+              type="button"
+              class="btn btn-link p-0 text-decoration-none card-link card-link-title"
               (click)="nodeVersionModal(serverInfo()!.nodeVersion)"
-              >Node.js</a
             >
+              Node.js
+            </button>
             @if (widget().showNpmVersion && nodejsInfo()!.npmVersion) {
               &middot; npm
             }
@@ -339,23 +363,23 @@
               </span>
               @if (nodejsInfo()?.updateAvailable && isAdmin) {
                 &middot;
-                <a
-                  href="javascript:void(0)"
-                  class="primary-text small"
+                <button
+                  type="button"
+                  class="btn btn-link p-0 text-decoration-none primary-text small"
                   (click)="nodeVersionModal(nodejsInfo()!.latestVersion)"
                 >
                   {{ 'plugins.button_update' | translate }}
-                </a>
+                </button>
               }
               @if (nodejsInfo()!.showNodeUnsupportedWarning && !nodejsInfo()!.updateAvailable) {
                 &middot;
-                <a
-                  href="javascript:void(0)"
-                  class="primary-text small"
+                <button
+                  type="button"
+                  class="btn btn-link p-0 text-decoration-none primary-text small"
                   (click)="nodeVersionModal(serverInfo()!.nodeVersion)"
                 >
                   {{ 'status.widget.info.node_unsupp' | translate }}
-                </a>
+                </button>
               }
             }
           </div>
