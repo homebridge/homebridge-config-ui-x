@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, createEnvironmentInjector, EnvironmentInjector, inject, OnDestroy, OnInit, Renderer2, signal } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { ActivatedRoute, Router } from '@angular/router'
+import { NgbDropdown, NgbDropdownItem, NgbDropdownMenu, NgbDropdownToggle } from '@ng-bootstrap/ng-bootstrap/dropdown'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap/tooltip'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
@@ -42,6 +43,10 @@ declare global {
 @Component({
   selector: 'app-config-editor',
   imports: [
+    NgbDropdown,
+    NgbDropdownToggle,
+    NgbDropdownMenu,
+    NgbDropdownItem,
     NgbTooltip,
     EditorComponent,
     DiffEditorComponent,
@@ -78,6 +83,13 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
   public readonly originalConfig = signal<string>('')
   public readonly saveInProgress = signal(false)
   public readonly isMobile = signal<boolean>(false)
+  // Lets screen-reader users opt into a plain <textarea> instead of the Monaco
+  // editor, which has well-known SR-support gaps. Persisted in localStorage so
+  // the choice survives reloads.
+  public readonly preferPlainTextEditor = signal<boolean>(
+    typeof localStorage !== 'undefined' && localStorage.getItem('hb_config_editor_plaintext') === 'true',
+  )
+
   public monacoEditor: any
   public editorOptions: any
   public monacoEditorModel!: NgxEditorModel
@@ -194,6 +206,34 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
     this.monacoEditor = editor.getModifiedEditor()
     this.updateDiffModels()
     window.editor = editor
+  }
+
+  public setPlainTextEditor(enabled: boolean): void {
+    if (!!enabled === this.preferPlainTextEditor()) {
+      return
+    }
+
+    this.preferPlainTextEditor.set(!!enabled)
+    try {
+      localStorage.setItem('hb_config_editor_plaintext', enabled ? 'true' : 'false')
+    } catch {
+      // localStorage can be unavailable (private mode, quota); silent fall back to in-memory
+    }
+
+    // When switching back to Monaco, push the latest config into the model
+    // so the textarea's edits aren't lost.
+    if (!enabled) {
+      setTimeout(() => {
+        try {
+          if (this.monacoEditor && this.homebridgeConfig()) {
+            this.monacoEditor.getModel()?.setValue(this.homebridgeConfig())
+            this.monacoEditor.focus()
+          }
+        } catch (error) {
+          console.error('Failed to refocus monaco editor:', error)
+        }
+      }, 0)
+    }
   }
 
   private updateDiffModels() {
