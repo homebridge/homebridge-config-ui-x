@@ -106,6 +106,13 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
   public readonly iconCoffee = '<i class="fas fa-coffee pink-text"></i>'
   public readonly iconHeart = '<i class="fas fa-heart pink-text"></i>'
 
+  // Curated screen-reader announcements for the install/uninstall/update flow.
+  // The xterm output is too noisy for SRs (per-line live region with ANSI noise),
+  // so we mute it briefly with terminalAriaHidden while we announce the action.
+  public readonly actionLiveMessage = signal('')
+  public readonly terminalAriaHidden = signal(false)
+  private restoreTerminalTimer: ReturnType<typeof setTimeout> | null = null
+
   // Private properties
   private io!: IoNamespace
   private toastSuccess!: string
@@ -123,6 +130,55 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
     this.term = new Terminal(this.$settings.getTerminalOptions({ disableStdin: true }))
     this.term.loadAddon(this.fitAddon)
     this.term.loadAddon(this.webLinksAddon)
+  }
+
+  private speakAction(messageKey: string, suppressTerminalMs = 2000): void {
+    this.terminalAriaHidden.set(true)
+    // Clear-then-set so consecutive messages re-trigger the aria-live announcement
+    this.actionLiveMessage.set('')
+    setTimeout(() => {
+      this.actionLiveMessage.set(
+        this.$translate.instant(messageKey, { pluginName: this.pluginDisplayName || this.pluginName }),
+      )
+    }, 0)
+
+    if (this.restoreTerminalTimer) {
+      clearTimeout(this.restoreTerminalTimer)
+    }
+    this.restoreTerminalTimer = setTimeout(() => {
+      this.terminalAriaHidden.set(false)
+    }, suppressTerminalMs)
+  }
+
+  private applyXtermA11yPatches(): void {
+    const host = this.termTarget as HTMLElement | undefined
+    if (!host) {
+      return
+    }
+
+    const xtermRoot = host.querySelector('.xterm') as HTMLElement | null
+    if (!xtermRoot) {
+      return
+    }
+
+    // The xterm textarea is for stdin which this terminal does not use
+    const ta = xtermRoot.querySelector('textarea') as HTMLTextAreaElement | null
+    if (ta) {
+      ta.disabled = true
+      ta.setAttribute('aria-hidden', 'true')
+      ta.setAttribute('tabindex', '-1')
+      ta.setAttribute('readonly', 'true')
+      if (document.activeElement === ta) {
+        ta.blur()
+      }
+    }
+
+    // Silence xterm's per-line live region — speakAction() drives announcements instead
+    const lives = Array.from(xtermRoot.querySelectorAll('[aria-live]')) as HTMLElement[]
+    for (const el of lives) {
+      el.setAttribute('aria-live', 'off')
+      el.setAttribute('aria-atomic', 'false')
+    }
   }
 
   // Lifecycle hooks
@@ -143,6 +199,8 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
 
     this.io.socket.on('stdout', (data: string | Uint8Array) => {
       this.term.write(data)
+      // xterm recreates the textarea/live-region as it renders, so re-patch on every write
+      this.applyXtermA11yPatches()
       const dataCleaned = data
         .toString()
         .replace(RE_ANSI, '')
@@ -152,12 +210,19 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
       }
     })
 
+    // Initial patches — xterm's internal accessibility DOM is created lazily
+    this.applyXtermA11yPatches()
+    setTimeout(() => this.applyXtermA11yPatches(), 0)
+    setTimeout(() => this.applyXtermA11yPatches(), 50)
+    setTimeout(() => this.applyXtermA11yPatches(), 250)
+
     this.toastSuccess = this.$translate.instant('toast.title_success')
 
     this.onlineUpdateOk.set(!(['homebridge', 'homebridge-config-ui-x'].includes(this.pluginName) && this.$settings.env.platform === 'win32'))
 
     switch (this.action) {
       case 'Install':
+        this.speakAction('plugins.a11y.installing', 4000)
         void this.install()
         if (this.targetVersion === this.installedVersion) {
           this.presentTenseVerb.set(this.$translate.instant('plugins.manage.reinstall'))
@@ -168,6 +233,7 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
         }
         break
       case 'Uninstall':
+        this.speakAction('plugins.a11y.uninstalling', 4000)
         this.uninstall()
         this.presentTenseVerb.set(this.$translate.instant('plugins.manage.uninstall'))
         this.pastTenseVerb.set(this.$translate.instant('plugins.manage.uninstalled'))
@@ -225,6 +291,10 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
   }
 
   public ngOnDestroy(): void {
+    if (this.restoreTerminalTimer) {
+      clearTimeout(this.restoreTerminalTimer)
+      this.restoreTerminalTimer = null
+    }
     this.io.end?.()
   }
 
@@ -244,6 +314,8 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
       void this.upgradeHomebridge()
       return
     }
+
+    this.speakAction('plugins.a11y.updating', 4000)
 
     this.io.request('update', {
       name: this.pluginName,
@@ -285,6 +357,7 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
             void this.$router.navigate(['/plugins'])
           } else {
             // Plugin is configured or has child bridges, show restart UI
+            this.speakAction('plugins.a11y.updated_restart', 3000)
             this.actionComplete.set(true)
             this.justUpdatedPlugin.set(true)
             void this.$router.navigate(['/plugins'])
@@ -292,6 +365,7 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
         }
       },
       error: (error) => {
+        this.speakAction('plugins.a11y.update_failed', 3000)
         this.actionFailed.set(true)
         console.error(error)
         this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
@@ -424,6 +498,7 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
       termRows: this.term.rows,
     }).subscribe({
       next: async () => {
+        this.speakAction('plugins.a11y.installed_restart', 3000)
         this.$toastr.success(`${this.pastTenseVerb()} ${this.pluginName}`, this.toastSuccess)
 
         // Trigger refresh of the plugin list in the background
@@ -443,6 +518,7 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
         }
       },
       error: (error) => {
+        this.speakAction('plugins.a11y.install_failed', 3000)
         this.actionFailed.set(true)
         console.error(error)
         void this.$router.navigate(['/plugins'])
@@ -458,6 +534,7 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
       termRows: this.term.rows,
     }).subscribe({
       next: () => {
+        this.speakAction('plugins.a11y.uninstalled_restart', 3000)
         // Trigger refresh of the plugin list in the background
         const refreshFn = this.onRefreshPluginList
         if (refreshFn) {
@@ -472,6 +549,7 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
         })
       },
       error: (error) => {
+        this.speakAction('plugins.a11y.uninstall_failed', 3000)
         this.actionFailed.set(true)
         console.error(error)
         this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
@@ -506,6 +584,7 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
 
     if (res === 'update') {
       // Continue selected, so update homebridge
+      this.speakAction('plugins.a11y.updating_homebridge', 4000)
       this.io.request('homebridge-update', {
         version: this.targetVersion,
         termCols: this.term.cols,

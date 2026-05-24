@@ -9,12 +9,16 @@
       (click)="dismissModal()"
     ></button>
   </div>
+  <span class="visually-hidden" role="status" aria-live="polite" aria-atomic="true">
+    {{ actionLiveMessage() }}
+  </span>
   <div
     id="plugin-log-output"
     class="modal-body"
     [hidden]="!onlineUpdateOk() || actionComplete() || releaseNotesShow()"
     [class.terminal-light-bg]="isLightTerminalTheme"
     [class.terminal-dark-bg]="!isLightTerminalTheme"
+    [attr.aria-hidden]="terminalAriaHidden() ? 'true' : null"
   ></div>
   @if (actionComplete()) {
     <div class="modal-body plugin-modal-body" role="status" aria-live="polite" aria-atomic="true">
