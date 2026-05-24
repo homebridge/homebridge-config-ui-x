@@ -1,3 +1,4 @@
+import { LowerCasePipe } from '@angular/common'
 import { ChangeDetectionStrategy, Component, input } from '@angular/core'
 import { TranslatePipe } from '@ngx-translate/core'
 
@@ -8,6 +9,7 @@ import { LongClickDirective } from '@/app/core/directives/long-click.directive'
   selector: 'app-switch',
   imports: [
     LongClickDirective,
+    LowerCasePipe,
     TranslatePipe,
   ],
   standalone: true,

@@ -1,3 +1,4 @@
+import { LowerCasePipe } from '@angular/common'
 import { ChangeDetectionStrategy, Component, computed, createEnvironmentInjector, EnvironmentInjector, inject, input } from '@angular/core'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe } from '@ngx-translate/core'
@@ -10,7 +11,7 @@ import { LongClickDirective } from '@/app/core/directives/long-click.directive'
 
 @Component({
   selector: 'app-air-quality-sensor',
-  imports: [TranslatePipe, LongClickDirective],
+  imports: [LowerCasePipe, TranslatePipe, LongClickDirective],
   standalone: true,
   templateUrl: './air-quality-sensor.component.html',
   styleUrl: './air-quality-sensor.component.scss',

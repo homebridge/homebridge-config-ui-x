@@ -1,3 +1,4 @@
+import { LowerCasePipe } from '@angular/common'
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core'
 import { TranslatePipe } from '@ngx-translate/core'
 
@@ -7,6 +8,7 @@ import { getOccupancySensorState } from '@/app/core/accessories/types/matter/mat
 @Component({
   selector: 'app-matter-occupancy-sensor',
   imports: [
+    LowerCasePipe,
     TranslatePipe,
   ],
   standalone: true,

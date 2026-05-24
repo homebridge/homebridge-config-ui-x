@@ -1,17 +1,12 @@
-@let hasHumidity = ('CurrentRelativeHumidity' in service().values);
-@let humidityText = hasHumidity
-  ? (service().values?.CurrentRelativeHumidity + '%')
-  : ('accessories.control.no_data' | translate);
+@let hasHumidity = 'CurrentRelativeHumidity' in service().values;
+@let humidityText =
+  hasHumidity ? `${service().values?.CurrentRelativeHumidity}%` : ('accessories.control.no_data' | translate);
 
 @let srBaseName = (service().customName || service().serviceName || '').trim();
-@let srType = ('accessories.core.humidity_sensor' | translate);
-@let includeType = srBaseName.toLowerCase().indexOf(srType.toLowerCase()) === -1;
+@let srType = 'accessories.core.humidity_sensor' | translate;
+@let includeType = !(srBaseName | lowercase).includes(srType | lowercase);
 
-@let srText =
-  srBaseName
-  + (includeType ? (', ' + srType) : '')
-  + ', '
-  + humidityText;
+@let srText = `${srBaseName + (includeType ? `, ${srType}` : '')}, ${humidityText}`;
 
 <div class="accessory-box">
   <span class="visually-hidden" role="status" aria-live="polite" aria-atomic="true">
@@ -19,7 +14,14 @@
   </span>
   <div class="d-flex flex-column h-100">
     <div class="accessory-svg" aria-hidden="true">
-      <svg width="32px" height="32px" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" focusable="false" aria-hidden="true">
+      <svg
+        width="32px"
+        height="32px"
+        viewBox="0 0 32 32"
+        xmlns="http://www.w3.org/2000/svg"
+        focusable="false"
+        aria-hidden="true"
+      >
         <! -- outer casing - ->
         <rect x="3.5" y="1" width="25" height="30" rx="3" stroke="#7f7f7f" fill="none" stroke-width="1.2" />
         <! -- water droplet - ->

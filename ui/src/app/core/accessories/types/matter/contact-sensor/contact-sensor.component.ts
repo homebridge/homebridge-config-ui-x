@@ -1,3 +1,4 @@
+import { LowerCasePipe } from '@angular/common'
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core'
 import { TranslatePipe } from '@ngx-translate/core'
 
@@ -7,6 +8,7 @@ import { getContactSensorState } from '@/app/core/accessories/types/matter/matte
 @Component({
   selector: 'app-matter-contact-sensor',
   imports: [
+    LowerCasePipe,
     TranslatePipe,
   ],
   standalone: true,

@@ -1,15 +1,53 @@
+@let values = service().values;
+@let hasPurifierState = 'CurrentAirPurifierState' in values;
+@let hasSpeed = 'RotationSpeed' in values;
+
+@let on = isOn();
+@let purifying = isPurifying();
+@let idle = values?.Active && hasPurifierState && values?.CurrentAirPurifierState === 1 && !purifying;
+
+@let speedText = hasSpeed ? `${values?.RotationSpeed}%` : '';
+@let stateText =
+  purifying
+    ? hasSpeed
+      ? speedText
+      : ('accessories.control.on' | translate)
+    : idle
+      ? ('accessories.control.idle' | translate)
+      : ('accessories.control.off' | translate);
+
+@let srBaseName = (service().customName || service().serviceName || '').trim();
+@let srType = 'accessories.core.air_purifier' | translate;
+@let includeType = !(srBaseName | lowercase).includes(srType | lowercase);
+
+@let srText = `${srBaseName + (includeType ? `, ${srType}` : '')}, ${stateText}`;
+
 <div
   class="accessory-box"
+  role="button"
   tabindex="0"
-  [class.accessory-on]="isOn()"
-  [class.purifying]="isPurifying()"
+  [class.accessory-on]="on"
+  [class.purifying]="purifying"
   [class.cursor-pointer]="readyForControl()"
+  [attr.aria-label]="srText"
   (longClick)="onLongClick()"
   (shortClick)="onClick()"
+  (keydown.enter)="onClick()"
+  (keydown.space)="$event.preventDefault(); onClick()"
 >
+  <span class="visually-hidden" role="status" aria-live="polite" aria-atomic="true">
+    {{ srText }}
+  </span>
   <div class="d-flex flex-column h-100">
-    <div class="accessory-svg" [attr.aria-label]="'accessories.core.air_purifier' | translate">
-      <svg width="32px" height="32px" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+    <div class="accessory-svg" aria-hidden="true">
+      <svg
+        width="32px"
+        height="32px"
+        viewBox="0 0 32 32"
+        xmlns="http://www.w3.org/2000/svg"
+        focusable="false"
+        aria-hidden="true"
+      >
         <! -- top wave - ->
         <path
           d="M3,3.0706147 C3.28945166,3.8007217 5.978098,4.1773883 10.0660175,4.2006147 C12.5085124,4.2144929 18.5053297,1.8514837 22.4060749,1.1943647 C24.1588716,0.898084 26.5955382,1.1756219 28.716875,2.0221772"
@@ -58,30 +96,7 @@
         <line x1="2" y1="31" x2="30" y2="31" stroke="#7f7f7f" stroke-width="1.5" stroke-linecap="round" />
       </svg>
     </div>
-    <div class="accessory-label mt-auto">{{ service().customName || service().serviceName }}</div>
-
-    @if (
-      (service().values?.Active && !('CurrentAirPurifierState' in service().values)) ||
-      (service().values?.Active &&
-        'CurrentAirPurifierState' in service().values &&
-        service().values?.CurrentAirPurifierState === 2) ||
-      service().values?.On
-    ) {
-      @if ('RotationSpeed' in service().values) {
-        <div class="accessory-label grey-text">{{ service().values?.RotationSpeed }}%</div>
-      } @else {
-        <div class="accessory-label grey-text">{{ 'accessories.control.on' | translate }}</div>
-      }
-    } @else if (
-      (service().values?.Active && !('CurrentAirPurifierState' in service().values)) ||
-      (service().values?.Active &&
-        'CurrentAirPurifierState' in service().values &&
-        service().values?.CurrentAirPurifierState === 1) ||
-      service().values?.On
-    ) {
-      <div class="accessory-label grey-text">{{ 'accessories.control.idle' | translate }}</div>
-    } @else {
-      <div class="accessory-label grey-text">{{ 'accessories.control.off' | translate }}</div>
-    }
+    <div class="accessory-label mt-auto" aria-hidden="true">{{ service().customName || service().serviceName }}</div>
+    <div class="accessory-label grey-text" aria-hidden="true">{{ stateText }}</div>
   </div>
 </div>

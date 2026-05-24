@@ -1,18 +1,15 @@
-@let hasLux = ('CurrentAmbientLightLevel' in service().values);
+@let hasLux = 'CurrentAmbientLightLevel' in service().values;
 @let lux = service().values?.CurrentAmbientLightLevel;
-@let luxText = hasLux
-  ? ((lux < 1 ? (lux | number: '0.1-1') : (lux | number: '1.0-0')) + ' lux')
-  : ('accessories.control.no_data' | translate);
+@let luxText =
+  hasLux
+    ? `${lux < 1 ? (lux | number: '0.1-1') : (lux | number: '1.0-0')} lux`
+    : ('accessories.control.no_data' | translate);
 
 @let srBaseName = (service().customName || service().serviceName || '').trim();
-@let srType = ('accessories.core.light_sensor' | translate);
-@let includeType = srBaseName.toLowerCase().indexOf(srType.toLowerCase()) === -1;
+@let srType = 'accessories.core.light_sensor' | translate;
+@let includeType = !(srBaseName | lowercase).includes(srType | lowercase);
 
-@let srText =
-  srBaseName
-  + (includeType ? (', ' + srType) : '')
-  + ', '
-  + luxText;
+@let srText = `${srBaseName + (includeType ? `, ${srType}` : '')}, ${luxText}`;
 
 <div class="accessory-box">
   <span class="visually-hidden" role="status" aria-live="polite" aria-atomic="true">
@@ -20,7 +17,14 @@
   </span>
   <div class="d-flex flex-column h-100">
     <div class="accessory-svg" aria-hidden="true">
-      <svg width="32px" height="32px" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" focusable="false" aria-hidden="true">
+      <svg
+        width="32px"
+        height="32px"
+        viewBox="0 0 32 32"
+        xmlns="http://www.w3.org/2000/svg"
+        focusable="false"
+        aria-hidden="true"
+      >
         <! -- outer casing - ->
         <rect x="3.5" y="1" width="25" height="30" rx="3" stroke="#7f7f7f" fill="none" stroke-width="1.2" />
         <! -- sun outline - ->
@@ -54,13 +58,9 @@
     <div class="accessory-label mt-auto" aria-hidden="true">{{ service().customName || service().serviceName }}</div>
     @if (hasLux) {
       @if (lux < 1) {
-        <div class="accessory-label grey-text" aria-hidden="true">
-          {{ lux | number: '0.1-1' }} lux
-        </div>
+        <div class="accessory-label grey-text" aria-hidden="true">{{ lux | number: '0.1-1' }} lux</div>
       } @else {
-        <div class="accessory-label grey-text" aria-hidden="true">
-          {{ lux | number: '1.0-0' }} lux
-        </div>
+        <div class="accessory-label grey-text" aria-hidden="true">{{ lux | number: '1.0-0' }} lux</div>
       }
     } @else {
       <div class="accessory-label grey-text" aria-hidden="true">
