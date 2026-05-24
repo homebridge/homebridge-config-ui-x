@@ -35,6 +35,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(login): hide decorative icons from screen readers
 - fix(setup-wizard): tighten icons and convert restore-backup anchor to button
 - fix(support): hide decorative icons and add keyboard activation to section headers
+- fix(accessories): hide decorative icons from screen readers
 
 ### Other Changes
 
