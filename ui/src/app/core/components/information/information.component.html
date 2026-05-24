@@ -11,7 +11,7 @@
   </div>
   <div class="modal-body text-center">
     @if (faIconClass) {
-      <i [class]="`fas ${faIconClass} mb-3 icon-xl`"></i>
+      <i aria-hidden="true" [class]="`fas ${faIconClass} mb-3 icon-xl`"></i>
     }
     @if (subtitle) {
       <h5 class="mb-3" [innerHTML]="subtitle"></h5>
@@ -58,7 +58,7 @@
           rel="noopener noreferrer"
           [href]="ctaButtonLink"
         >
-          {{ ctaButtonLabel }} <i class="fas fa-external-link-alt"></i>
+          {{ ctaButtonLabel }} <i class="fas fa-external-link-alt" aria-hidden="true"></i>
         </a>
       }
     </div>

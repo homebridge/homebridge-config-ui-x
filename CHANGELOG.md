@@ -39,6 +39,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(users): hide decorative icons and make 2FA copy button accessible
 - fix(power-options): hide decorative power-off icon from screen readers
 - fix(accessory-info): make copy buttons accessible
+- fix(plugins): hide decorative icons across plugin and shared modals
 
 ### Other Changes
 

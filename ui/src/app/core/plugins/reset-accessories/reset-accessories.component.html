@@ -13,11 +13,11 @@
   <div class="modal-body">
     @if (pairings().length === 0) {
       <div class="text-center mb-3">
-        <i class="fas fa-circle-check primary-text icon-xl"></i>
+        <i class="fas fa-circle-check primary-text icon-xl" aria-hidden="true"></i>
       </div>
       <p class="mb-0 text-center">{{ 'reset.bridge_accessories.empty' | translate }}</p>
     } @else {
-      <div class="text-center mb-3"><i class="fas fa-broom primary-text icon-xl"></i></div>
+      <div class="text-center mb-3"><i class="fas fa-broom primary-text icon-xl" aria-hidden="true"></i></div>
       <ul class="mb-3">
         <li>{{ 'reset.bridge_accessories.list_1' | translate }}</li>
         <li>{{ 'reset.clear_cache_single.list_3' | translate }}</li>
@@ -27,10 +27,10 @@
           <li class="list-group-item d-flex justify-content-between align-items-center">
             <span class="me-3">
               @if (isMatterSupported) {
-                <i class="fas fa-lg fa-hap me-2" [class.opacity-muted]="item._protocol === 'matter'"></i>
-                <i class="fas fa-lg fa-matter" [class.opacity-muted]="item._protocol !== 'matter'"></i>
+                <i class="fas fa-lg fa-hap me-2" aria-hidden="true" [class.opacity-muted]="item._protocol === 'matter'"></i>
+                <i class="fas fa-lg fa-matter" aria-hidden="true" [class.opacity-muted]="item._protocol !== 'matter'"></i>
               } @else {
-                <i class="fas fa-lg fa-hap"></i>
+                <i class="fas fa-lg fa-hap" aria-hidden="true"></i>
               }
             </span>
             <span class="flex-grow-1">
@@ -51,6 +51,7 @@
             >
               <i
                 class="fas"
+                aria-hidden="true"
                 [class.fa-broom]="!isInList(item._id, item._protocol)"
                 [class.fa-undo]="isInList(item._id, item._protocol) && !clicked()"
                 [class.fa-circle-notch]="isInList(item._id, item._protocol) && clicked()"
@@ -98,7 +99,7 @@
               ({{ toDelete().length }})
             }
           } @else {
-            <i class="fas fa-circle-notch fa-spin"></i>
+            <i class="fas fa-circle-notch fa-spin" aria-hidden="true"></i>
           }
         </button>
       }
