@@ -404,13 +404,23 @@
             class="text-start text-md-end grey-text font-monospace d-flex justify-content-between align-items-center ms-md-2"
           >
             <span class="text-break-all">{{ service.uniqueId }}</span>
-            <a href="javascript:void(0)" class="ms-2 text-primary flex-shrink-0" (click)="copyUniqueIdToClipboard()">
+            <button
+              type="button"
+              class="btn btn-link p-0 ms-2 text-primary flex-shrink-0 align-baseline"
+              [attr.aria-label]="'common.a11y.copy_to_clipboard' | translate"
+              (click)="copyUniqueIdToClipboard()"
+            >
               @if (uniqueIdCopied()) {
-                <i class="fas fa-check green-text"></i>
+                <i class="fas fa-check green-text" aria-hidden="true"></i>
               } @else {
-                <i class="fas fa-copy"></i>
+                <i class="fas fa-copy" aria-hidden="true"></i>
               }
-            </a>
+            </button>
+            @if (uniqueIdCopied()) {
+              <span class="visually-hidden" role="status" aria-live="polite" aria-atomic="true">
+                {{ 'common.a11y.copied' | translate }}
+              </span>
+            }
           </span>
         </li>
         <li class="list-group-item d-flex justify-content-between align-items-left flex-column flex-md-row">
@@ -429,13 +439,23 @@
             class="text-start text-md-end grey-text font-monospace d-flex justify-content-between align-items-center ms-md-2"
           >
             <span class="text-break-all">{{ matchedCachedAccessory.UUID }}</span>
-            <a href="javascript:void(0)" class="ms-2 text-primary flex-shrink-0" (click)="copyUUIDToClipboard()">
+            <button
+              type="button"
+              class="btn btn-link p-0 ms-2 text-primary flex-shrink-0 align-baseline"
+              [attr.aria-label]="'common.a11y.copy_to_clipboard' | translate"
+              (click)="copyUUIDToClipboard()"
+            >
               @if (uuidCopied()) {
-                <i class="fas fa-check green-text"></i>
+                <i class="fas fa-check green-text" aria-hidden="true"></i>
               } @else {
-                <i class="fas fa-copy"></i>
+                <i class="fas fa-copy" aria-hidden="true"></i>
               }
-            </a>
+            </button>
+            @if (uuidCopied()) {
+              <span class="visually-hidden" role="status" aria-live="polite" aria-atomic="true">
+                {{ 'common.a11y.copied' | translate }}
+              </span>
+            }
           </span>
         </li>
         <li class="list-group-item d-flex justify-content-between align-items-center">
