@@ -259,6 +259,8 @@
   "child_bridge.start_plural": "子ブリッジを開始",
   "child_bridge.stop": "子ブリッジを停止",
   "child_bridge.stop_plural": "子ブリッジを停止",
+  "common.a11y.copied": "Copied",
+  "common.a11y.copy_to_clipboard": "Copy to clipboard",
   "common.labels.advanced": "Advanced",
   "common.labels.beta": "ベータ版",
   "common.labels.disabled": "無効",

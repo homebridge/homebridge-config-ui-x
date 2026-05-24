@@ -259,6 +259,8 @@
   "child_bridge.start_plural": "Spustit podřízené mosty",
   "child_bridge.stop": "Zastavit podřízený most",
   "child_bridge.stop_plural": "Zastavit podřízené mosty",
+  "common.a11y.copied": "Copied",
+  "common.a11y.copy_to_clipboard": "Copy to clipboard",
   "common.labels.advanced": "Advanced",
   "common.labels.beta": "beta",
   "common.labels.disabled": "Zakázáno",

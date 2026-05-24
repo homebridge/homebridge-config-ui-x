@@ -259,6 +259,8 @@
   "child_bridge.start_plural": "Mulai Bridge-bridge anak",
   "child_bridge.stop": "Hentikan Bridge anak",
   "child_bridge.stop_plural": "Hentikan Bridge-bridge anak",
+  "common.a11y.copied": "Copied",
+  "common.a11y.copy_to_clipboard": "Copy to clipboard",
   "common.labels.advanced": "Advanced",
   "common.labels.beta": "beta",
   "common.labels.disabled": "Nonaktifkan",

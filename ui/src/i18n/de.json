@@ -259,6 +259,8 @@
   "child_bridge.start_plural": "Child-Bridges starten",
   "child_bridge.stop": "Child-Bridge stoppen",
   "child_bridge.stop_plural": "Child-Bridges stoppen",
+  "common.a11y.copied": "Copied",
+  "common.a11y.copy_to_clipboard": "Copy to clipboard",
   "common.labels.advanced": "Erweitert",
   "common.labels.beta": "Beta",
   "common.labels.disabled": "Deaktiviert",
