@@ -40,6 +40,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(accessory-info): make copy buttons accessible
 - fix(plugins): hide decorative icons across plugin and shared modals
 - fix(settings): add keyboard activation to collapsible section headers
+- fix(spinner): announce loading state to screen readers
 
 ### Other Changes
 
