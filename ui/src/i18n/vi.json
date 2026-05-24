@@ -779,6 +779,8 @@
   "status.widget.account_2": "Người dùng quản trị có thể thay đổi bố cục, trong khi người dùng không phải quản trị thì không thể chỉnh sửa.",
   "status.widget.add.label_pairing_code": "Mã ghép nối",
   "status.widget.add.matter_pairing_code": "Mã ghép nối Matter",
+  "status.widget.bridge.restart_complete": "{{ name }} restart complete.",
+  "status.widget.bridge.restart_complete_with_status": "{{ name }} restart complete, {{ status }}.",
   "status.widget.bridge.restart_error": "Không thể khởi động lại child bridge.",
   "status.widget.clock": "Đồng hồ",
   "status.widget.clock_dateformat": "Định dạng ngày",

@@ -779,6 +779,8 @@
   "status.widget.account_2": "Admin-Benutzer können das Layout ändern, während Nicht-Admin-Benutzer keine Änderungen vornehmen können.",
   "status.widget.add.label_pairing_code": "Pairing-Code",
   "status.widget.add.matter_pairing_code": "Matter-Kopplungscode",
+  "status.widget.bridge.restart_complete": "{{ name }} restart complete.",
+  "status.widget.bridge.restart_complete_with_status": "{{ name }} restart complete, {{ status }}.",
   "status.widget.bridge.restart_error": "Neustart der Child-Bridge fehlgeschlagen.",
   "status.widget.clock": "Uhr",
   "status.widget.clock_dateformat": "Datumsformat",

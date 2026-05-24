@@ -1,4 +1,12 @@
 <div class="flex-column d-flex align-items-stretch h-100 w-100 pb-3 overflow-auto no-scrollbars">
+  <span class="visually-hidden" role="status" aria-live="polite" aria-atomic="true">
+    {{ homebridgeLiveMessage() }}
+  </span>
+  @for (bridge of childBridges(); track bridge.username) {
+    <span class="visually-hidden" role="status" aria-live="polite" aria-atomic="true">
+      {{ childBridgeLiveMessages()[bridge.username || bridge.name] }}
+    </span>
+  }
   <div class="drag-handler p-2" [class.widget-cursor]="widget().draggable">
     {{ 'child_bridge.bridges' | translate }}
   </div>

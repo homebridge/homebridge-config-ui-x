@@ -779,6 +779,8 @@
   "status.widget.account_2": "管理者ユーザーのみレイアウトを編集できます。非管理者は変更できません。",
   "status.widget.add.label_pairing_code": "ペアリングコード",
   "status.widget.add.matter_pairing_code": "Matter Pairing Code",
+  "status.widget.bridge.restart_complete": "{{ name }} restart complete.",
+  "status.widget.bridge.restart_complete_with_status": "{{ name }} restart complete, {{ status }}.",
   "status.widget.bridge.restart_error": "子ブリッジの再起動に失敗しました。",
   "status.widget.clock": "時計",
   "status.widget.clock_dateformat": "日付形式",

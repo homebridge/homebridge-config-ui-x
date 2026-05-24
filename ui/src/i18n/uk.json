@@ -779,6 +779,8 @@
   "status.widget.account_2": "Користувачі з правами адміністратора можуть змінювати макет, тоді як користувачі без прав адміністратора не можуть вносити зміни.",
   "status.widget.add.label_pairing_code": "Код сполучення",
   "status.widget.add.matter_pairing_code": "Код сполучення Matter",
+  "status.widget.bridge.restart_complete": "{{ name }} restart complete.",
+  "status.widget.bridge.restart_complete_with_status": "{{ name }} restart complete, {{ status }}.",
   "status.widget.bridge.restart_error": "Не вдалося перезапустити Дочірній міст.",
   "status.widget.clock": "Годинник",
   "status.widget.clock_dateformat": "Формат дати",
