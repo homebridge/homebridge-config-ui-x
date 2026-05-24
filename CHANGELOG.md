@@ -54,6 +54,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - chore: replace `emoji-js` with a generated short-name lookup
 - chore: small fix in deprecate-past-releases workflow
 - chore: add some extra eslint rules for test files
+- chore(format): apply prettier formatting to a11y-touched templates
 
 ### Homebridge Dependencies
 
