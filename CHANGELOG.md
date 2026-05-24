@@ -24,6 +24,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(logs): wire search button aria-expanded + hide decorative toolbar icons (@rfiorentino1)
 - fix(settings): wire search button aria-expanded + hide redundant row labels (@rfiorentino1)
 - fix(accessories): apply switch a11y pattern to matter on/off variants (@rfiorentino1)
+- fix(status): add screen-reader expand/collapse to terminal widget (@rfiorentino1)
 
 ### Other Changes
 

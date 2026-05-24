@@ -22,6 +22,10 @@ export class TerminalService {
   private dataDisposable: IDisposable | null = null
   private isInitializing = false
   private hasUserTyped = false
+  // Whether startSession() should grab keyboard focus. The full-page terminal wants
+  // this (you land there to type); the dashboard widget opts out so it doesn't pull
+  // focus and scroll the page down on first load.
+  private autoFocusOnStart = true
   private destroy$ = new Subject<void>()
   public term!: Terminal
 
@@ -129,12 +133,13 @@ export class TerminalService {
     }
   }
 
-  public reconnectTerminal(targetElement: ElementRef, termOpts: ITerminalOptions = {}, elementResize?: Subject<any>): boolean {
+  public reconnectTerminal(targetElement: ElementRef, termOpts: ITerminalOptions = {}, elementResize?: Subject<any>, autoFocus = true): boolean {
     if (this.isInitializing) {
       return false
     }
 
     this.isInitializing = true
+    this.autoFocusOnStart = autoFocus
 
     // Handle element resize events
     this.elementResize = elementResize
@@ -226,16 +231,17 @@ export class TerminalService {
       return true
     } else {
       // No active connection, start fresh
-      return this.startTerminal(targetElement, termOpts, elementResize)
+      return this.startTerminal(targetElement, termOpts, elementResize, autoFocus)
     }
   }
 
-  public startTerminal(targetElement: ElementRef, termOpts: ITerminalOptions = {}, elementResize?: Subject<any>): boolean {
+  public startTerminal(targetElement: ElementRef, termOpts: ITerminalOptions = {}, elementResize?: Subject<any>, autoFocus = true): boolean {
     if (this.isInitializing) {
       return false
     }
 
     this.isInitializing = true
+    this.autoFocusOnStart = autoFocus
 
     // Handle element resize events
     this.elementResize = elementResize
@@ -338,6 +344,8 @@ export class TerminalService {
     })
     this.resize.next({ cols: this.term.cols, rows: this.term.rows })
     this.isInitializing = false
-    this.term.focus()
+    if (this.autoFocusOnStart) {
+      this.term.focus()
+    }
   }
 }

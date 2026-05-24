@@ -4,9 +4,24 @@
   [class.widget-container-dark]="theme() === 'dark'"
 >
   <div #terminaltitle class="drag-handler p-2" [class.terminal-title-dark]="theme() === 'dark'">
-    Homebridge {{ 'menu.docker.terminal' | translate }}
+    <span aria-hidden="true">Homebridge {{ 'menu.docker.terminal' | translate }}</span>
+    <button
+      type="button"
+      class="visually-hidden-focusable"
+      [attr.aria-expanded]="srExpanded()"
+      [attr.aria-controls]="contentId"
+      [attr.aria-label]="'menu.docker.terminal' | translate"
+      (click)="toggleSrExpanded($event)"
+    >
+      {{ 'menu.docker.terminal' | translate }}
+    </button>
   </div>
-  <div class="p-2" [style.height.px]="terminalHeight()">
+  <div
+    class="p-2"
+    [attr.id]="contentId"
+    [style.height.px]="terminalHeight()"
+    [attr.aria-hidden]="srExpanded() ? null : 'true'"
+  >
     <div #terminaloutput class="terminal gridster-item-content w-100 h-100 terminal-max-height"></div>
   </div>
 </div>
