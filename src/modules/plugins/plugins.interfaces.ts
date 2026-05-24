@@ -42,6 +42,12 @@ export interface HomebridgePlugin {
   directories?: {
     schemas?: string
   }
+  /**
+   * Saved config blocks for this plugin from `config.json`. Only populated
+   * when `GET /plugins?include=config` is called by an admin user; otherwise
+   * the field is omitted.
+   */
+  config?: any[]
 }
 
 export interface HomebridgePluginUiMetadata {
