@@ -12,11 +12,11 @@
   <div class="modal-body">
     @if (loading()) {
       <div class="w-100 text-center primary-text text-center">
-        <i class="fas fa-circle-notch fa-spin icon-xl"></i>
+        <i class="fas fa-circle-notch fa-spin icon-xl" aria-hidden="true"></i>
       </div>
     } @else {
       <div class="text-center">
-        <i class="fas fab fa-node-js primary-text mb-3 icon-xl"></i>
+        <i class="fas fab fa-node-js primary-text mb-3 icon-xl" aria-hidden="true"></i>
         <h5 class="mb-3">
           {{ nodeVersion }}
           @if (latestVersion !== nodeVersion) {
@@ -145,9 +145,9 @@
             </div>
             <div class="ms-3">
               @if (supportsNodeJs24) {
-                <i class="fas fa-check-circle green-text fa-xl"></i>
+                <i class="fas fa-check-circle green-text fa-xl" aria-hidden="true"></i>
               } @else {
-                <i class="fas fa-xmark-circle red-text fa-xl"></i>
+                <i class="fas fa-xmark-circle red-text fa-xl" aria-hidden="true"></i>
               }
             </div>
           </li>
@@ -178,11 +178,11 @@
               </div>
               <div class="ms-3">
                 @if (plugin.isSupported === 'yes') {
-                  <i class="fas fa-check-circle green-text fa-xl"></i>
+                  <i class="fas fa-check-circle green-text fa-xl" aria-hidden="true"></i>
                 } @else if (plugin.isSupported === 'no') {
-                  <i class="fas fa-xmark-circle red-text fa-xl"></i>
+                  <i class="fas fa-xmark-circle red-text fa-xl" aria-hidden="true"></i>
                 } @else {
-                  <i class="fas fa-question-circle orange-text fa-xl"></i>
+                  <i class="fas fa-question-circle orange-text fa-xl" aria-hidden="true"></i>
                 }
               </div>
             </li>
@@ -211,7 +211,7 @@
         href="https://github.com/homebridge/homebridge/wiki/How-To-Update-Node.js"
         rel="noopener noreferrer"
       >
-        {{ 'form.button_more_info' | translate }} <i class="fas fa-external-link-alt"></i>
+        {{ 'form.button_more_info' | translate }} <i class="fas fa-external-link-alt" aria-hidden="true"></i>
       </a>
     </div>
   </div>

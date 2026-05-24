@@ -172,6 +172,10 @@
 
     .btn-link {
       color: #9e9e9e !important;
+
+      &.primary-text {
+        color: $darkModePrimary !important;
+      }
     }
 
     .badge-primary {
