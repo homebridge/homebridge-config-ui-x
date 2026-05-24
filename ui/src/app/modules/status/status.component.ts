@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, createEnvironmentInjector, DestroyR
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap/tooltip'
-import { TranslatePipe } from '@ngx-translate/core'
+import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { Gridster, GridsterConfig, GridsterItem, GridsterItemConfig } from 'angular-gridster2'
 import { firstValueFrom, Subject } from 'rxjs'
 
@@ -46,6 +46,7 @@ export class StatusComponent implements OnInit, OnDestroy {
   private $navigationGuard = inject(TerminalNavigationGuardService)
   private $notification = inject(NotificationService)
   private $settings = inject(SettingsService)
+  private $translate = inject(TranslateService)
   private $ws = inject(WsService)
   private readonly isUnlocked = signal(false)
   private io!: IoNamespace
@@ -63,6 +64,21 @@ export class StatusComponent implements OnInit, OnDestroy {
   })
 
   public widgetsWithSettings: readonly string[] = WIDGETS_WITH_SETTINGS
+
+  // Keyboard-driven widget reorder mode for screen-reader / keyboard-only users.
+  // The default gridster drag-and-drop is mouse-only; this provides a parallel
+  // listbox-based path: arrow keys move the selected widget, escape exits.
+  public readonly reorderMode = signal(false)
+  public readonly selectedReorderComponent = signal<string | null>(null)
+  public readonly actionLiveMessage = signal('')
+  private actionTick = 0
+  private reorderAnnounceTimer: ReturnType<typeof setTimeout> | null = null
+
+  public get reorderComponents(): string[] {
+    return this.dashboard()
+      .map(x => x?.component)
+      .filter((c): c is string => typeof c === 'string' && c.length > 0)
+  }
 
   public ngOnInit() {
     // Set page title (status page should only show instance name)
@@ -263,7 +279,250 @@ export class StatusComponent implements OnInit, OnDestroy {
     })
   }
 
+  public manageWidgetByComponent(component: string): void {
+    const item = this.dashboard().find(x => x?.component === component)
+    if (item) {
+      void this.manageWidget(item)
+    }
+  }
+
+  public toggleReorderMode(): void {
+    if (!this.reorderMode()) {
+      this.enterReorderMode()
+    } else {
+      this.exitReorderMode(true, true)
+    }
+  }
+
+  public setSelectedReorderComponent(component: string): void {
+    if (!this.reorderMode()) {
+      return
+    }
+    const list = this.reorderComponents
+    if (!list.includes(component)) {
+      return
+    }
+    this.selectedReorderComponent.set(component)
+  }
+
+  public getReorderItemAriaLabel(component: string): string {
+    const name = this.getWidgetDisplayName(component)
+    const list = this.reorderComponents
+    const position = list.indexOf(component) + 1
+    const total = list.length || 1
+    return this.$translate.instant('status.reorder.item_label', { name, position, total })
+  }
+
+  public getWidgetSettingsAriaLabel(item: { component?: string }): string {
+    const name = this.getWidgetDisplayName(item?.component || '')
+    return this.$translate.instant('status.reorder.widget_settings', { name })
+  }
+
+  public onReorderKeydown(event: KeyboardEvent): void {
+    if (!this.reorderMode()) {
+      return
+    }
+
+    let handled = true
+    switch (event.key) {
+      case 'Tab':
+        this.selectNext(event.shiftKey)
+        break
+      case 'ArrowUp':
+        this.moveSelectedBy(-1)
+        break
+      case 'ArrowDown':
+        this.moveSelectedBy(1)
+        break
+      case 'ArrowLeft':
+        this.moveSelectedToEdge('top')
+        break
+      case 'ArrowRight':
+        this.moveSelectedToEdge('bottom')
+        break
+      case 'Escape':
+        this.exitReorderMode(true, true)
+        break
+      default:
+        handled = false
+    }
+
+    if (handled) {
+      event.preventDefault()
+      event.stopPropagation()
+    }
+  }
+
+  private enterReorderMode(): void {
+    const list = this.reorderComponents
+    this.reorderMode.set(true)
+    this.selectedReorderComponent.set(list[0] || null)
+    this.speakAction(this.$translate.instant('status.reorder.help'))
+
+    const selected = this.selectedReorderComponent()
+    if (selected) {
+      this.clearReorderAnnounceTimer()
+      // Wait long enough for the announcement to start before stealing focus
+      // (SR users skip the announcement otherwise).
+      this.reorderAnnounceTimer = setTimeout(() => {
+        this.reorderAnnounceTimer = null
+        if (!this.reorderMode()) {
+          return
+        }
+        const target = this.selectedReorderComponent()
+        if (target) {
+          this.focusReorderItem(target)
+        }
+      }, 7000)
+    }
+  }
+
+  private exitReorderMode(apply: boolean, announce: boolean): void {
+    this.clearReorderAnnounceTimer()
+    if (apply) {
+      void this.gridChangedEvent()
+    }
+    this.reorderMode.set(false)
+    this.selectedReorderComponent.set(null)
+    if (announce) {
+      this.speakAction(this.$translate.instant('status.reorder.disabled'))
+    }
+  }
+
+  private selectNext(prev: boolean): void {
+    const list = this.reorderComponents
+    if (!list.length) {
+      return
+    }
+    const current = this.selectedReorderComponent()
+    const idx = current && list.includes(current) ? list.indexOf(current) : 0
+    const nextIdx = prev ? (idx - 1 + list.length) % list.length : (idx + 1) % list.length
+    const next = list[nextIdx]
+    this.selectedReorderComponent.set(next)
+    setTimeout(() => this.focusReorderItem(next), 0)
+  }
+
+  private moveSelectedBy(delta: number): void {
+    const list = this.reorderComponents
+    const selected = this.selectedReorderComponent()
+    if (!selected || !list.includes(selected)) {
+      return
+    }
+    const idx = list.indexOf(selected)
+    const target = idx + delta
+    if (target < 0 || target >= list.length) {
+      return
+    }
+
+    this.reorderTo(selected, target)
+
+    const name = this.getWidgetDisplayName(selected)
+    this.speakAction(this.$translate.instant('status.reorder.moved', {
+      name,
+      position: target + 1,
+      total: list.length,
+    }))
+    setTimeout(() => this.focusReorderItem(selected), 0)
+  }
+
+  private moveSelectedToEdge(edge: 'top' | 'bottom'): void {
+    const list = this.reorderComponents
+    const selected = this.selectedReorderComponent()
+    if (!selected || !list.includes(selected)) {
+      return
+    }
+    const target = edge === 'top' ? 0 : list.length - 1
+    this.reorderTo(selected, target)
+
+    const name = this.getWidgetDisplayName(selected)
+    const edgeLabel = this.$translate.instant(edge === 'top' ? 'status.reorder.edge_top' : 'status.reorder.edge_bottom')
+    this.speakAction(this.$translate.instant('status.reorder.moved_to_edge', {
+      name,
+      edge: edgeLabel,
+      position: target + 1,
+      total: list.length,
+    }))
+    setTimeout(() => this.focusReorderItem(selected), 0)
+  }
+
+  private reorderTo(component: string, targetIdx: number): void {
+    const current = [...this.dashboard()]
+    const fromIdx = current.findIndex(x => x?.component === component)
+    if (fromIdx < 0) {
+      return
+    }
+    const [item] = current.splice(fromIdx, 1)
+    current.splice(targetIdx, 0, item)
+    // Keep mobileOrder in sync so the rendered grid matches the list order
+    current.forEach((w, i) => {
+      w.mobileOrder = i
+    })
+    this.dashboard.set(current)
+  }
+
+  private focusReorderItem(component: string): void {
+    const el = document.getElementById(`reorder-item-${component}`)
+    if (el) {
+      el.focus()
+    }
+  }
+
+  private speakAction(message: string): void {
+    // Zero-width-space trick to force the live region to re-announce when the
+    // same message is set twice in a row
+    this.actionTick = (this.actionTick + 1) % 10
+    this.actionLiveMessage.set(`${message}${'​'.repeat(this.actionTick)}`)
+  }
+
+  private clearReorderAnnounceTimer(): void {
+    if (this.reorderAnnounceTimer) {
+      clearTimeout(this.reorderAnnounceTimer)
+      this.reorderAnnounceTimer = null
+    }
+  }
+
+  public getWidgetDisplayName(component: string): string {
+    switch (component) {
+      case 'UpdateInfoWidgetComponent':
+        return this.$translate.instant('status.services.updates')
+      case 'WeatherWidgetComponent':
+        return this.$translate.instant('status.widget.weather.title_weather')
+      case 'AccessoriesWidgetComponent':
+        return this.$translate.instant('menu.label_accessories')
+      case 'BridgesWidgetComponent':
+        return this.$translate.instant('child_bridge.bridges')
+      case 'CpuWidgetComponent':
+        return this.$translate.instant('status.cpu.title_cpu')
+      case 'MemoryWidgetComponent':
+        return this.$translate.instant('status.memory.title_memory')
+      case 'NetworkWidgetComponent':
+        return this.$translate.instant('status.network.title_network')
+      case 'UptimeWidgetComponent':
+        return this.$translate.instant('status.uptime.title_uptime')
+      case 'SystemInfoWidgetComponent':
+        return this.$translate.instant('status.widget.info')
+      case 'HapQrcodeWidgetComponent':
+        return this.$translate.instant('status.widget.add.label_pairing_code')
+      case 'MatterQrcodeWidgetComponent':
+        return this.$translate.instant('status.widget.add.matter_pairing_code')
+      case 'HomebridgeLogsWidgetComponent':
+        return this.$translate.instant('status.widget.homebridge_logs')
+      case 'TerminalWidgetComponent':
+        return `Homebridge ${this.$translate.instant('menu.docker.terminal')}`
+      case 'ClockWidgetComponent':
+        return this.$translate.instant('status.widget.clock')
+      default: {
+        const base = component
+          .replace(/WidgetComponent$/, '')
+          .replace(/Component$/, '')
+          .replace(/Widget$/, '')
+        return base.replace(/([a-z0-9])([A-Z])/g, '$1 $2').trim() || component
+      }
+    }
+  }
+
   public ngOnDestroy() {
+    this.clearReorderAnnounceTimer()
     this.io.end!()
     this.saveWidgetsEvent.complete()
   }

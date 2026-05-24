@@ -1,3 +1,4 @@
+<div class="visually-hidden" role="status" aria-atomic="true">{{ actionLiveMessage() }}</div>
 <div class="row mb-3">
   <div class="col-6">
     <h3 class="primary-text m-0">{{ 'menu.label_status' | translate }}</h3>
@@ -57,19 +58,60 @@
   }
   <div class="row flex-column flex-grow-1">
     @if (dashboard().length) {
-      <gridster class="flex-grow-1 no-scrollbars py-0" [options]="options" [hidden]="consoleStatus() === 'down'">
+      @if (options.draggable!.enabled && isAdmin) {
+        <div class="col-12 mb-2">
+          <button
+            type="button"
+            class="btn btn-elegant my-0"
+            [attr.aria-pressed]="reorderMode()"
+            (click)="toggleReorderMode()"
+          >
+            {{ (reorderMode() ? 'status.reorder.exit_button' : 'status.reorder.enter_button') | translate }}
+          </button>
+        </div>
+        @if (reorderMode()) {
+          <div class="col-12 mb-3">
+            <ul
+              class="list-group list-group-box"
+              role="listbox"
+              [attr.aria-label]="'status.reorder.listbox_label' | translate"
+            >
+              @for (component of reorderComponents; track component) {
+                <li
+                  class="list-group-item d-flex justify-content-between align-items-center flex-wrap gap-2"
+                  role="option"
+                  [id]="`reorder-item-${component}`"
+                  [attr.tabindex]="component === selectedReorderComponent() ? '0' : '-1'"
+                  [attr.aria-selected]="component === selectedReorderComponent()"
+                  [attr.aria-label]="getReorderItemAriaLabel(component)"
+                  (focus)="setSelectedReorderComponent(component)"
+                  (keydown)="onReorderKeydown($event)"
+                >
+                  <span class="text-start" aria-hidden="true">{{ getWidgetDisplayName(component) }}</span>
+                </li>
+              }
+            </ul>
+          </div>
+        }
+      }
+      <gridster
+        class="flex-grow-1 no-scrollbars py-0"
+        [options]="options"
+        [hidden]="consoleStatus() === 'down' || reorderMode()"
+      >
         @for (item of dashboard(); track item) {
           @if (!(item.hideOnMobile && page().mobile) && !(item.hideOnDesktop && !page().mobile)) {
             <gridster-item class="widget-item" [item]="item" [id]="item.component">
               <div class="gridster-item-content">
                 @if (
                   (options.draggable!.enabled || page().showWidgetConfigure) &&
-                  widgetsWithSettings.includes(item.component)
+                  widgetsWithSettings.includes(item.component) &&
+                  !reorderMode()
                 ) {
                   <button
                     type="button"
                     class="widget-control-button"
-                    [attr.aria-label]="'status.widget.title_manage_widget' | translate"
+                    [attr.aria-label]="getWidgetSettingsAriaLabel(item)"
                     (click)="manageWidget(item)"
                   >
                     <i class="fas fa-cog" aria-hidden="true"></i>
