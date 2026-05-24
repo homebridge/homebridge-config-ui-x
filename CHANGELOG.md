@@ -32,6 +32,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(status): add keyboard-driven widget reorder mode (@rfiorentino1)
 - fix(accessories): extend a11y pattern to 9 remaining matter types (@rfiorentino1)
 - fix(login): hide decorative icons from screen readers
+- fix(setup-wizard): tighten icons and convert restore-backup anchor to button
 
 ### Other Changes
 
