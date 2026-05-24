@@ -1,14 +1,37 @@
+@let on = isOn();
+@let stateText = on ? ('accessories.control.on' | translate) : ('accessories.control.off' | translate);
+
+@let srBaseName = (service().customName || service().serviceName || service().displayName || '').trim();
+@let srType = 'accessories.core.outlet' | translate;
+@let includeType = !(srBaseName | lowercase).includes(srType | lowercase);
+
+@let srText = `${srBaseName + (includeType ? `, ${srType}` : '')}, ${stateText}`;
+
 <div
   class="accessory-box"
+  role="switch"
   tabindex="0"
-  [class.accessory-on]="isOn()"
+  [class.accessory-on]="on"
   [class.cursor-pointer]="readyForControl()"
+  [attr.aria-checked]="on"
+  [attr.aria-label]="srText"
   (click)="onClick()"
   (keydown.enter)="onClick()"
+  (keydown.space)="onClick()"
 >
+  <span class="visually-hidden" role="status" aria-live="polite" aria-atomic="true">
+    {{ srText }}
+  </span>
   <div class="d-flex flex-column h-100">
-    <div class="accessory-svg" [attr.aria-label]="'accessories.core.outlet' | translate">
-      <svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+    <div class="accessory-svg" aria-hidden="true">
+      <svg
+        width="32"
+        height="32"
+        viewBox="0 0 32 32"
+        xmlns="http://www.w3.org/2000/svg"
+        focusable="false"
+        aria-hidden="true"
+      >
         <! -- socket outline - ->
         <rect
           x="1"
@@ -42,12 +65,13 @@
         }
       </svg>
     </div>
-    <div class="accessory-label mt-auto">
+    <div class="accessory-label mt-auto" aria-hidden="true">
       {{ service().customName || service().serviceName || service().displayName }}
     </div>
     <div
       class="accessory-label grey-text"
-      [innerText]="(isOn() ? 'accessories.control.on' : 'accessories.control.off') | translate"
+      aria-hidden="true"
+      [innerText]="(on ? 'accessories.control.on' : 'accessories.control.off') | translate"
     ></div>
   </div>
 </div>

@@ -1,3 +1,4 @@
+import { LowerCasePipe } from '@angular/common'
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core'
 import { TranslatePipe } from '@ngx-translate/core'
 
@@ -7,6 +8,7 @@ import { controlDevice, getDeviceActiveState } from '@/app/core/accessories/type
 @Component({
   selector: 'app-on-off-light-switch',
   imports: [
+    LowerCasePipe,
     TranslatePipe,
   ],
   standalone: true,

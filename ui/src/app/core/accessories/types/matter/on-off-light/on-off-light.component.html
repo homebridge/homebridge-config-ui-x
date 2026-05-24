@@ -1,21 +1,44 @@
+@let on = isOn();
+@let stateText = on ? ('accessories.control.on' | translate) : ('accessories.control.off' | translate);
+
+@let srBaseName = (service().customName || service().serviceName || service().displayName || '').trim();
+@let srType = 'accessories.core.lightbulb' | translate;
+@let includeType = !(srBaseName | lowercase).includes(srType | lowercase);
+
+@let srText = `${srBaseName + (includeType ? `, ${srType}` : '')}, ${stateText}`;
+
 <div
   class="accessory-box"
+  role="switch"
   tabindex="0"
-  [class.accessory-on]="isOn()"
+  [class.accessory-on]="on"
   [class.cursor-pointer]="readyForControl()"
+  [attr.aria-checked]="on"
+  [attr.aria-label]="srText"
   (click)="onClick()"
   (keydown.enter)="onClick()"
+  (keydown.space)="onClick()"
 >
+  <span class="visually-hidden" role="status" aria-live="polite" aria-atomic="true">
+    {{ srText }}
+  </span>
   <div class="d-flex flex-column h-100">
-    <div class="accessory-svg" [attr.aria-label]="'accessories.core.lightbulb' | translate">
-      <svg width="32px" height="32px" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+    <div class="accessory-svg" aria-hidden="true">
+      <svg
+        width="32px"
+        height="32px"
+        viewBox="0 0 32 32"
+        xmlns="http://www.w3.org/2000/svg"
+        focusable="false"
+        aria-hidden="true"
+      >
         <! -- bulb outline - ->
         <path
           fill-opacity="0.75"
           stroke="#7f7f7f"
           stroke-width="1.5"
           d="M8 21c-2.8-2.2-4.5-5.4-4.5-9 0-6.1 5-11 11.5-11S27.5 5.9 27.5 12c0 3.5-1.7 6.7-4.5 8.9-1.2 1-1.8 4.8-3 7.3-.9 2-2.2 2.7-4.5 2.7s-3.6-.7-4.5-2.7c-1.2-2.5-1.8-6.3-3-7.3z"
-          [attr.fill]="isOn() ? '#ffcf55' : 'none'"
+          [attr.fill]="on ? '#ffcf55' : 'none'"
         />
         <! -- top inner line - ->
         <line stroke="#7f7f7f" stroke-width="1.5" x1="8" y1="21.5" x2="23" y2="21.5" />
@@ -25,12 +48,13 @@
         <line stroke="#7f7f7f" stroke-width="0.75" x1="11" y1="28" x2="20" y2="29" />
       </svg>
     </div>
-    <div class="accessory-label mt-auto">
+    <div class="accessory-label mt-auto" aria-hidden="true">
       {{ service().customName || service().serviceName || service().displayName }}
     </div>
     <div
       class="accessory-label grey-text"
-      [innerHTML]="(isOn() ? 'accessories.control.on' : 'accessories.control.off') | translate"
+      aria-hidden="true"
+      [innerHTML]="(on ? 'accessories.control.on' : 'accessories.control.off') | translate"
     ></div>
   </div>
 </div>
