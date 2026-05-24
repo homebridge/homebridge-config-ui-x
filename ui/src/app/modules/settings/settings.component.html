@@ -57,6 +57,8 @@
           [attr.aria-expanded]="showFields().general ? 'true' : 'false'"
           [attr.aria-controls]="'fieldsGeneral'"
           (click)="toggleSection('general')"
+          (keydown.enter)="toggleSection('general')"
+          (keydown.space)="$event.preventDefault(); toggleSection('general')"
         >
           <h5 class="primary-text">
             <i
@@ -159,6 +161,8 @@
           [attr.aria-expanded]="showFields().display ? 'true' : 'false'"
           [attr.aria-controls]="'fieldsDisplay'"
           (click)="toggleSection('display')"
+          (keydown.enter)="toggleSection('display')"
+          (keydown.space)="$event.preventDefault(); toggleSection('display')"
         >
           <h5 class="primary-text">
             <i
@@ -420,6 +424,8 @@
           [attr.aria-expanded]="showFields().startup ? 'true' : 'false'"
           [attr.aria-controls]="'fieldsStartup'"
           (click)="toggleSection('startup')"
+          (keydown.enter)="toggleSection('startup')"
+          (keydown.space)="$event.preventDefault(); toggleSection('startup')"
         >
           <h5 class="primary-text">
             <i
@@ -813,6 +819,8 @@
           [attr.aria-expanded]="showFields().network ? 'true' : 'false'"
           [attr.aria-controls]="'fieldsNetwork'"
           (click)="toggleSection('network')"
+          (keydown.enter)="toggleSection('network')"
+          (keydown.space)="$event.preventDefault(); toggleSection('network')"
         >
           <h5 class="primary-text">
             <i
@@ -1137,6 +1145,8 @@
           [attr.aria-expanded]="showFields().hap ? 'true' : 'false'"
           [attr.aria-controls]="'fieldsHap'"
           (click)="toggleSection('hap')"
+          (keydown.enter)="toggleSection('hap')"
+          (keydown.space)="$event.preventDefault(); toggleSection('hap')"
         >
           <h5 class="primary-text">
             <i
@@ -1203,6 +1213,8 @@
           [attr.aria-expanded]="showFields().matter ? 'true' : 'false'"
           [attr.aria-controls]="'fieldsMatter'"
           (click)="toggleSection('matter')"
+          (keydown.enter)="toggleSection('matter')"
+          (keydown.space)="$event.preventDefault(); toggleSection('matter')"
         >
           <h5 class="primary-text">
             <i
@@ -1345,6 +1357,8 @@
           [attr.aria-expanded]="showFields().terminal ? 'true' : 'false'"
           [attr.aria-controls]="'fieldsTerminal'"
           (click)="toggleSection('terminal')"
+          (keydown.enter)="toggleSection('terminal')"
+          (keydown.space)="$event.preventDefault(); toggleSection('terminal')"
         >
           <h5 class="primary-text">
             <i
@@ -1528,6 +1542,8 @@
           [attr.aria-expanded]="showFields().security ? 'true' : 'false'"
           [attr.aria-controls]="'fieldsSecurity'"
           (click)="toggleSection('security')"
+          (keydown.enter)="toggleSection('security')"
+          (keydown.space)="$event.preventDefault(); toggleSection('security')"
         >
           <h5 class="primary-text">
             <i
@@ -1733,6 +1749,8 @@
           [attr.aria-expanded]="showFields().cache ? 'true' : 'false'"
           [attr.aria-controls]="'fieldsCache'"
           (click)="toggleSection('cache')"
+          (keydown.enter)="toggleSection('cache')"
+          (keydown.space)="$event.preventDefault(); toggleSection('cache')"
         >
           <h5 class="primary-text">
             <i
@@ -1852,6 +1870,8 @@
           [attr.aria-expanded]="showFields().reset ? 'true' : 'false'"
           [attr.aria-controls]="'fieldsReset'"
           (click)="toggleSection('reset')"
+          (keydown.enter)="toggleSection('reset')"
+          (keydown.space)="$event.preventDefault(); toggleSection('reset')"
         >
           <h5 class="primary-text">
             <i
