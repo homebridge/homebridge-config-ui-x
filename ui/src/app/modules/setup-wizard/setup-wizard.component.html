@@ -30,9 +30,9 @@
         <button type="button" class="btn btn-lg btn-primary mb-4" (click)="onClickGettingStarted()">
           {{ 'setup.button_get_started' | translate }}
         </button>
-        <a href="javascript:void(0)" class="grey-text" (click)="onClickRestoreBackup()">{{
-          'setup_wizard_restore' | translate
-        }}</a>
+        <button type="button" class="btn btn-link grey-text p-0" (click)="onClickRestoreBackup()">
+          {{ 'setup_wizard_restore' | translate }}
+        </button>
       </div>
     } @else if (step() === 'create-account') {
       <div class="w-100 d-flex flex-column align-items-center mb-2">
@@ -41,7 +41,7 @@
         <div class="w-100">
           <form novalidate [formGroup]="createUserForm" (ngSubmit)="createFirstUser()">
             <div class="input-group mb-4">
-              <span class="input-group-text custom-input"><i class="fas fa-user primary-text fa-lg"></i></span>
+              <span class="input-group-text custom-input"><i class="fas fa-user primary-text fa-lg" aria-hidden="true"></i></span>
               <input
                 formControlName="username"
                 type="text"
@@ -58,7 +58,7 @@
               />
             </div>
             <div class="input-group mb-4">
-              <span class="input-group-text custom-input"><i class="fas fa-lock primary-text fa-lg"></i></span>
+              <span class="input-group-text custom-input"><i class="fas fa-lock primary-text fa-lg" aria-hidden="true"></i></span>
               <input
                 formControlName="password"
                 type="password"
@@ -74,7 +74,7 @@
               />
             </div>
             <div class="input-group mb-4">
-              <span class="input-group-text custom-input"><i class="fas fa-lock primary-text fa-lg"></i></span>
+              <span class="input-group-text custom-input"><i class="fas fa-lock primary-text fa-lg" aria-hidden="true"></i></span>
               <input
                 formControlName="passwordConfirm"
                 type="password"
@@ -136,7 +136,7 @@
             (click)="onRestoreBackupClick()"
           >
             @if (restoreUploading()) {
-              <i class="fas fa-circle-notch fa-spin"></i>
+              <i class="fas fa-circle-notch fa-spin" aria-hidden="true"></i>
               {{ 'backup.label_uploading' | translate }}
             } @else {
               {{ 'form.button_continue' | translate }}
