@@ -33,6 +33,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(accessories): extend a11y pattern to 9 remaining matter types (@rfiorentino1)
 - fix(login): hide decorative icons from screen readers
 - fix(setup-wizard): tighten icons and convert restore-backup anchor to button
+- fix(support): hide decorative icons and add keyboard activation to section headers
 
 ### Other Changes
 
