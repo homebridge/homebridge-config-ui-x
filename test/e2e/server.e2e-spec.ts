@@ -258,6 +258,70 @@ describe('ServerController (e2e)', () => {
     expect(res.json()._username).toBe('67:E4:1F:0E:A0:5D')
   })
 
+  describe('GET /server/accessory-overview', () => {
+    it('bundles cached HAP accessories, matter accessories and pairings into one payload', async () => {
+      // Copy mock Matter storage so matterAccessories is non-empty
+      const matterPath = resolve(process.env.UIX_STORAGE_PATH, 'matter')
+      await copy(resolve(__dirname, '../mocks', 'matter'), matterPath)
+
+      const res = await app.inject({
+        method: 'GET',
+        path: '/server/accessory-overview',
+        headers: {
+          authorization,
+        },
+      })
+
+      expect(res.statusCode).toBe(200)
+      const body = res.json()
+      expect(body).toHaveProperty('hapAccessories')
+      expect(body).toHaveProperty('matterAccessories')
+      expect(body).toHaveProperty('pairings')
+      expect(Array.isArray(body.hapAccessories)).toBe(true)
+      expect(Array.isArray(body.matterAccessories)).toBe(true)
+      expect(Array.isArray(body.pairings)).toBe(true)
+      expect(body.hapAccessories).toHaveLength(1)
+      expect(body.matterAccessories.length).toBeGreaterThan(0)
+      // Pairings include the HAP bridge plus any Matter-external published accessories
+      expect(body.pairings.length).toBeGreaterThanOrEqual(1)
+      // Matter accessory shape is preserved
+      expect(body.matterAccessories[0]).toHaveProperty('uuid')
+      expect(body.matterAccessories[0]).toHaveProperty('$protocol', 'matter')
+
+      // Cleanup
+      await remove(matterPath)
+    })
+
+    it('returns an empty matter array when the matter store is missing', async () => {
+      // No matter mock copied — accessories + persist are restored by beforeEach
+      const matterPath = resolve(process.env.UIX_STORAGE_PATH, 'matter')
+      await remove(matterPath)
+
+      const res = await app.inject({
+        method: 'GET',
+        path: '/server/accessory-overview',
+        headers: {
+          authorization,
+        },
+      })
+
+      expect(res.statusCode).toBe(200)
+      const body = res.json()
+      expect(body.hapAccessories).toHaveLength(1)
+      expect(body.matterAccessories).toEqual([])
+      expect(body.pairings).toHaveLength(1)
+    })
+
+    it('returns 401 without an authorization token', async () => {
+      const res = await app.inject({
+        method: 'GET',
+        path: '/server/accessory-overview',
+      })
+
+      expect(res.statusCode).toBe(401)
+    })
+  })
+
   it('DELETE /server/pairings/:deviceId', async () => {
     const res = await app.inject({
       method: 'DELETE',

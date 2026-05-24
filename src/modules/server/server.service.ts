@@ -634,9 +634,6 @@ export class ServerService {
   }
 
   /**
-   * Returns all cached accessories
-   */
-  /**
    * Aggregated snapshot used by accessory-management modals — bundles
    * cached HAP accessories, cached Matter accessories, and HAP pairings
    * into a single response so modal opens are a single round-trip.
@@ -650,6 +647,9 @@ export class ServerService {
     return { hapAccessories, matterAccessories, pairings }
   }
 
+  /**
+   * Returns all cached accessories
+   */
   public async getCachedAccessories() {
     const cachedAccessoriesDir = join(this.configService.storagePath, 'accessories')
 

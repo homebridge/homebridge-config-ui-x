@@ -440,6 +440,194 @@ describe('PluginController (e2e)', () => {
     expect(res.json().pluginType).toBe('accessory')
   })
 
+  describe('GET /plugins/:pluginName/editor-context', () => {
+    it('returns alias, configSchema, config blocks and childBridges for a plugin with schema', async () => {
+      const config = {
+        bridge: {
+          name: 'Homebridge',
+          username: '0E:1A:2B:3C:4D:5E',
+          port: 51826,
+          pin: '123-45-678',
+        },
+        platforms: [
+          {
+            platform: 'config',
+            name: 'Config',
+          },
+          {
+            platform: 'ExampleHomebridgePlugin',
+            name: 'Living Room',
+            _bridge: {
+              username: '0E:AA:BB:CC:DD:EE',
+              port: 45678,
+              pin: '111-22-333',
+            },
+          },
+          {
+            platform: 'ExampleHomebridgePlugin',
+            name: 'Kitchen',
+          },
+        ],
+      }
+      await writeFile(process.env.UIX_CONFIG_PATH, JSON.stringify(config, null, 2))
+
+      vi.spyOn(childBridgesService, 'getChildBridges').mockResolvedValue([
+        { plugin: 'homebridge-mock-plugin', username: '0E:AA:BB:CC:DD:EE' } as any,
+        { plugin: 'homebridge-some-other-plugin', username: '0E:11:22:33:44:55' } as any,
+      ])
+
+      const res = await app.inject({
+        method: 'GET',
+        path: '/plugins/homebridge-mock-plugin/editor-context',
+        headers: {
+          authorization,
+        },
+      })
+
+      expect(res.statusCode).toBe(200)
+      const body = res.json()
+      expect(body.pluginName).toBe('homebridge-mock-plugin')
+      expect(body.alias.pluginAlias).toBe('ExampleHomebridgePlugin')
+      expect(body.alias.pluginType).toBe('platform')
+      expect(body.configSchema).toBeTruthy()
+      expect(body.configSchema.pluginAlias).toBe('ExampleHomebridgePlugin')
+      expect(Array.isArray(body.config)).toBe(true)
+      expect(body.config).toHaveLength(2)
+      expect(body.config.map((b: any) => b.name).sort()).toEqual(['Kitchen', 'Living Room'])
+      // childBridges is scoped to the requested plugin only
+      expect(body.childBridges).toHaveLength(1)
+      expect(body.childBridges[0].plugin).toBe('homebridge-mock-plugin')
+    })
+
+    it('returns configSchema: null when the plugin ships without a config.schema.json', async () => {
+      vi.spyOn(childBridgesService, 'getChildBridges').mockResolvedValue([])
+
+      const res = await app.inject({
+        method: 'GET',
+        path: '/plugins/homebridge-mock-plugin-two/editor-context',
+        headers: {
+          authorization,
+        },
+      })
+
+      expect(res.statusCode).toBe(200)
+      const body = res.json()
+      expect(body.pluginName).toBe('homebridge-mock-plugin-two')
+      expect(body.alias.pluginAlias).toBe('HomebridgeMockPluginTwo')
+      expect(body.alias.pluginType).toBe('accessory')
+      expect(body.configSchema).toBeNull()
+      expect(Array.isArray(body.config)).toBe(true)
+      expect(Array.isArray(body.childBridges)).toBe(true)
+    })
+
+    it('returns 401 without an authorization token', async () => {
+      const res = await app.inject({
+        method: 'GET',
+        path: '/plugins/homebridge-mock-plugin/editor-context',
+      })
+
+      expect(res.statusCode).toBe(401)
+    })
+  })
+
+  describe('GET /plugins?include=config', () => {
+    it('attaches saved config blocks to each plugin when include=config is set', async () => {
+      const config = {
+        bridge: {
+          name: 'Homebridge',
+          username: '0E:1A:2B:3C:4D:5E',
+          port: 51826,
+          pin: '123-45-678',
+        },
+        accessories: [
+          {
+            accessory: 'HomebridgeMockPluginTwo',
+            name: 'Saved Accessory',
+          },
+        ],
+        platforms: [
+          {
+            platform: 'config',
+            name: 'Config',
+          },
+          {
+            platform: 'ExampleHomebridgePlugin',
+            name: 'Saved Platform',
+          },
+        ],
+      }
+      await writeFile(process.env.UIX_CONFIG_PATH, JSON.stringify(config, null, 2))
+
+      const res = await app.inject({
+        method: 'GET',
+        path: '/plugins?include=config',
+        headers: {
+          authorization,
+        },
+      })
+
+      expect(res.statusCode).toBe(200)
+      const plugins: HomebridgePlugin[] = res.json()
+      const mockOne = plugins.find(p => p.name === 'homebridge-mock-plugin')
+      const mockTwo = plugins.find(p => p.name === 'homebridge-mock-plugin-two')
+      expect(mockOne).toBeTruthy()
+      expect(mockTwo).toBeTruthy()
+      expect(mockOne!.config).toEqual([{ platform: 'ExampleHomebridgePlugin', name: 'Saved Platform' }])
+      expect(mockTwo!.config).toEqual([{ accessory: 'HomebridgeMockPluginTwo', name: 'Saved Accessory' }])
+    })
+
+    it('attaches an empty config array when the plugin has no saved blocks', async () => {
+      // config.json mock has no blocks for homebridge-mock-plugin or -two
+      await copy(resolve(__dirname, '../mocks', 'config.json'), process.env.UIX_CONFIG_PATH)
+
+      const res = await app.inject({
+        method: 'GET',
+        path: '/plugins?include=config',
+        headers: {
+          authorization,
+        },
+      })
+
+      expect(res.statusCode).toBe(200)
+      const plugins: HomebridgePlugin[] = res.json()
+      for (const plugin of plugins) {
+        expect(Array.isArray(plugin.config)).toBe(true)
+      }
+    })
+
+    it('default GET /plugins still omits the config field', async () => {
+      const res = await app.inject({
+        method: 'GET',
+        path: '/plugins',
+        headers: {
+          authorization,
+        },
+      })
+
+      expect(res.statusCode).toBe(200)
+      const plugins: HomebridgePlugin[] = res.json()
+      for (const plugin of plugins) {
+        expect(plugin).not.toHaveProperty('config')
+      }
+    })
+
+    it('ignores unknown include values without erroring', async () => {
+      const res = await app.inject({
+        method: 'GET',
+        path: '/plugins?include=bogus',
+        headers: {
+          authorization,
+        },
+      })
+
+      expect(res.statusCode).toBe(200)
+      const plugins: HomebridgePlugin[] = res.json()
+      for (const plugin of plugins) {
+        expect(plugin).not.toHaveProperty('config')
+      }
+    })
+  })
+
   it('POST /plugins/update/:pluginName (plugin with specific version)', async () => {
     const managePluginSpy = vi.spyOn(pluginsService as any, 'managePlugin').mockResolvedValue(true)
 

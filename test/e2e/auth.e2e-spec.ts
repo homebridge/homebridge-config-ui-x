@@ -13,6 +13,7 @@ import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from
 import { AuthModule } from '../../src/core/auth/auth.module.js'
 import { AuthService } from '../../src/core/auth/auth.service.js'
 import { ConfigService } from '../../src/core/config/config.service.js'
+import { PluginsService } from '../../src/modules/plugins/plugins.service.js'
 
 import '../../src/global-defaults.js'
 
@@ -235,6 +236,43 @@ describe('AuthController (e2e)', () => {
     // SSL settings should not expose passphrase value
     const ssl = res.json().env.ssl ?? {}
     expect(ssl).not.toHaveProperty('passphrase')
+  })
+
+  it('GET /auth/settings (unauthenticated - hasInstalledPlugins absent)', async () => {
+    const res = await app.inject({
+      method: 'GET',
+      path: '/auth/settings',
+    })
+
+    expect(res.statusCode).toBe(200)
+    expect(res.json().env).not.toHaveProperty('hasInstalledPlugins')
+  })
+
+  it('GET /auth/settings (authenticated - exposes hasInstalledPlugins)', async () => {
+    const accessToken = (await app.inject({
+      method: 'POST',
+      path: '/auth/login',
+      payload: {
+        username: 'admin',
+        password: 'admin',
+      },
+    })).json().access_token
+
+    // /auth/settings only reads the flag from the warm installed-plugins
+    // cache and never triggers the scan inline (it must not block the
+    // bootstrap/login path). Warm the cache first so the flag is exposed.
+    await app.get(PluginsService, { strict: false }).getInstalledPlugins()
+
+    const res = await app.inject({
+      method: 'GET',
+      path: '/auth/settings',
+      headers: {
+        authorization: `bearer ${accessToken}`,
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+    expect(typeof res.json().env.hasInstalledPlugins).toBe('boolean')
   })
 
   it('POST /auth/refresh (valid token)', async () => {

@@ -21,11 +21,12 @@ import {
   writeFile,
   writeJson,
 } from 'fs-extra'
-import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest'
+import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { AuthModule } from '../../src/core/auth/auth.module.js'
 import { ConfigService } from '../../src/core/config/config.service.js'
 import { SchedulerService } from '../../src/core/scheduler/scheduler.service.js'
+import { ChildBridgesService } from '../../src/modules/child-bridges/child-bridges.service.js'
 import { ConfigEditorModule } from '../../src/modules/config-editor/config-editor.module.js'
 import { ConfigEditorService } from '../../src/modules/config-editor/config-editor.service.js'
 
@@ -835,6 +836,122 @@ describe('ConfigEditorController (e2e)', () => {
     expect(config.disabledPlugins).toContainEqual('homebridge-example-plugin')
   })
 
+  describe('?include=restart-info', () => {
+    const mockBridges = [
+      { plugin: 'homebridge-mock-plugin', username: '0E:AA:BB:CC:DD:EE', identifier: 'Living Room' },
+      { plugin: 'homebridge-other-plugin', username: '0E:11:22:33:44:55', identifier: 'Kitchen' },
+    ]
+
+    beforeEach(() => {
+      const childBridgesService = app.get(ChildBridgesService)
+      vi.spyOn(childBridgesService, 'getChildBridges').mockResolvedValue(mockBridges as any)
+    })
+
+    it('POST /config-editor wraps the response with all child bridges', async () => {
+      const currentConfig: HomebridgeConfig = await readJson(configFilePath)
+      currentConfig.bridge.name = 'Restart Name'
+
+      const res = await app.inject({
+        method: 'POST',
+        path: '/config-editor?include=restart-info',
+        headers: {
+          authorization,
+        },
+        payload: currentConfig,
+      })
+
+      expect(res.statusCode).toBe(201)
+      const body = res.json()
+      expect(body).toHaveProperty('config')
+      expect(body).toHaveProperty('restartRequired', true)
+      expect(body.config.bridge.name).toBe('Restart Name')
+      expect(body.affectedBridges).toHaveLength(2)
+    })
+
+    it('POST /config-editor without include keeps the bare response shape (backward compat)', async () => {
+      const currentConfig: HomebridgeConfig = await readJson(configFilePath)
+
+      const res = await app.inject({
+        method: 'POST',
+        path: '/config-editor',
+        headers: {
+          authorization,
+        },
+        payload: currentConfig,
+      })
+
+      expect(res.statusCode).toBe(201)
+      const body = res.json()
+      expect(body).not.toHaveProperty('config')
+      expect(body).not.toHaveProperty('restartRequired')
+      expect(body).not.toHaveProperty('affectedBridges')
+      // The plain response is the saved config itself
+      expect(body).toHaveProperty('bridge')
+    })
+
+    it('POST /config-editor/plugin/:pluginName scopes affectedBridges to that plugin', async () => {
+      const res = await app.inject({
+        method: 'POST',
+        path: '/config-editor/plugin/homebridge-mock-plugin?include=restart-info',
+        headers: {
+          authorization,
+        },
+        payload: [
+          { platform: 'ExampleHomebridgePlugin', name: 'Updated Block' },
+        ],
+      })
+
+      expect(res.statusCode).toBe(201)
+      const body = res.json()
+      expect(body.restartRequired).toBe(true)
+      expect(body.affectedBridges).toHaveLength(1)
+      expect(body.affectedBridges[0].plugin).toBe('homebridge-mock-plugin')
+      expect(Array.isArray(body.config)).toBe(true)
+    })
+
+    it('PUT /config-editor/plugin/:pluginName/enable wraps the disabledPlugins array', async () => {
+      const initialConfig: HomebridgeConfig = await readJson(configFilePath)
+      initialConfig.disabledPlugins = ['homebridge-mock-plugin']
+      await writeJson(configFilePath, initialConfig)
+
+      const res = await app.inject({
+        method: 'PUT',
+        path: '/config-editor/plugin/homebridge-mock-plugin/enable?include=restart-info',
+        headers: {
+          authorization,
+        },
+        payload: {},
+      })
+
+      expect(res.statusCode).toBe(200)
+      const body = res.json()
+      expect(body.restartRequired).toBe(true)
+      expect(body.affectedBridges).toHaveLength(1)
+      expect(body.affectedBridges[0].plugin).toBe('homebridge-mock-plugin')
+      expect(body.config).toEqual([])
+    })
+
+    it('PUT /config-editor/plugin/:pluginName/disable captures bridges before the mutation', async () => {
+      const res = await app.inject({
+        method: 'PUT',
+        path: '/config-editor/plugin/homebridge-mock-plugin/disable?include=restart-info',
+        headers: {
+          authorization,
+        },
+        payload: {},
+      })
+
+      expect(res.statusCode).toBe(200)
+      const body = res.json()
+      expect(body.restartRequired).toBe(true)
+      // The plugin's bridges must still be present in affectedBridges even though
+      // the plugin is now disabled — captured from the pre-mutation snapshot.
+      expect(body.affectedBridges).toHaveLength(1)
+      expect(body.affectedBridges[0].plugin).toBe('homebridge-mock-plugin')
+      expect(body.config).toContain('homebridge-mock-plugin')
+    })
+  })
+
   it('GET /config-editor/backups', async () => {
     const backupCount = (await readdir(backupFilePath)).length
 
@@ -894,6 +1011,165 @@ describe('ConfigEditorController (e2e)', () => {
 
     expect(newBackupCount).toBe(0)
     expect(res.statusCode).toBe(200)
+  })
+
+  describe('PUT /config-editor/ui', () => {
+    it('persists a single UI config property', async () => {
+      const res = await app.inject({
+        method: 'PUT',
+        url: '/config-editor/ui',
+        headers: {
+          authorization,
+        },
+        payload: {
+          key: 'theme',
+          value: 'red',
+        },
+      })
+
+      expect(res.statusCode).toBe(200)
+
+      const config: HomebridgeConfig = await readJson(configFilePath)
+      const uiBlock = config.platforms.find((p: any) => p.platform === 'config')
+      expect((uiBlock as any).theme).toBe('red')
+    })
+
+    it('supports dot notation for nested keys', async () => {
+      const res = await app.inject({
+        method: 'PUT',
+        url: '/config-editor/ui',
+        headers: {
+          authorization,
+        },
+        payload: {
+          key: 'terminal.fontSize',
+          value: 14,
+        },
+      })
+
+      expect(res.statusCode).toBe(200)
+
+      const config: HomebridgeConfig = await readJson(configFilePath)
+      const uiBlock = config.platforms.find((p: any) => p.platform === 'config') as any
+      expect(uiBlock.terminal.fontSize).toBe(14)
+    })
+
+    it('rejects updates to the platform property', async () => {
+      const res = await app.inject({
+        method: 'PUT',
+        url: '/config-editor/ui',
+        headers: {
+          authorization,
+        },
+        payload: {
+          key: 'platform',
+          value: 'something-else',
+        },
+      })
+
+      expect(res.statusCode).toBe(400)
+      expect(res.body).toContain('Cannot update the platform property.')
+    })
+  })
+
+  describe('PATCH /config-editor/ui', () => {
+    it('applies multiple properties in a single write', async () => {
+      const res = await app.inject({
+        method: 'PATCH',
+        url: '/config-editor/ui',
+        headers: {
+          authorization,
+        },
+        payload: {
+          'theme': 'green',
+          'lang': 'fr',
+          'terminal.fontSize': 16,
+        },
+      })
+
+      expect(res.statusCode).toBe(200)
+
+      const config: HomebridgeConfig = await readJson(configFilePath)
+      const uiBlock = config.platforms.find((p: any) => p.platform === 'config') as any
+      expect(uiBlock.theme).toBe('green')
+      expect(uiBlock.lang).toBe('fr')
+      expect(uiBlock.terminal.fontSize).toBe(16)
+    })
+
+    it('rejects a batch that includes the platform key', async () => {
+      const res = await app.inject({
+        method: 'PATCH',
+        url: '/config-editor/ui',
+        headers: {
+          authorization,
+        },
+        payload: {
+          theme: 'blue',
+          platform: 'something-else',
+        },
+      })
+
+      expect(res.statusCode).toBe(400)
+      expect(res.body).toContain('Cannot update the platform property.')
+
+      // The whole batch must be rejected — theme should not have been written.
+      const config: HomebridgeConfig = await readJson(configFilePath)
+      const uiBlock = config.platforms.find((p: any) => p.platform === 'config') as any
+      expect(uiBlock.theme).not.toBe('blue')
+    })
+
+    it('ignores forbidden prototype-chain keys', async () => {
+      const res = await app.inject({
+        method: 'PATCH',
+        url: '/config-editor/ui',
+        headers: {
+          authorization,
+        },
+        payload: {
+          __proto__: 'hax',
+          constructor: 'hax',
+          prototype: 'hax',
+          theme: 'orange',
+        },
+      })
+
+      expect(res.statusCode).toBe(200)
+
+      const config: HomebridgeConfig = await readJson(configFilePath)
+      const uiBlock = config.platforms.find((p: any) => p.platform === 'config') as any
+      expect(uiBlock.theme).toBe('orange')
+      expect(uiBlock).not.toHaveProperty('__proto__', 'hax')
+      expect(uiBlock).not.toHaveProperty('constructor', 'hax')
+      expect(uiBlock).not.toHaveProperty('prototype', 'hax')
+    })
+
+    it('no-ops on an empty body', async () => {
+      const before: HomebridgeConfig = await readJson(configFilePath)
+
+      const res = await app.inject({
+        method: 'PATCH',
+        url: '/config-editor/ui',
+        headers: {
+          authorization,
+        },
+        payload: {},
+      })
+
+      expect(res.statusCode).toBe(200)
+
+      const after: HomebridgeConfig = await readJson(configFilePath)
+      expect(after).toEqual(before)
+    })
+
+    it('returns 401 without an authorization token', async () => {
+      const res = await app.inject({
+        method: 'PATCH',
+        url: '/config-editor/ui',
+        payload: { theme: 'purple' },
+      })
+
+      expect(res.statusCode).toBe(401)
+    })
   })
 
   it('GET/PUT /config-editor/ui/plugins/hide-updates-for (should handle hide updates functionality)', async () => {
