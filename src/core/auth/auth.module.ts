@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common'
 import { JwtModule } from '@nestjs/jwt'
 import { PassportModule } from '@nestjs/passport'
 
+import { PluginsModule } from '../../modules/plugins/plugins.module.js'
 import { ConfigModule } from '../config/config.module.js'
 import { ConfigService } from '../config/config.service.js'
 import { LoggerModule } from '../logger/logger.module.js'
@@ -27,6 +28,7 @@ import { JwtStrategy } from './jwt.strategy.js'
     }),
     ConfigModule,
     LoggerModule,
+    PluginsModule,
   ],
   providers: [
     AuthService,

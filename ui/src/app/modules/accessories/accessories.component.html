@@ -144,92 +144,84 @@
       <ng-container *ngTemplateOutlet="supportButton" />
     </div>
   </div>
-  @if (loading()) {
-    <app-spinner />
-  } @else {
-    @if (hasPlugins()) {
-      <div dragula="rooms-bag" [(dragulaModel)]="rooms">
-        @for (room of rooms; track room.name) {
-          <div>
-            @if (!isMobile() || room.services.length) {
-              <div class="row">
-                <div class="col-md-12 d-flex align-items-center">
-                  <h5
-                    class="primary-text drag-handle room-title m-0 mb-1 mb-sm-0 flex-grow-1"
-                    [class.cursor-move]="!isMobile()"
-                  >
-                    {{ room.name }}
-                  </h5>
-                  <button
-                    type="button"
-                    class="btn btn-elegant ms-2"
-                    container="body"
-                    placement="bottom"
-                    triggers="hover"
-                    [openDelay]="150"
-                    [ngbTooltip]="'accessories.button_edit_room' | translate"
-                    [attr.aria-label]="'accessories.button_edit_room' | translate"
-                    [class.edit-room-hidden]="isMobile()"
-                    (click)="editRoom($index)"
-                  >
-                    <i class="fas fa-cog" aria-hidden="true"></i>
-                  </button>
-                </div>
+  @if (hasPlugins()) {
+    <div dragula="rooms-bag" [(dragulaModel)]="rooms">
+      @for (room of rooms; track room.name) {
+        <div>
+          @if (!isMobile() || room.services.length) {
+            <div class="row">
+              <div class="col-md-12 d-flex align-items-center">
+                <h5
+                  class="primary-text drag-handle room-title m-0 mb-1 mb-sm-0 flex-grow-1"
+                  [class.cursor-move]="!isMobile()"
+                >
+                  {{ room.name }}
+                </h5>
+                <button
+                  type="button"
+                  class="btn btn-elegant ms-2"
+                  container="body"
+                  placement="bottom"
+                  triggers="hover"
+                  [openDelay]="150"
+                  [ngbTooltip]="'accessories.button_edit_room' | translate"
+                  [attr.aria-label]="'accessories.button_edit_room' | translate"
+                  [class.edit-room-hidden]="isMobile()"
+                  (click)="editRoom($index)"
+                >
+                  <i class="fas fa-cog" aria-hidden="true"></i>
+                </button>
+              </div>
+            </div>
+          }
+          <div class="row mb-4">
+            @if (room.services.length) {
+              <div
+                class="col-md-12 d-flex flex-wrap noselect services-bag"
+                dragula="services-bag"
+                [(dragulaModel)]="room.services"
+              >
+                @for (service of room.services; track service.uniqueId) {
+                  @if (shouldDisplayService(service)) {
+                    <div class="accessory-item accessory-tab">
+                      <app-accessory-tile [service]="service" />
+                    </div>
+                  }
+                }
+                @if (!manageLayoutMode) {
+                  <div class="accessory-box accessory-box-placeholder no-drag"></div>
+                  <div class="accessory-box accessory-box-placeholder no-drag"></div>
+                  <div class="accessory-box accessory-box-placeholder no-drag"></div>
+                  <div class="accessory-box accessory-box-placeholder no-drag"></div>
+                  <div class="accessory-box accessory-box-placeholder no-drag"></div>
+                  <div class="accessory-box accessory-box-placeholder no-drag"></div>
+                  <div class="accessory-box accessory-box-placeholder no-drag"></div>
+                  <div class="accessory-box accessory-box-placeholder no-drag"></div>
+                  <div class="accessory-box accessory-box-placeholder no-drag"></div>
+                  <div class="accessory-box accessory-box-placeholder no-drag"></div>
+                }
               </div>
             }
-            <div class="row mb-4">
-              @if (room.services.length) {
-                <div
-                  class="col-md-12 d-flex flex-wrap noselect services-bag"
-                  dragula="services-bag"
-                  [(dragulaModel)]="room.services"
-                >
-                  @for (service of room.services; track service.uniqueId) {
-                    @if (shouldDisplayService(service)) {
-                      <div class="accessory-item accessory-tab">
-                        <app-accessory-tile [service]="service" />
-                      </div>
-                    }
-                  }
-                  @if (!manageLayoutMode) {
-                    <div class="accessory-box accessory-box-placeholder no-drag"></div>
-                    <div class="accessory-box accessory-box-placeholder no-drag"></div>
-                    <div class="accessory-box accessory-box-placeholder no-drag"></div>
-                    <div class="accessory-box accessory-box-placeholder no-drag"></div>
-                    <div class="accessory-box accessory-box-placeholder no-drag"></div>
-                    <div class="accessory-box accessory-box-placeholder no-drag"></div>
-                    <div class="accessory-box accessory-box-placeholder no-drag"></div>
-                    <div class="accessory-box accessory-box-placeholder no-drag"></div>
-                    <div class="accessory-box accessory-box-placeholder no-drag"></div>
-                    <div class="accessory-box accessory-box-placeholder no-drag"></div>
-                  }
-                </div>
-              }
-              @if (!room.services.length && !isMobile()) {
-                <div
-                  class="col-md-12 d-flex flex-wrap noselect"
-                  dragula="services-bag"
-                  [(dragulaModel)]="room.services"
-                >
-                  <app-drag-here-placeholder class="no-drag" />
-                </div>
-              }
-            </div>
+            @if (!room.services.length && !isMobile()) {
+              <div class="col-md-12 d-flex flex-wrap noselect" dragula="services-bag" [(dragulaModel)]="room.services">
+                <app-drag-here-placeholder class="no-drag" />
+              </div>
+            }
           </div>
-        }
-      </div>
-    } @else {
-      <div class="col-12 text-center">
-        <div class="alert alert-warning p-5" role="alert">
-          <div class="text-center mb-3">
-            <i class="fas fa-plug primary-text icon-xl" aria-hidden="true"></i>
-          </div>
-          <h5 class="mb-3 mt-0">{{ 'accessories.no_plugins.title' | translate }}</h5>
-          <p class="mb-0 small">{{ 'accessories.no_plugins.message_1' | translate }}</p>
-          <p class="mb-0 small mt-2">{{ 'accessories.no_plugins.message_2' | translate }}</p>
         </div>
+      }
+    </div>
+  } @else {
+    <div class="col-12 text-center">
+      <div class="alert alert-warning p-5" role="alert">
+        <div class="text-center mb-3">
+          <i class="fas fa-plug primary-text icon-xl" aria-hidden="true"></i>
+        </div>
+        <h5 class="mb-3 mt-0">{{ 'accessories.no_plugins.title' | translate }}</h5>
+        <p class="mb-0 small">{{ 'accessories.no_plugins.message_1' | translate }}</p>
+        <p class="mb-0 small mt-2">{{ 'accessories.no_plugins.message_2' | translate }}</p>
       </div>
-    }
+    </div>
   }
 } @else {
   <div class="row">

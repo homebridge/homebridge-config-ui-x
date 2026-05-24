@@ -11,7 +11,9 @@ import {
 import { AuthGuard } from '@nestjs/passport'
 import { ApiBearerAuth, ApiExcludeEndpoint, ApiOperation, ApiTags } from '@nestjs/swagger'
 
+import { PluginsService } from '../../modules/plugins/plugins.service.js'
 import { ConfigService } from '../config/config.service.js'
+import { Logger } from '../logger/logger.service.js'
 import { AuthDto } from './auth.dto.js'
 import { AuthService } from './auth.service.js'
 import { CustomGuard } from './guards/custom.guard.js'
@@ -22,6 +24,8 @@ export class AuthController {
   constructor(
     @Inject(AuthService) private readonly authService: AuthService,
     @Inject(ConfigService) private readonly configService: ConfigService,
+    @Inject(PluginsService) private readonly pluginsService: PluginsService,
+    @Inject(Logger) private readonly logger: Logger,
   ) {}
 
   @ApiOperation({ summary: 'Exchange a username and password for an authentication token.' })
@@ -34,7 +38,28 @@ export class AuthController {
   @ApiOperation({ summary: 'Return settings required to load the UI before authentication.' })
   @UseGuards(CustomGuard)
   getSettings(@Request() req: any) {
-    return this.configService.uiSettings(req.user)
+    const settings: any = this.configService.uiSettings(req.user)
+    // Inline a flag the accessories page uses to gate its "no plugins" empty state,
+    // so it doesn't need a separate GET /plugins call on every mount.
+    //
+    // This endpoint is on the bootstrap/login critical path: the UI awaits it
+    // before navigating after login and the route guards await it on refresh.
+    // It must never block on the installed-plugins filesystem walk, so we only
+    // read the flag from the warm cache and never trigger the scan inline.
+    if (req.user) {
+      const cachedPlugins = this.pluginsService.getCachedInstalledPlugins()
+      if (cachedPlugins) {
+        settings.env.hasInstalledPlugins = cachedPlugins.some(p => p.name !== this.configService.name)
+      } else {
+        // Cache miss: return immediately without the flag and warm the cache
+        // in the background so the next settings load has it. The UI defaults
+        // to `true` (show the accessories grid) while the flag is absent.
+        void this.pluginsService.getInstalledPlugins().catch((e: any) => {
+          this.logger.error(`Failed to warm installed-plugins cache for /auth/settings: ${e.message}.`)
+        })
+      }
+    }
+    return settings
   }
 
   @ApiExcludeEndpoint()

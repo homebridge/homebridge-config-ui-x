@@ -12,9 +12,7 @@ import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
 import { AccessoriesService } from '@/app/core/accessories/accessories.service'
 import { AccessoryTileComponent } from '@/app/core/accessories/accessory-tile/accessory-tile.component'
 import { AuthService } from '@/app/core/auth/auth.service'
-import { PluginsCacheService } from '@/app/core/caching/plugins-cache.service'
 import { IoNamespace, WsService } from '@/app/core/communication/ws.service'
-import { SpinnerComponent } from '@/app/core/components/spinner/spinner.component'
 import { ChildBridgeStatusResponse } from '@/app/core/server.interfaces'
 import { SettingsService } from '@/app/core/ui/settings.service'
 import { MobileDetectService } from '@/app/core/utilities/mobile-detect.service'
@@ -37,7 +35,6 @@ import { ADD_ROOM_MODAL_DATA, EDIT_ROOM_MODAL_DATA } from '@/app/modules/accesso
     AccessoryTileComponent,
     DragHerePlaceholderComponent,
     TranslatePipe,
-    SpinnerComponent,
     FormsModule,
   ],
   standalone: true,
@@ -49,7 +46,6 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
   protected $accessories = inject(AccessoriesService)
 
   private destroyRef = inject(DestroyRef)
-  private $pluginsCache = inject(PluginsCacheService)
   private $auth = inject(AuthService)
   private dragulaService = inject(DragulaService)
   private $md = inject(MobileDetectService)
@@ -71,8 +67,7 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
   public readonly isMobile = signal<boolean | string>(false)
   public readonly hideHidden = signal(true)
   public readonly linkInsecure = '<a href="https://github.com/homebridge/homebridge-config-ui-x/wiki/Enabling-Accessory-Control" target="_blank"><i class="fas fa-up-right-from-square primary-text"></i></a>'
-  public readonly hasPlugins = signal(false)
-  public readonly loading = signal(true)
+  public readonly hasPlugins = signal(this.$settings.env.hasInstalledPlugins ?? true)
   public manageLayoutMode = false
   private previousBridgeSelection: string[] | null = null
 
@@ -84,7 +79,7 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
    * Computed property to check if filter UI should be shown
    */
   public readonly shouldShowFilters = computed(() =>
-    this.hasPlugins() && !this.loading() && this.availableBridges().length > 0,
+    this.hasPlugins() && this.availableBridges().length > 0,
   )
 
   // Getter/setter for dragula two-way binding
@@ -136,7 +131,6 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
     }
 
     void this.$accessories.start()
-    void this.checkForPlugins()
 
     // Set up WebSocket connections to get custom bridge names
     this.setupBridgeNameMapping()
@@ -312,18 +306,6 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
     // Clean up WebSocket connections
     this.ioStatus?.end?.()
     this.ioChild?.end?.()
-  }
-
-  private async checkForPlugins(): Promise<void> {
-    try {
-      const installedPlugins = await this.$pluginsCache.get()
-      this.hasPlugins.set(installedPlugins.length > 1) // ignore the ui plugin
-    } catch (error) {
-      console.error(error)
-      this.hasPlugins.set(true)
-    } finally {
-      this.loading.set(false)
-    }
   }
 
   /**

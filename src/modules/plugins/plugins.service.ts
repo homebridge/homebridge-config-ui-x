@@ -178,6 +178,16 @@ export class PluginsService {
   }
 
   /**
+   * Return the installed-plugins list only if it is already cached, without
+   * triggering the filesystem walk on a miss. Hot-path callers on the
+   * bootstrap/login critical path (e.g. `GET /auth/settings`) use this so a
+   * cold cache never blocks the response on a full scan.
+   */
+  public getCachedInstalledPlugins(): HomebridgePlugin[] | undefined {
+    return this.installedPluginsCache.get<HomebridgePlugin[]>('installed-plugins')
+  }
+
+  /**
    * Return an array of plugins currently installed
    */
   public async getInstalledPlugins(): Promise<HomebridgePlugin[]> {
