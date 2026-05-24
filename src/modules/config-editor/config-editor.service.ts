@@ -346,8 +346,25 @@ export class ConfigEditorService {
   }
 
   public async setPropertyForUi(property: string, value: any) {
-    // Cannot update the platform property
-    if (property === 'platform') {
+    await this.setPropertiesForUi({ [property]: value })
+  }
+
+  /**
+   * Apply multiple UI config properties in a single read/write of the
+   * Homebridge config file. The settings page batches concurrent field
+   * changes here so a burst of edits collapses into one disk write.
+   */
+  public async setPropertiesForUi(properties: Record<string, any>): Promise<void> {
+    if (!properties || typeof properties !== 'object' || Array.isArray(properties)) {
+      throw new BadRequestException('Properties must be a key/value object.')
+    }
+
+    const entries = Object.entries(properties)
+    if (entries.length === 0) {
+      return
+    }
+
+    if (entries.some(([key]) => key === 'platform')) {
       throw new BadRequestException('Cannot update the platform property.')
     }
 
@@ -355,7 +372,17 @@ export class ConfigEditorService {
     const config = await this.getConfigFile()
     const pluginConfig = config.platforms.find(x => x.platform === 'config')
 
-    // 2. Calculate the property, split dots into nested properties
+    // 2. Apply each property; supports dot notation for nested keys.
+    for (const [property, value] of entries) {
+      this.applyPropertyToPluginConfig(pluginConfig, property, value)
+    }
+
+    // 3. Clean and save the UI config block (single disk write)
+    config.platforms[config.platforms.findIndex(x => x.platform === 'config')] = this.cleanUpUiConfig(pluginConfig)
+    await this.updateConfigFile(config)
+  }
+
+  private applyPropertyToPluginConfig(pluginConfig: any, property: string, value: any): void {
     const forbiddenKeys = ['__proto__', 'constructor', 'prototype']
     if (property.includes('.')) {
       const properties = property.split('.')
@@ -372,7 +399,6 @@ export class ConfigEditorService {
 
       const finalProperty = properties.at(-1)
       if (!forbiddenKeys.includes(finalProperty)) {
-        // 3. Update the final property
         current[finalProperty] = value
       }
     } else {
@@ -380,10 +406,6 @@ export class ConfigEditorService {
         pluginConfig[property] = value
       }
     }
-
-    // 4. Clean and save the UI config block
-    config.platforms[config.platforms.findIndex(x => x.platform === 'config')] = this.cleanUpUiConfig(pluginConfig)
-    await this.updateConfigFile(config)
   }
 
   /**

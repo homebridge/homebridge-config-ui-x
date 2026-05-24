@@ -132,18 +132,12 @@ export class ManageVersionComponent implements OnInit {
       // Update based on package type
       if (plugin.name === 'homebridge') {
         // Use new unified policy
-        await this.$api.put('/config-editor/ui', {
-          key: 'homebridgeUpdatePolicy',
-          value,
-        })
+        await this.$api.patch('/config-editor/ui', { homebridgeUpdatePolicy: value })
         this.$settings.env.homebridgeUpdatePolicy = value
         await this.$api.post('/plugins/clear-cache', {})
       } else if (plugin.name === 'homebridge-config-ui-x') {
         // Use new unified policy
-        await this.$api.put('/config-editor/ui', {
-          key: 'homebridgeUiUpdatePolicy',
-          value,
-        })
+        await this.$api.patch('/config-editor/ui', { homebridgeUiUpdatePolicy: value })
         this.$settings.env.homebridgeUiUpdatePolicy = value
         await this.$api.post('/plugins/clear-cache', {})
       } else {
@@ -168,10 +162,7 @@ export class ManageVersionComponent implements OnInit {
         await this.$api.put('/config-editor/ui/plugins/hide-updates-for', {
           body: hideList,
         })
-        await this.$api.put('/config-editor/ui', {
-          key: 'plugins.showBetasFor',
-          value: betaList,
-        })
+        await this.$api.patch('/config-editor/ui', { 'plugins.showBetasFor': betaList })
         this.$settings.setEnvItem('plugins.hideUpdatesFor', hideList)
         this.$settings.setEnvItem('plugins.showBetasFor', betaList)
 

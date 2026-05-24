@@ -278,10 +278,13 @@ export class SslSettingsModalComponent implements OnInit {
         }
       }
 
-      // Save each setting individually using the same pattern as settings.component
-      for (const [key, value] of Object.entries(changes)) {
-        await this.$api.put('/config-editor/ui', { key, value })
-        this.$settings.setEnvItem(key, value)
+      // Batch every SSL key into a single PATCH so the modal save is one
+      // disk write rather than four sequential PUTs.
+      if (Object.keys(changes).length > 0) {
+        await this.$api.patch('/config-editor/ui', changes)
+        for (const [key, value] of Object.entries(changes)) {
+          this.$settings.setEnvItem(key, value)
+        }
       }
 
       // Return the selected mode so the parent can update the toggle and show restart notification
