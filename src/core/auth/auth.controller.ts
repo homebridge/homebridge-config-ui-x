@@ -11,7 +11,9 @@ import {
 import { AuthGuard } from '@nestjs/passport'
 import { ApiBearerAuth, ApiExcludeEndpoint, ApiOperation, ApiTags } from '@nestjs/swagger'
 
+import { PluginsService } from '../../modules/plugins/plugins.service.js'
 import { ConfigService } from '../config/config.service.js'
+import { Logger } from '../logger/logger.service.js'
 import { AuthDto } from './auth.dto.js'
 import { AuthService } from './auth.service.js'
 import { CustomGuard } from './guards/custom.guard.js'
@@ -22,6 +24,8 @@ export class AuthController {
   constructor(
     @Inject(AuthService) private readonly authService: AuthService,
     @Inject(ConfigService) private readonly configService: ConfigService,
+    @Inject(PluginsService) private readonly pluginsService: PluginsService,
+    @Inject(Logger) private readonly logger: Logger,
   ) {}
 
   @ApiOperation({ summary: 'Exchange a username and password for an authentication token.' })
@@ -33,8 +37,20 @@ export class AuthController {
   @Get('/settings')
   @ApiOperation({ summary: 'Return settings required to load the UI before authentication.' })
   @UseGuards(CustomGuard)
-  getSettings(@Request() req: any) {
-    return this.configService.uiSettings(req.user)
+  async getSettings(@Request() req: any) {
+    const settings: any = this.configService.uiSettings(req.user)
+    // Inline a flag the accessories page uses to gate its "no plugins" empty state,
+    // so it doesn't need a separate GET /plugins call on every mount.
+    if (req.user) {
+      try {
+        const plugins = await this.pluginsService.getInstalledPlugins()
+        settings.env.hasInstalledPlugins = plugins.some(p => p.name !== this.configService.name)
+      } catch (e: any) {
+        this.logger.error(`Failed to compute hasInstalledPlugins for /auth/settings: ${e.message}.`)
+        settings.env.hasInstalledPlugins = true
+      }
+    }
+    return settings
   }
 
   @ApiExcludeEndpoint()

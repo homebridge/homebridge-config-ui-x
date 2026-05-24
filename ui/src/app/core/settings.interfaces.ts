@@ -83,6 +83,7 @@ export interface EnvInterface {
   }
   homebridgePackagePath?: string
   disableServerMetricsMonitoring?: boolean
+  hasInstalledPlugins?: boolean
 }
 
 export interface AppSettingsInterface {
