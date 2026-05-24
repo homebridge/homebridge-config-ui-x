@@ -12,7 +12,7 @@
   </div>
   <div class="modal-body">
     <div class="text-center mb-3">
-      <i class="fas fa-hard-drive primary-text icon-xl"></i>
+      <i aria-hidden="true" class="fas fa-hard-drive primary-text icon-xl"></i>
     </div>
     <ul class="mb-3">
       <li>{{ 'backup.backup_help_one' | translate }}</li>
@@ -70,7 +70,7 @@
             [formControl]="enabledFormControl"
             [attr.aria-label]="'backup.settings_enable' | translate"
           />
-          <label for="disableScheduledBackups" class="rendux-label"></label>
+          <label for="disableScheduledBackups" class="rendux-label" aria-hidden="true"></label>
         </div>
       </li>
       <li class="list-group-item d-flex justify-content-between align-items-center">
@@ -83,10 +83,11 @@
           type="button"
           class="btn btn-primary m-0 ms-3 py-1"
           [disabled]="clicked()"
-          [attr.aria-label]="'backup.backup_now' | translate"
+          [attr.aria-label]="'form.button_download' | translate"
           (click)="onDownloadBackupClick()"
         >
           <i
+            aria-hidden="true"
             class="fas"
             [class.fa-arrow-right]="!clicked()"
             [class.fa-circle-notch]="clicked()"
@@ -108,6 +109,7 @@
           (click)="onCreateBackupClick()"
         >
           <i
+            aria-hidden="true"
             class="fas"
             [class.fa-arrow-right]="!clicked()"
             [class.fa-circle-notch]="clicked()"
@@ -128,7 +130,7 @@
           [disabled]="clicked()"
           (click)="restore(null)"
         >
-          <i class="fas fa-arrow-right"></i>
+          <i aria-hidden="true" class="fas fa-arrow-right"></i>
         </button>
       </li>
     </ul>
@@ -157,7 +159,7 @@
                     "
                     [openDelay]="150"
                   >
-                    <i class="fas fa-exclamation-circle"></i>
+                    <i aria-hidden="true" class="fas fa-exclamation-circle"></i>
                     {{ backup.size }}MB
                   </span>
                 } @else {
@@ -165,7 +167,7 @@
                 }
               </small>
             </span>
-            <span class="d-flex flex-nowrap">
+            <span class="d-flex flex-nowrap" role="group" [attr.aria-label]="'backup.aria_actions' | translate">
               <button
                 type="button"
                 class="btn btn-primary m-0 ms-3 py-1"
@@ -178,7 +180,7 @@
                 [attr.aria-label]="'form.button_restore' | translate"
                 (click)="restore(backup)"
               >
-                <i class="fas fa-history"></i>
+                <i aria-hidden="true" class="fas fa-history"></i>
               </button>
               <button
                 type="button"
@@ -192,7 +194,7 @@
                 [attr.aria-label]="'form.button_download' | translate"
                 (click)="download(backup)"
               >
-                <i class="fas fa-download"></i>
+                <i aria-hidden="true" class="fas fa-download"></i>
               </button>
               <button
                 type="button"
@@ -207,6 +209,7 @@
                 (click)="delete(backup)"
               >
                 <i
+                  aria-hidden="true"
                   class="fas"
                   [class.fa-trash]="backup.id !== deleting()"
                   [class.fa-circle-notch]="backup.id === deleting()"

@@ -189,6 +189,7 @@
   "accessories.support.rooms_2": "Để đổi tên phòng hiện có, hãy tạo phòng mới với tên mong muốn và chuyển các phụ kiện sang phòng mới.",
   "accessories.support.rooms_3": "Để xóa phòng hiện có, hãy chuyển toàn bộ phụ kiện sang phòng khác và làm mới trang.",
   "accessories.title_rooms": "Phòng",
+  "backup.aria_actions": "Backup actions",
   "backup.backup_delete_failed": "Xóa bản sao lưu thất bại. Xem nhật ký để biết chi tiết.",
   "backup.backup_download_failed": "Tải xuống bản sao lưu thất bại.",
   "backup.backup_exceeds_max_size": "Bản sao lưu ({{ backupSize }}) vượt quá kích thước khôi phục tối đa {{ maxBackupSizeText }}",
