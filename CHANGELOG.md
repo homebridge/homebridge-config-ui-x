@@ -21,6 +21,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(a11y): improve screen-reader announcements for xterm and plugin install completion
 - fix(plugins): tighten screen-reader coverage for plugins page and bridge modal
 - fix(status): tighten screen-reader coverage for status widgets
+- fix(logs): wire search button aria-expanded + hide decorative toolbar icons
 
 ### Other Changes
 

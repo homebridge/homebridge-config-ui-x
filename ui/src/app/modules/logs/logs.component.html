@@ -10,12 +10,14 @@
         container="body"
         placement="bottom"
         triggers="hover"
+        aria-controls="logs-search-region"
         [openDelay]="150"
         [ngbTooltip]="'form.search' | translate"
         [attr.aria-label]="'form.search' | translate"
+        [attr.aria-expanded]="showSearchBar()"
         (click)="showSearch()"
       >
-        <i [class]="`fas fa-search${showSearchBar() ? ' primary-text' : ''}`"></i>
+        <i aria-hidden="true" [class]="`fas fa-search${showSearchBar() ? ' primary-text' : ''}`"></i>
       </button>
       <button
         type="button"
@@ -28,7 +30,7 @@
         [attr.aria-label]="'form.button_download' | translate"
         (click)="downloadLogFile()"
       >
-        <i class="fas fa-download"></i>
+        <i class="fas fa-download" aria-hidden="true"></i>
       </button>
       <button
         type="button"
@@ -41,14 +43,14 @@
         [attr.aria-label]="'form.button_delete' | translate"
         (click)="truncateLogFile()"
       >
-        <i class="fas fa-trash-alt"></i>
+        <i class="fas fa-trash-alt" aria-hidden="true"></i>
       </button>
     </div>
   }
 </div>
 
 @if (showSearchBar()) {
-  <div class="row">
+  <div id="logs-search-region" class="row">
     <div class="col-md-12">
       <form novalidate [formGroup]="form" (ngSubmit)="onSubmit(form.value)">
         <input
