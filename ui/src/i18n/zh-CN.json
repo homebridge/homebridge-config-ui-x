@@ -779,6 +779,8 @@
   "status.widget.account_2": "管理员用户可以修改布局，非管理员用户无法更改。",
   "status.widget.add.label_pairing_code": "配对码",
   "status.widget.add.matter_pairing_code": "Matter Pairing Code",
+  "status.widget.bridge.restart_complete": "{{ name }} restart complete.",
+  "status.widget.bridge.restart_complete_with_status": "{{ name }} restart complete, {{ status }}.",
   "status.widget.bridge.restart_error": "重启子网桥失败。",
   "status.widget.clock": "时钟",
   "status.widget.clock_dateformat": "日期格式",
