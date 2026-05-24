@@ -348,6 +348,7 @@
   "menu.reload": "Reload",
   "menu.restart.title": "Käynnistys valinnat",
   "menu.settings.title": "Asetukset",
+  "menu.sidebar.aria_menu": "Menu",
   "menu.tooltip_logout": "Kirjaudu ulos",
   "menu.tooltip_restart": "Uudelleenkäynnistä",
   "menu.tooltip_user_accounts": "Käyttäjätunnukset",

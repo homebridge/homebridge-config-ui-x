@@ -4,7 +4,7 @@
 
 <div class="my-4 align-items-center container-narrow">
   <div class="w-100 text-center primary-text mb-5">
-    <i class="fas fa-power-off icon-xl"></i>
+    <i aria-hidden="true" class="fas fa-power-off icon-xl"></i>
   </div>
   <div class="text-center">
     <h4 class="primary-text mb-4">{{ 'restart.title_restart' | translate }}</h4>
@@ -15,13 +15,13 @@
       <div class="justify-content-center my-4">
         <div class="restart-progress-box primary-text">
           <span>
-            <i [class]="uiIcon()"></i>
+            <i aria-hidden="true" [class]="uiIcon()"></i>
             {{ 'restart.ui_online' | translate }}
           </span>
         </div>
         <div class="restart-progress-box primary-text">
           <span [class.grey-text]="!uiOnline()">
-            <i [class]="serviceIcon()"></i>
+            <i aria-hidden="true" [class]="serviceIcon()"></i>
             {{ 'restart.service_ready' | translate }}
           </span>
         </div>

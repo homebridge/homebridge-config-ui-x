@@ -348,6 +348,7 @@
   "menu.reload": "Neu laden",
   "menu.restart.title": "Energieoptionen",
   "menu.settings.title": "Einstellungen",
+  "menu.sidebar.aria_menu": "Menu",
   "menu.tooltip_logout": "Abmelden",
   "menu.tooltip_restart": "Neustart",
   "menu.tooltip_user_accounts": "Benutzerkonten",

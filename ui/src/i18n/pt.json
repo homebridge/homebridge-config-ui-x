@@ -348,6 +348,7 @@
   "menu.reload": "Reload",
   "menu.restart.title": "Power Options",
   "menu.settings.title": "Settings",
+  "menu.sidebar.aria_menu": "Menu",
   "menu.tooltip_logout": "Terminar Sessão",
   "menu.tooltip_restart": "Reiniciar",
   "menu.tooltip_user_accounts": "Contas de Utilizador",

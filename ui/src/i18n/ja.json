@@ -348,6 +348,7 @@
   "menu.reload": "再読み込み",
   "menu.restart.title": "電源オプション",
   "menu.settings.title": "設定",
+  "menu.sidebar.aria_menu": "Menu",
   "menu.tooltip_logout": "ログアウト",
   "menu.tooltip_restart": "再起動",
   "menu.tooltip_user_accounts": "ユーザーアカウント",

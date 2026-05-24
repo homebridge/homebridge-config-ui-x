@@ -348,6 +348,7 @@
   "menu.reload": "重新加载",
   "menu.restart.title": "电源选项",
   "menu.settings.title": "设置",
+  "menu.sidebar.aria_menu": "Menu",
   "menu.tooltip_logout": "注销",
   "menu.tooltip_restart": "重启",
   "menu.tooltip_user_accounts": "用户帐户",
