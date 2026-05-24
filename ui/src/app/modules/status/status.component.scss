@@ -16,6 +16,27 @@ gridster {
   background-color: inherit;
 }
 
+// Keyboard-driven widget reorder list
+.list-group-box {
+  .list-group-item[role='option'] {
+    cursor: pointer;
+
+    // Visible state for the currently picked-up widget (also covers pointer
+    // moves where keyboard focus isn't on the row).
+    &[aria-selected='true'] {
+      background-color: rgba(127, 127, 127, 0.12);
+      font-weight: 600;
+    }
+
+    // Clear focus indicator now sighted keyboard users can reach this view.
+    &:focus-visible {
+      outline: 2px solid #4f7cff;
+      outline-offset: -2px;
+      z-index: 1;
+    }
+  }
+}
+
 .widget-control-button {
   position: absolute;
   float: right;

@@ -1,23 +1,51 @@
+<div class="visually-hidden" role="status" aria-atomic="true">{{ actionLiveMessage() }}</div>
 <div class="row mb-3">
   <div class="col-6">
     <h3 class="primary-text m-0">{{ 'menu.label_status' | translate }}</h3>
   </div>
   @if (consoleStatus() === 'up' && isAdmin) {
     <div class="col-6 text-end">
-      <button
-        type="button"
-        class="btn btn-elegant my-0 me-0"
-        container="body"
-        placement="bottom"
-        triggers="hover"
-        [hidden]="!options.draggable!.enabled && !page().showWidgetConfigure"
-        [openDelay]="150"
-        [ngbTooltip]="'status.widget.show_hide' | translate"
-        [attr.aria-label]="'status.widget.show_hide' | translate"
-        (click)="addWidget()"
-      >
-        <i class="fas fa-eye-low-vision" aria-hidden="true"></i>
-      </button>
+      <div class="btn-group" role="group">
+        @if (options.draggable!.enabled || page().showWidgetConfigure) {
+          <button
+            type="button"
+            class="btn btn-elegant my-0"
+            container="body"
+            placement="bottom"
+            triggers="hover"
+            [disabled]="reorderMode()"
+            [openDelay]="150"
+            [ngbTooltip]="'status.widget.show_hide' | translate"
+            [attr.aria-label]="'status.widget.show_hide' | translate"
+            (click)="addWidget()"
+          >
+            <i class="fas fa-eye-low-vision" aria-hidden="true"></i>
+          </button>
+        }
+        @if (options.draggable!.enabled || page().showWidgetConfigure || reorderMode()) {
+          <button
+            #reorderTip="ngbTooltip"
+            id="reorder-toggle-button"
+            type="button"
+            class="btn btn-elegant my-0"
+            container="body"
+            placement="bottom"
+            triggers="hover"
+            [openDelay]="150"
+            [ngbTooltip]="(reorderMode() ? 'status.reorder.exit_button' : 'status.reorder.enter_button') | translate"
+            [attr.aria-label]="
+              (reorderMode() ? 'status.reorder.exit_button' : 'status.reorder.enter_button_label') | translate
+            "
+            [attr.aria-pressed]="reorderMode()"
+            (click)="reorderTip.close(); toggleReorderMode()"
+          >
+            <i
+              aria-hidden="true"
+              [class]="`fas fa-arrow-down-up-across-line${reorderMode() ? ' primary-text' : ''}`"
+            ></i>
+          </button>
+        }
+      </div>
       <div class="btn-group d-none d-sm-inline-block" role="group">
         <button
           type="button"
@@ -57,19 +85,75 @@
   }
   <div class="row flex-column flex-grow-1">
     @if (dashboard().length) {
-      <gridster class="flex-grow-1 no-scrollbars py-0" [options]="options" [hidden]="consoleStatus() === 'down'">
+      @if (reorderMode() && isAdmin) {
+        <div class="col-12 mb-3">
+          <div class="text-center mb-2">
+            <span class="badge badge-beta">{{ 'common.labels.beta' | translate }}</span>
+          </div>
+          <ul
+            class="list-group list-group-box"
+            role="listbox"
+            [attr.aria-label]="'status.reorder.listbox_label' | translate"
+          >
+            @for (component of reorderComponents; track component) {
+              <li
+                class="list-group-item d-flex justify-content-between align-items-center"
+                role="option"
+                [id]="`reorder-item-${component}`"
+                [attr.tabindex]="component === selectedReorderComponent() ? '0' : '-1'"
+                [attr.aria-selected]="component === selectedReorderComponent()"
+                [attr.aria-label]="getReorderItemAriaLabel(component)"
+                [attr.aria-describedby]="
+                  showReorderHelp() && component === selectedReorderComponent() ? 'reorder-instructions' : null
+                "
+                (focus)="setSelectedReorderComponent(component)"
+                (keydown)="onReorderKeydown($event)"
+              >
+                <span class="pe-2" aria-hidden="true">{{ getWidgetDisplayName(component) }}</span>
+                <span class="btn-group reorder-controls" role="group" aria-hidden="true">
+                  <button
+                    type="button"
+                    class="btn btn-primary waves-effect py-1"
+                    tabindex="-1"
+                    [disabled]="$first"
+                    (click)="moveComponent(component, -1)"
+                  >
+                    <i class="fas fa-chevron-up" aria-hidden="true"></i>
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-primary waves-effect py-1"
+                    tabindex="-1"
+                    [disabled]="$last"
+                    (click)="moveComponent(component, 1)"
+                  >
+                    <i class="fas fa-chevron-down" aria-hidden="true"></i>
+                  </button>
+                </span>
+              </li>
+            }
+          </ul>
+          <span id="reorder-instructions" class="visually-hidden">{{ 'status.reorder.help' | translate }}</span>
+        </div>
+      }
+      <gridster
+        class="flex-grow-1 no-scrollbars py-0"
+        [options]="options"
+        [hidden]="consoleStatus() === 'down' || reorderMode()"
+      >
         @for (item of dashboard(); track item) {
           @if (!(item.hideOnMobile && page().mobile) && !(item.hideOnDesktop && !page().mobile)) {
             <gridster-item class="widget-item" [item]="item" [id]="item.component">
               <div class="gridster-item-content">
                 @if (
                   (options.draggable!.enabled || page().showWidgetConfigure) &&
-                  widgetsWithSettings.includes(item.component)
+                  widgetsWithSettings.includes(item.component) &&
+                  !reorderMode()
                 ) {
                   <button
                     type="button"
                     class="widget-control-button"
-                    [attr.aria-label]="'status.widget.title_manage_widget' | translate"
+                    [attr.aria-label]="getWidgetSettingsAriaLabel(item)"
                     (click)="manageWidget(item)"
                   >
                     <i class="fas fa-cog" aria-hidden="true"></i>
