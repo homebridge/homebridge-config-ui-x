@@ -259,6 +259,8 @@
   "child_bridge.start_plural": "Khởi động các Child Bridge",
   "child_bridge.stop": "Dừng Child Bridge",
   "child_bridge.stop_plural": "Dừng các Child Bridge",
+  "common.a11y.copied": "Copied",
+  "common.a11y.copy_to_clipboard": "Copy to clipboard",
   "common.labels.advanced": "Advanced",
   "common.labels.beta": "beta",
   "common.labels.disabled": "Disabled",
