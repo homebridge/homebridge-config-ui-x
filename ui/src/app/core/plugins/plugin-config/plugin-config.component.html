@@ -154,7 +154,7 @@
           type="button"
           class="btn btn-elegant me-2"
           data-dismiss="modal"
-          aria-label="Add new config block"
+          [attr.aria-label]="'plugins.config.add_block' | translate"
           (click)="addBlock()"
         >
           <i class="fas fa-plus" aria-hidden="true"></i>
