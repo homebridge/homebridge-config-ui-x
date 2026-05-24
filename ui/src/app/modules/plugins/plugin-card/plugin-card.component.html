@@ -171,7 +171,7 @@
             <button
               type="button"
               class="card-link btn btn-link p-0 text-decoration-none"
-              [attr.aria-label]="`Plugin info for ${plugin().name}`"
+              [attr.aria-label]="'plugins.button_info' | translate: { pluginName: plugin().name }"
               (click)="pluginInfoModal(plugin())"
             >
               <i
@@ -191,7 +191,7 @@
               <button
                 type="button"
                 class="card-link btn btn-link p-0 text-decoration-none"
-                [attr.aria-label]="`Support ${plugin().author}`"
+                [attr.aria-label]="'plugins.donate.tile_donate_to' | translate: { author: plugin().author }"
                 (click)="openFundingModal(plugin())"
               >
                 <i class="fas fa-heart fa-lg me-1 pink-text" aria-hidden="true"></i>
@@ -293,7 +293,7 @@
                       type="button"
                       class="card-link btn btn-link p-0 text-decoration-none mt-auto dropdown-toggle-no-outline"
                       ngbDropdownToggle
-                      [attr.aria-label]="'Plugin Actions'"
+                      [attr.aria-label]="'plugins.button_actions' | translate"
                     >
                       <i class="fa-solid fa-ellipsis-v fa-lg" aria-hidden="true"></i>
                     </button>

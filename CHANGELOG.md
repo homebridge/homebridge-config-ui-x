@@ -14,6 +14,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(accessories): add ARIA labels, live regions, and keyboard handlers to HAP/matter tiles (@rfiorentino1)
 - fix(plugins): improve screen reader support in plugin card, manage, uninstall, config modals (@rfiorentino1)
 - fix(plugins): include plugin name in info button label and convert donate anchor (@rfiorentino1)
+- chore(i18n): translate new plugin a11y labels (@rfiorentino1)
 
 ### Other Changes
 
