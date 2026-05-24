@@ -92,6 +92,47 @@ describe('StatusGateway (e2e)', () => {
     })
   })
 
+  describe('Dashboard Init', () => {
+    const mockLayout = [{ widget: 'cpu', order: 1 }] as any
+
+    it('returns just the layout on non-Raspberry-Pi hosts', async () => {
+      vi.spyOn(statusService, 'getDashboardLayout').mockResolvedValue(mockLayout)
+      Object.defineProperty(configService, 'runningOnRaspberryPi', { value: false, configurable: true })
+
+      const result = await statusGateway.getDashboardInit() as any
+      expect(result.layout).toEqual(mockLayout)
+      expect(result).not.toHaveProperty('rpiThrottled')
+    })
+
+    it('attaches rpiThrottled on Raspberry-Pi hosts', async () => {
+      const mockRpi = { underVoltage: false, throttled: false }
+      vi.spyOn(statusService, 'getDashboardLayout').mockResolvedValue(mockLayout)
+      vi.spyOn(statusService, 'getRaspberryPiThrottledStatus').mockResolvedValue(mockRpi as any)
+      Object.defineProperty(configService, 'runningOnRaspberryPi', { value: true, configurable: true })
+
+      const result = await statusGateway.getDashboardInit() as any
+      expect(result.layout).toEqual(mockLayout)
+      expect(result.rpiThrottled).toEqual(mockRpi)
+    })
+
+    it('swallows Raspberry-Pi IPC failures and still returns the layout', async () => {
+      vi.spyOn(statusService, 'getDashboardLayout').mockResolvedValue(mockLayout)
+      vi.spyOn(statusService, 'getRaspberryPiThrottledStatus').mockRejectedValue(new Error('vcgencmd down'))
+      Object.defineProperty(configService, 'runningOnRaspberryPi', { value: true, configurable: true })
+
+      const result = await statusGateway.getDashboardInit() as any
+      expect(result.layout).toEqual(mockLayout)
+      expect(result).not.toHaveProperty('rpiThrottled')
+    })
+
+    it('returns a WsException when layout retrieval itself fails', async () => {
+      vi.spyOn(statusService, 'getDashboardInit').mockRejectedValue(new Error('layout down'))
+
+      const result = await statusGateway.getDashboardInit()
+      expect((result as any).message).toBe('layout down')
+    })
+  })
+
   describe('Version Checks', () => {
     it('should return homebridge version info', async () => {
       const mockPackage = { name: 'homebridge', installedVersion: '1.7.0', latestVersion: '1.8.0', updateAvailable: true }

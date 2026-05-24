@@ -237,6 +237,38 @@ describe('AuthController (e2e)', () => {
     expect(ssl).not.toHaveProperty('passphrase')
   })
 
+  it('GET /auth/settings (unauthenticated - hasInstalledPlugins absent)', async () => {
+    const res = await app.inject({
+      method: 'GET',
+      path: '/auth/settings',
+    })
+
+    expect(res.statusCode).toBe(200)
+    expect(res.json().env).not.toHaveProperty('hasInstalledPlugins')
+  })
+
+  it('GET /auth/settings (authenticated - exposes hasInstalledPlugins)', async () => {
+    const accessToken = (await app.inject({
+      method: 'POST',
+      path: '/auth/login',
+      payload: {
+        username: 'admin',
+        password: 'admin',
+      },
+    })).json().access_token
+
+    const res = await app.inject({
+      method: 'GET',
+      path: '/auth/settings',
+      headers: {
+        authorization: `bearer ${accessToken}`,
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+    expect(typeof res.json().env.hasInstalledPlugins).toBe('boolean')
+  })
+
   it('POST /auth/refresh (valid token)', async () => {
     const accessToken = (await app.inject({
       method: 'POST',
