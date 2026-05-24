@@ -1,7 +1,17 @@
-<div class="accessory-box">
+@let srBaseName = (service().customName || service().serviceName || '').trim();
+@let srType = service().humanType || '';
+
+<div class="accessory-box" role="group" [attr.aria-label]="srType ? `${srBaseName}, ${srType}` : srBaseName">
   <div class="d-flex flex-column h-100">
-    <div class="accessory-svg" [attr.aria-label]="service().humanType">
-      <svg width="32px" height="32px" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+    <div class="accessory-svg" aria-hidden="true">
+      <svg
+        width="32px"
+        height="32px"
+        viewBox="0 0 32 32"
+        xmlns="http://www.w3.org/2000/svg"
+        focusable="false"
+        aria-hidden="true"
+      >
         <! -- outer circle - ->
         <circle cx="16" cy="16" r="14" fill="none" stroke="#7f7f7f" stroke-width="1.5" />
         <! -- inner lightning bolt - ->
@@ -27,7 +37,7 @@
         />
       </svg>
     </div>
-    <div class="accessory-label mt-auto">{{ service().customName || service().serviceName }}</div>
-    <div class="accessory-label grey-text">{{ service().humanType }}</div>
+    <div class="accessory-label mt-auto" aria-hidden="true">{{ service().customName || service().serviceName }}</div>
+    <div class="accessory-label grey-text" aria-hidden="true">{{ service().humanType }}</div>
   </div>
 </div>

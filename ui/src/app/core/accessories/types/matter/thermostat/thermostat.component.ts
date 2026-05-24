@@ -1,4 +1,4 @@
-import { DecimalPipe, UpperCasePipe } from '@angular/common'
+import { DecimalPipe, LowerCasePipe, UpperCasePipe } from '@angular/common'
 import { ChangeDetectionStrategy, Component, computed, createEnvironmentInjector, EnvironmentInjector, inject, input } from '@angular/core'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe } from '@ngx-translate/core'
@@ -17,6 +17,7 @@ import { SettingsService } from '@/app/core/ui/settings.service'
   imports: [
     LongClickDirective,
     DecimalPipe,
+    LowerCasePipe,
     TranslatePipe,
     ConvertTempPipe,
     UpperCasePipe,

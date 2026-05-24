@@ -1,28 +1,56 @@
+@let pos = currentPosition();
+@let openText = 'accessories.control.open' | translate;
+@let stateText =
+  pos === 0 ? ('accessories.control.closed' | translate) : pos === 100 ? openText : `${openText} ${pos}%`;
+
+@let srBaseName = (service().customName || service().serviceName || service().displayName || '').trim();
+@let srType =
+  isDoor()
+    ? ('accessories.core.door' | translate)
+    : isWindow()
+      ? ('accessories.core.window' | translate)
+      : ('accessories.core.window_covering' | translate);
+@let includeType = !(srBaseName | lowercase).includes(srType | lowercase);
+
+@let srText = `${srBaseName + (includeType ? `, ${srType}` : '')}, ${stateText}`;
+
 <div
   class="accessory-box"
+  role="slider"
   tabindex="0"
-  [class.accessory-on]="currentPosition() > 0"
+  [class.accessory-on]="pos > 0"
   [class.cursor-pointer]="readyForControl()"
-  [style.--position]="currentPosition() / 100"
+  [style.--position]="pos / 100"
+  [attr.aria-valuemin]="0"
+  [attr.aria-valuemax]="100"
+  [attr.aria-valuenow]="pos"
+  [attr.aria-valuetext]="stateText"
+  [attr.aria-label]="srText"
   (longClick)="onLongClick()"
   (shortClick)="onClick()"
+  (keydown.enter)="onClick()"
+  (keydown.space)="onClick()"
 >
+  <span class="visually-hidden" role="status" aria-live="polite" aria-atomic="true">
+    {{ srText }}
+  </span>
   <div class="d-flex flex-column h-100">
     <! -- Window Covering Icon - ->
     @if (isWindowCovering()) {
-      <div class="accessory-svg" [attr.aria-label]="'accessories.core.window_covering' | translate">
-        <svg width="32px" height="32px" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-          <! -- outer frame - ->
+      <div class="accessory-svg" aria-hidden="true">
+        <svg
+          width="32px"
+          height="32px"
+          viewBox="0 0 32 32"
+          xmlns="http://www.w3.org/2000/svg"
+          focusable="false"
+          aria-hidden="true"
+        >
           <rect x="1" y="0.8" width="30" height="30.2" rx="0.5" stroke="#7f7f7f" fill="none" stroke-width="1.5" />
-          <! -- left window frame - ->
           <rect x="2.8" y="2.6" width="12.4" height="26.6" stroke="#7f7f7f" fill="none" stroke-width="1" />
-          <! -- left window divider - ->
           <rect x="3.66" y="15.65" width="10.68" height="0.5" stroke="#7f7f7f" fill="none" stroke-width="0.5" rx="2" />
-          <! -- right window frame - ->
           <rect x="16.8" y="2.6" width="12.4" height="26.6" stroke="#7f7f7f" fill="none" stroke-width="1" />
-          <! -- right window divider - ->
           <rect x="17.66" y="15.65" width="10.68" height="0.5" stroke="#7f7f7f" fill="none" stroke-width="0.5" rx="2" />
-          <! -- blind - ->
           <rect
             class="c-blinds"
             x="2.3"
@@ -35,7 +63,6 @@
             stroke-opacity="0.9"
             fill-opacity="0.9"
           />
-          <! -- light - ->
           <rect
             class="c-light"
             x="2.05"
@@ -53,11 +80,16 @@
     }
     <! -- Door Icon - ->
     @if (isDoor()) {
-      <div class="accessory-svg" [attr.aria-label]="'accessories.core.door' | translate">
-        <svg width="32px" height="32px" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-          <! -- outer frame - ->
+      <div class="accessory-svg" aria-hidden="true">
+        <svg
+          width="32px"
+          height="32px"
+          viewBox="0 0 32 32"
+          xmlns="http://www.w3.org/2000/svg"
+          focusable="false"
+          aria-hidden="true"
+        >
           <rect x="7.8" y="0.8" width="16.4" height="30.2" rx="0.5" stroke="#7f7f7f" fill="none" stroke-width="1.5" />
-          <! -- door outline - ->
           <rect
             class="outline"
             x="9.6"
@@ -68,7 +100,6 @@
             fill="none"
             stroke-width="1"
           />
-          <! -- top panel - ->
           <rect
             class="panel"
             x="11.2"
@@ -80,7 +111,6 @@
             stroke-width="0.5"
             rx="0.25"
           />
-          <! -- bottom panel - ->
           <rect
             class="panel"
             x="11.2"
@@ -92,9 +122,7 @@
             stroke-width="0.5"
             rx="0.25"
           />
-          <! -- wider floor - ->
           <line x1="0" y1="31" x2="32" y2="31" stroke="#7f7f7f" stroke-width="1.5" />
-          <! -- door handle - ->
           <rect
             class="handle"
             x="19.25"
@@ -111,11 +139,16 @@
     }
     <! -- Window Icon - ->
     @if (isWindow()) {
-      <div class="accessory-svg" [attr.aria-label]="'accessories.core.window' | translate">
-        <svg width="32px" height="32px" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
-          <! -- outer frame - ->
+      <div class="accessory-svg" aria-hidden="true">
+        <svg
+          width="32px"
+          height="32px"
+          viewBox="0 0 32 32"
+          xmlns="http://www.w3.org/2000/svg"
+          focusable="false"
+          aria-hidden="true"
+        >
           <rect x="1" y="0.8" width="30" height="30.2" rx="0.5" stroke="#7f7f7f" fill="none" stroke-width="1.5" />
-          <! -- left window frame - ->
           <rect
             class="outline-left"
             x="2.8"
@@ -126,7 +159,6 @@
             fill="none"
             stroke-width="1"
           />
-          <! -- left window divider - ->
           <rect
             class="divider-left"
             x="3.66"
@@ -138,7 +170,6 @@
             stroke-width="0.5"
             ry="2"
           />
-          <! -- left window handle - ->
           <rect
             class="handle-left"
             x="15.16"
@@ -150,7 +181,6 @@
             stroke-width="0.5"
             ry="2"
           />
-          <! -- right window frame - ->
           <rect
             class="outline-right"
             x="16.8"
@@ -161,7 +191,6 @@
             fill="none"
             stroke-width="1"
           />
-          <! -- right window divider - ->
           <rect
             class="divider-right"
             x="17.66"
@@ -173,7 +202,6 @@
             stroke-width="0.5"
             ry="2"
           />
-          <! -- right window handle - ->
           <rect
             class="handle-right"
             x="16.76"
@@ -188,16 +216,16 @@
         </svg>
       </div>
     }
-    <div class="accessory-label mt-auto">
+    <div class="accessory-label mt-auto" aria-hidden="true">
       {{ service().customName || service().serviceName || service().displayName }}
     </div>
-    <div class="accessory-label grey-text">
-      @if (currentPosition() === 0) {
+    <div class="accessory-label grey-text" aria-hidden="true">
+      @if (pos === 0) {
         {{ 'accessories.control.closed' | translate }}
-      } @else if (currentPosition() === 100) {
+      } @else if (pos === 100) {
         {{ 'accessories.control.open' | translate }}
       } @else {
-        {{ 'accessories.control.open' | translate }} {{ currentPosition() }}%
+        {{ 'accessories.control.open' | translate }} {{ pos }}%
       }
     </div>
   </div>

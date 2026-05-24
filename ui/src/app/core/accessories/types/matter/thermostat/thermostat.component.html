@@ -1,14 +1,49 @@
+@let mode = systemMode();
+@let modeText =
+  mode === 0
+    ? ('accessories.control.off' | translate)
+    : mode === 3
+      ? ('accessories.control.cool' | translate)
+      : mode === 4
+        ? ('accessories.control.heat' | translate)
+        : mode === 1
+          ? ('accessories.control.auto' | translate)
+          : '';
+
+@let srBaseName = (service().customName || service().serviceName || service().displayName || '').trim();
+@let srType = 'accessories.core.thermostat' | translate;
+@let includeType = !(srBaseName | lowercase).includes(srType | lowercase);
+
+@let srText =
+  modeText
+    ? `${srBaseName + (includeType ? `, ${srType}` : '')}, ${modeText}`
+    : `${srBaseName + (includeType ? `, ${srType}` : '')}`;
+
 <div
   class="accessory-box"
+  role="button"
   tabindex="0"
   [class.accessory-on]="isOn()"
   [class.cursor-pointer]="readyForControl()"
+  [attr.aria-label]="srText"
   (longClick)="onClick()"
   (shortClick)="onClick()"
+  (keydown.enter)="onClick()"
+  (keydown.space)="onClick()"
 >
+  <span class="visually-hidden" role="status" aria-live="polite" aria-atomic="true">
+    {{ srText }}
+  </span>
   <div class="d-flex flex-column h-100">
-    <div class="accessory-svg" [attr.aria-label]="'accessories.core.thermostat' | translate">
-      <svg width="32px" height="32px" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+    <div class="accessory-svg" aria-hidden="true">
+      <svg
+        width="32px"
+        height="32px"
+        viewBox="0 0 32 32"
+        xmlns="http://www.w3.org/2000/svg"
+        focusable="false"
+        aria-hidden="true"
+      >
         <defs>
           <linearGradient id="coolingGradient" x1="0" y1="1" x2="0" y2="0">
             <stop offset="0%" stop-color="#1e8bbd">
@@ -70,18 +105,17 @@
         }
       </svg>
     </div>
-    <div class="accessory-label mt-auto">
+    <div class="accessory-label mt-auto" aria-hidden="true">
       {{ service().customName || service().serviceName || service().displayName }}
     </div>
-
-    <div class="accessory-label grey-text">
-      @if (systemMode() === 0) {
+    <div class="accessory-label grey-text" aria-hidden="true">
+      @if (mode === 0) {
         {{ 'accessories.control.off' | translate }}
-      } @else if (systemMode() === 3) {
+      } @else if (mode === 3) {
         {{ 'accessories.control.cool' | translate }}
-      } @else if (systemMode() === 4) {
+      } @else if (mode === 4) {
         {{ 'accessories.control.heat' | translate }}
-      } @else if (systemMode() === 1) {
+      } @else if (mode === 1) {
         {{ 'accessories.control.auto' | translate }}
       }
     </div>
