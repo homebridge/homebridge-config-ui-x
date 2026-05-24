@@ -6,6 +6,7 @@ import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap/tooltip'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
 
+import { ServerPairingsCacheService } from '@/app/core/caching/server-pairings-cache.service'
 import { ApiService } from '@/app/core/communication/api.service'
 import { ACCESSORY_CONTROL_LISTS_MODAL_DATA } from '@/app/core/modal-data-tokens'
 import { SettingsService } from '@/app/core/ui/settings.service'
@@ -27,6 +28,7 @@ export class AccessoryControlListsComponent implements OnInit {
   // Injected dependencies
   private $activeModal = inject(NgbActiveModal)
   private $api = inject(ApiService)
+  private $pairingsCache = inject(ServerPairingsCacheService)
   private $settings = inject(SettingsService)
   private $toastr = inject(ToastrService)
   private $translate = inject(TranslateService)
@@ -57,7 +59,7 @@ export class AccessoryControlListsComponent implements OnInit {
     this.originalBlacklist = [...this.updatedBlacklist]
 
     try {
-      const pairings: Pairing[] = await this.$api.get('/server/pairings')
+      const pairings = await this.$pairingsCache.get<Pairing[]>()
       this.mainPairing.set(pairings.find((p: Pairing) => p._main))
       this.pairings.set(pairings
         .filter((p: Pairing) => !p._main)

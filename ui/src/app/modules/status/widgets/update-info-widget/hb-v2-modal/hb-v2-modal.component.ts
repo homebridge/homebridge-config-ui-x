@@ -6,7 +6,7 @@ import { ToastrService } from 'ngx-toastr'
 import { firstValueFrom } from 'rxjs'
 import { satisfies } from 'semver'
 
-import { ApiService } from '@/app/core/communication/api.service'
+import { PluginsCacheService } from '@/app/core/caching/plugins-cache.service'
 import { IoNamespace, WsService } from '@/app/core/communication/ws.service'
 import { HB_V2_MODAL_DATA } from '@/app/core/modal-data-tokens'
 import { SettingsService } from '@/app/core/ui/settings.service'
@@ -24,7 +24,7 @@ import { InstalledPlugin } from '@/app/modules/status/widgets/update-info-widget
 })
 export class HbV2ModalComponent implements OnInit {
   private $activeModal = inject(NgbActiveModal)
-  private $api = inject(ApiService)
+  private $pluginsCache = inject(PluginsCacheService)
   private $settings = inject(SettingsService)
   private $toastr = inject(ToastrService)
   private $translate = inject(TranslateService)
@@ -74,7 +74,7 @@ export class HbV2ModalComponent implements OnInit {
     const homebridgeVersion = this.$settings.env.homebridgeVersion!.split('.')[0]
 
     try {
-      const installedPlugins = await this.$api.get('/plugins')
+      const installedPlugins = await this.$pluginsCache.get()
       const processedPlugins = installedPlugins
         .filter((x: any) => x.name !== 'homebridge-config-ui-x')
         .map((x: any) => {

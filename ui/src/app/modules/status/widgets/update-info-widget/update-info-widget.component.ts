@@ -8,7 +8,7 @@ import { ToastrService } from 'ngx-toastr'
 import { firstValueFrom } from 'rxjs'
 
 import { AuthService } from '@/app/core/auth/auth.service'
-import { ApiService } from '@/app/core/communication/api.service'
+import { PluginsCacheService } from '@/app/core/caching/plugins-cache.service'
 import { IoNamespace, WsService } from '@/app/core/communication/ws.service'
 import { InformationComponent } from '@/app/core/components/information/information.component'
 import { HB_V2_MODAL_DATA, INFORMATION_MODAL_DATA, NODE_VERSION_MODAL_DATA } from '@/app/core/modal-data-tokens'
@@ -42,7 +42,7 @@ export class UpdateInfoWidgetComponent implements OnInit {
   // Injected dependencies
   private destroyRef = inject(DestroyRef)
   private injector = inject(EnvironmentInjector)
-  private $api = inject(ApiService)
+  private $pluginsCache = inject(PluginsCacheService)
   private $auth = inject(AuthService)
   private $modal = inject(NgbModal)
   private $plugin = inject(ManagePluginsService)
@@ -104,7 +104,7 @@ export class UpdateInfoWidgetComponent implements OnInit {
     this.isHbV2Ready.set(true)
 
     if (!this.isRunningHbV2() && this.isAdmin) {
-      const installedPlugins = await this.$api.get('/plugins')
+      const installedPlugins = await this.$pluginsCache.get()
       const allHb2Ready = installedPlugins
         .filter((x: any) => x.name !== 'homebridge-config-ui-x')
         .every((x: any) => {

@@ -6,6 +6,7 @@ import { ToastrService } from 'ngx-toastr'
 import { firstValueFrom } from 'rxjs'
 
 import { AuthService } from '@/app/core/auth/auth.service'
+import { TtlCacheService } from '@/app/core/caching/ttl-cache.service'
 import { ApiService } from '@/app/core/communication/api.service'
 import { IoNamespace, WsService } from '@/app/core/communication/ws.service'
 import { ChildBridgeStatusResponse, HomebridgeStatus, HomebridgeStatusResponse } from '@/app/core/server.interfaces'
@@ -28,6 +29,7 @@ export class BridgesWidgetComponent implements OnInit, OnDestroy {
   private destroyRef = inject(DestroyRef)
   private $api = inject(ApiService)
   private $auth = inject(AuthService)
+  private $cache = inject(TtlCacheService)
   private $settings = inject(SettingsService)
   private $toastr = inject(ToastrService)
   private $translate = inject(TranslateService)
@@ -191,6 +193,7 @@ export class BridgesWidgetComponent implements OnInit, OnDestroy {
     this.isRestarting.set(true)
     try {
       await this.$api.put('/server/restart', {})
+      this.$cache.invalidateAll()
     } catch (error: any) {
       console.error(error)
       this.$toastr.error(this.$translate.instant('restart.toast_server_restart_error'), this.$translate.instant('toast.title_error'))

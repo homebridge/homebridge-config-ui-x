@@ -15,10 +15,10 @@ import { RestartChildBridgesComponent } from '@/app/core/components/restart-chil
 import { RestartHomebridgeComponent } from '@/app/core/components/restart-homebridge/restart-homebridge.component'
 import { createChildBridgeSchema } from '@/app/core/helpers/child-bridges-schema.helper'
 import { CONFIG_RESTORE_MODAL_DATA, RESTART_CHILD_BRIDGES_MODAL_DATA } from '@/app/core/modal-data-tokens'
-import { ChildBridge } from '@/app/core/plugins/manage-plugins.interfaces'
 import { RE_USERNAME } from '@/app/core/regex.constants'
 import { MonacoEditorService } from '@/app/core/ui/monaco-editor.service'
 import { SettingsService } from '@/app/core/ui/settings.service'
+import { ChildBridgesService } from '@/app/core/utilities/child-bridges.service'
 import { MobileDetectService } from '@/app/core/utilities/mobile-detect.service'
 import {
   AccessoryConfig,
@@ -53,6 +53,7 @@ declare global {
 export class ConfigEditorComponent implements OnInit, OnDestroy {
   private injector = inject(EnvironmentInjector)
   private $api = inject(ApiService)
+  private $childBridges = inject(ChildBridgesService)
   private $md = inject(MobileDetectService)
   private $modal = inject(NgbModal)
   private $monacoEditor = inject(MonacoEditorService)
@@ -1476,7 +1477,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
     // At this point we have a list of the changed entries, and we know they all have a _bridge key
     // Now we can start to form a list of the child bridges that we can restart.
     try {
-      const data: ChildBridge[] = await this.$api.get('/status/homebridge/child-bridges')
+      const data = await this.$childBridges.getAll()
 
       // Match up the changed entries with the child bridges
       for (const entry of changedEntries) {

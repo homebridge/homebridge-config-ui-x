@@ -15,6 +15,7 @@ import { Terminal } from '@xterm/xterm'
 import { saveAs } from 'file-saver'
 import { ToastrService } from 'ngx-toastr'
 
+import { PluginsCacheService } from '@/app/core/caching/plugins-cache.service'
 import { ApiService } from '@/app/core/communication/api.service'
 import { IoNamespace, WsService } from '@/app/core/communication/ws.service'
 import { MarkdownComponent } from '@/app/core/components/markdown/markdown.component'
@@ -24,6 +25,7 @@ import { ChildBridge } from '@/app/core/plugins/manage-plugins.interfaces'
 import { ManageVersionComponent } from '@/app/core/plugins/manage-version/manage-version.component'
 import { PluginLogsComponent } from '@/app/core/plugins/plugin-logs/plugin-logs.component'
 import { SettingsService } from '@/app/core/ui/settings.service'
+import { ChildBridgesService } from '@/app/core/utilities/child-bridges.service'
 import { BackupService } from '@/app/modules/settings/backup/backup.service'
 import { HbV2ModalComponent } from '@/app/modules/status/widgets/update-info-widget/hb-v2-modal/hb-v2-modal.component'
 
@@ -54,7 +56,9 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
   private $activeModal = inject(NgbActiveModal)
   private $api = inject(ApiService)
   private $backup = inject(BackupService)
+  private $childBridges = inject(ChildBridgesService)
   private $modal = inject(NgbModal)
+  private $pluginsCache = inject(PluginsCacheService)
   private $router = inject(Router)
   private $settings = inject(SettingsService)
   private $toastr = inject(ToastrService)
@@ -341,6 +345,11 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
             console.error(error)
           }
 
+          // Invalidate caches BEFORE notifying the plugins page so the new
+          // version metadata flows through on the same refresh cycle.
+          this.$pluginsCache.invalidate()
+          this.$childBridges.invalidate()
+
           // Trigger refresh of the plugin list in the background
           const refreshFn = this.onRefreshPluginList
           if (refreshFn) {
@@ -501,6 +510,12 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
         this.speakAction('plugins.a11y.installed_restart', 3000)
         this.$toastr.success(`${this.pastTenseVerb()} ${this.pluginName}`, this.toastSuccess)
 
+        // Invalidate caches BEFORE notifying the plugins page — otherwise its
+        // loadInstalledPlugins() reads the pre-install cached list and the
+        // new card doesn't appear until the next manual reload.
+        this.$pluginsCache.invalidate()
+        this.$childBridges.invalidate()
+
         // Trigger refresh of the plugin list in the background
         const refreshFn = this.onRefreshPluginList
         if (refreshFn) {
@@ -509,8 +524,8 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
 
         // Fetch the updated plugin data and close with it
         try {
-          const installedPlugins = await this.$api.get('/plugins')
-          const installedPlugin = installedPlugins.find((x: { name: string }) => x.name === this.pluginName)
+          const installedPlugins = await this.$pluginsCache.get()
+          const installedPlugin = installedPlugins.find(x => x.name === this.pluginName)
           this.$activeModal.close({ action: 'just-installed', plugin: installedPlugin })
         } catch (error) {
           console.error('Failed to fetch updated plugin data:', error)
@@ -535,6 +550,8 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
     }).subscribe({
       next: () => {
         this.speakAction('plugins.a11y.uninstalled_restart', 3000)
+        this.$pluginsCache.invalidate()
+        this.$childBridges.invalidate()
         // Trigger refresh of the plugin list in the background
         const refreshFn = this.onRefreshPluginList
         if (refreshFn) {
@@ -644,7 +661,7 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
   }
 
   private async getChildBridges(): Promise<void> {
-    const data: ChildBridge[] = await this.$api.get('/status/homebridge/child-bridges')
+    const data = await this.$childBridges.getAll()
     const pluginBridges = data.filter(bridge => this.pluginName === bridge.plugin)
     this.childBridges.set(pluginBridges)
   }

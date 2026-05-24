@@ -8,6 +8,7 @@ import { ToastrService } from 'ngx-toastr'
 import { firstValueFrom } from 'rxjs'
 
 import { AuthService } from '@/app/core/auth/auth.service'
+import { PluginsCacheService } from '@/app/core/caching/plugins-cache.service'
 import { ApiService } from '@/app/core/communication/api.service'
 import { IoNamespace, WsService } from '@/app/core/communication/ws.service'
 import { ConfirmComponent } from '@/app/core/components/confirm/confirm.component'
@@ -48,6 +49,7 @@ export class PluginCardComponent implements OnInit {
   private $md = inject(MobileDetectService)
   private $modal = inject(NgbModal)
   private $plugin = inject(ManagePluginsService)
+  private $pluginsCache = inject(PluginsCacheService)
   private $settings = inject(SettingsService)
   private $toastr = inject(ToastrService)
   private $translate = inject(TranslateService)
@@ -153,6 +155,7 @@ export class PluginCardComponent implements OnInit {
       try {
         // Mark as disabled
         await this.$api.put(`/config-editor/plugin/${encodeURIComponent(plugin.name)}/disable`, {})
+        this.$pluginsCache.invalidate()
         plugin.disabled = true
 
         // Stop all child bridges
@@ -193,6 +196,7 @@ export class PluginCardComponent implements OnInit {
       await ref.result
       try {
         await this.$api.put(`/config-editor/plugin/${encodeURIComponent(plugin.name)}/enable`, {})
+        this.$pluginsCache.invalidate()
 
         // Mark as enabled
         plugin.disabled = false

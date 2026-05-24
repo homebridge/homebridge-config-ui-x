@@ -28,6 +28,7 @@ import {
   RE_NON_ALNUM,
 } from '@/app/core/regex.constants'
 import { SettingsService } from '@/app/core/ui/settings.service'
+import { ChildBridgesService } from '@/app/core/utilities/child-bridges.service'
 
 @Component({
   selector: 'app-plugin-bridge',
@@ -46,6 +47,7 @@ export class PluginBridgeComponent implements OnInit {
   // 1. Injected Dependencies
   private $activeModal = inject(NgbActiveModal)
   private $api = inject(ApiService)
+  private $childBridges = inject(ChildBridgesService)
   private $modal = inject(NgbModal)
   private $plugin = inject(ManagePluginsService)
   private $router = inject(Router)
@@ -539,10 +541,10 @@ export class PluginBridgeComponent implements OnInit {
   private async getMatterCommissioningInfo(username: string) {
     try {
       // Get all child bridges from the status endpoint
-      const childBridges = await this.$api.get('/status/homebridge/child-bridges')
+      const childBridges = await this.$childBridges.getAll()
 
       // Find the bridge matching this username
-      const bridge = childBridges.find((b: any) => b.username === username)
+      const bridge = childBridges.find(b => b.username === username)
 
       if (bridge && bridge.matterSetupUri) {
         // Store the Matter commissioning info

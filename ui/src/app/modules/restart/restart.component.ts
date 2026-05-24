@@ -5,6 +5,7 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
 import { timer } from 'rxjs'
 
+import { TtlCacheService } from '@/app/core/caching/ttl-cache.service'
 import { ApiService } from '@/app/core/communication/api.service'
 import { IoNamespace, WsService } from '@/app/core/communication/ws.service'
 import { HomebridgeStatusResponse } from '@/app/core/server.interfaces'
@@ -23,6 +24,7 @@ import { SettingsService } from '@/app/core/ui/settings.service'
 export class RestartComponent implements OnInit, OnDestroy {
   // Injected dependencies
   private $api = inject(ApiService)
+  private $cache = inject(TtlCacheService)
   private $router = inject(Router)
   private $settings = inject(SettingsService)
   private $toastr = inject(ToastrService)
@@ -94,6 +96,7 @@ export class RestartComponent implements OnInit, OnDestroy {
     // Perform the restart
     try {
       const data = await this.$api.put('/server/restart', {})
+      this.$cache.invalidateAll()
       this.resp.set(data)
       this.checkIfServerUp()
       if (!data.restartingUI) {

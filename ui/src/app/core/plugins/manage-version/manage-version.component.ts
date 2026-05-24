@@ -8,6 +8,7 @@ import { ToastrService } from 'ngx-toastr'
 import { debounceTime } from 'rxjs/operators'
 import { rcompare } from 'semver'
 
+import { PluginsCacheService } from '@/app/core/caching/plugins-cache.service'
 import { ApiService } from '@/app/core/communication/api.service'
 import { MANAGE_VERSION_MODAL_DATA } from '@/app/core/modal-data-tokens'
 import { HomebridgeUpdatePolicy } from '@/app/core/settings.interfaces'
@@ -29,6 +30,7 @@ export class ManageVersionComponent implements OnInit {
   // Injected dependencies
   private $activeModal = inject(NgbActiveModal)
   private $api = inject(ApiService)
+  private $pluginsCache = inject(PluginsCacheService)
   private $settings = inject(SettingsService)
   private $toastr = inject(ToastrService)
   private $translate = inject(TranslateService)
@@ -176,6 +178,10 @@ export class ManageVersionComponent implements OnInit {
         // Clear cache for regular plugins too
         await this.$api.post('/plugins/clear-cache', {})
       }
+
+      // Server-side plugin metadata was cleared above, so drop the
+      // frontend cache so the next /plugins call re-fetches.
+      this.$pluginsCache.invalidate()
 
       // Trigger refreshes
       const onRefresh = this.onRefreshPluginList
