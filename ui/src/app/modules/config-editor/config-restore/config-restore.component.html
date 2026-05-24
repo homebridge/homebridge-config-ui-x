@@ -49,7 +49,7 @@
               {{ backup.timestamp | date: 'mediumDate' }}<br />
               <span class="grey-text small">{{ backup.timestamp | date: 'shortTime' }}</span>
             </span>
-            <span class="d-flex flex-nowrap">
+            <span class="d-flex flex-nowrap" role="group" [attr.aria-label]="'backup.aria_actions' | translate">
               <button
                 type="button"
                 class="btn btn-primary m-0 ms-3 py-1"
@@ -62,7 +62,7 @@
                 [attr.aria-label]="'config.restore.copy_to_editor' | translate"
                 (click)="restore(backup.id)"
               >
-                <i class="fas fa-history"></i>
+                <i aria-hidden="true" class="fas fa-history"></i>
               </button>
               <button
                 type="button"
@@ -76,7 +76,7 @@
                 [attr.aria-label]="'form.button_download' | translate"
                 (click)="download(backup.id)"
               >
-                <i class="fas fa-download"></i>
+                <i aria-hidden="true" class="fas fa-download"></i>
               </button>
               <button
                 type="button"
@@ -91,6 +91,7 @@
                 (click)="delete(backup.id)"
               >
                 <i
+                  aria-hidden="true"
                   class="fas"
                   [class.fa-trash]="backup.id !== deleting()"
                   [class.fa-circle-notch]="backup.id === deleting()"
@@ -119,6 +120,7 @@
               (click)="deleteAllBackups()"
             >
               <i
+                aria-hidden="true"
                 class="fas"
                 [class.fa-trash]="'all' !== deleting()"
                 [class.fa-circle-notch]="'all' === deleting()"

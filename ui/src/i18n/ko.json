@@ -189,6 +189,7 @@
   "accessories.support.rooms_2": "You can rename or delete a room by clicking the cog icon next to its name when the layout is unlocked.",
   "accessories.support.rooms_3": "You must have at least one room, and exactly one default room, which is where new accessories will go.",
   "accessories.title_rooms": "Rooms",
+  "backup.aria_actions": "Backup actions",
   "backup.backup_delete_failed": "백업 삭제에 실패했습니다. 자세한 내용은 로그를 확인하세요.",
   "backup.backup_download_failed": "백업 다운로드 실패",
   "backup.backup_exceeds_max_size": "백업 ({{ backupSize }})이(가) 최대 복원 파일 크기 {{ maxBackupSizeText }}를 초과했습니다.",

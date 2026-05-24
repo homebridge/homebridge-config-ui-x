@@ -9,7 +9,7 @@
       [attr.aria-label]="'form.search' | translate"
       (click)="toggleSearch()"
     >
-      <i [class]="`fas fa-search${showSearchBar() ? ' primary-text' : ''}`"></i>
+      <i aria-hidden="true" [class]="`fas fa-search${showSearchBar() ? ' primary-text' : ''}`"></i>
     </button>
   </div>
 </div>
@@ -58,6 +58,7 @@
         >
           <h5 class="primary-text">
             <i
+              aria-hidden="true"
               class="fa"
               [class.fa-chevron-down]="showFields().general"
               [class.fa-chevron-right]="!showFields().general"
@@ -84,6 +85,7 @@
                   />
                   @if (hbNameIsSaving()) {
                     <i
+                      aria-hidden="true"
                       class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1 save-indicator"
                     ></i>
                   }
@@ -103,7 +105,7 @@
                   [attr.aria-label]="'backup.title_backup' | translate"
                   (click)="openBackupModal()"
                 >
-                  <i class="fas fa-arrow-right"></i>
+                  <i aria-hidden="true" class="fas fa-arrow-right"></i>
                 </button>
               </div>
             </li>
@@ -120,7 +122,7 @@
                   [attr.aria-label]="'config.restore.title' | translate"
                   (click)="openConfigBackup()"
                 >
-                  <i class="fas fa-arrow-right"></i>
+                  <i aria-hidden="true" class="fas fa-arrow-right"></i>
                 </button>
               </div>
             </li>
@@ -136,7 +138,7 @@
                   routerLink="/users"
                   [attr.aria-label]="'menu.tooltip_user_accounts' | translate"
                 >
-                  <i class="fas fa-arrow-right"></i>
+                  <i aria-hidden="true" class="fas fa-arrow-right"></i>
                 </a>
               </div>
             </li>
@@ -158,6 +160,7 @@
         >
           <h5 class="primary-text">
             <i
+              aria-hidden="true"
               class="fa"
               [class.fa-chevron-down]="showFields().display"
               [class.fa-chevron-right]="!showFields().display"
@@ -209,6 +212,7 @@
                   </select>
                   @if (uiLangIsSaving()) {
                     <i
+                      aria-hidden="true"
                       class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1 save-indicator"
                     ></i>
                   }
@@ -240,6 +244,7 @@
                   </select>
                   @if (uiThemeIsSaving()) {
                     <i
+                      aria-hidden="true"
                       class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1 save-indicator"
                     ></i>
                   }
@@ -261,6 +266,7 @@
                   </select>
                   @if (uiLightIsSaving()) {
                     <i
+                      aria-hidden="true"
                       class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1 save-indicator"
                     ></i>
                   }
@@ -281,6 +287,7 @@
                   </select>
                   @if (uiMenuIsSaving()) {
                     <i
+                      aria-hidden="true"
                       class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1 save-indicator"
                     ></i>
                   }
@@ -301,6 +308,7 @@
                   </select>
                   @if (uiTempIsSaving()) {
                     <i
+                      aria-hidden="true"
                       class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1 save-indicator"
                     ></i>
                   }
@@ -335,6 +343,7 @@
                     uiTerminalFontSizeIsSaving() || uiTerminalFontWeightIsSaving() || uiTerminalLightingModeIsSaving()
                   ) {
                     <i
+                      aria-hidden="true"
                       class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1 save-indicator"
                     ></i>
                   }
@@ -390,7 +399,7 @@
                   [attr.aria-label]="'settings.display.wallpaper' | translate"
                   (click)="openWallpaperModal()"
                 >
-                  <i class="fas fa-arrow-right"></i>
+                  <i aria-hidden="true" class="fas fa-arrow-right"></i>
                 </button>
               </div>
             </li>
@@ -412,6 +421,7 @@
         >
           <h5 class="primary-text">
             <i
+              aria-hidden="true"
               class="fa"
               [class.fa-chevron-down]="showFields().startup"
               [class.fa-chevron-right]="!showFields().startup"
@@ -444,6 +454,7 @@
                   </div>
                   @if (hbDebugIsSaving()) {
                     <i
+                      aria-hidden="true"
                       class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1 save-indicator"
                     ></i>
                   }
@@ -473,6 +484,7 @@
                   </div>
                   @if (hbKeepIsSaving()) {
                     <i
+                      aria-hidden="true"
                       class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1 save-indicator"
                     ></i>
                   }
@@ -502,6 +514,7 @@
                   </div>
                   @if (hbInsecureIsSaving()) {
                     <i
+                      aria-hidden="true"
                       class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1 save-indicator"
                     ></i>
                   }
@@ -524,7 +537,7 @@
                   [attr.aria-label]="'settings.security.ui_control' | translate"
                   (click)="accessoryUiControl()"
                 >
-                  <i class="fas fa-arrow-right"></i>
+                  <i aria-hidden="true" class="fas fa-arrow-right"></i>
                 </button>
               </div>
             </li>
@@ -557,6 +570,7 @@
                     />
                     @if (scheduledRestartCronIsSaving()) {
                       <i
+                        aria-hidden="true"
                         class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1 save-indicator"
                       ></i>
                     }
@@ -587,6 +601,7 @@
                   </div>
                   @if (uiMetricsIsSaving()) {
                     <i
+                      aria-hidden="true"
                       class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1 save-indicator"
                     ></i>
                   }
@@ -613,6 +628,7 @@
                   />
                   @if (hbPackageIsSaving()) {
                     <i
+                      aria-hidden="true"
                       class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1 save-indicator"
                     ></i>
                   }
@@ -640,6 +656,7 @@
                     />
                     @if (hbLinuxShutdownIsSaving()) {
                       <i
+                        aria-hidden="true"
                         class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1 save-indicator"
                       ></i>
                     }
@@ -666,6 +683,7 @@
                     />
                     @if (hbLinuxRestartIsSaving()) {
                       <i
+                        aria-hidden="true"
                         class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1 save-indicator"
                       ></i>
                     }
@@ -693,6 +711,7 @@
                       />
                       @if (uiTempFileIsSaving()) {
                         <i
+                          aria-hidden="true"
                           class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1 save-indicator"
                         ></i>
                       }
@@ -723,6 +742,7 @@
                   />
                   @if (hbEnvDebugIsSaving()) {
                     <i
+                      aria-hidden="true"
                       class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1 save-indicator"
                     ></i>
                   }
@@ -748,6 +768,7 @@
                   />
                   @if (hbEnvNodeIsSaving()) {
                     <i
+                      aria-hidden="true"
                       class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1 save-indicator"
                     ></i>
                   }
@@ -770,7 +791,7 @@
                     routerLink="/platform-tools/docker/startup-script"
                     [attr.aria-label]="'menu.docker.startup_script' | translate"
                   >
-                    <i class="fas fa-arrow-right"></i>
+                    <i aria-hidden="true" class="fas fa-arrow-right"></i>
                   </a>
                 </div>
               </li>
@@ -793,6 +814,7 @@
         >
           <h5 class="primary-text">
             <i
+              aria-hidden="true"
               class="fa"
               [class.fa-chevron-down]="showFields().network"
               [class.fa-chevron-right]="!showFields().network"
@@ -818,7 +840,7 @@
                       [class.badge-info]="!adapter.missing"
                     >
                       @if (adapter.missing) {
-                        <i class="fas fa-exclamation-triangle"></i>
+                        <i aria-hidden="true" class="fas fa-exclamation-triangle"></i>
                       }
                       {{ adapter.iface }}:
                       <span class="fw-normal">{{
@@ -836,7 +858,7 @@
                   [attr.aria-label]="'settings.network.title_network_interfaces' | translate"
                   (click)="selectNetworkInterfaces()"
                 >
-                  <i class="fas fa-arrow-right"></i>
+                  <i aria-hidden="true" class="fas fa-arrow-right"></i>
                 </button>
               </div>
             </li>
@@ -872,6 +894,7 @@
                   </select>
                   @if (hbMDnsIsSaving()) {
                     <i
+                      aria-hidden="true"
                       class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1 save-indicator"
                     ></i>
                   }
@@ -901,6 +924,7 @@
                   </div>
                   @if (enableMdnsAdvertiseIsSaving()) {
                     <i
+                      aria-hidden="true"
                       class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1 save-indicator"
                     ></i>
                   }
@@ -929,6 +953,7 @@
                   />
                   @if (hbPortIsSaving()) {
                     <i
+                      aria-hidden="true"
                       class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1 save-indicator"
                     ></i>
                   }
@@ -948,6 +973,7 @@
                 <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
                   @if (hbStartPortIsSaving() || hbEndPortIsSaving()) {
                     <i
+                      aria-hidden="true"
                       class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1 save-indicator"
                     ></i>
                   }
@@ -987,7 +1013,7 @@
                   <small class="grey-text pe-2" [innerHtml]="'settings.network.host_desc' | translate"></small>
                   @if (isPwa) {
                     <br /><small class="grey-text pe-2">
-                      <i class="fas fa-exclamation-triangle red-text"></i>
+                      <i aria-hidden="true" class="fas fa-exclamation-triangle red-text"></i>
                       {{ 'settings.warning_pwa' | translate }}
                     </small>
                   }
@@ -1003,6 +1029,7 @@
                   />
                   @if (uiHostIsSaving()) {
                     <i
+                      aria-hidden="true"
                       class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1 save-indicator"
                     ></i>
                   }
@@ -1020,7 +1047,7 @@
                   <small class="grey-text pe-2">{{ 'settings.network.proxy_desc' | translate }}</small>
                   @if (isPwa) {
                     <br /><small class="grey-text pe-2">
-                      <i class="fas fa-exclamation-triangle red-text"></i>
+                      <i aria-hidden="true" class="fas fa-exclamation-triangle red-text"></i>
                       {{ 'settings.warning_pwa' | translate }}
                     </small>
                   }
@@ -1036,6 +1063,7 @@
                   />
                   @if (uiProxyHostIsSaving()) {
                     <i
+                      aria-hidden="true"
                       class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1 save-indicator"
                     ></i>
                   }
@@ -1053,7 +1081,7 @@
                   <small class="grey-text pe-2">{{ 'settings.network.port_ui_desc' | translate }}</small>
                   @if (isPwa) {
                     <br /><small class="grey-text pe-2">
-                      <i class="fas fa-exclamation-triangle red-text"></i>
+                      <i aria-hidden="true" class="fas fa-exclamation-triangle red-text"></i>
                       {{ 'settings.warning_pwa' | translate }}
                     </small>
                   }
@@ -1071,6 +1099,7 @@
                   />
                   @if (uiPortIsSaving()) {
                     <i
+                      aria-hidden="true"
                       class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1 save-indicator"
                     ></i>
                   }
@@ -1087,7 +1116,7 @@
                   {{ 'settings.ports.title' | translate }}
                 </span>
                 <button type="button" class="btn btn-primary waves-effect" (click)="openPortOverview()">
-                  <i class="fas fa-arrow-right"></i>
+                  <i aria-hidden="true" class="fas fa-arrow-right"></i>
                 </button>
               </div>
             </li>
@@ -1108,7 +1137,12 @@
           (click)="toggleSection('hap')"
         >
           <h5 class="primary-text">
-            <i class="fa" [class.fa-chevron-down]="showFields().hap" [class.fa-chevron-right]="!showFields().hap"></i>
+            <i
+              aria-hidden="true"
+              class="fa"
+              [class.fa-chevron-down]="showFields().hap"
+              [class.fa-chevron-right]="!showFields().hap"
+            ></i>
             {{ 'settings.hap.title' | translate }}
           </h5>
         </div>
@@ -1145,6 +1179,7 @@
                   </div>
                   @if (hapEnabledIsSaving()) {
                     <i
+                      aria-hidden="true"
                       class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1 save-indicator"
                     ></i>
                   }
@@ -1169,6 +1204,7 @@
         >
           <h5 class="primary-text">
             <i
+              aria-hidden="true"
               class="fa"
               [class.fa-chevron-down]="showFields().matter"
               [class.fa-chevron-right]="!showFields().matter"
@@ -1211,6 +1247,7 @@
                   </div>
                   @if (matterEnabledIsSaving()) {
                     <i
+                      aria-hidden="true"
                       class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1 save-indicator"
                     ></i>
                   }
@@ -1241,6 +1278,7 @@
                     />
                     @if (matterPortIsSaving()) {
                       <i
+                        aria-hidden="true"
                         class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1 save-indicator"
                       ></i>
                     }
@@ -1261,6 +1299,7 @@
                 <div class="my-3 my-md-0 ps-0 ps-md-5 w-auto d-flex align-items-center">
                   @if (matterStartPortIsSaving() || matterEndPortIsSaving()) {
                     <i
+                      aria-hidden="true"
                       class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1 save-indicator"
                     ></i>
                   }
@@ -1307,6 +1346,7 @@
         >
           <h5 class="primary-text">
             <i
+              aria-hidden="true"
               class="fa"
               [class.fa-chevron-down]="showFields().terminal"
               [class.fa-chevron-right]="!showFields().terminal"
@@ -1338,6 +1378,7 @@
                   />
                   @if (hbLogSizeIsSaving()) {
                     <i
+                      aria-hidden="true"
                       class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1 save-indicator"
                     ></i>
                   }
@@ -1367,6 +1408,7 @@
                     />
                     @if (hbLogTruncateIsSaving()) {
                       <i
+                        aria-hidden="true"
                         class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1 save-indicator"
                       ></i>
                     }
@@ -1398,6 +1440,7 @@
                     </div>
                     @if (uiTerminalPersistenceIsSaving()) {
                       <i
+                        aria-hidden="true"
                         class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1 save-indicator"
                       ></i>
                     }
@@ -1428,6 +1471,7 @@
                       </div>
                       @if (uiTerminalHideWarningIsSaving()) {
                         <i
+                          aria-hidden="true"
                           class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1 save-indicator"
                         ></i>
                       }
@@ -1458,6 +1502,7 @@
                       />
                       @if (uiTerminalBufferSizeIsSaving()) {
                         <i
+                          aria-hidden="true"
                           class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1 save-indicator"
                         ></i>
                       }
@@ -1484,6 +1529,7 @@
         >
           <h5 class="primary-text">
             <i
+              aria-hidden="true"
               class="fa"
               [class.fa-chevron-down]="showFields().security"
               [class.fa-chevron-right]="!showFields().security"
@@ -1516,6 +1562,7 @@
                   </div>
                   @if (uiAuthIsSaving()) {
                     <i
+                      aria-hidden="true"
                       class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1 save-indicator"
                     ></i>
                   }
@@ -1547,7 +1594,10 @@
                       <label class="rendux-label ms-3 min-w-50" for="session-inactivity-based"></label>
                     </div>
                     @if (uiSessionTimeoutInactivityBasedIsSaving()) {
-                      <i class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 save-indicator"></i>
+                      <i
+                        aria-hidden="true"
+                        class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 save-indicator"
+                      ></i>
                     }
                   </div>
                 </div>
@@ -1615,6 +1665,7 @@
                     </div>
                     @if (uiSessionTimeoutIsSaving()) {
                       <i
+                        aria-hidden="true"
                         class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-md-1 save-indicator"
                       ></i>
                     }
@@ -1643,7 +1694,7 @@
                     <small class="grey-text pe-2">{{ 'settings.security.https_desc' | translate }}</small>
                     @if (isPwa) {
                       <br /><small class="grey-text pe-2">
-                        <i class="fas fa-exclamation-triangle red-text"></i>
+                        <i aria-hidden="true" class="fas fa-exclamation-triangle red-text"></i>
                         {{ 'settings.warning_pwa' | translate }}
                       </small>
                     }
@@ -1683,6 +1734,7 @@
         >
           <h5 class="primary-text">
             <i
+              aria-hidden="true"
               class="fa"
               [class.fa-chevron-down]="showFields().cache"
               [class.fa-chevron-right]="!showFields().cache"
@@ -1716,6 +1768,7 @@
                   </div>
                   @if (uiAccDebugIsSaving()) {
                     <i
+                      aria-hidden="true"
                       class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1 save-indicator"
                     ></i>
                   }
@@ -1738,7 +1791,7 @@
                   [attr.aria-label]="'reset.accessory_ind.title' | translate"
                   (click)="removeSingleCachedAccessories()"
                 >
-                  <i class="fas fa-arrow-right"></i>
+                  <i aria-hidden="true" class="fas fa-arrow-right"></i>
                 </button>
               </div>
             </li>
@@ -1758,7 +1811,7 @@
                   [attr.aria-label]="'reset.accessory_all.title' | translate"
                   (click)="removeBridgeAccessories()"
                 >
-                  <i class="fas fa-arrow-right"></i>
+                  <i aria-hidden="true" class="fas fa-arrow-right"></i>
                 </button>
               </div>
             </li>
@@ -1778,7 +1831,7 @@
                   [attr.aria-label]="'reset.accessory_all.title' | translate"
                   (click)="removeAllCachedAccessories()"
                 >
-                  <i class="fas fa-arrow-right"></i>
+                  <i aria-hidden="true" class="fas fa-arrow-right"></i>
                 </button>
               </div>
             </li>
@@ -1800,6 +1853,7 @@
         >
           <h5 class="primary-text">
             <i
+              aria-hidden="true"
               class="fa"
               [class.fa-chevron-down]="showFields().reset"
               [class.fa-chevron-right]="!showFields().reset"
@@ -1826,7 +1880,7 @@
                   [attr.aria-label]="'reset.bridge_ind.title' | translate"
                   (click)="unpairAccessory()"
                 >
-                  <i class="fas fa-arrow-right"></i>
+                  <i aria-hidden="true" class="fas fa-arrow-right"></i>
                 </button>
               </div>
             </li>
@@ -1846,7 +1900,7 @@
                   [attr.aria-label]="'reset.bridge_all.title' | translate"
                   (click)="resetHomebridgeState()"
                 >
-                  <i class="fas fa-arrow-right"></i>
+                  <i aria-hidden="true" class="fas fa-arrow-right"></i>
                 </button>
               </div>
             </li>

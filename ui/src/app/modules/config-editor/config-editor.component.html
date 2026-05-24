@@ -17,7 +17,7 @@
           [attr.aria-label]="'form.button_cancel' | translate"
           (click)="onCancelRestore()"
         >
-          <i class="fas fa-times"></i>
+          <i aria-hidden="true" class="fas fa-times"></i>
         </button>
       } @else {
         <button
@@ -31,7 +31,7 @@
           [ngbTooltip]="'form.button_restore' | translate"
           (click)="onRestore()"
         >
-          <i class="fas fa-history"></i>
+          <i aria-hidden="true" class="fas fa-history"></i>
         </button>
       }
       @if (!isMobile() && originalConfig()) {
@@ -50,7 +50,12 @@
           "
           (click)="toggleSideBySide()"
         >
-          <i class="fas" [class.fa-columns]="!renderSideBySide()" [class.fa-bars]="renderSideBySide()"></i>
+          <i
+            aria-hidden="true"
+            class="fas"
+            [class.fa-columns]="!renderSideBySide()"
+            [class.fa-bars]="renderSideBySide()"
+          ></i>
         </button>
       }
       <button
@@ -66,9 +71,9 @@
         (click)="onSave()"
       >
         @if (!saveInProgress()) {
-          <i class="fas fa-floppy-disk"></i>
+          <i aria-hidden="true" class="fas fa-floppy-disk"></i>
         } @else {
-          <i class="fas fa-circle-notch fa-spin"></i>
+          <i aria-hidden="true" class="fas fa-circle-notch fa-spin"></i>
         }
       </button>
     </div>
@@ -103,6 +108,7 @@
       autocorrect="off"
       autocapitalize="off"
       spellcheck="false"
+      [attr.aria-label]="'menu.config_json_editor' | translate"
       [ngModel]="homebridgeConfig()"
       (ngModelChange)="homebridgeConfig.set($event)"
     >
