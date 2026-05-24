@@ -15,11 +15,11 @@
   <div class="modal-body">
     @if (loading()) {
       <div class="text-center primary-text my-5 w-100">
-        <i class="fas fa-circle-notch fa-spin icon-xl"></i>
+        <i aria-hidden="true" class="fas fa-circle-notch fa-spin icon-xl"></i>
       </div>
     } @else {
       <div class="text-center">
-        <img alt="Plugin Icon" class="mb-3 plugin-icon-card" [src]="plugin.icon" (error)="handleIconError()" />
+        <img alt="" aria-hidden="true" class="mb-3 plugin-icon-card" [src]="plugin.icon" (error)="handleIconError()" />
       </div>
       <ul class="mb-3">
         <li [innerHTML]="'child_bridge.about' | translate: { link: linkChildBridges }"></li>
@@ -118,7 +118,11 @@
                     )
                   "
                 />
-                <label class="rendux-label" [for]="`toggleExternalBridgeInput_${selectedBlock()}`"></label>
+                <label
+                  class="rendux-label"
+                  aria-hidden="true"
+                  [for]="`toggleExternalBridgeInput_${selectedBlock()}`"
+                ></label>
               </div>
             </li>
           }
@@ -178,6 +182,7 @@
             >
               <span class="text-start">{{ 'common.labels.advanced' | translate }}</span>
               <i
+                aria-hidden="true"
                 class="fa grey-text"
                 [class.fa-chevron-left]="!showAdvanced()"
                 [class.fa-chevron-down]="showAdvanced()"
@@ -267,7 +272,11 @@
                         [attr.aria-label]="'settings.startup.debug' | translate"
                         [(ngModel)]="configBlocks()[+selectedBlock()]._bridge.debugModeEnabled"
                       />
-                      <label class="rendux-label" [for]="`homebridgeDebugMode_${selectedBlock()}`"></label>
+                      <label
+                        class="rendux-label"
+                        aria-hidden="true"
+                        [for]="`homebridgeDebugMode_${selectedBlock()}`"
+                      ></label>
                     </div>
                   </li>
                 }
@@ -325,7 +334,8 @@
             <! -- HAP Header with Toggle - ->
             <li class="list-group-item d-flex justify-content-between align-items-center flex-row pb-2">
               <span class="text-start">
-                <i class="fas fa-xl fa-hap me-2 my-2"></i> {{ 'child_bridge.config.enable_hap' | translate }}
+                <i aria-hidden="true" class="fas fa-xl fa-hap me-2 my-2"></i>
+                {{ 'child_bridge.config.enable_hap' | translate }}
               </span>
               <div
                 class="text-end grey-text d-flex align-items-center"
@@ -354,6 +364,7 @@
                 />
                 <label
                   class="rendux-label"
+                  aria-hidden="true"
                   [class.cursor-not-allowed]="configBlocks()[+selectedBlock()].accessory"
                   [for]="`toggleHapInput_${selectedBlock()}`"
                 ></label>
@@ -373,7 +384,7 @@
                     >
                       <div>
                         <div class="text-center grey-text">
-                          <i class="fas fa-qrcode fa-2x mb-2 primary-text"></i>
+                          <i aria-hidden="true" class="fas fa-qrcode fa-2x mb-2 primary-text"></i>
                         </div>
                         <div class="text-center small grey-text">{{ 'child_bridge.return_to_pair' | translate }}</div>
                       </div>
@@ -399,6 +410,7 @@
                     </p>
                     <p class="grey-text mx-auto small mb-1 qr-code-info">
                       <i
+                        aria-hidden="true"
                         class="fas fa-link"
                         [class.green-text]="
                           (deviceInfo().get(configBlocks()[+selectedBlock()]._bridge?.username) || undefined)?.[
@@ -443,7 +455,11 @@
                         [attr.aria-label]="'child_bridge.config.hide_pairing_alert' | translate"
                         (change)="toggleHideUnpairing(configBlocks()[+selectedBlock()]._bridge?.username, 'hap')"
                       />
-                      <label class="rendux-label" [for]="`toggleHideHapUnpairing_${selectedBlock()}`"></label>
+                      <label
+                        class="rendux-label"
+                        aria-hidden="true"
+                        [for]="`toggleHideHapUnpairing_${selectedBlock()}`"
+                      ></label>
                     </div>
                   </li>
                 }
@@ -476,7 +492,8 @@
               <! -- Matter Header with Toggle - ->
               <li class="list-group-item d-flex justify-content-between align-items-center flex-row pb-2">
                 <span class="mb-2 mb-md-0 w-100 w-md-50">
-                  <i class="fas fa-xl fa-matter me-2 my-2"></i> {{ 'matter_bridge.config.use' | translate }}
+                  <i aria-hidden="true" class="fas fa-xl fa-matter me-2 my-2"></i>
+                  {{ 'matter_bridge.config.use' | translate }}
                   <span class="badge badge-primary ms-1">{{ 'common.labels.beta' | translate }}</span>
                 </span>
                 <div class="text-end grey-text d-flex align-items-center">
@@ -494,7 +511,11 @@
                       )
                     "
                   />
-                  <label class="rendux-label" [for]="`toggleMatterBridgeInput_${selectedBlock()}`"></label>
+                  <label
+                    class="rendux-label"
+                    aria-hidden="true"
+                    [for]="`toggleMatterBridgeInput_${selectedBlock()}`"
+                  ></label>
                 </div>
               </li>
 
@@ -523,6 +544,7 @@
                       </p>
                       <p class="grey-text mx-auto small mb-1 qr-code-info">
                         <i
+                          aria-hidden="true"
                           class="fas fa-link"
                           [class.green-text]="
                             matterDeviceInfo().get(configBlocks()[+selectedBlock()]._bridge?.username)?.commissioned
@@ -557,7 +579,11 @@
                           [attr.aria-label]="'child_bridge.config.hide_pairing_alert' | translate"
                           (change)="toggleHideUnpairing(configBlocks()[+selectedBlock()]._bridge?.username, 'matter')"
                         />
-                        <label class="rendux-label" [for]="`toggleHideMatterUnpairing_${selectedBlock()}`"></label>
+                        <label
+                          class="rendux-label"
+                          aria-hidden="true"
+                          [for]="`toggleHideMatterUnpairing_${selectedBlock()}`"
+                        ></label>
                       </div>
                     </li>
                   }
@@ -573,7 +599,7 @@
                       >
                         <div>
                           <div class="text-center grey-text">
-                            <i class="fas fa-qrcode fa-2x mb-2 primary-text"></i>
+                            <i aria-hidden="true" class="fas fa-qrcode fa-2x mb-2 primary-text"></i>
                           </div>
                           <div class="text-center small grey-text">{{ 'child_bridge.return_to_pair' | translate }}</div>
                         </div>
@@ -618,7 +644,7 @@
             <ul class="d-inline-block text-start mb-0">
               @for (bridge of deleteBridges(); track bridge) {
                 <li>
-                  <i class="fas fa-lg fa-hap me-1"></i>
+                  <i aria-hidden="true" class="fas fa-lg fa-hap me-1"></i>
                   {{ bridge.bridgeName || (deviceInfo().get(bridge.id) || undefined)?.['displayName'] }}
                   <span class="grey-text"> &middot; </span>
                   <span class="grey-text font-monospace">{{ bridge.id }}</span>
@@ -626,7 +652,7 @@
               }
               @for (matterBridge of deleteMatterBridges(); track matterBridge) {
                 <li>
-                  <i class="fas fa-lg fa-matter me-1"></i>
+                  <i aria-hidden="true" class="fas fa-lg fa-matter me-1"></i>
                   {{ matterBridge.name }}
                   <span class="grey-text"> &middot; </span>
                   <span class="grey-text font-monospace">{{ matterBridge.username }}</span>
@@ -676,7 +702,7 @@
         >
           {{ 'form.button_save' | translate }}
           @if (saveInProgress()) {
-            <i class="fas fa-circle-notch fa-spin"></i>
+            <i aria-hidden="true" class="fas fa-circle-notch fa-spin"></i>
           }
         </button>
       }
@@ -698,7 +724,7 @@
             @if (!saveInProgress()) {
               {{ 'form.button_save' | translate }}
             } @else {
-              <i class="fas fa-circle-notch fa-spin"></i>
+              <i aria-hidden="true" class="fas fa-circle-notch fa-spin"></i>
             }
           </button>
         } @else {

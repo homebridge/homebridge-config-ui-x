@@ -14,12 +14,14 @@
         container="body"
         placement="bottom"
         triggers="hover"
+        aria-controls="plugin-search-region"
         [openDelay]="150"
         [ngbTooltip]="'form.search' | translate"
         [attr.aria-label]="'form.search' | translate"
+        [attr.aria-expanded]="showSearchBar()"
         (click)="showSearch()"
       >
-        <i [class]="`fas fa-search${showSearchBar() ? ' primary-text' : ''}`"></i>
+        <i aria-hidden="true" [class]="`fas fa-search${showSearchBar() ? ' primary-text' : ''}`"></i>
       </button>
       <button
         type="button"
@@ -27,12 +29,14 @@
         container="body"
         placement="bottom"
         triggers="hover"
+        aria-controls="stats-header stats-iframe"
         [openDelay]="150"
         [ngbTooltip]="'plugins.stats' | translate"
         [attr.aria-label]="'plugins.stats' | translate"
+        [attr.aria-expanded]="tab() === 'stats'"
         (click)="showStats()"
       >
-        <i [class]="`fas fa-sliders${tab() === 'stats' ? ' primary-text' : ''}`"></i>
+        <i aria-hidden="true" [class]="`fas fa-sliders${tab() === 'stats' ? ' primary-text' : ''}`"></i>
       </button>
     }
     <button
@@ -41,14 +45,14 @@
       [attr.aria-label]="'support.title' | translate"
       (click)="openSupport()"
     >
-      <i class="far fa-circle-question"></i>
+      <i aria-hidden="true" class="far fa-circle-question"></i>
     </button>
   </div>
 </div>
 
 @if (tab() === 'main') {
   @if (showSearchBar()) {
-    <div class="row">
+    <div class="row" id="plugin-search-region">
       <div class="col-md-12">
         <form novalidate [formGroup]="form" (ngSubmit)="onSubmit(form)">
           <input
@@ -57,6 +61,7 @@
             class="search-bar"
             formControlName="query"
             [placeholder]="'plugins.placeholder_search_plugin' | translate"
+            [attr.aria-label]="'plugins.placeholder_search_plugin' | translate"
           />
           @if (form.get('query')?.value) {
             <button
@@ -80,8 +85,9 @@
         </div>
       }
       @if (installedPlugins().length === 0 && !loading() && !mainError()) {
-        <div class="alert alert-info mt-4 text-center w-100">
+        <div class="alert alert-info mt-4 text-center w-100" role="status" aria-live="polite">
           <i
+            aria-hidden="true"
             class="fas primary-text my-3 icon-xl"
             [class.fa-magnifying-glass]="!showExitButton()"
             [class.fa-exclamation-circle]="showExitButton()"
@@ -100,8 +106,11 @@
     <div class="mb-2">
       <code
         >https://developers.homebridge.io/analytics
-        <a href="https://developers.homebridge.io/analytics" target="_blank"
-          ><i class="fas fa-up-right-from-square"></i></a
+        <a
+          href="https://developers.homebridge.io/analytics"
+          target="_blank"
+          [attr.aria-label]="'plugins.stats_open_in_new_tab' | translate"
+          ><i aria-hidden="true" class="fas fa-up-right-from-square"></i></a
       ></code>
     </div>
     <div class="small grey-text">{{ 'plugins.stats_note' | translate }}</div>

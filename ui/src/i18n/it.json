@@ -489,6 +489,7 @@
   "plugins.settings.restart_required": "Riavvia Homebridge per applicare le modifiche.",
   "plugins.stats": "Statistiche plugin",
   "plugins.stats_note": "I plugin non possono essere installati da questa pagina, questa è fornita solo per interesse.",
+  "plugins.stats_open_in_new_tab": "Open Homebridge analytics in new tab",
   "plugins.status_installed": "Installato",
   "plugins.support.list_1": "I plugin di Homebridge sono i mattoni di Homebridge, permettendoti di aggiungere il supporto per nuovi accessori e piattaforme. I plugin aggiungono il supporto per luci intelligenti, telecamere, TV, ecc., per marchi che non supportano nativamente HomeKit. Ad esempio, per portare i tuoi campanelli e telecamere Ring in HomeKit, puoi installare il plugin <code>homebridge-ring</code>.",
   "plugins.support.list_2": "I plugin di Homebridge sono creati da contributori pubblici nella comunità di Homebridge e non sono tipicamente associati ai manutentori di Homebridge, né ai produttori degli accessori stessi. Se hai una domanda su un plugin specifico, dovresti farlo sapere allo sviluppatore del plugin tramite la pagina GitHub del plugin.",

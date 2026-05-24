@@ -489,6 +489,7 @@
   "plugins.settings.restart_required": "Zrestartuj serwer, aby zastosować zmiany.",
   "plugins.stats": "Statystyki wtyczek",
   "plugins.stats_note": "Wtyczki nie mogą być instalowane z tej strony, jest to dostarczane tylko dla zainteresowania.",
+  "plugins.stats_open_in_new_tab": "Open Homebridge analytics in new tab",
   "plugins.status_installed": "Zainstalowana",
   "plugins.support.list_1": "Wtyczki Homebridge są elementami konstrukcyjnymi Homebridge, umożliwiającymi dodanie wsparcia dla nowych akcesoriów i platform. Wtyczki dodają wsparcie dla inteligentnych świateł, kamer, telewizorów itp. dla marek, które nie obsługują natywnie HomeKit. Na przykład, aby wprowadzić dzwonki i kamery Ring do HomeKit, możesz zainstalować wtyczkę <code>homebridge-ring</code>.",
   "plugins.support.list_2": "Wtyczki Homebridge są tworzone przez publicznych współpracowników w społeczności Homebridge i zazwyczaj nie są kojarzone z opiekunami Homebridge, ani z samymi producentami akcesoriów. Jeśli masz pytanie dotyczące konkretnej wtyczki, powinieneś dać znać twórcy wtyczki za pośrednictwem strony GitHub wtyczki.",

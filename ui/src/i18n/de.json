@@ -489,6 +489,7 @@
   "plugins.settings.restart_required": "Starte Homebridge neu, um die Änderungen zu übernehmen.",
   "plugins.stats": "Plugin-Statistiken",
   "plugins.stats_note": "Plugins können von dieser Seite aus nicht installiert werden, dies dient nur zur Information.",
+  "plugins.stats_open_in_new_tab": "Open Homebridge analytics in new tab",
   "plugins.status_installed": "Installiert",
   "plugins.support.list_1": "Homebridge-Plugins sind die Bausteine von Homebridge und ermöglichen es dir, Unterstützung für neue Geräte und Plattformen hinzuzufügen. Plugins fügen Unterstützung für smarte Lichter, Kameras, Fernseher usw. für Marken hinzu, die HomeKit nicht nativ unterstützen. Um zum Beispiel deine Ring-Türklingeln und -Kameras in HomeKit zu integrieren, kannst du das <code>homebridge-ring</code> Plugin installieren.",
   "plugins.support.list_2": "Homebridge-Plugins werden von öffentlichen Mitwirkenden in der Homebridge-Community erstellt und sind normalerweise nicht mit den Homebridge-Betreuern oder den Herstellern der Geräte selbst verbunden. Wenn du eine Frage zu einem bestimmten Plugin hast, solltest du den Plugin-Entwickler über die GitHub-Seite des Plugins informieren.",

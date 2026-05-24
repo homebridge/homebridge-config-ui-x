@@ -489,6 +489,7 @@
   "plugins.settings.restart_required": "重启 Homebridge 以应用更改。",
   "plugins.stats": "插件统计",
   "plugins.stats_note": "无法在此页面安装插件，此处仅用于展示。",
+  "plugins.stats_open_in_new_tab": "Open Homebridge analytics in new tab",
   "plugins.status_installed": "已安装",
   "plugins.support.list_1": "Homebridge 插件是 Homebridge 的基石，使您能够添加对新配件和平台的支持。插件为不原生支持 HomeKit 的品牌添加对智能灯、摄像头、电视等的支持。例如，要将 Ring 门铃和摄像头引入 HomeKit，您可以安装 <code>homebridge-ring</code> 插件。",
   "plugins.support.list_2": "Homebridge 插件由 Homebridge 社区的公共贡献者创建，通常与 Homebridge 维护者或配件制造商本身无关。如果您对特定插件有疑问，应通过该插件的 GitHub 页面联系开发者。",

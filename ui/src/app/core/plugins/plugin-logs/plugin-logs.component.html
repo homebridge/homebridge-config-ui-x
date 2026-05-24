@@ -45,7 +45,7 @@
         [disabled]="midAction()"
         (click)="downloadLogFile()"
       >
-        <i class="fas fa-download"></i>
+        <i aria-hidden="true" class="fas fa-download"></i>
       </button>
       @if (childBridges.length) {
         <button
@@ -62,7 +62,7 @@
           [disabled]="midAction()"
           (click)="restartChildBridges()"
         >
-          <i class="fas fa-power-off"></i>
+          <i aria-hidden="true" class="fas fa-power-off"></i>
         </button>
       }
     </div>
