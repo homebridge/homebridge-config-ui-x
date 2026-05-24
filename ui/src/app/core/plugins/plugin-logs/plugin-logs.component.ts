@@ -71,6 +71,22 @@ export class PluginLogsComponent implements OnInit, OnDestroy {
     this.resizeEvent.next(undefined)
   }
 
+  private patchXtermLiveRegion(): void {
+    const host = this.termTarget()?.nativeElement as HTMLElement | undefined
+    if (!host) {
+      return
+    }
+
+    const live = host.querySelector('[aria-live]') as HTMLElement | null
+    if (!live) {
+      return
+    }
+
+    live.setAttribute('role', 'status')
+    live.setAttribute('aria-live', 'polite')
+    live.setAttribute('aria-atomic', 'true')
+  }
+
   // Public methods
   public async restartChildBridges(): Promise<void> {
     this.midAction.set(true)
@@ -176,7 +192,10 @@ export class PluginLogsComponent implements OnInit, OnDestroy {
         return
       }
       this.pluginAlias = this.plugin.name === 'homebridge-config-ui-x' ? 'Homebridge UI' : (result[0]?.name || this.plugin.name)
-      this.$log.startTerminal(this.termTarget()!, this.$settings.getTerminalOptions(), this.resizeEvent, this.pluginAlias)
+      // Plugin logs are read-only — disable stdin so the xterm textarea is not a tab stop
+      this.$log.startTerminal(this.termTarget()!, this.$settings.getTerminalOptions({ disableStdin: true }), this.resizeEvent, this.pluginAlias)
+      // Configure xterm's screen-reader live region for log announcements
+      requestAnimationFrame(() => this.patchXtermLiveRegion())
     } catch (error) {
       console.error(error)
       const message = error instanceof Error ? (error as any).error?.message || error.message : this.$translate.instant('toast.title_error')
