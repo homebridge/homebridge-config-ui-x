@@ -147,6 +147,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(auth): expose `tokenReady` so loginGuard waits for stored-token load
 - fix(settings): use `*` target origin for theme postMessage to plugin iframes
 - fix(status): use `setInput()` for the widget signal input on dynamic widgets
+- fix(config-editor): add plain-text editor option for screen reader users (@rfiorentino1)
 
 ### Other Changes
 
