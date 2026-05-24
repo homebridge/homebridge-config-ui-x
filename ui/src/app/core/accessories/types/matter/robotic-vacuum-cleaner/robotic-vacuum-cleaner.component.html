@@ -1,14 +1,41 @@
+@let active = isActive();
+@let resolvedStatus = statusText() | translate;
+
+@let srBaseName = (service().customName || service().serviceName || '').trim();
+@let srType = 'accessories.core.robotic_vacuum_cleaner' | translate;
+@let includeType = !(srBaseName | lowercase).includes(srType | lowercase);
+
+@let srText =
+  resolvedStatus
+    ? `${srBaseName + (includeType ? `, ${srType}` : '')}, ${resolvedStatus}`
+    : `${srBaseName + (includeType ? `, ${srType}` : '')}`;
+
 <div
   class="accessory-box"
+  role="switch"
   tabindex="0"
-  [class.accessory-on]="isActive()"
+  [class.accessory-on]="active"
   [class.cursor-pointer]="readyForControl()"
+  [attr.aria-checked]="active"
+  [attr.aria-label]="srText"
   (longClick)="canShowModal() && onLongClick()"
   (shortClick)="onClick()"
+  (keydown.enter)="onClick()"
+  (keydown.space)="onClick()"
 >
+  <span class="visually-hidden" role="status" aria-live="polite" aria-atomic="true">
+    {{ srText }}
+  </span>
   <div class="d-flex flex-column h-100">
-    <div class="accessory-svg" [attr.aria-label]="'accessories.core.robotic_vacuum_cleaner' | translate">
-      <svg width="32px" height="32px" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+    <div class="accessory-svg" aria-hidden="true">
+      <svg
+        width="32px"
+        height="32px"
+        viewBox="0 0 32 32"
+        xmlns="http://www.w3.org/2000/svg"
+        focusable="false"
+        aria-hidden="true"
+      >
         <defs>
           <! -- clip lines to above the machine - ->
           <clipPath id="motionClip">
@@ -50,7 +77,6 @@
           stroke-linecap="round"
           [class.is-running]="isRunning()"
         >
-          <! -- left line - ->
           <line x1="12" y1="8" x2="12" y2="14" stroke-width="2.1" opacity="0">
             <animate attributeName="y1" values="8;0" dur="3s" begin="0.3s" repeatCount="indefinite" />
             <animate attributeName="y2" values="14;6" dur="3s" begin="0.3s" repeatCount="indefinite" />
@@ -63,7 +89,6 @@
               repeatCount="indefinite"
             />
           </line>
-          <! -- middle line - ->
           <line x1="16" y1="8" x2="16" y2="14" stroke-width="2.5" opacity="0">
             <animate attributeName="y1" values="8;0" dur="3s" begin="0.6s" repeatCount="indefinite" />
             <animate attributeName="y2" values="14;6" dur="3s" begin="0.6s" repeatCount="indefinite" />
@@ -76,7 +101,6 @@
               repeatCount="indefinite"
             />
           </line>
-          <! -- right line - ->
           <line x1="20" y1="8" x2="20" y2="14" stroke-width="2.1" opacity="0">
             <animate attributeName="y1" values="8;0" dur="3s" begin="0.9s" repeatCount="indefinite" />
             <animate attributeName="y2" values="14;6" dur="3s" begin="0.9s" repeatCount="indefinite" />
@@ -92,7 +116,7 @@
         </g>
       </svg>
     </div>
-    <div class="accessory-label mt-auto">{{ service().customName || service().serviceName }}</div>
-    <div class="accessory-label grey-text" [innerText]="statusText() | translate"></div>
+    <div class="accessory-label mt-auto" aria-hidden="true">{{ service().customName || service().serviceName }}</div>
+    <div class="accessory-label grey-text" aria-hidden="true" [innerText]="statusText() | translate"></div>
   </div>
 </div>

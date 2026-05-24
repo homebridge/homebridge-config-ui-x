@@ -1,3 +1,4 @@
+import { LowerCasePipe } from '@angular/common'
 import {
   ChangeDetectionStrategy,
   Component,
@@ -22,6 +23,7 @@ import { ColourService } from '@/app/core/utilities/colour.service'
   selector: 'app-color-temperature-light',
   imports: [
     LongClickDirective,
+    LowerCasePipe,
     TranslatePipe,
   ],
   standalone: true,

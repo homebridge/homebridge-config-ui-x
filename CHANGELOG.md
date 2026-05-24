@@ -30,6 +30,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(status): announce bridge restart completion to screen readers (@rfiorentino1)
 - fix(settings): make restart-required toast keyboard accessible (@rfiorentino1)
 - fix(status): add keyboard-driven widget reorder mode (@rfiorentino1)
+- fix(accessories): extend a11y pattern to 9 remaining matter types (@rfiorentino1)
 
 ### Other Changes
 
