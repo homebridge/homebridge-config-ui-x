@@ -9,7 +9,7 @@
     >
       <span class="bridge-filter-check">
         @if (isShowingAllBridges) {
-          <i class="fas fa-check primary-text"></i>
+          <i class="fas fa-check primary-text" aria-hidden="true"></i>
         }
       </span>
       {{ 'accessories.filter_all_bridges' | translate }}
@@ -21,7 +21,7 @@
       (click)="dropdown.close()"
     >
       <span class="badge badge-primary mx-1 text-lowercase">{{ 'common.labels.beta' | translate }}</span>
-      <i class="fas fa-times"></i>
+      <i class="fas fa-times" aria-hidden="true"></i>
     </button>
   </div>
   <div class="dropdown-divider"></div>
@@ -29,7 +29,7 @@
     <button type="button" ngbDropdownItem [class.active]="isBridgeSelected(bridge)" (click)="toggleBridge(bridge)">
       <span class="bridge-filter-check">
         @if (isBridgeSelected(bridge)) {
-          <i class="fas fa-check primary-text"></i>
+          <i class="fas fa-check primary-text" aria-hidden="true"></i>
         }
       </span>
       {{ bridge }}
@@ -42,7 +42,7 @@
     <button type="button" ngbDropdownItem [class.active]="manageLayoutMode" (click)="toggleManageLayout()">
       <span class="bridge-filter-check">
         @if (manageLayoutMode) {
-          <i class="fas fa-check primary-text"></i>
+          <i class="fas fa-check primary-text" aria-hidden="true"></i>
         }
       </span>
       {{ 'accessories.manage_layout' | translate }}
@@ -63,7 +63,7 @@
       [triggers]="showTooltip ? 'hover' : ''"
       [ngbTooltip]="showTooltip ? ('accessories.filter_by_bridge' | translate) : null"
     >
-      <i class="fas fa-house"></i>
+      <i class="fas fa-house" aria-hidden="true"></i>
     </button>
     <div ngbDropdownMenu [attr.aria-labelledby]="'accessories.filter_by_bridge' | translate">
       <ng-container
@@ -80,7 +80,7 @@
     [attr.aria-label]="'support.title' | translate"
     (click)="openSupport()"
   >
-    <i class="far fa-circle-question"></i>
+    <i class="far fa-circle-question" aria-hidden="true"></i>
   </button>
 </ng-template>
 
@@ -111,7 +111,7 @@
           [attr.aria-label]="'accessories.button_add_room' | translate"
           (click)="addRoom()"
         >
-          <i class="fas fa-folder-plus"></i>
+          <i class="fas fa-folder-plus" aria-hidden="true"></i>
         </button>
         <button
           type="button"
@@ -133,7 +133,7 @@
           "
           (click)="hideHidden.set(!hideHidden())"
         >
-          <i class="fas" [class.fa-eye]="!hideHidden()" [class.fa-eye-slash]="hideHidden()"></i>
+          <i class="fas" aria-hidden="true" [class.fa-eye]="!hideHidden()" [class.fa-eye-slash]="hideHidden()"></i>
         </button>
       }
       @if (shouldShowFilters()) {
@@ -172,7 +172,7 @@
                     [class.edit-room-hidden]="isMobile()"
                     (click)="editRoom($index)"
                   >
-                    <i class="fas fa-cog"></i>
+                    <i class="fas fa-cog" aria-hidden="true"></i>
                   </button>
                 </div>
               </div>
@@ -222,7 +222,7 @@
       <div class="col-12 text-center">
         <div class="alert alert-warning p-5" role="alert">
           <div class="text-center mb-3">
-            <i class="fas fa-plug primary-text icon-xl"></i>
+            <i class="fas fa-plug primary-text icon-xl" aria-hidden="true"></i>
           </div>
           <h5 class="mb-3 mt-0">{{ 'accessories.no_plugins.title' | translate }}</h5>
           <p class="mb-0 small">{{ 'accessories.no_plugins.message_1' | translate }}</p>
@@ -239,7 +239,7 @@
     <div class="col-12 text-center">
       <div class="alert alert-warning p-4" role="alert">
         <div class="text-center mb-3">
-          <i class="fas fa-lightbulb primary-text icon-xl"></i>
+          <i class="fas fa-lightbulb primary-text icon-xl" aria-hidden="true"></i>
         </div>
         <h5 class="mb-3 mt-0">{{ 'accessories.control_disabled' | translate }}</h5>
         <p
