@@ -259,6 +259,8 @@
   "child_bridge.start_plural": "เริ่มการทำงานบริดจ์ย่อย",
   "child_bridge.stop": "หยุดการทำงานบริดจ์ย่อย",
   "child_bridge.stop_plural": "หยุดการทำงานบริดจ์ย่อย",
+  "common.a11y.copied": "Copied",
+  "common.a11y.copy_to_clipboard": "Copy to clipboard",
   "common.labels.advanced": "Advanced",
   "common.labels.beta": "เบต้า",
   "common.labels.disabled": "ปิดการใช้งาน",

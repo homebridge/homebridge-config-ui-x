@@ -9,7 +9,7 @@
       [attr.aria-label]="'users.button_add_user' | translate"
       (click)="openAddNewUser()"
     >
-      <i class="fas fa-user-plus"></i>
+      <i class="fas fa-user-plus" aria-hidden="true"></i>
     </button>
     <button
       type="button"
@@ -17,7 +17,7 @@
       [attr.aria-label]="'support.title' | translate"
       (click)="openSupport()"
     >
-      <i class="far fa-circle-question"></i>
+      <i class="far fa-circle-question" aria-hidden="true"></i>
     </button>
   </div>
 </div>
@@ -30,7 +30,7 @@
             <span class="me-auto my-0">
               <h4>{{ user.name }}</h4>
               <h5 class="small text-truncate grey-text">
-                <i class="fas" [class.fa-user-secret]="user.admin" [class.fa-user]="!user.admin"></i>
+                <i class="fas" aria-hidden="true" [class.fa-user-secret]="user.admin" [class.fa-user]="!user.admin"></i>
                 {{ user.username }}
               </h5>
             </span>
@@ -66,7 +66,7 @@
                 [attr.aria-label]="'form.button_edit' | translate"
                 (click)="openEditUser(user)"
               >
-                <i class="fas fa-user-pen"></i>
+                <i class="fas fa-user-pen" aria-hidden="true"></i>
               </button>
             </div>
           </div>

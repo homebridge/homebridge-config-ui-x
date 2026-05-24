@@ -11,7 +11,7 @@
   </div>
   <div class="modal-body">
     <div class="text-center mb-3">
-      <i class="fas fa-key primary-text icon-xl"></i>
+      <i class="fas fa-key primary-text icon-xl" aria-hidden="true"></i>
     </div>
     <ul class="mb-3">
       <li>{{ 'users.setup_2fa_warning' | translate }}</li>
@@ -34,13 +34,23 @@
             <div class="grey-text small mt-0 mb-1">
               {{ 'users.setup_2fa_scan_qr_manual' | translate }}<br />
               {{ otpSecret() }}
-              <a href="javascript:void(0)" class="ms-1 text-primary" (click)="copySecretToClipboard()">
+              <button
+                type="button"
+                class="btn btn-link p-0 ms-1 text-primary align-baseline"
+                [attr.aria-label]="'common.a11y.copy_to_clipboard' | translate"
+                (click)="copySecretToClipboard()"
+              >
                 @if (secretCopied()) {
-                  <i class="fas fa-check green-text"></i>
+                  <i class="fas fa-check green-text" aria-hidden="true"></i>
                 } @else {
-                  <i class="fas fa-copy"></i>
+                  <i class="fas fa-copy" aria-hidden="true"></i>
                 }
-              </a>
+              </button>
+              @if (secretCopied()) {
+                <span class="visually-hidden" role="status" aria-live="polite" aria-atomic="true">
+                  {{ 'common.a11y.copied' | translate }}
+                </span>
+              }
             </div>
           }
         </li>

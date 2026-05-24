@@ -259,6 +259,8 @@
   "child_bridge.start_plural": "Uruchom mostki",
   "child_bridge.stop": "Wyłącz mostek",
   "child_bridge.stop_plural": "Wyłącz mostki",
+  "common.a11y.copied": "Copied",
+  "common.a11y.copy_to_clipboard": "Copy to clipboard",
   "common.labels.advanced": "Advanced",
   "common.labels.beta": "beta",
   "common.labels.disabled": "Wyłączony",

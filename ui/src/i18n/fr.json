@@ -259,6 +259,8 @@
   "child_bridge.start_plural": "Démarrer les Ponts secondaires",
   "child_bridge.stop": "Arrêter le Pont secondaire",
   "child_bridge.stop_plural": "Arrêter les Ponts secondaires",
+  "common.a11y.copied": "Copied",
+  "common.a11y.copy_to_clipboard": "Copy to clipboard",
   "common.labels.advanced": "Advanced",
   "common.labels.beta": "beta",
   "common.labels.disabled": "Désactivé",
