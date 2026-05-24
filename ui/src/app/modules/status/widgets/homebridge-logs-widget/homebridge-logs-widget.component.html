@@ -24,7 +24,7 @@
           (touchstart)="$event.stopPropagation()"
           (click)="showSearch()"
         >
-          <i [class]="`fas fa-search${showSearchBar() ? ' primary-text' : ''}`"></i>
+          <i aria-hidden="true" [class]="`fas fa-search${showSearchBar() ? ' primary-text' : ''}`"></i>
         </button>
         <button
           type="button"
@@ -39,7 +39,7 @@
           (touchstart)="$event.stopPropagation()"
           (click)="downloadLogFile()"
         >
-          <i class="fas fa-download"></i>
+          <i class="fas fa-download" aria-hidden="true"></i>
         </button>
         <button
           type="button"
@@ -54,7 +54,7 @@
           (touchstart)="$event.stopPropagation()"
           (click)="truncateLogFile()"
         >
-          <i class="fas fa-trash-alt"></i>
+          <i class="fas fa-trash-alt" aria-hidden="true"></i>
         </button>
       </div>
     }

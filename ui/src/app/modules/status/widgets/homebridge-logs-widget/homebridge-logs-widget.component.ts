@@ -59,14 +59,34 @@ export class HomebridgeLogsWidgetComponent implements OnInit, OnDestroy {
     return query.length > 0 && query.length < 3
   }
 
+  private patchXtermLiveRegion(): void {
+    const host = this.termTarget()?.nativeElement as HTMLElement | undefined
+    if (!host) {
+      return
+    }
+
+    const live = host.querySelector('[aria-live]') as HTMLElement | null
+    if (!live) {
+      return
+    }
+
+    live.setAttribute('role', 'status')
+    live.setAttribute('aria-live', 'polite')
+    live.setAttribute('aria-atomic', 'true')
+  }
+
   public ngOnInit(): void {
     // Use effective theme to enforce dark mode override when needed
     this.theme.set(this.$settings.getEffectiveTerminalLightingMode())
     setTimeout(() => {
-      // Use global terminal settings from settings service
+      // Logs are read-only, so disable stdin to keep the xterm textarea out of the tab order
       this.$log.startTerminal(this.termTarget()!, this.$settings.getTerminalOptions({
         cursorBlink: false,
+        disableStdin: true,
       }, true), this.resizeEvent)
+
+      // Configure xterm's screen-reader live region for log announcements
+      requestAnimationFrame(() => this.patchXtermLiveRegion())
 
       // Mark as initialized after terminal setup completes
       this.initialized = true
