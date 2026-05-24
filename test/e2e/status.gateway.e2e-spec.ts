@@ -209,6 +209,115 @@ describe('StatusGateway (e2e)', () => {
     })
   })
 
+  describe('Version Overview', () => {
+    const mockServerInfo = {
+      serviceUser: 'tester',
+      homebridgeRunningInDocker: false,
+      nodeVersion: 'v22.0.0',
+    } as any
+    const mockNode = { currentVersion: 'v22.0.0', latestVersion: 'v22.0.0', updateAvailable: false } as any
+    const mockHomebridge = { name: 'homebridge', installedVersion: '2.0.0', latestVersion: '2.0.0', updateAvailable: false } as any
+    const mockHomebridgeUi = { name: 'homebridge-config-ui-x', installedVersion: '5.0.0' } as any
+    const mockOutOfDatePlugins = [{ name: 'homebridge-test', installedVersion: '1.0.0', latestVersion: '2.0.0' }] as any
+    const mockHbV2ReadyPlugins = [
+      { name: 'homebridge-config-ui-x', engines: { homebridge: '^1.6.0 || ^2.0.0' } },
+      { name: 'homebridge-foo', engines: { homebridge: '^2.0.0' } },
+      { name: 'homebridge-bar', engines: { homebridge: '>=2.0.0-beta.0' } },
+    ] as any
+
+    const mockAllForHappyPath = () => {
+      vi.spyOn(statusService, 'getHomebridgeServerInfo').mockResolvedValue(mockServerInfo)
+      vi.spyOn(statusService, 'getNodeVersionInfo').mockResolvedValue(mockNode)
+      vi.spyOn(pluginsService, 'getHomebridgePackage').mockResolvedValue(mockHomebridge)
+      vi.spyOn(pluginsService, 'getHomebridgeUiPackage').mockResolvedValue(mockHomebridgeUi)
+      vi.spyOn(pluginsService, 'getOutOfDatePlugins').mockResolvedValue(mockOutOfDatePlugins)
+      vi.spyOn(pluginsService, 'getInstalledPlugins').mockResolvedValue(mockHbV2ReadyPlugins)
+    }
+
+    it('should return all version fields on happy path', async () => {
+      mockAllForHappyPath()
+
+      const result = await statusGateway.getVersionOverview() as any
+      expect(result.serverInfo).toEqual(mockServerInfo)
+      expect(result.node).toEqual(mockNode)
+      expect(result.homebridge).toEqual(mockHomebridge)
+      expect(result.homebridgeUi).toEqual(mockHomebridgeUi)
+      expect(result.outOfDatePlugins).toEqual(mockOutOfDatePlugins)
+      expect(result.docker).toBeNull()
+      expect(result.hbV2Ready).toBe(true)
+    })
+
+    it('should return docker details when running in docker', async () => {
+      const mockDocker = { currentVersion: '2024-01-01', latestVersion: '2024-02-01', updateAvailable: true, latestReleaseBody: '' }
+      vi.spyOn(statusService, 'getHomebridgeServerInfo').mockResolvedValue({ ...mockServerInfo, homebridgeRunningInDocker: true })
+      vi.spyOn(statusService, 'getNodeVersionInfo').mockResolvedValue(mockNode)
+      vi.spyOn(pluginsService, 'getHomebridgePackage').mockResolvedValue(mockHomebridge)
+      vi.spyOn(pluginsService, 'getHomebridgeUiPackage').mockResolvedValue(mockHomebridgeUi)
+      vi.spyOn(pluginsService, 'getOutOfDatePlugins').mockResolvedValue(mockOutOfDatePlugins)
+      vi.spyOn(pluginsService, 'getInstalledPlugins').mockResolvedValue(mockHbV2ReadyPlugins)
+      vi.spyOn(statusService, 'getDockerDetails').mockResolvedValue(mockDocker as any)
+
+      const result = await statusGateway.getVersionOverview() as any
+      expect(result.docker).toEqual(mockDocker)
+    })
+
+    it('should null individual fields when their source rejects', async () => {
+      vi.spyOn(statusService, 'getHomebridgeServerInfo').mockResolvedValue(mockServerInfo)
+      vi.spyOn(statusService, 'getNodeVersionInfo').mockRejectedValue(new Error('node down'))
+      vi.spyOn(pluginsService, 'getHomebridgePackage').mockResolvedValue(mockHomebridge)
+      vi.spyOn(pluginsService, 'getHomebridgeUiPackage').mockRejectedValue(new Error('ui down'))
+      vi.spyOn(pluginsService, 'getOutOfDatePlugins').mockRejectedValue(new Error('outdated down'))
+      vi.spyOn(pluginsService, 'getInstalledPlugins').mockResolvedValue(mockHbV2ReadyPlugins)
+
+      const result = await statusGateway.getVersionOverview() as any
+      expect(result.node).toBeNull()
+      expect(result.homebridgeUi).toBeNull()
+      expect(result.outOfDatePlugins).toEqual([])
+      // Survivors still present
+      expect(result.serverInfo).toEqual(mockServerInfo)
+      expect(result.homebridge).toEqual(mockHomebridge)
+      expect(result.hbV2Ready).toBe(true)
+    })
+
+    it('should return hbV2Ready=false when any non-ui plugin lacks a v2 engine constraint', async () => {
+      vi.spyOn(statusService, 'getHomebridgeServerInfo').mockResolvedValue(mockServerInfo)
+      vi.spyOn(statusService, 'getNodeVersionInfo').mockResolvedValue(mockNode)
+      vi.spyOn(pluginsService, 'getHomebridgePackage').mockResolvedValue(mockHomebridge)
+      vi.spyOn(pluginsService, 'getHomebridgeUiPackage').mockResolvedValue(mockHomebridgeUi)
+      vi.spyOn(pluginsService, 'getOutOfDatePlugins').mockResolvedValue([])
+      vi.spyOn(pluginsService, 'getInstalledPlugins').mockResolvedValue([
+        { name: 'homebridge-foo', engines: { homebridge: '^2.0.0' } },
+        { name: 'homebridge-bar', engines: { homebridge: '^1.6.0' } },
+      ] as any)
+
+      const result = await statusGateway.getVersionOverview() as any
+      expect(result.hbV2Ready).toBe(false)
+    })
+
+    it('should ignore homebridge-config-ui-x in hbV2Ready computation', async () => {
+      vi.spyOn(statusService, 'getHomebridgeServerInfo').mockResolvedValue(mockServerInfo)
+      vi.spyOn(statusService, 'getNodeVersionInfo').mockResolvedValue(mockNode)
+      vi.spyOn(pluginsService, 'getHomebridgePackage').mockResolvedValue(mockHomebridge)
+      vi.spyOn(pluginsService, 'getHomebridgeUiPackage').mockResolvedValue(mockHomebridgeUi)
+      vi.spyOn(pluginsService, 'getOutOfDatePlugins').mockResolvedValue([])
+      vi.spyOn(pluginsService, 'getInstalledPlugins').mockResolvedValue([
+        // UI plugin without a v2 range — must NOT block hbV2Ready
+        { name: 'homebridge-config-ui-x', engines: { homebridge: '^1.6.0' } },
+        { name: 'homebridge-foo', engines: { homebridge: '^2.0.0' } },
+      ] as any)
+
+      const result = await statusGateway.getVersionOverview() as any
+      expect(result.hbV2Ready).toBe(true)
+    })
+
+    it('should return WsException when the aggregator itself throws', async () => {
+      vi.spyOn(statusService, 'getVersionOverview').mockRejectedValue(new Error('overview error'))
+
+      const result = await statusGateway.getVersionOverview()
+      expect((result as any).message).toBe('overview error')
+    })
+  })
+
   describe('Server Info', () => {
     it('should return homebridge server info', async () => {
       const result = await statusGateway.getHomebridgeServerInfo()

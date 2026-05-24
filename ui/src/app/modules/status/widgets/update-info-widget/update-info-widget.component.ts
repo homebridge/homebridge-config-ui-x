@@ -8,7 +8,6 @@ import { ToastrService } from 'ngx-toastr'
 import { firstValueFrom } from 'rxjs'
 
 import { AuthService } from '@/app/core/auth/auth.service'
-import { PluginsCacheService } from '@/app/core/caching/plugins-cache.service'
 import { IoNamespace, WsService } from '@/app/core/communication/ws.service'
 import { InformationComponent } from '@/app/core/components/information/information.component'
 import { HB_V2_MODAL_DATA, INFORMATION_MODAL_DATA, NODE_VERSION_MODAL_DATA } from '@/app/core/modal-data-tokens'
@@ -22,6 +21,7 @@ import {
   DockerDetails,
   NodeJsInfo,
   ServerInfo,
+  VersionOverview,
   Widget,
 } from '@/app/modules/status/widgets/widgets.interfaces'
 import { environment } from '@/environments/environment'
@@ -42,7 +42,6 @@ export class UpdateInfoWidgetComponent implements OnInit {
   // Injected dependencies
   private destroyRef = inject(DestroyRef)
   private injector = inject(EnvironmentInjector)
-  private $pluginsCache = inject(PluginsCacheService)
   private $auth = inject(AuthService)
   private $modal = inject(NgbModal)
   private $plugin = inject(ManagePluginsService)
@@ -92,30 +91,70 @@ export class UpdateInfoWidgetComponent implements OnInit {
   }
 
   private async loadAllData(): Promise<void> {
-    await this.getNodeInfo()
-    await Promise.all([
-      this.checkHomebridgeVersion(),
-      this.checkHomebridgeUiVersion(),
-      this.getOutOfDatePlugins(),
-      this.getDockerInfo(),
-    ])
+    let overview: VersionOverview
+    try {
+      overview = await firstValueFrom(this.io.request('get-version-overview'))
+    } catch (error: any) {
+      console.error(error)
+      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      return
+    }
 
-    // The user on UI v5 will already have a compatible Node.js version
-    this.isHbV2Ready.set(true)
+    // Distribute the aggregated payload. Per-field null means the upstream
+    // call rejected on the server — leave the corresponding tile in its
+    // loading state (mirrors pre-aggregation behaviour where each failed
+    // call left its own *StatusDone signal false).
+    if (overview.serverInfo) {
+      this.serverInfo.set(overview.serverInfo)
+    }
 
+    if (overview.node) {
+      this.nodeUpdatePolicy = this.$settings.env.nodeUpdatePolicy || 'all'
+      this.nodejsInfo.set(overview.node)
+      this.nodejsStatusDone.set(true)
+    }
+
+    if (overview.homebridge) {
+      const hb = overview.homebridge
+      hb.displayName = 'Homebridge'
+      this.homebridgePkg.set(hb)
+      this.$settings.env.homebridgeVersion = hb.installedVersion
+      this.homebridgeUpdatePolicy = this.$settings.env.homebridgeUpdatePolicy || 'all'
+      this.isRunningHbV2.set(hb.installedVersion.startsWith('2.'))
+    }
+
+    if (overview.homebridgeUi) {
+      const hbUi = overview.homebridgeUi
+      this.$settings.env.homebridgeUiVersion = hbUi.installedVersion
+      this.homebridgeUiUpdatePolicy = this.$settings.env.homebridgeUiUpdatePolicy || 'all'
+      if (!environment.production) {
+        hbUi.updateAvailable = false
+      }
+      this.homebridgeUiPkg.set(hbUi)
+    }
+
+    this.homebridgePluginStatus.set(
+      overview.outOfDatePlugins
+        .filter(x => x.name !== 'homebridge-config-ui-x' && !this.$settings.env.plugins?.hideUpdatesFor?.includes(x.name)),
+    )
+    this.homebridgePluginStatusDone.set(true)
+
+    if (overview.serverInfo?.homebridgeRunningInDocker) {
+      if (overview.docker) {
+        this.dockerInfo.set(overview.docker)
+        this.dockerStatusDone.set(true)
+      }
+    } else {
+      this.dockerStatusDone.set(true)
+    }
+
+    // Hb v2 readiness is computed server-side from the installed plugin list.
+    // Display is gated on admin + not-currently-running-v2 to match prior behaviour.
     if (!this.isRunningHbV2() && this.isAdmin) {
-      const installedPlugins = await this.$pluginsCache.get()
-      const allHb2Ready = installedPlugins
-        .filter((x: any) => x.name !== 'homebridge-config-ui-x')
-        .every((x: any) => {
-          const hbEngines = x.engines?.homebridge?.split('||').map((s: string) => s.trim()) || []
-          return hbEngines.some(
-            (v: string) => v.startsWith('^2') || v.startsWith('>=2'),
-          )
-        })
-
-      this.isHbV2Ready.set(this.isHbV2Ready() && allHb2Ready)
+      this.isHbV2Ready.set(overview.hbV2Ready)
       this.isHbV2Loaded.set(true)
+    } else {
+      this.isHbV2Ready.set(true)
     }
   }
 
@@ -289,39 +328,6 @@ export class UpdateInfoWidgetComponent implements OnInit {
         error.message,
         this.$translate.instant('toast.title_error'),
       )
-    }
-  }
-
-  private async getOutOfDatePlugins(): Promise<void> {
-    try {
-      const outOfDatePlugins = await firstValueFrom(this.io.request('get-out-of-date-plugins'))
-      // Filter out Homebridge UI and plugins with hide updates setting (Angular 20 feature)
-      this.homebridgePluginStatus.set(outOfDatePlugins
-        .filter((x: any) => x.name !== 'homebridge-config-ui-x' && !this.$settings.env.plugins?.hideUpdatesFor?.includes(x.name)))
-      this.homebridgePluginStatusDone.set(true)
-    } catch (error: any) {
-      console.error(error)
-      this.$toastr.error(
-        error.message,
-        this.$translate.instant('toast.title_error'),
-      )
-    }
-  }
-
-  private async getDockerInfo(): Promise<void> {
-    if (this.serverInfo() && this.serverInfo()!.homebridgeRunningInDocker) {
-      try {
-        this.dockerInfo.set(await firstValueFrom(this.io.request('docker-version-check')))
-        this.dockerStatusDone.set(true)
-      } catch (error: any) {
-        console.error(error)
-        this.$toastr.error(
-          error.message,
-          this.$translate.instant('toast.title_error'),
-        )
-      }
-    } else {
-      this.dockerStatusDone.set(true)
     }
   }
 
