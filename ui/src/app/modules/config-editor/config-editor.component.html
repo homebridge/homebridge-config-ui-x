@@ -4,6 +4,16 @@
       <h3 class="primary-text m-0">{{ 'menu.config_json_editor' | translate }}</h3>
     </div>
     <div class="col-6 text-end">
+      <select
+        id="hb-editor-mode"
+        class="btn btn-elegant my-0 me-2"
+        [attr.aria-label]="'config.editor_mode' | translate"
+        [ngModel]="preferPlainTextEditor() ? 'plain' : 'default'"
+        (ngModelChange)="setPlainTextEditor($event === 'plain')"
+      >
+        <option value="default">{{ 'config.editor_mode_default' | translate }}</option>
+        <option value="plain">{{ 'config.editor_mode_plain' | translate }}</option>
+      </select>
       @if (originalConfig()) {
         <button
           type="button"
@@ -79,7 +89,7 @@
     </div>
   </div>
 
-  @if (!isMobile() && !originalConfig()) {
+  @if (!preferPlainTextEditor() && !isMobile() && !originalConfig()) {
     <ngx-monaco-editor
       class="flex-grow-1 h-100 w-100 mt-3 mb-0"
       [options]="editorOptions"
@@ -89,7 +99,7 @@
       (keydown.meta.s)="$event.preventDefault(); onSave()"
     />
   }
-  @if (!isMobile() && originalConfig()) {
+  @if (!preferPlainTextEditor() && !isMobile() && originalConfig()) {
     <ngx-monaco-diff-editor
       class="flex-grow-1 h-100 w-100 mt-3 mb-0"
       [options]="editorOptions"
@@ -100,7 +110,7 @@
       (keydown.meta.s)="$event.preventDefault(); onSave()"
     />
   }
-  @if (isMobile()) {
+  @if (preferPlainTextEditor() || isMobile()) {
     <textarea
       wrap="off"
       class="hb-plain-text-editor align-self-end h-100 w-100 my-3"

@@ -29,6 +29,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(plugins): tighten xterm screen-reader behaviour in plugin-logs modal
 - fix(status): announce bridge restart completion to screen readers
 - fix(settings): make restart-required toast keyboard accessible
+- fix(config-editor): add plain-text editor option for screen reader users
 
 ### Other Changes
 
