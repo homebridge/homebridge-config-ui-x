@@ -2438,31 +2438,73 @@ export class SettingsComponent implements OnInit {
   }
 
   private showRestartToast() {
-    if (!this.$settings.restartToastRef) {
-      this.$settings.restartToastRef = this.$toastr.info(
-        this.$translate.instant('settings.changes.saved'),
-        this.$translate.instant('menu.hbrestart.title'),
-        {
-          timeOut: 0,
-          tapToDismiss: true,
-          disableTimeOut: true,
-          positionClass: 'toast-bottom-right',
-          enableHtml: true,
-        },
-      )
-
-      if (this.$settings.restartToastRef) {
-        this.$settings.restartToastRef.onTap
-          ?.pipe(takeUntilDestroyed(this.destroyRef))
-          .subscribe(() => {
-            void this.$router.navigate(['/restart'])
-          })
-        this.$settings.restartToastRef.onHidden
-          ?.pipe(takeUntilDestroyed(this.destroyRef))
-          .subscribe(() => {
-            this.$settings.restartToastRef = null
-          })
-      }
+    if (this.$settings.restartToastRef) {
+      return
     }
+
+    const msg = this.$translate.instant('settings.changes.saved')
+    const restartLabel = this.$translate.instant('menu.hbrestart.title')
+    const closeLabel = this.$translate.instant('form.button_close')
+
+    // No title — we render the body ourselves with an inline Restart button
+    // that screen-reader users can navigate to (the default tapToDismiss
+    // behaviour has no keyboard equivalent).
+    const ref = this.$toastr.info(`<p class="hb-restart-toast-msg">${msg}</p>`, '', {
+      timeOut: 0,
+      disableTimeOut: true,
+      enableHtml: true,
+      tapToDismiss: false,
+      closeButton: true,
+      positionClass: 'toast-bottom-right',
+    })
+
+    this.$settings.restartToastRef = ref
+
+    ref.onShown?.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+      const toastEl = document.querySelector<HTMLElement>(`#toast-container #toast-${ref.toastId}`)
+      if (!toastEl) {
+        return
+      }
+
+      // Announce assertively — this toast is the result of a user action
+      toastEl.setAttribute('role', 'alert')
+      toastEl.setAttribute('aria-live', 'assertive')
+      toastEl.setAttribute('aria-atomic', 'true')
+
+      const body = toastEl.querySelector<HTMLElement>('.toast-message')
+      const closeBtn = toastEl.querySelector<HTMLButtonElement>('.toast-close-button')
+      const msgEl = body?.querySelector<HTMLElement>('.hb-restart-toast-msg')
+      if (!body || !closeBtn || !msgEl) {
+        return
+      }
+
+      // toastr's close button is an <a> by default — make it a real button
+      // with a translated aria-label so SR users can dismiss the toast.
+      closeBtn.setAttribute('type', 'button')
+      closeBtn.setAttribute('aria-label', closeLabel)
+
+      // Inject a real, focusable, keyboard-activatable Restart button.
+      const restartBtn = document.createElement('button')
+      restartBtn.type = 'button'
+      restartBtn.className = 'btn btn-link p-0 text-decoration-none mt-2'
+      restartBtn.textContent = restartLabel
+      const activate = (ev: Event) => {
+        ev.preventDefault()
+        ev.stopPropagation()
+        void this.$router.navigate(['/restart'])
+        this.$toastr.clear(ref.toastId)
+      }
+      restartBtn.addEventListener('click', activate)
+      restartBtn.addEventListener('keydown', (ev: KeyboardEvent) => {
+        if (ev.key === 'Enter' || ev.key === ' ') {
+          activate(ev)
+        }
+      })
+      body.appendChild(restartBtn)
+    })
+
+    ref.onHidden?.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+      this.$settings.restartToastRef = null
+    })
   }
 }
