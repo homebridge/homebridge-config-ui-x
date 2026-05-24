@@ -94,6 +94,37 @@ export class PluginsController {
 
   @UseGuards(AdminGuard)
   @ApiOperation({
+    summary: 'Bundled context for plugin editor modals — alias, config schema, saved config blocks, and the plugin\'s child bridges.',
+    description: 'Replaces the four-call fan-out (`/plugins/alias/:name`, `/plugins/config-schema/:name`, `/config-editor/plugin/:name`, `/status/homebridge/child-bridges`) the UI used to issue on every modal open. `configSchema` is `null` for plugins that ship without a `config.schema.json`.',
+  })
+  @ApiParam({ name: 'pluginName', type: 'string' })
+  @ApiResponse({
+    status: 200,
+    description: 'Editor context payload.',
+    schema: {
+      type: 'object',
+      properties: {
+        pluginName: { type: 'string' },
+        alias: {
+          type: 'object',
+          properties: {
+            pluginAlias: { type: 'string', nullable: true },
+            pluginType: { type: 'string', enum: ['platform', 'accessory'], nullable: true },
+          },
+        },
+        configSchema: { type: 'object', nullable: true },
+        config: { type: 'array', items: { type: 'object' } },
+        childBridges: { type: 'array', items: { type: 'object' } },
+      },
+    },
+  })
+  @Get(':pluginName/editor-context')
+  getEditorContext(@Param('pluginName') pluginName: string) {
+    return this.pluginsService.getEditorContext(pluginName)
+  }
+
+  @UseGuards(AdminGuard)
+  @ApiOperation({
     summary: 'Trigger an update for Homebridge, homebridge-config-ui-x, or any plugin.',
     description: 'This endpoint queues an update to be performed in the background. The update will be executed asynchronously and the appropriate restart will be performed based on what was updated.',
   })

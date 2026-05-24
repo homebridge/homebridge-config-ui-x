@@ -94,6 +94,17 @@ export interface PluginConfigBlock {
   __uuid__: string
 }
 
+export interface PluginEditorContext {
+  pluginName: string
+  alias: {
+    pluginAlias: string | null
+    pluginType: 'platform' | 'accessory' | null
+  }
+  configSchema: any | null
+  config: any[]
+  childBridges: ChildBridge[]
+}
+
 export interface VersionData {
   version: string
   engines?: {

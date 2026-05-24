@@ -1,6 +1,6 @@
 import { InjectionToken } from '@angular/core'
 
-import { PluginFundingOption } from '@/app/core/plugins'
+import { PluginEditorContext, PluginFundingOption } from '@/app/core/plugins'
 
 /**
  * Central file for all modal data injection tokens
@@ -40,6 +40,7 @@ export interface PluginModalData {
   plugin: any // Plugin type
   schema?: any
   pluginConfig?: any[]
+  editorContext?: PluginEditorContext
 }
 
 export const PLUGIN_MODAL_DATA = new InjectionToken<PluginModalData>('PluginModalData')
@@ -48,6 +49,7 @@ export interface PluginBridgeModalData {
   plugin: any
   schema: any
   justInstalled?: boolean
+  editorContext?: PluginEditorContext
 }
 
 export const PLUGIN_BRIDGE_MODAL_DATA = new InjectionToken<PluginBridgeModalData>('PluginBridgeModalData')
@@ -56,6 +58,7 @@ export interface CustomPluginsModalData {
   plugin: any
   schema: any
   pluginConfig?: any[]
+  editorContext?: PluginEditorContext
 }
 
 export const CUSTOM_PLUGINS_MODAL_DATA = new InjectionToken<CustomPluginsModalData>('CustomPluginsModalData')
@@ -63,6 +66,7 @@ export const CUSTOM_PLUGINS_MODAL_DATA = new InjectionToken<CustomPluginsModalDa
 export interface PluginLogsModalData {
   plugin: any
   childBridges?: any[]
+  editorContext?: PluginEditorContext
 }
 
 export const PLUGIN_LOGS_MODAL_DATA = new InjectionToken<PluginLogsModalData>('PluginLogsModalData')
@@ -73,6 +77,7 @@ export interface UninstallPluginModalData {
   action?: string
   keepOrphans?: boolean
   onRefreshPluginList?: () => void
+  editorContext?: PluginEditorContext
 }
 
 export const UNINSTALL_PLUGIN_MODAL_DATA = new InjectionToken<UninstallPluginModalData>('UninstallPluginModalData')

@@ -69,6 +69,7 @@ export class ManualConfigComponent implements OnInit, OnDestroy {
   // 2. Public properties for component use
   public plugin = this.modalData.plugin
   public schema = this.modalData.schema
+  private editorContext = this.modalData.editorContext
 
   // 3. Other properties
   private isDebugModeEnabled = this.$settings.isFeatureEnabled('childBridgeDebugMode')
@@ -467,7 +468,9 @@ export class ManualConfigComponent implements OnInit, OnDestroy {
       return
     }
     try {
-      const result = await this.$api.get(`/plugins/alias/${encodeURIComponent(plugin.name)}`)
+      const result = this.editorContext?.alias
+        ? this.editorContext.alias
+        : await this.$api.get(`/plugins/alias/${encodeURIComponent(plugin.name)}`)
       if (result.pluginAlias && result.pluginType) {
         this.pluginAlias.set(result.pluginAlias)
         this.pluginType.set(result.pluginType)
@@ -485,8 +488,9 @@ export class ManualConfigComponent implements OnInit, OnDestroy {
     if (!plugin) {
       return
     }
-    const config = await this.$api.get(`/config-editor/plugin/${encodeURIComponent(plugin.name)}`)
-    this.pluginConfig.set(config)
+    const config: any[] = this.editorContext?.config
+      ?? await this.$api.get(`/config-editor/plugin/${encodeURIComponent(plugin.name)}`)
+    this.pluginConfig.set(config as Record<string, unknown>[])
 
     this.canConfigure.set(true)
     this.loading.set(false)

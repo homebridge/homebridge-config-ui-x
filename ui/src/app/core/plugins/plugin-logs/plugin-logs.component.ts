@@ -46,6 +46,7 @@ export class PluginLogsComponent implements OnInit, OnDestroy {
   // Public properties (from injected data)
   public plugin = this.modalData.plugin
   public childBridges: ChildBridge[] = this.modalData.childBridges ?? []
+  private editorContext = this.modalData.editorContext
 
   // Signals
   public readonly midAction = signal(false)
@@ -187,7 +188,8 @@ export class PluginLogsComponent implements OnInit, OnDestroy {
       return
     }
     try {
-      const result = await this.$api.get(`/config-editor/plugin/${encodeURIComponent(this.plugin.name)}`)
+      const result: any[] = this.editorContext?.config
+        ?? await this.$api.get(`/config-editor/plugin/${encodeURIComponent(this.plugin.name)}`)
       if (!this.plugin) {
         return
       }
