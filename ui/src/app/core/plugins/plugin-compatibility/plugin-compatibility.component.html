@@ -14,6 +14,7 @@
     @if (plugin && !['homebridge', 'homebridge-config-ui-x'].includes(plugin.name)) {
       <div class="text-center mb-3">
         <i
+          aria-hidden="true"
           [class]="`${
             action === 'install'
               ? 'far fa-arrow-alt-circle-down'
@@ -27,7 +28,7 @@
         @if (!isValidNode) {
           <li class="list-group-item d-flex justify-content-between align-items-center">
             <div class="me-3">
-              <i class="fas fa-exclamation-circle orange-text fa-xl"></i>
+              <i class="fas fa-exclamation-circle orange-text fa-xl" aria-hidden="true"></i>
             </div>
             <div class="text-start flex-grow-1">
               {{
@@ -45,7 +46,7 @@
         @if (!isValidHb) {
           <li class="list-group-item d-flex justify-content-between align-items-center">
             <div class="me-3">
-              <i class="fas fa-exclamation-circle orange-text fa-xl"></i>
+              <i class="fas fa-exclamation-circle orange-text fa-xl" aria-hidden="true"></i>
             </div>
             <div class="text-start flex-grow-1">
               {{
@@ -65,12 +66,12 @@
     <! -- homebridge - ->
     @if (plugin && plugin.name === 'homebridge') {
       <div class="text-center mb-3">
-        <i class="fab fa-node-js primary-text icon-xl"></i>
+        <i class="fab fa-node-js primary-text icon-xl" aria-hidden="true"></i>
       </div>
       <ul class="list-group list-group-box mb-3 text-start">
         <li class="list-group-item d-flex justify-content-between align-items-center">
           <div class="me-3">
-            <i class="fas fa-exclamation-circle orange-text fa-xl"></i>
+            <i class="fas fa-exclamation-circle orange-text fa-xl" aria-hidden="true"></i>
           </div>
           <div class="text-start flex-grow-1">
             {{
@@ -90,7 +91,7 @@
         <p class="text-center mb-1">{{ 'plugins.compat.node_first' | translate: { packageName: 'Homebridge' } }}</p>
         <p class="text-center mb-0">
           <a href="https://homebridge.io/w/JTKEF" target="_blank" rel="noopener noreferrer">
-            {{ 'plugins.compat.node_link' | translate }} <i class="fas fa-up-right-from-square"></i>
+            {{ 'plugins.compat.node_link' | translate }} <i class="fas fa-up-right-from-square" aria-hidden="true"></i>
           </a>
         </p>
       </ngb-alert>
@@ -99,12 +100,12 @@
     <! -- homebridge ui - ->
     @if (plugin && plugin.name === 'homebridge-config-ui-x') {
       <div class="text-center mb-3">
-        <i class="fab fa-node-js primary-text icon-xl"></i>
+        <i class="fab fa-node-js primary-text icon-xl" aria-hidden="true"></i>
       </div>
       <ul class="list-group list-group-box mb-3 text-start">
         <li class="list-group-item d-flex justify-content-between align-items-center">
           <div class="me-3">
-            <i class="fas fa-exclamation-circle orange-text fa-xl"></i>
+            <i class="fas fa-exclamation-circle orange-text fa-xl" aria-hidden="true"></i>
           </div>
           <div class="text-start flex-grow-1">
             {{
@@ -124,7 +125,7 @@
         <p class="text-center mb-1">{{ 'plugins.compat.node_first' | translate: { packageName: 'Homebridge UI' } }}</p>
         <p class="text-center mb-0">
           <a href="https://homebridge.io/w/JTKEF" target="_blank" rel="noopener noreferrer">
-            {{ 'plugins.compat.node_link' | translate }} <i class="fas fa-up-right-from-square"></i>
+            {{ 'plugins.compat.node_link' | translate }} <i class="fas fa-up-right-from-square" aria-hidden="true"></i>
           </a>
         </p>
       </ngb-alert>

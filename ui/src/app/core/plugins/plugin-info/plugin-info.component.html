@@ -16,18 +16,21 @@
     <p class="grey-text mb-1 font-monospace">&#64;{{ plugin.author }}</p>
     <p class="mb-3">{{ plugin.description }}</p>
     <i
+      aria-hidden="true"
       class="fas fa-shield-alt mb-3 shield-icon"
       [class.orange-text]="!plugin.verifiedPlugin && !plugin.verifiedPlusPlugin"
       [class.grey-text]="plugin.verifiedPlugin || plugin.verifiedPlusPlugin"
       [class.opacity-muted]="plugin.verifiedPlugin || plugin.verifiedPlusPlugin"
     ></i>
     <i
+      aria-hidden="true"
       class="fas fa-shield-alt mb-3 shield-icon"
       [class.green-text]="!plugin.isHbScoped && (plugin.verifiedPlugin || plugin.verifiedPlusPlugin)"
       [class.grey-text]="plugin.isHbScoped || (!plugin.verifiedPlugin && !plugin.verifiedPlusPlugin)"
       [class.opacity-muted]="plugin.isHbScoped || (!plugin.verifiedPlugin && !plugin.verifiedPlusPlugin)"
     ></i>
     <i
+      aria-hidden="true"
       class="fas fa-shield-alt mb-3 shield-icon"
       [class.purple-text]="plugin.isHbScoped"
       [class.grey-text]="!plugin.isHbScoped"
@@ -74,7 +77,7 @@
           rel="noopener noreferrer"
           [href]="plugin.links.homepage || plugin.links.npm"
         >
-          {{ 'plugins.button_homepage' | translate }} <i class="fas fa-external-link-alt"></i>
+          {{ 'plugins.button_homepage' | translate }} <i class="fas fa-external-link-alt" aria-hidden="true"></i>
         </a>
       }
     </div>

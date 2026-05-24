@@ -13,7 +13,7 @@
   <div class="modal-body pb-0">
     @if (loading()) {
       <div class="text-center primary-text my-5 w-100">
-        <i class="fas fa-circle-notch fa-spin icon-xl"></i>
+        <i class="fas fa-circle-notch fa-spin icon-xl" aria-hidden="true"></i>
       </div>
     }
     @if (!loading() && !canConfigure()) {
@@ -51,7 +51,7 @@
                         [openDelay]="150"
                         (click)="removeBlock($index)"
                       >
-                        <i class="fas fa-trash-can"></i>
+                        <i class="fas fa-trash-can" aria-hidden="true"></i>
                       </button>
                     }
                     <button
@@ -64,7 +64,7 @@
                       [openDelay]="150"
                       (click)="editBlock($index)"
                     >
-                      <i class="far fa-pen-to-square"></i>
+                      <i class="far fa-pen-to-square" aria-hidden="true"></i>
                     </button>
                   }
                   @if (!schema?.singular) {
@@ -151,7 +151,7 @@
           ></i>
         } @else {
           <button type="button" class="btn btn-elegant me-2" data-bs-dismiss="modal" (click)="addBlock()">
-            <i class="fas fa-plus"></i>
+            <i class="fas fa-plus" aria-hidden="true"></i>
           </button>
         }
         <button
@@ -164,7 +164,7 @@
           @if (!saveInProgress()) {
             {{ 'form.button_save' | translate }}
           } @else {
-            <i class="fas fa-circle-notch fa-spin"></i>
+            <i class="fas fa-circle-notch fa-spin" aria-hidden="true"></i>
           }
         </button>
       } @else {
