@@ -1,5 +1,6 @@
-<div class="app-spinner-container">
-  <div class="animate_loader">
+<div class="app-spinner-container" role="status" aria-live="polite" aria-busy="true">
+  <span class="visually-hidden">{{ 'common.a11y.loading' | translate }}</span>
+  <div class="animate_loader" aria-hidden="true">
     <svg
       xmlns="http://www.w3.org/2000/svg"
       xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -8,6 +9,8 @@
       height="200px"
       viewBox="0 0 100 100"
       preserveAspectRatio="xMidYMid"
+      focusable="false"
+      aria-hidden="true"
     >
       <circle
         cx="50"
