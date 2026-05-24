@@ -171,7 +171,7 @@
             <button
               type="button"
               class="card-link btn btn-link p-0 text-decoration-none"
-              aria-label="Plugin Info"
+              [attr.aria-label]="`Plugin info for ${plugin().name}`"
               (click)="pluginInfoModal(plugin())"
             >
               <i
@@ -188,10 +188,15 @@
           <! -- plugin author and donate modal - ->
           <p class="card-text mb-2">
             @if ((plugin().verifiedPlugin || plugin().verifiedPlusPlugin) && plugin().funding) {
-              <a href="javascript:void(0)" class="card-link" (click)="openFundingModal(plugin())">
+              <button
+                type="button"
+                class="card-link btn btn-link p-0 text-decoration-none"
+                [attr.aria-label]="`Support ${plugin().author}`"
+                (click)="openFundingModal(plugin())"
+              >
                 <i class="fas fa-heart fa-lg me-1 pink-text" aria-hidden="true"></i>
                 <span class="grey-text">&#64;{{ plugin().author }}</span>
-              </a>
+              </button>
             }
             @if (!((plugin().verifiedPlugin || plugin().verifiedPlusPlugin) && plugin().funding)) {
               <span class="grey-text">
