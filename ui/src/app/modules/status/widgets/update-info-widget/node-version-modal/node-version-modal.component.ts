@@ -6,11 +6,11 @@ import { ToastrService } from 'ngx-toastr'
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators'
 import { satisfies } from 'semver'
 
+import { PluginsCacheService } from '@/app/core/caching/plugins-cache.service'
 import { ApiService } from '@/app/core/communication/api.service'
 import { NODE_VERSION_MODAL_DATA } from '@/app/core/modal-data-tokens'
 import { NodeUpdatePolicy } from '@/app/core/settings.interfaces'
 import { SettingsService } from '@/app/core/ui'
-import { InstalledPlugin } from '@/app/modules/status/widgets/update-info-widget/hb-v2-modal/hb-v2-modal.interfaces'
 import { PluginNodeCheck } from '@/app/modules/status/widgets/widgets.interfaces'
 
 @Component({
@@ -26,6 +26,7 @@ import { PluginNodeCheck } from '@/app/modules/status/widgets/widgets.interfaces
 export class NodeVersionModalComponent implements OnInit {
   private $activeModal = inject(NgbActiveModal)
   private $api = inject(ApiService)
+  private $pluginsCache = inject(PluginsCacheService)
   private $settings = inject(SettingsService)
   private $toastr = inject(ToastrService)
   private $translate = inject(TranslateService)
@@ -116,7 +117,7 @@ export class NodeVersionModalComponent implements OnInit {
     this.installedPlugins.set([])
 
     try {
-      const installedPlugins = await this.$api.get('/plugins')
+      const installedPlugins = await this.$pluginsCache.get()
       const processedPlugins = installedPlugins
         .map((x: any) => {
           const isSupported = x.engines?.node
@@ -131,7 +132,7 @@ export class NodeVersionModalComponent implements OnInit {
             icon: x.icon || this.defaultIcon,
           } as PluginNodeCheck
         })
-        .sort((a: InstalledPlugin, b: InstalledPlugin) => {
+        .sort((a: PluginNodeCheck, b: PluginNodeCheck) => {
           if (a.name === 'homebridge-config-ui-x') {
             return -1
           }

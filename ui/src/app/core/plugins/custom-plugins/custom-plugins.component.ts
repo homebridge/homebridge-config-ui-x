@@ -8,6 +8,7 @@ import { ToastrService } from 'ngx-toastr'
 import { Subject } from 'rxjs'
 import { debounceTime, skip } from 'rxjs/operators'
 
+import { CachedAccessoriesCacheService } from '@/app/core/caching/cached-accessories-cache.service'
 import { ApiService } from '@/app/core/communication/api.service'
 import { IoNamespace, WsService } from '@/app/core/communication/ws.service'
 import { SchemaFormComponent } from '@/app/core/components/schema-form/schema-form.component'
@@ -33,6 +34,7 @@ import { environment } from '@/environments/environment'
 export class CustomPluginsComponent implements OnInit, OnDestroy {
   // 1. Injected Dependencies
   private $activeModal = inject(NgbActiveModal)
+  private $accessoryCache = inject(CachedAccessoriesCacheService)
   private $api = inject(ApiService)
   private $cb = inject(ChildBridgesService)
   private $plugin = inject(ManagePluginsService)
@@ -551,8 +553,8 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
     }
 
     try {
-      const cachedAccessories = await this.$api.get('/server/cached-accessories')
-      return this.requestResponse(event, (cachedAccessories as { plugin: string }[]).filter(x => x.plugin === plugin.name))
+      const cachedAccessories = await this.$accessoryCache.getHap<{ plugin: string }[]>()
+      return this.requestResponse(event, cachedAccessories.filter(x => x.plugin === plugin.name))
     } catch (error) {
       console.error('Failed to get cached accessories:', error)
       this.$toastr.error(this.$translate.instant('toast.title_error'))
@@ -569,8 +571,8 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
     }
 
     try {
-      const cachedMatterAccessories = await this.$api.get('/server/matter-accessories')
-      return this.requestResponse(event, (cachedMatterAccessories as { plugin: string }[]).filter(x => x.plugin === plugin.name))
+      const cachedMatterAccessories = await this.$accessoryCache.getMatter<{ plugin: string }[]>()
+      return this.requestResponse(event, cachedMatterAccessories.filter(x => x.plugin === plugin.name))
     } catch (error) {
       console.error('Failed to get cached Matter accessories:', error)
       this.$toastr.error(this.$translate.instant('toast.title_error'))

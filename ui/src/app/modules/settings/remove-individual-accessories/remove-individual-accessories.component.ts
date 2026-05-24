@@ -7,6 +7,8 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
 
+import { CachedAccessoriesCacheService } from '@/app/core/caching/cached-accessories-cache.service'
+import { ServerPairingsCacheService } from '@/app/core/caching/server-pairings-cache.service'
 import { ApiService } from '@/app/core/communication/api.service'
 import { REMOVE_INDIVIDUAL_ACCESSORIES_MODAL_DATA } from '@/app/core/modal-data-tokens'
 import { RE_CHAR_PAIRS } from '@/app/core/regex.constants'
@@ -25,7 +27,9 @@ import { SettingsService } from '@/app/core/ui/settings.service'
 export class RemoveIndividualAccessoriesComponent implements OnInit {
   // Injected dependencies
   private $activeModal = inject(NgbActiveModal)
+  private $accessoryCache = inject(CachedAccessoriesCacheService)
   private $api = inject(ApiService)
+  private $pairingsCache = inject(ServerPairingsCacheService)
   private $router = inject(Router)
   private $settings = inject(SettingsService)
   private $toastr = inject(ToastrService)
@@ -117,6 +121,7 @@ export class RemoveIndividualAccessoriesComponent implements OnInit {
     // Use Promise.all to wait for all requests to complete
     try {
       await Promise.all(requests)
+      this.$accessoryCache.invalidate()
       this.$toastr.success(this.$translate.instant('reset.accessory_ind.done'), this.$translate.instant('toast.title_success'))
       this.$activeModal.close()
       void this.$router.navigate(['/restart'], {
@@ -138,13 +143,13 @@ export class RemoveIndividualAccessoriesComponent implements OnInit {
       // Build requests array - only fetch Matter accessories if feature is enabled
       const requests: [Promise<any>, Promise<any>, Promise<any>] | [Promise<any>, Promise<any>] = this.isMatterSupported
         ? [
-            this.$api.get('/server/cached-accessories'),
-            this.$api.get('/server/matter-accessories'),
-            this.$api.get('/server/pairings'),
+            this.$accessoryCache.getHap(),
+            this.$accessoryCache.getMatter(),
+            this.$pairingsCache.get(),
           ]
         : [
-            this.$api.get('/server/cached-accessories'),
-            this.$api.get('/server/pairings'),
+            this.$accessoryCache.getHap(),
+            this.$pairingsCache.get(),
           ]
 
       const results = await Promise.all(requests)

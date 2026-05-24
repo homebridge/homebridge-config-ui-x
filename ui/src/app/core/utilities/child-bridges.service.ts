@@ -5,16 +5,20 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
 
+import { TtlCacheService } from '@/app/core/caching/ttl-cache.service'
 import { ApiService } from '@/app/core/communication/api.service'
 import { RestartChildBridgesComponent } from '@/app/core/components/restart-child-bridges/restart-child-bridges.component'
 import { RestartHomebridgeComponent } from '@/app/core/components/restart-homebridge/restart-homebridge.component'
 import { RESTART_CHILD_BRIDGES_MODAL_DATA } from '@/app/core/modal-data-tokens'
+
+const CACHE_KEY = 'status-child-bridges'
 
 @Injectable({
   providedIn: 'root',
 })
 export class ChildBridgesService {
   private $api = inject(ApiService)
+  private $cache = inject(TtlCacheService)
   private $modal = inject(NgbModal)
   private $toastr = inject(ToastrService)
   private $translate = inject(TranslateService)
@@ -52,13 +56,24 @@ export class ChildBridgesService {
   }
 
   /**
+   * Gets the full list of child bridges, cached.
+   */
+  public getAll(): Promise<ChildBridge[]> {
+    return this.$cache.get<ChildBridge[]>(CACHE_KEY, () => this.$api.get<ChildBridge[]>('/status/homebridge/child-bridges'))
+  }
+
+  public invalidate(): void {
+    this.$cache.invalidate(CACHE_KEY)
+  }
+
+  /**
    * Gets child bridges for a specific plugin
    * @param pluginName - The name of the plugin to get child bridges for
    * @returns Array of child bridges for the plugin
    */
   private async getChildBridgesForPlugin(pluginName: string): Promise<ChildBridge[]> {
     try {
-      const data: ChildBridge[] = await this.$api.get('/status/homebridge/child-bridges') as ChildBridge[]
+      const data = await this.getAll()
       return data.filter(bridge => pluginName === bridge.plugin)
     } catch (error: any) {
       console.error(error)

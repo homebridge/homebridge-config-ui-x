@@ -4,6 +4,8 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
 
+import { CachedAccessoriesCacheService } from '@/app/core/caching/cached-accessories-cache.service'
+import { ServerPairingsCacheService } from '@/app/core/caching/server-pairings-cache.service'
 import { ApiService } from '@/app/core/communication/api.service'
 import { SettingsService } from '@/app/core/ui/settings.service'
 import { Pairing } from '@/app/modules/settings/settings.interfaces'
@@ -20,7 +22,9 @@ import { Pairing } from '@/app/modules/settings/settings.interfaces'
 export class RemoveBridgeAccessoriesComponent implements OnInit {
   // Injected dependencies
   private $activeModal = inject(NgbActiveModal)
+  private $accessoryCache = inject(CachedAccessoriesCacheService)
   private $api = inject(ApiService)
+  private $pairingsCache = inject(ServerPairingsCacheService)
   private $router = inject(Router)
   private $settings = inject(SettingsService)
   private $toastr = inject(ToastrService)
@@ -44,6 +48,8 @@ export class RemoveBridgeAccessoriesComponent implements OnInit {
       await this.$api.delete('/server/pairings/accessories', {
         body: this.toDelete(),
       })
+      this.$pairingsCache.invalidate()
+      this.$accessoryCache.invalidate()
       this.$toastr.success(this.$translate.instant('reset.accessory_ind.done'), this.$translate.instant('toast.title_success'))
       this.$activeModal.close()
       void this.$router.navigate(['/restart'], {
@@ -74,7 +80,7 @@ export class RemoveBridgeAccessoriesComponent implements OnInit {
 
   private async loadPairings(): Promise<void> {
     try {
-      const rawPairings = (await this.$api.get('/server/pairings'))
+      const rawPairings = (await this.$pairingsCache.get<any[]>())
         .filter((pairing: any) => pairing._category === 'bridge' && !pairing._main)
         .sort((a: Pairing, b: Pairing) => a.name.localeCompare(b.name))
 

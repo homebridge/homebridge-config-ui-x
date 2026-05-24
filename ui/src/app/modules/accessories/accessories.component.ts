@@ -12,7 +12,7 @@ import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
 import { AccessoriesService } from '@/app/core/accessories/accessories.service'
 import { AccessoryTileComponent } from '@/app/core/accessories/accessory-tile/accessory-tile.component'
 import { AuthService } from '@/app/core/auth/auth.service'
-import { ApiService } from '@/app/core/communication/api.service'
+import { PluginsCacheService } from '@/app/core/caching/plugins-cache.service'
 import { IoNamespace, WsService } from '@/app/core/communication/ws.service'
 import { SpinnerComponent } from '@/app/core/components/spinner/spinner.component'
 import { ChildBridgeStatusResponse } from '@/app/core/server.interfaces'
@@ -49,7 +49,7 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
   protected $accessories = inject(AccessoriesService)
 
   private destroyRef = inject(DestroyRef)
-  private $api = inject(ApiService)
+  private $pluginsCache = inject(PluginsCacheService)
   private $auth = inject(AuthService)
   private dragulaService = inject(DragulaService)
   private $md = inject(MobileDetectService)
@@ -316,7 +316,7 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
 
   private async checkForPlugins(): Promise<void> {
     try {
-      const installedPlugins = await this.$api.get('/plugins')
+      const installedPlugins = await this.$pluginsCache.get()
       this.hasPlugins.set(installedPlugins.length > 1) // ignore the ui plugin
     } catch (error) {
       console.error(error)

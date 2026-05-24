@@ -11,7 +11,8 @@ import { takeUntil } from 'rxjs/operators'
 import { AccessoryLayout, AccessoryLayoutService, ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
 import { AccessoryInfoComponent } from '@/app/core/accessories/accessory-info/accessory-info.component'
 import { AuthService } from '@/app/core/auth/auth.service'
-import { ApiService } from '@/app/core/communication/api.service'
+import { CachedAccessoriesCacheService } from '@/app/core/caching/cached-accessories-cache.service'
+import { ServerPairingsCacheService } from '@/app/core/caching/server-pairings-cache.service'
 import { IoNamespace, WsService } from '@/app/core/communication/ws.service'
 import { ACCESSORY_INFO_MODAL_DATA } from '@/app/core/modal-data-tokens'
 
@@ -20,7 +21,8 @@ import { ACCESSORY_INFO_MODAL_DATA } from '@/app/core/modal-data-tokens'
 })
 export class AccessoriesService {
   private injector = inject(EnvironmentInjector)
-  private $api = inject(ApiService)
+  private $accessoryCache = inject(CachedAccessoriesCacheService)
+  private $pairingsCache = inject(ServerPairingsCacheService)
   private $auth = inject(AuthService)
   private $destroyRef = inject(DestroyRef)
   private $modal = inject(NgbModal)
@@ -66,13 +68,13 @@ export class AccessoriesService {
 
   private async loadCachedData(): Promise<void> {
     try {
-      this.accessoryCache = await this.$api.get('/server/cached-accessories')
+      this.accessoryCache = await this.$accessoryCache.getHap()
     } catch (error) {
       console.error(error)
     }
 
     try {
-      this.pairingCache = await this.$api.get('/server/pairings')
+      this.pairingCache = await this.$pairingsCache.get()
     } catch (error) {
       console.error(error)
     }

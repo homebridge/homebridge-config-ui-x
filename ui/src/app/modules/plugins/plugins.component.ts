@@ -9,6 +9,7 @@ import { ToastrService } from 'ngx-toastr'
 import { Observable } from 'rxjs'
 
 import { AuthService } from '@/app/core/auth/auth.service'
+import { PluginsCacheService } from '@/app/core/caching/plugins-cache.service'
 import { ApiService } from '@/app/core/communication/api.service'
 import { IoNamespace, WsService } from '@/app/core/communication/ws.service'
 import { RestartHomebridgeComponent } from '@/app/core/components/restart-homebridge/restart-homebridge.component'
@@ -46,6 +47,7 @@ export class PluginsComponent implements OnInit, OnDestroy, CanComponentDeactiva
   private $auth = inject(AuthService)
   private $modal = inject(NgbModal)
   private $plugin = inject(ManagePluginsService)
+  private $pluginsCache = inject(PluginsCacheService)
   private $router = inject(Router)
   private $settings = inject(SettingsService)
   private $toastr = inject(ToastrService)
@@ -389,7 +391,7 @@ export class PluginsComponent implements OnInit, OnDestroy, CanComponentDeactiva
     this.mainError.set(false)
 
     try {
-      const installedPlugins = await this.$api.get<Plugin[]>('/plugins')
+      const installedPlugins = await this.$pluginsCache.get()
       const plugins = installedPlugins.filter((x: Plugin) => x.name !== 'homebridge-config-ui-x')
 
       // Populate per-plugin metadata BEFORE publishing to the signal so the
