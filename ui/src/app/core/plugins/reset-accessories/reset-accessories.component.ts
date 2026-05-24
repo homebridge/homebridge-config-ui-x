@@ -4,8 +4,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
 
-import { CachedAccessoriesCacheService } from '@/app/core/caching/cached-accessories-cache.service'
-import { ServerPairingsCacheService } from '@/app/core/caching/server-pairings-cache.service'
+import { AccessoryOverviewCacheService } from '@/app/core/caching/accessory-overview-cache.service'
 import { ApiService } from '@/app/core/communication/api.service'
 import { RESET_ACCESSORIES_MODAL_DATA } from '@/app/core/modal-data-tokens'
 import { ChildBridge } from '@/app/core/plugins/manage-plugins.interfaces'
@@ -25,9 +24,8 @@ import { SettingsService } from '@/app/core/ui/settings.service'
 export class ResetAccessoriesComponent implements OnInit {
   // 1. Injected Dependencies
   private $activeModal = inject(NgbActiveModal)
-  private $accessoryCache = inject(CachedAccessoriesCacheService)
+  private $accessoryOverview = inject(AccessoryOverviewCacheService)
   private $api = inject(ApiService)
-  private $pairingsCache = inject(ServerPairingsCacheService)
   private $router = inject(Router)
   private $settings = inject(SettingsService)
   private $toastr = inject(ToastrService)
@@ -70,8 +68,7 @@ export class ResetAccessoriesComponent implements OnInit {
       await this.$api.delete('/server/pairings/accessories', {
         body: this.toDelete(),
       })
-      this.$pairingsCache.invalidate()
-      this.$accessoryCache.invalidate()
+      this.$accessoryOverview.invalidate()
       this.$toastr.success(
         this.$translate.instant('reset.accessory_ind.done'),
         this.$translate.instant('toast.title_success'),
@@ -95,7 +92,7 @@ export class ResetAccessoriesComponent implements OnInit {
   // 9. Private Methods
   private async loadPairings(): Promise<void> {
     try {
-      const allPairings = await this.$pairingsCache.get<any[]>()
+      const { pairings: allPairings } = await this.$accessoryOverview.get<any, any, any>()
 
       // Get the plugin name from the first child bridge (all child bridges should have the same plugin)
       const pluginName = this.childBridges.length > 0 ? this.childBridges[0].plugin : null

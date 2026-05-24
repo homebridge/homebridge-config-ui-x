@@ -159,6 +159,16 @@ export class ServerController {
   }
 
   @UseGuards(AdminGuard)
+  @ApiOperation({
+    summary: 'Bundled accessory + pairing snapshot used by accessory-management modals.',
+    description: 'Aggregator that returns cached HAP accessories, cached Matter accessories, and HAP pairings in a single payload — replaces the two-to-three separate fetches that accessory removal / reset modals used to issue on open.',
+  })
+  @Get('/accessory-overview')
+  getAccessoryOverview() {
+    return this.serverService.getAccessoryOverview()
+  }
+
+  @UseGuards(AdminGuard)
   @ApiOperation({ summary: 'Get a single device pairing.' })
   @Get('/pairings/:deviceId')
   getDevicePairingById(@Param('deviceId') deviceId: string) {

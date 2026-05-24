@@ -7,8 +7,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
 
-import { CachedAccessoriesCacheService } from '@/app/core/caching/cached-accessories-cache.service'
-import { ServerPairingsCacheService } from '@/app/core/caching/server-pairings-cache.service'
+import { AccessoryOverviewCacheService } from '@/app/core/caching/accessory-overview-cache.service'
 import { ApiService } from '@/app/core/communication/api.service'
 import { REMOVE_INDIVIDUAL_ACCESSORIES_MODAL_DATA } from '@/app/core/modal-data-tokens'
 import { RE_CHAR_PAIRS } from '@/app/core/regex.constants'
@@ -27,9 +26,8 @@ import { SettingsService } from '@/app/core/ui/settings.service'
 export class RemoveIndividualAccessoriesComponent implements OnInit {
   // Injected dependencies
   private $activeModal = inject(NgbActiveModal)
-  private $accessoryCache = inject(CachedAccessoriesCacheService)
+  private $accessoryOverview = inject(AccessoryOverviewCacheService)
   private $api = inject(ApiService)
-  private $pairingsCache = inject(ServerPairingsCacheService)
   private $router = inject(Router)
   private $settings = inject(SettingsService)
   private $toastr = inject(ToastrService)
@@ -121,7 +119,7 @@ export class RemoveIndividualAccessoriesComponent implements OnInit {
     // Use Promise.all to wait for all requests to complete
     try {
       await Promise.all(requests)
-      this.$accessoryCache.invalidate()
+      this.$accessoryOverview.invalidate()
       this.$toastr.success(this.$translate.instant('reset.accessory_ind.done'), this.$translate.instant('toast.title_success'))
       this.$activeModal.close()
       void this.$router.navigate(['/restart'], {
@@ -140,22 +138,10 @@ export class RemoveIndividualAccessoriesComponent implements OnInit {
 
   private async loadCachedAccessories(): Promise<void> {
     try {
-      // Build requests array - only fetch Matter accessories if feature is enabled
-      const requests: [Promise<any>, Promise<any>, Promise<any>] | [Promise<any>, Promise<any>] = this.isMatterSupported
-        ? [
-            this.$accessoryCache.getHap(),
-            this.$accessoryCache.getMatter(),
-            this.$pairingsCache.get(),
-          ]
-        : [
-            this.$accessoryCache.getHap(),
-            this.$pairingsCache.get(),
-          ]
+      const { hapAccessories: cachedAccessories, matterAccessories: rawMatterAccessories, pairings }
+        = await this.$accessoryOverview.get<CachedAccessory, CachedAccessory, Pairing>()
 
-      const results = await Promise.all(requests)
-      const cachedAccessories = results[0]
-      const matterAccessories = this.isMatterSupported ? results[1] : []
-      const pairings: Pairing[] = this.isMatterSupported ? results[2] : results[1]
+      const matterAccessories = this.isMatterSupported ? rawMatterAccessories : []
 
       const pairingMap = new Map<string, Pairing>(pairings.map((pairing: Pairing) => [pairing._id, { ...pairing, accessories: [] as CachedAccessory[] }]))
 
