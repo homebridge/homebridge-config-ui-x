@@ -60,6 +60,7 @@ export class PluginBridgeComponent implements OnInit {
   public plugin = this.modalData.plugin
   public schema = this.modalData.schema
   public justInstalled = this.modalData.justInstalled ?? false
+  private editorContext = this.modalData.editorContext
 
   // 3. Signals
   public readonly loading = signal(true)
@@ -198,7 +199,9 @@ export class PluginBridgeComponent implements OnInit {
     }
 
     try {
-      const alias = await this.$api.get(`/plugins/alias/${encodeURIComponent(plugin.name)}`)
+      const alias = this.editorContext?.alias
+        ? this.editorContext.alias
+        : await this.$api.get(`/plugins/alias/${encodeURIComponent(plugin.name)}`)
       this.isPlatform.set(alias.pluginType === 'platform')
     } catch (error) {
       console.error(error)
@@ -215,7 +218,8 @@ export class PluginBridgeComponent implements OnInit {
     }
 
     try {
-      const loadedConfigBlocks = await this.$api.get(`/config-editor/plugin/${encodeURIComponent(plugin.name)}`)
+      const loadedConfigBlocks: any[] = this.editorContext?.config
+        ?? await this.$api.get(`/config-editor/plugin/${encodeURIComponent(plugin.name)}`)
       this.configBlocks.set(loadedConfigBlocks)
 
       for (const [i, block] of loadedConfigBlocks.entries()) {

@@ -19,7 +19,7 @@ import {
 } from '@/app/core/modal-data-tokens'
 import { CustomPluginsService } from '@/app/core/plugins/custom-plugins/custom-plugins.service'
 import { ManagePluginComponent } from '@/app/core/plugins/manage-plugin/manage-plugin.component'
-import { ChildBridge, Plugin } from '@/app/core/plugins/manage-plugins.interfaces'
+import { ChildBridge, Plugin, PluginEditorContext } from '@/app/core/plugins/manage-plugins.interfaces'
 import { ManageVersionComponent } from '@/app/core/plugins/manage-version/manage-version.component'
 import { ManualConfigComponent } from '@/app/core/plugins/manual-config/manual-config.component'
 import { PluginBridgeComponent } from '@/app/core/plugins/plugin-bridge/plugin-bridge.component'
@@ -89,6 +89,15 @@ export class ManagePluginsService {
   }
 
   async uninstallPlugin(plugin: Plugin, childBridges: ChildBridge[]) {
+    // Preload alias via editor-context so the modal doesn't have to
+    // refetch it (used to determine dynamic-platform behaviour).
+    let editorContext: PluginEditorContext | undefined
+    try {
+      editorContext = await this.loadEditorContext(plugin.name)
+    } catch (error) {
+      console.error(error)
+    }
+
     const injector = createEnvironmentInjector([{
       provide: UNINSTALL_PLUGIN_MODAL_DATA,
       useValue: {
@@ -97,6 +106,7 @@ export class ManagePluginsService {
         action: 'Uninstall',
         keepOrphans: this.$settings.keepOrphans,
         onRefreshPluginList: () => this.pluginListRefreshSubject.next(),
+        editorContext,
       },
     }], this.injector)
 
@@ -238,17 +248,18 @@ export class ManagePluginsService {
    * @param justInstalled
    */
   async bridgeSettings(plugin: Plugin, justInstalled = false) {
-    // Load the plugins schema
-    let schema: any
-    if (plugin.settingsSchema) {
-      try {
-        schema = await this.loadConfigSchema(plugin.name)
-      } catch (error) {
-        console.error(error)
-        this.$toastr.error(this.$translate.instant('plugins.toast_failed_to_load_plugin_schema'), this.$translate.instant('toast.title_error'))
-        return
-      }
+    // Single aggregated fetch — replaces the historical schema + alias +
+    // config + child-bridges fan-out that fired once the modal opened.
+    let editorContext: PluginEditorContext | undefined
+    try {
+      editorContext = await this.loadEditorContext(plugin.name)
+    } catch (error) {
+      console.error(error)
+      this.$toastr.error(this.$translate.instant('plugins.toast_failed_to_load_plugin_schema'), this.$translate.instant('toast.title_error'))
+      return
     }
+
+    const schema = plugin.settingsSchema ? editorContext.configSchema : undefined
 
     const injector = createEnvironmentInjector([{
       provide: PLUGIN_BRIDGE_MODAL_DATA,
@@ -256,6 +267,7 @@ export class ManagePluginsService {
         schema,
         plugin,
         justInstalled,
+        editorContext,
       },
     }], this.injector)
 
@@ -280,25 +292,24 @@ export class ManagePluginsService {
    * @param plugin
    */
   async settings(plugin: Plugin) {
-    // Load the plugins schema
-    let schema: any
-    if (plugin.settingsSchema) {
-      try {
-        schema = await this.loadConfigSchema(plugin.name)
-      } catch (error) {
-        console.error(error)
-        this.$toastr.error(this.$translate.instant('plugins.toast_failed_to_load_plugin_schema'), this.$translate.instant('toast.title_error'))
-        return
-      }
+    let editorContext: PluginEditorContext | undefined
+    try {
+      editorContext = await this.loadEditorContext(plugin.name)
+    } catch (error) {
+      console.error(error)
+      this.$toastr.error(this.$translate.instant('plugins.toast_failed_to_load_plugin_schema'), this.$translate.instant('toast.title_error'))
+      return
     }
+
+    const schema = plugin.settingsSchema ? editorContext.configSchema : undefined
 
     // Open the custom ui if the plugin has one
     if (schema && schema.customUi) {
-      return this.$customPluginsService.openCustomSettingsUi(plugin, schema)
+      return this.$customPluginsService.openCustomSettingsUi(plugin, schema, editorContext)
     }
 
     if (this.$customPluginsService.plugins[plugin.name]) {
-      return this.$customPluginsService.openSettings(plugin, schema)
+      return this.$customPluginsService.openSettings(plugin, schema, editorContext)
     }
 
     // Open the standard ui
@@ -307,6 +318,7 @@ export class ManagePluginsService {
       useValue: {
         schema,
         plugin,
+        editorContext,
       },
     }], this.injector)
 
@@ -326,21 +338,21 @@ export class ManagePluginsService {
    * Open the JSON config modal
    */
   async jsonEditor(plugin: Plugin) {
-    // Load the plugins schema
-    let schema: any
-    if (plugin.settingsSchema) {
-      try {
-        schema = await this.loadConfigSchema(plugin.name)
-      } catch (error) {
-        console.error(error)
-      }
+    let editorContext: PluginEditorContext | undefined
+    try {
+      editorContext = await this.loadEditorContext(plugin.name)
+    } catch (error) {
+      console.error(error)
     }
+
+    const schema = plugin.settingsSchema ? editorContext?.configSchema : undefined
 
     const injector = createEnvironmentInjector([{
       provide: PLUGIN_MODAL_DATA,
       useValue: {
         schema,
         plugin,
+        editorContext,
       },
     }], this.injector)
 
@@ -401,8 +413,15 @@ export class ManagePluginsService {
     return true
   }
 
-  private async loadConfigSchema(pluginName: string) {
-    return this.$api.get(`/plugins/config-schema/${encodeURIComponent(pluginName)}`)
+  /**
+   * Fetch the aggregated editor-context payload (alias + config schema +
+   * existing config blocks + child bridges) used to populate plugin
+   * settings modals. Replaces the historical fan-out of four separate
+   * calls per modal open. Returns `configSchema: null` for schema-less
+   * plugins.
+   */
+  public async loadEditorContext(pluginName: string): Promise<PluginEditorContext> {
+    return this.$api.get(`/plugins/${encodeURIComponent(pluginName)}/editor-context`)
   }
 
   /**

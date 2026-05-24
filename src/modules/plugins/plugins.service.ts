@@ -1649,6 +1649,55 @@ export class PluginsService {
   }
 
   /**
+   * Aggregated payload used by plugin editor modals — collapses the
+   * historical four-call fan-out (alias + schema + config blocks + child
+   * bridges) into a single response.
+   */
+  public async getEditorContext(pluginName: string) {
+    const [alias, configSchema, config, allChildBridges] = await Promise.all([
+      this.getPluginAlias(pluginName),
+      this.getPluginConfigSchemaSafe(pluginName),
+      this.getConfigBlocksForPlugin(pluginName),
+      this.childBridgesService.getChildBridges(),
+    ])
+
+    return {
+      pluginName,
+      alias,
+      configSchema,
+      config,
+      childBridges: allChildBridges.filter(b => b.plugin === pluginName),
+    }
+  }
+
+  private async getPluginConfigSchemaSafe(pluginName: string) {
+    try {
+      return await this.getPluginConfigSchema(pluginName)
+    } catch (e) {
+      if (e instanceof NotFoundException) {
+        return null
+      }
+      throw e
+    }
+  }
+
+  private async getConfigBlocksForPlugin(pluginName: string): Promise<any[]> {
+    const alias = await this.getPluginAlias(pluginName)
+    if (!alias.pluginAlias) {
+      return []
+    }
+
+    const config: HomebridgeConfig = await readJson(this.configService.configPath)
+    const arrayKey = alias.pluginType === 'accessory' ? 'accessories' : 'platforms'
+    const blocks = (config[arrayKey] ?? []) as any[]
+
+    return blocks.filter(block =>
+      block[alias.pluginType] === alias.pluginAlias
+      || block[alias.pluginType] === `${pluginName}.${alias.pluginAlias}`,
+    )
+  }
+
+  /**
    * Get the child bridge username(s) for a plugin if it's running in a child bridge
    * Returns an empty array if the plugin is not running in a child bridge
    * @param pluginName - The name of the plugin to check

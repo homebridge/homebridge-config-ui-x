@@ -4,7 +4,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { ApiService } from '@/app/core/communication/api.service'
 import { CUSTOM_PLUGINS_MODAL_DATA } from '@/app/core/modal-data-tokens'
 import { CustomPluginsComponent } from '@/app/core/plugins/custom-plugins/custom-plugins.component'
-import { Plugin } from '@/app/core/plugins/manage-plugins.interfaces'
+import { Plugin, PluginEditorContext } from '@/app/core/plugins/manage-plugins.interfaces'
 
 @Injectable({
   providedIn: 'root',
@@ -16,8 +16,8 @@ export class CustomPluginsService {
 
   public plugins: Record<string, any> = {}
 
-  async openSettings(plugin: Plugin, schema: any) {
-    const pluginConfig = await this.loadPluginConfig(plugin.name)
+  async openSettings(plugin: Plugin, schema: any, editorContext?: PluginEditorContext) {
+    const pluginConfig = editorContext?.config ?? await this.loadPluginConfig(plugin.name)
 
     const injector = createEnvironmentInjector([{
       provide: CUSTOM_PLUGINS_MODAL_DATA,
@@ -25,6 +25,7 @@ export class CustomPluginsService {
         plugin,
         schema,
         pluginConfig,
+        editorContext,
       },
     }], this.injector)
 
@@ -37,8 +38,8 @@ export class CustomPluginsService {
     return ref.result.catch(() => { /* modal dismissed */ })
   }
 
-  async openCustomSettingsUi(plugin: Plugin, schema: any) {
-    const pluginConfig = await this.loadPluginConfig(plugin.name)
+  async openCustomSettingsUi(plugin: Plugin, schema: any, editorContext?: PluginEditorContext) {
+    const pluginConfig = editorContext?.config ?? await this.loadPluginConfig(plugin.name)
 
     const injector = createEnvironmentInjector([{
       provide: CUSTOM_PLUGINS_MODAL_DATA,
@@ -46,6 +47,7 @@ export class CustomPluginsService {
         plugin,
         schema,
         pluginConfig,
+        editorContext,
       },
     }], this.injector)
 

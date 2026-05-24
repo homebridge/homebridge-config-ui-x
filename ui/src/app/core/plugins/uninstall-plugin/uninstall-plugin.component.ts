@@ -40,6 +40,7 @@ export class UninstallPluginComponent implements OnInit {
   public action = this.modalData.action ?? ''
   public keepOrphans = this.modalData.keepOrphans ?? false
   public onRefreshPluginList = this.modalData.onRefreshPluginList ?? (() => {})
+  private editorContext = this.modalData.editorContext
 
   // 3. Other public properties
   public readonly keepOrphansName = `<code>${this.$translate.instant('settings.startup.keep_accessories')}</code>`
@@ -184,7 +185,8 @@ export class UninstallPluginComponent implements OnInit {
     if (!this.plugin) {
       throw new Error('Plugin not set')
     }
-    return this.$api.get(`/plugins/alias/${encodeURIComponent(this.plugin.name)}`)
+    return this.editorContext?.alias
+      ?? this.$api.get(`/plugins/alias/${encodeURIComponent(this.plugin.name)}`)
   }
 
   private async removePluginConfig(): Promise<void> {

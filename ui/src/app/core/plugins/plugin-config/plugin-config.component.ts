@@ -62,6 +62,7 @@ export class PluginConfigComponent implements OnInit {
   // Public properties for component use
   public plugin = this.modalData.plugin
   public schema = this.modalData.schema
+  private editorContext = this.modalData.editorContext
 
   // Signals
   public readonly pluginConfig = signal<PluginConfigBlock[]>([])
@@ -199,7 +200,8 @@ export class PluginConfigComponent implements OnInit {
     }
 
     try {
-      const pluginConfig = await this.$api.get(`/config-editor/plugin/${encodeURIComponent(plugin.name)}`)
+      const pluginConfig: any[] = this.editorContext?.config
+        ?? await this.$api.get(`/config-editor/plugin/${encodeURIComponent(plugin.name)}`)
       const configBlocks = pluginConfig.map((block: Record<string, unknown>) => ({
         __uuid__: uuid(),
         name: block.name || schema.pluginAlias,
