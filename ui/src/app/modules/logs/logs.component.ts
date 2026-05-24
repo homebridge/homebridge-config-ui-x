@@ -55,6 +55,22 @@ export class LogsComponent implements OnInit, OnDestroy, CanComponentDeactivate 
     this.resizeEvent.next(undefined)
   }
 
+  private patchXtermLiveRegion(): void {
+    const host = this.termTarget()?.nativeElement as HTMLElement | undefined
+    if (!host) {
+      return
+    }
+
+    const live = host.querySelector('[aria-live]') as HTMLElement | null
+    if (!live) {
+      return
+    }
+
+    live.setAttribute('role', 'status')
+    live.setAttribute('aria-live', 'polite')
+    live.setAttribute('aria-atomic', 'true')
+  }
+
   public ngOnInit() {
     // Set page title
     const title = this.$translate.instant('menu.linux.label_logs')
@@ -85,8 +101,11 @@ export class LogsComponent implements OnInit, OnDestroy, CanComponentDeactivate 
       }
     }
 
-    // Start the terminal
-    this.$log.startTerminal(this.termTarget()!, this.$settings.getTerminalOptions(), this.resizeEvent)
+    // Start the terminal (logs are read-only, no stdin)
+    this.$log.startTerminal(this.termTarget()!, this.$settings.getTerminalOptions({ disableStdin: true }), this.resizeEvent)
+
+    // Configure xterm's screen-reader live region for log announcements
+    requestAnimationFrame(() => this.patchXtermLiveRegion())
 
     // Watch for changes in the search query
     this.form.get('query')?.valueChanges.pipe(
