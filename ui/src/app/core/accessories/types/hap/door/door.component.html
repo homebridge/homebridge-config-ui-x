@@ -1,15 +1,50 @@
+@let values = service().values;
+@let pos = values?.CurrentPosition;
+@let posState = values?.PositionState;
+
+@let stateText =
+  posState === 1
+    ? ('accessories.control.opening' | translate)
+    : posState === 0
+      ? ('accessories.control.closing' | translate)
+      : pos === 0
+        ? ('accessories.control.closed' | translate)
+        : pos === 100
+          ? ('accessories.control.open' | translate)
+          : `${('accessories.control.open' | translate)} ${pos}%`;
+
+@let srBaseName = (service().customName || service().serviceName || '').trim();
+@let srType = 'accessories.core.door' | translate;
+@let includeType = !(srBaseName | lowercase).includes(srType | lowercase);
+
+@let srText = `${srBaseName + (includeType ? `, ${srType}` : '')}, ${stateText}`;
+
 <div
   class="accessory-box"
+  role="button"
   tabindex="0"
-  [class.accessory-on]="service().values?.CurrentPosition"
+  [class.accessory-on]="pos"
   [class.cursor-pointer]="readyForControl()"
-  [style.--position]="(service().values?.CurrentPosition ?? 0) / 100"
+  [style.--position]="(pos ?? 0) / 100"
+  [attr.aria-label]="srText"
   (longClick)="onLongClick()"
   (shortClick)="onClick()"
+  (keydown.enter)="onClick()"
+  (keydown.space)="$event.preventDefault(); onClick()"
 >
+  <span class="visually-hidden" role="status" aria-live="polite" aria-atomic="true">
+    {{ srText }}
+  </span>
   <div class="d-flex flex-column h-100">
-    <div class="accessory-svg" [attr.aria-label]="'accessories.core.door' | translate">
-      <svg width="32px" height="32px" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+    <div class="accessory-svg" aria-hidden="true">
+      <svg
+        width="32px"
+        height="32px"
+        viewBox="0 0 32 32"
+        xmlns="http://www.w3.org/2000/svg"
+        focusable="false"
+        aria-hidden="true"
+      >
         <! -- outer frame - ->
         <rect x="7.8" y="0.8" width="16.4" height="30.2" rx="0.5" stroke="#7f7f7f" fill="none" stroke-width="1.5" />
         <! -- door outline - ->
@@ -63,23 +98,23 @@
         />
       </svg>
     </div>
-    <div class="accessory-label mt-auto">{{ service().customName || service().serviceName }}</div>
-    @if (service().values?.PositionState === 2) {
-      <div class="accessory-label grey-text">
-        @if (service().values?.CurrentPosition === 0) {
+    <div class="accessory-label mt-auto" aria-hidden="true">{{ service().customName || service().serviceName }}</div>
+    @if (posState === 2) {
+      <div class="accessory-label grey-text" aria-hidden="true">
+        @if (pos === 0) {
           {{ 'accessories.control.closed' | translate }}
         }
-        @if (service().values?.CurrentPosition > 0 && service().values?.CurrentPosition < 100) {
-          {{ 'accessories.control.open' | translate }} {{ service().values?.CurrentPosition }}%
+        @if (pos > 0 && pos < 100) {
+          {{ 'accessories.control.open' | translate }} {{ pos }}%
         }
-        @if (service().values?.CurrentPosition === 100) {
+        @if (pos === 100) {
           {{ 'accessories.control.open' | translate }}
         }
       </div>
-    } @else if (service().values?.PositionState === 1) {
-      <div class="accessory-label red-text">{{ 'accessories.control.opening' | translate }}...</div>
-    } @else if (service().values?.PositionState === 0) {
-      <div class="accessory-label red-text">{{ 'accessories.control.closing' | translate }}...</div>
+    } @else if (posState === 1) {
+      <div class="accessory-label red-text" aria-hidden="true">{{ 'accessories.control.opening' | translate }}...</div>
+    } @else if (posState === 0) {
+      <div class="accessory-label red-text" aria-hidden="true">{{ 'accessories.control.closing' | translate }}...</div>
     }
   </div>
 </div>

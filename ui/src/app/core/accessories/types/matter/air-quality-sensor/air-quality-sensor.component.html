@@ -1,15 +1,40 @@
+@let aq = airQuality() || 0;
+@let aqLabel = labels[aq] | translate;
+
+@let srBaseName = (service().customName || service().displayName || service().serviceName || '').trim();
+@let srType = 'accessories.core.air_quality_sensor' | translate;
+@let includeType = !(srBaseName | lowercase).includes(srType | lowercase);
+
+@let srText = `${srBaseName + (includeType ? `, ${srType}` : '')}, ${aqLabel}`;
+
 <div
-  class="accessory-box cursor-pointer"
+  class="accessory-box"
   appLongClick
-  [class.accessory-on]="airQuality() === 5"
-  [class.fill-red]="airQuality() === 5"
-  [class.fill-orange]="[3, 4].includes(airQuality())"
-  [class.fill-green]="[1, 2].includes(airQuality())"
+  [class.cursor-pointer]="canShowModal()"
+  [class.accessory-on]="aq === 5"
+  [class.fill-red]="aq === 5"
+  [class.fill-orange]="[3, 4].includes(aq)"
+  [class.fill-green]="[1, 2].includes(aq)"
+  [attr.role]="canShowModal() ? 'button' : null"
+  [attr.tabindex]="canShowModal() ? 0 : null"
+  [attr.aria-label]="canShowModal() ? srText : null"
   (longClick)="onLongClick()"
+  (keydown.enter)="canShowModal() && onLongClick()"
+  (keydown.space)="canShowModal() && onLongClick()"
 >
+  <span class="visually-hidden" role="status" aria-live="polite" aria-atomic="true">
+    {{ srText }}
+  </span>
   <div class="d-flex flex-column h-100">
-    <div class="accessory-svg" [attr.aria-label]="'accessories.core.air_quality_sensor' | translate">
-      <svg width="32px" height="32px" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+    <div class="accessory-svg" aria-hidden="true">
+      <svg
+        width="32px"
+        height="32px"
+        viewBox="0 0 32 32"
+        xmlns="http://www.w3.org/2000/svg"
+        focusable="false"
+        aria-hidden="true"
+      >
         <! -- outer casing - ->
         <rect x="3.5" y="1" width="25" height="30" rx="3" stroke="#7f7f7f" fill="none" stroke-width="1.2" />
         <! -- leaves - ->
@@ -37,9 +62,9 @@
         <line stroke-linecap="round" x1="25" y1="26" x2="25" y2="29" stroke="#7f7f7f" stroke-width="0.5" />
       </svg>
     </div>
-    <div class="accessory-label mt-auto">{{ service().customName || service().displayName }}</div>
-    <div class="accessory-label" [class.grey-text]="airQuality() < 5" [class.red-text]="airQuality() === 5">
-      {{ labels[airQuality() || 0] | translate }}
+    <div class="accessory-label mt-auto" aria-hidden="true">{{ service().customName || service().displayName }}</div>
+    <div class="accessory-label" aria-hidden="true" [class.grey-text]="aq < 5" [class.red-text]="aq === 5">
+      {{ aqLabel }}
     </div>
   </div>
 </div>

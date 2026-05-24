@@ -11,6 +11,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix: restore autofocus on username field at login page load
 - feat: add toolbar with search/download/clear to Homebridge Logs widget
 - fix(accessories): add screen reader live regions to HAP sensor tiles
+- fix(accessories): add ARIA labels, live regions, and keyboard handlers to HAP/matter tiles
 
 ### Other Changes
 

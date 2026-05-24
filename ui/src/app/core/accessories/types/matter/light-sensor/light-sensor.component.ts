@@ -1,4 +1,4 @@
-import { DecimalPipe } from '@angular/common'
+import { DecimalPipe, LowerCasePipe } from '@angular/common'
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core'
 import { TranslatePipe } from '@ngx-translate/core'
 
@@ -9,6 +9,7 @@ import { getLightSensorIlluminance } from '@/app/core/accessories/types/matter/m
   selector: 'app-matter-light-sensor',
   imports: [
     DecimalPipe,
+    LowerCasePipe,
     TranslatePipe,
   ],
   standalone: true,

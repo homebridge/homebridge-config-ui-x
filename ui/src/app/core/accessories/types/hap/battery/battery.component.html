@@ -1,24 +1,23 @@
-@let batteryLevel = (service().values?.BatteryLevel ?? 0);
+@let batteryLevel = service().values?.BatteryLevel ?? 0;
 @let isCharging = service().values?.ChargingState === 1;
-@let isLow = (service().values?.StatusLowBattery === 1) || (batteryLevel === 0);
+@let isLow = service().values?.StatusLowBattery === 1 || batteryLevel === 0;
 
 @let chargingText =
-  (service().values?.ChargingState === 0) ? ('accessories.control.battery_notcharging' | translate) :
-  (service().values?.ChargingState === 1) ? ('accessories.control.battery_charging' | translate) :
-  (service().values?.ChargingState === 2) ? ('accessories.control.battery_notchargeable' | translate) :
-  (isLow ? ('accessories.control.battery_low' | translate) : ('accessories.control.battery_charged' | translate));
+  service().values?.ChargingState === 0
+    ? ('accessories.control.battery_notcharging' | translate)
+    : service().values?.ChargingState === 1
+      ? ('accessories.control.battery_charging' | translate)
+      : service().values?.ChargingState === 2
+        ? ('accessories.control.battery_notchargeable' | translate)
+        : isLow
+          ? ('accessories.control.battery_low' | translate)
+          : ('accessories.control.battery_charged' | translate);
 
 @let srBaseName = (service().customName || service().serviceName || '').trim();
-@let srType = ('accessories.core.battery' | translate);
-@let includeType = srBaseName.toLowerCase().indexOf(srType.toLowerCase()) === -1;
+@let srType = 'accessories.core.battery' | translate;
+@let includeType = !(srBaseName | lowercase).includes(srType | lowercase);
 
-@let srText =
-  srBaseName
-  + (includeType ? (', ' + srType) : '')
-  + ', '
-  + batteryLevel
-  + '%, '
-  + chargingText;
+@let srText = `${srBaseName + (includeType ? `, ${srType}` : '')}, ${batteryLevel}%, ${chargingText}`;
 
 <div class="accessory-box" [class.accessory-on]="isCharging">
   <span class="visually-hidden" role="status" aria-live="polite" aria-atomic="true">
@@ -26,7 +25,14 @@
   </span>
   <div class="d-flex flex-column h-100">
     <div class="accessory-svg" aria-hidden="true">
-      <svg width="32px" height="32px" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" focusable="false" aria-hidden="true">
+      <svg
+        width="32px"
+        height="32px"
+        viewBox="0 0 32 32"
+        xmlns="http://www.w3.org/2000/svg"
+        focusable="false"
+        aria-hidden="true"
+      >
         <! -- filler colour - ->
         <rect
           x="1"

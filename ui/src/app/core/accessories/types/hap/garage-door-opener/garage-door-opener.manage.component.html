@@ -11,7 +11,7 @@
   </div>
   <div class="modal-body text-center px-5">
     <div class="d-flex justify-content-center mb-4 p-0">
-      <div class="mb-0 mx-0 p-3 btn-read w-100">
+      <div class="mb-0 mx-0 p-3 btn-read w-100" role="status" aria-live="polite" aria-atomic="true">
         @switch (service.values?.CurrentDoorState) {
           @case (0) {
             {{ 'accessories.control.open' | translate }}
@@ -39,19 +39,29 @@
       role="group"
       [attr.aria-label]="'accessories.control.state_control' | translate"
     >
-      <button type="button" class="btn mb-0 mx-0 p-3 btn-control" (click)="setTargetState(0, $event)">
-        <div class="float-start primary-text">
+      <button
+        type="button"
+        class="btn mb-0 mx-0 p-3 btn-control"
+        [attr.aria-pressed]="targetState === 0"
+        (click)="setTargetState(0, $event)"
+      >
+        <div class="float-start primary-text" aria-hidden="true">
           <i class="fas fa-xl" [class.fa-check-circle]="targetState === 0" [class.fa-blank]="targetState !== 0"></i>
         </div>
         {{ 'accessories.control.open' | translate }}
-        <div class="float-end"><i class="fas fa-xl fa-blank"></i></div>
+        <div class="float-end" aria-hidden="true"><i class="fas fa-xl fa-blank"></i></div>
       </button>
-      <button type="button" class="btn mb-0 mx-0 p-3 btn-control" (click)="setTargetState(1, $event)">
-        <div class="float-start primary-text">
+      <button
+        type="button"
+        class="btn mb-0 mx-0 p-3 btn-control"
+        [attr.aria-pressed]="targetState === 1"
+        (click)="setTargetState(1, $event)"
+      >
+        <div class="float-start primary-text" aria-hidden="true">
           <i class="fas fa-xl" [class.fa-check-circle]="targetState === 1" [class.fa-blank]="targetState !== 1"></i>
         </div>
         {{ 'accessories.control.close' | translate }}
-        <div class="float-end"><i class="fas fa-xl fa-blank"></i></div>
+        <div class="float-end" aria-hidden="true"><i class="fas fa-xl fa-blank"></i></div>
       </button>
     </div>
   </div>

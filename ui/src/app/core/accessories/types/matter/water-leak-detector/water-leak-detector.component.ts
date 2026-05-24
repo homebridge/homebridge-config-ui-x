@@ -1,3 +1,4 @@
+import { LowerCasePipe } from '@angular/common'
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core'
 import { TranslatePipe } from '@ngx-translate/core'
 
@@ -7,6 +8,7 @@ import { getWaterLeakState } from '@/app/core/accessories/types/matter/matter-de
 @Component({
   selector: 'app-matter-water-leak-detector',
   imports: [
+    LowerCasePipe,
     TranslatePipe,
   ],
   standalone: true,
