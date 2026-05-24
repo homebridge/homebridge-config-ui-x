@@ -6,7 +6,9 @@
     <button
       type="button"
       class="btn btn-elegant my-0 me-0"
+      aria-controls="settings-search-region"
       [attr.aria-label]="'form.search' | translate"
+      [attr.aria-expanded]="showSearchBar()"
       (click)="toggleSearch()"
     >
       <i aria-hidden="true" [class]="`fas fa-search${showSearchBar() ? ' primary-text' : ''}`"></i>
@@ -15,7 +17,7 @@
 </div>
 
 @if (showSearchBar()) {
-  <div class="row">
+  <div id="settings-search-region" class="row">
     <div class="col-md-12">
       <form novalidate>
         <input
@@ -98,7 +100,7 @@
               [attr.inert]="isItemHidden('setting-backup') || null"
             >
               <div class="setting-row-inner d-flex justify-content-between align-items-center">
-                <span class="pe-2">{{ 'backup.title_backup' | translate }}</span>
+                <span class="pe-2" aria-hidden="true">{{ 'backup.title_backup' | translate }}</span>
                 <button
                   type="button"
                   class="btn btn-primary waves-effect m-0 ms-3 py-1 min-w-50"
@@ -115,7 +117,7 @@
               [attr.inert]="isItemHidden('setting-restore') || null"
             >
               <div class="setting-row-inner d-flex justify-content-between align-items-center">
-                <span class="pe-2">{{ 'config.restore.title' | translate }}</span>
+                <span class="pe-2" aria-hidden="true">{{ 'config.restore.title' | translate }}</span>
                 <button
                   type="button"
                   class="btn btn-primary waves-effect m-0 ms-3 py-1 min-w-50"
@@ -132,7 +134,7 @@
               [attr.inert]="isItemHidden('setting-users') || null"
             >
               <div class="setting-row-inner d-flex justify-content-between align-items-center">
-                <span class="pe-2">{{ 'menu.tooltip_user_accounts' | translate }}</span>
+                <span class="pe-2" aria-hidden="true">{{ 'menu.tooltip_user_accounts' | translate }}</span>
                 <a
                   class="btn btn-primary waves-effect m-0 ms-3 py-1 min-w-50"
                   routerLink="/users"
