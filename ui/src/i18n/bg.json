@@ -348,6 +348,7 @@
   "menu.reload": "Reload",
   "menu.restart.title": "Power Options",
   "menu.settings.title": "Settings",
+  "menu.sidebar.aria_menu": "Menu",
   "menu.tooltip_logout": "Излез",
   "menu.tooltip_restart": "Рестарт",
   "menu.tooltip_user_accounts": "Потребители",

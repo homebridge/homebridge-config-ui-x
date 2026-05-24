@@ -16,6 +16,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(plugins): include plugin name in info button label and convert donate anchor (@rfiorentino1)
 - chore(i18n): translate new plugin a11y labels (@rfiorentino1)
 - fix(status): add aria-hidden to icons and convert anchors to buttons in dashboard widgets (@rfiorentino1)
+- fix(layout): mark active sidebar item and hide decorative icons (@rfiorentino1)
 
 ### Other Changes
 

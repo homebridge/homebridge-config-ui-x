@@ -348,6 +348,7 @@
   "menu.reload": "Перезагрузить",
   "menu.restart.title": "Параметры питания",
   "menu.settings.title": "Настройки",
+  "menu.sidebar.aria_menu": "Menu",
   "menu.tooltip_logout": "Выйти",
   "menu.tooltip_restart": "Перезапустить",
   "menu.tooltip_user_accounts": "Учётные записи пользователей",

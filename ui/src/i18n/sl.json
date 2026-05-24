@@ -348,6 +348,7 @@
   "menu.reload": "Reload",
   "menu.restart.title": "Power Options",
   "menu.settings.title": "Settings",
+  "menu.sidebar.aria_menu": "Menu",
   "menu.tooltip_logout": "Odjava",
   "menu.tooltip_restart": "Ponovni zagon",
   "menu.tooltip_user_accounts": "Uporabniški računi",

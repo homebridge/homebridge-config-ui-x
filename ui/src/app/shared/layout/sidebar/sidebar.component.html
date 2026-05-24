@@ -9,11 +9,11 @@
   (keydown)="handleKeydown($event)"
 >
   <span class="me-2 d-block d-lg-none m-header-label"></span>
-  <a [routerLink]="['/']" [attr.aria-label]="'menu.label_status' | translate">
-    <img class="hb-logo-img" ngSrc="assets/homebridge-logo.svg" alt="HB Logo" height="35" width="35" />
+  <a tabindex="-1" aria-hidden="true" [routerLink]="['/']">
+    <img class="hb-logo-img" ngSrc="assets/homebridge-logo.svg" alt="" height="35" width="35" />
     <div class="hb-logo-text-mobile">Homebridge</div>
   </a>
-  <div class="hamburger-icon" [class.hamburger-icon-cross]="isExpanded()">
+  <div aria-hidden="true" class="hamburger-icon" [class.hamburger-icon-cross]="isExpanded()">
     <span></span>
     <span></span>
     <span></span>
@@ -21,10 +21,23 @@
   </div>
 </div>
 
-<div class="sidebar" role="navigation" id="sidebar" [class.expanded]="isExpanded()">
-  <div class="header" tabindex="0" role="button" (click)="toggleSidebar()" (keydown)="handleKeydown($event)">
-    <a [routerLink]="['/']" [attr.aria-label]="'menu.label_status' | translate">
-      <img class="hb-logo-img" ngSrc="assets/homebridge-logo.svg" alt="HB Logo" height="35" width="35" />
+<div
+  class="sidebar"
+  role="navigation"
+  id="sidebar"
+  [attr.aria-label]="'menu.sidebar.aria_menu' | translate"
+  [class.expanded]="isExpanded()"
+>
+  <div
+    class="header"
+    tabindex="0"
+    role="button"
+    [attr.aria-label]="'menu.sidebar.aria_menu' | translate"
+    (click)="toggleSidebar()"
+    (keydown)="handleKeydown($event)"
+  >
+    <a tabindex="-1" aria-hidden="true" [routerLink]="['/']">
+      <img class="hb-logo-img" ngSrc="assets/homebridge-logo.svg" alt="" height="35" width="35" />
       <div class="hb-logo-text">Homebridge</div>
     </a>
   </div>
@@ -35,12 +48,13 @@
         role="menuitem"
         tabindex="0"
         routerLinkActive="active"
+        ariaCurrentWhenActive="page"
         [routerLink]="['/']"
         [routerLinkActiveOptions]="{ exact: true }"
         [attr.aria-label]="'menu.label_status' | translate"
         (keydown)="handleKeydown($event)"
       >
-        <div class="icon"><i class="fas fa-house"></i></div>
+        <div class="icon"><i aria-hidden="true" class="fas fa-house"></i></div>
         <div class="title">{{ 'menu.label_status' | translate }}</div>
       </div>
     </div>
@@ -55,7 +69,7 @@
           (click)="openUnderVoltageModal()"
           (keydown)="handleKeydown($event)"
         >
-          <div class="icon"><i class="fas fa-bolt fa-beat yellow-text fa-beat-scale-lg"></i></div>
+          <div class="icon"><i aria-hidden="true" class="fas fa-bolt fa-beat yellow-text fa-beat-scale-lg"></i></div>
           <div class="title">{{ 'rpi.throttled.undervoltage_title' | translate }}</div>
         </div>
       </div>
@@ -67,11 +81,12 @@
         role="menuitem"
         tabindex="0"
         routerLinkActive="active"
+        ariaCurrentWhenActive="page"
         [routerLink]="['/plugins']"
         [attr.aria-label]="'menu.label_plugins' | translate"
         (keydown)="handleKeydown($event)"
       >
-        <div class="icon"><i class="fas fa-plug"></i></div>
+        <div class="icon"><i aria-hidden="true" class="fas fa-plug"></i></div>
         <div class="title">{{ 'menu.label_plugins' | translate }}</div>
       </div>
     </div>
@@ -82,11 +97,12 @@
         role="menuitem"
         tabindex="0"
         routerLinkActive="active"
+        ariaCurrentWhenActive="page"
         [routerLink]="['/accessories']"
         [attr.aria-label]="'menu.label_accessories' | translate"
         (keydown)="handleKeydown($event)"
       >
-        <div class="icon"><i class="fas fa-lightbulb"></i></div>
+        <div class="icon"><i aria-hidden="true" class="fas fa-lightbulb"></i></div>
         <div class="title">{{ 'menu.label_accessories' | translate }}</div>
       </div>
     </div>
@@ -97,11 +113,12 @@
         role="menuitem"
         tabindex="0"
         routerLinkActive="active"
+        ariaCurrentWhenActive="page"
         [routerLink]="['/logs']"
         [attr.aria-label]="'menu.linux.label_logs' | translate"
         (keydown)="handleKeydown($event)"
       >
-        <div class="icon"><i class="fas fa-wave-square"></i></div>
+        <div class="icon"><i aria-hidden="true" class="fas fa-wave-square"></i></div>
         <div class="title">{{ 'menu.linux.label_logs' | translate }}</div>
       </div>
     </div>
@@ -113,11 +130,12 @@
           role="menuitem"
           tabindex="0"
           routerLinkActive="active"
+          ariaCurrentWhenActive="page"
           [routerLink]="['/platform-tools/terminal']"
           [attr.aria-label]="'menu.linux.label_terminal' | translate"
           (keydown)="handleKeydown($event)"
         >
-          <div class="icon"><i class="fas fa-terminal"></i></div>
+          <div class="icon"><i aria-hidden="true" class="fas fa-terminal"></i></div>
           <div class="title">{{ 'menu.linux.label_terminal' | translate }}</div>
         </div>
       </div>
@@ -129,11 +147,12 @@
           role="menuitem"
           tabindex="0"
           routerLinkActive="active"
+          ariaCurrentWhenActive="page"
           [routerLink]="['/config']"
           [attr.aria-label]="'menu.config_json_editor' | translate"
           (keydown)="handleKeydown($event)"
         >
-          <div class="icon"><i class="fas fa-code"></i></div>
+          <div class="icon"><i aria-hidden="true" class="fas fa-code"></i></div>
           <div class="title">{{ 'menu.config_json_editor' | translate }}</div>
         </div>
       </div>
@@ -145,11 +164,12 @@
           role="menuitem"
           tabindex="0"
           routerLinkActive="active"
+          ariaCurrentWhenActive="page"
           [routerLink]="['/settings']"
           [attr.aria-label]="'menu.label_settings' | translate"
           (keydown)="handleKeydown($event)"
         >
-          <div class="icon"><i class="fas fa-cog"></i></div>
+          <div class="icon"><i aria-hidden="true" class="fas fa-cog"></i></div>
           <div class="title">{{ 'menu.label_settings' | translate }}</div>
         </div>
       </div>
@@ -161,11 +181,12 @@
         role="menuitem"
         tabindex="0"
         routerLinkActive="active"
+        ariaCurrentWhenActive="page"
         [routerLink]="['/support']"
         [attr.aria-label]="'support.title' | translate"
         (keydown)="handleKeydown($event)"
       >
-        <div class="icon"><i class="far fa-circle-question"></i></div>
+        <div class="icon"><i aria-hidden="true" class="far fa-circle-question"></i></div>
         <div class="title">{{ 'support.title' | translate }}</div>
       </div>
     </div>
@@ -177,11 +198,12 @@
           role="menuitem"
           tabindex="0"
           routerLinkActive="active"
+          ariaCurrentWhenActive="page"
           [routerLink]="['/power-options']"
           [attr.aria-label]="'menu.restart.title' | translate"
           (keydown)="handleKeydown($event)"
         >
-          <div class="icon"><i class="fas fa-power-off"></i></div>
+          <div class="icon"><i aria-hidden="true" class="fas fa-power-off"></i></div>
           <div class="title">{{ 'menu.restart.title' | translate }}</div>
         </div>
       </div>
@@ -196,7 +218,7 @@
           (click)="reloadPage()"
           (keydown)="handleKeydown($event)"
         >
-          <div class="icon"><i class="fas fa-arrows-rotate"></i></div>
+          <div class="icon"><i aria-hidden="true" class="fas fa-arrows-rotate"></i></div>
           <div class="title">{{ 'menu.reload' | translate }}</div>
         </div>
       </div>
@@ -211,7 +233,7 @@
           (click)="logout()"
           (keydown)="handleKeydown($event)"
         >
-          <div class="icon"><i class="fas fa-right-from-bracket"></i></div>
+          <div class="icon"><i aria-hidden="true" class="fas fa-right-from-bracket"></i></div>
           <div class="title">{{ 'menu.tooltip_logout' | translate }}</div>
         </div>
       </div>

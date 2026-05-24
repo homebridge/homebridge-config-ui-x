@@ -348,6 +348,7 @@
   "menu.reload": "Recargar",
   "menu.restart.title": "Inicio/Apagado",
   "menu.settings.title": "Configuración",
+  "menu.sidebar.aria_menu": "Menu",
   "menu.tooltip_logout": "Cerrar Sesión",
   "menu.tooltip_restart": "Reiniciar",
   "menu.tooltip_user_accounts": "Cuentas de Usuario",

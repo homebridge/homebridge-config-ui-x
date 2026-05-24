@@ -348,6 +348,7 @@
   "menu.reload": "โหลดซ้ำ",
   "menu.restart.title": "ตัวเลือกด้านพลังงาน",
   "menu.settings.title": "การตั้งค่า",
+  "menu.sidebar.aria_menu": "Menu",
   "menu.tooltip_logout": "ออกจากระบบ",
   "menu.tooltip_restart": "รีสตาร์ท",
   "menu.tooltip_user_accounts": "บัญชีผู้ใช้",
