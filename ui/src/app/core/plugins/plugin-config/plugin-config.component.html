@@ -1,6 +1,6 @@
 <div class="modal-content">
   <div class="modal-header">
-    <h5 class="modal-title">{{ plugin.displayName || plugin.name }}</h5>
+    <h5 class="modal-title" id="plugin-config-title">{{ plugin.displayName || plugin.name }}</h5>
     <button
       type="button"
       class="btn-close"
@@ -38,9 +38,10 @@
                       triggers="hover"
                       [ngbTooltip]="'form.button_delete' | translate"
                       [openDelay]="150"
+                      [attr.aria-label]="`${('form.button_delete' | translate)} ${block.name}`"
                       (click)="removeBlock(block.__uuid__)"
                     >
-                      <i class="fas fa-trash-can"></i>
+                      <i class="fas fa-trash-can" aria-hidden="true"></i>
                     </button>
                   }
                   <button
@@ -52,11 +53,13 @@
                     triggers="hover"
                     [ngbTooltip]="'form.button_edit' | translate"
                     [openDelay]="150"
+                    [attr.aria-label]="`${('form.button_edit' | translate)} ${block.name}`"
                   >
-                    <i class="far fa-pen-to-square"></i>
+                    <i class="far fa-pen-to-square" aria-hidden="true"></i>
                   </button>
                   <i
                     class="fas fa-xl"
+                    aria-hidden="true"
                     container="modal"
                     placement="left"
                     triggers="hover"
@@ -127,6 +130,7 @@
       @if (schema.singular) {
         <i
           class="fas fa-xl me-2"
+          aria-hidden="true"
           container="modal"
           placement="top"
           triggers="hover"
@@ -146,8 +150,14 @@
           [openDelay]="150"
         ></i>
       } @else {
-        <button type="button" class="btn btn-elegant me-2" data-dismiss="modal" (click)="addBlock()">
-          <i class="fas fa-plus"></i>
+        <button
+          type="button"
+          class="btn btn-elegant me-2"
+          data-dismiss="modal"
+          aria-label="Add new config block"
+          (click)="addBlock()"
+        >
+          <i class="fas fa-plus" aria-hidden="true"></i>
         </button>
       }
       <button
@@ -160,7 +170,7 @@
         @if (!saveInProgress()) {
           <span>{{ 'form.button_save' | translate }}</span>
         } @else {
-          <i class="fas fa-circle-notch fa-spin"></i>
+          <i class="fas fa-circle-notch fa-spin" aria-hidden="true"></i>
         }
       </button>
     </div>

@@ -1,7 +1,7 @@
 <div class="card card-body mb-3">
   <div class="d-flex flex-row justify-content-between">
     <div class="d-flex flex-column me-3 align-items-center justify-content-between">
-      <img alt="Plugin Icon" class="plugin-icon-card mb-3" [src]="plugin().icon" (error)="handleIconError()" />
+      <img alt="" aria-hidden="true" class="plugin-icon-card mb-3" [src]="plugin().icon" (error)="handleIconError()" />
     </div>
     <div class="d-flex flex-column justify-content-between plugin-content">
       <div class="d-flex flex-row align-items-end">
@@ -13,9 +13,9 @@
               <div class="ms-auto">
                 <! -- update available - ->
                 @if (plugin().installedVersion && plugin().updateAvailable && !childBridgeRestartInProgress()) {
-                  <a
-                    href="javascript:void(0)"
-                    class="card-link"
+                  <button
+                    type="button"
+                    class="card-link btn btn-link p-0 text-decoration-none"
                     container="body"
                     triggers="hover"
                     [openDelay]="150"
@@ -23,8 +23,11 @@
                     [attr.aria-label]="'plugins.button_update' | translate"
                     (click)="checkAndUpdatePlugin()"
                   >
-                    <i class="far fa-arrow-alt-circle-up primary-text fa-lg fa-fade fa-spin-slow ms-3"></i>
-                  </a>
+                    <i
+                      class="far fa-arrow-alt-circle-up primary-text fa-lg fa-fade fa-spin-slow ms-3"
+                      aria-hidden="true"
+                    ></i>
+                  </button>
                 }
                 <! -- // - ->
                 <! -- switch to scoped available - ->
@@ -33,9 +36,9 @@
                   plugin().newHbScope?.switch === plugin().installedVersion &&
                   !childBridgeRestartInProgress()
                 ) {
-                  <a
-                    href="javascript:void(0)"
-                    class="card-link"
+                  <button
+                    type="button"
+                    class="card-link btn btn-link p-0 text-decoration-none"
                     container="body"
                     triggers="hover"
                     [openDelay]="150"
@@ -43,8 +46,11 @@
                     [attr.aria-label]="'plugins.manage.scoped.switch' | translate"
                     (click)="switchToScoped()"
                   >
-                    <i class="fas fa-arrow-right-arrow-left primary-text fa-lg fa-fade fa-spin-slow ms-3"></i>
-                  </a>
+                    <i
+                      class="fas fa-arrow-right-arrow-left primary-text fa-lg fa-fade fa-spin-slow ms-3"
+                      aria-hidden="true"
+                    ></i>
+                  </button>
                 }
                 <! -- // - ->
                 <! -- installed, not configured - ->
@@ -56,9 +62,9 @@
                   !childBridgeRestartInProgress() &&
                   !plugin().disabled
                 ) {
-                  <a
-                    href="javascript:void(0)"
-                    class="card-link"
+                  <button
+                    type="button"
+                    class="card-link btn btn-link p-0 text-decoration-none"
                     container="body"
                     triggers="hover"
                     [ngbTooltip]="'plugins.button_set_up' | translate"
@@ -66,8 +72,8 @@
                     [attr.aria-label]="'plugins.button_set_up' | translate"
                     (click)="openSettings()"
                   >
-                    <i class="fas fa-sliders primary-text fa-lg fa-fade fa-spin-slow ms-3"></i>
-                  </a>
+                    <i class="fas fa-sliders primary-text fa-lg fa-fade fa-spin-slow ms-3" aria-hidden="true"></i>
+                  </button>
                 }
                 <! -- // - ->
                 <! -- installed, configured, not setup as child bridge although recommended - ->
@@ -81,9 +87,9 @@
                   plugin().recommendChildBridge &&
                   !childBridgeRestartInProgress()
                 ) {
-                  <a
-                    href="javascript:void(0)"
-                    class="card-link"
+                  <button
+                    type="button"
+                    class="card-link btn btn-link p-0 text-decoration-none"
                     container="body"
                     triggers="hover"
                     [ngbTooltip]="'child_bridge.setup' | translate"
@@ -91,8 +97,11 @@
                     [attr.aria-label]="'child_bridge.setup' | translate"
                     (click)="openBridgeSettings()"
                   >
-                    <i class="icon-button fas fa-bridge primary-text fa-lg fa-fade fa-spin-slow ms-3"></i>
-                  </a>
+                    <i
+                      class="icon-button fas fa-bridge primary-text fa-lg fa-fade fa-spin-slow ms-3"
+                      aria-hidden="true"
+                    ></i>
+                  </button>
                 }
                 <! -- // - ->
                 <! -- installed, configured, setup as child bridge, not paired with homekit - ->
@@ -107,9 +116,9 @@
                   childBridgeStatus() === 'ok' &&
                   !plugin().disabled
                 ) {
-                  <a
-                    href="javascript:void(0)"
-                    class="card-link"
+                  <button
+                    type="button"
+                    class="card-link btn btn-link p-0 text-decoration-none"
                     container="body"
                     triggers="hover"
                     [ngbTooltip]="'child_bridge.bridge_connect' | translate"
@@ -117,13 +126,17 @@
                     [attr.aria-label]="'child_bridge.bridge_connect' | translate"
                     (click)="openBridgeSettings()"
                   >
-                    <i class="icon-button fas fa-qrcode primary-text fa-lg fa-fade fa-spin-slow ms-3"></i>
-                  </a>
+                    <i
+                      class="icon-button fas fa-qrcode primary-text fa-lg fa-fade fa-spin-slow ms-3"
+                      aria-hidden="true"
+                    ></i>
+                  </button>
                 }
                 <! -- // - ->
                 <! -- restart in progress spinner - ->
                 <i
                   class="fas fa-circle-notch fa-spin fa-lg grey-text ms-3"
+                  aria-hidden="true"
                   [hidden]="!childBridgeRestartInProgress()"
                 ></i>
                 <! -- // - ->
@@ -141,6 +154,7 @@
                 ) {
                   <i
                     class="fas fa-lg ms-3"
+                    aria-hidden="true"
                     [class.fa-bridge-circle-exclamation]="childBridgeStatus() === 'pending'"
                     [class.orange-text]="childBridgeStatus() === 'pending'"
                     [class.fa-bridge-circle-xmark]="childBridgeStatus() === 'down'"
@@ -154,28 +168,34 @@
           <! -- // - ->
           <! -- plugin npm name/info modal - ->
           <p class="card-text mb-2 text-truncate">
-            <a href="javascript:void(0)" class="card-link" (click)="pluginInfoModal(plugin())">
+            <button
+              type="button"
+              class="card-link btn btn-link p-0 text-decoration-none"
+              aria-label="Plugin Info"
+              (click)="pluginInfoModal(plugin())"
+            >
               <i
                 class="fas fa-shield-alt fa-lg me-1"
+                aria-hidden="true"
                 [class.purple-text]="plugin().isHbScoped"
                 [class.green-text]="!plugin().isHbScoped && (plugin().verifiedPlugin || plugin().verifiedPlusPlugin)"
                 [class.orange-text]="!plugin().isHbScoped && !plugin().verifiedPlugin && !plugin().verifiedPlusPlugin"
               ></i>
-              <span class="grey-text">{{ plugin().name }}</span>
-            </a>
+              <span class="grey-text" aria-hidden="true">{{ plugin().name }}</span>
+            </button>
           </p>
           <! -- // - ->
           <! -- plugin author and donate modal - ->
           <p class="card-text mb-2">
             @if ((plugin().verifiedPlugin || plugin().verifiedPlusPlugin) && plugin().funding) {
               <a href="javascript:void(0)" class="card-link" (click)="openFundingModal(plugin())">
-                <i class="fas fa-heart fa-lg me-1 pink-text"></i>
+                <i class="fas fa-heart fa-lg me-1 pink-text" aria-hidden="true"></i>
                 <span class="grey-text">&#64;{{ plugin().author }}</span>
               </a>
             }
             @if (!((plugin().verifiedPlugin || plugin().verifiedPlusPlugin) && plugin().funding)) {
               <span class="grey-text">
-                <i class="fas fa-heart fa-lg me-1 heart-muted"></i>&#64;{{ plugin().author }}
+                <i class="fas fa-heart fa-lg me-1 heart-muted" aria-hidden="true"></i>&#64;{{ plugin().author }}
               </span>
             }
           </p>
@@ -186,7 +206,7 @@
               <! -- not installed - ->
               @if (plugin().publicPackage && !plugin().installedVersion) {
                 <span>
-                  <i class="far fa-circle-dot fa-lg me-1"></i>
+                  <i class="far fa-circle-dot fa-lg me-1" aria-hidden="true"></i>
                   <span class="grey-text"
                     >v{{ plugin().latestVersion }}
                     @if (plugin().lastUpdated) {
@@ -198,7 +218,7 @@
               <! -- // - ->
               <! -- installed - ->
               @if (plugin().installedVersion) {
-                <i class="far fa-circle-check fa-lg me-1"></i>v{{ plugin().installedVersion }}
+                <i class="far fa-circle-check fa-lg me-1" aria-hidden="true"></i>v{{ plugin().installedVersion }}
               }
               <! -- // - ->
             </p>
@@ -206,9 +226,9 @@
               <div class="ms-auto">
                 <! -- icon for child bridge restart - ->
                 @if (!plugin().disabled && plugin().hasChildBridges && childBridgeStatus() === 'ok') {
-                  <a
-                    href="javascript:void(0)"
-                    class="card-link"
+                  <button
+                    type="button"
+                    class="card-link btn btn-link p-0 text-decoration-none"
                     container="body"
                     triggers="hover"
                     [openDelay]="150"
@@ -216,62 +236,82 @@
                       (setChildBridges().length > 1 ? 'child_bridge.restart_plural' : 'child_bridge.restart')
                         | translate
                     "
+                    [attr.aria-label]="
+                      (setChildBridges().length > 1 ? 'child_bridge.restart_plural' : 'child_bridge.restart')
+                        | translate
+                    "
                     (click)="doChildBridgeAction('restart')"
                   >
-                    <i class="fas fa-lg fa-power-off ms-3"></i>
-                  </a>
+                    <i class="fas fa-lg fa-power-off ms-3" aria-hidden="true"></i>
+                  </button>
                 }
                 <! -- // - ->
                 <! -- icon for plugin disabled - ->
                 @if (plugin().installedVersion && plugin().disabled) {
-                  <a href="javascript:void(0)" class="card-link red-text" (click)="enablePlugin(plugin())">
+                  <button
+                    type="button"
+                    class="card-link btn btn-link p-0 text-decoration-none red-text"
+                    [attr.aria-label]="'common.labels.disabled' | translate"
+                    (click)="enablePlugin(plugin())"
+                  >
                     <i
                       class="far fa-pause-circle fa-lg"
+                      aria-hidden="true"
                       container="body"
                       triggers="hover"
                       [ngbTooltip]="'common.labels.disabled' | translate"
                       [openDelay]="150"
                     ></i>
-                  </a>
+                  </button>
                 }
                 <! -- // - ->
                 <! -- icon for plugin not installed, to download - ->
                 @if (plugin().publicPackage && !plugin().installedVersion) {
-                  <a href="javascript:void(0)" (click)="installAlternateVersion()">
-                    <i class="far fa-arrow-alt-circle-down fa-lg"></i>
-                  </a>
+                  <button
+                    type="button"
+                    class="card-link btn btn-link p-0 text-decoration-none"
+                    container="body"
+                    triggers="hover"
+                    [openDelay]="150"
+                    [ngbTooltip]="'plugins.manage.install' | translate"
+                    [attr.aria-label]="'plugins.manage.install' | translate"
+                    (click)="installAlternateVersion()"
+                  >
+                    <i class="far fa-arrow-alt-circle-down fa-lg" aria-hidden="true"></i>
+                  </button>
                 }
                 <! -- // - ->
                 @if (plugin().installedVersion) {
                   <span ngbDropdown placement="left" class="d-inline-block ms-3 mt-auto">
                     <! -- icon to expand dropdown - ->
-                    <a
-                      class="card-link text-decoration-none mt-auto dropdown-toggle-no-outline"
-                      href="javascript:void(0)"
+                    <button
+                      type="button"
+                      class="card-link btn btn-link p-0 text-decoration-none mt-auto dropdown-toggle-no-outline"
                       ngbDropdownToggle
-                      [attr.aria-label]="'Plugin Actions Dropdown'"
+                      [attr.aria-label]="'Plugin Actions'"
                     >
-                      <i class="fa-solid fa-ellipsis-v fa-lg"></i>
-                    </a>
+                      <i class="fa-solid fa-ellipsis-v fa-lg" aria-hidden="true"></i>
+                    </button>
                     <! -- // - ->
                     <div ngbDropdownMenu aria-labelledby="Plugin Actions Dropdown">
                       <! -- plugin config - ->
                       <button type="button" ngbDropdownItem (click)="openSettings()">
-                        <i class="fas fa-sliders"></i>
+                        <i class="fas fa-sliders" aria-hidden="true"></i>
                         {{ 'plugins.button_settings' | translate }}
                       </button>
                       <! -- // - ->
                       <! -- plugin logs - ->
                       @if (plugin().isConfigured && !plugin().disabled) {
                         <button type="button" ngbDropdownItem (click)="viewPluginLog()">
-                          <i class="fas fa-wave-square"></i> {{ 'plugins.manage.plugin_logs' | translate }}
+                          <i class="fas fa-wave-square" aria-hidden="true"></i>
+                          {{ 'plugins.manage.plugin_logs' | translate }}
                         </button>
                       }
                       <! -- // - ->
                       <! -- plugin manage version - ->
                       @if (plugin().publicPackage) {
                         <button type="button" ngbDropdownItem (click)="installAlternateVersion()">
-                          <i class="fas fa-code-compare"></i>
+                          <i class="fas fa-code-compare" aria-hidden="true"></i>
                           {{ 'plugins.manage.manage_version' | translate }}
                         </button>
                       }
@@ -279,28 +319,32 @@
                       <! -- plugin manage config json - ->
                       @if (!isMobile() && plugin().name !== 'homebridge-config-ui-x') {
                         <button type="button" ngbDropdownItem (click)="openJsonEditor()">
-                          <i class="fas fa-code"></i> {{ 'plugins.manage.json_config' | translate }}
+                          <i class="fas fa-code" aria-hidden="true"></i>
+                          {{ 'plugins.manage.json_config' | translate }}
                         </button>
                       }
                       <! -- // - ->
                       <! -- plugin disable, when enabled - ->
                       @if (plugin().name !== 'homebridge-config-ui-x' && !plugin().disabled) {
                         <button type="button" ngbDropdownItem (click)="disablePlugin(plugin())">
-                          <i class="far fa-circle-pause"></i> {{ 'plugins.manage.disable' | translate }}
+                          <i class="far fa-circle-pause" aria-hidden="true"></i>
+                          {{ 'plugins.manage.disable' | translate }}
                         </button>
                       }
                       <! -- // - ->
                       <! -- plugin enable, when disabled - ->
                       @if (plugin().name !== 'homebridge-config-ui-x' && plugin().disabled) {
                         <button type="button" ngbDropdownItem (click)="enablePlugin(plugin())">
-                          <i class="far fa-circle-play"></i> {{ 'plugins.manage.enable' | translate }}
+                          <i class="far fa-circle-play" aria-hidden="true"></i>
+                          {{ 'plugins.manage.enable' | translate }}
                         </button>
                       }
                       <! -- // - ->
                       <! -- plugin uninstall - ->
                       @if (plugin().name !== 'homebridge-config-ui-x') {
                         <button type="button" ngbDropdownItem (click)="uninstallPlugin()">
-                          <i class="fas fa-trash"></i> {{ 'plugins.button_uninstall' | translate }}
+                          <i class="fas fa-trash" aria-hidden="true"></i>
+                          {{ 'plugins.button_uninstall' | translate }}
                         </button>
                       }
                       <! -- // - ->
@@ -316,13 +360,14 @@
                       @if (plugin().hasChildBridges && !plugin().disabled) {
                         <! -- child bridge settings - ->
                         <button type="button" ngbDropdownItem (click)="openBridgeSettings()">
-                          <i class="fas fa-bridge"></i> {{ 'child_bridge.bridge_settings' | translate }}
+                          <i class="fas fa-bridge" aria-hidden="true"></i>
+                          {{ 'child_bridge.bridge_settings' | translate }}
                         </button>
                         <! -- // - ->
                         <! -- child bridge restart - ->
                         @if (!childBridgeRestartInProgress()) {
                           <button type="button" ngbDropdownItem (click)="doChildBridgeAction('restart')">
-                            <i class="icon-button fas fa-power-off"></i>
+                            <i class="icon-button fas fa-power-off" aria-hidden="true"></i>
                             {{
                               (setChildBridges().length > 1 ? 'child_bridge.restart_plural' : 'child_bridge.restart')
                                 | translate
@@ -333,7 +378,7 @@
                         <! -- child bridge stop - ->
                         @if (!allChildBridgesStopped()) {
                           <button type="button" ngbDropdownItem (click)="doChildBridgeAction('stop')">
-                            <i class="fas fa-stop"></i>
+                            <i class="fas fa-stop" aria-hidden="true"></i>
                             {{
                               (setChildBridges().length > 1 ? 'child_bridge.stop_plural' : 'child_bridge.stop')
                                 | translate
@@ -343,7 +388,7 @@
                           <! -- // - ->
                           <! -- child bridge start - ->
                           <button type="button" ngbDropdownItem (click)="doChildBridgeAction('start')">
-                            <i class="fas fa-play"></i>
+                            <i class="fas fa-play" aria-hidden="true"></i>
                             {{
                               (setChildBridges().length > 1 ? 'child_bridge.start_plural' : 'child_bridge.start')
                                 | translate
@@ -353,7 +398,8 @@
                         <! -- // - ->
                         <! -- child bridge reset - ->
                         <button type="button" ngbDropdownItem (click)="resetChildBridges()">
-                          <i class="fas fa-broom"></i> {{ 'child_bridge.reset_accessories' | translate }}
+                          <i class="fas fa-broom" aria-hidden="true"></i>
+                          {{ 'child_bridge.reset_accessories' | translate }}
                         </button>
                         <! -- // - ->
                       }
@@ -373,7 +419,7 @@
                         !plugin().recommendChildBridge
                       ) {
                         <button type="button" ngbDropdownItem (click)="openBridgeSettings()">
-                          <i class="icon-button fas fa-bridge"></i>
+                          <i class="icon-button fas fa-bridge" aria-hidden="true"></i>
                           {{ 'child_bridge.setup' | translate }}
                         </button>
                       }
@@ -396,7 +442,7 @@
                         plugin().updateAvailable
                       ) {
                         <button type="button" ngbDropdownItem (click)="openBridgeSettings()">
-                          <i class="icon-button fas fa-bridge"></i>
+                          <i class="icon-button fas fa-bridge" aria-hidden="true"></i>
                           {{ 'child_bridge.setup' | translate }}
                         </button>
                       }
@@ -407,7 +453,7 @@
                       }
                       @if (plugin().links.bugs) {
                         <a ngbDropdownItem rel="noopener noreferrer" target="_blank" [href]="plugin().links.bugs">
-                          <i class="icon-button far fa-circle-question"></i>
+                          <i class="icon-button far fa-circle-question" aria-hidden="true"></i>
                           {{ 'support.links.issue' | translate }}
                         </a>
                       }

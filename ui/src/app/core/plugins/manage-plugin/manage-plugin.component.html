@@ -20,7 +20,7 @@
     <div class="modal-body plugin-modal-body">
       @if (justUpdatedPlugin()) {
         <div class="mb-3 text-center">
-          <i class="far fa-check-circle primary-text icon-xl"></i>
+          <i class="far fa-check-circle primary-text icon-xl" aria-hidden="true"></i>
         </div>
         <h5 class="text-center mb-3">{{ pastTenseVerb() }}: {{ pluginDisplayName }} ({{ targetVersionPretty() }})</h5>
         @if (!isDisabled) {
@@ -44,6 +44,7 @@
       <div class="mb-3 text-center">
         <i
           class="fas primary-text icon-xl"
+          aria-hidden="true"
           [class.fa-arrow-alt-circle-down]="action === 'Install'"
           [class.fa-code-compare]="action === 'Update' && installedVersion"
           [class.fa-arrow-alt-circle-up]="action === 'Update' && !installedVersion"
@@ -66,6 +67,7 @@ hb-service start</pre
       <div class="mb-3 text-center">
         <i
           class="far primary-text icon-xl"
+          aria-hidden="true"
           [class.fa-arrow-alt-circle-down]="action === 'Install' && !installedVersion"
           [class.fa-code-compare]="action === 'Install' && installedVersion"
           [class.fa-arrow-alt-circle-up]="action === 'Update'"
@@ -93,7 +95,7 @@ hb-service start</pre
             <div class="alert release-notes p-3 pb-1 my-0">
               @if (action === 'Update' && !versionNotesLoaded()) {
                 <div class="w-100 text-center primary-text mt-3 mb-4">
-                  <i class="fas fa-circle-notch fa-spin icon-xl"></i>
+                  <i class="fas fa-circle-notch fa-spin icon-xl" aria-hidden="true"></i>
                 </div>
               } @else {
                 @if (versionNotes()) {
@@ -133,7 +135,7 @@ hb-service start</pre
             <div class="alert release-notes p-3 pb-1 my-0">
               @if (action === 'Update' && !fullChangelogLoaded()) {
                 <div class="w-100 text-center primary-text mt-3 mb-4">
-                  <i class="fas fa-circle-notch fa-spin icon-xl"></i>
+                  <i class="fas fa-circle-notch fa-spin icon-xl" aria-hidden="true"></i>
                 </div>
               } @else {
                 @if (fullChangelog()) {
@@ -156,9 +158,16 @@ hb-service start</pre
           <p class="w-100 text-center mb-1 small">
             <span class="grey-text">{{ 'plugins.manage.backup' | translate }}</span>
             @if (downloadingBackup()) {
-              <span class="mx-1"><i class="fas fa-circle-notch fa-spin"></i></span>
+              <span class="mx-1"><i class="fas fa-circle-notch fa-spin" aria-hidden="true"></i></span>
             } @else {
-              <a href="javascript:void(0)" (click)="downloadBackupFile()"><i class="fas fa-download mx-1"></i></a>
+              <button
+                type="button"
+                class="btn btn-link p-0 align-baseline text-decoration-none"
+                [attr.aria-label]="'form.button_download' | translate"
+                (click)="downloadBackupFile()"
+              >
+                <i class="fas fa-download mx-1" aria-hidden="true"></i>
+              </button>
             }
           </p>
           <p class="w-100 text-center mb-0 small grey-text">{{ 'plugins.manage.hb_restart' | translate }}</p>

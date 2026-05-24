@@ -2,6 +2,16 @@
   min-width: calc(100% - 80px);
 }
 
+// The plugin name and @author lines were plain <a class="card-link"> text that
+// inherited the surrounding .card-text weight (300). The a11y pass turned them
+// into <button class="btn btn-link">, and Bootstrap's .btn forces font-weight:
+// 400, so those lines rendered heavier than the plain version line beneath them.
+// Inherit the weight again so every small-text line in the card matches at 300.
+// (Icons are unaffected — Font Awesome sets its own font-weight on the <i>.)
+.card-link {
+  font-weight: inherit;
+}
+
 .heart-muted {
   opacity: 0.5;
 }

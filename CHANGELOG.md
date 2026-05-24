@@ -12,6 +12,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - feat: add toolbar with search/download/clear to Homebridge Logs widget
 - fix(accessories): add screen reader live regions to HAP sensor tiles (@rfiorentino1)
 - fix(accessories): add ARIA labels, live regions, and keyboard handlers to HAP/matter tiles (@rfiorentino1)
+- fix(plugins): improve screen reader support in plugin card, manage, uninstall, config modals (@rfiorentino1)
 
 ### Other Changes
 
