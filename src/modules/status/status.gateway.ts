@@ -27,6 +27,20 @@ export class StatusGateway {
     }
   }
 
+  /**
+   * Bundles `get-dashboard-layout` and (when the host is a Raspberry Pi)
+   * `get-raspberry-pi-throttled-status` into one WS request — the dashboard
+   * page uses this on (re)connect so init is a single round-trip.
+   */
+  @SubscribeMessage('get-dashboard-init')
+  async getDashboardInit() {
+    try {
+      return await this.statusService.getDashboardInit()
+    } catch (e) {
+      return new WsException(e.message)
+    }
+  }
+
   @SubscribeMessage('set-dashboard-layout')
   async setDashboardLayout(client, payload) {
     try {
