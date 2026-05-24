@@ -14,7 +14,12 @@
     (keydown.space)="$event.preventDefault(); toggleSection('general')"
   >
     <h5 class="primary-text">
-      <i class="fa" aria-hidden="true" [class.fa-chevron-down]="showFields().general" [class.fa-chevron-right]="!showFields().general"></i>
+      <i
+        class="fa"
+        aria-hidden="true"
+        [class.fa-chevron-down]="showFields().general"
+        [class.fa-chevron-right]="!showFields().general"
+      ></i>
       {{ 'support.links.title' | translate }}
     </h5>
   </div>
@@ -95,7 +100,12 @@
     (keydown.space)="$event.preventDefault(); toggleSection('dev')"
   >
     <h5 class="primary-text">
-      <i class="fa" aria-hidden="true" [class.fa-chevron-down]="showFields().dev" [class.fa-chevron-right]="!showFields().dev"></i>
+      <i
+        class="fa"
+        aria-hidden="true"
+        [class.fa-chevron-down]="showFields().dev"
+        [class.fa-chevron-right]="!showFields().dev"
+      ></i>
       {{ 'support.dev.title' | translate }}
     </h5>
   </div>

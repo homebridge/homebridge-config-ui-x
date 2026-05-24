@@ -16,7 +16,9 @@
       <h4 class="mb-4 text-center">{{ 'setup.welcome_to_homebridge' | translate }}</h4>
       @if (!twoFactorCodeRequired()) {
         <div class="input-group mb-4">
-          <span class="input-group-text custom-input"><i class="fas fa-user primary-text fa-lg" aria-hidden="true"></i></span>
+          <span class="input-group-text custom-input"
+            ><i class="fas fa-user primary-text fa-lg" aria-hidden="true"></i
+          ></span>
           <input
             #username
             formControlName="username"
@@ -33,7 +35,9 @@
           />
         </div>
         <div class="input-group mb-4">
-          <span class="input-group-text custom-input"><i class="fas fa-lock primary-text fa-lg" aria-hidden="true"></i></span>
+          <span class="input-group-text custom-input"
+            ><i class="fas fa-lock primary-text fa-lg" aria-hidden="true"></i
+          ></span>
           <input
             #password
             formControlName="password"
@@ -50,7 +54,9 @@
         </div>
       } @else {
         <div class="input-group mb-4">
-          <span class="input-group-text custom-input"><i class="fas fa-key primary-text fa-lg" aria-hidden="true"></i></span>
+          <span class="input-group-text custom-input"
+            ><i class="fas fa-key primary-text fa-lg" aria-hidden="true"></i
+          ></span>
           <input
             #otp
             formControlName="otp"
