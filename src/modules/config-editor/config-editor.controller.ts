@@ -8,6 +8,7 @@ import {
   Inject,
   Param,
   ParseIntPipe,
+  Patch,
   Post,
   Put,
   UseGuards,
@@ -104,6 +105,24 @@ export class ConfigEditorController {
   @Put('/ui')
   setPropertyForUi(@Body() { key, value }) {
     return this.configEditorService.setPropertyForUi(key, value)
+  }
+
+  @UseGuards(AdminGuard)
+  @ApiOperation({
+    summary: 'Update multiple Homebridge UI config properties in a single disk write.',
+    description: 'Body is a `{ key: value }` map. Keys support dot notation for nested properties (e.g. `terminal.fontSize`). The settings page batches concurrent field edits through this endpoint so a burst of changes is one PATCH instead of one PUT per field.',
+  })
+  @ApiBody({
+    description: 'Map of UI config property keys to their new values.',
+    schema: {
+      type: 'object',
+      additionalProperties: true,
+      example: { 'theme': 'red', 'lang': 'auto', 'terminal.fontSize': 14 },
+    },
+  })
+  @Patch('/ui')
+  patchPropertiesForUi(@Body() body: Record<string, any>) {
+    return this.configEditorService.setPropertiesForUi(body)
   }
 
   @UseGuards(AdminGuard)

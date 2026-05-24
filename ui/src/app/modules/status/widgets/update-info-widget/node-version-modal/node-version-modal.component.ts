@@ -75,10 +75,7 @@ export class NodeVersionModalComponent implements OnInit {
 
   public async updateNodeUpdatePolicy(value: NodeUpdatePolicy): Promise<void> {
     try {
-      await this.$api.put('/config-editor/ui', {
-        key: 'nodeUpdatePolicy',
-        value,
-      })
+      await this.$api.patch('/config-editor/ui', { nodeUpdatePolicy: value })
 
       // Update the local settings cache
       this.$settings.env.nodeUpdatePolicy = value

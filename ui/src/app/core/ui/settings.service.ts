@@ -114,7 +114,7 @@ export class SettingsService {
       theme = this.defaultTheme
 
       // Save the new property to the config file
-      this.$api.put('/config-editor/ui', { key: 'theme', value: theme })
+      this.$api.patch('/config-editor/ui', { theme })
         .catch(error => console.error('Error saving setTheme:', error))
     }
 

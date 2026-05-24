@@ -1072,13 +1072,68 @@ export class SettingsComponent implements OnInit {
       .subscribe(port => this.hbEndPortSave(port!))
   }
 
+  // Pending-changes buffer for UI config writes — when several form fields
+  // settle around the same time we coalesce their saves into one
+  // PATCH /config-editor/ui (one disk write) instead of issuing one PUT per
+  // field. The promise returned to each caller resolves when the next flush
+  // completes so per-field "isSaving" indicators stay accurate.
+  private pendingUiChanges = new Map<string, unknown>()
+  private pendingUiFlushTimer: ReturnType<typeof setTimeout> | null = null
+  private pendingUiFlush: { promise: Promise<void>, resolve: () => void, reject: (error: any) => void } | null = null
+  private static readonly UI_FLUSH_COALESCE_MS = 150
+
   private async saveUiSettingChange(key: string, value: unknown): Promise<void> {
-    // Save the new property to the config file
     try {
-      await this.$api.put('/config-editor/ui', { key, value })
+      await this.queueUiSettingChange(key, value)
     } catch (error: any) {
       console.error(error)
       this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+    }
+  }
+
+  private queueUiSettingChange(key: string, value: unknown): Promise<void> {
+    this.pendingUiChanges.set(key, value)
+
+    if (!this.pendingUiFlush) {
+      let resolve!: () => void
+      let reject!: (error: any) => void
+      const promise = new Promise<void>((res, rej) => {
+        resolve = res
+        reject = rej
+      })
+      this.pendingUiFlush = { promise, resolve, reject }
+    }
+
+    if (this.pendingUiFlushTimer) {
+      clearTimeout(this.pendingUiFlushTimer)
+    }
+    this.pendingUiFlushTimer = setTimeout(
+      () => void this.flushPendingUiChanges(),
+      SettingsComponent.UI_FLUSH_COALESCE_MS,
+    )
+
+    return this.pendingUiFlush.promise
+  }
+
+  private async flushPendingUiChanges(): Promise<void> {
+    if (this.pendingUiFlushTimer) {
+      clearTimeout(this.pendingUiFlushTimer)
+      this.pendingUiFlushTimer = null
+    }
+    if (this.pendingUiChanges.size === 0 || !this.pendingUiFlush) {
+      return
+    }
+
+    const payload = Object.fromEntries(this.pendingUiChanges)
+    const flush = this.pendingUiFlush
+    this.pendingUiChanges = new Map()
+    this.pendingUiFlush = null
+
+    try {
+      await this.$api.patch('/config-editor/ui', payload)
+      flush.resolve()
+    } catch (error) {
+      flush.reject(error)
     }
   }
 
@@ -2041,7 +2096,7 @@ export class SettingsComponent implements OnInit {
       // Convert empty string to null
       const cronValue = value?.trim() ? value : null
       this.$settings.setEnvItem('scheduledRestartCron', cronValue)
-      await this.$api.put('/config-editor/ui', { key: 'scheduledRestartCron', value: cronValue })
+      await this.saveUiSettingChange('scheduledRestartCron', cronValue)
       setTimeout(() => {
         this.scheduledRestartCronIsSaving.set(false)
         this.$api.put('/platform-tools/hb-service/set-full-service-restart-flag', {})
