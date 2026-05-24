@@ -54,6 +54,11 @@ export class TerminalWidgetComponent implements OnInit, OnDestroy {
   public readonly terminalHeight = signal<number>(200)
   public readonly theme = signal<'dark' | 'light'>('dark')
 
+  // Screen-reader-only collapse: keeps the xterm textarea out of the tab order
+  // and the live region silent until SR users explicitly expand the widget.
+  public readonly srExpanded = signal(false)
+  public readonly contentId = `terminal-content-${globalThis.crypto?.randomUUID?.() || Math.random().toString(36).slice(2)}`
+
   // Other properties
   private visibilityChangeHandler: (() => void) | null = null
   resizeEvent!: Subject<void> // Set directly by ComponentFactoryResolver
@@ -66,10 +71,16 @@ export class TerminalWidgetComponent implements OnInit, OnDestroy {
   }
 
   onWindowFocus(): void {
+    if (!this.srExpanded()) {
+      return
+    }
     this.$terminal.activateTerminal()
   }
 
   onClick(): void {
+    if (!this.srExpanded()) {
+      return
+    }
     this.$terminal.activateTerminal()
   }
 
@@ -97,6 +108,64 @@ export class TerminalWidgetComponent implements OnInit, OnDestroy {
     live.setAttribute('aria-atomic', 'true')
   }
 
+  // Mirror srExpanded onto the xterm textarea so collapsed widgets are not a tab stop
+  // and don't expose stdin to screen readers.
+  private applyTerminalA11yState(): void {
+    const host = this.termTarget()?.nativeElement as HTMLElement | undefined
+    if (!host) {
+      return
+    }
+
+    const ta = host.querySelector('textarea') as HTMLTextAreaElement | null
+    if (!ta) {
+      return
+    }
+
+    if (this.srExpanded()) {
+      ta.disabled = false
+      ta.removeAttribute('aria-hidden')
+      ta.removeAttribute('tabindex')
+    } else {
+      ta.disabled = true
+      ta.setAttribute('aria-hidden', 'true')
+      ta.setAttribute('tabindex', '-1')
+      if (document.activeElement === ta) {
+        ta.blur()
+      }
+    }
+  }
+
+  private kickFocusOutOfCollapsedTerminal(): void {
+    if (this.srExpanded()) {
+      return
+    }
+
+    const host = this.termTarget()?.nativeElement as HTMLElement | undefined
+    if (!host || !host.contains(document.activeElement)) {
+      return
+    }
+
+    const title = this.titleElement()?.nativeElement as HTMLElement | undefined
+    const btn = title?.querySelector('button') as HTMLElement | null
+    btn?.focus()
+  }
+
+  public toggleSrExpanded(event: Event): void {
+    event.stopPropagation()
+    this.srExpanded.set(!this.srExpanded())
+
+    setTimeout(() => {
+      this.applyTerminalA11yState()
+      this.patchXtermLiveRegion()
+      if (this.srExpanded()) {
+        this.resizeEvent.next(undefined)
+        this.$terminal.activateTerminal()
+      } else {
+        this.kickFocusOutOfCollapsedTerminal()
+      }
+    }, 0)
+  }
+
   public ngOnInit(): void {
     // Use effective theme to enforce dark mode override when needed
     this.theme.set(this.$settings.getEffectiveTerminalLightingMode())
@@ -121,10 +190,15 @@ export class TerminalWidgetComponent implements OnInit, OnDestroy {
         this.$terminal.startTerminal(this.termTarget()!, terminalOptions, this.resizeEvent)
       }
 
-      // Autofocus terminal when component is fully loaded
+      // Autofocus terminal when component is fully loaded, but only if SR users
+      // have expanded the widget (otherwise the xterm textarea grabs focus and
+      // disrupts keyboard navigation through the dashboard)
       setTimeout(() => {
+        this.applyTerminalA11yState()
         this.patchXtermLiveRegion()
-        this.$terminal.activateTerminal()
+        if (this.srExpanded()) {
+          this.$terminal.activateTerminal()
+        }
       }, 100)
     })
 
@@ -184,8 +258,11 @@ export class TerminalWidgetComponent implements OnInit, OnDestroy {
       // Only focus if this terminal widget is actually visible on screen
       if (this.isTerminalWidgetVisible()) {
         setTimeout(() => {
+          this.applyTerminalA11yState()
           this.patchXtermLiveRegion()
-          this.$terminal.activateTerminal()
+          if (this.srExpanded()) {
+            this.$terminal.activateTerminal()
+          }
         }, 100)
       }
     }
