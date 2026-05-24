@@ -1,3 +1,4 @@
+export * from './accessory-overview-cache.service'
 export * from './cached-accessories-cache.service'
 export * from './plugins-cache.service'
 export * from './server-pairings-cache.service'
