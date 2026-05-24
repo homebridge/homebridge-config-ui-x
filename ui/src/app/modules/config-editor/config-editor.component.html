@@ -4,6 +4,59 @@
       <h3 class="primary-text m-0">{{ 'menu.config_json_editor' | translate }}</h3>
     </div>
     <div class="col-6 text-end">
+      <div ngbDropdown placement="bottom-end" class="d-none d-sm-inline-block me-2">
+        <button
+          id="hb-editor-mode-toggle"
+          type="button"
+          class="btn btn-elegant my-0"
+          ngbDropdownToggle
+          container="body"
+          placement="bottom"
+          triggers="hover"
+          [openDelay]="150"
+          [ngbTooltip]="'config.editor_mode' | translate"
+          [attr.aria-label]="'config.editor_mode' | translate"
+        >
+          <i aria-hidden="true" class="far fa-pen-to-square"></i>
+        </button>
+        <div
+          ngbDropdownMenu
+          role="menu"
+          [attr.aria-label]="'config.editor_mode' | translate"
+          [attr.aria-labelledby]="'hb-editor-mode-toggle'"
+        >
+          <button
+            type="button"
+            ngbDropdownItem
+            role="menuitemradio"
+            [class.active]="!preferPlainTextEditor()"
+            [attr.aria-checked]="!preferPlainTextEditor()"
+            (click)="setPlainTextEditor(false)"
+          >
+            <span class="hb-editor-mode-check">
+              @if (!preferPlainTextEditor()) {
+                <i aria-hidden="true" class="fas fa-check primary-text"></i>
+              }
+            </span>
+            {{ 'config.editor_mode_default' | translate }}
+          </button>
+          <button
+            type="button"
+            ngbDropdownItem
+            role="menuitemradio"
+            [class.active]="preferPlainTextEditor()"
+            [attr.aria-checked]="preferPlainTextEditor()"
+            (click)="setPlainTextEditor(true)"
+          >
+            <span class="hb-editor-mode-check">
+              @if (preferPlainTextEditor()) {
+                <i aria-hidden="true" class="fas fa-check primary-text"></i>
+              }
+            </span>
+            {{ 'config.editor_mode_plain' | translate }}
+          </button>
+        </div>
+      </div>
       @if (originalConfig()) {
         <button
           type="button"
@@ -79,7 +132,7 @@
     </div>
   </div>
 
-  @if (!isMobile() && !originalConfig()) {
+  @if (!preferPlainTextEditor() && !isMobile() && !originalConfig()) {
     <ngx-monaco-editor
       class="flex-grow-1 h-100 w-100 mt-3 mb-0"
       [options]="editorOptions"
@@ -89,7 +142,7 @@
       (keydown.meta.s)="$event.preventDefault(); onSave()"
     />
   }
-  @if (!isMobile() && originalConfig()) {
+  @if (!preferPlainTextEditor() && !isMobile() && originalConfig()) {
     <ngx-monaco-diff-editor
       class="flex-grow-1 h-100 w-100 mt-3 mb-0"
       [options]="editorOptions"
@@ -100,7 +153,7 @@
       (keydown.meta.s)="$event.preventDefault(); onSave()"
     />
   }
-  @if (isMobile()) {
+  @if (preferPlainTextEditor() || isMobile()) {
     <textarea
       wrap="off"
       class="hb-plain-text-editor align-self-end h-100 w-100 my-3"
