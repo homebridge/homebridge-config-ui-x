@@ -1688,13 +1688,46 @@ export class PluginsService {
     }
 
     const config: HomebridgeConfig = await readJson(this.configService.configPath)
+    return this.filterConfigBlocksForPlugin(config, pluginName, alias)
+  }
+
+  private filterConfigBlocksForPlugin(config: HomebridgeConfig, pluginName: string, alias: PluginAlias): any[] {
+    if (!alias.pluginAlias) {
+      return []
+    }
     const arrayKey = alias.pluginType === 'accessory' ? 'accessories' : 'platforms'
     const blocks = (config[arrayKey] ?? []) as any[]
-
     return blocks.filter(block =>
       block[alias.pluginType] === alias.pluginAlias
       || block[alias.pluginType] === `${pluginName}.${alias.pluginAlias}`,
     )
+  }
+
+  /**
+   * Like `getInstalledPlugins`, but attaches a `config` field to each
+   * plugin holding its saved config blocks from `config.json`. Reads the
+   * config file once and reuses cached alias lookups so this scales O(N)
+   * over installed plugins without N disk reads.
+   */
+  public async getInstalledPluginsWithConfig(): Promise<HomebridgePlugin[]> {
+    const plugins = await this.getInstalledPlugins()
+    let config: HomebridgeConfig
+    try {
+      config = await readJson(this.configService.configPath)
+    } catch (e) {
+      this.logger.error(`Failed to read config.json while attaching plugin config blocks: ${e.message}.`)
+      return plugins.map(plugin => ({ ...plugin, config: [] }))
+    }
+
+    return Promise.all(plugins.map(async (plugin) => {
+      try {
+        const alias = await this.getPluginAlias(plugin.name)
+        return { ...plugin, config: this.filterConfigBlocksForPlugin(config, plugin.name, alias) }
+      } catch (e) {
+        this.logger.error(`Failed to attach config blocks for plugin ${plugin.name}: ${e.message}.`)
+        return { ...plugin, config: [] }
+      }
+    }))
   }
 
   /**

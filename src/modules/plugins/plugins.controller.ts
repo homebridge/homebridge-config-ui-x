@@ -1,4 +1,4 @@
-import { Controller, Get, Inject, Param, Post, Query, UseGuards } from '@nestjs/common'
+import { Controller, ForbiddenException, Get, Inject, Param, Post, Query, Request, UseGuards } from '@nestjs/common'
 import { AuthGuard } from '@nestjs/passport'
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger'
 
@@ -14,9 +14,26 @@ export class PluginsController {
     @Inject(PluginsService) private readonly pluginsService: PluginsService,
   ) {}
 
-  @ApiOperation({ summary: 'Get the list of currently installed Homebridge plugins.' })
+  @ApiOperation({
+    summary: 'Get the list of currently installed Homebridge plugins.',
+    description: 'Pass `?include=config` (admin only) to bundle each plugin\'s saved `config.json` blocks onto the response — used by the plugins page to avoid an N+1 fan-out over `/config-editor/plugin/:name`.',
+  })
+  @ApiQuery({
+    name: 'include',
+    type: 'string',
+    required: false,
+    description: 'Comma-separated list of optional extras to attach. Supported values: `config` (admin only).',
+    example: 'config',
+  })
   @Get()
-  pluginsGet() {
+  pluginsGet(@Request() req: any, @Query('include') include?: string) {
+    const includes = (include ?? '').split(',').map(s => s.trim()).filter(Boolean)
+    if (includes.includes('config')) {
+      if (!req.user?.admin) {
+        throw new ForbiddenException('Admin role required to include plugin config blocks.')
+      }
+      return this.pluginsService.getInstalledPluginsWithConfig()
+    }
     return this.pluginsService.getInstalledPlugins()
   }
 

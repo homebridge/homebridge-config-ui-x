@@ -446,44 +446,56 @@ export class PluginsComponent implements OnInit, OnDestroy, CanComponentDeactiva
       return
     }
 
-    // Also get the current configuration for each plugin
-    await Promise.all(plugins
-      .filter(plugin => plugin.installedVersion)
-      .map(async (plugin: Plugin) => {
-        try {
-          // Adds some extra properties to the plugin object for the plugin card
-          const configBlocks = await this.$api.get<any[]>(`/config-editor/plugin/${encodeURIComponent(plugin.name)}`)
-          plugin.isConfigured = configBlocks.length > 0
-          plugin.isConfiguredDynamicPlatform = plugin.isConfigured && Object.hasOwn(configBlocks[0], 'platform')
+    // Config blocks are attached server-side via /plugins?include=config
+    // (admin only) — we used to issue one /config-editor/plugin/:name call
+    // per installed plugin here, which was an N+1 on every page load.
+    //
+    // Search results come from /plugins/search/:query which doesn't attach
+    // configs, so for any installed plugin that arrives without one we look
+    // it up in the installed-plugins cache (already warm during normal use).
+    const needsCacheLookup = plugins.some(p => p.installedVersion && p.config === undefined)
+    const cachedConfigByName = needsCacheLookup
+      ? new Map((await this.$pluginsCache.get()).map(p => [p.name, p.config ?? []]))
+      : null
 
-          plugin.recommendChildBridge = plugin.isConfigured
-            && this.$settings.env.recommendChildBridges
-            && !['homebridge', 'homebridge-config-ui-x'].includes(plugin.name)
+    for (const plugin of plugins) {
+      if (!plugin.installedVersion) {
+        continue
+      }
 
-          plugin.hasChildBridges = plugin.isConfigured && configBlocks.some(x => x._bridge && x._bridge.username)
+      try {
+        const configBlocks = plugin.config ?? cachedConfigByName?.get(plugin.name) ?? []
+        plugin.isConfigured = configBlocks.length > 0
+        plugin.isConfiguredDynamicPlatform = plugin.isConfigured && Object.hasOwn(configBlocks[0], 'platform')
 
-          const pluginChildBridges = this.getPluginChildBridges(plugin)
+        plugin.recommendChildBridge = plugin.isConfigured
+          && this.$settings.env.recommendChildBridges
+          && !['homebridge', 'homebridge-config-ui-x'].includes(plugin.name)
 
-          // Check for unpaired HAP bridges OR unpaired Matter bridges that are NOT hidden
-          plugin.hasChildBridgesUnpaired = pluginChildBridges.some((x) => {
-            const hasUnpairedHap = x.paired === false && !this.isBridgeAlertHidden(x.username, 'hap')
-            const hasUnpairedMatter = x.matterConfig && x.matterCommissioned === false && !this.isBridgeAlertHidden(x.username, 'matter')
+        plugin.hasChildBridges = plugin.isConfigured && configBlocks.some(x => x._bridge && x._bridge.username)
 
-            return hasUnpairedHap || hasUnpairedMatter
-          })
+        const pluginChildBridges = this.getPluginChildBridges(plugin)
 
-          if (this.$settings.env.plugins?.hideUpdatesFor?.includes(plugin.name)) {
-            plugin.updateAvailable = false
-          }
-        } catch (error) {
-          console.error(`Failed to load config for ${plugin.name}:`, error)
+        // Check for unpaired HAP bridges OR unpaired Matter bridges that are NOT hidden
+        plugin.hasChildBridgesUnpaired = pluginChildBridges.some((x) => {
+          const hasUnpairedHap = x.paired === false && !this.isBridgeAlertHidden(x.username, 'hap')
+          const hasUnpairedMatter = x.matterConfig && x.matterCommissioned === false && !this.isBridgeAlertHidden(x.username, 'matter')
 
-          // May not be technically correct, but if we can't load the config, assume it is configured
-          plugin.isConfigured = true
-          plugin.hasChildBridges = true
+          return hasUnpairedHap || hasUnpairedMatter
+        })
+
+        if (this.$settings.env.plugins?.hideUpdatesFor?.includes(plugin.name)) {
+          plugin.updateAvailable = false
         }
-      }),
-    )
+      } catch (error) {
+        console.error(`Failed to derive metadata for ${plugin.name}:`, error)
+
+        // If something goes wrong, assume it is configured — same fallback
+        // the previous per-plugin fetch used.
+        plugin.isConfigured = true
+        plugin.hasChildBridges = true
+      }
+    }
   }
 
   private getChildBridgeMetadata(): void {
