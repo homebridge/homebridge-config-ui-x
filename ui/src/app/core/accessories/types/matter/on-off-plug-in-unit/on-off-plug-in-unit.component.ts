@@ -1,3 +1,4 @@
+import { LowerCasePipe } from '@angular/common'
 import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core'
 import { TranslatePipe } from '@ngx-translate/core'
 
@@ -8,6 +9,7 @@ import { SettingsService } from '@/app/core/ui/settings.service'
 @Component({
   selector: 'app-on-off-plug-in-unit',
   imports: [
+    LowerCasePipe,
     TranslatePipe,
   ],
   standalone: true,
