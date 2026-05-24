@@ -1,4 +1,4 @@
-import type { PluginConfigBlock } from '@/app/core/plugins/manage-plugins.interfaces'
+import type { ChildBridge, PluginConfigBlock } from '@/app/core/plugins/manage-plugins.interfaces'
 
 import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core'
 import {
@@ -107,7 +107,11 @@ export class PluginConfigComponent implements OnInit {
     }
 
     try {
-      const newConfig = await this.$api.post(`/config-editor/plugin/${encodeURIComponent(plugin.name)}`, configBlocks)
+      const response = await this.$api.post<{ config: any[], restartRequired: boolean, affectedBridges: ChildBridge[] }>(
+        `/config-editor/plugin/${encodeURIComponent(plugin.name)}?include=restart-info`,
+        configBlocks,
+      )
+      const newConfig = response.config
       this.saveInProgress.set(false)
       if (plugin.name === 'homebridge-config-ui-x') {
         // Reload app settings if the config was changed for Homebridge UI
@@ -123,9 +127,11 @@ export class PluginConfigComponent implements OnInit {
         }
       }
 
-      // This will show the child bridge restart modal if needed, otherwise the full restart homebridge modal
+      // This will show the child bridge restart modal if needed, otherwise the full restart homebridge modal.
+      // Phase 7: affected bridges arrive inline on the save response so we
+      // skip the follow-up /status/homebridge/child-bridges fetch.
       this.$activeModal.close()
-      await this.$cb.openCorrectRestartModalForPlugin(plugin.name)
+      this.$cb.openCorrectRestartModalWithBridges(response.affectedBridges)
     } catch (error) {
       console.error(error)
       this.$toastr.error(this.$translate.instant('config.failed_to_save_config'), this.$translate.instant('toast.title_error'))
