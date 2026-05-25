@@ -114,10 +114,20 @@ export class StatusComponent implements OnInit, OnDestroy {
     // Subscribe for reconnections — fires once for cache-hit-while-connected
     // and on every (re)connect thereafter. `consoleStatus` starts as 'down' and
     // is flipped back to 'down' by the 'disconnect' handler below.
+    let initialLayoutLoaded = false
     this.io.connected!.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
       this.consoleStatus.set('up')
       this.io.socket.emit('monitor-server-status')
-      this.loadDashboardInit()
+      if (!initialLayoutLoaded) {
+        initialLayoutLoaded = true
+        // Loads layout + rpiThrottled. Layout is only applied once so a
+        // network blip mid-drag doesn't revert the user's edits.
+        this.loadDashboardInit()
+      } else {
+        // On reconnect we still want to refresh the RPi throttled banner,
+        // but skip the layout reapply.
+        this.refreshRpiThrottledStatus()
+      }
     })
 
     this.io.socket.on('disconnect', () => {
@@ -532,6 +542,14 @@ export class StatusComponent implements OnInit, OnDestroy {
         this.$notification.raspberryPiThrottled.set(response.rpiThrottled)
       }
       this.applyDashboardLayout(response?.layout ?? [])
+    })
+  }
+
+  private refreshRpiThrottledStatus() {
+    this.io.request('get-dashboard-init').subscribe((response: any) => {
+      if (response?.rpiThrottled) {
+        this.$notification.raspberryPiThrottled.set(response.rpiThrottled)
+      }
     })
   }
 
