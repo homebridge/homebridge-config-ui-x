@@ -88,9 +88,9 @@ export class ChildBridgesService {
   }
 
   /**
-   * Restart a single child bridge
+   * Start a single (currently stopped) child bridge
    */
   public startChildBridge(deviceId: string) {
-    return this.stopStartRestartChildBridge('restartChildBridge', deviceId)
+    return this.stopStartRestartChildBridge('startChildBridge', deviceId)
   }
 }
