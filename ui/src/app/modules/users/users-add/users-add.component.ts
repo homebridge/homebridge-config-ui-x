@@ -79,12 +79,16 @@ export class UsersAddComponent implements OnInit {
   }
 
   private matchPassword(AC: AbstractControl): { [key: string]: boolean } | null {
+    const passwordConfirmCtrl = AC.get('passwordConfirm')
     const password = AC.get('password')?.value
-    const passwordConfirm = AC.get('passwordConfirm')?.value
+    const passwordConfirm = passwordConfirmCtrl?.value
+    const otherErrors = { ...(passwordConfirmCtrl?.errors ?? {}) }
+    delete otherErrors.matchPassword
     if (password !== passwordConfirm) {
-      AC.get('passwordConfirm')?.setErrors({ matchPassword: true })
+      passwordConfirmCtrl?.setErrors({ ...otherErrors, matchPassword: true })
       return { matchPassword: true }
     }
+    passwordConfirmCtrl?.setErrors(Object.keys(otherErrors).length ? otherErrors : null)
     return null
   }
 }

@@ -64,6 +64,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(ws): repair socket cache lifecycle and token rotation
 - fix(plugins): guard restart modal against missing `affectedBridges`
 - fix(status): only apply dashboard layout on first connect
+- fix(users): clear stale `matchPassword` error when mismatch resolves
 
 ### Other Changes
 
