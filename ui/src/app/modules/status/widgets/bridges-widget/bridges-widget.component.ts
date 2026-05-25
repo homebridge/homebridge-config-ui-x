@@ -97,6 +97,45 @@ export class BridgesWidgetComponent implements OnInit, OnDestroy {
     return 'status.services.hap_running'
   }
 
+  /**
+   * Compose a single aria-label that the screen reader reads as the whole row
+   * is one button: "<name>, <Running|Not Running|Restarting>[, Matter
+   * Running|Matter Not Running][, Restart]". The trailing "Restart" only
+   * appears when the user can actually trigger a restart.
+   */
+  public mainBridgeAriaLabel(): string {
+    const status = this.homebridgeStatus()
+    const name = status?.name || 'Homebridge'
+    const inTransition = status?.status === 'pending' || this.isRestarting()
+    const statusLabel = this.bridgeStatusLabel(status?.status, inTransition)
+    const matter = this.matterStatusLabel(this.isMatterSupported && !!status?.matter?.enabled, status?.status, inTransition)
+    const restart = !inTransition && this.isAdmin ? `, ${this.$translate.instant('menu.tooltip_restart')}` : ''
+    return `${name}, ${statusLabel}${matter}${restart}`
+  }
+
+  public childBridgeAriaLabel(bridge: ChildBridgeWithUIState): string {
+    const inTransition = bridge.status === 'pending' || bridge.restarting || this.isRestarting()
+    const statusLabel = this.bridgeStatusLabel(bridge.status, inTransition)
+    const matter = this.matterStatusLabel(this.isMatterSupported && !!(bridge as any).matterConfig, bridge.status, inTransition)
+    const restart = !inTransition && this.isAdmin ? `, ${this.$translate.instant('menu.tooltip_restart')}` : ''
+    return `${bridge.name}, ${statusLabel}${matter}${restart}`
+  }
+
+  private bridgeStatusLabel(status: string | undefined, inTransition: boolean): string {
+    if (inTransition) {
+      return this.$translate.instant('status.services.label_restarting')
+    }
+    return this.$translate.instant(status === 'down' ? 'status.services.label_not_running' : 'status.services.label_running')
+  }
+
+  private matterStatusLabel(matterEnabled: boolean, status: string | undefined, inTransition: boolean): string {
+    // Skip matter announcement while restarting — the row label already says "Restarting".
+    if (!matterEnabled || inTransition) {
+      return ''
+    }
+    return `, ${this.$translate.instant(status === 'down' ? 'status.services.matter_not_running' : 'status.services.matter_running')}`
+  }
+
   private async initialize(): Promise<void> {
     this.ioMain = this.$ws.connectToNamespace('status')
 
