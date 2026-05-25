@@ -3,7 +3,7 @@ import { copyFile, open, readdir, readFile, rename, unlink } from 'node:fs/promi
 import { join, resolve } from 'node:path'
 import { pid } from 'node:process'
 
-import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common'
+import { BadRequestException, Inject, Injectable, NotFoundException, OnApplicationBootstrap } from '@nestjs/common'
 import dayjs from 'dayjs'
 import { ensureDir, move, pathExists, readJson, remove } from 'fs-extra/esm'
 import { gte } from 'semver'
@@ -30,7 +30,13 @@ export interface ConfigEditorRestartInfo<T> {
 }
 
 @Injectable()
-export class ConfigEditorService {
+export class ConfigEditorService implements OnApplicationBootstrap {
+  // Resolves after start() has finished, so updateConfigFile() can await
+  // it and never race with the in-flight backup migration that
+  // start() runs at boot. Resolves immediately if no save lands.
+  private readonly ready: Promise<void>
+  private resolveReady!: () => void
+
   constructor(
     @Inject(Logger) private readonly logger: Logger,
     @Inject(ConfigService) private readonly configService: ConfigService,
@@ -39,8 +45,19 @@ export class ConfigEditorService {
     @Inject(HomebridgeIpcService) private readonly homebridgeIpcService: HomebridgeIpcService,
     @Inject(ChildBridgesService) private readonly childBridgesService: ChildBridgesService,
   ) {
-    this.start()
+    this.ready = new Promise((res) => {
+      this.resolveReady = res
+    })
     this.scheduleConfigBackupCleanup()
+  }
+
+  async onApplicationBootstrap(): Promise<void> {
+    // Run start() through Nest's lifecycle so the migration completes
+    // before any request-driven save can land. Otherwise
+    // updateConfigFile()'s backup-snapshot and migrateConfigBackups()'s
+    // move/remove pass could touch the same files concurrently.
+    await this.start()
+    this.resolveReady()
   }
 
   /**
@@ -96,6 +113,10 @@ export class ConfigEditorService {
    * Updates the config file
    */
   public async updateConfigFile(config: HomebridgeConfig) {
+    // Wait until bootstrap-time migration has finished. Otherwise a save
+    // landing during start() could race with the backup migration's
+    // move/remove of legacy config.json.<ts> files.
+    await this.ready
     const now = new Date()
 
     if (!config) {
