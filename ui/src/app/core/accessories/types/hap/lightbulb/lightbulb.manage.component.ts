@@ -38,8 +38,10 @@ export const LIGHTBULB_ADAPTIVE_LIGHTING = new InjectionToken<Signal<boolean> | 
 export class LightbulbManageComponent extends BaseManageComponent {
   private $colour = inject(ColourService)
 
-  // Inject lightbulb-specific data (optional)
-  public adaptiveLightingSignal = inject(LIGHTBULB_ADAPTIVE_LIGHTING)!
+  // Inject lightbulb-specific data (optional — accessories without
+  // adaptive lighting don't provide the token, so the signal can be
+  // undefined; template calls must use `?.()` to stay safe).
+  public adaptiveLightingSignal = inject(LIGHTBULB_ADAPTIVE_LIGHTING)
   public hasAdaptiveLighting = !!this.adaptiveLightingSignal
 
   public targetMode!: boolean

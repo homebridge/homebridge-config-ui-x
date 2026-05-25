@@ -89,6 +89,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(server): allowlist restart/shutdown commands and use spawn-array
 - fix(fs): serialise JSON mutations through a shared JsonFileStore
 - fix(plugins): translate install/update toast template
+- fix(accessories): show lightbulb modal when adaptive lighting is absent
 
 ### Other Changes
 
