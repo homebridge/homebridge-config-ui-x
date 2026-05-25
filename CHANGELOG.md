@@ -53,6 +53,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(plugins): drop shell-injection vector in `cleanNpmCache`
 - fix(backup): block path-traversal and symlink entries in restores
 - fix(backup): reject concurrent restore uploads via a singleton slot
+- fix(installer): validate `--user` before writing sudoers entries
 
 ### Other Changes
 

@@ -10,6 +10,7 @@ import { gte, parse } from 'semver'
 import { osInfo } from 'systeminformation'
 
 import { isNodeV24SupportedArchitecture } from '../../core/node-version.constants.js'
+import { RE_OS_USERNAME } from '../../core/regex.constants.js'
 import { BasePlatform } from '../base-platform.js'
 
 export class LinuxInstaller extends BasePlatform {
@@ -619,6 +620,17 @@ export class LinuxInstaller extends BasePlatform {
    */
   private setupSudo() {
     try {
+      // Refuse to interpolate an unvalidated username into the sudoers line.
+      // A crafted `--user` value could otherwise inject a trailing entry
+      // (e.g. `foo, /bin/sh`) and grant NOPASSWD to arbitrary binaries.
+      if (!RE_OS_USERNAME.test(this.hbService.asUser)) {
+        this.hbService.logger(
+          `WARNING: Refusing to write /etc/sudoers entry — invalid username "${this.hbService.asUser}".`,
+          'warn',
+        )
+        return
+      }
+
       const npmPath = execSync('which npm').toString('utf8').trim()
       const shutdownPath = execSync('which shutdown').toString('utf8').trim()
       const sudoersEntry = `${this.hbService.asUser}    ALL=(ALL) NOPASSWD:SETENV: ${shutdownPath}, ${npmPath}, /usr/bin/npm, /usr/local/bin/npm, /usr/bin/apt-get update, /usr/bin/apt-get install --only-upgrade -y homebridge`
