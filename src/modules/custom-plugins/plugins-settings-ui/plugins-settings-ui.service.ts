@@ -204,8 +204,18 @@ export class PluginsSettingsUiService {
       }
     })
 
-    // Function to handle cleanup
+    // Function to handle cleanup. socket.io often emits both 'disconnect'
+    // and 'end' on the same socket close, so cleanup() would otherwise
+    // run twice and schedule two 5-second SIGTERM timers. By the time
+    // those fire the OS may have recycled childPid, so the second kill
+    // (or both, if the first fails) could land on an unrelated process.
+    // The single-shot flag plus a `child.killed` check prevents that.
+    let cleaned = false
     const cleanup = () => {
+      if (cleaned) {
+        return
+      }
+      cleaned = true
       this.loggerService.debug(`[${pluginName}] custom UI closing (terminating child process)...`)
 
       const childPid = child.pid
@@ -213,9 +223,17 @@ export class PluginsSettingsUiService {
         child.disconnect()
       }
       setTimeout(() => {
+        if (child.killed || !childPid) {
+          return
+        }
         try {
           process.kill(childPid, 'SIGTERM')
-        } catch (e) {}
+        } catch (e: any) {
+          // ESRCH is fine — the child already exited. Surface anything else.
+          if (e?.code !== 'ESRCH') {
+            this.loggerService.warn(`[${pluginName}] failed to SIGTERM child pid ${childPid}: ${e.message}`)
+          }
+        }
       }, 5000)
 
       client.removeAllListeners('end')
@@ -223,13 +241,8 @@ export class PluginsSettingsUiService {
       client.removeAllListeners('request')
     }
 
-    client.on('disconnect', () => {
-      cleanup()
-    })
-
-    client.on('end', () => {
-      cleanup()
-    })
+    client.on('disconnect', cleanup)
+    client.on('end', cleanup)
 
     client.on('request', (request) => {
       if (child.connected) {
