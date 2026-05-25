@@ -179,7 +179,8 @@
               <div
                 class="col-md-12 d-flex flex-wrap noselect services-bag"
                 dragula="services-bag"
-                [(dragulaModel)]="room.services"
+                [dragulaModel]="room.services"
+                (dragulaModelChange)="onServicesReorder(room, $event)"
               >
                 @for (service of room.services; track service.uniqueId) {
                   @if (shouldDisplayService(service)) {
@@ -203,7 +204,12 @@
               </div>
             }
             @if (!room.services.length && !isMobile()) {
-              <div class="col-md-12 d-flex flex-wrap noselect" dragula="services-bag" [(dragulaModel)]="room.services">
+              <div
+                class="col-md-12 d-flex flex-wrap noselect"
+                dragula="services-bag"
+                [dragulaModel]="room.services"
+                (dragulaModelChange)="onServicesReorder(room, $event)"
+              >
                 <app-drag-here-placeholder class="no-drag" />
               </div>
             }

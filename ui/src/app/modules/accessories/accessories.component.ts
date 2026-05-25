@@ -409,6 +409,22 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
   }
 
   /**
+   * Re-emit the rooms signal with the dropped room's services replaced.
+   * `[(dragulaModel)]="room.services"` would mutate the leaf in place
+   * without telling the signal anything had changed, leaving computeds
+   * over `rooms` stale (persistence still worked via saveLayout's
+   * synchronous read of the mutated value).
+   */
+  public onServicesReorder(
+    room: { name: string, isDefault?: boolean, services: ServiceTypeX[] },
+    newServices: ServiceTypeX[],
+  ): void {
+    this.$accessories.rooms.update(prev => prev.map(r => (
+      r === room ? { ...r, services: newServices } : r
+    )))
+  }
+
+  /**
    * Check if a service should be displayed based on current filters
    */
   public shouldDisplayService(service: ServiceTypeX): boolean {
