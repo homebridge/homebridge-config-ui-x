@@ -77,7 +77,10 @@ export class LoginComponent implements OnInit, AfterViewInit {
         }
       })
 
+    // Read + remove atomically so a failed/abandoned login doesn't leave a
+    // stale target_route in session storage for the next attempt
     this.targetRoute = window.sessionStorage.getItem('target_route') || ''
+    window.sessionStorage.removeItem('target_route')
     void this.setBackground()
   }
 
@@ -121,8 +124,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
       if (!this.$auth.user.admin && !this.validNonAdminRoutes.includes(this.targetRoute)) {
         this.targetRoute = '/'
       }
-      void this.$router.navigateByUrl(this.targetRoute)
-      window.sessionStorage.removeItem('target_route')
+      void this.$router.navigateByUrl(this.targetRoute || '/')
     } catch (error: any) {
       if (error.status === 412) {
         // Enable 2FA: add validators to the OTP control

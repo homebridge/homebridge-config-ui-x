@@ -35,8 +35,17 @@ export const adminGuard: CanActivateFn = async (_next, state) => {
     return false
   }
 
-  // Refresh token if needed on navigation
-  await $auth.checkAndRefreshIfNeeded()
+  // Force a server roundtrip so admin-demoted users lose UI access within one
+  // navigation instead of waiting for the JWT to expire. The backend rejects
+  // /auth/refresh when the user's admin flag has changed; refreshSession()
+  // then logs the user out via the rejection path.
+  try {
+    await $auth.refreshSession()
+  } catch {
+    window.sessionStorage.setItem('target_route', state.url)
+    await $router.navigate(['/login'])
+    return false
+  }
 
   // Check if user is admin
   if ($auth.user?.admin) {
