@@ -41,6 +41,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(plugins): hide decorative icons across plugin and shared modals
 - fix(settings): add keyboard activation to collapsible section headers
 - fix(spinner): announce loading state to screen readers
+- fix(layout): use buttons for sidebar items and trim duplicate menu announcements (@rfiorentino1)
 
 ### Other Changes
 
