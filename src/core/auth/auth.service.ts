@@ -584,6 +584,13 @@ export class AuthService {
       return false
     }
 
+    // Reserve the slot BEFORE awaiting verify(). Otherwise two parallel
+    // requests with the same captured code would both pass the cache
+    // check, both call verify(), and both succeed — defeating the
+    // single-use protection. The reservation is rolled back if the code
+    // turns out to be invalid so the user can correct a typo and retry.
+    this.otpUsageCache.set(otpCacheKey, 'pending')
+
     try {
       // Try with v13 (for 32-character secrets)
       const { valid } = await verify({
@@ -624,11 +631,16 @@ export class AuthService {
           return true
         }
       } else {
-        // Re-throw if it's a different error
+        // Re-throw if it's a different error — but first roll back the
+        // reservation so a transient failure doesn't lock the user out.
+        this.otpUsageCache.del(otpCacheKey)
         throw error
       }
     }
 
+    // verify() returned !valid. Roll back the reservation so a typed
+    // typo doesn't burn the code for the user's next attempt.
+    this.otpUsageCache.del(otpCacheKey)
     return false
   }
 

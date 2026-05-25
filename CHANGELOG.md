@@ -78,6 +78,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(log): scope the tail-ending flag per client
 - fix(custom-plugins): make custom-UI cleanup idempotent
 - fix(server): require admin to PUT /server/restart
+- fix(auth): reserve OTP cache slot before verifying
 
 ### Other Changes
 
