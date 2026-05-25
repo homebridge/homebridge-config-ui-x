@@ -90,6 +90,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(fs): serialise JSON mutations through a shared JsonFileStore
 - fix(plugins): translate install/update toast template
 - fix(accessories): show lightbulb modal when adaptive lighting is absent
+- fix(config-editor): reject prototype-chain keys in UI property patch
 
 ### Other Changes
 
