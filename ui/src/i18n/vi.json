@@ -477,6 +477,7 @@
   "plugins.manage.support_donate": "{{ iconHeart }} Yêu thích plugin này? Một khoản ủng hộ nhỏ có thể giúp nhà phát triển tiếp tục cải thiện nó cho mọi người! {{ link }}",
   "plugins.manage.support_github": "Bạn có thể thể hiện sự ủng hộ bằng cách tặng plugin này một {{ iconStar }} (hoặc bản phát hành một {{ iconThumbsUp }}) trên GitHub!",
   "plugins.manage.support_kofi": "{{ iconCoffee }} Thích plugin này? Mời nhà phát triển một ly cà phê để cảm ơn và giúp duy trì dự án! {{ link }}",
+  "plugins.manage.toast_success": "{{ verb }} {{ name }}",
   "plugins.manage.uninstall": "Gỡ cài đặt",
   "plugins.manage.uninstalled": "Đã gỡ bỏ",
   "plugins.manage.unverified_message": "Plugin Homebridge chưa được xác minh nghĩa là chưa trải qua quy trình đánh giá của đội ngũ dự án Homebridge. Điều này không nhất thiết đồng nghĩa với việc plugin kém hiệu quả hoặc không an toàn.",

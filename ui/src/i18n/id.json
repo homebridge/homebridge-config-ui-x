@@ -477,6 +477,7 @@
   "plugins.manage.support_donate": "{{ iconHeart }} Love this plugin? A small donation can help the developer keep improving it for everyone! {{ link }}",
   "plugins.manage.support_github": "You can show your support by giving this plugin a {{ iconStar }} (or the release a {{ iconThumbsUp }}) on GitHub!",
   "plugins.manage.support_kofi": "{{ iconCoffee }} Enjoying this plugin? Treat the developer a coffee to say thanks and help keep it maintained! {{ link }}",
+  "plugins.manage.toast_success": "{{ verb }} {{ name }}",
   "plugins.manage.uninstall": "Hapus Pemasangan",
   "plugins.manage.uninstalled": "Terhapus",
   "plugins.manage.unverified_message": "Plugin Homebridge yang tidak diverifikasi menunjukkan bahwa mereka belum menjalankan proses peninjauan oleh tim proyek Homebridge. Tidak adanya verifikasi tidak selalu menyiratkan ketidakefisienan atau masalah keamanan. Pembuat plugin mungkin memilih untuk tidak mencari verifikasi karena berbagai alasan.",
