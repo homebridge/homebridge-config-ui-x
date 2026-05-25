@@ -175,6 +175,12 @@ export class BackupService {
    * Schedule the job to create an instance backup at recurring intervals
    */
   public scheduleInstanceBackups() {
+    // Always cancel any existing job first so this method is safe to
+    // call from a runtime toggle. Without this, toggling
+    // scheduledBackupDisable to true at runtime would leave the
+    // previously scheduled job firing until the next UI restart.
+    this.schedulerService.cancelJob('instance-backup')
+
     if (this.configService.ui.scheduledBackupDisable === true) {
       this.logger.debug('Scheduled backups disabled.')
       return
@@ -189,6 +195,15 @@ export class BackupService {
       this.logger.log('Running scheduled instance backup...')
       this.runScheduledBackupJob()
     })
+  }
+
+  /**
+   * Re-register the scheduled-backup job — call after the
+   * `scheduledBackupDisable` flag is mutated at runtime so the schedule
+   * reflects the new setting without waiting for a UI restart.
+   */
+  public refreshBackupSchedule() {
+    this.scheduleInstanceBackups()
   }
 
   /**

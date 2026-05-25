@@ -26,6 +26,8 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vites
 import { AuthModule } from '../../src/core/auth/auth.module.js'
 import { ConfigService } from '../../src/core/config/config.service.js'
 import { SchedulerService } from '../../src/core/scheduler/scheduler.service.js'
+import { BackupModule } from '../../src/modules/backup/backup.module.js'
+import { BackupService } from '../../src/modules/backup/backup.service.js'
 import { ChildBridgesService } from '../../src/modules/child-bridges/child-bridges.service.js'
 import { ConfigEditorModule } from '../../src/modules/config-editor/config-editor.module.js'
 import { ConfigEditorService } from '../../src/modules/config-editor/config-editor.service.js'
@@ -42,6 +44,7 @@ describe('ConfigEditorController (e2e)', () => {
 
   let schedulerService: SchedulerService
   let configEditorService: ConfigEditorService
+  let backupService: BackupService
 
   beforeAll(async () => {
     process.env.UIX_BASE_PATH = resolve(__dirname, '../../')
@@ -67,7 +70,7 @@ describe('ConfigEditorController (e2e)', () => {
     await copy(resolve(__dirname, '../mocks', 'plugins'), pluginsPath)
 
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [ConfigEditorModule, AuthModule],
+      imports: [ConfigEditorModule, AuthModule, BackupModule],
     }).compile()
 
     app = moduleFixture.createNestApplication<NestFastifyApplication>(new FastifyAdapter())
@@ -82,6 +85,7 @@ describe('ConfigEditorController (e2e)', () => {
 
     schedulerService = app.get(SchedulerService)
     configEditorService = app.get(ConfigEditorService)
+    backupService = app.get(BackupService)
 
     // Wait for initial paths to be setup
     await new Promise(res => setTimeout(res, 1000))
@@ -1093,6 +1097,32 @@ describe('ConfigEditorController (e2e)', () => {
 
       expect(res.statusCode).toBe(400)
       expect(res.body).toContain('Cannot update the platform property.')
+    })
+
+    it('toggling scheduledBackupDisable re-registers the backup schedule', async () => {
+      // The bug was: BackupService.scheduleInstanceBackups only ran once
+      // at construction, so a user toggling this flag at runtime had to
+      // restart the UI. The fix wires setPropertiesForUi to call
+      // refreshBackupSchedule on the BackupService when the flag changes.
+      const spy = vi.spyOn(backupService, 'scheduleInstanceBackups')
+      spy.mockClear()
+
+      try {
+        const res = await app.inject({
+          method: 'PUT',
+          url: '/config-editor/ui',
+          headers: { authorization },
+          payload: {
+            key: 'scheduledBackupDisable',
+            value: true,
+          },
+        })
+
+        expect(res.statusCode).toBe(200)
+        expect(spy).toHaveBeenCalled()
+      } finally {
+        spy.mockRestore()
+      }
     })
   })
 

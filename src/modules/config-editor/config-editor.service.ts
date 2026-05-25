@@ -20,6 +20,7 @@ import { Logger } from '../../core/logger/logger.service.js'
 import { MatterConfig } from '../../core/matter/matter.interfaces.js'
 import { RE_COLON, RE_CONFIG_BACKUP, RE_PIN, RE_PLUGIN_NAME, RE_USERNAME } from '../../core/regex.constants.js'
 import { SchedulerService } from '../../core/scheduler/scheduler.service.js'
+import { BackupService } from '../backup/backup.service.js'
 import { ChildBridgesService } from '../child-bridges/child-bridges.service.js'
 import { PluginsService } from '../plugins/plugins.service.js'
 
@@ -44,6 +45,7 @@ export class ConfigEditorService implements OnApplicationBootstrap {
     @Inject(PluginsService) private readonly pluginsService: PluginsService,
     @Inject(HomebridgeIpcService) private readonly homebridgeIpcService: HomebridgeIpcService,
     @Inject(ChildBridgesService) private readonly childBridgesService: ChildBridgesService,
+    @Inject(BackupService) private readonly backupService: BackupService,
   ) {
     this.ready = new Promise((res) => {
       this.resolveReady = res
@@ -417,6 +419,14 @@ export class ConfigEditorService implements OnApplicationBootstrap {
     // 3. Clean and save the UI config block (single disk write)
     config.platforms[config.platforms.findIndex(x => x.platform === 'config')] = this.cleanUpUiConfig(pluginConfig)
     await this.updateConfigFile(config)
+
+    // If the scheduled-backup toggle changed, re-register the cron
+    // immediately. Otherwise the scheduler keeps using the value
+    // captured at module construction and the user's toggle does
+    // nothing until the next UI restart.
+    if (entries.some(([key]) => key === 'scheduledBackupDisable')) {
+      this.backupService.refreshBackupSchedule()
+    }
   }
 
   private applyPropertyToPluginConfig(pluginConfig: any, property: string, value: any): void {
