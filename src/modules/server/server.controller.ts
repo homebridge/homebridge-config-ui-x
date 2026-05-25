@@ -22,6 +22,7 @@ import { ApiBearerAuth, ApiBody, ApiConsumes, ApiOperation, ApiParam, ApiQuery, 
 import { AdminGuard } from '../../core/auth/guards/admin.guard.js'
 import { Logger } from '../../core/logger/logger.service.js'
 import { ChildBridgesService } from '../child-bridges/child-bridges.service.js'
+import { PortRangeDto } from '../config-editor/config-editor.dto.js'
 import { HomebridgeMdnsSettingDto, HomebridgeNetworkInterfacesDto } from './server.dto.js'
 import { ServerService } from './server.service.js'
 
@@ -320,8 +321,7 @@ export class ServerController {
   @UseGuards(AdminGuard)
   @Put('/ports')
   @ApiOperation({ summary: 'Update the usable ports for Homebridge.' })
-  @ApiBody({ description: 'Object with start and end properties.', type: 'json', isArray: false })
-  setUsablePorts(@Body() body) {
+  setUsablePorts(@Body() body: PortRangeDto) {
     return this.serverService.setUsablePorts(body)
   }
 

@@ -106,6 +106,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - chore: add some extra eslint rules for test files
 - chore(format): apply prettier formatting to a11y-touched templates
 - chore(test): pin runningOnRaspberryPi=false in flaky status-gateway test
+- chore(api): validate port-range bodies with a class-validator DTO
 
 ### Homebridge Dependencies
 
