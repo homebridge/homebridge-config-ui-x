@@ -2206,9 +2206,11 @@ export class PluginsService {
       client.emit('stdout', yellow(`You may experience issues while running on Node.js ${process.version}.\n\r\n\r`))
     }
 
-    // Set up the environment for the call
-    const env = {}
-    Object.assign(env, process.env)
+    // Build the npm-spawn env from a sanitised copy of process.env so a
+    // malicious plugin's postinstall script cannot read secret-shaped
+    // keys (cloud creds, CI tokens, *_SECRET / *_PASSWORD / *_PRIVATE_KEY)
+    // that happened to be set when the UI was launched.
+    const env = this.sanitizeNpmEnv(process.env)
     Object.assign(env, {
       npm_config_global_style: 'true',
       npm_config_unsafe_perm: 'true',
@@ -2298,6 +2300,38 @@ export class PluginsService {
         this.logger.error(`Failed to re-create custom plugin directory as ${e.message}.`)
       }
     }
+  }
+
+  /**
+   * Build a copy of `process.env` with secret-shaped keys removed before
+   * spawning npm. A malicious plugin's postinstall script runs in this
+   * env; without the strip, anything the UI inherited (AWS keys, CI
+   * tokens, custom *_PASSWORD vars) would be readable by the script.
+   *
+   * Conservative strip: drop common cloud / CI credential prefixes plus a
+   * pattern match for `SECRET`, `PASSWORD`, `PASSWD`, `PRIVATE_KEY`, and
+   * trailing-`_TOKEN`. Everything else (PATH, HOME, locale, npm_*,
+   * HOMEBRIDGE_*, UIX_*) passes through unchanged because npm and many
+   * plugin postinstall steps legitimately depend on it.
+   */
+  public sanitizeNpmEnv(env: NodeJS.ProcessEnv): NodeJS.ProcessEnv {
+    const droppedPrefixes = ['AWS_', 'AZURE_', 'GOOGLE_APPLICATION_', 'GCP_']
+    const droppedExact = new Set(['GITHUB_TOKEN', 'GH_TOKEN', 'NPM_TOKEN'])
+    const droppedPattern = /SECRET|PASSWORD|PASSWD|PRIVATE_KEY|_TOKEN$/i
+    const result: NodeJS.ProcessEnv = {}
+    for (const [key, value] of Object.entries(env)) {
+      if (droppedExact.has(key)) {
+        continue
+      }
+      if (droppedPrefixes.some(prefix => key.startsWith(prefix))) {
+        continue
+      }
+      if (droppedPattern.test(key)) {
+        continue
+      }
+      result[key] = value
+    }
+    return result
   }
 
   /**
