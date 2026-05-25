@@ -10,6 +10,7 @@ import process from 'node:process'
 import { pathExists, remove } from 'fs-extra/esm'
 import { gte, lt } from 'semver'
 
+import { RE_OS_USERNAME } from '../../core/regex.constants.js'
 import { BasePlatform } from '../base-platform.js'
 
 export class DarwinInstaller extends BasePlatform {
@@ -211,12 +212,25 @@ export class DarwinInstaller extends BasePlatform {
    * Resolves the target user home directory when running the installation command as SUDO
    */
   private getUserHomeDir() {
+    // Refuse to resolve a home directory for an unvalidated username.
+    // Routing the value through a shell here would let a crafted
+    // `--user 'foo"; rm -rf /; echo "'` execute as root at install-time.
+    if (!RE_OS_USERNAME.test(this.user)) {
+      this.hbService.logger(
+        `WARNING: Refusing to resolve home directory — invalid username "${this.user}".`,
+        'warn',
+      )
+      return homedir()
+    }
     try {
-      const realHomeDir = execSync(`eval echo "~${this.user}"`).toString('utf8').trim()
-      if (realHomeDir.charAt(0) === '~') {
-        throw new Error('Could not resolve user home directory')
+      // dscl is the canonical macOS directory-services lookup. execFileSync
+      // (no shell) keeps the validated username out of any shell parser.
+      const output = execFileSync('dscl', ['.', '-read', `/Users/${this.user}`, 'NFSHomeDirectory']).toString('utf8').trim()
+      const match = output.match(/NFSHomeDirectory: (.+)$/m)
+      if (match && match[1] && match[1].charAt(0) === '/') {
+        return match[1].trim()
       }
-      return realHomeDir
+      throw new Error(`Could not resolve user home directory for ${this.user}`)
     } catch (e) {
       return homedir()
     }
@@ -387,7 +401,12 @@ export class DarwinInstaller extends BasePlatform {
       '    <key>EnvironmentVariables</key>',
       '        <dict>',
       '            <key>PATH</key>',
-      `                <string>${process.env.PATH}</string>`,
+      // Hardcoded sane PATH instead of process.env.PATH so the daemon
+      // doesn't inherit the installer shell's PATH (often nvm-/brew-
+      // shaped) and then fail to find `node`/`npm` after the user's
+      // shell environment changes. dirname(process.execPath) is added
+      // so the running Node binary's directory is always discoverable.
+      `                <string>${dirname(process.execPath)}:/opt/homebridge/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin</string>`,
       '            <key>HOME</key>',
       `                <string>${this.getUserHomeDir()}</string>`,
       '            <key>UIX_STORAGE_PATH</key>',
