@@ -55,6 +55,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(backup): reject concurrent restore uploads via a singleton slot
 - fix(installer): validate `--user` before writing sudoers entries
 - fix(installer): switch Win32 nssm/sc to `execFileSync` arg arrays
+- fix(auth): reject JWTs with stale `instanceId` (except live wizard)
 
 ### Other Changes
 
