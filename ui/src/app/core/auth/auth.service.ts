@@ -1,7 +1,7 @@
 /* global NodeJS */
 import { inject, Injectable } from '@angular/core'
 import { JwtHelperService } from '@auth0/angular-jwt'
-import { firstValueFrom } from 'rxjs'
+import { firstValueFrom, Subject } from 'rxjs'
 
 import { UserInterface } from '@/app/core/auth/auth.interfaces'
 import { TokenCacheService } from '@/app/core/auth/token-cache.service'
@@ -22,6 +22,10 @@ export class AuthService {
 
   public token: string | null = null
   public user: UserInterface = {} as UserInterface
+  // Emits after refreshSession() persists a rotated token so downstream
+  // consumers (e.g. WsService) can update long-lived state that captured
+  // the previous token at construction time.
+  public readonly tokenRotated = new Subject<void>()
   private logoutTimer!: NodeJS.Timeout
   private lastRefreshTime: number = Date.now()
   private isRefreshing: boolean = false
@@ -198,6 +202,9 @@ export class AuthService {
         }
         // Update the last refresh timestamp
         this.lastRefreshTime = Date.now()
+        // Notify long-lived consumers (e.g. WsService) so they can rotate
+        // the new token onto already-open sockets / connections.
+        this.tokenRotated.next()
       }
     } finally {
       this.isRefreshing = false
