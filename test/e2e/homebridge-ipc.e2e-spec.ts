@@ -163,6 +163,35 @@ describe('HomebridgeIpcService (e2e)', () => {
 
       expect(() => ipcService.restartHomebridge()).not.toThrow()
     })
+
+    it('should de-duplicate rapid successive calls', () => {
+      const mockProcess = new EventEmitter() as any
+      mockProcess.connected = true
+      mockProcess.send = vi.fn()
+      mockProcess.kill = vi.fn()
+      mockProcess.pid = 12345
+
+      ipcService.setHomebridgeProcess(mockProcess)
+      // Earlier tests may have left a pending timer set; reset so we
+      // exercise the in-flight guard from a known starting state.
+      ;(ipcService as any).pendingShutdownTimer = null
+
+      const closeListenersBefore = mockProcess.listenerCount('close')
+
+      ipcService.restartHomebridge()
+      ipcService.restartHomebridge()
+      ipcService.restartHomebridge()
+
+      // Three rapid clicks add exactly one SIGTERM call and one
+      // `once('close')` listener — the second and third hit the guard.
+      expect(mockProcess.kill).toHaveBeenCalledTimes(1)
+      expect(mockProcess.kill).toHaveBeenCalledWith('SIGTERM')
+      expect(mockProcess.listenerCount('close')).toBe(closeListenersBefore + 1)
+
+      // Trip the close handler so the SIGKILL fallback timer clears and
+      // the next test starts with `pendingShutdownTimer` null.
+      mockProcess.emit('close')
+    })
   })
 
   describe('restartAndWaitForClose', () => {

@@ -1,3 +1,4 @@
+/* global NodeJS */
 import type { ChildProcess } from 'node:child_process'
 
 import { EventEmitter } from 'node:events'
@@ -10,6 +11,10 @@ import { Logger } from '../logger/logger.service.js'
 @Injectable()
 export class HomebridgeIpcService extends EventEmitter {
   private homebridge: ChildProcess
+  // Tracks the active SIGKILL fallback timer so rapid restart() calls
+  // don't stack independent timers and don't pile new `once('close')`
+  // listeners onto the same ChildProcess.
+  private pendingShutdownTimer: NodeJS.Timeout | null = null
 
   private permittedEvents = [
     'childBridgeMetadataResponse',
@@ -94,25 +99,38 @@ export class HomebridgeIpcService extends EventEmitter {
    * Restarts the main bridge process and any child bridges
    */
   public restartHomebridge(): void {
-    if (this.homebridge) {
-      this.logger.log('Sending SIGTERM to Homebridge...')
-
-      // Send SIGTERM command
-      this.homebridge.kill('SIGTERM')
-
-      // Prepare a timeout to send SIGKILL after 7 seconds if not shutdown before then
-      const shutdownTimeout = setTimeout(() => {
-        try {
-          this.logger.warn('Sending SIGKILL to Homebridge...')
-          this.homebridge.kill('SIGKILL')
-        } catch (e) {}
-      }, 7000)
-
-      // If homebridge ends before the timeout, clear the timeout
-      this.homebridge.once('close', () => {
-        clearTimeout(shutdownTimeout)
-      })
+    if (!this.homebridge) {
+      return
     }
+    // If a previous restart is still in flight, don't issue another
+    // SIGTERM + stack another SIGKILL timer + another `once('close')`
+    // listener — rapid clicks would otherwise trip MaxListenersExceeded
+    // warnings and slow the actual shutdown.
+    if (this.pendingShutdownTimer) {
+      return
+    }
+
+    this.logger.log('Sending SIGTERM to Homebridge...')
+    this.homebridge.kill('SIGTERM')
+
+    this.pendingShutdownTimer = setTimeout(() => {
+      try {
+        this.logger.warn('Sending SIGKILL to Homebridge...')
+        this.homebridge.kill('SIGKILL')
+      } catch (e: any) {
+        this.logger.error(`Failed to deliver SIGKILL to Homebridge: ${e.message}.`)
+        this.emit('serverStatusUpdate', { status: 'killFailed' })
+      } finally {
+        this.pendingShutdownTimer = null
+      }
+    }, 7000)
+
+    this.homebridge.once('close', () => {
+      if (this.pendingShutdownTimer) {
+        clearTimeout(this.pendingShutdownTimer)
+        this.pendingShutdownTimer = null
+      }
+    })
   }
 
   /**
