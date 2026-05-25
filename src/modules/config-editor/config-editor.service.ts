@@ -18,7 +18,7 @@ import { ConfigService } from '../../core/config/config.service.js'
 import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.service.js'
 import { Logger } from '../../core/logger/logger.service.js'
 import { MatterConfig } from '../../core/matter/matter.interfaces.js'
-import { RE_COLON, RE_CONFIG_BACKUP, RE_PIN, RE_PLUGIN_NAME, RE_USERNAME } from '../../core/regex.constants.js'
+import { RE_COLON, RE_CONFIG_BACKUP, RE_PIN, RE_PLUGIN_NAME, RE_SAFE_RESTART_CMD, RE_USERNAME } from '../../core/regex.constants.js'
 import { SchedulerService } from '../../core/scheduler/scheduler.service.js'
 import { BackupService } from '../backup/backup.service.js'
 import { ChildBridgesService } from '../child-bridges/child-bridges.service.js'
@@ -112,6 +112,40 @@ export class ConfigEditorService implements OnApplicationBootstrap {
   }
 
   /**
+   * Throw a BadRequestException if a *new* value for `ui.restart`,
+   * `ui.linux.restart`, or `ui.linux.shutdown` doesn't match the
+   * allowlist regex. Pre-existing values from earlier installs are
+   * grandfathered — comparing the incoming value to the in-memory
+   * `configService.ui` snapshot lets users with custom legacy commands
+   * keep saving unrelated config changes, while still blocking any
+   * fresh introduction of shell-injection-capable commands through the
+   * settings UI or the full-config JSON editor.
+   */
+  private assertRestartCommandsSafe(config: HomebridgeConfig): void {
+    const newUi = config.platforms?.find(p => p?.platform === 'config') as any
+    if (!newUi) {
+      return
+    }
+    const oldUi = this.configService.ui as any
+    const checks: Array<{ path: string, newValue: unknown, oldValue: unknown }> = [
+      { path: 'restart', newValue: newUi.restart, oldValue: oldUi?.restart },
+      { path: 'linux.restart', newValue: newUi.linux?.restart, oldValue: oldUi?.linux?.restart },
+      { path: 'linux.shutdown', newValue: newUi.linux?.shutdown, oldValue: oldUi?.linux?.shutdown },
+    ]
+    for (const { path, newValue, oldValue } of checks) {
+      if (newValue === oldValue) {
+        continue
+      }
+      if (newValue === undefined || newValue === null || newValue === '') {
+        continue
+      }
+      if (typeof newValue !== 'string' || !RE_SAFE_RESTART_CMD.test(newValue)) {
+        throw new BadRequestException(`Refusing to save unsafe restart/shutdown command for "${path}". The command must use systemctl, service, shutdown, reboot, poweroff, halt, or init, optionally prefixed with sudo, and may not contain shell metacharacters.`)
+      }
+    }
+  }
+
+  /**
    * Updates the config file
    */
   public async updateConfigFile(config: HomebridgeConfig) {
@@ -181,6 +215,14 @@ export class ConfigEditorService implements OnApplicationBootstrap {
     if (!config.platforms || !Array.isArray(config.platforms)) {
       config.platforms = []
     }
+
+    // Reject unsafe restart/shutdown commands in the UI platform block.
+    // Both save paths land here — the full-config JSON editor (`POST
+    // /config-editor`) and the patch-style settings UI (`PUT/PATCH
+    // /config-editor/ui` → `setPropertiesForUi`) — so this is the right
+    // chokepoint for the allowlist check. Runs after the array-shape
+    // coercion above so the find() below can't blow up on bad input.
+    this.assertRestartCommandsSafe(config)
 
     // Ensure config.plugins is an array and not empty
     if (config.plugins && Array.isArray(config.plugins)) {

@@ -72,3 +72,17 @@ export const RE_ANSI_COLOUR = /\x1B\[(\d{1,3}(;\d{1,2})?)?[mGK]/g
 // Security
 export const RE_PATH_TRAVERSAL = /^(\.\.(\/|\\|$))+/
 export const RE_STATIC_ASSET_EXT = /^.*\.(?:jpe?g|gif|png|svg|ttf|woff2|css)$/i
+
+// Allowlist for user-configured host / Homebridge restart and shutdown
+// commands (`ui.restart`, `ui.linux.restart`, `ui.linux.shutdown`).
+//
+// Matches an optional `sudo` with simple flags (`-n`, `-E`, `-nE`, ...)
+// followed by one of a small fixed set of trusted binaries
+// (systemctl/service/shutdown/reboot/poweroff/halt/init), then zero or
+// more space-separated arguments composed only of alphanumerics, dot,
+// underscore, slash, dash, colon, equals. No shell metacharacters
+// (`;`, `&`, `|`, `$`, `()`, backtick, redirects, quotes) — those
+// would let an admin who can edit config.json inject arbitrary shell
+// commands. Docker-mode `ui.restart` is set by the loader (not via
+// the save endpoint), so it intentionally bypasses this allowlist.
+export const RE_SAFE_RESTART_CMD = /^(?:sudo(?:\s+-[a-zA-Z]+)*\s+)?(?:systemctl|service|shutdown|reboot|poweroff|halt|init)(?:\s+[\w./:=-]+)*\s*$/
