@@ -402,6 +402,11 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
       if ((window as any).monaco) {
         const originalUri = (window as any).monaco.Uri.parse('file:///original.json')
         const modifiedUri = (window as any).monaco.Uri.parse('file:///modified.json')
+        // The main editor's model lives at this URI (see ngOnInit init
+        // path). Without disposing it here, every revisit creates another
+        // model at the same URI and Monaco can fail to attach the JSON
+        // schema to the new editor — schema validation silently breaks.
+        const mainUri = (window as any).monaco.Uri.parse('a://homebridge/config.json')
 
         const existingOriginalModel = (window as any).monaco.editor.getModel(originalUri)
         if (existingOriginalModel) {
@@ -411,6 +416,11 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
         const existingModifiedModel = (window as any).monaco.editor.getModel(modifiedUri)
         if (existingModifiedModel) {
           existingModifiedModel.dispose()
+        }
+
+        const existingMainModel = (window as any).monaco.editor.getModel(mainUri)
+        if (existingMainModel) {
+          existingMainModel.dispose()
         }
 
         // Clean up validation schemas to prevent interference with other Monaco editors
@@ -1302,6 +1312,13 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
         config,
       )
       this.homebridgeConfig.set(JSON.stringify(response.config, null, 4))
+      // Push the server-normalised text into the Monaco model so the
+      // editor's view matches the canonical saved state. Without this,
+      // any whitespace / key-order normalisation the server applied
+      // makes determineRestartType think the editor still differs from
+      // the saved config, surfacing phantom restart prompts after a
+      // no-op save.
+      this.monacoEditor?.getModel()?.setValue(this.homebridgeConfig())
       // Phase 7: server returns affected bridges inline so we no longer
       // need a follow-up /status/homebridge/child-bridges call to compute
       // child-bridge restart targets.
