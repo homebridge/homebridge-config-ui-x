@@ -1,4 +1,4 @@
-import { execSync } from 'node:child_process'
+import { execFileSync, execSync } from 'node:child_process'
 import { createWriteStream } from 'node:fs'
 import { arch } from 'node:os'
 import { resolve } from 'node:path'
@@ -7,6 +7,7 @@ import process from 'node:process'
 import axios from 'axios'
 import { pathExists, remove } from 'fs-extra/esm'
 
+import { RE_SERVICE_NAME } from '../../core/regex.constants.js'
 import { BasePlatform } from '../base-platform.js'
 
 export class Win32Installer extends BasePlatform {
@@ -15,6 +16,7 @@ export class Win32Installer extends BasePlatform {
    */
   public async install() {
     this.checkIsAdmin()
+    this.assertSafeServiceName()
     await this.hbService.portCheck()
     await this.hbService.storagePathCheck()
     await this.hbService.configCheck()
@@ -22,14 +24,29 @@ export class Win32Installer extends BasePlatform {
     // Download nssm.exe to help create the service
     const nssmPath: string = await this.downloadNssm()
 
-    // Commands to run
-    const installCmd = `"${nssmPath}" install ${this.hbService.serviceName} `
-      + `"${process.execPath}" "\""${this.hbService.selfPath}"\"" run -I -U "\""${this.hbService.storagePath}"\""`
-    const setUserDirCmd = `"${nssmPath}" set ${this.hbService.serviceName} AppEnvironmentExtra ":UIX_STORAGE_PATH=${this.hbService.storagePath}"`
+    // Argument arrays — execFileSync handles quoting per-arg so shell
+    // metacharacters in `storagePath` / `selfPath` cannot inject extra
+    // tokens into the command line.
+    const installArgs = [
+      'install',
+      this.hbService.serviceName,
+      process.execPath,
+      this.hbService.selfPath,
+      'run',
+      '-I',
+      '-U',
+      this.hbService.storagePath,
+    ]
+    const setUserDirArgs = [
+      'set',
+      this.hbService.serviceName,
+      'AppEnvironmentExtra',
+      `:UIX_STORAGE_PATH=${this.hbService.storagePath}`,
+    ]
 
     try {
-      execSync(installCmd)
-      execSync(setUserDirCmd)
+      execFileSync(nssmPath, installArgs)
+      execFileSync(nssmPath, setUserDirArgs)
       await this.configureFirewall()
       await this.start()
       await this.hbService.printPostInstallInstructions()
@@ -44,12 +61,13 @@ export class Win32Installer extends BasePlatform {
    */
   public async uninstall() {
     this.checkIsAdmin()
+    this.assertSafeServiceName()
 
     // Stop existing service
     await this.stop()
 
     try {
-      execSync(`sc delete ${this.hbService.serviceName}`)
+      execFileSync('sc', ['delete', this.hbService.serviceName])
       this.hbService.logger(`Removed ${this.hbService.serviceName} Service`, 'succeed')
     } catch (e) {
       console.error(e.toString())
@@ -62,10 +80,11 @@ export class Win32Installer extends BasePlatform {
    */
   public async start() {
     this.checkIsAdmin()
+    this.assertSafeServiceName()
 
     try {
       this.hbService.logger(`Starting ${this.hbService.serviceName} Service...`)
-      execSync(`sc start ${this.hbService.serviceName}`)
+      execFileSync('sc', ['start', this.hbService.serviceName])
       this.hbService.logger(`${this.hbService.serviceName} Started`, 'succeed')
     } catch (e) {
       this.hbService.logger(`Failed to start ${this.hbService.serviceName}`, 'fail')
@@ -77,10 +96,11 @@ export class Win32Installer extends BasePlatform {
    */
   public async stop() {
     this.checkIsAdmin()
+    this.assertSafeServiceName()
 
     try {
       this.hbService.logger(`Stopping ${this.hbService.serviceName} Service...`)
-      execSync(`sc stop ${this.hbService.serviceName}`)
+      execFileSync('sc', ['stop', this.hbService.serviceName])
       this.hbService.logger(`${this.hbService.serviceName} Stopped`, 'succeed')
     } catch (e) {
       this.hbService.logger(`Failed to stop ${this.hbService.serviceName}`, 'fail')
@@ -123,6 +143,20 @@ export class Win32Installer extends BasePlatform {
   public async updateNodejs(job: { target: string, rebuild: boolean }) {
     this.hbService.logger('ERROR: This command is not supported on Windows.', 'fail')
     this.hbService.logger(`Please download Node.js v${job.target} from https://nodejs.org/en/download/ and install manually.`, 'fail')
+  }
+
+  /**
+   * Defence-in-depth — re-run the `serviceName` regex at the start of each
+   * Win32Installer entry point. The CLI guards `--service-name` already, but
+   * the value also reaches `execFileSync('sc', [...serviceName])` here; if
+   * that upstream check is ever weakened we still refuse to pass an unsafe
+   * value to `sc`.
+   */
+  private assertSafeServiceName() {
+    if (!RE_SERVICE_NAME.test(this.hbService.serviceName)) {
+      this.hbService.logger(`ERROR: Refusing to run — invalid service name "${this.hbService.serviceName}".`, 'fail')
+      process.exit(1)
+    }
   }
 
   /**

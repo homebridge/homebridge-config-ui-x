@@ -54,6 +54,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(backup): block path-traversal and symlink entries in restores
 - fix(backup): reject concurrent restore uploads via a singleton slot
 - fix(installer): validate `--user` before writing sudoers entries
+- fix(installer): switch Win32 nssm/sc to `execFileSync` arg arrays
 
 ### Other Changes
 
