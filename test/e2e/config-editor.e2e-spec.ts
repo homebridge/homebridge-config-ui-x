@@ -1203,7 +1203,11 @@ describe('ConfigEditorController (e2e)', () => {
       expect(uiBlock.theme).not.toBe('blue')
     })
 
-    it('ignores forbidden prototype-chain keys', async () => {
+    it('rejects forbidden prototype-chain keys', async () => {
+      const before: HomebridgeConfig = await readJson(configFilePath)
+      const beforeUi = before.platforms.find((p: any) => p.platform === 'config') as any
+      const beforeTheme = beforeUi.theme
+
       const res = await app.inject({
         method: 'PATCH',
         url: '/config-editor/ui',
@@ -1218,14 +1222,36 @@ describe('ConfigEditorController (e2e)', () => {
         },
       })
 
-      expect(res.statusCode).toBe(200)
+      expect(res.statusCode).toBe(400)
 
+      // Whole batch must be rejected — theme should not have been written.
       const config: HomebridgeConfig = await readJson(configFilePath)
       const uiBlock = config.platforms.find((p: any) => p.platform === 'config') as any
-      expect(uiBlock.theme).toBe('orange')
-      expect(uiBlock).not.toHaveProperty('__proto__', 'hax')
-      expect(uiBlock).not.toHaveProperty('constructor', 'hax')
-      expect(uiBlock).not.toHaveProperty('prototype', 'hax')
+      expect(uiBlock.theme).toBe(beforeTheme)
+    })
+
+    it('rejects a dot-path that traverses a forbidden segment', async () => {
+      const before: HomebridgeConfig = await readJson(configFilePath)
+      const beforeUi = before.platforms.find((p: any) => p.platform === 'config') as any
+      const beforeCleanup = beforeUi.cleanup
+
+      const res = await app.inject({
+        method: 'PATCH',
+        url: '/config-editor/ui',
+        headers: {
+          authorization,
+        },
+        payload: {
+          'cleanup.__proto__.hax': 'pwned',
+        },
+      })
+
+      expect(res.statusCode).toBe(400)
+
+      const after: HomebridgeConfig = await readJson(configFilePath)
+      const afterUi = after.platforms.find((p: any) => p.platform === 'config') as any
+      expect(afterUi.cleanup).toEqual(beforeCleanup)
+      expect(afterUi.cleanup?.hax).toBeUndefined()
     })
 
     it('no-ops on an empty body', async () => {

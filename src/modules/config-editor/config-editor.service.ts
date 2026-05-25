@@ -451,6 +451,12 @@ export class ConfigEditorService implements OnApplicationBootstrap {
       throw new BadRequestException('Cannot update the platform property.')
     }
 
+    const forbiddenKeys = ['__proto__', 'constructor', 'prototype']
+    const offending = entries.find(([key]) => key.split('.').some(segment => forbiddenKeys.includes(segment)))
+    if (offending) {
+      throw new BadRequestException(`Property "${offending[0]}" contains a forbidden key segment.`)
+    }
+
     // 1. Get the current config for the Homebridge UI
     const config = await this.getConfigFile()
     const pluginConfig = config.platforms.find(x => x.platform === 'config')
@@ -474,28 +480,20 @@ export class ConfigEditorService implements OnApplicationBootstrap {
   }
 
   private applyPropertyToPluginConfig(pluginConfig: any, property: string, value: any): void {
-    const forbiddenKeys = ['__proto__', 'constructor', 'prototype']
     if (property.includes('.')) {
       const properties = property.split('.')
       let current = pluginConfig
 
       for (let i = 0; i < properties.length - 1; i += 1) {
-        if (!forbiddenKeys.includes(properties[i])) {
-          if (!current[properties[i]]) {
-            current[properties[i]] = {}
-          }
-          current = current[properties[i]]
+        if (!current[properties[i]]) {
+          current[properties[i]] = {}
         }
+        current = current[properties[i]]
       }
 
-      const finalProperty = properties.at(-1)
-      if (!forbiddenKeys.includes(finalProperty)) {
-        current[finalProperty] = value
-      }
+      current[properties.at(-1)] = value
     } else {
-      if (!forbiddenKeys.includes(property)) {
-        pluginConfig[property] = value
-      }
+      pluginConfig[property] = value
     }
   }
 
