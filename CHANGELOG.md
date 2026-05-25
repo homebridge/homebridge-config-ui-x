@@ -49,6 +49,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(plugins): drop redundant plugin name from info button aria-label (@rfiorentino1)
 - fix(layout): announce active sidebar item as "current page" (@rfiorentino1)
 - fix(lint): restore HTML comments and silence false `spaced-comment` rule
+- fix(a11y): use real <button> for collapsible disclosure sections (settings, support)
 
 ### Other Changes
 

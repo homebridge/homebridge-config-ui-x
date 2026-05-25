@@ -146,6 +146,22 @@ th {
   cursor: pointer;
 }
 
+// Reset native <button> chrome for buttons that act as disclosure-section
+// toggles (collapsible headers in support, settings, etc.). Lets a real
+// <button> render identically to the previous `<div role="button">` markup
+// while keeping native Enter/Space activation and proper button semantics
+// for screen readers.
+.disclosure-toggle {
+  background: transparent;
+  border: 0;
+  color: inherit;
+  font: inherit;
+  padding: 0;
+  text-align: left;
+  width: 100%;
+  cursor: pointer;
+}
+
 .list-group-box {
   border: 1px solid rgba(0, 0, 0, 0.125);
   border-radius: 0.5rem;
