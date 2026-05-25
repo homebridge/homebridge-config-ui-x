@@ -161,12 +161,16 @@ export class UsersEditComponent implements OnInit {
   }
 
   private matchPassword(abstractControl: AbstractControl): { [key: string]: boolean } | null {
+    const passwordConfirmCtrl = abstractControl.get('passwordConfirm')
     const password = abstractControl.get('password')?.value
-    const passwordConfirm = abstractControl.get('passwordConfirm')?.value
+    const passwordConfirm = passwordConfirmCtrl?.value
+    const otherErrors = { ...(passwordConfirmCtrl?.errors ?? {}) }
+    delete otherErrors.matchPassword
     if (password !== passwordConfirm) {
-      abstractControl.get('passwordConfirm')?.setErrors({ matchPassword: true })
+      passwordConfirmCtrl?.setErrors({ ...otherErrors, matchPassword: true })
       return { matchPassword: true }
     }
+    passwordConfirmCtrl?.setErrors(Object.keys(otherErrors).length ? otherErrors : null)
     return null
   }
 }

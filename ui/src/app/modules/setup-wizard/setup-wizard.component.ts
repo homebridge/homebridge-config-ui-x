@@ -241,13 +241,18 @@ export class SetupWizardComponent implements OnInit {
   }
 
   private matchPassword(AC: AbstractControl) {
+    const passwordConfirmCtrl = AC.get('passwordConfirm')!
     const password = AC.get('password')!.value
-    const passwordConfirm = AC.get('passwordConfirm')!.value
+    const passwordConfirm = passwordConfirmCtrl.value
+    // Preserve any other validator errors already on passwordConfirm
+    // (e.g. `required`) and only flip our `matchPassword` key on/off.
+    const otherErrors = { ...(passwordConfirmCtrl.errors ?? {}) }
+    delete otherErrors.matchPassword
     if (password !== passwordConfirm) {
-      AC.get('passwordConfirm')!.setErrors({ matchPassword: true })
+      passwordConfirmCtrl.setErrors({ ...otherErrors, matchPassword: true })
       return { matchPassword: true }
-    } else {
-      return null
     }
+    passwordConfirmCtrl.setErrors(Object.keys(otherErrors).length ? otherErrors : null)
+    return null
   }
 }
