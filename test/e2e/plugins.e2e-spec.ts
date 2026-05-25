@@ -3,6 +3,8 @@ import type { TestingModule } from '@nestjs/testing'
 
 import type { HomebridgePlugin } from '../../src/modules/plugins/plugins.interfaces.js'
 
+import * as childProcess from 'node:child_process'
+import { EventEmitter } from 'node:events'
 import { mkdir, writeFile } from 'node:fs/promises'
 import { join, resolve } from 'node:path'
 import process from 'node:process'
@@ -19,6 +21,14 @@ import { HomebridgeIpcService } from '../../src/core/homebridge-ipc/homebridge-i
 import { ChildBridgesService } from '../../src/modules/child-bridges/child-bridges.service.js'
 import { PluginsModule } from '../../src/modules/plugins/plugins.module.js'
 import { PluginsService } from '../../src/modules/plugins/plugins.service.js'
+
+vi.mock('node:child_process', async () => {
+  const actual = await vi.importActual<typeof import('node:child_process')>('node:child_process')
+  return {
+    ...actual,
+    spawn: vi.fn(actual.spawn),
+  }
+})
 
 describe('PluginController (e2e)', () => {
   let app: NestFastifyApplication
@@ -1228,6 +1238,26 @@ describe('PluginController (e2e)', () => {
 
       // Cleanup
       await remove(scopePath)
+    })
+  })
+
+  describe('cleanNpmCache', () => {
+    it('invokes spawn in argv form so shell metacharacters in the npm path are not interpreted', async () => {
+      const fakeChild = new EventEmitter()
+      const spawnMock = vi.mocked(childProcess.spawn)
+      spawnMock.mockClear()
+      spawnMock.mockImplementationOnce(() => {
+        setImmediate(() => fakeChild.emit('exit', 0))
+        return fakeChild as any
+      })
+
+      await (pluginsService as any).cleanNpmCache()
+
+      expect(spawnMock).toHaveBeenCalledOnce()
+      const call = spawnMock.mock.calls[0]
+      expect(typeof call[0]).toBe('string')
+      expect(Array.isArray(call[1])).toBe(true)
+      expect((call[2] as any)?.shell).not.toBe(true)
     })
   })
 
