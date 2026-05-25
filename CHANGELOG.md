@@ -69,6 +69,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(config-editor): sync Monaco model on save and dispose on destroy
 - fix(accessories): write new rooms reference on inner services reorder
 - fix(config-editor): write `config.json` atomically
+- fix(config-editor): treat restart-info IPC as best-effort
 
 ### Other Changes
 
