@@ -397,7 +397,7 @@
   "plugins.bridge.port_error": "พอร์ตของ {{ type }} ต้องเป็นจำนวนเต็มระหว่าง 1025 ถึง 65533 โดยไม่รวม 5353, 8080, 8443 และพอร์ตอื่นใดที่ถูกกำหนดใช้งานไว้แล้ว",
   "plugins.button_actions": "Plugin Actions",
   "plugins.button_homepage": "ปลั๊กอิน Homepage",
-  "plugins.button_info": "Plugin info for {{ pluginName }}",
+  "plugins.button_info": "Plugin info",
   "plugins.button_set_up": "ติดตั้ง",
   "plugins.button_settings": "การตั้งค่า",
   "plugins.button_uninstall": "ถอนการติดตั้ง",

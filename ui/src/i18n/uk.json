@@ -397,7 +397,7 @@
   "plugins.bridge.port_error": "Порт {{ type }} має бути цілим числом від 1025 до 65533, за винятком 5353, 8080, 8443 та будь-якого іншого вже налаштованого порту.",
   "plugins.button_actions": "Plugin Actions",
   "plugins.button_homepage": "Домашня сторінка плагіна",
-  "plugins.button_info": "Plugin info for {{ pluginName }}",
+  "plugins.button_info": "Plugin info",
   "plugins.button_set_up": "Налаштувати",
   "plugins.button_settings": "Налаштування",
   "plugins.button_uninstall": "Видалити",

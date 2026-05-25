@@ -397,7 +397,7 @@
   "plugins.bridge.port_error": "Cổng {{ type }} phải là số nguyên từ 1025 đến 65533, không bao gồm 5353, 8080, 8443 và các cổng đã cấu hình.",
   "plugins.button_actions": "Plugin Actions",
   "plugins.button_homepage": "Trang chủ Plugin",
-  "plugins.button_info": "Plugin info for {{ pluginName }}",
+  "plugins.button_info": "Plugin info",
   "plugins.button_set_up": "Thiết lập",
   "plugins.button_settings": "Cấu hình Plugin",
   "plugins.button_uninstall": "Gỡ cài đặt",

@@ -397,7 +397,7 @@
   "plugins.bridge.port_error": "{{ type }} port must be an integer between 1025 and 65533, excluding 5353, 8080, 8443 and any other already-configured port.",
   "plugins.button_actions": "Plugin Actions",
   "plugins.button_homepage": "插件主页",
-  "plugins.button_info": "Plugin info for {{ pluginName }}",
+  "plugins.button_info": "Plugin info",
   "plugins.button_set_up": "设置",
   "plugins.button_settings": "插件配置",
   "plugins.button_uninstall": "卸载",
