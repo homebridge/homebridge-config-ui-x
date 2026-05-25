@@ -14,6 +14,7 @@ import { promisify } from 'node:util'
 
 import {
   BadRequestException,
+  ConflictException,
   Inject,
   Injectable,
   InternalServerErrorException,
@@ -36,6 +37,11 @@ import { SchedulerService } from '../../core/scheduler/scheduler.service.js'
 import { PluginsService } from '../plugins/plugins.service.js'
 
 const pump = promisify(pipeline)
+
+// Sentinel value placed in `restoreDirectory` between the moment an upload
+// reserves the slot and the moment the temp dir is actually created. Lets
+// concurrent requests detect a pending upload before `mkdtemp` resolves.
+const RESTORE_PENDING = '__pending__'
 
 @Injectable()
 export class BackupService {
@@ -131,6 +137,19 @@ export class BackupService {
         .on('error', done)
         .on('close', () => done())
     })
+  }
+
+  /**
+   * Atomic check-and-set for the singleton restore slot. If another restore
+   * already holds it (or is mid-upload), throw `ConflictException`. The set
+   * happens synchronously before any `await`, so two concurrent uploads
+   * cannot both pass this gate.
+   */
+  private reserveRestoreSlot(): void {
+    if (this.restoreDirectory !== undefined) {
+      throw new ConflictException('Another restore is already pending. Trigger or cancel it first.')
+    }
+    this.restoreDirectory = RESTORE_PENDING
   }
 
   /**
@@ -462,21 +481,27 @@ export class BackupService {
       throw new NotFoundException()
     }
 
-    // Clear restore directory
-    this.restoreDirectory = undefined
+    // Reserve the singleton restore slot synchronously — concurrent uploads
+    // must lose the race and 409.
+    this.reserveRestoreSlot()
 
-    // Prepare a temp working directory
-    const restoreDir = await mkdtemp(join(tmpdir(), 'homebridge-backup-'))
+    try {
+      // Prepare a temp working directory
+      const restoreDir = await mkdtemp(join(tmpdir(), 'homebridge-backup-'))
 
-    // Pipe the data to the temp directory
-    await pump(createReadStream(backupPath), extract({
-      cwd: restoreDir,
-      strict: true,
-      preservePaths: false,
-      filter: this.tarSafeFilter,
-    }))
+      // Pipe the data to the temp directory
+      await pump(createReadStream(backupPath), extract({
+        cwd: restoreDir,
+        strict: true,
+        preservePaths: false,
+        filter: this.tarSafeFilter,
+      }))
 
-    this.restoreDirectory = restoreDir
+      this.restoreDirectory = restoreDir
+    } catch (err) {
+      this.restoreDirectory = undefined
+      throw err
+    }
   }
 
   /**
@@ -530,29 +555,38 @@ export class BackupService {
    * File upload handler
    */
   async uploadBackupRestore(data: MultipartFile) {
-    // Clear restore directory
-    this.restoreDirectory = undefined
+    // Reserve the singleton restore slot before any await so a concurrent
+    // upload loses the race and 409s.
+    this.reserveRestoreSlot()
 
-    // Prepare a temp working directory
-    const backupDir = await mkdtemp(join(tmpdir(), 'homebridge-backup-'))
+    try {
+      // Prepare a temp working directory
+      const backupDir = await mkdtemp(join(tmpdir(), 'homebridge-backup-'))
 
-    // Pipe the data to the temp directory
-    await pump(data.file, extract({
-      cwd: backupDir,
-      strict: true,
-      preservePaths: false,
-      filter: this.tarSafeFilter,
-    }))
+      // Pipe the data to the temp directory
+      await pump(data.file, extract({
+        cwd: backupDir,
+        strict: true,
+        preservePaths: false,
+        filter: this.tarSafeFilter,
+      }))
 
-    this.restoreDirectory = backupDir
+      this.restoreDirectory = backupDir
+    } catch (err) {
+      this.restoreDirectory = undefined
+      throw err
+    }
   }
 
   /**
-   * Removes the temporary directory used for the restore
+   * Removes the temporary directory used for the restore and releases the
+   * singleton restore slot so a subsequent upload can succeed.
    */
   async removeRestoreDirectory() {
-    if (this.restoreDirectory) {
-      return await remove(this.restoreDirectory)
+    const dir = this.restoreDirectory
+    this.restoreDirectory = undefined
+    if (dir && dir !== RESTORE_PENDING) {
+      return await remove(dir)
     }
   }
 
@@ -560,7 +594,11 @@ export class BackupService {
    * Do an offline restore
    */
   async triggerHeadlessRestore() {
-    if (!await pathExists(this.restoreDirectory)) {
+    if (
+      !this.restoreDirectory
+      || this.restoreDirectory === RESTORE_PENDING
+      || !await pathExists(this.restoreDirectory)
+    ) {
       throw new BadRequestException('No backup file uploaded')
     }
 
@@ -582,7 +620,7 @@ export class BackupService {
    * Restores the uploaded backup
    */
   async restoreFromBackup(client: EventEmitter, autoRestart = false) {
-    if (!this.restoreDirectory) {
+    if (!this.restoreDirectory || this.restoreDirectory === RESTORE_PENDING) {
       throw new BadRequestException()
     }
 
@@ -740,26 +778,32 @@ export class BackupService {
    * Upload a .hbfx backup file
    */
   async uploadHbfxRestore(data: MultipartFile) {
-    // Clear restore directory
-    this.restoreDirectory = undefined
+    // Reserve the singleton restore slot before any await so a concurrent
+    // upload loses the race and 409s.
+    this.reserveRestoreSlot()
 
-    // Prepare a temp working directory
-    const backupDir = await mkdtemp(join(tmpdir(), 'homebridge-backup-'))
+    try {
+      // Prepare a temp working directory
+      const backupDir = await mkdtemp(join(tmpdir(), 'homebridge-backup-'))
 
-    this.logger.log(`Extracting .hbfx file to ${backupDir}.`)
+      this.logger.log(`Extracting .hbfx file to ${backupDir}.`)
 
-    // Pipe the data through a path-validating extractor so a crafted .hbfx
-    // can't write outside backupDir (Zip Slip).
-    await this.extractZipSafely(data.file, backupDir)
+      // Pipe the data through a path-validating extractor so a crafted .hbfx
+      // can't write outside backupDir (Zip Slip).
+      await this.extractZipSafely(data.file, backupDir)
 
-    this.restoreDirectory = backupDir
+      this.restoreDirectory = backupDir
+    } catch (err) {
+      this.restoreDirectory = undefined
+      throw err
+    }
   }
 
   /**
    * Restore .hbfx backup file
    */
   async restoreHbfxBackup(client: EventEmitter) {
-    if (!this.restoreDirectory) {
+    if (!this.restoreDirectory || this.restoreDirectory === RESTORE_PENDING) {
       throw new BadRequestException()
     }
 

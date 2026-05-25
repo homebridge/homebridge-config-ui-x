@@ -52,6 +52,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(a11y): use real <button> for collapsible disclosure sections (settings, support)
 - fix(plugins): drop shell-injection vector in `cleanNpmCache`
 - fix(backup): block path-traversal and symlink entries in restores
+- fix(backup): reject concurrent restore uploads via a singleton slot
 
 ### Other Changes
 

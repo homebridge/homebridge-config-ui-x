@@ -691,6 +691,29 @@ describe('BackupController (e2e)', { timeout: 10_000 }, () => {
     })
   })
 
+  describe('Concurrent restore safety', () => {
+    it('restoreScheduledBackup refuses to interleave with an in-progress restore', async () => {
+      const stagingDir = await mkdtemp(join(tmpdir(), 'audit-concurrent-'))
+      await writeFileAsync(join(stagingDir, 'info.json'), JSON.stringify({ name: 'audit' }))
+
+      const backupId = 'abcdef012345.987654321'
+      const backupFile = `homebridge-backup-${backupId}.tar.gz`
+      await tarCreate(
+        { gzip: true, cwd: stagingDir, file: resolve(configService.instanceBackupPath, backupFile) },
+        ['info.json'],
+      )
+
+      // Simulate an in-flight restore that has already reserved the slot.
+      ;(backupService as any).restoreDirectory = '/tmp/already-restoring'
+
+      await expect(backupService.restoreScheduledBackup(backupId)).rejects.toThrow(/another restore/i)
+
+      // Clean up the simulated slot so other tests aren't affected.
+      ;(backupService as any).restoreDirectory = undefined
+      await remove(stagingDir)
+    })
+  })
+
   describe('Archive entry safety', () => {
     it('restoreScheduledBackup drops symlink entries during tar extraction', async () => {
       const stagingDir = await mkdtemp(join(tmpdir(), 'audit-staging-'))
