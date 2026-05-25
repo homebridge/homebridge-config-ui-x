@@ -877,6 +877,7 @@
   "support.links.reddit_sub": "Homebridge subreddit on hyvä paikka jakaa Homebridge asetuksesi ja etsiä apua.",
   "support.links.title": "Hyödyllisiä linkkejä",
   "support.title": "Tuki",
+  "toast.api_error_generic": "Something went wrong. Please try again.",
   "toast.no_auth": "Vain pääkäyttäjillä on pääsy pyydetylle sivulle.",
   "toast.title_error": "Virhe",
   "toast.title_notice": "Notice",

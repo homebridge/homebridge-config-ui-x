@@ -1,6 +1,5 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { TranslatePipe } from '@ngx-translate/core'
-import { ToastrService } from 'ngx-toastr'
 
 import { BaseManageComponent } from '@/app/core/accessories/types/base-manage.component'
 import { DoorLockState } from '@/app/core/accessories/types/matter/matter-device.constants'
@@ -16,8 +15,6 @@ import { getDoorLockState, setDoorLockState } from '@/app/core/accessories/types
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DoorLockManageComponent extends BaseManageComponent {
-  private $toastr = inject(ToastrService)
-
   public targetMode!: number
 
   protected setupComponent() {
@@ -40,7 +37,7 @@ export class DoorLockManageComponent extends BaseManageComponent {
 
       this.blurTarget(event)
     } catch (error) {
-      this.$toastr.error(`Failed to ${value === DoorLockState.Locked ? 'lock' : 'unlock'} door`, 'Error')
+      this.showGenericErrorToast(error)
       // Revert to previous state on error
       this.targetMode = previousMode
       this.cdr.markForCheck()

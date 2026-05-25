@@ -877,6 +877,7 @@
   "support.links.reddit_sub": "The Homebridge subreddit is a great place to share your Homebridge setup and ask for help.",
   "support.links.title": "Enllaços Útils",
   "support.title": "Ajuda i Suport",
+  "toast.api_error_generic": "Something went wrong. Please try again.",
   "toast.no_auth": "Only administrators may access the requested page.",
   "toast.title_error": "Error",
   "toast.title_notice": "Notice",

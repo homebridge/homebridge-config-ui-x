@@ -877,6 +877,7 @@
   "support.links.reddit_sub": "Homebridge 子版块是分享您的 Homebridge 设置并寻求帮助的好地方。",
   "support.links.title": "实用链接",
   "support.title": "支持",
+  "toast.api_error_generic": "Something went wrong. Please try again.",
   "toast.no_auth": "仅管理员可访问所请求的页面。",
   "toast.title_error": "错误",
   "toast.title_notice": "Notice",

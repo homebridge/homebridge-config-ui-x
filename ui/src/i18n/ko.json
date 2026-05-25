@@ -877,6 +877,7 @@
   "support.links.reddit_sub": "Homebridge 서브레딧은 Homebridge 설정을 공유하고 도움을 요청하기에 좋은 공간입니다.",
   "support.links.title": "유용한 링크",
   "support.title": "지원",
+  "toast.api_error_generic": "Something went wrong. Please try again.",
   "toast.no_auth": "관리자만 요청된 페이지에 접근할 수 있습니다.",
   "toast.title_error": "오류",
   "toast.title_notice": "Notice",

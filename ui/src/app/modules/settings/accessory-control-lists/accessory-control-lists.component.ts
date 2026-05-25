@@ -10,6 +10,7 @@ import { AccessoryOverviewCacheService } from '@/app/core/caching/accessory-over
 import { ApiService } from '@/app/core/communication/api.service'
 import { ACCESSORY_CONTROL_LISTS_MODAL_DATA } from '@/app/core/modal-data-tokens'
 import { SettingsService } from '@/app/core/ui/settings.service'
+import { HttpErrorService } from '@/app/core/utilities/http-error.service'
 import { Pairing } from '@/app/modules/settings/accessory-control-lists/accessory-control-lists.interfaces'
 
 @Component({
@@ -29,6 +30,7 @@ export class AccessoryControlListsComponent implements OnInit {
   private $activeModal = inject(NgbActiveModal)
   private $accessoryOverview = inject(AccessoryOverviewCacheService)
   private $api = inject(ApiService)
+  private $errors = inject(HttpErrorService)
   private $settings = inject(SettingsService)
   private $toastr = inject(ToastrService)
   private $translate = inject(TranslateService)
@@ -66,7 +68,7 @@ export class AccessoryControlListsComponent implements OnInit {
         .sort((a: Pairing, b: Pairing) => a.name.localeCompare(b.name)))
     } catch (error: any) {
       console.error(error)
-      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
       this.$activeModal.close()
     }
   }
@@ -95,7 +97,7 @@ export class AccessoryControlListsComponent implements OnInit {
     } catch (error: any) {
       this.clicked.set(false)
       console.error(error)
-      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
     }
   }
 

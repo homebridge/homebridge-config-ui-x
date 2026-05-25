@@ -6,6 +6,7 @@ import { ToastrService } from 'ngx-toastr'
 
 import { ApiService } from '@/app/core/communication/api.service'
 import { SettingsService } from '@/app/core/ui/settings.service'
+import { HttpErrorService } from '@/app/core/utilities/http-error.service'
 import { environment } from '@/environments/environment'
 
 @Component({
@@ -20,6 +21,7 @@ export class WallpaperComponent implements OnInit {
   // Injected dependencies
   private $activeModal = inject(NgbActiveModal)
   private $api = inject(ApiService)
+  private $errors = inject(HttpErrorService)
   private $settings = inject(SettingsService)
   private $toastr = inject(ToastrService)
   private $translate = inject(TranslateService)
@@ -72,7 +74,7 @@ export class WallpaperComponent implements OnInit {
       }
     } catch (error: any) {
       console.error(error)
-      this.$toastr.error(error.error?.message, this.$translate.instant('toast.title_error'))
+      this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
       this.clicked.set(false)
     }
   }

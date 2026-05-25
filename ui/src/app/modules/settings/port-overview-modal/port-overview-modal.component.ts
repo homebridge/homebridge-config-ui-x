@@ -4,6 +4,7 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
 
 import { ApiService } from '@/app/core/communication/api.service'
+import { HttpErrorService } from '@/app/core/utilities/http-error.service'
 
 interface NetworkOverviewEntry {
   service: string
@@ -26,6 +27,7 @@ interface NetworkOverviewEntry {
 export class PortOverviewModalComponent implements OnInit {
   private $activeModal = inject(NgbActiveModal)
   private $api = inject(ApiService)
+  private $errors = inject(HttpErrorService)
   private $toastr = inject(ToastrService)
   private $translate = inject(TranslateService)
 
@@ -44,7 +46,7 @@ export class PortOverviewModalComponent implements OnInit {
       this.conflicts.set(data.conflicts)
     } catch (error: any) {
       console.error(error)
-      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
     } finally {
       this.loading.set(false)
     }

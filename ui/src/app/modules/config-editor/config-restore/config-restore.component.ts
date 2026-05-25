@@ -10,6 +10,7 @@ import { ToastrService } from 'ngx-toastr'
 
 import { ApiService } from '@/app/core/communication/api.service'
 import { CONFIG_RESTORE_MODAL_DATA } from '@/app/core/modal-data-tokens'
+import { HttpErrorService } from '@/app/core/utilities/http-error.service'
 import { ConfigRestoreBackup } from '@/app/modules/config-editor/config-editor.interfaces'
 
 @Component({
@@ -28,6 +29,7 @@ export class ConfigRestoreComponent implements OnInit {
   // Injected dependencies
   private $activeModal = inject(NgbActiveModal)
   private $api = inject(ApiService)
+  private $errors = inject(HttpErrorService)
   private $router = inject(Router)
   private $toastr = inject(ToastrService)
   private $translate = inject(TranslateService)
@@ -55,7 +57,7 @@ export class ConfigRestoreComponent implements OnInit {
     } catch (error: any) {
       this.loading.set(false)
       console.error(error)
-      this.$toastr.error(error.error?.message || error.message, this.$translate.instant('toast.title_error'))
+      this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
       this.dismissModal()
     }
   }
@@ -75,7 +77,7 @@ export class ConfigRestoreComponent implements OnInit {
       this.clicked.set(false)
     } catch (error: any) {
       this.clicked.set(false)
-      this.$toastr.error(error.error?.message || error.message, this.$translate.instant('toast.title_error'))
+      this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
       console.error(error)
     }
   }
@@ -98,7 +100,7 @@ export class ConfigRestoreComponent implements OnInit {
       this.deleting.set(null)
     } catch (error: any) {
       this.deleting.set(null)
-      this.$toastr.error(error.error?.message || error.message, this.$translate.instant('toast.title_error'))
+      this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
       console.error(error)
     }
   }
@@ -111,7 +113,7 @@ export class ConfigRestoreComponent implements OnInit {
       this.backupList.set([])
       this.deleting.set(null)
     } catch (error: any) {
-      this.$toastr.error(error.error?.message || error.message, this.$translate.instant('toast.title_error'))
+      this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
       console.error(error)
       this.deleting.set(null)
     }

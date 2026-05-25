@@ -3,7 +3,6 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { TranslatePipe } from '@ngx-translate/core'
 import { NouisliderComponent } from 'ng2-nouislider'
-import { ToastrService } from 'ngx-toastr'
 import { Subject } from 'rxjs'
 
 import { BaseManageComponent } from '@/app/core/accessories/types/base-manage.component'
@@ -36,7 +35,6 @@ import { SettingsService } from '@/app/core/ui/settings.service'
 })
 export class MatterThermostatManageComponent extends BaseManageComponent {
   private $settings = inject(SettingsService)
-  private $toastr = inject(ToastrService)
 
   public targetMode!: number
   public targetHeatingTemp!: number
@@ -59,7 +57,7 @@ export class MatterThermostatManageComponent extends BaseManageComponent {
       try {
         await setThermostatHeatingSetpoint(this.service, this.targetHeatingTemp)
       } catch (error) {
-        this.$toastr.error('Failed to set heating temperature', 'Error')
+        this.showGenericErrorToast(error)
         // Revert to current value on error
         this.targetHeatingTemp = getThermostatHeatingSetpoint(this.service)
         this.cdr.markForCheck()
@@ -70,7 +68,7 @@ export class MatterThermostatManageComponent extends BaseManageComponent {
       try {
         await setThermostatCoolingSetpoint(this.service, this.targetCoolingTemp)
       } catch (error) {
-        this.$toastr.error('Failed to set cooling temperature', 'Error')
+        this.showGenericErrorToast(error)
         // Revert to current value on error
         this.targetCoolingTemp = getThermostatCoolingSetpoint(this.service)
         this.cdr.markForCheck()
@@ -82,7 +80,7 @@ export class MatterThermostatManageComponent extends BaseManageComponent {
         await setThermostatHeatingSetpoint(this.service, this.autoTemp[0])
         await setThermostatCoolingSetpoint(this.service, this.autoTemp[1])
       } catch (error) {
-        this.$toastr.error('Failed to set temperature range', 'Error')
+        this.showGenericErrorToast(error)
         // Revert to current values on error
         this.targetHeatingTemp = getThermostatHeatingSetpoint(this.service)
         this.targetCoolingTemp = getThermostatCoolingSetpoint(this.service)
@@ -151,7 +149,7 @@ export class MatterThermostatManageComponent extends BaseManageComponent {
       // Apply gradient to the new slider after it's created
       this.applySliderGradient('linear-gradient(to right, rgb(80, 80, 179), rgb(173, 216, 230), rgb(255, 185, 120), rgb(139, 90, 60))')
     } catch (error) {
-      this.$toastr.error('Failed to set thermostat mode', 'Error')
+      this.showGenericErrorToast(error)
       // Revert to previous mode on error
       this.targetMode = previousMode
       this.cdr.markForCheck()

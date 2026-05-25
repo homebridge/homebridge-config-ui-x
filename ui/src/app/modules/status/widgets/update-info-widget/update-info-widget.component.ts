@@ -15,6 +15,7 @@ import { Plugin } from '@/app/core/plugins/manage-plugins.interfaces'
 import { ManagePluginsService } from '@/app/core/plugins/manage-plugins.service'
 import { HomebridgeUiUpdatePolicy, HomebridgeUpdatePolicy, NodeUpdatePolicy } from '@/app/core/settings.interfaces'
 import { SettingsService } from '@/app/core/ui/settings.service'
+import { HttpErrorService } from '@/app/core/utilities/http-error.service'
 import { HbV2ModalComponent } from '@/app/modules/status/widgets/update-info-widget/hb-v2-modal/hb-v2-modal.component'
 import { NodeVersionModalComponent } from '@/app/modules/status/widgets/update-info-widget/node-version-modal/node-version-modal.component'
 import {
@@ -43,6 +44,7 @@ export class UpdateInfoWidgetComponent implements OnInit {
   private destroyRef = inject(DestroyRef)
   private injector = inject(EnvironmentInjector)
   private $auth = inject(AuthService)
+  private $errors = inject(HttpErrorService)
   private $modal = inject(NgbModal)
   private $plugin = inject(ManagePluginsService)
   private $settings = inject(SettingsService)
@@ -96,7 +98,7 @@ export class UpdateInfoWidgetComponent implements OnInit {
       overview = await firstValueFrom(this.io.request('get-version-overview'))
     } catch (error: any) {
       console.error(error)
-      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
       return
     }
 
@@ -285,7 +287,7 @@ export class UpdateInfoWidgetComponent implements OnInit {
     } catch (error: any) {
       console.error(error)
       this.$toastr.error(
-        error.message,
+        this.$errors.toToastMessage(error),
         this.$translate.instant('toast.title_error'),
       )
     }
@@ -306,7 +308,7 @@ export class UpdateInfoWidgetComponent implements OnInit {
     } catch (error: any) {
       console.error(error)
       this.$toastr.error(
-        error.message,
+        this.$errors.toToastMessage(error),
         this.$translate.instant('toast.title_error'),
       )
     }
@@ -325,7 +327,7 @@ export class UpdateInfoWidgetComponent implements OnInit {
     } catch (error: any) {
       console.error(error)
       this.$toastr.error(
-        error.message,
+        this.$errors.toToastMessage(error),
         this.$translate.instant('toast.title_error'),
       )
     }

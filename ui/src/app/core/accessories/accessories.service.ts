@@ -15,6 +15,7 @@ import { CachedAccessoriesCacheService } from '@/app/core/caching/cached-accesso
 import { ServerPairingsCacheService } from '@/app/core/caching/server-pairings-cache.service'
 import { IoNamespace, WsService } from '@/app/core/communication/ws.service'
 import { ACCESSORY_INFO_MODAL_DATA } from '@/app/core/modal-data-tokens'
+import { HttpErrorService } from '@/app/core/utilities/http-error.service'
 
 @Injectable({
   providedIn: 'root',
@@ -25,6 +26,7 @@ export class AccessoriesService {
   private $pairingsCache = inject(ServerPairingsCacheService)
   private $auth = inject(AuthService)
   private $destroyRef = inject(DestroyRef)
+  private $errors = inject(HttpErrorService)
   private $modal = inject(NgbModal)
   private $toastr = inject(ToastrService)
   private $translate = inject(TranslateService)
@@ -258,7 +260,7 @@ export class AccessoriesService {
         next: () => this.layoutSaved.next(undefined),
         error: (error) => {
           console.error(error)
-          this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+          this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
         },
       })
   }

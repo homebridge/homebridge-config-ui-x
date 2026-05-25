@@ -7,6 +7,7 @@ import { ToastrService } from 'ngx-toastr'
 import { ApiService } from '@/app/core/communication/api.service'
 import { RequiredIndicatorComponent } from '@/app/core/components/required-indicator/required-indicator.component'
 import { ADD_USER_MODAL_DATA } from '@/app/core/modal-data-tokens'
+import { HttpErrorService } from '@/app/core/utilities/http-error.service'
 import { User } from '@/app/modules/users/users.interface'
 
 @Component({
@@ -25,6 +26,7 @@ export class UsersAddComponent implements OnInit {
   // Injected dependencies
   private $activeModal = inject(NgbActiveModal)
   private $api = inject(ApiService)
+  private $errors = inject(HttpErrorService)
   private $toastr = inject(ToastrService)
   private $translate = inject(TranslateService)
   private modalData = inject(ADD_USER_MODAL_DATA)
@@ -52,7 +54,7 @@ export class UsersAddComponent implements OnInit {
       await this.$api.post('/users', value)
       this.$activeModal.close()
     } catch (error: any) {
-      this.$toastr.error(error.error?.message || error.message, this.$translate.instant('toast.title_error'))
+      this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
     }
   }
 

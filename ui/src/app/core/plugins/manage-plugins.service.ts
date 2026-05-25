@@ -29,6 +29,7 @@ import { ResetAccessoriesComponent } from '@/app/core/plugins/reset-accessories/
 import { SwitchToScopedComponent } from '@/app/core/plugins/switch-to-scoped/switch-to-scoped.component'
 import { UninstallPluginComponent } from '@/app/core/plugins/uninstall-plugin/uninstall-plugin.component'
 import { SettingsService } from '@/app/core/ui/settings.service'
+import { HttpErrorService } from '@/app/core/utilities/http-error.service'
 
 @Injectable({
   providedIn: 'root',
@@ -37,6 +38,7 @@ export class ManagePluginsService {
   private $api = inject(ApiService)
   private $modal = inject(NgbModal)
   private $customPluginsService = inject(CustomPluginsService)
+  private $errors = inject(HttpErrorService)
   private $settings = inject(SettingsService)
   private $toastr = inject(ToastrService)
   private $translate = inject(TranslateService)
@@ -386,7 +388,7 @@ export class ManagePluginsService {
       }
     } catch (error: any) {
       console.error(error)
-      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
       return false
     }
 

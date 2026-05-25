@@ -26,6 +26,7 @@ import { ManageVersionComponent } from '@/app/core/plugins/manage-version/manage
 import { PluginLogsComponent } from '@/app/core/plugins/plugin-logs/plugin-logs.component'
 import { SettingsService } from '@/app/core/ui/settings.service'
 import { ChildBridgesService } from '@/app/core/utilities/child-bridges.service'
+import { HttpErrorService } from '@/app/core/utilities/http-error.service'
 import { BackupService } from '@/app/modules/settings/backup/backup.service'
 import { HbV2ModalComponent } from '@/app/modules/status/widgets/update-info-widget/hb-v2-modal/hb-v2-modal.component'
 
@@ -57,6 +58,7 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
   private $api = inject(ApiService)
   private $backup = inject(BackupService)
   private $childBridges = inject(ChildBridgesService)
+  private $errors = inject(HttpErrorService)
   private $modal = inject(NgbModal)
   private $pluginsCache = inject(PluginsCacheService)
   private $router = inject(Router)
@@ -377,7 +379,7 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
         this.speakAction('plugins.a11y.update_failed', 3000)
         this.actionFailed.set(true)
         console.error(error)
-        this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+        this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
       },
     })
   }
@@ -537,7 +539,7 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
         this.actionFailed.set(true)
         console.error(error)
         void this.$router.navigate(['/plugins'])
-        this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+        this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
       },
     })
   }
@@ -569,7 +571,7 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
         this.speakAction('plugins.a11y.uninstall_failed', 3000)
         this.actionFailed.set(true)
         console.error(error)
-        this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+        this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
       },
     })
   }

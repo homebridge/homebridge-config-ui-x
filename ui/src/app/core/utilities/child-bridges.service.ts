@@ -10,6 +10,7 @@ import { ApiService } from '@/app/core/communication/api.service'
 import { RestartChildBridgesComponent } from '@/app/core/components/restart-child-bridges/restart-child-bridges.component'
 import { RestartHomebridgeComponent } from '@/app/core/components/restart-homebridge/restart-homebridge.component'
 import { RESTART_CHILD_BRIDGES_MODAL_DATA } from '@/app/core/modal-data-tokens'
+import { HttpErrorService } from '@/app/core/utilities/http-error.service'
 
 const CACHE_KEY = 'status-child-bridges'
 
@@ -19,6 +20,7 @@ const CACHE_KEY = 'status-child-bridges'
 export class ChildBridgesService {
   private $api = inject(ApiService)
   private $cache = inject(TtlCacheService)
+  private $errors = inject(HttpErrorService)
   private $modal = inject(NgbModal)
   private $toastr = inject(ToastrService)
   private $translate = inject(TranslateService)
@@ -91,7 +93,7 @@ export class ChildBridgesService {
       return data.filter(bridge => pluginName === bridge.plugin)
     } catch (error: any) {
       console.error(error)
-      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
       return []
     }
   }

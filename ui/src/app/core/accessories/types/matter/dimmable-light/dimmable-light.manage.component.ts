@@ -1,8 +1,7 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { TranslatePipe } from '@ngx-translate/core'
 import { NouisliderComponent } from 'ng2-nouislider'
-import { ToastrService } from 'ngx-toastr'
 import { Subject } from 'rxjs'
 
 import { BaseManageComponent } from '@/app/core/accessories/types/base-manage.component'
@@ -21,8 +20,6 @@ import { getBrightnessLevel, getOnOffState, levelToPercentage } from '@/app/core
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DimmableLightManageComponent extends BaseManageComponent {
-  private $toastr = inject(ToastrService)
-
   public targetMode!: boolean
   public targetBrightness!: { value: number, min: number, max: number, step: number }
   public targetBrightnessChanged: Subject<number> = new Subject<number>()
@@ -52,7 +49,7 @@ export class DimmableLightManageComponent extends BaseManageComponent {
           // Update local state
           this.targetMode = this.targetBrightness.value > 0
         } catch (error) {
-          this.$toastr.error('Failed to set light brightness', 'Error')
+          this.showGenericErrorToast(error)
           // Revert to previous value on error
           this.targetBrightness.value = previousBrightness
           this.targetMode = previousBrightness > 0
@@ -98,7 +95,7 @@ export class DimmableLightManageComponent extends BaseManageComponent {
 
       this.blurTarget(event)
     } catch (error) {
-      this.$toastr.error(`Failed to turn light ${value ? 'on' : 'off'}`, 'Error')
+      this.showGenericErrorToast(error)
       // Revert to previous state on error
       this.targetMode = previousMode
       this.targetBrightness.value = previousBrightness
