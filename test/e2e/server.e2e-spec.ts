@@ -15,6 +15,7 @@ import { copy, ensureDir, pathExists, readFile, readJson, remove, writeJson } fr
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { AuthModule } from '../../src/core/auth/auth.module.js'
+import { AuthService } from '../../src/core/auth/auth.service.js'
 import { ConfigService } from '../../src/core/config/config.service.js'
 import { ChildBridgesService } from '../../src/modules/child-bridges/child-bridges.service.js'
 import { ServerModule } from '../../src/modules/server/server.module.js'
@@ -1351,6 +1352,36 @@ describe('ServerController (e2e)', () => {
     expect(res.statusCode).toBe(201)
     expect(res.json().valid).toBe(true)
     expect(res.json().type).toBe('selfsigned')
+  })
+
+  it('PUT /server/restart (rejects non-admin users)', async () => {
+    // The restart command is admin-edited; non-admins can authenticate but
+    // must not be able to trigger whatever shell command an admin saved.
+    const authService = app.get(AuthService)
+    await authService.addUser({
+      name: 'NonAdmin Tester',
+      username: 'restart-nonadmin',
+      password: 'restart-nonadmin',
+      admin: false,
+    } as any)
+
+    const nonAdminAuth = `bearer ${(await app.inject({
+      method: 'POST',
+      path: '/auth/login',
+      payload: { username: 'restart-nonadmin', password: 'restart-nonadmin' },
+    })).json().access_token}`
+
+    const mockRestartServer = vi.fn()
+    serverService.restartServer = mockRestartServer as any
+
+    const res = await app.inject({
+      method: 'PUT',
+      path: '/server/restart',
+      headers: { authorization: nonAdminAuth },
+    })
+
+    expect(res.statusCode).toBe(403)
+    expect(mockRestartServer).not.toHaveBeenCalled()
   })
 
   afterAll(async () => {

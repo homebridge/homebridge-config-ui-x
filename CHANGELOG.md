@@ -77,6 +77,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(ipc): de-duplicate restartHomebridge SIGKILL timers and listeners
 - fix(log): scope the tail-ending flag per client
 - fix(custom-plugins): make custom-UI cleanup idempotent
+- fix(server): require admin to PUT /server/restart
 
 ### Other Changes
 
