@@ -16,6 +16,6 @@ export const setupWizardGuard: CanActivateFn = async () => {
     return true
   }
 
-  void $router.navigate(['/'])
-  return true
+  await $router.navigate(['/'])
+  return false
 }

@@ -17,6 +17,13 @@ export const authGuard: CanActivateFn = async (_next, state) => {
     await firstValueFrom($settings.onSettingsLoaded)
   }
 
+  // Fresh install: short-circuit straight to the setup wizard instead of
+  // bouncing through /login first
+  if ($settings.env.setupWizardComplete === false) {
+    await $router.navigate(['/setup'])
+    return false
+  }
+
   // If not using form auth, get a token automatically
   if ($settings.formAuth === false) {
     await $auth.noauth()
