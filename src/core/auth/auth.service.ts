@@ -13,12 +13,13 @@ import {
 } from '@nestjs/common'
 import { JwtService } from '@nestjs/jwt'
 import { createGuardrails } from '@otplib/core'
-import { pathExists, readJson, writeJson } from 'fs-extra/esm'
+import { pathExists, readJson } from 'fs-extra/esm'
 import NodeCache from 'node-cache'
 import { generateSecret, generateURI, verify } from 'otplib'
 
 import { UserDto } from '../../modules/users/users.dto.js'
 import { ConfigService } from '../config/config.service.js'
+import { JsonFileStoreService } from '../fs/json-file-store.service.js'
 import { Logger } from '../logger/logger.service.js'
 
 @Injectable()
@@ -34,6 +35,7 @@ export class AuthService {
   constructor(
     @Inject(JwtService) private readonly jwtService: JwtService,
     @Inject(ConfigService) private readonly configService: ConfigService,
+    @Inject(JsonFileStoreService) private readonly jsonStore: JsonFileStoreService,
     @Inject(Logger) private readonly logger: Logger,
   ) {
     this.checkAuthFile()
@@ -243,7 +245,9 @@ export class AuthService {
     // First user must be admin
     user.admin = true
 
-    await writeJson(this.configService.authPath, [])
+    // Start with an empty auth file; addUser() below acquires the same
+    // lock to push the first user, so both writes serialise correctly.
+    await this.jsonStore.write<UserDto[]>(this.configService.authPath, [], { spaces: 4 })
 
     const createdUser = await this.addUser(user)
 
@@ -333,12 +337,31 @@ export class AuthService {
   }
 
   /**
-   * Saves the user file
-   * @param users
+   * Run a read-modify-write transaction against auth.json under the
+   * shared per-path mutex. The callback receives the parsed users
+   * array (fresh from disk under the lock), mutates it in place, and
+   * may optionally return a side value for the outer caller (e.g. the
+   * newly-added user). The mutated array is then atomically persisted
+   * via write-temp/fsync/rename.
+   *
+   * Closes the long-standing race where two concurrent /users requests
+   * each read the same baseline (`Math.max(...ids) + 1` produced
+   * duplicate IDs; the second write wiped the first add/delete).
    */
-  private async saveUserFile(users: UserDto[]) {
-    // Update the auth.json
-    return await writeJson(this.configService.authPath, users, { spaces: 4 })
+  private async withAuthFile<R>(
+    mutator: (users: UserDto[]) => R | Promise<R>,
+  ): Promise<R> {
+    let result: R | undefined
+    await this.jsonStore.mutate<UserDto[]>(
+      this.configService.authPath,
+      async (current) => {
+        const users = current ?? []
+        result = await mutator(users)
+        return users
+      },
+      { spaces: 4 },
+    )
+    return result as R
   }
 
   /**
@@ -346,32 +369,29 @@ export class AuthService {
    * @param user
    */
   async addUser(user: UserDto) {
-    const authfile = await this.getUsers()
+    // Salt + password hashing are computed *outside* the auth.json
+    // lock so a slow PBKDF2 doesn't block other callers waiting on
+    // the file. The duplicate-username check + id derivation + push
+    // run inside the lock, against a fresh read.
     const salt = await this.genSalt()
+    const hashedPassword = await this.hashPassword(user.password, salt)
 
-    // User object
-    const newUser: UserDto = {
-      id: authfile.length ? Math.max(...authfile.map(x => x.id)) + 1 : 1,
-      username: user.username,
-      name: user.name,
-      hashedPassword: await this.hashPassword(user.password, salt),
-      salt,
-      admin: user.admin,
-    }
-
-    // Check a user with the same username does not already exist
-    if (authfile.some(x => x.username.toLowerCase() === newUser.username.toLowerCase())) {
-      throw new ConflictException(`User with username '${newUser.username}' already exists.`)
-    }
-
-    // Add the user to the authfile
-    authfile.push(newUser)
-
-    // Update the auth.json
-    await this.saveUserFile(authfile)
-    this.logger.warn(`Added new user: ${user.username}.`)
-
-    return this.desensitiseUserProfile(newUser)
+    return this.withAuthFile((authfile) => {
+      if (authfile.some(x => x.username.toLowerCase() === user.username.toLowerCase())) {
+        throw new ConflictException(`User with username '${user.username}' already exists.`)
+      }
+      const newUser: UserDto = {
+        id: authfile.length ? Math.max(...authfile.map(x => x.id)) + 1 : 1,
+        username: user.username,
+        name: user.name,
+        hashedPassword,
+        salt,
+        admin: user.admin,
+      }
+      authfile.push(newUser)
+      this.logger.warn(`Added new user: ${user.username}.`)
+      return this.desensitiseUserProfile(newUser)
+    })
   }
 
   /**
@@ -379,24 +399,18 @@ export class AuthService {
    * @param id
    */
   async deleteUser(id: number) {
-    const authfile = await this.getUsers()
-
-    const index = authfile.findIndex(x => x.id === id)
-
-    if (index < 0) {
-      throw new BadRequestException('User Not Found')
-    }
-
-    // Prevent deleting the only admin user
-    if (authfile[index].admin && authfile.filter(x => x.admin === true).length < 2) {
-      throw new BadRequestException('Cannot delete only admin user')
-    }
-
-    authfile.splice(index, 1)
-
-    // Update the auth.json
-    await this.saveUserFile(authfile)
-    this.logger.warn(`Deleted user with ID ${id}.`)
+    await this.withAuthFile((authfile) => {
+      const index = authfile.findIndex(x => x.id === id)
+      if (index < 0) {
+        throw new BadRequestException('User Not Found')
+      }
+      // Prevent deleting the only admin user
+      if (authfile[index].admin && authfile.filter(x => x.admin === true).length < 2) {
+        throw new BadRequestException('Cannot delete only admin user')
+      }
+      authfile.splice(index, 1)
+      this.logger.warn(`Deleted user with ID ${id}.`)
+    })
   }
 
   /**
@@ -405,172 +419,158 @@ export class AuthService {
    * @param update
    */
   async updateUser(id: number, update: UserDto) {
-    const authfile = await this.getUsers()
-
-    const user = authfile.find(x => x.id === id)
-
-    if (!user) {
-      throw new BadRequestException('User Not Found')
-    }
-
-    if (user.username !== update.username) {
-      if (authfile.some(x => x.username.toLowerCase() === update.username.toLowerCase())) {
-        throw new ConflictException(`User with username '${update.username}' already exists.`)
-      }
-
-      this.logger.log(`Updated user: changed username from ${user.username} to ${update.username}.`)
-      user.username = update.username
-    }
-
-    user.name = update.name || user.name
-    user.admin = (update.admin === undefined) ? user.admin : update.admin
-
+    // Pre-compute the new salt + hash outside the lock so PBKDF2 isn't
+    // serialised against unrelated auth-file mutations.
+    let newSalt: string | undefined
+    let newHashedPassword: string | undefined
     if (update.password) {
-      const salt = await this.genSalt()
-      user.hashedPassword = await this.hashPassword(update.password, salt)
-      user.salt = salt
+      newSalt = await this.genSalt()
+      newHashedPassword = await this.hashPassword(update.password, newSalt)
     }
 
-    // Update the auth.json
-    await this.saveUserFile(authfile)
-    this.logger.log(`Updated user: ${user.username}.`)
-
-    return this.desensitiseUserProfile(user)
+    return this.withAuthFile((authfile) => {
+      const user = authfile.find(x => x.id === id)
+      if (!user) {
+        throw new BadRequestException('User Not Found')
+      }
+      if (user.username !== update.username) {
+        if (authfile.some(x => x.username.toLowerCase() === update.username.toLowerCase())) {
+          throw new ConflictException(`User with username '${update.username}' already exists.`)
+        }
+        this.logger.log(`Updated user: changed username from ${user.username} to ${update.username}.`)
+        user.username = update.username
+      }
+      user.name = update.name || user.name
+      user.admin = (update.admin === undefined) ? user.admin : update.admin
+      if (newHashedPassword && newSalt) {
+        user.hashedPassword = newHashedPassword
+        user.salt = newSalt
+      }
+      this.logger.log(`Updated user: ${user.username}.`)
+      return this.desensitiseUserProfile(user)
+    })
   }
 
   /**
    * Change a users own password
    */
   async updateOwnPassword(username: string, currentPassword: string, newPassword: string) {
-    const authfile = await this.getUsers()
-    const user = authfile.find(x => x.username === username)
+    // The current-password check has to run against the on-disk value
+    // (otherwise a stale-but-just-changed password would be accepted).
+    // Do it inside the lock against a fresh read; the new salt and
+    // hash are computed inside too so the validate→update window
+    // can't be interleaved by another /password call for the same
+    // user.
+    const newSalt = await this.genSalt()
+    const newHashedPassword = await this.hashPassword(newPassword, newSalt)
 
-    if (!user) {
-      throw new NotFoundException('User not found.')
-    }
-
-    // This will throw an error of the password is wrong
-    await this.checkPassword(user, currentPassword)
-
-    // Generate a new salt
-    const salt = await this.genSalt()
-    user.hashedPassword = await this.hashPassword(newPassword, salt)
-    user.salt = salt
-
-    await this.saveUserFile(authfile)
-
-    return this.desensitiseUserProfile(user)
+    return this.withAuthFile(async (authfile) => {
+      const user = authfile.find(x => x.username === username)
+      if (!user) {
+        throw new NotFoundException('User not found.')
+      }
+      // This will throw an error if the password is wrong
+      await this.checkPassword(user, currentPassword)
+      user.hashedPassword = newHashedPassword
+      user.salt = newSalt
+      return this.desensitiseUserProfile(user)
+    })
   }
 
   /**
    * Generate an OTP secret for a user
    */
   async setupOtp(username: string) {
-    const authfile = await this.getUsers()
-    const user = authfile.find(x => x.username === username)
-
-    if (!user) {
-      throw new NotFoundException('User not found.')
-    }
-
-    if (user.otpActive) {
-      throw new ForbiddenException('2FA has already been activated.')
-    }
-
-    user.otpSecret = generateSecret()
-
-    await this.saveUserFile(authfile)
-    const appName = `Homebridge UI (${this.configService.instanceId.slice(0, 7)})`
-
-    return {
-      timestamp: new Date(),
-      otpauth: generateURI({
-        issuer: appName,
-        label: user.username,
-        secret: user.otpSecret,
-      }),
-    }
+    return this.withAuthFile((authfile) => {
+      const user = authfile.find(x => x.username === username)
+      if (!user) {
+        throw new NotFoundException('User not found.')
+      }
+      if (user.otpActive) {
+        throw new ForbiddenException('2FA has already been activated.')
+      }
+      user.otpSecret = generateSecret()
+      const appName = `Homebridge UI (${this.configService.instanceId.slice(0, 7)})`
+      return {
+        timestamp: new Date(),
+        otpauth: generateURI({
+          issuer: appName,
+          label: user.username,
+          secret: user.otpSecret,
+        }),
+      }
+    })
   }
 
   /**
    * Activates the OTP requirement for a user after verifying the otp code
    */
   async activateOtp(username: string, code: string) {
-    const authfile = await this.getUsers()
-    const user = authfile.find(x => x.username === username)
+    return this.withAuthFile(async (authfile) => {
+      const user = authfile.find(x => x.username === username)
+      if (!user) {
+        throw new NotFoundException('User not found.')
+      }
+      if (!user.otpSecret) {
+        throw new BadRequestException('2FA has not been setup.')
+      }
 
-    if (!user) {
-      throw new NotFoundException('User not found.')
-    }
-
-    if (!user.otpSecret) {
-      throw new BadRequestException('2FA has not been setup.')
-    }
-
-    let valid = false
-
-    try {
-      // Try with v13 (for 32-character secrets)
-      const result = await verify({
-        token: code,
-        secret: user.otpSecret,
-        epochTolerance: 30,
-      })
-      valid = result.valid
-    } catch (error: unknown) {
-      // If SecretTooShortError, use custom guardrails (shouldn't happen for new setups, but handle it)
-      if (error instanceof Error && error.name === 'SecretTooShortError' && user.otpSecret.length === 16) {
-        this.logger.warn(`${user.username} is attempting to activate a legacy 16-character OTP secret.`)
-
+      let valid = false
+      try {
+        // Try with v13 (for 32-character secrets)
         const result = await verify({
           token: code,
           secret: user.otpSecret,
           epochTolerance: 30,
-          guardrails: this.legacyOtpGuardrails,
         })
         valid = result.valid
+      } catch (error: unknown) {
+        // If SecretTooShortError, use custom guardrails (shouldn't happen for new setups, but handle it)
+        if (error instanceof Error && error.name === 'SecretTooShortError' && user.otpSecret.length === 16) {
+          this.logger.warn(`${user.username} is attempting to activate a legacy 16-character OTP secret.`)
 
-        if (valid) {
-          user.otpLegacySecret = true
+          const result = await verify({
+            token: code,
+            secret: user.otpSecret,
+            epochTolerance: 30,
+            guardrails: this.legacyOtpGuardrails,
+          })
+          valid = result.valid
+
+          if (valid) {
+            user.otpLegacySecret = true
+          }
+        } else {
+          throw error
         }
-      } else {
-        throw error
       }
-    }
 
-    if (valid) {
+      if (!valid) {
+        throw new BadRequestException('2FA code is not valid.')
+      }
       user.otpActive = true
-      await this.saveUserFile(authfile)
       this.logger.warn(`Activated 2FA for ${user.username}.`)
       return this.desensitiseUserProfile(user)
-    } else {
-      throw new BadRequestException('2FA code is not valid.')
-    }
+    })
   }
 
   /**
    * Deactivates the OTP requirement for a user after verifying their password
    */
   async deactivateOtp(username: string, password: string) {
-    const authfile = await this.getUsers()
-    const user = authfile.find(x => x.username === username)
-
-    if (!user) {
-      throw new NotFoundException('User not found.')
-    }
-
-    // This will throw an error if the password is not valid
-    await this.checkPassword(user, password)
-
-    user.otpActive = false
-    delete user.otpSecret
-    delete user.otpLegacySecret
-
-    await this.saveUserFile(authfile)
-
-    this.logger.warn(`Deactivated 2FA for ${username}.`)
-
-    return this.desensitiseUserProfile(user)
+    return this.withAuthFile(async (authfile) => {
+      const user = authfile.find(x => x.username === username)
+      if (!user) {
+        throw new NotFoundException('User not found.')
+      }
+      // This will throw an error if the password is not valid
+      await this.checkPassword(user, password)
+      user.otpActive = false
+      delete user.otpSecret
+      delete user.otpLegacySecret
+      this.logger.warn(`Deactivated 2FA for ${username}.`)
+      return this.desensitiseUserProfile(user)
+    })
   }
 
   /**
@@ -648,13 +648,20 @@ export class AuthService {
    * Mark a user as having a legacy OTP secret
    */
   private async markUserAsLegacyOtp(username: string) {
-    const authfile = await this.getUsers()
-    const user = authfile.find(x => x.username === username)
-
-    if (user && !user.otpLegacySecret) {
-      user.otpLegacySecret = true
-      await this.saveUserFile(authfile)
-      this.logger.warn(`Marked ${username} as having legacy OTP secret.`)
-    }
+    await this.jsonStore.mutate<UserDto[]>(
+      this.configService.authPath,
+      (current) => {
+        const authfile = current ?? []
+        const user = authfile.find(x => x.username === username)
+        if (!user || user.otpLegacySecret) {
+          // No-op: nothing to update, skip the write.
+          return null
+        }
+        user.otpLegacySecret = true
+        this.logger.warn(`Marked ${username} as having legacy OTP secret.`)
+        return authfile
+      },
+      { spaces: 4 },
+    )
   }
 }

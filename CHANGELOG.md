@@ -87,6 +87,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(backup): re-register scheduled backup cron when the toggle changes
 - fix(toast): centralise error toasts on a shared helper
 - fix(server): allowlist restart/shutdown commands and use spawn-array
+- fix(fs): serialise JSON mutations through a shared JsonFileStore
 
 ### Other Changes
 

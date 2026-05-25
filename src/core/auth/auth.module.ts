@@ -5,6 +5,7 @@ import { PassportModule } from '@nestjs/passport'
 import { PluginsModule } from '../../modules/plugins/plugins.module.js'
 import { ConfigModule } from '../config/config.module.js'
 import { ConfigService } from '../config/config.service.js'
+import { FsModule } from '../fs/fs.module.js'
 import { LoggerModule } from '../logger/logger.module.js'
 import { AuthController } from './auth.controller.js'
 import { AuthService } from './auth.service.js'
@@ -29,6 +30,7 @@ import { JwtStrategy } from './jwt.strategy.js'
     ConfigModule,
     LoggerModule,
     PluginsModule,
+    FsModule,
   ],
   providers: [
     AuthService,

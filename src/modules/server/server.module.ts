@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common'
 import { PassportModule } from '@nestjs/passport'
 
 import { ConfigModule } from '../../core/config/config.module.js'
+import { FsModule } from '../../core/fs/fs.module.js'
 import { HomebridgeIpcModule } from '../../core/homebridge-ipc/homebridge-ipc.module.js'
 import { LoggerModule } from '../../core/logger/logger.module.js'
 import { AccessoriesModule } from '../accessories/accessories.module.js'
@@ -19,6 +20,7 @@ import { ServerService } from './server.service.js'
     AccessoriesModule,
     ChildBridgesModule,
     HomebridgeIpcModule,
+    FsModule,
   ],
   providers: [
     ServerService,

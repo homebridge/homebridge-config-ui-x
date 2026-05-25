@@ -7,10 +7,11 @@ import { join } from 'node:path'
 
 import { HapClient } from '@homebridge/hap-client'
 import { BadRequestException, Inject, Injectable } from '@nestjs/common'
-import { mkdirp, pathExists, readJson, writeJsonSync } from 'fs-extra/esm'
+import { mkdirp, pathExists, readJson } from 'fs-extra/esm'
 import NodeCache from 'node-cache'
 
 import { ConfigService } from '../../core/config/config.service.js'
+import { JsonFileStoreService } from '../../core/fs/json-file-store.service.js'
 import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.service.js'
 import { Logger } from '../../core/logger/logger.service.js'
 import {
@@ -39,6 +40,7 @@ export class AccessoriesService {
     @Inject(ConfigService) private readonly configService: ConfigService,
     @Inject(Logger) private readonly logger: Logger,
     @Inject(HomebridgeIpcService) private readonly homebridgeIpcService: HomebridgeIpcService,
+    @Inject(JsonFileStoreService) private readonly jsonStore: JsonFileStoreService,
   ) {
     if (this.configService.homebridgeInsecureMode) {
       this.hapClient = new HapClient({
@@ -373,20 +375,24 @@ export class AccessoriesService {
    * @param layout
    */
   public async saveAccessoryLayout(user: string, layout: Record<string, unknown>) {
-    let accessoryLayout: any
-
-    try {
-      accessoryLayout = await readJson(this.configService.accessoryLayoutPath)
-    } catch (e) {
-      accessoryLayout = {}
-    }
-
+    // Ensure the accessories dir exists for the first-ever save before
+    // we acquire the file lock — pathExists/mkdirp don't touch the
+    // accessory-layout.json itself.
     if (!await pathExists(join(this.configService.storagePath, 'accessories'))) {
       await mkdirp(join(this.configService.storagePath, 'accessories'))
     }
 
-    accessoryLayout[user] = layout
-    writeJsonSync(this.configService.accessoryLayoutPath, accessoryLayout)
+    // Per-path mutex on accessory-layout.json so two near-simultaneous
+    // save-layout socket events don't both read the same baseline and
+    // drop one user's update on top of the other's.
+    await this.jsonStore.mutate<Record<string, unknown>>(
+      this.configService.accessoryLayoutPath,
+      (current) => {
+        const accessoryLayout = current ?? {}
+        accessoryLayout[user] = layout
+        return accessoryLayout
+      },
+    )
     this.logger.log(`Accessory layout changes saved for ${user}.`)
     return layout
   }
