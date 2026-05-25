@@ -349,14 +349,28 @@ export class HomebridgeServiceHelper {
       const logStartPosition = logStats.size - truncateSize
       const logBuffer = Buffer.alloc(truncateSize)
       const logFileHandle = await open(this.logPath, 'a+')
-      await logFileHandle.read(logBuffer, 0, truncateSize, logStartPosition)
 
-      // Truncate the existing file
-      await logFileHandle.truncate()
-
-      // Re-write the truncated log file
-      await logFileHandle.write(logBuffer)
-      await logFileHandle.close()
+      // Cork the WriteStream `this.log` (the FD that process.stdout /
+      // process.stderr are routed through) so concurrent log lines
+      // don't interleave with the truncate-then-rewrite sequence.
+      // Without the cork, lines emitted between truncate() and the
+      // final write() land out of order — and on some filesystems
+      // leave sparse \0 bytes between the truncated tail and the new
+      // content.
+      const corked = this.log && typeof (this.log as any).cork === 'function'
+      if (corked) {
+        (this.log as any).cork()
+      }
+      try {
+        await logFileHandle.read(logBuffer, 0, truncateSize, logStartPosition)
+        await logFileHandle.truncate()
+        await logFileHandle.write(logBuffer)
+      } finally {
+        await logFileHandle.close()
+        if (corked) {
+          (this.log as any).uncork()
+        }
+      }
     } catch (e) {
       this.logger(`Failed to truncate log file: ${e.message}.`, 'fail')
     }

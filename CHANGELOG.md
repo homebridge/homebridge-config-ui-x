@@ -82,6 +82,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(installer): await start() in macOS / Windows restart()
 - fix(installer): harden macOS install command
 - fix(installer): fix FreeBSD rc script for custom service names
+- fix(hb-service): cork log stream around truncate sequence
 
 ### Other Changes
 
