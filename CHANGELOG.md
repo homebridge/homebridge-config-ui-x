@@ -61,6 +61,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(plugins): flip `hasInstalledPlugins` flag locally on first install
 - fix(auth): re-decode user payload on session refresh
 - fix(routing): cancel route activation when a resolver fails
+- fix(ws): repair socket cache lifecycle and token rotation
 
 ### Other Changes
 
