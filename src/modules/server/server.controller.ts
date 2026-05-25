@@ -36,6 +36,7 @@ export class ServerController {
     @Inject(Logger) private readonly logger: Logger,
   ) {}
 
+  @UseGuards(AdminGuard)
   @Put('/restart')
   @ApiOperation({ summary: 'Restart the Homebridge instance.' })
   restartServer() {
