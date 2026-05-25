@@ -46,7 +46,10 @@ export class AuthController {
     // before navigating after login and the route guards await it on refresh.
     // It must never block on the installed-plugins filesystem walk, so we only
     // read the flag from the warm cache and never trigger the scan inline.
-    if (req.user) {
+    // Skip entirely while a plugin install/uninstall is in flight — the cache
+    // is mid-flux, and `true` (the UI default when the flag is absent) is the
+    // safe answer for the empty state anyway.
+    if (req.user && !this.pluginsService.isPluginManagementInProgress) {
       const cachedPlugins = this.pluginsService.getCachedInstalledPlugins()
       if (cachedPlugins) {
         settings.env.hasInstalledPlugins = cachedPlugins.some(p => p.name !== this.configService.name)
