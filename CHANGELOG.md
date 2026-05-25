@@ -68,6 +68,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(users): case-insensitive duplicate-username form validation
 - fix(config-editor): sync Monaco model on save and dispose on destroy
 - fix(accessories): write new rooms reference on inner services reorder
+- fix(config-editor): write `config.json` atomically
 
 ### Other Changes
 
