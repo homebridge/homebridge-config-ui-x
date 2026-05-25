@@ -4,9 +4,11 @@ import { TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
 
 import { ApiService } from '@/app/core/communication/api.service'
+import { HttpErrorService } from '@/app/core/utilities/http-error.service'
 
 export const startupScriptResolver: ResolveFn<any> = async () => {
   const $api = inject(ApiService)
+  const $errors = inject(HttpErrorService)
   const $router = inject(Router)
   const $toastr = inject(ToastrService)
   const $translate = inject(TranslateService)
@@ -15,7 +17,7 @@ export const startupScriptResolver: ResolveFn<any> = async () => {
     return await $api.get('/platform-tools/docker/startup-script')
   } catch (error: any) {
     console.error(error)
-    $toastr.error(error.message, $translate.instant('toast.title_error'))
+    $toastr.error($errors.toToastMessage(error), $translate.instant('toast.title_error'))
     await $router.navigate(['/'])
     throw error
   }

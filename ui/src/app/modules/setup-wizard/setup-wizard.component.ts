@@ -11,6 +11,7 @@ import { ApiService } from '@/app/core/communication/api.service'
 import { IoNamespace, WsService } from '@/app/core/communication/ws.service'
 import { RE_ANSI_FULL, RE_NEWLINE, RE_SPINNER } from '@/app/core/regex.constants'
 import { SettingsService } from '@/app/core/ui/settings.service'
+import { HttpErrorService } from '@/app/core/utilities/http-error.service'
 import { environment } from '@/environments/environment'
 
 @Component({
@@ -29,6 +30,7 @@ export class SetupWizardComponent implements OnInit {
   // Injected dependencies
   private $api = inject(ApiService)
   private $auth = inject(AuthService)
+  private $errors = inject(HttpErrorService)
   private $settings = inject(SettingsService)
   private $title = inject(Title)
   private $toastr = inject(ToastrService)
@@ -96,7 +98,7 @@ export class SetupWizardComponent implements OnInit {
       this.loading.set(false)
       this.progress.set(50)
       console.error(error)
-      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
     }
   }
 
@@ -221,7 +223,7 @@ export class SetupWizardComponent implements OnInit {
       this.restoreFailed.set(true)
       this.progress.set(20)
       this.step.set('restore-backup')
-      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
     } finally {
       if (this.io) {
         this.io.end?.()

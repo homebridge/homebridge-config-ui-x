@@ -878,6 +878,7 @@
   "support.links.reddit_sub": "De Homebridge subreddit is een goede plek om uw Homebridge setup te delen en om hulp te vragen.",
   "support.links.title": "Nuttige Links",
   "support.title": "Ondersteuning",
+  "toast.api_error_generic": "Something went wrong. Please try again.",
   "toast.no_auth": "Alleen administrators hebben toegang tot de opgevraagde pagina.",
   "toast.title_error": "Fout",
   "toast.title_notice": "Notice",

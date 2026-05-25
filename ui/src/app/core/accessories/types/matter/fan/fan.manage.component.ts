@@ -1,8 +1,7 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { TranslatePipe } from '@ngx-translate/core'
 import { NouisliderComponent } from 'ng2-nouislider'
-import { ToastrService } from 'ngx-toastr'
 import { Subject } from 'rxjs'
 
 import { BaseManageComponent } from '@/app/core/accessories/types/base-manage.component'
@@ -20,8 +19,6 @@ import { getFanPercentSetting, isFanOn, setFanSpeed } from '@/app/core/accessori
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MatterFanManageComponent extends BaseManageComponent {
-  private $toastr = inject(ToastrService)
-
   public targetMode!: boolean
   public targetSpeed!: {
     value: number
@@ -40,7 +37,7 @@ export class MatterFanManageComponent extends BaseManageComponent {
         try {
           await setFanSpeed(this.service, this.targetSpeed.value)
         } catch (error) {
-          this.$toastr.error('Failed to set fan speed', 'Error')
+          this.showGenericErrorToast(error)
           // Revert to previous value on error
           this.targetSpeed.value = previousSpeed
           this.targetMode = previousSpeed > 0
@@ -80,7 +77,7 @@ export class MatterFanManageComponent extends BaseManageComponent {
 
       this.blurTarget(event)
     } catch (error) {
-      this.$toastr.error(`Failed to turn fan ${value ? 'on' : 'off'}`, 'Error')
+      this.showGenericErrorToast(error)
       // Revert to previous state on error
       this.targetMode = previousMode
       this.targetSpeed.value = previousSpeed

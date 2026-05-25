@@ -2,7 +2,6 @@ import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { TranslatePipe } from '@ngx-translate/core'
 import { NouisliderComponent } from 'ng2-nouislider'
-import { ToastrService } from 'ngx-toastr'
 import { Subject } from 'rxjs'
 
 import { BaseManageComponent } from '@/app/core/accessories/types/base-manage.component'
@@ -25,7 +24,6 @@ import { ColourService } from '@/app/core/utilities/colour.service'
 })
 export class ColorTemperatureLightManageComponent extends BaseManageComponent {
   private $colour = inject(ColourService)
-  private $toastr = inject(ToastrService)
 
   public targetMode!: boolean
   public targetBrightness!: { value: number, min: number, max: number, step: number }
@@ -58,7 +56,7 @@ export class ColorTemperatureLightManageComponent extends BaseManageComponent {
           // Update local state
           this.targetMode = this.targetBrightness.value > 0
         } catch (error) {
-          this.$toastr.error('Failed to set light brightness', 'Error')
+          this.showGenericErrorToast(error)
           // Revert to previous value on error
           this.targetBrightness.value = previousBrightness
           this.targetMode = previousBrightness > 0
@@ -79,7 +77,7 @@ export class ColorTemperatureLightManageComponent extends BaseManageComponent {
           }
           await cluster.setAttributes({ colorTemperatureMireds: miredValue })
         } catch (error) {
-          this.$toastr.error('Failed to set light color temperature', 'Error')
+          this.showGenericErrorToast(error)
           // Revert to previous value on error
           this.targetColorTemperature.mired = previousMired
           this.targetColorTemperature.value = this.$colour.miredToKelvin(previousMired)
@@ -130,7 +128,7 @@ export class ColorTemperatureLightManageComponent extends BaseManageComponent {
 
       this.blurTarget(event)
     } catch (error) {
-      this.$toastr.error(`Failed to turn light ${value ? 'on' : 'off'}`, 'Error')
+      this.showGenericErrorToast(error)
       // Revert to previous state on error
       this.targetMode = previousMode
       this.targetBrightness.value = previousBrightness

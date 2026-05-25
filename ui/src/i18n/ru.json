@@ -878,6 +878,7 @@
   "support.links.reddit_sub": "Сабреддит Homebridge — отличное место для обсуждения вашей конфигурации и получения помощи.",
   "support.links.title": "Полезные ссылки",
   "support.title": "Поддержка",
+  "toast.api_error_generic": "Something went wrong. Please try again.",
   "toast.no_auth": "Только администраторы могут получить доступ к запрашиваемой странице.",
   "toast.title_error": "Ошибка",
   "toast.title_notice": "Notice",

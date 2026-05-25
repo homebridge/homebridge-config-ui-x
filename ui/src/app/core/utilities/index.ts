@@ -1,5 +1,6 @@
 export * from './child-bridges.service'
 export * from './colour.service'
+export * from './http-error.service'
 export * from './log.service'
 export * from './mobile-detect.service'
 export * from './terminal-navigation-guard.service'

@@ -1,8 +1,7 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { TranslatePipe } from '@ngx-translate/core'
 import { NouisliderComponent } from 'ng2-nouislider'
-import { ToastrService } from 'ngx-toastr'
 import { Subject } from 'rxjs'
 
 import { BaseManageComponent } from '@/app/core/accessories/types/base-manage.component'
@@ -20,8 +19,6 @@ import { getWindowCoveringPercentage, setWindowCoveringPosition } from '@/app/co
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WindowCoveringManageComponent extends BaseManageComponent {
-  private $toastr = inject(ToastrService)
-
   public targetPositionChanged: Subject<number> = new Subject<number>()
   public targetPosition!: {
     value: number
@@ -41,7 +38,7 @@ export class WindowCoveringManageComponent extends BaseManageComponent {
         try {
           await setWindowCoveringPosition(this.service, this.targetPosition.value)
         } catch (error) {
-          this.$toastr.error('Failed to set window covering position', 'Error')
+          this.showGenericErrorToast(error)
           // Revert to previous value on error
           this.targetPosition.value = previousPosition
           this.cdr.markForCheck()

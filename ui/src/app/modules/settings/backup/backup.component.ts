@@ -13,6 +13,7 @@ import { debounceTime } from 'rxjs/operators'
 import { ApiService } from '@/app/core/communication/api.service'
 import { RESTORE_MODAL_DATA } from '@/app/core/modal-data-tokens'
 import { SettingsService } from '@/app/core/ui/settings.service'
+import { HttpErrorService } from '@/app/core/utilities/http-error.service'
 import { ScheduledBackup } from '@/app/modules/settings/backup/backup.interfaces'
 import { BackupService } from '@/app/modules/settings/backup/backup.service'
 import { RestoreComponent } from '@/app/modules/settings/backup/restore/restore.component'
@@ -35,6 +36,7 @@ export class BackupComponent implements OnInit {
   private $activeModal = inject(NgbActiveModal)
   private $api = inject(ApiService)
   private $backup = inject(BackupService)
+  private $errors = inject(HttpErrorService)
   private $modal = inject(NgbModal)
   private $router = inject(Router)
   private $settings = inject(SettingsService)
@@ -140,7 +142,7 @@ export class BackupComponent implements OnInit {
     } catch (error: any) {
       this.clicked.set(false)
       console.error(error)
-      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
     }
   }
 
@@ -151,7 +153,7 @@ export class BackupComponent implements OnInit {
       void this.getScheduledBackups()
     } catch (error: any) {
       console.error(error)
-      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
     } finally {
       this.clicked.set(false)
     }
@@ -172,7 +174,7 @@ export class BackupComponent implements OnInit {
       this.showRestartToast()
     } catch (error: any) {
       console.error(error)
-      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
     }
   }
 

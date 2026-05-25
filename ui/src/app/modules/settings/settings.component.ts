@@ -18,6 +18,7 @@ import { SpinnerComponent } from '@/app/core/components/spinner/spinner.componen
 import { ACCESSORY_CONTROL_LISTS_MODAL_DATA, CONFIRM_MODAL_DATA, NETWORK_INTERFACES_MODAL_DATA, REMOVE_INDIVIDUAL_ACCESSORIES_MODAL_DATA } from '@/app/core/modal-data-tokens'
 import { RE_CRON_FIELD, RE_HAP_NAME_PATTERN, RE_WHITESPACE_SINGLE } from '@/app/core/regex.constants'
 import { SettingsService } from '@/app/core/ui/settings.service'
+import { HttpErrorService } from '@/app/core/utilities/http-error.service'
 import { TerminalService } from '@/app/core/utilities/terminal.service'
 import { AccessoryControlListsComponent } from '@/app/modules/settings/accessory-control-lists/accessory-control-lists.component'
 import { BackupComponent } from '@/app/modules/settings/backup/backup.component'
@@ -52,6 +53,7 @@ export class SettingsComponent implements OnInit {
   private injector = inject(EnvironmentInjector)
   private cdr = inject(ChangeDetectorRef)
   private $api = inject(ApiService)
+  private $errors = inject(HttpErrorService)
   private $modal = inject(NgbModal)
   private $notification = inject(NotificationService)
   private $router = inject(Router)
@@ -920,7 +922,7 @@ export class SettingsComponent implements OnInit {
     } catch (error: any) {
       if (error !== 'Dismiss') {
         console.error(error)
-        this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+        this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
       }
     }
   }
@@ -970,7 +972,7 @@ export class SettingsComponent implements OnInit {
     } catch (error: any) {
       if (error !== 'Dismiss') {
         console.error(error)
-        this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+        this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
       }
     }
   }
@@ -1016,7 +1018,7 @@ export class SettingsComponent implements OnInit {
         .subscribe(value => this.hbEnvNodeSave(value!))
     } catch (error: any) {
       console.error(error)
-      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
     }
   }
 
@@ -1035,7 +1037,7 @@ export class SettingsComponent implements OnInit {
       }
     } catch (error: any) {
       console.error(error)
-      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
     }
   }
 
@@ -1087,7 +1089,7 @@ export class SettingsComponent implements OnInit {
       await this.queueUiSettingChange(key, value)
     } catch (error: any) {
       console.error(error)
-      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
     }
   }
 
@@ -1153,7 +1155,7 @@ export class SettingsComponent implements OnInit {
       }, 1000)
     } catch (error: any) {
       console.error(error)
-      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
       this.hbNameIsSaving.set(false)
     }
   }
@@ -1168,7 +1170,7 @@ export class SettingsComponent implements OnInit {
       }, 1000)
     } catch (error: any) {
       console.error(error)
-      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
       this.uiLangIsSaving.set(false)
     }
   }
@@ -1196,7 +1198,7 @@ export class SettingsComponent implements OnInit {
       }, 1000)
     } catch (error: any) {
       console.error(error)
-      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
       this.uiThemeIsSaving.set(false)
       this.isThemeTransitioning.set(false)
     }
@@ -1225,7 +1227,7 @@ export class SettingsComponent implements OnInit {
       }, 1000)
     } catch (error: any) {
       console.error(error)
-      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
       this.uiLightIsSaving.set(false)
       this.isThemeTransitioning.set(false)
     }
@@ -1239,7 +1241,7 @@ export class SettingsComponent implements OnInit {
       window.location.reload()
     } catch (error: any) {
       console.error(error)
-      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
       this.uiMenuIsSaving.set(false)
     }
   }
@@ -1254,7 +1256,7 @@ export class SettingsComponent implements OnInit {
       }, 1000)
     } catch (error: any) {
       console.error(error)
-      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
       this.uiTempIsSaving.set(false)
     }
   }
@@ -1305,7 +1307,7 @@ export class SettingsComponent implements OnInit {
       }, 1000)
     } catch (error: any) {
       console.error(error)
-      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
       this.uiTerminalPersistenceIsSaving.set(false)
     }
   }
@@ -1320,7 +1322,7 @@ export class SettingsComponent implements OnInit {
       }, 1000)
     } catch (error: any) {
       console.error(error)
-      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
       this.uiTerminalHideWarningIsSaving.set(false)
     }
   }
@@ -1341,7 +1343,7 @@ export class SettingsComponent implements OnInit {
       }, 1000)
     } catch (error: any) {
       console.error(error)
-      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
       this.uiTerminalBufferSizeIsSaving.set(false)
     }
   }
@@ -1356,7 +1358,7 @@ export class SettingsComponent implements OnInit {
       }, 1000)
     } catch (error: any) {
       console.error(error)
-      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
       this.uiTerminalFontSizeIsSaving.set(false)
     }
   }
@@ -1371,7 +1373,7 @@ export class SettingsComponent implements OnInit {
       }, 1000)
     } catch (error: any) {
       console.error(error)
-      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
       this.uiTerminalFontWeightIsSaving.set(false)
     }
   }
@@ -1386,7 +1388,7 @@ export class SettingsComponent implements OnInit {
       }, 1000)
     } catch (error: any) {
       console.error(error)
-      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
       this.uiTerminalLightingModeIsSaving.set(false)
     }
   }
@@ -1413,7 +1415,7 @@ export class SettingsComponent implements OnInit {
       }, 1000)
     } catch (error: any) {
       console.error(error)
-      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
       this.hbDebugIsSaving.set(false)
     }
   }
@@ -1440,7 +1442,7 @@ export class SettingsComponent implements OnInit {
       }, 1000)
     } catch (error: any) {
       console.error(error)
-      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
       this.hbInsecureIsSaving.set(false)
     }
   }
@@ -1468,7 +1470,7 @@ export class SettingsComponent implements OnInit {
       }, 1000)
     } catch (error: any) {
       console.error(error)
-      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
       this.hbKeepIsSaving.set(false)
     }
   }
@@ -1495,7 +1497,7 @@ export class SettingsComponent implements OnInit {
       }, 1000)
     } catch (error: any) {
       console.error(error)
-      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
       this.hbEnvDebugIsSaving.set(false)
     }
   }
@@ -1522,7 +1524,7 @@ export class SettingsComponent implements OnInit {
       }, 1000)
     } catch (error: any) {
       console.error(error)
-      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
       this.hbEnvNodeIsSaving.set(false)
     }
   }
@@ -1550,7 +1552,7 @@ export class SettingsComponent implements OnInit {
       }, 1000)
     } catch (error: any) {
       console.error(error)
-      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
       this.hbLogSizeIsSaving.set(false)
     }
   }
@@ -1572,7 +1574,7 @@ export class SettingsComponent implements OnInit {
       }, 1000)
     } catch (error: any) {
       console.error(error)
-      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
       this.hbLogTruncateIsSaving.set(false)
     }
   }
@@ -1587,7 +1589,7 @@ export class SettingsComponent implements OnInit {
       }, 1000)
     } catch (error: any) {
       console.error(error)
-      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
       this.hbMDnsIsSaving.set(false)
     }
   }
@@ -1608,7 +1610,7 @@ export class SettingsComponent implements OnInit {
       }, 1000)
     } catch (error: any) {
       console.error(error)
-      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
       this.hbPortIsSaving.set(false)
     }
   }
@@ -1633,7 +1635,7 @@ export class SettingsComponent implements OnInit {
       }, 1000)
     } catch (error: any) {
       console.error(error)
-      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
       this.hbStartPortIsSaving.set(false)
       this.hbStartPortIsInvalid.set(true)
     }
@@ -1659,7 +1661,7 @@ export class SettingsComponent implements OnInit {
       }, 1000)
     } catch (error: any) {
       console.error(error)
-      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
       this.hbEndPortIsSaving.set(false)
       this.hbEndPortIsInvalid.set(true)
     }
@@ -1682,7 +1684,7 @@ export class SettingsComponent implements OnInit {
       }, 1000)
     } catch (error: any) {
       console.error(error)
-      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
       this.uiPortIsSaving.set(false)
     }
   }
@@ -1699,7 +1701,7 @@ export class SettingsComponent implements OnInit {
       }, 1000)
     } catch (error: any) {
       console.error(error)
-      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
       this.uiAuthIsSaving.set(false)
     }
   }
@@ -1739,7 +1741,7 @@ export class SettingsComponent implements OnInit {
       }, 1000)
     } catch (error: any) {
       console.error(error)
-      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
       this.uiSessionTimeoutIsSaving.set(false)
     }
   }
@@ -1755,7 +1757,7 @@ export class SettingsComponent implements OnInit {
       }, 1000)
     } catch (error: any) {
       console.error(error)
-      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
       this.uiSessionTimeoutInactivityBasedIsSaving.set(false)
     }
   }
@@ -1771,7 +1773,7 @@ export class SettingsComponent implements OnInit {
       }, 1000)
     } catch (error: any) {
       console.error(error)
-      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
       this.uiSslKeyIsSaving.set(false)
     }
   }
@@ -1787,7 +1789,7 @@ export class SettingsComponent implements OnInit {
       }, 1000)
     } catch (error: any) {
       console.error(error)
-      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
       this.uiSslCertIsSaving.set(false)
     }
   }
@@ -1803,7 +1805,7 @@ export class SettingsComponent implements OnInit {
       }, 1000)
     } catch (error: any) {
       console.error(error)
-      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
       this.uiSslPfxIsSaving.set(false)
     }
   }
@@ -1819,7 +1821,7 @@ export class SettingsComponent implements OnInit {
       }, 1000)
     } catch (error: any) {
       console.error(error)
-      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
       this.uiSslPassphraseIsSaving.set(false)
     }
   }
@@ -1837,7 +1839,7 @@ export class SettingsComponent implements OnInit {
       }, 1000)
     } catch (error: any) {
       console.error(error)
-      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
       this.uiSslSelfSignedHostnamesIsSaving.set(false)
     }
   }
@@ -1905,7 +1907,7 @@ export class SettingsComponent implements OnInit {
       }, 1000)
     } catch (error: any) {
       console.error(error)
-      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
       this.uiHostIsSaving.set(false)
     }
   }
@@ -1921,7 +1923,7 @@ export class SettingsComponent implements OnInit {
       }, 1000)
     } catch (error: any) {
       console.error(error)
-      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
       this.uiProxyHostIsSaving.set(false)
     }
   }
@@ -1937,7 +1939,7 @@ export class SettingsComponent implements OnInit {
       }, 1000)
     } catch (error: any) {
       console.error(error)
-      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
       this.hbPackageIsSaving.set(false)
     }
   }
@@ -1959,7 +1961,7 @@ export class SettingsComponent implements OnInit {
       }, 1000)
     } catch (error: any) {
       console.error(error)
-      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
       this.uiMetricsIsSaving.set(false)
     }
   }
@@ -1981,7 +1983,7 @@ export class SettingsComponent implements OnInit {
       }, 1000)
     } catch (error: any) {
       console.error(error)
-      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
     }
   }
 
@@ -1996,7 +1998,7 @@ export class SettingsComponent implements OnInit {
       }, 1000)
     } catch (error: any) {
       console.error(error)
-      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
       this.uiAccDebugIsSaving.set(false)
     }
   }
@@ -2018,7 +2020,7 @@ export class SettingsComponent implements OnInit {
       }, 1000)
     } catch (error: any) {
       console.error(error)
-      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
       this.uiTempFileIsSaving.set(false)
     }
   }
@@ -2040,7 +2042,7 @@ export class SettingsComponent implements OnInit {
       }, 1000)
     } catch (error: any) {
       console.error(error)
-      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
       this.hbLinuxShutdownIsSaving.set(false)
     }
   }
@@ -2062,7 +2064,7 @@ export class SettingsComponent implements OnInit {
       }, 1000)
     } catch (error: any) {
       console.error(error)
-      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
       this.hbLinuxRestartIsSaving.set(false)
     }
   }
@@ -2109,7 +2111,7 @@ export class SettingsComponent implements OnInit {
       }, 1000)
     } catch (error: any) {
       console.error(error)
-      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
       this.scheduledRestartCronIsSaving.set(false)
     }
   }
@@ -2185,7 +2187,7 @@ export class SettingsComponent implements OnInit {
         }, 1000)
       } catch (error: any) {
         console.error(error)
-        this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+        this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
         this.matterPortIsSaving.set(false)
       }
       return
@@ -2216,7 +2218,7 @@ export class SettingsComponent implements OnInit {
       }, 1000)
     } catch (error: any) {
       console.error(error)
-      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
       this.matterPortIsSaving.set(false)
       this.matterPortIsInvalid.set(true)
     }
@@ -2242,7 +2244,7 @@ export class SettingsComponent implements OnInit {
       }, 1000)
     } catch (error: any) {
       console.error(error)
-      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
       this.matterStartPortIsSaving.set(false)
       this.matterStartPortIsInvalid.set(true)
     }
@@ -2268,7 +2270,7 @@ export class SettingsComponent implements OnInit {
       }, 1000)
     } catch (error: any) {
       console.error(error)
-      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
       this.matterEndPortIsSaving.set(false)
       this.matterEndPortIsInvalid.set(true)
     }
@@ -2369,7 +2371,7 @@ export class SettingsComponent implements OnInit {
           } else {
             // Actual error - show error message and revert toggle
             console.error(error)
-            this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+            this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
             this.matterEnabledFormControl.patchValue(true, { emitEvent: false })
             this.matterEnabledIsSaving.set(false)
           }
@@ -2377,7 +2379,7 @@ export class SettingsComponent implements OnInit {
       }
     } catch (error: any) {
       console.error(error)
-      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
       this.matterEnabledFormControl.patchValue(value, { emitEvent: false })
       this.matterEnabledIsSaving.set(false)
     }
@@ -2452,7 +2454,7 @@ export class SettingsComponent implements OnInit {
             this.hapEnabledIsSaving.set(false)
           } else {
             console.error(error)
-            this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+            this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
             this.hapEnabledFormControl.patchValue(true, { emitEvent: false })
             this.hapEnabledIsSaving.set(false)
           }
@@ -2460,7 +2462,7 @@ export class SettingsComponent implements OnInit {
       }
     } catch (error: any) {
       console.error(error)
-      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
       this.hapEnabledFormControl.patchValue(!value, { emitEvent: false })
       this.hapEnabledIsSaving.set(false)
     }

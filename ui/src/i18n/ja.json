@@ -878,6 +878,7 @@
   "support.links.reddit_sub": "HomebridgeのSubredditではセットアップを共有したり質問ができます。",
   "support.links.title": "便利なリンク",
   "support.title": "サポート",
+  "toast.api_error_generic": "Something went wrong. Please try again.",
   "toast.no_auth": "このページには管理者のみアクセスできます。",
   "toast.title_error": "エラー",
   "toast.title_notice": "Notice",

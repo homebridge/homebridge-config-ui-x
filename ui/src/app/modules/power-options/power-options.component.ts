@@ -9,6 +9,7 @@ import { ApiService } from '@/app/core/communication/api.service'
 import { ConfirmComponent } from '@/app/core/components/confirm/confirm.component'
 import { CONFIRM_MODAL_DATA } from '@/app/core/modal-data-tokens'
 import { SettingsService } from '@/app/core/ui/settings.service'
+import { HttpErrorService } from '@/app/core/utilities/http-error.service'
 
 @Component({
   selector: 'app-power-options',
@@ -23,6 +24,7 @@ import { SettingsService } from '@/app/core/ui/settings.service'
 export class PowerOptionsComponent implements OnInit {
   private injector = inject(EnvironmentInjector)
   private $api = inject(ApiService)
+  private $errors = inject(HttpErrorService)
   private $modal = inject(NgbModal)
   private $router = inject(Router)
   private $settings = inject(SettingsService)
@@ -58,7 +60,7 @@ export class PowerOptionsComponent implements OnInit {
       void this.$router.navigate(['/restart'])
     } catch (error: any) {
       console.error(error)
-      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
     }
   }
 

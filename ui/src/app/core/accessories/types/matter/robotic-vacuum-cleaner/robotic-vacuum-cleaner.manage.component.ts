@@ -1,6 +1,5 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component } from '@angular/core'
 import { TranslatePipe } from '@ngx-translate/core'
-import { ToastrService } from 'ngx-toastr'
 
 import { BaseManageComponent } from '@/app/core/accessories/types/base-manage.component'
 import { RvcOperationalState, RvcRunMode } from '@/app/core/accessories/types/matter/matter-device.constants'
@@ -26,8 +25,6 @@ import {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class RoboticVacuumCleanerManageComponent extends BaseManageComponent {
-  private $toastr = inject(ToastrService)
-
   public currentMode: number = 0
 
   // Clean mode
@@ -124,8 +121,7 @@ export class RoboticVacuumCleanerManageComponent extends BaseManageComponent {
 
       this.blurTarget(event)
     } catch (error) {
-      const modeText = mode === RvcRunMode.Idle ? 'stop' : mode === RvcRunMode.Cleaning ? 'start' : 'pause'
-      this.$toastr.error(`Failed to ${modeText} robotic vacuum`, 'Error')
+      this.showGenericErrorToast(error)
       // Revert to previous state on error
       this.currentMode = previousMode
       this.cdr.markForCheck()
@@ -146,7 +142,7 @@ export class RoboticVacuumCleanerManageComponent extends BaseManageComponent {
       await cluster.setAttributes({ currentMode: mode })
       this.blurTarget(event)
     } catch (error) {
-      this.$toastr.error('Failed to set clean mode', 'Error')
+      this.showGenericErrorToast(error)
       this.currentCleanModeId = previousMode
       this.cdr.markForCheck()
     }
@@ -170,7 +166,7 @@ export class RoboticVacuumCleanerManageComponent extends BaseManageComponent {
       }
       await cluster.setAttributes({ selectedAreas: this.selectedAreaIds })
     } catch (error) {
-      this.$toastr.error('Failed to update area selection', 'Error')
+      this.showGenericErrorToast(error)
       this.selectedAreaIds = previousSelection
       this.cdr.markForCheck()
     }

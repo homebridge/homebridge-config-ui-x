@@ -7,6 +7,7 @@ import { ToastrService } from 'ngx-toastr'
 
 import { ApiService } from '@/app/core/communication/api.service'
 import { SettingsService } from '@/app/core/ui/settings.service'
+import { HttpErrorService } from '@/app/core/utilities/http-error.service'
 import { MobileDetectService } from '@/app/core/utilities/mobile-detect.service'
 
 @Component({
@@ -22,6 +23,7 @@ import { MobileDetectService } from '@/app/core/utilities/mobile-detect.service'
 export class StartupScriptComponent implements OnInit, OnDestroy {
   // Injected dependencies
   private $api = inject(ApiService)
+  private $errors = inject(HttpErrorService)
   private $md = inject(MobileDetectService)
   private $route = inject(ActivatedRoute)
   private $settings = inject(SettingsService)
@@ -115,7 +117,7 @@ export class StartupScriptComponent implements OnInit, OnDestroy {
       )
     } catch (error: any) {
       console.error(error)
-      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
     }
 
     this.saveInProgress.set(false)

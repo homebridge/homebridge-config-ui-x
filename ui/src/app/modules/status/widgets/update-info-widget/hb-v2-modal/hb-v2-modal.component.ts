@@ -10,6 +10,7 @@ import { PluginsCacheService } from '@/app/core/caching/plugins-cache.service'
 import { IoNamespace, WsService } from '@/app/core/communication/ws.service'
 import { HB_V2_MODAL_DATA } from '@/app/core/modal-data-tokens'
 import { SettingsService } from '@/app/core/ui/settings.service'
+import { HttpErrorService } from '@/app/core/utilities/http-error.service'
 import { InstalledPlugin } from '@/app/modules/status/widgets/update-info-widget/hb-v2-modal/hb-v2-modal.interfaces'
 
 @Component({
@@ -24,6 +25,7 @@ import { InstalledPlugin } from '@/app/modules/status/widgets/update-info-widget
 })
 export class HbV2ModalComponent implements OnInit {
   private $activeModal = inject(NgbActiveModal)
+  private $errors = inject(HttpErrorService)
   private $pluginsCache = inject(PluginsCacheService)
   private $settings = inject(SettingsService)
   private $toastr = inject(ToastrService)
@@ -64,7 +66,7 @@ export class HbV2ModalComponent implements OnInit {
       this.nodeReady.set(satisfies(nodeVersion, '>=22'))
     } catch (error: any) {
       console.error(error)
-      this.$toastr.error(error.message, this.$translate.instant('toast.title_error'))
+      this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
     }
   }
 

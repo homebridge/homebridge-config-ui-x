@@ -1,11 +1,14 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, DestroyRef, inject, InjectionToken, OnInit } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal'
+import { TranslateService } from '@ngx-translate/core'
+import { ToastrService } from 'ngx-toastr'
 import { Subject } from 'rxjs'
 import { debounceTime } from 'rxjs/operators'
 
 import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
 import { AccessoriesService } from '@/app/core/accessories/accessories.service'
+import { HttpErrorService } from '@/app/core/utilities/http-error.service'
 
 /**
  * Injection token for accessory manage modal data
@@ -34,6 +37,28 @@ export abstract class BaseManageComponent implements OnInit {
   protected destroyRef = inject(DestroyRef)
   protected $activeModal = inject(NgbActiveModal)
   protected cdr = inject(ChangeDetectorRef)
+  protected $errors = inject(HttpErrorService)
+  protected $toastr = inject(ToastrService)
+  protected $translate = inject(TranslateService)
+
+  /**
+   * Show a translated generic error toast. Child components call this
+   * from their cluster-write catch blocks instead of a hardcoded English
+   * string like `'Failed to set light brightness'`, so the user sees a
+   * consistent translated message in their language and we don't bloat
+   * the i18n bundle with one key per operation.
+   *
+   * The raw error still goes to `console.error` for debugging.
+   */
+  protected showGenericErrorToast(error?: unknown) {
+    if (error !== undefined) {
+      console.error(error)
+    }
+    this.$toastr.error(
+      this.$errors.toToastMessage(error),
+      this.$translate.instant('toast.title_error'),
+    )
+  }
 
   // Inject modal data using modern DI pattern
   private modalData = inject(ACCESSORY_MANAGE_MODAL_DATA)

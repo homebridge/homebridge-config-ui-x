@@ -8,6 +8,7 @@ import { AuthService } from '@/app/core/auth/auth.service'
 import { ApiService } from '@/app/core/communication/api.service'
 import { RequiredIndicatorComponent } from '@/app/core/components/required-indicator/required-indicator.component'
 import { USER_MODAL_DATA } from '@/app/core/modal-data-tokens'
+import { HttpErrorService } from '@/app/core/utilities/http-error.service'
 import { User } from '@/app/modules/users/users.interface'
 
 @Component({
@@ -27,6 +28,7 @@ export class UsersEditComponent implements OnInit {
   private $activeModal = inject(NgbActiveModal)
   private $api = inject(ApiService)
   private $auth = inject(AuthService)
+  private $errors = inject(HttpErrorService)
   private $toastr = inject(ToastrService)
   private $translate = inject(TranslateService)
   private modalData = inject(USER_MODAL_DATA)
@@ -94,7 +96,7 @@ export class UsersEditComponent implements OnInit {
         this.$activeModal.close()
       } catch (error: any) {
         console.error(error)
-        this.$toastr.error(error.error?.message || error.message, this.$translate.instant('toast.title_error'))
+        this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
       }
       return
     }
@@ -108,7 +110,7 @@ export class UsersEditComponent implements OnInit {
       }
     } catch (error: any) {
       console.error(error)
-      this.$toastr.error(error.error?.message || error.message, this.$translate.instant('toast.title_error'))
+      this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
     }
   }
 

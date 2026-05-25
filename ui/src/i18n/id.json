@@ -878,6 +878,7 @@
   "support.links.reddit_sub": "Homebridge Subreddit adalah tempat yang tepat untuk berbagi pengaturan Homebridge Anda dan meminta bantuan.",
   "support.links.title": "Tautan berguna",
   "support.title": "Dukungan",
+  "toast.api_error_generic": "Something went wrong. Please try again.",
   "toast.no_auth": "Hanya administrator yang dapat mengakses halaman yang diminta.",
   "toast.title_error": "Kesalahan",
   "toast.title_notice": "Notice",
