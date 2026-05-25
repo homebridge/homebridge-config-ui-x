@@ -75,6 +75,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(child-bridges): send the correct IPC event from Start
 - chore(setup-wizard): remove dead duplicate /backup gateway
 - fix(ipc): de-duplicate restartHomebridge SIGKILL timers and listeners
+- fix(log): scope the tail-ending flag per client
 
 ### Other Changes
 
