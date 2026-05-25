@@ -106,7 +106,7 @@ export class BridgesWidgetComponent implements OnInit, OnDestroy {
     const name = status?.name || 'Homebridge'
     const inTransition = status?.status === 'pending' || this.isRestarting()
     const statusLabel = this.bridgeStatusLabel(status?.status, inTransition)
-    const matter = this.matterStatusLabel(this.isMatterSupported && !!status?.matter?.enabled, status?.status, inTransition)
+    const matter = this.matterStatusLabel(!!status?.matter?.enabled, status?.status, inTransition)
     const restart = !inTransition && this.isAdmin ? `, ${this.$translate.instant('menu.tooltip_restart')}` : ''
     return `${name}, ${statusLabel}${matter}${restart}`
   }
@@ -114,7 +114,7 @@ export class BridgesWidgetComponent implements OnInit, OnDestroy {
   public childBridgeAriaLabel(bridge: ChildBridgeWithUIState): string {
     const inTransition = bridge.status === 'pending' || bridge.restarting || this.isRestarting()
     const statusLabel = this.bridgeStatusLabel(bridge.status, inTransition)
-    const matter = this.matterStatusLabel(this.isMatterSupported && !!(bridge as any).matterConfig, bridge.status, inTransition)
+    const matter = this.matterStatusLabel(!!(bridge as any).matterConfig, bridge.status, inTransition)
     const restart = !inTransition && this.isAdmin ? `, ${this.$translate.instant('menu.tooltip_restart')}` : ''
     return `${bridge.name}, ${statusLabel}${matter}${restart}`
   }
@@ -126,10 +126,19 @@ export class BridgesWidgetComponent implements OnInit, OnDestroy {
     return this.$translate.instant(status === 'down' ? 'status.services.label_not_running' : 'status.services.label_running')
   }
 
-  private matterStatusLabel(matterEnabled: boolean, status: string | undefined, inTransition: boolean): string {
-    // Skip matter announcement while restarting — the row label already says "Restarting".
-    if (!matterEnabled || inTransition) {
+  /**
+   * Mirror the visible matter icon: when Matter support is enabled in the
+   * server, the icon is always rendered with one of three tooltips
+   * (not_enabled / not_running / running). Announce the same state so screen
+   * reader users know whether matter is configured per-bridge. Skip during
+   * transition — the row label already says "Restarting".
+   */
+  private matterStatusLabel(matterEnabledForBridge: boolean, status: string | undefined, inTransition: boolean): string {
+    if (!this.isMatterSupported || inTransition) {
       return ''
+    }
+    if (!matterEnabledForBridge) {
+      return `, ${this.$translate.instant('status.services.matter_not_enabled')}`
     }
     return `, ${this.$translate.instant(status === 'down' ? 'status.services.matter_not_running' : 'status.services.matter_running')}`
   }
