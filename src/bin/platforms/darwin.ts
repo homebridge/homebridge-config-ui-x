@@ -98,9 +98,12 @@ export class DarwinInstaller extends BasePlatform {
   public async restart() {
     this.checkForRoot()
     await this.stop()
-    setTimeout(async () => {
-      await this.start()
-    }, 2000)
+    // Wait the post-stop settle period, then await start() so the outer
+    // promise reflects the real outcome. A fire-and-forget setTimeout
+    // would resolve before the service is back up and would turn any
+    // start() failure into an unhandled rejection.
+    await new Promise(resolve => setTimeout(resolve, 2000))
+    await this.start()
   }
 
   /**

@@ -79,6 +79,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(custom-plugins): make custom-UI cleanup idempotent
 - fix(server): require admin to PUT /server/restart
 - fix(auth): reserve OTP cache slot before verifying
+- fix(installer): await start() in macOS / Windows restart()
 
 ### Other Changes
 

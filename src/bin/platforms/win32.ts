@@ -113,9 +113,12 @@ export class Win32Installer extends BasePlatform {
   public async restart() {
     this.checkIsAdmin()
     await this.stop()
-    setTimeout(async () => {
-      await this.start()
-    }, 4000)
+    // Await the delay then await start() so the outer promise reflects
+    // the real outcome. A fire-and-forget setTimeout would resolve
+    // before the service is back up and would swallow any start()
+    // failure as an unhandled rejection.
+    await new Promise(resolve => setTimeout(resolve, 4000))
+    await this.start()
   }
 
   /**
