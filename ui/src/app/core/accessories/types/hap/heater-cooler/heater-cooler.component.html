@@ -48,15 +48,15 @@
             </stop>
           </linearGradient>
         </defs>
-        <! -- outer casing - ->
+        <!-- outer casing -->
         <rect x="3.5" y="1" width="25" height="30" rx="3" stroke="#7f7f7f" fill="none" stroke-width="1.2" />
-        <! -- grille - ->
+        <!-- grille -->
         <line x1="8" y1="7" x2="8" y2="16" stroke="#7f7f7f" stroke-width="1.2" stroke-linecap="round" />
         <line x1="12" y1="7" x2="12" y2="16" stroke="#7f7f7f" stroke-width="1.2" stroke-linecap="round" />
         <line x1="16" y1="7" x2="16" y2="16" stroke="#7f7f7f" stroke-width="1.2" stroke-linecap="round" />
         <line x1="20" y1="7" x2="20" y2="16" stroke="#7f7f7f" stroke-width="1.2" stroke-linecap="round" />
         <line x1="24" y1="7" x2="24" y2="16" stroke="#7f7f7f" stroke-width="1.2" stroke-linecap="round" />
-        <! -- status window - ->
+        <!-- status window -->
         <rect
           x="3.5"
           y="4"
@@ -68,7 +68,7 @@
           fill-opacity="0.5"
           [attr.fill]="getStatusFill()"
         />
-        <! -- current temperature - ->
+        <!-- current temperature -->
         @if ('CurrentTemperature' in service().values) {
           <text x="16" y="27.5" font-size="7" text-anchor="middle" fill="#7f7f7f" font-family="Arial, sans-serif">
             {{ service().values?.CurrentTemperature | convertTemp | number: '1.0-1' }}&deg;{{

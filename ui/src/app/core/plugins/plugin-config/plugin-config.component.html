@@ -15,7 +15,7 @@
       <markdown class="plugin-md" [data]="schema.headerDisplay | interpolateMd" />
     }
 
-    <! -- MULTIPLE CONFIG BLOCKS- ->
+    <!-- MULTIPLE CONFIG BLOCKS-->
     @if (pluginConfig().length && !schema.singular) {
       <div ngbAccordion [closeOthers]="true" (show)="blockShown($event)" (hide)="blockHidden($event)">
         @for (block of pluginConfig(); track block) {
@@ -95,7 +95,7 @@
       </div>
     }
 
-    <! -- SINGLE CONFIG BLOCK ONLY - ->
+    <!-- SINGLE CONFIG BLOCK ONLY -->
     @if (pluginConfig().length && schema.singular) {
       <div class="card card-body">
         <app-schema-form [configSchema]="schema" [(data)]="pluginConfig()[0].config" (isValid)="onIsValid($event, 0)" />

@@ -27,7 +27,7 @@
       <i class="fas fa-circle-notch fa-spin grey-text" aria-hidden="true"></i>
     </button>
   }
-  <! -- Matter Devices - ->
+  <!-- Matter Devices -->
   @if (service().protocol === 'matter') {
     @switch (service().customType || service().deviceType) {
       @case ('OnOffLight') {

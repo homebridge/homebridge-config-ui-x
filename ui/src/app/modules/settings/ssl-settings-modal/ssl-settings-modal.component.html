@@ -10,13 +10,13 @@
     ></button>
   </div>
   <div class="modal-body">
-    <! -- SSL Mode Selection - ->
+    <!-- SSL Mode Selection -->
     <ul
       class="list-group list-group-box mb-0"
       role="radiogroup"
       [attr.aria-label]="'settings.security.https_configure' | translate"
     >
-      <! -- Option: Off - ->
+      <!-- Option: Off -->
       <li class="list-group-item text-start">
         <label class="d-flex align-items-center w-100 mb-0 cursor-pointer">
           <input
@@ -45,7 +45,7 @@
         </label>
       </li>
 
-      <! -- Option: Self-Signed - ->
+      <!-- Option: Self-Signed -->
       <li class="list-group-item text-start">
         <label class="d-flex align-items-center w-100 mb-0 cursor-pointer">
           <input
@@ -74,7 +74,7 @@
         </label>
       </li>
 
-      <! -- Option: Key + Cert - ->
+      <!-- Option: Key + Cert -->
       <li class="list-group-item text-start">
         <label class="d-flex align-items-center w-100 mb-0 cursor-pointer">
           <input
@@ -103,7 +103,7 @@
         </label>
       </li>
 
-      <! -- Option: PFX - ->
+      <!-- Option: PFX -->
       <li class="list-group-item text-start">
         <label class="d-flex align-items-center w-100 mb-0 cursor-pointer">
           <input
@@ -133,7 +133,7 @@
       </li>
     </ul>
 
-    <! -- Configuration Section (shown based on selected mode) - ->
+    <!-- Configuration Section (shown based on selected mode) -->
     @if (selectedMode() === 'selfsigned') {
       <ul class="list-group list-group-box mt-4 mb-0">
         <li class="list-group-item">

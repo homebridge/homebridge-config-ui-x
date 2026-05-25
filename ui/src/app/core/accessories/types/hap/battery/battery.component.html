@@ -33,7 +33,7 @@
         focusable="false"
         aria-hidden="true"
       >
-        <! -- filler colour - ->
+        <!-- filler colour -->
         <rect
           x="1"
           y="5"
@@ -54,13 +54,13 @@
           "
         />
 
-        <! -- battery outline - ->
+        <!-- battery outline -->
         <rect x="29.5" y="8" width="2" height="7" rx="2" stroke="none" fill="#7f7f7f" stroke-width="1" />
 
-        <! -- battery right spot - ->
+        <!-- battery right spot -->
         <rect x="1" y="5" width="29" height="13" rx="2" stroke="#7f7f7f" fill="none" stroke-width="0.75" />
 
-        <! -- battery level - ->
+        <!-- battery level -->
         <text x="16" y="28" font-size="9" text-anchor="middle" fill="#7f7f7f" font-family="Arial, sans-serif">
           {{ service().values?.BatteryLevel || 0 }}%
         </text>
