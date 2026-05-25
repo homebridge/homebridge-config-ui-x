@@ -16,6 +16,48 @@ import { ConfirmComponent } from '@/app/core/components/confirm/confirm.componen
 import { CONFIRM_MODAL_DATA } from '@/app/core/modal-data-tokens'
 import { RE_ANSI_SIMPLE, RE_BRACKET_TAG } from '@/app/core/regex.constants'
 
+/**
+ * xterm.js always renders a hidden <textarea class="xterm-helper-textarea"> to
+ * capture keyboard input. Even with `disableStdin: true` it stays in the DOM
+ * and screen readers find it as a focusable "Terminal input" form field — but
+ * on read-only views (logs, install progress, restore output) there's nothing
+ * to type into it.
+ *
+ * xterm internally rebuilds parts of its DOM as it renders, so a one-shot
+ * patch after `term.open()` isn't enough — a MutationObserver watches the host
+ * element and re-applies the patch whenever xterm regenerates the subtree.
+ *
+ * Returns a disposer the caller must invoke when the terminal goes away, to
+ * release the observer.
+ */
+export function hideXtermInputFromScreenReader(host: HTMLElement): () => void {
+  const apply = () => {
+    const ta = host.querySelector('.xterm-helper-textarea') as HTMLTextAreaElement | null
+    if (!ta) {
+      return
+    }
+    ta.disabled = true
+    ta.setAttribute('aria-hidden', 'true')
+    ta.setAttribute('tabindex', '-1')
+    ta.setAttribute('readonly', 'true')
+    if (document.activeElement === ta) {
+      ta.blur()
+    }
+  }
+
+  apply()
+  // xterm creates the helper textarea lazily on first render; cover the
+  // common timing windows.
+  setTimeout(apply, 0)
+  setTimeout(apply, 50)
+  setTimeout(apply, 250)
+
+  const observer = new MutationObserver(apply)
+  observer.observe(host, { childList: true, subtree: true })
+
+  return () => observer.disconnect()
+}
+
 @Injectable({
   providedIn: 'root',
 })
@@ -36,6 +78,7 @@ export class LogService {
   private logBuffer: string[] = []
   private readonly maxBufferSize = 1000 // Maximum number of log chunks to keep in buffer
   private destroy$ = new Subject<void>()
+  private xtermA11yDisposer: (() => void) | null = null
 
   public term!: Terminal
 
@@ -69,6 +112,13 @@ export class LogService {
 
     // Open the terminal in the target element
     this.term.open(targetElement.nativeElement)
+
+    // xterm.js always renders a hidden <textarea.xterm-helper-textarea> to
+    // capture keyboard input. On read-only views (`disableStdin: true`) that
+    // textarea swallows nothing — but screen readers still find it as a
+    // focusable "Terminal input" form field. Hide it from the AX tree.
+    this.xtermA11yDisposer?.()
+    this.xtermA11yDisposer = hideXtermInputFromScreenReader(targetElement.nativeElement)
 
     // Fit to the element
     setTimeout(() => {
@@ -333,6 +383,9 @@ export class LogService {
     if (this.term) {
       this.term.dispose()
     }
+
+    this.xtermA11yDisposer?.()
+    this.xtermA11yDisposer = null
 
     if (this.resize) {
       this.resize.complete()

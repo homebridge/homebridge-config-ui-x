@@ -12,6 +12,7 @@ import { ApiService } from '@/app/core/communication/api.service'
 import { IoNamespace, WsService } from '@/app/core/communication/ws.service'
 import { RESTORE_MODAL_DATA } from '@/app/core/modal-data-tokens'
 import { SettingsService } from '@/app/core/ui/settings.service'
+import { hideXtermInputFromScreenReader } from '@/app/core/utilities/log.service'
 import { BackupComponent } from '@/app/modules/settings/backup/backup.component'
 import { ScheduledBackup } from '@/app/modules/settings/backup/backup.interfaces'
 
@@ -53,6 +54,7 @@ export class RestoreComponent implements OnInit, OnDestroy {
   private termTarget!: HTMLElement
   private fitAddon = new FitAddon()
   private webLinksAddon = new WebLinksAddon()
+  private xtermA11yDisposer: (() => void) | null = null
   public maxFileSizeText: string = globalThis.backup.maxBackupSizeText
 
   public get isLightTerminalTheme(): boolean {
@@ -71,6 +73,7 @@ export class RestoreComponent implements OnInit, OnDestroy {
     this.term.loadAddon(this.fitAddon)
     this.term.loadAddon(this.webLinksAddon)
     this.term.open(this.termTarget)
+    this.xtermA11yDisposer = hideXtermInputFromScreenReader(this.termTarget)
     this.fitAddon.fit()
 
     this.io.socket.on('stdout', (data) => {
@@ -132,6 +135,7 @@ export class RestoreComponent implements OnInit, OnDestroy {
 
   public ngOnDestroy(): void {
     this.io.end!()
+    this.xtermA11yDisposer?.()
     this.term?.dispose()
   }
 
