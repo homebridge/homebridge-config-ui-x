@@ -66,6 +66,15 @@
 
     .link {
       .link-row {
+        // Reset native <button> chrome so the row looks identical regardless of
+        // element type. Keeps focus outline + cursor from default-button rules.
+        background: transparent;
+        border: 0;
+        color: inherit;
+        font: inherit;
+        text-align: left;
+        width: 100%;
+
         display: flex;
         align-items: center;
         padding: 15px 10px 15px 10px;
