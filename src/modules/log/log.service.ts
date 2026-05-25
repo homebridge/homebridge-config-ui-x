@@ -19,7 +19,6 @@ import { TermSize } from '../platform-tools/terminal/terminal.interfaces.js'
 export class LogService {
   private command: string[]
   private useNative = false
-  private ending = false
   private nativeTail: Tail
   private activeClients = new WeakSet<EventEmitter>()
 
@@ -67,8 +66,6 @@ export class LogService {
     }
     this.activeClients.add(client)
 
-    this.ending = false
-
     if (!satisfies(process.version, `>=${this.configService.minimumNodeVersion}`)) {
       client.emit('stdout', yellow(`Node.js v${this.configService.minimumNodeVersion} higher is required for ${this.configService.name}.\n\r`))
       client.emit('stdout', yellow(`You may experience issues while running on Node.js ${process.version}.\n\r\n\r`))
@@ -95,6 +92,10 @@ export class LogService {
    */
   private tailLog(client: EventEmitter, size: TermSize) {
     const command = [...this.command]
+    // Per-client closure flag. A shared instance-level `ending` would
+    // let one client's disconnect suppress the "tail exited" diagnostic
+    // for every other client's tail process.
+    let ending = false
 
     // On Windows, avoid PTY for PowerShell to prevent ConPTY attach failures
     if (platform() === 'win32') {
@@ -126,7 +127,7 @@ export class LogService {
       // Send an error message to the client if the log tailing process exits early
       proc.on('exit', (code) => {
         try {
-          if (!this.ending) {
+          if (!ending) {
             client.emit('stdout', '\n\r')
             client.emit('stdout', red(`The log tail command ${command.join(' ')} exited with code ${code}.\n\r`))
             client.emit('stdout', red('Please check the command in your config.json is correct.\n\r\n\r'))
@@ -139,7 +140,7 @@ export class LogService {
 
       // Cleanup on disconnect
       const onEnd = () => {
-        this.ending = true
+        ending = true
         this.activeClients.delete(client)
 
         client.removeAllListeners('end')
@@ -150,8 +151,8 @@ export class LogService {
         } catch (e) {}
       }
 
-      client.on('end', onEnd.bind(this))
-      client.on('disconnect', onEnd.bind(this))
+      client.on('end', onEnd)
+      client.on('disconnect', onEnd)
     } else {
       // PTY mode for non-Windows platforms
       const term = this.nodePtyService.spawn(command.shift(), command, {
@@ -170,7 +171,7 @@ export class LogService {
       // Send an error message to the client if the log tailing process exits early
       term.onExit((code) => {
         try {
-          if (!this.ending) {
+          if (!ending) {
             client.emit('stdout', '\n\r')
             client.emit('stdout', red(`The log tail command ${command.join(' ')} exited with code ${code.exitCode}.\n\r`))
             client.emit('stdout', red('Please check the command in your config.json is correct.\n\r\n\r'))
@@ -190,7 +191,7 @@ export class LogService {
 
       // Cleanup on disconnect
       const onEnd = () => {
-        this.ending = true
+        ending = true
         this.activeClients.delete(client)
 
         client.removeAllListeners('resize')
@@ -206,8 +207,8 @@ export class LogService {
         }
       }
 
-      client.on('end', onEnd.bind(this))
-      client.on('disconnect', onEnd.bind(this))
+      client.on('end', onEnd)
+      client.on('disconnect', onEnd)
     }
   }
 
@@ -302,7 +303,6 @@ export class LogService {
 
     // Cleanup on disconnect
     const onEnd = () => {
-      this.ending = true
       this.activeClients.delete(client)
 
       // @ts-expect-error - TS2339: Property removeListener does not exist on type Tail
@@ -321,8 +321,8 @@ export class LogService {
       client.removeAllListeners('disconnect')
     }
 
-    client.on('end', onEnd.bind(this))
-    client.on('disconnect', onEnd.bind(this))
+    client.on('end', onEnd)
+    client.on('disconnect', onEnd)
   }
 
   /**

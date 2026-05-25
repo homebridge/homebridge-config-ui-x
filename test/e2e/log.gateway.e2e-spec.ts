@@ -12,6 +12,7 @@ import { copy, writeFile } from 'fs-extra'
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { ConfigService } from '../../src/core/config/config.service.js'
+import { NodePtyService } from '../../src/core/node-pty/node-pty.service.js'
 import { LogGateway } from '../../src/modules/log/log.gateway.js'
 import { LogModule } from '../../src/modules/log/log.module.js'
 import { LogService } from '../../src/modules/log/log.service.js'
@@ -26,6 +27,7 @@ describe('LogGateway (e2e)', () => {
   let configService: ConfigService
   let logGateway: LogGateway
   let logService: LogService
+  let nodePtyService: NodePtyService
   let client: EventEmitter
 
   const size = { cols: 80, rows: 24 }
@@ -58,6 +60,7 @@ describe('LogGateway (e2e)', () => {
     configService = app.get(ConfigService)
     logService = app.get(LogService)
     logGateway = app.get(LogGateway)
+    nodePtyService = app.get(NodePtyService)
   })
 
   beforeEach(async () => {
@@ -228,6 +231,56 @@ describe('LogGateway (e2e)', () => {
     await new Promise(res => setTimeout(res, 100))
 
     expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('Cannot show logs.'))
+  })
+
+  it('one client disconnect does not suppress another client\'s tail-exit message', async () => {
+    if (platform() === 'win32') {
+      // The PTY path is non-Windows only; Windows uses spawn(), tested implicitly elsewhere.
+      return
+    }
+
+    configService.ui.log = { method: 'file', path: logFilePath }
+    logService.setLogMethod()
+
+    // Build two controllable mock PTYs whose onExit callback we can fire manually.
+    const ptyExitCallbacks: Array<((event: { exitCode: number }) => void) | null> = [null, null]
+    function makeMockPty(slot: number) {
+      return {
+        onData: vi.fn(() => ({ dispose: vi.fn() })),
+        onExit: vi.fn((cb: (e: { exitCode: number }) => void) => {
+          ptyExitCallbacks[slot] = cb
+          return { dispose: vi.fn() }
+        }),
+        resize: vi.fn(),
+        kill: vi.fn(),
+        write: vi.fn(),
+      } as any
+    }
+    const mockPtyA = makeMockPty(0)
+    const mockPtyB = makeMockPty(1)
+
+    vi.spyOn(nodePtyService, 'spawn')
+      .mockReturnValueOnce(mockPtyA)
+      .mockReturnValueOnce(mockPtyB)
+
+    const clientA = new EventEmitter()
+    const clientB = new EventEmitter()
+    vi.spyOn(clientB, 'emit')
+
+    logGateway.connect(clientA, size)
+    logGateway.connect(clientB, size)
+
+    // Client A disconnects first. With a shared instance `ending` flag, this
+    // would also flip the flag observed by client B's exit handler.
+    clientA.emit('disconnect')
+
+    // Client B's tail subprocess now exits unexpectedly (exit code 1).
+    ptyExitCallbacks[1]?.({ exitCode: 1 })
+
+    expect(clientB.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('exited with code 1'))
+
+    // Tidy up so beforeEach doesn't see lingering listeners on the spare clients.
+    clientB.emit('disconnect')
   })
 
   afterAll(async () => {
