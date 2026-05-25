@@ -4,6 +4,7 @@ import { JwtHelperService } from '@auth0/angular-jwt'
 import { firstValueFrom } from 'rxjs'
 
 import { UserInterface } from '@/app/core/auth/auth.interfaces'
+import { TokenCacheService } from '@/app/core/auth/token-cache.service'
 import { ApiService } from '@/app/core/communication/api.service'
 import { NotificationService } from '@/app/core/communication/notification.service'
 import { SettingsService } from '@/app/core/ui/settings.service'
@@ -17,6 +18,7 @@ export class AuthService {
   private $jwtHelper = inject(JwtHelperService)
   private $notification = inject(NotificationService)
   private $settings = inject(SettingsService)
+  private $tokenCache = inject(TokenCacheService)
 
   public token: string | null = null
   public user: UserInterface = {} as UserInterface
@@ -182,12 +184,20 @@ export class AuthService {
     try {
       const resp = await this.$api.post('/auth/refresh', {})
       if (resp.access_token) {
-        this.token = resp.access_token
+        // Persist the new token in storage and invalidate the read-through
+        // cache used by AuthHelperService so the next read sees the new
+        // value, not the previous one.
         window.localStorage.setItem(environment.jwt.tokenKey, resp.access_token)
+        this.$tokenCache.invalidateCache()
+        // Re-run validateToken so this.user is re-decoded from the new
+        // payload. Otherwise admin demotion / OTP-legacy state would
+        // persist in memory until full reload. validateToken also resets
+        // the logout timer.
+        if (!this.validateToken(resp.access_token)) {
+          throw new Error('Refreshed access token failed validation')
+        }
         // Update the last refresh timestamp
         this.lastRefreshTime = Date.now()
-        // Reset the logout timer with the new session timeout
-        this.setLogoutTimer()
       }
     } finally {
       this.isRefreshing = false
