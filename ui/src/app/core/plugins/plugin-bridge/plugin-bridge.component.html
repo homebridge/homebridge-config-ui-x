@@ -57,9 +57,9 @@
             </li>
           </ul>
         }
-        <! -- CHILD BRIDGE SECTION - ->
+        <!-- CHILD BRIDGE SECTION -->
         <ul class="list-group list-group-box mt-3 mb-0">
-          <! -- Link Bridge Option - ->
+          <!-- Link Bridge Option -->
           @if (
             !configBlocks()[+selectedBlock()]._bridge?.username &&
             bridgesAvailableForLink().length &&
@@ -91,7 +91,7 @@
             </li>
           }
 
-          <! -- Child Bridge Toggle - ->
+          <!-- Child Bridge Toggle -->
           @if (currentBridgeHasLinks()) {
             <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
               <span class="mb-2 mb-md-0 w-100 w-md-50">Child Bridge</span>
@@ -135,7 +135,7 @@
             </li>
           }
 
-          <! -- Username Display (shown for both linked and enabled bridges) - ->
+          <!-- Username Display (shown for both linked and enabled bridges) -->
           @if (
             (currentlySelectedLink() || configBlocks()[+selectedBlock()]._bridge?.username) &&
             (currentlySelectedLink() || !currentBridgeHasLinks())
@@ -156,7 +156,7 @@
             </li>
           }
 
-          <! -- Name Field (shown only for enabled bridges, not linked) - ->
+          <!-- Name Field (shown only for enabled bridges, not linked) -->
           @if (!currentlySelectedLink() && configBlocks()[+selectedBlock()]._bridge?.username) {
             <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
               <label for="bridge-name" class="mb-2 mb-md-0 w-100 w-md-50">{{
@@ -328,10 +328,10 @@
           }
         </ul>
 
-        <! -- HOMEKIT (HAP) SECTION - Only shown when child bridge is enabled - ->
+        <!-- HOMEKIT (HAP) SECTION - Only shown when child bridge is enabled -->
         @if (!currentlySelectedLink() && configBlocks()[+selectedBlock()]._bridge?.username) {
           <ul class="list-group list-group-box mt-3 mb-0">
-            <! -- HAP Header with Toggle - ->
+            <!-- HAP Header with Toggle -->
             <li class="list-group-item d-flex justify-content-between align-items-center flex-row pb-2">
               <span class="text-start">
                 <i aria-hidden="true" class="fas fa-xl fa-hap me-2 my-2"></i>
@@ -372,7 +372,7 @@
             </li>
 
             @if (hapEnabledBlocks()[+selectedBlock()]) {
-              <! -- HAP QR Code - ->
+              <!-- HAP QR Code -->
               @if (
                 configBlocks()[+selectedBlock()]._bridge?.username &&
                 deviceInfo().get(configBlocks()[+selectedBlock()]._bridge?.username) === false
@@ -465,7 +465,7 @@
                 }
               }
 
-              <! -- HAP Configuration Fields - ->
+              <!-- HAP Configuration Fields -->
               <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
                 <label for="bridge-hap-port" class="mb-2 mb-md-0 w-100 w-md-50"
                   >{{ 'child_bridge.config.port' | translate }}<br />
@@ -486,10 +486,10 @@
             }
           </ul>
 
-          <! -- MATTER SECTION - Only shown when child bridge is enabled and plugin is platform-based - ->
+          <!-- MATTER SECTION - Only shown when child bridge is enabled and plugin is platform-based -->
           @if (isMatterSupported && !configBlocks()[+selectedBlock()].accessory) {
             <ul class="list-group list-group-box mt-3 mb-0">
-              <! -- Matter Header with Toggle - ->
+              <!-- Matter Header with Toggle -->
               <li class="list-group-item d-flex justify-content-between align-items-center flex-row pb-2">
                 <span class="mb-2 mb-md-0 w-100 w-md-50">
                   <i aria-hidden="true" class="fas fa-xl fa-matter me-2 my-2"></i>
@@ -519,7 +519,7 @@
                 </div>
               </li>
 
-              <! -- Matter Content (only when enabled) - ->
+              <!-- Matter Content (only when enabled) -->
               @if (
                 matterEnabledBlocks()[+selectedBlock()] &&
                 configBlocks()[+selectedBlock()]._bridge?.matter &&
@@ -531,7 +531,7 @@
                     <li>{{ 'child_bridge.config.matter_note_2' | translate }}</li>
                   </ul>
                 </li>
-                <! -- Matter QR Code - ->
+                <!-- Matter QR Code -->
                 @if (matterDeviceInfo().get(configBlocks()[+selectedBlock()]._bridge?.username)?.setupUri) {
                   <li class="list-group-item text-center">
                     <div class="w-100 d-flex flex-column text-center">
@@ -608,7 +608,7 @@
                   </li>
                 }
 
-                <! -- Matter Configuration Fields - ->
+                <!-- Matter Configuration Fields -->
                 <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
                   <label for="bridge-matter-port" class="mb-2 mb-md-0 w-100 w-md-50"
                     >{{ 'child_bridge.config.port' | translate }}<br />

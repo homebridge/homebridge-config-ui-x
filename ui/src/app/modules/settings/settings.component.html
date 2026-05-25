@@ -47,7 +47,7 @@
   <app-spinner />
 } @else {
   <div class="settings-content" [class.theme-transitioning]="isThemeTransitioning()">
-    <! -- GENERAL SETTINGS - ->
+    <!-- GENERAL SETTINGS -->
     @if (isSectionVisible('general')) {
       <div class="my-4">
         <div
@@ -151,7 +151,7 @@
       </div>
     }
 
-    <! -- DISPLAY SETTINGS - ->
+    <!-- DISPLAY SETTINGS -->
     @if (isSectionVisible('display')) {
       <div class="my-4">
         <div
@@ -414,7 +414,7 @@
       </div>
     }
 
-    <! -- STARTUP/ENV OPTIONS - ->
+    <!-- STARTUP/ENV OPTIONS -->
     @if (isSectionVisible('startup')) {
       <div class="my-4">
         <div
@@ -809,7 +809,7 @@
       </div>
     }
 
-    <! -- NETWORK SETTINGS - ->
+    <!-- NETWORK SETTINGS -->
     @if (isSectionVisible('network')) {
       <div class="my-4">
         <div
@@ -891,7 +891,7 @@
                     @if (showAvahiMdnsOption()) {
                       <option value="avahi">Avahi ({{ 'settings.mdns_advertiser_rec' | translate }})</option>
                     }
-                    <! -- ciao is recommended if avahi is not available - ->
+                    <!-- ciao is recommended if avahi is not available -->
                     <option value="ciao">
                       Ciao {{ showAvahiMdnsOption() ? '' : `(${('settings.mdns_advertiser_rec' | translate)})` }}
                     </option>
@@ -1135,7 +1135,7 @@
       </div>
     }
 
-    <! -- HAP SETTINGS - ->
+    <!-- HAP SETTINGS -->
     @if (isMatterSupported && isSectionVisible('hap')) {
       <div class="my-4">
         <div
@@ -1203,7 +1203,7 @@
       </div>
     }
 
-    <! -- MATTER SETTINGS - ->
+    <!-- MATTER SETTINGS -->
     @if (isMatterSupported && isSectionVisible('matter')) {
       <div class="my-4">
         <div
@@ -1347,7 +1347,7 @@
       </div>
     }
 
-    <! -- LOGGING & TERMINAL SETTINGS - ->
+    <!-- LOGGING & TERMINAL SETTINGS -->
     @if (isSectionVisible('terminal')) {
       <div class="my-4">
         <div
@@ -1532,7 +1532,7 @@
       </div>
     }
 
-    <! -- SECURITY SETTINGS - ->
+    <!-- SECURITY SETTINGS -->
     @if (isSectionVisible('security')) {
       <div class="my-4">
         <div
@@ -1739,7 +1739,7 @@
       </div>
     }
 
-    <! -- CACHE SETTINGS - ->
+    <!-- CACHE SETTINGS -->
     @if (isSectionVisible('cache')) {
       <div class="my-4">
         <div
@@ -1860,7 +1860,7 @@
       </div>
     }
 
-    <! -- RESET SETTINGS - ->
+    <!-- RESET SETTINGS -->
     @if (isSectionVisible('reset')) {
       <div class="my-4">
         <div

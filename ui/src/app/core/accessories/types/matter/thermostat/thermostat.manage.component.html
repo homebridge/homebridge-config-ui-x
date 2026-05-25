@@ -51,7 +51,7 @@
       </button>
     </div>
 
-    <! -- Auto mode - both heating and cooling - ->
+    <!-- Auto mode - both heating and cooling -->
     @if (targetMode === 1) {
       <h6 class="mt-4 mb-1">
         {{ 'accessories.control.threshold_auto' | translate }}: {{ autoTemp[0] | convertTemp | number: '1.0-1' }}&deg;{{
@@ -68,7 +68,7 @@
       />
     }
 
-    <! -- Heat mode - only heating setpoint - ->
+    <!-- Heat mode - only heating setpoint -->
     @if (targetMode === 4) {
       <h6 class="mt-4">
         {{ 'accessories.control.target' | translate }}: {{ targetHeatingTemp | convertTemp | number: '1.0-1' }}&deg;{{
@@ -84,7 +84,7 @@
       />
     }
 
-    <! -- Cool mode - only cooling setpoint - ->
+    <!-- Cool mode - only cooling setpoint -->
     @if (targetMode === 3) {
       <h6 class="mt-4">
         {{ 'accessories.control.target' | translate }}: {{ targetCoolingTemp | convertTemp | number: '1.0-1' }}&deg;{{

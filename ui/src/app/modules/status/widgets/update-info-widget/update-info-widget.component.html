@@ -47,7 +47,7 @@
         </div>
         @if (widget().dockerExpanded) {
           <div class="ps-5 pe-3 d-flex flex-wrap">
-            <! -- Homebridge - ->
+            <!-- Homebridge -->
             <div class="hb-status-item hb-status-item-docker-child d-flex flex-row py-1">
               <div class="d-flex ps-3 py-1">
                 <div class="mb-0 d-flex align-items-center">
@@ -108,7 +108,7 @@
                 </div>
               </div>
             </div>
-            <! -- Homebridge UI - ->
+            <!-- Homebridge UI -->
             <div class="hb-status-item hb-status-item-docker-child d-flex flex-row py-1">
               <div class="d-flex ps-3 py-1">
                 <div class="mb-0 d-flex align-items-center">
@@ -145,7 +145,7 @@
                 </div>
               </div>
             </div>
-            <! -- Node.js - ->
+            <!-- Node.js -->
             <div class="hb-status-item hb-status-item-docker-child d-flex flex-row py-1">
               <div class="d-flex ps-3 py-1">
                 <div class="mb-0 d-flex align-items-center">
@@ -201,7 +201,7 @@
       </div>
     }
     @if (serverInfo() && !serverInfo()!.homebridgeRunningInDocker) {
-      <! -- Homebridge - ->
+      <!-- Homebridge -->
       <div class="hb-status-item hb-status-item-quarter d-flex flex-row mb-1">
         <div class="d-flex ps-3 py-1">
           <div class="mb-0 d-flex align-items-center">
@@ -268,7 +268,7 @@
           </div>
         </div>
       </div>
-      <! -- Homebridge UI - ->
+      <!-- Homebridge UI -->
       <div class="hb-status-item hb-status-item-quarter d-flex flex-row mb-1">
         <div class="d-flex ps-3 py-1">
           <div class="mb-0 d-flex align-items-center">
@@ -306,7 +306,7 @@
         </div>
       </div>
     }
-    <! -- Plugins - ->
+    <!-- Plugins -->
     <div class="hb-status-item hb-status-item-quarter d-flex flex-row mb-1">
       <div class="d-flex ps-3 py-1">
         <div class="mb-0 d-flex align-items-center">
@@ -334,7 +334,7 @@
       </div>
     </div>
     @if (serverInfo() && !serverInfo()!.homebridgeRunningInDocker) {
-      <! -- Node.js - ->
+      <!-- Node.js -->
       <div class="hb-status-item hb-status-item-quarter d-flex flex-row mb-1">
         <div class="d-flex ps-3 py-1">
           <div class="mb-0 d-flex align-items-center">

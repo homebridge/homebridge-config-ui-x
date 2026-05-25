@@ -168,6 +168,10 @@ export default antfu(
         useTabs: false,
       }],
       'style/no-multiple-empty-lines': 'off',
+      // antfu's base config enables `style/spaced-comment` for JS comments, but
+      // it falsely matches HTML `<!-- ... -->` and demanded `<! -- ... - ->`,
+      // which renders as visible text. Turn off for templates.
+      'style/spaced-comment': 'off',
     },
   }))
   .append({

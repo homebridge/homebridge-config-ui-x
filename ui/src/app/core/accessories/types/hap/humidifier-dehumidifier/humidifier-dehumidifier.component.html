@@ -48,9 +48,9 @@
             </stop>
           </linearGradient>
         </defs>
-        <! -- outer casing - ->
+        <!-- outer casing -->
         <rect x="1" y="3.5" width="30" height="25" rx="3" stroke="#7f7f7f" fill="none" stroke-width="1.2" />
-        <! -- grille - ->
+        <!-- grille -->
         <line x1="6" y1="10" x2="6" y2="10" stroke="#7f7f7f" stroke-width="1.2" stroke-linecap="round" />
         <line x1="6" y1="12" x2="6" y2="12" stroke="#7f7f7f" stroke-width="1.2" stroke-linecap="round" />
         <line x1="6" y1="14" x2="6" y2="14" stroke="#7f7f7f" stroke-width="1.2" stroke-linecap="round" />
@@ -69,7 +69,7 @@
         <line x1="26" y1="10" x2="26" y2="10" stroke="#7f7f7f" stroke-width="1.2" stroke-linecap="round" />
         <line x1="26" y1="12" x2="26" y2="12" stroke="#7f7f7f" stroke-width="1.2" stroke-linecap="round" />
         <line x1="26" y1="14" x2="26" y2="14" stroke="#7f7f7f" stroke-width="1.2" stroke-linecap="round" />
-        <! -- status window - ->
+        <!-- status window -->
         <rect
           x="1"
           y="7"
@@ -81,7 +81,7 @@
           fill-opacity="0.5"
           [attr.fill]="getStatusFill()"
         />
-        <! --  current humidity - ->
+        <!--  current humidity -->
         @if ('CurrentRelativeHumidity' in service().values) {
           <text x="16.5" y="25.5" font-size="7" text-anchor="middle" fill="#7f7f7f" font-family="Arial, sans-serif">
             {{ service().values?.CurrentRelativeHumidity }}%
