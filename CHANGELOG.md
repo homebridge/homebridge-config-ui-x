@@ -65,6 +65,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(plugins): guard restart modal against missing `affectedBridges`
 - fix(status): only apply dashboard layout on first connect
 - fix(users): clear stale `matchPassword` error when mismatch resolves
+- fix(users): case-insensitive duplicate-username form validation
 
 ### Other Changes
 
