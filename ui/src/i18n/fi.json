@@ -334,6 +334,7 @@
   "logs.truncate_log_warning": "Tämä toiminto poistaa peruuttamattomasti Homebridgen lokitiedot. Haluatko varmasti jatkaa?",
   "matter_bridge.config.use": "Enable Matter",
   "menu.config_json_editor": "JSON Asetukset",
+  "menu.current_page": "current page",
   "menu.docker.restart_container": "Uudellenkäynnistä Container",
   "menu.docker.startup_script": "Käynnistys skripti",
   "menu.docker.terminal": "Pääte",
