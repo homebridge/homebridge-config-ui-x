@@ -2325,9 +2325,19 @@ export class PluginsService {
     }
 
     return new Promise((res) => {
-      // Join command and args into a single string to avoid DEP0190 deprecation warning
-      const fullCommand = command.join(' ')
-      const child = spawn(fullCommand, { shell: true })
+      // Array form: this.npm[0] is derived from env vars on Windows, so
+      // shell-mode spawn would let any metacharacters in it be interpreted.
+      // Node 20+ throws EINVAL synchronously when spawning a .cmd/.bat
+      // without shell:true (CVE-2024-27980), and cache clean is
+      // best-effort, so swallow either failure mode and continue.
+      let child: ReturnType<typeof spawn>
+      try {
+        child = spawn(command[0], command.slice(1))
+      } catch (e) {
+        this.logger.warn(`Skipped npm cache clean as ${e.message}.`)
+        res(null)
+        return
+      }
 
       child.on('exit', (code) => {
         this.logger.log(`Executed npm cache clear command with exit code ${code}.`)
@@ -2335,7 +2345,7 @@ export class PluginsService {
       })
 
       child.on('error', () => {
-        // Do nothing
+        res(null)
       })
     })
   }

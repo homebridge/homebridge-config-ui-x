@@ -50,6 +50,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(layout): announce active sidebar item as "current page" (@rfiorentino1)
 - fix(lint): restore HTML comments and silence false `spaced-comment` rule
 - fix(a11y): use real <button> for collapsible disclosure sections (settings, support)
+- fix(plugins): drop shell-injection vector in `cleanNpmCache`
 
 ### Other Changes
 
