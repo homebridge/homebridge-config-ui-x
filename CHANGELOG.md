@@ -70,6 +70,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(accessories): write new rooms reference on inner services reorder
 - fix(config-editor): write `config.json` atomically
 - fix(config-editor): treat restart-info IPC as best-effort
+- fix(plugins): cache npm-managed plugin list until after npm exits
 
 ### Other Changes
 

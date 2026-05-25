@@ -42,12 +42,20 @@ export class AuthController {
     // Inline a flag the accessories page uses to gate its "no plugins" empty state,
     // so it doesn't need a separate GET /plugins call on every mount.
     if (req.user) {
-      try {
-        const plugins = await this.pluginsService.getInstalledPlugins()
-        settings.env.hasInstalledPlugins = plugins.some(p => p.name !== this.configService.name)
-      } catch (e: any) {
-        this.logger.error(`Failed to compute hasInstalledPlugins for /auth/settings: ${e.message}.`)
+      if (this.pluginsService.isPluginManagementInProgress) {
+        // Skip the synchronous filesystem walk while an install is in
+        // flight — answering "true" is the safe default for this flag
+        // (the empty state would only mislead users in the literal
+        // "you have zero plugins" case anyway).
         settings.env.hasInstalledPlugins = true
+      } else {
+        try {
+          const plugins = await this.pluginsService.getInstalledPlugins()
+          settings.env.hasInstalledPlugins = plugins.some(p => p.name !== this.configService.name)
+        } catch (e: any) {
+          this.logger.error(`Failed to compute hasInstalledPlugins for /auth/settings: ${e.message}.`)
+          settings.env.hasInstalledPlugins = true
+        }
       }
     }
     return settings

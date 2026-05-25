@@ -123,6 +123,14 @@ export class PluginsService {
   // Cache for installed plugins to avoid redundant file system operations
   private installedPluginsCache = new NodeCache({ stdTTL: 60 })
 
+  // Set while runNpmCommand is mid-flight so concurrent reads (notably
+  // /auth/settings) can skip the synchronous filesystem walk that would
+  // otherwise re-cache a mid-install snapshot.
+  private pluginManagementInProgress = 0
+  public get isPluginManagementInProgress(): boolean {
+    return this.pluginManagementInProgress > 0
+  }
+
   /**
    * Define the alias / type some plugins without a schema where the extract method does not work
    */
@@ -2229,40 +2237,48 @@ export class PluginsService {
     client.emit('stdout', cyan(`DIR: ${cwd}\n\r`))
     client.emit('stdout', cyan(`CMD: ${command.join(' ')}\n\r\n\r`))
 
-    // Clear the installed plugins cache
-    this.installedPluginsCache.del('installed-plugins')
+    this.pluginManagementInProgress += 1
+    try {
+      await new Promise((res, rej) => {
+        const term = this.nodePtyService.spawn(command.shift(), command, {
+          name: 'xterm-color',
+          cols: cols || 80,
+          rows: rows || 30,
+          cwd,
+          env,
+        })
 
-    await new Promise((res, rej) => {
-      const term = this.nodePtyService.spawn(command.shift(), command, {
-        name: 'xterm-color',
-        cols: cols || 80,
-        rows: rows || 30,
-        cwd,
-        env,
+        // Send stdout data from the process to all clients
+        term.onData((data) => {
+          client.emit('stdout', data)
+        })
+
+        // Send an error message to the client if the command does not exit with code 0
+        term.onExit(({ exitCode }) => {
+          if (exitCode === 0) {
+            clearTimeout(timeoutTimer)
+            client.emit('stdout', green('\n\rOperation succeeded!.\n\r'))
+            res(null)
+          } else {
+            clearTimeout(timeoutTimer)
+            rej(new Error(`Operation failed with code ${exitCode}.\n\rYou can download this log file for future reference.\n\rSee https://github.com/homebridge/homebridge-config-ui-x/wiki/Troubleshooting for help.`))
+          }
+        })
+
+        // If the command spends to long trying to execute kill it after 5 minutes
+        timeoutTimer = setTimeout(() => {
+          term.kill('SIGTERM')
+        }, 300000)
       })
-
-      // Send stdout data from the process to all clients
-      term.onData((data) => {
-        client.emit('stdout', data)
-      })
-
-      // Send an error message to the client if the command does not exit with code 0
-      term.onExit(({ exitCode }) => {
-        if (exitCode === 0) {
-          clearTimeout(timeoutTimer)
-          client.emit('stdout', green('\n\rOperation succeeded!.\n\r'))
-          res(null)
-        } else {
-          clearTimeout(timeoutTimer)
-          rej(new Error(`Operation failed with code ${exitCode}.\n\rYou can download this log file for future reference.\n\rSee https://github.com/homebridge/homebridge-config-ui-x/wiki/Troubleshooting for help.`))
-        }
-      })
-
-      // If the command spends to long trying to execute kill it after 5 minutes
-      timeoutTimer = setTimeout(() => {
-        term.kill('SIGTERM')
-      }, 300000)
-    })
+    } finally {
+      // Invalidate the cache only after npm exits, not before — invalidating
+      // up front would let concurrent /plugins or /auth/settings calls walk
+      // the filesystem mid-install and re-cache a half-installed snapshot
+      // for 60s, leaving the UI showing the wrong version (or "not
+      // installed") for up to a minute after success.
+      this.installedPluginsCache.del('installed-plugins')
+      this.pluginManagementInProgress -= 1
+    }
   }
 
   /**
