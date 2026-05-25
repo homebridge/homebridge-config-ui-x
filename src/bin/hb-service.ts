@@ -13,7 +13,7 @@ import type { HomebridgeIpcService } from '../core/homebridge-ipc/homebridge-ipc
 import type { BasePlatform } from './base-platform.js'
 
 import { Buffer } from 'node:buffer'
-import { execSync, fork } from 'node:child_process'
+import { execFileSync, execSync, fork } from 'node:child_process'
 import { chownSync, createReadStream, createWriteStream, existsSync } from 'node:fs'
 import { mkdtemp, open, readFile, rename, stat } from 'node:fs/promises'
 import { arch, cpus, homedir, platform, release, tmpdir, type } from 'node:os'
@@ -1357,22 +1357,32 @@ export class HomebridgeServiceHelper {
       process.exit(1)
     }
 
+    // target.name is regex-validated upstream; target.version isn't —
+    // the parser captures anything up to the next slash, so a string
+    // like "1.0.0; rm -rf /" would otherwise reach the spawn unchecked.
+    // Limit to semver-shaped strings and dist tags (alphanumerics,
+    // dots, dashes, semver operators) before going near a spawn.
+    const RE_NPM_VERSION_OR_TAG = /^[\w.\-^~>=<*|+]+$/
+    if (!RE_NPM_VERSION_OR_TAG.test(target.version)) {
+      this.logger(`Invalid plugin version "${target.version}".`, 'fail')
+      process.exit(1)
+    }
+
     const cwd = dirname(process.env.UIX_CUSTOM_PLUGIN_PATH)
 
     if (!await pathExists(cwd)) {
       this.logger(`Path does not exist: ${cwd}.`, 'fail')
     }
 
-    let cmd: string = `npm --prefix "${cwd}" ${action} ${target.name}`
+    const npmArgs = ['--prefix', cwd, action, action === 'add' ? `${target.name}@${target.version}` : target.name]
 
-    if (action === 'add') {
-      cmd += `@${target.version}`
-    }
-
-    this.logger(`CMD: ${cmd}`, 'info')
+    this.logger(`CMD: npm ${npmArgs.join(' ')}`, 'info')
 
     try {
-      execSync(cmd, {
+      // execFileSync (argv form, no shell) keeps target.name and
+      // target.version out of any shell parser even if the validation
+      // regexes ever loosen.
+      execFileSync('npm', npmArgs, {
         cwd,
         stdio: 'inherit',
       })
