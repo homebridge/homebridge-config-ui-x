@@ -81,6 +81,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(auth): reserve OTP cache slot before verifying
 - fix(installer): await start() in macOS / Windows restart()
 - fix(installer): harden macOS install command
+- fix(installer): fix FreeBSD rc script for custom service names
 
 ### Other Changes
 

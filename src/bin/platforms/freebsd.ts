@@ -296,22 +296,28 @@ export class FreeBSDInstaller extends BasePlatform {
       `: \${${this.rcServiceName}_priority:="debug"}`,
       `: \${${this.rcServiceName}_storage_path:="${this.hbService.storagePath}"}`,
       '',
-      'export HOME="$(eval echo ~${homebridge_user})"', // eslint-disable-line no-template-curly-in-string
+      // Body must reference ${<rcServiceName>_user} and
+      // ${<rcServiceName>_storage_path}, not the literal "homebridge_"
+      // prefix. Under a custom service name the vars are defined as
+      // e.g. homebridge2_user, so a hard-coded ${homebridge_user} would
+      // read empty — chown -R would then run without a user and
+      // command_args would run with -U "".
+      `export HOME="$(eval echo ~\${${this.rcServiceName}_user})"`,
       'export PATH=/usr/local/bin:${PATH}', // eslint-disable-line no-template-curly-in-string
       'export HOMEBRIDGE_CONFIG_UI_TERMINAL=1',
-      'export UIX_STORAGE_PATH="${homebridge_storage_path}"', // eslint-disable-line no-template-curly-in-string
+      `export UIX_STORAGE_PATH="\${${this.rcServiceName}_storage_path}"`,
       '',
       'pidfile="/var/run/${name}.pid"', // eslint-disable-line no-template-curly-in-string
       'command="/usr/sbin/daemon"',
       'procname="daemon"',
-      `command_args=" -c -f -R 3 -P \${pidfile} ${this.hbService.selfPath} run -U \${homebridge_storage_path}"`,
+      `command_args=" -c -f -R 3 -P \${pidfile} ${this.hbService.selfPath} run -U \${${this.rcServiceName}_storage_path}"`,
       'start_precmd="homebridge_precmd"',
       '',
       'homebridge_precmd()',
       '{',
       '   sleep 10',
-      '   chown -R ${homebridge_user}: ${homebridge_storage_path}', // eslint-disable-line no-template-curly-in-string
-      '   install -o ${homebridge_user} /dev/null ${pidfile}', // eslint-disable-line no-template-curly-in-string
+      `   chown -R \${${this.rcServiceName}_user}: \${${this.rcServiceName}_storage_path}`,
+      `   install -o \${${this.rcServiceName}_user} /dev/null \${pidfile}`,
       '}',
       '',
       'run_rc_command "$1"',
