@@ -51,6 +51,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(lint): restore HTML comments and silence false `spaced-comment` rule
 - fix(a11y): use real <button> for collapsible disclosure sections (settings, support)
 - fix(plugins): drop shell-injection vector in `cleanNpmCache`
+- fix(backup): block path-traversal and symlink entries in restores
 
 ### Other Changes
 
