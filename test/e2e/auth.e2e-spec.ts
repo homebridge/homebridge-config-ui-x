@@ -8,10 +8,11 @@ import { ValidationPipe } from '@nestjs/common'
 import { FastifyAdapter } from '@nestjs/platform-fastify'
 import { Test } from '@nestjs/testing'
 import { copy, pathExists, remove } from 'fs-extra'
-import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from 'vitest'
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { AuthModule } from '../../src/core/auth/auth.module.js'
 import { AuthService } from '../../src/core/auth/auth.service.js'
+import { WsGuard } from '../../src/core/auth/guards/ws.guard.js'
 import { ConfigService } from '../../src/core/config/config.service.js'
 import { PluginsService } from '../../src/modules/plugins/plugins.service.js'
 
@@ -328,6 +329,26 @@ describe('AuthController (e2e)', () => {
     })
 
     expect(res.statusCode).toBe(401)
+  })
+
+  it('WsGuard disconnects setup-wizard token once setup wizard completes', async () => {
+    configService.setupWizardComplete = false
+    const wizardToken = (await authService.generateSetupWizardToken()).access_token
+    configService.setupWizardComplete = true
+
+    const disconnect = vi.fn()
+    const context: any = {
+      switchToWs: () => ({
+        getClient: () => ({
+          handshake: { query: { token: wizardToken } },
+          disconnect,
+        }),
+      }),
+    }
+
+    const guard = new WsGuard(configService)
+    expect(await guard.canActivate(context)).toBe(false)
+    expect(disconnect).toHaveBeenCalled()
   })
 
   it('POST /auth/refresh (no token)', async () => {
