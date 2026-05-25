@@ -83,6 +83,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(installer): harden macOS install command
 - fix(installer): fix FreeBSD rc script for custom service names
 - fix(hb-service): cork log stream around truncate sequence
+- fix(hb-service): validate plugin version and use execFileSync for CLI install
 
 ### Other Changes
 
