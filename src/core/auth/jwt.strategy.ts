@@ -18,6 +18,18 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   async validate(payload: any) {
+    // Reject tokens whose `instanceId` doesn't match this server. The
+    // setup-wizard token is signed with a sentinel `instanceId: 'xxxxx'`
+    // and carries `admin: true`, so it must only unlock requests while the
+    // wizard is still in progress — otherwise its 5-minute window would
+    // grant full admin access to every endpoint after first-user setup.
+    if (payload?.instanceId !== this.configService.instanceId) {
+      const isLiveWizardToken = payload?.username === 'setup-wizard'
+        && this.configService.setupWizardComplete === false
+      if (!isLiveWizardToken) {
+        throw new UnauthorizedException()
+      }
+    }
     const user = await this.authService.validateUser(payload)
     if (!user) {
       throw new UnauthorizedException()

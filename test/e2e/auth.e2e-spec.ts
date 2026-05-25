@@ -307,6 +307,23 @@ describe('AuthController (e2e)', () => {
     expect(res.statusCode).toBe(401)
   })
 
+  it('setup-wizard token is rejected once setup wizard completes', async () => {
+    // Mint a wizard token (allowed only while setup is incomplete).
+    configService.setupWizardComplete = false
+    const wizardToken = (await authService.generateSetupWizardToken()).access_token
+    configService.setupWizardComplete = true
+
+    const res = await app.inject({
+      method: 'GET',
+      path: '/auth/check',
+      headers: {
+        authorization: `bearer ${wizardToken}`,
+      },
+    })
+
+    expect(res.statusCode).toBe(401)
+  })
+
   it('POST /auth/refresh (no token)', async () => {
     const res = await app.inject({
       method: 'POST',
