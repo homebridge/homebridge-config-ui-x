@@ -183,6 +183,30 @@ describe('ConfigEditorController (e2e)', () => {
     expect(currentConfig).toEqual(await readJson(configFilePath))
   })
 
+  it('POST /config-editor?include=restart-info (still succeeds when child-bridge IPC throws)', async () => {
+    const childBridgesService = app.get(ChildBridgesService)
+    const spy = vi.spyOn(childBridgesService, 'getChildBridges').mockRejectedValue(new Error('IPC offline'))
+
+    const currentConfig: HomebridgeConfig = await readJson(configFilePath)
+    currentConfig.bridge.name = 'Renamed via wrapper'
+
+    try {
+      const res = await app.inject({
+        method: 'POST',
+        path: '/config-editor?include=restart-info',
+        headers: { authorization },
+        payload: currentConfig,
+      })
+
+      expect(res.statusCode).toBe(201)
+      expect(res.json().affectedBridges).toEqual([])
+      // Save still committed even though the IPC fetch failed.
+      expect((await readJson(configFilePath)).bridge.name).toBe('Renamed via wrapper')
+    } finally {
+      spy.mockRestore()
+    }
+  })
+
   it('POST /config-editor (missing required attributes)', async () => {
     const currentConfig: HomebridgeConfig = await readJson(configFilePath)
 

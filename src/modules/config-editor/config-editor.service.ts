@@ -630,10 +630,21 @@ export class ConfigEditorService {
    * call it used to issue after every save.
    */
   private async buildRestartInfo<T>(payload: T, pluginName: string | null): Promise<ConfigEditorRestartInfo<T>> {
-    const allBridges = await this.childBridgesService.getChildBridges()
-    const affectedBridges = pluginName === null
-      ? allBridges
-      : allBridges.filter(bridge => bridge.plugin === pluginName)
+    // The config has already been persisted by the caller. Treat the IPC
+    // fetch as best-effort: if Homebridge is mid-restart or the IPC
+    // channel is missing (requestResponse times out after 3 s), surface
+    // an empty `affectedBridges` instead of rejecting the wrapped
+    // endpoint — otherwise a successful save returns 500 to the UI even
+    // though config.json on disk reflects the new state.
+    let affectedBridges: Awaited<ReturnType<ChildBridgesService['getChildBridges']>> = []
+    try {
+      const allBridges = await this.childBridgesService.getChildBridges()
+      affectedBridges = pluginName === null
+        ? allBridges
+        : allBridges.filter(bridge => bridge.plugin === pluginName)
+    } catch (e) {
+      this.logger.warn(`Could not fetch child bridges for restart-info wrapper as ${e.message}.`)
+    }
     return {
       config: payload,
       restartRequired: true,
@@ -656,12 +667,13 @@ export class ConfigEditorService {
   }
 
   public async disablePluginWithRestartInfo(pluginName: string): Promise<ConfigEditorRestartInfo<string[]>> {
-    // Capture this plugin's bridges before disabling — once disabled the
-    // child-bridge IPC may stop reporting them, and `affectedBridges` is
-    // exactly the set the frontend needs to restart/stop.
-    const affected = (await this.childBridgesService.getChildBridges()).filter(b => b.plugin === pluginName)
+    // Disable first, then capture the snapshot — mirrors the enable path
+    // and avoids the case where an IPC failure (e.g. Homebridge
+    // restarting) before mutation blocks the user-requested disable from
+    // ever running. buildRestartInfo treats the IPC fetch as best-effort
+    // so the disable still completes if IPC is unavailable.
     const disabledPlugins = await this.disablePlugin(pluginName)
-    return { config: disabledPlugins, restartRequired: true, affectedBridges: affected }
+    return this.buildRestartInfo(disabledPlugins, pluginName)
   }
 
   public async enablePluginWithRestartInfo(pluginName: string): Promise<ConfigEditorRestartInfo<string[]>> {
