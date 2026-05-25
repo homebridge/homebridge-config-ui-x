@@ -102,6 +102,53 @@ describe('PluginController (e2e)', () => {
     })).json().access_token}`
   })
 
+  it('sanitises the npm-spawn env so plugin postinstall scripts cannot read secret-shaped keys', () => {
+    const sanitized = (pluginsService as any).sanitizeNpmEnv({
+      PATH: '/usr/bin',
+      HOME: '/home/me',
+      LANG: 'en_GB.UTF-8',
+      USER: 'pi',
+      AWS_ACCESS_KEY_ID: 'AKIA...',
+      AWS_SECRET_ACCESS_KEY: 'sekret',
+      AZURE_CLIENT_SECRET: 'shh',
+      GOOGLE_APPLICATION_CREDENTIALS: '/tmp/key.json',
+      GITHUB_TOKEN: 'gh_xxx',
+      GH_TOKEN: 'gh_xxx',
+      NPM_TOKEN: 'npm_xxx',
+      MY_CUSTOM_PASSWORD: 'hunter2',
+      DB_PASSWD: 'hunter2',
+      SOMETHING_SECRET: 'shh',
+      A_PRIVATE_KEY: '-----BEGIN-----',
+      HOMEBRIDGE_CONFIG_UI_PORT: '8581',
+      UIX_STORAGE_PATH: '/var/lib/homebridge',
+      npm_config_loglevel: 'error',
+    })
+
+    // Boring system + UI/homebridge wiring must pass through.
+    expect(sanitized.PATH).toBe('/usr/bin')
+    expect(sanitized.HOME).toBe('/home/me')
+    expect(sanitized.LANG).toBe('en_GB.UTF-8')
+    expect(sanitized.USER).toBe('pi')
+    expect(sanitized.HOMEBRIDGE_CONFIG_UI_PORT).toBe('8581')
+    expect(sanitized.UIX_STORAGE_PATH).toBe('/var/lib/homebridge')
+    expect(sanitized.npm_config_loglevel).toBe('error')
+
+    // Cloud creds and CI tokens are stripped wholesale.
+    expect(sanitized.AWS_ACCESS_KEY_ID).toBeUndefined()
+    expect(sanitized.AWS_SECRET_ACCESS_KEY).toBeUndefined()
+    expect(sanitized.AZURE_CLIENT_SECRET).toBeUndefined()
+    expect(sanitized.GOOGLE_APPLICATION_CREDENTIALS).toBeUndefined()
+    expect(sanitized.GITHUB_TOKEN).toBeUndefined()
+    expect(sanitized.GH_TOKEN).toBeUndefined()
+    expect(sanitized.NPM_TOKEN).toBeUndefined()
+
+    // Generic secret-shaped keys are stripped by pattern.
+    expect(sanitized.MY_CUSTOM_PASSWORD).toBeUndefined()
+    expect(sanitized.DB_PASSWD).toBeUndefined()
+    expect(sanitized.SOMETHING_SECRET).toBeUndefined()
+    expect(sanitized.A_PRIVATE_KEY).toBeUndefined()
+  })
+
   it('GET /plugins', async () => {
     const res = await app.inject({
       method: 'GET',
