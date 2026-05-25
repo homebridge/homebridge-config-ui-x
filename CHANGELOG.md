@@ -60,6 +60,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(auth): tighten route guards on auth/setup/admin transitions
 - fix(plugins): flip `hasInstalledPlugins` flag locally on first install
 - fix(auth): re-decode user payload on session refresh
+- fix(routing): cancel route activation when a resolver fails
 
 ### Other Changes
 

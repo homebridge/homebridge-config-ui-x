@@ -16,7 +16,7 @@ export const startupScriptResolver: ResolveFn<any> = async () => {
   } catch (error: any) {
     console.error(error)
     $toastr.error(error.message, $translate.instant('toast.title_error'))
-    void $router.navigate(['/'])
-    return undefined
+    await $router.navigate(['/'])
+    throw error
   }
 }
