@@ -337,6 +337,7 @@
   "logs.truncate_log_warning": "Ta czynność nie będzie mogła być cofnięta i usunie intniejący log Homebridge. Na pewno chcesz kontynuować?",
   "matter_bridge.config.use": "Enable Matter",
   "menu.config_json_editor": "Konfig. JSON",
+  "menu.current_page": "current page",
   "menu.docker.restart_container": "Zrestartuj kontener",
   "menu.docker.startup_script": "Skrypt startowy",
   "menu.docker.terminal": "Terminal",

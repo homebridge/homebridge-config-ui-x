@@ -337,6 +337,7 @@
   "logs.truncate_log_warning": "Thao tác này sẽ xóa vĩnh viễn nhật ký Homebridge hiện tại. Bạn có chắc muốn tiếp tục?",
   "matter_bridge.config.use": "Bật Matter",
   "menu.config_json_editor": "Cấu hình JSON",
+  "menu.current_page": "current page",
   "menu.docker.restart_container": "Khởi động lại Container",
   "menu.docker.startup_script": "Script khởi động",
   "menu.docker.terminal": "Terminal",

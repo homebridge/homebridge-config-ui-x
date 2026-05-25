@@ -337,6 +337,7 @@
   "logs.truncate_log_warning": "此動作將完全永久刪除現有的 Homebridge 日誌。是否要繼續？",
   "matter_bridge.config.use": "Enable Matter",
   "menu.config_json_editor": "JSON Config",
+  "menu.current_page": "current page",
   "menu.docker.restart_container": "重新啟動容器",
   "menu.docker.startup_script": "啟動腳本",
   "menu.docker.terminal": "終端",

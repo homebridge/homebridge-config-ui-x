@@ -337,6 +337,7 @@
   "logs.truncate_log_warning": "Questa operazione cancellerà irreversibilmente i tuoi log di Homebridge. Sei sicuro di voler continuare?",
   "matter_bridge.config.use": "Enable Matter",
   "menu.config_json_editor": "Config JSON",
+  "menu.current_page": "current page",
   "menu.docker.restart_container": "Riavvia Container",
   "menu.docker.startup_script": "Avvia script",
   "menu.docker.terminal": "Terminale",

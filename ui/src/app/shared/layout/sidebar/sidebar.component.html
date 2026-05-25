@@ -46,10 +46,13 @@
         type="button"
         class="link-row"
         routerLinkActive="active"
-        ariaCurrentWhenActive="page"
+        #statusRla="routerLinkActive"
         [routerLink]="['/']"
         [routerLinkActiveOptions]="{ exact: true }"
-        [attr.aria-label]="'menu.label_status' | translate"
+        [attr.aria-label]="
+          ('menu.label_status' | translate)
+          + (statusRla.isActive ? ', ' + ('menu.current_page' | translate) : '')
+        "
       >
         <div class="icon"><i aria-hidden="true" class="fas fa-house"></i></div>
         <div class="title">{{ 'menu.label_status' | translate }}</div>
@@ -75,9 +78,12 @@
         type="button"
         class="link-row"
         routerLinkActive="active"
-        ariaCurrentWhenActive="page"
+        #pluginsRla="routerLinkActive"
         [routerLink]="['/plugins']"
-        [attr.aria-label]="'menu.label_plugins' | translate"
+        [attr.aria-label]="
+          ('menu.label_plugins' | translate)
+          + (pluginsRla.isActive ? ', ' + ('menu.current_page' | translate) : '')
+        "
       >
         <div class="icon"><i aria-hidden="true" class="fas fa-plug"></i></div>
         <div class="title">{{ 'menu.label_plugins' | translate }}</div>
@@ -89,9 +95,12 @@
         type="button"
         class="link-row"
         routerLinkActive="active"
-        ariaCurrentWhenActive="page"
+        #accessoriesRla="routerLinkActive"
         [routerLink]="['/accessories']"
-        [attr.aria-label]="'menu.label_accessories' | translate"
+        [attr.aria-label]="
+          ('menu.label_accessories' | translate)
+          + (accessoriesRla.isActive ? ', ' + ('menu.current_page' | translate) : '')
+        "
       >
         <div class="icon"><i aria-hidden="true" class="fas fa-lightbulb"></i></div>
         <div class="title">{{ 'menu.label_accessories' | translate }}</div>
@@ -103,9 +112,12 @@
         type="button"
         class="link-row"
         routerLinkActive="active"
-        ariaCurrentWhenActive="page"
+        #logsRla="routerLinkActive"
         [routerLink]="['/logs']"
-        [attr.aria-label]="'menu.linux.label_logs' | translate"
+        [attr.aria-label]="
+          ('menu.linux.label_logs' | translate)
+          + (logsRla.isActive ? ', ' + ('menu.current_page' | translate) : '')
+        "
       >
         <div class="icon"><i aria-hidden="true" class="fas fa-wave-square"></i></div>
         <div class="title">{{ 'menu.linux.label_logs' | translate }}</div>
@@ -118,9 +130,12 @@
           type="button"
           class="link-row"
           routerLinkActive="active"
-          ariaCurrentWhenActive="page"
+          #terminalRla="routerLinkActive"
           [routerLink]="['/platform-tools/terminal']"
-          [attr.aria-label]="'menu.linux.label_terminal' | translate"
+          [attr.aria-label]="
+            ('menu.linux.label_terminal' | translate)
+            + (terminalRla.isActive ? ', ' + ('menu.current_page' | translate) : '')
+          "
         >
           <div class="icon"><i aria-hidden="true" class="fas fa-terminal"></i></div>
           <div class="title">{{ 'menu.linux.label_terminal' | translate }}</div>
@@ -133,9 +148,12 @@
           type="button"
           class="link-row"
           routerLinkActive="active"
-          ariaCurrentWhenActive="page"
+          #configRla="routerLinkActive"
           [routerLink]="['/config']"
-          [attr.aria-label]="'menu.config_json_editor' | translate"
+          [attr.aria-label]="
+            ('menu.config_json_editor' | translate)
+            + (configRla.isActive ? ', ' + ('menu.current_page' | translate) : '')
+          "
         >
           <div class="icon"><i aria-hidden="true" class="fas fa-code"></i></div>
           <div class="title">{{ 'menu.config_json_editor' | translate }}</div>
@@ -148,9 +166,12 @@
           type="button"
           class="link-row"
           routerLinkActive="active"
-          ariaCurrentWhenActive="page"
+          #settingsRla="routerLinkActive"
           [routerLink]="['/settings']"
-          [attr.aria-label]="'menu.label_settings' | translate"
+          [attr.aria-label]="
+            ('menu.label_settings' | translate)
+            + (settingsRla.isActive ? ', ' + ('menu.current_page' | translate) : '')
+          "
         >
           <div class="icon"><i aria-hidden="true" class="fas fa-cog"></i></div>
           <div class="title">{{ 'menu.label_settings' | translate }}</div>
@@ -163,9 +184,12 @@
         type="button"
         class="link-row"
         routerLinkActive="active"
-        ariaCurrentWhenActive="page"
+        #supportRla="routerLinkActive"
         [routerLink]="['/support']"
-        [attr.aria-label]="'support.title' | translate"
+        [attr.aria-label]="
+          ('support.title' | translate)
+          + (supportRla.isActive ? ', ' + ('menu.current_page' | translate) : '')
+        "
       >
         <div class="icon"><i aria-hidden="true" class="far fa-circle-question"></i></div>
         <div class="title">{{ 'support.title' | translate }}</div>
@@ -178,9 +202,12 @@
           type="button"
           class="link-row"
           routerLinkActive="active"
-          ariaCurrentWhenActive="page"
+          #powerRla="routerLinkActive"
           [routerLink]="['/power-options']"
-          [attr.aria-label]="'menu.restart.title' | translate"
+          [attr.aria-label]="
+            ('menu.restart.title' | translate)
+            + (powerRla.isActive ? ', ' + ('menu.current_page' | translate) : '')
+          "
         >
           <div class="icon"><i aria-hidden="true" class="fas fa-power-off"></i></div>
           <div class="title">{{ 'menu.restart.title' | translate }}</div>

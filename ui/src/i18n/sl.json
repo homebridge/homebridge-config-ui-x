@@ -337,6 +337,7 @@
   "logs.truncate_log_warning": "S tem boste nepreklicno izbrisali obstoječe dnevnike Homebridgea. Ali ste prepričani, da želite nadaljevati?",
   "matter_bridge.config.use": "Enable Matter",
   "menu.config_json_editor": "JSON Config",
+  "menu.current_page": "current page",
   "menu.docker.restart_container": "Znova zaženi kontejner",
   "menu.docker.startup_script": "Začetni skript",
   "menu.docker.terminal": "Terminal",
