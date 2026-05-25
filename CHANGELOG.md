@@ -45,6 +45,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(status): announce bridge rows as one button with status + matter + restart (@rfiorentino1)
 - fix(status): announce matter state on all rows when matter support is enabled (@rfiorentino1)
 - fix(status): drop duplicate text and widget-name announcements in show/hide widgets modal (@rfiorentino1)
+- fix(a11y): hide xterm helper textarea from screen readers on read-only terminals (@rfiorentino1)
 
 ### Other Changes
 

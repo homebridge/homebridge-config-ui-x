@@ -14,6 +14,7 @@ import { IoNamespace, WsService } from '@/app/core/communication/ws.service'
 import { SWITCH_TO_SCOPED_MODAL_DATA } from '@/app/core/modal-data-tokens'
 import { RE_ANSI } from '@/app/core/regex.constants'
 import { SettingsService } from '@/app/core/ui/settings.service'
+import { hideXtermInputFromScreenReader } from '@/app/core/utilities/log.service'
 
 @Component({
   selector: 'app-switch-to-scoped',
@@ -55,6 +56,7 @@ export class SwitchToScopedComponent implements OnInit, OnDestroy {
   private fitAddon = new FitAddon()
   private webLinksAddon = new WebLinksAddon()
   private errorLog = ''
+  private xtermA11yDisposer: (() => void) | null = null
 
   public readonly moreInfo = '<a href="https://github.com/homebridge/plugins/wiki/Scoped-Plugins" target="_blank"><i class="fas fa-up-right-from-square primary-text"></i></a>'
   public readonly prefix = '<span class="font-monospace">@homebridge-plugins/</span>'
@@ -74,6 +76,7 @@ export class SwitchToScopedComponent implements OnInit, OnDestroy {
     this.io = this.$ws.connectToNamespace('plugins')
     this.termTarget = document.getElementById('plugin-output')!
     this.term.open(this.termTarget)
+    this.xtermA11yDisposer = hideXtermInputFromScreenReader(this.termTarget)
     this.fitAddon.fit()
 
     this.io.socket.on('stdout', (data: string | Uint8Array) => {
@@ -157,6 +160,7 @@ export class SwitchToScopedComponent implements OnInit, OnDestroy {
 
   public ngOnDestroy(): void {
     this.io.end?.()
+    this.xtermA11yDisposer?.()
     this.term.dispose()
   }
 
