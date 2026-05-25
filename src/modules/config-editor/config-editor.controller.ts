@@ -26,7 +26,7 @@ import {
 } from '@nestjs/swagger'
 
 import { AdminGuard } from '../../core/auth/guards/admin.guard.js'
-import { SetBridgeAlertDto, SetScheduledRestartCronDto } from './config-editor.dto.js'
+import { PortRangeDto, SetBridgeAlertDto, SetScheduledRestartCronDto } from './config-editor.dto.js'
 import { ConfigEditorService } from './config-editor.service.js'
 
 function includesRestartInfo(include: string | undefined): boolean {
@@ -304,9 +304,8 @@ export class ConfigEditorController {
 
   @UseGuards(AdminGuard)
   @ApiOperation({ summary: 'Set the Matter port range configuration.' })
-  @ApiBody({ description: 'Object with start and end properties.', type: 'json', isArray: false })
   @Put('/matter/ports')
-  setMatterPortRange(@Body() body: { start?: number, end?: number }) {
+  setMatterPortRange(@Body() body: PortRangeDto) {
     return this.configEditorService.setMatterPortRange(body)
   }
 
