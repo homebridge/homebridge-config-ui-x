@@ -74,6 +74,11 @@ export class ManagePluginsService {
 
       // Handle just-installed action
       if (result?.action === 'just-installed' && result?.plugin) {
+        // /auth/settings only re-runs on login + full HB restart + UI plugin
+        // save, so the cached flag stays false after the first install until
+        // the next reload. Flip it locally so the Accessories empty-state and
+        // other consumers see the new plugin immediately.
+        this.$settings.env.hasInstalledPlugins = true
         if (result.plugin.isConfigured) {
           this.$modal.open(RestartHomebridgeComponent, {
             size: 'lg',
