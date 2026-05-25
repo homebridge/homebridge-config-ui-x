@@ -80,6 +80,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(server): require admin to PUT /server/restart
 - fix(auth): reserve OTP cache slot before verifying
 - fix(installer): await start() in macOS / Windows restart()
+- fix(installer): harden macOS install command
 
 ### Other Changes
 
