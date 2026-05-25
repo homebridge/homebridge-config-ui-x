@@ -4,6 +4,8 @@ import type { Mock } from 'vitest'
 
 import crypto from 'node:crypto'
 import { EventEmitter } from 'node:events'
+import { lstat, mkdtemp, symlink, writeFile as writeFileAsync } from 'node:fs/promises'
+import { tmpdir } from 'node:os'
 import { join, resolve } from 'node:path'
 import process from 'node:process'
 
@@ -29,6 +31,7 @@ import {
   writeJson,
   writeSync,
 } from 'fs-extra'
+import { create as tarCreate } from 'tar'
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { AuthModule } from '../../src/core/auth/auth.module.js'
@@ -685,6 +688,34 @@ describe('BackupController (e2e)', { timeout: 10_000 }, () => {
       // The gateway should catch, log, emit red error, and return WsException
       expect(gwClient.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('unexpected error'))
       expect((result as any).error).toBeDefined()
+    })
+  })
+
+  describe('Archive entry safety', () => {
+    it('restoreScheduledBackup drops symlink entries during tar extraction', async () => {
+      const stagingDir = await mkdtemp(join(tmpdir(), 'audit-staging-'))
+      await writeFileAsync(join(stagingDir, 'info.json'), JSON.stringify({ name: 'audit' }))
+      await symlink('/tmp/audit-symlink-target', join(stagingDir, 'evil'))
+
+      const backupId = '0123456789ab.123456789'
+      const backupFile = `homebridge-backup-${backupId}.tar.gz`
+      await tarCreate(
+        { gzip: true, cwd: stagingDir, file: resolve(configService.instanceBackupPath, backupFile) },
+        ['info.json', 'evil'],
+      )
+
+      await backupService.restoreScheduledBackup(backupId)
+
+      const restoreDir = (backupService as any).restoreDirectory as string
+      expect(restoreDir).toBeDefined()
+      const entries = await readdir(restoreDir)
+      for (const entry of entries) {
+        const stats = await lstat(join(restoreDir, entry))
+        expect(stats.isSymbolicLink()).toBe(false)
+      }
+
+      await remove(stagingDir)
+      await remove(restoreDir)
     })
   })
 

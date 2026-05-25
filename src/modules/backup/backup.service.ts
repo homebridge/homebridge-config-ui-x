@@ -4,10 +4,10 @@ import type { FastifyReply } from 'fastify'
 import type { HomebridgePlugin } from '../plugins/plugins.interfaces.js'
 
 import { EventEmitter } from 'node:events'
-import { constants, createReadStream, statSync } from 'node:fs'
-import { access, lstat, mkdtemp, readdir, realpath } from 'node:fs/promises'
+import { constants, createReadStream, createWriteStream, statSync } from 'node:fs'
+import { access, lstat, mkdir, mkdtemp, readdir, realpath } from 'node:fs/promises'
 import { platform, tmpdir } from 'node:os'
-import { basename, join, resolve } from 'node:path'
+import { basename, dirname, isAbsolute, join, relative, resolve, sep } from 'node:path'
 import process from 'node:process'
 import { pipeline } from 'node:stream'
 import { promisify } from 'node:util'
@@ -24,8 +24,8 @@ import { cyan, green, red, yellow } from 'bash-color'
 import dayjs from 'dayjs'
 import { copy, ensureDir, pathExists, readJson, remove, writeJson } from 'fs-extra/esm'
 import { networkInterfaces } from 'systeminformation'
-import { create, extract } from 'tar'
-import { Extract } from 'unzipper'
+import { create, extract, ReadEntry } from 'tar'
+import { Parse } from 'unzipper'
 
 import { HomebridgeConfig } from '../../core/config/config.interfaces.js'
 import { ConfigService } from '../../core/config/config.service.js'
@@ -49,6 +49,107 @@ export class BackupService {
     @Inject(Logger) private readonly logger: Logger,
   ) {
     this.scheduleInstanceBackups()
+  }
+
+  /**
+   * Tar `extract` filter that skips absolute paths, `..` segments, symlink
+   * and hardlink entries, and device/FIFO entries. Pairs with
+   * `strict: true, preservePaths: false` to keep crafted backups from
+   * writing outside the temp restore dir or diverting a later `copy`
+   * through a link onto the host.
+   */
+  private readonly tarSafeFilter = (path: string, entry: ReadEntry | import('node:fs').Stats): boolean => {
+    const type = (entry as ReadEntry).type
+    if (
+      type === 'SymbolicLink'
+      || type === 'Link'
+      || type === 'CharacterDevice'
+      || type === 'BlockDevice'
+      || type === 'FIFO'
+    ) {
+      return false
+    }
+    if (path.startsWith('/') || path.startsWith('..') || path.includes(`..${sep}`) || path.includes('../')) {
+      return false
+    }
+    return true
+  }
+
+  /**
+   * Stream-based zip extractor with per-entry path validation. Rejects any
+   * entry whose resolved path escapes the destination directory (Zip Slip,
+   * CVE-2024-22363 / CVE-2024-43374).
+   */
+  private async extractZipSafely(source: import('node:stream').Readable, destDir: string): Promise<void> {
+    const normalisedDest = resolve(destDir)
+    return new Promise<void>((res, rej) => {
+      let pending = 1
+      let aborted = false
+      let firstError: Error | undefined
+
+      const done = (err?: Error) => {
+        if (err && !firstError) {
+          firstError = err
+          aborted = true
+        }
+        pending--
+        if (pending === 0) {
+          firstError ? rej(firstError) : res()
+        }
+      }
+
+      source.pipe(Parse())
+        .on('entry', (entry: any) => {
+          if (aborted) {
+            entry.autodrain()
+            return
+          }
+          const entryPath = resolve(normalisedDest, entry.path)
+          const rel = relative(normalisedDest, entryPath)
+          if (rel.startsWith('..') || isAbsolute(rel)) {
+            entry.autodrain()
+            done(new Error(`Zip entry escapes destination: ${entry.path}`))
+            return
+          }
+          if (entry.type === 'Directory') {
+            pending++
+            mkdir(entryPath, { recursive: true })
+              .then(() => done())
+              .catch(done)
+            entry.autodrain()
+            return
+          }
+          pending++
+          mkdir(dirname(entryPath), { recursive: true })
+            .then(() => {
+              entry.pipe(createWriteStream(entryPath))
+                .on('finish', () => done())
+                .on('error', done)
+            })
+            .catch(done)
+        })
+        .on('error', done)
+        .on('close', () => done())
+    })
+  }
+
+  /**
+   * Defence-in-depth — walk an extracted archive and refuse to proceed if any
+   * entry is a symbolic link. `tarSafeFilter` and `extractZipSafely` already
+   * block symlink entries; this catches anything that slipped through.
+   */
+  private async assertNoSymlinks(dir: string): Promise<void> {
+    const entries = await readdir(dir, { withFileTypes: true })
+    for (const entry of entries) {
+      const entryPath = join(dir, entry.name)
+      const stats = await lstat(entryPath)
+      if (stats.isSymbolicLink()) {
+        throw new Error(`Archive contains symlink at ${entryPath} — refusing to restore.`)
+      }
+      if (entry.isDirectory()) {
+        await this.assertNoSymlinks(entryPath)
+      }
+    }
   }
 
   /**
@@ -370,6 +471,9 @@ export class BackupService {
     // Pipe the data to the temp directory
     await pump(createReadStream(backupPath), extract({
       cwd: restoreDir,
+      strict: true,
+      preservePaths: false,
+      filter: this.tarSafeFilter,
     }))
 
     this.restoreDirectory = restoreDir
@@ -435,6 +539,9 @@ export class BackupService {
     // Pipe the data to the temp directory
     await pump(data.file, extract({
       cwd: backupDir,
+      strict: true,
+      preservePaths: false,
+      filter: this.tarSafeFilter,
     }))
 
     this.restoreDirectory = backupDir
@@ -495,6 +602,17 @@ export class BackupService {
     if (!await pathExists(resolve(this.restoreDirectory, 'storage'))) {
       await this.removeRestoreDirectory()
       throw new Error('Uploaded file is not a valid Homebridge Backup Archive.')
+    }
+
+    // Reject the whole archive up front if any extracted entry is a symlink.
+    // tarSafeFilter already blocks symlink *entries* during extraction; this
+    // catches anything that slipped through (e.g. fs-extra dereferencing a
+    // dir entry whose contents are symlinks).
+    try {
+      await this.assertNoSymlinks(this.restoreDirectory)
+    } catch (err) {
+      await this.removeRestoreDirectory()
+      throw err
     }
 
     // Load info.json
@@ -630,10 +748,9 @@ export class BackupService {
 
     this.logger.log(`Extracting .hbfx file to ${backupDir}.`)
 
-    // Pipe the data to the temp directory
-    await pump(data.file, Extract({
-      path: backupDir,
-    }))
+    // Pipe the data through a path-validating extractor so a crafted .hbfx
+    // can't write outside backupDir (Zip Slip).
+    await this.extractZipSafely(data.file, backupDir)
 
     this.restoreDirectory = backupDir
   }
@@ -656,6 +773,15 @@ export class BackupService {
     if (!await pathExists(resolve(this.restoreDirectory, 'etc', 'config.json'))) {
       await this.removeRestoreDirectory()
       throw new Error('Uploaded file is not a valid HBFX Backup Archive.')
+    }
+
+    // Defence-in-depth — reject the archive if any extracted entry is a
+    // symlink.
+    try {
+      await this.assertNoSymlinks(this.restoreDirectory)
+    } catch (err) {
+      await this.removeRestoreDirectory()
+      throw err
     }
 
     // Load package.json
