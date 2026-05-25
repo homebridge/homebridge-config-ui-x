@@ -226,8 +226,7 @@ describe('ChildBridges (e2e)', () => {
 
       const result = childBridgesService.startChildBridge('0E:AA:BB:CC:DD:EE')
 
-      // Note: startChildBridge actually sends 'restartChildBridge' event (as per source)
-      expect(homebridgeIpcService.sendMessage).toHaveBeenCalledWith('restartChildBridge', '0E:AA:BB:CC:DD:EE')
+      expect(homebridgeIpcService.sendMessage).toHaveBeenCalledWith('startChildBridge', '0E:AA:BB:CC:DD:EE')
       expect(result).toEqual({ ok: true })
     })
 
