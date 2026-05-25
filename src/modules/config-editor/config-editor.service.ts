@@ -1,9 +1,11 @@
-import { readdir, readFile, rename, unlink } from 'node:fs/promises'
+import { randomBytes } from 'node:crypto'
+import { copyFile, open, readdir, readFile, rename, unlink } from 'node:fs/promises'
 import { join, resolve } from 'node:path'
+import { pid } from 'node:process'
 
 import { BadRequestException, Inject, Injectable, NotFoundException } from '@nestjs/common'
 import dayjs from 'dayjs'
-import { ensureDir, move, pathExists, readJson, remove, writeJsonSync } from 'fs-extra/esm'
+import { ensureDir, move, pathExists, readJson, remove } from 'fs-extra/esm'
 import { gte } from 'semver'
 
 import {
@@ -176,9 +178,13 @@ export class ConfigEditorService {
       delete config.disabledPlugins
     }
 
-    // Create backup of existing config
+    // Snapshot the existing config to the backup path via copyFile so the
+    // live file is never absent. A rename-then-write sequence would leave
+    // configPath unlinked between steps; a process kill (OOM, container
+    // restart, power loss) in that window would leave Homebridge with no
+    // config and it would generate a default on next start.
     try {
-      await rename(this.configService.configPath, resolve(this.configService.configBackupPath, `config.json.${now.getTime().toString()}`))
+      await copyFile(this.configService.configPath, resolve(this.configService.configBackupPath, `config.json.${now.getTime().toString()}`))
     } catch (e) {
       if (e.code === 'ENOENT') {
         await this.ensureBackupPathExists()
@@ -187,8 +193,10 @@ export class ConfigEditorService {
       }
     }
 
-    // Save config file
-    writeJsonSync(this.configService.configPath, config, { spaces: 4 })
+    // Save config file via write-tmp + fsync + rename so the on-disk
+    // content is always either the previous or the new full document,
+    // never a half-written file.
+    await this.atomicWriteJson(this.configService.configPath, config)
 
     this.logger.log('Changes to config.json saved.')
 
@@ -740,6 +748,32 @@ export class ConfigEditorService {
       this.logger.error(`Could not create directory for config backups ${this.configService.configBackupPath} as ${e.message}.`)
       this.logger.error(`Config backups will continue to use ${this.configService.storagePath}.`)
       this.configService.configBackupPath = this.configService.storagePath
+    }
+  }
+
+  /**
+   * Write a JSON document atomically: serialise to a temp file, fsync the
+   * temp file, then rename over the target. POSIX guarantees rename
+   * atomicity on the same filesystem, so readers always see either the
+   * previous full file or the new full file — never a half-written one.
+   */
+  private async atomicWriteJson(targetPath: string, payload: unknown): Promise<void> {
+    const tmpPath = `${targetPath}.tmp.${pid}.${randomBytes(6).toString('hex')}`
+    const data = `${JSON.stringify(payload, null, 4)}\n`
+    let handle: Awaited<ReturnType<typeof open>> | undefined
+    try {
+      handle = await open(tmpPath, 'w')
+      await handle.writeFile(data, 'utf8')
+      await handle.sync()
+    } finally {
+      await handle?.close()
+    }
+    try {
+      await rename(tmpPath, targetPath)
+    } catch (e) {
+      // Best-effort cleanup of the orphaned temp file on rename failure
+      await unlink(tmpPath).catch(() => undefined)
+      throw e
     }
   }
 
