@@ -58,6 +58,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(auth): reject JWTs with stale `instanceId` (except live wizard)
 - fix(auth): enforce `instanceId` check on WS + WS-admin guards
 - fix(auth): tighten route guards on auth/setup/admin transitions
+- fix(plugins): flip `hasInstalledPlugins` flag locally on first install
 
 ### Other Changes
 
