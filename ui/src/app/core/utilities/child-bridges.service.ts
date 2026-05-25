@@ -39,7 +39,11 @@ export class ChildBridgesService {
    * `affectedBridges` inline (Phase 7), so callers no longer need to make
    * a separate `/status/homebridge/child-bridges` round-trip.
    */
-  public openCorrectRestartModalWithBridges(childBridges: ChildBridge[]) {
+  public openCorrectRestartModalWithBridges(childBridges: ChildBridge[] = []) {
+    // Default to [] so callers passing through an absent `affectedBridges`
+    // field (e.g. when the wrapped restart-info endpoint failed) fall
+    // through to the full-Homebridge restart prompt instead of throwing
+    // and silently losing the restart-required notice altogether.
     if (childBridges.length) {
       const injector = createEnvironmentInjector([{
         provide: RESTART_CHILD_BRIDGES_MODAL_DATA,
