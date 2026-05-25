@@ -8,6 +8,7 @@ import { ValidationPipe } from '@nestjs/common'
 import { FastifyAdapter } from '@nestjs/platform-fastify'
 import { Test } from '@nestjs/testing'
 import { copy, pathExists, remove } from 'fs-extra'
+import { generate, generateSecret } from 'otplib'
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { AuthModule } from '../../src/core/auth/auth.module.js'
@@ -358,6 +359,30 @@ describe('AuthController (e2e)', () => {
     })
 
     expect(res.statusCode).toBe(401)
+  })
+
+  it('verifyOtpToken: parallel duplicate codes can only succeed once', async () => {
+    // Two parallel requests with the same captured TOTP code must not
+    // both authenticate — the cache slot has to be reserved before
+    // awaiting verify(), not after.
+    const otpSecret = generateSecret()
+    const user = {
+      id: 99,
+      username: 'otp-race-test',
+      name: 'OTP Race',
+      admin: false,
+      otpActive: true,
+      otpSecret,
+    }
+
+    const code = await generate({ secret: otpSecret })
+
+    const [r1, r2] = await Promise.all([
+      authService.verifyOtpToken(user as any, code),
+      authService.verifyOtpToken(user as any, code),
+    ])
+
+    expect([r1, r2].filter(Boolean)).toHaveLength(1)
   })
 
   afterAll(async () => {
