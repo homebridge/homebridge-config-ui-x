@@ -73,6 +73,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(plugins): cache npm-managed plugin list until after npm exits
 - fix(config-editor): gate writes on bootstrap migration completion
 - fix(child-bridges): send the correct IPC event from Start
+- chore(setup-wizard): remove dead duplicate /backup gateway
 
 ### Other Changes
 
