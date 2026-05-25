@@ -47,6 +47,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(status): drop duplicate text and widget-name announcements in show/hide widgets modal (@rfiorentino1)
 - fix(a11y): hide xterm helper textarea from screen readers on read-only terminals (@rfiorentino1)
 - fix(plugins): drop redundant plugin name from info button aria-label (@rfiorentino1)
+- fix(layout): announce active sidebar item as "current page" (@rfiorentino1)
 
 ### Other Changes
 

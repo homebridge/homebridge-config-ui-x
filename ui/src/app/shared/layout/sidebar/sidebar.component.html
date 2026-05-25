@@ -38,13 +38,15 @@
   <div class="link-wrapper">
     <div class="link">
       <button
+        #statusRla="routerLinkActive"
         type="button"
         class="link-row"
         routerLinkActive="active"
-        ariaCurrentWhenActive="page"
         [routerLink]="['/']"
         [routerLinkActiveOptions]="{ exact: true }"
-        [attr.aria-label]="'menu.label_status' | translate"
+        [attr.aria-label]="
+          ('menu.label_status' | translate) + (statusRla.isActive ? `, ${('menu.current_page' | translate)}` : '')
+        "
       >
         <div class="icon"><i aria-hidden="true" class="fas fa-house"></i></div>
         <div class="title">{{ 'menu.label_status' | translate }}</div>
@@ -67,12 +69,14 @@
 
     <div class="link">
       <button
+        #pluginsRla="routerLinkActive"
         type="button"
         class="link-row"
         routerLinkActive="active"
-        ariaCurrentWhenActive="page"
         [routerLink]="['/plugins']"
-        [attr.aria-label]="'menu.label_plugins' | translate"
+        [attr.aria-label]="
+          ('menu.label_plugins' | translate) + (pluginsRla.isActive ? `, ${('menu.current_page' | translate)}` : '')
+        "
       >
         <div class="icon"><i aria-hidden="true" class="fas fa-plug"></i></div>
         <div class="title">{{ 'menu.label_plugins' | translate }}</div>
@@ -81,12 +85,15 @@
 
     <div class="link">
       <button
+        #accessoriesRla="routerLinkActive"
         type="button"
         class="link-row"
         routerLinkActive="active"
-        ariaCurrentWhenActive="page"
         [routerLink]="['/accessories']"
-        [attr.aria-label]="'menu.label_accessories' | translate"
+        [attr.aria-label]="
+          ('menu.label_accessories' | translate) +
+          (accessoriesRla.isActive ? `, ${('menu.current_page' | translate)}` : '')
+        "
       >
         <div class="icon"><i aria-hidden="true" class="fas fa-lightbulb"></i></div>
         <div class="title">{{ 'menu.label_accessories' | translate }}</div>
@@ -95,12 +102,14 @@
 
     <div class="link">
       <button
+        #logsRla="routerLinkActive"
         type="button"
         class="link-row"
         routerLinkActive="active"
-        ariaCurrentWhenActive="page"
         [routerLink]="['/logs']"
-        [attr.aria-label]="'menu.linux.label_logs' | translate"
+        [attr.aria-label]="
+          ('menu.linux.label_logs' | translate) + (logsRla.isActive ? `, ${('menu.current_page' | translate)}` : '')
+        "
       >
         <div class="icon"><i aria-hidden="true" class="fas fa-wave-square"></i></div>
         <div class="title">{{ 'menu.linux.label_logs' | translate }}</div>
@@ -110,12 +119,15 @@
     @if (enableTerminalAccess && isAdmin) {
       <div class="link">
         <button
+          #terminalRla="routerLinkActive"
           type="button"
           class="link-row"
           routerLinkActive="active"
-          ariaCurrentWhenActive="page"
           [routerLink]="['/platform-tools/terminal']"
-          [attr.aria-label]="'menu.linux.label_terminal' | translate"
+          [attr.aria-label]="
+            ('menu.linux.label_terminal' | translate) +
+            (terminalRla.isActive ? `, ${('menu.current_page' | translate)}` : '')
+          "
         >
           <div class="icon"><i aria-hidden="true" class="fas fa-terminal"></i></div>
           <div class="title">{{ 'menu.linux.label_terminal' | translate }}</div>
@@ -125,12 +137,15 @@
     @if (isAdmin) {
       <div class="link">
         <button
+          #configRla="routerLinkActive"
           type="button"
           class="link-row"
           routerLinkActive="active"
-          ariaCurrentWhenActive="page"
           [routerLink]="['/config']"
-          [attr.aria-label]="'menu.config_json_editor' | translate"
+          [attr.aria-label]="
+            ('menu.config_json_editor' | translate) +
+            (configRla.isActive ? `, ${('menu.current_page' | translate)}` : '')
+          "
         >
           <div class="icon"><i aria-hidden="true" class="fas fa-code"></i></div>
           <div class="title">{{ 'menu.config_json_editor' | translate }}</div>
@@ -140,12 +155,14 @@
     @if (isAdmin) {
       <div class="link">
         <button
+          #settingsRla="routerLinkActive"
           type="button"
           class="link-row"
           routerLinkActive="active"
-          ariaCurrentWhenActive="page"
           [routerLink]="['/settings']"
-          [attr.aria-label]="'menu.label_settings' | translate"
+          [attr.aria-label]="
+            ('menu.label_settings' | translate) + (settingsRla.isActive ? `, ${('menu.current_page' | translate)}` : '')
+          "
         >
           <div class="icon"><i aria-hidden="true" class="fas fa-cog"></i></div>
           <div class="title">{{ 'menu.label_settings' | translate }}</div>
@@ -155,12 +172,14 @@
 
     <div class="link">
       <button
+        #supportRla="routerLinkActive"
         type="button"
         class="link-row"
         routerLinkActive="active"
-        ariaCurrentWhenActive="page"
         [routerLink]="['/support']"
-        [attr.aria-label]="'support.title' | translate"
+        [attr.aria-label]="
+          ('support.title' | translate) + (supportRla.isActive ? `, ${('menu.current_page' | translate)}` : '')
+        "
       >
         <div class="icon"><i aria-hidden="true" class="far fa-circle-question"></i></div>
         <div class="title">{{ 'support.title' | translate }}</div>
@@ -170,12 +189,14 @@
     @if (isAdmin) {
       <div class="link">
         <button
+          #powerRla="routerLinkActive"
           type="button"
           class="link-row"
           routerLinkActive="active"
-          ariaCurrentWhenActive="page"
           [routerLink]="['/power-options']"
-          [attr.aria-label]="'menu.restart.title' | translate"
+          [attr.aria-label]="
+            ('menu.restart.title' | translate) + (powerRla.isActive ? `, ${('menu.current_page' | translate)}` : '')
+          "
         >
           <div class="icon"><i aria-hidden="true" class="fas fa-power-off"></i></div>
           <div class="title">{{ 'menu.restart.title' | translate }}</div>

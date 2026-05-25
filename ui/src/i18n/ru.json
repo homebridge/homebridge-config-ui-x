@@ -334,6 +334,7 @@
   "logs.truncate_log_warning": "Это действие безвозвратно удалит существующие журналы Homebridge. Вы уверены, что хотите продолжить?",
   "matter_bridge.config.use": "Enable Matter",
   "menu.config_json_editor": "Редактор JSON конфигурации",
+  "menu.current_page": "current page",
   "menu.docker.restart_container": "Перезапустить контейнер",
   "menu.docker.startup_script": "Скрипт автозапуска",
   "menu.docker.terminal": "Терминал",

@@ -334,6 +334,7 @@
   "logs.truncate_log_warning": "การดำเนินการนี้จะลบบันทึก Homebridge ที่มีอยู่ของคุณอย่างไม่สามารถย้อนกลับได้ แน่ใจไหมว่าต้องการดำเนินการต่อ",
   "matter_bridge.config.use": "เปิดใช้งาน Matter",
   "menu.config_json_editor": "คอนฟิก JSON",
+  "menu.current_page": "current page",
   "menu.docker.restart_container": "รีสตาร์ทคอนเทนเนอร์",
   "menu.docker.startup_script": "สคริปต์เริ่มต้น",
   "menu.docker.terminal": "เทอร์มินอล",

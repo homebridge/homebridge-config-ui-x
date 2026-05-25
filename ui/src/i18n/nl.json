@@ -334,6 +334,7 @@
   "logs.truncate_log_warning": "Deze actie verwijdert uw Homebridge logs en is onomkeerbaar. Weet u zeker dat u door wilt gaan?",
   "matter_bridge.config.use": "Enable Matter",
   "menu.config_json_editor": "JSON Config",
+  "menu.current_page": "current page",
   "menu.docker.restart_container": "Herstart Container",
   "menu.docker.startup_script": "Opstart Script",
   "menu.docker.terminal": "Terminal",

@@ -334,6 +334,7 @@
   "logs.truncate_log_warning": "Esta acción es irreversible y eliminará los registros existentes de Homebridge. ¿Estás seguro de que deseas continuar?",
   "matter_bridge.config.use": "Enable Matter",
   "menu.config_json_editor": "Editor JSON de Configuración",
+  "menu.current_page": "current page",
   "menu.docker.restart_container": "Reiniciar contenedor",
   "menu.docker.startup_script": "Script de inicio",
   "menu.docker.terminal": "Terminal",
