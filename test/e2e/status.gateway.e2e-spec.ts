@@ -492,6 +492,11 @@ describe('StatusGateway (e2e)', () => {
 
   describe('Raspberry Pi Throttled Status', () => {
     it('should return WsException when not on Raspberry Pi', async () => {
+      // Earlier tests in this file set runningOnRaspberryPi=true via
+      // Object.defineProperty without cleanup, so explicitly assert the
+      // non-Pi state here rather than relying on the default value.
+      Object.defineProperty(configService, 'runningOnRaspberryPi', { value: false, configurable: true })
+
       const result = await statusGateway.getRaspberryPiThrottledStatus()
       // Not running on a Raspberry Pi in test, so should return WsException
       expect((result as any).message).toBeDefined()
