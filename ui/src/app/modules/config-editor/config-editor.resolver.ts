@@ -17,7 +17,10 @@ export const configEditorResolver: ResolveFn<string | undefined> = async () => {
   } catch (error: any) {
     console.error(error)
     $toastr.error(error.message, $translate.instant('toast.title_error'))
-    void $router.navigate(['/'])
-    return undefined
+    // Returning undefined does not cancel route activation in Angular —
+    // the component still mounts and then throws on the missing payload.
+    // Redirect and then re-throw so the editor never tries to parse it.
+    await $router.navigate(['/'])
+    throw error
   }
 }
