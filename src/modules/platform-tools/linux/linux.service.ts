@@ -1,9 +1,10 @@
-import { exec } from 'node:child_process'
+import { exec, spawn } from 'node:child_process'
 
 import { BadRequestException, Inject, Injectable } from '@nestjs/common'
 
 import { ConfigService } from '../../../core/config/config.service.js'
 import { Logger } from '../../../core/logger/logger.service.js'
+import { RE_SAFE_RESTART_CMD } from '../../../core/regex.constants.js'
 
 @Injectable()
 export class LinuxService {
@@ -16,19 +17,12 @@ export class LinuxService {
    * Reboot the host
    */
   restartHost() {
-    const cmd = [(this.configService.ui.linux && this.configService.ui.linux.restart)
+    const cmd = (this.configService.ui.linux && this.configService.ui.linux.restart)
       ? this.configService.ui.linux.restart
-      : 'sudo -n shutdown -r now']
+      : 'sudo -n shutdown -r now'
 
-    this.logger.warn(`Rebooting linux server with command ${cmd.join(' ')}.`)
-
-    setTimeout(() => {
-      exec(cmd.join(' '), (err) => {
-        if (err) {
-          this.logger.error(err.message)
-        }
-      })
-    }, 100)
+    this.logger.warn(`Rebooting linux server with command ${cmd}.`)
+    this.runHostCommand(cmd, 100)
 
     return { ok: true, command: cmd }
   }
@@ -37,21 +31,36 @@ export class LinuxService {
    * Shutdown the host
    */
   shutdownHost() {
-    const cmd = [(this.configService.ui.linux && this.configService.ui.linux.shutdown)
+    const cmd = (this.configService.ui.linux && this.configService.ui.linux.shutdown)
       ? this.configService.ui.linux.shutdown
-      : 'sudo -n shutdown -h now']
+      : 'sudo -n shutdown -h now'
 
-    this.logger.warn(`Shutting down linux server with command ${cmd.join(' ')}.`)
-
-    setTimeout(() => {
-      exec(cmd.join(' '), (err) => {
-        if (err) {
-          this.logger.error(err.message)
-        }
-      })
-    }, 500)
+    this.logger.warn(`Shutting down linux server with command ${cmd}.`)
+    this.runHostCommand(cmd, 500)
 
     return { ok: true, command: cmd }
+  }
+
+  /**
+   * Execute a configured host command. Uses `spawn` with `shell: false`
+   * and an argv array so config-supplied values can't be interpreted as
+   * shell syntax. The command itself is validated against the same
+   * allowlist enforced at save time (RE_SAFE_RESTART_CMD); a stored
+   * legacy value that doesn't match is refused rather than passed to a
+   * shell.
+   */
+  private runHostCommand(command: string, delayMs: number) {
+    if (!RE_SAFE_RESTART_CMD.test(command)) {
+      this.logger.error(`Refusing to run host command — not on the allowlist: "${command}". Edit ui.linux.restart / ui.linux.shutdown to use a supported form (e.g. "sudo -n shutdown -r now").`)
+      return
+    }
+    const argv = command.split(/\s+/).filter(Boolean)
+    setTimeout(() => {
+      const child = spawn(argv[0], argv.slice(1), { stdio: 'ignore', shell: false })
+      child.on('error', (err) => {
+        this.logger.error(err.message)
+      })
+    }, delayMs)
   }
 
   /**

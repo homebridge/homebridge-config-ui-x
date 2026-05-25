@@ -44,6 +44,7 @@ import {
   RE_HEX_ANY,
   RE_HYPHEN_GLOBAL,
   RE_PRIVATE_KEY,
+  RE_SAFE_RESTART_CMD,
   RE_VALID_NAME,
 } from '../../core/regex.constants.js'
 import { SslCertGeneratorService } from '../../core/ssl/ssl-cert-generator.service.js'
@@ -251,17 +252,38 @@ export class ServerService {
     }
 
     setTimeout(() => {
-      if (this.configService.ui.restart) {
-        this.logger.log(`Executing restart command ${this.configService.ui.restart}.`)
-        exec(this.configService.ui.restart, (err) => {
+      const restartCmd = this.configService.ui.restart
+      if (!restartCmd) {
+        this.logger.log('Sending SIGTERM to process...')
+        process.kill(process.pid, 'SIGTERM')
+        return
+      }
+      this.logger.log(`Executing restart command ${restartCmd}.`)
+      // Docker mode sets a multi-statement shell command in the loader
+      // (`killall ... ; sleep ... ; killall ... ; kill -9 $(pidof ...)`),
+      // which intentionally relies on shell semantics — that path stays
+      // on `exec`. User-supplied commands flow through the allowlist
+      // (RE_SAFE_RESTART_CMD), parsed to argv and run with
+      // `spawn({ shell: false })` so an admin who edits config.json
+      // can't inject arbitrary shell.
+      if (this.configService.runningInDocker) {
+        exec(restartCmd, (err) => {
           if (err) {
             this.logger.log('Restart command exited with an error, failed to restart Homebridge.')
           }
         })
-      } else {
-        this.logger.log('Sending SIGTERM to process...')
-        process.kill(process.pid, 'SIGTERM')
+        return
       }
+      if (!RE_SAFE_RESTART_CMD.test(restartCmd)) {
+        this.logger.error(`Refusing to run restart command — not on the allowlist: "${restartCmd}". Edit ui.restart to use a supported form (e.g. "sudo systemctl restart homebridge"). Falling back to SIGTERM.`)
+        process.kill(process.pid, 'SIGTERM')
+        return
+      }
+      const argv = restartCmd.split(/\s+/).filter(Boolean)
+      const child = spawn(argv[0], argv.slice(1), { stdio: 'ignore', shell: false })
+      child.on('error', () => {
+        this.logger.log('Restart command exited with an error, failed to restart Homebridge.')
+      })
     }, 500)
 
     return { ok: true, command: this.configService.ui.restart, restartingUI: true }

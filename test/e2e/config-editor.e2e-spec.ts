@@ -1099,6 +1099,37 @@ describe('ConfigEditorController (e2e)', () => {
       expect(res.body).toContain('Cannot update the platform property.')
     })
 
+    it('rejects an unsafe restart command on save', async () => {
+      // ui.restart is admin-editable and used to run through /bin/sh —
+      // a value with shell metacharacters could exec arbitrary code as
+      // the Homebridge process user. The allowlist now refuses any
+      // string that doesn't parse as `[sudo ...] <trusted-binary> [args]`.
+      const res = await app.inject({
+        method: 'PUT',
+        url: '/config-editor/ui',
+        headers: { authorization },
+        payload: {
+          key: 'restart',
+          value: 'sudo systemctl restart homebridge; rm -rf /',
+        },
+      })
+
+      expect(res.statusCode).toBe(400)
+      expect(res.body).toContain('restart')
+
+      // Sanity: a known-safe command of the same shape is allowed.
+      const okRes = await app.inject({
+        method: 'PUT',
+        url: '/config-editor/ui',
+        headers: { authorization },
+        payload: {
+          key: 'restart',
+          value: 'sudo systemctl restart homebridge',
+        },
+      })
+      expect(okRes.statusCode).toBe(200)
+    })
+
     it('toggling scheduledBackupDisable re-registers the backup schedule', async () => {
       // The bug was: BackupService.scheduleInstanceBackups only ran once
       // at construction, so a user toggling this flag at runtime had to
