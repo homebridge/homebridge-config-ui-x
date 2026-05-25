@@ -21,6 +21,10 @@ export const RE_DEV_SERVER_ORIGIN = /^https?:\/\/[^:]+:(?:4200|8080)$/
 // Homebridge service
 export const RE_SERVICE_NAME = /^[a-z0-9-]+$/i
 
+// POSIX OS username — used to validate `--user` before interpolating into
+// sudoers entries / service files. Matches `useradd` / Linux NAME_REGEX.
+export const RE_OS_USERNAME = /^[a-z_][a-z0-9_-]*\$?$/
+
 // npm package parsing
 export const RE_SCOPED = /^(@[^/]+\/[^@/]+)(?:@([^/]+))?(\/.*)?$/
 export const RE_NON_SCOPED = /^([^@/]+)(?:@([^/]+))?(\/.*)?$/

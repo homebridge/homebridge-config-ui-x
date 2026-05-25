@@ -7,6 +7,7 @@ import process from 'node:process'
 
 import { outputFile } from 'fs-extra/esm'
 
+import { RE_OS_USERNAME } from '../../core/regex.constants.js'
 import { BasePlatform } from '../base-platform.js'
 
 export class FreeBSDInstaller extends BasePlatform {
@@ -233,6 +234,16 @@ export class FreeBSDInstaller extends BasePlatform {
    */
   private setupSudo() {
     try {
+      // Refuse to interpolate an unvalidated username into the sudoers line —
+      // a crafted `--user` could otherwise inject `, /bin/sh` and grant NOPASSWD.
+      if (!RE_OS_USERNAME.test(this.hbService.asUser)) {
+        this.hbService.logger(
+          `WARNING: Refusing to write /usr/local/etc/sudoers entry — invalid username "${this.hbService.asUser}".`,
+          'warn',
+        )
+        return
+      }
+
       const npmPath = execSync('which npm').toString('utf8').trim()
       const sudoersEntry = `${this.hbService.asUser}    ALL=(ALL) NOPASSWD:SETENV: ${npmPath}, /usr/local/bin/npm`
 
