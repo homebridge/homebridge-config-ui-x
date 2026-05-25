@@ -477,6 +477,7 @@
   "plugins.manage.support_donate": "{{ iconHeart }} Love this plugin? A small donation can help the developer keep improving it for everyone! {{ link }}",
   "plugins.manage.support_github": "You can show your support by giving this plugin a {{ iconStar }} (or the release a {{ iconThumbsUp }}) on GitHub!",
   "plugins.manage.support_kofi": "{{ iconCoffee }} Enjoying this plugin? Treat the developer a coffee to say thanks and help keep it maintained! {{ link }}",
+  "plugins.manage.toast_success": "{{ verb }} {{ name }}",
   "plugins.manage.uninstall": "Disinstalla",
   "plugins.manage.uninstalled": "Disinstallato",
   "plugins.manage.unverified_message": "I plugin Homebridge non verificati indicano che non sono stati sottoposti al processo di revisione da parte del team del progetto Homebridge. La mancanza di convalida non implica necessariamente inefficacia o problemi di sicurezza. Gli autori potrebbero aver scelto di non cercare la convalida per vari motivi.",

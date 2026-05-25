@@ -361,7 +361,7 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
           // If plugin is not configured and has no child bridges, no restart needed
           if (!this.isConfigured() && this.childBridges().length === 0) {
             this.$toastr.success(
-              `${this.pastTenseVerb()} ${this.pluginName}`,
+              this.$translate.instant('plugins.manage.toast_success', { verb: this.pastTenseVerb(), name: this.pluginName }),
               this.toastSuccess,
             )
             this.$activeModal.close()
@@ -510,7 +510,7 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
     }).subscribe({
       next: async () => {
         this.speakAction('plugins.a11y.installed_restart', 3000)
-        this.$toastr.success(`${this.pastTenseVerb()} ${this.pluginName}`, this.toastSuccess)
+        this.$toastr.success(this.$translate.instant('plugins.manage.toast_success', { verb: this.pastTenseVerb(), name: this.pluginName }), this.toastSuccess)
 
         // Invalidate caches BEFORE notifying the plugins page — otherwise its
         // loadInstalledPlugins() reads the pre-install cached list and the

@@ -88,6 +88,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(toast): centralise error toasts on a shared helper
 - fix(server): allowlist restart/shutdown commands and use spawn-array
 - fix(fs): serialise JSON mutations through a shared JsonFileStore
+- fix(plugins): translate install/update toast template
 
 ### Other Changes
 
