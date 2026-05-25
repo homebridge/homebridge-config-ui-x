@@ -13,11 +13,17 @@
   <div
     class="d-flex flex-wrap w-100 mt-0 justify-content-start gridster-item-content overflow-auto no-scrollbars align-items-center"
   >
-    <! -- Main Bridge - ->
-    <div class="hb-status-item hb-status-item-quarter d-flex flex-row w-100 px-3 mt-2 mb-1">
+    <button
+      type="button"
+      class="hb-status-item hb-status-item-quarter hb-status-row d-flex flex-row w-100 px-3 mt-2 mb-1 text-start"
+      [attr.aria-label]="mainBridgeAriaLabel()"
+      [attr.aria-disabled]="homebridgeStatus()?.status === 'pending' || isRestarting() || !isAdmin ? 'true' : null"
+      (click)="!(homebridgeStatus()?.status === 'pending' || isRestarting() || !isAdmin) && restartHomebridge()"
+    >
       <div class="hb-status-icon d-flex align-items-center">
         <i
           class="fas fa-hap fa-sm"
+          aria-hidden="true"
           container="body"
           placement="right"
           triggers="hover"
@@ -28,11 +34,11 @@
           [class.opacity-muted]="isMainHapDisabled()"
           [openDelay]="150"
           [ngbTooltip]="mainHapTooltipKey() | translate"
-          [attr.aria-label]="mainHapTooltipKey() | translate"
         ></i>
         @if (isMatterSupported) {
           <i
             class="fas fa-matter fa-sm ms-2"
+            aria-hidden="true"
             container="body"
             placement="right"
             triggers="hover"
@@ -56,45 +62,36 @@
                 : 'status.services.matter_not_enabled'
               ) | translate
             "
-            [attr.aria-label]="
-              (homebridgeStatus()?.matter?.enabled
-                ? homebridgeStatus()?.status === 'down' && !isRestarting()
-                  ? 'status.services.hap_not_running'
-                  : 'status.services.hap_running'
-                : 'status.services.hap_not_enabled'
-              ) | translate
-            "
           ></i>
         }
       </div>
       <div class="align-self-center flex-child px-2">{{ homebridgeStatus()?.name || 'Homebridge' }}</div>
-      <div class="grey-text ms-auto d-flex align-items-center">
+      <div class="grey-text ms-auto d-flex align-items-center" aria-hidden="true">
         @if (homebridgeStatus()?.status !== 'pending' && !isRestarting() && isAdmin) {
-          <button
-            type="button"
-            class="icon-button-reset"
-            container="body"
-            triggers="hover"
-            placement="left"
-            [ngbTooltip]="'menu.tooltip_restart' | translate"
-            [attr.aria-label]="'menu.tooltip_restart' | translate"
-            [openDelay]="150"
-            (click)="restartHomebridge()"
-          >
-            <i class="fas fa-power-off" aria-hidden="true"></i>
-          </button>
+          <i class="fas fa-power-off"></i>
         }
         @if (homebridgeStatus()?.status === 'pending' || isRestarting()) {
-          <i class="fas fa-circle-notch fa-spin" aria-hidden="true"></i>
+          <i class="fas fa-circle-notch fa-spin"></i>
         }
       </div>
-    </div>
-    <! -- Child Bridges - ->
+    </button>
     @for (bridge of childBridges(); track bridge.username) {
-      <div class="hb-status-item hb-status-item-quarter d-flex flex-row w-100 px-3 mt-2 mb-1">
+      <button
+        type="button"
+        class="hb-status-item hb-status-item-quarter hb-status-row d-flex flex-row w-100 px-3 mt-2 mb-1 text-start"
+        [attr.aria-label]="childBridgeAriaLabel(bridge)"
+        [attr.aria-disabled]="
+          bridge.status === 'pending' || bridge.restarting || isRestarting() || !isAdmin ? 'true' : null
+        "
+        (click)="
+          !(bridge.status === 'pending' || bridge.restarting || isRestarting() || !isAdmin) &&
+            restartChildBridge(bridge)
+        "
+      >
         <div class="hb-status-icon d-flex align-items-center">
           <i
             class="fas fa-hap fa-sm"
+            aria-hidden="true"
             container="body"
             placement="right"
             triggers="hover"
@@ -111,11 +108,11 @@
             [class.opacity-muted]="isChildHapDisabled(bridge)"
             [openDelay]="150"
             [ngbTooltip]="childHapTooltipKey(bridge) | translate"
-            [attr.aria-label]="childHapTooltipKey(bridge) | translate"
           ></i>
           @if (isMatterSupported) {
             <i
               class="fas fa-matter fa-sm ms-2"
+              aria-hidden="true"
               container="body"
               placement="right"
               triggers="hover"
@@ -139,39 +136,19 @@
                   : 'status.services.matter_not_enabled'
                 ) | translate
               "
-              [attr.aria-label]="
-                (bridge.matterConfig
-                  ? bridge.status === 'down' && !bridge.restarting && !isRestarting()
-                    ? 'status.services.matter_not_running'
-                    : 'status.services.matter_running'
-                  : 'status.services.matter_not_enabled'
-                ) | translate
-              "
             ></i>
           }
         </div>
         <div class="align-self-center flex-child px-2">{{ bridge.name }}</div>
-        <div class="grey-text ms-auto d-flex align-items-center">
+        <div class="grey-text ms-auto d-flex align-items-center" aria-hidden="true">
           @if (bridge.status !== 'pending' && !bridge.restarting && !isRestarting() && isAdmin) {
-            <button
-              type="button"
-              class="icon-button-reset"
-              container="body"
-              triggers="hover"
-              placement="left"
-              [ngbTooltip]="'menu.tooltip_restart' | translate"
-              [attr.aria-label]="'menu.tooltip_restart' | translate"
-              [openDelay]="150"
-              (click)="restartChildBridge(bridge)"
-            >
-              <i class="fas fa-power-off" aria-hidden="true"></i>
-            </button>
+            <i class="fas fa-power-off"></i>
           }
           @if (bridge.status === 'pending' || bridge.restarting || isRestarting()) {
-            <i class="fas fa-circle-notch fa-spin" aria-hidden="true"></i>
+            <i class="fas fa-circle-notch fa-spin"></i>
           }
         </div>
-      </div>
+      </button>
     }
   </div>
 </div>

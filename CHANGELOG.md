@@ -42,6 +42,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(settings): add keyboard activation to collapsible section headers
 - fix(spinner): announce loading state to screen readers
 - fix(layout): use buttons for sidebar items and trim duplicate menu announcements (@rfiorentino1)
+- fix(status): announce bridge rows as one button with status + matter + restart (@rfiorentino1)
 
 ### Other Changes
 
