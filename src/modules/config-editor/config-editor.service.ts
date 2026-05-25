@@ -1,7 +1,5 @@
-import { randomBytes } from 'node:crypto'
-import { copyFile, open, readdir, readFile, rename, unlink } from 'node:fs/promises'
+import { copyFile, readdir, readFile, unlink } from 'node:fs/promises'
 import { join, resolve } from 'node:path'
-import { pid } from 'node:process'
 
 import { BadRequestException, Inject, Injectable, NotFoundException, OnApplicationBootstrap } from '@nestjs/common'
 import dayjs from 'dayjs'
@@ -15,6 +13,7 @@ import {
   PlatformConfig,
 } from '../../core/config/config.interfaces.js'
 import { ConfigService } from '../../core/config/config.service.js'
+import { JsonFileStoreService } from '../../core/fs/json-file-store.service.js'
 import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.service.js'
 import { Logger } from '../../core/logger/logger.service.js'
 import { MatterConfig } from '../../core/matter/matter.interfaces.js'
@@ -46,6 +45,7 @@ export class ConfigEditorService implements OnApplicationBootstrap {
     @Inject(HomebridgeIpcService) private readonly homebridgeIpcService: HomebridgeIpcService,
     @Inject(ChildBridgesService) private readonly childBridgesService: ChildBridgesService,
     @Inject(BackupService) private readonly backupService: BackupService,
+    @Inject(JsonFileStoreService) private readonly jsonStore: JsonFileStoreService,
   ) {
     this.ready = new Promise((res) => {
       this.resolveReady = res
@@ -243,11 +243,12 @@ export class ConfigEditorService implements OnApplicationBootstrap {
       delete config.disabledPlugins
     }
 
-    // Snapshot the existing config to the backup path via copyFile so the
-    // live file is never absent. A rename-then-write sequence would leave
-    // configPath unlinked between steps; a process kill (OOM, container
-    // restart, power loss) in that window would leave Homebridge with no
-    // config and it would generate a default on next start.
+    // Snapshot the existing config to a timestamped backup path before
+    // overwriting. copyFile keeps the live file present (never unlinked)
+    // so a crash between snapshot and write can't lose config.json. The
+    // ENOENT case here means there isn't a live config yet — first
+    // install or first save after wipe — so make sure the backup
+    // directory exists ready for the next save and proceed.
     try {
       await copyFile(this.configService.configPath, resolve(this.configService.configBackupPath, `config.json.${now.getTime().toString()}`))
     } catch (e) {
@@ -258,10 +259,11 @@ export class ConfigEditorService implements OnApplicationBootstrap {
       }
     }
 
-    // Save config file via write-tmp + fsync + rename so the on-disk
-    // content is always either the previous or the new full document,
-    // never a half-written file.
-    await this.atomicWriteJson(this.configService.configPath, config)
+    // Atomic write via shared JsonFileStore: write-temp + fsync + rename
+    // under the per-path mutex. Closes both the half-written-file
+    // window AND the concurrent read-modify-write race when this method
+    // is reached from multiple in-flight save endpoints at once.
+    await this.jsonStore.write(this.configService.configPath, config, { spaces: 4 })
 
     this.logger.log('Changes to config.json saved.')
 
@@ -833,32 +835,6 @@ export class ConfigEditorService implements OnApplicationBootstrap {
       this.logger.error(`Could not create directory for config backups ${this.configService.configBackupPath} as ${e.message}.`)
       this.logger.error(`Config backups will continue to use ${this.configService.storagePath}.`)
       this.configService.configBackupPath = this.configService.storagePath
-    }
-  }
-
-  /**
-   * Write a JSON document atomically: serialise to a temp file, fsync the
-   * temp file, then rename over the target. POSIX guarantees rename
-   * atomicity on the same filesystem, so readers always see either the
-   * previous full file or the new full file — never a half-written one.
-   */
-  private async atomicWriteJson(targetPath: string, payload: unknown): Promise<void> {
-    const tmpPath = `${targetPath}.tmp.${pid}.${randomBytes(6).toString('hex')}`
-    const data = `${JSON.stringify(payload, null, 4)}\n`
-    let handle: Awaited<ReturnType<typeof open>> | undefined
-    try {
-      handle = await open(tmpPath, 'w')
-      await handle.writeFile(data, 'utf8')
-      await handle.sync()
-    } finally {
-      await handle?.close()
-    }
-    try {
-      await rename(tmpPath, targetPath)
-    } catch (e) {
-      // Best-effort cleanup of the orphaned temp file on rename failure
-      await unlink(tmpPath).catch(() => undefined)
-      throw e
     }
   }
 

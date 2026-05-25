@@ -24,12 +24,13 @@ import {
   NotFoundException,
   ServiceUnavailableException,
 } from '@nestjs/common'
-import { ensureDir, pathExists, readJson, remove, writeJson } from 'fs-extra/esm'
+import { ensureDir, pathExists, readJson, remove } from 'fs-extra/esm'
 import NodeCache from 'node-cache'
 import { networkInterfaces } from 'systeminformation'
 import { check as tcpCheck } from 'tcp-port-used'
 
 import { ConfigService } from '../../core/config/config.service.js'
+import { JsonFileStoreService } from '../../core/fs/json-file-store.service.js'
 import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.service.js'
 import { Logger } from '../../core/logger/logger.service.js'
 import {
@@ -69,6 +70,7 @@ export class ServerService {
     @Inject(ConfigEditorService) private readonly configEditorService: ConfigEditorService,
     @Inject(AccessoriesService) private readonly accessoriesService: AccessoriesService,
     @Inject(HomebridgeIpcService) private readonly homebridgeIpcService: HomebridgeIpcService,
+    @Inject(JsonFileStoreService) private readonly jsonStore: JsonFileStoreService,
     @Inject(Logger) private readonly logger: Logger,
   ) {
     this.accessoryId = ServerService.macToHex(this.configService.homebridgeConfig.bridge.username)
@@ -704,14 +706,24 @@ export class ServerService {
     // Wait for homebridge to stop.
     await this.homebridgeIpcService.restartAndWaitForClose()
 
-    const cachedAccessories = await readJson(cachedAccessoriesPath) as Array<any>
-    const accessoryIndex = cachedAccessories.findIndex(x => x.UUID === uuid)
+    let found = false
+    await this.jsonStore.mutate<Array<any>>(cachedAccessoriesPath, (current) => {
+      if (current === null) {
+        // A missing cache file is treated as not-found (matching
+        // readJson()'s ENOENT exit path), not auto-created — also
+        // keeps the path-traversal-blocked-via-basename test happy.
+        throw new NotFoundException()
+      }
+      const accessoryIndex = current.findIndex(x => x.UUID === uuid)
+      if (accessoryIndex > -1) {
+        current.splice(accessoryIndex, 1)
+        found = true
+        this.logger.warn(`Removed cached accessory with UUID ${uuid} from file ${cacheFile}.`)
+      }
+      return current
+    })
 
-    if (accessoryIndex > -1) {
-      cachedAccessories.splice(accessoryIndex, 1)
-      await writeJson(cachedAccessoriesPath, cachedAccessories)
-      this.logger.warn(`Removed cached accessory with UUID ${uuid} from file ${cacheFile}.`)
-    } else {
+    if (!found) {
       this.logger.error(`Cannot find cached accessory with UUID ${uuid} from file ${cacheFile}.`)
       throw new NotFoundException()
     }
@@ -742,21 +754,30 @@ export class ServerService {
     // Process each group of accessories
     for (const [cacheFile, accessories] of accessoriesByCacheFile.entries()) {
       const cachedAccessoriesPath = resolve(this.configService.storagePath, 'accessories', cacheFile)
-      const cachedAccessories = await readJson(cachedAccessoriesPath) as Array<any>
-      for (const { uuid } of accessories) {
-        try {
-          const accessoryIndex = cachedAccessories.findIndex(x => x.UUID === uuid)
-          if (accessoryIndex > -1) {
-            cachedAccessories.splice(accessoryIndex, 1)
-            this.logger.warn(`Removed cached accessory with UUID ${uuid} from file ${cacheFile}.`)
-          } else {
-            this.logger.error(`Cannot find cached accessory with UUID ${uuid} from file ${cacheFile}.`)
-          }
-        } catch (e) {
-          this.logger.error(`Failed to remove cached accessory with UUID ${uuid} from file ${cacheFile} as ${e.message}.`)
+      await this.jsonStore.mutate<Array<any>>(cachedAccessoriesPath, (current) => {
+        if (current === null) {
+          // Don't auto-create a fresh cache file just because a caller
+          // pointed at a path that doesn't exist (e.g. an attempted
+          // path-traversal that basename() flattened to an unrelated
+          // name). Skip this cacheFile and let other groups proceed.
+          this.logger.error(`Cached accessories file not found: ${cacheFile}.`)
+          throw new NotFoundException(`Cache file ${cacheFile} not found.`)
         }
-      }
-      await writeJson(cachedAccessoriesPath, cachedAccessories)
+        for (const { uuid } of accessories) {
+          try {
+            const accessoryIndex = current.findIndex(x => x.UUID === uuid)
+            if (accessoryIndex > -1) {
+              current.splice(accessoryIndex, 1)
+              this.logger.warn(`Removed cached accessory with UUID ${uuid} from file ${cacheFile}.`)
+            } else {
+              this.logger.error(`Cannot find cached accessory with UUID ${uuid} from file ${cacheFile}.`)
+            }
+          } catch (e) {
+            this.logger.error(`Failed to remove cached accessory with UUID ${uuid} from file ${cacheFile} as ${e.message}.`)
+          }
+        }
+        return current
+      })
     }
 
     return { ok: true }
@@ -868,14 +889,19 @@ export class ServerService {
     // Wait for homebridge to stop
     await this.homebridgeIpcService.restartAndWaitForClose()
 
-    const matterAccessories = await readJson(matterAccessoriesPath) as StoredMatterAccessory[]
-    const accessoryIndex = matterAccessories.findIndex(x => x.uuid === uuid)
+    let found = false
+    await this.jsonStore.mutate<StoredMatterAccessory[]>(matterAccessoriesPath, (current) => {
+      const matterAccessories = current ?? []
+      const accessoryIndex = matterAccessories.findIndex(x => x.uuid === uuid)
+      if (accessoryIndex > -1) {
+        matterAccessories.splice(accessoryIndex, 1)
+        found = true
+        this.logger.warn(`Removed Matter accessory with UUID ${uuid} from bridge ${deviceId}.`)
+      }
+      return matterAccessories
+    }, { spaces: 2 })
 
-    if (accessoryIndex > -1) {
-      matterAccessories.splice(accessoryIndex, 1)
-      await writeJson(matterAccessoriesPath, matterAccessories, { spaces: 2 })
-      this.logger.warn(`Removed Matter accessory with UUID ${uuid} from bridge ${deviceId}.`)
-    } else {
+    if (!found) {
       this.logger.error(`Cannot find Matter accessory with UUID ${uuid} in bridge ${deviceId}.`)
       throw new NotFoundException()
     }
@@ -914,23 +940,23 @@ export class ServerService {
           continue
         }
 
-        const matterAccessories = await readJson(matterAccessoriesPath) as StoredMatterAccessory[]
-
-        for (const { uuid } of bridgeAccessories) {
-          try {
-            const accessoryIndex = matterAccessories.findIndex(x => x.uuid === uuid)
-            if (accessoryIndex > -1) {
-              matterAccessories.splice(accessoryIndex, 1)
-              this.logger.warn(`Removed Matter accessory with UUID ${uuid} from bridge ${deviceId}.`)
-            } else {
-              this.logger.error(`Cannot find Matter accessory with UUID ${uuid} in bridge ${deviceId}.`)
+        await this.jsonStore.mutate<StoredMatterAccessory[]>(matterAccessoriesPath, (current) => {
+          const matterAccessories = current ?? []
+          for (const { uuid } of bridgeAccessories) {
+            try {
+              const accessoryIndex = matterAccessories.findIndex(x => x.uuid === uuid)
+              if (accessoryIndex > -1) {
+                matterAccessories.splice(accessoryIndex, 1)
+                this.logger.warn(`Removed Matter accessory with UUID ${uuid} from bridge ${deviceId}.`)
+              } else {
+                this.logger.error(`Cannot find Matter accessory with UUID ${uuid} in bridge ${deviceId}.`)
+              }
+            } catch (e) {
+              this.logger.error(`Failed to remove Matter accessory with UUID ${uuid} from bridge ${deviceId} as ${e.message}.`)
             }
-          } catch (e) {
-            this.logger.error(`Failed to remove Matter accessory with UUID ${uuid} from bridge ${deviceId} as ${e.message}.`)
           }
-        }
-
-        await writeJson(matterAccessoriesPath, matterAccessories, { spaces: 2 })
+          return matterAccessories
+        }, { spaces: 2 })
       } catch (e) {
         this.logger.error(`Failed to process Matter accessories for bridge ${deviceId} as ${e.message}.`)
       }

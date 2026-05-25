@@ -361,6 +361,28 @@ describe('AuthController (e2e)', () => {
     expect(res.statusCode).toBe(401)
   })
 
+  it('addUser: parallel adds get distinct ids and no usernames are lost', async () => {
+    // Without per-path serialisation both addUser() calls would read
+    // the same baseline auth.json, derive the same next id, and the
+    // second write would clobber the first.
+    const users = await authService.getUsers()
+    const baseline = users.length
+
+    const results = await Promise.all([
+      authService.addUser({ name: 'Race A', username: 'race-add-a', password: 'race-pw-a', admin: false } as any),
+      authService.addUser({ name: 'Race B', username: 'race-add-b', password: 'race-pw-b', admin: false } as any),
+    ])
+
+    expect(results[0].id).not.toBe(results[1].id)
+
+    const after = await authService.getUsers()
+    expect(after.length).toBe(baseline + 2)
+    expect(after.find(u => u.username === 'race-add-a')).toBeDefined()
+    expect(after.find(u => u.username === 'race-add-b')).toBeDefined()
+    const ids = after.map(u => u.id)
+    expect(new Set(ids).size).toBe(ids.length)
+  })
+
   it('verifyOtpToken: parallel duplicate codes can only succeed once', async () => {
     // Two parallel requests with the same captured TOTP code must not
     // both authenticate — the cache slot has to be reserved before

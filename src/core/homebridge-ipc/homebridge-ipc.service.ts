@@ -36,6 +36,13 @@ export class HomebridgeIpcService extends EventEmitter {
    */
   public setHomebridgeProcess(process: ChildProcess) {
     this.homebridge = process
+    // Drop any stale pending-shutdown timer belonging to the previous
+    // process — otherwise the next restartHomebridge() call would be a
+    // no-op and the new process would never get SIGTERM.
+    if (this.pendingShutdownTimer) {
+      clearTimeout(this.pendingShutdownTimer)
+      this.pendingShutdownTimer = null
+    }
 
     this.homebridge.setMaxListeners(this.homebridge.getMaxListeners() + 2)
 
