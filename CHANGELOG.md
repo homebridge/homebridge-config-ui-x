@@ -44,6 +44,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(layout): use buttons for sidebar items and trim duplicate menu announcements (@rfiorentino1)
 - fix(status): announce bridge rows as one button with status + matter + restart (@rfiorentino1)
 - fix(status): announce matter state on all rows when matter support is enabled (@rfiorentino1)
+- fix(status): drop duplicate text and widget-name announcements in show/hide widgets modal (@rfiorentino1)
 
 ### Other Changes
 

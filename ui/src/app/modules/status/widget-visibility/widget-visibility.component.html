@@ -23,33 +23,33 @@
           <li class="list-group-item">
             <div class="mb-2">{{ widget.name }}</div>
             <div class="d-flex justify-content-between align-items-center mb-1 grey-text">
-              <span>{{ 'status.widget.show_on_desktop' | translate }}</span>
+              <span aria-hidden="true">{{ 'status.widget.show_on_desktop' | translate }}</span>
               <span class="d-flex align-items-center">
-                <i class="fas fa-desktop fa-lg"></i>
+                <i class="fas fa-desktop fa-lg" aria-hidden="true"></i>
                 <input
                   type="checkbox"
                   class="rendux-input"
                   [checked]="widget.showOnDesktop"
                   [id]="`desktop-${widget.component}`"
-                  [attr.aria-label]="`${('status.widget.show_on_desktop' | translate)} ${widget.name}`"
+                  [attr.aria-label]="'status.widget.show_on_desktop' | translate"
                   (click)="toggleDesktop(widget)"
                 />
-                <label class="rendux-label ms-2" [for]="`desktop-${widget.component}`"></label>
+                <label class="rendux-label ms-2" aria-hidden="true" [for]="`desktop-${widget.component}`"></label>
               </span>
             </div>
             <div class="d-flex justify-content-between align-items-center grey-text">
-              <span>{{ 'status.widget.show_on_mobile' | translate }}</span>
+              <span aria-hidden="true">{{ 'status.widget.show_on_mobile' | translate }}</span>
               <span class="d-flex align-items-center">
-                <i class="fas fa-mobile-screen-button fa-lg"></i>
+                <i class="fas fa-mobile-screen-button fa-lg" aria-hidden="true"></i>
                 <input
                   type="checkbox"
                   class="rendux-input"
                   [checked]="widget.showOnMobile"
                   [id]="`mobile-${widget.component}`"
-                  [attr.aria-label]="`${('status.widget.show_on_mobile' | translate)} ${widget.name}`"
+                  [attr.aria-label]="'status.widget.show_on_mobile' | translate"
                   (click)="toggleMobile(widget)"
                 />
-                <label class="rendux-label ms-2" [for]="`mobile-${widget.component}`"></label>
+                <label class="rendux-label ms-2" aria-hidden="true" [for]="`mobile-${widget.component}`"></label>
               </span>
             </div>
           </li>
