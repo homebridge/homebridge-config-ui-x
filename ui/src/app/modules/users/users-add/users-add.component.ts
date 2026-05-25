@@ -65,14 +65,17 @@ export class UsersAddComponent implements OnInit {
       return null
     }
 
-    const trimmedUsername = control.value.trim()
+    const trimmedUsername = control.value.trim().toLowerCase()
     if (!trimmedUsername) {
       return null
     }
 
-    // Case-sensitive comparison for usernames
+    // Case-insensitive — matches the backend which collides on lower-cased
+    // usernames (auth.service.ts addUser). A case-sensitive check would let
+    // "admin" through when "Admin" already exists, and the form would only
+    // surface the collision as a 409 toast after submit.
     const isDuplicate = this.existingUsers.some(
-      user => user.username === trimmedUsername,
+      user => user.username?.toLowerCase() === trimmedUsername,
     )
 
     return isDuplicate ? { duplicateUsername: true } : null

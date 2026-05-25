@@ -143,14 +143,15 @@ export class UsersEditComponent implements OnInit {
       return null
     }
 
-    const trimmedUsername = control.value.trim()
+    const trimmedUsername = control.value.trim().toLowerCase()
     if (!trimmedUsername) {
       return null
     }
 
-    // Case-sensitive comparison, excluding the current user
+    // Case-insensitive — matches the backend which collides on lower-cased
+    // usernames (auth.service.ts updateUser).
     const isDuplicate = this.existingUsers.some(
-      user => user.id !== this.user.id && user.username === trimmedUsername,
+      user => user.id !== this.user.id && user.username?.toLowerCase() === trimmedUsername,
     )
 
     return isDuplicate ? { duplicateUsername: true } : null
