@@ -39,11 +39,11 @@
           <div class="float-start primary-text">
             <i
               class="fas fa-xl fa-sun"
-              [class.off-text]="!adaptiveLightingSignal()"
-              [class.on-text]="adaptiveLightingSignal()"
+              [class.off-text]="!adaptiveLightingSignal?.()"
+              [class.on-text]="adaptiveLightingSignal?.()"
             ></i>
           </div>
-          {{ 'accessories.control.adaptive_lighting' | translate }}: {{ adaptiveLightingSignal() ? 'ON' : 'OFF' }}
+          {{ 'accessories.control.adaptive_lighting' | translate }}: {{ adaptiveLightingSignal?.() ? 'ON' : 'OFF' }}
           <div class="float-end"><i class="fas fa-xl fa-blank"></i></div>
         </div>
       </div>
@@ -67,12 +67,12 @@
           [min]="0"
           [max]="360"
           [step]="1"
-          [class.mb-1]="adaptiveLightingSignal()"
+          [class.mb-1]="adaptiveLightingSignal?.()"
           [(ngModel)]="targetHue.value"
           (ngModelChange)="onHueStateChange()"
         />
       </div>
-      @if (adaptiveLightingSignal()) {
+      @if (adaptiveLightingSignal?.()) {
         <div class="d-flex text-center mt-0 mb-1">
           <span class="grey-text small">{{ 'accessories.control.adaptive_lighting_note' | translate }}</span>
         </div>
@@ -85,12 +85,12 @@
           [min]="0"
           [max]="100"
           [step]="1"
-          [class.mb-1]="adaptiveLightingSignal()"
+          [class.mb-1]="adaptiveLightingSignal?.()"
           [(ngModel)]="targetSaturation.value"
           (ngModelChange)="onSaturationStateChange()"
         />
       </div>
-      @if (adaptiveLightingSignal()) {
+      @if (adaptiveLightingSignal?.()) {
         <div class="d-flex text-center mt-0 mb-1">
           <span class="grey-text small">{{ 'accessories.control.adaptive_lighting_note' | translate }}</span>
         </div>
@@ -105,12 +105,12 @@
           [min]="targetColorTemperature.min!"
           [max]="targetColorTemperature.max!"
           [step]="targetColorTemperature.step!"
-          [class.mb-1]="adaptiveLightingSignal()"
+          [class.mb-1]="adaptiveLightingSignal?.()"
           [(ngModel)]="targetColorTemperature.value"
           (ngModelChange)="onColorTemperatureStateChange()"
         />
       </div>
-      @if (adaptiveLightingSignal()) {
+      @if (adaptiveLightingSignal?.()) {
         <div class="d-flex text-center mt-0 mb-1">
           <span class="grey-text small">{{ 'accessories.control.adaptive_lighting_note' | translate }}</span>
         </div>
