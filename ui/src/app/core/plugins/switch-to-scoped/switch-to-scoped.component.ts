@@ -77,7 +77,11 @@ export class SwitchToScopedComponent implements OnInit, OnDestroy {
     this.termTarget = document.getElementById('plugin-output')!
     this.term.open(this.termTarget)
     this.xtermA11yDisposer = hideXtermInputFromScreenReader(this.termTarget)
-    this.fitAddon.fit()
+    // Defer fit() to the next tick. The modal's host element can have
+    // zero size on the first tick after open, so calling fit() inline
+    // would size the terminal to 0×0 and the user sees a blank pane
+    // until the next resize event.
+    setTimeout(() => this.fitAddon.fit(), 0)
 
     this.io.socket.on('stdout', (data: string | Uint8Array) => {
       this.term.write(data)

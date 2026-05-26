@@ -74,7 +74,9 @@ export class RestoreComponent implements OnInit, OnDestroy {
     this.term.loadAddon(this.webLinksAddon)
     this.term.open(this.termTarget)
     this.xtermA11yDisposer = hideXtermInputFromScreenReader(this.termTarget)
-    this.fitAddon.fit()
+    // Defer fit() to the next tick — modal host can be zero-sized
+    // on first paint, leaving the terminal at 0×0 until next resize.
+    setTimeout(() => this.fitAddon.fit(), 0)
 
     this.io.socket.on('stdout', (data) => {
       this.term.write(data)
