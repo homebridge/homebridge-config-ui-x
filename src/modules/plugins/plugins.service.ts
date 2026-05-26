@@ -2404,55 +2404,72 @@ export class PluginsService {
       )
       const pluginListData = pluginList.data
 
-      this.verifiedPlugins = []
-      this.verifiedPlusPlugins = []
-      this.pluginIcons = {}
-      this.hiddenPlugins = []
-      this.hiddenScopes = []
-      this.unmaintainedPlugins = []
-      this.pluginAuthors = {}
-      this.pluginNames = {}
-      this.pluginChangelogs = {}
-      this.newScopePlugins = {}
-      this.scopedPluginNames = []
+      // Populate locals first, then swap the service fields over in one
+      // synchronous block. Clearing the fields up front and pushing into
+      // them in-place would let any concurrent reader observe the cache
+      // mid-rebuild (the windows are narrow but real on reload paths
+      // that fan out to several callers).
+      const verifiedPlugins: string[] = []
+      const verifiedPlusPlugins: string[] = []
+      const pluginIcons: Record<string, string> = {}
+      const hiddenPlugins: string[] = []
+      const hiddenScopes: string[] = []
+      const unmaintainedPlugins: string[] = []
+      const pluginAuthors: Record<string, string> = {}
+      const pluginNames: Record<string, string> = {}
+      const pluginChangelogs: Record<string, string> = {}
+      const newScopePlugins: Record<string, string> = {}
+      const scopedPluginNames: string[] = []
 
       Object.keys(pluginListData).forEach((key) => {
         if (key.startsWith('@homebridge-plugins/')) {
-          this.scopedPluginNames.push(key)
+          scopedPluginNames.push(key)
         }
         const plugin: PluginListItem = pluginListData[key]
         if (plugin.i) {
-          this.pluginIcons[key] = `icons/${plugin.i}.png`
+          pluginIcons[key] = `icons/${plugin.i}.png`
         }
         if (plugin.h) {
           if (key.endsWith('/')) {
-            this.hiddenScopes.push(key)
+            hiddenScopes.push(key)
           } else {
-            this.hiddenPlugins.push(key)
+            hiddenPlugins.push(key)
           }
         }
         if (plugin.u) {
-          this.unmaintainedPlugins.push(key)
+          unmaintainedPlugins.push(key)
         }
         if (plugin.a) {
-          this.pluginAuthors[key] = plugin.a
+          pluginAuthors[key] = plugin.a
         }
         if (plugin.n) {
-          this.pluginNames[key] = plugin.n
+          pluginNames[key] = plugin.n
         }
         if (plugin.s) {
-          this.newScopePlugins[key] = plugin.s
+          newScopePlugins[key] = plugin.s
         }
         if (plugin.v) {
-          this.verifiedPlugins.push(key)
+          verifiedPlugins.push(key)
         }
         if (plugin.p) {
-          this.verifiedPlusPlugins.push(key)
+          verifiedPlusPlugins.push(key)
         }
         if (plugin.c) {
-          this.pluginChangelogs[key] = plugin.c
+          pluginChangelogs[key] = plugin.c
         }
       })
+
+      this.verifiedPlugins = verifiedPlugins
+      this.verifiedPlusPlugins = verifiedPlusPlugins
+      this.pluginIcons = pluginIcons
+      this.hiddenPlugins = hiddenPlugins
+      this.hiddenScopes = hiddenScopes
+      this.unmaintainedPlugins = unmaintainedPlugins
+      this.pluginAuthors = pluginAuthors
+      this.pluginNames = pluginNames
+      this.pluginChangelogs = pluginChangelogs
+      this.newScopePlugins = newScopePlugins
+      this.scopedPluginNames = scopedPluginNames
     } catch (e) {
       // Try again in 60 seconds
       this.pluginListRetryTimeout = setTimeout(() => this.loadPluginList(), 60000)
