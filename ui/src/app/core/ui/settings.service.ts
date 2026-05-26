@@ -175,10 +175,12 @@ export class SettingsService {
             iframeBody.style.color = '#000000 !important'
           }
 
-          // Notify iframe Angular app
+          // Theme update is a non-sensitive payload; use '*' as targetOrigin
+          // so cross-origin plugin iframes (which the same-origin string
+          // would silently skip) also receive it.
           iframe.contentWindow?.postMessage(
             { type: 'theme-update', isDark: this.actualLightingMode === 'dark', theme },
-            window.location.origin,
+            '*',
           )
         }
       } catch (e) {

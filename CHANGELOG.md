@@ -145,6 +145,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(auth): clear expired stored token quietly on bootstrap
 - fix(auth): cap the noauth-mode auto-reload retries per session
 - fix(auth): expose `tokenReady` so loginGuard waits for stored-token load
+- fix(settings): use `*` target origin for theme postMessage to plugin iframes
 
 ### Other Changes
 
