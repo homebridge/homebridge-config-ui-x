@@ -282,6 +282,20 @@ describe('HomebridgeIpcService (e2e)', () => {
         .rejects
         .toThrow('The Homebridge service did not respond')
     }, 10000)
+
+    it('cleans up the once-listener and timer when sendMessage throws', async () => {
+      const spy = vi.spyOn(ipcService, 'sendMessage').mockImplementation(() => {
+        throw new Error('IPC down')
+      })
+      try {
+        await expect(ipcService.requestResponse('foo', 'foo-response')).rejects.toThrow('IPC down')
+        // Without cleanup the once-listener would linger for 3 s and a
+        // later caller emitting `foo-response` would have it swallowed.
+        expect(ipcService.listenerCount('foo-response')).toBe(0)
+      } finally {
+        spy.mockRestore()
+      }
+    })
   })
 
   afterAll(async () => {

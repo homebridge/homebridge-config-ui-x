@@ -94,6 +94,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(plugins): strip secret-shaped env vars from npm spawn
 - fix(backup): write `config.json` atomically during restore
 - fix(plugins): build plugin-list caches in locals before swapping refs
+- fix(ipc): clean up `requestResponse` listener when `sendMessage` throws
 
 ### Other Changes
 

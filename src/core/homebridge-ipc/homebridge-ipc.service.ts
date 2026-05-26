@@ -87,7 +87,18 @@ export class HomebridgeIpcService extends EventEmitter {
 
       this.setMaxListeners(this.getMaxListeners() + 1)
       this.once(responseEvent, listener)
-      this.sendMessage(requestEvent)
+      try {
+        this.sendMessage(requestEvent)
+      } catch (e) {
+        // Without this cleanup the once-listener and timer would sit on
+        // the bus for 3 s and a later caller of `requestResponse` (or
+        // any handler that happened to emit `responseEvent` with stale
+        // data) would have its reply consumed by us instead.
+        clearTimeout(actionTimeout)
+        this.removeListener(responseEvent, listener)
+        this.setMaxListeners(this.getMaxListeners() - 1)
+        reject(e)
+      }
     })
   }
 
