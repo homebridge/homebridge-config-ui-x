@@ -125,6 +125,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(auth): clamp inactivity timer to the setTimeout 32-bit ms limit
 - fix(layout): throttle reconnect-driven checkToken to dampen restart storms
 - fix(config-editor): drop hard-coded `restartRequired` field from restart-info response
+- fix(setup): use `crypto.randomInt` for HomeKit PIN and bridge username
 
 ### Other Changes
 
