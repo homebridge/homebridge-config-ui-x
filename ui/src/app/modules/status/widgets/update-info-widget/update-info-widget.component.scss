@@ -6,6 +6,25 @@
   @media (max-width: 767px) {
     width: 100%;
   }
+
+  // The inline actions here (the package-name link, the "Update" / Node
+  // "unsupported" buttons, the v2-readiness info button) are Bootstrap .btn
+  // elements, which carry a 1px transparent top+bottom border. That makes them
+  // 2px taller than the plain text and anchors they sit beside. When a tile
+  // finishes loading, its name turns from plain text into a button (and an
+  // update action may appear), so the tile grew ~2px and nudged the tiles below
+  // it down. These are all borderless btn-link actions, so drop the border to
+  // keep the checking / up-to-date / update-available states the same height.
+  //
+  // .btn also forces font-weight: 400, but this widget lives inside a
+  // gridster-item (font-weight: 300), so a converted button renders heavier
+  // than the plain <a> links it sits beside (e.g. the Plugins link). These were
+  // all anchors that inherited 300 before they became buttons, so inherit the
+  // weight to keep every tile link matching the surrounding text.
+  .btn {
+    border-width: 0;
+    font-weight: inherit;
+  }
 }
 
 .hb-status-item-docker {

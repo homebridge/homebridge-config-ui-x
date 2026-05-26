@@ -75,6 +75,7 @@ export class UpdateInfoWidgetComponent implements OnInit {
   private io!: IoNamespace
   public packageVersion = this.$settings.env.packageVersion
   public homebridgeVersion = this.$settings.env.homebridgeVersion
+  public runningInDocker = this.$settings.env.runningInDocker
   public isAdmin = this.$auth.user.admin
   public nodeUpdatePolicy: NodeUpdatePolicy = 'all'
   public homebridgeUpdatePolicy: HomebridgeUpdatePolicy = 'all'
