@@ -787,15 +787,13 @@ export class ConfigEditorService implements OnApplicationBootstrap {
   }
 
   /**
-   * List config backups
+   * List config backups (newest first by timestamp suffix).
    */
   public async listConfigBackups() {
     const dirContents = await readdir(this.configService.configBackupPath)
 
     return dirContents
       .filter(x => x.match(RE_CONFIG_BACKUP))
-      .sort()
-      .reverse()
       .map((x) => {
         const ext = x.split('.')
         if (ext.length === 3 && !Number.isNaN(ext[2] as any)) {
@@ -809,6 +807,7 @@ export class ConfigEditorService implements OnApplicationBootstrap {
         }
       })
       .filter(x => x && !Number.isNaN(x.timestamp.getTime()))
+      .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime())
   }
 
   /**
@@ -899,8 +898,11 @@ export class ConfigEditorService implements OnApplicationBootstrap {
 
       const backups = dirContents
         .filter(x => x.match(RE_CONFIG_BACKUP))
-        .sort()
-        .reverse()
+        .sort((a, b) => {
+          const ta = Number.parseInt(a.split('.')[2], 10)
+          const tb = Number.parseInt(b.split('.')[2], 10)
+          return tb - ta
+        })
 
       // Move the last 100 to the new location
       for (const backupFileName of backups.splice(0, 100)) {

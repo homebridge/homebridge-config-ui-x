@@ -127,6 +127,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(config-editor): drop hard-coded `restartRequired` field from restart-info response
 - fix(setup): use `crypto.randomInt` for HomeKit PIN and bridge username
 - fix(server): validate cache file name on delete-cached-accessory endpoints
+- fix(config-editor): sort config backups by numeric timestamp
 
 ### Other Changes
 
