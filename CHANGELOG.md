@@ -116,6 +116,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(terminal): strip stacked socket listeners on terminal remount
 - fix(layout): tear down the app namespace socket on layout destroy
 - fix(restart): bind reconnect handler in RestartComponent to lifecycle
+- fix(schema-form): track `lastDataReference` on the internal-change skip path
 
 ### Other Changes
 

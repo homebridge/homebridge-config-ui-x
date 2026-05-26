@@ -46,8 +46,14 @@ export class SchemaFormComponent implements OnInit, OnDestroy {
     effect(() => {
       const newData = this.data()
 
-      // Skip update if we're processing a change from the form itself
+      // Skip update if we're processing a change from the form itself.
+      // Track the reference even on this branch so the next external
+      // input change is compared against what the input actually is now,
+      // not what it was before the internal write — otherwise the next
+      // effect tick would treat a no-op input as a fresh change and
+      // overwrite the form's in-flight state.
       if (this.processingInternalChange) {
+        this.lastDataReference = newData
         return
       }
 
