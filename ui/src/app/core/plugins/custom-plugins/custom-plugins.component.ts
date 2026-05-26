@@ -162,7 +162,7 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
 
     this.saveInProgress.set(true)
     try {
-      const response = await this.$api.post<{ config: any[], restartRequired: boolean, affectedBridges: ChildBridge[] }>(
+      const response = await this.$api.post<{ config: any[], affectedBridges: ChildBridge[] }>(
         `/config-editor/plugin/${encodeURIComponent(plugin.name)}?include=restart-info`,
         this.pluginConfig,
       )

@@ -1352,7 +1352,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
 
   private async saveConfig(config: HomebridgeConfig) {
     try {
-      const response = await this.$api.post<{ config: HomebridgeConfig, restartRequired: boolean, affectedBridges: ChildBridge[] }>(
+      const response = await this.$api.post<{ config: HomebridgeConfig, affectedBridges: ChildBridge[] }>(
         '/config-editor?include=restart-info',
         config,
       )

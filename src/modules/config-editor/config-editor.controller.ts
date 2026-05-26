@@ -52,7 +52,7 @@ export class ConfigEditorController {
   @UseGuards(AdminGuard)
   @ApiOperation({
     summary: 'Update the Homebridge `config.json` file.',
-    description: 'Pass `?include=restart-info` to receive `{ config, restartRequired, affectedBridges }` instead of the bare config — used by the editor to skip the follow-up `/status/homebridge/child-bridges` fetch after every save. Default response shape is unchanged.',
+    description: 'Pass `?include=restart-info` to receive `{ config, affectedBridges }` instead of the bare config — used by the editor to skip the follow-up `/status/homebridge/child-bridges` fetch after every save. Default response shape is unchanged.',
   })
   @ApiBody({ description: 'Homebridge config.json', type: 'json', isArray: false })
   @ApiQuery({
@@ -83,7 +83,7 @@ export class ConfigEditorController {
   @UseGuards(AdminGuard)
   @ApiOperation({
     summary: 'Replace the config for a specific plugin.',
-    description: 'An array of all config blocks for the plugin must be provided, missing blocks will be removed. Sending an empty array will remove all plugin config. Pass `?include=restart-info` to receive `{ config, restartRequired, affectedBridges }` with only this plugin\'s bridges in `affectedBridges` — the plugin settings modals use this to skip the follow-up `/status/homebridge/child-bridges` fetch.',
+    description: 'An array of all config blocks for the plugin must be provided, missing blocks will be removed. Sending an empty array will remove all plugin config. Pass `?include=restart-info` to receive `{ config, affectedBridges }` with only this plugin\'s bridges in `affectedBridges` — the plugin settings modals use this to skip the follow-up `/status/homebridge/child-bridges` fetch.',
   })
   @Post('/plugin/:pluginName')
   @ApiBody({ description: 'Array of plugin config blocks', type: 'json', isArray: true })
@@ -104,7 +104,7 @@ export class ConfigEditorController {
   @UseGuards(AdminGuard)
   @ApiOperation({
     summary: 'Mark a plugin as disabled.',
-    description: 'Pass `?include=restart-info` to receive `{ config, restartRequired, affectedBridges }` where `config` is the updated `disabledPlugins` array. Default response shape is unchanged.',
+    description: 'Pass `?include=restart-info` to receive `{ config, affectedBridges }` where `config` is the updated `disabledPlugins` array. Default response shape is unchanged.',
   })
   @ApiParam({ name: 'pluginName', type: 'string' })
   @ApiQuery({
@@ -125,7 +125,7 @@ export class ConfigEditorController {
   @UseGuards(AdminGuard)
   @ApiOperation({
     summary: 'Mark a plugin as enabled.',
-    description: 'Pass `?include=restart-info` to receive `{ config, restartRequired, affectedBridges }` where `config` is the updated `disabledPlugins` array. Default response shape is unchanged.',
+    description: 'Pass `?include=restart-info` to receive `{ config, affectedBridges }` where `config` is the updated `disabledPlugins` array. Default response shape is unchanged.',
   })
   @ApiParam({ name: 'pluginName', type: 'string' })
   @ApiQuery({

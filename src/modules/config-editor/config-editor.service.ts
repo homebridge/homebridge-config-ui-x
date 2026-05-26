@@ -25,7 +25,6 @@ import { PluginsService } from '../plugins/plugins.service.js'
 
 export interface ConfigEditorRestartInfo<T> {
   config: T
-  restartRequired: boolean
   affectedBridges: Awaited<ReturnType<ChildBridgesService['getChildBridges']>>
 }
 
@@ -722,7 +721,6 @@ export class ConfigEditorService implements OnApplicationBootstrap {
     }
     return {
       config: payload,
-      restartRequired: true,
       affectedBridges,
     }
   }
