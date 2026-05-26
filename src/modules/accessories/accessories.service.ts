@@ -76,8 +76,16 @@ export class AccessoriesService {
     }
 
     let services: (ServiceType | MatterService)[]
+    // Closure-scoped abort flag. `onEnd` flips this when the client
+    // disconnects so any in-flight `loadAllAccessories` / control
+    // requests can short-circuit at the next `await` boundary instead of
+    // burning IPC + HAP work whose result has nowhere to go.
+    let disconnected = false
 
     const loadAllAccessories = async (refresh: boolean) => {
+      if (disconnected) {
+        return
+      }
       if (!refresh) {
         const cached = this.accessoriesCache.get<(ServiceType | MatterService)[]>('services')
         if (cached && cached.length) {
@@ -87,6 +95,9 @@ export class AccessoriesService {
 
       // Load HAP accessories first
       const hapServices = await this.loadAccessories()
+      if (disconnected) {
+        return
+      }
       this.refreshCharacteristics(hapServices)
 
       // Emit HAP ready immediately so HAP accessories can be controlled
@@ -95,6 +106,9 @@ export class AccessoriesService {
 
       // Load Matter accessories (maybe slower due to IPC)
       const matterServices = await this.loadMatterAccessories()
+      if (disconnected) {
+        return
+      }
 
       // Emit Matter ready
       client.emit('matter-accessories-ready-for-control')
@@ -167,6 +181,7 @@ export class AccessoriesService {
 
     // Clean up on disconnect
     const onEnd = () => {
+      disconnected = true
       clearTimeout(secondaryLoadTimeout)
       client.removeAllListeners('end')
       client.removeAllListeners('disconnect')
