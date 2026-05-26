@@ -61,12 +61,14 @@ export class ChildBridgesService {
       this.$modal.open(RestartChildBridgesComponent, {
         size: 'lg',
         backdrop: 'static',
+        keyboard: false,
         injector,
       })
     } else {
       this.$modal.open(RestartHomebridgeComponent, {
         size: 'lg',
         backdrop: 'static',
+        keyboard: false,
       })
     }
   }

@@ -85,6 +85,7 @@ export class ManagePluginsService {
           this.$modal.open(RestartHomebridgeComponent, {
             size: 'lg',
             backdrop: 'static',
+            keyboard: false,
           })
         } else {
           await this.settings(result.plugin)
@@ -175,6 +176,7 @@ export class ManagePluginsService {
           this.$modal.open(RestartHomebridgeComponent, {
             size: 'lg',
             backdrop: 'static',
+            keyboard: false,
           })
         } else {
           await this.settings(result.plugin)

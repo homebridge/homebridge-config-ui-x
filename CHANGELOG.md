@@ -106,6 +106,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(accessories): keep live-update streams alive across reloads
 - fix(auth): global HTTP 401 interceptor triggers clean logout
 - fix(auth): invalidate token cache on cross-tab storage events
+- fix(layout): block ESC on version-mismatch and restart-required modals
 
 ### Other Changes
 
