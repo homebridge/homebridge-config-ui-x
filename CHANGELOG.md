@@ -144,6 +144,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(i18n): persist selected language to bootstrap before server settings
 - fix(auth): clear expired stored token quietly on bootstrap
 - fix(auth): cap the noauth-mode auto-reload retries per session
+- fix(auth): expose `tokenReady` so loginGuard waits for stored-token load
 
 ### Other Changes
 

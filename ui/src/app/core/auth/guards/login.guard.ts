@@ -15,6 +15,10 @@ export const loginGuard: CanActivateFn = async () => {
     await firstValueFrom($settings.onSettingsLoaded)
   }
 
+  // Wait for the bootstrap token load so isLoggedIn() reflects the stored
+  // token rather than the pre-load empty state.
+  await $auth.tokenReady
+
   if ($settings.env.setupWizardComplete === false) {
     // Redirect to set up wizard page
     void $router.navigate(['/setup'])
