@@ -283,6 +283,26 @@ describe('HomebridgeIpcService (e2e)', () => {
         .toThrow('The Homebridge service did not respond')
     }, 10000)
 
+    it('restartHomebridge logs when SIGTERM delivery is refused', async () => {
+      const mockProcess = new EventEmitter() as any
+      mockProcess.connected = true
+      mockProcess.send = vi.fn()
+      mockProcess.kill = vi.fn().mockReturnValue(false)
+      mockProcess.pid = 12345
+      ipcService.setHomebridgeProcess(mockProcess)
+
+      const errorSpy = vi.spyOn(ipcService['logger'], 'error')
+
+      try {
+        ipcService.restartHomebridge()
+        expect(mockProcess.kill).toHaveBeenCalledWith('SIGTERM')
+        expect(errorSpy).toHaveBeenCalledWith(expect.stringContaining('SIGTERM'))
+      } finally {
+        errorSpy.mockRestore()
+        mockProcess.emit('close')
+      }
+    })
+
     it('killHomebridge surfaces a failed kill() delivery as killFailed', async () => {
       const mockProcess = new EventEmitter() as any
       mockProcess.connected = true
