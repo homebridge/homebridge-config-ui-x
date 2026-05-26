@@ -135,6 +135,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(backup): return `+1` from scheduled-backups sort comparator
 - fix(hb-service): line-buffer Homebridge stdout/stderr to prevent log interleave
 - chore(terminal): drop per-byte debug logs from terminal service
+- fix(custom-plugins): attach custom-UI request handler before cleanup listeners
 
 ### Other Changes
 
