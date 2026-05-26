@@ -143,6 +143,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(login): default empty `target_route` to `/`
 - fix(i18n): persist selected language to bootstrap before server settings
 - fix(auth): clear expired stored token quietly on bootstrap
+- fix(auth): cap the noauth-mode auto-reload retries per session
 
 ### Other Changes
 
