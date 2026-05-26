@@ -134,6 +134,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(auth): throw `WsException` on WS guard auth failure
 - fix(backup): return `+1` from scheduled-backups sort comparator
 - fix(hb-service): line-buffer Homebridge stdout/stderr to prevent log interleave
+- chore(terminal): drop per-byte debug logs from terminal service
 
 ### Other Changes
 
