@@ -2427,7 +2427,7 @@ export class PluginsService {
       const pluginAuthors: Record<string, string> = {}
       const pluginNames: Record<string, string> = {}
       const pluginChangelogs: Record<string, string> = {}
-      const newScopePlugins: Record<string, string> = {}
+      const newScopePlugins: Record<string, PluginListNewScopeItem> = {}
       const scopedPluginNames: string[] = []
 
       Object.keys(pluginListData).forEach((key) => {
