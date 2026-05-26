@@ -60,7 +60,12 @@ export class LogService {
     // duplicate `tail-log` events attach two listeners to the shared native Tail
     // / spawn two child processes, and every line is delivered to the client
     // twice (see #2806). The matching `delete` happens in the per-method `onEnd`
-    // cleanups so we don't add extra `disconnect`/`end` listeners on the client.
+    // cleanups for paths that actually start a stream, or inline on the
+    // early-exit paths below (no log file / unreadable / not configured). If an
+    // early-exit path forgot to release the guard, the socket would stay
+    // "active" forever and every later `tail-log` on the same (reused) socket
+    // would be silently dropped — leaving the logs panel blank after the user
+    // navigates away and back (common in dev/watch, where no log file exists).
     if (this.activeClients.has(client)) {
       return
     }
@@ -82,6 +87,9 @@ export class LogService {
     } else {
       client.emit('stdout', red('Cannot show logs. The log option is not configured correctly in your Homebridge config.json file.\r\n\r\n'))
       client.emit('stdout', cyan('See https://homebridge.io/w/JtHrm for instructions or use hb-service.\r\n'))
+      // No stream was started here, so no `onEnd` will ever run to release the
+      // guard — release it now so a later `tail-log` on this socket isn't dropped.
+      this.activeClients.delete(client)
     }
   }
 
@@ -271,6 +279,11 @@ export class LogService {
       })
     } catch (e) {
       client.emit('stdout', red(`Failed to read log file: ${e.message}\n\r`))
+      // No tail was started (the file is missing or unreadable), so no `onEnd`
+      // will run to release the guard. Release it here, otherwise this socket
+      // stays in activeClients forever and every later `tail-log` on it is
+      // dropped — the logs panel goes blank after navigating away and back.
+      this.activeClients.delete(client)
       return
     }
 
