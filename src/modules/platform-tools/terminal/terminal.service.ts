@@ -188,8 +188,6 @@ export class TerminalService {
               output = injectedOutput
             }
 
-            this.logger.debug(`[${this.instanceId}] Terminal output: ${data.length} characters`)
-
             // Add to buffer for future clients
             TerminalService.terminalBuffer += output
 
@@ -200,7 +198,6 @@ export class TerminalService {
             }
 
             if (TerminalService.connectedClients.size > 0) {
-              this.logger.debug(`[${this.instanceId}] Sending output to ${TerminalService.connectedClients.size} connected clients`)
               TerminalService.connectedClients.forEach((client) => {
                 try {
                   client.emit('stdout', output)
@@ -271,9 +268,7 @@ export class TerminalService {
     this.logger.debug(`[${this.instanceId}] Adding stdin and resize listeners`)
 
     client.on('stdin', (data) => {
-      this.logger.debug(`[${this.instanceId}] Received stdin from client: ${data.length} characters`)
       if (TerminalService.persistentTerminal) {
-        this.logger.debug(`[${this.instanceId}] Writing to persistent terminal: ${data.length} characters`)
         TerminalService.persistentTerminal.write(data)
       } else {
         this.logger.warn(`[${this.instanceId}] No persistent terminal to write to!`)
