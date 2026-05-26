@@ -443,6 +443,33 @@ describe('BackupController (e2e)', { timeout: 10_000 }, () => {
     expect(res.json()[0]).toHaveProperty('timestamp')
   })
 
+  it('GET /backup/scheduled-backups (sorted newest first by id)', async () => {
+    await emptyDir(configService.instanceBackupPath)
+    const instanceId = configService.homebridgeConfig.bridge.username.replace(RE_COLON, '')
+
+    const timestamps = [1500000000000, 1700000000000, 1600000000000]
+    for (const ts of timestamps) {
+      await writeFile(
+        resolve(configService.instanceBackupPath, `homebridge-backup-${instanceId}.${ts}.tar.gz`),
+        'xyz',
+      )
+    }
+
+    const res = await app.inject({
+      method: 'GET',
+      path: '/backup/scheduled-backups',
+      headers: { authorization },
+    })
+
+    expect(res.statusCode).toBe(200)
+    const ids = res.json().map((b: any) => b.id)
+    expect(ids).toEqual([
+      `${instanceId}.1700000000000`,
+      `${instanceId}.1600000000000`,
+      `${instanceId}.1500000000000`,
+    ])
+  })
+
   it('GET /backup/scheduled-backups/:backupId', async () => {
     const scheduledBackups = (await app.inject({
       method: 'GET',

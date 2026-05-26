@@ -132,6 +132,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(hb-service): cache `isAvahiDaemonRunning` result for the install session
 - fix(installer): skip `chmod a+x` on Linux start when already executable
 - fix(auth): throw `WsException` on WS guard auth failure
+- fix(backup): return `+1` from scheduled-backups sort comparator
 
 ### Other Changes
 
