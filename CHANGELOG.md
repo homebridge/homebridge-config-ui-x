@@ -109,6 +109,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(layout): block ESC on version-mismatch and restart-required modals
 - fix(terminal): defer xterm FitAddon.fit() to next tick inside modals
 - fix(setup-wizard): reject oversized backup archives in the file picker
+- fix(settings): reject oversized wallpaper uploads in the file picker
 
 ### Other Changes
 

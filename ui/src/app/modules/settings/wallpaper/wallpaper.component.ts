@@ -46,7 +46,24 @@ export class WallpaperComponent implements OnInit {
   public onFileChange(event: Event): void {
     const files = (event.target as HTMLInputElement).files
     if (files?.length) {
-      this.selectedFile.set(files[0])
+      const file = files[0]
+      // Validate size before base64-encoding the bytes into a Data URL
+      // for preview — large images otherwise pin the renderer thread
+      // and then the server rejects the upload anyway.
+      if (file.size > globalThis.backup.maxBackupSize) {
+        ;(event.target as HTMLInputElement).value = ''
+        this.selectedFile.set(null)
+        this.wallpaperUrl.set(this.originalWallpaperUrl())
+        this.$toastr.error(
+          this.$translate.instant('backup.backup_exceeds_max_size', {
+            maxBackupSizeText: this.maxFileSizeText,
+            size: `${(file.size / (1024 * 1024)).toFixed(1)}MB`,
+          }),
+          this.$translate.instant('toast.title_error'),
+        )
+        return
+      }
+      this.selectedFile.set(file)
       const reader = new FileReader()
       reader.onload = (e: any) => {
         this.wallpaperUrl.set(e.target.result)
