@@ -1,5 +1,5 @@
 import { NgOptimizedImage } from '@angular/common'
-import { ChangeDetectionStrategy, Component, createEnvironmentInjector, effect, EnvironmentInjector, inject, input, OnDestroy, OnInit, Renderer2, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, createEnvironmentInjector, DestroyRef, effect, EnvironmentInjector, inject, input, OnDestroy, OnInit, Renderer2, signal } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { NavigationEnd, NavigationStart, Router, RouterLink, RouterLinkActive } from '@angular/router'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
@@ -29,6 +29,7 @@ import { SettingsService } from '@/app/core/ui/settings.service'
 })
 export class SidebarComponent implements OnInit, OnDestroy {
   private injector = inject(EnvironmentInjector)
+  private destroyRef = inject(DestroyRef)
   private $auth = inject(AuthService)
   private $authHelper = inject(AuthHelperService)
   private $settings = inject(SettingsService)
@@ -102,11 +103,16 @@ export class SidebarComponent implements OnInit, OnDestroy {
       }
     })
     let resizeTimeout: any
-    window.addEventListener('resize', () => {
+    const onResize = () => {
       clearTimeout(resizeTimeout)
       resizeTimeout = setTimeout(() => {
         this.updateListeners()
       }, 500)
+    }
+    window.addEventListener('resize', onResize)
+    this.destroyRef.onDestroy(() => {
+      clearTimeout(resizeTimeout)
+      window.removeEventListener('resize', onResize)
     })
 
     // Check authentication before navigation and ensure the menu closes when we navigate

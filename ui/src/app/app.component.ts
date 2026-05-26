@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, inject } from '@angular/core'
+import { ChangeDetectionStrategy, Component, DestroyRef, inject } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { NavigationError, Router, RouterOutlet } from '@angular/router'
 import { TranslateService } from '@ngx-translate/core'
@@ -16,6 +16,7 @@ export class AppComponent {
   private $translate = inject(TranslateService)
   private $settings = inject(SettingsService)
   private $router = inject(Router)
+  private destroyRef = inject(DestroyRef)
 
   constructor() {
     // Recover from chunk-load failures after a deploy: the router tries
@@ -39,6 +40,9 @@ export class AppComponent {
     }
     setLightingMode(colorSchemeQueryList)
     colorSchemeQueryList.addEventListener('change', setLightingMode)
+    this.destroyRef.onDestroy(() => {
+      colorSchemeQueryList.removeEventListener('change', setLightingMode)
+    })
 
     // This array needs to be updated each time a new translation is added
     const languages = [
