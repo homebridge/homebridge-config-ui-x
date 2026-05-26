@@ -151,8 +151,23 @@ export class AuthService {
       }
       this.logoutTimer = setTimeout(async () => {
         if (this.$settings.formAuth === false) {
-          await this.noauth()
-          window.location.reload()
+          // Guard the auto-reload with a per-session budget so a recurring
+          // failure (network down, server bouncing) can't trap the tab in
+          // an endless reload loop.
+          const COUNTER_KEY = 'uix.noauthReloadCount'
+          const RELOAD_BUDGET = 3
+          const count = Number(window.sessionStorage.getItem(COUNTER_KEY) ?? '0') + 1
+          if (count > RELOAD_BUDGET) {
+            console.warn('Skipping noauth re-login reload — retry budget exhausted this session.')
+            return
+          }
+          try {
+            await this.noauth()
+            window.sessionStorage.setItem(COUNTER_KEY, String(count))
+            window.location.reload()
+          } catch (e) {
+            console.warn('noauth re-login failed:', e)
+          }
         } else {
           this.logout()
         }
