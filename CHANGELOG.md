@@ -153,6 +153,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(search): focus the search input when opening the search bar
 - fix(accessories): skip matter ipc when matter isn't configured
 - fix(status): show all update-info tiles immediately on load
+- fix(log): release the tail-log guard on early exits so logs aren't blank after navigating
 
 ### Other Changes
 
