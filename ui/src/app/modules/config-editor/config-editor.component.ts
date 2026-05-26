@@ -1117,6 +1117,16 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
                                 pattern: '^(?:@[\\w-]+(?:\\.[\\w-]+)*/)?homebridge-[\\w-]+$',
                               },
                             },
+                            hideChildBridgeSetupFor: {
+                              type: 'array',
+                              title: this.$translate.instant('config.hide_child_bridge_setup'),
+                              description: 'A list of plugin names for which the "set up child bridge" recommendation icon will be hidden.',
+                              items: {
+                                type: 'string',
+                                title: this.$translate.instant('accessories.plugin'),
+                                pattern: '^(?:@[\\w-]+(?:\\.[\\w-]+)*/)?homebridge-[\\w-]+$',
+                              },
+                            },
                           },
                         },
                         nodeUpdatePolicy: {

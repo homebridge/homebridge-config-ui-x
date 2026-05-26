@@ -200,6 +200,21 @@ export class ConfigEditorController {
   }
 
   @UseGuards(AdminGuard)
+  @Get('/ui/plugins/hide-child-bridge-setup-for')
+  @ApiOperation({ summary: 'Get the plugins hide child-bridge-setup recommendation list.' })
+  getPluginsHideChildBridgeSetupFor(): Promise<string[]> {
+    return this.configEditorService.getPluginsHideChildBridgeSetupFor()
+  }
+
+  @UseGuards(AdminGuard)
+  @Put('/ui/plugins/hide-child-bridge-setup-for')
+  @ApiOperation({ summary: 'Update the plugins hide child-bridge-setup recommendation list.' })
+  @ApiBody({ description: 'Array of plugin names for which the set-up child bridge recommendation should be hidden.', type: 'json', isArray: true })
+  setPluginsHideChildBridgeSetupFor(@Body() { body }) {
+    return this.configEditorService.setPluginsHideChildBridgeSetupFor(body)
+  }
+
+  @UseGuards(AdminGuard)
   @Get('/ui/bridges/:username')
   @ApiOperation({ summary: 'Get a specific bridge configuration by username.' })
   @ApiParam({
