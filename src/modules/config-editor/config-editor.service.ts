@@ -458,18 +458,49 @@ export class ConfigEditorService implements OnApplicationBootstrap {
       throw new BadRequestException(`Property "${offending[0]}" contains a forbidden key segment.`)
     }
 
-    // 1. Get the current config for the Homebridge UI
-    const config = await this.getConfigFile()
-    const pluginConfig = config.platforms.find(x => x.platform === 'config')
+    // Read-modify-write inside the JsonFileStore's per-path mutex so
+    // two concurrent PATCH calls (multi-tab settings save, batched
+    // field edits) can't both load the same baseline and clobber each
+    // other on write. The mutator runs synchronously inside the lock;
+    // the mutate() call also handles the atomic write-temp/fsync/
+    // rename and the rotating backup snapshot.
+    await this.ready
+    const now = new Date()
+    await this.jsonStore.mutate<HomebridgeConfig>(
+      this.configService.configPath,
+      (config) => {
+        if (!config) {
+          config = {} as HomebridgeConfig
+        }
+        if (!config.platforms || !Array.isArray(config.platforms)) {
+          config.platforms = []
+        }
+        let pluginConfig = config.platforms.find(x => x.platform === 'config') as PlatformConfig | undefined
+        if (!pluginConfig) {
+          pluginConfig = { platform: 'config' } as PlatformConfig
+          config.platforms.push(pluginConfig)
+        }
+        for (const [property, value] of entries) {
+          this.applyPropertyToPluginConfig(pluginConfig, property, value)
+        }
+        config.platforms[config.platforms.findIndex(x => x.platform === 'config')] = this.cleanUpUiConfig(pluginConfig)
+        // Restart-command allowlist runs on the same chokepoint as the
+        // full-config save path so a crafted PATCH can't smuggle an
+        // unsafe `ui.restart` value past the runtime guard.
+        this.assertRestartCommandsSafe(config)
+        return config
+      },
+      {
+        spaces: 4,
+        backupTo: resolve(this.configService.configBackupPath, `config.json.${now.getTime().toString()}`),
+      },
+    )
 
-    // 2. Apply each property; supports dot notation for nested keys.
-    for (const [property, value] of entries) {
-      this.applyPropertyToPluginConfig(pluginConfig, property, value)
-    }
-
-    // 3. Clean and save the UI config block (single disk write)
-    config.platforms[config.platforms.findIndex(x => x.platform === 'config')] = this.cleanUpUiConfig(pluginConfig)
-    await this.updateConfigFile(config)
+    // Re-parse the saved config into the runtime config service so
+    // subsequent reads reflect the patched UI block.
+    const updatedConfig = await this.getConfigFile()
+    this.configService.parseConfig(JSON.parse(JSON.stringify(updatedConfig)))
+    this.logger.log('Changes to config.json saved.')
 
     // If the scheduled-backup toggle changed, re-register the cron
     // immediately. Otherwise the scheduler keeps using the value
