@@ -891,7 +891,7 @@ describe('ConfigEditorController (e2e)', () => {
       expect(res.statusCode).toBe(201)
       const body = res.json()
       expect(body).toHaveProperty('config')
-      expect(body).toHaveProperty('restartRequired', true)
+      expect(body).not.toHaveProperty('restartRequired')
       expect(body.config.bridge.name).toBe('Restart Name')
       expect(body.affectedBridges).toHaveLength(2)
     })
@@ -931,7 +931,7 @@ describe('ConfigEditorController (e2e)', () => {
 
       expect(res.statusCode).toBe(201)
       const body = res.json()
-      expect(body.restartRequired).toBe(true)
+      expect(body.restartRequired).toBeUndefined()
       expect(body.affectedBridges).toHaveLength(1)
       expect(body.affectedBridges[0].plugin).toBe('homebridge-mock-plugin')
       expect(Array.isArray(body.config)).toBe(true)
@@ -953,7 +953,7 @@ describe('ConfigEditorController (e2e)', () => {
 
       expect(res.statusCode).toBe(200)
       const body = res.json()
-      expect(body.restartRequired).toBe(true)
+      expect(body.restartRequired).toBeUndefined()
       expect(body.affectedBridges).toHaveLength(1)
       expect(body.affectedBridges[0].plugin).toBe('homebridge-mock-plugin')
       expect(body.config).toEqual([])
@@ -971,7 +971,7 @@ describe('ConfigEditorController (e2e)', () => {
 
       expect(res.statusCode).toBe(200)
       const body = res.json()
-      expect(body.restartRequired).toBe(true)
+      expect(body.restartRequired).toBeUndefined()
       // The plugin's bridges must still be present in affectedBridges even though
       // the plugin is now disabled — captured from the pre-mutation snapshot.
       expect(body.affectedBridges).toHaveLength(1)
