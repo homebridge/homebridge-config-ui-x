@@ -141,6 +141,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(layout): clean up color-scheme and sidebar resize listeners on destroy
 - fix(config-editor): guard `_bridge?.username` before `.toUpperCase()`
 - fix(login): default empty `target_route` to `/`
+- fix(i18n): persist selected language to bootstrap before server settings
 
 ### Other Changes
 

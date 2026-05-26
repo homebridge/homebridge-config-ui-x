@@ -89,7 +89,21 @@ export class AppComponent {
         this.$settings.rtl = rtlLanguages.includes(this.$translate.getCurrentLang())
       })
 
-    const browserLang = languages.find(x => x === this.$translate.getBrowserLang() || x === this.$translate.getBrowserCultureLang())
+    // Prefer the last user-selected language (persisted in localStorage) so
+    // bootstrap renders in the chosen locale before the server settings
+    // arrive; fall back to the browser-detected language.
+    let storedLang: string | undefined
+    try {
+      storedLang = window.localStorage.getItem('uix.lang') || undefined
+    } catch {
+      // ignored
+    }
+    if (storedLang && storedLang !== 'auto' && !languages.includes(storedLang)) {
+      storedLang = undefined
+    }
+    const browserLang = storedLang && storedLang !== 'auto'
+      ? storedLang
+      : languages.find(x => x === this.$translate.getBrowserLang() || x === this.$translate.getBrowserCultureLang())
 
     // Load all translations asynchronously
     void this.loadTranslations(languages, browserLang)

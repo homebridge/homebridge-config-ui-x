@@ -198,8 +198,18 @@ export class SettingsService {
   public setLang(lang: string) {
     if (lang) {
       this.$translate.use(lang)
+      try {
+        window.localStorage.setItem('uix.lang', lang)
+      } catch {
+        // Some private-browsing modes block localStorage writes; ignore.
+      }
     } else {
       lang = 'auto'
+      try {
+        window.localStorage.removeItem('uix.lang')
+      } catch {
+        // ignored
+      }
     }
     this.env.lang = lang
   }
