@@ -1,5 +1,6 @@
 import { NgOptimizedImage } from '@angular/common'
-import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit, signal } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { AbstractControl, FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { Title } from '@angular/platform-browser'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
@@ -36,6 +37,7 @@ export class SetupWizardComponent implements OnInit {
   private $toastr = inject(ToastrService)
   private $translate = inject(TranslateService)
   private $ws = inject(WsService)
+  private destroyRef = inject(DestroyRef)
 
   // Signals
   public readonly step = signal<'welcome' | 'create-account' | 'setup-complete' | 'restore-backup' | 'restoring' | 'restarting' | 'restore-complete'>('welcome')
@@ -225,17 +227,19 @@ export class SetupWizardComponent implements OnInit {
       await new Promise(resolve => setTimeout(resolve, 3000))
       this.progress.set(99)
 
-      const sub = interval(1000).subscribe(async () => {
-        try {
-          await this.$api.get('/auth/settings')
-          sub.unsubscribe()
-          this.progress.set(100)
-          this.restoreUploading.set(false)
-          this.step.set('restore-complete')
-        } catch {
-          // not up yet
-        }
-      })
+      const sub = interval(1000)
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe(async () => {
+          try {
+            await this.$api.get('/auth/settings')
+            sub.unsubscribe()
+            this.progress.set(100)
+            this.restoreUploading.set(false)
+            this.step.set('restore-complete')
+          } catch {
+            // not up yet
+          }
+        })
     } catch (error: any) {
       console.error(error)
       this.restoreUploading.set(false)
