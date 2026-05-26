@@ -144,10 +144,7 @@ export class LogsComponent implements OnInit, OnDestroy, CanComponentDeactivate 
       this.$log.clearSearchFilter()
     } else {
       this.showSearchBar.set(true)
-      const input = this.searchInput()
-      if (input) {
-        setTimeout(() => input.nativeElement.focus(), 10)
-      }
+      setTimeout(() => this.searchInput()?.nativeElement.focus(), 10)
     }
     setTimeout(() => this.resizeEvent.next(undefined), 10)
     this.$log.scrollToBottom()
