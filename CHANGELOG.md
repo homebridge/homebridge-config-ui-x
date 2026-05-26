@@ -102,6 +102,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(plugins): reject dynamic schema paths that escape `storagePath`
 - fix(status): skip post-unsubscribe emit on disconnected stats clients
 - fix(plugins): validate plugin version regex on install/update DTO
+- fix(accessories): drop double-subscribe in lock-mechanism slider
 
 ### Other Changes
 

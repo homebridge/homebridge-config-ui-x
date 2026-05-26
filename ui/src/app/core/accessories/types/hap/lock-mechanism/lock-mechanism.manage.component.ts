@@ -6,7 +6,7 @@ import { FormsModule } from '@angular/forms'
 import { TranslatePipe } from '@ngx-translate/core'
 import { NouisliderComponent } from 'ng2-nouislider'
 import { Subject, timer } from 'rxjs'
-import { distinctUntilChanged, takeUntil } from 'rxjs/operators'
+import { takeUntil } from 'rxjs/operators'
 
 import { BaseManageComponent } from '@/app/core/accessories/types/base-manage.component'
 import { DurationPipe } from '@/app/core/pipes/duration.pipe'
@@ -39,14 +39,6 @@ export class LockMechanismManageComponent extends BaseManageComponent {
     }
 
     if (this.serviceManagement) {
-      this.targetLockManagementAutoSecurityTimeoutChanged
-        .pipe(
-          distinctUntilChanged(),
-        )
-        .subscribe(() => {
-          void this.serviceManagement.getCharacteristic!('LockManagementAutoSecurityTimeout').setValue!(this.targetLockManagementAutoSecurityTimeout.value)
-        })
-
       this.createDebouncedSubscription(
         this.targetLockManagementAutoSecurityTimeoutChanged,
         () => {
