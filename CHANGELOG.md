@@ -170,6 +170,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - chore(api): validate port-range bodies with a class-validator DTO
 - test(audit): cover audit coverage gaps and close concurrent-PATCH race they exposed
 - chore(test): use type cast for private logger spy
+- fix(matter): type fabricId and nodeId as strings
 
 ### Homebridge Dependencies
 

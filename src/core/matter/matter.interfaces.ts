@@ -120,14 +120,18 @@ export interface MatterStateUpdate {
 }
 
 /**
- * Minimal representation of a Matter fabric
+ * Minimal representation of a Matter fabric.
+ *
+ * `fabricId` and `nodeId` are strings because Matter IDs are 64-bit and
+ * would lose precision as Number — they arrive from Homebridge core
+ * already stringified for safe IPC/JSON transport.
  */
 export interface MatterFabric {
   fabricIndex: number
   label?: string
   vendorId?: number
-  fabricId?: number
-  nodeId?: number
+  fabricId?: string
+  nodeId?: string
 }
 
 /**
