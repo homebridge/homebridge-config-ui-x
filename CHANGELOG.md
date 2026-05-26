@@ -92,6 +92,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(accessories): show lightbulb modal when adaptive lighting is absent
 - fix(config-editor): reject prototype-chain keys in UI property patch
 - fix(plugins): strip secret-shaped env vars from npm spawn
+- fix(backup): write `config.json` atomically during restore
 
 ### Other Changes
 
