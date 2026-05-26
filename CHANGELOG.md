@@ -101,6 +101,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(backup): only self-kill the UI after Homebridge SIGKILL is delivered
 - fix(plugins): reject dynamic schema paths that escape `storagePath`
 - fix(status): skip post-unsubscribe emit on disconnected stats clients
+- fix(plugins): validate plugin version regex on install/update DTO
 
 ### Other Changes
 
