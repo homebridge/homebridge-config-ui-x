@@ -34,6 +34,10 @@ export class AccessoriesService {
   private matterMonitoringActive = false
   private matterUpdateListener: ((event: MatterEvent) => void) | null = null
   private activeClients = new Set<Socket>()
+  // Per-socket reload entry point. Lets a repeat `get-accessories` for an
+  // already-connected socket re-fetch data instead of stacking a second set
+  // of listeners/timers on top of the live session.
+  private clientSessions = new Map<Socket, { reload: () => Promise<void> }>()
   private matterAccessories: MatterService[] = []
   // Single shared dispatcher for `matterEvent` IPC replies. Each in-flight
   // request stores `{ eventType, resolve, reject, timer }` keyed by its
@@ -67,13 +71,21 @@ export class AccessoriesService {
       return
     }
 
-    // Track this client
-    this.activeClients.add(client)
-
-    // If this is the first client, start Matter monitoring
-    if (this.activeClients.size === 1) {
-      await this.startMatterMonitoring()
+    // If this socket already has a live session, reload its data instead of
+    // wiring up a second set of listeners/timers. A client that re-emits
+    // `get-accessories` (e.g. a reconnect the server didn't observe as a
+    // disconnect) would otherwise stack handlers on the shared hapClient and
+    // characteristic monitor, multiplying the work done per update.
+    // `activeClients` membership is the synchronous guard: it is set below
+    // before the first `await`, so a racing repeat `get-accessories` still
+    // short-circuits here.
+    if (this.activeClients.has(client)) {
+      await this.clientSessions.get(client)?.reload()
+      return
     }
+
+    // Track this client (synchronous — closes the race in the guard above)
+    this.activeClients.add(client)
 
     let services: (ServiceType | MatterService)[]
     // Closure-scoped abort flag. `onEnd` flips this when the client
@@ -119,6 +131,15 @@ export class AccessoriesService {
       // Merge both for caching and legacy compatibility
       services = [...hapServices, ...matterServices]
       this.accessoriesCache.set('services', services)
+    }
+
+    // Expose this session's reload so a repeat `get-accessories` for this same
+    // socket re-fetches in place rather than re-registering listeners.
+    this.clientSessions.set(client, { reload: () => loadAllAccessories(true) })
+
+    // If this is the first client, start Matter monitoring
+    if (this.activeClients.size === 1) {
+      await this.startMatterMonitoring()
     }
 
     // Initial load
@@ -183,6 +204,7 @@ export class AccessoriesService {
     const onEnd = () => {
       disconnected = true
       clearTimeout(secondaryLoadTimeout)
+      this.clientSessions.delete(client)
       client.removeAllListeners('end')
       client.removeAllListeners('disconnect')
       client.removeAllListeners('accessory-control')
