@@ -129,12 +129,17 @@ export class HomebridgeIpcService extends EventEmitter {
     }
 
     this.logger.log('Sending SIGTERM to Homebridge...')
-    this.homebridge.kill('SIGTERM')
+    if (!this.homebridge.kill('SIGTERM')) {
+      this.logger.error('Failed to deliver SIGTERM to Homebridge — process may already be gone or kill() was refused.')
+    }
 
     this.pendingShutdownTimer = setTimeout(() => {
       try {
         this.logger.warn('Sending SIGKILL to Homebridge...')
-        this.homebridge.kill('SIGKILL')
+        if (!this.homebridge.kill('SIGKILL')) {
+          this.logger.error('Failed to deliver SIGKILL to Homebridge — process may already be gone or kill() was refused.')
+          this.emit('serverStatusUpdate', { status: 'killFailed' })
+        }
       } catch (e: any) {
         this.logger.error(`Failed to deliver SIGKILL to Homebridge: ${e.message}.`)
         this.emit('serverStatusUpdate', { status: 'killFailed' })

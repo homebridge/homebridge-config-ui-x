@@ -128,6 +128,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(setup): use `crypto.randomInt` for HomeKit PIN and bridge username
 - fix(server): validate cache file name on delete-cached-accessory endpoints
 - fix(config-editor): sort config backups by numeric timestamp
+- fix(ipc): log when SIGTERM/SIGKILL delivery to Homebridge is refused
 
 ### Other Changes
 
