@@ -137,6 +137,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - chore(terminal): drop per-byte debug logs from terminal service
 - fix(custom-plugins): attach custom-UI request handler before cleanup listeners
 - fix(ws): cap socket.io reconnect attempts and delay
+- fix(status): surface dashboard init errors as a toast
 
 ### Other Changes
 

@@ -4,6 +4,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap/tooltip'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { Gridster, GridsterConfig, GridsterItem, GridsterItemConfig } from 'angular-gridster2'
+import { ToastrService } from 'ngx-toastr'
 import { firstValueFrom, Subject } from 'rxjs'
 
 import { AuthService } from '@/app/core/auth/auth.service'
@@ -46,6 +47,7 @@ export class StatusComponent implements OnInit, OnDestroy {
   private $navigationGuard = inject(TerminalNavigationGuardService)
   private $notification = inject(NotificationService)
   private $settings = inject(SettingsService)
+  private $toastr = inject(ToastrService)
   private $translate = inject(TranslateService)
   private $ws = inject(WsService)
   private readonly isUnlocked = signal(false)
@@ -551,11 +553,19 @@ export class StatusComponent implements OnInit, OnDestroy {
    * `get-raspberry-pi-throttled-status` pair.
    */
   private loadDashboardInit() {
-    this.io.request('get-dashboard-init').subscribe((response: any) => {
-      if (response?.rpiThrottled) {
-        this.$notification.raspberryPiThrottled.set(response.rpiThrottled)
-      }
-      this.applyDashboardLayout(response?.layout ?? [])
+    this.io.request('get-dashboard-init').subscribe({
+      next: (response: any) => {
+        if (response?.rpiThrottled) {
+          this.$notification.raspberryPiThrottled.set(response.rpiThrottled)
+        }
+        this.applyDashboardLayout(response?.layout ?? [])
+      },
+      error: () => {
+        this.$toastr.error(
+          this.$translate.instant('toast.api_error_generic'),
+          this.$translate.instant('toast.title_error'),
+        )
+      },
     })
   }
 
