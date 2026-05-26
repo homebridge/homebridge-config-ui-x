@@ -14,6 +14,7 @@ import type { BasePlatform } from './base-platform.js'
 
 import { Buffer } from 'node:buffer'
 import { execFileSync, execSync, fork } from 'node:child_process'
+import { randomInt } from 'node:crypto'
 import { chownSync, createReadStream, createWriteStream, existsSync } from 'node:fs'
 import { mkdtemp, open, readFile, rename, stat } from 'node:fs/promises'
 import { arch, cpus, homedir, platform, release, tmpdir, type } from 'node:os'
@@ -930,7 +931,7 @@ export class HomebridgeServiceHelper {
    * Generates a new random pin
    */
   private generatePin() {
-    let code: string | Array<any> = `${Math.floor(10000000 + Math.random() * 90000000)}`
+    let code: string | Array<any> = `${randomInt(10000000, 100000000)}`
     code = code.split('')
     code.splice(3, 0, '-')
     code.splice(6, 0, '-')
@@ -945,8 +946,8 @@ export class HomebridgeServiceHelper {
     const hexDigits = '0123456789ABCDEF'
     let username = '0E:'
     for (let i = 0; i < 5; i += 1) {
-      username += hexDigits.charAt(Math.round(Math.random() * 15))
-      username += hexDigits.charAt(Math.round(Math.random() * 15))
+      username += hexDigits.charAt(randomInt(0, 16))
+      username += hexDigits.charAt(randomInt(0, 16))
       if (i !== 4) {
         username += ':'
       }
@@ -958,7 +959,7 @@ export class HomebridgeServiceHelper {
    * Generate a random port for Homebridge
    */
   private async generatePort() {
-    const randomPort = () => Math.floor(Math.random() * (52000 - 51000 + 1) + 51000)
+    const randomPort = () => randomInt(51000, 52001)
 
     let port = randomPort()
     while (await tcpCheck(port)) {
