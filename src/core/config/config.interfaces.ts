@@ -124,6 +124,7 @@ export interface HomebridgeUiConfig {
   plugins?: {
     hideUpdatesFor?: string[]
     showBetasFor?: string[]
+    hideChildBridgeSetupFor?: string[]
   }
   nodeUpdatePolicy?: 'all' | 'none' | 'major'
   homebridgeUpdatePolicy?: 'all' | 'beta' | 'major' | 'none'

@@ -416,27 +416,39 @@ export class PluginsComponent implements OnInit, OnDestroy, CanComponentDeactiva
   }
 
   private sortPlugins(plugins: Plugin[]): Plugin[] {
+    const recommendChildBridges = this.$settings.env.recommendChildBridges
+    const hideChildBridgeSetupFor = this.$settings.env.plugins?.hideChildBridgeSetupFor ?? []
+
+    // True when a plugin shouldn't be nudged toward a child bridge — either it
+    // already runs on one, or the user opted it out via `hideChildBridgeSetupFor`.
+    // Such plugins sink below ones that still need setting up, so we only keep a
+    // plugin prioritised when it's both not on a child bridge AND not opted out
+    // (and only while child-bridge recommendations are enabled at all).
+    const deprioritiseChildBridge = (plugin: Plugin): boolean =>
+      recommendChildBridges
+      && (plugin.hasChildBridges || hideChildBridgeSetupFor.includes(plugin.name))
+
     // Multi-criteria sorting
     // Priority 1: updateAvailable (=true)
     // Priority 2: newHbScope (=true)
     // Priority 3: disabled (=false)
     // Priority 4: isConfigured (=false) - unconfigured plugins need setup
     // Priority 5: hasChildBridgesUnpaired (=true) - unpaired bridges need pairing
-    // Priority 6: hasChildBridges (=false)
+    // Priority 6: needs child bridge setup (not on a bridge and not opted out)
     return [...plugins].sort((a, b) => {
       const aScore = (a.updateAvailable ? 1000 : 0)
         + (a.newHbScope ? 100 : 0)
         + (a.disabled ? -10 : 0)
         + (a.isConfigured ? -20 : 0)
         + (a.hasChildBridgesUnpaired ? 5 : 0)
-        + (a.hasChildBridges && this.$settings.env.recommendChildBridges ? -1 : 0)
+        + (deprioritiseChildBridge(a) ? -1 : 0)
 
       const bScore = (b.updateAvailable ? 1000 : 0)
         + (b.newHbScope ? 100 : 0)
         + (b.disabled ? -10 : 0)
         + (b.isConfigured ? -20 : 0)
         + (b.hasChildBridgesUnpaired ? 5 : 0)
-        + (b.hasChildBridges && this.$settings.env.recommendChildBridges ? -1 : 0)
+        + (deprioritiseChildBridge(b) ? -1 : 0)
 
       // Compare scores first, then fallback to name
       return aScore !== bScore ? bScore - aScore : a.name.localeCompare(b.name)
@@ -487,6 +499,7 @@ export class PluginsComponent implements OnInit, OnDestroy, CanComponentDeactiva
         plugin.recommendChildBridge = plugin.isConfigured
           && this.$settings.env.recommendChildBridges
           && !['homebridge', 'homebridge-config-ui-x'].includes(plugin.name)
+          && !this.$settings.env.plugins?.hideChildBridgeSetupFor?.includes(plugin.name)
 
         plugin.hasChildBridges = plugin.isConfigured && configBlocks.some(x => x._bridge && x._bridge.username)
         plugin.hasExternalAccessories = externalsFeatureEnabled && externalPluginNames.has(plugin.name)

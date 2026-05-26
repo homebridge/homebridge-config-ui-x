@@ -75,12 +75,14 @@ export class PluginBridgeComponent implements OnInit {
   public readonly showAdvanced = signal(false)
   public readonly globalDebug = signal<string>('')
   public readonly globalNodeOptions = signal<string>('')
+  public readonly hideChildBridgeSetup = signal<boolean>(false)
 
   // 6. Other Properties
   private matterExplicitlyDisabledBeforeChildBridge: Set<number> = new Set()
   private bridgeConfigs = new Map<string, BridgeConfig>()
   private originalScheduledRestartCrons = new Map<string, string | null>()
   private originalHideAlerts = new Map<string, { hideHapAlert?: boolean, hideMatterAlert?: boolean }>()
+  private originalHideChildBridgeSetup = false
   public readonly bridgeCache = signal<Map<number, Record<string, any>>>(new Map())
   public readonly originalBridges = signal<any[]>([])
   public readonly deviceInfo = signal<Map<string, DeviceInfo | false>>(new Map())
@@ -183,6 +185,9 @@ export class PluginBridgeComponent implements OnInit {
     try {
       await Promise.all([this.getPluginType(), this.loadPluginConfig(), this.loadBridgeConfigs(), this.loadGlobalStartupSettings()])
       this.canShowBridgeDebug.set(this.$settings.isFeatureEnabled('childBridgeDebugMode'))
+      const initialHideSetup = !!this.plugin && !!this.$settings.env.plugins?.hideChildBridgeSetupFor?.includes(this.plugin.name)
+      this.hideChildBridgeSetup.set(initialHideSetup)
+      this.originalHideChildBridgeSetup = initialHideSetup
     } catch (error) {
       console.error('Failed to initialize:', error)
       const message = error instanceof Error ? error.message : 'Failed to initialize component'
@@ -950,10 +955,20 @@ export class PluginBridgeComponent implements OnInit {
       // Check what has changed
       const cronHasChanged = this.hasScheduledRestartCronChanged()
       const hideAlertsChanged = this.hasHideAlertsChanged()
+      const hideChildBridgeSetupChanged = this.hasHideChildBridgeSetupChanged()
       const bridgeConfigChanged = this.hasBridgeConfigChanged()
       const bridgesDeleted = this.deleteBridges().length > 0 || this.deleteMatterBridges().length > 0
-      const nothingChanged = !cronHasChanged && !hideAlertsChanged && !bridgeConfigChanged && !bridgesDeleted
-      const onlyHideAlertsChanged = hideAlertsChanged && !cronHasChanged && !bridgeConfigChanged && !bridgesDeleted
+      const nothingChanged = !cronHasChanged && !hideAlertsChanged && !hideChildBridgeSetupChanged && !bridgeConfigChanged && !bridgesDeleted
+      const onlyHideAlertsChanged = (hideAlertsChanged || hideChildBridgeSetupChanged) && !cronHasChanged && !bridgeConfigChanged && !bridgesDeleted
+
+      // Save the per-plugin "hide set-up recommendation" toggle if it changed
+      if (hideChildBridgeSetupChanged) {
+        try {
+          await this.saveHideChildBridgeSetup()
+        } catch (error) {
+          console.error(error)
+        }
+      }
 
       // Save hide alert settings only for bridges that changed and are not being deleted
       for (const [username, bridgeConfig] of this.bridgeConfigs.entries()) {
@@ -1128,6 +1143,14 @@ export class PluginBridgeComponent implements OnInit {
   }
 
   /**
+   * Toggle hiding of the "set up child bridge" recommendation for this plugin
+   * (will be saved when modal is saved).
+   */
+  public toggleHideChildBridgeSetup(): void {
+    this.hideChildBridgeSetup.update(v => !v)
+  }
+
+  /**
    * Toggle hiding of unpairing alert for a specific bridge protocol (will be saved when modal is saved)
    */
   public toggleHideUnpairing(username: string, protocol: 'hap' | 'matter'): void {
@@ -1221,8 +1244,17 @@ export class PluginBridgeComponent implements OnInit {
   private hasBridgeConfigChanged(): boolean {
     const configBlocks = this.configBlocks()
 
-    // Check if number of config blocks changed
-    if (configBlocks.length !== this.originalBridges().length) {
+    // Compare against the count of UNIQUE bridge usernames currently in the
+    // config blocks. `originalBridges` only stores one entry per unique bridge
+    // (linked accessory blocks share a single bridge), so comparing the raw
+    // `configBlocks.length` to it falsely reports "changed" both for plugins
+    // without any child bridge AND for plugins with linked accessory blocks.
+    const currentBridgeUsernames = new Set(
+      configBlocks
+        .filter(b => b._bridge && b._bridge.username)
+        .map(b => b._bridge.username),
+    )
+    if (currentBridgeUsernames.size !== this.originalBridges().length) {
       return true
     }
 
@@ -1308,6 +1340,31 @@ export class PluginBridgeComponent implements OnInit {
       }
     }
     return false
+  }
+
+  private hasHideChildBridgeSetupChanged(): boolean {
+    return this.hideChildBridgeSetup() !== this.originalHideChildBridgeSetup
+  }
+
+  private async saveHideChildBridgeSetup(): Promise<void> {
+    const plugin = this.plugin
+    if (!plugin) {
+      return
+    }
+
+    const wantHidden = this.hideChildBridgeSetup()
+    const currentList = this.$settings.env.plugins?.hideChildBridgeSetupFor || []
+    let nextList = [...currentList]
+
+    if (wantHidden && !nextList.includes(plugin.name)) {
+      nextList = [...nextList, plugin.name].sort((a, b) => a.localeCompare(b))
+    } else if (!wantHidden) {
+      nextList = nextList.filter(x => x !== plugin.name)
+    }
+
+    await this.$api.put('/config-editor/ui/plugins/hide-child-bridge-setup-for', { body: nextList })
+    this.$settings.setEnvItem('plugins.hideChildBridgeSetupFor', nextList)
+    this.originalHideChildBridgeSetup = wantHidden
   }
 
   /**

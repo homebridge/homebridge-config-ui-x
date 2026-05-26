@@ -217,6 +217,7 @@ export class ConfigService {
         plugins: {
           hideUpdatesFor: this.ui.plugins?.hideUpdatesFor || [],
           showBetasFor: this.ui.plugins?.showBetasFor || [],
+          hideChildBridgeSetupFor: this.ui.plugins?.hideChildBridgeSetupFor || [],
         },
         nodeUpdatePolicy: this.ui.nodeUpdatePolicy || 'all',
         homebridgeUpdatePolicy: this.ui.homebridgeUpdatePolicy || 'all',

@@ -586,6 +586,33 @@ export class ConfigEditorService implements OnApplicationBootstrap {
   }
 
   /**
+   * Get the plugin hide child-bridge-setup recommendation list
+   */
+  public async getPluginsHideChildBridgeSetupFor(): Promise<string[]> {
+    const config = await this.getConfigFile()
+    const pluginConfig = config.platforms.find(x => x.platform === 'config')
+    return pluginConfig?.plugins?.hideChildBridgeSetupFor || []
+  }
+
+  /**
+   * Set the plugin hide child-bridge-setup recommendation list (this request is not partial)
+   */
+  public async setPluginsHideChildBridgeSetupFor(value: string[]) {
+    const config = await this.getConfigFile()
+    const pluginConfig = config.platforms.find(x => x.platform === 'config')
+
+    if (!pluginConfig.plugins) {
+      pluginConfig.plugins = {}
+    }
+    pluginConfig.plugins.hideChildBridgeSetupFor = (value || [])
+      .filter(x => typeof x === 'string' && x.trim() !== '' && RE_PLUGIN_NAME.test(x.trim()))
+      .map(x => x.trim().toLowerCase())
+
+    config.platforms[config.platforms.findIndex(x => x.platform === 'config')] = this.cleanUpUiConfig(pluginConfig)
+    await this.updateConfigFile(config)
+  }
+
+  /**
    * Get a specific bridge configuration by username
    * Returns an object with username and boolean flags (defaults to false if not set)
    */
