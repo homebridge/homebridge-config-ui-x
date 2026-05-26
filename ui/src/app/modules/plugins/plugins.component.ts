@@ -10,6 +10,7 @@ import { Observable } from 'rxjs'
 
 import { AuthService } from '@/app/core/auth/auth.service'
 import { PluginsCacheService } from '@/app/core/caching/plugins-cache.service'
+import { ServerPairingsCacheService } from '@/app/core/caching/server-pairings-cache.service'
 import { ApiService } from '@/app/core/communication/api.service'
 import { IoNamespace, WsService } from '@/app/core/communication/ws.service'
 import { RestartHomebridgeComponent } from '@/app/core/components/restart-homebridge/restart-homebridge.component'
@@ -48,6 +49,7 @@ export class PluginsComponent implements OnInit, OnDestroy, CanComponentDeactiva
   private $modal = inject(NgbModal)
   private $plugin = inject(ManagePluginsService)
   private $pluginsCache = inject(PluginsCacheService)
+  private $pairingsCache = inject(ServerPairingsCacheService)
   private $router = inject(Router)
   private $settings = inject(SettingsService)
   private $toastr = inject(ToastrService)
@@ -454,9 +456,23 @@ export class PluginsComponent implements OnInit, OnDestroy, CanComponentDeactiva
     // configs, so for any installed plugin that arrives without one we look
     // it up in the installed-plugins cache (already warm during normal use).
     const needsCacheLookup = plugins.some(p => p.installedVersion && p.config === undefined)
-    const cachedConfigByName = needsCacheLookup
-      ? new Map((await this.$pluginsCache.get()).map(p => [p.name, p.config ?? []]))
+    const externalsFeatureEnabled = this.$settings.isFeatureEnabled('externalAccessoriesAttribution')
+
+    const [cachedConfigList, pairings] = await Promise.all([
+      needsCacheLookup ? this.$pluginsCache.get() : Promise.resolve(null),
+      externalsFeatureEnabled ? this.$pairingsCache.get<any[]>().catch(() => []) : Promise.resolve([]),
+    ])
+
+    const cachedConfigByName = cachedConfigList
+      ? new Map(cachedConfigList.map(p => [p.name, p.config ?? []]))
       : null
+
+    const externalPluginNames = new Set<string>()
+    for (const pairing of pairings ?? []) {
+      if (typeof pairing?._plugin === 'string' && (pairing._isExternal === true || pairing._matterOnly === true)) {
+        externalPluginNames.add(pairing._plugin)
+      }
+    }
 
     for (const plugin of plugins) {
       if (!plugin.installedVersion) {
@@ -473,6 +489,7 @@ export class PluginsComponent implements OnInit, OnDestroy, CanComponentDeactiva
           && !['homebridge', 'homebridge-config-ui-x'].includes(plugin.name)
 
         plugin.hasChildBridges = plugin.isConfigured && configBlocks.some(x => x._bridge && x._bridge.username)
+        plugin.hasExternalAccessories = externalsFeatureEnabled && externalPluginNames.has(plugin.name)
 
         const pluginChildBridges = this.getPluginChildBridges(plugin)
 
@@ -494,6 +511,7 @@ export class PluginsComponent implements OnInit, OnDestroy, CanComponentDeactiva
         // the previous per-plugin fetch used.
         plugin.isConfigured = true
         plugin.hasChildBridges = true
+        plugin.hasExternalAccessories = false
       }
     }
   }

@@ -12,6 +12,7 @@ import {
   MANAGE_VERSION_MODAL_DATA,
   PLUGIN_BRIDGE_MODAL_DATA,
   PLUGIN_COMPATIBILITY_MODAL_DATA,
+  PLUGIN_EXTERNALS_MODAL_DATA,
   PLUGIN_MODAL_DATA,
   RESET_ACCESSORIES_MODAL_DATA,
   SWITCH_TO_SCOPED_MODAL_DATA,
@@ -25,6 +26,7 @@ import { ManualConfigComponent } from '@/app/core/plugins/manual-config/manual-c
 import { PluginBridgeComponent } from '@/app/core/plugins/plugin-bridge/plugin-bridge.component'
 import { PluginCompatibilityComponent } from '@/app/core/plugins/plugin-compatibility/plugin-compatibility.component'
 import { PluginConfigComponent } from '@/app/core/plugins/plugin-config/plugin-config.component'
+import { PluginExternalsComponent } from '@/app/core/plugins/plugin-externals/plugin-externals.component'
 import { ResetAccessoriesComponent } from '@/app/core/plugins/reset-accessories/reset-accessories.component'
 import { SwitchToScopedComponent } from '@/app/core/plugins/switch-to-scoped/switch-to-scoped.component'
 import { UninstallPluginComponent } from '@/app/core/plugins/uninstall-plugin/uninstall-plugin.component'
@@ -293,6 +295,28 @@ export class ManagePluginsService {
       if (result === 'refresh') {
         this.pluginListRefreshSubject.next()
       }
+    } catch (error) { /* modal was dismissed */ }
+  }
+
+  /**
+   * Open the external-accessories modal — shows QR codes for accessories the plugin
+   * has published with their own setup code (HAP or Matter).
+   * @param plugin
+   */
+  async externalAccessories(plugin: Plugin) {
+    const injector = createEnvironmentInjector([{
+      provide: PLUGIN_EXTERNALS_MODAL_DATA,
+      useValue: { plugin },
+    }], this.injector)
+
+    const ref = this.$modal.open(PluginExternalsComponent, {
+      size: 'lg',
+      backdrop: 'static',
+      injector,
+    })
+
+    try {
+      await ref.result
     } catch (error) { /* modal was dismissed */ }
   }
 

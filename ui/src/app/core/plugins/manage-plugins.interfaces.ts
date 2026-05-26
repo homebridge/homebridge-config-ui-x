@@ -16,6 +16,7 @@ export interface Plugin {
   globalInstall: boolean
   hasChildBridges: boolean
   hasChildBridgesUnpaired: boolean
+  hasExternalAccessories: boolean
   icon?: string
   installPath: string
   installedVersion: string

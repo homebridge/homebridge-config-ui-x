@@ -39,4 +39,9 @@ export const FEATURE_FLAGS: FeatureFlagDefinition[] = [
     description: 'Enables disabling HAP per bridge (main and child) and reflects HAP status in widgets',
     range: '^2.0.1-beta.0',
   },
+  {
+    key: 'externalAccessoriesAttribution',
+    description: 'Surfaces plugin attribution + QR codes for externally-published HAP and Matter accessories. Requires the homebridge runtime to write externalAccessories.<MAC>.json index files.',
+    range: '>=2.0.3-beta.18',
+  },
 ]

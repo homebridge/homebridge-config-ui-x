@@ -54,6 +54,12 @@ export interface PluginBridgeModalData {
 
 export const PLUGIN_BRIDGE_MODAL_DATA = new InjectionToken<PluginBridgeModalData>('PluginBridgeModalData')
 
+export interface PluginExternalsModalData {
+  plugin: any
+}
+
+export const PLUGIN_EXTERNALS_MODAL_DATA = new InjectionToken<PluginExternalsModalData>('PluginExternalsModalData')
+
 export interface CustomPluginsModalData {
   plugin: any
   schema: any

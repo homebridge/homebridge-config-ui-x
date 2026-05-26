@@ -287,7 +287,12 @@
                 }
                 <!-- // -->
                 @if (plugin().installedVersion) {
-                  <span ngbDropdown placement="left" class="d-inline-block ms-3 mt-auto">
+                  <span
+                    ngbDropdown
+                    container="body"
+                    placement="left bottom-end top-end"
+                    class="d-inline-block ms-3 mt-auto"
+                  >
                     <!-- icon to expand dropdown -->
                     <button
                       type="button"
@@ -408,6 +413,17 @@
                         </button>
                         <!-- // -->
                       }
+                      <!-- external accessories -->
+                      @if (plugin().hasExternalAccessories && !plugin().disabled) {
+                        @if (!plugin().hasChildBridges) {
+                          <div class="dropdown-divider"></div>
+                        }
+                        <button type="button" ngbDropdownItem (click)="openExternalAccessories()">
+                          <i class="fas fa-qrcode" aria-hidden="true"></i>
+                          {{ 'external_accessories.menu_label' | translate }}
+                        </button>
+                      }
+                      <!-- // -->
                       @if (
                         plugin().isConfigured &&
                         !plugin().hasChildBridges &&

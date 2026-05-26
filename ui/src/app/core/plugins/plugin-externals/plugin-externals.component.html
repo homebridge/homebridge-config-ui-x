@@ -1,0 +1,160 @@
+<div class="modal-content">
+  <div class="modal-header">
+    <h5 class="modal-title">
+      {{ plugin.displayName || plugin.name }}
+    </h5>
+    <button
+      type="button"
+      class="btn-close"
+      data-bs-dismiss="modal"
+      [attr.aria-label]="'form.button_close' | translate"
+      (click)="closeModal()"
+    ></button>
+  </div>
+  <div class="modal-body">
+    @if (loading()) {
+      <div class="text-center primary-text my-5 w-100">
+        <i aria-hidden="true" class="fas fa-circle-notch fa-spin icon-xl"></i>
+      </div>
+    } @else {
+      <div class="text-center">
+        <img
+          alt=""
+          aria-hidden="true"
+          class="mb-3 plugin-icon-card"
+          [src]="plugin.icon || defaultIcon"
+          (error)="handleIconError($event)"
+        />
+      </div>
+
+      @if (accessories().length === 0) {
+        <p class="text-center grey-text">{{ 'external_accessories.no_accessories' | translate }}</p>
+      } @else {
+        <ul class="mb-3">
+          <li>{{ 'external_accessories.about' | translate }}</li>
+        </ul>
+
+        @if (selected(); as accessory) {
+          <ul class="list-group list-group-box mb-3">
+            @if (accessories().length > 1) {
+              <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
+                <label for="externalSelect" class="mb-2 mb-md-0 w-100 w-md-50">
+                  {{ 'external_accessories.select_accessory' | translate }}
+                </label>
+                <div class="text-start text-md-end w-100 w-md-50">
+                  <select
+                    class="custom-select"
+                    id="externalSelect"
+                    [ngModel]="selectedIndex()"
+                    (ngModelChange)="selectedIndex.set($event)"
+                  >
+                    @for (accessory of accessories(); track accessory._id) {
+                      <option [value]="$index">{{ accessory.displayName || accessory.name }}</option>
+                    }
+                  </select>
+                </div>
+              </li>
+            } @else {
+              <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
+                <span class="mb-2 mb-md-0 w-100 w-md-50">{{
+                  'external_accessories.select_accessory' | translate
+                }}</span>
+                <div class="text-start text-md-end w-100 w-md-50 grey-text font-monospace">
+                  {{ accessory.displayName || accessory.name }}
+                </div>
+              </li>
+            }
+            <li class="list-group-item text-center">
+              <div class="w-100 d-flex flex-column text-center pt-2">
+                @if (accessory._setupCode) {
+                  <app-qrcode class="mx-auto qr-code-size" [data]="accessory._setupCode" />
+                } @else {
+                  <p class="grey-text my-3">{{ 'external_accessories.no_setup_code' | translate }}</p>
+                }
+                @if (accessory.pincode) {
+                  <p class="mx-auto mt-3 mb-1 font-monospace">{{ accessory.pincode }}</p>
+                }
+                <p class="grey-text mx-auto small mb-1 qr-code-info">
+                  <i
+                    aria-hidden="true"
+                    class="fas fa-link"
+                    [class.green-text]="accessory._isPaired"
+                    [class.grey-text]="!accessory._isPaired"
+                  ></i>
+                  {{ (accessory._isPaired ? 'status.widget.qr_paired' : 'status.widget.qr_unpaired') | translate }}
+                  @if (!accessory._isPaired && accessory._setupCode) {
+                    <span> &middot; {{ 'status.code_scan' | translate }}</span>
+                  }
+                </p>
+              </div>
+            </li>
+          </ul>
+
+          <ul class="list-group list-group-box">
+            <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
+              <span class="mb-2 mb-md-0 w-100 w-md-50">{{ 'external_accessories.protocol' | translate }}</span>
+              <div class="text-start text-md-end w-100 w-md-50 grey-text font-monospace">
+                {{ accessory._matter || accessory._matterOnly ? 'Matter' : 'HAP' }}
+              </div>
+            </li>
+            @if (accessory.manufacturer) {
+              <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
+                <span class="mb-2 mb-md-0 w-100 w-md-50">{{ 'external_accessories.manufacturer' | translate }}</span>
+                <div class="text-start text-md-end w-100 w-md-50 grey-text font-monospace">
+                  {{ accessory.manufacturer }}
+                </div>
+              </li>
+            }
+            @if (accessory.model) {
+              <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
+                <span class="mb-2 mb-md-0 w-100 w-md-50">{{ 'external_accessories.model' | translate }}</span>
+                <div class="text-start text-md-end w-100 w-md-50 grey-text font-monospace">
+                  {{ accessory.model }}
+                </div>
+              </li>
+            }
+            @if (accessory.serialNumber) {
+              <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
+                <span class="mb-2 mb-md-0 w-100 w-md-50">{{ 'external_accessories.serial_number' | translate }}</span>
+                <div class="text-start text-md-end w-100 w-md-50 grey-text font-monospace">
+                  {{ accessory.serialNumber }}
+                </div>
+              </li>
+            }
+            @if (accessory._username) {
+              <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
+                <span class="mb-2 mb-md-0 w-100 w-md-50">{{ 'external_accessories.username' | translate }}</span>
+                <div class="text-start text-md-end w-100 w-md-50 grey-text font-monospace">
+                  {{ accessory._username }}
+                </div>
+              </li>
+            }
+            @if (accessory._port) {
+              <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
+                <span class="mb-2 mb-md-0 w-100 w-md-50">{{ 'external_accessories.port' | translate }}</span>
+                <div class="text-start text-md-end w-100 w-md-50 grey-text font-monospace">
+                  {{ accessory._port }}
+                </div>
+              </li>
+            }
+          </ul>
+        }
+      }
+    }
+  </div>
+  <div class="modal-footer justify-content-between">
+    <div class="text-start"></div>
+    <div class="text-center">
+      <button
+        type="button"
+        class="btn btn-elegant"
+        data-bs-dismiss="modal"
+        [attr.aria-label]="'form.button_close' | translate"
+        (click)="closeModal()"
+      >
+        {{ 'form.button_close' | translate }}
+      </button>
+    </div>
+    <div class="text-end"></div>
+  </div>
+</div>
