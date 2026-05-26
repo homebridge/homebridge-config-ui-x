@@ -142,6 +142,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(config-editor): guard `_bridge?.username` before `.toUpperCase()`
 - fix(login): default empty `target_route` to `/`
 - fix(i18n): persist selected language to bootstrap before server settings
+- fix(auth): clear expired stored token quietly on bootstrap
 
 ### Other Changes
 

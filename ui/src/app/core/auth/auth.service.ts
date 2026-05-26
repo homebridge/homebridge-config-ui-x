@@ -67,9 +67,19 @@ export class AuthService {
       await firstValueFrom(this.$settings.onSettingsLoaded)
     }
     const token = window.localStorage.getItem(environment.jwt.tokenKey)
-    if (token) {
-      this.validateToken(token)
+    if (!token) {
+      return
     }
+    // On bootstrap an expired stored token must not call logout() — that
+    // triggers a full page reload while the app is still booting and
+    // wipes any in-flight init work. Clear it quietly and let the route
+    // guards send the user to /login.
+    if (this.$jwtHelper.isTokenExpired(token, this.$settings.serverTimeOffset)) {
+      window.localStorage.removeItem(environment.jwt.tokenKey)
+      this.token = null
+      return
+    }
+    this.validateToken(token)
   }
 
   public async checkToken() {
