@@ -11,10 +11,11 @@ import { ToastrService } from 'ngx-toastr'
 import { firstValueFrom } from 'rxjs'
 
 import { ApiService } from '@/app/core/communication/api.service'
+import { ConfirmComponent } from '@/app/core/components/confirm/confirm.component'
 import { RestartChildBridgesComponent } from '@/app/core/components/restart-child-bridges/restart-child-bridges.component'
 import { RestartHomebridgeComponent } from '@/app/core/components/restart-homebridge/restart-homebridge.component'
 import { createChildBridgeSchema } from '@/app/core/helpers/child-bridges-schema.helper'
-import { CONFIG_RESTORE_MODAL_DATA, RESTART_CHILD_BRIDGES_MODAL_DATA } from '@/app/core/modal-data-tokens'
+import { CONFIG_RESTORE_MODAL_DATA, CONFIRM_MODAL_DATA, RESTART_CHILD_BRIDGES_MODAL_DATA } from '@/app/core/modal-data-tokens'
 import { ChildBridge } from '@/app/core/plugins/manage-plugins.interfaces'
 import { RE_USERNAME } from '@/app/core/regex.constants'
 import { MonacoEditorService } from '@/app/core/ui/monaco-editor.service'
@@ -380,6 +381,50 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
   public toggleSideBySide() {
     this.renderSideBySide.set(!this.renderSideBySide())
     this.editorOptions = { ...this.editorOptions, renderSideBySide: this.renderSideBySide() }
+  }
+
+  /**
+   * Route guard hook. Returns true to allow navigation away, or
+   * resolves to false if the user picks "stay" on the unsaved-changes
+   * prompt. The route is bound to this method through the same
+   * forwarding `canDeactivate` array used by `/plugins` and `/logs`.
+   */
+  public canDeactivate(): Promise<boolean> | boolean {
+    if (!this.monacoEditor || !this.latestSavedConfig) {
+      return true
+    }
+    let editorValue: HomebridgeConfig
+    try {
+      editorValue = json5.parse(this.monacoEditor.getModel().getValue())
+    } catch {
+      // Invalid JSON in the editor — definitely an unsaved state worth
+      // warning about.
+      return this.confirmDiscardChanges()
+    }
+    if (isEqual(editorValue, this.latestSavedConfig)) {
+      return true
+    }
+    return this.confirmDiscardChanges()
+  }
+
+  private confirmDiscardChanges(): Promise<boolean> {
+    const injector = createEnvironmentInjector([{
+      provide: CONFIRM_MODAL_DATA,
+      useValue: {
+        title: this.$translate.instant('config.label_unsaved_changes'),
+        message: this.$translate.instant('config.message_unsaved_changes'),
+        confirmButtonLabel: this.$translate.instant('form.button_discard'),
+        confirmButtonClass: 'btn-danger',
+        faIconClass: 'fas fa-triangle-exclamation orange-text',
+      },
+    }], this.injector)
+
+    const ref = this.$modal.open(ConfirmComponent, {
+      size: 'lg',
+      backdrop: 'static',
+      injector,
+    })
+    return ref.result.then(() => true, () => false)
   }
 
   public ngOnDestroy() {

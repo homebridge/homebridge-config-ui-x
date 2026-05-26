@@ -48,6 +48,7 @@ export const routes: Routes = [
         path: 'config',
         loadComponent: () => import('@/app/modules/config-editor/config-editor.component').then(m => m.ConfigEditorComponent),
         canActivate: [adminGuard],
+        canDeactivate: [(component: any) => component.canDeactivate ? component.canDeactivate() : true],
         resolve: {
           config: configEditorResolver,
         },

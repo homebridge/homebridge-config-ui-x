@@ -117,6 +117,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(layout): tear down the app namespace socket on layout destroy
 - fix(restart): bind reconnect handler in RestartComponent to lifecycle
 - fix(schema-form): track `lastDataReference` on the internal-change skip path
+- fix(config-editor): prompt before navigating away with unsaved changes
 
 ### Other Changes
 
