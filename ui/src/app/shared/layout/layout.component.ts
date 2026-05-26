@@ -73,6 +73,10 @@ export class LayoutComponent implements OnInit {
       const ref = this.$modal.open(ConfirmComponent, {
         size: 'lg',
         backdrop: 'static',
+        // Block ESC. This is the "server restart required" modal — letting
+        // it dismiss silently leaves the user looking at a half-broken UI
+        // that the version-mismatch path was about to walk them through.
+        keyboard: false,
         injector,
       })
 

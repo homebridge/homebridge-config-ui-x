@@ -565,6 +565,7 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
         this.$modal.open(RestartHomebridgeComponent, {
           size: 'lg',
           backdrop: 'static',
+          keyboard: false,
         })
       },
       error: (error) => {

@@ -1030,6 +1030,7 @@ export class PluginBridgeComponent implements OnInit {
         this.$modal.open(RestartHomebridgeComponent, {
           size: 'lg',
           backdrop: 'static',
+          keyboard: false,
         })
       }
     } catch (error) {
