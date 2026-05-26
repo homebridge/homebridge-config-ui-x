@@ -93,6 +93,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(config-editor): reject prototype-chain keys in UI property patch
 - fix(plugins): strip secret-shaped env vars from npm spawn
 - fix(backup): write `config.json` atomically during restore
+- fix(plugins): build plugin-list caches in locals before swapping refs
 
 ### Other Changes
 
