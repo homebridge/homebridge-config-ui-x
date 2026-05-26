@@ -259,6 +259,78 @@ describe('ServerController (e2e)', () => {
     expect(res.json()._username).toBe('67:E4:1F:0E:A0:5D')
   })
 
+  it('tags HAP externals with plugin attribution when externalAccessories.json is present', async () => {
+    // Simulate what the homebridge runtime writes when a plugin calls publishExternalAccessories:
+    // a HAP AccessoryInfo file in persist/ plus an externalAccessories index in accessories/.
+    const externalDeviceId = 'ABCDEF012345'
+    const externalUsername = 'AB:CD:EF:01:23:45'
+    const externalPort = 51234
+
+    await writeJson(resolve(persistPath, `AccessoryInfo.${externalDeviceId}.json`), {
+      displayName: 'Living Room Camera',
+      category: 17, // CAMERA
+      pincode: '874-99-441',
+      signSk: 'a'.repeat(128),
+      signPk: 'a'.repeat(64),
+      pairedClients: {},
+      pairedClientsPermission: {},
+      configVersion: 1,
+      configHash: 'abcd',
+      setupID: 'ABCD',
+    })
+
+    await writeJson(resolve(accessoriesPath, 'externalAccessories'), [
+      {
+        username: externalUsername,
+        plugin: 'homebridge-camera-ffmpeg',
+        displayName: 'Living Room Camera',
+        category: 17,
+        port: externalPort,
+      },
+    ])
+
+    const res = await app.inject({
+      method: 'GET',
+      path: '/server/pairings',
+      headers: {
+        authorization,
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+    const external = res.json().find((d: any) => d._id === externalDeviceId)
+    expect(external).toBeDefined()
+    expect(external._plugin).toBe('homebridge-camera-ffmpeg')
+    expect(external._isExternal).toBe(true)
+    expect(external._port).toBe(externalPort)
+    expect(external._couldBeStale).toBe(false)
+    expect(external._setupCode).toBeDefined()
+  })
+
+  it('exposes Matter commissioning QR data on Matter externals', async () => {
+    const matterPath = resolve(process.env.UIX_STORAGE_PATH, 'matter')
+    await copy(resolve(__dirname, '../mocks', 'matter'), matterPath)
+
+    const res = await app.inject({
+      method: 'GET',
+      path: '/server/pairings',
+      headers: {
+        authorization,
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+    const matterExternal = res.json().find((d: any) => d._matterOnly === true)
+    expect(matterExternal).toBeDefined()
+    expect(matterExternal._isExternal).toBe(true)
+    expect(matterExternal._setupCode).toBe('MT:Y.K90-C80B00000000')
+    expect(matterExternal.pincode).toBe('8765-432-1098')
+    expect(matterExternal._isPaired).toBe(true)
+    expect(matterExternal._plugin).toBe('homebridge-external-plugin')
+
+    await remove(matterPath)
+  })
+
   describe('GET /server/accessory-overview', () => {
     it('bundles cached HAP accessories, matter accessories and pairings into one payload', async () => {
       // Copy mock Matter storage so matterAccessories is non-empty

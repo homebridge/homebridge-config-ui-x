@@ -287,7 +287,7 @@
                 }
                 <!-- // -->
                 @if (plugin().installedVersion) {
-                  <span ngbDropdown placement="left" class="d-inline-block ms-3 mt-auto">
+                  <span ngbDropdown placement="left bottom-end top-end" class="d-inline-block ms-3 mt-auto">
                     <!-- icon to expand dropdown -->
                     <button
                       type="button"
@@ -298,7 +298,7 @@
                       <i class="fa-solid fa-ellipsis-v fa-lg" aria-hidden="true"></i>
                     </button>
                     <!-- // -->
-                    <div ngbDropdownMenu aria-labelledby="Plugin Actions Dropdown">
+                    <div ngbDropdownMenu [attr.aria-label]="'plugins.button_actions' | translate">
                       <!-- plugin config -->
                       <button type="button" ngbDropdownItem (click)="openSettings()">
                         <i class="fas fa-sliders" aria-hidden="true"></i>
@@ -408,6 +408,17 @@
                         </button>
                         <!-- // -->
                       }
+                      <!-- external accessories -->
+                      @if (plugin().hasExternalAccessories && !plugin().disabled) {
+                        @if (!plugin().hasChildBridges) {
+                          <div class="dropdown-divider"></div>
+                        }
+                        <button type="button" ngbDropdownItem (click)="openExternalAccessories()">
+                          <i class="fas fa-qrcode" aria-hidden="true"></i>
+                          {{ 'external_accessories.menu_label' | translate }}
+                        </button>
+                      }
+                      <!-- // -->
                       @if (
                         plugin().isConfigured &&
                         !plugin().hasChildBridges &&

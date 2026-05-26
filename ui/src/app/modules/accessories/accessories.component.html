@@ -65,7 +65,7 @@
     >
       <i class="fas fa-house" aria-hidden="true"></i>
     </button>
-    <div ngbDropdownMenu [attr.aria-labelledby]="'accessories.filter_by_bridge' | translate">
+    <div ngbDropdownMenu [attr.aria-label]="'accessories.filter_by_bridge' | translate">
       <ng-container
         *ngTemplateOutlet="bridgeFilterMenu; context: { dropdown: dropdown, showManageLayout: showManageLayout }"
       />
