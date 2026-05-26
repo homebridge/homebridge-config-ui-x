@@ -102,7 +102,7 @@ export class WidgetsComponent implements OnInit, OnDestroy {
     // 2. Pass the though things
     this.componentRef.instance.resizeEvent = this.widget().$resizeEvent
     this.componentRef.instance.configureEvent = this.widget().$configureEvent
-    this.componentRef.instance.widget = this.widget
+    this.componentRef.setInput('widget', this.widget())
 
     // 3. Get DOM element from component
     const domElem = (this.componentRef.hostView as EmbeddedViewRef<any>)

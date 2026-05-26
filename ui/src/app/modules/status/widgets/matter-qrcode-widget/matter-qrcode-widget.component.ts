@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, ElementRef, inject, OnDestroy, OnInit, signal, viewChild } from '@angular/core'
+import { ChangeDetectionStrategy, Component, DestroyRef, ElementRef, inject, input, OnDestroy, OnInit, signal, viewChild } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { TranslatePipe } from '@ngx-translate/core'
 import { Subject } from 'rxjs'
@@ -6,6 +6,7 @@ import { Subject } from 'rxjs'
 import { IoNamespace, WsService } from '@/app/core/communication/ws.service'
 import { QrcodeComponent } from '@/app/core/components/qrcode/qrcode.component'
 import { HomebridgeStatusResponse } from '@/app/core/server.interfaces'
+import { Widget } from '@/app/modules/status/widgets/widgets.interfaces'
 
 @Component({
   selector: 'app-matter-qrcode-widget',
@@ -22,6 +23,9 @@ export class MatterQrcodeWidgetComponent implements OnInit, OnDestroy {
   // Injected dependencies
   private destroyRef = inject(DestroyRef)
   private $ws = inject(WsService)
+
+  // Inputs (set by the dashboard's dynamic widget loader via setInput)
+  public readonly widget = input.required<Widget>()
 
   // Signals
   readonly pincodeElement = viewChild<ElementRef>('pincodeMatter')

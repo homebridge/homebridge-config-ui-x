@@ -146,6 +146,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(auth): cap the noauth-mode auto-reload retries per session
 - fix(auth): expose `tokenReady` so loginGuard waits for stored-token load
 - fix(settings): use `*` target origin for theme postMessage to plugin iframes
+- fix(status): use `setInput()` for the widget signal input on dynamic widgets
 
 ### Other Changes
 
