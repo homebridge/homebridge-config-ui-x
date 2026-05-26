@@ -400,6 +400,52 @@ describe('PluginsGateway (e2e)', { timeout: 10_000 }, () => {
     expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('Operation succeeded!'))
   })
 
+  describe('PluginActionDto validation', () => {
+    it('rejects a malicious plugin version string via the class-validator regex', async () => {
+      const { plainToInstance } = await import('class-transformer')
+      const { validate } = await import('class-validator')
+      const { PluginActionDto } = await import('../../src/modules/plugins/plugins.dto.js')
+
+      // Versions containing characters that would let a malicious caller
+      // smuggle an npm CLI flag past the install path. The hb-service
+      // CLI gate uses the same regex; this asserts the in-UI DTO does
+      // the same.
+      const bad = [
+        '--registry=http://attacker/',
+        '1.0.0; rm -rf /',
+        '1.0.0$(whoami)',
+        '1.0.0`id`',
+        '1.0.0 && curl evil',
+      ]
+      for (const version of bad) {
+        const dto = plainToInstance(PluginActionDto, {
+          name: 'homebridge-mock-plugin',
+          version,
+        })
+        const errors = await validate(dto)
+        const versionError = errors.find(e => e.property === 'version')
+        expect(versionError, `expected version "${version}" to fail validation`).toBeDefined()
+      }
+    })
+
+    it('accepts the canonical semver / range shapes', async () => {
+      const { plainToInstance } = await import('class-transformer')
+      const { validate } = await import('class-validator')
+      const { PluginActionDto } = await import('../../src/modules/plugins/plugins.dto.js')
+
+      const good = ['latest', '1.0.0', '1.0.0-beta.1', '^1.0.0', '~1.0.0', '>=1.0.0', '*']
+      for (const version of good) {
+        const dto = plainToInstance(PluginActionDto, {
+          name: 'homebridge-mock-plugin',
+          version,
+        })
+        const errors = await validate(dto)
+        const versionError = errors.find(e => e.property === 'version')
+        expect(versionError, `expected version "${version}" to pass validation`).toBeUndefined()
+      }
+    })
+  })
+
   afterAll(async () => {
     await app.close()
   })

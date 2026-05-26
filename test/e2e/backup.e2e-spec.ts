@@ -2,6 +2,7 @@ import type { NestFastifyApplication } from '@nestjs/platform-fastify'
 import type { TestingModule } from '@nestjs/testing'
 import type { Mock } from 'vitest'
 
+import { Buffer } from 'node:buffer'
 import crypto from 'node:crypto'
 import { EventEmitter } from 'node:events'
 import { lstat, mkdtemp, symlink, writeFile as writeFileAsync } from 'node:fs/promises'
@@ -739,6 +740,128 @@ describe('BackupController (e2e)', { timeout: 10_000 }, () => {
 
       await remove(stagingDir)
       await remove(restoreDir)
+    })
+
+    it('uploadBackupRestore drops symlink entries from a crafted tarball', async () => {
+      // Clear the singleton slot in case a prior test in this describe
+      // block left it occupied — concurrent-upload rejection would
+      // otherwise mask the actual extraction behaviour we want to test.
+      ;(backupService as any).restoreDirectory = undefined
+
+      const stagingDir = await mkdtemp(join(tmpdir(), 'audit-upload-'))
+      await writeFileAsync(join(stagingDir, 'info.json'), JSON.stringify({ name: 'audit' }))
+      await symlink('/tmp/audit-upload-target', join(stagingDir, 'evil-link'))
+
+      const tarPath = join(stagingDir, 'crafted.tar.gz')
+      await tarCreate(
+        { gzip: true, cwd: stagingDir, file: tarPath },
+        ['info.json', 'evil-link'],
+      )
+
+      const payload = new FormData()
+      payload.append('crafted.tar.gz', await readFile(tarPath))
+      const headers = payload.getHeaders()
+      headers.authorization = authorization
+
+      const res = await app.inject({
+        method: 'POST',
+        path: '/backup/restore',
+        headers,
+        payload,
+      })
+      expect(res.statusCode).toBe(201)
+
+      await new Promise(r => setTimeout(r, 100))
+      const restoreDir = (backupService as any).restoreDirectory as string
+      expect(restoreDir).toBeDefined()
+      const entries = await readdir(restoreDir)
+      for (const entry of entries) {
+        const stats = await lstat(join(restoreDir, entry))
+        expect(stats.isSymbolicLink()).toBe(false)
+      }
+
+      await remove(stagingDir)
+      await remove(restoreDir).catch(() => undefined)
+      ;(backupService as any).restoreDirectory = undefined
+    })
+
+    it('extractZipSafely rejects an entry whose resolved path escapes the destination', async () => {
+      // Hand-built minimal zip with one safe entry + one path-traversal
+      // entry. yazl/archiver aren't in the tree, so we assemble the
+      // bytes manually rather than pull in a devDep just for one test.
+      const { Readable } = await import('node:stream')
+      const buildZip = (entries: { name: string, data: Buffer }[]): Buffer => {
+        const localParts: Buffer[] = []
+        const centralParts: Buffer[] = []
+        let offset = 0
+        for (const entry of entries) {
+          const nameBuf = Buffer.from(entry.name, 'utf8')
+          const local = Buffer.alloc(30)
+          local.writeUInt32LE(0x04034B50, 0) // local file header signature
+          local.writeUInt16LE(20, 4) // version
+          local.writeUInt16LE(0, 6) // flags
+          local.writeUInt16LE(0, 8) // method = store
+          local.writeUInt16LE(0, 10) // time
+          local.writeUInt16LE(0, 12) // date
+          const crc = crypto.createHash('sha1').update(entry.data).digest() // placeholder; real CRC32 not strictly required for our reader to enumerate
+          local.writeUInt32LE(0, 14) // crc32 (zeroed — unzipper tolerates)
+          local.writeUInt32LE(entry.data.length, 18)
+          local.writeUInt32LE(entry.data.length, 22)
+          local.writeUInt16LE(nameBuf.length, 26)
+          local.writeUInt16LE(0, 28)
+          localParts.push(local, nameBuf, entry.data)
+          const central = Buffer.alloc(46)
+          central.writeUInt32LE(0x02014B50, 0)
+          central.writeUInt16LE(20, 4)
+          central.writeUInt16LE(20, 6)
+          central.writeUInt16LE(0, 8)
+          central.writeUInt16LE(0, 10)
+          central.writeUInt16LE(0, 12)
+          central.writeUInt16LE(0, 14)
+          central.writeUInt32LE(0, 16) // crc32
+          central.writeUInt32LE(entry.data.length, 20)
+          central.writeUInt32LE(entry.data.length, 24)
+          central.writeUInt16LE(nameBuf.length, 28)
+          central.writeUInt16LE(0, 30)
+          central.writeUInt16LE(0, 32)
+          central.writeUInt16LE(0, 34)
+          central.writeUInt16LE(0, 36)
+          central.writeUInt32LE(0, 38) // external attrs
+          central.writeUInt32LE(offset, 42) // local header offset
+          centralParts.push(central, nameBuf)
+          offset += local.length + nameBuf.length + entry.data.length
+          // Suppress unused-var warning from the CRC placeholder helper.
+          void crc
+        }
+        const centralSize = centralParts.reduce((acc, b) => acc + b.length, 0)
+        const eocd = Buffer.alloc(22)
+        eocd.writeUInt32LE(0x06054B50, 0)
+        eocd.writeUInt16LE(0, 4)
+        eocd.writeUInt16LE(0, 6)
+        eocd.writeUInt16LE(entries.length, 8)
+        eocd.writeUInt16LE(entries.length, 10)
+        eocd.writeUInt32LE(centralSize, 12)
+        eocd.writeUInt32LE(offset, 16)
+        eocd.writeUInt16LE(0, 20)
+        return Buffer.concat([...localParts, ...centralParts, eocd])
+      }
+
+      const destDir = await mkdtemp(join(tmpdir(), 'audit-zip-'))
+      const escapeTarget = resolve(destDir, '..', 'audit-zip-escape.txt')
+      try {
+        const zipBuffer = buildZip([
+          { name: 'storage/legit.txt', data: Buffer.from('ok\n') },
+          { name: '../audit-zip-escape.txt', data: Buffer.from('OWNED\n') },
+        ])
+        const source = Readable.from(zipBuffer)
+        await expect((backupService as any).extractZipSafely(source, destDir))
+          .rejects
+          .toThrow(/escapes destination/i)
+        expect(await pathExists(escapeTarget)).toBe(false)
+      } finally {
+        await remove(destDir).catch(() => undefined)
+        await remove(escapeTarget).catch(() => undefined)
+      }
     })
   })
 

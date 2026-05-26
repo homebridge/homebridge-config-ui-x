@@ -13,6 +13,7 @@ import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } 
 
 import { AuthModule } from '../../src/core/auth/auth.module.js'
 import { AuthService } from '../../src/core/auth/auth.service.js'
+import { WsAdminGuard } from '../../src/core/auth/guards/ws-admin-guard.js'
 import { WsGuard } from '../../src/core/auth/guards/ws.guard.js'
 import { ConfigService } from '../../src/core/config/config.service.js'
 import { PluginsService } from '../../src/modules/plugins/plugins.service.js'
@@ -330,6 +331,87 @@ describe('AuthController (e2e)', () => {
     })
 
     expect(res.statusCode).toBe(401)
+  })
+
+  it('WsGuard rejects + disconnects when the handshake token is missing', async () => {
+    const disconnect = vi.fn()
+    const context: any = {
+      switchToWs: () => ({
+        getClient: () => ({
+          handshake: { query: {} },
+          disconnect,
+        }),
+      }),
+    }
+    const guard = new WsGuard(configService)
+    expect(await guard.canActivate(context)).toBe(false)
+    expect(disconnect).toHaveBeenCalled()
+  })
+
+  it('WsGuard rejects + disconnects when the handshake token is malformed', async () => {
+    const disconnect = vi.fn()
+    const context: any = {
+      switchToWs: () => ({
+        getClient: () => ({
+          handshake: { query: { token: 'not.a.valid.jwt' } },
+          disconnect,
+        }),
+      }),
+    }
+    const guard = new WsGuard(configService)
+    expect(await guard.canActivate(context)).toBe(false)
+    expect(disconnect).toHaveBeenCalled()
+  })
+
+  it('WsGuard rejects + disconnects an expired token', async () => {
+    const jwt = await import('jsonwebtoken')
+    const expiredToken = jwt.sign(
+      {
+        username: 'admin',
+        name: 'admin',
+        admin: true,
+        instanceId: configService.instanceId,
+        iat: Math.floor(Date.now() / 1000) - 3600,
+        exp: Math.floor(Date.now() / 1000) - 60,
+      },
+      configService.secrets.secretKey,
+    )
+    const disconnect = vi.fn()
+    const context: any = {
+      switchToWs: () => ({
+        getClient: () => ({
+          handshake: { query: { token: expiredToken } },
+          disconnect,
+        }),
+      }),
+    }
+    const guard = new WsGuard(configService)
+    expect(await guard.canActivate(context)).toBe(false)
+    expect(disconnect).toHaveBeenCalled()
+  })
+
+  it('WsAdminGuard rejects a non-admin user even with a valid token', async () => {
+    const jwt = await import('jsonwebtoken')
+    const nonAdminToken = jwt.sign(
+      {
+        username: 'someone',
+        name: 'Someone',
+        admin: false,
+        instanceId: configService.instanceId,
+      },
+      configService.secrets.secretKey,
+    )
+    const disconnect = vi.fn()
+    const context: any = {
+      switchToWs: () => ({
+        getClient: () => ({
+          handshake: { query: { token: nonAdminToken } },
+          disconnect,
+        }),
+      }),
+    }
+    const guard = new WsAdminGuard(configService)
+    expect(await guard.canActivate(context)).toBe(false)
   })
 
   it('WsGuard disconnects setup-wizard token once setup wizard completes', async () => {

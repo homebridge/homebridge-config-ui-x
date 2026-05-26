@@ -252,6 +252,23 @@ describe('PluginsSettingsUiController (e2e)', () => {
     })
   })
 
+  describe('Gateway guard sentinel', () => {
+    it('plugins-settings-ui gateway has WsAdminGuard applied', async () => {
+      // Sentinel: if someone weakens the guard (dropping it, or swapping
+      // for WsGuard) the test will fail and force a deliberate decision
+      // rather than a silent regression. The custom-UI handler can spawn
+      // a child process and forwards postMessage payloads — non-admins
+      // must not reach it.
+      const { PluginsSettingsUiGateway } = await import('../../src/modules/custom-plugins/plugins-settings-ui/plugins-settings-ui.gateway.js')
+      const { WsAdminGuard } = await import('../../src/core/auth/guards/ws-admin-guard.js')
+      const { Reflector } = await import('@nestjs/core')
+      const reflector = new Reflector()
+      const guards = reflector.get<any[]>('__guards__', PluginsSettingsUiGateway)
+      expect(guards, 'no guards applied to PluginsSettingsUiGateway').toBeDefined()
+      expect(guards.includes(WsAdminGuard)).toBe(true)
+    })
+  })
+
   afterAll(async () => {
     await app.close()
   })

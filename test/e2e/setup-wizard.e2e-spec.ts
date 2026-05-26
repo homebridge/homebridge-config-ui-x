@@ -195,6 +195,56 @@ describe('SetupWizard (e2e)', () => {
     expect(res.statusCode).toBe(403)
   })
 
+  it('POST /create-first-user (rejects empty body)', async () => {
+    configService.setupWizardComplete = false
+
+    const res = await app.inject({
+      method: 'POST',
+      path: '/setup-wizard/create-first-user',
+      payload: {},
+    })
+
+    expect(res.statusCode).toBe(400)
+  })
+
+  it('POST /create-first-user (rejects when username is missing)', async () => {
+    configService.setupWizardComplete = false
+
+    const res = await app.inject({
+      method: 'POST',
+      path: '/setup-wizard/create-first-user',
+      payload: { name: 'Admin', password: 'pw' },
+    })
+
+    expect(res.statusCode).toBe(400)
+  })
+
+  it('POST /create-first-user (rejects when name is missing)', async () => {
+    configService.setupWizardComplete = false
+
+    const res = await app.inject({
+      method: 'POST',
+      path: '/setup-wizard/create-first-user',
+      payload: { username: 'admin', password: 'pw' },
+    })
+
+    expect(res.statusCode).toBe(400)
+  })
+
+  it('GET /get-setup-wizard-token (no body)', async () => {
+    configService.setupWizardComplete = false
+
+    const res = await app.inject({
+      method: 'GET',
+      path: '/setup-wizard/get-setup-wizard-token',
+    })
+
+    // Token endpoint is GET so it accepts no body. Confirms the wizard
+    // token can be issued even from an unauthenticated client during
+    // setup — pairs with the 403 case above for the post-complete state.
+    expect(res.statusCode).toBe(200)
+  })
+
   afterAll(async () => {
     await app.close()
   })

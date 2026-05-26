@@ -978,6 +978,69 @@ describe('ConfigEditorController (e2e)', () => {
       expect(body.affectedBridges[0].plugin).toBe('homebridge-mock-plugin')
       expect(body.config).toContain('homebridge-mock-plugin')
     })
+
+    it('POST /config-editor/plugin/:pluginName?include=restart-info still saves when IPC throws', async () => {
+      const childBridgesService = app.get(ChildBridgesService)
+      const spy = vi.spyOn(childBridgesService, 'getChildBridges').mockRejectedValue(new Error('IPC offline'))
+      try {
+        const res = await app.inject({
+          method: 'POST',
+          path: '/config-editor/plugin/homebridge-mock-plugin?include=restart-info',
+          headers: { authorization },
+          payload: [
+            { platform: 'ExampleHomebridgePlugin', name: 'IPC-Failure Block' },
+          ],
+        })
+        expect(res.statusCode).toBe(201)
+        // affectedBridges is empty because the IPC fetch failed, but the
+        // mutation still committed — without the wrapper guard the
+        // endpoint would 500 and the disk write would be invisible.
+        expect(res.json().affectedBridges).toEqual([])
+        expect(Array.isArray(res.json().config)).toBe(true)
+      } finally {
+        spy.mockRestore()
+      }
+    })
+
+    it('PUT /config-editor/plugin/:pluginName/enable?include=restart-info still saves when IPC throws', async () => {
+      const initialConfig: HomebridgeConfig = await readJson(configFilePath)
+      initialConfig.disabledPlugins = ['homebridge-mock-plugin']
+      await writeJson(configFilePath, initialConfig)
+
+      const childBridgesService = app.get(ChildBridgesService)
+      const spy = vi.spyOn(childBridgesService, 'getChildBridges').mockRejectedValue(new Error('IPC offline'))
+      try {
+        const res = await app.inject({
+          method: 'PUT',
+          path: '/config-editor/plugin/homebridge-mock-plugin/enable?include=restart-info',
+          headers: { authorization },
+          payload: {},
+        })
+        expect(res.statusCode).toBe(200)
+        expect(res.json().affectedBridges).toEqual([])
+        expect(res.json().config).toEqual([])
+      } finally {
+        spy.mockRestore()
+      }
+    })
+
+    it('PUT /config-editor/plugin/:pluginName/disable?include=restart-info still saves when IPC throws', async () => {
+      const childBridgesService = app.get(ChildBridgesService)
+      const spy = vi.spyOn(childBridgesService, 'getChildBridges').mockRejectedValue(new Error('IPC offline'))
+      try {
+        const res = await app.inject({
+          method: 'PUT',
+          path: '/config-editor/plugin/homebridge-mock-plugin/disable?include=restart-info',
+          headers: { authorization },
+          payload: {},
+        })
+        expect(res.statusCode).toBe(200)
+        expect(res.json().affectedBridges).toEqual([])
+        expect(res.json().config).toContain('homebridge-mock-plugin')
+      } finally {
+        spy.mockRestore()
+      }
+    })
   })
 
   it('GET /config-editor/backups', async () => {
@@ -1252,6 +1315,33 @@ describe('ConfigEditorController (e2e)', () => {
       const afterUi = after.platforms.find((p: any) => p.platform === 'config') as any
       expect(afterUi.cleanup).toEqual(beforeCleanup)
       expect(afterUi.cleanup?.hax).toBeUndefined()
+    })
+
+    it('two concurrent PATCH calls both persist their keys', async () => {
+      // Without per-path serialisation in JsonFileStoreService, both calls
+      // would read the same baseline and the second write would drop the
+      // first call's key.
+      const [a, b] = await Promise.all([
+        app.inject({
+          method: 'PATCH',
+          url: '/config-editor/ui',
+          headers: { authorization },
+          payload: { 'parallelA.value': 1 },
+        }),
+        app.inject({
+          method: 'PATCH',
+          url: '/config-editor/ui',
+          headers: { authorization },
+          payload: { 'parallelB.value': 2 },
+        }),
+      ])
+      expect(a.statusCode).toBe(200)
+      expect(b.statusCode).toBe(200)
+
+      const config: HomebridgeConfig = await readJson(configFilePath)
+      const uiBlock = config.platforms.find((p: any) => p.platform === 'config') as any
+      expect(uiBlock.parallelA?.value).toBe(1)
+      expect(uiBlock.parallelB?.value).toBe(2)
     })
 
     it('no-ops on an empty body', async () => {
