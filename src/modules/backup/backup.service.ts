@@ -30,6 +30,7 @@ import { Parse } from 'unzipper'
 
 import { HomebridgeConfig } from '../../core/config/config.interfaces.js'
 import { ConfigService } from '../../core/config/config.service.js'
+import { JsonFileStoreService } from '../../core/fs/json-file-store.service.js'
 import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.service.js'
 import { Logger } from '../../core/logger/logger.service.js'
 import { RE_BACKUP_FILENAME, RE_BACKUP_ID, RE_COLON } from '../../core/regex.constants.js'
@@ -53,6 +54,7 @@ export class BackupService {
     @Inject(SchedulerService) private readonly schedulerService: SchedulerService,
     @Inject(HomebridgeIpcService) private readonly homebridgeIpcService: HomebridgeIpcService,
     @Inject(Logger) private readonly logger: Logger,
+    @Inject(JsonFileStoreService) private readonly jsonStore: JsonFileStoreService,
   ) {
     this.scheduleInstanceBackups()
   }
@@ -770,8 +772,9 @@ export class BackupService {
       })
     }
 
-    // Save the config
-    await writeJson(this.configService.configPath, restoredConfig, { spaces: 4 })
+    // Save the config (atomic write under the JSON store lock so a
+    // crash mid-write doesn't leave config.json half-truncated).
+    await this.jsonStore.write(this.configService.configPath, restoredConfig)
 
     // Remove temp files
     await this.removeRestoreDirectory()
@@ -953,8 +956,8 @@ export class BackupService {
       platform: 'config',
     })
 
-    // Save the config
-    await writeJson(this.configService.configPath, targetConfig, { spaces: 4 })
+    // Save the config (atomic write under the JSON store lock).
+    await this.jsonStore.write(this.configService.configPath, targetConfig)
 
     // Remove temp files
     await this.removeRestoreDirectory()
