@@ -151,6 +151,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(toast): announce each toast once for screen readers
 - feat(plugins): hide child bridge set-up per plugin
 - fix(search): focus the search input when opening the search bar
+- fix(accessories): skip matter ipc when matter isn't configured
 
 ### Other Changes
 

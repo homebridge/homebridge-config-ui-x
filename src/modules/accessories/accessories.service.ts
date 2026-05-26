@@ -557,10 +557,15 @@ export class AccessoriesService {
    * Start Matter monitoring via IPC
    */
   private async startMatterMonitoring(): Promise<void> {
-    // Check if Matter support is enabled
+    // Skip if the running Homebridge version pre-dates Matter, or if the user
+    // hasn't turned Matter on for any bridge. Without the latter check we'd
+    // still fire startMatterMonitoring + getMatterAccessories every time the
+    // accessories tab loads, and (because Homebridge core currently doesn't
+    // echo our correlationId on its empty reply) the dispatcher would drop
+    // the response and we'd log timeout/retry/failed for each request.
     const featureFlags = this.configService.getFeatureFlags()
-    if (!featureFlags.matterSupport) {
-      return // Matter support not enabled
+    if (!featureFlags.matterSupport || !this.configService.isMatterEnabled()) {
+      return
     }
 
     if (this.matterMonitoringActive) {
@@ -634,9 +639,8 @@ export class AccessoriesService {
    * Load Matter accessories via IPC
    */
   private async loadMatterAccessories(): Promise<MatterService[]> {
-    // Check if Matter support is enabled
     const featureFlags = this.configService.getFeatureFlags()
-    if (!featureFlags.matterSupport) {
+    if (!featureFlags.matterSupport || !this.configService.isMatterEnabled()) {
       return []
     }
 
