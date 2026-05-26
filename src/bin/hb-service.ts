@@ -20,6 +20,7 @@ import { mkdtemp, open, readFile, rename, stat } from 'node:fs/promises'
 import { arch, cpus, homedir, platform, release, tmpdir, type } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
 import process from 'node:process'
+import { StringDecoder } from 'node:string_decoder'
 import { fileURLToPath } from 'node:url'
 
 import axios from 'axios'
@@ -532,15 +533,50 @@ export class HomebridgeServiceHelper {
 
     this.logger(`Started Homebridge v${this.homebridgePackage.version} with PID: ${this.homebridge.pid}.`)
 
+    // Buffer per-stream output and flush whole lines so concurrent
+    // stdout/stderr writes don't interleave mid-line in the log file.
+    const outDecoder = new StringDecoder('utf8')
+    const errDecoder = new StringDecoder('utf8')
+    let outBuf = ''
+    let errBuf = ''
+    const flushLines = (key: 'out' | 'err') => {
+      const buf = key === 'out' ? outBuf : errBuf
+      let consumed = 0
+      let idx = buf.indexOf('\n', consumed)
+      while (idx !== -1) {
+        this.log.write(buf.slice(consumed, idx + 1))
+        consumed = idx + 1
+        idx = buf.indexOf('\n', consumed)
+      }
+      const remainder = buf.slice(consumed)
+      if (key === 'out') {
+        outBuf = remainder
+      } else {
+        errBuf = remainder
+      }
+    }
+
     this.homebridge.stdout.on('data', (data) => {
-      this.log.write(data)
+      outBuf += outDecoder.write(data)
+      flushLines('out')
     })
 
     this.homebridge.stderr.on('data', (data) => {
-      this.log.write(data)
+      errBuf += errDecoder.write(data)
+      flushLines('err')
     })
 
     this.homebridge.on('close', (code, signal) => {
+      outBuf += outDecoder.end()
+      errBuf += errDecoder.end()
+      if (outBuf) {
+        this.log.write(outBuf.endsWith('\n') ? outBuf : `${outBuf}\n`)
+        outBuf = ''
+      }
+      if (errBuf) {
+        this.log.write(errBuf.endsWith('\n') ? errBuf : `${errBuf}\n`)
+        errBuf = ''
+      }
       this.handleHomebridgeClose(code, signal)
     })
   }
