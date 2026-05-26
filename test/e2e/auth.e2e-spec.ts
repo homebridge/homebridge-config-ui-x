@@ -7,6 +7,7 @@ import process from 'node:process'
 import { ValidationPipe } from '@nestjs/common'
 import { FastifyAdapter } from '@nestjs/platform-fastify'
 import { Test } from '@nestjs/testing'
+import { WsException } from '@nestjs/websockets'
 import { copy, pathExists, remove } from 'fs-extra'
 import { generate, generateSecret } from 'otplib'
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -344,7 +345,7 @@ describe('AuthController (e2e)', () => {
       }),
     }
     const guard = new WsGuard(configService)
-    expect(await guard.canActivate(context)).toBe(false)
+    await expect(guard.canActivate(context)).rejects.toThrow(WsException)
     expect(disconnect).toHaveBeenCalled()
   })
 
@@ -359,7 +360,7 @@ describe('AuthController (e2e)', () => {
       }),
     }
     const guard = new WsGuard(configService)
-    expect(await guard.canActivate(context)).toBe(false)
+    await expect(guard.canActivate(context)).rejects.toThrow(WsException)
     expect(disconnect).toHaveBeenCalled()
   })
 
@@ -386,7 +387,7 @@ describe('AuthController (e2e)', () => {
       }),
     }
     const guard = new WsGuard(configService)
-    expect(await guard.canActivate(context)).toBe(false)
+    await expect(guard.canActivate(context)).rejects.toThrow(WsException)
     expect(disconnect).toHaveBeenCalled()
   })
 
@@ -430,7 +431,7 @@ describe('AuthController (e2e)', () => {
     }
 
     const guard = new WsGuard(configService)
-    expect(await guard.canActivate(context)).toBe(false)
+    await expect(guard.canActivate(context)).rejects.toThrow(WsException)
     expect(disconnect).toHaveBeenCalled()
   })
 

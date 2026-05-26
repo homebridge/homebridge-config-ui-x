@@ -1,4 +1,5 @@
 import { CanActivate, ExecutionContext, Inject, Injectable } from '@nestjs/common'
+import { WsException } from '@nestjs/websockets'
 import jwt from 'jsonwebtoken'
 
 import { UserDto } from '../../../modules/users/users.dto.js'
@@ -27,7 +28,7 @@ export class WsAdminGuard implements CanActivate {
       return user.admin
     } catch (e) {
       client.disconnect()
-      return false
+      throw new WsException('Unauthorized')
     }
   }
 }
