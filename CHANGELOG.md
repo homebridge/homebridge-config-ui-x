@@ -113,6 +113,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(settings): bind HAP/Matter toggle valueChanges to component lifecycle
 - fix(setup-wizard): tie post-restore poll interval to component lifecycle
 - fix(plugins): bind manage-version update-pref subscribe to component lifecycle
+- fix(terminal): strip stacked socket listeners on terminal remount
 
 ### Other Changes
 
