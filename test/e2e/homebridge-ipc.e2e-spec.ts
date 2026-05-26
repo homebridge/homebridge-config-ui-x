@@ -283,6 +283,29 @@ describe('HomebridgeIpcService (e2e)', () => {
         .toThrow('The Homebridge service did not respond')
     }, 10000)
 
+    it('killHomebridge surfaces a failed kill() delivery as killFailed', async () => {
+      const mockProcess = new EventEmitter() as any
+      mockProcess.connected = true
+      mockProcess.send = vi.fn()
+      mockProcess.kill = vi.fn().mockReturnValue(false)
+      mockProcess.pid = 12345
+      ipcService.setHomebridgeProcess(mockProcess)
+
+      const statusListener = vi.fn()
+      ipcService.on('serverStatusUpdate', statusListener)
+
+      try {
+        const delivered = await ipcService.killHomebridge()
+        // The caller (postBackupRestoreRestart) hinges on this bool to
+        // decide whether to self-kill the UI; a false return must
+        // propagate.
+        expect(delivered).toBe(false)
+        expect(statusListener).toHaveBeenCalledWith({ status: 'killFailed' })
+      } finally {
+        ipcService.off('serverStatusUpdate', statusListener)
+      }
+    })
+
     it('cleans up the once-listener and timer when sendMessage throws', async () => {
       const spy = vi.spyOn(ipcService, 'sendMessage').mockImplementation(() => {
         throw new Error('IPC down')

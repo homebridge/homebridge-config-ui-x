@@ -976,9 +976,17 @@ export class BackupService {
    * Send SIGKILL to Homebridge to prevent accessory cache being re-generated on shutdown
    */
   postBackupRestoreRestart() {
-    setTimeout(() => {
-      // Kill homebridge
-      this.homebridgeIpcService.killHomebridge()
+    setTimeout(async () => {
+      // Kill homebridge first. If `kill()` returns false the signal
+      // didn't land — Homebridge is still running. Self-killing the
+      // UI from that state would leave Homebridge alive on the OLD
+      // pre-restore config and the service supervisor would bring the
+      // UI back up to a mismatched setup.
+      const delivered = await this.homebridgeIpcService.killHomebridge()
+      if (!delivered) {
+        this.logger.error('Skipping UI self-kill: Homebridge SIGKILL was not delivered.')
+        return
+      }
 
       // Kill self
       setTimeout(() => {

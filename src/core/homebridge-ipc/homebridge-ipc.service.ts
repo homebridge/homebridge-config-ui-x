@@ -168,12 +168,23 @@ export class HomebridgeIpcService extends EventEmitter {
   }
 
   /**
-   * Send a SIGKILL to the homebridge process
+   * Send a SIGKILL to the homebridge process. Returns whether the signal
+   * was actually delivered — `kill()` returns false when the process has
+   * already exited or when the host refused delivery (no permission,
+   * wrong PID). Callers that chain into a self-kill (`postBackupRestore
+   * Restart`) need to bail out on `false` so they don't take the UI down
+   * while Homebridge keeps running on the old, pre-restore config.
    */
-  public async killHomebridge() {
-    if (this.homebridge) {
-      this.logger.log('Sending SIGKILL to Homebridge...')
-      this.homebridge.kill('SIGKILL')
+  public async killHomebridge(): Promise<boolean> {
+    if (!this.homebridge) {
+      return false
     }
+    this.logger.log('Sending SIGKILL to Homebridge...')
+    const delivered = this.homebridge.kill('SIGKILL')
+    if (!delivered) {
+      this.logger.error('Failed to deliver SIGKILL to Homebridge — process may already be gone or kill() was refused.')
+      this.emit('serverStatusUpdate', { status: 'killFailed' })
+    }
+    return delivered
   }
 }
