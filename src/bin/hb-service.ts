@@ -969,28 +969,39 @@ export class HomebridgeServiceHelper {
     return port
   }
 
+  private avahiDaemonRunning: boolean | undefined
+
   /**
    * Test to see if the avahi-daemon service is running
    * @returns boolean true if the avahi-daemon service is running
    */
   private async isAvahiDaemonRunning(): Promise<boolean> {
+    if (this.avahiDaemonRunning !== undefined) {
+      return this.avahiDaemonRunning
+    }
     if (platform() !== 'linux') {
+      this.avahiDaemonRunning = false
       return false
     }
     if (!await pathExists('/etc/avahi/avahi-daemon.conf') || !await pathExists('/usr/bin/systemctl')) {
+      this.avahiDaemonRunning = false
       return false
     }
     try {
       if (await pathExists('/usr/lib/systemd/system/avahi.service')) {
         execSync('systemctl is-active --quiet avahi 2> /dev/null')
+        this.avahiDaemonRunning = true
         return true
       } else if (await pathExists('/lib/systemd/system/avahi-daemon.service')) {
         execSync('systemctl is-active --quiet avahi-daemon 2> /dev/null')
+        this.avahiDaemonRunning = true
         return true
       } else {
+        this.avahiDaemonRunning = false
         return false
       }
     } catch (e) {
+      this.avahiDaemonRunning = false
       return false
     }
   }
