@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, createEnvironmentInjector, EnvironmentInjector, inject, OnInit, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, createEnvironmentInjector, EnvironmentInjector, inject, OnDestroy, OnInit, signal } from '@angular/core'
 import { Router, RouterOutlet } from '@angular/router'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslateService } from '@ngx-translate/core'
@@ -24,7 +24,7 @@ import { environment } from '@/environments/environment'
   styleUrl: './layout.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class LayoutComponent implements OnInit {
+export class LayoutComponent implements OnInit, OnDestroy {
   // Injected dependencies
   private injector = inject(EnvironmentInjector)
   private $auth = inject(AuthService)
@@ -47,6 +47,17 @@ export class LayoutComponent implements OnInit {
     })
 
     void this.compareServerUiVersion()
+  }
+
+  public ngOnDestroy(): void {
+    // Detach the reconnect handler and tear down the cached `app`
+    // namespace socket. Without this, logout-then-login would mount a
+    // fresh LayoutComponent that registers a second reconnect listener
+    // on top of the old one, so a single reconnect would fire
+    // `checkToken` twice. Same hazard for navigation patterns that
+    // remount the layout (some routes lazy-load and detach the shell).
+    this.io?.socket?.removeAllListeners('reconnect')
+    this.io?.end?.()
   }
 
   private async compareServerUiVersion(): Promise<void> {
