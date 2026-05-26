@@ -138,6 +138,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(custom-plugins): attach custom-UI request handler before cleanup listeners
 - fix(ws): cap socket.io reconnect attempts and delay
 - fix(status): surface dashboard init errors as a toast
+- fix(layout): clean up color-scheme and sidebar resize listeners on destroy
 
 ### Other Changes
 
