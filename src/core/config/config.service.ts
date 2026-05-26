@@ -444,6 +444,31 @@ export class ConfigService {
   }
 
   /**
+   * Whether Matter is enabled anywhere in the Homebridge config: on the main
+   * bridge (`bridge.matter`) or on any child bridge (`_bridge.matter` in a
+   * platform or accessory block). Used to skip Matter IPC chatter — and the
+   * timeout/retry log spam it produces — when no Matter server will ever
+   * answer. The version-based `matterSupport` feature flag only proves the
+   * Homebridge runtime knows about Matter, not that the user turned it on.
+   */
+  public isMatterEnabled(): boolean {
+    const config = this.homebridgeConfig
+    if (!config) {
+      return false
+    }
+    if (config.bridge?.matter) {
+      return true
+    }
+    if (Array.isArray(config.platforms) && config.platforms.some(p => p?._bridge?.matter)) {
+      return true
+    }
+    if (Array.isArray(config.accessories) && config.accessories.some(a => a?._bridge?.matter)) {
+      return true
+    }
+    return false
+  }
+
+  /**
    * Get the Node.js update notification policy
    * @returns 'all' (default), 'none', or 'major'
    */
