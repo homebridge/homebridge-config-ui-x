@@ -139,6 +139,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(ws): cap socket.io reconnect attempts and delay
 - fix(status): surface dashboard init errors as a toast
 - fix(layout): clean up color-scheme and sidebar resize listeners on destroy
+- fix(config-editor): guard `_bridge?.username` before `.toUpperCase()`
 
 ### Other Changes
 
