@@ -103,6 +103,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(status): skip post-unsubscribe emit on disconnected stats clients
 - fix(plugins): validate plugin version regex on install/update DTO
 - fix(accessories): drop double-subscribe in lock-mechanism slider
+- fix(accessories): keep live-update streams alive across reloads
 
 ### Other Changes
 

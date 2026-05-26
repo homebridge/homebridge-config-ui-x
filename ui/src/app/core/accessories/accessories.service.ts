@@ -37,6 +37,10 @@ export class AccessoriesService {
   private combinedServiceIds = new Set<string>()
   private io!: IoNamespace
   private stop$ = new Subject<void>()
+  // True between `start()` and `stop()`. Guards the `accessories-data` handler
+  // so an in-flight payload landing after a session stops can't push stale
+  // services to subscribers.
+  private sessionActive = false
   private hiddenTypes = new Set([
     'InputSource',
     'LockManagement',
@@ -132,6 +136,20 @@ export class AccessoriesService {
     this.stop$.next()
     this.stop$.complete()
 
+    // Mark the session inactive so any in-flight `accessories-data` event that
+    // lands between `io.end()` and the socket actually closing is dropped
+    // instead of pushing stale services to subscribers.
+    //
+    // The public `accessoryData`/`layoutSaved` Subjects are deliberately NOT
+    // completed/reassigned here. This service is a root singleton and its
+    // consumers (accessories page, control modal, dashboard widget) subscribe
+    // once via `takeUntilDestroyed` and never re-subscribe. Completing the
+    // Subjects on stop killed those subscriptions on the first
+    // `accessories-reload-required` reload, so a late-discovered bridge was
+    // sorted into the rooms but never re-added to the bridge filter — hiding
+    // the whole bridge until a manual page refresh.
+    this.sessionActive = false
+
     this.io?.end?.()
     this.rooms.set([])
     this.accessories = { services: [] }
@@ -140,7 +158,8 @@ export class AccessoriesService {
     this.accessoryLayout = undefined as any
     this.originalLayout = undefined as any
 
-    // Reset for next session
+    // Reset the internal unsubscribe channel for the next session. The public
+    // Subjects persist for the lifetime of this singleton service.
     this.stop$ = new Subject<void>()
   }
 
@@ -150,6 +169,7 @@ export class AccessoriesService {
   public async start() {
     this.hapReadyForControl = false
     this.matterReadyForControl = false
+    this.sessionActive = true
 
     // Connect to the socket endpoint
     this.io = this.$ws.connectToNamespace('accessories')
@@ -168,6 +188,11 @@ export class AccessoriesService {
 
     // Subscribe to accessory events
     this.io.socket.on('accessories-data', (data: ServiceType[]) => {
+      // Drop events that arrive after the session was stopped (e.g. an
+      // in-flight payload landing between `stop()` and the socket closing).
+      if (!this.sessionActive) {
+        return
+      }
       this.parseServices(data)
       this.combineRelatedServices()
       this.generateHelpers()
@@ -187,10 +212,15 @@ export class AccessoriesService {
       this.accessoryData.next(data)
     })
 
-    // When a new instance is available, do a self reload
-    this.io.socket.on('accessories-reload-required', async () => {
-      this.stop()
-      await this.start()
+    // When a new instance is discovered, reload accessory data over the
+    // existing socket instead of tearing the session down and back up.
+    // A full stop()/start() re-binds every socket handler on the cached
+    // socket (the previous handlers are never removed), so each reload
+    // doubled the live listeners — and because each fired another reload, the
+    // count grew with every late-discovered bridge. Re-fetching in place keeps
+    // the single set of handlers; parseServices() merges the new bridge in.
+    this.io.socket.on('accessories-reload-required', () => {
+      this.io.socket.emit('accessory-control', { refresh: true })
     })
 
     // When only Matter accessories need to reload
