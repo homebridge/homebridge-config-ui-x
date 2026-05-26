@@ -108,6 +108,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(auth): invalidate token cache on cross-tab storage events
 - fix(layout): block ESC on version-mismatch and restart-required modals
 - fix(terminal): defer xterm FitAddon.fit() to next tick inside modals
+- fix(setup-wizard): reject oversized backup archives in the file picker
 
 ### Other Changes
 

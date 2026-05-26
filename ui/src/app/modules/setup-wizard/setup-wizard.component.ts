@@ -105,7 +105,26 @@ export class SetupWizardComponent implements OnInit {
   public handleRestoreFileInput(event: Event): void {
     const files = (event.target as HTMLInputElement).files
     if (files?.length) {
-      this.selectedFile.set(files[0])
+      const file = files[0]
+      // Reject up front if the picked archive is larger than the
+      // server-side multipart limit — otherwise the user sits through
+      // a long upload that the backend tar-extract endpoint will
+      // refuse anyway. Matches the size hint that the other restore
+      // modals already show next to their file picker.
+      if (file.size > globalThis.backup.maxBackupSize) {
+        ;(event.target as HTMLInputElement).value = ''
+        this.selectedFile.set(undefined)
+        this.progress.set(20)
+        this.$toastr.error(
+          this.$translate.instant('backup.backup_exceeds_max_size', {
+            maxBackupSizeText: globalThis.backup.maxBackupSizeText,
+            size: `${(file.size / (1024 * 1024)).toFixed(1)}MB`,
+          }),
+          this.$translate.instant('toast.title_error'),
+        )
+        return
+      }
+      this.selectedFile.set(file)
       this.progress.set(40)
     } else {
       this.selectedFile.set(undefined)
