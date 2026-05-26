@@ -3,7 +3,7 @@
   <div
     class="d-flex flex-wrap w-100 mt-1 justify-content-start gridster-item-content overflow-auto no-scrollbars align-items-start"
   >
-    @if (serverInfo() && serverInfo()!.homebridgeRunningInDocker) {
+    @if (runningInDocker) {
       <div class="hb-status-item hb-status-item-docker d-flex flex-column mb-1">
         <div
           class="d-flex ps-3 py-1 align-items-center cursor-pointer"
@@ -152,18 +152,22 @@
                   <i aria-hidden="true" [class]="`fas fa-lg ${getNodejsIconClass()}`"></i>
                 </div>
                 <div class="align-self-center px-3">
-                  <button
-                    type="button"
-                    class="btn btn-link p-0 text-decoration-none card-link card-link-title"
-                    (click)="nodeVersionModal(serverInfo()!.nodeVersion)"
-                  >
-                    Node.js
-                  </button>
-                  @if (widget().showNpmVersion && nodejsInfo()!.npmVersion) {
-                    &middot; npm
+                  @if (nodejsStatusDone() && serverInfo()) {
+                    <button
+                      type="button"
+                      class="btn btn-link p-0 text-decoration-none card-link card-link-title"
+                      (click)="nodeVersionModal(serverInfo()!.nodeVersion)"
+                    >
+                      Node.js
+                    </button>
+                    @if (widget().showNpmVersion && nodejsInfo()?.npmVersion) {
+                      &middot; npm
+                    }
+                  } @else {
+                    <span>Node.js</span>
                   }
                   <br />
-                  @if (!nodejsStatusDone()) {
+                  @if (!nodejsStatusDone() || !serverInfo()) {
                     <span class="grey-text small">{{ 'status.homebridge.checking' | translate }}</span>
                   } @else {
                     <span class="grey-text small"
@@ -199,8 +203,7 @@
           </div>
         }
       </div>
-    }
-    @if (serverInfo() && !serverInfo()!.homebridgeRunningInDocker) {
+    } @else {
       <!-- Homebridge -->
       <div class="hb-status-item hb-status-item-quarter d-flex flex-row mb-1">
         <div class="d-flex ps-3 py-1">
@@ -333,7 +336,7 @@
         </div>
       </div>
     </div>
-    @if (serverInfo() && !serverInfo()!.homebridgeRunningInDocker) {
+    @if (!runningInDocker) {
       <!-- Node.js -->
       <div class="hb-status-item hb-status-item-quarter d-flex flex-row mb-1">
         <div class="d-flex ps-3 py-1">
@@ -341,18 +344,22 @@
             <i aria-hidden="true" [class]="`fas fa-lg ${getNodejsIconClass()}`"></i>
           </div>
           <div class="align-self-center px-3">
-            <button
-              type="button"
-              class="btn btn-link p-0 text-decoration-none card-link card-link-title"
-              (click)="nodeVersionModal(serverInfo()!.nodeVersion)"
-            >
-              Node.js
-            </button>
-            @if (widget().showNpmVersion && nodejsInfo()!.npmVersion) {
-              &middot; npm
+            @if (nodejsStatusDone() && serverInfo()) {
+              <button
+                type="button"
+                class="btn btn-link p-0 text-decoration-none card-link card-link-title"
+                (click)="nodeVersionModal(serverInfo()!.nodeVersion)"
+              >
+                Node.js
+              </button>
+              @if (widget().showNpmVersion && nodejsInfo()?.npmVersion) {
+                &middot; npm
+              }
+            } @else {
+              <span>Node.js</span>
             }
             <br />
-            @if (!nodejsStatusDone()) {
+            @if (!nodejsStatusDone() || !serverInfo()) {
               <span class="grey-text small">{{ 'status.homebridge.checking' | translate }}</span>
             } @else {
               <span class="grey-text small"
