@@ -104,6 +104,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(plugins): validate plugin version regex on install/update DTO
 - fix(accessories): drop double-subscribe in lock-mechanism slider
 - fix(accessories): keep live-update streams alive across reloads
+- fix(auth): global HTTP 401 interceptor triggers clean logout
 
 ### Other Changes
 
