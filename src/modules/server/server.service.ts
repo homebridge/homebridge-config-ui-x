@@ -41,6 +41,7 @@ import {
   RE_CHAR_PAIRS,
   RE_COLON,
   RE_DEVICE_ID,
+  RE_EXTERNAL_ACCESSORIES_EXACT,
   RE_HEX_12,
   RE_HEX_ANY,
   RE_HYPHEN_GLOBAL,
@@ -343,10 +344,11 @@ export class ServerService {
       .filter(x => x.match(RE_ACCESSORY_INFO_FILE))
 
     const configFile = await this.configEditorService.getConfigFile()
+    const externalAttribution = await this.getExternalAccessoryAttribution()
 
     // Get HAP devices
     const hapDevices = await Promise.all(devices.map(async (x) => {
-      return await this.getDevicePairingById(x.split('.')[1], configFile)
+      return await this.getDevicePairingById(x.split('.')[1], configFile, externalAttribution)
     }))
 
     // Get Matter external published accessories
@@ -354,6 +356,49 @@ export class ServerService {
 
     // Combine and sort by name
     return [...hapDevices, ...matterExternalDevices].sort((a, b) => a.name.localeCompare(b.name))
+  }
+
+  /**
+   * Read the externalAccessories index files written by the homebridge runtime so we can
+   * attribute each external HAP accessory to the plugin that published it (HAP-NodeJS
+   * AccessoryInfo files do not store plugin attribution). Older homebridge versions don't
+   * write these files, in which case this returns an empty map.
+   * @returns Map keyed by uppercase MAC username
+   * @private
+   */
+  private async getExternalAccessoryAttribution(): Promise<Map<string, { plugin: string, displayName?: string, category?: number, port?: number }>> {
+    const attribution = new Map<string, { plugin: string, displayName?: string, category?: number, port?: number }>()
+    const cachedAccessoriesDir = join(this.configService.storagePath, 'accessories')
+
+    if (!await pathExists(cachedAccessoriesDir)) {
+      return attribution
+    }
+
+    const externalFiles = (await readdir(cachedAccessoriesDir))
+      .filter(x => x.match(RE_EXTERNAL_ACCESSORIES_EXACT) || x === 'externalAccessories')
+
+    for (const file of externalFiles) {
+      try {
+        const entries = await readJson(join(cachedAccessoriesDir, file))
+        if (!Array.isArray(entries)) {
+          continue
+        }
+        for (const entry of entries) {
+          if (typeof entry?.username === 'string' && typeof entry?.plugin === 'string') {
+            attribution.set(entry.username.toUpperCase(), {
+              plugin: entry.plugin,
+              displayName: entry.displayName,
+              category: entry.category,
+              port: entry.port,
+            })
+          }
+        }
+      } catch (e) {
+        this.logger.warn(`Failed to read external accessory attribution file ${file}: ${e.message}`)
+      }
+    }
+
+    return attribution
   }
 
   /**
@@ -412,10 +457,14 @@ export class ServerService {
         // Read commissioning info if available
         const commissioningPath = join(matterPath, deviceId, 'commissioning.json')
         let commissioned = false
+        let qrCode: string | undefined
+        let manualPairingCode: string | undefined
         if (await pathExists(commissioningPath)) {
           try {
             const commissioningInfo = await readJson(commissioningPath)
             commissioned = commissioningInfo.commissioned || false
+            qrCode = typeof commissioningInfo.qrCode === 'string' ? commissioningInfo.qrCode : undefined
+            manualPairingCode = typeof commissioningInfo.manualPairingCode === 'string' ? commissioningInfo.manualPairingCode : undefined
           } catch (parseError) {
             this.logger.warn(`Malformed commissioning.json at ${commissioningPath}, removing corrupted file`)
             try {
@@ -434,8 +483,11 @@ export class ServerService {
           _category: 'other', // Matter external accessories don't have HAP categories
           _matter: true,
           _matterOnly: true, // Flag to indicate this is Matter-only
+          _isExternal: true,
           _isPaired: commissioned,
           _plugin: accessory.plugin, // Plugin identifier for filtering
+          _setupCode: qrCode, // Matter QR-code payload string (encodes the commissioning info)
+          pincode: manualPairingCode, // Human-readable manual pairing code
           name: accessory.displayName || 'Matter External Accessory',
           displayName: accessory.displayName || 'Matter External Accessory',
           manufacturer: accessory.manufacturer || 'Unknown',
@@ -457,8 +509,14 @@ export class ServerService {
    * Return a single device pairing
    * @param deviceId
    * @param configFile
+   * @param externalAttribution - optional pre-computed map of external accessory plugin
+   * attribution (use when calling in a loop to avoid re-reading the same files)
    */
-  public async getDevicePairingById(deviceId: string, configFile = null) {
+  public async getDevicePairingById(
+    deviceId: string,
+    configFile = null,
+    externalAttribution: Map<string, { plugin: string, displayName?: string, category?: number, port?: number }> | null = null,
+  ) {
     const persistPath = join(this.configService.storagePath, 'persist')
 
     let device: any
@@ -470,6 +528,10 @@ export class ServerService {
 
     if (!configFile) {
       configFile = await this.configEditorService.getConfigFile()
+    }
+
+    if (!externalAttribution) {
+      externalAttribution = await this.getExternalAccessoryAttribution()
     }
 
     const username = ServerService.hexToMac(deviceId)
@@ -491,6 +553,17 @@ export class ServerService {
     device._setupCode = this.generateSetupCode(device)
     device._couldBeStale = !device._main && device._category === 'bridge' && !pluginBlock
     device._matter = !!(pluginBlock?._bridge?.matter)
+
+    const externalMeta = externalAttribution.get(username.toUpperCase())
+    if (externalMeta && !isMain) {
+      device._plugin = externalMeta.plugin
+      device._isExternal = true
+      if (typeof externalMeta.port === 'number') {
+        device._port = externalMeta.port
+      }
+      // An attributed external is by definition not a stale orphan
+      device._couldBeStale = false
+    }
 
     // Validate that Matter should not be on accessory-based plugins
     if (device._matter && pluginBlock && 'accessory' in pluginBlock) {

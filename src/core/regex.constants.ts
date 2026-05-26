@@ -42,6 +42,7 @@ export const RE_HEX_ANY = /^[a-f0-9]+$/i
 export const RE_ACCESSORY_INFO_FILE = /AccessoryInfo\.([A-Fa-f0-9]+)\.json$/
 export const RE_CACHED_ACCESSORIES_EXACT = /^cachedAccessories\.([A-F,0-9]+)$/
 export const RE_CACHED_ACCESSORIES = /cachedAccessories\.([A-F,0-9]+)/
+export const RE_EXTERNAL_ACCESSORIES_EXACT = /^externalAccessories\.([A-F,0-9]+)$/
 
 // Homebridge bridge config
 export const RE_PIN = /^\d{3}-\d{2}-\d{3}$/

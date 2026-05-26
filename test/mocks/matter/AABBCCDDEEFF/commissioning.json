@@ -1,6 +1,8 @@
 {
   "commissioned": true,
-  "setupUri": "MT:Y.K90-C80B00000000",
-  "pin": "87654321",
-  "serialNumber": "EXT-MATTER-001"
+  "qrCode": "MT:Y.K90-C80B00000000",
+  "manualPairingCode": "8765-432-1098",
+  "serialNumber": "EXT-MATTER-001",
+  "passcode": 87654321,
+  "discriminator": 3840
 }

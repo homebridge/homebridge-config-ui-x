@@ -267,6 +267,10 @@ export class PluginCardComponent implements OnInit {
     void this.$plugin.bridgeSettings(this.plugin())
   }
 
+  public openExternalAccessories(): void {
+    void this.$plugin.externalAccessories(this.plugin())
+  }
+
   public switchToScoped(): void {
     void this.$plugin.switchToScoped(this.plugin())
   }
