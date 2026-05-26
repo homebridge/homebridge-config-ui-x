@@ -36,6 +36,7 @@ export class LayoutComponent implements OnInit, OnDestroy {
 
   // Other properties
   private io!: IoNamespace
+  private lastReconnectCheck = 0
 
   // Signals
   public readonly sidebarExpanded = signal(false)
@@ -43,6 +44,18 @@ export class LayoutComponent implements OnInit, OnDestroy {
   public ngOnInit(): void {
     this.io = this.$ws.connectToNamespace('app')
     this.io.socket.on('reconnect', () => {
+      // Cooldown between checkToken calls. On a rolling restart the
+      // socket can flap several times within a few seconds — each
+      // flap firing checkToken meant a 401 storm against a backend
+      // that's still starting up, and any one of those 401s reloads
+      // the page through the new auth-error interceptor. The loop
+      // self-perpetuates after reload because the fresh socket
+      // immediately reconnects too. Throttle to once every 5 s.
+      const now = Date.now()
+      if (now - this.lastReconnectCheck < 5000) {
+        return
+      }
+      this.lastReconnectCheck = now
       void this.$auth.checkToken()
     })
 
