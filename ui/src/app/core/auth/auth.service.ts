@@ -26,13 +26,17 @@ export class AuthService {
   // consumers (e.g. WsService) can update long-lived state that captured
   // the previous token at construction time.
   public readonly tokenRotated = new Subject<void>()
+  // Resolves once the constructor's loadToken() finishes — guards that
+  // check isLoggedIn() at startup must await this so they don't see the
+  // pre-load empty state on a fast first navigation.
+  public readonly tokenReady: Promise<void>
   private logoutTimer!: NodeJS.Timeout
   private lastRefreshTime: number = Date.now()
   private isRefreshing: boolean = false
 
   constructor() {
     // Load the token (if present) from local storage on page init
-    void this.loadToken()
+    this.tokenReady = this.loadToken()
   }
 
   public async login(form: { username: string, password: string, ota?: string }) {
