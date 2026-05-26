@@ -147,6 +147,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - chore(test): pin runningOnRaspberryPi=false in flaky status-gateway test
 - chore(api): validate port-range bodies with a class-validator DTO
 - test(audit): cover audit coverage gaps and close concurrent-PATCH race they exposed
+- chore(test): use type cast for private logger spy
 
 ### Homebridge Dependencies
 

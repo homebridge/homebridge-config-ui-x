@@ -291,7 +291,7 @@ describe('HomebridgeIpcService (e2e)', () => {
       mockProcess.pid = 12345
       ipcService.setHomebridgeProcess(mockProcess)
 
-      const errorSpy = vi.spyOn(ipcService['logger'], 'error')
+      const errorSpy = vi.spyOn((ipcService as any).logger, 'error')
 
       try {
         ipcService.restartHomebridge()
