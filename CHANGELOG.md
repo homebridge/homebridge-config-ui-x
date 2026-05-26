@@ -149,6 +149,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(status): use `setInput()` for the widget signal input on dynamic widgets
 - fix(config-editor): add plain-text editor option for screen reader users (@rfiorentino1)
 - fix(toast): announce each toast once for screen readers
+- feat(plugins): hide child bridge set-up per plugin
 
 ### Other Changes
 

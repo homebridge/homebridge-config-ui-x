@@ -125,6 +125,23 @@
                 ></label>
               </div>
             </li>
+            @if (!justInstalled && !enabledBlocks()[+selectedBlock()] && !currentlySelectedLink()) {
+              <li class="list-group-item d-flex justify-content-between align-items-center flex-row pb-2">
+                <span class="text-start">
+                  {{ 'child_bridge.config.hide_setup_recommendation' | translate }}
+                </span>
+                <div class="text-end grey-text d-flex align-items-center">
+                  <input
+                    type="checkbox"
+                    class="rendux-input"
+                    id="toggleHideChildBridgeSetupInput"
+                    [checked]="hideChildBridgeSetup()"
+                    (change)="toggleHideChildBridgeSetup()"
+                  />
+                  <label class="rendux-label" aria-hidden="true" for="toggleHideChildBridgeSetupInput"></label>
+                </div>
+              </li>
+            }
           }
           @if (currentlySelectedLink()) {
             <li class="list-group-item d-flex flex-column flex-md-row align-items-center">

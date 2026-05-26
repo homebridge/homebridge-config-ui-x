@@ -62,6 +62,7 @@ export interface EnvInterface {
   plugins?: {
     hideUpdatesFor?: string[]
     showBetasFor?: string[]
+    hideChildBridgeSetupFor?: string[]
   }
   nodeUpdatePolicy?: NodeUpdatePolicy
   homebridgeUpdatePolicy?: HomebridgeUpdatePolicy
