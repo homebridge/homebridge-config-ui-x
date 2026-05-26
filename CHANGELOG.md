@@ -96,6 +96,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(plugins): build plugin-list caches in locals before swapping refs
 - fix(ipc): clean up `requestResponse` listener when `sendMessage` throws
 - fix(scheduler): catch and log rejections from fire-and-forget cron callbacks
+- fix(accessories): route Matter IPC replies through a single shared dispatcher
 
 ### Other Changes
 
