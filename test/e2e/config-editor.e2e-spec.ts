@@ -1058,6 +1058,26 @@ describe('ConfigEditorController (e2e)', () => {
     expect(res.json()).toHaveLength(backupCount)
   })
 
+  it('GET /config-editor/backups (sorted newest first by numeric timestamp)', async () => {
+    await ensureDir(backupFilePath)
+    await emptyDir(backupFilePath)
+
+    const timestamps = ['999999999', '1700000000000', '1500000000000', '100000000000']
+    for (const ts of timestamps) {
+      await writeFile(resolve(backupFilePath, `config.json.${ts}`), 'xyz')
+    }
+
+    const res = await app.inject({
+      method: 'GET',
+      path: '/config-editor/backups',
+      headers: { authorization },
+    })
+
+    expect(res.statusCode).toBe(200)
+    const ids = res.json().map((b: any) => b.id)
+    expect(ids).toEqual(['1700000000000', '1500000000000', '100000000000', '999999999'])
+  })
+
   it('GET /config-editor/backups/:backupId', async () => {
     const availableBackups = (await app.inject({
       method: 'GET',
