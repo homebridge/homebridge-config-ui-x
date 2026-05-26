@@ -301,8 +301,19 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
           break
         }
         case 'i18n.translations': {
-          // eslint-disable-next-line ts/no-require-imports
-          this.requestResponse(e, require(`../../../../i18n/${this.$translate.getCurrentLang()}.json`))
+          // Synchronous require() — webpack throws when the requested
+          // locale file doesn't exist (unknown user language, mistyped
+          // setting). Without the try/catch the whole modal blows up
+          // instead of degrading to the English baseline.
+          let translations: unknown
+          try {
+            // eslint-disable-next-line ts/no-require-imports
+            translations = require(`../../../../i18n/${this.$translate.getCurrentLang()}.json`)
+          } catch {
+            // eslint-disable-next-line ts/no-require-imports
+            translations = require('../../../../i18n/en.json')
+          }
+          this.requestResponse(e, translations)
           break
         }
         case 'close': {

@@ -120,6 +120,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(config-editor): prompt before navigating away with unsaved changes
 - fix(accessories): surface a warning toast when the accessory cache fails to load
 - fix(users): surface errors when the users list fails to reload
+- fix(custom-plugins): fall back to en.json when locale require() fails
 
 ### Other Changes
 
