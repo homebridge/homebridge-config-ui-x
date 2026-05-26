@@ -241,13 +241,13 @@ export class PluginsSettingsUiService {
       client.removeAllListeners('request')
     }
 
-    client.on('disconnect', cleanup)
-    client.on('end', cleanup)
-
     client.on('request', (request) => {
       if (child.connected) {
         child.send(request)
       }
     })
+
+    client.on('disconnect', cleanup)
+    client.on('end', cleanup)
   }
 }
