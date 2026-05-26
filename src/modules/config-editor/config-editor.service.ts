@@ -1,3 +1,4 @@
+import { randomInt } from 'node:crypto'
 import { copyFile, readdir, readFile, unlink } from 'node:fs/promises'
 import { join, resolve } from 'node:path'
 
@@ -922,7 +923,7 @@ export class ConfigEditorService implements OnApplicationBootstrap {
    * Generates a new random pin
    */
   public generatePin() {
-    let code: string | Array<any> = `${Math.floor(10000000 + Math.random() * 90000000)}`
+    let code: string | Array<any> = `${randomInt(10000000, 100000000)}`
     code = code.split('')
     code.splice(3, 0, '-')
     code.splice(6, 0, '-')
@@ -937,8 +938,8 @@ export class ConfigEditorService implements OnApplicationBootstrap {
     const hexDigits = '0123456789ABCDEF'
     let username = '0E:'
     for (let i = 0; i < 5; i += 1) {
-      username += hexDigits.charAt(Math.round(Math.random() * 15))
-      username += hexDigits.charAt(Math.round(Math.random() * 15))
+      username += hexDigits.charAt(randomInt(0, 16))
+      username += hexDigits.charAt(randomInt(0, 16))
       if (i !== 4) {
         username += ':'
       }
