@@ -35,6 +35,12 @@ export class AccessoriesService {
   private matterUpdateListener: ((event: MatterEvent) => void) | null = null
   private activeClients = new Set<Socket>()
   private matterAccessories: MatterService[] = []
+  // Single shared dispatcher for `matterEvent` IPC replies. Each in-flight
+  // request stores `{ eventType, resolve, reject, timer }` keyed by its
+  // correlation id; the dispatcher routes incoming events to the right
+  // waiter instead of every request registering its own listener.
+  private matterRequests = new Map<string, { eventType: string, resolve: (v: any) => void, reject: (e: Error) => void, timer: ReturnType<typeof setTimeout> }>()
+  private matterDispatcherInstalled = false
 
   constructor(
     @Inject(ConfigService) private readonly configService: ConfigService,
@@ -445,40 +451,68 @@ export class AccessoriesService {
   }
 
   /**
-   * Single attempt to wait for a Matter event with the given timeout
+   * Single attempt to wait for a Matter event with the given timeout.
+   * Each request gets a correlation id and parks `{ resolve, reject }` in
+   * `matterRequests`; the shared dispatcher (installed on first use)
+   * routes incoming `matterEvent`s to the right waiter. Pre-fix this
+   * registered a fresh listener per request, so N concurrent requests
+   * meant N listeners and each emit did O(N) work.
    */
   private async attemptMatterEvent<T = unknown>(eventType: string, sendRequest: (correlationId: string) => void, timeoutMs: number): Promise<T> {
+    this.ensureMatterDispatcher()
     const correlationId = `${eventType}-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`
 
     return new Promise((resolve, reject) => {
-      const actionTimeout = setTimeout(() => {
-        // eslint-disable-next-line ts/no-use-before-define
-        this.homebridgeIpcService.removeListener('matterEvent', listener)
-        this.homebridgeIpcService.setMaxListeners(this.homebridgeIpcService.getMaxListeners() - 1)
-        reject(new Error('The Homebridge service did not respond'))
+      const timer = setTimeout(() => {
+        if (this.matterRequests.delete(correlationId)) {
+          reject(new Error('The Homebridge service did not respond'))
+        }
       }, timeoutMs)
 
-      const listener = (event: MatterEvent) => {
-        // Match on both event type and correlationId to prevent cross-talk
-        if (event.type === eventType && (!event.correlationId || event.correlationId === correlationId)) {
-          clearTimeout(actionTimeout)
-          this.homebridgeIpcService.removeListener('matterEvent', listener)
-          this.homebridgeIpcService.setMaxListeners(this.homebridgeIpcService.getMaxListeners() - 1)
-          resolve(event.data as T)
-        }
-      }
-
-      this.homebridgeIpcService.setMaxListeners(this.homebridgeIpcService.getMaxListeners() + 1)
-      this.homebridgeIpcService.on('matterEvent', listener)
+      this.matterRequests.set(correlationId, {
+        eventType,
+        resolve,
+        reject,
+        timer,
+      })
 
       try {
         sendRequest(correlationId)
       } catch (e) {
-        clearTimeout(actionTimeout)
-        this.homebridgeIpcService.removeListener('matterEvent', listener)
-        this.homebridgeIpcService.setMaxListeners(this.homebridgeIpcService.getMaxListeners() - 1)
-        reject(e)
+        if (this.matterRequests.delete(correlationId)) {
+          clearTimeout(timer)
+          reject(e)
+        }
       }
+    })
+  }
+
+  /**
+   * Install the single `matterEvent` listener on first use. Routes each
+   * incoming event to the waiter parked under its correlation id.
+   * Events whose correlation id is unknown (or whose `eventType` doesn't
+   * match the parked request's expectation) are dropped — matches the
+   * pre-fix per-listener filter behaviour.
+   */
+  private ensureMatterDispatcher(): void {
+    if (this.matterDispatcherInstalled) {
+      return
+    }
+    this.matterDispatcherInstalled = true
+    this.homebridgeIpcService.on('matterEvent', (event: MatterEvent) => {
+      if (!event?.correlationId) {
+        return
+      }
+      const waiter = this.matterRequests.get(event.correlationId)
+      if (!waiter) {
+        return
+      }
+      if (event.type !== waiter.eventType) {
+        return
+      }
+      this.matterRequests.delete(event.correlationId)
+      clearTimeout(waiter.timer)
+      waiter.resolve(event.data)
     })
   }
 
