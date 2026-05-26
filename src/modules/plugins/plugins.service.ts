@@ -1287,13 +1287,22 @@ export class PluginsService {
     // check to see if this plugin implements dynamic schemas
     if (configSchema.dynamicSchemaVersion) {
       const dynamicSchemaPath = resolve(this.configService.storagePath, `.${pluginName}-v${configSchema.dynamicSchemaVersion}.schema.json`)
-      this.logger.log(`[${pluginName}] dynamic schema path: ${dynamicSchemaPath}.`)
-      if (existsSync(dynamicSchemaPath)) {
-        try {
-          configSchema = await readJson(dynamicSchemaPath)
-          this.logger.log(`[${pluginName}] dynamic schema loaded from ${dynamicSchemaPath}.`)
-        } catch (e) {
-          this.logger.error(`[${pluginName}] failed to load dynamic schema from ${dynamicSchemaPath} as ${e.message}.`)
+      // `dynamicSchemaVersion` is plugin-controlled; resolve() folds any
+      // `../` segments before we hit `readJson`. Without this guard a
+      // crafted version string could escape `storagePath` and surface
+      // any JSON-parseable file on the host through the schema endpoint.
+      const storageBoundary = this.configService.storagePath + sep
+      if (!dynamicSchemaPath.startsWith(storageBoundary)) {
+        this.logger.warn(`[${pluginName}] ignoring dynamic schema path ${dynamicSchemaPath} — outside storage directory.`)
+      } else {
+        this.logger.log(`[${pluginName}] dynamic schema path: ${dynamicSchemaPath}.`)
+        if (existsSync(dynamicSchemaPath)) {
+          try {
+            configSchema = await readJson(dynamicSchemaPath)
+            this.logger.log(`[${pluginName}] dynamic schema loaded from ${dynamicSchemaPath}.`)
+          } catch (e) {
+            this.logger.error(`[${pluginName}] failed to load dynamic schema from ${dynamicSchemaPath} as ${e.message}.`)
+          }
         }
       }
     }

@@ -99,6 +99,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(accessories): route Matter IPC replies through a single shared dispatcher
 - fix(accessories): short-circuit accessory loads after client disconnect
 - fix(backup): only self-kill the UI after Homebridge SIGKILL is delivered
+- fix(plugins): reject dynamic schema paths that escape `storagePath`
 
 ### Other Changes
 

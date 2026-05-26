@@ -444,6 +444,46 @@ describe('PluginController (e2e)', () => {
     ;(pluginsService as any).configService.ui.lang = originalLang
   })
 
+  it('GET /plugins/config-schema/:plugin-name rejects a dynamicSchemaVersion that escapes storagePath', async () => {
+    const { readJson, writeJson, remove } = await import('fs-extra')
+    const { resolve: pathResolve } = await import('node:path')
+
+    const baseSchemaPath = pathResolve(pluginsPath, 'homebridge-mock-plugin', 'config.schema.json')
+    const baseSchema = await readJson(baseSchemaPath)
+    // Traversal climbs from storagePath up into the parent test/ dir.
+    const escapeVersion = '1.0/../../escape'
+    const escapeTarget = pathResolve(process.env.UIX_STORAGE_PATH!, `.homebridge-mock-plugin-v${escapeVersion}.schema.json`)
+    const maliciousSchema = {
+      pluginAlias: 'EscapedPlugin',
+      pluginType: 'platform',
+      schema: { properties: { exfiltrated: { type: 'string', default: 'OWNED' } } },
+    }
+
+    try {
+      await writeJson(baseSchemaPath, { ...baseSchema, dynamicSchemaVersion: escapeVersion })
+      await writeJson(escapeTarget, maliciousSchema)
+      // Reset the in-memory plugin cache so the new schema is picked up.
+      ;(pluginsService as any).installedPlugins = null
+
+      const res = await app.inject({
+        method: 'GET',
+        path: '/plugins/config-schema/homebridge-mock-plugin',
+        headers: {
+          authorization,
+        },
+      })
+
+      expect(res.statusCode).toBe(200)
+      // Must return the original schema, NOT the one parked outside storagePath.
+      expect(res.json().pluginAlias).toBe('ExampleHomebridgePlugin')
+      expect(res.json().schema.properties.exfiltrated).toBeUndefined()
+    } finally {
+      await writeJson(baseSchemaPath, baseSchema)
+      await remove(escapeTarget).catch(() => undefined)
+      ;(pluginsService as any).installedPlugins = null
+    }
+  })
+
   it('GET /plugins/changelog/:plugin-name', async () => {
     const res = await app.inject({
       method: 'GET',
