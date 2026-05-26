@@ -98,6 +98,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(scheduler): catch and log rejections from fire-and-forget cron callbacks
 - fix(accessories): route Matter IPC replies through a single shared dispatcher
 - fix(accessories): short-circuit accessory loads after client disconnect
+- fix(backup): only self-kill the UI after Homebridge SIGKILL is delivered
 
 ### Other Changes
 
