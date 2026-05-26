@@ -195,7 +195,9 @@ export class BackupService {
 
     this.schedulerService.scheduleJob('instance-backup', scheduleRule, () => {
       this.logger.log('Running scheduled instance backup...')
-      this.runScheduledBackupJob()
+      this.runScheduledBackupJob().catch((e) => {
+        this.logger.error(`Scheduled instance backup failed as ${e?.message || e}.`)
+      })
     })
   }
 

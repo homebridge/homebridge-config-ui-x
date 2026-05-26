@@ -83,7 +83,9 @@ export class ConfigEditorService implements OnApplicationBootstrap {
 
     this.schedulerService.scheduleJob('cleanup-config-backups', scheduleRule, () => {
       this.logger.log('Running job to cleanup config.json backup files older than 60 days...')
-      this.cleanupConfigBackups()
+      this.cleanupConfigBackups().catch((e) => {
+        this.logger.error(`config.json backup cleanup failed as ${e?.message || e}.`)
+      })
     })
   }
 
