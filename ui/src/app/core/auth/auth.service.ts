@@ -128,20 +128,25 @@ export class AuthService {
   private setLogoutTimer() {
     clearTimeout(this.logoutTimer)
     if (this.token && !this.$jwtHelper.isTokenExpired(this.token, this.$settings.serverTimeOffset)) {
-      // Use sessionTimeout as inactivity timeout
-      const inactivityTimeout = this.$settings.sessionTimeout * 1000 // Convert to milliseconds
-
-      // Set timeout only accepts a 32bit integer, if the number is larger than this, do not time out
-      if (inactivityTimeout <= 2147483647) {
-        this.logoutTimer = setTimeout(async () => {
-          if (this.$settings.formAuth === false) {
-            await this.noauth()
-            window.location.reload()
-          } else {
-            this.logout()
-          }
-        }, inactivityTimeout)
+      // setTimeout accepts a signed 32-bit ms count (max ≈ 24.8 days).
+      // sessionTimeout is admin-configurable seconds; values that produce
+      // a larger ms count silently never timeout — and silently is the
+      // problem. Clamp to the 32-bit ceiling so the timer always arms,
+      // and log a warning so the admin understands the effective max.
+      const TIMER_MAX_MS = 2147483647
+      const requested = this.$settings.sessionTimeout * 1000
+      const inactivityTimeout = Math.min(requested, TIMER_MAX_MS)
+      if (requested > TIMER_MAX_MS) {
+        console.warn(`Inactivity timeout ${this.$settings.sessionTimeout}s exceeds the browser setTimeout limit; clamped to ~24.8 days.`)
       }
+      this.logoutTimer = setTimeout(async () => {
+        if (this.$settings.formAuth === false) {
+          await this.noauth()
+          window.location.reload()
+        } else {
+          this.logout()
+        }
+      }, inactivityTimeout)
     }
   }
 
