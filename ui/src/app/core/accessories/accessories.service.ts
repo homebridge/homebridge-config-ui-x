@@ -73,16 +73,30 @@ export class AccessoriesService {
   }
 
   private async loadCachedData(): Promise<void> {
+    // Show a single toast on first failure rather than per-cache, so a
+    // backend that's down across the board doesn't fire two error toasts
+    // in a row. Failures here mean the Accessory Info modal will be
+    // missing data — without surfacing it, the user just sees a blank
+    // panel and assumes the feature is broken.
+    let surfaced = false
+    const handle = (error: any) => {
+      console.error(error)
+      if (!surfaced) {
+        surfaced = true
+        this.$toastr.warning(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_warning'))
+      }
+    }
+
     try {
       this.accessoryCache = await this.$accessoryCache.getHap()
     } catch (error) {
-      console.error(error)
+      handle(error)
     }
 
     try {
       this.pairingCache = await this.$pairingsCache.get()
     } catch (error) {
-      console.error(error)
+      handle(error)
     }
   }
 
