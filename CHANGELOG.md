@@ -148,6 +148,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(settings): use `*` target origin for theme postMessage to plugin iframes
 - fix(status): use `setInput()` for the widget signal input on dynamic widgets
 - fix(config-editor): add plain-text editor option for screen reader users (@rfiorentino1)
+- fix(toast): announce each toast once for screen readers
 
 ### Other Changes
 

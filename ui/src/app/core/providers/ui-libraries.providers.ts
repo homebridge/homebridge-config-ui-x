@@ -7,6 +7,7 @@ import { DragulaModule } from 'ng2-dragula'
 import { NgxMonacoEditorConfig, provideMonacoEditor } from 'ngx-monaco-editor-v2'
 import { provideToastr } from 'ngx-toastr'
 
+import { AppToastComponent } from '@/app/core/components/app-toast/app-toast.component'
 import { onMonacoLoad } from '@/app/core/ui/monaco-editor.service'
 
 // Status widgets only use filled line charts with hidden axes/legend/tooltips,
@@ -84,6 +85,7 @@ export function provideUiLibraries() {
       closeButton: true,
       maxOpened: 2,
       positionClass: 'toast-bottom-right',
+      toastComponent: AppToastComponent,
     }),
     provideCharts({ registerables: chartRegisterables }),
     provideMonacoEditor(monacoConfig),

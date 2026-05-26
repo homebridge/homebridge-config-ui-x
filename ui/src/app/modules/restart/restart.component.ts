@@ -66,6 +66,9 @@ export class RestartComponent implements OnInit, OnDestroy {
       if (this.statusCheckActive()) {
         this.uiOnline.set(true)
         if (data.status === 'ok' || data.status === 'pending') {
+          // Latch so further `homebridge-status` events don't re-toast
+          // while router navigation is in flight (screen readers re-read).
+          this.statusCheckActive.set(false)
           this.$toastr.success(this.$translate.instant('restart.toast_server_restarted'), this.$translate.instant('toast.title_success'))
           void this.$router.navigate(['/'])
         }
