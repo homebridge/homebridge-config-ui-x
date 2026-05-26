@@ -69,16 +69,20 @@ export class ContainerRestartComponent implements OnInit, OnDestroy {
     timer(10000)
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(() => {
-        // Listen to homebridge-status events to see when it's back online
-        this.io.socket.on('homebridge-status', (data: HomebridgeStatusResponse) => {
+        // Detach after the first ok/pending so further `homebridge-status`
+        // events don't re-toast while router navigation is in flight
+        // (screen readers re-read).
+        const onStatus = (data: HomebridgeStatusResponse) => {
           if (data.status === 'ok' || data.status === 'pending') {
+            this.io.socket.off('homebridge-status', onStatus)
             this.$toastr.success(
               this.$translate.instant('platform.docker.container_restarted'),
               this.$translate.instant('toast.title_success'),
             )
             void this.$router.navigate(['/'])
           }
-        })
+        }
+        this.io.socket.on('homebridge-status', onStatus)
         // Request a fresh status in case the container restarted quickly and we missed the initial event
         this.io.socket.emit('monitor-server-status')
       })
