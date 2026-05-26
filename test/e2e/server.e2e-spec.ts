@@ -231,6 +231,23 @@ describe('ServerController (e2e)', () => {
     expect(cachedAccessories).toHaveLength(1)
   })
 
+  it('DELETE /server/cached-accessories/:uuid (rejects unsafe cacheFile)', async () => {
+    const cachedAccessories = await readJson(resolve(accessoriesPath, 'cachedAccessories'))
+    const uuid = cachedAccessories[0].UUID
+
+    for (const cacheFile of ['../../auth.json', 'auth.json', 'cachedAccessories.NOTHEX', 'random-file']) {
+      const res = await app.inject({
+        method: 'DELETE',
+        path: `/server/cached-accessories/${uuid}?cacheFile=${encodeURIComponent(cacheFile)}`,
+        headers: { authorization },
+      })
+      expect(res.statusCode).toBe(400)
+    }
+
+    const after = await readJson(resolve(accessoriesPath, 'cachedAccessories'))
+    expect(after).toHaveLength(1)
+  })
+
   it('GET /server/pairings', async () => {
     const res = await app.inject({
       method: 'GET',
@@ -798,7 +815,8 @@ describe('ServerController (e2e)', () => {
   })
 
   it('DELETE /server/matter-accessories/:deviceId/:uuid (should return 404 if accessories file not found)', async () => {
-    const deviceId = 'NONEXISTENT'
+    // Valid 12-hex device ID that simply doesn't exist on disk.
+    const deviceId = 'ABCDEF012345'
     const uuid = 'some-uuid'
 
     const res = await app.inject({
@@ -810,6 +828,33 @@ describe('ServerController (e2e)', () => {
     })
 
     expect(res.statusCode).toBe(404)
+  })
+
+  it('DELETE /server/matter-accessories/:deviceId/:uuid (should return 400 for a malformed device ID)', async () => {
+    // A non-hex device ID must be rejected before any fs path is built, so a
+    // request-supplied value can't traverse out of the matter storage dir.
+    const res = await app.inject({
+      method: 'DELETE',
+      path: `/server/matter-accessories/${encodeURIComponent('../../etc')}/some-uuid`,
+      headers: {
+        authorization,
+      },
+    })
+
+    expect(res.statusCode).toBe(400)
+  })
+
+  it('DELETE /server/matter-accessories (should return 400 for a malformed device ID)', async () => {
+    const res = await app.inject({
+      method: 'DELETE',
+      path: '/server/matter-accessories',
+      headers: {
+        authorization,
+      },
+      payload: [{ deviceId: '../../etc', uuid: 'some-uuid' }],
+    })
+
+    expect(res.statusCode).toBe(400)
   })
 
   it('DELETE /server/matter-accessories/:deviceId/:uuid (should return 404 if uuid not found)', async () => {
@@ -1082,25 +1127,21 @@ describe('ServerController (e2e)', () => {
     expect(remaining).toHaveLength(0)
   })
 
-  it('DELETE /server/cached-accessories (bulk - path traversal blocked)', async () => {
-    // Ensure the auth file exists before the test
+  it('DELETE /server/cached-accessories (bulk - rejects unsafe cacheFile)', async () => {
     const authFilePath = resolve(process.env.UIX_STORAGE_PATH, 'auth.json')
     const authBefore = await readJson(authFilePath)
     expect(authBefore).toBeDefined()
 
-    const res = await app.inject({
-      method: 'DELETE',
-      path: '/server/cached-accessories',
-      headers: {
-        authorization,
-      },
-      payload: [{ uuid: 'some-uuid', cacheFile: '../../auth.json' }],
-    })
+    for (const cacheFile of ['../../auth.json', 'auth.json', 'cachedAccessories.NOTHEX']) {
+      const res = await app.inject({
+        method: 'DELETE',
+        path: '/server/cached-accessories',
+        headers: { authorization },
+        payload: [{ uuid: 'some-uuid', cacheFile }],
+      })
+      expect(res.statusCode).toBe(400)
+    }
 
-    // Should fail because basename('../../auth.json') = 'auth.json' won't exist in accessories dir
-    expect(res.statusCode).not.toBe(204)
-
-    // Auth file should be untouched
     const authAfter = await readJson(authFilePath)
     expect(authAfter).toEqual(authBefore)
   })

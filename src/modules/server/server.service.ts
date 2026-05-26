@@ -772,6 +772,10 @@ export class ServerService {
   public async deleteCachedAccessory(uuid: string, cacheFile: string) {
     cacheFile = basename(cacheFile || 'cachedAccessories')
 
+    if (cacheFile !== 'cachedAccessories' && !RE_CACHED_ACCESSORIES_EXACT.test(cacheFile)) {
+      throw new BadRequestException('Invalid cache file name.')
+    }
+
     const cachedAccessoriesPath = resolve(this.configService.storagePath, 'accessories', cacheFile)
 
     this.logger.warn(`Shutting down Homebridge before removing cached accessory ${uuid}...`)
@@ -818,6 +822,9 @@ export class ServerService {
     // Group accessories by cacheFile
     for (const { cacheFile, uuid } of accessories) {
       const accessoryCacheFile = basename(cacheFile || 'cachedAccessories')
+      if (accessoryCacheFile !== 'cachedAccessories' && !RE_CACHED_ACCESSORIES_EXACT.test(accessoryCacheFile)) {
+        throw new BadRequestException(`Invalid cache file name: ${accessoryCacheFile}.`)
+      }
       if (!accessoriesByCacheFile.has(accessoryCacheFile)) {
         accessoriesByCacheFile.set(accessoryCacheFile, [])
       }
@@ -950,6 +957,12 @@ export class ServerService {
    * @returns Success status object
    */
   public async deleteMatterAccessory(deviceId: string, uuid: string): Promise<{ ok: boolean }> {
+    // Matter device IDs are always 12 hex chars; reject anything else so a
+    // request-supplied value can't traverse out of the matter storage dir.
+    if (!RE_HEX_12.test(deviceId)) {
+      throw new BadRequestException('Invalid device ID.')
+    }
+
     const matterAccessoriesPath = join(this.configService.storagePath, 'matter', deviceId, 'accessories.json')
 
     if (!await pathExists(matterAccessoriesPath)) {
@@ -988,6 +1001,13 @@ export class ServerService {
    * @returns Success status object
    */
   public async deleteMatterAccessories(accessories: { deviceId: string, uuid: string }[]): Promise<{ ok: boolean }> {
+    // Matter device IDs are always 12 hex chars; reject anything else (before
+    // restarting Homebridge) so a request-supplied value can't traverse out of
+    // the matter storage dir.
+    if (accessories.some(({ deviceId }) => !RE_HEX_12.test(deviceId))) {
+      throw new BadRequestException('Invalid device ID.')
+    }
+
     this.logger.warn(`Shutting down Homebridge before removing Matter accessories ${accessories.map(x => x.uuid).join(', ')}.`)
 
     // Wait for homebridge to stop
