@@ -3,11 +3,13 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { ActivatedRoute } from '@angular/router'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
+import { ToastrService } from 'ngx-toastr'
 
 import { AuthService } from '@/app/core/auth/auth.service'
 import { ApiService } from '@/app/core/communication/api.service'
 import { ADD_USER_MODAL_DATA, USER_MODAL_DATA } from '@/app/core/modal-data-tokens'
 import { SettingsService } from '@/app/core/ui/settings.service'
+import { HttpErrorService } from '@/app/core/utilities/http-error.service'
 import { Users2faDisableComponent } from '@/app/modules/users/users-2fa-disable/users-2fa-disable.component'
 import { Users2faEnableComponent } from '@/app/modules/users/users-2fa-enable/users-2fa-enable.component'
 import { UsersAddComponent } from '@/app/modules/users/users-add/users-add.component'
@@ -30,9 +32,11 @@ export class UsersComponent implements OnInit {
   private destroyRef = inject(DestroyRef)
   private $api = inject(ApiService)
   private $auth = inject(AuthService)
+  private $errors = inject(HttpErrorService)
   private $modal = inject(NgbModal)
   private $route = inject(ActivatedRoute)
   private $settings = inject(SettingsService)
+  private $toastr = inject(ToastrService)
   private $translate = inject(TranslateService)
 
   // Signals
@@ -55,8 +59,16 @@ export class UsersComponent implements OnInit {
   }
 
   private async reloadUsers(): Promise<void> {
-    const result: User[] = await this.$api.get('/users')
-    this.homebridgeUsers.set(result)
+    try {
+      const result: User[] = await this.$api.get('/users')
+      this.homebridgeUsers.set(result)
+    } catch (error: any) {
+      // Without surfacing the failure, the user list silently stays
+      // on its pre-mutation snapshot — the user just added a person
+      // who appears to have vanished.
+      console.error(error)
+      this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
+    }
   }
 
   public async openAddNewUser(): Promise<void> {
