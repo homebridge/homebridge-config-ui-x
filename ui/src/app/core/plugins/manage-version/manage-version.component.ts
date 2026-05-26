@@ -1,6 +1,7 @@
 import type { VersionData } from '@/app/core/plugins/manage-plugins.interfaces'
 
-import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnInit, signal } from '@angular/core'
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
@@ -35,6 +36,7 @@ export class ManageVersionComponent implements OnInit {
   private $toastr = inject(ToastrService)
   private $translate = inject(TranslateService)
   private modalData = inject(MANAGE_VERSION_MODAL_DATA)
+  private destroyRef = inject(DestroyRef)
 
   // Public properties for component use
   public plugin = this.modalData.plugin
@@ -72,7 +74,7 @@ export class ManageVersionComponent implements OnInit {
     const currentPref = this.getCurrentUpdatePreference()
     this.updatePreferenceControl.setValue(currentPref)
     this.updatePreferenceControl.valueChanges
-      .pipe(debounceTime(500))
+      .pipe(debounceTime(500), takeUntilDestroyed(this.destroyRef))
       .subscribe((value: HomebridgeUpdatePolicy | null) => {
         if (value !== null) {
           void this.updatePreference(value)
