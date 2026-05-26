@@ -2161,13 +2161,19 @@ export class SettingsComponent implements OnInit {
       // Set enabled state
       this.matterEnabledFormControl.patchValue(isEnabled, { emitEvent: false })
 
-      // Subscribe to toggle changes
-      this.matterEnabledFormControl.valueChanges.subscribe(value => this.matterEnabledSave(value!))
+      // Subscribe to toggle changes. takeUntilDestroyed prevents the
+      // patchValue from a slow save fanning out a stale save back into
+      // the API after the user has navigated away.
+      this.matterEnabledFormControl.valueChanges
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe(value => this.matterEnabledSave(value!))
     } catch (error: any) {
       console.error(error)
       // Don't show error toast - Matter might not be configured yet
       // Subscribe to toggle changes even if config doesn't exist yet
-      this.matterEnabledFormControl.valueChanges.subscribe(value => this.matterEnabledSave(value!))
+      this.matterEnabledFormControl.valueChanges
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe(value => this.matterEnabledSave(value!))
     }
   }
 
@@ -2394,7 +2400,9 @@ export class SettingsComponent implements OnInit {
       // Fall back to enabled (default) — subscribe regardless so user can change it
       this.hapEnabledFormControl.patchValue(true, { emitEvent: false })
     }
-    this.hapEnabledFormControl.valueChanges.subscribe(value => this.hapEnabledSave(value!))
+    this.hapEnabledFormControl.valueChanges
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(value => this.hapEnabledSave(value!))
   }
 
   private async hapEnabledSave(value: boolean): Promise<void> {
