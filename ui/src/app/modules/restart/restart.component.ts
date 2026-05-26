@@ -50,11 +50,16 @@ export class RestartComponent implements OnInit, OnDestroy {
   public ngOnInit(): void {
     this.io = this.$ws.connectToNamespace('status')
 
-    // Subscribe for reconnections
-    this.io.connected!.subscribe(() => {
-      this.io.socket.emit('monitor-server-status')
-      this.$settings.getAppSettings().catch(() => { /* do nothing */ })
-    })
+    // Subscribe for reconnections. Bound to the component lifecycle —
+    // the user can navigate away before the reconnect arrives (closing
+    // the restart tab mid-restart) and without takeUntilDestroyed the
+    // callback would fire on a destroyed component closure.
+    this.io.connected!
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe(() => {
+        this.io.socket.emit('monitor-server-status')
+        this.$settings.getAppSettings().catch(() => { /* do nothing */ })
+      })
 
     // Set up socket listener for homebridge status updates
     this.io.socket.on('homebridge-status', (data: HomebridgeStatusResponse) => {
