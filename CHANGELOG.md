@@ -123,6 +123,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(custom-plugins): fall back to en.json when locale require() fails
 - fix(routing): reload the app on chunk-load failures after a deploy
 - fix(auth): clamp inactivity timer to the setTimeout 32-bit ms limit
+- fix(layout): throttle reconnect-driven checkToken to dampen restart storms
 
 ### Other Changes
 
