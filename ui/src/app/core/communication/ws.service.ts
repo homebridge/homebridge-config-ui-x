@@ -108,6 +108,8 @@ export class WsService {
       query: {
         token: this.$auth.token,
       },
+      reconnectionAttempts: 10,
+      reconnectionDelayMax: 30000,
     })
 
     const request = (resource: string, payload: any): Observable<any> => new Observable((observer) => {
