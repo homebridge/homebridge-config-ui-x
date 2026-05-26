@@ -1,0 +1,32 @@
+@let _options = options();
+
+@if (_options.closeButton) {
+  <button type="button" class="toast-close-button" aria-label="Close" (click)="remove()">
+    <span aria-hidden="true">&times;</span>
+  </button>
+}
+
+@if (title()) {
+  <div [class]="_options.titleClass">
+    {{ title() }}
+    @if (duplicatesCount) {
+      <span>[{{ duplicatesCount + 1 }}]</span>
+    }
+  </div>
+}
+
+@if (message()) {
+  @if (_options.enableHtml) {
+    <div role="alert" [class]="_options.messageClass" [innerHTML]="message()"></div>
+  } @else {
+    <div role="alert" [class]="_options.messageClass">
+      {{ message() }}
+    </div>
+  }
+}
+
+@if (_options.progressBar) {
+  <div>
+    <div class="toast-progress" [style.width]="`${width()}%`"></div>
+  </div>
+}
