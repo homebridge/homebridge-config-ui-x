@@ -204,10 +204,7 @@ export class PluginsComponent implements OnInit, OnDestroy, CanComponentDeactiva
       window.document.querySelector('body')?.classList.remove('bg-black')
       this.tab.set('main')
       this.showSearchBar.set(true)
-      const input = this.searchInput()
-      if (input) {
-        setTimeout(() => input.nativeElement.focus(), 0)
-      }
+      setTimeout(() => this.searchInput()?.nativeElement.focus(), 0)
     }
   }
 
