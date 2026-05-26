@@ -337,15 +337,25 @@ export class StatusService {
    */
   public async watchStats(client: any) {
     let homebridgeStatusInterval: NodeJS.Timeout
+    // Closure-scoped flag flipped by `onEnd`. The subscription callback
+    // is async and awaits `getHomebridgeStats()`; without this check
+    // the emit could land on a disconnected client (or fire after the
+    // socket was reused by another component).
+    let disposed = false
 
     client.emit('homebridge-status', await this.getHomebridgeStats())
 
     const homebridgeStatusChangeSub: Subscription = this.homebridgeStatusChange.subscribe(async () => {
-      client.emit('homebridge-status', await this.getHomebridgeStats())
+      const stats = await this.getHomebridgeStats()
+      if (disposed) {
+        return
+      }
+      client.emit('homebridge-status', stats)
     })
 
     // Cleanup on disconnect
     const onEnd = () => {
+      disposed = true
       client.removeAllListeners('end')
       client.removeAllListeners('disconnect')
 
