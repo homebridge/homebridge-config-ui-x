@@ -281,6 +281,17 @@ export class TerminalService {
         this.startSession()
       })
 
+    // Strip any prior listeners on the cached socket — the WS namespace
+    // cache may hand back the same `socket` instance on a remount, and
+    // without this `startTerminal` would stack a fresh `disconnect`,
+    // `process-exit`, and `stdout` handler on top of the old ones every
+    // time the terminal widget was attached, doubling (then tripling)
+    // the user-visible output over time. `reconnectTerminal` already
+    // does the same cleanup before re-registering.
+    this.io.socket.removeAllListeners('disconnect')
+    this.io.socket.removeAllListeners('process-exit')
+    this.io.socket.removeAllListeners('stdout')
+
     // Handle disconnect events
     this.io.socket.on('disconnect', () => {
       this.term.write(
