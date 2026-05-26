@@ -1556,7 +1556,10 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
       // Match up the changed entries with the child bridges
       for (const entry of changedEntries) {
         // Grab the username from the _bridge key, uppercase it, and find the matching child bridge
-        const configUsername = entry._bridge!.username.toUpperCase()
+        const configUsername = entry._bridge?.username?.toUpperCase()
+        if (!configUsername) {
+          return 'full'
+        }
         const childBridge = data.find(({ username }) => username === configUsername)
         if (childBridge) {
           if (!this.childBridgesToRestart.some((b: ChildBridgeToRestart) => b.username === childBridge.username)) {
