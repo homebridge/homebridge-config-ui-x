@@ -1,5 +1,5 @@
 import { execSync } from 'node:child_process'
-import { existsSync, readFileSync, unlinkSync } from 'node:fs'
+import { constants, existsSync, readFileSync, statSync, unlinkSync } from 'node:fs'
 import { chmod, readdir, rm, writeFile } from 'node:fs/promises'
 import { userInfo } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
@@ -678,7 +678,11 @@ export class LinuxInstaller extends BasePlatform {
           // Chown the storage directory to the service user
           execSync(`chown -R ${serviceUser}: "${storagePath}"`)
         }
-        execSync(`chmod a+x ${this.hbService.selfPath}`)
+        const mode = statSync(this.hbService.selfPath).mode
+        const execBits = constants.S_IXUSR | constants.S_IXGRP | constants.S_IXOTH
+        if ((mode & execBits) !== execBits) {
+          execSync(`chmod a+x ${this.hbService.selfPath}`)
+        }
       } catch (e) {
         this.hbService.logger('WARNING: Failed to set permissions', 'warn')
       }
