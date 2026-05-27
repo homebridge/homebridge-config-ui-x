@@ -709,6 +709,11 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
                       description: this.$translate.instant('status.widget.network.network_interface'),
                     },
                   },
+                  hap: {
+                    type: 'boolean',
+                    title: this.$translate.instant('child_bridge.config.enable_hap'),
+                    description: 'When false, HAP is not advertised for the main bridge.',
+                  },
                   ...this.isMatterSupported
                     ? {
                         matter: {

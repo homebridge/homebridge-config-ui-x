@@ -1149,19 +1149,11 @@ export class ConfigEditorService implements OnApplicationBootstrap {
 
   /**
    * Enable or disable HAP on the main bridge.
-   * Disabling requires `bridge.matter` to be configured (homebridge core
-   * rejects configs where neither protocol is enabled).
+   * HAP and Matter may both be disabled — the bridge then advertises nothing.
    */
   public async setHapEnabled(enabled: boolean): Promise<{ enabled: boolean }> {
     const config = await this.getConfigFile()
     if (!enabled) {
-      if (!config.bridge?.matter) {
-        throw new BadRequestException(
-          'At least one protocol (HAP or Matter) must be enabled. '
-          + 'Enable Matter on the main bridge before disabling HAP.',
-        )
-      }
-
       // Shutdown first so the running server doesn't see a partial config
       await this.homebridgeIpcService.restartAndWaitForClose()
       config.bridge.hap = false

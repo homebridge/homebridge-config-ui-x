@@ -175,6 +175,8 @@ export class SettingsComponent implements OnInit {
   public platform = this.$settings.env.platform
   public enableTerminalAccess = this.$settings.env.enableTerminalAccess
   public isMatterSupported = this.$settings.isFeatureEnabled('matterSupport')
+  // When false (older Homebridge), at least one of HAP/Matter must stay enabled.
+  public allowDisableAllProtocols = this.$settings.isFeatureEnabled('disableAllProtocols')
   public isPwa = Boolean(isStandalonePWA())
 
   public readonly hbNameIsInvalid = signal(false)
@@ -2283,8 +2285,9 @@ export class SettingsComponent implements OnInit {
   }
 
   private async matterEnabledSave(value: boolean): Promise<void> {
-    // Refuse to disable Matter unless HAP is enabled — at least one protocol is required
-    if (!value && !this.hapEnabledFormControl.value) {
+    // Refuse to disable Matter unless HAP is enabled — at least one protocol is
+    // required unless the running Homebridge supports disabling all protocols.
+    if (!value && !this.hapEnabledFormControl.value && !this.allowDisableAllProtocols) {
       this.$toastr.info(
         this.$translate.instant('settings.matter.requires_hap'),
         this.$translate.instant('toast.title_notice'),
@@ -2406,8 +2409,9 @@ export class SettingsComponent implements OnInit {
   }
 
   private async hapEnabledSave(value: boolean): Promise<void> {
-    // Refuse to disable HAP unless Matter is enabled — at least one protocol is required
-    if (!value && !this.matterEnabledFormControl.value) {
+    // Refuse to disable HAP unless Matter is enabled — at least one protocol is
+    // required unless the running Homebridge supports disabling all protocols.
+    if (!value && !this.matterEnabledFormControl.value && !this.allowDisableAllProtocols) {
       this.$toastr.info(
         this.$translate.instant('settings.hap.requires_matter'),
         this.$translate.instant('toast.title_notice'),

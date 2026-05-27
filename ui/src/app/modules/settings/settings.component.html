@@ -1159,7 +1159,7 @@
                 <div
                   class="d-flex align-items-center"
                   [title]="
-                    !matterEnabledFormControl.value && hapEnabledFormControl.value
+                    !allowDisableAllProtocols && !matterEnabledFormControl.value && hapEnabledFormControl.value
                       ? ('settings.hap.requires_matter' | translate)
                       : ''
                   "
@@ -1226,7 +1226,7 @@
                 <div
                   class="d-flex align-items-center"
                   [title]="
-                    !hapEnabledFormControl.value && matterEnabledFormControl.value
+                    !allowDisableAllProtocols && !hapEnabledFormControl.value && matterEnabledFormControl.value
                       ? ('settings.matter.requires_hap' | translate)
                       : ''
                   "
