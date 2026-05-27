@@ -456,13 +456,16 @@ export class ConfigService {
     if (!config) {
       return false
     }
-    if (config.bridge?.matter) {
+    // Matter is enabled when a `matter` block is present and not explicitly
+    // turned off via `matter.enabled: false` (the in-place-disable state).
+    const matterEnabled = (matter?: { enabled?: boolean }) => !!matter && matter.enabled !== false
+    if (matterEnabled(config.bridge?.matter)) {
       return true
     }
-    if (Array.isArray(config.platforms) && config.platforms.some(p => p?._bridge?.matter)) {
+    if (Array.isArray(config.platforms) && config.platforms.some(p => matterEnabled(p?._bridge?.matter))) {
       return true
     }
-    if (Array.isArray(config.accessories) && config.accessories.some(a => a?._bridge?.matter)) {
+    if (Array.isArray(config.accessories) && config.accessories.some(a => matterEnabled(a?._bridge?.matter))) {
       return true
     }
     return false

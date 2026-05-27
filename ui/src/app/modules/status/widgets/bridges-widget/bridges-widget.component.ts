@@ -116,9 +116,18 @@ export class BridgesWidgetComponent implements OnInit, OnDestroy {
   public childBridgeAriaLabel(bridge: ChildBridgeWithUIState): string {
     const inTransition = bridge.status === 'pending' || bridge.restarting || this.isRestarting()
     const statusLabel = this.bridgeStatusLabel(bridge.status, inTransition)
-    const matter = this.matterStatusLabel(!!bridge.matterConfig, bridge.status, inTransition)
+    const matter = this.matterStatusLabel(this.isChildMatterEnabled(bridge), bridge.status, inTransition)
     const restart = !inTransition && this.isAdmin ? `, ${this.$translate.instant('menu.tooltip_restart')}` : ''
     return `${bridge.name}, ${statusLabel}${matter}${restart}`
+  }
+
+  /**
+   * Whether Matter is actively enabled for a child bridge: configured and not
+   * turned off in place (`matterConfig.enabled === false`). Mirrors the visible
+   * Matter icon so it greys out for a configured-but-disabled bridge.
+   */
+  public isChildMatterEnabled(bridge: ChildBridgeWithUIState): boolean {
+    return !!bridge.matterConfig && bridge.matterConfig.enabled !== false
   }
 
   private bridgeStatusLabel(status: string | undefined, inTransition: boolean): string {

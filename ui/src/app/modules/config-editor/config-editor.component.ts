@@ -722,6 +722,11 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
                           title: this.$translate.instant('settings.matter.title'),
                           description: 'Matter-specific configuration for the main bridge.',
                           properties: {
+                            enabled: {
+                              type: 'boolean',
+                              title: this.$translate.instant('matter_bridge.config.use'),
+                              description: 'When false, Matter is configured but not advertised for the main bridge; the config and on-disk commissioning data are preserved.',
+                            },
                             port: {
                               type: 'number',
                               title: this.$translate.instant('settings.matter.port'),

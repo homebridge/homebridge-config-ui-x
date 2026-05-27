@@ -177,6 +177,9 @@ export class SettingsComponent implements OnInit {
   public isMatterSupported = this.$settings.isFeatureEnabled('matterSupport')
   // When false (older Homebridge), at least one of HAP/Matter must stay enabled.
   public allowDisableAllProtocols = this.$settings.isFeatureEnabled('disableAllProtocols')
+  // When true (Homebridge >= 2.0.3-beta.22), disabling Matter is non-destructive
+  // (matter.enabled=false, storage kept) rather than a teardown.
+  public allowMatterDisableInPlace = this.$settings.isFeatureEnabled('matterDisableInPlace')
   public isPwa = Boolean(isStandalonePWA())
 
   public readonly hbNameIsInvalid = signal(false)
@@ -2133,8 +2136,15 @@ export class SettingsComponent implements OnInit {
         this.$api.get<{ start?: number, end?: number }>('/config-editor/matter/ports'),
       ])
 
-      // null means Matter is disabled, {} or {port, name} means Matter is enabled
-      const isEnabled = matterConfig !== null
+      // null = Matter not configured. A block with `enabled: false` is the
+      // in-place disabled state (configured but off) — treat it as disabled.
+      const isEnabled = matterConfig !== null && matterConfig.enabled !== false
+
+      // Remember the configured port (even when disabled in place) so re-enabling
+      // reuses it and keeps the existing commissioning storage.
+      if (matterConfig?.port) {
+        this.matterConfigCache = { port: matterConfig.port }
+      }
 
       if (isEnabled) {
         // Matter is enabled - populate fields with config values
@@ -2296,6 +2306,46 @@ export class SettingsComponent implements OnInit {
       return
     }
 
+    if (this.allowMatterDisableInPlace) {
+      // Non-destructive: Matter commissioning is preserved (matter.enabled=false),
+      // so skip the confirm modal and the immediate restart. Write the change,
+      // flag a full service restart, and let the user restart via the toast.
+      try {
+        this.matterEnabledIsSaving.set(true)
+        if (value) {
+          // Enable: reuse the cached/allocated port. Writing the block clears any
+          // `enabled: false`, and the preserved storage keeps commissioning.
+          let port: number | undefined = this.matterConfigCache.port
+          if (!port) {
+            try {
+              const portResponse = await this.$api.get('/server/port/new/matter')
+              port = portResponse!.port
+            } catch (error: any) {
+              console.error('Failed to get Matter port, using fallback', error)
+              port = Math.floor(Math.random() * (5541 - 5530 + 1) + 5530)
+            }
+          }
+          await this.$api.put('/config-editor/matter', { port })
+          if (port !== undefined) {
+            this.matterPortFormControl.patchValue(port, { emitEvent: false })
+          }
+          this.matterConfigCache = { port }
+        } else {
+          // Disable in place: keep the block, port and commissioning storage.
+          this.matterConfigCache = { port: this.matterPortFormControl.value || undefined }
+          await this.$api.put('/config-editor/matter/enabled', { enabled: false, restart: false })
+        }
+        await this.requestFullServiceRestart()
+      } catch (error: any) {
+        console.error(error)
+        this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
+        this.matterEnabledFormControl.patchValue(!value, { emitEvent: false })
+      } finally {
+        this.matterEnabledIsSaving.set(false)
+      }
+      return
+    }
+
     try {
       this.matterEnabledIsSaving.set(true)
       if (value) {
@@ -2339,7 +2389,7 @@ export class SettingsComponent implements OnInit {
           provide: CONFIRM_MODAL_DATA,
           useValue: {
             title: this.$translate.instant('settings.matter.disable'),
-            message: this.$translate.instant('settings.matter.disable_desc'),
+            message: this.$translate.instant(this.allowMatterDisableInPlace ? 'settings.matter.disable_desc_in_place' : 'settings.matter.disable_desc'),
             message2: this.$translate.instant('common.phrases.are_you_sure'),
             confirmButtonLabel: this.$translate.instant('form.button_continue'),
             confirmButtonClass: 'btn-danger',
@@ -2371,7 +2421,14 @@ export class SettingsComponent implements OnInit {
           void this.$router.navigate(['/restart'], {
             queryParams: { alreadyRestarting: 'true' },
           })
-          await this.$api.delete('/config-editor/matter')
+          if (this.allowMatterDisableInPlace) {
+            // Non-destructive disable: keep the config block + commissioning
+            // storage, just mark Matter off so re-enabling needs no re-pairing.
+            await this.$api.put('/config-editor/matter/enabled', { enabled: false })
+          } else {
+            // Legacy teardown on older Homebridge: remove the block and its storage.
+            await this.$api.delete('/config-editor/matter')
+          }
         } catch (error: any) {
           if (error === 'Dismiss') {
             // User canceled - revert the toggle
@@ -2417,6 +2474,24 @@ export class SettingsComponent implements OnInit {
         this.$translate.instant('toast.title_notice'),
       )
       this.hapEnabledFormControl.patchValue(true, { emitEvent: false })
+      return
+    }
+
+    if (this.allowMatterDisableInPlace) {
+      // Non-destructive: HAP pairing is always preserved, so skip the confirm
+      // modal and the immediate restart. Write the change, flag a full service
+      // restart, and let the user restart via the toast when ready.
+      try {
+        this.hapEnabledIsSaving.set(true)
+        await this.$api.put('/config-editor/hap', { enabled: value, restart: false })
+        await this.requestFullServiceRestart()
+      } catch (error: any) {
+        console.error(error)
+        this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
+        this.hapEnabledFormControl.patchValue(!value, { emitEvent: false })
+      } finally {
+        this.hapEnabledIsSaving.set(false)
+      }
       return
     }
 
@@ -2504,6 +2579,20 @@ export class SettingsComponent implements OnInit {
         }
       }
     }))
+  }
+
+  // Flag the next restart as a full service restart — enabling/disabling HAP or
+  // Matter changes how the homebridge process starts, so it needs the whole
+  // service to restart — then surface the normal restart toast (deferred, the
+  // user restarts when ready). Mirrors how other restart-requiring settings save.
+  private async requestFullServiceRestart(): Promise<void> {
+    try {
+      await this.$api.put('/platform-tools/hb-service/set-full-service-restart-flag', {})
+    } catch (error) {
+      console.error(error)
+    } finally {
+      this.showRestartToast()
+    }
   }
 
   private showRestartToast() {
