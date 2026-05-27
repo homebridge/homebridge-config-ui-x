@@ -9,6 +9,7 @@ import { Subject } from 'rxjs'
 import { first, takeUntil } from 'rxjs/operators'
 
 import { ApiService } from '@/app/core/communication/api.service'
+import { RestartToastComponent } from '@/app/core/components/restart-toast/restart-toast.component'
 import { AppSettingsInterface, EnvInterface } from '@/app/core/settings.interfaces'
 
 @Injectable({
@@ -301,6 +302,40 @@ export class SettingsService {
    */
   public isFeatureEnabled(featureKey: string): boolean {
     return this.env.featureFlags?.[featureKey] ?? false
+  }
+
+  /**
+   * Show the "changes saved — restart required" toast.
+   *
+   * Uses the accessible RestartToastComponent: an announced message plus a
+   * focusable Restart button and Close button for keyboard/screen-reader users
+   * (clicking elsewhere on the toast does nothing). Shared by the settings and
+   * backup pages so both behave identically and stay accessible. The toast is a
+   * singleton — repeat calls while one is already showing are no-ops.
+   */
+  public showRestartToast(): void {
+    if (this.restartToastRef) {
+      return
+    }
+
+    this.restartToastRef = this.$toastr.info(
+      this.$translate.instant('settings.changes.saved'),
+      this.$translate.instant('menu.hbrestart.title'),
+      {
+        toastComponent: RestartToastComponent,
+        // Extra class so the cursor override (only the buttons are clickable,
+        // not the whole toast) can be scoped to this toast — see toastr.scss.
+        toastClass: 'ngx-toastr hb-restart-toast',
+        timeOut: 0,
+        tapToDismiss: false,
+        disableTimeOut: true,
+        positionClass: 'toast-bottom-right',
+      },
+    )
+
+    this.restartToastRef.onHidden?.subscribe(() => {
+      this.restartToastRef = null
+    })
   }
 
   // Terminal configuration constants

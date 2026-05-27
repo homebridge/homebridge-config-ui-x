@@ -880,7 +880,7 @@ export class SettingsComponent implements OnInit {
       this.uiSslTypeFormControl.patchValue(newSslType, { emitEvent: false })
       this.cdr.detectChanges()
       // Show the global restart toast since SSL changes require a restart
-      this.showRestartToast()
+      this.$settings.showRestartToast()
     } catch (error: any) {
       // Modal was dismissed without saving, do nothing
     }
@@ -923,7 +923,7 @@ export class SettingsComponent implements OnInit {
       })
 
       await ref.result
-      this.showRestartToast()
+      this.$settings.showRestartToast()
     } catch (error: any) {
       if (error !== 'Dismiss') {
         console.error(error)
@@ -973,7 +973,7 @@ export class SettingsComponent implements OnInit {
       const adapters: string[] = await ref.result
       this.buildBridgeNetworkAdapterList(adapters)
       await this.$api.put('/server/network-interfaces/bridge', { adapters })
-      this.showRestartToast()
+      this.$settings.showRestartToast()
     } catch (error: any) {
       if (error !== 'Dismiss') {
         console.error(error)
@@ -1412,10 +1412,10 @@ export class SettingsComponent implements OnInit {
         this.hbDebugIsSaving.set(false)
         this.$api.put('/platform-tools/hb-service/set-full-service-restart-flag', {})
           .catch(error => console.error(error))
-          .finally(() => this.showRestartToast())
+          .finally(() => this.$settings.showRestartToast())
           .catch((error) => {
             console.error(error)
-            this.showRestartToast()
+            this.$settings.showRestartToast()
           })
       }, 1000)
     } catch (error: any) {
@@ -1439,10 +1439,10 @@ export class SettingsComponent implements OnInit {
         this.hbInsecureIsSaving.set(false)
         this.$api.put('/platform-tools/hb-service/set-full-service-restart-flag', {})
           .catch(error => console.error(error))
-          .finally(() => this.showRestartToast())
+          .finally(() => this.$settings.showRestartToast())
           .catch((error) => {
             console.error(error)
-            this.showRestartToast()
+            this.$settings.showRestartToast()
           })
       }, 1000)
     } catch (error: any) {
@@ -1467,10 +1467,10 @@ export class SettingsComponent implements OnInit {
         this.hbKeepIsSaving.set(false)
         this.$api.put('/platform-tools/hb-service/set-full-service-restart-flag', {})
           .catch(error => console.error(error))
-          .finally(() => this.showRestartToast())
+          .finally(() => this.$settings.showRestartToast())
           .catch((error) => {
             console.error(error)
-            this.showRestartToast()
+            this.$settings.showRestartToast()
           })
       }, 1000)
     } catch (error: any) {
@@ -1494,10 +1494,10 @@ export class SettingsComponent implements OnInit {
         this.hbEnvDebugIsSaving.set(false)
         this.$api.put('/platform-tools/hb-service/set-full-service-restart-flag', {})
           .catch(error => console.error(error))
-          .finally(() => this.showRestartToast())
+          .finally(() => this.$settings.showRestartToast())
           .catch((error) => {
             console.error(error)
-            this.showRestartToast()
+            this.$settings.showRestartToast()
           })
       }, 1000)
     } catch (error: any) {
@@ -1521,10 +1521,10 @@ export class SettingsComponent implements OnInit {
         this.hbEnvNodeIsSaving.set(false)
         this.$api.put('/platform-tools/hb-service/set-full-service-restart-flag', {})
           .catch(error => console.error(error))
-          .finally(() => this.showRestartToast())
+          .finally(() => this.$settings.showRestartToast())
           .catch((error) => {
             console.error(error)
-            this.showRestartToast()
+            this.$settings.showRestartToast()
           })
       }, 1000)
     } catch (error: any) {
@@ -1553,7 +1553,7 @@ export class SettingsComponent implements OnInit {
       this.hbLogSizeIsInvalid.set(false)
       setTimeout(() => {
         this.hbLogSizeIsSaving.set(false)
-        this.showRestartToast()
+        this.$settings.showRestartToast()
       }, 1000)
     } catch (error: any) {
       console.error(error)
@@ -1575,7 +1575,7 @@ export class SettingsComponent implements OnInit {
       this.hbLogTruncateIsInvalid.set(false)
       setTimeout(() => {
         this.hbLogTruncateIsSaving.set(false)
-        this.showRestartToast()
+        this.$settings.showRestartToast()
       }, 1000)
     } catch (error: any) {
       console.error(error)
@@ -1590,7 +1590,7 @@ export class SettingsComponent implements OnInit {
       await this.$api.put('/server/mdns-advertiser', { advertiser: value })
       setTimeout(() => {
         this.hbMDnsIsSaving.set(false)
-        this.showRestartToast()
+        this.$settings.showRestartToast()
       }, 1000)
     } catch (error: any) {
       console.error(error)
@@ -1611,7 +1611,7 @@ export class SettingsComponent implements OnInit {
       this.hbPortIsInvalid.set(false)
       setTimeout(() => {
         this.hbPortIsSaving.set(false)
-        this.showRestartToast()
+        this.$settings.showRestartToast()
       }, 1000)
     } catch (error: any) {
       console.error(error)
@@ -1636,7 +1636,7 @@ export class SettingsComponent implements OnInit {
       await this.$api.put('/server/ports', { start: value || undefined, end: end || undefined })
       setTimeout(() => {
         this.hbStartPortIsSaving.set(false)
-        this.showRestartToast()
+        this.$settings.showRestartToast()
       }, 1000)
     } catch (error: any) {
       console.error(error)
@@ -1662,7 +1662,7 @@ export class SettingsComponent implements OnInit {
       await this.$api.put('/server/ports', { start: start || undefined, end: value || undefined })
       setTimeout(() => {
         this.hbEndPortIsSaving.set(false)
-        this.showRestartToast()
+        this.$settings.showRestartToast()
       }, 1000)
     } catch (error: any) {
       console.error(error)
@@ -1685,7 +1685,7 @@ export class SettingsComponent implements OnInit {
       this.uiPortIsInvalid.set(false)
       setTimeout(() => {
         this.uiPortIsSaving.set(false)
-        this.showRestartToast()
+        this.$settings.showRestartToast()
       }, 1000)
     } catch (error: any) {
       console.error(error)
@@ -1702,7 +1702,7 @@ export class SettingsComponent implements OnInit {
       this.$notification.formAuthEnabled.set(value)
       setTimeout(() => {
         this.uiAuthIsSaving.set(false)
-        this.showRestartToast()
+        this.$settings.showRestartToast()
       }, 1000)
     } catch (error: any) {
       console.error(error)
@@ -1742,7 +1742,7 @@ export class SettingsComponent implements OnInit {
       this.uiSessionTimeoutIsInvalid.set(false)
       setTimeout(() => {
         this.uiSessionTimeoutIsSaving.set(false)
-        this.showRestartToast()
+        this.$settings.showRestartToast()
       }, 1000)
     } catch (error: any) {
       console.error(error)
@@ -1758,7 +1758,7 @@ export class SettingsComponent implements OnInit {
       await this.saveUiSettingChange('sessionTimeoutInactivityBased', value)
       setTimeout(() => {
         this.uiSessionTimeoutInactivityBasedIsSaving.set(false)
-        this.showRestartToast()
+        this.$settings.showRestartToast()
       }, 1000)
     } catch (error: any) {
       console.error(error)
@@ -1774,7 +1774,7 @@ export class SettingsComponent implements OnInit {
       await this.saveUiSettingChange('ssl.key', value)
       setTimeout(() => {
         this.uiSslKeyIsSaving.set(false)
-        this.showRestartToast()
+        this.$settings.showRestartToast()
       }, 1000)
     } catch (error: any) {
       console.error(error)
@@ -1790,7 +1790,7 @@ export class SettingsComponent implements OnInit {
       await this.saveUiSettingChange('ssl.cert', value)
       setTimeout(() => {
         this.uiSslCertIsSaving.set(false)
-        this.showRestartToast()
+        this.$settings.showRestartToast()
       }, 1000)
     } catch (error: any) {
       console.error(error)
@@ -1806,7 +1806,7 @@ export class SettingsComponent implements OnInit {
       await this.saveUiSettingChange('ssl.pfx', value)
       setTimeout(() => {
         this.uiSslPfxIsSaving.set(false)
-        this.showRestartToast()
+        this.$settings.showRestartToast()
       }, 1000)
     } catch (error: any) {
       console.error(error)
@@ -1822,7 +1822,7 @@ export class SettingsComponent implements OnInit {
       await this.saveUiSettingChange('ssl.passphrase', value)
       setTimeout(() => {
         this.uiSslPassphraseIsSaving.set(false)
-        this.showRestartToast()
+        this.$settings.showRestartToast()
       }, 1000)
     } catch (error: any) {
       console.error(error)
@@ -1840,7 +1840,7 @@ export class SettingsComponent implements OnInit {
       await this.saveUiSettingChange('ssl.selfSignedHostnames', hostnames)
       setTimeout(() => {
         this.uiSslSelfSignedHostnamesIsSaving.set(false)
-        this.showRestartToast()
+        this.$settings.showRestartToast()
       }, 1000)
     } catch (error: any) {
       console.error(error)
@@ -1882,7 +1882,7 @@ export class SettingsComponent implements OnInit {
         if (!this.uiSslSelfSignedHostnamesFormControl.value) {
           this.uiSslSelfSignedHostnamesFormControl.patchValue('localhost, 127.0.0.1', { emitEvent: true })
         }
-        this.showRestartToast()
+        this.$settings.showRestartToast()
         break
       default:
         this.uiSslKeyFormControl.patchValue('', { emitEvent: false })
@@ -1897,7 +1897,7 @@ export class SettingsComponent implements OnInit {
         this.$settings.setEnvItem('ssl.selfSigned', false)
         this.$settings.setEnvItem('ssl.selfSignedHostnames', [])
         await this.saveUiSettingChange('ssl', '')
-        this.showRestartToast()
+        this.$settings.showRestartToast()
     }
   }
 
@@ -1908,7 +1908,7 @@ export class SettingsComponent implements OnInit {
       await this.saveUiSettingChange('host', value)
       setTimeout(() => {
         this.uiHostIsSaving.set(false)
-        this.showRestartToast()
+        this.$settings.showRestartToast()
       }, 1000)
     } catch (error: any) {
       console.error(error)
@@ -1924,7 +1924,7 @@ export class SettingsComponent implements OnInit {
       await this.saveUiSettingChange('proxyHost', value)
       setTimeout(() => {
         this.uiProxyHostIsSaving.set(false)
-        this.showRestartToast()
+        this.$settings.showRestartToast()
       }, 1000)
     } catch (error: any) {
       console.error(error)
@@ -1940,7 +1940,7 @@ export class SettingsComponent implements OnInit {
       await this.saveUiSettingChange('homebridgePackagePath', value)
       setTimeout(() => {
         this.hbPackageIsSaving.set(false)
-        this.showRestartToast()
+        this.$settings.showRestartToast()
       }, 1000)
     } catch (error: any) {
       console.error(error)
@@ -1958,10 +1958,10 @@ export class SettingsComponent implements OnInit {
         this.uiMetricsIsSaving.set(false)
         this.$api.put('/platform-tools/hb-service/set-full-service-restart-flag', {})
           .catch(error => console.error(error))
-          .finally(() => this.showRestartToast())
+          .finally(() => this.$settings.showRestartToast())
           .catch((error) => {
             console.error(error)
-            this.showRestartToast()
+            this.$settings.showRestartToast()
           })
       }, 1000)
     } catch (error: any) {
@@ -1980,10 +1980,10 @@ export class SettingsComponent implements OnInit {
         this.enableMdnsAdvertiseIsSaving.set(false)
         this.$api.put('/platform-tools/hb-service/set-full-service-restart-flag', {})
           .catch(error => console.error(error))
-          .finally(() => this.showRestartToast())
+          .finally(() => this.$settings.showRestartToast())
           .catch((error) => {
             console.error(error)
-            this.showRestartToast()
+            this.$settings.showRestartToast()
           })
       }, 1000)
     } catch (error: any) {
@@ -1999,7 +1999,7 @@ export class SettingsComponent implements OnInit {
       await this.saveUiSettingChange('accessoryControl.debug', value)
       setTimeout(() => {
         this.uiAccDebugIsSaving.set(false)
-        this.showRestartToast()
+        this.$settings.showRestartToast()
       }, 1000)
     } catch (error: any) {
       console.error(error)
@@ -2017,10 +2017,10 @@ export class SettingsComponent implements OnInit {
         this.uiTempFileIsSaving.set(false)
         this.$api.put('/platform-tools/hb-service/set-full-service-restart-flag', {})
           .catch(error => console.error(error))
-          .finally(() => this.showRestartToast())
+          .finally(() => this.$settings.showRestartToast())
           .catch((error) => {
             console.error(error)
-            this.showRestartToast()
+            this.$settings.showRestartToast()
           })
       }, 1000)
     } catch (error: any) {
@@ -2039,10 +2039,10 @@ export class SettingsComponent implements OnInit {
         this.hbLinuxShutdownIsSaving.set(false)
         this.$api.put('/platform-tools/hb-service/set-full-service-restart-flag', {})
           .catch(error => console.error(error))
-          .finally(() => this.showRestartToast())
+          .finally(() => this.$settings.showRestartToast())
           .catch((error) => {
             console.error(error)
-            this.showRestartToast()
+            this.$settings.showRestartToast()
           })
       }, 1000)
     } catch (error: any) {
@@ -2061,10 +2061,10 @@ export class SettingsComponent implements OnInit {
         this.hbLinuxRestartIsSaving.set(false)
         this.$api.put('/platform-tools/hb-service/set-full-service-restart-flag', {})
           .catch(error => console.error(error))
-          .finally(() => this.showRestartToast())
+          .finally(() => this.$settings.showRestartToast())
           .catch((error) => {
             console.error(error)
-            this.showRestartToast()
+            this.$settings.showRestartToast()
           })
       }, 1000)
     } catch (error: any) {
@@ -2108,10 +2108,10 @@ export class SettingsComponent implements OnInit {
         this.scheduledRestartCronIsSaving.set(false)
         this.$api.put('/platform-tools/hb-service/set-full-service-restart-flag', {})
           .catch(error => console.error(error))
-          .finally(() => this.showRestartToast())
+          .finally(() => this.$settings.showRestartToast())
           .catch((error) => {
             console.error(error)
-            this.showRestartToast()
+            this.$settings.showRestartToast()
           })
       }, 1000)
     } catch (error: any) {
@@ -2201,7 +2201,7 @@ export class SettingsComponent implements OnInit {
         })
         setTimeout(() => {
           this.matterPortIsSaving.set(false)
-          this.showRestartToast()
+          this.$settings.showRestartToast()
         }, 1000)
       } catch (error: any) {
         console.error(error)
@@ -2232,7 +2232,7 @@ export class SettingsComponent implements OnInit {
       })
       setTimeout(() => {
         this.matterPortIsSaving.set(false)
-        this.showRestartToast()
+        this.$settings.showRestartToast()
       }, 1000)
     } catch (error: any) {
       console.error(error)
@@ -2258,7 +2258,7 @@ export class SettingsComponent implements OnInit {
       await this.$api.put('/config-editor/matter/ports', { start: value || undefined, end: end || undefined })
       setTimeout(() => {
         this.matterStartPortIsSaving.set(false)
-        this.showRestartToast()
+        this.$settings.showRestartToast()
       }, 1000)
     } catch (error: any) {
       console.error(error)
@@ -2284,7 +2284,7 @@ export class SettingsComponent implements OnInit {
       await this.$api.put('/config-editor/matter/ports', { start: start || undefined, end: value || undefined })
       setTimeout(() => {
         this.matterEndPortIsSaving.set(false)
-        this.showRestartToast()
+        this.$settings.showRestartToast()
       }, 1000)
     } catch (error: any) {
       console.error(error)
@@ -2381,7 +2381,7 @@ export class SettingsComponent implements OnInit {
 
         setTimeout(() => {
           this.matterEnabledIsSaving.set(false)
-          this.showRestartToast()
+          this.$settings.showRestartToast()
         }, 1000)
       } else {
         // When disabling, show confirmation modal
@@ -2501,7 +2501,7 @@ export class SettingsComponent implements OnInit {
         await this.$api.put('/config-editor/hap', { enabled: true })
         setTimeout(() => {
           this.hapEnabledIsSaving.set(false)
-          this.showRestartToast()
+          this.$settings.showRestartToast()
         }, 1000)
       } else {
         // Disabling HAP — confirm first
@@ -2591,78 +2591,7 @@ export class SettingsComponent implements OnInit {
     } catch (error) {
       console.error(error)
     } finally {
-      this.showRestartToast()
+      this.$settings.showRestartToast()
     }
-  }
-
-  private showRestartToast() {
-    if (this.$settings.restartToastRef) {
-      return
-    }
-
-    const msg = this.$translate.instant('settings.changes.saved')
-    const restartLabel = this.$translate.instant('menu.hbrestart.title')
-    const closeLabel = this.$translate.instant('form.button_close')
-
-    // No title — we render the body ourselves with an inline Restart button
-    // that screen-reader users can navigate to (the default tapToDismiss
-    // behaviour has no keyboard equivalent).
-    const ref = this.$toastr.info(`<p class="hb-restart-toast-msg">${msg}</p>`, '', {
-      timeOut: 0,
-      disableTimeOut: true,
-      enableHtml: true,
-      tapToDismiss: false,
-      closeButton: true,
-      positionClass: 'toast-bottom-right',
-    })
-
-    this.$settings.restartToastRef = ref
-
-    ref.onShown?.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
-      const toastEl = document.querySelector<HTMLElement>(`#toast-container #toast-${ref.toastId}`)
-      if (!toastEl) {
-        return
-      }
-
-      // Announce assertively — this toast is the result of a user action
-      toastEl.setAttribute('role', 'alert')
-      toastEl.setAttribute('aria-live', 'assertive')
-      toastEl.setAttribute('aria-atomic', 'true')
-
-      const body = toastEl.querySelector<HTMLElement>('.toast-message')
-      const closeBtn = toastEl.querySelector<HTMLButtonElement>('.toast-close-button')
-      const msgEl = body?.querySelector<HTMLElement>('.hb-restart-toast-msg')
-      if (!body || !closeBtn || !msgEl) {
-        return
-      }
-
-      // toastr's close button is an <a> by default — make it a real button
-      // with a translated aria-label so SR users can dismiss the toast.
-      closeBtn.setAttribute('type', 'button')
-      closeBtn.setAttribute('aria-label', closeLabel)
-
-      // Inject a real, focusable, keyboard-activatable Restart button.
-      const restartBtn = document.createElement('button')
-      restartBtn.type = 'button'
-      restartBtn.className = 'btn btn-link p-0 text-decoration-none mt-2'
-      restartBtn.textContent = restartLabel
-      const activate = (ev: Event) => {
-        ev.preventDefault()
-        ev.stopPropagation()
-        void this.$router.navigate(['/restart'])
-        this.$toastr.clear(ref.toastId)
-      }
-      restartBtn.addEventListener('click', activate)
-      restartBtn.addEventListener('keydown', (ev: KeyboardEvent) => {
-        if (ev.key === 'Enter' || ev.key === ' ') {
-          activate(ev)
-        }
-      })
-      body.appendChild(restartBtn)
-    })
-
-    ref.onHidden?.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
-      this.$settings.restartToastRef = null
-    })
   }
 }
