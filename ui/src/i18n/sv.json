@@ -634,7 +634,7 @@
   "settings.display.wallpaper_success": "Wallpaper was successfully updated.",
   "settings.general.title_display": "Display",
   "settings.general.title_general": "Allmänt",
-  "settings.hap.desc": "HAP is the HomeKit Accessory Protocol used by the Apple Home app. It is enabled by default. You may only disable HAP on the main bridge if Matter is enabled — at least one protocol is required.",
+  "settings.hap.desc": "HAP is the HomeKit Accessory Protocol used by the Apple Home app. It is enabled by default.",
   "settings.hap.disable": "Disable HAP",
   "settings.hap.disable_desc": "This will stop publishing the main HomeKit bridge and restart Homebridge straight away. The HomeKit pairing data is preserved so you can re-enable HAP later.",
   "settings.hap.enabled_desc": "Whether HAP is published on the main Homebridge bridge.",

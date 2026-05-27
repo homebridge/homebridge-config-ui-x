@@ -1932,8 +1932,10 @@ describe('ConfigEditorController (e2e)', () => {
     expect(res.json()).toEqual({ enabled: true })
   })
 
-  it('PUT /config-editor/hap (should reject disabling HAP when Matter is not configured)', async () => {
-    // Default config has no bridge.matter — disabling HAP must be rejected
+  it('PUT /config-editor/hap (should allow disabling HAP even when Matter is not configured)', async () => {
+    // Default config has no bridge.matter. Disabling HAP here leaves the main
+    // bridge with no protocols enabled — this is now allowed; the bridge simply
+    // advertises nothing.
     const res = await app.inject({
       method: 'PUT',
       path: '/config-editor/hap',
@@ -1943,12 +1945,13 @@ describe('ConfigEditorController (e2e)', () => {
       payload: { enabled: false },
     })
 
-    expect(res.statusCode).toBe(400)
-    expect(res.body).toContain('At least one protocol')
+    expect(res.statusCode).toBe(200)
+    expect(res.json()).toEqual({ enabled: false })
 
-    // bridge.hap should not have been written
+    // bridge.hap should be persisted as false, with no matter configured
     const config: HomebridgeConfig = await readJson(configFilePath)
-    expect(config.bridge.hap).toBeUndefined()
+    expect(config.bridge.hap).toBe(false)
+    expect(config.bridge.matter).toBeUndefined()
   })
 
   it('PUT /config-editor/hap (should persist bridge.hap=false when Matter is configured)', async () => {

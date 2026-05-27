@@ -44,4 +44,9 @@ export const FEATURE_FLAGS: FeatureFlagDefinition[] = [
     description: 'Surfaces plugin attribution + QR codes for externally-published HAP and Matter accessories. Requires the homebridge runtime to write externalAccessories.<MAC>.json index files.',
     range: '>=2.0.3-beta.18',
   },
+  {
+    key: 'disableAllProtocols',
+    description: 'Allows disabling both HAP and Matter on a bridge (main and platform child bridges), leaving it with no advertised protocols. Requires the homebridge runtime to accept configs where neither protocol is enabled.',
+    range: '>=2.0.3-beta.21',
+  },
 ]
