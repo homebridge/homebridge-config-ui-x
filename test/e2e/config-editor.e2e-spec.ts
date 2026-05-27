@@ -1883,6 +1883,64 @@ describe('ConfigEditorController (e2e)', () => {
     expect(config.bridge.matter).toEqual(matterConfig)
   })
 
+  it('PUT /config-editor/matter/enabled (should disable Matter in place, preserving the block + port)', async () => {
+    // Configure Matter first
+    await app.inject({
+      method: 'PUT',
+      path: '/config-editor/matter',
+      headers: { authorization },
+      payload: { port: 5540 },
+    })
+
+    const res = await app.inject({
+      method: 'PUT',
+      path: '/config-editor/matter/enabled',
+      headers: { authorization },
+      payload: { enabled: false },
+    })
+
+    expect(res.statusCode).toBe(200)
+    expect(res.json()).toEqual({ enabled: false })
+
+    // The block and port are preserved; only `enabled: false` is added (no teardown)
+    const config: HomebridgeConfig = await readJson(configFilePath)
+    expect(config.bridge.matter).toEqual({ port: 5540, enabled: false })
+  })
+
+  it('PUT /config-editor/matter/enabled (should re-enable Matter by clearing the flag)', async () => {
+    // Pre-seed a disabled-in-place Matter block
+    const seed: HomebridgeConfig = await readJson(configFilePath)
+    seed.bridge.matter = { port: 5540, enabled: false }
+    await writeJson(configFilePath, seed)
+
+    const res = await app.inject({
+      method: 'PUT',
+      path: '/config-editor/matter/enabled',
+      headers: { authorization },
+      payload: { enabled: true },
+    })
+
+    expect(res.statusCode).toBe(200)
+    expect(res.json()).toEqual({ enabled: true })
+
+    // The `enabled` flag is removed (present-without-flag means enabled); port kept
+    const config: HomebridgeConfig = await readJson(configFilePath)
+    expect(config.bridge.matter).toEqual({ port: 5540 })
+  })
+
+  it('PUT /config-editor/matter/enabled (should reject when Matter is not configured)', async () => {
+    // Default config has no bridge.matter
+    const res = await app.inject({
+      method: 'PUT',
+      path: '/config-editor/matter/enabled',
+      headers: { authorization },
+      payload: { enabled: false },
+    })
+
+    expect(res.statusCode).toBe(400)
+    expect(res.body).toContain('Matter is not configured')
+  })
+
   it('GET /config-editor/hap (should return enabled=true when bridge.hap is unset)', async () => {
     const res = await app.inject({
       method: 'GET',

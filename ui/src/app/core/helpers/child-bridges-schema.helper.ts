@@ -107,6 +107,11 @@ export function createChildBridgeSchema(translate: TranslateService, { isDebugMo
               title: translate.instant('settings.matter.title'),
               description: 'Matter-specific configuration for this child bridge.',
               properties: {
+                enabled: {
+                  type: 'boolean',
+                  title: translate.instant('matter_bridge.config.use'),
+                  description: 'When false, Matter is configured but not advertised for this child bridge; the config and on-disk commissioning data are preserved.',
+                },
                 port: {
                   type: 'number',
                   title: translate.instant('settings.matter.port'),

@@ -357,6 +357,17 @@ export class ConfigEditorController {
 
   @UseGuards(AdminGuard)
   @ApiOperation({
+    summary: 'Enable or disable Matter for the main bridge in place',
+    description: 'Toggles `bridge.matter.enabled` without removing the config or its commissioning storage, so Matter can be re-enabled without re-commissioning. Requires Matter to already be configured.',
+  })
+  @ApiBody({ description: 'Matter enablement', type: 'json' })
+  @Put('/matter/enabled')
+  setMatterEnabled(@Body() body: { enabled: boolean, restart?: boolean }) {
+    return this.configEditorService.setMatterEnabled(body.enabled, body.restart ?? true)
+  }
+
+  @UseGuards(AdminGuard)
+  @ApiOperation({
     summary: 'Get HAP enablement for the main bridge',
     description: 'Returns whether HAP is published for the main Homebridge bridge. HAP is on by default and is opted out via `bridge.hap: false`.',
   })
@@ -372,7 +383,7 @@ export class ConfigEditorController {
   })
   @ApiBody({ description: 'HAP enablement', type: 'json' })
   @Put('/hap')
-  setHapEnabled(@Body() body: { enabled: boolean }) {
-    return this.configEditorService.setHapEnabled(body.enabled)
+  setHapEnabled(@Body() body: { enabled: boolean, restart?: boolean }) {
+    return this.configEditorService.setHapEnabled(body.enabled, body.restart ?? true)
   }
 }

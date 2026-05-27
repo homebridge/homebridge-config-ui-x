@@ -49,4 +49,9 @@ export const FEATURE_FLAGS: FeatureFlagDefinition[] = [
     description: 'Allows disabling both HAP and Matter on a bridge (main and platform child bridges), leaving it with no advertised protocols. Requires the homebridge runtime to accept configs where neither protocol is enabled.',
     range: '>=2.0.3-beta.21',
   },
+  {
+    key: 'matterDisableInPlace',
+    description: 'Disables Matter without tearing it down: sets matter.enabled=false and preserves the config + on-disk commissioning storage, so re-enabling does not require re-commissioning. Requires the homebridge runtime to honour matter.enabled (older versions treat the block\'s presence as enabled).',
+    range: '>=2.0.3-beta.22',
+  },
 ]

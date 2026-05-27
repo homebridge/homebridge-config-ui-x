@@ -9,6 +9,14 @@
  */
 export interface MatterConfig {
   port?: number
+  /**
+   * When `false`, Matter is configured but not advertised — the config block
+   * and on-disk commissioning storage are preserved so it can be re-enabled
+   * without re-commissioning. Missing/`true` means enabled. Mirrors how
+   * `bridge.hap: false` disables HAP without losing pairing data. Only honoured
+   * by Homebridge >= 2.0.3-beta.22 (see the `matterDisableInPlace` feature flag).
+   */
+  enabled?: boolean
 }
 
 // --- Accessories types ---

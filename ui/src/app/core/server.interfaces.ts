@@ -70,6 +70,8 @@ export interface ChildBridgeStatusResponse {
   /** Matter configuration */
   matterConfig?: {
     port?: number
+    /** When false, Matter is configured but disabled in place (storage preserved). */
+    enabled?: boolean
   }
 
   /** Matter identifier (filesystem storage key) */
