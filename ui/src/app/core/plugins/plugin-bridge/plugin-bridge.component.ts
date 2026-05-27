@@ -100,6 +100,9 @@ export class PluginBridgeComponent implements OnInit {
   public isMatterSupported = this.$settings.isFeatureEnabled('matterSupport')
   // When false (older Homebridge), at least one of HAP/Matter must stay enabled.
   public allowDisableAllProtocols = this.$settings.isFeatureEnabled('disableAllProtocols')
+  // When true (Homebridge >= 2.0.3-beta.22), disabling Matter on a child bridge
+  // is non-destructive (_bridge.matter.enabled=false, storage kept).
+  public allowMatterDisableInPlace = this.$settings.isFeatureEnabled('matterDisableInPlace')
   public readonly defaultIcon = 'assets/hb-icon.png'
   public readonly linkChildBridges = '<a href="https://github.com/homebridge/homebridge/wiki/Child-Bridges" target="_blank"><i class="fas fa-external-link-alt primary-text"></i></a>'
   public readonly linkDebug = '<a href="https://github.com/homebridge/homebridge-config-ui-x/wiki/Debug-Common-Values" target="_blank"><i class="fas fa-up-right-from-square primary-text"></i></a>'
@@ -278,7 +281,10 @@ export class PluginBridgeComponent implements OnInit {
             // Strip Matter config from accessory-based plugins
             delete block._bridge.matter
           } else {
-            this.matterEnabledBlocks.update(current => ({ ...current, [i]: true }))
+            // A block with `enabled: false` is the in-place disabled state — the
+            // toggle shows off, but the port + commissioning storage are kept.
+            const matterEnabled = !this.allowMatterDisableInPlace || block._bridge.matter.enabled !== false
+            this.matterEnabledBlocks.update(current => ({ ...current, [i]: matterEnabled }))
 
             // Only cache port - name is now shared at _bridge level
             this.matterBridgeCache.update(current => new Map(current).set(i, { port: block._bridge.matter.port }))
@@ -664,6 +670,25 @@ export class PluginBridgeComponent implements OnInit {
       // Set enabled state to false
       this.matterEnabledBlocks.update(current => ({ ...current, [Number(index)]: false }))
 
+      if (this.allowMatterDisableInPlace) {
+        // In-place disable (Homebridge >= 2.0.3-beta.22): keep the matter block,
+        // port and on-disk commissioning; just mark it disabled so re-enabling
+        // does not require re-commissioning.
+        if (block._bridge?.matter) {
+          this.matterBridgeCache.update(current => new Map(current).set(Number(index), {
+            port: block._bridge.matter.port,
+          }))
+          block._bridge.matter.enabled = false
+        }
+        // Hide commissioning (QR) info while it is disabled
+        if (block._bridge?.username) {
+          this.matterDeviceInfo.update(current => new Map(current).set(block._bridge.username, null))
+        }
+        return
+      }
+
+      // Legacy teardown (older Homebridge): remove the block and delete its
+      // commissioning storage on save.
       // Track for deletion if this was originally enabled
       const wasOriginallyEnabled = this.originalMatterBridges().some(m =>
         block._bridge?.matter && m.port === block._bridge.matter.port,

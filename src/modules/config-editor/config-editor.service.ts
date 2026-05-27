@@ -1093,13 +1093,13 @@ export class ConfigEditorService implements OnApplicationBootstrap {
   }
 
   /**
-   * Get the Matter configuration from config.bridge.matter
-   * Returns null if Matter is not configured (disabled)
+   * Get the Matter configuration from config.bridge.matter.
+   * Returns null when Matter is not configured at all. When configured the
+   * block is returned as-is, including `enabled: false` for the in-place
+   * disabled state (callers check `enabled` to tell disabled from absent).
    */
   public async getMatterConfig(): Promise<MatterConfig | null> {
     const config = await this.getConfigFile()
-    // Return null if matter config doesn't exist (disabled)
-    // Return the config object if it exists (enabled)
     return config.bridge.matter || null
   }
 
@@ -1114,6 +1114,40 @@ export class ConfigEditorService implements OnApplicationBootstrap {
     config.bridge.matter = matterConfig
     await this.updateConfigFile(config)
     return matterConfig
+  }
+
+  /**
+   * Enable or disable Matter in place on the main bridge, without tearing down
+   * the config or commissioning storage. Mirrors setHapEnabled: disabling sets
+   * `bridge.matter.enabled = false` (block + storage preserved, so re-enabling
+   * keeps commissioning); enabling clears the flag. Requires Matter to already
+   * be configured — use updateMatterConfig to configure it from scratch, and
+   * deleteMatterConfig to fully remove it (and its storage).
+   */
+  public async setMatterEnabled(enabled: boolean, restart = true): Promise<{ enabled: boolean }> {
+    const config = await this.getConfigFile()
+    if (!config.bridge?.matter) {
+      throw new BadRequestException('Matter is not configured on the main bridge.')
+    }
+
+    const currentlyEnabled = config.bridge.matter.enabled !== false
+    if (enabled === currentlyEnabled) {
+      return { enabled }
+    }
+
+    // Shutdown first so the running server doesn't see a partial config, unless
+    // the caller will trigger a (deferred) restart itself.
+    if (restart) {
+      await this.homebridgeIpcService.restartAndWaitForClose()
+    }
+    if (enabled) {
+      // Re-enable: omit the flag — present-without-`enabled` means enabled
+      delete config.bridge.matter.enabled
+    } else {
+      config.bridge.matter.enabled = false
+    }
+    await this.updateConfigFile(config)
+    return { enabled }
   }
 
   /**
@@ -1151,11 +1185,14 @@ export class ConfigEditorService implements OnApplicationBootstrap {
    * Enable or disable HAP on the main bridge.
    * HAP and Matter may both be disabled — the bridge then advertises nothing.
    */
-  public async setHapEnabled(enabled: boolean): Promise<{ enabled: boolean }> {
+  public async setHapEnabled(enabled: boolean, restart = true): Promise<{ enabled: boolean }> {
     const config = await this.getConfigFile()
     if (!enabled) {
-      // Shutdown first so the running server doesn't see a partial config
-      await this.homebridgeIpcService.restartAndWaitForClose()
+      // Shutdown first so the running server doesn't see a partial config, unless
+      // the caller will trigger a (deferred) restart itself.
+      if (restart) {
+        await this.homebridgeIpcService.restartAndWaitForClose()
+      }
       config.bridge.hap = false
       await this.updateConfigFile(config)
     } else {

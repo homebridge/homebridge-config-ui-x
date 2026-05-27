@@ -69,6 +69,7 @@ export interface ChildBridge {
   username: string
   matterConfig?: {
     port?: number
+    enabled?: boolean
   }
   matterIdentifier?: string
   matterSerialNumber?: string

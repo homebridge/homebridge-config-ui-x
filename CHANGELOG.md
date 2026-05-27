@@ -155,6 +155,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(status): show all update-info tiles immediately on load
 - fix(log): release the tail-log guard on early exits so logs aren't blank after navigating
 - feat: allow disabling both HAP and Matter on main and child bridges
+- feat(matter): allow disabling natter in place, preserving commissioning
 
 ### Other Changes
 
