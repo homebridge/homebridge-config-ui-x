@@ -157,6 +157,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - feat: allow disabling both HAP and Matter on main and child bridges
 - feat(matter): allow disabling natter in place, preserving commissioning
 - fix(toast): rework restart-required toast into a shared, keyboard-accessible component
+- fix(accessories): hide eve history service exposed by hap-client v5
 
 ### Other Changes
 
