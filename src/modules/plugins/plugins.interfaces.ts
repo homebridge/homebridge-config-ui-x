@@ -100,26 +100,43 @@ export interface INpmRegistryModule {
   'readmeFilename': string
 }
 
+/**
+ * A single result from the npm registry search endpoint
+ * (`/-/v1/search`). Note this is a trimmed projection — it carries no
+ * `engines` and no per-version data, only the `latest` version string.
+ * To obtain `engines`, look the package up individually via the
+ * per-package registry endpoint (`/<name>`, see `INpmRegistryModule`).
+ */
 export interface INpmSearchResultItem {
+  downloads: {
+    monthly: number
+    weekly: number
+  }
+  dependents: number
+  updated: string
+  searchScore: number
   package: {
     name: string
-    scope: string
+    scope?: string
     version: string
-    description: string
-    keywords: string[]
+    description?: string
+    sanitized_name?: string
+    keywords?: string[]
     date: string
     links: {
       npm: string
-      homebridge?: string
+      homepage?: string
       repository?: string
       bugs?: string
     }
-    author: INpmPerson
+    author?: INpmPerson
     publisher: INpmPerson
     maintainers: INpmPerson[]
+    license?: string
   }
-  flags: {
-    unstable: boolean
+  flags?: {
+    insecure?: number
+    unstable?: boolean
   }
   score: {
     final: number
@@ -129,11 +146,12 @@ export interface INpmSearchResultItem {
       maintenance: number
     }
   }
-  searchScore: number
 }
 
 export interface INpmSearchResults {
   objects: INpmSearchResultItem[]
+  total: number
+  time: string
 }
 
 export interface IPackageJson {
