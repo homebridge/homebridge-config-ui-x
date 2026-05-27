@@ -26,6 +26,38 @@
   font-size: 0.85rem;
 }
 
+// The restart toast is not tap-to-dismiss — only the explicit Restart button
+// and close (×) are interactive. ngx-toastr puts a pointer cursor on the whole
+// toast on hover (`.toast-container .ngx-toastr:hover`), which is misleading
+// here, so reset it to the default arrow; the buttons set their own pointer.
+.toast-container .ngx-toastr.hb-restart-toast,
+.toast-container .ngx-toastr.hb-restart-toast:hover {
+  cursor: default;
+}
+
+// Keyboard-operable restart action in the custom restart toast. Styled here
+// (global) rather than component-scoped so it isn't tinted by the theme's
+// .btn-link colour and renders reliably inside the toastr overlay.
+.hb-restart-toast-action {
+  display: inline-block;
+  margin-top: 0.5rem;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #fff;
+  font-family: inherit;
+  font-size: 0.85rem;
+  font-weight: 300;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.hb-restart-toast-action:hover,
+.hb-restart-toast-action:focus {
+  color: #fff;
+  text-decoration: underline;
+}
+
 .toast-success {
   background-color: #51a351 !important;
 }

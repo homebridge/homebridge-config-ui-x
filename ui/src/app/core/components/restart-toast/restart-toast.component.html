@@ -1,0 +1,12 @@
+<button
+  type="button"
+  class="toast-close-button"
+  [attr.aria-label]="'form.button_close' | translate"
+  (click)="dismiss()"
+>
+  <span aria-hidden="true">&times;</span>
+</button>
+<div role="alert" class="toast-message">{{ message() }}</div>
+<button type="button" class="hb-restart-toast-action" (click)="restart()">
+  {{ title() }}<span aria-hidden="true"> &rarr;</span>
+</button>

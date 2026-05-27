@@ -2,7 +2,6 @@ import { DatePipe } from '@angular/common'
 import { ChangeDetectionStrategy, Component, createEnvironmentInjector, DestroyRef, EnvironmentInjector, inject, OnInit, signal } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { FormControl, ReactiveFormsModule } from '@angular/forms'
-import { Router } from '@angular/router'
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap/tooltip'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
@@ -38,7 +37,6 @@ export class BackupComponent implements OnInit {
   private $backup = inject(BackupService)
   private $errors = inject(HttpErrorService)
   private $modal = inject(NgbModal)
-  private $router = inject(Router)
   private $settings = inject(SettingsService)
   private $toastr = inject(ToastrService)
   private $translate = inject(TranslateService)
@@ -171,7 +169,7 @@ export class BackupComponent implements OnInit {
       // Update the environment variable in the settings service
       this.$settings.setEnvItem(key, value)
 
-      this.showRestartToast()
+      this.$settings.showRestartToast()
     } catch (error: any) {
       console.error(error)
       this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
@@ -193,35 +191,6 @@ export class BackupComponent implements OnInit {
       this.backupTime.set(data.next)
     } catch (error) {
       console.error(error)
-    }
-  }
-
-  private showRestartToast(): void {
-    if (!this.$settings.restartToastRef) {
-      this.$settings.restartToastRef = this.$toastr.info(
-        this.$translate.instant('settings.changes.saved'),
-        this.$translate.instant('menu.hbrestart.title'),
-        {
-          timeOut: 0,
-          tapToDismiss: true,
-          disableTimeOut: true,
-          positionClass: 'toast-bottom-right',
-          enableHtml: true,
-        },
-      )
-
-      if (this.$settings.restartToastRef) {
-        this.$settings.restartToastRef.onTap
-          ?.pipe(takeUntilDestroyed(this.destroyRef))
-          .subscribe(() => {
-            void this.$router.navigate(['/restart'])
-          })
-        this.$settings.restartToastRef.onHidden
-          ?.pipe(takeUntilDestroyed(this.destroyRef))
-          .subscribe(() => {
-            this.$settings.restartToastRef = null
-          })
-      }
     }
   }
 
