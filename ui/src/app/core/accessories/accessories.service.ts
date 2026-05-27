@@ -48,6 +48,7 @@ export class AccessoriesService {
     'ProtocolInformation',
     'NFCAccess',
     'BridgedNode',
+    'History', // Eve History
   ])
 
   public layoutSaved = new Subject()
