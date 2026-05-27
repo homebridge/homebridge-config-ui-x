@@ -120,22 +120,44 @@ export class AccessoriesService {
     try {
       const result = await ref.result
 
-      // Apply saved values to the current service object in the room
+      // Apply saved values to the current service object in the room.
       // The original service reference may have been replaced by an accessories-data
-      // event during the modal close animation, so find the current one by uniqueId
+      // event during the modal close animation, so find the current one by uniqueId.
       const currentService = this.rooms()
         .flatMap(r => r.services)
         .find(s => s.uniqueId === service.uniqueId) as ServiceTypeX | undefined
 
       const target = currentService || service
-      target.customName = result.customName
-      target.customType = result.customType
-      target.hidden = result.hidden
-      target.onDashboard = result.onDashboard
+
+      // Build a NEW service object carrying the saved values rather than mutating
+      // `target` in place. The accessory tile is OnPush with a signal `input()`, so
+      // re-emitting the rooms array while the service keeps the same reference only
+      // re-checks the page — not the tile. The custom type (and therefore the icon)
+      // would stay stale until the next live data event or a manual page refresh.
+      // Swapping in a fresh reference changes the tile's input identity and forces it
+      // to re-render now.
+      const updated = {
+        ...target,
+        customName: result.customName,
+        customType: result.customType,
+        hidden: result.hidden,
+        onDashboard: result.onDashboard,
+      } as ServiceTypeX
+
+      // Keep the flat accessories list in sync so later parses/refreshes build on the
+      // new reference instead of resurrecting the stale one.
+      const flatIndex = this.accessories.services.findIndex(s => s.uniqueId === updated.uniqueId)
+      if (flatIndex !== -1) {
+        this.accessories.services[flatIndex] = updated
+      }
+
+      // Replace the service reference inside the rooms signal so the OnPush tile re-renders.
+      this.rooms.update(rooms => rooms.map(room => ({
+        ...room,
+        services: room.services.map(s => (s.uniqueId === updated.uniqueId ? updated : s)),
+      })))
 
       this.saveLayout()
-      // Trigger rooms signal update so OnPush components re-render
-      this.rooms.update(rooms => [...rooms])
     } catch {
       // Modal dismissed - do not save
     }
