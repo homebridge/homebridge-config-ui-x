@@ -98,6 +98,8 @@ export class PluginBridgeComponent implements OnInit {
   public readonly currentlySelectedLink = signal<PluginBridgeAccessoryLink | null>(null)
   public readonly currentBridgeHasLinks = signal<boolean>(false)
   public isMatterSupported = this.$settings.isFeatureEnabled('matterSupport')
+  // When false (older Homebridge), at least one of HAP/Matter must stay enabled.
+  public allowDisableAllProtocols = this.$settings.isFeatureEnabled('disableAllProtocols')
   public readonly defaultIcon = 'assets/hb-icon.png'
   public readonly linkChildBridges = '<a href="https://github.com/homebridge/homebridge/wiki/Child-Bridges" target="_blank"><i class="fas fa-external-link-alt primary-text"></i></a>'
   public readonly linkDebug = '<a href="https://github.com/homebridge/homebridge-config-ui-x/wiki/Debug-Common-Values" target="_blank"><i class="fas fa-up-right-from-square primary-text"></i></a>'
@@ -592,8 +594,9 @@ export class PluginBridgeComponent implements OnInit {
       return
     }
 
-    // Refuse to disable Matter when HAP is also off — at least one protocol is required.
-    if (!enable && !this.hapEnabledBlocks()[Number(index)]) {
+    // Refuse to disable Matter when HAP is also off — at least one protocol is
+    // required unless the running Homebridge supports disabling all protocols.
+    if (!enable && !this.hapEnabledBlocks()[Number(index)] && !this.allowDisableAllProtocols) {
       this.$toastr.info(
         this.$translate.instant('child_bridge.config.disable_matter_requires_hap'),
         this.$translate.instant('toast.title_notice'),
@@ -712,8 +715,9 @@ export class PluginBridgeComponent implements OnInit {
       return
     }
 
-    // Mutual exclusion: refuse to disable HAP unless Matter is enabled for this block.
-    if (!enable && !this.matterEnabledBlocks()[idx]) {
+    // Mutual exclusion: refuse to disable HAP unless Matter is enabled for this
+    // block — unless the running Homebridge supports disabling all protocols.
+    if (!enable && !this.matterEnabledBlocks()[idx] && !this.allowDisableAllProtocols) {
       this.$toastr.info(
         this.$translate.instant('child_bridge.config.disable_hap_requires_matter'),
         this.$translate.instant('toast.title_notice'),
@@ -867,12 +871,13 @@ export class PluginBridgeComponent implements OnInit {
 
       // Validate HAP and Matter configs before saving
       for (const [index, block] of configBlocks.entries()) {
-        // At least one protocol must be on for any enabled child bridge.
-        // Accessory blocks always use HAP (no Matter alternative), so treat
-        // HAP as on for them even if the signal was never set explicitly —
-        // e.g. when an accessory block is linked to a shared child bridge.
+        // At least one protocol must be on for any enabled child bridge — unless
+        // the running Homebridge supports disabling all protocols. Accessory
+        // blocks always use HAP (no Matter alternative), so treat HAP as on for
+        // them even if the signal was never set explicitly — e.g. when an
+        // accessory block is linked to a shared child bridge.
         const hapOn = block.accessory ? true : !!hapEnabledBlocks[index]
-        if (enabledBlocks[index] && !hapOn && !matterEnabledBlocks[index]) {
+        if (!this.allowDisableAllProtocols && enabledBlocks[index] && !hapOn && !matterEnabledBlocks[index]) {
           this.$toastr.error(
             this.$translate.instant('child_bridge.config.at_least_one_protocol'),
             this.$translate.instant('toast.title_error'),
