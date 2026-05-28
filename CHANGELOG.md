@@ -164,6 +164,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - feat(accessories): show current consumption on outlet-compatible hap tiles
 - feat(plugins): use new font-awesome `venmo-v` icon for donate modal
 - fix(status): add screen-reader-only collapse to homebridge logs widget (@rfiorentino1)
+- fix(plugins): drop duplicate aria-label on plugin actions dropdown menu (@rfiorentino1)
 
 ### Other Changes
 
