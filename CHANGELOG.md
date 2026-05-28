@@ -191,12 +191,13 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - chore: update deprecation script from homebridge repo
 - chore(deps): bump the actions group with 2 updates (#2831) (@dependabot)
 - test: stop linux platform-tools e2e from shutting down the CI runner
+- chore: dependency updates
 
 ### Homebridge Dependencies
 
-- `@homebridge/hap-client` @ `v4.0.4`
+- `@homebridge/hap-client` @ `v5.0.0`
 - `@homebridge/node-pty-prebuilt-multiarch` @ `v0.13.1`
-- `@homebridge/plugin-ui-utils` @ `v2.2.3`
+- `@homebridge/plugin-ui-utils` @ `v2.2.4`
 
 ## v5.23.0 (2026-05-12)
 
