@@ -44,6 +44,11 @@ export class HomebridgeLogsWidgetComponent implements OnInit, OnDestroy {
   public readonly showSearchBar = signal(false)
   public readonly showExitButton = signal(false)
 
+  // Screen-reader-only collapse: keeps the xterm live region quiet until SR users
+  // explicitly expand the widget. Visual presentation is unchanged for sighted users.
+  public readonly srExpanded = signal(false)
+  public readonly contentId = `homebridge-logs-content-${globalThis.crypto?.randomUUID?.() || Math.random().toString(36).slice(2)}`
+
   // Other properties
   public isAdmin = this.$auth.user.admin
   public form = new FormGroup({
@@ -174,6 +179,11 @@ export class HomebridgeLogsWidgetComponent implements OnInit, OnDestroy {
       this.$log.clearSearchFilter()
     }
     this.$log.destroyTerminal()
+  }
+
+  public toggleSrExpanded(event: Event): void {
+    event.stopPropagation()
+    this.srExpanded.set(!this.srExpanded())
   }
 
   public showSearch(): void {

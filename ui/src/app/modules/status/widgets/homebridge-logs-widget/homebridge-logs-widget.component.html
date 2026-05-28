@@ -8,7 +8,17 @@
     class="drag-handler d-flex align-items-center justify-content-between p-2"
     [class.terminal-title-dark]="theme() === 'dark'"
   >
-    <span>{{ 'status.widget.homebridge_logs' | translate }}</span>
+    <span aria-hidden="true">{{ 'status.widget.homebridge_logs' | translate }}</span>
+    <button
+      type="button"
+      class="visually-hidden-focusable"
+      [attr.aria-expanded]="srExpanded()"
+      [attr.aria-controls]="contentId"
+      [attr.aria-label]="'status.widget.homebridge_logs' | translate"
+      (click)="toggleSrExpanded($event)"
+    >
+      {{ 'status.widget.homebridge_logs' | translate }}
+    </button>
     @if (isAdmin && widget().showToolbar) {
       <div class="d-flex gap-1 widget-toolbar" [class.with-gear]="widget().draggable">
         <button
@@ -84,7 +94,12 @@
       </form>
     </div>
   }
-  <div class="p-2" [style.height.px]="terminalHeight()">
+  <div
+    class="p-2"
+    [attr.id]="contentId"
+    [style.height.px]="terminalHeight()"
+    [attr.aria-hidden]="srExpanded() ? null : 'true'"
+  >
     <div #logoutput class="terminal gridster-item-content w-100 h-100 terminal-max-height"></div>
   </div>
 </div>
