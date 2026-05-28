@@ -33,6 +33,11 @@ export class AccessoriesService {
   // Matter monitoring state
   private matterMonitoringActive = false
   private matterUpdateListener: ((event: MatterEvent) => void) | null = null
+  // Cached promise for the one-shot Matter monitoring start. Concurrent
+  // first-client connects all await the same promise so we only ever send
+  // one startMatterMonitoring IPC per UI process lifetime. Cleared on
+  // failure so a subsequent client can retry.
+  private matterMonitoringStartPromise: Promise<void> | null = null
   private activeClients = new Set<Socket>()
   // Per-socket reload entry point. Lets a repeat `get-accessories` for an
   // already-connected socket re-fetch data instead of stacking a second set
@@ -137,10 +142,12 @@ export class AccessoriesService {
     // socket re-fetches in place rather than re-registering listeners.
     this.clientSessions.set(client, { reload: () => loadAllAccessories(true) })
 
-    // If this is the first client, start Matter monitoring
-    if (this.activeClients.size === 1) {
-      await this.startMatterMonitoring()
-    }
+    // Ensure Matter monitoring is started (idempotent — one-shot per UI
+    // process lifetime, shared across concurrent connects). Every client
+    // awaits the same promise so loadMatterAccessories can rely on core's
+    // monitoring being active by the time it runs, regardless of how many
+    // clients have connected before.
+    await this.ensureMatterMonitoringStarted()
 
     // Initial load
     await loadAllAccessories(false)
@@ -215,10 +222,13 @@ export class AccessoriesService {
       // Remove client from active clients
       this.activeClients.delete(client)
 
-      // If no more clients, stop Matter monitoring
-      if (this.activeClients.size === 0) {
-        this.stopMatterMonitoring()
-      }
+      // Intentionally do NOT stop Matter monitoring on the last client
+      // disconnect. The pre-fix behaviour started monitoring on first connect
+      // and stopped on last disconnect, so every page reload cycled core's
+      // Matter state and re-raced its init on the next start — producing
+      // 'Matter monitoring not active' spam. Keep monitoring active for the
+      // lifetime of the UI process; core's matterMonitoringClients counter
+      // stays at >0 and the start-up race only ever happens once.
     }
 
     client.on('disconnect', onEnd.bind(this))
@@ -554,84 +564,104 @@ export class AccessoriesService {
   }
 
   /**
-   * Start Matter monitoring via IPC
+   * Idempotently start Matter monitoring for the lifetime of this UI process.
+   *
+   * The actual start is one-shot: concurrent first-client connects all share
+   * the same cached promise so we only send one `startMatterMonitoring` IPC
+   * regardless of how many sockets arrive. If the start fails the cached
+   * promise is cleared so a later client connect can retry — a transient
+   * core-side hiccup shouldn't leave Matter monitoring permanently inactive
+   * until the UI process restarts.
+   */
+  private async ensureMatterMonitoringStarted(): Promise<void> {
+    if (this.matterMonitoringActive) {
+      return
+    }
+    if (!this.matterMonitoringStartPromise) {
+      const attempt = this.startMatterMonitoring().catch((error) => {
+        this.logger.error('Failed to start Matter monitoring:', error)
+        if (this.matterMonitoringStartPromise === attempt) {
+          this.matterMonitoringStartPromise = null
+        }
+      })
+      this.matterMonitoringStartPromise = attempt
+    }
+    return this.matterMonitoringStartPromise
+  }
+
+  /**
+   * Start Matter monitoring via IPC.
+   *
+   * Gates the first `getMatterAccessories` on core's `monitoringStarted` ack
+   * so we don't race core's Matter init (which would log
+   * 'Matter monitoring not active'). The ack arrives via the shared
+   * matterEvent dispatcher, which only routes events that echo back the
+   * request's correlationId — so the wait is feature-flagged: against an
+   * older Homebridge that doesn't echo, we fall back to flipping the active
+   * flag synchronously (the pre-ack behaviour) rather than hanging on a
+   * reply that will never be delivered.
    */
   private async startMatterMonitoring(): Promise<void> {
     // Skip if the running Homebridge version pre-dates Matter, or if the user
     // hasn't turned Matter on for any bridge. Without the latter check we'd
     // still fire startMatterMonitoring + getMatterAccessories every time the
-    // accessories tab loads, and (because Homebridge core currently doesn't
-    // echo our correlationId on its empty reply) the dispatcher would drop
-    // the response and we'd log timeout/retry/failed for each request.
+    // accessories tab loads, producing timeout/retry/failed log spam.
     const featureFlags = this.configService.getFeatureFlags()
     if (!featureFlags.matterSupport || !this.configService.isMatterEnabled()) {
       return
     }
 
-    if (this.matterMonitoringActive) {
-      return // Already monitoring
+    this.logger.debug('Starting Matter accessory monitoring')
+
+    // Install the matter event listener BEFORE sending the start request so
+    // we don't miss any server-pushed accessoryUpdate/Added/Removed events
+    // that core may emit immediately after monitoring becomes active. The
+    // correlation-id dispatcher (which handles request/response events like
+    // accessoriesData and the monitoring acks) is installed lazily by
+    // waitForMatterEvent and runs alongside this listener on the same channel.
+    const listener: (event: MatterEvent) => void = (event) => {
+      switch (event.type) {
+        case 'accessoryUpdate':
+          this.handleMatterStateUpdate(event.data)
+          break
+
+        case 'accessoryAdded':
+        case 'accessoryRemoved':
+          this.logger.debug(`Matter accessory ${event.type}: ${event.data.uuid} - triggering reload`)
+          // Trigger a reload of only Matter accessories for all connected clients
+          for (const client of this.activeClients) {
+            client.emit('matter-accessories-reload-required')
+          }
+          break
+      }
     }
+    this.matterUpdateListener = listener
+    this.homebridgeIpcService.on('matterEvent', listener)
 
     try {
-      this.logger.debug('Starting Matter accessory monitoring')
-
-      // Send IPC command to start monitoring
-      this.homebridgeIpcService.sendMessage('startMatterMonitoring')
+      if (featureFlags.matterMonitoringAck) {
+        // Send with a correlationId and await core's ack before flipping the
+        // flag — this is what closes the startup race.
+        await this.waitForMatterEvent('monitoringStarted', (correlationId) => {
+          this.homebridgeIpcService.sendMessage('startMatterMonitoring', { correlationId })
+        })
+      } else {
+        // Older Homebridge doesn't echo correlationId on the ack, so the
+        // dispatcher would drop it. Fall back to fire-and-forget and accept
+        // the small startup-race window the ack would otherwise close.
+        this.homebridgeIpcService.sendMessage('startMatterMonitoring')
+      }
 
       this.matterMonitoringActive = true
-
-      // Setup unified IPC listener for Matter events
-      this.matterUpdateListener = (event: MatterEvent) => {
-        switch (event.type) {
-          case 'accessoryUpdate':
-            this.handleMatterStateUpdate(event.data)
-            break
-
-          case 'accessoryAdded':
-          case 'accessoryRemoved':
-            this.logger.debug(`Matter accessory ${event.type}: ${event.data.uuid} - triggering reload`)
-            // Trigger a reload of only Matter accessories for all connected clients
-            for (const client of this.activeClients) {
-              client.emit('matter-accessories-reload-required')
-            }
-            break
-        }
-      }
-
-      this.homebridgeIpcService.on('matterEvent', this.matterUpdateListener)
-
       this.logger.debug('Matter monitoring started successfully')
     } catch (error) {
-      this.logger.error('Failed to start Matter monitoring:', error)
-    }
-  }
-
-  /**
-   * Stop Matter monitoring via IPC
-   */
-  private async stopMatterMonitoring(): Promise<void> {
-    if (!this.matterMonitoringActive) {
-      return // Not monitoring
-    }
-
-    try {
-      this.logger.debug('Stopping Matter accessory monitoring')
-
-      // Remove IPC listener
-      if (this.matterUpdateListener) {
-        this.homebridgeIpcService.removeListener('matterEvent', this.matterUpdateListener)
+      // Tear the listener back down so a retry from ensureMatterMonitoringStarted
+      // doesn't end up with two listeners attached for accessory updates.
+      this.homebridgeIpcService.removeListener('matterEvent', listener)
+      if (this.matterUpdateListener === listener) {
         this.matterUpdateListener = null
       }
-
-      // Send IPC command to stop monitoring
-      this.homebridgeIpcService.sendMessage('stopMatterMonitoring')
-
-      this.matterMonitoringActive = false
-      this.matterAccessories = []
-
-      this.logger.debug('Matter monitoring stopped')
-    } catch (error) {
-      this.logger.error('Failed to stop Matter monitoring:', error)
+      throw error
     }
   }
 
