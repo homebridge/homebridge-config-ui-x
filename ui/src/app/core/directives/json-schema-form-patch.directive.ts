@@ -76,6 +76,14 @@ export class JsonSchemaFormPatchDirective implements AfterViewInit, OnDestroy {
     this.observer.observe(this.host.nativeElement, {
       childList: true,
       subtree: true,
+      // Also watch the attributes that signal disclosure-state changes so the
+      // proxy <button>s stay in sync. Bootstrap collapse flips aria-expanded
+      // on fieldset toggles; ng-formworks' SectionComponent flips the
+      // .expandable / .expanded class on its container <div>. Without this,
+      // the proxy reads stale state and announces "collapsed" even after the
+      // section has opened.
+      attributes: true,
+      attributeFilter: ['class', 'aria-expanded'],
     })
   }
 
@@ -93,6 +101,7 @@ export class JsonSchemaFormPatchDirective implements AfterViewInit, OnDestroy {
     const root = this.host.nativeElement
 
     this.patchExpandableFieldsetLegends(root)
+    this.patchExpandableSectionLegends(root)
     this.patchDeleteButtons(root)
     this.patchCheckboxRadioDuplicateText(root)
     this.patchBasicControlNames(root)
@@ -188,6 +197,127 @@ export class JsonSchemaFormPatchDirective implements AfterViewInit, OnDestroy {
     if (proxy.getAttribute('aria-expanded') !== next) {
       proxy.setAttribute('aria-expanded', next)
     }
+  }
+
+  // Section widget (type: "section" with expandable: true) renders as:
+  //   <section-widget>
+  //     <div class="expandable|expanded">
+  //       <label class="legend" (click)=toggleExpanded()>Title</label>
+  //       <root-widget [style.display]="expanded ? '' : 'none'">…items…</root-widget>
+  //     </div>
+  //   </section-widget>
+  // The clickable <label> has no role=button and no aria-expanded, so screen
+  // readers announce the title with no disclosure state (often just as "link"
+  // or "clickable", depending on the SR). This sibling of the fieldset patch
+  // injects a visually-hidden proxy <button> with proper role / aria-controls /
+  // aria-expanded, mirroring the fieldset treatment.
+  private patchExpandableSectionLegends(root: HTMLElement) {
+    // Target the SectionComponent host element directly — robust to whatever
+    // extra wrapping layers appear between nested sections. Each
+    // <section-widget> renders a single inner <div> with the legend + body
+    // (per @ng-formworks/core's SectionComponent template).
+    const sections = root.querySelectorAll<HTMLElement>('section-widget')
+
+    sections.forEach((sw) => {
+      const container = sw.querySelector(':scope > div') as HTMLElement | null
+      if (!container) {
+        return
+      }
+      // Only patch sections that are actually expandable — the template only
+      // applies one of these classes when options.expandable is true.
+      if (
+        !container.classList.contains('expandable')
+        && !container.classList.contains('expanded')
+      ) {
+        return
+      }
+      const legend = container.querySelector(':scope > label.legend') as HTMLElement | null
+      if (!legend) {
+        return
+      }
+
+      const titleText = this.cleanSectionTitle((legend.textContent || '').trim())
+      if (!titleText) {
+        return
+      }
+
+      const body = container.querySelector(':scope > root-widget') as HTMLElement | null
+
+      let proxy = container.querySelector(':scope > button.jsf-section-proxy') as HTMLButtonElement | null
+
+      if (!proxy) {
+        proxy = document.createElement('button')
+        proxy.type = 'button'
+        proxy.className = 'jsf-section-proxy visually-hidden-focusable'
+        container.insertBefore(proxy, container.firstChild)
+
+        proxy.addEventListener('click', (e) => {
+          e.preventDefault()
+          legend.click()
+          window.setTimeout(() => {
+            this.syncSectionProxyExpanded(container, proxy!, body)
+          }, 0)
+        })
+
+        proxy.addEventListener('keydown', (e: KeyboardEvent) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault()
+            proxy!.click()
+          }
+        })
+      }
+
+      proxy.textContent = titleText
+      proxy.setAttribute('role', 'button')
+      proxy.setAttribute('tabindex', '0')
+      proxy.setAttribute('aria-label', titleText)
+      proxy.removeAttribute('aria-describedby')
+
+      if (body) {
+        if (!body.id) {
+          body.id = `jsf_section_${Math.random().toString(36).slice(2)}`
+        }
+        proxy.setAttribute('aria-controls', body.id)
+      } else {
+        proxy.removeAttribute('aria-controls')
+      }
+
+      container.setAttribute('role', 'presentation')
+      legend.setAttribute('aria-hidden', 'true')
+      legend.querySelectorAll<HTMLElement>('button, a, [tabindex]').forEach((el) => {
+        el.setAttribute('tabindex', '-1')
+      })
+
+      this.syncSectionProxyExpanded(container, proxy, body)
+    })
+  }
+
+  private syncSectionProxyExpanded(
+    container: HTMLElement,
+    proxy: HTMLButtonElement,
+    body: HTMLElement | null,
+  ) {
+    const expanded = this.getSectionExpandedState(container, body)
+    const next = expanded ? 'true' : 'false'
+    if (proxy.getAttribute('aria-expanded') !== next) {
+      proxy.setAttribute('aria-expanded', next)
+    }
+  }
+
+  private getSectionExpandedState(container: HTMLElement, body: HTMLElement | null): boolean {
+    // The section template toggles the `expanded` class on the wrapper div
+    // when expanded; the `expandable` class is set only while collapsed.
+    if (container.classList.contains('expanded')) {
+      return true
+    }
+    if (container.classList.contains('expandable') && !container.classList.contains('expanded')) {
+      return false
+    }
+    if (body) {
+      const display = window.getComputedStyle(body).display
+      return display !== 'none'
+    }
+    return true
   }
 
   private findCollapseBody(fieldset: HTMLElement, realToggle: HTMLElement | null): HTMLElement | null {

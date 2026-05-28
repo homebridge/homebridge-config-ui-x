@@ -159,6 +159,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(toast): rework restart-required toast into a shared, keyboard-accessible component
 - fix(accessories): hide eve history service exposed by hap-client v5
 - fix(accessories): re-render tile immediately after editing custom type
+- fix(a11y): announce disclosure state on schema-form sections and docker widget (@rfiorentino1)
 
 ### Other Changes
 
