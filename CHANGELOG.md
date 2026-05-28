@@ -163,6 +163,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(accessories): gate first matter accessories load on core monitoring ack
 - feat(accessories): show current consumption on outlet-compatible hap tiles
 - feat(plugins): use new font-awesome `venmo-v` icon for donate modal
+- fix(status): add screen-reader-only collapse to homebridge logs widget (@rfiorentino1)
 
 ### Other Changes
 
