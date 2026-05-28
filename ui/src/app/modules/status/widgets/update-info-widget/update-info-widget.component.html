@@ -9,8 +9,11 @@
           class="d-flex ps-3 py-1 align-items-center cursor-pointer"
           role="button"
           tabindex="0"
+          [attr.aria-expanded]="widget().dockerExpanded ? 'true' : 'false'"
+          [attr.aria-controls]="'dockerExpandPanel'"
           (click)="toggleDockerExpand()"
           (keydown.enter)="toggleDockerExpand()"
+          (keydown.space)="$event.preventDefault(); toggleDockerExpand()"
         >
           <div class="mb-0 d-flex align-items-center">
             @if (!dockerStatusDone()) {
@@ -46,7 +49,7 @@
           </div>
         </div>
         @if (widget().dockerExpanded) {
-          <div class="ps-5 pe-3 d-flex flex-wrap">
+          <div id="dockerExpandPanel" class="ps-5 pe-3 d-flex flex-wrap">
             <!-- Homebridge -->
             <div class="hb-status-item hb-status-item-docker-child d-flex flex-row py-1">
               <div class="d-flex ps-3 py-1">
