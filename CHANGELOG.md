@@ -161,6 +161,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(accessories): re-render tile immediately after editing custom type
 - fix(a11y): announce disclosure state on schema-form sections and docker widget (@rfiorentino1)
 - fix(accessories): gate first matter accessories load on core monitoring ack
+- feat(accessories): show current consumption on outlet-compatible hap tiles
 
 ### Other Changes
 

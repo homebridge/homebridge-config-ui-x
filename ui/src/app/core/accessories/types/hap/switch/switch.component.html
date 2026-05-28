@@ -56,10 +56,12 @@
       </svg>
     </div>
     <div class="accessory-label mt-auto" aria-hidden="true">{{ service().customName || service().serviceName }}</div>
-    <div
-      class="accessory-label grey-text"
-      aria-hidden="true"
-      [innerText]="(on ? 'accessories.control.on' : 'accessories.control.off') | translate"
-    ></div>
+    <div class="accessory-label grey-text" aria-hidden="true">
+      {{ (on ? 'accessories.control.on' : 'accessories.control.off') | translate }}
+      @if (on && hasCurrentConsumption()) {
+        &middot;
+        {{ currentConsumption() }}W
+      }
+    </div>
   </div>
 </div>

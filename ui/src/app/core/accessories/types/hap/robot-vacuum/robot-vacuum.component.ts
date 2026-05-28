@@ -30,4 +30,16 @@ export class RobotVacuumComponent {
       void this.service().getCharacteristic!('Active').setValue!(this.service().values.Active ? 0 : 1)
     }
   }
+
+  public hasCurrentConsumption(): boolean {
+    return 'Consumption' in this.service().values
+  }
+
+  public currentConsumption(): number | undefined {
+    if (!this.hasCurrentConsumption()) {
+      return undefined
+    }
+
+    return this.service().values.Consumption
+  }
 }

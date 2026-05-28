@@ -98,4 +98,16 @@ export class HumidifierDehumidifierComponent implements OnInit {
       })
     }
   }
+
+  public hasCurrentConsumption(): boolean {
+    return 'Consumption' in this.service().values
+  }
+
+  public currentConsumption(): number | undefined {
+    if (!this.hasCurrentConsumption()) {
+      return undefined
+    }
+
+    return this.service().values.Consumption
+  }
 }

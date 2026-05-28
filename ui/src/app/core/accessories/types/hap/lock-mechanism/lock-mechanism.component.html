@@ -54,13 +54,18 @@
     @if (service().values?.LockCurrentState < 2) {
       <div
         class="accessory-label grey-text"
-        [innerText]="
-          (service().values?.LockCurrentState ? 'accessories.control.locked' : 'accessories.control.unlocked')
-            | translate
-        "
         [class.red-text]="!service().values?.LockCurrentState"
         [class.grey-text]="service().values?.LockCurrentState"
-      ></div>
+      >
+        {{
+          (service().values?.LockCurrentState ? 'accessories.control.locked' : 'accessories.control.unlocked')
+            | translate
+        }}
+        @if (!service().values?.LockCurrentState && hasCurrentConsumption()) {
+          &middot;
+          {{ currentConsumption() }}W
+        }
+      </div>
     } @else if (service().values?.LockCurrentState === 2) {
       <div class="accessory-label red-text">{{ 'accessories.control.jammed' | translate }}</div>
     } @else if (service().values?.LockCurrentState === 3) {
