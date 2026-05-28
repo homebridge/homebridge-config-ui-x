@@ -31,6 +31,24 @@ export type MatterEvent
     | { type: 'accessoryRemoved', correlationId?: string, data: MatterAccessoryInfo }
     | { type: 'accessoryControlResponse', correlationId?: string, data: MatterControlResponse }
     | { type: 'accessoryInfo', correlationId?: string, data: MatterAccessoryInfo }
+    | { type: 'monitoringStarted', correlationId?: string, data: MatterMonitoringAck }
+    | { type: 'monitoringStopped', correlationId?: string, data: MatterMonitoringAck }
+
+/**
+ * Ack payload for Matter monitoring lifecycle requests.
+ *
+ * Emitted by Homebridge core in response to `startMatterMonitoring` and
+ * `stopMatterMonitoring` IPC calls. The optional booleans describe which
+ * branch core took (first/last client vs. piggy-backing on an already-active
+ * or already-stopped state) — the UI only needs `success` today, but the
+ * shape is captured here to keep IPC contracts honest.
+ */
+export interface MatterMonitoringAck {
+  success: boolean
+  alreadyActive?: boolean
+  alreadyStopped?: boolean
+  othersActive?: boolean
+}
 
 /**
  * Response from getMatterAccessories IPC call
