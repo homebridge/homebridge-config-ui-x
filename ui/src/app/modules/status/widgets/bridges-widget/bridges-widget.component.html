@@ -27,11 +27,23 @@
           container="body"
           placement="right"
           triggers="hover"
-          [class.green-text]="!isMainHapDisabled() && homebridgeStatus()?.status === 'ok' && !isRestarting()"
-          [class.text-warning]="!isMainHapDisabled() && (homebridgeStatus()?.status === 'pending' || isRestarting())"
-          [class.red-text]="!isMainHapDisabled() && homebridgeStatus()?.status === 'down' && !isRestarting()"
-          [class.grey-text]="isMainHapDisabled()"
-          [class.opacity-muted]="isMainHapDisabled()"
+          [class.green-text]="
+            !isMainHapDisabled() && !isMainHapExternalsOnly() && homebridgeStatus()?.status === 'ok' && !isRestarting()
+          "
+          [class.text-warning]="
+            !isMainHapDisabled() &&
+            !isMainHapExternalsOnly() &&
+            (homebridgeStatus()?.status === 'pending' || isRestarting())
+          "
+          [class.red-text]="
+            !isMainHapDisabled() &&
+            !isMainHapExternalsOnly() &&
+            homebridgeStatus()?.status === 'down' &&
+            !isRestarting()
+          "
+          [class.grey-text]="isMainHapDisabled() && !isMainHapExternalsOnly()"
+          [class.opacity-muted]="isMainHapDisabled() && !isMainHapExternalsOnly()"
+          [class.text-info]="isMainHapExternalsOnly()"
           [openDelay]="150"
           [ngbTooltip]="mainHapTooltipKey() | translate"
         ></i>
@@ -43,23 +55,34 @@
             placement="right"
             triggers="hover"
             [class.green-text]="
-              homebridgeStatus()?.matter?.enabled && homebridgeStatus()?.status === 'ok' && !isRestarting()
+              !isMainMatterExternalsOnly() &&
+              homebridgeStatus()?.matter?.enabled &&
+              homebridgeStatus()?.status === 'ok' &&
+              !isRestarting()
             "
             [class.text-warning]="
-              homebridgeStatus()?.matter?.enabled && (homebridgeStatus()?.status === 'pending' || isRestarting())
+              !isMainMatterExternalsOnly() &&
+              homebridgeStatus()?.matter?.enabled &&
+              (homebridgeStatus()?.status === 'pending' || isRestarting())
             "
             [class.red-text]="
-              homebridgeStatus()?.matter?.enabled && homebridgeStatus()?.status === 'down' && !isRestarting()
+              !isMainMatterExternalsOnly() &&
+              homebridgeStatus()?.matter?.enabled &&
+              homebridgeStatus()?.status === 'down' &&
+              !isRestarting()
             "
-            [class.grey-text]="!homebridgeStatus()?.matter?.enabled"
-            [class.opacity-muted]="!homebridgeStatus()?.matter?.enabled"
+            [class.grey-text]="!homebridgeStatus()?.matter?.enabled && !isMainMatterExternalsOnly()"
+            [class.opacity-muted]="!homebridgeStatus()?.matter?.enabled && !isMainMatterExternalsOnly()"
+            [class.text-info]="isMainMatterExternalsOnly()"
             [openDelay]="150"
             [ngbTooltip]="
-              (homebridgeStatus()?.matter?.enabled
-                ? homebridgeStatus()?.status === 'down' && !isRestarting()
-                  ? 'status.services.matter_not_running'
-                  : 'status.services.matter_running'
-                : 'status.services.matter_not_enabled'
+              (isMainMatterExternalsOnly()
+                ? 'status.services.matter_externals_only'
+                : homebridgeStatus()?.matter?.enabled
+                  ? homebridgeStatus()?.status === 'down' && !isRestarting()
+                    ? 'status.services.matter_not_running'
+                    : 'status.services.matter_running'
+                  : 'status.services.matter_not_enabled'
               ) | translate
             "
           ></i>
@@ -96,16 +119,27 @@
             placement="right"
             triggers="hover"
             [class.green-text]="
-              !isChildHapDisabled(bridge) && bridge.status === 'ok' && !bridge.restarting && !isRestarting()
+              !isChildHapDisabled(bridge) &&
+              !isChildHapExternalsOnly(bridge) &&
+              bridge.status === 'ok' &&
+              !bridge.restarting &&
+              !isRestarting()
             "
             [class.text-warning]="
-              !isChildHapDisabled(bridge) && (bridge.status === 'pending' || bridge.restarting || isRestarting())
+              !isChildHapDisabled(bridge) &&
+              !isChildHapExternalsOnly(bridge) &&
+              (bridge.status === 'pending' || bridge.restarting || isRestarting())
             "
             [class.red-text]="
-              !isChildHapDisabled(bridge) && bridge.status === 'down' && !bridge.restarting && !isRestarting()
+              !isChildHapDisabled(bridge) &&
+              !isChildHapExternalsOnly(bridge) &&
+              bridge.status === 'down' &&
+              !bridge.restarting &&
+              !isRestarting()
             "
-            [class.grey-text]="isChildHapDisabled(bridge)"
-            [class.opacity-muted]="isChildHapDisabled(bridge)"
+            [class.grey-text]="isChildHapDisabled(bridge) && !isChildHapExternalsOnly(bridge)"
+            [class.opacity-muted]="isChildHapDisabled(bridge) && !isChildHapExternalsOnly(bridge)"
+            [class.text-info]="isChildHapExternalsOnly(bridge)"
             [openDelay]="150"
             [ngbTooltip]="childHapTooltipKey(bridge) | translate"
           ></i>
@@ -117,25 +151,29 @@
               placement="right"
               triggers="hover"
               [class.green-text]="
-                isChildMatterEnabled(bridge) && bridge.status === 'ok' && !bridge.restarting && !isRestarting()
+                !isChildMatterExternalsOnly(bridge) &&
+                isChildMatterEnabled(bridge) &&
+                bridge.status === 'ok' &&
+                !bridge.restarting &&
+                !isRestarting()
               "
               [class.text-warning]="
-                isChildMatterEnabled(bridge) && (bridge.status === 'pending' || bridge.restarting || isRestarting())
+                !isChildMatterExternalsOnly(bridge) &&
+                isChildMatterEnabled(bridge) &&
+                (bridge.status === 'pending' || bridge.restarting || isRestarting())
               "
               [class.red-text]="
-                isChildMatterEnabled(bridge) && bridge.status === 'down' && !bridge.restarting && !isRestarting()
+                !isChildMatterExternalsOnly(bridge) &&
+                isChildMatterEnabled(bridge) &&
+                bridge.status === 'down' &&
+                !bridge.restarting &&
+                !isRestarting()
               "
-              [class.grey-text]="!isChildMatterEnabled(bridge)"
-              [class.opacity-muted]="!isChildMatterEnabled(bridge)"
+              [class.grey-text]="!isChildMatterEnabled(bridge) && !isChildMatterExternalsOnly(bridge)"
+              [class.opacity-muted]="!isChildMatterEnabled(bridge) && !isChildMatterExternalsOnly(bridge)"
+              [class.text-info]="isChildMatterExternalsOnly(bridge)"
               [openDelay]="150"
-              [ngbTooltip]="
-                (isChildMatterEnabled(bridge)
-                  ? bridge.status === 'down' && !bridge.restarting && !isRestarting()
-                    ? 'status.services.matter_not_running'
-                    : 'status.services.matter_running'
-                  : 'status.services.matter_not_enabled'
-                ) | translate
-              "
+              [ngbTooltip]="childMatterTooltipKey(bridge) | translate"
             ></i>
           }
         </div>

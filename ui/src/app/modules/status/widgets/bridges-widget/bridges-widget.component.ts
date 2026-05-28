@@ -52,6 +52,7 @@ export class BridgesWidgetComponent implements OnInit, OnDestroy {
   public isAdmin = this.$auth.user.admin
   public isMatterSupported = this.$settings.isFeatureEnabled('matterSupport')
   public isHapBridgeDisableSupported = this.$settings.isFeatureEnabled('hapBridgeDisable')
+  public isProtocolExternalsOnlyEnabled = this.$settings.isFeatureEnabled('protocolExternalsOnly')
 
   // Track the last seen status so we can detect "pending -> stable" transitions.
   private lastHomebridgeStatus: string | undefined
@@ -70,7 +71,10 @@ export class BridgesWidgetComponent implements OnInit, OnDestroy {
   }
 
   public childHapTooltipKey(bridge: ChildBridgeWithUIState): string {
-    if (this.isHapBridgeDisableSupported && bridge.hap === false) {
+    if (this.isChildHapExternalsOnly(bridge)) {
+      return 'status.services.hap_externals_only'
+    }
+    if (this.isChildHapDisabled(bridge)) {
       return 'status.services.hap_not_enabled'
     }
     if (bridge.status === 'down' && !bridge.restarting && !this.isRestarting()) {
@@ -79,15 +83,85 @@ export class BridgesWidgetComponent implements OnInit, OnDestroy {
     return 'status.services.hap_running'
   }
 
+  /**
+   * Whether HAP is disabled for the given child bridge. Tolerates both the
+   * legacy boolean form (`bridge.hap === false`) and the nested object form
+   * (`bridge.hap.enabled === false`).
+   */
   public isChildHapDisabled(bridge: ChildBridgeWithUIState): boolean {
-    return this.isHapBridgeDisableSupported && bridge.hap === false
+    if (!this.isHapBridgeDisableSupported) {
+      return false
+    }
+    const hap = bridge.hap
+    if (hap === false) {
+      return true
+    }
+    if (typeof hap === 'object' && hap !== null && hap.enabled === false) {
+      return true
+    }
+    return false
+  }
+
+  /**
+   * Whether the given child bridge is in HAP externalsOnly mode. Only meaningful
+   * on the new runtime (>= 2.0.3-beta.26), where the bridge accessory is not
+   * advertised but plugins still publish external HAP accessories.
+   */
+  public isChildHapExternalsOnly(bridge: ChildBridgeWithUIState): boolean {
+    if (!this.isProtocolExternalsOnlyEnabled) {
+      return false
+    }
+    const hap = bridge.hap
+    return typeof hap === 'object' && hap !== null && hap.externalsOnly === true
   }
 
   public isMainHapDisabled(): boolean {
     return this.isHapBridgeDisableSupported && this.homebridgeStatus()?.hap?.enabled === false
   }
 
+  public isMainHapExternalsOnly(): boolean {
+    return this.isProtocolExternalsOnlyEnabled && this.homebridgeStatus()?.hap?.externalsOnly === true
+  }
+
+  /**
+   * Whether the given child bridge is in Matter externalsOnly mode. Reads
+   * directly from the child bridge metadata's matterConfig.
+   */
+  public isChildMatterExternalsOnly(bridge: ChildBridgeWithUIState): boolean {
+    return this.isProtocolExternalsOnlyEnabled && bridge.matterConfig?.externalsOnly === true
+  }
+
+  /**
+   * Whether the main bridge is in Matter externalsOnly mode. Reads from the
+   * status payload, which Homebridge >= 2.0.3-beta.26 populates with this
+   * field via getMatterStatus().
+   */
+  public isMainMatterExternalsOnly(): boolean {
+    return this.isProtocolExternalsOnlyEnabled && this.homebridgeStatus()?.matter?.externalsOnly === true
+  }
+
+  /**
+   * Tooltip translation key for the child bridge Matter icon. Extracted from
+   * the template because the original triple-nested ternary tripped the
+   * conditional-complexity lint rule.
+   */
+  public childMatterTooltipKey(bridge: ChildBridgeWithUIState): string {
+    if (this.isChildMatterExternalsOnly(bridge)) {
+      return 'status.services.matter_externals_only'
+    }
+    if (!this.isChildMatterEnabled(bridge)) {
+      return 'status.services.matter_not_enabled'
+    }
+    if (bridge.status === 'down' && !bridge.restarting && !this.isRestarting()) {
+      return 'status.services.matter_not_running'
+    }
+    return 'status.services.matter_running'
+  }
+
   public mainHapTooltipKey(): string {
+    if (this.isMainHapExternalsOnly()) {
+      return 'status.services.hap_externals_only'
+    }
     if (this.isMainHapDisabled()) {
       return 'status.services.hap_not_enabled'
     }

@@ -350,9 +350,14 @@
           <ul class="list-group list-group-box mt-3 mb-0">
             <!-- HAP Header with Toggle -->
             <li class="list-group-item d-flex justify-content-between align-items-center flex-row pb-2">
-              <span class="text-start">
-                <i aria-hidden="true" class="fas fa-xl fa-hap me-2 my-2"></i>
-                {{ 'child_bridge.config.enable_hap' | translate }}
+              <span class="text-start d-flex align-items-center flex-grow-1 me-3">
+                <i
+                  aria-hidden="true"
+                  class="fas fa-xl fa-hap me-2 my-2"
+                  [class.green-text]="hapEnabledBlocks()[+selectedBlock()]"
+                  [class.grey-text]="!hapEnabledBlocks()[+selectedBlock()]"
+                ></i>
+                <span>{{ 'child_bridge.config.enable_hap' | translate }}</span>
               </span>
               <div
                 class="text-end grey-text d-flex align-items-center"
@@ -387,6 +392,52 @@
                 ></label>
               </div>
             </li>
+
+            <!--
+              HAP externalsOnly toggle — visible only on Homebridge >= 2.0.3-beta.26,
+              when HAP is disabled, and this is not an accessory plugin (externals are
+              not supported via the accessory plugin API). Hidden during first-install
+              setup — externals-only is an advanced post-setup tweak, not a step in
+              the initial pairing flow.
+            -->
+            @if (
+              !justInstalled &&
+              isProtocolExternalsOnlyEnabled &&
+              !hapEnabledBlocks()[+selectedBlock()] &&
+              !configBlocks()[+selectedBlock()].accessory
+            ) {
+              <li class="list-group-item d-flex justify-content-between align-items-center flex-row pb-2">
+                <span class="text-start d-flex align-items-center flex-grow-1 me-3">
+                  <i
+                    aria-hidden="true"
+                    class="fas fa-xl fa-hap me-2 my-2"
+                    [class.text-info]="hapExternalsOnlyBlocks()[+selectedBlock()]"
+                    [class.grey-text]="!hapExternalsOnlyBlocks()[+selectedBlock()]"
+                  ></i>
+                  <span>
+                    {{ 'child_bridge.config.hap_externals_only' | translate }}
+                    <span class="badge badge-primary ms-1">{{ 'common.labels.beta' | translate }}</span>
+                    <span class="d-block small grey-text">
+                      {{ 'child_bridge.config.hap_externals_only_desc' | translate }}
+                    </span>
+                  </span>
+                </span>
+                <div class="text-end grey-text d-flex align-items-center">
+                  <input
+                    type="checkbox"
+                    class="rendux-input"
+                    [id]="`toggleHapExternalsOnlyInput_${selectedBlock()}`"
+                    [checked]="hapExternalsOnlyBlocks()[+selectedBlock()]"
+                    (change)="toggleHapExternalsOnly($event, +selectedBlock())"
+                  />
+                  <label
+                    class="rendux-label"
+                    aria-hidden="true"
+                    [for]="`toggleHapExternalsOnlyInput_${selectedBlock()}`"
+                  ></label>
+                </div>
+              </li>
+            }
 
             @if (hapEnabledBlocks()[+selectedBlock()]) {
               <!-- HAP QR Code -->
@@ -508,10 +559,17 @@
             <ul class="list-group list-group-box mt-3 mb-0">
               <!-- Matter Header with Toggle -->
               <li class="list-group-item d-flex justify-content-between align-items-center flex-row pb-2">
-                <span class="mb-2 mb-md-0 w-100 w-md-50">
-                  <i aria-hidden="true" class="fas fa-xl fa-matter me-2 my-2"></i>
-                  {{ 'matter_bridge.config.use' | translate }}
-                  <span class="badge badge-primary ms-1">{{ 'common.labels.beta' | translate }}</span>
+                <span class="text-start d-flex align-items-center flex-grow-1 me-3">
+                  <i
+                    aria-hidden="true"
+                    class="fas fa-xl fa-matter me-2 my-2"
+                    [class.green-text]="matterEnabledBlocks()[+selectedBlock()]"
+                    [class.grey-text]="!matterEnabledBlocks()[+selectedBlock()]"
+                  ></i>
+                  <span>
+                    {{ 'matter_bridge.config.use' | translate }}
+                    <span class="badge badge-primary ms-1">{{ 'common.labels.beta' | translate }}</span>
+                  </span>
                 </span>
                 <div class="text-end grey-text d-flex align-items-center">
                   <input
@@ -535,6 +593,54 @@
                   ></label>
                 </div>
               </li>
+
+              <!--
+                Matter externalsOnly toggle — visible only on Homebridge >= 2.0.3-beta.26,
+                when Matter is disabled for this bridge, and this is not an accessory
+                plugin (matter is platform-only). When toggled on without an existing
+                matter block, toggleMatterExternalsOnly() auto-allocates a port and
+                writes `{ port, enabled: false, externalsOnly: true }`. Hidden during
+                first-install setup — externals-only is an advanced post-setup tweak,
+                not a step in the initial pairing flow.
+              -->
+              @if (
+                !justInstalled &&
+                isProtocolExternalsOnlyEnabled &&
+                !matterEnabledBlocks()[+selectedBlock()] &&
+                !configBlocks()[+selectedBlock()].accessory
+              ) {
+                <li class="list-group-item d-flex justify-content-between align-items-center flex-row pb-2">
+                  <span class="text-start d-flex align-items-center flex-grow-1 me-3">
+                    <i
+                      aria-hidden="true"
+                      class="fas fa-xl fa-matter me-2 my-2"
+                      [class.text-info]="matterExternalsOnlyBlocks()[+selectedBlock()]"
+                      [class.grey-text]="!matterExternalsOnlyBlocks()[+selectedBlock()]"
+                    ></i>
+                    <span>
+                      {{ 'child_bridge.config.matter_externals_only' | translate }}
+                      <span class="badge badge-primary ms-1">{{ 'common.labels.beta' | translate }}</span>
+                      <span class="d-block small grey-text">
+                        {{ 'child_bridge.config.matter_externals_only_desc' | translate }}
+                      </span>
+                    </span>
+                  </span>
+                  <div class="text-end grey-text d-flex align-items-center">
+                    <input
+                      type="checkbox"
+                      class="rendux-input"
+                      [id]="`toggleMatterExternalsOnlyInput_${selectedBlock()}`"
+                      [checked]="matterExternalsOnlyBlocks()[+selectedBlock()]"
+                      (change)="toggleMatterExternalsOnly($event, +selectedBlock())"
+                    />
+                    <label
+                      class="rendux-label"
+                      aria-hidden="true"
+                      [for]="`toggleMatterExternalsOnlyInput_${selectedBlock()}`"
+                    ></label>
+                  </div>
+                </li>
+              }
 
               <!-- Matter Content (only when enabled) -->
               @if (

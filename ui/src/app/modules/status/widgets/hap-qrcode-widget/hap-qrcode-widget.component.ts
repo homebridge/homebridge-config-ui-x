@@ -31,6 +31,13 @@ export class HapQrcodeWidgetComponent implements OnInit, OnDestroy {
   readonly pincodeElement = viewChild<ElementRef>('pincode')
   readonly qrcodeContainerElement = viewChild<ElementRef>('qrcodecontainer')
   public readonly enabled = signal<boolean>(true)
+  /**
+   * True when the main bridge is in HAP externalsOnly mode — the bridge
+   * accessory itself isn't published, but plugins may still publish external
+   * HAP accessories. The widget hides the QR/PIN and shows an externalsOnly
+   * notice instead, since there's no main bridge to pair.
+   */
+  public readonly externalsOnly = signal<boolean>(false)
   public readonly loading = signal<boolean>(true)
   public readonly paired = signal<boolean>(false)
   public readonly pin = signal<string>('')
@@ -65,10 +72,14 @@ export class HapQrcodeWidgetComponent implements OnInit, OnDestroy {
   }
 
   private applyHapStatus(data: HomebridgeStatusResponse): void {
-    // HAP defaults to enabled when the status payload doesn't carry the flag
+    // HAP defaults to enabled when the status payload doesn't carry the flag.
+    // externalsOnly is only meaningful when the bridge accessory is not being
+    // published — in that mode we hide the QR/PIN since there's nothing to pair.
     const hapEnabled = data.hap ? data.hap.enabled : true
+    const externalsOnly = data.hap?.externalsOnly === true
     this.enabled.set(hapEnabled)
-    if (hapEnabled) {
+    this.externalsOnly.set(externalsOnly)
+    if (hapEnabled && !externalsOnly) {
       this.pin.set(data.pin)
       this.paired.set(data.paired)
       if (data.setupUri) {

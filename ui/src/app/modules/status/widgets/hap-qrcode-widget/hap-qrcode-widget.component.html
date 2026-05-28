@@ -9,6 +9,13 @@
             <div class="d-flex align-items-center justify-content-center w-100 h-100 qr-loading-container">
               @if (loading()) {
                 <i class="fas fa-circle-notch fa-spin fa-2xl grey-text"></i>
+              } @else if (externalsOnly()) {
+                <!--
+                  HAP externalsOnly mode — the bridge accessory itself isn't published,
+                  but plugins may still publish external HAP accessories. We use the
+                  info colour to distinguish from "fully disabled" (grey) and "running" (green).
+                -->
+                <i class="fas fa-hap text-info fa-2xl"></i>
               } @else if (!enabled()) {
                 <i class="fas fa-hap grey-text fa-2xl"></i>
               }
@@ -25,7 +32,9 @@
       </p>
       <p class="grey-text mb-1 small">
         <i class="fas fa-hap"></i>
-        @if (enabled()) {
+        @if (externalsOnly()) {
+          {{ 'status.services.hap_externals_only' | translate }}
+        } @else if (enabled()) {
           HAP
           @if (pin()) {
             &middot;

@@ -20,7 +20,7 @@
     <ul class="list-group list-group-box mt-3 mb-0">
       @if (mainPairing(); as mp) {
         <li class="list-group-item d-flex justify-content-between align-items-center flex-row pb-2">
-          <div class="d-flex align-items-center text-start">
+          <div class="d-flex align-items-center text-start flex-grow-1 me-3">
             <span class="me-3">
               @if (isMatterSupported) {
                 <i class="fas fa-lg fa-hap me-2" [class.opacity-muted]="mp._matterOnly"></i>
@@ -62,7 +62,7 @@
       }
       @for (item of pairings(); track item) {
         <li class="list-group-item d-flex justify-content-between align-items-center flex-row pb-2">
-          <div class="d-flex align-items-center text-start">
+          <div class="d-flex align-items-center text-start flex-grow-1 me-3">
             <span class="me-3">
               @if (isMatterSupported) {
                 <i class="fas fa-lg fa-hap me-2" [class.opacity-muted]="item._matterOnly"></i>

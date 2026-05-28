@@ -180,6 +180,9 @@ export class SettingsComponent implements OnInit {
   // When true (Homebridge >= 2.0.3-beta.22), disabling Matter is non-destructive
   // (matter.enabled=false, storage kept) rather than a teardown.
   public allowMatterDisableInPlace = this.$settings.isFeatureEnabled('matterDisableInPlace')
+  // When true (Homebridge >= 2.0.3-beta.26), HAP config uses the nested object
+  // form and both HAP and Matter expose an externalsOnly toggle.
+  public isProtocolExternalsOnlyEnabled = this.$settings.isFeatureEnabled('protocolExternalsOnly')
   public isPwa = Boolean(isStandalonePWA())
 
   public readonly hbNameIsInvalid = signal(false)
@@ -336,9 +339,15 @@ export class SettingsComponent implements OnInit {
 
   public readonly hapEnabledIsSaving = signal(false)
   public hapEnabledFormControl = new FormControl(true)
+  // externalsOnly is only meaningful when HAP is disabled. The toggle is
+  // hidden in the UI when hapEnabledFormControl.value === true.
+  public readonly hapExternalsOnlyIsSaving = signal(false)
+  public hapExternalsOnlyFormControl = new FormControl(false)
 
   public readonly matterEnabledIsSaving = signal(false)
   public matterEnabledFormControl = new FormControl(false)
+  public readonly matterExternalsOnlyIsSaving = signal(false)
+  public matterExternalsOnlyFormControl = new FormControl(false)
 
   public readonly matterPortIsInvalid = signal(false)
   public readonly matterPortIsSaving = signal(false)
@@ -2172,6 +2181,9 @@ export class SettingsComponent implements OnInit {
 
       // Set enabled state
       this.matterEnabledFormControl.patchValue(isEnabled, { emitEvent: false })
+      // externalsOnly is only meaningful when matter.enabled === false. Read
+      // and subscribe regardless so toggling produces a save.
+      this.matterExternalsOnlyFormControl.patchValue(matterConfig?.externalsOnly === true, { emitEvent: false })
 
       // Subscribe to toggle changes. takeUntilDestroyed prevents the
       // patchValue from a slow save fanning out a stale save back into
@@ -2179,6 +2191,11 @@ export class SettingsComponent implements OnInit {
       this.matterEnabledFormControl.valueChanges
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe(value => this.matterEnabledSave(value!))
+      if (this.isProtocolExternalsOnlyEnabled) {
+        this.matterExternalsOnlyFormControl.valueChanges
+          .pipe(takeUntilDestroyed(this.destroyRef))
+          .subscribe(value => this.matterExternalsOnlySave(value === true))
+      }
     } catch (error: any) {
       console.error(error)
       // Don't show error toast - Matter might not be configured yet
@@ -2186,6 +2203,28 @@ export class SettingsComponent implements OnInit {
       this.matterEnabledFormControl.valueChanges
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe(value => this.matterEnabledSave(value!))
+    }
+  }
+
+  /**
+   * Save the Matter externalsOnly flag. Only meaningful when Matter is
+   * disabled in place. Uses the existing /matter/enabled endpoint with
+   * `enabled: false` plus the new `externalsOnly` field.
+   */
+  private async matterExternalsOnlySave(value: boolean): Promise<void> {
+    if (this.matterEnabledFormControl.value !== false) {
+      return
+    }
+    try {
+      this.matterExternalsOnlyIsSaving.set(true)
+      await this.$api.put('/config-editor/matter/enabled', { enabled: false, externalsOnly: value, restart: false })
+      await this.requestFullServiceRestart()
+    } catch (error: any) {
+      console.error(error)
+      this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
+      this.matterExternalsOnlyFormControl.patchValue(!value, { emitEvent: false })
+    } finally {
+      this.matterExternalsOnlyIsSaving.set(false)
     }
   }
 
@@ -2330,10 +2369,18 @@ export class SettingsComponent implements OnInit {
             this.matterPortFormControl.patchValue(port, { emitEvent: false })
           }
           this.matterConfigCache = { port }
+          // Re-enabling clears externalsOnly — validation rejects enabled + externalsOnly.
+          if (this.isProtocolExternalsOnlyEnabled) {
+            this.matterExternalsOnlyFormControl.patchValue(false, { emitEvent: false })
+          }
         } else {
           // Disable in place: keep the block, port and commissioning storage.
           this.matterConfigCache = { port: this.matterPortFormControl.value || undefined }
-          await this.$api.put('/config-editor/matter/enabled', { enabled: false, restart: false })
+          const body: { enabled: boolean, restart: boolean, externalsOnly?: boolean } = { enabled: false, restart: false }
+          if (this.isProtocolExternalsOnlyEnabled) {
+            body.externalsOnly = this.matterExternalsOnlyFormControl.value === true
+          }
+          await this.$api.put('/config-editor/matter/enabled', body)
         }
         await this.requestFullServiceRestart()
       } catch (error: any) {
@@ -2453,16 +2500,46 @@ export class SettingsComponent implements OnInit {
 
   private async initHapSettings(): Promise<void> {
     try {
-      const { enabled } = await this.$api.get<{ enabled: boolean }>('/config-editor/hap')
+      const { enabled, externalsOnly } = await this.$api.get<{ enabled: boolean, externalsOnly?: boolean }>('/config-editor/hap')
       this.hapEnabledFormControl.patchValue(enabled, { emitEvent: false })
+      this.hapExternalsOnlyFormControl.patchValue(externalsOnly === true, { emitEvent: false })
     } catch (error: any) {
       console.error(error)
       // Fall back to enabled (default) — subscribe regardless so user can change it
       this.hapEnabledFormControl.patchValue(true, { emitEvent: false })
+      this.hapExternalsOnlyFormControl.patchValue(false, { emitEvent: false })
     }
     this.hapEnabledFormControl.valueChanges
       .pipe(takeUntilDestroyed(this.destroyRef))
       .subscribe(value => this.hapEnabledSave(value!))
+    if (this.isProtocolExternalsOnlyEnabled) {
+      this.hapExternalsOnlyFormControl.valueChanges
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe(value => this.hapExternalsOnlySave(value === true))
+    }
+  }
+
+  /**
+   * Save the HAP externalsOnly flag. Only meaningful when HAP is disabled.
+   * Re-uses the existing /hap endpoint with `enabled: false` plus the new
+   * `externalsOnly` field, which the backend writes alongside enabled: false.
+   */
+  private async hapExternalsOnlySave(value: boolean): Promise<void> {
+    if (this.hapEnabledFormControl.value !== false) {
+      // Defensive: should be hidden in the UI but guard against direct invocation.
+      return
+    }
+    try {
+      this.hapExternalsOnlyIsSaving.set(true)
+      await this.$api.put('/config-editor/hap', { enabled: false, externalsOnly: value, restart: false })
+      await this.requestFullServiceRestart()
+    } catch (error: any) {
+      console.error(error)
+      this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
+      this.hapExternalsOnlyFormControl.patchValue(!value, { emitEvent: false })
+    } finally {
+      this.hapExternalsOnlyIsSaving.set(false)
+    }
   }
 
   private async hapEnabledSave(value: boolean): Promise<void> {
@@ -2483,7 +2560,18 @@ export class SettingsComponent implements OnInit {
       // restart, and let the user restart via the toast when ready.
       try {
         this.hapEnabledIsSaving.set(true)
-        await this.$api.put('/config-editor/hap', { enabled: value, restart: false })
+        const body: { enabled: boolean, restart: boolean, externalsOnly?: boolean } = { enabled: value, restart: false }
+        // When disabling HAP, propagate the current externalsOnly setting (if the
+        // feature is supported). When re-enabling, clear it from the form too —
+        // the backend already drops the property entirely.
+        if (this.isProtocolExternalsOnlyEnabled) {
+          if (!value) {
+            body.externalsOnly = this.hapExternalsOnlyFormControl.value === true
+          } else {
+            this.hapExternalsOnlyFormControl.patchValue(false, { emitEvent: false })
+          }
+        }
+        await this.$api.put('/config-editor/hap', body)
         await this.requestFullServiceRestart()
       } catch (error: any) {
         console.error(error)

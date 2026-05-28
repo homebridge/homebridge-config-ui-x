@@ -1,6 +1,6 @@
 import type { Buffer } from 'node:buffer'
 
-import { MatterConfig } from '../matter/matter.interfaces.js'
+import { BridgeHapConfig, MatterConfig } from '../matter/matter.interfaces.js'
 
 export interface StartupConfig {
   host?: '::' | '0.0.0.0' | string
@@ -22,7 +22,14 @@ interface PluginChildBridge {
   manufacturer?: string
   model?: string
   firmwareRevision?: string
-  hap?: boolean
+  /**
+   * HAP toggle. Older Homebridge versions used a boolean (`hap: false` to
+   * disable). Homebridge >= 2.0.3-beta.26 expects the nested object form
+   * (`{ enabled?, externalsOnly? }`). Both shapes are typed here so config-ui-x
+   * can read/write either; the `protocolExternalsOnly` feature flag determines
+   * which shape is produced when the user toggles via the UI.
+   */
+  hap?: boolean | BridgeHapConfig
   env?: {
     DEBUG?: string
     NODE_OPTIONS?: string
@@ -55,7 +62,8 @@ export interface HomebridgeConfig {
     manufacturer?: string
     model?: string
     firmwareRevision?: string
-    hap?: boolean
+    /** Boolean form is supported for older homebridge runtimes; >= 2.0.3-beta.26 expects the nested object form. */
+    hap?: boolean | BridgeHapConfig
     matter?: MatterConfig
   }
   mdns?: {

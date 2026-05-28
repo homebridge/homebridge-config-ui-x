@@ -1,9 +1,19 @@
 import { TranslateService } from '@ngx-translate/core'
 
+import { createHapSchema } from './hap-schema.helper'
+import { createMatterSchema } from './matter-schema.helper'
+
 export interface ChildBridgeSchemaOptions {
   isDebugModeEnabled: boolean
   isMatterSupported: boolean
   isPlatformPlugin?: boolean
+  /**
+   * When true (Homebridge >= 2.0.3-beta.26), the `hap` field accepts the
+   * nested object form `{ enabled?, externalsOnly? }` and `matter` accepts an
+   * `externalsOnly` flag. Schema still allows the legacy boolean form for
+   * `hap` so configs written by older UI versions remain valid.
+   */
+  isProtocolExternalsOnlyEnabled?: boolean
 }
 
 /**
@@ -13,9 +23,10 @@ export interface ChildBridgeSchemaOptions {
  * @param options.isDebugModeEnabled - Whether debug mode is enabled to include the debug option
  * @param options.isMatterSupported - Whether Matter support is enabled to include Matter settings
  * @param options.isPlatformPlugin - Whether the plugin is platform-based (Matter only works with platform plugins)
+ * @param options.isProtocolExternalsOnlyEnabled - Whether the running Homebridge supports the nested HAP shape and externalsOnly mode
  * @returns Child bridge schema object
  */
-export function createChildBridgeSchema(translate: TranslateService, { isDebugModeEnabled, isMatterSupported, isPlatformPlugin = true }: ChildBridgeSchemaOptions) {
+export function createChildBridgeSchema(translate: TranslateService, { isDebugModeEnabled, isMatterSupported, isPlatformPlugin = true, isProtocolExternalsOnlyEnabled = false }: ChildBridgeSchemaOptions) {
   return {
     type: 'object',
     required: ['username'],
@@ -76,11 +87,7 @@ export function createChildBridgeSchema(translate: TranslateService, { isDebugMo
             },
           }
         : {},
-      hap: {
-        type: 'boolean',
-        title: translate.instant('child_bridge.config.enable_hap'),
-        description: 'When false, HAP is not advertised for this child bridge.',
-      },
+      hap: createHapSchema(translate, isProtocolExternalsOnlyEnabled, 'child'),
       env: {
         type: 'object',
         additionalProperties: false,
@@ -100,28 +107,7 @@ export function createChildBridgeSchema(translate: TranslateService, { isDebugMo
         },
       },
       ...(isMatterSupported && isPlatformPlugin)
-        ? {
-            matter: {
-              type: 'object',
-              additionalProperties: false,
-              title: translate.instant('settings.matter.title'),
-              description: 'Matter-specific configuration for this child bridge.',
-              properties: {
-                enabled: {
-                  type: 'boolean',
-                  title: translate.instant('matter_bridge.config.use'),
-                  description: 'When false, Matter is configured but not advertised for this child bridge; the config and on-disk commissioning data are preserved.',
-                },
-                port: {
-                  type: 'number',
-                  title: translate.instant('settings.matter.port'),
-                  description: translate.instant('settings.matter.port_desc'),
-                  minimum: 1025,
-                  maximum: 65534,
-                },
-              },
-            },
-          }
+        ? { matter: createMatterSchema(translate, isProtocolExternalsOnlyEnabled, 'child') }
         : {},
     },
   }

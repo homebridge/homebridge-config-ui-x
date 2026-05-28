@@ -67,9 +67,17 @@ export interface ChildBridge {
   setupUri: string
   status: string
   username: string
+  /**
+   * HAP config. Older Homebridge sends a boolean; >= 2.0.3-beta.26 sends the
+   * nested object form. Both shapes are typed so the UI can read either —
+   * `protocolExternalsOnly` feature flag determines which is authoritative.
+   */
+  hap?: boolean | { enabled?: boolean, externalsOnly?: boolean }
   matterConfig?: {
     port?: number
     enabled?: boolean
+    /** When true, Matter bridge node is suppressed but external Matter accessories may still publish. */
+    externalsOnly?: boolean
   }
   matterIdentifier?: string
   matterSerialNumber?: string

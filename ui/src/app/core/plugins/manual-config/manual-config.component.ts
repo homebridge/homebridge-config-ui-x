@@ -75,6 +75,7 @@ export class ManualConfigComponent implements OnInit, OnDestroy {
   // 3. Other properties
   private isDebugModeEnabled = this.$settings.isFeatureEnabled('childBridgeDebugMode')
   private isMatterSupported = this.$settings.isFeatureEnabled('matterSupport')
+  private isProtocolExternalsOnlyEnabled = this.$settings.isFeatureEnabled('protocolExternalsOnly')
 
   public readonly pluginAlias = signal<string>('')
   public readonly pluginType = signal<'platform' | 'accessory' | null>(null)
@@ -297,6 +298,7 @@ export class ManualConfigComponent implements OnInit, OnDestroy {
       isDebugModeEnabled: this.isDebugModeEnabled,
       isMatterSupported: this.isMatterSupported,
       isPlatformPlugin: this.pluginType() === 'platform',
+      isProtocolExternalsOnlyEnabled: this.isProtocolExternalsOnlyEnabled,
     })
 
     // Ensure required properties are present for the plugin type
@@ -375,6 +377,7 @@ export class ManualConfigComponent implements OnInit, OnDestroy {
       isDebugModeEnabled: this.isDebugModeEnabled,
       isMatterSupported: this.isMatterSupported,
       isPlatformPlugin: this.pluginType() === 'platform',
+      isProtocolExternalsOnlyEnabled: this.isProtocolExternalsOnlyEnabled,
     })
 
     if (this.pluginType() === 'platform') {

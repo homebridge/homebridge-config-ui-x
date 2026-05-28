@@ -362,14 +362,14 @@ export class ConfigEditorController {
   })
   @ApiBody({ description: 'Matter enablement', type: 'json' })
   @Put('/matter/enabled')
-  setMatterEnabled(@Body() body: { enabled: boolean, restart?: boolean }) {
-    return this.configEditorService.setMatterEnabled(body.enabled, body.restart ?? true)
+  setMatterEnabled(@Body() body: { enabled: boolean, restart?: boolean, externalsOnly?: boolean }) {
+    return this.configEditorService.setMatterEnabled(body.enabled, body.restart ?? true, body.externalsOnly ?? false)
   }
 
   @UseGuards(AdminGuard)
   @ApiOperation({
     summary: 'Get HAP enablement for the main bridge',
-    description: 'Returns whether HAP is published for the main Homebridge bridge. HAP is on by default and is opted out via `bridge.hap: false`.',
+    description: 'Returns whether HAP is published for the main Homebridge bridge. HAP is on by default. Reads tolerate both the legacy `bridge.hap: false` boolean form and the nested `bridge.hap: { enabled: false }` form used by Homebridge >= 2.0.3-beta.26.',
   })
   @Get('/hap')
   getHapEnabled() {
@@ -379,11 +379,11 @@ export class ConfigEditorController {
   @UseGuards(AdminGuard)
   @ApiOperation({
     summary: 'Enable or disable HAP for the main bridge',
-    description: 'Toggles `bridge.hap` for the main Homebridge bridge. Disabling requires `bridge.matter` to be configured.',
+    description: 'Toggles HAP for the main Homebridge bridge. The shape written to `bridge.hap` depends on the `protocolExternalsOnly` feature flag: when the running Homebridge supports it the nested object form is written, otherwise the boolean form is preserved.',
   })
   @ApiBody({ description: 'HAP enablement', type: 'json' })
   @Put('/hap')
-  setHapEnabled(@Body() body: { enabled: boolean, restart?: boolean }) {
-    return this.configEditorService.setHapEnabled(body.enabled, body.restart ?? true)
+  setHapEnabled(@Body() body: { enabled: boolean, restart?: boolean, externalsOnly?: boolean }) {
+    return this.configEditorService.setHapEnabled(body.enabled, body.restart ?? true, body.externalsOnly ?? false)
   }
 }

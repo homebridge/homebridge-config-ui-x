@@ -103,6 +103,17 @@ export class PluginBridgeComponent implements OnInit {
   // When true (Homebridge >= 2.0.3-beta.22), disabling Matter on a child bridge
   // is non-destructive (_bridge.matter.enabled=false, storage kept).
   public allowMatterDisableInPlace = this.$settings.isFeatureEnabled('matterDisableInPlace')
+  // When true (Homebridge >= 2.0.3-beta.26), HAP config uses the nested object
+  // form (`{ enabled?, externalsOnly? }`) and both HAP and Matter expose an
+  // externalsOnly toggle that suppresses the bridge accessory/node itself
+  // while still allowing plugins to publish external accessories.
+  public isProtocolExternalsOnlyEnabled = this.$settings.isFeatureEnabled('protocolExternalsOnly')
+  // Tracks whether HAP externalsOnly is set, keyed by block index. Only meaningful
+  // when isProtocolExternalsOnlyEnabled is true and HAP is disabled for the block.
+  public readonly hapExternalsOnlyBlocks = signal<Record<number, boolean>>({})
+  // Tracks whether Matter externalsOnly is set, keyed by block index. Only meaningful
+  // when isProtocolExternalsOnlyEnabled is true and Matter is disabled for the block.
+  public readonly matterExternalsOnlyBlocks = signal<Record<number, boolean>>({})
   public readonly defaultIcon = 'assets/hb-icon.png'
   public readonly linkChildBridges = '<a href="https://github.com/homebridge/homebridge/wiki/Child-Bridges" target="_blank"><i class="fas fa-external-link-alt primary-text"></i></a>'
   public readonly linkDebug = '<a href="https://github.com/homebridge/homebridge-config-ui-x/wiki/Debug-Common-Values" target="_blank"><i class="fas fa-up-right-from-square primary-text"></i></a>'
@@ -236,10 +247,27 @@ export class PluginBridgeComponent implements OnInit {
         if (block._bridge) {
           this.enabledBlocks.update(current => ({ ...current, [i]: true }))
 
-          // HAP is enabled by default; only `_bridge.hap === false` opts out.
-          // Accessory child bridges cannot disable HAP (no Matter alternative).
-          const hapEnabled = block.accessory ? true : block._bridge.hap !== false
+          // HAP is enabled by default. Two shapes are tolerated:
+          //   - Legacy boolean: `_bridge.hap === false` means disabled.
+          //   - Nested object: `_bridge.hap.enabled === false` means disabled,
+          //     and `_bridge.hap.externalsOnly === true` is also surfaced.
+          // Accessory child bridges cannot disable HAP (no Matter alternative)
+          // and never have externalsOnly meaning.
+          const hap = block._bridge.hap
+          let hapEnabled = true
+          let hapExternalsOnly = false
+          if (!block.accessory) {
+            if (hap === false) {
+              hapEnabled = false
+            } else if (typeof hap === 'object' && hap !== null) {
+              hapEnabled = hap.enabled !== false
+              hapExternalsOnly = hap.externalsOnly === true
+            }
+          }
           this.hapEnabledBlocks.update(current => ({ ...current, [i]: hapEnabled }))
+          if (this.isProtocolExternalsOnlyEnabled) {
+            this.hapExternalsOnlyBlocks.update(current => ({ ...current, [i]: hapExternalsOnly }))
+          }
         }
 
         if (block._bridge && block._bridge.username) {
@@ -285,6 +313,15 @@ export class PluginBridgeComponent implements OnInit {
             // toggle shows off, but the port + commissioning storage are kept.
             const matterEnabled = !this.allowMatterDisableInPlace || block._bridge.matter.enabled !== false
             this.matterEnabledBlocks.update(current => ({ ...current, [i]: matterEnabled }))
+            // externalsOnly is only meaningful on the new homebridge runtime
+            // (>= 2.0.3-beta.26) and only when matter is disabled (validation
+            // requires enabled: false alongside externalsOnly: true).
+            if (this.isProtocolExternalsOnlyEnabled) {
+              this.matterExternalsOnlyBlocks.update(current => ({
+                ...current,
+                [i]: block._bridge.matter.externalsOnly === true,
+              }))
+            }
 
             // Only cache port - name is now shared at _bridge level
             this.matterBridgeCache.update(current => new Map(current).set(i, { port: block._bridge.matter.port }))
@@ -615,6 +652,14 @@ export class PluginBridgeComponent implements OnInit {
     if (enable) {
       // Set enabled state to true
       this.matterEnabledBlocks.update(current => ({ ...current, [Number(index)]: true }))
+      // Re-enabling Matter must clear any lingering externalsOnly — the
+      // runtime validation rejects `enabled: true + externalsOnly: true`.
+      if (this.isProtocolExternalsOnlyEnabled) {
+        this.matterExternalsOnlyBlocks.update(current => ({ ...current, [Number(index)]: false }))
+        if (block._bridge?.matter?.externalsOnly !== undefined) {
+          delete block._bridge.matter.externalsOnly
+        }
+      }
 
       const matterCache = this.matterBridgeCache().get(Number(index))
 
@@ -754,6 +799,12 @@ export class PluginBridgeComponent implements OnInit {
 
     if (enable) {
       this.hapEnabledBlocks.update(current => ({ ...current, [idx]: true }))
+      // Re-enabling HAP must also clear any lingering externalsOnly setting —
+      // the validation rule on the new runtime is `externalsOnly requires
+      // enabled: false`, so this combination would be rejected.
+      if (this.isProtocolExternalsOnlyEnabled) {
+        this.hapExternalsOnlyBlocks.update(current => ({ ...current, [idx]: false }))
+      }
 
       if (!block._bridge) {
         block._bridge = { env: {} }
@@ -777,7 +828,104 @@ export class PluginBridgeComponent implements OnInit {
     } else {
       this.hapEnabledBlocks.update(current => ({ ...current, [idx]: false }))
       block._bridge = block._bridge || {}
+      this.writeHapDisabled(block)
+    }
+  }
+
+  /**
+   * Write the "HAP disabled" shape onto a bridge block.
+   *
+   * Older Homebridge expects `_bridge.hap: false`; >= 2.0.3-beta.26 expects
+   * `_bridge.hap: { enabled: false }`. The feature flag decides which shape
+   * gets written. externalsOnly is never set here — disabling HAP transitions
+   * the block to the plain disabled shape, and the externalsOnly toggle (which
+   * only appears once HAP is disabled) writes the externalsOnly shape itself
+   * via toggleHapExternalsOnly().
+   */
+  private writeHapDisabled(block: any): void {
+    if (this.isProtocolExternalsOnlyEnabled) {
+      block._bridge.hap = { enabled: false }
+    } else {
       block._bridge.hap = false
+    }
+  }
+
+  /**
+   * Toggle the `hap.externalsOnly` flag for a block. Only meaningful when HAP
+   * is already disabled (the toggle is hidden in the UI when HAP is enabled).
+   */
+  public toggleHapExternalsOnly(event: Event, idx: number): void {
+    if (!this.isProtocolExternalsOnlyEnabled) {
+      return
+    }
+    const checked = (event.target as HTMLInputElement).checked
+    this.hapExternalsOnlyBlocks.update(current => ({ ...current, [idx]: checked }))
+
+    const block = this.configBlocks()[idx]
+    if (!block?._bridge) {
+      return
+    }
+    // externalsOnly is only valid when HAP is disabled; write the nested
+    // object form with the current toggle state.
+    if (this.hapEnabledBlocks()[idx] === false) {
+      block._bridge.hap = checked
+        ? { enabled: false, externalsOnly: true }
+        : { enabled: false }
+    }
+  }
+
+  /**
+   * Toggle the `matter.externalsOnly` flag for a block. Only meaningful when
+   * Matter is disabled (the toggle is hidden in the UI when Matter is on).
+   *
+   * When toggled on against a child bridge that has never configured matter,
+   * a matter block is auto-created (`{ port, enabled: false, externalsOnly: true }`)
+   * so the user doesn't have to enable-then-disable matter just to reach this
+   * setting. When toggled off again, that auto-created block is removed iff
+   * matter wasn't otherwise engaged in this session (tracked via
+   * `matterBridgeCache`, which is populated on every load and every
+   * `toggleMatterBridge` call).
+   */
+  public async toggleMatterExternalsOnly(event: Event, idx: number): Promise<void> {
+    if (!this.isProtocolExternalsOnlyEnabled) {
+      return
+    }
+    const checked = (event.target as HTMLInputElement).checked
+    const block = this.configBlocks()[idx]
+
+    // Accessory blocks have no matter — sync DOM back and bail.
+    if (block?.accessory) {
+      this.syncCheckboxDom(event, false)
+      this.matterExternalsOnlyBlocks.update(current => ({ ...current, [idx]: false }))
+      return
+    }
+
+    this.matterExternalsOnlyBlocks.update(current => ({ ...current, [idx]: checked }))
+
+    if (!block?._bridge) {
+      return
+    }
+
+    if (checked) {
+      if (!block._bridge.matter) {
+        const port = await this.getUnusedMatterPort()
+        block._bridge.matter = { port, enabled: false, externalsOnly: true }
+      } else {
+        block._bridge.matter.externalsOnly = true
+      }
+    } else {
+      if (!block._bridge.matter) {
+        return
+      }
+      delete block._bridge.matter.externalsOnly
+      // If the matter block exists only because the user toggled externalsOnly
+      // on (matter was never originally configured and was never engaged via
+      // the matter toggle in this session), tearing externalsOnly off tears
+      // the block out too — otherwise we'd leave behind an orphan
+      // `{ port, enabled: false }` matter block the user never asked for.
+      if (!this.matterBridgeCache().has(idx)) {
+        delete block._bridge.matter
+      }
     }
   }
 
@@ -856,12 +1004,20 @@ export class PluginBridgeComponent implements OnInit {
     }
   }
 
-  private normalizeHapConfig(block: any, hapEnabled: boolean | undefined): void {
+  private normalizeHapConfig(block: any, hapEnabled: boolean | undefined, hapExternalsOnly = false): void {
     if (!block._bridge) {
       return
     }
     if (hapEnabled === false) {
-      block._bridge.hap = false
+      if (this.isProtocolExternalsOnlyEnabled) {
+        // Nested form for Homebridge >= 2.0.3-beta.26. externalsOnly is only
+        // written when explicitly toggled on alongside enabled: false.
+        block._bridge.hap = hapExternalsOnly
+          ? { enabled: false, externalsOnly: true }
+          : { enabled: false }
+      } else {
+        block._bridge.hap = false
+      }
     } else {
       delete block._bridge.hap
     }
@@ -951,8 +1107,13 @@ export class PluginBridgeComponent implements OnInit {
         // Normalize the matter config (trim strings, remove empty values)
         this.normalizeMatterConfig(block)
 
-        // Normalize the hap flag — only persist `false`; omit when on
-        this.normalizeHapConfig(block, hapEnabledBlocks[index])
+        // Normalize the hap flag — only persist `false` (or `{ enabled: false }`
+        // on the new runtime); omit when on. externalsOnly carries through
+        // only when HAP is disabled.
+        const hapExternalsOnly = this.isProtocolExternalsOnlyEnabled
+          && hapEnabledBlocks[index] === false
+          && this.hapExternalsOnlyBlocks()[index] === true
+        this.normalizeHapConfig(block, hapEnabledBlocks[index], hapExternalsOnly)
       }
 
       await this.$api.post(`/config-editor/plugin/${encodeURIComponent(plugin.name)}`, configBlocks)
@@ -1330,8 +1491,15 @@ export class PluginBridgeComponent implements OnInit {
         return true
       }
 
-      // Check HAP disabled state — only `hap === false` is persisted; absent/true means enabled
-      if ((block._bridge.hap === false) !== (original.hap === false)) {
+      // Check HAP disabled state. Both shapes are tolerated:
+      // legacy boolean (`hap === false`) and nested object (`hap.enabled === false`).
+      // externalsOnly is also part of the persisted state.
+      const isHapDisabled = (h: any) => h === false || (typeof h === 'object' && h !== null && h.enabled === false)
+      const hapExternalsOnly = (h: any) => typeof h === 'object' && h !== null && h.externalsOnly === true
+      if (isHapDisabled(block._bridge.hap) !== isHapDisabled(original.hap)) {
+        return true
+      }
+      if (hapExternalsOnly(block._bridge.hap) !== hapExternalsOnly(original.hap)) {
         return true
       }
 
@@ -1343,6 +1511,9 @@ export class PluginBridgeComponent implements OnInit {
       }
       if (hasMatter && hadMatter) {
         if (block._bridge.matter.port !== original.matter.port) {
+          return true
+        }
+        if (block._bridge.matter.externalsOnly !== original.matter.externalsOnly) {
           return true
         }
       }

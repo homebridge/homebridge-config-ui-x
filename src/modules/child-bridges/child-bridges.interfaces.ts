@@ -5,7 +5,7 @@
  * between the UI and homebridge core.
  * Child bridges can have both HAP and optional Matter functionality.
  */
-import { MatterConfig } from '../../core/matter/matter.interfaces.js'
+import { BridgeHapConfig, MatterConfig } from '../../core/matter/matter.interfaces.js'
 
 export type BridgeStatus = 'pending' | 'ok' | 'down'
 
@@ -48,8 +48,15 @@ export interface ChildBridgeMetadata {
   /** Manually stopped flag */
   manuallyStopped: boolean
 
-  /** HAP enabled flag — undefined or true means HAP is published, false means HAP is disabled for this bridge */
-  hap?: boolean
+  /**
+   * HAP configuration for this child bridge. Older Homebridge versions sent a
+   * boolean (`true`/`false`/undefined for the default-on). Homebridge
+   * >= 2.0.3-beta.26 sends the nested object form (`{ enabled?, externalsOnly? }`).
+   * Both shapes are typed here so the metadata passes through unchanged to the
+   * UI, which decides which shape is authoritative via the `protocolExternalsOnly`
+   * feature flag.
+   */
+  hap?: boolean | BridgeHapConfig
 
   /** Matter configuration */
   matterConfig?: MatterConfig

@@ -1124,15 +1124,23 @@ export class ConfigEditorService implements OnApplicationBootstrap {
    * be configured — use updateMatterConfig to configure it from scratch, and
    * deleteMatterConfig to fully remove it (and its storage).
    */
-  public async setMatterEnabled(enabled: boolean, restart = true): Promise<{ enabled: boolean }> {
+  public async setMatterEnabled(
+    enabled: boolean,
+    restart = true,
+    externalsOnly = false,
+  ): Promise<{ enabled: boolean, externalsOnly: boolean }> {
     const config = await this.getConfigFile()
     if (!config.bridge?.matter) {
       throw new BadRequestException('Matter is not configured on the main bridge.')
     }
 
+    const useExternalsOnly = this.configService.getFeatureFlags().protocolExternalsOnly === true
     const currentlyEnabled = config.bridge.matter.enabled !== false
-    if (enabled === currentlyEnabled) {
-      return { enabled }
+    const currentlyExternalsOnly = config.bridge.matter.externalsOnly === true
+    const targetExternalsOnly = useExternalsOnly && !enabled && externalsOnly
+
+    if (enabled === currentlyEnabled && targetExternalsOnly === currentlyExternalsOnly) {
+      return { enabled, externalsOnly: currentlyExternalsOnly }
     }
 
     // Shutdown first so the running server doesn't see a partial config, unless
@@ -1141,13 +1149,20 @@ export class ConfigEditorService implements OnApplicationBootstrap {
       await this.homebridgeIpcService.restartAndWaitForClose()
     }
     if (enabled) {
-      // Re-enable: omit the flag — present-without-`enabled` means enabled
+      // Re-enable: omit the flag — present-without-`enabled` means enabled.
+      // externalsOnly must be cleared too (validation rejects enabled + externalsOnly).
       delete config.bridge.matter.enabled
+      delete config.bridge.matter.externalsOnly
     } else {
       config.bridge.matter.enabled = false
+      if (targetExternalsOnly) {
+        config.bridge.matter.externalsOnly = true
+      } else {
+        delete config.bridge.matter.externalsOnly
+      }
     }
     await this.updateConfigFile(config)
-    return { enabled }
+    return { enabled, externalsOnly: targetExternalsOnly }
   }
 
   /**
@@ -1173,36 +1188,77 @@ export class ConfigEditorService implements OnApplicationBootstrap {
   }
 
   /**
-   * Get whether HAP is enabled on the main bridge.
-   * HAP is enabled by default; users opt out via `bridge.hap: false`.
+   * Get whether HAP is enabled on the main bridge, plus the externalsOnly
+   * flag for newer Homebridge versions.
+   *
+   * HAP is enabled by default; users opt out via either the legacy boolean
+   * form (`bridge.hap: false`, older Homebridge) or the nested form
+   * (`bridge.hap: { enabled: false, externalsOnly?: true }`, Homebridge >= 2.0.3-beta.26).
+   * Reading tolerates both shapes; writing chooses the appropriate shape
+   * based on the `protocolExternalsOnly` feature flag.
    */
-  public async getHapEnabled(): Promise<{ enabled: boolean }> {
+  public async getHapEnabled(): Promise<{ enabled: boolean, externalsOnly: boolean }> {
     const config = await this.getConfigFile()
-    return { enabled: config.bridge?.hap !== false }
+    const hap = config.bridge?.hap
+    // Legacy: hap === false means disabled.
+    if (hap === false) {
+      return { enabled: false, externalsOnly: false }
+    }
+    // Nested: { enabled: false } means disabled, optionally externalsOnly.
+    if (typeof hap === 'object' && hap !== null) {
+      const enabled = hap.enabled !== false
+      const externalsOnly = hap.externalsOnly === true
+      return { enabled, externalsOnly }
+    }
+    return { enabled: true, externalsOnly: false }
   }
 
   /**
    * Enable or disable HAP on the main bridge.
-   * HAP and Matter may both be disabled — the bridge then advertises nothing.
+   *
+   * Writes either the boolean form or the nested object form based on the
+   * `protocolExternalsOnly` feature flag (which depends on the running
+   * Homebridge version). When disabling, the optional `externalsOnly` flag
+   * is honoured only when the nested shape is being written.
+   *
+   * @param enabled - Whether HAP should be published.
+   * @param restart - Whether to restart Homebridge after the change (deferred to caller when false).
+   * @param externalsOnly - Optional. When `enabled: false`, additionally suppress the bridge accessory itself (externals still publish).
    */
-  public async setHapEnabled(enabled: boolean, restart = true): Promise<{ enabled: boolean }> {
+  public async setHapEnabled(
+    enabled: boolean,
+    restart = true,
+    externalsOnly = false,
+  ): Promise<{ enabled: boolean, externalsOnly: boolean }> {
     const config = await this.getConfigFile()
+    const useNestedShape = this.configService.getFeatureFlags().protocolExternalsOnly === true
+
     if (!enabled) {
       // Shutdown first so the running server doesn't see a partial config, unless
       // the caller will trigger a (deferred) restart itself.
       if (restart) {
         await this.homebridgeIpcService.restartAndWaitForClose()
       }
-      config.bridge.hap = false
+      if (useNestedShape) {
+        config.bridge.hap = externalsOnly
+          ? { enabled: false, externalsOnly: true }
+          : { enabled: false }
+      } else {
+        // Legacy runtime: externalsOnly is ignored (the runtime would reject the nested form).
+        config.bridge.hap = false
+      }
       await this.updateConfigFile(config)
     } else {
-      // Re-enable: omit the property by default
-      if (config.bridge?.hap === false) {
+      // Re-enable: drop the property entirely so the default (enabled) takes effect.
+      // Any present shape — the legacy boolean or any nested object — is removed,
+      // which also clears a lingering externalsOnly that would otherwise fail validation.
+      const hap = config.bridge?.hap
+      if (hap === false || (typeof hap === 'object' && hap !== null)) {
         delete config.bridge.hap
         await this.updateConfigFile(config)
       }
     }
-    return { enabled }
+    return { enabled, externalsOnly: useNestedShape && !enabled && externalsOnly }
   }
 
   /**

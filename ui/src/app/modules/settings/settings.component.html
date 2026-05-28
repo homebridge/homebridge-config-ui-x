@@ -1186,6 +1186,43 @@
                 </div>
               </div>
             </li>
+            <!--
+              HAP externalsOnly toggle — only shown when:
+              - The running Homebridge supports the nested config (>= 2.0.3-beta.26).
+              - HAP is currently disabled (validation rule: externalsOnly requires enabled: false).
+              Toggling externalsOnly back to true is hidden when HAP is re-enabled; the form
+              control is reset programmatically so the saved value cannot leak back in.
+            -->
+            @if (isProtocolExternalsOnlyEnabled && hapEnabledFormControl.value === false) {
+              <li class="setting-row list-group-item">
+                <div class="setting-row-inner d-flex justify-content-between align-items-center">
+                  <span>
+                    {{ 'settings.hap.externals_only' | translate }}
+                    <span class="badge badge-primary ms-1">{{ 'common.labels.beta' | translate }}</span
+                    ><br />
+                    <small class="grey-text pe-2">{{ 'settings.hap.externals_only_desc' | translate }}</small>
+                  </span>
+                  <div class="d-flex align-items-center">
+                    <div class="order-1 order-md-2">
+                      <input
+                        type="checkbox"
+                        class="rendux-input"
+                        id="hapExternalsOnly"
+                        [formControl]="hapExternalsOnlyFormControl"
+                        [attr.aria-label]="'settings.hap.externals_only' | translate"
+                      />
+                      <label for="hapExternalsOnly" class="rendux-label ms-3 min-w-50"></label>
+                    </div>
+                    @if (hapExternalsOnlyIsSaving()) {
+                      <i
+                        aria-hidden="true"
+                        class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1 save-indicator"
+                      ></i>
+                    }
+                  </div>
+                </div>
+              </li>
+            }
           </ul>
         }
       </div>
@@ -1258,6 +1295,41 @@
                 </div>
               </div>
             </li>
+            <!--
+              Matter externalsOnly toggle — only shown when:
+              - The running Homebridge supports the nested config (>= 2.0.3-beta.26).
+              - Matter is currently disabled in place (validation requires matter.enabled: false).
+            -->
+            @if (isProtocolExternalsOnlyEnabled && matterEnabledFormControl.value === false) {
+              <li class="setting-row list-group-item">
+                <div class="setting-row-inner d-flex justify-content-between align-items-center">
+                  <span>
+                    {{ 'settings.matter.externals_only' | translate }}
+                    <span class="badge badge-primary ms-1">{{ 'common.labels.beta' | translate }}</span
+                    ><br />
+                    <small class="grey-text pe-2">{{ 'settings.matter.externals_only_desc' | translate }}</small>
+                  </span>
+                  <div class="d-flex align-items-center">
+                    <div class="order-1 order-md-2">
+                      <input
+                        type="checkbox"
+                        class="rendux-input"
+                        id="matterExternalsOnly"
+                        [formControl]="matterExternalsOnlyFormControl"
+                        [attr.aria-label]="'settings.matter.externals_only' | translate"
+                      />
+                      <label for="matterExternalsOnly" class="rendux-label ms-3 min-w-50"></label>
+                    </div>
+                    @if (matterExternalsOnlyIsSaving()) {
+                      <i
+                        aria-hidden="true"
+                        class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1 save-indicator"
+                      ></i>
+                    }
+                  </div>
+                </div>
+              </li>
+            }
             @if (matterEnabledFormControl.value) {
               <li
                 class="setting-row list-group-item"

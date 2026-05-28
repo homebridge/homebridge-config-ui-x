@@ -307,9 +307,20 @@ export class StatusService {
   }
 
   private getHapInfo() {
-    return {
-      enabled: this.configService.homebridgeConfig.bridge.hap !== false,
+    const hap = this.configService.homebridgeConfig.bridge.hap
+    // Tolerate both the legacy boolean form (`hap: false`) and the nested
+    // object form (`hap: { enabled: false, externalsOnly: true }`). The
+    // bridge accessory itself is "enabled" only when the protocol is on
+    // AND externalsOnly is not set.
+    let enabled = true
+    let externalsOnly = false
+    if (hap === false) {
+      enabled = false
+    } else if (typeof hap === 'object' && hap !== null) {
+      enabled = hap.enabled !== false
+      externalsOnly = hap.externalsOnly === true
     }
+    return { enabled, externalsOnly }
   }
 
   /**

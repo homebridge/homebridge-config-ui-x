@@ -16,6 +16,8 @@ import { ConfirmComponent } from '@/app/core/components/confirm/confirm.componen
 import { RestartChildBridgesComponent } from '@/app/core/components/restart-child-bridges/restart-child-bridges.component'
 import { RestartHomebridgeComponent } from '@/app/core/components/restart-homebridge/restart-homebridge.component'
 import { createChildBridgeSchema } from '@/app/core/helpers/child-bridges-schema.helper'
+import { createHapSchema } from '@/app/core/helpers/hap-schema.helper'
+import { createMatterSchema } from '@/app/core/helpers/matter-schema.helper'
 import { CONFIG_RESTORE_MODAL_DATA, CONFIRM_MODAL_DATA, RESTART_CHILD_BRIDGES_MODAL_DATA } from '@/app/core/modal-data-tokens'
 import { ChildBridge } from '@/app/core/plugins/manage-plugins.interfaces'
 import { RE_USERNAME } from '@/app/core/regex.constants'
@@ -78,6 +80,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
   private hbPendingRestart = false
   private isDebugModeEnabled = this.$settings.isFeatureEnabled('childBridgeDebugMode')
   private isMatterSupported = this.$settings.isFeatureEnabled('matterSupport')
+  private isProtocolExternalsOnlyEnabled = this.$settings.isFeatureEnabled('protocolExternalsOnly')
 
   public readonly homebridgeConfig = signal<string>('')
   public readonly originalConfig = signal<string>('')
@@ -609,6 +612,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
     const childBridgeSchema = createChildBridgeSchema(this.$translate, {
       isDebugModeEnabled: this.isDebugModeEnabled,
       isMatterSupported: this.isMatterSupported,
+      isProtocolExternalsOnlyEnabled: this.isProtocolExternalsOnlyEnabled,
     });
 
     (window as any).monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
@@ -709,34 +713,9 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
                       description: this.$translate.instant('status.widget.network.network_interface'),
                     },
                   },
-                  hap: {
-                    type: 'boolean',
-                    title: this.$translate.instant('child_bridge.config.enable_hap'),
-                    description: 'When false, HAP is not advertised for the main bridge.',
-                  },
+                  hap: createHapSchema(this.$translate, this.isProtocolExternalsOnlyEnabled, 'main'),
                   ...this.isMatterSupported
-                    ? {
-                        matter: {
-                          type: 'object',
-                          additionalProperties: false,
-                          title: this.$translate.instant('settings.matter.title'),
-                          description: 'Matter-specific configuration for the main bridge.',
-                          properties: {
-                            enabled: {
-                              type: 'boolean',
-                              title: this.$translate.instant('matter_bridge.config.use'),
-                              description: 'When false, Matter is configured but not advertised for the main bridge; the config and on-disk commissioning data are preserved.',
-                            },
-                            port: {
-                              type: 'number',
-                              title: this.$translate.instant('settings.matter.port'),
-                              description: this.$translate.instant('settings.matter.port_desc'),
-                              minimum: 1025,
-                              maximum: 65534,
-                            },
-                          },
-                        },
-                      }
+                    ? { matter: createMatterSchema(this.$translate, this.isProtocolExternalsOnlyEnabled, 'main') }
                     : {},
                 },
                 default: { name: 'Homebridge', username: '0E:89:49:64:91:86', port: 51173, pin: '6302-7655' },

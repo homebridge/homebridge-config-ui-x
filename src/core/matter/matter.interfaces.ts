@@ -13,10 +13,38 @@ export interface MatterConfig {
    * When `false`, Matter is configured but not advertised — the config block
    * and on-disk commissioning storage are preserved so it can be re-enabled
    * without re-commissioning. Missing/`true` means enabled. Mirrors how
-   * `bridge.hap: false` disables HAP without losing pairing data. Only honoured
-   * by Homebridge >= 2.0.3-beta.22 (see the `matterDisableInPlace` feature flag).
+   * `bridge.hap.enabled: false` disables HAP without losing pairing data.
+   * Only honoured by Homebridge >= 2.0.3-beta.22 (see the `matterDisableInPlace`
+   * feature flag).
    */
   enabled?: boolean
+  /**
+   * When `true`, the Matter bridge node itself is NOT advertised, but plugins
+   * may still publish external Matter accessories (each gets its own pairing).
+   * Requires `enabled: false`. Only honoured by Homebridge >= 2.0.3-beta.26
+   * (see the `protocolExternalsOnly` feature flag).
+   */
+  externalsOnly?: boolean
+}
+
+/**
+ * HAP-bridge configuration interface — used by Homebridge >= 2.0.3-beta.26.
+ * Earlier versions used a boolean `hap` field; the dual shape stays supported
+ * here so config-ui-x keeps working against older homebridge runtimes (see
+ * the `protocolExternalsOnly` feature flag).
+ */
+export interface BridgeHapConfig {
+  /**
+   * Whether HAP is published for this bridge. Default `true`. Set to `false`
+   * to suppress HAP advertisement while preserving pairing data.
+   */
+  enabled?: boolean
+  /**
+   * When `true`, the HAP bridge accessory itself is NOT published, but
+   * plugins may still publish external HAP accessories (each pairs as its
+   * own standalone tile). Requires `enabled: false`.
+   */
+  externalsOnly?: boolean
 }
 
 // --- Accessories types ---
@@ -204,6 +232,12 @@ export interface HomebridgeStatusMatterUpdate {
   serialNumber?: string
   commissioned?: boolean
   deviceCount?: number
+  /**
+   * When true, the Matter bridge node itself is not advertised but plugins
+   * may still publish external Matter accessories. Only set by Homebridge
+   * >= 2.0.3-beta.26 (see the `protocolExternalsOnly` feature flag).
+   */
+  externalsOnly?: boolean
 }
 
 // --- Network overview types ---

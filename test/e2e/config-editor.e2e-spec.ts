@@ -1900,7 +1900,7 @@ describe('ConfigEditorController (e2e)', () => {
     })
 
     expect(res.statusCode).toBe(200)
-    expect(res.json()).toEqual({ enabled: false })
+    expect(res.json()).toEqual({ enabled: false, externalsOnly: false })
 
     // The block and port are preserved; only `enabled: false` is added (no teardown)
     const config: HomebridgeConfig = await readJson(configFilePath)
@@ -1921,9 +1921,32 @@ describe('ConfigEditorController (e2e)', () => {
     })
 
     expect(res.statusCode).toBe(200)
-    expect(res.json()).toEqual({ enabled: true })
+    expect(res.json()).toEqual({ enabled: true, externalsOnly: false })
 
     // The `enabled` flag is removed (present-without-flag means enabled); port kept
+    const config: HomebridgeConfig = await readJson(configFilePath)
+    expect(config.bridge.matter).toEqual({ port: 5540 })
+  })
+
+  it('PUT /config-editor/matter/enabled (should also clear externalsOnly when re-enabling)', async () => {
+    // Pre-seed: matter disabled in place + externalsOnly set. Even though the
+    // mock homebridge version has the protocolExternalsOnly flag off (writes
+    // wouldn't produce this shape), the reader and re-enable path tolerate it.
+    const seed: HomebridgeConfig = await readJson(configFilePath)
+    seed.bridge.matter = { port: 5540, enabled: false, externalsOnly: true } as any
+    await writeJson(configFilePath, seed)
+
+    const res = await app.inject({
+      method: 'PUT',
+      path: '/config-editor/matter/enabled',
+      headers: { authorization },
+      payload: { enabled: true },
+    })
+
+    expect(res.statusCode).toBe(200)
+    expect(res.json()).toEqual({ enabled: true, externalsOnly: false })
+
+    // externalsOnly must be cleared too (validation would reject enabled + externalsOnly).
     const config: HomebridgeConfig = await readJson(configFilePath)
     expect(config.bridge.matter).toEqual({ port: 5540 })
   })
@@ -1951,13 +1974,13 @@ describe('ConfigEditorController (e2e)', () => {
     })
 
     expect(res.statusCode).toBe(200)
-    expect(res.json()).toEqual({ enabled: true })
+    expect(res.json()).toEqual({ enabled: true, externalsOnly: false })
   })
 
-  it('GET /config-editor/hap (should return enabled=false when bridge.hap=false)', async () => {
+  it('GET /config-editor/hap (should return enabled=false when bridge.hap=false, legacy boolean form)', async () => {
     // Pre-seed config with bridge.hap=false (and matter configured so it's a valid state)
     const config: HomebridgeConfig = await readJson(configFilePath)
-    config.bridge.hap = false
+    ;(config.bridge as any).hap = false
     config.bridge.matter = { port: 5540 }
     await writeJson(configFilePath, config)
 
@@ -1970,12 +1993,12 @@ describe('ConfigEditorController (e2e)', () => {
     })
 
     expect(res.statusCode).toBe(200)
-    expect(res.json()).toEqual({ enabled: false })
+    expect(res.json()).toEqual({ enabled: false, externalsOnly: false })
   })
 
   it('GET /config-editor/hap (should return enabled=true when bridge.hap=true explicitly)', async () => {
     const config: HomebridgeConfig = await readJson(configFilePath)
-    config.bridge.hap = true
+    ;(config.bridge as any).hap = true
     await writeJson(configFilePath, config)
 
     const res = await app.inject({
@@ -1987,7 +2010,61 @@ describe('ConfigEditorController (e2e)', () => {
     })
 
     expect(res.statusCode).toBe(200)
-    expect(res.json()).toEqual({ enabled: true })
+    expect(res.json()).toEqual({ enabled: true, externalsOnly: false })
+  })
+
+  it('GET /config-editor/hap (should return enabled=false when bridge.hap is the nested object form)', async () => {
+    // The new homebridge runtime (>= 2.0.3-beta.26) writes the nested object
+    // form. The reader tolerates this even when the feature flag is off.
+    const config: HomebridgeConfig = await readJson(configFilePath)
+    ;(config.bridge as any).hap = { enabled: false }
+    config.bridge.matter = { port: 5540 }
+    await writeJson(configFilePath, config)
+
+    const res = await app.inject({
+      method: 'GET',
+      path: '/config-editor/hap',
+      headers: {
+        authorization,
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+    expect(res.json()).toEqual({ enabled: false, externalsOnly: false })
+  })
+
+  it('GET /config-editor/hap (should surface externalsOnly:true when set in the nested form)', async () => {
+    const config: HomebridgeConfig = await readJson(configFilePath)
+    ;(config.bridge as any).hap = { enabled: false, externalsOnly: true }
+    await writeJson(configFilePath, config)
+
+    const res = await app.inject({
+      method: 'GET',
+      path: '/config-editor/hap',
+      headers: {
+        authorization,
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+    expect(res.json()).toEqual({ enabled: false, externalsOnly: true })
+  })
+
+  it('GET /config-editor/hap (should treat an empty hap object as enabled)', async () => {
+    const config: HomebridgeConfig = await readJson(configFilePath)
+    ;(config.bridge as any).hap = {}
+    await writeJson(configFilePath, config)
+
+    const res = await app.inject({
+      method: 'GET',
+      path: '/config-editor/hap',
+      headers: {
+        authorization,
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+    expect(res.json()).toEqual({ enabled: true, externalsOnly: false })
   })
 
   it('PUT /config-editor/hap (should allow disabling HAP even when Matter is not configured)', async () => {
@@ -2004,9 +2081,10 @@ describe('ConfigEditorController (e2e)', () => {
     })
 
     expect(res.statusCode).toBe(200)
-    expect(res.json()).toEqual({ enabled: false })
+    expect(res.json()).toEqual({ enabled: false, externalsOnly: false })
 
-    // bridge.hap should be persisted as false, with no matter configured
+    // bridge.hap should be persisted as false (legacy form on the older mock
+    // homebridge version that doesn't have the protocolExternalsOnly flag).
     const config: HomebridgeConfig = await readJson(configFilePath)
     expect(config.bridge.hap).toBe(false)
     expect(config.bridge.matter).toBeUndefined()
@@ -2033,7 +2111,7 @@ describe('ConfigEditorController (e2e)', () => {
     })
 
     expect(res.statusCode).toBe(200)
-    expect(res.json()).toEqual({ enabled: false })
+    expect(res.json()).toEqual({ enabled: false, externalsOnly: false })
 
     const config: HomebridgeConfig = await readJson(configFilePath)
     expect(config.bridge.hap).toBe(false)
@@ -2041,9 +2119,9 @@ describe('ConfigEditorController (e2e)', () => {
   })
 
   it('PUT /config-editor/hap (should delete the hap property when re-enabling)', async () => {
-    // Pre-seed: HAP disabled, Matter configured
+    // Pre-seed: HAP disabled (legacy boolean form), Matter configured
     const config: HomebridgeConfig = await readJson(configFilePath)
-    config.bridge.hap = false
+    ;(config.bridge as any).hap = false
     config.bridge.matter = { port: 5540 }
     await writeJson(configFilePath, config)
 
@@ -2057,9 +2135,32 @@ describe('ConfigEditorController (e2e)', () => {
     })
 
     expect(res.statusCode).toBe(200)
-    expect(res.json()).toEqual({ enabled: true })
+    expect(res.json()).toEqual({ enabled: true, externalsOnly: false })
 
     // hap property should be removed (HAP enabled is the default — omit when on)
+    const updated: HomebridgeConfig = await readJson(configFilePath)
+    expect(updated.bridge.hap).toBeUndefined()
+  })
+
+  it('PUT /config-editor/hap (should also delete the nested hap object when re-enabling)', async () => {
+    // Pre-seed: nested form with enabled: false + externalsOnly: true
+    const config: HomebridgeConfig = await readJson(configFilePath)
+    ;(config.bridge as any).hap = { enabled: false, externalsOnly: true }
+    await writeJson(configFilePath, config)
+
+    const res = await app.inject({
+      method: 'PUT',
+      path: '/config-editor/hap',
+      headers: {
+        authorization,
+      },
+      payload: { enabled: true },
+    })
+
+    expect(res.statusCode).toBe(200)
+    expect(res.json()).toEqual({ enabled: true, externalsOnly: false })
+
+    // The whole property is dropped — externalsOnly: true cannot coexist with enabled: true.
     const updated: HomebridgeConfig = await readJson(configFilePath)
     expect(updated.bridge.hap).toBeUndefined()
   })
@@ -2079,7 +2180,7 @@ describe('ConfigEditorController (e2e)', () => {
     })
 
     expect(res.statusCode).toBe(200)
-    expect(res.json()).toEqual({ enabled: true })
+    expect(res.json()).toEqual({ enabled: true, externalsOnly: false })
 
     const after: HomebridgeConfig = await readJson(configFilePath)
     expect(after.bridge.hap).toBeUndefined()

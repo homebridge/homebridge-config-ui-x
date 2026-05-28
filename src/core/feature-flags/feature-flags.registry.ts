@@ -59,4 +59,9 @@ export const FEATURE_FLAGS: FeatureFlagDefinition[] = [
     description: 'Homebridge core echoes the request\'s correlationId on its monitoringStarted/Stopped acks. Lets the UI gate its first getMatterAccessories on the ack instead of racing core\'s Matter init — without the echo, the UI dispatcher drops the reply and we fall back to the pre-ack behaviour.',
     range: '>=2.0.3-beta.24',
   },
+  {
+    key: 'protocolExternalsOnly',
+    description: 'Nested HAP bridge config (`hap: { enabled?, externalsOnly? }`) and `externalsOnly` mode for both HAP and Matter. When set, the bridge accessory/node itself is not advertised but plugins may still publish external accessories. Requires the homebridge runtime to accept the new nested HAP shape; older runtimes still understand the boolean form.',
+    range: '>=2.0.3-beta.26',
+  },
 ]

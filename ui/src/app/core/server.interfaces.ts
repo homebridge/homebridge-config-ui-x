@@ -12,10 +12,18 @@ export interface HomebridgeStatusMatterUpdate {
   serialNumber?: string
   commissioned?: boolean
   deviceCount?: number
+  /**
+   * When true, the Matter bridge node itself is not advertised but plugins
+   * may still publish external Matter accessories. Only set by Homebridge
+   * >= 2.0.3-beta.26.
+   */
+  externalsOnly?: boolean
 }
 
 export interface HomebridgeStatusHapUpdate {
   enabled: boolean
+  /** When true, the bridge accessory itself is not published but plugins may still publish external HAP accessories. */
+  externalsOnly?: boolean
 }
 
 export interface HomebridgeStatusResponse {
@@ -64,14 +72,24 @@ export interface ChildBridgeStatusResponse {
   /** Manually stopped flag */
   manuallyStopped: boolean
 
-  /** HAP enabled flag — undefined or true means HAP is published, false means HAP is disabled for this bridge */
-  hap?: boolean
+  /**
+   * HAP configuration for this child bridge.
+   *
+   * Older Homebridge versions used a boolean (`true`/`false`/undefined for default).
+   * Homebridge >= 2.0.3-beta.26 sends the nested object form, including
+   * `externalsOnly`. Both shapes are typed here so the UI can render against
+   * either — the `protocolExternalsOnly` feature flag decides which shape is
+   * authoritative at runtime.
+   */
+  hap?: boolean | { enabled?: boolean, externalsOnly?: boolean }
 
   /** Matter configuration */
   matterConfig?: {
     port?: number
     /** When false, Matter is configured but disabled in place (storage preserved). */
     enabled?: boolean
+    /** When true, the Matter bridge node itself is not advertised but plugins may publish external Matter accessories. */
+    externalsOnly?: boolean
   }
 
   /** Matter identifier (filesystem storage key) */
