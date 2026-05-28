@@ -86,6 +86,8 @@ export class DonateComponent implements OnInit {
       case 'kofi':
       case 'ko-fi':
         return 'fab fa-ko-fi'
+      case 'venmo':
+        return 'fab fa-venmo-v'
       default:
         return 'fas fa-link'
     }
