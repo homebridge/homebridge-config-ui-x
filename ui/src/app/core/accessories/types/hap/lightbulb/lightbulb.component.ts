@@ -78,6 +78,9 @@ export class LightbulbComponent implements OnInit {
       const cls = this.isAdaptiveLightingEnabled() ? 'on-text' : 'grey-text'
       label += ` &middot; <i class='fas fa-sun ${cls}'></i>`
     }
+    if (this.hasCurrentConsumption()) {
+      label += ` &middot; ${this.currentConsumption()}W`
+    }
 
     return label
   }
@@ -88,11 +91,27 @@ export class LightbulbComponent implements OnInit {
     if (!isOn) {
       return ''
     }
+    let label = ''
     if (this.hasAdaptiveLighting()) {
       const cls = this.isAdaptiveLightingEnabled() ? 'on-text' : 'grey-text'
-      return ` &middot; <i class='fas fa-sun ${cls}'></i>`
+      label += ` &middot; <i class='fas fa-sun ${cls}'></i>`
     }
-    return ''
+    if (this.hasCurrentConsumption()) {
+      label += ` &middot; ${this.currentConsumption()}W`
+    }
+    return label
+  }
+
+  public hasCurrentConsumption(): boolean {
+    return 'Consumption' in this.service().values
+  }
+
+  public currentConsumption(): number | undefined {
+    if (!this.hasCurrentConsumption()) {
+      return undefined
+    }
+
+    return this.service().values.Consumption
   }
 
   public onClick() {

@@ -122,6 +122,10 @@
       } @else {
         {{ 'accessories.control.on' | translate }}
       }
+      @if ((service().values?.Active || service().values?.On) && hasCurrentConsumption()) {
+        &middot;
+        {{ currentConsumption() }}W
+      }
     </div>
   </div>
 </div>

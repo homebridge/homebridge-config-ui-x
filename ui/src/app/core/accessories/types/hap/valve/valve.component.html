@@ -135,7 +135,13 @@
     @if (service().values?.Active && remainingDuration()) {
       <div class="accessory-label grey-text">{{ remainingDuration() }}</div>
     } @else if ((service().values?.Active && !remainingDuration()) || service().values?.On) {
-      <div class="accessory-label grey-text">{{ 'accessories.control.running' | translate }}</div>
+      <div class="accessory-label grey-text">
+        {{ 'accessories.control.running' | translate }}
+        @if (hasCurrentConsumption()) {
+          &middot;
+          {{ currentConsumption() }}W
+        }
+      </div>
     } @else {
       <div class="accessory-label grey-text">{{ 'accessories.control.off' | translate }}</div>
     }

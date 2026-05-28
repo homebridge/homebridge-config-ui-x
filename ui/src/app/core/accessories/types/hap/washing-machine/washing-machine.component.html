@@ -39,12 +39,15 @@
       </svg>
     </div>
     <div class="accessory-label mt-auto">{{ service().customName || service().serviceName }}</div>
-    <div
-      class="accessory-label grey-text"
-      [innerText]="
+    <div class="accessory-label grey-text">
+      {{
         (service().values?.On || service().values?.Active ? 'accessories.control.on' : 'accessories.control.off')
           | translate
-      "
-    ></div>
+      }}
+      @if ((service().values?.On || service().values?.Active) && hasCurrentConsumption()) {
+        &middot;
+        {{ currentConsumption() }}W
+      }
+    </div>
   </div>
 </div>

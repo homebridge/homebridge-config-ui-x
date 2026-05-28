@@ -209,7 +209,13 @@
       }
     } @else {
       @if (values?.On || values?.Active) {
-        <div class="accessory-label red-text" aria-hidden="true">{{ 'accessories.control.open' | translate }}</div>
+        <div class="accessory-label red-text" aria-hidden="true">
+          {{ 'accessories.control.open' | translate }}
+          @if (hasCurrentConsumption()) {
+            &middot;
+            {{ currentConsumption() }}W
+          }
+        </div>
       } @else {
         <div class="accessory-label grey-text" aria-hidden="true">{{ 'accessories.control.closed' | translate }}</div>
       }
