@@ -186,6 +186,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - chore(test): use type cast for private logger spy
 - fix(matter): type fabricId and nodeId as strings
 - chore(plugins): align npm search result types with the live registry response
+- chore: update deprecation script from homebridge repo
 
 ### Homebridge Dependencies
 
