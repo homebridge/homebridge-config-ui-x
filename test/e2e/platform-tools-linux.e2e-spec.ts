@@ -16,6 +16,26 @@ import { ConfigService } from '../../src/core/config/config.service.js'
 import { LinuxModule } from '../../src/modules/platform-tools/linux/linux.module.js'
 import { LinuxService } from '../../src/modules/platform-tools/linux/linux.service.js'
 
+// Several tests below restore the real LinuxService implementation and call it
+// with the default `sudo -n shutdown -r now` / `-h now` / apt-get commands. On a
+// CI runner with passwordless sudo those commands actually execute, halting the
+// runner mid-suite (exit 143, "runner has received a shutdown signal"). Stub the
+// process-spawning primitives so the command-building + return-shape logic still
+// runs and is asserted, but nothing is ever shelled out.
+vi.mock('node:child_process', async (importOriginal) => {
+  const actual = await importOriginal<typeof import('node:child_process')>()
+  return {
+    ...actual,
+    spawn: vi.fn(() => ({ on: vi.fn() })),
+    exec: vi.fn((_command: string, callback?: (...args: any[]) => void) => {
+      if (typeof callback === 'function') {
+        callback(null, '', '')
+      }
+      return { on: vi.fn() }
+    }),
+  }
+})
+
 describe('PlatformToolsLinux (e2e)', () => {
   let app: NestFastifyApplication
 

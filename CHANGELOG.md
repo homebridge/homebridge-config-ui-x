@@ -188,6 +188,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - chore(plugins): align npm search result types with the live registry response
 - chore: update deprecation script from homebridge repo
 - chore(deps): bump the actions group with 2 updates (#2831) (@dependabot)
+- test: stop linux platform-tools e2e from shutting down the CI runner
 
 ### Homebridge Dependencies
 
