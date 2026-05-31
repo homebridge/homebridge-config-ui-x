@@ -8,6 +8,10 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 
 - feat(accessories): allow exposing HAP switches/outlets as speakers
 
+### Other Changes
+
+- chore(deps): dependency updates
+
 ### Homebridge Dependencies
 
 - `@homebridge/hap-client` @ `v5.0.0`
