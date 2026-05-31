@@ -167,6 +167,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(plugins): drop duplicate aria-label on plugin actions dropdown menu (@rfiorentino1)
 - feat: support nested hap config and externalsOnly mode
 - fix(ui): show plugin JSON config option on mobile
+- fix(ui): preserve child bridge config when saving plugin settings
 
 ### Other Changes
 

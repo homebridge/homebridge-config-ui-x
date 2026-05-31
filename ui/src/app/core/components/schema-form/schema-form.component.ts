@@ -90,6 +90,14 @@ export class SchemaFormComponent implements OnInit, OnDestroy {
     // Update the existing object in-place to preserve external references
     // Emit the SAME reference (not the new one) to prevent effect from re-running
     if (currentDataObj && typeof currentDataObj === 'object' && typeof data === 'object') {
+      // The child-bridge block (`_bridge`) is injected as a hidden schema and
+      // is never edited through this form — the child-bridge modal owns it.
+      // ng-formworks rebuilds it from that sub-schema and drops nested shapes
+      // it does not model (e.g. `hap: { enabled, externalsOnly }`), so letting
+      // the form's copy through would silently strip a child bridge's HAP/Matter
+      // disable or externals-only state on save. Preserve the original verbatim.
+      const preservedBridge = currentDataObj._bridge
+
       // Update existing object in-place (preserves external references)
       for (const key of Object.keys(currentDataObj)) {
         if (!(key in data)) {
@@ -97,6 +105,12 @@ export class SchemaFormComponent implements OnInit, OnDestroy {
         }
       }
       Object.assign(currentDataObj, data)
+
+      if (preservedBridge === undefined) {
+        delete currentDataObj._bridge
+      } else {
+        currentDataObj._bridge = preservedBridge
+      }
 
       // Emit the SAME reference we just updated (not the new one from json-schema-form)
       // This prevents the effect from seeing a reference change
