@@ -14,6 +14,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 
 - chore: added `deprecate-past-pre-releases` workflow (@NorthernMan54)
 - chore: change security report email addresses (@NorthernMan54)
+- chore(deps): dependency updates
 
 ### Homebridge Dependencies
 
