@@ -322,7 +322,7 @@
                       }
                       <!-- // -->
                       <!-- plugin manage config json -->
-                      @if (!isMobile() && plugin().name !== 'homebridge-config-ui-x') {
+                      @if (plugin().name !== 'homebridge-config-ui-x') {
                         <button type="button" ngbDropdownItem (click)="openJsonEditor()">
                           <i class="fas fa-code" aria-hidden="true"></i>
                           {{ 'plugins.manage.json_config' | translate }}

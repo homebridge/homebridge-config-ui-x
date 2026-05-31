@@ -166,6 +166,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(status): add screen-reader-only collapse to homebridge logs widget (@rfiorentino1)
 - fix(plugins): drop duplicate aria-label on plugin actions dropdown menu (@rfiorentino1)
 - feat: support nested hap config and externalsOnly mode
+- fix(ui): show plugin JSON config option on mobile
 
 ### Other Changes
 
