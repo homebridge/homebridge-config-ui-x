@@ -2,6 +2,18 @@
 
 All notable changes to `homebridge-config-ui-x` will be documented in this file. This project tries to adhere to [Semantic Versioning](http://semver.org/).
 
+## v5.24.1 (Pending Release)
+
+### UI Changes
+
+- feat(accessories): allow exposing HAP switches/outlets as speakers
+
+### Homebridge Dependencies
+
+- `@homebridge/hap-client` @ `v5.0.0`
+- `@homebridge/node-pty-prebuilt-multiarch` @ `v0.13.1`
+- `@homebridge/plugin-ui-utils` @ `v2.2.4`
+
 ## v5.24.0 (2026-05-31)
 
 ### UI Changes

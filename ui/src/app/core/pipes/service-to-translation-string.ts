@@ -12,6 +12,11 @@ export class ServiceToTranslationStringPipe implements PipeTransform {
       return value
     }
 
+    // SmartSpeaker has no dedicated translation; it reuses the Speaker label
+    if (value === 'SmartSpeaker') {
+      return 'accessories.core.speaker'
+    }
+
     // Replace capital letters (except the first) with _ + lowercase
     const service = value
       .replace(RE_FIRST_UPPER, match => match.toLowerCase())
