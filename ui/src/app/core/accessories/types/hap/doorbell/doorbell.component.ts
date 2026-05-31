@@ -35,6 +35,9 @@ export class DoorbellComponent {
 
   public isOn(): boolean {
     const values = this.service().values
+    if ('On' in values) {
+      return !!values?.On
+    }
     if ('Active' in values) {
       return !!values?.Active
     }
@@ -52,7 +55,9 @@ export class DoorbellComponent {
       return
     }
 
-    if ('Active' in this.service().values) {
+    if ('On' in this.service().values) {
+      void this.service().getCharacteristic!('On').setValue!(!this.service().values.On)
+    } else if ('Active' in this.service().values) {
       void this.service().getCharacteristic!('Active').setValue!(this.service().values.Active === 0 ? 1 : 0)
     } else if ('TargetMediaState' in this.service().values) {
       void this.service().getCharacteristic!('TargetMediaState').setValue!(this.service().values.TargetMediaState === 0 ? 1 : 0)

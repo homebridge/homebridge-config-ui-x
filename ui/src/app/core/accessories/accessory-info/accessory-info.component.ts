@@ -90,6 +90,8 @@ export class AccessoryInfoComponent implements OnInit, OnDestroy {
       'WindowCovering',
     ],
     [
+      'Switch',
+      'Outlet',
       'Doorbell',
       'Speaker',
       'SmartSpeaker',
@@ -200,6 +202,19 @@ export class AccessoryInfoComponent implements OnInit, OnDestroy {
       this.customTypeList = [
         ...new Set(this.hapCustomTypeList.filter(types => types.includes(this.localService.type)).flat()),
       ]
+
+      // Speaker and SmartSpeaker render with the same tile, so only offer the variant
+      // that matches the real accessory type - never list both in the dropdown
+      if (this.localService.type === 'SmartSpeaker') {
+        this.customTypeList = this.customTypeList.filter(type => type !== 'Speaker')
+      } else {
+        this.customTypeList = this.customTypeList.filter(type => type !== 'SmartSpeaker')
+
+        // Migrate a stale SmartSpeaker customType (set before this dedup) to Speaker
+        if (this.localService.customType === 'SmartSpeaker') {
+          this.localService.customType = 'Speaker'
+        }
+      }
 
       // HAP accessory
       this.accessoryInformation = Object.entries(this.localService.accessoryInformation).map(([key, value]) => ({

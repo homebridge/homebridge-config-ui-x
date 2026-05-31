@@ -2,6 +2,25 @@
 
 All notable changes to `homebridge-config-ui-x` will be documented in this file. This project tries to adhere to [Semantic Versioning](http://semver.org/).
 
+## v5.24.1 (Pending Release)
+
+### UI Changes
+
+- i18n: updates to the `uk.json` language file (#2883) (@xrust83)
+- fix(ui): validate session timeout fields individually (#2885) (@dnicolson)
+- feat(accessories): allow exposing HAP switches/outlets as speakers
+
+### Other Changes
+
+- chore: added `deprecate-past-pre-releases` workflow (@NorthernMan54)
+- chore: change security report email addresses (@NorthernMan54)
+
+### Homebridge Dependencies
+
+- `@homebridge/hap-client` @ `v5.0.0`
+- `@homebridge/node-pty-prebuilt-multiarch` @ `v0.13.1`
+- `@homebridge/plugin-ui-utils` @ `v2.2.4`
+
 ## v5.24.0 (2026-05-31)
 
 ### UI Changes
