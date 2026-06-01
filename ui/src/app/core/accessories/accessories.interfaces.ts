@@ -21,6 +21,14 @@ export type AccessoryLayout = {
   services: AccessoryLayoutService[]
 }[]
 
+export interface SmartAutomation {
+  id: string
+  name: string
+  type: 'smart-light-group'
+  uniqueIds: string[]
+  restoreAfterMs: number
+}
+
 /**
  * Matter OnOff cluster attributes
  */

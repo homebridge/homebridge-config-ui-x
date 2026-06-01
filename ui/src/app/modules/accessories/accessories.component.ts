@@ -8,7 +8,7 @@ import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap/tooltip'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { DragulaModule, DragulaService } from 'ng2-dragula'
 
-import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
+import { ServiceTypeX, SmartAutomation } from '@/app/core/accessories/accessories.interfaces'
 import { AccessoriesService } from '@/app/core/accessories/accessories.service'
 import { AccessoryTileComponent } from '@/app/core/accessories/accessory-tile/accessory-tile.component'
 import { AuthService } from '@/app/core/auth/auth.service'
@@ -70,6 +70,15 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
   public readonly hasPlugins = signal(this.$settings.env.hasInstalledPlugins ?? true)
   public manageLayoutMode = false
   private previousBridgeSelection: string[] | null = null
+  public readonly activeTab = signal<'accessories' | 'smart-automation'>('accessories')
+  public readonly smartAutomations = signal<SmartAutomation[]>([])
+  public smartAutomationDraft: Partial<SmartAutomation> = {
+    type: 'smart-light-group',
+    restoreAfterMs: 30000,
+    uniqueIds: [],
+  }
+
+  public readonly selectedLightUniqueIds = signal<string[]>([])
 
   // Signal references for persisted properties from service (persist across navigation)
   public readonly availableBridges = this.$accessories.availableBridges
@@ -131,6 +140,10 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
     }
 
     void this.$accessories.start()
+      .then(() => this.loadSmartAutomations())
+      .catch((error) => {
+        console.error(error)
+      })
 
     // Set up WebSocket connections to get custom bridge names
     this.setupBridgeNameMapping()
@@ -308,6 +321,63 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
     this.ioChild?.end?.()
   }
 
+  public setActiveTab(tab: 'accessories' | 'smart-automation'): void {
+    this.activeTab.set(tab)
+  }
+
+  public isLightSelected(uniqueId: string): boolean {
+    return this.selectedLightUniqueIds().includes(uniqueId)
+  }
+
+  public toggleLightSelection(uniqueId: string, selected: boolean): void {
+    const next = selected
+      ? [...new Set([...this.selectedLightUniqueIds(), uniqueId])]
+      : this.selectedLightUniqueIds().filter(id => id !== uniqueId)
+    this.selectedLightUniqueIds.set(next)
+  }
+
+  public editSmartAutomation(automation: SmartAutomation): void {
+    this.smartAutomationDraft = { ...automation, uniqueIds: [...automation.uniqueIds] }
+    this.selectedLightUniqueIds.set([...automation.uniqueIds])
+  }
+
+  public async saveSmartAutomation(): Promise<void> {
+    try {
+      const draft = {
+        ...this.smartAutomationDraft,
+        uniqueIds: [...new Set(this.selectedLightUniqueIds())],
+        type: 'smart-light-group' as const,
+      }
+
+      const saved = await this.$accessories.saveSmartAutomation(draft)
+      const current = this.smartAutomations()
+      const exists = current.some(item => item.id === saved.id)
+      this.smartAutomations.set(exists
+        ? current.map(item => item.id === saved.id ? saved : item)
+        : [...current, saved],
+      )
+      this.resetSmartAutomationDraft()
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  public async deleteSmartAutomation(id: string): Promise<void> {
+    try {
+      await this.$accessories.deleteSmartAutomation(id)
+      this.smartAutomations.set(this.smartAutomations().filter(x => x.id !== id))
+      if (this.smartAutomationDraft.id === id) {
+        this.resetSmartAutomationDraft()
+      }
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  public runSmartAutomation(automation: SmartAutomation): void {
+    this.$accessories.runSmartLightGroupAutomation(automation.uniqueIds, automation.restoreAfterMs)
+  }
+
   /**
    * Set up WebSocket connections to get custom bridge names from config
    */
@@ -406,6 +476,23 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
       // Update available bridges after handling selection
       this.availableBridges.set(newBridges)
     }
+  }
+
+  private async loadSmartAutomations(): Promise<void> {
+    try {
+      this.smartAutomations.set(await this.$accessories.getSmartAutomations())
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  private resetSmartAutomationDraft(): void {
+    this.smartAutomationDraft = {
+      type: 'smart-light-group',
+      restoreAfterMs: 30000,
+      uniqueIds: [],
+    }
+    this.selectedLightUniqueIds.set([])
   }
 
   /**
