@@ -191,5 +191,15 @@
   ],
   "scarfSettings": {
     "enabled": false
+  },
+  "allowScripts": {
+    "@homebridge/node-pty-prebuilt-multiarch@0.13.1": true,
+    "macos-temperature-sensor@1.0.4": true,
+    "osx-temperature-sensor@1.0.8": true,
+    "@nestjs/core@11.1.24": true,
+    "@scarf/scarf@1.4.0": true,
+    "@swc/core@1.15.40": true,
+    "esbuild@0.28.0": true,
+    "fsevents@2.3.3": true
   }
 }
