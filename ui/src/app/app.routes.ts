@@ -57,6 +57,17 @@ export const routes: Routes = [
         path: 'accessories',
         loadComponent: () => import('@/app/modules/accessories/accessories.component').then(m => m.AccessoriesComponent),
         canActivate: [authGuard],
+        data: {
+          view: 'accessories',
+        },
+      },
+      {
+        path: 'smart-automations',
+        loadComponent: () => import('@/app/modules/accessories/accessories.component').then(m => m.AccessoriesComponent),
+        canActivate: [authGuard],
+        data: {
+          view: 'smart-automation',
+        },
       },
       {
         path: 'logs',

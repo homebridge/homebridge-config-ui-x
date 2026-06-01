@@ -87,10 +87,12 @@
 @if (enableAccessories) {
   <div class="row mb-3">
     <div class="col-6">
-      <h3 class="primary-text m-0">{{ 'menu.label_accessories' | translate }}</h3>
+      <h3 class="primary-text m-0">
+        {{ isSmartAutomationView ? 'Smart Automation' : ('menu.label_accessories' | translate) }}
+      </h3>
     </div>
     <div class="col-6 text-end d-inline-block d-sm-none">
-      @if (shouldShowFilters()) {
+      @if (!isSmartAutomationView && shouldShowFilters()) {
         <ng-container
           *ngTemplateOutlet="bridgeFilterDropdown; context: { showManageLayout: false, showTooltip: false }"
         />
@@ -98,7 +100,7 @@
       <ng-container *ngTemplateOutlet="supportButton" />
     </div>
     <div class="col-6 text-end d-none d-sm-inline-block">
-      @if (hasPlugins()) {
+      @if (!isSmartAutomationView && hasPlugins()) {
         <button
           type="button"
           class="btn btn-elegant my-0 me-2"
@@ -136,7 +138,7 @@
           <i class="fas" aria-hidden="true" [class.fa-eye]="!hideHidden()" [class.fa-eye-slash]="hideHidden()"></i>
         </button>
       }
-      @if (shouldShowFilters()) {
+      @if (!isSmartAutomationView && shouldShowFilters()) {
         <ng-container
           *ngTemplateOutlet="bridgeFilterDropdown; context: { showManageLayout: true, showTooltip: true }"
         />
@@ -144,31 +146,7 @@
       <ng-container *ngTemplateOutlet="supportButton" />
     </div>
   </div>
-  <div class="row mb-3">
-    <div class="col-12">
-      <div class="btn-group" role="tablist" aria-label="Accessory tabs">
-        <button
-          type="button"
-          class="btn"
-          [class.btn-primary]="activeTab() === 'accessories'"
-          [class.btn-elegant]="activeTab() !== 'accessories'"
-          (click)="setActiveTab('accessories')"
-        >
-          {{ 'menu.label_accessories' | translate }}
-        </button>
-        <button
-          type="button"
-          class="btn"
-          [class.btn-primary]="activeTab() === 'smart-automation'"
-          [class.btn-elegant]="activeTab() !== 'smart-automation'"
-          (click)="setActiveTab('smart-automation')"
-        >
-          Smart Automation
-        </button>
-      </div>
-    </div>
-  </div>
-  @if (activeTab() === 'accessories') {
+  @if (!isSmartAutomationView) {
     @if (hasPlugins()) {
       <div dragula="rooms-bag" [(dragulaModel)]="rooms">
         @for (room of rooms; track room.name) {
@@ -330,19 +308,23 @@
                   <div class="list-group-item">
                     <div class="d-flex justify-content-between align-items-start">
                       <div>
-                        <h6 class="mb-1">{{ automation.name }}</h6>
+                        <div class="form-check form-switch mb-2">
+                          <input
+                            type="checkbox"
+                            class="form-check-input"
+                            [id]="`smart-automation-switch-${automation.id}`"
+                            [ngModel]="isAutomationSwitchOn(automation.id)"
+                            (ngModelChange)="toggleAutomationSwitch(automation, $event)"
+                          />
+                          <label class="form-check-label" [for]="`smart-automation-switch-${automation.id}`">
+                            {{ automation.name }}
+                          </label>
+                        </div>
                         <small class="text-muted d-block">Type: Smart Light Group</small>
                         <small class="text-muted d-block">Lights: {{ automation.uniqueIds.length }}</small>
                         <small class="text-muted d-block">Restore: {{ automation.restoreAfterMs }}ms</small>
                       </div>
                       <div class="ms-3">
-                        <button
-                          type="button"
-                          class="btn btn-sm btn-elegant me-2"
-                          (click)="runSmartAutomation(automation)"
-                        >
-                          Run
-                        </button>
                         <button
                           type="button"
                           class="btn btn-sm btn-elegant me-2"
