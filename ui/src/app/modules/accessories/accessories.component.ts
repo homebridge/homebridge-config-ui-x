@@ -2,6 +2,7 @@ import { NgTemplateOutlet } from '@angular/common'
 import { ChangeDetectionStrategy, Component, computed, createEnvironmentInjector, DestroyRef, EnvironmentInjector, inject, OnDestroy, OnInit, signal } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { FormsModule } from '@angular/forms'
+import { ActivatedRoute } from '@angular/router'
 import { NgbDropdown, NgbDropdownItem, NgbDropdownMenu, NgbDropdownToggle } from '@ng-bootstrap/ng-bootstrap/dropdown'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap/tooltip'
@@ -52,6 +53,7 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
   private $settings = inject(SettingsService)
   private $translate = inject(TranslateService)
   private $ws = inject(WsService)
+  private $route = inject(ActivatedRoute)
   private ioStatus!: IoNamespace
   private ioChild!: IoNamespace
 
@@ -69,14 +71,16 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
   public readonly hasPlugins = signal(this.$settings.env.hasInstalledPlugins ?? true)
   public manageLayoutMode = false
   private previousBridgeSelection: string[] | null = null
-  public readonly activeTab = signal<'accessories' | 'smart-automation'>('accessories')
+  public readonly isSmartAutomationView = this.$route.snapshot.data.view === 'smart-automation'
   public readonly smartAutomations = signal<SmartAutomation[]>([])
+  public readonly automationSwitchStates = signal<Record<string, boolean>>({})
   public smartAutomationDraft: Partial<SmartAutomation> = {
     type: 'smart-light-group',
     restoreAfterMs: 30000,
     uniqueIds: [],
   }
 
+  private automationSwitchResetTimers = new Map<string, ReturnType<typeof setTimeout>>()
   public readonly selectedLightUniqueIds = signal<string[]>([])
 
   // Signal references for persisted properties from service (persist across navigation)
@@ -125,7 +129,9 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
 
   public ngOnInit(): void {
     // Set page title
-    const title = this.$translate.instant('menu.label_accessories')
+    const title = this.isSmartAutomationView
+      ? 'Smart Automation'
+      : this.$translate.instant('menu.label_accessories')
     this.$settings.setPageTitle(title)
 
     // Initialize selectedBridges if null or empty - default to showing all bridges
@@ -135,7 +141,7 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
     }
 
     void this.$accessories.start()
-      .then(() => this.loadSmartAutomations())
+      .then(() => this.isSmartAutomationView ? this.loadSmartAutomations() : undefined)
       .catch((error) => {
         console.error(error)
       })
@@ -306,6 +312,8 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
 
   public ngOnDestroy(): void {
     this.$accessories.stop()
+    this.automationSwitchResetTimers.forEach(timer => clearTimeout(timer))
+    this.automationSwitchResetTimers.clear()
 
     // Destroy drag and drop bags
     this.dragulaService.destroy?.('rooms-bag')
@@ -314,10 +322,6 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
     // Clean up WebSocket connections
     this.ioStatus?.end?.()
     this.ioChild?.end?.()
-  }
-
-  public setActiveTab(tab: 'accessories' | 'smart-automation'): void {
-    this.activeTab.set(tab)
   }
 
   public isLightSelected(uniqueId: string): boolean {
@@ -361,6 +365,7 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
     try {
       await this.$accessories.deleteSmartAutomation(id)
       this.smartAutomations.set(this.smartAutomations().filter(x => x.id !== id))
+      this.clearAutomationSwitchState(id)
       if (this.smartAutomationDraft.id === id) {
         this.resetSmartAutomationDraft()
       }
@@ -371,6 +376,31 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
 
   public runSmartAutomation(automation: SmartAutomation): void {
     this.$accessories.runSmartLightGroupAutomation(automation.uniqueIds, automation.restoreAfterMs)
+  }
+
+  public isAutomationSwitchOn(id: string): boolean {
+    return !!this.automationSwitchStates()[id]
+  }
+
+  public toggleAutomationSwitch(automation: SmartAutomation, enabled: boolean): void {
+    this.setAutomationSwitchState(automation.id, enabled)
+
+    if (!enabled) {
+      this.clearAutomationResetTimer(automation.id)
+      return
+    }
+
+    this.runSmartAutomation(automation)
+    this.clearAutomationResetTimer(automation.id)
+    const resetAfterMs = Number.isInteger(automation.restoreAfterMs) && automation.restoreAfterMs > 0
+      ? automation.restoreAfterMs
+      : 30000
+
+    const timer = setTimeout(() => {
+      this.setAutomationSwitchState(automation.id, false)
+      this.clearAutomationResetTimer(automation.id)
+    }, resetAfterMs)
+    this.automationSwitchResetTimers.set(automation.id, timer)
   }
 
   /**
@@ -488,6 +518,31 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
       uniqueIds: [],
     }
     this.selectedLightUniqueIds.set([])
+  }
+
+  private setAutomationSwitchState(id: string, enabled: boolean): void {
+    this.automationSwitchStates.update((current) => {
+      const next = { ...current }
+      if (enabled) {
+        next[id] = true
+      } else {
+        delete next[id]
+      }
+      return next
+    })
+  }
+
+  private clearAutomationResetTimer(id: string): void {
+    const timer = this.automationSwitchResetTimers.get(id)
+    if (timer) {
+      clearTimeout(timer)
+      this.automationSwitchResetTimers.delete(id)
+    }
+  }
+
+  private clearAutomationSwitchState(id: string): void {
+    this.setAutomationSwitchState(id, false)
+    this.clearAutomationResetTimer(id)
   }
 
   /**
