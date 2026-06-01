@@ -29,6 +29,15 @@ import {
 export class AccessoriesService {
   public hapClient: HapClient
   public accessoriesCache = new NodeCache({ stdTTL: 0 })
+  private smartLightGroupTimers = new Map<string, ReturnType<typeof setTimeout>>()
+  private readonly smartLightRestoreCharacteristicOrder = [
+    'Brightness',
+    'Hue',
+    'Saturation',
+    'ColorTemperature',
+    'ColorTemperatureMireds',
+    'On',
+  ] as const
 
   // Matter monitoring state
   private matterMonitoringActive = false
@@ -157,6 +166,12 @@ export class AccessoriesService {
       if (msg.refresh) {
         // Reload all accessories (typically triggered by Matter accessory changes)
         await loadAllAccessories(true)
+      } else if (msg.smartLightGroup) {
+        try {
+          await this.runSmartLightGroupAutomation(msg.smartLightGroup.uniqueIds, msg.smartLightGroup.restoreAfterMs)
+        } catch (e) {
+          client.emit('accessory-control-failure', e.message)
+        }
       } else if (msg.set) {
         // Check if this is a Matter accessory
         if (msg.set.uniqueId && msg.set.uniqueId.startsWith('matter:')) {
@@ -400,6 +415,80 @@ export class AccessoriesService {
     }
   }
 
+  public async runSmartLightGroupAutomation(uniqueIds: string[], restoreAfterMs = 30000) {
+    const sanitizedUniqueIds = [...new Set(uniqueIds)].filter(x => typeof x === 'string' && x.length > 0)
+
+    if (!sanitizedUniqueIds.length) {
+      throw new BadRequestException('At least one uniqueId is required.')
+    }
+
+    const services = await this.loadAccessories()
+    const selectedLights = services
+      .filter(service => sanitizedUniqueIds.includes(service.uniqueId))
+      .filter(service => service.type === 'Lightbulb')
+
+    if (!selectedLights.length) {
+      throw new BadRequestException('No lightbulb services were found for the supplied uniqueIds.')
+    }
+
+    const snapshots = selectedLights.map((service) => {
+      const writableState = service.serviceCharacteristics
+        .filter(characteristic =>
+          characteristic.canWrite
+          && this.smartLightRestoreCharacteristicOrder.includes(characteristic.type as typeof this.smartLightRestoreCharacteristicOrder[number])
+          && characteristic.value !== undefined,
+        )
+        .map(characteristic => ({
+          type: characteristic.type,
+          value: characteristic.value as string | number | boolean,
+        }))
+
+      return {
+        uniqueId: service.uniqueId,
+        writableState,
+      }
+    })
+
+    const failures: string[] = []
+    for (const service of selectedLights) {
+      const onCharacteristic = service.getCharacteristic('On')
+
+      if (!onCharacteristic || !onCharacteristic.canWrite) {
+        failures.push(`${service.uniqueId}: missing writable On characteristic`)
+        continue
+      }
+
+      try {
+        await onCharacteristic.setValue(true)
+      } catch (error) {
+        failures.push(`${service.uniqueId}: ${error.message}`)
+      }
+    }
+
+    if (failures.length === selectedLights.length) {
+      throw new BadRequestException(`Failed to apply smart light group automation. ${failures.join('; ')}`)
+    }
+
+    const timerKey = this.getSmartLightGroupTimerKey(sanitizedUniqueIds)
+    const existingTimer = this.smartLightGroupTimers.get(timerKey)
+    if (existingTimer) {
+      clearTimeout(existingTimer)
+    }
+
+    const timer = setTimeout(() => {
+      void this.restoreSmartLightGroupState(timerKey, snapshots)
+    }, restoreAfterMs)
+
+    this.smartLightGroupTimers.set(timerKey, timer)
+
+    return {
+      message: 'Smart light group automation started.',
+      restoreAfterMs,
+      affectedLights: selectedLights.length,
+      failedLights: failures,
+    }
+  }
+
   /**
    * Get the accessory layout
    */
@@ -456,6 +545,54 @@ export class AccessoriesService {
   public resetInstancePool() {
     if (this.configService.homebridgeInsecureMode) {
       this.hapClient.resetInstancePool()
+    }
+  }
+
+  private getSmartLightGroupTimerKey(uniqueIds: string[]) {
+    return [...uniqueIds].sort().join('|')
+  }
+
+  private async restoreSmartLightGroupState(
+    timerKey: string,
+    snapshots: Array<{ uniqueId: string, writableState: Array<{ type: string, value: string | number | boolean }> }>,
+  ) {
+    try {
+      const services = await this.loadAccessories()
+
+      for (const snapshot of snapshots) {
+        const service = services.find(x => x.uniqueId === snapshot.uniqueId)
+        if (!service) {
+          continue
+        }
+
+        const sortedState = [...snapshot.writableState].sort((a, b) => {
+          if (a.type === 'On') {
+            return 1
+          }
+          if (b.type === 'On') {
+            return -1
+          }
+          return this.smartLightRestoreCharacteristicOrder.indexOf(a.type as typeof this.smartLightRestoreCharacteristicOrder[number])
+            - this.smartLightRestoreCharacteristicOrder.indexOf(b.type as typeof this.smartLightRestoreCharacteristicOrder[number])
+        })
+
+        for (const characteristicState of sortedState) {
+          const characteristic = service.getCharacteristic(characteristicState.type)
+          if (!characteristic || !characteristic.canWrite) {
+            continue
+          }
+
+          try {
+            await characteristic.setValue(characteristicState.value)
+          } catch (error) {
+            this.logger.warn(`Failed to restore ${characteristicState.type} for ${service.uniqueId}: ${error.message}`)
+          }
+        }
+      }
+    } catch (error) {
+      this.logger.warn(`Failed to restore smart light group state: ${error.message}`)
+    } finally {
+      this.smartLightGroupTimers.delete(timerKey)
     }
   }
 
