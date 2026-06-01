@@ -107,6 +107,7 @@
         routerLinkActive="active"
         [routerLink]="['/smart-automations']"
         [attr.aria-label]="`Smart Automation${smartAutomationsRla.isActive ? `, ${('menu.current_page' | translate)}` : ''}`"
+        [attr.title]="'Smart Automation'"
       >
         <div class="icon"><i aria-hidden="true" class="fas fa-toggle-on"></i></div>
         <div class="title">Smart Automation</div>
