@@ -90,31 +90,9 @@ The [Homebridge Plugin Template](https://github.com/homebridge/homebridge-plugin
 
 There are many existing plugins you can study; you might start with the [Homebridge Example Plugins](https://github.com/homebridge/homebridge-examples) or a plugin that already implements the device type you need.
 
-## Smart Automation Major Release Beta Roadmap
+## Smart Automation Roadmap
 
-To stage this work as a major release, run development on a dedicated beta track branch: **`release/v6-beta`**.
-
-### MVP 1: Automation Foundation
-
-- Add an automation engine service for scheduled and event-driven triggers.
-- Add an "Automations (Beta)" management view for create, enable, disable, and delete actions.
-- Add execution history logs for troubleshooting and support.
-
-### MVP 2: Value Automations
-
-- Add built-in security system automations.
-- Add smart light group automations that can restore previous light state after temporary overrides.
-- Add conflict validation and safety guardrails for overlapping rules.
-
-### MVP 3: Advanced Extensions
-
-- Add composable conditions (presence, time windows, and accessory state).
-- Add reusable action sets and grouped automation workflows to extend Home app behavior.
-- Add import/export plus staged rollout controls for safer deployment at scale.
-
-### End Target
-
-- Deliver a leading-edge automation system that extends Home app automations with safe, transparent, and reversible behavior for end users.
+For the dedicated Smart Automation plan and milestone scope, see [`ROADMAP`](ROADMAP).
 
 ## Community
 
