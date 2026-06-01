@@ -283,6 +283,33 @@ export class AccessoriesService {
     })
   }
 
+  public runSmartLightGroupAutomation(uniqueIds: string[], restoreAfterMs = 30000) {
+    if (!this.io?.socket || !Array.isArray(uniqueIds) || uniqueIds.length === 0) {
+      return
+    }
+
+    this.io.socket.emit('accessory-control', {
+      smartLightGroup: {
+        uniqueIds: [...new Set(uniqueIds)],
+        restoreAfterMs,
+      },
+    })
+  }
+
+  public runRoomSmartLightGroupAutomation(roomName: string, restoreAfterMs = 30000) {
+    const room = this.rooms().find(x => x.name === roomName)
+    if (!room) {
+      return
+    }
+
+    const uniqueIds = room.services
+      .filter(service => service.type === 'Lightbulb')
+      .map(service => service.uniqueId!)
+      .filter(Boolean)
+
+    this.runSmartLightGroupAutomation(uniqueIds, restoreAfterMs)
+  }
+
   /**
    * Save the room layout
    */

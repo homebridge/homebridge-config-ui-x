@@ -421,6 +421,86 @@ describe('AccessoriesController (e2e)', () => {
     expect(res.body).toContain('value should not be null or undefined')
   })
 
+  it('PUT /accessories/automation/smart-light-group (valid)', async () => {
+    const onCharacteristic = {
+      type: 'On',
+      canWrite: true,
+      value: false,
+      setValue: vi.fn(async (value: boolean) => {
+        onCharacteristic.value = value
+      }),
+    }
+    const brightnessCharacteristic = {
+      type: 'Brightness',
+      canWrite: true,
+      value: 45,
+      setValue: vi.fn(async (value: number) => {
+        brightnessCharacteristic.value = value
+      }),
+    }
+    const lightbulbService = {
+      uniqueId: 'light-1',
+      type: 'Lightbulb',
+      serviceCharacteristics: [onCharacteristic, brightnessCharacteristic],
+      getCharacteristic: vi.fn((type: string) => {
+        if (type === 'On') {
+          return onCharacteristic
+        }
+        if (type === 'Brightness') {
+          return brightnessCharacteristic
+        }
+        return null
+      }),
+    }
+
+    hapClientMock.mockResolvedValue([lightbulbService] as any)
+
+    const res = await app.inject({
+      method: 'PUT',
+      path: '/accessories/automation/smart-light-group',
+      headers: {
+        authorization,
+      },
+      payload: {
+        uniqueIds: ['light-1'],
+        restoreAfterMs: 1000,
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+    expect(onCharacteristic.setValue).toHaveBeenCalledWith(true)
+
+    await new Promise(resolve => setTimeout(resolve, 1100))
+
+    expect(brightnessCharacteristic.setValue).toHaveBeenCalledWith(45)
+    expect(onCharacteristic.setValue).toHaveBeenLastCalledWith(false)
+  })
+
+  it('PUT /accessories/automation/smart-light-group (no lightbulb services)', async () => {
+    const switchService = {
+      uniqueId: 'switch-1',
+      type: 'Switch',
+      serviceCharacteristics: [],
+      getCharacteristic: vi.fn(() => null),
+    }
+
+    hapClientMock.mockResolvedValue([switchService] as any)
+
+    const res = await app.inject({
+      method: 'PUT',
+      path: '/accessories/automation/smart-light-group',
+      headers: {
+        authorization,
+      },
+      payload: {
+        uniqueIds: ['switch-1'],
+      },
+    })
+
+    expect(res.statusCode).toBe(400)
+    expect(res.body).toContain('No lightbulb services were found')
+  })
+
   it('GET /accessories/layout (returns default room when user not in layout)', async () => {
     const res = await app.inject({
       method: 'GET',

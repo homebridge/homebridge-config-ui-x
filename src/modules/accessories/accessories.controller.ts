@@ -11,7 +11,7 @@ import {
 import { AuthGuard } from '@nestjs/passport'
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger'
 
-import { AccessorySetCharacteristicDto } from './accessories.dto.js'
+import { AccessorySetCharacteristicDto, SmartLightGroupAutomationDto } from './accessories.dto.js'
 import { AccessoriesService } from './accessories.service.js'
 
 @ApiTags('Accessories')
@@ -38,6 +38,15 @@ export class AccessoriesController {
   @Get('/layout')
   getAccessoryLayout(@Request() req) {
     return this.accessoriesService.getAccessoryLayout(req.user.username)
+  }
+
+  @ApiOperation({
+    summary: 'Run smart light group automation and restore previous light state.',
+    description: 'Turns selected light services on and restores their previous writable state after a delay.',
+  })
+  @Put('/automation/smart-light-group')
+  runSmartLightGroupAutomation(@Body() body: SmartLightGroupAutomationDto) {
+    return this.accessoriesService.runSmartLightGroupAutomation(body.uniqueIds, body.restoreAfterMs)
   }
 
   @ApiOperation({
