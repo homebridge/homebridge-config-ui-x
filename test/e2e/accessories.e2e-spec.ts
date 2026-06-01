@@ -613,6 +613,40 @@ describe('AccessoriesController (e2e)', () => {
     ;(accessoriesService as any).hapMonitorPromise = null
   })
 
+  it('service smart automation CRUD should save, update and delete', async () => {
+    const created = await accessoriesService.saveSmartAutomation('admin', {
+      name: 'Hallway Motion Lights',
+      type: 'smart-light-group',
+      uniqueIds: ['light-1', 'light-2'],
+      restoreAfterMs: 120000,
+    })
+
+    expect(created.id).toBeTruthy()
+    expect(created.uniqueIds).toEqual(['light-1', 'light-2'])
+
+    const listAfterCreate = await accessoriesService.getSmartAutomations('admin')
+    expect(listAfterCreate).toHaveLength(1)
+
+    const updated = await accessoriesService.saveSmartAutomation('admin', {
+      ...created,
+      name: 'Hallway Motion Lights Updated',
+      uniqueIds: ['light-2'],
+      restoreAfterMs: 90000,
+    })
+
+    expect(updated.name).toBe('Hallway Motion Lights Updated')
+    expect(updated.uniqueIds).toEqual(['light-2'])
+
+    const listAfterUpdate = await accessoriesService.getSmartAutomations('admin')
+    expect(listAfterUpdate).toHaveLength(1)
+    expect(listAfterUpdate[0].name).toBe('Hallway Motion Lights Updated')
+
+    await accessoriesService.deleteSmartAutomation('admin', created.id)
+
+    const listAfterDelete = await accessoriesService.getSmartAutomations('admin')
+    expect(listAfterDelete).toHaveLength(0)
+  })
+
   it('service.resetInstancePool should not throw when insecure mode disabled', () => {
     configService.homebridgeInsecureMode = false
     // Should be a no-op when insecure mode is disabled
