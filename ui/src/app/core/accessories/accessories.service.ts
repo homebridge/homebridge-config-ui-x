@@ -8,7 +8,7 @@ import { ToastrService } from 'ngx-toastr'
 import { firstValueFrom, Subject } from 'rxjs'
 import { takeUntil } from 'rxjs/operators'
 
-import { AccessoryLayout, AccessoryLayoutService, ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
+import { AccessoryLayout, AccessoryLayoutService, ServiceTypeX, SmartAutomation } from '@/app/core/accessories/accessories.interfaces'
 import { AccessoryInfoComponent } from '@/app/core/accessories/accessory-info/accessory-info.component'
 import { AuthService } from '@/app/core/auth/auth.service'
 import { CachedAccessoriesCacheService } from '@/app/core/caching/cached-accessories-cache.service'
@@ -308,6 +308,36 @@ export class AccessoriesService {
       .filter(Boolean)
 
     this.runSmartLightGroupAutomation(uniqueIds, restoreAfterMs)
+  }
+
+  public async getSmartAutomations() {
+    if (!this.io?.request) {
+      return [] as SmartAutomation[]
+    }
+
+    return await firstValueFrom(this.io.request('get-smart-automations', { user: this.$auth.user.username }))
+  }
+
+  public async saveSmartAutomation(automation: Partial<SmartAutomation>) {
+    if (!this.io?.request) {
+      throw new Error('Accessory session is not active.')
+    }
+
+    return await firstValueFrom(this.io.request('save-smart-automation', {
+      user: this.$auth.user.username,
+      automation,
+    }))
+  }
+
+  public async deleteSmartAutomation(id: string) {
+    if (!this.io?.request) {
+      throw new Error('Accessory session is not active.')
+    }
+
+    return await firstValueFrom(this.io.request('delete-smart-automation', {
+      user: this.$auth.user.username,
+      id,
+    }))
   }
 
   /**
