@@ -26,7 +26,7 @@ import {
   MatterStateUpdate,
 } from '../../core/matter/matter.interfaces.js'
 
-interface SmartAutomation {
+export interface SmartAutomation {
   id: string
   name: string
   type: 'smart-light-group'
