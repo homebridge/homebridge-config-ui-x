@@ -25,6 +25,11 @@ This roadmap defines a phased delivery plan for Smart Automation in Homebridge U
 - Add reusable action sets and grouped automation workflows to extend Home app behavior.
 - Add import/export plus staged rollout controls for safer deployment at scale.
 
+## Future Features
+
+- Add smart automation support for Matter devices.
+- Add smart automation support for HomeKit devices.
+
 ## End Target
 
 - Deliver a leading-edge automation system that extends Home app automations with safe, transparent, and reversible behavior for end users.
