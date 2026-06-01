@@ -99,6 +99,19 @@
         <div class="title">{{ 'menu.label_accessories' | translate }}</div>
       </button>
     </div>
+    <div class="link">
+      <button
+        #smartAutomationsRla="routerLinkActive"
+        type="button"
+        class="link-row"
+        routerLinkActive="active"
+        [routerLink]="['/smart-automations']"
+        [attr.aria-label]="`Smart Automation${smartAutomationsRla.isActive ? `, ${('menu.current_page' | translate)}` : ''}`"
+      >
+        <div class="icon"><i aria-hidden="true" class="fas fa-toggle-on"></i></div>
+        <div class="title">Smart Automation</div>
+      </button>
+    </div>
 
     @if (canViewLogs) {
       <div class="link">
