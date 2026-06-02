@@ -79,6 +79,7 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
     type: 'smart-light-group',
     restoreAfterMs: 30000,
     uniqueIds: [],
+    enabled: true,
   }
 
   private automationSwitchResetTimers = new Map<string, ReturnType<typeof setTimeout>>()
@@ -351,6 +352,7 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
         ...this.smartAutomationDraft,
         uniqueIds: [...new Set(this.selectedLightUniqueIds())],
         type: 'smart-light-group' as const,
+        enabled: this.smartAutomationDraft.enabled ?? true,
       }
 
       const saved = await this.$accessories.saveSmartAutomation(draft)
@@ -388,6 +390,11 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
   }
 
   public toggleAutomationSwitch(automation: SmartAutomation, enabled: boolean): void {
+    if (!automation.enabled) {
+      this.setAutomationSwitchState(automation.id, false)
+      return
+    }
+
     this.setAutomationSwitchState(automation.id, enabled)
 
     if (!enabled) {
@@ -406,6 +413,21 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
       this.clearAutomationResetTimer(automation.id)
     }, resetAfterMs)
     this.automationSwitchResetTimers.set(automation.id, timer)
+  }
+
+  public async setSmartAutomationEnabled(automation: SmartAutomation, enabled: boolean): Promise<void> {
+    try {
+      const saved = await this.$accessories.saveSmartAutomation({
+        ...automation,
+        enabled,
+      })
+      this.smartAutomations.update(current => current.map(item => item.id === saved.id ? saved : item))
+      if (!enabled) {
+        this.clearAutomationSwitchState(automation.id)
+      }
+    } catch (error) {
+      console.error(error)
+    }
   }
 
   /**
@@ -521,6 +543,7 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
       type: 'smart-light-group',
       restoreAfterMs: 30000,
       uniqueIds: [],
+      enabled: true,
     }
     this.selectedLightUniqueIds.set([])
   }

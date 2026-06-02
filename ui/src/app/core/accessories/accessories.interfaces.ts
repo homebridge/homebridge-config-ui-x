@@ -27,6 +27,7 @@ export interface SmartAutomation {
   type: 'smart-light-group'
   uniqueIds: string[]
   restoreAfterMs: number
+  enabled: boolean
 }
 
 /**

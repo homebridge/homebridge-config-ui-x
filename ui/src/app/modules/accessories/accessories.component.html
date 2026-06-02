@@ -237,6 +237,10 @@
       <div class="col-lg-6 mb-3">
         <div class="card h-100">
           <div class="card-body">
+            <div class="alert alert-info mb-3" role="alert">
+              Create and manage smart automations for grouped lights. Enable or disable each automation without deleting
+              it.
+            </div>
             <h5 class="card-title">Create / Edit Smart Automation</h5>
             <div class="mb-3">
               <label class="form-label" for="smart-automation-name">Name</label>
@@ -263,6 +267,15 @@
                 class="form-control"
                 [(ngModel)]="smartAutomationDraft.restoreAfterMs"
               />
+            </div>
+            <div class="form-check mb-3">
+              <input
+                id="smart-automation-enabled"
+                type="checkbox"
+                class="form-check-input"
+                [(ngModel)]="smartAutomationDraft.enabled"
+              />
+              <label class="form-check-label" for="smart-automation-enabled">Enabled</label>
             </div>
             <h6 class="mb-2">Choose Lights</h6>
             <div class="smart-automation-chooser">
@@ -314,6 +327,7 @@
                             class="form-check-input"
                             [id]="`smart-automation-switch-${automation.id}`"
                             [ngModel]="isAutomationSwitchOn(automation.id)"
+                            [disabled]="!automation.enabled"
                             (ngModelChange)="toggleAutomationSwitch(automation, $event)"
                           />
                           <label class="form-check-label" [for]="`smart-automation-switch-${automation.id}`">
@@ -323,8 +337,18 @@
                         <small class="text-muted d-block">Type: Smart Light Group</small>
                         <small class="text-muted d-block">Lights: {{ automation.uniqueIds.length }}</small>
                         <small class="text-muted d-block">Restore: {{ automation.restoreAfterMs }}ms</small>
+                        <small class="text-muted d-block">
+                          Status: {{ automation.enabled ? 'Enabled' : 'Disabled' }}
+                        </small>
                       </div>
                       <div class="ms-3">
+                        <button
+                          type="button"
+                          class="btn btn-sm btn-elegant me-2"
+                          (click)="setSmartAutomationEnabled(automation, !automation.enabled)"
+                        >
+                          {{ automation.enabled ? 'Disable' : 'Enable' }}
+                        </button>
                         <button
                           type="button"
                           class="btn btn-sm btn-elegant me-2"
