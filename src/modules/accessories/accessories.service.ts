@@ -32,6 +32,7 @@ export interface SmartAutomation {
   type: 'smart-light-group'
   uniqueIds: string[]
   restoreAfterMs: number
+  enabled: boolean
 }
 
 @Injectable()
@@ -632,7 +633,10 @@ export class AccessoriesService {
   public async getSmartAutomations(username: string) {
     try {
       const smartAutomations = await readJson(this.getSmartAutomationsPath()) as Record<string, SmartAutomation[]>
-      return smartAutomations[username] || []
+      return (smartAutomations[username] || []).map(automation => ({
+        ...automation,
+        enabled: automation.enabled ?? true,
+      }))
     } catch (e) {
       return []
     }
@@ -656,6 +660,7 @@ export class AccessoriesService {
     if (restoreAfterMs < 1000 || restoreAfterMs > 86_400_000) {
       throw new BadRequestException('restoreAfterMs must be between 1000 and 86400000.')
     }
+    const enabled = typeof automation.enabled === 'boolean' ? automation.enabled : true
 
     if (!await pathExists(join(this.configService.storagePath, 'accessories'))) {
       await mkdirp(join(this.configService.storagePath, 'accessories'))
@@ -667,6 +672,7 @@ export class AccessoriesService {
       type: 'smart-light-group' as const,
       uniqueIds,
       restoreAfterMs,
+      enabled,
     }
 
     await this.jsonStore.mutate<Record<string, SmartAutomation[]>>(this.getSmartAutomationsPath(), (current) => {
