@@ -233,6 +233,51 @@
       </div>
     }
   } @else {
+    <div class="row mb-3">
+      <div class="col-12">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Smart Automation Child Bridge</h5>
+            @if (smartAutomationChildBridge(); as bridge) {
+              <p class="mb-2 text-muted">
+                Publish smart automation switch accessories using the dedicated
+                <strong>{{ bridge.name }}</strong> child bridge.
+              </p>
+              <small class="text-muted d-block mb-3">Status: {{ bridge.status }}</small>
+              <button
+                type="button"
+                class="btn btn-sm btn-elegant me-2"
+                [disabled]="!isAdmin || bridge.status === 'pending'"
+                (click)="startSmartAutomationChildBridge()"
+              >
+                Start
+              </button>
+              <button
+                type="button"
+                class="btn btn-sm btn-elegant me-2"
+                [disabled]="!isAdmin || bridge.status === 'pending'"
+                (click)="restartSmartAutomationChildBridge()"
+              >
+                Restart
+              </button>
+              <button
+                type="button"
+                class="btn btn-sm btn-danger"
+                [disabled]="!isAdmin || bridge.status === 'pending'"
+                (click)="stopSmartAutomationChildBridge()"
+              >
+                Stop
+              </button>
+            } @else {
+              <p class="mb-0 text-muted">
+                No Smart Automation child bridge was found. Create a child bridge named
+                <strong>Smart Automation</strong> for homebridge-config-ui-x to publish automation switches.
+              </p>
+            }
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="row">
       <div class="col-lg-6 mb-3">
         <app-smart-automation-form

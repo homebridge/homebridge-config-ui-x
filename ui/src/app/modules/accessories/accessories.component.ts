@@ -8,6 +8,7 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap/tooltip'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { DragulaModule, DragulaService } from 'ng2-dragula'
+import { firstValueFrom } from 'rxjs'
 
 import { ServiceTypeX, SmartAutomation } from '@/app/core/accessories/accessories.interfaces'
 import { AccessoriesService } from '@/app/core/accessories/accessories.service'
@@ -79,6 +80,7 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
   public readonly isSmartAutomationView = this.$route.snapshot.data.view === 'smart-automation'
   public readonly smartAutomations = signal<SmartAutomation[]>([])
   public readonly automationSwitchStates = signal<Record<string, boolean>>({})
+  public readonly smartAutomationChildBridge = signal<ChildBridgeStatusResponse | null>(null)
   public smartAutomationDraft: Partial<SmartAutomation> = {
     type: 'smart-light-group',
     restoreAfterMs: 30000,
@@ -430,6 +432,45 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
     }
   }
 
+  public async restartSmartAutomationChildBridge(): Promise<void> {
+    const bridge = this.smartAutomationChildBridge()
+    if (!bridge?.username || !this.ioChild?.request) {
+      return
+    }
+
+    try {
+      await firstValueFrom(this.ioChild.request('restart-child-bridge', bridge.username))
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  public async startSmartAutomationChildBridge(): Promise<void> {
+    const bridge = this.smartAutomationChildBridge()
+    if (!bridge?.username || !this.ioChild?.request) {
+      return
+    }
+
+    try {
+      await firstValueFrom(this.ioChild.request('start-child-bridge', bridge.username))
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  public async stopSmartAutomationChildBridge(): Promise<void> {
+    const bridge = this.smartAutomationChildBridge()
+    if (!bridge?.username || !this.ioChild?.request) {
+      return
+    }
+
+    try {
+      await firstValueFrom(this.ioChild.request('stop-child-bridge', bridge.username))
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
   /**
    * Set up WebSocket connections to get custom bridge names from config
    */
@@ -455,6 +496,7 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
 
     this.ioChild.socket.on('child-bridge-status-update', (data: ChildBridgeStatusResponse) => {
       this.bridgeUsernameToNameMap.set(data.username, data.name)
+      this.updateSmartAutomationChildBridge([data])
     })
   }
 
@@ -466,7 +508,20 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
       data.forEach((bridge) => {
         this.bridgeUsernameToNameMap.set(bridge.username, bridge.name)
       })
+      this.updateSmartAutomationChildBridge(data, true)
     })
+  }
+
+  private updateSmartAutomationChildBridge(bridges: ChildBridgeStatusResponse[], resetIfMissing = false): void {
+    const smartAutomationBridge = bridges.find(bridge =>
+      bridge.plugin === 'homebridge-config-ui-x'
+      && bridge.name?.toLowerCase() === 'smart automation',
+    )
+    if (smartAutomationBridge) {
+      this.smartAutomationChildBridge.set(smartAutomationBridge)
+    } else if (resetIfMissing) {
+      this.smartAutomationChildBridge.set(null)
+    }
   }
 
   /**
