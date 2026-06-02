@@ -63,11 +63,8 @@ export const routes: Routes = [
       },
       {
         path: 'smart-automations',
-        loadComponent: () => import('@/app/modules/accessories/accessories.component').then(m => m.AccessoriesComponent),
+        loadComponent: () => import('@/app/modules/smart-automations/smart-automations.component').then(m => m.SmartAutomationsComponent),
         canActivate: [authGuard],
-        data: {
-          view: 'smart-automation',
-        },
       },
       {
         path: 'logs',
