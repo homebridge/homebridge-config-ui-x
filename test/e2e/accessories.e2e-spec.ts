@@ -619,10 +619,12 @@ describe('AccessoriesController (e2e)', () => {
       type: 'smart-light-group',
       uniqueIds: ['light-1', 'light-2'],
       restoreAfterMs: 120000,
+      enabled: true,
     })
 
     expect(created.id).toBeTruthy()
     expect(created.uniqueIds).toEqual(['light-1', 'light-2'])
+    expect(created.enabled).toBe(true)
 
     const listAfterCreate = await accessoriesService.getSmartAutomations('admin')
     expect(listAfterCreate).toHaveLength(1)
@@ -632,10 +634,12 @@ describe('AccessoriesController (e2e)', () => {
       name: 'Hallway Motion Lights Updated',
       uniqueIds: ['light-2'],
       restoreAfterMs: 90000,
+      enabled: false,
     })
 
     expect(updated.name).toBe('Hallway Motion Lights Updated')
     expect(updated.uniqueIds).toEqual(['light-2'])
+    expect(updated.enabled).toBe(false)
 
     const listAfterUpdate = await accessoriesService.getSmartAutomations('admin')
     expect(listAfterUpdate).toHaveLength(1)
