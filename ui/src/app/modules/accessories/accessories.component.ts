@@ -21,6 +21,8 @@ import { AddRoomComponent } from '@/app/modules/accessories/add-room/add-room.co
 import { DragHerePlaceholderComponent } from '@/app/modules/accessories/drag-here-placeholder/drag-here-placeholder.component'
 import { EditRoomComponent } from '@/app/modules/accessories/edit-room/edit-room.component'
 import { ADD_ROOM_MODAL_DATA, EDIT_ROOM_MODAL_DATA } from '@/app/modules/accessories/modal-data-tokens'
+import { SmartAutomationFormComponent } from '@/app/modules/accessories/smart-automation-form/smart-automation-form.component'
+import { SmartAutomationListComponent } from '@/app/modules/accessories/smart-automation-list/smart-automation-list.component'
 
 @Component({
   selector: 'app-accessories',
@@ -34,6 +36,8 @@ import { ADD_ROOM_MODAL_DATA, EDIT_ROOM_MODAL_DATA } from '@/app/modules/accesso
     DragulaModule,
     AccessoryTileComponent,
     DragHerePlaceholderComponent,
+    SmartAutomationFormComponent,
+    SmartAutomationListComponent,
     TranslatePipe,
     FormsModule,
   ],
@@ -323,10 +327,6 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
     // Clean up WebSocket connections
     this.ioStatus?.end?.()
     this.ioChild?.end?.()
-  }
-
-  public isLightSelected(uniqueId: string): boolean {
-    return this.selectedLightUniqueIds().includes(uniqueId)
   }
 
   public toggleLightSelection(uniqueId: string, selected: boolean): void {
