@@ -1,0 +1,80 @@
+<div class="card h-100">
+  <div class="card-body">
+    <h5 class="card-title">Create / Edit Smart Automation</h5>
+    <div class="mb-3">
+      <label class="form-label" for="smart-automation-name">Name</label>
+      <input
+        id="smart-automation-name"
+        type="text"
+        class="form-control"
+        [ngModel]="draft().name"
+        (ngModelChange)="updateDraft('name', $event)"
+      />
+    </div>
+    <div class="mb-3">
+      <label class="form-label" for="smart-automation-type">Automation Type</label>
+      <select
+        id="smart-automation-type"
+        class="form-select"
+        [ngModel]="draft().type"
+        (ngModelChange)="updateDraft('type', $event)"
+      >
+        <option value="smart-light-group">Smart Light Group</option>
+      </select>
+    </div>
+    <div class="alert alert-info mb-3" role="alert">
+      {{ getAutomationDescription(draft().type) }}
+    </div>
+    <div class="mb-3">
+      <label class="form-label" for="smart-automation-restore">Restore Previous State After (ms)</label>
+      <input
+        id="smart-automation-restore"
+        type="number"
+        min="1000"
+        max="86400000"
+        class="form-control"
+        [ngModel]="draft().restoreAfterMs"
+        (ngModelChange)="updateDraft('restoreAfterMs', $event)"
+      />
+    </div>
+    <div class="form-check mb-3">
+      <input
+        id="smart-automation-enabled"
+        type="checkbox"
+        class="form-check-input"
+        [ngModel]="draft().enabled"
+        (ngModelChange)="updateDraft('enabled', $event)"
+      />
+      <label class="form-check-label" for="smart-automation-enabled">Enabled</label>
+    </div>
+    <h6 class="mb-2">Choose Lights</h6>
+    <div class="smart-automation-chooser">
+      @for (room of rooms(); track room.name) {
+        @if (room.services.length) {
+          <div class="mb-2">
+            <div class="fw-semibold">{{ room.name }}</div>
+            @for (service of room.services; track service.uniqueId) {
+              @if (service.type === 'Lightbulb') {
+                <div class="form-check">
+                  <input
+                    type="checkbox"
+                    class="form-check-input"
+                    [id]="`smart-auto-light-${service.uniqueId}`"
+                    [ngModel]="selectedLightUniqueIds().includes(service.uniqueId || '')"
+                    (ngModelChange)="onLightSelectionChange(service.uniqueId || '', $event)"
+                  />
+                  <label class="form-check-label" [for]="`smart-auto-light-${service.uniqueId}`">
+                    {{ service.serviceName }}
+                  </label>
+                </div>
+              }
+            }
+          </div>
+        }
+      }
+    </div>
+    <button type="button" class="btn btn-primary mt-3 me-2" (click)="save.emit()">
+      {{ draft().id ? 'Update Automation' : 'Create Automation' }}
+    </button>
+  </div>
+</div>

@@ -235,142 +235,23 @@
   } @else {
     <div class="row">
       <div class="col-lg-6 mb-3">
-        <div class="card h-100">
-          <div class="card-body">
-            <div class="alert alert-info mb-3" role="alert">
-              Create and manage smart automations for grouped lights. Enable or disable each automation without deleting
-              it.
-            </div>
-            <h5 class="card-title">Create / Edit Smart Automation</h5>
-            <div class="mb-3">
-              <label class="form-label" for="smart-automation-name">Name</label>
-              <input
-                id="smart-automation-name"
-                type="text"
-                class="form-control"
-                [(ngModel)]="smartAutomationDraft.name"
-              />
-            </div>
-            <div class="mb-3">
-              <label class="form-label" for="smart-automation-type">Automation Type</label>
-              <select id="smart-automation-type" class="form-select" [(ngModel)]="smartAutomationDraft.type">
-                <option value="smart-light-group">Smart Light Group</option>
-              </select>
-            </div>
-            <div class="mb-3">
-              <label class="form-label" for="smart-automation-restore">Restore Previous State After (ms)</label>
-              <input
-                id="smart-automation-restore"
-                type="number"
-                min="1000"
-                max="86400000"
-                class="form-control"
-                [(ngModel)]="smartAutomationDraft.restoreAfterMs"
-              />
-            </div>
-            <div class="form-check mb-3">
-              <input
-                id="smart-automation-enabled"
-                type="checkbox"
-                class="form-check-input"
-                [(ngModel)]="smartAutomationDraft.enabled"
-              />
-              <label class="form-check-label" for="smart-automation-enabled">Enabled</label>
-            </div>
-            <h6 class="mb-2">Choose Lights</h6>
-            <div class="smart-automation-chooser">
-              @for (room of rooms; track room.name) {
-                @if (room.services.length) {
-                  <div class="mb-2">
-                    <div class="fw-semibold">{{ room.name }}</div>
-                    @for (service of room.services; track service.uniqueId) {
-                      @if (service.type === 'Lightbulb') {
-                        <div class="form-check">
-                          <input
-                            type="checkbox"
-                            class="form-check-input"
-                            [id]="`smart-auto-light-${service.uniqueId}`"
-                            [ngModel]="isLightSelected(service.uniqueId || '')"
-                            (ngModelChange)="toggleLightSelection(service.uniqueId || '', $event)"
-                          />
-                          <label class="form-check-label" [for]="`smart-auto-light-${service.uniqueId}`">
-                            {{ service.serviceName }}
-                          </label>
-                        </div>
-                      }
-                    }
-                  </div>
-                }
-              }
-            </div>
-            <button type="button" class="btn btn-primary mt-3 me-2" (click)="saveSmartAutomation()">
-              {{ smartAutomationDraft.id ? 'Update Automation' : 'Create Automation' }}
-            </button>
-          </div>
-        </div>
+        <app-smart-automation-form
+          [draft]="smartAutomationDraft"
+          [rooms]="rooms"
+          [selectedLightUniqueIds]="selectedLightUniqueIds()"
+          (lightSelectionChange)="toggleLightSelection($event.uniqueId, $event.selected)"
+          (save)="saveSmartAutomation()"
+        />
       </div>
       <div class="col-lg-6 mb-3">
-        <div class="card h-100">
-          <div class="card-body">
-            <h5 class="card-title">Saved Smart Automations</h5>
-            @if (!smartAutomations().length) {
-              <p class="text-muted mb-0">No smart automations created yet.</p>
-            } @else {
-              <div class="list-group">
-                @for (automation of smartAutomations(); track automation.id) {
-                  <div class="list-group-item">
-                    <div class="d-flex justify-content-between align-items-start">
-                      <div>
-                        <div class="form-check form-switch mb-2">
-                          <input
-                            type="checkbox"
-                            class="form-check-input"
-                            [id]="`smart-automation-switch-${automation.id}`"
-                            [ngModel]="isAutomationSwitchOn(automation.id)"
-                            [disabled]="!automation.enabled"
-                            (ngModelChange)="toggleAutomationSwitch(automation, $event)"
-                          />
-                          <label class="form-check-label" [for]="`smart-automation-switch-${automation.id}`">
-                            {{ automation.name }}
-                          </label>
-                        </div>
-                        <small class="text-muted d-block">Type: Smart Light Group</small>
-                        <small class="text-muted d-block">Lights: {{ automation.uniqueIds.length }}</small>
-                        <small class="text-muted d-block">Restore: {{ automation.restoreAfterMs }}ms</small>
-                        <small class="text-muted d-block">
-                          Status: {{ automation.enabled ? 'Enabled' : 'Disabled' }}
-                        </small>
-                      </div>
-                      <div class="ms-3">
-                        <button
-                          type="button"
-                          class="btn btn-sm btn-elegant me-2"
-                          (click)="setSmartAutomationEnabled(automation, !automation.enabled)"
-                        >
-                          {{ automation.enabled ? 'Disable' : 'Enable' }}
-                        </button>
-                        <button
-                          type="button"
-                          class="btn btn-sm btn-elegant me-2"
-                          (click)="editSmartAutomation(automation)"
-                        >
-                          Edit
-                        </button>
-                        <button
-                          type="button"
-                          class="btn btn-sm btn-danger"
-                          (click)="deleteSmartAutomation(automation.id)"
-                        >
-                          Delete
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                }
-              </div>
-            }
-          </div>
-        </div>
+        <app-smart-automation-list
+          [automations]="smartAutomations()"
+          [automationSwitchStates]="automationSwitchStates()"
+          (toggleSwitch)="toggleAutomationSwitch($event.automation, $event.enabled)"
+          (setEnabled)="setSmartAutomationEnabled($event.automation, $event.enabled)"
+          (edit)="editSmartAutomation($event)"
+          (delete)="deleteSmartAutomation($event)"
+        />
       </div>
     </div>
   }
