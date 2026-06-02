@@ -15,12 +15,15 @@ import { AuthModule } from '../../src/core/auth/auth.module.js'
 import { ConfigService } from '../../src/core/config/config.service.js'
 import { AccessoriesModule } from '../../src/modules/accessories/accessories.module.js'
 import { AccessoriesService } from '../../src/modules/accessories/accessories.service.js'
+import { SmartAutomationsModule } from '../../src/modules/smart-automations/smart-automations.module.js'
+import { SmartAutomationsService } from '../../src/modules/smart-automations/smart-automations.service.js'
 
 describe('AccessoriesController (e2e)', () => {
   let app: NestFastifyApplication
 
   let configService: ConfigService
   let accessoriesService: AccessoriesService
+  let smartAutomationsService: SmartAutomationsService
 
   let authFilePath: string
   let secretsFilePath: string
@@ -99,7 +102,7 @@ describe('AccessoriesController (e2e)', () => {
     configService.homebridgeInsecureMode = true
 
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AccessoriesModule, AuthModule],
+      imports: [AccessoriesModule, SmartAutomationsModule, AuthModule],
     }).overrideProvider(ConfigService).useValue(configService).compile()
 
     app = moduleFixture.createNestApplication<NestFastifyApplication>(new FastifyAdapter())
@@ -113,6 +116,7 @@ describe('AccessoriesController (e2e)', () => {
     await app.getHttpAdapter().getInstance().ready()
 
     accessoriesService = app.get(AccessoriesService)
+    smartAutomationsService = app.get(SmartAutomationsService)
   })
 
   beforeEach(async () => {
@@ -614,7 +618,7 @@ describe('AccessoriesController (e2e)', () => {
   })
 
   it('service smart automation CRUD should save, update and delete', async () => {
-    const created = await accessoriesService.saveSmartAutomation('admin', {
+    const created = await smartAutomationsService.saveSmartAutomation('admin', {
       name: 'Hallway Motion Lights',
       type: 'smart-light-group',
       uniqueIds: ['light-1', 'light-2'],
@@ -626,10 +630,10 @@ describe('AccessoriesController (e2e)', () => {
     expect(created.uniqueIds).toEqual(['light-1', 'light-2'])
     expect(created.enabled).toBe(true)
 
-    const listAfterCreate = await accessoriesService.getSmartAutomations('admin')
+    const listAfterCreate = await smartAutomationsService.getSmartAutomations('admin')
     expect(listAfterCreate).toHaveLength(1)
 
-    const updated = await accessoriesService.saveSmartAutomation('admin', {
+    const updated = await smartAutomationsService.saveSmartAutomation('admin', {
       ...created,
       name: 'Hallway Motion Lights Updated',
       uniqueIds: ['light-2'],
@@ -641,13 +645,13 @@ describe('AccessoriesController (e2e)', () => {
     expect(updated.uniqueIds).toEqual(['light-2'])
     expect(updated.enabled).toBe(false)
 
-    const listAfterUpdate = await accessoriesService.getSmartAutomations('admin')
+    const listAfterUpdate = await smartAutomationsService.getSmartAutomations('admin')
     expect(listAfterUpdate).toHaveLength(1)
     expect(listAfterUpdate[0].name).toBe('Hallway Motion Lights Updated')
 
-    await accessoriesService.deleteSmartAutomation('admin', created.id)
+    await smartAutomationsService.deleteSmartAutomation('admin', created.id)
 
-    const listAfterDelete = await accessoriesService.getSmartAutomations('admin')
+    const listAfterDelete = await smartAutomationsService.getSmartAutomations('admin')
     expect(listAfterDelete).toHaveLength(0)
   })
 

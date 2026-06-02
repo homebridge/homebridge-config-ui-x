@@ -2,15 +2,13 @@ import { NgTemplateOutlet } from '@angular/common'
 import { ChangeDetectionStrategy, Component, computed, createEnvironmentInjector, DestroyRef, EnvironmentInjector, inject, OnDestroy, OnInit, signal } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { FormsModule } from '@angular/forms'
-import { ActivatedRoute } from '@angular/router'
 import { NgbDropdown, NgbDropdownItem, NgbDropdownMenu, NgbDropdownToggle } from '@ng-bootstrap/ng-bootstrap/dropdown'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap/tooltip'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { DragulaModule, DragulaService } from 'ng2-dragula'
-import { firstValueFrom } from 'rxjs'
 
-import { ServiceTypeX, SmartAutomation } from '@/app/core/accessories/accessories.interfaces'
+import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
 import { AccessoriesService } from '@/app/core/accessories/accessories.service'
 import { AccessoryTileComponent } from '@/app/core/accessories/accessory-tile/accessory-tile.component'
 import { AuthService } from '@/app/core/auth/auth.service'
@@ -22,8 +20,6 @@ import { AddRoomComponent } from '@/app/modules/accessories/add-room/add-room.co
 import { DragHerePlaceholderComponent } from '@/app/modules/accessories/drag-here-placeholder/drag-here-placeholder.component'
 import { EditRoomComponent } from '@/app/modules/accessories/edit-room/edit-room.component'
 import { ADD_ROOM_MODAL_DATA, EDIT_ROOM_MODAL_DATA } from '@/app/modules/accessories/modal-data-tokens'
-import { SmartAutomationFormComponent } from '@/app/modules/accessories/smart-automation-form/smart-automation-form.component'
-import { SmartAutomationListComponent } from '@/app/modules/accessories/smart-automation-list/smart-automation-list.component'
 
 @Component({
   selector: 'app-accessories',
@@ -37,8 +33,6 @@ import { SmartAutomationListComponent } from '@/app/modules/accessories/smart-au
     DragulaModule,
     AccessoryTileComponent,
     DragHerePlaceholderComponent,
-    SmartAutomationFormComponent,
-    SmartAutomationListComponent,
     TranslatePipe,
     FormsModule,
   ],
@@ -58,7 +52,6 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
   private $settings = inject(SettingsService)
   private $translate = inject(TranslateService)
   private $ws = inject(WsService)
-  private $route = inject(ActivatedRoute)
   private ioStatus!: IoNamespace
   private ioChild!: IoNamespace
 
@@ -76,19 +69,6 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
   public readonly hasPlugins = signal(this.$settings.env.hasInstalledPlugins ?? true)
   public manageLayoutMode = false
   private previousBridgeSelection: string[] | null = null
-  public readonly isSmartAutomationView = this.$route.snapshot.data.view === 'smart-automation'
-  public readonly smartAutomations = signal<SmartAutomation[]>([])
-  public readonly automationSwitchStates = signal<Record<string, boolean>>({})
-  public readonly smartAutomationChildBridge = signal<ChildBridgeStatusResponse | null>(null)
-  public smartAutomationDraft: Partial<SmartAutomation> = {
-    type: 'smart-light-group',
-    restoreAfterMs: 30000,
-    uniqueIds: [],
-    enabled: true,
-  }
-
-  private automationSwitchResetTimers = new Map<string, ReturnType<typeof setTimeout>>()
-  public readonly selectedLightUniqueIds = signal<string[]>([])
 
   // Signal references for persisted properties from service (persist across navigation)
   public readonly availableBridges = this.$accessories.availableBridges
@@ -136,9 +116,7 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
 
   public ngOnInit(): void {
     // Set page title
-    const title = this.isSmartAutomationView
-      ? 'Smart Automation'
-      : this.$translate.instant('menu.label_accessories')
+    const title = this.$translate.instant('menu.label_accessories')
     this.$settings.setPageTitle(title)
 
     // Initialize selectedBridges if null or empty - default to showing all bridges
@@ -148,7 +126,6 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
     }
 
     void this.$accessories.start()
-      .then(() => this.isSmartAutomationView ? this.loadSmartAutomations() : undefined)
       .catch((error) => {
         console.error(error)
       })
@@ -319,8 +296,6 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
 
   public ngOnDestroy(): void {
     this.$accessories.stop()
-    this.automationSwitchResetTimers.forEach(timer => clearTimeout(timer))
-    this.automationSwitchResetTimers.clear()
 
     // Destroy drag and drop bags
     this.dragulaService.destroy?.('rooms-bag')
@@ -329,141 +304,6 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
     // Clean up WebSocket connections
     this.ioStatus?.end?.()
     this.ioChild?.end?.()
-  }
-
-  public toggleLightSelection(uniqueId: string, selected: boolean): void {
-    const next = selected
-      ? [...new Set([...this.selectedLightUniqueIds(), uniqueId])]
-      : this.selectedLightUniqueIds().filter(id => id !== uniqueId)
-    this.selectedLightUniqueIds.set(next)
-  }
-
-  public editSmartAutomation(automation: SmartAutomation): void {
-    this.smartAutomationDraft = { ...automation, uniqueIds: [...automation.uniqueIds] }
-    this.selectedLightUniqueIds.set([...automation.uniqueIds])
-  }
-
-  public async saveSmartAutomation(): Promise<void> {
-    try {
-      const draft = {
-        ...this.smartAutomationDraft,
-        uniqueIds: [...new Set(this.selectedLightUniqueIds())],
-        type: 'smart-light-group' as const,
-        enabled: this.smartAutomationDraft.enabled ?? true,
-      }
-
-      const saved = await this.$accessories.saveSmartAutomation(draft)
-      const current = this.smartAutomations()
-      const exists = current.some(item => item.id === saved.id)
-      this.smartAutomations.set(exists
-        ? current.map(item => item.id === saved.id ? saved : item)
-        : [...current, saved],
-      )
-      this.resetSmartAutomationDraft()
-    } catch (error) {
-      console.error(error)
-    }
-  }
-
-  public async deleteSmartAutomation(id: string): Promise<void> {
-    try {
-      await this.$accessories.deleteSmartAutomation(id)
-      this.smartAutomations.set(this.smartAutomations().filter(x => x.id !== id))
-      this.clearAutomationSwitchState(id)
-      if (this.smartAutomationDraft.id === id) {
-        this.resetSmartAutomationDraft()
-      }
-    } catch (error) {
-      console.error(error)
-    }
-  }
-
-  public runSmartAutomation(automation: SmartAutomation): void {
-    this.$accessories.runSmartLightGroupAutomation(automation.uniqueIds, automation.restoreAfterMs)
-  }
-
-  public isAutomationSwitchOn(id: string): boolean {
-    return !!this.automationSwitchStates()[id]
-  }
-
-  public toggleAutomationSwitch(automation: SmartAutomation, enabled: boolean): void {
-    if (!automation.enabled) {
-      this.setAutomationSwitchState(automation.id, false)
-      return
-    }
-
-    this.setAutomationSwitchState(automation.id, enabled)
-
-    if (!enabled) {
-      this.clearAutomationResetTimer(automation.id)
-      return
-    }
-
-    this.runSmartAutomation(automation)
-    this.clearAutomationResetTimer(automation.id)
-    const resetAfterMs = Number.isInteger(automation.restoreAfterMs) && automation.restoreAfterMs > 0
-      ? automation.restoreAfterMs
-      : 30000
-
-    const timer = setTimeout(() => {
-      this.setAutomationSwitchState(automation.id, false)
-      this.clearAutomationResetTimer(automation.id)
-    }, resetAfterMs)
-    this.automationSwitchResetTimers.set(automation.id, timer)
-  }
-
-  public async setSmartAutomationEnabled(automation: SmartAutomation, enabled: boolean): Promise<void> {
-    try {
-      const saved = await this.$accessories.saveSmartAutomation({
-        ...automation,
-        enabled,
-      })
-      this.smartAutomations.update(current => current.map(item => item.id === saved.id ? saved : item))
-      if (!enabled) {
-        this.clearAutomationSwitchState(automation.id)
-      }
-    } catch (error) {
-      console.error(error)
-    }
-  }
-
-  public async restartSmartAutomationChildBridge(): Promise<void> {
-    const bridge = this.smartAutomationChildBridge()
-    if (!bridge?.username || !this.ioChild?.request) {
-      return
-    }
-
-    try {
-      await firstValueFrom(this.ioChild.request('restart-child-bridge', bridge.username))
-    } catch (error) {
-      console.error(error)
-    }
-  }
-
-  public async startSmartAutomationChildBridge(): Promise<void> {
-    const bridge = this.smartAutomationChildBridge()
-    if (!bridge?.username || !this.ioChild?.request) {
-      return
-    }
-
-    try {
-      await firstValueFrom(this.ioChild.request('start-child-bridge', bridge.username))
-    } catch (error) {
-      console.error(error)
-    }
-  }
-
-  public async stopSmartAutomationChildBridge(): Promise<void> {
-    const bridge = this.smartAutomationChildBridge()
-    if (!bridge?.username || !this.ioChild?.request) {
-      return
-    }
-
-    try {
-      await firstValueFrom(this.ioChild.request('stop-child-bridge', bridge.username))
-    } catch (error) {
-      console.error(error)
-    }
   }
 
   /**
@@ -491,7 +331,6 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
 
     this.ioChild.socket.on('child-bridge-status-update', (data: ChildBridgeStatusResponse) => {
       this.bridgeUsernameToNameMap.set(data.username, data.name)
-      this.updateSmartAutomationChildBridge([data])
     })
   }
 
@@ -503,20 +342,7 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
       data.forEach((bridge) => {
         this.bridgeUsernameToNameMap.set(bridge.username, bridge.name)
       })
-      this.updateSmartAutomationChildBridge(data, true)
     })
-  }
-
-  private updateSmartAutomationChildBridge(bridges: ChildBridgeStatusResponse[], resetIfMissing = false): void {
-    const smartAutomationBridge = bridges.find(bridge =>
-      bridge.plugin === 'homebridge-config-ui-x'
-      && bridge.name?.toLowerCase() === 'smart automation',
-    )
-    if (smartAutomationBridge) {
-      this.smartAutomationChildBridge.set(smartAutomationBridge)
-    } else if (resetIfMissing) {
-      this.smartAutomationChildBridge.set(null)
-    }
   }
 
   /**
@@ -578,49 +404,6 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
       // Update available bridges after handling selection
       this.availableBridges.set(newBridges)
     }
-  }
-
-  private async loadSmartAutomations(): Promise<void> {
-    try {
-      this.smartAutomations.set(await this.$accessories.getSmartAutomations())
-    } catch (error) {
-      console.error(error)
-    }
-  }
-
-  private resetSmartAutomationDraft(): void {
-    this.smartAutomationDraft = {
-      type: 'smart-light-group',
-      restoreAfterMs: 30000,
-      uniqueIds: [],
-      enabled: true,
-    }
-    this.selectedLightUniqueIds.set([])
-  }
-
-  private setAutomationSwitchState(id: string, enabled: boolean): void {
-    this.automationSwitchStates.update((current) => {
-      const next = { ...current }
-      if (enabled) {
-        next[id] = true
-      } else {
-        delete next[id]
-      }
-      return next
-    })
-  }
-
-  private clearAutomationResetTimer(id: string): void {
-    const timer = this.automationSwitchResetTimers.get(id)
-    if (timer) {
-      clearTimeout(timer)
-      this.automationSwitchResetTimers.delete(id)
-    }
-  }
-
-  private clearAutomationSwitchState(id: string): void {
-    this.setAutomationSwitchState(id, false)
-    this.clearAutomationResetTimer(id)
   }
 
   /**
