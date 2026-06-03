@@ -1,4 +1,4 @@
-import { ApplicationRef, ChangeDetectionStrategy, Component, ComponentFactoryResolver, ElementRef, EmbeddedViewRef, inject, Injector, input, OnDestroy, OnInit } from '@angular/core'
+import { ApplicationRef, ChangeDetectionStrategy, Component, createComponent, ElementRef, EmbeddedViewRef, EnvironmentInjector, inject, Injector, input, OnDestroy, OnInit } from '@angular/core'
 
 import { AccessoriesWidgetComponent } from '@/app/modules/status/widgets/accessories-widget/accessories-widget.component'
 import { BridgesWidgetComponent } from '@/app/modules/status/widgets/bridges-widget/bridges-widget.component'
@@ -54,8 +54,8 @@ export const AVAILABLE_WIDGETS = [
 export class WidgetsComponent implements OnInit, OnDestroy {
   // Injected dependencies
   private appRef = inject(ApplicationRef)
-  private componentFactoryResolver = inject(ComponentFactoryResolver)
   private el = inject(ElementRef)
+  private environmentInjector = inject(EnvironmentInjector)
   private injector = inject(Injector)
 
   // Other properties
@@ -95,9 +95,10 @@ export class WidgetsComponent implements OnInit, OnDestroy {
 
   private load(component: any): void {
     // 1. Create a component reference from the component
-    this.componentRef = this.componentFactoryResolver
-      .resolveComponentFactory(component)
-      .create(this.injector)
+    this.componentRef = createComponent(component, {
+      environmentInjector: this.environmentInjector,
+      elementInjector: this.injector,
+    })
 
     // 2. Pass the though things
     this.componentRef.instance.resizeEvent = this.widget().$resizeEvent

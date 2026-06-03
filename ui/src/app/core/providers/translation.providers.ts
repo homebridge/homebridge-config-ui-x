@@ -15,8 +15,9 @@ export function provideAppTranslation() {
     {
       provide: LOCALE_ID,
       useFactory: (translate: TranslateService) => {
-        if (translate.getCurrentLang() in supportedLocales) {
-          return supportedLocales[translate.getCurrentLang() as keyof typeof supportedLocales]
+        const currentLang = translate.getCurrentLang()
+        if (currentLang && currentLang in supportedLocales) {
+          return supportedLocales[currentLang as keyof typeof supportedLocales]
         } else {
           return 'en'
         }

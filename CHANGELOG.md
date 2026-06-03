@@ -15,12 +15,13 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - chore: added `deprecate-past-pre-releases` workflow (@NorthernMan54)
 - chore: change security report email addresses (@NorthernMan54)
 - chore(deps): dependency updates
+- chore(deps): upgrade angular 21 to 22
 
 ### Homebridge Dependencies
 
-- `@homebridge/hap-client` @ `v5.0.0`
+- `@homebridge/hap-client` @ `v5.1.0`
 - `@homebridge/node-pty-prebuilt-multiarch` @ `v0.13.1`
-- `@homebridge/plugin-ui-utils` @ `v2.2.4`
+- `@homebridge/plugin-ui-utils` @ `v2.2.5`
 
 ## v5.24.0 (2026-05-31)
 

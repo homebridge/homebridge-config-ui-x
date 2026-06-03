@@ -175,7 +175,7 @@ export class WidgetControlComponent implements OnInit {
             sort: 'population',
             cnt: '30',
             appid: environment.owm.appid,
-            lang: this.$translate.getCurrentLang(),
+            lang: this.$translate.getCurrentLang() ?? 'en',
           },
         }),
       })
