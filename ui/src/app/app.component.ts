@@ -85,8 +85,8 @@ export class AppComponent {
     // Watch for lang changes
     this.$translate.onLangChange
       .pipe(takeUntilDestroyed())
-      .subscribe(() => {
-        this.$settings.rtl = rtlLanguages.includes(this.$translate.getCurrentLang())
+      .subscribe(({ lang }) => {
+        this.$settings.rtl = rtlLanguages.includes(lang)
       })
 
     // Prefer the last user-selected language (persisted in localStorage) so

@@ -133,7 +133,7 @@ export class WeatherWidgetComponent implements OnInit {
           id: this.widget().location!.id,
           appid: environment.owm.appid,
           units: 'metric',
-          lang: this.$translate.getCurrentLang(),
+          lang: this.$translate.getCurrentLang() ?? 'en',
         },
       }),
     }).subscribe((data) => {

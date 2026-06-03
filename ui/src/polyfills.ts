@@ -1,6 +1,6 @@
 /**
  * Polyfills for the Angular application.
- * Zone.js is required for Angular's default change detection.
+ * The app runs zoneless (provideZonelessChangeDetection in main.ts), so Zone.js is not loaded.
  */
 
 // Fixes https://github.com/angular/angular-cli/issues/8160
