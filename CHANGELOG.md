@@ -11,6 +11,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 ### Other Changes
 
 - chore(deps): dependency updates
+- chore(deps): upgrade angular 21 to 22
 
 ### Homebridge Dependencies
 
