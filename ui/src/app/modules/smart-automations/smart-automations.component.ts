@@ -5,11 +5,24 @@ import { firstValueFrom } from 'rxjs'
 import { ServiceTypeX, SmartAutomation } from '@/app/core/accessories/accessories.interfaces'
 import { AccessoriesService } from '@/app/core/accessories/accessories.service'
 import { AuthService } from '@/app/core/auth/auth.service'
+import { ApiService } from '@/app/core/communication/api.service'
 import { IoNamespace, WsService } from '@/app/core/communication/ws.service'
 import { ChildBridgeStatusResponse } from '@/app/core/server.interfaces'
 import { SettingsService } from '@/app/core/ui/settings.service'
 import { SmartAutomationFormComponent } from '@/app/modules/smart-automations/smart-automation-form/smart-automation-form.component'
 import { SmartAutomationListComponent } from '@/app/modules/smart-automations/smart-automation-list/smart-automation-list.component'
+
+interface ConfigPlatformBlock {
+  platform: string
+  name?: string
+  _bridge?: {
+    username?: string
+    pin?: string
+    name?: string
+  }
+  smartAutomations?: SmartAutomation[]
+  [key: string]: any
+}
 
 @Component({
   selector: 'app-smart-automations',
@@ -23,6 +36,7 @@ import { SmartAutomationListComponent } from '@/app/modules/smart-automations/sm
 })
 export class SmartAutomationsComponent implements OnInit, OnDestroy {
   private $accessories = inject(AccessoriesService)
+  private $api = inject(ApiService)
   private $auth = inject(AuthService)
   private $settings = inject(SettingsService)
   private $ws = inject(WsService)
@@ -33,6 +47,9 @@ export class SmartAutomationsComponent implements OnInit, OnDestroy {
   public readonly smartAutomations = signal<SmartAutomation[]>([])
   public readonly automationSwitchStates = signal<Record<string, boolean>>({})
   public readonly smartAutomationChildBridge = signal<ChildBridgeStatusResponse | null>(null)
+  public readonly configuredChildBridge = signal<ConfigPlatformBlock['_bridge'] | null>(null)
+  public readonly configuredChildBridgeSwitches = signal<SmartAutomation[]>([])
+  public readonly configuredChildBridgeSwitchNames = signal<string>('')
   public readonly selectedLightUniqueIds = signal<string[]>([])
   public smartAutomationDraft: Partial<SmartAutomation> = {
     type: 'smart-light-group',
@@ -94,6 +111,7 @@ export class SmartAutomationsComponent implements OnInit, OnDestroy {
         ? current.map(item => item.id === saved.id ? saved : item)
         : [...current, saved],
       )
+      await this.syncSmartAutomationChildBridgeConfig()
       this.resetSmartAutomationDraft()
     } catch (error) {
       console.error(error)
@@ -108,6 +126,7 @@ export class SmartAutomationsComponent implements OnInit, OnDestroy {
       if (this.smartAutomationDraft.id === id) {
         this.resetSmartAutomationDraft()
       }
+      await this.syncSmartAutomationChildBridgeConfig()
     } catch (error) {
       console.error(error)
     }
@@ -153,6 +172,7 @@ export class SmartAutomationsComponent implements OnInit, OnDestroy {
       if (!enabled) {
         this.clearAutomationSwitchState(automation.id)
       }
+      await this.syncSmartAutomationChildBridgeConfig()
     } catch (error) {
       console.error(error)
     }
@@ -197,6 +217,10 @@ export class SmartAutomationsComponent implements OnInit, OnDestroy {
     }
   }
 
+  public async configureSmartAutomationChildBridge(): Promise<void> {
+    await this.syncSmartAutomationChildBridgeConfig()
+  }
+
   private setupSmartAutomationChildBridgeMonitoring(): void {
     this.ioChild = this.$ws.connectToNamespace('child-bridges')
     this.ioChild.connected!.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
@@ -230,9 +254,78 @@ export class SmartAutomationsComponent implements OnInit, OnDestroy {
   private async loadSmartAutomations(): Promise<void> {
     try {
       this.smartAutomations.set(await this.$accessories.getSmartAutomations())
+      await this.loadSmartAutomationChildBridgeConfig()
     } catch (error) {
       console.error(error)
     }
+  }
+
+  private async loadSmartAutomationChildBridgeConfig(): Promise<void> {
+    if (!this.isAdmin) {
+      return
+    }
+
+    try {
+      const configBlocks = await this.$api.get<ConfigPlatformBlock[]>('/config-editor/plugin/homebridge-config-ui-x')
+      const uiConfigBlock = configBlocks.find(block => block.platform === 'config')
+      const switches = (uiConfigBlock?.smartAutomations || []).filter(a => typeof a?.name === 'string')
+      this.configuredChildBridge.set(uiConfigBlock?._bridge || null)
+      this.configuredChildBridgeSwitches.set(switches)
+      this.configuredChildBridgeSwitchNames.set(switches.map(automation => automation.name).join(', '))
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  private async syncSmartAutomationChildBridgeConfig(): Promise<void> {
+    if (!this.isAdmin) {
+      return
+    }
+
+    try {
+      const configBlocks = await this.$api.get<ConfigPlatformBlock[]>('/config-editor/plugin/homebridge-config-ui-x')
+      const uiConfigIndex = configBlocks.findIndex(block => block.platform === 'config')
+      if (uiConfigIndex === -1) {
+        return
+      }
+
+      const current = configBlocks[uiConfigIndex]
+      const nextBridge = {
+        ...current._bridge,
+        name: 'Smart Automation',
+        username: current._bridge?.username || this.generateBridgeUsername(),
+        pin: current._bridge?.pin || this.generateBridgePin(),
+      }
+
+      configBlocks[uiConfigIndex] = {
+        ...current,
+        _bridge: nextBridge,
+        smartAutomations: this.smartAutomations().map(automation => ({ ...automation })),
+      }
+
+      await this.$api.post('/config-editor/plugin/homebridge-config-ui-x', configBlocks)
+      this.configuredChildBridge.set(nextBridge)
+      const switches = this.smartAutomations().map(automation => ({ ...automation }))
+      this.configuredChildBridgeSwitches.set(switches)
+      this.configuredChildBridgeSwitchNames.set(switches.map(automation => automation.name).join(', '))
+      this.fetchChildBridges()
+    } catch (error) {
+      console.error(error)
+    }
+  }
+
+  private generateBridgePin(): string {
+    const random = new Uint8Array(8)
+    globalThis.crypto.getRandomValues(random)
+    const code = `${(random[0] % 9) + 1}${Array.from(random.slice(1), value => (value % 10).toString()).join('')}`
+    return `${code.slice(0, 3)}-${code.slice(3, 5)}-${code.slice(5, 8)}`
+  }
+
+  private generateBridgeUsername(): string {
+    const random = new Uint8Array(5)
+    globalThis.crypto.getRandomValues(random)
+    const pairs = Array.from(random, value => value.toString(16).padStart(2, '0').toUpperCase())
+    return `0E:${pairs.join(':')}`
   }
 
   private resetSmartAutomationDraft(): void {
