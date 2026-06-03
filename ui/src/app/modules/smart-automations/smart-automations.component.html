@@ -9,6 +9,19 @@
     <div class="card">
       <div class="card-body">
         <h5 class="card-title">Smart Automation Child Bridge</h5>
+        @if (configuredChildBridge(); as configuredBridge) {
+          <small class="text-muted d-block mb-2">
+            Configured child bridge: <strong>{{ configuredBridge.name || 'Smart Automation' }}</strong> ({{
+              configuredBridge.username || 'username pending'
+            }})
+          </small>
+        }
+        @if (configuredChildBridgeSwitches().length) {
+          <small class="text-muted d-block mb-3">
+            Published automation switches:
+            {{ configuredChildBridgeSwitchNames() }}
+          </small>
+        }
         @if (smartAutomationChildBridge(); as bridge) {
           <p class="mb-2 text-muted">
             Publish smart automation switch accessories using the dedicated
@@ -44,6 +57,11 @@
             No Smart Automation child bridge was found. Create a child bridge named
             <strong>Smart Automation</strong> for homebridge-config-ui-x to publish automation switches.
           </p>
+        }
+        @if (isAdmin) {
+          <button type="button" class="btn btn-sm btn-primary mt-3" (click)="configureSmartAutomationChildBridge()">
+            {{ configuredChildBridge() ? 'Sync Child Bridge Switches' : 'Create & Populate Child Bridge' }}
+          </button>
         }
       </div>
     </div>
