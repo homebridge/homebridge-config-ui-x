@@ -9,6 +9,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - i18n: updates to the `uk.json` language file (#2883) (@xrust83)
 - fix(ui): validate session timeout fields individually (#2885) (@dnicolson)
 - feat(accessories): allow exposing HAP switches/outlets as speakers
+- refactor(status): migrate weather widget to httpResource
 
 ### Other Changes
 
