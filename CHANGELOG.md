@@ -7,6 +7,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 ### UI Changes
 
 - feat(accessories): allow exposing HAP switches/outlets as speakers
+- refactor(status): migrate weather widget to httpResource
 
 ### Other Changes
 

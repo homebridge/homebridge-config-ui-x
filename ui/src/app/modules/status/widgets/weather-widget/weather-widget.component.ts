@@ -1,6 +1,6 @@
 import { DecimalPipe, TitleCasePipe, UpperCasePipe } from '@angular/common'
-import { HttpClient, HttpParams } from '@angular/common/http'
-import { ChangeDetectionStrategy, Component, DestroyRef, inject, input, OnInit, signal } from '@angular/core'
+import { httpResource } from '@angular/common/http'
+import { ChangeDetectionStrategy, Component, computed, DestroyRef, effect, inject, input, OnInit, signal, untracked } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import dayjs from 'dayjs'
@@ -11,6 +11,9 @@ import { ConvertTempPipe } from '@/app/core/pipes/convert-temp.pipe'
 import { SettingsService } from '@/app/core/ui/settings.service'
 import { OpenWeatherMapResponse, Widget } from '@/app/modules/status/widgets/widgets.interfaces'
 import { environment } from '@/environments/environment'
+
+// Cache OpenWeatherMap responses for 20 minutes to prevent repeat requests (API rate limits)
+const WEATHER_CACHE_MINUTES = 20
 
 @Component({
   selector: 'app-weather-widget',
@@ -28,37 +31,106 @@ import { environment } from '@/environments/environment'
 export class WeatherWidgetComponent implements OnInit {
   // Injected dependencies
   private destroyRef = inject(DestroyRef)
-  private $http = inject(HttpClient)
   private $settings = inject(SettingsService)
   private $translate = inject(TranslateService)
   private $ws = inject(WsService)
 
   // Signals
   readonly widget = input.required<Widget>()
-  public readonly currentWeather = signal<OpenWeatherMapResponse | null>(null)
+
+  // Bumped to force the resource to re-evaluate (and re-check the cache) on reconnect / reconfigure / timer
+  private readonly refreshTrigger = signal(0)
+
+  // Last known-good weather, seeded from the cache and updated after each successful fetch.
+  // Used as the displayed value while the resource is idle (fresh cache) or loading.
+  private readonly cachedWeather = signal<OpenWeatherMapResponse | null>(null)
+
+  // Declarative HTTP GET to OpenWeatherMap. Re-runs when the location, language, or refreshTrigger
+  // changes; returns undefined (no request) when there is no location or the cache is still fresh.
+  protected readonly weather = httpResource<OpenWeatherMapResponse>(() => {
+    this.refreshTrigger()
+    const location = this.widget().location
+    if (!location?.id) {
+      return undefined
+    }
+    if (this.readFreshCache(location.id)) {
+      return undefined
+    }
+    return {
+      url: 'https://api.openweathermap.org/data/2.5/weather',
+      params: {
+        id: location.id,
+        appid: environment.owm.appid,
+        units: 'metric',
+        lang: this.$translate.getCurrentLang(),
+      },
+    }
+  })
+
+  // What the template renders: the live fetch result, or the last cached value while idle/loading.
+  public readonly currentWeather = computed<OpenWeatherMapResponse | null>(
+    () => this.weather.value() ?? this.cachedWeather(),
+  )
 
   // Other properties
   private io!: IoNamespace
   public temperatureUnits = this.$settings.env.temperatureUnits
-  configureEvent!: Subject<any> // Set directly by ComponentFactoryResolver
+  configureEvent!: Subject<any> // Set directly by createComponent()
+
+  constructor() {
+    // Persist each successful fetch to the cache and the displayed value
+    effect(() => {
+      const data = this.weather.value()
+      if (!data) {
+        return
+      }
+      const locationId = untracked(() => this.widget().location?.id)
+      if (!locationId) {
+        return
+      }
+      const stamped: OpenWeatherMapResponse = { ...data, timestamp: new Date().toISOString() }
+      this.cachedWeather.set(stamped)
+      localStorage.setItem(`weather-${locationId}`, JSON.stringify(stamped))
+    })
+  }
 
   public ngOnInit(): void {
+    // Seed the display from a fresh cached value so we show data immediately without a network call
+    const locationId = this.widget().location?.id
+    if (locationId) {
+      const cached = this.readFreshCache(locationId)
+      if (cached) {
+        this.cachedWeather.set(cached)
+      }
+    }
+
     this.io = this.$ws.getExistingNamespace('status')
 
-    // Set up reconnection handler
-    this.io.connected!.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
-      this.getCurrentWeather()
-    })
+    // Refresh on server reconnect, on reconfigure, and periodically. Each trigger re-evaluates the
+    // request factory, which still respects the 20-minute cache before hitting the network.
+    this.io.connected!.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => this.refresh())
+    this.configureEvent?.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => this.refresh())
+    interval(1300000).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => this.refresh())
+  }
 
-    // Set up configure event handler
-    this.configureEvent?.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
-      this.getCurrentWeather()
-    })
+  private refresh(): void {
+    this.refreshTrigger.update(n => n + 1)
+  }
 
-    // Set up periodic refresh
-    interval(1300000).pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
-      this.getCurrentWeather()
-    })
+  /**
+   * Return the cached weather for a location if it exists and is less than 20 minutes old, else null.
+   */
+  private readFreshCache(locationId: string | number): OpenWeatherMapResponse | null {
+    try {
+      const raw = localStorage.getItem(`weather-${locationId}`)
+      if (raw) {
+        const cached = JSON.parse(raw) as OpenWeatherMapResponse
+        if (cached.timestamp && dayjs().diff(dayjs(cached.timestamp), 'minute') < WEATHER_CACHE_MINUTES) {
+          return cached
+        }
+      }
+    } catch (e) {}
+    return null
   }
 
   /**
@@ -105,44 +177,5 @@ export class WeatherWidgetComponent implements OnInit {
       default:
         return 'fas fa-cloud'
     }
-  }
-
-  /**
-   * Get the current weather forecast from OpenWeatherMap
-   * Cache for 20 minutes to prevent repeat requests
-   */
-  private getCurrentWeather(): void {
-    if (!this.widget().location || !this.widget().location!.id) {
-      return
-    }
-
-    try {
-      const cacheItem = localStorage.getItem(`weather-${this.widget().location!.id}`)
-      if (cacheItem) {
-        const weatherCache = JSON.parse(cacheItem) as OpenWeatherMapResponse
-        if (weatherCache.timestamp && dayjs().diff(dayjs(weatherCache.timestamp), 'minute') < 20) {
-          this.currentWeather.set(weatherCache)
-          return
-        }
-      }
-    } catch (e) {}
-
-    this.$http.get<OpenWeatherMapResponse>('https://api.openweathermap.org/data/2.5/weather', {
-      params: new HttpParams({
-        fromObject: {
-          id: this.widget().location!.id,
-          appid: environment.owm.appid,
-          units: 'metric',
-          lang: this.$translate.getCurrentLang(),
-        },
-      }),
-    }).subscribe((data) => {
-      const weatherData: OpenWeatherMapResponse = {
-        ...data,
-        timestamp: new Date().toISOString(),
-      }
-      this.currentWeather.set(weatherData)
-      localStorage.setItem(`weather-${this.widget().location!.id}`, JSON.stringify(weatherData))
-    })
   }
 }
