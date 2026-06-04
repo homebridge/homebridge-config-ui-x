@@ -24,6 +24,8 @@ interface ConfigPlatformBlock {
   [key: string]: any
 }
 
+const SMART_AUTOMATION_PLATFORM = 'smart-automation'
+
 @Component({
   selector: 'app-smart-automations',
   imports: [
@@ -267,9 +269,10 @@ export class SmartAutomationsComponent implements OnInit, OnDestroy {
 
     try {
       const configBlocks = await this.$api.get<ConfigPlatformBlock[]>('/config-editor/plugin/homebridge-config-ui-x')
-      const uiConfigBlock = configBlocks.find(block => block.platform === 'config')
-      const switches = (uiConfigBlock?.smartAutomations || []).filter(a => typeof a?.name === 'string')
-      this.configuredChildBridge.set(uiConfigBlock?._bridge || null)
+      const smartAutomationBlock = configBlocks.find(block => block.platform === SMART_AUTOMATION_PLATFORM)
+        || configBlocks.find(block => block.platform === 'config')
+      const switches = (smartAutomationBlock?.smartAutomations || []).filter(a => typeof a?.name === 'string')
+      this.configuredChildBridge.set(smartAutomationBlock?._bridge || null)
       this.configuredChildBridgeSwitches.set(switches)
       this.configuredChildBridgeSwitchNames.set(switches.map(automation => automation.name).join(', '))
     } catch (error) {
@@ -284,23 +287,33 @@ export class SmartAutomationsComponent implements OnInit, OnDestroy {
 
     try {
       const configBlocks = await this.$api.get<ConfigPlatformBlock[]>('/config-editor/plugin/homebridge-config-ui-x')
-      const uiConfigIndex = configBlocks.findIndex(block => block.platform === 'config')
-      if (uiConfigIndex === -1) {
+      const engineIndex = configBlocks.findIndex(block => block.platform === SMART_AUTOMATION_PLATFORM)
+      const uiConfigBlock = configBlocks.find(block => block.platform === 'config')
+      const current = engineIndex >= 0 ? configBlocks[engineIndex] : null
+      const bridgeSource = current?._bridge || uiConfigBlock?._bridge
+
+      if (!current && !uiConfigBlock) {
         return
       }
 
-      const current = configBlocks[uiConfigIndex]
       const nextBridge = {
-        ...current._bridge,
+        ...bridgeSource,
         name: 'Smart Automation',
-        username: current._bridge?.username || this.generateBridgeUsername(),
-        pin: current._bridge?.pin || this.generateBridgePin(),
+        username: bridgeSource?.username || this.generateBridgeUsername(),
+        pin: bridgeSource?.pin || this.generateBridgePin(),
       }
 
-      configBlocks[uiConfigIndex] = {
-        ...current,
+      const nextBlock = {
+        ...(current || {}),
+        platform: SMART_AUTOMATION_PLATFORM,
+        name: current?.name || 'Smart Automation',
         _bridge: nextBridge,
         smartAutomations: this.smartAutomations().map(automation => ({ ...automation })),
+      }
+      if (engineIndex >= 0) {
+        configBlocks[engineIndex] = nextBlock
+      } else {
+        configBlocks.push(nextBlock)
       }
 
       await this.$api.post('/config-editor/plugin/homebridge-config-ui-x', configBlocks)
