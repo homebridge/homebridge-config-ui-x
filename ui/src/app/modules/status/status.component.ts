@@ -52,6 +52,12 @@ export class StatusComponent implements OnInit, OnDestroy {
   private $ws = inject(WsService)
   private readonly isUnlocked = signal(false)
   private io!: IoNamespace
+  // Flipped to true only once the layout has actually been applied (see
+  // loadDashboardInit). Kept as a field — not a local in ngOnInit — so the
+  // success handler can set it. While false, every (re)connect retries the
+  // load; once true, reconnects skip the reapply so a network blip mid-drag
+  // doesn't revert the user's edits.
+  private initialLayoutLoaded = false
 
   public isAdmin = this.$auth.user.admin
   public isMatterSupported = this.$settings.isFeatureEnabled('matterSupport')
@@ -118,14 +124,14 @@ export class StatusComponent implements OnInit, OnDestroy {
     // Subscribe for reconnections — fires once for cache-hit-while-connected
     // and on every (re)connect thereafter. `consoleStatus` starts as 'down' and
     // is flipped back to 'down' by the 'disconnect' handler below.
-    let initialLayoutLoaded = false
     this.io.connected!.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
       this.consoleStatus.set('up')
       this.io.socket.emit('monitor-server-status')
-      if (!initialLayoutLoaded) {
-        initialLayoutLoaded = true
-        // Loads layout + rpiThrottled. Layout is only applied once so a
-        // network blip mid-drag doesn't revert the user's edits.
+      if (!this.initialLayoutLoaded) {
+        // Loads layout + rpiThrottled. The "loaded" flag is set inside
+        // loadDashboardInit only after the layout is applied, so a dropped ack
+        // or error on the first connect retries on the next (re)connect rather
+        // than leaving the dashboard permanently empty.
         this.loadDashboardInit()
       } else {
         // On reconnect we still want to refresh the RPi throttled banner,
@@ -559,8 +565,14 @@ export class StatusComponent implements OnInit, OnDestroy {
           this.$notification.raspberryPiThrottled.set(response.rpiThrottled)
         }
         this.applyDashboardLayout(response?.layout ?? [])
+        // Only mark loaded once the layout is actually applied. If the first
+        // connect's ack is dropped (socket reconnect) or errors, this stays
+        // false so the next (re)connect retries instead of leaving the
+        // dashboard empty.
+        this.initialLayoutLoaded = true
       },
       error: () => {
+        // Leave initialLayoutLoaded false so a reconnect re-attempts the load.
         this.$toastr.error(
           this.$translate.instant('toast.api_error_generic'),
           this.$translate.instant('toast.title_error'),
@@ -634,8 +646,12 @@ export class StatusComponent implements OnInit, OnDestroy {
   }
 
   private resetLayout() {
+    // `require` returns a shared cached array, so clone it before mutating —
+    // otherwise the splice below permanently strips the Matter widget from the
+    // cached default, and a later reset on a matter-capable view would be
+    // missing it.
     // eslint-disable-next-line ts/no-require-imports
-    const layout = require('./default-dashboard-layout.json')
+    const layout = [...require('./default-dashboard-layout.json')]
 
     // If matter is not supported, remove the Matter QR code widget
     if (!this.isMatterSupported) {
