@@ -454,6 +454,7 @@
   "plugins.manage.confirm_disable_platform_1": "Alle Geräte, die von diesem Plugin bereitgestellt werden, werden aus der Homebridge UI entfernt, bleiben aber in HomeKit mit dem Status „Keine Antwort“ erhalten.",
   "plugins.manage.confirm_disable_platform_2": "Wenn du das Plugin wieder aktivierst, werden die Geräte wieder in der Homebridge UI angezeigt und können wieder über HomeKit gesteuert werden. Die Geräte verlieren nicht ihre HomeKit-Daten (wie zugehörige Szenen und Automatisierungen).",
   "plugins.manage.confirm_disable_setting": "Deine Einstellung für {{ setting }} ist derzeit {{ value }}, daher:",
+  "plugins.manage.confirm_disable_setting_override": "Your setting for {{ setting }} is currently {{ value }}. However, since you are removing the plugin config:",
   "plugins.manage.confirm_enable": "Bist du sicher, dass du {{ pluginName }} aktivieren möchtest?",
   "plugins.manage.disable": "Deaktivieren",
   "plugins.manage.enable": "Aktivieren",

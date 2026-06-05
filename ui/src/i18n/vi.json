@@ -454,6 +454,7 @@
   "plugins.manage.confirm_disable_platform_1": "Các phụ kiện do plugin này cung cấp sẽ bị xóa khỏi Homebridge UI nhưng vẫn tồn tại trong HomeKit với trạng thái 'Không phản hồi'.",
   "plugins.manage.confirm_disable_platform_2": "Khi bật lại plugin, phụ kiện sẽ có thể điều khiển lại trong HomeKit và không mất dữ liệu.",
   "plugins.manage.confirm_disable_setting": "Cài đặt {{ setting }} hiện tại là {{ value }}, do đó:",
+  "plugins.manage.confirm_disable_setting_override": "Your setting for {{ setting }} is currently {{ value }}. However, since you are removing the plugin config:",
   "plugins.manage.confirm_enable": "Bạn có chắc muốn bật {{ pluginName }}?",
   "plugins.manage.disable": "Vô hiệu hóa",
   "plugins.manage.enable": "Bật",

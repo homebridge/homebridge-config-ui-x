@@ -9,6 +9,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - feat(accessories): allow exposing HAP switches/outlets as speakers
 - refactor(status): migrate weather widget to httpResource
 - fix(acc-control): prevent hap/matter icons wrapping on mobile
+- fix(plugins): restore lost confirm_disable_setting_override translation
 
 ### Other Changes
 

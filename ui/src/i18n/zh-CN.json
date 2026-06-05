@@ -454,6 +454,7 @@
   "plugins.manage.confirm_disable_platform_1": "此插件在 Homebridge UI 的配件页面仍会显示其配件，但在 HomeKit 中会显示为“无响应”。",
   "plugins.manage.confirm_disable_platform_2": "当您重新启用该插件时，这些配件将重新出现在 Homebridge UI 中，但在 HomeKit 中再次可控。配件不会丢失其 HomeKit 数据（如相关场景和自动化）。",
   "plugins.manage.confirm_disable_setting": "您对 {{ setting }} 的当前设置为 {{ value }}，因此：",
+  "plugins.manage.confirm_disable_setting_override": "Your setting for {{ setting }} is currently {{ value }}. However, since you are removing the plugin config:",
   "plugins.manage.confirm_enable": "确定要启用 {{ pluginName }}？",
   "plugins.manage.disable": "禁用",
   "plugins.manage.enable": "启用",
