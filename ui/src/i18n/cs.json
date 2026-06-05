@@ -454,6 +454,7 @@
   "plugins.manage.confirm_disable_platform_1": "Jakékoli příslušenství vystavené tímto pluginem bude odstraněno z obrazovky příslušenství uživatelského rozhraní Homebridge, ale zůstane v HomeKitu s označením 'Žádná odpověď'.",
   "plugins.manage.confirm_disable_platform_2": "Po opětovném povolení pluginu se příslušenství opět objeví v uživatelském rozhraní Homebridge a bude opět ovladatelné v HomeKitu. Příslušenství neztratí svá data HomeKitu (např. související scény a automatizace).",
   "plugins.manage.confirm_disable_setting": "Your setting for {{ setting }} is currently {{ value }}, therefore:",
+  "plugins.manage.confirm_disable_setting_override": "Your setting for {{ setting }} is currently {{ value }}. However, since you are removing the plugin config:",
   "plugins.manage.confirm_enable": "Opravdu chcete povolit {{ pluginName }}?",
   "plugins.manage.disable": "Zakázat",
   "plugins.manage.enable": "Povolit",

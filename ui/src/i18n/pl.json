@@ -454,6 +454,7 @@
   "plugins.manage.confirm_disable_platform_1": "Wszelkie akcesoria udostępnione przez tę wtyczkę zostaną usunięte z ekranu akcesoriów Homebridge UI, ale pozostaną w HomeKit z etykietą 'Brak odpowiedzi'.",
   "plugins.manage.confirm_disable_platform_2": "Po ponownym włączeniu wtyczki akcesoria pojawią się ponownie w interfejsie użytkownika Homebridge i staną się ponownie kontrolowane w HomeKit. Akcesoria nie stracą swoich danych HomeKit (takich jak powiązane sceny i automatyzacja).",
   "plugins.manage.confirm_disable_setting": "Twoje ustawienie dla {{ setting }} to obecnie {{ value }}, dlatego:",
+  "plugins.manage.confirm_disable_setting_override": "Your setting for {{ setting }} is currently {{ value }}. However, since you are removing the plugin config:",
   "plugins.manage.confirm_enable": "Na pewno włączyć {{ pluginName }}?",
   "plugins.manage.disable": "Wyłącz",
   "plugins.manage.enable": "Włącz",
