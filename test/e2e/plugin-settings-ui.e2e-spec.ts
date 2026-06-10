@@ -159,7 +159,7 @@ describe('PluginsSettingsUiController (e2e)', () => {
   it('GET /plugins/settings-ui/:plugin-name/index.html (non-http origin → rejected)', async () => {
     const res = await app.inject({
       method: 'GET',
-      path: `plugins/settings-ui/homebridge-mock-plugin/index.html?origin=${encodeURIComponent('javascript:alert(1)')}`,
+      path: `/plugins/settings-ui/homebridge-mock-plugin/index.html?origin=${encodeURIComponent('javascript:alert(1)')}`,
       headers: { cookie: sessionCookie },
     })
 
