@@ -133,7 +133,7 @@ describe('PluginsSettingsUiController (e2e)', () => {
   it('GET /plugins/settings-ui/:plugin-name/index.html (set origin)', async () => {
     const res = await app.inject({
       method: 'GET',
-      path: `plugins/settings-ui/homebridge-mock-plugin/index.html?origin=${encodeURIComponent('http://example.com')}`,
+      path: `/plugins/settings-ui/homebridge-mock-plugin/index.html?origin=${encodeURIComponent('http://example.com')}`,
       headers: { cookie: sessionCookie },
     })
 
