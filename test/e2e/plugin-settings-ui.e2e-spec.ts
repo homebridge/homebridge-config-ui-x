@@ -145,7 +145,7 @@ describe('PluginsSettingsUiController (e2e)', () => {
     const xssOrigin = encodeURIComponent('"></' + 'script><script>alert(document.domain)</script>')
     const res = await app.inject({
       method: 'GET',
-      path: `plugins/settings-ui/homebridge-mock-plugin/index.html?origin=${xssOrigin}`,
+      path: `/plugins/settings-ui/homebridge-mock-plugin/index.html?origin=${xssOrigin}`,
       headers: { cookie: sessionCookie },
     })
 
