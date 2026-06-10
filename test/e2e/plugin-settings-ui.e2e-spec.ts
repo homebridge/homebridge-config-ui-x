@@ -22,6 +22,7 @@ import '../../src/global-defaults.js'
 describe('PluginsSettingsUiController (e2e)', () => {
   let app: NestFastifyApplication
   let httpService: HttpService
+  let sessionCookie: string
 
   let authFilePath: string
   let secretsFilePath: string
@@ -66,16 +67,45 @@ describe('PluginsSettingsUiController (e2e)', () => {
 
     await ensureDir(resolve(pluginsPath, 'homebridge-mock-plugin/homebridge-ui/public'))
     await writeFile(resolve(pluginsPath, 'homebridge-mock-plugin/homebridge-ui/public/index.html'), '<h1>Hello World</h1>')
+
+    // Obtain a session cookie via login so authenticated tests can send it
+    const loginRes = await app.inject({
+      method: 'POST',
+      path: '/auth/login',
+      payload: { username: 'admin', password: 'admin' },
+    })
+    const { access_token } = JSON.parse(loginRes.body)
+    sessionCookie = `hb-session=${access_token}`
   })
 
   beforeEach(async () => {
     vi.resetAllMocks()
   })
 
+  it('GET /plugins/settings-ui/:plugin-name/ (no cookie → 401)', async () => {
+    const res = await app.inject({
+      method: 'GET',
+      path: '/plugins/settings-ui/homebridge-mock-plugin/',
+    })
+
+    expect(res.statusCode).toBe(401)
+  })
+
+  it('GET /plugins/settings-ui/:plugin-name/ (invalid cookie → 401)', async () => {
+    const res = await app.inject({
+      method: 'GET',
+      path: '/plugins/settings-ui/homebridge-mock-plugin/',
+      headers: { cookie: 'hb-session=not-a-valid-jwt' },
+    })
+
+    expect(res.statusCode).toBe(401)
+  })
+
   it('GET /plugins/settings-ui/:plugin-name/', async () => {
     const res = await app.inject({
       method: 'GET',
       path: '/plugins/settings-ui/homebridge-mock-plugin/',
+      headers: { cookie: sessionCookie },
     })
 
     expect(res.statusCode).toBe(200)
@@ -87,27 +117,62 @@ describe('PluginsSettingsUiController (e2e)', () => {
     const res = await app.inject({
       method: 'GET',
       path: '/plugins/settings-ui/homebridge-mock-plugin/index.html',
+      headers: { cookie: sessionCookie },
     })
 
     expect(res.statusCode).toBe(200)
     expect(res.body).toContain('Hello World')
     expect(res.body).toContain('homebridge-mock-plugin')
+    // A non-empty CSP must be present on the index.html response
+    const csp = res.headers['content-security-policy'] as string
+    expect(csp).toBeTruthy()
+    expect(csp).toContain('script-src')
+    expect(csp).toContain('frame-ancestors')
   })
 
   it('GET /plugins/settings-ui/:plugin-name/index.html (set origin)', async () => {
     const res = await app.inject({
       method: 'GET',
       path: `plugins/settings-ui/homebridge-mock-plugin/index.html?origin=${encodeURIComponent('http://example.com')}`,
+      headers: { cookie: sessionCookie },
     })
 
     expect(res.statusCode).toBe(200)
     expect(res.body).toContain('http://example.com/assets/plugin-ui-utils/ui.js')
   })
 
+  it('GET /plugins/settings-ui/:plugin-name/index.html (XSS via origin → rejected)', async () => {
+    const xssOrigin = encodeURIComponent('"></' + 'script><script>alert(document.domain)</script>')
+    const res = await app.inject({
+      method: 'GET',
+      path: `plugins/settings-ui/homebridge-mock-plugin/index.html?origin=${xssOrigin}`,
+      headers: { cookie: sessionCookie },
+    })
+
+    expect(res.statusCode).toBe(200)
+    // The malicious origin must not appear verbatim in the response
+    expect(res.body).not.toContain('alert(document.domain)')
+    // The fallback origin should be used instead
+    expect(res.body).toContain('http://localhost:4200/assets/plugin-ui-utils/ui.js')
+  })
+
+  it('GET /plugins/settings-ui/:plugin-name/index.html (non-http origin → rejected)', async () => {
+    const res = await app.inject({
+      method: 'GET',
+      path: `plugins/settings-ui/homebridge-mock-plugin/index.html?origin=${encodeURIComponent('javascript:alert(1)')}`,
+      headers: { cookie: sessionCookie },
+    })
+
+    expect(res.statusCode).toBe(200)
+    expect(res.body).not.toContain('javascript:alert(1)')
+    expect(res.body).toContain('http://localhost:4200/assets/plugin-ui-utils/ui.js')
+  })
+
   it('GET /plugins/settings-ui/:plugin-name/index.html (no custom ui for plugin)', async () => {
     const res = await app.inject({
       method: 'GET',
       path: '/plugins/settings-ui/homebridge-mock-plugin-two/index.html',
+      headers: { cookie: sessionCookie },
     })
 
     expect(res.statusCode).toBe(404)
@@ -117,6 +182,7 @@ describe('PluginsSettingsUiController (e2e)', () => {
     const res = await app.inject({
       method: 'GET',
       path: '/plugins/settings-ui/homebridge-mock-plugin/../../../etc/passwd',
+      headers: { cookie: sessionCookie },
     })
 
     // Should not return 200 with file contents
@@ -127,6 +193,7 @@ describe('PluginsSettingsUiController (e2e)', () => {
     const res = await app.inject({
       method: 'GET',
       path: '/plugins/settings-ui/homebridge-nonexistent-plugin/',
+      headers: { cookie: sessionCookie },
     })
 
     expect(res.statusCode).toBe(404)
@@ -136,6 +203,7 @@ describe('PluginsSettingsUiController (e2e)', () => {
     const res = await app.inject({
       method: 'GET',
       path: '/plugins/settings-ui/homebridge-mock-plugin/nonexistent.html',
+      headers: { cookie: sessionCookie },
     })
 
     expect(res.statusCode).toBe(404)
@@ -145,6 +213,7 @@ describe('PluginsSettingsUiController (e2e)', () => {
     const res = await app.inject({
       method: 'GET',
       path: '/plugins/settings-ui/homebridge-mock-plugin/?v=1.0.0',
+      headers: { cookie: sessionCookie },
     })
 
     expect(res.statusCode).toBe(200)
@@ -171,6 +240,33 @@ describe('PluginsSettingsUiController (e2e)', () => {
       expect(html).not.toContain('</script><script>alert(1)</script>')
       // The title should use HTML entities
       expect(html).toContain('&lt;')
+    })
+
+    it('buildIndexHtml should reject a malicious origin and use the fallback', async () => {
+      const pluginUi = {
+        plugin: { name: 'homebridge-mock-plugin' },
+        publicPath: resolve(pluginsPath, 'homebridge-mock-plugin/homebridge-ui/public'),
+        serverPath: resolve(pluginsPath, 'homebridge-mock-plugin/homebridge-ui/server'),
+      }
+
+      const xssOrigin = '"></' + 'script><script>alert(document.domain)</script>'
+      const html = await pluginsSettingsUiService.buildIndexHtml(pluginUi as any, xssOrigin)
+
+      expect(html).not.toContain('alert(document.domain)')
+      expect(html).toContain('http://localhost:4200/assets/plugin-ui-utils/ui.js')
+    })
+
+    it('buildIndexHtml should reject a javascript: origin and use the fallback', async () => {
+      const pluginUi = {
+        plugin: { name: 'homebridge-mock-plugin' },
+        publicPath: resolve(pluginsPath, 'homebridge-mock-plugin/homebridge-ui/public'),
+        serverPath: resolve(pluginsPath, 'homebridge-mock-plugin/homebridge-ui/server'),
+      }
+
+      const html = await pluginsSettingsUiService.buildIndexHtml(pluginUi as any, 'javascript:alert(1)')
+
+      expect(html).not.toContain('javascript:alert(1)')
+      expect(html).toContain('http://localhost:4200/assets/plugin-ui-utils/ui.js')
     })
 
     it('startCustomUiHandler should emit ready with server:false when no server script', async () => {
@@ -266,6 +362,19 @@ describe('PluginsSettingsUiController (e2e)', () => {
       const guards = reflector.get<any[]>('__guards__', PluginsSettingsUiGateway)
       expect(guards, 'no guards applied to PluginsSettingsUiGateway').toBeDefined()
       expect(guards.includes(WsAdminGuard)).toBe(true)
+    })
+
+    it('PluginsSettingsUiController has CookieAuthGuard applied', async () => {
+      // Sentinel: ensures the HTTP asset-serving routes remain protected by
+      // the cookie guard. If the guard is removed the test fails, making any
+      // regression a deliberate, reviewed decision.
+      const { PluginsSettingsUiController } = await import('../../src/modules/custom-plugins/plugins-settings-ui/plugins-settings-ui.controller.js')
+      const { CookieAuthGuard } = await import('../../src/core/auth/guards/cookie-auth.guard.js')
+      const { Reflector } = await import('@nestjs/core')
+      const reflector = new Reflector()
+      const guards = reflector.get<any[]>('__guards__', PluginsSettingsUiController)
+      expect(guards, 'no guards applied to PluginsSettingsUiController').toBeDefined()
+      expect(guards.includes(CookieAuthGuard)).toBe(true)
     })
   })
 
