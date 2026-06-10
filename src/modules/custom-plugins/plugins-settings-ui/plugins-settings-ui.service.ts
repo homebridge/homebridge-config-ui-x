@@ -150,7 +150,7 @@ export class PluginsSettingsUiService {
   /**
    * Build the entrypoint html file for the plugin custom ui
    */
-  async buildIndexHtml(pluginUi: HomebridgePluginUiMetadata, origin: string) {
+  async buildIndexHtml(pluginUi: HomebridgePluginUiMetadata, origin?: string) {
     const body = await this.getIndexHtmlBody(pluginUi)
     const safeOrigin = this.sanitizeOrigin(origin)
 
