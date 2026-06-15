@@ -13,7 +13,7 @@
     "postinstall": "patch-package"
   },
   "dependencies": {
-    "@angular/common": "21.2.15",
+    "@angular/common": "21.2.17",
     "@angular/compiler": "21.2.15",
     "@angular/core": "21.2.15",
     "@angular/forms": "21.2.15",
@@ -75,7 +75,7 @@
   },
   "overrides": {
     "@angular/animations": "21.2.15",
-    "@angular/common": "21.2.15",
+    "@angular/common": "21.2.17",
     "@angular/compiler": "21.2.15",
     "@angular/core": "21.2.15",
     "lodash-es": "4.18.1",
