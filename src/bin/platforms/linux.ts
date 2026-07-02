@@ -53,7 +53,7 @@ export class LinuxInstaller extends BasePlatform {
       await this.hbService.printPostInstallInstructions()
     } catch (e) {
       console.error(e.toString())
-      this.hbService.logger('ERROR: Failed Operation', 'fail')
+      this.hbService.logger.error('ERROR: Failed Operation')
     }
   }
 
@@ -75,10 +75,10 @@ export class LinuxInstaller extends BasePlatform {
       // Reload services
       await this.reloadSystemd()
 
-      this.hbService.logger(`Removed ${this.hbService.serviceName} Service`, 'succeed')
+      this.hbService.logger.success(`Removed ${this.hbService.serviceName} Service`)
     } catch (e) {
       console.error(e.toString())
-      this.hbService.logger('ERROR: Failed Operation', 'fail')
+      this.hbService.logger.error('ERROR: Failed Operation')
     }
   }
 
@@ -92,7 +92,7 @@ export class LinuxInstaller extends BasePlatform {
       // eslint-disable-next-line no-console
       console.log(ret)
     } catch (e) {
-      this.hbService.logger(`Failed to start ${this.hbService.serviceName} - ${e}`, 'fail')
+      this.hbService.logger.error(`Failed to start ${this.hbService.serviceName} - ${e}`)
     }
   }
 
@@ -103,11 +103,11 @@ export class LinuxInstaller extends BasePlatform {
     this.checkForRoot()
     this.fixPermissions()
     try {
-      this.hbService.logger(`Starting ${this.hbService.serviceName} Service...`)
+      this.hbService.logger.log(`Starting ${this.hbService.serviceName} Service...`)
       execSync(`systemctl start ${this.systemdServiceName}`)
       execSync(`systemctl status ${this.systemdServiceName} --no-pager`)
     } catch (e) {
-      this.hbService.logger(`Failed to start ${this.hbService.serviceName} - ${e}`, 'fail')
+      this.hbService.logger.error(`Failed to start ${this.hbService.serviceName} - ${e}`)
       process.exit(1)
     }
   }
@@ -118,11 +118,11 @@ export class LinuxInstaller extends BasePlatform {
   public async stop() {
     this.checkForRoot()
     try {
-      this.hbService.logger(`Stopping ${this.hbService.serviceName} Service...`)
+      this.hbService.logger.log(`Stopping ${this.hbService.serviceName} Service...`)
       execSync(`systemctl stop ${this.systemdServiceName}`)
-      this.hbService.logger(`${this.hbService.serviceName} Stopped`, 'succeed')
+      this.hbService.logger.success(`${this.hbService.serviceName} Stopped`)
     } catch (e) {
-      this.hbService.logger(`Failed to stop ${this.systemdServiceName} - ${e}`, 'fail')
+      this.hbService.logger.error(`Failed to stop ${this.systemdServiceName} - ${e}`)
     }
   }
 
@@ -133,12 +133,12 @@ export class LinuxInstaller extends BasePlatform {
     this.checkForRoot()
     this.fixPermissions()
     try {
-      this.hbService.logger(`Restarting ${this.hbService.serviceName} Service...`)
+      this.hbService.logger.log(`Restarting ${this.hbService.serviceName} Service...`)
       execSync(`systemctl restart ${this.systemdServiceName}`)
       execSync(`systemctl status ${this.systemdServiceName} --no-pager`)
-      this.hbService.logger(`${this.hbService.serviceName} Restarted`, 'succeed')
+      this.hbService.logger.success(`${this.hbService.serviceName} Restarted`)
     } catch (e) {
-      this.hbService.logger(`Failed to restart ${this.hbService.serviceName} - ${e}`, 'fail')
+      this.hbService.logger.error(`Failed to restart ${this.hbService.serviceName} - ${e}`)
     }
   }
 
@@ -200,7 +200,7 @@ export class LinuxInstaller extends BasePlatform {
         cwd: process.env.UIX_BASE_PATH,
         stdio: 'inherit',
       })
-      this.hbService.logger(`Rebuilt homebridge-config-ui-x for Node.js ${targetNodeVersion}.`, 'succeed')
+      this.hbService.logger.success(`Rebuilt homebridge-config-ui-x for Node.js ${targetNodeVersion}.`)
 
       if (all === true) {
         // Rebuild all global node_modules
@@ -209,14 +209,14 @@ export class LinuxInstaller extends BasePlatform {
             cwd: npmGlobalPath,
             stdio: 'inherit',
           })
-          this.hbService.logger(`Rebuilt plugins in ${npmGlobalPath} for Node.js ${targetNodeVersion}.`, 'succeed')
+          this.hbService.logger.success(`Rebuilt plugins in ${npmGlobalPath} for Node.js ${targetNodeVersion}.`)
         } catch (e) {
-          this.hbService.logger('Could not rebuild all plugins - check logs.', 'warn')
+          this.hbService.logger.warn('Could not rebuild all plugins - check logs.')
         }
       }
     } catch (e) {
       console.error(e.toString())
-      this.hbService.logger('ERROR: Failed Operation', 'fail')
+      this.hbService.logger.error('ERROR: Failed Operation')
     }
   }
 
@@ -268,8 +268,8 @@ export class LinuxInstaller extends BasePlatform {
     // Check if trying to install Node.js 24 on unsupported architecture
     if (gte(job.target, '24.0.0')) {
       if (!isNodeV24SupportedArchitecture()) {
-        this.hbService.logger(`Node.js ${job.target} is not supported on ${process.arch} architecture.`, 'fail')
-        this.hbService.logger('Node.js v24 requires a 64-bit architecture. Please use Node.js v22 instead.', 'fail')
+        this.hbService.logger.error(`Node.js ${job.target} is not supported on ${process.arch} architecture.`)
+        this.hbService.logger.error('Node.js v24 requires a 64-bit architecture. Please use Node.js v22 instead.')
         process.exit(1)
       }
     }
@@ -278,7 +278,7 @@ export class LinuxInstaller extends BasePlatform {
     const targetPath = dirname(dirname(process.execPath))
 
     if (targetPath !== '/usr' && targetPath !== '/usr/local' && targetPath !== '/opt/homebridge' && !targetPath.endsWith('/@appstore/homebridge/app')) {
-      this.hbService.logger(`Cannot update Node.js on your system. Non-standard installation path detected: ${targetPath}`, 'fail')
+      this.hbService.logger.error(`Cannot update Node.js on your system. Non-standard installation path detected: ${targetPath}`)
       process.exit(1)
     }
 
@@ -292,7 +292,7 @@ export class LinuxInstaller extends BasePlatform {
 
     // Rebuild node modules if required
     if (job.rebuild) {
-      this.hbService.logger(`Rebuilding for Node.js ${job.target}...`)
+      this.hbService.logger.log(`Rebuilding for Node.js ${job.target}...`)
       await this.rebuild(true)
     }
 
@@ -300,7 +300,7 @@ export class LinuxInstaller extends BasePlatform {
     if (await pathExists(this.systemdServicePath)) {
       await this.restart()
     } else {
-      this.hbService.logger('Please restart Homebridge for the changes to take effect.', 'warn')
+      this.hbService.logger.warn('Please restart Homebridge for the changes to take effect.')
     }
   }
 
@@ -309,7 +309,7 @@ export class LinuxInstaller extends BasePlatform {
    */
   public async updateHomebridgePackage() {
     if (process.env.HOMEBRIDGE_APT_PACKAGE !== '1') {
-      this.hbService.logger('ERROR: This command is only available for apt package installs.', 'fail')
+      this.hbService.logger.error('ERROR: This command is only available for apt package installs.')
       process.exit(1)
     }
 
@@ -324,9 +324,9 @@ export class LinuxInstaller extends BasePlatform {
         stdio: 'inherit',
       })
 
-      this.hbService.logger('Homebridge apt package update complete.', 'succeed')
+      this.hbService.logger.success('Homebridge apt package update complete.')
     } catch (e) {
-      this.hbService.logger(`Failed to update Homebridge apt package: ${e.message}`, 'fail')
+      this.hbService.logger.error(`Failed to update Homebridge apt package: ${e.message}`)
       process.exit(1)
     }
   }
@@ -352,18 +352,18 @@ export class LinuxInstaller extends BasePlatform {
   private async glibcVersionCheck(target: string) {
     const glibcVersion = Number.parseFloat(execSync('getconf GNU_LIBC_VERSION 2>/dev/null').toString().split('glibc')[1].trim())
     if (glibcVersion < 2.23) {
-      this.hbService.logger('Your version of Linux does not meet the GLIBC version requirements to use this tool to upgrade Node.js. '
-        + `Wanted: >=2.23. Installed: ${glibcVersion} - see https://homebridge.io/w/JJSun`, 'fail')
+      this.hbService.logger.error('Your version of Linux does not meet the GLIBC version requirements to use this tool to upgrade Node.js. '
+        + `Wanted: >=2.23. Installed: ${glibcVersion} - see https://homebridge.io/w/JJSun`)
       process.exit(1)
     }
     if (gte(target, '18.0.0') && glibcVersion < 2.28) {
-      this.hbService.logger('Your version of Linux does not meet the GLIBC version requirements to use this tool to upgrade Node.js. '
-        + `Wanted: >=2.28. Installed: ${glibcVersion} - see https://homebridge.io/w/JJSun`, 'fail')
+      this.hbService.logger.error('Your version of Linux does not meet the GLIBC version requirements to use this tool to upgrade Node.js. '
+        + `Wanted: >=2.28. Installed: ${glibcVersion} - see https://homebridge.io/w/JJSun`)
       process.exit(1)
     }
     if (gte(target, '20.0.0') && glibcVersion < 2.31) {
-      this.hbService.logger('Your version of Linux does not meet the GLIBC version requirements to use this tool to upgrade Node.js. '
-        + `Wanted: >=2.31. Installed: ${glibcVersion} - see https://homebridge.io/w/JJSun`, 'fail')
+      this.hbService.logger.error('Your version of Linux does not meet the GLIBC version requirements to use this tool to upgrade Node.js. '
+        + `Wanted: >=2.31. Installed: ${glibcVersion} - see https://homebridge.io/w/JJSun`)
       process.exit(1)
     }
   }
@@ -398,7 +398,7 @@ export class LinuxInstaller extends BasePlatform {
         // Skip glibc version check on Synology DSM
         // We know node > 18 requires glibc > 2.28, while DSM 7 only has 2.27 at the moment
         if (gte(job.target, '18.0.0')) {
-          this.hbService.logger('Cannot update Node.js on your system. Synology DSM 7 does not currently support Node.js 18 or later.', 'fail')
+          this.hbService.logger.error('Cannot update Node.js on your system. Synology DSM 7 does not currently support Node.js 18 or later.')
           process.exit(1)
         }
       } else {
@@ -407,10 +407,10 @@ export class LinuxInstaller extends BasePlatform {
     } catch (e) {
       const os = await osInfo()
       if (os.distro === 'Alpine Linux') {
-        this.hbService.logger('Updating Node.js on Alpine Linux / Docker is not supported by this command.', 'fail')
-        this.hbService.logger('To update Node.js you should pull down the latest version of the homebridge/homebridge Docker image.', 'fail')
+        this.hbService.logger.error('Updating Node.js on Alpine Linux / Docker is not supported by this command.')
+        this.hbService.logger.error('To update Node.js you should pull down the latest version of the homebridge/homebridge Docker image.')
       } else {
-        this.hbService.logger('Updating Node.js using this tool is not supported on your version of Linux.')
+        this.hbService.logger.log('Updating Node.js using this tool is not supported on your version of Linux.')
       }
       process.exit(1)
     }
@@ -438,11 +438,11 @@ export class LinuxInstaller extends BasePlatform {
         downloadUrl = `https://unofficial-builds.nodejs.org/download/release/${job.target}/node-${job.target}-linux-armv6l.tar.gz`
         break
       default:
-        this.hbService.logger(`Architecture not supported: ${process.arch}.`, 'fail')
+        this.hbService.logger.error(`Architecture not supported: ${process.arch}.`)
         process.exit(1)
     }
 
-    this.hbService.logger(`Target: ${targetPath}`)
+    this.hbService.logger.log(`Target: ${targetPath}`)
 
     try {
       const archivePath = await this.hbService.downloadNodejs(downloadUrl)
@@ -464,7 +464,7 @@ export class LinuxInstaller extends BasePlatform {
       // Clean up
       await remove(archivePath)
     } catch (e) {
-      this.hbService.logger(`Failed to update Node.js: ${e.message}`, 'fail')
+      this.hbService.logger.error(`Failed to update Node.js: ${e.message}`)
       process.exit(1)
     }
   }
@@ -473,7 +473,7 @@ export class LinuxInstaller extends BasePlatform {
    * Update the NodeSource repo and use it to update Node.js
    */
   private async updateNodeFromNodesource(job: { target: string, rebuild: boolean }) {
-    this.hbService.logger('Updating from NodeSource...')
+    this.hbService.logger.log('Updating from NodeSource...')
 
     try {
       await this.glibcVersionCheck(job.target)
@@ -516,7 +516,7 @@ export class LinuxInstaller extends BasePlatform {
         stdio: 'inherit',
       })
     } catch (e) {
-      this.hbService.logger(`Failed to update Node.js: ${e.message}`, 'fail')
+      this.hbService.logger.error(`Failed to update Node.js: ${e.message}`)
       process.exit(1)
     }
   }
@@ -528,7 +528,7 @@ export class LinuxInstaller extends BasePlatform {
     try {
       execSync('systemctl daemon-reload')
     } catch (e) {
-      this.hbService.logger('WARNING: failed to run "systemctl daemon-reload"', 'warn')
+      this.hbService.logger.warn('WARNING: failed to run "systemctl daemon-reload"')
     }
   }
 
@@ -539,7 +539,7 @@ export class LinuxInstaller extends BasePlatform {
     try {
       execSync(`systemctl enable ${this.systemdServiceName} 2> /dev/null`)
     } catch (e) {
-      this.hbService.logger(`WARNING: failed to run "systemctl enable ${this.systemdServiceName}"`, 'warn')
+      this.hbService.logger.warn(`WARNING: failed to run "systemctl enable ${this.systemdServiceName}"`)
     }
   }
 
@@ -550,7 +550,7 @@ export class LinuxInstaller extends BasePlatform {
     try {
       execSync(`systemctl disable ${this.systemdServiceName} 2> /dev/null`)
     } catch (e) {
-      this.hbService.logger(`WARNING: failed to run "systemctl disable ${this.systemdServiceName}"`, 'warn')
+      this.hbService.logger.warn(`WARNING: failed to run "systemctl disable ${this.systemdServiceName}"`)
     }
   }
 
@@ -559,17 +559,17 @@ export class LinuxInstaller extends BasePlatform {
    */
   private checkForRoot() {
     if (this.isPackage()) {
-      this.hbService.logger('ERROR: This command is not available.', 'fail')
+      this.hbService.logger.error('ERROR: This command is not available.')
       process.exit(1)
     }
     if (process.getuid() !== 0) {
-      this.hbService.logger('ERROR: This command must be executed using sudo on Linux', 'fail')
-      this.hbService.logger(`EXAMPLE: sudo hb-service ${this.hbService.action}`, 'fail')
+      this.hbService.logger.error('ERROR: This command must be executed using sudo on Linux')
+      this.hbService.logger.error(`EXAMPLE: sudo hb-service ${this.hbService.action}`)
       process.exit(1)
     }
     if (this.hbService.action === 'install' && !this.hbService.asUser) {
-      this.hbService.logger('ERROR: User parameter missing. Pass in the user you want to run Homebridge as using the --user flag eg.', 'fail')
-      this.hbService.logger(`EXAMPLE: sudo hb-service ${this.hbService.action} --user your-user`, 'fail')
+      this.hbService.logger.error('ERROR: User parameter missing. Pass in the user you want to run Homebridge as using the --user flag eg.')
+      this.hbService.logger.error(`EXAMPLE: sudo hb-service ${this.hbService.action} --user your-user`)
       process.exit(1)
     }
   }
@@ -579,8 +579,8 @@ export class LinuxInstaller extends BasePlatform {
    */
   private checkIsNotRoot() {
     if (process.getuid() === 0 && !this.hbService.allowRunRoot && process.env.HOMEBRIDGE_CONFIG_UI !== '1') {
-      this.hbService.logger('ERROR: This command must not be executed as root or with sudo', 'fail')
-      this.hbService.logger('ERROR: If you know what you are doing; you can override this by adding --allow-root', 'fail')
+      this.hbService.logger.error('ERROR: This command must not be executed as root or with sudo')
+      this.hbService.logger.error('ERROR: If you know what you are doing; you can override this by adding --allow-root')
       process.exit(1)
     }
   }
@@ -595,10 +595,10 @@ export class LinuxInstaller extends BasePlatform {
     } catch (e) {
       // If not create the user
       execSync(`useradd -m --system ${this.hbService.asUser}`)
-      this.hbService.logger(`Created service user: ${this.hbService.asUser}`, 'info')
+      this.hbService.logger.log(`Created service user: ${this.hbService.asUser}`)
       if (this.hbService.addGroup) {
         execSync(`usermod -a -G ${this.hbService.addGroup} ${this.hbService.asUser}`, { timeout: 10000 })
-        this.hbService.logger(`Added ${this.hbService.asUser} to group ${this.hbService.addGroup}`, 'info')
+        this.hbService.logger.log(`Added ${this.hbService.asUser} to group ${this.hbService.addGroup}`)
       }
     }
 
@@ -624,9 +624,8 @@ export class LinuxInstaller extends BasePlatform {
       // A crafted `--user` value could otherwise inject a trailing entry
       // (e.g. `foo, /bin/sh`) and grant NOPASSWD to arbitrary binaries.
       if (!RE_OS_USERNAME.test(this.hbService.asUser)) {
-        this.hbService.logger(
-          `WARNING: Refusing to write /etc/sudoers entry — invalid username "${this.hbService.asUser}".`,
-          'warn',
+        this.hbService.logger.warn(
+          `WARNING: Refusing to write /etc/sudoers entry — invalid username "${this.hbService.asUser}".`
         )
         return
       }
@@ -644,7 +643,7 @@ export class LinuxInstaller extends BasePlatform {
       // Grant the user restricted sudo privileges to /sbin/shutdown
       execSync(`echo '${sudoersEntry}' | sudo EDITOR='tee -a' visudo`)
     } catch (e) {
-      this.hbService.logger('WARNING: Failed to setup /etc/sudoers, you may not be able to shutdown/restart your server from the Homebridge UI.', 'warn')
+      this.hbService.logger.warn('WARNING: Failed to setup /etc/sudoers, you may not be able to shutdown/restart your server from the Homebridge UI.')
     }
   }
 
@@ -684,7 +683,7 @@ export class LinuxInstaller extends BasePlatform {
           execSync(`chmod a+x ${this.hbService.selfPath}`)
         }
       } catch (e) {
-        this.hbService.logger('WARNING: Failed to set permissions', 'warn')
+        this.hbService.logger.warn('WARNING: Failed to set permissions')
       }
     }
   }
@@ -722,15 +721,15 @@ export class LinuxInstaller extends BasePlatform {
 
       // Add ui rule
       execSync(`ufw allow ${this.hbService.uiPort}/tcp 2> /dev/null`)
-      this.hbService.logger(`Added firewall rule to allow inbound traffic on port ${this.hbService.uiPort}/tcp`, 'info')
+      this.hbService.logger.log(`Added firewall rule to allow inbound traffic on port ${this.hbService.uiPort}/tcp`)
 
       // Add bridge rule
       if (bridgePort) {
         execSync(`ufw allow ${bridgePort}/tcp 2> /dev/null`)
-        this.hbService.logger(`Added firewall rule to allow inbound traffic on port ${bridgePort}/tcp`, 'info')
+        this.hbService.logger.log(`Added firewall rule to allow inbound traffic on port ${bridgePort}/tcp`)
       }
     } catch (e) {
-      this.hbService.logger('WARNING: failed to allow ports through firewall.', 'warn')
+      this.hbService.logger.warn('WARNING: failed to allow ports through firewall.')
     }
   }
 
@@ -751,19 +750,19 @@ export class LinuxInstaller extends BasePlatform {
 
       // Add ui rule
       execSync(`firewall-cmd --permanent --add-port=${this.hbService.uiPort}/tcp 2> /dev/null`)
-      this.hbService.logger(`Added firewall rule to allow inbound traffic on port ${this.hbService.uiPort}/tcp`, 'info')
+      this.hbService.logger.log(`Added firewall rule to allow inbound traffic on port ${this.hbService.uiPort}/tcp`)
 
       // Add bridge rule
       if (bridgePort) {
         execSync(`firewall-cmd --permanent --add-port=${bridgePort}/tcp 2> /dev/null`)
-        this.hbService.logger(`Added firewall rule to allow inbound traffic on port ${bridgePort}/tcp`, 'info')
+        this.hbService.logger.log(`Added firewall rule to allow inbound traffic on port ${bridgePort}/tcp`)
       }
 
       // Reload the firewall
       execSync('firewall-cmd --reload 2> /dev/null')
-      this.hbService.logger('Firewall reloaded', 'info')
+      this.hbService.logger.log('Firewall reloaded')
     } catch (e) {
-      this.hbService.logger('WARNING: failed to allow ports through firewall.', 'warn')
+      this.hbService.logger.warn('WARNING: failed to allow ports through firewall.')
     }
   }
 

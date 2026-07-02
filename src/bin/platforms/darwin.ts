@@ -41,7 +41,7 @@ export class DarwinInstaller extends BasePlatform {
       await this.hbService.printPostInstallInstructions()
     } catch (e) {
       console.error(e.toString())
-      this.hbService.logger('ERROR: Failed Operation', 'fail')
+      this.hbService.logger.error('ERROR: Failed Operation')
     }
   }
 
@@ -54,14 +54,14 @@ export class DarwinInstaller extends BasePlatform {
 
     try {
       if (existsSync(this.plistPath)) {
-        this.hbService.logger(`Removed ${this.hbService.serviceName} Service`, 'succeed')
+        this.hbService.logger.success(`Removed ${this.hbService.serviceName} Service`)
         unlinkSync(this.plistPath)
       } else {
-        this.hbService.logger(`Could not find installed ${this.hbService.serviceName} Service.`, 'fail')
+        this.hbService.logger.error(`Could not find installed ${this.hbService.serviceName} Service.`)
       }
     } catch (e) {
       console.error(e.toString())
-      this.hbService.logger('ERROR: Failed Operation', 'fail')
+      this.hbService.logger.error('ERROR: Failed Operation')
     }
   }
 
@@ -71,11 +71,11 @@ export class DarwinInstaller extends BasePlatform {
   public async start() {
     this.checkForRoot()
     try {
-      this.hbService.logger(`Starting ${this.hbService.serviceName} Service...`)
+      this.hbService.logger.log(`Starting ${this.hbService.serviceName} Service...`)
       execFileSync('launchctl', ['load', '-w', this.plistPath])
-      this.hbService.logger(`${this.hbService.serviceName} Started`, 'succeed')
+      this.hbService.logger.success(`${this.hbService.serviceName} Started`)
     } catch (e) {
-      this.hbService.logger(`Failed to start ${this.hbService.serviceName}`, 'fail')
+      this.hbService.logger.error(`Failed to start ${this.hbService.serviceName}`)
     }
   }
 
@@ -85,11 +85,11 @@ export class DarwinInstaller extends BasePlatform {
   public async stop() {
     this.checkForRoot()
     try {
-      this.hbService.logger(`Stopping ${this.hbService.serviceName} Service...`)
+      this.hbService.logger.log(`Stopping ${this.hbService.serviceName} Service...`)
       execFileSync('launchctl', ['unload', '-w', this.plistPath])
-      this.hbService.logger(`${this.hbService.serviceName} Stopped`, 'succeed')
+      this.hbService.logger.success(`${this.hbService.serviceName} Stopped`)
     } catch (e) {
-      this.hbService.logger(`Failed to stop ${this.hbService.serviceName}`, 'fail')
+      this.hbService.logger.error(`Failed to stop ${this.hbService.serviceName}`)
     }
   }
 
@@ -130,7 +130,7 @@ export class DarwinInstaller extends BasePlatform {
         cwd: process.env.UIX_BASE_PATH,
         stdio: 'inherit',
       })
-      this.hbService.logger(`Rebuilt homebridge-config-ui-x for Node.js ${targetNodeVersion}.`, 'succeed')
+      this.hbService.logger.success(`Rebuilt homebridge-config-ui-x for Node.js ${targetNodeVersion}.`)
 
       if (all === true) {
         // Rebuild all modules
@@ -139,16 +139,16 @@ export class DarwinInstaller extends BasePlatform {
             cwd: npmGlobalPath,
             stdio: 'inherit',
           })
-          this.hbService.logger(`Rebuilt plugins in ${npmGlobalPath} for Node.js ${targetNodeVersion}.`, 'succeed')
+          this.hbService.logger.success(`Rebuilt plugins in ${npmGlobalPath} for Node.js ${targetNodeVersion}.`)
         } catch (e) {
-          this.hbService.logger('Could not rebuild all modules - check Homebridge logs.', 'warn')
+          this.hbService.logger.warn('Could not rebuild all modules - check Homebridge logs.')
         }
       }
 
       await this.setNpmPermissions(npmGlobalPath)
     } catch (e) {
       console.error(e.toString())
-      this.hbService.logger('ERROR: Failed Operation', 'fail')
+      this.hbService.logger.error('ERROR: Failed Operation')
     }
   }
 
@@ -187,13 +187,13 @@ export class DarwinInstaller extends BasePlatform {
    */
   private checkForRoot() {
     if (process.getuid() !== 0) {
-      this.hbService.logger('ERROR: This command must be executed using sudo on macOS', 'fail')
-      this.hbService.logger(`sudo hb-service ${this.hbService.action}`, 'fail')
+      this.hbService.logger.error('ERROR: This command must be executed using sudo on macOS')
+      this.hbService.logger.error(`sudo hb-service ${this.hbService.action}`)
       process.exit(1)
     }
     if (!process.env.SUDO_USER && !this.hbService.asUser) {
-      this.hbService.logger('ERROR: Could not detect user. Pass in the user you want to run Homebridge as using the --user flag eg.', 'fail')
-      this.hbService.logger(`sudo hb-service ${this.hbService.action} --user your-user`, 'fail')
+      this.hbService.logger.error('ERROR: Could not detect user. Pass in the user you want to run Homebridge as using the --user flag eg.')
+      this.hbService.logger.error(`sudo hb-service ${this.hbService.action} --user your-user`)
       process.exit(1)
     }
     this.user = this.hbService.asUser || process.env.SUDO_USER
@@ -216,9 +216,8 @@ export class DarwinInstaller extends BasePlatform {
     // Routing the value through a shell here would let a crafted
     // `--user 'foo"; rm -rf /; echo "'` execute as root at install-time.
     if (!RE_OS_USERNAME.test(this.user)) {
-      this.hbService.logger(
-        `WARNING: Refusing to resolve home directory — invalid username "${this.user}".`,
-        'warn',
+      this.hbService.logger.warn(
+        `WARNING: Refusing to resolve home directory — invalid username "${this.user}".`
       )
       return homedir()
     }
@@ -243,18 +242,18 @@ export class DarwinInstaller extends BasePlatform {
     this.checkForRoot()
 
     if (!['x64', 'arm64'].includes(process.arch)) {
-      this.hbService.logger(`Architecture not supported: ${process.arch}.`, 'fail')
+      this.hbService.logger.error(`Architecture not supported: ${process.arch}.`)
       process.exit(1)
     }
 
     if (process.arch === 'arm64' && lt(job.target, '18.0.0')) {
-      this.hbService.logger('macOS M1 / arm64 support is only available from Node.js v18 or later', 'fail')
+      this.hbService.logger.error('macOS M1 / arm64 support is only available from Node.js v18 or later')
       process.exit(1)
     }
 
     // Node.js 18+ requires macOS 10.15 or later, which starts with Darwin 19.0.0
     if (lt(release(), '19.0.0') && gte(job.target, '18.0.0')) {
-      this.hbService.logger('macOS Catalina 10.15 or later is required to install Node.js v18 or later', 'fail')
+      this.hbService.logger.error('macOS Catalina 10.15 or later is required to install Node.js v18 or later')
       process.exit(1)
     }
 
@@ -263,11 +262,11 @@ export class DarwinInstaller extends BasePlatform {
 
     // Only allow updates when installed using the official Node.js installer / Homebridge package
     if (targetPath !== '/usr/local' && !targetPath.startsWith('/Library/Application Support/Homebridge/node-')) {
-      this.hbService.logger(`Cannot update Node.js on your system. Non-standard installation path detected: ${targetPath}`, 'fail')
+      this.hbService.logger.error(`Cannot update Node.js on your system. Non-standard installation path detected: ${targetPath}`)
       process.exit(1)
     }
 
-    this.hbService.logger(`Target: ${targetPath}`)
+    this.hbService.logger.log(`Target: ${targetPath}`)
 
     try {
       const archivePath = await this.hbService.downloadNodejs(downloadUrl)
@@ -296,10 +295,10 @@ export class DarwinInstaller extends BasePlatform {
       if (await pathExists(this.plistPath)) {
         await this.restart()
       } else {
-        this.hbService.logger('Please restart Homebridge for the changes to take effect.', 'warn')
+        this.hbService.logger.warn('Please restart Homebridge for the changes to take effect.')
       }
     } catch (e) {
-      this.hbService.logger(`Failed to update Node.js: ${e.message}`, 'fail')
+      this.hbService.logger.error(`Failed to update Node.js: ${e.message}`)
       process.exit(1)
     }
   }
@@ -342,8 +341,8 @@ export class DarwinInstaller extends BasePlatform {
       execSync(`chown -R ${this.user}:admin "${npmGlobalPath}"`)
       execSync(`chown -R ${this.user}:admin "$(dirname $(which npm))"`)
     } catch (e) {
-      this.hbService.logger(`ERROR: User "${this.user}" does not have write access to the global npm modules path.`, 'fail')
-      this.hbService.logger('You can fix this issue by running the following commands:', 'fail')
+      this.hbService.logger.error(`ERROR: User "${this.user}" does not have write access to the global npm modules path.`)
+      this.hbService.logger.error('You can fix this issue by running the following commands:')
 
       /* eslint-disable no-console */
       console.log('')
@@ -352,7 +351,7 @@ export class DarwinInstaller extends BasePlatform {
       console.log('')
       /* eslint-enable no-console */
 
-      this.hbService.logger('Once you have done this run the hb-service install command again to complete your installation.', 'fail')
+      this.hbService.logger.error('Once you have done this run the hb-service install command again to complete your installation.')
       process.exit(1)
     }
   }
