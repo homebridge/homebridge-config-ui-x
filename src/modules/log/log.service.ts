@@ -7,7 +7,7 @@ import { platform } from 'node:os'
 import process from 'node:process'
 
 import { Inject, Injectable } from '@nestjs/common'
-import { cyan, red, yellow } from 'bash-color'
+import { cyan, green, red, yellow } from 'bash-color'
 import { satisfies } from 'semver'
 import { Tail } from 'tail'
 
@@ -117,7 +117,7 @@ export class LogService {
       // Send stdout data from the process to the client
       proc.stdout?.on('data', (data) => {
         try {
-          client.emit('stdout', data.toString('utf8').split('\n').join('\n\r'))
+          this.emitMessage(client, data.toString('utf8').split('\n').join('\n\r'))
         } catch (e) {
           // The client socket probably closed
         }
@@ -126,7 +126,7 @@ export class LogService {
       // Send stderr data from the process to the client
       proc.stderr?.on('data', (data) => {
         try {
-          client.emit('stdout', data.toString('utf8').split('\n').join('\n\r'))
+          this.emitMessage(client, data.toString('utf8').split('\n').join('\n\r'))
         } catch (e) {
           // The client socket probably closed
         }
@@ -156,7 +156,7 @@ export class LogService {
 
         try {
           proc.kill()
-        } catch (e) {}
+        } catch (e) { }
       }
 
       client.on('end', onEnd)
@@ -173,7 +173,7 @@ export class LogService {
 
       // Send stdout data from the process to the client
       term.onData((data) => {
-        client.emit('stdout', data)
+        this.emitMessage(client, data)
       })
 
       // Send an error message to the client if the log tailing process exits early
@@ -194,7 +194,7 @@ export class LogService {
       client.on('resize', (resize: { rows: number, cols: number }) => {
         try {
           term.resize(resize.cols, resize.rows)
-        } catch (e) {}
+        } catch (e) { }
       })
 
       // Cleanup on disconnect
@@ -208,7 +208,7 @@ export class LogService {
 
         try {
           term.kill()
-        } catch (e) {}
+        } catch (e) { }
         // Really make sure the log tail command is killed when using sudo mode
         if (this.configService.ui.sudo && term && term.pid) {
           exec(`sudo -n kill -9 ${term.pid}`)
@@ -271,7 +271,7 @@ export class LogService {
       const logStream = createReadStream(this.configService.ui.log.path, { start: logStartPosition })
 
       logStream.on('data', (buffer) => {
-        client.emit('stdout', buffer.toString('utf8').split('\n').join('\n\r'))
+        this.emitMessage(client, buffer.toString('utf8').split('\n').join('\n\r'))
       })
 
       logStream.on('end', () => {
@@ -304,7 +304,7 @@ export class LogService {
 
     // Watch for lines and emit to client
     const onLine = (line: string) => {
-      client.emit('stdout', `${line}\n\r`)
+      this.emitMessage(client, `${line}\n\r`)
     }
 
     const onError = (err: Error) => {
@@ -350,5 +350,31 @@ export class LogService {
    */
   private logNotConfigured() {
     this.command = null
+  }
+
+  private emitMessage(client: EventEmitter, msg: string) {
+    let output = msg
+
+    if (process.env.UIX_DEBUG_LOGGING !== '1') {
+      output = output.replace(/^.*\[DEBUG\].*(?:\r?\n|\n\r|$)/gm, '')
+    }
+
+    output = output.replace(/\[(INFO|SUCCESS|ERROR|WARN|DEBUG|VERBOSE)\]\s*([^\r\n]*)/g,
+      (_match, level, content) => {
+        switch (level) {
+          case 'SUCCESS':
+            return green(content)
+          case 'WARN':
+            return yellow(content)
+          case 'ERROR':
+            return red(content)
+          default:
+            return content
+        }
+      })
+
+    if (output) {
+      client.emit('stdout', output)
+    }
   }
 }
