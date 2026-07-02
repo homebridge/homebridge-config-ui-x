@@ -82,7 +82,7 @@ export class ConfigEditorService implements OnApplicationBootstrap {
     this.logger.debug(`Next config.json backup cleanup scheduled for ${scheduleRule.nextInvocationDate(new Date()).toString()}.`)
 
     this.schedulerService.scheduleJob('cleanup-config-backups', scheduleRule, () => {
-      this.logger.log('Running job to cleanup config.json backup files older than 60 days...')
+      this.logger.debug('Running job to cleanup config.json backup files older than 60 days...')
       this.cleanupConfigBackups().catch((e) => {
         this.logger.error(`config.json backup cleanup failed as ${e?.message || e}.`)
       })

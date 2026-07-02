@@ -86,7 +86,7 @@ export class TerminalService {
   }
 
   private async createNewTerminal(client: WsEventEmitter, size: TermSize) {
-    this.logger.log('Starting new terminal session.')
+    this.logger.debug('Starting new terminal session.')
 
     // Get the preferred shell for the current platform
     const shell = await this.getPreferredShell()
@@ -135,7 +135,7 @@ export class TerminalService {
     client.on('resize', (resize: TermSize) => {
       try {
         term.resize(resize.cols, resize.rows)
-      } catch (e) {}
+      } catch (e) { }
     })
 
     // cleanup on disconnect
@@ -148,9 +148,9 @@ export class TerminalService {
       client.removeAllListeners('disconnect')
 
       try {
-        this.logger.log('Terminal session ended.')
+        this.logger.debug('Terminal session ended.')
         term.kill()
-      } catch (e) {}
+      } catch (e) { }
     }
 
     client.on('end', onEnd.bind(this))
@@ -240,7 +240,7 @@ export class TerminalService {
       // Resize to match current client
       try {
         TerminalService.persistentTerminal.resize(size.cols, size.rows)
-      } catch (e) {}
+      } catch (e) { }
     }
 
     // Clean up any existing listeners on this client before adding new ones
@@ -281,7 +281,7 @@ export class TerminalService {
         if (TerminalService.persistentTerminal) {
           TerminalService.persistentTerminal.resize(resize.cols, resize.rows)
         }
-      } catch (e) {}
+      } catch (e) { }
     })
 
     // Clean up client listeners on disconnect (but keep terminal alive)

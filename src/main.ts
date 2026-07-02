@@ -144,7 +144,7 @@ async function bootstrap(): Promise<NestFastifyApplication> {
   app.useGlobalFilters(new SpaFilter())
 
   // (13) Start listening - woohoo!
-  logger.warn(`Homebridge UI v${configService.package.version} is listening on ${startupConfig.host} port ${configService.ui.port}.`)
+  logger.success(`Homebridge UI v${configService.package.version} is listening on ${startupConfig.host} port ${configService.ui.port}.`)
   await app.listen(configService.ui.port, startupConfig.host)
 
   // Advertise the HTTP service via mDNS/Bonjour for easy discovery (if enabled)
@@ -174,7 +174,7 @@ async function bootstrap(): Promise<NestFastifyApplication> {
   }
 
   const handleShutdown = (signal: string) => {
-    logger.log(`Received ${signal}, starting graceful shutdown...`)
+    logger.debug(`Received ${signal}, starting graceful shutdown...`)
     if (bonjour) {
       try {
         logger.log('Shutting down mDNS service advertising...')

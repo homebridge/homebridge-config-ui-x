@@ -90,7 +90,7 @@ export class StatusService {
         this.getMemoryUsagePoint()
       }, 10000)
     } else {
-      this.logger.warn('Server metrics monitoring disabled.')
+      this.logger.debug('Server metrics monitoring disabled.')
     }
 
     this.homebridgeIpcService.on('serverStatusUpdate', (data: HomebridgeStatusUpdate) => {
