@@ -13,6 +13,7 @@
     "postinstall": "patch-package"
   },
   "dependencies": {
+    "@angular/cdk": "21.2.14",
     "@angular/common": "21.2.15",
     "@angular/compiler": "21.2.15",
     "@angular/core": "21.2.15",
