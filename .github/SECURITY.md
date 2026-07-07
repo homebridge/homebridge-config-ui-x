@@ -14,7 +14,7 @@ The `homebridge-config-ui-x` team and community take all security bugs in
 `homebridge-config-ui-x`. We appreciate your efforts and responsible disclosure
 and will make every effort to acknowledge your contributions.
 
-Report security bugs by emailing the maintainer at dev@oz.nu
+Report security bugs by emailing the maintainer at [mail](mailto:bwp91@icloud.com,northern.man1@gmail.com,homebridge-security@andi-bauer.com,dev@oz.nu?subject=%5BHB-SECURITY%5D).
 
 The maintainer will acknowledge your email within 48 hours, and will send a
 more detailed response within 48 hours indicating the next steps in handling
