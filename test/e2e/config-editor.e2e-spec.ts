@@ -1337,6 +1337,29 @@ describe('ConfigEditorController (e2e)', () => {
       expect(afterUi.cleanup?.hax).toBeUndefined()
     })
 
+    it('rejects a dot-path that traverses an inherited key', async () => {
+      const before: HomebridgeConfig = await readJson(configFilePath)
+      const beforeUi = before.platforms.find((p: any) => p.platform === 'config') as any
+
+      const res = await app.inject({
+        method: 'PATCH',
+        url: '/config-editor/ui',
+        headers: {
+          authorization,
+        },
+        payload: {
+          'toString. call': 'unhandled',
+        },
+      })
+
+      expect(res.statusCode).toBe(400)
+
+      const after: HomebridgeConfig = await readJson(configFilePath)
+      const afterUi = after.platforms.find((p: any) => p.platform === 'config') as any
+      expect(afterUi.toString).toBe(beforeUi.toString)
+      expect(Object.hasOwn(afterUi, 'toString')).toBe(false)
+    })
+
     it('two concurrent PATCH calls both persist their keys', async () => {
       // Without per-path serialisation in JsonFileStoreService, both calls
       // would read the same baseline and the second write would drop the
