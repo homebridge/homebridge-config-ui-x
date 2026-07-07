@@ -12,7 +12,7 @@ This document outlines security procedures and general policies for the `homebri
 
 The `homebridge-config-ui-x` team takes all security vulnerabilities seriously. We appreciate responsible disclosure and will make every effort to acknowledge your contributions and keep you informed throughout the process.
 
-To report a vulnerability, email the security team at [mail](mailto:bwp91@icloud.com,northern.man1@gmail.com,beckersmarthome@icloud.com,homebridge-security@andi-bauer.com,dev@oz.nu?subject=%5BHB-SECURITY%5D). Please include the following in your report:
+To report a vulnerability, email the security team at [mail](mailto:bwp91@icloud.com,northern.man1@gmail.com,homebridge-security@andi-bauer.com,dev@oz.nu?subject=%5BHB-SECURITY%5D). Please include the following in your report:
 
 - A description of the vulnerability and its potential impact
 - The affected version(s)
@@ -39,5 +39,3 @@ We do not currently operate a bug bounty programme.
 ## Comments on this Policy
 
 If you have suggestions on how this process could be improved please submit a pull request.
-
-[link-responsible-disclosure]: http://en.wikipedia.org/wiki/Responsible_disclosure
