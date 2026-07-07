@@ -71,6 +71,7 @@ export class ServerController {
     return this.childBridgesService.startChildBridge(deviceId)
   }
 
+  @UseGuards(AdminGuard)
   @Get('/pairing')
   @ApiOperation({ summary: 'Get the Homebridge <> HomeKit pairing information and status.' })
   getBridgePairingInformation() {
