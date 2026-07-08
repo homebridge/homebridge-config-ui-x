@@ -91,7 +91,7 @@
     "@nestjs/passport": "11.0.5",
     "@nestjs/platform-fastify": "11.1.24",
     "@nestjs/platform-socket.io": "11.1.24",
-    "@nestjs/swagger": "11.4.4",
+    "@nestjs/swagger": "11.4.5",
     "@nestjs/websockets": "11.1.24",
     "axios": "1.16.1",
     "bash-color": "0.0.4",
