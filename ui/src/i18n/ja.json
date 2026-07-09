@@ -454,6 +454,7 @@
   "plugins.manage.confirm_disable_platform_1": "このプラグインが公開するアクセサリはHomebridge UIから削除されますが、HomeKitには「応答なし」として残ります。",
   "plugins.manage.confirm_disable_platform_2": "プラグインを再度有効にすると、アクセサリはHomebridge UIに再表示され、HomeKitでも制御できるようになります。HomeKitのデータは保持されます。",
   "plugins.manage.confirm_disable_setting": "{{ setting }}の設定が現在{{ value }}のため:",
+  "plugins.manage.confirm_disable_setting_override": "Your setting for {{ setting }} is currently {{ value }}. However, since you are removing the plugin config:",
   "plugins.manage.confirm_enable": "本当に{{ pluginName }}を有効にしますか？",
   "plugins.manage.disable": "無効にする",
   "plugins.manage.enable": "有効にする",

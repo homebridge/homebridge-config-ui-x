@@ -454,6 +454,7 @@
   "plugins.manage.confirm_disable_platform_1": "Tutti gli accessori esposti da questo plugin verranno rimossi dalla schermata degli accessori di Homebridge UI ma rimarranno in HomeKit con l'etichetta 'Nessuna risposta'.",
   "plugins.manage.confirm_disable_platform_2": "Quando riabiliti il plugin, gli accessori riappariranno in Homebridge UI e diventeranno nuovamente controllabili in HomeKit. Gli accessori non perderanno i loro dati HomeKit (come scene e automazioni correlate).",
   "plugins.manage.confirm_disable_setting": "La tua impostazione per {{ setting }} è attualmente {{ value }}, quindi:",
+  "plugins.manage.confirm_disable_setting_override": "Your setting for {{ setting }} is currently {{ value }}. However, since you are removing the plugin config:",
   "plugins.manage.confirm_enable": "Sei sicuro di voler attivare {{ pluginName }}?",
   "plugins.manage.disable": "Disattiva",
   "plugins.manage.enable": "Attiva",

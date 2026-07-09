@@ -27,10 +27,28 @@ export class SwitchComponent {
       return false
     }
 
-    return !!(values.On
-      || values.Active
-      || ('LockTargetState' in values && !values.LockTargetState)
-      || ('CurrentDoorState' in values && [0, 2].includes(values.CurrentDoorState)))
+    if ('On' in values) {
+      return !!values.On
+    }
+    if ('Active' in values) {
+      return !!values.Active
+    }
+    if ('CurrentMediaState' in values) {
+      return [0, 1].includes(values.CurrentMediaState)
+    }
+    if ('Mute' in values && 'Volume' in values) {
+      return !values.Mute && values.Volume > 0
+    }
+    if ('Mute' in values) {
+      return !values.Mute
+    }
+    if ('LockTargetState' in values) {
+      return !values.LockTargetState
+    }
+    if ('CurrentDoorState' in values) {
+      return [0, 2].includes(values.CurrentDoorState)
+    }
+    return false
   }
 
   public onClick() {
@@ -42,6 +60,10 @@ export class SwitchComponent {
       void this.service().getCharacteristic!('On').setValue!(!this.service().values.On)
     } else if ('Active' in this.service().values) {
       void this.service().getCharacteristic!('Active').setValue!(this.service().values.Active ? 0 : 1)
+    } else if ('TargetMediaState' in this.service().values) {
+      void this.service().getCharacteristic!('TargetMediaState').setValue!(this.service().values.TargetMediaState === 0 ? 1 : 0)
+    } else if ('Mute' in this.service().values) {
+      void this.service().getCharacteristic!('Mute').setValue!(!this.service().values.Mute)
     } else if ('LockTargetState' in this.service().values) {
       void this.service().getCharacteristic!('LockTargetState').setValue!(this.service().values.LockTargetState ? 0 : 1)
     } else if ('TargetDoorState' in this.service().values) {

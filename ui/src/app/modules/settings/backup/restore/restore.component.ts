@@ -208,7 +208,7 @@ export class RestoreComponent implements OnInit, OnDestroy {
     formData.append('restoreArchive', this.selectedFile()!, this.selectedFile()?.name)
     try {
       const event = await this.$api.post('/backup/restore/hbfx', formData, {
-        reportProgress: true,
+        reportUploadProgress: true,
         observe: 'events',
       })
       if (event.type === HttpEventType.UploadProgress) {
