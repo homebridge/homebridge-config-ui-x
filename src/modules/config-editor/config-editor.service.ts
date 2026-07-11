@@ -518,10 +518,18 @@ export class ConfigEditorService implements OnApplicationBootstrap {
       let current = pluginConfig
 
       for (let i = 0; i < properties.length - 1; i += 1) {
-        if (!current[properties[i]]) {
-          current[properties[i]] = {}
+        const pathSegment = properties[i]
+        const hasOwnSegment = Object.hasOwn(current, pathSegment)
+        if (!hasOwnSegment && pathSegment in current) {
+          throw new BadRequestException(`Property "${property}" contains an invalid nested key segment.`)
         }
-        current = current[properties[i]]
+        if (!hasOwnSegment) {
+          current[pathSegment] = {}
+        }
+        if (typeof current[pathSegment] !== 'object' || Array.isArray(current[pathSegment])) {
+          throw new BadRequestException(`Property "${property}" cannot traverse through a non-object value.`)
+        }
+        current = current[pathSegment]
       }
 
       current[properties.at(-1)] = value
