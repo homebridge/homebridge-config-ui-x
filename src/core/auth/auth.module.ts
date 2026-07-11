@@ -10,6 +10,7 @@ import { LoggerModule } from '../logger/logger.module.js'
 import { AuthController } from './auth.controller.js'
 import { AuthService } from './auth.service.js'
 import { AdminGuard } from './guards/admin.guard.js'
+import { CookieAuthGuard } from './guards/cookie-auth.guard.js'
 import { WsAdminGuard } from './guards/ws-admin-guard.js'
 import { WsGuard } from './guards/ws.guard.js'
 import { JwtStrategy } from './jwt.strategy.js'
@@ -38,12 +39,15 @@ import { JwtStrategy } from './jwt.strategy.js'
     WsGuard,
     WsAdminGuard,
     AdminGuard,
+    CookieAuthGuard,
   ],
   controllers: [
     AuthController,
   ],
   exports: [
     AuthService,
+    CookieAuthGuard,
+    JwtModule,
   ],
 })
 export class AuthModule {}

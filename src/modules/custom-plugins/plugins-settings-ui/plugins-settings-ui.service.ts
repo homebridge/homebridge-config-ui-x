@@ -55,13 +55,33 @@ export class PluginsSettingsUiService {
         return reply.code(404).send('Not Found')
       }
 
-      // This will severely limit the ability for this page to do anything if loaded outside the UI
+      // For non-HTML assets the CSP header is irrelevant to the browser, but
+      // setting an empty value is a belt-and-suspenders measure that prevents
+      // any stale header from leaking through.
       reply.header('Content-Security-Policy', '')
 
       if (assetPath === 'index.html') {
+        // Validate origin once here so the same value is used in both the CSP
+        // header and the HTML body — preventing any mismatch between the two.
+        const safeOrigin = this.sanitizeOrigin(origin)
+        // Scope the CSP tightly to the validated origin.  'unsafe-inline' is
+        // required because the generated index.html contains two inline
+        // <script> blocks.  frame-ancestors restricts embedding to same-origin
+        // frames only, preventing the plugin iframe from being embedded by
+        // third-party pages.
+        reply.header(
+          'Content-Security-Policy',
+          `default-src 'self' ${safeOrigin}; `
+          + `script-src 'self' 'unsafe-inline' ${safeOrigin}; `
+          + `style-src 'self' 'unsafe-inline' ${safeOrigin}; `
+          + `img-src * data:; `
+          + `connect-src *; `
+          + `font-src 'self' data:; `
+          + `frame-ancestors 'self' ${safeOrigin}`,
+        )
         return reply
           .type('text/html')
-          .send(await this.buildIndexHtml(pluginUi, origin))
+          .send(await this.buildIndexHtml(pluginUi, safeOrigin))
       }
 
       if (pluginUi.devServer) {
@@ -130,8 +150,9 @@ export class PluginsSettingsUiService {
   /**
    * Build the entrypoint html file for the plugin custom ui
    */
-  async buildIndexHtml(pluginUi: HomebridgePluginUiMetadata, origin: string) {
+  async buildIndexHtml(pluginUi: HomebridgePluginUiMetadata, origin?: string) {
     const body = await this.getIndexHtmlBody(pluginUi)
+    const safeOrigin = this.sanitizeOrigin(origin)
 
     return `
       <!doctype html>
@@ -146,7 +167,7 @@ export class PluginsSettingsUiService {
             serverEnv: ${JSON.stringify(this.configService.uiSettings(true)).replace(/</g, '\\u003c')},
           };
           </script>
-          <script src="${origin || 'http://localhost:4200'}/assets/plugin-ui-utils/ui.js?v=${this.configService.package.version}"></script>
+          <script src="${safeOrigin}/assets/plugin-ui-utils/ui.js?v=${this.configService.package.version}"></script>
           <script>
             window.addEventListener('load', () => {
               window.parent.postMessage({action: 'loaded'}, '*');
@@ -158,6 +179,29 @@ export class PluginsSettingsUiService {
         </body>
       </html>
     `
+  }
+
+  /**
+   * Validate and return only the origin (scheme + host) of the provided URL.
+   * Returns a safe fallback if the value is missing, not a valid URL, or uses
+   * a scheme other than http/https — preventing script-src injection via the
+   * `origin` query parameter.
+   */
+  private sanitizeOrigin(origin: string | undefined): string {
+    const fallback = 'http://localhost:4200'
+    if (!origin) {
+      return fallback
+    }
+    try {
+      const url = new URL(origin)
+      if (url.protocol !== 'http:' && url.protocol !== 'https:') {
+        return fallback
+      }
+      // Return only protocol + host, stripping any path, query, or fragment
+      return url.origin
+    } catch {
+      return fallback
+    }
   }
 
   /**
