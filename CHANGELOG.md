@@ -25,6 +25,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - chore(deps): upgrade angular 21 to 22
 - chore: update `SECURITY.md` (@NorthernMan54)
 - chore: update claude and copilot reference files
+- chore: update `actions/checkout` to `v7`
 
 ### Homebridge Dependencies
 
