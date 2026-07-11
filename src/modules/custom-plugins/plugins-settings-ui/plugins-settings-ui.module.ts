@@ -1,6 +1,7 @@
 import { HttpModule } from '@nestjs/axios'
 import { Module } from '@nestjs/common'
 
+import { AuthModule } from '../../../core/auth/auth.module.js'
 import { ConfigModule } from '../../../core/config/config.module.js'
 import { LoggerModule } from '../../../core/logger/logger.module.js'
 import { PluginsModule } from '../../plugins/plugins.module.js'
@@ -10,6 +11,7 @@ import { PluginsSettingsUiService } from './plugins-settings-ui.service.js'
 
 @Module({
   imports: [
+    AuthModule,
     ConfigModule,
     LoggerModule,
     PluginsModule,
