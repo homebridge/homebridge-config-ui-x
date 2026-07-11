@@ -1765,9 +1765,9 @@ export class SettingsComponent implements OnInit {
     min: number,
     max: number,
   ): number | null {
-    const value = control.value || 0
+    const value = control.value ?? 0
 
-    if (typeof value !== 'number' || value < min || value > max || !Number.isInteger(value)) {
+    if (typeof value !== 'number' || Number.isNaN(value) || value < min || value > max || !Number.isInteger(value)) {
       invalidSignal.set(true)
       return null
     }
