@@ -813,7 +813,7 @@
   "status.reorder.item_label": "{{ name }}. Позиція {{ position }} з {{ total }}.",
   "status.reorder.listbox_label": "Зміна порядку віджетів",
   "status.reorder.moved": "Переміщено {{ name }} на позицію {{ position }} з {{ total }}.",
-  "status.reorder.moved_to_edge": "Переміщено {{ name }} до {{ edge }}, позиція {{ position }} з {{ total }}."",
+  "status.reorder.moved_to_edge": "Переміщено {{ name }} до {{ edge }}, позиція {{ position }} з {{ total }}.",
   "status.reorder.widget_settings": "Налаштування {{ name }}",
   "status.services.hap_externals_only": "HAP Тільки зовнішні",
   "status.services.hap_not_enabled": "HAP не ввімкнено",
