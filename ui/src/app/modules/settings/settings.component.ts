@@ -1,4 +1,5 @@
 import type { NetworkAdapterAvailable, NetworkAdapterSelected } from '@/app/modules/settings/settings.interfaces'
+import type { WritableSignal } from '@angular/core'
 
 import { TitleCasePipe } from '@angular/common'
 import { afterNextRender, ChangeDetectionStrategy, ChangeDetectorRef, Component, createEnvironmentInjector, DestroyRef, ElementRef, EnvironmentInjector, inject, OnInit, runInInjectionContext, signal, viewChild } from '@angular/core'
@@ -289,7 +290,9 @@ export class SettingsComponent implements OnInit {
   public readonly uiAuthIsSaving = signal(false)
   public uiAuthFormControl = new UntypedFormControl(true)
 
-  public readonly uiSessionTimeoutIsInvalid = signal(false)
+  public readonly uiSessionTimeoutDaysIsInvalid = signal(false)
+  public readonly uiSessionTimeoutHoursIsInvalid = signal(false)
+  public readonly uiSessionTimeoutMinutesIsInvalid = signal(false)
   public readonly uiSessionTimeoutIsSaving = signal(false)
   public uiSessionTimeoutDaysFormControl = new FormControl(0)
   public uiSessionTimeoutHoursFormControl = new FormControl(8)
@@ -1721,26 +1724,20 @@ export class SettingsComponent implements OnInit {
   }
 
   private async uiSessionTimeoutSaveFromFields(): Promise<void> {
-    const days = this.uiSessionTimeoutDaysFormControl.value || 0
-    const hours = this.uiSessionTimeoutHoursFormControl.value || 0
-    const minutes = this.uiSessionTimeoutMinutesFormControl.value || 0
+    const days = this.normalizeSessionTimeoutField(this.uiSessionTimeoutDaysFormControl, this.uiSessionTimeoutDaysIsInvalid, 0, 365)
+    const hours = this.normalizeSessionTimeoutField(this.uiSessionTimeoutHoursFormControl, this.uiSessionTimeoutHoursIsInvalid, 0, 23)
+    const minutes = this.normalizeSessionTimeoutField(this.uiSessionTimeoutMinutesFormControl, this.uiSessionTimeoutMinutesIsInvalid, 0, 59)
 
-    // Validate individual fields
-    if (
-      typeof days !== 'number' || days < 0 || days > 365 || !Number.isInteger(days)
-      || typeof hours !== 'number' || hours < 0 || hours > 23 || !Number.isInteger(hours)
-      || typeof minutes !== 'number' || minutes < 0 || minutes > 59 || !Number.isInteger(minutes)
-    ) {
-      this.uiSessionTimeoutIsInvalid.set(true)
+    if (days === null || hours === null || minutes === null) {
       return
     }
 
     // Convert to seconds
     const totalSeconds = (days * 86400) + (hours * 3600) + (minutes * 60)
 
-    // Validate total: minimum 10 minutes (600 seconds), maximum 1000 days (86400000 seconds)
-    if (totalSeconds < 600 || totalSeconds > 86400000) {
-      this.uiSessionTimeoutIsInvalid.set(true)
+    // Validate total: minimum 10 minutes (600 seconds)
+    if (totalSeconds < 600) {
+      this.uiSessionTimeoutMinutesIsInvalid.set(true)
       return
     }
 
@@ -1748,7 +1745,9 @@ export class SettingsComponent implements OnInit {
       this.uiSessionTimeoutIsSaving.set(true)
       this.$settings.setItem('sessionTimeout', totalSeconds)
       await this.saveUiSettingChange('sessionTimeout', totalSeconds)
-      this.uiSessionTimeoutIsInvalid.set(false)
+      this.uiSessionTimeoutDaysIsInvalid.set(false)
+      this.uiSessionTimeoutHoursIsInvalid.set(false)
+      this.uiSessionTimeoutMinutesIsInvalid.set(false)
       setTimeout(() => {
         this.uiSessionTimeoutIsSaving.set(false)
         this.$settings.showRestartToast()
@@ -1758,6 +1757,24 @@ export class SettingsComponent implements OnInit {
       this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
       this.uiSessionTimeoutIsSaving.set(false)
     }
+  }
+
+  private normalizeSessionTimeoutField(
+    control: FormControl<number | null>,
+    invalidSignal: WritableSignal<boolean>,
+    min: number,
+    max: number,
+  ): number | null {
+    const value = control.value ?? 0
+
+    if (typeof value !== 'number' || Number.isNaN(value) || value < min || value > max || !Number.isInteger(value)) {
+      invalidSignal.set(true)
+      return null
+    }
+
+    invalidSignal.set(false)
+    control.patchValue(value, { emitEvent: false })
+    return value
   }
 
   private async uiSessionTimeoutInactivityBasedSave(value: boolean): Promise<void> {
