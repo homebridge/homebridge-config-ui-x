@@ -20,6 +20,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - chore: change security report email addresses (@NorthernMan54)
 - chore(deps): dependency updates
 - chore(deps): upgrade angular 21 to 22
+- chore: update `SECURITY.md` (@NorthernMan54)
 
 ### Homebridge Dependencies
 
