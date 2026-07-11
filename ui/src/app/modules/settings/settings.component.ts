@@ -1,4 +1,5 @@
 import type { NetworkAdapterAvailable, NetworkAdapterSelected } from '@/app/modules/settings/settings.interfaces'
+import type { WritableSignal } from '@angular/core'
 
 import { TitleCasePipe } from '@angular/common'
 import { afterNextRender, ChangeDetectionStrategy, ChangeDetectorRef, Component, createEnvironmentInjector, DestroyRef, ElementRef, EnvironmentInjector, inject, OnInit, runInInjectionContext, signal, viewChild } from '@angular/core'
@@ -1723,19 +1724,11 @@ export class SettingsComponent implements OnInit {
   }
 
   private async uiSessionTimeoutSaveFromFields(): Promise<void> {
-    const days = this.uiSessionTimeoutDaysFormControl.value || 0
-    const hours = this.uiSessionTimeoutHoursFormControl.value || 0
-    const minutes = this.uiSessionTimeoutMinutesFormControl.value || 0
+    const days = this.normalizeSessionTimeoutField(this.uiSessionTimeoutDaysFormControl, this.uiSessionTimeoutDaysIsInvalid, 0, 365)
+    const hours = this.normalizeSessionTimeoutField(this.uiSessionTimeoutHoursFormControl, this.uiSessionTimeoutHoursIsInvalid, 0, 23)
+    const minutes = this.normalizeSessionTimeoutField(this.uiSessionTimeoutMinutesFormControl, this.uiSessionTimeoutMinutesIsInvalid, 0, 59)
 
-    const daysIsInvalid = !this.isSessionTimeoutFieldValid(days, 0, 365)
-    const hoursIsInvalid = !this.isSessionTimeoutFieldValid(hours, 0, 23)
-    const minutesIsInvalid = !this.isSessionTimeoutFieldValid(minutes, 0, 59)
-
-    this.uiSessionTimeoutDaysIsInvalid.set(daysIsInvalid)
-    this.uiSessionTimeoutHoursIsInvalid.set(hoursIsInvalid)
-    this.uiSessionTimeoutMinutesIsInvalid.set(minutesIsInvalid)
-
-    if (daysIsInvalid || hoursIsInvalid || minutesIsInvalid) {
+    if (days === null || hours === null || minutes === null) {
       return
     }
 
@@ -1766,8 +1759,22 @@ export class SettingsComponent implements OnInit {
     }
   }
 
-  private isSessionTimeoutFieldValid(value: number, min: number, max: number): boolean {
-    return typeof value === 'number' && value >= min && value <= max && Number.isInteger(value)
+  private normalizeSessionTimeoutField(
+    control: FormControl<number | null>,
+    invalidSignal: WritableSignal<boolean>,
+    min: number,
+    max: number,
+  ): number | null {
+    const value = control.value || 0
+
+    if (typeof value !== 'number' || value < min || value > max || !Number.isInteger(value)) {
+      invalidSignal.set(true)
+      return null
+    }
+
+    invalidSignal.set(false)
+    control.patchValue(value, { emitEvent: false })
+    return value
   }
 
   private async uiSessionTimeoutInactivityBasedSave(value: boolean): Promise<void> {
