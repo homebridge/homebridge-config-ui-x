@@ -14,6 +14,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(plugins): restore lost confirm_disable_setting_override translation
 - fix(status): reload dashboard layout if first connect ack is dropped
 - fix(plugins): custom ui fixes (#2847) (@NorthernMan54)
+- fix: add missing `AdminGuard` to `GET /api/server/pairing` (#2879) (@NorthernMan54)
 
 ### Other Changes
 
