@@ -1,42 +1,41 @@
 # Security Policies and Procedures
 
-This document outlines security procedures and general policies for the
-`homebridge-config-ui-x` project.
+This document outlines security procedures and general policies for the `homebridge-config-ui-x` project.
 
-- [Reporting a Bug](#reporting-a-bug)
+- [Reporting a Vulnerability](#reporting-a-vulnerability)
 - [Disclosure Policy](#disclosure-policy)
 - [Comments on this Policy](#comments-on-this-policy)
 
-## Reporting a Bug
+---
 
-The `homebridge-config-ui-x` team and community take all security bugs in
-`homebridge-config-ui-x` seriously. Thank you for improving the security of
-`homebridge-config-ui-x`. We appreciate your efforts and responsible disclosure
-and will make every effort to acknowledge your contributions.
+## Reporting a Vulnerability
 
-Report security bugs by emailing the maintainer at [mail](mailto:bwp91@icloud.com,northern.man1@gmail.com,homebridge-security@andi-bauer.com,dev@oz.nu?subject=%5BHB-SECURITY%5D).
+The `homebridge-config-ui-x` team takes all security vulnerabilities seriously. We appreciate responsible disclosure and will make every effort to acknowledge your contributions and keep you informed throughout the process.
 
-The maintainer will acknowledge your email within 48 hours, and will send a
-more detailed response within 48 hours indicating the next steps in handling
-your report. After the initial reply to your report, the security team will
-endeavor to keep you informed of the progress towards a fix and full
-announcement, and may ask for additional information or guidance.
+To report a vulnerability, email the security team at [mail](mailto:bwp91@icloud.com,northern.man1@gmail.com,homebridge-security@andi-bauer.com,dev@oz.nu?subject=%5BHB-SECURITY%5D). Please include the following in your report:
 
-Report security bugs in third-party modules to the person or team maintaining
-the module.
+- A description of the vulnerability and its potential impact
+- The affected version(s)
+- Steps to reproduce or proof of concept
+- Any suggested mitigations if known
+
+The security team will acknowledge your report within 48 hours and provide a more detailed response within 96 hours outlining the next steps. We will endeavour to keep you informed of progress toward a fix throughout the process and may follow up for additional information or guidance.
+
+Please report security bugs in third-party modules to the person or team maintaining that module.
 
 ## Disclosure Policy
 
-When the security team receives a security bug report, they will assign it to a
-primary handler. This person will coordinate the fix and release process,
-involving the following steps:
+When a vulnerability report is received, a primary handler will be assigned to coordinate the fix and release process:
 
-- Confirm the problem and determine the affected versions.
-- Audit code to find any potential similar problems.
-- Prepare fixes for all releases still under maintenance. These fixes will be
-  released as fast as possible to npm.
+- Confirm the vulnerability and determine the affected versions
+- Audit the codebase for similar issues
+- Prepare and release fixes for all versions currently under active maintenance as quickly as possible
+- Coordinate disclosure timing with the reporter where possible; we ask for a reasonable embargo period to allow fixes to reach users before public disclosure
+
+We assess all reports against CVSS v3.1 scoring criteria. Where the attack complexity, prerequisites, or deployment context of the Homebridge ecosystem result in a score that does not meet the threshold for a CVE, we will communicate that assessment clearly to the reporter with our reasoning.
+
+We do not currently operate a bug bounty programme.
 
 ## Comments on this Policy
 
-If you have suggestions on how this process could be improved please submit a
-pull request.
+If you have suggestions on how this process could be improved please submit a pull request.
