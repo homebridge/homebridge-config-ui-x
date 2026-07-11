@@ -289,7 +289,9 @@ export class SettingsComponent implements OnInit {
   public readonly uiAuthIsSaving = signal(false)
   public uiAuthFormControl = new UntypedFormControl(true)
 
-  public readonly uiSessionTimeoutIsInvalid = signal(false)
+  public readonly uiSessionTimeoutDaysIsInvalid = signal(false)
+  public readonly uiSessionTimeoutHoursIsInvalid = signal(false)
+  public readonly uiSessionTimeoutMinutesIsInvalid = signal(false)
   public readonly uiSessionTimeoutIsSaving = signal(false)
   public uiSessionTimeoutDaysFormControl = new FormControl(0)
   public uiSessionTimeoutHoursFormControl = new FormControl(8)
@@ -1725,22 +1727,24 @@ export class SettingsComponent implements OnInit {
     const hours = this.uiSessionTimeoutHoursFormControl.value || 0
     const minutes = this.uiSessionTimeoutMinutesFormControl.value || 0
 
-    // Validate individual fields
-    if (
-      typeof days !== 'number' || days < 0 || days > 365 || !Number.isInteger(days)
-      || typeof hours !== 'number' || hours < 0 || hours > 23 || !Number.isInteger(hours)
-      || typeof minutes !== 'number' || minutes < 0 || minutes > 59 || !Number.isInteger(minutes)
-    ) {
-      this.uiSessionTimeoutIsInvalid.set(true)
+    const daysIsInvalid = !this.isSessionTimeoutFieldValid(days, 0, 365)
+    const hoursIsInvalid = !this.isSessionTimeoutFieldValid(hours, 0, 23)
+    const minutesIsInvalid = !this.isSessionTimeoutFieldValid(minutes, 0, 59)
+
+    this.uiSessionTimeoutDaysIsInvalid.set(daysIsInvalid)
+    this.uiSessionTimeoutHoursIsInvalid.set(hoursIsInvalid)
+    this.uiSessionTimeoutMinutesIsInvalid.set(minutesIsInvalid)
+
+    if (daysIsInvalid || hoursIsInvalid || minutesIsInvalid) {
       return
     }
 
     // Convert to seconds
     const totalSeconds = (days * 86400) + (hours * 3600) + (minutes * 60)
 
-    // Validate total: minimum 10 minutes (600 seconds), maximum 1000 days (86400000 seconds)
-    if (totalSeconds < 600 || totalSeconds > 86400000) {
-      this.uiSessionTimeoutIsInvalid.set(true)
+    // Validate total: minimum 10 minutes (600 seconds)
+    if (totalSeconds < 600) {
+      this.uiSessionTimeoutMinutesIsInvalid.set(true)
       return
     }
 
@@ -1748,7 +1752,9 @@ export class SettingsComponent implements OnInit {
       this.uiSessionTimeoutIsSaving.set(true)
       this.$settings.setItem('sessionTimeout', totalSeconds)
       await this.saveUiSettingChange('sessionTimeout', totalSeconds)
-      this.uiSessionTimeoutIsInvalid.set(false)
+      this.uiSessionTimeoutDaysIsInvalid.set(false)
+      this.uiSessionTimeoutHoursIsInvalid.set(false)
+      this.uiSessionTimeoutMinutesIsInvalid.set(false)
       setTimeout(() => {
         this.uiSessionTimeoutIsSaving.set(false)
         this.$settings.showRestartToast()
@@ -1758,6 +1764,10 @@ export class SettingsComponent implements OnInit {
       this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
       this.uiSessionTimeoutIsSaving.set(false)
     }
+  }
+
+  private isSessionTimeoutFieldValid(value: number, min: number, max: number): boolean {
+    return typeof value === 'number' && value >= min && value <= max && Number.isInteger(value)
   }
 
   private async uiSessionTimeoutInactivityBasedSave(value: boolean): Promise<void> {

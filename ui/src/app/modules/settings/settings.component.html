@@ -1698,7 +1698,7 @@
                           id="session-timeout-days"
                           [formControl]="uiSessionTimeoutDaysFormControl"
                           [attr.aria-label]="'settings.startup.session_days' | translate"
-                          [class.is-invalid]="uiSessionTimeoutIsInvalid()"
+                          [class.is-invalid]="uiSessionTimeoutDaysIsInvalid()"
                         />
                         <label for="session-timeout-days" class="ms-1 me-2 mb-0 text-nowrap grey-text small">{{
                           'settings.startup.session_days' | translate
@@ -1714,7 +1714,7 @@
                           id="session-timeout-hours"
                           [formControl]="uiSessionTimeoutHoursFormControl"
                           [attr.aria-label]="'settings.startup.session_hours' | translate"
-                          [class.is-invalid]="uiSessionTimeoutIsInvalid()"
+                          [class.is-invalid]="uiSessionTimeoutHoursIsInvalid()"
                         />
                         <label for="session-timeout-hours" class="ms-1 me-2 mb-0 text-nowrap grey-text small">{{
                           'settings.startup.session_hours' | translate
@@ -1730,7 +1730,7 @@
                           id="session-timeout-minutes"
                           [formControl]="uiSessionTimeoutMinutesFormControl"
                           [attr.aria-label]="'settings.startup.session_minutes' | translate"
-                          [class.is-invalid]="uiSessionTimeoutIsInvalid()"
+                          [class.is-invalid]="uiSessionTimeoutMinutesIsInvalid()"
                         />
                         <label for="session-timeout-minutes" class="ms-1 me-2 mb-0 text-nowrap grey-text small">{{
                           'settings.startup.session_minutes' | translate
