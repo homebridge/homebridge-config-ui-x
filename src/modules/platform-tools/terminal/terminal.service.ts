@@ -135,7 +135,9 @@ export class TerminalService {
     client.on('resize', (resize: TermSize) => {
       try {
         term.resize(resize.cols, resize.rows)
-      } catch (e) { }
+      } catch {
+        // The terminal has probably already exited
+      }
     })
 
     // cleanup on disconnect
@@ -150,7 +152,9 @@ export class TerminalService {
       try {
         this.logger.debug('Terminal session ended.')
         term.kill()
-      } catch (e) { }
+      } catch {
+        // The terminal has probably already exited
+      }
     }
 
     client.on('end', onEnd.bind(this))
@@ -240,7 +244,9 @@ export class TerminalService {
       // Resize to match current client
       try {
         TerminalService.persistentTerminal.resize(size.cols, size.rows)
-      } catch (e) { }
+      } catch {
+        // The terminal has probably already exited
+      }
     }
 
     // Clean up any existing listeners on this client before adding new ones
@@ -281,7 +287,9 @@ export class TerminalService {
         if (TerminalService.persistentTerminal) {
           TerminalService.persistentTerminal.resize(resize.cols, resize.rows)
         }
-      } catch (e) { }
+      } catch {
+        // The terminal has probably already exited
+      }
     })
 
     // Clean up client listeners on disconnect (but keep terminal alive)
