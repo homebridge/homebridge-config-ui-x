@@ -34,6 +34,7 @@ import { extract } from 'tar'
 import { check as tcpCheck } from 'tcp-port-used'
 
 import { RE_COLON, RE_NON_SCOPED, RE_PLUGIN_NAME, RE_SCOPED, RE_SERVICE_NAME } from '../core/regex.constants.js'
+import { Logger } from './logger.js'
 import { DarwinInstaller } from './platforms/darwin.js'
 import { FreeBSDInstaller } from './platforms/freebsd.js'
 import { LinuxInstaller } from './platforms/linux.js'
@@ -45,72 +46,6 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
 type Action = 'install' | 'uninstall' | 'start' | 'stop' | 'restart' | 'rebuild' | 'run' | 'add' | 'remove' | 'logs' | 'view' | 'update-node' | 'update-homebridge' | 'before-start' | 'status'
-
-class Logger {
-  // Read `action` and `logFile` from the service helper at write time —
-  // `logFile` is not assigned until `startLog()` runs, which happens after
-  // the first log calls in the `run` path, so it must not be snapshotted here.
-  constructor(
-    private readonly hbService: HomebridgeServiceHelper,
-  ) {}
-
-  log(msg: string) {
-    this._log(msg, 'info')
-  }
-
-  success(msg: string) {
-    this._log(msg, 'success')
-  }
-
-  error(msg: string) {
-    this._log(msg, 'error')
-  }
-
-  warn(msg: string) {
-    this._log(msg, 'warn')
-  }
-
-  debug(msg: string) {
-    this._log(msg, 'debug')
-  }
-
-  verbose(msg: string) {
-    this._log(msg, 'verbose')
-  }
-
-  private _log(msg: string, level: 'info' | 'success' | 'error' | 'warn' | 'debug' | 'verbose') {
-    if (this.hbService.action === 'run') {
-      msg = `\x1B[37m[${new Date().toLocaleString()}]\x1B[0m `
-        + `\x1B[36m[HB Supervisor]\x1B[0m [${level.toUpperCase()}] ${msg}`
-
-      if (this.hbService.logFile) {
-        this.hbService.logFile.write(`${msg}\n`)
-      } else {
-        console.log(msg)
-      }
-    } else {
-      let oraLevel: 'info' | 'succeed' | 'fail' | 'warn'
-      switch (level) {
-        case 'info':
-        case 'debug':
-        case 'verbose':
-          oraLevel = 'info'
-          break
-        case 'success':
-          oraLevel = 'succeed'
-          break
-        case 'error':
-          oraLevel = 'fail'
-          break
-        case 'warn':
-          oraLevel = 'warn'
-          break
-      }
-
-      ora()[oraLevel](msg)
-    }
-  }
-}
 
 export class HomebridgeServiceHelper {
   public action: Action
