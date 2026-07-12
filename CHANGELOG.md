@@ -18,6 +18,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix: handle invalid nested `/api/config-editor/ui` keys as `400` (#2881) (@NorthernMan54)
 - fix(auth): send credentials on auth requests so the hb-session cookie is stored
 - fix(server): derive ssl public key from pem for `@types/node` v26 compatibility
+- fix(ui): remove stale terminal socket listeners on destroy
 
 ### Other Changes
 
