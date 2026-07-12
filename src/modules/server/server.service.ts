@@ -242,7 +242,7 @@ export class ServerService {
    * Restart the server
    */
   public async restartServer() {
-    this.logger.log('Homebridge restart request received.')
+    this.logger.debug('Homebridge restart request received.')
 
     if (!await this.configService.uiRestartRequired() && !await this.nodeVersionChanged()) {
       this.logger.log('UI/Bridge settings have not changed - only restarting Homebridge process.')
@@ -257,7 +257,7 @@ export class ServerService {
     setTimeout(() => {
       const restartCmd = this.configService.ui.restart
       if (!restartCmd) {
-        this.logger.log('Sending SIGTERM to process...')
+        this.logger.debug('Sending SIGTERM to process...')
         process.kill(process.pid, 'SIGTERM')
         return
       }

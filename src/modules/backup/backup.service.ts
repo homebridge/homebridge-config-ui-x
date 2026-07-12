@@ -194,7 +194,7 @@ export class BackupService {
     scheduleRule.second = Math.floor(Math.random() * 59)
 
     this.schedulerService.scheduleJob('instance-backup', scheduleRule, () => {
-      this.logger.log('Running scheduled instance backup...')
+      this.logger.debug('Running scheduled instance backup...')
       this.runScheduledBackupJob().catch((e) => {
         this.logger.error(`Scheduled instance backup failed as ${e?.message || e}.`)
       })
@@ -220,7 +220,7 @@ export class BackupService {
     const backupFileName = `homebridge-backup-${instanceId}.${Date.now().toString()}.tar.gz`
     const backupPath = resolve(backupDir, backupFileName)
 
-    this.logger.log(`Creating temporary backup archive at ${backupPath}.`)
+    this.logger.debug(`Creating temporary backup archive at ${backupPath}.`)
 
     try {
       // Resolve the real path of the storage directory (in case it's a symbolic link)

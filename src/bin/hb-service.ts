@@ -304,7 +304,7 @@ export class HomebridgeServiceHelper {
     }
 
     // Work out the log path
-    this.logger.log(`Logging to ${this.logPath}.`)
+    this.logger.debug(`Logging to ${this.logPath}.`)
 
     // Redirect all stdout to the log file
     this.logFile = createWriteStream(this.logPath, { flags: 'a' })
@@ -382,8 +382,8 @@ export class HomebridgeServiceHelper {
       process.exit(0)
     }
 
-    this.logger.log(`Homebridge storage path: ${this.storagePath}.`)
-    this.logger.log(`Homebridge config path: ${process.env.UIX_CONFIG_PATH}.`)
+    this.logger.debug(`Homebridge storage path: ${this.storagePath}.`)
+    this.logger.debug(`Homebridge config path: ${process.env.UIX_CONFIG_PATH}.`)
 
     // Start the interval to truncate the logs every two hours
     setInterval(() => {
@@ -402,19 +402,19 @@ export class HomebridgeServiceHelper {
       await this.configCheck()
 
       // Log os info
-      this.logger.log(`OS: ${type()} ${release()} ${arch()}.`)
-      this.logger.log(`Node.js ${process.version} ${process.execPath}.`)
+      this.logger.debug(`OS: ${type()} ${release()} ${arch()}.`)
+      this.logger.debug(`Node.js ${process.version} ${process.execPath}.`)
 
       // Work out the homebridge binary path
       this.homebridgeBinary = await this.findHomebridgePath()
-      this.logger.log(`Homebridge path: ${this.homebridgeBinary}.`)
+      this.logger.debug(`Homebridge path: ${this.homebridgeBinary}.`)
 
       // Load startup options if they exist
       await this.loadHomebridgeStartupOptions()
 
       // Get the standalone ui binary on this system
       this.uiBinary = resolve(process.env.UIX_BASE_PATH, 'dist', 'bin', 'standalone.js')
-      this.logger.log(`UI path: ${this.uiBinary}.`)
+      this.logger.debug(`UI path: ${this.uiBinary}.`)
     } catch (e) {
       this.logger.log(e.message)
       process.exit(1)
@@ -447,7 +447,7 @@ export class HomebridgeServiceHelper {
    */
   private startExitHandler() {
     const exitHandler = () => {
-      this.logger.log('Stopping services...')
+      this.logger.debug('Stopping services...')
       try {
         this.homebridge.kill()
       } catch (e) {}
@@ -481,11 +481,11 @@ export class HomebridgeServiceHelper {
     }
 
     if (this.homebridgeOpts.length) {
-      this.logger.log(`Starting Homebridge with extra flags: ${this.homebridgeOpts.join(' ')}.`)
+      this.logger.debug(`Starting Homebridge with extra flags: ${this.homebridgeOpts.join(' ')}.`)
     }
 
     if (Object.keys(this.homebridgeCustomEnv).length) {
-      this.logger.log(`Starting Homebridge with custom env: ${JSON.stringify(this.homebridgeCustomEnv)}.`)
+      this.logger.debug(`Starting Homebridge with custom env: ${JSON.stringify(this.homebridgeCustomEnv)}.`)
     }
 
     // Env setup
@@ -525,7 +525,7 @@ export class HomebridgeServiceHelper {
       this.ipcService.setHomebridgeVersion(this.homebridgePackage.version)
     }
 
-    this.logger.log(`Started Homebridge v${this.homebridgePackage.version} with PID: ${this.homebridge.pid}.`)
+    this.logger.success(`Started Homebridge v${this.homebridgePackage.version} with PID: ${this.homebridge.pid}.`)
 
     // Buffer per-stream output and flush whole lines so concurrent
     // stdout/stderr writes don't interleave mid-line in the log file.

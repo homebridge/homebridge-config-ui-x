@@ -23,6 +23,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(plugins): remove stale custom ui socket listeners on destroy (#2873)
 - refactor(hb-service): level-based logger — `hb-service run` now writes level tags like `[INFO]` and `[VERBOSE]` into `homebridge.log` (#2874) (@mpatfield)
 - feat(log): strip and colorize hb-service level tags in the log stream (#2875) (@mpatfield)
+- refactor(log): downgrade noisy log messages to debug (#2876) (@mpatfield)
 
 ### Other Changes
 

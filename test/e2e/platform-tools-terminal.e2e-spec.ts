@@ -166,6 +166,24 @@ describe('PlatformToolsTerminal (e2e)', () => {
     expect(mockTerm.resize).toHaveBeenCalledWith(20, 25)
   })
 
+  it('ON /platform-tools/terminal/start-session (resize failure is tolerated)', async () => {
+    terminalGateway.startTerminalSession(client, size)
+
+    await new Promise(res => setTimeout(res, 100))
+
+    expect(nodePtyService.spawn).toHaveBeenCalled()
+
+    // A resize on a terminal that has already exited must not crash the session
+    vi.mocked(mockTerm.resize).mockImplementationOnce(() => {
+      throw new Error('read EPIPE')
+    })
+    expect(() => client.emit('resize', { cols: 20, rows: 25 })).not.toThrow()
+
+    // The session is still usable afterwards
+    client.emit('stdin', 'help')
+    expect(mockTerm.write).toHaveBeenCalledWith('help')
+  })
+
   describe('HTTP Endpoints', () => {
     beforeEach(async () => {
       authorization = `bearer ${(await app.inject({
