@@ -132,6 +132,16 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
   public ngOnDestroy(): void {
     window.removeEventListener('message', this.handleMessage)
 
+    // Remove socket event listeners before ending the connection. The socket
+    // is cached by WsService and outlives this modal — any listener left
+    // behind would post to this instance's destroyed iframe the next time
+    // the custom UI is opened (#2873).
+    if (this.io?.socket) {
+      this.io.socket.removeAllListeners('response')
+      this.io.socket.removeAllListeners('stream')
+      this.io.socket.removeAllListeners('ready')
+    }
+
     if (this.io) {
       this.io.end?.()
     }
@@ -207,14 +217,17 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
 
     this.io.socket.emit('start', plugin.name)
 
+    // The iframe is only assigned once the socket reports 'ready' (loadUi),
+    // and its contentWindow is nulled when the modal is torn down, so guard
+    // both dereferences.
     this.io.socket.on('response', (data) => {
       data.action = 'response'
-      this.iframe.contentWindow!.postMessage(data, environment.api.origin)
+      this.iframe?.contentWindow?.postMessage(data, environment.api.origin)
     })
 
     this.io.socket.on('stream', (data) => {
       data.action = 'stream'
-      this.iframe.contentWindow!.postMessage(data, environment.api.origin)
+      this.iframe?.contentWindow?.postMessage(data, environment.api.origin)
     })
 
     this.io.socket.on('ready', () => {
