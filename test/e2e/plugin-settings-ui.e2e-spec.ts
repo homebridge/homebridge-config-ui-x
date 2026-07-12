@@ -127,6 +127,9 @@ describe('PluginsSettingsUiController (e2e)', () => {
     const csp = res.headers['content-security-policy'] as string
     expect(csp).toBeTruthy()
     expect(csp).toContain('script-src')
+    // Custom UIs ran without any CSP before v5.24.1 — frameworks that
+    // evaluate expressions at runtime (e.g. Alpine.js, Vue) need this (#2873)
+    expect(csp).toContain('\'unsafe-eval\'')
     expect(csp).toContain('frame-ancestors')
   })
 

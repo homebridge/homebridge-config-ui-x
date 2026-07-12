@@ -66,13 +66,16 @@ export class PluginsSettingsUiService {
         const safeOrigin = this.sanitizeOrigin(origin)
         // Scope the CSP tightly to the validated origin.  'unsafe-inline' is
         // required because the generated index.html contains two inline
-        // <script> blocks.  frame-ancestors restricts embedding to same-origin
+        // <script> blocks.  'unsafe-eval' is required because plugin custom
+        // UIs ran without any CSP before v5.24.1 and commonly use frameworks
+        // that evaluate expressions at runtime (e.g. Alpine.js, Vue) — see
+        // #2873.  frame-ancestors restricts embedding to same-origin
         // frames only, preventing the plugin iframe from being embedded by
         // third-party pages.
         reply.header(
           'Content-Security-Policy',
           `default-src 'self' ${safeOrigin}; `
-          + `script-src 'self' 'unsafe-inline' ${safeOrigin}; `
+          + `script-src 'self' 'unsafe-inline' 'unsafe-eval' ${safeOrigin}; `
           + `style-src 'self' 'unsafe-inline' ${safeOrigin}; `
           + `img-src * data:; `
           + `connect-src *; `
