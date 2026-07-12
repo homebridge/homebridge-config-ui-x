@@ -13,6 +13,7 @@ import { Tail } from 'tail'
 
 import { ConfigService } from '../../core/config/config.service.js'
 import { NodePtyService } from '../../core/node-pty/node-pty.service.js'
+import { RE_SUPERVISOR_DEBUG_LINE, RE_SUPERVISOR_LEVEL_TAG } from '../../core/regex.constants.js'
 import { TermSize } from '../platform-tools/terminal/terminal.interfaces.js'
 
 @Injectable()
@@ -355,23 +356,25 @@ export class LogService {
   private emitMessage(client: EventEmitter, msg: string) {
     let output = msg
 
+    // Only lines written by the hb-service supervisor carry the level tags —
+    // Homebridge core and plugin output must pass through untouched, even if
+    // it happens to contain text like `[DEBUG]`.
     if (process.env.UIX_DEBUG_LOGGING !== '1') {
-      output = output.replace(/^.*\[DEBUG\].*(?:\r?\n|\n\r|$)/gm, '')
+      output = output.replace(RE_SUPERVISOR_DEBUG_LINE, '')
     }
 
-    output = output.replace(/\[(INFO|SUCCESS|ERROR|WARN|DEBUG|VERBOSE)\]\s*([^\r\n]*)/g,
-      (_match, level, content) => {
-        switch (level) {
-          case 'SUCCESS':
-            return green(content)
-          case 'WARN':
-            return yellow(content)
-          case 'ERROR':
-            return red(content)
-          default:
-            return content
-        }
-      })
+    output = output.replace(RE_SUPERVISOR_LEVEL_TAG, (_match, prefix, level, content) => {
+      switch (level) {
+        case 'SUCCESS':
+          return prefix + green(content)
+        case 'WARN':
+          return prefix + yellow(content)
+        case 'ERROR':
+          return prefix + red(content)
+        default:
+          return prefix + content
+      }
+    })
 
     if (output) {
       client.emit('stdout', output)

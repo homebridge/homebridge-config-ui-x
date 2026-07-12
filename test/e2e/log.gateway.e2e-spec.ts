@@ -8,6 +8,7 @@ import process from 'node:process'
 
 import { FastifyAdapter } from '@nestjs/platform-fastify'
 import { Test } from '@nestjs/testing'
+import { green, red, yellow } from 'bash-color'
 import { copy, writeFile } from 'fs-extra'
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -281,6 +282,88 @@ describe('LogGateway (e2e)', () => {
 
     // Tidy up so beforeEach doesn't see lingering listeners on the spare clients.
     clientB.emit('disconnect')
+  })
+
+  describe('emitMessage', () => {
+    // Mirrors the line format written by the hb-service supervisor:
+    // <grey>[date]<reset> <cyan>[HB Supervisor]<reset> [LEVEL] message
+    const supervisor = '\x1B[37m[1/1/2026, 12:00:00 PM]\x1B[0m \x1B[36m[HB Supervisor]\x1B[0m'
+
+    const originalDebugLogging = process.env.UIX_DEBUG_LOGGING
+
+    beforeEach(() => {
+      delete process.env.UIX_DEBUG_LOGGING
+    })
+
+    afterAll(() => {
+      if (originalDebugLogging === undefined) {
+        delete process.env.UIX_DEBUG_LOGGING
+      } else {
+        process.env.UIX_DEBUG_LOGGING = originalDebugLogging
+      }
+    })
+
+    function emitted(msg: string): string[] {
+      const target = new EventEmitter()
+      const chunks: string[] = []
+      target.on('stdout', (data: string) => chunks.push(data))
+      ;(logService as any).emitMessage(target, msg)
+      return chunks
+    }
+
+    it('strips the level tag from supervisor lines', () => {
+      const [out] = emitted(`${supervisor} [INFO] Started Homebridge.\n\r`)
+
+      expect(out).toContain('[HB Supervisor]')
+      expect(out).not.toContain('[INFO]')
+      expect(out).toContain('Started Homebridge.')
+    })
+
+    it('colorizes supervisor SUCCESS/WARN/ERROR content', () => {
+      expect(emitted(`${supervisor} [SUCCESS] done\n\r`)[0]).toContain(green('done'))
+      expect(emitted(`${supervisor} [WARN] careful\n\r`)[0]).toContain(yellow('careful'))
+      expect(emitted(`${supervisor} [ERROR] broken\n\r`)[0]).toContain(red('broken'))
+    })
+
+    it('suppresses supervisor DEBUG lines when debug logging is off', () => {
+      const chunks = emitted(`${supervisor} [DEBUG] internal detail\n\r`)
+
+      expect(chunks).toHaveLength(0)
+    })
+
+    it('keeps supervisor DEBUG lines when UIX_DEBUG_LOGGING is enabled', () => {
+      process.env.UIX_DEBUG_LOGGING = '1'
+
+      const [out] = emitted(`${supervisor} [DEBUG] internal detail\n\r`)
+
+      expect(out).toContain('internal detail')
+      expect(out).not.toContain('[DEBUG]')
+    })
+
+    it('removes only the supervisor DEBUG line from a multi-line chunk', () => {
+      const [out] = emitted([
+        `${supervisor} [INFO] line one`,
+        `${supervisor} [DEBUG] line two`,
+        '[1/1/2026, 12:00:00 PM] [homebridge-foo] line three',
+        '',
+      ].join('\n\r'))
+
+      expect(out).toContain('line one')
+      expect(out).not.toContain('line two')
+      expect(out).toContain('[homebridge-foo] line three')
+    })
+
+    it('does not drop plugin output that happens to contain [DEBUG]', () => {
+      const [out] = emitted('[1/1/2026, 12:00:00 PM] [homebridge-foo] payload contained [DEBUG] marker\n\r')
+
+      expect(out).toContain('payload contained [DEBUG] marker')
+    })
+
+    it('does not strip or recolour tags in plugin output', () => {
+      const line = '[1/1/2026, 12:00:00 PM] [homebridge-foo] upstream said [ERROR] oops\n\r'
+
+      expect(emitted(line)[0]).toBe(line)
+    })
   })
 
   afterAll(async () => {

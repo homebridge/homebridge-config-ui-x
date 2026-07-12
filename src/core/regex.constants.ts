@@ -70,6 +70,14 @@ export const RE_STABLE_DATE = /^\d{4}-\d{2}-\d{2}$/
 // eslint-disable-next-line no-control-regex
 export const RE_ANSI_COLOUR = /\x1B\[(\d{1,3}(;\d{1,2})?)?[mGK]/g
 
+// Log lines written by the hb-service supervisor, which carry level tags in
+// the form `[HB Supervisor]<ansi reset> [LEVEL] message`. Scoped to the
+// `[HB Supervisor]` marker so Homebridge core and plugin output is untouched.
+// eslint-disable-next-line no-control-regex
+export const RE_SUPERVISOR_DEBUG_LINE = /^.*\[HB Supervisor\](?:\x1B\[\d+m)?\s*\[DEBUG\].*(?:\r?\n\r?|$)/gm
+// eslint-disable-next-line no-control-regex
+export const RE_SUPERVISOR_LEVEL_TAG = /(\[HB Supervisor\](?:\x1B\[\d+m)?\s*)\[(INFO|SUCCESS|ERROR|WARN|DEBUG|VERBOSE)\]\s*([^\r\n]*)/g
+
 // Security
 export const RE_PATH_TRAVERSAL = /^(\.\.(\/|\\|$))+/
 export const RE_STATIC_ASSET_EXT = /^.*\.(?:jpe?g|gif|png|svg|ttf|woff2|css)$/i
