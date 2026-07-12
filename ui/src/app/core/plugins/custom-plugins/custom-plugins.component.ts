@@ -154,10 +154,10 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
     this.formValid.set(isValid)
   }
 
-  public async savePluginConfig(exit = false): Promise<void> {
+  public async savePluginConfig(exit = false): Promise<boolean> {
     const plugin = this.plugin
     if (!plugin) {
-      return
+      return false
     }
 
     this.saveInProgress.set(true)
@@ -176,7 +176,7 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
           // Close the modal and open the child bridge setup modal
           this.$activeModal.close()
           void this.$plugin.bridgeSettings(plugin, true)
-          return
+          return true
         }
 
         // This will show the child bridge restart modal if needed, otherwise the full restart homebridge modal.
@@ -185,10 +185,12 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
         this.$activeModal.close()
         this.$cb.openCorrectRestartModalWithBridges(response.affectedBridges)
       }
+      return true
     } catch (error) {
       console.error(error)
       this.$toastr.error(this.$translate.instant('config.failed_to_save_config'), this.$translate.instant('toast.title_error'))
       this.saveInProgress.set(false)
+      return false
     }
   }
 
@@ -255,7 +257,16 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
           break
         }
         case 'config.save': {
-          this.requestResponse(e, this.savePluginConfig())
+          // Respond only after the save settles, and never with the Promise
+          // itself — postMessage structured-clones its payload, and a Promise
+          // throws DataCloneError, silently dropping the ack (#2869).
+          void this.savePluginConfig().then((success) => {
+            if (success) {
+              this.requestResponse(e, this.getConfigBlocks())
+            } else {
+              this.requestResponse(e, { message: this.$translate.instant('config.failed_to_save_config') }, false)
+            }
+          })
           break
         }
         case 'config.update': {
