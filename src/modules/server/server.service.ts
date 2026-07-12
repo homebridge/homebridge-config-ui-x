@@ -6,7 +6,7 @@ import type { NetworkOverviewEntry, StoredMatterAccessory } from '../../core/mat
 
 import { Buffer } from 'node:buffer'
 import { exec, spawn } from 'node:child_process'
-import { createPrivateKey, createPublicKey, X509Certificate } from 'node:crypto'
+import { createPublicKey, X509Certificate } from 'node:crypto'
 import { createWriteStream } from 'node:fs'
 import { readdir, readFile, unlink, writeFile } from 'node:fs/promises'
 import { basename, extname, join, resolve } from 'node:path'
@@ -1671,8 +1671,7 @@ export class ServerService {
     try {
       const x509 = new X509Certificate(certPem)
       const certPub = x509.publicKey.export({ type: 'spki', format: 'der' }) as Buffer
-      const priv = createPrivateKey({ key: keyPem })
-      const pubFromPriv = createPublicKey(priv).export({ type: 'spki', format: 'der' }) as Buffer
+      const pubFromPriv = createPublicKey(keyPem).export({ type: 'spki', format: 'der' }) as Buffer
       if (!certPub.equals(pubFromPriv)) {
         throw new BadRequestException('The private key does not match the certificate public key.')
       }
@@ -1830,8 +1829,7 @@ export class ServerService {
         const certPem = await readFile(ssl.cert)
         const x509 = new X509Certificate(certPem)
         const certPub = x509.publicKey.export({ type: 'spki', format: 'der' }) as Buffer
-        const priv = createPrivateKey({ key: keyPem })
-        const pubFromPriv = createPublicKey(priv).export({ type: 'spki', format: 'der' }) as Buffer
+        const pubFromPriv = createPublicKey(keyPem).export({ type: 'spki', format: 'der' }) as Buffer
         if (!certPub.equals(pubFromPriv)) {
           return { ok: true, valid: false, type: 'keycert', details: 'Private key does not match certificate.' }
         }
