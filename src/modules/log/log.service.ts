@@ -7,13 +7,18 @@ import { platform } from 'node:os'
 import process from 'node:process'
 
 import { Inject, Injectable } from '@nestjs/common'
-import { cyan, red, yellow } from 'bash-color'
+import { cyan, green, red, yellow } from 'bash-color'
 import { satisfies } from 'semver'
 import { Tail } from 'tail'
 
 import { ConfigService } from '../../core/config/config.service.js'
 import { NodePtyService } from '../../core/node-pty/node-pty.service.js'
+import { RE_SUPERVISOR_DEBUG_LINE, RE_SUPERVISOR_LEVEL_TAG } from '../../core/regex.constants.js'
 import { TermSize } from '../platform-tools/terminal/terminal.interfaces.js'
+
+// How long a trailing partial line is held back waiting for its terminator
+// before being flushed to the client anyway
+const PARTIAL_LINE_FLUSH_MS = 50
 
 @Injectable()
 export class LogService {
@@ -21,6 +26,7 @@ export class LogService {
   private useNative = false
   private nativeTail: Tail
   private activeClients = new WeakSet<EventEmitter>()
+  private logBuffers = new WeakMap<EventEmitter, { buffer: string, flushTimeout: ReturnType<typeof setTimeout> }>()
 
   constructor(
     @Inject(ConfigService) private readonly configService: ConfigService,
@@ -117,7 +123,7 @@ export class LogService {
       // Send stdout data from the process to the client
       proc.stdout?.on('data', (data) => {
         try {
-          client.emit('stdout', data.toString('utf8').split('\n').join('\n\r'))
+          this.emitMessage(client, data.toString('utf8').split('\n').join('\n\r'))
         } catch (e) {
           // The client socket probably closed
         }
@@ -126,7 +132,7 @@ export class LogService {
       // Send stderr data from the process to the client
       proc.stderr?.on('data', (data) => {
         try {
-          client.emit('stdout', data.toString('utf8').split('\n').join('\n\r'))
+          this.emitMessage(client, data.toString('utf8').split('\n').join('\n\r'))
         } catch (e) {
           // The client socket probably closed
         }
@@ -136,6 +142,7 @@ export class LogService {
       proc.on('exit', (code) => {
         try {
           if (!ending) {
+            this.flushMessage(client)
             client.emit('stdout', '\n\r')
             client.emit('stdout', red(`The log tail command ${command.join(' ')} exited with code ${code}.\n\r`))
             client.emit('stdout', red('Please check the command in your config.json is correct.\n\r\n\r'))
@@ -150,13 +157,14 @@ export class LogService {
       const onEnd = () => {
         ending = true
         this.activeClients.delete(client)
+        this.discardMessageBuffer(client)
 
         client.removeAllListeners('end')
         client.removeAllListeners('disconnect')
 
         try {
           proc.kill()
-        } catch (e) {}
+        } catch (e) { }
       }
 
       client.on('end', onEnd)
@@ -173,13 +181,14 @@ export class LogService {
 
       // Send stdout data from the process to the client
       term.onData((data) => {
-        client.emit('stdout', data)
+        this.emitMessage(client, data)
       })
 
       // Send an error message to the client if the log tailing process exits early
       term.onExit((code) => {
         try {
           if (!ending) {
+            this.flushMessage(client)
             client.emit('stdout', '\n\r')
             client.emit('stdout', red(`The log tail command ${command.join(' ')} exited with code ${code.exitCode}.\n\r`))
             client.emit('stdout', red('Please check the command in your config.json is correct.\n\r\n\r'))
@@ -194,13 +203,14 @@ export class LogService {
       client.on('resize', (resize: { rows: number, cols: number }) => {
         try {
           term.resize(resize.cols, resize.rows)
-        } catch (e) {}
+        } catch (e) { }
       })
 
       // Cleanup on disconnect
       const onEnd = () => {
         ending = true
         this.activeClients.delete(client)
+        this.discardMessageBuffer(client)
 
         client.removeAllListeners('resize')
         client.removeAllListeners('end')
@@ -208,7 +218,7 @@ export class LogService {
 
         try {
           term.kill()
-        } catch (e) {}
+        } catch (e) { }
         // Really make sure the log tail command is killed when using sudo mode
         if (this.configService.ui.sudo && term && term.pid) {
           exec(`sudo -n kill -9 ${term.pid}`)
@@ -271,10 +281,13 @@ export class LogService {
       const logStream = createReadStream(this.configService.ui.log.path, { start: logStartPosition })
 
       logStream.on('data', (buffer) => {
-        client.emit('stdout', buffer.toString('utf8').split('\n').join('\n\r'))
+        this.emitMessage(client, buffer.toString('utf8').split('\n').join('\n\r'))
       })
 
       logStream.on('end', () => {
+        // The initial dump is done — flush any held partial line right away
+        // (e.g. when the log file does not end with a newline)
+        this.flushMessage(client)
         logStream.close()
       })
     } catch (e) {
@@ -304,7 +317,7 @@ export class LogService {
 
     // Watch for lines and emit to client
     const onLine = (line: string) => {
-      client.emit('stdout', `${line}\n\r`)
+      this.emitMessage(client, `${line}\n\r`)
     }
 
     const onError = (err: Error) => {
@@ -317,6 +330,7 @@ export class LogService {
     // Cleanup on disconnect
     const onEnd = () => {
       this.activeClients.delete(client)
+      this.discardMessageBuffer(client)
 
       // @ts-expect-error - TS2339: Property removeListener does not exist on type Tail
       this.nativeTail.removeListener('line', onLine)
@@ -350,5 +364,90 @@ export class LogService {
    */
   private logNotConfigured() {
     this.command = null
+  }
+
+  private emitMessage(client: EventEmitter, msg: string) {
+    // Chunks from the pty/stream can split a log line in two, which would let
+    // half a supervisor line slip past the tag handling in processMessage().
+    // Emit up to the last complete line and hold the remainder until its
+    // terminator arrives — or until a short idle timeout, so output that
+    // legitimately ends without a newline still reaches the client.
+    const pending = this.logBuffers.get(client)
+    if (pending) {
+      clearTimeout(pending.flushTimeout)
+    }
+
+    const data = (pending?.buffer ?? '') + msg
+    const lastNewline = data.lastIndexOf('\n')
+
+    // Keep a `\r` directly after the last `\n` with the complete part so
+    // `\n\r` line endings are not split in half
+    const splitAt = lastNewline === -1 ? 0 : (data[lastNewline + 1] === '\r' ? lastNewline + 2 : lastNewline + 1)
+    const partial = data.slice(splitAt)
+
+    if (partial) {
+      this.logBuffers.set(client, {
+        buffer: partial,
+        flushTimeout: setTimeout(() => this.flushMessage(client), PARTIAL_LINE_FLUSH_MS).unref(),
+      })
+    } else {
+      this.logBuffers.delete(client)
+    }
+
+    if (splitAt > 0) {
+      this.processMessage(client, data.slice(0, splitAt))
+    }
+  }
+
+  /**
+   * Emit any held partial line through the normal processing path
+   */
+  private flushMessage(client: EventEmitter) {
+    const pending = this.logBuffers.get(client)
+    if (!pending) {
+      return
+    }
+    clearTimeout(pending.flushTimeout)
+    this.logBuffers.delete(client)
+    this.processMessage(client, pending.buffer)
+  }
+
+  /**
+   * Discard any held partial line without emitting it (client is disconnecting)
+   */
+  private discardMessageBuffer(client: EventEmitter) {
+    const pending = this.logBuffers.get(client)
+    if (pending) {
+      clearTimeout(pending.flushTimeout)
+      this.logBuffers.delete(client)
+    }
+  }
+
+  private processMessage(client: EventEmitter, msg: string) {
+    let output = msg
+
+    // Only lines written by the hb-service supervisor carry the level tags —
+    // Homebridge core and plugin output must pass through untouched, even if
+    // it happens to contain text like `[DEBUG]`.
+    if (process.env.UIX_DEBUG_LOGGING !== '1') {
+      output = output.replace(RE_SUPERVISOR_DEBUG_LINE, '')
+    }
+
+    output = output.replace(RE_SUPERVISOR_LEVEL_TAG, (_match, prefix, level, content) => {
+      switch (level) {
+        case 'SUCCESS':
+          return prefix + green(content)
+        case 'WARN':
+          return prefix + yellow(content)
+        case 'ERROR':
+          return prefix + red(content)
+        default:
+          return prefix + content
+      }
+    })
+
+    if (output) {
+      client.emit('stdout', output)
+    }
   }
 }
