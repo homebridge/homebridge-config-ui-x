@@ -38,7 +38,7 @@ export class FreeBSDInstaller extends BasePlatform {
       await this.hbService.printPostInstallInstructions()
     } catch (e) {
       console.error(e.toString())
-      this.hbService.logger('ERROR: Failed Operation', 'fail')
+      this.hbService.logger.error('ERROR: Failed Operation')
     }
   }
 
@@ -54,14 +54,14 @@ export class FreeBSDInstaller extends BasePlatform {
 
     try {
       if (existsSync(this.rcServicePath)) {
-        this.hbService.logger(`Removed ${this.rcServiceName} Service`, 'succeed')
+        this.hbService.logger.success(`Removed ${this.rcServiceName} Service`)
         unlinkSync(this.rcServicePath)
       } else {
-        this.hbService.logger(`Could not find installed ${this.rcServiceName} Service.`, 'fail')
+        this.hbService.logger.error(`Could not find installed ${this.rcServiceName} Service.`)
       }
     } catch (e) {
       console.error(e.toString())
-      this.hbService.logger('ERROR: Failed Operation', 'fail')
+      this.hbService.logger.error('ERROR: Failed Operation')
     }
   }
 
@@ -71,11 +71,11 @@ export class FreeBSDInstaller extends BasePlatform {
   public async start() {
     this.checkForRoot()
     try {
-      this.hbService.logger(`Starting ${this.rcServiceName} Service...`)
+      this.hbService.logger.log(`Starting ${this.rcServiceName} Service...`)
       execSync(`service ${this.rcServiceName} start`, { stdio: 'inherit' })
-      this.hbService.logger(`${this.rcServiceName} Started`, 'succeed')
+      this.hbService.logger.success(`${this.rcServiceName} Started`)
     } catch (e) {
-      this.hbService.logger(`Failed to start ${this.rcServiceName}`, 'fail')
+      this.hbService.logger.error(`Failed to start ${this.rcServiceName}`)
     }
   }
 
@@ -85,11 +85,11 @@ export class FreeBSDInstaller extends BasePlatform {
   public async stop() {
     this.checkForRoot()
     try {
-      this.hbService.logger(`Stopping ${this.rcServiceName} Service...`)
+      this.hbService.logger.log(`Stopping ${this.rcServiceName} Service...`)
       execSync(`service ${this.rcServiceName} stop`, { stdio: 'inherit' })
-      this.hbService.logger(`${this.rcServiceName} Stopped`, 'succeed')
+      this.hbService.logger.success(`${this.rcServiceName} Stopped`)
     } catch (e) {
-      this.hbService.logger(`Failed to stop ${this.rcServiceName}`, 'fail')
+      this.hbService.logger.error(`Failed to stop ${this.rcServiceName}`)
     }
   }
 
@@ -99,11 +99,11 @@ export class FreeBSDInstaller extends BasePlatform {
   public async restart() {
     this.checkForRoot()
     try {
-      this.hbService.logger(`Restarting ${this.rcServiceName} Service...`)
+      this.hbService.logger.log(`Restarting ${this.rcServiceName} Service...`)
       execSync(`service ${this.rcServiceName} restart`, { stdio: 'inherit' })
-      this.hbService.logger(`${this.rcServiceName} Restarted`, 'succeed')
+      this.hbService.logger.success(`${this.rcServiceName} Restarted`)
     } catch (e) {
-      this.hbService.logger(`Failed to restart ${this.rcServiceName}`, 'fail')
+      this.hbService.logger.error(`Failed to restart ${this.rcServiceName}`)
     }
   }
 
@@ -135,14 +135,14 @@ export class FreeBSDInstaller extends BasePlatform {
             stdio: 'inherit',
           })
         } catch (e) {
-          this.hbService.logger('Could not rebuild all modules - check Homebridge logs.', 'warn')
+          this.hbService.logger.warn('Could not rebuild all modules - check Homebridge logs.')
         }
       }
 
-      this.hbService.logger(`Rebuilt modules in ${process.env.UIX_BASE_PATH} for Node.js ${targetNodeVersion}.`, 'succeed')
+      this.hbService.logger.success(`Rebuilt modules in ${process.env.UIX_BASE_PATH} for Node.js ${targetNodeVersion}.`)
     } catch (e) {
       console.error(e.toString())
-      this.hbService.logger('ERROR: Failed Operation', 'fail')
+      this.hbService.logger.error('ERROR: Failed Operation')
     }
   }
 
@@ -183,7 +183,7 @@ export class FreeBSDInstaller extends BasePlatform {
     try {
       execSync(`sysrc ${this.rcServiceName}_enable="YES" 2> /dev/null`)
     } catch (e) {
-      this.hbService.logger(`WARNING: failed to run "sysrc ${this.rcServiceName}_enable=\"YES\"`, 'warn')
+      this.hbService.logger.warn(`WARNING: failed to run "sysrc ${this.rcServiceName}_enable=\"YES\"`)
     }
   }
 
@@ -194,7 +194,7 @@ export class FreeBSDInstaller extends BasePlatform {
     try {
       execSync(`sysrc ${this.rcServiceName}_enable="NO" 2> /dev/null`)
     } catch (e) {
-      this.hbService.logger(`WARNING: failed to run "sysrc ${this.rcServiceName}_enable=\"NO\"`, 'warn')
+      this.hbService.logger.warn(`WARNING: failed to run "sysrc ${this.rcServiceName}_enable=\"NO\"`)
     }
   }
 
@@ -203,13 +203,13 @@ export class FreeBSDInstaller extends BasePlatform {
    */
   private checkForRoot() {
     if (process.getuid() !== 0) {
-      this.hbService.logger('ERROR: This command must be executed using sudo on FreeBSD', 'fail')
-      this.hbService.logger(`EXAMPLE: sudo hb-service ${this.hbService.action}`, 'fail')
+      this.hbService.logger.error('ERROR: This command must be executed using sudo on FreeBSD')
+      this.hbService.logger.error(`EXAMPLE: sudo hb-service ${this.hbService.action}`)
       process.exit(1)
     }
     if (this.hbService.action === 'install' && !process.env.SUDO_USER && !this.hbService.asUser) {
-      this.hbService.logger('ERROR: Could not detect user. Pass in the user you want to run Homebridge as using the --user flag eg.', 'fail')
-      this.hbService.logger(`EXAMPLE: sudo hb-service ${this.hbService.action} --user your-user`, 'fail')
+      this.hbService.logger.error('ERROR: Could not detect user. Pass in the user you want to run Homebridge as using the --user flag eg.')
+      this.hbService.logger.error(`EXAMPLE: sudo hb-service ${this.hbService.action} --user your-user`)
       process.exit(1)
     }
   }
@@ -224,7 +224,7 @@ export class FreeBSDInstaller extends BasePlatform {
     } catch (e) {
       // If not create the user
       execSync(`pw useradd -q -n ${this.hbService.asUser} -s /usr/sbin/nologin 2> /dev/null`)
-      this.hbService.logger(`Created service user: ${this.hbService.asUser}`, 'info')
+      this.hbService.logger.log(`Created service user: ${this.hbService.asUser}`)
     }
   }
 
@@ -237,9 +237,8 @@ export class FreeBSDInstaller extends BasePlatform {
       // Refuse to interpolate an unvalidated username into the sudoers line —
       // a crafted `--user` could otherwise inject `, /bin/sh` and grant NOPASSWD.
       if (!RE_OS_USERNAME.test(this.hbService.asUser)) {
-        this.hbService.logger(
+        this.hbService.logger.warn(
           `WARNING: Refusing to write /usr/local/etc/sudoers entry — invalid username "${this.hbService.asUser}".`,
-          'warn',
         )
         return
       }
@@ -256,7 +255,7 @@ export class FreeBSDInstaller extends BasePlatform {
       // Grant the user restricted sudo privileges to /sbin/shutdown
       execSync(`echo '${sudoersEntry}' | sudo EDITOR='tee -a' visudo`)
     } catch (e) {
-      this.hbService.logger('WARNING: Failed to setup /etc/sudoers, you may not be able to shutdown/restart your server from the Homebridge UI.', 'warn')
+      this.hbService.logger.warn('WARNING: Failed to setup /etc/sudoers, you may not be able to shutdown/restart your server from the Homebridge UI.')
     }
   }
 
@@ -264,7 +263,7 @@ export class FreeBSDInstaller extends BasePlatform {
    * Update Node.js
    */
   public async updateNodejs(job: { target: string, rebuild: boolean }) {
-    this.hbService.logger('Update Node.js using pkg manually.', 'fail')
+    this.hbService.logger.error('Update Node.js using pkg manually.')
     process.exit(1)
   }
 

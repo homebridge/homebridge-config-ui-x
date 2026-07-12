@@ -52,7 +52,7 @@ export class Win32Installer extends BasePlatform {
       await this.hbService.printPostInstallInstructions()
     } catch (e) {
       console.error(e.toString())
-      this.hbService.logger('ERROR: Failed Operation', 'fail')
+      this.hbService.logger.error('ERROR: Failed Operation')
     }
   }
 
@@ -68,10 +68,10 @@ export class Win32Installer extends BasePlatform {
 
     try {
       execFileSync('sc', ['delete', this.hbService.serviceName])
-      this.hbService.logger(`Removed ${this.hbService.serviceName} Service`, 'succeed')
+      this.hbService.logger.success(`Removed ${this.hbService.serviceName} Service`)
     } catch (e) {
       console.error(e.toString())
-      this.hbService.logger('ERROR: Failed Operation', 'fail')
+      this.hbService.logger.error('ERROR: Failed Operation')
     }
   }
 
@@ -83,11 +83,11 @@ export class Win32Installer extends BasePlatform {
     this.assertSafeServiceName()
 
     try {
-      this.hbService.logger(`Starting ${this.hbService.serviceName} Service...`)
+      this.hbService.logger.log(`Starting ${this.hbService.serviceName} Service...`)
       execFileSync('sc', ['start', this.hbService.serviceName])
-      this.hbService.logger(`${this.hbService.serviceName} Started`, 'succeed')
+      this.hbService.logger.success(`${this.hbService.serviceName} Started`)
     } catch (e) {
-      this.hbService.logger(`Failed to start ${this.hbService.serviceName}`, 'fail')
+      this.hbService.logger.error(`Failed to start ${this.hbService.serviceName}`)
     }
   }
 
@@ -99,11 +99,11 @@ export class Win32Installer extends BasePlatform {
     this.assertSafeServiceName()
 
     try {
-      this.hbService.logger(`Stopping ${this.hbService.serviceName} Service...`)
+      this.hbService.logger.log(`Stopping ${this.hbService.serviceName} Service...`)
       execFileSync('sc', ['stop', this.hbService.serviceName])
-      this.hbService.logger(`${this.hbService.serviceName} Stopped`, 'succeed')
+      this.hbService.logger.success(`${this.hbService.serviceName} Stopped`)
     } catch (e) {
-      this.hbService.logger(`Failed to stop ${this.hbService.serviceName}`, 'fail')
+      this.hbService.logger.error(`Failed to stop ${this.hbService.serviceName}`)
     }
   }
 
@@ -133,10 +133,10 @@ export class Win32Installer extends BasePlatform {
         stdio: 'inherit',
       })
 
-      this.hbService.logger(`Rebuilt modules in ${process.env.UIX_BASE_PATH} for Node.js ${process.version}.`, 'succeed')
+      this.hbService.logger.success(`Rebuilt modules in ${process.env.UIX_BASE_PATH} for Node.js ${process.version}.`)
     } catch (e) {
       console.error(e.toString())
-      this.hbService.logger('ERROR: Failed Operation', 'fail')
+      this.hbService.logger.error('ERROR: Failed Operation')
     }
   }
 
@@ -144,8 +144,8 @@ export class Win32Installer extends BasePlatform {
    * Update Node.js
    */
   public async updateNodejs(job: { target: string, rebuild: boolean }) {
-    this.hbService.logger('ERROR: This command is not supported on Windows.', 'fail')
-    this.hbService.logger(`Please download Node.js v${job.target} from https://nodejs.org/en/download/ and install manually.`, 'fail')
+    this.hbService.logger.error('ERROR: This command is not supported on Windows.')
+    this.hbService.logger.error(`Please download Node.js v${job.target} from https://nodejs.org/en/download/ and install manually.`)
   }
 
   /**
@@ -157,7 +157,7 @@ export class Win32Installer extends BasePlatform {
    */
   private assertSafeServiceName() {
     if (!RE_SERVICE_NAME.test(this.hbService.serviceName)) {
-      this.hbService.logger(`ERROR: Refusing to run — invalid service name "${this.hbService.serviceName}".`, 'fail')
+      this.hbService.logger.error(`ERROR: Refusing to run — invalid service name "${this.hbService.serviceName}".`)
       process.exit(1)
     }
   }
@@ -169,8 +169,8 @@ export class Win32Installer extends BasePlatform {
     try {
       execSync('fsutil dirty query %systemdrive% >nul')
     } catch (e) {
-      this.hbService.logger('ERROR: This command must be run as an Administrator', 'fail')
-      this.hbService.logger('Node.js command prompt shortcut -> Right Click -> Run as administrator', 'fail')
+      this.hbService.logger.error('ERROR: This command must be run as an Administrator')
+      this.hbService.logger.error('Node.js command prompt shortcut -> Right Click -> Run as administrator')
       process.exit(1)
     }
   }
@@ -190,7 +190,7 @@ export class Win32Installer extends BasePlatform {
 
     const nssmFile = createWriteStream(nssmPath)
 
-    this.hbService.logger(`Downloading NSSM from ${downloadUrl}`)
+    this.hbService.logger.log(`Downloading NSSM from ${downloadUrl}`)
 
     return new Promise((res, rej) => {
       axios({
@@ -209,7 +209,7 @@ export class Win32Installer extends BasePlatform {
           // Cleanup
           nssmFile.close()
           await remove(nssmPath)
-          this.hbService.logger(`Failed to download nssm: ${e.message}`, 'fail')
+          this.hbService.logger.error(`Failed to download nssm: ${e.message}`)
           process.exit(0)
         })
     })
@@ -234,8 +234,8 @@ export class Win32Installer extends BasePlatform {
     try {
       execSync(openFirewallCmd)
     } catch (e) {
-      this.hbService.logger('Failed to configure firewall rule for Homebridge.', 'warn')
-      this.hbService.logger(e)
+      this.hbService.logger.warn('Failed to configure firewall rule for Homebridge.')
+      this.hbService.logger.log(e)
     }
   }
 }

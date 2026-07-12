@@ -34,6 +34,7 @@ import { extract } from 'tar'
 import { check as tcpCheck } from 'tcp-port-used'
 
 import { RE_COLON, RE_NON_SCOPED, RE_PLUGIN_NAME, RE_SCOPED, RE_SERVICE_NAME } from '../core/regex.constants.js'
+import { Logger } from './logger.js'
 import { DarwinInstaller } from './platforms/darwin.js'
 import { FreeBSDInstaller } from './platforms/freebsd.js'
 import { LinuxInstaller } from './platforms/linux.js'
@@ -44,8 +45,10 @@ process.title = 'hb-service'
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = dirname(__filename)
 
+type Action = 'install' | 'uninstall' | 'start' | 'stop' | 'restart' | 'rebuild' | 'run' | 'add' | 'remove' | 'logs' | 'view' | 'update-node' | 'update-homebridge' | 'before-start' | 'status'
+
 export class HomebridgeServiceHelper {
-  public action: 'install' | 'uninstall' | 'start' | 'stop' | 'restart' | 'rebuild' | 'run' | 'add' | 'remove' | 'logs' | 'view' | 'update-node' | 'update-homebridge' | 'before-start' | 'status'
+  public action: Action
   public selfPath = __filename
   public serviceName = 'Homebridge'
   public storagePath: string
@@ -54,7 +57,8 @@ export class HomebridgeServiceHelper {
   public enableHbServicePluginManagement = false
   public asUser: string
   public addGroup: string
-  private log: WriteStream | NodeJS.WriteStream
+  public _logger: Logger
+  public logFile: WriteStream | NodeJS.WriteStream
   private homebridgeModulePath: string
   private homebridgePackage: { version: string, bin: { homebridge: string } }
   private homebridgeBinary: string
@@ -82,6 +86,13 @@ export class HomebridgeServiceHelper {
     return resolve(this.storagePath, 'homebridge.log')
   }
 
+  get logger(): Logger {
+    if (!this._logger) {
+      this._logger = new Logger(this)
+    }
+    return this._logger
+  }
+
   constructor() {
     // Check the node.js version
     this.nodeVersionCheck()
@@ -101,7 +112,7 @@ export class HomebridgeServiceHelper {
         this.installer = new FreeBSDInstaller(this)
         break
       default:
-        this.logger(`ERROR: This command is not supported on ${platform()}.`, 'fail')
+        this.logger.error(`ERROR: This command is not supported on ${platform()}.`)
         process.exit(1)
     }
 
@@ -142,12 +153,12 @@ export class HomebridgeServiceHelper {
     switch (this.action) {
       case 'install': {
         this.nvmCheck()
-        this.logger(`Installing ${this.serviceName} service...`)
+        this.logger.log(`Installing ${this.serviceName} service...`)
         this.installer.install()
         break
       }
       case 'uninstall': {
-        this.logger(`Removing ${this.serviceName} service...`)
+        this.logger.log(`Removing ${this.serviceName} service...`)
         this.installer.uninstall()
         break
       }
@@ -160,12 +171,12 @@ export class HomebridgeServiceHelper {
         break
       }
       case 'restart': {
-        this.logger(`Restarting ${this.serviceName} service...`)
+        this.logger.log(`Restarting ${this.serviceName} service...`)
         this.installer.restart()
         break
       }
       case 'rebuild': {
-        this.logger(`Rebuilding for Node.js ${process.version}...`)
+        this.logger.log(`Rebuilding for Node.js ${process.version}...`)
         this.installer.rebuild(program.args.includes('--all'))
         break
       }
@@ -234,29 +245,12 @@ export class HomebridgeServiceHelper {
   }
 
   /**
-   * Logger function, log to homebridge.log file when possible
-   */
-  public logger(msg: string, level: 'info' | 'succeed' | 'fail' | 'warn' = 'info') {
-    if (this.action === 'run') {
-      msg = `\x1B[37m[${new Date().toLocaleString()}]\x1B[0m `
-        + `\x1B[36m[HB Supervisor]\x1B[0m ${msg}`
-      if (this.log) {
-        this.log.write(`${msg}\n`)
-      } else {
-        console.log(msg)
-      }
-    } else {
-      ora()[level](msg)
-    }
-  }
-
-  /**
    * Sets the required environment variables passed on to the child processes
    */
   private setEnv() {
     // Ensure service name is valid
     if (!RE_SERVICE_NAME.test(this.serviceName)) {
-      this.logger('Service name must not contain spaces or special characters.', 'fail')
+      this.logger.error('Service name must not contain spaces or special characters.')
       process.exit(1)
     }
 
@@ -272,7 +266,7 @@ export class HomebridgeServiceHelper {
     // Certain commands are not supported when running in Docker
     if (process.env.CONFIG_UI_VERSION && process.env.HOMEBRIDGE_VERSION && process.env.QEMU_ARCH) {
       if (platform() === 'linux' && ['install', 'uninstall', 'start', 'stop', 'restart', 'logs'].includes(this.action)) {
-        this.logger(`Sorry, the ${this.action} command is not supported in Docker.`, 'fail')
+        this.logger.error(`Sorry, the ${this.action} command is not supported in Docker.`)
         process.exit(1)
       }
     }
@@ -305,16 +299,16 @@ export class HomebridgeServiceHelper {
    */
   private async startLog() {
     if (this.stdout === true) {
-      this.log = process.stdout
+      this.logFile = process.stdout
       return
     }
 
     // Work out the log path
-    this.logger(`Logging to ${this.logPath}.`)
+    this.logger.log(`Logging to ${this.logPath}.`)
 
     // Redirect all stdout to the log file
-    this.log = createWriteStream(this.logPath, { flags: 'a' })
-    process.stdout.write = process.stderr.write = this.log.write.bind(this.log)
+    this.logFile = createWriteStream(this.logPath, { flags: 'a' })
+    process.stdout.write = process.stderr.write = this.logFile.write.bind(this.logFile)
   }
 
   private async readConfig() {
@@ -359,9 +353,9 @@ export class HomebridgeServiceHelper {
       // final write() land out of order — and on some filesystems
       // leave sparse \0 bytes between the truncated tail and the new
       // content.
-      const corked = this.log && typeof (this.log as any).cork === 'function'
+      const corked = this.logFile && typeof (this.logFile as any).cork === 'function'
       if (corked) {
-        (this.log as any).cork()
+        (this.logFile as any).cork()
       }
       try {
         await logFileHandle.read(logBuffer, 0, truncateSize, logStartPosition)
@@ -370,11 +364,11 @@ export class HomebridgeServiceHelper {
       } finally {
         await logFileHandle.close()
         if (corked) {
-          (this.log as any).uncork()
+          (this.logFile as any).uncork()
         }
       }
     } catch (e) {
-      this.logger(`Failed to truncate log file: ${e.message}.`, 'fail')
+      this.logger.error(`Failed to truncate log file: ${e.message}.`)
     }
   }
 
@@ -383,13 +377,13 @@ export class HomebridgeServiceHelper {
    */
   private async launch() {
     if (platform() !== 'win32' && process.getuid() === 0 && !this.allowRunRoot) {
-      this.logger('The hb-service run command should not be executed as root.')
-      this.logger('Use the --allow-root flag to force the service to run as the root user.')
+      this.logger.log('The hb-service run command should not be executed as root.')
+      this.logger.log('Use the --allow-root flag to force the service to run as the root user.')
       process.exit(0)
     }
 
-    this.logger(`Homebridge storage path: ${this.storagePath}.`)
-    this.logger(`Homebridge config path: ${process.env.UIX_CONFIG_PATH}.`)
+    this.logger.log(`Homebridge storage path: ${this.storagePath}.`)
+    this.logger.log(`Homebridge config path: ${process.env.UIX_CONFIG_PATH}.`)
 
     // Start the interval to truncate the logs every two hours
     setInterval(() => {
@@ -408,21 +402,21 @@ export class HomebridgeServiceHelper {
       await this.configCheck()
 
       // Log os info
-      this.logger(`OS: ${type()} ${release()} ${arch()}.`)
-      this.logger(`Node.js ${process.version} ${process.execPath}.`)
+      this.logger.log(`OS: ${type()} ${release()} ${arch()}.`)
+      this.logger.log(`Node.js ${process.version} ${process.execPath}.`)
 
       // Work out the homebridge binary path
       this.homebridgeBinary = await this.findHomebridgePath()
-      this.logger(`Homebridge path: ${this.homebridgeBinary}.`)
+      this.logger.log(`Homebridge path: ${this.homebridgeBinary}.`)
 
       // Load startup options if they exist
       await this.loadHomebridgeStartupOptions()
 
       // Get the standalone ui binary on this system
       this.uiBinary = resolve(process.env.UIX_BASE_PATH, 'dist', 'bin', 'standalone.js')
-      this.logger(`UI path: ${this.uiBinary}.`)
+      this.logger.log(`UI path: ${this.uiBinary}.`)
     } catch (e) {
-      this.logger(e.message)
+      this.logger.log(e.message)
       process.exit(1)
     }
 
@@ -439,7 +433,7 @@ export class HomebridgeServiceHelper {
 
     // Delay the launch of homebridge on Raspberry Pi 1/Zero by 20 seconds
     if (cpus().length === 1 && arch() === 'arm') {
-      this.logger('Delaying Homebridge startup by 20 seconds on low powered server.')
+      this.logger.log('Delaying Homebridge startup by 20 seconds on low powered server.')
       setTimeout(() => {
         this.runHomebridge()
       }, 20000)
@@ -453,7 +447,7 @@ export class HomebridgeServiceHelper {
    */
   private startExitHandler() {
     const exitHandler = () => {
-      this.logger('Stopping services...')
+      this.logger.log('Stopping services...')
       try {
         this.homebridge.kill()
       } catch (e) {}
@@ -475,8 +469,8 @@ export class HomebridgeServiceHelper {
    */
   private runHomebridge() {
     if (!this.homebridgeBinary || !pathExistsSync(this.homebridgeBinary)) {
-      this.logger('Could not find Homebridge. Make sure you have installed Homebridge using the -g flag then restart.', 'fail')
-      this.logger('npm install -g --unsafe-perm homebridge', 'fail')
+      this.logger.error('Could not find Homebridge. Make sure you have installed Homebridge using the -g flag then restart.')
+      this.logger.error('npm install -g --unsafe-perm homebridge')
       return
     }
 
@@ -487,11 +481,11 @@ export class HomebridgeServiceHelper {
     }
 
     if (this.homebridgeOpts.length) {
-      this.logger(`Starting Homebridge with extra flags: ${this.homebridgeOpts.join(' ')}.`)
+      this.logger.log(`Starting Homebridge with extra flags: ${this.homebridgeOpts.join(' ')}.`)
     }
 
     if (Object.keys(this.homebridgeCustomEnv).length) {
-      this.logger(`Starting Homebridge with custom env: ${JSON.stringify(this.homebridgeCustomEnv)}.`)
+      this.logger.log(`Starting Homebridge with custom env: ${JSON.stringify(this.homebridgeCustomEnv)}.`)
     }
 
     // Env setup
@@ -531,7 +525,7 @@ export class HomebridgeServiceHelper {
       this.ipcService.setHomebridgeVersion(this.homebridgePackage.version)
     }
 
-    this.logger(`Started Homebridge v${this.homebridgePackage.version} with PID: ${this.homebridge.pid}.`)
+    this.logger.log(`Started Homebridge v${this.homebridgePackage.version} with PID: ${this.homebridge.pid}.`)
 
     // Buffer per-stream output and flush whole lines so concurrent
     // stdout/stderr writes don't interleave mid-line in the log file.
@@ -544,7 +538,7 @@ export class HomebridgeServiceHelper {
       let consumed = 0
       let idx = buf.indexOf('\n', consumed)
       while (idx !== -1) {
-        this.log.write(buf.slice(consumed, idx + 1))
+        this.logFile.write(buf.slice(consumed, idx + 1))
         consumed = idx + 1
         idx = buf.indexOf('\n', consumed)
       }
@@ -570,11 +564,11 @@ export class HomebridgeServiceHelper {
       outBuf += outDecoder.end()
       errBuf += errDecoder.end()
       if (outBuf) {
-        this.log.write(outBuf.endsWith('\n') ? outBuf : `${outBuf}\n`)
+        this.logFile.write(outBuf.endsWith('\n') ? outBuf : `${outBuf}\n`)
         outBuf = ''
       }
       if (errBuf) {
-        this.log.write(errBuf.endsWith('\n') ? errBuf : `${errBuf}\n`)
+        this.logFile.write(errBuf.endsWith('\n') ? errBuf : `${errBuf}\n`)
         errBuf = ''
       }
       this.handleHomebridgeClose(code, signal)
@@ -587,13 +581,13 @@ export class HomebridgeServiceHelper {
    * @param signal
    */
   private handleHomebridgeClose(code: number, signal: string) {
-    this.logger(`Homebridge process ended. Code: ${code}, signal: ${signal}.`)
+    this.logger.log(`Homebridge process ended. Code: ${code}, signal: ${signal}.`)
 
     this.checkForStaleHomebridgeProcess()
     this.refreshHomebridgePackage()
 
     setTimeout(() => {
-      this.logger('Restarting Homebridge...')
+      this.logger.log('Restarting Homebridge...')
       this.runHomebridge()
     }, 5000)
   }
@@ -612,7 +606,7 @@ export class HomebridgeServiceHelper {
       // Extract services
       this.ipcService = ui.get(main.HomebridgeIpcService)
     } catch (e) {
-      this.logger('The user interface threw an unhandled error.')
+      this.logger.log('The user interface threw an unhandled error.')
       console.error(e)
 
       setTimeout(() => {
@@ -688,10 +682,10 @@ export class HomebridgeServiceHelper {
       if (await pathExists(this.homebridgeModulePath)) {
         this.homebridgePackage = await readJson(join(this.homebridgeModulePath, 'package.json'))
       } else {
-        this.logger(`Homebridge not longer found at ${this.homebridgeModulePath}.`, 'fail')
+        this.logger.error(`Homebridge not longer found at ${this.homebridgeModulePath}.`)
         this.homebridgeModulePath = undefined
         this.homebridgeBinary = await this.findHomebridgePath()
-        this.logger(`Found new Homebridge path: ${this.homebridgeBinary}.`)
+        this.logger.log(`Found new Homebridge path: ${this.homebridgeBinary}.`)
       }
     } catch (e) {
       console.log(e)
@@ -704,7 +698,7 @@ export class HomebridgeServiceHelper {
   private nodeVersionCheck() {
     // 64 = v10;
     if (Number.parseInt(process.versions.modules, 10) < 64) {
-      this.logger(`Node.js v10.13.0 or greater is required, current: ${process.version}.`, 'fail')
+      this.logger.error(`Node.js v10.13.0 or greater is required, current: ${process.version}.`)
       process.exit(1)
     }
   }
@@ -714,12 +708,11 @@ export class HomebridgeServiceHelper {
    */
   private nvmCheck() {
     if (process.execPath.includes('nvm') && platform() === 'linux') {
-      this.logger(
+      this.logger.warn(
         'WARNING: It looks like you are running Node.js via NVM (Node Version Manager).\n'
         + '  Using hb-service with NVM may not work unless you have configured NVM for the\n'
         + '  user this service will run as. See https://homebridge.io/w/JUZ2g for instructions on how\n'
         + '  to remove NVM, then follow the wiki instructions to install Node.js and Homebridge.',
-        'warn',
       )
     }
   }
@@ -745,7 +738,7 @@ export class HomebridgeServiceHelper {
 
     console.log('')
 
-    this.logger('Homebridge setup complete.', 'succeed')
+    this.logger.success('Homebridge setup complete.')
   }
 
   /**
@@ -754,9 +747,9 @@ export class HomebridgeServiceHelper {
   public async portCheck() {
     const inUse = await tcpCheck(this.uiPort)
     if (inUse) {
-      this.logger(`Port ${this.uiPort} is already in use by another process on this host.`, 'fail')
-      this.logger('You can specify another port using the --port flag, e.g.:', 'fail')
-      this.logger(`hb-service ${this.action} --port 8581`, 'fail')
+      this.logger.error(`Port ${this.uiPort} is already in use by another process on this host.`)
+      this.logger.error('You can specify another port using the --port flag, e.g.:')
+      this.logger.error(`hb-service ${this.action} --port 8581`)
       process.exit(1)
     }
   }
@@ -766,12 +759,12 @@ export class HomebridgeServiceHelper {
    */
   public async storagePathCheck() {
     if (platform() === 'darwin' && !await pathExists(dirname(this.storagePath))) {
-      this.logger(`Cannot create Homebridge storage directory, base path does not exist: ${dirname(this.storagePath)}.`, 'fail')
+      this.logger.error(`Cannot create Homebridge storage directory, base path does not exist: ${dirname(this.storagePath)}.`)
       process.exit(1)
     }
 
     if (!await pathExists(this.storagePath)) {
-      this.logger(`Creating Homebridge directory: ${this.storagePath}.`)
+      this.logger.log(`Creating Homebridge directory: ${this.storagePath}.`)
       await mkdirp(this.storagePath)
       await this.chownPath(this.storagePath)
     }
@@ -786,7 +779,7 @@ export class HomebridgeServiceHelper {
     let restartRequired = false
 
     if (!await pathExists(process.env.UIX_CONFIG_PATH)) {
-      this.logger(`Creating default config.json: ${process.env.UIX_CONFIG_PATH}.`)
+      this.logger.log(`Creating default config.json: ${process.env.UIX_CONFIG_PATH}.`)
       await this.createDefaultConfig()
       restartRequired = true
     }
@@ -802,7 +795,7 @@ export class HomebridgeServiceHelper {
 
       // If the config block does not exist, then create it
       if (!uiConfigBlock) {
-        this.logger(`Adding missing UI platform block to ${process.env.UIX_CONFIG_PATH}.`, 'info')
+        this.logger.log(`Adding missing UI platform block to ${process.env.UIX_CONFIG_PATH}.`)
         uiConfigBlock = await this.createDefaultUiConfig()
         currentConfig.platforms.push(uiConfigBlock)
         saveRequired = true
@@ -812,7 +805,7 @@ export class HomebridgeServiceHelper {
       // Ensure the port is set
       if (this.action !== 'install' && typeof uiConfigBlock.port !== 'number') {
         uiConfigBlock.port = await this.getLastKnownUiPort()
-        this.logger(`Added missing port number to UI config: ${uiConfigBlock.port}.`, 'info')
+        this.logger.log(`Added missing port number to UI config: ${uiConfigBlock.port}.`)
         saveRequired = true
         restartRequired = true
       }
@@ -822,7 +815,7 @@ export class HomebridgeServiceHelper {
         // Correct the port
         if (uiConfigBlock.port !== this.uiPort) {
           uiConfigBlock.port = this.uiPort
-          this.logger(`Homebridge UI port in ${process.env.UIX_CONFIG_PATH} changed to: ${this.uiPort}.`, 'warn')
+          this.logger.warn(`Homebridge UI port in ${process.env.UIX_CONFIG_PATH} changed to: ${this.uiPort}.`)
         }
         // Delete unnecessary config
         delete uiConfigBlock.restart
@@ -834,7 +827,7 @@ export class HomebridgeServiceHelper {
       // Ensure the ui port is defined and is a number
       if (typeof uiConfigBlock.port !== 'number') {
         uiConfigBlock.port = await this.getLastKnownUiPort()
-        this.logger(`Added missing port number to UI config: ${uiConfigBlock.port}.`, 'info')
+        this.logger.log(`Added missing port number to UI config: ${uiConfigBlock.port}.`)
         saveRequired = true
         restartRequired = true
       }
@@ -842,21 +835,21 @@ export class HomebridgeServiceHelper {
       // Check the bridge section exists
       if (!currentConfig.bridge) {
         currentConfig.bridge = await this.generateBridgeConfig()
-        this.logger('Added missing Homebridge bridge section to the config.json.', 'info')
+        this.logger.log('Added missing Homebridge bridge section to the config.json.')
         saveRequired = true
       }
 
       // Ensure port is set in bridge config
       if (!currentConfig.bridge.port) {
         currentConfig.bridge.port = await this.generatePort()
-        this.logger(`Added port to the Homebridge bridge section of the config.json: ${currentConfig.bridge.port}.`, 'info')
+        this.logger.log(`Added port to the Homebridge bridge section of the config.json: ${currentConfig.bridge.port}.`)
         saveRequired = true
       }
 
       // Ensure bridge port is not the same as the UI port
       if ((uiConfigBlock && currentConfig.bridge.port === uiConfigBlock.port) || currentConfig.bridge.port === 8080) {
         currentConfig.bridge.port = await this.generatePort()
-        this.logger(`Bridge port must not be the same as the UI port. Changing bridge port to: ${currentConfig.bridge.port}.`, 'info')
+        this.logger.log(`Bridge port must not be the same as the UI port. Changing bridge port to: ${currentConfig.bridge.port}.`)
         saveRequired = true
       }
 
@@ -864,7 +857,7 @@ export class HomebridgeServiceHelper {
       if (currentConfig.plugins && Array.isArray(currentConfig.plugins)) {
         if (!currentConfig.plugins.includes('homebridge-config-ui-x')) {
           currentConfig.plugins.push('homebridge-config-ui-x')
-          this.logger('Added Homebridge UI to the plugins array in the config.json.', 'info')
+          this.logger.log('Added Homebridge UI to the plugins array in the config.json.')
           saveRequired = true
         }
       }
@@ -874,8 +867,8 @@ export class HomebridgeServiceHelper {
       }
     } catch (e) {
       const backupFile = resolve(this.storagePath, `config.json.invalid.${Date.now().toString()}`)
-      this.logger(`${process.env.UIX_CONFIG_PATH} does not contain valid JSON.`, 'warn')
-      this.logger(`Invalid config.json file has been backed up to ${backupFile}.`, 'warn')
+      this.logger.warn(`${process.env.UIX_CONFIG_PATH} does not contain valid JSON.`)
+      this.logger.warn(`Invalid config.json file has been backed up to ${backupFile}.`)
       await rename(process.env.UIX_CONFIG_PATH, backupFile)
       await this.createDefaultConfig()
       restartRequired = true
@@ -884,7 +877,7 @@ export class HomebridgeServiceHelper {
     // If the port number potentially changed, we need to restart here when running the
     // Raspbian image so the nginx config will be updated
     if (restartRequired && this.action === 'run' && await this.isRaspbianImage()) {
-      this.logger('Restarting process after port number update.', 'info')
+      this.logger.log('Restarting process after port number update.')
       process.exit(1)
     }
   }
@@ -1078,7 +1071,7 @@ export class HomebridgeServiceHelper {
       }
 
       // Kill the stale Homebridge process
-      this.logger(`Found stale Homebridge process running on port: ${currentConfig.bridge.port}, with PID: ${pid}, killing...`)
+      this.logger.log(`Found stale Homebridge process running on port: ${currentConfig.bridge.port}, with PID: ${pid}, killing...`)
       process.kill(pid, 'SIGKILL')
     } catch (e) {
       // Do nothing
@@ -1090,7 +1083,7 @@ export class HomebridgeServiceHelper {
    */
   private async tailLogs() {
     if (!existsSync(this.logPath)) {
-      this.logger(`Log file does not exist at expected location: ${this.logPath}.`, 'fail')
+      this.logger.error(`Log file does not exist at expected location: ${this.logPath}.`)
       process.exit(1)
     }
 
@@ -1123,7 +1116,7 @@ export class HomebridgeServiceHelper {
   private async viewLogs() {
     this.installer.viewLogs()
     if (!existsSync(this.logPath)) {
-      this.logger(`Log file does not exist at expected location: ${this.logPath}.`, 'fail')
+      this.logger.error(`Log file does not exist at expected location: ${this.logPath}.`)
       process.exit(1)
     }
 
@@ -1200,7 +1193,7 @@ export class HomebridgeServiceHelper {
         }
       }
     } catch (e) {
-      this.logger(`Failed to load startup options as ${e.message}.`)
+      this.logger.log(`Failed to load startup options as ${e.message}.`)
     }
   }
 
@@ -1226,7 +1219,7 @@ export class HomebridgeServiceHelper {
 
     // Check response is valid array
     if (!Array.isArray(versionList)) {
-      this.logger('Failed to check for Node.js updates.', 'fail')
+      this.logger.error('Failed to check for Node.js updates.')
       return { update: false }
     }
 
@@ -1238,22 +1231,22 @@ export class HomebridgeServiceHelper {
       if (wantedVersion) {
         // Check the requested version is greater than v22.12.0
         if (!gte(wantedVersion.version, '22.12.0')) {
-          this.logger('Refusing to install Node.js version lower than v22.12.0.', 'fail')
+          this.logger.error('Refusing to install Node.js version lower than v22.12.0.')
           return { update: false }
         }
-        this.logger(`Installing Node.js ${wantedVersion.version} over ${process.version}...`, 'info')
+        this.logger.log(`Installing Node.js ${wantedVersion.version} over ${process.version}...`)
         return this.installer.updateNodejs({
           target: wantedVersion.version,
           rebuild: wantedVersion.modules !== process.versions.modules,
         })
       } else {
-        this.logger(`v${requestedVersion} is not a valid Node.js version.`, 'info')
+        this.logger.log(`v${requestedVersion} is not a valid Node.js version.`)
         return { update: false }
       }
     }
 
     if (gt(currentLts.version, process.version)) {
-      this.logger(`Updating Node.js from ${process.version} to ${currentLts.version}...`, 'info')
+      this.logger.log(`Updating Node.js from ${process.version} to ${currentLts.version}...`)
       return this.installer.updateNodejs({
         target: currentLts.version,
         rebuild: currentLts.modules !== process.versions.modules,
@@ -1264,14 +1257,14 @@ export class HomebridgeServiceHelper {
     const latestVersion = versionList.filter(x => parse(x.version).major === currentMajor)[0]
 
     if (gt(latestVersion.version, process.version)) {
-      this.logger(`Updating Node.js from ${process.version} to ${latestVersion.version}...`, 'info')
+      this.logger.log(`Updating Node.js from ${process.version} to ${latestVersion.version}...`)
       return this.installer.updateNodejs({
         target: latestVersion.version,
         rebuild: latestVersion.modules !== process.versions.modules,
       })
     }
 
-    this.logger(`Node.js ${process.version} already up-to-date.`)
+    this.logger.log(`Node.js ${process.version} already up-to-date.`)
 
     return { update: false }
   }
@@ -1343,18 +1336,18 @@ export class HomebridgeServiceHelper {
    * Check the current status of the Homebridge UI by calling its API
    */
   private async checkStatus() {
-    this.logger(`Testing hb-service is running on port ${this.uiPort}...`)
+    this.logger.log(`Testing hb-service is running on port ${this.uiPort}...`)
 
     try {
       const res = await axios.get(`http://localhost:${this.uiPort}/api`)
       if (res.data === 'Hello World!') {
-        this.logger('Homebridge UI running.', 'succeed')
+        this.logger.success('Homebridge UI running.')
       } else {
-        this.logger('Unexpected response.', 'fail')
+        this.logger.error('Unexpected response.')
         process.exit(1)
       }
     } catch (e) {
-      this.logger('Homebridge UI not running.', 'fail')
+      this.logger.error('Homebridge UI not running.')
       process.exit(1)
     }
   }
@@ -1367,7 +1360,7 @@ export class HomebridgeServiceHelper {
     const m = RE_SCOPED.exec(input) || RE_NON_SCOPED.exec(input)
 
     if (!m) {
-      this.logger('Invalid plugin name.', 'fail')
+      this.logger.error('Invalid plugin name.')
       process.exit(1)
     }
 
@@ -1383,12 +1376,12 @@ export class HomebridgeServiceHelper {
    */
   private async npmPluginManagement(args: any[]) {
     if (!this.enableHbServicePluginManagement) {
-      this.logger('Plugin management is not supported on your platform using hb-service.', 'fail')
+      this.logger.error('Plugin management is not supported on your platform using hb-service.')
       process.exit(1)
     }
 
     if (args.length === 1) {
-      this.logger('Plugin name required.', 'fail')
+      this.logger.error('Plugin name required.')
       process.exit(1)
     }
 
@@ -1396,12 +1389,12 @@ export class HomebridgeServiceHelper {
     const target = this.parseNpmPackageString(args.at(-1))
 
     if (!target.name) {
-      this.logger('Invalid plugin name.', 'fail')
+      this.logger.error('Invalid plugin name.')
       process.exit(1)
     }
 
     if (!RE_PLUGIN_NAME.test(target.name)) {
-      this.logger('Invalid plugin name.', 'fail')
+      this.logger.error('Invalid plugin name.')
       process.exit(1)
     }
 
@@ -1412,19 +1405,19 @@ export class HomebridgeServiceHelper {
     // dots, dashes, semver operators) before going near a spawn.
     const RE_NPM_VERSION_OR_TAG = /^[\w.\-^~>=<*|+]+$/
     if (!RE_NPM_VERSION_OR_TAG.test(target.version)) {
-      this.logger(`Invalid plugin version "${target.version}".`, 'fail')
+      this.logger.error(`Invalid plugin version "${target.version}".`)
       process.exit(1)
     }
 
     const cwd = dirname(process.env.UIX_CUSTOM_PLUGIN_PATH)
 
     if (!await pathExists(cwd)) {
-      this.logger(`Path does not exist: ${cwd}.`, 'fail')
+      this.logger.error(`Path does not exist: ${cwd}.`)
     }
 
     const npmArgs = ['--prefix', cwd, action, action === 'add' ? `${target.name}@${target.version}` : target.name]
 
-    this.logger(`CMD: npm ${npmArgs.join(' ')}`, 'info')
+    this.logger.log(`CMD: npm ${npmArgs.join(' ')}`)
 
     try {
       // execFileSync (argv form, no shell) keeps target.name and
@@ -1434,9 +1427,9 @@ export class HomebridgeServiceHelper {
         cwd,
         stdio: 'inherit',
       })
-      this.logger(`Installed ${target.name}@${target.version}.`, 'succeed')
+      this.logger.success(`Installed ${target.name}@${target.version}.`)
     } catch (e) {
-      this.logger(`Plugin installation failed as ${e.message}.`, 'fail')
+      this.logger.error(`Plugin installation failed as ${e.message}.`)
     }
   }
 }
