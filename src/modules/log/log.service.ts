@@ -16,12 +16,17 @@ import { NodePtyService } from '../../core/node-pty/node-pty.service.js'
 import { RE_SUPERVISOR_DEBUG_LINE, RE_SUPERVISOR_LEVEL_TAG } from '../../core/regex.constants.js'
 import { TermSize } from '../platform-tools/terminal/terminal.interfaces.js'
 
+// How long a trailing partial line is held back waiting for its terminator
+// before being flushed to the client anyway
+const PARTIAL_LINE_FLUSH_MS = 50
+
 @Injectable()
 export class LogService {
   private command: string[]
   private useNative = false
   private nativeTail: Tail
   private activeClients = new WeakSet<EventEmitter>()
+  private logBuffers = new WeakMap<EventEmitter, { buffer: string, flushTimeout: ReturnType<typeof setTimeout> }>()
 
   constructor(
     @Inject(ConfigService) private readonly configService: ConfigService,
@@ -137,6 +142,7 @@ export class LogService {
       proc.on('exit', (code) => {
         try {
           if (!ending) {
+            this.flushMessage(client)
             client.emit('stdout', '\n\r')
             client.emit('stdout', red(`The log tail command ${command.join(' ')} exited with code ${code}.\n\r`))
             client.emit('stdout', red('Please check the command in your config.json is correct.\n\r\n\r'))
@@ -151,6 +157,7 @@ export class LogService {
       const onEnd = () => {
         ending = true
         this.activeClients.delete(client)
+        this.discardMessageBuffer(client)
 
         client.removeAllListeners('end')
         client.removeAllListeners('disconnect')
@@ -181,6 +188,7 @@ export class LogService {
       term.onExit((code) => {
         try {
           if (!ending) {
+            this.flushMessage(client)
             client.emit('stdout', '\n\r')
             client.emit('stdout', red(`The log tail command ${command.join(' ')} exited with code ${code.exitCode}.\n\r`))
             client.emit('stdout', red('Please check the command in your config.json is correct.\n\r\n\r'))
@@ -202,6 +210,7 @@ export class LogService {
       const onEnd = () => {
         ending = true
         this.activeClients.delete(client)
+        this.discardMessageBuffer(client)
 
         client.removeAllListeners('resize')
         client.removeAllListeners('end')
@@ -276,6 +285,9 @@ export class LogService {
       })
 
       logStream.on('end', () => {
+        // The initial dump is done — flush any held partial line right away
+        // (e.g. when the log file does not end with a newline)
+        this.flushMessage(client)
         logStream.close()
       })
     } catch (e) {
@@ -318,6 +330,7 @@ export class LogService {
     // Cleanup on disconnect
     const onEnd = () => {
       this.activeClients.delete(client)
+      this.discardMessageBuffer(client)
 
       // @ts-expect-error - TS2339: Property removeListener does not exist on type Tail
       this.nativeTail.removeListener('line', onLine)
@@ -354,6 +367,63 @@ export class LogService {
   }
 
   private emitMessage(client: EventEmitter, msg: string) {
+    // Chunks from the pty/stream can split a log line in two, which would let
+    // half a supervisor line slip past the tag handling in processMessage().
+    // Emit up to the last complete line and hold the remainder until its
+    // terminator arrives — or until a short idle timeout, so output that
+    // legitimately ends without a newline still reaches the client.
+    const pending = this.logBuffers.get(client)
+    if (pending) {
+      clearTimeout(pending.flushTimeout)
+    }
+
+    const data = (pending?.buffer ?? '') + msg
+    const lastNewline = data.lastIndexOf('\n')
+
+    // Keep a `\r` directly after the last `\n` with the complete part so
+    // `\n\r` line endings are not split in half
+    const splitAt = lastNewline === -1 ? 0 : (data[lastNewline + 1] === '\r' ? lastNewline + 2 : lastNewline + 1)
+    const partial = data.slice(splitAt)
+
+    if (partial) {
+      this.logBuffers.set(client, {
+        buffer: partial,
+        flushTimeout: setTimeout(() => this.flushMessage(client), PARTIAL_LINE_FLUSH_MS).unref(),
+      })
+    } else {
+      this.logBuffers.delete(client)
+    }
+
+    if (splitAt > 0) {
+      this.processMessage(client, data.slice(0, splitAt))
+    }
+  }
+
+  /**
+   * Emit any held partial line through the normal processing path
+   */
+  private flushMessage(client: EventEmitter) {
+    const pending = this.logBuffers.get(client)
+    if (!pending) {
+      return
+    }
+    clearTimeout(pending.flushTimeout)
+    this.logBuffers.delete(client)
+    this.processMessage(client, pending.buffer)
+  }
+
+  /**
+   * Discard any held partial line without emitting it (client is disconnecting)
+   */
+  private discardMessageBuffer(client: EventEmitter) {
+    const pending = this.logBuffers.get(client)
+    if (pending) {
+      clearTimeout(pending.flushTimeout)
+      this.logBuffers.delete(client)
+    }
+  }
+
+  private processMessage(client: EventEmitter, msg: string) {
     let output = msg
 
     // Only lines written by the hb-service supervisor carry the level tags —

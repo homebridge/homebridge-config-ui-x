@@ -364,6 +364,72 @@ describe('LogGateway (e2e)', () => {
 
       expect(emitted(line)[0]).toBe(line)
     })
+
+    it('suppresses a supervisor DEBUG line split across two chunks', () => {
+      const target = new EventEmitter()
+      const chunks: string[] = []
+      target.on('stdout', (data: string) => chunks.push(data))
+      const service = logService as any
+
+      service.emitMessage(target, `${supervisor} [DEB`)
+      service.emitMessage(target, 'UG] secret detail\n\r')
+
+      expect(chunks).toHaveLength(0)
+
+      service.emitMessage(target, `${supervisor} [INFO] visible\n\r`)
+
+      expect(chunks).toHaveLength(1)
+      expect(chunks[0]).toContain('visible')
+      expect(chunks[0]).not.toContain('secret detail')
+    })
+
+    it('strips the tag from a supervisor line split across two chunks', () => {
+      const target = new EventEmitter()
+      const chunks: string[] = []
+      target.on('stdout', (data: string) => chunks.push(data))
+      const service = logService as any
+
+      service.emitMessage(target, `${supervisor} [SUC`)
+      service.emitMessage(target, 'CESS] made it\n\r')
+
+      expect(chunks).toHaveLength(1)
+      expect(chunks[0]).toContain(green('made it'))
+      expect(chunks[0]).not.toContain('[SUCCESS]')
+    })
+
+    it('emits complete lines immediately while holding the partial remainder', () => {
+      const target = new EventEmitter()
+      const chunks: string[] = []
+      target.on('stdout', (data: string) => chunks.push(data))
+      const service = logService as any
+
+      service.emitMessage(target, 'line a\n\rline b partial')
+
+      expect(chunks).toHaveLength(1)
+      expect(chunks[0]).toBe('line a\n\r')
+
+      service.emitMessage(target, ' now complete\n\r')
+
+      expect(chunks).toHaveLength(2)
+      expect(chunks[1]).toBe('line b partial now complete\n\r')
+    })
+
+    it('flushes a held partial line after a short idle timeout', async () => {
+      const target = new EventEmitter()
+      const chunks: string[] = []
+      target.on('stdout', (data: string) => chunks.push(data))
+      const service = logService as any
+
+      service.emitMessage(target, `${supervisor} [INFO] no trailing newline`)
+
+      expect(chunks).toHaveLength(0)
+
+      await new Promise(res => setTimeout(res, 150))
+
+      expect(chunks).toHaveLength(1)
+      expect(chunks[0]).toContain('no trailing newline')
+      expect(chunks[0]).not.toContain('[INFO]')
+    })
   })
 
   afterAll(async () => {
