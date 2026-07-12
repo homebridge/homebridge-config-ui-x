@@ -47,10 +47,12 @@ const __dirname = dirname(__filename)
 type Action = 'install' | 'uninstall' | 'start' | 'stop' | 'restart' | 'rebuild' | 'run' | 'add' | 'remove' | 'logs' | 'view' | 'update-node' | 'update-homebridge' | 'before-start' | 'status'
 
 class Logger {
+  // Read `action` and `logFile` from the service helper at write time —
+  // `logFile` is not assigned until `startLog()` runs, which happens after
+  // the first log calls in the `run` path, so it must not be snapshotted here.
   constructor(
-    private readonly action: Action,
-    private readonly logFile: WriteStream | NodeJS.WriteStream,
-  ) { }
+    private readonly hbService: HomebridgeServiceHelper,
+  ) {}
 
   log(msg: string) {
     this._log(msg, 'info')
@@ -77,12 +79,12 @@ class Logger {
   }
 
   private _log(msg: string, level: 'info' | 'success' | 'error' | 'warn' | 'debug' | 'verbose') {
-    if (this.action === 'run') {
+    if (this.hbService.action === 'run') {
       msg = `\x1B[37m[${new Date().toLocaleString()}]\x1B[0m `
         + `\x1B[36m[HB Supervisor]\x1B[0m [${level.toUpperCase()}] ${msg}`
 
-      if (this.logFile) {
-        this.logFile.write(`${msg}\n`)
+      if (this.hbService.logFile) {
+        this.hbService.logFile.write(`${msg}\n`)
       } else {
         console.log(msg)
       }
@@ -121,7 +123,7 @@ export class HomebridgeServiceHelper {
   public asUser: string
   public addGroup: string
   public _logger: Logger
-  private logFile: WriteStream | NodeJS.WriteStream
+  public logFile: WriteStream | NodeJS.WriteStream
   private homebridgeModulePath: string
   private homebridgePackage: { version: string, bin: { homebridge: string } }
   private homebridgeBinary: string
@@ -151,7 +153,7 @@ export class HomebridgeServiceHelper {
 
   get logger(): Logger {
     if (!this._logger) {
-      this._logger = new Logger(this.action, this.logFile)
+      this._logger = new Logger(this)
     }
     return this._logger
   }
