@@ -38,6 +38,15 @@ export class TerminalService {
       this.dataDisposable.dispose()
       this.dataDisposable = null
     }
+    // Remove socket event listeners before ending the connection. The socket
+    // is cached by WsService and outlives this terminal — any listener left
+    // behind would fire against the nulled `term` the next time the socket
+    // disconnects (e.g. WsService bouncing sockets on token rotation).
+    if (this.io && this.io.socket) {
+      this.io.socket.removeAllListeners('disconnect')
+      this.io.socket.removeAllListeners('stdout')
+      this.io.socket.removeAllListeners('process-exit')
+    }
     if (this.io) {
       this.io.end!()
     }
@@ -292,9 +301,11 @@ export class TerminalService {
     this.io.socket.removeAllListeners('process-exit')
     this.io.socket.removeAllListeners('stdout')
 
-    // Handle disconnect events
+    // Handle disconnect events. `term` may be gone while the listener is
+    // still attached (detachTerminal keeps the socket alive on purpose), so
+    // guard the write.
     this.io.socket.on('disconnect', () => {
-      this.term.write(
+      this.term?.write(
         '\n\r\n\rTerminal disconnected. Is the server running?\n\r\n\r',
       )
     })
