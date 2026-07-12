@@ -40,7 +40,12 @@ export class AuthService {
   }
 
   public async login(form: { username: string, password: string, ota?: string }) {
-    const resp = await this.$api.post('/auth/login', form)
+    // withCredentials lets the browser store the hb-session cookie the
+    // server sets on this response. Same-origin requests do this anyway,
+    // but the dev server (:4200 → :8581) is cross-origin, where the
+    // Set-Cookie header is silently ignored without it — leaving the
+    // custom plugin UI iframe to 401 against /api/plugins/settings-ui/*.
+    const resp = await this.$api.post('/auth/login', form, { withCredentials: true })
     if (!this.validateToken(resp.access_token)) {
       throw new Error('Invalid username or password.')
     }
@@ -49,7 +54,8 @@ export class AuthService {
   }
 
   public async noauth() {
-    const resp = await this.$api.post('/auth/noauth', {})
+    // withCredentials: see login() — required for the hb-session cookie
+    const resp = await this.$api.post('/auth/noauth', {}, { withCredentials: true })
     if (!this.validateToken(resp.access_token)) {
       throw new Error('Invalid username or password.')
     } else {
@@ -220,7 +226,8 @@ export class AuthService {
     this.isRefreshing = true
 
     try {
-      const resp = await this.$api.post('/auth/refresh', {})
+      // withCredentials: see login() — required for the hb-session cookie
+      const resp = await this.$api.post('/auth/refresh', {}, { withCredentials: true })
       if (resp.access_token) {
         // Persist the new token in storage and invalidate the read-through
         // cache used by AuthHelperService so the next read sees the new
