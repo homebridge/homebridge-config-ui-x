@@ -47,7 +47,6 @@ const __dirname = dirname(__filename)
 type Action = 'install' | 'uninstall' | 'start' | 'stop' | 'restart' | 'rebuild' | 'run' | 'add' | 'remove' | 'logs' | 'view' | 'update-node' | 'update-homebridge' | 'before-start' | 'status'
 
 class Logger {
-
   constructor(
     private readonly action: Action,
     private readonly logFile: WriteStream | NodeJS.WriteStream,
@@ -78,19 +77,16 @@ class Logger {
   }
 
   private _log(msg: string, level: 'info' | 'success' | 'error' | 'warn' | 'debug' | 'verbose') {
-
     if (this.action === 'run') {
       msg = `\x1B[37m[${new Date().toLocaleString()}]\x1B[0m `
         + `\x1B[36m[HB Supervisor]\x1B[0m [${level.toUpperCase()}] ${msg}`
 
       if (this.logFile) {
         this.logFile.write(`${msg}\n`)
-
       } else {
         console.log(msg)
       }
     } else {
-
       let oraLevel: 'info' | 'succeed' | 'fail' | 'warn'
       switch (level) {
         case 'info':
@@ -155,9 +151,9 @@ export class HomebridgeServiceHelper {
 
   get logger(): Logger {
     if (!this._logger) {
-      this._logger = new Logger(this.action, this.logFile);
+      this._logger = new Logger(this.action, this.logFile)
     }
-    return this._logger;
+    return this._logger
   }
 
   constructor() {
@@ -310,7 +306,6 @@ export class HomebridgeServiceHelper {
       }
     }
   }
-
 
   /**
    * Sets the required environment variables passed on to the child processes
@@ -518,12 +513,12 @@ export class HomebridgeServiceHelper {
       this.logger.log('Stopping services...')
       try {
         this.homebridge.kill()
-      } catch (e) { }
+      } catch (e) {}
 
       setTimeout(() => {
         try {
           this.homebridge.kill('SIGKILL')
-        } catch (e) { }
+        } catch (e) {}
         process.exit(1282)
       }, 7000)
     }
@@ -780,7 +775,7 @@ export class HomebridgeServiceHelper {
         'WARNING: It looks like you are running Node.js via NVM (Node Version Manager).\n'
         + '  Using hb-service with NVM may not work unless you have configured NVM for the\n'
         + '  user this service will run as. See https://homebridge.io/w/JUZ2g for instructions on how\n'
-        + '  to remove NVM, then follow the wiki instructions to install Node.js and Homebridge.'
+        + '  to remove NVM, then follow the wiki instructions to install Node.js and Homebridge.',
       )
     }
   }

@@ -5,7 +5,7 @@ import process from 'node:process'
 export class BasePlatform {
   constructor(
     public hbService: HomebridgeServiceHelper,
-  ) { }
+  ) {}
 
   public async install(): Promise<void> {
     this.hbService.logger.error('This command has not been implemented on this platform.')
@@ -58,7 +58,7 @@ export class BasePlatform {
     return null
   }
 
-  public async updateNodejs(job: { target: string, rebuild: boolean }): Promise<void> { }
+  public async updateNodejs(job: { target: string, rebuild: boolean }): Promise<void> {}
 
   public async updateHomebridgePackage(): Promise<void> {
     this.hbService.logger.error('This command has not been implemented on this platform.')

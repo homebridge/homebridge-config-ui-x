@@ -217,7 +217,7 @@ export class DarwinInstaller extends BasePlatform {
     // `--user 'foo"; rm -rf /; echo "'` execute as root at install-time.
     if (!RE_OS_USERNAME.test(this.user)) {
       this.hbService.logger.warn(
-        `WARNING: Refusing to resolve home directory — invalid username "${this.user}".`
+        `WARNING: Refusing to resolve home directory — invalid username "${this.user}".`,
       )
       return homedir()
     }

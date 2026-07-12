@@ -625,7 +625,7 @@ export class LinuxInstaller extends BasePlatform {
       // (e.g. `foo, /bin/sh`) and grant NOPASSWD to arbitrary binaries.
       if (!RE_OS_USERNAME.test(this.hbService.asUser)) {
         this.hbService.logger.warn(
-          `WARNING: Refusing to write /etc/sudoers entry — invalid username "${this.hbService.asUser}".`
+          `WARNING: Refusing to write /etc/sudoers entry — invalid username "${this.hbService.asUser}".`,
         )
         return
       }
