@@ -25,6 +25,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - feat(log): strip and colorize hb-service level tags in the log stream (#2875) (@mpatfield)
 - refactor(log): downgrade noisy log messages to debug (#2876) (@mpatfield)
 - fix(plugins): allow `unsafe-eval` in the custom ui csp so eval-based frameworks work again (#2873)
+- chore(matter): type the gas concentration clusters
 
 ### Other Changes
 

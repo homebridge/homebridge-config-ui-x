@@ -231,6 +231,18 @@ export interface MatterPM10ConcentrationMeasurementCluster extends Record<string
 }
 
 /**
+ * Matter gas ConcentrationMeasurement cluster attributes
+ * (CO in ppm; NO2 and Ozone in ppb by default)
+ */
+export interface MatterConcentrationMeasurementCluster extends Record<string, unknown> {
+  measuredValue: number | null
+  minMeasuredValue?: number
+  maxMeasuredValue?: number
+  measurementUnit?: number
+  measurementMedium?: number
+}
+
+/**
  * Matter DoorLock cluster attributes
  */
 export interface MatterDoorLockCluster extends Record<string, unknown> {
@@ -368,6 +380,9 @@ export interface MatterClusters extends Record<string, unknown> {
   airQuality?: MatterAirQualityCluster
   pm25ConcentrationMeasurement?: MatterPM25ConcentrationMeasurementCluster
   pm10ConcentrationMeasurement?: MatterPM10ConcentrationMeasurementCluster
+  carbonMonoxideConcentrationMeasurement?: MatterConcentrationMeasurementCluster
+  nitrogenDioxideConcentrationMeasurement?: MatterConcentrationMeasurementCluster
+  ozoneConcentrationMeasurement?: MatterConcentrationMeasurementCluster
   doorLock?: MatterDoorLockCluster
   windowCovering?: MatterWindowCoveringCluster
   fanControl?: MatterFanControlCluster

@@ -738,21 +738,21 @@ export function getPm10Value(service: ServiceTypeX): number | null {
  * Get Carbon Monoxide concentration value (ppm)
  */
 export function getCarbonMonoxideValue(service: ServiceTypeX): number | null {
-  return (service.clusters as any)?.carbonMonoxideConcentrationMeasurement?.measuredValue ?? null
+  return service.clusters?.carbonMonoxideConcentrationMeasurement?.measuredValue ?? null
 }
 
 /**
  * Get Nitrogen Dioxide concentration value (ppb)
  */
 export function getNitrogenDioxideValue(service: ServiceTypeX): number | null {
-  return (service.clusters as any)?.nitrogenDioxideConcentrationMeasurement?.measuredValue ?? null
+  return service.clusters?.nitrogenDioxideConcentrationMeasurement?.measuredValue ?? null
 }
 
 /**
  * Get Ozone concentration value (ppb)
  */
 export function getOzoneValue(service: ServiceTypeX): number | null {
-  return (service.clusters as any)?.ozoneConcentrationMeasurement?.measuredValue ?? null
+  return service.clusters?.ozoneConcentrationMeasurement?.measuredValue ?? null
 }
 
 /**
@@ -766,12 +766,19 @@ export function hasConcentrationData(service: ServiceTypeX): boolean {
     || getOzoneValue(service) !== null
 }
 
+type ConcentrationClusterName
+  = | 'pm25ConcentrationMeasurement'
+    | 'pm10ConcentrationMeasurement'
+    | 'carbonMonoxideConcentrationMeasurement'
+    | 'nitrogenDioxideConcentrationMeasurement'
+    | 'ozoneConcentrationMeasurement'
+
 /**
  * Get the unit for a concentration cluster
  * measurementUnit: 0 = PPM, 1 = PPB, 2 = PPT, 3 = mg/m³, 4 = µg/m³
  */
-export function getConcentrationUnit(service: ServiceTypeX, clusterName: string): string {
-  const cluster = (service.clusters as any)?.[clusterName]
+export function getConcentrationUnit(service: ServiceTypeX, clusterName: ConcentrationClusterName): string {
+  const cluster = service.clusters?.[clusterName]
   if (cluster?.measurementUnit !== undefined) {
     switch (cluster.measurementUnit) {
       case 0: return 'ppm'
