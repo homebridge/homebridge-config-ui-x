@@ -1,0 +1,62 @@
+@let on = isOn();
+@let stateText = on ? ('accessories.control.on' | translate) : ('accessories.control.off' | translate);
+
+@let srBaseName = (service().customName || service().serviceName || service().displayName || '').trim();
+@let srType = 'accessories.core.pump' | translate;
+@let includeType = !(srBaseName | lowercase).includes(srType | lowercase);
+
+@let srText = `${srBaseName + (includeType ? `, ${srType}` : '')}, ${stateText}`;
+
+<div
+  class="accessory-box"
+  role="switch"
+  tabindex="0"
+  [class.accessory-on]="on"
+  [class.cursor-pointer]="readyForControl()"
+  [attr.aria-checked]="on"
+  [attr.aria-label]="srText"
+  (click)="onClick()"
+  (keydown.enter)="onClick()"
+  (keydown.space)="onClick()"
+>
+  <span class="visually-hidden" role="status" aria-live="polite" aria-atomic="true">
+    {{ srText }}
+  </span>
+  <div class="d-flex flex-column h-100">
+    <div class="accessory-svg" aria-hidden="true">
+      <svg
+        width="32"
+        height="32"
+        viewBox="0 0 32 32"
+        xmlns="http://www.w3.org/2000/svg"
+        focusable="false"
+        aria-hidden="true"
+      >
+        <!-- inlet pipe -->
+        <line x1="1" y1="16" x2="6" y2="16" stroke="#7f7f7f" stroke-width="3" stroke-linecap="round" />
+        <!-- outlet pipe -->
+        <line x1="16" y1="6" x2="16" y2="1" stroke="#7f7f7f" stroke-width="3" stroke-linecap="round" />
+        <!-- pump housing -->
+        <circle class="housing" cx="16" cy="16" r="10" fill="none" stroke="#7f7f7f" stroke-width="2" />
+        <!-- impeller -->
+        <g class="impeller" stroke="#7f7f7f" stroke-width="1.5" stroke-linecap="round">
+          <line x1="16" y1="16" x2="16" y2="10" />
+          <line x1="16" y1="16" x2="21.2" y2="19" />
+          <line x1="16" y1="16" x2="10.8" y2="19" />
+        </g>
+        <!-- impeller hub -->
+        <circle class="hub" cx="16" cy="16" r="2" fill="#7f7f7f" stroke="none" />
+        <!-- pump base -->
+        <line x1="9" y1="30" x2="23" y2="30" stroke="#7f7f7f" stroke-width="2.5" stroke-linecap="round" />
+      </svg>
+    </div>
+    <div class="accessory-label mt-auto" aria-hidden="true">
+      {{ service().customName || service().serviceName || service().displayName }}
+    </div>
+    <div
+      class="accessory-label grey-text"
+      aria-hidden="true"
+      [innerText]="(on ? 'accessories.control.on' : 'accessories.control.off') | translate"
+    ></div>
+  </div>
+</div>

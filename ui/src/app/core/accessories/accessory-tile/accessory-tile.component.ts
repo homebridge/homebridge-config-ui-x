@@ -48,18 +48,21 @@ import { DimmableLightComponent } from '@/app/core/accessories/types/matter/dimm
 import { MatterDoorLockComponent } from '@/app/core/accessories/types/matter/door-lock/door-lock.component'
 import { ExtendedColorLightComponent } from '@/app/core/accessories/types/matter/extended-color-light/extended-color-light.component'
 import { MatterFanComponent } from '@/app/core/accessories/types/matter/fan/fan.component'
+import { MatterGenericSwitchComponent } from '@/app/core/accessories/types/matter/generic-switch/generic-switch.component'
 import { MatterHumiditySensorComponent } from '@/app/core/accessories/types/matter/humidity-sensor/humidity-sensor.component'
 import { MatterLightSensorComponent } from '@/app/core/accessories/types/matter/light-sensor/light-sensor.component'
 import { MatterOccupancySensorComponent } from '@/app/core/accessories/types/matter/occupancy-sensor/occupancy-sensor.component'
 import { OnOffLightSwitchComponent } from '@/app/core/accessories/types/matter/on-off-light-switch/on-off-light-switch.component'
 import { OnOffLightComponent } from '@/app/core/accessories/types/matter/on-off-light/on-off-light.component'
 import { OnOffPlugInUnitComponent } from '@/app/core/accessories/types/matter/on-off-plug-in-unit/on-off-plug-in-unit.component'
+import { MatterPumpComponent } from '@/app/core/accessories/types/matter/pump/pump.component'
 import { RoboticVacuumCleanerComponent } from '@/app/core/accessories/types/matter/robotic-vacuum-cleaner/robotic-vacuum-cleaner.component'
 import { MatterSmokeCoAlarmComponent } from '@/app/core/accessories/types/matter/smoke-co-alarm/smoke-co-alarm.component'
 import { MatterTemperatureSensorComponent } from '@/app/core/accessories/types/matter/temperature-sensor/temperature-sensor.component'
 import { MatterThermostatComponent } from '@/app/core/accessories/types/matter/thermostat/thermostat.component'
 import { MatterUnknownComponent } from '@/app/core/accessories/types/matter/unknown/unknown.component'
 import { MatterWaterLeakDetectorComponent } from '@/app/core/accessories/types/matter/water-leak-detector/water-leak-detector.component'
+import { MatterWaterValveComponent } from '@/app/core/accessories/types/matter/water-valve/water-valve.component'
 import { MatterWindowCoveringComponent } from '@/app/core/accessories/types/matter/window-covering/window-covering.component'
 
 @Component({
@@ -121,6 +124,9 @@ import { MatterWindowCoveringComponent } from '@/app/core/accessories/types/matt
     MatterWindowCoveringComponent,
     MatterFanComponent,
     MatterThermostatComponent,
+    MatterGenericSwitchComponent,
+    MatterWaterValveComponent,
+    MatterPumpComponent,
     MatterUnknownComponent,
     TranslatePipe,
     AccessCodeComponent,

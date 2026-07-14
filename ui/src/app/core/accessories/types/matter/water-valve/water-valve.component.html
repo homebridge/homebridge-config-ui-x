@@ -1,0 +1,63 @@
+@let open = isOpen();
+@let stateText = open ? ('accessories.control.open' | translate) : ('accessories.control.closed' | translate);
+
+@let srBaseName = (service().customName || service().serviceName || service().displayName || '').trim();
+@let srType = 'accessories.core.valve' | translate;
+@let includeType = !(srBaseName | lowercase).includes(srType | lowercase);
+
+@let srText = `${srBaseName + (includeType ? `, ${srType}` : '')}, ${stateText}`;
+
+<div
+  class="accessory-box"
+  role="switch"
+  tabindex="0"
+  [class.accessory-on]="open"
+  [class.cursor-pointer]="readyForControl()"
+  [attr.aria-checked]="open"
+  [attr.aria-label]="srText"
+  (click)="onClick()"
+  (keydown.enter)="onClick()"
+  (keydown.space)="onClick()"
+>
+  <span class="visually-hidden" role="status" aria-live="polite" aria-atomic="true">
+    {{ srText }}
+  </span>
+  <div class="d-flex flex-column h-100">
+    <div class="accessory-svg" aria-hidden="true">
+      <svg
+        width="32"
+        height="32"
+        viewBox="0 0 32 32"
+        xmlns="http://www.w3.org/2000/svg"
+        focusable="false"
+        aria-hidden="true"
+      >
+        <!-- top twister -->
+        <line x1="8" y1="3" x2="14" y2="3" stroke="#7f7f7f" stroke-width="3" stroke-linecap="round" />
+        <!-- twister to main pipe -->
+        <line x1="11" y1="8" x2="11" y2="3" stroke="#7f7f7f" stroke-width="3" stroke-linecap="round" />
+        <!-- main pipe -->
+        <line x1="0" y1="9" x2="21" y2="9" stroke="#7f7f7f" stroke-width="4" stroke-linecap="round" />
+        <!-- nozzle -->
+        <line x1="21" y1="9" x2="21" y2="14" stroke="#7f7f7f" stroke-width="4" stroke-linecap="round" />
+        <!-- top row of drops -->
+        <circle class="drop drop-top" fill="#1976d2" fill-opacity="0" cx="21" cy="19" r="1.5" />
+        <!-- middle row of drops -->
+        <circle class="drop drop-middle" fill="#1976d2" fill-opacity="0" cx="17" cy="24" r="1.5" />
+        <circle class="drop drop-middle" fill="#1976d2" fill-opacity="0" cx="25" cy="24" r="1.5" />
+        <!-- bottom row of drops -->
+        <circle class="drop drop-bottom" fill="#1976d2" fill-opacity="0" cx="13" cy="29" r="1.5" />
+        <circle class="drop drop-bottom" fill="#1976d2" fill-opacity="0" cx="21" cy="29" r="1.5" />
+        <circle class="drop drop-bottom" fill="#1976d2" fill-opacity="0" cx="29" cy="29" r="1.5" />
+      </svg>
+    </div>
+    <div class="accessory-label mt-auto" aria-hidden="true">
+      {{ service().customName || service().serviceName || service().displayName }}
+    </div>
+    @if (open) {
+      <div class="accessory-label grey-text" aria-hidden="true">{{ 'accessories.control.open' | translate }}</div>
+    } @else {
+      <div class="accessory-label grey-text" aria-hidden="true">{{ 'accessories.control.closed' | translate }}</div>
+    }
+  </div>
+</div>

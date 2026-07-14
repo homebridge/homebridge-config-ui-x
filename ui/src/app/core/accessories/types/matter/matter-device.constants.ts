@@ -23,6 +23,10 @@ export const MatterDeviceType = {
   Window: 'Window', // custom type (use WindowCovering cluster but with different icons)
   Fan: 'Fan',
   Thermostat: 'Thermostat',
+  GenericSwitch: 'GenericSwitch',
+  WaterValve: 'WaterValve',
+  Pump: 'Pump',
+  RoomAirConditioner: 'RoomAirConditioner',
 } as const
 
 /**
@@ -81,6 +85,15 @@ export const MatterWindowCovering = {
   FullyOpen: 0,
   FullyClosed: 10000,
 } as const
+
+/**
+ * Water Valve States (ValveConfigurationAndControl cluster)
+ */
+export enum WaterValveState {
+  Closed = 0,
+  Open = 1,
+  Transitioning = 2,
+}
 
 /**
  * Thermostat System Modes

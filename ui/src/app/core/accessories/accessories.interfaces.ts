@@ -231,6 +231,26 @@ export interface MatterPM10ConcentrationMeasurementCluster extends Record<string
 }
 
 /**
+ * Matter Switch cluster attributes (GenericSwitch — stateless buttons/remotes)
+ */
+export interface MatterSwitchCluster extends Record<string, unknown> {
+  currentPosition?: number // 0 = released, >= 1 = button position pressed
+  numberOfPositions?: number
+  multiPressMax?: number
+}
+
+/**
+ * Matter ValveConfigurationAndControl cluster attributes (water valves)
+ * States: 0 = Closed, 1 = Open, 2 = Transitioning
+ */
+export interface MatterValveConfigurationAndControlCluster extends Record<string, unknown> {
+  currentState?: number | null
+  targetState?: number | null
+  openDuration?: number | null
+  remainingDuration?: number | null
+}
+
+/**
  * Matter gas ConcentrationMeasurement cluster attributes
  * (CO in ppm; NO2 and Ozone in ppb by default)
  */
@@ -387,6 +407,8 @@ export interface MatterClusters extends Record<string, unknown> {
   windowCovering?: MatterWindowCoveringCluster
   fanControl?: MatterFanControlCluster
   thermostat?: MatterThermostatCluster
+  switch?: MatterSwitchCluster
+  valveConfigurationAndControl?: MatterValveConfigurationAndControlCluster
 }
 
 /**

@@ -1,0 +1,27 @@
+.accessory-on .accessory-svg {
+  .housing {
+    stroke: #1976d2;
+    stroke-opacity: 0.75;
+    stroke-width: 2.5;
+  }
+
+  .impeller {
+    stroke: #1976d2;
+    transform-origin: 16px 16px;
+    animation: spin 2s linear infinite;
+  }
+
+  .hub {
+    fill: #1976d2;
+  }
+
+  @keyframes spin {
+    from {
+      transform: rotate(0deg);
+    }
+
+    to {
+      transform: rotate(360deg);
+    }
+  }
+}

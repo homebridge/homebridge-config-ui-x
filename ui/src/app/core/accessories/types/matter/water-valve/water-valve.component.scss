@@ -1,0 +1,32 @@
+.accessory-on {
+  svg {
+    .drop {
+      fill-opacity: 0.5;
+    }
+
+    .drop-top {
+      animation: blink 1.5s infinite;
+    }
+
+    .drop-middle {
+      animation: blink 1.5s infinite;
+      animation-delay: 0.5s;
+    }
+
+    .drop-bottom {
+      animation: blink 1.5s infinite;
+      animation-delay: 1s;
+    }
+
+    @keyframes blink {
+      0%,
+      100% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0;
+      }
+    }
+  }
+}

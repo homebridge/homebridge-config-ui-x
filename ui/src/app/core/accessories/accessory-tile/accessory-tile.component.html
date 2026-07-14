@@ -135,6 +135,26 @@
           {{ 'accessories.core.thermostat' | translate }}
         </app-matter-thermostat>
       }
+      @case ('RoomAirConditioner') {
+        <app-matter-thermostat [service]="service()" [readyForControl]="$accessories.matterReadyForControl">
+          {{ 'accessories.core.heater_cooler' | translate }}
+        </app-matter-thermostat>
+      }
+      @case ('GenericSwitch') {
+        <app-matter-generic-switch [service]="service()">
+          {{ 'accessories.core.stateless_programmable_switch' | translate }}
+        </app-matter-generic-switch>
+      }
+      @case ('WaterValve') {
+        <app-matter-water-valve [service]="service()" [readyForControl]="$accessories.matterReadyForControl">
+          {{ 'accessories.core.valve' | translate }}
+        </app-matter-water-valve>
+      }
+      @case ('Pump') {
+        <app-matter-pump [service]="service()" [readyForControl]="$accessories.matterReadyForControl">
+          {{ 'accessories.core.pump' | translate }}
+        </app-matter-pump>
+      }
       @default {
         <app-matter-unknown [service]="service()">{{ service().humanType }}</app-matter-unknown>
       }

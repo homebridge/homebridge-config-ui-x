@@ -1,6 +1,6 @@
 import type { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
 
-import { MatterBrightness, MatterDeviceType, RvcOperationalState, RvcRunMode } from './matter-device.constants'
+import { MatterBrightness, MatterDeviceType, RvcOperationalState, RvcRunMode, WaterValveState } from './matter-device.constants'
 
 /**
  * Check if a device is an OnOff type (light, switch, or plug-in unit)
@@ -524,6 +524,51 @@ export async function toggleWindowCovering(service: ServiceTypeX): Promise<void>
     await setWindowCoveringPosition(service, 0) // Close
   } else {
     await setWindowCoveringPosition(service, 100) // Open
+  }
+}
+
+// ============================================================================
+// Water Valve Utility Functions
+// ============================================================================
+
+/**
+ * Get water valve state
+ * 0 = Closed, 1 = Open, 2 = Transitioning
+ */
+export function getWaterValveState(service: ServiceTypeX): number {
+  return service.clusters?.valveConfigurationAndControl?.currentState ?? WaterValveState.Closed
+}
+
+/**
+ * Check if the water valve is open (or moving towards open)
+ */
+export function isWaterValveOpen(service: ServiceTypeX): boolean {
+  const state = getWaterValveState(service)
+  return state === WaterValveState.Open
+    || (state === WaterValveState.Transitioning
+      && service.clusters?.valveConfigurationAndControl?.targetState === WaterValveState.Open)
+}
+
+/**
+ * Toggle water valve open/closed
+ * Setting targetState maps to the valve's open/close command in Homebridge,
+ * so plugin handlers are invoked.
+ */
+export async function toggleWaterValve(service: ServiceTypeX): Promise<void> {
+  const cluster = service.getCluster?.('valveConfigurationAndControl')
+
+  if (!cluster) {
+    const error = new Error('ValveConfigurationAndControl cluster not found')
+    console.error(error.message)
+    throw error
+  }
+
+  const targetState = isWaterValveOpen(service) ? WaterValveState.Closed : WaterValveState.Open
+  try {
+    await cluster.setAttributes({ targetState })
+  } catch (error) {
+    console.error(`Failed to ${targetState === WaterValveState.Open ? 'open' : 'close'} water valve:`, error)
+    throw error
   }
 }
 
