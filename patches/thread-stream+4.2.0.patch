@@ -1,0 +1,13 @@
+diff --git a/node_modules/thread-stream/index.d.ts b/node_modules/thread-stream/index.d.ts
+index c1f2b70..691facb 100644
+--- a/node_modules/thread-stream/index.d.ts
++++ b/node_modules/thread-stream/index.d.ts
+@@ -93,7 +93,7 @@ declare class ThreadStream extends EventEmitter {
+    * @param transferList an optional list of transferable objects to be transferred to the Worker context.
+    * @returns {boolean} true if the event had listeners, false otherwise.
+    */
+-  emit(eventName: 'message', message: any, transferList?: workerThreads.TransferListItem[]): boolean
++  emit(eventName: 'message', message: any, transferList?: workerThreads.Transferable[]): boolean
+ }
+ 
+ export = ThreadStream;
