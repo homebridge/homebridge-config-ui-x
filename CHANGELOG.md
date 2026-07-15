@@ -37,6 +37,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - chore: update `SECURITY.md` (@NorthernMan54)
 - chore: update claude and copilot reference files
 - chore: update `actions/checkout` to `v7`
+- chore(deps): update @types/node to v26, patch thread-stream
 
 ### Homebridge Dependencies
 

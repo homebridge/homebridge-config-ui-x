@@ -10,7 +10,7 @@
     "start": "ng serve --host 0.0.0.0",
     "prebuild": "node ../scripts/fontawesome-subset.mjs",
     "build": "ng build --configuration production",
-    "postinstall": "patch-package"
+    "prepare": "node ../scripts/apply-patches.mjs"
   },
   "dependencies": {
     "@angular/common": "22.0.6",
@@ -27,9 +27,9 @@
     "@ng-formworks/bootstrap5": "21.7.0",
     "@ng-formworks/core": "21.7.0",
     "@ngx-translate/core": "18.0.0",
-    "@xterm/addon-fit": "0.12.0-beta.288",
-    "@xterm/addon-web-links": "0.13.0-beta.288",
-    "@xterm/xterm": "6.1.0-beta.288",
+    "@xterm/addon-fit": "0.12.0-beta.289",
+    "@xterm/addon-web-links": "0.13.0-beta.289",
+    "@xterm/xterm": "6.1.0-beta.289",
     "ajv-keywords": "5.1.0",
     "angular-gridster2": "22.0.0",
     "bootstrap": "5.3.8",
@@ -96,7 +96,6 @@
   "allowScripts": {
     "@parcel/watcher@2.5.6": true,
     "esbuild@0.28.1": true,
-    "esbuild@0.27.7": true,
     "fsevents@2.3.3": true,
     "lmdb@3.5.4": true,
     "msgpackr-extract@3.0.4": true
