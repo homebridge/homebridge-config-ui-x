@@ -128,7 +128,7 @@ export class Win32Installer extends BasePlatform {
     this.checkIsAdmin()
 
     try {
-      execSync('npm rebuild --unsafe-perm', {
+      execSync('npm rebuild', {
         cwd: process.env.UIX_BASE_PATH,
         stdio: 'inherit',
       })

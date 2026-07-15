@@ -470,7 +470,7 @@ export class HomebridgeServiceHelper {
   private runHomebridge() {
     if (!this.homebridgeBinary || !pathExistsSync(this.homebridgeBinary)) {
       this.logger.error('Could not find Homebridge. Make sure you have installed Homebridge using the -g flag then restart.')
-      this.logger.error('npm install -g --unsafe-perm homebridge')
+      this.logger.error('npm install -g homebridge')
       return
     }
 

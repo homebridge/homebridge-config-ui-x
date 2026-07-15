@@ -19,13 +19,13 @@ function tryRebuildNodePtyModule() {
   logger.warn('[node-pty] Trying to rebuild automatically...')
   logger.warn(`[node-pty] Path: ${modulePath}.`)
   try {
-    execSync('npm run install --unsafe-perm', {
+    execSync('npm run install', {
       cwd: modulePath,
       stdio: 'ignore',
     })
   } catch (e) {
     if (platform() !== 'win32') {
-      execSync('sudo -E -n run install --unsafe-perm', {
+      execSync('sudo -E -n npm run install', {
         cwd: modulePath,
         stdio: 'ignore',
       })
@@ -76,11 +76,11 @@ function main() {
       } else if (platform() === 'darwin') {
         logger.warn('[node-pty] From the terminal run these commands (exact commands may vary):\n')
         logger.warn(`cd ${modulePath}`)
-        logger.warn('sudo npm rebuild --unsafe-perm\n')
+        logger.warn('sudo npm rebuild\n')
       } else {
         logger.warn('[node-pty] From the terminal run these commands (exact commands may vary):\n')
         logger.warn(`cd ${modulePath}`)
-        logger.warn('sudo npm rebuild --unsafe-perm\n')
+        logger.warn('sudo npm rebuild\n')
       }
     }
     process.exit(1)
