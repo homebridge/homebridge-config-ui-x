@@ -2,6 +2,18 @@
 
 All notable changes to `homebridge-config-ui-x` will be documented in this file. This project tries to adhere to [Semantic Versioning](http://semver.org/).
 
+## v5.25.1 (Pending Release)
+
+### Other Changes
+
+- fix: remove unsupported npm flag `--unsafe-perm` (#2891)
+
+### Homebridge Dependencies
+
+- `@homebridge/hap-client` @ `v5.1.0`
+- `@homebridge/node-pty-prebuilt-multiarch` @ `v0.13.1`
+- `@homebridge/plugin-ui-utils` @ `v2.2.5`
+
 ## v5.25.0 (2026-07-15)
 
 ### UI Changes

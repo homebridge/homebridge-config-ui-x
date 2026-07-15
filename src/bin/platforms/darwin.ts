@@ -126,7 +126,7 @@ export class DarwinInstaller extends BasePlatform {
         },
       }).toString('utf8')
 
-      execSync('npm rebuild --unsafe-perm', {
+      execSync('npm rebuild', {
         cwd: process.env.UIX_BASE_PATH,
         stdio: 'inherit',
       })
@@ -135,7 +135,7 @@ export class DarwinInstaller extends BasePlatform {
       if (all === true) {
         // Rebuild all modules
         try {
-          execSync('npm rebuild --unsafe-perm', {
+          execSync('npm rebuild', {
             cwd: npmGlobalPath,
             stdio: 'inherit',
           })

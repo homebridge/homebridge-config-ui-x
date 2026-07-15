@@ -81,7 +81,7 @@ if ! cd "$TARGET_PATH/lib/node_modules/homebridge-config-ui-x"; then
   exit 1
 fi
 
-if ! npm rebuild --foreground-scripts --unsafe-perm @homebridge/node-pty-prebuilt-multiarch; then
+if ! npm rebuild --foreground-scripts @homebridge/node-pty-prebuilt-multiarch; then
   echo "Failed to rebuild."
   mv "$TARGET_PATH/lib/node_modules/.homebridge-config-ui-x.bak" "$TARGET_PATH/lib/node_modules/homebridge-config-ui-x"
   rm -rf "$tmp_dir"
