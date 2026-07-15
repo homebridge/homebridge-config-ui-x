@@ -7,6 +7,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 ### Other Changes
 
 - fix: remove unsupported npm flag `--unsafe-perm` (#2891)
+- chore(deps): dependency updates
 
 ## v5.25.0 (2026-07-15)
 
