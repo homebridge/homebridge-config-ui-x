@@ -33,6 +33,10 @@ export class ConfigService {
   public homebridgeInsecureMode = Boolean(process.env.UIX_INSECURE_MODE === '1')
   public homebridgeVersion: string
 
+  // The module path of the Homebridge install hb-service launched, sent over
+  // IPC at startup — only set when running under hb-service
+  public runningHomebridgeModulePath: string
+
   // Server env
   public minimumNodeVersion = '22.12.0'
   public runningInDocker = Boolean(process.env.HOMEBRIDGE_CONFIG_UI === '1')
