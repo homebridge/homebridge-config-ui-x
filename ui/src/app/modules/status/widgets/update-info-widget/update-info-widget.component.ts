@@ -122,6 +122,7 @@ export class UpdateInfoWidgetComponent implements OnInit {
       hb.displayName = 'Homebridge'
       this.homebridgePkg.set(hb)
       this.$settings.env.homebridgeVersion = hb.installedVersion
+      this.homebridgeVersion = hb.installedVersion
       this.homebridgeUpdatePolicy = this.$settings.env.homebridgeUpdatePolicy || 'all'
       this.isRunningHbV2.set(hb.installedVersion.startsWith('2.'))
     }
@@ -225,6 +226,10 @@ export class UpdateInfoWidgetComponent implements OnInit {
       return 'fa-circle-notch fa-spin primary-text'
     }
 
+    if (this.homebridgePkg().multipleInstances) {
+      return 'fa-exclamation-circle orange-text'
+    }
+
     if (this.homebridgeUpdatePolicy === 'none' || (this.homebridgeUpdatePolicy === 'major' && !this.homebridgePkg().updateAvailable)) {
       return 'fa-circle green-text'
     }
@@ -283,6 +288,7 @@ export class UpdateInfoWidgetComponent implements OnInit {
 
       this.homebridgePkg.set(response)
       this.$settings.env.homebridgeVersion = response.installedVersion
+      this.homebridgeVersion = response.installedVersion
       this.homebridgeUpdatePolicy = this.$settings.env.homebridgeUpdatePolicy || 'all'
       this.isRunningHbV2.set(response.installedVersion.startsWith('2.'))
     } catch (error: any) {

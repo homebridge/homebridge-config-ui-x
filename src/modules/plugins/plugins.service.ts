@@ -799,9 +799,21 @@ export class PluginsService {
       throw new Error('Unable To Find Homebridge Installation.')
     }
 
-    const homebridgeModule = homebridgeInstalls[0]
+    let homebridgeModule = homebridgeInstalls[0]
+
+    // When more than one install exists, prefer the one hb-service reported it
+    // actually launched — otherwise the UI reports (and updates) a copy that is
+    // not running, while the stale copy keeps starting (#2897)
+    if (homebridgeInstalls.length > 1) {
+      const runningModule = await this.findRunningHomebridgeInstall(homebridgeInstalls)
+      if (runningModule) {
+        homebridgeModule = runningModule
+      }
+    }
+
     const pkgJson: IPackageJson = await readJson(join(homebridgeModule.installPath, 'package.json'))
     const homebridge = await this.parsePackageJson(pkgJson, homebridgeModule.path)
+    homebridge.multipleInstances = homebridgeInstalls.length > 1
 
     if (!homebridge.latestVersion) {
       return homebridge
@@ -842,6 +854,35 @@ export class PluginsService {
     this.configService.homebridgeVersion = homebridge.installedVersion
 
     return homebridge
+  }
+
+  /**
+   * Out of several Homebridge installs, find the one whose module path matches
+   * what hb-service reported it launched (sent over IPC at startup). Compared
+   * via realpath since these installs are commonly reached through symlinks.
+   * Returns null when not running under hb-service or when nothing matches.
+   */
+  private async findRunningHomebridgeInstall(installs: Array<{ name: string, path: string, installPath: string }>) {
+    if (!this.configService.runningHomebridgeModulePath) {
+      return null
+    }
+
+    try {
+      const runningPath = await realpath(this.configService.runningHomebridgeModulePath)
+      for (const install of installs) {
+        try {
+          if (await realpath(install.installPath) === runningPath) {
+            return install
+          }
+        } catch (e) {
+          this.logger.debug(`Failed to resolve Homebridge install path ${install.installPath} as ${e.message}.`)
+        }
+      }
+    } catch (e) {
+      this.logger.debug(`Failed to resolve running Homebridge module path as ${e.message}.`)
+    }
+
+    return null
   }
 
   /**

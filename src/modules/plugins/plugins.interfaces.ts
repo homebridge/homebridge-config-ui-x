@@ -19,6 +19,12 @@ export interface HomebridgePlugin {
   updateTag?: string
   installPath?: string
   globalInstall?: boolean
+  /**
+   * Set on the `homebridge` package when more than one install of Homebridge
+   * was found on disk — the reported install is the one hb-service launched
+   * where that is known, but the extras should be removed (homebridge.io/w/JJSgm)
+   */
+  multipleInstances?: boolean
   settingsSchema?: boolean
   disabled?: boolean
   links?: {

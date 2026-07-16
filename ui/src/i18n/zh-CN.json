@@ -796,6 +796,7 @@
   "status.credits.translations": "翻译",
   "status.credits.translations_thanks": "Homebridge UI 的翻译由社区提供，特别感谢：",
   "status.homebridge.checking": "正在检查更新…",
+  "status.homebridge.multiple_installs": "Multiple Installs Found",
   "status.homebridge.up_to_date": "已是最新",
   "status.memory.label_available": "可用",
   "status.memory.label_total": "总计",

@@ -796,6 +796,7 @@
   "status.credits.translations": "Translations",
   "status.credits.translations_thanks": "Homebridge UI translations are provided by the community, with special thanks to:",
   "status.homebridge.checking": "Güncellemeler kontrol ediliyor…",
+  "status.homebridge.multiple_installs": "Multiple Installs Found",
   "status.homebridge.up_to_date": "Güncel",
   "status.memory.label_available": "Kullanılabilir",
   "status.memory.label_total": "Toplam",
