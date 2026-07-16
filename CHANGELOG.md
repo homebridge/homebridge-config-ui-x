@@ -13,6 +13,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 
 - fix: remove unsupported npm flag `--unsafe-perm` (#2891)
 - chore(deps): dependency updates
+- fix(status): always honour configured cpu temp file over auto-detection (#2896) (@TNOTA)
 
 ### Homebridge Dependencies
 
