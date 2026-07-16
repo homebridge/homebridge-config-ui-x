@@ -187,6 +187,11 @@
                   [class.is-invalid]="getHapNameValidationError(selectedBlock())"
                   [(ngModel)]="configBlocks()[+selectedBlock()]._bridge.name"
                 />
+                @if (getHapNameValidationError(selectedBlock())) {
+                  <div class="invalid-feedback d-block">
+                    {{ 'child_bridge.config.name_invalid' | translate }}
+                  </div>
+                }
               </div>
             </li>
             <li
@@ -549,6 +554,11 @@
                     [class.is-invalid]="getHapPortValidationError(selectedBlock())"
                     [(ngModel)]="configBlocks()[+selectedBlock()]._bridge.port"
                   />
+                  @if (getHapPortValidationError(selectedBlock())) {
+                    <div class="invalid-feedback d-block">
+                      {{ 'settings.matter.port_desc' | translate }}
+                    </div>
+                  }
                 </div>
               </li>
             }
@@ -802,6 +812,12 @@
     }
   </div>
   <div class="modal-footer justify-content-between">
+    @if (canConfigure() && !justInstalled && validationErrorBridgeName; as invalidBridge) {
+      <div class="w-100 text-center small text-danger mb-1">
+        <i aria-hidden="true" class="fas fa-fw fa-triangle-exclamation me-1"></i>
+        {{ 'child_bridge.config.validation_blocking' | translate: { name: invalidBridge } }}
+      </div>
+    }
     <div class="text-start">
       @if (canConfigure() && !justInstalled) {
         <button
