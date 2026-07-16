@@ -796,6 +796,7 @@
   "status.credits.translations": "การแปล",
   "status.credits.translations_thanks": "การแปล UI ของ Homebridge ได้รับการจัดทำโดยชุมชน โดยขอขอบคุณเป็นพิเศษแก่:",
   "status.homebridge.checking": "ตรวจสอบการอัปเดท…",
+  "status.homebridge.multiple_installs": "Multiple Installs Found",
   "status.homebridge.up_to_date": "เป็นปัจจุบันแล้ว",
   "status.memory.label_available": "เหลือว่าง",
   "status.memory.label_total": "ทั้งหมด",

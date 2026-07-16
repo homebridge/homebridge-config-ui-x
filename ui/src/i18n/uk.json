@@ -796,6 +796,7 @@
   "status.credits.translations": "Переклади",
   "status.credits.translations_thanks": "Переклади інтерфейсу Homebridge надаються спільнотою, окрема подяка висловлюється:",
   "status.homebridge.checking": "Перевірка оновлень…",
+  "status.homebridge.multiple_installs": "Multiple Installs Found",
   "status.homebridge.up_to_date": "Актуальна версія",
   "status.memory.label_available": "Вільно",
   "status.memory.label_total": "Всього",

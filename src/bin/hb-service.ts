@@ -428,7 +428,7 @@ export class HomebridgeServiceHelper {
 
     // Tell the ui what homebridge we are running initially (this is refreshed when Homebridge is restarted)
     if (this.ipcService && this.homebridgePackage) {
-      this.ipcService.setHomebridgeVersion(this.homebridgePackage.version)
+      this.ipcService.setHomebridgeVersion(this.homebridgePackage.version, this.homebridgeModulePath)
     }
 
     // Delay the launch of homebridge on Raspberry Pi 1/Zero by 20 seconds
@@ -522,7 +522,7 @@ export class HomebridgeServiceHelper {
     // Let the ipc service know of the new process
     if (this.ipcService) {
       this.ipcService.setHomebridgeProcess(this.homebridge)
-      this.ipcService.setHomebridgeVersion(this.homebridgePackage.version)
+      this.ipcService.setHomebridgeVersion(this.homebridgePackage.version, this.homebridgeModulePath)
     }
 
     this.logger.success(`Started Homebridge v${this.homebridgePackage.version} with PID: ${this.homebridge.pid}.`)

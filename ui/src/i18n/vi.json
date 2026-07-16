@@ -796,6 +796,7 @@
   "status.credits.translations": "Bản dịch",
   "status.credits.translations_thanks": "Bản dịch Homebridge UI được đóng góp bởi cộng đồng, đặc biệt cảm ơn:",
   "status.homebridge.checking": "Đang kiểm tra cập nhật…",
+  "status.homebridge.multiple_installs": "Multiple Installs Found",
   "status.homebridge.up_to_date": "Đã cập nhật mới nhất",
   "status.memory.label_available": "Khả dụng",
   "status.memory.label_total": "Tổng",

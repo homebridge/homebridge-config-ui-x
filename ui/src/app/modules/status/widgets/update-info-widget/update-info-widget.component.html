@@ -97,6 +97,17 @@
                     <span class="grey-text small">{{ 'status.homebridge.checking' | translate }}</span>
                   } @else {
                     <span class="grey-text small">v{{ homebridgeVersion }}</span>
+                    @if (homebridgePkg().multipleInstances) {
+                      &middot;
+                      <a
+                        class="orange-text small text-decoration-none"
+                        href="https://homebridge.io/w/JJSgm"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
+                        {{ 'status.homebridge.multiple_installs' | translate }}
+                      </a>
+                    }
                     @if (homebridgePkg().updateAvailable && isAdmin) {
                       &middot;
                       <button
@@ -260,6 +271,17 @@
               <span class="grey-text small">{{ 'status.homebridge.checking' | translate }}</span>
             } @else {
               <span class="grey-text small">v{{ homebridgeVersion }}</span>
+              @if (homebridgePkg().multipleInstances) {
+                &middot;
+                <a
+                  class="orange-text small text-decoration-none"
+                  href="https://homebridge.io/w/JJSgm"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {{ 'status.homebridge.multiple_installs' | translate }}
+                </a>
+              }
               @if (homebridgePkg().updateAvailable && isAdmin) {
                 &middot;
                 <button

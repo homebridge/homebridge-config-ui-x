@@ -61,10 +61,14 @@ export class HomebridgeIpcService extends EventEmitter {
   }
 
   /**
-   * Set the current homebridge version
+   * Set the current homebridge version, and optionally the module path it was
+   * launched from so the UI can tell which install is really running
    */
-  public setHomebridgeVersion(version: string) {
+  public setHomebridgeVersion(version: string, modulePath?: string) {
     this.configService.homebridgeVersion = version
+    if (modulePath) {
+      this.configService.runningHomebridgeModulePath = modulePath
+    }
   }
 
   /**
