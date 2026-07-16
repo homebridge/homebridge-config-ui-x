@@ -150,13 +150,15 @@ export class StatusService {
    * Get the current CPU temperature using systeminformation.cpuTemperature
    */
   private async getCpuTemp() {
-    const cpuTempData = await cpuTemperature()
-
-    if (cpuTempData.main === -1 && this.configService.ui.temp) {
+    // An explicitly configured temperature file always wins - auto-detection
+    // can read the wrong sensor entirely on some platforms (e.g. Intel macOS
+    // reporting ~40°C too high), and previously the override only engaged
+    // when auto-detection failed outright, never when it was wrong (#2896)
+    if (this.configService.ui.temp) {
       return this.getCpuTempLegacy()
     }
 
-    return cpuTempData
+    return cpuTemperature()
   }
 
   /**
