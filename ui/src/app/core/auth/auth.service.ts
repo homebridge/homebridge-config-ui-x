@@ -90,6 +90,20 @@ export class AuthService {
       return
     }
     this.validateToken(token)
+
+    // CookieAuthGuard on /api/plugins/settings-ui/* requires an HttpOnly
+    // hb-session cookie that is only set on login/refresh/noauth. A Bearer
+    // token restored from localStorage after upgrading mid-session (or any
+    // bootstrap without a prior login in this browser) leaves custom plugin
+    // UIs returning 401 until the user re-logs in (#2893). Mint the cookie
+    // here via refresh; best-effort so a failed refresh never blocks boot.
+    if (this.$settings.formAuth !== false && this.token) {
+      try {
+        await this.refreshSession()
+      } catch (err) {
+        console.warn('Failed to mint hb-session cookie on bootstrap:', err)
+      }
+    }
   }
 
   public async checkToken() {

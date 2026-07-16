@@ -4,6 +4,10 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 
 ## v5.25.1 (Pending Release)
 
+### UI Changes
+
+- fix(auth): mint `hb-session` on bootstrap so custom plugin UIs work after mid-session upgrades (#2893) (@tbaur)
+
 ### Other Changes
 
 - fix: remove unsupported npm flag `--unsafe-perm` (#2891)
