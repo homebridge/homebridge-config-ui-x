@@ -987,7 +987,26 @@ export class PluginBridgeComponent implements OnInit {
 
     // Check if HAP port conflicts with Matter port on same bridge
     const matterPort = block._bridge?.matter?.port
-    return matterPort && port === matterPort
+    return !!matterPort && port === matterPort
+  }
+
+  /**
+   * The display name of the first bridge whose name or port fails validation.
+   * The disabled Save button needs to say why - the offending bridge may not
+   * even be the one currently on screen (#2892).
+   */
+  public get validationErrorBridgeName(): string | null {
+    const configBlocks = this.configBlocks()
+    const enabledBlocks = this.enabledBlocks()
+
+    for (const [index, block] of configBlocks.entries()) {
+      if (enabledBlocks[index] && block._bridge?.username) {
+        if (this.getHapNameValidationError(index.toString()) || this.getHapPortValidationError(index.toString())) {
+          return block._bridge.name || block.name || block.platform || block.accessory || `#${index + 1}`
+        }
+      }
+    }
+    return null
   }
 
   private normalizeMatterConfig(block: any): void {
