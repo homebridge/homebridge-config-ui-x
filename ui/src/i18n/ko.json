@@ -796,6 +796,7 @@
   "status.credits.translations": "Translations",
   "status.credits.translations_thanks": "Homebridge UI translations are provided by the community, with special thanks to:",
   "status.homebridge.checking": "업데이트 확인 중…",
+  "status.homebridge.multiple_installs": "Multiple Installs Found",
   "status.homebridge.up_to_date": "최신 상태",
   "status.memory.label_available": "가능",
   "status.memory.label_total": "전체",

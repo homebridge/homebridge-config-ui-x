@@ -796,6 +796,7 @@
   "status.credits.translations": "Translations",
   "status.credits.translations_thanks": "Homebridge UI translations are provided by the community, with special thanks to:",
   "status.homebridge.checking": "בודק עדכונים…",
+  "status.homebridge.multiple_installs": "Multiple Installs Found",
   "status.homebridge.up_to_date": "מעודכן",
   "status.memory.label_available": "פנוי",
   "status.memory.label_total": "סה״כ",

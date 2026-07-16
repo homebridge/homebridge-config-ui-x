@@ -31,6 +31,7 @@ export interface Plugin {
     homepage?: string
     bugs?: string
   }
+  multipleInstances?: boolean
   name: string
   newHbScope?: {
     from: string
