@@ -303,6 +303,18 @@ describe('AuthController (e2e)', () => {
     expect(res.json()).toHaveProperty('expires_in')
     // Verify the token is valid (length and structure) - JWT uses base64url which includes - and _ chars
     expect(res.json().access_token).toMatch(RE_JWT)
+
+    // #2893/#2894: bootstrap mints hb-session by calling refresh with the
+    // restored Bearer token. The Set-Cookie must be present and scoped to
+    // the custom plugin UI path so CookieAuthGuard can accept the iframe.
+    const setCookie = res.headers['set-cookie']
+    const cookieHeaders = Array.isArray(setCookie) ? setCookie : setCookie ? [setCookie] : []
+    const hbSession = cookieHeaders.find(c => c.startsWith('hb-session='))
+    expect(hbSession).toBeTruthy()
+    expect(hbSession).toContain('HttpOnly')
+    expect(hbSession).toContain('Path=/api/plugins/settings-ui/')
+    const cookieValue = hbSession!.slice('hb-session='.length).split(';')[0]
+    expect(cookieValue).toMatch(RE_JWT)
   })
 
   it('POST /auth/refresh (invalid token)', async () => {
