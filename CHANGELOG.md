@@ -9,6 +9,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(auth): mint `hb-session` on bootstrap so custom plugin UIs work after mid-session upgrades (#2893) (@tbaur)
 - fix(plugins): improve child bridge disabled save button state (#2892) (@khiscott)
 - fix(status): show warning on update widget when multiple hb installs found (#2897) (@aguynamedjoetoo)
+- fix(auth): await bootstrap `tokenReady` in auth/admin guards so `hb-session` is minted before custom plugin UIs can open (#2893) (@tbaur)
 
 ### Other Changes
 
