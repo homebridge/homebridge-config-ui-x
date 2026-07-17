@@ -40,7 +40,7 @@ export const adminGuard: CanActivateFn = async (_next, state) => {
   // /auth/refresh when the user's admin flag has changed; refreshSession()
   // then logs the user out via the rejection path.
   try {
-    await $auth.refreshSession()
+    await $auth.refreshSession('admin-guard')
   } catch {
     window.sessionStorage.setItem('target_route', state.url)
     await $router.navigate(['/login'])
