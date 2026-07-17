@@ -91,6 +91,45 @@ describe('PluginsSettingsUiController (e2e)', () => {
     expect(res.statusCode).toBe(401)
   })
 
+  it('Bearer-only session mints hb-session via refresh then loads settings-ui (#2893)', async () => {
+    // Mid-session upgrade path: valid Bearer token in localStorage, but no
+    // hb-session cookie (never set on ≤5.24.x sessions). Bootstrap calls
+    // POST /auth/refresh; the Set-Cookie must be enough for CookieAuthGuard.
+    const loginRes = await app.inject({
+      method: 'POST',
+      path: '/auth/login',
+      payload: { username: 'admin', password: 'admin' },
+    })
+    const { access_token } = JSON.parse(loginRes.body)
+
+    const denied = await app.inject({
+      method: 'GET',
+      path: '/plugins/settings-ui/homebridge-mock-plugin/index.html',
+    })
+    expect(denied.statusCode).toBe(401)
+
+    const refreshRes = await app.inject({
+      method: 'POST',
+      path: '/auth/refresh',
+      headers: { authorization: `bearer ${access_token}` },
+    })
+    expect(refreshRes.statusCode).toBe(201)
+
+    const setCookie = refreshRes.headers['set-cookie']
+    const cookieHeaders = Array.isArray(setCookie) ? setCookie : setCookie ? [setCookie] : []
+    const hbSessionHeader = cookieHeaders.find(c => c.startsWith('hb-session='))
+    expect(hbSessionHeader).toBeTruthy()
+    const cookiePair = hbSessionHeader!.split(';')[0]
+
+    const allowed = await app.inject({
+      method: 'GET',
+      path: '/plugins/settings-ui/homebridge-mock-plugin/index.html',
+      headers: { cookie: cookiePair },
+    })
+    expect(allowed.statusCode).toBe(200)
+    expect(allowed.body).toContain('Hello World')
+  })
+
   it('GET /plugins/settings-ui/:plugin-name/ (invalid cookie → 401)', async () => {
     const res = await app.inject({
       method: 'GET',

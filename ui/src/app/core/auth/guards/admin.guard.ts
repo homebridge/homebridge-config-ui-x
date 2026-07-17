@@ -21,6 +21,12 @@ export const adminGuard: CanActivateFn = async (_next, state) => {
     await firstValueFrom($settings.onSettingsLoaded)
   }
 
+  // Wait for bootstrap loadToken() (hb-session mint + in-memory token)
+  // before the admin refresh below. Without this, a concurrent
+  // refreshSession() during bootstrap hits isRefreshing and no-ops,
+  // skipping the admin-demotion check on cold load.
+  await $auth.tokenReady
+
   // If not using form auth, get a token automatically
   if ($settings.formAuth === false) {
     await $auth.noauth()
