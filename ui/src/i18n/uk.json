@@ -661,6 +661,8 @@
   "settings.matter.disable": "Вимкнути Matter",
   "settings.matter.disable_desc": "Це видалить файли даних Matter для головного мосту та негайно перезапустить Homebridge. Файли даних для будь-яких Дочірніх мостів залишаться в силі.",
   "settings.matter.disable_desc_in_place": "Це зупинить публікацію Matter для головного мосту та негайно перезапустить Homebridge. Дані введення в експлуатацію Matter зберігаються, тому Ви можете знову ввімкнути їх пізніше.",
+  "settings.matter.disable_ipv4": "Disable IPv4 (Matter)",
+  "settings.matter.disable_ipv4_desc": "When on, Matter only advertises over IPv6. This can help when 'homebridge.local' stops working because Matter and the system's own network discovery both use the same port. Apple hubs use IPv6 for Matter, so this is safe on most networks.",
   "settings.matter.enabled_desc": "Чи вмикати Matter на головному мосту.",
   "settings.matter.enabled_desc_in_place": "Чи публікується Matter на головному мосту. Увімкнення або вимкнення набуває чинності після перезавантаження. Вимкнення зберігає Matter увімкненим, тому Ви можете знову ввімкнути його пізніше без повторного введення в експлуатацію.",
   "settings.matter.externals_only": "Тільки зовнішні (Matter)",

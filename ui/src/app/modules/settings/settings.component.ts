@@ -138,6 +138,7 @@ export class SettingsComponent implements OnInit {
       'setting-matter-enabled',
       'setting-matter-port',
       'setting-matter-port-range',
+      'setting-matter-disable-ipv4',
     ],
     terminal: [
       'setting-terminal-log-max',
@@ -184,6 +185,9 @@ export class SettingsComponent implements OnInit {
   // When true (Homebridge >= 2.0.3-beta.26), HAP config uses the nested object
   // form and both HAP and Matter expose an externalsOnly toggle.
   public isProtocolExternalsOnlyEnabled = this.$settings.isFeatureEnabled('protocolExternalsOnly')
+  // When true (Homebridge >= 2.2.0), Matter exposes a disableIpv4 toggle that
+  // makes the Matter mDNS responder IPv6-only.
+  public isMatterDisableIpv4Enabled = this.$settings.isFeatureEnabled('matterDisableIpv4')
   public isPwa = Boolean(isStandalonePWA())
 
   public readonly hbNameIsInvalid = signal(false)
@@ -364,9 +368,12 @@ export class SettingsComponent implements OnInit {
   public readonly matterEndPortIsSaving = signal(false)
   public matterEndPortFormControl = new FormControl(0)
 
+  public readonly matterDisableIpv4IsSaving = signal(false)
+  public matterDisableIpv4FormControl = new FormControl(false)
+
   // Other properties
   // Cache for Matter config values (in-memory only, for restoring after accidental disable)
-  private matterConfigCache: { port?: number } = {}
+  private matterConfigCache: { port?: number, disableIpv4?: boolean } = {}
   public readonly linkDebug = '<a href="https://github.com/homebridge/homebridge-config-ui-x/wiki/Debug-Common-Values" target="_blank" rel="noopener noreferrer"><i class="fas fa-up-right-from-square primary-text"></i></a>'
   public readonly linkRaspbianSsl = '<a href="https://github.com/homebridge/homebridge-raspbian-image/wiki/SSL-HTTPS-Access" target="_blank" rel="noopener noreferrer"><i class="fas fa-up-right-from-square primary-text"></i></a>'
   public readonly linkCron = '<a href="https://crontab.guru/" target="_blank" rel="noopener noreferrer"><i class="fas fa-up-right-from-square primary-text"></i></a>'
@@ -463,7 +470,11 @@ export class SettingsComponent implements OnInit {
     }
 
     if (!this.matterEnabledFormControl.value) {
-      unavailable.push('setting-matter-port', 'setting-matter-port-range')
+      unavailable.push('setting-matter-port', 'setting-matter-port-range', 'setting-matter-disable-ipv4')
+    }
+
+    if (!this.isMatterDisableIpv4Enabled) {
+      unavailable.push('setting-matter-disable-ipv4')
     }
 
     if (!(this.hbLogSizeFormControl.value! > 0)) {
@@ -572,6 +583,7 @@ export class SettingsComponent implements OnInit {
       'setting-matter-enabled': `${this.$translate.instant('common.labels.enabled')} ${this.$translate.instant('settings.matter.enabled_desc')}`,
       'setting-matter-port': `${this.$translate.instant('settings.matter.port')} ${this.$translate.instant('settings.matter.port_desc')}`,
       'setting-matter-port-range': `${this.$translate.instant('settings.network.port_range')} ${this.$translate.instant('settings.matter.port_range_desc')}`,
+      'setting-matter-disable-ipv4': `${this.$translate.instant('settings.matter.disable_ipv4')} ${this.$translate.instant('settings.matter.disable_ipv4_desc')}`,
 
       // Terminal section
       'setting-terminal-log-max': this.$translate.instant('settings.terminal.log_max'),
@@ -2168,8 +2180,8 @@ export class SettingsComponent implements OnInit {
 
       // Remember the configured port (even when disabled in place) so re-enabling
       // reuses it and keeps the existing commissioning storage.
-      if (matterConfig?.port) {
-        this.matterConfigCache = { port: matterConfig.port }
+      if (matterConfig?.port || matterConfig?.disableIpv4) {
+        this.matterConfigCache = { port: matterConfig.port, disableIpv4: matterConfig.disableIpv4 === true || undefined }
       }
 
       if (isEnabled) {
@@ -2184,6 +2196,14 @@ export class SettingsComponent implements OnInit {
       this.matterPortFormControl.valueChanges
         .pipe(debounceTime(1500), takeUntilDestroyed(this.destroyRef))
         .subscribe(value => this.matterPortSave(value!))
+
+      // disableIpv4 toggle (Homebridge >= 2.2.0 only)
+      this.matterDisableIpv4FormControl.patchValue(matterConfig?.disableIpv4 === true, { emitEvent: false })
+      if (this.isMatterDisableIpv4Enabled) {
+        this.matterDisableIpv4FormControl.valueChanges
+          .pipe(takeUntilDestroyed(this.destroyRef))
+          .subscribe(value => this.matterDisableIpv4Save(value === true))
+      }
 
       // Matter port range
       this.matterStartPortFormControl.patchValue(matterPorts.start ?? null, { emitEvent: false })
@@ -2245,6 +2265,31 @@ export class SettingsComponent implements OnInit {
     }
   }
 
+  /**
+   * Save the Matter disableIpv4 flag. PUT /config-editor/matter replaces the
+   * whole bridge.matter block, so the current port is sent alongside to
+   * preserve it (and vice versa in matterPortSave).
+   */
+  private async matterDisableIpv4Save(value: boolean): Promise<void> {
+    try {
+      this.matterDisableIpv4IsSaving.set(true)
+      const port = this.matterPortFormControl.value
+      await this.$api.put('/config-editor/matter', {
+        port: port || undefined,
+        disableIpv4: value || undefined,
+      })
+      setTimeout(() => {
+        this.matterDisableIpv4IsSaving.set(false)
+        this.$settings.showRestartToast()
+      }, 1000)
+    } catch (error: any) {
+      console.error(error)
+      this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
+      this.matterDisableIpv4FormControl.patchValue(!value, { emitEvent: false })
+      this.matterDisableIpv4IsSaving.set(false)
+    }
+  }
+
   private async matterPortSave(value: number): Promise<void> {
     // Port is optional - if empty/null/undefined, just save without validation
     if (!value && value !== 0) {
@@ -2254,6 +2299,7 @@ export class SettingsComponent implements OnInit {
         this.matterPortIsInvalid.set(false)
         await this.$api.put('/config-editor/matter', {
           port: undefined,
+          disableIpv4: this.matterDisableIpv4FormControl.value || undefined,
         })
         setTimeout(() => {
           this.matterPortIsSaving.set(false)
@@ -2285,6 +2331,7 @@ export class SettingsComponent implements OnInit {
       this.matterPortIsInvalid.set(false)
       await this.$api.put('/config-editor/matter', {
         port: value,
+        disableIpv4: this.matterDisableIpv4FormControl.value || undefined,
       })
       setTimeout(() => {
         this.matterPortIsSaving.set(false)
@@ -2381,18 +2428,23 @@ export class SettingsComponent implements OnInit {
               port = Math.floor(Math.random() * (5541 - 5530 + 1) + 5530)
             }
           }
-          await this.$api.put('/config-editor/matter', { port })
+          const disableIpv4 = this.matterConfigCache.disableIpv4 || undefined
+          await this.$api.put('/config-editor/matter', { port, disableIpv4 })
           if (port !== undefined) {
             this.matterPortFormControl.patchValue(port, { emitEvent: false })
           }
-          this.matterConfigCache = { port }
+          this.matterDisableIpv4FormControl.patchValue(disableIpv4 === true, { emitEvent: false })
+          this.matterConfigCache = { port, disableIpv4 }
           // Re-enabling clears externalsOnly — validation rejects enabled + externalsOnly.
           if (this.isProtocolExternalsOnlyEnabled) {
             this.matterExternalsOnlyFormControl.patchValue(false, { emitEvent: false })
           }
         } else {
           // Disable in place: keep the block, port and commissioning storage.
-          this.matterConfigCache = { port: this.matterPortFormControl.value || undefined }
+          this.matterConfigCache = {
+            port: this.matterPortFormControl.value || undefined,
+            disableIpv4: this.matterDisableIpv4FormControl.value || undefined,
+          }
           const body: { enabled: boolean, restart: boolean, externalsOnly?: boolean } = { enabled: false, restart: false }
           if (this.isProtocolExternalsOnlyEnabled) {
             body.externalsOnly = this.matterExternalsOnlyFormControl.value === true
@@ -2431,17 +2483,20 @@ export class SettingsComponent implements OnInit {
           }
         }
 
+        const disableIpv4 = this.matterConfigCache.disableIpv4 || undefined
         await this.$api.put('/config-editor/matter', {
           port,
+          disableIpv4,
         })
 
         // Update the form value
         if (port !== undefined) {
           this.matterPortFormControl.patchValue(port, { emitEvent: false })
         }
+        this.matterDisableIpv4FormControl.patchValue(disableIpv4 === true, { emitEvent: false })
 
         // Update cache with current value
-        this.matterConfigCache = { port }
+        this.matterConfigCache = { port, disableIpv4 }
 
         setTimeout(() => {
           this.matterEnabledIsSaving.set(false)

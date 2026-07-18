@@ -114,6 +114,12 @@ export class PluginBridgeComponent implements OnInit {
   // Tracks whether Matter externalsOnly is set, keyed by block index. Only meaningful
   // when isProtocolExternalsOnlyEnabled is true and Matter is disabled for the block.
   public readonly matterExternalsOnlyBlocks = signal<Record<number, boolean>>({})
+  // When true (Homebridge >= 2.2.0), Matter exposes a disableIpv4 toggle that
+  // makes the Matter mDNS responder IPv6-only.
+  public isMatterDisableIpv4Enabled = this.$settings.isFeatureEnabled('matterDisableIpv4')
+  // Tracks whether Matter disableIpv4 is set, keyed by block index. Only
+  // meaningful when isMatterDisableIpv4Enabled is true and Matter is enabled.
+  public readonly matterDisableIpv4Blocks = signal<Record<number, boolean>>({})
   public readonly defaultIcon = 'assets/hb-icon.png'
   public readonly linkChildBridges = '<a href="https://github.com/homebridge/homebridge/wiki/Child-Bridges" target="_blank"><i class="fas fa-external-link-alt primary-text"></i></a>'
   public readonly linkDebug = '<a href="https://github.com/homebridge/homebridge-config-ui-x/wiki/Debug-Common-Values" target="_blank"><i class="fas fa-up-right-from-square primary-text"></i></a>'
@@ -322,9 +328,15 @@ export class PluginBridgeComponent implements OnInit {
                 [i]: block._bridge.matter.externalsOnly === true,
               }))
             }
+            if (this.isMatterDisableIpv4Enabled) {
+              this.matterDisableIpv4Blocks.update(current => ({
+                ...current,
+                [i]: block._bridge.matter.disableIpv4 === true,
+              }))
+            }
 
-            // Only cache port - name is now shared at _bridge level
-            this.matterBridgeCache.update(current => new Map(current).set(i, { port: block._bridge.matter.port }))
+            // Only cache port + disableIpv4 - name is now shared at _bridge level
+            this.matterBridgeCache.update(current => new Map(current).set(i, { port: block._bridge.matter.port, disableIpv4: block._bridge.matter.disableIpv4 === true }))
             this.originalMatterBridges.update(current => [...current, { port: block._bridge.matter.port }])
             // Use username as key, just like HAP
             if (block._bridge.username) {
@@ -401,10 +413,14 @@ export class PluginBridgeComponent implements OnInit {
       // Restore Matter configuration if it was previously cached (cached means it was enabled before disabling)
       // BUT only if the user didn't explicitly disable Matter before disabling the child bridge
       if (matterCache && !this.matterExplicitlyDisabledBeforeChildBridge.has(Number(index))) {
-        // Only restore port - name is shared at _bridge level
+        // Only restore port + disableIpv4 - name is shared at _bridge level
         // Use cached port if available, otherwise get a new Matter port
         block._bridge.matter = {
           port: matterCache.port ?? await this.getUnusedMatterPort(),
+          ...(matterCache.disableIpv4 === true ? { disableIpv4: true } : {}),
+        }
+        if (this.isMatterDisableIpv4Enabled) {
+          this.matterDisableIpv4Blocks.update(current => ({ ...current, [Number(index)]: matterCache.disableIpv4 === true }))
         }
 
         // Also restore the enabled state
@@ -456,9 +472,10 @@ export class PluginBridgeComponent implements OnInit {
 
       // Cache Matter configuration before deleting if Matter is enabled
       if (block._bridge?.matter && this.matterEnabledBlocks()[Number(index)]) {
-        // Only cache port - name is shared at _bridge level
+        // Only cache port + disableIpv4 - name is shared at _bridge level
         this.matterBridgeCache.update(current => new Map(current).set(Number(index), {
           port: block._bridge.matter.port,
+          disableIpv4: block._bridge.matter.disableIpv4 === true,
         }))
       }
 
@@ -681,13 +698,21 @@ export class PluginBridgeComponent implements OnInit {
         port = await this.getUnusedMatterPort()
       }
 
-      // Only store port in matter config - name is now shared at _bridge level
+      // Preserve disableIpv4 across the rebuild: an in-place-disabled block
+      // still carries it, otherwise fall back to the cached value.
+      const keepDisableIpv4 = block._bridge.matter?.disableIpv4 === true || matterCache?.disableIpv4 === true
+
+      // Only store port + disableIpv4 in matter config - name is now shared at _bridge level
       block._bridge.matter = {
         port,
+        ...(keepDisableIpv4 ? { disableIpv4: true } : {}),
+      }
+      if (this.isMatterDisableIpv4Enabled) {
+        this.matterDisableIpv4Blocks.update(current => ({ ...current, [Number(index)]: keepDisableIpv4 }))
       }
 
-      // Update cache with current values (only port)
-      this.matterBridgeCache.update(current => new Map(current).set(Number(index), { port }))
+      // Update cache with current values (only port + disableIpv4)
+      this.matterBridgeCache.update(current => new Map(current).set(Number(index), { port, disableIpv4: keepDisableIpv4 }))
 
       // If this was marked for deletion, remove it from the delete list
       if (block._bridge.username) {
@@ -722,6 +747,7 @@ export class PluginBridgeComponent implements OnInit {
         if (block._bridge?.matter) {
           this.matterBridgeCache.update(current => new Map(current).set(Number(index), {
             port: block._bridge.matter.port,
+            disableIpv4: block._bridge.matter.disableIpv4 === true,
           }))
           block._bridge.matter.enabled = false
         }
@@ -739,10 +765,11 @@ export class PluginBridgeComponent implements OnInit {
         block._bridge?.matter && m.port === block._bridge.matter.port,
       )
 
-      // Cache the current values before deleting (for potential restore) - only port
+      // Cache the current values before deleting (for potential restore) - only port + disableIpv4
       if (block._bridge && block._bridge.matter) {
         this.matterBridgeCache.update(current => new Map(current).set(Number(index), {
           port: block._bridge.matter.port,
+          disableIpv4: block._bridge.matter.disableIpv4 === true,
         }))
         delete block._bridge.matter
       }
@@ -927,6 +954,38 @@ export class PluginBridgeComponent implements OnInit {
         delete block._bridge.matter
       }
     }
+  }
+
+  /**
+   * Toggle the Matter disableIpv4 flag for a block. When on, the Matter mDNS
+   * responder for this bridge runs IPv6-only. Only available on Homebridge
+   * >= 2.2.0 (see the `matterDisableIpv4` feature flag) and only shown while
+   * Matter is enabled for the block.
+   */
+  public toggleMatterDisableIpv4(event: Event, idx: number): void {
+    if (!this.isMatterDisableIpv4Enabled) {
+      return
+    }
+    const checked = (event.target as HTMLInputElement).checked
+    const block = this.configBlocks()[idx]
+
+    this.matterDisableIpv4Blocks.update(current => ({ ...current, [idx]: checked }))
+
+    if (!block?._bridge?.matter) {
+      return
+    }
+
+    if (checked) {
+      block._bridge.matter.disableIpv4 = true
+    } else {
+      delete block._bridge.matter.disableIpv4
+    }
+
+    // Keep the cache in sync so disable/enable round-trips preserve the flag
+    this.matterBridgeCache.update((current) => {
+      const existing = current.get(idx)
+      return existing ? new Map(current).set(idx, { ...existing, disableIpv4: checked }) : current
+    })
   }
 
   public getMatterPortValidationError(index: string): boolean {
