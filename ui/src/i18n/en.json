@@ -661,6 +661,8 @@
   "settings.matter.disable": "Disable Matter",
   "settings.matter.disable_desc": "This will delete the Matter data files for the main bridge and restart Homebridge straight away. The data files for any child bridges will not be affected.",
   "settings.matter.disable_desc_in_place": "This will stop publishing Matter for the main bridge and restart Homebridge straight away. The Matter commissioning data is preserved so you can re-enable it later.",
+  "settings.matter.disable_ipv4": "Disable IPv4 (Matter)",
+  "settings.matter.disable_ipv4_desc": "When on, Matter only advertises over IPv6. This can help when 'homebridge.local' stops working because Matter and the system's own network discovery both use the same port. Apple hubs use IPv6 for Matter, so this is safe on most networks.",
   "settings.matter.enabled_desc": "Whether to enable Matter on the main bridge.",
   "settings.matter.enabled_desc_in_place": "Whether Matter is published on the main bridge. Enabling or disabling takes effect after a restart. Disabling keeps the Matter commissioning, so you can re-enable it later without re-commissioning.",
   "settings.matter.externals_only": "Externals Only (Matter)",

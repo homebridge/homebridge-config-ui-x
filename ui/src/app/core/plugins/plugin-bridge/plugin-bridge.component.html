@@ -760,6 +760,42 @@
                     />
                   </div>
                 </li>
+
+                <!--
+                  Matter disableIpv4 toggle — visible only on Homebridge >= 2.2.0,
+                  when Matter is enabled for this bridge (guaranteed by the
+                  enclosing Matter-content block). When on, the Matter mDNS
+                  responder runs IPv6-only. Shown during first-install setup too,
+                  consistent with the Matter port field above.
+                -->
+                @if (isMatterDisableIpv4Enabled) {
+                  <li class="list-group-item d-flex justify-content-between align-items-center flex-row pb-2">
+                    <span class="text-start d-flex align-items-center flex-grow-1 me-3">
+                      <span>
+                        {{ 'settings.matter.disable_ipv4' | translate }}
+                        <span class="badge badge-primary ms-1">{{ 'common.labels.beta' | translate }}</span>
+                        <span class="d-block small grey-text">
+                          {{ 'settings.matter.disable_ipv4_desc' | translate }}
+                        </span>
+                      </span>
+                    </span>
+                    <div class="text-end grey-text d-flex align-items-center">
+                      <input
+                        type="checkbox"
+                        class="rendux-input"
+                        [id]="`toggleMatterDisableIpv4Input_${selectedBlock()}`"
+                        [checked]="matterDisableIpv4Blocks()[+selectedBlock()]"
+                        [attr.aria-label]="'settings.matter.disable_ipv4' | translate"
+                        (change)="toggleMatterDisableIpv4($event, +selectedBlock())"
+                      />
+                      <label
+                        class="rendux-label"
+                        aria-hidden="true"
+                        [for]="`toggleMatterDisableIpv4Input_${selectedBlock()}`"
+                      ></label>
+                    </div>
+                  </li>
+                }
               }
             </ul>
           }

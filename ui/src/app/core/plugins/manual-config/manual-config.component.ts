@@ -76,6 +76,7 @@ export class ManualConfigComponent implements OnInit, OnDestroy {
   private isDebugModeEnabled = this.$settings.isFeatureEnabled('childBridgeDebugMode')
   private isMatterSupported = this.$settings.isFeatureEnabled('matterSupport')
   private isProtocolExternalsOnlyEnabled = this.$settings.isFeatureEnabled('protocolExternalsOnly')
+  private isMatterDisableIpv4Enabled = this.$settings.isFeatureEnabled('matterDisableIpv4')
 
   public readonly pluginAlias = signal<string>('')
   public readonly pluginType = signal<'platform' | 'accessory' | null>(null)
@@ -299,6 +300,7 @@ export class ManualConfigComponent implements OnInit, OnDestroy {
       isMatterSupported: this.isMatterSupported,
       isPlatformPlugin: this.pluginType() === 'platform',
       isProtocolExternalsOnlyEnabled: this.isProtocolExternalsOnlyEnabled,
+      isMatterDisableIpv4Enabled: this.isMatterDisableIpv4Enabled,
     })
 
     // Ensure required properties are present for the plugin type
@@ -378,6 +380,7 @@ export class ManualConfigComponent implements OnInit, OnDestroy {
       isMatterSupported: this.isMatterSupported,
       isPlatformPlugin: this.pluginType() === 'platform',
       isProtocolExternalsOnlyEnabled: this.isProtocolExternalsOnlyEnabled,
+      isMatterDisableIpv4Enabled: this.isMatterDisableIpv4Enabled,
     })
 
     if (this.pluginType() === 'platform') {

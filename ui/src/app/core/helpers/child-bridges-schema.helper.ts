@@ -14,6 +14,11 @@ export interface ChildBridgeSchemaOptions {
    * `hap` so configs written by older UI versions remain valid.
    */
   isProtocolExternalsOnlyEnabled?: boolean
+  /**
+   * When true (Homebridge >= 2.2.0), `matter` accepts a `disableIpv4` flag
+   * that makes the Matter mDNS responder IPv6-only.
+   */
+  isMatterDisableIpv4Enabled?: boolean
 }
 
 /**
@@ -24,9 +29,10 @@ export interface ChildBridgeSchemaOptions {
  * @param options.isMatterSupported - Whether Matter support is enabled to include Matter settings
  * @param options.isPlatformPlugin - Whether the plugin is platform-based (Matter only works with platform plugins)
  * @param options.isProtocolExternalsOnlyEnabled - Whether the running Homebridge supports the nested HAP shape and externalsOnly mode
+ * @param options.isMatterDisableIpv4Enabled - Whether the running Homebridge supports the Matter disableIpv4 option
  * @returns Child bridge schema object
  */
-export function createChildBridgeSchema(translate: TranslateService, { isDebugModeEnabled, isMatterSupported, isPlatformPlugin = true, isProtocolExternalsOnlyEnabled = false }: ChildBridgeSchemaOptions) {
+export function createChildBridgeSchema(translate: TranslateService, { isDebugModeEnabled, isMatterSupported, isPlatformPlugin = true, isProtocolExternalsOnlyEnabled = false, isMatterDisableIpv4Enabled = false }: ChildBridgeSchemaOptions) {
   return {
     type: 'object',
     required: ['username'],
@@ -107,7 +113,7 @@ export function createChildBridgeSchema(translate: TranslateService, { isDebugMo
         },
       },
       ...(isMatterSupported && isPlatformPlugin)
-        ? { matter: createMatterSchema(translate, isProtocolExternalsOnlyEnabled, 'child') }
+        ? { matter: createMatterSchema(translate, isProtocolExternalsOnlyEnabled, 'child', isMatterDisableIpv4Enabled) }
         : {},
     },
   }
