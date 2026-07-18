@@ -14,6 +14,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(auth): distinct log messages per token-refresh reason (bootstrap vs admin-guard vs session extension) (@tbaur)
 - fix(config-editor): read from the plain-text editor when it is active
 - fix(restart): detach status listeners so restart pages can't re-toast after navigation
+- fix(schema-form): compile field pattern validators with the unicode flag to match ajv (#2904)
 
 ### Other Changes
 
