@@ -155,15 +155,16 @@ export class AuthService {
   /**
    * Refresh an existing token to extend the session
    * @param user - the current user payload from the JWT
+   * @param reason - optional client reason for distinct log lines (allowlisted)
    */
-  async refreshToken(user: any): Promise<any> {
+  async refreshToken(user: any, reason?: string): Promise<any> {
     // Validate that the user still exists and has the same permissions
     const currentUser = await this.findByUsername(user.username)
     if (!currentUser) {
       throw new UnauthorizedException('User no longer exists')
     }
 
-    this.logger.log(`Request received to refresh token for ${user.username}.`)
+    this.logger.log(this.refreshTokenLogMessage(user.username, reason))
 
     // Verify the user's admin status hasn't changed
     if (currentUser.admin !== user.admin) {
@@ -188,6 +189,25 @@ export class AuthService {
       access_token: token,
       token_type: 'Bearer',
       expires_in: this.configService.ui.sessionTimeout,
+    }
+  }
+
+  /**
+   * Distinct log lines per refresh caller so bootstrap vs admin-guard vs
+   * inactivity extension are not identical (and look like accidental dupes).
+   */
+  private refreshTokenLogMessage(username: string, reason?: string): string {
+    switch (reason) {
+      case 'hb-session-bootstrap':
+        return `Minting hb-session cookie for ${username} (bootstrap token refresh).`
+      case 'admin-guard':
+        return `Verifying admin session for ${username} (admin-guard token refresh).`
+      case 'session-extension':
+        return `Extending session for ${username} (inactivity-based token refresh).`
+      case 'profile-update':
+        return `Refreshing token for ${username} after profile/auth change.`
+      default:
+        return `Request received to refresh token for ${username}.`
     }
   }
 

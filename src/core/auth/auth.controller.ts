@@ -17,7 +17,7 @@ import { ApiBearerAuth, ApiExcludeEndpoint, ApiOperation, ApiTags } from '@nestj
 import { PluginsService } from '../../modules/plugins/plugins.service.js'
 import { ConfigService } from '../config/config.service.js'
 import { Logger } from '../logger/logger.service.js'
-import { AuthDto } from './auth.dto.js'
+import { AuthDto, RefreshTokenDto } from './auth.dto.js'
 import { AuthService } from './auth.service.js'
 import { CustomGuard } from './guards/custom.guard.js'
 
@@ -98,8 +98,12 @@ export class AuthController {
   @ApiOperation({ summary: 'Refresh the authentication token to extend the session.' })
   @UseGuards(AuthGuard())
   @Post('/refresh')
-  async refreshToken(@Request() req: any, @Res({ passthrough: true }) res: FastifyReply) {
-    const result = await this.authService.refreshToken(req.user)
+  async refreshToken(
+    @Request() req: any,
+    @Body() body: RefreshTokenDto = {},
+    @Res({ passthrough: true }) res: FastifyReply,
+  ) {
+    const result = await this.authService.refreshToken(req.user, body.reason)
     res.header('Set-Cookie', this.buildSessionCookie(result.access_token, req.protocol === 'https'))
     return result
   }
