@@ -82,7 +82,7 @@
   "dependencies": {
     "@fastify/helmet": "13.1.0",
     "@fastify/multipart": "10.1.0",
-    "@fastify/static": "9.3.0",
+    "@fastify/static": "10.1.0",
     "@homebridge/hap-client": "5.1.0",
     "@homebridge/node-pty-prebuilt-multiarch": "0.13.1",
     "@nestjs/axios": "4.0.1",
@@ -115,14 +115,14 @@
     "reflect-metadata": "0.2.2",
     "rxjs": "7.8.2",
     "semver": "7.8.5",
-    "systeminformation": "5.31.17",
+    "systeminformation": "5.32.0",
     "tail": "2.2.6",
     "tar": "7.5.20",
     "tcp-port-used": "1.0.3",
     "unzipper": "0.12.5"
   },
   "optionalDependencies": {
-    "macos-temperature-sensor": "1.0.4",
+    "macos-temperature-sensor": "2.0.0",
     "osx-temperature-sensor": "1.0.8"
   },
   "devDependencies": {
