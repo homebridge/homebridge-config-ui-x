@@ -105,6 +105,16 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
     this.isMobile.set(!!this.$md.detect.mobile())
   }
 
+  /**
+   * True when Monaco is the active editing surface. In plain-text mode (or
+   * on mobile) the <textarea> drives `homebridgeConfig` directly and any
+   * retained Monaco reference points at a hidden/disposed editor whose model
+   * is stale — it must not be read from or written to.
+   */
+  private get isMonacoActive(): boolean {
+    return !this.isMobile() && !this.preferPlainTextEditor() && !!this.monacoEditor
+  }
+
   public ngOnInit() {
     // Set page title - using "JSON Config" from menu
     const title = this.$translate.instant('menu.config_json_editor')
@@ -217,6 +227,20 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
       return
     }
 
+    // When switching to plain text, carry any unsaved Monaco edits into
+    // `homebridgeConfig` first — the textarea renders from that signal, and
+    // Monaco edits are otherwise only synced into it on save.
+    if (enabled && this.isMonacoActive) {
+      try {
+        const value = this.monacoEditor.getModel()?.getValue()
+        if (typeof value === 'string') {
+          this.homebridgeConfig.set(value)
+        }
+      } catch (error) {
+        console.error('Failed to read monaco editor value:', error)
+      }
+    }
+
     this.preferPlainTextEditor.set(!!enabled)
     try {
       localStorage.setItem('hb_config_editor_plaintext', enabled ? 'true' : 'false')
@@ -272,15 +296,18 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
     }
 
     // Hide decorations
-    if (this.monacoEditor) {
+    if (this.isMonacoActive) {
       this.editorDecorations = this.monacoEditor.deltaDecorations(this.editorDecorations, [])
     }
 
     this.saveInProgress.set(true)
     // Verify homebridgeConfig contains valid json
     try {
-      // Get the value from the editor
-      if (!this.isMobile()) {
+      // Get the value from the editor. Only consult Monaco when it is the
+      // active surface — in plain-text mode the textarea has already kept
+      // `homebridgeConfig` in sync, and reading the retained Monaco model
+      // here would clobber those edits with its stale content.
+      if (this.isMonacoActive) {
         // Format the document
         await this.monacoEditor.getAction('editor.action.formatDocument').run()
 
@@ -434,12 +461,18 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
    * forwarding `canDeactivate` array used by `/plugins` and `/logs`.
    */
   public canDeactivate(): Promise<boolean> | boolean {
-    if (!this.monacoEditor || !this.latestSavedConfig) {
+    if (!this.latestSavedConfig) {
       return true
     }
+    // Read from whichever editing surface is active: the textarea keeps
+    // `homebridgeConfig` in sync as the user types, so only an active
+    // Monaco holds edits the signal hasn't seen yet.
+    const rawValue = this.isMonacoActive
+      ? this.monacoEditor.getModel().getValue()
+      : this.homebridgeConfig()
     let editorValue: HomebridgeConfig
     try {
-      editorValue = json5.parse(this.monacoEditor.getModel().getValue())
+      editorValue = json5.parse(rawValue)
     } catch {
       // Invalid JSON in the editor — definitely an unsaved state worth
       // warning about.
@@ -573,7 +606,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
    * Highlight the problematic rows in the editor
    */
   private highlightOffendingArrayItem(block: string) {
-    if (!this.monacoEditor) {
+    if (!this.isMonacoActive) {
       return
     }
 
@@ -1403,8 +1436,11 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
       // any whitespace / key-order normalisation the server applied
       // makes determineRestartType think the editor still differs from
       // the saved config, surfacing phantom restart prompts after a
-      // no-op save.
-      this.monacoEditor?.getModel()?.setValue(this.homebridgeConfig())
+      // no-op save. (Plain-text mode renders from `homebridgeConfig`
+      // directly, so only an active Monaco needs the push.)
+      if (this.isMonacoActive) {
+        this.monacoEditor.getModel()?.setValue(this.homebridgeConfig())
+      }
       // Phase 7: server returns affected bridges inline so we no longer
       // need a follow-up /status/homebridge/child-bridges call to compute
       // child-bridge restart targets.
@@ -1675,7 +1711,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
     } catch (e) {
       const config = json5.parse(this.homebridgeConfig())
       this.homebridgeConfig.set(JSON.stringify(config, null, 4))
-      if (this.monacoEditor) {
+      if (this.isMonacoActive) {
         this.monacoEditor.getModel().setValue(this.homebridgeConfig())
       }
       return config
