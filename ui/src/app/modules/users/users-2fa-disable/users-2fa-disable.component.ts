@@ -54,7 +54,7 @@ export class Users2faDisableComponent {
 
       // Force a token refresh to get updated user data without otpLegacySecret flag
       try {
-        await this.$auth.refreshSession()
+        await this.$auth.refreshSession('profile-update')
       } catch (err) {
         // Silently fail - the stale flag will be cleared on next login
         console.error('Failed to refresh session after disabling 2FA:', err)
