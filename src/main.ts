@@ -100,11 +100,15 @@ async function bootstrap(): Promise<NestFastifyApplication> {
   })
 
   // (7) Serve static assets with a long cache timeout
+  // Note: `maxAge`/`immutable` must be passed as @fastify/static options (not just
+  // via `setHeaders`) - @fastify/static's `send` dependency computes its own
+  // Cache-Control header from these options and applies it via `reply.headers()`
+  // *after* `setHeaders` runs, for both 200 and 304 responses, silently overwriting
+  // any Cache-Control set by `setHeaders` alone.
   app.useStaticAssets({
     root: resolve(process.env.UIX_BASE_PATH, 'public'),
-    setHeaders(res) {
-      res.setHeader('Cache-Control', 'public,max-age=31536000,immutable')
-    },
+    maxAge: '1y',
+    immutable: true,
   })
 
   // Set prefix
