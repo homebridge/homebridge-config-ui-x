@@ -1,3 +1,10 @@
+// Static assets
+// Content-hashed Angular build output: an 8-char base64url hash before the
+// extension (chunk-B3-qTyJy.js, styles-PEDBJHIE.css, chunk--1gmbzpq.js,
+// media/fa-solid-900-7ICWWULB.woff2). Used to decide which files get
+// immutable long-lived cache headers.
+export const RE_HASHED_ASSET = /-[\w-]{8}\.(?:js|css|woff2?|ttf|eot|svg)$/i
+
 // Character / string manipulation
 export const RE_COLON = /:/g
 export const RE_CHAR_PAIRS = /.{1,2}/g

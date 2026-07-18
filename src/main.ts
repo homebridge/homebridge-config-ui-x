@@ -18,6 +18,7 @@ import { ConfigService } from './core/config/config.service.js'
 import { getStartupConfig } from './core/config/config.startup.js'
 import { devServerCorsConfig } from './core/cors.config.js'
 import { Logger } from './core/logger/logger.service.js'
+import { RE_HASHED_ASSET } from './core/regex.constants.js'
 import { SpaFilter } from './core/spa/spa.filter.js'
 
 import './env-setup.js'
@@ -99,11 +100,27 @@ async function bootstrap(): Promise<NestFastifyApplication> {
     res.send(await readFile(resolve(process.env.UIX_BASE_PATH, 'public/index.html')))
   })
 
-  // (7) Serve static assets with a long cache timeout
+  // (7) Serve static assets. Content-hashed build output (chunk-B3-qTyJy.js,
+  // styles-PEDBJHIE.css, media/fa-solid-900-7ICWWULB.woff2, ...) is immutable
+  // by construction - a new build produces new filenames - so it gets a
+  // year-long immutable cache (#2902). Everything else under public/ keeps
+  // stable filenames across releases (assets/monaco/**, icons, manifest) and
+  // must revalidate, or upgrades would leave browsers running year-old copies.
+  //
+  // `cacheControl: false` is load-bearing: with it left on (the default),
+  // @fastify/static's `send` dependency computes its own Cache-Control from
+  // its `maxAge`/`immutable` options and applies it via `reply.headers()`
+  // AFTER this callback runs, silently overwriting whatever setHeaders() set -
+  // on both 200 and 304 responses.
   app.useStaticAssets({
     root: resolve(process.env.UIX_BASE_PATH, 'public'),
-    setHeaders(res) {
-      res.setHeader('Cache-Control', 'public,max-age=31536000,immutable')
+    cacheControl: false,
+    setHeaders(res, path) {
+      if (RE_HASHED_ASSET.test(path)) {
+        res.setHeader('Cache-Control', 'public,max-age=31536000,immutable')
+      } else {
+        res.setHeader('Cache-Control', 'no-cache')
+      }
     },
   })
 
