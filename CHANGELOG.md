@@ -12,6 +12,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(auth): await bootstrap `tokenReady` in auth/admin guards so `hb-session` is minted before custom plugin UIs can open (#2893) (@tbaur)
 - feat(settings): support matter `disableIpv4` option from homebridge v2.2.0
 - fix(auth): distinct log messages per token-refresh reason (bootstrap vs admin-guard vs session extension) (@tbaur)
+- fix(config-editor): read from the plain-text editor when it is active
 
 ### Other Changes
 
