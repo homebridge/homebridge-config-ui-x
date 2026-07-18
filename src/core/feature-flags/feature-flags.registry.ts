@@ -64,4 +64,9 @@ export const FEATURE_FLAGS: FeatureFlagDefinition[] = [
     description: 'Nested HAP bridge config (`hap: { enabled?, externalsOnly? }`) and `externalsOnly` mode for both HAP and Matter. When set, the bridge accessory/node itself is not advertised but plugins may still publish external accessories. Requires the homebridge runtime to accept the new nested HAP shape; older runtimes still understand the boolean form.',
     range: '>=2.0.3-beta.26',
   },
+  {
+    key: 'matterDisableIpv4',
+    description: 'Exposes `matter.disableIpv4` (main bridge and child bridges). When true, the Matter mDNS responder runs IPv6-only — no IPv4 sockets on port 5353 — so it cannot compete with avahi-daemon for IPv4 mDNS traffic on the same host (symptom: `<hostname>.local` stops resolving over IPv4). Requires a homebridge runtime that reads the option; older runtimes ignore the key.',
+    range: '>=2.2.0',
+  },
 ]

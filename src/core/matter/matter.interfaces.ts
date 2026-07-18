@@ -25,6 +25,13 @@ export interface MatterConfig {
    * (see the `protocolExternalsOnly` feature flag).
    */
   externalsOnly?: boolean
+  /**
+   * When `true`, the Matter mDNS responder runs IPv6-only — no IPv4 sockets
+   * on port 5353 — so it cannot compete with avahi-daemon for IPv4 mDNS
+   * traffic on the same host. Only honoured by Homebridge >= 2.2.0 (see the
+   * `matterDisableIpv4` feature flag).
+   */
+  disableIpv4?: boolean
 }
 
 /**

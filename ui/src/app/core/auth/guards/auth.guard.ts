@@ -17,6 +17,12 @@ export const authGuard: CanActivateFn = async (_next, state) => {
     await firstValueFrom($settings.onSettingsLoaded)
   }
 
+  // Wait for bootstrap loadToken() — including the best-effort
+  // hb-session mint via /auth/refresh (#2893/#2894) — so a fast first
+  // navigation cannot open a custom plugin UI iframe before the cookie
+  // exists (which would 401 under CookieAuthGuard).
+  await $auth.tokenReady
+
   // Fresh install: short-circuit straight to the setup wizard instead of
   // bouncing through /login first
   if ($settings.env.setupWizardComplete === false) {

@@ -6,14 +6,17 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 
 ### UI Changes
 
-- fix(auth): distinct log messages per token-refresh reason (bootstrap vs admin-guard vs session extension) (@tbaur)
 - fix(auth): mint `hb-session` on bootstrap so custom plugin UIs work after mid-session upgrades (#2893) (@tbaur)
 - fix(plugins): improve child bridge disabled save button state (#2892) (@khiscott)
 - fix(status): show warning on update widget when multiple hb installs found (#2897) (@aguynamedjoetoo)
+- fix(auth): await bootstrap `tokenReady` in auth/admin guards so `hb-session` is minted before custom plugin UIs can open (#2893) (@tbaur)
+- feat(settings): support matter `disableIpv4` option from homebridge v2.2.0
+- fix(auth): distinct log messages per token-refresh reason (bootstrap vs admin-guard vs session extension) (@tbaur)
 
 ### Other Changes
 
 - fix: remove unsupported npm flag `--unsafe-perm` (#2891)
+- fix(main): serve hashed static assets with immutable long-lived caching (#2902)
 - chore(deps): dependency updates
 - fix(status): always honour configured cpu temp file over auto-detection (#2896) (@TNOTA)
 
