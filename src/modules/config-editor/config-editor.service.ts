@@ -1291,5 +1291,10 @@ export class ConfigEditorService implements OnApplicationBootstrap {
         throw new BadRequestException('Port 5353, 8080, and 8443 are reserved and cannot be used')
       }
     }
+
+    // Validate disableIpv4
+    if (matterConfig.disableIpv4 !== undefined && typeof matterConfig.disableIpv4 !== 'boolean') {
+      throw new BadRequestException('disableIpv4 must be a boolean')
+    }
   }
 }

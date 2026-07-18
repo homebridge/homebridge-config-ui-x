@@ -13,6 +13,7 @@ export interface PluginChildBridge {
   }
   matter?: {
     port?: number
+    disableIpv4?: boolean
   }
 }
 

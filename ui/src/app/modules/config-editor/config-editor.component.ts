@@ -81,6 +81,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
   private isDebugModeEnabled = this.$settings.isFeatureEnabled('childBridgeDebugMode')
   private isMatterSupported = this.$settings.isFeatureEnabled('matterSupport')
   private isProtocolExternalsOnlyEnabled = this.$settings.isFeatureEnabled('protocolExternalsOnly')
+  private isMatterDisableIpv4Enabled = this.$settings.isFeatureEnabled('matterDisableIpv4')
 
   public readonly homebridgeConfig = signal<string>('')
   public readonly originalConfig = signal<string>('')
@@ -613,6 +614,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
       isDebugModeEnabled: this.isDebugModeEnabled,
       isMatterSupported: this.isMatterSupported,
       isProtocolExternalsOnlyEnabled: this.isProtocolExternalsOnlyEnabled,
+      isMatterDisableIpv4Enabled: this.isMatterDisableIpv4Enabled,
     });
 
     (window as any).monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
@@ -715,7 +717,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
                   },
                   hap: createHapSchema(this.$translate, this.isProtocolExternalsOnlyEnabled, 'main'),
                   ...this.isMatterSupported
-                    ? { matter: createMatterSchema(this.$translate, this.isProtocolExternalsOnlyEnabled, 'main') }
+                    ? { matter: createMatterSchema(this.$translate, this.isProtocolExternalsOnlyEnabled, 'main', this.isMatterDisableIpv4Enabled) }
                     : {},
                 },
                 default: { name: 'Homebridge', username: '0E:89:49:64:91:86', port: 51173, pin: '6302-7655' },
