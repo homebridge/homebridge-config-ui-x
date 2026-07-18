@@ -99,7 +99,7 @@ export class AuthService {
     // here via refresh; best-effort so a failed refresh never blocks boot.
     if (this.$settings.formAuth !== false && this.token) {
       try {
-        await this.refreshSession()
+        await this.refreshSession('hb-session-bootstrap')
       } catch (err) {
         console.warn('Failed to mint hb-session cookie on bootstrap:', err)
       }
@@ -221,7 +221,7 @@ export class AuthService {
     // Only refresh if we're past the threshold since last refresh
     if (timeSinceLastRefresh > refreshThreshold) {
       try {
-        await this.refreshSession()
+        await this.refreshSession('session-extension')
       } catch (err) {
         console.error('Failed to refresh session:', err)
         // On error, the user will be logged out when the timer expires
@@ -231,8 +231,9 @@ export class AuthService {
 
   /**
    * Refresh the current session by getting a new token
+   * @param reason - optional allowlisted reason for distinct server log lines
    */
-  public async refreshSession() {
+  public async refreshSession(reason?: 'hb-session-bootstrap' | 'admin-guard' | 'session-extension' | 'profile-update') {
     if (this.isRefreshing) {
       return
     }
@@ -241,7 +242,7 @@ export class AuthService {
 
     try {
       // withCredentials: see login() — required for the hb-session cookie
-      const resp = await this.$api.post('/auth/refresh', {}, { withCredentials: true })
+      const resp = await this.$api.post('/auth/refresh', reason ? { reason } : {}, { withCredentials: true })
       if (resp.access_token) {
         // Persist the new token in storage and invalidate the read-through
         // cache used by AuthHelperService so the next read sees the new
