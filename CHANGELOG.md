@@ -15,6 +15,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 ### Other Changes
 
 - fix: remove unsupported npm flag `--unsafe-perm` (#2891)
+- fix(main): serve hashed static assets with immutable long-lived caching (#2902)
 - chore(deps): dependency updates
 - fix(status): always honour configured cpu temp file over auto-detection (#2896) (@TNOTA)
 
