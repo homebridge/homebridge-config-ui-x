@@ -7,6 +7,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 ### Other Changes
 
 - chore(deps): dependency updates
+- fix(plugins): drop the npm_config_unsafe_perm env var from npm spawns (#2891)
 
 ### Homebridge Dependencies
 

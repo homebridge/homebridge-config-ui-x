@@ -2273,7 +2273,6 @@ export class PluginsService {
     const env = this.sanitizeNpmEnv(process.env)
     Object.assign(env, {
       npm_config_global_style: 'true',
-      npm_config_unsafe_perm: 'true',
       npm_config_update_notifier: 'false',
       npm_config_prefer_online: 'true',
       npm_config_foreground_scripts: 'true',
