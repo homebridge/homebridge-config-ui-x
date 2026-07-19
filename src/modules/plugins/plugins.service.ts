@@ -66,6 +66,7 @@ const module = require('node:module')
 @Injectable()
 export class PluginsService {
   private _npm: Array<string> | undefined
+  private npmMajorVersion: number | null = null
   private _paths: Array<string> | undefined
 
   /**
@@ -663,6 +664,15 @@ export class PluginsService {
     // If installing, set --omit=dev to prevent installing devDependencies
     installOptions.push('--omit=dev')
     const npmPluginLabel = `${pluginAction.name}@${pluginAction.version}`
+
+    // npm >= 12 blocks dependency lifecycle scripts unless allowlisted (#2909).
+    // Honour the plugin's declared `allowScripts` (plus the plugin itself) so
+    // installs behave as before the policy change, and say so in the log.
+    const allowedScripts = await this.getAllowedInstallScripts(pluginAction.name, pluginAction.version)
+    if (allowedScripts.length) {
+      installOptions.push(`--allow-scripts=${allowedScripts.join(',')}`)
+      client.emit('stdout', yellow(`Allowing install scripts for: ${allowedScripts.join(', ')}.\r\n\r\n`))
+    }
 
     // Clean up the npm cache before any installation
     await this.cleanNpmCache()
@@ -2220,6 +2230,72 @@ export class PluginsService {
     } catch (e) {
       return 'latest'
     }
+  }
+
+  /**
+   * Returns the major version of the npm binary, cached after the first call.
+   * Returns 0 when npm cannot be queried (the caller then skips version-gated
+   * flags rather than risking an unknown-flag hard error).
+   */
+  private getNpmMajorVersion(): number {
+    if (this.npmMajorVersion === null) {
+      try {
+        this.npmMajorVersion = Number.parseInt(execSync('npm --version', { timeout: 10000 }).toString().trim().split('.')[0], 10) || 0
+      } catch (error) {
+        this.logger.debug(`Could not determine npm version: ${error.message}`)
+        this.npmMajorVersion = 0
+      }
+    }
+    return this.npmMajorVersion
+  }
+
+  /**
+   * npm >= 12 refuses to run dependency lifecycle scripts unless they are
+   * explicitly allowlisted (#2909). Build the --allow-scripts list for a
+   * plugin install: the plugin itself plus any dependencies the plugin
+   * declares in its package.json `allowScripts` field (either an array of
+   * package names or an object map of name -> boolean).
+   *
+   * Returns an empty list when the running npm is older than 12 - passing the
+   * flag there would hard-error as an unknown option - or when the registry
+   * lookup fails entirely (the plugin's own name is still allowed in that
+   * case, as installing the plugin is taken as consent for its own script).
+   */
+  private async getAllowedInstallScripts(pluginName: string, pluginVersion: string): Promise<string[]> {
+    if (this.getNpmMajorVersion() < 12) {
+      return []
+    }
+
+    const allowed = new Set<string>([pluginName])
+
+    try {
+      // This fetch must NOT use the minimal-projection accept header
+      // (application/vnd.npm.install-v1+json) used elsewhere in this service:
+      // that projection strips the `allowScripts` field this lookup exists to read.
+      const pkg: INpmRegistryModule = (await firstValueFrom(
+        this.httpService.get(`https://registry.npmjs.org/${encodeURIComponent(pluginName).replace(RE_ENCODED_AT, '@')}`),
+      )).data
+      const manifest = pkg.versions?.[pluginVersion] as (IPackageJson & { allowScripts?: unknown }) | undefined
+      const declared = manifest?.allowScripts
+
+      if (Array.isArray(declared)) {
+        for (const name of declared) {
+          if (typeof name === 'string' && name.length) {
+            allowed.add(name)
+          }
+        }
+      } else if (declared && typeof declared === 'object') {
+        for (const [name, enabled] of Object.entries(declared)) {
+          if (enabled === true) {
+            allowed.add(name)
+          }
+        }
+      }
+    } catch (error) {
+      this.logger.debug(`Could not read allowScripts for ${pluginName}@${pluginVersion}: ${error.message}`)
+    }
+
+    return [...allowed]
   }
 
   /**

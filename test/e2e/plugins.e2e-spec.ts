@@ -14,6 +14,7 @@ import { ValidationPipe } from '@nestjs/common'
 import { FastifyAdapter } from '@nestjs/platform-fastify'
 import { Test } from '@nestjs/testing'
 import { copy, remove } from 'fs-extra'
+import { of } from 'rxjs'
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { AuthModule } from '../../src/core/auth/auth.module.js'
@@ -1345,6 +1346,82 @@ describe('PluginController (e2e)', () => {
       expect(typeof call[0]).toBe('string')
       expect(Array.isArray(call[1])).toBe(true)
       expect((call[2] as any)?.shell).not.toBe(true)
+    })
+  })
+
+  describe('getAllowedInstallScripts (#2909)', () => {
+    const call = (name: string, version: string) =>
+      (pluginsService as any).getAllowedInstallScripts(name, version) as Promise<string[]>
+
+    beforeEach(() => {
+      // Prime the cached npm major version so the tests never shell out.
+      ;(pluginsService as any).npmMajorVersion = 12
+    })
+
+    it('returns an empty list on npm older than 12 without hitting the registry', async () => {
+      ;(pluginsService as any).npmMajorVersion = 10
+      const getSpy = vi.spyOn(httpService, 'get')
+
+      await expect(call('homebridge-mock-plugin', '1.0.0')).resolves.toEqual([])
+      expect(getSpy).not.toHaveBeenCalled()
+      getSpy.mockRestore()
+    })
+
+    it('allows the plugin itself plus map-form allowScripts entries, keys verbatim', async () => {
+      const getSpy = vi.spyOn(httpService, 'get').mockReturnValue(of({
+        data: {
+          versions: {
+            '1.0.0': {
+              allowScripts: {
+                '@stoprocent/noble@2.3.4': true,
+                'ffmpeg-for-homebridge': true,
+                'blocked-package': false,
+              },
+            },
+          },
+        },
+      }) as any)
+
+      await expect(call('homebridge-mock-plugin', '1.0.0')).resolves.toEqual([
+        'homebridge-mock-plugin',
+        '@stoprocent/noble@2.3.4',
+        'ffmpeg-for-homebridge',
+      ])
+      getSpy.mockRestore()
+    })
+
+    it('allows array-form allowScripts entries', async () => {
+      const getSpy = vi.spyOn(httpService, 'get').mockReturnValue(of({
+        data: {
+          versions: {
+            '2.0.0': { allowScripts: ['ffmpeg-for-homebridge'] },
+          },
+        },
+      }) as any)
+
+      await expect(call('homebridge-mock-plugin', '2.0.0')).resolves.toEqual([
+        'homebridge-mock-plugin',
+        'ffmpeg-for-homebridge',
+      ])
+      getSpy.mockRestore()
+    })
+
+    it('still allows the plugin itself when it declares no allowScripts', async () => {
+      const getSpy = vi.spyOn(httpService, 'get').mockReturnValue(of({
+        data: { versions: { '1.0.0': {} } },
+      }) as any)
+
+      await expect(call('homebridge-mock-plugin', '1.0.0')).resolves.toEqual(['homebridge-mock-plugin'])
+      getSpy.mockRestore()
+    })
+
+    it('still allows the plugin itself when the registry lookup fails', async () => {
+      const getSpy = vi.spyOn(httpService, 'get').mockImplementation(() => {
+        throw new Error('registry unreachable')
+      })
+
+      await expect(call('homebridge-mock-plugin', '1.0.0')).resolves.toEqual(['homebridge-mock-plugin'])
+      getSpy.mockRestore()
     })
   })
 
