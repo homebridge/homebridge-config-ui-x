@@ -4,6 +4,10 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 
 ## v5.26.1 (Pending Release)
 
+### UI Changes
+
+- feat(accessories): show live power on matter outlet tiles
+
 ### Other Changes
 
 - chore(deps): dependency updates

@@ -328,6 +328,18 @@ export function getLightSensorIlluminance(service: ServiceTypeX): number {
 }
 
 /**
+ * Get the active power reading (in watts)
+ * Matter stores ElectricalPowerMeasurement.activePower in milliwatts
+ */
+export function getActivePowerWatts(service: ServiceTypeX): number | null {
+  const activePower = service.clusters?.electricalPowerMeasurement?.activePower
+  if (activePower === null || activePower === undefined || typeof activePower !== 'number') {
+    return null
+  }
+  return activePower / 1000 // Convert from milliwatts to watts
+}
+
+/**
  * Get temperature sensor value (in °C)
  * Matter stores temperature in hundredths of °C
  */

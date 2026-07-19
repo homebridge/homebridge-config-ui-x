@@ -1,5 +1,7 @@
 @let on = isOn();
-@let stateText = on ? ('accessories.control.on' | translate) : ('accessories.control.off' | translate);
+@let watts = activePowerWatts();
+@let baseStateText = on ? ('accessories.control.on' | translate) : ('accessories.control.off' | translate);
+@let stateText = on && watts !== null ? `${baseStateText} · ${(watts | number: '1.0-1')}W` : baseStateText;
 
 @let srBaseName = (service().customName || service().serviceName || service().displayName || '').trim();
 @let srType = 'accessories.core.outlet' | translate;
@@ -68,10 +70,6 @@
     <div class="accessory-label mt-auto" aria-hidden="true">
       {{ service().customName || service().serviceName || service().displayName }}
     </div>
-    <div
-      class="accessory-label grey-text"
-      aria-hidden="true"
-      [innerText]="(on ? 'accessories.control.on' : 'accessories.control.off') | translate"
-    ></div>
+    <div class="accessory-label grey-text" aria-hidden="true" [innerText]="stateText"></div>
   </div>
 </div>
