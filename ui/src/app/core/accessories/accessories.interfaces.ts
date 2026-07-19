@@ -177,6 +177,12 @@ export interface MatterTemperatureMeasurementCluster extends Record<string, unkn
   maxMeasuredValue?: number
 }
 
+export interface MatterElectricalPowerMeasurementCluster extends Record<string, unknown> {
+  voltage?: number | null // millivolts
+  activeCurrent?: number | null // milliamps
+  activePower?: number | null // milliwatts
+}
+
 /**
  * Matter RelativeHumidityMeasurement cluster attributes
  */
@@ -409,6 +415,7 @@ export interface MatterClusters extends Record<string, unknown> {
   thermostat?: MatterThermostatCluster
   switch?: MatterSwitchCluster
   valveConfigurationAndControl?: MatterValveConfigurationAndControlCluster
+  electricalPowerMeasurement?: MatterElectricalPowerMeasurementCluster
 }
 
 /**

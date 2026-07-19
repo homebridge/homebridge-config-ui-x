@@ -1,14 +1,15 @@
-import { LowerCasePipe } from '@angular/common'
+import { DecimalPipe, LowerCasePipe } from '@angular/common'
 import { ChangeDetectionStrategy, Component, computed, inject, input } from '@angular/core'
 import { TranslatePipe } from '@ngx-translate/core'
 
 import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
-import { controlDevice, getDeviceActiveState } from '@/app/core/accessories/types/matter/matter-device.utils'
+import { controlDevice, getActivePowerWatts, getDeviceActiveState } from '@/app/core/accessories/types/matter/matter-device.utils'
 import { SettingsService } from '@/app/core/ui/settings.service'
 
 @Component({
   selector: 'app-on-off-plug-in-unit',
   imports: [
+    DecimalPipe,
     LowerCasePipe,
     TranslatePipe,
   ],
@@ -34,4 +35,8 @@ export class OnOffPlugInUnitComponent {
   }
 
   public readonly isOn = computed(() => getDeviceActiveState(this.service()))
+
+  // Live power reading in watts, or null when the outlet does not expose the
+  // ElectricalPowerMeasurement cluster (or has no reading yet)
+  public readonly activePowerWatts = computed(() => getActivePowerWatts(this.service()))
 }
