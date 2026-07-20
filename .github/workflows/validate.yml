@@ -56,7 +56,7 @@ jobs:
           - windows-2025
           - windows-2022
           - windows-11-arm
-        node-version: [20.x, 22.x, 24.x]
+        node-version: [20.x, 22.x, 24.x, 26.x]
 
     runs-on: ${{ matrix.os }}
 
