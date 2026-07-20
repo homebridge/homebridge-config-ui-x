@@ -758,6 +758,15 @@ export class PluginsService {
       // If installing, set --omit=dev to prevent installing devDependencies
       installOptions.push('--omit=dev')
       npmPluginLabel = `${pluginAction.name}@${pluginAction.version}`
+
+      // npm >= 12 blocks dependency lifecycle scripts unless allowlisted (#2909).
+      // Honour the plugin's declared `allowScripts` (plus the plugin itself) so
+      // installs behave as before the policy change, and say so in the log.
+      const allowedScripts = await this.getAllowedInstallScripts(pluginAction.name, pluginAction.version)
+      if (allowedScripts.length) {
+        installOptions.push(`--allow-scripts=${allowedScripts.join(',')}`)
+        client.emit('stdout', yellow(`Allowing install scripts for: ${allowedScripts.join(', ')}.\r\n\r\n`))
+      }
     }
 
     // Clean up the npm cache before any installation or uninstallation
