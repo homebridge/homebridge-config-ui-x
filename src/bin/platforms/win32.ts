@@ -181,7 +181,9 @@ export class Win32Installer extends BasePlatform {
    * This is used to create the Windows Services
    */
   private async downloadNssm(): Promise<string> {
-    const downloadUrl = `https://github.com/homebridge/nssm/releases/download/2.24-101-g897c7ad/nssm_${arch()}.exe`
+    // Windows ARM64 hosts can run x64 binaries via emulation; fall back to x64 when no native ARM build exists
+    const nssmArch = arch() === 'arm64' ? 'x64' : arch()
+    const downloadUrl = `https://github.com/homebridge/nssm/releases/download/2.24-101-g897c7ad/nssm_${nssmArch}.exe`
     const nssmPath = resolve(this.hbService.storagePath, 'nssm.exe')
 
     if (await pathExists(nssmPath)) {
