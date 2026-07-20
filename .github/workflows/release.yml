@@ -90,21 +90,21 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        os: [
-          ubuntu-latest, 
-          ubuntu-24.04, 
-          ubuntu-22.04, 
-          ubuntu-24.04-arm,
-          ubuntu-22.04-arm,
-          macos-latest,
-          macos-26, 
-          macos-15,
-          macos-26-intel, 
-          macos-15-intel, 
-          windows-latest, 
-          windows-2025, 
-          windows-2022, 
-          windows-11-arm]        
+        os:
+          - ubuntu-latest
+          - ubuntu-24.04
+          - ubuntu-22.04
+          - ubuntu-24.04-arm
+          - ubuntu-22.04-arm
+          - macos-latest
+          - macos-26
+          - macos-15
+          - macos-26-intel
+          - macos-15-intel
+          - windows-latest
+          - windows-2025
+          - windows-2022
+          - windows-11-arm
     uses: homebridge/.github/.github/workflows/nodejs-build-and-test.yml@latest
     with:
       enable_coverage: false
