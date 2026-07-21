@@ -143,12 +143,19 @@ describe('PluginsGateway (e2e)', { timeout: 10_000 }, () => {
     try {
       await pluginsGateway.installPlugin(client, { name: 'homebridge-mock-plugin', version: '3.2.5' })
 
+      // npm only accepts --allow-scripts for global installs; a project-scoped
+      // install fails with EALLOWSCRIPTS if it is passed, so the flag is only
+      // added when installing globally (which this path does on Windows).
       const expectedCmd = isWin32 ? win32NpmPath : 'npm'
       const expectedArgs = isWin32
         ? ['install', '-g', '--omit=dev', '--allow-scripts=homebridge-mock-plugin,ffmpeg-for-homebridge', 'homebridge-mock-plugin@3.2.5']
-        : ['install', '--omit=dev', '--allow-scripts=homebridge-mock-plugin,ffmpeg-for-homebridge', 'homebridge-mock-plugin@3.2.5']
+        : ['install', '--omit=dev', 'homebridge-mock-plugin@3.2.5']
       expect(mockSpawn).toHaveBeenCalledWith(expectedCmd, expectedArgs, expect.anything())
-      expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('Allowing install scripts for: homebridge-mock-plugin, ffmpeg-for-homebridge.'))
+
+      const expectedNotice = isWin32
+        ? 'Allowing install scripts for: homebridge-mock-plugin, ffmpeg-for-homebridge.'
+        : 'npm only accepts --allow-scripts for global installs'
+      expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining(expectedNotice))
     } finally {
       allowScriptsSpy.mockRestore()
     }
