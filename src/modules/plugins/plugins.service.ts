@@ -332,6 +332,18 @@ export class PluginsService {
       : []
   }
 
+  /**
+   * Whether a plugin advertises that it can expose accessories to Matter.
+   *
+   * Plugin authors opt in by adding the `supports-matter` keyword to their
+   * package.json, the same way they already add `homebridge-plugin`. Reading it
+   * from the package itself means the flag travels with the plugin, so it works
+   * for private and locally installed plugins too.
+   */
+  private supportsMatter(keywords?: string[]): boolean {
+    return Array.isArray(keywords) && keywords.some(k => k?.toLowerCase() === 'supports-matter')
+  }
+
   private matchesPlugin(plugin: HomebridgePlugin, searchTerms: string[]): 'exactName' | 'exactKeyword' | 'partial' | null {
     const pluginName = plugin.name.toLowerCase()
     const pluginKeywords = this.getPluginKeywords(plugin)
@@ -431,6 +443,7 @@ export class PluginsService {
           author: this.pluginAuthors[pkg.package.name] || (pkg.package.publisher ? pkg.package.publisher.username : null),
           verifiedPlugin: this.verifiedPlugins.includes(pkg.package.name),
           verifiedPlusPlugin: this.verifiedPlusPlugins.includes(pkg.package.name),
+          supportsMatter: this.supportsMatter(pkg.package.keywords),
           icon: this.pluginIcons[pkg.package.name] ? `${this.pluginListUrl}${this.pluginIcons[pkg.package.name]}` : null,
           isHbScoped: pkg.package.name.startsWith('@homebridge-plugins/'),
           newHbScope: this.newScopePlugins[pkg.package.name],
@@ -548,6 +561,7 @@ export class PluginsService {
           : pkg.name,
         verifiedPlugin: this.verifiedPlugins.includes(pkg.name),
         verifiedPlusPlugin: this.verifiedPlusPlugins.includes(pkg.name),
+        supportsMatter: this.supportsMatter(pkg.keywords),
         icon: this.pluginIcons[pkg.name],
         isHbScoped: pkg.name.startsWith('@homebridge-plugins/'),
         newHbScope: this.newScopePlugins[pkg.name],
@@ -570,6 +584,7 @@ export class PluginsService {
         || ((pkg.maintainers && pkg.maintainers.length) ? pkg.maintainers[0].name : null)
       plugin.verifiedPlugin = this.verifiedPlugins.includes(pkg.name)
       plugin.verifiedPlusPlugin = this.verifiedPlusPlugins.includes(pkg.name)
+      plugin.supportsMatter = this.supportsMatter(pkg.keywords)
       plugin.icon = this.pluginIcons[pkg.name]
         ? `${this.pluginListUrl}${this.pluginIcons[pkg.name]}`
         : null
@@ -1088,6 +1103,7 @@ export class PluginsService {
         : pkgJson.name,
       verifiedPlugin: this.verifiedPlugins.includes(pkgJson.name),
       verifiedPlusPlugin: this.verifiedPlusPlugins.includes(pkgJson.name),
+      supportsMatter: this.supportsMatter(pkgJson.keywords),
       icon: this.pluginIcons[pkgJson.name]
         ? `${this.pluginListUrl}${this.pluginIcons[pkgJson.name]}`
         : null,
@@ -2130,6 +2146,7 @@ export class PluginsService {
         : pkgJson.name,
       verifiedPlugin: this.verifiedPlugins.includes(pkgJson.name),
       verifiedPlusPlugin: this.verifiedPlusPlugins.includes(pkgJson.name),
+      supportsMatter: this.supportsMatter(pkgJson.keywords),
       icon: this.pluginIcons[pkgJson.name]
         ? `${this.pluginListUrl}${this.pluginIcons[pkgJson.name]}`
         : null,

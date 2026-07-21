@@ -19,3 +19,29 @@
 .dropdown-toggle-no-outline {
   outline: none;
 }
+
+// Wrapper anchors the pill to the icon and occupies exactly the box the img
+// (plus its mb-3) used to, so flagged and unflagged cards stay identical.
+.plugin-icon-wrapper {
+  position: relative;
+  display: inline-block;
+  line-height: 0;
+}
+
+// The "supports matter" pill overlapping the bottom edge of the plugin icon.
+// Colour and the soft theme-tinted background come from the theme files
+// (.matter-pill uses $primary), so only layout lives here. The fa-matter icon
+// inherits the text colour via its currentColor mask. Absolutely positioned so
+// it takes no layout space and rides half-on/half-off the icon's bottom edge.
+.matter-pill {
+  position: absolute;
+  bottom: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: inline-flex;
+  align-items: center;
+  max-width: 90px;
+  padding: 4px;
+  white-space: nowrap;
+  border-radius: 10px;
+}
