@@ -2,6 +2,23 @@
 
 All notable changes to `homebridge-config-ui-x` will be documented in this file. This project tries to adhere to [Semantic Versioning](http://semver.org/).
 
+## v5.27.1 (Pending Release)
+
+### UI Changes
+
+- fix(ui): keep status widget values and units on one line (#2913) (@tbaur)
+- feat(settings): support HAP `disableIdentifyingMaterial` option (#2924) (@naterator)
+
+### Other Changes
+
+- chore(deps): dependency updates
+
+### Homebridge Dependencies
+
+- `@homebridge/hap-client` @ `v5.1.0`
+- `@homebridge/node-pty-prebuilt-multiarch` @ `v0.13.1`
+- `@homebridge/plugin-ui-utils` @ `v2.2.5`
+
 ## v5.27.0 (2026-07-19)
 
 ### UI Changes
