@@ -1349,6 +1349,31 @@ describe('PluginController (e2e)', () => {
     })
   })
 
+  describe('supportsMatter', () => {
+    const call = (keywords?: string[]) => (pluginsService as any).supportsMatter(keywords) as boolean
+
+    it('is true when the plugin declares the supports-matter keyword', () => {
+      expect(call(['homebridge-plugin', 'supports-matter'])).toBe(true)
+    })
+
+    it('is false when the keyword is absent', () => {
+      expect(call(['homebridge-plugin', 'matter'])).toBe(false)
+    })
+
+    it('is false when there are no keywords at all', () => {
+      expect(call([])).toBe(false)
+      expect(call(undefined)).toBe(false)
+    })
+
+    it('ignores keyword casing', () => {
+      expect(call(['supports-matter'])).toBe(true)
+    })
+
+    it('does not match a keyword that merely contains the term', () => {
+      expect(call(['not-supports-matter-really'])).toBe(false)
+    })
+  })
+
   describe('getAllowedInstallScripts (#2909)', () => {
     const call = (name: string, version: string) =>
       (pluginsService as any).getAllowedInstallScripts(name, version) as Promise<string[]>

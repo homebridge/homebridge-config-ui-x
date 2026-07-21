@@ -116,6 +116,13 @@
       color: $darkModePrimary;
     }
 
+    .matter-pill {
+      color: $darkModePrimary;
+      // Opaque so the icon it overlaps does not show through the pill.
+      background-color: color.mix($darkModePrimary, $secondaryBackground, 20%);
+      border: 2px solid $secondaryBackground;
+    }
+
     .hb-uix-switch input:checked ~ .hb-uix-slider {
       background-color: $darkModePrimary;
     }

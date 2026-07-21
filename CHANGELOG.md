@@ -8,6 +8,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 
 - fix(ui): keep status widget values and units on one line (#2913) (@tbaur)
 - feat(settings): support HAP `disableIdentifyingMaterial` option (#2924) (@naterator)
+- feat(plugins): show matter support badge on plugin cards
 
 ### Other Changes
 

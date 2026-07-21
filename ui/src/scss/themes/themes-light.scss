@@ -76,6 +76,13 @@
       color: $primary;
     }
 
+    .matter-pill {
+      color: $primary;
+      // Opaque so the icon it overlaps does not show through the pill.
+      background-color: color.mix($primary, #ffffff, 15%);
+      border: 2px solid #ffffff;
+    }
+
     .grey-text,
     .grey-text a {
       color: #666666 !important;
