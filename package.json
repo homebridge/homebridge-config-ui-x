@@ -109,13 +109,13 @@
     "node-schedule": "2.1.1",
     "ora": "9.4.1",
     "otplib": "13.4.1",
-    "p-limit": "7.3.0",
+    "p-limit": "7.3.1",
     "passport": "0.7.0",
     "passport-jwt": "4.0.1",
     "reflect-metadata": "0.2.2",
     "rxjs": "7.8.2",
     "semver": "7.8.5",
-    "systeminformation": "5.32.0",
+    "systeminformation": "5.33.0",
     "tail": "2.2.6",
     "tar": "7.5.20",
     "tcp-port-used": "1.0.3",
@@ -158,6 +158,9 @@
       "@angular-eslint/eslint-plugin": "^22.1.0",
       "@angular-eslint/eslint-plugin-template": "^22.1.0",
       "@angular-eslint/template-parser": "^22.1.0"
+    },
+    "concurrently": {
+      "shell-quote": "^1.10.0"
     }
   },
   "maintainers": [
