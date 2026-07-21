@@ -680,14 +680,7 @@ export class PluginsService {
     installOptions.push('--omit=dev')
     const npmPluginLabel = `${pluginAction.name}@${pluginAction.version}`
 
-    // npm >= 12 blocks dependency lifecycle scripts unless allowlisted (#2909).
-    // Honour the plugin's declared `allowScripts` (plus the plugin itself) so
-    // installs behave as before the policy change, and say so in the log.
-    const allowedScripts = await this.getAllowedInstallScripts(pluginAction.name, pluginAction.version)
-    if (allowedScripts.length) {
-      installOptions.push(`--allow-scripts=${allowedScripts.join(',')}`)
-      client.emit('stdout', yellow(`Allowing install scripts for: ${allowedScripts.join(', ')}.\r\n\r\n`))
-    }
+    await this.applyAllowScripts(installOptions, client, pluginAction)
 
     // Clean up the npm cache before any installation
     await this.cleanNpmCache()
@@ -774,14 +767,7 @@ export class PluginsService {
       installOptions.push('--omit=dev')
       npmPluginLabel = `${pluginAction.name}@${pluginAction.version}`
 
-      // npm >= 12 blocks dependency lifecycle scripts unless allowlisted (#2909).
-      // Honour the plugin's declared `allowScripts` (plus the plugin itself) so
-      // installs behave as before the policy change, and say so in the log.
-      const allowedScripts = await this.getAllowedInstallScripts(pluginAction.name, pluginAction.version)
-      if (allowedScripts.length) {
-        installOptions.push(`--allow-scripts=${allowedScripts.join(',')}`)
-        client.emit('stdout', yellow(`Allowing install scripts for: ${allowedScripts.join(', ')}.\r\n\r\n`))
-      }
+      await this.applyAllowScripts(installOptions, client, pluginAction)
     }
 
     // Clean up the npm cache before any installation or uninstallation
@@ -2322,6 +2308,29 @@ export class PluginsService {
     }
 
     return [...allowed]
+  }
+
+  /**
+   * Add `--allow-scripts` to an npm install when the running npm needs it (#2909).
+   *
+   * npm only accepts the flag for global installs. Passing it to a project-scoped
+   * install (a custom plugin path with its own package.json) fails outright with
+   * EALLOWSCRIPTS, so there we explain what to do instead rather than breaking
+   * the install.
+   */
+  private async applyAllowScripts(installOptions: string[], client: EventEmitter, pluginAction: PluginActionDto): Promise<void> {
+    const allowedScripts = await this.getAllowedInstallScripts(pluginAction.name, pluginAction.version)
+    if (!allowedScripts.length) {
+      return
+    }
+
+    if (!installOptions.includes('-g')) {
+      client.emit('stdout', yellow(`Install scripts for ${allowedScripts.join(', ')} will not run: npm only accepts --allow-scripts for global installs. Add an "allowScripts" entry to the package.json alongside your plugins to permit them.\r\n\r\n`))
+      return
+    }
+
+    installOptions.push(`--allow-scripts=${allowedScripts.join(',')}`)
+    client.emit('stdout', yellow(`Allowing install scripts for: ${allowedScripts.join(', ')}.\r\n\r\n`))
   }
 
   /**
