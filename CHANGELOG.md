@@ -15,6 +15,8 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - chore(deps): dependency updates
 - chore(deps): add node 26 support and bump node-pty (#2916) (@NorthernMan54)
 - ci: validate and release against node 26 (#2917) (#2918) (@NorthernMan54)
+- fix(plugins): pass allow-scripts to plugin installs (#2921) (@bcomnes)
+- fix(plugins): only pass allow-scripts to global installs
 
 ### Homebridge Dependencies
 
