@@ -76,6 +76,18 @@
       color: $primary;
     }
 
+    // Brand colours, not theme accents: hap = Homebridge purple, matter = the
+    // official Matter dark navy (the brandmark has no accent colour).
+    .transport-icon.enabled {
+      .fa-hap {
+        color: #491f59;
+      }
+
+      .fa-matter {
+        color: #131926;
+      }
+    }
+
     .grey-text,
     .grey-text a {
       color: #666666 !important;

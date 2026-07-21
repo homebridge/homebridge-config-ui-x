@@ -81,7 +81,11 @@
     <div class="d-flex flex-wrap justify-content-between">
       @for (plugin of installedPlugins(); track plugin) {
         <div class="hb-plugin-space-between">
-          <app-plugin-card [plugin]="plugin" [childBridges]="getPluginChildBridges(plugin)" />
+          <app-plugin-card
+            [plugin]="plugin"
+            [childBridges]="getPluginChildBridges(plugin)"
+            [isSearchResult]="isSearchMode()"
+          />
         </div>
       }
       @if (installedPlugins().length === 0 && !loading() && !mainError()) {
