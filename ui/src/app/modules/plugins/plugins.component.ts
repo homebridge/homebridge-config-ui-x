@@ -67,9 +67,11 @@ export class PluginsComponent implements OnInit, OnDestroy, CanComponentDeactiva
   public readonly childBridges = signal<ChildBridge[]>([])
   public readonly showSearchBar = signal(false)
   public readonly showExitButton = signal(false)
+  // True while the grid is showing search results rather than the installed
+  // list. Read by the template to decide what a plugin card may show.
+  public readonly isSearchMode = signal(false)
 
   // Other properties
-  private readonly isSearchMode = signal(false)
   private io!: IoNamespace
   // Dedupes concurrent loads — without this, the websocket-connected subscriber
   // and the router NavigationEnd subscriber both fire `loadInstalledPlugins()`
@@ -385,6 +387,10 @@ export class PluginsComponent implements OnInit, OnDestroy, CanComponentDeactiva
   private async runLoadInstalledPlugins(): Promise<Plugin[] | undefined> {
     this.form.setValue({ query: '' })
     this.showExitButton.set(false)
+    // Loading the installed list is by definition leaving search mode. Most
+    // callers already clear the flag first, but the router and websocket
+    // subscribers below do not, which would leave it set over installed plugins
+    this.isSearchMode.set(false)
     this.loading.set(true)
     this.installedPlugins.set([])
     this.mainError.set(false)

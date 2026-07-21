@@ -116,6 +116,18 @@
       color: $darkModePrimary;
     }
 
+    // Brand colours lightened for dark backgrounds: hap = the UI's light
+    // Homebridge purple, matter = the Matter brand palette's light cyan.
+    .transport-icon.enabled {
+      .fa-hap {
+        color: #9c42f5;
+      }
+
+      .fa-matter {
+        color: #8beff2;
+      }
+    }
+
     .hb-uix-switch input:checked ~ .hb-uix-slider {
       background-color: $darkModePrimary;
     }

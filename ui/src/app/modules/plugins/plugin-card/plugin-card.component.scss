@@ -19,3 +19,25 @@
 .dropdown-toggle-no-outline {
   outline: none;
 }
+
+// The transport icons (hap + matter) sit side by side, centred in the empty
+// space below the plugin icon. Each icon is either enabled (coloured, via the
+// theme files) or disabled (faded grey, below). The fa-hap/fa-matter glyphs
+// inherit the text colour via their currentColor masks.
+.transport-icons {
+  gap: 12px;
+}
+
+.transport-icon {
+  line-height: 0;
+
+  // Halfway between the default icon size (1em) and fa-lg (1.25em).
+  i {
+    font-size: 1.125em;
+  }
+
+  &:not(.enabled) {
+    color: #888888;
+    opacity: 0.35;
+  }
+}
