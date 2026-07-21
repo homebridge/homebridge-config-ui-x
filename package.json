@@ -56,7 +56,7 @@
     "hb-service": "dist/bin/hb-service.js"
   },
   "engines": {
-    "node": "^22.12.0 || ^24.0.0",
+    "node": "^22.12.0 || ^24.0.0 || ^26.0.0",
     "homebridge": "^1.8.0 || ^2.0.0"
   },
   "scripts": {
@@ -84,7 +84,7 @@
     "@fastify/multipart": "10.1.0",
     "@fastify/static": "9.3.0",
     "@homebridge/hap-client": "5.1.0",
-    "@homebridge/node-pty-prebuilt-multiarch": "0.13.1",
+    "@homebridge/node-pty-prebuilt-multiarch": "0.14.1-beta.4",
     "@nestjs/axios": "4.0.1",
     "@nestjs/common": "11.1.28",
     "@nestjs/core": "11.1.28",
@@ -117,7 +117,7 @@
     "semver": "7.8.5",
     "systeminformation": "5.33.0",
     "tail": "2.2.6",
-    "tar": "7.5.20",
+    "tar": "7.5.21",
     "tcp-port-used": "1.0.3",
     "unzipper": "0.12.5"
   },
@@ -129,7 +129,7 @@
     "@angular-eslint/eslint-plugin": "^22.1.0",
     "@angular-eslint/eslint-plugin-template": "^22.1.0",
     "@angular-eslint/template-parser": "^22.1.0",
-    "@antfu/eslint-config": "^9.1.0",
+    "@antfu/eslint-config": "^9.2.0",
     "@nestjs/testing": "^11.1.28",
     "@prettier/plugin-xml": "^3.4.2",
     "@types/fs-extra": "^11.0.4",
@@ -205,7 +205,7 @@
     "enabled": false
   },
   "allowScripts": {
-    "@homebridge/node-pty-prebuilt-multiarch@0.13.1": true,
+    "@homebridge/node-pty-prebuilt-multiarch@0.14.1-beta.4": true,
     "macos-temperature-sensor@2.0.0": true,
     "osx-temperature-sensor@1.0.8": true,
     "esbuild@0.28.1": true,
