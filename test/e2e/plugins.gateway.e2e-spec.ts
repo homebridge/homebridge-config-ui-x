@@ -87,6 +87,10 @@ describe('PluginsGateway (e2e)', { timeout: 10_000 }, () => {
     // Ensure config is correct
     configService.ui.sudo = false
     configService.customPluginPath = pluginsPath
+
+    // Keep existing command tests independent of the npm version running the suite.
+    // npm 12 behavior has explicit coverage below.
+    ;(pluginsService as any).npmMajorVersion = 11
   })
 
   it('ON /plugins/install', async () => {
@@ -118,6 +122,36 @@ describe('PluginsGateway (e2e)', { timeout: 10_000 }, () => {
 
     // Expect the method to let the client know the command succeeded
     expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('Operation succeeded!'))
+  })
+
+  it('ON /plugins/install (npm 12 allow scripts)', async () => {
+    const allowScriptsSpy = vi.spyOn(pluginsService as any, 'getAllowedInstallScripts')
+      .mockResolvedValue(['homebridge-mock-plugin', 'ffmpeg-for-homebridge'])
+    const mockSpawn = vi.spyOn(nodePtyService, 'spawn')
+      .mockImplementation(() => {
+        const term = {
+          onData: vi.fn(),
+          onExit: vi.fn(),
+          kill: vi.fn(),
+        }
+        setTimeout(() => {
+          term.onExit.mock.calls[0]?.[0]({ exitCode: 0 })
+        }, 10)
+        return term
+      })
+
+    try {
+      await pluginsGateway.installPlugin(client, { name: 'homebridge-mock-plugin', version: '3.2.5' })
+
+      const expectedCmd = isWin32 ? win32NpmPath : 'npm'
+      const expectedArgs = isWin32
+        ? ['install', '-g', '--omit=dev', '--allow-scripts=homebridge-mock-plugin,ffmpeg-for-homebridge', 'homebridge-mock-plugin@3.2.5']
+        : ['install', '--omit=dev', '--allow-scripts=homebridge-mock-plugin,ffmpeg-for-homebridge', 'homebridge-mock-plugin@3.2.5']
+      expect(mockSpawn).toHaveBeenCalledWith(expectedCmd, expectedArgs, expect.anything())
+      expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('Allowing install scripts for: homebridge-mock-plugin, ffmpeg-for-homebridge.'))
+    } finally {
+      allowScriptsSpy.mockRestore()
+    }
   })
 
   it('ON /plugins/install (custom version)', async () => {
