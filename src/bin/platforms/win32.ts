@@ -179,7 +179,7 @@ export class Win32Installer extends BasePlatform {
    * Windows Only!
    * Downloads nssm - NSSM - the Non-Sucking Service Manager - https://nssm.cc/
    * This is used to create the Windows Services
-   * 
+   *
    * https://github.com/homebridge/nssm/releases/download/v2.25.1/nssm_arm64.exe
    * https://github.com/homebridge/nssm/releases/latest/download/nssm_arm64.exe
    */
