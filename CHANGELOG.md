@@ -12,11 +12,12 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 ### Other Changes
 
 - chore(deps): dependency updates
+- chore(deps): add node 26 support and bump node-pty (#2916) (@NorthernMan54)
 
 ### Homebridge Dependencies
 
 - `@homebridge/hap-client` @ `v5.1.0`
-- `@homebridge/node-pty-prebuilt-multiarch` @ `v0.13.1`
+- `@homebridge/node-pty-prebuilt-multiarch` @ `v0.14.1-beta`
 - `@homebridge/plugin-ui-utils` @ `v2.2.5`
 
 ## v5.27.0 (2026-07-19)
