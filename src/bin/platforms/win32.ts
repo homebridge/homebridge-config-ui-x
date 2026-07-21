@@ -179,9 +179,12 @@ export class Win32Installer extends BasePlatform {
    * Windows Only!
    * Downloads nssm - NSSM - the Non-Sucking Service Manager - https://nssm.cc/
    * This is used to create the Windows Services
+   * 
+   * https://github.com/homebridge/nssm/releases/download/v2.25.1/nssm_arm64.exe
+   * https://github.com/homebridge/nssm/releases/latest/download/nssm_arm64.exe
    */
   private async downloadNssm(): Promise<string> {
-    const downloadUrl = `https://github.com/homebridge/nssm/releases/download/2.24-101-g897c7ad/nssm_${arch()}.exe`
+    const downloadUrl = `https://github.com/homebridge/nssm/releases/latest/download/nssm_${arch()}.exe`
     const nssmPath = resolve(this.hbService.storagePath, 'nssm.exe')
 
     if (await pathExists(nssmPath)) {
