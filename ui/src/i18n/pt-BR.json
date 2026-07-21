@@ -645,6 +645,8 @@
   "settings.hap.desc": "HAP is the HomeKit Accessory Protocol used by the Apple Home app. It is enabled by default.",
   "settings.hap.disable": "Disable HAP",
   "settings.hap.disable_desc": "This will stop publishing the main HomeKit bridge and restart Homebridge straight away. The HomeKit pairing data is preserved so you can re-enable HAP later.",
+  "settings.hap.disable_identifying_material": "Disable Identifying Material (HAP)",
+  "settings.hap.disable_identifying_material_desc": "When on, Homebridge does not append a unique four-character identifier to HAP bridge and external accessory names. Ensure these names are unique on your network to avoid mDNS name collisions and pairing instability.",
   "settings.hap.enabled_desc": "Whether HAP is published on the main Homebridge bridge.",
   "settings.hap.enabled_desc_in_place": "Whether HAP is published on the main Homebridge bridge. Enabling or disabling takes effect after a restart. Disabling keeps the HomeKit pairing, so you can re-enable HAP later without re-pairing.",
   "settings.hap.externals_only": "Externals Only (HAP)",

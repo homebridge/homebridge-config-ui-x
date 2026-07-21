@@ -1196,50 +1196,69 @@ export class ConfigEditorService implements OnApplicationBootstrap {
   }
 
   /**
-   * Get whether HAP is enabled on the main bridge, plus the externalsOnly
-   * flag for newer Homebridge versions.
+   * Get whether HAP is enabled on the main bridge, plus nested HAP options
+   * supported by newer Homebridge versions.
    *
    * HAP is enabled by default; users opt out via either the legacy boolean
    * form (`bridge.hap: false`, older Homebridge) or the nested form
-   * (`bridge.hap: { enabled: false, externalsOnly?: true }`, Homebridge >= 2.0.3-beta.26).
+   * (`bridge.hap: { enabled: false, externalsOnly?: true,
+   * disableIdentifyingMaterial?: true }`, newer Homebridge versions).
    * Reading tolerates both shapes; writing chooses the appropriate shape
-   * based on the `protocolExternalsOnly` feature flag.
+   * based on the applicable feature flags.
    */
-  public async getHapEnabled(): Promise<{ enabled: boolean, externalsOnly: boolean }> {
+  public async getHapEnabled(): Promise<{ enabled: boolean, externalsOnly: boolean, disableIdentifyingMaterial: boolean }> {
     const config = await this.getConfigFile()
     const hap = config.bridge?.hap
     // Legacy: hap === false means disabled.
     if (hap === false) {
-      return { enabled: false, externalsOnly: false }
+      return { enabled: false, externalsOnly: false, disableIdentifyingMaterial: false }
     }
-    // Nested: { enabled: false } means disabled, optionally externalsOnly.
+    // Nested: { enabled: false } means disabled; other options are surfaced
+    // independently of the running version so manually-authored configs remain visible.
     if (typeof hap === 'object' && hap !== null) {
       const enabled = hap.enabled !== false
       const externalsOnly = hap.externalsOnly === true
-      return { enabled, externalsOnly }
+      const disableIdentifyingMaterial = hap.disableIdentifyingMaterial === true
+      return { enabled, externalsOnly, disableIdentifyingMaterial }
     }
-    return { enabled: true, externalsOnly: false }
+    return { enabled: true, externalsOnly: false, disableIdentifyingMaterial: false }
   }
 
   /**
    * Enable or disable HAP on the main bridge.
    *
    * Writes either the boolean form or the nested object form based on the
-   * `protocolExternalsOnly` feature flag (which depends on the running
-   * Homebridge version). When disabling, the optional `externalsOnly` flag
-   * is honoured only when the nested shape is being written.
+   * running Homebridge version. When disabling, the optional `externalsOnly`
+   * flag is honoured only when supported. `disableIdentifyingMaterial` is
+   * preserved when older UI clients omit it from a HAP enablement request.
    *
    * @param enabled - Whether HAP should be published.
    * @param restart - Whether to restart Homebridge after the change (deferred to caller when false).
    * @param externalsOnly - Optional. When `enabled: false`, additionally suppress the bridge accessory itself (externals still publish).
+   * @param disableIdentifyingMaterial - Optional. Whether HAP-NodeJS should omit username-derived identifying material from published names.
    */
   public async setHapEnabled(
     enabled: boolean,
     restart = true,
     externalsOnly = false,
-  ): Promise<{ enabled: boolean, externalsOnly: boolean }> {
+    disableIdentifyingMaterial?: boolean,
+  ): Promise<{ enabled: boolean, externalsOnly: boolean, disableIdentifyingMaterial: boolean }> {
+    if (disableIdentifyingMaterial !== undefined && typeof disableIdentifyingMaterial !== 'boolean') {
+      throw new BadRequestException('HAP disableIdentifyingMaterial must be a boolean.')
+    }
+
     const config = await this.getConfigFile()
-    const useNestedShape = this.configService.getFeatureFlags().protocolExternalsOnly === true
+    const featureFlags = this.configService.getFeatureFlags()
+    const supportsExternalsOnly = featureFlags.protocolExternalsOnly === true
+    const supportsDisableIdentifyingMaterial = featureFlags.hapDisableIdentifyingMaterial === true
+    const useNestedShape = supportsExternalsOnly || supportsDisableIdentifyingMaterial
+    const currentHap = config.bridge?.hap
+    const currentDisableIdentifyingMaterial = typeof currentHap === 'object'
+      && currentHap !== null
+      && currentHap.disableIdentifyingMaterial === true
+    const targetDisableIdentifyingMaterial = supportsDisableIdentifyingMaterial
+      && (disableIdentifyingMaterial ?? currentDisableIdentifyingMaterial)
+    const targetExternalsOnly = supportsExternalsOnly && !enabled && externalsOnly
 
     if (!enabled) {
       // Shutdown first so the running server doesn't see a partial config, unless
@@ -1248,25 +1267,33 @@ export class ConfigEditorService implements OnApplicationBootstrap {
         await this.homebridgeIpcService.restartAndWaitForClose()
       }
       if (useNestedShape) {
-        config.bridge.hap = externalsOnly
-          ? { enabled: false, externalsOnly: true }
-          : { enabled: false }
+        config.bridge.hap = {
+          enabled: false,
+          ...(targetExternalsOnly ? { externalsOnly: true } : {}),
+          ...(targetDisableIdentifyingMaterial ? { disableIdentifyingMaterial: true } : {}),
+        }
       } else {
         // Legacy runtime: externalsOnly is ignored (the runtime would reject the nested form).
         config.bridge.hap = false
       }
       await this.updateConfigFile(config)
     } else {
-      // Re-enable: drop the property entirely so the default (enabled) takes effect.
-      // Any present shape — the legacy boolean or any nested object — is removed,
-      // which also clears a lingering externalsOnly that would otherwise fail validation.
-      const hap = config.bridge?.hap
-      if (hap === false || (typeof hap === 'object' && hap !== null)) {
+      // Re-enable: clear enabled/externalsOnly while retaining the identifying
+      // material preference. If it is off, drop the property entirely so the
+      // default HAP behavior takes effect.
+      if (targetDisableIdentifyingMaterial) {
+        config.bridge.hap = { disableIdentifyingMaterial: true }
+        await this.updateConfigFile(config)
+      } else if (currentHap === false || (typeof currentHap === 'object' && currentHap !== null)) {
         delete config.bridge.hap
         await this.updateConfigFile(config)
       }
     }
-    return { enabled, externalsOnly: useNestedShape && !enabled && externalsOnly }
+    return {
+      enabled,
+      externalsOnly: targetExternalsOnly,
+      disableIdentifyingMaterial: targetDisableIdentifyingMaterial,
+    }
   }
 
   /**

@@ -645,6 +645,8 @@
   "settings.hap.desc": "HAP – це протокол аксесуарів HomeKit, який використовується додатком Apple Home. Він увімкнено за замовчуванням.",
   "settings.hap.disable": "Вимкнути HAP",
   "settings.hap.disable_desc": "Це зупинить публікацію основного мосту HomeKit та одразу перезапустить Homebridge. Дані сполучення HomeKit зберігаються, тож Ви можете знову ввімкнути HAP пізніше.",
+  "settings.hap.disable_identifying_material": "Disable Identifying Material (HAP)",
+  "settings.hap.disable_identifying_material_desc": "When on, Homebridge does not append a unique four-character identifier to HAP bridge and external accessory names. Ensure these names are unique on your network to avoid mDNS name collisions and pairing instability.",
   "settings.hap.enabled_desc": "Чи публікується HAP на головному мосту Homebridge.",
   "settings.hap.enabled_desc_in_place": "Чи опубліковано HAP на головному мосту Homebridge. Увімкнення або вимкнення набуває чинності після перезавантаження. Вимкнення зберігає сполучення HomeKit, тому Ви можете знову ввімкнути HAP пізніше без повторного сполучення.",
   "settings.hap.externals_only": "Тільки зовнішні (HAP)",

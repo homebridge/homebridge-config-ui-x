@@ -19,6 +19,11 @@ export interface ChildBridgeSchemaOptions {
    * that makes the Matter mDNS responder IPv6-only.
    */
   isMatterDisableIpv4Enabled?: boolean
+  /**
+   * When true (Homebridge >= 2.2.2-beta.0), `hap` accepts a
+   * `disableIdentifyingMaterial` flag.
+   */
+  isHapDisableIdentifyingMaterialEnabled?: boolean
 }
 
 /**
@@ -30,9 +35,10 @@ export interface ChildBridgeSchemaOptions {
  * @param options.isPlatformPlugin - Whether the plugin is platform-based (Matter only works with platform plugins)
  * @param options.isProtocolExternalsOnlyEnabled - Whether the running Homebridge supports the nested HAP shape and externalsOnly mode
  * @param options.isMatterDisableIpv4Enabled - Whether the running Homebridge supports the Matter disableIpv4 option
+ * @param options.isHapDisableIdentifyingMaterialEnabled - Whether the running Homebridge supports the HAP disableIdentifyingMaterial option
  * @returns Child bridge schema object
  */
-export function createChildBridgeSchema(translate: TranslateService, { isDebugModeEnabled, isMatterSupported, isPlatformPlugin = true, isProtocolExternalsOnlyEnabled = false, isMatterDisableIpv4Enabled = false }: ChildBridgeSchemaOptions) {
+export function createChildBridgeSchema(translate: TranslateService, { isDebugModeEnabled, isMatterSupported, isPlatformPlugin = true, isProtocolExternalsOnlyEnabled = false, isMatterDisableIpv4Enabled = false, isHapDisableIdentifyingMaterialEnabled = false }: ChildBridgeSchemaOptions) {
   return {
     type: 'object',
     required: ['username'],
@@ -93,7 +99,7 @@ export function createChildBridgeSchema(translate: TranslateService, { isDebugMo
             },
           }
         : {},
-      hap: createHapSchema(translate, isProtocolExternalsOnlyEnabled, 'child'),
+      hap: createHapSchema(translate, isProtocolExternalsOnlyEnabled, 'child', isHapDisableIdentifyingMaterialEnabled),
       env: {
         type: 'object',
         additionalProperties: false,

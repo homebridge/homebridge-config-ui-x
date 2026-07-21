@@ -70,10 +70,10 @@ export interface ChildBridge {
   username: string
   /**
    * HAP config. Older Homebridge sends a boolean; >= 2.0.3-beta.26 sends the
-   * nested object form. Both shapes are typed so the UI can read either —
-   * `protocolExternalsOnly` feature flag determines which is authoritative.
+   * nested object form. Both shapes are typed so the UI can read either;
+   * feature flags determine which nested properties are available.
    */
-  hap?: boolean | { enabled?: boolean, externalsOnly?: boolean }
+  hap?: boolean | { enabled?: boolean, externalsOnly?: boolean, disableIdentifyingMaterial?: boolean }
   matterConfig?: {
     port?: number
     enabled?: boolean
