@@ -2,6 +2,32 @@
   <div class="d-flex flex-row justify-content-between">
     <div class="d-flex flex-column me-3 align-items-center justify-content-between">
       <img alt="" aria-hidden="true" class="plugin-icon-card mb-3" [src]="plugin().icon" (error)="handleIconError()" />
+      <!-- supported transport icons: hap + matter -->
+      <div class="transport-icons flex-grow-1 d-flex align-items-center justify-content-center">
+        <span
+          class="transport-icon"
+          container="body"
+          triggers="hover"
+          [class.enabled]="supportsHap"
+          [openDelay]="150"
+          [ngbTooltip]="hapTooltip | translate: { protocol: 'plugins.label_hap' | translate }"
+        >
+          <i class="fas fa-hap" aria-hidden="true"></i>
+          <span class="visually-hidden">{{ 'plugins.label_hap' | translate }}</span>
+        </span>
+        <span
+          class="transport-icon"
+          container="body"
+          triggers="hover"
+          [class.enabled]="supportsMatter"
+          [openDelay]="150"
+          [ngbTooltip]="matterTooltip | translate: { protocol: 'plugins.label_matter' | translate }"
+        >
+          <i class="fas fa-matter" aria-hidden="true"></i>
+          <span class="visually-hidden">{{ 'plugins.label_matter' | translate }}</span>
+        </span>
+      </div>
+      <!-- // -->
     </div>
     <div class="d-flex flex-column justify-content-between plugin-content">
       <div class="d-flex flex-row align-items-end">

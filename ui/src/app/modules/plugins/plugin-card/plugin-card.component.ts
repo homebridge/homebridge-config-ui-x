@@ -64,6 +64,34 @@ export class PluginCardComponent implements OnInit {
   public readonly defaultIcon = 'assets/hb-icon.png'
   public readonly isAdmin = this.$auth.user.admin
 
+  // A plugin with neither supports-* keyword predates the convention and can
+  // only be a HAP plugin, so the hap icon stays enabled as the fallback.
+  public get supportsHap(): boolean {
+    return this.plugin().supportsHap === true || this.plugin().supportsMatter !== true
+  }
+
+  public get supportsMatter(): boolean {
+    return this.plugin().supportsMatter === true
+  }
+
+  // With a single transport the plugin definitely exposes over it ("exposes"),
+  // with both it depends on the bridge config ("can expose"). The tooltip keys
+  // are shared between the icons; the protocol name is interpolated in from
+  // the label keys in the template.
+  public get hapTooltip(): string {
+    if (!this.supportsHap) {
+      return 'plugins.tooltip_not'
+    }
+    return this.supportsMatter ? 'plugins.tooltip_can' : 'plugins.tooltip_yes'
+  }
+
+  public get matterTooltip(): string {
+    if (!this.supportsMatter) {
+      return 'plugins.tooltip_not'
+    }
+    return this.supportsHap ? 'plugins.tooltip_can' : 'plugins.tooltip_yes'
+  }
+
   // Signals
   public readonly hasChildBridges = signal(false)
   public readonly allChildBridgesStopped = signal(false)
