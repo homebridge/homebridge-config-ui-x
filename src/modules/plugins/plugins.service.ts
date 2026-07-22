@@ -2097,10 +2097,6 @@ export class PluginsService {
     packageName: string,
     preferBetas: boolean,
   ): Promise<void> {
-    if (plugin.updateAvailable) {
-      return // Already has an update available
-    }
-
     const pluginVersion = parse(plugin.installedVersion)
     const installedTag = pluginVersion.prerelease[0]?.toString()
 
@@ -2113,16 +2109,29 @@ export class PluginsService {
       && gt(plugin.installedVersion, plugin.latestVersion)
     ) || preferBetas
 
-    if (shouldCheckBetas) {
-      const versions = await this.getAvailablePluginVersions(packageName)
-      const targetTag = preferBetas && !installedTag ? 'beta' : installedTag
+    if (!shouldCheckBetas) {
+      return
+    }
 
-      if (versions.tags[targetTag] && gt(versions.tags[targetTag], plugin.installedVersion)) {
-        plugin.latestVersion = versions.tags[targetTag]
-        plugin.updateAvailable = true
-        plugin.updateEngines = versions.versions?.[plugin.latestVersion]?.engines || null
-        plugin.updateTag = targetTag
-      }
+    const versions = await this.getAvailablePluginVersions(packageName)
+    const targetTag = preferBetas && !installedTag ? 'beta' : installedTag
+    const candidate = versions.tags[targetTag]
+
+    // Offer the prerelease only when it is the newest thing available. A
+    // prerelease sorts below its own release (1.2.4-beta.5 < 1.2.4), so once the
+    // stable overtakes the beta line we keep the stable rather than sending a
+    // beta user backwards. Without the second check the caller's stable result
+    // would also be left in place while the beta preference was ignored, which
+    // is how a beta user ended up being offered, and shown release notes for,
+    // the stable version.
+    const beatsInstalled = candidate && gt(candidate, plugin.installedVersion)
+    const beatsStable = !plugin.updateAvailable || gt(candidate, plugin.latestVersion)
+
+    if (beatsInstalled && beatsStable) {
+      plugin.latestVersion = candidate
+      plugin.updateAvailable = true
+      plugin.updateEngines = versions.versions?.[plugin.latestVersion]?.engines || null
+      plugin.updateTag = targetTag
     }
   }
 
