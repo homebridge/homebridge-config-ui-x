@@ -77,6 +77,7 @@ export class ManualConfigComponent implements OnInit, OnDestroy {
   private isMatterSupported = this.$settings.isFeatureEnabled('matterSupport')
   private isProtocolExternalsOnlyEnabled = this.$settings.isFeatureEnabled('protocolExternalsOnly')
   private isMatterDisableIpv4Enabled = this.$settings.isFeatureEnabled('matterDisableIpv4')
+  private isHapDisableIdentifyingMaterialEnabled = this.$settings.isFeatureEnabled('hapDisableIdentifyingMaterial')
 
   public readonly pluginAlias = signal<string>('')
   public readonly pluginType = signal<'platform' | 'accessory' | null>(null)
@@ -301,6 +302,7 @@ export class ManualConfigComponent implements OnInit, OnDestroy {
       isPlatformPlugin: this.pluginType() === 'platform',
       isProtocolExternalsOnlyEnabled: this.isProtocolExternalsOnlyEnabled,
       isMatterDisableIpv4Enabled: this.isMatterDisableIpv4Enabled,
+      isHapDisableIdentifyingMaterialEnabled: this.isHapDisableIdentifyingMaterialEnabled,
     })
 
     // Ensure required properties are present for the plugin type
@@ -381,6 +383,7 @@ export class ManualConfigComponent implements OnInit, OnDestroy {
       isPlatformPlugin: this.pluginType() === 'platform',
       isProtocolExternalsOnlyEnabled: this.isProtocolExternalsOnlyEnabled,
       isMatterDisableIpv4Enabled: this.isMatterDisableIpv4Enabled,
+      isHapDisableIdentifyingMaterialEnabled: this.isHapDisableIdentifyingMaterialEnabled,
     })
 
     if (this.pluginType() === 'platform') {

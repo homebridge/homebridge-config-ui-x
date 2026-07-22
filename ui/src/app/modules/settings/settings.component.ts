@@ -133,6 +133,7 @@ export class SettingsComponent implements OnInit {
     ],
     hap: [
       'setting-hap-enabled',
+      'setting-hap-disable-identifying-material',
     ],
     matter: [
       'setting-matter-enabled',
@@ -188,6 +189,9 @@ export class SettingsComponent implements OnInit {
   // When true (Homebridge >= 2.2.0), Matter exposes a disableIpv4 toggle that
   // makes the Matter mDNS responder IPv6-only.
   public isMatterDisableIpv4Enabled = this.$settings.isFeatureEnabled('matterDisableIpv4')
+  // When true (Homebridge >= 2.2.2-beta.0), HAP exposes a toggle that disables
+  // username-derived identifying material in bridge and mDNS service names.
+  public isHapDisableIdentifyingMaterialEnabled = this.$settings.isFeatureEnabled('hapDisableIdentifyingMaterial')
   public isPwa = Boolean(isStandalonePWA())
 
   public readonly hbNameIsInvalid = signal(false)
@@ -350,6 +354,8 @@ export class SettingsComponent implements OnInit {
   // hidden in the UI when hapEnabledFormControl.value === true.
   public readonly hapExternalsOnlyIsSaving = signal(false)
   public hapExternalsOnlyFormControl = new FormControl(false)
+  public readonly hapDisableIdentifyingMaterialIsSaving = signal(false)
+  public hapDisableIdentifyingMaterialFormControl = new FormControl(false)
 
   public readonly matterEnabledIsSaving = signal(false)
   public matterEnabledFormControl = new FormControl(false)
@@ -477,6 +483,10 @@ export class SettingsComponent implements OnInit {
       unavailable.push('setting-matter-disable-ipv4')
     }
 
+    if (!this.isHapDisableIdentifyingMaterialEnabled) {
+      unavailable.push('setting-hap-disable-identifying-material')
+    }
+
     if (!(this.hbLogSizeFormControl.value! > 0)) {
       unavailable.push('setting-terminal-log-truncate')
     }
@@ -525,6 +535,7 @@ export class SettingsComponent implements OnInit {
       display: this.$translate.instant('settings.general.title_display'),
       startup: this.$translate.instant('settings.title_startup_options'),
       network: this.$translate.instant('settings.network.title_network'),
+      hap: `${this.$translate.instant('settings.hap.title')} ${this.$translate.instant('settings.hap.desc')}`,
       matter: `${this.$translate.instant('settings.matter.title')} ${this.$translate.instant('settings.matter.desc')}`,
       terminal: this.$translate.instant('settings.network.title_terminal'),
       security: this.$translate.instant('settings.network.title_security'),
@@ -578,6 +589,10 @@ export class SettingsComponent implements OnInit {
       'setting-network-proxy': this.$translate.instant('settings.network.proxy'),
       'setting-ui-port-network': this.$translate.instant('settings.network.port_ui'),
       'setting-port-overview': this.$translate.instant('settings.ports.title'),
+
+      // HAP section
+      'setting-hap-enabled': `${this.$translate.instant('common.labels.enabled')} ${this.$translate.instant('settings.hap.enabled_desc')}`,
+      'setting-hap-disable-identifying-material': `${this.$translate.instant('settings.hap.disable_identifying_material')} ${this.$translate.instant('settings.hap.disable_identifying_material_desc')}`,
 
       // Matter section
       'setting-matter-enabled': `${this.$translate.instant('common.labels.enabled')} ${this.$translate.instant('settings.matter.enabled_desc')}`,
@@ -2572,14 +2587,16 @@ export class SettingsComponent implements OnInit {
 
   private async initHapSettings(): Promise<void> {
     try {
-      const { enabled, externalsOnly } = await this.$api.get<{ enabled: boolean, externalsOnly?: boolean }>('/config-editor/hap')
+      const { enabled, externalsOnly, disableIdentifyingMaterial } = await this.$api.get<{ enabled: boolean, externalsOnly?: boolean, disableIdentifyingMaterial?: boolean }>('/config-editor/hap')
       this.hapEnabledFormControl.patchValue(enabled, { emitEvent: false })
       this.hapExternalsOnlyFormControl.patchValue(externalsOnly === true, { emitEvent: false })
+      this.hapDisableIdentifyingMaterialFormControl.patchValue(disableIdentifyingMaterial === true, { emitEvent: false })
     } catch (error: any) {
       console.error(error)
       // Fall back to enabled (default) — subscribe regardless so user can change it
       this.hapEnabledFormControl.patchValue(true, { emitEvent: false })
       this.hapExternalsOnlyFormControl.patchValue(false, { emitEvent: false })
+      this.hapDisableIdentifyingMaterialFormControl.patchValue(false, { emitEvent: false })
     }
     this.hapEnabledFormControl.valueChanges
       .pipe(takeUntilDestroyed(this.destroyRef))
@@ -2588,6 +2605,11 @@ export class SettingsComponent implements OnInit {
       this.hapExternalsOnlyFormControl.valueChanges
         .pipe(takeUntilDestroyed(this.destroyRef))
         .subscribe(value => this.hapExternalsOnlySave(value === true))
+    }
+    if (this.isHapDisableIdentifyingMaterialEnabled) {
+      this.hapDisableIdentifyingMaterialFormControl.valueChanges
+        .pipe(takeUntilDestroyed(this.destroyRef))
+        .subscribe(value => this.hapDisableIdentifyingMaterialSave(value === true))
     }
   }
 
@@ -2603,7 +2625,12 @@ export class SettingsComponent implements OnInit {
     }
     try {
       this.hapExternalsOnlyIsSaving.set(true)
-      await this.$api.put('/config-editor/hap', { enabled: false, externalsOnly: value, restart: false })
+      await this.$api.put('/config-editor/hap', {
+        enabled: false,
+        externalsOnly: value,
+        disableIdentifyingMaterial: this.hapDisableIdentifyingMaterialFormControl.value === true,
+        restart: false,
+      })
       await this.requestFullServiceRestart()
     } catch (error: any) {
       console.error(error)
@@ -2611,6 +2638,29 @@ export class SettingsComponent implements OnInit {
       this.hapExternalsOnlyFormControl.patchValue(!value, { emitEvent: false })
     } finally {
       this.hapExternalsOnlyIsSaving.set(false)
+    }
+  }
+
+  /**
+   * Save whether HAP-NodeJS should omit username-derived identifying material
+   * from bridge display names and mDNS service instance names.
+   */
+  private async hapDisableIdentifyingMaterialSave(value: boolean): Promise<void> {
+    try {
+      this.hapDisableIdentifyingMaterialIsSaving.set(true)
+      await this.$api.put('/config-editor/hap', {
+        enabled: this.hapEnabledFormControl.value !== false,
+        externalsOnly: this.hapExternalsOnlyFormControl.value === true,
+        disableIdentifyingMaterial: value,
+        restart: false,
+      })
+      await this.requestFullServiceRestart()
+    } catch (error: any) {
+      console.error(error)
+      this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
+      this.hapDisableIdentifyingMaterialFormControl.patchValue(!value, { emitEvent: false })
+    } finally {
+      this.hapDisableIdentifyingMaterialIsSaving.set(false)
     }
   }
 
@@ -2632,16 +2682,19 @@ export class SettingsComponent implements OnInit {
       // restart, and let the user restart via the toast when ready.
       try {
         this.hapEnabledIsSaving.set(true)
-        const body: { enabled: boolean, restart: boolean, externalsOnly?: boolean } = { enabled: value, restart: false }
+        const body: { enabled: boolean, restart: boolean, externalsOnly?: boolean, disableIdentifyingMaterial?: boolean } = { enabled: value, restart: false }
         // When disabling HAP, propagate the current externalsOnly setting (if the
-        // feature is supported). When re-enabling, clear it from the form too —
-        // the backend already drops the property entirely.
+        // feature is supported). When re-enabling, clear it from the form too;
+        // the backend removes externalsOnly while retaining independent options.
         if (this.isProtocolExternalsOnlyEnabled) {
           if (!value) {
             body.externalsOnly = this.hapExternalsOnlyFormControl.value === true
           } else {
             this.hapExternalsOnlyFormControl.patchValue(false, { emitEvent: false })
           }
+        }
+        if (this.isHapDisableIdentifyingMaterialEnabled) {
+          body.disableIdentifyingMaterial = this.hapDisableIdentifyingMaterialFormControl.value === true
         }
         await this.$api.put('/config-editor/hap', body)
         await this.requestFullServiceRestart()
@@ -2658,7 +2711,12 @@ export class SettingsComponent implements OnInit {
     try {
       this.hapEnabledIsSaving.set(true)
       if (value) {
-        await this.$api.put('/config-editor/hap', { enabled: true })
+        await this.$api.put('/config-editor/hap', {
+          enabled: true,
+          disableIdentifyingMaterial: this.isHapDisableIdentifyingMaterialEnabled
+            ? this.hapDisableIdentifyingMaterialFormControl.value === true
+            : undefined,
+        })
         setTimeout(() => {
           this.hapEnabledIsSaving.set(false)
           this.$settings.showRestartToast()
@@ -2694,7 +2752,12 @@ export class SettingsComponent implements OnInit {
           void this.$router.navigate(['/restart'], {
             queryParams: { alreadyRestarting: 'true' },
           })
-          await this.$api.put('/config-editor/hap', { enabled: false })
+          await this.$api.put('/config-editor/hap', {
+            enabled: false,
+            disableIdentifyingMaterial: this.isHapDisableIdentifyingMaterialEnabled
+              ? this.hapDisableIdentifyingMaterialFormControl.value === true
+              : undefined,
+          })
         } catch (error: any) {
           if (error === 'Dismiss') {
             this.hapEnabledFormControl.patchValue(true, { emitEvent: false })

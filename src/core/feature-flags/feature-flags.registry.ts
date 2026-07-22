@@ -69,4 +69,9 @@ export const FEATURE_FLAGS: FeatureFlagDefinition[] = [
     description: 'Exposes `matter.disableIpv4` (main bridge and child bridges). When true, the Matter mDNS responder runs IPv6-only — no IPv4 sockets on port 5353 — so it cannot compete with avahi-daemon for IPv4 mDNS traffic on the same host (symptom: `<hostname>.local` stops resolving over IPv4). Requires a homebridge runtime that reads the option; older runtimes ignore the key.',
     range: '>=2.2.0',
   },
+  {
+    key: 'hapDisableIdentifyingMaterial',
+    description: 'Exposes `hap.disableIdentifyingMaterial` (main bridge and child bridges). When true, HAP-NodeJS does not append username-derived identifying material to bridge display names and mDNS service instance names. Requires a homebridge runtime that reads the option; older runtimes reject the key.',
+    range: '>=2.2.2-beta.0',
+  },
 ]

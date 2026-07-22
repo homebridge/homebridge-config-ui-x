@@ -444,6 +444,47 @@
               </li>
             }
 
+            <!--
+              HAP disableIdentifyingMaterial toggle — visible on Homebridge
+              >= 2.2.2-beta.0 for both platform and accessory child bridges.
+              It remains available while HAP is disabled so the preference is
+              preserved independently of protocol enablement.
+            -->
+            @if (isHapDisableIdentifyingMaterialEnabled) {
+              <li class="list-group-item d-flex justify-content-between align-items-center flex-row pb-2">
+                <span class="text-start d-flex align-items-center flex-grow-1 me-3">
+                  <i
+                    aria-hidden="true"
+                    class="fas fa-xl fa-hap me-2 my-2"
+                    [class.text-warning]="hapDisableIdentifyingMaterialBlocks()[+selectedBlock()]"
+                    [class.grey-text]="!hapDisableIdentifyingMaterialBlocks()[+selectedBlock()]"
+                  ></i>
+                  <span>
+                    {{ 'settings.hap.disable_identifying_material' | translate }}
+                    <span class="badge badge-primary ms-1">{{ 'common.labels.beta' | translate }}</span>
+                    <span class="d-block small grey-text">
+                      {{ 'settings.hap.disable_identifying_material_desc' | translate }}
+                    </span>
+                  </span>
+                </span>
+                <div class="text-end grey-text d-flex align-items-center">
+                  <input
+                    type="checkbox"
+                    class="rendux-input"
+                    [id]="`toggleHapDisableIdentifyingMaterialInput_${selectedBlock()}`"
+                    [checked]="hapDisableIdentifyingMaterialBlocks()[+selectedBlock()]"
+                    [attr.aria-label]="'settings.hap.disable_identifying_material' | translate"
+                    (change)="toggleHapDisableIdentifyingMaterial($event, +selectedBlock())"
+                  />
+                  <label
+                    class="rendux-label"
+                    aria-hidden="true"
+                    [for]="`toggleHapDisableIdentifyingMaterialInput_${selectedBlock()}`"
+                  ></label>
+                </div>
+              </li>
+            }
+
             @if (hapEnabledBlocks()[+selectedBlock()]) {
               <!-- HAP QR Code -->
               @if (

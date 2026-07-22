@@ -1187,6 +1187,48 @@
               </div>
             </li>
             <!--
+              HAP disableIdentifyingMaterial toggle — only shown when the
+              running Homebridge supports the option (>= 2.2.2-beta.0).
+              The option is independent of HAP enablement so it remains
+              configurable while a bridge is temporarily disabled.
+            -->
+            @if (isHapDisableIdentifyingMaterialEnabled) {
+              <li
+                class="setting-row list-group-item"
+                [class.setting-hidden]="isItemHidden('setting-hap-disable-identifying-material')"
+                [attr.inert]="isItemHidden('setting-hap-disable-identifying-material') || null"
+              >
+                <div class="setting-row-inner d-flex justify-content-between align-items-center">
+                  <span>
+                    {{ 'settings.hap.disable_identifying_material' | translate }}
+                    <span class="badge badge-primary ms-1">{{ 'common.labels.beta' | translate }}</span
+                    ><br />
+                    <small class="grey-text pe-2">{{
+                      'settings.hap.disable_identifying_material_desc' | translate
+                    }}</small>
+                  </span>
+                  <div class="d-flex align-items-center">
+                    <div class="order-1 order-md-2">
+                      <input
+                        type="checkbox"
+                        class="rendux-input"
+                        id="hapDisableIdentifyingMaterial"
+                        [formControl]="hapDisableIdentifyingMaterialFormControl"
+                        [attr.aria-label]="'settings.hap.disable_identifying_material' | translate"
+                      />
+                      <label for="hapDisableIdentifyingMaterial" class="rendux-label ms-3 min-w-50"></label>
+                    </div>
+                    @if (hapDisableIdentifyingMaterialIsSaving()) {
+                      <i
+                        aria-hidden="true"
+                        class="fas fa-floppy-disk primary-text fa-xl me-0 me-md-2 ms-2 ms-md-0 order-2 order-md-1 save-indicator"
+                      ></i>
+                    }
+                  </div>
+                </div>
+              </li>
+            }
+            <!--
               HAP externalsOnly toggle — only shown when:
               - The running Homebridge supports the nested config (>= 2.0.3-beta.26).
               - HAP is currently disabled (validation rule: externalsOnly requires enabled: false).

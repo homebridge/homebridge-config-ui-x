@@ -6,7 +6,11 @@ export interface PluginChildBridge {
   manufacturer?: string
   model?: string
   firmwareRevision?: string
-  hap?: boolean
+  hap?: boolean | {
+    enabled?: boolean
+    externalsOnly?: boolean
+    disableIdentifyingMaterial?: boolean
+  }
   env?: {
     DEBUG?: string
     NODE_OPTIONS?: string
@@ -42,7 +46,11 @@ export interface HomebridgeConfig {
     manufacturer?: string
     model?: string
     firmwareRevision?: string
-    hap?: boolean
+    hap?: boolean | {
+      enabled?: boolean
+      externalsOnly?: boolean
+      disableIdentifyingMaterial?: boolean
+    }
     matter?: {
       port?: number
     }
