@@ -5,22 +5,27 @@ import { TranslateService } from '@ngx-translate/core'
  * bridge schema (config-editor) and the child bridge schema so the two cannot
  * drift apart.
  *
- * When externalsOnly is supported (Homebridge >= 2.0.3-beta.26) the field
- * accepts both the nested object form `{ enabled?, externalsOnly? }` and the
- * legacy boolean — so configs written by older UI versions (or against older
- * runtimes) stay valid. Otherwise it is a plain boolean.
+ * When nested HAP options are supported, the field accepts both the nested
+ * object form and the legacy boolean — so configs written by older UI versions
+ * (or against older runtimes) stay valid. Otherwise it is a plain boolean.
  *
  * @param translate - The translation service for localized titles
  * @param isProtocolExternalsOnlyEnabled - Whether the running Homebridge supports the nested HAP shape and externalsOnly mode
  * @param scope - `'main'` for the main bridge or `'child'` for a child bridge; selects the description wording
+ * @param isHapDisableIdentifyingMaterialEnabled - Whether the running Homebridge supports the HAP disableIdentifyingMaterial option
  * @returns The JSON schema fragment for the `hap` property
  */
-export function createHapSchema(translate: TranslateService, isProtocolExternalsOnlyEnabled: boolean, scope: 'child' | 'main') {
+export function createHapSchema(
+  translate: TranslateService,
+  isProtocolExternalsOnlyEnabled: boolean,
+  scope: 'child' | 'main',
+  isHapDisableIdentifyingMaterialEnabled = false,
+) {
   const disabledDescription = scope === 'main'
     ? 'When false, HAP is not advertised for the main bridge.'
     : 'When false, HAP is not advertised for this child bridge.'
 
-  if (!isProtocolExternalsOnlyEnabled) {
+  if (!isProtocolExternalsOnlyEnabled && !isHapDisableIdentifyingMaterialEnabled) {
     return {
       type: 'boolean',
       title: translate.instant('child_bridge.config.enable_hap'),
@@ -42,11 +47,24 @@ export function createHapSchema(translate: TranslateService, isProtocolExternals
             title: translate.instant('child_bridge.config.enable_hap'),
             description: disabledDescription,
           },
-          externalsOnly: {
-            type: 'boolean',
-            title: translate.instant('child_bridge.config.hap_externals_only'),
-            description: 'When true, the bridge accessory itself is not published but plugins may still publish external HAP accessories. Requires hap.enabled: false.',
-          },
+          ...(isProtocolExternalsOnlyEnabled
+            ? {
+                externalsOnly: {
+                  type: 'boolean',
+                  title: translate.instant('child_bridge.config.hap_externals_only'),
+                  description: 'When true, the bridge accessory itself is not published but plugins may still publish external HAP accessories. Requires hap.enabled: false.',
+                },
+              }
+            : {}),
+          ...(isHapDisableIdentifyingMaterialEnabled
+            ? {
+                disableIdentifyingMaterial: {
+                  type: 'boolean',
+                  title: translate.instant('settings.hap.disable_identifying_material'),
+                  description: translate.instant('settings.hap.disable_identifying_material_desc'),
+                },
+              }
+            : {}),
         },
       },
     ],

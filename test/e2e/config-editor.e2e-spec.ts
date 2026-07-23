@@ -45,6 +45,8 @@ describe('ConfigEditorController (e2e)', () => {
   let schedulerService: SchedulerService
   let configEditorService: ConfigEditorService
   let backupService: BackupService
+  let homebridgeConfigService: ConfigService
+  let originalHomebridgeVersion: string
 
   beforeAll(async () => {
     process.env.UIX_BASE_PATH = resolve(__dirname, '../../')
@@ -86,12 +88,16 @@ describe('ConfigEditorController (e2e)', () => {
     schedulerService = app.get(SchedulerService)
     configEditorService = app.get(ConfigEditorService)
     backupService = app.get(BackupService)
+    homebridgeConfigService = app.get(ConfigService)
+    originalHomebridgeVersion = homebridgeConfigService.homebridgeVersion
 
     // Wait for initial paths to be setup
     await new Promise(res => setTimeout(res, 1000))
   })
 
   beforeEach(async () => {
+    homebridgeConfigService.homebridgeVersion = originalHomebridgeVersion
+
     // Get auth token before each test
     authorization = `bearer ${(await app.inject({
       method: 'POST',
@@ -1997,7 +2003,7 @@ describe('ConfigEditorController (e2e)', () => {
     })
 
     expect(res.statusCode).toBe(200)
-    expect(res.json()).toEqual({ enabled: true, externalsOnly: false })
+    expect(res.json()).toEqual({ enabled: true, externalsOnly: false, disableIdentifyingMaterial: false })
   })
 
   it('GET /config-editor/hap (should return enabled=false when bridge.hap=false, legacy boolean form)', async () => {
@@ -2016,7 +2022,7 @@ describe('ConfigEditorController (e2e)', () => {
     })
 
     expect(res.statusCode).toBe(200)
-    expect(res.json()).toEqual({ enabled: false, externalsOnly: false })
+    expect(res.json()).toEqual({ enabled: false, externalsOnly: false, disableIdentifyingMaterial: false })
   })
 
   it('GET /config-editor/hap (should return enabled=true when bridge.hap=true explicitly)', async () => {
@@ -2033,7 +2039,7 @@ describe('ConfigEditorController (e2e)', () => {
     })
 
     expect(res.statusCode).toBe(200)
-    expect(res.json()).toEqual({ enabled: true, externalsOnly: false })
+    expect(res.json()).toEqual({ enabled: true, externalsOnly: false, disableIdentifyingMaterial: false })
   })
 
   it('GET /config-editor/hap (should return enabled=false when bridge.hap is the nested object form)', async () => {
@@ -2053,7 +2059,7 @@ describe('ConfigEditorController (e2e)', () => {
     })
 
     expect(res.statusCode).toBe(200)
-    expect(res.json()).toEqual({ enabled: false, externalsOnly: false })
+    expect(res.json()).toEqual({ enabled: false, externalsOnly: false, disableIdentifyingMaterial: false })
   })
 
   it('GET /config-editor/hap (should surface externalsOnly:true when set in the nested form)', async () => {
@@ -2070,7 +2076,24 @@ describe('ConfigEditorController (e2e)', () => {
     })
 
     expect(res.statusCode).toBe(200)
-    expect(res.json()).toEqual({ enabled: false, externalsOnly: true })
+    expect(res.json()).toEqual({ enabled: false, externalsOnly: true, disableIdentifyingMaterial: false })
+  })
+
+  it('GET /config-editor/hap (should surface disableIdentifyingMaterial:true when set)', async () => {
+    const config: HomebridgeConfig = await readJson(configFilePath)
+    config.bridge.hap = { disableIdentifyingMaterial: true }
+    await writeJson(configFilePath, config)
+
+    const res = await app.inject({
+      method: 'GET',
+      path: '/config-editor/hap',
+      headers: {
+        authorization,
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+    expect(res.json()).toEqual({ enabled: true, externalsOnly: false, disableIdentifyingMaterial: true })
   })
 
   it('GET /config-editor/hap (should treat an empty hap object as enabled)', async () => {
@@ -2087,7 +2110,7 @@ describe('ConfigEditorController (e2e)', () => {
     })
 
     expect(res.statusCode).toBe(200)
-    expect(res.json()).toEqual({ enabled: true, externalsOnly: false })
+    expect(res.json()).toEqual({ enabled: true, externalsOnly: false, disableIdentifyingMaterial: false })
   })
 
   it('PUT /config-editor/hap (should allow disabling HAP even when Matter is not configured)', async () => {
@@ -2104,7 +2127,7 @@ describe('ConfigEditorController (e2e)', () => {
     })
 
     expect(res.statusCode).toBe(200)
-    expect(res.json()).toEqual({ enabled: false, externalsOnly: false })
+    expect(res.json()).toEqual({ enabled: false, externalsOnly: false, disableIdentifyingMaterial: false })
 
     // bridge.hap should be persisted as false (legacy form on the older mock
     // homebridge version that doesn't have the protocolExternalsOnly flag).
@@ -2134,7 +2157,7 @@ describe('ConfigEditorController (e2e)', () => {
     })
 
     expect(res.statusCode).toBe(200)
-    expect(res.json()).toEqual({ enabled: false, externalsOnly: false })
+    expect(res.json()).toEqual({ enabled: false, externalsOnly: false, disableIdentifyingMaterial: false })
 
     const config: HomebridgeConfig = await readJson(configFilePath)
     expect(config.bridge.hap).toBe(false)
@@ -2158,7 +2181,7 @@ describe('ConfigEditorController (e2e)', () => {
     })
 
     expect(res.statusCode).toBe(200)
-    expect(res.json()).toEqual({ enabled: true, externalsOnly: false })
+    expect(res.json()).toEqual({ enabled: true, externalsOnly: false, disableIdentifyingMaterial: false })
 
     // hap property should be removed (HAP enabled is the default — omit when on)
     const updated: HomebridgeConfig = await readJson(configFilePath)
@@ -2181,7 +2204,7 @@ describe('ConfigEditorController (e2e)', () => {
     })
 
     expect(res.statusCode).toBe(200)
-    expect(res.json()).toEqual({ enabled: true, externalsOnly: false })
+    expect(res.json()).toEqual({ enabled: true, externalsOnly: false, disableIdentifyingMaterial: false })
 
     // The whole property is dropped — externalsOnly: true cannot coexist with enabled: true.
     const updated: HomebridgeConfig = await readJson(configFilePath)
@@ -2203,10 +2226,89 @@ describe('ConfigEditorController (e2e)', () => {
     })
 
     expect(res.statusCode).toBe(200)
-    expect(res.json()).toEqual({ enabled: true, externalsOnly: false })
+    expect(res.json()).toEqual({ enabled: true, externalsOnly: false, disableIdentifyingMaterial: false })
 
     const after: HomebridgeConfig = await readJson(configFilePath)
     expect(after.bridge.hap).toBeUndefined()
+  })
+
+  it('should enable the hapDisableIdentifyingMaterial feature flag from Homebridge 2.2.2-beta.0', () => {
+    homebridgeConfigService.homebridgeVersion = '2.2.1'
+    expect(homebridgeConfigService.getFeatureFlags().hapDisableIdentifyingMaterial).toBe(false)
+
+    homebridgeConfigService.homebridgeVersion = '2.2.2-beta.0'
+    expect(homebridgeConfigService.getFeatureFlags().hapDisableIdentifyingMaterial).toBe(true)
+
+    homebridgeConfigService.homebridgeVersion = '2.3.0'
+    expect(homebridgeConfigService.getFeatureFlags().hapDisableIdentifyingMaterial).toBe(true)
+  })
+
+  it('PUT /config-editor/hap (should persist and preserve disableIdentifyingMaterial)', async () => {
+    homebridgeConfigService.homebridgeVersion = '2.2.2-beta.0'
+
+    let res = await app.inject({
+      method: 'PUT',
+      path: '/config-editor/hap',
+      headers: { authorization },
+      payload: { enabled: true, disableIdentifyingMaterial: true, restart: false },
+    })
+
+    expect(res.statusCode).toBe(200)
+    expect(res.json()).toEqual({ enabled: true, externalsOnly: false, disableIdentifyingMaterial: true })
+    let config: HomebridgeConfig = await readJson(configFilePath)
+    expect(config.bridge.hap).toEqual({ disableIdentifyingMaterial: true })
+
+    // Older UI clients omit the new field when toggling HAP. Preserve the
+    // configured preference across both transitions.
+    res = await app.inject({
+      method: 'PUT',
+      path: '/config-editor/hap',
+      headers: { authorization },
+      payload: { enabled: false, restart: false },
+    })
+
+    expect(res.statusCode).toBe(200)
+    expect(res.json()).toEqual({ enabled: false, externalsOnly: false, disableIdentifyingMaterial: true })
+    config = await readJson(configFilePath)
+    expect(config.bridge.hap).toEqual({ enabled: false, disableIdentifyingMaterial: true })
+
+    res = await app.inject({
+      method: 'PUT',
+      path: '/config-editor/hap',
+      headers: { authorization },
+      payload: { enabled: true, restart: false },
+    })
+
+    expect(res.statusCode).toBe(200)
+    expect(res.json()).toEqual({ enabled: true, externalsOnly: false, disableIdentifyingMaterial: true })
+    config = await readJson(configFilePath)
+    expect(config.bridge.hap).toEqual({ disableIdentifyingMaterial: true })
+
+    res = await app.inject({
+      method: 'PUT',
+      path: '/config-editor/hap',
+      headers: { authorization },
+      payload: { enabled: true, disableIdentifyingMaterial: false, restart: false },
+    })
+
+    expect(res.statusCode).toBe(200)
+    expect(res.json()).toEqual({ enabled: true, externalsOnly: false, disableIdentifyingMaterial: false })
+    config = await readJson(configFilePath)
+    expect(config.bridge.hap).toBeUndefined()
+  })
+
+  it('PUT /config-editor/hap (should reject non-boolean disableIdentifyingMaterial)', async () => {
+    homebridgeConfigService.homebridgeVersion = '2.2.2-beta.0'
+
+    const res = await app.inject({
+      method: 'PUT',
+      path: '/config-editor/hap',
+      headers: { authorization },
+      payload: { enabled: true, disableIdentifyingMaterial: 'yes', restart: false },
+    })
+
+    expect(res.statusCode).toBe(400)
+    expect(res.body).toContain('disableIdentifyingMaterial must be a boolean')
   })
 
   it('GET/PUT /config-editor/ui/bridges/:username/scheduled-restart-cron (should handle scheduled restart cron)', async () => {

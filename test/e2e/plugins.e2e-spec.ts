@@ -15,6 +15,7 @@ import { FastifyAdapter } from '@nestjs/platform-fastify'
 import { Test } from '@nestjs/testing'
 import { copy, remove } from 'fs-extra'
 import { of } from 'rxjs'
+import { gt as semverGt } from 'semver'
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { AuthModule } from '../../src/core/auth/auth.module.js'
@@ -1346,6 +1347,127 @@ describe('PluginController (e2e)', () => {
       expect(typeof call[0]).toBe('string')
       expect(Array.isArray(call[1])).toBe(true)
       expect((call[2] as any)?.shell).not.toBe(true)
+    })
+  })
+
+  describe('supportsMatter', () => {
+    const call = (keywords?: string[]) => (pluginsService as any).supportsMatter(keywords) as boolean
+
+    it('is true when the plugin declares the supports-matter keyword', () => {
+      expect(call(['homebridge-plugin', 'supports-matter'])).toBe(true)
+    })
+
+    it('is false when the keyword is absent', () => {
+      expect(call(['homebridge-plugin', 'matter'])).toBe(false)
+    })
+
+    it('is false when there are no keywords at all', () => {
+      expect(call([])).toBe(false)
+      expect(call(undefined)).toBe(false)
+    })
+
+    it('ignores keyword casing', () => {
+      expect(call(['supports-matter'])).toBe(true)
+    })
+
+    it('does not match a keyword that merely contains the term', () => {
+      expect(call(['not-supports-matter-really'])).toBe(false)
+    })
+  })
+
+  describe('checkForBetaUpdates', () => {
+    // Model the caller: it sets latestVersion/updateAvailable from the stable
+    // release before delegating to the beta check.
+    const check = async (opts: {
+      installed: string
+      stable: string
+      betaTag?: string
+      preferBetas: boolean
+    }) => {
+      const plugin: any = {
+        name: 'homebridge-mock-plugin',
+        installedVersion: opts.installed,
+        latestVersion: opts.stable,
+        updateAvailable: semverGt(opts.stable, opts.installed),
+        updateTag: null,
+      }
+
+      const versionsSpy = vi.spyOn(pluginsService, 'getAvailablePluginVersions').mockResolvedValue({
+        tags: opts.betaTag ? { latest: opts.stable, beta: opts.betaTag } : { latest: opts.stable },
+        versions: {},
+      } as any)
+
+      try {
+        await (pluginsService as any).checkForBetaUpdates(plugin, plugin.name, opts.preferBetas)
+      } finally {
+        versionsSpy.mockRestore()
+      }
+
+      return plugin
+    }
+
+    it('offers a newer beta even when a stable update is also available', async () => {
+      // Regression: the beta preference used to be skipped entirely whenever a
+      // stable update existed, so beta users were offered the stable version.
+      const plugin = await check({
+        installed: '11.29.0',
+        stable: '11.29.3',
+        betaTag: '11.30.0-beta.2',
+        preferBetas: true,
+      })
+
+      expect(plugin.latestVersion).toBe('11.30.0-beta.2')
+      expect(plugin.updateAvailable).toBe(true)
+      expect(plugin.updateTag).toBe('beta')
+    })
+
+    it('keeps the stable when it has overtaken the beta line', async () => {
+      // A prerelease sorts below its own release, so a beta user should not be
+      // sent backwards from 11.30.0 to 11.30.0-beta.2.
+      const plugin = await check({
+        installed: '11.30.0-beta.1',
+        stable: '11.30.0',
+        betaTag: '11.30.0-beta.2',
+        preferBetas: true,
+      })
+
+      expect(plugin.latestVersion).toBe('11.30.0')
+      expect(plugin.updateTag).toBeNull()
+    })
+
+    it('offers a beta to a user on the current stable', async () => {
+      const plugin = await check({
+        installed: '11.29.3',
+        stable: '11.29.3',
+        betaTag: '11.30.0-beta.2',
+        preferBetas: true,
+      })
+
+      expect(plugin.latestVersion).toBe('11.30.0-beta.2')
+      expect(plugin.updateTag).toBe('beta')
+    })
+
+    it('does not offer betas when the preference is off', async () => {
+      const plugin = await check({
+        installed: '11.29.0',
+        stable: '11.29.3',
+        betaTag: '11.30.0-beta.2',
+        preferBetas: false,
+      })
+
+      expect(plugin.latestVersion).toBe('11.29.3')
+      expect(plugin.updateTag).toBeNull()
+    })
+
+    it('reports no update when already on the newest beta', async () => {
+      const plugin = await check({
+        installed: '11.30.0-beta.2',
+        stable: '11.29.3',
+        betaTag: '11.30.0-beta.2',
+        preferBetas: true,
+      })
+
+      expect(plugin.updateAvailable).toBe(false)
     })
   })
 

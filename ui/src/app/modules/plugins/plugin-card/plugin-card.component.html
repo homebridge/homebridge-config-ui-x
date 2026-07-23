@@ -1,7 +1,23 @@
 <div class="card card-body mb-3">
   <div class="d-flex flex-row justify-content-between">
     <div class="d-flex flex-column me-3 align-items-center justify-content-between">
-      <img alt="" aria-hidden="true" class="plugin-icon-card mb-3" [src]="plugin().icon" (error)="handleIconError()" />
+      <div class="plugin-icon-wrapper mb-3">
+        <img alt="" aria-hidden="true" class="plugin-icon-card" [src]="plugin().icon" (error)="handleIconError()" />
+        <!-- supports matter pill -->
+        @if (plugin().supportsMatter) {
+          <span
+            class="matter-pill"
+            container="body"
+            triggers="hover"
+            [openDelay]="150"
+            [ngbTooltip]="'plugins.tooltip_matter' | translate"
+          >
+            <i class="fas fa-lg fa-matter" aria-hidden="true"></i>
+            <span class="visually-hidden">{{ 'plugins.label_matter' | translate }}</span>
+          </span>
+        }
+        <!-- // -->
+      </div>
     </div>
     <div class="d-flex flex-column justify-content-between plugin-content">
       <div class="d-flex flex-row align-items-end">

@@ -52,6 +52,14 @@ export interface BridgeHapConfig {
    * own standalone tile). Requires `enabled: false`.
    */
   externalsOnly?: boolean
+  /**
+   * Whether to disable HAP-NodeJS's `addIdentifyingMaterial` publish option,
+   * which appends identifying material derived from the username to the
+   * bridge display name and mDNS service instance name. Defaults to `false`.
+   * Only honoured by Homebridge >= 2.2.2-beta.0 (see the
+   * `hapDisableIdentifyingMaterial` feature flag).
+   */
+  disableIdentifyingMaterial?: boolean
 }
 
 // --- Accessories types ---

@@ -368,8 +368,8 @@ export class ConfigEditorController {
 
   @UseGuards(AdminGuard)
   @ApiOperation({
-    summary: 'Get HAP enablement for the main bridge',
-    description: 'Returns whether HAP is published for the main Homebridge bridge. HAP is on by default. Reads tolerate both the legacy `bridge.hap: false` boolean form and the nested `bridge.hap: { enabled: false }` form used by Homebridge >= 2.0.3-beta.26.',
+    summary: 'Get HAP configuration for the main bridge',
+    description: 'Returns whether HAP is published for the main Homebridge bridge and the supported nested HAP options. HAP is on by default. Reads tolerate both the legacy `bridge.hap: false` boolean form and the nested object form used by newer Homebridge versions.',
   })
   @Get('/hap')
   getHapEnabled() {
@@ -378,12 +378,12 @@ export class ConfigEditorController {
 
   @UseGuards(AdminGuard)
   @ApiOperation({
-    summary: 'Enable or disable HAP for the main bridge',
-    description: 'Toggles HAP for the main Homebridge bridge. The shape written to `bridge.hap` depends on the `protocolExternalsOnly` feature flag: when the running Homebridge supports it the nested object form is written, otherwise the boolean form is preserved.',
+    summary: 'Update HAP configuration for the main bridge',
+    description: 'Updates HAP enablement and supported nested options for the main Homebridge bridge. The shape written to `bridge.hap` depends on feature support in the running Homebridge version.',
   })
-  @ApiBody({ description: 'HAP enablement', type: 'json' })
+  @ApiBody({ description: 'HAP configuration', type: 'json' })
   @Put('/hap')
-  setHapEnabled(@Body() body: { enabled: boolean, restart?: boolean, externalsOnly?: boolean }) {
-    return this.configEditorService.setHapEnabled(body.enabled, body.restart ?? true, body.externalsOnly ?? false)
+  setHapEnabled(@Body() body: { enabled: boolean, restart?: boolean, externalsOnly?: boolean, disableIdentifyingMaterial?: boolean }) {
+    return this.configEditorService.setHapEnabled(body.enabled, body.restart ?? true, body.externalsOnly ?? false, body.disableIdentifyingMaterial)
   }
 }

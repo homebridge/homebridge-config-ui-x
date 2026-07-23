@@ -76,12 +76,12 @@ export interface ChildBridgeStatusResponse {
    * HAP configuration for this child bridge.
    *
    * Older Homebridge versions used a boolean (`true`/`false`/undefined for default).
-   * Homebridge >= 2.0.3-beta.26 sends the nested object form, including
-   * `externalsOnly`. Both shapes are typed here so the UI can render against
-   * either — the `protocolExternalsOnly` feature flag decides which shape is
-   * authoritative at runtime.
+   * Homebridge >= 2.0.3-beta.26 sends the nested object form. Newer runtimes
+   * may include `externalsOnly` and `disableIdentifyingMaterial`. Both shapes
+   * are typed here so the UI can render against either; feature flags decide
+   * which properties are available at runtime.
    */
-  hap?: boolean | { enabled?: boolean, externalsOnly?: boolean }
+  hap?: boolean | { enabled?: boolean, externalsOnly?: boolean, disableIdentifyingMaterial?: boolean }
 
   /** Matter configuration */
   matterConfig?: {

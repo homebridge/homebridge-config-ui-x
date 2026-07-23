@@ -111,6 +111,11 @@ export class PluginBridgeComponent implements OnInit {
   // Tracks whether HAP externalsOnly is set, keyed by block index. Only meaningful
   // when isProtocolExternalsOnlyEnabled is true and HAP is disabled for the block.
   public readonly hapExternalsOnlyBlocks = signal<Record<number, boolean>>({})
+  // When true (Homebridge >= 2.2.2-beta.0), HAP exposes a toggle that disables
+  // username-derived identifying material in bridge and mDNS service names.
+  public isHapDisableIdentifyingMaterialEnabled = this.$settings.isFeatureEnabled('hapDisableIdentifyingMaterial')
+  // Tracks whether HAP disableIdentifyingMaterial is set, keyed by block index.
+  public readonly hapDisableIdentifyingMaterialBlocks = signal<Record<number, boolean>>({})
   // Tracks whether Matter externalsOnly is set, keyed by block index. Only meaningful
   // when isProtocolExternalsOnlyEnabled is true and Matter is disabled for the block.
   public readonly matterExternalsOnlyBlocks = signal<Record<number, boolean>>({})
@@ -258,7 +263,8 @@ export class PluginBridgeComponent implements OnInit {
           //   - Nested object: `_bridge.hap.enabled === false` means disabled,
           //     and `_bridge.hap.externalsOnly === true` is also surfaced.
           // Accessory child bridges cannot disable HAP (no Matter alternative)
-          // and never have externalsOnly meaning.
+          // and never have externalsOnly meaning. They may still customize
+          // identifying material through the nested HAP object.
           const hap = block._bridge.hap
           let hapEnabled = true
           let hapExternalsOnly = false
@@ -273,6 +279,12 @@ export class PluginBridgeComponent implements OnInit {
           this.hapEnabledBlocks.update(current => ({ ...current, [i]: hapEnabled }))
           if (this.isProtocolExternalsOnlyEnabled) {
             this.hapExternalsOnlyBlocks.update(current => ({ ...current, [i]: hapExternalsOnly }))
+          }
+          if (this.isHapDisableIdentifyingMaterialEnabled) {
+            this.hapDisableIdentifyingMaterialBlocks.update(current => ({
+              ...current,
+              [i]: typeof hap === 'object' && hap !== null && hap.disableIdentifyingMaterial === true,
+            }))
           }
         }
 
@@ -397,6 +409,10 @@ export class PluginBridgeComponent implements OnInit {
     if (enable) {
       const bridgeCache = this.bridgeCache().get(Number(index))
       const matterCache = this.matterBridgeCache().get(Number(index))
+      const keepHapDisableIdentifyingMaterial = this.isHapDisableIdentifyingMaterialEnabled
+        && typeof bridgeCache?.hap === 'object'
+        && bridgeCache.hap !== null
+        && bridgeCache.hap.disableIdentifyingMaterial === true
 
       // Always create HAP bridge configuration when HAP toggle is enabled
       block._bridge = {
@@ -408,6 +424,7 @@ export class PluginBridgeComponent implements OnInit {
         firmwareRevision: bridgeCache?.firmwareRevision,
         debugModeEnabled: bridgeCache?.debugModeEnabled,
         env: bridgeCache?.env || {},
+        ...(keepHapDisableIdentifyingMaterial ? { hap: { disableIdentifyingMaterial: true } } : {}),
       }
 
       // Restore Matter configuration if it was previously cached (cached means it was enabled before disabling)
@@ -465,6 +482,12 @@ export class PluginBridgeComponent implements OnInit {
 
       // HAP defaults to on whenever a child bridge is enabled
       this.hapEnabledBlocks.update(current => ({ ...current, [Number(index)]: true }))
+      if (this.isHapDisableIdentifyingMaterialEnabled) {
+        this.hapDisableIdentifyingMaterialBlocks.update(current => ({
+          ...current,
+          [Number(index)]: keepHapDisableIdentifyingMaterial,
+        }))
+      }
     } else {
       // Set enabled state to false
       this.enabledBlocks.update(current => ({ ...current, [Number(index)]: false }))
@@ -825,6 +848,8 @@ export class PluginBridgeComponent implements OnInit {
     }
 
     if (enable) {
+      const keepDisableIdentifyingMaterial = this.isHapDisableIdentifyingMaterialEnabled
+        && this.hapDisableIdentifyingMaterialBlocks()[idx] === true
       this.hapEnabledBlocks.update(current => ({ ...current, [idx]: true }))
       // Re-enabling HAP must also clear any lingering externalsOnly setting —
       // the validation rule on the new runtime is `externalsOnly requires
@@ -848,14 +873,18 @@ export class PluginBridgeComponent implements OnInit {
         block._bridge.name = this.sanitizeBridgeName(this.plugin.displayName || this.plugin.name)
       }
 
-      delete block._bridge.hap
+      if (keepDisableIdentifyingMaterial) {
+        block._bridge.hap = { disableIdentifyingMaterial: true }
+      } else {
+        delete block._bridge.hap
+      }
 
       this.bridgeCache.update(current => new Map(current).set(idx, block._bridge))
       await this.getDeviceInfo(block._bridge.username)
     } else {
       this.hapEnabledBlocks.update(current => ({ ...current, [idx]: false }))
       block._bridge = block._bridge || {}
-      this.writeHapDisabled(block)
+      this.writeHapDisabled(block, idx)
     }
   }
 
@@ -867,11 +896,17 @@ export class PluginBridgeComponent implements OnInit {
    * gets written. externalsOnly is never set here — disabling HAP transitions
    * the block to the plain disabled shape, and the externalsOnly toggle (which
    * only appears once HAP is disabled) writes the externalsOnly shape itself
-   * via toggleHapExternalsOnly().
+   * via toggleHapExternalsOnly(). The independent disableIdentifyingMaterial
+   * preference is preserved in either nested disabled shape.
    */
-  private writeHapDisabled(block: any): void {
-    if (this.isProtocolExternalsOnlyEnabled) {
-      block._bridge.hap = { enabled: false }
+  private writeHapDisabled(block: any, idx: number): void {
+    if (this.isProtocolExternalsOnlyEnabled || this.isHapDisableIdentifyingMaterialEnabled) {
+      block._bridge.hap = {
+        enabled: false,
+        ...(this.hapDisableIdentifyingMaterialBlocks()[idx] === true
+          ? { disableIdentifyingMaterial: true }
+          : {}),
+      }
     } else {
       block._bridge.hap = false
     }
@@ -895,9 +930,51 @@ export class PluginBridgeComponent implements OnInit {
     // externalsOnly is only valid when HAP is disabled; write the nested
     // object form with the current toggle state.
     if (this.hapEnabledBlocks()[idx] === false) {
-      block._bridge.hap = checked
-        ? { enabled: false, externalsOnly: true }
-        : { enabled: false }
+      block._bridge.hap = {
+        enabled: false,
+        ...(checked ? { externalsOnly: true } : {}),
+        ...(this.hapDisableIdentifyingMaterialBlocks()[idx] === true
+          ? { disableIdentifyingMaterial: true }
+          : {}),
+      }
+    }
+  }
+
+  /**
+   * Toggle the `hap.disableIdentifyingMaterial` flag for a block. The option
+   * is independent of HAP enablement and is preserved across HAP and child
+   * bridge disable/enable round-trips.
+   */
+  public toggleHapDisableIdentifyingMaterial(event: Event, idx: number): void {
+    if (!this.isHapDisableIdentifyingMaterialEnabled) {
+      return
+    }
+    const checked = (event.target as HTMLInputElement).checked
+    const block = this.configBlocks()[idx]
+
+    this.hapDisableIdentifyingMaterialBlocks.update(current => ({ ...current, [idx]: checked }))
+
+    if (!block?._bridge) {
+      return
+    }
+
+    const existingHap = block._bridge.hap
+    const hap = typeof existingHap === 'object' && existingHap !== null
+      ? { ...existingHap }
+      : existingHap === false || this.hapEnabledBlocks()[idx] === false
+        ? { enabled: false }
+        : {}
+
+    if (checked) {
+      hap.disableIdentifyingMaterial = true
+    } else {
+      delete hap.disableIdentifyingMaterial
+    }
+
+    if (Object.keys(hap).length > 0) {
+      block._bridge.hap = hap
+    } else {
+      delete block._bridge.hap
     }
   }
 
@@ -1082,20 +1159,29 @@ export class PluginBridgeComponent implements OnInit {
     }
   }
 
-  private normalizeHapConfig(block: any, hapEnabled: boolean | undefined, hapExternalsOnly = false): void {
+  private normalizeHapConfig(
+    block: any,
+    hapEnabled: boolean | undefined,
+    hapExternalsOnly = false,
+    hapDisableIdentifyingMaterial = false,
+  ): void {
     if (!block._bridge) {
       return
     }
     if (hapEnabled === false) {
-      if (this.isProtocolExternalsOnlyEnabled) {
-        // Nested form for Homebridge >= 2.0.3-beta.26. externalsOnly is only
-        // written when explicitly toggled on alongside enabled: false.
-        block._bridge.hap = hapExternalsOnly
-          ? { enabled: false, externalsOnly: true }
-          : { enabled: false }
+      if (this.isProtocolExternalsOnlyEnabled || this.isHapDisableIdentifyingMaterialEnabled) {
+        // Nested form for newer Homebridge versions. Optional settings are
+        // written only when explicitly toggled on.
+        block._bridge.hap = {
+          enabled: false,
+          ...(hapExternalsOnly ? { externalsOnly: true } : {}),
+          ...(hapDisableIdentifyingMaterial ? { disableIdentifyingMaterial: true } : {}),
+        }
       } else {
         block._bridge.hap = false
       }
+    } else if (hapDisableIdentifyingMaterial) {
+      block._bridge.hap = { disableIdentifyingMaterial: true }
     } else {
       delete block._bridge.hap
     }
@@ -1185,13 +1271,15 @@ export class PluginBridgeComponent implements OnInit {
         // Normalize the matter config (trim strings, remove empty values)
         this.normalizeMatterConfig(block)
 
-        // Normalize the hap flag — only persist `false` (or `{ enabled: false }`
-        // on the new runtime); omit when on. externalsOnly carries through
-        // only when HAP is disabled.
+        // Normalize HAP into the shape supported by the running Homebridge.
+        // externalsOnly carries through only when HAP is disabled; the
+        // identifying-material preference is independent of enablement.
         const hapExternalsOnly = this.isProtocolExternalsOnlyEnabled
           && hapEnabledBlocks[index] === false
           && this.hapExternalsOnlyBlocks()[index] === true
-        this.normalizeHapConfig(block, hapEnabledBlocks[index], hapExternalsOnly)
+        const hapDisableIdentifyingMaterial = this.isHapDisableIdentifyingMaterialEnabled
+          && this.hapDisableIdentifyingMaterialBlocks()[index] === true
+        this.normalizeHapConfig(block, hapEnabledBlocks[index], hapExternalsOnly, hapDisableIdentifyingMaterial)
       }
 
       await this.$api.post(`/config-editor/plugin/${encodeURIComponent(plugin.name)}`, configBlocks)
@@ -1571,13 +1659,17 @@ export class PluginBridgeComponent implements OnInit {
 
       // Check HAP disabled state. Both shapes are tolerated:
       // legacy boolean (`hap === false`) and nested object (`hap.enabled === false`).
-      // externalsOnly is also part of the persisted state.
+      // Nested HAP options are also part of the persisted state.
       const isHapDisabled = (h: any) => h === false || (typeof h === 'object' && h !== null && h.enabled === false)
       const hapExternalsOnly = (h: any) => typeof h === 'object' && h !== null && h.externalsOnly === true
+      const hapDisableIdentifyingMaterial = (h: any) => typeof h === 'object' && h !== null && h.disableIdentifyingMaterial === true
       if (isHapDisabled(block._bridge.hap) !== isHapDisabled(original.hap)) {
         return true
       }
       if (hapExternalsOnly(block._bridge.hap) !== hapExternalsOnly(original.hap)) {
+        return true
+      }
+      if (hapDisableIdentifyingMaterial(block._bridge.hap) !== hapDisableIdentifyingMaterial(original.hap)) {
         return true
       }
 

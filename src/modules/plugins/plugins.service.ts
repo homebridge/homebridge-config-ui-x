@@ -332,6 +332,18 @@ export class PluginsService {
       : []
   }
 
+  /**
+   * Whether a plugin advertises that it can expose accessories to Matter.
+   *
+   * Plugin authors opt in by adding the `supports-matter` keyword to their
+   * package.json, the same way they already add `homebridge-plugin`. Reading it
+   * from the package itself means the flag travels with the plugin, so it works
+   * for private and locally installed plugins too.
+   */
+  private supportsMatter(keywords?: string[]): boolean {
+    return Array.isArray(keywords) && keywords.some(k => k?.toLowerCase() === 'supports-matter')
+  }
+
   private matchesPlugin(plugin: HomebridgePlugin, searchTerms: string[]): 'exactName' | 'exactKeyword' | 'partial' | null {
     const pluginName = plugin.name.toLowerCase()
     const pluginKeywords = this.getPluginKeywords(plugin)
@@ -431,6 +443,7 @@ export class PluginsService {
           author: this.pluginAuthors[pkg.package.name] || (pkg.package.publisher ? pkg.package.publisher.username : null),
           verifiedPlugin: this.verifiedPlugins.includes(pkg.package.name),
           verifiedPlusPlugin: this.verifiedPlusPlugins.includes(pkg.package.name),
+          supportsMatter: this.supportsMatter(pkg.package.keywords),
           icon: this.pluginIcons[pkg.package.name] ? `${this.pluginListUrl}${this.pluginIcons[pkg.package.name]}` : null,
           isHbScoped: pkg.package.name.startsWith('@homebridge-plugins/'),
           newHbScope: this.newScopePlugins[pkg.package.name],
@@ -548,6 +561,7 @@ export class PluginsService {
           : pkg.name,
         verifiedPlugin: this.verifiedPlugins.includes(pkg.name),
         verifiedPlusPlugin: this.verifiedPlusPlugins.includes(pkg.name),
+        supportsMatter: this.supportsMatter(pkg.keywords),
         icon: this.pluginIcons[pkg.name],
         isHbScoped: pkg.name.startsWith('@homebridge-plugins/'),
         newHbScope: this.newScopePlugins[pkg.name],
@@ -570,6 +584,7 @@ export class PluginsService {
         || ((pkg.maintainers && pkg.maintainers.length) ? pkg.maintainers[0].name : null)
       plugin.verifiedPlugin = this.verifiedPlugins.includes(pkg.name)
       plugin.verifiedPlusPlugin = this.verifiedPlusPlugins.includes(pkg.name)
+      plugin.supportsMatter = this.supportsMatter(pkg.keywords)
       plugin.icon = this.pluginIcons[pkg.name]
         ? `${this.pluginListUrl}${this.pluginIcons[pkg.name]}`
         : null
@@ -665,14 +680,7 @@ export class PluginsService {
     installOptions.push('--omit=dev')
     const npmPluginLabel = `${pluginAction.name}@${pluginAction.version}`
 
-    // npm >= 12 blocks dependency lifecycle scripts unless allowlisted (#2909).
-    // Honour the plugin's declared `allowScripts` (plus the plugin itself) so
-    // installs behave as before the policy change, and say so in the log.
-    const allowedScripts = await this.getAllowedInstallScripts(pluginAction.name, pluginAction.version)
-    if (allowedScripts.length) {
-      installOptions.push(`--allow-scripts=${allowedScripts.join(',')}`)
-      client.emit('stdout', yellow(`Allowing install scripts for: ${allowedScripts.join(', ')}.\r\n\r\n`))
-    }
+    await this.applyAllowScripts(installOptions, client, pluginAction)
 
     // Clean up the npm cache before any installation
     await this.cleanNpmCache()
@@ -758,6 +766,8 @@ export class PluginsService {
       // If installing, set --omit=dev to prevent installing devDependencies
       installOptions.push('--omit=dev')
       npmPluginLabel = `${pluginAction.name}@${pluginAction.version}`
+
+      await this.applyAllowScripts(installOptions, client, pluginAction)
     }
 
     // Clean up the npm cache before any installation or uninstallation
@@ -1088,6 +1098,7 @@ export class PluginsService {
         : pkgJson.name,
       verifiedPlugin: this.verifiedPlugins.includes(pkgJson.name),
       verifiedPlusPlugin: this.verifiedPlusPlugins.includes(pkgJson.name),
+      supportsMatter: this.supportsMatter(pkgJson.keywords),
       icon: this.pluginIcons[pkgJson.name]
         ? `${this.pluginListUrl}${this.pluginIcons[pkgJson.name]}`
         : null,
@@ -2086,10 +2097,6 @@ export class PluginsService {
     packageName: string,
     preferBetas: boolean,
   ): Promise<void> {
-    if (plugin.updateAvailable) {
-      return // Already has an update available
-    }
-
     const pluginVersion = parse(plugin.installedVersion)
     const installedTag = pluginVersion.prerelease[0]?.toString()
 
@@ -2102,16 +2109,29 @@ export class PluginsService {
       && gt(plugin.installedVersion, plugin.latestVersion)
     ) || preferBetas
 
-    if (shouldCheckBetas) {
-      const versions = await this.getAvailablePluginVersions(packageName)
-      const targetTag = preferBetas && !installedTag ? 'beta' : installedTag
+    if (!shouldCheckBetas) {
+      return
+    }
 
-      if (versions.tags[targetTag] && gt(versions.tags[targetTag], plugin.installedVersion)) {
-        plugin.latestVersion = versions.tags[targetTag]
-        plugin.updateAvailable = true
-        plugin.updateEngines = versions.versions?.[plugin.latestVersion]?.engines || null
-        plugin.updateTag = targetTag
-      }
+    const versions = await this.getAvailablePluginVersions(packageName)
+    const targetTag = preferBetas && !installedTag ? 'beta' : installedTag
+    const candidate = versions.tags[targetTag]
+
+    // Offer the prerelease only when it is the newest thing available. A
+    // prerelease sorts below its own release (1.2.4-beta.5 < 1.2.4), so once the
+    // stable overtakes the beta line we keep the stable rather than sending a
+    // beta user backwards. Without the second check the caller's stable result
+    // would also be left in place while the beta preference was ignored, which
+    // is how a beta user ended up being offered, and shown release notes for,
+    // the stable version.
+    const beatsInstalled = candidate && gt(candidate, plugin.installedVersion)
+    const beatsStable = !plugin.updateAvailable || gt(candidate, plugin.latestVersion)
+
+    if (beatsInstalled && beatsStable) {
+      plugin.latestVersion = candidate
+      plugin.updateAvailable = true
+      plugin.updateEngines = versions.versions?.[plugin.latestVersion]?.engines || null
+      plugin.updateTag = targetTag
     }
   }
 
@@ -2130,6 +2150,7 @@ export class PluginsService {
         : pkgJson.name,
       verifiedPlugin: this.verifiedPlugins.includes(pkgJson.name),
       verifiedPlusPlugin: this.verifiedPlusPlugins.includes(pkgJson.name),
+      supportsMatter: this.supportsMatter(pkgJson.keywords),
       icon: this.pluginIcons[pkgJson.name]
         ? `${this.pluginListUrl}${this.pluginIcons[pkgJson.name]}`
         : null,
@@ -2296,6 +2317,29 @@ export class PluginsService {
     }
 
     return [...allowed]
+  }
+
+  /**
+   * Add `--allow-scripts` to an npm install when the running npm needs it (#2909).
+   *
+   * npm only accepts the flag for global installs. Passing it to a project-scoped
+   * install (a custom plugin path with its own package.json) fails outright with
+   * EALLOWSCRIPTS, so there we explain what to do instead rather than breaking
+   * the install.
+   */
+  private async applyAllowScripts(installOptions: string[], client: EventEmitter, pluginAction: PluginActionDto): Promise<void> {
+    const allowedScripts = await this.getAllowedInstallScripts(pluginAction.name, pluginAction.version)
+    if (!allowedScripts.length) {
+      return
+    }
+
+    if (!installOptions.includes('-g')) {
+      client.emit('stdout', yellow(`Install scripts for ${allowedScripts.join(', ')} will not run: npm only accepts --allow-scripts for global installs. Add an "allowScripts" entry to the package.json alongside your plugins to permit them.\r\n\r\n`))
+      return
+    }
+
+    installOptions.push(`--allow-scripts=${allowedScripts.join(',')}`)
+    client.emit('stdout', yellow(`Allowing install scripts for: ${allowedScripts.join(', ')}.\r\n\r\n`))
   }
 
   /**

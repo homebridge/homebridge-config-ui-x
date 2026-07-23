@@ -2,6 +2,29 @@
 
 All notable changes to `homebridge-config-ui-x` will be documented in this file. This project tries to adhere to [Semantic Versioning](http://semver.org/).
 
+## v5.27.1 (Pending Release)
+
+### UI Changes
+
+- fix(ui): keep status widget values and units on one line (#2913) (@tbaur)
+- feat(settings): support HAP `disableIdentifyingMaterial` option (#2924) (@naterator)
+- feat(plugins): show matter support badge on plugin cards
+
+### Other Changes
+
+- chore(deps): dependency updates
+- chore(deps): add node 26 support and bump node-pty (#2916) (@NorthernMan54)
+- ci: validate and release against node 26 (#2917) (#2918) (@NorthernMan54)
+- fix(plugins): pass allow-scripts to plugin installs (#2921) (@bcomnes)
+- fix(plugins): only pass allow-scripts to global installs
+- fix(plugins): honour the beta preference when a stable update is also available
+
+### Homebridge Dependencies
+
+- `@homebridge/hap-client` @ `v5.1.0`
+- `@homebridge/node-pty-prebuilt-multiarch` @ `v0.14.1-beta`
+- `@homebridge/plugin-ui-utils` @ `v2.2.5`
+
 ## v5.27.0 (2026-07-19)
 
 ### UI Changes
