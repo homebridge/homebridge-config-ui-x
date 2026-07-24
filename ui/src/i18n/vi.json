@@ -528,6 +528,7 @@
   "plugins.settings.label_open_config_editor": "Mở Trình chỉnh sửa cấu hình",
   "plugins.settings.message_consult_documentation": "Vui lòng tham khảo tài liệu plugin để cấu hình đúng cách.",
   "plugins.settings.message_manual_config_required": "Plugin này phải được cấu hình thủ công bằng Trình chỉnh sửa cấu hình của Homebridge UI.",
+  "plugins.settings.message_ui_offline": "Not connected to the Homebridge UI server.",
   "plugins.settings.plugin_config_saved": "Đã lưu cấu hình Plugin",
   "plugins.settings.restart_required": "Khởi động lại Homebridge để áp dụng thay đổi.",
   "plugins.stats": "Thống kê Plugin",

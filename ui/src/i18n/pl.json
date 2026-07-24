@@ -528,6 +528,7 @@
   "plugins.settings.label_open_config_editor": "Otwórz edytor konfiguracji",
   "plugins.settings.message_consult_documentation": "Sprawdż na stronie wsparcia tej wtyczki, jak ją poprawnie skonfigurować.",
   "plugins.settings.message_manual_config_required": "Ta wtyczka musi być skonfigurowana ręcznie z użyciem wbudowanego edytora.",
+  "plugins.settings.message_ui_offline": "Not connected to the Homebridge UI server.",
   "plugins.settings.plugin_config_saved": "Zapisano konfigurację wtyczki",
   "plugins.settings.restart_required": "Zrestartuj serwer, aby zastosować zmiany.",
   "plugins.stats": "Statystyki wtyczek",

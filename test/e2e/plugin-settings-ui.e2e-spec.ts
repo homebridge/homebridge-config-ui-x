@@ -1,5 +1,6 @@
 import type { NestFastifyApplication } from '@nestjs/platform-fastify'
 import type { TestingModule } from '@nestjs/testing'
+import type { MockInstance } from 'vitest'
 
 import { resolve } from 'node:path'
 import process from 'node:process'
@@ -417,6 +418,276 @@ describe('PluginsSettingsUiController (e2e)', () => {
       const guards = reflector.get<any[]>('__guards__', PluginsSettingsUiController)
       expect(guards, 'no guards applied to PluginsSettingsUiController').toBeDefined()
       expect(guards.includes(CookieAuthGuard)).toBe(true)
+    })
+  })
+
+  describe('startCustomUiHandler sessions', () => {
+    // The message the service sends back for any request it cannot forward to a helper.
+    const customUiUnavailable = 'The custom UI server for this plugin is not available.'
+
+    // Every wait below spans a real child process booting, answering over IPC or exiting, so these
+    // poll for the outcome instead of sleeping for a guessed interval.
+    const waitOptions = { interval: 50, timeout: 5000 }
+
+    let pluginsSettingsUiService: PluginsSettingsUiService
+
+    beforeEach(() => {
+      pluginsSettingsUiService = app.get(PluginsSettingsUiService)
+    })
+
+    // Each test drives its own socket, so no listener, child or spy state carries between them.
+    async function createClient() {
+      const { EventEmitter } = await import('node:events')
+      const client = new EventEmitter()
+
+      return { client, emitSpy: vi.spyOn(client, 'emit') }
+    }
+
+    // Wait for the socket to receive an event and hand back the payload it carried.
+    async function waitForEmit(emitSpy: MockInstance, event: string, match: (payload: any) => boolean = () => true): Promise<any> {
+      let payload: any
+
+      await vi.waitFor(() => {
+        const call = emitSpy.mock.calls.find(([name, value]) => name === event && match(value))
+        if (!call) {
+          throw new Error(`the socket has not received a matching '${event}' event`)
+        }
+        payload = call[1]
+      }, waitOptions)
+
+      return payload
+    }
+
+    function countEmits(emitSpy: MockInstance, event: string, match: (payload: any) => boolean = () => true): number {
+      return emitSpy.mock.calls.filter(([name, value]) => name === event && match(value)).length
+    }
+
+    it('rejects a request when the plugin ships no server-side script', async () => {
+      const { client, emitSpy } = await createClient()
+
+      await pluginsSettingsUiService.startCustomUiHandler('homebridge-mock-plugin', client)
+      client.emit('request', { requestId: 'r1', path: '/x' })
+
+      expect(emitSpy).toHaveBeenCalledWith('response', {
+        requestId: 'r1',
+        success: false,
+        data: { message: customUiUnavailable },
+      })
+
+      client.emit('end')
+    })
+
+    it('keeps sessions on separate sockets isolated from each other', async () => {
+      const a = await createClient()
+      const b = await createClient()
+
+      await pluginsSettingsUiService.startCustomUiHandler('homebridge-mock-plugin', a.client)
+      await pluginsSettingsUiService.startCustomUiHandler('homebridge-mock-plugin', b.client)
+
+      a.client.emit('request', { requestId: 'r-a', path: '/x' })
+
+      expect(a.emitSpy).toHaveBeenCalledWith('response', {
+        requestId: 'r-a',
+        success: false,
+        data: { message: customUiUnavailable },
+      })
+      expect(countEmits(b.emitSpy, 'response')).toBe(0)
+
+      a.client.emit('disconnect')
+
+      expect(a.client.listenerCount('request')).toBe(0)
+      expect(a.client.listenerCount('disconnect')).toBe(0)
+      expect(a.client.listenerCount('end')).toBe(0)
+      expect(b.client.listenerCount('request')).toBe(1)
+      expect(b.client.listenerCount('disconnect')).toBe(1)
+      expect(b.client.listenerCount('end')).toBe(1)
+
+      b.client.emit('end')
+    })
+
+    it('collapses overlapping starts on one socket into a single session', async () => {
+      const { client, emitSpy } = await createClient()
+
+      const first = pluginsSettingsUiService.startCustomUiHandler('homebridge-mock-plugin', client)
+      const second = pluginsSettingsUiService.startCustomUiHandler('homebridge-mock-plugin', client)
+      await Promise.all([first, second])
+
+      expect(emitSpy).toHaveBeenCalledExactlyOnceWith('ready', { server: false })
+      expect(client.listenerCount('request')).toBe(1)
+      expect(client.listenerCount('disconnect')).toBe(1)
+      expect(client.listenerCount('end')).toBe(1)
+
+      client.emit('end')
+    })
+
+    describe('with a helper child running', () => {
+      // A dependency-free stand-in for a plugin's server-side script, speaking the raw IPC protocol
+      // and mirroring how @homebridge/plugin-ui-utils behaves: it announces itself once it boots and
+      // terminates itself the moment the parent closes the IPC channel.
+      const helperScript = `
+process.send({ action: 'ready', payload: { server: true } })
+
+process.on('disconnect', () => {
+  process.kill(process.pid, 'SIGTERM')
+})
+
+process.on('message', (request) => {
+  if (request.path === '/exit') {
+    process.exit(0)
+  }
+
+  if (request.path === '/hang') {
+    return
+  }
+
+  process.send({ action: 'response', payload: { requestId: request.requestId, success: true, data: { echo: request.path } } })
+})
+`
+
+      let serverPath: string
+
+      beforeAll(async () => {
+        serverPath = resolve(pluginsPath, 'homebridge-mock-plugin/homebridge-ui/server.js')
+        await writeFile(serverPath, helperScript)
+      })
+
+      afterAll(async () => {
+        await remove(serverPath)
+      })
+
+      it('relays a request to the helper and returns its response', async () => {
+        const { client, emitSpy } = await createClient()
+
+        await pluginsSettingsUiService.startCustomUiHandler('homebridge-mock-plugin', client)
+
+        expect(await waitForEmit(emitSpy, 'ready')).toEqual({ server: true })
+
+        client.emit('request', { requestId: 'r2', path: '/hello' })
+
+        expect(await waitForEmit(emitSpy, 'response', payload => payload?.requestId === 'r2'))
+          .toEqual({ requestId: 'r2', success: true, data: { echo: '/hello' } })
+
+        client.emit('end')
+      })
+
+      it('supersedes the previous helper when the same socket starts again', async () => {
+        const { client, emitSpy } = await createClient()
+
+        await pluginsSettingsUiService.startCustomUiHandler('homebridge-mock-plugin', client)
+        await waitForEmit(emitSpy, 'ready')
+        await pluginsSettingsUiService.startCustomUiHandler('homebridge-mock-plugin', client)
+
+        expect(client.listenerCount('request')).toBe(1)
+
+        client.emit('request', { requestId: 'r-second', path: '/again' })
+
+        expect(await waitForEmit(emitSpy, 'response', payload => payload?.requestId === 'r-second'))
+          .toEqual({ requestId: 'r-second', success: true, data: { echo: '/again' } })
+
+        // A listener left behind by the superseded session would answer this same request id a
+        // second time, with a rejection from its own dead child.
+        expect(countEmits(emitSpy, 'response', payload => payload?.requestId === 'r-second')).toBe(1)
+
+        client.emit('end')
+      })
+
+      it('rejects requests that arrive once the helper has died', async () => {
+        const { client, emitSpy } = await createClient()
+
+        await pluginsSettingsUiService.startCustomUiHandler('homebridge-mock-plugin', client)
+        await waitForEmit(emitSpy, 'ready')
+
+        client.emit('request', { requestId: 'r-exit', path: '/exit' })
+
+        // The child's `connected` flag drops a moment after the child itself is gone, so a single
+        // post-exit request can still be handed to it and vanish. Re-emitting under a fresh request
+        // id each poll, and only accepting an answer to the id emitted in that same tick, pins the
+        // rejection to the arrival path rather than to any later settlement.
+        let attempt = 0
+        let rejection: any
+
+        await vi.waitFor(() => {
+          const requestId = `r-dead-${attempt++}`
+          client.emit('request', { requestId, path: '/x' })
+          const call = emitSpy.mock.calls.find(([name, payload]) => name === 'response' && payload?.requestId === requestId)
+          if (!call) {
+            throw new Error('the socket has not received a rejection yet')
+          }
+          rejection = call[1]
+        }, waitOptions)
+
+        expect(rejection).toEqual({
+          requestId: expect.stringMatching(/^r-dead-\d+$/),
+          success: false,
+          data: { message: customUiUnavailable },
+        })
+
+        client.emit('end')
+      })
+
+      it('tears the session down on disconnect and re-establishes it on a later start', async () => {
+        const { client, emitSpy } = await createClient()
+
+        await pluginsSettingsUiService.startCustomUiHandler('homebridge-mock-plugin', client)
+        await waitForEmit(emitSpy, 'ready')
+
+        client.emit('disconnect')
+
+        expect(client.listenerCount('request')).toBe(0)
+        expect(client.listenerCount('disconnect')).toBe(0)
+        expect(client.listenerCount('end')).toBe(0)
+
+        await pluginsSettingsUiService.startCustomUiHandler('homebridge-mock-plugin', client)
+
+        expect(client.listenerCount('request')).toBe(1)
+        expect(client.listenerCount('disconnect')).toBe(1)
+        expect(client.listenerCount('end')).toBe(1)
+
+        client.emit('request', { requestId: 'r-again', path: '/back' })
+
+        expect(await waitForEmit(emitSpy, 'response', payload => payload?.requestId === 'r-again'))
+          .toEqual({ requestId: 'r-again', success: true, data: { echo: '/back' } })
+
+        client.emit('end')
+      })
+
+      it('forks a single helper when starts overlap', async () => {
+        const { client, emitSpy } = await createClient()
+
+        const first = pluginsSettingsUiService.startCustomUiHandler('homebridge-mock-plugin', client)
+        const second = pluginsSettingsUiService.startCustomUiHandler('homebridge-mock-plugin', client)
+        await Promise.all([first, second])
+        await waitForEmit(emitSpy, 'ready')
+
+        expect(client.listenerCount('request')).toBe(1)
+
+        client.emit('request', { requestId: 'r-single', path: '/single' })
+
+        expect(await waitForEmit(emitSpy, 'response', payload => payload?.requestId === 'r-single'))
+          .toEqual({ requestId: 'r-single', success: true, data: { echo: '/single' } })
+
+        // Both invocations have long since settled by now, so a second child would have announced
+        // itself and answered alongside the first.
+        expect(countEmits(emitSpy, 'ready')).toBe(1)
+        expect(countEmits(emitSpy, 'response', payload => payload?.requestId === 'r-single')).toBe(1)
+
+        client.emit('end')
+      })
+
+      it('settles in-flight requests when the helper dies', async () => {
+        const { client, emitSpy } = await createClient()
+
+        await pluginsSettingsUiService.startCustomUiHandler('homebridge-mock-plugin', client)
+        await waitForEmit(emitSpy, 'ready')
+
+        client.emit('request', { requestId: 'r-hang', path: '/hang' })
+        client.emit('request', { requestId: 'r-exit2', path: '/exit' })
+
+        expect(await waitForEmit(emitSpy, 'response', payload => payload?.requestId === 'r-hang'))
+          .toEqual({ requestId: 'r-hang', success: false, data: { message: customUiUnavailable } })
+
+        client.emit('end')
+      })
     })
   })
 
