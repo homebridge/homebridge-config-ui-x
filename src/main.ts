@@ -107,19 +107,24 @@ async function bootstrap(): Promise<NestFastifyApplication> {
   // stable filenames across releases (assets/monaco/**, icons, manifest) and
   // must revalidate, or upgrades would leave browsers running year-old copies.
   //
-  // `cacheControl: false` is load-bearing: with it left on (the default),
-  // @fastify/static's `send` dependency computes its own Cache-Control from
-  // its `maxAge`/`immutable` options and applies it via `reply.headers()`
-  // AFTER this callback runs, silently overwriting whatever setHeaders() set -
-  // on both 200 and 304 responses.
+  // `cacheControl: false` keeps the `send` dependency from computing its own
+  // Cache-Control from `maxAge`/`immutable` at all, so the values set below are
+  // the only ones in play. @fastify/static v10 also lets setHeaders() win over
+  // send's headers, but leaving this off keeps the two from ever disagreeing.
+  //
+  // The `reply` cast is needed because v10 hands setHeaders() a FastifyReply
+  // (v9 passed a node Response), while @nestjs/platform-fastify still vendors
+  // the v9 signature in its FastifyStaticOptions type. Drop the cast once its
+  // peer range covers v10.
   app.useStaticAssets({
     root: resolve(process.env.UIX_BASE_PATH, 'public'),
     cacheControl: false,
-    setHeaders(res, path) {
+    setHeaders: (reply: unknown, path: string) => {
+      const res = reply as FastifyReply
       if (RE_HASHED_ASSET.test(path)) {
-        res.setHeader('Cache-Control', 'public,max-age=31536000,immutable')
+        res.header('Cache-Control', 'public,max-age=31536000,immutable')
       } else {
-        res.setHeader('Cache-Control', 'no-cache')
+        res.header('Cache-Control', 'no-cache')
       }
     },
   })

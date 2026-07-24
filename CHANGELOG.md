@@ -20,6 +20,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(plugins): only pass allow-scripts to global installs
 - fix(plugins): honour the beta preference when a stable update is also available
 - feat: add windows arm support (#2927) (@NorthernMan54)
+- fix(deps): bump `@fastify/static` to v10 (security)
 
 ### Homebridge Dependencies
 

@@ -13,13 +13,13 @@
     "prepare": "node ../scripts/apply-patches.mjs"
   },
   "dependencies": {
-    "@angular/common": "22.0.7",
-    "@angular/compiler": "22.0.7",
-    "@angular/core": "22.0.7",
-    "@angular/forms": "22.0.7",
-    "@angular/localize": "22.0.7",
-    "@angular/platform-browser": "22.0.7",
-    "@angular/router": "22.0.7",
+    "@angular/common": "22.0.8",
+    "@angular/compiler": "22.0.8",
+    "@angular/core": "22.0.8",
+    "@angular/forms": "22.0.8",
+    "@angular/localize": "22.0.8",
+    "@angular/platform-browser": "22.0.8",
+    "@angular/router": "22.0.8",
     "@auth0/angular-jwt": "5.2.0",
     "@homebridge/hap-client": "5.1.0",
     "@ng-bootstrap/ng-bootstrap": "21.0.0",
@@ -53,10 +53,10 @@
     "uuid": "14.0.1"
   },
   "devDependencies": {
-    "@angular/build": "^22.0.7",
-    "@angular/cli": "^22.0.7",
-    "@angular/compiler-cli": "^22.0.7",
-    "@angular/language-service": "^22.0.7",
+    "@angular/build": "^22.0.8",
+    "@angular/cli": "^22.0.8",
+    "@angular/compiler-cli": "^22.0.8",
+    "@angular/language-service": "^22.0.8",
     "@fortawesome/fontawesome-free": "^7.3.1",
     "@homebridge/plugin-ui-utils": "^2.2.5",
     "@types/file-saver": "^2.0.7",
@@ -73,16 +73,16 @@
     "typescript": "^6.0.3"
   },
   "overrides": {
-    "@angular/animations": "22.0.7",
+    "@angular/animations": "22.0.8",
     "@angular/build": {
       "@babel/core": "^7.29.7"
     },
-    "@angular/common": "22.0.7",
-    "@angular/compiler": "22.0.7",
-    "@angular/core": "22.0.7",
-    "@angular/forms": "22.0.7",
-    "@angular/localize": "22.0.7",
-    "@angular/platform-browser": "22.0.7",
+    "@angular/common": "22.0.8",
+    "@angular/compiler": "22.0.8",
+    "@angular/core": "22.0.8",
+    "@angular/forms": "22.0.8",
+    "@angular/localize": "22.0.8",
+    "@angular/platform-browser": "22.0.8",
     "lodash-es": "4.18.1",
     "ngx-monaco-editor-v2": {
       "monaco-editor": {
