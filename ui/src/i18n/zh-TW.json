@@ -529,6 +529,7 @@
   "plugins.settings.label_open_config_editor": "開啟 Config 編輯器",
   "plugins.settings.message_consult_documentation": "請參閱 Plugin 文件以了解如何正確的設定此 Plugin。",
   "plugins.settings.message_manual_config_required": "此 Plugin 必須使用 Homebridge UI Config 編輯器進行手動編輯。",
+  "plugins.settings.message_ui_offline": "Not connected to the Homebridge UI server.",
   "plugins.settings.plugin_config_saved": "Plugin Config 已儲存",
   "plugins.settings.restart_required": "重新啟動 Homebridge 方能使 Config 的變更生效。",
   "plugins.stats": "Plugin Statistics",
