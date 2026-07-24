@@ -529,6 +529,7 @@
   "plugins.settings.label_open_config_editor": "פתח עורך קונפיגורציה",
   "plugins.settings.message_consult_documentation": "אנא בודק את התיעוד של התוסף על מנת לקבל הוראות קונפיגורציה לתוסף",
   "plugins.settings.message_manual_config_required": "התוסף הזה חייב להיות מוגדר ידנית בעזרת עורך הקונפיגורציה של הומברידג'",
+  "plugins.settings.message_ui_offline": "Not connected to the Homebridge UI server.",
   "plugins.settings.plugin_config_saved": "קונפוגרוציה של תוסף נשמרה",
   "plugins.settings.restart_required": "אתחל את הומברידג' כדי להחיל את השינויים",
   "plugins.stats": "סטטיסטיקות תוסף",

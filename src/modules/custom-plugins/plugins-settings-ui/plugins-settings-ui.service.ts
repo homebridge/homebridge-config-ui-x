@@ -1,3 +1,4 @@
+import type { ChildProcess } from 'node:child_process'
 import type { EventEmitter } from 'node:events'
 
 import type { HomebridgePluginUiMetadata } from '../../plugins/plugins.interfaces.js'
@@ -18,10 +19,16 @@ import { Logger } from '../../../core/logger/logger.service.js'
 import { RE_PATH_TRAVERSAL, RE_STATIC_ASSET_EXT } from '../../../core/regex.constants.js'
 import { PluginsService } from '../../plugins/plugins.service.js'
 
+// Sent back to the iframe for any request the server cannot answer. It describes the present state
+// rather than a permanent one, because the same text covers a plugin that ships no server-side
+// script and a helper that is momentarily gone.
+const CUSTOM_UI_UNAVAILABLE = 'The custom UI server for this plugin is not available.'
+
 @Injectable()
 export class PluginsSettingsUiService {
   private pluginUiMetadataCache = new NodeCache({ stdTTL: 86400 })
   private pluginUiLastVersionCache = new NodeCache({ stdTTL: 86400 })
+  private customUiCleanups = new WeakMap<EventEmitter, () => void>()
 
   constructor(
     @Inject(Logger) private readonly loggerService: Logger,
@@ -208,48 +215,39 @@ export class PluginsSettingsUiService {
   }
 
   /**
+   * Answer a single request the server cannot forward to a helper, in the shape the iframe bridge
+   * expects: it settles the pending promise held against this request id by rejecting it.
+   */
+  private rejectRequest(pluginName: string, client: EventEmitter, requestId: string) {
+    client.emit('response', { requestId, success: false, data: { message: CUSTOM_UI_UNAVAILABLE } })
+    this.loggerService.debug(`[${pluginName}] custom UI request ${requestId} rejected (no server-side handler available).`)
+  }
+
+  /**
    * Starts the custom ui server-side handler
    */
   async startCustomUiHandler(pluginName: string, client: EventEmitter) {
-    const pluginUi: HomebridgePluginUiMetadata = (this.pluginUiMetadataCache.get(pluginName) as any)
-      || (await this.getPluginUiMetadata(pluginName))
+    // A second start can land on a socket that already has a live handler — the settings modal
+    // reopened on the cached namespace socket, or a buffered start and a subscription-driven one
+    // arriving together. Retiring the previous handler first keeps this socket to one child and
+    // one set of listeners instead of stacking a second of each.
+    this.customUiCleanups.get(client)?.()
 
-    // check the plugin has a server side script
-    if (!await pathExists(resolve(pluginUi.serverPath))) {
-      client.emit('ready', { server: false })
-      return
-    }
+    // Undefined until (and unless) this invocation reaches the fork below.
+    let child: ChildProcess | undefined
 
-    // Pass all env vars to server side script
-    const childEnv = { ...process.env }
-    childEnv.HOMEBRIDGE_STORAGE_PATH = this.configService.storagePath
-    childEnv.HOMEBRIDGE_CONFIG_PATH = this.configService.configPath
-    childEnv.HOMEBRIDGE_UI_VERSION = this.configService.package.version
+    // The ids of the requests handed to this invocation's child and not yet answered.
+    const outstanding = new Set<string>()
 
-    // Launch the server side script
-    const child = fork(pluginUi.serverPath, [], {
-      silent: true,
-      env: childEnv,
-    })
-
-    child.stdout.on('data', (data) => {
-      this.loggerService.log(`[${pluginName}] ${data.toString().trim()}`)
-    })
-
-    child.stderr.on('data', (data) => {
-      this.loggerService.error(`[${pluginName}] ${data.toString().trim()}`)
-    })
-
-    child.on('exit', () => {
-      this.loggerService.debug(`[${pluginName}] custom UI closed (child process ended).`)
-    })
-
-    child.addListener('message', (response: { action: string, payload: any }) => {
-      if (typeof response === 'object' && response.action) {
-        response.action = response.action === 'error' ? 'server_error' : response.action
-        client.emit(response.action, response.payload)
+    // The iframe bridge holds a pending promise per request id with no timeout of its own, so a
+    // request nothing can answer any more has to be settled here or it stalls the plugin UI for
+    // as long as the page stays open.
+    const settleOutstanding = () => {
+      for (const requestId of outstanding) {
+        this.rejectRequest(pluginName, client, requestId)
       }
-    })
+      outstanding.clear()
+    }
 
     // Function to handle cleanup. socket.io often emits both 'disconnect'
     // and 'end' on the same socket close, so cleanup() would otherwise
@@ -265,36 +263,113 @@ export class PluginsSettingsUiService {
       cleaned = true
       this.loggerService.debug(`[${pluginName}] custom UI closing (terminating child process)...`)
 
-      const childPid = child.pid
-      if (child.connected) {
+      // On a disconnect the socket is gone and these emits are harmless; on a modal close or a
+      // supersede the socket survives and the iframe gets its answers.
+      settleOutstanding()
+
+      // Detach this invocation's child from the socket while it drains, so a message it still
+      // manages to send cannot be relayed onto a session a newer child now serves. Its stdout,
+      // stderr and exit handlers stay: their logging is useful right up to the exit.
+      child?.removeAllListeners('message')
+
+      const childPid = child?.pid
+      if (child?.connected) {
         child.disconnect()
       }
-      setTimeout(() => {
-        if (child.killed || !childPid) {
-          return
-        }
-        try {
-          process.kill(childPid, 'SIGTERM')
-        } catch (e: any) {
-          // ESRCH is fine — the child already exited. Surface anything else.
-          if (e?.code !== 'ESRCH') {
-            this.loggerService.warn(`[${pluginName}] failed to SIGTERM child pid ${childPid}: ${e.message}`)
+      if (child) {
+        setTimeout(() => {
+          if (child.killed || !childPid) {
+            return
           }
-        }
-      }, 5000)
+          try {
+            process.kill(childPid, 'SIGTERM')
+          } catch (e: any) {
+            // ESRCH is fine — the child already exited. Surface anything else.
+            if (e?.code !== 'ESRCH') {
+              this.loggerService.warn(`[${pluginName}] failed to SIGTERM child pid ${childPid}: ${e.message}`)
+            }
+          }
+        }, 5000)
+      }
 
       client.removeAllListeners('end')
       client.removeAllListeners('disconnect')
       client.removeAllListeners('request')
+      this.customUiCleanups.delete(client)
     }
 
-    client.on('request', (request) => {
-      if (child.connected) {
+    this.customUiCleanups.set(client, cleanup)
+
+    // Bind the socket's listeners synchronously, before the lookups below suspend: they belong to
+    // the socket for its whole session, and a request that arrives while a helper is being
+    // resolved still has to be answered rather than dropped.
+    client.on('request', (request: { requestId?: string }) => {
+      if (child?.connected) {
+        if (request?.requestId) {
+          outstanding.add(request.requestId)
+        }
         child.send(request)
+      } else if (request?.requestId) {
+        this.rejectRequest(pluginName, client, request.requestId)
       }
     })
 
     client.on('disconnect', cleanup)
     client.on('end', cleanup)
+
+    const pluginUi: HomebridgePluginUiMetadata = (this.pluginUiMetadataCache.get(pluginName) as any)
+      || (await this.getPluginUiMetadata(pluginName))
+
+    // check the plugin has a server side script
+    const hasServerScript = await pathExists(resolve(pluginUi.serverPath))
+
+    // An invocation superseded, or a socket closed, while the lookups above were in flight must
+    // leave no trace of itself: no stray ready, and no orphan child.
+    if (cleaned) {
+      return
+    }
+
+    if (!hasServerScript) {
+      client.emit('ready', { server: false })
+      return
+    }
+
+    // Pass all env vars to server side script
+    const childEnv = { ...process.env }
+    childEnv.HOMEBRIDGE_STORAGE_PATH = this.configService.storagePath
+    childEnv.HOMEBRIDGE_CONFIG_PATH = this.configService.configPath
+    childEnv.HOMEBRIDGE_UI_VERSION = this.configService.package.version
+
+    // Launch the server side script
+    child = fork(pluginUi.serverPath, [], {
+      silent: true,
+      env: childEnv,
+    })
+
+    child.stdout.on('data', (data) => {
+      this.loggerService.log(`[${pluginName}] ${data.toString().trim()}`)
+    })
+
+    child.stderr.on('data', (data) => {
+      this.loggerService.error(`[${pluginName}] ${data.toString().trim()}`)
+    })
+
+    child.on('exit', () => {
+      this.loggerService.debug(`[${pluginName}] custom UI closed (child process ended).`)
+
+      // A crash, or a kill from the cleanup path, can take the child down with requests still in
+      // flight. Nothing will ever answer those, so settle them here.
+      settleOutstanding()
+    })
+
+    child.addListener('message', (response: { action: string, payload: any }) => {
+      if (typeof response === 'object' && response.action) {
+        if (response.action === 'response' && response.payload?.requestId) {
+          outstanding.delete(response.payload.requestId)
+        }
+        response.action = response.action === 'error' ? 'server_error' : response.action
+        client.emit(response.action, response.payload)
+      }
+    })
   }
 }
