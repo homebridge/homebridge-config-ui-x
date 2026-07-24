@@ -528,6 +528,7 @@
   "plugins.settings.label_open_config_editor": "Abrir editor de configurações",
   "plugins.settings.message_consult_documentation": "Consulte a documentação do plugin para ter instruções de como configurá-lo corretamente.",
   "plugins.settings.message_manual_config_required": "Este plugin precisa ser configurado manualmente utilizando o editor de configurações do Homebridge UI.",
+  "plugins.settings.message_ui_offline": "Not connected to the Homebridge UI server.",
   "plugins.settings.plugin_config_saved": "Configurações do Plugin Salvas",
   "plugins.settings.restart_required": "Reinicie o Homebridge para aplicar as mudanças.",
   "plugins.stats": "Plugin Statistics",

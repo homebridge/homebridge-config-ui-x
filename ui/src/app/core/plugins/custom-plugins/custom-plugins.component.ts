@@ -215,7 +215,14 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
       return
     }
 
-    this.io.socket.emit('start', plugin.name)
+    // The server-side helper is tied to the socket and dies with it, so the plugin has to be
+    // introduced to the server on every connection, not just the first. Subscribing to `connected`
+    // covers all three cases with one path — a cache-hit reopen, the initial connect and each
+    // reconnect — and it is the only place 'start' is emitted: emitting directly as well would
+    // fire it twice on a cache hit (see the WsService doc comment).
+    this.io.connected!.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+      this.io.socket.emit('start', plugin.name)
+    })
 
     // The iframe is only assigned once the socket reports 'ready' (loadUi),
     // and its contentWindow is nulled when the modal is torn down, so guard
@@ -239,6 +246,13 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
   private loadUi(): void {
     const plugin = this.plugin
     if (!plugin) {
+      return
+    }
+
+    // Each connection brings a freshly spawned helper announcing itself with 'ready', and that
+    // helper serves the iframe already on the page. Reassigning the src would reload the plugin UI
+    // and throw away whatever the user has typed into it, so it is assigned once per modal.
+    if (this.iframe) {
       return
     }
 
@@ -381,6 +395,15 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
   }
 
   private handleRequest(event: MessageEvent): void {
+    // socket.io flushes its buffered emits before the 'connect' event fires, so a request buffered
+    // while the socket is down would reach the fresh server-side socket ahead of the 'start' that
+    // gives it a helper, and nothing would answer it. Failing fast instead keeps the plugin UI's
+    // promise chain moving and leaves its own retry logic free to recover once the socket is back.
+    if (!this.io.socket.connected) {
+      this.requestResponse(event, { message: this.$translate.instant('plugins.settings.message_ui_offline') }, false)
+      return
+    }
+
     this.io.socket.emit('request', event.data)
   }
 
