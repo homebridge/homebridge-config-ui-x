@@ -9,6 +9,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(ui): keep status widget values and units on one line (#2913) (@tbaur)
 - feat(settings): support HAP `disableIdentifyingMaterial` option (#2924) (@naterator)
 - feat(plugins): show matter support badge on plugin cards
+- fix(plugins): re-establish custom ui sessions on socket reconnect (#2931) (@hjdhjd)
 
 ### Other Changes
 
@@ -19,6 +20,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(plugins): pass allow-scripts to plugin installs (#2921) (@bcomnes)
 - fix(plugins): only pass allow-scripts to global installs
 - fix(plugins): honour the beta preference when a stable update is also available
+- fix(deps): bump `@fastify/static` to v10 (security)
 
 ### Homebridge Dependencies
 
