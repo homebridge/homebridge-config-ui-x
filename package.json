@@ -84,7 +84,7 @@
     "@fastify/multipart": "10.1.0",
     "@fastify/static": "9.3.0",
     "@homebridge/hap-client": "5.1.0",
-    "@homebridge/node-pty-prebuilt-multiarch": "0.14.1-beta.4",
+    "@homebridge/node-pty-prebuilt-multiarch": "^0.14.1",
     "@nestjs/axios": "4.0.1",
     "@nestjs/common": "11.1.28",
     "@nestjs/core": "11.1.28",
@@ -212,6 +212,6 @@
     "fsevents@2.3.3": true,
     "@nestjs/core": false,
     "@scarf/scarf": false,
-    "@homebridge/node-pty-prebuilt-multiarch@0.14.1-beta.4": true
+    "@homebridge/node-pty-prebuilt-multiarch@0.14.1": true
   }
 }
