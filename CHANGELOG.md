@@ -9,6 +9,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(ui): keep status widget values and units on one line (#2913) (@tbaur)
 - feat(settings): support HAP `disableIdentifyingMaterial` option (#2924) (@naterator)
 - feat(plugins): detect the supports-matter keyword on plugins
+- fix(plugins): re-establish custom ui sessions on socket reconnect (#2931) (@hjdhjd)
 
 ### Other Changes
 
