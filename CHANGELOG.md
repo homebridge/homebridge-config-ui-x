@@ -20,6 +20,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(plugins): pass allow-scripts to plugin installs (#2921) (@bcomnes)
 - fix(plugins): only pass allow-scripts to global installs
 - fix(plugins): honour the beta preference when a stable update is also available
+- fix(deps): bump `@fastify/static` to v10 (security)
 
 ### Homebridge Dependencies
 
