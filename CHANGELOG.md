@@ -12,6 +12,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(plugins): re-establish custom ui sessions on socket reconnect (#2931) (@hjdhjd)
 - feat(plugins): show commissioned matter fabrics on child bridges
 - fix(settings): return metrics and package path settings in env (#2934)
+- fix(status): skip metrics collection when monitoring is disabled (#2934)
 
 ### Other Changes
 

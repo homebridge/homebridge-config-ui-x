@@ -260,7 +260,18 @@ export class StatusService {
    * Returns server CPU Load and temperature information
    */
   public async getServerCpuInfo() {
-    if (!this.memoryUsageHistory.length) {
+    // When metrics monitoring is disabled, return an empty result rather than
+    // collecting on demand - the dashboard widgets poll this endpoint, which
+    // previously kept the metrics alive even with the monitoring turned off (#2934)
+    if (this.configService.ui.disableServerMetricsMonitoring === true) {
+      return {
+        cpuTemperature: { main: -1, cores: [], max: -1 },
+        currentLoad: 0,
+        cpuLoadHistory: [],
+      }
+    }
+
+    if (!this.cpuLoadHistory.length) {
       await this.getCpuLoadPoint()
     }
 
@@ -275,6 +286,14 @@ export class StatusService {
    * Returns server Memory usage information
    */
   public async getServerMemoryInfo() {
+    // See getServerCpuInfo - no on-demand collection when monitoring is disabled (#2934)
+    if (this.configService.ui.disableServerMetricsMonitoring === true) {
+      return {
+        mem: null,
+        memoryUsageHistory: [],
+      }
+    }
+
     if (!this.memoryUsageHistory.length) {
       await this.getMemoryUsagePoint()
     }

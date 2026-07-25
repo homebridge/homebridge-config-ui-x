@@ -389,6 +389,28 @@ describe('StatusGateway (e2e)', () => {
       expect(result).toHaveProperty('memoryUsageHistory')
     }, 30000)
 
+    it('should return empty CPU info when metrics monitoring is disabled', async () => {
+      configService.ui.disableServerMetricsMonitoring = true
+      try {
+        const result = await statusGateway.getServerCpuInfo()
+        expect((result as any).cpuLoadHistory).toEqual([])
+        expect((result as any).cpuTemperature).toEqual({ main: -1, cores: [], max: -1 })
+      } finally {
+        delete configService.ui.disableServerMetricsMonitoring
+      }
+    })
+
+    it('should return empty memory info when metrics monitoring is disabled', async () => {
+      configService.ui.disableServerMetricsMonitoring = true
+      try {
+        const result = await statusGateway.getServerMemoryInfo()
+        expect((result as any).mem).toBeNull()
+        expect((result as any).memoryUsageHistory).toEqual([])
+      } finally {
+        delete configService.ui.disableServerMetricsMonitoring
+      }
+    })
+
     it('should return network info with default interface', async () => {
       const result = await statusGateway.getServerNetworkInfo(client, { netInterfaces: [] })
       expect(result).toHaveProperty('net')
