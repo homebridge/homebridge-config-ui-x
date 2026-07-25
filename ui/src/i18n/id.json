@@ -806,6 +806,7 @@
   "status.memory.label_available": "Tersedia",
   "status.memory.label_total": "Total",
   "status.memory.title_memory": "Memori",
+  "status.metrics.label_disabled": "Server metric monitoring is disabled",
   "status.network.received_per_second": "Diterima",
   "status.network.sent_per_second": "Dikirim",
   "status.network.title_network": "Aktivitas Jaringan",

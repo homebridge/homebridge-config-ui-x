@@ -806,6 +806,7 @@
   "status.memory.label_available": "Na voljo",
   "status.memory.label_total": "Skupaj",
   "status.memory.title_memory": "Spomin",
+  "status.metrics.label_disabled": "Server metric monitoring is disabled",
   "status.network.received_per_second": "Received",
   "status.network.sent_per_second": "Sent",
   "status.network.title_network": "Network Activity",

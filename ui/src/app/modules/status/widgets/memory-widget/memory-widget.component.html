@@ -2,37 +2,45 @@
   <div class="drag-handler p-2" [class.widget-cursor]="widget().draggable">
     {{ 'status.memory.title_memory' | translate }}
   </div>
-  <canvas
-    class="widget-chart h-100 w-100"
-    baseChart
-    [data]="lineChartData"
-    [labels]="lineChartLabels"
-    [options]="lineChartOptions"
-    [type]="lineChartType"
-  ></canvas>
   <div #widgetbackground class="hb-widget-chart-background"></div>
-  <div class="d-flex flex-row flex-grow-1 align-items-center w-100 gridster-item-content text-center">
-    <div class="d-flex justify-content-around flex-wrap w-100">
-      <div class="text-center widget-value-parent-wrap">
-        <div class="widget-value mb-0">
-          @if (totalMemory() !== undefined) {
-            {{ totalMemory() | number: '1.0-2' }} GB
-          } @else {
-            <i class="fas fa-circle-notch fa-spin"></i>
-          }
+  @if (metricsDisabled) {
+    <div
+      class="d-flex flex-row flex-grow-1 align-items-center justify-content-center w-100 gridster-item-content text-center px-3"
+    >
+      <div class="grey-text">{{ 'status.metrics.label_disabled' | translate }}</div>
+    </div>
+  } @else {
+    <canvas
+      class="widget-chart h-100 w-100"
+      baseChart
+      [data]="lineChartData"
+      [labels]="lineChartLabels"
+      [options]="lineChartOptions"
+      [type]="lineChartType"
+    ></canvas>
+    <div class="d-flex flex-row flex-grow-1 align-items-center w-100 gridster-item-content text-center">
+      <div class="d-flex justify-content-around flex-wrap w-100">
+        <div class="text-center widget-value-parent-wrap">
+          <div class="widget-value mb-0">
+            @if (totalMemory() !== undefined) {
+              {{ totalMemory() | number: '1.0-2' }} GB
+            } @else {
+              <i class="fas fa-circle-notch fa-spin"></i>
+            }
+          </div>
+          <div class="widget-value-label grey-text">{{ 'status.memory.label_total' | translate }}</div>
         </div>
-        <div class="widget-value-label grey-text">{{ 'status.memory.label_total' | translate }}</div>
-      </div>
-      <div class="text-center widget-value-parent-wrap">
-        <div class="widget-value mb-0">
-          @if (freeMemory() !== undefined) {
-            {{ freeMemory() | number: '1.0-2' }} GB
-          } @else {
-            <i class="fas fa-circle-notch fa-spin"></i>
-          }
+        <div class="text-center widget-value-parent-wrap">
+          <div class="widget-value mb-0">
+            @if (freeMemory() !== undefined) {
+              {{ freeMemory() | number: '1.0-2' }} GB
+            } @else {
+              <i class="fas fa-circle-notch fa-spin"></i>
+            }
+          </div>
+          <div class="widget-value-label grey-text">{{ 'status.memory.label_available' | translate }}</div>
         </div>
-        <div class="widget-value-label grey-text">{{ 'status.memory.label_available' | translate }}</div>
       </div>
     </div>
-  </div>
+  }
 </div>

@@ -806,6 +806,7 @@
   "status.memory.label_available": "Ledigt",
   "status.memory.label_total": "Totalt",
   "status.memory.title_memory": "Minne",
+  "status.metrics.label_disabled": "Server metric monitoring is disabled",
   "status.network.received_per_second": "Mottaget",
   "status.network.sent_per_second": "Skickat",
   "status.network.title_network": "Nätverksaktivitet",

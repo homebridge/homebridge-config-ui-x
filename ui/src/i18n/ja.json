@@ -806,6 +806,7 @@
   "status.memory.label_available": "空き",
   "status.memory.label_total": "合計",
   "status.memory.title_memory": "メモリ",
+  "status.metrics.label_disabled": "Server metric monitoring is disabled",
   "status.network.received_per_second": "受信/秒",
   "status.network.sent_per_second": "送信/秒",
   "status.network.title_network": "ネットワーク活動",

@@ -806,6 +806,7 @@
   "status.memory.label_available": "Volná",
   "status.memory.label_total": "Celková",
   "status.memory.title_memory": "Paměť RAM",
+  "status.metrics.label_disabled": "Server metric monitoring is disabled",
   "status.network.received_per_second": "Přijato",
   "status.network.sent_per_second": "Odesláno",
   "status.network.title_network": "Aktivita Sítě",

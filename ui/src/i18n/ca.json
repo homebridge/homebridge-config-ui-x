@@ -806,6 +806,7 @@
   "status.memory.label_available": "Lliure",
   "status.memory.label_total": "Total",
   "status.memory.title_memory": "Memòria",
+  "status.metrics.label_disabled": "Server metric monitoring is disabled",
   "status.network.received_per_second": "Rebut",
   "status.network.sent_per_second": "Enviat",
   "status.network.title_network": "Activitat en xarxa",

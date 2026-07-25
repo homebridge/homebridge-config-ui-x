@@ -806,6 +806,7 @@
   "status.memory.label_available": "Disponível",
   "status.memory.label_total": "Total",
   "status.memory.title_memory": "Memória",
+  "status.metrics.label_disabled": "Server metric monitoring is disabled",
   "status.network.received_per_second": "Recebido",
   "status.network.sent_per_second": "Enviado",
   "status.network.title_network": "Atividade da Rede",
