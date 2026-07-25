@@ -739,6 +739,24 @@
                           <span> &middot; {{ 'status.code_scan' | translate }}</span>
                         }
                       </p>
+                      <!-- Commissioned fabric list: which controllers hold a pairing (Homebridge >= 2.2.2-beta.8) -->
+                      @if (
+                        isMatterFabricInfoEnabled &&
+                        matterDeviceInfo().get(configBlocks()[+selectedBlock()]._bridge?.username)?.fabrics?.length
+                      ) {
+                        <div class="mx-auto small grey-text">
+                          @for (
+                            fabric of matterDeviceInfo().get(configBlocks()[+selectedBlock()]._bridge?.username)
+                              ?.fabrics;
+                            track fabric.fabricIndex
+                          ) {
+                            <div>
+                              <i aria-hidden="true" class="fas fa-fw fa-user"></i>
+                              {{ getMatterFabricLabel(fabric) }}
+                            </div>
+                          }
+                        </div>
+                      }
                     </div>
                   </li>
                   @if (!matterDeviceInfo().get(configBlocks()[+selectedBlock()]._bridge?.username)?.commissioned) {

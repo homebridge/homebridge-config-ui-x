@@ -5,7 +5,7 @@
  * between the UI and homebridge core.
  * Child bridges can have both HAP and optional Matter functionality.
  */
-import { BridgeHapConfig, MatterConfig } from '../../core/matter/matter.interfaces.js'
+import { BridgeHapConfig, MatterConfig, MatterFabric } from '../../core/matter/matter.interfaces.js'
 
 export type BridgeStatus = 'pending' | 'ok' | 'down'
 
@@ -78,4 +78,10 @@ export interface ChildBridgeMetadata {
 
   /** Number of Matter devices */
   matterDeviceCount?: number
+
+  /** Number of commissioned Matter fabrics (Homebridge >= 2.2.2-beta.8) */
+  matterFabricCount?: number
+
+  /** Commissioned Matter fabrics (Homebridge >= 2.2.2-beta.8) */
+  matterFabrics?: MatterFabric[]
 }

@@ -199,6 +199,12 @@ export interface MatterFabric {
   fabricIndex: number
   label?: string
   vendorId?: number
+  /**
+   * The child bridge metadata path (`matterFabrics`, Homebridge >= 2.2.2-beta.8)
+   * sends the raw matter.js field name; the accessory-info path maps it to
+   * `vendorId` in core. Consumers should read `vendorId ?? rootVendorId`.
+   */
+  rootVendorId?: number
   fabricId?: string
   nodeId?: string
 }

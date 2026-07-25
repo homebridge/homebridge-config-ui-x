@@ -1,3 +1,5 @@
+import type { MatterFabricInfo } from '../server.interfaces'
+
 export interface PluginFundingOption {
   type: string
   url: string
@@ -87,6 +89,8 @@ export interface ChildBridge {
   matterCommissioned?: boolean
   matterSetupUri?: string
   matterPin?: string
+  matterFabricCount?: number
+  matterFabrics?: MatterFabricInfo[]
 }
 
 export interface DeviceInfo {
