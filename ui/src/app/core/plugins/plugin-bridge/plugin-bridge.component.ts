@@ -122,6 +122,9 @@ export class PluginBridgeComponent implements OnInit {
   // When true (Homebridge >= 2.2.0), Matter exposes a disableIpv4 toggle that
   // makes the Matter mDNS responder IPv6-only.
   public isMatterDisableIpv4Enabled = this.$settings.isFeatureEnabled('matterDisableIpv4')
+  // Homebridge >= 2.2.2-beta.8 includes the commissioned fabric list in child
+  // bridge metadata; older runtimes omit the fields entirely.
+  public isMatterFabricInfoEnabled = this.$settings.isFeatureEnabled('matterFabricInfo')
   // Tracks whether Matter disableIpv4 is set, keyed by block index. Only
   // meaningful when isMatterDisableIpv4Enabled is true and Matter is enabled.
   public readonly matterDisableIpv4Blocks = signal<Record<number, boolean>>({})
@@ -632,6 +635,26 @@ export class PluginBridgeComponent implements OnInit {
     return sanitized
   }
 
+  /**
+   * Human-readable name for a commissioned Matter fabric: the controller
+   * vendor, plus the fabric's own label (the home name, on Apple Home
+   * fabrics) when one is set.
+   */
+  public getMatterFabricLabel(fabric: { vendorId?: number, rootVendorId?: number, label?: string }): string {
+    // The child bridge metadata path sends the raw matter.js field name
+    // (rootVendorId); the accessory-info path maps it to vendorId in core.
+    const vendorId = fabric.vendorId ?? fabric.rootVendorId
+    const vendorNames: Record<number, string> = {
+      0x1349: 'Apple Home',
+      0x1384: 'Apple Keychain',
+      0x6006: 'Google Home',
+      0x1217: 'Amazon Alexa',
+      0x1049: 'SmartThings',
+    }
+    const vendor = vendorNames[vendorId ?? 0] ?? `0x${(vendorId ?? 0).toString(16).toUpperCase()}`
+    return fabric.label ? `${vendor} · ${fabric.label}` : vendor
+  }
+
   private async getMatterCommissioningInfo(username: string) {
     try {
       // Get all child bridges from the status endpoint
@@ -649,6 +672,8 @@ export class PluginBridgeComponent implements OnInit {
           commissioned: bridge.matterCommissioned,
           deviceCount: bridge.matterDeviceCount,
           port: bridge.matterConfig?.port,
+          fabrics: bridge.matterFabrics,
+          fabricCount: bridge.matterFabricCount,
         }))
       } else {
         // Bridge found but Matter not yet started, or QR code not available yet
