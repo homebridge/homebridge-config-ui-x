@@ -806,6 +806,7 @@
   "status.memory.label_available": "가능",
   "status.memory.label_total": "전체",
   "status.memory.title_memory": "메모리",
+  "status.metrics.label_disabled": "Server metric monitoring is disabled",
   "status.network.received_per_second": "수신됨",
   "status.network.sent_per_second": "전송",
   "status.network.title_network": "네트워크 Activity",

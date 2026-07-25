@@ -806,6 +806,7 @@
   "status.memory.label_available": "Vrij",
   "status.memory.label_total": "Totaal",
   "status.memory.title_memory": "Geheugen",
+  "status.metrics.label_disabled": "Server metric monitoring is disabled",
   "status.network.received_per_second": "Ontvangen",
   "status.network.sent_per_second": "Verzonden",
   "status.network.title_network": "Netwerk Activiteit",

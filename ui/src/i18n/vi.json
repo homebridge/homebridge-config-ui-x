@@ -806,6 +806,7 @@
   "status.memory.label_available": "Khả dụng",
   "status.memory.label_total": "Tổng",
   "status.memory.title_memory": "Bộ nhớ",
+  "status.metrics.label_disabled": "Server metric monitoring is disabled",
   "status.network.received_per_second": "Nhận",
   "status.network.sent_per_second": "Gửi",
   "status.network.title_network": "Hoạt động mạng",
