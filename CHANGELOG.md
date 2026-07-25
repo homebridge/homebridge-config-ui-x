@@ -14,6 +14,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(settings): return metrics and package path settings in env (#2934)
 - fix(status): skip metrics collection when monitoring is disabled (#2934)
 - feat(status): show message on widgets when metrics monitoring is disabled (#2934)
+- feat(plugins): default new child bridges to matter without hap for matter-only plugins (#3975)
 
 ### Other Changes
 

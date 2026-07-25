@@ -1375,6 +1375,42 @@ describe('PluginController (e2e)', () => {
     })
   })
 
+  describe('supportsHap', () => {
+    const call = (keywords?: string[]) => (pluginsService as any).supportsHap(keywords) as boolean
+
+    it('is true when the plugin declares the supports-hap keyword', () => {
+      expect(call(['homebridge-plugin', 'supports-hap'])).toBe(true)
+    })
+
+    it('is false when the keyword is absent', () => {
+      expect(call(['homebridge-plugin', 'hap'])).toBe(false)
+    })
+
+    it('is false when there are no keywords at all', () => {
+      expect(call([])).toBe(false)
+      expect(call(undefined)).toBe(false)
+    })
+
+    it('ignores keyword casing', () => {
+      expect(call(['Supports-HAP'])).toBe(true)
+    })
+
+    it('does not match a keyword that merely contains the term', () => {
+      expect(call(['not-supports-hap-really'])).toBe(false)
+    })
+
+    // The convention (#3975): declaring either transport keyword makes the
+    // declaration complete, so supports-matter without supports-hap marks a
+    // matter-only plugin. Neither keyword = legacy = treated as HAP.
+    it('marks a plugin as matter-only when it declares supports-matter without supports-hap', () => {
+      const matterOnly = (keywords: string[]) =>
+        (pluginsService as any).supportsMatter(keywords) && !(pluginsService as any).supportsHap(keywords)
+      expect(matterOnly(['homebridge-plugin', 'supports-matter'])).toBe(true)
+      expect(matterOnly(['homebridge-plugin', 'supports-matter', 'supports-hap'])).toBe(false)
+      expect(matterOnly(['homebridge-plugin'])).toBe(false)
+    })
+  })
+
   describe('checkForBetaUpdates', () => {
     // Model the caller: it sets latestVersion/updateAvailable from the stable
     // release before delegating to the beta check.

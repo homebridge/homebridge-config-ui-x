@@ -53,6 +53,7 @@ export interface Plugin {
   verifiedPlugin: boolean
   verifiedPlusPlugin: boolean
   supportsMatter?: boolean
+  supportsHap?: boolean
   // Present when the plugin came from GET /plugins?include=config (admin
   // only). Holds the plugin's saved config.json blocks; the plugins page
   // reads it instead of fetching per-plugin via /config-editor/plugin/:name.
