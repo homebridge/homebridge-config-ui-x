@@ -22,6 +22,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(plugins): only pass allow-scripts to global installs
 - fix(plugins): honour the beta preference when a stable update is also available
 - fix(deps): bump `@fastify/static` to v10 (security)
+- fix(ci): resolve intermittent backup test timeouts in validate.yml (#2933)
 
 ### Homebridge Dependencies
 
