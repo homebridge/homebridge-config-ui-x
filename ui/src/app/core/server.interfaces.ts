@@ -109,4 +109,27 @@ export interface ChildBridgeStatusResponse {
 
   /** Number of Matter devices */
   matterDeviceCount?: number
+
+  /** Number of commissioned Matter fabrics (Homebridge >= 2.2.2-beta.8) */
+  matterFabricCount?: number
+
+  /** Commissioned Matter fabrics (Homebridge >= 2.2.2-beta.8) */
+  matterFabrics?: MatterFabricInfo[]
+}
+
+/**
+ * A commissioned Matter fabric (one controller ecosystem's pairing).
+ *
+ * `fabricId`/`nodeId` are strings — they are 64-bit Matter identifiers,
+ * stringified in core for safe IPC/JSON transport. The vendor may arrive as
+ * `vendorId` (accessory-info path) or `rootVendorId` (child bridge metadata
+ * path, raw matter.js field name) — read `vendorId ?? rootVendorId`.
+ */
+export interface MatterFabricInfo {
+  fabricIndex: number
+  label?: string
+  vendorId?: number
+  rootVendorId?: number
+  fabricId?: string
+  nodeId?: string
 }

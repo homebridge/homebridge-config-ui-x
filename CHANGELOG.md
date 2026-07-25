@@ -10,6 +10,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - feat(settings): support HAP `disableIdentifyingMaterial` option (#2924) (@naterator)
 - feat(plugins): detect the supports-matter keyword on plugins
 - fix(plugins): re-establish custom ui sessions on socket reconnect (#2931) (@hjdhjd)
+- feat(plugins): show commissioned matter fabrics on child bridges
 
 ### Other Changes
 
