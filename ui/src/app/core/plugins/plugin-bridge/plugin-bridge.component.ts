@@ -98,6 +98,14 @@ export class PluginBridgeComponent implements OnInit {
   public readonly currentlySelectedLink = signal<PluginBridgeAccessoryLink | null>(null)
   public readonly currentBridgeHasLinks = signal<boolean>(false)
   public isMatterSupported = this.$settings.isFeatureEnabled('matterSupport')
+  // A plugin that declares the `supports-matter` keyword without `supports-hap`
+  // publishes nothing over HAP (#3975). New child bridges for such plugins
+  // default to Matter on / HAP off, so the HAP QR code (which would pair an
+  // empty bridge) never appears. Both toggles stay visible to override.
+  public isMatterOnlyPlugin = this.isMatterSupported
+    && this.plugin?.supportsMatter === true
+    && this.plugin?.supportsHap !== true
+
   // When false (older Homebridge), at least one of HAP/Matter must stay enabled.
   public allowDisableAllProtocols = this.$settings.isFeatureEnabled('disableAllProtocols')
   // When true (Homebridge >= 2.0.3-beta.22), disabling Matter on a child bridge
@@ -490,6 +498,15 @@ export class PluginBridgeComponent implements OnInit {
           ...current,
           [Number(index)]: keepHapDisableIdentifyingMaterial,
         }))
+      }
+
+      // Matter-only plugin (#3975): a brand-new child bridge defaults to
+      // Matter on / HAP off instead. Enabling Matter first keeps the
+      // at-least-one-protocol guard in toggleHapBridge satisfied. Bridges
+      // with existing configuration keep their saved state.
+      if (this.isMatterOnlyPlugin && !block.accessory && !bridgeCache && !matterCache) {
+        await this.toggleMatterBridge(block, true, index)
+        await this.toggleHapBridge(block, false, index)
       }
     } else {
       // Set enabled state to false

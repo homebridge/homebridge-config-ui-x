@@ -344,6 +344,19 @@ export class PluginsService {
     return Array.isArray(keywords) && keywords.some(k => k?.toLowerCase() === 'supports-matter')
   }
 
+  /**
+   * Whether a plugin advertises that it exposes accessories over HAP.
+   *
+   * Companion to `supports-matter`: declaring either transport keyword makes
+   * the declaration complete, so `supports-matter` without `supports-hap`
+   * marks a Matter-only plugin whose new child bridges should not publish a
+   * HAP bridge (#3975). Plugins declaring neither keyword keep today's
+   * behaviour and are treated as HAP plugins.
+   */
+  private supportsHap(keywords?: string[]): boolean {
+    return Array.isArray(keywords) && keywords.some(k => k?.toLowerCase() === 'supports-hap')
+  }
+
   private matchesPlugin(plugin: HomebridgePlugin, searchTerms: string[]): 'exactName' | 'exactKeyword' | 'partial' | null {
     const pluginName = plugin.name.toLowerCase()
     const pluginKeywords = this.getPluginKeywords(plugin)
@@ -444,6 +457,7 @@ export class PluginsService {
           verifiedPlugin: this.verifiedPlugins.includes(pkg.package.name),
           verifiedPlusPlugin: this.verifiedPlusPlugins.includes(pkg.package.name),
           supportsMatter: this.supportsMatter(pkg.package.keywords),
+          supportsHap: this.supportsHap(pkg.package.keywords),
           icon: this.pluginIcons[pkg.package.name] ? `${this.pluginListUrl}${this.pluginIcons[pkg.package.name]}` : null,
           isHbScoped: pkg.package.name.startsWith('@homebridge-plugins/'),
           newHbScope: this.newScopePlugins[pkg.package.name],
@@ -562,6 +576,7 @@ export class PluginsService {
         verifiedPlugin: this.verifiedPlugins.includes(pkg.name),
         verifiedPlusPlugin: this.verifiedPlusPlugins.includes(pkg.name),
         supportsMatter: this.supportsMatter(pkg.keywords),
+        supportsHap: this.supportsHap(pkg.keywords),
         icon: this.pluginIcons[pkg.name],
         isHbScoped: pkg.name.startsWith('@homebridge-plugins/'),
         newHbScope: this.newScopePlugins[pkg.name],
@@ -585,6 +600,7 @@ export class PluginsService {
       plugin.verifiedPlugin = this.verifiedPlugins.includes(pkg.name)
       plugin.verifiedPlusPlugin = this.verifiedPlusPlugins.includes(pkg.name)
       plugin.supportsMatter = this.supportsMatter(pkg.keywords)
+      plugin.supportsHap = this.supportsHap(pkg.keywords)
       plugin.icon = this.pluginIcons[pkg.name]
         ? `${this.pluginListUrl}${this.pluginIcons[pkg.name]}`
         : null
@@ -1099,6 +1115,7 @@ export class PluginsService {
       verifiedPlugin: this.verifiedPlugins.includes(pkgJson.name),
       verifiedPlusPlugin: this.verifiedPlusPlugins.includes(pkgJson.name),
       supportsMatter: this.supportsMatter(pkgJson.keywords),
+      supportsHap: this.supportsHap(pkgJson.keywords),
       icon: this.pluginIcons[pkgJson.name]
         ? `${this.pluginListUrl}${this.pluginIcons[pkgJson.name]}`
         : null,
@@ -2151,6 +2168,7 @@ export class PluginsService {
       verifiedPlugin: this.verifiedPlugins.includes(pkgJson.name),
       verifiedPlusPlugin: this.verifiedPlusPlugins.includes(pkgJson.name),
       supportsMatter: this.supportsMatter(pkgJson.keywords),
+      supportsHap: this.supportsHap(pkgJson.keywords),
       icon: this.pluginIcons[pkgJson.name]
         ? `${this.pluginListUrl}${this.pluginIcons[pkgJson.name]}`
         : null,
