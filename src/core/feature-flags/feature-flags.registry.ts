@@ -74,4 +74,9 @@ export const FEATURE_FLAGS: FeatureFlagDefinition[] = [
     description: 'Exposes `hap.disableIdentifyingMaterial` (main bridge and child bridges). When true, HAP-NodeJS does not append username-derived identifying material to bridge display names and mDNS service instance names. Requires a homebridge runtime that reads the option; older runtimes reject the key.',
     range: '>=2.2.2-beta.0',
   },
+  {
+    key: 'matterFabricInfo',
+    description: 'Homebridge core includes the commissioned Matter fabric list (matterFabrics/matterFabricCount) in child bridge metadata, so the UI can show which controllers hold a fabric rather than a bare paired flag. Older runtimes omit the fields.',
+    range: '>=2.2.2-beta.8',
+  },
 ]
