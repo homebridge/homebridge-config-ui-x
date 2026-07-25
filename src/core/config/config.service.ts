@@ -188,9 +188,11 @@ export class ConfigService {
       ...toReturn,
       env: {
         ...toReturn.env,
+        disableServerMetricsMonitoring: this.ui.disableServerMetricsMonitoring,
         enableAccessories: this.homebridgeInsecureMode,
         enableTerminalAccess: this.enableTerminalAccess,
         enableMdnsAdvertise: Boolean(this.ui.enableMdnsAdvertise),
+        homebridgePackagePath: this.ui.homebridgePackagePath,
         nodeVersion: process.version,
         recommendChildBridges: this.recommendChildBridges,
         runningInDocker: this.runningInDocker,
@@ -245,8 +247,6 @@ export class ConfigService {
       wallpaper: this.ui.wallpaper,
       host: this.ui.host || '',
       proxyHost: this.ui.proxyHost || '',
-      homebridgePackagePath: this.ui.homebridgePackagePath,
-      disableServerMetricsMonitoring: this.ui.disableServerMetricsMonitoring,
       keepOrphans: this.hbStartupSettings?.keepOrphans || false,
     }
   }
