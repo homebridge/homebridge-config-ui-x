@@ -806,6 +806,7 @@
   "status.memory.label_available": "可用",
   "status.memory.label_total": "总计",
   "status.memory.title_memory": "内存",
+  "status.metrics.label_disabled": "Server metric monitoring is disabled",
   "status.network.received_per_second": "接收速率",
   "status.network.sent_per_second": "发送速率",
   "status.network.title_network": "网络活动",

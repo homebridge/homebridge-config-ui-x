@@ -806,6 +806,7 @@
   "status.memory.label_available": "Saatavilla",
   "status.memory.label_total": "Yhteensä",
   "status.memory.title_memory": "Muisti",
+  "status.metrics.label_disabled": "Server metric monitoring is disabled",
   "status.network.received_per_second": "Vastaanotettu",
   "status.network.sent_per_second": "Lähetetty",
   "status.network.title_network": "Verkon aktiivisuus",

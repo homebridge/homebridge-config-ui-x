@@ -33,11 +33,15 @@ export class CpuWidgetComponent extends BaseChartWidgetComponent {
 
   // Other properties
   public temperatureUnits = this.$settings.env.temperatureUnits
+  public metricsDisabled = this.$settings.env.disableServerMetricsMonitoring === true
 
   protected fetchData(): void {
+    if (this.metricsDisabled) {
+      return
+    }
     this.io.request('get-server-cpu-info').subscribe((data: CpuWidgetData) => {
       this.updateData(data)
-      this.chart()!.update()
+      this.chart()?.update()
     })
   }
 

@@ -806,6 +806,7 @@
   "status.memory.label_available": "Frei",
   "status.memory.label_total": "Gesamt",
   "status.memory.title_memory": "Arbeitsspeicher",
+  "status.metrics.label_disabled": "Server metric monitoring is disabled",
   "status.network.received_per_second": "Empfangen",
   "status.network.sent_per_second": "Gesendet",
   "status.network.title_network": "Netzwerkaktivität",
