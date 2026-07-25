@@ -50,6 +50,7 @@ jobs:
   validate_service_starts:
     needs: build_and_test
     name: Validate
+    timeout-minutes: 30
     strategy:
       fail-fast: false
       matrix:
