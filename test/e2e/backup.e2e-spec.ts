@@ -49,14 +49,6 @@ const RE_COLON = /:/g
 
 vi.spyOn(globalThis.console, 'error')
 
-// Function code taken from http://blog.tompawlak.org/how-to-generate-random-values-nodejs-javascript
-function randomValueHex(len: number) {
-  return crypto.randomBytes(Math.ceil(len / 2))
-    .toString('hex') // convert to hexadecimal format
-    .slice(0, len)
-    .toUpperCase() // return required number of characters
-}
-
 describe('BackupController (e2e)', { timeout: 10_000 }, () => {
   let app: NestFastifyApplication
 
@@ -131,6 +123,10 @@ describe('BackupController (e2e)', { timeout: 10_000 }, () => {
   })
 
   beforeEach(async () => {
+    // Clean up large test files to prevent them from slowing down subsequent tests
+    // (e.g. scheduled backup jobs that would otherwise include these files)
+    emptyDirSync(resolve(process.env.UIX_STORAGE_PATH, 'largefile'))
+
     // Mock functions
     postBackupRestoreRestartFn = vi.fn()
     backupService.postBackupRestoreRestart = postBackupRestoreRestartFn as any
@@ -329,23 +325,25 @@ describe('BackupController (e2e)', { timeout: 10_000 }, () => {
 
   // https://github.com/homebridge/homebridge-config-ui-x/issues/1856
 
-  it('POST /backup/restore of a large .homebridge directory should backup, but restore will not work', { timeout: 10_000 }, async () => {
-    // Create a large file to be included within the backup
-    emptyDirSync(resolve(process.env.UIX_STORAGE_PATH, 'largefile'))
-
+  it('POST /backup/restore of a large .homebridge directory should backup, but restore will not work', { timeout: 60_000 }, async () => {
+    // Create large files with binary random data (incompressible by gzip) to exceed
+    // the 25MB backup size limit. Uses 64KB chunks for efficient file I/O.
+    const CHUNK_SIZE = 65536
     const createEmptyFileOfSize = (fileName, size) => {
       return new Promise((done) => {
         const fh = openSync(fileName, 'w')
-        for (let i = 0; i < size; i = i + 1024) {
-          writeSync(fh, randomValueHex(1024))
+        for (let i = 0; i < size; i += CHUNK_SIZE) {
+          writeSync(fh, crypto.randomBytes(Math.min(CHUNK_SIZE, size - i)))
         }
         closeSync(fh)
         done(true)
       })
     }
 
-    for (let i = 0; i < 10; i += 1) {
-      await createEmptyFileOfSize(largeFilePath + i, 9000000)
+    // 4 files × 9MB = 36MB of binary random data; gzip cannot compress random bytes,
+    // so the resulting backup tar.gz will exceed the 25MB restore size limit.
+    for (let i = 0; i < 4; i += 1) {
+      await createEmptyFileOfSize(largeFilePath + i, 9_000_000)
     }
 
     // Get a new backup
