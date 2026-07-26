@@ -16,6 +16,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - feat(status): show message on widgets when metrics monitoring is disabled (#2934)
 - feat(plugins): default new child bridges to matter without hap for matter-only plugins (#3975)
 - feat(plugins): show hap and matter support icons on plugin cards
+- chore(ui): remove beta badges from graduated features
 
 ### Other Changes
 
