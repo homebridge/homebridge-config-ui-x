@@ -613,7 +613,7 @@ export class StatusService {
     try {
       const versionList = (await firstValueFrom(this.httpService.get('https://nodejs.org/dist/index.json'))).data
 
-      // Get the newest node v22 and v24
+      // Get the newest node v22, v24 and v26
       const latest22 = versionList.filter((x: { version: string }) => x.version.startsWith('v22'))[0]
       const latest24 = versionList.filter((x: { version: string }) => x.version.startsWith('v24'))[0]
       const latest26 = versionList.filter((x: { version: string }) => x.version.startsWith('v26'))[0]
