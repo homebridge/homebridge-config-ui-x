@@ -17,7 +17,6 @@
             <span [innerHTML]="'status.widget.account_1' | translate"></span><br />
             <span [innerHTML]="'status.widget.account_2' | translate"></span>
           </div>
-          <span class="badge badge-primary">{{ 'common.labels.beta' | translate }}</span>
         </li>
         @for (widget of availableWidgets(); track widget.component) {
           <li class="list-group-item">
