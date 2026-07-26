@@ -50,6 +50,7 @@ export interface Plugin {
   updateTag: null | string
   verifiedPlugin: boolean
   verifiedPlusPlugin: boolean
+  supportsMatter?: boolean
   // Present when the plugin came from GET /plugins?include=config (admin
   // only). Holds the plugin's saved config.json blocks; the plugins page
   // reads it instead of fetching per-plugin via /config-editor/plugin/:name.

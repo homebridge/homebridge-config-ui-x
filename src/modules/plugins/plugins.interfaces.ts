@@ -6,6 +6,7 @@ export interface HomebridgePlugin {
   keywords?: string[]
   verifiedPlugin?: boolean
   verifiedPlusPlugin?: boolean
+  supportsMatter?: boolean
   icon?: string
   publicPackage?: boolean
   installedVersion?: string
