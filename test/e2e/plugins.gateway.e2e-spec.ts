@@ -126,7 +126,10 @@ describe('PluginsGateway (e2e)', { timeout: 10_000 }, () => {
 
   it('ON /plugins/install (npm 12 allow scripts)', async () => {
     const allowScriptsSpy = vi.spyOn(pluginsService as any, 'getAllowedInstallScripts')
-      .mockResolvedValue(['homebridge-mock-plugin', 'ffmpeg-for-homebridge'])
+      .mockResolvedValue({
+        allowed: ['homebridge-mock-plugin', 'ffmpeg-for-homebridge'],
+        withScripts: ['ffmpeg-for-homebridge'],
+      })
     const mockSpawn = vi.spyOn(nodePtyService, 'spawn')
       .mockImplementation(() => {
         const term = {
