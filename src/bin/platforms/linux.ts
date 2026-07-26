@@ -265,11 +265,11 @@ export class LinuxInstaller extends BasePlatform {
       this.checkForRoot()
     }
 
-    // Check if trying to install Node.js 24 on unsupported architecture
+    // Check if trying to install Node.js 24 or greater on unsupported architecture
     if (gte(job.target, '24.0.0')) {
       if (!isNodeV24SupportedArchitecture()) {
         this.hbService.logger.error(`Node.js ${job.target} is not supported on ${process.arch} architecture.`)
-        this.hbService.logger.error('Node.js v24 requires a 64-bit architecture. Please use Node.js v22 instead.')
+        this.hbService.logger.error('Node.js v24 or greater requires a 64-bit architecture. Please use Node.js v22 instead.')
         process.exit(1)
       }
     }
