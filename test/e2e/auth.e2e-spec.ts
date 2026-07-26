@@ -242,6 +242,16 @@ describe('AuthController (e2e)', () => {
     expect(ssl).not.toHaveProperty('passphrase')
   })
 
+  it('GET /auth/settings (unauthenticated - exposes temperatureUnits for plugins)', async () => {
+    const res = await app.inject({
+      method: 'GET',
+      path: '/auth/settings',
+    })
+
+    expect(res.statusCode).toBe(200)
+    expect(['c', 'f']).toContain(res.json().env.temperatureUnits)
+  })
+
   it('GET /auth/settings (unauthenticated - hasInstalledPlugins absent)', async () => {
     const res = await app.inject({
       method: 'GET',
