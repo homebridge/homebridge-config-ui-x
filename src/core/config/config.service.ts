@@ -170,6 +170,10 @@ export class ConfigService {
         setupWizardComplete: this.setupWizardComplete,
         scheduledBackupDisable: Boolean(this.ui.scheduledBackupDisable),
         scheduledBackupPath: this.ui.scheduledBackupPath || this.instanceBackupPath,
+        // Deliberately in the unauthenticated block: a per-instance display
+        // preference (not personal data) that plugins may read without a
+        // session to match the UI's temperature unit
+        temperatureUnits: this.ui.tempUnits || 'c',
       },
       formAuth: Boolean(this.ui.auth !== 'none'),
       sessionTimeout: this.ui.sessionTimeout || 28800,
@@ -202,7 +206,6 @@ export class ConfigService {
         runningInFreeBSD: this.runningInFreeBSD,
         runningOnRaspberryPi: this.runningOnRaspberryPi,
         runningOnRaspbianImage: this.runningOnRaspbianImage,
-        temperatureUnits: this.ui.tempUnits || 'c',
         temp: this.ui.temp,
         log: {
           maxSize: this.ui.log?.maxSize,
