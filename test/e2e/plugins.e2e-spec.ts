@@ -1509,18 +1509,18 @@ describe('PluginController (e2e)', () => {
 
   describe('getAllowedInstallScripts (#2909)', () => {
     const call = (name: string, version: string) =>
-      (pluginsService as any).getAllowedInstallScripts(name, version) as Promise<string[]>
+      (pluginsService as any).getAllowedInstallScripts(name, version) as Promise<{ allowed: string[], withScripts: string[] }>
 
     beforeEach(() => {
       // Prime the cached npm major version so the tests never shell out.
       ;(pluginsService as any).npmMajorVersion = 12
     })
 
-    it('returns an empty list on npm older than 12 without hitting the registry', async () => {
+    it('returns empty lists on npm older than 12 without hitting the registry', async () => {
       ;(pluginsService as any).npmMajorVersion = 10
       const getSpy = vi.spyOn(httpService, 'get')
 
-      await expect(call('homebridge-mock-plugin', '1.0.0')).resolves.toEqual([])
+      await expect(call('homebridge-mock-plugin', '1.0.0')).resolves.toEqual({ allowed: [], withScripts: [] })
       expect(getSpy).not.toHaveBeenCalled()
       getSpy.mockRestore()
     })
@@ -1540,11 +1540,51 @@ describe('PluginController (e2e)', () => {
         },
       }) as any)
 
-      await expect(call('homebridge-mock-plugin', '1.0.0')).resolves.toEqual([
-        'homebridge-mock-plugin',
-        '@stoprocent/noble@2.3.4',
-        'ffmpeg-for-homebridge',
-      ])
+      // The plugin itself has no install script, so it is allowed but is not
+      // expected to run anything.
+      await expect(call('homebridge-mock-plugin', '1.0.0')).resolves.toEqual({
+        allowed: [
+          'homebridge-mock-plugin',
+          '@stoprocent/noble@2.3.4',
+          'ffmpeg-for-homebridge',
+        ],
+        withScripts: [
+          '@stoprocent/noble@2.3.4',
+          'ffmpeg-for-homebridge',
+        ],
+      })
+      getSpy.mockRestore()
+    })
+
+    it('reports the plugin itself as script-running when its manifest has an install script', async () => {
+      const getSpy = vi.spyOn(httpService, 'get').mockReturnValue(of({
+        data: {
+          versions: {
+            '1.0.0': { scripts: { postinstall: 'node scripts/setup.js' } },
+          },
+        },
+      }) as any)
+
+      await expect(call('homebridge-mock-plugin', '1.0.0')).resolves.toEqual({
+        allowed: ['homebridge-mock-plugin'],
+        withScripts: ['homebridge-mock-plugin@1.0.0'],
+      })
+      getSpy.mockRestore()
+    })
+
+    it('honours the registry hasInstallScript flag when scripts are stripped', async () => {
+      const getSpy = vi.spyOn(httpService, 'get').mockReturnValue(of({
+        data: {
+          versions: {
+            '1.0.0': { hasInstallScript: true },
+          },
+        },
+      }) as any)
+
+      await expect(call('homebridge-mock-plugin', '1.0.0')).resolves.toEqual({
+        allowed: ['homebridge-mock-plugin'],
+        withScripts: ['homebridge-mock-plugin@1.0.0'],
+      })
       getSpy.mockRestore()
     })
 
@@ -1557,10 +1597,10 @@ describe('PluginController (e2e)', () => {
         },
       }) as any)
 
-      await expect(call('homebridge-mock-plugin', '2.0.0')).resolves.toEqual([
-        'homebridge-mock-plugin',
-        'ffmpeg-for-homebridge',
-      ])
+      await expect(call('homebridge-mock-plugin', '2.0.0')).resolves.toEqual({
+        allowed: ['homebridge-mock-plugin', 'ffmpeg-for-homebridge'],
+        withScripts: ['ffmpeg-for-homebridge'],
+      })
       getSpy.mockRestore()
     })
 
@@ -1569,7 +1609,10 @@ describe('PluginController (e2e)', () => {
         data: { versions: { '1.0.0': {} } },
       }) as any)
 
-      await expect(call('homebridge-mock-plugin', '1.0.0')).resolves.toEqual(['homebridge-mock-plugin'])
+      await expect(call('homebridge-mock-plugin', '1.0.0')).resolves.toEqual({
+        allowed: ['homebridge-mock-plugin'],
+        withScripts: [],
+      })
       getSpy.mockRestore()
     })
 
@@ -1578,8 +1621,59 @@ describe('PluginController (e2e)', () => {
         throw new Error('registry unreachable')
       })
 
-      await expect(call('homebridge-mock-plugin', '1.0.0')).resolves.toEqual(['homebridge-mock-plugin'])
+      await expect(call('homebridge-mock-plugin', '1.0.0')).resolves.toEqual({
+        allowed: ['homebridge-mock-plugin'],
+        withScripts: [],
+      })
       getSpy.mockRestore()
+    })
+  })
+
+  describe('filterLocallyHandledScripts (#2909)', () => {
+    const call = (scriptPackages: string[], localAllowScripts: unknown) =>
+      (pluginsService as any).filterLocallyHandledScripts(scriptPackages, localAllowScripts) as string[]
+
+    it('keeps every package when there is no local allowScripts', () => {
+      expect(call(['homebridge-mock-plugin@1.0.0', 'ffmpeg-for-homebridge'], undefined))
+        .toEqual(['homebridge-mock-plugin@1.0.0', 'ffmpeg-for-homebridge'])
+    })
+
+    it('drops packages allowed with a bare name', () => {
+      expect(call(['homebridge-mock-plugin@1.0.0'], { 'homebridge-mock-plugin': true }))
+        .toEqual([])
+    })
+
+    it('drops packages allowed with the exact version pin', () => {
+      expect(call(['homebridge-mock-plugin@1.0.0'], { 'homebridge-mock-plugin@1.0.0': true }))
+        .toEqual([])
+    })
+
+    it('keeps a package whose true entry pins a different version', () => {
+      // Updating 1.0.0 -> 1.1.0 with a stale pin still blocks the script, so
+      // the warning must fire.
+      expect(call(['homebridge-mock-plugin@1.1.0'], { 'homebridge-mock-plugin@1.0.0': true }))
+        .toEqual(['homebridge-mock-plugin@1.1.0'])
+    })
+
+    it('drops explicitly denied packages whatever version the entry names', () => {
+      expect(call(
+        ['homebridge-mock-plugin@1.1.0', '@scarf/scarf'],
+        { 'homebridge-mock-plugin@1.0.0': false, '@scarf/scarf': false },
+      )).toEqual([])
+    })
+
+    it('handles scoped dependency keys with version pins', () => {
+      expect(call(
+        ['@stoprocent/noble@2.3.4', 'ffmpeg-for-homebridge'],
+        { '@stoprocent/noble@2.3.4': true },
+      )).toEqual(['ffmpeg-for-homebridge'])
+    })
+
+    it('treats array-form local entries as allowed', () => {
+      expect(call(
+        ['homebridge-mock-plugin@1.0.0', 'ffmpeg-for-homebridge'],
+        ['ffmpeg-for-homebridge'],
+      )).toEqual(['homebridge-mock-plugin@1.0.0'])
     })
   })
 

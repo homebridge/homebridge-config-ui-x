@@ -2295,17 +2295,25 @@ export class PluginsService {
    * declares in its package.json `allowScripts` field (either an array of
    * package names or an object map of name -> boolean).
    *
-   * Returns an empty list when the running npm is older than 12 - passing the
-   * flag there would hard-error as an unknown option - or when the registry
-   * lookup fails entirely (the plugin's own name is still allowed in that
-   * case, as installing the plugin is taken as consent for its own script).
+   * `withScripts` is the subset expected to actually run an install script -
+   * the declared dependencies (they are only declared because they have one)
+   * plus the plugin itself only when its manifest shows one - so a
+   * project-scoped install can warn about skipped scripts without naming
+   * script-less packages.
+   *
+   * Returns empty lists when the running npm is older than 12 - passing the
+   * flag there would hard-error as an unknown option. When the registry
+   * lookup fails entirely the plugin's own name is still allowed (installing
+   * the plugin is taken as consent for its own script), but `withScripts`
+   * stays empty as nothing is known to have a script.
    */
-  private async getAllowedInstallScripts(pluginName: string, pluginVersion: string): Promise<string[]> {
+  private async getAllowedInstallScripts(pluginName: string, pluginVersion: string): Promise<{ allowed: string[], withScripts: string[] }> {
     if (this.getNpmMajorVersion() < 12) {
-      return []
+      return { allowed: [], withScripts: [] }
     }
 
     const allowed = new Set<string>([pluginName])
+    const withScripts = new Set<string>()
 
     try {
       // This fetch must NOT use the minimal-projection accept header
@@ -2314,19 +2322,25 @@ export class PluginsService {
       const pkg: INpmRegistryModule = (await firstValueFrom(
         this.httpService.get(`https://registry.npmjs.org/${encodeURIComponent(pluginName).replace(RE_ENCODED_AT, '@')}`),
       )).data
-      const manifest = pkg.versions?.[pluginVersion] as (IPackageJson & { allowScripts?: unknown }) | undefined
-      const declared = manifest?.allowScripts
+      const manifest = pkg.versions?.[pluginVersion] as (IPackageJson & { allowScripts?: unknown, hasInstallScript?: boolean }) | undefined
 
+      if (manifest?.hasInstallScript === true || ['preinstall', 'install', 'postinstall'].some(script => manifest?.scripts?.[script])) {
+        withScripts.add(`${pluginName}@${pluginVersion}`)
+      }
+
+      const declared = manifest?.allowScripts
       if (Array.isArray(declared)) {
         for (const name of declared) {
           if (typeof name === 'string' && name.length) {
             allowed.add(name)
+            withScripts.add(name)
           }
         }
       } else if (declared && typeof declared === 'object') {
         for (const [name, enabled] of Object.entries(declared)) {
           if (enabled === true) {
             allowed.add(name)
+            withScripts.add(name)
           }
         }
       }
@@ -2334,7 +2348,63 @@ export class PluginsService {
       this.logger.debug(`Could not read allowScripts for ${pluginName}@${pluginVersion}: ${error.message}`)
     }
 
-    return [...allowed]
+    return { allowed: [...allowed], withScripts: [...withScripts] }
+  }
+
+  /**
+   * Read the `allowScripts` field of the package.json alongside the custom
+   * plugin path, or undefined when the file or field does not exist (yet).
+   */
+  private async getLocalAllowScripts(): Promise<unknown> {
+    if (!this.configService.customPluginPath) {
+      return undefined
+    }
+    try {
+      return (await readJson(resolve(this.configService.customPluginPath, '../package.json')))?.allowScripts
+    } catch {
+      return undefined
+    }
+  }
+
+  /**
+   * For a project-scoped install npm reads script permissions from the
+   * `allowScripts` field of the package.json alongside the plugins, so a
+   * skipped-script warning is only warranted for packages with no verdict
+   * there. An entry matches a package by name; a `false` entry is a
+   * deliberate denial whatever version it names, while a `true` entry only
+   * counts when it carries no version pin or the exact version being
+   * installed - a stale `name@oldversion: true` pin still leaves the
+   * script blocked after an update.
+   */
+  private filterLocallyHandledScripts(scriptPackages: string[], localAllowScripts: unknown): string[] {
+    const splitKey = (key: string): { name: string, version?: string } => {
+      const at = key.indexOf('@', 1)
+      return at === -1 ? { name: key } : { name: key.slice(0, at), version: key.slice(at + 1) }
+    }
+
+    const entries: Array<{ name: string, version?: string, enabled: boolean }> = []
+    if (Array.isArray(localAllowScripts)) {
+      for (const key of localAllowScripts) {
+        if (typeof key === 'string' && key.length) {
+          entries.push({ ...splitKey(key), enabled: true })
+        }
+      }
+    } else if (localAllowScripts && typeof localAllowScripts === 'object') {
+      for (const [key, enabled] of Object.entries(localAllowScripts)) {
+        if (typeof enabled === 'boolean') {
+          entries.push({ ...splitKey(key), enabled })
+        }
+      }
+    }
+
+    return scriptPackages.filter((packageKey) => {
+      const candidate = splitKey(packageKey)
+      const matches = entries.filter(x => x.name === candidate.name)
+      if (matches.some(x => !x.enabled)) {
+        return false
+      }
+      return !matches.some(x => !x.version || !candidate.version || x.version === candidate.version)
+    })
   }
 
   /**
@@ -2342,22 +2412,27 @@ export class PluginsService {
    *
    * npm only accepts the flag for global installs. Passing it to a project-scoped
    * install (a custom plugin path with its own package.json) fails outright with
-   * EALLOWSCRIPTS, so there we explain what to do instead rather than breaking
-   * the install.
+   * EALLOWSCRIPTS, so there we instead explain what to do - but only when a
+   * script would actually be skipped: nothing is printed when neither the plugin
+   * nor its declared dependencies run install scripts, or when the package.json
+   * alongside the plugins already settles every script either way.
    */
   private async applyAllowScripts(installOptions: string[], client: EventEmitter, pluginAction: PluginActionDto): Promise<void> {
-    const allowedScripts = await this.getAllowedInstallScripts(pluginAction.name, pluginAction.version)
-    if (!allowedScripts.length) {
+    const { allowed, withScripts } = await this.getAllowedInstallScripts(pluginAction.name, pluginAction.version)
+    if (!allowed.length) {
       return
     }
 
     if (!installOptions.includes('-g')) {
-      client.emit('stdout', yellow(`Install scripts for ${allowedScripts.join(', ')} will not run: npm only accepts --allow-scripts for global installs. Add an "allowScripts" entry to the package.json alongside your plugins to permit them.\r\n\r\n`))
+      const skipped = this.filterLocallyHandledScripts(withScripts, await this.getLocalAllowScripts())
+      if (skipped.length) {
+        client.emit('stdout', yellow(`Install scripts for ${skipped.join(', ')} will not run: npm only accepts --allow-scripts for global installs. Add an "allowScripts" entry to the package.json alongside your plugins to permit them.\r\n\r\n`))
+      }
       return
     }
 
-    installOptions.push(`--allow-scripts=${allowedScripts.join(',')}`)
-    client.emit('stdout', yellow(`Allowing install scripts for: ${allowedScripts.join(', ')}.\r\n\r\n`))
+    installOptions.push(`--allow-scripts=${allowed.join(',')}`)
+    client.emit('stdout', yellow(`Allowing install scripts for: ${allowed.join(', ')}.\r\n\r\n`))
   }
 
   /**
