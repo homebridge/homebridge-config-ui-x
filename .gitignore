@@ -77,3 +77,7 @@ info
 
 # AI agents
 .claude
+
+# Local Homebridge UI patch artifacts
+/patch-hb-ui-accessories-v527-generic.sh
+/homebridge-ui-accessories-patch-v5.27-generic.md

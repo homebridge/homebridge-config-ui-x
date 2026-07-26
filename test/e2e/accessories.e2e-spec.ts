@@ -91,6 +91,7 @@ describe('AccessoriesController (e2e)', () => {
     // Enable insecure mode for this test suite.
     configService = new ConfigService()
     configService.homebridgeInsecureMode = true
+    process.env.HB_UI_ACCESSORIES_LOCAL_SEED = '0'
 
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AccessoriesModule, AuthModule],
@@ -114,6 +115,9 @@ describe('AccessoriesController (e2e)', () => {
 
     // Enable insecure mode
     configService.homebridgeInsecureMode = true
+    ;(accessoriesService as any).lastKnownHapServices = new Map()
+    ;(accessoriesService as any).stableHapServiceIdentities = new Map()
+    ;(accessoriesService as any).accessoryLoadChain = Promise.resolve([])
 
     // Setup mocks
     hapClientMock = vi.spyOn(accessoriesService.hapClient, 'getAllServices')
@@ -412,7 +416,105 @@ describe('AccessoriesController (e2e)', () => {
     configService.homebridgeInsecureMode = true
   })
 
+  it('service keeps known services when a HAP snapshot is partial', () => {
+    const first = {
+      uniqueId: 'first',
+      type: 'Switch',
+      serviceName: 'First',
+      aid: 1,
+      iid: 1,
+      accessoryInformation: {},
+      instance: { username: 'AA:AA:AA:AA:AA:AA' },
+    }
+    const second = {
+      uniqueId: 'second',
+      type: 'Switch',
+      serviceName: 'Second',
+      aid: 1,
+      iid: 2,
+      accessoryInformation: {},
+      instance: { username: 'BB:BB:BB:BB:BB:BB' },
+    }
+
+    const mergeHapSnapshot = (accessoriesService as any).mergeHapSnapshot.bind(accessoriesService)
+    expect(mergeHapSnapshot([first, second])).toHaveLength(2)
+    expect(mergeHapSnapshot([first])).toEqual([first, second])
+  })
+
+  it('service preserves IDs across LOCAL-SCAN and regular discovery', () => {
+    const local = {
+      uniqueId: 'local-id',
+      nameBasedUniqueId: 'local-name-id',
+      type: 'Television',
+      serviceName: 'Television',
+      aid: 1,
+      iid: 8,
+      accessoryInformation: {
+        'Manufacturer': 'Example',
+        'Model': 'Model',
+        'Serial Number': 'Serial',
+      },
+      instance: { username: 'LOCAL-SCAN:12345678' },
+    }
+    const discovered = {
+      ...local,
+      uniqueId: 'discovered-id',
+      nameBasedUniqueId: 'discovered-name-id',
+      instance: { username: 'AA:BB:CC:DD:EE:FF' },
+    }
+
+    const normalise = (accessoriesService as any).normaliseHapServiceIdentity.bind(accessoriesService)
+    normalise(local)
+    expect(normalise(discovered)).toMatchObject({
+      uniqueId: 'local-id',
+      nameBasedUniqueId: 'local-name-id',
+    })
+  })
+
+  it('service keeps the first instance for a duplicate endpoint', () => {
+    const local = {
+      name: 'Local',
+      username: 'LOCAL-SCAN:12345678',
+      ipAddress: '127.0.0.1',
+      port: 12345,
+      services: [],
+      connectionFailedCount: 0,
+      configurationNumber: 0,
+    }
+    const discovered = {
+      ...local,
+      name: 'Discovered',
+      username: 'AA:BB:CC:DD:EE:FF',
+    }
+    Reflect.set(accessoriesService.hapClient, 'instances', [local, discovered])
+
+    expect((accessoriesService as any).dedupeHapInstancePool()).toBe(1)
+    expect(Reflect.get(accessoriesService.hapClient, 'instances')).toEqual([local])
+  })
+
+  it('service derives the same local identity independently of the port', () => {
+    const accessoriesData = {
+      accessories: [{
+        services: [{
+          characteristics: [
+            { description: 'Name', value: 'Example Accessory' },
+            { description: 'Serial Number', value: 'Serial' },
+            { description: 'Manufacturer', value: 'Example' },
+            { description: 'Model', value: 'Model' },
+          ],
+        }],
+      }],
+    }
+    const describe = (accessoriesService as any).describeLocalHapEndpoint.bind(accessoriesService)
+    const first = describe({ host: '127.0.0.1', port: 12345, accessoriesData })
+    const second = describe({ host: '127.0.0.1', port: 54321, accessoriesData })
+
+    expect(first.key).toBe(second.key)
+    expect(first.username).toBe(second.username)
+  })
+
   afterAll(async () => {
+    delete process.env.HB_UI_ACCESSORIES_LOCAL_SEED
     await app.close()
   })
 })

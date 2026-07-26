@@ -1,9 +1,11 @@
-import type { ServiceType } from '@homebridge/hap-client'
+import type { HapInstance, ServiceType } from '@homebridge/hap-client'
 import type { Socket } from 'socket.io'
 
 import type { AccessoryControlMessage } from './accessories.interfaces.js'
 
+import { readFile } from 'node:fs/promises'
 import { join } from 'node:path'
+import process from 'node:process'
 
 import { HapClient } from '@homebridge/hap-client'
 import { BadRequestException, Inject, Injectable } from '@nestjs/common'
@@ -25,10 +27,46 @@ import {
   MatterStateUpdate,
 } from '../../core/matter/matter.interfaces.js'
 
+interface HapAccessoriesPayload {
+  accessories?: Array<{
+    services?: Array<{
+      characteristics?: Array<{
+        description?: unknown
+        value?: unknown
+      }>
+    }>
+  }>
+}
+
+interface LocalHapProbe {
+  host: string
+  port: number
+  accessoriesData: HapAccessoriesPayload
+}
+
+interface LocalHapCandidate {
+  host?: string
+  port: number
+  username?: string
+  name?: string
+  source: string
+}
+
+interface StableHapServiceIdentity {
+  uniqueId: string
+  nameBasedUniqueId?: string
+  localScan: boolean
+}
+
 @Injectable()
 export class AccessoriesService {
   public hapClient: HapClient
   public accessoriesCache = new NodeCache({ stdTTL: 0 })
+
+  private accessoryLoadChain: Promise<ServiceType[]> = Promise.resolve([])
+  private lastKnownHapServices = new Map<string, ServiceType>()
+  private stableHapServiceIdentities = new Map<string, StableHapServiceIdentity>()
+  private lastLocalHapSeedAt = 0
 
   // Matter monitoring state
   private matterMonitoringActive = false
@@ -192,8 +230,8 @@ export class AccessoriesService {
 
     const monitor = await this.hapClient.monitorCharacteristics()
 
-    const updateHandler = (data: ServiceType | MatterService) => {
-      client.emit('accessories-data', data)
+    const updateHandler = (data: ServiceType) => {
+      client.emit('accessories-data', this.normaliseHapServiceIdentity(data))
     }
     monitor.on('service-update', updateHandler)
 
@@ -253,6 +291,499 @@ export class AccessoriesService {
   }
 
   /**
+   * Access hap-client's discovered instance pool.
+   *
+   * hap-client does not currently expose public methods for adding a known
+   * instance. Keep this reflection boundary in one place so the fallback can
+   * be removed cleanly when such an API becomes available.
+   */
+  private getHapInstancePool(): HapInstance[] {
+    const instances = Reflect.get(this.hapClient, 'instances')
+    return Array.isArray(instances) ? instances as HapInstance[] : []
+  }
+
+  private setHapInstancePool(instances: HapInstance[]): void {
+    Reflect.set(this.hapClient, 'instances', instances)
+  }
+
+  private isLocalScanInstance(instance?: Partial<HapInstance>): boolean {
+    return String(instance?.username || '').toUpperCase().startsWith('LOCAL-SCAN:')
+  }
+
+  /**
+   * Build an endpoint-independent identity for a HAP service.
+   * It is only used to bridge identity changes involving LOCAL-SCAN instances.
+   */
+  private hapServiceIdentityKey(service: ServiceType): string | null {
+    const information = service.accessoryInformation || {}
+    const serial = String(information['Serial Number'] || '').trim().toLowerCase()
+    const instanceUsername = String(service.instance?.username || '').trim().toLowerCase()
+    const deviceIdentity = serial
+      ? [
+          serial,
+          String(information.Manufacturer || '').trim().toLowerCase(),
+          String(information.Model || '').trim().toLowerCase(),
+        ].join('|')
+      : instanceUsername
+
+    if (!deviceIdentity || !service.type) {
+      return null
+    }
+
+    return [
+      deviceIdentity,
+      String(service.serviceName || '').trim().toLowerCase(),
+      service.aid,
+      service.iid,
+      service.type,
+    ].join('|')
+  }
+
+  private normaliseHapServiceIdentity(service: ServiceType): ServiceType {
+    if (!service?.uniqueId) {
+      return service
+    }
+
+    const key = this.hapServiceIdentityKey(service)
+    if (!key) {
+      return service
+    }
+
+    const localScan = this.isLocalScanInstance(service.instance)
+    const stable = this.stableHapServiceIdentities.get(key)
+    if (!stable) {
+      this.stableHapServiceIdentities.set(key, {
+        uniqueId: service.uniqueId,
+        nameBasedUniqueId: service.nameBasedUniqueId,
+        localScan,
+      })
+      return service
+    }
+
+    // Avoid correlating two regular HAP instances that happen to expose the
+    // same non-unique AccessoryInformation values.
+    if (!stable.localScan && !localScan) {
+      return service
+    }
+
+    service.uniqueId = stable.uniqueId
+    if (stable.nameBasedUniqueId) {
+      service.nameBasedUniqueId = stable.nameBasedUniqueId
+    }
+    if (localScan) {
+      stable.localScan = true
+    }
+    return service
+  }
+
+  /**
+   * Merge partial snapshots without dropping services returned by an earlier
+   * successful load. Incoming services always replace their previous object.
+   */
+  private mergeHapSnapshot(hapServices: ServiceType[]): ServiceType[] {
+    const previousCount = this.lastKnownHapServices.size
+    if (!hapServices.length && previousCount) {
+      this.logger.warn(
+        `Ignoring empty HAP accessory snapshot; keeping ${previousCount} previously known HAP services.`,
+      )
+      return [...this.lastKnownHapServices.values()]
+    }
+
+    const previousInstances = new Set(
+      [...this.lastKnownHapServices.values()]
+        .map(service => service.instance?.username)
+        .filter(Boolean),
+    )
+    const currentInstances = new Set(
+      hapServices
+        .map(service => service.instance?.username)
+        .filter(Boolean),
+    )
+    const missingInstances = [...previousInstances]
+      .filter(username => !currentInstances.has(username))
+    const currentServices = new Map<string, ServiceType>()
+
+    for (const incoming of hapServices) {
+      const service = this.normaliseHapServiceIdentity(incoming)
+      if (service.uniqueId) {
+        currentServices.set(service.uniqueId, service)
+      }
+    }
+
+    // When every previously known instance responded, this is a complete
+    // snapshot and can safely replace the cache (including real removals).
+    if (!missingInstances.length) {
+      this.lastKnownHapServices = currentServices
+      return [...currentServices.values()]
+    }
+
+    for (const [uniqueId, service] of currentServices) {
+      this.lastKnownHapServices.set(uniqueId, service)
+    }
+    const merged = [...this.lastKnownHapServices.values()]
+    this.logger.warn(
+      `HAP accessory snapshot looks partial: received ${hapServices.length}, `
+      + `keeping ${merged.length} previously known service(s). Missing instances: `
+      + `${missingInstances.join(', ')}.`,
+    )
+    return merged
+  }
+
+  /**
+   * Keep the first instance for a username or endpoint. This makes a validated
+   * LOCAL-SCAN instance sticky if mDNS later reports the same endpoint.
+   */
+  private dedupeHapInstancePool(): number {
+    const instances = this.getHapInstancePool()
+    const usernames = new Set<string>()
+    const endpoints = new Set<string>()
+    const deduped: HapInstance[] = []
+
+    for (const instance of instances) {
+      const username = String(instance?.username || '').trim().toLowerCase()
+      const rawHost = String(instance?.ipAddress || '').trim().toLowerCase()
+      const host = rawHost === 'localhost' ? '127.0.0.1' : rawHost
+      const port = Number(instance?.port)
+      const endpoint = host && Number.isInteger(port) ? `${host}:${port}` : ''
+
+      if (
+        (username && usernames.has(username))
+        || (endpoint && endpoints.has(endpoint))
+      ) {
+        continue
+      }
+
+      if (username) {
+        usernames.add(username)
+      }
+      if (endpoint) {
+        endpoints.add(endpoint)
+      }
+      deduped.push(instance)
+    }
+
+    this.setHapInstancePool(deduped)
+    return instances.length - deduped.length
+  }
+
+  private async fetchWithTimeout(url: string, options: Parameters<typeof fetch>[1] = {}): Promise<Response> {
+    const controller = new AbortController()
+    const timer = setTimeout(() => controller.abort(), 1000)
+    try {
+      return await fetch(url, {
+        ...options,
+        signal: controller.signal,
+      })
+    } finally {
+      clearTimeout(timer)
+    }
+  }
+
+  /**
+   * Verify that a local listener exposes HAP and accepts this bridge's PIN.
+   */
+  private async probeLocalHapPort(port: number, pin: string): Promise<LocalHapProbe | null> {
+    for (const host of ['127.0.0.1', 'localhost']) {
+      try {
+        const accessoriesResponse = await this.fetchWithTimeout(`http://${host}:${port}/accessories`)
+        if (!accessoriesResponse.ok) {
+          continue
+        }
+
+        const accessoriesData = await accessoriesResponse.json().catch(() => null) as HapAccessoriesPayload | null
+        if (!Array.isArray(accessoriesData?.accessories)) {
+          continue
+        }
+
+        const checkResponse = await this.fetchWithTimeout(`http://${host}:${port}/characteristics`, {
+          method: 'PUT',
+          headers: {
+            'content-type': 'application/json',
+            'authorization': pin,
+          },
+          body: JSON.stringify({
+            characteristics: [{ aid: -1, iid: -1 }],
+          }),
+        })
+        if (![200, 204, 207].includes(checkResponse.status)) {
+          continue
+        }
+
+        return {
+          host,
+          port,
+          accessoriesData,
+        }
+      } catch {
+        // Not a reachable and authorised HAP endpoint.
+      }
+    }
+    return null
+  }
+
+  /**
+   * Derive a stable synthetic username from public HAP AccessoryInformation.
+   */
+  private describeLocalHapEndpoint(probe: LocalHapProbe): {
+    key: string
+    username: string
+    name: string
+  } | null {
+    for (const accessory of probe.accessoriesData.accessories || []) {
+      const information = new Map<string, string>()
+      for (const service of accessory.services || []) {
+        for (const characteristic of service.characteristics || []) {
+          const description = String(characteristic.description || '').trim().toLowerCase()
+          if (
+            !['name', 'serial number', 'manufacturer', 'model'].includes(description)
+            || information.has(description)
+          ) {
+            continue
+          }
+          const value = String(characteristic.value || '').trim()
+          if (value) {
+            information.set(description, value)
+          }
+        }
+      }
+
+      const name = information.get('name') || ''
+      const identity = [
+        information.get('serial number') || '',
+        name,
+        information.get('manufacturer') || '',
+        information.get('model') || '',
+      ]
+        .map(value => value.trim().toLowerCase())
+        .join('|')
+      if (!identity.replaceAll('|', '')) {
+        continue
+      }
+
+      // FNV-1a provides a short deterministic identifier; this is not used
+      // for security, only to avoid embedding accessory details in usernames.
+      let hash = 2166136261
+      for (const character of identity) {
+        hash ^= character.codePointAt(0) || 0
+        hash = Math.imul(hash, 16777619)
+      }
+
+      return {
+        key: `scan:${identity}`,
+        username: `LOCAL-SCAN:${(hash >>> 0).toString(16).padStart(8, '0').toUpperCase()}`,
+        name: name || `Local HAP ${probe.port}`,
+      }
+    }
+    return null
+  }
+
+  private async parseProcNetTcp(path: string): Promise<number[]> {
+    try {
+      const text = await readFile(path, 'utf8')
+      const ports: number[] = []
+      for (const line of text.split('\n').slice(1)) {
+        const columns = line.trim().split(/\s+/)
+        if (columns.length < 4 || columns[3] !== '0A') {
+          continue
+        }
+        const port = Number.parseInt(columns[1].split(':').pop(), 16)
+        if (Number.isInteger(port) && port > 0 && port <= 65535) {
+          ports.push(port)
+        }
+      }
+      return [...new Set(ports)]
+    } catch {
+      return []
+    }
+  }
+
+  /**
+   * Add configured local bridges and verified undiscovered local HAP
+   * listeners to hap-client's instance pool.
+   */
+  private async seedLocalHapInstances(): Promise<void> {
+    if (process.env.HB_UI_ACCESSORIES_LOCAL_SEED === '0') {
+      return
+    }
+
+    const now = Date.now()
+    const configuredInterval = Number(process.env.HB_UI_ACCESSORIES_LOCAL_SEED_INTERVAL_MS)
+    const intervalMs = Number.isFinite(configuredInterval) && configuredInterval >= 0
+      ? configuredInterval
+      : 30000
+    if (this.lastLocalHapSeedAt && now - this.lastLocalHapSeedAt < intervalMs) {
+      this.dedupeHapInstancePool()
+      return
+    }
+    this.lastLocalHapSeedAt = now
+
+    const config = this.configService.homebridgeConfig
+    const pin = config.bridge?.pin
+    if (!pin) {
+      this.logger.warn('No Homebridge bridge pin found; skipping local HAP instance fallback.')
+      return
+    }
+
+    const candidates = new Map<string, LocalHapCandidate>()
+    const normaliseUsername = (value: unknown): string => {
+      const username = String(value || '').trim()
+      return /^(?:[a-f\d]{2}:){5}[a-f\d]{2}$/i.test(username)
+        ? username.toUpperCase()
+        : username
+    }
+    const addBridgeCandidate = (
+      bridge: { port?: unknown, username?: unknown, name?: unknown } | undefined,
+      source: string,
+    ) => {
+      if (!bridge) {
+        return
+      }
+      const port = Number(bridge.port)
+      if (!Number.isInteger(port) || port <= 0 || port > 65535) {
+        return
+      }
+      const username = normaliseUsername(bridge.username)
+      candidates.set(`bridge:${username.toLowerCase() || port}`, {
+        port,
+        username,
+        name: bridge.name ? String(bridge.name) : undefined,
+        source,
+      })
+    }
+
+    addBridgeCandidate(config.bridge, 'config.bridge')
+    for (const platform of config.platforms || []) {
+      addBridgeCandidate(platform._bridge, 'platform._bridge')
+    }
+    for (const accessory of config.accessories || []) {
+      addBridgeCandidate(accessory._bridge, 'accessory._bridge')
+    }
+
+    this.dedupeHapInstancePool()
+    const currentInstances = this.getHapInstancePool()
+
+    // Validate existing synthetic instances first. Their identity keys reserve
+    // the device so another concurrently listening port cannot replace them.
+    for (const instance of currentInstances) {
+      if (!this.isLocalScanInstance(instance)) {
+        continue
+      }
+      const probe = await this.probeLocalHapPort(Number(instance.port), pin)
+      const description = probe && this.describeLocalHapEndpoint(probe)
+      if (probe && description) {
+        candidates.set(description.key, {
+          host: probe.host,
+          port: Number(instance.port),
+          username: instance.username,
+          name: description.name,
+          source: 'existing-local-scan',
+        })
+      }
+    }
+
+    if (process.env.HB_UI_ACCESSORIES_LOCAL_SCAN !== '0') {
+      const scanPorts = new Set([
+        ...await this.parseProcNetTcp('/proc/net/tcp'),
+        ...await this.parseProcNetTcp('/proc/net/tcp6'),
+      ])
+      const unknownPorts = [...scanPorts].filter(port => (
+        port !== 8581
+        && ![...candidates.values()].some(candidate => candidate.port === port)
+        && !currentInstances.some(instance => instance.port === port)
+      ))
+
+      // Probe in small batches to cap both latency and concurrent local I/O.
+      for (let index = 0; index < unknownPorts.length; index += 8) {
+        const batch = unknownPorts.slice(index, index + 8)
+        const probes = await Promise.all(batch.map(port => this.probeLocalHapPort(port, pin)))
+        for (const probe of probes) {
+          if (!probe) {
+            continue
+          }
+          const description = this.describeLocalHapEndpoint(probe)
+          if (!description || candidates.has(description.key)) {
+            continue
+          }
+          candidates.set(description.key, {
+            host: probe.host,
+            port: probe.port,
+            username: description.username,
+            name: description.name,
+            source: '/proc/net/tcp,hap-scan',
+          })
+        }
+      }
+    }
+
+    const instances = this.getHapInstancePool()
+    this.setHapInstancePool(instances)
+    const seeded: string[] = []
+    const updated: string[] = []
+
+    for (const candidate of candidates.values()) {
+      const username = String(candidate.username || '')
+      const existingByUsername = username
+        ? instances.find(instance => instance.username.toLowerCase() === username.toLowerCase())
+        : undefined
+
+      if (existingByUsername) {
+        if (existingByUsername.port !== candidate.port) {
+          const probe = candidate.host
+            ? { host: candidate.host }
+            : await this.probeLocalHapPort(candidate.port, pin)
+          if (probe) {
+            existingByUsername.ipAddress = probe.host
+            existingByUsername.port = candidate.port
+            existingByUsername.name = candidate.name || existingByUsername.name
+            existingByUsername.connectionFailedCount = 0
+            updated.push(
+              `${existingByUsername.name} (${existingByUsername.username}) -> `
+              + `${probe.host}:${candidate.port} [${candidate.source}]`,
+            )
+          }
+        }
+        continue
+      }
+
+      if (instances.some(instance => instance.port === candidate.port)) {
+        continue
+      }
+
+      const probe = candidate.host
+        ? { host: candidate.host }
+        : await this.probeLocalHapPort(candidate.port, pin)
+      if (!probe) {
+        continue
+      }
+
+      const instance: HapInstance = {
+        name: candidate.name || `Local HAP ${candidate.port}`,
+        username: username || `LOCAL-CONFIG:${candidate.port}`,
+        ipAddress: probe.host,
+        port: candidate.port,
+        services: [],
+        connectionFailedCount: 0,
+        configurationNumber: 0,
+      }
+      instances.push(instance)
+      seeded.push(
+        `${instance.name} (${instance.username}) @ `
+        + `${probe.host}:${candidate.port} [${candidate.source}]`,
+      )
+      this.hapClient.emit('instance-discovered', instance)
+    }
+
+    const dedupedCount = this.dedupeHapInstancePool()
+    if (seeded.length || updated.length || dedupedCount) {
+      this.logger.warn(
+        `Local HAP fallback: seeded ${seeded.length}, updated ${updated.length}, `
+        + `deduplicated ${dedupedCount} instance(s): `
+        + `${[...seeded, ...updated].join('; ') || 'no new endpoints'}`,
+      )
+    }
+  }
+
+  /**
    * Load all the accessories from Homebridge
    */
   public async loadAccessories(): Promise<ServiceType[]> {
@@ -260,16 +791,28 @@ export class AccessoriesService {
       throw new BadRequestException('Homebridge must be running in insecure mode to access accessories.')
     }
 
-    try {
-      return await this.hapClient.getAllServices()
-    } catch (e) {
-      if (e.response?.status === 401) {
-        this.logger.warn('Homebridge must be running in insecure mode to view and control accessories from this plugin.')
-      } else {
-        this.logger.error(`Failed to load accessories from Homebridge as ${e.message}.`)
+    const run = async (): Promise<ServiceType[]> => {
+      try {
+        await this.seedLocalHapInstances()
+        const hapServices = await this.hapClient.getAllServices()
+        return this.mergeHapSnapshot(hapServices)
+      } catch (e) {
+        if (e.response?.status === 401) {
+          this.logger.warn('Homebridge must be running in insecure mode to view and control accessories from this plugin.')
+        } else {
+          this.logger.error(`Failed to load accessories from Homebridge as ${e.message}.`)
+        }
+        return this.mergeHapSnapshot([])
       }
-      return []
     }
+
+    this.accessoryLoadChain = this.accessoryLoadChain
+      .catch((error) => {
+        this.logger.warn(`Previous accessory load failed: ${error?.message || error}`)
+        return []
+      })
+      .then(run)
+    return await this.accessoryLoadChain
   }
 
   /**
