@@ -350,8 +350,15 @@
           }
         </ul>
 
-        <!-- HOMEKIT (HAP) SECTION - Only shown when child bridge is enabled -->
-        @if (!currentlySelectedLink() && configBlocks()[+selectedBlock()]._bridge?.username) {
+        <!-- HOMEKIT (HAP) SECTION - Only shown when child bridge is enabled.
+             Hidden entirely for a matter-only plugin (#3975): it publishes nothing
+             over HAP, so the options have no meaning. Still shown if HAP somehow
+             ended up enabled on such a bridge, so it can always be turned off. -->
+        @if (
+          !currentlySelectedLink() &&
+          configBlocks()[+selectedBlock()]._bridge?.username &&
+          (!isMatterOnlyPlugin || hapEnabledBlocks()[+selectedBlock()])
+        ) {
           <ul class="list-group list-group-box mt-3 mb-0">
             <!-- HAP Header with Toggle -->
             <li class="list-group-item d-flex justify-content-between align-items-center flex-row pb-2">
