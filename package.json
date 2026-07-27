@@ -84,7 +84,7 @@
     "@fastify/helmet": "13.1.0",
     "@fastify/multipart": "10.1.0",
     "@fastify/static": "10.1.2",
-    "@homebridge/hap-client": "5.1.0",
+    "@homebridge/hap-client": "5.1.1",
     "@homebridge/node-pty-prebuilt-multiarch": "0.14.1",
     "@nestjs/axios": "4.0.1",
     "@nestjs/common": "11.1.28",
