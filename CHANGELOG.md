@@ -36,6 +36,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(plugins): only warn about skipped install scripts when one would actually be skipped
 - fix(build): copy the monaco chunks renamed in v0.56, so the json config editor is not a blank page
 - fix(deps): bump `@homebridge/hap-client` to v5.1.1 so child bridges sharing a hostname are discovered (#2936)
+- fix(test): reset the accessory layout so the default-room test passes on repeat runs
 
 ### Homebridge Dependencies
 
