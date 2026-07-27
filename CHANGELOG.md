@@ -31,6 +31,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(ci): resolve intermittent backup test timeouts in validate.yml (#2933)
 - feat(auth): always return temp. units in settings
 - fix(plugins): only warn about skipped install scripts when one would actually be skipped
+- fix(build): copy the monaco chunks renamed in v0.56, so the json config editor is not a blank page
 
 ### Homebridge Dependencies
 
