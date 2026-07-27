@@ -19,6 +19,7 @@ import { gt as semverGt } from 'semver'
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { AuthModule } from '../../src/core/auth/auth.module.js'
+import { ConfigService } from '../../src/core/config/config.service.js'
 import { HomebridgeIpcService } from '../../src/core/homebridge-ipc/homebridge-ipc.service.js'
 import { ChildBridgesService } from '../../src/modules/child-bridges/child-bridges.service.js'
 import { PluginsModule } from '../../src/modules/plugins/plugins.module.js'
@@ -1626,6 +1627,59 @@ describe('PluginController (e2e)', () => {
         withScripts: [],
       })
       getSpy.mockRestore()
+    })
+  })
+
+  describe('getHomebridgePackage - which install sets the version (#2897)', () => {
+    let configService: ConfigService
+    let fakeInstallPath: string
+
+    beforeEach(async () => {
+      configService = app.get(ConfigService)
+      fakeInstallPath = resolve(process.env.UIX_STORAGE_PATH, 'fake-homebridge', 'node_modules', 'homebridge')
+      await mkdir(fakeInstallPath, { recursive: true })
+      await writeFile(join(fakeInstallPath, 'package.json'), JSON.stringify({ name: 'homebridge', version: '2.1.1' }))
+
+      vi.spyOn(pluginsService as any, 'getInstalledModules').mockResolvedValue([
+        { name: 'homebridge', path: fakeInstallPath, installPath: fakeInstallPath },
+      ])
+      vi.spyOn(pluginsService as any, 'parsePackageJson').mockResolvedValue({
+        name: 'homebridge',
+        installedVersion: '2.1.1',
+        latestVersion: '2.2.0',
+      })
+      configService.ui.homebridgeUpdatePolicy = 'none'
+    })
+
+    it('does not let a discovered-but-not-running install overwrite the IPC version', async () => {
+      // hb-service reported launching a copy that is not among the scanned paths
+      // (the reporter had an apt install plus one under the plugin path). Without
+      // the guard, this disk scan overwrote the real running version, so the UI
+      // showed one version on load and another after a refresh.
+      configService.runningHomebridgeModulePath = resolve(process.env.UIX_STORAGE_PATH, 'some-other-homebridge')
+      configService.homebridgeVersion = '1.9.0'
+
+      await pluginsService.getHomebridgePackage()
+
+      expect(configService.homebridgeVersion).toBe('1.9.0')
+    })
+
+    it('sets the version from disk when hb-service has not reported a running module', async () => {
+      configService.runningHomebridgeModulePath = undefined
+      configService.homebridgeVersion = '1.9.0'
+
+      await pluginsService.getHomebridgePackage()
+
+      expect(configService.homebridgeVersion).toBe('2.1.1')
+    })
+
+    it('sets the version from disk when the discovered install is the running one', async () => {
+      configService.runningHomebridgeModulePath = fakeInstallPath
+      configService.homebridgeVersion = '1.9.0'
+
+      await pluginsService.getHomebridgePackage()
+
+      expect(configService.homebridgeVersion).toBe('2.1.1')
     })
   })
 
