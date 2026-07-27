@@ -13,22 +13,22 @@
     "prepare": "node ../scripts/apply-patches.mjs"
   },
   "dependencies": {
-    "@angular/common": "22.0.8",
-    "@angular/compiler": "22.0.8",
-    "@angular/core": "22.0.8",
-    "@angular/forms": "22.0.8",
-    "@angular/localize": "22.0.8",
-    "@angular/platform-browser": "22.0.8",
-    "@angular/router": "22.0.8",
+    "@angular/common": "22.1.0",
+    "@angular/compiler": "22.1.0",
+    "@angular/core": "22.1.0",
+    "@angular/forms": "22.1.0",
+    "@angular/localize": "22.1.0",
+    "@angular/platform-browser": "22.1.0",
+    "@angular/router": "22.1.0",
     "@auth0/angular-jwt": "5.2.0",
-    "@homebridge/hap-client": "5.1.0",
+    "@homebridge/hap-client": "5.1.1",
     "@ng-bootstrap/ng-bootstrap": "21.0.0",
     "@ng-formworks/bootstrap5": "21.7.0",
     "@ng-formworks/core": "21.7.0",
     "@ngx-translate/core": "18.0.0",
-    "@xterm/addon-fit": "0.12.0-beta.291",
-    "@xterm/addon-web-links": "0.13.0-beta.291",
-    "@xterm/xterm": "6.1.0-beta.291",
+    "@xterm/addon-fit": "0.12.0-beta.292",
+    "@xterm/addon-web-links": "0.13.0-beta.292",
+    "@xterm/xterm": "6.1.0-beta.292",
     "ajv-keywords": "5.1.0",
     "angular-gridster2": "22.0.0",
     "bootstrap": "5.3.8",
@@ -53,17 +53,17 @@
     "uuid": "14.0.1"
   },
   "devDependencies": {
-    "@angular/build": "^22.0.8",
-    "@angular/cli": "^22.0.8",
-    "@angular/compiler-cli": "^22.0.8",
-    "@angular/language-service": "^22.0.8",
+    "@angular/build": "^22.1.2",
+    "@angular/cli": "^22.1.2",
+    "@angular/compiler-cli": "^22.1.0",
+    "@angular/language-service": "^22.1.0",
     "@fortawesome/fontawesome-free": "^7.3.1",
     "@homebridge/plugin-ui-utils": "^2.2.5",
     "@types/file-saver": "^2.0.7",
     "@types/lodash-es": "^4.17.12",
-    "@types/node": "^26.1.1",
+    "@types/node": "^26.1.2",
     "@types/qrcode": "^1.5.6",
-    "@types/semver": "^7.7.1",
+    "@types/semver": "^7.8.0",
     "emoji-js": "3.9.0",
     "fontawesome-subset": "^4.6.0",
     "he": "^1.2.0",
@@ -73,16 +73,16 @@
     "typescript": "^6.0.3"
   },
   "overrides": {
-    "@angular/animations": "22.0.8",
+    "@angular/animations": "22.1.0",
     "@angular/build": {
       "@babel/core": "^7.29.7"
     },
-    "@angular/common": "22.0.8",
-    "@angular/compiler": "22.0.8",
-    "@angular/core": "22.0.8",
-    "@angular/forms": "22.0.8",
-    "@angular/localize": "22.0.8",
-    "@angular/platform-browser": "22.0.8",
+    "@angular/common": "22.1.0",
+    "@angular/compiler": "22.1.0",
+    "@angular/core": "22.1.0",
+    "@angular/forms": "22.1.0",
+    "@angular/localize": "22.1.0",
+    "@angular/platform-browser": "22.1.0",
     "lodash-es": "4.18.1",
     "ngx-monaco-editor-v2": {
       "monaco-editor": {
@@ -96,10 +96,10 @@
     }
   },
   "allowScripts": {
-    "@parcel/watcher@2.6.0": true,
-    "esbuild@0.28.1": true,
-    "fsevents@2.3.3": true,
-    "lmdb@3.5.4": true,
-    "msgpackr-extract@3.0.4": true
+    "@parcel/watcher": true,
+    "esbuild": true,
+    "fsevents": true,
+    "lmdb": true,
+    "msgpackr-extract": true
   }
 }
