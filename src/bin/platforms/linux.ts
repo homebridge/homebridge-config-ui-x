@@ -265,11 +265,11 @@ export class LinuxInstaller extends BasePlatform {
       this.checkForRoot()
     }
 
-    // Check if trying to install Node.js 24 on unsupported architecture
+    // Check if trying to install Node.js 24 or greater on unsupported architecture
     if (gte(job.target, '24.0.0')) {
       if (!isNodeV24SupportedArchitecture()) {
         this.hbService.logger.error(`Node.js ${job.target} is not supported on ${process.arch} architecture.`)
-        this.hbService.logger.error('Node.js v24 requires a 64-bit architecture. Please use Node.js v22 instead.')
+        this.hbService.logger.error('Node.js v24 or greater requires a 64-bit architecture. Please use Node.js v22 instead.')
         process.exit(1)
       }
     }
@@ -332,21 +332,25 @@ export class LinuxInstaller extends BasePlatform {
   }
 
   /**
-   * Debian Version - Supplied GLIBC Version
-   *
-   *  9 - Stretch       2.24
-   * 10 - Buster        2.28
-   * 11 - Bullseye      2.31
-   * 12 - Bookworm      2.36
-   * 13 - Trixie
-   *
    * NodeJS Version - Minimum GLIBC Version
    *
-   *      18            2.28
-   *      20            2.31
+   *      18            2.28    // Official floor set here: builds moved to RHEL 8.
+   *                            // https://nodejs.org/en/blog/announcements/v18-release-announce
+   *      20            2.28    // Unchanged from 18; no dedicated migration doc, but bracketed
+   *                            // https://github.com/nodejs/node/blob/v20.x/BUILDING.md
+   *      22            2.28    // Unchanged from 20.
+   *                            // https://github.com/nodejs/node/blob/v22.x/BUILDING.md
+   *      24            2.28    // Explicitly confirmed "no change from Node.js 22."
+   *                            // Also adds a new libatomic/libatomic1 runtime dependency
+   *                            // (separate from glibc) starting at v25.
+   *                            // https://nodejs.org/en/blog/migrations/v22-to-v24
+   *      26            2.28    // Unchanged from 24.
+   *                            // https://github.com/nodejs/node/blob/v26.x/BUILDING.md
    *
-   * References:
-   * https://github.com/nodejs/node/blob/main/BUILDING.md?plain=1#L107-L125
+   * Summary: the official glibc floor has been 2.28 since Node 18 and has not
+   * increased since, for any subsequent version through the current 26 dev
+   * branch. There is no 2.31 requirement documented anywhere by Node.js itself.
+   * ( I think when they launched 20 it originally had a 2.31 requirement, but that was later rolled back to 2.28. )
    */
 
   private async glibcVersionCheck(target: string) {
@@ -361,9 +365,9 @@ export class LinuxInstaller extends BasePlatform {
         + `Wanted: >=2.28. Installed: ${glibcVersion} - see https://homebridge.io/w/JJSun`)
       process.exit(1)
     }
-    if (gte(target, '20.0.0') && glibcVersion < 2.31) {
+    if (gte(target, '20.0.0') && glibcVersion < 2.28) {
       this.hbService.logger.error('Your version of Linux does not meet the GLIBC version requirements to use this tool to upgrade Node.js. '
-        + `Wanted: >=2.31. Installed: ${glibcVersion} - see https://homebridge.io/w/JJSun`)
+        + `Wanted: >=2.28. Installed: ${glibcVersion} - see https://homebridge.io/w/JJSun`)
       process.exit(1)
     }
   }

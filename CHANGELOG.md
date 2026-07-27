@@ -19,6 +19,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - chore(ui): remove beta badges from graduated features
 - feat(plugins): hide the hap options on child bridges for matter-only plugins (#3975)
 - fix(plugins): keep the running homebridge version when a second install is found (#2897)
+- Update NodeJS Version checker for NodeJS 26 (#2938) (@NorthernMan54)
 
 ### Other Changes
 
