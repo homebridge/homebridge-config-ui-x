@@ -613,9 +613,10 @@ export class StatusService {
     try {
       const versionList = (await firstValueFrom(this.httpService.get('https://nodejs.org/dist/index.json'))).data
 
-      // Get the newest node v22 and v24
+      // Get the newest node v22, v24 and v26
       const latest22 = versionList.filter((x: { version: string }) => x.version.startsWith('v22'))[0]
       const latest24 = versionList.filter((x: { version: string }) => x.version.startsWith('v24'))[0]
+      const latest26 = versionList.filter((x: { version: string }) => x.version.startsWith('v26'))[0]
 
       let updateAvailable = false
       let latestVersion = process.version
@@ -624,10 +625,23 @@ export class StatusService {
       /**
        * NodeJS Version - Minimum GLIBC Version
        *
-       *      18            2.28
-       *      20            2.31
-       *      22            2.31 (assumption - the code below assumes this)
-       *      24            2.31+ (64-bit architectures only)
+       *      18            2.28    // Official floor set here: builds moved to RHEL 8.
+       *                            // https://nodejs.org/en/blog/announcements/v18-release-announce
+       *      20            2.28    // Unchanged from 18; no dedicated migration doc, but bracketed
+       *                            // https://github.com/nodejs/node/blob/v20.x/BUILDING.md
+       *      22            2.28    // Unchanged from 20.
+       *                            // https://github.com/nodejs/node/blob/v22.x/BUILDING.md
+       *      24            2.28    // Explicitly confirmed "no change from Node.js 22."
+       *                            // Also adds a new libatomic/libatomic1 runtime dependency
+       *                            // (separate from glibc) starting at v25.
+       *                            // https://nodejs.org/en/blog/migrations/v22-to-v24
+       *      26            2.28    // Unchanged from 24.
+       *                            // https://github.com/nodejs/node/blob/v26.x/BUILDING.md
+       *
+       * Summary: the official glibc floor has been 2.28 since Node 18 and has not
+       * increased since, for any subsequent version through the current 26 dev
+       * branch. There is no 2.31 requirement documented anywhere by Node.js itself.
+       * ( I think when they launched 20 it originally had a 2.31 requirement, but that was later rolled back to 2.28. )
        */
 
       // Behaviour depends on the installed version of node
@@ -664,6 +678,15 @@ export class StatusService {
           if (gt(latest24.version, process.version)) {
             updateAvailable = true
             latestVersion = latest24.version
+          }
+          break
+        }
+        case 'v26': {
+          // Currently using v26 (only possible on 64-bit architectures)
+          // Check if there is a new minor/patch version available
+          if (gt(latest26.version, process.version)) {
+            updateAvailable = true
+            latestVersion = latest26.version
           }
           break
         }
