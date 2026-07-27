@@ -17,6 +17,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - feat(plugins): default new child bridges to matter without hap for matter-only plugins (#3975)
 - feat(plugins): show hap and matter support icons on plugin cards
 - feat(plugins): hide the hap options on child bridges for matter-only plugins (#3975)
+- fix(plugins): keep the running homebridge version when a second install is found (#2897)
 - chore(ui): remove beta badges from graduated features
 
 ### Other Changes
