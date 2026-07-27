@@ -8,7 +8,7 @@ import process from 'node:process'
 import { ValidationPipe } from '@nestjs/common'
 import { FastifyAdapter } from '@nestjs/platform-fastify'
 import { Test } from '@nestjs/testing'
-import { copy } from 'fs-extra'
+import { copy, remove } from 'fs-extra'
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { AuthModule } from '../../src/core/auth/auth.module.js'
@@ -87,6 +87,12 @@ describe('AccessoriesController (e2e)', () => {
     // Setup test auth file
     await copy(resolve(__dirname, '../mocks', 'auth.json'), authFilePath)
     await copy(resolve(__dirname, '../mocks', '.uix-secrets'), secretsFilePath)
+
+    // Clear any accessory layout left behind by a previous run. The layout is
+    // written by the save test later in this file, so without this the
+    // "user not in layout" test sees the saved layout and fails on every run
+    // after the first. CI never caught it because CI always starts clean.
+    await remove(resolve(process.env.UIX_STORAGE_PATH, 'accessories', 'uiAccessoriesLayout.json'))
 
     // Enable insecure mode for this test suite.
     configService = new ConfigService()
