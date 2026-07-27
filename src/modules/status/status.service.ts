@@ -641,6 +641,7 @@ export class StatusService {
        * Summary: the official glibc floor has been 2.28 since Node 18 and has not
        * increased since, for any subsequent version through the current 26 dev
        * branch. There is no 2.31 requirement documented anywhere by Node.js itself.
+       * ( I think when they launched 20 it originally had a 2.31 requirement, but that was later rolled back to 2.28. )
        */
 
       // Behaviour depends on the installed version of node
