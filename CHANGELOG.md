@@ -16,6 +16,8 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - feat(status): show message on widgets when metrics monitoring is disabled (#2934)
 - feat(plugins): default new child bridges to matter without hap for matter-only plugins (#3975)
 - feat(plugins): show hap and matter support icons on plugin cards
+- feat(plugins): hide the hap options on child bridges for matter-only plugins (#3975)
+- fix(plugins): keep the running homebridge version when a second install is found (#2897)
 - chore(ui): remove beta badges from graduated features
 
 ### Other Changes
@@ -31,10 +33,12 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(ci): resolve intermittent backup test timeouts in validate.yml (#2933)
 - feat(auth): always return temp. units in settings
 - fix(plugins): only warn about skipped install scripts when one would actually be skipped
+- fix(deps): bump `@homebridge/hap-client` to v5.1.1 so child bridges sharing a hostname are discovered (#2936)
+- fix(build): copy the monaco chunks renamed in v0.56, so the json config editor is not a blank page
 
 ### Homebridge Dependencies
 
-- `@homebridge/hap-client` @ `v5.1.0`
+- `@homebridge/hap-client` @ `v5.1.1`
 - `@homebridge/node-pty-prebuilt-multiarch` @ `v0.14.1`
 - `@homebridge/plugin-ui-utils` @ `v2.2.5`
 
@@ -52,7 +56,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 
 ### Homebridge Dependencies
 
-- `@homebridge/hap-client` @ `v5.1.0`
+- `@homebridge/hap-client` @ `v5.1.1`
 - `@homebridge/node-pty-prebuilt-multiarch` @ `v0.13.1`
 - `@homebridge/plugin-ui-utils` @ `v2.2.5`
 
@@ -80,7 +84,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 
 ### Homebridge Dependencies
 
-- `@homebridge/hap-client` @ `v5.1.0`
+- `@homebridge/hap-client` @ `v5.1.1`
 - `@homebridge/node-pty-prebuilt-multiarch` @ `v0.13.1`
 - `@homebridge/plugin-ui-utils` @ `v2.2.5`
 
@@ -123,7 +127,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 
 ### Homebridge Dependencies
 
-- `@homebridge/hap-client` @ `v5.1.0`
+- `@homebridge/hap-client` @ `v5.1.1`
 - `@homebridge/node-pty-prebuilt-multiarch` @ `v0.13.1`
 - `@homebridge/plugin-ui-utils` @ `v2.2.5`
 
