@@ -837,14 +837,13 @@ export class PluginsService {
 
     let homebridgeModule = homebridgeInstalls[0]
 
-    // When more than one install exists, prefer the one hb-service reported it
-    // actually launched — otherwise the UI reports (and updates) a copy that is
-    // not running, while the stale copy keeps starting (#2897)
-    if (homebridgeInstalls.length > 1) {
-      const runningModule = await this.findRunningHomebridgeInstall(homebridgeInstalls)
-      if (runningModule) {
-        homebridgeModule = runningModule
-      }
+    // Prefer the install hb-service reported it actually launched — otherwise the
+    // UI reports (and updates) a copy that is not running, while the stale copy
+    // keeps starting (#2897). Checked even when only one install was discovered,
+    // because the running one can live outside the paths we scan.
+    const runningModule = await this.findRunningHomebridgeInstall(homebridgeInstalls)
+    if (runningModule) {
+      homebridgeModule = runningModule
     }
 
     const pkgJson: IPackageJson = await readJson(join(homebridgeModule.installPath, 'package.json'))
@@ -887,7 +886,14 @@ export class PluginsService {
       await this.checkForBetaUpdates(homebridge, 'homebridge', true)
     }
 
-    this.configService.homebridgeVersion = homebridge.installedVersion
+    // Only let this on-disk version become the authoritative one when it really is
+    // the running install. hb-service reports the running version over IPC, and
+    // that value also drives the feature flags — so letting a discovered-but-not-
+    // running copy overwrite it makes the UI show the wrong version and offer
+    // features the running Homebridge does not have (#2897).
+    if (!this.configService.runningHomebridgeModulePath || runningModule) {
+      this.configService.homebridgeVersion = homebridge.installedVersion
+    }
 
     return homebridge
   }
