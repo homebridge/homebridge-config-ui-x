@@ -13,16 +13,17 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 ### Other Changes
 
 - chore(deps): dependency updates
-- chore(deps): add node 26 support and bump node-pty (#2916) (@NorthernMan54)
+- chore(deps): add node 26 support and bump node-pty (#2916) (#2930) (@NorthernMan54)
 - ci: validate and release against node 26 (#2917) (#2918) (@NorthernMan54)
 - fix(plugins): pass allow-scripts to plugin installs (#2921) (@bcomnes)
 - fix(plugins): only pass allow-scripts to global installs
 - fix(plugins): honour the beta preference when a stable update is also available
+- feat: add windows arm support (#2927) (@NorthernMan54)
 
 ### Homebridge Dependencies
 
 - `@homebridge/hap-client` @ `v5.1.0`
-- `@homebridge/node-pty-prebuilt-multiarch` @ `v0.14.1-beta`
+- `@homebridge/node-pty-prebuilt-multiarch` @ `v0.14.1`
 - `@homebridge/plugin-ui-utils` @ `v2.2.5`
 
 ## v5.27.0 (2026-07-19)
