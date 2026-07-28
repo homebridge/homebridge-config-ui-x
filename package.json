@@ -84,7 +84,7 @@
     "@fastify/multipart": "10.1.0",
     "@fastify/static": "9.3.0",
     "@homebridge/hap-client": "5.1.0",
-    "@homebridge/node-pty-prebuilt-multiarch": "0.14.1-beta.4",
+    "@homebridge/node-pty-prebuilt-multiarch": "0.14.1",
     "@nestjs/axios": "4.0.1",
     "@nestjs/common": "11.1.28",
     "@nestjs/core": "11.1.28",
@@ -205,13 +205,13 @@
     "enabled": false
   },
   "allowScripts": {
-    "@homebridge/node-pty-prebuilt-multiarch@0.14.1-beta.4": true,
     "macos-temperature-sensor@2.0.0": true,
     "osx-temperature-sensor@1.0.8": true,
     "esbuild@0.28.1": true,
     "@swc/core@1.15.46": true,
     "fsevents@2.3.3": true,
     "@nestjs/core": false,
-    "@scarf/scarf": false
+    "@scarf/scarf": false,
+    "@homebridge/node-pty-prebuilt-multiarch@0.14.1": true
   }
 }
