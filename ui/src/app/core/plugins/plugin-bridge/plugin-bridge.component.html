@@ -352,258 +352,267 @@
 
         <!-- HOMEKIT (HAP) SECTION - Only shown when child bridge is enabled -->
         @if (!currentlySelectedLink() && configBlocks()[+selectedBlock()]._bridge?.username) {
-          <ul class="list-group list-group-box mt-3 mb-0">
-            <!-- HAP Header with Toggle -->
-            <li class="list-group-item d-flex justify-content-between align-items-center flex-row pb-2">
-              <span class="text-start d-flex align-items-center flex-grow-1 me-3">
-                <i
-                  aria-hidden="true"
-                  class="fas fa-xl fa-hap me-2 my-2"
-                  [class.green-text]="hapEnabledBlocks()[+selectedBlock()]"
-                  [class.grey-text]="!hapEnabledBlocks()[+selectedBlock()]"
-                ></i>
-                <span>{{ 'child_bridge.config.enable_hap' | translate }}</span>
-              </span>
-              <div
-                class="text-end grey-text d-flex align-items-center"
-                [class.hap-toggle-disabled]="configBlocks()[+selectedBlock()].accessory"
-                [title]="
-                  configBlocks()[+selectedBlock()].accessory
-                    ? ('child_bridge.config.hap_disabled_for_accessory' | translate)
-                    : ''
-                "
-              >
-                <input
-                  type="checkbox"
-                  class="rendux-input"
-                  [class.pointer-events-none]="configBlocks()[+selectedBlock()].accessory"
-                  [id]="`toggleHapInput_${selectedBlock()}`"
-                  [checked]="hapEnabledBlocks()[+selectedBlock()]"
-                  [disabled]="configBlocks()[+selectedBlock()].accessory"
-                  (change)="
-                    toggleHapBridge(
-                      configBlocks()[+selectedBlock()],
-                      !hapEnabledBlocks()[+selectedBlock()],
-                      selectedBlock(),
-                      $event
-                    )
+          <!-- The HAP options are hidden entirely for a matter-only plugin (#3975): it
+               publishes nothing over HAP, so they have no meaning. Still shown if HAP
+               somehow ended up enabled on such a bridge, so it can always be turned off.
+               This condition must wrap only the list below — the matter section is a
+               sibling inside the same block, and putting it on the outer @if hid that too. -->
+          @if (!isMatterOnlyPlugin || hapEnabledBlocks()[+selectedBlock()]) {
+            <ul class="list-group list-group-box mt-3 mb-0">
+              <!-- HAP Header with Toggle -->
+              <li class="list-group-item d-flex justify-content-between align-items-center flex-row pb-2">
+                <span class="text-start d-flex align-items-center flex-grow-1 me-3">
+                  <i
+                    aria-hidden="true"
+                    class="fas fa-xl fa-hap me-2 my-2"
+                    [class.green-text]="hapEnabledBlocks()[+selectedBlock()]"
+                    [class.grey-text]="!hapEnabledBlocks()[+selectedBlock()]"
+                  ></i>
+                  <span>{{ 'child_bridge.config.enable_hap' | translate }}</span>
+                </span>
+                <div
+                  class="text-end grey-text d-flex align-items-center"
+                  [class.hap-toggle-disabled]="configBlocks()[+selectedBlock()].accessory"
+                  [title]="
+                    configBlocks()[+selectedBlock()].accessory
+                      ? ('child_bridge.config.hap_disabled_for_accessory' | translate)
+                      : ''
                   "
-                />
-                <label
-                  class="rendux-label"
-                  aria-hidden="true"
-                  [class.cursor-not-allowed]="configBlocks()[+selectedBlock()].accessory"
-                  [for]="`toggleHapInput_${selectedBlock()}`"
-                ></label>
-              </div>
-            </li>
-
-            <!--
-              HAP externalsOnly toggle — visible only on Homebridge >= 2.0.3-beta.26,
-              when HAP is disabled, and this is not an accessory plugin (externals are
-              not supported via the accessory plugin API). Hidden during first-install
-              setup — externals-only is an advanced post-setup tweak, not a step in
-              the initial pairing flow.
-            -->
-            @if (
-              !justInstalled &&
-              isProtocolExternalsOnlyEnabled &&
-              !hapEnabledBlocks()[+selectedBlock()] &&
-              !configBlocks()[+selectedBlock()].accessory
-            ) {
-              <li class="list-group-item d-flex justify-content-between align-items-center flex-row pb-2">
-                <span class="text-start d-flex align-items-center flex-grow-1 me-3">
-                  <i
-                    aria-hidden="true"
-                    class="fas fa-xl fa-hap me-2 my-2"
-                    [class.text-info]="hapExternalsOnlyBlocks()[+selectedBlock()]"
-                    [class.grey-text]="!hapExternalsOnlyBlocks()[+selectedBlock()]"
-                  ></i>
-                  <span>
-                    {{ 'child_bridge.config.hap_externals_only' | translate }}
-                    <span class="badge badge-primary ms-1">{{ 'common.labels.beta' | translate }}</span>
-                    <span class="d-block small grey-text">
-                      {{ 'child_bridge.config.hap_externals_only_desc' | translate }}
-                    </span>
-                  </span>
-                </span>
-                <div class="text-end grey-text d-flex align-items-center">
+                >
                   <input
                     type="checkbox"
                     class="rendux-input"
-                    [id]="`toggleHapExternalsOnlyInput_${selectedBlock()}`"
-                    [checked]="hapExternalsOnlyBlocks()[+selectedBlock()]"
-                    (change)="toggleHapExternalsOnly($event, +selectedBlock())"
+                    [class.pointer-events-none]="configBlocks()[+selectedBlock()].accessory"
+                    [id]="`toggleHapInput_${selectedBlock()}`"
+                    [checked]="hapEnabledBlocks()[+selectedBlock()]"
+                    [disabled]="configBlocks()[+selectedBlock()].accessory"
+                    (change)="
+                      toggleHapBridge(
+                        configBlocks()[+selectedBlock()],
+                        !hapEnabledBlocks()[+selectedBlock()],
+                        selectedBlock(),
+                        $event
+                      )
+                    "
                   />
                   <label
                     class="rendux-label"
                     aria-hidden="true"
-                    [for]="`toggleHapExternalsOnlyInput_${selectedBlock()}`"
+                    [class.cursor-not-allowed]="configBlocks()[+selectedBlock()].accessory"
+                    [for]="`toggleHapInput_${selectedBlock()}`"
                   ></label>
                 </div>
               </li>
-            }
 
-            <!--
-              HAP disableIdentifyingMaterial toggle — visible on Homebridge
-              >= 2.2.2-beta.0 for both platform and accessory child bridges.
-              It remains available while HAP is disabled so the preference is
-              preserved independently of protocol enablement.
-            -->
-            @if (isHapDisableIdentifyingMaterialEnabled) {
-              <li class="list-group-item d-flex justify-content-between align-items-center flex-row pb-2">
-                <span class="text-start d-flex align-items-center flex-grow-1 me-3">
-                  <i
-                    aria-hidden="true"
-                    class="fas fa-xl fa-hap me-2 my-2"
-                    [class.text-warning]="hapDisableIdentifyingMaterialBlocks()[+selectedBlock()]"
-                    [class.grey-text]="!hapDisableIdentifyingMaterialBlocks()[+selectedBlock()]"
-                  ></i>
-                  <span>
-                    {{ 'settings.hap.disable_identifying_material' | translate }}
-                    <span class="badge badge-primary ms-1">{{ 'common.labels.beta' | translate }}</span>
-                    <span class="d-block small grey-text">
-                      {{ 'settings.hap.disable_identifying_material_desc' | translate }}
-                    </span>
-                  </span>
-                </span>
-                <div class="text-end grey-text d-flex align-items-center">
-                  <input
-                    type="checkbox"
-                    class="rendux-input"
-                    [id]="`toggleHapDisableIdentifyingMaterialInput_${selectedBlock()}`"
-                    [checked]="hapDisableIdentifyingMaterialBlocks()[+selectedBlock()]"
-                    [attr.aria-label]="'settings.hap.disable_identifying_material' | translate"
-                    (change)="toggleHapDisableIdentifyingMaterial($event, +selectedBlock())"
-                  />
-                  <label
-                    class="rendux-label"
-                    aria-hidden="true"
-                    [for]="`toggleHapDisableIdentifyingMaterialInput_${selectedBlock()}`"
-                  ></label>
-                </div>
-              </li>
-            }
-
-            @if (hapEnabledBlocks()[+selectedBlock()]) {
-              <!-- HAP QR Code -->
+              <!--
+                HAP externalsOnly toggle — visible only on Homebridge >= 2.0.3-beta.26,
+                when HAP is disabled, and this is not an accessory plugin (externals are
+                not supported via the accessory plugin API). Hidden during first-install
+                setup — externals-only is an advanced post-setup tweak, not a step in
+                the initial pairing flow.
+              -->
               @if (
-                configBlocks()[+selectedBlock()]._bridge?.username &&
-                deviceInfo().get(configBlocks()[+selectedBlock()]._bridge?.username) === false
+                !justInstalled &&
+                isProtocolExternalsOnlyEnabled &&
+                !hapEnabledBlocks()[+selectedBlock()] &&
+                !configBlocks()[+selectedBlock()].accessory
               ) {
-                <li class="list-group-item text-center">
-                  <div class="w-100 d-flex flex-column text-center">
-                    <div
-                      class="mx-auto d-flex align-items-center justify-content-center qr-code-placeholder primary-text p-3"
-                    >
-                      <div>
-                        <div class="text-center grey-text">
-                          <i aria-hidden="true" class="fas fa-qrcode fa-2x mb-2 primary-text"></i>
-                        </div>
-                        <div class="text-center small grey-text">{{ 'child_bridge.return_to_pair' | translate }}</div>
-                      </div>
-                    </div>
+                <li class="list-group-item d-flex justify-content-between align-items-center flex-row pb-2">
+                  <span class="text-start d-flex align-items-center flex-grow-1 me-3">
+                    <i
+                      aria-hidden="true"
+                      class="fas fa-xl fa-hap me-2 my-2"
+                      [class.text-info]="hapExternalsOnlyBlocks()[+selectedBlock()]"
+                      [class.grey-text]="!hapExternalsOnlyBlocks()[+selectedBlock()]"
+                    ></i>
+                    <span>
+                      {{ 'child_bridge.config.hap_externals_only' | translate }}
+                      <span class="badge badge-primary ms-1">{{ 'common.labels.beta' | translate }}</span>
+                      <span class="d-block small grey-text">
+                        {{ 'child_bridge.config.hap_externals_only_desc' | translate }}
+                      </span>
+                    </span>
+                  </span>
+                  <div class="text-end grey-text d-flex align-items-center">
+                    <input
+                      type="checkbox"
+                      class="rendux-input"
+                      [id]="`toggleHapExternalsOnlyInput_${selectedBlock()}`"
+                      [checked]="hapExternalsOnlyBlocks()[+selectedBlock()]"
+                      (change)="toggleHapExternalsOnly($event, +selectedBlock())"
+                    />
+                    <label
+                      class="rendux-label"
+                      aria-hidden="true"
+                      [for]="`toggleHapExternalsOnlyInput_${selectedBlock()}`"
+                    ></label>
                   </div>
                 </li>
               }
-              @if (deviceInfo().get(configBlocks()[+selectedBlock()]._bridge?.username)) {
-                <li class="list-group-item text-center">
-                  <div class="w-100 d-flex flex-column text-center">
-                    <app-qrcode
-                      class="mx-auto qr-code-size"
-                      [data]="
-                        (deviceInfo().get(configBlocks()[+selectedBlock()]._bridge?.username) || undefined)?.[
-                          '_setupCode'
-                        ] ?? ''
-                      "
+
+              <!--
+                HAP disableIdentifyingMaterial toggle — visible on Homebridge
+                >= 2.2.2-beta.0 for both platform and accessory child bridges.
+                It remains available while HAP is disabled so the preference is
+                preserved independently of protocol enablement.
+              -->
+              @if (isHapDisableIdentifyingMaterialEnabled) {
+                <li class="list-group-item d-flex justify-content-between align-items-center flex-row pb-2">
+                  <span class="text-start d-flex align-items-center flex-grow-1 me-3">
+                    <i
+                      aria-hidden="true"
+                      class="fas fa-xl fa-hap me-2 my-2"
+                      [class.text-warning]="hapDisableIdentifyingMaterialBlocks()[+selectedBlock()]"
+                      [class.grey-text]="!hapDisableIdentifyingMaterialBlocks()[+selectedBlock()]"
+                    ></i>
+                    <span>
+                      {{ 'settings.hap.disable_identifying_material' | translate }}
+                      <span class="badge badge-primary ms-1">{{ 'common.labels.beta' | translate }}</span>
+                      <span class="d-block small grey-text">
+                        {{ 'settings.hap.disable_identifying_material_desc' | translate }}
+                      </span>
+                    </span>
+                  </span>
+                  <div class="text-end grey-text d-flex align-items-center">
+                    <input
+                      type="checkbox"
+                      class="rendux-input"
+                      [id]="`toggleHapDisableIdentifyingMaterialInput_${selectedBlock()}`"
+                      [checked]="hapDisableIdentifyingMaterialBlocks()[+selectedBlock()]"
+                      [attr.aria-label]="'settings.hap.disable_identifying_material' | translate"
+                      (change)="toggleHapDisableIdentifyingMaterial($event, +selectedBlock())"
                     />
-                    <p class="mx-auto mt-3 mb-1 font-monospace">
-                      {{
-                        (deviceInfo().get(configBlocks()[+selectedBlock()]._bridge?.username) || undefined)?.['pincode']
-                      }}
-                    </p>
-                    <p class="grey-text mx-auto small mb-1 qr-code-info">
-                      <i
-                        aria-hidden="true"
-                        class="fas fa-link"
-                        [class.green-text]="
-                          (deviceInfo().get(configBlocks()[+selectedBlock()]._bridge?.username) || undefined)?.[
-                            '_isPaired'
-                          ]
-                        "
-                        [class.grey-text]="
-                          !(deviceInfo().get(configBlocks()[+selectedBlock()]._bridge?.username) || undefined)?.[
-                            '_isPaired'
-                          ]
-                        "
-                      ></i>
-                      {{
-                        ((deviceInfo().get(configBlocks()[+selectedBlock()]._bridge?.username) || undefined)?.[
-                          '_isPaired'
-                        ]
-                          ? 'status.widget.qr_paired'
-                          : 'status.widget.qr_unpaired'
-                        ) | translate
-                      }}
-                      @if (
-                        !(deviceInfo().get(configBlocks()[+selectedBlock()]._bridge?.username) || undefined)?.[
-                          '_isPaired'
-                        ]
-                      ) {
-                        <span> &middot; {{ 'status.code_scan' | translate }}</span>
-                      }
-                    </p>
+                    <label
+                      class="rendux-label"
+                      aria-hidden="true"
+                      [for]="`toggleHapDisableIdentifyingMaterialInput_${selectedBlock()}`"
+                    ></label>
                   </div>
                 </li>
+              }
+
+              @if (hapEnabledBlocks()[+selectedBlock()]) {
+                <!-- HAP QR Code -->
                 @if (
-                  !(deviceInfo().get(configBlocks()[+selectedBlock()]._bridge?.username) || undefined)?.['_isPaired']
+                  configBlocks()[+selectedBlock()]._bridge?.username &&
+                  deviceInfo().get(configBlocks()[+selectedBlock()]._bridge?.username) === false
                 ) {
-                  <li class="list-group-item d-flex justify-content-between align-items-center flex-row pb-2">
-                    <span class="text-start">{{ 'child_bridge.config.hide_pairing_alert' | translate }}</span>
-                    <div class="text-end grey-text d-flex align-items-center">
-                      <input
-                        type="checkbox"
-                        class="rendux-input"
-                        [id]="`toggleHideHapUnpairing_${selectedBlock()}`"
-                        [checked]="isUnpairingHidden(configBlocks()[+selectedBlock()]._bridge?.username, 'hap')"
-                        [attr.aria-label]="'child_bridge.config.hide_pairing_alert' | translate"
-                        (change)="toggleHideUnpairing(configBlocks()[+selectedBlock()]._bridge?.username, 'hap')"
-                      />
-                      <label
-                        class="rendux-label"
-                        aria-hidden="true"
-                        [for]="`toggleHideHapUnpairing_${selectedBlock()}`"
-                      ></label>
+                  <li class="list-group-item text-center">
+                    <div class="w-100 d-flex flex-column text-center">
+                      <div
+                        class="mx-auto d-flex align-items-center justify-content-center qr-code-placeholder primary-text p-3"
+                      >
+                        <div>
+                          <div class="text-center grey-text">
+                            <i aria-hidden="true" class="fas fa-qrcode fa-2x mb-2 primary-text"></i>
+                          </div>
+                          <div class="text-center small grey-text">{{ 'child_bridge.return_to_pair' | translate }}</div>
+                        </div>
+                      </div>
                     </div>
                   </li>
                 }
-              }
-
-              <!-- HAP Configuration Fields -->
-              <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
-                <label for="bridge-hap-port" class="mb-2 mb-md-0 w-100 w-md-50"
-                  >{{ 'child_bridge.config.port' | translate }}<br />
-                  <small class="grey-text">{{ 'child_bridge.config.hap_port_desc' | translate }}</small></label
-                >
-                <div class="text-start text-md-end w-100 w-md-50">
-                  <input
-                    id="bridge-hap-port"
-                    type="number"
-                    class="form-control custom-input font-monospace"
-                    min="1025"
-                    max="65533"
-                    [class.is-invalid]="getHapPortValidationError(selectedBlock())"
-                    [(ngModel)]="configBlocks()[+selectedBlock()]._bridge.port"
-                  />
-                  @if (getHapPortValidationError(selectedBlock())) {
-                    <div class="invalid-feedback d-block">
-                      {{ 'settings.matter.port_desc' | translate }}
+                @if (deviceInfo().get(configBlocks()[+selectedBlock()]._bridge?.username)) {
+                  <li class="list-group-item text-center">
+                    <div class="w-100 d-flex flex-column text-center">
+                      <app-qrcode
+                        class="mx-auto qr-code-size"
+                        [data]="
+                          (deviceInfo().get(configBlocks()[+selectedBlock()]._bridge?.username) || undefined)?.[
+                            '_setupCode'
+                          ] ?? ''
+                        "
+                      />
+                      <p class="mx-auto mt-3 mb-1 font-monospace">
+                        {{
+                          (deviceInfo().get(configBlocks()[+selectedBlock()]._bridge?.username) || undefined)?.[
+                            'pincode'
+                          ]
+                        }}
+                      </p>
+                      <p class="grey-text mx-auto small mb-1 qr-code-info">
+                        <i
+                          aria-hidden="true"
+                          class="fas fa-link"
+                          [class.green-text]="
+                            (deviceInfo().get(configBlocks()[+selectedBlock()]._bridge?.username) || undefined)?.[
+                              '_isPaired'
+                            ]
+                          "
+                          [class.grey-text]="
+                            !(deviceInfo().get(configBlocks()[+selectedBlock()]._bridge?.username) || undefined)?.[
+                              '_isPaired'
+                            ]
+                          "
+                        ></i>
+                        {{
+                          ((deviceInfo().get(configBlocks()[+selectedBlock()]._bridge?.username) || undefined)?.[
+                            '_isPaired'
+                          ]
+                            ? 'status.widget.qr_paired'
+                            : 'status.widget.qr_unpaired'
+                          ) | translate
+                        }}
+                        @if (
+                          !(deviceInfo().get(configBlocks()[+selectedBlock()]._bridge?.username) || undefined)?.[
+                            '_isPaired'
+                          ]
+                        ) {
+                          <span> &middot; {{ 'status.code_scan' | translate }}</span>
+                        }
+                      </p>
                     </div>
+                  </li>
+                  @if (
+                    !(deviceInfo().get(configBlocks()[+selectedBlock()]._bridge?.username) || undefined)?.['_isPaired']
+                  ) {
+                    <li class="list-group-item d-flex justify-content-between align-items-center flex-row pb-2">
+                      <span class="text-start">{{ 'child_bridge.config.hide_pairing_alert' | translate }}</span>
+                      <div class="text-end grey-text d-flex align-items-center">
+                        <input
+                          type="checkbox"
+                          class="rendux-input"
+                          [id]="`toggleHideHapUnpairing_${selectedBlock()}`"
+                          [checked]="isUnpairingHidden(configBlocks()[+selectedBlock()]._bridge?.username, 'hap')"
+                          [attr.aria-label]="'child_bridge.config.hide_pairing_alert' | translate"
+                          (change)="toggleHideUnpairing(configBlocks()[+selectedBlock()]._bridge?.username, 'hap')"
+                        />
+                        <label
+                          class="rendux-label"
+                          aria-hidden="true"
+                          [for]="`toggleHideHapUnpairing_${selectedBlock()}`"
+                        ></label>
+                      </div>
+                    </li>
                   }
-                </div>
-              </li>
-            }
-          </ul>
+                }
+
+                <!-- HAP Configuration Fields -->
+                <li class="list-group-item d-flex flex-column flex-md-row align-items-center">
+                  <label for="bridge-hap-port" class="mb-2 mb-md-0 w-100 w-md-50"
+                    >{{ 'child_bridge.config.port' | translate }}<br />
+                    <small class="grey-text">{{ 'child_bridge.config.hap_port_desc' | translate }}</small></label
+                  >
+                  <div class="text-start text-md-end w-100 w-md-50">
+                    <input
+                      id="bridge-hap-port"
+                      type="number"
+                      class="form-control custom-input font-monospace"
+                      min="1025"
+                      max="65533"
+                      [class.is-invalid]="getHapPortValidationError(selectedBlock())"
+                      [(ngModel)]="configBlocks()[+selectedBlock()]._bridge.port"
+                    />
+                    @if (getHapPortValidationError(selectedBlock())) {
+                      <div class="invalid-feedback d-block">
+                        {{ 'settings.matter.port_desc' | translate }}
+                      </div>
+                    }
+                  </div>
+                </li>
+              }
+            </ul>
+          }
 
           <!-- MATTER SECTION - Only shown when child bridge is enabled and plugin is platform-based -->
           @if (isMatterSupported && !configBlocks()[+selectedBlock()].accessory) {
