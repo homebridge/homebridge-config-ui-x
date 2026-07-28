@@ -101,7 +101,9 @@ export class PluginBridgeComponent implements OnInit {
   // A plugin that declares the `supports-matter` keyword without `supports-hap`
   // publishes nothing over HAP (#3975). New child bridges for such plugins
   // default to Matter on / HAP off, so the HAP QR code (which would pair an
-  // empty bridge) never appears. Both toggles stay visible to override.
+  // empty bridge) never appears, and the HAP section is hidden entirely since
+  // the options cannot mean anything. It reappears if HAP is somehow enabled on
+  // such a bridge, so that state is never unreachable.
   public isMatterOnlyPlugin = this.isMatterSupported
     && this.plugin?.supportsMatter === true
     && this.plugin?.supportsHap !== true
