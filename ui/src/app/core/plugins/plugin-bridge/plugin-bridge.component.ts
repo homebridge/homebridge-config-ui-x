@@ -1359,8 +1359,23 @@ export class PluginBridgeComponent implements OnInit {
       const hideChildBridgeSetupChanged = this.hasHideChildBridgeSetupChanged()
       const bridgeConfigChanged = this.hasBridgeConfigChanged()
       const bridgesDeleted = this.deleteBridges().length > 0 || this.deleteMatterBridges().length > 0
-      const nothingChanged = !cronHasChanged && !hideAlertsChanged && !hideChildBridgeSetupChanged && !bridgeConfigChanged && !bridgesDeleted
-      const onlyHideAlertsChanged = (hideAlertsChanged || hideChildBridgeSetupChanged) && !cronHasChanged && !bridgeConfigChanged && !bridgesDeleted
+      const nothingChangedHere = !cronHasChanged && !hideAlertsChanged && !hideChildBridgeSetupChanged && !bridgeConfigChanged && !bridgesDeleted
+
+      /*
+       * ⚠️ `justInstalled` means we were opened straight from a first-time plugin
+       * config save, which deliberately skipped its own restart prompt and left
+       * it to us (see the `isFirstSave()` branches in plugin-config,
+       * custom-plugins and manual-config).
+       *
+       * So there is ALWAYS a saved config change to restart for in that case,
+       * even when nothing on this screen was touched. Declining the child bridge
+       * used to leave every flag above false, so the modal closed silently and
+       * the restart was never offered - which also made it look as though the
+       * config had not saved at all (#2946).
+       */
+      const nothingChanged = nothingChangedHere && !this.justInstalled
+      const onlyHideAlertsChanged = !this.justInstalled
+        && (hideAlertsChanged || hideChildBridgeSetupChanged) && !cronHasChanged && !bridgeConfigChanged && !bridgesDeleted
 
       // Save the per-plugin "hide set-up recommendation" toggle if it changed
       if (hideChildBridgeSetupChanged) {
