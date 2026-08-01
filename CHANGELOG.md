@@ -77,6 +77,9 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(restart): detach status listeners so restart pages can't re-toast after navigation
 - fix(schema-form): compile field pattern validators with the unicode flag to match ajv (#2904)
 - chore(deps): remove unused `@angular/platform-browser-dynamic`
+- i18n: updates to the `zh-tw.json` language file (#2949) (@rncchen)
+- fix(i18n): correct ozone formula across all locales (#2950) (@rncchen)
+- i18n: credit rncchen for the traditional chinese translation
 
 ### Other Changes
 
