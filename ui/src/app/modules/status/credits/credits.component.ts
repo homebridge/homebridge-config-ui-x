@@ -18,6 +18,7 @@ export class CreditsComponent {
     { language: 'Hebrew', github: 'seidnerj' },
     { language: 'Polish', github: 'mkz212' },
     { language: 'Thai', github: 'tomzt' },
+    { language: 'Traditional Chinese', github: 'rncchen' },
     { language: 'Ukrainian', github: 'xrust83' },
     { language: 'Vietnam', github: 'khanhnd88' },
   ]
