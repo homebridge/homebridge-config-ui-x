@@ -46,3 +46,13 @@
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
+// The hap/matter icons that head each protocol section. Bootstrap's spacers
+// land either side of what this needs: the gap to the left of the icon is the
+// list item's own padding (1rem) and the icon's artwork runs to the very edge
+// of its box, so a matching gap on the right is that padding less the 1px left
+// side bearing of the label's first letter. me-2 leaves it visibly tight and
+// me-3 a pixel wide.
+.protocol-icon {
+  margin-right: calc(var(--bs-list-group-item-padding-x, 1rem) - 1px);
+}
