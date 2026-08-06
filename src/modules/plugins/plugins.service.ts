@@ -1533,7 +1533,7 @@ export class PluginsService {
         try {
           const release = await firstValueFrom(this.httpService.get(`https://api.github.com/repos/${owner}/${repo}/releases/tags/${tag}`))
           return release.data
-        } catch {}
+        } catch { }
       }
       return null
     }
@@ -1549,7 +1549,7 @@ export class PluginsService {
         }))
         const matched = response.data.filter((b: any) => b.name.includes(keyword))
         return matched.length > 0 ? matched.at(-1).name : null
-      } catch {}
+      } catch { }
       return null
     }
 
@@ -1570,20 +1570,20 @@ export class PluginsService {
               try {
                 const changelog = await firstValueFrom(this.httpService.get(`https://raw.githubusercontent.com/homebridge/${pluginName}/refs/heads/${branch}/CHANGELOG.md`))
                 changelogData = changelog.data
-              } catch {}
+              } catch { }
             }
           }
           if (!changelogData && tag) {
             try {
               const changelog = await firstValueFrom(this.httpService.get(`https://raw.githubusercontent.com/homebridge/${pluginName}/refs/tags/${tag}/CHANGELOG.md`))
               changelogData = changelog.data
-            } catch {}
+            } catch { }
           }
           if (!changelogData) {
             try {
               const changelog = await firstValueFrom(this.httpService.get(`https://raw.githubusercontent.com/homebridge/${pluginName}/HEAD/CHANGELOG.md`))
               changelogData = changelog.data
-            } catch {}
+            } catch { }
           }
 
           return {
@@ -1634,7 +1634,7 @@ export class PluginsService {
             try {
               const changelog = await firstValueFrom(this.httpService.get(`https://raw.githubusercontent.com/${match[1]}/${match[2]}/${ref}/${changelogPath}${filename}`))
               return changelog.data
-            } catch {}
+            } catch { }
           }
           return null
         }
@@ -1895,6 +1895,7 @@ export class PluginsService {
 
     const schema = await readJson(resolve(fullPath, 'config.schema.json'))
     const customUiPath = resolve(fullPath, schema.customUiPath || 'homebridge-ui')
+    const customUiCspDomains = this.sanitizeCspDomains(schema.customUiCspDomains)
 
     const publicPath = resolve(customUiPath, 'public')
     const serverPath = resolve(customUiPath, 'server.js')
@@ -1914,6 +1915,7 @@ export class PluginsService {
         serverPath,
         publicPath,
         plugin,
+        customUiCspDomains,
       }
     }
 
@@ -2753,5 +2755,16 @@ export class PluginsService {
       this.pluginListRetryTimeout = setTimeout(() => this.loadPluginList(), 60000)
       this.logger.debug(`Could not obtain plugin list from plugins repo as ${e.message}.`)
     }
+  }
+
+  private sanitizeCspDomains(domains: unknown): string[] {
+    if (!Array.isArray(domains)) {
+      return []
+    }
+    // Only allow https://<domain>.<tld> style domains, no paths or query strings
+    const RE_VALID_CSP_DOMAIN = /^https:\/\/[a-z0-9-]+(?:\.[a-z0-9-]+)+$/i
+    return domains
+      .filter((d): d is string => typeof d === 'string' && RE_VALID_CSP_DOMAIN.test(d))
+      .slice(0, 10) // hard cap to stop a runaway/malicious schema
   }
 }
