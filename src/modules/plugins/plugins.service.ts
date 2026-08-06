@@ -14,6 +14,7 @@ import type {
   PluginListNewScopeItem,
 } from './plugins.interfaces.js'
 
+import { Buffer } from 'node:buffer'
 import { execSync, fork, spawn } from 'node:child_process'
 import { EventEmitter } from 'node:events'
 import { constants, existsSync } from 'node:fs'
@@ -2764,7 +2765,16 @@ export class PluginsService {
     // Only allow https://<domain>.<tld> style domains, no paths or query strings
     const RE_VALID_CSP_DOMAIN = /^https:\/\/[a-z0-9-]+(?:\.[a-z0-9-]+)+$/i
     return domains
-      .filter((d): d is string => typeof d === 'string' && RE_VALID_CSP_DOMAIN.test(d))
+      .filter((d): d is string => {
+        if (typeof d !== 'string') {
+          return false
+        }
+        if (Buffer.byteLength(d, 'utf8') > 256) {
+          this.logger.error('Ignoring customUiCspDomains entry longer than 256 bytes.')
+          return false
+        }
+        return RE_VALID_CSP_DOMAIN.test(d)
+      })
       .slice(0, 10) // hard cap to stop a runaway/malicious schema
   }
 }
