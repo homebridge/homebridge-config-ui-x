@@ -63,6 +63,7 @@ export interface HomebridgePluginUiMetadata {
   publicPath: string
   serverPath: string
   plugin: HomebridgePlugin
+  customUiCspDomains: string[]
 }
 
 export interface HomebridgePluginVersions {

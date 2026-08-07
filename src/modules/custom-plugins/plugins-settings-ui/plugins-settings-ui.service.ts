@@ -35,7 +35,7 @@ export class PluginsSettingsUiService {
     @Inject(PluginsService) private readonly pluginsService: PluginsService,
     @Inject(ConfigService) private readonly configService: ConfigService,
     @Inject(HttpService) private readonly httpService: HttpService,
-  ) {}
+  ) { }
 
   /**
    * Serve Custom HTML Assets for a plugin
@@ -79,15 +79,19 @@ export class PluginsSettingsUiService {
         // #2873.  frame-ancestors restricts embedding to same-origin
         // frames only, preventing the plugin iframe from being embedded by
         // third-party pages.
+        const extraDomains = pluginUi.customUiCspDomains?.length
+          ? ` ${pluginUi.customUiCspDomains.join(' ')}`
+          : ''
         reply.header(
           'Content-Security-Policy',
           `default-src 'self' ${safeOrigin}; `
-          + `script-src 'self' 'unsafe-inline' 'unsafe-eval' ${safeOrigin}; `
+          + `script-src 'self' 'unsafe-inline' 'unsafe-eval' ${safeOrigin}${extraDomains}; `
           + `style-src 'self' 'unsafe-inline' ${safeOrigin}; `
           + `img-src * data:; `
           + `connect-src *; `
           + `font-src 'self' data:; `
-          + `frame-ancestors 'self' ${safeOrigin}`,
+          + `frame-ancestors 'self' ${safeOrigin}; `
+          + `frame-src 'self' ${safeOrigin}${extraDomains}`,
         )
         return reply
           .type('text/html')
