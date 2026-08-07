@@ -17,6 +17,7 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vites
 import { AuthModule } from '../../src/core/auth/auth.module.js'
 import { PluginsSettingsUiModule } from '../../src/modules/custom-plugins/plugins-settings-ui/plugins-settings-ui.module.js'
 import { PluginsSettingsUiService } from '../../src/modules/custom-plugins/plugins-settings-ui/plugins-settings-ui.service.js'
+import { PluginsService } from '../../src/modules/plugins/plugins.service.js'
 
 import '../../src/global-defaults.js'
 
@@ -171,6 +172,42 @@ describe('PluginsSettingsUiController (e2e)', () => {
     // evaluate expressions at runtime (e.g. Alpine.js, Vue) need this (#2873)
     expect(csp).toContain('\'unsafe-eval\'')
     expect(csp).toContain('frame-ancestors')
+  })
+
+  it('GET /plugins/settings-ui/:plugin-name/index.html ignores customUiCspDomains entries longer than 256 bytes', async () => {
+    const { readJson, writeJson } = await import('fs-extra')
+
+    const baseSchemaPath = resolve(pluginsPath, 'homebridge-mock-plugin', 'config.schema.json')
+    const baseSchema = await readJson(baseSchemaPath)
+    const maxLengthDomain = `https://${'a'.repeat(244)}.com`
+    const overLengthDomain = `https://${'b'.repeat(245)}.com`
+    const pluginsService = app.get(PluginsService)
+    const loggerErrorSpy = vi.spyOn((pluginsService as any).logger, 'error').mockImplementation(() => undefined)
+
+    try {
+      await writeJson(baseSchemaPath, {
+        ...baseSchema,
+        customUiCspDomains: [maxLengthDomain, overLengthDomain],
+      })
+      ;(app.get(PluginsSettingsUiService) as any).pluginUiMetadataCache.del('homebridge-mock-plugin')
+      ;(app.get(PluginsSettingsUiService) as any).pluginUiLastVersionCache.del('homebridge-mock-plugin')
+
+      const res = await app.inject({
+        method: 'GET',
+        path: '/plugins/settings-ui/homebridge-mock-plugin/index.html',
+        headers: { cookie: sessionCookie },
+      })
+
+      expect(res.statusCode).toBe(200)
+      const csp = res.headers['content-security-policy'] as string
+      expect(csp).toContain(maxLengthDomain)
+      expect(csp).not.toContain(overLengthDomain)
+      expect(loggerErrorSpy).toHaveBeenCalledWith('Ignoring customUiCspDomains entry longer than 256 bytes.')
+    } finally {
+      await writeJson(baseSchemaPath, baseSchema)
+      ;(app.get(PluginsSettingsUiService) as any).pluginUiMetadataCache.del('homebridge-mock-plugin')
+      ;(app.get(PluginsSettingsUiService) as any).pluginUiLastVersionCache.del('homebridge-mock-plugin')
+    }
   })
 
   it('GET /plugins/settings-ui/:plugin-name/index.html (set origin)', async () => {
