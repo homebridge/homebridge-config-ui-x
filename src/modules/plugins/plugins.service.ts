@@ -69,6 +69,7 @@ export class PluginsService {
   private _npm: Array<string> | undefined
   private npmMajorVersion: number | null = null
   private _paths: Array<string> | undefined
+  private warnedDuplicateUiInstall = false
 
   /**
    * Lazy getter for npm path - computed only when first accessed
@@ -233,11 +234,18 @@ export class PluginsService {
             // Check if the plugin has been disabled
             plugin.disabled = disabledPlugins.includes(plugin.name)
 
-            // Filter out duplicate plugins and give preference to non-global plugins
+            // Filter out duplicate plugins and give preference to non-global plugins.
+            // The UI is deduplicated here too because it carries the 'homebridge-plugin'
+            // keyword, but 'prefer non-global' is wrong for it: it runs from
+            // UIX_BASE_PATH, which is normally the global install. Letting a shadow copy
+            // under customPluginPath win made manageUi() update that copy instead of the
+            // one running, so the same update was offered again after every restart.
             const existingPlugin = plugins.find(x => plugin.name === x.name)
+            const isUi = plugin.name === this.configService.name
+            const isRunningUi = isUi && resolve(plugin.installPath) === dirname(resolve(process.env.UIX_BASE_PATH))
             if (!existingPlugin) {
               plugins.push(plugin)
-            } else if (!plugin.globalInstall && existingPlugin.globalInstall === true) {
+            } else if (isUi ? isRunningUi : (!plugin.globalInstall && existingPlugin.globalInstall === true)) {
               const index = plugins.indexOf(existingPlugin)
               plugins[index] = plugin
             }
@@ -651,8 +659,16 @@ export class PluginsService {
     // Check if the plugin is already installed
     await this.getInstalledPlugins()
 
-    // Check if the plugin is currently installed
-    const existingPlugin = this.installedPlugins.find(x => x.name === pluginAction.name)
+    // Update the installation we are actually running from. The UI carries the
+    // 'homebridge-plugin' keyword, so it is deduplicated like a plugin - and that
+    // deduplication prefers a non-global copy. A second copy of the UI under
+    // customPluginPath would otherwise be the one updated, leaving the running
+    // install untouched and the very same update offered again after the restart.
+    // Note installPath here is the containing node_modules directory, not the
+    // package directory, so it is the parent of UIX_BASE_PATH that must match.
+    const uiPlugins = this.installedPlugins.filter(x => x.name === pluginAction.name)
+    const runningParent = dirname(resolve(process.env.UIX_BASE_PATH))
+    const existingPlugin = uiPlugins.find(x => resolve(x.installPath) === runningParent) ?? uiPlugins[0]
 
     // If the plugin is already installed, match the installation path
     if (existingPlugin) {
@@ -1103,10 +1119,25 @@ export class PluginsService {
    */
   public async getHomebridgeUiPackage(): Promise<HomebridgePlugin> {
     const modules = await this.getInstalledModules()
-    const uiModule = modules.find(x => x.name === this.configService.name)
+    const uiModules = modules.filter(x => x.name === this.configService.name)
+
+    // Identify ourselves by where we are actually running from, rather than taking the
+    // first name match. getBasePaths() searches customPluginPath first, so a second copy
+    // of the UI sitting in the plugin directory shadowed the real installation and the UI
+    // reported that copy's version as its own - which is how a beta user was told an
+    // update was available to the very version they were already running.
+    const runningPath = resolve(process.env.UIX_BASE_PATH)
+    const uiModule = uiModules.find(x => resolve(x.installPath) === runningPath) ?? uiModules[0]
 
     if (!uiModule) {
       throw new Error('Unable to find Homebridge UI installation.')
+    }
+
+    // A second copy is not harmless: npm reinstates it from the parent package.json on
+    // every plugin update, so say so rather than quietly using the right one.
+    if (uiModules.length > 1 && !this.warnedDuplicateUiInstall) {
+      this.warnedDuplicateUiInstall = true
+      this.logger.warn(`Found more than one installation of ${this.configService.name}: ${uiModules.map(x => x.installPath).join(', ')}. Using ${uiModule.installPath}, the one currently running. You should remove the others.`)
     }
 
     const pkgJson: IPackageJson = await readJson(join(uiModule.installPath, 'package.json'))
@@ -1992,8 +2023,13 @@ export class PluginsService {
       }
     }
 
-    // If homebridge-config-ui-x not found in default locations
-    if (allModules.findIndex(x => x.name === 'homebridge-config-ui-x') === -1) {
+    // Always include the installation we are actually running from, even when another
+    // copy of the UI was found. This used to only run when no copy was found at all, so
+    // a shadow copy under customPluginPath hid the real one completely: the running
+    // install is not necessarily inside any scanned base path, and every 'which install
+    // is us?' check downstream then had nothing to match and quietly took the shadow.
+    const runningUiPath = resolve(process.env.UIX_BASE_PATH)
+    if (!allModules.some(x => x.name === 'homebridge-config-ui-x' && resolve(x.installPath) === runningUiPath)) {
       allModules.push({
         name: 'homebridge-config-ui-x',
         installPath: process.env.UIX_BASE_PATH,
