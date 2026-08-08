@@ -25,6 +25,10 @@ export const RE_NON_NUMERIC_DOT = /[^0-9.]/g
 // CORS
 export const RE_DEV_SERVER_ORIGIN = /^https?:\/\/[^:]+:(?:4200|8080)$/
 
+// The ports `ng serve` listens on. Used to tell a genuine Angular dev server
+// apart from any other origin a caller might supply.
+export const DEV_SERVER_PORTS = new Set(['4200', '8080'])
+
 // Homebridge service
 export const RE_SERVICE_NAME = /^[a-z0-9-]+$/i
 
