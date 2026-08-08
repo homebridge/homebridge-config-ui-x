@@ -16,7 +16,7 @@ import { firstValueFrom } from 'rxjs'
 
 import { ConfigService } from '../../../core/config/config.service.js'
 import { Logger } from '../../../core/logger/logger.service.js'
-import { RE_PATH_TRAVERSAL, RE_STATIC_ASSET_EXT } from '../../../core/regex.constants.js'
+import { DEV_SERVER_PORTS, RE_PATH_TRAVERSAL, RE_STATIC_ASSET_EXT } from '../../../core/regex.constants.js'
 import { PluginsService } from '../../plugins/plugins.service.js'
 
 // Sent back to the iframe for any request the server cannot answer. It describes the present state
@@ -68,34 +68,35 @@ export class PluginsSettingsUiService {
       reply.header('Content-Security-Policy', '')
 
       if (assetPath === 'index.html') {
-        // Validate origin once here so the same value is used in both the CSP
-        // header and the HTML body — preventing any mismatch between the two.
-        const safeOrigin = this.sanitizeOrigin(origin)
-        // Scope the CSP tightly to the validated origin.  'unsafe-inline' is
-        // required because the generated index.html contains two inline
-        // <script> blocks.  'unsafe-eval' is required because plugin custom
-        // UIs ran without any CSP before v5.24.1 and commonly use frameworks
-        // that evaluate expressions at runtime (e.g. Alpine.js, Vue) — see
-        // #2873.  frame-ancestors restricts embedding to same-origin
-        // frames only, preventing the plugin iframe from being embedded by
-        // third-party pages.
+        // Resolved once here so the same value is used in both the CSP header
+        // and the HTML body — preventing any mismatch between the two. Empty in
+        // every normal case, which leaves the policy as plain 'self'.
+        const uiOrigin = this.resolveUiOrigin(origin, reply.request?.headers?.host)
+        const devOrigin = uiOrigin ? ` ${uiOrigin}` : ''
+        // Scope the CSP to this server.  'unsafe-inline' is required because the
+        // generated index.html contains two inline <script> blocks.
+        // 'unsafe-eval' is required because plugin custom UIs ran without any
+        // CSP before v5.24.1 and commonly use frameworks that evaluate
+        // expressions at runtime (e.g. Alpine.js, Vue) — see #2873.
+        // frame-ancestors restricts embedding to same-origin frames only,
+        // preventing the plugin iframe from being embedded by third-party pages.
         const extraDomains = pluginUi.customUiCspDomains?.length
           ? ` ${pluginUi.customUiCspDomains.join(' ')}`
           : ''
         reply.header(
           'Content-Security-Policy',
-          `default-src 'self' ${safeOrigin}; `
-          + `script-src 'self' 'unsafe-inline' 'unsafe-eval' ${safeOrigin}${extraDomains}; `
-          + `style-src 'self' 'unsafe-inline' ${safeOrigin}; `
+          `default-src 'self'${devOrigin}; `
+          + `script-src 'self' 'unsafe-inline' 'unsafe-eval'${devOrigin}${extraDomains}; `
+          + `style-src 'self' 'unsafe-inline'${devOrigin}; `
           + `img-src * data:; `
           + `connect-src *; `
           + `font-src 'self' data:; `
-          + `frame-ancestors 'self' ${safeOrigin}; `
-          + `frame-src 'self' ${safeOrigin}${extraDomains}`,
+          + `frame-ancestors 'self'${devOrigin}; `
+          + `frame-src 'self'${devOrigin}${extraDomains}`,
         )
         return reply
           .type('text/html')
-          .send(await this.buildIndexHtml(pluginUi, safeOrigin))
+          .send(await this.buildIndexHtml(pluginUi, uiOrigin))
       }
 
       if (pluginUi.devServer) {
@@ -166,7 +167,10 @@ export class PluginsSettingsUiService {
    */
   async buildIndexHtml(pluginUi: HomebridgePluginUiMetadata, origin?: string) {
     const body = await this.getIndexHtmlBody(pluginUi)
-    const safeOrigin = this.sanitizeOrigin(origin)
+    // Checked again here rather than trusting the caller. serveCustomUiAsset
+    // already resolves the origin against the request host, but this method is
+    // reachable on its own, and the attribute below is the sink that mattered.
+    const safeOrigin = this.assertBareDevOrigin(origin)
 
     return `
       <!doctype html>
@@ -196,25 +200,72 @@ export class PluginsSettingsUiService {
   }
 
   /**
-   * Validate and return only the origin (scheme + host) of the provided URL.
-   * Returns a safe fallback if the value is missing, not a valid URL, or uses
-   * a scheme other than http/https — preventing script-src injection via the
-   * `origin` query parameter.
+   * Work out where `plugin-ui-utils/ui.js` should be loaded from.
+   *
+   * Returns an empty string in every normal case, so the script tag below is
+   * written as a relative path and can only ever point back at this server.
+   *
+   * The one exception is the Angular dev server: during `npm run dev` the UI is
+   * served from port 4200 while the API answers on 8581, so a relative path
+   * would look for the asset on the API and not find it. That case is allowed
+   * only when the supplied origin is on the *same host* the request arrived on
+   * and on a dev-server port - so a developer's own machine still works, and no
+   * caller can nominate a host of their choosing.
+   *
+   * This used to be a `sanitizeOrigin()` that checked the scheme and nothing
+   * else, which meant any `http(s)` host passed. That host was written into the
+   * CSP and into the `<script src>` of a page on the UI's own origin, so a
+   * crafted link ran the attacker's JavaScript with full UI authority and could
+   * read the session token out of localStorage. Reported privately, 2026-08-08.
    */
-  private sanitizeOrigin(origin: string | undefined): string {
-    const fallback = 'http://localhost:4200'
+  /**
+   * Accept a value only if it is exactly a bare origin - scheme and host, no
+   * path, query, fragment or credentials - on a dev-server port. Anything else
+   * becomes an empty string, which makes the script tag relative.
+   *
+   * Comparing against `url.origin` is what rejects a breakout attempt: a value
+   * carrying a quote or a closing tag never round-trips back to itself.
+   */
+  private assertBareDevOrigin(origin: string | undefined): string {
     if (!origin) {
-      return fallback
+      return ''
     }
     try {
       const url = new URL(origin)
       if (url.protocol !== 'http:' && url.protocol !== 'https:') {
-        return fallback
+        return ''
       }
-      // Return only protocol + host, stripping any path, query, or fragment
+      if (!DEV_SERVER_PORTS.has(url.port)) {
+        return ''
+      }
+      return url.origin === origin ? url.origin : ''
+    } catch {
+      return ''
+    }
+  }
+
+  private resolveUiOrigin(origin: string | undefined, requestHost: string | undefined): string {
+    if (!origin) {
+      return ''
+    }
+    try {
+      const url = new URL(origin)
+      if (url.protocol !== 'http:' && url.protocol !== 'https:') {
+        return ''
+      }
+      if (!DEV_SERVER_PORTS.has(url.port)) {
+        return ''
+      }
+      // `requestHost` still carries the port the API is listening on, which is
+      // not the port the dev server uses, so only the hostname is compared.
+      const requestHostname = requestHost?.split(':')[0]
+      if (!requestHostname || url.hostname !== requestHostname) {
+        return ''
+      }
+      // Only protocol + host, stripping any path, query or fragment
       return url.origin
     } catch {
-      return fallback
+      return ''
     }
   }
 

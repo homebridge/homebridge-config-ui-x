@@ -40,6 +40,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(deps): bump `@homebridge/hap-client` to v5.1.1 so child bridges sharing a hostname are discovered (#2936)
 - fix(test): reset the accessory layout so the default-room test passes on repeat runs
 - Fix for CSP Errors (#2960)
+- fix(security): stop a caller-supplied origin reaching the plugin ui script tag and csp (reported by @yowie)
 
 ### Homebridge Dependencies
 
