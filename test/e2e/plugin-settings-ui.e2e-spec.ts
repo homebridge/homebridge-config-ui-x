@@ -210,7 +210,7 @@ describe('PluginsSettingsUiController (e2e)', () => {
     }
   })
 
-  it('GET /plugins/settings-ui/:plugin-name/index.html (set origin)', async () => {
+  it('GET /plugins/settings-ui/:plugin-name/index.html (foreign origin → ignored)', async () => {
     const res = await app.inject({
       method: 'GET',
       path: `/plugins/settings-ui/homebridge-mock-plugin/index.html?origin=${encodeURIComponent('http://example.com')}`,
@@ -218,7 +218,41 @@ describe('PluginsSettingsUiController (e2e)', () => {
     })
 
     expect(res.statusCode).toBe(200)
-    expect(res.body).toContain('http://example.com/assets/plugin-ui-utils/ui.js')
+    // A caller-supplied host must never reach the script tag or the policy.
+    // This used to be reflected, which is what made the page loadable with an
+    // attacker's script on the UI's own origin.
+    expect(res.body).not.toContain('http://example.com')
+    expect(res.headers['content-security-policy']).not.toContain('http://example.com')
+    expect(res.body).toContain('src="/assets/plugin-ui-utils/ui.js')
+  })
+
+  it('GET /plugins/settings-ui/:plugin-name/index.html (foreign origin on a dev port → ignored)', async () => {
+    // Being on a dev-server port is not enough on its own - the host has to
+    // match the host the request arrived on
+    const res = await app.inject({
+      method: 'GET',
+      path: `/plugins/settings-ui/homebridge-mock-plugin/index.html?origin=${encodeURIComponent('http://attacker.example.com:4200')}`,
+      headers: { cookie: sessionCookie, host: 'localhost:8581' },
+    })
+
+    expect(res.statusCode).toBe(200)
+    expect(res.body).not.toContain('attacker.example.com')
+    expect(res.headers['content-security-policy']).not.toContain('attacker.example.com')
+    expect(res.body).toContain('src="/assets/plugin-ui-utils/ui.js')
+  })
+
+  it('GET /plugins/settings-ui/:plugin-name/index.html (matching dev server origin → allowed)', async () => {
+    // `npm run dev` serves the UI on 4200 while the API answers on 8581, so a
+    // relative path would not find the asset. Same host, dev port, so allowed.
+    const res = await app.inject({
+      method: 'GET',
+      path: `/plugins/settings-ui/homebridge-mock-plugin/index.html?origin=${encodeURIComponent('http://localhost:4200')}`,
+      headers: { cookie: sessionCookie, host: 'localhost:8581' },
+    })
+
+    expect(res.statusCode).toBe(200)
+    expect(res.body).toContain('http://localhost:4200/assets/plugin-ui-utils/ui.js')
+    expect(res.headers['content-security-policy']).toContain('http://localhost:4200')
   })
 
   it('GET /plugins/settings-ui/:plugin-name/index.html (XSS via origin → rejected)', async () => {
@@ -232,8 +266,8 @@ describe('PluginsSettingsUiController (e2e)', () => {
     expect(res.statusCode).toBe(200)
     // The malicious origin must not appear verbatim in the response
     expect(res.body).not.toContain('alert(document.domain)')
-    // The fallback origin should be used instead
-    expect(res.body).toContain('http://localhost:4200/assets/plugin-ui-utils/ui.js')
+    // Falls back to a relative path, which cannot carry a host at all
+    expect(res.body).toContain('src="/assets/plugin-ui-utils/ui.js')
   })
 
   it('GET /plugins/settings-ui/:plugin-name/index.html (non-http origin → rejected)', async () => {
@@ -245,7 +279,7 @@ describe('PluginsSettingsUiController (e2e)', () => {
 
     expect(res.statusCode).toBe(200)
     expect(res.body).not.toContain('javascript:alert(1)')
-    expect(res.body).toContain('http://localhost:4200/assets/plugin-ui-utils/ui.js')
+    expect(res.body).toContain('src="/assets/plugin-ui-utils/ui.js')
   })
 
   it('GET /plugins/settings-ui/:plugin-name/index.html (no custom ui for plugin)', async () => {
@@ -322,7 +356,7 @@ describe('PluginsSettingsUiController (e2e)', () => {
       expect(html).toContain('&lt;')
     })
 
-    it('buildIndexHtml should reject a malicious origin and use the fallback', async () => {
+    it('buildIndexHtml should reject a malicious origin and fall back to a relative path', async () => {
       const pluginUi = {
         plugin: { name: 'homebridge-mock-plugin' },
         publicPath: resolve(pluginsPath, 'homebridge-mock-plugin/homebridge-ui/public'),
@@ -333,10 +367,10 @@ describe('PluginsSettingsUiController (e2e)', () => {
       const html = await pluginsSettingsUiService.buildIndexHtml(pluginUi as any, xssOrigin)
 
       expect(html).not.toContain('alert(document.domain)')
-      expect(html).toContain('http://localhost:4200/assets/plugin-ui-utils/ui.js')
+      expect(html).toContain('src="/assets/plugin-ui-utils/ui.js')
     })
 
-    it('buildIndexHtml should reject a javascript: origin and use the fallback', async () => {
+    it('buildIndexHtml should reject a javascript: origin and fall back to a relative path', async () => {
       const pluginUi = {
         plugin: { name: 'homebridge-mock-plugin' },
         publicPath: resolve(pluginsPath, 'homebridge-mock-plugin/homebridge-ui/public'),
@@ -346,7 +380,7 @@ describe('PluginsSettingsUiController (e2e)', () => {
       const html = await pluginsSettingsUiService.buildIndexHtml(pluginUi as any, 'javascript:alert(1)')
 
       expect(html).not.toContain('javascript:alert(1)')
-      expect(html).toContain('http://localhost:4200/assets/plugin-ui-utils/ui.js')
+      expect(html).toContain('src="/assets/plugin-ui-utils/ui.js')
     })
 
     it('startCustomUiHandler should emit ready with server:false when no server script', async () => {
