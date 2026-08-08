@@ -6,14 +6,14 @@ import type { HomebridgePlugin } from '../../src/modules/plugins/plugins.interfa
 import * as childProcess from 'node:child_process'
 import { EventEmitter } from 'node:events'
 import { mkdir, writeFile } from 'node:fs/promises'
-import { join, resolve } from 'node:path'
+import { dirname, join, resolve, sep } from 'node:path'
 import process from 'node:process'
 
 import { HttpService } from '@nestjs/axios'
 import { ValidationPipe } from '@nestjs/common'
 import { FastifyAdapter } from '@nestjs/platform-fastify'
 import { Test } from '@nestjs/testing'
-import { copy, remove } from 'fs-extra'
+import { copy, readJson, remove } from 'fs-extra'
 import { of } from 'rxjs'
 import { gt as semverGt } from 'semver'
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
@@ -1627,6 +1627,222 @@ describe('PluginController (e2e)', () => {
         withScripts: [],
       })
       getSpy.mockRestore()
+    })
+  })
+
+  describe('getHomebridgeUiPackage - which install sets the version', () => {
+    let shadowPath: string
+    let runningPath: string
+
+    beforeEach(async () => {
+      runningPath = resolve(process.env.UIX_BASE_PATH)
+      shadowPath = resolve(process.env.UIX_STORAGE_PATH, 'fake-ui', 'node_modules', 'homebridge-config-ui-x')
+      await mkdir(shadowPath, { recursive: true })
+      await writeFile(join(shadowPath, 'package.json'), JSON.stringify({
+        name: 'homebridge-config-ui-x',
+        version: '0.0.1-shadow',
+      }))
+
+      // customPluginPath is searched first by getBasePaths(), so a copy of the UI in
+      // the plugin directory is returned before the one actually running
+      vi.spyOn(pluginsService as any, 'getInstalledModules').mockResolvedValue([
+        { name: 'homebridge-config-ui-x', path: resolve(shadowPath, '..'), installPath: shadowPath },
+        { name: 'homebridge-config-ui-x', path: resolve(runningPath, '..'), installPath: runningPath },
+      ])
+      // keep the npm lookup out of it - this is only about which package.json is read
+      vi.spyOn(pluginsService as any, 'getPluginFromNpm').mockImplementation(async (pkg: any) => {
+        pkg.latestVersion = null
+        return pkg
+      })
+
+      // the duplicate warning fires once per process, so clear it between tests
+      ;(pluginsService as any).warnedDuplicateUiInstall = false
+    })
+
+    // Regression: a second copy of the UI in the plugin directory shadowed the real
+    // installation, so the UI reported that copy's version as its own. On a beta that
+    // meant being offered an "update" to the version already running - and npm puts the
+    // copy back on every plugin update, so it kept coming back.
+    it('reports the version of the install that is actually running', async () => {
+      const running = await readJson(join(runningPath, 'package.json'))
+
+      const uiPackage = await pluginsService.getHomebridgeUiPackage()
+
+      expect(uiPackage.installedVersion).toBe(running.version)
+      expect(uiPackage.installedVersion).not.toBe('0.0.1-shadow')
+    })
+
+    it('still works when only one installation is found', async () => {
+      vi.spyOn(pluginsService as any, 'getInstalledModules').mockResolvedValue([
+        { name: 'homebridge-config-ui-x', path: resolve(shadowPath, '..'), installPath: shadowPath },
+      ])
+
+      const uiPackage = await pluginsService.getHomebridgeUiPackage()
+
+      expect(uiPackage.installedVersion).toBe('0.0.1-shadow')
+    })
+
+    it('falls back to the first match when none of them is the running install', async () => {
+      const otherPath = resolve(process.env.UIX_STORAGE_PATH, 'fake-ui-2', 'node_modules', 'homebridge-config-ui-x')
+      await mkdir(otherPath, { recursive: true })
+      await writeFile(join(otherPath, 'package.json'), JSON.stringify({
+        name: 'homebridge-config-ui-x',
+        version: '0.0.2-other',
+      }))
+      vi.spyOn(pluginsService as any, 'getInstalledModules').mockResolvedValue([
+        { name: 'homebridge-config-ui-x', path: resolve(shadowPath, '..'), installPath: shadowPath },
+        { name: 'homebridge-config-ui-x', path: resolve(otherPath, '..'), installPath: otherPath },
+      ])
+
+      // no throw, and a deterministic answer rather than whichever the scan happened to hit
+      const uiPackage = await pluginsService.getHomebridgeUiPackage()
+
+      expect(uiPackage.installedVersion).toBe('0.0.1-shadow')
+    })
+
+    // UIX_BASE_PATH can be set by the user through UIX_BASE_PATH_OVERRIDE, so it will not
+    // always be normalised the way resolve() leaves it. Comparing raw strings would miss
+    // the running install and quietly fall back to the shadow copy.
+    it('matches the running install despite a trailing separator on UIX_BASE_PATH', async () => {
+      const original = process.env.UIX_BASE_PATH
+      process.env.UIX_BASE_PATH = `${original}${sep}`
+
+      try {
+        const running = await readJson(join(runningPath, 'package.json'))
+        const uiPackage = await pluginsService.getHomebridgeUiPackage()
+
+        expect(uiPackage.installedVersion).toBe(running.version)
+      } finally {
+        process.env.UIX_BASE_PATH = original
+      }
+    })
+
+    describe('the duplicate-install warning', () => {
+      let warnSpy: any
+
+      beforeEach(() => {
+        warnSpy = vi.spyOn((pluginsService as any).logger, 'warn').mockImplementation(() => {})
+      })
+
+      it('names both installations so the stale one can be removed', async () => {
+        await pluginsService.getHomebridgeUiPackage()
+
+        expect(warnSpy).toHaveBeenCalledTimes(1)
+        const message = warnSpy.mock.calls[0][0]
+        expect(message).toContain(shadowPath)
+        expect(message).toContain(runningPath)
+      })
+
+      // npm reinstates the duplicate on every plugin update, and this runs on every
+      // plugin-list refresh - so warning each time would be a steady drip in the log
+      it('warns only once, not on every refresh', async () => {
+        await pluginsService.getHomebridgeUiPackage()
+        await pluginsService.getHomebridgeUiPackage()
+        await pluginsService.getHomebridgeUiPackage()
+
+        expect(warnSpy).toHaveBeenCalledTimes(1)
+      })
+
+      it('stays quiet for the normal single-installation case', async () => {
+        vi.spyOn(pluginsService as any, 'getInstalledModules').mockResolvedValue([
+          { name: 'homebridge-config-ui-x', path: resolve(runningPath, '..'), installPath: runningPath },
+        ])
+
+        await pluginsService.getHomebridgeUiPackage()
+
+        expect(warnSpy).not.toHaveBeenCalled()
+      })
+    })
+
+    // The fix above only worked because getInstalledModules() had been mocked to contain
+    // the running install. On a real hb-service setup the running install sits outside
+    // every scanned base path, and the safety net that adds it back only ran when no copy
+    // of the UI was found at all - so the shadow copy suppressed it and became the only
+    // candidate. That put a beta Pi back in exactly the original broken state, reporting
+    // the shadow's stable version and offering an update to the beta already running.
+    describe('when the running install is outside the scanned paths', () => {
+      beforeEach(() => {
+        vi.restoreAllMocks()
+        // only the shadow copy is discoverable, as on a real Pi
+        vi.spyOn(pluginsService as any, 'paths', 'get').mockReturnValue([resolve(shadowPath, '..')])
+        vi.spyOn(pluginsService as any, 'getPluginFromNpm').mockImplementation(async (pkg: any) => {
+          pkg.latestVersion = null
+          return pkg
+        })
+        ;(pluginsService as any).warnedDuplicateUiInstall = false
+      })
+
+      it('still finds the running install in the module scan', async () => {
+        const modules = await (pluginsService as any).getInstalledModules()
+        const uiModules = modules.filter((x: any) => x.name === 'homebridge-config-ui-x')
+
+        expect(uiModules.map((x: any) => resolve(x.installPath))).toContain(runningPath)
+      })
+
+      it('reports the running version, not the shadow copy it happens to find', async () => {
+        const running = await readJson(join(runningPath, 'package.json'))
+
+        const uiPackage = await pluginsService.getHomebridgeUiPackage()
+
+        expect(uiPackage.installedVersion).toBe(running.version)
+        expect(uiPackage.installedVersion).not.toBe('0.0.1-shadow')
+      })
+    })
+  })
+
+  describe('manageUi - which install gets updated', () => {
+    let npmSpy: any
+    let runningParent: string
+    let shadowParent: string
+
+    beforeEach(async () => {
+      runningParent = dirname(resolve(process.env.UIX_BASE_PATH))
+      shadowParent = resolve(process.env.UIX_STORAGE_PATH, 'fake-ui-plugins', 'node_modules')
+
+      // the plugin list dedupes in favour of the non-global copy, so the shadow
+      // comes first - exactly the order manageUi used to take blindly
+      ;(pluginsService as any).installedPlugins = [
+        { name: 'homebridge-config-ui-x', installPath: shadowParent, globalInstall: false },
+        { name: 'homebridge-config-ui-x', installPath: runningParent, globalInstall: true },
+      ]
+
+      vi.spyOn(pluginsService as any, 'getInstalledPlugins').mockResolvedValue([])
+      vi.spyOn(pluginsService as any, 'isUiUpdateBundleAvailable').mockResolvedValue('')
+      vi.spyOn(pluginsService as any, 'applyAllowScripts').mockResolvedValue(undefined)
+      vi.spyOn(pluginsService as any, 'cleanNpmCache').mockResolvedValue(undefined)
+      npmSpy = vi.spyOn(pluginsService as any, 'runNpmCommand').mockResolvedValue(undefined)
+    })
+
+    // Regression: the UI carries the 'homebridge-plugin' keyword, so it is deduped like
+    // a plugin and the dedup prefers a non-global copy. A second copy of the UI under the
+    // plugin path was therefore the one npm updated, leaving the install that is actually
+    // running untouched - so the same update kept being offered after every restart.
+    it('installs into the installation that is actually running', async () => {
+      await (pluginsService as any).manageUi(
+        'install',
+        { name: 'homebridge-config-ui-x', version: '9.9.9' },
+        new EventEmitter(),
+      )
+
+      expect(npmSpy).toHaveBeenCalledTimes(1)
+      const [, cwd] = npmSpy.mock.calls[0]
+      expect(cwd).toBe(resolve(runningParent, '../'))
+      expect(cwd).not.toBe(resolve(shadowParent, '../'))
+    })
+
+    it('falls back to the only installation when there is just one', async () => {
+      ;(pluginsService as any).installedPlugins = [
+        { name: 'homebridge-config-ui-x', installPath: shadowParent, globalInstall: false },
+      ]
+
+      await (pluginsService as any).manageUi(
+        'install',
+        { name: 'homebridge-config-ui-x', version: '9.9.9' },
+        new EventEmitter(),
+      )
+
+      const [, cwd] = npmSpy.mock.calls[0]
+      expect(cwd).toBe(resolve(shadowParent, '../'))
     })
   })
 

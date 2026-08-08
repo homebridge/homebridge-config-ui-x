@@ -41,6 +41,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(test): reset the accessory layout so the default-room test passes on repeat runs
 - Fix for CSP Errors (#2960)
 - fix(security): stop a caller-supplied origin reaching the plugin ui script tag and csp
+- fix(plugins): always use the ui installation that is actually running
 
 ### Homebridge Dependencies
 
