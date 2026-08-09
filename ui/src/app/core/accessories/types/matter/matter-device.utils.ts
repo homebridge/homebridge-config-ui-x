@@ -517,11 +517,51 @@ export async function setDoorLockState(service: ServiceTypeX, locked: boolean): 
 // ============================================================================
 
 /**
+ * Whether this covering can be moved up and down.
+ *
+ * A tilt-only blind has no lift at all, so offering a position slider would
+ * write an attribute the cluster does not have. Inferred from the declared
+ * attributes on Homebridge versions that do not send the feature map - which is
+ * exactly what those versions detected the features from themselves.
+ */
+export function hasWindowCoveringLift(service: ServiceTypeX): boolean {
+  const cluster = service.clusters?.windowCovering
+  return hasClusterFeature(
+    service,
+    'windowCovering',
+    'positionAwareLift',
+    cluster?.currentPositionLiftPercent100ths !== undefined
+    || cluster?.targetPositionLiftPercent100ths !== undefined,
+  )
+}
+
+/**
+ * Whether this covering has tilting slats, as a Venetian blind does.
+ */
+export function hasWindowCoveringTilt(service: ServiceTypeX): boolean {
+  const cluster = service.clusters?.windowCovering
+  return hasClusterFeature(
+    service,
+    'windowCovering',
+    'positionAwareTilt',
+    cluster?.currentPositionTiltPercent100ths !== undefined
+    || cluster?.targetPositionTiltPercent100ths !== undefined,
+  )
+}
+
+/**
  * Get current window covering position (0-10000, where 0=open, 10000=closed)
  * Matter uses inverted percentage
  */
 export function getWindowCoveringPosition(service: ServiceTypeX): number {
   return service.clusters?.windowCovering?.currentPositionLiftPercent100ths ?? 0
+}
+
+/**
+ * Get current tilt position (0-10000, where 0=open, 10000=closed)
+ */
+export function getWindowCoveringTiltPosition(service: ServiceTypeX): number {
+  return service.clusters?.windowCovering?.currentPositionTiltPercent100ths ?? 0
 }
 
 /**
@@ -569,6 +609,36 @@ export async function setWindowCoveringPosition(service: ServiceTypeX, percentag
     await cluster.setAttributes({ targetPositionLiftPercent100ths: matterPosition })
   } catch (error) {
     console.error('Failed to set window covering position:', error)
+    throw error
+  }
+}
+
+/**
+ * Get tilt position as percentage (0-100, where 0=closed, 100=open)
+ */
+export function getWindowCoveringTiltPercentage(service: ServiceTypeX): number {
+  return matterPositionToPercentage(getWindowCoveringTiltPosition(service))
+}
+
+/**
+ * Set window covering tilt position
+ * @param service - The service
+ * @param percentage - Percentage open (0=closed, 100=open)
+ */
+export async function setWindowCoveringTiltPosition(service: ServiceTypeX, percentage: number): Promise<void> {
+  const cluster = service.getCluster?.('windowCovering')
+
+  if (!cluster) {
+    const error = new Error('Window covering cluster not found')
+    console.error(error.message)
+    throw error
+  }
+
+  const matterPosition = percentageToMatterPosition(percentage)
+  try {
+    await cluster.setAttributes({ targetPositionTiltPercent100ths: matterPosition })
+  } catch (error) {
+    console.error('Failed to set window covering tilt position:', error)
     throw error
   }
 }

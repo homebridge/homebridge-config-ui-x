@@ -12,34 +12,57 @@
   <div class="modal-body text-center px-5">
     <div class="d-flex justify-content-center mb-0 p-0">
       <div class="mb-0 mx-0 p-3 btn-read w-100">
-        @if (currentPosition === 0) {
+        @if (summaryPercentage === 0) {
           {{ 'accessories.control.closed' | translate }}
-        } @else if (currentPosition === 100) {
+        } @else if (summaryPercentage === 100) {
           {{ 'accessories.control.open' | translate }}
         } @else {
-          {{ 'accessories.control.open' | translate }} {{ currentPosition }}%
+          {{ 'accessories.control.open' | translate }} {{ summaryPercentage }}%
         }
       </div>
     </div>
-    <h6 class="mt-4">{{ 'accessories.control.target' | translate }}: {{ targetPosition.value }}%</h6>
-    <nouislider
-      class="mb-1"
-      [min]="targetPosition.min"
-      [max]="targetPosition.max"
-      [step]="targetPosition.step"
-      [(ngModel)]="targetPosition.value"
-      (ngModelChange)="onTargetPositionChange()"
-    />
-    <div class="d-flex justify-content-between align-items-center mt-0 mb-1">
-      <span class="grey-text small">{{ 'accessories.control.closed' | translate }}</span>
-      <span class="grey-text small">{{ 'accessories.control.open' | translate }}</span>
-    </div>
-    <h6 class="mt-4">{{ 'accessories.control.current' | translate }}: {{ currentPosition }}%</h6>
-    <nouislider class="mb-1" [min]="0" [max]="100" [step]="1" [disabled]="true" [ngModel]="currentPosition" />
-    <div class="d-flex justify-content-between align-items-center mt-0 mb-1">
-      <span class="grey-text small">{{ 'accessories.control.closed' | translate }}</span>
-      <span class="grey-text small">{{ 'accessories.control.open' | translate }}</span>
-    </div>
+    @if (supportsLift) {
+      <h6 class="mt-4">{{ 'accessories.control.target' | translate }}: {{ targetPosition.value }}%</h6>
+      <nouislider
+        class="mb-1"
+        [min]="targetPosition.min"
+        [max]="targetPosition.max"
+        [step]="targetPosition.step"
+        [(ngModel)]="targetPosition.value"
+        (ngModelChange)="onTargetPositionChange()"
+      />
+      <div class="d-flex justify-content-between align-items-center mt-0 mb-1">
+        <span class="grey-text small">{{ 'accessories.control.closed' | translate }}</span>
+        <span class="grey-text small">{{ 'accessories.control.open' | translate }}</span>
+      </div>
+      <h6 class="mt-4">{{ 'accessories.control.current' | translate }}: {{ currentPosition }}%</h6>
+      <nouislider class="mb-1" [min]="0" [max]="100" [step]="1" [disabled]="true" [ngModel]="currentPosition" />
+      <div class="d-flex justify-content-between align-items-center mt-0 mb-1">
+        <span class="grey-text small">{{ 'accessories.control.closed' | translate }}</span>
+        <span class="grey-text small">{{ 'accessories.control.open' | translate }}</span>
+      </div>
+    }
+    @if (supportsTilt) {
+      <h6 class="mt-4">{{ 'accessories.control.tilt_target' | translate }}: {{ targetTilt.value }}%</h6>
+      <nouislider
+        class="mb-1"
+        [min]="targetTilt.min"
+        [max]="targetTilt.max"
+        [step]="targetTilt.step"
+        [(ngModel)]="targetTilt.value"
+        (ngModelChange)="onTargetTiltChange()"
+      />
+      <div class="d-flex justify-content-between align-items-center mt-0 mb-1">
+        <span class="grey-text small">{{ 'accessories.control.closed' | translate }}</span>
+        <span class="grey-text small">{{ 'accessories.control.open' | translate }}</span>
+      </div>
+      <h6 class="mt-4">{{ 'accessories.control.tilt_current' | translate }}: {{ currentTilt }}%</h6>
+      <nouislider class="mb-1" [min]="0" [max]="100" [step]="1" [disabled]="true" [ngModel]="currentTilt" />
+      <div class="d-flex justify-content-between align-items-center mt-0 mb-1">
+        <span class="grey-text small">{{ 'accessories.control.closed' | translate }}</span>
+        <span class="grey-text small">{{ 'accessories.control.open' | translate }}</span>
+      </div>
+    }
   </div>
   <div class="modal-footer"></div>
 </div>
