@@ -5,7 +5,7 @@ import type { HomebridgePlugin } from '../../src/modules/plugins/plugins.interfa
 
 import * as childProcess from 'node:child_process'
 import { EventEmitter } from 'node:events'
-import { mkdir, writeFile } from 'node:fs/promises'
+import { mkdir, symlink, writeFile } from 'node:fs/promises'
 import { dirname, join, resolve, sep } from 'node:path'
 import process from 'node:process'
 
@@ -1877,6 +1877,34 @@ describe('PluginController (e2e)', () => {
 
       await pluginsService.getHomebridgePackage()
 
+      expect(configService.homebridgeVersion).toBe('1.9.0')
+    })
+
+    it('uses the running install when two Homebridge installations are discovered', async () => {
+      const runningInstallPath = resolve(process.env.UIX_STORAGE_PATH, 'running-homebridge', 'node_modules', 'homebridge')
+      const runningModulePath = resolve(process.env.UIX_STORAGE_PATH, 'running-homebridge-link')
+      await mkdir(runningInstallPath, { recursive: true })
+      await writeFile(join(runningInstallPath, 'package.json'), JSON.stringify({ name: 'homebridge', version: '1.9.0' }))
+      await remove(runningModulePath)
+      await symlink(runningInstallPath, runningModulePath, 'junction')
+
+      vi.mocked((pluginsService as any).getInstalledModules).mockResolvedValue([
+        { name: 'homebridge', path: fakeInstallPath, installPath: fakeInstallPath },
+        { name: 'homebridge', path: runningInstallPath, installPath: runningInstallPath },
+      ])
+      vi.mocked((pluginsService as any).parsePackageJson).mockImplementation(async (pkg: { version: string }) => ({
+        name: 'homebridge',
+        installedVersion: pkg.version,
+        latestVersion: '2.2.0',
+      }))
+      // hb-service can report the symlinked path used to launch Homebridge,
+      // while plugin discovery finds the real installation directory.
+      homebridgeIpcService.setHomebridgeVersion('1.9.0', runningModulePath)
+
+      const homebridge = await pluginsService.getHomebridgePackage()
+
+      expect(homebridge.installedVersion).toBe('1.9.0')
+      expect(homebridge.multipleInstances).toBe(true)
       expect(configService.homebridgeVersion).toBe('1.9.0')
     })
 
