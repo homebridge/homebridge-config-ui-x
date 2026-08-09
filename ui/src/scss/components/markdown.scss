@@ -77,6 +77,48 @@
   td[align='center'] {
     text-align: center;
   }
+
+  // GitHub-style alerts (`> [!NOTE]` and friends). The blockquote is tagged with
+  // these classes by the markdown component; the icon comes from there too, so
+  // that the Font Awesome subset step can see the class name.
+  .md-alert {
+    margin: 1rem 0;
+    padding: 0.5rem 1rem;
+    border-left: 0.25rem solid var(--md-alert-color);
+
+    > :last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  .md-alert-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 0.25rem;
+    font-weight: 600;
+    color: var(--md-alert-color);
+  }
+
+  .md-alert-note {
+    --md-alert-color: #0969da;
+  }
+
+  .md-alert-tip {
+    --md-alert-color: #1a7f37;
+  }
+
+  .md-alert-important {
+    --md-alert-color: #8250df;
+  }
+
+  .md-alert-warning {
+    --md-alert-color: #9a6700;
+  }
+
+  .md-alert-caution {
+    --md-alert-color: #cf222e;
+  }
 }
 
 body.dark-mode .plugin-md {
@@ -92,5 +134,26 @@ body.dark-mode .plugin-md {
   td {
     border-color: #444;
     color: #eee !important;
+  }
+
+  // Lighter accents so the titles stay legible on the dark background.
+  .md-alert-note {
+    --md-alert-color: #4493f8;
+  }
+
+  .md-alert-tip {
+    --md-alert-color: #3fb950;
+  }
+
+  .md-alert-important {
+    --md-alert-color: #ab7df8;
+  }
+
+  .md-alert-warning {
+    --md-alert-color: #d29922;
+  }
+
+  .md-alert-caution {
+    --md-alert-color: #f85149;
   }
 }
