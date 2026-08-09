@@ -23,6 +23,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(plugins): offer the restart after a first-time plugin config, even when the child bridge is declined (#2946) (@BKeyport)
 - fix(plugins): even up the space either side of the hap and matter icons on the child bridge sections
 - feat(ui): render github style alerts in markdown, instead of showing the raw marker
+- feat(accessories): only offer the thermostat modes a matter device actually has
 
 ### Other Changes
 

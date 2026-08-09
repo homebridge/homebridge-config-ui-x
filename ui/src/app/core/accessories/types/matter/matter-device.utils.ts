@@ -677,6 +677,36 @@ export function getThermostatLocalTemperature(service: ServiceTypeX): number | n
 }
 
 /**
+ * Which modes this thermostat supports, for deciding which controls to offer.
+ *
+ * Homebridge v2.4.0+ sends the cluster's featureMap, which is authoritative -
+ * it is the only way to tell heat+cool WITH auto from heat+cool without, since
+ * both declare the same setpoints. Older Homebridge sends no featureMap, so
+ * fall back to inferring from the declared setpoints exactly as Homebridge
+ * itself derives the features there: a declared heating setpoint means
+ * Heating, cooling likewise, and both together always meant AutoMode too.
+ */
+export function getThermostatSupportedModes(service: ServiceTypeX): { heat: boolean, cool: boolean, auto: boolean } {
+  const cluster = service.clusters?.thermostat
+  const featureMap = cluster?.featureMap
+  if (featureMap) {
+    return {
+      heat: featureMap.heating === true,
+      cool: featureMap.cooling === true,
+      auto: featureMap.autoMode === true,
+    }
+  }
+
+  const heat = cluster?.occupiedHeatingSetpoint !== undefined
+  const cool = cluster?.occupiedCoolingSetpoint !== undefined
+  if (!heat && !cool) {
+    // No information at all - offer everything rather than nothing
+    return { heat: true, cool: true, auto: true }
+  }
+  return { heat, cool, auto: heat && cool }
+}
+
+/**
  * Get system mode
  * 0=Off, 1=Auto, 3=Cool, 4=Heat, 5=Emergency Heat, 6=Precooling, 7=Fan Only
  */
