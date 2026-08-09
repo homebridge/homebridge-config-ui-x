@@ -106,6 +106,8 @@
   "accessories.control.target": "Cíl",
   "accessories.control.temperature_thresholds": "Temperature Thresholds",
   "accessories.control.threshold_auto": "Auto Threshold",
+  "accessories.control.tilt_current": "Tilt Current",
+  "accessories.control.tilt_target": "Tilt Target",
   "accessories.control.triggered": "Spuštěno",
   "accessories.control.unknown": "Neznámý",
   "accessories.control.unlock": "Unlock",
