@@ -26,6 +26,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - feat(accessories): only offer the thermostat modes a matter device actually has
 - feat(accessories): only offer the colour controls a matter light actually has
 - feat(accessories): add a tilt control for matter window coverings that support it
+- feat(accessories): add tilt controls for hap window coverings that support them
 
 ### Other Changes
 
