@@ -6,7 +6,16 @@ import { Subject } from 'rxjs'
 
 import { BaseManageComponent } from '@/app/core/accessories/types/base-manage.component'
 import { MatterBrightness, MatterColorTemperature } from '@/app/core/accessories/types/matter/matter-device.constants'
-import { getBrightnessLevel, getColorTemperatureMireds, getHue, getOnOffState, getSaturation, hasColorTemperature, levelToPercentage } from '@/app/core/accessories/types/matter/matter-device.utils'
+import {
+  getBrightnessLevel,
+  getColorTemperatureMireds,
+  getHue,
+  getOnOffState,
+  getSaturation,
+  hasClusterFeature,
+  hasColorTemperature,
+  levelToPercentage,
+} from '@/app/core/accessories/types/matter/matter-device.utils'
 import { ConvertMiredPipe } from '@/app/core/pipes/convert-mired.pipe'
 import { ColourService } from '@/app/core/utilities/colour.service'
 
@@ -294,7 +303,23 @@ export class ExtendedColorLightManageComponent extends BaseManageComponent {
   }
 
   public get supportsColorTemperature(): boolean {
-    return hasColorTemperature(this.service)
+    // Gate on the registered feature where Homebridge reports it, falling back
+    // to the declared attribute on versions that do not
+    return hasClusterFeature(this.service, 'colorControl', 'colorTemperature', hasColorTemperature(this.service))
+  }
+
+  /**
+   * Hue and saturation ride on the HueSaturation feature. An ExtendedColorLight
+   * normally has it, but a plugin composing ColorControl itself may not, and
+   * writing hue to a cluster without the feature is rejected.
+   */
+  public get supportsHueSaturation(): boolean {
+    return hasClusterFeature(
+      this.service,
+      'colorControl',
+      'hueSaturation',
+      this.service.clusters?.colorControl?.currentHue !== undefined,
+    )
   }
 
   /**

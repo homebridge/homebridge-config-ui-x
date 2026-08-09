@@ -2,6 +2,54 @@ import type { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces
 
 import { MatterBrightness, MatterDeviceType, RvcOperationalState, RvcRunMode, WaterValveState } from './matter-device.constants'
 
+// ============================================================================
+// Cluster Features
+// ============================================================================
+
+/**
+ * The features a cluster was registered with, as named booleans.
+ *
+ * Matter gates parts of a cluster behind features chosen at registration, and a
+ * plugin can now pick those itself (`api.matter.deviceRequirements`). The UI has
+ * to respect that, or it offers controls the device will reject: a thermostat
+ * without AutoMode is the obvious one, but the same applies to a covering with
+ * no Tilt, or a colour light with no HueSaturation.
+ *
+ * Homebridge sends the map from v2.4.0; callers pass an `inferred` fallback for
+ * older versions, worked out from the declared attributes.
+ *
+ * ⚠️ `undefined` from here means "not known", NOT "no features" - never treat a
+ * missing map as everything being off, or every control disappears on an older
+ * Homebridge.
+ *
+ * Deliberately NOT behind a `featureFlags` entry. The flag would only tell us
+ * whether the map SHOULD be there, and the answer changes nothing: with no map
+ * we fall back to inference either way. Inference is also exactly right on
+ * older versions - they had no `deviceRequirements`, so every cluster's
+ * features were auto-detected from the very attributes we read here.
+ */
+export function getClusterFeatures(service: ServiceTypeX, cluster: string): Record<string, boolean> | undefined {
+  const featureMap = (service.clusters?.[cluster] as { featureMap?: unknown } | undefined)?.featureMap
+  if (!featureMap || typeof featureMap !== 'object') {
+    return undefined
+  }
+  return featureMap as Record<string, boolean>
+}
+
+/**
+ * Resolve one cluster feature to a boolean, falling back to an inferred value
+ * when the running Homebridge does not send the feature map.
+ */
+export function hasClusterFeature(
+  service: ServiceTypeX,
+  cluster: string,
+  feature: string,
+  inferred: boolean,
+): boolean {
+  const features = getClusterFeatures(service, cluster)
+  return features ? features[feature] === true : inferred
+}
+
 /**
  * Check if a device is an OnOff type (light, switch, or plug-in unit)
  */
@@ -679,31 +727,25 @@ export function getThermostatLocalTemperature(service: ServiceTypeX): number | n
 /**
  * Which modes this thermostat supports, for deciding which controls to offer.
  *
- * Homebridge v2.4.0+ sends the cluster's featureMap, which is authoritative -
- * it is the only way to tell heat+cool WITH auto from heat+cool without, since
- * both declare the same setpoints. Older Homebridge sends no featureMap, so
- * fall back to inferring from the declared setpoints exactly as Homebridge
- * itself derives the features there: a declared heating setpoint means
- * Heating, cooling likewise, and both together always meant AutoMode too.
+ * The feature map is authoritative - it is the only thing that can tell a
+ * heat+cool thermostat WITH auto mode from one without, since both declare the
+ * same setpoints. Without it, infer exactly as Homebridge itself did: a
+ * declared heating setpoint meant Heating, cooling likewise, and both together
+ * always meant AutoMode too.
  */
 export function getThermostatSupportedModes(service: ServiceTypeX): { heat: boolean, cool: boolean, auto: boolean } {
   const cluster = service.clusters?.thermostat
-  const featureMap = cluster?.featureMap
-  if (featureMap) {
-    return {
-      heat: featureMap.heating === true,
-      cool: featureMap.cooling === true,
-      auto: featureMap.autoMode === true,
-    }
-  }
+  const declaredHeat = cluster?.occupiedHeatingSetpoint !== undefined
+  const declaredCool = cluster?.occupiedCoolingSetpoint !== undefined
 
-  const heat = cluster?.occupiedHeatingSetpoint !== undefined
-  const cool = cluster?.occupiedCoolingSetpoint !== undefined
-  if (!heat && !cool) {
-    // No information at all - offer everything rather than nothing
-    return { heat: true, cool: true, auto: true }
+  // Nothing declared and no map: offer everything rather than an empty modal
+  const noInfo = !declaredHeat && !declaredCool && !getClusterFeatures(service, 'thermostat')
+
+  return {
+    heat: noInfo || hasClusterFeature(service, 'thermostat', 'heating', declaredHeat),
+    cool: noInfo || hasClusterFeature(service, 'thermostat', 'cooling', declaredCool),
+    auto: noInfo || hasClusterFeature(service, 'thermostat', 'autoMode', declaredHeat && declaredCool),
   }
-  return { heat, cool, auto: heat && cool }
 }
 
 /**
