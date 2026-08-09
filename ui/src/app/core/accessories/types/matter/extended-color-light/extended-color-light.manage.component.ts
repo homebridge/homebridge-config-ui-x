@@ -327,6 +327,7 @@ export class ExtendedColorLightManageComponent extends BaseManageComponent {
    */
   private updateSaturationSliderGradient() {
     const hDegrees = (this.targetHue.value / 254) * 360
-    this.applySliderGradient(`linear-gradient(to right, hsl(${hDegrees}, 0%, 50%), hsl(${hDegrees}, 100%, 50%))`, '.saturation-slider .noUi-target')
+    // White at zero saturation, not grey - matching how the tile paints the bulb
+    this.applySliderGradient(`linear-gradient(to right, ${this.$colour.hueSaturationToHsl(hDegrees, 0)}, ${this.$colour.hueSaturationToHsl(hDegrees, 100)})`, '.saturation-slider .noUi-target')
   }
 }
