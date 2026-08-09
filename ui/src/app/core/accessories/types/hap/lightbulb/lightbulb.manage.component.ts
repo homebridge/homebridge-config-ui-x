@@ -198,8 +198,9 @@ export class LightbulbManageComponent extends BaseManageComponent {
 
   private applySaturationGradient() {
     const hue = this.targetHue?.value || 0
+    // White at zero saturation, not grey - matching how the tile paints the bulb
     this.applySliderGradient(`linear-gradient(to right,
-      hsl(${hue}, 0%, 50%),
-      hsl(${hue}, 100%, 50%))`, '.saturation-slider .noUi-target')
+      ${this.$colour.hueSaturationToHsl(hue, 0)},
+      ${this.$colour.hueSaturationToHsl(hue, 100)})`, '.saturation-slider .noUi-target')
   }
 }

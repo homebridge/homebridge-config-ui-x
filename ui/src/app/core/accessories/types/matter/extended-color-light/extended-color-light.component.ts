@@ -106,11 +106,10 @@ export class ExtendedColorLightComponent {
 
     if (hasHueSaturation) {
       // Convert Matter values (0-254) to standard ranges
-      const hDegrees = (getHue(service) / 254) * 360
-      const sPercent = (getSaturation(service) / 254) * 100
-
-      // Use HSL for CSS - full lightness for vibrant color
-      return `hsl(${hDegrees}, ${sPercent}%, 50%)`
+      return this.$colour.hueSaturationToHsl(
+        (getHue(service) / 254) * 360,
+        (getSaturation(service) / 254) * 100,
+      )
     }
 
     return '#ffcf55'

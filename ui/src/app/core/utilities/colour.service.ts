@@ -12,6 +12,25 @@ export class ColourService {
     return Math.round(1000000 / kelvin)
   }
 
+  /**
+   * A bulb's hue and saturation as a CSS colour, for painting an accessory icon.
+   *
+   * HomeKit and Matter both describe a light as hue plus saturation with the
+   * brightness carried separately, which is HSV at full value - NOT HSL. Feeding
+   * those numbers straight to `hsl()` at 50% lightness makes an unsaturated bulb
+   * come out mid grey when it should be white.
+   *
+   * Converting HSV at full value gives lightness `1 - s/2` and a saturation that
+   * is always 100%, so a fully unsaturated bulb lands on white and a fully
+   * saturated one on the vivid hue, with pastels in between.
+   *
+   * @param hue - hue in degrees, 0-360
+   * @param saturation - saturation as a percentage, 0-100
+   */
+  public hueSaturationToHsl(hue: number, saturation: number): string {
+    return `hsl(${Math.round(hue)}, 100%, ${Math.round(100 - saturation / 2)}%)`
+  }
+
   public kelvinToHex(kelvin: number): string {
     // Clamp kelvin to the valid range
     kelvin = Math.max(1000, Math.min(40000, kelvin))
