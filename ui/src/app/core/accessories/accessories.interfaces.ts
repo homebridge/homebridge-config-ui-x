@@ -344,6 +344,16 @@ export interface MatterFanControlCluster extends Record<string, unknown> {
  * Note: Temperatures are in hundredths of °C (2500 = 25.00°C)
  */
 export interface MatterThermostatCluster extends Record<string, unknown> {
+  // Which features the cluster was registered with (named booleans, sent by
+  // Homebridge v2.4.0+). This is the only reliable way to tell a heat+cool
+  // thermostat WITH auto mode from one without - both declare both setpoints.
+  featureMap?: {
+    heating?: boolean
+    cooling?: boolean
+    autoMode?: boolean
+    occupancy?: boolean
+  } & Record<string, boolean | undefined>
+
   // Temperature measurements
   localTemperature: number | null // read-only, hundredths of °C, autopopulated from externalMeasuredIndoorTemperature or TemperatureMeasurement cluster
   externalMeasuredIndoorTemperature?: number | null // writable state for external temperature sensor (hundredths of °C)
@@ -360,8 +370,8 @@ export interface MatterThermostatCluster extends Record<string, unknown> {
   absMaxCoolSetpointLimit?: number
 
   // Setpoints (hundredths of °C)
-  occupiedHeatingSetpoint: number // heating setpoint when occupied
-  occupiedCoolingSetpoint: number // cooling setpoint when occupied
+  occupiedHeatingSetpoint?: number // heating setpoint when occupied (requires Heating feature)
+  occupiedCoolingSetpoint?: number // cooling setpoint when occupied (requires Cooling feature)
   unoccupiedHeatingSetpoint?: number // heating setpoint when unoccupied (requires Occupancy feature)
   unoccupiedCoolingSetpoint?: number // cooling setpoint when unoccupied (requires Occupancy feature)
 
