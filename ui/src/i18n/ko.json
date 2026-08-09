@@ -106,6 +106,8 @@
   "accessories.control.target": "대상",
   "accessories.control.temperature_thresholds": "Temperature Thresholds",
   "accessories.control.threshold_auto": "Auto Threshold",
+  "accessories.control.tilt_current": "Tilt Current",
+  "accessories.control.tilt_target": "Tilt Target",
   "accessories.control.triggered": "작동 됨",
   "accessories.control.unknown": "알 수 없음",
   "accessories.control.unlock": "Unlock",

@@ -106,6 +106,8 @@
   "accessories.control.target": "Ціль",
   "accessories.control.temperature_thresholds": "Пороги температури",
   "accessories.control.threshold_auto": "Автоматичний поріг",
+  "accessories.control.tilt_current": "Tilt Current",
+  "accessories.control.tilt_target": "Tilt Target",
   "accessories.control.triggered": "Спрацювало",
   "accessories.control.unknown": "Невідомий",
   "accessories.control.unlock": "Розблокувати",
