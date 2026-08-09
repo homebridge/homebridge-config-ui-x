@@ -3,7 +3,7 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
 import { TranslatePipe } from '@ngx-translate/core'
 
 import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
-import { hasSmokeAlarm, isSmokeCoAlarmTriggered } from '@/app/core/accessories/types/matter/matter-device.utils'
+import { hasCoAlarm, hasSmokeAlarm, isSmokeCoAlarmTriggered } from '@/app/core/accessories/types/matter/matter-device.utils'
 
 @Component({
   selector: 'app-matter-smoke-co-alarm',
@@ -22,12 +22,25 @@ export class MatterSmokeCoAlarmComponent {
   public readonly isTriggered = computed(() => isSmokeCoAlarmTriggered(this.service()))
 
   /**
-   * Both alarms live on one cluster and one Matter device type, but a plugin
-   * can register either alarm on its own - so an accessory shown here may be a
-   * carbon monoxide alarm that senses no smoke at all. Only the screen reader
-   * name changes; the tile itself shows the accessory's own name.
+   * Both alarms share one cluster and one Matter device type, but a plugin can
+   * register either on its own - so an accessory shown here may sense only
+   * carbon monoxide, only smoke, or both. A combined alarm keeps the generic
+   * "ALARM" face, which is what it is.
    */
-  public readonly typeKey = computed(() => hasSmokeAlarm(this.service())
-    ? 'accessories.core.smoke_sensor'
-    : 'accessories.core.carbon_monoxide_sensor')
+  public readonly alarmKind = computed<'smoke' | 'co' | 'both'>(() => {
+    const service = this.service()
+    const smoke = hasSmokeAlarm(service)
+    const co = hasCoAlarm(service)
+
+    if (smoke && co) {
+      return 'both'
+    }
+    // Matter requires at least one of the two, so a device claiming neither is
+    // malformed - call it smoke, matching the SmokeSensor device type it came in under
+    return co ? 'co' : 'smoke'
+  })
+
+  public readonly typeKey = computed(() => this.alarmKind() === 'co'
+    ? 'accessories.core.carbon_monoxide_sensor'
+    : 'accessories.core.smoke_sensor')
 }
