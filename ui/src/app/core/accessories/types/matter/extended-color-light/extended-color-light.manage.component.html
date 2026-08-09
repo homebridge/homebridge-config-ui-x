@@ -54,26 +54,28 @@
         />
       </div>
     }
-    <h6 class="mt-3">{{ 'accessories.control.hue' | translate }}: {{ huePercentage }}%</h6>
-    <div class="hue-slider">
-      <nouislider
-        [min]="targetHue.min"
-        [max]="targetHue.max"
-        [step]="targetHue.step"
-        [(ngModel)]="targetHue.value"
-        (ngModelChange)="onHueStateChange()"
-      />
-    </div>
-    <h6 class="mt-3">{{ 'accessories.control.saturation' | translate }}: {{ saturationPercentage }}%</h6>
-    <div class="saturation-slider">
-      <nouislider
-        [min]="targetSaturation.min"
-        [max]="targetSaturation.max"
-        [step]="targetSaturation.step"
-        [(ngModel)]="targetSaturation.value"
-        (ngModelChange)="onSaturationStateChange()"
-      />
-    </div>
+    @if (supportsHueSaturation) {
+      <h6 class="mt-3">{{ 'accessories.control.hue' | translate }}: {{ huePercentage }}%</h6>
+      <div class="hue-slider">
+        <nouislider
+          [min]="targetHue.min"
+          [max]="targetHue.max"
+          [step]="targetHue.step"
+          [(ngModel)]="targetHue.value"
+          (ngModelChange)="onHueStateChange()"
+        />
+      </div>
+      <h6 class="mt-3">{{ 'accessories.control.saturation' | translate }}: {{ saturationPercentage }}%</h6>
+      <div class="saturation-slider">
+        <nouislider
+          [min]="targetSaturation.min"
+          [max]="targetSaturation.max"
+          [step]="targetSaturation.step"
+          [(ngModel)]="targetSaturation.value"
+          (ngModelChange)="onSaturationStateChange()"
+        />
+      </div>
+    }
   </div>
   <div class="modal-footer"></div>
 </div>
