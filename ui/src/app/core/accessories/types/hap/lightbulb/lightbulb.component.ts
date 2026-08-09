@@ -58,7 +58,7 @@ export class LightbulbComponent implements OnInit {
     }
 
     if ('Hue' in values) {
-      return `hsl(${values?.Hue}, ${values?.Saturation}%, 50%)`
+      return this.$colour.hueSaturationToHsl(values?.Hue, values?.Saturation)
     }
 
     if ('ColorTemperature' in values) {

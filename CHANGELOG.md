@@ -31,6 +31,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - feat(accessories): show the smoke or co face on a matter alarm that only senses one of them
 - fix(accessories): stop a matter light with no hue support painting its tile icon grey
 - fix(accessories): read and drive the tilt on a matter covering that only tilts
+- fix(accessories): paint an unsaturated bulb white rather than grey, on both hap and matter
 
 ### Other Changes
 
