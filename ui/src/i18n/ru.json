@@ -106,6 +106,8 @@
   "accessories.control.target": "Целевая температура",
   "accessories.control.temperature_thresholds": "Temperature Thresholds",
   "accessories.control.threshold_auto": "Auto Threshold",
+  "accessories.control.tilt_current": "Tilt Current",
+  "accessories.control.tilt_target": "Tilt Target",
   "accessories.control.triggered": "Сработало",
   "accessories.control.unknown": "Неизвестно",
   "accessories.control.unlock": "Unlock",

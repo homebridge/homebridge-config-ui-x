@@ -25,6 +25,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - feat(ui): render github style alerts in markdown, instead of showing the raw marker
 - feat(accessories): only offer the thermostat modes a matter device actually has
 - feat(accessories): only offer the colour controls a matter light actually has
+- feat(accessories): add a tilt control for matter window coverings that support it
 
 ### Other Changes
 
