@@ -11,6 +11,7 @@ import {
   getThermostatCoolingSetpoint,
   getThermostatHeatingSetpoint,
   getThermostatLocalTemperature,
+  getThermostatSupportedModes,
   getThermostatSystemMode,
   setThermostatCoolingSetpoint,
   setThermostatHeatingSetpoint,
@@ -37,6 +38,9 @@ export class MatterThermostatManageComponent extends BaseManageComponent {
   private $settings = inject(SettingsService)
 
   public targetMode!: number
+  // Only offer the modes the device actually has - a thermostat without the
+  // AutoMode feature must not show an Auto button (the write would be rejected)
+  public supportedModes: { heat: boolean, cool: boolean, auto: boolean } = { heat: true, cool: true, auto: true }
   public targetHeatingTemp!: number
   public targetCoolingTemp!: number
   public autoTemp!: [number, number]
@@ -53,6 +57,8 @@ export class MatterThermostatManageComponent extends BaseManageComponent {
   public maxCoolSetpoint: number = 35
 
   protected setupComponent() {
+    this.supportedModes = getThermostatSupportedModes(this.service)
+
     this.createDebouncedSubscription(this.heatingTempChanged, async () => {
       try {
         await setThermostatHeatingSetpoint(this.service, this.targetHeatingTemp)
