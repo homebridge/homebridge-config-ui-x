@@ -3,7 +3,7 @@
   triggered ? ('accessories.control.detected' | translate) : ('accessories.control.not_detected' | translate);
 
 @let srBaseName = (service().customName || service().serviceName || '').trim();
-@let srType = 'accessories.core.smoke_sensor' | translate;
+@let srType = typeKey() | translate;
 @let includeType = !(srBaseName | lowercase).includes(srType | lowercase);
 
 @let srText = `${srBaseName + (includeType ? `, ${srType}` : '')}, ${stateText}`;
