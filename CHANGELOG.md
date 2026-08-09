@@ -27,6 +27,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - feat(accessories): only offer the colour controls a matter light actually has
 - feat(accessories): add a tilt control for matter window coverings that support it
 - feat(accessories): add tilt controls for hap window coverings that support them
+- fix(accessories): announce a matter co-only alarm as a carbon monoxide sensor, not a smoke sensor
 
 ### Other Changes
 
