@@ -15,7 +15,7 @@ import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
 import { AccessoriesService } from '@/app/core/accessories/accessories.service'
 import { ACCESSORY_MANAGE_MODAL_DATA } from '@/app/core/accessories/types/base-manage.component'
 import { ExtendedColorLightManageComponent } from '@/app/core/accessories/types/matter/extended-color-light/extended-color-light.manage.component'
-import { getBrightnessPercentage, getColorMode, getColorTemperatureMireds, getDeviceActiveState, getHue, getSaturation, toggleDimmableLight } from '@/app/core/accessories/types/matter/matter-device.utils'
+import { getBrightnessPercentage, getColorMode, getColorTemperatureMireds, getDeviceActiveState, getHue, getSaturation, hasClusterFeature, hasColorTemperature, toggleDimmableLight } from '@/app/core/accessories/types/matter/matter-device.utils'
 import { LongClickDirective } from '@/app/core/directives/long-click.directive'
 import { ColourService } from '@/app/core/utilities/colour.service'
 
@@ -76,25 +76,43 @@ export class ExtendedColorLightComponent {
   /**
    * Get the light color for the icon
    * Uses color temperature when in CT mode (colorMode=2), otherwise hue/saturation
+   *
+   * ⚠️ A plugin can compose ColorControl with only some of its features, so an
+   * extended colour light may have no HueSaturation at all. Reading hue and
+   * saturation there gave 0 and 0, painting the bulb flat grey. Falls through
+   * to colour temperature and then to the warm default the other light tiles
+   * use, matching how the HAP lightbulb tile picks its fill.
    */
   public readonly lightColor = computed(() => {
-    const colorMode = getColorMode(this.service())
+    const service = this.service()
+    const hasHueSaturation = hasClusterFeature(
+      service,
+      'colorControl',
+      'hueSaturation',
+      service.clusters?.colorControl?.currentHue !== undefined,
+    )
+    const hasColorTemp = hasClusterFeature(
+      service,
+      'colorControl',
+      'colorTemperature',
+      hasColorTemperature(service),
+    )
 
-    // Color temperature mode
-    if (colorMode === 2) {
-      const mireds = getColorTemperatureMireds(this.service())
+    // Color temperature mode, or a light that can only do color temperature
+    if (hasColorTemp && (getColorMode(service) === 2 || !hasHueSaturation)) {
+      const mireds = getColorTemperatureMireds(service)
       return this.$colour.kelvinToHex(this.$colour.miredToKelvin(mireds))
     }
 
-    // Hue/Saturation mode
-    const hue = getHue(this.service())
-    const saturation = getSaturation(this.service())
+    if (hasHueSaturation) {
+      // Convert Matter values (0-254) to standard ranges
+      const hDegrees = (getHue(service) / 254) * 360
+      const sPercent = (getSaturation(service) / 254) * 100
 
-    // Convert Matter values (0-254) to standard ranges
-    const hDegrees = (hue / 254) * 360
-    const sPercent = (saturation / 254) * 100
+      // Use HSL for CSS - full lightness for vibrant color
+      return `hsl(${hDegrees}, ${sPercent}%, 50%)`
+    }
 
-    // Use HSL for CSS - full lightness for vibrant color
-    return `hsl(${hDegrees}, ${sPercent}%, 50%)`
+    return '#ffcf55'
   })
 }
