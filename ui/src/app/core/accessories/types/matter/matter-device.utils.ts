@@ -428,6 +428,34 @@ export function getCoAlarmState(service: ServiceTypeX): number {
 }
 
 /**
+ * Whether this alarm senses smoke.
+ *
+ * A plugin can now register a SmokeCoAlarm with only one of the two alarms, so
+ * a device sitting under the "SmokeSensor" device type may in fact be a
+ * carbon monoxide alarm and nothing else.
+ */
+export function hasSmokeAlarm(service: ServiceTypeX): boolean {
+  return hasClusterFeature(
+    service,
+    'smokeCoAlarm',
+    'smokeAlarm',
+    service.clusters?.smokeCoAlarm?.smokeState !== undefined,
+  )
+}
+
+/**
+ * Whether this alarm senses carbon monoxide.
+ */
+export function hasCoAlarm(service: ServiceTypeX): boolean {
+  return hasClusterFeature(
+    service,
+    'smokeCoAlarm',
+    'coAlarm',
+    service.clusters?.smokeCoAlarm?.coState !== undefined,
+  )
+}
+
+/**
  * Check if smoke or CO alarm is triggered (warning or critical)
  */
 export function isSmokeCoAlarmTriggered(service: ServiceTypeX): boolean {
