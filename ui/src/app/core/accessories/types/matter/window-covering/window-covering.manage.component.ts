@@ -6,6 +6,7 @@ import { Subject } from 'rxjs'
 
 import { BaseManageComponent } from '@/app/core/accessories/types/base-manage.component'
 import {
+  getWindowCoveringOpenPercentage,
   getWindowCoveringPercentage,
   getWindowCoveringTiltPercentage,
   hasWindowCoveringLift,
@@ -138,11 +139,10 @@ export class WindowCoveringManageComponent extends BaseManageComponent {
   }
 
   /**
-   * What the open/closed summary at the top of the modal reports. A tilt-only
-   * blind has no lift position, and its unset default would otherwise read as
-   * fully open.
+   * What the open/closed summary at the top of the modal reports - the same
+   * value the tile shows, so the two cannot drift apart.
    */
   public get summaryPercentage(): number {
-    return this.supportsLift ? this.currentPosition : this.currentTilt
+    return getWindowCoveringOpenPercentage(this.service)
   }
 }

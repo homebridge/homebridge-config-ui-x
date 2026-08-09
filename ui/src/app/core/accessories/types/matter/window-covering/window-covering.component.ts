@@ -6,7 +6,7 @@ import { TranslatePipe } from '@ngx-translate/core'
 import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
 import { AccessoriesService } from '@/app/core/accessories/accessories.service'
 import { ACCESSORY_MANAGE_MODAL_DATA } from '@/app/core/accessories/types/base-manage.component'
-import { getWindowCoveringPercentage, toggleWindowCovering } from '@/app/core/accessories/types/matter/matter-device.utils'
+import { getWindowCoveringOpenPercentage, toggleWindowCovering } from '@/app/core/accessories/types/matter/matter-device.utils'
 import { WindowCoveringManageComponent } from '@/app/core/accessories/types/matter/window-covering/window-covering.manage.component'
 import { LongClickDirective } from '@/app/core/directives/long-click.directive'
 
@@ -61,7 +61,8 @@ export class MatterWindowCoveringComponent {
     })
   }
 
-  public readonly currentPosition = computed(() => getWindowCoveringPercentage(this.service()))
+  // Reports the tilt on a covering that only tilts - see getWindowCoveringOpenPercentage
+  public readonly currentPosition = computed(() => getWindowCoveringOpenPercentage(this.service()))
 
   public readonly deviceType = computed(() => this.service().customType || this.service().deviceType || 'WindowCovering')
 
