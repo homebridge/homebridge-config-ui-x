@@ -24,6 +24,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(plugins): even up the space either side of the hap and matter icons on the child bridge sections
 - feat(ui): render github style alerts in markdown, instead of showing the raw marker
 - feat(accessories): only offer the thermostat modes a matter device actually has
+- feat(accessories): only offer the colour controls a matter light actually has
 
 ### Other Changes
 
