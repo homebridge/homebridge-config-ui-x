@@ -53,6 +53,52 @@
       <span class="grey-text small">{{ 'accessories.control.closed' | translate }}</span>
       <span class="grey-text small">{{ 'accessories.control.open' | translate }}</span>
     </div>
+    @if (targetHorizontalTilt) {
+      <h6 class="mt-4">
+        {{ 'accessories.control.tilt_horizontal_target' | translate }}: {{ targetHorizontalTilt.value }}°
+      </h6>
+      <nouislider
+        class="mb-1"
+        [min]="targetHorizontalTilt.min"
+        [max]="targetHorizontalTilt.max"
+        [step]="targetHorizontalTilt.step"
+        [(ngModel)]="targetHorizontalTilt.value"
+        (ngModelChange)="onTargetHorizontalTiltChange()"
+      />
+      <h6 class="mt-4">
+        {{ 'accessories.control.tilt_horizontal_current' | translate }}: {{ currentHorizontalTilt }}°
+      </h6>
+      <nouislider
+        class="mb-1"
+        [min]="targetHorizontalTilt.min"
+        [max]="targetHorizontalTilt.max"
+        [step]="targetHorizontalTilt.step"
+        [disabled]="true"
+        [ngModel]="currentHorizontalTilt"
+      />
+    }
+    @if (targetVerticalTilt) {
+      <h6 class="mt-4">
+        {{ 'accessories.control.tilt_vertical_target' | translate }}: {{ targetVerticalTilt.value }}°
+      </h6>
+      <nouislider
+        class="mb-1"
+        [min]="targetVerticalTilt.min"
+        [max]="targetVerticalTilt.max"
+        [step]="targetVerticalTilt.step"
+        [(ngModel)]="targetVerticalTilt.value"
+        (ngModelChange)="onTargetVerticalTiltChange()"
+      />
+      <h6 class="mt-4">{{ 'accessories.control.tilt_vertical_current' | translate }}: {{ currentVerticalTilt }}°</h6>
+      <nouislider
+        class="mb-1"
+        [min]="targetVerticalTilt.min"
+        [max]="targetVerticalTilt.max"
+        [step]="targetVerticalTilt.step"
+        [disabled]="true"
+        [ngModel]="currentVerticalTilt"
+      />
+    }
   </div>
   <div class="modal-footer"></div>
 </div>
