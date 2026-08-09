@@ -672,16 +672,34 @@ export async function setWindowCoveringTiltPosition(service: ServiceTypeX, perce
 }
 
 /**
+ * How open this covering is, as a percentage, for the tile and the modal's
+ * summary line.
+ *
+ * ⚠️ Reads the TILT position on a covering that only tilts. Its lift position
+ * would otherwise default to 0, which reads as fully open.
+ */
+export function getWindowCoveringOpenPercentage(service: ServiceTypeX): number {
+  return hasWindowCoveringLift(service)
+    ? getWindowCoveringPercentage(service)
+    : getWindowCoveringTiltPercentage(service)
+}
+
+/**
  * Toggle window covering (open if closed, close if open)
+ *
+ * Drives the tilt on a covering that only tilts - writing a lift position it
+ * has no feature for is rejected.
  */
 export async function toggleWindowCovering(service: ServiceTypeX): Promise<void> {
-  const currentPercentage = getWindowCoveringPercentage(service)
+  const tiltOnly = !hasWindowCoveringLift(service) && hasWindowCoveringTilt(service)
+  const currentPercentage = getWindowCoveringOpenPercentage(service)
+  const setPosition = tiltOnly ? setWindowCoveringTiltPosition : setWindowCoveringPosition
 
   // If more than 50% open, close it; otherwise open it
   if (currentPercentage > 50) {
-    await setWindowCoveringPosition(service, 0) // Close
+    await setPosition(service, 0) // Close
   } else {
-    await setWindowCoveringPosition(service, 100) // Open
+    await setPosition(service, 100) // Open
   }
 }
 
