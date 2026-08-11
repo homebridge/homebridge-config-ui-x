@@ -18,6 +18,7 @@ import { ManagePluginsService } from '@/app/core/plugins/manage-plugins.service'
 import { SettingsService } from '@/app/core/ui/settings.service'
 import { ChildBridgesService } from '@/app/core/utilities/child-bridges.service'
 import { environment } from '@/environments/environment'
+import { isDevMode } from '@angular/core'
 
 @Component({
   selector: 'app-custom-plugins',
@@ -261,7 +262,18 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
       return
     }
 
-    this.iframe.src = `${environment.api.base + this.basePath}/index.html?origin=${encodeURIComponent(location.origin)}&v=${encodeURIComponent(plugin.installedVersion)}`
+    const url = new URL(
+      `${environment.api.base + this.basePath}/index.html`,
+      location.origin,
+    )
+
+    if (isDevMode()) {
+      url.searchParams.set('origin', location.origin)
+    }
+
+    url.searchParams.set('v', plugin.installedVersion)
+
+    this.iframe.src = url.toString()
   }
 
   private handleMessage = (e: MessageEvent): void => {
