@@ -63,42 +63,42 @@ export class PluginsSettingsUiService {
       }
 
       // For non-HTML assets the CSP header is irrelevant to the browser, but
-      // setting an empty value prevents any stale header from leaking through.
+      // setting an empty value is a belt-and-suspenders measure that prevents
+      // any stale header from leaking through.
       reply.header('Content-Security-Policy', '')
 
       if (assetPath === 'index.html') {
-        // In production the primary UI and plugin UI are same-origin, so the
-        // request-supplied origin is ignored.
-        //
-        // In Angular development mode the primary UI runs on :4200 while
-        // Config UI X runs on :8581. Angular supplies its origin so the
-        // generated plugin UI can load assets from the Angular dev server.
-        //
-        // The server independently requires UIX_DEVELOPMENT=1 before it will
-        // consider the request-supplied origin. The origin remains untrusted
-        // and must pass resolveUiOrigin() before it is used.
+        // Resolved once here so the same value is used in both the CSP header
+        // and the HTML body — preventing any mismatch between the two. Empty in
+        // every normal case, which leaves the policy as plain 'self'.
+        // The cross-origin asset path is only needed when Angular's development
+        // server and the API run on different ports. Ignore caller-supplied
+        // origins entirely in production.
         const uiOrigin = process.env.UIX_DEVELOPMENT === '1'
           ? this.resolveUiOrigin(origin, reply.request?.headers?.host)
           : ''
-
-        const cspOrigin = uiOrigin ? ` ${uiOrigin}` : ''
-
+        const devOrigin = uiOrigin ? ` ${uiOrigin}` : ''
+        // Scope the CSP to this server.  'unsafe-inline' is required because the
+        // generated index.html contains two inline <script> blocks.
+        // 'unsafe-eval' is required because plugin custom UIs ran without any
+        // CSP before v5.24.1 and commonly use frameworks that evaluate
+        // expressions at runtime (e.g. Alpine.js, Vue) — see #2873.
+        // frame-ancestors restricts embedding to same-origin frames only,
+        // preventing the plugin iframe from being embedded by third-party pages.
         const extraDomains = pluginUi.customUiCspDomains?.length
           ? ` ${pluginUi.customUiCspDomains.join(' ')}`
           : ''
-
         reply.header(
           'Content-Security-Policy',
-          `default-src 'self'; `
-          + `script-src 'self' 'unsafe-inline' 'unsafe-eval'${cspOrigin}${extraDomains}; `
-          + `style-src 'self' 'unsafe-inline'${cspOrigin}; `
+          `default-src 'self'${devOrigin}; `
+          + `script-src 'self' 'unsafe-inline' 'unsafe-eval'${devOrigin}${extraDomains}; `
+          + `style-src 'self' 'unsafe-inline'${devOrigin}; `
           + `img-src * data:; `
           + `connect-src *; `
-          + `font-src 'self' data:${cspOrigin}; `
-          + `frame-ancestors 'self'${cspOrigin}; `
-          + `frame-src 'self'${cspOrigin}${extraDomains}`,
+          + `font-src 'self' data:; `
+          + `frame-ancestors 'self'${devOrigin}; `
+          + `frame-src 'self'${devOrigin}${extraDomains}`,
         )
-
         return reply
           .type('text/html')
           .send(await this.buildIndexHtml(pluginUi, uiOrigin))
@@ -145,17 +145,10 @@ export class PluginsSettingsUiService {
    */
   async serveAssetsFromDevServer(reply, pluginUi: HomebridgePluginUiMetadata, assetPath: string) {
     try {
-      const response = await firstValueFrom(
-        this.httpService.get(
-          `${pluginUi.devServer}/${assetPath}`,
-          { responseType: 'text' },
-        ),
-      )
-
+      const response = await firstValueFrom(this.httpService.get(`${pluginUi.devServer}/${assetPath}`, { responseType: 'text' }))
       for (const [key, value] of Object.entries(response.headers)) {
         reply.header(key, value)
       }
-
       reply.send(response.data)
     } catch {
       reply.code(404).send('Not Found')
@@ -168,14 +161,7 @@ export class PluginsSettingsUiService {
   async getIndexHtmlBody(pluginUi: HomebridgePluginUiMetadata) {
     if (pluginUi.devServer) {
       // Dev server is only enabled for private plugins
-      return (
-        await firstValueFrom(
-          this.httpService.get(
-            pluginUi.devServer,
-            { responseType: 'text' },
-          ),
-        )
-      ).data
+      return (await firstValueFrom(this.httpService.get(pluginUi.devServer, { responseType: 'text' }))).data
     } else {
       return await readFile(join(pluginUi.publicPath, 'index.html'), 'utf8')
     }
@@ -186,21 +172,10 @@ export class PluginsSettingsUiService {
    */
   async buildIndexHtml(pluginUi: HomebridgePluginUiMetadata, origin?: string) {
     const body = await this.getIndexHtmlBody(pluginUi)
-
-    // Re-sanitize the origin: only accept a validated URL origin (scheme + host
-    // + port) so that untrusted input cannot inject HTML attributes or
-    // javascript: URLs into the <script src>.
-    let safeOrigin = ''
-    if (origin) {
-      try {
-        const parsed = new URL(origin)
-        if ((parsed.protocol === 'http:' || parsed.protocol === 'https:') && parsed.origin === origin) {
-          safeOrigin = parsed.origin
-        }
-      } catch {
-        // leave safeOrigin as ''
-      }
-    }
+    // Checked again here rather than trusting the caller. serveCustomUiAsset
+    // already resolves the origin against the request host, but this method is
+    // reachable on its own, and the attribute below is the sink that mattered.
+    const safeOrigin = this.assertBareDevOrigin(origin)
 
     return `
       <!doctype html>
@@ -230,47 +205,70 @@ export class PluginsSettingsUiService {
   }
 
   /**
-   * Validate and resolve the Angular development server origin.
+   * Work out where `plugin-ui-utils/ui.js` should be loaded from.
    *
-   * This method is only called when UIX_DEVELOPMENT=1. The origin comes
-   * from the request URL and is therefore still treated as untrusted.
+   * Returns an empty string in every normal case, so the script tag below is
+   * written as a relative path and can only ever point back at this server.
    *
-   * The origin must:
-   * - use HTTP or HTTPS;
-   * - use a known development-server port;
-   * - use the same hostname as the Config UI X request;
-   * - contain only the scheme, hostname and port.
+   * The one exception is the Angular dev server: during `npm run dev` the UI is
+   * served from port 4200 while the API answers on 8581, so a relative path
+   * would look for the asset on the API and not find it. That case is allowed
+   * only when the supplied origin is on the *same host* the request arrived on
+   * and on a dev-server port - so a developer's own machine still works, and no
+   * caller can nominate a host of their choosing.
    *
-   * Any invalid value resolves to an empty string, causing the generated
-   * plugin UI to fall back to same-origin behaviour.
+   * This used to be a `sanitizeOrigin()` that checked the scheme and nothing
+   * else, which meant any `http(s)` host passed. That host was written into the
+   * CSP and into the `<script src>` of a page on the UI's own origin, so a
+   * crafted link ran the attacker's JavaScript with full UI authority and could
+   * read the session token out of localStorage. Reported privately, 2026-08-08.
    */
+  /**
+   * Accept a value only if it is exactly a bare origin - scheme and host, no
+   * path, query, fragment or credentials - on a dev-server port. Anything else
+   * becomes an empty string, which makes the script tag relative.
+   *
+   * Comparing against `url.origin` is what rejects a breakout attempt: a value
+   * carrying a quote or a closing tag never round-trips back to itself.
+   */
+  private assertBareDevOrigin(origin: string | undefined): string {
+    if (!origin) {
+      return ''
+    }
+    try {
+      const url = new URL(origin)
+      if (url.protocol !== 'http:' && url.protocol !== 'https:') {
+        return ''
+      }
+      if (!DEV_SERVER_PORTS.has(url.port)) {
+        return ''
+      }
+      return url.origin === origin ? url.origin : ''
+    } catch {
+      return ''
+    }
+  }
+
   private resolveUiOrigin(origin: string | undefined, requestHost: string | undefined): string {
     if (!origin) {
       return ''
     }
-
     try {
       const url = new URL(origin)
-
       if (url.protocol !== 'http:' && url.protocol !== 'https:') {
         return ''
       }
-
       if (!DEV_SERVER_PORTS.has(url.port)) {
         return ''
       }
-
-      // The API request arrives on :8581 while the Angular dev server runs
-      // on a different port, so compare only the hostname.
+      // `requestHost` still carries the port the API is listening on, which is
+      // not the port the dev server uses, so only the hostname is compared.
       const requestHostname = requestHost?.split(':')[0]
-
       if (!requestHostname || url.hostname !== requestHostname) {
         return ''
       }
-
-      // Only accept a bare origin. This rejects paths, queries, fragments,
-      // credentials and any other value that does not round-trip to url.origin.
-      return url.origin === origin ? url.origin : ''
+      // Only protocol + host, stripping any path, query or fragment
+      return url.origin
     } catch {
       return ''
     }
@@ -281,15 +279,8 @@ export class PluginsSettingsUiService {
    * expects: it settles the pending promise held against this request id by rejecting it.
    */
   private rejectRequest(pluginName: string, client: EventEmitter, requestId: string) {
-    client.emit('response', {
-      requestId,
-      success: false,
-      data: { message: CUSTOM_UI_UNAVAILABLE },
-    })
-
-    this.loggerService.debug(
-      `[${pluginName}] custom UI request ${requestId} rejected (no server-side handler available).`,
-    )
+    client.emit('response', { requestId, success: false, data: { message: CUSTOM_UI_UNAVAILABLE } })
+    this.loggerService.debug(`[${pluginName}] custom UI request ${requestId} rejected (no server-side handler available).`)
   }
 
   /**
@@ -325,16 +316,12 @@ export class PluginsSettingsUiService {
     // (or both, if the first fails) could land on an unrelated process.
     // The single-shot flag plus a `child.killed` check prevents that.
     let cleaned = false
-
     const cleanup = () => {
       if (cleaned) {
         return
       }
-
       cleaned = true
-      this.loggerService.debug(
-        `[${pluginName}] custom UI closing (terminating child process)...`,
-      )
+      this.loggerService.debug(`[${pluginName}] custom UI closing (terminating child process)...`)
 
       // On a disconnect the socket is gone and these emits are harmless; on a modal close or a
       // supersede the socket survives and the iframe gets its answers.
@@ -346,25 +333,20 @@ export class PluginsSettingsUiService {
       child?.removeAllListeners('message')
 
       const childPid = child?.pid
-
       if (child?.connected) {
         child.disconnect()
       }
-
       if (child) {
         setTimeout(() => {
           if (child.killed || !childPid) {
             return
           }
-
           try {
             process.kill(childPid, 'SIGTERM')
           } catch (e: any) {
             // ESRCH is fine — the child already exited. Surface anything else.
             if (e?.code !== 'ESRCH') {
-              this.loggerService.warn(
-                `[${pluginName}] failed to SIGTERM child pid ${childPid}: ${e.message}`,
-              )
+              this.loggerService.warn(`[${pluginName}] failed to SIGTERM child pid ${childPid}: ${e.message}`)
             }
           }
         }, 5000)
@@ -386,7 +368,6 @@ export class PluginsSettingsUiService {
         if (request?.requestId) {
           outstanding.add(request.requestId)
         }
-
         child.send(request)
       } else if (request?.requestId) {
         this.rejectRequest(pluginName, client, request.requestId)
@@ -399,7 +380,7 @@ export class PluginsSettingsUiService {
     const pluginUi: HomebridgePluginUiMetadata = (this.pluginUiMetadataCache.get(pluginName) as any)
       || (await this.getPluginUiMetadata(pluginName))
 
-    // Check the plugin has a server side script.
+    // check the plugin has a server side script
     const hasServerScript = await pathExists(resolve(pluginUi.serverPath))
 
     // An invocation superseded, or a socket closed, while the lookups above were in flight must
@@ -413,13 +394,13 @@ export class PluginsSettingsUiService {
       return
     }
 
-    // Pass all env vars to server side script.
+    // Pass all env vars to server side script
     const childEnv = { ...process.env }
     childEnv.HOMEBRIDGE_STORAGE_PATH = this.configService.storagePath
     childEnv.HOMEBRIDGE_CONFIG_PATH = this.configService.configPath
     childEnv.HOMEBRIDGE_UI_VERSION = this.configService.package.version
 
-    // Launch the server side script.
+    // Launch the server side script
     child = fork(pluginUi.serverPath, [], {
       silent: true,
       env: childEnv,
@@ -434,30 +415,21 @@ export class PluginsSettingsUiService {
     })
 
     child.on('exit', () => {
-      this.loggerService.debug(
-        `[${pluginName}] custom UI closed (child process ended).`,
-      )
+      this.loggerService.debug(`[${pluginName}] custom UI closed (child process ended).`)
 
       // A crash, or a kill from the cleanup path, can take the child down with requests still in
       // flight. Nothing will ever answer those, so settle them here.
       settleOutstanding()
     })
 
-    child.addListener(
-      'message',
-      (response: { action: string, payload: any }) => {
-        if (typeof response === 'object' && response.action) {
-          if (response.action === 'response' && response.payload?.requestId) {
-            outstanding.delete(response.payload.requestId)
-          }
-
-          response.action = response.action === 'error'
-            ? 'server_error'
-            : response.action
-
-          client.emit(response.action, response.payload)
+    child.addListener('message', (response: { action: string, payload: any }) => {
+      if (typeof response === 'object' && response.action) {
+        if (response.action === 'response' && response.payload?.requestId) {
+          outstanding.delete(response.payload.requestId)
         }
-      },
-    )
+        response.action = response.action === 'error' ? 'server_error' : response.action
+        client.emit(response.action, response.payload)
+      }
+    })
   }
 }
