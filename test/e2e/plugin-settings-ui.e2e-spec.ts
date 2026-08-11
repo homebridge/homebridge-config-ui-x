@@ -12,7 +12,7 @@ import { Test } from '@nestjs/testing'
 import { AxiosResponse, InternalAxiosRequestConfig } from 'axios'
 import { copy, ensureDir, remove, writeFile } from 'fs-extra'
 import { of } from 'rxjs'
-import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { AuthModule } from '../../src/core/auth/auth.module.js'
 import { PluginsSettingsUiModule } from '../../src/modules/custom-plugins/plugins-settings-ui/plugins-settings-ui.module.js'
@@ -84,254 +84,350 @@ describe('PluginsSettingsUiController (e2e)', () => {
     vi.resetAllMocks()
   })
 
-  it('GET /plugins/settings-ui/:plugin-name/ (no cookie → 401)', async () => {
-    const res = await app.inject({
-      method: 'GET',
-      path: '/plugins/settings-ui/homebridge-mock-plugin/',
-    })
+  describe('GET /plugins/settings-ui/:plugin-name/*', () => {
+    describe('authentication', () => {
+      it('rejects a request without an hb-session cookie', async () => {
+        const res = await app.inject({
+          method: 'GET',
+          path: '/plugins/settings-ui/homebridge-mock-plugin/',
+        })
 
-    expect(res.statusCode).toBe(401)
-  })
-
-  it('Bearer-only session mints hb-session via refresh then loads settings-ui (#2893)', async () => {
-    // Mid-session upgrade path: valid Bearer token in localStorage, but no
-    // hb-session cookie (never set on ≤5.24.x sessions). Bootstrap calls
-    // POST /auth/refresh; the Set-Cookie must be enough for CookieAuthGuard.
-    const loginRes = await app.inject({
-      method: 'POST',
-      path: '/auth/login',
-      payload: { username: 'admin', password: 'admin' },
-    })
-    const { access_token } = JSON.parse(loginRes.body)
-
-    const denied = await app.inject({
-      method: 'GET',
-      path: '/plugins/settings-ui/homebridge-mock-plugin/index.html',
-    })
-    expect(denied.statusCode).toBe(401)
-
-    const refreshRes = await app.inject({
-      method: 'POST',
-      path: '/auth/refresh',
-      headers: { authorization: `bearer ${access_token}` },
-    })
-    expect(refreshRes.statusCode).toBe(201)
-
-    const setCookie = refreshRes.headers['set-cookie']
-    const cookieHeaders = Array.isArray(setCookie) ? setCookie : setCookie ? [setCookie] : []
-    const hbSessionHeader = cookieHeaders.find(c => c.startsWith('hb-session='))
-    expect(hbSessionHeader).toBeTruthy()
-    const cookiePair = hbSessionHeader!.split(';')[0]
-
-    const allowed = await app.inject({
-      method: 'GET',
-      path: '/plugins/settings-ui/homebridge-mock-plugin/index.html',
-      headers: { cookie: cookiePair },
-    })
-    expect(allowed.statusCode).toBe(200)
-    expect(allowed.body).toContain('Hello World')
-  })
-
-  it('GET /plugins/settings-ui/:plugin-name/ (invalid cookie → 401)', async () => {
-    const res = await app.inject({
-      method: 'GET',
-      path: '/plugins/settings-ui/homebridge-mock-plugin/',
-      headers: { cookie: 'hb-session=not-a-valid-jwt' },
-    })
-
-    expect(res.statusCode).toBe(401)
-  })
-
-  it('GET /plugins/settings-ui/:plugin-name/', async () => {
-    const res = await app.inject({
-      method: 'GET',
-      path: '/plugins/settings-ui/homebridge-mock-plugin/',
-      headers: { cookie: sessionCookie },
-    })
-
-    expect(res.statusCode).toBe(200)
-    expect(res.body).toContain('Hello World')
-    expect(res.body).toContain('homebridge-mock-plugin')
-  })
-
-  it('GET /plugins/settings-ui/:plugin-name/index.html', async () => {
-    const res = await app.inject({
-      method: 'GET',
-      path: '/plugins/settings-ui/homebridge-mock-plugin/index.html',
-      headers: { cookie: sessionCookie },
-    })
-
-    expect(res.statusCode).toBe(200)
-    expect(res.body).toContain('Hello World')
-    expect(res.body).toContain('homebridge-mock-plugin')
-    // A non-empty CSP must be present on the index.html response
-    const csp = res.headers['content-security-policy'] as string
-    expect(csp).toBeTruthy()
-    expect(csp).toContain('script-src')
-    // Custom UIs ran without any CSP before v5.24.1 — frameworks that
-    // evaluate expressions at runtime (e.g. Alpine.js, Vue) need this (#2873)
-    expect(csp).toContain('\'unsafe-eval\'')
-    expect(csp).toContain('frame-ancestors')
-  })
-
-  it('GET /plugins/settings-ui/:plugin-name/index.html ignores customUiCspDomains entries longer than 256 bytes', async () => {
-    const { readJson, writeJson } = await import('fs-extra')
-
-    const baseSchemaPath = resolve(pluginsPath, 'homebridge-mock-plugin', 'config.schema.json')
-    const baseSchema = await readJson(baseSchemaPath)
-    const maxLengthDomain = `https://${'a'.repeat(244)}.com`
-    const overLengthDomain = `https://${'b'.repeat(245)}.com`
-    const pluginsService = app.get(PluginsService)
-    const loggerErrorSpy = vi.spyOn((pluginsService as any).logger, 'error').mockImplementation(() => undefined)
-
-    try {
-      await writeJson(baseSchemaPath, {
-        ...baseSchema,
-        customUiCspDomains: [maxLengthDomain, overLengthDomain],
-      })
-      ;(app.get(PluginsSettingsUiService) as any).pluginUiMetadataCache.del('homebridge-mock-plugin')
-      ;(app.get(PluginsSettingsUiService) as any).pluginUiLastVersionCache.del('homebridge-mock-plugin')
-
-      const res = await app.inject({
-        method: 'GET',
-        path: '/plugins/settings-ui/homebridge-mock-plugin/index.html',
-        headers: { cookie: sessionCookie },
+        expect(res.statusCode).toBe(401)
       })
 
-      expect(res.statusCode).toBe(200)
-      const csp = res.headers['content-security-policy'] as string
-      expect(csp).toContain(maxLengthDomain)
-      expect(csp).not.toContain(overLengthDomain)
-      expect(loggerErrorSpy).toHaveBeenCalledWith('Ignoring customUiCspDomains entry longer than 256 bytes.')
-    } finally {
-      await writeJson(baseSchemaPath, baseSchema)
-      ;(app.get(PluginsSettingsUiService) as any).pluginUiMetadataCache.del('homebridge-mock-plugin')
-      ;(app.get(PluginsSettingsUiService) as any).pluginUiLastVersionCache.del('homebridge-mock-plugin')
-    }
-  })
+      it('rejects a valid bearer token without an hb-session cookie', async () => {
+        const loginRes = await app.inject({
+          method: 'POST',
+          path: '/auth/login',
+          payload: { username: 'admin', password: 'admin' },
+        })
+        const { access_token } = JSON.parse(loginRes.body)
 
-  it('GET /plugins/settings-ui/:plugin-name/index.html (foreign origin → ignored)', async () => {
-    const res = await app.inject({
-      method: 'GET',
-      path: `/plugins/settings-ui/homebridge-mock-plugin/index.html?origin=${encodeURIComponent('http://example.com')}`,
-      headers: { cookie: sessionCookie },
+        const res = await app.inject({
+          method: 'GET',
+          path: '/plugins/settings-ui/homebridge-mock-plugin/index.html',
+          headers: { authorization: `Bearer ${access_token}` },
+        })
+
+        expect(res.statusCode).toBe(401)
+      })
+
+      it('rejects an invalid bearer token without an hb-session cookie', async () => {
+        const res = await app.inject({
+          method: 'GET',
+          path: '/plugins/settings-ui/homebridge-mock-plugin/index.html',
+          headers: { authorization: 'Bearer not-a-valid-jwt' },
+        })
+
+        expect(res.statusCode).toBe(401)
+      })
+
+      it('mints hb-session via bearer refresh then loads settings-ui (#2893)', async () => {
+        // Mid-session upgrade path: valid Bearer token in localStorage, but no
+        // hb-session cookie (never set on ≤5.24.x sessions). Bootstrap calls
+        // POST /auth/refresh; the Set-Cookie must be enough for CookieAuthGuard.
+        const loginRes = await app.inject({
+          method: 'POST',
+          path: '/auth/login',
+          payload: { username: 'admin', password: 'admin' },
+        })
+        const { access_token } = JSON.parse(loginRes.body)
+
+        const denied = await app.inject({
+          method: 'GET',
+          path: '/plugins/settings-ui/homebridge-mock-plugin/index.html',
+        })
+        expect(denied.statusCode).toBe(401)
+
+        const refreshRes = await app.inject({
+          method: 'POST',
+          path: '/auth/refresh',
+          headers: { authorization: `bearer ${access_token}` },
+        })
+        expect(refreshRes.statusCode).toBe(201)
+
+        const setCookie = refreshRes.headers['set-cookie']
+        const cookieHeaders = Array.isArray(setCookie) ? setCookie : setCookie ? [setCookie] : []
+        const hbSessionHeader = cookieHeaders.find(c => c.startsWith('hb-session='))
+        expect(hbSessionHeader).toBeTruthy()
+        const cookiePair = hbSessionHeader!.split(';')[0]
+
+        const allowed = await app.inject({
+          method: 'GET',
+          path: '/plugins/settings-ui/homebridge-mock-plugin/index.html',
+          headers: { cookie: cookiePair },
+        })
+        expect(allowed.statusCode).toBe(200)
+        expect(allowed.body).toContain('Hello World')
+      })
+
+      it('rejects an invalid hb-session cookie', async () => {
+        const res = await app.inject({
+          method: 'GET',
+          path: '/plugins/settings-ui/homebridge-mock-plugin/',
+          headers: { cookie: 'hb-session=not-a-valid-jwt' },
+        })
+
+        expect(res.statusCode).toBe(401)
+      })
+
+      it('accepts a valid hb-session cookie', async () => {
+        const res = await app.inject({
+          method: 'GET',
+          path: '/plugins/settings-ui/homebridge-mock-plugin/',
+          headers: { cookie: sessionCookie },
+        })
+
+        expect(res.statusCode).toBe(200)
+        expect(res.body).toContain('Hello World')
+        expect(res.body).toContain('homebridge-mock-plugin')
+      })
     })
 
-    expect(res.statusCode).toBe(200)
-    // A caller-supplied host must never reach the script tag or the policy.
-    // This used to be reflected, which is what made the page loadable with an
-    // attacker's script on the UI's own origin.
-    expect(res.body).not.toContain('http://example.com')
-    expect(res.headers['content-security-policy']).not.toContain('http://example.com')
-    expect(res.body).toContain('src="/assets/plugin-ui-utils/ui.js')
-  })
+    describe('index HTML and CSP', () => {
+      it('serves the plugin index with its content security policy', async () => {
+        const res = await app.inject({
+          method: 'GET',
+          path: '/plugins/settings-ui/homebridge-mock-plugin/index.html',
+          headers: { cookie: sessionCookie },
+        })
 
-  it('GET /plugins/settings-ui/:plugin-name/index.html (foreign origin on a dev port → ignored)', async () => {
-    // Being on a dev-server port is not enough on its own - the host has to
-    // match the host the request arrived on
-    const res = await app.inject({
-      method: 'GET',
-      path: `/plugins/settings-ui/homebridge-mock-plugin/index.html?origin=${encodeURIComponent('http://attacker.example.com:4200')}`,
-      headers: { cookie: sessionCookie, host: 'localhost:8581' },
+        expect(res.statusCode).toBe(200)
+        expect(res.body).toContain('Hello World')
+        expect(res.body).toContain('homebridge-mock-plugin')
+        // A non-empty CSP must be present on the index.html response
+        const csp = res.headers['content-security-policy'] as string
+        expect(csp).toBeTruthy()
+        expect(csp).toContain('script-src')
+        // Custom UIs ran without any CSP before v5.24.1 — frameworks that
+        // evaluate expressions at runtime (e.g. Alpine.js, Vue) need this (#2873)
+        expect(csp).toContain('\'unsafe-eval\'')
+        expect(csp).toContain('frame-ancestors')
+      })
+
+      it('ignores customUiCspDomains entries longer than 256 bytes', async () => {
+        const { readJson, writeJson } = await import('fs-extra')
+
+        const baseSchemaPath = resolve(pluginsPath, 'homebridge-mock-plugin', 'config.schema.json')
+        const baseSchema = await readJson(baseSchemaPath)
+        const maxLengthDomain = `https://${'a'.repeat(244)}.com`
+        const overLengthDomain = `https://${'b'.repeat(245)}.com`
+        const pluginsService = app.get(PluginsService)
+        const loggerErrorSpy = vi.spyOn((pluginsService as any).logger, 'error').mockImplementation(() => undefined)
+
+        try {
+          await writeJson(baseSchemaPath, {
+            ...baseSchema,
+            customUiCspDomains: [maxLengthDomain, overLengthDomain],
+          })
+          ;(app.get(PluginsSettingsUiService) as any).pluginUiMetadataCache.del('homebridge-mock-plugin')
+          ;(app.get(PluginsSettingsUiService) as any).pluginUiLastVersionCache.del('homebridge-mock-plugin')
+
+          const res = await app.inject({
+            method: 'GET',
+            path: '/plugins/settings-ui/homebridge-mock-plugin/index.html',
+            headers: { cookie: sessionCookie },
+          })
+
+          expect(res.statusCode).toBe(200)
+          const csp = res.headers['content-security-policy'] as string
+          expect(csp).toContain(maxLengthDomain)
+          expect(csp).not.toContain(overLengthDomain)
+          expect(loggerErrorSpy).toHaveBeenCalledWith('Ignoring customUiCspDomains entry longer than 256 bytes.')
+        } finally {
+          await writeJson(baseSchemaPath, baseSchema)
+          ;(app.get(PluginsSettingsUiService) as any).pluginUiMetadataCache.del('homebridge-mock-plugin')
+          ;(app.get(PluginsSettingsUiService) as any).pluginUiLastVersionCache.del('homebridge-mock-plugin')
+        }
+      })
     })
 
-    expect(res.statusCode).toBe(200)
-    expect(res.body).not.toContain('attacker.example.com')
-    expect(res.headers['content-security-policy']).not.toContain('attacker.example.com')
-    expect(res.body).toContain('src="/assets/plugin-ui-utils/ui.js')
-  })
+    describe('origin handling', () => {
+      let previousDevelopment: string | undefined
 
-  it('GET /plugins/settings-ui/:plugin-name/index.html (matching dev server origin → allowed)', async () => {
-    // `npm run dev` serves the UI on 4200 while the API answers on 8581, so a
-    // relative path would not find the asset. Same host, dev port, so allowed.
-    const res = await app.inject({
-      method: 'GET',
-      path: `/plugins/settings-ui/homebridge-mock-plugin/index.html?origin=${encodeURIComponent('http://localhost:4200')}`,
-      headers: { cookie: sessionCookie, host: 'localhost:8581' },
+      beforeEach(() => {
+        previousDevelopment = process.env.UIX_DEVELOPMENT
+      })
+
+      afterEach(() => {
+        if (previousDevelopment === undefined) {
+          delete process.env.UIX_DEVELOPMENT
+        } else {
+          process.env.UIX_DEVELOPMENT = previousDevelopment
+        }
+      })
+
+      describe('in production', () => {
+        beforeEach(() => {
+          delete process.env.UIX_DEVELOPMENT
+        })
+
+        it.each([
+          {
+            description: 'a matching development-server origin',
+            origin: 'http://localhost:4200',
+          },
+          {
+            description: 'an attacker hostname on an allowed development port',
+            origin: 'http://attacker.example.com:4200',
+          },
+          {
+            description: 'a matching hostname on a non-development port',
+            origin: 'http://localhost:4444',
+          },
+          {
+            description: 'an origin containing an XSS payload',
+            origin: '"></' + 'script><script>alert(document.domain)</script>',
+          },
+          {
+            description: 'a non-http origin',
+            origin: 'javascript:alert(1)',
+          },
+        ])('ignores $description', async ({ origin }) => {
+          const res = await app.inject({
+            method: 'GET',
+            path: `/plugins/settings-ui/homebridge-mock-plugin/index.html?origin=${encodeURIComponent(origin)}`,
+            headers: { cookie: sessionCookie, host: 'localhost:8581' },
+          })
+
+          expect(res.statusCode).toBe(200)
+          expect(res.body).not.toContain(origin)
+          expect(res.headers['content-security-policy']).not.toContain(origin)
+          expect(res.body).toContain('src="/assets/plugin-ui-utils/ui.js')
+        })
+      })
+
+      describe('in development', () => {
+        beforeEach(() => {
+          process.env.UIX_DEVELOPMENT = '1'
+        })
+
+        it('allows a matching development-server origin', async () => {
+          // `npm run dev` serves the UI on 4200 while the API answers on 8581, so a
+          // relative path would not find the asset. Same host, dev port, so allowed.
+          const origin = 'http://localhost:4200'
+          const res = await app.inject({
+            method: 'GET',
+            path: `/plugins/settings-ui/homebridge-mock-plugin/index.html?origin=${encodeURIComponent(origin)}`,
+            headers: { cookie: sessionCookie, host: 'localhost:8581' },
+          })
+
+          expect(res.statusCode).toBe(200)
+          expect(res.body).toContain(`${origin}/assets/plugin-ui-utils/ui.js`)
+          expect(res.headers['content-security-policy']).toContain(origin)
+        })
+
+        it('rejects an attacker hostname on an allowed development port', async () => {
+          const origin = 'http://attacker.example.com:4200'
+          const res = await app.inject({
+            method: 'GET',
+            path: `/plugins/settings-ui/homebridge-mock-plugin/index.html?origin=${encodeURIComponent(origin)}`,
+            headers: { cookie: sessionCookie, host: 'localhost:8581' },
+          })
+
+          expect(res.statusCode).toBe(200)
+          expect(res.body).not.toContain(origin)
+          expect(res.headers['content-security-policy']).not.toContain(origin)
+          expect(res.body).toContain('src="/assets/plugin-ui-utils/ui.js')
+        })
+
+        it('rejects a matching hostname on a non-development port', async () => {
+          const origin = 'http://localhost:4444'
+          const res = await app.inject({
+            method: 'GET',
+            path: `/plugins/settings-ui/homebridge-mock-plugin/index.html?origin=${encodeURIComponent(origin)}`,
+            headers: { cookie: sessionCookie, host: 'localhost:8581' },
+          })
+
+          expect(res.statusCode).toBe(200)
+          expect(res.body).not.toContain(origin)
+          expect(res.headers['content-security-policy']).not.toContain(origin)
+          expect(res.body).toContain('src="/assets/plugin-ui-utils/ui.js')
+        })
+
+        it('rejects an origin containing an XSS payload', async () => {
+          const xssOrigin = '"></' + 'script><script>alert(document.domain)</script>'
+          const res = await app.inject({
+            method: 'GET',
+            path: `/plugins/settings-ui/homebridge-mock-plugin/index.html?origin=${encodeURIComponent(xssOrigin)}`,
+            headers: { cookie: sessionCookie, host: 'localhost:8581' },
+          })
+
+          expect(res.statusCode).toBe(200)
+          expect(res.body).not.toContain('alert(document.domain)')
+          expect(res.body).toContain('src="/assets/plugin-ui-utils/ui.js')
+        })
+
+        it('rejects a non-http origin', async () => {
+          const origin = 'javascript:alert(1)'
+          const res = await app.inject({
+            method: 'GET',
+            path: `/plugins/settings-ui/homebridge-mock-plugin/index.html?origin=${encodeURIComponent(origin)}`,
+            headers: { cookie: sessionCookie, host: 'localhost:8581' },
+          })
+
+          expect(res.statusCode).toBe(200)
+          expect(res.body).not.toContain(origin)
+          expect(res.body).toContain('src="/assets/plugin-ui-utils/ui.js')
+        })
+      })
     })
 
-    expect(res.statusCode).toBe(200)
-    expect(res.body).toContain('http://localhost:4200/assets/plugin-ui-utils/ui.js')
-    expect(res.headers['content-security-policy']).toContain('http://localhost:4200')
-  })
+    describe('asset handling', () => {
+      it('returns 404 when the plugin has no custom UI', async () => {
+        const res = await app.inject({
+          method: 'GET',
+          path: '/plugins/settings-ui/homebridge-mock-plugin-two/index.html',
+          headers: { cookie: sessionCookie },
+        })
 
-  it('GET /plugins/settings-ui/:plugin-name/index.html (XSS via origin → rejected)', async () => {
-    const xssOrigin = encodeURIComponent('"></' + 'script><script>alert(document.domain)</script>')
-    const res = await app.inject({
-      method: 'GET',
-      path: `/plugins/settings-ui/homebridge-mock-plugin/index.html?origin=${xssOrigin}`,
-      headers: { cookie: sessionCookie },
+        expect(res.statusCode).toBe(404)
+      })
+
+      it('returns 404 for a missing asset', async () => {
+        const res = await app.inject({
+          method: 'GET',
+          path: '/plugins/settings-ui/homebridge-mock-plugin/nonexistent.html',
+          headers: { cookie: sessionCookie },
+        })
+
+        expect(res.statusCode).toBe(404)
+      })
+
+      it('serves the plugin UI with a version query parameter', async () => {
+        const res = await app.inject({
+          method: 'GET',
+          path: '/plugins/settings-ui/homebridge-mock-plugin/?v=1.0.0',
+          headers: { cookie: sessionCookie },
+        })
+
+        expect(res.statusCode).toBe(200)
+        expect(res.body).toContain('Hello World')
+      })
     })
 
-    expect(res.statusCode).toBe(200)
-    // The malicious origin must not appear verbatim in the response
-    expect(res.body).not.toContain('alert(document.domain)')
-    // Falls back to a relative path, which cannot carry a host at all
-    expect(res.body).toContain('src="/assets/plugin-ui-utils/ui.js')
-  })
+    describe('path and plugin validation', () => {
+      it('blocks path traversal', async () => {
+        const res = await app.inject({
+          method: 'GET',
+          path: '/plugins/settings-ui/homebridge-mock-plugin/../../../etc/passwd',
+          headers: { cookie: sessionCookie },
+        })
 
-  it('GET /plugins/settings-ui/:plugin-name/index.html (non-http origin → rejected)', async () => {
-    const res = await app.inject({
-      method: 'GET',
-      path: `/plugins/settings-ui/homebridge-mock-plugin/index.html?origin=${encodeURIComponent('javascript:alert(1)')}`,
-      headers: { cookie: sessionCookie },
+        // Should not return 200 with file contents
+        expect(res.statusCode).not.toBe(200)
+      })
+
+      it('returns 404 for a nonexistent plugin', async () => {
+        const res = await app.inject({
+          method: 'GET',
+          path: '/plugins/settings-ui/homebridge-nonexistent-plugin/',
+          headers: { cookie: sessionCookie },
+        })
+
+        expect(res.statusCode).toBe(404)
+      })
     })
-
-    expect(res.statusCode).toBe(200)
-    expect(res.body).not.toContain('javascript:alert(1)')
-    expect(res.body).toContain('src="/assets/plugin-ui-utils/ui.js')
-  })
-
-  it('GET /plugins/settings-ui/:plugin-name/index.html (no custom ui for plugin)', async () => {
-    const res = await app.inject({
-      method: 'GET',
-      path: '/plugins/settings-ui/homebridge-mock-plugin-two/index.html',
-      headers: { cookie: sessionCookie },
-    })
-
-    expect(res.statusCode).toBe(404)
-  })
-
-  it('GET /plugins/settings-ui/:plugin-name/../../../etc/passwd (path traversal blocked)', async () => {
-    const res = await app.inject({
-      method: 'GET',
-      path: '/plugins/settings-ui/homebridge-mock-plugin/../../../etc/passwd',
-      headers: { cookie: sessionCookie },
-    })
-
-    // Should not return 200 with file contents
-    expect(res.statusCode).not.toBe(200)
-  })
-
-  it('GET /plugins/settings-ui/:plugin-name/ (nonexistent plugin)', async () => {
-    const res = await app.inject({
-      method: 'GET',
-      path: '/plugins/settings-ui/homebridge-nonexistent-plugin/',
-      headers: { cookie: sessionCookie },
-    })
-
-    expect(res.statusCode).toBe(404)
-  })
-
-  it('GET /plugins/settings-ui/:plugin-name/nonexistent.html (missing file)', async () => {
-    const res = await app.inject({
-      method: 'GET',
-      path: '/plugins/settings-ui/homebridge-mock-plugin/nonexistent.html',
-      headers: { cookie: sessionCookie },
-    })
-
-    expect(res.statusCode).toBe(404)
-  })
-
-  it('GET /plugins/settings-ui/:plugin-name/ with version query param', async () => {
-    const res = await app.inject({
-      method: 'GET',
-      path: '/plugins/settings-ui/homebridge-mock-plugin/?v=1.0.0',
-      headers: { cookie: sessionCookie },
-    })
-
-    expect(res.statusCode).toBe(200)
-    expect(res.body).toContain('Hello World')
   })
 
   describe('PluginsSettingsUiService', () => {
@@ -380,6 +476,19 @@ describe('PluginsSettingsUiController (e2e)', () => {
       const html = await pluginsSettingsUiService.buildIndexHtml(pluginUi as any, 'javascript:alert(1)')
 
       expect(html).not.toContain('javascript:alert(1)')
+      expect(html).toContain('src="/assets/plugin-ui-utils/ui.js')
+    })
+
+    it('buildIndexHtml should reject an http origin outside the development ports', async () => {
+      const pluginUi = {
+        plugin: { name: 'homebridge-mock-plugin' },
+        publicPath: resolve(pluginsPath, 'homebridge-mock-plugin/homebridge-ui/public'),
+        serverPath: resolve(pluginsPath, 'homebridge-mock-plugin/homebridge-ui/server'),
+      }
+
+      const html = await pluginsSettingsUiService.buildIndexHtml(pluginUi as any, 'https://evil.example.com')
+
+      expect(html).not.toContain('https://evil.example.com')
       expect(html).toContain('src="/assets/plugin-ui-utils/ui.js')
     })
 
