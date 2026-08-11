@@ -71,7 +71,12 @@ export class PluginsSettingsUiService {
         // Resolved once here so the same value is used in both the CSP header
         // and the HTML body — preventing any mismatch between the two. Empty in
         // every normal case, which leaves the policy as plain 'self'.
-        const uiOrigin = this.resolveUiOrigin(origin, reply.request?.headers?.host)
+        // The cross-origin asset path is only needed when Angular's development
+        // server and the API run on different ports. Ignore caller-supplied
+        // origins entirely in production.
+        const uiOrigin = process.env.UIX_DEVELOPMENT === '1'
+          ? this.resolveUiOrigin(origin, reply.request?.headers?.host)
+          : ''
         const devOrigin = uiOrigin ? ` ${uiOrigin}` : ''
         // Scope the CSP to this server.  'unsafe-inline' is required because the
         // generated index.html contains two inline <script> blocks.
