@@ -244,11 +244,13 @@ describe('PluginsSettingsUiController (e2e)', () => {
   it('GET /plugins/settings-ui/:plugin-name/index.html (matching dev server origin → allowed)', async () => {
     // `npm run dev` serves the UI on 4200 while the API answers on 8581, so a
     // relative path would not find the asset. Same host, dev port, so allowed.
+    process.env.UIX_DEVELOPMENT = '1'
     const res = await app.inject({
       method: 'GET',
       path: `/plugins/settings-ui/homebridge-mock-plugin/index.html?origin=${encodeURIComponent('http://localhost:4200')}`,
       headers: { cookie: sessionCookie, host: 'localhost:8581' },
     })
+    delete process.env.UIX_DEVELOPMENT
 
     expect(res.statusCode).toBe(200)
     expect(res.body).toContain('http://localhost:4200/assets/plugin-ui-utils/ui.js')
