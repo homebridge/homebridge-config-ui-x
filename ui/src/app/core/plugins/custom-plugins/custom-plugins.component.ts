@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, ElementRef, inject, OnDestroy, OnInit, signal, viewChild } from '@angular/core'
+import { ChangeDetectionStrategy, Component, DestroyRef, ElementRef, inject, isDevMode, OnDestroy, OnInit, signal, viewChild } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap/tooltip'
@@ -18,7 +18,6 @@ import { ManagePluginsService } from '@/app/core/plugins/manage-plugins.service'
 import { SettingsService } from '@/app/core/ui/settings.service'
 import { ChildBridgesService } from '@/app/core/utilities/child-bridges.service'
 import { environment } from '@/environments/environment'
-import { isDevMode } from '@angular/core'
 
 @Component({
   selector: 'app-custom-plugins',
