@@ -34,6 +34,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(accessories): paint an unsaturated bulb white rather than grey, on both hap and matter
 - fix(ui): sanitise rendered markdown to prevent stored XSS
 - feat(log): let admins restrict the Homebridge log to administrators
+- fix(status): support degrees as well as millidegrees in the configured cpu temp file (#2896) (@lidonius1122)
 
 ### Other Changes
 
