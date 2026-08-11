@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, ElementRef, inject, OnDestroy, OnInit, signal, viewChild } from '@angular/core'
+import { ChangeDetectionStrategy, Component, DestroyRef, ElementRef, inject, isDevMode, OnDestroy, OnInit, signal, viewChild } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap/tooltip'
@@ -261,7 +261,18 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
       return
     }
 
-    this.iframe.src = `${environment.api.base + this.basePath}/index.html?origin=${encodeURIComponent(location.origin)}&v=${encodeURIComponent(plugin.installedVersion)}`
+    const url = new URL(
+      `${environment.api.base + this.basePath}/index.html`,
+      location.origin,
+    )
+
+    if (isDevMode()) {
+      url.searchParams.set('origin', location.origin)
+    }
+
+    url.searchParams.set('v', plugin.installedVersion)
+
+    this.iframe.src = url.toString()
   }
 
   private handleMessage = (e: MessageEvent): void => {
