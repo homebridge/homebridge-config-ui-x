@@ -303,8 +303,8 @@ describe('PluginsSettingsUiController (e2e)', () => {
         })
 
         it('allows a matching development-server origin', async () => {
-        // `npm run dev` serves the UI on 4200 while the API answers on 8581, so a
-        // relative path would not find the asset. Same host, dev port, so allowed.
+          // `npm run dev` serves the UI on 4200 while the API answers on 8581, so a
+          // relative path would not find the asset. Same host, dev port, so allowed.
           const origin = 'http://localhost:4200'
           const res = await app.inject({
             method: 'GET',
