@@ -187,6 +187,21 @@ export class PluginsSettingsUiService {
   async buildIndexHtml(pluginUi: HomebridgePluginUiMetadata, origin?: string) {
     const body = await this.getIndexHtmlBody(pluginUi)
 
+    // Re-sanitize the origin: only accept a validated URL origin (scheme + host
+    // + port) so that untrusted input cannot inject HTML attributes or
+    // javascript: URLs into the <script src>.
+    let safeOrigin = ''
+    if (origin) {
+      try {
+        const parsed = new URL(origin)
+        if ((parsed.protocol === 'http:' || parsed.protocol === 'https:') && parsed.origin === origin) {
+          safeOrigin = parsed.origin
+        }
+      } catch {
+        // leave safeOrigin as ''
+      }
+    }
+
     return `
       <!doctype html>
       <html>
@@ -200,7 +215,7 @@ export class PluginsSettingsUiService {
             serverEnv: ${JSON.stringify(this.configService.uiSettings(true)).replace(/</g, '\\u003c')},
           };
           </script>
-          <script src="${origin || ''}/assets/plugin-ui-utils/ui.js?v=${this.configService.package.version}"></script>
+          <script src="${safeOrigin}/assets/plugin-ui-utils/ui.js?v=${this.configService.package.version}"></script>
           <script>
             window.addEventListener('load', () => {
               window.parent.postMessage({action: 'loaded'}, '*');
