@@ -175,8 +175,9 @@ export class StatusService {
 
       // The configured file may hold either degrees or millidegrees, so pick the
       // unit by magnitude - no cpu runs at 1000°C, and a millidegrees reading is
-      // never below 1°C in practice (#2896)
-      const cpuTemp = tempValue >= 1000 ? tempValue / 1000 : tempValue
+      // never within 1°C of zero in practice. The comparison ignores the sign so
+      // a sub-zero millidegrees reading is not mistaken for degrees (#2896)
+      const cpuTemp = Math.abs(tempValue) >= 1000 ? tempValue / 1000 : tempValue
       return {
         main: cpuTemp,
         cores: [],

@@ -108,6 +108,8 @@ describe('StatusService - getCpuTemp', () => {
       ['whole degrees', '47', 47],
       ['fractional degrees', '47.5', 47.5],
       ['a trailing newline', '47000\n', 47],
+      ['sub-zero millidegrees', '-5000', -5],
+      ['sub-zero degrees', '-5', -5],
     ]
 
     it.each(cases)('should read %s as %s -> %s°C', async (_label, contents, expected) => {
