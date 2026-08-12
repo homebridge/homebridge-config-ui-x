@@ -148,7 +148,9 @@ export interface HomebridgeUiConfig {
    * above (ignoring the sign) is taken as millidegrees and divided by 1000,
    * anything smaller is taken as degrees. The trade-off is that a millidegrees
    * file reporting below 1°C - 999 or less in magnitude - is read as whole
-   * degrees instead.
+   * degrees instead. That direction is deliberate: guessing wrong at the
+   * boundary shows an obviously impossible temperature, below absolute zero,
+   * rather than a plausible-looking wrong one nobody notices.
    */
   temp?: string
   tempUnits?: string
