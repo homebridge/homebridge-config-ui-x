@@ -36,12 +36,7 @@ export class AuthService {
   }
 
   public async login(form: { username: string, password: string, ota?: string }) {
-    // withCredentials lets the browser store the hb-session cookie the
-    // server sets on this response. Same-origin requests do this anyway,
-    // but the dev server (:4200 → :8581) is cross-origin, where the
-    // Set-Cookie header is silently ignored without it — leaving the
-    // custom plugin UI iframe to 401 against /api/plugins/settings-ui/*.
-    const resp = await this.$api.post('/auth/login', form, { withCredentials: true })
+    const resp = await this.$api.post('/auth/login', form)
     if (!this.validateToken(resp.access_token)) {
       throw new Error('Invalid username or password.')
     }
@@ -50,8 +45,7 @@ export class AuthService {
   }
 
   public async noauth() {
-    // withCredentials: see login() — required for the hb-session cookie
-    const resp = await this.$api.post('/auth/noauth', {}, { withCredentials: true })
+    const resp = await this.$api.post('/auth/noauth', {})
     if (!this.validateToken(resp.access_token)) {
       throw new Error('Invalid username or password.')
     } else {
@@ -79,7 +73,7 @@ export class AuthService {
     }
     // The access token is only ever held in memory, so a page load starts with
     // nothing. Exchange the HttpOnly hb-refresh cookie for a fresh token; this
-    // also re-mints the hb-session cookie the custom plugin UIs need (#2893).
+    // while plugin UIs use their own short-lived, single-use tickets (#2893).
     //
     // A failure here is the normal "not signed in" case — the route guards send
     // the user to /login — so it must never throw and block boot.
@@ -235,7 +229,7 @@ export class AuthService {
    * Refresh the current session by getting a new token
    * @param reason - optional allowlisted reason for distinct server log lines
    */
-  public async refreshSession(reason?: 'hb-session-bootstrap' | 'admin-guard' | 'session-extension' | 'profile-update') {
+  public async refreshSession(reason?: 'admin-guard' | 'session-extension' | 'profile-update') {
     if (this.isRefreshing) {
       return
     }
@@ -243,8 +237,7 @@ export class AuthService {
     this.isRefreshing = true
 
     try {
-      // withCredentials: see login() — required for the hb-session cookie
-      const resp = await this.$api.post('/auth/refresh', reason ? { reason } : {}, { withCredentials: true })
+      const resp = await this.$api.post('/auth/refresh', reason ? { reason } : {})
       if (resp.access_token) {
         // Hold the new token in memory; AuthHelperService reads through to
         // the same store, so there is nothing further to keep in step.

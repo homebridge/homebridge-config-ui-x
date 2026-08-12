@@ -132,6 +132,9 @@ describe('AuthController (e2e)', () => {
 
     expect(res.statusCode).toBe(201)
     expect(res.json()).toHaveProperty('access_token')
+    const cookies = Array.isArray(res.headers['set-cookie']) ? res.headers['set-cookie'] : [res.headers['set-cookie']]
+    expect(cookies.some(cookie => cookie?.startsWith('hb-refresh='))).toBe(true)
+    expect(cookies.some(cookie => cookie?.startsWith('hb-session='))).toBe(false)
   })
 
   it('POST /auth/login (invalid login)', async () => {
@@ -211,7 +214,8 @@ describe('AuthController (e2e)', () => {
       payload: { username: 'admin', password: 'admin' },
     })
     expect(login.statusCode).toBe(201)
-    const setCookies = login.headers['set-cookie'] as unknown as string[]
+    const header = login.headers['set-cookie']
+    const setCookies = (Array.isArray(header) ? header : [header]) as string[]
     const refreshCookie = setCookies.find(c => c.startsWith('hb-refresh='))!
     expect(refreshCookie).toBeDefined()
     // The token must not be reachable from JavaScript, which is the whole point
@@ -236,9 +240,10 @@ describe('AuthController (e2e)', () => {
     // Logout must clear the cookie, or a reload would silently restore the
     // session the user just ended.
     const loggedOut = await app.inject({ method: 'POST', path: '/auth/logout' })
-    const cleared = loggedOut.headers['set-cookie'] as unknown as string[]
+    const clearedHeader = loggedOut.headers['set-cookie']
+    const cleared = (Array.isArray(clearedHeader) ? clearedHeader : [clearedHeader]) as string[]
     expect(cleared.some(c => c.startsWith('hb-refresh=') && c.includes('Max-Age=0'))).toBe(true)
-    expect(cleared.some(c => c.startsWith('hb-session=') && c.includes('Max-Age=0'))).toBe(true)
+    expect(cleared.some(c => c.startsWith('hb-session='))).toBe(false)
   })
 
   it('locks out repeated failed logins', async () => {
@@ -304,6 +309,9 @@ describe('AuthController (e2e)', () => {
 
     expect(res.statusCode).toBe(201)
     expect(res.json()).toHaveProperty('access_token')
+    const cookies = Array.isArray(res.headers['set-cookie']) ? res.headers['set-cookie'] : [res.headers['set-cookie']]
+    expect(cookies.some(cookie => cookie?.startsWith('hb-refresh='))).toBe(true)
+    expect(cookies.some(cookie => cookie?.startsWith('hb-session='))).toBe(false)
   })
 
   it('GET /auth/check (valid token)', async () => {
@@ -479,17 +487,9 @@ describe('AuthController (e2e)', () => {
     // Verify the token is valid (length and structure) - JWT uses base64url which includes - and _ chars
     expect(res.json().access_token).toMatch(RE_JWT)
 
-    // #2893/#2894: bootstrap mints hb-session by calling refresh with the
-    // restored Bearer token. The Set-Cookie must be present and scoped to
-    // the custom plugin UI path so CookieAuthGuard can accept the iframe.
-    const setCookie = res.headers['set-cookie']
-    const cookieHeaders = Array.isArray(setCookie) ? setCookie : setCookie ? [setCookie] : []
-    const hbSession = cookieHeaders.find(c => c.startsWith('hb-session='))
-    expect(hbSession).toBeTruthy()
-    expect(hbSession).toContain('HttpOnly')
-    expect(hbSession).toContain('Path=/api/plugins/settings-ui/')
-    const cookieValue = hbSession!.slice('hb-session='.length).split(';')[0]
-    expect(cookieValue).toMatch(RE_JWT)
+    const cookies = Array.isArray(res.headers['set-cookie']) ? res.headers['set-cookie'] : [res.headers['set-cookie']]
+    expect(cookies.some(cookie => cookie?.startsWith('hb-refresh='))).toBe(true)
+    expect(cookies.some(cookie => cookie?.startsWith('hb-session='))).toBe(false)
   })
 
   it('POST /auth/refresh (invalid token)', async () => {

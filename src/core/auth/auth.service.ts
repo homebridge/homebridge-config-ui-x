@@ -291,13 +291,11 @@ export class AuthService {
   }
 
   /**
-   * Distinct log lines per refresh caller so bootstrap vs admin-guard vs
-   * inactivity extension are not identical (and look like accidental dupes).
+   * Distinct log lines per refresh caller so admin checks and inactivity
+   * extension are not identical (and look like accidental duplicates).
    */
   private refreshTokenLogMessage(username: string, reason?: string): string {
     switch (reason) {
-      case 'hb-session-bootstrap':
-        return `Minting hb-session cookie for ${username} (bootstrap token refresh).`
       case 'admin-guard':
         return `Verifying admin session for ${username} (admin-guard token refresh).`
       case 'session-extension':

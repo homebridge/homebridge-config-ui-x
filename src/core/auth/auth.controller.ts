@@ -38,7 +38,7 @@ export class AuthController {
   @Post('login')
   async signIn(@Body() body: AuthDto, @Request() req: FastifyRequest, @Res({ passthrough: true }) res: FastifyReply) {
     const result = await this.authService.signIn(body.username, body.password, body.otp, req.ip)
-    this.setAuthCookies(res, result.access_token, req.protocol === 'https')
+    this.setRefreshCookie(res, result.access_token, req.protocol === 'https')
     return result
   }
 
@@ -85,7 +85,7 @@ export class AuthController {
   @Post('/noauth')
   async getToken(@Request() req: FastifyRequest, @Res({ passthrough: true }) res: FastifyReply) {
     const result = await this.authService.generateNoAuthToken()
-    this.setAuthCookies(res, result.access_token, req.protocol === 'https')
+    this.setRefreshCookie(res, result.access_token, req.protocol === 'https')
     return result
   }
 
@@ -107,7 +107,7 @@ export class AuthController {
     @Res({ passthrough: true }) res: FastifyReply,
   ) {
     const result = await this.authService.refreshToken(req.user, body.reason)
-    this.setAuthCookies(res, result.access_token, req.protocol === 'https')
+    this.setRefreshCookie(res, result.access_token, req.protocol === 'https')
     return result
   }
 
@@ -122,7 +122,7 @@ export class AuthController {
       throw new UnauthorizedException()
     }
     const result = await this.authService.refreshToken(payload, 'session-restore')
-    this.setAuthCookies(res, result.access_token, req.protocol === 'https')
+    this.setRefreshCookie(res, result.access_token, req.protocol === 'https')
     return result
   }
 
@@ -163,27 +163,8 @@ export class AuthController {
     return null
   }
 
-  private setAuthCookies(res: FastifyReply, token: string, secure: boolean) {
-    res.header('Set-Cookie', [
-      this.buildSessionCookie(token, secure),
-      this.buildRefreshCookie(token, secure),
-    ])
-  }
-
-  /**
-   * Build the Set-Cookie header value for the hb-session cookie.
-   * HttpOnly prevents client-side JavaScript from reading the token.
-   * SameSite=Strict prevents cross-site request forgery.
-   * Path is scoped to the plugin settings-ui route so the browser only
-   * sends this cookie for requests to /api/plugins/settings-ui/* and does
-   * not attach it to every other API request.
-   * Secure is added when the request arrived over HTTPS so the browser
-   * will not transmit the cookie over plain HTTP connections.
-   */
-  private buildSessionCookie(token: string, secure: boolean): string {
-    const maxAge = this.configService.ui.sessionTimeout || 28800
-    const secureFlag = secure ? '; Secure' : ''
-    return `hb-session=${token}; HttpOnly; SameSite=Strict; Path=/api/plugins/settings-ui/; Max-Age=${maxAge}${secureFlag}`
+  private setRefreshCookie(res: FastifyReply, token: string, secure: boolean) {
+    res.header('Set-Cookie', this.buildRefreshCookie(token, secure))
   }
 
   /**
@@ -206,15 +187,12 @@ export class AuthController {
   }
 
   /**
-   * Both cookies, cleared. Used by logout — without this the browser would
+   * Clear the refresh cookie. Used by logout — without this the browser would
    * still hold a valid refresh cookie and the next page load would silently
    * restore the session the user just ended.
    */
   private buildClearedCookies(secure: boolean): string[] {
     const secureFlag = secure ? '; Secure' : ''
-    return [
-      `hb-session=; HttpOnly; SameSite=Strict; Path=/api/plugins/settings-ui/; Max-Age=0${secureFlag}`,
-      `hb-refresh=; HttpOnly; SameSite=Strict; Path=/api/auth/session; Max-Age=0${secureFlag}`,
-    ]
+    return [`hb-refresh=; HttpOnly; SameSite=Strict; Path=/api/auth/session; Max-Age=0${secureFlag}`]
   }
 }

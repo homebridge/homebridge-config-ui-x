@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, ElementRef, inject, isDevMode, OnDestroy, OnInit, signal, viewChild } from '@angular/core'
+import { ChangeDetectionStrategy, Component, DestroyRef, ElementRef, inject, OnDestroy, OnInit, signal, viewChild } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap/tooltip'
@@ -239,11 +239,11 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
 
     this.io.socket.on('ready', () => {
       this.loading.set(false)
-      this.loadUi()
+      void this.loadUi()
     })
   }
 
-  private loadUi(): void {
+  private async loadUi(): Promise<void> {
     const plugin = this.plugin
     if (!plugin) {
       return
@@ -261,18 +261,17 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
       return
     }
 
-    const url = new URL(
-      `${environment.api.base + this.basePath}/index.html`,
-      location.origin,
-    )
-
-    if (isDevMode()) {
-      url.searchParams.set('origin', location.origin)
+    try {
+      const { ticket } = await this.$api.post<{ ticket: string }>(`${this.basePath}/ticket`, {})
+      const url = new URL(`${environment.api.base + this.basePath}/index.html`, location.origin)
+      url.searchParams.set('ticket', ticket)
+      url.searchParams.set('v', plugin.installedVersion)
+      this.iframe.src = url.toString()
+    } catch (error) {
+      console.error('Failed to load custom plugin UI:', error)
+      this.loading.set(false)
+      this.$toastr.error(this.$translate.instant('plugins.settings.message_ui_offline'), this.$translate.instant('toast.title_error'))
     }
-
-    url.searchParams.set('v', plugin.installedVersion)
-
-    this.iframe.src = url.toString()
   }
 
   private handleMessage = (e: MessageEvent): void => {
