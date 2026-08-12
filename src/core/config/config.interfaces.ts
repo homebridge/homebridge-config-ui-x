@@ -147,7 +147,8 @@ export interface HomebridgeUiConfig {
    * The file may contain either degrees or millidegrees: a reading of 1000 or
    * above (ignoring the sign) is taken as millidegrees and divided by 1000,
    * anything smaller is taken as degrees. The trade-off is that a millidegrees
-   * file reporting below 1°C - 999 or less - is read as whole degrees instead.
+   * file reporting below 1°C - 999 or less in magnitude - is read as whole
+   * degrees instead.
    */
   temp?: string
   tempUnits?: string

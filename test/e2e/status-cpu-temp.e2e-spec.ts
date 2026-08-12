@@ -110,6 +110,10 @@ describe('StatusService - getCpuTemp', () => {
       ['a trailing newline', '47000\n', 47],
       ['sub-zero millidegrees', '-5000', -5],
       ['sub-zero degrees', '-5', -5],
+      // The magnitude rule cannot tell a sub-1°C millidegrees reading from a
+      // plain degrees one, so these pin the trade-off discussed in #2896
+      ['millidegrees under the threshold', '999', 999],
+      ['sub-zero millidegrees under the threshold', '-500', -500],
     ]
 
     it.each(cases)('should read %s as %s -> %s°C', async (_label, contents, expected) => {
