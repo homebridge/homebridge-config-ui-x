@@ -95,7 +95,7 @@ export class PluginsSettingsUiService {
           + `style-src 'self' 'unsafe-inline'${devOrigin}; `
           + `img-src * data:; `
           + `connect-src *; `
-          + `font-src 'self' data:; `
+          + `font-src 'self' data:${devOrigin}; `
           + `frame-ancestors 'self'${devOrigin}; `
           + `frame-src 'self'${devOrigin}${extraDomains}`,
         )
