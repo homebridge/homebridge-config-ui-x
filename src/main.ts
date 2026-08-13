@@ -14,6 +14,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
 import Bonjour from 'bonjour-service'
 
 import { AppModule } from './app.module.js'
+import { API_PREFIX } from './core/api.constants.js'
 import { ConfigService } from './core/config/config.service.js'
 import { getStartupConfig } from './core/config/config.startup.js'
 import { devServerCorsConfig } from './core/cors.config.js'
@@ -146,7 +147,7 @@ async function bootstrap(): Promise<NestFastifyApplication> {
   })
 
   // Set prefix
-  app.setGlobalPrefix('/api')
+  app.setGlobalPrefix(API_PREFIX)
 
   // (9) Set up cors
   app.enableCors({

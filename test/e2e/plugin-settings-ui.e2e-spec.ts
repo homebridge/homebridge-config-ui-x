@@ -16,6 +16,7 @@ import { copy, ensureDir, remove, writeFile } from 'fs-extra'
 import { of } from 'rxjs'
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
+import { API_PREFIX } from '../../src/core/api.constants.js'
 import { AuthModule } from '../../src/core/auth/auth.module.js'
 import { PluginsSettingsUiModule } from '../../src/modules/custom-plugins/plugins-settings-ui/plugins-settings-ui.module.js'
 import { PluginsSettingsUiService } from '../../src/modules/custom-plugins/plugins-settings-ui/plugins-settings-ui.service.js'
@@ -62,6 +63,7 @@ describe('PluginsSettingsUiController (e2e)', () => {
     const adapter = new FastifyAdapter()
     adapter.register(fastifyStatic, { root: process.env.UIX_BASE_PATH })
     app = moduleFixture.createNestApplication<NestFastifyApplication>(adapter)
+    app.setGlobalPrefix(API_PREFIX)
 
     app.useGlobalPipes(new ValidationPipe({
       whitelist: true,
@@ -81,7 +83,7 @@ describe('PluginsSettingsUiController (e2e)', () => {
     // Obtain the primary bearer used to issue narrow, single-use UI tickets.
     const loginRes = await app.inject({
       method: 'POST',
-      path: '/auth/login',
+      path: `${API_PREFIX}/auth/login`,
       payload: { username: 'admin', password: 'admin' },
     })
     accessToken = JSON.parse(loginRes.body).access_token
@@ -90,7 +92,7 @@ describe('PluginsSettingsUiController (e2e)', () => {
   async function issueTicket(pluginName = 'homebridge-mock-plugin', origin?: string) {
     return await app.inject({
       method: 'POST',
-      path: `/plugins/settings-ui/${pluginName}/ticket`,
+      path: `${API_PREFIX}/plugins/settings-ui/${pluginName}/ticket`,
       headers: {
         authorization: `Bearer ${accessToken}`,
         host: 'localhost:8581',
@@ -106,7 +108,7 @@ describe('PluginsSettingsUiController (e2e)', () => {
     }
     return await app.inject({
       method: 'GET',
-      path: `/plugins/settings-ui/${pluginName}/index.html?${new URLSearchParams({ ticket: issued.json().ticket, ...(version ? { v: version } : {}) })}`,
+      path: `${API_PREFIX}/plugins/settings-ui/${pluginName}/index.html?${new URLSearchParams({ ticket: issued.json().ticket, ...(version ? { v: version } : {}) })}`,
     })
   }
 
@@ -125,7 +127,7 @@ describe('PluginsSettingsUiController (e2e)', () => {
       it('rejects direct navigation to the generated index without a ticket', async () => {
         const res = await app.inject({
           method: 'GET',
-          path: '/plugins/settings-ui/homebridge-mock-plugin/index.html',
+          path: `${API_PREFIX}/plugins/settings-ui/homebridge-mock-plugin/index.html`,
         })
 
         expect(res.statusCode).toBe(401)
@@ -134,7 +136,7 @@ describe('PluginsSettingsUiController (e2e)', () => {
       it('rejects a crafted URL even when it carries a legacy session cookie', async () => {
         const res = await app.inject({
           method: 'GET',
-          path: '/plugins/settings-ui/homebridge-mock-plugin/index.html?origin=https%3A%2F%2Fattacker.example',
+          path: `${API_PREFIX}/plugins/settings-ui/homebridge-mock-plugin/index.html?origin=https%3A%2F%2Fattacker.example`,
           headers: { cookie: `hb-session=${accessToken}` },
         })
         expect(res.statusCode).toBe(401)
@@ -143,7 +145,7 @@ describe('PluginsSettingsUiController (e2e)', () => {
       it('rejects ticket issuance without a bearer token', async () => {
         const res = await app.inject({
           method: 'POST',
-          path: '/plugins/settings-ui/homebridge-mock-plugin/ticket',
+          path: `${API_PREFIX}/plugins/settings-ui/homebridge-mock-plugin/ticket`,
         })
         expect(res.statusCode).toBe(401)
       })
@@ -151,7 +153,7 @@ describe('PluginsSettingsUiController (e2e)', () => {
       it('rejects an invalid bearer token when issuing a ticket', async () => {
         const res = await app.inject({
           method: 'POST',
-          path: '/plugins/settings-ui/homebridge-mock-plugin/ticket',
+          path: `${API_PREFIX}/plugins/settings-ui/homebridge-mock-plugin/ticket`,
           headers: { authorization: 'Bearer not-a-valid-jwt' },
         })
 
@@ -173,7 +175,7 @@ describe('PluginsSettingsUiController (e2e)', () => {
 
       it('rejects replay of a consumed ticket', async () => {
         const issued = await issueTicket()
-        const path = `/plugins/settings-ui/homebridge-mock-plugin/index.html?ticket=${encodeURIComponent(issued.json().ticket)}`
+        const path = `${API_PREFIX}/plugins/settings-ui/homebridge-mock-plugin/index.html?ticket=${encodeURIComponent(issued.json().ticket)}`
         const first = await app.inject({ method: 'GET', path })
         const replay = await app.inject({ method: 'GET', path })
 
@@ -185,7 +187,7 @@ describe('PluginsSettingsUiController (e2e)', () => {
         const issued = await issueTicket()
         const res = await app.inject({
           method: 'GET',
-          path: `/plugins/settings-ui/homebridge-mock-plugin-two/index.html?ticket=${encodeURIComponent(issued.json().ticket)}`,
+          path: `${API_PREFIX}/plugins/settings-ui/homebridge-mock-plugin-two/index.html?ticket=${encodeURIComponent(issued.json().ticket)}`,
         })
         expect(res.statusCode).toBe(401)
       })
@@ -193,7 +195,7 @@ describe('PluginsSettingsUiController (e2e)', () => {
       it('rejects an oversized ticket before hashing it', async () => {
         const res = await app.inject({
           method: 'GET',
-          path: `/plugins/settings-ui/homebridge-mock-plugin/index.html?ticket=${'a'.repeat(129)}`,
+          path: `${API_PREFIX}/plugins/settings-ui/homebridge-mock-plugin/index.html?ticket=${'a'.repeat(129)}`,
         })
         expect(res.statusCode).toBe(401)
       })
@@ -367,7 +369,7 @@ describe('PluginsSettingsUiController (e2e)', () => {
       it('rejects an asset request without a custom-UI session', async () => {
         const res = await app.inject({
           method: 'GET',
-          path: '/plugins/settings-ui/homebridge-mock-plugin/main.js',
+          path: `${API_PREFIX}/plugins/settings-ui/homebridge-mock-plugin/main.js`,
         })
 
         expect(res.statusCode).toBe(401)
@@ -377,7 +379,7 @@ describe('PluginsSettingsUiController (e2e)', () => {
         const index = await loadIndex()
         const res = await app.inject({
           method: 'GET',
-          path: '/plugins/settings-ui/homebridge-mock-plugin/main.js',
+          path: `${API_PREFIX}/plugins/settings-ui/homebridge-mock-plugin/main.js`,
           headers: { cookie: assetCookie(index) },
         })
 
@@ -392,7 +394,7 @@ describe('PluginsSettingsUiController (e2e)', () => {
         const cookie = assetCookie(index)
         const revoked = await app.inject({
           method: 'POST',
-          path: '/plugins/settings-ui/homebridge-mock-plugin/session/revoke',
+          path: `${API_PREFIX}/plugins/settings-ui/homebridge-mock-plugin/session/revoke`,
           headers: {
             authorization: `Bearer ${accessToken}`,
             cookie,
@@ -400,7 +402,7 @@ describe('PluginsSettingsUiController (e2e)', () => {
         })
         const denied = await app.inject({
           method: 'GET',
-          path: '/plugins/settings-ui/homebridge-mock-plugin/main.js',
+          path: `${API_PREFIX}/plugins/settings-ui/homebridge-mock-plugin/main.js`,
           headers: { cookie },
         })
 
@@ -414,7 +416,7 @@ describe('PluginsSettingsUiController (e2e)', () => {
         const index = await loadIndex()
         const res = await app.inject({
           method: 'GET',
-          path: '/plugins/settings-ui/homebridge-mock-plugin/assets/logo.svg',
+          path: `${API_PREFIX}/plugins/settings-ui/homebridge-mock-plugin/assets/logo.svg`,
           headers: { cookie: assetCookie(index) },
         })
 
@@ -427,7 +429,7 @@ describe('PluginsSettingsUiController (e2e)', () => {
         const index = await loadIndex()
         const res = await app.inject({
           method: 'GET',
-          path: '/plugins/settings-ui/homebridge-mock-plugin/other.html',
+          path: `${API_PREFIX}/plugins/settings-ui/homebridge-mock-plugin/other.html`,
           headers: { cookie: assetCookie(index) },
         })
 
@@ -438,7 +440,7 @@ describe('PluginsSettingsUiController (e2e)', () => {
         const index = await loadIndex()
         const res = await app.inject({
           method: 'GET',
-          path: '/plugins/settings-ui/homebridge-mock-plugin-two/main.js',
+          path: `${API_PREFIX}/plugins/settings-ui/homebridge-mock-plugin-two/main.js`,
           headers: { cookie: assetCookie(index) },
         })
 
@@ -449,7 +451,7 @@ describe('PluginsSettingsUiController (e2e)', () => {
         const index = await loadIndex()
         const res = await app.inject({
           method: 'GET',
-          path: '/plugins/settings-ui/homebridge-mock-plugin/nonexistent.js',
+          path: `${API_PREFIX}/plugins/settings-ui/homebridge-mock-plugin/nonexistent.js`,
           headers: { cookie: assetCookie(index) },
         })
 
@@ -468,7 +470,7 @@ describe('PluginsSettingsUiController (e2e)', () => {
       it('blocks path traversal', async () => {
         const res = await app.inject({
           method: 'GET',
-          path: '/plugins/settings-ui/homebridge-mock-plugin/../../../etc/passwd',
+          path: `${API_PREFIX}/plugins/settings-ui/homebridge-mock-plugin/../../../etc/passwd`,
         })
 
         // Should not return 200 with file contents
