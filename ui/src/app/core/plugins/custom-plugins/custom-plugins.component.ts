@@ -275,7 +275,8 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
   }
 
   private handleMessage = (e: MessageEvent): void => {
-    if (e.origin === environment.api.origin || e.origin === window.origin) {
+    if (e.source === this.iframe?.contentWindow
+      && (e.origin === environment.api.origin || e.origin === window.origin)) {
       switch (e.data.action) {
         case 'loaded':
           void this.injectDefaultStyles(e)
