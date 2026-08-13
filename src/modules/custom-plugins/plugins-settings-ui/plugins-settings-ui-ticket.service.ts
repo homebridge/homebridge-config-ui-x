@@ -19,8 +19,12 @@ interface SettingsUiAssetSession {
 
 @Injectable()
 export class PluginsSettingsUiTicketService {
+  static readonly assetSessionTtl = 1800
   private readonly tickets = new NodeCache({ stdTTL: 60, useClones: false })
-  private readonly assetSessions = new NodeCache({ stdTTL: 600, useClones: false })
+  private readonly assetSessions = new NodeCache({
+    stdTTL: PluginsSettingsUiTicketService.assetSessionTtl,
+    useClones: false,
+  })
 
   issue(pluginName: string, username: string, requestOrigin?: string, requestHost?: string) {
     const ticket = randomBytes(32).toString('base64url')
@@ -52,13 +56,27 @@ export class PluginsSettingsUiTicketService {
     return token
   }
 
-  validateAssetSession(token: string | undefined, pluginName: string): void {
+  validateAssetSession(token: string | undefined, pluginName: string): string {
     if (!token || token.length > 128) {
       throw new UnauthorizedException()
     }
-    const session = this.assetSessions.get<SettingsUiAssetSession>(this.digest(token))
+    const digest = this.digest(token)
+    const session = this.assetSessions.get<SettingsUiAssetSession>(digest)
     if (!session || session.pluginName !== pluginName) {
       throw new UnauthorizedException()
+    }
+    this.assetSessions.ttl(digest, PluginsSettingsUiTicketService.assetSessionTtl)
+    return token
+  }
+
+  revokeAssetSession(token: string | undefined, pluginName: string): void {
+    if (!token || token.length > 128) {
+      return
+    }
+    const digest = this.digest(token)
+    const session = this.assetSessions.get<SettingsUiAssetSession>(digest)
+    if (session?.pluginName === pluginName) {
+      this.assetSessions.del(digest)
     }
   }
 

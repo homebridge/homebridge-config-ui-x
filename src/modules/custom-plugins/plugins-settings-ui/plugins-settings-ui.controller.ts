@@ -37,17 +37,24 @@ export class PluginsSettingsUiController {
   ) {
     const claims = this.ticketService.consume(ticket, pluginName)
     const assetSession = this.ticketService.issueAssetSession(pluginName, claims.username)
-    const requestPath = (request.raw?.url || request.url).split('?')[0]
-    const cookiePath = requestPath.slice(0, -'index.html'.length)
-    const secure = request.protocol === 'https' ? '; Secure' : ''
-    reply.header(
-      'Set-Cookie',
-      `hb-plugin-ui=${assetSession}; HttpOnly; SameSite=Strict; Path=${cookiePath}; Max-Age=600${secure}`,
-    )
+    this.setAssetSessionCookie(request, reply, assetSession)
     reply.header('Cache-Control', 'no-store, private')
     reply.header('Pragma', 'no-cache')
     reply.header('Referrer-Policy', 'no-referrer')
     return await this.pluginSettingsUiService.serveCustomUiAsset(reply, pluginName, 'index.html', claims.uiOrigin, version)
+  }
+
+  @Post('/:pluginName/session/revoke')
+  @UseGuards(AuthGuard('jwt'), AdminGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Revokes the active custom-UI asset session.' })
+  revokeAssetSession(@Req() request, @Res({ passthrough: true }) reply, @Param('pluginName') pluginName: string) {
+    this.ticketService.revokeAssetSession(
+      this.ticketService.extractAssetSession(request.headers?.cookie),
+      pluginName,
+    )
+    this.setAssetSessionCookie(request, reply, '', 0)
+    return { status: 'OK' }
   }
 
   @Get('/:pluginName/*')
@@ -57,10 +64,23 @@ export class PluginsSettingsUiController {
     if (!file || /(?:^|\/)index\.html$/i.test(file) || /\.(?:html?|xhtml)$/i.test(file)) {
       throw new UnauthorizedException()
     }
-    this.ticketService.validateAssetSession(
+    const token = this.ticketService.validateAssetSession(
       this.ticketService.extractAssetSession(request.headers?.cookie),
       pluginName,
     )
+    this.setAssetSessionCookie(request, reply, token)
     return await this.pluginSettingsUiService.serveCustomUiAsset(reply, pluginName, file, '', v)
+  }
+
+  private setAssetSessionCookie(request, reply, token: string, maxAge = PluginsSettingsUiTicketService.assetSessionTtl) {
+    const requestPath = (request.raw?.url || request.url).split('?')[0]
+    const marker = `/plugins/settings-ui/${request.params.pluginName}/`
+    const markerIndex = requestPath.indexOf(marker)
+    const cookiePath = markerIndex === -1 ? marker : requestPath.slice(0, markerIndex + marker.length)
+    const secure = request.protocol === 'https' ? '; Secure' : ''
+    reply.header(
+      'Set-Cookie',
+      `hb-plugin-ui=${token}; HttpOnly; SameSite=Strict; Path=${cookiePath}; Max-Age=${maxAge}${secure}`,
+    )
   }
 }

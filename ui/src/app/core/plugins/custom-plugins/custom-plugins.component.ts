@@ -77,6 +77,7 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
   private basePath = ''
   private iframe!: HTMLIFrameElement
   private schemaFormRecentlyRefreshed = false
+  private assetSessionRevoked = false
   private destroyRef = inject(DestroyRef)
   public schemaFormUpdatedSubject = new Subject<unknown>()
   private schemaFormRefreshSubject = new Subject<unknown>()
@@ -184,6 +185,7 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
         // If it is the first time configuring the plugin, then offer to set up a child bridge straight away
         if (this.isFirstSave() && this.$settings.env.recommendChildBridges && newConfig[0]?.platform) {
           // Close the modal and open the child bridge setup modal
+          await this.revokeAssetSession()
           this.$activeModal.close()
           void this.$plugin.bridgeSettings(plugin, true)
           return true
@@ -192,6 +194,7 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
         // This will show the child bridge restart modal if needed, otherwise the full restart homebridge modal.
         // Phase 7: affected bridges arrive inline on the save response so we
         // skip the follow-up /status/homebridge/child-bridges fetch.
+        await this.revokeAssetSession()
         this.$activeModal.close()
         this.$cb.openCorrectRestartModalWithBridges(response.affectedBridges)
       }
@@ -204,7 +207,8 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
     }
   }
 
-  public dismissModal(): void {
+  public async dismissModal(): Promise<void> {
+    await this.revokeAssetSession()
     this.$activeModal.dismiss('Dismiss')
   }
 
@@ -366,7 +370,7 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
           break
         }
         case 'close': {
-          this.$activeModal.close()
+          void this.revokeAssetSession().finally(() => this.$activeModal.close())
           break
         }
         case 'toast.success':
@@ -445,6 +449,20 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
     }
 
     return this.requestResponse(event, this.getConfigBlocks())
+  }
+
+  private async revokeAssetSession(): Promise<void> {
+    if (this.assetSessionRevoked || !this.plugin) {
+      return
+    }
+    this.assetSessionRevoked = true
+    try {
+      await this.$api.post(`${this.basePath}/session/revoke`, {}, { withCredentials: true })
+    } catch (error) {
+      // The session also has a short sliding expiry. Closing the modal should
+      // not be blocked if the server is already unavailable.
+      console.warn('Failed to revoke custom plugin UI asset session:', error)
+    }
   }
 
   private requestResponse(event: MessageEvent, data: unknown, success = true): void {

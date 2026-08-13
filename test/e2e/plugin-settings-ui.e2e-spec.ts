@@ -168,6 +168,7 @@ describe('PluginsSettingsUiController (e2e)', () => {
         expect(res.headers['set-cookie']).toContain('HttpOnly')
         expect(res.headers['set-cookie']).toContain('SameSite=Strict')
         expect(res.headers['set-cookie']).toContain('Path=/plugins/settings-ui/homebridge-mock-plugin/')
+        expect(res.headers['set-cookie']).toContain('Max-Age=1800')
       })
 
       it('rejects replay of a consumed ticket', async () => {
@@ -383,6 +384,30 @@ describe('PluginsSettingsUiController (e2e)', () => {
         expect(res.statusCode).toBe(200)
         expect(res.body).toContain('customUiLoaded')
         expect(res.headers['x-content-type-options']).toBe('nosniff')
+        expect(res.headers['set-cookie']).toContain('Max-Age=1800')
+      })
+
+      it('revokes the asset session and expires its cookie', async () => {
+        const index = await loadIndex()
+        const cookie = assetCookie(index)
+        const revoked = await app.inject({
+          method: 'POST',
+          path: '/plugins/settings-ui/homebridge-mock-plugin/session/revoke',
+          headers: {
+            authorization: `Bearer ${accessToken}`,
+            cookie,
+          },
+        })
+        const denied = await app.inject({
+          method: 'GET',
+          path: '/plugins/settings-ui/homebridge-mock-plugin/main.js',
+          headers: { cookie },
+        })
+
+        expect(revoked.statusCode).toBe(201)
+        expect(revoked.headers['set-cookie']).toContain('hb-plugin-ui=;')
+        expect(revoked.headers['set-cookie']).toContain('Max-Age=0')
+        expect(denied.statusCode).toBe(401)
       })
 
       it('serves an existing SVG with a restrictive response CSP', async () => {
@@ -472,6 +497,8 @@ describe('PluginsSettingsUiController (e2e)', () => {
       expect(component).toContain('this.iframe.src = url.toString()')
       expect(component).not.toContain('form.submit()')
       expect(component).toContain('e.source === this.iframe?.contentWindow')
+      expect(component).toContain('await this.revokeAssetSession()')
+      expect(component).toMatch(/this\.basePath\}\/session\/revoke/)
     })
   })
 
