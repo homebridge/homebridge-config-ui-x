@@ -167,7 +167,7 @@ describe('PluginsSettingsUiController (e2e)', () => {
         expect(res.headers['set-cookie']).toContain('hb-plugin-ui=')
         expect(res.headers['set-cookie']).toContain('HttpOnly')
         expect(res.headers['set-cookie']).toContain('SameSite=Strict')
-        expect(res.headers['set-cookie']).toContain('Path=/plugins/settings-ui/homebridge-mock-plugin/')
+        expect(res.headers['set-cookie']).toContain('Path=/api/plugins/settings-ui/homebridge-mock-plugin/')
         expect(res.headers['set-cookie']).toContain('Max-Age=1800')
       })
 

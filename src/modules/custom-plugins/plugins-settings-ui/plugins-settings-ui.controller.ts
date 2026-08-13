@@ -73,10 +73,9 @@ export class PluginsSettingsUiController {
   }
 
   private setAssetSessionCookie(request, reply, token: string, maxAge = PluginsSettingsUiTicketService.assetSessionTtl) {
-    const requestPath = (request.raw?.url || request.url).split('?')[0]
-    const marker = `/plugins/settings-ui/${request.params.pluginName}/`
-    const markerIndex = requestPath.indexOf(marker)
-    const cookiePath = markerIndex === -1 ? marker : requestPath.slice(0, markerIndex + marker.length)
+    // Build the scope from the known application prefix and route parameter;
+    // never let encoded path text or query data influence a Set-Cookie Path.
+    const cookiePath = `/api/plugins/settings-ui/${encodeURIComponent(request.params.pluginName)}/`
     const secure = request.protocol === 'https' ? '; Secure' : ''
     reply.header(
       'Set-Cookie',
