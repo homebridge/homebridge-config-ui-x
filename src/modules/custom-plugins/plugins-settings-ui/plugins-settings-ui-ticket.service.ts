@@ -12,9 +12,15 @@ interface SettingsUiTicket {
   uiOrigin: string
 }
 
+interface SettingsUiAssetSession {
+  pluginName: string
+  username: string
+}
+
 @Injectable()
 export class PluginsSettingsUiTicketService {
   private readonly tickets = new NodeCache({ stdTTL: 60, useClones: false })
+  private readonly assetSessions = new NodeCache({ stdTTL: 600, useClones: false })
 
   issue(pluginName: string, username: string, requestOrigin?: string, requestHost?: string) {
     const ticket = randomBytes(32).toString('base64url')
@@ -27,7 +33,7 @@ export class PluginsSettingsUiTicketService {
   }
 
   consume(ticket: string | undefined, pluginName: string): SettingsUiTicket {
-    if (!ticket) {
+    if (!ticket || ticket.length > 128) {
       throw new UnauthorizedException()
     }
 
@@ -38,6 +44,31 @@ export class PluginsSettingsUiTicketService {
       throw new UnauthorizedException()
     }
     return claims
+  }
+
+  issueAssetSession(pluginName: string, username: string): string {
+    const token = randomBytes(32).toString('base64url')
+    this.assetSessions.set(this.digest(token), { pluginName, username } satisfies SettingsUiAssetSession)
+    return token
+  }
+
+  validateAssetSession(token: string | undefined, pluginName: string): void {
+    if (!token || token.length > 128) {
+      throw new UnauthorizedException()
+    }
+    const session = this.assetSessions.get<SettingsUiAssetSession>(this.digest(token))
+    if (!session || session.pluginName !== pluginName) {
+      throw new UnauthorizedException()
+    }
+  }
+
+  extractAssetSession(cookieHeader: string | undefined): string | undefined {
+    for (const part of cookieHeader?.split(';') ?? []) {
+      const [name, ...value] = part.trim().split('=')
+      if (name === 'hb-plugin-ui') {
+        return value.join('=') || undefined
+      }
+    }
   }
 
   private digest(ticket: string): string {
