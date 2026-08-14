@@ -20,13 +20,6 @@ export class WsService {
 
   private namespaceConnectionCache: Record<string, IoNamespace> = {}
 
-  constructor() {
-    // When the access token is rotated (refreshSession), update the cached
-    // sockets' handshake query so the next (re)connect uses the live token
-    // instead of replaying the one captured at socket creation time.
-    this.$auth.tokenRotated.subscribe(() => this.rotateTokenOnCachedSockets())
-  }
-
   /**
    * Wrapper function to reuse the same connection.
    *
@@ -78,22 +71,12 @@ export class WsService {
     return io
   }
 
-  private rotateTokenOnCachedSockets(): void {
-    const newToken = this.$auth.token
-    for (const ns of Object.values(this.namespaceConnectionCache)) {
-      const opts = ns.socket?.io?.opts as { query?: Record<string, any> } | undefined
-      if (opts?.query && typeof opts.query === 'object') {
-        opts.query.token = newToken
-      }
-      // Force a reconnect so the next handshake carries the new token.
-      // Long-lived sockets would otherwise keep replaying the original
-      // token on every reconnect, leaving rotated/revoked tokens stuck on
-      // disconnected dashboards.
-      if (ns.socket.connected) {
-        ns.socket.disconnect().connect()
-      }
-    }
-  }
+  // There is deliberately no "push the rotated token onto cached sockets" step.
+  // The `auth` callback in establishConnectionToNamespace is re-evaluated by
+  // socket.io on every (re)connect, so a rotated token is picked up on its own.
+  // Forcing open sockets to reconnect on rotation is not needed either: WsGuard
+  // re-verifies the JWT and re-reads the user record on every message, so an
+  // expired or revoked token stops working on an already-open socket regardless.
 
   public getExistingNamespace(namespace: string): IoNamespace {
     return this.namespaceConnectionCache[namespace]
@@ -105,9 +88,18 @@ export class WsService {
    */
   private establishConnectionToNamespace(namespace: string): IoNamespace {
     const socket: Socket = ioFn(`${environment.api.socket}/${namespace}`, {
-      query: {
-        token: this.$auth.token,
-      },
+      // Sent in the handshake payload rather than the URL. A token in the query
+      // string is recorded by reverse proxies, access logs and monitoring, and
+      // stays a usable bearer credential until it expires.
+      //
+      // ⚠️ Callback form, not a plain object: socket.io calls this on every
+      // (re)connect, so the handshake always carries the token that is current
+      // at that moment. A plain object is captured once when the socket is
+      // built, and the token is loaded asynchronously now (see token-store.ts),
+      // so a socket created during bootstrap would freeze `null` in its
+      // handshake and be rejected by WsGuard on every retry for the life of the
+      // page — which showed up as a status page stuck on its spinner.
+      auth: (cb: (data: Record<string, any>) => void) => cb({ token: this.$auth.token }),
       reconnectionAttempts: 10,
       reconnectionDelayMax: 30000,
     })

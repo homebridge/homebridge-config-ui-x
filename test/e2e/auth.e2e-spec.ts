@@ -535,6 +535,26 @@ describe('AuthController (e2e)', () => {
     expect(await guard.canActivate(context)).toBe(false)
   })
 
+  it('WsGuard accepts a token from the handshake auth payload', async () => {
+    // Clients send the token in `auth` so it does not end up in the URL (and
+    // therefore in proxy and access logs). The `query` form is still accepted
+    // for a browser running a pre-upgrade bundle, which the other guard tests
+    // above exercise.
+    const token = (await authService.signIn('admin', 'admin')).access_token
+    const disconnect = vi.fn()
+    const context: any = {
+      switchToWs: () => ({
+        getClient: () => ({
+          handshake: { auth: { token }, query: {} },
+          disconnect,
+        }),
+      }),
+    }
+
+    expect(await app.get(WsGuard).canActivate(context)).toBe(true)
+    expect(disconnect).not.toHaveBeenCalled()
+  })
+
   it('WsGuard disconnects setup-wizard token once setup wizard completes', async () => {
     configService.setupWizardComplete = false
     const wizardToken = (await authService.generateSetupWizardToken()).access_token
