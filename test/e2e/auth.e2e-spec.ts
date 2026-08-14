@@ -94,6 +94,31 @@ describe('AuthController (e2e)', () => {
     expect(configService.setupWizardComplete).toBe(true)
   })
 
+  it('setupFirstUser only creates one admin under concurrent onboarding requests', async () => {
+    // Simulate first run: no auth file, wizard not complete
+    await remove(authFilePath)
+    await authService.checkAuthFile()
+    expect(configService.setupWizardComplete).toBe(false)
+
+    // Two requests arriving together. Without the synchronous reservation both
+    // would pass the setupWizardComplete check and each create an administrator.
+    const results = await Promise.allSettled([
+      authService.setupFirstUser({ username: 'firstadmin', password: 'passwordone', name: 'First' } as any),
+      authService.setupFirstUser({ username: 'secondadmin', password: 'passwordtwo', name: 'Second' } as any),
+    ])
+
+    expect(results.filter(r => r.status === 'fulfilled')).toHaveLength(1)
+    expect(results.filter(r => r.status === 'rejected')).toHaveLength(1)
+
+    // Exactly one user exists in the auth file
+    const users = await authService.getUsers()
+    expect(users).toHaveLength(1)
+
+    // Restore state for following tests
+    await copy(resolve(__dirname, '../mocks', 'auth.json'), authFilePath)
+    configService.setupWizardComplete = true
+  })
+
   it('POST /auth/login (valid login)', async () => {
     const res = await app.inject({
       method: 'POST',
