@@ -59,6 +59,9 @@ export class UserDto {
   passwordIterations?: number
 
   @Equals(undefined)
+  sessionVersion?: number
+
+  @Equals(undefined)
   otpSecret?: string
 
   @Equals(undefined)
