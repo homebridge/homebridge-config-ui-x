@@ -56,6 +56,9 @@ export class UserDto {
   salt?: string
 
   @Equals(undefined)
+  passwordIterations?: number
+
+  @Equals(undefined)
   otpSecret?: string
 
   @Equals(undefined)
