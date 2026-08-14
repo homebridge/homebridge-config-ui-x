@@ -95,7 +95,12 @@ export class PluginsSettingsUiService {
           + `style-src 'self' 'unsafe-inline'${devOrigin}; `
           + `img-src * data:; `
           + `connect-src *; `
-          + `font-src 'self' data:; `
+          // devOrigin, like script-src/style-src above: with the Angular dev
+          // server on a different port to the API, a plugin UI's stylesheet
+          // resolves its @font-face URLs against that origin, and omitting it
+          // here blocked every webfont with a font-src violation. Empty outside
+          // UIX_DEVELOPMENT, so the shipped policy is unchanged.
+          + `font-src 'self' data:${devOrigin}; `
           + `frame-ancestors 'self'${devOrigin}; `
           + `frame-src 'self'${devOrigin}${extraDomains}`,
         )
