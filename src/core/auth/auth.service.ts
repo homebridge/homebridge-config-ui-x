@@ -26,6 +26,10 @@ import { Logger } from '../logger/logger.service.js'
 export class AuthService {
   private otpUsageCache = new NodeCache({ stdTTL: 90 })
 
+  // Synchronous reservation flag for first-user setup, so two concurrent
+  // onboarding requests cannot both create an administrator. See setupFirstUser.
+  private firstUserSetupInProgress = false
+
   // Custom guardrails for legacy 16-character OTP secrets (10 bytes when decoded)
   private legacyOtpGuardrails = createGuardrails({
     MIN_SECRET_BYTES: 10, // allow legacy 16-character Base32 secrets from otplib v12
@@ -262,18 +266,33 @@ export class AuthService {
       throw new BadRequestException('Password missing.')
     }
 
-    // First user must be admin
-    user.admin = true
+    // Reserve the setup synchronously, before the first `await` below.
+    // `setupWizardComplete` is only flipped true after both async writes
+    // finish, so without this reservation two requests arriving together
+    // could both pass the check above and each create an administrator during
+    // first-run onboarding. The flag is released in `finally`, so a failed
+    // attempt (e.g. a write error) still allows a genuine retry.
+    if (this.firstUserSetupInProgress) {
+      throw new ConflictException('First user setup is already in progress.')
+    }
+    this.firstUserSetupInProgress = true
 
-    // Start with an empty auth file; addUser() below acquires the same
-    // lock to push the first user, so both writes serialise correctly.
-    await this.jsonStore.write<UserDto[]>(this.configService.authPath, [], { spaces: 4 })
+    try {
+      // First user must be admin
+      user.admin = true
 
-    const createdUser = await this.addUser(user)
+      // Start with an empty auth file; addUser() below acquires the same
+      // lock to push the first user, so both writes serialise correctly.
+      await this.jsonStore.write<UserDto[]>(this.configService.authPath, [], { spaces: 4 })
 
-    this.configService.setupWizardComplete = true
+      const createdUser = await this.addUser(user)
 
-    return createdUser
+      this.configService.setupWizardComplete = true
+
+      return createdUser
+    } finally {
+      this.firstUserSetupInProgress = false
+    }
   }
 
   /**
