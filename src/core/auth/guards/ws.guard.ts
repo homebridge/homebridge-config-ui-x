@@ -6,6 +6,7 @@ import jwt from 'jsonwebtoken'
 import { UserDto } from '../../../modules/users/users.dto.js'
 import { ConfigService } from '../../config/config.service.js'
 import { AuthService } from '../auth.service.js'
+import { extractWsToken } from './ws-token.js'
 
 @Injectable()
 export class WsGuard implements CanActivate {
@@ -32,7 +33,7 @@ export class WsGuard implements CanActivate {
   async canActivate(context: ExecutionContext) {
     const client = context.switchToWs().getClient()
     try {
-      const payload = jwt.verify(client.handshake.query.token, this.configService.secrets.secretKey) as UserDto & { instanceId?: string }
+      const payload = jwt.verify(extractWsToken(client.handshake), this.configService.secrets.secretKey) as UserDto & { instanceId?: string }
       // Mirror JwtStrategy.validate — reject mismatched instanceId so the
       // setup-wizard token (intentionally signed with a wrong instanceId)
       // cannot reach socket endpoints once the wizard has completed.

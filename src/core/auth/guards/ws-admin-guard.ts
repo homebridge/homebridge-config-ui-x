@@ -6,6 +6,7 @@ import jwt from 'jsonwebtoken'
 import { UserDto } from '../../../modules/users/users.dto.js'
 import { ConfigService } from '../../config/config.service.js'
 import { AuthService } from '../auth.service.js'
+import { extractWsToken } from './ws-token.js'
 
 @Injectable()
 export class WsAdminGuard implements CanActivate {
@@ -31,7 +32,7 @@ export class WsAdminGuard implements CanActivate {
   async canActivate(context: ExecutionContext) {
     const client = context.switchToWs().getClient()
     try {
-      const user = jwt.verify(client.handshake.query.token, this.configService.secrets.secretKey) as UserDto & { instanceId?: string }
+      const user = jwt.verify(extractWsToken(client.handshake), this.configService.secrets.secretKey) as UserDto & { instanceId?: string }
       // Reject mismatched instanceId — the setup-wizard token signs a
       // sentinel value and must not reach admin WS endpoints. Live wizard
       // tokens are still allowed *only* while the wizard is in progress.
