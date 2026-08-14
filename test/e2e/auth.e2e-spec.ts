@@ -203,6 +203,44 @@ describe('AuthController (e2e)', () => {
     expect(await authService.validateUser(payload)).toBeNull()
   })
 
+  it('exchanges the session cookie for a token, and logout revokes it', async () => {
+    // Log in and keep the HttpOnly cookies the server sets.
+    const login = await app.inject({
+      method: 'POST',
+      path: '/auth/login',
+      payload: { username: 'admin', password: 'admin' },
+    })
+    expect(login.statusCode).toBe(201)
+    const setCookies = login.headers['set-cookie'] as unknown as string[]
+    const refreshCookie = setCookies.find(c => c.startsWith('hb-refresh='))!
+    expect(refreshCookie).toBeDefined()
+    // The token must not be reachable from JavaScript, which is the whole point
+    // of moving it out of localStorage.
+    expect(refreshCookie).toContain('HttpOnly')
+    expect(refreshCookie).toContain('SameSite=Strict')
+    const cookieValue = refreshCookie.split(';')[0]
+
+    // A page load exchanges the cookie for a fresh access token.
+    const restored = await app.inject({
+      method: 'POST',
+      path: '/auth/session',
+      headers: { cookie: cookieValue },
+    })
+    expect(restored.statusCode).toBe(201)
+    expect(restored.json()).toHaveProperty('access_token')
+
+    // Without the cookie there is nothing to restore.
+    const anonymous = await app.inject({ method: 'POST', path: '/auth/session' })
+    expect(anonymous.statusCode).toBe(401)
+
+    // Logout must clear the cookie, or a reload would silently restore the
+    // session the user just ended.
+    const loggedOut = await app.inject({ method: 'POST', path: '/auth/logout' })
+    const cleared = loggedOut.headers['set-cookie'] as unknown as string[]
+    expect(cleared.some(c => c.startsWith('hb-refresh=') && c.includes('Max-Age=0'))).toBe(true)
+    expect(cleared.some(c => c.startsWith('hb-session=') && c.includes('Max-Age=0'))).toBe(true)
+  })
+
   it('locks out repeated failed logins', async () => {
     // A bogus username keeps this isolated from the admin account other tests
     // use. 11 attempts = the 10-failure threshold plus one that trips the lockout.
@@ -354,6 +392,39 @@ describe('AuthController (e2e)', () => {
 
     expect(res.statusCode).toBe(200)
     expect(res.json().env).not.toHaveProperty('hasInstalledPlugins')
+  })
+
+  // ⚠️ Pins the asymmetry that the UI has to work around: these keys are only
+  // sent to an authorised caller. SettingsService fetches settings once from its
+  // own constructor, before the access token exists, so AuthService.loadToken()
+  // has to fetch them a second time once it has one. Without that, the whole
+  // session runs on the unauthenticated subset and `enableAccessories` reads as
+  // undefined — the accessories page then tells users to enable insecure mode
+  // when it is already on.
+  it('GET /auth/settings (authorised-only keys are withheld when unauthenticated)', async () => {
+    const authorisedOnly = ['enableAccessories', 'enableTerminalAccess', 'restrictLogsToAdmins']
+
+    const anonymous = await app.inject({ method: 'GET', path: '/auth/settings' })
+    expect(anonymous.statusCode).toBe(200)
+    for (const key of authorisedOnly) {
+      expect(anonymous.json().env).not.toHaveProperty(key)
+    }
+
+    const accessToken = (await app.inject({
+      method: 'POST',
+      path: '/auth/login',
+      payload: { username: 'admin', password: 'admin' },
+    })).json().access_token
+
+    const authorised = await app.inject({
+      method: 'GET',
+      path: '/auth/settings',
+      headers: { authorization: `bearer ${accessToken}` },
+    })
+    expect(authorised.statusCode).toBe(200)
+    for (const key of authorisedOnly) {
+      expect(authorised.json().env).toHaveProperty(key)
+    }
   })
 
   it('GET /auth/settings (authenticated - exposes hasInstalledPlugins)', async () => {
