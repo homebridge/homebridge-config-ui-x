@@ -69,7 +69,14 @@ async function bootstrap(): Promise<NestFastifyApplication> {
         fontSrc: ['\'self\'', 'data:'], // required for web-workers for monaco editor
         scriptSrcAttr: null,
         objectSrc: null,
-        frameAncestors: null,
+        // Block clickjacking: only same-origin pages may frame the UI (this
+        // still allows the app's own same-origin plugin-UI iframes). Admins who
+        // embed the dashboard in a third-party page can widen this with the
+        // `allowFrameAncestors` config option. Was previously unset (any origin
+        // could frame the authenticated UI). X-Frame-Options stays off
+        // (frameguard: false) because it cannot express an allowlist; modern
+        // browsers honour this CSP directive instead.
+        frameAncestors: ['\'self\'', ...(startupConfig.allowedFrameAncestors ?? [])],
         formAction: null,
         baseUri: null,
         upgradeInsecureRequests: null,

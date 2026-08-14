@@ -11,6 +11,9 @@ export interface StartupConfig {
     passphrase?: string
   }
   cspWsOverride?: string
+  // Extra origins permitted to frame the UI, from `ui.allowFrameAncestors`.
+  // Empty by default, so the CSP is `frame-ancestors 'self'` — same-origin only.
+  allowedFrameAncestors?: string[]
   debug?: boolean
 }
 
