@@ -65,6 +65,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(ws): send the session token in the handshake payload, not the query string
 - fix(server): drop 'unsafe-inline' from the app's script-src
 - fix(auth): hold the access token in memory instead of localStorage
+- test(status): stop the dashboard e2e tests clobbering the dev storage layout
 
 ### Homebridge Dependencies
 

@@ -9,7 +9,7 @@ import { HttpService } from '@nestjs/axios'
 import { FastifyAdapter } from '@nestjs/platform-fastify'
 import { Test } from '@nestjs/testing'
 import { AxiosResponse, InternalAxiosRequestConfig } from 'axios'
-import { copy } from 'fs-extra'
+import { copy, pathExists, readFile, remove, writeFile } from 'fs-extra'
 import { of } from 'rxjs'
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -31,10 +31,23 @@ describe('StatusGateway (e2e)', () => {
   let ipcService: HomebridgeIpcService
   let client: EventEmitter
 
+  // `test/.homebridge` is also the storage path `npm run watch` runs against,
+  // so the dashboard tests below write over the developer's own saved layout.
+  // The dummy layout they save has no `component` field, which the UI filters
+  // out entirely — leaving a blank status page until the file is deleted by
+  // hand. Snapshot the real file here and put it back in afterAll.
+  let dashboardLayoutPath: string
+  let savedDashboardLayout: string | null = null
+
   beforeAll(async () => {
     process.env.UIX_BASE_PATH = resolve(__dirname, '../../')
     process.env.UIX_STORAGE_PATH = resolve(__dirname, '../', '.homebridge')
     process.env.UIX_CONFIG_PATH = resolve(process.env.UIX_STORAGE_PATH, 'config.json')
+
+    dashboardLayoutPath = resolve(process.env.UIX_STORAGE_PATH, '.uix-dashboard.json')
+    savedDashboardLayout = await pathExists(dashboardLayoutPath)
+      ? await readFile(dashboardLayoutPath, 'utf8')
+      : null
 
     // Setup test config
     await copy(resolve(__dirname, '../mocks', 'config.json'), process.env.UIX_CONFIG_PATH)
@@ -690,6 +703,14 @@ describe('StatusGateway (e2e)', () => {
   })
 
   afterAll(async () => {
+    // Restore whatever layout the developer had before this run — or remove
+    // the file entirely if there was none, so the UI falls back to defaults.
+    if (savedDashboardLayout === null) {
+      await remove(dashboardLayoutPath)
+    } else {
+      await writeFile(dashboardLayoutPath, savedDashboardLayout)
+    }
+
     await app.close()
   })
 })
