@@ -58,7 +58,14 @@ async function bootstrap(): Promise<NestFastifyApplication> {
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ['\'self\''],
-        scriptSrc: ['\'self\'', '\'unsafe-inline\'', '\'unsafe-eval\''],
+        // No 'unsafe-inline': the built index.html loads only external module
+        // scripts and carries no inline <script> body, so nothing here needs
+        // it. Dropping it is what stops an injected event handler (e.g.
+        // `<img src=x onerror=...>`) from running at all. 'unsafe-eval' stays
+        // because the Monaco editor genuinely needs it. Plugin custom UIs are
+        // served with their own, looser policy in plugins-settings-ui.service.
+        scriptSrc: ['\'self\'', '\'unsafe-eval\''],
+        // Angular injects component styles as inline <style> blocks.
         styleSrc: ['\'self\'', '\'unsafe-inline\''],
         imgSrc: ['\'self\'', 'data:', 'https://raw.githubusercontent.com', 'https://user-images.githubusercontent.com'],
         connectSrc: ['\'self\'', 'https://openweathermap.org', 'https://api.openweathermap.org', (req) => {
@@ -67,7 +74,9 @@ async function bootstrap(): Promise<NestFastifyApplication> {
         frameSrc: ['\'self\'', 'data:', 'https://developers.homebridge.io'],
         workerSrc: ['\'self\'', 'blob:'], // required for web-workers for monaco editor
         fontSrc: ['\'self\'', 'data:'], // required for web-workers for monaco editor
-        scriptSrcAttr: null,
+        // Inline event-handler attributes are never used by the app, and this
+        // says so explicitly rather than relying on the script-src fallback.
+        scriptSrcAttr: ['\'none\''],
         objectSrc: null,
         // Block clickjacking: only same-origin pages may frame the UI (this
         // still allows the app's own same-origin plugin-UI iframes). Admins who
