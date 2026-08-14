@@ -9,8 +9,10 @@ import {
   Post,
   Request,
   Res,
+  UnauthorizedException,
   UseGuards,
 } from '@nestjs/common'
+import { JwtService } from '@nestjs/jwt'
 import { AuthGuard } from '@nestjs/passport'
 import { ApiBearerAuth, ApiExcludeEndpoint, ApiOperation, ApiTags } from '@nestjs/swagger'
 
@@ -29,13 +31,14 @@ export class AuthController {
     @Inject(ConfigService) private readonly configService: ConfigService,
     @Inject(PluginsService) private readonly pluginsService: PluginsService,
     @Inject(Logger) private readonly logger: Logger,
+    @Inject(JwtService) private readonly jwtService: JwtService,
   ) {}
 
   @ApiOperation({ summary: 'Exchange a username and password for an authentication token.' })
   @Post('login')
   async signIn(@Body() body: AuthDto, @Request() req: FastifyRequest, @Res({ passthrough: true }) res: FastifyReply) {
     const result = await this.authService.signIn(body.username, body.password, body.otp, req.ip)
-    res.header('Set-Cookie', this.buildSessionCookie(result.access_token, req.protocol === 'https'))
+    this.setAuthCookies(res, result.access_token, req.protocol === 'https')
     return result
   }
 
@@ -82,7 +85,7 @@ export class AuthController {
   @Post('/noauth')
   async getToken(@Request() req: FastifyRequest, @Res({ passthrough: true }) res: FastifyReply) {
     const result = await this.authService.generateNoAuthToken()
-    res.header('Set-Cookie', this.buildSessionCookie(result.access_token, req.protocol === 'https'))
+    this.setAuthCookies(res, result.access_token, req.protocol === 'https')
     return result
   }
 
@@ -104,8 +107,67 @@ export class AuthController {
     @Res({ passthrough: true }) res: FastifyReply,
   ) {
     const result = await this.authService.refreshToken(req.user, body.reason)
-    res.header('Set-Cookie', this.buildSessionCookie(result.access_token, req.protocol === 'https'))
+    this.setAuthCookies(res, result.access_token, req.protocol === 'https')
     return result
+  }
+
+  @ApiOperation({
+    summary: 'Exchange the HttpOnly session cookie for an access token.',
+    description: 'Called on page load so the access token never has to be persisted in browser storage.',
+  })
+  @Post('/session')
+  async restoreSession(@Request() req: any, @Res({ passthrough: true }) res: FastifyReply) {
+    const payload = this.readRefreshCookie(req.headers?.cookie)
+    if (!payload) {
+      throw new UnauthorizedException()
+    }
+    const result = await this.authService.refreshToken(payload, 'session-restore')
+    this.setAuthCookies(res, result.access_token, req.protocol === 'https')
+    return result
+  }
+
+  @ApiOperation({ summary: 'Clear the session cookies.' })
+  @Post('/logout')
+  logout(@Request() req: FastifyRequest, @Res({ passthrough: true }) res: FastifyReply) {
+    res.header('Set-Cookie', this.buildClearedCookies(req.protocol === 'https'))
+    return { status: 'OK' }
+  }
+
+  /**
+   * Verify the hb-refresh cookie and return its payload, or null. The token is
+   * checked exactly as a Bearer token would be, including the per-instance and
+   * current-user checks, so a stale or revoked cookie restores nothing.
+   */
+  private readRefreshCookie(cookieHeader?: string): any | null {
+    if (!cookieHeader) {
+      return null
+    }
+    for (const part of cookieHeader.split(';')) {
+      const eq = part.indexOf('=')
+      if (eq === -1) {
+        continue
+      }
+      if (part.slice(0, eq).trim() !== 'hb-refresh') {
+        continue
+      }
+      const value = part.slice(eq + 1).trim()
+      if (!value) {
+        return null
+      }
+      try {
+        return this.jwtService.verify(value)
+      } catch {
+        return null
+      }
+    }
+    return null
+  }
+
+  private setAuthCookies(res: FastifyReply, token: string, secure: boolean) {
+    res.header('Set-Cookie', [
+      this.buildSessionCookie(token, secure),
+      this.buildRefreshCookie(token, secure),
+    ])
   }
 
   /**
@@ -122,5 +184,37 @@ export class AuthController {
     const maxAge = this.configService.ui.sessionTimeout || 28800
     const secureFlag = secure ? '; Secure' : ''
     return `hb-session=${token}; HttpOnly; SameSite=Strict; Path=/api/plugins/settings-ui/; Max-Age=${maxAge}${secureFlag}`
+  }
+
+  /**
+   * Build the Set-Cookie header for the hb-refresh cookie.
+   *
+   * This is what lets the access token live only in memory in the browser: on
+   * page load the UI exchanges this cookie for a fresh token instead of reading
+   * one back out of localStorage, where any script on the page could read it.
+   *
+   * HttpOnly keeps it away from JavaScript, and Path is scoped to the single
+   * endpoint that consumes it so it is not attached to ordinary API calls.
+   * SameSite=Strict means a cross-site page cannot trigger the exchange, and
+   * the API itself still authenticates with a Bearer header, so widening this
+   * does not introduce a CSRF path.
+   */
+  private buildRefreshCookie(token: string, secure: boolean): string {
+    const maxAge = this.configService.ui.sessionTimeout || 28800
+    const secureFlag = secure ? '; Secure' : ''
+    return `hb-refresh=${token}; HttpOnly; SameSite=Strict; Path=/api/auth/session; Max-Age=${maxAge}${secureFlag}`
+  }
+
+  /**
+   * Both cookies, cleared. Used by logout — without this the browser would
+   * still hold a valid refresh cookie and the next page load would silently
+   * restore the session the user just ended.
+   */
+  private buildClearedCookies(secure: boolean): string[] {
+    const secureFlag = secure ? '; Secure' : ''
+    return [
+      `hb-session=; HttpOnly; SameSite=Strict; Path=/api/plugins/settings-ui/; Max-Age=0${secureFlag}`,
+      `hb-refresh=; HttpOnly; SameSite=Strict; Path=/api/auth/session; Max-Age=0${secureFlag}`,
+    ]
   }
 }

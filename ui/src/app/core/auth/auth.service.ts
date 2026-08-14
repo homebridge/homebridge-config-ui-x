@@ -5,10 +5,10 @@ import { firstValueFrom } from 'rxjs'
 
 import { UserInterface } from '@/app/core/auth/auth.interfaces'
 import { TokenCacheService } from '@/app/core/auth/token-cache.service'
+import { setStoredToken } from '@/app/core/auth/token-store'
 import { ApiService } from '@/app/core/communication/api.service'
 import { NotificationService } from '@/app/core/communication/notification.service'
 import { SettingsService } from '@/app/core/ui/settings.service'
-import { environment } from '@/environments/environment'
 
 @Injectable({
   providedIn: 'root',
@@ -45,7 +45,7 @@ export class AuthService {
     if (!this.validateToken(resp.access_token)) {
       throw new Error('Invalid username or password.')
     }
-    window.localStorage.setItem(environment.jwt.tokenKey, resp.access_token)
+    setStoredToken(resp.access_token)
     await this.$settings.getAppSettings() // update settings to get full settings object
   }
 
@@ -55,7 +55,7 @@ export class AuthService {
     if (!this.validateToken(resp.access_token)) {
       throw new Error('Invalid username or password.')
     } else {
-      window.localStorage.setItem(environment.jwt.tokenKey, resp.access_token)
+      setStoredToken(resp.access_token)
       await this.$settings.getAppSettings() // update settings to get full settings
     }
   }
@@ -63,42 +63,48 @@ export class AuthService {
   public logout() {
     this.user = {} as UserInterface
     this.token = null
+    setStoredToken(null)
     clearTimeout(this.logoutTimer)
-    window.localStorage.removeItem(environment.jwt.tokenKey)
-    window.location.reload()
+    // Clear the HttpOnly cookies server-side before reloading. Without this the
+    // browser would still hold a valid hb-refresh cookie and the reload would
+    // silently restore the session the user just ended.
+    this.$api.post('/auth/logout', {}, { withCredentials: true })
+      .catch(() => { /* logging out regardless */ })
+      .finally(() => window.location.reload())
   }
 
   public async loadToken() {
     if (!this.$settings.settingsLoaded) {
       await firstValueFrom(this.$settings.onSettingsLoaded)
     }
-    const token = window.localStorage.getItem(environment.jwt.tokenKey)
-    if (!token) {
-      return
-    }
-    // On bootstrap an expired stored token must not call logout() — that
-    // triggers a full page reload while the app is still booting and
-    // wipes any in-flight init work. Clear it quietly and let the route
-    // guards send the user to /login.
-    if (this.$jwtHelper.isTokenExpired(token, this.$settings.serverTimeOffset)) {
-      window.localStorage.removeItem(environment.jwt.tokenKey)
-      this.token = null
-      return
-    }
-    this.validateToken(token)
-
-    // CookieAuthGuard on /api/plugins/settings-ui/* requires an HttpOnly
-    // hb-session cookie that is only set on login/refresh/noauth. A Bearer
-    // token restored from localStorage after upgrading mid-session (or any
-    // bootstrap without a prior login in this browser) leaves custom plugin
-    // UIs returning 401 until the user re-logs in (#2893). Mint the cookie
-    // here via refresh; best-effort so a failed refresh never blocks boot.
-    if (this.$settings.formAuth !== false && this.token) {
-      try {
-        await this.refreshSession('hb-session-bootstrap')
-      } catch (err) {
-        console.warn('Failed to mint hb-session cookie on bootstrap:', err)
+    // The access token is only ever held in memory, so a page load starts with
+    // nothing. Exchange the HttpOnly hb-refresh cookie for a fresh token; this
+    // also re-mints the hb-session cookie the custom plugin UIs need (#2893).
+    //
+    // A failure here is the normal "not signed in" case — the route guards send
+    // the user to /login — so it must never throw and block boot.
+    try {
+      const resp = await this.$api.post('/auth/session', {}, { withCredentials: true })
+      if (resp?.access_token) {
+        setStoredToken(resp.access_token)
+        this.validateToken(resp.access_token)
+        // ⚠️ Re-read the settings now that a token exists. GET /auth/settings
+        // returns a REDUCED object to unauthenticated callers — `enableAccessories`,
+        // `enableTerminalAccess`, `restrictLogsToAdmins` and friends are only sent
+        // to an authorised request (see ConfigService.uiSettings). SettingsService
+        // fires its first fetch from its own constructor, which now runs before
+        // this method has a token, so without this second fetch the whole session
+        // ran on the pre-login subset — the accessories page told users to turn on
+        // insecure mode even though it was already on. login()/noauth() do the
+        // same thing for the same reason.
+        //
+        // Awaited deliberately: tokenReady must not resolve until the authorised
+        // settings are in place, because the route guards gate on it.
+        await this.$settings.getAppSettings()
       }
+    } catch {
+      setStoredToken(null)
+      this.token = null
     }
   }
 
@@ -149,7 +155,7 @@ export class AuthService {
 
       return true
     } catch (e) {
-      window.localStorage.removeItem(environment.jwt.tokenKey)
+      setStoredToken(null)
       this.token = null
       return false
     }
@@ -240,10 +246,9 @@ export class AuthService {
       // withCredentials: see login() — required for the hb-session cookie
       const resp = await this.$api.post('/auth/refresh', reason ? { reason } : {}, { withCredentials: true })
       if (resp.access_token) {
-        // Persist the new token in storage and invalidate the read-through
-        // cache used by AuthHelperService so the next read sees the new
-        // value, not the previous one.
-        window.localStorage.setItem(environment.jwt.tokenKey, resp.access_token)
+        // Hold the new token in memory; AuthHelperService reads through to
+        // the same store, so there is nothing further to keep in step.
+        setStoredToken(resp.access_token)
         this.$tokenCache.invalidateCache()
         // Re-run validateToken so this.user is re-decoded from the new
         // payload. Otherwise admin demotion / OTP-legacy state would
