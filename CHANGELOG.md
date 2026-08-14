@@ -53,6 +53,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(security): stop a caller-supplied origin reaching the plugin ui script tag and csp (reported by @yowie)
 - fix(plugins): always use the ui installation that is actually running
 - fix(child-bridges): require admin to start/stop/restart a bridge over websocket
+- fix(terminal): restrict persistent-session HTTP endpoints to admins
 
 ### Homebridge Dependencies
 
