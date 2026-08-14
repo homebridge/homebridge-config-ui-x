@@ -37,7 +37,18 @@ export class CookieAuthGuard implements CanActivate {
     }
 
     try {
-      this.jwtService.verify(token)
+      // Mirror JwtStrategy.validate and the WS guards: a valid signature is not
+      // enough — the token must be for this instance. The setup-wizard token is
+      // signed with a sentinel instanceId, so it is accepted only while the
+      // wizard is still in progress.
+      const payload = this.jwtService.verify(token) as { instanceId?: string, username?: string }
+      if (payload?.instanceId !== this.configService.instanceId) {
+        const isLiveWizardToken = payload?.username === 'setup-wizard'
+          && this.configService.setupWizardComplete === false
+        if (!isLiveWizardToken) {
+          throw new UnauthorizedException()
+        }
+      }
       return true
     } catch {
       throw new UnauthorizedException()
