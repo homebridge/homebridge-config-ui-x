@@ -33,6 +33,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(accessories): read and drive the tilt on a matter covering that only tilts
 - fix(accessories): paint an unsaturated bulb white rather than grey, on both hap and matter
 - fix(ui): sanitise rendered markdown to prevent stored XSS
+- feat(log): let admins restrict the Homebridge log to administrators
 
 ### Other Changes
 

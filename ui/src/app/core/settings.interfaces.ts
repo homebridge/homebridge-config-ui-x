@@ -17,6 +17,7 @@ export interface EnvInterface {
   platform: 'darwin' | 'win32' | 'linux' | 'freebsd'
   enableAccessories: boolean
   enableTerminalAccess: boolean
+  restrictLogsToAdmins?: boolean
   featureFlags?: FeatureFlags
   homebridgeInstanceName: string
   homebridgeVersion?: string

@@ -46,6 +46,7 @@ export class SidebarComponent implements OnInit, OnDestroy {
   public readonly formAuth = signal<boolean>(this.$settings.formAuth)
   public isAdmin = this.$auth.user.admin
   public enableTerminalAccess = this.$settings.env.enableTerminalAccess
+  public canViewLogs = !this.$settings.env.restrictLogsToAdmins || this.$auth.user.admin
   public readonly rPiCurrentlyUnderVoltage = signal<boolean>(false)
   public readonly rPiWasUnderVoltage = signal<boolean>(false)
   public readonly legacyOtpToastShown = signal<boolean>(false)

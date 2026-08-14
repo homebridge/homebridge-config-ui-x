@@ -100,21 +100,23 @@
       </button>
     </div>
 
-    <div class="link">
-      <button
-        #logsRla="routerLinkActive"
-        type="button"
-        class="link-row"
-        routerLinkActive="active"
-        [routerLink]="['/logs']"
-        [attr.aria-label]="
-          ('menu.linux.label_logs' | translate) + (logsRla.isActive ? `, ${('menu.current_page' | translate)}` : '')
-        "
-      >
-        <div class="icon"><i aria-hidden="true" class="fas fa-wave-square"></i></div>
-        <div class="title">{{ 'menu.linux.label_logs' | translate }}</div>
-      </button>
-    </div>
+    @if (canViewLogs) {
+      <div class="link">
+        <button
+          #logsRla="routerLinkActive"
+          type="button"
+          class="link-row"
+          routerLinkActive="active"
+          [routerLink]="['/logs']"
+          [attr.aria-label]="
+            ('menu.linux.label_logs' | translate) + (logsRla.isActive ? `, ${('menu.current_page' | translate)}` : '')
+          "
+        >
+          <div class="icon"><i aria-hidden="true" class="fas fa-wave-square"></i></div>
+          <div class="title">{{ 'menu.linux.label_logs' | translate }}</div>
+        </button>
+      </div>
+    }
 
     @if (enableTerminalAccess && isAdmin) {
       <div class="link">
