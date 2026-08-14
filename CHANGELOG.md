@@ -32,6 +32,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(accessories): stop a matter light with no hue support painting its tile icon grey
 - fix(accessories): read and drive the tilt on a matter covering that only tilts
 - fix(accessories): paint an unsaturated bulb white rather than grey, on both hap and matter
+- fix(ui): sanitise rendered markdown to prevent stored XSS
 
 ### Other Changes
 

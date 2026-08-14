@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component, effect, ElementRef, inject, input } from '@angular/core'
+import { ChangeDetectionStrategy, Component, effect, ElementRef, inject, input, SecurityContext } from '@angular/core'
+import { DomSanitizer } from '@angular/platform-browser'
 import { marked } from 'marked'
 
 import emojiShortnames from './emoji-shortnames.json'
@@ -52,6 +53,7 @@ const ALERT_LABELS: Record<string, string> = {
 })
 export class MarkdownComponent {
   private el = inject<ElementRef<HTMLElement>>(ElementRef)
+  private sanitizer = inject(DomSanitizer)
 
   public readonly data = input('')
 
@@ -61,7 +63,17 @@ export class MarkdownComponent {
 
   private render(source: string): void {
     const root = this.el.nativeElement
-    root.innerHTML = marked.parse(source ?? '', { async: false }) as string
+    // The markdown here is third-party: a plugin's CHANGELOG.md (fetched from
+    // GitHub / the installed package) and the headerDisplay / footerDisplay of
+    // any installed plugin's config.schema.json. `marked` does not sanitise its
+    // output, so assigning it straight to innerHTML let a crafted plugin run
+    // script in an admin's browser (e.g. `<img src=x onerror=...>`). Run the
+    // parsed HTML through Angular's HTML sanitizer first, which strips event
+    // handlers, <script>, javascript: URLs and the like while leaving normal
+    // formatting intact. The alert / emoji DOM work below runs on the already
+    // sanitised tree.
+    const parsed = marked.parse(source ?? '', { async: false }) as string
+    root.innerHTML = this.sanitizer.sanitize(SecurityContext.HTML, parsed) ?? ''
 
     root.querySelectorAll('a').forEach((a) => {
       a.target = '_blank'
