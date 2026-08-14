@@ -56,6 +56,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(child-bridges): require admin to start/stop/restart a bridge over websocket
 - fix(terminal): restrict persistent-session HTTP endpoints to admins
 - fix(auth): make first-user setup atomic against concurrent requests
+- fix(auth): pin the plugin-UI cookie guard to this instance
 
 ### Homebridge Dependencies
 
