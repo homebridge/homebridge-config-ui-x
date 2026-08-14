@@ -169,6 +169,39 @@ describe('AuthController (e2e)', () => {
     expect(again[0].hashedPassword).toBe(after[0].hashedPassword)
   })
 
+  it('rejects a token whose user has been deleted', async () => {
+    const created: any = await authService.addUser({ name: 'Temp', username: 'temp-deleted', password: 'temp-pw', admin: false } as any)
+    const payload = await authService.authenticate('temp-deleted', 'temp-pw')
+    expect(await authService.validateUser(payload)).toBeTruthy()
+
+    await authService.deleteUser(created.id)
+
+    // Previously the payload was returned unchecked, so the token kept working
+    // until it expired (eight hours by default).
+    expect(await authService.validateUser(payload)).toBeNull()
+  })
+
+  it('rejects a token whose user has been demoted from admin', async () => {
+    const created: any = await authService.addUser({ name: 'Demote', username: 'temp-demote', password: 'temp-pw', admin: true } as any)
+    const payload = await authService.authenticate('temp-demote', 'temp-pw')
+    expect(payload.admin).toBe(true)
+    expect(await authService.validateUser(payload)).toBeTruthy()
+
+    await authService.updateUser(created.id, { name: 'Demote', username: 'temp-demote', admin: false } as any)
+
+    expect(await authService.validateUser(payload)).toBeNull()
+  })
+
+  it('rejects a token issued before the password was changed', async () => {
+    await authService.addUser({ name: 'Rotate', username: 'temp-rotate', password: 'old-password', admin: false } as any)
+    const payload = await authService.authenticate('temp-rotate', 'old-password')
+    expect(await authService.validateUser(payload)).toBeTruthy()
+
+    await authService.updateOwnPassword('temp-rotate', 'old-password', 'new-password')
+
+    expect(await authService.validateUser(payload)).toBeNull()
+  })
+
   it('locks out repeated failed logins', async () => {
     // A bogus username keeps this isolated from the admin account other tests
     // use. 11 attempts = the 10-failure threshold plus one that trips the lockout.
@@ -426,7 +459,7 @@ describe('AuthController (e2e)', () => {
         }),
       }),
     }
-    const guard = new WsGuard(configService)
+    const guard = app.get(WsGuard)
     await expect(guard.canActivate(context)).rejects.toThrow(WsException)
     expect(disconnect).toHaveBeenCalled()
   })
@@ -441,7 +474,7 @@ describe('AuthController (e2e)', () => {
         }),
       }),
     }
-    const guard = new WsGuard(configService)
+    const guard = app.get(WsGuard)
     await expect(guard.canActivate(context)).rejects.toThrow(WsException)
     expect(disconnect).toHaveBeenCalled()
   })
@@ -468,12 +501,16 @@ describe('AuthController (e2e)', () => {
         }),
       }),
     }
-    const guard = new WsGuard(configService)
+    const guard = app.get(WsGuard)
     await expect(guard.canActivate(context)).rejects.toThrow(WsException)
     expect(disconnect).toHaveBeenCalled()
   })
 
   it('WsAdminGuard rejects a non-admin user even with a valid token', async () => {
+    // The user has to exist in the auth file: a token naming a user who is not
+    // there is now rejected outright rather than returning false.
+    await authService.addUser({ name: 'Someone', username: 'someone', password: 'someone-pw', admin: false } as any)
+
     const jwt = await import('jsonwebtoken')
     const nonAdminToken = jwt.sign(
       {
@@ -481,6 +518,7 @@ describe('AuthController (e2e)', () => {
         name: 'Someone',
         admin: false,
         instanceId: configService.instanceId,
+        sessionVersion: 0,
       },
       configService.secrets.secretKey,
     )
@@ -493,7 +531,7 @@ describe('AuthController (e2e)', () => {
         }),
       }),
     }
-    const guard = new WsAdminGuard(configService)
+    const guard = app.get(WsAdminGuard)
     expect(await guard.canActivate(context)).toBe(false)
   })
 
@@ -512,7 +550,7 @@ describe('AuthController (e2e)', () => {
       }),
     }
 
-    const guard = new WsGuard(configService)
+    const guard = app.get(WsGuard)
     await expect(guard.canActivate(context)).rejects.toThrow(WsException)
     expect(disconnect).toHaveBeenCalled()
   })

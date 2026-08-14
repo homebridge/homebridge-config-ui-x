@@ -36,6 +36,12 @@ const LEGACY_PBKDF2_ITERATIONS = 1000
 const MAX_LOGIN_FAILURES = 10
 const LOGIN_LOCKOUT_SECONDS = 300
 
+// How long the auth file is cached for per-request token validation. Writes
+// that change a user's identity or role clear it immediately, so this is only
+// the ceiling for changes made outside this process (e.g. editing auth.json by
+// hand).
+const USER_CACHE_TTL_SECONDS = 5
+
 @Injectable()
 export class AuthService {
   private otpUsageCache = new NodeCache({ stdTTL: 90 })
@@ -44,6 +50,10 @@ export class AuthService {
   // A failed attempt refreshes the TTL, so sustained guessing keeps the account
   // locked; the count clears after LOGIN_LOCKOUT_SECONDS of no attempts.
   private loginFailureCache = new NodeCache({ stdTTL: LOGIN_LOCKOUT_SECONDS })
+
+  // Short-lived cache of the auth file, so validating a token on every request
+  // is not a file read each time. Cleared by invalidateUserCache() on writes.
+  private userCache = new NodeCache({ stdTTL: USER_CACHE_TTL_SECONDS })
 
   // Synchronous reservation flag for first-user setup, so two concurrent
   // onboarding requests cannot both create an administrator. See setupFirstUser.
@@ -112,6 +122,7 @@ export class AuthService {
           name: user.name,
           admin: user.admin,
           instanceId: this.configService.instanceId,
+          sessionVersion: user.sessionVersion ?? 0,
           otpLegacySecret: user.otpLegacySecret || false,
         }
       }
@@ -225,6 +236,7 @@ export class AuthService {
       name: user.name,
       admin: user.admin,
       instanceId: this.configService.instanceId,
+      sessionVersion: user.sessionVersion ?? 0,
       otpLegacySecret: user.otpLegacySecret || false,
     })
 
@@ -265,6 +277,9 @@ export class AuthService {
       name: user.name,
       admin: user.admin,
       instanceId: user.instanceId,
+      // Take the version from the stored record, not the old token, so a
+      // refresh cannot carry a stale credential version forward.
+      sessionVersion: currentUser.sessionVersion ?? 0,
       otpLegacySecret: currentUser.otpLegacySecret || false,
     })
 
@@ -295,12 +310,68 @@ export class AuthService {
   }
 
   /**
-   * Validate User
-   * All information about the user we need is stored in the payload
+   * Validate a decoded, verified JWT payload against the user's current state.
+   *
+   * A valid signature alone is not enough: the payload is a snapshot from when
+   * the token was minted, so without this check a deleted user, a demoted
+   * administrator, or a user whose password was just changed kept full access
+   * until the token expired (eight hours by default).
+   *
    * @param payload - the decoded, verified jwt payload
+   * @returns the payload if it still matches the stored user, otherwise null
    */
   async validateUser(payload: any): Promise<any> {
+    // The setup-wizard token deliberately has no user record behind it. It is
+    // already constrained to the live wizard by the instanceId checks in
+    // JwtStrategy and the websocket guards.
+    if (payload?.username === 'setup-wizard' && this.configService.setupWizardComplete === false) {
+      return payload
+    }
+
+    const user = await this.findCurrentUser(payload?.username)
+
+    // Deleted (or renamed) since the token was issued
+    if (!user) {
+      return null
+    }
+
+    // Role changed since the token was issued
+    if (!!user.admin !== !!payload.admin) {
+      return null
+    }
+
+    // Credentials changed since the token was issued (password, OTP, ...)
+    if ((user.sessionVersion ?? 0) !== (payload.sessionVersion ?? 0)) {
+      return null
+    }
+
     return payload
+  }
+
+  /**
+   * Look up a user for token validation. This runs on every authenticated
+   * request, so the auth file is cached briefly rather than read each time;
+   * revocation therefore takes effect within USER_CACHE_TTL_SECONDS.
+   */
+  private async findCurrentUser(username?: string): Promise<UserDto | undefined> {
+    if (!username) {
+      return undefined
+    }
+    let users = this.userCache.get<UserDto[]>('users')
+    if (!users) {
+      users = await this.getUsers()
+      this.userCache.set('users', users)
+    }
+    return users.find(x => x.username === username)
+  }
+
+  /**
+   * Drop the cached auth file. Called after any write that changes who a user
+   * is or what they may do, so revocation is immediate rather than waiting for
+   * the cache to expire.
+   */
+  private invalidateUserCache() {
+    this.userCache.del('users')
   }
 
   /**
@@ -479,6 +550,10 @@ export class AuthService {
       },
       { spaces: 4 },
     )
+    // Every write to the auth file goes through here, so this is the one place
+    // that has to drop the token-validation cache. Without it a deletion or
+    // demotion would not take effect until the cache expired.
+    this.invalidateUserCache()
     return result as R
   }
 
@@ -505,6 +580,7 @@ export class AuthService {
         hashedPassword,
         salt,
         passwordIterations: PBKDF2_ITERATIONS,
+        sessionVersion: 0,
         admin: user.admin,
       }
       authfile.push(newUser)
@@ -560,11 +636,17 @@ export class AuthService {
         user.username = update.username
       }
       user.name = update.name || user.name
+      const adminChanged = update.admin !== undefined && !!update.admin !== !!user.admin
       user.admin = (update.admin === undefined) ? user.admin : update.admin
       if (newHashedPassword && newSalt) {
         user.hashedPassword = newHashedPassword
         user.salt = newSalt
         user.passwordIterations = PBKDF2_ITERATIONS
+      }
+      // Changing the password or the admin role must invalidate tokens already
+      // issued to this user, which carry the old values in their payload.
+      if (newHashedPassword || adminChanged) {
+        user.sessionVersion = (user.sessionVersion ?? 0) + 1
       }
       this.logger.log(`Updated user: ${user.username}.`)
       return this.desensitiseUserProfile(user)
@@ -594,6 +676,8 @@ export class AuthService {
       user.hashedPassword = newHashedPassword
       user.salt = newSalt
       user.passwordIterations = PBKDF2_ITERATIONS
+      // Invalidate tokens issued against the old password.
+      user.sessionVersion = (user.sessionVersion ?? 0) + 1
       return this.desensitiseUserProfile(user)
     })
   }
@@ -670,6 +754,8 @@ export class AuthService {
         throw new BadRequestException('2FA code is not valid.')
       }
       user.otpActive = true
+      // Turning 2FA on invalidates sessions established before it was required.
+      user.sessionVersion = (user.sessionVersion ?? 0) + 1
       this.logger.warn(`Activated 2FA for ${user.username}.`)
       return this.desensitiseUserProfile(user)
     })
@@ -689,6 +775,7 @@ export class AuthService {
       user.otpActive = false
       delete user.otpSecret
       delete user.otpLegacySecret
+      user.sessionVersion = (user.sessionVersion ?? 0) + 1
       this.logger.warn(`Deactivated 2FA for ${username}.`)
       return this.desensitiseUserProfile(user)
     })
