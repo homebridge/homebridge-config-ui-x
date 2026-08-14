@@ -87,6 +87,17 @@ export async function getStartupConfig() {
     config.cspWsOverride = `wss://${ui.proxyHost} ws://${ui.proxyHost}`
   }
 
+  // Extra origins allowed to frame the UI. The default CSP is
+  // `frame-ancestors 'self'`, which blocks clickjacking from third-party pages;
+  // set `allowFrameAncestors` (an array, or a space/comma-separated string) to
+  // permit embedding the dashboard in named origins.
+  if (ui.allowFrameAncestors) {
+    const raw = Array.isArray(ui.allowFrameAncestors)
+      ? ui.allowFrameAncestors
+      : String(ui.allowFrameAncestors).split(/[\s,]+/)
+    config.allowedFrameAncestors = raw.map((s: string) => s.trim()).filter(Boolean)
+  }
+
   // Preload debug settings
   if (ui.debug) {
     config.debug = true
