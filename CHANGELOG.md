@@ -67,6 +67,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(auth): hold the access token in memory instead of localStorage
 - test(status): stop the dashboard e2e tests clobbering the dev storage layout
 - fix(custom-plugins): allow plugin UI webfonts from the dev server origin
+- chore(build): stop copying monaco's unused json language sources
 
 ### Homebridge Dependencies
 
