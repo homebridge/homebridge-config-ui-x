@@ -59,6 +59,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(auth): pin the plugin-UI cookie guard to this instance
 - fix(server): set frame-ancestors to block clickjacking of the UI
 - fix(auth): hash passwords at OWASP work factor with transparent upgrade
+- fix(auth): throttle failed logins to stop credential and 2FA brute force
 
 ### Homebridge Dependencies
 
