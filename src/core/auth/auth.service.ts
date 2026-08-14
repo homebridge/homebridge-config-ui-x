@@ -30,9 +30,20 @@ const PBKDF2_ITERATIONS = 210000
 // PBKDF2_ITERATIONS on the owner's next successful login.
 const LEGACY_PBKDF2_ITERATIONS = 1000
 
+// Login throttling: after this many failed attempts for a given key the account
+// is locked out for LOGIN_LOCKOUT_SECONDS. Guards against online password and
+// 2FA guessing, which was otherwise unlimited.
+const MAX_LOGIN_FAILURES = 10
+const LOGIN_LOCKOUT_SECONDS = 300
+
 @Injectable()
 export class AuthService {
   private otpUsageCache = new NodeCache({ stdTTL: 90 })
+
+  // Counts recent failed logins per key (normalised username + client address).
+  // A failed attempt refreshes the TTL, so sustained guessing keeps the account
+  // locked; the count clears after LOGIN_LOCKOUT_SECONDS of no attempts.
+  private loginFailureCache = new NodeCache({ stdTTL: LOGIN_LOCKOUT_SECONDS })
 
   // Synchronous reservation flag for first-user setup, so two concurrent
   // onboarding requests cannot both create an administrator. See setupFirstUser.
@@ -58,8 +69,19 @@ export class AuthService {
    * @param username
    * @param password
    * @param otp
+   * @param clientId - optional client identifier (e.g. source address) mixed into
+   * the throttle key alongside the username
    */
-  async authenticate(username: string, password: string, otp?: string): Promise<any> {
+  async authenticate(username: string, password: string, otp?: string, clientId?: string): Promise<any> {
+    const throttleKey = `${(username || '').toLowerCase()}|${clientId || ''}`
+
+    // Reject before doing any work once the failure threshold is reached, so
+    // password and 2FA guessing cannot run unbounded.
+    if ((this.loginFailureCache.get<number>(throttleKey) || 0) >= MAX_LOGIN_FAILURES) {
+      this.logger.warn(`Too many failed login attempts for '${username}' - temporarily locked out.`)
+      throw new HttpException('Too many failed attempts. Please wait a few minutes and try again.', 429)
+    }
+
     try {
       const user = await this.findByUsername(username)
 
@@ -81,6 +103,9 @@ export class AuthService {
       // password hash to the current work factor before returning.
       await this.upgradePasswordHashIfNeeded(user, password)
 
+      // Success clears the failure count for this key.
+      this.loginFailureCache.del(throttleKey)
+
       if (user) {
         return {
           username: user.username,
@@ -91,6 +116,14 @@ export class AuthService {
         }
       }
     } catch (e) {
+      // "2FA Code Required" is a prompt for more input, not a failed attempt,
+      // so it must not count towards the lockout.
+      const is2faPrompt = e instanceof HttpException && e.getStatus() === 412 && e.message === '2FA Code Required'
+      if (!is2faPrompt) {
+        const failures = (this.loginFailureCache.get<number>(throttleKey) || 0) + 1
+        this.loginFailureCache.set(throttleKey, failures)
+      }
+
       if (e instanceof ForbiddenException) {
         this.logger.warn('Failed login attempt.')
         this.logger.warn('If you have forgotten your password, you can reset to the default '
@@ -111,9 +144,10 @@ export class AuthService {
    * @param username
    * @param password
    * @param otp
+   * @param clientId - optional client identifier (e.g. source address) for login throttling
    */
-  async signIn(username: string, password: string, otp?: string): Promise<any> {
-    const user = await this.authenticate(username, password, otp)
+  async signIn(username: string, password: string, otp?: string, clientId?: string): Promise<any> {
+    const user = await this.authenticate(username, password, otp, clientId)
     const token = this.jwtService.sign(user)
 
     return {
