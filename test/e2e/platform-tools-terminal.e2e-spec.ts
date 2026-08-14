@@ -280,6 +280,111 @@ describe('PlatformToolsTerminal (e2e)', () => {
     })
   })
 
+  /**
+   * Which installs may use the terminal at all. This decides both the sidebar
+   * link and whether TerminalService will start a session, and it is read from
+   * the environment once, when ConfigService is constructed - so each case
+   * below builds its own.
+   *
+   * ⚠️ `HOMEBRIDGE_CONFIG_UI_TERMINAL=1` is the opt-in for installs that are
+   * not Docker: `nodemon.json` sets it for the dev server, and hb-service
+   * writes it into the systemd environment file for apt package installs.
+   * Nothing covered it before, so when the expression was accidentally cut
+   * short the terminal silently disappeared for all of them.
+   */
+  describe('which installs may use the terminal', () => {
+    const withEnv = (env: Record<string, string | undefined>) => {
+      const saved: Record<string, string | undefined> = {}
+      for (const [key, value] of Object.entries(env)) {
+        saved[key] = process.env[key]
+        if (value === undefined) {
+          delete process.env[key]
+        } else {
+          process.env[key] = value
+        }
+      }
+      try {
+        return new ConfigService()
+      } finally {
+        for (const [key, value] of Object.entries(saved)) {
+          if (value === undefined) {
+            delete process.env[key]
+          } else {
+            process.env[key] = value
+          }
+        }
+      }
+    }
+
+    it('is enabled by the opt-in environment variable, outside docker', () => {
+      const config = withEnv({
+        HOMEBRIDGE_CONFIG_UI_TERMINAL: '1',
+        HOMEBRIDGE_CONFIG_UI: undefined,
+        HOMEBRIDGE_SYNOLOGY_PACKAGE: undefined,
+        HOMEBRIDGE_APT_PACKAGE: undefined,
+      })
+
+      expect(config.runningInDocker).toBe(false)
+      expect(config.enableTerminalAccess).toBe(true)
+    })
+
+    it('is enabled for a synology package install', () => {
+      const config = withEnv({
+        HOMEBRIDGE_CONFIG_UI_TERMINAL: undefined,
+        HOMEBRIDGE_CONFIG_UI: undefined,
+        HOMEBRIDGE_SYNOLOGY_PACKAGE: '1',
+        HOMEBRIDGE_APT_PACKAGE: undefined,
+      })
+
+      expect(config.enableTerminalAccess).toBe(true)
+    })
+
+    it('is enabled for an apt package install, and that install can turn it off', () => {
+      const enabled = withEnv({
+        HOMEBRIDGE_CONFIG_UI_TERMINAL: '1',
+        HOMEBRIDGE_CONFIG_UI: undefined,
+        HOMEBRIDGE_SYNOLOGY_PACKAGE: undefined,
+        HOMEBRIDGE_APT_PACKAGE: '1',
+      })
+      expect(enabled.enableTerminalAccess).toBe(true)
+
+      const disabled = withEnv({
+        HOMEBRIDGE_CONFIG_UI_TERMINAL: '0',
+        HOMEBRIDGE_CONFIG_UI: undefined,
+        HOMEBRIDGE_SYNOLOGY_PACKAGE: undefined,
+        HOMEBRIDGE_APT_PACKAGE: '1',
+      })
+      expect(disabled.enableTerminalAccess).toBe(false)
+    })
+
+    it('is off for a plain install that has not opted in', () => {
+      const config = withEnv({
+        HOMEBRIDGE_CONFIG_UI_TERMINAL: undefined,
+        HOMEBRIDGE_CONFIG_UI: undefined,
+        HOMEBRIDGE_SYNOLOGY_PACKAGE: undefined,
+        HOMEBRIDGE_APT_PACKAGE: undefined,
+      })
+
+      expect(config.enableTerminalAccess).toBe(false)
+    })
+
+    /**
+     * The log restriction sits directly above this in the source and is a
+     * separate setting: it must come from the UI config alone, and never
+     * inherit whatever the terminal environment says.
+     */
+    it('does not let the terminal environment restrict the log', () => {
+      const config = withEnv({
+        HOMEBRIDGE_CONFIG_UI_TERMINAL: '1',
+        HOMEBRIDGE_CONFIG_UI: undefined,
+        HOMEBRIDGE_SYNOLOGY_PACKAGE: '1',
+        HOMEBRIDGE_APT_PACKAGE: '1',
+      })
+
+      expect(config.restrictLogsToAdmins).toBe(false)
+    })
+  })
+
   afterAll(async () => {
     await app.close()
   })

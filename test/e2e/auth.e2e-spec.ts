@@ -15,6 +15,7 @@ import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } 
 import { AuthModule } from '../../src/core/auth/auth.module.js'
 import { AuthService } from '../../src/core/auth/auth.service.js'
 import { WsAdminGuard } from '../../src/core/auth/guards/ws-admin-guard.js'
+import { WsLogGuard } from '../../src/core/auth/guards/ws-log.guard.js'
 import { WsGuard } from '../../src/core/auth/guards/ws.guard.js'
 import { ConfigService } from '../../src/core/config/config.service.js'
 import { PluginsService } from '../../src/modules/plugins/plugins.service.js'
@@ -553,6 +554,33 @@ describe('AuthController (e2e)', () => {
 
     expect(await app.get(WsGuard).canActivate(context)).toBe(true)
     expect(disconnect).not.toHaveBeenCalled()
+  })
+
+  it('WsLogGuard follows the restrictLogsToAdmins setting', async () => {
+    await authService.addUser({ name: 'Log Reader', username: 'log-reader', password: 'log-reader-pw', admin: false } as any)
+    const nonAdmin = (await authService.signIn('log-reader', 'log-reader-pw')).access_token
+    const admin = (await authService.signIn('admin', 'admin')).access_token
+
+    const contextFor = (token: string) => ({
+      switchToWs: () => ({
+        getClient: () => ({ handshake: { auth: { token } }, disconnect: vi.fn() }),
+      }),
+    }) as any
+
+    const guard = app.get(WsLogGuard)
+
+    // Default: the log is readable by any signed-in user, which is the
+    // long-standing behaviour and must not change on upgrade.
+    configService.restrictLogsToAdmins = false
+    expect(await guard.canActivate(contextFor(nonAdmin))).toBe(true)
+    expect(await guard.canActivate(contextFor(admin))).toBe(true)
+
+    // Restricted: administrators only.
+    configService.restrictLogsToAdmins = true
+    expect(await guard.canActivate(contextFor(nonAdmin))).toBe(false)
+    expect(await guard.canActivate(contextFor(admin))).toBe(true)
+
+    configService.restrictLogsToAdmins = false
   })
 
   it('WsGuard disconnects setup-wizard token once setup wizard completes', async () => {

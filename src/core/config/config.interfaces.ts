@@ -152,6 +152,11 @@ export interface HomebridgeUiConfig {
   debug?: boolean
   sessionTimeout?: number
   sessionTimeoutInactivityBased?: boolean
+  // Restrict the log viewer / log stream to administrators. Off by default:
+  // any signed-in user has always been able to read the Homebridge log.
+  restrictLogsToAdmins?: boolean
+  // Extra origins permitted to frame the UI (CSP frame-ancestors).
+  allowFrameAncestors?: string | string[]
   homebridgePackagePath?: string
   scheduledBackupPath?: string
   scheduledBackupDisable?: boolean

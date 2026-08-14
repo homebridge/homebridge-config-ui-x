@@ -3,6 +3,7 @@ import { Routes } from '@angular/router'
 import { adminGuard } from '@/app/core/auth/guards/admin.guard'
 import { authGuard } from '@/app/core/auth/guards/auth.guard'
 import { loginGuard } from '@/app/core/auth/guards/login.guard'
+import { logsGuard } from '@/app/core/auth/guards/logs.guard'
 import { setupWizardGuard } from '@/app/core/auth/guards/setup-wizard.guard'
 import { configEditorResolver } from '@/app/modules/config-editor/config-editor.resolver'
 import { usersResolver } from '@/app/modules/users/users.resolver'
@@ -61,7 +62,7 @@ export const routes: Routes = [
       {
         path: 'logs',
         loadComponent: () => import('@/app/modules/logs/logs.component').then(m => m.LogsComponent),
-        canActivate: [authGuard],
+        canActivate: [logsGuard],
         canDeactivate: [(component: any, _currentRoute: any, _currentState: any, nextState?: any) => component.canDeactivate ? component.canDeactivate(nextState?.url) : true],
       },
       {
