@@ -62,6 +62,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(auth): throttle failed logins to stop credential and 2FA brute force
 - fix(auth): revoke tokens when a user is deleted, demoted or changes password
 - fix(ws): send the session token in the handshake payload, not the query string
+- fix(server): drop 'unsafe-inline' from the app's script-src
 
 ### Homebridge Dependencies
 
