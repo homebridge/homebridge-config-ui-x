@@ -1,10 +1,17 @@
 import { Inject, UseGuards } from '@nestjs/common'
 import { SubscribeMessage, WebSocketGateway, WsException } from '@nestjs/websockets'
 
+import { WsAdminGuard } from '../../core/auth/guards/ws-admin-guard.js'
 import { WsGuard } from '../../core/auth/guards/ws.guard.js'
 import { devServerCorsConfig } from '../../core/cors.config.js'
 import { ChildBridgesService } from './child-bridges.service.js'
 
+// Class-level guard requires any authenticated user, so the read-only status
+// handlers below stay available to the non-admin dashboard. The three handlers
+// that start/stop/restart a bridge are separately gated to admins with
+// @UseGuards(WsAdminGuard) — matching the REST equivalents in
+// server.controller.ts, which are all AdminGuard. Without this a non-admin
+// could stop every child bridge over the socket.
 @UseGuards(WsGuard)
 @WebSocketGateway({
   namespace: '/child-bridges',
@@ -30,6 +37,7 @@ export class ChildBridgesGateway {
     this.childBridgesService.watchChildBridgeStatus(client)
   }
 
+  @UseGuards(WsAdminGuard)
   @SubscribeMessage('restart-child-bridge')
   async restartChildBridge(client, payload) {
     try {
@@ -39,6 +47,7 @@ export class ChildBridgesGateway {
     }
   }
 
+  @UseGuards(WsAdminGuard)
   @SubscribeMessage('stop-child-bridge')
   async stopChildBridge(client, payload) {
     try {
@@ -48,6 +57,7 @@ export class ChildBridgesGateway {
     }
   }
 
+  @UseGuards(WsAdminGuard)
   @SubscribeMessage('start-child-bridge')
   async startChildBridge(client, payload) {
     try {
