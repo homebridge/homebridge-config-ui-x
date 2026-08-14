@@ -3,12 +3,14 @@ import type { EventEmitter } from 'node:events'
 import { Inject, UseGuards } from '@nestjs/common'
 import { SubscribeMessage, WebSocketGateway } from '@nestjs/websockets'
 
-import { WsGuard } from '../../core/auth/guards/ws.guard.js'
+import { WsLogGuard } from '../../core/auth/guards/ws-log.guard.js'
 import { devServerCorsConfig } from '../../core/cors.config.js'
 import { TermSize } from '../platform-tools/terminal/terminal.interfaces.js'
 import { LogService } from './log.service.js'
 
-@UseGuards(WsGuard)
+// Any signed-in user by default, administrators only when the admin has set
+// `restrictLogsToAdmins` — see WsLogGuard.
+@UseGuards(WsLogGuard)
 @WebSocketGateway({
   namespace: 'log',
   allowEIO3: true,

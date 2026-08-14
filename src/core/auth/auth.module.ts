@@ -12,6 +12,7 @@ import { AuthService } from './auth.service.js'
 import { AdminGuard } from './guards/admin.guard.js'
 import { CookieAuthGuard } from './guards/cookie-auth.guard.js'
 import { WsAdminGuard } from './guards/ws-admin-guard.js'
+import { WsLogGuard } from './guards/ws-log.guard.js'
 import { WsGuard } from './guards/ws.guard.js'
 import { JwtStrategy } from './jwt.strategy.js'
 
@@ -38,6 +39,7 @@ import { JwtStrategy } from './jwt.strategy.js'
     JwtStrategy,
     WsGuard,
     WsAdminGuard,
+    WsLogGuard,
     AdminGuard,
     CookieAuthGuard,
   ],
