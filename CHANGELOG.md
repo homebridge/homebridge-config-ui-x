@@ -68,6 +68,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - test(status): stop the dashboard e2e tests clobbering the dev storage layout
 - fix(custom-plugins): allow plugin UI webfonts from the dev server origin
 - chore(build): stop copying monaco's unused json language sources
+- fix(plugins): cancel the pending ui self-restart when the module is torn down
 
 ### Homebridge Dependencies
 

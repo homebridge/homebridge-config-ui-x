@@ -32,7 +32,7 @@ import {
 import process from 'node:process'
 
 import { HttpService } from '@nestjs/axios'
-import { BadRequestException, Inject, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common'
+import { BadRequestException, Inject, Injectable, InternalServerErrorException, NotFoundException, OnModuleDestroy } from '@nestjs/common'
 import axios from 'axios'
 import { cyan, green, red, yellow } from 'bash-color'
 import { createFile, ensureDir, pathExists, pathExistsSync, readJson, remove } from 'fs-extra/esm'
@@ -65,7 +65,7 @@ const require = createRequire(import.meta.url)
 const module = require('node:module')
 
 @Injectable()
-export class PluginsService {
+export class PluginsService implements OnModuleDestroy {
   private _npm: Array<string> | undefined
   private npmMajorVersion: number | null = null
   private _paths: Array<string> | undefined
@@ -93,6 +93,39 @@ export class PluginsService {
 
   // Constants
   private static readonly UI_RESTART_DELAY_MS = 5000
+
+  // Handle for the pending self-restart, so it can be cancelled if this module
+  // is torn down before it fires. See scheduleUiRestart / onModuleDestroy.
+  private uiRestartTimer?: NodeJS.Timeout
+
+  /**
+   * Arm the delayed self-restart after the UI has updated itself.
+   *
+   * ⚠️ This calls `process.exit`, so it must not outlive the module that armed
+   * it. It previously ran as a bare `setTimeout`, which meant an e2e test that
+   * exercised `POST /plugins/update/homebridge-config-ui-x` left a five second
+   * fuse burning: the test passed, then the timer killed the test runner
+   * mid-suite with "process.exit unexpectedly called with 0". Whether it went
+   * off at all came down to whether the worker happened to still be alive five
+   * seconds later, so adding an unrelated test file was enough to turn it from
+   * dormant to reproducible on every platform.
+   *
+   * `unref` so it can never be the only thing holding the process open, and the
+   * handle is kept so `onModuleDestroy` can clear it.
+   */
+  private scheduleUiRestart(): void {
+    this.uiRestartTimer = setTimeout(() => {
+      process.exit(0)
+    }, PluginsService.UI_RESTART_DELAY_MS)
+    this.uiRestartTimer.unref()
+  }
+
+  public onModuleDestroy(): void {
+    if (this.uiRestartTimer) {
+      clearTimeout(this.uiRestartTimer)
+      this.uiRestartTimer = undefined
+    }
+  }
 
   // Installed plugin cache
   private installedPlugins: HomebridgePlugin[]
@@ -1062,9 +1095,7 @@ export class PluginsService {
         } else if (name === this.configService.name) {
           await this.managePlugin('install', { name, version: targetVersion }, mockClient)
           this.logger.warn(`homebridge-config-ui-x has been updated, server will restart in ${PluginsService.UI_RESTART_DELAY_MS / 1000} seconds...`)
-          setTimeout(() => {
-            process.exit(0)
-          }, PluginsService.UI_RESTART_DELAY_MS)
+          this.scheduleUiRestart()
         } else {
           // It's a regular plugin - install it then check where it's running
           await this.managePlugin('install', { name, version: targetVersion }, mockClient)
