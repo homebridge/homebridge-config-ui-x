@@ -4,7 +4,7 @@ import type { TestingModule } from '@nestjs/testing'
 import { resolve } from 'node:path'
 import process from 'node:process'
 
-import { ValidationPipe } from '@nestjs/common'
+import { HttpException, ValidationPipe } from '@nestjs/common'
 import { FastifyAdapter } from '@nestjs/platform-fastify'
 import { Test } from '@nestjs/testing'
 import { WsException } from '@nestjs/websockets'
@@ -167,6 +167,19 @@ describe('AuthController (e2e)', () => {
     await expect(authService.authenticate('admin', 'admin')).resolves.toBeTruthy()
     const again = await readJson(authFilePath)
     expect(again[0].hashedPassword).toBe(after[0].hashedPassword)
+  })
+
+  it('locks out repeated failed logins', async () => {
+    // A bogus username keeps this isolated from the admin account other tests
+    // use. 11 attempts = the 10-failure threshold plus one that trips the lockout.
+    let last: any
+    for (let i = 0; i < 11; i++) {
+      last = await authService.authenticate('bruteforce', 'wrong-password').catch((e: any) => e)
+    }
+
+    // The attempt past the threshold is rejected before any password work with 429.
+    expect(last).toBeInstanceOf(HttpException)
+    expect(last.getStatus()).toBe(429)
   })
 
   it('POST /auth/login (missing password)', async () => {

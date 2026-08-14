@@ -34,7 +34,7 @@ export class AuthController {
   @ApiOperation({ summary: 'Exchange a username and password for an authentication token.' })
   @Post('login')
   async signIn(@Body() body: AuthDto, @Request() req: FastifyRequest, @Res({ passthrough: true }) res: FastifyReply) {
-    const result = await this.authService.signIn(body.username, body.password, body.otp)
+    const result = await this.authService.signIn(body.username, body.password, body.otp, req.ip)
     res.header('Set-Cookie', this.buildSessionCookie(result.access_token, req.protocol === 'https'))
     return result
   }
