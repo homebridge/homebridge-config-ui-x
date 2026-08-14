@@ -22,6 +22,14 @@ import { ConfigService } from '../config/config.service.js'
 import { JsonFileStoreService } from '../fs/json-file-store.service.js'
 import { Logger } from '../logger/logger.service.js'
 
+// OWASP-recommended PBKDF2-HMAC-SHA512 work factor. New and changed passwords
+// are hashed at this strength.
+const PBKDF2_ITERATIONS = 210000
+// Records created before versioned hashing carry no iteration count and were
+// hashed at 1,000. They verify at this count and are transparently upgraded to
+// PBKDF2_ITERATIONS on the owner's next successful login.
+const LEGACY_PBKDF2_ITERATIONS = 1000
+
 @Injectable()
 export class AuthService {
   private otpUsageCache = new NodeCache({ stdTTL: 90 })
@@ -68,6 +76,10 @@ export class AuthService {
       if (user.otpActive && !await this.verifyOtpToken(user, otp)) {
         throw new HttpException('2FA Code Invalid', 412)
       }
+
+      // Credentials (and OTP, if enabled) are valid: upgrade a legacy weak
+      // password hash to the current work factor before returning.
+      await this.upgradePasswordHashIfNeeded(user, password)
 
       if (user) {
         return {
@@ -116,7 +128,10 @@ export class AuthService {
    * This will throw an error if the credentials are incorrect.
    */
   private async checkPassword(user: UserDto, password: string) {
-    const passwordAttemptHash = await this.hashPassword(password, user.salt)
+    // Verify against the strength this record was hashed at. Legacy records
+    // carry no count and were hashed at 1,000 iterations.
+    const iterations = user.passwordIterations ?? LEGACY_PBKDF2_ITERATIONS
+    const passwordAttemptHash = await this.hashPassword(password, user.salt, iterations)
     const passwordAttemptHashBuff = Buffer.from(passwordAttemptHash, 'hex')
     const knownPasswordHashBuff = Buffer.from(user.hashedPassword, 'hex')
 
@@ -124,6 +139,36 @@ export class AuthService {
       return user
     } else {
       throw new ForbiddenException()
+    }
+  }
+
+  /**
+   * Re-hash a user's password at the current work factor if it is stored at a
+   * weaker one. Called after a successful login (outside the auth-file lock) so
+   * legacy 1,000-iteration hashes are upgraded transparently the next time the
+   * owner signs in.
+   */
+  private async upgradePasswordHashIfNeeded(user: UserDto, password: string) {
+    const current = user.passwordIterations ?? LEGACY_PBKDF2_ITERATIONS
+    if (current >= PBKDF2_ITERATIONS) {
+      return
+    }
+    try {
+      const salt = await this.genSalt()
+      const hashedPassword = await this.hashPassword(password, salt, PBKDF2_ITERATIONS)
+      await this.withAuthFile((authfile) => {
+        const stored = authfile.find(x => x.username === user.username)
+        if (stored) {
+          stored.salt = salt
+          stored.hashedPassword = hashedPassword
+          stored.passwordIterations = PBKDF2_ITERATIONS
+        }
+      })
+      this.logger.log(`Upgraded stored password hash strength for ${user.username}.`)
+    } catch (e) {
+      // Never fail a valid login because the upgrade write failed; it will be
+      // retried on the next login.
+      this.logger.warn(`Could not upgrade password hash for ${user.username}: ${e.message}`)
     }
   }
 
@@ -229,9 +274,9 @@ export class AuthService {
    * @param password
    * @param salt
    */
-  private async hashPassword(password: string, salt: string): Promise<string> {
+  private async hashPassword(password: string, salt: string, iterations: number = PBKDF2_ITERATIONS): Promise<string> {
     return new Promise((resolve, reject) => {
-      pbkdf2(password, salt, 1000, 64, 'sha512', (err, derivedKey) => {
+      pbkdf2(password, salt, iterations, 64, 'sha512', (err, derivedKey) => {
         if (err) {
           return reject(err)
         }
@@ -425,6 +470,7 @@ export class AuthService {
         name: user.name,
         hashedPassword,
         salt,
+        passwordIterations: PBKDF2_ITERATIONS,
         admin: user.admin,
       }
       authfile.push(newUser)
@@ -484,6 +530,7 @@ export class AuthService {
       if (newHashedPassword && newSalt) {
         user.hashedPassword = newHashedPassword
         user.salt = newSalt
+        user.passwordIterations = PBKDF2_ITERATIONS
       }
       this.logger.log(`Updated user: ${user.username}.`)
       return this.desensitiseUserProfile(user)
@@ -512,6 +559,7 @@ export class AuthService {
       await this.checkPassword(user, currentPassword)
       user.hashedPassword = newHashedPassword
       user.salt = newSalt
+      user.passwordIterations = PBKDF2_ITERATIONS
       return this.desensitiseUserProfile(user)
     })
   }

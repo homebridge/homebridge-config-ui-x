@@ -8,7 +8,7 @@ import { ValidationPipe } from '@nestjs/common'
 import { FastifyAdapter } from '@nestjs/platform-fastify'
 import { Test } from '@nestjs/testing'
 import { WsException } from '@nestjs/websockets'
-import { copy, pathExists, remove } from 'fs-extra'
+import { copy, pathExists, readJson, remove } from 'fs-extra'
 import { generate, generateSecret } from 'otplib'
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -145,6 +145,28 @@ describe('AuthController (e2e)', () => {
 
     expect(res.statusCode).toBe(403)
     expect(res.json()).not.toHaveProperty('access_token')
+  })
+
+  it('upgrades a legacy weak password hash on successful login', async () => {
+    // The mock auth file is a legacy record: hashed at 1,000 iterations with
+    // no stored iteration count.
+    const before = await readJson(authFilePath)
+    expect(before[0].passwordIterations).toBeUndefined()
+
+    // A correct login verifies against the legacy count, then re-hashes at the
+    // current work factor and persists it.
+    await authService.authenticate('admin', 'admin')
+
+    const after = await readJson(authFilePath)
+    expect(after[0].passwordIterations).toBe(210000)
+    expect(after[0].hashedPassword).not.toBe(before[0].hashedPassword)
+    expect(after[0].salt).not.toBe(before[0].salt)
+
+    // The upgraded record still authenticates, and an upgraded record is not
+    // re-hashed again.
+    await expect(authService.authenticate('admin', 'admin')).resolves.toBeTruthy()
+    const again = await readJson(authFilePath)
+    expect(again[0].hashedPassword).toBe(after[0].hashedPassword)
   })
 
   it('POST /auth/login (missing password)', async () => {
