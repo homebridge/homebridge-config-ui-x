@@ -57,6 +57,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(terminal): restrict persistent-session HTTP endpoints to admins
 - fix(auth): make first-user setup atomic against concurrent requests
 - fix(auth): pin the plugin-UI cookie guard to this instance
+- fix(server): set frame-ancestors to block clickjacking of the UI
 
 ### Homebridge Dependencies
 
