@@ -9,6 +9,7 @@ import process from 'node:process'
 import fastifyStatic from '@fastify/static'
 import { HttpService } from '@nestjs/axios'
 import { ValidationPipe } from '@nestjs/common'
+import { JwtService } from '@nestjs/jwt'
 import { FastifyAdapter } from '@nestjs/platform-fastify'
 import { Test } from '@nestjs/testing'
 import { AxiosResponse, InternalAxiosRequestConfig } from 'axios'
@@ -510,6 +511,36 @@ describe('PluginsSettingsUiController (e2e)', () => {
         const cleared = Array.isArray(loggedOut.headers['set-cookie'])
           ? loggedOut.headers['set-cookie']
           : [loggedOut.headers['set-cookie']]
+        expect(cleared.some(value => value?.startsWith('hb-plugin-ui=;')
+          && value.includes('Path=/api/plugins/settings-ui/homebridge-mock-plugin/')
+          && value.includes('Max-Age=0'))).toBe(true)
+        expect(denied.statusCode).toBe(401)
+      })
+
+      it('revokes the user asset session when logout receives an expired signed token', async () => {
+        const index = await loadIndex()
+        const cookie = assetCookie(index)
+        const jwtService = app.get(JwtService)
+        const claims = jwtService.decode(accessToken) as Record<string, unknown>
+        delete claims.iat
+        delete claims.exp
+        const expiredAccessToken = jwtService.sign(claims, { expiresIn: -1 })
+
+        const loggedOut = await app.inject({
+          method: 'POST',
+          path: `${API_PREFIX}/auth/logout`,
+          headers: { authorization: `Bearer ${expiredAccessToken}` },
+        })
+        const denied = await app.inject({
+          method: 'GET',
+          path: `${API_PREFIX}/plugins/settings-ui/homebridge-mock-plugin/main.js`,
+          headers: { cookie },
+        })
+        const cleared = Array.isArray(loggedOut.headers['set-cookie'])
+          ? loggedOut.headers['set-cookie']
+          : [loggedOut.headers['set-cookie']]
+
+        expect(loggedOut.statusCode).toBe(201)
         expect(cleared.some(value => value?.startsWith('hb-plugin-ui=;')
           && value.includes('Path=/api/plugins/settings-ui/homebridge-mock-plugin/')
           && value.includes('Max-Age=0'))).toBe(true)

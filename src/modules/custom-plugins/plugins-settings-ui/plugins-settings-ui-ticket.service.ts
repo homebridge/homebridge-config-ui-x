@@ -26,16 +26,12 @@ export interface ValidatedSettingsUiAssetSession extends SettingsUiAssetSession 
 export class PluginsSettingsUiTicketService {
   static readonly assetSessionTtl = 1800
 
-  private static readonly tickets = new NodeCache({ stdTTL: 60, useClones: false })
+  private readonly tickets = new NodeCache({ stdTTL: 60, useClones: false })
 
-  private static readonly assetSessions = new NodeCache({
+  private readonly assetSessions = new NodeCache({
     stdTTL: PluginsSettingsUiTicketService.assetSessionTtl,
     useClones: false,
   })
-
-  private readonly tickets = PluginsSettingsUiTicketService.tickets
-
-  private readonly assetSessions = PluginsSettingsUiTicketService.assetSessions
 
   issue(pluginName: string, username: string, requestOrigin?: string, requestHost?: string) {
     const ticket = randomBytes(32).toString('base64url')

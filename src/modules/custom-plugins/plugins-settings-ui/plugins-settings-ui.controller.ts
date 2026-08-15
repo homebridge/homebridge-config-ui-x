@@ -41,6 +41,9 @@ export class PluginsSettingsUiController {
     let uiOrigin: string
     let assetSession: string
     try {
+      // A single-use ticket gates first entry. Once redeemed, the narrow
+      // per-plugin asset session authorizes reloads of this primary index; all
+      // secondary HTML documents remain blocked by the asset route below.
       const claims = this.ticketService.consume(ticket, pluginName)
       uiOrigin = claims.uiOrigin
       assetSession = this.ticketService.issueAssetSession(pluginName, claims.username, claims.uiOrigin)

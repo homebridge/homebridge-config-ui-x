@@ -134,8 +134,9 @@ export class AuthController {
   @UseGuards(CustomGuard)
   @Post('/logout')
   logout(@Request() req: FastifyRequest & { user?: { username: string } }, @Res({ passthrough: true }) res: FastifyReply) {
-    const pluginNames = req.user?.username
-      ? this.pluginUiTicketService.revokeUser(req.user.username)
+    const username = req.user?.username ?? this.readLogoutUsername(req.headers.authorization)
+    const pluginNames = username
+      ? this.pluginUiTicketService.revokeUser(username)
       : []
     res.header('Set-Cookie', this.buildClearedCookies(req.protocol === 'https', pluginNames))
     return { status: 'OK' }
@@ -169,6 +170,24 @@ export class AuthController {
       }
     }
     return null
+  }
+
+  /**
+   * Recover a revocation identity from a signed Bearer token when normal
+   * authentication rejected it only because it expired. This never grants
+   * access; it is used solely to delete that user's server-side sessions.
+   */
+  private readLogoutUsername(authorization?: string): string | undefined {
+    const [scheme, token] = authorization?.split(' ') ?? []
+    if (scheme?.toLowerCase() !== 'bearer' || !token) {
+      return undefined
+    }
+    try {
+      const payload = this.jwtService.verify(token, { ignoreExpiration: true })
+      return typeof payload?.username === 'string' ? payload.username : undefined
+    } catch {
+      return undefined
+    }
   }
 
   private setRefreshCookie(res: FastifyReply, token: string, secure: boolean) {
