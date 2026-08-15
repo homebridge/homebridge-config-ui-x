@@ -978,6 +978,24 @@ export class PluginsService implements OnModuleDestroy {
   }
 
   /**
+   * Whether the given install path is already among the modules of that name,
+   * compared via realpath so a symlinked duplicate is not added twice
+   */
+  private async containsInstallPath(modules: Array<{ name: string, installPath: string }>, name: string, resolvedPath: string) {
+    for (const module of modules.filter(x => x.name === name)) {
+      try {
+        if (await realpath(module.installPath) === resolvedPath) {
+          return true
+        }
+      } catch (e) {
+        this.logger.debug(`Failed to resolve ${name} install path ${module.installPath} as ${e.message}.`)
+      }
+    }
+
+    return false
+  }
+
+  /**
    * Updates the Homebridge package
    */
   public async updateHomebridgePackage(homebridgeUpdateAction: HomebridgeUpdateActionDto, client: EventEmitter) {
@@ -2066,6 +2084,31 @@ export class PluginsService implements OnModuleDestroy {
         installPath: process.env.UIX_BASE_PATH,
         path: dirname(process.env.UIX_BASE_PATH),
       })
+    }
+
+    // Same for the Homebridge hb-service told us it launched: the apt and Pi image
+    // flavours install to /opt/homebridge, which is not one of the base paths we
+    // scan, so a second copy that is scanned would be the only candidate and every
+    // 'which install is running?' check downstream had nothing to match (#2897).
+    const runningHomebridgePath = this.configService.runningHomebridgeModulePath
+    if (runningHomebridgePath) {
+      let resolvedRunningPath: string
+      try {
+        resolvedRunningPath = await realpath(runningHomebridgePath)
+      } catch (e) {
+        this.logger.debug(`Failed to resolve running Homebridge module path as ${e.message}.`)
+      }
+
+      if (resolvedRunningPath && existsSync(join(resolvedRunningPath, 'package.json'))) {
+        const alreadyFound = await this.containsInstallPath(allModules, 'homebridge', resolvedRunningPath)
+        if (!alreadyFound) {
+          allModules.push({
+            name: 'homebridge',
+            installPath: resolvedRunningPath,
+            path: dirname(resolvedRunningPath),
+          })
+        }
+      }
     }
 
     // If homebridge not found in default locations, check the folder above
