@@ -8,6 +8,7 @@ import type {
   INpmRegistryModule,
   INpmSearchResults,
   IPackageJson,
+  PackageUpdateResult,
   PluginAlias,
   PluginListData,
   PluginListItem,
@@ -1096,48 +1097,51 @@ export class PluginsService implements OnModuleDestroy {
 
     // Schedule the update to run asynchronously
     setImmediate(async () => {
+      this.logger.log(`Starting scheduled update for ${name} to version ${targetVersion}`)
+
+      // Create a mock client for capturing output
+      const mockClient = new EventEmitter()
+      mockClient.on('stdout', (data) => {
+        this.logger.log(`[${name} update] ${data.toString().trim()}`)
+      })
+
+      const result = await this.performPackageUpdate(name, targetVersion, mockClient)
+
+      if (!result.ok) {
+        this.logger.error(`Failed to update ${name}: ${result.error}`)
+        // Fallback to restarting Homebridge if anything goes wrong
+        try {
+          this.logger.warn('Attempting fallback restart of Homebridge process...')
+          this.homebridgeIpcService.restartHomebridge()
+        } catch (restartError) {
+          this.logger.error(`Failed to restart Homebridge: ${restartError.message}`)
+        }
+        return
+      }
+
+      // Apply the restart the update calls for. The narration matches the
+      // pre-extraction behaviour exactly.
       try {
-        this.logger.log(`Starting scheduled update for ${name} to version ${targetVersion}`)
-
-        // Create a mock client for capturing output
-        const mockClient = new EventEmitter()
-        mockClient.on('stdout', (data) => {
-          this.logger.log(`[${name} update] ${data.toString().trim()}`)
-        })
-
-        // Perform the update based on package type
-        if (name === 'homebridge') {
-          await this.updateHomebridgePackage({ version: targetVersion }, mockClient)
+        if (result.restart.homebridge && name === 'homebridge') {
           this.logger.log(`Successfully updated Homebridge to version ${targetVersion}. Performing quick restart of Homebridge process...`)
           this.homebridgeIpcService.restartHomebridge()
-        } else if (name === this.configService.name) {
-          await this.managePlugin('install', { name, version: targetVersion }, mockClient)
+        } else if (result.restart.ui) {
           this.logger.warn(`homebridge-config-ui-x has been updated, server will restart in ${PluginsService.UI_RESTART_DELAY_MS / 1000} seconds...`)
           this.scheduleUiRestart()
-        } else {
-          // It's a regular plugin - install it then check where it's running
-          await this.managePlugin('install', { name, version: targetVersion }, mockClient)
+        } else if (result.restart.childBridgeUsernames.length > 0) {
           this.logger.log(`Successfully updated ${name} to version ${targetVersion}.`)
-
-          // Check if the plugin is running in child bridges
-          const childBridgeUsernames = await this.getPluginChildBridgeUsernames(name)
-
-          if (childBridgeUsernames.length > 0) {
-            // Plugin is running in one or more child bridges - restart each child bridge
-            this.logger.log(`${name} is running in ${childBridgeUsernames.length} child bridge(s). Restarting child bridges: ${childBridgeUsernames.join(', ')}`)
-            for (const username of childBridgeUsernames) {
-              this.logger.log(`Restarting child bridge ${username}...`)
-              this.childBridgesService.restartChildBridge(username)
-            }
-          } else {
-            // Plugin is not running in a child bridge - do a quick restart of Homebridge
-            this.logger.log(`${name} is not running in a child bridge. Performing quick restart of Homebridge process...`)
-            this.homebridgeIpcService.restartHomebridge()
+          this.logger.log(`${name} is running in ${result.restart.childBridgeUsernames.length} child bridge(s). Restarting child bridges: ${result.restart.childBridgeUsernames.join(', ')}`)
+          for (const username of result.restart.childBridgeUsernames) {
+            this.logger.log(`Restarting child bridge ${username}...`)
+            this.childBridgesService.restartChildBridge(username)
           }
+        } else if (result.restart.homebridge) {
+          this.logger.log(`Successfully updated ${name} to version ${targetVersion}.`)
+          this.logger.log(`${name} is not running in a child bridge. Performing quick restart of Homebridge process...`)
+          this.homebridgeIpcService.restartHomebridge()
         }
       } catch (error) {
         this.logger.error(`Failed to update ${name}: ${error.message}`)
-        // Fallback to restarting Homebridge if anything goes wrong
         try {
           this.logger.warn('Attempting fallback restart of Homebridge process...')
           this.homebridgeIpcService.restartHomebridge()
@@ -1151,6 +1155,37 @@ export class PluginsService implements OnModuleDestroy {
       ok: true,
       name,
       version: targetVersion,
+    }
+  }
+
+  /**
+   * Perform a single package update (plugin, Homebridge, or the UI itself)
+   * WITHOUT any restart side effect. The result says what restart the update
+   * calls for; the caller decides when - and whether - to apply it. This is
+   * the shared path between the single-package endpoint above and the
+   * Update All orchestrator, which must control restart ordering itself
+   * (one Homebridge restart at the end, the UI's own restart last of all).
+   */
+  public async performPackageUpdate(name: string, version: string, client: EventEmitter): Promise<PackageUpdateResult> {
+    const restart = { homebridge: false, ui: false, childBridgeUsernames: [] as string[] }
+    try {
+      if (name === 'homebridge') {
+        await this.updateHomebridgePackage({ version }, client)
+        restart.homebridge = true
+      } else if (name === this.configService.name) {
+        await this.managePlugin('install', { name, version }, client)
+        restart.ui = true
+      } else {
+        // A regular plugin - install it, then work out what runs it
+        await this.managePlugin('install', { name, version }, client)
+        restart.childBridgeUsernames = await this.getPluginChildBridgeUsernames(name)
+        if (restart.childBridgeUsernames.length === 0) {
+          restart.homebridge = true
+        }
+      }
+      return { ok: true, name, version, restart }
+    } catch (error) {
+      return { ok: false, name, version, error: error.message, restart }
     }
   }
 
