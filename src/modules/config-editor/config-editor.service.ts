@@ -148,15 +148,12 @@ export class ConfigEditorService implements OnApplicationBootstrap {
   }
 
   /**
-   * Updates the config file
+   * Normalise a config object in place: ensure the bridge block is complete
+   * and valid, the array sections are arrays, and the optional sections are
+   * well-formed. Shared by the full-file save path and the locked
+   * read-modify-write path so both persist the same shape.
    */
-  public async updateConfigFile(config: HomebridgeConfig) {
-    // Wait until bootstrap-time migration has finished. Otherwise a save
-    // landing during start() could race with the backup migration's
-    // move/remove of legacy config.json.<ts> files.
-    await this.ready
-    const now = new Date()
-
+  private normaliseConfig(config: HomebridgeConfig | null): HomebridgeConfig {
     if (!config) {
       config = {} as HomebridgeConfig
     }
@@ -245,6 +242,21 @@ export class ConfigEditorService implements OnApplicationBootstrap {
       delete config.disabledPlugins
     }
 
+    return config
+  }
+
+  /**
+   * Updates the config file
+   */
+  public async updateConfigFile(config: HomebridgeConfig) {
+    // Wait until bootstrap-time migration has finished. Otherwise a save
+    // landing during start() could race with the backup migration's
+    // move/remove of legacy config.json.<ts> files.
+    await this.ready
+    const now = new Date()
+
+    config = this.normaliseConfig(config)
+
     // Snapshot the existing config to a timestamped backup path before
     // overwriting. copyFile keeps the live file present (never unlinked)
     // so a crash between snapshot and write can't lose config.json. The
@@ -277,6 +289,53 @@ export class ConfigEditorService implements OnApplicationBootstrap {
   }
 
   /**
+   * Read-modify-write of config.json inside the JsonFileStore's per-path
+   * mutex. The mutator receives the current config, fresh from disk and
+   * normalised, and mutates it in place; its return value is handed back to
+   * the caller.
+   *
+   * The targeted mutation endpoints (disable/enable plugin, the ui hide
+   * lists, per-bridge properties, per-plugin config) used to read via
+   * getConfigFile() outside the lock and then persist the whole file - so
+   * two concurrent calls both loaded the same baseline and the second write
+   * silently discarded the first's change. Only full-file saves, where the
+   * caller intentionally supplies the entire config, stay on
+   * updateConfigFile().
+   */
+  private async mutateConfigFile<R>(mutator: (config: HomebridgeConfig) => R | Promise<R>): Promise<R> {
+    // Wait until bootstrap-time migration has finished, same as
+    // updateConfigFile().
+    await this.ready
+    const now = new Date()
+
+    let result: R
+    await this.jsonStore.mutate<HomebridgeConfig>(
+      this.configService.configPath,
+      async (current) => {
+        const config = this.normaliseConfig(current)
+        result = await mutator(config)
+        // The mutators here never touch the restart commands, but keep the
+        // allowlist chokepoint on every path that persists the file.
+        this.assertRestartCommandsSafe(config)
+        return config
+      },
+      {
+        spaces: 4,
+        backupTo: resolve(this.configService.configBackupPath, `config.json.${now.getTime().toString()}`),
+      },
+    )
+
+    this.logger.log('Changes to config.json saved.')
+
+    // Re-parse the saved config into the runtime config service so
+    // subsequent reads reflect the change.
+    const updatedConfig = await this.getConfigFile()
+    this.configService.parseConfig(JSON.parse(JSON.stringify(updatedConfig)))
+
+    return result
+  }
+
+  /**
    * Return the config for a specific plugin
    */
   public async getConfigForPlugin(pluginName: string) {
@@ -301,10 +360,8 @@ export class ConfigEditorService implements OnApplicationBootstrap {
    * Update the config for a specific plugin
    */
   public async updateConfigForPlugin(pluginName: string, pluginConfig: Record<string, any>[]) {
-    const [plugin, config] = await Promise.all([
-      await this.pluginsService.getPluginAlias(pluginName),
-      await this.getConfigFile(),
-    ])
+    // The alias lookup does plugin io, so it runs outside the config lock.
+    const plugin = await this.pluginsService.getPluginAlias(pluginName)
 
     if (!plugin.pluginAlias) {
       throw new BadRequestException('Plugin alias could not be determined.')
@@ -323,29 +380,6 @@ export class ConfigEditorService implements OnApplicationBootstrap {
         throw new BadRequestException('Plugin config must be an array of objects.')
       }
       block[plugin.pluginType] = plugin.pluginAlias
-    }
-
-    let positionIndices: number
-
-    // Remove the existing config blocks
-    if (arrayKey === 'accessories') {
-      config.accessories = config.accessories?.filter((block, index) => {
-        if (block[plugin.pluginType] === plugin.pluginAlias || block[plugin.pluginType] === `${pluginName}.${plugin.pluginAlias}`) {
-          positionIndices = index
-          return false
-        } else {
-          return true
-        }
-      }) || []
-    } else {
-      config.platforms = config.platforms?.filter((block, index) => {
-        if (block[plugin.pluginType] === plugin.pluginAlias || block[plugin.pluginType] === `${pluginName}.${plugin.pluginAlias}`) {
-          positionIndices = index
-          return false
-        } else {
-          return true
-        }
-      }) || []
     }
 
     // Try and keep any _bridge object 'clean'
@@ -381,24 +415,38 @@ export class ConfigEditorService implements OnApplicationBootstrap {
       }
     })
 
-    // Replace with the provided config, trying to put it back in the same location
-    if (arrayKey === 'accessories') {
-      if (positionIndices !== undefined) {
-        config.accessories?.splice(positionIndices, 0, ...(pluginConfig as AccessoryConfig[]))
-      } else {
-        config.accessories?.push(...(pluginConfig as AccessoryConfig[]))
-      }
-    } else {
-      if (positionIndices !== undefined) {
-        config.platforms?.splice(positionIndices, 0, ...(pluginConfig as PlatformConfig[]))
-      } else {
-        config.platforms?.push(...(pluginConfig as PlatformConfig[]))
-      }
-    }
+    // Remove the existing blocks and put the new ones back in the same
+    // location, against a fresh read of the config inside the lock.
+    return this.mutateConfigFile((config) => {
+      let positionIndices: number
 
-    // Save the config file
-    await this.updateConfigFile(config)
-    return pluginConfig
+      const removeExisting = (block: Record<string, any>, index: number) => {
+        if (block[plugin.pluginType] === plugin.pluginAlias || block[plugin.pluginType] === `${pluginName}.${plugin.pluginAlias}`) {
+          positionIndices = index
+          return false
+        } else {
+          return true
+        }
+      }
+
+      if (arrayKey === 'accessories') {
+        config.accessories = config.accessories?.filter(removeExisting) || []
+        if (positionIndices !== undefined) {
+          config.accessories?.splice(positionIndices, 0, ...(pluginConfig as AccessoryConfig[]))
+        } else {
+          config.accessories?.push(...(pluginConfig as AccessoryConfig[]))
+        }
+      } else {
+        config.platforms = config.platforms?.filter(removeExisting) || []
+        if (positionIndices !== undefined) {
+          config.platforms?.splice(positionIndices, 0, ...(pluginConfig as PlatformConfig[]))
+        } else {
+          config.platforms?.push(...(pluginConfig as PlatformConfig[]))
+        }
+      }
+
+      return pluginConfig
+    })
   }
 
   /**
@@ -558,22 +606,19 @@ export class ConfigEditorService implements OnApplicationBootstrap {
    * Set the accessory control blacklist (this request is not partial)
    */
   public async setAccessoryControlInstanceBlacklist(value: string[]) {
-    // 1. Get the current config for the Homebridge UI
-    const config = await this.getConfigFile()
-    const pluginConfig = this.findOrCreateUiConfigBlock(config)
+    await this.mutateConfigFile((config) => {
+      const pluginConfig = this.findOrCreateUiConfigBlock(config)
 
-    // 2. Ensure the accessoryControl block exists and set the instanceBlacklist
-    if (!pluginConfig.accessoryControl) {
-      pluginConfig.accessoryControl = {}
-    }
-    pluginConfig.accessoryControl.instanceBlacklist = (value || [])
-      .filter(x => typeof x === 'string' && x.trim() !== '' && RE_USERNAME.test(x.trim()))
-      .map(x => x.trim().toUpperCase())
-      .sort((a, b) => a.localeCompare(b))
+      if (!pluginConfig.accessoryControl) {
+        pluginConfig.accessoryControl = {}
+      }
+      pluginConfig.accessoryControl.instanceBlacklist = (value || [])
+        .filter(x => typeof x === 'string' && x.trim() !== '' && RE_USERNAME.test(x.trim()))
+        .map(x => x.trim().toUpperCase())
+        .sort((a, b) => a.localeCompare(b))
 
-    // 3. Clean and save the UI config block
-    config.platforms[config.platforms.findIndex(x => x.platform === 'config')] = this.cleanUpUiConfig(pluginConfig)
-    await this.updateConfigFile(config)
+      config.platforms[config.platforms.findIndex(x => x.platform === 'config')] = this.cleanUpUiConfig(pluginConfig)
+    })
   }
 
   /**
@@ -592,21 +637,18 @@ export class ConfigEditorService implements OnApplicationBootstrap {
    * Set the plugin hide update list (this request is not partial)
    */
   public async setPluginsHideUpdatesFor(value: string[]) {
-    // 1. Get the current config for the Homebridge UI
-    const config = await this.getConfigFile()
-    const pluginConfig = this.findOrCreateUiConfigBlock(config)
+    await this.mutateConfigFile((config) => {
+      const pluginConfig = this.findOrCreateUiConfigBlock(config)
 
-    // 2. Ensure the plugins object exists and set the hideUpdatesFor property
-    if (!pluginConfig.plugins) {
-      pluginConfig.plugins = {}
-    }
-    pluginConfig.plugins.hideUpdatesFor = (value || [])
-      .filter(x => typeof x === 'string' && x.trim() !== '' && RE_PLUGIN_NAME.test(x.trim()))
-      .map(x => x.trim().toLowerCase())
+      if (!pluginConfig.plugins) {
+        pluginConfig.plugins = {}
+      }
+      pluginConfig.plugins.hideUpdatesFor = (value || [])
+        .filter(x => typeof x === 'string' && x.trim() !== '' && RE_PLUGIN_NAME.test(x.trim()))
+        .map(x => x.trim().toLowerCase())
 
-    // 3. Clean and save the UI config block
-    config.platforms[config.platforms.findIndex(x => x.platform === 'config')] = this.cleanUpUiConfig(pluginConfig)
-    await this.updateConfigFile(config)
+      config.platforms[config.platforms.findIndex(x => x.platform === 'config')] = this.cleanUpUiConfig(pluginConfig)
+    })
   }
 
   /**
@@ -622,18 +664,18 @@ export class ConfigEditorService implements OnApplicationBootstrap {
    * Set the plugin hide child-bridge-setup recommendation list (this request is not partial)
    */
   public async setPluginsHideChildBridgeSetupFor(value: string[]) {
-    const config = await this.getConfigFile()
-    const pluginConfig = this.findOrCreateUiConfigBlock(config)
+    await this.mutateConfigFile((config) => {
+      const pluginConfig = this.findOrCreateUiConfigBlock(config)
 
-    if (!pluginConfig.plugins) {
-      pluginConfig.plugins = {}
-    }
-    pluginConfig.plugins.hideChildBridgeSetupFor = (value || [])
-      .filter(x => typeof x === 'string' && x.trim() !== '' && RE_PLUGIN_NAME.test(x.trim()))
-      .map(x => x.trim().toLowerCase())
+      if (!pluginConfig.plugins) {
+        pluginConfig.plugins = {}
+      }
+      pluginConfig.plugins.hideChildBridgeSetupFor = (value || [])
+        .filter(x => typeof x === 'string' && x.trim() !== '' && RE_PLUGIN_NAME.test(x.trim()))
+        .map(x => x.trim().toLowerCase())
 
-    config.platforms[config.platforms.findIndex(x => x.platform === 'config')] = this.cleanUpUiConfig(pluginConfig)
-    await this.updateConfigFile(config)
+      config.platforms[config.platforms.findIndex(x => x.platform === 'config')] = this.cleanUpUiConfig(pluginConfig)
+    })
   }
 
   /**
@@ -679,42 +721,43 @@ export class ConfigEditorService implements OnApplicationBootstrap {
       throw new NotFoundException('Invalid bridge username format')
     }
 
-    const config = await this.getConfigFile()
-    const pluginConfig = this.findOrCreateUiConfigBlock(config)
     const normalizedUsername = username.trim().toUpperCase()
 
-    // Initialize bridges array if it doesn't exist
-    if (!pluginConfig.bridges) {
-      pluginConfig.bridges = []
-    }
+    await this.mutateConfigFile((config) => {
+      const pluginConfig = this.findOrCreateUiConfigBlock(config)
 
-    let bridge = pluginConfig.bridges.find((b: HomebridgeUiBridgeConfig) => b.username.toUpperCase() === normalizedUsername)
-
-    // Check if value is "truthy" - for booleans this is true, for strings this is non-empty, for null/undefined this is false
-    const shouldSet = value !== null && value !== undefined && value !== false && value !== '' && value !== 'never'
-
-    if (shouldSet) {
-      // Set property to the value
-      if (!bridge) {
-        bridge = { username: normalizedUsername }
-        pluginConfig.bridges.push(bridge)
+      // Initialize bridges array if it doesn't exist
+      if (!pluginConfig.bridges) {
+        pluginConfig.bridges = []
       }
-      bridge[property] = value
-    } else {
-      // Remove the property
-      if (bridge) {
-        delete bridge[property]
 
-        // Remove bridge if it has no properties other than username
-        const hasOtherProps = Object.keys(bridge).some(key => key !== 'username')
-        if (!hasOtherProps) {
-          pluginConfig.bridges = pluginConfig.bridges.filter((b: HomebridgeUiBridgeConfig) => b.username.toUpperCase() !== normalizedUsername)
+      let bridge = pluginConfig.bridges.find((b: HomebridgeUiBridgeConfig) => b.username.toUpperCase() === normalizedUsername)
+
+      // Check if value is "truthy" - for booleans this is true, for strings this is non-empty, for null/undefined this is false
+      const shouldSet = value !== null && value !== undefined && value !== false && value !== '' && value !== 'never'
+
+      if (shouldSet) {
+        // Set property to the value
+        if (!bridge) {
+          bridge = { username: normalizedUsername }
+          pluginConfig.bridges.push(bridge)
+        }
+        bridge[property] = value
+      } else {
+        // Remove the property
+        if (bridge) {
+          delete bridge[property]
+
+          // Remove bridge if it has no properties other than username
+          const hasOtherProps = Object.keys(bridge).some(key => key !== 'username')
+          if (!hasOtherProps) {
+            pluginConfig.bridges = pluginConfig.bridges.filter((b: HomebridgeUiBridgeConfig) => b.username.toUpperCase() !== normalizedUsername)
+          }
         }
       }
-    }
 
-    config.platforms[config.platforms.findIndex(x => x.platform === 'config')] = this.cleanUpUiConfig(pluginConfig)
-    await this.updateConfigFile(config)
+      config.platforms[config.platforms.findIndex(x => x.platform === 'config')] = this.cleanUpUiConfig(pluginConfig)
+    })
   }
 
   /**
@@ -746,37 +789,35 @@ export class ConfigEditorService implements OnApplicationBootstrap {
       throw new BadRequestException('Disabling this plugin is now allowed.')
     }
 
-    const config = await this.getConfigFile()
+    return this.mutateConfigFile((config) => {
+      if (!Array.isArray(config.disabledPlugins)) {
+        config.disabledPlugins = []
+      }
 
-    if (!Array.isArray(config.disabledPlugins)) {
-      config.disabledPlugins = []
-    }
-
-    config.disabledPlugins.push(pluginName)
-
-    await this.updateConfigFile(config)
-    return config.disabledPlugins
+      config.disabledPlugins.push(pluginName)
+      return config.disabledPlugins
+    })
   }
 
   /**
    * Mark a plugin as enabled
    */
   public async enablePlugin(pluginName: string) {
-    const config = await this.getConfigFile()
+    // The mutator always runs and returns the (possibly untouched) list; the
+    // write is a no-op change when the plugin was not in the list, which is
+    // the price of doing the check against a fresh read inside the lock.
+    return this.mutateConfigFile((config) => {
+      if (!Array.isArray(config.disabledPlugins)) {
+        config.disabledPlugins = []
+      }
 
-    if (!Array.isArray(config.disabledPlugins)) {
-      config.disabledPlugins = []
-    }
+      const idx = config.disabledPlugins.findIndex(x => x === pluginName)
+      if (idx > -1) {
+        config.disabledPlugins.splice(idx, 1)
+      }
 
-    const idx = config.disabledPlugins.findIndex(x => x === pluginName)
-
-    // Check plugin is in the list
-    if (idx > -1) {
-      config.disabledPlugins.splice(idx, 1)
-      await this.updateConfigFile(config)
-    }
-
-    return config.disabledPlugins
+      return config.disabledPlugins
+    })
   }
 
   /**

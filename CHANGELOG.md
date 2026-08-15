@@ -81,6 +81,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(accessories): reject a non-numeric characteristic value instead of sending NaN to homebridge
 - fix(terminal): stop one client's disconnect muting the exit notice of every other terminal session
 - fix(accessories): share one characteristic monitor so a second tab no longer freezes live updates in the first
+- fix(config-editor): run the targeted config mutations inside the file lock so concurrent saves cannot clobber each other
 
 ### Homebridge Dependencies
 

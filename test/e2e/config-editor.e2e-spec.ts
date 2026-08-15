@@ -1604,6 +1604,27 @@ describe('ConfigEditorController (e2e)', () => {
     expect(result.length).toBe(0)
   })
 
+  it('concurrent targeted mutations do not clobber each other', async () => {
+    // Regression: the targeted mutation endpoints read the config outside the
+    // lock and then persisted the whole file, so two concurrent calls both
+    // loaded the same baseline and the second write silently discarded the
+    // first's change. All four changes below must survive together.
+    await Promise.all([
+      configEditorService.disablePlugin('homebridge-mock-plugin'),
+      configEditorService.setPluginsHideUpdatesFor(['homebridge-mock-plugin-two']),
+      configEditorService.setBridgeHideHapAlert('67:E4:1F:0E:A0:5D', true),
+      configEditorService.setAccessoryControlInstanceBlacklist(['0E:02:9A:9D:44:45']),
+    ])
+
+    const savedConfig: HomebridgeConfig = await readJson(configFilePath)
+    const uiBlock = savedConfig.platforms.find(x => x.platform === 'config') as any
+
+    expect(savedConfig.disabledPlugins).toContain('homebridge-mock-plugin')
+    expect(uiBlock.plugins.hideUpdatesFor).toEqual(['homebridge-mock-plugin-two'])
+    expect(uiBlock.bridges).toEqual([{ username: '67:E4:1F:0E:A0:5D', hideHapAlert: true }])
+    expect(uiBlock.accessoryControl.instanceBlacklist).toEqual(['0E:02:9A:9D:44:45'])
+  })
+
   it('PUT /config-editor/ui/* (creates the ui platform block when the config has none)', async () => {
     // Regression: a config.json without a `platform: config` block is a
     // supported state (ConfigService falls back to a stub at startup), but the
