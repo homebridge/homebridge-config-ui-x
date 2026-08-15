@@ -66,6 +66,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(server): drop 'unsafe-inline' from the app's script-src
 - fix(auth): hold the access token in memory instead of localStorage
 - fix(custom-plugins): replace the plugin UI session cookie with short-lived, single-use tickets (@NorthernMan54)
+- fix(custom-plugins): block alternative HTML documents in custom plugin UIs; every HTML entry point must redeem a ticket
 - test(status): stop the dashboard e2e tests clobbering the dev storage layout
 - fix(custom-plugins): allow plugin UI webfonts from the dev server origin
 - chore(build): stop copying monaco's unused json language sources
