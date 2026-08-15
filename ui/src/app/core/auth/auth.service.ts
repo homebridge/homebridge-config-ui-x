@@ -36,11 +36,6 @@ export class AuthService {
   }
 
   public async login(form: { username: string, password: string, ota?: string }) {
-    // withCredentials lets the browser store the hb-session cookie the
-    // server sets on this response. Same-origin requests do this anyway,
-    // but the dev server (:4200 → :8581) is cross-origin, where the
-    // Set-Cookie header is silently ignored without it — leaving the
-    // custom plugin UI iframe to 401 against /api/plugins/settings-ui/*.
     const resp = await this.$api.post('/auth/login', form, { withCredentials: true })
     if (!this.validateToken(resp.access_token)) {
       throw new Error('Invalid username or password.')
@@ -50,7 +45,6 @@ export class AuthService {
   }
 
   public async noauth() {
-    // withCredentials: see login() — required for the hb-session cookie
     const resp = await this.$api.post('/auth/noauth', {}, { withCredentials: true })
     if (!this.validateToken(resp.access_token)) {
       throw new Error('Invalid username or password.')
@@ -61,16 +55,22 @@ export class AuthService {
   }
 
   public logout() {
-    this.user = {} as UserInterface
-    this.token = null
-    setStoredToken(null)
     clearTimeout(this.logoutTimer)
     // Clear the HttpOnly cookies server-side before reloading. Without this the
     // browser would still hold a valid hb-refresh cookie and the reload would
     // silently restore the session the user just ended.
-    this.$api.post('/auth/logout', {}, { withCredentials: true })
+    // Start the request while the bearer token is still available to the HTTP
+    // interceptor, then clear local authentication immediately. The server
+    // cleanup is best-effort and must not leave the UI signed in if it stalls.
+    const logoutRequest = this.$api.post('/auth/logout', {}, { withCredentials: true })
+    this.user = {} as UserInterface
+    this.token = null
+    setStoredToken(null)
+    logoutRequest
       .catch(() => { /* logging out regardless */ })
-      .finally(() => window.location.reload())
+      .finally(() => {
+        window.location.reload()
+      })
   }
 
   public async loadToken() {
@@ -78,8 +78,8 @@ export class AuthService {
       await firstValueFrom(this.$settings.onSettingsLoaded)
     }
     // The access token is only ever held in memory, so a page load starts with
-    // nothing. Exchange the HttpOnly hb-refresh cookie for a fresh token; this
-    // also re-mints the hb-session cookie the custom plugin UIs need (#2893).
+    // nothing. Exchange the HttpOnly hb-refresh cookie for a fresh token.
+    // Plugin UIs use their own short-lived, single-use tickets (#2893).
     //
     // A failure here is the normal "not signed in" case — the route guards send
     // the user to /login — so it must never throw and block boot.
@@ -235,7 +235,7 @@ export class AuthService {
    * Refresh the current session by getting a new token
    * @param reason - optional allowlisted reason for distinct server log lines
    */
-  public async refreshSession(reason?: 'hb-session-bootstrap' | 'admin-guard' | 'session-extension' | 'profile-update') {
+  public async refreshSession(reason?: 'admin-guard' | 'session-extension' | 'profile-update') {
     if (this.isRefreshing) {
       return
     }
@@ -243,7 +243,6 @@ export class AuthService {
     this.isRefreshing = true
 
     try {
-      // withCredentials: see login() — required for the hb-session cookie
       const resp = await this.$api.post('/auth/refresh', reason ? { reason } : {}, { withCredentials: true })
       if (resp.access_token) {
         // Hold the new token in memory; AuthHelperService reads through to

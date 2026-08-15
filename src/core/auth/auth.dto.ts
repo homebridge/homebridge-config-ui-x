@@ -22,7 +22,6 @@ export class AuthDto {
 
 /** Client-supplied reason for POST /auth/refresh — used only for distinct log lines. */
 export const REFRESH_TOKEN_REASONS = [
-  'hb-session-bootstrap',
   'admin-guard',
   'session-extension',
   'profile-update',

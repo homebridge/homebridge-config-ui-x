@@ -4,7 +4,6 @@
     <button
       type="button"
       class="btn-close"
-      data-bs-dismiss="modal"
       [attr.aria-label]="'form.button_close' | translate"
       [disabled]="saveInProgress()"
       (click)="dismissModal()"
@@ -74,13 +73,7 @@
   </div>
   <div class="modal-footer justify-content-between">
     <div class="text-start">
-      <button
-        type="button"
-        class="btn btn-elegant"
-        data-bs-dismiss="modal"
-        [disabled]="saveInProgress()"
-        (click)="dismissModal()"
-      >
+      <button type="button" class="btn btn-elegant" [disabled]="saveInProgress()" (click)="dismissModal()">
         {{ 'form.button_close' | translate }}
       </button>
     </div>
@@ -111,7 +104,6 @@
       <button
         type="button"
         class="btn btn-primary"
-        data-bs-dismiss="modal"
         [disabled]="saveInProgress() || saveButtonDisabled()"
         (click)="savePluginConfig(true)"
       >

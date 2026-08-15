@@ -14,12 +14,13 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger'
 import Bonjour from 'bonjour-service'
 
 import { AppModule } from './app.module.js'
+import { API_PREFIX } from './core/api.constants.js'
 import { ConfigService } from './core/config/config.service.js'
 import { getStartupConfig } from './core/config/config.startup.js'
 import { devServerCorsConfig } from './core/cors.config.js'
 import { Logger } from './core/logger/logger.service.js'
-import { RE_HASHED_ASSET } from './core/regex.constants.js'
 import { SpaFilter } from './core/spa/spa.filter.js'
+import { setStaticAssetCacheHeaders } from './core/static-assets.js'
 
 import './env-setup.js'
 import 'reflect-metadata'
@@ -135,18 +136,11 @@ async function bootstrap(): Promise<NestFastifyApplication> {
   app.useStaticAssets({
     root: resolve(process.env.UIX_BASE_PATH, 'public'),
     cacheControl: false,
-    setHeaders: (reply: unknown, path: string) => {
-      const res = reply as FastifyReply
-      if (RE_HASHED_ASSET.test(path)) {
-        res.header('Cache-Control', 'public,max-age=31536000,immutable')
-      } else {
-        res.header('Cache-Control', 'no-cache')
-      }
-    },
+    setHeaders: setStaticAssetCacheHeaders,
   })
 
   // Set prefix
-  app.setGlobalPrefix('/api')
+  app.setGlobalPrefix(API_PREFIX)
 
   // (9) Set up cors
   app.enableCors({
