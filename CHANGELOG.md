@@ -87,6 +87,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(scripts): wait for the alias message to flush before the extract child exits
 - fix(test): restore the shared test storage directory after a run, so the suite stops clobbering dev state
 - refactor(plugins): extract a restart-free package update path shared by single updates and update all
+- fix(auth): let a plugin authenticate as a service, instead of every self-minted token now failing
 
 ### Homebridge Dependencies
 
