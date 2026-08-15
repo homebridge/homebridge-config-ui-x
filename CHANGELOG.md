@@ -77,6 +77,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(test): poll for the tailed log lines instead of sleeping, so a slow runner cannot fail the job
 - fix(users): refuse to demote the only admin, matching the existing delete protection
 - fix(config-editor): create the ui platform block on demand instead of crashing when a config has none
+- fix(accessories): stop a malformed accessory-control message taking down the ui process
 
 ### Homebridge Dependencies
 
