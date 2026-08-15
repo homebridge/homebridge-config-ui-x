@@ -83,6 +83,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(accessories): share one characteristic monitor so a second tab no longer freezes live updates in the first
 - fix(config-editor): run the targeted config mutations inside the file lock so concurrent saves cannot clobber each other
 - fix(scripts): make the ui self-update rollback actually restore the previous version on failure
+- fix(scripts): import esm plugins via a file url so alias extraction works on windows
 
 ### Homebridge Dependencies
 

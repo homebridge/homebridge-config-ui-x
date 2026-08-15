@@ -7,6 +7,7 @@ import { readFileSync } from 'node:fs'
 import { createRequire } from 'node:module'
 import path from 'node:path'
 import process from 'node:process'
+import { pathToFileURL } from 'node:url'
 
 // Create a require function for loading CommonJS plugins
 const require = createRequire(import.meta.url)
@@ -148,10 +149,13 @@ async function main() {
     } catch (requireError) {
       // If require fails, try dynamic import for ESM modules
       try {
-        // For ESM, we need to use file:// URL on some platforms
-        const importPath = actualEntryPoint.startsWith('/') || actualEntryPoint.startsWith('file://')
+        // import() only accepts file:// URLs for absolute paths on Windows -
+        // a raw `C:\...` path is read as a URL with protocol `c:` and throws
+        // ERR_UNSUPPORTED_ESM_URL_SCHEME, so ESM plugins never resolved an
+        // alias there. pathToFileURL handles every platform.
+        const importPath = actualEntryPoint.startsWith('file://')
           ? actualEntryPoint
-          : path.resolve(actualEntryPoint)
+          : pathToFileURL(path.resolve(actualEntryPoint)).href
         pluginModules = await import(importPath)
       } catch (importError) {
         throw requireError // Throw the original error
