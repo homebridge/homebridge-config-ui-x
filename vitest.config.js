@@ -7,6 +7,9 @@ export default defineConfig({
       include: ['src/**/*.ts'],
     },
     fileParallelism: false,
+    // Snapshot/restore test/.homebridge around the run - the specs write mock
+    // fixtures into it, and it is the same directory `npm run watch` uses
+    globalSetup: ['./test/global-setup.ts'],
     include: ['test/**/*.e2e-spec.ts'],
   },
   plugins: [
