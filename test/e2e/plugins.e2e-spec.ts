@@ -16,7 +16,7 @@ import { Test } from '@nestjs/testing'
 import { copy, readJson, remove } from 'fs-extra'
 import { of } from 'rxjs'
 import { gt as semverGt } from 'semver'
-import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { AuthModule } from '../../src/core/auth/auth.module.js'
 import { ConfigService } from '../../src/core/config/config.service.js'
@@ -1942,6 +1942,87 @@ describe('PluginController (e2e)', () => {
       await pluginsService.getHomebridgePackage()
 
       expect(configService.homebridgeVersion).toBe('2.1.1')
+    })
+  })
+
+  describe('getInstalledModules - a running install outside the scanned paths (#2897)', () => {
+    let configService: ConfigService
+    let scannedPath: string
+    let unscannedPath: string
+
+    const getInstalledModules = () =>
+      (pluginsService as any).getInstalledModules() as Promise<Array<{ name: string, path: string, installPath: string }>>
+
+    beforeEach(async () => {
+      configService = app.get(ConfigService)
+
+      // The copy the base path scan can see, standing in for the stale second install
+      scannedPath = resolve(process.env.UIX_STORAGE_PATH, 'plugins', 'node_modules', 'homebridge')
+      await mkdir(scannedPath, { recursive: true })
+      await writeFile(join(scannedPath, 'package.json'), JSON.stringify({ name: 'homebridge', version: '2.1.1' }))
+
+      // The one hb-service actually launched, in an /opt/homebridge style location
+      // that is not among the scanned base paths
+      unscannedPath = resolve(process.env.UIX_STORAGE_PATH, 'opt-homebridge', 'lib', 'node_modules', 'homebridge')
+      await mkdir(unscannedPath, { recursive: true })
+      await writeFile(join(unscannedPath, 'package.json'), JSON.stringify({ name: 'homebridge', version: '1.9.0' }))
+
+      configService.runningHomebridgeModulePath = unscannedPath
+    })
+
+    afterEach(async () => {
+      configService.runningHomebridgeModulePath = undefined
+      await remove(resolve(process.env.UIX_STORAGE_PATH, 'opt-homebridge'))
+      await remove(scannedPath)
+    })
+
+    // Regression: the scan only ever returned installs under the base paths, so the
+    // apt and Pi image location was invisible. findRunningHomebridgeInstall then had
+    // nothing to match and getHomebridgePackage fell back to the first discovered
+    // install - the copy that is not running.
+    it('includes the running install so it can be matched', async () => {
+      const modules = await getInstalledModules()
+      const homebridgeInstalls = modules.filter(x => x.name === 'homebridge')
+
+      expect(homebridgeInstalls.some(x => x.installPath === unscannedPath)).toBe(true)
+    })
+
+    it('reports the running version rather than the discovered one', async () => {
+      const homebridge = await pluginsService.getHomebridgePackage()
+
+      expect(homebridge.installedVersion).toBe('1.9.0')
+      expect(configService.homebridgeVersion).toBe('1.9.0')
+    })
+
+    it('resolves the running path through a symlink without listing it twice', async () => {
+      const linkPath = resolve(process.env.UIX_STORAGE_PATH, 'opt-homebridge-link')
+      await remove(linkPath)
+      await symlink(unscannedPath, linkPath, 'junction')
+      configService.runningHomebridgeModulePath = linkPath
+
+      const modules = await getInstalledModules()
+      const homebridgeInstalls = modules.filter(x => x.name === 'homebridge')
+
+      expect(homebridgeInstalls.filter(x => x.installPath === unscannedPath)).toHaveLength(1)
+      expect(homebridgeInstalls.some(x => x.installPath === linkPath)).toBe(false)
+      await remove(linkPath)
+    })
+
+    it('leaves the scan alone when the running path has no package.json', async () => {
+      configService.runningHomebridgeModulePath = resolve(process.env.UIX_STORAGE_PATH, 'opt-homebridge', 'empty')
+
+      const modules = await getInstalledModules()
+
+      expect(modules.some(x => x.name === 'homebridge' && x.installPath === scannedPath)).toBe(true)
+      expect(modules.some(x => x.installPath.endsWith('empty'))).toBe(false)
+    })
+
+    it('leaves the scan alone when the running path does not exist', async () => {
+      configService.runningHomebridgeModulePath = resolve(process.env.UIX_STORAGE_PATH, 'does-not-exist', 'homebridge')
+
+      const modules = await getInstalledModules()
+
+      expect(modules.some(x => x.name === 'homebridge' && x.installPath === scannedPath)).toBe(true)
     })
   })
 
