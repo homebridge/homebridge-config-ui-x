@@ -33,6 +33,22 @@ describe('LogGateway (e2e)', () => {
 
   const size = { cols: 80, rows: 24 }
 
+  /**
+   * Wait for the tailed log lines to reach the client.
+   *
+   * These tests spawn a real process (`tail`, or PowerShell's `Get-Content -Wait`)
+   * and its first output is its own startup banner, not the file. A fixed sleep
+   * therefore only passes while the runner is fast enough: a cold Windows runner
+   * took longer than the old 1000ms to get PowerShell going, so the assertion ran
+   * against the banner alone and the job failed. Polling returns as soon as the
+   * lines land, and only gives up if they genuinely never arrive.
+   */
+  const expectTailedLines = () => vi.waitFor(() => {
+    expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('line 1'))
+    expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('line 2'))
+    expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('line 3'))
+  }, { timeout: 15000, interval: 50 })
+
   beforeAll(async () => {
     process.env.UIX_BASE_PATH = resolve(__dirname, '../../')
     process.env.UIX_STORAGE_PATH = resolve(__dirname, '../', '.homebridge')
@@ -98,11 +114,7 @@ describe('LogGateway (e2e)', () => {
 
     logGateway.connect(client, size)
 
-    await new Promise(res => setTimeout(res, 100))
-
-    expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('line 1'))
-    expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('line 2'))
-    expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('line 3'))
+    await expectTailedLines()
   })
 
   it('ON /log/tail-log (tail)', async () => {
@@ -121,11 +133,7 @@ describe('LogGateway (e2e)', () => {
 
     logGateway.connect(client, size)
 
-    await new Promise(res => setTimeout(res, 1000))
-
-    expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('line 1'))
-    expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('line 2'))
-    expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('line 3'))
+    await expectTailedLines()
   })
 
   it('ON /log/tail-log (tail - with sudo)', async () => {
@@ -191,11 +199,7 @@ describe('LogGateway (e2e)', () => {
 
     logGateway.connect(client, size)
 
-    await new Promise(res => setTimeout(res, 1000))
-
-    expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('line 1'))
-    expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('line 2'))
-    expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('line 3'))
+    await expectTailedLines()
   })
 
   it('ON /log/tail-log (cleans up connections)', async () => {
