@@ -45,7 +45,16 @@ describe('PluginController (e2e)', () => {
   let pluginsPath: string
   let authorization: string
 
+  // ⚠️ Two tests below POST /plugins/update/homebridge-config-ui-x, which is
+  // the path that schedules the UI's own restart - a real process.exit(0) five
+  // seconds later. The test that arms it passes and moves on, so the exit lands
+  // mid-suite and kills the whole vitest worker, blamed on whichever unrelated
+  // test happened to be running. Held for the lifetime of this file rather than
+  // per-test, because the fuse outlives the test that lit it.
+  let exitSpy: ReturnType<typeof vi.spyOn>
+
   beforeAll(async () => {
+    exitSpy = vi.spyOn(process, 'exit').mockImplementation((() => undefined) as never)
     process.env.UIX_BASE_PATH = resolve(__dirname, '../../')
     process.env.UIX_STORAGE_PATH = resolve(__dirname, '../', '.homebridge')
     process.env.UIX_CONFIG_PATH = resolve(process.env.UIX_STORAGE_PATH, 'config.json')
@@ -1976,6 +1985,9 @@ describe('PluginController (e2e)', () => {
   })
 
   afterAll(async () => {
+    // Close first: PluginsService.onModuleDestroy clears any restart still
+    // pending, so nothing can fire once the spy is gone.
     await app.close()
+    exitSpy.mockRestore()
   })
 })
