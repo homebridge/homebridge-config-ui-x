@@ -18,7 +18,12 @@ export class AccessoriesGateway {
 
   @SubscribeMessage('get-accessories')
   connect(client: any, payload: any) {
-    this.accessoriesService.connect(client)
+    // Deliberately not awaited - but it must not be left to reject unhandled
+    // either: there is no global unhandledRejection handler, so a rejection
+    // here would take the whole UI process down.
+    this.accessoriesService.connect(client).catch((e) => {
+      client.emit('accessory-control-failure', e.message)
+    })
   }
 
   @SubscribeMessage('get-layout')

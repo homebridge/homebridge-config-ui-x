@@ -411,6 +411,43 @@ describe('AccessoriesController (e2e)', () => {
     expect(loaded).toEqual(layout)
   })
 
+  it('service.connect survives a malformed accessory-control payload', async () => {
+    // Regression: the accessory-control handler is an async socket listener.
+    // socket.io does not await listeners and there is no global
+    // unhandledRejection handler, so `msg.refresh` throwing on an undefined
+    // payload rejected unhandled - which exits the Node process. Vitest fails
+    // this test on any unhandled rejection, so it genuinely catches that.
+    const { EventEmitter } = await import('node:events')
+    const client = new EventEmitter() as any
+    client.emit = vi.fn(client.emit.bind(client))
+
+    const monitor = new EventEmitter() as any
+    monitor.finish = vi.fn()
+    vi.spyOn(accessoriesService.hapClient, 'monitorCharacteristics').mockResolvedValue(monitor)
+    vi.spyOn(accessoriesService.hapClient, 'refreshInstances').mockImplementation(() => undefined)
+    // the full connect path calls refreshCharacteristics on each service,
+    // which the shared fixture does not carry
+    hapClientMock.mockResolvedValue((mockedServices as any[]).map(s => ({
+      ...s,
+      refreshCharacteristics: vi.fn().mockResolvedValue(undefined),
+    })) as any)
+
+    await accessoriesService.connect(client)
+
+    // a malformed payload must be ignored, not crash the process
+    client.emit('accessory-control')
+    client.emit('accessory-control', 'not-an-object')
+    await new Promise(res => setTimeout(res, 50))
+
+    // and the session still works afterwards: a real refresh still runs
+    hapClientMock.mockClear()
+    client.emit('accessory-control', { refresh: true })
+    await new Promise(res => setTimeout(res, 50))
+    expect(hapClientMock).toHaveBeenCalled()
+
+    client.emit('disconnect')
+  })
+
   it('service.resetInstancePool should not throw when insecure mode disabled', () => {
     configService.homebridgeInsecureMode = false
     // Should be a no-op when insecure mode is disabled

@@ -152,8 +152,15 @@ export class AccessoriesService {
     // Initial load
     await loadAllAccessories(false)
 
-    // Handling incoming requests
+    // Handling incoming requests. The handler must never reject: socket.io
+    // does not await listeners, there is no global unhandledRejection handler,
+    // and Node's default response to an unhandled rejection is to exit - so a
+    // single malformed `accessory-control` payload would take the whole UI
+    // process down.
     const requestHandler = async (msg?: AccessoryControlMessage) => {
+      if (!msg || typeof msg !== 'object') {
+        return
+      }
       if (msg.refresh) {
         // Reload all accessories (typically triggered by Matter accessory changes)
         await loadAllAccessories(true)
@@ -188,7 +195,12 @@ export class AccessoriesService {
         }
       }
     }
-    client.on('accessory-control', requestHandler)
+    client.on('accessory-control', (msg?: AccessoryControlMessage) => {
+      requestHandler(msg).catch((e) => {
+        this.logger.error(`Failed to handle accessory control request as ${e.message}.`)
+        client.emit('accessory-control-failure', e.message)
+      })
+    })
 
     const monitor = await this.hapClient.monitorCharacteristics()
 
