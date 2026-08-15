@@ -1,3 +1,5 @@
+import process from 'node:process'
+
 import { Controller, Get, Inject, NotFoundException, Param, Post, Query, Req, Res, UseGuards } from '@nestjs/common'
 import { AuthGuard } from '@nestjs/passport'
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger'
@@ -77,11 +79,18 @@ export class PluginsSettingsUiController {
     if (!file || /(?:^|\/)index\.html$/i.test(file) || /\.(?:html?|xhtml)$/i.test(file)) {
       throw new NotFoundException()
     }
-    const session = this.ticketService.validateAssetSession(
-      this.ticketService.extractAssetSession(request.headers?.cookie),
-      pluginName,
-    )
-    this.setAssetSessionCookie(request, reply, session.token)
+
+    // Browser developer tools fetch source maps without the iframe's
+    // path-scoped cookie. Permit only maps, and only in explicit development
+    // mode; production maps and every executable asset remain protected.
+    const isDevelopmentSourceMap = process.env.UIX_DEVELOPMENT === '1' && file.toLowerCase().endsWith('.map')
+    if (!isDevelopmentSourceMap) {
+      const session = this.ticketService.validateAssetSession(
+        this.ticketService.extractAssetSession(request.headers?.cookie),
+        pluginName,
+      )
+      this.setAssetSessionCookie(request, reply, session.token)
+    }
     return await this.pluginSettingsUiService.serveCustomUiAsset(reply, pluginName, file, '', v)
   }
 

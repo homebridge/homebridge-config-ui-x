@@ -76,6 +76,7 @@ describe('PluginsSettingsUiController (e2e)', () => {
     await ensureDir(resolve(pluginsPath, 'homebridge-mock-plugin/homebridge-ui/public'))
     await writeFile(resolve(pluginsPath, 'homebridge-mock-plugin/homebridge-ui/public/index.html'), '<h1>Hello World</h1>')
     await writeFile(resolve(pluginsPath, 'homebridge-mock-plugin/homebridge-ui/public/main.js'), 'window.customUiLoaded = true')
+    await writeFile(resolve(pluginsPath, 'homebridge-mock-plugin/homebridge-ui/public/main.js.map'), '{"version":3,"sources":[]}')
     await ensureDir(resolve(pluginsPath, 'homebridge-mock-plugin/homebridge-ui/public/assets'))
     await writeFile(resolve(pluginsPath, 'homebridge-mock-plugin/homebridge-ui/public/assets/logo.svg'), '<svg xmlns="http://www.w3.org/2000/svg"></svg>')
     await writeFile(resolve(pluginsPath, 'homebridge-mock-plugin/homebridge-ui/public/other.html'), '<h1>Not an entrypoint</h1>')
@@ -398,6 +399,45 @@ describe('PluginsSettingsUiController (e2e)', () => {
         })
 
         expect(res.statusCode).toBe(401)
+      })
+
+      it('rejects an unauthenticated source map outside development mode', async () => {
+        const previousDevelopment = process.env.UIX_DEVELOPMENT
+        delete process.env.UIX_DEVELOPMENT
+        try {
+          const res = await app.inject({
+            method: 'GET',
+            path: `${API_PREFIX}/plugins/settings-ui/homebridge-mock-plugin/main.js.map`,
+          })
+
+          expect(res.statusCode).toBe(401)
+        } finally {
+          if (previousDevelopment === undefined) {
+            delete process.env.UIX_DEVELOPMENT
+          } else {
+            process.env.UIX_DEVELOPMENT = previousDevelopment
+          }
+        }
+      })
+
+      it('serves a source map without an asset cookie in development mode', async () => {
+        const previousDevelopment = process.env.UIX_DEVELOPMENT
+        process.env.UIX_DEVELOPMENT = '1'
+        try {
+          const res = await app.inject({
+            method: 'GET',
+            path: `${API_PREFIX}/plugins/settings-ui/homebridge-mock-plugin/main.js.map`,
+          })
+
+          expect(res.statusCode).toBe(200)
+          expect(res.json()).toMatchObject({ version: 3 })
+        } finally {
+          if (previousDevelopment === undefined) {
+            delete process.env.UIX_DEVELOPMENT
+          } else {
+            process.env.UIX_DEVELOPMENT = previousDevelopment
+          }
+        }
       })
 
       it('serves existing JavaScript without changing its URL after ticket redemption', async () => {
