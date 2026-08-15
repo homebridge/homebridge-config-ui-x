@@ -36,6 +36,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - feat(log): let admins restrict the Homebridge log to administrators
 - fix(status): support degrees as well as millidegrees in the configured cpu temp file (#2896) (@lidonius1122)
 - fix(ui): show a cpu temperature of zero or below on the widget (#2896) (@lidonius1122)
+- fix(plugins): find the running Homebridge when it is installed outside the scanned paths (#2897) (@lidonius1122)
 
 ### Other Changes
 
