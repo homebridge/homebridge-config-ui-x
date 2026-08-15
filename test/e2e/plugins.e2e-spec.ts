@@ -2026,6 +2026,72 @@ describe('PluginController (e2e)', () => {
     })
   })
 
+  describe('performPackageUpdate - the shared restart-free update path', () => {
+    // The whole point of the extraction: the update itself must never restart
+    // anything. It reports what restart it calls for; the caller (the single
+    // package endpoint today, the Update All orchestrator later) decides when.
+    const client = new EventEmitter()
+
+    it('updates homebridge and asks for a homebridge restart, doing none itself', async () => {
+      const update = vi.spyOn(pluginsService, 'updateHomebridgePackage').mockResolvedValue(undefined as any)
+      const restart = vi.spyOn(homebridgeIpcService, 'restartHomebridge').mockImplementation(() => undefined)
+      const uiRestart = vi.spyOn(pluginsService as any, 'scheduleUiRestart')
+
+      const result = await pluginsService.performPackageUpdate('homebridge', '2.4.0', client)
+
+      expect(update).toHaveBeenCalledWith({ version: '2.4.0' }, client)
+      expect(result).toEqual({
+        ok: true,
+        name: 'homebridge',
+        version: '2.4.0',
+        restart: { homebridge: true, ui: false, childBridgeUsernames: [] },
+      })
+      expect(restart).not.toHaveBeenCalled()
+      expect(uiRestart).not.toHaveBeenCalled()
+    })
+
+    it('updates the ui and asks for a ui restart, without arming the exit timer', async () => {
+      const manage = vi.spyOn(pluginsService, 'managePlugin').mockResolvedValue(true)
+      const uiRestart = vi.spyOn(pluginsService as any, 'scheduleUiRestart')
+
+      const result = await pluginsService.performPackageUpdate('homebridge-config-ui-x', '5.27.1', client)
+
+      expect(manage).toHaveBeenCalledWith('install', { name: 'homebridge-config-ui-x', version: '5.27.1' }, client)
+      expect(result.restart).toEqual({ homebridge: false, ui: true, childBridgeUsernames: [] })
+      expect(uiRestart).not.toHaveBeenCalled()
+    })
+
+    it('updates a plugin on child bridges and names them instead of asking for a homebridge restart', async () => {
+      vi.spyOn(pluginsService, 'managePlugin').mockResolvedValue(true)
+      vi.spyOn(pluginsService, 'getPluginChildBridgeUsernames').mockResolvedValue(['0E:11:22:33:44:55'])
+      const bridgeRestart = vi.spyOn(childBridgesService, 'restartChildBridge').mockReturnValue(undefined as any)
+
+      const result = await pluginsService.performPackageUpdate('homebridge-mock-plugin', '1.1.0', client)
+
+      expect(result.restart).toEqual({ homebridge: false, ui: false, childBridgeUsernames: ['0E:11:22:33:44:55'] })
+      expect(bridgeRestart).not.toHaveBeenCalled()
+    })
+
+    it('updates a main-bridge plugin and asks for a homebridge restart', async () => {
+      vi.spyOn(pluginsService, 'managePlugin').mockResolvedValue(true)
+      vi.spyOn(pluginsService, 'getPluginChildBridgeUsernames').mockResolvedValue([])
+
+      const result = await pluginsService.performPackageUpdate('homebridge-mock-plugin', '1.1.0', client)
+
+      expect(result.restart).toEqual({ homebridge: true, ui: false, childBridgeUsernames: [] })
+    })
+
+    it('reports a failed update instead of throwing, and asks for no restart', async () => {
+      vi.spyOn(pluginsService, 'managePlugin').mockRejectedValue(new Error('npm exploded'))
+
+      const result = await pluginsService.performPackageUpdate('homebridge-mock-plugin', '1.1.0', client)
+
+      expect(result.ok).toBe(false)
+      expect(result.error).toBe('npm exploded')
+      expect(result.restart).toEqual({ homebridge: false, ui: false, childBridgeUsernames: [] })
+    })
+  })
+
   describe('filterLocallyHandledScripts (#2909)', () => {
     const call = (scriptPackages: string[], localAllowScripts: unknown) =>
       (pluginsService as any).filterLocallyHandledScripts(scriptPackages, localAllowScripts) as string[]

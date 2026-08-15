@@ -226,3 +226,20 @@ export interface PluginListItem {
 export interface PluginListData {
   data: Record<string, PluginListItem>
 }
+
+/**
+ * Outcome of a single package update performed WITHOUT restart side effects.
+ * `restart` says what the update calls for; the caller decides when - and
+ * whether - to apply it.
+ */
+export interface PackageUpdateResult {
+  ok: boolean
+  name: string
+  version: string
+  error?: string
+  restart: {
+    homebridge: boolean
+    ui: boolean
+    childBridgeUsernames: string[]
+  }
+}
