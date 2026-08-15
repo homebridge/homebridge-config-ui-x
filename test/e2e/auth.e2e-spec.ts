@@ -1,6 +1,7 @@
 import type { NestFastifyApplication } from '@nestjs/platform-fastify'
 import type { TestingModule } from '@nestjs/testing'
 
+import { createHash } from 'node:crypto'
 import { resolve } from 'node:path'
 import process from 'node:process'
 
@@ -9,6 +10,7 @@ import { FastifyAdapter } from '@nestjs/platform-fastify'
 import { Test } from '@nestjs/testing'
 import { WsException } from '@nestjs/websockets'
 import { copy, pathExists, readJson, remove } from 'fs-extra'
+import jwt from 'jsonwebtoken'
 import { generate, generateSecret } from 'otplib'
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -537,6 +539,81 @@ describe('AuthController (e2e)', () => {
     })
 
     expect(res.statusCode).toBe(401)
+  })
+
+  /**
+   * Service tokens: a plugin on this machine reads the secret key out of
+   * `.uix-secrets` and signs a token for itself rather than logging in as a
+   * person. homebridge-updater does exactly this, and stopped working when
+   * token revocation started checking the username against the auth file.
+   */
+  describe('service tokens', () => {
+    const signServiceToken = (overrides: Record<string, any> = {}, expiresIn: string | number = '1m') => {
+      const secretKey = configService.secrets.secretKey
+      return jwt.sign({
+        username: '@homebridge-plugins/homebridge-updater',
+        name: '@homebridge-plugins/homebridge-updater',
+        service: '@homebridge-plugins/homebridge-updater',
+        admin: true,
+        instanceId: createHash('sha256').update(secretKey).digest('hex'),
+        ...overrides,
+      }, secretKey, { expiresIn } as any)
+    }
+
+    const check = async (token: string) => await app.inject({
+      method: 'GET',
+      path: '/auth/check',
+      headers: { authorization: `bearer ${token}` },
+    })
+
+    it('accepts a token that declares itself, with no user record behind it', async () => {
+      const res = await check(signServiceToken())
+      expect(res.statusCode).toBe(200)
+    })
+
+    it('rejects one whose service claim names nobody', async () => {
+      expect((await check(signServiceToken({ service: '' }))).statusCode).toBe(401)
+      expect((await check(signServiceToken({ service: '   ' }))).statusCode).toBe(401)
+      expect((await check(signServiceToken({ service: 42 }))).statusCode).toBe(401)
+    })
+
+    it('rejects one that stays valid for longer than the maximum', async () => {
+      expect((await check(signServiceToken({}, '5m'))).statusCode).toBe(200)
+      expect((await check(signServiceToken({}, '6m'))).statusCode).toBe(401)
+      expect((await check(signServiceToken({}, '8h'))).statusCode).toBe(401)
+    })
+
+    it('rejects one with no expiry to bound', async () => {
+      const secretKey = configService.secrets.secretKey
+      const token = jwt.sign({
+        service: 'no-expiry',
+        admin: true,
+        instanceId: createHash('sha256').update(secretKey).digest('hex'),
+      }, secretKey)
+
+      expect((await check(token)).statusCode).toBe(401)
+    })
+
+    it('rejects one minted for a different instance', async () => {
+      expect((await check(signServiceToken({ instanceId: 'someone-elses-instance' }))).statusCode).toBe(401)
+    })
+
+    /**
+     * The point of the whole design: a deleted user's token must not become
+     * valid again just because their username no longer resolves. Only a
+     * token that says it is a service gets the exemption.
+     */
+    it('still rejects an unknown user that has not declared itself a service', async () => {
+      const secretKey = configService.secrets.secretKey
+      const token = jwt.sign({
+        username: 'deleted-admin',
+        name: 'deleted-admin',
+        admin: true,
+        instanceId: createHash('sha256').update(secretKey).digest('hex'),
+      }, secretKey, { expiresIn: '1m' })
+
+      expect((await check(token)).statusCode).toBe(401)
+    })
   })
 
   it('WsGuard rejects + disconnects when the handshake token is missing', async () => {

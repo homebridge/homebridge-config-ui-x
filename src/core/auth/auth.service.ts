@@ -43,6 +43,12 @@ const LOGIN_LOCKOUT_SECONDS = 300
 // hand).
 const USER_CACHE_TTL_SECONDS = 5
 
+// The longest a service token may be valid for, from `iat` to `exp`. Minting
+// one already requires the secret key, so this is not a barrier to an attacker
+// who has that - it bounds how long a token stays usable if one leaks (plugins
+// have been known to print their own requests at debug level).
+const MAX_SERVICE_TOKEN_LIFETIME_SECONDS = 300
+
 @Injectable()
 export class AuthService {
   private otpUsageCache = new NodeCache({ stdTTL: 90 })
@@ -328,10 +334,20 @@ export class AuthService {
       return payload
     }
 
+    // A service token stands for a program, not a person, so the user checks
+    // below cannot apply to it.
+    if (payload?.service !== undefined) {
+      return this.validateServiceToken(payload)
+    }
+
     const user = await this.findCurrentUser(payload?.username)
 
     // Deleted (or renamed) since the token was issued
     if (!user) {
+      // Named because the alternative is a bare 401 with nothing behind it:
+      // this is what a plugin minting its own token sees if it has not
+      // declared itself with a `service` claim.
+      this.logger.debug(`Rejected a correctly signed token for '${payload?.username}': no such user. A plugin authenticating with its own token must set the "service" claim.`)
       return null
     }
 
@@ -342,6 +358,48 @@ export class AuthService {
 
     // Credentials changed since the token was issued (password, OTP, ...)
     if ((user.sessionVersion ?? 0) !== (payload.sessionVersion ?? 0)) {
+      return null
+    }
+
+    return payload
+  }
+
+  /**
+   * Validate a service token: one a program on this machine mints for itself
+   * by reading the secret key out of `.uix-secrets`, rather than logging in as
+   * a person. Homebridge plugins that call this api use these.
+   *
+   * The contract, for anyone writing one:
+   *
+   * - sign with `secrets.secretKey` from `<storagePath>/.uix-secrets`
+   * - `service`: a non-empty string naming the caller, e.g. the plugin name.
+   *   Its presence is what marks the token as a service token
+   * - `instanceId`: `sha256(secretKey)` as hex, checked like any other token
+   * - `admin`: true if the token needs administrator endpoints
+   * - expire it within MAX_SERVICE_TOKEN_LIFETIME_SECONDS; mint a fresh one
+   *   as needed rather than holding a long-lived token
+   *
+   * Why these are exempt from the user checks: those exist to revoke a person
+   * whose account was deleted, demoted, or had its password changed, and a
+   * service token has no account behind it to revoke. It must therefore say so
+   * explicitly - treating any unknown username as a service would hand a
+   * deleted user's token the access that deleting them was meant to remove.
+   */
+  private validateServiceToken(payload: any): any {
+    if (typeof payload.service !== 'string' || payload.service.trim() === '') {
+      this.logger.warn('Rejected a service token: the "service" claim must name the caller.')
+      return null
+    }
+
+    // jwt.verify has already rejected an expired token; this bounds how long a
+    // valid one lives. A token with no issued-at cannot be bounded at all.
+    const { iat, exp, service } = payload
+    if (typeof iat !== 'number' || typeof exp !== 'number') {
+      this.logger.warn(`Rejected a service token from '${service}': it must carry an expiry.`)
+      return null
+    }
+    if (exp - iat > MAX_SERVICE_TOKEN_LIFETIME_SECONDS) {
+      this.logger.warn(`Rejected a service token from '${service}': valid for ${exp - iat} seconds, the maximum is ${MAX_SERVICE_TOKEN_LIFETIME_SECONDS}.`)
       return null
     }
 
