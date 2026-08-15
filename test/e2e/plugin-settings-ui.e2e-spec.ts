@@ -20,6 +20,7 @@ import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } 
 import { API_PREFIX } from '../../src/core/api.constants.js'
 import { AuthModule } from '../../src/core/auth/auth.module.js'
 import { AuthService } from '../../src/core/auth/auth.service.js'
+import { setStaticAssetCacheHeaders } from '../../src/core/static-assets.js'
 import { PluginsSettingsUiModule } from '../../src/modules/custom-plugins/plugins-settings-ui/plugins-settings-ui.module.js'
 import { PluginsSettingsUiService } from '../../src/modules/custom-plugins/plugins-settings-ui/plugins-settings-ui.service.js'
 import { PluginsService } from '../../src/modules/plugins/plugins.service.js'
@@ -63,7 +64,11 @@ describe('PluginsSettingsUiController (e2e)', () => {
     }).overrideProvider(HttpService).useValue(httpService).compile()
 
     const adapter = new FastifyAdapter()
-    adapter.register(fastifyStatic, { root: process.env.UIX_BASE_PATH })
+    adapter.register(fastifyStatic, {
+      root: process.env.UIX_BASE_PATH,
+      cacheControl: false,
+      setHeaders: setStaticAssetCacheHeaders,
+    })
     app = moduleFixture.createNestApplication<NestFastifyApplication>(adapter)
     app.setGlobalPrefix(API_PREFIX)
 
@@ -78,6 +83,7 @@ describe('PluginsSettingsUiController (e2e)', () => {
     await ensureDir(resolve(pluginsPath, 'homebridge-mock-plugin/homebridge-ui/public'))
     await writeFile(resolve(pluginsPath, 'homebridge-mock-plugin/homebridge-ui/public/index.html'), '<h1>Hello World</h1>')
     await writeFile(resolve(pluginsPath, 'homebridge-mock-plugin/homebridge-ui/public/main.js'), 'window.customUiLoaded = true')
+    await writeFile(resolve(pluginsPath, 'homebridge-mock-plugin/homebridge-ui/public/chunk-ABCDEFGH.js'), 'window.hashedAssetLoaded = true')
     await writeFile(resolve(pluginsPath, 'homebridge-mock-plugin/homebridge-ui/public/main.js.map'), '{"version":3,"sources":[]}')
     await ensureDir(resolve(pluginsPath, 'homebridge-mock-plugin/homebridge-ui/public/assets'))
     await writeFile(resolve(pluginsPath, 'homebridge-mock-plugin/homebridge-ui/public/assets/logo.svg'), '<svg xmlns="http://www.w3.org/2000/svg"></svg>')
@@ -479,6 +485,18 @@ describe('PluginsSettingsUiController (e2e)', () => {
         expect(res.headers['set-cookie']).toContain('Max-Age=1800')
       })
 
+      it('does not let the static handler publicly cache a protected hashed asset', async () => {
+        const index = await loadIndex()
+        const res = await app.inject({
+          method: 'GET',
+          path: `${API_PREFIX}/plugins/settings-ui/homebridge-mock-plugin/chunk-ABCDEFGH.js`,
+          headers: { cookie: assetCookie(index) },
+        })
+
+        expect(res.statusCode).toBe(200)
+        expect(res.headers['cache-control']).toBe('no-store, private')
+      })
+
       it('revokes the asset session and expires its cookie', async () => {
         const index = await loadIndex()
         const cookie = assetCookie(index)
@@ -500,6 +518,61 @@ describe('PluginsSettingsUiController (e2e)', () => {
         expect(revoked.headers['set-cookie']).toContain('hb-plugin-ui=;')
         expect(revoked.headers['set-cookie']).toContain('Max-Age=0')
         expect(denied.statusCode).toBe(401)
+      })
+
+      it('revokes an outstanding ticket when the modal closes before redemption', async () => {
+        const issued = await issueTicket()
+        const revoked = await app.inject({
+          method: 'POST',
+          path: `${API_PREFIX}/plugins/settings-ui/homebridge-mock-plugin/session/revoke`,
+          headers: { authorization: `Bearer ${accessToken}` },
+        })
+        const denied = await app.inject({
+          method: 'GET',
+          path: `${API_PREFIX}/plugins/settings-ui/homebridge-mock-plugin/index.html?ticket=${encodeURIComponent(issued.json().ticket)}`,
+        })
+
+        expect(revoked.statusCode).toBe(201)
+        expect(denied.statusCode).toBe(401)
+      })
+
+      it('revokes an asset session when its administrator is demoted', async () => {
+        const authService = app.get(AuthService)
+        const user = await authService.addUser({
+          name: 'Temporary Plugin Admin',
+          username: 'temporary-plugin-admin',
+          password: 'temporary-plugin-password',
+          admin: true,
+        } as any)
+
+        try {
+          const token = (await authService.signIn('temporary-plugin-admin', 'temporary-plugin-password')).access_token
+          const issued = await app.inject({
+            method: 'POST',
+            path: `${API_PREFIX}/plugins/settings-ui/homebridge-mock-plugin/ticket`,
+            headers: { authorization: `Bearer ${token}` },
+          })
+          const index = await app.inject({
+            method: 'GET',
+            path: `${API_PREFIX}/plugins/settings-ui/homebridge-mock-plugin/index.html?ticket=${encodeURIComponent(issued.json().ticket)}`,
+          })
+          const cookie = assetCookie(index)
+
+          await authService.updateUser(user.id, {
+            name: user.name,
+            username: user.username,
+            admin: false,
+          } as any)
+          const denied = await app.inject({
+            method: 'GET',
+            path: `${API_PREFIX}/plugins/settings-ui/homebridge-mock-plugin/main.js`,
+            headers: { cookie },
+          })
+
+          expect(denied.statusCode).toBe(401)
+        } finally {
+          await authService.deleteUser(user.id)
+        }
       })
 
       it('revokes the user asset session and expires its cookie on logout', async () => {

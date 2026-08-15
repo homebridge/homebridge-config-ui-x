@@ -87,6 +87,22 @@ export class PluginsSettingsUiTicketService {
     }
   }
 
+  revokeUserPlugin(username: string, pluginName: string): void {
+    for (const key of this.tickets.keys()) {
+      const ticket = this.tickets.get<SettingsUiTicket>(key)
+      if (ticket?.username === username && ticket.pluginName === pluginName) {
+        this.tickets.del(key)
+      }
+    }
+
+    for (const key of this.assetSessions.keys()) {
+      const session = this.assetSessions.get<SettingsUiAssetSession>(key)
+      if (session?.username === username && session.pluginName === pluginName) {
+        this.assetSessions.del(key)
+      }
+    }
+  }
+
   revokeUser(username: string): string[] {
     const pluginNames = new Set<string>()
 

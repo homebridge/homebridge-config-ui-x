@@ -163,6 +163,9 @@ export class PluginsSettingsUiService {
       for (const [key, value] of Object.entries(response.headers)) {
         reply.header(key, value)
       }
+      // Do not let the development server's cache policy override the
+      // authenticated route's revocation boundary.
+      reply.header('Cache-Control', 'no-store, private')
       reply.send(response.data)
     } catch {
       reply.code(404).send('Not Found')

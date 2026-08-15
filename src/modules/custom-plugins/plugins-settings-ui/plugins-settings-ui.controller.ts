@@ -67,10 +67,10 @@ export class PluginsSettingsUiController {
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Revokes the active custom-UI asset session.' })
   revokeAssetSession(@Req() request, @Res({ passthrough: true }) reply, @Param('pluginName') pluginName: string) {
-    this.ticketService.revokeAssetSession(
-      this.ticketService.extractAssetSession(request.headers?.cookie),
-      pluginName,
-    )
+    // Revoke every outstanding ticket and asset session for this user/plugin,
+    // not only the cookie on this request. This also closes the race where the
+    // modal is closed while its ticketed index request is still in flight.
+    this.ticketService.revokeUserPlugin(request.user.username, pluginName)
     this.setAssetSessionCookie(request, reply, '', 0)
     return { status: 'OK' }
   }
