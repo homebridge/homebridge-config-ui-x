@@ -69,6 +69,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(custom-plugins): allow plugin UI webfonts from the dev server origin
 - chore(build): stop copying monaco's unused json language sources
 - fix(plugins): cancel the pending ui self-restart when the module is torn down
+- fix(test): stop the plugin update tests firing the real ui restart
 
 ### Homebridge Dependencies
 
