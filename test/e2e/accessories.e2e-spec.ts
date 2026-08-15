@@ -488,6 +488,51 @@ describe('AccessoriesController (e2e)', () => {
     client.emit('disconnect')
   })
 
+  it('service.connect shares one characteristic monitor across clients', async () => {
+    // Regression: each client used to call hapClient.monitorCharacteristics(),
+    // and every call finishes the previous monitor - so opening the
+    // accessories page in a second tab silently froze live updates in the
+    // first. One shared monitor, per-client listeners.
+    const { EventEmitter } = await import('node:events')
+    ;(accessoriesService as any).hapMonitorPromise = null
+
+    const monitor = new EventEmitter() as any
+    monitor.finish = vi.fn()
+    const monitorSpy = vi.spyOn(accessoriesService.hapClient, 'monitorCharacteristics').mockResolvedValue(monitor)
+    vi.spyOn(accessoriesService.hapClient, 'refreshInstances').mockImplementation(() => undefined)
+    hapClientMock.mockResolvedValue((mockedServices as any[]).map(s => ({
+      ...s,
+      refreshCharacteristics: vi.fn().mockResolvedValue(undefined),
+    })) as any)
+
+    const clientA = new EventEmitter() as any
+    const clientB = new EventEmitter() as any
+    await accessoriesService.connect(clientA)
+    await accessoriesService.connect(clientB)
+
+    // one monitor for both clients
+    expect(monitorSpy).toHaveBeenCalledTimes(1)
+
+    // both clients receive live updates
+    const emitsA = vi.fn()
+    const emitsB = vi.fn()
+    clientA.on('accessories-data', emitsA)
+    clientB.on('accessories-data', emitsB)
+    monitor.emit('service-update', { uniqueId: 'x' })
+    expect(emitsA).toHaveBeenCalledTimes(1)
+    expect(emitsB).toHaveBeenCalledTimes(1)
+
+    // one client leaving must not silence the other, and must not finish the monitor
+    clientA.emit('disconnect')
+    monitor.emit('service-update', { uniqueId: 'y' })
+    expect(emitsA).toHaveBeenCalledTimes(1)
+    expect(emitsB).toHaveBeenCalledTimes(2)
+    expect(monitor.finish).not.toHaveBeenCalled()
+
+    clientB.emit('disconnect')
+    ;(accessoriesService as any).hapMonitorPromise = null
+  })
+
   it('service.resetInstancePool should not throw when insecure mode disabled', () => {
     configService.homebridgeInsecureMode = false
     // Should be a no-op when insecure mode is disabled

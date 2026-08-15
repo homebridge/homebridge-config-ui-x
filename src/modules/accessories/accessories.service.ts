@@ -38,6 +38,12 @@ export class AccessoriesService {
   // one startMatterMonitoring IPC per UI process lifetime. Cleared on
   // failure so a subsequent client can retry.
   private matterMonitoringStartPromise: Promise<void> | null = null
+  // Cached promise for the single shared HAP characteristic monitor. Each call
+  // to hapClient.monitorCharacteristics() FINISHES the previous monitor before
+  // creating a new one, so the pre-fix per-client monitor meant a second
+  // browser tab silently froze live updates in the first. Cleared on failure
+  // so a later client can retry.
+  private hapMonitorPromise: Promise<Awaited<ReturnType<HapClient['monitorCharacteristics']>>> | null = null
   private activeClients = new Set<Socket>()
   // Per-socket reload entry point. Lets a repeat `get-accessories` for an
   // already-connected socket re-fetch data instead of stacking a second set
@@ -202,7 +208,7 @@ export class AccessoriesService {
       })
     })
 
-    const monitor = await this.hapClient.monitorCharacteristics()
+    const monitor = await this.ensureHapMonitor()
 
     const updateHandler = (data: ServiceType | MatterService) => {
       client.emit('accessories-data', data)
@@ -227,8 +233,13 @@ export class AccessoriesService {
       client.removeAllListeners('end')
       client.removeAllListeners('disconnect')
       client.removeAllListeners('accessory-control')
-      monitor.removeAllListeners('service-update')
-      monitor.finish()
+      // Only detach THIS client's listener. The monitor is shared by every
+      // connected client, so removing all listeners or finishing it here
+      // would silence live updates for everyone else (the same reasoning as
+      // the Matter monitoring note below - it stays up for the lifetime of
+      // the UI process, and hap-client refreshes its connections itself as
+      // instances come and go).
+      monitor.removeListener('service-update', updateHandler)
       this.hapClient.removeListener('instance-discovered', instanceUpdateHandler)
 
       // Remove client from active clients
@@ -248,6 +259,26 @@ export class AccessoriesService {
 
     // Send a refresh instances request
     this.hapClient.refreshInstances()
+  }
+
+  /**
+   * Create (once) and share the HAP characteristic monitor across every
+   * connected client. Concurrent first connects await the same promise so
+   * monitorCharacteristics() is only ever called once per UI process - each
+   * call finishes the previous monitor, which is exactly the bug this
+   * prevents.
+   */
+  private async ensureHapMonitor(): Promise<Awaited<ReturnType<HapClient['monitorCharacteristics']>>> {
+    if (!this.hapMonitorPromise) {
+      const attempt = this.hapClient.monitorCharacteristics().catch((e) => {
+        if (this.hapMonitorPromise === attempt) {
+          this.hapMonitorPromise = null
+        }
+        throw e
+      })
+      this.hapMonitorPromise = attempt
+    }
+    return this.hapMonitorPromise
   }
 
   /**
