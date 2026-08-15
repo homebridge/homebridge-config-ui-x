@@ -1,4 +1,4 @@
-import { inject } from '@angular/core'
+import { inject, Injector, runInInjectionContext } from '@angular/core'
 import { CanActivateFn } from '@angular/router'
 import { firstValueFrom } from 'rxjs'
 
@@ -17,6 +17,10 @@ import { SettingsService } from '@/app/core/ui/settings.service'
  * guard a non-admin could still open /logs directly and get an empty terminal.
  */
 export const logsGuard: CanActivateFn = async (next, state) => {
+  // ⚠️ Captured up front, and every `inject()` here must stay above the first
+  // `await`. Angular only provides an injection context for the synchronous
+  // part of a guard, so anything injected after awaiting throws NG0203.
+  const injector = inject(Injector)
   const $auth = inject(AuthService)
   const $settings = inject(SettingsService)
 
@@ -36,5 +40,11 @@ export const logsGuard: CanActivateFn = async (next, state) => {
   // because CanActivateFn also permits returning an Observable, which a
   // promise-returning wrapper cannot express.
   const delegate = $settings.env?.restrictLogsToAdmins ? adminGuard : authGuard
-  return await (delegate(next, state) as Promise<boolean>)
+
+  // ⚠️ The delegates open with their own `inject()` calls, and the awaits above
+  // have already discarded the context Angular set up for this guard - calling
+  // them directly throws NG0203 and the log viewer never loads. Restoring the
+  // context covers those calls, which all run synchronously before the
+  // delegate's own first await.
+  return await runInInjectionContext(injector, () => delegate(next, state) as Promise<boolean>)
 }
