@@ -455,9 +455,9 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
     if (this.assetSessionRevoked || !this.plugin) {
       return
     }
-    this.assetSessionRevoked = true
     try {
       await this.$api.post(`${this.basePath}/session/revoke`, {}, { withCredentials: true })
+      this.assetSessionRevoked = true
     } catch (error) {
       // The session also has a short sliding expiry. Closing the modal should
       // not be blocked if the server is already unavailable.

@@ -67,7 +67,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(ws): send the session token in the handshake payload, not the query string
 - fix(server): drop 'unsafe-inline' from the app's script-src
 - fix(auth): hold the access token in memory instead of localStorage
-- fix(custom-plugins): replace the plugin UI session cookie with short-lived, single-use tickets (@NorthernMan54)
+- fix(custom-plugins): replace the plugin UI session cookie with short-lived, single-use tickets issued only to administrators (@NorthernMan54)
 - fix(custom-plugins): block alternative HTML documents in custom plugin UIs; every HTML entry point must redeem a ticket
 - test(status): stop the dashboard e2e tests clobbering the dev storage layout
 - fix(custom-plugins): allow plugin UI webfonts from the dev server origin

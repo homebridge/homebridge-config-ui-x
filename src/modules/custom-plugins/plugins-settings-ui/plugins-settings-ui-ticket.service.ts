@@ -15,16 +15,27 @@ interface SettingsUiTicket {
 interface SettingsUiAssetSession {
   pluginName: string
   username: string
+  uiOrigin: string
+}
+
+export interface ValidatedSettingsUiAssetSession extends SettingsUiAssetSession {
+  token: string
 }
 
 @Injectable()
 export class PluginsSettingsUiTicketService {
   static readonly assetSessionTtl = 1800
-  private readonly tickets = new NodeCache({ stdTTL: 60, useClones: false })
-  private readonly assetSessions = new NodeCache({
+
+  private static readonly tickets = new NodeCache({ stdTTL: 60, useClones: false })
+
+  private static readonly assetSessions = new NodeCache({
     stdTTL: PluginsSettingsUiTicketService.assetSessionTtl,
     useClones: false,
   })
+
+  private readonly tickets = PluginsSettingsUiTicketService.tickets
+
+  private readonly assetSessions = PluginsSettingsUiTicketService.assetSessions
 
   issue(pluginName: string, username: string, requestOrigin?: string, requestHost?: string) {
     const ticket = randomBytes(32).toString('base64url')
@@ -50,13 +61,13 @@ export class PluginsSettingsUiTicketService {
     return claims
   }
 
-  issueAssetSession(pluginName: string, username: string): string {
+  issueAssetSession(pluginName: string, username: string, uiOrigin: string): string {
     const token = randomBytes(32).toString('base64url')
-    this.assetSessions.set(this.digest(token), { pluginName, username } satisfies SettingsUiAssetSession)
+    this.assetSessions.set(this.digest(token), { pluginName, username, uiOrigin } satisfies SettingsUiAssetSession)
     return token
   }
 
-  validateAssetSession(token: string | undefined, pluginName: string): string {
+  validateAssetSession(token: string | undefined, pluginName: string): ValidatedSettingsUiAssetSession {
     if (!token || token.length > 128) {
       throw new UnauthorizedException()
     }
@@ -66,7 +77,7 @@ export class PluginsSettingsUiTicketService {
       throw new UnauthorizedException()
     }
     this.assetSessions.ttl(digest, PluginsSettingsUiTicketService.assetSessionTtl)
-    return token
+    return { ...session, token }
   }
 
   revokeAssetSession(token: string | undefined, pluginName: string): void {
@@ -78,6 +89,26 @@ export class PluginsSettingsUiTicketService {
     if (session?.pluginName === pluginName) {
       this.assetSessions.del(digest)
     }
+  }
+
+  revokeUser(username: string): string[] {
+    const pluginNames = new Set<string>()
+
+    for (const key of this.tickets.keys()) {
+      if (this.tickets.get<SettingsUiTicket>(key)?.username === username) {
+        this.tickets.del(key)
+      }
+    }
+
+    for (const key of this.assetSessions.keys()) {
+      const session = this.assetSessions.get<SettingsUiAssetSession>(key)
+      if (session?.username === username) {
+        pluginNames.add(session.pluginName)
+        this.assetSessions.del(key)
+      }
+    }
+
+    return [...pluginNames]
   }
 
   extractAssetSession(cookieHeader: string | undefined): string | undefined {

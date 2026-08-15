@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common'
 import { JwtModule } from '@nestjs/jwt'
 import { PassportModule } from '@nestjs/passport'
 
+import { PluginsSettingsUiTicketModule } from '../../modules/custom-plugins/plugins-settings-ui/plugins-settings-ui-ticket.module.js'
 import { PluginsModule } from '../../modules/plugins/plugins.module.js'
 import { ConfigModule } from '../config/config.module.js'
 import { ConfigService } from '../config/config.service.js'
@@ -31,6 +32,7 @@ import { JwtStrategy } from './jwt.strategy.js'
     ConfigModule,
     LoggerModule,
     PluginsModule,
+    PluginsSettingsUiTicketModule,
     FsModule,
   ],
   providers: [
@@ -48,6 +50,7 @@ import { JwtStrategy } from './jwt.strategy.js'
     AuthService,
     AdminGuard,
     JwtModule,
+    PluginsSettingsUiTicketModule,
   ],
 })
 export class AuthModule {}

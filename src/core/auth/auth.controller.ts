@@ -16,7 +16,9 @@ import { JwtService } from '@nestjs/jwt'
 import { AuthGuard } from '@nestjs/passport'
 import { ApiBearerAuth, ApiExcludeEndpoint, ApiOperation, ApiTags } from '@nestjs/swagger'
 
+import { PluginsSettingsUiTicketService } from '../../modules/custom-plugins/plugins-settings-ui/plugins-settings-ui-ticket.service.js'
 import { PluginsService } from '../../modules/plugins/plugins.service.js'
+import { API_PREFIX } from '../api.constants.js'
 import { ConfigService } from '../config/config.service.js'
 import { Logger } from '../logger/logger.service.js'
 import { AuthDto, RefreshTokenDto } from './auth.dto.js'
@@ -30,6 +32,7 @@ export class AuthController {
     @Inject(AuthService) private readonly authService: AuthService,
     @Inject(ConfigService) private readonly configService: ConfigService,
     @Inject(PluginsService) private readonly pluginsService: PluginsService,
+    @Inject(PluginsSettingsUiTicketService) private readonly pluginUiTicketService: PluginsSettingsUiTicketService,
     @Inject(Logger) private readonly logger: Logger,
     @Inject(JwtService) private readonly jwtService: JwtService,
   ) {}
@@ -127,9 +130,12 @@ export class AuthController {
   }
 
   @ApiOperation({ summary: 'Clear the session cookies.' })
+  @ApiBearerAuth()
+  @UseGuards(AuthGuard())
   @Post('/logout')
-  logout(@Request() req: FastifyRequest, @Res({ passthrough: true }) res: FastifyReply) {
-    res.header('Set-Cookie', this.buildClearedCookies(req.protocol === 'https'))
+  logout(@Request() req: FastifyRequest & { user: { username: string } }, @Res({ passthrough: true }) res: FastifyReply) {
+    const pluginNames = this.pluginUiTicketService.revokeUser(req.user.username)
+    res.header('Set-Cookie', this.buildClearedCookies(req.protocol === 'https', pluginNames))
     return { status: 'OK' }
   }
 
@@ -183,7 +189,7 @@ export class AuthController {
   private buildRefreshCookie(token: string, secure: boolean): string {
     const maxAge = this.configService.ui.sessionTimeout || 28800
     const secureFlag = secure ? '; Secure' : ''
-    return `hb-refresh=${token}; HttpOnly; SameSite=Strict; Path=/api/auth/session; Max-Age=${maxAge}${secureFlag}`
+    return `hb-refresh=${token}; HttpOnly; SameSite=Strict; Path=${API_PREFIX}/auth/session; Max-Age=${maxAge}${secureFlag}`
   }
 
   /**
@@ -191,8 +197,11 @@ export class AuthController {
    * still hold a valid refresh cookie and the next page load would silently
    * restore the session the user just ended.
    */
-  private buildClearedCookies(secure: boolean): string[] {
+  private buildClearedCookies(secure: boolean, pluginNames: string[] = []): string[] {
     const secureFlag = secure ? '; Secure' : ''
-    return [`hb-refresh=; HttpOnly; SameSite=Strict; Path=/api/auth/session; Max-Age=0${secureFlag}`]
+    return [
+      `hb-refresh=; HttpOnly; SameSite=Strict; Path=${API_PREFIX}/auth/session; Max-Age=0${secureFlag}`,
+      ...pluginNames.map(pluginName => `hb-plugin-ui=; HttpOnly; SameSite=Strict; Path=${API_PREFIX}/plugins/settings-ui/${encodeURIComponent(pluginName)}/; Max-Age=0${secureFlag}`),
+    ]
   }
 }

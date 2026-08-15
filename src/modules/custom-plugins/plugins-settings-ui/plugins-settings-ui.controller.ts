@@ -1,4 +1,4 @@
-import { Controller, Get, Inject, Param, Post, Query, Req, Res, UnauthorizedException, UseGuards } from '@nestjs/common'
+import { Controller, Get, Inject, NotFoundException, Param, Post, Query, Req, Res, UseGuards } from '@nestjs/common'
 import { AuthGuard } from '@nestjs/passport'
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger'
 
@@ -36,13 +36,25 @@ export class PluginsSettingsUiController {
     @Query('ticket') ticket?: string,
     @Query('v') version?: string,
   ) {
-    const claims = this.ticketService.consume(ticket, pluginName)
-    const assetSession = this.ticketService.issueAssetSession(pluginName, claims.username)
+    let uiOrigin: string
+    let assetSession: string
+    try {
+      const claims = this.ticketService.consume(ticket, pluginName)
+      uiOrigin = claims.uiOrigin
+      assetSession = this.ticketService.issueAssetSession(pluginName, claims.username, claims.uiOrigin)
+    } catch {
+      const existing = this.ticketService.validateAssetSession(
+        this.ticketService.extractAssetSession(request.headers?.cookie),
+        pluginName,
+      )
+      uiOrigin = existing.uiOrigin
+      assetSession = existing.token
+    }
     this.setAssetSessionCookie(request, reply, assetSession)
     reply.header('Cache-Control', 'no-store, private')
     reply.header('Pragma', 'no-cache')
     reply.header('Referrer-Policy', 'no-referrer')
-    return await this.pluginSettingsUiService.serveCustomUiAsset(reply, pluginName, 'index.html', claims.uiOrigin, version)
+    return await this.pluginSettingsUiService.serveCustomUiAsset(reply, pluginName, 'index.html', uiOrigin, version)
   }
 
   @Post('/:pluginName/session/revoke')
@@ -63,13 +75,13 @@ export class PluginsSettingsUiController {
   @ApiParam({ name: 'pluginName', type: 'string' })
   async serveCustomUiAsset(@Req() request, @Res() reply, @Param('pluginName') pluginName, @Param('*') file, @Query('v') v?: string) {
     if (!file || /(?:^|\/)index\.html$/i.test(file) || /\.(?:html?|xhtml)$/i.test(file)) {
-      throw new UnauthorizedException()
+      throw new NotFoundException()
     }
-    const token = this.ticketService.validateAssetSession(
+    const session = this.ticketService.validateAssetSession(
       this.ticketService.extractAssetSession(request.headers?.cookie),
       pluginName,
     )
-    this.setAssetSessionCookie(request, reply, token)
+    this.setAssetSessionCookie(request, reply, session.token)
     return await this.pluginSettingsUiService.serveCustomUiAsset(reply, pluginName, file, '', v)
   }
 

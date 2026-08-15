@@ -55,16 +55,18 @@ export class AuthService {
   }
 
   public logout() {
-    this.user = {} as UserInterface
-    this.token = null
-    setStoredToken(null)
     clearTimeout(this.logoutTimer)
     // Clear the HttpOnly cookies server-side before reloading. Without this the
     // browser would still hold a valid hb-refresh cookie and the reload would
     // silently restore the session the user just ended.
     this.$api.post('/auth/logout', {}, { withCredentials: true })
       .catch(() => { /* logging out regardless */ })
-      .finally(() => window.location.reload())
+      .finally(() => {
+        this.user = {} as UserInterface
+        this.token = null
+        setStoredToken(null)
+        window.location.reload()
+      })
   }
 
   public async loadToken() {

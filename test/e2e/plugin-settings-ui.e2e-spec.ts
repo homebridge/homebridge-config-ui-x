@@ -183,6 +183,22 @@ describe('PluginsSettingsUiController (e2e)', () => {
         expect(replay.statusCode).toBe(401)
       })
 
+      it('reloads the primary index with its existing asset session', async () => {
+        const issued = await issueTicket()
+        const path = `${API_PREFIX}/plugins/settings-ui/homebridge-mock-plugin/index.html?ticket=${encodeURIComponent(issued.json().ticket)}`
+        const first = await app.inject({ method: 'GET', path })
+        const reloaded = await app.inject({
+          method: 'GET',
+          path,
+          headers: { cookie: assetCookie(first) },
+        })
+
+        expect(first.statusCode).toBe(200)
+        expect(reloaded.statusCode).toBe(200)
+        expect(reloaded.body).toContain('Hello World')
+        expect(reloaded.headers['set-cookie']).toContain('Max-Age=1800')
+      })
+
       it('rejects a ticket against a different plugin', async () => {
         const issued = await issueTicket()
         const res = await app.inject({
@@ -412,6 +428,45 @@ describe('PluginsSettingsUiController (e2e)', () => {
         expect(denied.statusCode).toBe(401)
       })
 
+      it('revokes the user asset session and expires its cookie on logout', async () => {
+        const login = await app.inject({
+          method: 'POST',
+          path: `${API_PREFIX}/auth/login`,
+          payload: { username: 'admin', password: 'admin' },
+        })
+        const userAccessToken = login.json().access_token
+        const issued = await app.inject({
+          method: 'POST',
+          path: `${API_PREFIX}/plugins/settings-ui/homebridge-mock-plugin/ticket`,
+          headers: { authorization: `Bearer ${userAccessToken}` },
+        })
+        const index = await app.inject({
+          method: 'GET',
+          path: `${API_PREFIX}/plugins/settings-ui/homebridge-mock-plugin/index.html?ticket=${encodeURIComponent(issued.json().ticket)}`,
+        })
+        expect(index.statusCode).toBe(200)
+        const cookie = assetCookie(index)
+
+        const loggedOut = await app.inject({
+          method: 'POST',
+          path: `${API_PREFIX}/auth/logout`,
+          headers: { authorization: `Bearer ${userAccessToken}` },
+        })
+        const denied = await app.inject({
+          method: 'GET',
+          path: `${API_PREFIX}/plugins/settings-ui/homebridge-mock-plugin/main.js`,
+          headers: { cookie },
+        })
+
+        const cleared = Array.isArray(loggedOut.headers['set-cookie'])
+          ? loggedOut.headers['set-cookie']
+          : [loggedOut.headers['set-cookie']]
+        expect(cleared.some(value => value?.startsWith('hb-plugin-ui=;')
+          && value.includes('Path=/api/plugins/settings-ui/homebridge-mock-plugin/')
+          && value.includes('Max-Age=0'))).toBe(true)
+        expect(denied.statusCode).toBe(401)
+      })
+
       it('serves an existing SVG with a restrictive response CSP', async () => {
         const index = await loadIndex()
         const res = await app.inject({
@@ -433,7 +488,7 @@ describe('PluginsSettingsUiController (e2e)', () => {
           headers: { cookie: assetCookie(index) },
         })
 
-        expect(res.statusCode).toBe(401)
+        expect(res.statusCode).toBe(404)
       })
 
       it('does not authorize another plugin with an asset session', async () => {

@@ -239,7 +239,12 @@ describe('AuthController (e2e)', () => {
 
     // Logout must clear the cookie, or a reload would silently restore the
     // session the user just ended.
-    const loggedOut = await app.inject({ method: 'POST', path: '/auth/logout' })
+    const loggedOut = await app.inject({
+      method: 'POST',
+      path: '/auth/logout',
+      headers: { authorization: `Bearer ${restored.json().access_token}` },
+    })
+    expect(loggedOut.statusCode).toBe(201)
     const clearedHeader = loggedOut.headers['set-cookie']
     const cleared = (Array.isArray(clearedHeader) ? clearedHeader : [clearedHeader]) as string[]
     expect(cleared.some(c => c.startsWith('hb-refresh=') && c.includes('Max-Age=0'))).toBe(true)
