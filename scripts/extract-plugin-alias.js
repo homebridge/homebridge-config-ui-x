@@ -172,11 +172,14 @@ async function main() {
 
     pluginInitializer(HomebridgeApiMock)
 
+    // Exit only once the IPC message has flushed - process.send is
+    // asynchronous, and exiting immediately after it can drop the message,
+    // which surfaced as an intermittent failure to determine a plugin's
+    // alias. The 2500ms fuse below still bounds a send that never completes.
     process.send({
       pluginAlias,
       pluginType,
-    })
-    process.exit()
+    }, () => process.exit())
   } catch (e) {
     process.exit(1)
   }
