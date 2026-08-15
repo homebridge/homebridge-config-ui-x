@@ -76,6 +76,7 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
   private io!: IoNamespace
   private basePath = ''
   private iframe!: HTMLIFrameElement
+  private iframeLoadInProgress = false
   private schemaFormRecentlyRefreshed = false
   private assetSessionRevoked = false
   private destroyRef = inject(DestroyRef)
@@ -260,25 +261,29 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
     // Each connection brings a freshly spawned helper announcing itself with 'ready', and that
     // helper serves the iframe already on the page. Reassigning the src would reload the plugin UI
     // and throw away whatever the user has typed into it, so it is assigned once per modal.
-    if (this.iframe) {
+    if (this.iframe || this.iframeLoadInProgress) {
       return
     }
 
-    this.iframe = this.customPluginUiElementTarget()?.nativeElement as HTMLIFrameElement
-    if (!this.iframe) {
+    const iframe = this.customPluginUiElementTarget()?.nativeElement as HTMLIFrameElement
+    if (!iframe) {
       return
     }
 
+    this.iframeLoadInProgress = true
     try {
       const { ticket } = await this.$api.post<{ ticket: string }>(`${this.basePath}/ticket`, {})
       const url = new URL(`${environment.api.base + this.basePath}/index.html`, location.origin)
       url.searchParams.set('ticket', ticket)
       url.searchParams.set('v', plugin.installedVersion)
-      this.iframe.src = url.toString()
+      this.iframe = iframe
+      iframe.src = url.toString()
     } catch (error) {
       console.error('Failed to load custom plugin UI:', error)
       this.loading.set(false)
       this.$toastr.error(this.$translate.instant('plugins.settings.message_ui_offline'), this.$translate.instant('toast.title_error'))
+    } finally {
+      this.iframeLoadInProgress = false
     }
   }
 

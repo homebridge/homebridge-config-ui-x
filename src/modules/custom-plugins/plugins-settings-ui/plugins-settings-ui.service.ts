@@ -63,7 +63,10 @@ export class PluginsSettingsUiService {
       }
 
       reply.header('X-Content-Type-Options', 'nosniff')
-      reply.header('Cache-Control', 'private')
+      // Every protected asset request must reach the server so the asset
+      // session can be validated (and its sliding expiry renewed). A cached
+      // response would otherwise remain usable after the session is revoked.
+      reply.header('Cache-Control', 'no-store, private')
       // SVG is an active document format. Constrain it even though the normal
       // custom-UI use is through an image element rather than navigation.
       reply.header(

@@ -19,6 +19,7 @@ import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } 
 
 import { API_PREFIX } from '../../src/core/api.constants.js'
 import { AuthModule } from '../../src/core/auth/auth.module.js'
+import { AuthService } from '../../src/core/auth/auth.service.js'
 import { PluginsSettingsUiModule } from '../../src/modules/custom-plugins/plugins-settings-ui/plugins-settings-ui.module.js'
 import { PluginsSettingsUiService } from '../../src/modules/custom-plugins/plugins-settings-ui/plugins-settings-ui.service.js'
 import { PluginsService } from '../../src/modules/plugins/plugins.service.js'
@@ -160,6 +161,29 @@ describe('PluginsSettingsUiController (e2e)', () => {
         })
 
         expect(res.statusCode).toBe(401)
+      })
+
+      it('rejects ticket issuance by an authenticated non-admin user', async () => {
+        const authService = app.get(AuthService)
+        const user = await authService.addUser({
+          name: 'Plugin UI User',
+          username: 'plugin-ui-user',
+          password: 'plugin-ui-password',
+          admin: false,
+        } as any)
+
+        try {
+          const token = (await authService.signIn('plugin-ui-user', 'plugin-ui-password')).access_token
+          const res = await app.inject({
+            method: 'POST',
+            path: `${API_PREFIX}/plugins/settings-ui/homebridge-mock-plugin/ticket`,
+            headers: { authorization: `Bearer ${token}` },
+          })
+
+          expect(res.statusCode).toBe(403)
+        } finally {
+          await authService.deleteUser(user.id)
+        }
       })
 
       it('issues and redeems a bearer-authorized ticket', async () => {
@@ -603,9 +627,11 @@ describe('PluginsSettingsUiController (e2e)', () => {
 
     describe('path and plugin validation', () => {
       it('blocks path traversal', async () => {
+        const index = await loadIndex()
         const res = await app.inject({
           method: 'GET',
           path: `${API_PREFIX}/plugins/settings-ui/homebridge-mock-plugin/../../../etc/passwd`,
+          headers: { cookie: assetCookie(index) },
         })
 
         // Should not return 200 with file contents
@@ -631,7 +657,7 @@ describe('PluginsSettingsUiController (e2e)', () => {
       ), 'utf8')
 
       expect(component).toMatch(/url\.searchParams\.set\('ticket', ticket\)/)
-      expect(component).toContain('this.iframe.src = url.toString()')
+      expect(component).toContain('iframe.src = url.toString()')
       expect(component).not.toContain('form.submit()')
       expect(component).toContain('e.source === this.iframe?.contentWindow')
       expect(component).toContain('await this.revokeAssetSession()')
