@@ -14,7 +14,6 @@ import { NodePtyService } from '../../../core/node-pty/node-pty.service.js'
 
 @Injectable()
 export class TerminalService {
-  private ending = false
   private static persistentTerminal: IPty | null = null
   private static connectedClients: Set<WsEventEmitter> = new Set()
   private static dataListenerAttached = false
@@ -66,8 +65,6 @@ export class TerminalService {
    * @param size
    */
   async startSession(client: WsEventEmitter, size: TermSize) {
-    this.ending = false
-
     // If terminal is not enabled, disconnect the client
     if (!this.configService.enableTerminalAccess) {
       this.logger.warn('Terminal is not enabled, disconnecting client...')
@@ -87,6 +84,12 @@ export class TerminalService {
 
   private async createNewTerminal(client: WsEventEmitter, size: TermSize) {
     this.logger.debug('Starting new terminal session.')
+
+    // Per-session closure flag. This service is a singleton serving every
+    // client, so a shared instance-level `ending` let one client's disconnect
+    // suppress the process-exit notification for every other client's shell.
+    // (The log service fixed the identical pattern the same way.)
+    let ending = false
 
     // Get the preferred shell for the current platform
     const shell = await this.getPreferredShell()
@@ -118,7 +121,7 @@ export class TerminalService {
     // Let the client know when the session ends
     term.onExit((exitInfo: { exitCode: number, signal?: number }) => {
       try {
-        if (!this.ending) {
+        if (!ending) {
           client.emit('process-exit', exitInfo.exitCode)
         }
       } catch (e) {
@@ -142,7 +145,7 @@ export class TerminalService {
 
     // cleanup on disconnect
     const onEnd = () => {
-      this.ending = true
+      ending = true
 
       client.removeAllListeners('stdin')
       client.removeAllListeners('resize')
@@ -157,8 +160,8 @@ export class TerminalService {
       }
     }
 
-    client.on('end', onEnd.bind(this))
-    client.on('disconnect', onEnd.bind(this))
+    client.on('end', onEnd)
+    client.on('disconnect', onEnd)
   }
 
   private async attachToPersistentTerminal(client: WsEventEmitter, size: TermSize) {

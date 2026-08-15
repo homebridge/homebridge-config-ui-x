@@ -79,6 +79,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(config-editor): create the ui platform block on demand instead of crashing when a config has none
 - fix(accessories): stop a malformed accessory-control message taking down the ui process
 - fix(accessories): reject a non-numeric characteristic value instead of sending NaN to homebridge
+- fix(terminal): stop one client's disconnect muting the exit notice of every other terminal session
 
 ### Homebridge Dependencies
 
