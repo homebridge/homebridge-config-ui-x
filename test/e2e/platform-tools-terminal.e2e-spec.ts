@@ -184,6 +184,42 @@ describe('PlatformToolsTerminal (e2e)', () => {
     expect(mockTerm.write).toHaveBeenCalledWith('help')
   })
 
+  it('ON /platform-tools/terminal/start-session (one client disconnecting does not mute another session\'s exit)', async () => {
+    // Regression: `ending` was a shared instance field, so any client's
+    // disconnect set it true for every session and suppressed the
+    // process-exit notification for every other client's shell.
+    const clientA = new MockWsEventEmitter()
+    const clientB = new MockWsEventEmitter()
+
+    let exitHandlerB: (info: { exitCode: number }) => void
+    const termA = { ...mockTerm, onExit: vi.fn(), kill: vi.fn() } as unknown as IPty
+    const termB = {
+      ...mockTerm,
+      kill: vi.fn(),
+      onExit: vi.fn((handler: any) => {
+        exitHandlerB = handler
+      }),
+    } as unknown as IPty
+
+    vi.mocked(nodePtyService.spawn).mockReset()
+    vi.mocked(nodePtyService.spawn)
+      .mockImplementationOnce(() => termA)
+      .mockImplementationOnce(() => termB)
+
+    // start the sessions sequentially so termA deterministically belongs to
+    // clientA and termB to clientB
+    await terminalGateway.startTerminalSession(clientA, size)
+    await terminalGateway.startTerminalSession(clientB, size)
+
+    // client A goes away; B's shell then exits (e.g. the user typed `exit`)
+    clientA.emit('disconnect')
+    vi.spyOn(clientB, 'emit')
+    exitHandlerB({ exitCode: 0 })
+
+    expect(clientB.emit).toHaveBeenCalledWith('process-exit', 0)
+    clientB.emit('disconnect')
+  })
+
   describe('HTTP Endpoints', () => {
     beforeEach(async () => {
       authorization = `bearer ${(await app.inject({
