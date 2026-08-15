@@ -59,8 +59,27 @@ if [ ! -d "$TARGET_PATH" ]; then
   mkdir -p "$TARGET_PATH"
 fi
 
+# Restore the backed-up install after a failed extract/rebuild. The new
+# (broken) directory must be removed BEFORE the mv: `mv` onto an existing
+# directory moves the backup INSIDE it, leaving the broken install in place
+# and the good one nested where nothing will ever load it. Mirrors
+# revertToBackup in upgrade-install-plugin.sh.
+revert_to_backup() {
+  if [ -d "$TARGET_PATH/lib/node_modules/.homebridge-config-ui-x.bak" ]; then
+    echo "Restoring previous version..."
+    rm -rf "$TARGET_PATH/lib/node_modules/homebridge-config-ui-x"
+    mv "$TARGET_PATH/lib/node_modules/.homebridge-config-ui-x.bak" "$TARGET_PATH/lib/node_modules/homebridge-config-ui-x"
+    echo "Restore complete. Installation failed."
+  fi
+  rm -rf "$tmp_dir"
+  exit 1
+}
+
 echo "Creating backup..."
 if [ -d "$TARGET_PATH/lib/node_modules/homebridge-config-ui-x" ]; then
+  # A stale backup from an earlier failed run would make the mv below nest
+  # the live install inside it instead of renaming
+  rm -rf "$TARGET_PATH/lib/node_modules/.homebridge-config-ui-x.bak"
   mv "$TARGET_PATH/lib/node_modules/homebridge-config-ui-x" "$TARGET_PATH/lib/node_modules/.homebridge-config-ui-x.bak"
 fi
 echo ""
@@ -68,9 +87,7 @@ echo ""
 echo "Extracting..."
 if ! tar --no-same-owner -xvmf "$tmp_dir/homebridge-config-ui-x-${TARGET_VERSION}.tar.gz" -C "$TARGET_PATH"; then
   echo "Failed to extract."
-  mv "$TARGET_PATH/lib/node_modules/.homebridge-config-ui-x.bak" "$TARGET_PATH/lib/node_modules/homebridge-config-ui-x"
-  rm -rf "$tmp_dir"
-  exit 1
+  revert_to_backup
 fi
 echo ""
 
@@ -83,9 +100,9 @@ fi
 
 if ! npm rebuild --foreground-scripts @homebridge/node-pty-prebuilt-multiarch; then
   echo "Failed to rebuild."
-  mv "$TARGET_PATH/lib/node_modules/.homebridge-config-ui-x.bak" "$TARGET_PATH/lib/node_modules/homebridge-config-ui-x"
-  rm -rf "$tmp_dir"
-  exit 1
+  # Leave the directory we cd'd into before revert_to_backup deletes it
+  cd "$TARGET_PATH" || true
+  revert_to_backup
 fi
 echo ""
 
