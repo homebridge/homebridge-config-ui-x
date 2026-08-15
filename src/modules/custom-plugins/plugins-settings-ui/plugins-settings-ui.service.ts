@@ -62,10 +62,19 @@ export class PluginsSettingsUiService {
         return reply.code(404).send('Not Found')
       }
 
-      // For non-HTML assets the CSP header is irrelevant to the browser, but
-      // setting an empty value is a belt-and-suspenders measure that prevents
-      // any stale header from leaking through.
-      reply.header('Content-Security-Policy', '')
+      reply.header('X-Content-Type-Options', 'nosniff')
+      // Every protected asset request must reach the server so the asset
+      // session can be validated (and its sliding expiry renewed). A cached
+      // response would otherwise remain usable after the session is revoked.
+      reply.header('Cache-Control', 'no-store, private')
+      // SVG is an active document format. Constrain it even though the normal
+      // custom-UI use is through an image element rather than navigation.
+      reply.header(
+        'Content-Security-Policy',
+        assetPath.toLowerCase().endsWith('.svg')
+          ? 'default-src \'none\'; style-src \'unsafe-inline\'; img-src data:'
+          : '',
+      )
 
       if (assetPath === 'index.html') {
         // Resolved once here so the same value is used in both the CSP header
@@ -154,6 +163,9 @@ export class PluginsSettingsUiService {
       for (const [key, value] of Object.entries(response.headers)) {
         reply.header(key, value)
       }
+      // Do not let the development server's cache policy override the
+      // authenticated route's revocation boundary.
+      reply.header('Cache-Control', 'no-store, private')
       reply.send(response.data)
     } catch {
       reply.code(404).send('Not Found')

@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, ElementRef, inject, isDevMode, OnDestroy, OnInit, signal, viewChild } from '@angular/core'
+import { ChangeDetectionStrategy, Component, DestroyRef, ElementRef, inject, OnDestroy, OnInit, signal, viewChild } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap/tooltip'
@@ -76,7 +76,9 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
   private io!: IoNamespace
   private basePath = ''
   private iframe!: HTMLIFrameElement
+  private iframeLoadInProgress = false
   private schemaFormRecentlyRefreshed = false
+  private assetSessionRevoked = false
   private destroyRef = inject(DestroyRef)
   public schemaFormUpdatedSubject = new Subject<unknown>()
   private schemaFormRefreshSubject = new Subject<unknown>()
@@ -130,6 +132,10 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
   }
 
   public ngOnDestroy(): void {
+    // Covers modal destruction paths that bypass the explicit close handlers,
+    // including ng-bootstrap's default Escape-key dismissal.
+    void this.revokeAssetSession()
+
     window.removeEventListener('message', this.handleMessage)
 
     // Remove socket event listeners before ending the connection. The socket
@@ -184,6 +190,7 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
         // If it is the first time configuring the plugin, then offer to set up a child bridge straight away
         if (this.isFirstSave() && this.$settings.env.recommendChildBridges && newConfig[0]?.platform) {
           // Close the modal and open the child bridge setup modal
+          await this.revokeAssetSession()
           this.$activeModal.close()
           void this.$plugin.bridgeSettings(plugin, true)
           return true
@@ -192,6 +199,7 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
         // This will show the child bridge restart modal if needed, otherwise the full restart homebridge modal.
         // Phase 7: affected bridges arrive inline on the save response so we
         // skip the follow-up /status/homebridge/child-bridges fetch.
+        await this.revokeAssetSession()
         this.$activeModal.close()
         this.$cb.openCorrectRestartModalWithBridges(response.affectedBridges)
       }
@@ -204,7 +212,8 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
     }
   }
 
-  public dismissModal(): void {
+  public async dismissModal(): Promise<void> {
+    await this.revokeAssetSession()
     this.$activeModal.dismiss('Dismiss')
   }
 
@@ -239,11 +248,11 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
 
     this.io.socket.on('ready', () => {
       this.loading.set(false)
-      this.loadUi()
+      void this.loadUi()
     })
   }
 
-  private loadUi(): void {
+  private async loadUi(): Promise<void> {
     const plugin = this.plugin
     if (!plugin) {
       return
@@ -252,31 +261,35 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
     // Each connection brings a freshly spawned helper announcing itself with 'ready', and that
     // helper serves the iframe already on the page. Reassigning the src would reload the plugin UI
     // and throw away whatever the user has typed into it, so it is assigned once per modal.
-    if (this.iframe) {
+    if (this.iframe || this.iframeLoadInProgress) {
       return
     }
 
-    this.iframe = this.customPluginUiElementTarget()?.nativeElement as HTMLIFrameElement
-    if (!this.iframe) {
+    const iframe = this.customPluginUiElementTarget()?.nativeElement as HTMLIFrameElement
+    if (!iframe) {
       return
     }
 
-    const url = new URL(
-      `${environment.api.base + this.basePath}/index.html`,
-      location.origin,
-    )
-
-    if (isDevMode()) {
-      url.searchParams.set('origin', location.origin)
+    this.iframeLoadInProgress = true
+    try {
+      const { ticket } = await this.$api.post<{ ticket: string }>(`${this.basePath}/ticket`, {})
+      const url = new URL(`${environment.api.base + this.basePath}/index.html`, location.origin)
+      url.searchParams.set('ticket', ticket)
+      url.searchParams.set('v', plugin.installedVersion)
+      this.iframe = iframe
+      iframe.src = url.toString()
+    } catch (error) {
+      console.error('Failed to load custom plugin UI:', error)
+      this.loading.set(false)
+      this.$toastr.error(this.$translate.instant('plugins.settings.message_ui_offline'), this.$translate.instant('toast.title_error'))
+    } finally {
+      this.iframeLoadInProgress = false
     }
-
-    url.searchParams.set('v', plugin.installedVersion)
-
-    this.iframe.src = url.toString()
   }
 
   private handleMessage = (e: MessageEvent): void => {
-    if (e.origin === environment.api.origin || e.origin === window.origin) {
+    if (e.source === this.iframe?.contentWindow
+      && (e.origin === environment.api.origin || e.origin === window.origin)) {
       switch (e.data.action) {
         case 'loaded':
           void this.injectDefaultStyles(e)
@@ -366,7 +379,7 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
           break
         }
         case 'close': {
-          this.$activeModal.close()
+          void this.revokeAssetSession().finally(() => this.$activeModal.close())
           break
         }
         case 'toast.success':
@@ -445,6 +458,20 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
     }
 
     return this.requestResponse(event, this.getConfigBlocks())
+  }
+
+  private async revokeAssetSession(): Promise<void> {
+    if (this.assetSessionRevoked || !this.plugin) {
+      return
+    }
+    try {
+      await this.$api.post(`${this.basePath}/session/revoke`, {}, { withCredentials: true })
+      this.assetSessionRevoked = true
+    } catch (error) {
+      // The session also has a short sliding expiry. Closing the modal should
+      // not be blocked if the server is already unavailable.
+      console.warn('Failed to revoke custom plugin UI asset session:', error)
+    }
   }
 
   private requestResponse(event: MessageEvent, data: unknown, success = true): void {

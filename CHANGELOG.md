@@ -72,6 +72,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - chore(build): stop copying monaco's unused json language sources
 - fix(plugins): cancel the pending ui self-restart when the module is torn down
 - fix(test): stop the plugin update tests firing the real ui restart
+- feat: replace plugin ui session cookie with short-lived single-use tickets (#2972) (@NorthernMan54)
 
 ### Homebridge Dependencies
 

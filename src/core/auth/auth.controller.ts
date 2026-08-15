@@ -16,7 +16,9 @@ import { JwtService } from '@nestjs/jwt'
 import { AuthGuard } from '@nestjs/passport'
 import { ApiBearerAuth, ApiExcludeEndpoint, ApiOperation, ApiTags } from '@nestjs/swagger'
 
+import { PluginsSettingsUiTicketService } from '../../modules/custom-plugins/plugins-settings-ui/plugins-settings-ui-ticket.service.js'
 import { PluginsService } from '../../modules/plugins/plugins.service.js'
+import { API_PREFIX } from '../api.constants.js'
 import { ConfigService } from '../config/config.service.js'
 import { Logger } from '../logger/logger.service.js'
 import { AuthDto, RefreshTokenDto } from './auth.dto.js'
@@ -30,6 +32,7 @@ export class AuthController {
     @Inject(AuthService) private readonly authService: AuthService,
     @Inject(ConfigService) private readonly configService: ConfigService,
     @Inject(PluginsService) private readonly pluginsService: PluginsService,
+    @Inject(PluginsSettingsUiTicketService) private readonly pluginUiTicketService: PluginsSettingsUiTicketService,
     @Inject(Logger) private readonly logger: Logger,
     @Inject(JwtService) private readonly jwtService: JwtService,
   ) {}
@@ -38,7 +41,7 @@ export class AuthController {
   @Post('login')
   async signIn(@Body() body: AuthDto, @Request() req: FastifyRequest, @Res({ passthrough: true }) res: FastifyReply) {
     const result = await this.authService.signIn(body.username, body.password, body.otp, req.ip)
-    this.setAuthCookies(res, result.access_token, req.protocol === 'https')
+    this.setRefreshCookie(res, result.access_token, req.protocol === 'https')
     return result
   }
 
@@ -85,7 +88,7 @@ export class AuthController {
   @Post('/noauth')
   async getToken(@Request() req: FastifyRequest, @Res({ passthrough: true }) res: FastifyReply) {
     const result = await this.authService.generateNoAuthToken()
-    this.setAuthCookies(res, result.access_token, req.protocol === 'https')
+    this.setRefreshCookie(res, result.access_token, req.protocol === 'https')
     return result
   }
 
@@ -107,7 +110,7 @@ export class AuthController {
     @Res({ passthrough: true }) res: FastifyReply,
   ) {
     const result = await this.authService.refreshToken(req.user, body.reason)
-    this.setAuthCookies(res, result.access_token, req.protocol === 'https')
+    this.setRefreshCookie(res, result.access_token, req.protocol === 'https')
     return result
   }
 
@@ -122,14 +125,20 @@ export class AuthController {
       throw new UnauthorizedException()
     }
     const result = await this.authService.refreshToken(payload, 'session-restore')
-    this.setAuthCookies(res, result.access_token, req.protocol === 'https')
+    this.setRefreshCookie(res, result.access_token, req.protocol === 'https')
     return result
   }
 
   @ApiOperation({ summary: 'Clear the session cookies.' })
+  @ApiBearerAuth()
+  @UseGuards(CustomGuard)
   @Post('/logout')
-  logout(@Request() req: FastifyRequest, @Res({ passthrough: true }) res: FastifyReply) {
-    res.header('Set-Cookie', this.buildClearedCookies(req.protocol === 'https'))
+  logout(@Request() req: FastifyRequest & { user?: { username: string } }, @Res({ passthrough: true }) res: FastifyReply) {
+    const username = req.user?.username ?? this.readLogoutUsername(req.headers.authorization)
+    const pluginNames = username
+      ? this.pluginUiTicketService.revokeUser(username)
+      : []
+    res.header('Set-Cookie', this.buildClearedCookies(req.protocol === 'https', pluginNames))
     return { status: 'OK' }
   }
 
@@ -163,27 +172,26 @@ export class AuthController {
     return null
   }
 
-  private setAuthCookies(res: FastifyReply, token: string, secure: boolean) {
-    res.header('Set-Cookie', [
-      this.buildSessionCookie(token, secure),
-      this.buildRefreshCookie(token, secure),
-    ])
+  /**
+   * Recover a revocation identity from a signed Bearer token when normal
+   * authentication rejected it only because it expired. This never grants
+   * access; it is used solely to delete that user's server-side sessions.
+   */
+  private readLogoutUsername(authorization?: string): string | undefined {
+    const [scheme, token] = authorization?.split(' ') ?? []
+    if (scheme?.toLowerCase() !== 'bearer' || !token) {
+      return undefined
+    }
+    try {
+      const payload = this.jwtService.verify(token, { ignoreExpiration: true })
+      return typeof payload?.username === 'string' ? payload.username : undefined
+    } catch {
+      return undefined
+    }
   }
 
-  /**
-   * Build the Set-Cookie header value for the hb-session cookie.
-   * HttpOnly prevents client-side JavaScript from reading the token.
-   * SameSite=Strict prevents cross-site request forgery.
-   * Path is scoped to the plugin settings-ui route so the browser only
-   * sends this cookie for requests to /api/plugins/settings-ui/* and does
-   * not attach it to every other API request.
-   * Secure is added when the request arrived over HTTPS so the browser
-   * will not transmit the cookie over plain HTTP connections.
-   */
-  private buildSessionCookie(token: string, secure: boolean): string {
-    const maxAge = this.configService.ui.sessionTimeout || 28800
-    const secureFlag = secure ? '; Secure' : ''
-    return `hb-session=${token}; HttpOnly; SameSite=Strict; Path=/api/plugins/settings-ui/; Max-Age=${maxAge}${secureFlag}`
+  private setRefreshCookie(res: FastifyReply, token: string, secure: boolean) {
+    res.header('Set-Cookie', this.buildRefreshCookie(token, secure))
   }
 
   /**
@@ -202,19 +210,19 @@ export class AuthController {
   private buildRefreshCookie(token: string, secure: boolean): string {
     const maxAge = this.configService.ui.sessionTimeout || 28800
     const secureFlag = secure ? '; Secure' : ''
-    return `hb-refresh=${token}; HttpOnly; SameSite=Strict; Path=/api/auth/session; Max-Age=${maxAge}${secureFlag}`
+    return `hb-refresh=${token}; HttpOnly; SameSite=Strict; Path=${API_PREFIX}/auth/session; Max-Age=${maxAge}${secureFlag}`
   }
 
   /**
-   * Both cookies, cleared. Used by logout — without this the browser would
+   * Clear the refresh cookie. Used by logout — without this the browser would
    * still hold a valid refresh cookie and the next page load would silently
    * restore the session the user just ended.
    */
-  private buildClearedCookies(secure: boolean): string[] {
+  private buildClearedCookies(secure: boolean, pluginNames: string[] = []): string[] {
     const secureFlag = secure ? '; Secure' : ''
     return [
-      `hb-session=; HttpOnly; SameSite=Strict; Path=/api/plugins/settings-ui/; Max-Age=0${secureFlag}`,
-      `hb-refresh=; HttpOnly; SameSite=Strict; Path=/api/auth/session; Max-Age=0${secureFlag}`,
+      `hb-refresh=; HttpOnly; SameSite=Strict; Path=${API_PREFIX}/auth/session; Max-Age=0${secureFlag}`,
+      ...pluginNames.map(pluginName => `hb-plugin-ui=; HttpOnly; SameSite=Strict; Path=${API_PREFIX}/plugins/settings-ui/${encodeURIComponent(pluginName)}/; Max-Age=0${secureFlag}`),
     ]
   }
 }

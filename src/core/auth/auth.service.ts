@@ -17,6 +17,7 @@ import { pathExists, readJson } from 'fs-extra/esm'
 import NodeCache from 'node-cache'
 import { generateSecret, generateURI, verify } from 'otplib'
 
+import { PluginsSettingsUiTicketService } from '../../modules/custom-plugins/plugins-settings-ui/plugins-settings-ui-ticket.service.js'
 import { UserDto } from '../../modules/users/users.dto.js'
 import { ConfigService } from '../config/config.service.js'
 import { JsonFileStoreService } from '../fs/json-file-store.service.js'
@@ -70,6 +71,7 @@ export class AuthService {
     @Inject(ConfigService) private readonly configService: ConfigService,
     @Inject(JsonFileStoreService) private readonly jsonStore: JsonFileStoreService,
     @Inject(Logger) private readonly logger: Logger,
+    @Inject(PluginsSettingsUiTicketService) private readonly pluginUiTicketService: PluginsSettingsUiTicketService,
   ) {
     this.checkAuthFile()
   }
@@ -291,13 +293,11 @@ export class AuthService {
   }
 
   /**
-   * Distinct log lines per refresh caller so bootstrap vs admin-guard vs
-   * inactivity extension are not identical (and look like accidental dupes).
+   * Distinct log lines per refresh caller so admin checks and inactivity
+   * extension are not identical (and look like accidental duplicates).
    */
   private refreshTokenLogMessage(username: string, reason?: string): string {
     switch (reason) {
-      case 'hb-session-bootstrap':
-        return `Minting hb-session cookie for ${username} (bootstrap token refresh).`
       case 'admin-guard':
         return `Verifying admin session for ${username} (admin-guard token refresh).`
       case 'session-extension':
@@ -594,6 +594,7 @@ export class AuthService {
    * @param id
    */
   async deleteUser(id: number) {
+    let deletedUsername: string | undefined
     await this.withAuthFile((authfile) => {
       const index = authfile.findIndex(x => x.id === id)
       if (index < 0) {
@@ -603,9 +604,11 @@ export class AuthService {
       if (authfile[index].admin && authfile.filter(x => x.admin === true).length < 2) {
         throw new BadRequestException('Cannot delete only admin user')
       }
+      deletedUsername = authfile[index].username
       authfile.splice(index, 1)
       this.logger.warn(`Deleted user with ID ${id}.`)
     })
+    this.pluginUiTicketService.revokeUser(deletedUsername!)
   }
 
   /**
@@ -623,11 +626,13 @@ export class AuthService {
       newHashedPassword = await this.hashPassword(update.password, newSalt)
     }
 
-    return this.withAuthFile((authfile) => {
+    let previousUsername: string | undefined
+    const result = await this.withAuthFile((authfile) => {
       const user = authfile.find(x => x.id === id)
       if (!user) {
         throw new BadRequestException('User Not Found')
       }
+      previousUsername = user.username
       if (user.username !== update.username) {
         if (authfile.some(x => x.username.toLowerCase() === update.username.toLowerCase())) {
           throw new ConflictException(`User with username '${update.username}' already exists.`)
@@ -651,6 +656,8 @@ export class AuthService {
       this.logger.log(`Updated user: ${user.username}.`)
       return this.desensitiseUserProfile(user)
     })
+    this.pluginUiTicketService.revokeUser(previousUsername!)
+    return result
   }
 
   /**
@@ -666,7 +673,7 @@ export class AuthService {
     const newSalt = await this.genSalt()
     const newHashedPassword = await this.hashPassword(newPassword, newSalt)
 
-    return this.withAuthFile(async (authfile) => {
+    const result = await this.withAuthFile(async (authfile) => {
       const user = authfile.find(x => x.username === username)
       if (!user) {
         throw new NotFoundException('User not found.')
@@ -680,6 +687,8 @@ export class AuthService {
       user.sessionVersion = (user.sessionVersion ?? 0) + 1
       return this.desensitiseUserProfile(user)
     })
+    this.pluginUiTicketService.revokeUser(username)
+    return result
   }
 
   /**
@@ -711,7 +720,7 @@ export class AuthService {
    * Activates the OTP requirement for a user after verifying the otp code
    */
   async activateOtp(username: string, code: string) {
-    return this.withAuthFile(async (authfile) => {
+    const result = await this.withAuthFile(async (authfile) => {
       const user = authfile.find(x => x.username === username)
       if (!user) {
         throw new NotFoundException('User not found.')
@@ -759,13 +768,15 @@ export class AuthService {
       this.logger.warn(`Activated 2FA for ${user.username}.`)
       return this.desensitiseUserProfile(user)
     })
+    this.pluginUiTicketService.revokeUser(username)
+    return result
   }
 
   /**
    * Deactivates the OTP requirement for a user after verifying their password
    */
   async deactivateOtp(username: string, password: string) {
-    return this.withAuthFile(async (authfile) => {
+    const result = await this.withAuthFile(async (authfile) => {
       const user = authfile.find(x => x.username === username)
       if (!user) {
         throw new NotFoundException('User not found.')
@@ -779,6 +790,8 @@ export class AuthService {
       this.logger.warn(`Deactivated 2FA for ${username}.`)
       return this.desensitiseUserProfile(user)
     })
+    this.pluginUiTicketService.revokeUser(username)
+    return result
   }
 
   /**
