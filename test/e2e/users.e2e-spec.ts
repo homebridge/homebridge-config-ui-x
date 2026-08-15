@@ -290,6 +290,31 @@ describe('UsersController (e2e)', () => {
     expect(res.json().message).toContain('Cannot delete only admin user')
   })
 
+  it('PATCH /users/:userId (do not allow demotion of only admin)', async () => {
+    // Regression: deleteUser refused to remove the only admin, but updateUser
+    // would happily demote them - leaving nobody able to manage users, and
+    // with auth 'none' no admin to mint tokens for at all.
+    const res = await app.inject({
+      method: 'PATCH',
+      path: '/users/1',
+      headers: {
+        authorization,
+      },
+      payload: {
+        name: 'Administrator',
+        username: 'admin',
+        admin: false,
+      },
+    })
+
+    expect(res.statusCode).toBe(400)
+    expect(res.json().message).toContain('Cannot remove admin from only admin user')
+
+    // the stored record must still be an admin
+    const authfile = await readJson(authFilePath)
+    expect(authfile.find(x => x.id === 1).admin).toBe(true)
+  })
+
   it('POST /users/change-password', async () => {
     const payload: UserUpdatePasswordDto = {
       currentPassword: 'admin',

@@ -75,6 +75,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(test): stop the plugin update tests firing the real ui restart
 - feat: replace plugin ui session cookie with short-lived single-use tickets (#2972) (@NorthernMan54)
 - fix(test): poll for the tailed log lines instead of sleeping, so a slow runner cannot fail the job
+- fix(users): refuse to demote the only admin, matching the existing delete protection
 
 ### Homebridge Dependencies
 
