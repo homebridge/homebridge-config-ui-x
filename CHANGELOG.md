@@ -78,6 +78,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(users): refuse to demote the only admin, matching the existing delete protection
 - fix(config-editor): create the ui platform block on demand instead of crashing when a config has none
 - fix(accessories): stop a malformed accessory-control message taking down the ui process
+- fix(accessories): reject a non-numeric characteristic value instead of sending NaN to homebridge
 
 ### Homebridge Dependencies
 

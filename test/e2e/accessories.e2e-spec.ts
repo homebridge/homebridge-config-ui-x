@@ -281,6 +281,46 @@ describe('AccessoriesController (e2e)', () => {
     expect(res.statusCode).toBe(400)
   })
 
+  it('PUT /accessories/:uniqueId (int - not a number)', async () => {
+    // Regression: NaN passed both range checks (every comparison against NaN
+    // is false), so a non-numeric value was sent on to Homebridge.
+    getCharacteristic.mockReturnValueOnce(intCharacteristic)
+
+    const res = await app.inject({
+      method: 'PUT',
+      path: '/accessories/c8964091efa500870e34996208e670cf7dc362d244e0410220752459a5e78d1c',
+      headers: {
+        authorization,
+      },
+      payload: {
+        characteristicType: 'Active',
+        value: 'not-a-number',
+      },
+    })
+
+    expect(setValue).not.toHaveBeenCalled()
+    expect(res.statusCode).toBe(400)
+  })
+
+  it('PUT /accessories/:uniqueId (float - not a number)', async () => {
+    getCharacteristic.mockReturnValueOnce(floatCharacteristic)
+
+    const res = await app.inject({
+      method: 'PUT',
+      path: '/accessories/c8964091efa500870e34996208e670cf7dc362d244e0410220752459a5e78d1c',
+      headers: {
+        authorization,
+      },
+      payload: {
+        characteristicType: 'TargetTemperature',
+        value: 'not-a-number',
+      },
+    })
+
+    expect(setValue).not.toHaveBeenCalled()
+    expect(res.statusCode).toBe(400)
+  })
+
   it('PUT /accessories/:uniqueId (float - valid)', async () => {
     getCharacteristic.mockReturnValueOnce(floatCharacteristic)
 
