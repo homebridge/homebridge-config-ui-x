@@ -642,6 +642,12 @@ export class AuthService {
       }
       user.name = update.name || user.name
       const adminChanged = update.admin !== undefined && !!update.admin !== !!user.admin
+      // Demoting the only administrator would leave nobody able to manage
+      // users (and with auth set to "none", no admin to mint tokens for at
+      // all) - the same lockout deleteUser already refuses.
+      if (adminChanged && !update.admin && authfile.filter(x => x.admin === true).length < 2) {
+        throw new BadRequestException('Cannot remove admin from only admin user')
+      }
       user.admin = (update.admin === undefined) ? user.admin : update.admin
       if (newHashedPassword && newSalt) {
         user.hashedPassword = newHashedPassword
