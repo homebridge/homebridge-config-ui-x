@@ -367,6 +367,11 @@ export class AccessoriesService {
     // Integers
     if (['uint8', 'uint16', 'uint32', 'uint64'].includes(characteristic.format)) {
       value = Number.parseInt(value as string, 10)
+      // NaN slips through both range checks below (every comparison against
+      // NaN is false), so a non-numeric value would be sent on to Homebridge
+      if (Number.isNaN(value)) {
+        throw new BadRequestException('Invalid value. The value must be a number.')
+      }
       if (characteristic.minValue !== undefined && value < characteristic.minValue) {
         throw new BadRequestException(`Invalid value. The value must be between ${characteristic.minValue} and ${characteristic.maxValue}.`)
       }
@@ -378,6 +383,9 @@ export class AccessoriesService {
     // Floats
     if (characteristic.format === 'float') {
       value = Number.parseFloat(value as string)
+      if (Number.isNaN(value)) {
+        throw new BadRequestException('Invalid value. The value must be a number.')
+      }
       if (characteristic.minValue !== undefined && value < characteristic.minValue) {
         throw new BadRequestException(`Invalid value. The value must be between ${characteristic.minValue} and ${characteristic.maxValue}.`)
       }
