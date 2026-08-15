@@ -30,7 +30,8 @@
           </div>
           <div class="widget-value-label grey-text">{{ 'status.cpu.load' | translate }}</div>
         </div>
-        @if (cpuTemperature().main && cpuTemperature().main! > 0) {
+        <!-- -1 is the no-sensor sentinel, everything else is a real reading -->
+        @if (cpuTemperature().main !== undefined && cpuTemperature().main !== null && cpuTemperature().main !== -1) {
           <div class="text-center widget-value-parent-wrap">
             <div class="widget-value mb-0">
               {{ cpuTemperature().main! | convertTemp: temperatureUnits | number: '1.0-0' }}&deg;{{
