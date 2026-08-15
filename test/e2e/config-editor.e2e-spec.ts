@@ -1604,6 +1604,35 @@ describe('ConfigEditorController (e2e)', () => {
     expect(result.length).toBe(0)
   })
 
+  it('PUT /config-editor/ui/* (creates the ui platform block when the config has none)', async () => {
+    // Regression: a config.json without a `platform: config` block is a
+    // supported state (ConfigService falls back to a stub at startup), but the
+    // ui mutation endpoints dereferenced the block unconditionally and each
+    // returned a 500 TypeError in that state.
+    const currentConfig: HomebridgeConfig = await readJson(configFilePath)
+    currentConfig.platforms = currentConfig.platforms.filter(x => x.platform !== 'config')
+    await writeJson(configFilePath, currentConfig)
+
+    const res = await app.inject({
+      method: 'PUT',
+      url: '/config-editor/ui/bridges/67:E4:1F:0E:A0:5D/hide-hap-alert',
+      headers: {
+        authorization,
+      },
+      payload: {
+        value: true,
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+
+    // the block was created and carries the new bridge entry
+    const savedConfig: HomebridgeConfig = await readJson(configFilePath)
+    const uiBlock = savedConfig.platforms.find(x => x.platform === 'config') as any
+    expect(uiBlock).toBeTruthy()
+    expect(uiBlock.bridges).toEqual([{ username: '67:E4:1F:0E:A0:5D', hideHapAlert: true }])
+  })
+
   it('GET/PUT /config-editor/ui/bridges/:username (should handle bridge configuration)', async () => {
     const testUsername1 = '67:E4:1F:0E:A0:5D'
     const testUsername2 = '0E:02:9A:9D:44:45'

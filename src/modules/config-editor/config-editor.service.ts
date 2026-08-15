@@ -539,12 +539,28 @@ export class ConfigEditorService implements OnApplicationBootstrap {
   }
 
   /**
+   * Find the UI's own platform block in the given config, creating it when the
+   * config has none. A config.json without a `platform: config` block is a
+   * supported state (ConfigService falls back to a stub at startup - the
+   * standalone mode), but the mutation endpoints below dereference the block
+   * unconditionally and each returned a 500 TypeError in that state.
+   */
+  private findOrCreateUiConfigBlock(config: HomebridgeConfig): PlatformConfig {
+    let pluginConfig = config.platforms.find(x => x.platform === 'config') as PlatformConfig | undefined
+    if (!pluginConfig) {
+      pluginConfig = { platform: 'config' } as PlatformConfig
+      config.platforms.push(pluginConfig)
+    }
+    return pluginConfig
+  }
+
+  /**
    * Set the accessory control blacklist (this request is not partial)
    */
   public async setAccessoryControlInstanceBlacklist(value: string[]) {
     // 1. Get the current config for the Homebridge UI
     const config = await this.getConfigFile()
-    const pluginConfig = config.platforms.find(x => x.platform === 'config')
+    const pluginConfig = this.findOrCreateUiConfigBlock(config)
 
     // 2. Ensure the accessoryControl block exists and set the instanceBlacklist
     if (!pluginConfig.accessoryControl) {
@@ -578,7 +594,7 @@ export class ConfigEditorService implements OnApplicationBootstrap {
   public async setPluginsHideUpdatesFor(value: string[]) {
     // 1. Get the current config for the Homebridge UI
     const config = await this.getConfigFile()
-    const pluginConfig = config.platforms.find(x => x.platform === 'config')
+    const pluginConfig = this.findOrCreateUiConfigBlock(config)
 
     // 2. Ensure the plugins object exists and set the hideUpdatesFor property
     if (!pluginConfig.plugins) {
@@ -607,7 +623,7 @@ export class ConfigEditorService implements OnApplicationBootstrap {
    */
   public async setPluginsHideChildBridgeSetupFor(value: string[]) {
     const config = await this.getConfigFile()
-    const pluginConfig = config.platforms.find(x => x.platform === 'config')
+    const pluginConfig = this.findOrCreateUiConfigBlock(config)
 
     if (!pluginConfig.plugins) {
       pluginConfig.plugins = {}
@@ -664,7 +680,7 @@ export class ConfigEditorService implements OnApplicationBootstrap {
     }
 
     const config = await this.getConfigFile()
-    const pluginConfig = config.platforms.find(x => x.platform === 'config')
+    const pluginConfig = this.findOrCreateUiConfigBlock(config)
     const normalizedUsername = username.trim().toUpperCase()
 
     // Initialize bridges array if it doesn't exist
