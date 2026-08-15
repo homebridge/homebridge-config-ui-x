@@ -80,6 +80,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(accessories): stop a malformed accessory-control message taking down the ui process
 - fix(accessories): reject a non-numeric characteristic value instead of sending NaN to homebridge
 - fix(terminal): stop one client's disconnect muting the exit notice of every other terminal session
+- fix(accessories): share one characteristic monitor so a second tab no longer freezes live updates in the first
 
 ### Homebridge Dependencies
 
