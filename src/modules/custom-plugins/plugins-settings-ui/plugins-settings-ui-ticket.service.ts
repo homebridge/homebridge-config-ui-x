@@ -47,8 +47,8 @@ export class PluginsSettingsUiTicketService {
     return ticket
   }
 
-  consume(ticket: string | undefined, pluginName: string): SettingsUiTicket {
-    if (!ticket || ticket.length > 128) {
+  consume(ticket: unknown, pluginName: string): SettingsUiTicket {
+    if (typeof ticket !== 'string' || !ticket || ticket.length > 128) {
       throw new UnauthorizedException()
     }
 

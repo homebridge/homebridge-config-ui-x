@@ -131,10 +131,12 @@ export class AuthController {
 
   @ApiOperation({ summary: 'Clear the session cookies.' })
   @ApiBearerAuth()
-  @UseGuards(AuthGuard())
+  @UseGuards(CustomGuard)
   @Post('/logout')
-  logout(@Request() req: FastifyRequest & { user: { username: string } }, @Res({ passthrough: true }) res: FastifyReply) {
-    const pluginNames = this.pluginUiTicketService.revokeUser(req.user.username)
+  logout(@Request() req: FastifyRequest & { user?: { username: string } }, @Res({ passthrough: true }) res: FastifyReply) {
+    const pluginNames = req.user?.username
+      ? this.pluginUiTicketService.revokeUser(req.user.username)
+      : []
     res.header('Set-Cookie', this.buildClearedCookies(req.protocol === 'https', pluginNames))
     return { status: 'OK' }
   }

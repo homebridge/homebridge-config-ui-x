@@ -36,7 +36,7 @@ export class AuthService {
   }
 
   public async login(form: { username: string, password: string, ota?: string }) {
-    const resp = await this.$api.post('/auth/login', form)
+    const resp = await this.$api.post('/auth/login', form, { withCredentials: true })
     if (!this.validateToken(resp.access_token)) {
       throw new Error('Invalid username or password.')
     }
@@ -45,7 +45,7 @@ export class AuthService {
   }
 
   public async noauth() {
-    const resp = await this.$api.post('/auth/noauth', {})
+    const resp = await this.$api.post('/auth/noauth', {}, { withCredentials: true })
     if (!this.validateToken(resp.access_token)) {
       throw new Error('Invalid username or password.')
     } else {
@@ -239,7 +239,7 @@ export class AuthService {
     this.isRefreshing = true
 
     try {
-      const resp = await this.$api.post('/auth/refresh', reason ? { reason } : {})
+      const resp = await this.$api.post('/auth/refresh', reason ? { reason } : {}, { withCredentials: true })
       if (resp.access_token) {
         // Hold the new token in memory; AuthHelperService reads through to
         // the same store, so there is nothing further to keep in step.

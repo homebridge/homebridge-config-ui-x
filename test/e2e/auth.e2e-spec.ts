@@ -251,6 +251,19 @@ describe('AuthController (e2e)', () => {
     expect(cleared.some(c => c.startsWith('hb-session='))).toBe(false)
   })
 
+  it('clears session cookies when logout receives an invalid bearer token', async () => {
+    const loggedOut = await app.inject({
+      method: 'POST',
+      path: '/auth/logout',
+      headers: { authorization: 'Bearer invalid-token' },
+    })
+    const setCookie = loggedOut.headers['set-cookie']
+    const cleared = (Array.isArray(setCookie) ? setCookie : [setCookie]) as string[]
+
+    expect(loggedOut.statusCode).toBe(201)
+    expect(cleared.some(cookie => cookie.startsWith('hb-refresh=') && cookie.includes('Max-Age=0'))).toBe(true)
+  })
+
   it('locks out repeated failed logins', async () => {
     // A bogus username keeps this isolated from the admin account other tests
     // use. 11 attempts = the 10-failure threshold plus one that trips the lockout.

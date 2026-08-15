@@ -131,6 +131,10 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
   }
 
   public ngOnDestroy(): void {
+    // Covers modal destruction paths that bypass the explicit close handlers,
+    // including ng-bootstrap's default Escape-key dismissal.
+    void this.revokeAssetSession()
+
     window.removeEventListener('message', this.handleMessage)
 
     // Remove socket event listeners before ending the connection. The socket

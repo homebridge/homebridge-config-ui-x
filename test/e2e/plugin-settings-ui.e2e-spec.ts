@@ -215,6 +215,15 @@ describe('PluginsSettingsUiController (e2e)', () => {
         })
         expect(res.statusCode).toBe(401)
       })
+
+      it('rejects repeated ticket query parameters without a server error', async () => {
+        const res = await app.inject({
+          method: 'GET',
+          path: `${API_PREFIX}/plugins/settings-ui/homebridge-mock-plugin/index.html?ticket=one&ticket=two`,
+        })
+
+        expect(res.statusCode).toBe(401)
+      })
     })
 
     describe('index HTML and CSP', () => {
@@ -556,6 +565,7 @@ describe('PluginsSettingsUiController (e2e)', () => {
       expect(component).toContain('e.source === this.iframe?.contentWindow')
       expect(component).toContain('await this.revokeAssetSession()')
       expect(component).toMatch(/this\.basePath\}\/session\/revoke/)
+      expect(component).toMatch(/ngOnDestroy\(\): void \{[\s\S]*void this\.revokeAssetSession\(\)/)
     })
   })
 
