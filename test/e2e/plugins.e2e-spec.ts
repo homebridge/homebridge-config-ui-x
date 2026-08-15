@@ -826,6 +826,10 @@ describe('PluginController (e2e)', () => {
     // Wait for the setImmediate callback to complete
     await new Promise(resolve => setTimeout(resolve, 200))
 
+    // ⚠️ Kill the fuse before releasing the stub - see the note on the other
+    // update test. 5000ms timer, 200ms wait: restoring process.exit here left a
+    // live timer that fired during a later test and killed the worker.
+    pluginsService.onModuleDestroy()
     managePluginSpy.mockRestore()
     exitSpy.mockRestore()
   })
@@ -1272,6 +1276,11 @@ describe('PluginController (e2e)', () => {
       const expectedDelayMs = 5000 // PluginsService.UI_RESTART_DELAY_MS
       expect(setTimeoutSpy).toHaveBeenCalledWith(expect.any(Function), expectedDelayMs)
 
+      // ⚠️ Kill the fuse before releasing the stub. The restart is armed on a
+      // 5000ms timer but this test only waits 200ms, so restoring process.exit
+      // here used to leave a live timer that fired 4.8s later - during whatever
+      // test was running by then - and took the whole worker down with it.
+      pluginsService.onModuleDestroy()
       managePluginSpy.mockRestore()
       exitSpy.mockRestore()
       setTimeoutSpy.mockRestore()
