@@ -35,6 +35,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(accessories): clamp colour temperature before converting it to a tile colour
 - fix(ui): tolerate a null acknowledgement on websocket requests
 - chore(accessories): rename the misleading mobile flag to layout locked
+- fix(ui): show zero seconds as 0s in the duration pipe instead of nothing
 
 ### Other Changes
 
