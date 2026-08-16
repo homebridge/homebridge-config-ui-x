@@ -4,7 +4,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
 import { firstValueFrom } from 'rxjs'
-import { satisfies } from 'semver'
+import { intersects, satisfies } from 'semver'
 
 import { PluginsCacheService } from '@/app/core/caching/plugins-cache.service'
 import { IoNamespace, WsService } from '@/app/core/communication/ws.service'
@@ -81,7 +81,16 @@ export class HbV2ModalComponent implements OnInit {
         .filter((x: any) => x.name !== 'homebridge-config-ui-x')
         .map((x: any) => {
           const hbEngines = x.engines?.homebridge?.split('||').map((x: string) => x.trim()) || []
-          const hb2Ready = homebridgeVersion === '2' ? 'hide' : hbEngines.some((x: string) => (x.startsWith('^2') || x.startsWith('>=2'))) ? 'supported' : 'unknown'
+          // A prefix check misses valid ranges like '2.x' or '>= 2.0.0' - ask semver
+          // whether the declared range overlaps the v2 line instead
+          const supportsV2 = hbEngines.some((range: string) => {
+            try {
+              return intersects(range, '2.x')
+            } catch {
+              return false
+            }
+          })
+          const hb2Ready = homebridgeVersion === '2' ? 'hide' : supportsV2 ? 'supported' : 'unknown'
           if (hb2Ready === 'unknown') {
             this.allPluginsSupported.set(false)
           }
