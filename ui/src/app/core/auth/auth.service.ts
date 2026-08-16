@@ -35,7 +35,7 @@ export class AuthService {
     this.tokenReady = this.loadToken()
   }
 
-  public async login(form: { username: string, password: string, ota?: string }) {
+  public async login(form: { username: string, password: string, otp?: string }) {
     const resp = await this.$api.post('/auth/login', form, { withCredentials: true })
     if (!this.validateToken(resp.access_token)) {
       throw new Error('Invalid username or password.')
