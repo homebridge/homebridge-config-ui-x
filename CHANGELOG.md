@@ -16,6 +16,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(status): reset the all-plugins-supported flag when the v2 plugin list reloads
 - fix(status): let skip-if-compatible skip the v2 modal when all plugins support v2
 - fix(auth): correct the two factor code field name in the login type
+- fix(restart): detach the status listener when leaving the restart page
 
 ### Other Changes
 
