@@ -27,6 +27,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(plugins): translate the deconz and hue dump file button labels properly
 - fix(accessories): allow zero degree setpoint limits on the matter thermostat modal
 - fix(status): show the metric widget spinners until the first data arrives
+- chore(status): drop the unused lock layout callbacks from the widget visibility modal
 
 ### Other Changes
 

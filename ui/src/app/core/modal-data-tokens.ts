@@ -223,8 +223,6 @@ export const WIDGET_CONTROL_MODAL_DATA = new InjectionToken<WidgetControlModalDa
 export interface WidgetVisibilityModalData {
   dashboard: any
   resetLayout: () => void
-  lockLayout: () => void
-  unlockLayout: () => void
 }
 
 export const WIDGET_VISIBILITY_MODAL_DATA = new InjectionToken<WidgetVisibilityModalData>('WidgetVisibilityModalData')
