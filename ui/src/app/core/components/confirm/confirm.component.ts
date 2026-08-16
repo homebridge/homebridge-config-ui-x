@@ -24,8 +24,6 @@ export class ConfirmComponent {
   public confirmButtonLabel = this.modalData.confirmButtonLabel
   public confirmButtonClass = this.modalData.confirmButtonClass
   public faIconClass = this.modalData.faIconClass
-  public ctaButtonLabel = this.modalData.ctaButtonLabel
-  public ctaButtonLink = this.modalData.ctaButtonLink
 
   // Public methods
   public dismissModal(): void {
