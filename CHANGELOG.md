@@ -12,6 +12,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(settings): re-enable the reset button when a full bridge reset fails
 - fix(status): detect homebridge v2 by major version rather than a string prefix
 - fix(status): respect the update policy for the v2 readiness button in the docker layout
+- fix(status): use semver to judge plugin homebridge v2 support instead of a prefix match
 
 ### Other Changes
 
