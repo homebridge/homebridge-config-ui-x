@@ -15,7 +15,6 @@ import { AuthService } from '@/app/core/auth/auth.service'
 import { IoNamespace, WsService } from '@/app/core/communication/ws.service'
 import { ChildBridgeStatusResponse } from '@/app/core/server.interfaces'
 import { SettingsService } from '@/app/core/ui/settings.service'
-import { MobileDetectService } from '@/app/core/utilities/mobile-detect.service'
 import { AccessorySupportComponent } from '@/app/modules/accessories/accessory-support/accessory-support.component'
 import { AddRoomComponent } from '@/app/modules/accessories/add-room/add-room.component'
 import { DragHerePlaceholderComponent } from '@/app/modules/accessories/drag-here-placeholder/drag-here-placeholder.component'
@@ -48,7 +47,6 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
   private destroyRef = inject(DestroyRef)
   private $auth = inject(AuthService)
   private dragulaService = inject(DragulaService)
-  private $md = inject(MobileDetectService)
   private injector = inject(EnvironmentInjector)
   private $modal = inject(NgbModal)
   private $settings = inject(SettingsService)
@@ -64,7 +62,8 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
 
   public isAdmin = this.$auth.user.admin
   public enableAccessories = this.$settings.env.enableAccessories
-  public readonly isMobile = signal<boolean | string>(false)
+  // The room/tile layout starts locked; toggleLayoutLock opens it for editing
+  public readonly layoutLocked = signal<boolean>(true)
   public readonly hideHidden = signal(true)
   public readonly linkInsecure = '<a href="https://github.com/homebridge/homebridge-config-ui-x/wiki/Enabling-Accessory-Control" target="_blank"><i class="fas fa-up-right-from-square primary-text"></i></a>'
   public readonly hasPlugins = signal(this.$settings.env.hasInstalledPlugins ?? true)
@@ -94,8 +93,6 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
   constructor() {
     const dragulaService = this.dragulaService
 
-    this.isMobile.set(this.$md.detect.mobile() || false)
-
     // Drag-and-drop is restricted to manage-layout mode, where filters are guaranteed off and the
     // dragula model + DOM stay 1-to-1. Allowing drag while filters hide items causes the model
     // splice to operate on the wrong indexes (#2790).
@@ -115,8 +112,6 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
           this.$accessories.saveLayout()
         })
       })
-
-    this.isMobile.set(true)
   }
 
   public ngOnInit(): void {
@@ -179,7 +174,7 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
       // Save the layout to persist the new room
       this.$accessories.saveLayout()
 
-      if (this.isMobile()) {
+      if (this.layoutLocked()) {
         this.toggleLayoutLock()
       }
     } catch {
@@ -286,7 +281,7 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
   }
 
   public toggleLayoutLock(): void {
-    this.isMobile.set(!this.isMobile())
+    this.layoutLocked.set(!this.layoutLocked())
   }
 
   public openSupport(): void {
@@ -477,7 +472,7 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
       this.manageLayoutMode = false
       this.previousBridgeSelection = null
 
-      if (!this.isMobile()) {
+      if (!this.layoutLocked()) {
         this.toggleLayoutLock()
       }
       return
@@ -492,7 +487,7 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
       this.selectedBridges.set(current.filter((_, i) => i !== index))
     }
 
-    if (!this.isMobile()) {
+    if (!this.layoutLocked()) {
       this.toggleLayoutLock()
     }
   }
@@ -518,7 +513,7 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
       this.manageLayoutMode = false
       this.previousBridgeSelection = null
 
-      if (!this.isMobile()) {
+      if (!this.layoutLocked()) {
         this.toggleLayoutLock()
       }
       return
@@ -532,7 +527,7 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
       this.selectedBridges.set([...this.availableBridges()])
     }
 
-    if (!this.isMobile()) {
+    if (!this.layoutLocked()) {
       this.toggleLayoutLock()
     }
   }
@@ -561,7 +556,7 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
       this.previousBridgeSelection = current ? [...current] : null
 
       // Unlock layout
-      if (this.isMobile()) {
+      if (this.layoutLocked()) {
         this.toggleLayoutLock()
       }
     } else {
@@ -570,7 +565,7 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
       this.previousBridgeSelection = null
 
       // Lock layout when exiting manage mode
-      if (!this.isMobile()) {
+      if (!this.layoutLocked()) {
         this.toggleLayoutLock()
       }
     }
