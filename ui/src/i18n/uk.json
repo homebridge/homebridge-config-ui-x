@@ -404,6 +404,7 @@
   "platform.linux.restarting_server": "Перезапуск сервера",
   "platform.linux.server_restart_error": "Виникла помилка відправки команди перезавантаження на сервер",
   "platform.linux.server_restarted": "Сервер перезавантажений",
+  "platform.linux.server_shutdown_error": "Виникла помилка відправки команди вимкнення на сервер",
   "platform.linux.server_taking_long_time": "Перезапуск сервера займає багато часу",
   "platform.linux.server_will_power_down": "Сервер скоро відключиться.",
   "platform.linux.shutting_down_server": "Вимкнення сервера",

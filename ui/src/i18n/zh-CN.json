@@ -404,6 +404,7 @@
   "platform.linux.restarting_server": "正在重启服务器",
   "platform.linux.server_restart_error": "向服务器发送重启命令时出错",
   "platform.linux.server_restarted": "服务器已重启",
+  "platform.linux.server_shutdown_error": "向服务器发送关机命令时出错",
   "platform.linux.server_taking_long_time": "服务器重启已超时",
   "platform.linux.server_will_power_down": "服务器很快就会关机。",
   "platform.linux.shutting_down_server": "正在关闭服务器",

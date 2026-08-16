@@ -404,6 +404,7 @@
   "platform.linux.restarting_server": "מאתחל שרת",
   "platform.linux.server_restart_error": "אירעה שגיאה בשליחת פקודת האתחול לשרת",
   "platform.linux.server_restarted": "שרת אותחל",
+  "platform.linux.server_shutdown_error": "אירעה שגיאה בשליחת פקודת הכיבוי לשרת",
   "platform.linux.server_taking_long_time": "לשרת לוקח זמן רב לחזור להיות מחובר",
   "platform.linux.server_will_power_down": "השרת יכבה תוך זמן קצר.",
   "platform.linux.shutting_down_server": "מכבה שרת",

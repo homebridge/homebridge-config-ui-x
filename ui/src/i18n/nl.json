@@ -404,6 +404,7 @@
   "platform.linux.restarting_server": "Herstarten van de server",
   "platform.linux.server_restart_error": "Er is een fout opgetreden bij het verzenden van de opdracht Opnieuw opstarten naar de server",
   "platform.linux.server_restarted": "Server opnieuw gestart",
+  "platform.linux.server_shutdown_error": "Er is een fout opgetreden bij het verzenden van de opdracht Afsluiten naar de server",
   "platform.linux.server_taking_long_time": "Het duurt te lang voordat de server weer online komt",
   "platform.linux.server_will_power_down": "De server zal binnenkort worden uitgeschakeld.",
   "platform.linux.shutting_down_server": "Server Afsluiten",

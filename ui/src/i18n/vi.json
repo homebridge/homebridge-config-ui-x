@@ -404,6 +404,7 @@
   "platform.linux.restarting_server": "Đang khởi động lại server",
   "platform.linux.server_restart_error": "Đã xảy ra lỗi khi gửi lệnh khởi động lại tới server",
   "platform.linux.server_restarted": "Server đã được khởi động lại",
+  "platform.linux.server_shutdown_error": "Đã xảy ra lỗi khi gửi lệnh tắt máy tới server",
   "platform.linux.server_taking_long_time": "Server đang mất nhiều thời gian để hoạt động trở lại",
   "platform.linux.server_will_power_down": "Server sẽ tắt nguồn trong giây lát.",
   "platform.linux.shutting_down_server": "Đang tắt server",

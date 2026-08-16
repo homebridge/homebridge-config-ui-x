@@ -404,6 +404,7 @@
   "platform.linux.restarting_server": "Restarting Server",
   "platform.linux.server_restart_error": "An error occurred sending the restart command to the server",
   "platform.linux.server_restarted": "Server Restarted",
+  "platform.linux.server_shutdown_error": "An error occurred sending the shutdown command to the server",
   "platform.linux.server_taking_long_time": "The server is taking a long time to come back online",
   "platform.linux.server_will_power_down": "The server will power down shortly.",
   "platform.linux.shutting_down_server": "Shutting Down Server",

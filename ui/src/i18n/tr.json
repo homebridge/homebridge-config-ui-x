@@ -404,6 +404,7 @@
   "platform.linux.restarting_server": "Sunucu Yeniden Başlatılıyor",
   "platform.linux.server_restart_error": "Yeniden başlatma komutu sunucuya gönderilirken hata oluştu.",
   "platform.linux.server_restarted": "Sunucu yeniden başlatıldı.",
+  "platform.linux.server_shutdown_error": "Kapatma komutu sunucuya gönderilirken hata oluştu.",
   "platform.linux.server_taking_long_time": "Sunucunun yeniden çevirimiçi olması uzun zaman alıyor.",
   "platform.linux.server_will_power_down": "Sunucu kısa bir süre sonra kapanacak.",
   "platform.linux.shutting_down_server": "Sunucu Kapatılıyor",

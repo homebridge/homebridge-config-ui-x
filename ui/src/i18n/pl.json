@@ -404,6 +404,7 @@
   "platform.linux.restarting_server": "Ponowne uruchamianie serwera",
   "platform.linux.server_restart_error": "Wystąpił błąd podczas wysyłania polecenia restartu serwera",
   "platform.linux.server_restarted": "Serwer uruchomił się ponownie",
+  "platform.linux.server_shutdown_error": "Wystąpił błąd podczas wysyłania polecenia wyłączenia serwera",
   "platform.linux.server_taking_long_time": "Serwer potrzebuje więcej czasu, by powrócić do trybu online",
   "platform.linux.server_will_power_down": "Serwer wkrótce się wyłączy.",
   "platform.linux.shutting_down_server": "Wyłączanie serwera",

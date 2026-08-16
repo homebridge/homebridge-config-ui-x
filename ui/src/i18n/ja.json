@@ -404,6 +404,7 @@
   "platform.linux.restarting_server": "サーバーを再起動中",
   "platform.linux.server_restart_error": "サーバー再起動コマンドの送信中にエラーが発生しました",
   "platform.linux.server_restarted": "サーバーが再起動しました",
+  "platform.linux.server_shutdown_error": "サーバーシャットダウンコマンドの送信中にエラーが発生しました",
   "platform.linux.server_taking_long_time": "サーバーがオンラインに復帰するのに時間がかかっています",
   "platform.linux.server_will_power_down": "サーバーはまもなく停止します",
   "platform.linux.shutting_down_server": "サーバーをシャットダウンしています",
