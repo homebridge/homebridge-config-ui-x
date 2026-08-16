@@ -17,6 +17,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(status): let skip-if-compatible skip the v2 modal when all plugins support v2
 - fix(auth): correct the two factor code field name in the login type
 - fix(restart): detach the status listener when leaving the restart page
+- fix(plugins): track config block validity by block id so removals keep the right state
 
 ### Other Changes
 

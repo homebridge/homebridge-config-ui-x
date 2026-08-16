@@ -68,7 +68,7 @@ export class PluginConfigComponent implements OnInit {
   public readonly pluginConfig = signal<PluginConfigBlock[]>([])
   public readonly show = signal('')
   public readonly saveInProgress = signal(false)
-  public readonly formBlocksValid = signal<{ [key: number]: boolean }>({})
+  public readonly formBlocksValid = signal<{ [key: string]: boolean }>({})
   public readonly formIsValid = signal(true)
   public readonly strictValidation = signal(false)
   public readonly pluginAlias = signal<string>('')
@@ -165,26 +165,25 @@ export class PluginConfigComponent implements OnInit {
       },
     }])
 
-    this.formBlocksValid.update(current => ({ ...current, [this.pluginConfig().length - 1]: false }))
+    this.formBlocksValid.update(current => ({ ...current, [__uuid__]: false }))
     this.blockShown(__uuid__)
   }
 
   public removeBlock(__uuid__: string): void {
-    const pluginConfigIndex = this.pluginConfig().findIndex(x => x.__uuid__ === __uuid__)
     this.pluginConfig.update(current => current.filter(x => x.__uuid__ !== __uuid__))
 
+    // Validity is keyed by block id - keying by index left the remaining
+    // entries pointing at the wrong blocks after a middle block was removed
     this.formBlocksValid.update((current) => {
       const updated = { ...current }
-      delete updated[pluginConfigIndex]
+      delete updated[__uuid__]
       return updated
     })
-    if (!Object.keys(this.formBlocksValid()).length) {
-      this.formIsValid.set(true)
-    }
+    this.formIsValid.set(Object.values(this.formBlocksValid()).every(x => x))
   }
 
-  public onIsValid($event: boolean, index: number): void {
-    this.formBlocksValid.update(current => ({ ...current, [index]: $event }))
+  public onIsValid($event: boolean, __uuid__: string): void {
+    this.formBlocksValid.update(current => ({ ...current, [__uuid__]: $event }))
     this.formIsValid.set(Object.values(this.formBlocksValid()).every(x => x))
   }
 
