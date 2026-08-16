@@ -146,13 +146,14 @@ export abstract class BaseChartWidgetComponent implements OnInit, OnDestroy {
   }
 
   protected updateChartData(currentValue: number): void {
+    // Make room first so the series never holds more than historyItems points
+    if (Object.keys(this.lineChartData.datasets[0].data).length >= this.historyItems) {
+      this.shiftChartData()
+    }
+
     const dataLength = Object.keys(this.lineChartData.datasets[0].data).length
     this.lineChartData.datasets[0].data[dataLength] = currentValue
     this.lineChartLabels.push('point')
-
-    if (dataLength >= this.historyItems) {
-      this.shiftChartData()
-    }
   }
 
   protected shiftChartData(): void {
