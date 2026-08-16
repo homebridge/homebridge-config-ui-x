@@ -104,8 +104,8 @@ export class HbV2ModalComponent implements OnInit {
 
       this.installedPlugins.set(processedPlugins)
 
-      // Skip if there are no plugins installed
-      if (this.skipIfCompatible && this.installedPlugins().length === 0) {
+      // Skip when every installed plugin declares v2 support (covers no plugins at all)
+      if (this.skipIfCompatible && this.allPluginsSupported()) {
         this.$activeModal.close('update')
       }
     } catch (error) {
