@@ -116,9 +116,29 @@ export class PluginsService implements OnModuleDestroy {
    */
   private scheduleUiRestart(): void {
     this.uiRestartTimer = setTimeout(() => {
-      process.exit(0)
+      void this.exitOnceUpdatesFinish()
     }, PluginsService.UI_RESTART_DELAY_MS)
     this.uiRestartTimer.unref()
+  }
+
+  /**
+   * Exit for the self-restart only once no package operation is running or
+   * queued. Exiting kills this process's npm children, and an npm install
+   * killed mid-extraction leaves the package half-unpacked on disk - a
+   * homebridge caught like that cannot start again (updater#278: an
+   * auto-updater posted homebridge + ui + plugin updates in one pass, the
+   * ui's own update finished first, and this exit destroyed the rest).
+   */
+  private async exitOnceUpdatesFinish(): Promise<void> {
+    while (this.packageOperationsPending > 0) {
+      this.logger.warn('Waiting for a package update to finish before restarting the UI...')
+      await this.packageOperationQueue
+    }
+    // Torn down while waiting (tests) - never exit someone else's process
+    if (!this.uiRestartTimer) {
+      return
+    }
+    process.exit(0)
   }
 
   public onModuleDestroy(): void {
@@ -126,6 +146,26 @@ export class PluginsService implements OnModuleDestroy {
       clearTimeout(this.uiRestartTimer)
       this.uiRestartTimer = undefined
     }
+  }
+
+  /**
+   * All npm package operations run through here, one at a time. npm has no
+   * lock of its own: two npm processes rewriting the same node_modules tree
+   * corrupt it, and `POST /plugins/update/:name` returns as soon as its npm
+   * run is SCHEDULED - so back-to-back calls (the homebridge-updater plugin
+   * applying several updates, updater#278) otherwise run npm concurrently.
+   */
+  private packageOperationQueue: Promise<unknown> = Promise.resolve()
+  private packageOperationsPending = 0
+
+  private queuePackageOperation<T>(operation: () => Promise<T>): Promise<T> {
+    this.packageOperationsPending++
+    const run = this.packageOperationQueue.then(operation).finally(() => {
+      this.packageOperationsPending--
+    })
+    // The queue lives on after a failed operation - only the caller sees the error
+    this.packageOperationQueue = run.catch(() => {})
+    return run
   }
 
   // Installed plugin cache
@@ -774,6 +814,10 @@ export class PluginsService implements OnModuleDestroy {
    * @param client
    */
   async managePlugin(action: 'install' | 'uninstall', pluginAction: PluginActionDto, client: EventEmitter) {
+    return this.queuePackageOperation(() => this.doManagePlugin(action, pluginAction, client))
+  }
+
+  private async doManagePlugin(action: 'install' | 'uninstall', pluginAction: PluginActionDto, client: EventEmitter) {
     pluginAction.version = pluginAction.version || 'latest'
 
     // Use a different route for the ui
@@ -1000,6 +1044,10 @@ export class PluginsService implements OnModuleDestroy {
    * Updates the Homebridge package
    */
   public async updateHomebridgePackage(homebridgeUpdateAction: HomebridgeUpdateActionDto, client: EventEmitter) {
+    return this.queuePackageOperation(() => this.doUpdateHomebridgePackage(homebridgeUpdateAction, client))
+  }
+
+  private async doUpdateHomebridgePackage(homebridgeUpdateAction: HomebridgeUpdateActionDto, client: EventEmitter) {
     const homebridge = await this.getHomebridgePackage()
 
     homebridgeUpdateAction.version = homebridgeUpdateAction.version || 'latest'
