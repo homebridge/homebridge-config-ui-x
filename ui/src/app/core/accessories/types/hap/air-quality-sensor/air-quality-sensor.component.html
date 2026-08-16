@@ -1,5 +1,5 @@
 @let aq = service().values?.AirQuality || 0;
-@let aqLabel = labels[aq];
+@let aqLabel = labels[aq] | translate;
 
 @let srBaseName = (service().customName || service().serviceName || '').trim();
 @let srType = 'accessories.core.air_quality_sensor' | translate;
