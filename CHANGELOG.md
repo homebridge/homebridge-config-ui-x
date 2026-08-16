@@ -24,6 +24,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - chore(settings): remove leftover debug scaffolding from the search filter
 - chore(settings): remove the unreferenced settings support modal
 - fix(i18n): register the missing finnish locale data
+- fix(plugins): translate the deconz and hue dump file button labels properly
 
 ### Other Changes
 
