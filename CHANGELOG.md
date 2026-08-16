@@ -14,6 +14,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(status): respect the update policy for the v2 readiness button in the docker layout
 - fix(status): use semver to judge plugin homebridge v2 support instead of a prefix match
 - fix(status): reset the all-plugins-supported flag when the v2 plugin list reloads
+- fix(status): let skip-if-compatible skip the v2 modal when all plugins support v2
 
 ### Other Changes
 
