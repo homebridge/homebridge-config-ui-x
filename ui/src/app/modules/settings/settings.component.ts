@@ -494,10 +494,7 @@ export class SettingsComponent implements OnInit {
   }
 
   public isItemHidden(itemId: string): boolean {
-    const isHidden = !!this.hiddenItems()[itemId]
-    if (this.searchQuery()) { // Only log when searching
-    }
-    return isHidden
+    return !!this.hiddenItems()[itemId]
   }
 
   public isSectionVisible(sectionName: string): boolean {

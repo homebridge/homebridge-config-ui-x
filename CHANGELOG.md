@@ -21,6 +21,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(ui): keep restarting the remaining child bridges when one restart fails
 - fix(status): keep chart history within the configured number of points
 - chore(settings): remove the legacy ssl form controls superseded by the ssl modal
+- chore(settings): remove leftover debug scaffolding from the search filter
 
 ### Other Changes
 
