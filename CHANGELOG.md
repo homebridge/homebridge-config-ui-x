@@ -11,6 +11,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(settings): subscribe to the hbfx upload events so the restore can actually start
 - fix(settings): re-enable the reset button when a full bridge reset fails
 - fix(status): detect homebridge v2 by major version rather than a string prefix
+- fix(status): respect the update policy for the v2 readiness button in the docker layout
 
 ### Other Changes
 
