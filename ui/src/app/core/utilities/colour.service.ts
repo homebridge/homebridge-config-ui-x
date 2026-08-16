@@ -63,6 +63,9 @@ export class ColourService {
   }
 
   public kelvinToHsl(kelvin: number): string {
+    // Clamp kelvin to the valid range, matching kelvinToHex - an out-of-range
+    // value would feed the logarithms below and come out as NaN
+    kelvin = Math.max(1000, Math.min(40000, kelvin))
     const temp = kelvin / 100
     let red: number, green: number, blue: number
     if (temp <= 66) {
