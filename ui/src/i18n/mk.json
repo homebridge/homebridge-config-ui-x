@@ -404,6 +404,7 @@
   "platform.linux.restarting_server": "Серверот се рестартира",
   "platform.linux.server_restart_error": "Настана грешка при испраќање на рестарт командата до серверот",
   "platform.linux.server_restarted": "Серверот е рестартиран",
+  "platform.linux.server_shutdown_error": "Настана грешка при испраќање на командата за исклучување до серверот",
   "platform.linux.server_taking_long_time": "Рестартирањето на серверот трае подолго време.",
   "platform.linux.server_will_power_down": "Серверот ќе се исклучи наскоро.",
   "platform.linux.shutting_down_server": "Серверот се исклучува",

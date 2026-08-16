@@ -404,6 +404,7 @@
   "platform.linux.restarting_server": "Перезагрузка сервера",
   "platform.linux.server_restart_error": "Произошла ошибка при отправке команды перезагрузки серверу",
   "platform.linux.server_restarted": "Сервер перезагружен",
+  "platform.linux.server_shutdown_error": "Произошла ошибка при отправке команды выключения серверу",
   "platform.linux.server_taking_long_time": "Сервер долго не выходит в онлайн",
   "platform.linux.server_will_power_down": "Сервер будет скоро выключен.",
   "platform.linux.shutting_down_server": "Выключение сервера",

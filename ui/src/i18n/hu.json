@@ -404,6 +404,7 @@
   "platform.linux.restarting_server": "Szerver újraindul",
   "platform.linux.server_restart_error": "Valami probléma történt az újraintás utasítása közben",
   "platform.linux.server_restarted": "Szerver újraindítva",
+  "platform.linux.server_shutdown_error": "Valami probléma történt a leállítás utasítása közben",
   "platform.linux.server_taking_long_time": "A szervernek túl sokáig tart visszatérni online.",
   "platform.linux.server_will_power_down": "A szerver hamarosan leáll.",
   "platform.linux.shutting_down_server": "Szerver leállítása",

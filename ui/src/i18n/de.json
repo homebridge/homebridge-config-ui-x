@@ -404,6 +404,7 @@
   "platform.linux.restarting_server": "Neustart des Servers",
   "platform.linux.server_restart_error": "Beim Senden des Neustartbefehls an den Server ist ein Fehler aufgetreten",
   "platform.linux.server_restarted": "Server wurde neu gestartet",
+  "platform.linux.server_shutdown_error": "Beim Senden des Befehls zum Herunterfahren an den Server ist ein Fehler aufgetreten",
   "platform.linux.server_taking_long_time": "Der Server braucht lange, um wieder online zu gehen",
   "platform.linux.server_will_power_down": "Der Server wird in Kürze heruntergefahren.",
   "platform.linux.shutting_down_server": "Herunterfahren des Servers",

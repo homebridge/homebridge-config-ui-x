@@ -404,6 +404,7 @@
   "platform.linux.restarting_server": "Starta om servern",
   "platform.linux.server_restart_error": "Ett fel inträffade när omstartskommandot skickades till servern",
   "platform.linux.server_restarted": "Serveren har startats om",
+  "platform.linux.server_shutdown_error": "Ett fel inträffade när avstängningskommandot skickades till servern",
   "platform.linux.server_taking_long_time": "Servern tar lång tid att komma tillbaka online",
   "platform.linux.server_will_power_down": "Servern stängs av inom kort.",
   "platform.linux.shutting_down_server": "Stänga av servern",

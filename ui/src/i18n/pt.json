@@ -404,6 +404,7 @@
   "platform.linux.restarting_server": "A reiniciar o servidor",
   "platform.linux.server_restart_error": "Ocorreu um erro ao enviar o comando de reinício para o servidor",
   "platform.linux.server_restarted": "O Servidor foi Reiniciado",
+  "platform.linux.server_shutdown_error": "Ocorreu um erro ao enviar o comando de desligamento para o servidor",
   "platform.linux.server_taking_long_time": "O servidor está a demorar demasiado tempo a inicializar",
   "platform.linux.server_will_power_down": "O servidor irá desligar brevemente.",
   "platform.linux.shutting_down_server": "A Desligar o Servidor",

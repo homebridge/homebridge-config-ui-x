@@ -404,6 +404,7 @@
   "platform.linux.restarting_server": "Uudellenkäynnistetään palvelin",
   "platform.linux.server_restart_error": "Tapahtui virhe uudelleenkäynnistys komennon lähettämisessä palvelimelle",
   "platform.linux.server_restarted": "Palvelin uudelleenkäynnistetty",
+  "platform.linux.server_shutdown_error": "Tapahtui virhe sammutuskomennon lähettämisessä palvelimelle",
   "platform.linux.server_taking_long_time": "Palvelimen käynnistyminen tuntuu kestävän",
   "platform.linux.server_will_power_down": "Palvelin sammutetaan piakkoin.",
   "platform.linux.shutting_down_server": "Palvelinta sammutetaan",

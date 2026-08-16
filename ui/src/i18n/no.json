@@ -404,6 +404,7 @@
   "platform.linux.restarting_server": "Restart serveren",
   "platform.linux.server_restart_error": "En feil oppsto med å sende restartkommandoen til serveren",
   "platform.linux.server_restarted": "Serveren har startet på nytt",
+  "platform.linux.server_shutdown_error": "En feil oppsto med å sende kommandoen for å slå av serveren",
   "platform.linux.server_taking_long_time": "Serveren bruker lang tid på å komme tilbake online",
   "platform.linux.server_will_power_down": "Serveren slås av innen kort tid.",
   "platform.linux.shutting_down_server": "Slå av serveren",

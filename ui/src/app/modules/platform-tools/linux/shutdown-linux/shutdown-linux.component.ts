@@ -24,8 +24,8 @@ export class ShutdownLinuxComponent implements OnInit {
     void this.$api.put('/platform-tools/linux/shutdown-host', {})
       .catch((error) => {
         console.error(error)
-        this.error.set(this.$translate.instant('platform.linux.server_restart_error'))
-        this.$toastr.error(this.$translate.instant('platform.linux.server_restart_error'), this.$translate.instant('toast.title_error'))
+        this.error.set(this.$translate.instant('platform.linux.server_shutdown_error'))
+        this.$toastr.error(this.$translate.instant('platform.linux.server_shutdown_error'), this.$translate.instant('toast.title_error'))
       })
   }
 }

@@ -404,6 +404,7 @@
   "platform.linux.restarting_server": "Ponovni zagon strežnika",
   "platform.linux.server_restart_error": "Pri pošiljanju ukaza za ponovni zagon strežniku je prišlo do napake",
   "platform.linux.server_restarted": "Strežnik vnovič zagnan",
+  "platform.linux.server_shutdown_error": "Pri pošiljanju ukaza za izklop strežniku je prišlo do napake",
   "platform.linux.server_taking_long_time": "Strežnik rabi dolgo časa, da se zažene",
   "platform.linux.server_will_power_down": "Strežnik se bo kmalu izklopil.",
   "platform.linux.shutting_down_server": "Zaustavitev strežnika",
