@@ -36,20 +36,26 @@ export class RestartChildBridgesComponent {
       return
     }
 
-    try {
-      for (const bridge of this.bridges) {
+    // Keep going when one bridge fails to restart - stopping at the first
+    // failure used to leave the remaining bridges running old config
+    let anyFailed = false
+    for (const bridge of this.bridges) {
+      try {
         await this.$api.put(`/server/restart/${bridge.username}`, {})
+      } catch (error) {
+        console.error(error)
+        anyFailed = true
       }
+    }
+    if (anyFailed) {
+      this.$toastr.error(this.$translate.instant('plugins.manage.child_bridge_restart_failed'), this.$translate.instant('toast.title_error'))
+    } else {
       this.$toastr.success(
         this.$translate.instant('plugins.manage.child_bridge_restart'),
         this.$translate.instant('toast.title_success'),
       )
-    } catch (error) {
-      console.error(error)
-      this.$toastr.error(this.$translate.instant('plugins.manage.child_bridge_restart_failed'), this.$translate.instant('toast.title_error'))
-    } finally {
-      this.$activeModal.close()
     }
+    this.$activeModal.close()
   }
 
   public dismissModal(): void {
