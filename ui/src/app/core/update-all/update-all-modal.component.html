@@ -1,0 +1,185 @@
+<div class="modal-content" role="dialog" aria-modal="true" [attr.aria-labelledby]="'update-all-modal-title'">
+  <div class="modal-header">
+    <h5 class="modal-title" id="update-all-modal-title">{{ 'update_all.title' | translate }}</h5>
+    <button
+      type="button"
+      class="btn-close"
+      data-bs-dismiss="modal"
+      [attr.aria-label]="'form.button_close' | translate"
+      (click)="dismissModal()"
+    ></button>
+  </div>
+  <div class="modal-body">
+    @if (loading()) {
+      <div class="text-center py-4">
+        <i class="fas fa-lg fa-circle-notch fa-spin primary-text" aria-hidden="true"></i>
+      </div>
+    } @else {
+      <div class="text-center mb-3">
+        <i class="fas fa-arrow-alt-circle-up primary-text icon-xl" aria-hidden="true"></i>
+      </div>
+      @if (plan().items.length === 0) {
+        <p class="text-center grey-text my-3">{{ 'update_all.empty' | translate }}</p>
+      } @else {
+        <ul class="mb-3">
+          <li>{{ 'update_all.description' | translate }}</li>
+          <li>{{ 'update_all.description_2' | translate }}</li>
+          @if (restartPlan().homebridge && restartPlan().ui) {
+            <li>{{ 'update_all.restart_homebridge_and_ui' | translate }}</li>
+          } @else if (restartPlan().homebridge) {
+            <li>{{ 'update_all.restart_homebridge' | translate }}</li>
+          } @else {
+            @if (restartPlan().ui) {
+              <li>{{ 'update_all.restart_ui' | translate }}</li>
+            }
+            @if (restartPlan().childBridgeCount === 1) {
+              <li>{{ 'update_all.restart_child_bridges_one' | translate }}</li>
+            } @else if (restartPlan().childBridgeCount > 1) {
+              <li>{{ 'update_all.restart_child_bridges' | translate: { count: restartPlan().childBridgeCount } }}</li>
+            }
+          }
+        </ul>
+        <ul class="list-group list-group-box mb-0">
+          @for (item of plan().items; track item.name) {
+            <li class="list-group-item d-flex justify-content-between align-items-center flex-row pb-2">
+              <div class="d-flex align-items-center text-start flex-grow-1 me-3">
+                <img
+                  alt=""
+                  aria-hidden="true"
+                  class="plugin-icon-small me-3 flex-shrink-0"
+                  [src]="item.icon || defaultIcon"
+                  (error)="handleIconError(item)"
+                />
+                <div>
+                  {{ item.displayName || item.name }}
+                  <br />
+                  <small class="grey-text">
+                    v{{ item.from }}
+                    <i class="fas fa-arrow-right mx-1" aria-hidden="true"></i>
+                    v{{ item.to }}
+                  </small>
+                </div>
+              </div>
+              <div class="text-end grey-text d-flex align-items-center">
+                <input
+                  type="checkbox"
+                  class="rendux-input"
+                  [id]="`update-all-item-${item.name}`"
+                  [checked]="isTicked(item.name)"
+                  [attr.aria-label]="item.displayName || item.name"
+                  (change)="toggleItem(item.name)"
+                />
+                <label class="rendux-label ms-3" [for]="`update-all-item-${item.name}`"></label>
+              </div>
+            </li>
+          }
+        </ul>
+      }
+
+      @if (hasNeedsReview()) {
+        <button
+          type="button"
+          class="btn btn-link p-0 text-decoration-none primary-text small d-block mt-3"
+          aria-controls="update-all-needs-review"
+          [attr.aria-expanded]="showNeedsReview()"
+          (click)="showNeedsReview.set(!showNeedsReview())"
+        >
+          <i class="fas fa-chevron-down me-1" aria-hidden="true" [class.fa-rotate-180]="showNeedsReview()"></i>
+          {{ 'update_all.label_needs_review' | translate: { count: plan().needsReview.length } }}
+        </button>
+        @if (showNeedsReview()) {
+          <ul id="update-all-needs-review" class="list-group list-group-box mt-2 mb-0">
+            @for (item of plan().needsReview; track item.name) {
+              <li class="list-group-item d-flex align-items-center flex-row pb-2">
+                <img
+                  alt=""
+                  aria-hidden="true"
+                  class="plugin-icon-small me-3 flex-shrink-0"
+                  [src]="item.icon || defaultIcon"
+                  (error)="handleIconError(item)"
+                />
+                <div class="text-start">
+                  {{ item.displayName || item.name }}
+                  <br />
+                  <small class="grey-text">
+                    v{{ item.from }}
+                    <i class="fas fa-arrow-right mx-1" aria-hidden="true"></i>
+                    v{{ item.to }}
+                    &middot;
+                    {{ 'update_all.reason_major' | translate }}
+                  </small>
+                </div>
+              </li>
+            }
+          </ul>
+        }
+      }
+
+      @if (hasSkipped()) {
+        <button
+          type="button"
+          class="btn btn-link p-0 text-decoration-none primary-text small d-block mt-3"
+          aria-controls="update-all-skipped"
+          [attr.aria-expanded]="showSkipped()"
+          (click)="showSkipped.set(!showSkipped())"
+        >
+          <i class="fas fa-chevron-down me-1" aria-hidden="true" [class.fa-rotate-180]="showSkipped()"></i>
+          {{ 'update_all.label_skipped' | translate: { count: plan().skipped.length } }}
+        </button>
+        @if (showSkipped()) {
+          <ul id="update-all-skipped" class="list-group list-group-box mt-2 mb-0">
+            @for (item of plan().skipped; track item.name) {
+              <li class="list-group-item d-flex align-items-center flex-row pb-2">
+                <img
+                  alt=""
+                  aria-hidden="true"
+                  class="plugin-icon-small me-3 flex-shrink-0"
+                  [src]="item.icon || defaultIcon"
+                  (error)="handleIconError(item)"
+                />
+                <div class="text-start">
+                  {{ item.displayName || item.name }}
+                  <br />
+                  <small class="grey-text">{{ `update_all.reason_${item.reason}` | translate }}</small>
+                </div>
+              </li>
+            }
+          </ul>
+        }
+      }
+    }
+  </div>
+  <div class="modal-footer justify-content-between">
+    <div class="text-start">
+      <button
+        type="button"
+        class="btn btn-elegant"
+        data-bs-dismiss="modal"
+        [attr.aria-label]="'form.button_close' | translate"
+        (click)="dismissModal()"
+      >
+        {{ 'form.button_close' | translate }}
+      </button>
+    </div>
+    <div class="text-center"></div>
+    <div class="text-end">
+      @if (!loading() && plan().items.length > 0) {
+        <button
+          type="button"
+          class="btn btn-primary"
+          [disabled]="selectedCount() === 0 || starting()"
+          (click)="confirm()"
+        >
+          @if (starting()) {
+            <i class="fas fa-circle-notch fa-spin me-1" aria-hidden="true"></i>
+          }
+          @if (selectedCount() === 1) {
+            {{ 'update_all.button_update_one' | translate }}
+          } @else {
+            {{ 'update_all.button_update_many' | translate: { count: selectedCount() } }}
+          }
+        </button>
+      }
+    </div>
+  </div>
+</div>

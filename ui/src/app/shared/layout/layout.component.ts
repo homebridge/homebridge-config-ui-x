@@ -6,10 +6,13 @@ import { firstValueFrom } from 'rxjs'
 import { lt } from 'semver'
 
 import { AuthService } from '@/app/core/auth/auth.service'
+import { ApiService } from '@/app/core/communication/api.service'
 import { IoNamespace, WsService } from '@/app/core/communication/ws.service'
 import { ConfirmComponent } from '@/app/core/components/confirm/confirm.component'
 import { CONFIRM_MODAL_DATA } from '@/app/core/modal-data-tokens'
 import { SettingsService } from '@/app/core/ui/settings.service'
+import { UpdateAllProgressComponent } from '@/app/core/update-all/update-all-progress.component'
+import { UpdateAllJournal } from '@/app/core/update-all/update-all.interfaces'
 import { SidebarComponent } from '@/app/shared/layout/sidebar/sidebar.component'
 import { environment } from '@/environments/environment'
 
@@ -27,6 +30,7 @@ import { environment } from '@/environments/environment'
 export class LayoutComponent implements OnInit, OnDestroy {
   // Injected dependencies
   private injector = inject(EnvironmentInjector)
+  private $api = inject(ApiService)
   private $auth = inject(AuthService)
   private $modal = inject(NgbModal)
   private $router = inject(Router)
@@ -60,6 +64,42 @@ export class LayoutComponent implements OnInit, OnDestroy {
     })
 
     void this.compareServerUiVersion()
+    void this.checkUpdateAllState()
+  }
+
+  /**
+   * The Update All journal outlives the run - deliberately, because the run's
+   * final step can be the UI restarting itself. On every page load: an
+   * unfinished journal means a run may still be going (the progress modal
+   * re-syncs from its ws snapshot, and shows the summary if it turns out to
+   * be over); a recently finished, unacknowledged journal gets its summary
+   * shown once. Anything older, or already seen, stays quiet.
+   */
+  private async checkUpdateAllState(): Promise<void> {
+    if (!this.$settings.settingsLoaded) {
+      await firstValueFrom(this.$settings.onSettingsLoaded)
+    }
+    if (!this.$auth.user?.admin) {
+      return
+    }
+
+    try {
+      const journal = await this.$api.get<UpdateAllJournal | null>('/update-all/journal')
+      if (!journal) {
+        return
+      }
+      const finishedRecently = journal.finishedAt
+        && Date.now() - Date.parse(journal.finishedAt) < 24 * 60 * 60 * 1000
+      if (!journal.finishedAt || (finishedRecently && !journal.acknowledged)) {
+        this.$modal.open(UpdateAllProgressComponent, {
+          size: 'lg',
+          backdrop: 'static',
+        })
+      }
+    } catch (error) {
+      // never block the page over a status nicety
+      console.error(error)
+    }
   }
 
   public ngOnDestroy(): void {

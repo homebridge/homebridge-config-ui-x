@@ -1,4 +1,4 @@
-import type { FakeAuth, FakeIoNamespace, FakeModalService, FakeSettings, FakeWs } from '@/testing'
+import type { FakeApi, FakeAuth, FakeIoNamespace, FakeModalService, FakeSettings, FakeWs } from '@/testing'
 
 import { NO_ERRORS_SCHEMA } from '@angular/core'
 import { TestBed } from '@angular/core/testing'
@@ -8,9 +8,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { ConfirmComponent } from '@/app/core/components/confirm/confirm.component'
 import { CONFIRM_MODAL_DATA } from '@/app/core/modal-data-tokens'
+import { UpdateAllProgressComponent } from '@/app/core/update-all/update-all-progress.component'
 import { LayoutComponent } from '@/app/shared/layout/layout.component'
 import { environment } from '@/environments/environment'
-import { fakeWs, makeAuth, makeSettings, modalServiceSpy } from '@/testing'
+import { fakeApi, fakeWs, makeAuth, makeSettings, modalServiceSpy } from '@/testing'
 import { provideFakes, provideTestTranslate } from '@/testing/providers'
 
 /**
@@ -34,6 +35,7 @@ describe('layoutComponent', () => {
   let ws: FakeWs
   let io: FakeIoNamespace
   let modal: FakeModalService
+  let api: FakeApi
   let navigate: ReturnType<typeof vi.fn>
 
   /**
@@ -43,15 +45,19 @@ describe('layoutComponent', () => {
    * @param options.url - the current router url
    * @param options.settingsLoaded - whether /auth/settings has answered yet
    * @param options.onSettingsLoaded - the settings-loaded stream to use
+   * @param options.admin - whether the signed-in user is an admin
+   * @param options.journal - the Update All journal the server reports
    */
   async function open(options: {
     uiVersion?: string
     url?: string
     settingsLoaded?: boolean
     onSettingsLoaded?: Subject<void>
+    admin?: boolean
+    journal?: Record<string, any> | null
   } = {}) {
     TestBed.resetTestingModule()
-    auth = makeAuth()
+    auth = makeAuth({ user: { admin: options.admin ?? true } })
     settings = makeSettings({
       // Matching the bundled version is the ordinary case: no mismatch, no modal
       uiVersion: options.uiVersion ?? environment.serverTarget,
@@ -61,12 +67,17 @@ describe('layoutComponent', () => {
     ws = fakeWs()
     io = ws.namespace('app')
     modal = modalServiceSpy()
+    // ⚠️ Required, not optional. The shell asks for the Update All journal on
+    // every load, so without a fake the real ApiService issues a request that
+    // never settles and `ngOnInit` hangs — which shows up as every case in this
+    // file timing out, not as one failed assertion.
+    api = fakeApi().respond('get', '/update-all/journal', options.journal ?? null)
 
     TestBed.configureTestingModule({
       providers: [
         provideRouter([]),
         provideTestTranslate(),
-        provideFakes({ auth, settings, ws, modal }),
+        provideFakes({ api, auth, settings, ws, modal }),
       ],
     })
 
@@ -95,6 +106,81 @@ describe('layoutComponent', () => {
 
   afterEach(() => {
     vi.useRealTimers()
+  })
+
+  /**
+   * Picking an Update All run back up after a page load.
+   *
+   * ⚠️ **The journal deliberately outlives the run**, because the last thing an
+   * Update All can do is restart the UI — which throws away the page watching it.
+   * So the shell asks on every load: a run still going gets its progress modal
+   * back, and one that finished while the user was away gets its summary shown
+   * once. Anything else has to stay quiet, or the modal reappears on every visit.
+   */
+  describe('picking up an update all run', () => {
+    /** A journal as the server reports it. */
+    function journal(overrides: Record<string, any> = {}) {
+      return { finishedAt: null, acknowledged: false, ...overrides }
+    }
+
+    /** Whether the progress modal was opened. */
+    function progressShown() {
+      return modal.opened.some(entry => entry.content === UpdateAllProgressComponent)
+    }
+
+    it('reopens the progress modal for a run that is still going', async () => {
+      await open({ journal: journal({ finishedAt: null }) })
+
+      expect(progressShown()).toBe(true)
+      expect(modal.lastOpened()!.options).toMatchObject({ size: 'lg', backdrop: 'static' })
+    })
+
+    it('shows the summary for a run that finished while the user was away', async () => {
+      await open({ journal: journal({ finishedAt: new Date().toISOString(), acknowledged: false }) })
+
+      expect(progressShown()).toBe(true)
+    })
+
+    it('stays quiet about a summary the user has already seen', async () => {
+      await open({ journal: journal({ finishedAt: new Date().toISOString(), acknowledged: true }) })
+
+      expect(progressShown()).toBe(false)
+    })
+
+    it('stays quiet about a run that finished more than a day ago', async () => {
+      // ⚠️ Otherwise an old journal reopens the modal on every page load for ever
+      const twoDaysAgo = new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString()
+
+      await open({ journal: journal({ finishedAt: twoDaysAgo, acknowledged: false }) })
+
+      expect(progressShown()).toBe(false)
+    })
+
+    it('says nothing when there is no journal at all', async () => {
+      await open({ journal: null })
+
+      expect(progressShown()).toBe(false)
+    })
+
+    it('never shows it to a non-admin', async () => {
+      // Only an admin can run an update, so only an admin has a run to resume
+      await open({ admin: false, journal: journal({ finishedAt: null }) })
+
+      expect(progressShown()).toBe(false)
+      expect(api.callsTo('get', '/update-all/journal')).toEqual([])
+    })
+
+    it('does not block the page when the journal cannot be read', async () => {
+      // ⚠️ This is a status nicety on the shell that wraps every page. A failure
+      // here must not stop the app rendering
+      vi.spyOn(console, 'error').mockImplementation(() => {})
+      api = fakeApi().fail('get', '/update-all/journal', new Error('server unavailable'))
+
+      const shell = await open({ journal: null })
+
+      expect(shell).toBeDefined()
+      expect(progressShown()).toBe(false)
+    })
   })
 
   describe('the shared socket', () => {

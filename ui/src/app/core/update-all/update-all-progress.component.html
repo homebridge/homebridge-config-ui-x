@@ -1,0 +1,123 @@
+<div class="modal-content" role="dialog" aria-modal="true" [attr.aria-labelledby]="'update-all-progress-title'">
+  <div class="modal-header">
+    <h5 class="modal-title" id="update-all-progress-title">{{ 'update_all.title' | translate }}</h5>
+    <button
+      type="button"
+      class="btn-close"
+      data-bs-dismiss="modal"
+      [attr.aria-label]="'form.button_close' | translate"
+      (click)="closeModal()"
+    ></button>
+  </div>
+  <div class="modal-body">
+    @if (phase() === 'loading') {
+      <div class="text-center py-4">
+        <i class="fas fa-lg fa-circle-notch fa-spin primary-text" aria-hidden="true"></i>
+      </div>
+    }
+
+    @if (journal(); as journalValue) {
+      <div class="mb-3" role="status" aria-live="polite">
+        @for (item of journalValue.items; track item.name) {
+          <div class="d-flex align-items-center py-2 border-bottom">
+            <span class="me-3 flex-shrink-0">
+              @switch (displayStatus(item.status)) {
+                @case ('running') {
+                  <i class="fas fa-circle-notch fa-spin primary-text" aria-hidden="true"></i>
+                }
+                @case ('ok') {
+                  <i class="fas fa-check-circle green-text" aria-hidden="true"></i>
+                }
+                @case ('failed') {
+                  <i class="fas fa-times-circle red-text" aria-hidden="true"></i>
+                }
+                @case ('skipped') {
+                  <i class="fas fa-minus-circle grey-text" aria-hidden="true"></i>
+                }
+                @case ('incomplete') {
+                  <i class="fas fa-minus-circle grey-text" aria-hidden="true"></i>
+                }
+                @default {
+                  <i class="far fa-circle grey-text" aria-hidden="true"></i>
+                }
+              }
+            </span>
+            <span class="flex-grow-1">
+              <span class="d-block">{{ item.displayName || item.name }}</span>
+              <span class="grey-text small">
+                v{{ item.from }}
+                <i class="fas fa-arrow-right mx-1" aria-hidden="true"></i>
+                v{{ item.to }}
+                @switch (displayStatus(item.status)) {
+                  @case ('running') {
+                    &middot; {{ 'update_all.status_running' | translate }}
+                  }
+                  @case ('planned') {
+                    &middot; {{ 'update_all.status_planned' | translate }}
+                  }
+                  @case ('incomplete') {
+                    &middot; {{ 'update_all.status_incomplete' | translate }}
+                  }
+                }
+                @if (item.reason) {
+                  &middot; {{ item.reason }}
+                }
+              </span>
+            </span>
+          </div>
+        }
+      </div>
+    }
+
+    @if (phase() === 'progress') {
+      <div
+        id="update-all-log-output"
+        aria-hidden="true"
+        [class.terminal-light-bg]="isLightTerminalTheme"
+        [class.terminal-dark-bg]="!isLightTerminalTheme"
+      ></div>
+      @if (disconnected()) {
+        <p class="orange-text small mt-2 mb-0">{{ 'update_all.reconnecting' | translate }}</p>
+      }
+      @if (cancelRequested()) {
+        <p class="grey-text small mt-2 mb-0">{{ 'update_all.stopping' | translate }}</p>
+      }
+    }
+
+    @if (phase() === 'summary' && journal(); as journalValue) {
+      <div class="mt-1">
+        @switch (journalValue.restart.homebridge) {
+          @case ('done') {
+            <p class="small mb-1">{{ 'update_all.summary_restart_homebridge_done' | translate }}</p>
+          }
+          @case ('failed') {
+            <p class="orange-text small mb-1">{{ 'update_all.summary_restart_homebridge_failed' | translate }}</p>
+          }
+        }
+        @if (journalValue.restart.childBridges === 'done') {
+          <p class="small mb-1">{{ 'update_all.summary_restart_child_bridges_done' | translate }}</p>
+        }
+        @if (journalValue.restart.ui === 'scheduled') {
+          <p class="small mb-1">{{ 'update_all.summary_restart_ui' | translate }}</p>
+        }
+      </div>
+    }
+  </div>
+  <div class="modal-footer justify-content-between">
+    <div class="text-start">
+      @if (phase() === 'progress') {
+        <button type="button" class="btn btn-elegant" [disabled]="cancelRequested()" (click)="cancelRun()">
+          {{ 'update_all.button_stop' | translate }}
+        </button>
+      }
+    </div>
+    <div class="text-center"></div>
+    <div class="text-end">
+      @if (phase() === 'summary') {
+        <button type="button" class="btn btn-primary" (click)="closeModal()">
+          {{ 'form.button_close' | translate }}
+        </button>
+      }
+    </div>
+  </div>
+</div>
