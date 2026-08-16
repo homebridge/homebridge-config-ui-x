@@ -66,10 +66,40 @@ export class AccessoriesService {
     if (this.configService.homebridgeInsecureMode) {
       this.hapClient = new HapClient({
         pin: this.configService.homebridgeConfig.bridge.pin,
+        pins: this.getChildBridgePins(),
         logger: this.logger,
         config: this.configService.ui.accessoryControl || {},
       })
     }
+  }
+
+  /**
+   * The pin for each child bridge that sets its own, keyed by username.
+   *
+   * ⚠️ Even in insecure mode a bridge checks the `Authorization` header against
+   * ITS OWN pincode, so sending the main bridge's pin to every instance only
+   * works while every child bridge inherits it. A child bridge with a `pin` in
+   * its `_bridge` block answered 470, was dropped during discovery, and its
+   * accessories silently never appeared on the Accessories page (#2936).
+   *
+   * Bridges without their own pin are left out, so hap-client falls back to the
+   * main bridge pin for them.
+   */
+  private getChildBridgePins(): Record<string, string> {
+    const config = this.configService.homebridgeConfig
+    const blocks = [
+      ...(Array.isArray(config?.platforms) ? config.platforms : []),
+      ...(Array.isArray(config?.accessories) ? config.accessories : []),
+    ]
+
+    const pins: Record<string, string> = {}
+    for (const block of blocks) {
+      const bridge = block?._bridge
+      if (bridge?.username && bridge?.pin) {
+        pins[bridge.username] = bridge.pin
+      }
+    }
+    return pins
   }
 
   /**

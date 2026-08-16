@@ -9,7 +9,7 @@ import { ValidationPipe } from '@nestjs/common'
 import { FastifyAdapter } from '@nestjs/platform-fastify'
 import { Test } from '@nestjs/testing'
 import { copy, remove } from 'fs-extra'
-import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { AuthModule } from '../../src/core/auth/auth.module.js'
 import { ConfigService } from '../../src/core/config/config.service.js'
@@ -538,6 +538,61 @@ describe('AccessoriesController (e2e)', () => {
     // Should be a no-op when insecure mode is disabled
     expect(() => accessoriesService.resetInstancePool()).not.toThrow()
     configService.homebridgeInsecureMode = true
+  })
+
+  /**
+   * Even in insecure mode a bridge checks the `Authorization` header against
+   * ITS OWN pincode, so a child bridge with a `pin` in its `_bridge` block
+   * answered 470 and was dropped during discovery - its accessories never
+   * appeared on the Accessories page (#2936).
+   */
+  describe('per-child-bridge pins (#2936)', () => {
+    const originalConfig = { platforms: undefined, accessories: undefined }
+
+    beforeEach(() => {
+      originalConfig.platforms = configService.homebridgeConfig.platforms
+      originalConfig.accessories = configService.homebridgeConfig.accessories
+    })
+
+    afterEach(() => {
+      configService.homebridgeConfig.platforms = originalConfig.platforms
+      configService.homebridgeConfig.accessories = originalConfig.accessories
+    })
+
+    it('collects the pin of every child bridge that sets one', () => {
+      configService.homebridgeConfig.platforms = [
+        { platform: 'WithPin', _bridge: { username: '0E:AA:BB:CC:DD:EE', pin: '999-88-777' } },
+        { platform: 'NoPin', _bridge: { username: '0E:11:22:33:44:55' } },
+        { platform: 'NoBridge' },
+      ] as any
+      configService.homebridgeConfig.accessories = [
+        { accessory: 'AccWithPin', name: 'A', _bridge: { username: '0E:99:88:77:66:55', pin: '111-22-333' } },
+      ] as any
+
+      const pins = (accessoriesService as any).getChildBridgePins()
+
+      // only the two that set their own - everything else falls back to the main pin
+      expect(pins).toEqual({
+        '0E:AA:BB:CC:DD:EE': '999-88-777',
+        '0E:99:88:77:66:55': '111-22-333',
+      })
+    })
+
+    it('returns an empty map when nothing sets its own pin', () => {
+      configService.homebridgeConfig.platforms = [
+        { platform: 'NoPin', _bridge: { username: '0E:11:22:33:44:55' } },
+      ] as any
+      configService.homebridgeConfig.accessories = undefined
+
+      expect((accessoriesService as any).getChildBridgePins()).toEqual({})
+    })
+
+    it('does not throw when the config has no platforms or accessories', () => {
+      configService.homebridgeConfig.platforms = undefined
+      configService.homebridgeConfig.accessories = undefined
+
+      expect(() => (accessoriesService as any).getChildBridgePins()).not.toThrow()
+    })
   })
 
   afterAll(async () => {
