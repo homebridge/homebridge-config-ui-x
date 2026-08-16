@@ -103,10 +103,11 @@ export class MatterThermostatManageComponent extends BaseManageComponent {
     // Get limits from cluster if available
     const cluster = this.service.clusters?.thermostat
     if (cluster) {
-      this.minHeatSetpoint = cluster.minHeatSetpointLimit ? cluster.minHeatSetpointLimit / 100 : 7
-      this.maxHeatSetpoint = cluster.maxHeatSetpointLimit ? cluster.maxHeatSetpointLimit / 100 : 30
-      this.minCoolSetpoint = cluster.minCoolSetpointLimit ? cluster.minCoolSetpointLimit / 100 : 10
-      this.maxCoolSetpoint = cluster.maxCoolSetpointLimit ? cluster.maxCoolSetpointLimit / 100 : 35
+      // A limit of 0 (0°C) is legitimate, so only fall back when the attribute is absent
+      this.minHeatSetpoint = cluster.minHeatSetpointLimit != null ? cluster.minHeatSetpointLimit / 100 : 7
+      this.maxHeatSetpoint = cluster.maxHeatSetpointLimit != null ? cluster.maxHeatSetpointLimit / 100 : 30
+      this.minCoolSetpoint = cluster.minCoolSetpointLimit != null ? cluster.minCoolSetpointLimit / 100 : 10
+      this.maxCoolSetpoint = cluster.maxCoolSetpointLimit != null ? cluster.maxCoolSetpointLimit / 100 : 35
     }
 
     this.applySliderGradient('linear-gradient(to right, rgb(80, 80, 179), rgb(173, 216, 230), rgb(255, 185, 120), rgb(139, 90, 60))')
