@@ -63,13 +63,13 @@
                     container="modal"
                     placement="left"
                     triggers="hover"
-                    [class.fa-circle-check]="formBlocksValid()[$index] === true"
-                    [class.green-text]="formBlocksValid()[$index] === true"
-                    [class.fa-circle-exclamation]="formBlocksValid()[$index] === false"
-                    [class.red-text]="strictValidation() && formBlocksValid()[$index] === false"
-                    [class.orange-text]="!strictValidation() && formBlocksValid()[$index] === false"
+                    [class.fa-circle-check]="formBlocksValid()[block.__uuid__] === true"
+                    [class.green-text]="formBlocksValid()[block.__uuid__] === true"
+                    [class.fa-circle-exclamation]="formBlocksValid()[block.__uuid__] === false"
+                    [class.red-text]="strictValidation() && formBlocksValid()[block.__uuid__] === false"
+                    [class.orange-text]="!strictValidation() && formBlocksValid()[block.__uuid__] === false"
                     [ngbTooltip]="
-                      (formBlocksValid()[$index]
+                      (formBlocksValid()[block.__uuid__]
                         ? 'form.label_valid'
                         : strictValidation()
                           ? 'form.label_invalid_strict'
@@ -86,7 +86,7 @@
                 <app-schema-form
                   [configSchema]="schema"
                   [(data)]="block.config"
-                  (isValid)="onIsValid($event, $index)"
+                  (isValid)="onIsValid($event, block.__uuid__)"
                 />
               </div>
             </div>
@@ -98,7 +98,11 @@
     <!-- SINGLE CONFIG BLOCK ONLY -->
     @if (pluginConfig().length && schema.singular) {
       <div class="card card-body">
-        <app-schema-form [configSchema]="schema" [(data)]="pluginConfig()[0].config" (isValid)="onIsValid($event, 0)" />
+        <app-schema-form
+          [configSchema]="schema"
+          [(data)]="pluginConfig()[0].config"
+          (isValid)="onIsValid($event, pluginConfig()[0].__uuid__)"
+        />
         @if (plugin.name === 'homebridge-deconz') {
           <app-homebridge-deconz />
         }
