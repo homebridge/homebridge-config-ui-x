@@ -1,4 +1,4 @@
-import { HttpEventType, HttpResponse } from '@angular/common/http'
+import { HttpClient, HttpEventType, HttpResponse } from '@angular/common/http'
 import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit, signal } from '@angular/core'
 import { Router } from '@angular/router'
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
@@ -15,6 +15,7 @@ import { SettingsService } from '@/app/core/ui/settings.service'
 import { hideXtermInputFromScreenReader } from '@/app/core/utilities/log.service'
 import { BackupComponent } from '@/app/modules/settings/backup/backup.component'
 import { ScheduledBackup } from '@/app/modules/settings/backup/backup.interfaces'
+import { environment } from '@/environments/environment'
 
 @Component({
   selector: 'app-restore',
@@ -27,6 +28,7 @@ export class RestoreComponent implements OnInit, OnDestroy {
   // Injected dependencies
   private $activeModal = inject(NgbActiveModal)
   private $api = inject(ApiService)
+  private $http = inject(HttpClient)
   private $modal = inject(NgbModal)
   private $router = inject(Router)
   private $settings = inject(SettingsService)
@@ -98,7 +100,7 @@ export class RestoreComponent implements OnInit, OnDestroy {
       if (this.restoreArchiveType() === 'homebridge') {
         void this.uploadHomebridgeArchive()
       } else if (this.restoreArchiveType() === 'hbfx') {
-        void this.uploadHbfxArchive()
+        this.uploadHbfxArchive()
       }
     }
   }
@@ -201,31 +203,38 @@ export class RestoreComponent implements OnInit, OnDestroy {
       })
   }
 
-  private async uploadHbfxArchive(): Promise<void> {
+  private uploadHbfxArchive(): void {
     this.term.reset()
     this.clicked.set(true)
     const formData: FormData = new FormData()
     formData.append('restoreArchive', this.selectedFile()!, this.selectedFile()?.name)
-    try {
-      const event = await this.$api.post('/backup/restore/hbfx', formData, {
-        reportUploadProgress: true,
-        observe: 'events',
-      })
-      if (event.type === HttpEventType.UploadProgress) {
-        this.uploadPercent.set(Math.round(100 * event.loaded / event.total!))
-      } else if (event instanceof HttpResponse) {
-        this.restoreStarted.set(true)
-        this.restoreInProgress.set(true)
-        setTimeout(() => {
-          void this.startHbfxRestore()
-        }, 500)
-      }
-    } catch (error: any) {
-      console.error(error)
-      this.$toastr.error(error.error?.message || this.$translate.instant('backup.restore_failed'), this.$translate.instant('toast.title_error'))
-    } finally {
-      this.clicked.set(false)
-    }
+    // ApiService wraps requests in firstValueFrom, which would resolve on the first
+    // (Sent) event and never see the upload progress or the response - subscribe to
+    // the full event stream instead
+    this.$http.post(`${environment.api.base}/backup/restore/hbfx`, formData, {
+      reportProgress: true,
+      observe: 'events',
+    }).subscribe({
+      next: (event) => {
+        if (event.type === HttpEventType.UploadProgress && event.total) {
+          this.uploadPercent.set(Math.round(100 * event.loaded / event.total))
+        } else if (event instanceof HttpResponse) {
+          this.restoreStarted.set(true)
+          this.restoreInProgress.set(true)
+          setTimeout(() => {
+            void this.startHbfxRestore()
+          }, 500)
+        }
+      },
+      error: (error: any) => {
+        console.error(error)
+        this.$toastr.error(error.error?.message || this.$translate.instant('backup.restore_failed'), this.$translate.instant('toast.title_error'))
+        this.clicked.set(false)
+      },
+      complete: () => {
+        this.clicked.set(false)
+      },
+    })
   }
 
   private async startHbfxRestore(): Promise<void> {
