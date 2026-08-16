@@ -404,6 +404,7 @@
   "platform.linux.restarting_server": "서버 재시작 중",
   "platform.linux.server_restart_error": "재시작 명령을 서버로 보내는 중에 오류가 발생했습니다.",
   "platform.linux.server_restarted": "서버가 재시작되었습니다",
+  "platform.linux.server_shutdown_error": "종료 명령을 서버로 보내는 중에 오류가 발생했습니다.",
   "platform.linux.server_taking_long_time": "서버가 다시 온라인 상태로 돌아오는데 많은 시간이 소요되고 있습니다.",
   "platform.linux.server_will_power_down": "서버의 전원이 곧 꺼집니다.",
   "platform.linux.shutting_down_server": "서버 종료",

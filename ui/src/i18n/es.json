@@ -404,6 +404,7 @@
   "platform.linux.restarting_server": "Reiniciando Servidor",
   "platform.linux.server_restart_error": "Un error ha ocurrido al enviar el comando de reinicio al servidor",
   "platform.linux.server_restarted": "Servidor reiniciado",
+  "platform.linux.server_shutdown_error": "Un error ha ocurrido al enviar el comando de apagado al servidor",
   "platform.linux.server_taking_long_time": "El servidor está tardando demasiado tiempo en volver a estar disponible",
   "platform.linux.server_will_power_down": "El servidor se apagará pronto.",
   "platform.linux.shutting_down_server": "Apagando el servidor",

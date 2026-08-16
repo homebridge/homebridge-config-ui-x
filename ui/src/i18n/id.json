@@ -404,6 +404,7 @@
   "platform.linux.restarting_server": "Memulai Kembali Server",
   "platform.linux.server_restart_error": "Terjadi kesalahan saat mengirim perintah restart ke server",
   "platform.linux.server_restarted": "Server Telah Dimulai Kembali",
+  "platform.linux.server_shutdown_error": "Terjadi kesalahan saat mengirim perintah shutdown ke server",
   "platform.linux.server_taking_long_time": "Server membutuhkan waktu lebih lama untuk kembali online",
   "platform.linux.server_will_power_down": "Server akan segera dimatikan.",
   "platform.linux.shutting_down_server": "Mematikan Server",

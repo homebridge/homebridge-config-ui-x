@@ -404,6 +404,7 @@
   "platform.linux.restarting_server": "กำลังรีสตาร์ทเซิร์ฟเวอร์",
   "platform.linux.server_restart_error": "เกิดข้อผิดพลาดในการส่งคำสั่งรีสตาร์ทไปยังเซิร์ฟเวอร์",
   "platform.linux.server_restarted": "รีสตาร์ทเซิร์ฟเวอร์แล้ว",
+  "platform.linux.server_shutdown_error": "เกิดข้อผิดพลาดในการส่งคำสั่งปิดเครื่องไปยังเซิร์ฟเวอร์",
   "platform.linux.server_taking_long_time": "เซิร์ฟเวอร์ใช้เวลานานในการกลับมาออนไลน์",
   "platform.linux.server_will_power_down": "เซิร์ฟเวอร์จะปิดการทำงานในไม่ช้า",
   "platform.linux.shutting_down_server": "กำลังปิดเซิร์ฟเวอร์",

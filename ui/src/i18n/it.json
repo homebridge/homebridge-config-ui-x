@@ -404,6 +404,7 @@
   "platform.linux.restarting_server": "Riavvio del sistema",
   "platform.linux.server_restart_error": "Si è verificato un errore durante l'invio del comando di riavvio al sistema",
   "platform.linux.server_restarted": "Sistema riavviato",
+  "platform.linux.server_shutdown_error": "Si è verificato un errore durante l'invio del comando di arresto al sistema",
   "platform.linux.server_taking_long_time": "Il sistema impiega molto tempo per tornare online",
   "platform.linux.server_will_power_down": "Il sistema si spegnerà a breve.",
   "platform.linux.shutting_down_server": "Arresto del sistema",
