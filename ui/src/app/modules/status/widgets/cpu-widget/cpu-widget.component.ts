@@ -29,7 +29,7 @@ export class CpuWidgetComponent extends BaseChartWidgetComponent {
 
   // Signals
   public readonly cpuTemperature = signal<CpuWidgetData['cpuTemperature']>({})
-  public readonly currentLoad = signal<number>(0)
+  public readonly currentLoad = signal<number | undefined>(undefined)
 
   // Other properties
   public temperatureUnits = this.$settings.env.temperatureUnits
