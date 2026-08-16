@@ -44,6 +44,7 @@ export class ResetAllBridgesComponent {
       void this.$router.navigate(['/restart'])
     } catch (error) {
       console.error(error)
+      this.clicked.set(false)
       this.$toastr.error(this.$translate.instant('reset.failed_to_reset'), this.$translate.instant('toast.title_error'))
     }
   }
