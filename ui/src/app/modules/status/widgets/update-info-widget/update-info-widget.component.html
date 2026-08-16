@@ -69,7 +69,13 @@
                     } @else {
                       Homebridge
                     }
-                    @if (isHbV2Loaded() && !isRunningHbV2() && isAdmin) {
+                    @if (
+                      isHbV2Loaded() &&
+                      !isRunningHbV2() &&
+                      isAdmin &&
+                      homebridgeUpdatePolicy !== 'none' &&
+                      homebridgeUpdatePolicy !== 'major'
+                    ) {
                       <button
                         type="button"
                         class="btn btn-link p-0 text-decoration-none ms-1"
