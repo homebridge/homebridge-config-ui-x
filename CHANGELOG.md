@@ -88,6 +88,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(test): restore the shared test storage directory after a run, so the suite stops clobbering dev state
 - refactor(plugins): extract a restart-free package update path shared by single updates and update all
 - fix(auth): let a plugin authenticate as a service, instead of every self-minted token now failing
+- fix(accessories): send each child bridge its own pin, so its accessories are not hidden (#2936)
 
 ### Homebridge Dependencies
 
