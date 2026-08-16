@@ -16,8 +16,6 @@ export interface ConfirmModalData {
   confirmButtonLabel?: string
   confirmButtonClass?: string
   faIconClass?: string
-  ctaButtonLabel?: string
-  ctaButtonLink?: string
 }
 
 export const CONFIRM_MODAL_DATA = new InjectionToken<ConfirmModalData>('ConfirmModalData')

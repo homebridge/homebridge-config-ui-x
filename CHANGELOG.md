@@ -28,6 +28,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(accessories): allow zero degree setpoint limits on the matter thermostat modal
 - fix(status): show the metric widget spinners until the first data arrives
 - chore(status): drop the unused lock layout callbacks from the widget visibility modal
+- chore(ui): drop the unrendered cta fields from the confirm modal
 
 ### Other Changes
 
