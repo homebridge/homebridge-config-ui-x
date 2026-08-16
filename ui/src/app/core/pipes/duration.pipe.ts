@@ -14,6 +14,6 @@ export class DurationPipe implements PipeTransform {
     return [
       minutes > 0 ? `${minutes.toString()}m` : '',
       seconds > 0 ? `${seconds.toString()}s` : '',
-    ].filter(Boolean).join(' ')
+    ].filter(Boolean).join(' ') || '0s'
   }
 }
