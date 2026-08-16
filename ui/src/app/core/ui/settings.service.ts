@@ -234,7 +234,7 @@ export class SettingsService {
 
   /**
    * Check to make sure the server time is roughly the same as the client time.
-   * A warning is shown if the time difference is >= 4 hours.
+   * A warning is shown if the time difference is >= 8 hours.
    * @param timestamp
    */
   private checkServerTime(timestamp: string) {
