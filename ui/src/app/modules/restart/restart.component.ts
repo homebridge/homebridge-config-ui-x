@@ -62,18 +62,7 @@ export class RestartComponent implements OnInit, OnDestroy {
       })
 
     // Set up socket listener for homebridge status updates
-    this.io.socket.on('homebridge-status', (data: HomebridgeStatusResponse) => {
-      if (this.statusCheckActive()) {
-        this.uiOnline.set(true)
-        if (data.status === 'ok' || data.status === 'pending') {
-          // Latch so further `homebridge-status` events don't re-toast
-          // while router navigation is in flight (screen readers re-read).
-          this.statusCheckActive.set(false)
-          this.$toastr.success(this.$translate.instant('restart.toast_server_restarted'), this.$translate.instant('toast.title_success'))
-          void this.$router.navigate(['/'])
-        }
-      }
-    })
+    this.io.socket.on('homebridge-status', this.handleHomebridgeStatus)
 
     // Some custom flow can be run via the use of query params
     const queryParams = this.$router.parseUrl(this.$router.url).queryParams
@@ -90,8 +79,26 @@ export class RestartComponent implements OnInit, OnDestroy {
   }
 
   public ngOnDestroy(): void {
+    // The `status` namespace is cached and shared, so the listener must be
+    // detached by reference or it would keep toasting and navigating from
+    // whatever page the user moves to next
+    this.io.socket.off('homebridge-status', this.handleHomebridgeStatus)
     this.io.end?.()
     this.statusCheckActive.set(false)
+  }
+
+  // Named handler so ngOnDestroy can detach it by reference
+  private handleHomebridgeStatus = (data: HomebridgeStatusResponse): void => {
+    if (this.statusCheckActive()) {
+      this.uiOnline.set(true)
+      if (data.status === 'ok' || data.status === 'pending') {
+        // Latch so further `homebridge-status` events don't re-toast
+        // while router navigation is in flight (screen readers re-read).
+        this.statusCheckActive.set(false)
+        this.$toastr.success(this.$translate.instant('restart.toast_server_restarted'), this.$translate.instant('toast.title_success'))
+        void this.$router.navigate(['/'])
+      }
+    }
   }
 
   // Public methods
