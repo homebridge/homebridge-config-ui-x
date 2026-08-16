@@ -50,6 +50,9 @@ yarn.lock
 # Optional eslint cache
 .eslintcache
 
+# Angular CLI cache (created when ui builds/tests run from the repo root)
+.angular
+
 # Optional REPL history
 .node_repl_history
 

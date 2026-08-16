@@ -2,7 +2,7 @@ import antfu from '@antfu/eslint-config'
 
 export default antfu(
   {
-    ignores: ['dist', 'info', 'ui/.angular', '.github/npm-version-script-esm.js'],
+    ignores: ['dist', 'info', '.angular', 'ui/.angular', '.github/npm-version-script-esm.js'],
     typescript: true,
     angular: true,
     formatters: {
