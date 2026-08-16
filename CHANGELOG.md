@@ -30,6 +30,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - chore(status): drop the unused lock layout callbacks from the widget visibility modal
 - chore(ui): drop the unrendered cta fields from the confirm modal
 - fix(platform-tools): give the shutdown page its own error message
+- fix(accessories): translate the hap air quality labels like the matter ones
 
 ### Other Changes
 

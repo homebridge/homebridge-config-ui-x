@@ -13,7 +13,14 @@ import { BaseManageComponent } from '@/app/core/accessories/types/base-manage.co
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class HapAirQualitySensorManageComponent extends BaseManageComponent {
-  public labels = ['Unknown', 'Excellent', 'Good', 'Fair', 'Inferior', 'Poor']
+  public labels = [
+    'accessories.control.air_quality_unknown',
+    'accessories.control.air_quality_excellent',
+    'accessories.control.air_quality_good',
+    'accessories.control.air_quality_fair',
+    'accessories.control.air_quality_inferior',
+    'accessories.control.air_quality_poor',
+  ]
 
   public airQuality = 0
   public pm25: number | null = null
