@@ -106,7 +106,9 @@ export class WsService {
 
     const request = (resource: string, payload: any): Observable<any> => new Observable((observer) => {
       socket.emit(resource, payload, (resp: any) => {
-        if (typeof resp === 'object' && resp.error) {
+        // The null check matters: typeof null is 'object', so without it a
+        // null acknowledgement would throw reading `.error` inside the callback
+        if (resp && typeof resp === 'object' && resp.error) {
           observer.error(resp)
         } else {
           observer.next(resp)

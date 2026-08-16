@@ -33,6 +33,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(accessories): translate the hap air quality labels like the matter ones
 - chore(ui): correct the server time warning threshold in the settings service comment
 - fix(accessories): clamp colour temperature before converting it to a tile colour
+- fix(ui): tolerate a null acknowledgement on websocket requests
 
 ### Other Changes
 
