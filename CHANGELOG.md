@@ -23,6 +23,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - chore(settings): remove the legacy ssl form controls superseded by the ssl modal
 - chore(settings): remove leftover debug scaffolding from the search filter
 - chore(settings): remove the unreferenced settings support modal
+- fix(i18n): register the missing finnish locale data
 
 ### Other Changes
 
