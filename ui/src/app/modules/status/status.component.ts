@@ -191,8 +191,6 @@ export class StatusComponent implements OnInit, OnDestroy {
       useValue: {
         dashboard: this.dashboard(),
         resetLayout: this.resetLayout.bind(this),
-        lockLayout: this.lockLayout.bind(this),
-        unlockLayout: this.unlockLayout.bind(this),
       },
     }], this.injector)
 
