@@ -72,6 +72,7 @@ export class HbV2ModalComponent implements OnInit {
 
   private async loadInstalledPlugins() {
     this.installedPlugins.set([])
+    this.allPluginsSupported.set(true)
     this.loading.set(true)
     const homebridgeVersion = this.$settings.env.homebridgeVersion!.split('.')[0]
 
