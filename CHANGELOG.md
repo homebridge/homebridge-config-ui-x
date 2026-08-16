@@ -31,6 +31,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - chore(ui): drop the unrendered cta fields from the confirm modal
 - fix(platform-tools): give the shutdown page its own error message
 - fix(accessories): translate the hap air quality labels like the matter ones
+- chore(ui): correct the server time warning threshold in the settings service comment
 
 ### Other Changes
 
