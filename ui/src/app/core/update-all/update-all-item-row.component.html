@@ -1,0 +1,18 @@
+<div class="d-flex align-items-center text-start flex-grow-1 me-3">
+  <img
+    alt=""
+    aria-hidden="true"
+    class="plugin-icon-small me-3 flex-shrink-0"
+    [src]="icon() || defaultIcon"
+    (error)="handleIconError($event)"
+  />
+  <div>
+    {{ displayName() }}
+    <br />
+    <small class="grey-text">
+      v{{ from() }}
+      <i class="fas fa-arrow-right mx-1" aria-hidden="true"></i>
+      v{{ to() }}
+    </small>
+  </div>
+</div>

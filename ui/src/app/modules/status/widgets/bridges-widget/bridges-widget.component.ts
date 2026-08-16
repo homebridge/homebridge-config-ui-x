@@ -9,16 +9,14 @@ import { AuthService } from '@/app/core/auth/auth.service'
 import { TtlCacheService } from '@/app/core/caching/ttl-cache.service'
 import { ApiService } from '@/app/core/communication/api.service'
 import { IoNamespace, WsService } from '@/app/core/communication/ws.service'
+import { ChildBridgeStatusIconsComponent } from '@/app/core/components/child-bridge-status-icons/child-bridge-status-icons.component'
 import { ChildBridgeStatusResponse, HomebridgeStatus, HomebridgeStatusResponse } from '@/app/core/server.interfaces'
 import { SettingsService } from '@/app/core/ui/settings.service'
 import { ChildBridgeWithUIState, Widget } from '@/app/modules/status/widgets/widgets.interfaces'
 
 @Component({
   selector: 'app-bridges-widget',
-  imports: [
-    NgbTooltip,
-    TranslatePipe,
-  ],
+  imports: [ChildBridgeStatusIconsComponent, NgbTooltip, TranslatePipe],
   standalone: true,
   templateUrl: './bridges-widget.component.html',
   styleUrl: './bridges-widget.component.scss',

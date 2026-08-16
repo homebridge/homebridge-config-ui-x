@@ -10,9 +10,11 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { InformationComponent } from '@/app/core/components/information/information.component'
 import { HB_V2_MODAL_DATA, INFORMATION_MODAL_DATA, NODE_VERSION_MODAL_DATA } from '@/app/core/modal-data-tokens'
 import { ManagePluginsService } from '@/app/core/plugins/manage-plugins.service'
+import { UpdateAllModalComponent } from '@/app/core/update-all/update-all-modal.component'
 import { HbV2ModalComponent } from '@/app/modules/status/widgets/update-info-widget/hb-v2-modal/hb-v2-modal.component'
 import { NodeVersionModalComponent } from '@/app/modules/status/widgets/update-info-widget/node-version-modal/node-version-modal.component'
 import { UpdateInfoWidgetComponent } from '@/app/modules/status/widgets/update-info-widget/update-info-widget.component'
+import { environment } from '@/environments/environment'
 import { fakeWs, makeAuth, makeSettings, modalServiceSpy, toastrStub } from '@/testing'
 import { provideFakes, provideTestTranslate } from '@/testing/providers'
 
@@ -554,6 +556,72 @@ describe('UpdateInfoWidgetComponent', () => {
         widget.updatePackage(pkg)
 
         expect(managePlugins.upgradeHomebridge).toHaveBeenCalledWith(pkg, '1.9.0')
+      })
+    })
+
+    describe('the update all button', () => {
+      /**
+       * Everything reporting an update at once.
+       *
+       * ⚠️ A fresh object each time: the widget writes onto the payload it is
+       * given (`hbUi.updateAvailable = false` in a dev build), so a shared one
+       * would carry that edit into the next test.
+       */
+      function allOutOfDate() {
+        return {
+          homebridge: { name: 'homebridge', installedVersion: '1.8.0', latestVersion: '1.9.0', updateAvailable: true },
+          homebridgeUi: { name: 'homebridge-config-ui-x', installedVersion: '5.0.0', updateAvailable: true },
+          outOfDatePlugins: [{ name: 'homebridge-example', displayName: 'Example', installedVersion: '1.0.0', latestVersion: '1.1.0' }],
+        }
+      }
+
+      it('counts homebridge and every out-of-date plugin', async () => {
+        // The count gates the button (from two): with a single update the
+        // existing one-package flow is the right tool.
+        // ⚠️ Two, not three: this is a dev build, and the widget forces the
+        // ui's own update off in anything but production - see below
+        const widget = create({ payload: allOutOfDate() })
+        await settle()
+
+        expect(widget.updateAllCount()).toBe(2)
+      })
+
+      it('counts the ui itself only in a real build', async () => {
+        // A dev build must never offer to update the ui out from under the
+        // developer running it, so `updateAvailable` is cleared on load
+        environment.production = true
+        try {
+          const widget = create({ payload: allOutOfDate() })
+          await settle()
+
+          expect(widget.updateAllCount()).toBe(3)
+        } finally {
+          environment.production = false
+        }
+      })
+
+      it('counts nothing when everything is up to date', async () => {
+        const widget = create({
+          payload: {
+            homebridge: { name: 'homebridge', installedVersion: '1.8.0', latestVersion: '1.8.0', updateAvailable: false },
+            homebridgeUi: { name: 'homebridge-config-ui-x', installedVersion: '5.0.0', updateAvailable: false },
+            outOfDatePlugins: [],
+          },
+        })
+        await settle()
+
+        expect(widget.updateAllCount()).toBe(0)
+      })
+
+      it('opens the plan modal, which cannot be clicked away', async () => {
+        const widget = create()
+        await settle()
+
+        widget.updateAllModal()
+
+        expect(modal.lastOpened()!.content).toBe(UpdateAllModalComponent)
+        // A run must not be interrupted by a stray backdrop click
+        expect(modal.lastOpened()!.options).toMatchObject({ size: 'lg', backdrop: 'static' })
       })
     })
   })

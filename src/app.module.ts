@@ -18,6 +18,7 @@ import { PluginsModule } from './modules/plugins/plugins.module.js'
 import { ServerModule } from './modules/server/server.module.js'
 import { SetupWizardModule } from './modules/setup-wizard/setup-wizard.module.js'
 import { StatusModule } from './modules/status/status.module.js'
+import { UpdateAllModule } from './modules/update-all/update-all.module.js'
 import { UsersModule } from './modules/users/users.module.js'
 
 @Module({
@@ -38,6 +39,7 @@ import { UsersModule } from './modules/users/users.module.js'
     BackupModule,
     LogModule,
     SetupWizardModule,
+    UpdateAllModule,
   ],
   controllers: [
     AppController,

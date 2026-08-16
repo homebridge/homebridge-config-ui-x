@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, ElementRef, inject, OnDestroy, OnInit, signal, viewChild } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, DestroyRef, ElementRef, inject, OnDestroy, OnInit, signal, viewChild } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { NavigationEnd, Router, Event as RouterEvent } from '@angular/router'
@@ -18,6 +18,7 @@ import { SpinnerComponent } from '@/app/core/components/spinner/spinner.componen
 import { ChildBridge, Plugin } from '@/app/core/plugins/manage-plugins.interfaces'
 import { ManagePluginsService } from '@/app/core/plugins/manage-plugins.service'
 import { SettingsService } from '@/app/core/ui/settings.service'
+import { UpdateAllModalComponent } from '@/app/core/update-all/update-all-modal.component'
 import { PluginCardComponent } from '@/app/modules/plugins/plugin-card/plugin-card.component'
 import { PluginSupportComponent } from '@/app/modules/plugins/plugin-support/plugin-support.component'
 
@@ -70,6 +71,13 @@ export class PluginsComponent implements OnInit, OnDestroy, CanComponentDeactiva
   // True while the grid is showing search results rather than the installed
   // list. Read by the template to decide what a plugin card may show.
   public readonly isSearchMode = signal(false)
+
+  /**
+   * How many installed packages show an update, gating the Update All button
+   * (≥2 - with one update the card's own update button is the right tool).
+   * The modal fetches the authoritative plan itself.
+   */
+  public readonly availableUpdateCount = computed(() => this.installedPlugins().filter(x => x.updateAvailable).length)
 
   // Other properties
   private io!: IoNamespace
@@ -192,6 +200,13 @@ export class PluginsComponent implements OnInit, OnDestroy, CanComponentDeactiva
       this.isSearchMode.set(true)
       void this.search()
     }
+  }
+
+  public updateAllModal(): void {
+    this.$modal.open(UpdateAllModalComponent, {
+      size: 'lg',
+      backdrop: 'static',
+    })
   }
 
   public showSearch(): void {
