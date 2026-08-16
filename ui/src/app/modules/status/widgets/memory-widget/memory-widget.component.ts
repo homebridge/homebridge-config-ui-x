@@ -25,8 +25,8 @@ export class MemoryWidgetComponent extends BaseChartWidgetComponent {
   private $settings = inject(SettingsService)
 
   // Signals
-  public readonly totalMemory = signal<number>(0)
-  public readonly freeMemory = signal<number>(0)
+  public readonly totalMemory = signal<number | undefined>(undefined)
+  public readonly freeMemory = signal<number | undefined>(undefined)
 
   // Other properties
   public metricsDisabled = this.$settings.env.disableServerMetricsMonitoring === true
