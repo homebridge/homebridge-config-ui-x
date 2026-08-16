@@ -1,0 +1,232 @@
+<div class="modal-content" role="dialog" aria-modal="true" [attr.aria-labelledby]="'update-all-modal-title'">
+  <div class="modal-header">
+    <h5 class="modal-title" id="update-all-modal-title">{{ 'update_all.title' | translate }}</h5>
+    <button
+      type="button"
+      class="btn-close"
+      data-bs-dismiss="modal"
+      [attr.aria-label]="'form.button_close' | translate"
+      (click)="closeModal()"
+    ></button>
+  </div>
+  <div class="modal-body">
+    @if (phase() === 'loading') {
+      <div class="text-center py-4">
+        <i class="fas fa-lg fa-circle-notch fa-spin primary-text" aria-hidden="true"></i>
+      </div>
+    } @else {
+      <div class="text-center mb-3">
+        <i class="fas fa-arrow-alt-circle-up primary-text icon-xl" aria-hidden="true"></i>
+      </div>
+
+      @if (phase() === 'plan' && rows().length === 0) {
+        <p class="text-center grey-text my-3">{{ 'update_all.empty' | translate }}</p>
+      } @else {
+        <!--
+          Stays on screen for every phase. Dropping it when the run starts would
+          pull the whole list up under the user's cursor, and the restart line
+          still has something to say - it narrows as items fail or are skipped.
+        -->
+        <ul class="mb-3">
+          <li>{{ 'update_all.description' | translate }}</li>
+          <li>{{ 'update_all.description_2' | translate }}</li>
+          <!--
+            Exactly one line, always, picked by the widest restart the selection
+            calls for. The three scopes contain each other - restarting the UI
+            takes the whole service down with it, which restarts Homebridge,
+            which restarts every child bridge - so only the widest is worth
+            saying, and the list never changes height.
+          -->
+          @if (restartPlan().ui) {
+            <li>{{ 'update_all.restart_homebridge_and_ui' | translate }}</li>
+          } @else if (restartPlan().homebridge) {
+            <li>{{ 'update_all.restart_homebridge' | translate }}</li>
+          } @else if (restartPlan().childBridgeCount === 1) {
+            <li>{{ 'update_all.restart_child_bridges_one' | translate }}</li>
+          } @else if (restartPlan().childBridgeCount > 1) {
+            <li>{{ 'update_all.restart_child_bridges' | translate: { count: restartPlan().childBridgeCount } }}</li>
+          } @else {
+            <li>{{ 'update_all.restart_none' | translate }}</li>
+          }
+        </ul>
+
+        <!--
+          One list for every phase. The rows do not move when the run starts -
+          only the right-hand cell changes, from a toggle to that item's status.
+        -->
+        <ul class="list-group list-group-box mb-0" role="status" aria-live="polite">
+          @for (item of rows(); track item.name) {
+            <li class="list-group-item d-flex justify-content-between align-items-center flex-row pb-2">
+              @let line = rowLine(item);
+              <app-update-all-item-row
+                class="d-flex flex-grow-1"
+                [displayName]="item.displayName || item.name"
+                [icon]="item.icon"
+                [note]="line.key | translate: line.params"
+              />
+              @let icon = rowIcon(item);
+              @if (isSelectable(item) || item.excluded || item.needsReview) {
+                <!--
+                  A row that is not part of the run keeps its toggle, disabled -
+                  it stays in the list so nothing moves, and the toggle says
+                  plainly that it is not included. A major jump is never
+                  selectable at all, and says why under its versions.
+                -->
+                <div class="text-end grey-text d-flex align-items-center">
+                  <input
+                    type="checkbox"
+                    class="rendux-input"
+                    [id]="`update-all-item-${item.name}`"
+                    [checked]="!item.needsReview && isTicked(item.name)"
+                    [disabled]="!isSelectable(item)"
+                    [attr.aria-label]="
+                      isSelectable(item)
+                        ? item.displayName || item.name
+                        : `${item.displayName || item.name}: ${('update_all.status_excluded' | translate)}`
+                    "
+                    (change)="toggleItem(item.name)"
+                  />
+                  <label class="rendux-label ms-3" [for]="`update-all-item-${item.name}`"></label>
+                </div>
+              } @else {
+                <div class="text-end d-flex align-items-center flex-shrink-0">
+                  @if (restartStatusFor(item)) {
+                    @for (bridge of bridgeIconSourcesFor(item); track bridge.username) {
+                      <app-child-bridge-status-icons class="me-2 d-flex align-items-center" [bridge]="bridge" />
+                    }
+                  }
+                  <!-- Icon only: the label is the accessible name and the tooltip -->
+                  <span role="img" [attr.aria-label]="icon.label | translate" [attr.title]="icon.label | translate">
+                    <i aria-hidden="true" [class]="icon.classes"></i>
+                  </span>
+                </div>
+              }
+            </li>
+          }
+        </ul>
+      }
+
+      @if (phase() === 'plan') {
+        @if (hasSkipped()) {
+          <button
+            type="button"
+            class="btn btn-link p-0 text-decoration-none primary-text small d-block mt-3"
+            aria-controls="update-all-skipped"
+            [attr.aria-expanded]="showSkipped()"
+            (click)="showSkipped.set(!showSkipped())"
+          >
+            <i class="fas fa-chevron-down me-1" aria-hidden="true" [class.fa-rotate-180]="showSkipped()"></i>
+            {{ 'update_all.label_skipped' | translate: { count: plan().skipped.length } }}
+          </button>
+          @if (showSkipped()) {
+            <ul id="update-all-skipped" class="list-group list-group-box mt-2 mb-0">
+              @for (item of plan().skipped; track item.name) {
+                <li class="list-group-item d-flex align-items-center flex-row pb-2">
+                  <img
+                    alt=""
+                    aria-hidden="true"
+                    class="plugin-icon-small me-3 flex-shrink-0"
+                    [src]="item.icon || defaultIcon"
+                    (error)="handleIconError(item)"
+                  />
+                  <div class="text-start">
+                    {{ item.displayName || item.name }}
+                    <br />
+                    <small class="grey-text">{{ `update_all.reason_${item.reason}` | translate }}</small>
+                  </div>
+                </li>
+              }
+            </ul>
+          }
+        }
+      } @else {
+        @if (phase() === 'progress') {
+          <div
+            id="update-all-log-output"
+            class="mt-3"
+            aria-hidden="true"
+            [class.terminal-light-bg]="isLightTerminalTheme"
+            [class.terminal-dark-bg]="!isLightTerminalTheme"
+          ></div>
+          @if (disconnected()) {
+            <p class="orange-text small mt-2 mb-0">{{ 'update_all.reconnecting' | translate }}</p>
+          }
+          @if (cancelRequested()) {
+            <p class="grey-text small mt-2 mb-0">{{ 'update_all.stopping' | translate }}</p>
+          }
+        }
+
+        @if (phase() === 'summary' && journal(); as journalValue) {
+          <div class="mt-3">
+            @switch (journalValue.restart.homebridge) {
+              @case ('done') {
+                <p class="small mb-1">{{ 'update_all.summary_restart_homebridge_done' | translate }}</p>
+              }
+              @case ('failed') {
+                <p class="orange-text small mb-1">{{ 'update_all.summary_restart_homebridge_failed' | translate }}</p>
+              }
+            }
+            @if (journalValue.restart.ui === 'scheduled') {
+              <p class="small mb-1">{{ 'update_all.summary_restart_ui' | translate }}</p>
+            }
+            @if (journalValue.restart.childBridges === 'done' && !watchingBridges()) {
+              <p class="small mb-1">{{ 'update_all.summary_restart_child_bridges_done' | translate }}</p>
+            }
+          </div>
+        }
+      }
+    }
+  </div>
+  <div class="modal-footer justify-content-between">
+    <div class="text-start">
+      @if (phase() === 'plan') {
+        <button
+          type="button"
+          class="btn btn-elegant"
+          data-bs-dismiss="modal"
+          [attr.aria-label]="'form.button_close' | translate"
+          (click)="dismissModal()"
+        >
+          {{ 'form.button_close' | translate }}
+        </button>
+      }
+    </div>
+    <div class="text-center">
+      @if (phase() === 'progress') {
+        <button type="button" class="btn btn-elegant" [disabled]="cancelRequested()" (click)="cancelRun()">
+          {{ 'update_all.button_stop' | translate }}
+        </button>
+      }
+    </div>
+    <div class="text-end">
+      <!--
+        Shown for the whole plan phase, disabled when there is nothing to run -
+        including when every update is a major, which cannot be selected. The
+        footer keeps one shape, and a disabled button says why you cannot go on
+        where a missing one says nothing at all.
+      -->
+      @if (phase() === 'plan') {
+        <button
+          type="button"
+          class="btn btn-primary"
+          [disabled]="selectedCount() === 0 || starting()"
+          (click)="confirm()"
+        >
+          @if (starting()) {
+            <i class="fas fa-circle-notch fa-spin me-1" aria-hidden="true"></i>
+          }
+          @if (selectedCount() === 1) {
+            {{ 'update_all.button_update_one' | translate }}
+          } @else {
+            {{ 'update_all.button_update_many' | translate: { count: selectedCount() } }}
+          }
+        </button>
+      }
+      @if (phase() === 'summary') {
+        <button type="button" class="btn btn-primary" (click)="closeModal()">
+          {{ 'form.button_close' | translate }}
+        </button>
+      }
+    </div>
+  </div>
+</div>

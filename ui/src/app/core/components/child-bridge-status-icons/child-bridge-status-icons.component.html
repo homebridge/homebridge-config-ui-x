@@ -1,0 +1,32 @@
+<i
+  class="fas fa-hap fa-sm"
+  aria-hidden="true"
+  container="body"
+  placement="right"
+  triggers="hover"
+  [class.green-text]="!hapDisabled() && !hapExternalsOnly() && isUp()"
+  [class.text-warning]="!hapDisabled() && !hapExternalsOnly() && inTransition()"
+  [class.red-text]="!hapDisabled() && !hapExternalsOnly() && isDown()"
+  [class.grey-text]="hapDisabled() && !hapExternalsOnly()"
+  [class.opacity-muted]="hapDisabled() && !hapExternalsOnly()"
+  [class.text-info]="hapExternalsOnly()"
+  [openDelay]="150"
+  [ngbTooltip]="hapTooltipKey() | translate"
+></i>
+@if (isMatterSupported) {
+  <i
+    class="fas fa-matter fa-sm ms-2"
+    aria-hidden="true"
+    container="body"
+    placement="right"
+    triggers="hover"
+    [class.green-text]="!matterExternalsOnly() && matterEnabled() && isUp()"
+    [class.text-warning]="!matterExternalsOnly() && matterEnabled() && inTransition()"
+    [class.red-text]="!matterExternalsOnly() && matterEnabled() && isDown()"
+    [class.grey-text]="!matterEnabled() && !matterExternalsOnly()"
+    [class.opacity-muted]="!matterEnabled() && !matterExternalsOnly()"
+    [class.text-info]="matterExternalsOnly()"
+    [openDelay]="150"
+    [ngbTooltip]="matterTooltipKey() | translate"
+  ></i>
+}

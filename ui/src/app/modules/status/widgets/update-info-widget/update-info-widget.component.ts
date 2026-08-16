@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, createEnvironmentInjector, DestroyRef, EnvironmentInjector, inject, input, OnInit, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, createEnvironmentInjector, DestroyRef, EnvironmentInjector, inject, input, OnInit, signal } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { RouterLink } from '@angular/router'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
@@ -15,6 +15,7 @@ import { Plugin } from '@/app/core/plugins/manage-plugins.interfaces'
 import { ManagePluginsService } from '@/app/core/plugins/manage-plugins.service'
 import { HomebridgeUiUpdatePolicy, HomebridgeUpdatePolicy, NodeUpdatePolicy } from '@/app/core/settings.interfaces'
 import { SettingsService } from '@/app/core/ui/settings.service'
+import { UpdateAllModalComponent } from '@/app/core/update-all/update-all-modal.component'
 import { HttpErrorService } from '@/app/core/utilities/http-error.service'
 import { HbV2ModalComponent } from '@/app/modules/status/widgets/update-info-widget/hb-v2-modal/hb-v2-modal.component'
 import { NodeVersionModalComponent } from '@/app/modules/status/widgets/update-info-widget/node-version-modal/node-version-modal.component'
@@ -70,6 +71,18 @@ export class UpdateInfoWidgetComponent implements OnInit {
     latestReleaseBody: '',
     updateAvailable: false,
   })
+
+  /**
+   * How many items Update All would offer, from what this widget already
+   * loaded. Gates the title-bar button (≥2 - with one update the existing
+   * single-update flow is the right tool); the modal fetches the
+   * authoritative plan itself.
+   */
+  public readonly updateAllCount = computed(() =>
+    this.homebridgePluginStatus().length
+    + (this.homebridgePkg().updateAvailable ? 1 : 0)
+    + (this.homebridgeUiPkg().updateAvailable ? 1 : 0),
+  )
 
   // Other properties
   private io!: IoNamespace
@@ -343,6 +356,13 @@ export class UpdateInfoWidgetComponent implements OnInit {
   public toggleDockerExpand(): void {
     this.widget().dockerExpanded = !this.widget().dockerExpanded
     this.widget().$saveWidgetsEvent.next() // Trigger the save event
+  }
+
+  public updateAllModal(): void {
+    this.$modal.open(UpdateAllModalComponent, {
+      size: 'lg',
+      backdrop: 'static',
+    })
   }
 
   public dockerUpdateModal(): void {

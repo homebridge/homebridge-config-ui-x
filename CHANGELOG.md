@@ -52,6 +52,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(accessories): ignore the mouse events ios replays for the full 300ms after a touch
 - fix(auth): sign out this browser only when a token refresh is refused (#2981) (@lidonius1122)
 - fix(schema-form): make the `dynamicDefaults` keyword generate values again (#2606)
+- feat(update-all): update hb, ui and plugins at once
 
 ### Other Changes
 

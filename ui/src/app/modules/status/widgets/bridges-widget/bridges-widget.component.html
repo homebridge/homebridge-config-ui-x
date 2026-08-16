@@ -112,70 +112,7 @@
         "
       >
         <div class="hb-status-icon d-flex align-items-center">
-          <i
-            class="fas fa-hap fa-sm"
-            aria-hidden="true"
-            container="body"
-            placement="right"
-            triggers="hover"
-            [class.green-text]="
-              !isChildHapDisabled(bridge) &&
-              !isChildHapExternalsOnly(bridge) &&
-              bridge.status === 'ok' &&
-              !bridge.restarting &&
-              !isRestarting()
-            "
-            [class.text-warning]="
-              !isChildHapDisabled(bridge) &&
-              !isChildHapExternalsOnly(bridge) &&
-              (bridge.status === 'pending' || bridge.restarting || isRestarting())
-            "
-            [class.red-text]="
-              !isChildHapDisabled(bridge) &&
-              !isChildHapExternalsOnly(bridge) &&
-              bridge.status === 'down' &&
-              !bridge.restarting &&
-              !isRestarting()
-            "
-            [class.grey-text]="isChildHapDisabled(bridge) && !isChildHapExternalsOnly(bridge)"
-            [class.opacity-muted]="isChildHapDisabled(bridge) && !isChildHapExternalsOnly(bridge)"
-            [class.text-info]="isChildHapExternalsOnly(bridge)"
-            [openDelay]="150"
-            [ngbTooltip]="childHapTooltipKey(bridge) | translate"
-          ></i>
-          @if (isMatterSupported) {
-            <i
-              class="fas fa-matter fa-sm ms-2"
-              aria-hidden="true"
-              container="body"
-              placement="right"
-              triggers="hover"
-              [class.green-text]="
-                !isChildMatterExternalsOnly(bridge) &&
-                isChildMatterEnabled(bridge) &&
-                bridge.status === 'ok' &&
-                !bridge.restarting &&
-                !isRestarting()
-              "
-              [class.text-warning]="
-                !isChildMatterExternalsOnly(bridge) &&
-                isChildMatterEnabled(bridge) &&
-                (bridge.status === 'pending' || bridge.restarting || isRestarting())
-              "
-              [class.red-text]="
-                !isChildMatterExternalsOnly(bridge) &&
-                isChildMatterEnabled(bridge) &&
-                bridge.status === 'down' &&
-                !bridge.restarting &&
-                !isRestarting()
-              "
-              [class.grey-text]="!isChildMatterEnabled(bridge) && !isChildMatterExternalsOnly(bridge)"
-              [class.opacity-muted]="!isChildMatterEnabled(bridge) && !isChildMatterExternalsOnly(bridge)"
-              [class.text-info]="isChildMatterExternalsOnly(bridge)"
-              [openDelay]="150"
-              [ngbTooltip]="childMatterTooltipKey(bridge) | translate"
-            ></i>
-          }
+          <app-child-bridge-status-icons [bridge]="bridge" [serverRestarting]="isRestarting()" />
         </div>
         <div class="align-self-center flex-child px-2">{{ bridge.name }}</div>
         <div class="grey-text ms-auto d-flex align-items-center" aria-hidden="true">

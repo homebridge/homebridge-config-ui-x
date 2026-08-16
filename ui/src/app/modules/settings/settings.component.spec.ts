@@ -536,6 +536,52 @@ describe('SettingsComponent', () => {
       expect(api.callsTo('put', '/server/ports')).toHaveLength(0)
     })
 
+    it('refuses to put homebridge on the ui port', async () => {
+      // The mirror of the ui-side check: whichever of the two fields the user
+      // edits, they must not end up sharing a port
+      await change('hbPortFormControl', component.uiPortFormControl.value)
+
+      expect(api.callsTo('put', '/server/port')).toHaveLength(0)
+      expect(component.hbPortIsInvalid()).toBe(true)
+    })
+
+    it.each([
+      ['the start', 'hbStartPortFormControl', 'hbStartPortIsInvalid'],
+      ['the end', 'hbEndPortFormControl', 'hbEndPortIsInvalid'],
+    ])('rejects %s of the child bridge range outside the usable ports', async (_case, control, flag) => {
+      // Below 1025 is reserved and above 65533 does not exist, so homebridge
+      // would fail to bind a child bridge and the whole restart would fail
+      for (const port of [1024, 65534, 52000.5]) {
+        await change(control, port)
+
+        expect(api.callsTo('put', '/server/ports')).toHaveLength(0)
+        expect((component as any)[flag]()).toBe(true)
+      }
+    })
+
+    it('refuses an end port that is not above the start', async () => {
+      // Equal is as broken as inverted: the range has to hold at least one port
+      component.hbStartPortFormControl.setValue(52000)
+      await vi.advanceTimersByTimeAsync(SETTLE_MS)
+
+      await change('hbEndPortFormControl', 52000)
+
+      expect(api.callsTo('put', '/server/ports')).toHaveLength(0)
+      expect(component.hbEndPortIsInvalid()).toBe(true)
+    })
+
+    it.each([
+      ['a terminal buffer size', 'uiTerminalBufferSizeFormControl', 'uiTerminalBufferSizeIsInvalid'],
+      ['a log truncate size', 'hbLogTruncateFormControl', 'hbLogTruncateIsInvalid'],
+    ])('rejects %s that is negative or fractional', async (_case, control, flag) => {
+      for (const value of [-1, 10.5]) {
+        await change(control, value)
+
+        expect(api.callsTo('patch', '/config-editor/ui')).toHaveLength(0)
+        expect((component as any)[flag]()).toBe(true)
+      }
+    })
+
     it.each([5353, 8080, 8443])('refuses the reserved matter port %s', async (port) => {
       await change('matterPortFormControl', port)
 
@@ -2028,6 +2074,44 @@ describe('SettingsComponent', () => {
 
         expect(api.lastCall('put', '/config-editor/hap')?.body).toMatchObject({ enabled: false })
         expect(page.hapDisableIdentifyingMaterialIsSaving()).toBe(false)
+      })
+
+      it('carries the flag along when hap itself is switched on', async () => {
+        // ⚠️ The order users work in: arm this while hap is off, then turn hap
+        // on. Dropping the flag from that write would publish the identifying
+        // material once before the preference could be applied - which is the
+        // one moment the setting exists to prevent
+        const page = await withFlag(false)
+        page.hapDisableIdentifyingMaterialFormControl.setValue(true, { emitEvent: false })
+
+        await save('hapEnabledSave', true)
+
+        expect(api.lastCall('put', '/config-editor/hap')?.body)
+          .toMatchObject({ enabled: true, disableIdentifyingMaterial: true })
+      })
+
+      it('carries the flag along when hap is switched off', async () => {
+        // The block is replaced wholesale, so the preference has to be restated
+        // or switching hap off quietly forgets it
+        create({
+          featureFlags: {
+            matterSupport: true,
+            hapDisableIdentifyingMaterial: true,
+            protocolExternalsOnly: true,
+            disableAllProtocols: true,
+            // Without this the save takes the destructive path, which waits on
+            // a confirmation modal rather than writing
+            matterDisableInPlace: true,
+          },
+        })
+        await vi.advanceTimersByTimeAsync(0)
+        const page = component as any
+        page.hapDisableIdentifyingMaterialFormControl.setValue(true, { emitEvent: false })
+
+        await save('hapEnabledSave', false)
+
+        expect(api.lastCall('put', '/config-editor/hap')?.body)
+          .toMatchObject({ enabled: false, disableIdentifyingMaterial: true })
       })
 
       it('flags a full service restart rather than restarting there and then', async () => {

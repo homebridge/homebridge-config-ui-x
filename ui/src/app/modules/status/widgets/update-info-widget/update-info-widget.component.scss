@@ -2,6 +2,41 @@
   font-size: 20px;
 }
 
+// The Update All button in the title bar, styled and positioned exactly like
+// the toolbar icons on the Homebridge logs widget (see the full reasoning in
+// homebridge-logs-widget.component.scss): 10px padding matches the gear's
+// effective padding, the toolbar anchors flush right at the gear's position,
+// and shifts left by the gear's width when the gear is rendered (layout
+// unlocked, or below 576px where the gear is always shown).
+:host {
+  position: relative;
+}
+
+.widget-toolbar-button {
+  background: none;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  color: #999999;
+  border-radius: 3px;
+}
+
+.widget-toolbar {
+  position: absolute;
+  top: 0;
+  right: 2px;
+
+  &.with-gear {
+    right: 42px;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .widget-toolbar {
+    right: 42px;
+  }
+}
+
 .hb-status-item {
   @media (max-width: 767px) {
     width: 100%;
