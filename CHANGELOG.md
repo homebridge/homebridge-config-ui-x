@@ -10,6 +10,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(plugins): run package updates one at a time, and hold the ui self-restart until they finish
 - fix(settings): subscribe to the hbfx upload events so the restore can actually start
 - fix(settings): re-enable the reset button when a full bridge reset fails
+- fix(status): detect homebridge v2 by major version rather than a string prefix
 
 ### Other Changes
 

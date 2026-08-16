@@ -124,7 +124,7 @@ export class UpdateInfoWidgetComponent implements OnInit {
       this.$settings.env.homebridgeVersion = hb.installedVersion
       this.homebridgeVersion = hb.installedVersion
       this.homebridgeUpdatePolicy = this.$settings.env.homebridgeUpdatePolicy || 'all'
-      this.isRunningHbV2.set(hb.installedVersion.startsWith('2.'))
+      this.isRunningHbV2.set(Number(hb.installedVersion.split('.')[0]) >= 2)
     }
 
     if (overview.homebridgeUi) {
@@ -290,7 +290,7 @@ export class UpdateInfoWidgetComponent implements OnInit {
       this.$settings.env.homebridgeVersion = response.installedVersion
       this.homebridgeVersion = response.installedVersion
       this.homebridgeUpdatePolicy = this.$settings.env.homebridgeUpdatePolicy || 'all'
-      this.isRunningHbV2.set(response.installedVersion.startsWith('2.'))
+      this.isRunningHbV2.set(Number(response.installedVersion.split('.')[0]) >= 2)
     } catch (error: any) {
       console.error(error)
       this.$toastr.error(
