@@ -309,22 +309,9 @@ export class SettingsComponent implements OnInit {
   public readonly uiSessionTimeoutInactivityBasedIsSaving = signal(false)
   public uiSessionTimeoutInactivityBasedFormControl = new FormControl(false)
 
+  // The SSL certificate details themselves are managed by the SSL settings
+  // modal - this control only tracks the current mode for display
   public uiSslTypeFormControl = new FormControl('off')
-
-  public readonly uiSslKeyIsSaving = signal(false)
-  public uiSslKeyFormControl = new FormControl('')
-
-  public readonly uiSslCertIsSaving = signal(false)
-  public uiSslCertFormControl = new FormControl('')
-
-  public readonly uiSslPfxIsSaving = signal(false)
-  public uiSslPfxFormControl = new FormControl('')
-
-  public readonly uiSslPassphraseIsSaving = signal(false)
-  public uiSslPassphraseFormControl = new FormControl('')
-
-  public readonly uiSslSelfSignedHostnamesIsSaving = signal(false)
-  public uiSslSelfSignedHostnamesFormControl = new FormControl('')
 
   public readonly hbPackageIsSaving = signal(false)
   public hbPackageFormControl = new FormControl('')
@@ -648,11 +635,6 @@ export class SettingsComponent implements OnInit {
       this.uiHostFormControl.disable()
       this.uiProxyHostFormControl.disable()
       this.uiSslTypeFormControl.disable()
-      this.uiSslKeyFormControl.disable()
-      this.uiSslCertFormControl.disable()
-      this.uiSslPfxFormControl.disable()
-      this.uiSslPassphraseFormControl.disable()
-      this.uiSslSelfSignedHostnamesFormControl.disable()
     }
 
     // (2) Disable the SSL select box if running in raspbian image (externally managed)
@@ -789,34 +771,6 @@ export class SettingsComponent implements OnInit {
       .pipe(debounceTime(750), takeUntilDestroyed(this.destroyRef))
       .subscribe(value => this.uiSessionTimeoutInactivityBasedSave(value!))
 
-    this.uiSslKeyFormControl.patchValue(this.$settings.env.ssl?.key || '', { emitEvent: false })
-    this.uiSslKeyFormControl.valueChanges
-      .pipe(debounceTime(1500), takeUntilDestroyed(this.destroyRef))
-      .subscribe(value => this.uiSslKeySave(value!))
-
-    this.uiSslCertFormControl.patchValue(this.$settings.env.ssl?.cert || '', { emitEvent: false })
-    this.uiSslCertFormControl.valueChanges
-      .pipe(debounceTime(1500), takeUntilDestroyed(this.destroyRef))
-      .subscribe(value => this.uiSslCertSave(value!))
-
-    this.uiSslPfxFormControl.patchValue(this.$settings.env.ssl?.pfx || '', { emitEvent: false })
-    this.uiSslPfxFormControl.valueChanges
-      .pipe(debounceTime(1500), takeUntilDestroyed(this.destroyRef))
-      .subscribe(value => this.uiSslPfxSave(value!))
-
-    this.uiSslPassphraseFormControl.patchValue('', { emitEvent: false })
-    this.uiSslPassphraseFormControl.valueChanges
-      .pipe(debounceTime(1500), takeUntilDestroyed(this.destroyRef))
-      .subscribe(value => this.uiSslPassphraseSave(value!))
-
-    this.uiSslSelfSignedHostnamesFormControl.patchValue(
-      this.$settings.env.ssl?.selfSignedHostnames?.join(', ') || 'localhost, 127.0.0.1',
-      { emitEvent: false },
-    )
-    this.uiSslSelfSignedHostnamesFormControl.valueChanges
-      .pipe(debounceTime(1500), takeUntilDestroyed(this.destroyRef))
-      .subscribe(value => this.uiSslSelfSignedHostnamesSave(value!))
-
     this.uiSslTypeFormControl.patchValue(
       this.$settings.env.ssl?.selfSigned
         ? 'selfsigned'
@@ -825,9 +779,6 @@ export class SettingsComponent implements OnInit {
           : (this.$settings.env.ssl?.pfx || this.$settings.env.ssl?.hasPassphrase) ? 'pfx' : 'off',
       { emitEvent: false },
     )
-    this.uiSslTypeFormControl.valueChanges
-      .pipe(debounceTime(750), takeUntilDestroyed(this.destroyRef))
-      .subscribe(value => this.uiSslTypeSave(value!))
 
     this.uiHostFormControl.patchValue(this.$settings.host || '', { emitEvent: false })
     this.uiHostFormControl.valueChanges
@@ -1817,140 +1768,6 @@ export class SettingsComponent implements OnInit {
       console.error(error)
       this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
       this.uiSessionTimeoutInactivityBasedIsSaving.set(false)
-    }
-  }
-
-  private async uiSslKeySave(value: string): Promise<void> {
-    try {
-      this.uiSslKeyIsSaving.set(true)
-      this.$settings.setEnvItem('ssl.key', value)
-      await this.saveUiSettingChange('ssl.key', value)
-      setTimeout(() => {
-        this.uiSslKeyIsSaving.set(false)
-        this.$settings.showRestartToast()
-      }, 1000)
-    } catch (error: any) {
-      console.error(error)
-      this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
-      this.uiSslKeyIsSaving.set(false)
-    }
-  }
-
-  private async uiSslCertSave(value: string): Promise<void> {
-    try {
-      this.uiSslCertIsSaving.set(true)
-      this.$settings.setEnvItem('ssl.cert', value)
-      await this.saveUiSettingChange('ssl.cert', value)
-      setTimeout(() => {
-        this.uiSslCertIsSaving.set(false)
-        this.$settings.showRestartToast()
-      }, 1000)
-    } catch (error: any) {
-      console.error(error)
-      this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
-      this.uiSslCertIsSaving.set(false)
-    }
-  }
-
-  private async uiSslPfxSave(value: string): Promise<void> {
-    try {
-      this.uiSslPfxIsSaving.set(true)
-      this.$settings.setEnvItem('ssl.pfx', value)
-      await this.saveUiSettingChange('ssl.pfx', value)
-      setTimeout(() => {
-        this.uiSslPfxIsSaving.set(false)
-        this.$settings.showRestartToast()
-      }, 1000)
-    } catch (error: any) {
-      console.error(error)
-      this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
-      this.uiSslPfxIsSaving.set(false)
-    }
-  }
-
-  private async uiSslPassphraseSave(value: string): Promise<void> {
-    try {
-      this.uiSslPassphraseIsSaving.set(true)
-      this.$settings.setEnvItem('ssl.passphrase', value)
-      await this.saveUiSettingChange('ssl.passphrase', value)
-      setTimeout(() => {
-        this.uiSslPassphraseIsSaving.set(false)
-        this.$settings.showRestartToast()
-      }, 1000)
-    } catch (error: any) {
-      console.error(error)
-      this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
-      this.uiSslPassphraseIsSaving.set(false)
-    }
-  }
-
-  private async uiSslSelfSignedHostnamesSave(value: string): Promise<void> {
-    try {
-      this.uiSslSelfSignedHostnamesIsSaving.set(true)
-      // Convert comma-separated string to array, trim whitespace
-      const hostnames = value.split(',').map(h => h.trim()).filter(h => h.length > 0)
-      this.$settings.setEnvItem('ssl.selfSignedHostnames', hostnames)
-      await this.saveUiSettingChange('ssl.selfSignedHostnames', hostnames)
-      setTimeout(() => {
-        this.uiSslSelfSignedHostnamesIsSaving.set(false)
-        this.$settings.showRestartToast()
-      }, 1000)
-    } catch (error: any) {
-      console.error(error)
-      this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
-      this.uiSslSelfSignedHostnamesIsSaving.set(false)
-    }
-  }
-
-  private async uiSslTypeSave(value: string): Promise<void> {
-    switch (value) {
-      case 'keycert':
-        this.uiSslPfxFormControl.patchValue('', { emitEvent: false })
-        this.uiSslPassphraseFormControl.patchValue('', { emitEvent: false })
-        this.$settings.setEnvItem('ssl.pfx', '')
-        this.$settings.setEnvItem('ssl.passphrase', '')
-        this.$settings.setEnvItem('ssl.selfSigned', false)
-        await this.saveUiSettingChange('ssl.selfSigned', false)
-        break
-      case 'pfx':
-        this.uiSslKeyFormControl.patchValue('', { emitEvent: false })
-        this.uiSslCertFormControl.patchValue('', { emitEvent: false })
-        this.$settings.setEnvItem('ssl.key', '')
-        this.$settings.setEnvItem('ssl.cert', '')
-        this.$settings.setEnvItem('ssl.selfSigned', false)
-        await this.saveUiSettingChange('ssl.selfSigned', false)
-        break
-      case 'selfsigned':
-        this.uiSslKeyFormControl.patchValue('', { emitEvent: false })
-        this.uiSslCertFormControl.patchValue('', { emitEvent: false })
-        this.uiSslPfxFormControl.patchValue('', { emitEvent: false })
-        this.uiSslPassphraseFormControl.patchValue('', { emitEvent: false })
-        this.$settings.setEnvItem('ssl.key', '')
-        this.$settings.setEnvItem('ssl.cert', '')
-        this.$settings.setEnvItem('ssl.pfx', '')
-        this.$settings.setEnvItem('ssl.passphrase', '')
-        this.$settings.setEnvItem('ssl.selfSigned', true)
-        await this.saveUiSettingChange('ssl.selfSigned', true)
-        // Initialize with default hostnames if not set
-        if (!this.uiSslSelfSignedHostnamesFormControl.value) {
-          this.uiSslSelfSignedHostnamesFormControl.patchValue('localhost, 127.0.0.1', { emitEvent: true })
-        }
-        this.$settings.showRestartToast()
-        break
-      default:
-        this.uiSslKeyFormControl.patchValue('', { emitEvent: false })
-        this.uiSslCertFormControl.patchValue('', { emitEvent: false })
-        this.uiSslPfxFormControl.patchValue('', { emitEvent: false })
-        this.uiSslPassphraseFormControl.patchValue('', { emitEvent: false })
-        this.uiSslSelfSignedHostnamesFormControl.patchValue('', { emitEvent: false })
-        this.$settings.setEnvItem('ssl.key', '')
-        this.$settings.setEnvItem('ssl.cert', '')
-        this.$settings.setEnvItem('ssl.pfx', '')
-        this.$settings.setEnvItem('ssl.passphrase', '')
-        this.$settings.setEnvItem('ssl.selfSigned', false)
-        this.$settings.setEnvItem('ssl.selfSignedHostnames', [])
-        await this.saveUiSettingChange('ssl', '')
-        this.$settings.showRestartToast()
     }
   }
 
