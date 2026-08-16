@@ -2,7 +2,17 @@
 
 All notable changes to `homebridge-config-ui-x` will be documented in this file. This project tries to adhere to [Semantic Versioning](http://semver.org/).
 
-## v5.27.1 (Pending Release)
+## v5.28.0 (2026-08-16)
+
+### Highlights
+
+- 💡 Better Matter support, including smarter controls for lights, thermostats, blinds, smoke/CO alarms, and child bridges
+- 🔎 Plugin search now clearly shows whether plugins support HAP, Matter, or both
+- 🔐 Stronger security for logins, sessions, plugin UIs, terminals, and child-bridge controls
+- 🖥️ Added Node.js 26 and Windows ARM support
+- 🛠️ Fixed accessory updates freezing across multiple browser tabs
+- 🔌 Improved plugin installation, updating, reconnection, and restart handling
+- ⚙️ Various reliability fixes for the config editor, dashboard metrics, CPU temperature reporting, and UI self-updates
 
 ### UI Changes
 
