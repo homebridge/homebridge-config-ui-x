@@ -104,7 +104,7 @@
           container="body"
           placement="bottom"
           triggers="hover"
-          [hidden]="isMobile()"
+          [hidden]="layoutLocked()"
           [openDelay]="150"
           [ngbTooltip]="'accessories.button_add_room' | translate"
           [attr.aria-label]="'accessories.button_add_room' | translate"
@@ -118,7 +118,7 @@
           container="body"
           placement="bottom"
           triggers="hover"
-          [hidden]="isMobile()"
+          [hidden]="layoutLocked()"
           [openDelay]="150"
           [ngbTooltip]="
             hideHidden()
@@ -147,12 +147,12 @@
     <div dragula="rooms-bag" [(dragulaModel)]="rooms">
       @for (room of rooms; track room.name) {
         <div>
-          @if (!isMobile() || room.services.length) {
+          @if (!layoutLocked() || room.services.length) {
             <div class="row">
               <div class="col-md-12 d-flex align-items-center">
                 <h5
                   class="primary-text drag-handle room-title m-0 mb-1 mb-sm-0 flex-grow-1"
-                  [class.cursor-move]="!isMobile()"
+                  [class.cursor-move]="!layoutLocked()"
                 >
                   {{ room.name }}
                 </h5>
@@ -165,7 +165,7 @@
                   [openDelay]="150"
                   [ngbTooltip]="'accessories.button_edit_room' | translate"
                   [attr.aria-label]="'accessories.button_edit_room' | translate"
-                  [class.edit-room-hidden]="isMobile()"
+                  [class.edit-room-hidden]="layoutLocked()"
                   (click)="editRoom($index)"
                 >
                   <i class="fas fa-cog" aria-hidden="true"></i>
@@ -202,7 +202,7 @@
                 }
               </div>
             }
-            @if (!room.services.length && !isMobile()) {
+            @if (!room.services.length && !layoutLocked()) {
               <div
                 class="col-md-12 d-flex flex-wrap noselect"
                 dragula="services-bag"
