@@ -12,49 +12,11 @@
 }
 
 // Match the gear's effective styling so the four icons look like one set.
-// Gear (`.widget-control-button`) runs `padding: 10px` from the base rule
-// in status.component.scss (component-scoped CSS wins over the theme rule
-// at equal specificity). The theme's `padding: 5px` loses, so the gear's
-// real padding is 10px. Mirror it here so the icons land at the same y.
-.widget-toolbar-button {
-  background: none;
-  border: none;
-  padding: 10px;
-  cursor: pointer;
-  color: #999999;
-  border-radius: 3px;
-}
-
-// Anchor the toolbar at the same top as the gear (which sits at
-// `top: 0; right: 2px`). Default position is flush right at `right: 2px`
-// — when the layout is locked on desktop, the gear is not rendered at
-// all (status.component only renders it when `draggable.enabled` is true
-// or below 576px), so the toolbar takes the full right edge.
-//
-// When the gear IS visible (layout unlocked, or below 576px), we shift
-// the toolbar left to leave a 4px gap (matching the toolbar's internal
-// `gap-1` so all four icons feel evenly spaced).
+// The title-bar toolbar (download/search icons) is styled by the shared
+// scss/components/widget-toolbar.scss (one owner for the gear geometry);
+// the anchor for its absolute positioning lives here.
 :host {
   position: relative;
-}
-
-.widget-toolbar {
-  position: absolute;
-  top: 0;
-  right: 2px;
-
-  &.with-gear {
-    right: 42px;
-  }
-}
-
-// Below 576px the status component sets `showWidgetConfigure: true`, so
-// the gear is always rendered and visible regardless of edit mode.
-// Always leave space for it on this breakpoint.
-@media (max-width: 575.98px) {
-  .widget-toolbar {
-    right: 42px;
-  }
 }
 
 .search-bar {

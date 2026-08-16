@@ -1,4 +1,4 @@
-import type { FakeAuth, FakeIoNamespace, FakeModalService, FakeSettings, FakeWs } from '@/testing'
+import type { FakeApi, FakeAuth, FakeIoNamespace, FakeModalService, FakeSettings, FakeWs } from '@/testing'
 
 import { NO_ERRORS_SCHEMA } from '@angular/core'
 import { TestBed } from '@angular/core/testing'
@@ -8,9 +8,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { ConfirmComponent } from '@/app/core/components/confirm/confirm.component'
 import { CONFIRM_MODAL_DATA } from '@/app/core/modal-data-tokens'
+import { UpdateAllModalComponent } from '@/app/core/update-all/update-all-modal.component'
 import { LayoutComponent } from '@/app/shared/layout/layout.component'
 import { environment } from '@/environments/environment'
-import { fakeWs, makeAuth, makeSettings, modalServiceSpy } from '@/testing'
+import { fakeApi, fakeWs, makeAuth, makeSettings, modalServiceSpy } from '@/testing'
 import { provideFakes, provideTestTranslate } from '@/testing/providers'
 
 /**
@@ -34,6 +35,7 @@ describe('layoutComponent', () => {
   let ws: FakeWs
   let io: FakeIoNamespace
   let modal: FakeModalService
+  let api: FakeApi
   let navigate: ReturnType<typeof vi.fn>
 
   /**
@@ -43,15 +45,17 @@ describe('layoutComponent', () => {
    * @param options.url - the current router url
    * @param options.settingsLoaded - whether /auth/settings has answered yet
    * @param options.onSettingsLoaded - the settings-loaded stream to use
+   * @param options.admin - whether the signed-in user is an admin
    */
   async function open(options: {
     uiVersion?: string
     url?: string
     settingsLoaded?: boolean
     onSettingsLoaded?: Subject<void>
+    admin?: boolean
   } = {}) {
     TestBed.resetTestingModule()
-    auth = makeAuth()
+    auth = makeAuth({ user: { admin: options.admin ?? true } })
     settings = makeSettings({
       // Matching the bundled version is the ordinary case: no mismatch, no modal
       uiVersion: options.uiVersion ?? environment.serverTarget,
@@ -61,12 +65,13 @@ describe('layoutComponent', () => {
     ws = fakeWs()
     io = ws.namespace('app')
     modal = modalServiceSpy()
+    api = fakeApi()
 
     TestBed.configureTestingModule({
       providers: [
         provideRouter([]),
         provideTestTranslate(),
-        provideFakes({ auth, settings, ws, modal }),
+        provideFakes({ api, auth, settings, ws, modal }),
       ],
     })
 
@@ -95,6 +100,19 @@ describe('layoutComponent', () => {
 
   afterEach(() => {
     vi.useRealTimers()
+  })
+
+  describe('update all stays closed on page load', () => {
+    // ⚠️ Deliberate behaviour change: the modal used to reopen after the UI's
+    // self-restart (resuming a run, or showing an unseen summary once). That
+    // was removed - the modal only ever opens from its entry buttons, and the
+    // shell must not even ask the server about the journal.
+    it('never asks for the journal and never opens the modal', async () => {
+      await open()
+
+      expect(api.callsTo('get', '/update-all/journal')).toEqual([])
+      expect(modal.opened.some(entry => entry.content === UpdateAllModalComponent)).toBe(false)
+    })
   })
 
   describe('the shared socket', () => {

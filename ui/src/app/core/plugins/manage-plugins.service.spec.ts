@@ -28,6 +28,7 @@ import { PluginExternalsComponent } from '@/app/core/plugins/plugin-externals/pl
 import { ResetAccessoriesComponent } from '@/app/core/plugins/reset-accessories/reset-accessories.component'
 import { SwitchToScopedComponent } from '@/app/core/plugins/switch-to-scoped/switch-to-scoped.component'
 import { UninstallPluginComponent } from '@/app/core/plugins/uninstall-plugin/uninstall-plugin.component'
+import { UpdateAllModalComponent } from '@/app/core/update-all/update-all-modal.component'
 import { fakeApi, makeSettings, modalServiceSpy, toastrStub } from '@/testing'
 import { provideFakes, provideTestTranslate } from '@/testing/providers'
 
@@ -663,6 +664,18 @@ describe('managePluginsService', () => {
       await service.switchToScoped(makePlugin())
 
       expect(modal.lastOpened()!.options).toMatchObject({ size: 'lg', backdrop: 'static' })
+    })
+  })
+
+  describe('the update all opener', () => {
+    it('opens the modal large and undismissable, and hands back the ref', () => {
+      // Both entry points (the plugins page and the update-info widget) come
+      // through here, so these options have exactly one owner
+      const ref = service.openUpdateAllModal()
+
+      expect(modal.lastOpened()!.content).toBe(UpdateAllModalComponent)
+      expect(modal.lastOpened()!.options).toMatchObject({ size: 'lg', backdrop: 'static' })
+      expect(ref).toBe(modal.lastOpened()!.ref)
     })
   })
 })

@@ -71,7 +71,10 @@ export class RestartComponent implements OnInit, OnDestroy {
     const restarting = queryParams.restarting === 'true'
 
     if (restarting) {
-      this.uiOnline.set(true)
+      // `uiRestarting` says the UI is going down too (Update All schedules its
+      // own restart), so the UI row must start as pending rather than ticked -
+      // the first `homebridge-status` after it returns flips it.
+      this.uiOnline.set(queryParams.uiRestarting !== 'true')
       this.checkIfServerUp()
     } else {
       void this.performRestart()

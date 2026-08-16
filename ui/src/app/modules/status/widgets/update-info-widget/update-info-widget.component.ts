@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, createEnvironmentInjector, DestroyRef, EnvironmentInjector, inject, input, OnInit, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, createEnvironmentInjector, DestroyRef, EnvironmentInjector, inject, input, OnInit, signal } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { RouterLink } from '@angular/router'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
@@ -70,6 +70,18 @@ export class UpdateInfoWidgetComponent implements OnInit {
     latestReleaseBody: '',
     updateAvailable: false,
   })
+
+  /**
+   * How many items Update All would offer, from what this widget already
+   * loaded. Gates the title-bar button (≥2 - with one update the existing
+   * single-update flow is the right tool); the modal fetches the
+   * authoritative plan itself.
+   */
+  public readonly updateAllCount = computed(() =>
+    this.homebridgePluginStatus().length
+    + (this.homebridgePkg().updateAvailable ? 1 : 0)
+    + (this.homebridgeUiPkg().updateAvailable ? 1 : 0),
+  )
 
   // Other properties
   private io!: IoNamespace
@@ -343,6 +355,25 @@ export class UpdateInfoWidgetComponent implements OnInit {
   public toggleDockerExpand(): void {
     this.widget().dockerExpanded = !this.widget().dockerExpanded
     this.widget().$saveWidgetsEvent.next() // Trigger the save event
+  }
+
+  public updateAllModal(): void {
+    const ref = this.$plugin.openUpdateAllModal()
+
+    // A run that only restarts child bridges never disconnects the status
+    // socket, so nothing else refreshes this widget - reload once the modal
+    // is closed so completed updates stop showing as available.
+    // `closed` (not `hidden`) + the destroy guard: the 'handover' close is
+    // followed by the server going down and this widget being destroyed, and
+    // a reload taken then hangs on a socket whose ack never comes
+    ref.closed
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((reason) => {
+        if (reason === 'handover') {
+          return
+        }
+        void this.loadAllData()
+      })
   }
 
   public dockerUpdateModal(): void {

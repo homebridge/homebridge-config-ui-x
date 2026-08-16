@@ -13,6 +13,7 @@ import { PluginsCacheService } from '@/app/core/caching/plugins-cache.service'
 import { ServerPairingsCacheService } from '@/app/core/caching/server-pairings-cache.service'
 import { RestartHomebridgeComponent } from '@/app/core/components/restart-homebridge/restart-homebridge.component'
 import { ManagePluginsService } from '@/app/core/plugins/manage-plugins.service'
+import { UpdateAllModalComponent } from '@/app/core/update-all/update-all-modal.component'
 import { PluginSupportComponent } from '@/app/modules/plugins/plugin-support/plugin-support.component'
 import { PluginsComponent } from '@/app/modules/plugins/plugins.component'
 import { cacheStub, fakeApi, fakeWs, makeAuth, makeSettings, modalServiceSpy, toastrStub } from '@/testing'
@@ -47,7 +48,7 @@ describe('the plugins page', () => {
   let toastr: FakeToastr
   let pluginsCache: FakeCache<Plugin[]>
   let pairingsCache: FakeCache<any[]>
-  let managePlugins: { onPluginListRefresh: Subject<void>, settings: ReturnType<typeof vi.fn> }
+  let managePlugins: { onPluginListRefresh: Subject<void>, settings: ReturnType<typeof vi.fn>, openUpdateAllModal: ReturnType<typeof vi.fn> }
   let fixture: ComponentFixture<PluginsComponent>
 
   /**
@@ -92,7 +93,12 @@ describe('the plugins page', () => {
     settings = makeSettings({ env: { recommendChildBridges: true, ...options.env } })
     pluginsCache = cacheStub<Plugin[]>(options.installed ?? [])
     pairingsCache = cacheStub<any[]>(options.pairings ?? [])
-    managePlugins = { onPluginListRefresh: new Subject<void>(), settings: vi.fn() }
+    managePlugins = {
+      onPluginListRefresh: new Subject<void>(),
+      settings: vi.fn(),
+      // routes through the fake modal service so the specs can reach the ref
+      openUpdateAllModal: vi.fn(() => modal.open(UpdateAllModalComponent)),
+    }
 
     io = ws.namespace('child-bridges', { connected: options.connected ?? true })
     io.socket.respondTo('get-homebridge-child-bridge-status', [])
@@ -1010,6 +1016,65 @@ describe('the plugins page', () => {
 
       expect(modal.lastOpened()!.content).toBe(PluginSupportComponent)
       expect(modal.lastOpened()!.options).toMatchObject({ size: 'lg', backdrop: 'static' })
+    })
+  })
+
+  describe('the update all button', () => {
+    it('counts only the plugins that have an update', async () => {
+      // The count gates the button: with one update the card's own update
+      // button is the right tool, so the page offers this from two
+      const page = create({
+        installed: [
+          plugin('homebridge-a', { updateAvailable: true }),
+          plugin('homebridge-b', { updateAvailable: true }),
+          plugin('homebridge-c'),
+        ],
+      })
+      await settle()
+
+      expect(page.availableUpdateCount()).toBe(2)
+    })
+
+    it('opens the plan modal through the shared opener', async () => {
+      // The modal's options (size, static backdrop) are the opener's business
+      // and are asserted with ManagePluginsService - both entry points share it
+      const page = create({ installed: [plugin('homebridge-a', { updateAvailable: true })] })
+      await settle()
+
+      page.updateAllModal()
+
+      expect(managePlugins.openUpdateAllModal).toHaveBeenCalledTimes(1)
+      expect(modal.lastOpened()!.content).toBe(UpdateAllModalComponent)
+    })
+
+    it('invalidates the cache and reloads the list when the modal is closed', async () => {
+      // A run that only restarts child bridges never reloads this page, and
+      // the plugin list sits behind a ttl cache - without invalidate + reload
+      // the completed updates would keep showing as available
+      const page = create({ installed: [plugin('homebridge-a', { updateAvailable: true })] })
+      await settle()
+      const before = vi.mocked(pluginsCache.get).mock.calls.length
+
+      page.updateAllModal()
+      modal.lastOpened()!.ref.close()
+      await settle()
+
+      expect(pluginsCache.invalidate).toHaveBeenCalled()
+      expect(vi.mocked(pluginsCache.get).mock.calls.length).toBe(before + 1)
+    })
+
+    it('does not reload on the handover close - the server is restarting', async () => {
+      // The modal closes with 'handover' just before navigating to /restart;
+      // a reload taken then would cache pre-update state from a dying server
+      const page = create({ installed: [plugin('homebridge-a', { updateAvailable: true })] })
+      await settle()
+      const before = vi.mocked(pluginsCache.get).mock.calls.length
+
+      page.updateAllModal()
+      modal.lastOpened()!.ref.close('handover')
+      await settle()
+
+      expect(vi.mocked(pluginsCache.get).mock.calls.length).toBe(before)
     })
   })
 

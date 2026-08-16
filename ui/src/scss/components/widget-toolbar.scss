@@ -1,0 +1,40 @@
+// Title-bar icon toolbar for status widgets (the logs widget and the
+// update-info widget both render one). One owner for the geometry:
+//
+// - Gear (`.widget-control-button`) runs `padding: 10px` from the base rule
+//   in status.component.scss (component-scoped CSS wins over the theme rule
+//   at equal specificity). The theme's `padding: 5px` loses, so the gear's
+//   real padding is 10px. Mirror it here so the icons land at the same y.
+// - The toolbar anchors at the same top as the gear (`top: 0; right: 2px`).
+//   When the layout is locked on desktop the gear is not rendered at all
+//   (status.component only renders it when `draggable.enabled` is true or
+//   below 576px), so the toolbar takes the full right edge; `.with-gear`
+//   shifts it left by the gear's width (42px) when the gear is visible.
+// - Below 576px the status component sets `showWidgetConfigure: true`, so
+//   the gear is always rendered - always leave space for it there.
+//
+// Each widget using this must set `position: relative` on its own :host.
+.widget-toolbar-button {
+  background: none;
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  color: #999999;
+  border-radius: 3px;
+}
+
+.widget-toolbar {
+  position: absolute;
+  top: 0;
+  right: 2px;
+
+  &.with-gear {
+    right: 42px;
+  }
+}
+
+@media (max-width: 575.98px) {
+  .widget-toolbar {
+    right: 42px;
+  }
+}

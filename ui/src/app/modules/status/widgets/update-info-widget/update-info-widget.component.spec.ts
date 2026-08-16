@@ -10,9 +10,11 @@ import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { InformationComponent } from '@/app/core/components/information/information.component'
 import { HB_V2_MODAL_DATA, INFORMATION_MODAL_DATA, NODE_VERSION_MODAL_DATA } from '@/app/core/modal-data-tokens'
 import { ManagePluginsService } from '@/app/core/plugins/manage-plugins.service'
+import { UpdateAllModalComponent } from '@/app/core/update-all/update-all-modal.component'
 import { HbV2ModalComponent } from '@/app/modules/status/widgets/update-info-widget/hb-v2-modal/hb-v2-modal.component'
 import { NodeVersionModalComponent } from '@/app/modules/status/widgets/update-info-widget/node-version-modal/node-version-modal.component'
 import { UpdateInfoWidgetComponent } from '@/app/modules/status/widgets/update-info-widget/update-info-widget.component'
+import { environment } from '@/environments/environment'
 import { fakeWs, makeAuth, makeSettings, modalServiceSpy, toastrStub } from '@/testing'
 import { provideFakes, provideTestTranslate } from '@/testing/providers'
 
@@ -146,7 +148,7 @@ describe('UpdateInfoWidgetComponent', () => {
     let modal: FakeModalService
     let ws: FakeWs
     let io: FakeIoNamespace
-    let managePlugins: { installAlternateVersion: ReturnType<typeof vi.fn>, upgradeHomebridge: ReturnType<typeof vi.fn> }
+    let managePlugins: { installAlternateVersion: ReturnType<typeof vi.fn>, upgradeHomebridge: ReturnType<typeof vi.fn>, openUpdateAllModal: ReturnType<typeof vi.fn> }
     let saveWidgets: Subject<void>
 
     /** The aggregated payload, with everything present by default. */
@@ -178,7 +180,12 @@ describe('UpdateInfoWidgetComponent', () => {
       ws = fakeWs()
       saveWidgets = new Subject<void>()
       settings = makeSettings({ env: { packageVersion: '5.0.0', homebridgeVersion: '1.8.0', ...options.env } })
-      managePlugins = { installAlternateVersion: vi.fn(), upgradeHomebridge: vi.fn() }
+      managePlugins = {
+        installAlternateVersion: vi.fn(),
+        upgradeHomebridge: vi.fn(),
+        // routes through the fake modal service so the specs can reach the ref
+        openUpdateAllModal: vi.fn(() => modal.open(UpdateAllModalComponent)),
+      }
 
       io = ws.namespace('status')
       if (options.fails) {
@@ -555,6 +562,103 @@ describe('UpdateInfoWidgetComponent', () => {
 
         expect(managePlugins.upgradeHomebridge).toHaveBeenCalledWith(pkg, '1.9.0')
       })
+    })
+
+    describe('the update all button', () => {
+      /**
+       * Everything reporting an update at once.
+       *
+       * ⚠️ A fresh object each time: the widget writes onto the payload it is
+       * given (`hbUi.updateAvailable = false` in a dev build), so a shared one
+       * would carry that edit into the next test.
+       */
+      function allOutOfDate() {
+        return {
+          homebridge: { name: 'homebridge', installedVersion: '1.8.0', latestVersion: '1.9.0', updateAvailable: true },
+          homebridgeUi: { name: 'homebridge-config-ui-x', installedVersion: '5.0.0', updateAvailable: true },
+          outOfDatePlugins: [{ name: 'homebridge-example', displayName: 'Example', installedVersion: '1.0.0', latestVersion: '1.1.0' }],
+        }
+      }
+
+      it('counts homebridge and every out-of-date plugin', async () => {
+        // The count gates the button (from two): with a single update the
+        // existing one-package flow is the right tool.
+        // ⚠️ Two, not three: this is a dev build, and the widget forces the
+        // ui's own update off in anything but production - see below
+        const widget = create({ payload: allOutOfDate() })
+        await settle()
+
+        expect(widget.updateAllCount()).toBe(2)
+      })
+
+      it('counts the ui itself only in a real build', async () => {
+        // A dev build must never offer to update the ui out from under the
+        // developer running it, so `updateAvailable` is cleared on load
+        environment.production = true
+        try {
+          const widget = create({ payload: allOutOfDate() })
+          await settle()
+
+          expect(widget.updateAllCount()).toBe(3)
+        } finally {
+          environment.production = false
+        }
+      })
+
+      it('counts nothing when everything is up to date', async () => {
+        const widget = create({
+          payload: {
+            homebridge: { name: 'homebridge', installedVersion: '1.8.0', latestVersion: '1.8.0', updateAvailable: false },
+            homebridgeUi: { name: 'homebridge-config-ui-x', installedVersion: '5.0.0', updateAvailable: false },
+            outOfDatePlugins: [],
+          },
+        })
+        await settle()
+
+        expect(widget.updateAllCount()).toBe(0)
+      })
+
+      it('opens the plan modal through the shared opener', async () => {
+        // Options are asserted with ManagePluginsService - both entry points share it
+        const widget = create()
+        await settle()
+
+        widget.updateAllModal()
+
+        expect(managePlugins.openUpdateAllModal).toHaveBeenCalledTimes(1)
+        expect(modal.lastOpened()!.content).toBe(UpdateAllModalComponent)
+      })
+
+      it('reloads the widget data when the modal is closed', async () => {
+        // A run that only restarts child bridges never drops the status
+        // socket, so without this reload completed updates would keep
+        // showing as available
+        const widget = create()
+        await settle()
+        const countOverviewRequests = () => io.requests.filter(entry => entry.resource === 'get-version-overview').length
+        const before = countOverviewRequests()
+
+        widget.updateAllModal()
+        modal.lastOpened()!.ref.close()
+        await settle()
+
+        expect(countOverviewRequests()).toBe(before + 1)
+      })
+    })
+
+    it('does not reload on the handover close - the server is restarting', async () => {
+      // 'handover' precedes the navigation to /restart; a reload then
+      // hangs on a socket whose server is going away
+      const widget = create()
+      await settle()
+      const countOverviewRequests = () => io.requests.filter(entry => entry.resource === 'get-version-overview').length
+      const before = countOverviewRequests()
+
+      widget.updateAllModal()
+      modal.lastOpened()!.ref.close('handover')
+      await settle()
+
+      expect(countOverviewRequests()).toBe(before)
     })
   })
 })
