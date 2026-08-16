@@ -18,6 +18,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(auth): correct the two factor code field name in the login type
 - fix(restart): detach the status listener when leaving the restart page
 - fix(plugins): track config block validity by block id so removals keep the right state
+- fix(ui): keep restarting the remaining child bridges when one restart fails
 
 ### Other Changes
 
