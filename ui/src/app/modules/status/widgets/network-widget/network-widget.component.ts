@@ -22,8 +22,8 @@ import { BaseChartWidgetComponent } from '@/app/modules/status/widgets/base-char
 export class NetworkWidgetComponent extends BaseChartWidgetComponent {
   // Signals
   public readonly interface = signal<string>('')
-  public readonly receivedPerSec = signal<number>(0)
-  public readonly sentPerSec = signal<number>(0)
+  public readonly receivedPerSec = signal<number | undefined>(undefined)
+  public readonly sentPerSec = signal<number | undefined>(undefined)
 
   protected fetchData(): void {
     this.io.request('get-server-network-info', { netInterfaces: [this.widget().networkInterface] }).subscribe((data: NetworkWidgetData) => {
