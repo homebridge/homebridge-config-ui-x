@@ -4,6 +4,14 @@
   overflow: hidden;
 }
 
+// Shorter than the plugin modal's terminal - the update-all modal shows the
+// item tick list above the output pane
+#update-all-log-output {
+  min-height: 220px;
+  padding: 5px 5px 5px 5px;
+  overflow: hidden;
+}
+
 .no-scrollbars,
 .xterm-viewport {
   &::-webkit-scrollbar {

@@ -118,18 +118,24 @@ export class HomebridgeIpcService extends EventEmitter {
   }
 
   /**
-   * Restarts the main bridge process and any child bridges
+   * Restarts the main bridge process and any child bridges.
+   * @returns whether a restart is actually under way - false means no
+   * Homebridge process is attached, so nothing was (or will be) restarted.
+   * Callers that record an outcome (Update All's journal) rely on this;
+   * the fire-and-forget callers ignore it.
    */
-  public restartHomebridge(): void {
+  public restartHomebridge(): boolean {
     if (!this.homebridge) {
-      return
+      this.logger.error('Cannot restart Homebridge - no Homebridge process is attached.')
+      return false
     }
     // If a previous restart is still in flight, don't issue another
     // SIGTERM + stack another SIGKILL timer + another `once('close')`
     // listener — rapid clicks would otherwise trip MaxListenersExceeded
-    // warnings and slow the actual shutdown.
+    // warnings and slow the actual shutdown. A restart IS happening, which
+    // is what the caller wanted, so this still reports true.
     if (this.pendingShutdownTimer) {
-      return
+      return true
     }
 
     this.logger.log('Sending SIGTERM to Homebridge...')
@@ -158,6 +164,7 @@ export class HomebridgeIpcService extends EventEmitter {
         this.pendingShutdownTimer = null
       }
     })
+    return true
   }
 
   /**

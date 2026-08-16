@@ -798,6 +798,85 @@ describe('the custom plugin ui', () => {
         expect(component.formSchema()).toBeUndefined()
       })
 
+      describe('what a custom form sends back', () => {
+        /** Put a custom form up, ready to be edited. */
+        async function withForm() {
+          await open()
+          await ready()
+          await post({ action: 'form.create', formId: 'pairing', schema: { type: 'object' }, data: { code: '' } })
+          pluginWindow.postMessage.mockClear()
+        }
+
+        /** Every stream message the plugin page received. */
+        function streams() {
+          return pluginWindow.postMessage.mock.calls
+            .map(call => ({ message: call[0], targetOrigin: call[1] }))
+            .filter(entry => entry.message?.action === 'stream')
+        }
+
+        it('streams edits back under the form id the plugin chose', async () => {
+          // The plugin page matches the reply to its own form by this id
+          vi.useFakeTimers()
+          await withForm()
+
+          // ⚠️ `skip(1)` sits AFTER the debounce, so what is dropped is the
+          // first value to settle - the form reporting the data the plugin
+          // just handed it - rather than the first keystroke
+          component.formUpdatedSubject.next({ code: '' })
+          vi.advanceTimersByTime(200)
+          expect(streams()).toEqual([])
+
+          component.formUpdatedSubject.next({ code: '1234' })
+          vi.advanceTimersByTime(200)
+
+          expect(streams().map(entry => entry.message)).toEqual([{
+            action: 'stream',
+            event: 'pairing',
+            data: { formEvent: 'change', formData: { code: '1234' } },
+          }])
+        })
+
+        it('sends only the last edit of a burst of typing', async () => {
+          vi.useFakeTimers()
+          await withForm()
+          // Settle one value first, so the skip above is spent
+          component.formUpdatedSubject.next({ code: '' })
+          vi.advanceTimersByTime(200)
+
+          component.formUpdatedSubject.next({ code: '1' })
+          vi.advanceTimersByTime(50)
+          component.formUpdatedSubject.next({ code: '12' })
+          vi.advanceTimersByTime(50)
+          component.formUpdatedSubject.next({ code: '123' })
+          vi.advanceTimersByTime(200)
+
+          expect(streams().map(entry => entry.message.data.formData)).toEqual([{ code: '123' }])
+        })
+
+        it.each(['submit', 'cancel'] as const)('tells the plugin page the form was %sed, with what it holds', async (formEvent) => {
+          await withForm()
+          component.formData.set({ code: '1234' })
+
+          component.formActionSubject.next(formEvent)
+
+          expect(streams().map(entry => entry.message)).toEqual([{
+            action: 'stream',
+            event: 'pairing',
+            data: { formEvent, formData: { code: '1234' } },
+          }])
+        })
+
+        it('addresses the plugin page rather than any listening window', async () => {
+          // A wildcard target origin would hand whatever the user typed into
+          // the form - pairing codes, tokens - to any window that got in
+          await withForm()
+
+          component.formActionSubject.next('submit')
+
+          expect(streams().map(entry => entry.targetOrigin)).toEqual([environment.api.origin])
+        })
+      })
+
       it('reports the lighting mode the user is actually seeing', async () => {
         await open()
         await ready()

@@ -2,6 +2,13 @@
   font-size: 20px;
 }
 
+// The title-bar toolbar itself is styled by the shared
+// scss/components/widget-toolbar.scss (one owner for the gear geometry);
+// the anchor for its absolute positioning lives here.
+:host {
+  position: relative;
+}
+
 .hb-status-item {
   @media (max-width: 767px) {
     width: 100%;

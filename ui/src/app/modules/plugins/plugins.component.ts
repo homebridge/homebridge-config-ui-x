@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, ElementRef, inject, OnDestroy, OnInit, signal, viewChild } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, DestroyRef, ElementRef, inject, OnDestroy, OnInit, signal, viewChild } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { NavigationEnd, Router, Event as RouterEvent } from '@angular/router'
@@ -70,6 +70,25 @@ export class PluginsComponent implements OnInit, OnDestroy, CanComponentDeactiva
   // True while the grid is showing search results rather than the installed
   // list. Read by the template to decide what a plugin card may show.
   public readonly isSearchMode = signal(false)
+
+  /**
+   * How many installed packages show an update, gating the Update All button
+   * (≥2 - with one update the card's own update button is the right tool).
+   * The UI package is filtered out of the plugin list before display but
+   * still counts here - it is an item Update All would offer, and without it
+   * this gate disagrees with the status widget's for the same state. This
+   * count still cannot see a Homebridge core update (this page never loads
+   * it); the widget's gate can, so the two can differ by that one item.
+   * The modal fetches the authoritative plan itself.
+   */
+  public readonly availableUpdateCount = computed(() =>
+    this.installedPlugins().filter(x => x.updateAvailable).length + (this.uiUpdateAvailable() ? 1 : 0))
+
+  /**
+   * Whether homebridge-config-ui-x itself has an update, captured before the
+   * list filters it out for display
+   */
+  private readonly uiUpdateAvailable = signal(false)
 
   // Other properties
   private io!: IoNamespace
@@ -192,6 +211,29 @@ export class PluginsComponent implements OnInit, OnDestroy, CanComponentDeactiva
       this.isSearchMode.set(true)
       void this.search()
     }
+  }
+
+  public updateAllModal(): void {
+    const ref = this.$plugin.openUpdateAllModal()
+
+    // A run that only restarts child bridges never reloads this page, so
+    // refresh the list once the modal is closed - completed updates should
+    // stop showing as available. The cache must be invalidated first or the
+    // reload would serve the same stale list back.
+    // `closed` (not `hidden`): a plan-phase dismiss ran nothing, and the
+    // 'handover' close means the server is restarting RIGHT NOW - reloading
+    // then would cache pre-update state fetched from a dying process. The
+    // destroy guard matters for the same reason: hidden/closed emit after the
+    // fade, by which time the hand-over has navigated away from this page
+    ref.closed
+      .pipe(takeUntilDestroyed(this.destroyRef))
+      .subscribe((reason) => {
+        if (reason === 'handover') {
+          return
+        }
+        this.$pluginsCache.invalidate()
+        void this.loadInstalledPlugins()
+      })
   }
 
   public showSearch(): void {
@@ -397,6 +439,7 @@ export class PluginsComponent implements OnInit, OnDestroy, CanComponentDeactiva
 
     try {
       const installedPlugins = await this.$pluginsCache.get()
+      this.uiUpdateAvailable.set(installedPlugins.some((x: Plugin) => x.name === 'homebridge-config-ui-x' && x.updateAvailable))
       const plugins = installedPlugins.filter((x: Plugin) => x.name !== 'homebridge-config-ui-x')
 
       // Populate per-plugin metadata BEFORE publishing to the signal so the

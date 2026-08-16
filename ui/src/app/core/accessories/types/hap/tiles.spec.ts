@@ -1242,4 +1242,118 @@ describe('the HAP accessory tiles', () => {
       })
     })
   })
+
+  /**
+   * The two climate tiles that colour themselves by what the unit is doing
+   * right now, rather than merely whether it is on.
+   *
+   * Both are written identically, so they are asserted as a set: each has a
+   * state characteristic with one value meaning "working in the first
+   * direction" and another meaning the second, plus a `type` input for a unit
+   * published as a dedicated one-direction accessory (no state characteristic
+   * at all, so the tile has only the input to go on).
+   *
+   * ⚠️ The order the two are tested in matters: the tile checks its first
+   * direction before the second, so a unit reporting both would show the
+   * first. `first` below is whichever the component tests first, which is NOT
+   * the lower state value in both tiles.
+   */
+  describe('what colour a climate tile shows', () => {
+    const CLIMATE_TILES = [
+      [
+        'humidifier dehumidifier',
+        HumidifierDehumidifierComponent,
+        'CurrentHumidifierDehumidifierState',
+        { state: 2, type: 'humidifier', fill: 'url(#humidifyingGradient)' },
+        { state: 3, type: 'dehumidifier', fill: 'url(#dehumidifyingGradient)' },
+      ],
+      [
+        'heater cooler',
+        HeaterCoolerComponent,
+        'CurrentHeaterCoolerState',
+        { state: 3, type: 'cooler', fill: 'url(#coolingGradient)' },
+        { state: 2, type: 'heater', fill: 'url(#heatingGradient)' },
+      ],
+    ] as const
+
+    const ON = '#42d672'
+    const OFF = '#7b7b7b'
+
+    /**
+     * Build a climate tile, optionally as a dedicated one-direction unit.
+     * @param type - the tile component
+     * @param service - the accessory service it renders
+     * @param unitType - the `type` input, for a dedicated humidifier/heater/etc
+     */
+    function climateTile(type: any, service: ServiceTypeX, unitType?: string) {
+      const fixture = build(type, service, true)
+      if (unitType) {
+        fixture.componentRef.setInput('type', unitType)
+        fixture.detectChanges()
+      }
+      return fixture.componentInstance as { getStatusFill: () => string }
+    }
+
+    describe.each(CLIMATE_TILES)('the %s tile', (_name, tile, stateChar, first, second) => {
+      it(`shows the ${first.type} colour while it is working in that direction`, () => {
+        const service = serviceWith([['Active', 1], [stateChar, first.state]])
+
+        expect(climateTile(tile, service).getStatusFill()).toBe(first.fill)
+      })
+
+      it(`shows the ${second.type} colour while it is working in that direction`, () => {
+        const service = serviceWith([['Active', 1], [stateChar, second.state]])
+
+        expect(climateTile(tile, service).getStatusFill()).toBe(second.fill)
+      })
+
+      it('shows plain on when it is active but idle', () => {
+        // Reporting a direction is not the same as running in it
+        const service = serviceWith([['Active', 1], [stateChar, 0]])
+
+        expect(climateTile(tile, service).getStatusFill()).toBe(ON)
+      })
+
+      it('shows off when it is not active, whatever state it reports', () => {
+        // A unit that never clears its state characteristic would otherwise
+        // keep glowing after being switched off
+        const service = serviceWith([['Active', 0], [stateChar, first.state]])
+
+        expect(climateTile(tile, service).getStatusFill()).toBe(OFF)
+      })
+
+      it(`colours a dedicated ${first.type} from its own tile type`, () => {
+        // Published as a plain switch with no state characteristic: the tile
+        // knows the direction only from the input the accessory list gave it
+        const service = serviceWith([['On', true]])
+
+        expect(climateTile(tile, service, first.type).getStatusFill()).toBe(first.fill)
+      })
+
+      it(`colours a dedicated ${second.type} from its own tile type`, () => {
+        const service = serviceWith([['On', true]])
+
+        expect(climateTile(tile, service, second.type).getStatusFill()).toBe(second.fill)
+      })
+
+      it('leaves a dedicated unit that is off uncoloured', () => {
+        const service = serviceWith([['On', false]])
+
+        expect(climateTile(tile, service, first.type).getStatusFill()).toBe(OFF)
+      })
+
+      it('switches it on and off again by its active flag', () => {
+        // ⚠️ `Active` is numeric: writing a boolean here is silently ignored
+        // by some accessories, which is why both directions are asserted
+        const off = serviceWith([['Active', 0]])
+        const on = serviceWith([['Active', 1]])
+
+        create<{ onClick: () => void }>(tile as any, off).onClick()
+        create<{ onClick: () => void }>(tile as any, on).onClick()
+
+        expect(writesTo(off)).toEqual([{ type: 'Active', value: 1 }])
+        expect(writesTo(on)).toEqual([{ type: 'Active', value: 0 }])
+      })
+    })
+  })
 })

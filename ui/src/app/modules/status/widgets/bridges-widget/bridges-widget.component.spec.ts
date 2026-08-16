@@ -170,136 +170,47 @@ describe('bridgesWidgetComponent', () => {
     })
   })
 
-  describe('what the hap icon means', () => {
-    it('says running on a healthy bridge', async () => {
-      const widget = await open({ bridges: [makeBridge()] })
-
-      expect(widget.childHapTooltipKey(widget.childBridges()[0])).toBe('status.services.hap_running')
-      expect(widget.mainHapTooltipKey()).toBe('status.services.hap_running')
-    })
-
-    it('says not running on a stopped bridge', async () => {
-      const widget = await open({ bridges: [makeBridge({ status: 'down' })], status: { status: 'down' } })
-
-      expect(widget.childHapTooltipKey(widget.childBridges()[0])).toBe('status.services.hap_not_running')
-      expect(widget.mainHapTooltipKey()).toBe('status.services.hap_not_running')
-    })
-
-    it('says running while a bridge is restarting', async () => {
-      const widget = await open({ bridges: [makeBridge({ status: 'down' })] })
-      widget.childBridges.update(bridges => [{ ...bridges[0], restarting: true }])
-
-      // "Not running" during a restart the user just asked for reads as a
-      // failure rather than as progress
-      expect(widget.childHapTooltipKey(widget.childBridges()[0])).toBe('status.services.hap_running')
-    })
-
-    it('reads the legacy boolean form of disabled hap', async () => {
-      const widget = await open({
-        featureFlags: { hapBridgeDisable: true },
-        bridges: [makeBridge({ hap: false })],
-      })
-
-      expect(widget.isChildHapDisabled(widget.childBridges()[0])).toBe(true)
-      expect(widget.childHapTooltipKey(widget.childBridges()[0])).toBe('status.services.hap_not_enabled')
-    })
-
-    it('reads the nested object form of disabled hap', async () => {
-      const widget = await open({
-        featureFlags: { hapBridgeDisable: true },
-        bridges: [makeBridge({ hap: { enabled: false } })],
-      })
-
-      expect(widget.isChildHapDisabled(widget.childBridges()[0])).toBe(true)
-    })
-
-    it('ignores a disabled flag the running homebridge cannot honour', async () => {
-      const widget = await open({ bridges: [makeBridge({ hap: false })] })
-
-      // Without the feature the runtime advertises HAP regardless, so showing it
-      // as off would be a lie
-      expect(widget.isChildHapDisabled(widget.childBridges()[0])).toBe(false)
-      expect(widget.childHapTooltipKey(widget.childBridges()[0])).toBe('status.services.hap_running')
-    })
-
-    it('prefers externals-only over plain disabled', async () => {
-      const widget = await open({
-        featureFlags: { hapBridgeDisable: true, protocolExternalsOnly: true },
-        bridges: [makeBridge({ hap: { enabled: false, externalsOnly: true } })],
-      })
-
-      // Both are true at once, and externals-only is the more specific and more
-      // reassuring of the two: accessories are still published
-      expect(widget.isChildHapExternalsOnly(widget.childBridges()[0])).toBe(true)
-      expect(widget.childHapTooltipKey(widget.childBridges()[0])).toBe('status.services.hap_externals_only')
-    })
-
-    it('reads the main bridge flags from the status payload', async () => {
-      const widget = await open({
-        featureFlags: { hapBridgeDisable: true, protocolExternalsOnly: true },
-        status: { status: 'ok', hap: { enabled: false, externalsOnly: true } },
-      })
-
-      expect(widget.isMainHapDisabled()).toBe(true)
-      expect(widget.isMainHapExternalsOnly()).toBe(true)
-      expect(widget.mainHapTooltipKey()).toBe('status.services.hap_externals_only')
-    })
-  })
-
-  describe('what the matter icon means', () => {
-    it('says not enabled on a bridge with no matter config', async () => {
+  describe('the bridge status icons', () => {
+    // The colour and tooltip rules live in ChildBridgeStatusIconsComponent and
+    // are tested with it - these cover what the widget still owns: the
+    // aria-label's matter check, and mapping the main bridge into the shared
+    // icon source shape so its icons obey the same rules as the child rows.
+    it('reads no matter config as not enabled for the aria label', async () => {
       const widget = await open({ featureFlags: { matterSupport: true }, bridges: [makeBridge()] })
 
       expect(widget.isChildMatterEnabled(widget.childBridges()[0])).toBe(false)
-      expect(widget.childMatterTooltipKey(widget.childBridges()[0])).toBe('status.services.matter_not_enabled')
     })
 
-    it('says running on a bridge with matter configured', async () => {
+    it('treats a configured matter bridge as enabled', async () => {
       const widget = await open({
         featureFlags: { matterSupport: true },
         bridges: [makeBridge({ matterConfig: { port: 5540 } })],
       })
 
       expect(widget.isChildMatterEnabled(widget.childBridges()[0])).toBe(true)
-      expect(widget.childMatterTooltipKey(widget.childBridges()[0])).toBe('status.services.matter_running')
     })
 
-    it('greys out a matter bridge turned off in place', async () => {
+    it('treats a matter bridge turned off in place as not enabled', async () => {
+      // Still configured, so the icon shows, but it is not advertising anything
       const widget = await open({
         featureFlags: { matterSupport: true },
         bridges: [makeBridge({ matterConfig: { port: 5540, enabled: false } })],
       })
 
-      // Still configured, so the icon shows, but it is not advertising anything
       expect(widget.isChildMatterEnabled(widget.childBridges()[0])).toBe(false)
     })
 
-    it('says not running when a matter bridge is stopped', async () => {
+    it('maps the main bridge into the shared icon source', async () => {
       const widget = await open({
-        featureFlags: { matterSupport: true },
-        bridges: [makeBridge({ status: 'down', matterConfig: { port: 5540 } })],
+        featureFlags: { hapBridgeDisable: true, protocolExternalsOnly: true, matterSupport: true },
+        status: { status: 'ok', hap: { enabled: false, externalsOnly: true }, matter: { enabled: true, externalsOnly: true } },
       })
 
-      expect(widget.childMatterTooltipKey(widget.childBridges()[0])).toBe('status.services.matter_not_running')
-    })
-
-    it('reads matter externals-only from the child config', async () => {
-      const widget = await open({
-        featureFlags: { matterSupport: true, protocolExternalsOnly: true },
-        bridges: [makeBridge({ matterConfig: { port: 5540, externalsOnly: true } })],
+      expect(widget.mainBridgeIconSource()).toEqual({
+        status: 'ok',
+        hap: { enabled: false, externalsOnly: true },
+        matterConfig: { enabled: true, externalsOnly: true },
       })
-
-      expect(widget.isChildMatterExternalsOnly(widget.childBridges()[0])).toBe(true)
-      expect(widget.childMatterTooltipKey(widget.childBridges()[0])).toBe('status.services.matter_externals_only')
-    })
-
-    it('reads matter externals-only for the main bridge from the status', async () => {
-      const widget = await open({
-        featureFlags: { matterSupport: true, protocolExternalsOnly: true },
-        status: { status: 'ok', matter: { enabled: true, externalsOnly: true } },
-      })
-
-      expect(widget.isMainMatterExternalsOnly()).toBe(true)
     })
   })
 
@@ -590,6 +501,22 @@ describe('bridgesWidgetComponent', () => {
       await vi.advanceTimersByTimeAsync(3000)
 
       expect(widget.childBridgeLiveMessages()['0E:11:11:11:11:11']).toBeFalsy()
+    })
+
+    it('tracks a bridge that has no username by its name', async () => {
+      // Every per-bridge record here is keyed by username, falling back to the
+      // name. Without the fallback a bridge whose config carries no username
+      // is filed under `undefined`, so any two of them share one restart
+      // state and one announcement
+      const nameless = makeBridge({ username: undefined, name: 'Nameless Bridge' })
+      const widget = await open({ bridges: [nameless] })
+
+      await widget.restartChildBridge(widget.childBridges()[0])
+      childIo.socket.fire('child-bridge-status-update', { ...nameless, status: 'pending' })
+      childIo.socket.fire('child-bridge-status-update', { ...nameless, status: 'ok' })
+      await vi.advanceTimersByTimeAsync(3000)
+
+      expect(widget.childBridgeLiveMessages()['Nameless Bridge']).toBeTruthy()
     })
 
     it('says nothing about a restart the user did not ask for', async () => {

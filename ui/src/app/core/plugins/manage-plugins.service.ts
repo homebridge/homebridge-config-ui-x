@@ -1,5 +1,5 @@
 import { createEnvironmentInjector, EnvironmentInjector, inject, Injectable } from '@angular/core'
-import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
+import { NgbModal, NgbModalRef } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
 import { Subject } from 'rxjs'
@@ -31,6 +31,7 @@ import { ResetAccessoriesComponent } from '@/app/core/plugins/reset-accessories/
 import { SwitchToScopedComponent } from '@/app/core/plugins/switch-to-scoped/switch-to-scoped.component'
 import { UninstallPluginComponent } from '@/app/core/plugins/uninstall-plugin/uninstall-plugin.component'
 import { SettingsService } from '@/app/core/ui/settings.service'
+import { UpdateAllModalComponent } from '@/app/core/update-all/update-all-modal.component'
 import { HttpErrorService } from '@/app/core/utilities/http-error.service'
 
 @Injectable({
@@ -49,6 +50,21 @@ export class ManagePluginsService {
   // Subject to notify when plugins list needs to be refreshed
   private pluginListRefreshSubject = new Subject<void>()
   public onPluginListRefresh = this.pluginListRefreshSubject.asObservable()
+
+  /**
+   * Open the Update All modal. Both entry points (the plugins page toolbar
+   * and the update-info widget) come through here so the modal's options
+   * cannot drift between them. Callers subscribe their own refresh to the
+   * returned ref's `closed` - skipping the 'handover' reason, which means
+   * the server is restarting right now.
+   */
+  openUpdateAllModal(): NgbModalRef {
+    return this.$modal.open(UpdateAllModalComponent, {
+      size: 'lg',
+      // A run must not be interrupted by a stray backdrop click
+      backdrop: 'static',
+    })
+  }
 
   async installPlugin(plugin: Plugin, targetVersion: string, backToVersionModal: Plugin | null = null) {
     const injector = createEnvironmentInjector([{

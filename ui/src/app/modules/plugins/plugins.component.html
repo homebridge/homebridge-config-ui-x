@@ -8,6 +8,21 @@
   </div>
   <div class="col-6 text-end">
     @if (isAdmin) {
+      @if (availableUpdateCount() >= 2) {
+        <button
+          type="button"
+          class="btn btn-elegant my-0 me-2"
+          container="body"
+          placement="bottom"
+          triggers="hover"
+          [openDelay]="150"
+          [ngbTooltip]="'update_all.title' | translate"
+          [attr.aria-label]="'update_all.title' | translate"
+          (click)="updateAllModal()"
+        >
+          <i aria-hidden="true" class="fas fa-arrow-alt-circle-up"></i>
+        </button>
+      }
       <button
         type="button"
         class="btn btn-elegant my-0 me-2"

@@ -113,12 +113,30 @@ export class PluginsService implements OnModuleDestroy {
    *
    * `unref` so it can never be the only thing holding the process open, and the
    * handle is kept so `onModuleDestroy` can clear it.
+   *
+   * Public because the Update All finale arms it too - always after its
+   * journal is safely on disk, since this timer ends the process.
    */
-  private scheduleUiRestart(): void {
+  public scheduleUiRestart(): void {
+    // Re-arming must reset the fuse, not orphan the old one - an uncleared
+    // earlier timer keeps its original deadline and can end the process
+    // inside the fresh window the new caller was promised
+    if (this.uiRestartTimer) {
+      clearTimeout(this.uiRestartTimer)
+    }
     this.uiRestartTimer = setTimeout(() => {
       void this.exitOnceUpdatesFinish()
     }, PluginsService.UI_RESTART_DELAY_MS)
     this.uiRestartTimer.unref()
+  }
+
+  /**
+   * True while a self-restart fuse is burning. Long work started now (an
+   * Update All run) would be cut short by the exit, so callers refuse to
+   * start until the restart has happened.
+   */
+  public get uiRestartPending(): boolean {
+    return this.uiRestartTimer !== undefined
   }
 
   /**

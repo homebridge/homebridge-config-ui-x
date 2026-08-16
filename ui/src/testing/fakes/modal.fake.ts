@@ -1,12 +1,16 @@
 import type { InjectionToken } from '@angular/core'
 import type { NgbActiveModal, NgbModal, NgbModalOptions } from '@ng-bootstrap/ng-bootstrap/modal'
+import type { Observable } from 'rxjs'
 import type { Mock } from 'vitest'
 
+import { Subject } from 'rxjs'
 import { vi } from 'vitest'
 
 export interface FakeModalRef {
   componentInstance: Record<string, any>
   result: Promise<any>
+  hidden: Observable<void>
+  closed: Observable<any>
   close: (value?: any) => void
   dismiss: (reason?: any) => void
 }
@@ -55,7 +59,9 @@ export function activeModalStub(): NgbActiveModal {
 
 /**
  * A controllable modal reference. `result` settles when `close` or `dismiss`
- * is called, matching NgbModalRef - close resolves, dismiss rejects.
+ * is called, matching NgbModalRef - close resolves, dismiss rejects, `hidden`
+ * emits either way, and `closed` emits the close value on close only (a
+ * dismiss completes it silently, like the real ref).
  */
 export function fakeModalRef(): FakeModalRef {
   let settle: (value: any) => void = () => {}
@@ -70,11 +76,29 @@ export function fakeModalRef(): FakeModalRef {
   // rejection and fail an unrelated test
   result.catch(() => {})
 
+  const hidden = new Subject<void>()
+  const closed = new Subject<any>()
+  const emitHidden = () => {
+    hidden.next()
+    hidden.complete()
+  }
+
   return {
     componentInstance: {},
     result,
-    close: vi.fn((value?: any) => settle(value)) as unknown as (value?: any) => void,
-    dismiss: vi.fn((reason?: any) => reject(reason)) as unknown as (reason?: any) => void,
+    hidden,
+    closed,
+    close: vi.fn((value?: any) => {
+      settle(value)
+      closed.next(value)
+      closed.complete()
+      emitHidden()
+    }) as unknown as (value?: any) => void,
+    dismiss: vi.fn((reason?: any) => {
+      reject(reason)
+      closed.complete()
+      emitHidden()
+    }) as unknown as (reason?: any) => void,
   }
 }
 
