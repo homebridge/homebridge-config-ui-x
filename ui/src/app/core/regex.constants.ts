@@ -55,6 +55,16 @@ export const RE_NON_SAFARI = /Chrome|CriOS|FxiOS|EdgiOS/
 export const RE_STARTS_WITH_DIGIT = /^\d/
 export const RE_KOFI = /ko-?fi/i
 
+// Form values
+/**
+ * At least one character that is not whitespace.
+ *
+ * `Validators.required` only rejects null and the empty string, so a value of
+ * spaces alone counts as filled in - which let a room be created with a name that
+ * trimmed away to nothing.
+ */
+export const RE_NOT_BLANK = /\S/
+
 // Scheduling
 export const RE_WHITESPACE_SINGLE = /\s+/
 export const RE_CRON_FIELD = /^[\d*,\-/]+$/

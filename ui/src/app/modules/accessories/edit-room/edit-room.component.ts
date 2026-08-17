@@ -4,6 +4,7 @@ import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe } from '@ngx-translate/core'
 
 import { RequiredIndicatorComponent } from '@/app/core/components/required-indicator/required-indicator.component'
+import { RE_NOT_BLANK } from '@/app/core/regex.constants'
 import { EDIT_ROOM_MODAL_DATA } from '@/app/modules/accessories/modal-data-tokens'
 
 @Component({
@@ -28,7 +29,7 @@ export class EditRoomComponent implements OnInit {
   private initialFormValue: { roomName: string | null, isDefault: boolean | null } = { roomName: null, isDefault: null }
 
   public roomForm = new FormGroup({
-    roomName: new FormControl('', [Validators.required]),
+    roomName: new FormControl('', [Validators.required, Validators.pattern(RE_NOT_BLANK)]),
     isDefault: new FormControl(false),
   })
 
