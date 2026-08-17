@@ -36,6 +36,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(ui): tolerate a null acknowledgement on websocket requests
 - chore(accessories): rename the misleading mobile flag to layout locked
 - fix(ui): show zero seconds as 0s in the duration pipe instead of nothing
+- fix(settings): recheck the ssl form when a field is edited
 
 ### Other Changes
 
