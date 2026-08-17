@@ -1078,15 +1078,18 @@ export class SettingsComponent implements OnInit {
   private pendingUiFlush: { promise: Promise<void>, resolve: () => void, reject: (error: any) => void } | null = null
   private static readonly UI_FLUSH_COALESCE_MS = 150
 
-  private async saveUiSettingChange(key: string, value: unknown): Promise<void> {
-    try {
-      await this.queueUiSettingChange(key, value)
-    } catch (error: any) {
-      console.error(error)
-      this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
-    }
-  }
-
+  /**
+   * Queue one UI config change for the next flush.
+   *
+   * ⚠️ **This rejects when the write fails, and every caller has to let it.** The
+   * caller's catch is what reports the failure and stops its spinner; a helper
+   * that reported the error and then resolved anyway left every caller running
+   * its success path over a write that never landed — clearing the "invalid"
+   * marker, asking for a restart that would apply nothing, and in the case of
+   * the menu mode reloading the page over the top of its own error toast.
+   * @param key - the UI config key
+   * @param value - the value to write
+   */
   private queueUiSettingChange(key: string, value: unknown): Promise<void> {
     this.pendingUiChanges.set(key, value)
 
@@ -1158,10 +1161,6 @@ export class SettingsComponent implements OnInit {
     try {
       this.uiLangIsSaving.set(true)
       this.$settings.setLang(value)
-      // The queue directly rather than saveUiSettingChange, which reports a
-      // failure and then resolves anyway: this is the one setting that needs to
-      // know whether the write really landed before it throws the page away. A
-      // failure lands in the catch below, which reports it the same way.
       await this.queueUiSettingChange('lang', value)
 
       // Reload once the choice is safely saved, if the new language formats its
@@ -1213,7 +1212,7 @@ export class SettingsComponent implements OnInit {
 
       // Change the theme (background will transition)
       this.$settings.setTheme(value)
-      await this.saveUiSettingChange('theme', value)
+      await this.queueUiSettingChange('theme', value)
 
       // Wait for background transition to start, then fade content back in
       await new Promise(resolve => setTimeout(resolve, 100))
@@ -1242,7 +1241,7 @@ export class SettingsComponent implements OnInit {
 
       // Change the lighting mode (background will transition)
       this.$settings.setLightingMode(value, 'user')
-      await this.saveUiSettingChange('lightingMode', value)
+      await this.queueUiSettingChange('lightingMode', value)
 
       // Wait for background transition to start, then fade content back in
       await new Promise(resolve => setTimeout(resolve, 100))
@@ -1263,7 +1262,7 @@ export class SettingsComponent implements OnInit {
     try {
       this.uiMenuIsSaving.set(true)
       this.$settings.setMenuMode(value)
-      await this.saveUiSettingChange('menuMode', value)
+      await this.queueUiSettingChange('menuMode', value)
       window.location.reload()
     } catch (error: any) {
       console.error(error)
@@ -1276,7 +1275,7 @@ export class SettingsComponent implements OnInit {
     try {
       this.uiTempIsSaving.set(true)
       this.$settings.setEnvItem('temperatureUnits', value)
-      await this.saveUiSettingChange('tempUnits', value)
+      await this.queueUiSettingChange('tempUnits', value)
       setTimeout(() => {
         this.uiTempIsSaving.set(false)
       }, 1000)
@@ -1327,7 +1326,7 @@ export class SettingsComponent implements OnInit {
       }
 
       this.$settings.setEnvItem('terminal.persistence', value)
-      await this.saveUiSettingChange('terminal.persistence', value)
+      await this.queueUiSettingChange('terminal.persistence', value)
       setTimeout(() => {
         this.uiTerminalPersistenceIsSaving.set(false)
       }, 1000)
@@ -1342,7 +1341,7 @@ export class SettingsComponent implements OnInit {
     try {
       this.uiTerminalHideWarningIsSaving.set(true)
       this.$settings.setEnvItem('terminal.hideWarning', value)
-      await this.saveUiSettingChange('terminal.hideWarning', value)
+      await this.queueUiSettingChange('terminal.hideWarning', value)
       setTimeout(() => {
         this.uiTerminalHideWarningIsSaving.set(false)
       }, 1000)
@@ -1362,7 +1361,7 @@ export class SettingsComponent implements OnInit {
     try {
       this.uiTerminalBufferSizeIsSaving.set(true)
       this.$settings.setEnvItem('terminal.bufferSize', value)
-      await this.saveUiSettingChange('terminal.bufferSize', value)
+      await this.queueUiSettingChange('terminal.bufferSize', value)
       this.uiTerminalBufferSizeIsInvalid.set(false)
       setTimeout(() => {
         this.uiTerminalBufferSizeIsSaving.set(false)
@@ -1378,7 +1377,7 @@ export class SettingsComponent implements OnInit {
     try {
       this.uiTerminalFontSizeIsSaving.set(true)
       this.$settings.setEnvItem('terminal.fontSize', value)
-      await this.saveUiSettingChange('terminal.fontSize', value)
+      await this.queueUiSettingChange('terminal.fontSize', value)
       setTimeout(() => {
         this.uiTerminalFontSizeIsSaving.set(false)
       }, 1000)
@@ -1393,7 +1392,7 @@ export class SettingsComponent implements OnInit {
     try {
       this.uiTerminalFontWeightIsSaving.set(true)
       this.$settings.setEnvItem('terminal.fontWeight', value)
-      await this.saveUiSettingChange('terminal.fontWeight', value)
+      await this.queueUiSettingChange('terminal.fontWeight', value)
       setTimeout(() => {
         this.uiTerminalFontWeightIsSaving.set(false)
       }, 1000)
@@ -1408,7 +1407,7 @@ export class SettingsComponent implements OnInit {
     try {
       this.uiTerminalLightingModeIsSaving.set(true)
       this.$settings.setEnvItem('terminal.lightingMode', value)
-      await this.saveUiSettingChange('terminal.lightingMode', value)
+      await this.queueUiSettingChange('terminal.lightingMode', value)
       setTimeout(() => {
         this.uiTerminalLightingModeIsSaving.set(false)
       }, 1000)
@@ -1567,10 +1566,10 @@ export class SettingsComponent implements OnInit {
       if (!value || value === -1) {
         // If the value is -1, we set the log.maxSize to undefined
         // This will remove the setting from the config file
-        await this.saveUiSettingChange('log.truncateSize', null)
+        await this.queueUiSettingChange('log.truncateSize', null)
         this.hbLogTruncateIsInvalid.set(false)
       }
-      await this.saveUiSettingChange('log.maxSize', value)
+      await this.queueUiSettingChange('log.maxSize', value)
       this.hbLogSizeIsInvalid.set(false)
       setTimeout(() => {
         this.hbLogSizeIsSaving.set(false)
@@ -1592,7 +1591,7 @@ export class SettingsComponent implements OnInit {
     try {
       this.hbLogTruncateIsSaving.set(true)
       this.$settings.setEnvItem('log.truncateSize', value)
-      await this.saveUiSettingChange('log.truncateSize', value)
+      await this.queueUiSettingChange('log.truncateSize', value)
       this.hbLogTruncateIsInvalid.set(false)
       setTimeout(() => {
         this.hbLogTruncateIsSaving.set(false)
@@ -1702,7 +1701,7 @@ export class SettingsComponent implements OnInit {
     try {
       this.uiPortIsSaving.set(true)
       this.$settings.setEnvItem('port', value)
-      await this.saveUiSettingChange('port', value)
+      await this.queueUiSettingChange('port', value)
       this.uiPortIsInvalid.set(false)
       setTimeout(() => {
         this.uiPortIsSaving.set(false)
@@ -1719,7 +1718,7 @@ export class SettingsComponent implements OnInit {
     try {
       this.uiAuthIsSaving.set(true)
       this.$settings.setItem('formAuth', value)
-      await this.saveUiSettingChange('auth', value ? 'form' : 'none')
+      await this.queueUiSettingChange('auth', value ? 'form' : 'none')
       this.$notification.formAuthEnabled.set(value)
       setTimeout(() => {
         this.uiAuthIsSaving.set(false)
@@ -1753,7 +1752,7 @@ export class SettingsComponent implements OnInit {
     try {
       this.uiSessionTimeoutIsSaving.set(true)
       this.$settings.setItem('sessionTimeout', totalSeconds)
-      await this.saveUiSettingChange('sessionTimeout', totalSeconds)
+      await this.queueUiSettingChange('sessionTimeout', totalSeconds)
       this.uiSessionTimeoutDaysIsInvalid.set(false)
       this.uiSessionTimeoutHoursIsInvalid.set(false)
       this.uiSessionTimeoutMinutesIsInvalid.set(false)
@@ -1790,7 +1789,7 @@ export class SettingsComponent implements OnInit {
     try {
       this.uiSessionTimeoutInactivityBasedIsSaving.set(true)
       this.$settings.setItem('sessionTimeoutInactivityBased', value)
-      await this.saveUiSettingChange('sessionTimeoutInactivityBased', value)
+      await this.queueUiSettingChange('sessionTimeoutInactivityBased', value)
       setTimeout(() => {
         this.uiSessionTimeoutInactivityBasedIsSaving.set(false)
         this.$settings.showRestartToast()
@@ -1806,7 +1805,7 @@ export class SettingsComponent implements OnInit {
     try {
       this.uiHostIsSaving.set(true)
       this.$settings.setItem('host', value)
-      await this.saveUiSettingChange('host', value)
+      await this.queueUiSettingChange('host', value)
       setTimeout(() => {
         this.uiHostIsSaving.set(false)
         this.$settings.showRestartToast()
@@ -1822,7 +1821,7 @@ export class SettingsComponent implements OnInit {
     try {
       this.uiProxyHostIsSaving.set(true)
       this.$settings.setItem('proxyHost', value)
-      await this.saveUiSettingChange('proxyHost', value)
+      await this.queueUiSettingChange('proxyHost', value)
       setTimeout(() => {
         this.uiProxyHostIsSaving.set(false)
         this.$settings.showRestartToast()
@@ -1838,7 +1837,7 @@ export class SettingsComponent implements OnInit {
     try {
       this.hbPackageIsSaving.set(true)
       this.$settings.setEnvItem('homebridgePackagePath', value)
-      await this.saveUiSettingChange('homebridgePackagePath', value)
+      await this.queueUiSettingChange('homebridgePackagePath', value)
       setTimeout(() => {
         this.hbPackageIsSaving.set(false)
         this.$settings.showRestartToast()
@@ -1854,7 +1853,7 @@ export class SettingsComponent implements OnInit {
     try {
       this.uiMetricsIsSaving.set(true)
       this.$settings.setEnvItem('disableServerMetricsMonitoring', !value)
-      await this.saveUiSettingChange('disableServerMetricsMonitoring', !value)
+      await this.queueUiSettingChange('disableServerMetricsMonitoring', !value)
       setTimeout(() => {
         this.uiMetricsIsSaving.set(false)
         this.$api.put('/platform-tools/hb-service/set-full-service-restart-flag', {})
@@ -1876,7 +1875,7 @@ export class SettingsComponent implements OnInit {
     try {
       this.enableMdnsAdvertiseIsSaving.set(true)
       this.$settings.setEnvItem('enableMdnsAdvertise', value)
-      await this.saveUiSettingChange('enableMdnsAdvertise', value)
+      await this.queueUiSettingChange('enableMdnsAdvertise', value)
       setTimeout(() => {
         this.enableMdnsAdvertiseIsSaving.set(false)
         this.$api.put('/platform-tools/hb-service/set-full-service-restart-flag', {})
@@ -1890,6 +1889,7 @@ export class SettingsComponent implements OnInit {
     } catch (error: any) {
       console.error(error)
       this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
+      this.enableMdnsAdvertiseIsSaving.set(false)
     }
   }
 
@@ -1897,7 +1897,7 @@ export class SettingsComponent implements OnInit {
     try {
       this.uiAccDebugIsSaving.set(true)
       this.$settings.setEnvItem('accessoryControl.debug', value)
-      await this.saveUiSettingChange('accessoryControl.debug', value)
+      await this.queueUiSettingChange('accessoryControl.debug', value)
       setTimeout(() => {
         this.uiAccDebugIsSaving.set(false)
         this.$settings.showRestartToast()
@@ -1913,7 +1913,7 @@ export class SettingsComponent implements OnInit {
     try {
       this.uiTempFileIsSaving.set(true)
       this.$settings.setEnvItem('temp', value)
-      await this.saveUiSettingChange('temp', value)
+      await this.queueUiSettingChange('temp', value)
       setTimeout(() => {
         this.uiTempFileIsSaving.set(false)
         this.$api.put('/platform-tools/hb-service/set-full-service-restart-flag', {})
@@ -1935,7 +1935,7 @@ export class SettingsComponent implements OnInit {
     try {
       this.hbLinuxShutdownIsSaving.set(true)
       this.$settings.setEnvItem('linux.shutdown', value)
-      await this.saveUiSettingChange('linux.shutdown', value)
+      await this.queueUiSettingChange('linux.shutdown', value)
       setTimeout(() => {
         this.hbLinuxShutdownIsSaving.set(false)
         this.$api.put('/platform-tools/hb-service/set-full-service-restart-flag', {})
@@ -1957,7 +1957,7 @@ export class SettingsComponent implements OnInit {
     try {
       this.hbLinuxRestartIsSaving.set(true)
       this.$settings.setEnvItem('linux.restart', value)
-      await this.saveUiSettingChange('linux.restart', value)
+      await this.queueUiSettingChange('linux.restart', value)
       setTimeout(() => {
         this.hbLinuxRestartIsSaving.set(false)
         this.$api.put('/platform-tools/hb-service/set-full-service-restart-flag', {})
@@ -2004,7 +2004,7 @@ export class SettingsComponent implements OnInit {
       // Convert empty string to null
       const cronValue = value?.trim() ? value : null
       this.$settings.setEnvItem('scheduledRestartCron', cronValue)
-      await this.saveUiSettingChange('scheduledRestartCron', cronValue)
+      await this.queueUiSettingChange('scheduledRestartCron', cronValue)
       setTimeout(() => {
         this.scheduledRestartCronIsSaving.set(false)
         this.$api.put('/platform-tools/hb-service/set-full-service-restart-flag', {})
