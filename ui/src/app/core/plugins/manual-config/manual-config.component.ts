@@ -90,6 +90,9 @@ export class ManualConfigComponent implements OnInit, OnDestroy {
   public readonly saveInProgress = signal(false)
   public readonly isFirstSave = signal(false)
   public monacoEditor: any
+  // Deferred validation checks still waiting on Monaco, so they can be cancelled
+  // if the modal closes before they fire
+  private validationTimers = new Set<ReturnType<typeof setTimeout>>()
 
   // Validation properties
   public readonly formBlocksValid = signal<{ [key: number]: boolean }>({})
@@ -130,7 +133,7 @@ export class ManualConfigComponent implements OnInit, OnDestroy {
 
     // Add event listener for content changes to trigger validation
     // Debounce validation to avoid excessive calls
-    this.monacoEditor.onDidChangeModelContent(() => setTimeout(() => this.onValidationChange(), 300))
+    this.monacoEditor.onDidChangeModelContent(() => this.scheduleValidation(300))
 
     // Also listen for marker changes to get more accurate validation timing
     const monaco = (window as any).monaco
@@ -146,7 +149,28 @@ export class ManualConfigComponent implements OnInit, OnDestroy {
     await this.monacoEditor.getAction('editor.action.formatDocument').run()
   }
 
+  /**
+   * Re-check the editor's contents once Monaco has caught up.
+   *
+   * ⚠️ Tracked rather than fired and forgotten. The callback reads `window` and
+   * writes a signal on this component, so one left running past `ngOnDestroy`
+   * touches a component that no longer exists.
+   * @param delayMs - how long to wait for Monaco
+   */
+  private scheduleValidation(delayMs: number): void {
+    const timer = setTimeout(() => {
+      this.validationTimers.delete(timer)
+      this.onValidationChange()
+    }, delayMs)
+    this.validationTimers.add(timer)
+  }
+
   public ngOnDestroy(): void {
+    for (const timer of this.validationTimers) {
+      clearTimeout(timer)
+    }
+    this.validationTimers.clear()
+
     try {
       // Clear up main editor
       if (window.editor && window.editor.dispose) {
@@ -216,7 +240,7 @@ export class ManualConfigComponent implements OnInit, OnDestroy {
     this.updateOverallValidation()
 
     // Trigger validation check after Monaco is ready
-    setTimeout(() => this.onValidationChange(), 150)
+    this.scheduleValidation(150)
   }
 
   public removeBlock(index: number): void {
