@@ -75,6 +75,7 @@
     "start": "tsx src/main.ts",
     "test": "vitest run",
     "test-coverage": "npm run test -- --coverage",
+    "test:ui": "npm run test --prefix ui",
     "upgrade-install": "./scripts/upgrade-install.sh",
     "watch": "concurrently \"npm run watch:ui\" \"npm run watch:server\"",
     "watch:server": "nodemon",
