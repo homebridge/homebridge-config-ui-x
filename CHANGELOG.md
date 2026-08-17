@@ -43,6 +43,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(i18n): format dates and numbers for the language the user chose
 - fix(settings): reload after a language change so the new date and number formats apply
 - fix(setup-wizard): authorise the restore requests so restoring a backup works again
+- fix(accessories): reject a room name that is only spaces
 - fix(accessories): link lock management to its mechanism on the first accessory payload
 - fix(platform-tools): recover the terminal when reconnecting after the socket has dropped
 - fix(status): actually clear the node version cache when the update policy changes
