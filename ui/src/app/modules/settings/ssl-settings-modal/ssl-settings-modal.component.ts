@@ -47,9 +47,17 @@ export class SslSettingsModalComponent implements OnInit {
   public pfxPathControl = new FormControl<string>('', { nonNullable: true })
   public passphraseControl = new FormControl<string>('', { nonNullable: true })
 
+  // Bumped by detectChanges(), which every valueChanges subscription already
+  // calls. A FormControl's value is not a signal, so without something signal
+  // shaped to depend on, isFormInvalid keeps returning whatever it worked out
+  // the last time the mode changed - clearing the hostnames field would leave
+  // the save button enabled and post an empty hostname list.
+  private readonly formRevision = signal(0)
+
   // Computed validation
   public readonly isFormInvalid = computed(() => {
     const mode = this.selectedMode()
+    this.formRevision()
 
     switch (mode) {
       case 'selfsigned': {
@@ -140,6 +148,8 @@ export class SslSettingsModalComponent implements OnInit {
   }
 
   private detectChanges(): void {
+    this.formRevision.update(revision => revision + 1)
+
     const currentConfig = {
       mode: this.selectedMode(),
       hostnames: this.hostnamesControl.value,
