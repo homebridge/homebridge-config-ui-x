@@ -407,6 +407,15 @@
       opacity: 0.8;
     }
 
+    // The plugin custom UI iframe body carries this theme class and modal-content together on one element, so this compound selector paints its
+    // canvas (the descendant modal selectors above cannot match it). It can match nothing else: in the parent document the theme class exists only
+    // on the body element, which is never given modal-content. The important flag keeps the canvas authoritative over the base styles the iframe
+    // mirrors from the parent document.
+    &.modal-content {
+      background-color: $modalBackground !important;
+      color: #ffffff !important;
+    }
+
     .table {
       color: #ffffff;
     }

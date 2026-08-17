@@ -513,12 +513,11 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
       sourceWindow.postMessage({ action: 'inline-style', style: css.innerHTML }, event.origin)
     }
 
-    // Add custom CSS
+    // Add custom CSS. Canvas colors come from the mirrored theme stylesheets (the &.modal-content rule in the theme mixins), so only the
+    // iframe-specific layout override lives here.
     const customStyles = `
       body {
         height: unset !important;
-        background-color: ${darkMode ? '#242424' : '#FFFFFF'} !important;
-        color: ${darkMode ? '#FFFFFF' : '#000000'} !important;
       }
     `
     sourceWindow.postMessage({ action: 'inline-style', style: customStyles }, event.origin)

@@ -20,6 +20,13 @@
       cursor: not-allowed;
     }
 
+    // The plugin custom UI iframe body carries this theme class and modal-content together on one element; this paints its canvas (see the
+    // dark theme mixin for the full rationale).
+    &.modal-content {
+      background-color: #ffffff !important;
+      color: #000000 !important;
+    }
+
     .sidebar {
       background: $primary-dark;
       color: #eeeeee;
