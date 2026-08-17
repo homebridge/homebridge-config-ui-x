@@ -20,7 +20,7 @@ export class LongClickDirective implements OnDestroy {
   private downTimeout!: NodeJS.Timeout
   private done = false
   private touchInProgress = false
-  private touchStartTime = 0
+  private lastTouchTime = 0
 
   public readonly duration = input(350)
 
@@ -49,6 +49,11 @@ export class LongClickDirective implements OnDestroy {
       this.shortClick.emit(event)
     }
 
+    // The replay is timed from the finger lifting, not from it landing: a long
+    // press outlasts the window on its own, so timing from touchstart would let
+    // the replay through
+    this.lastTouchTime = Date.now()
+
     setTimeout(() => {
       this.touchInProgress = false
     }, 150)
@@ -59,7 +64,7 @@ export class LongClickDirective implements OnDestroy {
     if ('touches' in event) {
       this.touchInProgress = true
       this.done = false
-      this.touchStartTime = Date.now()
+      this.lastTouchTime = Date.now()
 
       if (event.cancelable && this.isSafariMobile()) {
         event.preventDefault()
@@ -93,9 +98,15 @@ export class LongClickDirective implements OnDestroy {
     clearTimeout(this.downTimeout)
   }
 
+  /**
+   * True while a mouse event is close enough to a touch to be iOS replaying it.
+   * Deliberately independent of `touchInProgress`, which is cleared 150ms after
+   * touchend - narrower than the replay this is here to block. Browsers on iOS
+   * that are not Safari have no other protection, since `preventDefault()` on
+   * touchstart is only safe to call there.
+   */
   private isSyntheticEvent(): boolean {
-    const timeSinceTouch = Date.now() - this.touchStartTime
-    return this.touchInProgress && timeSinceTouch < 300
+    return Date.now() - this.lastTouchTime < 300
   }
 
   private isSafariMobile(): boolean {
