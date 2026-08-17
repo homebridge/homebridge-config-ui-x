@@ -158,9 +158,6 @@ export class SettingsService {
             if (!iframeBody.classList.contains('dark-mode')) {
               iframeBody.classList.add('dark-mode')
             }
-
-            iframeBody.style.backgroundColor = '#242424 !important'
-            iframeBody.style.color = '#ffffff !important'
           } else {
             if (!iframeBody.classList.contains(`config-ui-x-${this.theme}`)) {
               iframeBody.classList.add(`config-ui-x-${this.theme}`)
@@ -171,18 +168,7 @@ export class SettingsService {
             if (iframeBody.classList.contains('dark-mode')) {
               iframeBody.classList.remove('dark-mode')
             }
-
-            iframeBody.style.backgroundColor = '#ffffff !important'
-            iframeBody.style.color = '#000000 !important'
           }
-
-          // Theme update is a non-sensitive payload; use '*' as targetOrigin
-          // so cross-origin plugin iframes (which the same-origin string
-          // would silently skip) also receive it.
-          iframe.contentWindow?.postMessage(
-            { type: 'theme-update', isDark: this.actualLightingMode === 'dark', theme },
-            '*',
-          )
         }
       } catch (e) {
         console.warn(`Iframe ${index}: Access denied (cross-origin?)`, { error: e, src: iframe.src })
