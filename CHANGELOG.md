@@ -57,6 +57,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - chore(lint): ignore the angular cache created by ui builds run from the repo root
 - fix(settings): report a failed setting write instead of carrying on as if it saved
 - chore(settings): drop the unreachable catch after the restart flag is set
+- fix(plugins): cancel the raw json editor deferred validation when the modal closes
 
 ### Homebridge Dependencies
 
