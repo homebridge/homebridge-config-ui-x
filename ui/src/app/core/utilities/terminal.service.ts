@@ -239,7 +239,16 @@ export class TerminalService {
       this.isInitializing = false
       return true
     } else {
-      // No active connection, start fresh
+      // No active connection, start fresh.
+      //
+      // Release the flag first: `startTerminal` has the same `isInitializing`
+      // guard at the top, so handing over while it is still set made it refuse
+      // straight away — `reconnectTerminal` returned false having done nothing
+      // at all. The terminal widget reaches this path whenever it re-initialises
+      // after the socket has dropped (a server restart, then coming back to the
+      // dashboard): it asks to reconnect because a terminal object still exists,
+      // and the user was left looking at a dead terminal until a page reload.
+      this.isInitializing = false
       return this.startTerminal(targetElement, termOpts, elementResize, autoFocus)
     }
   }
