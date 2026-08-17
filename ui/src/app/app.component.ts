@@ -3,6 +3,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { NavigationError, Router, RouterOutlet } from '@angular/router'
 import { TranslateService } from '@ngx-translate/core'
 
+import { supportedLocales } from '@/app/core/locales'
 import { SettingsService } from '@/app/core/ui/settings.service'
 
 @Component({
@@ -44,38 +45,11 @@ export class AppComponent {
       colorSchemeQueryList.removeEventListener('change', setLightingMode)
     })
 
-    // This array needs to be updated each time a new translation is added
-    const languages = [
-      'en',
-      'bg',
-      'ca',
-      'zh-CN',
-      'zh-TW',
-      'cs',
-      'fi',
-      'fr',
-      'de',
-      'hu',
-      'id',
-      'he',
-      'it',
-      'ja',
-      'ko',
-      'mk',
-      'nl',
-      'no',
-      'pl',
-      'pt',
-      'pt-BR',
-      'ru',
-      'sl',
-      'es',
-      'sv',
-      'th',
-      'tr',
-      'uk',
-      'vi',
-    ]
+    // Every language the UI ships, taken from the locale table rather than
+    // listed again here: the two used to be maintained by hand side by side, and
+    // a language present in one but not the other either loads a translation
+    // with the wrong date and number formats or cannot be selected at all.
+    const languages = Object.keys(supportedLocales)
 
     // Which languages should use RTL
     const rtlLanguages = [
