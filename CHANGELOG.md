@@ -39,6 +39,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(settings): recheck the ssl form when a field is edited
 - fix(status): set the chart history length before the first metric fetch
 - fix(accessories): link lock management to its mechanism on the first accessory payload
+- fix(platform-tools): recover the terminal when reconnecting after the socket has dropped
 
 ### Other Changes
 
