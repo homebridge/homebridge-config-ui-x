@@ -37,6 +37,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - chore(accessories): rename the misleading mobile flag to layout locked
 - fix(ui): show zero seconds as 0s in the duration pipe instead of nothing
 - fix(settings): recheck the ssl form when a field is edited
+- fix(status): set the chart history length before the first metric fetch
 
 ### Other Changes
 

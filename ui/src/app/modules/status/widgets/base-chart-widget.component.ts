@@ -83,11 +83,17 @@ export abstract class BaseChartWidgetComponent implements OnInit, OnDestroy {
       this.lineChartOptions!.elements!.line!.borderColor = userColor
     }
 
+    // Before the connected subscription, not after: `connected` is a
+    // ReplaySubject, so on the usual path — the status page already has the
+    // socket open — subscribing fires fetchData() synchronously. With the
+    // interval and history size still unset at that point, initializeChartData
+    // sliced by `undefined` and seeded the chart with the server's whole
+    // history rather than the configured number of points.
+    this.initializeWidget()
+
     this.io.connected!.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
       this.fetchData()
     })
-
-    this.initializeWidget()
 
     // Listen for configuration changes
     this.configureEvent.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
