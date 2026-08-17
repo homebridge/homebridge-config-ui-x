@@ -38,6 +38,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(ui): show zero seconds as 0s in the duration pipe instead of nothing
 - fix(settings): recheck the ssl form when a field is edited
 - fix(status): set the chart history length before the first metric fetch
+- test(ui): add unit tests for the angular ui
 - fix(config-editor): offer vietnamese in the guided ui language setting
 - chore(i18n): take the shell language list from the supported locales table
 - fix(i18n): format dates and numbers for the language the user chose

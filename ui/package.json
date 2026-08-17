@@ -10,7 +10,9 @@
     "start": "ng serve --host 0.0.0.0",
     "prebuild": "node ../scripts/fontawesome-subset.mjs",
     "build": "ng build --configuration production",
-    "prepare": "node ../scripts/apply-patches.mjs"
+    "prepare": "node ../scripts/apply-patches.mjs",
+    "test": "ng test --no-watch",
+    "test:watch": "ng test --watch"
   },
   "dependencies": {
     "@angular/common": "22.1.2",
@@ -67,10 +69,12 @@
     "emoji-js": "3.9.0",
     "fontawesome-subset": "^4.6.0",
     "he": "^1.2.0",
+    "jsdom": "^30.0.1",
     "monaco-editor": "^0.56.0",
     "patch-package": "^8.0.1",
     "ts-node": "^10.9.2",
-    "typescript": "^6.0.3"
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.10"
   },
   "overrides": {
     "@angular/animations": "22.1.2",
