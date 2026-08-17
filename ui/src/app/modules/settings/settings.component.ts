@@ -2,7 +2,7 @@ import type { NetworkAdapterAvailable, NetworkAdapterSelected } from '@/app/modu
 import type { WritableSignal } from '@angular/core'
 
 import { TitleCasePipe } from '@angular/common'
-import { afterNextRender, ChangeDetectionStrategy, ChangeDetectorRef, Component, createEnvironmentInjector, DestroyRef, ElementRef, EnvironmentInjector, inject, OnInit, runInInjectionContext, signal, viewChild } from '@angular/core'
+import { afterNextRender, ChangeDetectionStrategy, ChangeDetectorRef, Component, createEnvironmentInjector, DestroyRef, ElementRef, EnvironmentInjector, inject, LOCALE_ID, OnInit, runInInjectionContext, signal, viewChild } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { FormControl, FormsModule, ReactiveFormsModule, UntypedFormControl } from '@angular/forms'
 import { Router, RouterLink } from '@angular/router'
@@ -16,6 +16,7 @@ import { ApiService } from '@/app/core/communication/api.service'
 import { NotificationService } from '@/app/core/communication/notification.service'
 import { ConfirmComponent } from '@/app/core/components/confirm/confirm.component'
 import { SpinnerComponent } from '@/app/core/components/spinner/spinner.component'
+import { chooseStartupLanguage, localeIdFor } from '@/app/core/locales'
 import { ACCESSORY_CONTROL_LISTS_MODAL_DATA, CONFIRM_MODAL_DATA, NETWORK_INTERFACES_MODAL_DATA, REMOVE_INDIVIDUAL_ACCESSORIES_MODAL_DATA } from '@/app/core/modal-data-tokens'
 import { RE_CRON_FIELD, RE_HAP_NAME_PATTERN, RE_WHITESPACE_SINGLE } from '@/app/core/regex.constants'
 import { SettingsService } from '@/app/core/ui/settings.service'
@@ -62,6 +63,7 @@ export class SettingsComponent implements OnInit {
   private $terminal = inject(TerminalService)
   private $toastr = inject(ToastrService)
   private $translate = inject(TranslateService)
+  private $locale = inject(LOCALE_ID)
 
   readonly searchInput = viewChild<ElementRef>('searchInput')
 
@@ -1156,7 +1158,28 @@ export class SettingsComponent implements OnInit {
     try {
       this.uiLangIsSaving.set(true)
       this.$settings.setLang(value)
-      await this.saveUiSettingChange('lang', value)
+      // The queue directly rather than saveUiSettingChange, which reports a
+      // failure and then resolves anyway: this is the one setting that needs to
+      // know whether the write really landed before it throws the page away. A
+      // failure lands in the catch below, which reports it the same way.
+      await this.queueUiSettingChange('lang', value)
+
+      // Reload once the choice is safely saved, if the new language formats its
+      // dates and numbers differently.
+      //
+      // Translated text switches straight away, but LOCALE_ID - which every date,
+      // time and number pipe reads - is resolved once by Angular at bootstrap and
+      // cannot be resolved again in a running app. Without this the page would go
+      // on formatting for the previous language until the user happened to reload.
+      //
+      // Only when the locale actually differs: switching between two languages
+      // that share one (pt and pt-BR), or picking 'auto' when the browser is
+      // already set to the same language, should not throw the page away.
+      if (this.localeAfterReload() !== this.$locale) {
+        window.location.reload()
+        return
+      }
+
       setTimeout(() => {
         this.uiLangIsSaving.set(false)
       }, 1000)
@@ -1165,6 +1188,17 @@ export class SettingsComponent implements OnInit {
       this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
       this.uiLangIsSaving.set(false)
     }
+  }
+
+  /**
+   * The locale the UI will format with after the next load.
+   *
+   * `setLang` has already stored the choice, so this asks the same question the
+   * LOCALE_ID factory will ask at the next bootstrap rather than repeating its
+   * rules - 'auto' and a language the app no longer ships included.
+   */
+  private localeAfterReload(): string {
+    return localeIdFor(chooseStartupLanguage(this.$translate.getBrowserLang(), this.$translate.getBrowserCultureLang()))
   }
 
   private async uiThemeSave(value: string): Promise<void> {
