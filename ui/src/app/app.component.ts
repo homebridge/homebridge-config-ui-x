@@ -3,7 +3,7 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { NavigationError, Router, RouterOutlet } from '@angular/router'
 import { TranslateService } from '@ngx-translate/core'
 
-import { supportedLocales } from '@/app/core/locales'
+import { chooseStartupLanguage, supportedLocales } from '@/app/core/locales'
 import { SettingsService } from '@/app/core/ui/settings.service'
 
 @Component({
@@ -64,20 +64,11 @@ export class AppComponent {
       })
 
     // Prefer the last user-selected language (persisted in localStorage) so
-    // bootstrap renders in the chosen locale before the server settings
-    // arrive; fall back to the browser-detected language.
-    let storedLang: string | undefined
-    try {
-      storedLang = window.localStorage.getItem('uix.lang') || undefined
-    } catch {
-      // ignored
-    }
-    if (storedLang && storedLang !== 'auto' && !languages.includes(storedLang)) {
-      storedLang = undefined
-    }
-    const browserLang = storedLang && storedLang !== 'auto'
-      ? storedLang
-      : languages.find(x => x === this.$translate.getBrowserLang() || x === this.$translate.getBrowserCultureLang())
+    // bootstrap renders in the chosen locale before the server settings arrive;
+    // fall back to the browser-detected language. The same decision decides which
+    // locale dates and numbers are formatted with, so it is made in one place -
+    // see chooseStartupLanguage.
+    const browserLang = chooseStartupLanguage(this.$translate.getBrowserLang(), this.$translate.getBrowserCultureLang())
 
     // Load all translations asynchronously
     void this.loadTranslations(languages, browserLang)
