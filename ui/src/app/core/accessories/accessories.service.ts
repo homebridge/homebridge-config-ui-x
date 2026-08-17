@@ -510,12 +510,6 @@ export class AccessoriesService {
     services.forEach((service) => {
       const existingIndex = this.accessories.services.findIndex(x => x.uniqueId === service.uniqueId)
 
-      // Special case for locks - if there exists just one mechanism and one management service, link them
-      // This allows us to manage the settings for lock management inside the long press modal for the lock mechanism
-      if (service.type === 'LockMechanism') {
-        this.attachLockManagementToMechanism(service)
-      }
-
       if (existingIndex !== -1) {
         // Replace the object instead of mutating it
         this.accessories.services[existingIndex] = service
@@ -850,6 +844,16 @@ export class AccessoriesService {
         this.attachFanToHeaterCooler(service)
       } else if (service.type === 'HumidifierDehumidifier') {
         this.attachFanToHumidifierDehumidifier(service)
+      } else if (service.type === 'LockMechanism') {
+        // Here rather than in parseServices, which is where this used to live.
+        // parseServices returns early on the very first payload, so the link
+        // was never made on load: the long-press modal offered no lock
+        // management settings until the lock next changed state, which for a
+        // door lock can be hours. And on later payloads it searched the array
+        // before the replacement objects were written back, so the mechanism
+        // ended up linked to the previous management object — a stale
+        // reference that was replaced again on the following event.
+        this.attachLockManagementToMechanism(service)
       }
     }
 
