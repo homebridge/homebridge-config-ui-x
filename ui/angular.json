@@ -200,6 +200,16 @@
               "buildTarget": "ui:build:production"
             }
           }
+        },
+        "test": {
+          "builder": "@angular/build:unit-test",
+          "options": {
+            "buildTarget": "ui:build",
+            "tsConfig": "tsconfig.spec.json",
+            "runner": "vitest",
+            "runnerConfig": "vitest-base.config.ts",
+            "setupFiles": ["src/testing/setup.ts"]
+          }
         }
       }
     }

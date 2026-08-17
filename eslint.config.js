@@ -175,8 +175,12 @@ export default antfu(
     },
   }))
   .append({
-    files: ['test/**/*.e2e-spec.ts'],
+    files: ['test/**/*.e2e-spec.ts', 'ui/src/**/*.spec.ts'],
     rules: {
+      // antfu's base config only applies its test rules to `*.spec.ts` (not
+      // `*.e2e-spec.ts`), and this repo titles describe blocks after the class
+      // under test, so switch off the lowercase-title rule where it does apply
+      'test/prefer-lowercase-title': 'off',
       'test/expect-expect': 'error',
       'test/no-commented-out-tests': 'error',
       'test/no-conditional-expect': 'error',

@@ -118,6 +118,24 @@ jobs:
           node dist/bin/hb-service.js view
           exit 1
 
+  # The UI unit tests run in jsdom, so a single platform is enough
+  ui_test:
+    name: Test UI
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: ui/package-lock.json
+      - name: Install UI dependencies
+        run: npm ci
+        working-directory: ui
+      - name: Run UI tests
+        run: npm run test
+        working-directory: ui
+
   lint:
     needs: build_and_test
     uses: homebridge/.github/.github/workflows/eslint.yml@latest
