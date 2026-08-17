@@ -38,6 +38,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(ui): show zero seconds as 0s in the duration pipe instead of nothing
 - fix(settings): recheck the ssl form when a field is edited
 - fix(status): set the chart history length before the first metric fetch
+- fix(config-editor): offer vietnamese in the guided ui language setting
 - fix(accessories): link lock management to its mechanism on the first accessory payload
 - fix(platform-tools): recover the terminal when reconnecting after the socket has dropped
 - fix(status): actually clear the node version cache when the update policy changes

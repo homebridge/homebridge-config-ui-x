@@ -967,6 +967,7 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
                             { title: 'Thai (th)', enum: ['th'] },
                             { title: 'Turkish (tr)', enum: ['tr'] },
                             { title: 'Ukrainian (uk)', enum: ['uk'] },
+                            { title: 'Vietnamese (vi)', enum: ['vi'] },
                           ],
                         },
                         wallpaper: {
