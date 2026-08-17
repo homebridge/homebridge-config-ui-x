@@ -8,6 +8,7 @@ import { ToastrService } from 'ngx-toastr'
 import { firstValueFrom, interval } from 'rxjs'
 
 import { AuthService } from '@/app/core/auth/auth.service'
+import { setStoredToken } from '@/app/core/auth/token-store'
 import { ApiService } from '@/app/core/communication/api.service'
 import { IoNamespace, WsService } from '@/app/core/communication/ws.service'
 import { RE_ANSI_FULL, RE_NEWLINE, RE_SPINNER } from '@/app/core/regex.constants'
@@ -139,9 +140,17 @@ export class SetupWizardComponent implements OnInit {
     this.step.set('restoring')
     this.progress.set(60)
     try {
-      // get and set a temporary access token
+      // Get and set a temporary access token.
+      //
+      // ⚠️ `setStoredToken` is what makes the rest of this flow work. Both
+      // `POST /backup/restore` and `PUT /backup/restart` are behind the auth and
+      // admin guards, and the Authorization header comes from the in-memory token
+      // store via `tokenGetter`. This used to write the token to localStorage,
+      // which is where the JWT interceptor read it from before the token moved
+      // in-memory for security — since that move, nothing read it, so every
+      // request in the restore went out bare and the upload 401'd.
       const authorization = await this.$api.get('/setup-wizard/get-setup-wizard-token')
-      window.localStorage.setItem(environment.jwt.tokenKey, authorization.access_token)
+      setStoredToken(authorization.access_token)
       this.$auth.token = authorization.access_token
       this.progress.set(65)
 
@@ -204,8 +213,9 @@ export class SetupWizardComponent implements OnInit {
       this.step.set('restarting')
       this.progress.set(85)
 
-      // remove tokens
-      window.localStorage.removeItem(environment.jwt.tokenKey)
+      // Remove tokens: this one is an admin token on a box that has just had a
+      // different user database restored onto it
+      setStoredToken(null)
       this.$auth.token = null
 
       // show final message in the terminal box
