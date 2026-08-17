@@ -1433,10 +1433,6 @@ export class SettingsComponent implements OnInit {
         this.$api.put('/platform-tools/hb-service/set-full-service-restart-flag', {})
           .catch(error => console.error(error))
           .finally(() => this.$settings.showRestartToast())
-          .catch((error) => {
-            console.error(error)
-            this.$settings.showRestartToast()
-          })
       }, 1000)
     } catch (error: any) {
       console.error(error)
@@ -1460,10 +1456,6 @@ export class SettingsComponent implements OnInit {
         this.$api.put('/platform-tools/hb-service/set-full-service-restart-flag', {})
           .catch(error => console.error(error))
           .finally(() => this.$settings.showRestartToast())
-          .catch((error) => {
-            console.error(error)
-            this.$settings.showRestartToast()
-          })
       }, 1000)
     } catch (error: any) {
       console.error(error)
@@ -1488,10 +1480,6 @@ export class SettingsComponent implements OnInit {
         this.$api.put('/platform-tools/hb-service/set-full-service-restart-flag', {})
           .catch(error => console.error(error))
           .finally(() => this.$settings.showRestartToast())
-          .catch((error) => {
-            console.error(error)
-            this.$settings.showRestartToast()
-          })
       }, 1000)
     } catch (error: any) {
       console.error(error)
@@ -1515,10 +1503,6 @@ export class SettingsComponent implements OnInit {
         this.$api.put('/platform-tools/hb-service/set-full-service-restart-flag', {})
           .catch(error => console.error(error))
           .finally(() => this.$settings.showRestartToast())
-          .catch((error) => {
-            console.error(error)
-            this.$settings.showRestartToast()
-          })
       }, 1000)
     } catch (error: any) {
       console.error(error)
@@ -1542,10 +1526,6 @@ export class SettingsComponent implements OnInit {
         this.$api.put('/platform-tools/hb-service/set-full-service-restart-flag', {})
           .catch(error => console.error(error))
           .finally(() => this.$settings.showRestartToast())
-          .catch((error) => {
-            console.error(error)
-            this.$settings.showRestartToast()
-          })
       }, 1000)
     } catch (error: any) {
       console.error(error)
@@ -1859,10 +1839,6 @@ export class SettingsComponent implements OnInit {
         this.$api.put('/platform-tools/hb-service/set-full-service-restart-flag', {})
           .catch(error => console.error(error))
           .finally(() => this.$settings.showRestartToast())
-          .catch((error) => {
-            console.error(error)
-            this.$settings.showRestartToast()
-          })
       }, 1000)
     } catch (error: any) {
       console.error(error)
@@ -1881,10 +1857,6 @@ export class SettingsComponent implements OnInit {
         this.$api.put('/platform-tools/hb-service/set-full-service-restart-flag', {})
           .catch(error => console.error(error))
           .finally(() => this.$settings.showRestartToast())
-          .catch((error) => {
-            console.error(error)
-            this.$settings.showRestartToast()
-          })
       }, 1000)
     } catch (error: any) {
       console.error(error)
@@ -1919,10 +1891,6 @@ export class SettingsComponent implements OnInit {
         this.$api.put('/platform-tools/hb-service/set-full-service-restart-flag', {})
           .catch(error => console.error(error))
           .finally(() => this.$settings.showRestartToast())
-          .catch((error) => {
-            console.error(error)
-            this.$settings.showRestartToast()
-          })
       }, 1000)
     } catch (error: any) {
       console.error(error)
@@ -1941,10 +1909,6 @@ export class SettingsComponent implements OnInit {
         this.$api.put('/platform-tools/hb-service/set-full-service-restart-flag', {})
           .catch(error => console.error(error))
           .finally(() => this.$settings.showRestartToast())
-          .catch((error) => {
-            console.error(error)
-            this.$settings.showRestartToast()
-          })
       }, 1000)
     } catch (error: any) {
       console.error(error)
@@ -1963,10 +1927,6 @@ export class SettingsComponent implements OnInit {
         this.$api.put('/platform-tools/hb-service/set-full-service-restart-flag', {})
           .catch(error => console.error(error))
           .finally(() => this.$settings.showRestartToast())
-          .catch((error) => {
-            console.error(error)
-            this.$settings.showRestartToast()
-          })
       }, 1000)
     } catch (error: any) {
       console.error(error)
@@ -2010,10 +1970,6 @@ export class SettingsComponent implements OnInit {
         this.$api.put('/platform-tools/hb-service/set-full-service-restart-flag', {})
           .catch(error => console.error(error))
           .finally(() => this.$settings.showRestartToast())
-          .catch((error) => {
-            console.error(error)
-            this.$settings.showRestartToast()
-          })
       }, 1000)
     } catch (error: any) {
       console.error(error)
