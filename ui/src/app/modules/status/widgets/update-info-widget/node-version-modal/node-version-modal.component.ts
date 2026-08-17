@@ -3,6 +3,7 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
+import { firstValueFrom } from 'rxjs'
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators'
 import { satisfies } from 'semver'
 
@@ -80,9 +81,16 @@ export class NodeVersionModalComponent implements OnInit {
       // Update the local settings cache
       this.$settings.env.nodeUpdatePolicy = value
 
-      // Clear the backend cache so the new policy is applied
+      // Clear the backend cache so the new policy is applied.
+      //
+      // ⚠️ `firstValueFrom` is not optional here. `IoNamespace.request` returns
+      // a cold Observable, and awaiting one does nothing at all: `await` on a
+      // non-thenable resolves immediately without subscribing, so the request
+      // was never sent. The policy saved, the server kept serving its cached
+      // answer, and the widget went on offering the version the OLD policy
+      // chose until something else cleared the cache.
       if (this.statusIo) {
-        await this.statusIo.request('clear-nodejs-version-cache')
+        await firstValueFrom(this.statusIo.request('clear-nodejs-version-cache'))
       }
 
       // Call the onUpdate callback if provided to refresh the widget
