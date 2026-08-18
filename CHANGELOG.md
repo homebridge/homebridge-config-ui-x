@@ -62,6 +62,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(plugins): cancel the raw json editor deferred validation when the modal closes
 - fix(auth): reject revoked refresh sessions (#2980) (@NorthernMan54)
 - fix(accessories): keep the default room checkbox disabled state and its submitted value in step
+- fix(auth): log a refused session refresh, and drop the routine ones to debug
 
 ### Homebridge Dependencies
 

@@ -21,6 +21,7 @@ import { WsAdminGuard } from '../../src/core/auth/guards/ws-admin-guard.js'
 import { WsLogGuard } from '../../src/core/auth/guards/ws-log.guard.js'
 import { WsGuard } from '../../src/core/auth/guards/ws.guard.js'
 import { ConfigService } from '../../src/core/config/config.service.js'
+import { Logger } from '../../src/core/logger/logger.service.js'
 import { PluginsSettingsUiTicketService } from '../../src/modules/custom-plugins/plugins-settings-ui/plugins-settings-ui-ticket.service.js'
 import { PluginsService } from '../../src/modules/plugins/plugins.service.js'
 
@@ -415,6 +416,46 @@ describe('AuthController (e2e)', () => {
 
       expect(restored.statusCode).toBe(401)
       expect(restored.json()).not.toHaveProperty('access_token')
+    })
+
+    // #2978: the routine refresh lines are debug now, because they follow from
+    // the user having a browser open rather than any decision. That trade only
+    // holds if a REFUSED refresh is visible - before this, an account deleted,
+    // demoted or with revoked credentials was turned away in silence, while the
+    // successful refreshes announced themselves on every page load.
+    it('warns when it refuses a refresh, and stays quiet when it allows one', async () => {
+      // the app's own Logger, not Nest's - LoggerModule is @Global, so it
+      // resolves from anywhere with strict off
+      const logger = app.get(Logger, { strict: false })
+      const warn = vi.spyOn(logger, 'warn').mockImplementation(() => {})
+      const log = vi.spyOn(logger, 'log').mockImplementation(() => {})
+
+      try {
+        const stale = await app.inject({
+          method: 'POST',
+          path: '/auth/session',
+          headers: { cookie: signUserCookie({ sessionStartedAt: Math.floor(Date.now() / 1000) - (31 * DAY) }) },
+        })
+        expect(stale.statusCode).toBe(401)
+        expect(warn).toHaveBeenCalledWith(expect.stringContaining('Refused to refresh the session'))
+
+        warn.mockClear()
+        log.mockClear()
+
+        const ok = await app.inject({
+          method: 'POST',
+          path: '/auth/session',
+          headers: { cookie: signUserCookie({}) },
+        })
+        expect(ok.statusCode).toBe(201)
+        // the successful path says nothing at info or above - that is the whole point
+        expect(warn).not.toHaveBeenCalled()
+        expect(log).not.toHaveBeenCalledWith(expect.stringContaining('refresh token'))
+        expect(log).not.toHaveBeenCalledWith(expect.stringContaining('Restoring session'))
+      } finally {
+        warn.mockRestore()
+        log.mockRestore()
+      }
     })
 
     it('carries the start time forward unchanged on a refresh', async () => {
