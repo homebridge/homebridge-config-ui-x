@@ -21,7 +21,7 @@ import { PluginsService } from '../../modules/plugins/plugins.service.js'
 import { API_PREFIX } from '../api.constants.js'
 import { ConfigService } from '../config/config.service.js'
 import { Logger } from '../logger/logger.service.js'
-import { AuthDto, RefreshTokenDto } from './auth.dto.js'
+import { AuthDto, LogoutDto, RefreshTokenDto } from './auth.dto.js'
 import { AuthService } from './auth.service.js'
 import { CustomGuard } from './guards/custom.guard.js'
 
@@ -143,7 +143,11 @@ export class AuthController {
   @ApiBearerAuth()
   @UseGuards(CustomGuard)
   @Post('/logout')
-  async logout(@Request() req: FastifyRequest & { user?: { username: string, service?: string } }, @Res({ passthrough: true }) res: FastifyReply) {
+  async logout(
+    @Request() req: FastifyRequest & { user?: { username: string, service?: string } },
+    @Body() body: LogoutDto = {},
+    @Res({ passthrough: true }) res: FastifyReply,
+  ) {
     // Only a currently valid user token may revoke all of that user's tokens.
     // The fallback below accepts expired tokens solely to clean up plugin UI
     // tickets; allowing one to increment sessionVersion would give any token
@@ -163,12 +167,20 @@ export class AuthController {
     // behind it - so a failed auth.json write (a read-only card, a corrupted
     // file) returned a 500 with no Set-Cookie at all, and the user who clicked
     // "log out" was still signed in with no indication anything failed (#2981).
+    // A local logout is one the user never asked for - the inactivity timer
+    // fires while the token is still valid. It clears THIS browser's cookies
+    // and nothing else: no sessionVersion bump and no ticket revocation, since
+    // either would end the user's sessions on every other device because one
+    // forgotten tab timed out.
+    const localOnly = body?.scope === 'local'
     const pluginNames = username
-      ? this.pluginUiTicketService.revokeUser(username)
+      ? (localOnly
+          ? this.pluginUiTicketService.userPluginNames(username)
+          : this.pluginUiTicketService.revokeUser(username))
       : []
     res.header('Set-Cookie', this.buildClearedCookies(req.protocol === 'https', pluginNames))
 
-    if (account) {
+    if (account && !localOnly) {
       try {
         await this.authService.revokeUserSessions(account)
       } catch (e) {

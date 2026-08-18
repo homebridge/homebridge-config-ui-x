@@ -317,6 +317,29 @@ describe('AuthService', () => {
       expect(service.token).toBeNull()
     })
 
+    it('asks the server for a local sign-out, not an account-wide one', async () => {
+      // Since the server revokes every session on a normal logout, an idle tab
+      // here would otherwise end the user's active sessions on every other
+      // device. Nobody chose this logout, so it reaches only this browser.
+      vi.useFakeTimers()
+      api.respond('post', '/auth/session', { access_token: makeJwt() })
+      const service = await create({ formAuth: true, sessionTimeout: 60 })
+
+      await vi.advanceTimersByTimeAsync(60_000)
+
+      expect(service.token).toBeNull()
+      expect(api.lastCall('post', '/auth/logout')?.body).toMatchObject({ scope: 'local' })
+    })
+
+    it('keeps a logout the user chose account-wide', async () => {
+      api.respond('post', '/auth/session', { access_token: makeJwt() })
+      const service = await create({ formAuth: true })
+
+      service.logout()
+
+      expect(api.lastCall('post', '/auth/logout')?.body ?? {}).not.toHaveProperty('scope')
+    })
+
     it('quietly signs back in when the ui has no login', async () => {
       vi.useFakeTimers()
       api.respond('post', '/auth/session', { access_token: makeJwt() })
