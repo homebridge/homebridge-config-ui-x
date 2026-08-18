@@ -55,6 +55,9 @@ describe('UpdateAllController (e2e)', () => {
 
   const mockHomebridgeIpcService = {
     restartHomebridge: vi.fn(),
+    // AccessoriesService subscribes to serverStatusUpdate in its constructor
+    on: vi.fn(),
+    removeListener: vi.fn(),
   }
 
   const mockChildBridgesService = {

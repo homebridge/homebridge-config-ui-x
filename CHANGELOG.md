@@ -74,12 +74,13 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(ui): keep retrying the first settings load instead of showing a blank page
 - fix(accessories): write onOff as well when a matter light is turned on through a level write
 - fix(accessories): re-arm matter monitoring after homebridge restarts (homebridge/homebridge#3993)
+- chore(deps): dependency updates, update nest to v12
 
 ### Homebridge Dependencies
 
-- `@homebridge/hap-client` @ `v5.2.0`
+- `@homebridge/hap-client` @ `v5.3.0`
 - `@homebridge/node-pty-prebuilt-multiarch` @ `v0.14.1`
-- `@homebridge/plugin-ui-utils` @ `v2.2.5`
+- `@homebridge/plugin-ui-utils` @ `v2.2.6`
 
 ## v5.28.0 (2026-08-16)
 
