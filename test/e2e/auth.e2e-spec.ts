@@ -503,6 +503,51 @@ describe('AuthController (e2e)', () => {
     })
   })
 
+  // #2981: the revocation is an auth.json write, and it used to run before the
+  // Set-Cookie line - so a read-only card or a corrupted file turned logout
+  // into a 500 with no Set-Cookie at all, and the user who clicked "log out"
+  // was still signed in with nothing telling them otherwise.
+  it('still clears the cookies when the revocation write fails', async () => {
+    const login = await app.inject({
+      method: 'POST',
+      path: '/auth/login',
+      payload: { username: 'admin', password: 'admin' },
+    })
+    const header = login.headers['set-cookie']
+    const setCookies = (Array.isArray(header) ? header : [header]) as string[]
+    const cookieValue = setCookies.find(c => c.startsWith('hb-refresh='))!.split(';')[0]
+
+    const revoke = vi.spyOn(authService, 'revokeUserSessions')
+      .mockRejectedValueOnce(new Error('EACCES: read-only file system'))
+    try {
+      const loggedOut = await app.inject({
+        method: 'POST',
+        path: '/auth/logout',
+        headers: { authorization: `Bearer ${login.json().access_token}` },
+      })
+
+      // The browser-side half of logout must survive the disk failure: the
+      // response carries the cleared cookie, and does not surface as an error.
+      expect(loggedOut.statusCode).toBe(201)
+      const clearedHeader = loggedOut.headers['set-cookie']
+      const cleared = (Array.isArray(clearedHeader) ? clearedHeader : [clearedHeader]) as string[]
+      expect(cleared.some(c => c.startsWith('hb-refresh=') && c.includes('Max-Age=0'))).toBe(true)
+
+      // Honest about the limit: with the write lost, the server-side session
+      // could not be revoked, so a captured copy of the cookie still restores.
+      // That is exactly why the error log above tells the user to log out again
+      // once the storage is fixed.
+      const replayed = await app.inject({
+        method: 'POST',
+        path: '/auth/session',
+        headers: { cookie: cookieValue },
+      })
+      expect(replayed.statusCode).toBe(201)
+    } finally {
+      revoke.mockRestore()
+    }
+  })
+
   it('clears session cookies when logout receives an invalid bearer token', async () => {
     const loggedOut = await app.inject({
       method: 'POST',
