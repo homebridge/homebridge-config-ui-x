@@ -156,14 +156,32 @@ export class AuthController {
     // are in the middle of using. `refreshToken` refuses them for the same
     // reason.
     const account = req.user?.service === undefined ? req.user?.username : undefined
-    if (account) {
-      await this.authService.revokeUserSessions(account)
-    }
     const username = account ?? this.readLogoutUsername(req.headers.authorization)
+
+    // The cookies clear and the in-memory tickets go BEFORE the revocation
+    // write, and unconditionally. Neither needs the disk, and both used to sit
+    // behind it - so a failed auth.json write (a read-only card, a corrupted
+    // file) returned a 500 with no Set-Cookie at all, and the user who clicked
+    // "log out" was still signed in with no indication anything failed (#2981).
     const pluginNames = username
       ? this.pluginUiTicketService.revokeUser(username)
       : []
     res.header('Set-Cookie', this.buildClearedCookies(req.protocol === 'https', pluginNames))
+
+    if (account) {
+      try {
+        await this.authService.revokeUserSessions(account)
+      } catch (e) {
+        // This browser is signed out either way - the cleared cookies are
+        // already on the response. What failed is the server-side revocation,
+        // and that genuinely cannot happen until the storage is writable, so
+        // say so rather than pretending the logout did everything it normally
+        // does.
+        this.logger.error(`Failed to revoke the sessions for ${account} during logout: ${e.message}. `
+          + 'This browser has been signed out, but a session cookie captured elsewhere stays usable '
+          + 'until the storage problem is fixed - log out again once it is.')
+      }
+    }
     return { status: 'OK' }
   }
 
