@@ -548,6 +548,57 @@ describe('AuthController (e2e)', () => {
     }
   })
 
+  // The inactivity timer logs out with a VALID token, and a normal logout now
+  // revokes the account everywhere - so an idle tab forgotten on one machine
+  // would end the user's active sessions on every other device. A local-scope
+  // logout clears this browser's cookies and touches nothing else.
+  it('keeps other sessions alive when the logout is scoped to this browser', async () => {
+    const login = await app.inject({
+      method: 'POST',
+      path: '/auth/login',
+      payload: { username: 'admin', password: 'admin' },
+    })
+    const header = login.headers['set-cookie']
+    const setCookies = (Array.isArray(header) ? header : [header]) as string[]
+    const cookieValue = setCookies.find(c => c.startsWith('hb-refresh='))!.split(';')[0]
+
+    const local = await app.inject({
+      method: 'POST',
+      path: '/auth/logout',
+      payload: { scope: 'local' },
+      headers: { authorization: `Bearer ${login.json().access_token}` },
+    })
+
+    // this browser is signed out...
+    expect(local.statusCode).toBe(201)
+    const clearedHeader = local.headers['set-cookie']
+    const cleared = (Array.isArray(clearedHeader) ? clearedHeader : [clearedHeader]) as string[]
+    expect(cleared.some(c => c.startsWith('hb-refresh=') && c.includes('Max-Age=0'))).toBe(true)
+
+    // ...and the other device's copy of the session still works, because
+    // nobody asked for an account-wide revocation
+    const otherDevice = await app.inject({
+      method: 'POST',
+      path: '/auth/session',
+      headers: { cookie: cookieValue },
+    })
+    expect(otherDevice.statusCode).toBe(201)
+
+    // a logout the user chose is the account-wide one
+    const full = await app.inject({
+      method: 'POST',
+      path: '/auth/logout',
+      headers: { authorization: `Bearer ${otherDevice.json().access_token}` },
+    })
+    expect(full.statusCode).toBe(201)
+    const replayed = await app.inject({
+      method: 'POST',
+      path: '/auth/session',
+      headers: { cookie: cookieValue },
+    })
+    expect(replayed.statusCode).toBe(401)
+  })
+
   it('clears session cookies when logout receives an invalid bearer token', async () => {
     const loggedOut = await app.inject({
       method: 'POST',
