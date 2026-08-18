@@ -21,6 +21,7 @@ import { WsAdminGuard } from '../../src/core/auth/guards/ws-admin-guard.js'
 import { WsLogGuard } from '../../src/core/auth/guards/ws-log.guard.js'
 import { WsGuard } from '../../src/core/auth/guards/ws.guard.js'
 import { ConfigService } from '../../src/core/config/config.service.js'
+import { PluginsSettingsUiTicketService } from '../../src/modules/custom-plugins/plugins-settings-ui/plugins-settings-ui-ticket.service.js'
 import { PluginsService } from '../../src/modules/plugins/plugins.service.js'
 
 import '../../src/global-defaults.js'
@@ -789,6 +790,116 @@ describe('AuthController (e2e)', () => {
 
       expect(res.statusCode).toBe(401)
       expect(res.json()).not.toHaveProperty('access_token')
+    })
+
+    /**
+     * A service token's `username` is whatever the minting program typed - no
+     * user record is ever looked up for it, by design, because the token stands
+     * for a program rather than a person. So nothing on this endpoint may treat
+     * that name as an account, or any plugin able to read `.uix-secrets` could
+     * name an administrator and act on their behalf.
+     */
+    it('does not revoke a person\'s sessions when a service token names them', async () => {
+      const login = await app.inject({
+        method: 'POST',
+        path: '/auth/login',
+        payload: { username: 'admin', password: 'admin' },
+      })
+      const header = login.headers['set-cookie']
+      const setCookies = (Array.isArray(header) ? header : [header]) as string[]
+      const cookieValue = setCookies.find(c => c.startsWith('hb-refresh='))!.split(';')[0]
+
+      const loggedOut = await app.inject({
+        method: 'POST',
+        path: '/auth/logout',
+        headers: { authorization: `Bearer ${signServiceToken({ username: 'admin', name: 'Administrator' })}` },
+      })
+      expect(loggedOut.statusCode).toBe(201)
+
+      // The administrator was never asked to log out, so their session stands.
+      // Without the guard this cookie is dead, and every browser they use is
+      // signed out by a plugin they never interacted with.
+      const restored = await app.inject({
+        method: 'POST',
+        path: '/auth/session',
+        headers: { cookie: cookieValue },
+      })
+      expect(restored.statusCode).toBe(201)
+      expect(restored.json()).toHaveProperty('access_token')
+    })
+
+    /**
+     * Logout deliberately reads expired tokens as well, so that a plugin ui
+     * ticket still gets cleaned up after the token behind it has run out. An
+     * expired token cannot reach session revocation, so the only thing it can
+     * act on is tickets - and it must not be able to act on someone else's.
+     *
+     * The observable is the response's cookies: every ticket that logout
+     * revokes adds an `hb-plugin-ui=` cookie cleared for that plugin's path.
+     */
+    it('does not clear a person\'s plugin ui tickets when an expired service token names them', async () => {
+      const tickets = app.get(PluginsSettingsUiTicketService)
+      tickets.issueAssetSession('homebridge-mock-plugin', 'admin', 'http://localhost')
+
+      const loggedOut = await app.inject({
+        method: 'POST',
+        path: '/auth/logout',
+        headers: { authorization: `Bearer ${signServiceToken({ username: 'admin' }, -10)}` },
+      })
+      expect(loggedOut.statusCode).toBe(201)
+
+      const header = loggedOut.headers['set-cookie']
+      const cleared = (Array.isArray(header) ? header : [header]) as string[]
+      expect(cleared.some(c => c.startsWith('hb-plugin-ui='))).toBe(false)
+    })
+
+    it('still clears them for a person whose own token has expired', async () => {
+      // The guard above must not cost the fallback the job it exists to do.
+      const secretKey = configService.secrets.secretKey
+      const expiredUserToken = jwt.sign({
+        username: 'admin',
+        name: 'Administrator',
+        admin: true,
+        instanceId: createHash('sha256').update(secretKey).digest('hex'),
+      }, secretKey, { expiresIn: -10 } as any)
+
+      const tickets = app.get(PluginsSettingsUiTicketService)
+      tickets.issueAssetSession('homebridge-mock-plugin', 'admin', 'http://localhost')
+
+      const loggedOut = await app.inject({
+        method: 'POST',
+        path: '/auth/logout',
+        headers: { authorization: `Bearer ${expiredUserToken}` },
+      })
+
+      const header = loggedOut.headers['set-cookie']
+      const cleared = (Array.isArray(header) ? header : [header]) as string[]
+      expect(cleared.some(c => c.startsWith('hb-plugin-ui='))).toBe(true)
+    })
+
+    it('still lets a person log themselves out', async () => {
+      // The guard above must not cost a real user their own logout.
+      const login = await app.inject({
+        method: 'POST',
+        path: '/auth/login',
+        payload: { username: 'admin', password: 'admin' },
+      })
+      const header = login.headers['set-cookie']
+      const setCookies = (Array.isArray(header) ? header : [header]) as string[]
+      const cookieValue = setCookies.find(c => c.startsWith('hb-refresh='))!.split(';')[0]
+
+      await app.inject({
+        method: 'POST',
+        path: '/auth/logout',
+        headers: { authorization: `Bearer ${login.json().access_token}` },
+      })
+
+      const replayed = await app.inject({
+        method: 'POST',
+        path: '/auth/session',
+        headers: { cookie: cookieValue },
+      })
+      expect(replayed.statusCode).toBe(401)
     })
 
     it('rejects one whose service claim names nobody', async () => {

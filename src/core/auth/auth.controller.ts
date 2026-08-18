@@ -143,15 +143,23 @@ export class AuthController {
   @ApiBearerAuth()
   @UseGuards(CustomGuard)
   @Post('/logout')
-  async logout(@Request() req: FastifyRequest & { user?: { username: string } }, @Res({ passthrough: true }) res: FastifyReply) {
+  async logout(@Request() req: FastifyRequest & { user?: { username: string, service?: string } }, @Res({ passthrough: true }) res: FastifyReply) {
     // Only a currently valid user token may revoke all of that user's tokens.
     // The fallback below accepts expired tokens solely to clean up plugin UI
     // tickets; allowing one to increment sessionVersion would give any token
     // captured in the past a permanent account-logout primitive.
-    if (req.user?.username) {
-      await this.authService.revokeUserSessions(req.user.username)
+    //
+    // Neither path may act on a service token. Those are minted by programs on
+    // this machine and nothing constrains the `username` they put in the
+    // payload, so one naming an administrator would let any plugin sign that
+    // person out of every browser they use, or drop the plugin ui tickets they
+    // are in the middle of using. `refreshToken` refuses them for the same
+    // reason.
+    const account = req.user?.service === undefined ? req.user?.username : undefined
+    if (account) {
+      await this.authService.revokeUserSessions(account)
     }
-    const username = req.user?.username ?? this.readLogoutUsername(req.headers.authorization)
+    const username = account ?? this.readLogoutUsername(req.headers.authorization)
     const pluginNames = username
       ? this.pluginUiTicketService.revokeUser(username)
       : []
@@ -201,6 +209,11 @@ export class AuthController {
     }
     try {
       const payload = this.jwtService.verify(token, { ignoreExpiration: true })
+      // Expiry is the only check relaxed here. A service token is still not a
+      // person, so it cannot name one to have their tickets cleared.
+      if (payload?.service !== undefined) {
+        return undefined
+      }
       return typeof payload?.username === 'string' ? payload.username : undefined
     } catch {
       return undefined
