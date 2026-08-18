@@ -59,6 +59,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(settings): report a failed setting write instead of carrying on as if it saved
 - chore(settings): drop the unreachable catch after the restart flag is set
 - fix(plugins): cancel the raw json editor deferred validation when the modal closes
+- fix(auth): reject revoked refresh sessions (#2980) (@NorthernMan54)
 
 ### Homebridge Dependencies
 
