@@ -31,8 +31,12 @@ export class AddRoomComponent implements OnInit {
     this.roomForm.controls.roomName.updateValueAndValidity()
 
     // If there are no existing rooms (edge case), this must be the default room
-    if (this.existingRooms.length === 0) {
+    if (this.noExistingRooms) {
       this.roomForm.patchValue({ isDefault: true })
+      // Disabled on the control rather than with [disabled] in the template: a
+      // reactive control disabled through the DOM attribute stays enabled in the
+      // form model, so the two disagree and Angular warns about it
+      this.roomForm.controls.isDefault.disable()
     }
   }
 
@@ -66,9 +70,13 @@ export class AddRoomComponent implements OnInit {
       return
     }
 
+    // getRawValue() to include disabled controls - isDefault is disabled when this
+    // is the first room, and `value` would drop it and submit the room as not default
+    const formValue = this.roomForm.getRawValue()
+
     this.$activeModal.close({
-      name: this.roomForm.value.roomName?.trim() || '',
-      isDefault: this.roomForm.value.isDefault || false,
+      name: formValue.roomName?.trim() || '',
+      isDefault: formValue.isDefault || false,
     })
   }
 }
