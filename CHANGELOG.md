@@ -69,10 +69,11 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(plugins): keep the stable update when the requested dist-tag is missing (#2983) (@tbaur)
 - test(ui): cover the update all modals, climate tile colours and other gaps
 - test(ui): inject the terminal, file saver and socket so the specs stop relying on module mocks
+- chore(deps): dependency updates
 
 ### Homebridge Dependencies
 
-- `@homebridge/hap-client` @ `v5.2.0`
+- `@homebridge/hap-client` @ `v5.2.2-beta.1`
 - `@homebridge/node-pty-prebuilt-multiarch` @ `v0.14.1`
 - `@homebridge/plugin-ui-utils` @ `v2.2.5`
 
