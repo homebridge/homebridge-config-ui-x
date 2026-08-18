@@ -60,6 +60,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - chore(settings): drop the unreachable catch after the restart flag is set
 - fix(plugins): cancel the raw json editor deferred validation when the modal closes
 - fix(auth): reject revoked refresh sessions (#2980) (@NorthernMan54)
+- fix(accessories): keep the default room checkbox disabled state and its submitted value in step
 
 ### Homebridge Dependencies
 

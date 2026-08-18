@@ -188,9 +188,33 @@ describe('the room modals', () => {
     it('makes the very first room the default', async () => {
       const modal = await openAdd([])
 
-      // Something has to be the default, and there is nothing else to be it
-      expect(modal.roomForm.value.isDefault).toBe(true)
+      // Something has to be the default, and there is nothing else to be it.
+      // getRawValue() rather than value: the control is disabled, and `value`
+      // omits disabled controls entirely.
+      expect(modal.roomForm.getRawValue().isDefault).toBe(true)
       expect(modal.noExistingRooms).toBe(true)
+    })
+
+    it('leaves the default checkbox on the first room ticked but untouchable', async () => {
+      // Disabled on the CONTROL, not with [disabled] in the template. A reactive
+      // control disabled through the DOM attribute stays enabled in the form model,
+      // which is what Angular warns about - and it made the two disagree.
+      const modal = await openAdd([])
+
+      expect(modal.roomForm.controls.isDefault.disabled).toBe(true)
+    })
+
+    it('still submits the very first room as the default', async () => {
+      // ⚠️ The reason closeModal() has to read getRawValue(). `value` drops
+      // disabled controls, so reading it here submitted the first room with
+      // isDefault: false - the room the user cannot untick would not have been
+      // the default at all.
+      const modal = await openAdd([])
+      modal.roomForm.patchValue({ roomName: 'Lounge' })
+
+      modal.closeModal()
+
+      expect(activeModal.close).toHaveBeenCalledWith({ name: 'Lounge', isDefault: true })
     })
 
     it('does not force the default when rooms already exist', async () => {
