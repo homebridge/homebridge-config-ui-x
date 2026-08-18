@@ -612,6 +612,15 @@ describe('PluginsSettingsUiController (e2e)', () => {
           && value.includes('Path=/api/plugins/settings-ui/homebridge-mock-plugin/')
           && value.includes('Max-Age=0'))).toBe(true)
         expect(denied.statusCode).toBe(401)
+
+        // Logout now revokes every token for the user. Replace the shared
+        // bearer used by the remaining tests with a newly authenticated one.
+        const relogin = await app.inject({
+          method: 'POST',
+          path: `${API_PREFIX}/auth/login`,
+          payload: { username: 'admin', password: 'admin' },
+        })
+        accessToken = relogin.json().access_token
       })
 
       it('revokes the user asset session when logout receives an expired signed token', async () => {
