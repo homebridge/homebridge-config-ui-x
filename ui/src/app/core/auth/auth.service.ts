@@ -54,7 +54,15 @@ export class AuthService {
     }
   }
 
-  public logout() {
+  /**
+   * @param options - how far the logout reaches
+   * @param options.scope - `'local'` signs out this browser only. The inactivity
+   * timer uses it because it fires while the token is still valid, and a full
+   * logout revokes the account's sessions everywhere - so without it, one idle
+   * tab forgotten on another machine ends the user's active session here.
+   * A logout the user actually asked for stays account-wide.
+   */
+  public logout(options?: { scope?: 'local' }) {
     clearTimeout(this.logoutTimer)
     // Clear the HttpOnly cookies server-side before reloading. Without this the
     // browser would still hold a valid hb-refresh cookie and the reload would
@@ -62,7 +70,7 @@ export class AuthService {
     // Start the request while the bearer token is still available to the HTTP
     // interceptor, then clear local authentication immediately. The server
     // cleanup is best-effort and must not leave the UI signed in if it stalls.
-    const logoutRequest = this.$api.post('/auth/logout', {}, { withCredentials: true })
+    const logoutRequest = this.$api.post('/auth/logout', options?.scope ? { scope: options.scope } : {}, { withCredentials: true })
     this.user = {} as UserInterface
     this.token = null
     setStoredToken(null)
@@ -195,7 +203,9 @@ export class AuthService {
             console.warn('noauth re-login failed:', e)
           }
         } else {
-          this.logout()
+          // Nobody chose this logout - end this browser's session, not the
+          // account's sessions on every other device
+          this.logout({ scope: 'local' })
         }
       }, inactivityTimeout)
     }

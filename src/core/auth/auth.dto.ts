@@ -29,6 +29,25 @@ export const REFRESH_TOKEN_REASONS = [
 
 export type RefreshTokenReason = (typeof REFRESH_TOKEN_REASONS)[number]
 
+/**
+ * How far a logout reaches. `everywhere` (the default) revokes every session
+ * for the account; `local` signs out this browser only, and exists for logouts
+ * the USER never asked for - the inactivity timer fires with a valid token, so
+ * without this an idle tab left on one machine would end the user's active
+ * sessions on every other device.
+ */
+export const LOGOUT_SCOPES = ['local', 'everywhere'] as const
+
+export type LogoutScope = (typeof LOGOUT_SCOPES)[number]
+
+export class LogoutDto {
+  @IsOptional()
+  @IsString()
+  @IsIn(LOGOUT_SCOPES)
+  @ApiProperty({ required: false, enum: LOGOUT_SCOPES })
+  readonly scope?: LogoutScope
+}
+
 export class RefreshTokenDto {
   @IsOptional()
   @IsString()

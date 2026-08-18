@@ -103,6 +103,25 @@ export class PluginsSettingsUiTicketService {
     }
   }
 
+  /**
+   * The plugins this user currently holds asset sessions for, revoking
+   * nothing. A browser-local logout needs the names to clear its own
+   * `hb-plugin-ui` cookies, while leaving the server-side sessions alone
+   * for the user's other devices.
+   */
+  userPluginNames(username: string): string[] {
+    const pluginNames = new Set<string>()
+
+    for (const key of this.assetSessions.keys()) {
+      const session = this.assetSessions.get<SettingsUiAssetSession>(key)
+      if (session?.username === username) {
+        pluginNames.add(session.pluginName)
+      }
+    }
+
+    return [...pluginNames]
+  }
+
   revokeUser(username: string): string[] {
     const pluginNames = new Set<string>()
 
