@@ -276,32 +276,32 @@ export class AuthService {
     // Service tokens are deliberately short-lived credentials minted by local
     // programs. They must not be exchangeable for a normal user session.
     if (user?.service !== undefined) {
-      throw new UnauthorizedException('Service tokens cannot be refreshed')
+      this.rejectRefresh(user.username ?? 'a service token', 'Service tokens cannot be refreshed')
     }
 
     // Validate that the user still exists and has the same permissions
     const currentUser = await this.findByUsername(user.username)
     if (!currentUser) {
-      throw new UnauthorizedException('User no longer exists')
+      this.rejectRefresh(user.username, 'User no longer exists')
     }
 
-    this.logger.log(this.refreshTokenLogMessage(user.username, reason))
+    this.logger.debug(this.refreshTokenLogMessage(user.username, reason))
 
     // Verify the user's admin status hasn't changed
     if (currentUser.admin !== user.admin) {
-      throw new UnauthorizedException('User permissions have changed, please log in again')
+      this.rejectRefresh(user.username, 'User permissions have changed, please log in again')
     }
 
     // Password and 2FA changes increment this value. Refreshing must reject
     // the old credential rather than copying the current value into a new
     // token and making the revoked session valid again.
     if ((currentUser.sessionVersion ?? 0) !== (user.sessionVersion ?? 0)) {
-      throw new UnauthorizedException('User credentials have changed, please log in again')
+      this.rejectRefresh(user.username, 'User credentials have changed, please log in again')
     }
 
     // Check if the instance ID matches (prevents cross-instance token reuse)
     if (user.instanceId !== this.configService.instanceId) {
-      throw new UnauthorizedException('Token is not valid for this instance')
+      this.rejectRefresh(user.username, 'Token is not valid for this instance')
     }
 
     // Cap the total lifetime of a renewal chain: carried forward unchanged on
@@ -312,7 +312,7 @@ export class AuthService {
       ? user.sessionStartedAt
       : Math.floor(Date.now() / 1000)
     if (Math.floor(Date.now() / 1000) - sessionStartedAt > MAX_SESSION_LIFETIME_SECONDS) {
-      throw new UnauthorizedException('Session has reached its maximum age, please log in again')
+      this.rejectRefresh(user.username, 'Session has reached its maximum age, please log in again')
     }
 
     // Generate a new token with the same user data but updated expiration
@@ -334,6 +334,26 @@ export class AuthService {
   }
 
   /**
+   * Refuse a token refresh, saying why in the log before throwing.
+   *
+   * ⚠️ **Every rejection below goes through here, and new ones must too.** The
+   * routine "refreshing" lines are debug, because they are a consequence of the
+   * user having a browser open rather than a decision anyone made (#2978). That
+   * only works if the interesting half is visible: before this, a refresh
+   * refused because the account was deleted, demoted or had its credentials
+   * revoked logged nothing at all, while the successful ones announced
+   * themselves on every page load. Failed logins, lockouts and rejected service
+   * tokens already warn - this is the same event class.
+   *
+   * @param username - whose refresh was refused.
+   * @param reason - the client-facing message, reused verbatim in the log.
+   */
+  private rejectRefresh(username: string, reason: string): never {
+    this.logger.warn(`Refused to refresh the session for ${username}: ${reason.toLowerCase()}`)
+    throw new UnauthorizedException(reason)
+  }
+
+  /**
    * Distinct log lines per refresh caller so admin checks and inactivity
    * extension are not identical (and look like accidental duplicates).
    */
@@ -345,6 +365,8 @@ export class AuthService {
         return `Extending session for ${username} (inactivity-based token refresh).`
       case 'profile-update':
         return `Refreshing token for ${username} after profile/auth change.`
+      case 'session-restore':
+        return `Restoring session for ${username} (page load, token held in memory).`
       default:
         return `Request received to refresh token for ${username}.`
     }
