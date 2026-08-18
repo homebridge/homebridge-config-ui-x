@@ -49,6 +49,15 @@ const USER_CACHE_TTL_SECONDS = 5
 // have been known to print their own requests at debug level).
 const MAX_SERVICE_TOKEN_LIFETIME_SECONDS = 300
 
+/**
+ * Each refresh renews the session cookie with a full Max-Age, so a chain of
+ * renewals never ends on its own. This caps the total lifetime of one
+ * signed-in session: past it, the next refresh returns 401 and the user signs
+ * in again. Revocation (password change, 2FA, logout) still ends a session
+ * immediately - this is only the backstop for sessions nothing ever revokes.
+ */
+const MAX_SESSION_LIFETIME_SECONDS = 30 * 24 * 60 * 60
+
 @Injectable()
 export class AuthService {
   private otpUsageCache = new NodeCache({ stdTTL: 90 })
@@ -167,7 +176,9 @@ export class AuthService {
    */
   async signIn(username: string, password: string, otp?: string, clientId?: string): Promise<any> {
     const user = await this.authenticate(username, password, otp, clientId)
-    const token = this.jwtService.sign(user)
+    // When this sign-in happened. Refreshes carry it forward unchanged, so the
+    // renewal chain as a whole has an age that can be capped.
+    const token = this.jwtService.sign({ ...user, sessionStartedAt: Math.floor(Date.now() / 1000) })
 
     return {
       access_token: token,
@@ -246,6 +257,7 @@ export class AuthService {
       instanceId: this.configService.instanceId,
       sessionVersion: user.sessionVersion ?? 0,
       otpLegacySecret: user.otpLegacySecret || false,
+      sessionStartedAt: Math.floor(Date.now() / 1000),
     })
 
     return {
@@ -292,6 +304,17 @@ export class AuthService {
       throw new UnauthorizedException('Token is not valid for this instance')
     }
 
+    // Cap the total lifetime of a renewal chain: carried forward unchanged on
+    // every refresh, so one request per window can no longer renew for ever.
+    // A token minted before this field existed is grandfathered in - the cap
+    // starts counting from the first refresh that sees it.
+    const sessionStartedAt = typeof user.sessionStartedAt === 'number'
+      ? user.sessionStartedAt
+      : Math.floor(Date.now() / 1000)
+    if (Math.floor(Date.now() / 1000) - sessionStartedAt > MAX_SESSION_LIFETIME_SECONDS) {
+      throw new UnauthorizedException('Session has reached its maximum age, please log in again')
+    }
+
     // Generate a new token with the same user data but updated expiration
     const token = this.jwtService.sign({
       username: user.username,
@@ -300,6 +323,7 @@ export class AuthService {
       instanceId: user.instanceId,
       sessionVersion: currentUser.sessionVersion ?? 0,
       otpLegacySecret: currentUser.otpLegacySecret || false,
+      sessionStartedAt,
     })
 
     return {

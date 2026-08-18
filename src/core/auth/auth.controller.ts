@@ -120,13 +120,23 @@ export class AuthController {
   })
   @Post('/session')
   async restoreSession(@Request() req: any, @Res({ passthrough: true }) res: FastifyReply) {
-    const payload = this.readRefreshCookie(req.headers?.cookie)
-    if (!payload) {
-      throw new UnauthorizedException()
+    try {
+      const payload = this.readRefreshCookie(req.headers?.cookie)
+      if (!payload) {
+        throw new UnauthorizedException()
+      }
+      const result = await this.authService.refreshToken(payload, 'session-restore')
+      this.setRefreshCookie(res, result.access_token, req.protocol === 'https')
+      return result
+    } catch (e) {
+      // A rejected cookie never restores anything again, but the browser keeps
+      // re-presenting it on every page load until its Max-Age runs out. Clear
+      // it alongside the 401 so the retries stop.
+      if (req.headers?.cookie?.includes('hb-refresh=')) {
+        res.header('Set-Cookie', this.buildClearedCookies(req.protocol === 'https'))
+      }
+      throw e
     }
-    const result = await this.authService.refreshToken(payload, 'session-restore')
-    this.setRefreshCookie(res, result.access_token, req.protocol === 'https')
-    return result
   }
 
   @ApiOperation({ summary: 'Clear the session cookies.' })

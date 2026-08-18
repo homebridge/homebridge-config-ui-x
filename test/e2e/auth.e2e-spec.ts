@@ -1,6 +1,7 @@
 import type { NestFastifyApplication } from '@nestjs/platform-fastify'
 import type { TestingModule } from '@nestjs/testing'
 
+import { Buffer } from 'node:buffer'
 import { createHash } from 'node:crypto'
 import { resolve } from 'node:path'
 import process from 'node:process'
@@ -281,6 +282,183 @@ describe('AuthController (e2e)', () => {
     })
     expect(restored.statusCode).toBe(401)
     expect(restored.json()).not.toHaveProperty('access_token')
+  })
+
+  it('rejects a refresh cookie issued before an admin reset the password', async () => {
+    // The same trigger as changing your own password, but through the admin
+    // route - the case a user relies on after losing control of an account
+    const login = await app.inject({
+      method: 'POST',
+      path: '/auth/login',
+      payload: { username: 'admin', password: 'admin' },
+    })
+    const header = login.headers['set-cookie']
+    const setCookies = (Array.isArray(header) ? header : [header]) as string[]
+    const staleCookie = setCookies.find(c => c.startsWith('hb-refresh='))!.split(';')[0]
+
+    const adminUser = (await authService.getUsers()).find(x => x.username === 'admin')!
+    await authService.updateUser(adminUser.id, {
+      username: 'admin',
+      name: adminUser.name,
+      admin: true,
+      password: 'reset-by-an-admin',
+    } as any)
+
+    const restored = await app.inject({
+      method: 'POST',
+      path: '/auth/session',
+      headers: { cookie: staleCookie },
+    })
+    expect(restored.statusCode).toBe(401)
+    expect(restored.json()).not.toHaveProperty('access_token')
+  })
+
+  it('rejects a refresh cookie issued before 2fa was activated', async () => {
+    // Turning 2FA on is the advised response to a weak password, so a cookie
+    // captured beforehand must not survive it
+    const login = await app.inject({
+      method: 'POST',
+      path: '/auth/login',
+      payload: { username: 'admin', password: 'admin' },
+    })
+    const header = login.headers['set-cookie']
+    const setCookies = (Array.isArray(header) ? header : [header]) as string[]
+    const staleCookie = setCookies.find(c => c.startsWith('hb-refresh='))!.split(';')[0]
+
+    await authService.setupOtp('admin')
+    const secret = (await readJson(authFilePath)).find((x: any) => x.username === 'admin').otpSecret
+    await authService.activateOtp('admin', await generate({ secret }))
+
+    const restored = await app.inject({
+      method: 'POST',
+      path: '/auth/session',
+      headers: { cookie: staleCookie },
+    })
+    expect(restored.statusCode).toBe(401)
+    expect(restored.json()).not.toHaveProperty('access_token')
+  })
+
+  it('clears a rejected refresh cookie so the browser stops re-presenting it', async () => {
+    // Without this the dead cookie comes back on every page load until its
+    // Max-Age runs out, each time costing a 401 round trip
+    const login = await app.inject({
+      method: 'POST',
+      path: '/auth/login',
+      payload: { username: 'admin', password: 'admin' },
+    })
+    const header = login.headers['set-cookie']
+    const setCookies = (Array.isArray(header) ? header : [header]) as string[]
+    const staleCookie = setCookies.find(c => c.startsWith('hb-refresh='))!.split(';')[0]
+
+    await authService.updateOwnPassword('admin', 'admin', 'changed-again')
+
+    const restored = await app.inject({
+      method: 'POST',
+      path: '/auth/session',
+      headers: { cookie: staleCookie },
+    })
+    expect(restored.statusCode).toBe(401)
+    const cleared = ([restored.headers['set-cookie']].flat() as string[]).filter(Boolean)
+    expect(cleared.some(c => c.startsWith('hb-refresh=') && c.includes('Max-Age=0'))).toBe(true)
+  })
+
+  it('sets no cookie at all on a session request that carried none', async () => {
+    // The guard on the case above: clearing must react to a presented cookie,
+    // not fire on every 401
+    const restored = await app.inject({
+      method: 'POST',
+      path: '/auth/session',
+    })
+    expect(restored.statusCode).toBe(401)
+    expect(restored.headers['set-cookie']).toBeUndefined()
+  })
+
+  /**
+   * The absolute session lifetime.
+   *
+   * Every successful restore sets a fresh cookie with a full Max-Age, so one
+   * request per window used to renew a session for ever. The cap bounds the
+   * whole renewal chain from the original sign-in, not from the last refresh.
+   */
+  describe('the absolute session lifetime', () => {
+    /** A refresh cookie signed the way a login would sign it. */
+    function signUserCookie(overrides: Record<string, any> = {}) {
+      const secretKey = configService.secrets.secretKey
+      const token = jwt.sign({
+        username: 'admin',
+        name: 'Administrator',
+        admin: true,
+        instanceId: createHash('sha256').update(secretKey).digest('hex'),
+        sessionVersion: 0,
+        otpLegacySecret: false,
+        ...overrides,
+      }, secretKey, { expiresIn: '1m' })
+      return `hb-refresh=${token}`
+    }
+
+    /** The claims inside a minted access token. */
+    function decode(accessToken: string): Record<string, any> {
+      return JSON.parse(Buffer.from(accessToken.split('.')[1], 'base64url').toString())
+    }
+
+    const DAY = 24 * 60 * 60
+
+    it('refuses to renew a session past its maximum age', async () => {
+      const cookie = signUserCookie({ sessionStartedAt: Math.floor(Date.now() / 1000) - (31 * DAY) })
+
+      const restored = await app.inject({
+        method: 'POST',
+        path: '/auth/session',
+        headers: { cookie },
+      })
+
+      expect(restored.statusCode).toBe(401)
+      expect(restored.json()).not.toHaveProperty('access_token')
+    })
+
+    it('carries the start time forward unchanged on a refresh', async () => {
+      // The one assertion that keeps the cap honest: if a refresh restamped
+      // the start time, every refresh would reset the clock and the cap would
+      // never be reached
+      const startedAt = Math.floor(Date.now() / 1000) - DAY
+      const cookie = signUserCookie({ sessionStartedAt: startedAt })
+
+      const restored = await app.inject({
+        method: 'POST',
+        path: '/auth/session',
+        headers: { cookie },
+      })
+
+      expect(restored.statusCode).toBe(201)
+      expect(decode(restored.json().access_token).sessionStartedAt).toBe(startedAt)
+    })
+
+    it('starts the clock at first refresh for a cookie minted before the cap existed', async () => {
+      // Grandfathering: rejecting these outright would sign every user out on
+      // upgrade. They gain the field on their next refresh instead
+      const cookie = signUserCookie()
+
+      const restored = await app.inject({
+        method: 'POST',
+        path: '/auth/session',
+        headers: { cookie },
+      })
+
+      expect(restored.statusCode).toBe(201)
+      const claims = decode(restored.json().access_token)
+      expect(claims.sessionStartedAt).toBeGreaterThan(Math.floor(Date.now() / 1000) - 60)
+    })
+
+    it('stamps the start time at login', async () => {
+      const login = await app.inject({
+        method: 'POST',
+        path: '/auth/login',
+        payload: { username: 'admin', password: 'admin' },
+      })
+
+      const claims = decode(login.json().access_token)
+      expect(claims.sessionStartedAt).toBeGreaterThan(Math.floor(Date.now() / 1000) - 60)
+    })
   })
 
   it('clears session cookies when logout receives an invalid bearer token', async () => {
