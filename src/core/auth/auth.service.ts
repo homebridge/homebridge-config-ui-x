@@ -261,6 +261,12 @@ export class AuthService {
    * @param reason - optional client reason for distinct log lines (allowlisted)
    */
   async refreshToken(user: any, reason?: string): Promise<any> {
+    // Service tokens are deliberately short-lived credentials minted by local
+    // programs. They must not be exchangeable for a normal user session.
+    if (user?.service !== undefined) {
+      throw new UnauthorizedException('Service tokens cannot be refreshed')
+    }
+
     // Validate that the user still exists and has the same permissions
     const currentUser = await this.findByUsername(user.username)
     if (!currentUser) {
@@ -274,6 +280,13 @@ export class AuthService {
       throw new UnauthorizedException('User permissions have changed, please log in again')
     }
 
+    // Password and 2FA changes increment this value. Refreshing must reject
+    // the old credential rather than copying the current value into a new
+    // token and making the revoked session valid again.
+    if ((currentUser.sessionVersion ?? 0) !== (user.sessionVersion ?? 0)) {
+      throw new UnauthorizedException('User credentials have changed, please log in again')
+    }
+
     // Check if the instance ID matches (prevents cross-instance token reuse)
     if (user.instanceId !== this.configService.instanceId) {
       throw new UnauthorizedException('Token is not valid for this instance')
@@ -285,8 +298,6 @@ export class AuthService {
       name: user.name,
       admin: user.admin,
       instanceId: user.instanceId,
-      // Take the version from the stored record, not the old token, so a
-      // refresh cannot carry a stale credential version forward.
       sessionVersion: currentUser.sessionVersion ?? 0,
       otpLegacySecret: currentUser.otpLegacySecret || false,
     })
@@ -667,6 +678,19 @@ export class AuthService {
       this.logger.warn(`Deleted user with ID ${id}.`)
     })
     this.pluginUiTicketService.revokeUser(deletedUsername!)
+  }
+
+  /**
+   * Revoke every token issued for a user. Used by logout so deleting the
+   * browser cookie also invalidates any copy that may have been captured.
+   */
+  async revokeUserSessions(username: string): Promise<void> {
+    await this.withAuthFile((authfile) => {
+      const user = authfile.find(x => x.username === username)
+      if (user) {
+        user.sessionVersion = (user.sessionVersion ?? 0) + 1
+      }
+    })
   }
 
   /**

@@ -133,7 +133,14 @@ export class AuthController {
   @ApiBearerAuth()
   @UseGuards(CustomGuard)
   @Post('/logout')
-  logout(@Request() req: FastifyRequest & { user?: { username: string } }, @Res({ passthrough: true }) res: FastifyReply) {
+  async logout(@Request() req: FastifyRequest & { user?: { username: string } }, @Res({ passthrough: true }) res: FastifyReply) {
+    // Only a currently valid user token may revoke all of that user's tokens.
+    // The fallback below accepts expired tokens solely to clean up plugin UI
+    // tickets; allowing one to increment sessionVersion would give any token
+    // captured in the past a permanent account-logout primitive.
+    if (req.user?.username) {
+      await this.authService.revokeUserSessions(req.user.username)
+    }
     const username = req.user?.username ?? this.readLogoutUsername(req.headers.authorization)
     const pluginNames = username
       ? this.pluginUiTicketService.revokeUser(username)
@@ -175,7 +182,7 @@ export class AuthController {
   /**
    * Recover a revocation identity from a signed Bearer token when normal
    * authentication rejected it only because it expired. This never grants
-   * access; it is used solely to delete that user's server-side sessions.
+   * access; it is used solely to delete that user's plugin UI tickets.
    */
   private readLogoutUsername(authorization?: string): string | undefined {
     const [scheme, token] = authorization?.split(' ') ?? []

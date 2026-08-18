@@ -251,6 +251,36 @@ describe('AuthController (e2e)', () => {
     const cleared = (Array.isArray(clearedHeader) ? clearedHeader : [clearedHeader]) as string[]
     expect(cleared.some(c => c.startsWith('hb-refresh=') && c.includes('Max-Age=0'))).toBe(true)
     expect(cleared.some(c => c.startsWith('hb-session='))).toBe(false)
+
+    // Clearing the browser cookie is not sufficient if a copy was captured.
+    // Logout must revoke the server-side session represented by that cookie.
+    const replayed = await app.inject({
+      method: 'POST',
+      path: '/auth/session',
+      headers: { cookie: cookieValue },
+    })
+    expect(replayed.statusCode).toBe(401)
+  })
+
+  it('rejects a refresh cookie issued before a password change', async () => {
+    const login = await app.inject({
+      method: 'POST',
+      path: '/auth/login',
+      payload: { username: 'admin', password: 'admin' },
+    })
+    const header = login.headers['set-cookie']
+    const setCookies = (Array.isArray(header) ? header : [header]) as string[]
+    const staleCookie = setCookies.find(c => c.startsWith('hb-refresh='))!.split(';')[0]
+
+    await authService.updateOwnPassword('admin', 'admin', 'changed-password')
+
+    const restored = await app.inject({
+      method: 'POST',
+      path: '/auth/session',
+      headers: { cookie: staleCookie },
+    })
+    expect(restored.statusCode).toBe(401)
+    expect(restored.json()).not.toHaveProperty('access_token')
   })
 
   it('clears session cookies when logout receives an invalid bearer token', async () => {
@@ -569,6 +599,18 @@ describe('AuthController (e2e)', () => {
     it('accepts a token that declares itself, with no user record behind it', async () => {
       const res = await check(signServiceToken())
       expect(res.statusCode).toBe(200)
+    })
+
+    it('does not exchange a service token for a user session', async () => {
+      const token = signServiceToken({ username: 'admin', name: 'Administrator' })
+      const res = await app.inject({
+        method: 'POST',
+        path: '/auth/session',
+        headers: { cookie: `hb-refresh=${token}` },
+      })
+
+      expect(res.statusCode).toBe(401)
+      expect(res.json()).not.toHaveProperty('access_token')
     })
 
     it('rejects one whose service claim names nobody', async () => {
