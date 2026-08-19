@@ -592,6 +592,22 @@ describe('bridgesWidgetComponent', () => {
       expect(widget.childBridgeLiveMessages()['0E:11:11:11:11:11']).toBeFalsy()
     })
 
+    it('tracks a bridge that has no username by its name', async () => {
+      // Every per-bridge record here is keyed by username, falling back to the
+      // name. Without the fallback a bridge whose config carries no username
+      // is filed under `undefined`, so any two of them share one restart
+      // state and one announcement
+      const nameless = makeBridge({ username: undefined, name: 'Nameless Bridge' })
+      const widget = await open({ bridges: [nameless] })
+
+      await widget.restartChildBridge(widget.childBridges()[0])
+      childIo.socket.fire('child-bridge-status-update', { ...nameless, status: 'pending' })
+      childIo.socket.fire('child-bridge-status-update', { ...nameless, status: 'ok' })
+      await vi.advanceTimersByTimeAsync(3000)
+
+      expect(widget.childBridgeLiveMessages()['Nameless Bridge']).toBeTruthy()
+    })
+
     it('says nothing about a restart the user did not ask for', async () => {
       const widget = await open()
 

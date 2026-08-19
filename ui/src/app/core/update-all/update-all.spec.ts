@@ -1,0 +1,608 @@
+import type { UpdateAllJournal, UpdateAllPlan, UpdateAllPlanItem } from '@/app/core/update-all/update-all.interfaces'
+import type { FakeApi, FakeIoNamespace, FakeModalService, FakeSettings, FakeToastr, FakeWs } from '@/testing'
+
+import { NO_ERRORS_SCHEMA } from '@angular/core'
+import { TestBed } from '@angular/core/testing'
+import { TranslatePipe } from '@ngx-translate/core'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
+
+import { activeModalStub, fakeApi, fakeWs, makeSettings, modalServiceSpy, toastrStub } from '@/testing'
+import { provideFakes, provideTestTranslate } from '@/testing/providers'
+
+const { terminals } = vi.hoisted(() => ({ terminals: [] as any[] }))
+
+vi.mock('@xterm/xterm', () => ({
+  Terminal: class {
+    public written: string[] = []
+    public loadAddon = vi.fn()
+    public open = vi.fn()
+    public dispose = vi.fn()
+    constructor(public options: any) {
+      terminals.push(this)
+    }
+
+    public write(data: any): void {
+      this.written.push(String(data))
+    }
+  },
+}))
+vi.mock('@xterm/addon-fit', () => ({ FitAddon: class {
+  public fit = vi.fn()
+} }))
+
+/**
+ * The Update All feature: the plan/confirm modal and the progress/summary
+ * modal it opens.
+ *
+ * ⚠️ Both components are loaded with `await import()` and imported above as
+ * types only. A top-level value import evaluates the progress component
+ * against the real xterm before the mock registry is consulted, and the mock
+ * then records nothing - which reads as the component being broken.
+ */
+describe('update all', () => {
+  let api: FakeApi
+  let toastr: FakeToastr
+  let settings: FakeSettings
+  let activeModal: ReturnType<typeof activeModalStub>
+
+  async function settle() {
+    for (let tick = 0; tick < 12; tick += 1) {
+      await Promise.resolve()
+    }
+  }
+
+  beforeEach(() => {
+    vi.spyOn(console, 'error').mockImplementation(() => {})
+    vi.mocked(console.error).mockClear()
+    terminals.length = 0
+  })
+
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
+  describe('the plan modal', () => {
+    let modal: FakeModalService
+
+    function planItem(overrides: Partial<UpdateAllPlanItem> = {}): UpdateAllPlanItem {
+      return {
+        type: 'plugin',
+        name: 'homebridge-example',
+        from: '1.0.0',
+        to: '1.1.0',
+        ...overrides,
+      }
+    }
+
+    function makePlan(overrides: Partial<UpdateAllPlan> = {}): UpdateAllPlan {
+      return { items: [], needsReview: [], skipped: [], ...overrides }
+    }
+
+    /**
+     * Open the plan modal.
+     * @param options - how to set it up
+     * @param options.plan - what the server answers with for the plan
+     * @param options.arrange - runs on the fresh fakes before the modal is built
+     */
+    async function open(options: { plan?: UpdateAllPlan, arrange?: (fakes: { api: FakeApi }) => void } = {}) {
+      TestBed.resetTestingModule()
+      api = fakeApi()
+      toastr = toastrStub()
+      settings = makeSettings()
+      activeModal = activeModalStub()
+      modal = modalServiceSpy()
+      api.respond('get', '/update-all/plan', options.plan ?? makePlan({ items: [planItem()] }))
+      api.respond('post', '/update-all/start', {})
+
+      const { UpdateAllModalComponent } = await import('@/app/core/update-all/update-all-modal.component')
+
+      TestBed.configureTestingModule({
+        imports: [UpdateAllModalComponent],
+        providers: [
+          provideTestTranslate(),
+          provideFakes({ api, toastr, settings, activeModal, modal }),
+        ],
+      })
+
+      TestBed.overrideComponent(UpdateAllModalComponent, {
+        set: { imports: [TranslatePipe], schemas: [NO_ERRORS_SCHEMA] },
+      })
+
+      options.arrange?.({ api })
+
+      const fixture = TestBed.createComponent(UpdateAllModalComponent)
+      fixture.detectChanges()
+      await settle()
+      return { component: fixture.componentInstance, fixture }
+    }
+
+    it('loads the plan and stops showing the loading state', async () => {
+      const { component } = await open({ plan: makePlan({ items: [planItem(), planItem({ name: 'homebridge-other' })] }) })
+
+      expect(component.loading()).toBe(false)
+      expect(component.plan().items).toHaveLength(2)
+      expect(component.selectedCount()).toBe(2)
+    })
+
+    it('reports a failed plan lookup and closes itself', async () => {
+      // Nothing can be confirmed without a plan, so staying open would offer an
+      // empty list with no explanation
+      const { component } = await open({ arrange: ({ api }) => api.fail('get', '/update-all/plan', new Error('nope')) })
+
+      expect(toastr.error).toHaveBeenCalledWith(expect.anything(), 'toast.title_error')
+      expect(activeModal.dismiss).toHaveBeenCalledWith('Dismiss')
+      expect(component.loading()).toBe(true)
+    })
+
+    it('unticks and reticks an item', async () => {
+      const { component } = await open({ plan: makePlan({ items: [planItem(), planItem({ name: 'homebridge-other' })] }) })
+
+      component.toggleItem('homebridge-example')
+
+      expect(component.isTicked('homebridge-example')).toBe(false)
+      expect(component.selectedCount()).toBe(1)
+
+      component.toggleItem('homebridge-example')
+
+      expect(component.isTicked('homebridge-example')).toBe(true)
+      expect(component.selectedCount()).toBe(2)
+    })
+
+    it('falls back to the homebridge icon when a plugin icon fails to load', async () => {
+      const { component } = await open()
+      const item = component.plan().items[0]
+
+      component.handleIconError(item)
+
+      expect(item.icon).toBe('assets/hb-icon.png')
+    })
+
+    it('reports whether there is anything to review or skipped', async () => {
+      const { component } = await open({
+        plan: makePlan({
+          items: [planItem()],
+          needsReview: [{ ...planItem({ name: 'homebridge-major' }), reason: 'major' }],
+        }),
+      })
+
+      expect(component.hasNeedsReview()).toBe(true)
+      expect(component.hasSkipped()).toBe(false)
+    })
+
+    describe('the restart plan it previews', () => {
+      it('counts one homebridge restart and no child bridges when homebridge itself is updating', async () => {
+        // A homebridge restart takes every child bridge with it, so counting
+        // them as well would promise the user more restarts than happen
+        const { component } = await open({
+          plan: makePlan({
+            items: [
+              planItem({ type: 'homebridge', name: 'homebridge' }),
+              planItem({ name: 'homebridge-child', childBridgeUsernames: ['AA:BB:CC:DD:EE:FF'] }),
+            ],
+          }),
+        })
+
+        expect(component.restartPlan()).toEqual({ ui: false, homebridge: true, childBridgeCount: 0 })
+      })
+
+      it('treats a plugin on the main bridge as a homebridge restart', async () => {
+        const { component } = await open({
+          plan: makePlan({ items: [planItem({ childBridgeUsernames: [] })] }),
+        })
+
+        expect(component.restartPlan()).toEqual({ ui: false, homebridge: true, childBridgeCount: 0 })
+      })
+
+      it('counts each child bridge once when only child-bridged plugins are updating', async () => {
+        // Two plugins sharing a child bridge is one restart, not two
+        const { component } = await open({
+          plan: makePlan({
+            items: [
+              planItem({ name: 'homebridge-a', childBridgeUsernames: ['AA:BB:CC:DD:EE:FF'] }),
+              planItem({ name: 'homebridge-b', childBridgeUsernames: ['AA:BB:CC:DD:EE:FF', '11:22:33:44:55:66'] }),
+            ],
+          }),
+        })
+
+        expect(component.restartPlan()).toEqual({ ui: false, homebridge: false, childBridgeCount: 2 })
+      })
+
+      it('flags the ui restart independently of the homebridge one', async () => {
+        const { component } = await open({
+          plan: makePlan({ items: [planItem({ type: 'ui', name: 'homebridge-config-ui-x', childBridgeUsernames: ['AA:BB:CC:DD:EE:FF'] })] }),
+        })
+
+        expect(component.restartPlan()).toEqual({ ui: true, homebridge: false, childBridgeCount: 1 })
+      })
+
+      it('follows the ticks rather than the whole plan', async () => {
+        const { component } = await open({
+          plan: makePlan({
+            items: [
+              planItem({ type: 'homebridge', name: 'homebridge' }),
+              planItem({ name: 'homebridge-child', childBridgeUsernames: ['AA:BB:CC:DD:EE:FF'] }),
+            ],
+          }),
+        })
+
+        component.toggleItem('homebridge')
+
+        expect(component.restartPlan()).toEqual({ ui: false, homebridge: false, childBridgeCount: 1 })
+      })
+    })
+
+    describe('confirming', () => {
+      it('sends only the ticked items, as name and target version', async () => {
+        // The server re-validates against a fresh plan, so the modal echoes the
+        // plan's `to` rather than choosing a version itself
+        const { component } = await open({
+          plan: makePlan({ items: [planItem(), planItem({ name: 'homebridge-other', to: '2.0.0' })] }),
+        })
+        component.toggleItem('homebridge-example')
+
+        await component.confirm()
+
+        expect(api.lastCall('post', '/update-all/start')?.body).toEqual({
+          items: [{ name: 'homebridge-other', to: '2.0.0' }],
+        })
+      })
+
+      it('closes itself and opens the progress modal, which cannot be clicked away', async () => {
+        const { UpdateAllProgressComponent } = await import('@/app/core/update-all/update-all-progress.component')
+        const { component } = await open()
+
+        await component.confirm()
+
+        expect(activeModal.close).toHaveBeenCalledWith('started')
+        expect(modal.lastOpened()?.content).toBe(UpdateAllProgressComponent)
+        // A run cannot be interrupted by a stray backdrop click
+        expect(modal.lastOpened()?.options).toMatchObject({ size: 'lg', backdrop: 'static' })
+      })
+
+      it('does nothing when everything has been unticked', async () => {
+        const { component } = await open()
+        component.toggleItem('homebridge-example')
+
+        await component.confirm()
+
+        expect(api.callsTo('post', '/update-all/start')).toHaveLength(0)
+        expect(modal.opened).toHaveLength(0)
+      })
+
+      it('starts one run however many times the button is pressed', async () => {
+        // Two runs at once would have npm fighting itself over node_modules
+        const { component } = await open()
+
+        await Promise.all([component.confirm(), component.confirm(), component.confirm()])
+
+        expect(api.callsTo('post', '/update-all/start')).toHaveLength(1)
+      })
+
+      it('reports a failed start and lets the user try again', async () => {
+        const { component } = await open({ arrange: ({ api }) => api.fail('post', '/update-all/start', new Error('nope')) })
+
+        await component.confirm()
+
+        expect(toastr.error).toHaveBeenCalledWith(expect.anything(), 'toast.title_error')
+        expect(component.starting()).toBe(false)
+        expect(activeModal.close).not.toHaveBeenCalled()
+        expect(modal.opened).toHaveLength(0)
+      })
+    })
+
+    it('dismisses when closed', async () => {
+      const { component } = await open()
+
+      component.dismissModal()
+
+      expect(activeModal.dismiss).toHaveBeenCalledWith('Dismiss')
+    })
+  })
+
+  describe('the progress modal', () => {
+    let ws: FakeWs
+    let io: FakeIoNamespace
+
+    function makeJournal(overrides: Partial<UpdateAllJournal> = {}): UpdateAllJournal {
+      return {
+        schemaVersion: 1,
+        runId: 'run-1',
+        startedAt: '2026-08-19T10:00:00.000Z',
+        acknowledged: false,
+        items: [
+          { type: 'plugin', name: 'homebridge-example', from: '1.0.0', to: '1.1.0', status: 'planned' },
+          { type: 'plugin', name: 'homebridge-other', from: '2.0.0', to: '2.1.0', status: 'planned' },
+        ],
+        restart: { homebridge: 'pending', ui: 'pending' },
+        ...overrides,
+      }
+    }
+
+    /**
+     * Open the progress modal.
+     * @param options - how to set it up
+     * @param options.active - whether the server says a run is still going
+     * @param options.journal - the journal in the subscribe snapshot
+     * @param options.arrange - runs on the fresh fakes before the modal is built
+     */
+    async function open(options: {
+      active?: boolean
+      journal?: UpdateAllJournal | null
+      arrange?: (fakes: { api: FakeApi, io: FakeIoNamespace }) => void
+    } = {}) {
+      TestBed.resetTestingModule()
+      vi.useFakeTimers()
+      api = fakeApi()
+      toastr = toastrStub()
+      settings = makeSettings()
+      activeModal = activeModalStub()
+      ws = fakeWs()
+      io = ws.namespace('update-all')
+
+      const journal = options.journal === undefined ? makeJournal() : options.journal
+      io.socket.respondTo('subscribe', { active: options.active ?? true, journal })
+      api.respond('get', '/update-all/journal', journal)
+      api.respond('post', '/update-all/cancel', {})
+      api.respond('post', '/update-all/journal/ack', {})
+
+      const { UpdateAllProgressComponent } = await import('@/app/core/update-all/update-all-progress.component')
+
+      TestBed.configureTestingModule({
+        imports: [UpdateAllProgressComponent],
+        providers: [
+          provideTestTranslate(),
+          provideFakes({ api, toastr, settings, activeModal, ws }),
+        ],
+      })
+
+      TestBed.overrideComponent(UpdateAllProgressComponent, {
+        set: { imports: [TranslatePipe], schemas: [NO_ERRORS_SCHEMA] },
+      })
+
+      options.arrange?.({ api, io })
+
+      const fixture = TestBed.createComponent(UpdateAllProgressComponent)
+      fixture.detectChanges()
+      await settle()
+      // The terminal pane is only in the DOM once the progress branch has
+      // rendered, which is why the component defers its lookup by a tick
+      fixture.detectChanges()
+      vi.advanceTimersByTime(1)
+      return { component: fixture.componentInstance, fixture }
+    }
+
+    it('subscribes to the run and shows its progress', async () => {
+      const { component } = await open({ active: true })
+
+      expect(ws.connectToNamespace).toHaveBeenCalledWith('update-all')
+      expect(io.requests.map(request => request.resource)).toEqual(['subscribe'])
+      expect(component.phase()).toBe('progress')
+      expect(component.journal()?.items).toHaveLength(2)
+    })
+
+    it('opens a terminal for the npm output', async () => {
+      await open({ active: true })
+
+      expect(terminals).toHaveLength(1)
+      expect(terminals[0].open).toHaveBeenCalled()
+    })
+
+    it('goes straight to the summary when the run has already finished', async () => {
+      // The UI restarting itself reopens this modal after the run ended
+      const { component } = await open({ active: false })
+
+      expect(component.phase()).toBe('summary')
+      expect(terminals).toHaveLength(0)
+    })
+
+    it('re-reads the journal from disk for the summary', async () => {
+      // The snapshot's copy predates the restart outcomes
+      const finished = makeJournal({ finishedAt: '2026-08-19T10:05:00.000Z', restart: { homebridge: 'done', ui: 'scheduled' } })
+      const { component } = await open({
+        active: false,
+        arrange: ({ api }) => api.respond('get', '/update-all/journal', finished),
+      })
+
+      expect(component.journal()?.restart).toEqual({ homebridge: 'done', ui: 'scheduled' })
+    })
+
+    it('still shows the summary when the journal cannot be re-read', async () => {
+      const { component } = await open({
+        active: false,
+        arrange: ({ api }) => api.fail('get', '/update-all/journal', new Error('nope')),
+      })
+
+      expect(component.phase()).toBe('summary')
+    })
+
+    it('reports a failed subscribe and closes itself', async () => {
+      const { component } = await open({
+        arrange: ({ io }) => io.socket.respondTo('subscribe', { error: 'nope' }),
+      })
+
+      expect(toastr.error).toHaveBeenCalledWith(expect.anything(), 'toast.title_error')
+      expect(activeModal.dismiss).toHaveBeenCalledWith('Dismiss')
+      expect(component.phase()).toBe('loading')
+    })
+
+    describe('live events', () => {
+      it('marks an item running when it starts', async () => {
+        const { component } = await open()
+
+        io.socket.fire('item-start', { name: 'homebridge-example' })
+
+        expect(component.journal()?.items.find(item => item.name === 'homebridge-example')?.status).toBe('running')
+        expect(component.journal()?.items.find(item => item.name === 'homebridge-other')?.status).toBe('planned')
+      })
+
+      it('records the result an item finished with', async () => {
+        const { component } = await open()
+
+        io.socket.fire('item-result', { name: 'homebridge-other', status: 'failed' })
+
+        expect(component.journal()?.items.find(item => item.name === 'homebridge-other')?.status).toBe('failed')
+      })
+
+      it('ignores item events that arrive before the journal', async () => {
+        const { component } = await open({ journal: null, active: true })
+
+        io.socket.fire('item-start', { name: 'homebridge-example' })
+
+        expect(component.journal()).toBeNull()
+      })
+
+      it('writes npm output into the terminal', async () => {
+        await open({ active: true })
+
+        io.socket.fire('stdout', { name: 'homebridge-example', data: 'added 1 package\r\n' })
+
+        expect(terminals[0].written).toEqual(['added 1 package\r\n'])
+      })
+
+      it('shows the summary when the run completes', async () => {
+        const { component } = await open({ active: true })
+        expect(component.phase()).toBe('progress')
+
+        io.socket.fire('run-complete')
+        await settle()
+
+        expect(component.phase()).toBe('summary')
+      })
+
+      it('says so while the server is away, and recovers on reconnect', async () => {
+        // The server goes down while the UI updates itself - appearing frozen
+        // would read as a hung update
+        const { component } = await open({ active: true })
+
+        io.socket.fire('disconnect')
+
+        expect(component.disconnected()).toBe(true)
+
+        io.markConnected()
+        await settle()
+
+        expect(component.disconnected()).toBe(false)
+        // The fresh server-side socket has to be re-registered, or the rest of
+        // the run streams into nothing
+        expect(io.requests.map(request => request.resource)).toEqual(['subscribe', 'subscribe'])
+      })
+    })
+
+    describe('cancelling', () => {
+      it('asks the server to stop and says so', async () => {
+        const { component } = await open({ active: true })
+
+        await component.cancelRun()
+
+        expect(api.callsTo('post', '/update-all/cancel')).toHaveLength(1)
+        expect(component.cancelRequested()).toBe(true)
+      })
+
+      it('reports a failed cancel and lets the user ask again', async () => {
+        const { component } = await open({
+          active: true,
+          arrange: ({ api }) => api.fail('post', '/update-all/cancel', new Error('nope')),
+        })
+
+        await component.cancelRun()
+
+        expect(toastr.error).toHaveBeenCalledWith(expect.anything(), 'toast.title_error')
+        expect(component.cancelRequested()).toBe(false)
+      })
+    })
+
+    describe('what a row shows', () => {
+      it('reads an unfinished item as incomplete in the summary', async () => {
+        // A spinner in the summary would look alive for ever - these mean the
+        // run died mid-item, e.g. a power cut during the ui update
+        const { component } = await open({ active: false })
+
+        expect(component.displayStatus('running')).toBe('incomplete')
+        expect(component.displayStatus('planned')).toBe('incomplete')
+      })
+
+      it('leaves finished statuses alone in the summary', async () => {
+        const { component } = await open({ active: false })
+
+        expect(component.displayStatus('ok')).toBe('ok')
+        expect(component.displayStatus('failed')).toBe('failed')
+        expect(component.displayStatus('skipped')).toBe('skipped')
+      })
+
+      it('keeps a running item running while the run is live', async () => {
+        const { component } = await open({ active: true })
+
+        expect(component.displayStatus('running')).toBe('running')
+      })
+    })
+
+    describe('closing', () => {
+      it('acknowledges the journal so the summary is shown once', async () => {
+        const { component } = await open({ active: false })
+
+        component.closeModal()
+
+        expect(api.callsTo('post', '/update-all/journal/ack')).toHaveLength(1)
+        expect(activeModal.close).toHaveBeenCalled()
+      })
+
+      it('closes even when the acknowledgement fails', async () => {
+        // A failed ack only means the summary appears once more
+        const { component } = await open({
+          active: false,
+          arrange: ({ api }) => api.fail('post', '/update-all/journal/ack', new Error('nope')),
+        })
+
+        component.closeModal()
+        await settle()
+
+        expect(activeModal.close).toHaveBeenCalled()
+      })
+
+      it('does not acknowledge a run that is still going', async () => {
+        // The summary has not been seen yet, so it must still be shown later
+        const { component } = await open({ active: true })
+
+        component.closeModal()
+
+        expect(api.callsTo('post', '/update-all/journal/ack')).toHaveLength(0)
+        expect(activeModal.close).toHaveBeenCalled()
+      })
+    })
+
+    describe('teardown', () => {
+      it('detaches its own listeners without touching the shared socket', async () => {
+        // The namespace socket is cached and shared, so removeAllListeners()
+        // would silently break whatever else is listening on it
+        const { fixture } = await open({ active: true })
+        expect(io.socket.handlers('item-start')).toHaveLength(1)
+
+        fixture.destroy()
+
+        expect(io.socket.handlers('item-start')).toHaveLength(0)
+        expect(io.socket.handlers('stdout')).toHaveLength(0)
+        expect(io.socket.removeAllListeners).not.toHaveBeenCalled()
+      })
+
+      it('disposes the terminal and ends the namespace', async () => {
+        const { fixture } = await open({ active: true })
+
+        fixture.destroy()
+
+        expect(terminals[0].dispose).toHaveBeenCalled()
+        expect(io.end).toHaveBeenCalled()
+      })
+
+      it('stops listening for reconnects', async () => {
+        const { fixture } = await open({ active: true })
+
+        fixture.destroy()
+        io.markConnected()
+        await settle()
+
+        // One from the original connect, and none after teardown
+        expect(io.requests).toHaveLength(1)
+      })
+    })
+  })
+})

@@ -13,6 +13,7 @@ import { PluginsCacheService } from '@/app/core/caching/plugins-cache.service'
 import { ServerPairingsCacheService } from '@/app/core/caching/server-pairings-cache.service'
 import { RestartHomebridgeComponent } from '@/app/core/components/restart-homebridge/restart-homebridge.component'
 import { ManagePluginsService } from '@/app/core/plugins/manage-plugins.service'
+import { UpdateAllModalComponent } from '@/app/core/update-all/update-all-modal.component'
 import { PluginSupportComponent } from '@/app/modules/plugins/plugin-support/plugin-support.component'
 import { PluginsComponent } from '@/app/modules/plugins/plugins.component'
 import { cacheStub, fakeApi, fakeWs, makeAuth, makeSettings, modalServiceSpy, toastrStub } from '@/testing'
@@ -1009,6 +1010,34 @@ describe('the plugins page', () => {
       page.openSupport()
 
       expect(modal.lastOpened()!.content).toBe(PluginSupportComponent)
+      expect(modal.lastOpened()!.options).toMatchObject({ size: 'lg', backdrop: 'static' })
+    })
+  })
+
+  describe('the update all button', () => {
+    it('counts only the plugins that have an update', async () => {
+      // The count gates the button: with one update the card's own update
+      // button is the right tool, so the page offers this from two
+      const page = create({
+        installed: [
+          plugin('homebridge-a', { updateAvailable: true }),
+          plugin('homebridge-b', { updateAvailable: true }),
+          plugin('homebridge-c'),
+        ],
+      })
+      await settle()
+
+      expect(page.availableUpdateCount()).toBe(2)
+    })
+
+    it('opens the plan modal, which cannot be clicked away', async () => {
+      const page = create({ installed: [plugin('homebridge-a', { updateAvailable: true })] })
+      await settle()
+
+      page.updateAllModal()
+
+      expect(modal.lastOpened()!.content).toBe(UpdateAllModalComponent)
+      // A run must not be interrupted by a stray backdrop click
       expect(modal.lastOpened()!.options).toMatchObject({ size: 'lg', backdrop: 'static' })
     })
   })

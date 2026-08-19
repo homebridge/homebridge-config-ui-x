@@ -152,6 +152,28 @@ describe('plugin modals', () => {
       expect(modalRef.versionsWithTags().map(v => v.tag)).toEqual(['latest', 'next', 'beta'])
     })
 
+    it('puts a tag it does not recognise after the ones it does', async () => {
+      // Plugins publish their own dist-tags, and an unknown one must not
+      // displace `latest` at the front of the shortcuts
+      const modalRef = await openVersions(makePlugin(), () => {
+        api.respond('get', /\/plugins\/lookup\/.*\/versions$/, {
+          versions: versionsResponse.versions,
+          tags: { legacy: '1.0.0', latest: '2.0.0', beta: '2.1.0-beta.1' },
+        })
+      })
+
+      expect(modalRef.versionsWithTags().map(v => v.tag)).toEqual(['latest', 'beta', 'legacy'])
+    })
+
+    it('records no engine requirement for a version npm no longer describes', async () => {
+      // The kept version is built here rather than read from npm, so a plugin
+      // with no engines field must leave the requirement empty rather than
+      // rendering an undefined one
+      const modalRef = await openVersions(makePlugin({ installedVersion: '0.9.0', engines: undefined }))
+
+      expect(modalRef.versions().find(v => v.version === '0.9.0')?.engines).toBeNull()
+    })
+
     it('lists one version once per tag it carries', async () => {
       const modalRef = await openVersions()
 
