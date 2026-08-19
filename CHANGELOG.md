@@ -11,6 +11,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 ### Other Changes
 
 - ci: label fork pull requests and rename the pr-labeler caller job (#2984) (@tbaur)
+- ci: map pr-labeler branch prefixes to the repo's existing labels
 
 ### Homebridge Dependencies
 
