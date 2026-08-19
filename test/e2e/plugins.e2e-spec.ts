@@ -1524,6 +1524,33 @@ describe('PluginController (e2e)', () => {
 
       expect(plugin.updateAvailable).toBe(false)
     })
+
+    it('keeps the stable when the requested tag does not exist', async () => {
+      // Most packages publish no beta tag, so the candidate is undefined. Only
+      // beatsInstalled guarded it, leaving beatsStable to call gt(undefined) as
+      // soon as a stable update existed, which aborted the whole npm lookup.
+      const plugin = await check({
+        installed: '11.29.0',
+        stable: '11.29.3',
+        preferBetas: true,
+      })
+
+      expect(plugin.latestVersion).toBe('11.29.3')
+      expect(plugin.updateAvailable).toBe(true)
+      expect(plugin.updateTag).toBeNull()
+    })
+
+    it('reports no update when the requested tag does not exist', async () => {
+      const plugin = await check({
+        installed: '11.29.3',
+        stable: '11.29.3',
+        preferBetas: true,
+      })
+
+      expect(plugin.latestVersion).toBe('11.29.3')
+      expect(plugin.updateAvailable).toBe(false)
+      expect(plugin.updateTag).toBeNull()
+    })
   })
 
   describe('getAllowedInstallScripts (#2909)', () => {
