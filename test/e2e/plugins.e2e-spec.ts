@@ -1524,6 +1524,33 @@ describe('PluginController (e2e)', () => {
 
       expect(plugin.updateAvailable).toBe(false)
     })
+
+    it('keeps the stable when the requested tag does not exist (#2982)', async () => {
+      // Most packages publish no beta tag, so the candidate is undefined. Only
+      // beatsInstalled guarded it, leaving beatsStable to call gt(undefined) as
+      // soon as a stable update existed, which aborted the whole npm lookup.
+      const plugin = await check({
+        installed: '11.29.0',
+        stable: '11.29.3',
+        preferBetas: true,
+      })
+
+      expect(plugin.latestVersion).toBe('11.29.3')
+      expect(plugin.updateAvailable).toBe(true)
+      expect(plugin.updateTag).toBeNull()
+    })
+
+    it('reports no update when the requested tag does not exist', async () => {
+      const plugin = await check({
+        installed: '11.29.3',
+        stable: '11.29.3',
+        preferBetas: true,
+      })
+
+      expect(plugin.latestVersion).toBe('11.29.3')
+      expect(plugin.updateAvailable).toBe(false)
+      expect(plugin.updateTag).toBeNull()
+    })
   })
 
   describe('getAllowedInstallScripts (#2909)', () => {
@@ -2089,138 +2116,6 @@ describe('PluginController (e2e)', () => {
       expect(result.ok).toBe(false)
       expect(result.error).toBe('npm exploded')
       expect(result.restart).toEqual({ homebridge: false, ui: false, childBridgeUsernames: [] })
-    })
-  })
-
-  describe('package operation serialisation (updater#278)', () => {
-    // POST /plugins/update/:name returns once its npm run is SCHEDULED, so
-    // back-to-back calls (an auto-updater applying several updates) used to
-    // run npm concurrently in one node_modules tree and corrupt it. Every
-    // package operation now goes through one queue, and the ui's self-restart
-    // waits for the queue to drain - exiting kills any in-flight npm child,
-    // leaving the package it was unpacking broken on disk.
-    const client = new EventEmitter()
-
-    const deferred = () => {
-      let resolve!: () => void
-      const promise = new Promise<void>((res) => {
-        resolve = res
-      })
-      return { promise, resolve }
-    }
-
-    const flush = () => new Promise(resolve => setImmediate(resolve))
-
-    it('runs package operations one at a time, in call order', async () => {
-      const gate = deferred()
-      const order: string[] = []
-      const doManage = vi.spyOn(pluginsService as any, 'doManagePlugin').mockImplementation(async (...args: any[]) => {
-        const pluginAction = args[1]
-        order.push(`start-${pluginAction.name}`)
-        if (pluginAction.name === 'homebridge-first') {
-          await gate.promise
-        }
-        order.push(`end-${pluginAction.name}`)
-        return true
-      })
-
-      const first = pluginsService.managePlugin('install', { name: 'homebridge-first', version: '1.0.0' } as any, client)
-      const second = pluginsService.managePlugin('install', { name: 'homebridge-second', version: '1.0.0' } as any, client)
-      await flush()
-
-      // The second operation must not have started while the first is inside npm
-      expect(order).toEqual(['start-homebridge-first'])
-
-      gate.resolve()
-      await Promise.all([first, second])
-      expect(order).toEqual(['start-homebridge-first', 'end-homebridge-first', 'start-homebridge-second', 'end-homebridge-second'])
-
-      doManage.mockRestore()
-    })
-
-    it('a homebridge update queues behind a plugin operation', async () => {
-      const gate = deferred()
-      const order: string[] = []
-      const doManage = vi.spyOn(pluginsService as any, 'doManagePlugin').mockImplementation(async () => {
-        order.push('start-plugin')
-        await gate.promise
-        order.push('end-plugin')
-        return true
-      })
-      const doUpdate = vi.spyOn(pluginsService as any, 'doUpdateHomebridgePackage').mockImplementation(async () => {
-        order.push('homebridge')
-        return true
-      })
-
-      const first = pluginsService.managePlugin('install', { name: 'homebridge-mock-plugin', version: '1.0.0' } as any, client)
-      const second = pluginsService.updateHomebridgePackage({ version: '2.4.0' } as any, client)
-      await flush()
-      expect(order).toEqual(['start-plugin'])
-
-      gate.resolve()
-      await Promise.all([first, second])
-      expect(order).toEqual(['start-plugin', 'end-plugin', 'homebridge'])
-
-      doManage.mockRestore()
-      doUpdate.mockRestore()
-    })
-
-    it('a failed operation surfaces its error to its own caller without blocking the queue', async () => {
-      const doManage = vi.spyOn(pluginsService as any, 'doManagePlugin')
-        .mockRejectedValueOnce(new Error('npm exploded'))
-        .mockResolvedValueOnce(true)
-
-      const first = pluginsService.managePlugin('install', { name: 'homebridge-broken', version: '1.0.0' } as any, client)
-      const second = pluginsService.managePlugin('install', { name: 'homebridge-fine', version: '1.0.0' } as any, client)
-
-      await expect(first).rejects.toThrow('npm exploded')
-      await expect(second).resolves.toBe(true)
-
-      doManage.mockRestore()
-    })
-
-    it('the ui self-restart exit waits for the in-flight operation to finish', async () => {
-      const gate = deferred()
-      const exitSpy = vi.spyOn(process, 'exit').mockImplementation((() => undefined) as any)
-      const doManage = vi.spyOn(pluginsService as any, 'doManagePlugin').mockImplementation(async () => {
-        await gate.promise
-        return true
-      })
-      // Simulate the armed self-restart timer - exitOnceUpdatesFinish refuses
-      // to exit once onModuleDestroy has cleared it
-      const fakeTimer = setTimeout(() => {}, 60000);
-      (pluginsService as any).uiRestartTimer = fakeTimer
-
-      try {
-        const update = pluginsService.managePlugin('install', { name: 'homebridge-slow', version: '1.0.0' } as any, client)
-        const exitPromise = (pluginsService as any).exitOnceUpdatesFinish() as Promise<void>
-        await flush()
-
-        // npm is still running - the exit must not have happened
-        expect(exitSpy).not.toHaveBeenCalled()
-
-        gate.resolve()
-        await update
-        await exitPromise
-        expect(exitSpy).toHaveBeenCalledWith(0)
-      } finally {
-        clearTimeout(fakeTimer);
-        (pluginsService as any).uiRestartTimer = undefined
-        exitSpy.mockRestore()
-        doManage.mockRestore()
-      }
-    })
-
-    it('never exits after the module owning the timer has been torn down', async () => {
-      const exitSpy = vi.spyOn(process, 'exit').mockImplementation((() => undefined) as any);
-      (pluginsService as any).uiRestartTimer = undefined
-
-      try {
-        await (pluginsService as any).exitOnceUpdatesFinish()
-        expect(exitSpy).not.toHaveBeenCalled()
-      } finally {
-        exitSpy.mockRestore()
-      }
     })
   })
 

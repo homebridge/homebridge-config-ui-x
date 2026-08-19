@@ -64,6 +64,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(auth): log a refused session refresh, and drop the routine ones to debug
 - fix(auth): clear the session cookies on logout even when the revocation write fails (#2981)
 - fix(auth): sign out only this browser when a session ends from inactivity
+- fix(plugins): keep the stable update when the requested dist-tag is missing (#2983) (@tbaur)
 
 ### Homebridge Dependencies
 
