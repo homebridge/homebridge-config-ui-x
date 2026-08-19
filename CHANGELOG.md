@@ -2,6 +2,22 @@
 
 All notable changes to `homebridge-config-ui-x` will be documented in this file. This project tries to adhere to [Semantic Versioning](http://semver.org/).
 
+## v5.28.1 (Pending Release)
+
+### UI Changes
+
+- fix: custom ui canvas follows theme changes (#2977) (@hjdhjd)
+
+### Other Changes
+
+- ci: label fork pull requests and rename the pr-labeler caller job (#2984) (@tbaur)
+
+### Homebridge Dependencies
+
+- `@homebridge/hap-client` @ `v5.2.0`
+- `@homebridge/node-pty-prebuilt-multiarch` @ `v0.14.1`
+- `@homebridge/plugin-ui-utils` @ `v2.2.5`
+
 ## v5.28.0 (2026-08-16)
 
 ### Highlights
