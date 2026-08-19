@@ -1525,7 +1525,7 @@ describe('PluginController (e2e)', () => {
       expect(plugin.updateAvailable).toBe(false)
     })
 
-    it('keeps the stable when the requested tag does not exist', async () => {
+    it('keeps the stable when the requested tag does not exist (#2982)', async () => {
       // Most packages publish no beta tag, so the candidate is undefined. Only
       // beatsInstalled guarded it, leaving beatsStable to call gt(undefined) as
       // soon as a stable update existed, which aborted the whole npm lookup.
