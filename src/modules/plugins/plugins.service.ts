@@ -2339,6 +2339,13 @@ export class PluginsService implements OnModuleDestroy {
     const targetTag = preferBetas && !installedTag ? 'beta' : installedTag
     const candidate = versions.tags[targetTag]
 
+    // Most packages publish no prerelease tag, so there is nothing to compare
+    // against. Returning here keeps the caller's stable result and stops the
+    // comparisons below from being handed an undefined version.
+    if (!candidate) {
+      return
+    }
+
     // Offer the prerelease only when it is the newest thing available. A
     // prerelease sorts below its own release (1.2.4-beta.5 < 1.2.4), so once the
     // stable overtakes the beta line we keep the stable rather than sending a
@@ -2346,7 +2353,7 @@ export class PluginsService implements OnModuleDestroy {
     // would also be left in place while the beta preference was ignored, which
     // is how a beta user ended up being offered, and shown release notes for,
     // the stable version.
-    const beatsInstalled = candidate && gt(candidate, plugin.installedVersion)
+    const beatsInstalled = gt(candidate, plugin.installedVersion)
     const beatsStable = !plugin.updateAvailable || gt(candidate, plugin.latestVersion)
 
     if (beatsInstalled && beatsStable) {
