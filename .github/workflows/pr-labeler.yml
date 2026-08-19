@@ -1,7 +1,7 @@
 name: PR Labeler
 
 on:
-  pull_request: # required for auto labeler
+  pull_request_target: # pull_request gives fork PRs a read-only token, so labelling fails
     types: [opened, reopened, synchronize]
   workflow_dispatch:
 
