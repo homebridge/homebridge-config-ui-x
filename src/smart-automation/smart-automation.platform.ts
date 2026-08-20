@@ -95,7 +95,7 @@ export class SmartAutomationPlatform {
 
     const lightService = accessory.getService(Service.Lightbulb) || accessory.addService(Service.Lightbulb)
     lightService.setCharacteristic(Characteristic.Name, automation.name)
-    this.configureLightbulbCharacteristics(accessory, lightService, automation)
+    const passThroughCharacteristics = this.configureLightbulbCharacteristics(accessory, lightService, automation, rulesEngine)
 
     const onCharacteristic = lightService.getCharacteristic(Characteristic.On)
     onCharacteristic.removeAllListeners('set')
@@ -106,6 +106,14 @@ export class SmartAutomationPlatform {
       }
       this.log.info(`${automation.name}: trigger light received ${value ? 'On' : 'Off'}.`)
       await rulesEngine.setOn(Boolean(value))
+      if (value) {
+        for (const passThrough of passThroughCharacteristics) {
+          await rulesEngine.setCharacteristic(
+            passThrough.type,
+            accessory.context.lightbulbValues[passThrough.uuid],
+          )
+        }
+      }
     })
 
     if (!(automation.enabled ?? true)) {
@@ -113,26 +121,31 @@ export class SmartAutomationPlatform {
     }
   }
 
-  private configureLightbulbCharacteristics(accessory: any, lightService: any, automation: SmartAutomationConfig) {
+  private configureLightbulbCharacteristics(
+    accessory: any,
+    lightService: any,
+    automation: SmartAutomationConfig,
+    rulesEngine: SmartAutomationRulesEngine,
+  ): Array<{ type: string, uuid: string }> {
     const { Characteristic } = this.api.hap
+    const optionalCharacteristics = [
+      { defaultValue: 100, hapType: Characteristic.Brightness, type: 'Brightness' },
+      { defaultValue: 0, hapType: Characteristic.Hue, type: 'Hue' },
+      { defaultValue: 0, hapType: Characteristic.Saturation, type: 'Saturation' },
+      { defaultValue: 140, hapType: Characteristic.ColorTemperature, type: 'ColorTemperature' },
+    ]
     const characteristicTypes = {
-      'dimmable': [Characteristic.Brightness],
-      'colour': [Characteristic.Brightness, Characteristic.Hue, Characteristic.Saturation],
-      'temperature': [Characteristic.Brightness, Characteristic.ColorTemperature],
+      'dimmable': ['Brightness'],
+      'colour': ['Brightness', 'Hue', 'Saturation'],
+      'temperature': ['Brightness', 'ColorTemperature'],
       'on-off': [],
     }
-    const allOptionalTypes = [
-      Characteristic.Brightness,
-      Characteristic.Hue,
-      Characteristic.Saturation,
-      Characteristic.ColorTemperature,
-    ]
     const desiredTypes = new Set(characteristicTypes[automation.lightbulbType])
     accessory.context.lightbulbValues ||= {}
 
-    for (const characteristicType of allOptionalTypes) {
-      const existing = lightService.characteristics.find(characteristic => characteristic.UUID === characteristicType.UUID)
-      if (!desiredTypes.has(characteristicType)) {
+    for (const definition of optionalCharacteristics) {
+      const existing = lightService.characteristics.find(characteristic => characteristic.UUID === definition.hapType.UUID)
+      if (!desiredTypes.has(definition.type)) {
         if (existing) {
           this.log.debug(`${automation.name}: removing published ${existing.displayName || existing.UUID} characteristic (${existing.UUID}).`)
           lightService.removeCharacteristic(existing)
@@ -140,23 +153,23 @@ export class SmartAutomationPlatform {
         continue
       }
 
-      const characteristic = lightService.getCharacteristic(characteristicType)
-      const defaultValue = characteristicType === Characteristic.Brightness
-        ? 100
-        : characteristicType === Characteristic.ColorTemperature
-          ? 140
-          : 0
-      accessory.context.lightbulbValues[characteristicType.UUID] ??= defaultValue
-      this.log.debug(`${automation.name}: publishing ${characteristic.displayName || characteristicType.UUID} characteristic (${characteristicType.UUID}) with value ${String(accessory.context.lightbulbValues[characteristicType.UUID])}.`)
+      const characteristic = lightService.getCharacteristic(definition.hapType)
+      accessory.context.lightbulbValues[definition.hapType.UUID] ??= definition.defaultValue
+      this.log.debug(`${automation.name}: publishing ${characteristic.displayName || definition.hapType.UUID} characteristic (${definition.hapType.UUID}) with value ${String(accessory.context.lightbulbValues[definition.hapType.UUID])}.`)
       characteristic.removeAllListeners('get')
       characteristic.removeAllListeners('set')
-      characteristic.onGet(() => accessory.context.lightbulbValues[characteristicType.UUID])
-      characteristic.onSet((value: string | number | boolean) => {
-        const previousValue = accessory.context.lightbulbValues[characteristicType.UUID]
-        this.log.debug(`${automation.name}: published ${characteristic.displayName || characteristicType.UUID} changed ${String(previousValue)} -> ${String(value)}.`)
-        accessory.context.lightbulbValues[characteristicType.UUID] = value
+      characteristic.onGet(() => accessory.context.lightbulbValues[definition.hapType.UUID])
+      characteristic.onSet(async (value: string | number | boolean) => {
+        const previousValue = accessory.context.lightbulbValues[definition.hapType.UUID]
+        this.log.debug(`${automation.name}: published ${characteristic.displayName || definition.hapType.UUID} changed ${String(previousValue)} -> ${String(value)}.`)
+        accessory.context.lightbulbValues[definition.hapType.UUID] = value
+        await rulesEngine.setCharacteristic(definition.type, value)
       })
     }
+
+    return optionalCharacteristics
+      .filter(definition => desiredTypes.has(definition.type))
+      .map(definition => ({ type: definition.type, uuid: definition.hapType.UUID }))
   }
 
   private getAutomations(): SmartAutomationConfig[] {

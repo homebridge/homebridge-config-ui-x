@@ -128,7 +128,34 @@ describe('SmartLightGroupRulesEngine', () => {
     const debugOutput = log.debug.mock.calls.flat().join('\n')
     expect(debugOutput).toContain('captured light-1.On=false')
     expect(debugOutput).toContain('captured light-1.Brightness=42')
-    expect(debugOutput).toContain('turn on light-1.On: false -> On')
+    expect(debugOutput).toContain('turn on light-1.On: false -> true')
     expect(debugOutput).toContain('restore light-1.Brightness: 80 -> 42')
+  })
+
+  it('passes published light settings through while active and restores the original values on Off', async () => {
+    const brightness = createCharacteristic('Brightness', 20)
+    const light = createLight('light-1', true, [brightness])
+    const accessories = { getServices: vi.fn(async () => [light.service]) }
+    const log = {
+      debug: vi.fn(),
+      info: vi.fn(),
+      warn: vi.fn(),
+    }
+    const engine = new SmartLightGroupRulesEngine(config, accessories, log)
+
+    await engine.setCharacteristic('Brightness', 40)
+    expect(brightness.value).toBe(20)
+
+    await engine.setOn(true)
+    await engine.setCharacteristic('Brightness', 60)
+    expect(brightness.value).toBe(60)
+
+    await engine.setOn(false)
+    expect(brightness.value).toBe(20)
+    expect(light.characteristic.value).toBe(true)
+
+    const debugOutput = log.debug.mock.calls.flat().join('\n')
+    expect(debugOutput).toContain('ignoring Brightness=40 because the trigger light is off')
+    expect(debugOutput).toContain('set Brightness light-1.Brightness: 20 -> 60')
   })
 })
