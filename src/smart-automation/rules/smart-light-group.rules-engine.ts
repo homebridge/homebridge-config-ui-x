@@ -4,7 +4,10 @@ import type { SmartAutomationAccessoryController, SmartAutomationRulesEngine, Sm
 
 interface SavedLightState {
   uniqueId: string
-  on: boolean
+  characteristics: Array<{
+    type: string
+    value: string | number | boolean
+  }>
 }
 
 export class SmartLightGroupRulesEngine implements SmartAutomationRulesEngine {
@@ -36,12 +39,19 @@ export class SmartLightGroupRulesEngine implements SmartAutomationRulesEngine {
   private async turnOn(lights: ServiceType[]): Promise<void> {
     if (this.savedState === null) {
       this.savedState = lights.flatMap((light) => {
-        const characteristic = light.getCharacteristic('On')
-        return characteristic?.value === undefined
+        const characteristics = light.serviceCharacteristics
+          .filter(characteristic => characteristic.canWrite && characteristic.value !== undefined)
+          .map(characteristic => ({
+            type: characteristic.type,
+            value: characteristic.value as string | number | boolean,
+          }))
+
+        return characteristics.length === 0
           ? []
-          : [{ uniqueId: light.uniqueId, on: Boolean(characteristic.value) }]
+          : [{ uniqueId: light.uniqueId, characteristics }]
       })
-      this.log.info(`[Smart Automation] ${this.config.name}: saved the state of ${this.savedState.length} light${this.savedState.length === 1 ? '' : 's'}.`)
+      const characteristicCount = this.savedState.reduce((count, state) => count + state.characteristics.length, 0)
+      this.log.info(`[Smart Automation] ${this.config.name}: saved ${characteristicCount} writable characteristics across ${this.savedState.length} light${this.savedState.length === 1 ? '' : 's'}.`)
     } else {
       this.log.debug(`[Smart Automation] ${this.config.name}: keeping the existing saved state for repeated On.`)
     }
@@ -59,9 +69,45 @@ export class SmartLightGroupRulesEngine implements SmartAutomationRulesEngine {
       return
     }
 
-    const previousValues = new Map(savedState.map(state => [state.uniqueId, state.on]))
-    await this.writeLightStates(lights, light => previousValues.get(light.uniqueId) ?? false, 'restore')
+    await this.restoreLightStates(lights, savedState)
     this.log.info(`[Smart Automation] ${this.config.name}: restored and cleared the saved light state.`)
+  }
+
+  private async restoreLightStates(lights: ServiceType[], savedState: SavedLightState[]): Promise<void> {
+    const lightsById = new Map(lights.map(light => [light.uniqueId, light]))
+
+    for (const state of savedState) {
+      const light = lightsById.get(state.uniqueId)
+      if (!light) {
+        this.log.warn(`[Smart Automation] ${this.config.name}: could not find ${state.uniqueId} while restoring state.`)
+        continue
+      }
+
+      const characteristics = [...state.characteristics].sort((first, second) => {
+        if (first.type === 'On') {
+          return 1
+        }
+        if (second.type === 'On') {
+          return -1
+        }
+        return 0
+      })
+
+      for (const stateCharacteristic of characteristics) {
+        const characteristic = light.getCharacteristic(stateCharacteristic.type)
+        if (!characteristic?.canWrite) {
+          this.log.warn(`[Smart Automation] ${this.config.name}: ${state.uniqueId} no longer has a writable ${stateCharacteristic.type} characteristic.`)
+          continue
+        }
+
+        try {
+          this.log.debug(`[Smart Automation] ${this.config.name}: restore ${state.uniqueId}.${stateCharacteristic.type} -> ${String(stateCharacteristic.value)}.`)
+          await characteristic.setValue(stateCharacteristic.value)
+        } catch (error) {
+          this.log.warn(`[Smart Automation] ${this.config.name}: failed to restore ${stateCharacteristic.type} for ${state.uniqueId}: ${error?.message || error}`)
+        }
+      }
+    }
   }
 
   private async writeLightStates(
