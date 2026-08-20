@@ -11,6 +11,7 @@ import { SmartAutomationListComponent } from '@/app/modules/smart-automations/sm
 interface ConfigPlatformBlock {
   platform: string
   name?: string
+  debug?: boolean
   _bridge?: {
     username?: string
     pin?: string
@@ -41,6 +42,7 @@ export class SmartAutomationsComponent implements OnInit, OnDestroy {
 
   public isAdmin = this.$auth.user.admin
   public readonly smartAutomations = signal<SmartAutomation[]>([])
+  public readonly debugEnabled = signal(false)
   public readonly selectedLightUniqueIds = signal<string[]>([])
   public smartAutomationDraft: Partial<SmartAutomation> = {
     type: 'smart-light-group',
@@ -135,6 +137,15 @@ export class SmartAutomationsComponent implements OnInit, OnDestroy {
     }
   }
 
+  public async setDebugLogging(enabled: boolean): Promise<void> {
+    this.debugEnabled.set(enabled)
+    await this.syncSmartAutomationChildBridgeConfig()
+  }
+
+  public onDebugLoggingChange(event: Event): void {
+    void this.setDebugLogging((event.target as HTMLInputElement).checked)
+  }
+
   private async loadSmartAutomationConfig(): Promise<void> {
     if (!this.isAdmin) {
       return
@@ -146,6 +157,7 @@ export class SmartAutomationsComponent implements OnInit, OnDestroy {
         || configBlocks.find(block => block.platform === 'config')
       const switches = (smartAutomationBlock?.smartAutomations || []).filter(a => typeof a?.name === 'string')
       this.smartAutomations.set(switches)
+      this.debugEnabled.set(smartAutomationBlock?.debug === true)
     } catch (error) {
       console.error(error)
     }
@@ -178,6 +190,7 @@ export class SmartAutomationsComponent implements OnInit, OnDestroy {
         ...(current || {}),
         platform: SMART_AUTOMATION_PLATFORM,
         name: current?.name || 'Smart Automation',
+        debug: this.debugEnabled(),
         _bridge: nextBridge,
         smartAutomations: this.smartAutomations().map(automation => ({ ...automation })),
       }
