@@ -21,7 +21,7 @@
     "@angular/platform-browser": "22.1.2",
     "@angular/router": "22.1.2",
     "@auth0/angular-jwt": "5.2.0",
-    "@homebridge/hap-client": "5.2.0",
+    "@homebridge/hap-client": "5.2.1",
     "@ng-bootstrap/ng-bootstrap": "21.0.0",
     "@ng-formworks/bootstrap5": "21.7.0",
     "@ng-formworks/core": "21.7.0",
