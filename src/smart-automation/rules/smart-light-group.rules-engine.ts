@@ -25,6 +25,17 @@ export class SmartLightGroupRulesEngine implements SmartAutomationRulesEngine {
     await (value ? this.turnOn(lights) : this.turnOff(lights))
   }
 
+  public async setCharacteristic(type: string, value: string | number | boolean): Promise<void> {
+    if (this.savedState === null) {
+      this.log.debug(`${this.config.name}: ignoring ${type}=${String(value)} because the trigger light is off.`)
+      return
+    }
+
+    const lights = await this.getLights()
+    this.log.debug(`${this.config.name}: passing through ${type}=${String(value)} to ${lights.length} resolved light${lights.length === 1 ? '' : 's'}.`)
+    await this.writeCharacteristicStates(lights, type, () => value, `set ${type}`)
+  }
+
   private async getLights(): Promise<ServiceType[]> {
     const uniqueIds = new Set(this.config.uniqueIds)
     const services = await this.accessories.getServices()
@@ -129,16 +140,25 @@ export class SmartLightGroupRulesEngine implements SmartAutomationRulesEngine {
     getValue: (light: ServiceType) => boolean,
     operation: string,
   ): Promise<void> {
+    await this.writeCharacteristicStates(lights, 'On', getValue, operation)
+  }
+
+  private async writeCharacteristicStates(
+    lights: ServiceType[],
+    type: string,
+    getValue: (light: ServiceType) => string | number | boolean,
+    operation: string,
+  ): Promise<void> {
     for (const light of lights) {
-      const characteristic = light.getCharacteristic('On')
+      const characteristic = light.getCharacteristic(type)
       if (!characteristic?.canWrite) {
-        this.log.warn(`${this.config.name}: ${light.uniqueId} has no writable On characteristic.`)
+        this.log.warn(`${this.config.name}: ${light.uniqueId} has no writable ${type} characteristic.`)
         continue
       }
 
       try {
         const value = getValue(light)
-        this.log.debug(`${this.config.name}: ${operation} ${light.uniqueId}.On: ${String(characteristic.value)} -> ${value ? 'On' : 'Off'}.`)
+        this.log.debug(`${this.config.name}: ${operation} ${light.uniqueId}.${type}: ${String(characteristic.value)} -> ${String(value)}.`)
         await characteristic.setValue(value)
       } catch (error) {
         this.log.warn(`${this.config.name}: failed to ${operation} ${light.uniqueId}: ${error?.message || error}`)

@@ -28,7 +28,7 @@ export class SmartAutomationFormComponent {
 
   public getAutomationDescription(type: SmartAutomation['type'] | undefined): string {
     if (type === 'smart-light-group') {
-      return 'Publishes a light that stores all writable characteristics for the selected lights, then restores their complete saved state when turned off. Designed for use with Siri or other voice assistants; it does not work through direct control in the Home app.'
+      return 'Publishes a light that stores the selected lights’ complete state, passes brightness and colour changes through while on, then restores the original state when turned off. Designed for use with Siri or other voice assistants; it does not work through direct control in the Home app.'
     }
 
     return 'Select an automation type to see how it works.'

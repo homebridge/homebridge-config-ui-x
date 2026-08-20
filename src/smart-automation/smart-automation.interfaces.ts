@@ -17,4 +17,5 @@ export interface SmartAutomationAccessoryController {
 
 export interface SmartAutomationRulesEngine {
   setOn: (value: boolean) => Promise<void>
+  setCharacteristic: (type: string, value: string | number | boolean) => Promise<void>
 }
