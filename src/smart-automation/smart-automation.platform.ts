@@ -37,6 +37,7 @@ export class SmartAutomationPlatform {
       const PlatformAccessory = this.api.platformAccessory
       const accessory = existing || new PlatformAccessory(automation.name, uuid)
       const rulesEngine = this.createRulesEngine(automation)
+      this.log.info(`${automation.name}: configured ${automation.lightbulbType} trigger light for ${automation.uniqueIds.length} group light${automation.uniqueIds.length === 1 ? '' : 's'}.`)
       this.log.debug(`${automation.name}: configuration id=${automation.id}, type=${automation.type}, publishedLight=${automation.lightbulbType}, enabled=${automation.enabled}, lights=[${automation.uniqueIds.join(', ')}].`)
 
       desiredUuids.add(uuid)
@@ -108,9 +109,11 @@ export class SmartAutomationPlatform {
       await rulesEngine.setOn(Boolean(value))
       if (value) {
         for (const passThrough of passThroughCharacteristics) {
+          const passThroughValue = accessory.context.lightbulbValues[passThrough.uuid]
+          this.log.info(`${automation.name}: applying published ${passThrough.type}=${String(passThroughValue)} after On.`)
           await rulesEngine.setCharacteristic(
             passThrough.type,
-            accessory.context.lightbulbValues[passThrough.uuid],
+            passThroughValue,
           )
         }
       }
@@ -161,6 +164,7 @@ export class SmartAutomationPlatform {
       characteristic.onGet(() => accessory.context.lightbulbValues[definition.hapType.UUID])
       characteristic.onSet(async (value: string | number | boolean) => {
         const previousValue = accessory.context.lightbulbValues[definition.hapType.UUID]
+        this.log.info(`${automation.name}: published ${definition.type} received ${String(value)}.`)
         this.log.debug(`${automation.name}: published ${characteristic.displayName || definition.hapType.UUID} changed ${String(previousValue)} -> ${String(value)}.`)
         accessory.context.lightbulbValues[definition.hapType.UUID] = value
         await rulesEngine.setCharacteristic(definition.type, value)
