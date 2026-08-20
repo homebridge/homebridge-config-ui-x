@@ -47,7 +47,6 @@ export class SmartAutomationsComponent implements OnInit, OnDestroy {
 
   public isAdmin = this.$auth.user.admin
   public readonly smartAutomations = signal<SmartAutomation[]>([])
-  public readonly automationSwitchStates = signal<Record<string, boolean>>({})
   public readonly smartAutomationChildBridge = signal<ChildBridgeStatusResponse | null>(null)
   public readonly configuredChildBridge = signal<ConfigPlatformBlock['_bridge'] | null>(null)
   public readonly configuredChildBridgeSwitches = signal<SmartAutomation[]>([])
@@ -55,12 +54,9 @@ export class SmartAutomationsComponent implements OnInit, OnDestroy {
   public readonly selectedLightUniqueIds = signal<string[]>([])
   public smartAutomationDraft: Partial<SmartAutomation> = {
     type: 'smart-light-group',
-    restoreAfterMs: 30000,
     uniqueIds: [],
     enabled: true,
   }
-
-  private automationSwitchResetTimers = new Map<string, ReturnType<typeof setTimeout>>()
 
   public get rooms(): Array<{ name: string, isDefault?: boolean, services: ServiceTypeX[] }> {
     return this.$accessories.rooms()
@@ -70,7 +66,7 @@ export class SmartAutomationsComponent implements OnInit, OnDestroy {
     this.$settings.setPageTitle('Smart Automation')
 
     void this.$accessories.start()
-      .then(() => this.loadSmartAutomations())
+      .then(() => this.loadSmartAutomationChildBridgeConfig())
       .catch((error) => {
         console.error(error)
       })
@@ -80,8 +76,6 @@ export class SmartAutomationsComponent implements OnInit, OnDestroy {
 
   public ngOnDestroy(): void {
     this.$accessories.stop()
-    this.automationSwitchResetTimers.forEach(timer => clearTimeout(timer))
-    this.automationSwitchResetTimers.clear()
     this.ioChild?.end?.()
   }
 
@@ -106,7 +100,14 @@ export class SmartAutomationsComponent implements OnInit, OnDestroy {
         enabled: this.smartAutomationDraft.enabled ?? true,
       }
 
-      const saved = await this.$accessories.saveSmartAutomation(draft)
+      const saved = {
+        ...draft,
+        id: draft.id || globalThis.crypto.randomUUID(),
+        name: draft.name?.trim(),
+      } as SmartAutomation
+      if (!saved.name || !saved.uniqueIds.length) {
+        return
+      }
       const current = this.smartAutomations()
       const exists = current.some(item => item.id === saved.id)
       this.smartAutomations.set(exists
@@ -122,9 +123,7 @@ export class SmartAutomationsComponent implements OnInit, OnDestroy {
 
   public async deleteSmartAutomation(id: string): Promise<void> {
     try {
-      await this.$accessories.deleteSmartAutomation(id)
       this.smartAutomations.set(this.smartAutomations().filter(x => x.id !== id))
-      this.clearAutomationSwitchState(id)
       if (this.smartAutomationDraft.id === id) {
         this.resetSmartAutomationDraft()
       }
@@ -134,46 +133,13 @@ export class SmartAutomationsComponent implements OnInit, OnDestroy {
     }
   }
 
-  public runSmartAutomation(automation: SmartAutomation): void {
-    this.$accessories.runSmartLightGroupAutomation(automation.uniqueIds, automation.restoreAfterMs)
-  }
-
-  public toggleAutomationSwitch(automation: SmartAutomation, enabled: boolean): void {
-    if (!automation.enabled) {
-      this.setAutomationSwitchState(automation.id, false)
-      return
-    }
-
-    this.setAutomationSwitchState(automation.id, enabled)
-
-    if (!enabled) {
-      this.clearAutomationResetTimer(automation.id)
-      return
-    }
-
-    this.runSmartAutomation(automation)
-    this.clearAutomationResetTimer(automation.id)
-    const resetAfterMs = Number.isInteger(automation.restoreAfterMs) && automation.restoreAfterMs > 0
-      ? automation.restoreAfterMs
-      : 30000
-
-    const timer = setTimeout(() => {
-      this.setAutomationSwitchState(automation.id, false)
-      this.clearAutomationResetTimer(automation.id)
-    }, resetAfterMs)
-    this.automationSwitchResetTimers.set(automation.id, timer)
-  }
-
   public async setSmartAutomationEnabled(automation: SmartAutomation, enabled: boolean): Promise<void> {
     try {
-      const saved = await this.$accessories.saveSmartAutomation({
+      const saved = {
         ...automation,
         enabled,
-      })
-      this.smartAutomations.update(current => current.map(item => item.id === saved.id ? saved : item))
-      if (!enabled) {
-        this.clearAutomationSwitchState(automation.id)
       }
+      this.smartAutomations.update(current => current.map(item => item.id === saved.id ? saved : item))
       await this.syncSmartAutomationChildBridgeConfig()
     } catch (error) {
       console.error(error)
@@ -253,15 +219,6 @@ export class SmartAutomationsComponent implements OnInit, OnDestroy {
     }
   }
 
-  private async loadSmartAutomations(): Promise<void> {
-    try {
-      this.smartAutomations.set(await this.$accessories.getSmartAutomations())
-      await this.loadSmartAutomationChildBridgeConfig()
-    } catch (error) {
-      console.error(error)
-    }
-  }
-
   private async loadSmartAutomationChildBridgeConfig(): Promise<void> {
     if (!this.isAdmin) {
       return
@@ -272,6 +229,7 @@ export class SmartAutomationsComponent implements OnInit, OnDestroy {
       const smartAutomationBlock = configBlocks.find(block => block.platform === SMART_AUTOMATION_PLATFORM)
         || configBlocks.find(block => block.platform === 'config')
       const switches = (smartAutomationBlock?.smartAutomations || []).filter(a => typeof a?.name === 'string')
+      this.smartAutomations.set(switches)
       this.configuredChildBridge.set(smartAutomationBlock?._bridge || null)
       this.configuredChildBridgeSwitches.set(switches)
       this.configuredChildBridgeSwitchNames.set(switches.map(automation => automation.name).join(', '))
@@ -344,35 +302,9 @@ export class SmartAutomationsComponent implements OnInit, OnDestroy {
   private resetSmartAutomationDraft(): void {
     this.smartAutomationDraft = {
       type: 'smart-light-group',
-      restoreAfterMs: 30000,
       uniqueIds: [],
       enabled: true,
     }
     this.selectedLightUniqueIds.set([])
-  }
-
-  private setAutomationSwitchState(id: string, enabled: boolean): void {
-    this.automationSwitchStates.update((current) => {
-      const next = { ...current }
-      if (enabled) {
-        next[id] = true
-      } else {
-        delete next[id]
-      }
-      return next
-    })
-  }
-
-  private clearAutomationResetTimer(id: string): void {
-    const timer = this.automationSwitchResetTimers.get(id)
-    if (timer) {
-      clearTimeout(timer)
-      this.automationSwitchResetTimers.delete(id)
-    }
-  }
-
-  private clearAutomationSwitchState(id: string): void {
-    this.setAutomationSwitchState(id, false)
-    this.clearAutomationResetTimer(id)
   }
 }

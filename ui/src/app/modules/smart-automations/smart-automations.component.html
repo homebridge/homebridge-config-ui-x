@@ -81,8 +81,6 @@
   <div class="col-lg-6 mb-3">
     <app-smart-automation-list
       [automations]="smartAutomations()"
-      [automationSwitchStates]="automationSwitchStates()"
-      (toggleSwitch)="toggleAutomationSwitch($event.automation, $event.enabled)"
       (setEnabled)="setSmartAutomationEnabled($event.automation, $event.enabled)"
       (edit)="editSmartAutomation($event)"
       (delete)="deleteSmartAutomation($event)"
