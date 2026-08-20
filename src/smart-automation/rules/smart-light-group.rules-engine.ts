@@ -32,6 +32,7 @@ export class SmartLightGroupRulesEngine implements SmartAutomationRulesEngine {
     }
 
     const lights = await this.getLights()
+    this.log.info(`${this.config.name}: passing ${type}=${String(value)} through to ${lights.length} light${lights.length === 1 ? '' : 's'}.`)
     this.log.debug(`${this.config.name}: passing through ${type}=${String(value)} to ${lights.length} resolved light${lights.length === 1 ? '' : 's'}.`)
     await this.writeCharacteristicStates(lights, type, () => value, `set ${type}`)
   }
