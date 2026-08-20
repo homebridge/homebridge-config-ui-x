@@ -1,13 +1,9 @@
-import { ChangeDetectionStrategy, Component, DestroyRef, inject, OnDestroy, OnInit, signal } from '@angular/core'
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
-import { firstValueFrom } from 'rxjs'
+import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit, signal } from '@angular/core'
 
 import { ServiceTypeX, SmartAutomation } from '@/app/core/accessories/accessories.interfaces'
 import { AccessoriesService } from '@/app/core/accessories/accessories.service'
 import { AuthService } from '@/app/core/auth/auth.service'
 import { ApiService } from '@/app/core/communication/api.service'
-import { IoNamespace, WsService } from '@/app/core/communication/ws.service'
-import { ChildBridgeStatusResponse } from '@/app/core/server.interfaces'
 import { SettingsService } from '@/app/core/ui/settings.service'
 import { SmartAutomationFormComponent } from '@/app/modules/smart-automations/smart-automation-form/smart-automation-form.component'
 import { SmartAutomationListComponent } from '@/app/modules/smart-automations/smart-automation-list/smart-automation-list.component'
@@ -34,6 +30,7 @@ const SMART_AUTOMATION_PLATFORM = 'smart-automation'
   ],
   standalone: true,
   templateUrl: './smart-automations.component.html',
+  styleUrl: './smart-automations.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SmartAutomationsComponent implements OnInit, OnDestroy {
@@ -41,16 +38,9 @@ export class SmartAutomationsComponent implements OnInit, OnDestroy {
   private $api = inject(ApiService)
   private $auth = inject(AuthService)
   private $settings = inject(SettingsService)
-  private $ws = inject(WsService)
-  private destroyRef = inject(DestroyRef)
-  private ioChild!: IoNamespace
 
   public isAdmin = this.$auth.user.admin
   public readonly smartAutomations = signal<SmartAutomation[]>([])
-  public readonly smartAutomationChildBridge = signal<ChildBridgeStatusResponse | null>(null)
-  public readonly configuredChildBridge = signal<ConfigPlatformBlock['_bridge'] | null>(null)
-  public readonly configuredChildBridgeSwitches = signal<SmartAutomation[]>([])
-  public readonly configuredChildBridgeSwitchNames = signal<string>('')
   public readonly selectedLightUniqueIds = signal<string[]>([])
   public smartAutomationDraft: Partial<SmartAutomation> = {
     type: 'smart-light-group',
@@ -66,17 +56,14 @@ export class SmartAutomationsComponent implements OnInit, OnDestroy {
     this.$settings.setPageTitle('Smart Automation')
 
     void this.$accessories.start()
-      .then(() => this.loadSmartAutomationChildBridgeConfig())
+      .then(() => this.loadSmartAutomationConfig())
       .catch((error) => {
         console.error(error)
       })
-
-    this.setupSmartAutomationChildBridgeMonitoring()
   }
 
   public ngOnDestroy(): void {
     this.$accessories.stop()
-    this.ioChild?.end?.()
   }
 
   public toggleLightSelection(uniqueId: string, selected: boolean): void {
@@ -146,80 +133,7 @@ export class SmartAutomationsComponent implements OnInit, OnDestroy {
     }
   }
 
-  public async restartSmartAutomationChildBridge(): Promise<void> {
-    const bridge = this.smartAutomationChildBridge()
-    if (!bridge?.username || !this.ioChild?.request) {
-      return
-    }
-
-    try {
-      await firstValueFrom(this.ioChild.request('restart-child-bridge', bridge.username))
-    } catch (error) {
-      console.error(error)
-    }
-  }
-
-  public async startSmartAutomationChildBridge(): Promise<void> {
-    const bridge = this.smartAutomationChildBridge()
-    if (!bridge?.username || !this.ioChild?.request) {
-      return
-    }
-
-    try {
-      await firstValueFrom(this.ioChild.request('start-child-bridge', bridge.username))
-    } catch (error) {
-      console.error(error)
-    }
-  }
-
-  public async stopSmartAutomationChildBridge(): Promise<void> {
-    const bridge = this.smartAutomationChildBridge()
-    if (!bridge?.username || !this.ioChild?.request) {
-      return
-    }
-
-    try {
-      await firstValueFrom(this.ioChild.request('stop-child-bridge', bridge.username))
-    } catch (error) {
-      console.error(error)
-    }
-  }
-
-  public async configureSmartAutomationChildBridge(): Promise<void> {
-    await this.syncSmartAutomationChildBridgeConfig()
-  }
-
-  private setupSmartAutomationChildBridgeMonitoring(): void {
-    this.ioChild = this.$ws.connectToNamespace('child-bridges')
-    this.ioChild.connected!.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
-      this.ioChild.socket.emit('monitor-child-bridge-status')
-      this.fetchChildBridges()
-    })
-
-    this.ioChild.socket.on('child-bridge-status-update', (data: ChildBridgeStatusResponse) => {
-      this.updateSmartAutomationChildBridge([data])
-    })
-  }
-
-  private fetchChildBridges(): void {
-    this.ioChild.request('get-homebridge-child-bridge-status').subscribe((data: ChildBridgeStatusResponse[]) => {
-      this.updateSmartAutomationChildBridge(data, true)
-    })
-  }
-
-  private updateSmartAutomationChildBridge(bridges: ChildBridgeStatusResponse[], resetIfMissing = false): void {
-    const smartAutomationBridge = bridges.find(bridge =>
-      bridge.plugin === 'homebridge-config-ui-x'
-      && bridge.name?.toLowerCase() === 'smart automation',
-    )
-    if (smartAutomationBridge) {
-      this.smartAutomationChildBridge.set(smartAutomationBridge)
-    } else if (resetIfMissing) {
-      this.smartAutomationChildBridge.set(null)
-    }
-  }
-
-  private async loadSmartAutomationChildBridgeConfig(): Promise<void> {
+  private async loadSmartAutomationConfig(): Promise<void> {
     if (!this.isAdmin) {
       return
     }
@@ -230,9 +144,6 @@ export class SmartAutomationsComponent implements OnInit, OnDestroy {
         || configBlocks.find(block => block.platform === 'config')
       const switches = (smartAutomationBlock?.smartAutomations || []).filter(a => typeof a?.name === 'string')
       this.smartAutomations.set(switches)
-      this.configuredChildBridge.set(smartAutomationBlock?._bridge || null)
-      this.configuredChildBridgeSwitches.set(switches)
-      this.configuredChildBridgeSwitchNames.set(switches.map(automation => automation.name).join(', '))
     } catch (error) {
       console.error(error)
     }
@@ -275,11 +186,6 @@ export class SmartAutomationsComponent implements OnInit, OnDestroy {
       }
 
       await this.$api.post('/config-editor/plugin/homebridge-config-ui-x', configBlocks)
-      this.configuredChildBridge.set(nextBridge)
-      const switches = this.smartAutomations().map(automation => ({ ...automation }))
-      this.configuredChildBridgeSwitches.set(switches)
-      this.configuredChildBridgeSwitchNames.set(switches.map(automation => automation.name).join(', '))
-      this.fetchChildBridges()
     } catch (error) {
       console.error(error)
     }

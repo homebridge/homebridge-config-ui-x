@@ -9,9 +9,9 @@ import { HapClient } from '@homebridge/hap-client'
 export class HapSmartAutomationAccessoryController implements SmartAutomationAccessoryController {
   private readonly hapClient: HapClient | null
 
-  constructor(configPath: string | undefined, logger: any) {
+  constructor(configPath: string | undefined, private readonly log: any) {
     if (!configPath) {
-      logger.warn('[Smart Automation] Could not determine the Homebridge config path.')
+      this.log.warn('[Smart Automation] Could not determine the Homebridge config path.')
       this.hapClient = null
       return
     }
@@ -25,16 +25,22 @@ export class HapSmartAutomationAccessoryController implements SmartAutomationAcc
 
       this.hapClient = new HapClient({
         pin,
-        logger,
+        logger: this.log,
         config: config?.platforms?.find(platform => platform?.platform === 'config')?.ui?.accessoryControl || {},
       })
     } catch (error) {
-      logger.warn(`[Smart Automation] Failed to initialise accessory control: ${error?.message || error}`)
+      this.log.warn(`[Smart Automation] Failed to initialise accessory control: ${error?.message || error}`)
       this.hapClient = null
     }
   }
 
   public async getServices(): Promise<ServiceType[]> {
-    return this.hapClient ? await this.hapClient.getAllServices() : []
+    if (!this.hapClient) {
+      return []
+    }
+
+    const services = await this.hapClient.getAllServices()
+    this.log.debug(`[Smart Automation] Discovered ${services.length} Homebridge services.`)
+    return services
   }
 }

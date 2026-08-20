@@ -28,7 +28,10 @@ export class SmartAutomationPlatform {
     const existingAccessories: any[] = []
     const desiredUuids = new Set<string>()
 
-    for (const automation of this.getAutomations()) {
+    const automations = this.getAutomations()
+    this.log.info(`[Smart Automation] Starting engine with ${automations.length} configured automation${automations.length === 1 ? '' : 's'}.`)
+
+    for (const automation of automations) {
       const uuid = this.api.hap.uuid.generate(`smart-automation:${automation.id}`)
       const existing = this.accessories.get(uuid)
       const PlatformAccessory = this.api.platformAccessory
@@ -39,6 +42,7 @@ export class SmartAutomationPlatform {
       this.configureTriggerSwitch(accessory, automation, rulesEngine)
       this.accessories.set(uuid, accessory)
       ;(existing ? existingAccessories : newAccessories).push(accessory)
+      this.log.debug(`[Smart Automation] ${automation.name}: ${existing ? 'restored' : 'created'} trigger switch (${automation.id}).`)
     }
 
     const staleAccessories = [...this.accessories.entries()]
@@ -55,6 +59,8 @@ export class SmartAutomationPlatform {
     if (staleAccessories.length) {
       this.api.unregisterPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, staleAccessories)
     }
+
+    this.log.info(`[Smart Automation] Engine ready; published ${automations.length} trigger switch${automations.length === 1 ? '' : 'es'}.`)
   }
 
   private createRulesEngine(automation: SmartAutomationConfig): SmartAutomationRulesEngine {
@@ -88,6 +94,7 @@ export class SmartAutomationPlatform {
         onCharacteristic.updateValue(false)
         return
       }
+      this.log.info(`[Smart Automation] ${automation.name}: trigger switch received ${value ? 'On' : 'Off'}.`)
       await rulesEngine.setOn(Boolean(value))
     })
 

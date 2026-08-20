@@ -1,6 +1,9 @@
-<div class="card h-100">
+<div class="card automation-editor-card">
   <div class="card-body">
-    <h5 class="card-title">Create / Edit Smart Automation</h5>
+    <div class="mb-4">
+      <h5 class="card-title mb-1">{{ draft().id ? 'Edit automation' : 'Create an automation' }}</h5>
+      <small class="text-muted">Choose an automation type and the accessories it will control.</small>
+    </div>
     <div class="mb-3">
       <label class="form-label" for="smart-automation-name">Name</label>
       <input
@@ -22,8 +25,9 @@
         <option value="smart-light-group">Smart Light Group</option>
       </select>
     </div>
-    <div class="alert alert-info mb-3" role="alert">
-      {{ getAutomationDescription(draft().type) }}
+    <div class="automation-description mb-4" role="note">
+      <i class="fas fa-circle-info" aria-hidden="true"></i>
+      <span>{{ getAutomationDescription(draft().type) }}</span>
     </div>
     <div class="form-check mb-3">
       <input
@@ -35,7 +39,10 @@
       />
       <label class="form-check-label" for="smart-automation-enabled">Enabled</label>
     </div>
-    <h6 class="mb-2">Choose Lights</h6>
+    <div class="d-flex align-items-center justify-content-between mb-2">
+      <h6 class="mb-0">Choose lights</h6>
+      <small class="text-muted">{{ selectedLightUniqueIds().length }} selected</small>
+    </div>
     <div class="smart-automation-chooser">
       @for (room of rooms(); track room.name) {
         @if (room.services.length) {
@@ -61,8 +68,11 @@
         }
       }
     </div>
-    <button type="button" class="btn btn-primary mt-3 me-2" (click)="save.emit()">
-      {{ draft().id ? 'Update Automation' : 'Create Automation' }}
-    </button>
+    <div class="d-flex justify-content-end mt-4">
+      <button type="button" class="btn btn-primary" (click)="save.emit()">
+        <i class="fas fa-check me-1" aria-hidden="true"></i>
+        {{ draft().id ? 'Save changes' : 'Create automation' }}
+      </button>
+    </div>
   </div>
 </div>
