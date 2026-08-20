@@ -29,6 +29,23 @@
       <i class="fas fa-circle-info" aria-hidden="true"></i>
       <span>{{ getAutomationDescription(draft().type) }}</span>
     </div>
+    <div class="mb-3">
+      <label class="form-label" for="smart-automation-lightbulb-type">Published Light Type</label>
+      <select
+        id="smart-automation-lightbulb-type"
+        class="form-select"
+        [ngModel]="draft().lightbulbType || 'on-off'"
+        (ngModelChange)="updateDraft('lightbulbType', $event)"
+      >
+        <option value="on-off">On/Off only</option>
+        <option value="dimmable">Dimmable</option>
+        <option value="colour">Colour</option>
+        <option value="temperature">Temperature</option>
+      </select>
+      <small class="form-text text-muted"
+        >Controls which characteristics the automation light exposes to voice assistants.</small
+      >
+    </div>
     <div class="form-check mb-3">
       <input
         id="smart-automation-enabled"

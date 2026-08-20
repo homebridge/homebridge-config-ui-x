@@ -3,7 +3,7 @@
     <div class="d-flex align-items-center justify-content-between mb-3">
       <div>
         <h5 class="card-title mb-1">Your automations</h5>
-        <small class="text-muted">Manage the switches published by the engine.</small>
+        <small class="text-muted">Manage the lights published by the engine.</small>
       </div>
     </div>
 
@@ -33,7 +33,8 @@
                   </span>
                 </div>
                 <small class="text-muted d-block">
-                  Smart Light Group &middot; {{ automation.uniqueIds.length }}
+                  Smart Light Group &middot; {{ getLightbulbTypeLabel(automation.lightbulbType) }} &middot;
+                  {{ automation.uniqueIds.length }}
                   {{ automation.uniqueIds.length === 1 ? 'light' : 'lights' }}
                 </small>
                 <div class="automation-actions mt-3">
