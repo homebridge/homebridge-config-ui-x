@@ -23,29 +23,61 @@
         (ngModelChange)="updateDraft('type', $event)"
       >
         <option value="smart-light-group">Smart Light Group</option>
+        <option value="door-ajar">Door Left Ajar</option>
       </select>
     </div>
     <div class="automation-description mb-4" role="note">
       <i class="fas fa-circle-info" aria-hidden="true"></i>
       <span>{{ getAutomationDescription(draft().type) }}</span>
     </div>
-    <div class="mb-3">
-      <label class="form-label" for="smart-automation-lightbulb-type">Published Light Type</label>
-      <select
-        id="smart-automation-lightbulb-type"
-        class="form-select"
-        [ngModel]="draft().lightbulbType || 'on-off'"
-        (ngModelChange)="updateDraft('lightbulbType', $event)"
-      >
-        <option value="on-off">On/Off only</option>
-        <option value="dimmable">Dimmable</option>
-        <option value="colour">Colour</option>
-        <option value="temperature">Temperature</option>
-      </select>
-      <small class="form-text text-muted"
-        >Controls which characteristics the automation light exposes to voice assistants.</small
-      >
-    </div>
+    @if (draft().type === 'door-ajar') {
+      <div class="row">
+        <div class="col-sm-6 mb-3">
+          <label class="form-label" for="smart-automation-open-minutes">Alert after (minutes)</label>
+          <input
+            id="smart-automation-open-minutes"
+            type="number"
+            min="1"
+            max="1440"
+            class="form-control"
+            [ngModel]="draft().openMinutes ?? 5"
+            (ngModelChange)="updateDraft('openMinutes', $event)"
+          />
+          <small class="form-text text-muted">How long the door may stay open before the sensor opens.</small>
+        </div>
+        <div class="col-sm-6 mb-3">
+          <label class="form-label" for="smart-automation-repeat-minutes">Repeat every (minutes)</label>
+          <input
+            id="smart-automation-repeat-minutes"
+            type="number"
+            min="1"
+            max="1440"
+            class="form-control"
+            [ngModel]="draft().repeatMinutes ?? 5"
+            (ngModelChange)="updateDraft('repeatMinutes', $event)"
+          />
+          <small class="form-text text-muted">How often to alert again while the door stays open.</small>
+        </div>
+      </div>
+    } @else {
+      <div class="mb-3">
+        <label class="form-label" for="smart-automation-lightbulb-type">Published Light Type</label>
+        <select
+          id="smart-automation-lightbulb-type"
+          class="form-select"
+          [ngModel]="draft().lightbulbType || 'on-off'"
+          (ngModelChange)="updateDraft('lightbulbType', $event)"
+        >
+          <option value="on-off">On/Off only</option>
+          <option value="dimmable">Dimmable</option>
+          <option value="colour">Colour</option>
+          <option value="temperature">Temperature</option>
+        </select>
+        <small class="form-text text-muted"
+          >Controls which characteristics the automation light exposes to voice assistants.</small
+        >
+      </div>
+    }
     <div class="form-check mb-3">
       <input
         id="smart-automation-enabled"
@@ -57,7 +89,7 @@
       <label class="form-check-label" for="smart-automation-enabled">Enabled</label>
     </div>
     <div class="d-flex align-items-center justify-content-between mb-2">
-      <h6 class="mb-0">Choose lights</h6>
+      <h6 class="mb-0">{{ draft().type === 'door-ajar' ? 'Choose a door' : 'Choose lights' }}</h6>
       <small class="text-muted">{{ selectedLightUniqueIds().length }} selected</small>
     </div>
     <div class="smart-automation-chooser">
@@ -66,17 +98,22 @@
           <div class="mb-2">
             <div class="fw-semibold">{{ room.name }}</div>
             @for (service of room.services; track service.uniqueId) {
-              @if (service.type === 'Lightbulb') {
+              @if (isSelectable(service.type, draft().type)) {
                 <div class="form-check">
                   <input
-                    type="checkbox"
                     class="form-check-input"
+                    [type]="draft().type === 'door-ajar' ? 'radio' : 'checkbox'"
                     [id]="`smart-auto-light-${service.uniqueId}`"
                     [ngModel]="selectedLightUniqueIds().includes(service.uniqueId || '')"
-                    (ngModelChange)="onLightSelectionChange(service.uniqueId || '', $event)"
+                    (ngModelChange)="
+                      draft().type === 'door-ajar'
+                        ? onDoorSelectionChange(service.uniqueId || '', $event)
+                        : onLightSelectionChange(service.uniqueId || '', $event)
+                    "
                   />
                   <label class="form-check-label" [for]="`smart-auto-light-${service.uniqueId}`">
                     {{ service.serviceName }}
+                    <span class="text-muted small">&middot; {{ service.type }}</span>
                   </label>
                 </div>
               }
