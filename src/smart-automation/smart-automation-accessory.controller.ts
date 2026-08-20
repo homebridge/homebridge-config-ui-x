@@ -11,7 +11,7 @@ export class HapSmartAutomationAccessoryController implements SmartAutomationAcc
 
   constructor(configPath: string | undefined, private readonly log: any) {
     if (!configPath) {
-      this.log.warn('[Smart Automation] Could not determine the Homebridge config path.')
+      this.log.warn('Could not determine the Homebridge config path.')
       this.hapClient = null
       return
     }
@@ -29,7 +29,7 @@ export class HapSmartAutomationAccessoryController implements SmartAutomationAcc
         config: config?.platforms?.find(platform => platform?.platform === 'config')?.ui?.accessoryControl || {},
       })
     } catch (error) {
-      this.log.warn(`[Smart Automation] Failed to initialise accessory control: ${error?.message || error}`)
+      this.log.warn(`Failed to initialise accessory control: ${error?.message || error}`)
       this.hapClient = null
     }
   }
@@ -40,7 +40,7 @@ export class HapSmartAutomationAccessoryController implements SmartAutomationAcc
     }
 
     const services = await this.hapClient.getAllServices()
-    this.log.debug(`[Smart Automation] Discovered ${services.length} Homebridge services.`)
+    this.log.debug(`Accessory discovery returned ${services.length} Homebridge services.`)
     return services
   }
 }

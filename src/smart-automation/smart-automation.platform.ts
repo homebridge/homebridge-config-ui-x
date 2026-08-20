@@ -29,7 +29,7 @@ export class SmartAutomationPlatform {
     const desiredUuids = new Set<string>()
 
     const automations = this.getAutomations()
-    this.log.info(`[Smart Automation] Starting engine with ${automations.length} configured automation${automations.length === 1 ? '' : 's'}.`)
+    this.log.info(`Starting engine with ${automations.length} configured automation${automations.length === 1 ? '' : 's'}.`)
 
     for (const automation of automations) {
       const uuid = this.api.hap.uuid.generate(`smart-automation:${automation.id}`)
@@ -37,18 +37,22 @@ export class SmartAutomationPlatform {
       const PlatformAccessory = this.api.platformAccessory
       const accessory = existing || new PlatformAccessory(automation.name, uuid)
       const rulesEngine = this.createRulesEngine(automation)
+      this.log.debug(`${automation.name}: configuration id=${automation.id}, type=${automation.type}, publishedLight=${automation.lightbulbType}, enabled=${automation.enabled}, lights=[${automation.uniqueIds.join(', ')}].`)
 
       desiredUuids.add(uuid)
       this.configureTriggerLightbulb(accessory, automation, rulesEngine)
       this.accessories.set(uuid, accessory)
       ;(existing ? existingAccessories : newAccessories).push(accessory)
-      this.log.debug(`[Smart Automation] ${automation.name}: ${existing ? 'restored' : 'created'} ${automation.lightbulbType} trigger light (${automation.id}).`)
+      this.log.debug(`${automation.name}: ${existing ? 'restored cached' : 'created new'} ${automation.lightbulbType} trigger light; uuid=${uuid}.`)
     }
 
     const staleAccessories = [...this.accessories.entries()]
       .filter(([uuid]) => !desiredUuids.has(uuid))
       .map(([, accessory]) => accessory)
-    staleAccessories.forEach(accessory => this.accessories.delete(accessory.UUID))
+    staleAccessories.forEach((accessory) => {
+      this.log.debug(`Removing stale trigger light ${accessory.displayName || accessory.UUID}; uuid=${accessory.UUID}.`)
+      this.accessories.delete(accessory.UUID)
+    })
 
     if (newAccessories.length) {
       this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, newAccessories)
@@ -60,7 +64,7 @@ export class SmartAutomationPlatform {
       this.api.unregisterPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, staleAccessories)
     }
 
-    this.log.info(`[Smart Automation] Engine ready; published ${automations.length} trigger light${automations.length === 1 ? '' : 's'}.`)
+    this.log.info(`Engine ready; published ${automations.length} trigger light${automations.length === 1 ? '' : 's'}.`)
   }
 
   private createRulesEngine(automation: SmartAutomationConfig): SmartAutomationRulesEngine {
@@ -100,7 +104,7 @@ export class SmartAutomationPlatform {
         onCharacteristic.updateValue(false)
         return
       }
-      this.log.info(`[Smart Automation] ${automation.name}: trigger light received ${value ? 'On' : 'Off'}.`)
+      this.log.info(`${automation.name}: trigger light received ${value ? 'On' : 'Off'}.`)
       await rulesEngine.setOn(Boolean(value))
     })
 
@@ -130,6 +134,7 @@ export class SmartAutomationPlatform {
       const existing = lightService.characteristics.find(characteristic => characteristic.UUID === characteristicType.UUID)
       if (!desiredTypes.has(characteristicType)) {
         if (existing) {
+          this.log.debug(`${automation.name}: removing published ${existing.displayName || existing.UUID} characteristic (${existing.UUID}).`)
           lightService.removeCharacteristic(existing)
         }
         continue
@@ -142,10 +147,13 @@ export class SmartAutomationPlatform {
           ? 140
           : 0
       accessory.context.lightbulbValues[characteristicType.UUID] ??= defaultValue
+      this.log.debug(`${automation.name}: publishing ${characteristic.displayName || characteristicType.UUID} characteristic (${characteristicType.UUID}) with value ${String(accessory.context.lightbulbValues[characteristicType.UUID])}.`)
       characteristic.removeAllListeners('get')
       characteristic.removeAllListeners('set')
       characteristic.onGet(() => accessory.context.lightbulbValues[characteristicType.UUID])
       characteristic.onSet((value: string | number | boolean) => {
+        const previousValue = accessory.context.lightbulbValues[characteristicType.UUID]
+        this.log.debug(`${automation.name}: published ${characteristic.displayName || characteristicType.UUID} changed ${String(previousValue)} -> ${String(value)}.`)
         accessory.context.lightbulbValues[characteristicType.UUID] = value
       })
     }
