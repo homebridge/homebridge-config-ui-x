@@ -69,7 +69,13 @@ export class SmartAutomationsComponent implements OnInit, OnDestroy {
     this.$accessories.stop()
   }
 
-  public toggleLightSelection(uniqueId: string, selected: boolean): void {
+  public toggleLightSelection(uniqueId: string, selected: boolean, single = false): void {
+    // A door rule watches one door, so picking another replaces the choice
+    // rather than quietly adding a second the engine would ignore
+    if (single) {
+      this.selectedLightUniqueIds.set(selected ? [uniqueId] : [])
+      return
+    }
     const next = selected
       ? [...new Set([...this.selectedLightUniqueIds(), uniqueId])]
       : this.selectedLightUniqueIds().filter(id => id !== uniqueId)
@@ -83,13 +89,26 @@ export class SmartAutomationsComponent implements OnInit, OnDestroy {
 
   public async saveSmartAutomation(): Promise<void> {
     try {
-      const draft = {
-        ...this.smartAutomationDraft,
-        uniqueIds: [...new Set(this.selectedLightUniqueIds())],
-        type: 'smart-light-group' as const,
-        lightbulbType: this.smartAutomationDraft.lightbulbType || 'on-off',
-        enabled: this.smartAutomationDraft.enabled ?? true,
-      }
+      const type = this.smartAutomationDraft.type || 'smart-light-group'
+      const selected = [...new Set(this.selectedLightUniqueIds())]
+      const draft = type === 'door-ajar'
+        ? {
+            ...this.smartAutomationDraft,
+            type,
+            // One door per rule, so extra choices are dropped here rather than
+            // written to a config the engine will only half honour
+            uniqueIds: selected.slice(0, 1),
+            openMinutes: this.toMinutes(this.smartAutomationDraft.openMinutes, 5),
+            repeatMinutes: this.toMinutes(this.smartAutomationDraft.repeatMinutes, 5),
+            enabled: this.smartAutomationDraft.enabled ?? true,
+          }
+        : {
+            ...this.smartAutomationDraft,
+            uniqueIds: selected,
+            type,
+            lightbulbType: this.smartAutomationDraft.lightbulbType || 'on-off',
+            enabled: this.smartAutomationDraft.enabled ?? true,
+          }
 
       const saved = {
         ...draft,
@@ -204,6 +223,20 @@ export class SmartAutomationsComponent implements OnInit, OnDestroy {
     } catch (error) {
       console.error(error)
     }
+  }
+
+  /**
+   * Keep a typed-in interval to something the engine can hold. It clamps the
+   * same way server side, so a silly value cannot reach a timer.
+   * @param value - whatever the number input produced
+   * @param fallback - the default for this field
+   */
+  private toMinutes(value: unknown, fallback: number): number {
+    const minutes = Number(value)
+    if (!Number.isFinite(minutes) || minutes <= 0) {
+      return fallback
+    }
+    return Math.min(Math.round(minutes), 1440)
   }
 
   private generateBridgePin(): string {

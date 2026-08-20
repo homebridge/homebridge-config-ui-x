@@ -19,7 +19,11 @@
           <div class="automation-item">
             <div class="d-flex align-items-start gap-3">
               <div class="automation-type-icon" aria-hidden="true">
-                <i class="fas fa-lightbulb"></i>
+                <i
+                  class="fas"
+                  [class.fa-lightbulb]="automation.type !== 'door-ajar'"
+                  [class.fa-door-open]="automation.type === 'door-ajar'"
+                ></i>
               </div>
               <div class="flex-grow-1 min-width-0">
                 <div class="d-flex align-items-center justify-content-between gap-2 mb-1">
@@ -32,11 +36,20 @@
                     {{ automation.enabled ? 'Enabled' : 'Disabled' }}
                   </span>
                 </div>
-                <small class="text-muted d-block">
-                  Smart Light Group &middot; {{ getLightbulbTypeLabel(automation.lightbulbType) }} &middot;
-                  {{ automation.uniqueIds.length }}
-                  {{ automation.uniqueIds.length === 1 ? 'light' : 'lights' }}
-                </small>
+                @if (automation.type === 'door-ajar') {
+                  <small class="text-muted d-block">
+                    Door Left Ajar &middot; alerts after {{ automation.openMinutes ?? 5 }}
+                    {{ (automation.openMinutes ?? 5) === 1 ? 'minute' : 'minutes' }} &middot; repeats every
+                    {{ automation.repeatMinutes ?? 5 }}
+                    {{ (automation.repeatMinutes ?? 5) === 1 ? 'minute' : 'minutes' }}
+                  </small>
+                } @else {
+                  <small class="text-muted d-block">
+                    Smart Light Group &middot; {{ getLightbulbTypeLabel(automation.lightbulbType) }} &middot;
+                    {{ automation.uniqueIds.length }}
+                    {{ automation.uniqueIds.length === 1 ? 'light' : 'lights' }}
+                  </small>
+                }
                 <div class="automation-actions mt-3">
                   <button
                     type="button"

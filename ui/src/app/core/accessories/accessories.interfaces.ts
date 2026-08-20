@@ -24,9 +24,14 @@ export type AccessoryLayout = {
 export interface SmartAutomation {
   id: string
   name: string
-  type: 'smart-light-group'
+  type: 'smart-light-group' | 'door-ajar'
   uniqueIds: string[]
-  lightbulbType: 'on-off' | 'dimmable' | 'colour' | 'temperature'
+  /** Smart Light Group only: which characteristics the published light exposes. */
+  lightbulbType?: 'on-off' | 'dimmable' | 'colour' | 'temperature'
+  /** Door Left Ajar only: how long the door may stay open before alerting. */
+  openMinutes?: number
+  /** Door Left Ajar only: how often to alert again while it stays open. */
+  repeatMinutes?: number
   enabled: boolean
 }
 
