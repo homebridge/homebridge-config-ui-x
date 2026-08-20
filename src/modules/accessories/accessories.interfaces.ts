@@ -9,9 +9,5 @@ export interface AccessoryControlMessage {
     cluster?: string
     attributes?: Record<string, unknown>
   }
-  smartLightGroup?: {
-    uniqueIds: string[]
-    restoreAfterMs?: number
-  }
   refresh?: boolean
 }

@@ -28,7 +28,7 @@ export class SmartAutomationFormComponent {
 
   public getAutomationDescription(type: SmartAutomation['type'] | undefined): string {
     if (type === 'smart-light-group') {
-      return 'Turns the selected light group on and then restores each light to its previous state after the configured delay.'
+      return 'Publishes a switch that stores the selected lights’ On/Off state when turned on, then restores that state when turned off.'
     }
 
     return 'Select an automation type to see how it works.'

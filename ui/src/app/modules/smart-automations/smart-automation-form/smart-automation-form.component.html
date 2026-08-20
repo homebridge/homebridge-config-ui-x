@@ -25,18 +25,6 @@
     <div class="alert alert-info mb-3" role="alert">
       {{ getAutomationDescription(draft().type) }}
     </div>
-    <div class="mb-3">
-      <label class="form-label" for="smart-automation-restore">Restore Previous State After (ms)</label>
-      <input
-        id="smart-automation-restore"
-        type="number"
-        min="1000"
-        max="86400000"
-        class="form-control"
-        [ngModel]="draft().restoreAfterMs"
-        (ngModelChange)="updateDraft('restoreAfterMs', $event)"
-      />
-    </div>
     <div class="form-check mb-3">
       <input
         id="smart-automation-enabled"

@@ -15,15 +15,12 @@ import { AuthModule } from '../../src/core/auth/auth.module.js'
 import { ConfigService } from '../../src/core/config/config.service.js'
 import { AccessoriesModule } from '../../src/modules/accessories/accessories.module.js'
 import { AccessoriesService } from '../../src/modules/accessories/accessories.service.js'
-import { SmartAutomationsModule } from '../../src/modules/smart-automations/smart-automations.module.js'
-import { SmartAutomationsService } from '../../src/modules/smart-automations/smart-automations.service.js'
 
 describe('AccessoriesController (e2e)', () => {
   let app: NestFastifyApplication
 
   let configService: ConfigService
   let accessoriesService: AccessoriesService
-  let smartAutomationsService: SmartAutomationsService
 
   let authFilePath: string
   let secretsFilePath: string
@@ -102,7 +99,7 @@ describe('AccessoriesController (e2e)', () => {
     configService.homebridgeInsecureMode = true
 
     const moduleFixture: TestingModule = await Test.createTestingModule({
-      imports: [AccessoriesModule, SmartAutomationsModule, AuthModule],
+      imports: [AccessoriesModule, AuthModule],
     }).overrideProvider(ConfigService).useValue(configService).compile()
 
     app = moduleFixture.createNestApplication<NestFastifyApplication>(new FastifyAdapter())
@@ -116,7 +113,6 @@ describe('AccessoriesController (e2e)', () => {
     await app.getHttpAdapter().getInstance().ready()
 
     accessoriesService = app.get(AccessoriesService)
-    smartAutomationsService = app.get(SmartAutomationsService)
   })
 
   beforeEach(async () => {
@@ -425,86 +421,6 @@ describe('AccessoriesController (e2e)', () => {
     expect(res.body).toContain('value should not be null or undefined')
   })
 
-  it('PUT /accessories/automation/smart-light-group (valid)', async () => {
-    const onCharacteristic = {
-      type: 'On',
-      canWrite: true,
-      value: false,
-      setValue: vi.fn(async (value: boolean) => {
-        onCharacteristic.value = value
-      }),
-    }
-    const brightnessCharacteristic = {
-      type: 'Brightness',
-      canWrite: true,
-      value: 45,
-      setValue: vi.fn(async (value: number) => {
-        brightnessCharacteristic.value = value
-      }),
-    }
-    const lightbulbService = {
-      uniqueId: 'light-1',
-      type: 'Lightbulb',
-      serviceCharacteristics: [onCharacteristic, brightnessCharacteristic],
-      getCharacteristic: vi.fn((type: string) => {
-        if (type === 'On') {
-          return onCharacteristic
-        }
-        if (type === 'Brightness') {
-          return brightnessCharacteristic
-        }
-        return null
-      }),
-    }
-
-    hapClientMock.mockResolvedValue([lightbulbService] as any)
-
-    const res = await app.inject({
-      method: 'PUT',
-      path: '/accessories/automation/smart-light-group',
-      headers: {
-        authorization,
-      },
-      payload: {
-        uniqueIds: ['light-1'],
-        restoreAfterMs: 1000,
-      },
-    })
-
-    expect(res.statusCode).toBe(200)
-    expect(onCharacteristic.setValue).toHaveBeenCalledWith(true)
-
-    await new Promise(resolve => setTimeout(resolve, 1100))
-
-    expect(brightnessCharacteristic.setValue).toHaveBeenCalledWith(45)
-    expect(onCharacteristic.setValue).toHaveBeenLastCalledWith(false)
-  })
-
-  it('PUT /accessories/automation/smart-light-group (no lightbulb services)', async () => {
-    const switchService = {
-      uniqueId: 'switch-1',
-      type: 'Switch',
-      serviceCharacteristics: [],
-      getCharacteristic: vi.fn(() => null),
-    }
-
-    hapClientMock.mockResolvedValue([switchService] as any)
-
-    const res = await app.inject({
-      method: 'PUT',
-      path: '/accessories/automation/smart-light-group',
-      headers: {
-        authorization,
-      },
-      payload: {
-        uniqueIds: ['switch-1'],
-      },
-    })
-
-    expect(res.statusCode).toBe(400)
-    expect(res.body).toContain('No lightbulb services were found')
-  })
-
   it('GET /accessories/layout (returns default room when user not in layout)', async () => {
     const res = await app.inject({
       method: 'GET',
@@ -615,44 +531,6 @@ describe('AccessoriesController (e2e)', () => {
 
     clientB.emit('disconnect')
     ;(accessoriesService as any).hapMonitorPromise = null
-  })
-
-  it('service smart automation CRUD should save, update and delete', async () => {
-    const created = await smartAutomationsService.saveSmartAutomation('admin', {
-      name: 'Hallway Motion Lights',
-      type: 'smart-light-group',
-      uniqueIds: ['light-1', 'light-2'],
-      restoreAfterMs: 120000,
-      enabled: true,
-    })
-
-    expect(created.id).toBeTruthy()
-    expect(created.uniqueIds).toEqual(['light-1', 'light-2'])
-    expect(created.enabled).toBe(true)
-
-    const listAfterCreate = await smartAutomationsService.getSmartAutomations('admin')
-    expect(listAfterCreate).toHaveLength(1)
-
-    const updated = await smartAutomationsService.saveSmartAutomation('admin', {
-      ...created,
-      name: 'Hallway Motion Lights Updated',
-      uniqueIds: ['light-2'],
-      restoreAfterMs: 90000,
-      enabled: false,
-    })
-
-    expect(updated.name).toBe('Hallway Motion Lights Updated')
-    expect(updated.uniqueIds).toEqual(['light-2'])
-    expect(updated.enabled).toBe(false)
-
-    const listAfterUpdate = await smartAutomationsService.getSmartAutomations('admin')
-    expect(listAfterUpdate).toHaveLength(1)
-    expect(listAfterUpdate[0].name).toBe('Hallway Motion Lights Updated')
-
-    await smartAutomationsService.deleteSmartAutomation('admin', created.id)
-
-    const listAfterDelete = await smartAutomationsService.getSmartAutomations('admin')
-    expect(listAfterDelete).toHaveLength(0)
   })
 
   it('service.resetInstancePool should not throw when insecure mode disabled', () => {

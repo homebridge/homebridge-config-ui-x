@@ -9,22 +9,9 @@
           <div class="list-group-item">
             <div class="d-flex justify-content-between align-items-start">
               <div>
-                <div class="form-check form-switch mb-2">
-                  <input
-                    type="checkbox"
-                    class="form-check-input"
-                    [id]="`smart-automation-switch-${automation.id}`"
-                    [ngModel]="isAutomationSwitchOn(automation.id)"
-                    [disabled]="!automation.enabled"
-                    (ngModelChange)="toggleSwitch.emit({ automation, enabled: $event })"
-                  />
-                  <label class="form-check-label" [for]="`smart-automation-switch-${automation.id}`">
-                    {{ automation.name }}
-                  </label>
-                </div>
+                <h6 class="mb-2">{{ automation.name }}</h6>
                 <small class="text-muted d-block">Type: Smart Light Group</small>
                 <small class="text-muted d-block">Lights: {{ automation.uniqueIds.length }}</small>
-                <small class="text-muted d-block">Restore: {{ automation.restoreAfterMs }}ms</small>
                 <small class="text-muted d-block">Status: {{ automation.enabled ? 'Enabled' : 'Disabled' }}</small>
               </div>
               <div class="ms-3">
