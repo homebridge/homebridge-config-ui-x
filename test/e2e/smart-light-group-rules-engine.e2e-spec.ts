@@ -35,6 +35,7 @@ describe('SmartLightGroupRulesEngine', () => {
     id: 'outside-lights',
     name: 'Outside Lights',
     type: 'smart-light-group' as const,
+    lightbulbType: 'on-off' as const,
     uniqueIds: ['light-1', 'light-2'],
     enabled: true,
   }

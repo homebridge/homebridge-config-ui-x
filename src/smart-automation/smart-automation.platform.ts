@@ -39,10 +39,10 @@ export class SmartAutomationPlatform {
       const rulesEngine = this.createRulesEngine(automation)
 
       desiredUuids.add(uuid)
-      this.configureTriggerSwitch(accessory, automation, rulesEngine)
+      this.configureTriggerLightbulb(accessory, automation, rulesEngine)
       this.accessories.set(uuid, accessory)
       ;(existing ? existingAccessories : newAccessories).push(accessory)
-      this.log.debug(`[Smart Automation] ${automation.name}: ${existing ? 'restored' : 'created'} trigger switch (${automation.id}).`)
+      this.log.debug(`[Smart Automation] ${automation.name}: ${existing ? 'restored' : 'created'} ${automation.lightbulbType} trigger light (${automation.id}).`)
     }
 
     const staleAccessories = [...this.accessories.entries()]
@@ -60,7 +60,7 @@ export class SmartAutomationPlatform {
       this.api.unregisterPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, staleAccessories)
     }
 
-    this.log.info(`[Smart Automation] Engine ready; published ${automations.length} trigger switch${automations.length === 1 ? '' : 'es'}.`)
+    this.log.info(`[Smart Automation] Engine ready; published ${automations.length} trigger light${automations.length === 1 ? '' : 's'}.`)
   }
 
   private createRulesEngine(automation: SmartAutomationConfig): SmartAutomationRulesEngine {
@@ -70,7 +70,7 @@ export class SmartAutomationPlatform {
     }
   }
 
-  private configureTriggerSwitch(
+  private configureTriggerLightbulb(
     accessory: any,
     automation: SmartAutomationConfig,
     rulesEngine: SmartAutomationRulesEngine,
@@ -81,25 +81,73 @@ export class SmartAutomationPlatform {
 
     accessory.getService(Service.AccessoryInformation)
       .setCharacteristic(Characteristic.Manufacturer, 'homebridge-config-ui-x')
-      .setCharacteristic(Characteristic.Model, 'Smart Automation Trigger')
+      .setCharacteristic(Characteristic.Model, 'Smart Automation Light')
       .setCharacteristic(Characteristic.SerialNumber, automation.id)
 
-    const switchService = accessory.getService(Service.Switch) || accessory.addService(Service.Switch)
-    switchService.setCharacteristic(Characteristic.Name, automation.name)
+    const legacySwitchService = accessory.getService(Service.Switch)
+    if (legacySwitchService) {
+      accessory.removeService(legacySwitchService)
+    }
 
-    const onCharacteristic = switchService.getCharacteristic(Characteristic.On)
+    const lightService = accessory.getService(Service.Lightbulb) || accessory.addService(Service.Lightbulb)
+    lightService.setCharacteristic(Characteristic.Name, automation.name)
+    this.configureLightbulbCharacteristics(accessory, lightService, automation)
+
+    const onCharacteristic = lightService.getCharacteristic(Characteristic.On)
     onCharacteristic.removeAllListeners('set')
     onCharacteristic.onSet(async (value: boolean) => {
       if (!(automation.enabled ?? true)) {
         onCharacteristic.updateValue(false)
         return
       }
-      this.log.info(`[Smart Automation] ${automation.name}: trigger switch received ${value ? 'On' : 'Off'}.`)
+      this.log.info(`[Smart Automation] ${automation.name}: trigger light received ${value ? 'On' : 'Off'}.`)
       await rulesEngine.setOn(Boolean(value))
     })
 
     if (!(automation.enabled ?? true)) {
       onCharacteristic.updateValue(false)
+    }
+  }
+
+  private configureLightbulbCharacteristics(accessory: any, lightService: any, automation: SmartAutomationConfig) {
+    const { Characteristic } = this.api.hap
+    const characteristicTypes = {
+      'dimmable': [Characteristic.Brightness],
+      'colour': [Characteristic.Brightness, Characteristic.Hue, Characteristic.Saturation],
+      'temperature': [Characteristic.Brightness, Characteristic.ColorTemperature],
+      'on-off': [],
+    }
+    const allOptionalTypes = [
+      Characteristic.Brightness,
+      Characteristic.Hue,
+      Characteristic.Saturation,
+      Characteristic.ColorTemperature,
+    ]
+    const desiredTypes = new Set(characteristicTypes[automation.lightbulbType])
+    accessory.context.lightbulbValues ||= {}
+
+    for (const characteristicType of allOptionalTypes) {
+      const existing = lightService.characteristics.find(characteristic => characteristic.UUID === characteristicType.UUID)
+      if (!desiredTypes.has(characteristicType)) {
+        if (existing) {
+          lightService.removeCharacteristic(existing)
+        }
+        continue
+      }
+
+      const characteristic = lightService.getCharacteristic(characteristicType)
+      const defaultValue = characteristicType === Characteristic.Brightness
+        ? 100
+        : characteristicType === Characteristic.ColorTemperature
+          ? 140
+          : 0
+      accessory.context.lightbulbValues[characteristicType.UUID] ??= defaultValue
+      characteristic.removeAllListeners('get')
+      characteristic.removeAllListeners('set')
+      characteristic.onGet(() => accessory.context.lightbulbValues[characteristicType.UUID])
+      characteristic.onSet((value: string | number | boolean) => {
+        accessory.context.lightbulbValues[characteristicType.UUID] = value
+      })
     }
   }
 
@@ -111,6 +159,9 @@ export class SmartAutomationPlatform {
         ...automation,
         name: automation.name?.trim() || 'Smart Light Group',
         uniqueIds: [...new Set(automation.uniqueIds || [])].filter(Boolean),
+        lightbulbType: ['on-off', 'dimmable', 'colour', 'temperature'].includes(automation.lightbulbType)
+          ? automation.lightbulbType
+          : 'on-off',
         enabled: automation.enabled ?? true,
       }))
       .filter(automation => automation.uniqueIds.length > 0)

@@ -5,6 +5,7 @@ export interface SmartLightGroupConfig {
   name: string
   type: 'smart-light-group'
   uniqueIds: string[]
+  lightbulbType: 'on-off' | 'dimmable' | 'colour' | 'temperature'
   enabled?: boolean
 }
 

@@ -14,4 +14,13 @@ export class SmartAutomationListComponent {
   public readonly setEnabled = output<{ automation: SmartAutomation, enabled: boolean }>()
   public readonly edit = output<SmartAutomation>()
   public readonly delete = output<string>()
+
+  public getLightbulbTypeLabel(type: SmartAutomation['lightbulbType']): string {
+    return {
+      'on-off': 'On/Off',
+      'dimmable': 'Dimmable',
+      'colour': 'Colour',
+      'temperature': 'Temperature',
+    }[type || 'on-off']
+  }
 }

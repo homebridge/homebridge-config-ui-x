@@ -44,6 +44,7 @@ export class SmartAutomationsComponent implements OnInit, OnDestroy {
   public readonly selectedLightUniqueIds = signal<string[]>([])
   public smartAutomationDraft: Partial<SmartAutomation> = {
     type: 'smart-light-group',
+    lightbulbType: 'on-off',
     uniqueIds: [],
     enabled: true,
   }
@@ -84,6 +85,7 @@ export class SmartAutomationsComponent implements OnInit, OnDestroy {
         ...this.smartAutomationDraft,
         uniqueIds: [...new Set(this.selectedLightUniqueIds())],
         type: 'smart-light-group' as const,
+        lightbulbType: this.smartAutomationDraft.lightbulbType || 'on-off',
         enabled: this.smartAutomationDraft.enabled ?? true,
       }
 
@@ -217,6 +219,7 @@ export class SmartAutomationsComponent implements OnInit, OnDestroy {
   private resetSmartAutomationDraft(): void {
     this.smartAutomationDraft = {
       type: 'smart-light-group',
+      lightbulbType: 'on-off',
       uniqueIds: [],
       enabled: true,
     }
