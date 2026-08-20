@@ -34,7 +34,11 @@ describe('SmartLightGroupRulesEngine', () => {
     const first = createLight('light-1', false)
     const second = createLight('light-2', true)
     const accessories = { getServices: vi.fn(async () => [first.service, second.service]) }
-    const engine = new SmartLightGroupRulesEngine(config, accessories, { warn: vi.fn() })
+    const engine = new SmartLightGroupRulesEngine(config, accessories, {
+      debug: vi.fn(),
+      info: vi.fn(),
+      warn: vi.fn(),
+    })
 
     await engine.setOn(true)
     expect(first.characteristic.value).toBe(true)
@@ -56,7 +60,11 @@ describe('SmartLightGroupRulesEngine', () => {
     const first = createLight('light-1', true)
     const second = createLight('light-2', true)
     const accessories = { getServices: vi.fn(async () => [first.service, second.service]) }
-    const engine = new SmartLightGroupRulesEngine(config, accessories, { warn: vi.fn() })
+    const engine = new SmartLightGroupRulesEngine(config, accessories, {
+      debug: vi.fn(),
+      info: vi.fn(),
+      warn: vi.fn(),
+    })
 
     await engine.setOn(false)
 

@@ -6,6 +6,7 @@ import { SmartAutomation } from '@/app/core/accessories/accessories.interfaces'
   selector: 'app-smart-automation-list',
   standalone: true,
   templateUrl: './smart-automation-list.component.html',
+  styleUrl: './smart-automation-list.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SmartAutomationListComponent {

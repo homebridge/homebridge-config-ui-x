@@ -1,29 +1,67 @@
-<div class="card h-100">
+<div class="card automation-list-card">
   <div class="card-body">
-    <h5 class="card-title">Saved Smart Automations</h5>
+    <div class="d-flex align-items-center justify-content-between mb-3">
+      <div>
+        <h5 class="card-title mb-1">Your automations</h5>
+        <small class="text-muted">Manage the switches published by the engine.</small>
+      </div>
+    </div>
+
     @if (!automations().length) {
-      <p class="text-muted mb-0">No smart automations created yet.</p>
+      <div class="automation-empty text-center">
+        <i class="fas fa-wand-magic-sparkles mb-3" aria-hidden="true"></i>
+        <h6>No automations yet</h6>
+        <p class="text-muted small mb-0">Configure your first Smart Light Group using the editor.</p>
+      </div>
     } @else {
-      <div class="list-group">
+      <div class="automation-items">
         @for (automation of automations(); track automation.id) {
-          <div class="list-group-item">
-            <div class="d-flex justify-content-between align-items-start">
-              <div>
-                <h6 class="mb-2">{{ automation.name }}</h6>
-                <small class="text-muted d-block">Type: Smart Light Group</small>
-                <small class="text-muted d-block">Lights: {{ automation.uniqueIds.length }}</small>
-                <small class="text-muted d-block">Status: {{ automation.enabled ? 'Enabled' : 'Disabled' }}</small>
+          <div class="automation-item">
+            <div class="d-flex align-items-start gap-3">
+              <div class="automation-type-icon" aria-hidden="true">
+                <i class="fas fa-lightbulb"></i>
               </div>
-              <div class="ms-3">
-                <button
-                  type="button"
-                  class="btn btn-sm btn-elegant me-2"
-                  (click)="setEnabled.emit({ automation, enabled: !automation.enabled })"
-                >
-                  {{ automation.enabled ? 'Disable' : 'Enable' }}
-                </button>
-                <button type="button" class="btn btn-sm btn-elegant me-2" (click)="edit.emit(automation)">Edit</button>
-                <button type="button" class="btn btn-sm btn-danger" (click)="delete.emit(automation.id)">Delete</button>
+              <div class="flex-grow-1 min-width-0">
+                <div class="d-flex align-items-center justify-content-between gap-2 mb-1">
+                  <h6 class="mb-0 text-truncate">{{ automation.name }}</h6>
+                  <span
+                    class="badge"
+                    [class.bg-success]="automation.enabled"
+                    [class.bg-secondary]="!automation.enabled"
+                  >
+                    {{ automation.enabled ? 'Enabled' : 'Disabled' }}
+                  </span>
+                </div>
+                <small class="text-muted d-block">
+                  Smart Light Group &middot; {{ automation.uniqueIds.length }}
+                  {{ automation.uniqueIds.length === 1 ? 'light' : 'lights' }}
+                </small>
+                <div class="automation-actions mt-3">
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-elegant"
+                    (click)="setEnabled.emit({ automation, enabled: !automation.enabled })"
+                  >
+                    <i
+                      class="fas"
+                      aria-hidden="true"
+                      [class.fa-pause]="automation.enabled"
+                      [class.fa-play]="!automation.enabled"
+                    ></i>
+                    {{ automation.enabled ? 'Disable' : 'Enable' }}
+                  </button>
+                  <button type="button" class="btn btn-sm btn-elegant" (click)="edit.emit(automation)">
+                    <i class="fas fa-pencil" aria-hidden="true"></i> Edit
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-outline-danger"
+                    [attr.aria-label]="`Delete ${automation.name}`"
+                    (click)="delete.emit(automation.id)"
+                  >
+                    <i class="fas fa-trash" aria-hidden="true"></i>
+                  </button>
+                </div>
               </div>
             </div>
           </div>

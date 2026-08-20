@@ -1,89 +1,37 @@
-<div class="row mb-3">
-  <div class="col-6">
-    <h3 class="primary-text m-0">Smart Automation</h3>
-  </div>
-</div>
-
-<div class="row mb-3">
-  <div class="col-12">
-    <div class="card">
-      <div class="card-body">
-        <h5 class="card-title">Smart Automation Child Bridge</h5>
-        @if (configuredChildBridge(); as configuredBridge) {
-          <small class="text-muted d-block mb-2">
-            Configured child bridge: <strong>{{ configuredBridge.name || 'Smart Automation' }}</strong> ({{
-              configuredBridge.username || 'username pending'
-            }})
-          </small>
-        }
-        @if (configuredChildBridgeSwitches().length) {
-          <small class="text-muted d-block mb-3">
-            Published automation switches:
-            {{ configuredChildBridgeSwitchNames() }}
-          </small>
-        }
-        @if (smartAutomationChildBridge(); as bridge) {
-          <p class="mb-2 text-muted">
-            Publish smart automation switch accessories using the dedicated
-            <strong>{{ bridge.name }}</strong> child bridge.
-          </p>
-          <small class="text-muted d-block mb-3">Status: {{ bridge.status }}</small>
-          <button
-            type="button"
-            class="btn btn-sm btn-elegant me-2"
-            [disabled]="!isAdmin || bridge.status === 'pending'"
-            (click)="startSmartAutomationChildBridge()"
-          >
-            Start
-          </button>
-          <button
-            type="button"
-            class="btn btn-sm btn-elegant me-2"
-            [disabled]="!isAdmin || bridge.status === 'pending'"
-            (click)="restartSmartAutomationChildBridge()"
-          >
-            Restart
-          </button>
-          <button
-            type="button"
-            class="btn btn-sm btn-danger"
-            [disabled]="!isAdmin || bridge.status === 'pending'"
-            (click)="stopSmartAutomationChildBridge()"
-          >
-            Stop
-          </button>
-        } @else {
-          <p class="mb-0 text-muted">
-            No Smart Automation child bridge was found. Create a child bridge named
-            <strong>Smart Automation</strong> for homebridge-config-ui-x to publish automation switches.
-          </p>
-        }
-        @if (isAdmin) {
-          <button type="button" class="btn btn-sm btn-primary mt-3" (click)="configureSmartAutomationChildBridge()">
-            {{ configuredChildBridge() ? 'Sync Child Bridge Switches' : 'Create & Populate Child Bridge' }}
-          </button>
-        }
-      </div>
+<div class="smart-automation-page">
+  <div class="smart-automation-hero mb-4">
+    <div class="smart-automation-hero-icon" aria-hidden="true">
+      <i class="fas fa-wand-magic-sparkles"></i>
+    </div>
+    <div class="flex-grow-1">
+      <h3 class="primary-text mb-1">Smart Automation</h3>
+      <p class="text-muted mb-0">
+        Build smarter Homebridge behavior with focused automation types and switches you can use anywhere in HomeKit.
+      </p>
+    </div>
+    <div class="automation-count">
+      <strong>{{ smartAutomations().length }}</strong>
+      <span>{{ smartAutomations().length === 1 ? 'automation' : 'automations' }}</span>
     </div>
   </div>
-</div>
 
-<div class="row">
-  <div class="col-lg-6 mb-3">
-    <app-smart-automation-form
-      [draft]="smartAutomationDraft"
-      [rooms]="rooms"
-      [selectedLightUniqueIds]="selectedLightUniqueIds()"
-      (lightSelectionChange)="toggleLightSelection($event.uniqueId, $event.selected)"
-      (save)="saveSmartAutomation()"
-    />
-  </div>
-  <div class="col-lg-6 mb-3">
-    <app-smart-automation-list
-      [automations]="smartAutomations()"
-      (setEnabled)="setSmartAutomationEnabled($event.automation, $event.enabled)"
-      (edit)="editSmartAutomation($event)"
-      (delete)="deleteSmartAutomation($event)"
-    />
+  <div class="row g-3 align-items-start">
+    <div class="col-xl-4 col-lg-5">
+      <app-smart-automation-list
+        [automations]="smartAutomations()"
+        (setEnabled)="setSmartAutomationEnabled($event.automation, $event.enabled)"
+        (edit)="editSmartAutomation($event)"
+        (delete)="deleteSmartAutomation($event)"
+      />
+    </div>
+    <div class="col-xl-8 col-lg-7">
+      <app-smart-automation-form
+        [draft]="smartAutomationDraft"
+        [rooms]="rooms"
+        [selectedLightUniqueIds]="selectedLightUniqueIds()"
+        (lightSelectionChange)="toggleLightSelection($event.uniqueId, $event.selected)"
+        (save)="saveSmartAutomation()"
+      />
+    </div>
   </div>
 </div>
