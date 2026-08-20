@@ -102,7 +102,7 @@ export class SmartAutomationsComponent implements OnInit, OnDestroy {
 
       const saved = {
         ...draft,
-        id: draft.id || globalThis.crypto.randomUUID(),
+        id: draft.id || this.generateAutomationId(),
         name: draft.name?.trim(),
       } as SmartAutomation
       if (!saved.name || !saved.uniqueIds.length) {
@@ -290,6 +290,15 @@ export class SmartAutomationsComponent implements OnInit, OnDestroy {
     globalThis.crypto.getRandomValues(random)
     const code = `${(random[0] % 9) + 1}${Array.from(random.slice(1), value => (value % 10).toString()).join('')}`
     return `${code.slice(0, 3)}-${code.slice(3, 5)}-${code.slice(5, 8)}`
+  }
+
+  private generateAutomationId(): string {
+    const bytes = new Uint8Array(16)
+    globalThis.crypto.getRandomValues(bytes)
+    bytes[6] = (bytes[6] & 0x0F) | 0x40
+    bytes[8] = (bytes[8] & 0x3F) | 0x80
+    const hex = Array.from(bytes, value => value.toString(16).padStart(2, '0')).join('')
+    return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-${hex.slice(12, 16)}-${hex.slice(16, 20)}-${hex.slice(20)}`
   }
 
   private generateBridgeUsername(): string {
