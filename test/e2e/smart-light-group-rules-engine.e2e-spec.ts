@@ -109,4 +109,26 @@ describe('SmartLightGroupRulesEngine', () => {
     expect(onRestoreOrder).toBeGreaterThan(brightnessRestoreOrder)
     expect(onRestoreOrder).toBeGreaterThan(hueRestoreOrder)
   })
+
+  it('logs detailed characteristic snapshots and old-to-new writes at debug level', async () => {
+    const brightness = createCharacteristic('Brightness', 42)
+    const light = createLight('light-1', false, [brightness])
+    const accessories = { getServices: vi.fn(async () => [light.service]) }
+    const log = {
+      debug: vi.fn(),
+      info: vi.fn(),
+      warn: vi.fn(),
+    }
+    const engine = new SmartLightGroupRulesEngine(config, accessories, log)
+
+    await engine.setOn(true)
+    brightness.value = 80
+    await engine.setOn(false)
+
+    const debugOutput = log.debug.mock.calls.flat().join('\n')
+    expect(debugOutput).toContain('captured light-1.On=false')
+    expect(debugOutput).toContain('captured light-1.Brightness=42')
+    expect(debugOutput).toContain('turn on light-1.On: false -> On')
+    expect(debugOutput).toContain('restore light-1.Brightness: 80 -> 42')
+  })
 })
