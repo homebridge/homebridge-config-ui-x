@@ -2,21 +2,30 @@ import { describe, expect, it, vi } from 'vitest'
 
 import { SmartLightGroupRulesEngine } from '../../src/smart-automation/rules/smart-light-group.rules-engine.js'
 
-function createLight(uniqueId: string, initialValue: boolean) {
+function createCharacteristic(type: string, initialValue: string | number | boolean, canWrite = true) {
   const characteristic = {
-    canWrite: true,
+    canWrite,
+    type,
     value: initialValue,
-    setValue: vi.fn(async (value: boolean) => {
+    setValue: vi.fn(async (value: string | number | boolean) => {
       characteristic.value = value
     }),
   }
+
+  return characteristic
+}
+
+function createLight(uniqueId: string, initialValue: boolean, additionalCharacteristics: any[] = []) {
+  const characteristic = createCharacteristic('On', initialValue)
+  const serviceCharacteristics = [characteristic, ...additionalCharacteristics]
 
   return {
     characteristic,
     service: {
       type: 'Lightbulb',
       uniqueId,
-      getCharacteristic: vi.fn(() => characteristic),
+      serviceCharacteristics,
+      getCharacteristic: vi.fn(type => serviceCharacteristics.find(item => item.type === type)),
     } as any,
   }
 }
@@ -70,5 +79,33 @@ describe('SmartLightGroupRulesEngine', () => {
 
     expect(first.characteristic.value).toBe(false)
     expect(second.characteristic.value).toBe(false)
+  })
+
+  it('restores every writable light characteristic and restores On last', async () => {
+    const brightness = createCharacteristic('Brightness', 35)
+    const hue = createCharacteristic('Hue', 120)
+    const name = createCharacteristic('Name', 'Porch Light', false)
+    const light = createLight('light-1', false, [brightness, hue, name])
+    const accessories = { getServices: vi.fn(async () => [light.service]) }
+    const engine = new SmartLightGroupRulesEngine(config, accessories, {
+      debug: vi.fn(),
+      info: vi.fn(),
+      warn: vi.fn(),
+    })
+
+    await engine.setOn(true)
+    brightness.value = 100
+    hue.value = 270
+    await engine.setOn(false)
+
+    expect(brightness.value).toBe(35)
+    expect(hue.value).toBe(120)
+    expect(name.setValue).not.toHaveBeenCalled()
+
+    const brightnessRestoreOrder = brightness.setValue.mock.invocationCallOrder.at(-1)!
+    const hueRestoreOrder = hue.setValue.mock.invocationCallOrder.at(-1)!
+    const onRestoreOrder = light.characteristic.setValue.mock.invocationCallOrder.at(-1)!
+    expect(onRestoreOrder).toBeGreaterThan(brightnessRestoreOrder)
+    expect(onRestoreOrder).toBeGreaterThan(hueRestoreOrder)
   })
 })
