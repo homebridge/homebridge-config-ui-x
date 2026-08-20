@@ -2,6 +2,7 @@ import type { SmartAutomationConfig, SmartAutomationRulesEngine } from './smart-
 
 import { SmartLightGroupRulesEngine } from './rules/smart-light-group.rules-engine.js'
 import { HapSmartAutomationAccessoryController } from './smart-automation-accessory.controller.js'
+import { createSmartAutomationLogger, SmartAutomationLogger } from './smart-automation.logger.js'
 
 const PLUGIN_NAME = 'homebridge-config-ui-x'
 const PLATFORM_NAME = 'smart-automation'
@@ -9,13 +10,16 @@ const PLATFORM_NAME = 'smart-automation'
 export class SmartAutomationPlatform {
   private readonly accessories = new Map<string, any>()
   private readonly accessoryController: HapSmartAutomationAccessoryController
+  private readonly log: SmartAutomationLogger
 
   constructor(
-    private readonly log: any,
-    private readonly config: { smartAutomations?: SmartAutomationConfig[] },
+    homebridgeLog: any,
+    private readonly config: { debug?: boolean, smartAutomations?: SmartAutomationConfig[] },
     private readonly api: any,
   ) {
+    this.log = createSmartAutomationLogger(homebridgeLog, this.config.debug === true)
     this.accessoryController = new HapSmartAutomationAccessoryController(this.api?.user?.configPath?.(), this.log)
+    this.log.info(`Smart Automation debug logging is ${this.config.debug ? 'enabled' : 'disabled'}.`)
     this.api.on('didFinishLaunching', () => void this.initialise())
   }
 

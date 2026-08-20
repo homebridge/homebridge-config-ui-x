@@ -14,6 +14,20 @@
       <strong>{{ smartAutomations().length }}</strong>
       <span>{{ smartAutomations().length === 1 ? 'automation' : 'automations' }}</span>
     </div>
+    <div class="debug-toggle form-check form-switch mb-0">
+      <input
+        id="smart-automation-debug"
+        type="checkbox"
+        class="form-check-input"
+        [checked]="debugEnabled()"
+        [disabled]="!isAdmin"
+        (change)="onDebugLoggingChange($event)"
+      />
+      <label class="form-check-label" for="smart-automation-debug">
+        Debug logging
+        <small class="text-muted d-block">Applies after restart</small>
+      </label>
+    </div>
   </div>
 
   <div class="row g-3 align-items-start">

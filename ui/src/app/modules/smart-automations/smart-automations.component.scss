@@ -43,13 +43,29 @@
   }
 }
 
+.debug-toggle {
+  padding-left: 2.75rem;
+  white-space: nowrap;
+
+  .form-check-input {
+    width: 2.2rem;
+    height: 1.15rem;
+    margin-left: -2.75rem;
+  }
+
+  small {
+    font-size: 0.7rem;
+  }
+}
+
 @media (max-width: 575.98px) {
   .smart-automation-hero {
     align-items: flex-start;
     padding: 1rem;
   }
 
-  .automation-count {
+  .automation-count,
+  .debug-toggle {
     display: none;
   }
 }
