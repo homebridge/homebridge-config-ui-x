@@ -65,6 +65,17 @@ describe('authErrorInterceptor', () => {
     expect(auth.logout).not.toHaveBeenCalled()
   })
 
+  it('leaves /api/auth/refresh to decide its own logout', async () => {
+    // ⚠️ #2981. This is the one endpoint that refuses a token the guard still
+    // accepts - a token past the 30-day renewal cap. Logging out from here
+    // would send the ACCOUNT-WIDE logout with a token the server honours, and
+    // one device reaching the cap would sign the user out on every other
+    // device. refreshSession() asks for a browser-local logout instead.
+    await expectFailure('/api/auth/refresh', 401)
+
+    expect(auth.logout).not.toHaveBeenCalled()
+  })
+
   it('does nothing when there is no session to end', async () => {
     auth.token = null
 

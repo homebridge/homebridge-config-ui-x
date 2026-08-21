@@ -50,6 +50,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(platform-tools): recover the terminal when reconnecting after the socket has dropped
 - fix(status): actually clear the node version cache when the update policy changes
 - fix(accessories): ignore the mouse events ios replays for the full 300ms after a touch
+- fix(auth): sign out this browser only when a token refresh is refused (#2981) (@lidonius1122)
 
 ### Other Changes
 
