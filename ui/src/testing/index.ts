@@ -15,6 +15,8 @@
  * `@/testing/providers` in the specs that need DI.
  */
 
+import './reset-token-store'
+
 export * from './constants'
 export * from './fakes/api.fake'
 export * from './fakes/auth.fake'
@@ -22,6 +24,7 @@ export * from './fakes/browser.fake'
 export * from './fakes/cache.fake'
 export * from './fakes/modal.fake'
 export * from './fakes/settings.fake'
+export * from './fakes/terminal.fake'
 export * from './fakes/toastr.fake'
 export * from './fakes/ws.fake'
 export * from './fixtures/accessory.fixture'

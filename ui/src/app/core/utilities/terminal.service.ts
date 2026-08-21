@@ -1,17 +1,20 @@
+import type { FitAddon } from '@xterm/addon-fit'
+import type { WebLinksAddon } from '@xterm/addon-web-links'
+import type { IDisposable, ITerminalOptions, Terminal } from '@xterm/xterm'
+
 import { ElementRef, inject, Injectable } from '@angular/core'
-import { FitAddon } from '@xterm/addon-fit'
-import { WebLinksAddon } from '@xterm/addon-web-links'
-import { IDisposable, ITerminalOptions, Terminal } from '@xterm/xterm'
 import { Subject } from 'rxjs'
 import { debounceTime, takeUntil } from 'rxjs/operators'
 
 import { ApiService } from '@/app/core/communication/api.service'
 import { IoNamespace, WsService } from '@/app/core/communication/ws.service'
+import { TERMINAL_FACTORY } from '@/app/core/utilities/terminal.factory'
 
 @Injectable({
   providedIn: 'root',
 })
 export class TerminalService {
+  private $terminals = inject(TERMINAL_FACTORY)
   private $ws = inject(WsService)
   private $api = inject(ApiService)
   private io!: IoNamespace
@@ -156,11 +159,11 @@ export class TerminalService {
     // Reuse existing connection if still active
     if (this.io && this.io.socket && this.io.socket.connected) {
       // Create addons
-      this.fitAddon = new FitAddon()
-      this.webLinksAddon = new WebLinksAddon()
+      this.fitAddon = this.$terminals.createFitAddon()
+      this.webLinksAddon = this.$terminals.createWebLinksAddon()
 
       // Create a new terminal instance for the UI
-      this.term = new Terminal(termOpts)
+      this.term = this.$terminals.createTerminal(termOpts)
 
       // Load addons before open
       this.term.loadAddon(this.fitAddon)
@@ -268,11 +271,11 @@ export class TerminalService {
     this.io = this.$ws.connectToNamespace('platform-tools/terminal')
 
     // Create addons
-    this.fitAddon = new FitAddon()
-    this.webLinksAddon = new WebLinksAddon()
+    this.fitAddon = this.$terminals.createFitAddon()
+    this.webLinksAddon = this.$terminals.createWebLinksAddon()
 
     // Create a terminal instance
-    this.term = new Terminal(termOpts)
+    this.term = this.$terminals.createTerminal(termOpts)
 
     // Load addons before open
     this.term.loadAddon(this.fitAddon)

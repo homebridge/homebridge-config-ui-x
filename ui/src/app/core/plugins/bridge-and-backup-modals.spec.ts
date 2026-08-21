@@ -12,10 +12,15 @@ import { RestartChildBridgesComponent } from '@/app/core/components/restart-chil
 import { CONFIG_RESTORE_MODAL_DATA, PLUGIN_EXTERNALS_MODAL_DATA, RESET_ACCESSORIES_MODAL_DATA, RESTART_CHILD_BRIDGES_MODAL_DATA } from '@/app/core/modal-data-tokens'
 import { PluginExternalsComponent } from '@/app/core/plugins/plugin-externals/plugin-externals.component'
 import { ResetAccessoriesComponent } from '@/app/core/plugins/reset-accessories/reset-accessories.component'
-import { activeModalStub, cacheStub, fakeApi, makePlugin, makeSettings, toastrStub } from '@/testing'
+import { SAVE_AS } from '@/app/core/utilities/file-saver.factory'
+import { activeModalStub, cacheStub, fakeApi, fakeSaveAs, makePlugin, makeSettings, toastrStub } from '@/testing'
 import { provideFakes, provideTestTranslate } from '@/testing/providers'
 
-vi.mock('file-saver', () => ({ saveAs: vi.fn() }))
+/**
+ * ⚠️ `saveAs` is substituted through `SAVE_AS`, not by mocking `file-saver`.
+ * The unit-test builder bundles third-party imports into the app, so a module
+ * mock never reaches the component - it would trigger a real download.
+ */
 
 /**
  * Four modals with nothing else covering them: restarting a plugin's child
@@ -35,6 +40,7 @@ vi.mock('file-saver', () => ({ saveAs: vi.fn() }))
  * then reads zero calls — which looks like the component never saving anything.
  */
 describe('the bridge and backup modals', () => {
+  let saveAs: ReturnType<typeof fakeSaveAs>
   let api: FakeApi
   let toastr: FakeToastr
   let settings: FakeSettings
@@ -69,9 +75,12 @@ describe('the bridge and backup modals', () => {
     settings = makeSettings({ env: { featureFlags: options.featureFlags ?? {} } })
     activeModal = activeModalStub()
 
+    saveAs = fakeSaveAs()
+
     TestBed.configureTestingModule({
       imports: [type as any],
       providers: [
+        { provide: SAVE_AS, useValue: saveAs },
         provideRouter([]),
         provideTestTranslate(),
         provideFakes({ api, toastr, settings, activeModal }),
@@ -461,8 +470,6 @@ describe('the bridge and backup modals', () => {
       const modal = await openModal({ arrange: () => api.respond('get', '/config-editor/backups/1700000000000', { bridge: { name: 'Homebridge' } }) })
 
       await modal.download('1700000000000')
-
-      const { saveAs } = await import('file-saver')
       expect(saveAs).toHaveBeenCalledWith(expect.any(Blob), 'config-backup-1700000000000.json')
       expect(modal.clicked()).toBe(false)
     })

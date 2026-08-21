@@ -7,28 +7,53 @@ import { vi } from 'vitest'
  * the global setup file rather than per spec.
  */
 
+/**
+ * The spies, kept on `globalThis` rather than in module scope.
+ *
+ * ⚠️ This module is evaluated more than once: the global setup file loads one
+ * copy and a spec importing from `@/testing` can get another, because the
+ * unit-test builder compiles the app through its build target. Two copies meant
+ * the setup installed one `vi.fn()` on `window.location` while the spec asserted
+ * on a different one, so a genuine `reload()` looked like it never happened.
+ * Anchoring them to a global makes every copy share the same spies.
+ * @param key - a unique name for the spy
+ */
+function sharedSpy(key: string) {
+  const store = ((globalThis as any).__uiTestSpies ??= {})
+  return (store[key] ??= vi.fn())
+}
+
 /** Spy for `window.location.reload` - asserted by the logout and settings specs. */
-export const locationReload = vi.fn()
+export const locationReload = sharedSpy('locationReload')
 
 /** Spy for `window.location.assign`. */
-export const locationAssign = vi.fn()
+export const locationAssign = sharedSpy('locationAssign')
 
 /** Spy for `window.location.replace`. */
-export const locationReplace = vi.fn()
+export const locationReplace = sharedSpy('locationReplace')
 
 /** Spy for `window.open` - the server-time warning toast and support links use it. */
-export const windowOpen = vi.fn()
+export const windowOpen = sharedSpy('windowOpen')
 
 /** Spy for `window.scrollTo` - jsdom logs "Not implemented" without it. */
-export const windowScrollTo = vi.fn()
+export const windowScrollTo = sharedSpy('windowScrollTo')
 
 /** Spy for `Element.prototype.scrollIntoView` - used by the logs and terminal views. */
-export const scrollIntoView = vi.fn()
+export const scrollIntoView = sharedSpy('scrollIntoView')
 
 type MediaListener = (event: MediaQueryListEvent) => void
 
-let matchMediaMatches = false
-const mediaListeners = new Set<MediaListener>()
+/**
+ * The mutable state, kept on `globalThis` for the same reason as the spies
+ * above: the setup file installs the stubs from one copy of this module while
+ * a spec calls `setMatchMedia` on another, so module-scope values simply never
+ * met. Everything the stubs read or write lives in this one bag.
+ */
+const state = ((globalThis as any).__uiTestBrowserState ??= {
+  matchMediaMatches: false,
+  mediaListeners: new Set<MediaListener>(),
+  locationFields: {} as Record<string, string>,
+}) as { matchMediaMatches: boolean, mediaListeners: Set<MediaListener>, locationFields: Record<string, string> }
 
 /**
  * Set what the next `window.matchMedia(...).matches` read returns.
@@ -38,7 +63,7 @@ const mediaListeners = new Set<MediaListener>()
  * @param matches - what the media query should report
  */
 export function setMatchMedia(matches: boolean): void {
-  matchMediaMatches = matches
+  state.matchMediaMatches = matches
 }
 
 /**
@@ -47,9 +72,9 @@ export function setMatchMedia(matches: boolean): void {
  * @param matches - the new state to report to the listeners
  */
 export function fireMatchMediaChange(matches: boolean): void {
-  matchMediaMatches = matches
+  state.matchMediaMatches = matches
   const event = { matches, media: '' } as MediaQueryListEvent
-  mediaListeners.forEach(listener => listener(event))
+  state.mediaListeners.forEach(listener => listener(event))
 }
 
 function createMediaQueryList(query: string): MediaQueryList {
@@ -57,18 +82,18 @@ function createMediaQueryList(query: string): MediaQueryList {
   // are type-only, so eslint's no-undef rule rejects them here
   const addListener = (listener: unknown) => {
     if (typeof listener === 'function') {
-      mediaListeners.add(listener as MediaListener)
+      state.mediaListeners.add(listener as MediaListener)
     }
   }
   const removeListener = (listener: unknown) => {
     if (typeof listener === 'function') {
-      mediaListeners.delete(listener as MediaListener)
+      state.mediaListeners.delete(listener as MediaListener)
     }
   }
 
   return {
     get matches() {
-      return matchMediaMatches
+      return state.matchMediaMatches
     },
     media: query,
     onchange: null,
@@ -128,8 +153,6 @@ function fakeCanvasContext(): Record<string, unknown> {
   }
 }
 
-let locationFields: Record<string, string> = {}
-
 /**
  * Replace `window.location` with a plain object.
  *
@@ -142,7 +165,7 @@ let locationFields: Record<string, string> = {}
  */
 function installLocation(): void {
   const real = window.location
-  locationFields = {
+  state.locationFields = {
     href: real.href,
     origin: real.origin,
     protocol: real.protocol,
@@ -155,11 +178,11 @@ function installLocation(): void {
   }
 
   define(window, 'location', {
-    ...locationFields,
+    ...state.locationFields,
     reload: locationReload,
     assign: locationAssign,
     replace: locationReplace,
-    toString: () => locationFields.href,
+    toString: () => state.locationFields.href,
   })
 }
 
@@ -186,10 +209,10 @@ export function installBrowserStubs(): void {
  * Reset the stubs between tests. Called by the global setup file's `beforeEach`.
  */
 export function resetBrowserStubs(): void {
-  matchMediaMatches = false
-  mediaListeners.clear()
+  state.matchMediaMatches = false
+  state.mediaListeners.clear()
   // A spec may have written to href or hash; put the url back
-  Object.assign(window.location, locationFields)
+  Object.assign(window.location, state.locationFields)
   locationReload.mockClear()
   locationAssign.mockClear()
   locationReplace.mockClear()

@@ -9,25 +9,18 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { ConfirmComponent } from '@/app/core/components/confirm/confirm.component'
 import { CONFIRM_MODAL_DATA } from '@/app/core/modal-data-tokens'
-import { fakeApi, fakeWs, modalServiceSpy, toastrStub } from '@/testing'
+import { SAVE_AS } from '@/app/core/utilities/file-saver.factory'
+import { TERMINAL_FACTORY } from '@/app/core/utilities/terminal.factory'
+import { fakeApi, fakeSaveAs, fakeTerminals, fakeWs, modalServiceSpy, toastrStub } from '@/testing'
 import { provideFakes, provideTestTranslate } from '@/testing/providers'
 
 /**
- * ⚠️ `LogService` and `TerminalService` are loaded with `await import()` inside
- * the helpers, and imported above as **types only**.
- *
- * A top-level value import of either one silently defeats `vi.mock('@xterm/xterm')`
- * with this test builder: the module is evaluated against the real xterm before
- * the mock registry is consulted, so `new Terminal(...)` builds a real minified
- * xterm instance, every `written`/`focus` assertion reads `undefined`, and the
- * failure looks like a broken fixture rather than an un-applied mock. Loading
- * them lazily is what makes the mock stick.
+ * ⚠️ The terminal is substituted through `TERMINAL_FACTORY`, not by mocking
+ * `@xterm/xterm`. A module mock cannot reach these services: the unit-test
+ * builder compiles the app through its build target, so xterm is bundled into
+ * the service and the mock never applies - the service quietly builds a real
+ * terminal and every `written`/`focus` assertion reads `undefined`.
  */
-
-const { terminals, fits } = vi.hoisted(() => ({
-  terminals: [] as any[],
-  fits: [] as any[],
-}))
 
 /**
  * A stand-in for xterm's Terminal, recording everything written and handing
@@ -37,56 +30,6 @@ const { terminals, fits } = vi.hoisted(() => ({
  * shows up as a failure in *cleanup* of the following tests rather than on its
  * own assertion, which reads as a dozen broken tests instead of one gap.
  */
-vi.mock('@xterm/xterm', () => ({
-  Terminal: class {
-    public written: string[] = []
-    public cols = 80
-    public rows = 24
-    public buffer = { active: { length: 42 } }
-    public dataHandlers: Array<(data: string) => void> = []
-    public resizeHandlers: Array<(size: { cols: number, rows: number }) => void> = []
-    public dataDisposed = false
-
-    public loadAddon = vi.fn()
-    public open = vi.fn()
-    public reset = vi.fn()
-    public clear = vi.fn()
-    public focus = vi.fn()
-    public dispose = vi.fn()
-    public scrollToLine = vi.fn()
-
-    constructor(public options: any) {
-      terminals.push(this)
-    }
-
-    public write(data: string): void {
-      this.written.push(data)
-    }
-
-    public onData(handler: (data: string) => void) {
-      this.dataHandlers.push(handler)
-      return { dispose: () => {
-        this.dataDisposed = true
-      } }
-    }
-
-    public onResize(handler: (size: { cols: number, rows: number }) => void) {
-      this.resizeHandlers.push(handler)
-      return { dispose: vi.fn() }
-    }
-  },
-}))
-
-vi.mock('@xterm/addon-fit', () => ({
-  FitAddon: class {
-    public fit = vi.fn()
-    constructor() {
-      fits.push(this)
-    }
-  },
-}))
-vi.mock('@xterm/addon-web-links', () => ({ WebLinksAddon: class {} }))
-vi.mock('file-saver', () => ({ saveAs: vi.fn() }))
 
 /**
  * The two services that own an xterm instance: LogService (read-only, and the
@@ -106,21 +49,23 @@ describe('the terminal-owning services', () => {
   let modal: FakeModalService
   let host: HTMLElement
   let target: ElementRef
+  let xterm: ReturnType<typeof fakeTerminals>
+  let saveAs: ReturnType<typeof fakeSaveAs>
 
   /** The most recently constructed fake terminal. */
   function term() {
-    return terminals.at(-1)!
+    return xterm.term()
   }
 
   /** The most recently constructed fake fit addon. */
   function fit() {
-    return fits.at(-1)!
+    return xterm.fit()
   }
 
   async function configure(namespace: string) {
     TestBed.resetTestingModule()
-    terminals.length = 0
-    fits.length = 0
+    xterm = fakeTerminals()
+    saveAs = fakeSaveAs()
 
     ws = fakeWs()
     io = ws.namespace(namespace, { connected: false })
@@ -136,6 +81,8 @@ describe('the terminal-owning services', () => {
       providers: [
         provideTestTranslate(),
         provideFakes({ api, ws, toastr, modal }),
+        { provide: TERMINAL_FACTORY, useValue: xterm.factory },
+        { provide: SAVE_AS, useValue: saveAs },
       ],
     })
   }
@@ -438,7 +385,6 @@ describe('the terminal-owning services', () => {
         modal.lastOpened()!.ref.close()
         await settle()
 
-        const { saveAs } = await import('file-saver')
         expect(api.lastCall('get', '/platform-tools/hb-service/log/download')?.options)
           .toEqual({ observe: 'response', responseType: 'blob' })
         expect(saveAs).toHaveBeenCalledWith(expect.any(Blob), 'homebridge.log.txt')
@@ -454,8 +400,7 @@ describe('the terminal-owning services', () => {
         modal.lastOpened()!.ref.close()
         await settle()
 
-        const { saveAs } = await import('file-saver')
-        const saved = vi.mocked(saveAs).mock.calls.at(-1)![0] as Blob
+        const saved = saveAs.mock.calls.at(-1)![0] as Blob
         expect(await saved.text()).toBe('setting up homekit\nhomekit ready')
       })
 
@@ -819,7 +764,7 @@ describe('the terminal-owning services', () => {
       await start()
 
       expect(service.startTerminal(target, {})).toBe(false)
-      expect(terminals).toHaveLength(1)
+      expect(xterm.terminals).toHaveLength(1)
     })
 
     describe('reconnecting to a live session', () => {

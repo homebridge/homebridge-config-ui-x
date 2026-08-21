@@ -7,40 +7,14 @@ import { provideRouter, Router } from '@angular/router'
 import { afterAll, afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { RESTORE_MODAL_DATA } from '@/app/core/modal-data-tokens'
+import { TERMINAL_FACTORY } from '@/app/core/utilities/terminal.factory'
 import { BackupComponent } from '@/app/modules/settings/backup/backup.component'
 import { RestoreComponent } from '@/app/modules/settings/backup/restore/restore.component'
 import { environment } from '@/environments/environment'
-import { activeModalStub, fakeApi, fakeWs, makeSettings, modalServiceSpy, toastrStub } from '@/testing'
+import { activeModalStub, fakeApi, fakeTerminals, fakeWs, makeSettings, modalServiceSpy, toastrStub } from '@/testing'
 import { provideFakes, provideTestTranslate } from '@/testing/providers'
 
 // Every terminal the component built, so a spec can read what was written to it
-const { terminals } = vi.hoisted(() => ({ terminals: [] as any[] }))
-
-// xterm needs a real canvas and a sized element, neither of which jsdom has.
-// Nothing here is under test: the component's own job is to decide what to
-// write and when to start the restore
-vi.mock('@xterm/xterm', () => ({
-  Terminal: class {
-    public written: string[] = []
-    public loadAddon = vi.fn()
-    public open = vi.fn()
-    public reset = vi.fn()
-    public dispose = vi.fn()
-
-    constructor(public options: any) {
-      terminals.push(this)
-    }
-
-    public write(data: string): void {
-      this.written.push(data)
-    }
-  },
-}))
-
-vi.mock('@xterm/addon-fit', () => ({ FitAddon: class {
-  public fit = vi.fn()
-} }))
-vi.mock('@xterm/addon-web-links', () => ({ WebLinksAddon: class {} }))
 
 /**
  * The restore modal, which is the most destructive screen in the app: it
@@ -55,6 +29,7 @@ vi.mock('@xterm/addon-web-links', () => ({ WebLinksAddon: class {} }))
  * because ApiService resolves on the first upload event rather than the response.
  */
 describe('restoreComponent', () => {
+  let xterm: ReturnType<typeof fakeTerminals>
   let api: FakeApi
   let http: HttpTestingController
   let settings: FakeSettings
@@ -87,8 +62,11 @@ describe('restoreComponent', () => {
     ws = fakeWs()
     io = ws.namespace('backup')
 
+    xterm = fakeTerminals()
+
     TestBed.configureTestingModule({
       providers: [
+        { provide: TERMINAL_FACTORY, useValue: xterm.factory },
         provideRouter([]),
         provideHttpClient(),
         provideHttpClientTesting(),
@@ -119,7 +97,6 @@ describe('restoreComponent', () => {
   }
 
   beforeEach(() => {
-    terminals.length = 0
     // The component reaches for this by id rather than a view child, so it has
     // to exist before the modal is created
     termTarget = document.createElement('div')
@@ -151,7 +128,7 @@ describe('restoreComponent', () => {
 
       io.socket.fire('stdout', 'Extracting archive...')
 
-      expect(terminals[0].written).toEqual(['Extracting archive...'])
+      expect(xterm.terminals[0].written).toEqual(['Extracting archive...'])
     })
 
     it('builds a read-only terminal', async () => {
@@ -262,7 +239,7 @@ describe('restoreComponent', () => {
 
       restore.onRestoreBackupClick()
 
-      expect(terminals[0].reset).toHaveBeenCalled()
+      expect(xterm.terminals[0].reset).toHaveBeenCalled()
     })
   })
 
@@ -426,7 +403,7 @@ describe('restoreComponent', () => {
     it('closes the socket and the terminal on teardown', async () => {
       TestBed.resetTestingModule()
       await open()
-      const term = terminals[0]
+      const term = xterm.terminals[0]
 
       TestBed.resetTestingModule()
 

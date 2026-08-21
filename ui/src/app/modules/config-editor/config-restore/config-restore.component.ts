@@ -5,11 +5,11 @@ import { Router } from '@angular/router'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap/tooltip'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
-import { saveAs } from 'file-saver'
 import { ToastrService } from 'ngx-toastr'
 
 import { ApiService } from '@/app/core/communication/api.service'
 import { CONFIG_RESTORE_MODAL_DATA } from '@/app/core/modal-data-tokens'
+import { SAVE_AS } from '@/app/core/utilities/file-saver.factory'
 import { HttpErrorService } from '@/app/core/utilities/http-error.service'
 import { ConfigRestoreBackup } from '@/app/modules/config-editor/config-editor.interfaces'
 
@@ -27,6 +27,7 @@ import { ConfigRestoreBackup } from '@/app/modules/config-editor/config-editor.i
 })
 export class ConfigRestoreComponent implements OnInit {
   // Injected dependencies
+  private $saveAs = inject(SAVE_AS)
   private $activeModal = inject(NgbActiveModal)
   private $api = inject(ApiService)
   private $errors = inject(HttpErrorService)
@@ -73,7 +74,7 @@ export class ConfigRestoreComponent implements OnInit {
       const formattedJson = JSON.stringify(json, null, 4)
       const blob = new Blob([formattedJson], { type: 'application/json' })
       const fileName = `config-backup-${backupId}.json`
-      saveAs(blob, fileName)
+      this.$saveAs(blob, fileName)
       this.clicked.set(false)
     } catch (error: any) {
       this.clicked.set(false)

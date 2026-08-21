@@ -2,15 +2,21 @@ import type { FakeSocket } from '@/testing'
 
 import { TestBed } from '@angular/core/testing'
 import { firstValueFrom } from 'rxjs'
-import { io } from 'socket.io-client'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
+import { SOCKET_FACTORY } from '@/app/core/communication/socket.factory'
 import { WsService } from '@/app/core/communication/ws.service'
 import { environment } from '@/environments/environment'
 import { fakeSocket, makeAuth } from '@/testing'
 import { provideFakes } from '@/testing/providers'
 
-vi.mock('socket.io-client', () => ({ io: vi.fn() }))
+/**
+ * ⚠️ No `vi.mock('socket.io-client')` here. The unit-test builder compiles the
+ * app through its build target, so socket.io is bundled into the service and a
+ * module mock never reaches it - the service would quietly open a real socket.
+ * The factory token is the seam that survives bundling.
+ */
+const io = vi.fn()
 
 describe('WsService', () => {
   let service: WsService
@@ -28,7 +34,10 @@ describe('WsService', () => {
 
     auth = makeAuth()
     TestBed.configureTestingModule({
-      providers: [provideFakes({ auth })],
+      providers: [
+        provideFakes({ auth }),
+        { provide: SOCKET_FACTORY, useValue: io },
+      ],
     })
     service = TestBed.inject(WsService)
   })

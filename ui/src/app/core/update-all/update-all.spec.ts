@@ -6,29 +6,9 @@ import { TestBed } from '@angular/core/testing'
 import { TranslatePipe } from '@ngx-translate/core'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { activeModalStub, fakeApi, fakeWs, makeSettings, modalServiceSpy, toastrStub } from '@/testing'
+import { TERMINAL_FACTORY } from '@/app/core/utilities/terminal.factory'
+import { activeModalStub, fakeApi, fakeTerminals, fakeWs, makeSettings, modalServiceSpy, toastrStub } from '@/testing'
 import { provideFakes, provideTestTranslate } from '@/testing/providers'
-
-const { terminals } = vi.hoisted(() => ({ terminals: [] as any[] }))
-
-vi.mock('@xterm/xterm', () => ({
-  Terminal: class {
-    public written: string[] = []
-    public loadAddon = vi.fn()
-    public open = vi.fn()
-    public dispose = vi.fn()
-    constructor(public options: any) {
-      terminals.push(this)
-    }
-
-    public write(data: any): void {
-      this.written.push(String(data))
-    }
-  },
-}))
-vi.mock('@xterm/addon-fit', () => ({ FitAddon: class {
-  public fit = vi.fn()
-} }))
 
 /**
  * The Update All feature: the plan/confirm modal and the progress/summary
@@ -40,6 +20,7 @@ vi.mock('@xterm/addon-fit', () => ({ FitAddon: class {
  * then records nothing - which reads as the component being broken.
  */
 describe('update all', () => {
+  let xterm: ReturnType<typeof fakeTerminals>
   let api: FakeApi
   let toastr: FakeToastr
   let settings: FakeSettings
@@ -54,7 +35,6 @@ describe('update all', () => {
   beforeEach(() => {
     vi.spyOn(console, 'error').mockImplementation(() => {})
     vi.mocked(console.error).mockClear()
-    terminals.length = 0
   })
 
   afterEach(() => {
@@ -96,9 +76,12 @@ describe('update all', () => {
 
       const { UpdateAllModalComponent } = await import('@/app/core/update-all/update-all-modal.component')
 
+      xterm = fakeTerminals()
+
       TestBed.configureTestingModule({
         imports: [UpdateAllModalComponent],
         providers: [
+          { provide: TERMINAL_FACTORY, useValue: xterm.factory },
           provideTestTranslate(),
           provideFakes({ api, toastr, settings, activeModal, modal }),
         ],
@@ -347,9 +330,12 @@ describe('update all', () => {
 
       const { UpdateAllProgressComponent } = await import('@/app/core/update-all/update-all-progress.component')
 
+      xterm = fakeTerminals()
+
       TestBed.configureTestingModule({
         imports: [UpdateAllProgressComponent],
         providers: [
+          { provide: TERMINAL_FACTORY, useValue: xterm.factory },
           provideTestTranslate(),
           provideFakes({ api, toastr, settings, activeModal, ws }),
         ],
@@ -383,8 +369,8 @@ describe('update all', () => {
     it('opens a terminal for the npm output', async () => {
       await open({ active: true })
 
-      expect(terminals).toHaveLength(1)
-      expect(terminals[0].open).toHaveBeenCalled()
+      expect(xterm.terminals).toHaveLength(1)
+      expect(xterm.terminals[0].open).toHaveBeenCalled()
     })
 
     it('goes straight to the summary when the run has already finished', async () => {
@@ -392,7 +378,7 @@ describe('update all', () => {
       const { component } = await open({ active: false })
 
       expect(component.phase()).toBe('summary')
-      expect(terminals).toHaveLength(0)
+      expect(xterm.terminals).toHaveLength(0)
     })
 
     it('re-reads the journal from disk for the summary', async () => {
@@ -456,7 +442,7 @@ describe('update all', () => {
 
         io.socket.fire('stdout', { name: 'homebridge-example', data: 'added 1 package\r\n' })
 
-        expect(terminals[0].written).toEqual(['added 1 package\r\n'])
+        expect(xterm.terminals[0].written).toEqual(['added 1 package\r\n'])
       })
 
       it('shows the summary when the run completes', async () => {
@@ -589,7 +575,7 @@ describe('update all', () => {
 
         fixture.destroy()
 
-        expect(terminals[0].dispose).toHaveBeenCalled()
+        expect(xterm.terminals[0].dispose).toHaveBeenCalled()
         expect(io.end).toHaveBeenCalled()
       })
 

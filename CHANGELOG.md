@@ -67,6 +67,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(auth): sign out only this browser when a session ends from inactivity
 - fix(plugins): keep the stable update when the requested dist-tag is missing (#2983) (@tbaur)
 - test(ui): cover the update all modals, climate tile colours and other gaps
+- test(ui): inject the terminal, file saver and socket so the specs stop relying on module mocks
 
 ### Homebridge Dependencies
 

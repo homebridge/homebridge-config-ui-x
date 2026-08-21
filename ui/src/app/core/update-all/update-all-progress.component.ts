@@ -1,8 +1,8 @@
+import type { Terminal } from '@xterm/xterm'
+
 import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit, signal } from '@angular/core'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
-import { FitAddon } from '@xterm/addon-fit'
-import { Terminal } from '@xterm/xterm'
 import { ToastrService } from 'ngx-toastr'
 import { firstValueFrom, Subscription } from 'rxjs'
 
@@ -11,6 +11,7 @@ import { IoNamespace, WsService } from '@/app/core/communication/ws.service'
 import { SettingsService } from '@/app/core/ui/settings.service'
 import { UpdateAllItemStatus, UpdateAllJournal, UpdateAllSnapshot } from '@/app/core/update-all/update-all.interfaces'
 import { HttpErrorService } from '@/app/core/utilities/http-error.service'
+import { TERMINAL_FACTORY } from '@/app/core/utilities/terminal.factory'
 
 /**
  * The Update All progress/summary modal. While a run is active it renders the
@@ -34,6 +35,7 @@ import { HttpErrorService } from '@/app/core/utilities/http-error.service'
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class UpdateAllProgressComponent implements OnInit, OnDestroy {
+  private $terminals = inject(TERMINAL_FACTORY)
   private $activeModal = inject(NgbActiveModal)
   private $api = inject(ApiService)
   private $errors = inject(HttpErrorService)
@@ -44,7 +46,7 @@ export class UpdateAllProgressComponent implements OnInit, OnDestroy {
 
   private io!: IoNamespace
   private term: Terminal | null = null
-  private fitAddon = new FitAddon()
+  private fitAddon = this.$terminals.createFitAddon()
   private connectedSub: Subscription | null = null
   private listenersAttached = false
   // Kept so ngOnDestroy can detach exactly our listeners - the namespace
@@ -148,7 +150,7 @@ export class UpdateAllProgressComponent implements OnInit, OnDestroy {
     if (!target) {
       return
     }
-    this.term = new Terminal(this.$settings.getTerminalOptions({ disableStdin: true }))
+    this.term = this.$terminals.createTerminal(this.$settings.getTerminalOptions({ disableStdin: true }))
     this.term.loadAddon(this.fitAddon)
     this.term.open(target)
     this.fitAddon.fit()

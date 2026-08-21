@@ -1,3 +1,5 @@
+import type { Terminal } from '@xterm/xterm'
+
 import { ChangeDetectionStrategy, Component, createEnvironmentInjector, EnvironmentInjector, inject, OnDestroy, OnInit, signal } from '@angular/core'
 import { Router } from '@angular/router'
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
@@ -9,10 +11,6 @@ import {
   NgbNavOutlet,
 } from '@ng-bootstrap/ng-bootstrap/nav'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
-import { FitAddon } from '@xterm/addon-fit'
-import { WebLinksAddon } from '@xterm/addon-web-links'
-import { Terminal } from '@xterm/xterm'
-import { saveAs } from 'file-saver'
 import { ToastrService } from 'ngx-toastr'
 
 import { PluginsCacheService } from '@/app/core/caching/plugins-cache.service'
@@ -26,7 +24,9 @@ import { ManageVersionComponent } from '@/app/core/plugins/manage-version/manage
 import { PluginLogsComponent } from '@/app/core/plugins/plugin-logs/plugin-logs.component'
 import { SettingsService } from '@/app/core/ui/settings.service'
 import { ChildBridgesService } from '@/app/core/utilities/child-bridges.service'
+import { SAVE_AS } from '@/app/core/utilities/file-saver.factory'
 import { HttpErrorService } from '@/app/core/utilities/http-error.service'
+import { TERMINAL_FACTORY } from '@/app/core/utilities/terminal.factory'
 import { BackupService } from '@/app/modules/settings/backup/backup.service'
 import { HbV2ModalComponent } from '@/app/modules/status/widgets/update-info-widget/hb-v2-modal/hb-v2-modal.component'
 
@@ -54,6 +54,8 @@ const RE_STARTS_WITH_DIGIT = /^\d/
 
 export class ManagePluginComponent implements OnInit, OnDestroy {
   // Injected dependencies
+  private $saveAs = inject(SAVE_AS)
+  private $terminals = inject(TERMINAL_FACTORY)
   private $activeModal = inject(NgbActiveModal)
   private $api = inject(ApiService)
   private $backup = inject(BackupService)
@@ -124,8 +126,8 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
   private toastSuccess!: string
   private term: Terminal
   private termTarget!: HTMLElement
-  private fitAddon = new FitAddon()
-  private webLinksAddon = new WebLinksAddon()
+  private fitAddon = this.$terminals.createFitAddon()
+  private webLinksAddon = this.$terminals.createWebLinksAddon()
   private errorLog = ''
 
   public get isLightTerminalTheme(): boolean {
@@ -133,7 +135,7 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
   }
 
   constructor() {
-    this.term = new Terminal(this.$settings.getTerminalOptions({ disableStdin: true }))
+    this.term = this.$terminals.createTerminal(this.$settings.getTerminalOptions({ disableStdin: true }))
     this.term.loadAddon(this.fitAddon)
     this.term.loadAddon(this.webLinksAddon)
   }
@@ -420,7 +422,7 @@ export class ManagePluginComponent implements OnInit, OnDestroy {
 
   public downloadLogFile(): void {
     const blob = new Blob([this.errorLog], { type: 'text/plain;charset=utf-8' })
-    saveAs(blob, `${this.pluginName}-error.log`)
+    this.$saveAs(blob, `${this.pluginName}-error.log`)
   }
 
   public async downloadBackupFile(): Promise<void> {

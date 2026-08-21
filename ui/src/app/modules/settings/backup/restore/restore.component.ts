@@ -1,11 +1,10 @@
+import type { Terminal } from '@xterm/xterm'
+
 import { HttpClient, HttpEventType, HttpResponse } from '@angular/common/http'
 import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit, signal } from '@angular/core'
 import { Router } from '@angular/router'
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
-import { FitAddon } from '@xterm/addon-fit'
-import { WebLinksAddon } from '@xterm/addon-web-links'
-import { Terminal } from '@xterm/xterm'
 import { ToastrService } from 'ngx-toastr'
 
 import { ApiService } from '@/app/core/communication/api.service'
@@ -13,6 +12,7 @@ import { IoNamespace, WsService } from '@/app/core/communication/ws.service'
 import { RESTORE_MODAL_DATA } from '@/app/core/modal-data-tokens'
 import { SettingsService } from '@/app/core/ui/settings.service'
 import { hideXtermInputFromScreenReader } from '@/app/core/utilities/log.service'
+import { TERMINAL_FACTORY } from '@/app/core/utilities/terminal.factory'
 import { BackupComponent } from '@/app/modules/settings/backup/backup.component'
 import { ScheduledBackup } from '@/app/modules/settings/backup/backup.interfaces'
 import { environment } from '@/environments/environment'
@@ -26,6 +26,7 @@ import { environment } from '@/environments/environment'
 })
 export class RestoreComponent implements OnInit, OnDestroy {
   // Injected dependencies
+  private $terminals = inject(TERMINAL_FACTORY)
   private $activeModal = inject(NgbActiveModal)
   private $api = inject(ApiService)
   private $http = inject(HttpClient)
@@ -54,8 +55,8 @@ export class RestoreComponent implements OnInit, OnDestroy {
   private io!: IoNamespace
   private term!: Terminal
   private termTarget!: HTMLElement
-  private fitAddon = new FitAddon()
-  private webLinksAddon = new WebLinksAddon()
+  private fitAddon = this.$terminals.createFitAddon()
+  private webLinksAddon = this.$terminals.createWebLinksAddon()
   private xtermA11yDisposer: (() => void) | null = null
   public maxFileSizeText: string = globalThis.backup.maxBackupSizeText
 
@@ -71,7 +72,7 @@ export class RestoreComponent implements OnInit, OnDestroy {
     this.io = this.$ws.connectToNamespace('backup')
     this.termTarget = document.getElementById('plugin-log-output')!
 
-    this.term = new Terminal(this.$settings.getTerminalOptions({ disableStdin: true }))
+    this.term = this.$terminals.createTerminal(this.$settings.getTerminalOptions({ disableStdin: true }))
     this.term.loadAddon(this.fitAddon)
     this.term.loadAddon(this.webLinksAddon)
     this.term.open(this.termTarget)
