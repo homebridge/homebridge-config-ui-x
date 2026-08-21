@@ -268,6 +268,30 @@ describe('AuthService', () => {
       expect(service.isLoggedIn()).toBe(false)
     })
 
+    it('signs out this browser only when the server refuses the refresh', async () => {
+      // ⚠️ #2981. `validateUser()` never checks `sessionStartedAt`, so a token
+      // past the 30-day renewal cap still authorises - only `refreshToken()`
+      // rejects it. An account-wide logout here would hand the server a token
+      // it honours and end the user's sessions on every other device, for a
+      // logout nobody asked for.
+      const service = await create()
+      api.fail('post', '/auth/refresh', { status: 401 })
+
+      await expect(service.refreshSession('admin-guard')).rejects.toEqual({ status: 401 })
+
+      expect(api.lastCall('post', '/auth/logout')?.body).toEqual({ scope: 'local' })
+    })
+
+    it('leaves the session alone when the refresh merely fails to arrive', async () => {
+      // A server hiccup or a dropped connection is not a refusal
+      const service = await create()
+      api.fail('post', '/auth/refresh', { status: 500 })
+
+      await expect(service.refreshSession('admin-guard')).rejects.toEqual({ status: 500 })
+
+      expect(api.callsTo('post', '/auth/logout')).toHaveLength(0)
+    })
+
     it('makes one request when called twice at once', async () => {
       const service = await create()
       let release: (value: any) => void = () => {}

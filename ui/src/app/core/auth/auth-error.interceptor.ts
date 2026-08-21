@@ -16,6 +16,7 @@ const SKIP_PATHS = [
   '/auth/login',
   '/auth/noauth',
   '/auth/check',
+  '/auth/refresh',
 ]
 
 function shouldSkip(url: string): boolean {
@@ -33,6 +34,16 @@ function shouldSkip(url: string): boolean {
  * Login / noauth / check are skipped because those legitimately 401 in
  * non-bug paths (wrong password, missing setup wizard, deliberate token
  * probe).
+ *
+ * Refresh is skipped for a different reason: it is the one endpoint that
+ * refuses a token the guard still accepts. `validateUser()` never looks at
+ * `sessionStartedAt`, so a token past the 30-day renewal cap authorises
+ * normally and only `refreshToken()` rejects it - at which point this
+ * interceptor would call the ACCOUNT-WIDE logout holding a token the server
+ * honours, and one device reaching the cap would sign the user out
+ * everywhere (#2981). Every reason a refresh is refused is a reason to sign
+ * out this browser alone, so `refreshSession()` owns that decision and asks
+ * for a local logout itself.
  *
  * AuthService is resolved lazily through an `Injector` rather than via a
  * top-level `inject(AuthService)`. Eager injection here creates a cycle:

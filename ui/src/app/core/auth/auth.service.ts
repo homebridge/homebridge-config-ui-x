@@ -243,6 +243,14 @@ export class AuthService {
 
   /**
    * Refresh the current session by getting a new token
+   *
+   * A refusal signs THIS browser out and nothing else. Every reason the server
+   * refuses a refresh - the user is gone, permissions changed, credentials
+   * changed, wrong instance - already invalidates that token everywhere, so a
+   * wider logout gains nothing. The exception is the 30-day renewal cap, where
+   * the user's other devices are legitimately still signed in and an
+   * account-wide logout would end them (#2981).
+   *
    * @param reason - optional allowlisted reason for distinct server log lines
    */
   public async refreshSession(reason?: 'admin-guard' | 'session-extension' | 'profile-update') {
@@ -269,6 +277,13 @@ export class AuthService {
         // Update the last refresh timestamp
         this.lastRefreshTime = Date.now()
       }
+    } catch (error: any) {
+      // Only a refusal, never a connection problem - a blip on the way to the
+      // server must not sign anybody out.
+      if (error?.status === 401) {
+        this.logout({ scope: 'local' })
+      }
+      throw error
     } finally {
       this.isRefreshing = false
     }
