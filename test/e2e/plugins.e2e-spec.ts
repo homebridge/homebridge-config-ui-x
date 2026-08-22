@@ -2036,7 +2036,9 @@ describe('PluginController (e2e)', () => {
     })
 
     it('leaves the scan alone when the running path has no package.json', async () => {
-      configService.runningHomebridgeModulePath = resolve(process.env.UIX_STORAGE_PATH, 'opt-homebridge', 'empty')
+      const emptyPath = resolve(process.env.UIX_STORAGE_PATH, 'opt-homebridge', 'empty')
+      await mkdir(emptyPath, { recursive: true })
+      configService.runningHomebridgeModulePath = emptyPath
 
       const modules = await getInstalledModules()
 
