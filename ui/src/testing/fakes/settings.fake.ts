@@ -1,6 +1,7 @@
 import type { EnvInterface } from '@/app/core/settings.interfaces'
 import type { SettingsService } from '@/app/core/ui/settings.service'
 
+import { signal } from '@angular/core'
 import { of, Subject } from 'rxjs'
 import { vi } from 'vitest'
 
@@ -86,6 +87,8 @@ export function makeSettings(overrides: MakeSettingsOverrides = {}): FakeSetting
     browserLang: 'en',
     settingsLoaded: true,
     onSettingsLoaded: of(undefined),
+    // The shell reads this every render - a plain `false` would not be callable
+    serverUnreachable: signal(false),
     restartToastRef: null,
     terminalSettingsChanged: new Subject(),
     themeList: [

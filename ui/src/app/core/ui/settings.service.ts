@@ -1,6 +1,6 @@
 import type { ITerminalOptions } from '@xterm/xterm'
 
-import { inject, Injectable } from '@angular/core'
+import { inject, Injectable, OnDestroy, signal } from '@angular/core'
 import { Title } from '@angular/platform-browser'
 import { TranslateService } from '@ngx-translate/core'
 import dayjs from 'dayjs'
@@ -15,7 +15,7 @@ import { AppSettingsInterface, EnvInterface } from '@/app/core/settings.interfac
 @Injectable({
   providedIn: 'root',
 })
-export class SettingsService {
+export class SettingsService implements OnDestroy {
   private $api = inject(ApiService)
   private $title = inject(Title)
   private $toastr = inject(ToastrService)
@@ -24,6 +24,11 @@ export class SettingsService {
   private readonly defaultTheme = 'deep-purple'
   private forbiddenKeys = ['__proto__', 'constructor', 'prototype']
   private serverTimeToastCleanup$ = new Subject<void>()
+  private destroyed = false
+
+  // Back off to a steady five seconds: a server that is restarting is usually
+  // back within a few seconds, and one that is not should not be hammered.
+  private static readonly RETRY_DELAYS_MS = [1000, 2000, 5000]
 
   public restartToastRef: ActiveToast<any> | null = null
   public terminalSettingsChanged = new Subject<{ fontSize?: number, fontWeight?: string, lightingMode?: 'light' | 'dark' }>()
@@ -48,6 +53,13 @@ export class SettingsService {
   public browserLang!: string // set by the browser language
   public onSettingsLoaded = this.settingsLoadedSubject.pipe(first())
   public settingsLoaded = false
+
+  /**
+   * Set while the very first settings load is failing and being retried, so the
+   * app can show that it is waiting rather than nothing at all. Only the initial
+   * load touches this - once the settings are in, it is never set again.
+   */
+  public readonly serverUnreachable = signal(false)
   public readonly themeList = [
     'orange',
     'red',
@@ -65,7 +77,43 @@ export class SettingsService {
   ]
 
   constructor() {
-    void this.getAppSettings()
+    void this.loadAppSettingsWithRetry()
+  }
+
+  public ngOnDestroy(): void {
+    this.destroyed = true
+  }
+
+  /**
+   * The first settings load, retried until it lands.
+   *
+   * Nothing in the app can render until it does: every route guard, the layout
+   * and the login page all wait on `onSettingsLoaded`, which is a Subject that
+   * only ever emits on success. A single failed request therefore used to leave
+   * the app on a blank page for ever - no error, no retry, and no route
+   * activated to render one.
+   *
+   * That is not an unlikely case. Refreshing the page while the UI restarts
+   * after updating itself hits it every time, and the only way out was another
+   * refresh once the server happened to be back.
+   */
+  private async loadAppSettingsWithRetry(): Promise<void> {
+    for (let attempt = 0; !this.destroyed; attempt++) {
+      try {
+        await this.getAppSettings()
+        this.serverUnreachable.set(false)
+        return
+      } catch (error) {
+        // Only the first one: this retries for as long as the server is away,
+        // and a line every five seconds would bury whatever else is in there.
+        if (attempt === 0) {
+          console.error('Could not load the app settings, retrying until the server answers...', error)
+        }
+        this.serverUnreachable.set(true)
+        const delay = SettingsService.RETRY_DELAYS_MS[Math.min(attempt, SettingsService.RETRY_DELAYS_MS.length - 1)]
+        await new Promise(resolve => setTimeout(resolve, delay))
+      }
+    }
   }
 
   public async getAppSettings() {
