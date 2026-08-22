@@ -60,6 +60,32 @@ describe('SettingsService', () => {
     return service
   }
 
+  /**
+   * A server that refuses the first `failures` requests before answering, so a
+   * spec can drive the retry the constructor performs.
+   * @param failures - how many requests to reject before succeeding
+   */
+  function createFlaky(failures: number) {
+    TestBed.resetTestingModule()
+    let attempts = 0
+    api = fakeApi().respond('get', '/auth/settings', () => {
+      attempts += 1
+      if (attempts <= failures) {
+        throw new Error('connection refused')
+      }
+      return appSettings()
+    })
+    toastr = toastrStub()
+    TestBed.configureTestingModule({
+      providers: [
+        provideTestTranslate(),
+        provideFakes({ api, toastr }),
+      ],
+    })
+    service = TestBed.inject(SettingsService)
+    return service
+  }
+
   beforeEach(() => {
     create()
   })
@@ -75,6 +101,53 @@ describe('SettingsService', () => {
       expect(service.settingsLoaded).toBe(true)
       expect(service.env.homebridgeInstanceName).toBe('Front Room')
       expect(loaded).toHaveBeenCalledTimes(1)
+    })
+
+    /**
+     * ⚠️ The failure this pins is a blank page, not a missing setting. Every
+     * route guard waits on `onSettingsLoaded`, which only ever emits on
+     * success, so one refused request used to strand the app with no route
+     * activated and nothing to look at. Refreshing while the UI restarts after
+     * updating itself does exactly that.
+     */
+    it('retries the first load until the server answers, instead of giving up', async () => {
+      vi.useFakeTimers()
+      try {
+        const service = createFlaky(2)
+        const loaded = vi.fn()
+        service.onSettingsLoaded.subscribe(loaded)
+
+        // The first attempt has already been made and refused
+        await vi.advanceTimersByTimeAsync(0)
+        expect(service.settingsLoaded).toBe(false)
+        expect(service.serverUnreachable()).toBe(true)
+
+        // Backs off 1s then 2s before the third attempt succeeds
+        await vi.advanceTimersByTimeAsync(3000)
+
+        expect(service.settingsLoaded).toBe(true)
+        expect(service.serverUnreachable()).toBe(false)
+        expect(loaded).toHaveBeenCalledTimes(1)
+        expect(api.callsTo('get', '/auth/settings')).toHaveLength(3)
+      } finally {
+        vi.useRealTimers()
+      }
+    })
+
+    it('stops retrying once it is destroyed, so a torn-down app leaves nothing running', async () => {
+      vi.useFakeTimers()
+      try {
+        const service = createFlaky(Number.POSITIVE_INFINITY)
+        await vi.advanceTimersByTimeAsync(0)
+        expect(api.callsTo('get', '/auth/settings')).toHaveLength(1)
+
+        service.ngOnDestroy()
+        await vi.advanceTimersByTimeAsync(30000)
+
+        expect(api.callsTo('get', '/auth/settings')).toHaveLength(1)
+      } finally {
+        vi.useRealTimers()
+      }
     })
   })
 
