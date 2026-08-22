@@ -16,6 +16,7 @@ nest-cli.json
 scripts/lang-sync.ts
 scripts/fontawesome-subset.mjs
 scripts/emoji-shortnames.mjs
+scripts/watch-supervisor.mjs
 test
 
 # Logs
