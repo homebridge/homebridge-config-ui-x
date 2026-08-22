@@ -68,6 +68,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(plugins): keep the stable update when the requested dist-tag is missing (#2983) (@tbaur)
 - fix(settings): stop the remove-accessories scroll timer outliving its modal
 - test(ui): inject the terminal, file saver and socket so the specs stop relying on module mocks
+- chore(dev): restart the watch server when the ui updates itself
 
 ### Homebridge Dependencies
 
