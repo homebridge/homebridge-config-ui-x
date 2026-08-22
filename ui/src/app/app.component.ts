@@ -3,19 +3,20 @@ import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
 import { NavigationError, Router, RouterOutlet } from '@angular/router'
 import { TranslateService } from '@ngx-translate/core'
 
+import { ServerUnreachableComponent } from '@/app/core/components/server-unreachable/server-unreachable.component'
 import { chooseStartupLanguage, supportedLocales } from '@/app/core/locales'
 import { SettingsService } from '@/app/core/ui/settings.service'
 
 @Component({
   selector: 'app-root',
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, ServerUnreachableComponent],
   standalone: true,
   templateUrl: './app.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AppComponent {
   private $translate = inject(TranslateService)
-  private $settings = inject(SettingsService)
+  protected $settings = inject(SettingsService)
   private $router = inject(Router)
   private destroyRef = inject(DestroyRef)
 

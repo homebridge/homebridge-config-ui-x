@@ -1,0 +1,167 @@
+// Ported from the nginx 502 page in homebridge-raspbian-image. The colours are
+// fixed rather than themed on purpose: this renders before the settings arrive,
+// so the user's chosen theme is not known yet.
+$hb-purple: #421367;
+$hb-logo-ink: #211915;
+
+// The one vertical rhythm on this page - see .hb-unreachable-content
+$hb-gap: 20px;
+
+.hb-unreachable {
+  position: fixed;
+  inset: 0;
+  z-index: 1050;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  overflow: auto;
+  background: $hb-purple;
+  color: #fff;
+  text-align: center;
+}
+
+// The four blocks - logo, title, message, help - are spaced by one gap set in
+// one place, rather than a margin each. Four margins is how they drifted apart.
+.hb-unreachable-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $hb-gap;
+  max-width: 640px;
+}
+
+.hb-unreachable-logo {
+  display: inline-block;
+  position: relative;
+  width: 133px;
+  height: 133px;
+  border-radius: 100%;
+  background: #fff;
+  opacity: 0;
+  animation: hb-unreachable-appear 1.5s cubic-bezier(0.19, 1, 0.22, 1) forwards 1s;
+
+  svg {
+    position: absolute;
+    inset: 0;
+    width: 85px;
+    margin: auto;
+    overflow: visible;
+  }
+}
+
+// The mask is a single stroked outline, drawn on by animating its dash offset -
+// that is what makes the logo look hand-drawn.
+.hb-unreachable-logo mask path {
+  stroke-dasharray: 1300;
+  stroke-dashoffset: 1300;
+  animation: hb-unreachable-draw 3s linear forwards;
+  animation-delay: 1.75s;
+}
+
+.hb-unreachable-logo-base use {
+  fill: $hb-logo-ink;
+  opacity: 0.3;
+}
+
+.hb-unreachable-logo-draw use {
+  fill: $hb-logo-ink;
+  opacity: 0.8;
+}
+
+.hb-unreachable-text {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: $hb-gap;
+  opacity: 0;
+  animation: hb-unreachable-fade-in 3s ease forwards;
+
+  h1 {
+    margin: 0;
+    font-size: 32px;
+    font-weight: 400;
+    line-height: 1.2;
+  }
+
+  h2 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 1.2;
+    opacity: 0.66;
+  }
+}
+
+.hb-unreachable-help {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.5;
+  opacity: 0.66;
+}
+
+// The app strips underlines from every link, so this leans on the trailing
+// icon and full-strength white to read as one - the same way the support page
+// marks its outward links.
+.hb-unreachable-link {
+  font-size: 16px;
+  line-height: 1.5;
+
+  &,
+  &:visited {
+    color: #fff;
+  }
+
+  &:hover,
+  &:focus {
+    opacity: 0.8;
+  }
+
+  i {
+    margin-left: 0.35rem;
+    font-size: 0.85em;
+  }
+}
+
+@keyframes hb-unreachable-draw {
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes hb-unreachable-appear {
+  0% {
+    transform: translateY(25px);
+    opacity: 0;
+  }
+
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+@keyframes hb-unreachable-fade-in {
+  0% {
+    opacity: 0;
+  }
+
+  100% {
+    opacity: 1;
+  }
+}
+
+// Nothing here carries meaning, so drop the whole sequence rather than speed it
+// up - and make sure the logo and the message are still visible without it.
+@media (prefers-reduced-motion: reduce) {
+  .hb-unreachable-logo,
+  .hb-unreachable-text {
+    opacity: 1;
+    animation: none;
+  }
+
+  .hb-unreachable-logo mask path {
+    stroke-dashoffset: 0;
+    animation: none;
+  }
+}

@@ -10,7 +10,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { AppComponent } from '@/app/app.component'
 import { AVAILABLE_WIDGETS, WIDGETS_WITH_SETTINGS } from '@/app/modules/status/widgets/widgets.component'
 import { fireMatchMediaChange, locationReload, makeSettings, setMatchMedia } from '@/testing'
-import { provideFakes } from '@/testing/providers'
+import { provideFakes, provideTestTranslate } from '@/testing/providers'
 
 /**
  * The app shell, and the widget registry it has nothing to do with but which has
@@ -301,6 +301,46 @@ describe('appComponent', () => {
 
       expect(() => fixture.detectChanges()).not.toThrow()
       expect(fixture.nativeElement.children).toHaveLength(0)
+    })
+  })
+
+  /**
+   * ⚠️ The one thing the shell can render itself. Until the settings arrive no
+   * route can activate, so if the first load is failing the shell has to say so
+   * - otherwise the user is looking at an empty page with no clue that anything
+   * is happening. Built with the real imports, since the point is that the
+   * markup renders.
+   */
+  describe('waiting for the server', () => {
+    function createShell(unreachable: boolean) {
+      TestBed.resetTestingModule()
+      const settings = makeSettings()
+      settings.serverUnreachable.set(unreachable)
+
+      TestBed.configureTestingModule({
+        imports: [AppComponent],
+        providers: [
+          provideRouter([]),
+          provideTestTranslate(),
+          provideFakes({ settings }),
+        ],
+      })
+
+      const fixture = TestBed.createComponent(AppComponent)
+      fixture.detectChanges()
+      return fixture
+    }
+
+    it('says it is waiting when the first settings load has not landed', () => {
+      const fixture = createShell(true)
+
+      expect(fixture.nativeElement.querySelector('.hb-unreachable')).toBeTruthy()
+    })
+
+    it('shows nothing extra once the settings are in', () => {
+      const fixture = createShell(false)
+
+      expect(fixture.nativeElement.querySelector('.hb-unreachable')).toBeNull()
     })
   })
 })
