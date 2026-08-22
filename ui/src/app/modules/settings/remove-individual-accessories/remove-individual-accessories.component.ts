@@ -1,6 +1,6 @@
 import type { CachedAccessory, Pairing } from '@/app/modules/settings/settings.interfaces'
 
-import { ChangeDetectionStrategy, Component, inject, OnInit, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit, signal } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { Router } from '@angular/router'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal'
@@ -23,7 +23,7 @@ import { SettingsService } from '@/app/core/ui/settings.service'
   templateUrl: './remove-individual-accessories.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class RemoveIndividualAccessoriesComponent implements OnInit {
+export class RemoveIndividualAccessoriesComponent implements OnInit, OnDestroy {
   // Injected dependencies
   private $activeModal = inject(NgbActiveModal)
   private $accessoryOverview = inject(AccessoryOverviewCacheService)
@@ -33,6 +33,8 @@ export class RemoveIndividualAccessoriesComponent implements OnInit {
   private $toastr = inject(ToastrService)
   private $translate = inject(TranslateService)
   private modalData = inject(REMOVE_INDIVIDUAL_ACCESSORIES_MODAL_DATA)
+  private scrollTimeout?: ReturnType<typeof setTimeout>
+  private destroyed = false
 
   // Public properties for component use
   public selectedBridge = this.modalData.selectedBridge
@@ -208,8 +210,16 @@ export class RemoveIndividualAccessoriesComponent implements OnInit {
         this.selectedBridgeAccessories.set(this.pairings().find((pairing: Pairing) => pairing._id === selectedBridgeId)?.accessories || [])
 
         // Wait for both Angular's @for render and the NgBootstrap modal fade-in (~150ms) before scrolling.
-        if (this.highlightUuid && this.selectedBridgeAccessories().length > 1) {
-          setTimeout(() => document.querySelector('.list-group-item-highlight')?.scrollIntoView({ block: 'center', behavior: 'smooth' }), 250)
+        // ⚠️ Held so it can be cancelled. Left running, it fires 250ms after a
+        // modal that may already be gone, and scrolls whichever highlighted row
+        // it finds by then - in tests, after the DOM itself has been torn down,
+        // where it throws "document is not defined" and fails an otherwise
+        // green run on its exit code.
+        // The destroyed check matters as much as the cancel: this runs after an
+        // await, so the modal can already be gone by the time we get here and a
+        // plain clearTimeout in ngOnDestroy would have nothing to cancel yet.
+        if (!this.destroyed && this.highlightUuid && this.selectedBridgeAccessories().length > 1) {
+          this.scrollTimeout = setTimeout(() => document.querySelector('.list-group-item-highlight')?.scrollIntoView({ block: 'center', behavior: 'smooth' }), 250)
         }
       }
     } catch (error) {
@@ -217,5 +227,10 @@ export class RemoveIndividualAccessoriesComponent implements OnInit {
       this.$toastr.error(this.$translate.instant('reset.error_message'), this.$translate.instant('toast.title_error'))
       this.$activeModal.close()
     }
+  }
+
+  ngOnDestroy(): void {
+    this.destroyed = true
+    clearTimeout(this.scrollTimeout)
   }
 }

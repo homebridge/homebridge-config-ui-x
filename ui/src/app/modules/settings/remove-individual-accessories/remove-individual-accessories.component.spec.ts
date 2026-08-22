@@ -1,4 +1,5 @@
 import type { FakeApi, FakeToastr } from '@/testing'
+import type { ComponentFixture } from '@angular/core/testing'
 
 import { NO_ERRORS_SCHEMA } from '@angular/core'
 import { TestBed } from '@angular/core/testing'
@@ -30,6 +31,7 @@ describe('removeIndividualAccessoriesComponent', () => {
   let toastr: FakeToastr
   let overview: { get: ReturnType<typeof vi.fn>, invalidate: ReturnType<typeof vi.fn> }
   let activeModal: { close: ReturnType<typeof vi.fn>, dismiss: ReturnType<typeof vi.fn> }
+  let fixture: ComponentFixture<RemoveIndividualAccessoriesComponent> | undefined
 
   /**
    * A cached HAP accessory.
@@ -125,7 +127,7 @@ describe('removeIndividualAccessoriesComponent', () => {
     // passing. The case that checks the navigation re-spies on top of this.
     vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true)
 
-    const fixture = TestBed.createComponent(RemoveIndividualAccessoriesComponent)
+    fixture = TestBed.createComponent(RemoveIndividualAccessoriesComponent)
     fixture.detectChanges()
     return fixture.componentInstance
   }
@@ -142,6 +144,12 @@ describe('removeIndividualAccessoriesComponent', () => {
   })
 
   afterEach(() => {
+    // ⚠️ Without this the last fixture in the file is never destroyed, so the
+    // component's scroll timeout outlives the DOM and throws "document is not
+    // defined" from a timer. Every test still reports as passing and the run
+    // fails on its exit code - the same shape as the router note above.
+    fixture?.destroy()
+    fixture = undefined
     vi.useRealTimers()
   })
 
@@ -450,6 +458,32 @@ describe('removeIndividualAccessoriesComponent', () => {
       await vi.advanceTimersByTimeAsync(250)
 
       expect(scrollIntoView).toHaveBeenCalled()
+      row.remove()
+    })
+
+    it('does not scroll once the modal has gone', async () => {
+      // ⚠️ The timeout used to outlive the component. In the app that scrolls
+      // whichever highlighted row exists 250ms later, which may belong to
+      // something else entirely; in tests it fires after the DOM is torn down
+      // and throws "document is not defined" from a timer, failing a run in
+      // which every single test passed.
+      vi.useFakeTimers()
+      const scrollIntoView = vi.fn()
+      const row = document.createElement('div')
+      row.className = 'list-group-item-highlight'
+      ;(row as any).scrollIntoView = scrollIntoView
+      document.body.appendChild(row)
+
+      open({
+        hapAccessories: [hap('One', 'cachedAccessories', 'uuid-1'), hap('Two', 'cachedAccessories', 'uuid-2')],
+        pairings: [pairing({ _id: 'MAIN00', _main: true })],
+        highlightUuid: 'uuid-1',
+        highlightCacheFile: 'cachedAccessories',
+      })
+      fixture!.destroy()
+      await vi.advanceTimersByTimeAsync(250)
+
+      expect(scrollIntoView).not.toHaveBeenCalled()
       row.remove()
     })
   })
