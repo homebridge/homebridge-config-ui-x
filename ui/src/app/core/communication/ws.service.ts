@@ -1,8 +1,9 @@
 import { inject, Injectable } from '@angular/core'
 import { Observable, ReplaySubject } from 'rxjs'
-import { io as ioFn, Socket } from 'socket.io-client'
+import { Socket } from 'socket.io-client'
 
 import { AuthService } from '@/app/core/auth/auth.service'
+import { SOCKET_FACTORY } from '@/app/core/communication/socket.factory'
 import { environment } from '@/environments/environment'
 
 export interface IoNamespace {
@@ -16,6 +17,7 @@ export interface IoNamespace {
   providedIn: 'root',
 })
 export class WsService {
+  private $socketFactory = inject(SOCKET_FACTORY)
   private $auth = inject(AuthService)
 
   private namespaceConnectionCache: Record<string, IoNamespace> = {}
@@ -87,7 +89,7 @@ export class WsService {
    * @param namespace
    */
   private establishConnectionToNamespace(namespace: string): IoNamespace {
-    const socket: Socket = ioFn(`${environment.api.socket}/${namespace}`, {
+    const socket: Socket = this.$socketFactory(`${environment.api.socket}/${namespace}`, {
       // Sent in the handshake payload rather than the URL. A token in the query
       // string is recorded by reverse proxies, access logs and monitoring, and
       // stays a usable bearer credential until it expires.

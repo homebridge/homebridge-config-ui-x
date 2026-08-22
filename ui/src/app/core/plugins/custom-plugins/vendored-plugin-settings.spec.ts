@@ -3,10 +3,15 @@ import type { FakeApi, FakeToastr } from '@/testing'
 import { TestBed } from '@angular/core/testing'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { fakeApi, toastrStub } from '@/testing'
+import { SAVE_AS } from '@/app/core/utilities/file-saver.factory'
+import { fakeApi, fakeSaveAs, toastrStub } from '@/testing'
 import { provideFakes, provideTestTranslate } from '@/testing/providers'
 
-vi.mock('file-saver', () => ({ saveAs: vi.fn() }))
+/**
+ * ⚠️ `saveAs` is substituted through `SAVE_AS`, not by mocking `file-saver`.
+ * The unit-test builder bundles third-party imports into the app, so a module
+ * mock never reaches the component - it would trigger a real download.
+ */
 
 /**
  * The two settings components the UI ships on behalf of a plugin, both of which
@@ -25,6 +30,7 @@ vi.mock('file-saver', () => ({ saveAs: vi.fn() }))
  * spec hit with xterm — it is not specific to one library.
  */
 describe('the vendored plugin settings components', () => {
+  let saveAs: ReturnType<typeof fakeSaveAs>
   let api: FakeApi
   let toastr: FakeToastr
 
@@ -47,9 +53,12 @@ describe('the vendored plugin settings components', () => {
       ? (await import('@/app/core/plugins/custom-plugins/homebridge-hue/homebridge-hue.component')).HomebridgeHueComponent
       : (await import('@/app/core/plugins/custom-plugins/homebridge-deconz/homebridge-deconz.component')).HomebridgeDeconzComponent
 
+    saveAs = fakeSaveAs()
+
     TestBed.configureTestingModule({
       imports: [type],
       providers: [
+        { provide: SAVE_AS, useValue: saveAs },
         provideTestTranslate(),
         provideFakes({ api, toastr }),
       ],
@@ -66,16 +75,14 @@ describe('the vendored plugin settings components', () => {
     }
   }
 
-  /** The file-saver mock, cleared so each test reads only its own calls. */
+  /** The injected file-saver stand-in, rebuilt for each component. */
   async function saver() {
-    const { saveAs } = await import('file-saver')
-    return vi.mocked(saveAs)
+    return saveAs
   }
 
   beforeEach(async () => {
     vi.spyOn(console, 'error').mockImplementation(() => {})
     vi.mocked(console.error).mockClear()
-    ;(await saver()).mockClear()
   })
 
   describe.each([

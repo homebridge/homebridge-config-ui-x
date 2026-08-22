@@ -5,13 +5,13 @@ import { FormControl, ReactiveFormsModule } from '@angular/forms'
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap/tooltip'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
-import { saveAs } from 'file-saver'
 import { ToastrService } from 'ngx-toastr'
 import { debounceTime } from 'rxjs/operators'
 
 import { ApiService } from '@/app/core/communication/api.service'
 import { RESTORE_MODAL_DATA } from '@/app/core/modal-data-tokens'
 import { SettingsService } from '@/app/core/ui/settings.service'
+import { SAVE_AS } from '@/app/core/utilities/file-saver.factory'
 import { HttpErrorService } from '@/app/core/utilities/http-error.service'
 import { ScheduledBackup } from '@/app/modules/settings/backup/backup.interfaces'
 import { BackupService } from '@/app/modules/settings/backup/backup.service'
@@ -31,6 +31,7 @@ import { RestoreComponent } from '@/app/modules/settings/backup/restore/restore.
 })
 export class BackupComponent implements OnInit {
   // Injected dependencies
+  private $saveAs = inject(SAVE_AS)
   private destroyRef = inject(DestroyRef)
   private $activeModal = inject(NgbActiveModal)
   private $api = inject(ApiService)
@@ -95,7 +96,7 @@ export class BackupComponent implements OnInit {
         })
         this.$toastr.warning(message, this.$translate.instant('toast.title_warning'))
       }
-      saveAs(res.body!, archiveName)
+      this.$saveAs(res.body!, archiveName)
     } catch (error) {
       console.error(error)
       this.$toastr.error(this.$translate.instant('backup.backup_download_failed'), this.$translate.instant('toast.title_error'))

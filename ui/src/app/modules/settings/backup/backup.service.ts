@@ -1,14 +1,15 @@
 import { inject, Injectable } from '@angular/core'
 import { TranslateService } from '@ngx-translate/core'
-import { saveAs } from 'file-saver'
 import { ToastrService } from 'ngx-toastr'
 
 import { ApiService } from '@/app/core/communication/api.service'
+import { SAVE_AS } from '@/app/core/utilities/file-saver.factory'
 
 @Injectable({
   providedIn: 'root',
 })
 export class BackupService {
+  private $saveAs = inject(SAVE_AS)
   private $api = inject(ApiService)
   private $toastr = inject(ToastrService)
   private $translate = inject(TranslateService)
@@ -27,6 +28,6 @@ export class BackupService {
       })
       this.$toastr.warning(message, this.$translate.instant('toast.title_warning'))
     }
-    saveAs(res.body!, archiveName)
+    this.$saveAs(res.body!, archiveName)
   }
 }

@@ -8,33 +8,10 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { PluginsCacheService } from '@/app/core/caching/plugins-cache.service'
 import { NODE_VERSION_MODAL_DATA, SWITCH_TO_SCOPED_MODAL_DATA } from '@/app/core/modal-data-tokens'
-import { activeModalStub, cacheStub, fakeApi, fakeIoNamespace, fakeWs, makePlugin, makeSettings, toastrStub } from '@/testing'
+import { SAVE_AS } from '@/app/core/utilities/file-saver.factory'
+import { TERMINAL_FACTORY } from '@/app/core/utilities/terminal.factory'
+import { activeModalStub, cacheStub, fakeApi, fakeIoNamespace, fakeSaveAs, fakeTerminals, fakeWs, makePlugin, makeSettings, toastrStub } from '@/testing'
 import { provideFakes, provideTestTranslate } from '@/testing/providers'
-
-const { terminals } = vi.hoisted(() => ({ terminals: [] as any[] }))
-
-vi.mock('@xterm/xterm', () => ({
-  Terminal: class {
-    public written: string[] = []
-    public cols = 80
-    public rows = 24
-    public loadAddon = vi.fn()
-    public open = vi.fn()
-    public dispose = vi.fn()
-    constructor(public options: any) {
-      terminals.push(this)
-    }
-
-    public write(data: any): void {
-      this.written.push(String(data))
-    }
-  },
-}))
-vi.mock('@xterm/addon-fit', () => ({ FitAddon: class {
-  public fit = vi.fn()
-} }))
-vi.mock('@xterm/addon-web-links', () => ({ WebLinksAddon: class {} }))
-vi.mock('file-saver', () => ({ saveAs: vi.fn() }))
 
 /**
  * Two modals that both walk the user through a multi-step operation.
@@ -45,6 +22,8 @@ vi.mock('file-saver', () => ({ saveAs: vi.fn() }))
  * nothing, which reads as the component being broken.
  */
 describe('the switch-to-scoped and node version modals', () => {
+  let xterm: ReturnType<typeof fakeTerminals>
+  let saveAs: ReturnType<typeof fakeSaveAs>
   let api: FakeApi
   let toastr: FakeToastr
   let settings: FakeSettings
@@ -60,7 +39,6 @@ describe('the switch-to-scoped and node version modals', () => {
   beforeEach(() => {
     vi.spyOn(console, 'error').mockImplementation(() => {})
     vi.mocked(console.error).mockClear()
-    terminals.length = 0
   })
 
   afterEach(() => {
@@ -90,9 +68,15 @@ describe('the switch-to-scoped and node version modals', () => {
 
       const { SwitchToScopedComponent } = await import('@/app/core/plugins/switch-to-scoped/switch-to-scoped.component')
 
+      xterm = fakeTerminals()
+
+      saveAs = fakeSaveAs()
+
       TestBed.configureTestingModule({
         imports: [SwitchToScopedComponent],
         providers: [
+          { provide: TERMINAL_FACTORY, useValue: xterm.factory },
+          { provide: SAVE_AS, useValue: saveAs },
           provideRouter([]),
           provideTestTranslate(),
           provideFakes({ api, toastr, settings, activeModal, ws }),
@@ -199,7 +183,7 @@ describe('the switch-to-scoped and node version modals', () => {
 
       io.socket.fire('stdout', 'added 1 package')
 
-      expect(terminals.at(-1)!.written.join('')).toContain('added 1 package')
+      expect(xterm.terminals.at(-1)!.written.join('')).toContain('added 1 package')
     })
 
     it('keeps a plain-text copy of the output for the log download', async () => {
@@ -210,9 +194,8 @@ describe('the switch-to-scoped and node version modals', () => {
       io.socket.fire('stdout', '[32madded 1 package[0m\n')
       modal.downloadLogFile()
 
-      const { saveAs } = await import('file-saver')
       expect(saveAs).toHaveBeenCalledWith(expect.any(Blob), 'homebridge-example-error.log')
-      const saved = vi.mocked(saveAs).mock.calls.at(-1)![0] as Blob
+      const saved = saveAs.mock.calls.at(-1)![0] as Blob
       expect(await saved.text()).toBe('added 1 package\r\n')
     })
 
@@ -228,7 +211,7 @@ describe('the switch-to-scoped and node version modals', () => {
       modal.ngOnDestroy()
 
       expect(io.end).toHaveBeenCalled()
-      expect(terminals.at(-1)!.dispose).toHaveBeenCalled()
+      expect(xterm.terminals.at(-1)!.dispose).toHaveBeenCalled()
     })
 
     it('dismisses without switching anything', async () => {
@@ -274,9 +257,14 @@ describe('the switch-to-scoped and node version modals', () => {
 
       const { NodeVersionModalComponent } = await import('@/app/modules/status/widgets/update-info-widget/node-version-modal/node-version-modal.component')
 
+      xterm = fakeTerminals()
+
+      saveAs = fakeSaveAs()
+
       TestBed.configureTestingModule({
         imports: [NodeVersionModalComponent],
         providers: [
+          { provide: TERMINAL_FACTORY, useValue: xterm.factory },
           provideTestTranslate(),
           provideFakes({ api, toastr, settings, activeModal }),
           { provide: PluginsCacheService, useValue: plugins },

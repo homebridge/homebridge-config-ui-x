@@ -1,11 +1,9 @@
+import type { Terminal } from '@xterm/xterm'
+
 import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit, signal } from '@angular/core'
 import { Router } from '@angular/router'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
-import { FitAddon } from '@xterm/addon-fit'
-import { WebLinksAddon } from '@xterm/addon-web-links'
-import { Terminal } from '@xterm/xterm'
-import { saveAs } from 'file-saver'
 import { ToastrService } from 'ngx-toastr'
 import { firstValueFrom } from 'rxjs'
 
@@ -14,7 +12,9 @@ import { IoNamespace, WsService } from '@/app/core/communication/ws.service'
 import { SWITCH_TO_SCOPED_MODAL_DATA } from '@/app/core/modal-data-tokens'
 import { RE_ANSI } from '@/app/core/regex.constants'
 import { SettingsService } from '@/app/core/ui/settings.service'
+import { SAVE_AS } from '@/app/core/utilities/file-saver.factory'
 import { hideXtermInputFromScreenReader } from '@/app/core/utilities/log.service'
+import { TERMINAL_FACTORY } from '@/app/core/utilities/terminal.factory'
 
 @Component({
   selector: 'app-switch-to-scoped',
@@ -28,6 +28,8 @@ import { hideXtermInputFromScreenReader } from '@/app/core/utilities/log.service
 })
 export class SwitchToScopedComponent implements OnInit, OnDestroy {
   // Injected dependencies
+  private $saveAs = inject(SAVE_AS)
+  private $terminals = inject(TERMINAL_FACTORY)
   private $activeModal = inject(NgbActiveModal)
   private $api = inject(ApiService)
   private $router = inject(Router)
@@ -53,8 +55,8 @@ export class SwitchToScopedComponent implements OnInit, OnDestroy {
   private io!: IoNamespace
   private term: Terminal
   private termTarget!: HTMLElement
-  private fitAddon = new FitAddon()
-  private webLinksAddon = new WebLinksAddon()
+  private fitAddon = this.$terminals.createFitAddon()
+  private webLinksAddon = this.$terminals.createWebLinksAddon()
   private errorLog = ''
   private xtermA11yDisposer: (() => void) | null = null
 
@@ -66,7 +68,7 @@ export class SwitchToScopedComponent implements OnInit, OnDestroy {
   }
 
   constructor() {
-    this.term = new Terminal(this.$settings.getTerminalOptions({ disableStdin: true }))
+    this.term = this.$terminals.createTerminal(this.$settings.getTerminalOptions({ disableStdin: true }))
     this.term.loadAddon(this.fitAddon)
     this.term.loadAddon(this.webLinksAddon)
   }
@@ -159,7 +161,7 @@ export class SwitchToScopedComponent implements OnInit, OnDestroy {
     }
 
     const blob = new Blob([this.errorLog], { type: 'text/plain;charset=utf-8' })
-    saveAs(blob, `${this.plugin.name}-error.log`)
+    this.$saveAs(blob, `${this.plugin.name}-error.log`)
   }
 
   public ngOnDestroy(): void {

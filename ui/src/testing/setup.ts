@@ -17,9 +17,14 @@ beforeEach(() => {
   window.localStorage.clear()
   window.sessionStorage.clear()
 
-  // Module-level state, not a service: a token left behind by one spec is
-  // still there for the next one
+  // Module-level state, not a service: a token left behind by one test is
+  // still there for the next one.
+  //
+  // ⚠️ Cleared through the hook `@/testing` publishes, not by calling the
+  // import directly - this file holds a different copy of `token-store` from
+  // the one the specs and the app share, so clearing its own copy did nothing.
   setStoredToken(null)
+  ;((globalThis as any).__resetTokenStore as (() => void) | undefined)?.()
 
   // The theme, terminal and accessory pages all add classes to the body
   document.body.className = ''

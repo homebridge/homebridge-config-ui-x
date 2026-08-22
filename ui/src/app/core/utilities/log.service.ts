@@ -1,11 +1,11 @@
+import type { FitAddon } from '@xterm/addon-fit'
+import type { WebLinksAddon } from '@xterm/addon-web-links'
+import type { ITerminalOptions, Terminal } from '@xterm/xterm'
+
 import { HttpResponse } from '@angular/common/http'
 import { createEnvironmentInjector, ElementRef, EnvironmentInjector, inject, Injectable } from '@angular/core'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslateService } from '@ngx-translate/core'
-import { FitAddon } from '@xterm/addon-fit'
-import { WebLinksAddon } from '@xterm/addon-web-links'
-import { ITerminalOptions, Terminal } from '@xterm/xterm'
-import { saveAs } from 'file-saver'
 import { ToastrService } from 'ngx-toastr'
 import { Subject } from 'rxjs'
 import { debounceTime, takeUntil } from 'rxjs/operators'
@@ -15,6 +15,8 @@ import { IoNamespace, WsService } from '@/app/core/communication/ws.service'
 import { ConfirmComponent } from '@/app/core/components/confirm/confirm.component'
 import { CONFIRM_MODAL_DATA } from '@/app/core/modal-data-tokens'
 import { RE_ANSI_SIMPLE, RE_BRACKET_TAG } from '@/app/core/regex.constants'
+import { SAVE_AS } from '@/app/core/utilities/file-saver.factory'
+import { TERMINAL_FACTORY } from '@/app/core/utilities/terminal.factory'
 
 /**
  * xterm.js always renders a hidden <textarea class="xterm-helper-textarea"> to
@@ -66,6 +68,8 @@ export function hideXtermInputFromScreenReader(host: HTMLElement): () => void {
   providedIn: 'root',
 })
 export class LogService {
+  private $saveAs = inject(SAVE_AS)
+  private $terminals = inject(TERMINAL_FACTORY)
   private injector = inject(EnvironmentInjector)
   private $api = inject(ApiService)
   private $modal = inject(NgbModal)
@@ -101,11 +105,11 @@ export class LogService {
     this.io = this.$ws.connectToNamespace('log')
 
     // Create addons
-    this.fitAddon = new FitAddon()
-    this.webLinksAddon = new WebLinksAddon()
+    this.fitAddon = this.$terminals.createFitAddon()
+    this.webLinksAddon = this.$terminals.createWebLinksAddon()
 
     // Create a terminal instance (always read-only)
-    this.term = new Terminal({ ...termOpts, disableStdin: true })
+    this.term = this.$terminals.createTerminal({ ...termOpts, disableStdin: true })
 
     // Load addons
     this.term.loadAddon(this.fitAddon)
@@ -309,9 +313,9 @@ export class LogService {
             return cleanLine.includes(filter)
           })
           const filteredBlob = new Blob([filteredLines.join('\n')], { type: 'text/plain' })
-          saveAs(filteredBlob, 'homebridge.log.txt')
+          this.$saveAs(filteredBlob, 'homebridge.log.txt')
         } else {
-          saveAs(res.body!, 'homebridge.log.txt')
+          this.$saveAs(res.body!, 'homebridge.log.txt')
         }
       } catch (err) {
         let message: string | undefined
