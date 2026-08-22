@@ -2,7 +2,6 @@ import type { FakeApi, FakeCache, FakeIoNamespace, FakeModalService, FakeSetting
 
 import { TestBed } from '@angular/core/testing'
 import { provideRouter, Router } from '@angular/router'
-import { saveAs } from 'file-saver'
 import { afterAll, afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { PluginsCacheService } from '@/app/core/caching/plugins-cache.service'
@@ -12,41 +11,12 @@ import { ManagePluginComponent } from '@/app/core/plugins/manage-plugin/manage-p
 import { ManageVersionComponent } from '@/app/core/plugins/manage-version/manage-version.component'
 import { PluginLogsComponent } from '@/app/core/plugins/plugin-logs/plugin-logs.component'
 import { ChildBridgesService } from '@/app/core/utilities/child-bridges.service'
+import { SAVE_AS } from '@/app/core/utilities/file-saver.factory'
+import { TERMINAL_FACTORY } from '@/app/core/utilities/terminal.factory'
 import { BackupService } from '@/app/modules/settings/backup/backup.service'
 import { HbV2ModalComponent } from '@/app/modules/status/widgets/update-info-widget/hb-v2-modal/hb-v2-modal.component'
-import { activeModalStub, cacheStub, fakeApi, fakeWs, makeChildBridge, makePlugin, makeSettings, modalServiceSpy, toastrStub } from '@/testing'
+import { activeModalStub, cacheStub, fakeApi, fakeSaveAs, fakeTerminals, fakeWs, makeChildBridge, makePlugin, makeSettings, modalServiceSpy, toastrStub } from '@/testing'
 import { provideFakes, provideTestTranslate } from '@/testing/providers'
-
-const { terminals } = vi.hoisted(() => ({ terminals: [] as any[] }))
-
-// The component builds its terminal in the constructor, so this has to be
-// mocked for the component to be creatable at all. `cols` and `rows` matter:
-// they are sent to the server so npm's output wraps to the visible width
-vi.mock('@xterm/xterm', () => ({
-  Terminal: class {
-    public written: string[] = []
-    public cols = 80
-    public rows = 24
-    public loadAddon = vi.fn()
-    public open = vi.fn()
-    public reset = vi.fn()
-    public dispose = vi.fn()
-
-    constructor(public options: any) {
-      terminals.push(this)
-    }
-
-    public write(data: string): void {
-      this.written.push(data)
-    }
-  },
-}))
-
-vi.mock('@xterm/addon-fit', () => ({ FitAddon: class {
-  public fit = vi.fn()
-} }))
-vi.mock('@xterm/addon-web-links', () => ({ WebLinksAddon: class {} }))
-vi.mock('file-saver', () => ({ saveAs: vi.fn() }))
 
 /**
  * The one modal in the app that runs npm.
@@ -62,6 +32,8 @@ vi.mock('file-saver', () => ({ saveAs: vi.fn() }))
  * flag before navigating, because the page is about to be replaced.
  */
 describe('managePluginComponent', () => {
+  let xterm: ReturnType<typeof fakeTerminals>
+  let saveAs: ReturnType<typeof fakeSaveAs>
   let api: FakeApi
   let settings: FakeSettings
   let toastr: ReturnType<typeof toastrStub>
@@ -105,8 +77,14 @@ describe('managePluginComponent', () => {
     childBridges = { getAll: vi.fn(async () => []), invalidate: vi.fn() }
     backup = { downloadBackup: vi.fn(async () => undefined) }
 
+    xterm = fakeTerminals()
+
+    saveAs = fakeSaveAs()
+
     TestBed.configureTestingModule({
       providers: [
+        { provide: TERMINAL_FACTORY, useValue: xterm.factory },
+        { provide: SAVE_AS, useValue: saveAs },
         provideRouter([]),
         provideTestTranslate(),
         provideFakes({ api, settings, toastr, activeModal, modal, ws }),
@@ -139,8 +117,6 @@ describe('managePluginComponent', () => {
   }
 
   beforeEach(() => {
-    terminals.length = 0
-    vi.mocked(saveAs).mockClear()
     onRefreshPluginList = vi.fn()
 
     // ⚠️ Take the last one away first. The component finds this element by id, and
@@ -745,7 +721,7 @@ describe('managePluginComponent', () => {
 
       io.socket.fire('stdout', 'added 1 package\r\n')
 
-      expect(terminals[0].written).toEqual(['added 1 package\r\n'])
+      expect(xterm.terminals[0].written).toEqual(['added 1 package\r\n'])
     })
 
     it('saves the log without the colour codes', async () => {
@@ -754,10 +730,10 @@ describe('managePluginComponent', () => {
 
       modalRef.downloadLogFile()
 
-      const written = await (vi.mocked(saveAs).mock.calls[0][0] as Blob).text()
+      const written = await (saveAs.mock.calls[0][0] as Blob).text()
       // This file gets pasted into GitHub issues, where escape codes are noise
       expect(written).toBe('npm ERR! code E404\r\n')
-      expect(vi.mocked(saveAs).mock.calls[0][1]).toBe('homebridge-test-error.log')
+      expect(saveAs.mock.calls[0][1]).toBe('homebridge-test-error.log')
     })
 
     it('keeps blank output out of the log', async () => {
@@ -767,7 +743,7 @@ describe('managePluginComponent', () => {
       modalRef.downloadLogFile()
 
       // Progress bars send a lot of cursor control and nothing else
-      expect(await (vi.mocked(saveAs).mock.calls[0][0] as Blob).text()).toBe('')
+      expect(await (saveAs.mock.calls[0][0] as Blob).text()).toBe('')
     })
 
     it('closes the socket on teardown', async () => {

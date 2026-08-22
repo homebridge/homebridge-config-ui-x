@@ -3,7 +3,6 @@ import type { FakeApi, FakeCache, FakeModalService, FakeSettings } from '@/testi
 import { provideHttpClient } from '@angular/common/http'
 import { provideHttpClientTesting } from '@angular/common/http/testing'
 import { TestBed } from '@angular/core/testing'
-import { saveAs } from 'file-saver'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { PluginsCacheService } from '@/app/core/caching/plugins-cache.service'
@@ -19,11 +18,16 @@ import { ManagePluginComponent } from '@/app/core/plugins/manage-plugin/manage-p
 import { ManageVersionComponent } from '@/app/core/plugins/manage-version/manage-version.component'
 import { PluginLogsComponent } from '@/app/core/plugins/plugin-logs/plugin-logs.component'
 import { UninstallPluginComponent } from '@/app/core/plugins/uninstall-plugin/uninstall-plugin.component'
+import { SAVE_AS } from '@/app/core/utilities/file-saver.factory'
 import { LogService } from '@/app/core/utilities/log.service'
-import { activeModalStub, cacheStub, fakeApi, makeChildBridge, makePlugin, makeSettings, modalServiceSpy, toastrStub } from '@/testing'
+import { activeModalStub, cacheStub, fakeApi, fakeSaveAs, makeChildBridge, makePlugin, makeSettings, modalServiceSpy, toastrStub } from '@/testing'
 import { provideFakes, provideTestTranslate } from '@/testing/providers'
 
-vi.mock('file-saver', () => ({ saveAs: vi.fn() }))
+/**
+ * ⚠️ `saveAs` is substituted through `SAVE_AS`, not by mocking `file-saver`.
+ * The unit-test builder bundles third-party imports into the app, so a module
+ * mock never reaches the component - it would trigger a real download.
+ */
 
 /**
  * Three of the modals reached from a plugin's action menu.
@@ -34,6 +38,7 @@ vi.mock('file-saver', () => ({ saveAs: vi.fn() }))
  * npm. So what these specs check is the decision, not the outcome.
  */
 describe('plugin modals', () => {
+  let saveAs: ReturnType<typeof fakeSaveAs>
   let api: FakeApi
   let settings: FakeSettings
   let toastr: ReturnType<typeof toastrStub>
@@ -68,8 +73,11 @@ describe('plugin modals', () => {
     pluginsCache = cacheStub<any[]>([])
     log = { startTerminal: vi.fn(), destroyTerminal: vi.fn() }
 
+    saveAs = fakeSaveAs()
+
     TestBed.configureTestingModule({
       providers: [
+        { provide: SAVE_AS, useValue: saveAs },
         provideHttpClient(),
         provideHttpClientTesting(),
         provideTestTranslate(),

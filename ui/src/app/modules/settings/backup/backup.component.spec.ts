@@ -2,18 +2,20 @@ import type { EnvInterface } from '@/app/core/settings.interfaces'
 import type { FakeApi, FakeModalService, FakeSettings } from '@/testing'
 
 import { TestBed } from '@angular/core/testing'
-import { saveAs } from 'file-saver'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { RESTORE_MODAL_DATA } from '@/app/core/modal-data-tokens'
+import { SAVE_AS } from '@/app/core/utilities/file-saver.factory'
 import { BackupComponent } from '@/app/modules/settings/backup/backup.component'
 import { RestoreComponent } from '@/app/modules/settings/backup/restore/restore.component'
-import { activeModalStub, fakeApi, makeSettings, modalServiceSpy, toastrStub } from '@/testing'
+import { activeModalStub, fakeApi, fakeSaveAs, makeSettings, modalServiceSpy, toastrStub } from '@/testing'
 import { provideFakes, provideTestTranslate } from '@/testing/providers'
 
-// Downloads are the one thing a spec cannot let happen for real: jsdom has no
-// file system, and saveAs would try to click an anchor
-vi.mock('file-saver', () => ({ saveAs: vi.fn() }))
+/**
+ * ⚠️ `saveAs` is substituted through `SAVE_AS`, not by mocking `file-saver`.
+ * The unit-test builder bundles third-party imports into the app, so a module
+ * mock never reaches the component - it would trigger a real download.
+ */
 
 /**
  * The backup modal: download a backup now, manage the scheduled ones, and hand
@@ -25,6 +27,7 @@ vi.mock('file-saver', () => ({ saveAs: vi.fn() }))
  * refactor without anything looking broken.
  */
 describe('backupComponent', () => {
+  let saveAs: ReturnType<typeof fakeSaveAs>
   let api: FakeApi
   let settings: FakeSettings
   let toastr: ReturnType<typeof toastrStub>
@@ -58,8 +61,11 @@ describe('backupComponent', () => {
     activeModal = activeModalStub()
     modal = modalServiceSpy()
 
+    saveAs = fakeSaveAs()
+
     TestBed.configureTestingModule({
       providers: [
+        { provide: SAVE_AS, useValue: saveAs },
         provideTestTranslate(),
         provideFakes({ api, settings, toastr, activeModal, modal }),
       ],

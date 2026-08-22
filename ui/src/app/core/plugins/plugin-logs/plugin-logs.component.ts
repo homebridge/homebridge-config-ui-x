@@ -3,7 +3,6 @@ import { ChangeDetectionStrategy, Component, createEnvironmentInjector, ElementR
 import { NgbActiveModal, NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap/tooltip'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
-import { saveAs } from 'file-saver'
 import { ToastrService } from 'ngx-toastr'
 import { Subject } from 'rxjs'
 
@@ -12,6 +11,7 @@ import { ConfirmComponent } from '@/app/core/components/confirm/confirm.componen
 import { CONFIRM_MODAL_DATA, PLUGIN_LOGS_MODAL_DATA } from '@/app/core/modal-data-tokens'
 import { ChildBridge } from '@/app/core/plugins/manage-plugins.interfaces'
 import { SettingsService } from '@/app/core/ui/settings.service'
+import { SAVE_AS } from '@/app/core/utilities/file-saver.factory'
 import { LogService } from '@/app/core/utilities/log.service'
 
 // eslint-disable-next-line no-control-regex
@@ -30,6 +30,7 @@ const RE_BRACKET_TAG = /36m\[.*?\]/
 })
 export class PluginLogsComponent implements OnInit, OnDestroy {
   // Injected dependencies
+  private $saveAs = inject(SAVE_AS)
   private $activeModal = inject(NgbActiveModal)
   private $api = inject(ApiService)
   private $log = inject(LogService)
@@ -157,7 +158,7 @@ export class PluginLogsComponent implements OnInit, OnDestroy {
         })
 
         if (this.plugin) {
-          saveAs(new Blob([finalOutput], { type: 'text/plain;charset=utf-8' }), `${this.plugin.name}.log.txt`)
+          this.$saveAs(new Blob([finalOutput], { type: 'text/plain;charset=utf-8' }), `${this.plugin.name}.log.txt`)
         }
         this.midAction.set(false)
       } catch (err: any) {
