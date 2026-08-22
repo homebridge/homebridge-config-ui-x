@@ -40,7 +40,7 @@ import { createFile, ensureDir, pathExists, pathExistsSync, readJson, remove } f
 import NodeCache from 'node-cache'
 import pLimit from 'p-limit'
 import { firstValueFrom } from 'rxjs'
-import { gt, lt, parse, rcompare, satisfies } from 'semver'
+import { gt, inc, lt, parse, rcompare, satisfies } from 'semver'
 
 import { ConfigService } from '../../core/config/config.service.js'
 import { HomebridgeIpcService } from '../../core/homebridge-ipc/homebridge-ipc.service.js'
@@ -993,7 +993,7 @@ export class PluginsService implements OnModuleDestroy {
       this.configService.homebridgeVersion = homebridge.installedVersion
     }
 
-    return homebridge
+    return this.applyFakeUpdate(homebridge)
   }
 
   /**
@@ -1349,7 +1349,7 @@ export class PluginsService implements OnModuleDestroy {
       await this.checkForBetaUpdates(uiPackage, this.configService.name, true)
     }
 
-    return uiPackage
+    return this.applyFakeUpdate(uiPackage)
   }
 
   /**
@@ -2467,7 +2467,7 @@ export class PluginsService implements OnModuleDestroy {
       plugin.updateTag = null
       plugin.links = {}
     }
-    return plugin
+    return this.applyFakeUpdate(plugin)
   }
 
   /**
@@ -2655,7 +2655,100 @@ export class PluginsService implements OnModuleDestroy {
    * @param cols
    * @param rows
    */
+  /**
+   * Development only: pretend an update is available, so the update flows can be exercised on a real
+   * install without publishing anything.
+   *
+   * Set `UIX_FAKE_UPDATES` to a comma separated list of package names, or `*` for everything with an
+   * installed version. A name may carry a suffix:
+   *
+   * - `name:minor` (the default) or `name:patch` - an update the batch will offer
+   * - `name:major` - excluded from the batch as "needs review"
+   * - `name:fail` - offered, then fails when it runs, to exercise the error path
+   *
+   * `UIX_DEVELOPMENT` must also be `1`, so this can never fire in a real install. While it is set,
+   * {@link runNpmCommand} refuses to run npm at all - a fabricated version could not be installed
+   * anyway, and nothing should reach the registry while the versions on screen are invented.
+   */
+  private applyFakeUpdate<T extends HomebridgePlugin>(plugin: T): T {
+    const rule = this.fakeUpdateRule(plugin?.name)
+    if (!rule || !plugin.installedVersion) {
+      return plugin
+    }
+
+    const faked = inc(plugin.installedVersion, rule === 'fail' ? 'minor' : rule)
+    if (!faked) {
+      return plugin
+    }
+
+    plugin.latestVersion = faked
+    plugin.updateAvailable = true
+    plugin.publicPackage = true
+    plugin.updateEngines = null
+    plugin.updateTag = null
+    return plugin
+  }
+
+  /**
+   * The `UIX_FAKE_UPDATES` rule that applies to a package, or null when the harness is off or the
+   * package is not listed. See {@link applyFakeUpdate}.
+   */
+  private fakeUpdateRule(name?: string): 'major' | 'minor' | 'patch' | 'fail' | null {
+    if (process.env.UIX_DEVELOPMENT !== '1' || !process.env.UIX_FAKE_UPDATES || !name) {
+      return null
+    }
+
+    for (const entry of process.env.UIX_FAKE_UPDATES.split(',')) {
+      const [target, rule = 'minor'] = entry.trim().split(':')
+      if (target === '*' || target === name) {
+        return ['major', 'minor', 'patch', 'fail'].includes(rule) ? rule as 'major' | 'minor' | 'patch' | 'fail' : 'minor'
+      }
+    }
+
+    return null
+  }
+
+  /**
+   * Development only: act out an npm install instead of running one, so an update can be watched
+   * end to end without touching the registry or the installed plugins. Active whenever
+   * {@link applyFakeUpdate} is - the versions on screen are invented, so installing them is not a
+   * thing npm could do.
+   *
+   * A package listed as `name:fail` throws here instead, so the failure path can be exercised too.
+   *
+   * @returns true when the command was faked and the caller should do nothing further.
+   */
+  private async runFakeNpmCommand(command: Array<string>, client: EventEmitter): Promise<boolean> {
+    if (process.env.UIX_DEVELOPMENT !== '1' || !process.env.UIX_FAKE_UPDATES) {
+      return false
+    }
+
+    // The install target is the last `name@version` argument npm was given
+    const target = command.filter(x => x.includes('@') && !x.startsWith('-')).pop() || 'unknown'
+    const name = target.slice(0, target.lastIndexOf('@')) || target
+
+    client.emit('stdout', yellow(`FAKE INSTALL - npm was not run (UIX_FAKE_UPDATES is set).\n\r`))
+    client.emit('stdout', `$ ${command.join(' ')}\n\r`)
+
+    for (const step of ['reify', 'audit', 'fund']) {
+      await new Promise(resolve => setTimeout(resolve, 700))
+      client.emit('stdout', `npm ${step}: ok\n\r`)
+    }
+
+    if (this.fakeUpdateRule(name) === 'fail') {
+      client.emit('stdout', red(`FAKE FAILURE for ${name}, as requested by UIX_FAKE_UPDATES.\n\r`))
+      throw new Error(`Pretend install of ${target} failed (UIX_FAKE_UPDATES)`)
+    }
+
+    client.emit('stdout', green(`Pretend install of ${target} finished.\n\r`))
+    return true
+  }
+
   private async runNpmCommand(command: Array<string>, cwd: string, client: EventEmitter, cols?: number, rows?: number) {
+    if (await this.runFakeNpmCommand(command, client)) {
+      return
+    }
+
     // Remove synology @eaDir folders from the node_modules
     await this.removeSynologyMetadata()
 

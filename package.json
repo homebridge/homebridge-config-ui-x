@@ -79,7 +79,10 @@
     "upgrade-install": "./scripts/upgrade-install.sh",
     "watch": "concurrently \"npm run watch:ui\" \"npm run watch:server\"",
     "watch:server": "nodemon",
-    "watch:ui": "npm run start --prefix ui"
+    "watch:ui": "npm run start --prefix ui",
+    "watch:fake": "UIX_DEVELOPMENT=1 UIX_FAKE_UPDATES='*' npm run watch",
+    "watch:fake:major": "UIX_DEVELOPMENT=1 UIX_FAKE_UPDATES='*:major' npm run watch",
+    "watch:fake:fail": "UIX_DEVELOPMENT=1 UIX_FAKE_UPDATES='*:fail' npm run watch"
   },
   "dependencies": {
     "@fastify/helmet": "13.1.1",
