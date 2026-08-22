@@ -398,6 +398,11 @@ describe('AuthController (e2e)', () => {
       return `hb-refresh=${token}`
     }
 
+    /** The bearer token from a cookie minted by `signUserCookie`. */
+    function signUserToken(overrides: Record<string, any> = {}) {
+      return signUserCookie(overrides).split('=').slice(1).join('=').split(';')[0]
+    }
+
     /** The claims inside a minted access token. */
     function decode(accessToken: string): Record<string, any> {
       return JSON.parse(Buffer.from(accessToken.split('.')[1], 'base64url').toString())
@@ -500,6 +505,32 @@ describe('AuthController (e2e)', () => {
 
       const claims = decode(login.json().access_token)
       expect(claims.sessionStartedAt).toBeGreaterThan(Math.floor(Date.now() / 1000) - 60)
+    })
+
+    // #2981: `refreshToken()` is the only reader of `sessionStartedAt`, so a
+    // token past the cap is refused a renewal while every guarded route still
+    // accepts it. That is what let the browser turn a refused refresh into an
+    // account-wide logout the server then honoured. The fix for that is in the
+    // interceptor and `refreshSession()`, covered by the ui specs; this pins
+    // the server side it reacts to, so the asymmetry cannot be dropped without
+    // a test saying so.
+    it('accepts an over-age token at /auth/check while refusing to renew it', async () => {
+      const overAge = signUserToken({ sessionStartedAt: Math.floor(Date.now() / 1000) - (31 * DAY) })
+
+      const checked = await app.inject({
+        method: 'GET',
+        path: '/auth/check',
+        headers: { authorization: `Bearer ${overAge}` },
+      })
+      expect(checked.statusCode).toBe(200)
+
+      const refreshed = await app.inject({
+        method: 'POST',
+        path: '/auth/refresh',
+        headers: { authorization: `Bearer ${overAge}` },
+      })
+      expect(refreshed.statusCode).toBe(401)
+      expect(refreshed.json().message).toContain('maximum age')
     })
   })
 
