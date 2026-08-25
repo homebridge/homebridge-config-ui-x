@@ -252,6 +252,12 @@ export class SmartAutomationsComponent implements OnInit, OnDestroy {
       }
 
       await this.$api.post('/config-editor/plugin/homebridge-config-ui-x', configBlocks)
+
+      // The automation engine runs in its own child-bridge process and reads
+      // its rules only during startup. Reload just that bridge after every
+      // successful edit so the running engine uses the configuration we have
+      // just persisted, without restarting the main bridge or other plugins.
+      await this.$api.put(`/server/restart/${encodeURIComponent(nextBridge.username)}`, {})
     } catch (error) {
       console.error(error)
     }
