@@ -20,10 +20,12 @@
         id="smart-automation-type"
         class="form-select"
         [ngModel]="draft().type"
-        (ngModelChange)="updateDraft('type', $event)"
+        (ngModelChange)="onAutomationTypeChange($event)"
       >
         <option value="smart-light-group">Smart Light Group</option>
         <option value="door-ajar">Door Left Ajar</option>
+        <option value="humidity-control">Humidity-controlled AC</option>
+        <option value="average-temperature">Average Temperature Sensor</option>
       </select>
     </div>
     <div class="automation-description mb-4" role="note">
@@ -59,7 +61,35 @@
           <small class="form-text text-muted">How often to alert again while the door stays open.</small>
         </div>
       </div>
-    } @else {
+    } @else if (draft().type === 'humidity-control') {
+      <div class="row">
+        <div class="col-sm-6 mb-3">
+          <label class="form-label" for="smart-automation-on-humidity">Turn on above (%)</label>
+          <input
+            id="smart-automation-on-humidity"
+            type="number"
+            min="1"
+            max="100"
+            class="form-control"
+            [ngModel]="draft().onHumidity ?? 60"
+            (ngModelChange)="updateDraft('onHumidity', $event)"
+          />
+        </div>
+        <div class="col-sm-6 mb-3">
+          <label class="form-label" for="smart-automation-off-humidity">Turn off below (%)</label>
+          <input
+            id="smart-automation-off-humidity"
+            type="number"
+            min="0"
+            max="99"
+            class="form-control"
+            [ngModel]="draft().offHumidity ?? 50"
+            (ngModelChange)="updateDraft('offHumidity', $event)"
+          />
+        </div>
+      </div>
+      <small class="form-text text-muted d-block mb-3">The off threshold must be lower than the on threshold.</small>
+    } @else if (draft().type === 'smart-light-group') {
       <div class="mb-3">
         <label class="form-label" for="smart-automation-lightbulb-type">Published Light Type</label>
         <select
@@ -88,40 +118,109 @@
       />
       <label class="form-check-label" for="smart-automation-enabled">Enabled</label>
     </div>
-    <div class="d-flex align-items-center justify-content-between mb-2">
-      <h6 class="mb-0">{{ draft().type === 'door-ajar' ? 'Choose a door' : 'Choose lights' }}</h6>
-      <small class="text-muted">{{ selectedLightUniqueIds().length }} selected</small>
-    </div>
-    <div class="smart-automation-chooser">
-      @for (room of rooms(); track room.name) {
-        @if (room.services.length) {
-          <div class="mb-2">
-            <div class="fw-semibold">{{ room.name }}</div>
-            @for (service of room.services; track service.uniqueId) {
-              @if (isSelectable(service.type, draft().type)) {
-                <div class="form-check">
-                  <input
-                    class="form-check-input"
-                    [type]="draft().type === 'door-ajar' ? 'radio' : 'checkbox'"
-                    [id]="`smart-auto-light-${service.uniqueId}`"
-                    [ngModel]="selectedLightUniqueIds().includes(service.uniqueId || '')"
-                    (ngModelChange)="
-                      draft().type === 'door-ajar'
-                        ? onDoorSelectionChange(service.uniqueId || '', $event)
-                        : onLightSelectionChange(service.uniqueId || '', $event)
-                    "
-                  />
-                  <label class="form-check-label" [for]="`smart-auto-light-${service.uniqueId}`">
-                    {{ service.serviceName }}
-                    <span class="text-muted small">&middot; {{ service.type }}</span>
-                  </label>
-                </div>
+    @if (draft().type === 'humidity-control') {
+      <div class="d-flex align-items-center justify-content-between mb-2">
+        <h6 class="mb-0">Choose a humidity sensor</h6>
+        <small class="text-muted">{{ selectedLightUniqueIds().length ? 'Selected' : 'Required' }}</small>
+      </div>
+      <div class="smart-automation-chooser mb-3">
+        @for (room of rooms(); track room.name) {
+          @if (room.services.length) {
+            <div class="mb-2">
+              <div class="fw-semibold">{{ room.name }}</div>
+              @for (service of room.services; track service.uniqueId) {
+                @if (isSourceSelectable(service, draft().type)) {
+                  <div class="form-check">
+                    <input
+                      class="form-check-input"
+                      type="radio"
+                      [id]="`smart-auto-humidity-${service.uniqueId}`"
+                      [ngModel]="selectedLightUniqueIds().includes(service.uniqueId || '')"
+                      (ngModelChange)="onDoorSelectionChange(service.uniqueId || '', $event)"
+                    />
+                    <label class="form-check-label" [for]="`smart-auto-humidity-${service.uniqueId}`">
+                      {{ service.serviceName }} <span class="text-muted small">&middot; {{ service.type }}</span>
+                    </label>
+                  </div>
+                }
               }
-            }
-          </div>
+            </div>
+          }
         }
-      }
-    </div>
+      </div>
+      <div class="d-flex align-items-center justify-content-between mb-2">
+        <h6 class="mb-0">Choose an air conditioner or control</h6>
+        <small class="text-muted">{{ selectedTargetUniqueId() ? 'Selected' : 'Required' }}</small>
+      </div>
+      <div class="smart-automation-chooser">
+        @for (room of rooms(); track room.name) {
+          @if (room.services.length) {
+            <div class="mb-2">
+              <div class="fw-semibold">{{ room.name }}</div>
+              @for (service of room.services; track service.uniqueId) {
+                @if (isControlTarget(service)) {
+                  <div class="form-check">
+                    <input
+                      class="form-check-input"
+                      type="radio"
+                      [id]="`smart-auto-target-${service.uniqueId}`"
+                      [ngModel]="selectedTargetUniqueId() === service.uniqueId"
+                      (ngModelChange)="onTargetSelectionChange(service.uniqueId || '', $event)"
+                    />
+                    <label class="form-check-label" [for]="`smart-auto-target-${service.uniqueId}`">
+                      {{ service.serviceName }} <span class="text-muted small">&middot; {{ service.type }}</span>
+                    </label>
+                  </div>
+                }
+              }
+            </div>
+          }
+        }
+      </div>
+    } @else {
+      <div class="d-flex align-items-center justify-content-between mb-2">
+        <h6 class="mb-0">
+          {{
+            draft().type === 'door-ajar'
+              ? 'Choose a door'
+              : draft().type === 'average-temperature'
+                ? 'Choose temperature sensors'
+                : 'Choose lights'
+          }}
+        </h6>
+        <small class="text-muted">{{ selectedLightUniqueIds().length }} selected</small>
+      </div>
+      <div class="smart-automation-chooser">
+        @for (room of rooms(); track room.name) {
+          @if (room.services.length) {
+            <div class="mb-2">
+              <div class="fw-semibold">{{ room.name }}</div>
+              @for (service of room.services; track service.uniqueId) {
+                @if (isSourceSelectable(service, draft().type)) {
+                  <div class="form-check">
+                    <input
+                      class="form-check-input"
+                      [type]="draft().type === 'door-ajar' ? 'radio' : 'checkbox'"
+                      [id]="`smart-auto-light-${service.uniqueId}`"
+                      [ngModel]="selectedLightUniqueIds().includes(service.uniqueId || '')"
+                      (ngModelChange)="
+                        draft().type === 'door-ajar'
+                          ? onDoorSelectionChange(service.uniqueId || '', $event)
+                          : onLightSelectionChange(service.uniqueId || '', $event)
+                      "
+                    />
+                    <label class="form-check-label" [for]="`smart-auto-light-${service.uniqueId}`">
+                      {{ service.serviceName }}
+                      <span class="text-muted small">&middot; {{ service.type }}</span>
+                    </label>
+                  </div>
+                }
+              }
+            </div>
+          }
+        }
+      </div>
+    }
     <div class="d-flex justify-content-end mt-4">
       <button type="button" class="btn btn-primary" (click)="save.emit()">
         <i class="fas fa-check me-1" aria-hidden="true"></i>

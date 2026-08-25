@@ -44,7 +44,9 @@
         [draft]="smartAutomationDraft"
         [rooms]="rooms"
         [selectedLightUniqueIds]="selectedLightUniqueIds()"
-        (lightSelectionChange)="toggleLightSelection($event.uniqueId, $event.selected, $event.single)"
+        [selectedTargetUniqueId]="selectedTargetUniqueId()"
+        (automationTypeChange)="onAutomationTypeChange($event)"
+        (lightSelectionChange)="toggleLightSelection($event.uniqueId, $event.selected, $event.single, $event.target)"
         (save)="saveSmartAutomation()"
       />
     </div>

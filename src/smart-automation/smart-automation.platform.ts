@@ -1,6 +1,8 @@
-import type { DoorAjarConfig, SmartAutomationConfig, SmartAutomationMonitor, SmartAutomationRulesEngine, SmartLightGroupConfig } from './smart-automation.interfaces.js'
+import type { AverageTemperatureConfig, DoorAjarConfig, HumidityControlConfig, SmartAutomationConfig, SmartAutomationMonitor, SmartAutomationRulesEngine, SmartLightGroupConfig } from './smart-automation.interfaces.js'
 
+import { AverageTemperatureRulesEngine } from './rules/average-temperature.rules-engine.js'
 import { clampMinutes, DoorAjarRulesEngine } from './rules/door-ajar.rules-engine.js'
+import { clampHumidity, HumidityControlRulesEngine } from './rules/humidity-control.rules-engine.js'
 import { SmartLightGroupRulesEngine } from './rules/smart-light-group.rules-engine.js'
 import { HapSmartAutomationAccessoryController } from './smart-automation-accessory.controller.js'
 import { createSmartAutomationLogger, SmartAutomationLogger } from './smart-automation.logger.js'
@@ -42,9 +44,19 @@ export class SmartAutomationPlatform {
     const desiredUuids = new Set<string>()
 
     const automations = this.getAutomations()
+    let publishedAccessories = 0
     this.log.info(`Starting engine with ${automations.length} configured automation${automations.length === 1 ? '' : 's'}.`)
 
     for (const automation of automations) {
+      if (automation.type === 'humidity-control') {
+        this.log.info(`${automation.name}: watching humidity above ${automation.onHumidity}% and below ${automation.offHumidity}%.`)
+        this.log.debug(`${automation.name}: configuration id=${automation.id}, type=${automation.type}, sensor=${automation.uniqueIds[0]}, target=${automation.targetUniqueId}.`)
+        const monitor = new HumidityControlRulesEngine(automation, this.accessoryController, this.log)
+        this.monitors.push(monitor)
+        monitor.start(() => undefined)
+        continue
+      }
+
       const uuid = this.api.hap.uuid.generate(`smart-automation:${automation.id}`)
       const existing = this.accessories.get(uuid)
       const PlatformAccessory = this.api.platformAccessory
@@ -55,6 +67,10 @@ export class SmartAutomationPlatform {
         this.log.info(`${automation.name}: watching one door, alerting after ${clampMinutes(automation.openMinutes, 5)} minutes and repeating every ${clampMinutes(automation.repeatMinutes, 5)}.`)
         this.log.debug(`${automation.name}: configuration id=${automation.id}, type=${automation.type}, enabled=${automation.enabled}, door=${automation.uniqueIds[0]}.`)
         this.configureAjarSensor(accessory, automation)
+      } else if (automation.type === 'average-temperature') {
+        this.log.info(`${automation.name}: averaging ${automation.uniqueIds.length} temperature sensor${automation.uniqueIds.length === 1 ? '' : 's'}.`)
+        this.log.debug(`${automation.name}: configuration id=${automation.id}, type=${automation.type}, sensors=[${automation.uniqueIds.join(', ')}].`)
+        this.configureAverageTemperatureSensor(accessory, automation)
       } else {
         const rulesEngine = this.createRulesEngine(automation)
         this.log.info(`${automation.name}: configured ${automation.lightbulbType} trigger light for ${automation.uniqueIds.length} group light${automation.uniqueIds.length === 1 ? '' : 's'}.`)
@@ -63,6 +79,7 @@ export class SmartAutomationPlatform {
       }
 
       this.accessories.set(uuid, accessory)
+      publishedAccessories++
       ;(existing ? existingAccessories : newAccessories).push(accessory)
       this.log.debug(`${automation.name}: ${existing ? 'restored cached' : 'created new'} accessory; uuid=${uuid}.`)
     }
@@ -85,7 +102,7 @@ export class SmartAutomationPlatform {
       this.api.unregisterPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, staleAccessories)
     }
 
-    this.log.info(`Engine ready; published ${automations.length} trigger light${automations.length === 1 ? '' : 's'}.`)
+    this.log.info(`Engine ready; published ${publishedAccessories} automation accessor${publishedAccessories === 1 ? 'y' : 'ies'} and started ${this.monitors.length} monitor${this.monitors.length === 1 ? '' : 's'}.`)
   }
 
   private createRulesEngine(automation: SmartLightGroupConfig): SmartAutomationRulesEngine {
@@ -189,6 +206,39 @@ export class SmartAutomationPlatform {
     monitor.start(publish)
   }
 
+  private configureAverageTemperatureSensor(accessory: any, automation: AverageTemperatureConfig) {
+    const { Characteristic, Service } = this.api.hap
+    accessory.displayName = automation.name
+    accessory.context.automationId = automation.id
+
+    accessory.getService(Service.AccessoryInformation)
+      .setCharacteristic(Characteristic.Manufacturer, 'homebridge-config-ui-x')
+      .setCharacteristic(Characteristic.Model, 'Smart Automation Average Temperature')
+      .setCharacteristic(Characteristic.SerialNumber, automation.id)
+
+    const legacyLightService = accessory.getService(Service.Lightbulb)
+    if (legacyLightService) {
+      accessory.removeService(legacyLightService)
+    }
+    const legacyContactService = accessory.getService(Service.ContactSensor)
+    if (legacyContactService) {
+      accessory.removeService(legacyContactService)
+    }
+
+    const sensor = accessory.getService(Service.TemperatureSensor) || accessory.addService(Service.TemperatureSensor)
+    sensor.setCharacteristic(Characteristic.Name, automation.name)
+    const publish = (value: number) => sensor.updateCharacteristic(Characteristic.CurrentTemperature, value)
+
+    if (!(automation.enabled ?? true)) {
+      this.log.debug(`${automation.name}: disabled, so its average is not being calculated.`)
+      return
+    }
+
+    const monitor = new AverageTemperatureRulesEngine(automation, this.accessoryController, this.log)
+    this.monitors.push(monitor)
+    monitor.start(publish)
+  }
+
   private configureLightbulbCharacteristics(
     accessory: any,
     lightService: any,
@@ -244,7 +294,7 @@ export class SmartAutomationPlatform {
   private getAutomations(): SmartAutomationConfig[] {
     const automations = Array.isArray(this.config.smartAutomations) ? this.config.smartAutomations : []
     return automations
-      .filter(automation => ['smart-light-group', 'door-ajar'].includes(automation?.type) && typeof automation.id === 'string')
+      .filter(automation => ['smart-light-group', 'door-ajar', 'humidity-control', 'average-temperature'].includes(automation?.type) && typeof automation.id === 'string')
       .map((automation) => {
         const shared = {
           ...automation,
@@ -264,6 +314,26 @@ export class SmartAutomationPlatform {
           } as DoorAjarConfig
         }
 
+        if (automation.type === 'humidity-control') {
+          const onHumidity = clampHumidity(automation.onHumidity, 60)
+          const offHumidity = Math.min(clampHumidity(automation.offHumidity, 50), Math.max(0, onHumidity - 1))
+          return {
+            ...shared,
+            name: automation.name?.trim() || 'Humidity Controlled AC',
+            uniqueIds: shared.uniqueIds.slice(0, 1),
+            targetUniqueId: automation.targetUniqueId || '',
+            onHumidity,
+            offHumidity,
+          } as HumidityControlConfig
+        }
+
+        if (automation.type === 'average-temperature') {
+          return {
+            ...shared,
+            name: automation.name?.trim() || 'Average Temperature',
+          } as AverageTemperatureConfig
+        }
+
         return {
           ...shared,
           name: automation.name?.trim() || 'Smart Light Group',
@@ -272,6 +342,6 @@ export class SmartAutomationPlatform {
             : 'on-off',
         } as SmartLightGroupConfig
       })
-      .filter(automation => automation.uniqueIds.length > 0)
+      .filter(automation => automation.uniqueIds.length > 0 && (automation.type !== 'humidity-control' || Boolean(automation.targetUniqueId)))
   }
 }

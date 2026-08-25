@@ -21,8 +21,10 @@
               <div class="automation-type-icon" aria-hidden="true">
                 <i
                   class="fas"
-                  [class.fa-lightbulb]="automation.type !== 'door-ajar'"
+                  [class.fa-lightbulb]="automation.type === 'smart-light-group'"
                   [class.fa-door-open]="automation.type === 'door-ajar'"
+                  [class.fa-droplet]="automation.type === 'humidity-control'"
+                  [class.fa-temperature-half]="automation.type === 'average-temperature'"
                 ></i>
               </div>
               <div class="flex-grow-1 min-width-0">
@@ -42,6 +44,16 @@
                     {{ (automation.openMinutes ?? 5) === 1 ? 'minute' : 'minutes' }} &middot; repeats every
                     {{ automation.repeatMinutes ?? 5 }}
                     {{ (automation.repeatMinutes ?? 5) === 1 ? 'minute' : 'minutes' }}
+                  </small>
+                } @else if (automation.type === 'humidity-control') {
+                  <small class="text-muted d-block">
+                    Humidity-controlled AC &middot; on above {{ automation.onHumidity ?? 60 }}% &middot; off below
+                    {{ automation.offHumidity ?? 50 }}%
+                  </small>
+                } @else if (automation.type === 'average-temperature') {
+                  <small class="text-muted d-block">
+                    Average Temperature &middot; {{ automation.uniqueIds.length }}
+                    {{ automation.uniqueIds.length === 1 ? 'sensor' : 'sensors' }}
                   </small>
                 } @else {
                   <small class="text-muted d-block">

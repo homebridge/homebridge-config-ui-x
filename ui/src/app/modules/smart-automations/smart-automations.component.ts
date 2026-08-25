@@ -44,6 +44,7 @@ export class SmartAutomationsComponent implements OnInit, OnDestroy {
   public readonly smartAutomations = signal<SmartAutomation[]>([])
   public readonly debugEnabled = signal(false)
   public readonly selectedLightUniqueIds = signal<string[]>([])
+  public readonly selectedTargetUniqueId = signal('')
   public smartAutomationDraft: Partial<SmartAutomation> = {
     type: 'smart-light-group',
     lightbulbType: 'on-off',
@@ -69,7 +70,11 @@ export class SmartAutomationsComponent implements OnInit, OnDestroy {
     this.$accessories.stop()
   }
 
-  public toggleLightSelection(uniqueId: string, selected: boolean, single = false): void {
+  public toggleLightSelection(uniqueId: string, selected: boolean, single = false, target = false): void {
+    if (target) {
+      this.selectedTargetUniqueId.set(selected ? uniqueId : '')
+      return
+    }
     // A door rule watches one door, so picking another replaces the choice
     // rather than quietly adding a second the engine would ignore
     if (single) {
@@ -85,12 +90,24 @@ export class SmartAutomationsComponent implements OnInit, OnDestroy {
   public editSmartAutomation(automation: SmartAutomation): void {
     this.smartAutomationDraft = { ...automation, uniqueIds: [...automation.uniqueIds] }
     this.selectedLightUniqueIds.set([...automation.uniqueIds])
+    this.selectedTargetUniqueId.set(automation.targetUniqueId || '')
+  }
+
+  public onAutomationTypeChange(type: SmartAutomation['type']): void {
+    this.smartAutomationDraft.type = type
+    this.selectedLightUniqueIds.set([])
+    this.selectedTargetUniqueId.set('')
   }
 
   public async saveSmartAutomation(): Promise<void> {
     try {
       const type = this.smartAutomationDraft.type || 'smart-light-group'
       const selected = [...new Set(this.selectedLightUniqueIds())]
+      const onHumidity = this.toHumidity(this.smartAutomationDraft.onHumidity, 60)
+      const offHumidity = Math.min(
+        this.toHumidity(this.smartAutomationDraft.offHumidity, 50),
+        Math.max(0, onHumidity - 1),
+      )
       const draft = type === 'door-ajar'
         ? {
             ...this.smartAutomationDraft,
@@ -102,20 +119,32 @@ export class SmartAutomationsComponent implements OnInit, OnDestroy {
             repeatMinutes: this.toMinutes(this.smartAutomationDraft.repeatMinutes, 5),
             enabled: this.smartAutomationDraft.enabled ?? true,
           }
-        : {
-            ...this.smartAutomationDraft,
-            uniqueIds: selected,
-            type,
-            lightbulbType: this.smartAutomationDraft.lightbulbType || 'on-off',
-            enabled: this.smartAutomationDraft.enabled ?? true,
-          }
+        : type === 'humidity-control'
+          ? {
+              ...this.smartAutomationDraft,
+              type,
+              uniqueIds: selected.slice(0, 1),
+              targetUniqueId: this.selectedTargetUniqueId(),
+              onHumidity,
+              offHumidity,
+              enabled: this.smartAutomationDraft.enabled ?? true,
+            }
+          : {
+              ...this.smartAutomationDraft,
+              uniqueIds: selected,
+              type,
+              ...(type === 'smart-light-group'
+                ? { lightbulbType: this.smartAutomationDraft.lightbulbType || 'on-off' }
+                : {}),
+              enabled: this.smartAutomationDraft.enabled ?? true,
+            }
 
       const saved = {
         ...draft,
         id: draft.id || this.generateAutomationId(),
         name: draft.name?.trim(),
       } as SmartAutomation
-      if (!saved.name || !saved.uniqueIds.length) {
+      if (!saved.name || !saved.uniqueIds.length || (saved.type === 'humidity-control' && !saved.targetUniqueId)) {
         return
       }
       const current = this.smartAutomations()
@@ -239,6 +268,11 @@ export class SmartAutomationsComponent implements OnInit, OnDestroy {
     return Math.min(Math.round(minutes), 1440)
   }
 
+  private toHumidity(value: unknown, fallback: number): number {
+    const humidity = Number(value)
+    return Number.isFinite(humidity) ? Math.min(Math.max(Math.round(humidity), 0), 100) : fallback
+  }
+
   private generateBridgePin(): string {
     const random = new Uint8Array(8)
     globalThis.crypto.getRandomValues(random)
@@ -270,5 +304,6 @@ export class SmartAutomationsComponent implements OnInit, OnDestroy {
       enabled: true,
     }
     this.selectedLightUniqueIds.set([])
+    this.selectedTargetUniqueId.set('')
   }
 }

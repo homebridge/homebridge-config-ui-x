@@ -75,7 +75,7 @@ export function clampMinutes(minutes: unknown, fallback: number): number {
  * closed for a moment before opening it again — otherwise the second and
  * later alerts would never fire.
  */
-export class DoorAjarRulesEngine implements SmartAutomationMonitor {
+export class DoorAjarRulesEngine implements SmartAutomationMonitor<boolean> {
   private publish: ((tripped: boolean) => void) | null = null
   private timer: ReturnType<typeof setInterval> | null = null
   private pulseTimer: ReturnType<typeof setTimeout> | null = null
