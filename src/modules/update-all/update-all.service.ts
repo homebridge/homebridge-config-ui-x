@@ -319,6 +319,10 @@ export class UpdateAllService {
           settled.add(item.name)
           continue
         }
+        // The UI's own update ends the process that also hosts Homebridge, so
+        // going ahead after Homebridge has failed to update would restart a
+        // half-updated Homebridge - and take away the interface needed to fix
+        // it. Leave the UI where it is and say so.
         if (item.type === 'ui' && homebridgeFailed) {
           await this.journalService.updateItem(item.name, 'skipped', { reason: 'Skipped because the Homebridge update failed.' })
           this.emitEvent('item-result', { name: item.name, status: 'skipped' })
@@ -405,13 +409,24 @@ export class UpdateAllService {
   }
 
   /**
-   * The smallest restart that covers everything the run changed:
+   * The smallest restart that covers everything the run changed.
    *
-   * - Homebridge itself updated, or any updated plugin not in a child bridge
-   *   → one full Homebridge restart. That also restarts every child bridge,
-   *   so no separate bridge restarts on top.
-   * - Only child-bridge plugins updated → restart just those bridges.
-   * - A UI-only update needs no Homebridge restart at all.
+   * ⚠️ The three scopes contain each other, widest first:
+   *
+   * - The UI updated → it restarts itself, which ends the process hosting it.
+   *   hb-service runs the UI in-process (`runUi`) and owns Homebridge as its
+   *   child, so the whole service goes down and comes back: Homebridge
+   *   returns, and with it every child bridge. Issuing either of the smaller
+   *   restarts as well would only restart Homebridge twice, and would tear
+   *   down child bridges seconds before the service takes them anyway.
+   * - Otherwise Homebridge itself updated, or any updated plugin not in a
+   *   child bridge → one full Homebridge restart, which also restarts every
+   *   child bridge, so no separate bridge restarts on top.
+   * - Otherwise only child-bridge plugins updated → restart just those.
+   *
+   * The first case holds for every install: standalone mode, where the UI ran
+   * as its own service beside Homebridge, was removed in v5.0.0, and hb-service
+   * is now the only thing that starts the UI.
    *
    * The journal's final state is written HERE, before the caller arms the
    * UI's own restart - that timer ends the process, and the journal is what
@@ -424,7 +439,11 @@ export class UpdateAllService {
       childBridges: 'not-needed',
     }
 
-    if (needs.homebridge) {
+    if (needs.ui) {
+      // Nothing to issue - the UI's own restart is the widest of the three and
+      // brings Homebridge and every child bridge back with it.
+      this.logger.log('Update All: the Homebridge UI restart will bring Homebridge and its child bridges back too.')
+    } else if (needs.homebridge) {
       try {
         this.logger.log('Update All: restarting Homebridge...')
         this.homebridgeIpcService.restartHomebridge()

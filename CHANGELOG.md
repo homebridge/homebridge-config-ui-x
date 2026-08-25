@@ -51,6 +51,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(status): actually clear the node version cache when the update policy changes
 - fix(accessories): ignore the mouse events ios replays for the full 300ms after a touch
 - fix(auth): sign out this browser only when a token refresh is refused (#2981) (@lidonius1122)
+- fix(schema-form): make the `dynamicDefaults` keyword generate values again (#2606)
 - feat(update-all): update hb, ui and plugins at once
 
 ### Other Changes
@@ -76,8 +77,9 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 ### Homebridge Dependencies
 
 - `@homebridge/hap-client` @ `v5.2.2-beta.1`
+- `@homebridge/hap-client` @ `v5.2.2`
 - `@homebridge/node-pty-prebuilt-multiarch` @ `v0.14.1`
-- `@homebridge/plugin-ui-utils` @ `v2.2.5`
+- `@homebridge/plugin-ui-utils` @ `v2.2.6`
 
 ## v5.28.0 (2026-08-16)
 

@@ -64,8 +64,9 @@ describe('update all', () => {
      * @param options - how to set it up
      * @param options.plan - what the server answers with for the plan
      * @param options.arrange - runs on the fresh fakes before the modal is built
+     * @param options.render - keep the real child components, so the markup can be asserted
      */
-    async function open(options: { plan?: UpdateAllPlan, arrange?: (fakes: { api: FakeApi }) => void } = {}) {
+    async function open(options: { plan?: UpdateAllPlan, arrange?: (fakes: { api: FakeApi }) => void, render?: boolean } = {}) {
       TestBed.resetTestingModule()
       api = fakeApi()
       toastr = toastrStub()
@@ -92,9 +93,11 @@ describe('update all', () => {
         ],
       })
 
-      TestBed.overrideComponent(UpdateAllModalComponent, {
-        set: { imports: [TranslatePipe], schemas: [NO_ERRORS_SCHEMA] },
-      })
+      if (!options.render) {
+        TestBed.overrideComponent(UpdateAllModalComponent, {
+          set: { imports: [TranslatePipe], schemas: [NO_ERRORS_SCHEMA] },
+        })
+      }
 
       options.arrange?.({ api })
 
@@ -145,7 +148,18 @@ describe('update all', () => {
       expect(item.icon).toBe('assets/hb-icon.png')
     })
 
-    it('reports whether there is anything to review or skipped', async () => {
+    it('reports whether anything was skipped', async () => {
+      const { component } = await open({ plan: makePlan({ items: [planItem()] }) })
+
+      expect(component.hasSkipped()).toBe(false)
+    })
+
+    /**
+     * Majors are shown in the main list rather than a section of their own, so
+     * they are seen without going looking - but they can never be part of a
+     * run, so they carry a toggle that is off and cannot be turned on.
+     */
+    it('shows a major update in the list, unselectable and saying why', async () => {
       const { component } = await open({
         plan: makePlan({
           items: [planItem()],
@@ -153,8 +167,200 @@ describe('update all', () => {
         }),
       })
 
-      expect(component.hasNeedsReview()).toBe(true)
-      expect(component.hasSkipped()).toBe(false)
+      const major = component.rows().find(x => x.name === 'homebridge-major')!
+      expect(major).toBeDefined()
+      expect(component.isSelectable(major)).toBe(false)
+      expect(component.rowLine(major).key).toBe('update_all.line_major')
+
+      // and it is not counted as something the run would update
+      expect(component.selectedCount()).toBe(1)
+      expect(component.restartPlan()).toEqual({ ui: false, homebridge: true, childBridgeCount: 0 })
+    })
+
+    it('leaves the ordinary rows selectable, and says what will happen to them', async () => {
+      const { component } = await open({ plan: makePlan({ items: [planItem()] }) })
+
+      const row = component.rows()[0]
+      expect(component.isSelectable(row)).toBe(true)
+      expect(component.rowLine(row).key).toBe('update_all.line_planned')
+    })
+
+    /**
+     * The third line follows the row through the run, so the row keeps its
+     * height from the plan to the summary and the reason for a failure sits
+     * with the item it belongs to rather than in a list at the bottom.
+     */
+    it('says what is happening to a row at each point in its life', async () => {
+      const { component } = await open({ plan: makePlan({ items: [planItem({ name: 'homebridge-a', displayName: 'Plugin A' })] }) })
+      const row = () => component.rows()[0]
+
+      // the planned line is the only one that names the versions, since the row has no version line of its own
+      expect(component.rowLine(row())).toEqual({
+        key: 'update_all.line_planned',
+        params: { plugin: 'Plugin A', from: '1.0.0', to: '1.1.0' },
+      })
+
+      component.toggleItem('homebridge-a')
+      expect(component.rowLine(row())).toEqual({ key: 'update_all.line_excluded', params: { plugin: 'Plugin A' } })
+      component.toggleItem('homebridge-a')
+
+      component.phase.set('progress')
+      component.journal.set({
+        schemaVersion: 1,
+        runId: 'r1',
+        startedAt: '2026-08-19T10:00:00.000Z',
+        acknowledged: false,
+        items: [{ ...planItem({ name: 'homebridge-a', displayName: 'Plugin A' }), status: 'running' }],
+        restart: { homebridge: 'pending', ui: 'pending' },
+      })
+      expect(component.rowLine(row())).toEqual({ key: 'update_all.line_running', params: { plugin: 'Plugin A', to: '1.1.0' } })
+
+      component.journal.set({
+        ...component.journal()!,
+        items: [{ ...planItem({ name: 'homebridge-a', displayName: 'Plugin A' }), status: 'failed', reason: 'npm exploded' }],
+      })
+      expect(component.rowLine(row())).toEqual({
+        key: 'update_all.line_failed',
+        params: { plugin: 'Plugin A', reason: 'npm exploded' },
+      })
+
+      component.journal.set({
+        ...component.journal()!,
+        items: [{ ...planItem({ name: 'homebridge-a', displayName: 'Plugin A' }), status: 'ok' }],
+      })
+      expect(component.rowLine(row())).toEqual({ key: 'update_all.line_ok', params: { plugin: 'Plugin A', to: '1.1.0' } })
+    })
+
+    // Every reason the run writes ends in a full stop, and so does the string
+    it('does not end a failure line with two full stops', async () => {
+      const { component } = await open({ plan: makePlan({ items: [planItem({ name: 'homebridge-a', displayName: 'Plugin A' })] }) })
+      component.phase.set('progress')
+      component.journal.set({
+        schemaVersion: 1,
+        runId: 'r1',
+        startedAt: '2026-08-19T10:00:00.000Z',
+        acknowledged: false,
+        items: [{ ...planItem({ name: 'homebridge-a', displayName: 'Plugin A' }), status: 'skipped', reason: 'Run cancelled by the user.' }],
+        restart: { homebridge: 'pending', ui: 'pending' },
+      })
+
+      expect(component.rowLine(component.rows()[0])).toEqual({
+        key: 'update_all.line_skipped',
+        params: { plugin: 'Plugin A', reason: 'Run cancelled by the user' },
+      })
+    })
+
+    /**
+     * Rendered with the real child components, because the point of moving
+     * majors into the main list is what the user sees: one table, with the
+     * major's toggle off and unusable and the reason under its versions.
+     */
+    it('draws the major in the same table, with a dead toggle and its reason', async () => {
+      const { fixture } = await open({
+        render: true,
+        plan: makePlan({
+          items: [planItem({ name: 'homebridge-normal', displayName: 'Normal' })],
+          needsReview: [{ ...planItem({ name: 'homebridge-major', displayName: 'Major' }), reason: 'major' }],
+        }),
+      })
+      fixture.detectChanges()
+
+      const rows = fixture.nativeElement.querySelectorAll('.list-group-item')
+      expect(rows).toHaveLength(2)
+
+      const normalToggle = fixture.nativeElement.querySelector('#update-all-item-homebridge-normal')
+      expect(normalToggle.disabled).toBe(false)
+      expect(normalToggle.checked).toBe(true)
+
+      const majorToggle = fixture.nativeElement.querySelector('#update-all-item-homebridge-major')
+      expect(majorToggle.disabled).toBe(true)
+      expect(majorToggle.checked).toBe(false)
+
+      // the reason sits inside the major's own row, not in a section elsewhere
+      expect(rows[1].textContent).toContain('update_all.line_major')
+      expect(rows[0].textContent).not.toContain('update_all.line_major')
+    })
+
+    /**
+     * ⚠️ The bug this pins is movement, not wording. The restart line used to
+     * vanish when the last item was unticked, so the list lost a bullet and
+     * everything below it jumped up under the user's cursor.
+     */
+    it('keeps the summary the same height when everything is unticked', async () => {
+      const { component, fixture } = await open({
+        render: true,
+        plan: makePlan({ items: [planItem({ name: 'homebridge-a' })] }),
+      })
+      fixture.detectChanges()
+
+      // the first list in the body is the summary, the second is the plugin rows
+      const bullets = () => fixture.nativeElement.querySelectorAll('.modal-body > ul')[0].querySelectorAll('li').length
+      const before = bullets()
+
+      component.toggleItem('homebridge-a')
+      fixture.detectChanges()
+
+      expect(bullets()).toBe(before)
+      expect(fixture.nativeElement.textContent).toContain('update_all.restart_none')
+    })
+
+    /**
+     * ⚠️ The three restart scopes contain each other. The UI restarting itself
+     * ends the process hosting it, which in a service install is also
+     * Homebridge's parent - so Homebridge returns too, and with it every child
+     * bridge. Naming the smaller ones alongside would promise restarts that are
+     * really just part of the big one.
+     */
+    it('names only the widest restart when the ui is updating', async () => {
+      const { fixture } = await open({
+        render: true,
+        plan: makePlan({
+          items: [
+            planItem({ type: 'ui', name: 'homebridge-config-ui-x' }),
+            planItem({ name: 'homebridge-on-a-bridge', childBridgeUsernames: ['AA:BB:CC:DD:EE:FF'] }),
+          ],
+        }),
+      })
+      fixture.detectChanges()
+
+      const summary = fixture.nativeElement.querySelectorAll('.modal-body > ul')[0]
+      expect(summary.querySelectorAll('li')).toHaveLength(3)
+      expect(summary.textContent).toContain('update_all.restart_homebridge_and_ui')
+      expect(summary.textContent).not.toContain('update_all.restart_child_bridges')
+    })
+
+    it('names the child bridges when only they are restarting', async () => {
+      const { fixture } = await open({
+        render: true,
+        plan: makePlan({
+          items: [planItem({ name: 'homebridge-on-a-bridge', childBridgeUsernames: ['AA:BB:CC:DD:EE:FF'] })],
+        }),
+      })
+      fixture.detectChanges()
+
+      const summary = fixture.nativeElement.querySelectorAll('.modal-body > ul')[0]
+      expect(summary.querySelectorAll('li')).toHaveLength(3)
+      expect(summary.textContent).toContain('update_all.restart_child_bridges_one')
+    })
+
+    /**
+     * The footer keeps one shape through the plan phase. A run of nothing but
+     * major updates has no selectable rows, and the button used to vanish -
+     * leaving Close alone and no sign of why the run could not start.
+     */
+    it('keeps the update button in place, disabled, when nothing can be selected', async () => {
+      const { fixture } = await open({
+        render: true,
+        plan: makePlan({
+          items: [],
+          needsReview: [{ ...planItem({ name: 'homebridge-major' }), reason: 'major' }],
+        }),
+      })
+      fixture.detectChanges()
+
+      const button = fixture.nativeElement.querySelector('.modal-footer .btn-primary')
+      expect(button).toBeTruthy()
+      expect(button.disabled).toBe(true)
     })
 
     describe('the restart plan it previews', () => {
@@ -454,23 +660,58 @@ describe('update all', () => {
     })
 
     /**
-     * The hand-over to the restart page, which had no coverage at all - the
-     * navigation was only visible as an unhandled rejection in the run output.
-     * `uiRestarting` is the half that matters: it tells the restart page the UI
-     * is going down too, so it shows that row as pending rather than ticked.
+     * ⚠️ The hand-over only belongs to a run this modal watched finish. The
+     * journal records what a run ASKED for - "a UI restart was scheduled" - and
+     * never that it happened, so a modal reopened the next day would otherwise
+     * read that as "going down now" and bounce the user to the restart page.
+     * Worse, that path never acknowledged the journal, so it repeated on every
+     * page load for 24 hours.
+     *
+     * `uiRestarting` is the half that matters on the live path: it tells the
+     * restart page the UI is going down too, so it shows that row as pending
+     * rather than ticked.
      */
-    it('hands over to the restart page when the run calls for a restart', async () => {
+    it('hands over to the restart page when it watches the run finish', async () => {
       const finished = makeJournal({ finishedAt: '2026-08-19T10:05:00.000Z', restart: { homebridge: 'done', ui: 'scheduled' } })
-      await open({
-        active: false,
+      const { component } = await open({
+        active: true,
         arrange: ({ api }) => api.respond('get', '/update-all/journal', finished),
       })
+      expect(component.phase()).toBe('progress')
+
+      io.socket.fire('run-complete')
+      await settle()
 
       const router = TestBed.inject(Router)
       await router.navigated
 
       expect(activeModal.close).toHaveBeenCalled()
       expect(router.url).toBe('/restart?restarting=true&uiRestarting=true')
+    })
+
+    it('shows the summary instead when the run was already over on arrival', async () => {
+      const finished = makeJournal({ finishedAt: '2026-08-19T10:05:00.000Z', restart: { homebridge: 'done', ui: 'scheduled' } })
+      const { component } = await open({
+        active: false,
+        arrange: ({ api }) => api.respond('get', '/update-all/journal', finished),
+      })
+
+      expect(component.phase()).toBe('summary')
+      expect(TestBed.inject(Router).url).toBe('/')
+      expect(activeModal.close).not.toHaveBeenCalled()
+    })
+
+    // Reaching the summary is what acknowledges the run, so it shows only once
+    it('acknowledges the journal when the summary is closed', async () => {
+      const finished = makeJournal({ finishedAt: '2026-08-19T10:05:00.000Z', restart: { homebridge: 'done', ui: 'scheduled' } })
+      const { component } = await open({
+        active: false,
+        arrange: ({ api }) => api.respond('get', '/update-all/journal', finished),
+      })
+
+      component.closeModal()
+
+      expect(api.callsTo('post', '/update-all/journal/ack')).toHaveLength(1)
     })
 
     it('stays put when nothing the run did needs a restart', async () => {

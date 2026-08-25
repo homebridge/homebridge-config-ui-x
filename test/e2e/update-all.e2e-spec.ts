@@ -462,8 +462,11 @@ describe('UpdateAllController (e2e)', () => {
         ['homebridge-alpha', 'ok'],
         ['homebridge-beta', 'ok'],
       ])
-      expect(journal.restart).toEqual({ homebridge: 'done', ui: 'scheduled', childBridges: 'not-needed' })
-      expect(mockHomebridgeIpcService.restartHomebridge).toHaveBeenCalledTimes(1)
+      // The UI is in this run, and its own restart is the widest of the three -
+      // it takes Homebridge and every child bridge with it, so no separate
+      // Homebridge restart is issued on top
+      expect(journal.restart).toEqual({ homebridge: 'not-needed', ui: 'scheduled', childBridges: 'not-needed' })
+      expect(mockHomebridgeIpcService.restartHomebridge).not.toHaveBeenCalled()
       expect(mockPluginsService.scheduleUiRestart).toHaveBeenCalledTimes(1)
 
       // the backup ran once, before any update touched the instance
@@ -739,6 +742,34 @@ describe('UpdateAllController (e2e)', () => {
 
       // a UI-only update needs no Homebridge restart at all
       expect(mockHomebridgeIpcService.restartHomebridge).not.toHaveBeenCalled()
+      expect((await journalService.read()).restart).toEqual({ homebridge: 'not-needed', ui: 'scheduled', childBridges: 'not-needed' })
+    })
+
+    /**
+     * ⚠️ The three restart scopes contain each other. The UI restarting itself
+     * ends the process hb-service runs it in, and that process owns Homebridge,
+     * so Homebridge and every child bridge come back with it. Restarting the
+     * child bridges here would tear them down seconds before the service did
+     * it anyway.
+     */
+    it('issues no child bridge restarts when the ui is restarting too', async () => {
+      mockPluginsService.getOutOfDatePlugins.mockResolvedValue([plugin('homebridge-bridged')])
+      mockPluginsService.getHomebridgeUiPackage.mockResolvedValue({ name: 'homebridge-config-ui-x', installedVersion: '5.27.0', latestVersion: '5.27.1', updateAvailable: true })
+      mockPluginsService.performPackageUpdate.mockImplementation(async (name: string, version: string) => (
+        name === 'homebridge-config-ui-x'
+          ? okUpdate(name, version, { ui: true })
+          : okUpdate(name, version, { childBridgeUsernames: ['AA:BB:CC:DD:EE:FF'] })
+      ))
+
+      await startRun([
+        { name: 'homebridge-config-ui-x', to: '5.27.1' },
+        { name: 'homebridge-bridged', to: '1.1.0' },
+      ])
+      await updateAllService.waitForActiveRun()
+
+      expect(mockChildBridgesService.restartChildBridge).not.toHaveBeenCalled()
+      expect(mockHomebridgeIpcService.restartHomebridge).not.toHaveBeenCalled()
+      expect(mockPluginsService.scheduleUiRestart).toHaveBeenCalledTimes(1)
       expect((await journalService.read()).restart).toEqual({ homebridge: 'not-needed', ui: 'scheduled', childBridges: 'not-needed' })
     })
 

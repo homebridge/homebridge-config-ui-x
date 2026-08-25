@@ -1,8 +1,8 @@
 diff --git a/node_modules/@ng-formworks/core/fesm2022/ng-formworks-core.mjs b/node_modules/@ng-formworks/core/fesm2022/ng-formworks-core.mjs
-index 33dd350..b01704a 100644
+index 33dd350..b8bf514 100644
 --- a/node_modules/@ng-formworks/core/fesm2022/ng-formworks-core.mjs
 +++ b/node_modules/@ng-formworks/core/fesm2022/ng-formworks-core.mjs
-@@ -7,22 +7,27 @@ import addFormats from 'ajv-formats';
+@@ -7,22 +7,29 @@ import addFormats from 'ajv-formats';
  import Ajv2019 from 'ajv/dist/2019';
  import jsonDraft6 from 'ajv/lib/refs/json-schema-draft-06.json';
  import jsonDraft7 from 'ajv/lib/refs/json-schema-draft-07.json';
@@ -36,11 +36,13 @@ index 33dd350..b01704a 100644
 +import def from 'ajv-keywords/dist/definitions/dynamicDefaults';
 +import { v4 } from 'uuid';
 +
-+def.DEFAULTS.uuid = v4;
++// DEFAULTS entries are factories that return the generator function
++// (see ajv-keywords' own: `timestamp: () => () => Date.now()`)
++def.DEFAULTS.uuid = () => v4;
  
  class Framework {
      constructor() {
-@@ -3024,7 +3029,19 @@ class JsonValidators {
+@@ -3024,7 +3031,19 @@ class JsonValidators {
              let requiredPattern;
              if (typeof pattern === 'string') {
                  requiredPattern = (wholeString) ? `^${pattern}$` : pattern;
@@ -61,7 +63,7 @@ index 33dd350..b01704a 100644
              }
              else {
                  requiredPattern = pattern.toString();
-@@ -7365,7 +7382,7 @@ class JsonSchemaFormService {
+@@ -7365,7 +7384,7 @@ class JsonSchemaFormService {
              //validateFormats:false,
              strict: false
          };
@@ -70,7 +72,75 @@ index 33dd350..b01704a 100644
          //Being replaced by getAjvValidator()
          this.validateFormData = null; // Compiled AJV function to validate active form's schema
          this.formValues = {}; // Internal form data (may not have correct types)
-@@ -7825,6 +7842,9 @@ class JsonSchemaFormService {
+@@ -7685,6 +7704,67 @@ class JsonSchemaFormService {
+             this.ajvRegistry[ajvInstanceName].ajvValidator = ajvValidator;
+         }
+     }
++    applyDynamicDefaults() {
++        // ajv only compiles the 'dynamicDefaults' keyword (ajv-keywords) into
++        // working code when the instance has useDefaults on, but the shared
++        // validation instance must NOT use it: validation re-runs against the
++        // formatted output data on every change, where useDefaults would both
++        // re-insert static defaults the user has cleared (returnEmptyFields)
++        // and regenerate dynamic values (e.g. uuids) on every keystroke.
++        // Instead, apply the schema once to the initial form values with a
++        // dedicated instance, so generated values land in the form controls
++        // and stay stable from then on.
++        if (!this.schema || typeof this.schema !== 'object' ||
++            !JSON.stringify(this.schema).includes('"dynamicDefaults"')) {
++            return;
++        }
++        try {
++            const schema = cloneDeep(this.schema);
++            // Match compileAjvSchema: 'ui:order' is not a valid subschema
++            if (schema.properties && Array.isArray(schema.properties['ui:order'])) {
++                schema['ui:order'] = schema.properties['ui:order'];
++                delete schema.properties['ui:order'];
++            }
++            const ajvInstance = ajvKeywords(this.createAjvInstance({ ...this.ajvOptions, useDefaults: true }), ['uniqueItemProperties', 'dynamicDefaults']);
++            if (this.formValues === null || typeof this.formValues !== 'object') {
++                this.formValues = {};
++            }
++            ajvInstance.compile(schema)(this.formValues);
++        }
++        catch (error) {
++            console.error('applyDynamicDefaults error:', error);
++        }
++    }
++    applyDynamicDefaultsToNewItem(control, dataPointer) {
++        // Companion to applyDynamicDefaults (see it for why the shared
++        // validation instance cannot do this): fills 'dynamicDefaults'
++        // (ajv-keywords) values into an item the user just added to an array.
++        // useDefaults: 'empty' because the new item's controls already exist
++        // with empty values rather than being undefined; controls with a
++        // static schema default are not empty (the template already set
++        // them), so in practice only dynamic values get written.
++        if (!this.schema || typeof this.schema !== 'object' ||
++            !JSON.stringify(this.schema).includes('"dynamicDefaults"')) {
++            return;
++        }
++        try {
++            const itemSchema = JsonPointer.get(this.schema, JsonPointer.toSchemaPointer(dataPointer, this.schema));
++            if (!itemSchema || typeof itemSchema !== 'object' ||
++                !JSON.stringify(itemSchema).includes('"dynamicDefaults"')) {
++                return;
++            }
++            const value = control.getRawValue();
++            if (value === null || typeof value !== 'object') {
++                return;
++            }
++            const ajvInstance = ajvKeywords(this.createAjvInstance({ ...this.ajvOptions, useDefaults: 'empty' }), ['uniqueItemProperties', 'dynamicDefaults']);
++            ajvInstance.compile(cloneDeep(itemSchema))(value);
++            control.patchValue(value);
++        }
++        catch (error) {
++            console.error('applyDynamicDefaults error:', error);
++        }
++    }
+     buildSchemaFromData(data, requireAllFields = false) {
+         if (data) {
+             return buildSchemaFromData(data, requireAllFields);
+@@ -7825,6 +7905,9 @@ class JsonSchemaFormService {
              }
          };
          const parentNode = parentCtxAsSignals.layoutNode();
@@ -80,7 +150,7 @@ index 33dd350..b01704a 100644
          const parentValues = this.getFormControlValue(parentCtxAsSignals);
          const isArrayItem = (parentNode.type || '').slice(-5) === 'array' && isArray(parentValues);
          const text = JsonPointer.getFirst(isArrayItem && childNode.type !== '$ref'
-@@ -7890,10 +7910,10 @@ class JsonSchemaFormService {
+@@ -7890,10 +7973,10 @@ class JsonSchemaFormService {
              const condition_nullChecks = {
                  functionBody: condition.functionBodyRaw ||
                      condition.functionBody
@@ -95,7 +165,17 @@ index 33dd350..b01704a 100644
              };
              return this.evaluateFunctionBodyCondition(condition_nullChecks, dataIndex);
          }
-@@ -8268,6 +8288,9 @@ class JsonSchemaFormService {
+@@ -8217,6 +8300,9 @@ class JsonSchemaFormService {
+         }
+         // Create a new Angular form control from a template in templateRefLibrary
+         const newFormGroup = buildFormGroup(this.templateRefLibrary[ctx.layoutNode().$ref]);
++        // Fill 'dynamicDefaults' (ajv-keywords) values into the new item
++        // before it joins the form, so they are set exactly once
++        this.applyDynamicDefaultsToNewItem(newFormGroup, ctx.layoutNode().$ref);
+         // Add the new form control to the parent formArray or formGroup
+         if (ctx.layoutNode().arrayItem) {
+             // Add new array item to formArray
+@@ -8268,6 +8354,9 @@ class JsonSchemaFormService {
              const layoutArray = this.getLayoutArray(ctx);
              layoutArray.splice(newIndex, 0, layoutArray.splice(oldIndex, 1)[0]);
          }
@@ -105,7 +185,7 @@ index 33dd350..b01704a 100644
          return true;
      }
      removeItem(ctx) {
-@@ -8288,6 +8311,11 @@ class JsonSchemaFormService {
+@@ -8288,6 +8377,11 @@ class JsonSchemaFormService {
          }
          // Remove layoutNode from layout
          JsonPointer.remove(this.layout, this.getLayoutPointer(ctx));
@@ -117,7 +197,7 @@ index 33dd350..b01704a 100644
          return true;
      }
      //TODO fix-doesnt seem to work for nested array
-@@ -8683,7 +8711,7 @@ class CheckboxComponent {
+@@ -8683,7 +8777,7 @@ class CheckboxComponent {
      static { this.ɵcmp = i0.ɵɵngDeclareComponent({ minVersion: "17.0.0", version: "21.0.2", type: CheckboxComponent, isStandalone: false, selector: "checkbox-widget", inputs: { layoutNode: { classPropertyName: "layoutNode", publicName: "layoutNode", isSignal: true, isRequired: false, transformFunction: null }, layoutIndex: { classPropertyName: "layoutIndex", publicName: "layoutIndex", isSignal: true, isRequired: false, transformFunction: null }, dataIndex: { classPropertyName: "dataIndex", publicName: "dataIndex", isSignal: true, isRequired: false, transformFunction: null } }, ngImport: i0, template: `
      <label
        [attr.for]="'control' + layoutNode()?._id"
@@ -126,7 +206,7 @@ index 33dd350..b01704a 100644
        @if (boundControl) {
          <input
            [formControl]="formControl"
-@@ -8716,6 +8744,7 @@ class CheckboxComponent {
+@@ -8716,6 +8810,7 @@ class CheckboxComponent {
            [style.display]="options?.notitle ? 'none' : ''"
          [innerHTML]="options?.title"></span>
        }
@@ -134,7 +214,7 @@ index 33dd350..b01704a 100644
      </label>`, isInline: true, dependencies: [{ kind: "directive", type: i1.CheckboxControlValueAccessor, selector: "input[type=checkbox][formControlName],input[type=checkbox][formControl],input[type=checkbox][ngModel]" }, { kind: "directive", type: i1.NgControlStatus, selector: "[formControlName],[ngModel],[formControl]" }, { kind: "directive", type: i1.FormControlDirective, selector: "[formControl]", inputs: ["formControl", "disabled", "ngModel"], outputs: ["ngModelChange"], exportAs: ["ngForm"] }] }); }
  }
  i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "21.0.2", ngImport: i0, type: CheckboxComponent, decorators: [{
-@@ -8726,7 +8755,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "21.0.2", ngImpor
+@@ -8726,7 +8821,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "21.0.2", ngImpor
                      template: `
      <label
        [attr.for]="'control' + layoutNode()?._id"
@@ -143,7 +223,7 @@ index 33dd350..b01704a 100644
        @if (boundControl) {
          <input
            [formControl]="formControl"
-@@ -8759,6 +8788,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "21.0.2", ngImpor
+@@ -8759,6 +8854,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "21.0.2", ngImpor
            [style.display]="options?.notitle ? 'none' : ''"
          [innerHTML]="options?.title"></span>
        }
@@ -151,7 +231,7 @@ index 33dd350..b01704a 100644
      </label>`,
                      standalone: false
                  }]
-@@ -8818,9 +8848,9 @@ class CheckboxesComponent {
+@@ -8818,9 +8914,9 @@ class CheckboxesComponent {
          @for (checkboxItem of checkboxList; track checkboxItem) {
            <label
              [attr.for]="'control' + layoutNode()?._id + '/' + checkboxItem.value"
@@ -163,7 +243,7 @@ index 33dd350..b01704a 100644
              <input type="checkbox"
                [attr.required]="options?.required"
                [checked]="checkboxItem.checked"
-@@ -8832,6 +8862,7 @@ class CheckboxesComponent {
+@@ -8832,6 +8928,7 @@ class CheckboxesComponent {
                [value]="checkboxItem.value"
                (change)="updateValue($event)">
                <span [innerHTML]="checkboxItem.name"></span>
@@ -171,7 +251,7 @@ index 33dd350..b01704a 100644
              </label>
            }
          </div>
-@@ -8844,20 +8875,21 @@ class CheckboxesComponent {
+@@ -8844,20 +8941,21 @@ class CheckboxesComponent {
              <div [class]="options?.htmlClass || ''">
                <label
                  [attr.for]="'control' + layoutNode()?._id + '/' + checkboxItem.value"
@@ -196,7 +276,7 @@ index 33dd350..b01704a 100644
                  </label>
                </div>
              }
-@@ -8883,9 +8915,9 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "21.0.2", ngImpor
+@@ -8883,9 +8981,9 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "21.0.2", ngImpor
          @for (checkboxItem of checkboxList; track checkboxItem) {
            <label
              [attr.for]="'control' + layoutNode()?._id + '/' + checkboxItem.value"
@@ -208,7 +288,7 @@ index 33dd350..b01704a 100644
              <input type="checkbox"
                [attr.required]="options?.required"
                [checked]="checkboxItem.checked"
-@@ -8897,6 +8929,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "21.0.2", ngImpor
+@@ -8897,6 +8995,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "21.0.2", ngImpor
                [value]="checkboxItem.value"
                (change)="updateValue($event)">
                <span [innerHTML]="checkboxItem.name"></span>
@@ -216,7 +296,7 @@ index 33dd350..b01704a 100644
              </label>
            }
          </div>
-@@ -8909,20 +8942,21 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "21.0.2", ngImpor
+@@ -8909,20 +9008,21 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "21.0.2", ngImpor
              <div [class]="options?.htmlClass || ''">
                <label
                  [attr.for]="'control' + layoutNode()?._id + '/' + checkboxItem.value"
@@ -241,7 +321,7 @@ index 33dd350..b01704a 100644
                  </label>
                </div>
              }
-@@ -9816,7 +9850,7 @@ class RadiosComponent {
+@@ -9816,7 +9916,7 @@ class RadiosComponent {
          [class]="(options?.itemLabelHtmlClass || '') +
            ((controlValue + '' === radioItem?.value + '') ?
            (' ' + (options?.activeClass || '') + ' ' + (options?.style?.selected || '')) :
@@ -250,7 +330,7 @@ index 33dd350..b01704a 100644
              <input type="radio"
                [attr.aria-describedby]="'control' + layoutNode()?._id + 'Status'"
                [attr.readonly]="options?.readonly ? 'readonly' : null"
-@@ -9845,7 +9879,7 @@ class RadiosComponent {
+@@ -9845,7 +9945,7 @@ class RadiosComponent {
            [class]="(options?.itemLabelHtmlClass || '') +
              ((controlValue + '' === radioItem?.value + '') ?
              (' ' + (options?.activeClass || '') + ' ' + (options?.style?.selected || '')) :
@@ -259,7 +339,7 @@ index 33dd350..b01704a 100644
                  <input type="radio"
                    [attr.aria-describedby]="'control' + layoutNode()?._id + 'Status'"
                    [attr.readonly]="options?.readonly ? 'readonly' : null"
-@@ -9888,7 +9922,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "21.0.2", ngImpor
+@@ -9888,7 +9988,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "21.0.2", ngImpor
          [class]="(options?.itemLabelHtmlClass || '') +
            ((controlValue + '' === radioItem?.value + '') ?
            (' ' + (options?.activeClass || '') + ' ' + (options?.style?.selected || '')) :
@@ -268,7 +348,7 @@ index 33dd350..b01704a 100644
              <input type="radio"
                [attr.aria-describedby]="'control' + layoutNode()?._id + 'Status'"
                [attr.readonly]="options?.readonly ? 'readonly' : null"
-@@ -9917,7 +9951,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "21.0.2", ngImpor
+@@ -9917,7 +10017,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "21.0.2", ngImpor
            [class]="(options?.itemLabelHtmlClass || '') +
              ((controlValue + '' === radioItem?.value + '') ?
              (' ' + (options?.activeClass || '') + ' ' + (options?.style?.selected || '')) :
@@ -277,7 +357,7 @@ index 33dd350..b01704a 100644
                  <input type="radio"
                    [attr.aria-describedby]="'control' + layoutNode()?._id + 'Status'"
                    [attr.readonly]="options?.readonly ? 'readonly' : null"
-@@ -10397,7 +10431,7 @@ class SectionComponent {
+@@ -10397,7 +10497,7 @@ class SectionComponent {
            </div>
          }
        </fieldset>
@@ -286,7 +366,7 @@ index 33dd350..b01704a 100644
  }
  i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "21.0.2", ngImport: i0, type: SectionComponent, decorators: [{
              type: Component,
-@@ -10478,7 +10512,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "21.0.2", ngImpor
+@@ -10478,7 +10578,7 @@ i0.ɵɵngDeclareClassMetadata({ minVersion: "12.0.0", version: "21.0.2", ngImpor
            </div>
          }
        </fieldset>
@@ -295,7 +375,7 @@ index 33dd350..b01704a 100644
          }], propDecorators: { layoutNode: [{ type: i0.Input, args: [{ isSignal: true, alias: "layoutNode", required: false }] }], layoutIndex: [{ type: i0.Input, args: [{ isSignal: true, alias: "layoutIndex", required: false }] }], dataIndex: [{ type: i0.Input, args: [{ isSignal: true, alias: "dataIndex", required: false }] }] } });
  
  class SelectComponent {
-@@ -10501,6 +10535,16 @@ class SelectComponent {
+@@ -10501,6 +10601,16 @@ class SelectComponent {
          //as either a grouped select or a flat select
          this.selectListFlatGroup = buildTitleMap(this.options.titleMap || this.options.enumNames, this.options.enum, !!this.options.required, true);
          this.jsf.initializeControl(this);
@@ -312,3 +392,13 @@ index 33dd350..b01704a 100644
      }
      deselectAll() {
          this.selectListFlatGroup.forEach(selItem => {
+@@ -12480,6 +12590,9 @@ class JsonSchemaFormComponent {
+             // If not already initialized, initialize ajv and compile schema
+             //this.jsf.compileAjvSchema();
+             //moved to initializeAjv()
++            // Fill 'dynamicDefaults' (ajv-keywords) into the initial form
++            // values before the layout and FormGroup are built from them
++            this.jsf.applyDynamicDefaults();
+             // Update all layout elements, add values, widgets, and validators,
+             // replace any '*' with a layout built from all schema elements,
+             // and update the FormGroup template with any new validators

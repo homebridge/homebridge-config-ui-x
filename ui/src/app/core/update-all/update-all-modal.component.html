@@ -19,7 +19,7 @@
         <i class="fas fa-arrow-alt-circle-up primary-text icon-xl" aria-hidden="true"></i>
       </div>
 
-      @if (phase() === 'plan' && plan().items.length === 0) {
+      @if (phase() === 'plan' && rows().length === 0) {
         <p class="text-center grey-text my-3">{{ 'update_all.empty' | translate }}</p>
       } @else {
         <!--
@@ -30,19 +30,23 @@
         <ul class="mb-3">
           <li>{{ 'update_all.description' | translate }}</li>
           <li>{{ 'update_all.description_2' | translate }}</li>
-          @if (restartPlan().homebridge && restartPlan().ui) {
+          <!--
+            Exactly one line, always, picked by the widest restart the selection
+            calls for. The three scopes contain each other - restarting the UI
+            takes the whole service down with it, which restarts Homebridge,
+            which restarts every child bridge - so only the widest is worth
+            saying, and the list never changes height.
+          -->
+          @if (restartPlan().ui) {
             <li>{{ 'update_all.restart_homebridge_and_ui' | translate }}</li>
           } @else if (restartPlan().homebridge) {
             <li>{{ 'update_all.restart_homebridge' | translate }}</li>
+          } @else if (restartPlan().childBridgeCount === 1) {
+            <li>{{ 'update_all.restart_child_bridges_one' | translate }}</li>
+          } @else if (restartPlan().childBridgeCount > 1) {
+            <li>{{ 'update_all.restart_child_bridges' | translate: { count: restartPlan().childBridgeCount } }}</li>
           } @else {
-            @if (restartPlan().ui) {
-              <li>{{ 'update_all.restart_ui' | translate }}</li>
-            }
-            @if (restartPlan().childBridgeCount === 1) {
-              <li>{{ 'update_all.restart_child_bridges_one' | translate }}</li>
-            } @else if (restartPlan().childBridgeCount > 1) {
-              <li>{{ 'update_all.restart_child_bridges' | translate: { count: restartPlan().childBridgeCount } }}</li>
-            }
+            <li>{{ 'update_all.restart_none' | translate }}</li>
           }
         </ul>
 
@@ -53,29 +57,30 @@
         <ul class="list-group list-group-box mb-0" role="status" aria-live="polite">
           @for (item of rows(); track item.name) {
             <li class="list-group-item d-flex justify-content-between align-items-center flex-row pb-2">
+              @let line = rowLine(item);
               <app-update-all-item-row
                 class="d-flex flex-grow-1"
                 [displayName]="item.displayName || item.name"
                 [icon]="item.icon"
-                [from]="item.from"
-                [to]="item.to"
+                [note]="line.key | translate: line.params"
               />
               @let icon = rowIcon(item);
-              @if (phase() === 'plan' || item.excluded) {
+              @if (isSelectable(item) || item.excluded || item.needsReview) {
                 <!--
-                  An unticked item keeps its toggle once the run starts, disabled -
-                  it stays in the list so nothing moves, and the toggle says plainly
-                  that it is not part of this run.
+                  A row that is not part of the run keeps its toggle, disabled -
+                  it stays in the list so nothing moves, and the toggle says
+                  plainly that it is not included. A major jump is never
+                  selectable at all, and says why under its versions.
                 -->
                 <div class="text-end grey-text d-flex align-items-center">
                   <input
                     type="checkbox"
                     class="rendux-input"
                     [id]="`update-all-item-${item.name}`"
-                    [checked]="isTicked(item.name)"
-                    [disabled]="phase() !== 'plan'"
+                    [checked]="!item.needsReview && isTicked(item.name)"
+                    [disabled]="!isSelectable(item)"
                     [attr.aria-label]="
-                      phase() === 'plan'
+                      isSelectable(item)
                         ? item.displayName || item.name
                         : `${item.displayName || item.name}: ${('update_all.status_excluded' | translate)}`
                     "
@@ -102,44 +107,6 @@
       }
 
       @if (phase() === 'plan') {
-        @if (hasNeedsReview()) {
-          <button
-            type="button"
-            class="btn btn-link p-0 text-decoration-none primary-text small d-block mt-3"
-            aria-controls="update-all-needs-review"
-            [attr.aria-expanded]="showNeedsReview()"
-            (click)="showNeedsReview.set(!showNeedsReview())"
-          >
-            <i class="fas fa-chevron-down me-1" aria-hidden="true" [class.fa-rotate-180]="showNeedsReview()"></i>
-            {{ 'update_all.label_needs_review' | translate: { count: plan().needsReview.length } }}
-          </button>
-          @if (showNeedsReview()) {
-            <ul id="update-all-needs-review" class="list-group list-group-box mt-2 mb-0">
-              @for (item of plan().needsReview; track item.name) {
-                <li class="list-group-item d-flex align-items-center flex-row pb-2">
-                  <img
-                    alt=""
-                    aria-hidden="true"
-                    class="plugin-icon-small me-3 flex-shrink-0"
-                    [src]="item.icon || defaultIcon"
-                    (error)="handleIconError(item)"
-                  />
-                  <div class="text-start">
-                    {{ item.displayName || item.name }}
-                    <br />
-                    <small class="grey-text">
-                      v{{ item.from }}
-                      <i class="fas fa-arrow-right mx-1" aria-hidden="true"></i>
-                      v{{ item.to }}
-                      &middot;
-                      {{ 'update_all.reason_major' | translate }}
-                    </small>
-                  </div>
-                </li>
-              }
-            </ul>
-          }
-        }
         @if (hasSkipped()) {
           <button
             type="button"
@@ -173,14 +140,6 @@
           }
         }
       } @else {
-        @if (failureReasons().length > 0) {
-          <ul class="mt-3 mb-0 small grey-text">
-            @for (failure of failureReasons(); track failure.name) {
-              <li>{{ failure.displayName }}: {{ failure.reason }}</li>
-            }
-          </ul>
-        }
-
         @if (phase() === 'progress') {
           <div
             id="update-all-log-output"
@@ -240,7 +199,13 @@
       }
     </div>
     <div class="text-end">
-      @if (phase() === 'plan' && plan().items.length > 0) {
+      <!--
+        Shown for the whole plan phase, disabled when there is nothing to run -
+        including when every update is a major, which cannot be selected. The
+        footer keeps one shape, and a disabled button says why you cannot go on
+        where a missing one says nothing at all.
+      -->
+      @if (phase() === 'plan') {
         <button
           type="button"
           class="btn btn-primary"

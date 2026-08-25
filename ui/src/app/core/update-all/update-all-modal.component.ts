@@ -12,14 +12,18 @@ import { IoNamespace, WsService } from '@/app/core/communication/ws.service'
 import { ChildBridgeIconSource, ChildBridgeStatusIconsComponent } from '@/app/core/components/child-bridge-status-icons/child-bridge-status-icons.component'
 import { SettingsService } from '@/app/core/ui/settings.service'
 import { UpdateAllItemRowComponent } from '@/app/core/update-all/update-all-item-row.component'
-import { UPDATE_ALL_MODAL_DATA, UpdateAllItemStatus, UpdateAllJournal, UpdateAllJournalItem, UpdateAllPlan, UpdateAllPlanItem, UpdateAllSnapshot } from '@/app/core/update-all/update-all.interfaces'
+import { UPDATE_ALL_MODAL_DATA, UpdateAllExclusionReason, UpdateAllItemStatus, UpdateAllJournal, UpdateAllJournalItem, UpdateAllPlan, UpdateAllPlanItem, UpdateAllSnapshot } from '@/app/core/update-all/update-all.interfaces'
 import { HttpErrorService } from '@/app/core/utilities/http-error.service'
 import { TERMINAL_FACTORY } from '@/app/core/utilities/terminal.factory'
 
-/** A row on screen: a journal item, or a plan item the user left unticked */
+/** A row on screen: a journal item, or a plan item that is not part of the run */
 interface UpdateAllRow extends UpdateAllJournalItem {
   /** Unticked before the run, so it is shown with a disabled toggle rather than a status */
   excluded?: boolean
+  /** A major jump: in the list so it can be seen, but never selectable */
+  needsReview?: boolean
+  /** Why it needs review, rendered under the versions */
+  reviewReason?: UpdateAllExclusionReason
 }
 
 /**
@@ -81,22 +85,24 @@ export class UpdateAllModalComponent implements OnInit, OnDestroy {
   public readonly defaultIcon = 'assets/hb-icon.png'
   public readonly starting = signal(false)
   public readonly plan = signal<UpdateAllPlan>({ items: [], needsReview: [], skipped: [] })
-  public readonly showNeedsReview = signal(false)
   public readonly showSkipped = signal(false)
 
   // Names the user has unticked - everything in the plan is ticked by default
   private readonly unticked = signal<ReadonlySet<string>>(new Set())
 
   public readonly selectedCount = computed(() => this.plan().items.filter(x => !this.unticked().has(x.name)).length)
-  public readonly hasNeedsReview = computed(() => this.plan().needsReview.length > 0)
   public readonly hasSkipped = computed(() => this.plan().skipped.length > 0)
 
   /**
    * What the finale will restart for the CURRENT selection, mirroring its
    * rules: Homebridge itself or any main-bridge plugin -> one Homebridge
    * restart (which covers every child bridge, so none are counted then);
-   * otherwise just the child bridges of the selected plugins. The UI
-   * restarting itself is independent of both.
+   * otherwise just the child bridges of the selected plugins.
+   *
+   * ⚠️ The three are nested, widest first: the UI restarting itself ends the
+   * process that hosts it, and in a service install that process is also
+   * Homebridge's parent - so Homebridge comes back too, and with it every child
+   * bridge. The summary line therefore only names the widest one.
    */
   public readonly restartPlan = computed(() => {
     // While the run is on, anything already failed or skipped will not restart
@@ -104,7 +110,7 @@ export class UpdateAllModalComponent implements OnInit, OnDestroy {
     // finale will do with the same information.
     const selected = this.phase() === 'plan'
       ? this.plan().items.filter(x => !this.unticked().has(x.name))
-      : this.rows().filter(x => !x.excluded && x.status !== 'failed' && x.status !== 'skipped')
+      : this.rows().filter(x => !x.excluded && !x.needsReview && x.status !== 'failed' && x.status !== 'skipped')
     const ui = selected.some(x => x.type === 'ui')
     const homebridge = selected.some(x => x.type === 'homebridge'
       || (x.type === 'plugin' && (x.childBridgeUsernames?.length ?? 0) === 0))
@@ -122,8 +128,19 @@ export class UpdateAllModalComponent implements OnInit, OnDestroy {
    */
   public readonly rows = computed<UpdateAllRow[]>(() => {
     const planItems = this.plan().items
+
+    // Majors sit in the same list rather than a section of their own, so the
+    // user can see them without going looking. They are never part of a run,
+    // so they carry a disabled toggle in every phase and say why underneath.
+    const reviewRows: UpdateAllRow[] = this.plan().needsReview.map(({ reason, ...item }) => ({
+      ...item,
+      status: 'planned' as const,
+      needsReview: true,
+      reviewReason: reason,
+    }))
+
     if (this.phase() === 'plan') {
-      return planItems.map(x => ({ ...x, status: 'planned' as const }))
+      return [...planItems.map(x => ({ ...x, status: 'planned' as const })), ...reviewRows]
     }
 
     // Once running, the plan's order is what keeps every row where the user last
@@ -135,8 +152,79 @@ export class UpdateAllModalComponent implements OnInit, OnDestroy {
       return journal?.items ?? []
     }
     const byName = new Map((journal?.items ?? []).map(x => [x.name, x]))
-    return planItems.map(x => byName.get(x.name) ?? { ...x, status: 'planned' as const, excluded: this.unticked().has(x.name) })
+    return [
+      ...planItems.map(x => byName.get(x.name) ?? { ...x, status: 'planned' as const, excluded: this.unticked().has(x.name) }),
+      ...reviewRows,
+    ]
   })
+
+  /**
+   * The third line of a row, saying what is happening to that item at this
+   * moment - it will be updated, it will not, it is updating, it failed and
+   * why, it is done.
+   *
+   * Every state has a line, deliberately: a row that sometimes has three lines
+   * and sometimes two would change height as the run moves, which is the thing
+   * this modal works hardest to avoid. A major jump keeps its own reason here
+   * instead, since that says both what will happen and why.
+   *
+   * Returns the i18n key and its values - the template translates it.
+   * @param item - the row being rendered
+   */
+  public rowLine(item: UpdateAllRow): { key: string, params: Record<string, string> } {
+    const plugin = item.displayName || item.name
+    // The strings end in a full stop of their own, and a reason may or may not
+    // - every one the run writes itself does, an npm error is anyone's guess -
+    // so take a trailing one off rather than render "..".
+    const reason = item.reason?.replace(/\.\s*$/, '')
+
+    // Its own line rather than a status: it says both what would happen and why
+    // it is not on offer, so a "will not be updated" line on top would be noise
+    if (item.needsReview) {
+      return { key: `update_all.line_${item.reviewReason}`, params: { plugin, from: item.from, to: item.to } }
+    }
+
+    // Unticked, whether that is still a choice (plan) or already settled (run)
+    if (item.excluded || (this.phase() === 'plan' && !this.isTicked(item.name))) {
+      return { key: 'update_all.line_excluded', params: { plugin } }
+    }
+
+    // The child bridges coming back is the last thing to happen to a row, so it
+    // outranks the item's own status, exactly as the icon does
+    switch (this.restartStatusFor(item)) {
+      case 'restarting':
+        return { key: 'update_all.line_restarting', params: { plugin, to: item.to } }
+      case 'restarted':
+        return { key: 'update_all.line_restarted', params: { plugin, to: item.to } }
+    }
+
+    switch (this.displayStatus(item.status)) {
+      case 'running':
+        return { key: 'update_all.line_running', params: { plugin, to: item.to } }
+      case 'ok':
+        return { key: 'update_all.line_ok', params: { plugin, to: item.to } }
+      case 'failed':
+        return reason
+          ? { key: 'update_all.line_failed', params: { plugin, reason } }
+          : { key: 'update_all.line_failed_plain', params: { plugin } }
+      case 'skipped':
+        return reason
+          ? { key: 'update_all.line_skipped', params: { plugin, reason } }
+          : { key: 'update_all.line_skipped_plain', params: { plugin } }
+      case 'incomplete':
+        return { key: 'update_all.line_incomplete', params: { plugin } }
+      default:
+        // The only line that names the versions - the row has no separate
+        // version line any more, and once a run is under way what matters is
+        // what is happening, not what it is moving between
+        return { key: 'update_all.line_planned', params: { plugin, from: item.from, to: item.to } }
+    }
+  }
+
+  /** Whether this row's toggle can still be changed */
+  public isSelectable(item: UpdateAllRow): boolean {
+    return this.phase() === 'plan' && !item.needsReview
+  }
 
   // ---- run phases ----
   public readonly journal = signal<UpdateAllJournal | null>(null)
@@ -156,10 +244,6 @@ export class UpdateAllModalComponent implements OnInit, OnDestroy {
   public readonly watchingBridges = computed(() => this.restartingBridges().length > 0)
 
   /** Failure reasons, listed under the rows rather than squeezed into them */
-  public readonly failureReasons = computed(() => (this.journal()?.items ?? [])
-    .filter(x => x.status === 'failed' && x.reason)
-    .map(x => ({ name: x.name, displayName: x.displayName || x.name, reason: x.reason! })))
-
   public get isLightTerminalTheme(): boolean {
     return this.$settings.getEffectiveTerminalLightingMode() === 'light'
   }
@@ -272,7 +356,9 @@ export class UpdateAllModalComponent implements OnInit, OnDestroy {
         // the terminal pane only exists once the progress branch has rendered
         setTimeout(() => this.initTerminal(), 0)
       } else {
-        await this.showSummary()
+        // The run was already over when we attached, so any restart it called
+        // for has long since happened - show what it did, do not hand over
+        await this.showSummary(false)
       }
     } catch (error: any) {
       console.error(error)
@@ -295,7 +381,7 @@ export class UpdateAllModalComponent implements OnInit, OnDestroy {
     on('item-start', (payload: { name: string }) => this.setItemStatus(payload.name, 'running'))
     on('item-result', (payload: { name: string, status: UpdateAllItemStatus }) => this.setItemStatus(payload.name, payload.status))
     on('stdout', (payload: { name: string, data: string }) => this.term?.write(payload.data))
-    on('run-complete', () => void this.showSummary())
+    on('run-complete', () => void this.showSummary(true))
     // While the UI updates itself the server goes away for a few seconds -
     // say so instead of appearing frozen. The reconnect re-subscribes above.
     on('disconnect', () => this.disconnected.set(true))
@@ -329,8 +415,20 @@ export class UpdateAllModalComponent implements OnInit, OnDestroy {
     return usernames.every(x => done.includes(x)) ? 'restarted' : 'restarting'
   }
 
-  /** Re-read the journal from disk for the final statuses and restart outcomes */
-  private async showSummary(): Promise<void> {
+  /**
+   * Re-read the journal from disk for the final statuses and restart outcomes.
+   *
+   * ⚠️ `handOver` is what stops the restart page reappearing days later. The
+   * journal records what a run *asked for* - "a UI restart was scheduled" - and
+   * never that it happened, so on re-reading there is no way to tell "going
+   * down now" from "went down yesterday". Only a run this modal watched finish
+   * is handed over; one that was already over when we attached goes straight to
+   * the summary, which is also the only path that acknowledges the journal.
+   * Without that, the summary was never acknowledged, so every page load for
+   * the next 24 hours reopened this and bounced the user to /restart.
+   * @param handOver - true only when this modal saw the run complete
+   */
+  private async showSummary(handOver: boolean): Promise<void> {
     let journal = this.journal()
     try {
       const fresh = await this.$api.get<UpdateAllJournal | null>('/update-all/journal')
@@ -348,7 +446,7 @@ export class UpdateAllModalComponent implements OnInit, OnDestroy {
     const restart = journal?.restart
     const homebridgeRestarting = restart?.homebridge === 'done' || restart?.homebridge === 'failed'
     const uiRestarting = restart?.ui === 'scheduled'
-    if (homebridgeRestarting || uiRestarting) {
+    if (handOver && (homebridgeRestarting || uiRestarting)) {
       this.$activeModal.close()
       void this.$router.navigate(['/restart'], {
         queryParams: {
@@ -468,28 +566,31 @@ export class UpdateAllModalComponent implements OnInit, OnDestroy {
    * The single icon a row shows on the right once the run is under way. The
    * label is not rendered - it is the accessible name and the tooltip, so the
    * rows stay narrow without the state becoming mouse-only.
+   *
+   * `fa-xl` to match the plugin rows in the Node.js update modal, which show
+   * the same ticks and crosses at the same place in a list of the same shape.
    */
   public rowIcon(item: UpdateAllRow): { classes: string, label: string } {
     switch (this.restartStatusFor(item)) {
       case 'restarting':
-        return { classes: 'fas fa-lg fa-circle-notch fa-spin grey-text', label: 'status.services.label_restarting' }
+        return { classes: 'fas fa-xl fa-circle-notch fa-spin grey-text', label: 'status.services.label_restarting' }
       case 'restarted':
-        return { classes: 'fas fa-lg fa-check-circle green-text', label: 'update_all.status_restarted' }
+        return { classes: 'fas fa-xl fa-check-circle green-text', label: 'update_all.status_restarted' }
     }
 
     switch (this.displayStatus(item.status)) {
       case 'running':
-        return { classes: 'fas fa-lg fa-circle-notch fa-spin grey-text', label: 'update_all.status_running' }
+        return { classes: 'fas fa-xl fa-circle-notch fa-spin grey-text', label: 'update_all.status_running' }
       case 'ok':
-        return { classes: 'fas fa-lg fa-check-circle green-text', label: 'update_all.status_ok' }
+        return { classes: 'fas fa-xl fa-check-circle green-text', label: 'update_all.status_ok' }
       case 'failed':
-        return { classes: 'fas fa-lg fa-times-circle red-text', label: 'update_all.status_failed' }
+        return { classes: 'fas fa-xl fa-times-circle red-text', label: 'update_all.status_failed' }
       case 'skipped':
-        return { classes: 'fas fa-lg fa-minus-circle grey-text', label: 'update_all.status_skipped' }
+        return { classes: 'fas fa-xl fa-minus-circle grey-text', label: 'update_all.status_skipped' }
       case 'incomplete':
-        return { classes: 'fas fa-lg fa-minus-circle grey-text', label: 'update_all.status_incomplete' }
+        return { classes: 'fas fa-xl fa-minus-circle grey-text', label: 'update_all.status_incomplete' }
       default:
-        return { classes: 'far fa-lg fa-circle grey-text', label: 'update_all.status_planned' }
+        return { classes: 'far fa-xl fa-circle grey-text', label: 'update_all.status_planned' }
     }
   }
 

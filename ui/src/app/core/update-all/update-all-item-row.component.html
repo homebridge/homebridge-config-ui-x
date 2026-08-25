@@ -8,11 +8,9 @@
   />
   <div>
     {{ displayName() }}
-    <br />
-    <small class="grey-text">
-      v{{ from() }}
-      <i class="fas fa-arrow-right mx-1" aria-hidden="true"></i>
-      v{{ to() }}
-    </small>
+    @if (note()) {
+      <br />
+      <small class="grey-text">{{ note() }}</small>
+    }
   </div>
 </div>
