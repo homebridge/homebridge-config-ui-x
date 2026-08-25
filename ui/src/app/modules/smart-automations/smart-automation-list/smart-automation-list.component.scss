@@ -1,0 +1,48 @@
+.automation-list-card {
+  overflow: hidden;
+}
+
+.automation-empty {
+  padding: 3rem 1.25rem;
+  border: 1px dashed rgba(0, 0, 0, 0.14);
+  border-radius: 0.6rem;
+
+  > i {
+    color: var(--primary-color, #ff8c00);
+    font-size: 1.75rem;
+    opacity: 0.75;
+  }
+}
+
+.automation-items {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.automation-item {
+  padding: 1rem;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 0.6rem;
+  background: rgba(0, 0, 0, 0.015);
+}
+
+.automation-type-icon {
+  display: grid;
+  place-items: center;
+  flex: 0 0 2.25rem;
+  width: 2.25rem;
+  height: 2.25rem;
+  border-radius: 0.5rem;
+  color: var(--primary-color, #ff8c00);
+  background: rgba(255, 140, 0, 0.12);
+}
+
+.min-width-0 {
+  min-width: 0;
+}
+
+.automation-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+}

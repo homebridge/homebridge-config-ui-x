@@ -1,0 +1,35 @@
+# Smart Automation Major Release Plan
+
+This roadmap defines a phased delivery plan for Smart Automation in Homebridge UI.
+
+## Feature Track Branch
+
+- Use `alpha-6.0.0` as the dedicated branch for Smart Automation feature development.
+
+## MVP 1: Foundation + Smart Light Group Automation
+
+- Add an automation engine service for scheduled and event-driven triggers.
+- Add an "Automations (Alpha)" management view for create, enable, disable, and delete actions.
+- Add execution history logs for troubleshooting and support.
+- Add smart light group automation with "restore previous light state" behavior after temporary overrides.
+
+## MVP 2: Security System + Rule Safety
+
+- Add built-in security system automations.
+- Add conflict validation and safety guardrails for overlapping rules.
+- Add rule validation feedback in the automation editor before save.
+
+## MVP 3: Advanced Extensions
+
+- Add composable conditions (presence, time windows, and accessory state).
+- Add reusable action sets and grouped automation workflows to extend Home app behavior.
+- Add import/export plus staged rollout controls for safer deployment at scale.
+
+## Future Features
+
+- Add smart automation support for Matter devices.
+- Add smart automation support for HomeKit devices.
+
+## End Target
+
+- Deliver a leading-edge automation system that extends Home app automations with safe, transparent, and reversible behavior for end users.

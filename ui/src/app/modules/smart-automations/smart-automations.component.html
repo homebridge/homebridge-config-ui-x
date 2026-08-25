@@ -1,0 +1,54 @@
+<div class="smart-automation-page">
+  <div class="smart-automation-hero mb-4">
+    <div class="smart-automation-hero-icon" aria-hidden="true">
+      <i class="fas fa-wand-magic-sparkles"></i>
+    </div>
+    <div class="flex-grow-1">
+      <h3 class="primary-text mb-1">Smart Automation</h3>
+      <p class="text-muted mb-0">
+        Create intelligent automations that monitor accessories, evaluate conditions, and control your Homebridge
+        devices.
+      </p>
+    </div>
+    <div class="automation-count">
+      <strong>{{ smartAutomations().length }}</strong>
+      <span>{{ smartAutomations().length === 1 ? 'automation' : 'automations' }}</span>
+    </div>
+    <div class="debug-toggle form-check form-switch mb-0">
+      <input
+        id="smart-automation-debug"
+        type="checkbox"
+        class="form-check-input"
+        [checked]="debugEnabled()"
+        [disabled]="!isAdmin"
+        (change)="onDebugLoggingChange($event)"
+      />
+      <label class="form-check-label" for="smart-automation-debug">
+        Debug logging
+        <small class="text-muted d-block">Applies after restart</small>
+      </label>
+    </div>
+  </div>
+
+  <div class="row g-3 align-items-start">
+    <div class="col-xl-4 col-lg-5">
+      <app-smart-automation-list
+        [automations]="smartAutomations()"
+        (setEnabled)="setSmartAutomationEnabled($event.automation, $event.enabled)"
+        (edit)="editSmartAutomation($event)"
+        (delete)="deleteSmartAutomation($event)"
+      />
+    </div>
+    <div class="col-xl-8 col-lg-7">
+      <app-smart-automation-form
+        [draft]="smartAutomationDraft"
+        [rooms]="rooms"
+        [selectedLightUniqueIds]="selectedLightUniqueIds()"
+        [selectedTargetUniqueId]="selectedTargetUniqueId()"
+        (automationTypeChange)="onAutomationTypeChange($event)"
+        (lightSelectionChange)="toggleLightSelection($event.uniqueId, $event.selected, $event.single, $event.target)"
+        (save)="saveSmartAutomation()"
+      />
+    </div>
+  </div>
+</div>

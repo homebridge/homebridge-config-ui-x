@@ -1,0 +1,98 @@
+<div class="card automation-list-card">
+  <div class="card-body">
+    <div class="d-flex align-items-center justify-content-between mb-3">
+      <div>
+        <h5 class="card-title mb-1">Your automations</h5>
+        <small class="text-muted">Manage the lights published by the engine.</small>
+      </div>
+    </div>
+
+    @if (!automations().length) {
+      <div class="automation-empty text-center">
+        <i class="fas fa-wand-magic-sparkles mb-3" aria-hidden="true"></i>
+        <h6>No automations yet</h6>
+        <p class="text-muted small mb-0">Configure your first Smart Light Group using the editor.</p>
+      </div>
+    } @else {
+      <div class="automation-items">
+        @for (automation of automations(); track automation.id) {
+          <div class="automation-item">
+            <div class="d-flex align-items-start gap-3">
+              <div class="automation-type-icon" aria-hidden="true">
+                <i
+                  class="fas"
+                  [class.fa-lightbulb]="automation.type === 'smart-light-group'"
+                  [class.fa-door-open]="automation.type === 'door-ajar'"
+                  [class.fa-droplet]="automation.type === 'humidity-control'"
+                  [class.fa-temperature-half]="automation.type === 'average-temperature'"
+                ></i>
+              </div>
+              <div class="flex-grow-1 min-width-0">
+                <div class="d-flex align-items-center justify-content-between gap-2 mb-1">
+                  <h6 class="mb-0 text-truncate">{{ automation.name }}</h6>
+                  <span
+                    class="badge"
+                    [class.bg-success]="automation.enabled"
+                    [class.bg-secondary]="!automation.enabled"
+                  >
+                    {{ automation.enabled ? 'Enabled' : 'Disabled' }}
+                  </span>
+                </div>
+                @if (automation.type === 'door-ajar') {
+                  <small class="text-muted d-block">
+                    Door Left Ajar &middot; alerts after {{ automation.openMinutes ?? 5 }}
+                    {{ (automation.openMinutes ?? 5) === 1 ? 'minute' : 'minutes' }} &middot; repeats every
+                    {{ automation.repeatMinutes ?? 5 }}
+                    {{ (automation.repeatMinutes ?? 5) === 1 ? 'minute' : 'minutes' }}
+                  </small>
+                } @else if (automation.type === 'humidity-control') {
+                  <small class="text-muted d-block">
+                    Humidity-controlled AC &middot; on above {{ automation.onHumidity ?? 60 }}% &middot; off below
+                    {{ automation.offHumidity ?? 50 }}%
+                  </small>
+                } @else if (automation.type === 'average-temperature') {
+                  <small class="text-muted d-block">
+                    Average Temperature &middot; {{ automation.uniqueIds.length }}
+                    {{ automation.uniqueIds.length === 1 ? 'sensor' : 'sensors' }}
+                  </small>
+                } @else {
+                  <small class="text-muted d-block">
+                    Smart Light Group &middot; {{ getLightbulbTypeLabel(automation.lightbulbType) }} &middot;
+                    {{ automation.uniqueIds.length }}
+                    {{ automation.uniqueIds.length === 1 ? 'light' : 'lights' }}
+                  </small>
+                }
+                <div class="automation-actions mt-3">
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-elegant"
+                    (click)="setEnabled.emit({ automation, enabled: !automation.enabled })"
+                  >
+                    <i
+                      class="fas"
+                      aria-hidden="true"
+                      [class.fa-pause]="automation.enabled"
+                      [class.fa-play]="!automation.enabled"
+                    ></i>
+                    {{ automation.enabled ? 'Disable' : 'Enable' }}
+                  </button>
+                  <button type="button" class="btn btn-sm btn-elegant" (click)="edit.emit(automation)">
+                    <i class="fas fa-pencil" aria-hidden="true"></i> Edit
+                  </button>
+                  <button
+                    type="button"
+                    class="btn btn-sm btn-outline-danger"
+                    [attr.aria-label]="`Delete ${automation.name}`"
+                    (click)="delete.emit(automation.id)"
+                  >
+                    <i class="fas fa-trash" aria-hidden="true"></i>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        }
+      </div>
+    }
+  </div>
+</div>
