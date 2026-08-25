@@ -7,6 +7,8 @@ import process from 'node:process'
 import { Command } from 'commander'
 import { satisfies } from 'semver'
 
+import { SmartAutomationPlatform } from './smart-automation/smart-automation.platform.js'
+
 let homebridge: any
 
 class HomebridgeUi {
@@ -44,5 +46,6 @@ class HomebridgeUi {
 export default (api) => {
   homebridge = api
   homebridge.registerPlatform('homebridge-config-ui-x', 'config', HomebridgeUi)
+  homebridge.registerPlatform('homebridge-config-ui-x', 'smart-automation', SmartAutomationPlatform)
   process.on('disconnect', () => process.exit())
 }

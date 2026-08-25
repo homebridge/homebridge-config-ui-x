@@ -126,6 +126,9 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
     }
 
     void this.$accessories.start()
+      .catch((error) => {
+        console.error(error)
+      })
 
     // Set up WebSocket connections to get custom bridge names
     this.setupBridgeNameMapping()

@@ -90,6 +90,10 @@ The [Homebridge Plugin Template](https://github.com/homebridge/homebridge-plugin
 
 There are many existing plugins you can study; you might start with the [Homebridge Example Plugins](https://github.com/homebridge/homebridge-examples) or a plugin that already implements the device type you need.
 
+## Smart Automation Roadmap
+
+For the dedicated Smart Automation plan and milestone scope, see [`ROADMAP`](ROADMAP).
+
 ## Community
 
 The official Homebridge Discord server and Reddit community are where users can discuss Homebridge and ask for help.
