@@ -187,6 +187,24 @@ function installLocation(): void {
 }
 
 /**
+ * A deterministic FileReader for image-preview tests.
+ *
+ * jsdom's FileReader currently passes a cross-realm byte array to its base64
+ * dependency under newer Node versions, which throws after the test has
+ * already completed. Browser encoding itself is not what these component
+ * tests exercise, so a tiny valid data URL is the useful boundary here.
+ */
+class FakeFileReader {
+  public result: string | null = null
+  public onload: ((event: { target: FakeFileReader }) => void) | null = null
+
+  public readAsDataURL(file: File): void {
+    this.result = `data:${file.type || 'application/octet-stream'};base64,eA==`
+    this.onload?.({ target: this })
+  }
+}
+
+/**
  * Install every browser stub. Called once by the global setup file.
  */
 export function installBrowserStubs(): void {
@@ -195,6 +213,7 @@ export function installBrowserStubs(): void {
   define(window, 'scrollTo', windowScrollTo)
   define(Element.prototype, 'scrollIntoView', scrollIntoView)
   define(HTMLCanvasElement.prototype, 'getContext', vi.fn(() => fakeCanvasContext()))
+  define(window, 'FileReader', FakeFileReader)
 
   installLocation()
 
