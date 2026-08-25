@@ -71,6 +71,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - test(ui): inject the terminal, file saver and socket so the specs stop relying on module mocks
 - chore(dev): restart the watch server when the ui updates itself
 - fix(ui): keep retrying the first settings load instead of showing a blank page
+- fix(accessories): write onOff as well when a matter light is turned on through a level write
 
 ### Homebridge Dependencies
 

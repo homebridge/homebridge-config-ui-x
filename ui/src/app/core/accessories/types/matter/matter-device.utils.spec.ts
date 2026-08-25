@@ -222,12 +222,17 @@ describe('matter-device.utils', () => {
       expect(service.writes).toEqual([{ cluster: 'onOff', attributes: { onOff: false } }])
     })
 
-    it('turns a dimmable light back on at its previous level', async () => {
+    it('turns a dimmable light back on at its previous level, writing onOff as well', async () => {
+      // A raw level write does not run Matter's on/off coupling, so without
+      // the onOff write the tile never reads as on and can never turn off
       const service = device({ onOff: { onOff: false }, levelControl: { currentLevel: 200 } })
 
       await toggleDimmableLight(service)
 
-      expect(service.writes).toEqual([{ cluster: 'levelControl', attributes: { currentLevel: 200 } }])
+      expect(service.writes).toEqual([
+        { cluster: 'levelControl', attributes: { currentLevel: 200 } },
+        { cluster: 'onOff', attributes: { onOff: true } },
+      ])
     })
 
     it('turns a light stored at level zero on at full brightness', async () => {
@@ -235,7 +240,10 @@ describe('matter-device.utils', () => {
 
       await toggleDimmableLight(service)
 
-      expect(service.writes).toEqual([{ cluster: 'levelControl', attributes: { currentLevel: 254 } }])
+      expect(service.writes).toEqual([
+        { cluster: 'levelControl', attributes: { currentLevel: 254 } },
+        { cluster: 'onOff', attributes: { onOff: true } },
+      ])
     })
   })
 
@@ -874,12 +882,17 @@ describe('matter-device.utils', () => {
       expect(service.writes).toEqual([{ cluster: 'onOff', attributes: { onOff: false } }])
     })
 
-    it('turns a light on at the level it was last on at', async () => {
+    it('turns a light on at the level it was last on at, writing onOff as well', async () => {
+      // A raw level write does not run Matter's on/off coupling, so without
+      // the onOff write the tile never reads as on and can never turn off
       const service = light({ on: false, level: 60 })
 
       await toggleDimmableLight(service)
 
-      expect(service.writes).toEqual([{ cluster: 'levelControl', attributes: { currentLevel: 60 } }])
+      expect(service.writes).toEqual([
+        { cluster: 'levelControl', attributes: { currentLevel: 60 } },
+        { cluster: 'onOff', attributes: { onOff: true } },
+      ])
     })
 
     it('turns a light left at zero on at full brightness', async () => {
@@ -888,7 +901,10 @@ describe('matter-device.utils', () => {
 
       await toggleDimmableLight(service)
 
-      expect(service.writes).toEqual([{ cluster: 'levelControl', attributes: { currentLevel: 254 } }])
+      expect(service.writes).toEqual([
+        { cluster: 'levelControl', attributes: { currentLevel: 254 } },
+        { cluster: 'onOff', attributes: { onOff: true } },
+      ])
     })
 
     it('refuses to turn off a light with no on/off cluster', async () => {

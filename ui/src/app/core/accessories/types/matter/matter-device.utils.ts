@@ -291,13 +291,19 @@ export async function toggleDimmableLight(service: ServiceTypeX): Promise<void> 
     // Turn on - set to max if currently 0, otherwise restore previous level
     const targetLevel = brightness || MatterBrightness.Max
     const levelCluster = service.getCluster?.('levelControl')
-    if (!levelCluster) {
-      const error = new Error('LevelControl cluster not found')
+    const onOffCluster = service.getCluster?.('onOff')
+    if (!levelCluster || !onOffCluster) {
+      const error = new Error(!levelCluster ? 'LevelControl cluster not found' : 'OnOff cluster not found')
       console.error(error.message)
       throw error
     }
     try {
+      // A raw currentLevel attribute write does not run Matter's on/off
+      // coupling (that only happens for the moveToLevelWithOnOff command,
+      // which real controllers send), so onOff must be written as well or
+      // the device state never reads as on
       await levelCluster.setAttributes({ currentLevel: targetLevel })
+      await onOffCluster.setAttributes({ onOff: true })
     } catch (error) {
       console.error('Failed to turn Matter light on:', error)
       throw error

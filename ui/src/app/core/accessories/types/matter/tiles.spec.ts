@@ -93,8 +93,8 @@ describe('the matter accessory tiles', () => {
     name: string
     type: new (...args: any[]) => { onClick: () => void }
     clusters: Record<string, Record<string, unknown>>
-    /** The cluster a plain tap should write to. */
-    cluster: string
+    /** The cluster(s) a plain tap should write to, in order. */
+    cluster: string | string[]
     /**
      * The matter device type, where the tile's helper branches on it.
      * ⚠️ The vacuum needs this: `controlDevice` picks the RVC path only when
@@ -134,21 +134,22 @@ describe('the matter accessory tiles', () => {
       name: 'dimmable light',
       type: DimmableLightComponent as unknown as TileCase['type'],
       clusters: { onOff: { onOff: false }, levelControl: { currentLevel: 0 } },
-      // Switching a dimmable light ON goes to levelControl, not onOff - a level
-      // of 0 would be clamped up to minLevel and leave it dimly on
-      cluster: 'levelControl',
+      // Switching a dimmable light ON restores the level AND writes onOff - a
+      // raw level write alone does not run Matter's on/off coupling, so the
+      // state would never read as on
+      cluster: ['levelControl', 'onOff'],
     },
     {
       name: 'colour temperature light',
       type: ColorTemperatureLightComponent as unknown as TileCase['type'],
       clusters: { onOff: { onOff: false }, levelControl: { currentLevel: 0 }, colorControl: { colorTemperatureMireds: 250 } },
-      cluster: 'levelControl',
+      cluster: ['levelControl', 'onOff'],
     },
     {
       name: 'extended colour light',
       type: ExtendedColorLightComponent as unknown as TileCase['type'],
       clusters: { onOff: { onOff: false }, levelControl: { currentLevel: 0 }, colorControl: { currentHue: 50, currentSaturation: 200 } },
-      cluster: 'levelControl',
+      cluster: ['levelControl', 'onOff'],
     },
     {
       name: 'door lock',
@@ -204,7 +205,7 @@ describe('the matter accessory tiles', () => {
       component.onClick()
       await settle()
 
-      expect(service.writes.map(write => write.cluster)).toEqual([tile.cluster])
+      expect(service.writes.map(write => write.cluster)).toEqual([tile.cluster].flat())
     })
   })
 

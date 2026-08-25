@@ -181,6 +181,24 @@ describe('matter light manage modals', () => {
       expect(service.writes).toEqual([{ cluster: 'levelControl', attributes: { currentLevel: 200 } }])
     })
 
+    it('writes onOff as well when the slider is moved while the light is off', async () => {
+      // A raw level write does not run Matter's on/off coupling, so a slider
+      // move from the off state must also set onOff
+      const component = create(type, {
+        clusters: { onOff: { onOff: false }, levelControl: { currentLevel: 0 }, colorControl: {} },
+      }).componentInstance
+
+      await slide(() => {
+        component.targetBrightness.value = 200
+        component.onBrightnessStateChange()
+      })
+
+      expect(service.writes).toEqual([
+        { cluster: 'levelControl', attributes: { currentLevel: 200 } },
+        { cluster: 'onOff', attributes: { onOff: true } },
+      ])
+    })
+
     it('turns the light off through onOff when the slider reaches zero', async () => {
       // A currentLevel of 0 is clamped up to minLevel by most devices, so the
       // light would stay dimly on
@@ -195,12 +213,17 @@ describe('matter light manage modals', () => {
       expect(component.targetMode).toBe(false)
     })
 
-    it('turns the light on through levelControl', async () => {
+    it('turns the light on through levelControl and onOff', async () => {
+      // A raw level write does not run Matter's on/off coupling, so onOff
+      // must be written too or the light state never reads as on
       const component = create(type).componentInstance
 
       await component.setTargetMode(true, { target: document.createElement('button') } as unknown as MouseEvent)
 
-      expect(service.writes).toEqual([{ cluster: 'levelControl', attributes: { currentLevel: 120 } }])
+      expect(service.writes).toEqual([
+        { cluster: 'levelControl', attributes: { currentLevel: 120 } },
+        { cluster: 'onOff', attributes: { onOff: true } },
+      ])
       expect(component.targetMode).toBe(true)
     })
 
@@ -211,7 +234,10 @@ describe('matter light manage modals', () => {
 
       await component.setTargetMode(true, { target: document.createElement('button') } as unknown as MouseEvent)
 
-      expect(service.writes).toEqual([{ cluster: 'levelControl', attributes: { currentLevel: 254 } }])
+      expect(service.writes).toEqual([
+        { cluster: 'levelControl', attributes: { currentLevel: 254 } },
+        { cluster: 'onOff', attributes: { onOff: true } },
+      ])
     })
 
     it('turns the light off through onOff', async () => {

@@ -51,6 +51,16 @@ export class ColorTemperatureLightManageComponent extends BaseManageComponent {
               throw new Error('LevelControl cluster not found')
             }
             await cluster.setAttributes({ currentLevel: this.targetBrightness.value })
+            // A raw level write does not run Matter's on/off coupling, so a
+            // slider move while off must also set onOff or the light state
+            // never reads as on
+            if (!getOnOffState(this.service)) {
+              const onOffCluster = this.service.getCluster?.('onOff')
+              if (!onOffCluster) {
+                throw new Error('OnOff cluster not found')
+              }
+              await onOffCluster.setAttributes({ onOff: true })
+            }
           }
 
           // Update local state
@@ -113,10 +123,14 @@ export class ColorTemperatureLightManageComponent extends BaseManageComponent {
         const targetLevel = this.targetBrightness.value || this.targetBrightness.max
         this.targetBrightness.value = targetLevel
         const cluster = this.service.getCluster?.('levelControl')
-        if (!cluster) {
-          throw new Error('LevelControl cluster not found')
+        const onOffCluster = this.service.getCluster?.('onOff')
+        if (!cluster || !onOffCluster) {
+          throw new Error(!cluster ? 'LevelControl cluster not found' : 'OnOff cluster not found')
         }
+        // Both writes are needed: a raw level write does not run Matter's
+        // on/off coupling (only the moveToLevelWithOnOff command does that)
         await cluster.setAttributes({ currentLevel: targetLevel })
+        await onOffCluster.setAttributes({ onOff: true })
       } else {
         // Turning off - use onOff cluster instead of levelControl
         const cluster = this.service.getCluster?.('onOff')
