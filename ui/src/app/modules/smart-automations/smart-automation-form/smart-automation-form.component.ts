@@ -24,6 +24,11 @@ export class SmartAutomationFormComponent {
     this.lightSelectionChange.emit({ uniqueId, selected })
   }
 
+  public onAccessorySelectionChange(uniqueId: string, event: Event, single: boolean): void {
+    const selected = (event.target as HTMLInputElement).checked
+    this.lightSelectionChange.emit({ uniqueId, selected, single })
+  }
+
   public updateDraft(name: keyof SmartAutomation, value: string | number | boolean): void {
     this.draft()[name] = value as never
   }
@@ -107,5 +112,13 @@ export class SmartAutomationFormComponent {
   public isControlTarget(service: ServiceTypeX): boolean {
     return ['Switch', 'Outlet', 'Fan', 'Fanv2', 'HeaterCooler', 'Thermostat', 'AirPurifier'].includes(service.type || '')
       && service.serviceCharacteristics.some(characteristic => characteristic.canWrite && ['On', 'Active', 'TargetHeatingCoolingState'].includes(characteristic.type))
+  }
+
+  public canSave(): boolean {
+    return Boolean(
+      this.draft().name?.trim()
+      && this.selectedLightUniqueIds().length
+      && (this.draft().type !== 'humidity-control' || this.selectedTargetUniqueId()),
+    )
   }
 }

@@ -73,18 +73,21 @@ export class SmartAutomationsComponent implements OnInit, OnDestroy {
   public toggleLightSelection(uniqueId: string, selected: boolean, single = false, target = false): void {
     if (target) {
       this.selectedTargetUniqueId.set(selected ? uniqueId : '')
+      this.prefillAutomationName(uniqueId, selected)
       return
     }
     // A door rule watches one door, so picking another replaces the choice
     // rather than quietly adding a second the engine would ignore
     if (single) {
       this.selectedLightUniqueIds.set(selected ? [uniqueId] : [])
+      this.prefillAutomationName(uniqueId, selected)
       return
     }
     const next = selected
       ? [...new Set([...this.selectedLightUniqueIds(), uniqueId])]
       : this.selectedLightUniqueIds().filter(id => id !== uniqueId)
     this.selectedLightUniqueIds.set(next)
+    this.prefillAutomationName(uniqueId, selected)
   }
 
   public editSmartAutomation(automation: SmartAutomation): void {
@@ -271,6 +274,34 @@ export class SmartAutomationsComponent implements OnInit, OnDestroy {
   private toHumidity(value: unknown, fallback: number): number {
     const humidity = Number(value)
     return Number.isFinite(humidity) ? Math.min(Math.max(Math.round(humidity), 0), 100) : fallback
+  }
+
+  private getServiceName(uniqueId: string | undefined): string | undefined {
+    if (!uniqueId) {
+      return undefined
+    }
+    return this.rooms
+      .flatMap(room => room.services)
+      .find(service => service.uniqueId === uniqueId)
+      ?.serviceName
+      ?.trim()
+  }
+
+  private prefillAutomationName(uniqueId: string, selected: boolean): void {
+    if (!selected || this.smartAutomationDraft.name?.trim()) {
+      return
+    }
+    const deviceName = this.getServiceName(uniqueId)
+    if (!deviceName) {
+      return
+    }
+    const suffix = {
+      'smart-light-group': 'Group',
+      'door-ajar': 'Ajar',
+      'humidity-control': 'Humidity Control',
+      'average-temperature': 'Average Temperature',
+    }[this.smartAutomationDraft.type || 'smart-light-group']
+    this.smartAutomationDraft.name = `${deviceName} ${suffix}`
   }
 
   private generateBridgePin(): string {
