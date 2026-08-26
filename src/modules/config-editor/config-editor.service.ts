@@ -352,7 +352,7 @@ export class ConfigEditorService implements OnApplicationBootstrap {
 
     return config[arrayKey].filter((block) => {
       return block[plugin.pluginType] === plugin.pluginAlias
-        || block[plugin.pluginType] === `${pluginName}.${plugin.pluginAlias}`
+        || block[plugin.pluginType] === `${plugin.pluginIdentifier || pluginName}.${plugin.pluginAlias}`
     })
   }
 
@@ -421,7 +421,7 @@ export class ConfigEditorService implements OnApplicationBootstrap {
       let positionIndices: number
 
       const removeExisting = (block: Record<string, any>, index: number) => {
-        if (block[plugin.pluginType] === plugin.pluginAlias || block[plugin.pluginType] === `${pluginName}.${plugin.pluginAlias}`) {
+        if (block[plugin.pluginType] === plugin.pluginAlias || block[plugin.pluginType] === `${plugin.pluginIdentifier || pluginName}.${plugin.pluginAlias}`) {
           positionIndices = index
           return false
         } else {
@@ -860,7 +860,8 @@ export class ConfigEditorService implements OnApplicationBootstrap {
 
   public async updateConfigForPluginWithRestartInfo(pluginName: string, pluginConfig: Record<string, any>[]): Promise<ConfigEditorRestartInfo<Record<string, any>[]>> {
     const saved = await this.updateConfigForPlugin(pluginName, pluginConfig)
-    return this.buildRestartInfo(saved, pluginName)
+    const plugin = await this.pluginsService.getPluginAlias(pluginName)
+    return this.buildRestartInfo(saved, plugin.pluginIdentifier || pluginName)
   }
 
   public async disablePluginWithRestartInfo(pluginName: string): Promise<ConfigEditorRestartInfo<string[]>> {

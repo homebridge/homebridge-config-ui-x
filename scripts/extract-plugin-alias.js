@@ -14,6 +14,7 @@ const require = createRequire(import.meta.url)
 
 let pluginAlias
 let pluginType
+const pluginAliases = []
 
 const HomebridgeApiMock = {
   registerPlatform(pluginIdentifier, platformName, constructor) {
@@ -25,6 +26,7 @@ const HomebridgeApiMock = {
     } else {
       pluginAlias = platformName
     }
+    pluginAliases.push({ pluginAlias, pluginType })
   },
   registerAccessory(pluginIdentifier, accessoryName, constructor) {
     pluginType = 'accessory'
@@ -35,6 +37,7 @@ const HomebridgeApiMock = {
     } else {
       pluginAlias = accessoryName
     }
+    pluginAliases.push({ pluginAlias, pluginType })
   },
   version: 2.5,
   serverVersion: '1.2.3',
@@ -179,6 +182,7 @@ async function main() {
     process.send({
       pluginAlias,
       pluginType,
+      pluginAliases,
     }, () => process.exit())
   } catch (e) {
     process.exit(1)

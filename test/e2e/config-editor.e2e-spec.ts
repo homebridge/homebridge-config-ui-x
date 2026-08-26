@@ -173,6 +173,80 @@ describe('ConfigEditorController (e2e)', () => {
     expect(res.json()).toEqual(await readJson(configFilePath))
   })
 
+  it('creates and updates a requested secondary plugin platform alias', async () => {
+    homebridgeConfigService.homebridgeVersion = '2.4.0'
+    const automationConfig = {
+      platform: 'incorrect-client-value',
+      name: 'Smart Automation',
+      _bridge: {
+        name: 'Smart Automation',
+        username: '0E:75:1E:81:C7:1D',
+        pin: '031-45-154',
+      },
+      smartAutomations: [{
+        id: 'automation-1',
+        name: 'Garage Door Ajar',
+        type: 'door-ajar',
+        uniqueIds: ['garage-door'],
+        enabled: true,
+      }],
+    }
+
+    const create = await app.inject({
+      method: 'POST',
+      path: '/config-editor/plugin/smart-automation',
+      headers: { authorization },
+      payload: [automationConfig],
+    })
+
+    expect(create.statusCode).toBe(201)
+    expect(create.json()[0].platform).toBe('smart-automation')
+
+    const savedAfterCreate: HomebridgeConfig = await readJson(configFilePath)
+    expect(savedAfterCreate.platforms.find(block => block.platform === 'config')).toBeDefined()
+    expect(savedAfterCreate.platforms.filter(block => block.platform === 'smart-automation')).toHaveLength(1)
+
+    automationConfig.smartAutomations.push({
+      id: 'automation-2',
+      name: 'Hall Average Temperature',
+      type: 'average-temperature',
+      uniqueIds: ['hall-one', 'hall-two'],
+      enabled: true,
+    })
+    const update = await app.inject({
+      method: 'POST',
+      path: '/config-editor/plugin/smart-automation',
+      headers: { authorization },
+      payload: [automationConfig],
+    })
+    expect(update.statusCode).toBe(201)
+
+    const get = await app.inject({
+      method: 'GET',
+      path: '/config-editor/plugin/smart-automation',
+      headers: { authorization },
+    })
+    expect(get.statusCode).toBe(200)
+    expect(get.json()[0].smartAutomations).toHaveLength(2)
+
+    const savedAfterUpdate: HomebridgeConfig = await readJson(configFilePath)
+    expect(savedAfterUpdate.platforms.filter(block => block.platform === 'smart-automation')).toHaveLength(1)
+    expect(savedAfterUpdate.platforms.find(block => block.platform === 'config')).toBeDefined()
+  })
+
+  it('rejects an alias that the requested plugin does not register', async () => {
+    const before = await readJson(configFilePath)
+    const response = await app.inject({
+      method: 'POST',
+      path: '/config-editor/plugin/not-a-real-platform',
+      headers: { authorization },
+      payload: [{ platform: 'not-a-real-platform' }],
+    })
+
+    expect(response.statusCode).toBe(404)
+    expect(await readJson(configFilePath)).toEqual(before)
+  })
+
   it('POST /config-editor (valid config)', async () => {
     const currentConfig: HomebridgeConfig = await readJson(configFilePath)
 
