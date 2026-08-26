@@ -1881,65 +1881,84 @@ export class PluginsService implements OnModuleDestroy {
     if (!this.installedPlugins) {
       await this.getInstalledPlugins()
     }
-    const plugin = this.installedPlugins.find(x => x.name === pluginName)
-
-    if (!plugin) {
-      throw new NotFoundException()
-    }
-
     const fromCache: PluginAlias | undefined = this.pluginAliasCache.get(pluginName)
     if (fromCache as any) {
       return fromCache
     }
 
-    const output = {
+    const output: PluginAlias = {
       pluginAlias: null,
       pluginType: null,
     }
+    const plugin = this.installedPlugins.find(x => x.name === pluginName)
 
-    if (plugin.settingsSchema) {
+    if (plugin?.settingsSchema) {
       const schema = await this.getPluginConfigSchema(pluginName)
       output.pluginAlias = schema.pluginAlias
       output.pluginType = schema.pluginType
-    } else {
+      output.pluginIdentifier = plugin.name
+    } else if (plugin) {
       try {
-        await new Promise((res, rej) => {
-          const child = fork(resolve(process.env.UIX_BASE_PATH, 'scripts/extract-plugin-alias.js'), {
-            env: {
-              UIX_EXTRACT_PLUGIN_PATH: resolve(plugin.installPath, plugin.name),
-            },
-            stdio: 'ignore',
-          })
-
-          child.once('message', (data: any) => {
-            if (data.pluginAlias && data.pluginType) {
-              output.pluginAlias = data.pluginAlias
-              output.pluginType = data.pluginType
-              res(null)
-            } else {
-              rej(new Error('Invalid Response'))
-            }
-          })
-
-          child.once('close', (code) => {
-            if (code !== 0) {
-              // eslint-disable-next-line unicorn/error-message
-              rej(new Error())
-            }
-          })
-        })
+        const aliases = await this.extractPluginAliases(plugin)
+        Object.assign(output, aliases.at(-1), { pluginIdentifier: plugin.name })
       } catch (e) {
         this.logger.debug(`Failed to extract ${pluginName} plugin alias as ${e.message}.`)
         // Fallback to the manual list, if defined for this plugin
         if (this.pluginAliasHints[pluginName]) {
           output.pluginAlias = this.pluginAliasHints[pluginName].pluginAlias
           output.pluginType = this.pluginAliasHints[pluginName].pluginType
+          output.pluginIdentifier = plugin.name
         }
+      }
+    } else {
+      // The route historically accepted an npm package identifier. Also
+      // accept any platform/accessory alias registered by an installed plugin.
+      for (const candidate of this.installedPlugins) {
+        try {
+          const aliases = await this.extractPluginAliases(candidate)
+          const match = aliases.find(alias => alias.pluginAlias === pluginName)
+          if (match) {
+            Object.assign(output, match, { pluginIdentifier: candidate.name })
+            break
+          }
+        } catch {
+          // Some plugins cannot be safely loaded by the extractor. Continue
+          // searching; this is the same best-effort behaviour as package lookup.
+        }
+      }
+      if (!output.pluginAlias) {
+        throw new NotFoundException()
       }
     }
 
     this.pluginAliasCache.set(pluginName, output)
     return output
+  }
+
+  private extractPluginAliases(plugin: HomebridgePlugin): Promise<PluginAlias[]> {
+    return new Promise((res, rej) => {
+      const child = fork(resolve(process.env.UIX_BASE_PATH, 'scripts/extract-plugin-alias.js'), {
+        env: {
+          UIX_EXTRACT_PLUGIN_PATH: resolve(plugin.installPath, plugin.name),
+        },
+        stdio: 'ignore',
+      })
+
+      child.once('message', (data: any) => {
+        const aliases = Array.isArray(data.pluginAliases)
+          ? data.pluginAliases
+          : [{ pluginAlias: data.pluginAlias, pluginType: data.pluginType }]
+        const valid = aliases.filter((alias: PluginAlias) => alias.pluginAlias && alias.pluginType)
+        valid.length ? res(valid) : rej(new Error('Invalid Response'))
+      })
+
+      child.once('close', (code) => {
+        if (code !== 0) {
+          // eslint-disable-next-line unicorn/error-message
+          rej(new Error())
+        }
+      })
+    })
   }
 
   /**

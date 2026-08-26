@@ -203,9 +203,8 @@ export class SmartAutomationsComponent implements OnInit, OnDestroy {
     }
 
     try {
-      const configBlocks = await this.$api.get<ConfigPlatformBlock[]>('/config-editor/plugin/homebridge-config-ui-x')
-      const smartAutomationBlock = configBlocks.find(block => block.platform === SMART_AUTOMATION_PLATFORM)
-        || configBlocks.find(block => block.platform === 'config')
+      const configBlocks = await this.$api.get<ConfigPlatformBlock[]>('/config-editor/plugin/smart-automation')
+      const smartAutomationBlock = configBlocks[0]
       const switches = (smartAutomationBlock?.smartAutomations || []).filter(a => typeof a?.name === 'string')
       this.smartAutomations.set(switches)
       this.debugEnabled.set(smartAutomationBlock?.debug === true)
@@ -220,15 +219,9 @@ export class SmartAutomationsComponent implements OnInit, OnDestroy {
     }
 
     try {
-      const configBlocks = await this.$api.get<ConfigPlatformBlock[]>('/config-editor/plugin/homebridge-config-ui-x')
-      const engineIndex = configBlocks.findIndex(block => block.platform === SMART_AUTOMATION_PLATFORM)
-      const uiConfigBlock = configBlocks.find(block => block.platform === 'config')
-      const current = engineIndex >= 0 ? configBlocks[engineIndex] : null
-      const bridgeSource = current?._bridge || uiConfigBlock?._bridge
-
-      if (!current && !uiConfigBlock) {
-        return
-      }
+      const configBlocks = await this.$api.get<ConfigPlatformBlock[]>('/config-editor/plugin/smart-automation')
+      const current = configBlocks[0]
+      const bridgeSource = current?._bridge
 
       const nextBridge = {
         ...bridgeSource,
@@ -245,13 +238,7 @@ export class SmartAutomationsComponent implements OnInit, OnDestroy {
         _bridge: nextBridge,
         smartAutomations: this.smartAutomations().map(automation => ({ ...automation })),
       }
-      if (engineIndex >= 0) {
-        configBlocks[engineIndex] = nextBlock
-      } else {
-        configBlocks.push(nextBlock)
-      }
-
-      await this.$api.post('/config-editor/plugin/homebridge-config-ui-x', configBlocks)
+      await this.$api.post('/config-editor/plugin/smart-automation', [nextBlock])
 
       // The automation engine runs in its own child-bridge process and reads
       // its rules only during startup. Reload just that bridge after every
@@ -260,6 +247,7 @@ export class SmartAutomationsComponent implements OnInit, OnDestroy {
       await this.$api.put(`/server/restart/${encodeURIComponent(nextBridge.username)}`, {})
     } catch (error) {
       console.error(error)
+      throw error
     }
   }
 
