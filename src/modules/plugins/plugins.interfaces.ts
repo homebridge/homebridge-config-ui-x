@@ -203,6 +203,7 @@ export type NpmFunding = { type: string, url: string } | string | Array<{ type: 
 export interface PluginAlias {
   pluginAlias: null | string
   pluginType: null | 'platform' | 'accessory'
+  pluginIdentifier?: string
 }
 
 export interface PluginListNewScopeItem {
