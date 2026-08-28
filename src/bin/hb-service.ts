@@ -16,7 +16,7 @@ import { Buffer } from 'node:buffer'
 import { execFileSync, execSync, fork } from 'node:child_process'
 import { randomInt } from 'node:crypto'
 import { chownSync, createReadStream, createWriteStream, existsSync } from 'node:fs'
-import { mkdtemp, open, readFile, rename, stat } from 'node:fs/promises'
+import { mkdtemp, open, readFile, realpath, rename, stat } from 'node:fs/promises'
 import { arch, cpus, homedir, platform, release, tmpdir, type } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
 import process from 'node:process'
@@ -25,7 +25,7 @@ import { fileURLToPath } from 'node:url'
 
 import axios from 'axios'
 import { program } from 'commander'
-import { mkdirp, pathExists, pathExistsSync, readJson, readJsonSync, remove, writeJson } from 'fs-extra/esm'
+import { ensureSymlink, mkdirp, pathExists, pathExistsSync, readJson, readJsonSync, remove, writeJson } from 'fs-extra/esm'
 import ora from 'ora'
 import { gt, gte, parse } from 'semver'
 import { networkInterfaceDefault, networkInterfaces } from 'systeminformation'
@@ -415,6 +415,8 @@ export class HomebridgeServiceHelper {
       // Get the standalone ui binary on this system
       this.uiBinary = resolve(process.env.UIX_BASE_PATH, 'dist', 'bin', 'standalone.js')
       this.logger.debug(`UI path: ${this.uiBinary}.`)
+
+      await this.exposeSmartAutomationPlugin()
     } catch (e) {
       this.logger.log(e.message)
       process.exit(1)
@@ -439,6 +441,45 @@ export class HomebridgeServiceHelper {
       }, 20000)
     } else {
       this.runHomebridge()
+    }
+  }
+
+  /**
+   * The packaged UI and user plugins live in separate module trees on the
+   * official images. Make the embedded Smart Automation package visible from
+   * Homebridge's single strict plugin path without changing that path or
+   * copying a second installation of the engine.
+   */
+  private async exposeSmartAutomationPlugin(): Promise<void> {
+    const pluginPath = process.env.UIX_CUSTOM_PLUGIN_PATH
+    if (!pluginPath) {
+      return
+    }
+
+    const embeddedPlugin = resolve(process.env.UIX_BASE_PATH, 'dist', 'smart-automation')
+    const embeddedManifest = resolve(embeddedPlugin, 'package.json')
+    if (!await pathExists(embeddedManifest)) {
+      this.logger.warn(`Embedded Smart Automation plugin was not found at ${embeddedPlugin}.`)
+      return
+    }
+
+    const exposedPlugin = resolve(pluginPath, 'homebridge-smart-automation')
+    if (await pathExists(exposedPlugin)) {
+      try {
+        if (await realpath(exposedPlugin) === await realpath(embeddedPlugin)) {
+          return
+        }
+      } catch {}
+
+      this.logger.warn(`Could not expose the embedded Smart Automation plugin because ${exposedPlugin} already exists.`)
+      return
+    }
+
+    try {
+      await ensureSymlink(embeddedPlugin, exposedPlugin, 'junction')
+      this.logger.debug(`Exposed Smart Automation plugin at ${exposedPlugin}.`)
+    } catch (e) {
+      this.logger.warn(`Could not expose the embedded Smart Automation plugin as ${e.message}.`)
     }
   }
 
