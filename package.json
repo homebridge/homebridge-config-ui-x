@@ -62,7 +62,7 @@
   "scripts": {
     "prepare": "node scripts/apply-patches.mjs",
     "build": "npm run build:server && npm run build:ui",
-    "build:server": "rimraf dist && tsc -p tsconfig.build.json",
+    "build:server": "rimraf dist && tsc -p tsconfig.build.json && node scripts/build-smart-automation-plugin.mjs",
     "build:ui": "npm run build --prefix ui",
     "postbuild:ui": "node scripts/verify-monaco-assets.mjs",
     "check": "npm run check:server && npm run check:ui",
