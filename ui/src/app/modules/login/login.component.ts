@@ -29,6 +29,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
   private $auth = inject(AuthService)
   private $router = inject(Router)
   private $settings = inject(SettingsService)
+  private otpFocusTimer?: ReturnType<typeof setTimeout>
   private targetRoute!: string
   private validNonAdminRoutes = [
     '/accessories',
@@ -46,6 +47,14 @@ export class LoginComponent implements OnInit, AfterViewInit {
   public readonly invalid2faCode = signal(false)
   public readonly twoFactorCodeRequired = signal(false)
   public readonly inProgress = signal(false)
+
+  constructor() {
+    this.destroyRef.onDestroy(() => {
+      if (this.otpFocusTimer) {
+        clearTimeout(this.otpFocusTimer)
+      }
+    })
+  }
 
   // Initialize form as property with all controls (including OTP for 2FA)
   // OTP validators are added dynamically when 2FA is required
@@ -145,8 +154,11 @@ export class LoginComponent implements OnInit, AfterViewInit {
         }
 
         this.twoFactorCodeRequired.set(true)
-        setTimeout(() => {
-          document.getElementById('form-ota')?.focus()
+        if (this.otpFocusTimer) {
+          clearTimeout(this.otpFocusTimer)
+        }
+        this.otpFocusTimer = setTimeout(() => {
+          this.otpInput()?.nativeElement.focus()
         }, 100)
       } else {
         this.invalidCredentials.set(true)
