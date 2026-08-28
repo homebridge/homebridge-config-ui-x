@@ -72,6 +72,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - chore(dev): restart the watch server when the ui updates itself
 - fix(ui): keep retrying the first settings load instead of showing a blank page
 - fix(accessories): write onOff as well when a matter light is turned on through a level write
+- fix(accessories): re-arm matter monitoring after homebridge restarts (homebridge/homebridge#3993)
 
 ### Homebridge Dependencies
 

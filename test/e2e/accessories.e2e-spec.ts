@@ -13,6 +13,7 @@ import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } 
 
 import { AuthModule } from '../../src/core/auth/auth.module.js'
 import { ConfigService } from '../../src/core/config/config.service.js'
+import { HomebridgeIpcService } from '../../src/core/homebridge-ipc/homebridge-ipc.service.js'
 import { AccessoriesModule } from '../../src/modules/accessories/accessories.module.js'
 import { AccessoriesService } from '../../src/modules/accessories/accessories.service.js'
 
@@ -592,6 +593,85 @@ describe('AccessoriesController (e2e)', () => {
       configService.homebridgeConfig.accessories = undefined
 
       expect(() => (accessoriesService as any).getChildBridgePins()).not.toThrow()
+    })
+  })
+
+  /**
+   * Core loses its Matter monitoring switch when the Homebridge process
+   * restarts, so the service must clear its one-shot on status 'down' and
+   * re-arm it on 'ok' while viewers are connected (#3993). Without that,
+   * external (Matter controller) changes silently stop reaching the
+   * accessories page until the UI process restarts.
+   */
+  describe('matter monitoring re-arm after homebridge restart (#3993)', () => {
+    let ipcService: HomebridgeIpcService
+    let svc: any
+
+    beforeEach(() => {
+      ipcService = app.get(HomebridgeIpcService)
+      svc = accessoriesService as any
+      svc.activeClients.clear()
+    })
+
+    afterEach(() => {
+      svc.activeClients.clear()
+      svc.matterMonitoringActive = false
+      svc.matterMonitoringStartPromise = null
+      svc.matterUpdateListener = null
+    })
+
+    it('on "down", forgets the one-shot and detaches the matter update listener', () => {
+      const listener = vi.fn()
+      ipcService.on('matterEvent', listener)
+      svc.matterUpdateListener = listener
+      svc.matterMonitoringActive = true
+      svc.matterMonitoringStartPromise = Promise.resolve()
+
+      ipcService.emit('serverStatusUpdate', { status: 'down' })
+
+      expect(svc.matterMonitoringActive).toBe(false)
+      expect(svc.matterMonitoringStartPromise).toBeNull()
+      expect(svc.matterUpdateListener).toBeNull()
+      expect(ipcService.listeners('matterEvent')).not.toContain(listener)
+    })
+
+    it('on "ok" with viewers connected, re-arms monitoring and tells them to re-fetch', async () => {
+      const client = { emit: vi.fn() }
+      svc.activeClients.add(client)
+      const ensureSpy = vi.spyOn(svc, 'ensureMatterMonitoringStarted').mockImplementation(async () => {
+        svc.matterMonitoringActive = true
+      })
+
+      ipcService.emit('serverStatusUpdate', { status: 'down' })
+      ipcService.emit('serverStatusUpdate', { status: 'ok' })
+
+      expect(ensureSpy).toHaveBeenCalledTimes(1)
+      // the reload event lands after the ensure promise resolves
+      await new Promise(setImmediate)
+      expect(client.emit).toHaveBeenCalledWith('matter-accessories-reload-required')
+    })
+
+    it('on "ok" with nobody connected, leaves re-arming to the next client connect', () => {
+      const ensureSpy = vi.spyOn(svc, 'ensureMatterMonitoringStarted').mockResolvedValue(undefined)
+
+      ipcService.emit('serverStatusUpdate', { status: 'down' })
+      ipcService.emit('serverStatusUpdate', { status: 'ok' })
+
+      expect(ensureSpy).not.toHaveBeenCalled()
+    })
+
+    it('does not emit the re-fetch event when the start returned early (matter off)', async () => {
+      const client = { emit: vi.fn() }
+      svc.activeClients.add(client)
+      // resolves without flipping matterMonitoringActive - the "matter not
+      // supported / not enabled" early-return shape
+      vi.spyOn(svc, 'ensureMatterMonitoringStarted').mockResolvedValue(undefined)
+
+      ipcService.emit('serverStatusUpdate', { status: 'down' })
+      ipcService.emit('serverStatusUpdate', { status: 'ok' })
+
+      await new Promise(setImmediate)
+      expect(client.emit).not.toHaveBeenCalled()
     })
   })
 
