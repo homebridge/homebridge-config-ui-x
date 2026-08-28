@@ -71,6 +71,16 @@ export class AccessoriesService {
         config: this.configService.ui.accessoryControl || {},
       })
     }
+
+    // Core loses its Matter monitoring switch whenever the Homebridge process
+    // restarts, while this process's one-shot (see
+    // ensureMatterMonitoringStarted) still believes monitoring is armed — so
+    // external (e.g. Matter controller) changes silently stop reaching the
+    // accessories page until the UI itself restarts (#3993). Track the
+    // process lifecycle instead: reset the one-shot when Homebridge goes
+    // down, and re-arm as soon as it is back up while viewers are still
+    // connected.
+    this.homebridgeIpcService.on('serverStatusUpdate', this.onServerStatusUpdate)
   }
 
   /**
@@ -642,6 +652,58 @@ export class AccessoriesService {
       clearTimeout(waiter.timer)
       waiter.resolve(event.data)
     })
+  }
+
+  /**
+   * Follow the Homebridge process lifecycle (statuses come from core's
+   * ServerStatus enum: 'pending' / 'ok' / 'down'). A restarted core comes
+   * back with Matter monitoring off, so the one-shot must be cleared on
+   * 'down' and re-armed on 'ok' — but only while sockets are connected;
+   * with nobody watching, the next client connect re-arms it as normal.
+   */
+  private readonly onServerStatusUpdate = (data: { status?: string }): void => {
+    if (data?.status === 'down') {
+      this.resetMatterMonitoringState()
+    } else if (data?.status === 'ok' && this.activeClients.size > 0 && !this.matterMonitoringStartPromise) {
+      this.rearmMatterMonitoring()
+    }
+  }
+
+  /**
+   * Forget that Matter monitoring was ever started, so the next
+   * ensureMatterMonitoringStarted call sends a fresh enable to core. The
+   * update listener comes off the IPC bus too — re-arming installs a new
+   * one, and leaving the old one attached would double up every event.
+   */
+  private resetMatterMonitoringState(): void {
+    if (this.matterUpdateListener) {
+      this.homebridgeIpcService.removeListener('matterEvent', this.matterUpdateListener)
+      this.matterUpdateListener = null
+    }
+    this.matterMonitoringActive = false
+    this.matterMonitoringStartPromise = null
+  }
+
+  /**
+   * Re-arm Matter monitoring for the viewers already connected, then have
+   * them re-fetch — the restarted core rebuilt its Matter state from
+   * scratch, so this process's cached cluster values can't be trusted.
+   */
+  private rearmMatterMonitoring(): void {
+    this.ensureMatterMonitoringStarted()
+      .then(() => {
+        // False when the start returned early (Matter unsupported or not
+        // enabled) — nothing to reload in that case.
+        if (!this.matterMonitoringActive) {
+          return
+        }
+        for (const client of this.activeClients) {
+          client.emit('matter-accessories-reload-required')
+        }
+      })
+      .catch((error) => {
+        this.logger.warn(`Failed to re-arm Matter monitoring after Homebridge restart: ${error.message}`)
+      })
   }
 
   /**
