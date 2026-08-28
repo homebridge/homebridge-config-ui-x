@@ -7,7 +7,6 @@ import { SmartLightGroupRulesEngine } from './rules/smart-light-group.rules-engi
 import { HapSmartAutomationAccessoryController } from './smart-automation-accessory.controller.js'
 import { createSmartAutomationLogger, SmartAutomationLogger } from './smart-automation.logger.js'
 
-const PLUGIN_NAME = 'homebridge-config-ui-x'
 const PLATFORM_NAME = 'smart-automation'
 
 export class SmartAutomationPlatform {
@@ -20,6 +19,7 @@ export class SmartAutomationPlatform {
     homebridgeLog: any,
     private readonly config: { debug?: boolean, smartAutomations?: SmartAutomationConfig[] },
     private readonly api: any,
+    private readonly pluginName = 'homebridge-config-ui-x',
   ) {
     this.log = createSmartAutomationLogger(homebridgeLog, this.config.debug === true)
     this.accessoryController = new HapSmartAutomationAccessoryController(this.api?.user?.configPath?.(), this.log)
@@ -93,13 +93,13 @@ export class SmartAutomationPlatform {
     })
 
     if (newAccessories.length) {
-      this.api.registerPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, newAccessories)
+      this.api.registerPlatformAccessories(this.pluginName, PLATFORM_NAME, newAccessories)
     }
     if (existingAccessories.length) {
       this.api.updatePlatformAccessories(existingAccessories)
     }
     if (staleAccessories.length) {
-      this.api.unregisterPlatformAccessories(PLUGIN_NAME, PLATFORM_NAME, staleAccessories)
+      this.api.unregisterPlatformAccessories(this.pluginName, PLATFORM_NAME, staleAccessories)
     }
 
     this.log.info(`Engine ready; published ${publishedAccessories} automation accessor${publishedAccessories === 1 ? 'y' : 'ies'} and started ${this.monitors.length} monitor${this.monitors.length === 1 ? '' : 's'}.`)
