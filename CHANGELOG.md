@@ -2,7 +2,16 @@
 
 All notable changes to `homebridge-config-ui-x` will be documented in this file. This project tries to adhere to [Semantic Versioning](http://semver.org/).
 
-## v5.28.1 (Pending Release)
+## v5.29.0 (2026-08-31)
+
+### Highlights
+
+- 🚀 New: update Homebridge, the UI and your plugins all in one go, with a single restart at the end (beta)
+- 🩹 Matter fixes: accessory status keeps updating after a Homebridge restart, lights switch on properly when only brightness is set, and thermostat limits can reach 0°
+- 💾 Restoring a backup works again from both the setup wizard and the .hbfx uploader
+- 🔐 Signing out, session expiry, and refused token refreshes now affect only the browser they happen in, instead of logging out every device on the account
+- ✅ The Homebridge v2 readiness check now judges plugin support correctly and can skip the modal when everything is compatible
+- ⚙️ Many smaller reliability fixes across accessories, the terminal, child bridge restarts, the config editor, and the dashboard
 
 ### UI Changes
 
