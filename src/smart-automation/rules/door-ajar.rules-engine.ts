@@ -2,9 +2,6 @@ import type { ServiceType } from '@homebridge/hap-client'
 
 import type { DoorAjarConfig, SmartAutomationAccessoryController, SmartAutomationMonitor } from '../smart-automation.interfaces.js'
 
-/** How often the door is read. Fine enough for a rule measured in minutes. */
-const POLL_SECONDS = 30
-
 /**
  * The longest delay either setting may ask for.
  *
@@ -77,8 +74,9 @@ export function clampMinutes(minutes: unknown, fallback: number): number {
  */
 export class DoorAjarRulesEngine implements SmartAutomationMonitor<boolean> {
   private publish: ((tripped: boolean) => void) | null = null
-  private timer: ReturnType<typeof setInterval> | null = null
+  private timer: ReturnType<typeof setTimeout> | null = null
   private pulseTimer: ReturnType<typeof setTimeout> | null = null
+  private unsubscribe: (() => void) | null = null
   private openSince: number | null = null
   private lastAlertAt: number | null = null
   private tripped = false
@@ -94,21 +92,25 @@ export class DoorAjarRulesEngine implements SmartAutomationMonitor<boolean> {
     this.publish = publish
     publish(false)
     this.log.info(`${this.config.name}: watching for the door being left open longer than ${this.openMinutes()} minute${this.openMinutes() === 1 ? '' : 's'}, repeating every ${this.repeatMinutes()}.`)
-    this.timer = setInterval(() => void this.tick(), POLL_SECONDS * 1000)
-    // Never hold Homebridge open on the way out
-    this.timer.unref?.()
+    this.unsubscribe = this.accessories.onServicesChanged?.((changedUniqueIds) => {
+      if (changedUniqueIds.has(this.config.uniqueIds[0])) {
+        void this.tick()
+      }
+    }) || null
     void this.tick()
   }
 
   public stop(): void {
     if (this.timer) {
-      clearInterval(this.timer)
+      clearTimeout(this.timer)
       this.timer = null
     }
     if (this.pulseTimer) {
       clearTimeout(this.pulseTimer)
       this.pulseTimer = null
     }
+    this.unsubscribe?.()
+    this.unsubscribe = null
     this.publish = null
   }
 
@@ -123,8 +125,8 @@ export class DoorAjarRulesEngine implements SmartAutomationMonitor<boolean> {
   /**
    * Read the door and decide what the sensor should say.
    *
-   * ⚠️ Nothing in here may throw. It runs on an interval, and an unhandled
-   * rejection from a timer takes the whole child bridge down with it.
+   * ⚠️ Nothing in here may throw. It runs from HAP Event callbacks and deadline
+   * timers, and an unhandled rejection would take the child bridge down.
    */
   public async tick(): Promise<void> {
     try {
@@ -153,16 +155,21 @@ export class DoorAjarRulesEngine implements SmartAutomationMonitor<boolean> {
 
       if (!this.tripped) {
         if (openForMs < this.openMinutes() * 60_000) {
+          this.scheduleTick(this.openMinutes() * 60_000 - openForMs)
           return
         }
         this.log.info(`${this.config.name}: the door has been open for ${Math.round(openForMs / 60_000)} minutes.`)
         this.trip(now)
+        this.scheduleTick(this.repeatMinutes() * 60_000)
         return
       }
 
       if (this.lastAlertAt !== null && now - this.lastAlertAt >= this.repeatMinutes() * 60_000) {
         this.log.info(`${this.config.name}: the door is still open.`)
         this.retrigger(now)
+        this.scheduleTick(this.repeatMinutes() * 60_000)
+      } else if (this.lastAlertAt !== null) {
+        this.scheduleTick(this.repeatMinutes() * 60_000 - (now - this.lastAlertAt))
       }
     } catch (error: any) {
       this.log.warn(`${this.config.name}: could not check the door: ${error?.message || error}`)
@@ -187,6 +194,10 @@ export class DoorAjarRulesEngine implements SmartAutomationMonitor<boolean> {
   private reset(): void {
     this.openSince = null
     this.lastAlertAt = null
+    if (this.timer) {
+      clearTimeout(this.timer)
+      this.timer = null
+    }
     if (this.pulseTimer) {
       clearTimeout(this.pulseTimer)
       this.pulseTimer = null
@@ -195,6 +206,17 @@ export class DoorAjarRulesEngine implements SmartAutomationMonitor<boolean> {
       this.tripped = false
       this.publish?.(false)
     }
+  }
+
+  private scheduleTick(delayMs: number): void {
+    if (this.timer) {
+      clearTimeout(this.timer)
+    }
+    this.timer = setTimeout(() => {
+      this.timer = null
+      void this.tick()
+    }, Math.max(1, delayMs))
+    this.timer.unref?.()
   }
 
   private trip(now: number): void {

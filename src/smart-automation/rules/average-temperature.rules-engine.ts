@@ -2,8 +2,6 @@ import type { ServiceType } from '@homebridge/hap-client'
 
 import type { AverageTemperatureConfig, SmartAutomationAccessoryController, SmartAutomationMonitor } from '../smart-automation.interfaces.js'
 
-const POLL_SECONDS = 30
-
 export function averageTemperature(services: ServiceType[]): number | undefined {
   const values = services
     .map(service => service.serviceCharacteristics.find(characteristic => characteristic.type === 'CurrentTemperature')?.value)
@@ -20,7 +18,7 @@ export function averageTemperature(services: ServiceType[]): number | undefined 
 
 export class AverageTemperatureRulesEngine implements SmartAutomationMonitor<number> {
   private publish: ((value: number) => void) | null = null
-  private timer: ReturnType<typeof setInterval> | null = null
+  private unsubscribe: (() => void) | null = null
 
   constructor(
     private readonly config: AverageTemperatureConfig,
@@ -31,16 +29,17 @@ export class AverageTemperatureRulesEngine implements SmartAutomationMonitor<num
   public start(publish: (value: number) => void): void {
     this.publish = publish
     this.log.info(`${this.config.name}: averaging ${this.config.uniqueIds.length} temperature sensor${this.config.uniqueIds.length === 1 ? '' : 's'}.`)
-    this.timer = setInterval(() => void this.tick(), POLL_SECONDS * 1000)
-    this.timer.unref?.()
+    this.unsubscribe = this.accessories.onServicesChanged?.((changedUniqueIds) => {
+      if (this.config.uniqueIds.some(uniqueId => changedUniqueIds.has(uniqueId))) {
+        void this.tick()
+      }
+    }) || null
     void this.tick()
   }
 
   public stop(): void {
-    if (this.timer) {
-      clearInterval(this.timer)
-      this.timer = null
-    }
+    this.unsubscribe?.()
+    this.unsubscribe = null
     this.publish = null
   }
 

@@ -49,7 +49,10 @@ export interface AverageTemperatureConfig {
 export type SmartAutomationConfig = SmartLightGroupConfig | DoorAjarConfig | HumidityControlConfig | AverageTemperatureConfig
 
 export interface SmartAutomationAccessoryController {
+  start?: () => Promise<void>
+  stop?: () => void
   getServices: () => Promise<ServiceType[]>
+  onServicesChanged?: (listener: (changedUniqueIds: ReadonlySet<string>) => void) => () => void
 }
 
 export interface SmartAutomationRulesEngine {

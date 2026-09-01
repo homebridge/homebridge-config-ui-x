@@ -99,4 +99,29 @@ describe('HumidityControlRulesEngine', () => {
 
     expect(on.setValue).not.toHaveBeenCalled()
   })
+
+  it('reacts to a HAP Event for the configured humidity sensor', async () => {
+    const humidity = characteristic('CurrentRelativeHumidity', 55)
+    const on = characteristic('On', false, true)
+    let servicesChanged: ((changedUniqueIds: ReadonlySet<string>) => void) | undefined
+    const accessories = {
+      getServices: vi.fn(async () => [
+        service('HumiditySensor', 'humidity', [humidity]),
+        service('Switch', 'ac', [on]),
+      ]),
+      onServicesChanged: vi.fn((listener) => {
+        servicesChanged = listener
+        return vi.fn()
+      }),
+    }
+    const engine = new HumidityControlRulesEngine(config, accessories, { debug: vi.fn(), info: vi.fn(), warn: vi.fn() })
+
+    engine.start(() => undefined)
+    await vi.waitFor(() => expect(accessories.getServices).toHaveBeenCalled())
+    humidity.value = 70
+    servicesChanged?.(new Set(['humidity']))
+    await vi.waitFor(() => expect(on.value).toBe(true))
+
+    engine.stop()
+  })
 })

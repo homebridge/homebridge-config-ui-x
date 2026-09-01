@@ -235,9 +235,8 @@ describe('DoorAjarRulesEngine', () => {
     await engine.tick()
 
     setDoor(0)
-    // ⚠️ The clock runs from when the engine SEES the door open, not from when
-    // it opened - with a 30 second poll that is up to half a minute of slack,
-    // which is immaterial for a rule measured in minutes
+    // The clock runs from the HAP Event where the engine sees the door open,
+    // since HomeKit does not provide the physical transition timestamp.
     await engine.tick()
     await advance(engine, 9)
 
@@ -259,7 +258,7 @@ describe('DoorAjarRulesEngine', () => {
   })
 
   it('survives the accessory lookup failing', async () => {
-    // ⚠️ This runs on an interval: a rejection here would take the bridge down
+    // This also runs from timers, so a rejection must not take the bridge down
     const accessories = { getServices: vi.fn(async () => {
       throw new Error('hap is unreachable')
     }) }

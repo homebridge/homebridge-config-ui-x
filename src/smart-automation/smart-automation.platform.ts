@@ -31,7 +31,10 @@ export class SmartAutomationPlatform {
         this.log.warn(`Failed to start the Smart Automation engine: ${error?.message || error}`)
       })
     })
-    this.api.on('shutdown', () => this.monitors.forEach(monitor => monitor.stop()))
+    this.api.on('shutdown', () => {
+      this.monitors.forEach(monitor => monitor.stop())
+      this.accessoryController.stop()
+    })
   }
 
   public configureAccessory(accessory: any) {
@@ -39,6 +42,7 @@ export class SmartAutomationPlatform {
   }
 
   private async initialise() {
+    await this.accessoryController.start()
     const newAccessories: any[] = []
     const existingAccessories: any[] = []
     const desiredUuids = new Set<string>()

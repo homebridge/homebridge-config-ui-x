@@ -2,8 +2,6 @@ import type { ServiceType } from '@homebridge/hap-client'
 
 import type { HumidityControlConfig, SmartAutomationAccessoryController, SmartAutomationMonitor } from '../smart-automation.interfaces.js'
 
-const POLL_SECONDS = 30
-
 interface TargetControl {
   characteristic: ReturnType<ServiceType['getCharacteristic']>
   offValue: string | number | boolean
@@ -42,7 +40,7 @@ function targetControl(service: ServiceType): TargetControl | undefined {
 }
 
 export class HumidityControlRulesEngine implements SmartAutomationMonitor<boolean> {
-  private timer: ReturnType<typeof setInterval> | null = null
+  private unsubscribe: (() => void) | null = null
 
   constructor(
     private readonly config: HumidityControlConfig,
@@ -52,16 +50,17 @@ export class HumidityControlRulesEngine implements SmartAutomationMonitor<boolea
 
   public start(_publish: (value: boolean) => void): void {
     this.log.info(`${this.config.name}: turning the target on above ${this.config.onHumidity}% and off below ${this.config.offHumidity}%.`)
-    this.timer = setInterval(() => void this.tick(), POLL_SECONDS * 1000)
-    this.timer.unref?.()
+    this.unsubscribe = this.accessories.onServicesChanged?.((changedUniqueIds) => {
+      if (changedUniqueIds.has(this.config.uniqueIds[0]) || changedUniqueIds.has(this.config.targetUniqueId)) {
+        void this.tick()
+      }
+    }) || null
     void this.tick()
   }
 
   public stop(): void {
-    if (this.timer) {
-      clearInterval(this.timer)
-      this.timer = null
-    }
+    this.unsubscribe?.()
+    this.unsubscribe = null
   }
 
   public async tick(): Promise<void> {
