@@ -85,8 +85,8 @@ jobs:
 
   build_and_test_beta:
     needs: determine-release-type
-    name: Build and Test (Beta)
-    if: needs.determine-release-type.outputs.release_type == 'beta'
+    name: Build and Test (${{ needs.determine-release-type.outputs.release_type }})
+    if: needs.determine-release-type.outputs.release_type == 'beta' || needs.determine-release-type.outputs.release_type == 'alpha'
     strategy:
       fail-fast: false
       matrix:
