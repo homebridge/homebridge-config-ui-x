@@ -38,24 +38,21 @@ const currentTag = `v${version}`
 const expectedHeading = new RegExp(`^## v${escapeRegExp(baseVersion)} \\((?:pending|pending release)\\)\\s*$`, 'i')
 const changelogLines = readFileSync('CHANGELOG.md', 'utf8').split('\n')
 const sectionStart = changelogLines.findIndex(line => expectedHeading.test(line))
+const earlierVersion = sectionStart === -1
+  ? undefined
+  : changelogLines.slice(0, sectionStart).find(line => line.startsWith('## '))
+let cumulativeNotes = ''
 
-if (sectionStart === -1) {
-  throw new Error(`CHANGELOG.md must start with a v${baseVersion} pending section before publishing ${currentTag}`)
+if (sectionStart !== -1 && !earlierVersion) {
+  const nextSectionOffset = changelogLines.slice(sectionStart + 1).findIndex(line => line.startsWith('## '))
+  const sectionEnd = nextSectionOffset === -1
+    ? changelogLines.length
+    : sectionStart + 1 + nextSectionOffset
+  cumulativeNotes = changelogLines.slice(sectionStart + 1, sectionEnd).join('\n').trim()
 }
-
-const earlierVersion = changelogLines.slice(0, sectionStart).find(line => line.startsWith('## '))
-if (earlierVersion) {
-  throw new Error(`The v${baseVersion} pending section must be the first version in CHANGELOG.md`)
-}
-
-const nextSectionOffset = changelogLines.slice(sectionStart + 1).findIndex(line => line.startsWith('## '))
-const sectionEnd = nextSectionOffset === -1
-  ? changelogLines.length
-  : sectionStart + 1 + nextSectionOffset
-const cumulativeNotes = changelogLines.slice(sectionStart + 1, sectionEnd).join('\n').trim()
 
 if (!cumulativeNotes) {
-  throw new Error(`The v${baseVersion} pending changelog section is empty`)
+  console.warn(`No usable v${baseVersion} pending changelog section found; generating commit-list-only notes.`)
 }
 
 const previousPrerelease = tags(`v${baseVersion}-${releaseType}.*`).find(tag => tag !== currentTag)
@@ -78,17 +75,16 @@ const comparisonHeading = comparisonTag
 const comparisonLink = comparisonTag
   ? `\n\n[View the full comparison](${serverUrl}/${repository}/compare/${comparisonTag}...${currentTag})`
   : ''
+const cumulativeSection = cumulativeNotes
+  ? `\n\n## Everything included in the v${baseVersion} ${releaseLabel}\n\n${cumulativeNotes}`
+  : ''
 
 const notes = `> [!WARNING]
 > This is a ${releaseLabel} test release and is not recommended for production systems.
 
 ## ${comparisonHeading}
 
-${commitNotes}${comparisonLink}
-
-## Everything included in the v${baseVersion} ${releaseLabel}
-
-${cumulativeNotes}
+${commitNotes}${comparisonLink}${cumulativeSection}
 
 ## Testing
 
@@ -96,4 +92,4 @@ ${cumulativeNotes}
 `
 
 writeFileSync(outputPath, notes)
-console.log(`Generated ${outputPath} using ${comparisonTag || 'the complete history'} and the v${baseVersion} pending changelog section.`)
+console.log(`Generated ${outputPath} using ${comparisonTag || 'the complete history'}${cumulativeNotes ? ` and the v${baseVersion} pending changelog section` : ''}.`)
