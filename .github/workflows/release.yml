@@ -213,7 +213,7 @@ jobs:
         uses: actions/download-artifact@v7
         with:
           name: prerelease-notes-${{ needs.publish.outputs.npm_version }}
-          
+
       - name: Create nightly release
         id: create_release
         uses: viperproject/create-nightly-release@v2
