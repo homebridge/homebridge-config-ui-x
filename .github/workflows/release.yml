@@ -157,18 +157,34 @@ jobs:
           # Add prerelease suffix
           npm version pre --preid=${{ needs.determine-release-type.outputs.release_type }} --no-git-tag-version
 
+      - name: Get package version
+        id: get-published-version
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Package version: $VERSION"
+
+      - name: Generate pre-release notes
+        if: needs.determine-release-type.outputs.release_type == 'beta' || needs.determine-release-type.outputs.release_type == 'alpha'
+        run: |
+          node scripts/generate-prerelease-notes.mjs \
+            --version "${{ steps.get-published-version.outputs.version }}" \
+            --type "${{ needs.determine-release-type.outputs.release_type }}" \
+            --output "${{ runner.temp }}/prerelease-notes.md"
+
+      - name: Upload pre-release notes
+        if: needs.determine-release-type.outputs.release_type == 'beta' || needs.determine-release-type.outputs.release_type == 'alpha'
+        uses: actions/upload-artifact@v7
+        with:
+          name: prerelease-notes-${{ steps.get-published-version.outputs.version }}
+          path: ${{ runner.temp }}/prerelease-notes.md
+          retention-days: 1
+
       - name: Build
         run: npm run build
 
       - name: Publish to npm with OIDC
         run: npm publish --tag ${{ needs.determine-release-type.outputs.npm_tag }} --provenance --access public
-
-      - name: Get published version
-        id: get-published-version
-        run: |
-          VERSION=$(node -p "require('./package.json').version")
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
-          echo "Published version: $VERSION"
 
       - name: Add publish summary
         run: |
@@ -193,15 +209,11 @@ jobs:
       (needs.determine-release-type.outputs.release_type == 'beta' || needs.determine-release-type.outputs.release_type == 'alpha')
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v7
+      - name: Download pre-release notes
+        uses: actions/download-artifact@v7
         with:
-          fetch-depth: 0
-      - name: Generate pre-release notes
-        run: |
-          node scripts/generate-prerelease-notes.mjs \
-            --version "${{ needs.publish.outputs.npm_version }}" \
-            --type "${{ needs.determine-release-type.outputs.release_type }}" \
-            --output prerelease-notes.md
+          name: prerelease-notes-${{ needs.publish.outputs.npm_version }}
+          
       - name: Create nightly release
         id: create_release
         uses: viperproject/create-nightly-release@v2
