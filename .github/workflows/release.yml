@@ -170,6 +170,19 @@ jobs:
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "Published version: $VERSION"
 
+      - name: Add publish summary
+        run: |
+          {
+            echo "## Published Homebridge UI"
+            echo
+            echo "| Property | Value |"
+            echo "| --- | --- |"
+            echo '| Version | `v${{ steps.get-published-version.outputs.version }}` |'
+            echo '| Release type | `${{ needs.determine-release-type.outputs.release_type }}` |'
+            echo '| npm tag | `${{ needs.determine-release-type.outputs.npm_tag }}` |'
+            echo '| Package | [View on npm](https://www.npmjs.com/package/homebridge-config-ui-x/v/${{ steps.get-published-version.outputs.version }}) |'
+          } >> "$GITHUB_STEP_SUMMARY"
+
   pre-release:
     needs: [determine-release-type, publish]
     name: Create GitHub Pre-Release
@@ -181,6 +194,14 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+      - name: Generate pre-release notes
+        run: |
+          node scripts/generate-prerelease-notes.mjs \
+            --version "${{ needs.publish.outputs.npm_version }}" \
+            --type "${{ needs.determine-release-type.outputs.release_type }}" \
+            --output prerelease-notes.md
       - name: Create nightly release
         id: create_release
         uses: viperproject/create-nightly-release@v2
@@ -189,11 +210,20 @@ jobs:
         with:
           tag_name: v${{ needs.publish.outputs.npm_version }}
           release_name: v${{ needs.publish.outputs.npm_version }}
-          body: |
-            v${{ needs.publish.outputs.npm_version }}
-            [How To Test Upcoming Changes](https://github.com/homebridge/homebridge-config-ui-x/wiki/How-To-Test-Upcoming-Changes)
+          body_path: prerelease-notes.md
           keep_num: 5
           keep_tags: false
+
+      - name: Add GitHub pre-release summary
+        run: |
+          {
+            echo "## GitHub Pre-Release"
+            echo
+            echo '- Version: `v${{ needs.publish.outputs.npm_version }}`'
+            echo '- Type: `${{ needs.determine-release-type.outputs.release_type }}`'
+            echo '- Branch: `${{ github.ref_name }}`'
+            echo '- Release: [View on GitHub](${{ steps.create_release.outputs.html_url }})'
+          } >> "$GITHUB_STEP_SUMMARY"
 
   attach-artifact:
     needs: [determine-release-type, publish, pre-release]
