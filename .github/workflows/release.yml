@@ -119,8 +119,7 @@ jobs:
     if: |
       always() &&
       needs.determine-release-type.outputs.release_type != 'none' &&
-      (needs.determine-release-type.outputs.release_type == 'alpha' ||
-       needs.build_and_test_latest.result == 'success' ||
+      (needs.build_and_test_latest.result == 'success' ||
        needs.build_and_test_latest.result == 'skipped') &&
       (needs.build_and_test_beta.result == 'success' ||
        needs.build_and_test_beta.result == 'skipped')
@@ -131,6 +130,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v7
