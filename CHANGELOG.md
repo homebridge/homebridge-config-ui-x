@@ -10,6 +10,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 ### UI Changes
 
 - fix: add crossorigin attribute to manifest link for when using cf tunnels (#3005) (@Macleykun)
+- chore(status): drop the unused tooltip import from the bridges widget
 
 ### Other Changes
 
