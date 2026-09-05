@@ -548,16 +548,18 @@ describe('AccessoriesController (e2e)', () => {
    * appeared on the Accessories page (#2936).
    */
   describe('per-child-bridge pins (#2936)', () => {
-    const originalConfig = { platforms: undefined, accessories: undefined }
+    const originalConfig = { platforms: undefined, accessories: undefined, username: undefined }
 
     beforeEach(() => {
       originalConfig.platforms = configService.homebridgeConfig.platforms
       originalConfig.accessories = configService.homebridgeConfig.accessories
+      originalConfig.username = configService.homebridgeConfig.bridge.username
     })
 
     afterEach(() => {
       configService.homebridgeConfig.platforms = originalConfig.platforms
       configService.homebridgeConfig.accessories = originalConfig.accessories
+      configService.homebridgeConfig.bridge.username = originalConfig.username
     })
 
     it('collects the pin of every child bridge that sets one', () => {
@@ -577,6 +579,26 @@ describe('AccessoriesController (e2e)', () => {
         '0E:AA:BB:CC:DD:EE': '999-88-777',
         '0E:99:88:77:66:55': '111-22-333',
       })
+    })
+
+    // Another Homebridge on the network refuses our pin by design. Naming which
+    // bridges are ours is what lets hap-client keep those refusals out of the
+    // warnings (#2979, #3001).
+    it('names the main bridge and every child bridge as our own', () => {
+      configService.homebridgeConfig.bridge.username = '0E:00:11:22:33:44'
+      configService.homebridgeConfig.platforms = [
+        { platform: 'WithPin', _bridge: { username: '0E:AA:BB:CC:DD:EE', pin: '999-88-777' } },
+        { platform: 'NoPin', _bridge: { username: '0E:11:22:33:44:55' } },
+        { platform: 'NoBridge' },
+      ] as any
+      configService.homebridgeConfig.accessories = [
+        { accessory: 'Acc', name: 'A', _bridge: { username: '0E:99:88:77:66:55' } },
+      ] as any
+
+      const own = (accessoriesService as any).getOwnBridgeUsernames()
+
+      // the main bridge, then every child bridge whether or not it sets a pin
+      expect(own).toEqual(['0E:00:11:22:33:44', '0E:AA:BB:CC:DD:EE', '0E:11:22:33:44:55', '0E:99:88:77:66:55'])
     })
 
     it('returns an empty map when nothing sets its own pin', () => {

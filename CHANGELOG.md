@@ -14,6 +14,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 ### Other Changes
 
 - chore(deps): dependency updates
+- fix(accessories): tell hap-client our bridges, so a stranger's refused pin is a debug line (#2979)
 
 ### Homebridge Dependencies
 
