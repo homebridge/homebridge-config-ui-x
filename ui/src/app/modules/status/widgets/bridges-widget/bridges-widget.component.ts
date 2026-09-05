@@ -1,6 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, DestroyRef, inject, input, OnDestroy, OnInit, signal } from '@angular/core'
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop'
-import { NgbTooltip } from '@ng-bootstrap/ng-bootstrap/tooltip'
 import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
 import { firstValueFrom } from 'rxjs'
@@ -16,7 +15,7 @@ import { ChildBridgeWithUIState, Widget } from '@/app/modules/status/widgets/wid
 
 @Component({
   selector: 'app-bridges-widget',
-  imports: [ChildBridgeStatusIconsComponent, NgbTooltip, TranslatePipe],
+  imports: [ChildBridgeStatusIconsComponent, TranslatePipe],
   standalone: true,
   templateUrl: './bridges-widget.component.html',
   styleUrl: './bridges-widget.component.scss',
