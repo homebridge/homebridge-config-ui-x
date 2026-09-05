@@ -27,6 +27,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - ci: update github actions to their latest versions (#3071)
 - fix(hb-service): stop the macos installer failing when npm's path has spaces or shell characters (#3026) (@smitty078)
 - chore(deps): dependency updates + code fixes
+- fix(accessories): tell hap-client our bridges, so a stranger's refused pin is a debug line (#2979)
 
 ### Homebridge Dependencies
 
