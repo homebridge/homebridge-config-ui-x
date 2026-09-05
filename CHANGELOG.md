@@ -11,10 +11,14 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 
 - fix: add crossorigin attribute to manifest link for when using cf tunnels (#3005) (@Macleykun)
 
+### Other Changes
+
+- chore(deps): dependency updates
+
 ### Homebridge Dependencies
 
-- `@homebridge/hap-client` @ `v5.3.0`
-- `@homebridge/node-pty-prebuilt-multiarch` @ `v0.14.1`
+- `@homebridge/hap-client` @ `v5.3.1-beta.0`
+- `@homebridge/node-pty-prebuilt-multiarch` @ `v0.15.0`
 - `@homebridge/plugin-ui-utils` @ `v2.2.6`
 
 ## v5.29.0 (2026-08-31)
