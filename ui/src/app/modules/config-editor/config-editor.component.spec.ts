@@ -145,6 +145,28 @@ describe('ConfigEditorComponent', () => {
       expect(component.homebridgeConfig()).toBe('{"password":"unfinished')
     })
 
+    it('keeps edited backup content when the diff editor is hidden and recreated', () => {
+      component.isMobile.set(false)
+      component.preferPlainTextEditor.set(false)
+      component.originalConfig.set('{"password":"before-restore"}')
+      component.homebridgeConfig.set('{"password":"backup-value"}')
+      component.monacoEditor = { getModel: () => ({ getValue: () => '{"password":"edited-backup"}' }) }
+      component.toggleSecrets()
+      expect(component.redactedConfig()).not.toContain('edited-backup')
+      component.toggleSecrets()
+      let recreatedContent = '{"password":"backup-value"}'
+      const modifiedEditor = { getModel: () => ({ setValue: (value: string) => {
+        recreatedContent = value
+      } }) }
+      const originalModel = { setValue: vi.fn() }
+      const originalEditor = { getModel: () => originalModel }
+      component.onInitDiffEditor({ getModifiedEditor: () => modifiedEditor, getOriginalEditor: () => originalEditor })
+      expect(recreatedContent).toBe('{"password":"edited-backup"}')
+      expect(originalEditor.getModel().setValue).toHaveBeenCalledWith('{"password":"before-restore"}')
+      window.editor = undefined
+      component.monacoEditor = undefined
+    })
+
     it('captures unsaved Monaco edits before hiding', () => {
       component.isMobile.set(false)
       component.preferPlainTextEditor.set(false)

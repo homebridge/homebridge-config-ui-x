@@ -222,8 +222,8 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
 
   public onInitDiffEditor(editor: any) {
     this.monacoEditor = editor.getModifiedEditor()
-    this.updateDiffModels()
     window.editor = editor
+    this.updateDiffModels()
   }
 
   public setPlainTextEditor(enabled: boolean): void {
