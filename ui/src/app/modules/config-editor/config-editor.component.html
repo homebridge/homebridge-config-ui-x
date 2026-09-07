@@ -4,8 +4,22 @@
       <h3 class="primary-text m-0">{{ 'menu.config_json_editor' | translate }}</h3>
     </div>
     <div class="col-6 text-end">
-      <button type="button" class="btn btn-elegant my-0 me-2" [disabled]="saveInProgress()" (click)="toggleSecrets()">
-        {{ (secretsRevealed() ? 'config.privacy.hide' : 'config.privacy.reveal') | translate }}
+      <button
+        type="button"
+        class="btn btn-elegant my-0 me-2"
+        [disabled]="saveInProgress()"
+        [attr.aria-label]="(secretsRevealed() ? 'config.privacy.hide' : 'config.privacy.reveal') | translate"
+        (click)="toggleSecrets()"
+      >
+        <i
+          class="fas me-sm-2"
+          aria-hidden="true"
+          [class.fa-eye]="!secretsRevealed()"
+          [class.fa-eye-slash]="secretsRevealed()"
+        ></i>
+        <span class="d-none d-sm-inline">
+          {{ (secretsRevealed() ? 'config.privacy.hide' : 'config.privacy.reveal') | translate }}
+        </span>
       </button>
       @if (secretsRevealed()) {
         <div ngbDropdown placement="bottom-end" class="d-none d-sm-inline-block me-2">

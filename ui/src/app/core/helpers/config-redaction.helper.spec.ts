@@ -13,16 +13,16 @@ describe('redactConfig', () => {
     const preview = redactConfig(input)!
     expect(preview).not.toContain('secret-')
     expect(JSON.parse(preview)).toEqual({
-      bridge: { name: 'Test bridge', pin: '[REDACTED]' },
-      platforms: [{ password: '[REDACTED]', api_key: '[REDACTED]', nested: [{ refreshToken: '[REDACTED]' }], port: 1234 }],
-      privateKey: '[REDACTED]',
+      bridge: { name: 'Test bridge', pin: '********' },
+      platforms: [{ password: '********', api_key: '********', nested: [{ refreshToken: '********' }], port: 1234 }],
+      privateKey: '********',
     })
     expect(JSON.stringify(source)).toBe(input)
   })
 
   it('supports relaxed JSON and drops comments which may contain secrets', () => {
     expect(redactConfig('{password: "synthetic", /* secret-comment */ port: 1234,}')).toBe(
-      '{\n    "password": "[REDACTED]",\n    "port": 1234\n}',
+      '{\n    "password": "********",\n    "port": 1234\n}',
     )
   })
 

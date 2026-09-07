@@ -116,7 +116,7 @@ describe('ConfigEditorComponent', () => {
       expect(component.secretsRevealed()).toBe(false)
       expect(preview.readOnly).toBe(true)
       expect(preview.value).not.toContain('synthetic-password')
-      expect(preview.value).toContain('[REDACTED]')
+      expect(preview.value).toContain('********')
       await component.onSave()
       expect(api.calls.filter(call => call.method === 'post')).toHaveLength(0)
     })

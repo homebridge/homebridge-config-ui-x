@@ -7,7 +7,7 @@ const secretKey = /password|passwd|passphrase|secret|token|apikey|privatekey|aut
 export function redactConfig(config: string): string | null {
   try {
     return JSON.stringify(json5.parse(config), (key, value) => {
-      return secretKey.test(key.replace(/[-_\s]/g, '')) ? '[REDACTED]' : value
+      return secretKey.test(key.replace(/[-_\s]/g, '')) ? '********' : value
     }, 4)
   } catch {
     // Do not fall back to the raw text when unsaved JSON is incomplete.
