@@ -700,4 +700,29 @@ describe('AccessoriesController (e2e)', () => {
   afterAll(async () => {
     await app.close()
   })
+
+  it('bounds refresh traffic across simultaneous clients and continues after one failure', async () => {
+    let active = 0
+    let peak = 0
+    let completed = 0
+    const services = Array.from({ length: 40 }, (_, index) => ({
+      uniqueId: `load-${index}`,
+      async refreshCharacteristics() {
+        active++
+        peak = Math.max(peak, active)
+        await new Promise(resolve => setTimeout(resolve, 1))
+        active--
+        completed++
+        if (index === 2) {
+          throw new Error('One accessory disconnected')
+        }
+      },
+    }))
+    await Promise.all([
+      (accessoriesService as any).refreshCharacteristics(services),
+      (accessoriesService as any).refreshCharacteristics(services),
+    ])
+    expect(peak).toBeLessThanOrEqual(8)
+    expect(completed).toBe(80)
+  })
 })

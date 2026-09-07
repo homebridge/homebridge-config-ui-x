@@ -182,6 +182,22 @@ describe('HAP light and climate manage modals', () => {
       expect(component.targetMode).toBe(false)
     })
 
+    it('preserves the queued slider value and a later explicit power choice', async () => {
+      const bulb = colourBulb({ on: true, brightness: 65 })
+      const component = create(LightbulbManageComponent, bulb)
+      component.targetBrightness.value = 66
+      component.onBrightnessStateChange()
+      component.setTargetMode(false, { target: { blur() {} } } as unknown as MouseEvent)
+      bulb.values.On = false
+      accessoryData.next(undefined)
+      expect(component.targetBrightness.value).toBe(66)
+      await vi.advanceTimersByTimeAsync(500)
+      expect(writesTo(bulb)).toEqual([
+        { type: 'On', value: false },
+        { type: 'Brightness', value: 66 },
+      ])
+    })
+
     it('writes a brightness change to Brightness', async () => {
       const bulb = colourBulb()
       const component = create(LightbulbManageComponent, bulb)

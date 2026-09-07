@@ -10,6 +10,7 @@ import { TranslatePipe } from '@ngx-translate/core'
 import { describe, expect, it, vi } from 'vitest'
 
 import { AccessoriesService as AccessoriesServiceToken } from '@/app/core/accessories/accessories.service'
+import { THEME_PICKER_UUID } from '@/app/core/accessories/theme-picker.model'
 import { ACCESSORY_MANAGE_MODAL_DATA } from '@/app/core/accessories/types/base-manage.component'
 import { AirPurifierComponent } from '@/app/core/accessories/types/hap/air-purifier/air-purifier.component'
 import { DoorComponent } from '@/app/core/accessories/types/hap/door/door.component'
@@ -36,6 +37,7 @@ import { ValveComponent } from '@/app/core/accessories/types/hap/valve/valve.com
 import { WashingMachineComponent } from '@/app/core/accessories/types/hap/washing-machine/washing-machine.component'
 import { WindowCoveringComponent } from '@/app/core/accessories/types/hap/window-covering/window-covering.component'
 import { WindowComponent } from '@/app/core/accessories/types/hap/window/window.component'
+import { LongClickDirective } from '@/app/core/directives/long-click.directive'
 import { ConvertMiredPipe } from '@/app/core/pipes/convert-mired.pipe'
 import { ConvertTempPipe } from '@/app/core/pipes/convert-temp.pipe'
 import { DurationPipe } from '@/app/core/pipes/duration.pipe'
@@ -92,7 +94,7 @@ describe('the HAP accessory tiles', () => {
 
     TestBed.overrideComponent(type as any, {
       set: {
-        imports: [TranslatePipe, LowerCasePipe, UpperCasePipe, DecimalPipe, ConvertTempPipe, ConvertMiredPipe, DurationPipe],
+        imports: [LongClickDirective, TranslatePipe, LowerCasePipe, UpperCasePipe, DecimalPipe, ConvertTempPipe, ConvertMiredPipe, DurationPipe],
         schemas: [NO_ERRORS_SCHEMA],
       },
     })
@@ -328,6 +330,29 @@ describe('the HAP accessory tiles', () => {
   })
 
   describe('the lightbulb tile', () => {
+    it.each([true, false])('opens theme controls without toggling power, with brightness support: %s', (brightness) => {
+      const service = serviceWith(brightness ? [['On', true], ['Brightness', 65]] : [['On', true]])
+      service.type = 'Lightbulb'
+      service.serviceCharacteristics.push({ setValue: vi.fn(), uuid: THEME_PICKER_UUID, value: JSON.stringify({ version: 1, role: 'source', group: 'c48b8a28-40d3-4f51-b51c-a5d39d985991' }) } as any)
+      const fixture = build(LightbulbComponent, service, true)
+      const button = fixture.nativeElement.querySelector('.theme-controls') as HTMLButtonElement
+      expect(button).not.toBeNull()
+      for (const events of [['mousedown', 'mouseup'], ['touchstart', 'touchend'], ['keyup']]) {
+        for (const type of events) {
+          button.dispatchEvent(type === 'keyup'
+            ? new KeyboardEvent(type, { key: 'Enter', bubbles: true })
+            : new Event(type, { bubbles: true }))
+        }
+        button.click()
+      }
+      expect(modal.open).toHaveBeenCalledTimes(3)
+      expect(writesTo(service)).toEqual([])
+      fixture.componentRef.setInput('readyForControl', false)
+      fixture.detectChanges()
+      expect(button.disabled).toBe(true)
+      fixture.destroy()
+    })
+
     it('paints nothing when the bulb is off', () => {
       const component = create(LightbulbComponent, serviceWith([['On', false], ['Hue', 120], ['Saturation', 100]]))
 

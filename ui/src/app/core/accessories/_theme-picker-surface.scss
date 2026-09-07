@@ -1,0 +1,41 @@
+@mixin surface {
+  --tp-brand: var(--accessory-control-accent);
+  --tp-soft: var(--accessory-control-tint);
+  --tp-text: #212529;
+  --tp-muted: #666;
+  --tp-line: #dee2e6;
+  --tp-paper: #fff;
+  --tp-page: #f4f4f4;
+  color: var(--tp-text);
+  background: var(--tp-paper);
+  text-align: left;
+  &.dark {
+    --tp-brand: color-mix(in srgb, var(--accessory-control-accent) 65%, white);
+    --tp-text: #fff;
+    --tp-muted: #9e9e9e;
+    --tp-line: #444;
+    --tp-paper: #242424;
+    --tp-page: #333;
+  }
+  button:not(.btn):not(.btn-close),
+  input {
+    font-family: inherit;
+  }
+  button {
+    cursor: pointer;
+  }
+  button:disabled,
+  button[aria-disabled='true'] {
+    opacity: 0.5;
+    cursor: wait;
+  }
+  button:focus-visible,
+  input:focus-visible,
+  summary:focus-visible {
+    outline: 2px solid var(--tp-brand);
+    outline-offset: 3px;
+  }
+  svg {
+    display: block;
+  }
+}

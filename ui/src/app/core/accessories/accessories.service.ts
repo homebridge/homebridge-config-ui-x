@@ -6,10 +6,11 @@ import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
 import { TranslateService } from '@ngx-translate/core'
 import { ToastrService } from 'ngx-toastr'
 import { firstValueFrom, Subject } from 'rxjs'
-import { takeUntil } from 'rxjs/operators'
+import { finalize, takeUntil, timeout } from 'rxjs/operators'
 
 import { AccessoryLayout, AccessoryLayoutService, ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
 import { AccessoryInfoComponent } from '@/app/core/accessories/accessory-info/accessory-info.component'
+import { legacyThemeActions, nativeFavoriteServices, themeActions } from '@/app/core/accessories/theme-picker.model'
 import { AuthService } from '@/app/core/auth/auth.service'
 import { CachedAccessoriesCacheService } from '@/app/core/caching/cached-accessories-cache.service'
 import { ServerPairingsCacheService } from '@/app/core/caching/server-pairings-cache.service'
@@ -286,7 +287,7 @@ export class AccessoriesService {
   /**
    * Save the room layout
    */
-  public saveLayout() {
+  public saveLayout(onSaved?: () => void, onError?: () => void) {
     // Generate layout schema from currently active rooms
     const currentLayout = this.rooms().map(room => ({
       name: room.name,
@@ -304,6 +305,7 @@ export class AccessoriesService {
         customType: (service as ServiceTypeX).customType || undefined,
         hidden: (service as ServiceTypeX).hidden || undefined,
         onDashboard: (service as ServiceTypeX).onDashboard || undefined,
+        themeFavorites: (service as ServiceTypeX).themeFavorites,
       })),
     }))
 
@@ -317,15 +319,28 @@ export class AccessoriesService {
     // This will add back rooms that exist in the original layout even if they have no discovered services
     this.accessoryLayout = this.mergeWithUndiscoveredServices(currentLayout as AccessoryLayout)
 
+    let settled = false
     // Send update request to server
     this.io.request('save-layout', { user: this.$auth.user.username, layout: this.accessoryLayout })
       .pipe(
+        timeout(10000),
         takeUntil(this.stop$),
         takeUntilDestroyed(this.$destroyRef),
+        finalize(() => {
+          if (!settled) {
+            onError?.()
+          }
+        }),
       )
       .subscribe({
-        next: () => this.layoutSaved.next(undefined),
+        next: () => {
+          settled = true
+          this.layoutSaved.next(undefined)
+          onSaved?.()
+        },
         error: (error) => {
+          settled = true
+          onError?.()
           console.error(error)
           this.$toastr.error(this.$errors.toToastMessage(error), this.$translate.instant('toast.title_error'))
         },
@@ -480,6 +495,7 @@ export class AccessoriesService {
           customType: originalService.customType,
           hidden: originalService.hidden,
           onDashboard: originalService.onDashboard,
+          themeFavorites: originalService.themeFavorites,
         })
       }
     }
@@ -551,6 +567,7 @@ export class AccessoriesService {
         if (cached) {
           // Apply custom attributes from cache before adding to room
           const serviceX = service as ServiceTypeX
+          serviceX.themeFavorites = cached.service.themeFavorites
           if (cached.service.customType) {
             serviceX.customType = cached.service.customType
           }
@@ -654,6 +671,7 @@ export class AccessoriesService {
 
         // Only apply the custom properties we care about, not all properties
         const serviceX = service as ServiceTypeX
+        serviceX.themeFavorites = cached.service.themeFavorites
         if (cached.service.customType) {
           serviceX.customType = cached.service.customType
         }
@@ -838,6 +856,18 @@ export class AccessoriesService {
 
   private combineRelatedServices() {
     this.combinedServiceIds.clear()
+
+    for (const service of this.accessories.services) {
+      for (const favorite of nativeFavoriteServices(service, this.accessories.services)) {
+        this.combinedServiceIds.add(favorite.uniqueId!)
+      }
+      const availableIds = new Set(themeActions(service, this.accessories.services).map(action => action.id))
+      for (const action of legacyThemeActions(service, this.accessories.services)) {
+        if (availableIds.has(action.id)) {
+          this.combinedServiceIds.add(action.service.uniqueId!)
+        }
+      }
+    }
 
     for (const service of this.accessories.services) {
       if (service.type === 'HeaterCooler') {
