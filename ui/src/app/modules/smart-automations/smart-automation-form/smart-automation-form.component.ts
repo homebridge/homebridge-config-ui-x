@@ -83,7 +83,7 @@ export class SmartAutomationFormComponent {
   }
 
   public isSourceSelectable(service: ServiceTypeX, type: SmartAutomation['type'] | undefined): boolean {
-    if (!this.isSelectable(service.type, type)) {
+    if (!this.isSelectable(service.type, type) || this.isOwnPublishedAccessory(service)) {
       return false
     }
     const requiredCharacteristic = type === 'humidity-control'
@@ -110,8 +110,24 @@ export class SmartAutomationFormComponent {
   }
 
   public isControlTarget(service: ServiceTypeX): boolean {
-    return ['Switch', 'Outlet', 'Fan', 'Fanv2', 'HeaterCooler', 'Thermostat', 'AirPurifier'].includes(service.type || '')
+    return !this.isOwnPublishedAccessory(service)
+      && ['Switch', 'Outlet', 'Fan', 'Fanv2', 'HeaterCooler', 'Thermostat', 'AirPurifier'].includes(service.type || '')
       && service.serviceCharacteristics.some(characteristic => characteristic.canWrite && ['On', 'Active', 'TargetHeatingCoolingState'].includes(characteristic.type))
+  }
+
+  /**
+   * Prevent an automation from consuming its own published accessory, which
+   * would create a feedback loop. Outputs from every other automation remain
+   * selectable so rules can intentionally be chained together.
+   * @param service - a discovered Homebridge service
+   */
+  private isOwnPublishedAccessory(service: ServiceTypeX): boolean {
+    const automationId = this.draft().id
+    return Boolean(
+      automationId
+      && service.accessoryInformation?.Manufacturer === 'homebridge-config-ui-x'
+      && service.accessoryInformation?.['Serial Number'] === automationId,
+    )
   }
 
   public canSave(): boolean {
