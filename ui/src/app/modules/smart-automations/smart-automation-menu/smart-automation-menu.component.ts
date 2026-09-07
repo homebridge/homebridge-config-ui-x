@@ -86,7 +86,9 @@ export class SmartAutomationMenuComponent {
       return
     }
     try {
-      const io = this.$ws.getExistingNamespace('child-bridges')
+      // This tab can be the first page opened after a UI restart, so the
+      // child-bridges namespace may not have been created by Plugins or Status.
+      const io = this.$ws.connectToNamespace('child-bridges')
       await firstValueFrom(io.request(`${action}-child-bridge`, username))
     } catch (error) {
       console.error(error)
