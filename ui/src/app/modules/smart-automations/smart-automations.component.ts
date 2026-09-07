@@ -46,6 +46,7 @@ export class SmartAutomationsComponent implements OnInit, OnDestroy {
   public readonly smartAutomations = signal<SmartAutomation[]>([])
   public readonly automationsLoading = signal(true)
   public readonly childBridgeUsername = signal('')
+  public readonly pluginDisabled = signal(false)
   public readonly debugEnabled = signal(false)
   public readonly selectedLightUniqueIds = signal<string[]>([])
   public readonly selectedTargetUniqueId = signal('')
@@ -67,6 +68,7 @@ export class SmartAutomationsComponent implements OnInit, OnDestroy {
     // these requests independent so a slow or reconnecting accessories socket
     // cannot leave the automation list empty on the initial page load.
     void this.loadSmartAutomationConfig()
+    void this.loadSmartAutomationDisabledState()
     void this.$accessories.start()
       .catch((error) => {
         console.error(error)
@@ -217,6 +219,18 @@ export class SmartAutomationsComponent implements OnInit, OnDestroy {
       console.error(error)
     } finally {
       this.automationsLoading.set(false)
+    }
+  }
+
+  private async loadSmartAutomationDisabledState(): Promise<void> {
+    if (!this.isAdmin) {
+      return
+    }
+    try {
+      const config = await this.$api.get<{ disabledPlugins?: string[] }>('/config-editor')
+      this.pluginDisabled.set(config.disabledPlugins?.includes('homebridge-smart-automation') === true)
+    } catch (error) {
+      console.error(error)
     }
   }
 

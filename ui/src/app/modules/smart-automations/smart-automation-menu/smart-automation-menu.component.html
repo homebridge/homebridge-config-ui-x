@@ -20,6 +20,17 @@
       <i class="fas fa-code" aria-hidden="true"></i>
       {{ 'plugins.manage.json_config' | translate }}
     </button>
+    @if (!disabled()) {
+      <button type="button" ngbDropdownItem (click)="disablePlugin()">
+        <i class="far fa-circle-pause" aria-hidden="true"></i>
+        {{ 'plugins.manage.disable' | translate }}
+      </button>
+    } @else {
+      <button type="button" ngbDropdownItem (click)="enablePlugin()">
+        <i class="far fa-circle-play" aria-hidden="true"></i>
+        {{ 'plugins.manage.enable' | translate }}
+      </button>
+    }
     @if (bridgeUsername()) {
       <div class="dropdown-divider"></div>
       <button type="button" ngbDropdownItem (click)="childBridgeAction('restart')">

@@ -11,7 +11,7 @@ describe('smartAutomationsComponent', () => {
   it('loads saved automations without waiting for accessory discovery', async () => {
     let finishConfigLoad!: (value: any) => void
     const configLoad = new Promise(resolve => finishConfigLoad = resolve)
-    const api = fakeApi().respond('get', '/config-editor/plugin/smart-automation', configLoad)
+    const api = fakeApi().respond('get', '/config-editor/plugin/smart-automation', configLoad).respond('get', '/config-editor', { disabledPlugins: [] })
     const accessories = {
       rooms: signal([]),
       start: vi.fn(() => new Promise<void>(() => {})),

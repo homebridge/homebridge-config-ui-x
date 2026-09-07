@@ -18,7 +18,9 @@
       <app-smart-automation-menu
         [bridgeUsername]="childBridgeUsername()"
         [debugEnabled]="debugEnabled()"
+        [disabled]="pluginDisabled()"
         (debugChange)="setDebugLogging($event)"
+        (disabledChange)="pluginDisabled.set($event)"
       />
     }
   </div>
