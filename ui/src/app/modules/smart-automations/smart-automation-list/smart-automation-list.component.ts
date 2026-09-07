@@ -11,6 +11,7 @@ import { SmartAutomation } from '@/app/core/accessories/accessories.interfaces'
 })
 export class SmartAutomationListComponent {
   public readonly automations = input<SmartAutomation[]>([])
+  public readonly loading = input(false)
   public readonly setEnabled = output<{ automation: SmartAutomation, enabled: boolean }>()
   public readonly edit = output<SmartAutomation>()
   public readonly delete = output<string>()

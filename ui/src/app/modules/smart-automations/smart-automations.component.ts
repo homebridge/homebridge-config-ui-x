@@ -42,6 +42,7 @@ export class SmartAutomationsComponent implements OnInit, OnDestroy {
 
   public isAdmin = this.$auth.user.admin
   public readonly smartAutomations = signal<SmartAutomation[]>([])
+  public readonly automationsLoading = signal(true)
   public readonly debugEnabled = signal(false)
   public readonly selectedLightUniqueIds = signal<string[]>([])
   public readonly selectedTargetUniqueId = signal('')
@@ -202,6 +203,7 @@ export class SmartAutomationsComponent implements OnInit, OnDestroy {
 
   private async loadSmartAutomationConfig(): Promise<void> {
     if (!this.isAdmin) {
+      this.automationsLoading.set(false)
       return
     }
 
@@ -213,6 +215,8 @@ export class SmartAutomationsComponent implements OnInit, OnDestroy {
       this.debugEnabled.set(smartAutomationBlock?.debug === true)
     } catch (error) {
       console.error(error)
+    } finally {
+      this.automationsLoading.set(false)
     }
   }
 

@@ -9,16 +9,9 @@ import { provideFakes } from '@/testing/providers'
 
 describe('smartAutomationsComponent', () => {
   it('loads saved automations without waiting for accessory discovery', async () => {
-    const api = fakeApi().respond('get', '/config-editor/plugin/smart-automation', [{
-      platform: 'smart-automation',
-      smartAutomations: [{
-        id: 'automation-1',
-        name: 'Dining Room',
-        type: 'smart-light-group',
-        uniqueIds: ['light-1'],
-        enabled: true,
-      }],
-    }])
+    let finishConfigLoad!: (value: any) => void
+    const configLoad = new Promise(resolve => finishConfigLoad = resolve)
+    const api = fakeApi().respond('get', '/config-editor/plugin/smart-automation', configLoad)
     const accessories = {
       rooms: signal([]),
       start: vi.fn(() => new Promise<void>(() => {})),
@@ -41,10 +34,24 @@ describe('smartAutomationsComponent', () => {
 
     const fixture = TestBed.createComponent(SmartAutomationsComponent)
     fixture.detectChanges()
+
+    expect(fixture.componentInstance.automationsLoading()).toBe(true)
+    finishConfigLoad([{
+      platform: 'smart-automation',
+      smartAutomations: [{
+        id: 'automation-1',
+        name: 'Dining Room',
+        type: 'smart-light-group',
+        uniqueIds: ['light-1'],
+        enabled: true,
+      }],
+    }])
+    await Promise.resolve()
     await Promise.resolve()
 
     expect(accessories.start).toHaveBeenCalledOnce()
     expect(api.callsTo('get', '/config-editor/plugin/smart-automation')).toHaveLength(1)
+    expect(fixture.componentInstance.automationsLoading()).toBe(false)
     expect(fixture.componentInstance.smartAutomations()).toEqual([
       expect.objectContaining({ id: 'automation-1', name: 'Dining Room' }),
     ])

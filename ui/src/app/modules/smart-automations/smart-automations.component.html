@@ -34,6 +34,7 @@
     <div class="col-xl-4 col-lg-5">
       <app-smart-automation-list
         [automations]="smartAutomations()"
+        [loading]="automationsLoading()"
         (setEnabled)="setSmartAutomationEnabled($event.automation, $event.enabled)"
         (edit)="editSmartAutomation($event)"
         (delete)="deleteSmartAutomation($event)"
