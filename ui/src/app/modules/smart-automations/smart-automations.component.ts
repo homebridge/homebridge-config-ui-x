@@ -59,8 +59,11 @@ export class SmartAutomationsComponent implements OnInit, OnDestroy {
   public ngOnInit(): void {
     this.$settings.setPageTitle('Smart Automation')
 
+    // Loading the saved rules does not depend on accessory discovery. Keep
+    // these requests independent so a slow or reconnecting accessories socket
+    // cannot leave the automation list empty on the initial page load.
+    void this.loadSmartAutomationConfig()
     void this.$accessories.start()
-      .then(() => this.loadSmartAutomationConfig())
       .catch((error) => {
         console.error(error)
       })
