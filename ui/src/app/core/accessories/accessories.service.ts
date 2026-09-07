@@ -362,7 +362,7 @@ export class AccessoriesService {
    * Check if a cached service matches a discovered service.
    *
    * Matching priority:
-   * 1. nameBasedUniqueId (stable across sessions, available from hap-client)
+   * 1. nameBasedUniqueId scoped to a nonempty serial number and bridge
    * 2. uniqueId (stable within a session, may change between sessions)
    * 3. Fallback: name + serial + bridge + uuid (legacy layouts without nameBasedUniqueId)
    *
@@ -375,20 +375,25 @@ export class AccessoriesService {
         && cachedService.bridge === (discoveredService.instance?.username || discoveredService.bridge)
     }
 
-    // Primary match: nameBasedUniqueId (stable across sessions)
-    if (cachedService.nameBasedUniqueId && discoveredService.nameBasedUniqueId) {
+    const bridge = discoveredService.instance?.username || discoveredService.bridge
+    const serial = discoveredService.accessoryInformation?.['Serial Number'] || discoveredService.serial
+    if (cachedService.bridge !== bridge || (cachedService.serial && serial && cachedService.serial !== serial)) {
+      return false
+    }
+
+    // Names can be identical on different devices (e.g. two dual-outlet plugs).
+    // Only use a name-based identity after establishing the physical device.
+    const sameDevice = !!cachedService.serial && cachedService.serial === serial
+    if (sameDevice && cachedService.nameBasedUniqueId && discoveredService.nameBasedUniqueId) {
       return cachedService.nameBasedUniqueId === discoveredService.nameBasedUniqueId
     }
 
-    // Secondary match: uniqueId
-    if (cachedService.uniqueId === discoveredService.uniqueId) {
+    if (cachedService.uniqueId && cachedService.uniqueId === discoveredService.uniqueId) {
       return true
     }
 
-    // Fallback: multi-field match for legacy layouts without nameBasedUniqueId
-    return cachedService.name === (discoveredService.serviceName || discoveredService.name)
-      && cachedService.serial === (discoveredService.accessoryInformation?.['Serial Number'] || discoveredService.serial)
-      && cachedService.bridge === (discoveredService.instance?.username || discoveredService.bridge)
+    return sameDevice
+      && cachedService.name === (discoveredService.serviceName || discoveredService.name)
       && cachedService.uuid === discoveredService.uuid
   }
 
@@ -494,7 +499,14 @@ export class AccessoriesService {
    * Get a stable key for a service, preferring nameBasedUniqueId
    */
   private getServiceKey(service: any): string {
-    return service.nameBasedUniqueId || service.uniqueId
+    const bridge = service.instance?.username || service.bridge
+    const serial = service.accessoryInformation?.['Serial Number'] || service.serial
+    if (service.protocol === 'matter' || service.uniqueId?.startsWith('matter:')) {
+      return JSON.stringify([bridge, service.uniqueId])
+    }
+    return service.nameBasedUniqueId && serial
+      ? JSON.stringify([bridge, serial, service.nameBasedUniqueId])
+      : JSON.stringify([bridge, service.uniqueId])
   }
 
   /**

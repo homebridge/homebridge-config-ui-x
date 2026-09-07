@@ -541,6 +541,45 @@ describe('AccessoriesService', () => {
       })
     }
 
+    it('keeps same-named outlets on different plugs separate through discovery and save', async () => {
+      const plugs = ['PLUG-A', 'PLUG-B'].map((serial, index) => layoutEntry({
+        uniqueId: `plug-${index}`,
+        serial,
+        nameBasedUniqueId: 'shared-outlet-name',
+        customName: `Custom ${index}`,
+      }))
+      await start({ layout: [{ name: 'Kitchen', isDefault: true, services: plugs }] })
+      sendData(...plugs.map(plug => rawHap({
+        uniqueId: plug.uniqueId,
+        nameBasedUniqueId: plug.nameBasedUniqueId,
+        accessoryInformation: { 'Serial Number': plug.serial },
+      })))
+      expect(service.rooms()[0].services.map(s => s.customName)).toEqual(['Custom 0', 'Custom 1'])
+      await service.saveLayout()
+      const saved = io.requests.find(entry => entry.resource === 'save-layout')!.payload.layout[0].services
+      expect(saved.map((s: AccessoryLayoutService) => s.customName)).toEqual(['Custom 0', 'Custom 1'])
+    })
+
+    it('preserves an offline plug when an online plug shares its name-based id', async () => {
+      const plugs = ['PLUG-A', 'PLUG-B'].map((serial, index) => layoutEntry({
+        uniqueId: `plug-${index}`,
+        serial,
+        nameBasedUniqueId: 'shared-outlet-name',
+        customName: `Custom ${index}`,
+      }))
+      await start({ layout: [{ name: 'Kitchen', isDefault: true, services: plugs }] })
+      sendData(rawHap({ uniqueId: 'plug-0', nameBasedUniqueId: 'shared-outlet-name', accessoryInformation: { 'Serial Number': 'PLUG-A' } }))
+      await service.saveLayout()
+      const saved = io.requests.find(entry => entry.resource === 'save-layout')!.payload.layout[0].services
+      expect(saved.map((s: AccessoryLayoutService) => s.customName)).toEqual(['Custom 0', 'Custom 1'])
+    })
+
+    it('does not infer device identity from a shared name when serial numbers are absent', async () => {
+      await withLayout(layoutEntry({ uniqueId: 'old', serial: '', nameBasedUniqueId: 'same-name' }))
+      sendData(rawHap({ uniqueId: 'new', nameBasedUniqueId: 'same-name', accessoryInformation: {} }))
+      expect(idsIn('Hallway')).toEqual([])
+    })
+
     it('prefers nameBasedUniqueId over a changed uniqueId', async () => {
       // uniqueId is only stable within a session, so a restarted child bridge
       // hands back a different one for the same accessory
