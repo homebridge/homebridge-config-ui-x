@@ -1,0 +1,17 @@
+<div class="modal-header">
+  <h5 class="modal-title">Smart Automation Plugin Config</h5>
+  <button type="button" class="btn-close" aria-label="Close" (click)="dismiss()"></button>
+</div>
+<div class="modal-body">
+  <div class="form-check form-switch">
+    <input id="smart-automation-debug" type="checkbox" class="form-check-input" [(ngModel)]="debugEnabled" />
+    <label class="form-check-label" for="smart-automation-debug">
+      Debug logging
+      <small class="text-muted d-block">Include detailed rule evaluation and accessory changes in the log.</small>
+    </label>
+  </div>
+</div>
+<div class="modal-footer">
+  <button type="button" class="btn btn-elegant" (click)="dismiss()">Cancel</button>
+  <button type="button" class="btn btn-primary" (click)="save()">Save</button>
+</div>

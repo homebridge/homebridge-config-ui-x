@@ -7,6 +7,7 @@ import { ApiService } from '@/app/core/communication/api.service'
 import { SettingsService } from '@/app/core/ui/settings.service'
 import { SmartAutomationFormComponent } from '@/app/modules/smart-automations/smart-automation-form/smart-automation-form.component'
 import { SmartAutomationListComponent } from '@/app/modules/smart-automations/smart-automation-list/smart-automation-list.component'
+import { SmartAutomationMenuComponent } from '@/app/modules/smart-automations/smart-automation-menu/smart-automation-menu.component'
 
 interface ConfigPlatformBlock {
   platform: string
@@ -28,6 +29,7 @@ const SMART_AUTOMATION_PLATFORM = 'smart-automation'
   imports: [
     SmartAutomationFormComponent,
     SmartAutomationListComponent,
+    SmartAutomationMenuComponent,
   ],
   standalone: true,
   templateUrl: './smart-automations.component.html',
@@ -42,6 +44,9 @@ export class SmartAutomationsComponent implements OnInit, OnDestroy {
 
   public isAdmin = this.$auth.user.admin
   public readonly smartAutomations = signal<SmartAutomation[]>([])
+  public readonly automationsLoading = signal(true)
+  public readonly childBridgeUsername = signal('')
+  public readonly pluginDisabled = signal(false)
   public readonly debugEnabled = signal(false)
   public readonly selectedLightUniqueIds = signal<string[]>([])
   public readonly selectedTargetUniqueId = signal('')
@@ -59,8 +64,12 @@ export class SmartAutomationsComponent implements OnInit, OnDestroy {
   public ngOnInit(): void {
     this.$settings.setPageTitle('Smart Automation')
 
+    // Loading the saved rules does not depend on accessory discovery. Keep
+    // these requests independent so a slow or reconnecting accessories socket
+    // cannot leave the automation list empty on the initial page load.
+    void this.loadSmartAutomationConfig()
+    void this.loadSmartAutomationDisabledState()
     void this.$accessories.start()
-      .then(() => this.loadSmartAutomationConfig())
       .catch((error) => {
         console.error(error)
       })
@@ -193,12 +202,9 @@ export class SmartAutomationsComponent implements OnInit, OnDestroy {
     await this.syncSmartAutomationChildBridgeConfig()
   }
 
-  public onDebugLoggingChange(event: Event): void {
-    void this.setDebugLogging((event.target as HTMLInputElement).checked)
-  }
-
   private async loadSmartAutomationConfig(): Promise<void> {
     if (!this.isAdmin) {
+      this.automationsLoading.set(false)
       return
     }
 
@@ -208,6 +214,21 @@ export class SmartAutomationsComponent implements OnInit, OnDestroy {
       const switches = (smartAutomationBlock?.smartAutomations || []).filter(a => typeof a?.name === 'string')
       this.smartAutomations.set(switches)
       this.debugEnabled.set(smartAutomationBlock?.debug === true)
+      this.childBridgeUsername.set(smartAutomationBlock?._bridge?.username || '')
+    } catch (error) {
+      console.error(error)
+    } finally {
+      this.automationsLoading.set(false)
+    }
+  }
+
+  private async loadSmartAutomationDisabledState(): Promise<void> {
+    if (!this.isAdmin) {
+      return
+    }
+    try {
+      const config = await this.$api.get<{ disabledPlugins?: string[] }>('/config-editor')
+      this.pluginDisabled.set(config.disabledPlugins?.includes('homebridge-smart-automation') === true)
     } catch (error) {
       console.error(error)
     }

@@ -14,26 +14,22 @@
       <strong>{{ smartAutomations().length }}</strong>
       <span>{{ smartAutomations().length === 1 ? 'automation' : 'automations' }}</span>
     </div>
-    <div class="debug-toggle form-check form-switch mb-0">
-      <input
-        id="smart-automation-debug"
-        type="checkbox"
-        class="form-check-input"
-        [checked]="debugEnabled()"
-        [disabled]="!isAdmin"
-        (change)="onDebugLoggingChange($event)"
+    @if (isAdmin) {
+      <app-smart-automation-menu
+        [bridgeUsername]="childBridgeUsername()"
+        [debugEnabled]="debugEnabled()"
+        [disabled]="pluginDisabled()"
+        (debugChange)="setDebugLogging($event)"
+        (disabledChange)="pluginDisabled.set($event)"
       />
-      <label class="form-check-label" for="smart-automation-debug">
-        Debug logging
-        <small class="text-muted d-block">Applies after restart</small>
-      </label>
-    </div>
+    }
   </div>
 
   <div class="row g-3 align-items-start">
     <div class="col-xl-4 col-lg-5">
       <app-smart-automation-list
         [automations]="smartAutomations()"
+        [loading]="automationsLoading()"
         (setEnabled)="setSmartAutomationEnabled($event.automation, $event.enabled)"
         (edit)="editSmartAutomation($event)"
         (delete)="deleteSmartAutomation($event)"

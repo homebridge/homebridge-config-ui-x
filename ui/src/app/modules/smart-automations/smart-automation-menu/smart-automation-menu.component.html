@@ -1,0 +1,60 @@
+<div ngbDropdown placement="bottom-end" class="smart-automation-menu">
+  <button
+    type="button"
+    class="btn btn-link primary-text p-2 dropdown-toggle-no-outline"
+    ngbDropdownToggle
+    [attr.aria-label]="'plugins.button_actions' | translate"
+  >
+    <i class="fas fa-ellipsis-v fa-lg" aria-hidden="true"></i>
+  </button>
+  <div ngbDropdownMenu>
+    <button type="button" ngbDropdownItem (click)="openSettings()">
+      <i class="fas fa-sliders" aria-hidden="true"></i>
+      {{ 'plugins.button_settings' | translate }}
+    </button>
+    <button type="button" ngbDropdownItem (click)="viewLogs()">
+      <i class="fas fa-wave-square" aria-hidden="true"></i>
+      {{ 'plugins.manage.plugin_logs' | translate }}
+    </button>
+    <button type="button" ngbDropdownItem (click)="openJsonEditor()">
+      <i class="fas fa-code" aria-hidden="true"></i>
+      {{ 'plugins.manage.json_config' | translate }}
+    </button>
+    @if (!disabled()) {
+      <button type="button" ngbDropdownItem (click)="disablePlugin()">
+        <i class="far fa-circle-pause" aria-hidden="true"></i>
+        {{ 'plugins.manage.disable' | translate }}
+      </button>
+    } @else {
+      <button type="button" ngbDropdownItem (click)="enablePlugin()">
+        <i class="far fa-circle-play" aria-hidden="true"></i>
+        {{ 'plugins.manage.enable' | translate }}
+      </button>
+    }
+    @if (bridgeUsername()) {
+      <div class="dropdown-divider"></div>
+      <button type="button" ngbDropdownItem (click)="childBridgeAction('restart')">
+        <i class="fas fa-power-off" aria-hidden="true"></i>
+        {{ 'child_bridge.restart' | translate }}
+      </button>
+      <button type="button" ngbDropdownItem (click)="childBridgeAction('stop')">
+        <i class="fas fa-stop" aria-hidden="true"></i>
+        {{ 'child_bridge.stop' | translate }}
+      </button>
+      <button type="button" ngbDropdownItem (click)="resetAccessories()">
+        <i class="fas fa-broom" aria-hidden="true"></i>
+        {{ 'child_bridge.reset_accessories' | translate }}
+      </button>
+    }
+    <div class="dropdown-divider"></div>
+    <a
+      ngbDropdownItem
+      rel="noopener noreferrer"
+      target="_blank"
+      href="https://github.com/homebridge/homebridge-config-ui-x/issues"
+    >
+      <i class="far fa-circle-question" aria-hidden="true"></i>
+      {{ 'support.links.issue' | translate }}
+    </a>
+  </div>
+</div>
