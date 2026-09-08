@@ -2,11 +2,11 @@ import { describe, expect, it, vi } from 'vitest'
 
 import { averageTemperature, AverageTemperatureRulesEngine } from '../../src/smart-automation/rules/average-temperature.rules-engine.js'
 
-function temperatureSensor(uniqueId: string, value: unknown) {
+function temperatureSensor(uniqueId: string, value: unknown, name = uniqueId) {
   return {
     type: 'TemperatureSensor',
     uniqueId,
-    serviceName: uniqueId,
+    serviceName: name,
     serviceCharacteristics: value === undefined
       ? []
       : [{ type: 'CurrentTemperature', value, canWrite: false }],
@@ -33,10 +33,11 @@ describe('averageTemperature', () => {
 
 describe('AverageTemperatureRulesEngine', () => {
   it('publishes the average of only the configured sensors', async () => {
+    const log = { debug: vi.fn(), info: vi.fn(), warn: vi.fn() }
     const accessories = {
       getServices: vi.fn(async () => [
-        temperatureSensor('one', 19),
-        temperatureSensor('two', 23),
+        temperatureSensor('one', 19, 'Backyard North'),
+        temperatureSensor('two', 23, 'Backyard South'),
         temperatureSensor('not-selected', 99),
       ]),
     }
@@ -47,13 +48,38 @@ describe('AverageTemperatureRulesEngine', () => {
       type: 'average-temperature',
       uniqueIds: ['one', 'two'],
       enabled: true,
-    }, accessories, { debug: vi.fn(), info: vi.fn(), warn: vi.fn() })
+    }, accessories, log)
 
     engine.start(value => published.push(value))
     await engine.tick()
     engine.stop()
 
     expect(published).toContain(21)
+    expect(log.debug).toHaveBeenCalledWith(
+      'Room Average: inputs [Backyard North=19°C, Backyard South=23°C]; averaged 2 of 2 resolved sensors to 21°C.',
+    )
+  })
+
+  it('identifies resolved sensors whose readings are unavailable', async () => {
+    const log = { debug: vi.fn(), info: vi.fn(), warn: vi.fn() }
+    const engine = new AverageTemperatureRulesEngine({
+      id: 'room-average',
+      name: 'Room Average',
+      type: 'average-temperature',
+      uniqueIds: ['one', 'missing'],
+      enabled: true,
+    }, {
+      getServices: vi.fn(async () => [
+        temperatureSensor('one', 20, 'Backyard'),
+        temperatureSensor('missing', undefined, 'Patio'),
+      ]),
+    }, log)
+
+    await engine.tick()
+
+    expect(log.debug).toHaveBeenCalledWith(
+      'Room Average: inputs [Backyard=20°C, Patio=unavailable]; averaged 1 of 2 resolved sensors to 20°C.',
+    )
   })
 
   it('publishes a new average when a selected sensor sends a HAP Event', async () => {
