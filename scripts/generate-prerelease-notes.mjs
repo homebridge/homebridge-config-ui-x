@@ -79,8 +79,9 @@ const cumulativeSection = cumulativeNotes
   ? `\n\n## Everything included in the v${baseVersion} ${releaseLabel}\n\n${cumulativeNotes}`
   : ''
 
-const notes = `> [!WARNING]
-> This is a ${releaseLabel} test release and is not recommended for production systems.
+const notes = `
+> [!WARNING]
+> This ${releaseLabel} test release is not recommended for production systems.
 
 ## ${comparisonHeading}
 
