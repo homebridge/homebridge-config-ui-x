@@ -33,6 +33,10 @@
     }
     @if (bridgeUsername()) {
       <div class="dropdown-divider"></div>
+      <button type="button" ngbDropdownItem (click)="openBridgeSettings()">
+        <i class="fas fa-bridge" aria-hidden="true"></i>
+        {{ 'child_bridge.bridge_settings' | translate }}
+      </button>
       <button type="button" ngbDropdownItem (click)="childBridgeAction('restart')">
         <i class="fas fa-power-off" aria-hidden="true"></i>
         {{ 'child_bridge.restart' | translate }}

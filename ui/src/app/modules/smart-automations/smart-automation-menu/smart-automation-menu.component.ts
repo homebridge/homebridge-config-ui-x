@@ -80,6 +80,10 @@ export class SmartAutomationMenuComponent {
     void this.$plugins.jsonEditor(SMART_AUTOMATION_PLUGIN)
   }
 
+  public openBridgeSettings(): void {
+    void this.$plugins.bridgeSettings(SMART_AUTOMATION_PLUGIN)
+  }
+
   public async childBridgeAction(action: 'restart' | 'start' | 'stop'): Promise<void> {
     const username = this.bridgeUsername()
     if (!username) {
