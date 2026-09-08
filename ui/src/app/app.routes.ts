@@ -65,7 +65,7 @@ export const routes: Routes = [
       {
         path: 'smart-automations',
         loadComponent: () => import('@/app/modules/smart-automations/smart-automations.component').then(m => m.SmartAutomationsComponent),
-        canActivate: [authGuard],
+        canActivate: [adminGuard],
       },
       {
         path: 'logs',

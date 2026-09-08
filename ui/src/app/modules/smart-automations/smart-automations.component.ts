@@ -168,11 +168,11 @@ export class SmartAutomationsComponent implements OnInit, OnDestroy {
       }
       const current = this.smartAutomations()
       const exists = current.some(item => item.id === saved.id)
-      this.smartAutomations.set(exists
+      const next = exists
         ? current.map(item => item.id === saved.id ? saved : item)
-        : [...current, saved],
-      )
-      await this.syncSmartAutomationChildBridgeConfig()
+        : [...current, saved]
+      await this.syncSmartAutomationChildBridgeConfig(next)
+      this.smartAutomations.set(next)
       this.resetSmartAutomationDraft()
     } catch (error) {
       console.error(error)
@@ -181,11 +181,12 @@ export class SmartAutomationsComponent implements OnInit, OnDestroy {
 
   public async deleteSmartAutomation(id: string): Promise<void> {
     try {
-      this.smartAutomations.set(this.smartAutomations().filter(x => x.id !== id))
+      const next = this.smartAutomations().filter(x => x.id !== id)
+      await this.syncSmartAutomationChildBridgeConfig(next)
+      this.smartAutomations.set(next)
       if (this.smartAutomationDraft.id === id) {
         this.resetSmartAutomationDraft()
       }
-      await this.syncSmartAutomationChildBridgeConfig()
     } catch (error) {
       console.error(error)
     }
@@ -197,16 +198,21 @@ export class SmartAutomationsComponent implements OnInit, OnDestroy {
         ...automation,
         enabled,
       }
-      this.smartAutomations.update(current => current.map(item => item.id === saved.id ? saved : item))
-      await this.syncSmartAutomationChildBridgeConfig()
+      const next = this.smartAutomations().map(item => item.id === saved.id ? saved : item)
+      await this.syncSmartAutomationChildBridgeConfig(next)
+      this.smartAutomations.set(next)
     } catch (error) {
       console.error(error)
     }
   }
 
   public async setDebugLogging(enabled: boolean): Promise<void> {
-    this.debugEnabled.set(enabled)
-    await this.syncSmartAutomationChildBridgeConfig()
+    try {
+      await this.syncSmartAutomationChildBridgeConfig(this.smartAutomations(), enabled)
+      this.debugEnabled.set(enabled)
+    } catch (error) {
+      console.error(error)
+    }
   }
 
   private async loadSmartAutomationConfig(): Promise<void> {
@@ -241,7 +247,10 @@ export class SmartAutomationsComponent implements OnInit, OnDestroy {
     }
   }
 
-  private async syncSmartAutomationChildBridgeConfig(): Promise<void> {
+  private async syncSmartAutomationChildBridgeConfig(
+    automations: SmartAutomation[],
+    debug = this.debugEnabled(),
+  ): Promise<void> {
     if (!this.isAdmin) {
       return
     }
@@ -262,17 +271,24 @@ export class SmartAutomationsComponent implements OnInit, OnDestroy {
         ...(current || {}),
         platform: SMART_AUTOMATION_PLATFORM,
         name: current?.name || 'Smart Automation',
-        debug: this.debugEnabled(),
+        debug,
         _bridge: nextBridge,
-        smartAutomations: this.smartAutomations().map(automation => ({ ...automation })),
+        smartAutomations: automations.map(automation => ({ ...automation })),
       }
       await this.$api.post('/config-editor/plugin/smart-automation', [nextBlock])
+      this.childBridgeUsername.set(nextBridge.username)
 
       // The automation engine runs in its own child-bridge process and reads
       // its rules only during startup. Reload just that bridge after every
       // successful edit so the running engine uses the configuration we have
       // just persisted, without restarting the main bridge or other plugins.
-      await this.$api.put(`/server/restart/${encodeURIComponent(nextBridge.username)}`, {})
+      try {
+        await this.$api.put(`/server/restart/${encodeURIComponent(nextBridge.username)}`, {})
+      } catch (error) {
+        // The configuration is already durable. A failed restart must not make
+        // callers roll the UI back to a state that no longer matches config.json.
+        console.error(error)
+      }
     } catch (error) {
       console.error(error)
       throw error
