@@ -67,6 +67,7 @@ export class AccessoriesService {
       this.hapClient = new HapClient({
         pin: this.configService.homebridgeConfig.bridge.pin,
         pins: this.getChildBridgePins(),
+        ownUsernames: this.getOwnBridgeUsernames(),
         logger: this.logger,
         config: this.configService.ui.accessoryControl || {},
       })
@@ -81,6 +82,35 @@ export class AccessoriesService {
     // down, and re-arm as soon as it is back up while viewers are still
     // connected.
     this.homebridgeIpcService.on('serverStatusUpdate', this.onServerStatusUpdate)
+  }
+
+  /**
+   * The usernames of every bridge that belongs to THIS Homebridge: the main
+   * bridge plus each child bridge in the config.
+   *
+   * Discovery finds every Homebridge on the network, and another install's
+   * bridges refuse our pin by design - their pin belongs to whoever runs them.
+   * Telling hap-client which bridges are ours lets it log those refusals at
+   * debug instead of warning the owner to fix a pin that is not theirs
+   * (#2979, #3001). A child bridge of ours that refuses the pin still warns.
+   */
+  private getOwnBridgeUsernames(): string[] {
+    const config = this.configService.homebridgeConfig
+    const blocks = [
+      ...(Array.isArray(config?.platforms) ? config.platforms : []),
+      ...(Array.isArray(config?.accessories) ? config.accessories : []),
+    ]
+
+    const usernames = new Set<string>()
+    if (config?.bridge?.username) {
+      usernames.add(config.bridge.username)
+    }
+    for (const block of blocks) {
+      if (block?._bridge?.username) {
+        usernames.add(block._bridge.username)
+      }
+    }
+    return [...usernames]
   }
 
   /**

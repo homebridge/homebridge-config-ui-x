@@ -2,22 +2,25 @@
 
 All notable changes to `homebridge-config-ui-x` will be documented in this file. This project tries to adhere to [Semantic Versioning](http://semver.org/).
 
-## v5.29.1 (pending)
+## v5.29.1 (Pending Release)
 
 ### Highlights
 
 
 ### UI Changes
 
+- fix: add crossorigin attribute to manifest link for when using cf tunnels (#3005) (@Macleykun)
+- chore(status): drop the unused tooltip import from the bridges widget
 
 ### Other Changes
 
-- Update of @homebridge/node-pty-prebuilt-multiarch to `v0.15.0`
+- chore(deps): dependency updates
+- fix(accessories): tell hap-client our bridges, so a stranger's refused pin is a debug line (#2979)
 - ci: improve beta release notes and workflow summaries
 
 ### Homebridge Dependencies
 
-- `@homebridge/hap-client` @ `v5.3.0`
+- `@homebridge/hap-client` @ `v5.3.1-beta.0`
 - `@homebridge/node-pty-prebuilt-multiarch` @ `v0.15.0`
 - `@homebridge/plugin-ui-utils` @ `v2.2.6`
 
