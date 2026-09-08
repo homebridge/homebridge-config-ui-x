@@ -1,7 +1,7 @@
 import { ChangeDetectionStrategy, Component, createEnvironmentInjector, EnvironmentInjector, inject, input, model, output } from '@angular/core'
 import { NgbDropdown, NgbDropdownItem, NgbDropdownMenu, NgbDropdownToggle } from '@ng-bootstrap/ng-bootstrap/dropdown'
 import { NgbModal } from '@ng-bootstrap/ng-bootstrap/modal'
-import { TranslatePipe } from '@ngx-translate/core'
+import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 import { firstValueFrom } from 'rxjs'
 
 import { ApiService } from '@/app/core/communication/api.service'
@@ -17,7 +17,7 @@ import { SMART_AUTOMATION_SETTINGS_DATA, SmartAutomationSettingsComponent } from
 
 const SMART_AUTOMATION_PLUGIN = {
   name: 'homebridge-smart-automation',
-  displayName: 'Smart Automation',
+  displayName: '',
   installedVersion: '',
   isConfigured: true,
   links: {
@@ -38,6 +38,7 @@ export class SmartAutomationMenuComponent {
   private $modal = inject(NgbModal)
   private $plugins = inject(ManagePluginsService)
   private $settings = inject(SettingsService)
+  private $translate = inject(TranslateService)
   private $ws = inject(WsService)
 
   public readonly bridgeUsername = input('')
@@ -64,7 +65,7 @@ export class SmartAutomationMenuComponent {
     const injector = createEnvironmentInjector([{
       provide: PLUGIN_LOGS_MODAL_DATA,
       useValue: {
-        plugin: SMART_AUTOMATION_PLUGIN,
+        plugin: this.plugin(),
         childBridges: this.childBridges(),
       },
     }], this.injector)
@@ -77,11 +78,11 @@ export class SmartAutomationMenuComponent {
   }
 
   public openJsonEditor(): void {
-    void this.$plugins.jsonEditor(SMART_AUTOMATION_PLUGIN)
+    void this.$plugins.jsonEditor(this.plugin())
   }
 
   public openBridgeSettings(): void {
-    void this.$plugins.bridgeSettings(SMART_AUTOMATION_PLUGIN)
+    void this.$plugins.bridgeSettings(this.plugin())
   }
 
   public async childBridgeAction(action: 'restart' | 'start' | 'stop'): Promise<void> {
@@ -103,7 +104,7 @@ export class SmartAutomationMenuComponent {
     const injector = createEnvironmentInjector([{
       provide: DISABLE_PLUGIN_MODAL_DATA,
       useValue: {
-        pluginName: SMART_AUTOMATION_PLUGIN.displayName,
+        pluginName: this.$translate.instant('smart_automation.title'),
         isConfigured: true,
         isConfiguredDynamicPlatform: true,
         keepOrphans: this.$settings.keepOrphans,
@@ -129,9 +130,9 @@ export class SmartAutomationMenuComponent {
     const injector = createEnvironmentInjector([{
       provide: CONFIRM_MODAL_DATA,
       useValue: {
-        title: SMART_AUTOMATION_PLUGIN.displayName,
-        message: 'Enable the Smart Automation engine?',
-        confirmButtonLabel: 'Enable',
+        title: this.$translate.instant('smart_automation.title'),
+        message: this.$translate.instant('smart_automation.confirm_enable'),
+        confirmButtonLabel: this.$translate.instant('plugins.manage.enable'),
         faIconClass: 'far fa-circle-play primary-text',
       },
     }], this.injector)
@@ -163,7 +164,7 @@ export class SmartAutomationMenuComponent {
     return [{
       identifier: username,
       manuallyStopped: false,
-      name: 'Smart Automation',
+      name: this.$translate.instant('smart_automation.title'),
       paired: false,
       pid: 0,
       pin: '',
@@ -172,5 +173,12 @@ export class SmartAutomationMenuComponent {
       status: 'unknown',
       username,
     }]
+  }
+
+  private plugin(): Plugin {
+    return {
+      ...SMART_AUTOMATION_PLUGIN,
+      displayName: this.$translate.instant('smart_automation.title'),
+    }
   }
 }

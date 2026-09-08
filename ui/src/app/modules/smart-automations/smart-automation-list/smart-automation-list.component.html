@@ -2,22 +2,28 @@
   <div class="card-body">
     <div class="d-flex align-items-center justify-content-between mb-3">
       <div>
-        <h5 class="card-title mb-1">Your automations</h5>
-        <small class="text-muted">Manage the lights published by the engine.</small>
+        <h5 class="card-title mb-1">
+          {{ 'smart_automation.list.title' | translate }}
+        </h5>
+        <small class="text-muted">{{ 'smart_automation.list.help' | translate }}</small>
       </div>
     </div>
 
     @if (loading()) {
       <div class="automation-empty text-center" role="status" aria-live="polite">
         <span class="spinner-border spinner-border-sm mb-3" aria-hidden="true"></span>
-        <h6>Loading automations</h6>
-        <p class="text-muted small mb-0">Reading your saved Smart Automation configuration.</p>
+        <h6>{{ 'smart_automation.loading.title' | translate }}</h6>
+        <p class="text-muted small mb-0">
+          {{ 'smart_automation.loading.message' | translate }}
+        </p>
       </div>
     } @else if (!automations().length) {
       <div class="automation-empty text-center">
         <i class="fas fa-wand-magic-sparkles mb-3" aria-hidden="true"></i>
-        <h6>No automations yet</h6>
-        <p class="text-muted small mb-0">Configure your first Smart Light Group using the editor.</p>
+        <h6>{{ 'smart_automation.empty.title' | translate }}</h6>
+        <p class="text-muted small mb-0">
+          {{ 'smart_automation.empty.message' | translate }}
+        </p>
       </div>
     } @else {
       <div class="automation-items">
@@ -41,38 +47,86 @@
                     [class.bg-success]="automation.enabled"
                     [class.bg-secondary]="!automation.enabled"
                   >
-                    {{ automation.enabled ? 'Enabled' : 'Disabled' }}
+                    {{
+                      (automation.enabled ? 'smart_automation.status.enabled' : 'smart_automation.status.disabled')
+                        | translate
+                    }}
                   </span>
                 </div>
                 @if (automation.type === 'door-ajar') {
                   <small class="text-muted d-block">
-                    Door Left Ajar &middot; alerts after {{ automation.openMinutes ?? 5 }}
-                    {{ (automation.openMinutes ?? 5) === 1 ? 'minute' : 'minutes' }} &middot; repeats every
-                    {{ automation.repeatMinutes ?? 5 }}
-                    {{ (automation.repeatMinutes ?? 5) === 1 ? 'minute' : 'minutes' }}
+                    {{
+                      'smart_automation.summary.door_ajar'
+                        | translate
+                          : {
+                              open: automation.openMinutes ?? 5,
+                              openUnit:
+                                ((automation.openMinutes ?? 5) === 1
+                                  ? 'smart_automation.unit.minute'
+                                  : 'smart_automation.unit.minutes'
+                                ) | translate,
+                              repeat: automation.repeatMinutes ?? 5,
+                              repeatUnit:
+                                ((automation.repeatMinutes ?? 5) === 1
+                                  ? 'smart_automation.unit.minute'
+                                  : 'smart_automation.unit.minutes'
+                                ) | translate,
+                            }
+                    }}
                   </small>
                 } @else if (automation.type === 'humidity-control') {
                   <small class="text-muted d-block">
-                    Humidity-controlled AC &middot; on above {{ automation.onHumidity ?? 60 }}% &middot; off below
-                    {{ automation.offHumidity ?? 50 }}%
+                    {{
+                      'smart_automation.summary.humidity_control'
+                        | translate
+                          : {
+                              on: automation.onHumidity ?? 60,
+                              off: automation.offHumidity ?? 50,
+                            }
+                    }}
                   </small>
                 } @else if (automation.type === 'average-temperature') {
                   <small class="text-muted d-block">
-                    Average Temperature &middot; {{ automation.uniqueIds.length }}
-                    {{ automation.uniqueIds.length === 1 ? 'sensor' : 'sensors' }}
+                    {{
+                      'smart_automation.summary.average_temperature'
+                        | translate
+                          : {
+                              count: automation.uniqueIds.length,
+                              unit:
+                                (automation.uniqueIds.length === 1
+                                  ? 'smart_automation.unit.sensor'
+                                  : 'smart_automation.unit.sensors'
+                                ) | translate,
+                            }
+                    }}
                   </small>
                 } @else {
                   <small class="text-muted d-block">
-                    Smart Light Group &middot; {{ getLightbulbTypeLabel(automation.lightbulbType) }} &middot;
-                    {{ automation.uniqueIds.length }}
-                    {{ automation.uniqueIds.length === 1 ? 'light' : 'lights' }}
+                    {{
+                      'smart_automation.summary.smart_light_group'
+                        | translate
+                          : {
+                              lightType: getLightbulbTypeLabel(automation.lightbulbType) | translate,
+                              count: automation.uniqueIds.length,
+                              unit:
+                                (automation.uniqueIds.length === 1
+                                  ? 'smart_automation.unit.light'
+                                  : 'smart_automation.unit.lights'
+                                ) | translate,
+                            }
+                    }}
                   </small>
                 }
                 <div class="automation-actions mt-3">
                   <button
                     type="button"
                     class="btn btn-sm btn-elegant"
-                    (click)="setEnabled.emit({ automation, enabled: !automation.enabled })"
+                    (click)="
+                      setEnabled.emit({
+                        automation,
+                        enabled: !automation.enabled,
+                      })
+                    "
                   >
                     <i
                       class="fas"
@@ -80,15 +134,16 @@
                       [class.fa-pause]="automation.enabled"
                       [class.fa-play]="!automation.enabled"
                     ></i>
-                    {{ automation.enabled ? 'Disable' : 'Enable' }}
+                    {{ (automation.enabled ? 'plugins.manage.disable' : 'plugins.manage.enable') | translate }}
                   </button>
                   <button type="button" class="btn btn-sm btn-elegant" (click)="edit.emit(automation)">
-                    <i class="fas fa-pencil" aria-hidden="true"></i> Edit
+                    <i class="fas fa-pencil" aria-hidden="true"></i>
+                    {{ 'form.button_edit' | translate }}
                   </button>
                   <button
                     type="button"
                     class="btn btn-sm btn-outline-danger"
-                    [attr.aria-label]="`Delete ${automation.name}`"
+                    [attr.aria-label]="'smart_automation.action.delete' | translate: { name: automation.name }"
                     (click)="delete.emit(automation.id)"
                   >
                     <i class="fas fa-trash" aria-hidden="true"></i>

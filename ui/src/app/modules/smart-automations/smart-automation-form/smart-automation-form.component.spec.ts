@@ -1,8 +1,10 @@
 import { TestBed } from '@angular/core/testing'
-import { describe, expect, it } from 'vitest'
+import { TranslateService } from '@ngx-translate/core'
+import { beforeEach, describe, expect, it } from 'vitest'
 
 import { ServiceTypeX, SmartAutomation } from '@/app/core/accessories/accessories.interfaces'
 import { SmartAutomationFormComponent } from '@/app/modules/smart-automations/smart-automation-form/smart-automation-form.component'
+import { provideTestTranslate } from '@/testing/providers'
 
 function publishedLight(automationId: string): ServiceTypeX {
   return {
@@ -16,6 +18,16 @@ function publishedLight(automationId: string): ServiceTypeX {
 }
 
 describe('smartAutomationFormComponent', () => {
+  beforeEach(() => {
+    TestBed.configureTestingModule({ providers: [provideTestTranslate()] })
+    TestBed.inject(TranslateService).setTranslation('en', {
+      'smart_automation.type.average_temperature': 'Average Temperature Sensor',
+      'smart_automation.type.door_ajar': 'Door Left Ajar',
+      'smart_automation.type.humidity_control': 'Humidity-controlled AC',
+      'smart_automation.type.smart_light_group': 'Smart Light Group',
+    })
+  })
+
   it('sorts automation types by their displayed names', () => {
     const fixture = TestBed.createComponent(SmartAutomationFormComponent)
     fixture.componentRef.setInput('draft', { type: 'smart-light-group' } satisfies Partial<SmartAutomation>)
@@ -31,8 +43,7 @@ describe('smartAutomationFormComponent', () => {
       'Humidity-controlled AC',
       'Smart Light Group',
     ])
-    expect(fixture.componentInstance.getAutomationDescription('smart-light-group')).toContain('Primarily designed for automations')
-    expect(fixture.componentInstance.getAutomationDescription('smart-light-group')).toContain('motion is detected by the front door')
+    expect(fixture.componentInstance.getAutomationDescription('smart-light-group')).toBe('smart_automation.description.smart_light_group')
   })
 
   it('excludes only the accessory published by the automation being edited', () => {

@@ -1,11 +1,12 @@
 import { ChangeDetectionStrategy, Component, input, output } from '@angular/core'
 import { FormsModule } from '@angular/forms'
+import { TranslatePipe } from '@ngx-translate/core'
 
 import { ServiceTypeX, SmartAutomation } from '@/app/core/accessories/accessories.interfaces'
 
 @Component({
   selector: 'app-smart-automation-form',
-  imports: [FormsModule],
+  imports: [FormsModule, TranslatePipe],
   standalone: true,
   templateUrl: './smart-automation-form.component.html',
   styleUrl: './smart-automation-form.component.scss',
@@ -41,22 +42,22 @@ export class SmartAutomationFormComponent {
 
   public getAutomationDescription(type: SmartAutomation['type'] | undefined): string {
     if (type === 'smart-light-group') {
-      return 'Publishes a light that stores the selected lights’ complete state, passes brightness and colour changes through while on, then restores the original state when turned off. Primarily designed for automations — for example, when motion is detected by the front door, temporarily bring all outside lights to 100% brightness, wait a few minutes, then return them to their previous state. It can also be used with Siri or other voice assistants.'
+      return 'smart_automation.description.smart_light_group'
     }
 
     if (type === 'door-ajar') {
-      return 'Publishes a contact sensor for the chosen door. If the door is left open longer than the time below, the sensor opens — use that as the trigger for a Home app automation. While the door stays open it keeps alerting at the repeat interval, and it resets as soon as the door is closed.'
+      return 'smart_automation.description.door_ajar'
     }
 
     if (type === 'humidity-control') {
-      return 'Watches a humidity sensor and controls an air conditioner using separate on and off thresholds. The gap between the thresholds prevents rapid cycling: it turns on above the high threshold, stays unchanged between them, and turns off below the low threshold.'
+      return 'smart_automation.description.humidity_control'
     }
 
     if (type === 'average-temperature') {
-      return 'Publishes one temperature sensor containing the average of all selected temperature sensors. Sensors without a current numeric reading are ignored.'
+      return 'smart_automation.description.average_temperature'
     }
 
-    return 'Select an automation type to see how it works.'
+    return 'smart_automation.description.select_type'
   }
 
   /**

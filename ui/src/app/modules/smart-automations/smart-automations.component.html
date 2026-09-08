@@ -4,15 +4,21 @@
       <i class="fas fa-wand-magic-sparkles"></i>
     </div>
     <div class="flex-grow-1">
-      <h3 class="primary-text mb-1">Smart Automation</h3>
+      <h3 class="primary-text mb-1">
+        {{ 'smart_automation.title' | translate }}
+      </h3>
       <p class="text-muted mb-0">
-        Create intelligent automations that monitor accessories, evaluate conditions, and control your Homebridge
-        devices.
+        {{ 'smart_automation.subtitle' | translate }}
       </p>
     </div>
     <div class="automation-count">
       <strong>{{ smartAutomations().length }}</strong>
-      <span>{{ smartAutomations().length === 1 ? 'automation' : 'automations' }}</span>
+      <span>
+        {{
+          (smartAutomations().length === 1 ? 'smart_automation.unit.automation' : 'smart_automation.unit.automations')
+            | translate
+        }}
+      </span>
     </div>
     @if (isAdmin) {
       <app-smart-automation-menu
