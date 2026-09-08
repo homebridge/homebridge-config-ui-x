@@ -32,6 +32,7 @@ describe('smartAutomationFormComponent', () => {
       'Smart Light Group',
     ])
     expect(fixture.componentInstance.getAutomationDescription('smart-light-group')).toContain('Primarily designed for automations')
+    expect(fixture.componentInstance.getAutomationDescription('smart-light-group')).toContain('motion is detected by the front door')
   })
 
   it('excludes only the accessory published by the automation being edited', () => {
