@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, inject, OnDestroy, OnInit, signal } from '@angular/core'
+import { TranslatePipe, TranslateService } from '@ngx-translate/core'
 
 import { ServiceTypeX, SmartAutomation } from '@/app/core/accessories/accessories.interfaces'
 import { AccessoriesService } from '@/app/core/accessories/accessories.service'
@@ -30,6 +31,7 @@ const SMART_AUTOMATION_PLATFORM = 'smart-automation'
     SmartAutomationFormComponent,
     SmartAutomationListComponent,
     SmartAutomationMenuComponent,
+    TranslatePipe,
   ],
   standalone: true,
   templateUrl: './smart-automations.component.html',
@@ -41,6 +43,7 @@ export class SmartAutomationsComponent implements OnInit, OnDestroy {
   private $api = inject(ApiService)
   private $auth = inject(AuthService)
   private $settings = inject(SettingsService)
+  private $translate = inject(TranslateService)
 
   public isAdmin = this.$auth.user.admin
   public readonly smartAutomations = signal<SmartAutomation[]>([])
@@ -62,7 +65,7 @@ export class SmartAutomationsComponent implements OnInit, OnDestroy {
   }
 
   public ngOnInit(): void {
-    this.$settings.setPageTitle('Smart Automation')
+    this.$settings.setPageTitle('smart_automation.title')
 
     // Loading the saved rules does not depend on accessory discovery. Keep
     // these requests independent so a slow or reconnecting accessories socket
@@ -109,6 +112,10 @@ export class SmartAutomationsComponent implements OnInit, OnDestroy {
     this.smartAutomationDraft.type = type
     this.selectedLightUniqueIds.set([])
     this.selectedTargetUniqueId.set('')
+  }
+
+  public closeSmartAutomationEditor(): void {
+    this.resetSmartAutomationDraft()
   }
 
   public async saveSmartAutomation(): Promise<void> {
@@ -311,12 +318,12 @@ export class SmartAutomationsComponent implements OnInit, OnDestroy {
       return
     }
     const suffix = {
-      'smart-light-group': 'Group',
-      'door-ajar': 'Ajar',
-      'humidity-control': 'Humidity Control',
-      'average-temperature': 'Average Temperature',
+      'smart-light-group': 'smart_automation.name_suffix.group',
+      'door-ajar': 'smart_automation.name_suffix.ajar',
+      'humidity-control': 'smart_automation.name_suffix.humidity_control',
+      'average-temperature': 'smart_automation.name_suffix.average_temperature',
     }[this.smartAutomationDraft.type || 'smart-light-group']
-    this.smartAutomationDraft.name = `${deviceName} ${suffix}`
+    this.smartAutomationDraft.name = `${deviceName} ${this.$translate.instant(suffix)}`
   }
 
   private generateBridgePin(): string {

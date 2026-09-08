@@ -5,7 +5,7 @@ import { describe, expect, it, vi } from 'vitest'
 import { AccessoriesService } from '@/app/core/accessories/accessories.service'
 import { SmartAutomationsComponent } from '@/app/modules/smart-automations/smart-automations.component'
 import { fakeApi, makeAuth, makeSettings } from '@/testing'
-import { provideFakes } from '@/testing/providers'
+import { provideFakes, provideTestTranslate } from '@/testing/providers'
 
 describe('smartAutomationsComponent', () => {
   it('loads saved automations without waiting for accessory discovery', async () => {
@@ -20,6 +20,7 @@ describe('smartAutomationsComponent', () => {
 
     TestBed.configureTestingModule({
       providers: [
+        provideTestTranslate(),
         provideFakes({
           api,
           auth: makeAuth({ user: { admin: true } }),
@@ -29,7 +30,7 @@ describe('smartAutomationsComponent', () => {
       ],
     })
     TestBed.overrideComponent(SmartAutomationsComponent, {
-      set: { imports: [], schemas: [NO_ERRORS_SCHEMA] },
+      set: { imports: [], schemas: [NO_ERRORS_SCHEMA], template: '' },
     })
 
     const fixture = TestBed.createComponent(SmartAutomationsComponent)

@@ -2,12 +2,19 @@ import type { ServiceType } from '@homebridge/hap-client'
 
 import type { AverageTemperatureConfig, SmartAutomationAccessoryController, SmartAutomationMonitor } from '../smart-automation.interfaces.js'
 
+function currentTemperature(service: ServiceType): number | undefined {
+  const value = service.serviceCharacteristics.find(characteristic => characteristic.type === 'CurrentTemperature')?.value
+  if (value === null || value === undefined) {
+    return undefined
+  }
+  const temperature = Number(value)
+  return Number.isFinite(temperature) ? temperature : undefined
+}
+
 export function averageTemperature(services: ServiceType[]): number | undefined {
   const values = services
-    .map(service => service.serviceCharacteristics.find(characteristic => characteristic.type === 'CurrentTemperature')?.value)
-    .filter(value => value !== null && value !== undefined)
-    .map(Number)
-    .filter(Number.isFinite)
+    .map(currentTemperature)
+    .filter((value): value is number => value !== undefined)
 
   if (!values.length) {
     return undefined
@@ -48,6 +55,10 @@ export class AverageTemperatureRulesEngine implements SmartAutomationMonitor<num
       const configured = new Set(this.config.uniqueIds)
       const services = (await this.accessories.getServices())
         .filter(service => configured.has(service.uniqueId))
+      const readings = services.map(service => ({
+        name: service.serviceName || service.uniqueId,
+        value: currentTemperature(service),
+      }))
       const value = averageTemperature(services)
 
       if (value === undefined) {
@@ -55,7 +66,11 @@ export class AverageTemperatureRulesEngine implements SmartAutomationMonitor<num
         return
       }
 
-      this.log.debug(`${this.config.name}: averaged ${services.length} resolved sensor${services.length === 1 ? '' : 's'} to ${value}°C.`)
+      const inputs = readings
+        .map(reading => `${reading.name}=${reading.value === undefined ? 'unavailable' : `${reading.value}°C`}`)
+        .join(', ')
+      const reportingSensors = readings.filter(reading => reading.value !== undefined).length
+      this.log.debug(`${this.config.name}: inputs [${inputs}]; averaged ${reportingSensors} of ${services.length} resolved sensor${services.length === 1 ? '' : 's'} to ${value}°C.`)
       this.publish?.(value)
     } catch (error: any) {
       this.log.warn(`${this.config.name}: could not average the temperature sensors: ${error?.message || error}`)

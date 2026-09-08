@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, inject, InjectionToken } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { NgbActiveModal } from '@ng-bootstrap/ng-bootstrap/modal'
+import { TranslatePipe } from '@ngx-translate/core'
 
 interface SmartAutomationSettingsData {
   debugEnabled: boolean
@@ -11,7 +12,7 @@ export const SMART_AUTOMATION_SETTINGS_DATA = new InjectionToken<SmartAutomation
 
 @Component({
   selector: 'app-smart-automation-settings',
-  imports: [FormsModule],
+  imports: [FormsModule, TranslatePipe],
   standalone: true,
   templateUrl: './smart-automation-settings.component.html',
   changeDetection: ChangeDetectionStrategy.OnPush,
