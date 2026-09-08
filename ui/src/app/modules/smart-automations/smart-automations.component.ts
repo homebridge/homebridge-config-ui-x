@@ -111,6 +111,10 @@ export class SmartAutomationsComponent implements OnInit, OnDestroy {
     this.selectedTargetUniqueId.set('')
   }
 
+  public closeSmartAutomationEditor(): void {
+    this.resetSmartAutomationDraft()
+  }
+
   public async saveSmartAutomation(): Promise<void> {
     try {
       const type = this.smartAutomationDraft.type || 'smart-light-group'

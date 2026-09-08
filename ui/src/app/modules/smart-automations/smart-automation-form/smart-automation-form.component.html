@@ -220,7 +220,12 @@
         }
       </div>
     }
-    <div class="d-flex justify-content-end mt-4">
+    <div class="d-flex justify-content-between mt-4">
+      <div>
+        @if (draft().id) {
+          <button type="button" class="btn btn-elegant" (click)="cancelEdit.emit()">Close</button>
+        }
+      </div>
       <button type="button" class="btn btn-primary" [disabled]="!canSave()" (click)="save.emit()">
         <i class="fas fa-check me-1" aria-hidden="true"></i>
         {{ draft().id ? 'Save changes' : 'Create automation' }}

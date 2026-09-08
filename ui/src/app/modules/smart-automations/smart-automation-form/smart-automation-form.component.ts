@@ -18,6 +18,7 @@ export class SmartAutomationFormComponent {
   public readonly selectedTargetUniqueId = input('')
   public readonly lightSelectionChange = output<{ uniqueId: string, selected: boolean, single?: boolean, target?: boolean }>()
   public readonly automationTypeChange = output<SmartAutomation['type']>()
+  public readonly cancelEdit = output<void>()
   public readonly save = output<void>()
 
   public onLightSelectionChange(uniqueId: string, selected: boolean): void {

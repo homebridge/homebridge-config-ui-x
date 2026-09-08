@@ -43,6 +43,7 @@
         [selectedTargetUniqueId]="selectedTargetUniqueId()"
         (automationTypeChange)="onAutomationTypeChange($event)"
         (lightSelectionChange)="toggleLightSelection($event.uniqueId, $event.selected, $event.single, $event.target)"
+        (cancelEdit)="closeSmartAutomationEditor()"
         (save)="saveSmartAutomation()"
       />
     </div>
