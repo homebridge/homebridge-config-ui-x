@@ -41,7 +41,7 @@ export class SmartAutomationFormComponent {
 
   public getAutomationDescription(type: SmartAutomation['type'] | undefined): string {
     if (type === 'smart-light-group') {
-      return 'Publishes a light that stores the selected lights’ complete state, passes brightness and colour changes through while on, then restores the original state when turned off. Designed for use with Siri or other voice assistants; it does not work through direct control in the Home app.'
+      return 'Publishes a light that stores the selected lights’ complete state, passes brightness and colour changes through while on, then restores the original state when turned off. Primarily designed for automations — for example, temporarily changing a group of lights while an event is active — and for Siri or other voice assistants.'
     }
 
     if (type === 'door-ajar') {

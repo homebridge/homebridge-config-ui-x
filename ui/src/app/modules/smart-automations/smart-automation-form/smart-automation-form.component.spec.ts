@@ -16,6 +16,24 @@ function publishedLight(automationId: string): ServiceTypeX {
 }
 
 describe('smartAutomationFormComponent', () => {
+  it('sorts automation types by their displayed names', () => {
+    const fixture = TestBed.createComponent(SmartAutomationFormComponent)
+    fixture.componentRef.setInput('draft', { type: 'smart-light-group' } satisfies Partial<SmartAutomation>)
+    fixture.detectChanges()
+
+    const element = fixture.nativeElement as HTMLElement
+    const labels = [...element.querySelectorAll<HTMLOptionElement>('#smart-automation-type option')]
+      .map(option => option.textContent?.trim())
+
+    expect(labels).toEqual([
+      'Average Temperature Sensor',
+      'Door Left Ajar',
+      'Humidity-controlled AC',
+      'Smart Light Group',
+    ])
+    expect(fixture.componentInstance.getAutomationDescription('smart-light-group')).toContain('Primarily designed for automations')
+  })
+
   it('excludes only the accessory published by the automation being edited', () => {
     const fixture = TestBed.createComponent(SmartAutomationFormComponent)
     fixture.componentRef.setInput('draft', {
