@@ -180,6 +180,7 @@ jobs:
           name: prerelease-notes-${{ steps.get-published-version.outputs.version }}
           path: ${{ runner.temp }}/prerelease-notes.md
           retention-days: 1
+          overwrite: true
 
       - name: Build
         run: npm run build
@@ -224,7 +225,7 @@ jobs:
           tag_name: v${{ needs.publish.outputs.npm_version }}
           release_name: v${{ needs.publish.outputs.npm_version }}
           body_path: prerelease-notes.md
-          keep_num: 5
+          keep_num: 12
           keep_tags: false
 
       - name: Add GitHub pre-release summary
