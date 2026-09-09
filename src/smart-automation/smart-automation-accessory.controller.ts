@@ -148,7 +148,6 @@ export class HapSmartAutomationAccessoryController implements SmartAutomationAcc
 
   private readonly onServiceUpdate = (update: ServiceType | ServiceType[]): void => {
     const changedServices = (Array.isArray(update) ? update : [update]).filter(Boolean)
-    this.log.debug(`HAP Client event values:\n${this.inspectServices(changedServices)}`)
     const changedUniqueIds = new Set<string>()
     for (const changed of changedServices) {
       const index = this.services.findIndex(service => service.uniqueId === changed.uniqueId)

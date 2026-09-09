@@ -65,7 +65,7 @@ export class SmartAutomationsComponent implements OnInit, OnDestroy {
   }
 
   public ngOnInit(): void {
-    this.$settings.setPageTitle('smart_automation.title')
+    this.$settings.setPageTitle(this.$translate.instant('smart_automation.title'))
 
     // Loading the saved rules does not depend on accessory discovery. Keep
     // these requests independent so a slow or reconnecting accessories socket
