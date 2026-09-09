@@ -137,6 +137,7 @@ describe('SidebarComponent', () => {
         'menu.label_status',
         'menu.label_plugins',
         'menu.label_accessories',
+        'smart_automation.title',
         'menu.linux.label_logs',
         'menu.linux.label_terminal',
         'menu.config_json_editor',
@@ -156,7 +157,6 @@ describe('SidebarComponent', () => {
         'menu.label_status',
         'menu.label_plugins',
         'menu.label_accessories',
-        'Smart Automation',
         'menu.linux.label_logs',
         'support.title',
         'menu.tooltip_logout',
@@ -168,7 +168,7 @@ describe('SidebarComponent', () => {
       ['the settings page', 'menu.label_settings'],
       ['the power options', 'menu.restart.title'],
       ['the terminal', 'menu.linux.label_terminal'],
-      ['smart automations', 'Smart Automation'],
+      ['smart automations', 'smart_automation.title'],
     ])('hides %s', (_name, label) => {
       const element = render({ admin: false, terminal: true })
 

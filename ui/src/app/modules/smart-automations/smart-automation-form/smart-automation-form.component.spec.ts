@@ -76,6 +76,29 @@ describe('smartAutomationFormComponent', () => {
     expect(input?.value).toBe('30')
   })
 
+  it('selects only the chosen humidity source and control target', () => {
+    const fixture = TestBed.createComponent(SmartAutomationFormComponent)
+    fixture.componentRef.setInput('draft', { type: 'humidity-control' } satisfies Partial<SmartAutomation>)
+    fixture.componentRef.setInput('selectedLightUniqueIds', ['humidity-2'])
+    fixture.componentRef.setInput('selectedTargetUniqueId', 'switch-2')
+    fixture.componentRef.setInput('rooms', [{
+      name: 'Outside',
+      services: [
+        { uniqueId: 'humidity-1', type: 'HumiditySensor', serviceName: 'Humidity One', serviceCharacteristics: [{ type: 'CurrentRelativeHumidity' }] },
+        { uniqueId: 'humidity-2', type: 'HumiditySensor', serviceName: 'Humidity Two', serviceCharacteristics: [{ type: 'CurrentRelativeHumidity' }] },
+        { uniqueId: 'switch-1', type: 'Switch', serviceName: 'Switch One', serviceCharacteristics: [{ type: 'On', canWrite: true }] },
+        { uniqueId: 'switch-2', type: 'Switch', serviceName: 'Switch Two', serviceCharacteristics: [{ type: 'On', canWrite: true }] },
+      ] as unknown as ServiceTypeX[],
+    }])
+    fixture.detectChanges()
+
+    const element = fixture.nativeElement as HTMLElement
+    const sources = [...element.querySelectorAll<HTMLInputElement>('input[name="smart-auto-humidity-source"]')]
+    const targets = [...element.querySelectorAll<HTMLInputElement>('input[name="smart-auto-humidity-target"]')]
+    expect(sources.map(input => input.checked)).toEqual([false, true])
+    expect(targets.map(input => input.checked)).toEqual([false, true])
+  })
+
   it('emits close without changing the saved automation', () => {
     const fixture = TestBed.createComponent(SmartAutomationFormComponent)
     fixture.componentRef.setInput('draft', {
@@ -92,5 +115,24 @@ describe('smartAutomationFormComponent', () => {
 
     expect(closed).toHaveLength(1)
     expect(fixture.componentInstance.draft().name).toBe('Dining Room')
+  })
+
+  it('offers reset when a new automation is ready to create', () => {
+    const fixture = TestBed.createComponent(SmartAutomationFormComponent)
+    fixture.componentRef.setInput('draft', {
+      name: 'Dining Room',
+      type: 'smart-light-group',
+    } satisfies Partial<SmartAutomation>)
+    fixture.componentRef.setInput('selectedLightUniqueIds', ['light-1'])
+    const reset: void[] = []
+    fixture.componentInstance.cancelEdit.subscribe(value => reset.push(value))
+    fixture.detectChanges()
+
+    const buttons = [...(fixture.nativeElement as HTMLElement).querySelectorAll<HTMLButtonElement>('button')]
+    const resetButton = buttons.find(button => button.textContent?.trim() === 'smart_automation.action.reset')
+    resetButton?.click()
+
+    expect(resetButton).toBeDefined()
+    expect(reset).toHaveLength(1)
   })
 })

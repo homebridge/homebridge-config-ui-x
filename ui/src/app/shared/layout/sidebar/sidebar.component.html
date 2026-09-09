@@ -107,11 +107,14 @@
           class="link-row"
           routerLinkActive="active"
           [routerLink]="['/smart-automations']"
-          [attr.aria-label]="`Smart Automation${smartAutomationsRla.isActive ? `, ${('menu.current_page' | translate)}` : ''}`"
-          [attr.title]="'Smart Automation'"
+          [attr.aria-label]="
+            ('smart_automation.title' | translate) +
+            (smartAutomationsRla.isActive ? `, ${('menu.current_page' | translate)}` : '')
+          "
+          [attr.title]="'smart_automation.title' | translate"
         >
           <div class="icon"><i aria-hidden="true" class="fas fa-wand-magic-sparkles"></i></div>
-          <div class="title">Smart Automation</div>
+          <div class="title">{{ 'smart_automation.title' | translate }}</div>
         </button>
       </div>
     }

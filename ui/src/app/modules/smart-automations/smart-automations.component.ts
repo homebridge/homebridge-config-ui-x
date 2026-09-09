@@ -270,7 +270,7 @@ export class SmartAutomationsComponent implements OnInit, OnDestroy {
 
       const nextBridge = {
         ...bridgeSource,
-        name: 'Smart Automation',
+        name: 'Smart Automations',
         username: bridgeSource?.username || this.generateBridgeUsername(),
         pin: bridgeSource?.pin || this.generateBridgePin(),
       }
@@ -278,7 +278,7 @@ export class SmartAutomationsComponent implements OnInit, OnDestroy {
       const nextBlock = {
         ...(current || {}),
         platform: SMART_AUTOMATION_PLATFORM,
-        name: current?.name || 'Smart Automation',
+        name: current?.name || 'Smart Automations',
         debug,
         _bridge: nextBridge,
         smartAutomations: automations.map(automation => ({ ...automation })),

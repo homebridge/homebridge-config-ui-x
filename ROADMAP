@@ -1,10 +1,10 @@
-# Smart Automation Major Release Plan
+# Smart Automations Major Release Plan
 
-This roadmap defines a phased delivery plan for Smart Automation in Homebridge UI.
+This roadmap defines a phased delivery plan for Smart Automations in Homebridge UI.
 
 ## Feature Track Branch
 
-- Use `alpha-6.0.0` as the dedicated branch for Smart Automation feature development.
+- Use `alpha-6.0.0` as the dedicated branch for Smart Automations feature development.
 
 ## MVP 1: Foundation + Smart Light Group Automation
 

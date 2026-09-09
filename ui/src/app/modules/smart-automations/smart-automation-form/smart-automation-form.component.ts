@@ -101,13 +101,15 @@ export class SmartAutomationFormComponent {
    * A door rule watches exactly one door, so choosing another replaces the
    * first rather than adding to it.
    * @param uniqueId - the accessory chosen
-   * @param selected - whether it was ticked or unticked
+   * @param event - the changed radio input
    */
-  public onDoorSelectionChange(uniqueId: string, selected: boolean): void {
+  public onDoorSelectionChange(uniqueId: string, event: Event): void {
+    const selected = (event.target as HTMLInputElement).checked
     this.lightSelectionChange.emit({ uniqueId, selected, single: true })
   }
 
-  public onTargetSelectionChange(uniqueId: string, selected: boolean): void {
+  public onTargetSelectionChange(uniqueId: string, event: Event): void {
+    const selected = (event.target as HTMLInputElement).checked
     this.lightSelectionChange.emit({ uniqueId, selected, single: true, target: true })
   }
 

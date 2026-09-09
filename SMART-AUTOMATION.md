@@ -1,16 +1,16 @@
-# Smart Automation
+# Smart Automations
 
-> Smart Automation is currently an alpha feature. Its behaviour and user interface may change before the final release.
+> Smart Automations is currently an alpha feature. Its behaviour and user interface may change before the final release.
 
-Smart Automation lets Homebridge monitor and control accessories without requiring a separate automation plugin. Each automation runs in a dedicated Smart Automation child bridge.
+Smart Automations lets Homebridge monitor and control accessories without requiring a separate automation plugin. Each automation runs in a dedicated Smart Automations child bridge.
 
-To create one, open **Smart Automation** in the Homebridge UI, enter a name, choose an automation type and select the accessories to use. Make sure **Enabled** is selected, then choose **Create automation**. Saving, editing, enabling, disabling or deleting an automation automatically restarts only the Smart Automation child bridge so the change can take effect.
+To create one, open **Smart Automations** in the Homebridge UI, enter a name, choose an automation type and select the accessories to use. Make sure **Enabled** is selected, then choose **Create automation**. Saving, editing, enabling, disabling or deleting an automation automatically restarts only the Smart Automations child bridge so the change can take effect.
 
 ## Smart Light Group
 
 A Smart Light Group combines several lights into one temporary control. It is useful for commands such as “turn on the downstairs lights” while preserving the state each light had before the command.
 
-When the group is turned on, Smart Automation:
+When the group is turned on, Smart Automations:
 
 1. Saves the current state of every selected light, including its on/off state and any writable brightness, colour or colour-temperature settings.
 2. Turns on all selected lights.
@@ -36,7 +36,7 @@ Door Left Ajar watches one door and publishes a separate contact sensor that can
 - **Alert after** is how long the selected door may remain open before the published contact sensor opens.
 - **Repeat every** controls how often the sensor triggers again while the door remains open.
 
-The timer resets as soon as the selected door closes. If the door stays open, Smart Automation briefly resets the published sensor before each repeat so HomeKit sees a new event.
+The timer resets as soon as the selected door closes. If the door stays open, Smart Automations briefly resets the published sensor before each repeat so HomeKit sees a new event.
 
 Supported sources include garage doors, doors, windows, window coverings and contact sensors. A garage door that is opening, closing or stopped before reaching its closed position is treated as open.
 
