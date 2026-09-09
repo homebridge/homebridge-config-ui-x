@@ -148,15 +148,23 @@ export class SmartAutomationsComponent implements OnInit, OnDestroy {
               offHumidity,
               enabled: this.smartAutomationDraft.enabled ?? true,
             }
-          : {
-              ...this.smartAutomationDraft,
-              uniqueIds: selected,
-              type,
-              ...(type === 'smart-light-group'
-                ? { lightbulbType: this.smartAutomationDraft.lightbulbType || 'on-off' }
-                : {}),
-              enabled: this.smartAutomationDraft.enabled ?? true,
-            }
+          : type === 'average-temperature'
+            ? {
+                ...this.smartAutomationDraft,
+                uniqueIds: selected,
+                type,
+                removeAfterMinutes: this.toMinutes(this.smartAutomationDraft.removeAfterMinutes, 30),
+                enabled: this.smartAutomationDraft.enabled ?? true,
+              }
+            : {
+                ...this.smartAutomationDraft,
+                uniqueIds: selected,
+                type,
+                ...(type === 'smart-light-group'
+                  ? { lightbulbType: this.smartAutomationDraft.lightbulbType || 'on-off' }
+                  : {}),
+                enabled: this.smartAutomationDraft.enabled ?? true,
+              }
 
       const saved = {
         ...draft,

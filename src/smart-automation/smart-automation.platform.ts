@@ -72,7 +72,7 @@ export class SmartAutomationPlatform {
         this.log.debug(`${automation.name}: configuration id=${automation.id}, type=${automation.type}, enabled=${automation.enabled}, door=${automation.uniqueIds[0]}.`)
         this.configureAjarSensor(accessory, automation)
       } else if (automation.type === 'average-temperature') {
-        this.log.info(`${automation.name}: averaging ${automation.uniqueIds.length} temperature sensor${automation.uniqueIds.length === 1 ? '' : 's'}.`)
+        this.log.info(`${automation.name}: averaging ${automation.uniqueIds.length} temperature sensor${automation.uniqueIds.length === 1 ? '' : 's'} and removing sensors after ${clampMinutes(automation.removeAfterMinutes, 30)} minutes without an update.`)
         this.log.debug(`${automation.name}: configuration id=${automation.id}, type=${automation.type}, sensors=[${automation.uniqueIds.join(', ')}].`)
         this.configureAverageTemperatureSensor(accessory, automation)
       } else {
@@ -335,6 +335,7 @@ export class SmartAutomationPlatform {
           return {
             ...shared,
             name: automation.name?.trim() || 'Average Temperature',
+            removeAfterMinutes: clampMinutes(automation.removeAfterMinutes, 30),
           } as AverageTemperatureConfig
         }
 

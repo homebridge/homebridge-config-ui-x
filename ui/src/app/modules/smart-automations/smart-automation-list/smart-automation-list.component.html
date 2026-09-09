@@ -92,6 +92,7 @@
                         | translate
                           : {
                               count: automation.uniqueIds.length,
+                              remove: automation.removeAfterMinutes ?? 30,
                               unit:
                                 (automation.uniqueIds.length === 1
                                   ? 'smart_automation.unit.sensor'

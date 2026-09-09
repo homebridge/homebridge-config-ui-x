@@ -109,6 +109,22 @@
       <small class="form-text text-muted d-block mb-3">{{
         'smart_automation.help.humidity_threshold' | translate
       }}</small>
+    } @else if (draft().type === 'average-temperature') {
+      <div class="mb-3">
+        <label class="form-label" for="smart-automation-remove-after-minutes">
+          {{ 'smart_automation.field.remove_after' | translate }}
+        </label>
+        <input
+          id="smart-automation-remove-after-minutes"
+          type="number"
+          min="1"
+          max="1440"
+          class="form-control"
+          [ngModel]="draft().removeAfterMinutes ?? 30"
+          (ngModelChange)="updateDraft('removeAfterMinutes', $event)"
+        />
+        <small class="form-text text-muted">{{ 'smart_automation.help.remove_after' | translate }}</small>
+      </div>
     } @else if (draft().type === 'smart-light-group') {
       <div class="mb-3">
         <label class="form-label" for="smart-automation-lightbulb-type">

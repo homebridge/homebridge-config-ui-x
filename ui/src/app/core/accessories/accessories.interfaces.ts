@@ -38,6 +38,8 @@ export interface SmartAutomation {
   onHumidity?: number
   /** Humidity Control only: turn the target off below this percentage. */
   offHumidity?: number
+  /** Average Temperature only: exclude a sensor after this many minutes without a successful read. */
+  removeAfterMinutes?: number
   enabled: boolean
 }
 

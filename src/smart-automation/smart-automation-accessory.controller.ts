@@ -3,6 +3,7 @@ import type { ServiceType } from '@homebridge/hap-client'
 import type { SmartAutomationAccessoryController } from './smart-automation.interfaces.js'
 
 import { readFileSync } from 'node:fs'
+import { inspect } from 'node:util'
 
 import { HapClient } from '@homebridge/hap-client'
 
@@ -109,6 +110,7 @@ export class HapSmartAutomationAccessoryController implements SmartAutomationAcc
       const services = await this.hapClient!.getAllServices()
       this.services = services
       this.log.debug(`Accessory discovery returned ${services.length} Homebridge services.`)
+      this.log.debug(`HAP Client discovery values:\n${this.inspectServices(services)}`)
       if (rebuildMonitor) {
         await this.replaceMonitor(services)
       }
@@ -146,6 +148,7 @@ export class HapSmartAutomationAccessoryController implements SmartAutomationAcc
 
   private readonly onServiceUpdate = (update: ServiceType | ServiceType[]): void => {
     const changedServices = (Array.isArray(update) ? update : [update]).filter(Boolean)
+    this.log.debug(`HAP Client event values:\n${this.inspectServices(changedServices)}`)
     const changedUniqueIds = new Set<string>()
     for (const changed of changedServices) {
       const index = this.services.findIndex(service => service.uniqueId === changed.uniqueId)
@@ -194,5 +197,16 @@ export class HapSmartAutomationAccessoryController implements SmartAutomationAcc
         this.log.warn(`Smart Automation update listener failed: ${error?.message || error}`)
       }
     }
+  }
+
+  private inspectServices(services: ServiceType[]): string {
+    return inspect(services, {
+      breakLength: 120,
+      colors: false,
+      compact: false,
+      depth: null,
+      maxArrayLength: null,
+      maxStringLength: null,
+    })
   }
 }

@@ -47,6 +47,7 @@ describe('AverageTemperatureRulesEngine', () => {
       name: 'Room Average',
       type: 'average-temperature',
       uniqueIds: ['one', 'two'],
+      removeAfterMinutes: 30,
       enabled: true,
     }, accessories, log)
 
@@ -67,6 +68,7 @@ describe('AverageTemperatureRulesEngine', () => {
       name: 'Room Average',
       type: 'average-temperature',
       uniqueIds: ['one', 'missing'],
+      removeAfterMinutes: 30,
       enabled: true,
     }, {
       getServices: vi.fn(async () => [
@@ -99,6 +101,7 @@ describe('AverageTemperatureRulesEngine', () => {
       name: 'Room Average',
       type: 'average-temperature',
       uniqueIds: ['one', 'two'],
+      removeAfterMinutes: 30,
       enabled: true,
     }, accessories, { debug: vi.fn(), info: vi.fn(), warn: vi.fn() })
 
@@ -108,6 +111,62 @@ describe('AverageTemperatureRulesEngine', () => {
     servicesChanged?.(new Set(['one']))
     await vi.waitFor(() => expect(published).toContain(23))
 
+    engine.stop()
+  })
+
+  it('actively reads CurrentTemperature through the HAP Client characteristic', async () => {
+    const sensor = temperatureSensor('one', 0, 'Backyard Tree')
+    const getValue = vi.fn(async () => ({ value: 24.5 }))
+    sensor.getCharacteristic = vi.fn(() => ({ getValue }))
+    const published: number[] = []
+    const engine = new AverageTemperatureRulesEngine({
+      id: 'room-average',
+      name: 'Room Average',
+      type: 'average-temperature',
+      uniqueIds: ['one'],
+      removeAfterMinutes: 30,
+      enabled: true,
+    }, {
+      getServices: vi.fn(async () => [sensor]),
+    }, { debug: vi.fn(), info: vi.fn(), warn: vi.fn() })
+
+    engine.start(value => published.push(value))
+    await vi.waitFor(() => expect(published).toContain(24.5))
+
+    expect(sensor.getCharacteristic).toHaveBeenCalledWith('CurrentTemperature')
+    expect(getValue).toHaveBeenCalledOnce()
+    engine.stop()
+  })
+
+  it('removes a sensor after current-temperature refreshes stop succeeding', async () => {
+    let now = 0
+    const fresh = temperatureSensor('fresh', 20, 'Backyard')
+    const stale = temperatureSensor('stale', 10, 'Backyard Tree')
+    fresh.getCharacteristic = vi.fn(() => ({ getValue: vi.fn(async () => ({ value: 20 })) }))
+    const staleGetValue = vi.fn()
+      .mockResolvedValueOnce({ value: 10 })
+      .mockResolvedValue(undefined)
+    stale.getCharacteristic = vi.fn(() => ({ getValue: staleGetValue }))
+    const published: number[] = []
+    const log = { debug: vi.fn(), info: vi.fn(), warn: vi.fn() }
+    const engine = new AverageTemperatureRulesEngine({
+      id: 'room-average',
+      name: 'Room Average',
+      type: 'average-temperature',
+      uniqueIds: ['fresh', 'stale'],
+      removeAfterMinutes: 5,
+      enabled: true,
+    }, {
+      getServices: vi.fn(async () => [fresh, stale]),
+    }, log, () => now)
+
+    engine.start(value => published.push(value))
+    await vi.waitFor(() => expect(published).toContain(15))
+    now = 5 * 60_000
+    await engine.tick()
+
+    expect(published.at(-1)).toBe(20)
+    expect(log.debug).toHaveBeenCalledWith(expect.stringContaining('Backyard Tree=stale (5 min)'))
     engine.stop()
   })
 })

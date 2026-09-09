@@ -43,6 +43,8 @@ export interface AverageTemperatureConfig {
   type: 'average-temperature'
   /** Temperature services included in the arithmetic mean. */
   uniqueIds: string[]
+  /** Remove a sensor after this many minutes without a successful current-temperature read. */
+  removeAfterMinutes: number
   enabled?: boolean
 }
 

@@ -31,11 +31,15 @@ describe('HapSmartAutomationAccessoryController', () => {
     await controller.start()
     expect(hapClient.getAllServices).toHaveBeenCalledTimes(1)
     expect(hapClient.monitorCharacteristics).toHaveBeenCalledTimes(1)
+    expect(log.debug).toHaveBeenCalledWith(expect.stringContaining('HAP Client discovery values:'))
+    expect(log.debug).toHaveBeenCalledWith(expect.stringContaining('value: 20'))
 
     monitor.emit('service-update', [updated])
     expect((await controller.getServices())[0].serviceCharacteristics[0].value).toBe(24)
     expect(changed.at(-1)).toEqual(['temperature'])
     expect(hapClient.getAllServices).toHaveBeenCalledTimes(1)
+    expect(log.debug).toHaveBeenCalledWith(expect.stringContaining('HAP Client event values:'))
+    expect(log.debug).toHaveBeenCalledWith(expect.stringContaining('value: 24'))
 
     controller.stop()
     expect(monitor.finish).toHaveBeenCalledTimes(1)

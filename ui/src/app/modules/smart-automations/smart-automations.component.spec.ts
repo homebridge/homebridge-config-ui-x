@@ -150,4 +150,24 @@ describe('smartAutomationsComponent', () => {
     expect(component.childBridgeUsername()).toMatch(/^0E(?::[0-9A-F]{2}){5}$/)
     expect(consoleError).toHaveBeenCalledWith(restartError)
   })
+
+  it('persists the average-temperature removal interval in minutes', async () => {
+    const api = fakeApi()
+      .respond('get', '/config-editor/plugin/smart-automation', [])
+      .respond('post', '/config-editor/plugin/smart-automation', [])
+      .respond('put', /\/server\/restart\//, {})
+    const { component } = createComponent(api)
+    component.smartAutomationDraft = {
+      name: 'Backyard Average',
+      type: 'average-temperature',
+      removeAfterMinutes: 12.4,
+      enabled: true,
+    }
+    component.selectedLightUniqueIds.set(['sensor-1', 'sensor-2'])
+
+    await component.saveSmartAutomation()
+
+    expect(api.lastCall('post', '/config-editor/plugin/smart-automation')?.body[0].smartAutomations[0])
+      .toEqual(expect.objectContaining({ removeAfterMinutes: 12 }))
+  })
 })
