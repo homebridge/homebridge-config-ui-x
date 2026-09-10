@@ -162,7 +162,9 @@ export class SmartAutomationsComponent implements OnInit, OnDestroy {
                 type,
                 ...(type === 'smart-light-group'
                   ? { lightbulbType: this.smartAutomationDraft.lightbulbType || 'on-off' }
-                  : {}),
+                  : type === 'security-system'
+                    ? { autoBypass: this.smartAutomationDraft.autoBypass === true }
+                    : {}),
                 enabled: this.smartAutomationDraft.enabled ?? true,
               }
 
@@ -346,6 +348,7 @@ export class SmartAutomationsComponent implements OnInit, OnDestroy {
       'door-ajar': 'smart_automation.name_suffix.ajar',
       'humidity-control': 'smart_automation.name_suffix.humidity_control',
       'average-temperature': 'smart_automation.name_suffix.average_temperature',
+      'security-system': 'smart_automation.name_suffix.security_system',
     }[this.smartAutomationDraft.type || 'smart-light-group']
     this.smartAutomationDraft.name = `${deviceName} ${this.$translate.instant(suffix)}`
   }

@@ -1,8 +1,9 @@
-import type { AverageTemperatureConfig, DoorAjarConfig, HumidityControlConfig, SmartAutomationConfig, SmartAutomationMonitor, SmartAutomationRulesEngine, SmartLightGroupConfig } from './smart-automation.interfaces.js'
+import type { AverageTemperatureConfig, DoorAjarConfig, HumidityControlConfig, SecuritySystemConfig, SmartAutomationConfig, SmartAutomationMonitor, SmartAutomationRulesEngine, SmartLightGroupConfig } from './smart-automation.interfaces.js'
 
 import { AverageTemperatureRulesEngine } from './rules/average-temperature.rules-engine.js'
 import { clampMinutes, DoorAjarRulesEngine } from './rules/door-ajar.rules-engine.js'
 import { clampHumidity, HumidityControlRulesEngine } from './rules/humidity-control.rules-engine.js'
+import { SECURITY_DISARMED, SecuritySystemRulesEngine } from './rules/security-system.rules-engine.js'
 import { SmartLightGroupRulesEngine } from './rules/smart-light-group.rules-engine.js'
 import { HapSmartAutomationAccessoryController } from './smart-automation-accessory.controller.js'
 import { createSmartAutomationLogger, SmartAutomationLogger } from './smart-automation.logger.js'
@@ -75,6 +76,9 @@ export class SmartAutomationPlatform {
         this.log.info(`${automation.name}: averaging ${automation.uniqueIds.length} temperature sensor${automation.uniqueIds.length === 1 ? '' : 's'} and removing sensors after ${clampMinutes(automation.removeAfterMinutes, 30)} minutes without an update.`)
         this.log.debug(`${automation.name}: configuration id=${automation.id}, type=${automation.type}, sensors=[${automation.uniqueIds.join(', ')}].`)
         this.configureAverageTemperatureSensor(accessory, automation)
+      } else if (automation.type === 'security-system') {
+        this.log.info(`${automation.name}: monitoring ${automation.uniqueIds.length} contact and motion sensor${automation.uniqueIds.length === 1 ? '' : 's'}.`)
+        this.configureSecuritySystem(accessory, automation)
       } else {
         const rulesEngine = this.createRulesEngine(automation)
         this.log.info(`${automation.name}: configured ${automation.lightbulbType} trigger light for ${automation.uniqueIds.length} group light${automation.uniqueIds.length === 1 ? '' : 's'}.`)
@@ -243,6 +247,49 @@ export class SmartAutomationPlatform {
     monitor.start(publish)
   }
 
+  private configureSecuritySystem(accessory: any, automation: SecuritySystemConfig) {
+    const { Characteristic, Service } = this.api.hap
+    accessory.displayName = automation.name
+    accessory.context.automationId = automation.id
+
+    accessory.getService(Service.AccessoryInformation)
+      .setCharacteristic(Characteristic.Manufacturer, 'homebridge-config-ui-x')
+      .setCharacteristic(Characteristic.Model, 'Smart Automation Security System')
+      .setCharacteristic(Characteristic.SerialNumber, automation.id)
+
+    for (const legacyType of [Service.Lightbulb, Service.ContactSensor, Service.TemperatureSensor]) {
+      const legacyService = accessory.getService(legacyType)
+      if (legacyService) {
+        accessory.removeService(legacyService)
+      }
+    }
+
+    const service = accessory.getService(Service.SecuritySystem) || accessory.addService(Service.SecuritySystem)
+    service.setCharacteristic(Characteristic.Name, automation.name)
+    const current = service.getCharacteristic(Characteristic.SecuritySystemCurrentState)
+    const target = service.getCharacteristic(Characteristic.SecuritySystemTargetState)
+    const fault = service.getCharacteristic(Characteristic.StatusFault)
+    const engine = new SecuritySystemRulesEngine(automation, this.accessoryController, this.log)
+    const publish = (state: number) => current.updateValue(state)
+
+    target.removeAllListeners('set')
+    target.onSet(async (value: number) => {
+      const actualState = await engine.setTargetState(Number(value))
+      accessory.context.securitySystemTargetState = actualState
+      if (actualState !== Number(value)) {
+        target.updateValue(actualState)
+      }
+    })
+
+    this.monitors.push(engine)
+    engine.start(publish, value => fault.updateValue(value))
+    const initialState = (automation.enabled ?? true)
+      ? Number(accessory.context.securitySystemTargetState ?? SECURITY_DISARMED)
+      : SECURITY_DISARMED
+    target.updateValue(initialState)
+    void engine.setTargetState(initialState)
+  }
+
   private configureLightbulbCharacteristics(
     accessory: any,
     lightService: any,
@@ -298,7 +345,7 @@ export class SmartAutomationPlatform {
   private getAutomations(): SmartAutomationConfig[] {
     const automations = Array.isArray(this.config.smartAutomations) ? this.config.smartAutomations : []
     return automations
-      .filter(automation => ['smart-light-group', 'door-ajar', 'humidity-control', 'average-temperature'].includes(automation?.type) && typeof automation.id === 'string')
+      .filter(automation => ['smart-light-group', 'door-ajar', 'humidity-control', 'average-temperature', 'security-system'].includes(automation?.type) && typeof automation.id === 'string')
       .map((automation) => {
         const shared = {
           ...automation,
@@ -337,6 +384,14 @@ export class SmartAutomationPlatform {
             name: automation.name?.trim() || 'Average Temperature',
             removeAfterMinutes: clampMinutes(automation.removeAfterMinutes, 30),
           } as AverageTemperatureConfig
+        }
+
+        if (automation.type === 'security-system') {
+          return {
+            ...shared,
+            name: automation.name?.trim() || 'Security System',
+            autoBypass: automation.autoBypass === true,
+          } as SecuritySystemConfig
         }
 
         return {

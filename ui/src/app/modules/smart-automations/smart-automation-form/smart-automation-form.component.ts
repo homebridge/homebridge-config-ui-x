@@ -57,6 +57,10 @@ export class SmartAutomationFormComponent {
       return 'smart_automation.description.average_temperature'
     }
 
+    if (type === 'security-system') {
+      return 'smart_automation.description.security_system'
+    }
+
     return 'smart_automation.description.select_type'
   }
 
@@ -76,6 +80,9 @@ export class SmartAutomationFormComponent {
     }
     if (type === 'humidity-control') {
       return ['HumiditySensor', 'HumidifierDehumidifier', 'Thermostat']
+    }
+    if (type === 'security-system') {
+      return ['ContactSensor', 'MotionSensor']
     }
     return ['Lightbulb']
   }

@@ -48,7 +48,18 @@ export interface AverageTemperatureConfig {
   enabled?: boolean
 }
 
-export type SmartAutomationConfig = SmartLightGroupConfig | DoorAjarConfig | HumidityControlConfig | AverageTemperatureConfig
+export interface SecuritySystemConfig {
+  id: string
+  name: string
+  type: 'security-system'
+  /** Contact and motion sensors that trigger the alarm while it is armed. */
+  uniqueIds: string[]
+  /** Arm with open contacts bypassed until each one closes. */
+  autoBypass: boolean
+  enabled?: boolean
+}
+
+export type SmartAutomationConfig = SmartLightGroupConfig | DoorAjarConfig | HumidityControlConfig | AverageTemperatureConfig | SecuritySystemConfig
 
 export interface SmartAutomationAccessoryController {
   start?: () => Promise<void>

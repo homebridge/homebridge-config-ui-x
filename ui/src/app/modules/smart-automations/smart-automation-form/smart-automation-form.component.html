@@ -33,6 +33,9 @@
         <option value="humidity-control">
           {{ 'smart_automation.type.humidity_control' | translate }}
         </option>
+        <option value="security-system">
+          {{ 'smart_automation.type.security_system' | translate }}
+        </option>
         <option value="smart-light-group">
           {{ 'smart_automation.type.smart_light_group' | translate }}
         </option>
@@ -152,6 +155,21 @@
         <small class="form-text text-muted">{{ 'smart_automation.help.published_light_type' | translate }}</small>
       </div>
     }
+    @if (draft().type === 'security-system') {
+      <div class="form-check mb-3">
+        <input
+          id="smart-automation-auto-bypass"
+          type="checkbox"
+          class="form-check-input"
+          [ngModel]="draft().autoBypass ?? false"
+          (ngModelChange)="updateDraft('autoBypass', $event)"
+        />
+        <label class="form-check-label" for="smart-automation-auto-bypass">
+          {{ 'smart_automation.field.auto_bypass' | translate }}
+        </label>
+        <small class="form-text text-muted d-block">{{ 'smart_automation.help.auto_bypass' | translate }}</small>
+      </div>
+    }
     <div class="form-check mb-3">
       <input
         id="smart-automation-enabled"
@@ -249,7 +267,9 @@
               ? 'smart_automation.picker.door'
               : draft().type === 'average-temperature'
                 ? 'smart_automation.picker.temperature_sensors'
-                : 'smart_automation.picker.lights'
+                : draft().type === 'security-system'
+                  ? 'smart_automation.picker.security_sensors'
+                  : 'smart_automation.picker.lights'
             ) | translate
           }}
         </h6>

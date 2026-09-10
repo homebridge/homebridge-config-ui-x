@@ -24,7 +24,7 @@ export type AccessoryLayout = {
 export interface SmartAutomation {
   id: string
   name: string
-  type: 'smart-light-group' | 'door-ajar' | 'humidity-control' | 'average-temperature'
+  type: 'smart-light-group' | 'door-ajar' | 'humidity-control' | 'average-temperature' | 'security-system'
   uniqueIds: string[]
   /** Smart Light Group only: which characteristics the published light exposes. */
   lightbulbType?: 'on-off' | 'dimmable' | 'colour' | 'temperature'
@@ -40,6 +40,8 @@ export interface SmartAutomation {
   offHumidity?: number
   /** Average Temperature only: exclude a sensor after this many minutes without a successful read. */
   removeAfterMinutes?: number
+  /** Security System only: arm with open contacts bypassed until they close. */
+  autoBypass?: boolean
   enabled: boolean
 }
 

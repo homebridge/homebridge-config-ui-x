@@ -37,6 +37,7 @@
                   [class.fa-door-open]="automation.type === 'door-ajar'"
                   [class.fa-droplet]="automation.type === 'humidity-control'"
                   [class.fa-temperature-half]="automation.type === 'average-temperature'"
+                  [class.fa-shield-alt]="automation.type === 'security-system'"
                 ></i>
               </div>
               <div class="flex-grow-1 min-width-0">
@@ -93,6 +94,23 @@
                           : {
                               count: automation.uniqueIds.length,
                               remove: automation.removeAfterMinutes ?? 30,
+                              unit:
+                                (automation.uniqueIds.length === 1
+                                  ? 'smart_automation.unit.sensor'
+                                  : 'smart_automation.unit.sensors'
+                                ) | translate,
+                            }
+                    }}
+                  </small>
+                } @else if (automation.type === 'security-system') {
+                  <small class="text-muted d-block">
+                    {{
+                      (automation.autoBypass
+                        ? 'smart_automation.summary.security_system_auto_bypass'
+                        : 'smart_automation.summary.security_system')
+                        | translate
+                          : {
+                              count: automation.uniqueIds.length,
                               unit:
                                 (automation.uniqueIds.length === 1
                                   ? 'smart_automation.unit.sensor'

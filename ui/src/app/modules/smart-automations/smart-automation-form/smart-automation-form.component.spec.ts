@@ -24,6 +24,7 @@ describe('smartAutomationFormComponent', () => {
       'smart_automation.type.average_temperature': 'Average Temperature Sensor',
       'smart_automation.type.door_ajar': 'Door Left Ajar',
       'smart_automation.type.humidity_control': 'Humidity-controlled AC',
+      'smart_automation.type.security_system': 'Security System',
       'smart_automation.type.smart_light_group': 'Smart Light Group',
     })
   })
@@ -41,9 +42,19 @@ describe('smartAutomationFormComponent', () => {
       'Average Temperature Sensor',
       'Door Left Ajar',
       'Humidity-controlled AC',
+      'Security System',
       'Smart Light Group',
     ])
     expect(fixture.componentInstance.getAutomationDescription('smart-light-group')).toBe('smart_automation.description.smart_light_group')
+  })
+
+  it('offers contact and motion sensors to a security system', () => {
+    const fixture = TestBed.createComponent(SmartAutomationFormComponent)
+    fixture.componentRef.setInput('draft', { type: 'security-system' } satisfies Partial<SmartAutomation>)
+    fixture.detectChanges()
+
+    expect(fixture.componentInstance.selectableTypes('security-system')).toEqual(['ContactSensor', 'MotionSensor'])
+    expect(fixture.componentInstance.getAutomationDescription('security-system')).toBe('smart_automation.description.security_system')
   })
 
   it('excludes only the accessory published by the automation being edited', () => {
