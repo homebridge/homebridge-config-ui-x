@@ -58,13 +58,14 @@ describe('SecuritySystemRulesEngine', () => {
     const motion = sensor('MotionSensor', 'hall', false)
     let changed: ((ids: ReadonlySet<string>) => void) | undefined
     const published: number[] = []
+    const log = { debug: vi.fn(), info: vi.fn(), warn: vi.fn() }
     const engine = new SecuritySystemRulesEngine(config, {
       getServices: vi.fn(async () => [motion]),
       onServicesChanged: vi.fn((listener) => {
         changed = listener
         return vi.fn()
       }),
-    }, { info: vi.fn(), warn: vi.fn() })
+    }, log)
 
     engine.start(value => published.push(value))
     await engine.setTargetState(0)
@@ -72,6 +73,9 @@ describe('SecuritySystemRulesEngine', () => {
     changed?.(new Set(['hall']))
 
     await vi.waitFor(() => expect(published.at(-1)).toBe(SECURITY_ALARM_TRIGGERED))
+    expect(log.info).toHaveBeenCalledWith(expect.stringContaining('sensor event — hall (MotionSensor, id=hall) is motion detected [protected]; system=Stay Arm'))
+    expect(log.warn).toHaveBeenCalledWith(expect.stringContaining('ALARM TRIGGERED'))
+    expect(log.warn).toHaveBeenCalledWith(expect.stringContaining('SecuritySystemCurrentState=4'))
     engine.stop()
   })
 

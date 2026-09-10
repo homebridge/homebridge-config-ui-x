@@ -180,7 +180,7 @@ export class HapSmartAutomationAccessoryController implements SmartAutomationAcc
         return
       }
       this.services = services.filter(service => this.monitoredUniqueIds.has(service.uniqueId))
-      this.log.debug(`Accessory discovery returned ${services.length} Homebridge services.`)
+      this.log.debug(`Accessory discovery found ${services.length} Homebridge services; ${this.services.length} are used by enabled Smart Automations.`)
       if (rebuildMonitor) {
         await this.replaceMonitor(this.services)
       }
