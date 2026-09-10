@@ -84,38 +84,62 @@ jobs:
       - run: npm run build:server
       - run: npm run test
 
-      # remove dev deps
-      - run: npm clean-install --omit=dev
+      # Pack the built package so the service is tested using the same package
+      # boundary as an npm registry installation, rather than a source link.
+      - name: Pack Homebridge UI
+        run: npm pack --ignore-scripts
 
-      # test hb-service
-      - run: node dist/bin/hb-service.js -v
       - if: runner.os == 'Linux'
         name: Run hb-service install (Linux)
         run: |
-          sudo npm link
-          sudo npm install -g --omit=dev homebridge
+          # npm normally warns but exits successfully when dependency install scripts are
+          # unreviewed. Strict mode turns that warning into a validation failure.
+          sudo npm install -g --omit=dev --strict-allow-scripts ./homebridge-config-ui-x-*.tgz homebridge
+
+          # Verify that the packed global install contains a loadable native node-pty
+          # binding. This catches missing prebuilds even when npm reports success.
+          cd "$(npm root -g)/homebridge-config-ui-x"
+          node -e "require('@homebridge/node-pty-prebuilt-multiarch')"
+          hb-service -v
           sudo hb-service install --user homebridge --group `id -gn`
           sleep 30
       - if: runner.os == 'macOS'
         name: Run hb-service install (macOS)
         run: |
-          sudo npm link
-          sudo npm install -g --omit=dev homebridge
+          # npm normally warns but exits successfully when dependency install scripts are
+          # unreviewed. Strict mode turns that warning into a validation failure.
+          sudo npm install -g --omit=dev --strict-allow-scripts ./homebridge-config-ui-x-*.tgz homebridge
+
+          # Verify that the packed global install contains a loadable native node-pty
+          # binding. This catches missing prebuilds even when npm reports success.
+          cd "$(npm root -g)/homebridge-config-ui-x"
+          node -e "require('@homebridge/node-pty-prebuilt-multiarch')"
+          hb-service -v
           sudo hb-service install
           sleep 30
       - if: runner.os == 'Windows'
         name: Run hb-service install (Windows)
         run: |
-          npm link
-          npm install -g --omit=dev homebridge
+          $package = Get-Item ./homebridge-config-ui-x-*.tgz
+
+          # npm normally warns but exits successfully when dependency install scripts are
+          # unreviewed. Strict mode turns that warning into a validation failure.
+          npm install -g --omit=dev --strict-allow-scripts $package.FullName homebridge
+
+          # Verify that the packed global install contains a loadable native node-pty
+          # binding. This catches missing prebuilds even when npm reports success.
+          Push-Location (Join-Path (npm root -g) 'homebridge-config-ui-x')
+          node -e "require('@homebridge/node-pty-prebuilt-multiarch')"
+          Pop-Location
+          hb-service -v
           hb-service install
           Start-Sleep -s 30
       - name: Test hb-service install
-        run: node dist/bin/hb-service.js status --port 8581
+        run: hb-service status --port 8581
       - name: View Errors
         if: ${{ failure() }}
         run: |
-          node dist/bin/hb-service.js view
+          hb-service view
           exit 1
 
   # The UI unit tests run in jsdom, so a single platform is enough
