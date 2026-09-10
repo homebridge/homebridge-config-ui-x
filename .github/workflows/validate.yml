@@ -98,7 +98,7 @@ jobs:
 
           # Verify that the packed global install contains a loadable native node-pty
           # binding. This catches missing prebuilds even when npm reports success.
-          cd "$(npm root -g)/homebridge-config-ui-x"
+          cd "$(sudo npm root -g)/homebridge-config-ui-x"
           node -e "require('@homebridge/node-pty-prebuilt-multiarch')"
           hb-service -v
           sudo hb-service install --user homebridge --group `id -gn`
@@ -112,7 +112,7 @@ jobs:
 
           # Verify that the packed global install contains a loadable native node-pty
           # binding. This catches missing prebuilds even when npm reports success.
-          cd "$(npm root -g)/homebridge-config-ui-x"
+          cd "$(sudo npm root -g)/homebridge-config-ui-x"
           node -e "require('@homebridge/node-pty-prebuilt-multiarch')"
           hb-service -v
           sudo hb-service install
