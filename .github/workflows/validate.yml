@@ -102,7 +102,7 @@ jobs:
           cd "$global_node_modules/homebridge-config-ui-x"
           node -e "require('@homebridge/node-pty-prebuilt-multiarch')"
           hb-service -v
-          sudo hb-service install --user homebridge --group `id -gn`
+          sudo env "PATH=$PATH" hb-service install --user homebridge --group `id -gn`
           sleep 30
       - if: runner.os == 'macOS'
         name: Run hb-service install (macOS)
@@ -117,7 +117,7 @@ jobs:
           cd "$global_node_modules/homebridge-config-ui-x"
           node -e "require('@homebridge/node-pty-prebuilt-multiarch')"
           hb-service -v
-          sudo hb-service install
+          sudo env "PATH=$PATH" hb-service install
           sleep 30
       - if: runner.os == 'Windows'
         name: Run hb-service install (Windows)
