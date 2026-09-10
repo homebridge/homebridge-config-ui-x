@@ -12,6 +12,7 @@ const PLATFORM_NAME = 'smart-automation'
 
 export class SmartAutomationPlatform {
   private readonly accessories = new Map<string, any>()
+  private stopped = false
   private readonly monitors: SmartAutomationMonitor[] = []
   private readonly accessoryController: HapSmartAutomationAccessoryController
   private readonly log: SmartAutomationLogger
@@ -23,7 +24,12 @@ export class SmartAutomationPlatform {
     private readonly pluginName = 'homebridge-config-ui-x',
   ) {
     this.log = createSmartAutomationLogger(homebridgeLog, this.config.debug === true)
-    this.accessoryController = new HapSmartAutomationAccessoryController(this.api?.user?.configPath?.(), this.log)
+    const monitoredUniqueIds = new Set(this.getAutomations()
+      .filter(automation => automation.enabled)
+      .flatMap(automation => automation.type === 'humidity-control'
+        ? [...automation.uniqueIds, automation.targetUniqueId].filter(Boolean)
+        : automation.uniqueIds))
+    this.accessoryController = new HapSmartAutomationAccessoryController(this.api?.user?.configPath?.(), this.log, monitoredUniqueIds)
     this.log.info(`Smart Automation debug logging is ${this.config.debug ? 'enabled' : 'disabled'}.`)
     this.api.on('didFinishLaunching', () => {
       this.initialise().catch((error: any) => {
@@ -33,6 +39,7 @@ export class SmartAutomationPlatform {
       })
     })
     this.api.on('shutdown', () => {
+      this.stopped = true
       this.monitors.forEach(monitor => monitor.stop())
       this.accessoryController.stop()
     })
@@ -44,6 +51,9 @@ export class SmartAutomationPlatform {
 
   private async initialise() {
     await this.accessoryController.start()
+    if (this.stopped) {
+      return
+    }
     const newAccessories: any[] = []
     const existingAccessories: any[] = []
     const desiredUuids = new Set<string>()

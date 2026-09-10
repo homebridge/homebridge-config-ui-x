@@ -169,4 +169,43 @@ describe('AverageTemperatureRulesEngine', () => {
     expect(log.debug).toHaveBeenCalledWith(expect.stringContaining('Backyard Tree=stale (5 min)'))
     engine.stop()
   })
+
+  it.each(['error', 'empty'])('excludes a failed refresh (%s) immediately and recovers on a successful read', async (failure) => {
+    let now = 0
+    const healthy = temperatureSensor('healthy', 24)
+    healthy.getCharacteristic = () => ({ getValue: async () => ({ value: 24 }) })
+    const failing = temperatureSensor('failing', 0, 'Backyard Tree')
+    const getValue = vi.fn().mockResolvedValue({ value: 12 })
+    failing.getCharacteristic = () => ({ getValue })
+    const published: number[] = []
+    const log = { debug: vi.fn(), info: vi.fn(), warn: vi.fn() }
+    const engine = new AverageTemperatureRulesEngine({
+      id: 'average',
+      name: 'Average',
+      type: 'average-temperature',
+      uniqueIds: ['healthy', 'failing'],
+      removeAfterMinutes: 5,
+    }, { getServices: async () => [healthy, failing] }, log, () => now)
+    engine.start(value => published.push(value))
+    await vi.waitFor(() => expect(published.at(-1)).toBe(18))
+    if (failure === 'error') {
+      getValue.mockRejectedValueOnce(new Error('HAP status -70402'))
+    } else {
+      getValue.mockResolvedValueOnce(undefined)
+    }
+    await engine.tick()
+    expect(published.at(-1)).toBe(24)
+    expect(log.debug).toHaveBeenCalledWith(expect.stringContaining(`Backyard Tree=${failure === 'error' ? 'error' : 'unavailable'}`))
+    now = 6 * 60_000
+    getValue.mockRejectedValueOnce(new Error('HAP status -70402'))
+    log.debug.mockClear()
+    await engine.tick()
+    expect(published.at(-1)).toBe(24)
+    expect(log.debug).toHaveBeenCalledWith(expect.stringContaining('Backyard Tree=error'))
+    expect(log.debug).not.toHaveBeenCalledWith(expect.stringContaining('Backyard Tree=stale'))
+    getValue.mockResolvedValue({ value: 0 })
+    await engine.tick()
+    expect(published.at(-1)).toBe(12)
+    engine.stop()
+  })
 })

@@ -4,14 +4,14 @@
       <h5 class="card-title mb-1">
         {{ (draft().id ? 'smart_automation.editor.edit' : 'smart_automation.editor.create') | translate }}
       </h5>
-      <small class="text-muted">{{ 'smart_automation.editor.help' | translate }}</small>
+      <small class="grey-text">{{ 'smart_automation.editor.help' | translate }}</small>
     </div>
     <div class="mb-3">
       <label class="form-label" for="smart-automation-name">{{ 'smart_automation.field.name' | translate }}</label>
       <input
         id="smart-automation-name"
         type="text"
-        class="form-control"
+        class="form-control custom-input"
         [ngModel]="draft().name"
         (ngModelChange)="updateDraft('name', $event)"
       />
@@ -20,7 +20,7 @@
       <label class="form-label" for="smart-automation-type">{{ 'smart_automation.field.type' | translate }}</label>
       <select
         id="smart-automation-type"
-        class="form-select"
+        class="custom-select"
         [ngModel]="draft().type"
         (ngModelChange)="onAutomationTypeChange($event)"
       >
@@ -41,8 +41,8 @@
         </option>
       </select>
     </div>
-    <div class="automation-description mb-4" role="note">
-      <i class="fas fa-circle-info" aria-hidden="true"></i>
+    <div class="automation-description alert alert-info mb-4" role="note">
+      <i class="fas fa-circle-info primary-text" aria-hidden="true"></i>
       <span>{{ getAutomationDescription(draft().type) | translate }}</span>
     </div>
     @if (draft().type === 'door-ajar') {
@@ -56,11 +56,11 @@
             type="number"
             min="1"
             max="1440"
-            class="form-control"
+            class="form-control custom-input"
             [ngModel]="draft().openMinutes ?? 5"
             (ngModelChange)="updateDraft('openMinutes', $event)"
           />
-          <small class="form-text text-muted">{{ 'smart_automation.help.alert_after' | translate }}</small>
+          <small class="form-text grey-text">{{ 'smart_automation.help.alert_after' | translate }}</small>
         </div>
         <div class="col-sm-6 mb-3">
           <label class="form-label" for="smart-automation-repeat-minutes">
@@ -71,11 +71,11 @@
             type="number"
             min="1"
             max="1440"
-            class="form-control"
+            class="form-control custom-input"
             [ngModel]="draft().repeatMinutes ?? 5"
             (ngModelChange)="updateDraft('repeatMinutes', $event)"
           />
-          <small class="form-text text-muted">{{ 'smart_automation.help.repeat_every' | translate }}</small>
+          <small class="form-text grey-text">{{ 'smart_automation.help.repeat_every' | translate }}</small>
         </div>
       </div>
     } @else if (draft().type === 'humidity-control') {
@@ -89,7 +89,7 @@
             type="number"
             min="1"
             max="100"
-            class="form-control"
+            class="form-control custom-input"
             [ngModel]="draft().onHumidity ?? 60"
             (ngModelChange)="updateDraft('onHumidity', $event)"
           />
@@ -103,13 +103,13 @@
             type="number"
             min="0"
             max="99"
-            class="form-control"
+            class="form-control custom-input"
             [ngModel]="draft().offHumidity ?? 50"
             (ngModelChange)="updateDraft('offHumidity', $event)"
           />
         </div>
       </div>
-      <small class="form-text text-muted d-block mb-3">{{
+      <small class="form-text grey-text d-block mb-3">{{
         'smart_automation.help.humidity_threshold' | translate
       }}</small>
     } @else if (draft().type === 'average-temperature') {
@@ -122,11 +122,11 @@
           type="number"
           min="1"
           max="1440"
-          class="form-control"
+          class="form-control custom-input"
           [ngModel]="draft().removeAfterMinutes ?? 30"
           (ngModelChange)="updateDraft('removeAfterMinutes', $event)"
         />
-        <small class="form-text text-muted">{{ 'smart_automation.help.remove_after' | translate }}</small>
+        <small class="form-text grey-text">{{ 'smart_automation.help.remove_after' | translate }}</small>
       </div>
     } @else if (draft().type === 'smart-light-group') {
       <div class="mb-3">
@@ -135,7 +135,7 @@
         </label>
         <select
           id="smart-automation-lightbulb-type"
-          class="form-select"
+          class="custom-select"
           [ngModel]="draft().lightbulbType || 'on-off'"
           (ngModelChange)="updateDraft('lightbulbType', $event)"
         >
@@ -152,7 +152,7 @@
             {{ 'smart_automation.light_type.temperature' | translate }}
           </option>
         </select>
-        <small class="form-text text-muted">{{ 'smart_automation.help.published_light_type' | translate }}</small>
+        <small class="form-text grey-text">{{ 'smart_automation.help.published_light_type' | translate }}</small>
       </div>
     }
     @if (draft().type === 'security-system') {
@@ -167,7 +167,7 @@
         <label class="form-check-label" for="smart-automation-auto-bypass">
           {{ 'smart_automation.field.auto_bypass' | translate }}
         </label>
-        <small class="form-text text-muted d-block">{{ 'smart_automation.help.auto_bypass' | translate }}</small>
+        <small class="form-text grey-text d-block">{{ 'smart_automation.help.auto_bypass' | translate }}</small>
       </div>
     }
     <div class="form-check mb-3">
@@ -187,14 +187,14 @@
         <h6 class="mb-0">
           {{ 'smart_automation.picker.humidity_sensor' | translate }}
         </h6>
-        <small class="text-muted">
+        <small class="grey-text">
           {{
             (selectedLightUniqueIds().length ? 'smart_automation.status.selected' : 'smart_automation.status.required')
               | translate
           }}
         </small>
       </div>
-      <div class="smart-automation-chooser mb-3">
+      <div class="list-group-item smart-automation-chooser mb-3">
         @for (room of rooms(); track room.name) {
           @if (room.services.length) {
             <div class="mb-2">
@@ -212,7 +212,7 @@
                     />
                     <label class="form-check-label" [for]="`smart-auto-humidity-${service.uniqueId}`">
                       {{ service.serviceName }}
-                      <span class="text-muted small">&middot; {{ service.type }}</span>
+                      <span class="grey-text small">&middot; {{ service.type }}</span>
                     </label>
                   </div>
                 }
@@ -225,14 +225,14 @@
         <h6 class="mb-0">
           {{ 'smart_automation.picker.control_target' | translate }}
         </h6>
-        <small class="text-muted">
+        <small class="grey-text">
           {{
             (selectedTargetUniqueId() ? 'smart_automation.status.selected' : 'smart_automation.status.required')
               | translate
           }}
         </small>
       </div>
-      <div class="smart-automation-chooser">
+      <div class="list-group-item smart-automation-chooser">
         @for (room of rooms(); track room.name) {
           @if (room.services.length) {
             <div class="mb-2">
@@ -250,7 +250,7 @@
                     />
                     <label class="form-check-label" [for]="`smart-auto-target-${service.uniqueId}`">
                       {{ service.serviceName }}
-                      <span class="text-muted small">&middot; {{ service.type }}</span>
+                      <span class="grey-text small">&middot; {{ service.type }}</span>
                     </label>
                   </div>
                 }
@@ -273,11 +273,11 @@
             ) | translate
           }}
         </h6>
-        <small class="text-muted">
+        <small class="grey-text">
           {{ 'smart_automation.picker.selected_count' | translate: { count: selectedLightUniqueIds().length } }}
         </small>
       </div>
-      <div class="smart-automation-chooser">
+      <div class="list-group-item smart-automation-chooser">
         @for (room of rooms(); track room.name) {
           @if (room.services.length) {
             <div class="mb-2">
@@ -297,7 +297,7 @@
                     />
                     <label class="form-check-label" [for]="`smart-auto-light-${service.uniqueId}`">
                       {{ service.serviceName }}
-                      <span class="text-muted small">&middot; {{ service.type }}</span>
+                      <span class="grey-text small">&middot; {{ service.type }}</span>
                     </label>
                   </div>
                 }

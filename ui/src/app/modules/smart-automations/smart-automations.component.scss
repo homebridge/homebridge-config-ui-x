@@ -8,9 +8,7 @@
   align-items: center;
   gap: 1rem;
   padding: 1.25rem 1.5rem;
-  border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 0.75rem;
-  background: linear-gradient(135deg, rgba(255, 140, 0, 0.1), rgba(255, 140, 0, 0.02));
 }
 
 .smart-automation-hero-icon {
@@ -20,8 +18,6 @@
   width: 3rem;
   height: 3rem;
   border-radius: 0.75rem;
-  color: #fff;
-  background: var(--primary-color, #ff8c00);
   font-size: 1.25rem;
 }
 
@@ -29,7 +25,6 @@
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  color: var(--primary-color, #ff8c00);
   white-space: nowrap;
 
   strong {
@@ -38,7 +33,6 @@
   }
 
   span {
-    color: var(--bs-secondary-color);
     font-size: 0.75rem;
   }
 }

@@ -3,7 +3,6 @@ import type { ServiceType } from '@homebridge/hap-client'
 import type { SmartAutomationAccessoryController } from './smart-automation.interfaces.js'
 
 import { readFileSync } from 'node:fs'
-import { inspect } from 'node:util'
 
 import { HapClient } from '@homebridge/hap-client'
 
@@ -11,7 +10,13 @@ const RECONCILE_MINUTES = 5
 const MONITOR_RETRY_SECONDS = 5
 
 export class HapSmartAutomationAccessoryController implements SmartAutomationAccessoryController {
-  private readonly hapClient: HapClient | null
+  private hapClient: HapClient | null = null
+  private readonly createHapClient: (() => HapClient) | null = null
+  private stopped = false
+  private startupTimer: ReturnType<typeof setTimeout> | null = null
+  private discoveryTimer: ReturnType<typeof setTimeout> | null = null
+  private finishStartupWait: (() => void) | null = null
+  private finishDiscoveryWait: (() => void) | null = null
   private services: ServiceType[] = []
   private monitor: Awaited<ReturnType<HapClient['monitorCharacteristics']>> | null = null
   private startPromise: Promise<void> | null = null
@@ -20,9 +25,14 @@ export class HapSmartAutomationAccessoryController implements SmartAutomationAcc
   private retryTimer: ReturnType<typeof setTimeout> | null = null
   private readonly listeners = new Set<(changedUniqueIds: ReadonlySet<string>) => void>()
 
-  constructor(configPath: string | undefined, private readonly log: any, hapClient?: HapClient) {
-    if (hapClient) {
-      this.hapClient = hapClient
+  constructor(
+    configPath: string | undefined,
+    private readonly log: any,
+    private readonly monitoredUniqueIds: ReadonlySet<string>,
+    createHapClient?: () => HapClient,
+  ) {
+    if (createHapClient) {
+      this.createHapClient = createHapClient
       return
     }
     if (!configPath) {
@@ -38,7 +48,7 @@ export class HapSmartAutomationAccessoryController implements SmartAutomationAcc
         throw new Error('The main bridge pin is missing.')
       }
 
-      this.hapClient = new HapClient({
+      this.createHapClient = () => new HapClient({
         pin,
         logger: this.log,
         config: config?.platforms?.find(platform => platform?.platform === 'config')?.ui?.accessoryControl || {},
@@ -50,11 +60,14 @@ export class HapSmartAutomationAccessoryController implements SmartAutomationAcc
   }
 
   public async start(): Promise<void> {
-    if (!this.hapClient) {
+    if (this.stopped || !this.createHapClient || !this.monitoredUniqueIds.size) {
       return
     }
     if (!this.startPromise) {
-      const attempt = this.reconcile(true).then(() => {
+      const attempt = this.startDiscovery().then(() => {
+        if (this.stopped) {
+          return
+        }
         this.reconcileTimer = setInterval(
           () => void this.reconcile(true),
           RECONCILE_MINUTES * 60_000,
@@ -71,7 +84,65 @@ export class HapSmartAutomationAccessoryController implements SmartAutomationAcc
     await this.startPromise
   }
 
+  private async startDiscovery(): Promise<void> {
+    this.log.debug('Waiting 15 seconds before starting HAP discovery.')
+    await new Promise<void>((resolve) => {
+      this.finishStartupWait = resolve
+      this.startupTimer = setTimeout(resolve, 15_000)
+      this.startupTimer.unref?.()
+    })
+    this.startupTimer = null
+    this.finishStartupWait = null
+    if (this.stopped) {
+      return
+    }
+    this.hapClient = this.createHapClient!()
+    this.hapClient.on('instance-discovered', this.onInstanceDiscovered)
+    await new Promise<void>((resolve) => {
+      this.finishDiscoveryWait = resolve
+      this.onInstanceDiscovered()
+    })
+    if (!this.stopped) {
+      await this.reconcile(true)
+    }
+  }
+
+  private readonly onInstanceDiscovered = (): void => {
+    if (this.stopped) {
+      return
+    }
+    if (this.discoveryTimer) {
+      clearTimeout(this.discoveryTimer)
+    }
+    this.discoveryTimer = setTimeout(() => {
+      this.discoveryTimer = null
+      this.log.debug('HAP discovery settled; loading automation services.')
+      if (this.finishDiscoveryWait) {
+        const resolve = this.finishDiscoveryWait
+        this.finishDiscoveryWait = null
+        resolve()
+      } else {
+        void this.reconcile(true)
+      }
+    }, 5_000)
+    this.discoveryTimer.unref?.()
+  }
+
   public stop(): void {
+    this.stopped = true
+    if (this.startupTimer) {
+      clearTimeout(this.startupTimer)
+      this.startupTimer = null
+    }
+    if (this.discoveryTimer) {
+      clearTimeout(this.discoveryTimer)
+      this.discoveryTimer = null
+    }
+    this.finishStartupWait?.()
+    this.finishStartupWait = null
+    this.finishDiscoveryWait?.()
+    this.finishDiscoveryWait = null
+    this.hapClient?.removeListener('instance-discovered', this.onInstanceDiscovered)
     if (this.reconcileTimer) {
       clearInterval(this.reconcileTimer)
       this.reconcileTimer = null
@@ -91,15 +162,12 @@ export class HapSmartAutomationAccessoryController implements SmartAutomationAcc
   }
 
   public async getServices(): Promise<ServiceType[]> {
-    if (!this.hapClient) {
-      return []
-    }
     await this.start()
     return this.services
   }
 
   private async reconcile(rebuildMonitor: boolean): Promise<void> {
-    if (!this.hapClient) {
+    if (this.stopped || !this.hapClient) {
       return
     }
     if (this.reconcilePromise) {
@@ -108,13 +176,15 @@ export class HapSmartAutomationAccessoryController implements SmartAutomationAcc
 
     const attempt = (async () => {
       const services = await this.hapClient!.getAllServices()
-      this.services = services
-      this.log.debug(`Accessory discovery returned ${services.length} Homebridge services.`)
-      this.log.debug(`HAP Client discovery values:\n${this.inspectServices(services)}`)
-      if (rebuildMonitor) {
-        await this.replaceMonitor(services)
+      if (this.stopped) {
+        return
       }
-      this.notify(new Set(services.map(service => service.uniqueId)))
+      this.services = services.filter(service => this.monitoredUniqueIds.has(service.uniqueId))
+      this.log.debug(`Accessory discovery returned ${services.length} Homebridge services.`)
+      if (rebuildMonitor) {
+        await this.replaceMonitor(this.services)
+      }
+      this.notify(new Set(this.services.map(service => service.uniqueId)))
     })().catch((error) => {
       this.log.warn(`Failed to reconcile Smart Automation accessories: ${error?.message || error}`)
       this.scheduleMonitorRetry()
@@ -129,7 +199,15 @@ export class HapSmartAutomationAccessoryController implements SmartAutomationAcc
 
   private async replaceMonitor(services: ServiceType[]): Promise<void> {
     this.finishMonitor()
-    this.monitor = await this.hapClient!.monitorCharacteristics(services)
+    if (!services.length) {
+      return
+    }
+    const monitor = await this.hapClient!.monitorCharacteristics(services)
+    if (this.stopped) {
+      monitor.finish()
+      return
+    }
+    this.monitor = monitor
     this.monitor.on('service-update', this.onServiceUpdate)
     this.monitor.on('monitor-close', this.onMonitorClose)
     this.monitor.on('monitor-error', this.onMonitorError)
@@ -150,6 +228,13 @@ export class HapSmartAutomationAccessoryController implements SmartAutomationAcc
     const changedServices = (Array.isArray(update) ? update : [update]).filter(Boolean)
     const changedUniqueIds = new Set<string>()
     for (const changed of changedServices) {
+      if (!this.monitoredUniqueIds.has(changed.uniqueId)) {
+        continue
+      }
+      const values = changed.serviceCharacteristics
+        .map(characteristic => `${characteristic.type}=${String(characteristic.value)}`)
+        .join(', ')
+      this.log.debug(`HAP service update: ${changed.uniqueId} (${changed.serviceName || 'unnamed'}): ${values}.`)
       const index = this.services.findIndex(service => service.uniqueId === changed.uniqueId)
       if (index === -1) {
         this.services.push(changed)
@@ -178,7 +263,7 @@ export class HapSmartAutomationAccessoryController implements SmartAutomationAcc
   }
 
   private scheduleMonitorRetry(): void {
-    if (this.retryTimer || !this.hapClient) {
+    if (this.stopped || this.retryTimer || !this.hapClient) {
       return
     }
     this.retryTimer = setTimeout(() => {
@@ -196,16 +281,5 @@ export class HapSmartAutomationAccessoryController implements SmartAutomationAcc
         this.log.warn(`Smart Automation update listener failed: ${error?.message || error}`)
       }
     }
-  }
-
-  private inspectServices(services: ServiceType[]): string {
-    return inspect(services, {
-      breakLength: 120,
-      colors: false,
-      compact: false,
-      depth: null,
-      maxArrayLength: null,
-      maxStringLength: null,
-    })
   }
 }

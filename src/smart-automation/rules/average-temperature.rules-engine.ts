@@ -77,7 +77,7 @@ export class AverageTemperatureRulesEngine implements SmartAutomationMonitor<num
       }
 
       const inputs = readings
-        .map(reading => `${reading.name}=${reading.stale ? `stale (${reading.ageMinutes} min)` : reading.value === undefined ? 'unavailable' : `${reading.value}°C`}`)
+        .map(reading => `${reading.name}=${reading.error ? 'error' : reading.stale ? `stale (${reading.ageMinutes} min)` : reading.value === undefined ? 'unavailable' : `${reading.value}°C`}`)
         .join(', ')
       const reportingSensors = readings.filter(reading => reading.value !== undefined).length
       this.log.debug(`${this.config.name}: inputs [${inputs}]; averaged ${reportingSensors} of ${services.length} resolved sensor${services.length === 1 ? '' : 's'} to ${value}°C.`)
@@ -93,6 +93,7 @@ export class AverageTemperatureRulesEngine implements SmartAutomationMonitor<num
 
   private async readTemperature(service: ServiceType): Promise<{
     ageMinutes: number
+    error: boolean
     name: string
     stale: boolean
     value: number | undefined
@@ -101,25 +102,29 @@ export class AverageTemperatureRulesEngine implements SmartAutomationMonitor<num
     const now = this.now()
     this.lastUpdatedAt.set(uniqueId, this.lastUpdatedAt.get(uniqueId) ?? now)
 
+    let error = false
     let value = currentTemperature(service)
     const characteristic = service.getCharacteristic?.('CurrentTemperature')
     if (characteristic?.getValue) {
       try {
         const refreshed = await characteristic.getValue()
         const refreshedValue = numericTemperature(refreshed?.value)
+        value = refreshedValue
         if (refreshedValue !== undefined) {
-          value = refreshedValue
           this.lastUpdatedAt.set(uniqueId, now)
         }
-      } catch (error: any) {
-        this.log.debug(`${this.config.name}: could not refresh ${service.serviceName || uniqueId}: ${error?.message || error}`)
+      } catch (refreshError: any) {
+        error = true
+        value = undefined
+        this.log.debug(`${this.config.name}: could not refresh ${service.serviceName || uniqueId}: ${refreshError?.message || refreshError}`)
       }
     }
 
     const ageMs = now - (this.lastUpdatedAt.get(uniqueId) ?? now)
-    const stale = ageMs >= this.removeAfterMinutes() * 60_000
+    const stale = !error && ageMs >= this.removeAfterMinutes() * 60_000
     return {
       ageMinutes: Math.floor(ageMs / 60_000),
+      error,
       name: service.serviceName || uniqueId,
       stale,
       value: stale ? undefined : value,
