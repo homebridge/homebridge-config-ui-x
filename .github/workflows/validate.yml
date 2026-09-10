@@ -94,11 +94,12 @@ jobs:
         run: |
           # npm normally warns but exits successfully when dependency install scripts are
           # unreviewed. Strict mode turns that warning into a validation failure.
-          sudo npm install -g --omit=dev --strict-allow-scripts ./homebridge-config-ui-x-*.tgz homebridge
+          sudo env "PATH=$PATH" npm install -g --omit=dev --strict-allow-scripts ./homebridge-config-ui-x-*.tgz homebridge
 
           # Verify that the packed global install contains a loadable native node-pty
           # binding. This catches missing prebuilds even when npm reports success.
-          cd "$(sudo npm root -g)/homebridge-config-ui-x"
+          global_node_modules=$(sudo env "PATH=$PATH" npm root -g)
+          cd "$global_node_modules/homebridge-config-ui-x"
           node -e "require('@homebridge/node-pty-prebuilt-multiarch')"
           hb-service -v
           sudo hb-service install --user homebridge --group `id -gn`
@@ -108,11 +109,12 @@ jobs:
         run: |
           # npm normally warns but exits successfully when dependency install scripts are
           # unreviewed. Strict mode turns that warning into a validation failure.
-          sudo npm install -g --omit=dev --strict-allow-scripts ./homebridge-config-ui-x-*.tgz homebridge
+          sudo env "PATH=$PATH" npm install -g --omit=dev --strict-allow-scripts ./homebridge-config-ui-x-*.tgz homebridge
 
           # Verify that the packed global install contains a loadable native node-pty
           # binding. This catches missing prebuilds even when npm reports success.
-          cd "$(sudo npm root -g)/homebridge-config-ui-x"
+          global_node_modules=$(sudo env "PATH=$PATH" npm root -g)
+          cd "$global_node_modules/homebridge-config-ui-x"
           node -e "require('@homebridge/node-pty-prebuilt-multiarch')"
           hb-service -v
           sudo hb-service install
