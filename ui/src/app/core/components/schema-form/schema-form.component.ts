@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component, effect, inject, input, OnDestroy, OnInit, output, signal } from '@angular/core'
 import { JsonSchemaFormModule } from '@ng-formworks/core'
 
+import { ConfigInputComponent } from '@/app/core/components/schema-form/config-input.component'
 import { JsonSchemaFormPatchDirective } from '@/app/core/directives/json-schema-form-patch.directive'
 import { SettingsService } from '@/app/core/ui/settings.service'
 
@@ -27,6 +28,7 @@ export class SchemaFormComponent implements OnInit, OnDestroy {
 
   public readonly currentData = signal<any>(null)
   public readonly language = signal('en')
+  public readonly widgets = { text: ConfigInputComponent, password: ConfigInputComponent }
   public jsonFormOptions = {
     addSubmit: false,
     loadExternalAssets: false,
