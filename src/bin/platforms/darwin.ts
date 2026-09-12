@@ -1,6 +1,4 @@
-import type { PathLike } from 'node:fs'
-
-import { execFileSync, execSync } from 'node:child_process'
+import { execFileSync } from 'node:child_process'
 import { existsSync, unlinkSync } from 'node:fs'
 import { writeFile } from 'node:fs/promises'
 import { homedir, release, userInfo } from 'node:os'
@@ -116,17 +114,11 @@ export class DarwinInstaller extends BasePlatform {
         this.checkForRoot() // do not need root in package mode
       }
 
-      const targetNodeVersion = execSync('node -v').toString('utf8').trim()
+      const targetNodeVersion = execFileSync('node', ['-v']).toString('utf8').trim()
 
-      const npmGlobalPath = execSync('/bin/echo -n "$(npm -g prefix)/lib/node_modules"', {
-        env: {
-          npm_config_loglevel: 'silent',
-          npm_update_notifier: 'false',
-          ...process.env,
-        },
-      }).toString('utf8')
+      const npmGlobalPath = this.getGlobalNpmPath()
 
-      execSync('npm rebuild', {
+      execFileSync('npm', ['rebuild'], {
         cwd: process.env.UIX_BASE_PATH,
         stdio: 'inherit',
       })
@@ -135,7 +127,7 @@ export class DarwinInstaller extends BasePlatform {
       if (all === true) {
         // Rebuild all modules
         try {
-          execSync('npm rebuild', {
+          execFileSync('npm', ['rebuild'], {
             cwd: npmGlobalPath,
             stdio: 'inherit',
           })
@@ -157,8 +149,9 @@ export class DarwinInstaller extends BasePlatform {
    */
   public async getId(): Promise<{ uid: number, gid: number }> {
     if ((process.getuid() === 0 && this.hbService.asUser) || process.env.SUDO_USER) {
-      const uid = execSync(`id -u ${this.hbService.asUser || process.env.SUDO_USER}`).toString('utf8')
-      const gid = execSync(`id -g ${this.hbService.asUser || process.env.SUDO_USER}`).toString('utf8')
+      const user = this.hbService.asUser || process.env.SUDO_USER
+      const uid = execFileSync('id', ['-u', user]).toString('utf8')
+      const gid = execFileSync('id', ['-g', user]).toString('utf8')
       return {
         uid: Number.parseInt(uid, 10),
         gid: Number.parseInt(gid, 10),
@@ -176,7 +169,9 @@ export class DarwinInstaller extends BasePlatform {
    */
   public getPidOfPort(port: number) {
     try {
-      return execSync(`lsof -n -iTCP:${port} -sTCP:LISTEN -t 2> /dev/null`).toString('utf8').trim()
+      return execFileSync('lsof', ['-n', `-iTCP:${port}`, '-sTCP:LISTEN', '-t'], {
+        stdio: ['ignore', 'pipe', 'ignore'],
+      }).toString('utf8').trim()
     } catch (e) {
       return null
     }
@@ -304,50 +299,78 @@ export class DarwinInstaller extends BasePlatform {
   }
 
   /**
+   * Resolve npm paths without shell expansion.
+   */
+  private getGlobalNpmPath(): string {
+    const prefix = execFileSync('npm', ['-g', 'prefix'], {
+      encoding: 'utf8',
+      env: {
+        ...process.env,
+        npm_config_loglevel: 'silent',
+        npm_update_notifier: 'false',
+      },
+    }).replace(/\n$/, '')
+    if (!prefix) {
+      throw new Error('npm returned an empty global prefix')
+    }
+    return resolve(prefix, 'lib', 'node_modules')
+  }
+
+  private getNpmBinPath(): string {
+    const npmPath = execFileSync('/usr/bin/which', ['npm'], {
+      encoding: 'utf8',
+    }).replace(/\n$/, '')
+    if (!npmPath) {
+      throw new Error('Could not resolve the npm executable')
+    }
+    return dirname(npmPath)
+  }
+
+  /**
    * Checks if the user has write access to the global npm directory
    */
   private async checkGlobalNpmAccess() {
-    const npmGlobalPath = execSync('/bin/echo -n "$(npm -g prefix)/lib/node_modules"', {
-      env: {
-        npm_config_loglevel: 'silent',
-        npm_update_notifier: 'false',
-        ...process.env,
-      },
-    }).toString('utf8')
+    const npmGlobalPath = this.getGlobalNpmPath()
+    const npmBinPath = this.getNpmBinPath()
     const { uid, gid } = await this.getId()
 
     try {
-      execSync(`test -w "${npmGlobalPath}"`, {
+      execFileSync('/bin/test', ['-w', npmGlobalPath], {
         uid,
         gid,
       })
-      execSync('test -w "$(dirname $(which npm))"', {
+      execFileSync('/bin/test', ['-w', npmBinPath], {
         uid,
         gid,
       })
     } catch (e) {
-      await this.setNpmPermissions(npmGlobalPath)
+      await this.setNpmPermissions(npmGlobalPath, npmBinPath)
     }
   }
 
   /**
    * Set permissions on global npm path
    */
-  private async setNpmPermissions(npmGlobalPath: PathLike) {
+  private async setNpmPermissions(npmGlobalPath: string, npmBinPath?: string) {
     if (this.isPackage()) {
       return // we don't need to check this in package mode
     }
+    const binPath = npmBinPath ?? this.getNpmBinPath()
+    const owner = `${this.user}:admin`
     try {
-      execSync(`chown -R ${this.user}:admin "${npmGlobalPath}"`)
-      execSync(`chown -R ${this.user}:admin "$(dirname $(which npm))"`)
+      execFileSync('/usr/sbin/chown', ['-R', owner, npmGlobalPath])
+      execFileSync('/usr/sbin/chown', ['-R', owner, binPath])
     } catch (e) {
       this.hbService.logger.error(`ERROR: User "${this.user}" does not have write access to the global npm modules path.`)
       this.hbService.logger.error('You can fix this issue by running the following commands:')
 
+      // These commands are displayed for copying into a POSIX shell.
+      const quote = (value: string) => "'" + value.replace(/'/g, "'\\''") + "'"
+
       /* eslint-disable no-console */
       console.log('')
-      console.log(`sudo chown -R ${this.user}:admin "${npmGlobalPath}"`)
-      console.log(`sudo chown -R ${this.user}:admin "$(dirname $(which npm))"`)
+      console.log(`sudo chown -R ${quote(owner)} ${quote(npmGlobalPath)}`)
+      console.log(`sudo chown -R ${quote(owner)} ${quote(binPath)}`)
       console.log('')
       /* eslint-enable no-console */
 
