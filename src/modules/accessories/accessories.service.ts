@@ -9,6 +9,7 @@ import { HapClient } from '@homebridge/hap-client'
 import { BadRequestException, Inject, Injectable } from '@nestjs/common'
 import { mkdirp, pathExists, readJson } from 'fs-extra/esm'
 import NodeCache from 'node-cache'
+import pLimit from 'p-limit'
 
 import { ConfigService } from '../../core/config/config.service.js'
 import { JsonFileStoreService } from '../../core/fs/json-file-store.service.js'
@@ -25,8 +26,11 @@ import {
   MatterStateUpdate,
 } from '../../core/matter/matter.interfaces.js'
 
+import './theme-picker.types.js'
+
 @Injectable()
 export class AccessoriesService {
+  private readonly refreshLimit = pLimit(8)
   public hapClient: HapClient
   public accessoriesCache = new NodeCache({ stdTTL: 0 })
 
@@ -356,11 +360,11 @@ export class AccessoriesService {
    * @param services
    */
   private refreshCharacteristics(services: ServiceType[]) {
-    Promise.all(services.map(service =>
+    return Promise.all(services.map(service => this.refreshLimit(() =>
       service.refreshCharacteristics().catch((error) => {
         this.logger.error(`Failed to refresh characteristics for service ${service.uniqueId}: ${error.message}`)
       }),
-    )).catch((error) => {
+    ))).catch((error) => {
       this.logger.warn(`Failed to refresh characteristics: ${error.message}`)
     })
   }
