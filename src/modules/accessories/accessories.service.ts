@@ -25,7 +25,6 @@ import {
   MatterService,
   MatterStateUpdate,
 } from '../../core/matter/matter.interfaces.js'
-import { isThemeControl, writeThemeControl } from './theme-control.js'
 
 import './theme-picker.types.js'
 
@@ -518,13 +517,7 @@ export class AccessoriesService {
     }
 
     try {
-      if (isThemeControl(service, characteristic)) {
-        const username = service.instance.username.toUpperCase()
-        const childPin = Object.entries(this.getChildBridgePins()).find(([key]) => key.toUpperCase() === username)?.[1]
-        await writeThemeControl(service, characteristic, value, childPin ?? this.configService.homebridgeConfig.bridge.pin)
-      } else {
-        await characteristic.setValue(value)
-      }
+      await characteristic.setValue(value)
       await service.refreshCharacteristics()
       return service
     } catch (e) {

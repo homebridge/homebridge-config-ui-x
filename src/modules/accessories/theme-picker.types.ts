@@ -1,7 +1,6 @@
 import { Characteristics } from '@homebridge/hap-client/hap-types'
 
-// The HAP client filters unknown characteristics. Register only our experimental
-// relationship marker, catalog, shared favorites and explicit theme selection.
+// Register only the experimental picker characteristics that compatible plugins publish.
 Object.assign(Characteristics, {
   '5B530C0B-C1DF-496C-9151-52EAB77FD424': 'ThemeCatalog',
   'ThemeCatalog': '5B530C0B-C1DF-496C-9151-52EAB77FD424',

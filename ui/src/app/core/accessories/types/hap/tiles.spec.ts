@@ -438,13 +438,25 @@ describe('the HAP accessory tiles', () => {
     })
 
     describe('a long press', () => {
-      it('opens the manage modal for a dimmable bulb', async () => {
-        const component = create(LightbulbComponent, serviceWith([['On', true], ['Brightness', 60]]))
+      it.each([
+        ['dimmable', [['On', true], ['Brightness', 60]]],
+        ['color temperature', [['On', true], ['Brightness', 60], ['ColorTemperature', 250]]],
+        ['full color', [['On', true], ['Brightness', 60], ['Hue', 120], ['Saturation', 100]]],
+        ['adaptive full color', [['On', true], ['Brightness', 60], ['Hue', 120], ['Saturation', 100], ['CharacteristicValueActiveTransitionCount', 1]]],
+      ])('opens the existing manage modal for a %s bulb without theme metadata', async (_name, chars) => {
+        const service = serviceWith(chars as Array<[string, any]>)
+        const fixture = build(LightbulbComponent, service, true)
+        const component = fixture.componentInstance as LightbulbComponent
 
-        await component.onLongClick()
+        const opening = component.onLongClick()
 
+        expect(component.hasThemePicker()).toBe(false)
+        expect(fixture.nativeElement.querySelector('.theme-controls')).toBeNull()
         expect(modal.opened).toHaveLength(1)
         expect(modal.lastOpened()!.options?.backdrop).toBe('static')
+        modal.lastOpened()!.ref.close()
+        await opening
+        fixture.destroy()
       })
 
       it('opens nothing for a bulb with only on and off', () => {

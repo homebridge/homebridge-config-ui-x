@@ -19,7 +19,7 @@ A compatible Lightbulb can expose a catalog and shared favorites without adding 
 | Both support this protocol         | Catalog browsing, selection and shared favorites are available.                                |
 | Invalid or unsupported catalog     | The UI does not hide controls it cannot replace.                                               |
 
-The UI discovers capabilities from characteristics, not a plugin name or minimum package version. There is no package dependency on a vendor plugin. Theme controls use a checked HAP write acknowledgement; a successful read of an old value is not treated as proof that a command succeeded.
+The UI discovers capabilities from characteristics, not a plugin name or minimum package version. There is no package dependency on a vendor plugin. Theme controls use the same `hap-client` read and write path as existing accessories.
 
 ## Protocol version 1
 
