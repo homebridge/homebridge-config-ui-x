@@ -11,8 +11,8 @@
     "prebuild": "node ../scripts/fontawesome-subset.mjs",
     "build": "ng build --configuration production",
     "prepare": "node ../scripts/apply-patches.mjs",
-    "test": "ng test --no-watch",
-    "test:watch": "ng test --watch"
+    "test": "NODE_OPTIONS=--no-experimental-webstorage ng test --no-watch",
+    "test:watch": "NODE_OPTIONS=--no-experimental-webstorage ng test --watch"
   },
   "dependencies": {
     "@angular/common": "22.1.4",

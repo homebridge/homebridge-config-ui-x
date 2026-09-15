@@ -77,10 +77,11 @@ describe('smartAutomationFormComponent', () => {
     expect(fixture.componentInstance.isSourceSelectable(publishedLight('automation-1'), 'smart-light-group')).toBe(true)
   })
 
-  it('shows the stale-reading interval for average temperature automations', () => {
+  it('shows the stale-reading interval for average temperature automations', async () => {
     const fixture = TestBed.createComponent(SmartAutomationFormComponent)
-    fixture.componentRef.setInput('draft', { type: 'average-temperature' } satisfies Partial<SmartAutomation>)
+    fixture.componentRef.setInput('draft', { type: 'average-temperature' })
     fixture.detectChanges()
+    await fixture.whenStable()
 
     const input = (fixture.nativeElement as HTMLElement)
       .querySelector<HTMLInputElement>('#smart-automation-remove-after-minutes')
