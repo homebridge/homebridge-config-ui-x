@@ -1482,6 +1482,49 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
     return a.every(itemA => b.some(itemB => isEqual(itemA, itemB)))
   }
 
+  /**
+   * Pair an original platform/accessory block with its counterpart after save.
+   * Type name alone is not unique: two accessory blocks can share
+   * `accessory: "Sensor"`, and `find()` would compare both to the first.
+   * Prefer `_bridge.username`, then name, and never reuse a claimed row.
+   */
+  private findMatchingConfigEntry<T extends PlatformConfig | AccessoryConfig>(
+    original: T,
+    updated: T[],
+    typeKey: 'platform' | 'accessory',
+    claimed: Set<number>,
+  ): T | undefined {
+    const originalUsername = original._bridge?.username?.toUpperCase()
+    if (originalUsername) {
+      const byUsername = updated.findIndex((entry, index) =>
+        !claimed.has(index) && entry._bridge?.username?.toUpperCase() === originalUsername,
+      )
+      if (byUsername !== -1) {
+        claimed.add(byUsername)
+        return updated[byUsername]
+      }
+    }
+
+    const originalType = original[typeKey]
+    const byTypeAndName = updated.findIndex((entry, index) =>
+      !claimed.has(index) && entry[typeKey] === originalType && entry.name === original.name,
+    )
+    if (byTypeAndName !== -1) {
+      claimed.add(byTypeAndName)
+      return updated[byTypeAndName]
+    }
+
+    const byType = updated.findIndex((entry, index) =>
+      !claimed.has(index) && entry[typeKey] === originalType,
+    )
+    if (byType !== -1) {
+      claimed.add(byType)
+      return updated[byType]
+    }
+
+    return undefined
+  }
+
   private detectConfigPlatformChanges(): boolean {
     try {
       const originalConfigJson = this.latestSavedConfig
@@ -1598,11 +1641,13 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
     }
 
     // For the rest of the checks, we need to find out which entries have changed
+    const claimedPlatforms = new Set<number>()
+    const claimedAccessories = new Set<number>()
     const changedPlatformEntries = originalPlatforms.filter((p: PlatformConfig) => {
-      return !isEqual(p, updatedPlatforms.find((up: PlatformConfig) => up.platform === p.platform))
+      return !isEqual(p, this.findMatchingConfigEntry(p, updatedPlatforms, 'platform', claimedPlatforms))
     })
     const changedAccessoryEntries = originalAccessories.filter((a: AccessoryConfig) => {
-      return !isEqual(a, updatedAccessories.find((ua: AccessoryConfig) => ua.accessory === a.accessory))
+      return !isEqual(a, this.findMatchingConfigEntry(a, updatedAccessories, 'accessory', claimedAccessories))
     })
     const changedEntries = [...changedPlatformEntries, ...changedAccessoryEntries]
 
