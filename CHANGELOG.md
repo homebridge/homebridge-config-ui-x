@@ -15,6 +15,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 ### Other Changes
 
 - ci: fail pull requests that target latest instead of the beta branch (@NorthernMan54)
+- test: give the status tests a longer timeout on windows arm64
 
 ### Homebridge Dependencies
 
