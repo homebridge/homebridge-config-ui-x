@@ -12,6 +12,10 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix: add crossorigin attribute to manifest link for when using cf tunnels (#3005) (@Macleykun)
 - chore(status): drop the unused tooltip import from the bridges widget
 
+### Other Changes
+
+- test: give the status tests a longer timeout on windows arm64
+
 ### Homebridge Dependencies
 
 - `@homebridge/hap-client` @ `v5.3.0`
