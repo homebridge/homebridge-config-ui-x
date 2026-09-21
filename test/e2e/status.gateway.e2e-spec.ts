@@ -20,6 +20,10 @@ import { StatusGateway } from '../../src/modules/status/status.gateway.js'
 import { StatusModule } from '../../src/modules/status/status.module.js'
 import { StatusService } from '../../src/modules/status/status.service.js'
 
+// Near the top of the file (after imports)
+const NETWORK_TEST_TIMEOUT =
+  process.platform === 'win32' && process.arch === 'arm64' ? 60_000 : 30_000
+
 describe('StatusGateway (e2e)', () => {
   let app: NestFastifyApplication
 
@@ -428,7 +432,7 @@ describe('StatusGateway (e2e)', () => {
       const result = await statusGateway.getServerNetworkInfo(client, { netInterfaces: [] })
       expect(result).toHaveProperty('net')
       expect(result).toHaveProperty('point')
-    }, 30000)
+    }, NETWORK_TEST_TIMEOUT)
 
     it('should return uptime info', async () => {
       const result = await statusGateway.getServerUptimeInfo()

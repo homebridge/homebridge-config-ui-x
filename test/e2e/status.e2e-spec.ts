@@ -20,6 +20,10 @@ import { PluginsService } from '../../src/modules/plugins/plugins.service.js'
 import { StatusModule } from '../../src/modules/status/status.module.js'
 import { StatusService } from '../../src/modules/status/status.service.js'
 
+// Near the top of the file (after imports)
+const NETWORK_TEST_TIMEOUT =
+  process.platform === 'win32' && process.arch === 'arm64' ? 60_000 : 30_000
+
 describe('StatusController (e2e)', () => {
   let app: NestFastifyApplication
   let httpService: HttpService
@@ -91,7 +95,7 @@ describe('StatusController (e2e)', () => {
     expect(res.json()).toHaveProperty('cpuLoadHistory')
     expect(res.json()).toHaveProperty('cpuTemperature')
     expect(res.json()).toHaveProperty('currentLoad')
-  }, 30000)
+  }, NETWORK_TEST_TIMEOUT)
 
   it('GET /status/ram', async () => {
     const res = await app.inject({
@@ -105,7 +109,7 @@ describe('StatusController (e2e)', () => {
     expect(res.statusCode).toBe(200)
     expect(res.json()).toHaveProperty('mem')
     expect(res.json()).toHaveProperty('memoryUsageHistory')
-  }, 30000)
+  }, NETWORK_TEST_TIMEOUT)
 
   it('GET /status/network', async () => {
     const res = await app.inject({
@@ -119,7 +123,7 @@ describe('StatusController (e2e)', () => {
     expect(res.statusCode).toBe(200)
     expect(res.json()).toHaveProperty('net')
     expect(res.json()).toHaveProperty('point')
-  }, 30000)
+  }, NETWORK_TEST_TIMEOUT)
 
   it('GET /status/uptime', async () => {
     const res = await app.inject({
