@@ -84,38 +84,64 @@ jobs:
       - run: npm run build:server
       - run: npm run test
 
-      # remove dev deps
-      - run: npm clean-install --omit=dev
+      # Pack the built package so the service is tested using the same package
+      # boundary as an npm registry installation, rather than a source link.
+      - name: Pack Homebridge UI
+        run: npm pack --ignore-scripts
 
-      # test hb-service
-      - run: node dist/bin/hb-service.js -v
       - if: runner.os == 'Linux'
         name: Run hb-service install (Linux)
         run: |
-          sudo npm link
-          sudo npm install -g --omit=dev homebridge
-          sudo hb-service install --user homebridge --group `id -gn`
+          # Global installs do not inherit allowScripts from a dependency's package.json,
+          # so explicitly allow the lifecycle scripts required by Homebridge UI.
+          sudo env "PATH=$PATH" npm install -g --omit=dev --allow-scripts=homebridge-config-ui-x,@homebridge/node-pty-prebuilt-multiarch,macos-temperature-sensor,osx-temperature-sensor ./homebridge-config-ui-x-*.tgz homebridge
+
+          # Verify that the packed global install contains a loadable native node-pty
+          # binding. This catches missing prebuilds even when npm reports success.
+          global_node_modules=$(sudo env "PATH=$PATH" npm root -g)
+          cd "$global_node_modules/homebridge-config-ui-x"
+          node -e "require('@homebridge/node-pty-prebuilt-multiarch')"
+          hb-service -v
+          sudo env "PATH=$PATH" hb-service install --user homebridge --group `id -gn`
           sleep 30
       - if: runner.os == 'macOS'
         name: Run hb-service install (macOS)
         run: |
-          sudo npm link
-          sudo npm install -g --omit=dev homebridge
-          sudo hb-service install
+          # Global installs do not inherit allowScripts from a dependency's package.json,
+          # so explicitly allow the lifecycle scripts required by Homebridge UI.
+          sudo env "PATH=$PATH" npm install -g --omit=dev --allow-scripts=homebridge-config-ui-x,@homebridge/node-pty-prebuilt-multiarch,macos-temperature-sensor,osx-temperature-sensor ./homebridge-config-ui-x-*.tgz homebridge
+
+          # Verify that the packed global install contains a loadable native node-pty
+          # binding. This catches missing prebuilds even when npm reports success.
+          global_node_modules=$(sudo env "PATH=$PATH" npm root -g)
+          cd "$global_node_modules/homebridge-config-ui-x"
+          node -e "require('@homebridge/node-pty-prebuilt-multiarch')"
+          hb-service -v
+          sudo env "PATH=$PATH" hb-service install
           sleep 30
       - if: runner.os == 'Windows'
         name: Run hb-service install (Windows)
         run: |
-          npm link
-          npm install -g --omit=dev homebridge
+          $package = Get-Item ./homebridge-config-ui-x-*.tgz
+
+          # Global installs do not inherit allowScripts from a dependency's package.json,
+          # so explicitly allow the lifecycle scripts required by Homebridge UI.
+          npm install -g --omit=dev --allow-scripts=homebridge-config-ui-x,@homebridge/node-pty-prebuilt-multiarch,macos-temperature-sensor,osx-temperature-sensor $package.FullName homebridge
+
+          # Verify that the packed global install contains a loadable native node-pty
+          # binding. This catches missing prebuilds even when npm reports success.
+          Push-Location (Join-Path (npm root -g) 'homebridge-config-ui-x')
+          node -e "require('@homebridge/node-pty-prebuilt-multiarch')"
+          Pop-Location
+          hb-service -v
           hb-service install
           Start-Sleep -s 30
       - name: Test hb-service install
-        run: node dist/bin/hb-service.js status --port 8581
+        run: hb-service status --port 8581
       - name: View Errors
         if: ${{ failure() }}
         run: |
-          node dist/bin/hb-service.js view
+          hb-service view
           exit 1
 
   # The UI unit tests run in jsdom, so a single platform is enough
