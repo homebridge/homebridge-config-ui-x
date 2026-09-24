@@ -904,6 +904,23 @@ describe('AccessoriesService', () => {
   })
 
   describe('saving the layout', () => {
+    it('preserves theme favorites for an absent lamp and an explicitly empty favorite list', async () => {
+      const lamps = [
+        layoutEntry({ uniqueId: 'lamp-a', serial: 'LAMP-A', themeFavorites: ['theme-a'] }),
+        layoutEntry({ uniqueId: 'lamp-b', serial: 'LAMP-B', themeFavorites: [] }),
+      ]
+      await start({ layout: [{ name: 'Kitchen', isDefault: true, services: lamps }] })
+      sendData(rawHap({ uniqueId: 'lamp-b', accessoryInformation: { 'Serial Number': 'LAMP-B' } }))
+      expect(service.rooms()[0].services[0].themeFavorites).toEqual([])
+      const saved = vi.fn()
+      service.saveLayout(saved)
+      await settle()
+      expect(saved).toHaveBeenCalledOnce()
+      const services = io.requests.find(entry => entry.resource === 'save-layout')!.payload.layout[0].services
+      expect(services.find((item: AccessoryLayoutService) => item.uniqueId === 'lamp-a').themeFavorites).toEqual(['theme-a'])
+      expect(services.find((item: AccessoryLayoutService) => item.uniqueId === 'lamp-b').themeFavorites).toEqual([])
+    })
+
     it('sends the room names and the fields the layout needs', async () => {
       await start({
         layout: [{

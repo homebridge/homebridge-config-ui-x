@@ -42,5 +42,23 @@
         "
       ></div>
     }
+    @if (hasThemePicker()) {
+      <button
+        type="button"
+        class="theme-controls"
+        [disabled]="!readyForControl()"
+        [attr.aria-label]="
+          'accessories.themes.open_controls' | translate: { name: service().customName || service().serviceName }
+        "
+        (mousedown)="$event.stopPropagation()"
+        (mouseup)="$event.stopPropagation()"
+        (touchstart)="$event.stopPropagation()"
+        (touchend)="$event.stopPropagation()"
+        (keyup.enter)="$event.stopPropagation()"
+        (click)="openControls($event)"
+      >
+        {{ 'accessories.themes.controls' | translate }} <span aria-hidden="true">›</span>
+      </button>
+    }
   </div>
 </div>

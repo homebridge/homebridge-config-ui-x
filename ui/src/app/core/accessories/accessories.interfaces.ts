@@ -1,6 +1,7 @@
 import type { ServiceType } from '@homebridge/hap-client'
 
 export interface AccessoryLayoutService {
+  themeFavorites?: string[]
   uniqueId: string
   nameBasedUniqueId?: string
   aid: number
@@ -457,6 +458,7 @@ export interface ColorTemperatureControlConfig extends SliderControlConfig {
 }
 
 export type ServiceTypeX = ServiceType & {
+  themeFavorites?: string[]
   customName?: string
   customType?: string
   hidden?: boolean

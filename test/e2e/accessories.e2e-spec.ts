@@ -59,6 +59,14 @@ describe('AccessoriesController (e2e)', () => {
     canWrite: true,
   }
 
+  const themeSelectionCharacteristic = {
+    setValue,
+    type: 'ThemeSelection',
+    value: '',
+    format: 'string',
+    canWrite: true,
+  }
+
   const mockedServices = [
     {
       refreshCharacteristics,
@@ -67,6 +75,7 @@ describe('AccessoriesController (e2e)', () => {
         booleanCharacteristic,
         intCharacteristic,
         floatCharacteristic,
+        themeSelectionCharacteristic,
       ],
       uniqueId: 'c8964091efa500870e34996208e670cf7dc362d244e0410220752459a5e78d1c',
     },
@@ -360,6 +369,27 @@ describe('AccessoriesController (e2e)', () => {
     expect(getCharacteristic).toHaveBeenCalled()
     expect(setValue).not.toHaveBeenCalled()
     expect(res.statusCode).toBe(400)
+  })
+
+  it('PUT /accessories/:uniqueId sends a theme selection through the HAP client characteristic', async () => {
+    getCharacteristic.mockReturnValueOnce(themeSelectionCharacteristic)
+    const selection = 'a'.repeat(64)
+
+    const res = await app.inject({
+      method: 'PUT',
+      path: '/accessories/c8964091efa500870e34996208e670cf7dc362d244e0410220752459a5e78d1c',
+      headers: {
+        authorization,
+      },
+      payload: {
+        characteristicType: 'ThemeSelection',
+        value: selection,
+      },
+    })
+
+    expect(getCharacteristic).toHaveBeenCalledWith('ThemeSelection')
+    expect(setValue).toHaveBeenCalledWith(selection)
+    expect(res.statusCode).toBe(200)
   })
 
   it('PUT /accessories/:uniqueId (invalid characteristic type)', async () => {
@@ -699,5 +729,30 @@ describe('AccessoriesController (e2e)', () => {
 
   afterAll(async () => {
     await app.close()
+  })
+
+  it('bounds refresh traffic across simultaneous clients and continues after one failure', async () => {
+    let active = 0
+    let peak = 0
+    let completed = 0
+    const services = Array.from({ length: 40 }, (_, index) => ({
+      uniqueId: `load-${index}`,
+      async refreshCharacteristics() {
+        active++
+        peak = Math.max(peak, active)
+        await new Promise(resolve => setTimeout(resolve, 1))
+        active--
+        completed++
+        if (index === 2) {
+          throw new Error('One accessory disconnected')
+        }
+      },
+    }))
+    await Promise.all([
+      (accessoriesService as any).refreshCharacteristics(services),
+      (accessoriesService as any).refreshCharacteristics(services),
+    ])
+    expect(peak).toBeLessThanOrEqual(8)
+    expect(completed).toBe(80)
   })
 })

@@ -2,6 +2,9 @@
 
 @mixin make-theme($name, $primary, $primary-dark) {
   .config-ui-x-#{$name} {
+    --accessory-control-accent: #{$primary};
+    --accessory-control-link: #{$primary};
+    --accessory-control-tint: #{rgba($primary, 0.1)};
     pre {
       background-color: #eaeaea;
       color: #333333;
