@@ -27,15 +27,17 @@ export class Win32Installer extends BasePlatform {
     // Argument arrays — execFileSync handles quoting per-arg so shell
     // metacharacters in `storagePath` / `selfPath` cannot inject extra
     // tokens into the command line.
+    // NSSM stores everything after the application path verbatim in
+    // `AppParameters`, so paths containing spaces must carry their own quotes.
     const installArgs = [
       'install',
       this.hbService.serviceName,
       process.execPath,
-      this.hbService.selfPath,
+      `"${this.hbService.selfPath}"`,
       'run',
       '-I',
       '-U',
-      this.hbService.storagePath,
+      `"${this.hbService.storagePath}"`,
     ]
     const setUserDirArgs = [
       'set',
