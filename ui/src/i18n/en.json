@@ -445,6 +445,8 @@
   "plugins.compat.node_link": "How To Update Node.js",
   "plugins.compat.node_too_low": "The {{ pluginName }} plugin recommends running on Node.js v{{ minVersion }} or later. You are currently running Node.js {{ installedVersion }}.",
   "plugins.compat.title": "Compatibility Check",
+  "plugins.config.show_value": "Show value",
+  "plugins.config.hide_value": "Hide value",
   "plugins.config.add_block": "Add new config block",
   "plugins.config.load_error": "Failed to load plugin config.",
   "plugins.config.must_be_array": "Plugin config must be an array.",
