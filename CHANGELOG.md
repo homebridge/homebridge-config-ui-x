@@ -17,6 +17,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - chore(deps): dependency updates
 - fix(accessories): tell hap-client our bridges, so a stranger's refused pin is a debug line (#2979)
 - test: give the status tests a longer timeout on windows arm64
+- fix(hb-service): quote paths with spaces when registering the Windows service (#3037) (@xLarry)
 
 ### Homebridge Dependencies
 
