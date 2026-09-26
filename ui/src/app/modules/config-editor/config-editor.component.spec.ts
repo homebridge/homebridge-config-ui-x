@@ -414,6 +414,115 @@ describe('ConfigEditorComponent', () => {
       ])
     })
 
+    it('does not queue an unchanged accessory bridge when a platform changed', async () => {
+      const accessory = {
+        accessory: 'Sensor',
+        name: 'Sensor',
+        _bridge: { username: '0E:22:33:44:55:66' },
+      }
+      const saved = {
+        bridge: {},
+        platforms: [bridged('example', '0E:11:22:33:44:55')],
+        accessories: [accessory],
+      }
+      const edited = {
+        bridge: {},
+        platforms: [bridged('example', '0E:11:22:33:44:55', { token: 'new' })],
+        accessories: [accessory],
+      }
+
+      const decision = await restartFor({
+        saved,
+        edited,
+        bridges: [
+          { name: 'Example Bridge', username: '0E:11:22:33:44:55' },
+          { name: 'Sensor', username: '0E:22:33:44:55:66' },
+        ],
+      })
+
+      expect(decision).toBe('child')
+      expect((component as any).childBridgesToRestart).toEqual([
+        { name: 'Example Bridge', username: '0E:11:22:33:44:55', matterSerialNumber: undefined },
+      ])
+    })
+
+    it('does not treat a second accessory of the same type as changed', async () => {
+      // Matching only on `accessory` would compare both blocks to the first
+      const first = {
+        accessory: 'Sensor',
+        name: 'One',
+        serialNumber: '1111111111',
+        _bridge: { username: '0E:22:33:44:55:66' },
+      }
+      const second = {
+        accessory: 'Sensor',
+        name: 'Two',
+        serialNumber: '2222222222',
+        _bridge: { username: '0E:33:44:55:66:77' },
+      }
+      const saved = {
+        bridge: {},
+        platforms: [bridged('example', '0E:11:22:33:44:55')],
+        accessories: [first, second],
+      }
+      const edited = {
+        bridge: {},
+        platforms: [bridged('example', '0E:11:22:33:44:55', { token: 'new' })],
+        accessories: [first, second],
+      }
+
+      const decision = await restartFor({
+        saved,
+        edited,
+        bridges: [
+          { name: 'Example Bridge', username: '0E:11:22:33:44:55' },
+          { name: 'One', username: '0E:22:33:44:55:66' },
+          { name: 'Two', username: '0E:33:44:55:66:77' },
+        ],
+      })
+
+      expect(decision).toBe('child')
+      expect((component as any).childBridgesToRestart).toEqual([
+        { name: 'Example Bridge', username: '0E:11:22:33:44:55', matterSerialNumber: undefined },
+      ])
+    })
+
+    it('restarts only the accessory bridge that actually changed', async () => {
+      const first = {
+        accessory: 'Sensor',
+        name: 'One',
+        serialNumber: '1111111111',
+        _bridge: { username: '0E:22:33:44:55:66' },
+      }
+      const second = {
+        accessory: 'Sensor',
+        name: 'Two',
+        serialNumber: '2222222222',
+        _bridge: { username: '0E:33:44:55:66:77' },
+      }
+      const saved = { bridge: {}, platforms: [bridged('example')], accessories: [first, second] }
+      const edited = {
+        bridge: {},
+        platforms: [bridged('example')],
+        accessories: [first, { ...second, debug: true }],
+      }
+
+      const decision = await restartFor({
+        saved,
+        edited,
+        bridges: [
+          { name: 'Example Bridge', username: '0E:11:22:33:44:55' },
+          { name: 'One', username: '0E:22:33:44:55:66' },
+          { name: 'Two', username: '0E:33:44:55:66:77' },
+        ],
+      })
+
+      expect(decision).toBe('child')
+      expect((component as any).childBridgesToRestart).toEqual([
+        { name: 'Two', username: '0E:33:44:55:66:77', matterSerialNumber: undefined },
+      ])
+    })
+
     it('matches the bridge whatever case the config wrote its username in', async () => {
       const saved = { bridge: {}, platforms: [bridged('example', '0e:11:22:33:44:55')] }
       const edited = { bridge: {}, platforms: [bridged('example', '0e:11:22:33:44:55', { debug: true })] }
