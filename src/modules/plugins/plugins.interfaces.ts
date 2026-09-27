@@ -196,6 +196,9 @@ export interface IPackageJson {
   directories?: {
     schemas?: string
   }
+  homebridge?: {
+    author?: string
+  }
 }
 
 export type NpmFunding = { type: string, url: string } | string | Array<{ type: string, url: string } | string>

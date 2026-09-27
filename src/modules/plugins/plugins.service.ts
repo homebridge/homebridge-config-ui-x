@@ -5,6 +5,7 @@ import type {
   HomebridgePlugin,
   HomebridgePluginUiMetadata,
   HomebridgePluginVersions,
+  INpmPerson,
   INpmRegistryModule,
   INpmSearchResults,
   IPackageJson,
@@ -49,6 +50,7 @@ import { NodePtyService } from '../../core/node-pty/node-pty.service.js'
 import {
   RE_ENCODED_AT,
   RE_GITHUB_REPO,
+  RE_GITHUB_USERNAME,
   RE_HYPHEN,
   RE_HYPHEN_GLOBAL,
   RE_PLUGIN_NAME,
@@ -696,8 +698,7 @@ export class PluginsService implements OnModuleDestroy {
         homepage: pkg.homepage,
         bugs: typeof pkg.bugs === 'object' && pkg.bugs?.url ? pkg.bugs.url : null,
       }
-      plugin.author = this.pluginAuthors[pkg.name]
-        || ((pkg.maintainers && pkg.maintainers.length) ? pkg.maintainers[0].name : null)
+      plugin.author = this.getPluginAuthor(pkg.name, pkg.versions?.[plugin.latestVersion], pkg.maintainers)
       plugin.verifiedPlugin = this.verifiedPlugins.includes(pkg.name)
       plugin.verifiedPlusPlugin = this.verifiedPlusPlugins.includes(pkg.name)
       plugin.supportsMatter = this.supportsMatter(pkg.keywords)
@@ -2428,6 +2429,30 @@ export class PluginsService implements OnModuleDestroy {
   }
 
   /**
+   * Resolve the author shown for a plugin
+   * Order: the curated plugin list, then `homebridge.author` from a verified plugin's package.json, then the first npm maintainer
+   * @param name
+   * @param pkg - the package.json of the latest published version
+   * @param maintainers
+   */
+  private getPluginAuthor(name: string, pkg?: IPackageJson, maintainers?: INpmPerson[]): string | null {
+    if (this.pluginAuthors[name]) {
+      return this.pluginAuthors[name]
+    }
+
+    const declared = pkg?.homebridge?.author
+    if (
+      (this.verifiedPlugins.includes(name) || this.verifiedPlusPlugins.includes(name))
+      && typeof declared === 'string'
+      && RE_GITHUB_USERNAME.test(declared)
+    ) {
+      return declared
+    }
+
+    return maintainers?.length ? maintainers[0].name : null
+  }
+
+  /**
    * Accepts a HomebridgePlugin and adds data from npm
    * @param plugin
    * @param skipBetaCheck - Skip beta checking (used when beta check is done separately)
@@ -2470,8 +2495,7 @@ export class PluginsService implements OnModuleDestroy {
         homepage: pkg.homepage,
         bugs: typeof pkg.bugs === 'object' && pkg.bugs?.url ? pkg.bugs.url : null,
       }
-      plugin.author = this.pluginAuthors[pkg.name]
-        || ((pkg.maintainers && pkg.maintainers.length) ? pkg.maintainers[0].name : null)
+      plugin.author = this.getPluginAuthor(pkg.name, pkg, pkg.maintainers)
     } catch (e) {
       if (e.response?.status !== 404) {
         this.logger.log(`[${plugin.name}] failed to check registry.npmjs.org for updates (see https://homebridge.io/w/JJSz6 for help) as ${e.message}.`)

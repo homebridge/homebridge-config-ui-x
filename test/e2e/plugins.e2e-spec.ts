@@ -883,6 +883,61 @@ describe('PluginController (e2e)', () => {
     expect(res.statusCode).toBe(401)
   })
 
+  describe('getPluginAuthor', () => {
+    const maintainers = [{ name: 'original-owner', email: 'a@example.com' }, { name: 'current-maintainer', email: 'b@example.com' }]
+    const pkg = { name: 'homebridge-example', homebridge: { author: 'current-maintainer' } }
+    let saved: Record<string, unknown>
+
+    beforeEach(() => {
+      const svc = pluginsService as any
+      saved = { pluginAuthors: svc.pluginAuthors, verifiedPlugins: svc.verifiedPlugins, verifiedPlusPlugins: svc.verifiedPlusPlugins }
+      svc.pluginAuthors = {}
+      svc.verifiedPlugins = []
+      svc.verifiedPlusPlugins = []
+    })
+
+    afterEach(() => {
+      Object.assign(pluginsService as any, saved)
+    })
+
+    const getAuthor = (p: Record<string, unknown> = pkg) => (pluginsService as any).getPluginAuthor('homebridge-example', p, maintainers)
+
+    it('uses homebridge.author for a verified plugin', () => {
+      ;(pluginsService as any).verifiedPlugins = ['homebridge-example']
+      expect(getAuthor()).toBe('current-maintainer')
+    })
+
+    it('uses homebridge.author for a verified plus plugin', () => {
+      ;(pluginsService as any).verifiedPlusPlugins = ['homebridge-example']
+      expect(getAuthor()).toBe('current-maintainer')
+    })
+
+    it('ignores homebridge.author for an unverified plugin', () => {
+      expect(getAuthor()).toBe('original-owner')
+    })
+
+    it('prefers the curated plugin list over homebridge.author', () => {
+      ;(pluginsService as any).verifiedPlugins = ['homebridge-example']
+      ;(pluginsService as any).pluginAuthors = { 'homebridge-example': 'curated' }
+      expect(getAuthor()).toBe('curated')
+    })
+
+    it('ignores an invalid homebridge.author', () => {
+      ;(pluginsService as any).verifiedPlugins = ['homebridge-example']
+      expect(getAuthor({ name: 'homebridge-example', homebridge: { author: 'not a handle' } })).toBe('original-owner')
+      expect(getAuthor({ name: 'homebridge-example', homebridge: { author: 42 } })).toBe('original-owner')
+    })
+
+    it('falls back to the first maintainer without homebridge.author', () => {
+      ;(pluginsService as any).verifiedPlugins = ['homebridge-example']
+      expect(getAuthor({ name: 'homebridge-example' })).toBe('original-owner')
+    })
+
+    it('returns null without an author or maintainers', () => {
+      expect((pluginsService as any).getPluginAuthor('homebridge-example', undefined, undefined)).toBeNull()
+    })
+  })
+
   describe('getPluginChildBridgeUsernames', () => {
     it('should return empty array for plugin not in child bridge', async () => {
       const config = {
