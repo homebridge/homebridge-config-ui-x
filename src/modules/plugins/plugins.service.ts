@@ -1687,6 +1687,7 @@ export class PluginsService implements OnModuleDestroy {
   public async getPluginRelease(pluginName: string, version?: string) {
     let latestVersion: string | null = null
     let resolvedVersion: string | null = null
+    let repositoryDirectory: string | null = null
 
     try {
       const pkg: INpmRegistryModule = (await firstValueFrom((
@@ -1705,13 +1706,20 @@ export class PluginsService implements OnModuleDestroy {
         // version is already a specific semver
         resolvedVersion = version
       }
+
+      // monorepo plugins declare their package folder in repository.directory
+      const repository = pkg.versions?.[resolvedVersion]?.repository
+      if (typeof repository === 'object' && repository.directory) {
+        repositoryDirectory = `${repository.directory.replace(/\/+$/, '')}/`
+      }
     } catch (e) {
       throw new NotFoundException()
     }
 
-    // Helper to fetch a GitHub release by tag, trying v-prefixed first then bare version
+    // Helper to fetch a GitHub release by tag, trying v-prefixed first, then bare version,
+    // then <plugin-name>@<version>
     const fetchReleaseByVersion = async (owner: string, repo: string, ver: string) => {
-      for (const tag of [`v${ver}`, ver]) {
+      for (const tag of [`v${ver}`, ver, `${pluginName}@${ver}`]) {
         try {
           const release = await firstValueFrom(this.httpService.get(`https://api.github.com/repos/${owner}/${repo}/releases/tags/${tag}`))
           return release.data
@@ -1808,15 +1816,20 @@ export class PluginsService implements OnModuleDestroy {
         }
 
         // The plugin may have a custom changelog path from this.pluginChangelogs[pkg.package.name]
-        const changelogPath = this.pluginChangelogs[pluginName] || ''
+        const changelogPaths = this.pluginChangelogs[pluginName]
+          ? [this.pluginChangelogs[pluginName]]
+          // otherwise try the repo root, then the package folder from repository.directory
+          : ['', ...(repositoryDirectory ? [repositoryDirectory] : [])]
 
         // Helper to fetch a CHANGELOG.md from the repo, trying both cases
         const fetchChangelog = async (ref: string): Promise<string | null> => {
-          for (const filename of ['CHANGELOG.md', 'changelog.md']) {
-            try {
-              const changelog = await firstValueFrom(this.httpService.get(`https://raw.githubusercontent.com/${match[1]}/${match[2]}/${ref}/${changelogPath}${filename}`))
-              return changelog.data
-            } catch { }
+          for (const changelogPath of changelogPaths) {
+            for (const filename of ['CHANGELOG.md', 'changelog.md']) {
+              try {
+                const changelog = await firstValueFrom(this.httpService.get(`https://raw.githubusercontent.com/${match[1]}/${match[2]}/${ref}/${changelogPath}${filename}`))
+                return changelog.data
+              } catch { }
+            }
           }
           return null
         }

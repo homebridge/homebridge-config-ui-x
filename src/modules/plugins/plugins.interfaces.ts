@@ -179,7 +179,7 @@ export interface IPackageJson {
   files?: string[]
   main?: string
   bin?: string | { [key: string]: string }
-  repository?: string | { type: string, url: string }
+  repository?: string | { type: string, url: string, directory?: string }
   scripts?: { [key: string]: string }
   dependencies?: { [key: string]: string }
   devDependencies?: { [key: string]: string }
