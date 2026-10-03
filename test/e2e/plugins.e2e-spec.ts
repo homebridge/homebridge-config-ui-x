@@ -626,6 +626,7 @@ describe('PluginController (e2e)', () => {
           directory: 'packages/homebridge-foo',
         }),
         'https://raw.githubusercontent.com/owner/repo/HEAD/listed/CHANGELOG.md': '## listed',
+        'https://raw.githubusercontent.com/owner/repo/HEAD/packages/homebridge-foo/CHANGELOG.md': '## package',
       })
 
       const res = await getRelease()

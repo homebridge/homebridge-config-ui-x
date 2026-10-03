@@ -1709,7 +1709,7 @@ export class PluginsService implements OnModuleDestroy {
 
       // monorepo plugins declare their package folder in repository.directory
       const repository = pkg.versions?.[resolvedVersion]?.repository
-      if (typeof repository === 'object' && repository.directory) {
+      if (typeof repository === 'object' && repository?.directory) {
         repositoryDirectory = `${repository.directory.replace(/\/+$/, '')}/`
       }
     } catch (e) {
