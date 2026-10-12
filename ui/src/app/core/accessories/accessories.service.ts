@@ -35,6 +35,11 @@ export class AccessoriesService {
   private pairingCache: any[] = []
   private customAttributesApplied = new Set<string>()
   private combinedServiceIds = new Set<string>()
+  // Layout entry -> uniqueId of the discovered service it was given to, so one
+  // saved entry can never supply custom attributes to two live services
+  private layoutClaims = new Map<AccessoryLayoutService, string>()
+  // nameBasedUniqueIds that more than one saved entry shares
+  private ambiguousNameIds = new Set<string>()
   private io!: IoNamespace
   private stop$ = new Subject<void>()
   // True between `start()` and `stop()`. Guards the `accessories-data` handler
@@ -192,6 +197,8 @@ export class AccessoriesService {
     this.accessories = { services: [] }
     this.customAttributesApplied.clear()
     this.combinedServiceIds.clear()
+    this.layoutClaims.clear()
+    this.ambiguousNameIds.clear()
     this.accessoryLayout = undefined as any
     this.originalLayout = undefined as any
 
@@ -315,7 +322,16 @@ export class AccessoriesService {
 
     // Merge with undiscovered services from original layout to preserve custom information
     // This will add back rooms that exist in the original layout even if they have no discovered services
-    this.accessoryLayout = this.mergeWithUndiscoveredServices(currentLayout as AccessoryLayout)
+    this.setLayout(this.mergeWithUndiscoveredServices(currentLayout as AccessoryLayout))
+
+    // The merged layout starts with one entry per live service, room by room
+    // and in order, so hand each of those entries straight back to its service
+    const rooms = this.rooms()
+    this.accessoryLayout.forEach((room, roomIndex) => {
+      rooms[roomIndex]?.services.forEach((service, serviceIndex) => {
+        this.layoutClaims.set(room.services[serviceIndex], service.uniqueId!)
+      })
+    })
 
     // Send update request to server
     this.io.request('save-layout', { user: this.$auth.user.username, layout: this.accessoryLayout })
@@ -336,7 +352,7 @@ export class AccessoriesService {
    * Load the room layout
    */
   private async loadLayout() {
-    this.accessoryLayout = await firstValueFrom(this.io.request('get-layout', { user: this.$auth.user.username }))
+    this.setLayout(await firstValueFrom(this.io.request('get-layout', { user: this.$auth.user.username })))
 
     // Store original layout to preserve undiscovered services
     this.originalLayout = JSON.parse(JSON.stringify(this.accessoryLayout))
@@ -359,50 +375,116 @@ export class AccessoriesService {
   }
 
   /**
+   * Replace the working layout, re-indexing what matching depends on
+   */
+  private setLayout(layout: AccessoryLayout) {
+    this.accessoryLayout = layout
+    this.layoutClaims.clear()
+    this.ambiguousNameIds = this.findAmbiguousNameIds(layout)
+  }
+
+  /**
+   * The nameBasedUniqueIds that more than one entry in a layout shares
+   */
+  private findAmbiguousNameIds(layout: AccessoryLayout): Set<string> {
+    const seen = new Set<string>()
+    const ambiguous = new Set<string>()
+    for (const service of layout.flatMap(room => room.services)) {
+      if (service.nameBasedUniqueId) {
+        if (seen.has(service.nameBasedUniqueId)) {
+          ambiguous.add(service.nameBasedUniqueId)
+        }
+        seen.add(service.nameBasedUniqueId)
+      }
+    }
+    return ambiguous
+  }
+
+  /**
+   * A serial number that identifies the physical device, or undefined when the
+   * plugin left it empty or at the HAP default every accessory shares
+   */
+  private deviceSerial(serial: string | undefined): string | undefined {
+    return serial && serial !== 'Default-SerialNumber' ? serial : undefined
+  }
+
+  /**
    * Check if a cached service matches a discovered service.
    *
    * Matching priority:
-   * 1. nameBasedUniqueId (stable across sessions, available from hap-client)
+   * 1. nameBasedUniqueId (stable across sessions, available from hap-client), when
+   *    the serial numbers agree, or when one of them does not identify the device and
+   *    no other saved entry shares the same nameBasedUniqueId
    * 2. uniqueId (stable within a session, may change between sessions)
    * 3. Fallback: name + serial + bridge + uuid (legacy layouts without nameBasedUniqueId)
    *
+   * nameBasedUniqueId only hashes the bridge, manufacturer and service name, so
+   * two plugs that each expose an "Outlet 1" share it. Serial numbers tell them apart:
+   * two real serial numbers that differ never match, whatever the other ids say.
+   *
    * Matter accessories use uniqueId + bridge matching only.
    */
-  private servicesMatch(cachedService: AccessoryLayoutService, discoveredService: any): boolean {
+  private servicesMatch(cachedService: AccessoryLayoutService, discoveredService: any, ambiguousNameIds = this.ambiguousNameIds): boolean {
     const isMatterAccessory = discoveredService.protocol === 'matter' || discoveredService.uniqueId?.startsWith('matter:')
     if (isMatterAccessory) {
       return cachedService.uniqueId === discoveredService.uniqueId
         && cachedService.bridge === (discoveredService.instance?.username || discoveredService.bridge)
     }
 
-    // Primary match: nameBasedUniqueId (stable across sessions)
-    if (cachedService.nameBasedUniqueId && discoveredService.nameBasedUniqueId) {
-      return cachedService.nameBasedUniqueId === discoveredService.nameBasedUniqueId
+    const bridge = discoveredService.instance?.username || discoveredService.bridge
+    if (cachedService.bridge !== bridge) {
+      return false
     }
 
-    // Secondary match: uniqueId
-    if (cachedService.uniqueId === discoveredService.uniqueId) {
+    const serial = discoveredService.accessoryInformation?.['Serial Number'] || discoveredService.serial
+    const cachedDeviceSerial = this.deviceSerial(cachedService.serial)
+    const discoveredDeviceSerial = this.deviceSerial(serial)
+    const serialsKnown = !!cachedDeviceSerial && !!discoveredDeviceSerial
+    if (serialsKnown && cachedDeviceSerial !== discoveredDeviceSerial) {
+      // A different serial number is a different device
+      return false
+    }
+    const sameUniqueId = !!cachedService.uniqueId && cachedService.uniqueId === discoveredService.uniqueId
+
+    if (cachedService.nameBasedUniqueId && discoveredService.nameBasedUniqueId) {
+      if (cachedService.nameBasedUniqueId !== discoveredService.nameBasedUniqueId) {
+        return false
+      }
+      return serialsKnown || !ambiguousNameIds.has(cachedService.nameBasedUniqueId) || sameUniqueId
+    }
+
+    if (sameUniqueId) {
       return true
     }
 
-    // Fallback: multi-field match for legacy layouts without nameBasedUniqueId
     return cachedService.name === (discoveredService.serviceName || discoveredService.name)
-      && cachedService.serial === (discoveredService.accessoryInformation?.['Serial Number'] || discoveredService.serial)
-      && cachedService.bridge === (discoveredService.instance?.username || discoveredService.bridge)
+      && cachedService.serial === serial
       && cachedService.uuid === discoveredService.uuid
   }
 
   /**
    * Find a cached service in the layout that matches a discovered service.
    * Returns the cached service and the room it belongs to, or null if not found.
+   *
+   * Each saved entry goes to at most one discovered service: the first to match
+   * claims it, and keeps it on later events.
    */
   private findInLayout(service: ServiceType): { room: AccessoryLayout[number], service: AccessoryLayoutService } | null {
     for (const room of this.accessoryLayout) {
       for (const cachedService of room.services) {
-        if (!cachedService.name) {
+        if (this.layoutClaims.get(cachedService) === service.uniqueId) {
+          return { room, service: cachedService }
+        }
+      }
+    }
+
+    for (const room of this.accessoryLayout) {
+      for (const cachedService of room.services) {
+        if (!cachedService.name || this.layoutClaims.has(cachedService)) {
           continue
         }
         if (this.servicesMatch(cachedService, service)) {
+          this.layoutClaims.set(cachedService, service.uniqueId!)
           return { room, service: cachedService }
         }
       }
@@ -421,25 +503,16 @@ export class AccessoriesService {
     // Create the merged layout starting with current rooms
     const mergedLayout: AccessoryLayout = JSON.parse(JSON.stringify(currentLayout))
 
-    // Track which original services have been matched to a discovered service
-    const matchedOriginalKeys = new Set<string>()
-
-    // First pass: find all original services that match a discovered service
+    // First pass: pair each discovered service with at most one original entry
+    const originalServices = this.originalLayout.flatMap(room => room.services).filter(service => service.name)
+    const matchedOriginals = new Set<AccessoryLayoutService>()
+    const ambiguousNameIds = this.findAmbiguousNameIds(this.originalLayout)
     for (const room of mergedLayout) {
       for (const discoveredService of room.services) {
-        for (const originalRoom of this.originalLayout) {
-          for (const originalService of originalRoom.services) {
-            if (!originalService.name) {
-              continue
-            }
-            if (this.servicesMatch(originalService, discoveredService)) {
-              matchedOriginalKeys.add(this.getServiceKey(originalService))
-              break
-            }
-          }
-          if (matchedOriginalKeys.has(this.getServiceKey(discoveredService))) {
-            break
-          }
+        const original = originalServices.find(originalService =>
+          !matchedOriginals.has(originalService) && this.servicesMatch(originalService, discoveredService, ambiguousNameIds))
+        if (original) {
+          matchedOriginals.add(original)
         }
       }
     }
@@ -447,7 +520,7 @@ export class AccessoriesService {
     // Second pass: add unmatched services from original layout (truly undiscovered services)
     for (const originalRoom of this.originalLayout) {
       for (const originalService of originalRoom.services) {
-        if (matchedOriginalKeys.has(this.getServiceKey(originalService))) {
+        if (matchedOriginals.has(originalService)) {
           continue
         }
         if (!originalService.name) {
@@ -488,13 +561,6 @@ export class AccessoriesService {
     return mergedLayout.filter(room =>
       room.services.length > 0 || currentLayout.some(r => r.name === room.name),
     )
-  }
-
-  /**
-   * Get a stable key for a service, preferring nameBasedUniqueId
-   */
-  private getServiceKey(service: any): string {
-    return service.nameBasedUniqueId || service.uniqueId
   }
 
   /**
