@@ -541,6 +541,89 @@ describe('AccessoriesService', () => {
       })
     }
 
+    it('keeps same-named outlets on different plugs separate through discovery and save', async () => {
+      const plugs = ['PLUG-A', 'PLUG-B'].map((serial, index) => layoutEntry({
+        uniqueId: `plug-${index}`,
+        serial,
+        nameBasedUniqueId: 'shared-outlet-name',
+        customName: `Custom ${index}`,
+      }))
+      await start({ layout: [{ name: 'Kitchen', isDefault: true, services: plugs }] })
+      sendData(...plugs.map(plug => rawHap({
+        uniqueId: plug.uniqueId,
+        nameBasedUniqueId: plug.nameBasedUniqueId,
+        accessoryInformation: { 'Serial Number': plug.serial },
+      })))
+      expect(service.rooms()[0].services.map(s => s.customName)).toEqual(['Custom 0', 'Custom 1'])
+      await service.saveLayout()
+      const saved = io.requests.find(entry => entry.resource === 'save-layout')!.payload.layout[0].services
+      expect(saved.map((s: AccessoryLayoutService) => s.customName)).toEqual(['Custom 0', 'Custom 1'])
+    })
+
+    it('preserves an offline plug when an online plug shares its name-based id', async () => {
+      const plugs = ['PLUG-A', 'PLUG-B'].map((serial, index) => layoutEntry({
+        uniqueId: `plug-${index}`,
+        serial,
+        nameBasedUniqueId: 'shared-outlet-name',
+        customName: `Custom ${index}`,
+      }))
+      await start({ layout: [{ name: 'Kitchen', isDefault: true, services: plugs }] })
+      sendData(rawHap({ uniqueId: 'plug-0', nameBasedUniqueId: 'shared-outlet-name', accessoryInformation: { 'Serial Number': 'PLUG-A' } }))
+      await service.saveLayout()
+      const saved = io.requests.find(entry => entry.resource === 'save-layout')!.payload.layout[0].services
+      expect(saved.map((s: AccessoryLayoutService) => s.customName)).toEqual(['Custom 0', 'Custom 1'])
+    })
+
+    it('keeps the default serial number from merging same-named outlets on different plugs', async () => {
+      const plugs = [0, 1].map(index => layoutEntry({
+        uniqueId: `plug-${index}`,
+        serial: 'Default-SerialNumber',
+        nameBasedUniqueId: 'shared-outlet-name',
+        customName: `Custom ${index}`,
+      }))
+      await start({ layout: [{ name: 'Kitchen', isDefault: true, services: plugs }] })
+
+      // The second plug arrives first, so a first-match search would hand it plug 0's name
+      sendData(rawHap({ uniqueId: 'plug-1', nameBasedUniqueId: 'shared-outlet-name', accessoryInformation: { 'Serial Number': 'Default-SerialNumber' } }))
+      await service.saveLayout()
+
+      const saved = io.requests.find(entry => entry.resource === 'save-layout')!.payload.layout[0].services
+      expect(saved.map((s: AccessoryLayoutService) => [s.uniqueId, s.customName])).toEqual([['plug-1', 'Custom 1'], ['plug-0', 'Custom 0']])
+    })
+
+    it('matches a lone saved entry by name across a restart when there is no serial number', async () => {
+      await withLayout(layoutEntry({ uniqueId: 'old', serial: '', nameBasedUniqueId: 'same-name' }))
+      sendData(rawHap({ uniqueId: 'new', nameBasedUniqueId: 'same-name', accessoryInformation: {} }))
+      expect(idsIn('Hallway')).toEqual(['new'])
+    })
+
+    it('treats a changed serial number as a different device, even with the same uniqueId', async () => {
+      await withLayout(layoutEntry({ uniqueId: 'hap-1', serial: 'PLUG-A', nameBasedUniqueId: 'nb-1' }))
+      sendData(rawHap({ uniqueId: 'hap-1', nameBasedUniqueId: 'nb-1', accessoryInformation: { 'Serial Number': 'PLUG-B' } }))
+      expect(idsIn('Hallway')).toEqual([])
+      expect(idsIn('Kitchen')).toEqual(['hap-1'])
+    })
+
+    it('treats a changed serial number as a different device for a legacy entry', async () => {
+      await withLayout(layoutEntry({ uniqueId: 'hap-1', serial: 'PLUG-A' }))
+      sendData(rawHap({ uniqueId: 'hap-1', accessoryInformation: { 'Serial Number': 'PLUG-B' } }))
+      expect(idsIn('Hallway')).toEqual([])
+    })
+
+    it('does not give a saved outlet to a same-named outlet on a different serial', async () => {
+      await withLayout(layoutEntry({ uniqueId: 'plug-0', serial: 'PLUG-A', nameBasedUniqueId: 'shared-outlet-name' }))
+      sendData(rawHap({ uniqueId: 'plug-1', nameBasedUniqueId: 'shared-outlet-name', accessoryInformation: { 'Serial Number': 'PLUG-B' } }))
+      expect(idsIn('Hallway')).toEqual([])
+    })
+
+    it('gives one saved entry to only one discovered service', async () => {
+      await withLayout(layoutEntry({ uniqueId: 'ancient-id', customName: 'Lamp' }))
+      sendData(rawHap({ uniqueId: 'fresh-1' }), rawHap({ uniqueId: 'fresh-2', iid: 20 }))
+      expect(idsIn('Hallway')).toEqual(['fresh-1'])
+      expect(idsIn('Kitchen')).toEqual(['fresh-2'])
+      expect((room('Kitchen')!.services[0] as ServiceTypeX).customName).toBeUndefined()
+    })
+
     it('prefers nameBasedUniqueId over a changed uniqueId', async () => {
       // uniqueId is only stable within a session, so a restarted child bridge
       // hands back a different one for the same accessory
