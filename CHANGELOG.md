@@ -11,12 +11,16 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 
 - fix: add crossorigin attribute to manifest link for when using cf tunnels (#3005) (@Macleykun)
 - chore(status): drop the unused tooltip import from the bridges widget
+- fix(accessories): stop saved names colliding between separate outlets on the same accessory (#3009) (@msrivas-7)
+- fix(i18n): correct Korean plugin verification messages (#3007) (@chazepps)
 
 ### Other Changes
 
 - chore(deps): dependency updates
 - fix(accessories): tell hap-client our bridges, so a stranger's refused pin is a debug line (#2979)
-- ci: improve beta release notes and workflow summaries
+- fix(hb-service): quote paths with spaces when registering the Windows service (#3037) (@xLarry)
+- ci: improve beta release notes and workflow summaries (#3004)
+- test: give the status tests a longer timeout on windows arm64
 
 ### Homebridge Dependencies
 
