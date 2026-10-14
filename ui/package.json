@@ -56,7 +56,7 @@
   },
   "devDependencies": {
     "@angular/build": "^22.1.6",
-    "@angular/cli": "^22.1.6",
+    "@angular/cli": "^22.2.2",
     "@angular/compiler-cli": "^22.1.4",
     "@angular/language-service": "^22.1.4",
     "@fortawesome/fontawesome-free": "^7.3.1",
