@@ -3,6 +3,7 @@ import type { TestingModule } from '@nestjs/testing'
 
 import type { HomebridgeConfig } from '../../src/core/config/config.interfaces.js'
 
+import { Buffer } from 'node:buffer'
 import { resolve } from 'node:path'
 import process from 'node:process'
 
@@ -12,6 +13,7 @@ import { FastifyAdapter } from '@nestjs/platform-fastify'
 import { Test } from '@nestjs/testing'
 import FormData from 'form-data'
 import { copy, ensureDir, pathExists, readFile, readJson, remove, writeJson } from 'fs-extra'
+import forge from 'node-forge'
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import { AuthModule } from '../../src/core/auth/auth.module.js'
@@ -1461,6 +1463,115 @@ describe('ServerController (e2e)', () => {
 
     expect(res.statusCode).toBe(400)
   })
+
+  it('POST /server/ssl/keycert (key + cert upload completes)', async () => {
+    await copy(resolve(__dirname, '../mocks', 'config.json'), process.env.UIX_CONFIG_PATH)
+
+    // Generate a matching key/cert pair to upload
+    const genRes = await app.inject({
+      method: 'POST',
+      path: '/server/ssl/selfsigned/generate',
+      headers: {
+        authorization,
+      },
+      payload: {
+        hostnames: ['localhost'],
+        mode: 'keycert',
+      },
+    })
+    expect(genRes.statusCode).toBe(201)
+    const keyPem = await readFile(genRes.json().keyPath)
+    const certPem = await readFile(genRes.json().certPath)
+
+    const payload = new FormData()
+    payload.append('key', keyPem, 'privkey.pem')
+    payload.append('cert', certPem, 'fullchain.pem')
+
+    const headers = payload.getHeaders()
+    headers.authorization = authorization
+
+    const res = await app.inject({
+      method: 'POST',
+      path: '/server/ssl/keycert',
+      headers,
+      payload,
+    })
+
+    expect(res.statusCode).toBe(201)
+    expect(res.json().ok).toBe(true)
+    expect(res.json().type).toBe('keycert')
+    expect((await readFile(res.json().keyPath)).equals(keyPem)).toBe(true)
+    expect((await readFile(res.json().certPath)).equals(certPem)).toBe(true)
+
+    const config = await readJson(configService.configPath)
+    const uiBlock = config.platforms.find(x => x.platform === 'config')
+    expect(uiBlock.ssl.key).toBe(res.json().keyPath)
+    expect(uiBlock.ssl.cert).toBe(res.json().certPath)
+  }, 10000)
+
+  it('POST /server/ssl/pfx (pfx + passphrase upload completes)', async () => {
+    await copy(resolve(__dirname, '../mocks', 'config.json'), process.env.UIX_CONFIG_PATH)
+
+    const genRes = await app.inject({
+      method: 'POST',
+      path: '/server/ssl/selfsigned/generate',
+      headers: {
+        authorization,
+      },
+      payload: {
+        hostnames: ['localhost'],
+        mode: 'keycert',
+      },
+    })
+    expect(genRes.statusCode).toBe(201)
+    const key = forge.pki.privateKeyFromPem((await readFile(genRes.json().keyPath)).toString())
+    const cert = forge.pki.certificateFromPem((await readFile(genRes.json().certPath)).toString())
+    const pfx = Buffer.from(forge.asn1.toDer(forge.pkcs12.toPkcs12Asn1(key, [cert], 'test-pass', { algorithm: '3des' })).getBytes(), 'binary')
+
+    // File part first, then the passphrase field: the file stream must be consumed before the next part is yielded
+    const payload = new FormData()
+    payload.append('pfx', pfx, 'ui.pfx')
+    payload.append('passphrase', 'test-pass')
+
+    const headers = payload.getHeaders()
+    headers.authorization = authorization
+
+    const res = await app.inject({
+      method: 'POST',
+      path: '/server/ssl/pfx',
+      headers,
+      payload,
+    })
+
+    expect(res.statusCode).toBe(201)
+    expect(res.json().ok).toBe(true)
+    expect(res.json().type).toBe('pfx')
+
+    const config = await readJson(configService.configPath)
+    const uiBlock = config.platforms.find(x => x.platform === 'config')
+    expect(uiBlock.ssl.pfx).toBe(res.json().pfxPath)
+    expect(uiBlock.ssl.passphrase).toBe('test-pass')
+  }, 10000)
+
+  it('POST /server/ssl/pfx (too big a pfx is reported as too big)', async () => {
+    // With the passphrase after the file, asking for that next part used to fail
+    // first with a vaguer "request file too large" before the size was checked
+    const payload = new FormData()
+    payload.append('pfx', Buffer.alloc(globalThis.backup.maxBackupSize + 1), 'ui.pfx')
+    payload.append('passphrase', 'test-pass')
+
+    const headers = payload.getHeaders()
+    headers.authorization = authorization
+
+    const res = await app.inject({
+      method: 'POST',
+      path: '/server/ssl/pfx',
+      headers,
+      payload,
+    })
+
+    expect(res.json().message).toContain('Upload exceeds maximum size')
+  }, 20000)
 
   it('POST /server/ssl/validate (selfsigned mode)', async () => {
     await copy(resolve(__dirname, '../mocks', 'config.json'), process.env.UIX_CONFIG_PATH)

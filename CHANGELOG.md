@@ -24,6 +24,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - test: give the status tests a longer timeout on windows arm64
 - ci: update github actions to their latest versions (#3071)
 - fix(hb-service): stop the macos installer failing when npm's path has spaces or shell characters (#3026) (@smitty078)
+- fix(server): consume multipart file streams in ssl keycert/pfx upload (#3067) (@aashishvanand)
 
 ### Homebridge Dependencies
 
