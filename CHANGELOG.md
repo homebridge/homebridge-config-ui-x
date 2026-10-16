@@ -30,6 +30,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - ci: update github actions to their latest versions (#3071)
 - fix(hb-service): stop the macos installer failing when npm's path has spaces or shell characters (#3026) (@smitty078)
 - chore(deps): dependency updates + code fixes
+- fix(server): consume multipart file streams in ssl keycert/pfx upload (#3067) (@aashishvanand)
 
 ### Homebridge Dependencies
 
