@@ -1,15 +1,15 @@
 import { Body, Controller, Get, Inject, Post, UseGuards } from '@nestjs/common'
-import { AuthGuard } from '@nestjs/passport'
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger'
 
 import { AdminGuard } from '../../core/auth/guards/admin.guard.js'
+import { JwtAuthGuard } from '../../core/auth/guards/jwt-auth.guard.js'
 import { UpdateAllJournalService } from './update-all-journal.service.js'
 import { UpdateAllStartDto } from './update-all.dto.js'
 import { UpdateAllService } from './update-all.service.js'
 
 @ApiTags('Update All')
 @ApiBearerAuth()
-@UseGuards(AuthGuard(), AdminGuard)
+@UseGuards(JwtAuthGuard, AdminGuard)
 @Controller('update-all')
 export class UpdateAllController {
   constructor(

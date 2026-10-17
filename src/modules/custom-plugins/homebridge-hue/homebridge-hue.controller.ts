@@ -1,15 +1,15 @@
 import type { StreamableFile } from '@nestjs/common'
 
 import { Controller, Get, Header, Inject, UseGuards } from '@nestjs/common'
-import { AuthGuard } from '@nestjs/passport'
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger'
 
 import { AdminGuard } from '../../../core/auth/guards/admin.guard.js'
+import { JwtAuthGuard } from '../../../core/auth/guards/jwt-auth.guard.js'
 import { HomebridgeHueService } from './homebridge-hue.service.js'
 
 @ApiTags('Plugins')
 @ApiBearerAuth()
-@UseGuards(AuthGuard())
+@UseGuards(JwtAuthGuard)
 @Controller('plugins/custom-plugins/homebridge-hue')
 export class HomebridgeHueController {
   constructor(

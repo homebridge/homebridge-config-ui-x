@@ -14,7 +14,6 @@ import {
   Res,
   UseGuards,
 } from '@nestjs/common'
-import { AuthGuard } from '@nestjs/passport'
 import {
   ApiBearerAuth,
   ApiBody,
@@ -25,12 +24,13 @@ import {
 } from '@nestjs/swagger'
 
 import { AdminGuard } from '../../core/auth/guards/admin.guard.js'
+import { JwtAuthGuard } from '../../core/auth/guards/jwt-auth.guard.js'
 import { Logger } from '../../core/logger/logger.service.js'
 import { BackupService } from './backup.service.js'
 
 @ApiTags('Backup & Restore')
 @ApiBearerAuth()
-@UseGuards(AuthGuard())
+@UseGuards(JwtAuthGuard)
 @Controller('backup')
 export class BackupController {
   constructor(
