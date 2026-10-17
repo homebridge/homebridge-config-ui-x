@@ -1,0 +1,27 @@
+.theme-controls {
+  padding: 4px 0 0;
+  border: 0;
+  background: transparent;
+  color: var(--accessory-control-link);
+  font: inherit;
+  font-size: 12px;
+  line-height: 18px;
+  text-align: left;
+  cursor: pointer;
+
+  &:hover {
+    text-decoration: underline;
+  }
+  &:focus-visible {
+    outline: 2px solid currentColor;
+    outline-offset: 2px;
+  }
+  &:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+}
+
+.accessory-on .theme-controls {
+  color: var(--accessory-control-accent);
+}
