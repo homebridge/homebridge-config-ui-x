@@ -1,13 +1,13 @@
 import { Controller, Inject, Put, UseGuards } from '@nestjs/common'
-import { AuthGuard } from '@nestjs/passport'
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger'
 
 import { AdminGuard } from '../../../core/auth/guards/admin.guard.js'
+import { JwtAuthGuard } from '../../../core/auth/guards/jwt-auth.guard.js'
 import { LinuxService } from './linux.service.js'
 
 @ApiTags('Platform - Linux')
 @ApiBearerAuth()
-@UseGuards(AuthGuard())
+@UseGuards(JwtAuthGuard)
 @Controller('platform-tools/linux')
 export class LinuxController {
   constructor(

@@ -1,11 +1,11 @@
 import process from 'node:process'
 
 import { Controller, Get, Inject, NotFoundException, Param, Post, Query, Req, Res, UseGuards } from '@nestjs/common'
-import { AuthGuard } from '@nestjs/passport'
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger'
 
 import { API_PREFIX } from '../../../core/api.constants.js'
 import { AdminGuard } from '../../../core/auth/guards/admin.guard.js'
+import { JwtAuthGuard } from '../../../core/auth/guards/jwt-auth.guard.js'
 import { PluginsSettingsUiTicketService } from './plugins-settings-ui-ticket.service.js'
 import { PluginsSettingsUiService } from './plugins-settings-ui.service.js'
 
@@ -18,7 +18,7 @@ export class PluginsSettingsUiController {
   ) {}
 
   @Post('/:pluginName/ticket')
-  @UseGuards(AuthGuard('jwt'), AdminGuard)
+  @UseGuards(JwtAuthGuard, AdminGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Issues a single-use ticket for a plugin custom UI.' })
   async issueTicket(@Req() request, @Param('pluginName') pluginName: string) {
@@ -63,7 +63,7 @@ export class PluginsSettingsUiController {
   }
 
   @Post('/:pluginName/session/revoke')
-  @UseGuards(AuthGuard('jwt'), AdminGuard)
+  @UseGuards(JwtAuthGuard, AdminGuard)
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Revokes the active custom-UI asset session.' })
   revokeAssetSession(@Req() request, @Res({ passthrough: true }) reply, @Param('pluginName') pluginName: string) {
