@@ -16,6 +16,7 @@ export const RE_WHITESPACE = /\s+/
 export const RE_URL_WITH_OPTIONAL_PAREN = /\(?(?:https?|ftp):\/\/[\n\S]+/g
 export const RE_URL = /(?:https?|ftp):\/\/[\n\S]+/g
 export const RE_GITHUB_REPO = /https:\/\/github.com\/([^/]+)\/([^/#]+)/
+export const RE_GITHUB_USERNAME = /^[a-z\d](?:[a-z\d]|-(?=[a-z\d])){0,38}$/i
 
 // Encoding
 export const RE_ENCODED_AT = /%40/g
