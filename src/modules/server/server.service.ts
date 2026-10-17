@@ -1601,27 +1601,8 @@ export class ServerService {
     // Accept both specific field names (key, cert) and a generic 'files' array; detect content by PEM headers.
     // Override the global `files: 1` multipart limit since this endpoint legitimately receives a key + cert pair (#2789).
     const parts = req.parts ? req.parts({ limits: { files: 2 } }) : null
-    const files: Array<{ fieldname: string, filename: string, mimetype: string, file: Readable, truncated?: boolean }> = []
+    const files: Array<{ fieldname: string, buf: Buffer }> = []
 
-    if (parts) {
-      for await (const part of parts) {
-        if (part.file) {
-          files.push(part)
-        }
-      }
-    } else {
-      // Fallback to single file (should not happen for pair uploads)
-      const single = await req.file()
-      if (single?.file) {
-        files.push(single)
-      }
-    }
-
-    if (!files.length) {
-      throw new BadRequestException('No files uploaded. Please upload both the private key and certificate files.')
-    }
-
-    // Read all file streams into buffers
     const readStreamToBuffer = async (stream: Readable): Promise<Buffer> => {
       const chunks: Buffer[] = []
       await new Promise<void>((resolvePromise, rejectPromise) => {
@@ -1632,14 +1613,39 @@ export class ServerService {
       return Buffer.concat(chunks)
     }
 
+    // Each file stream must be consumed before @fastify/multipart yields the next part,
+    // otherwise the iterator never advances and the request hangs (#3066)
+    const addFile = async (part: any) => {
+      const buf = await readStreamToBuffer(part.file as Readable)
+      if (part.file?.truncated) {
+        throw new InternalServerErrorException(`Upload exceeds maximum size ${globalThis.backup.maxBackupSizeText}.`)
+      }
+      files.push({ fieldname: part.fieldname, buf })
+    }
+
+    if (parts) {
+      for await (const part of parts) {
+        if (part.file) {
+          await addFile(part)
+        }
+      }
+    } else {
+      // Fallback to single file (should not happen for pair uploads)
+      const single = await req.file()
+      if (single?.file) {
+        await addFile(single)
+      }
+    }
+
+    if (!files.length) {
+      throw new BadRequestException('No files uploaded. Please upload both the private key and certificate files.')
+    }
+
     let keyPem: Buffer | null = null
     let certPem: Buffer | null = null
 
     for (const f of files) {
-      if ((f as any).file?.truncated) {
-        throw new InternalServerErrorException(`Upload exceeds maximum size ${globalThis.backup.maxBackupSizeText}.`)
-      }
-      const buf = await readStreamToBuffer(f.file as unknown as Readable)
+      const buf = f.buf
       const text = buf.toString('utf8')
 
       // A single PEM may contain both a key and a cert (combined bundle); test each independently
@@ -1731,29 +1737,7 @@ export class ServerService {
     // Expect file field named 'pfx' (or any file) and optional field 'passphrase'
     let passphrase: string | undefined
     let filePart: any
-
-    if (req.parts) {
-      for await (const part of req.parts()) {
-        if (part.type === 'file' || part.file) {
-          filePart = part
-        } else if (part.type === 'field' || part.value) {
-          if (part.fieldname === 'passphrase') {
-            passphrase = part.value
-          }
-        }
-      }
-    } else {
-      // Fallback to single-file API
-      filePart = await req.file()
-      passphrase = req.body?.passphrase
-    }
-
-    if (!filePart) {
-      throw new BadRequestException('No PFX file uploaded.')
-    }
-    if (filePart.file?.truncated) {
-      throw new InternalServerErrorException(`Upload exceeds maximum size ${globalThis.backup.maxBackupSizeText}.`)
-    }
+    let pfxBuffer: Buffer | undefined
 
     const readStreamToBuffer = async (stream: Readable): Promise<Buffer> => {
       const chunks: Buffer[] = []
@@ -1764,7 +1748,34 @@ export class ServerService {
       })
       return Buffer.concat(chunks)
     }
-    const pfxBuffer = await readStreamToBuffer(filePart.file as unknown as Readable)
+
+    if (req.parts) {
+      for await (const part of req.parts()) {
+        if (part.type === 'file' || part.file) {
+          filePart = part
+          // Consume the stream now, or @fastify/multipart never yields the next part (#3066)
+          pfxBuffer = await readStreamToBuffer(part.file as Readable)
+        } else if (part.type === 'field' || part.value) {
+          if (part.fieldname === 'passphrase') {
+            passphrase = part.value
+          }
+        }
+      }
+    } else {
+      // Fallback to single-file API
+      filePart = await req.file()
+      passphrase = req.body?.passphrase
+      if (filePart?.file) {
+        pfxBuffer = await readStreamToBuffer(filePart.file as Readable)
+      }
+    }
+
+    if (!filePart || !pfxBuffer) {
+      throw new BadRequestException('No PFX file uploaded.')
+    }
+    if (filePart.file?.truncated) {
+      throw new InternalServerErrorException(`Upload exceeds maximum size ${globalThis.backup.maxBackupSizeText}.`)
+    }
 
     // Validate by attempting to create a secure context
     try {
