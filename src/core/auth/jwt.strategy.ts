@@ -5,6 +5,9 @@ import { ExtractJwt, Strategy } from 'passport-jwt'
 import { ConfigService } from '../config/config.service.js'
 import { AuthService } from './auth.service.js'
 
+/** Reads the JWT from a request. Shared so `JwtAuthGuard` agrees on when a token is missing. */
+export const extractBearerToken = ExtractJwt.fromAuthHeaderAsBearerToken()
+
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor(
@@ -12,7 +15,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     @Inject(AuthService) private readonly authService: AuthService,
   ) {
     super({
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      jwtFromRequest: extractBearerToken,
       secretOrKey: configService.secrets.secretKey,
     })
   }
