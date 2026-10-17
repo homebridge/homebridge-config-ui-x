@@ -1,0 +1,14 @@
+<div class="position-relative">
+  <input-widget [layoutNode]="inputLayout()" [layoutIndex]="layoutIndex()" [dataIndex]="dataIndex()" />
+  @if (isSecret()) {
+    <button
+      type="button"
+      class="btn btn-link text-reset p-2 m-0 position-absolute end-0 bottom-0"
+      [attr.aria-label]="(revealed() ? 'plugins.config.hide_value' : 'plugins.config.show_value') | translate"
+      [attr.aria-controls]="`control${layoutNode()._id}`"
+      (click)="revealed.set(!revealed())"
+    >
+      <i class="fas fa-fw" aria-hidden="true" [class.fa-eye]="!revealed()" [class.fa-eye-slash]="revealed()"></i>
+    </button>
+  }
+</div>
