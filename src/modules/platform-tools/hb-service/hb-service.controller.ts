@@ -8,16 +8,16 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common'
-import { AuthGuard } from '@nestjs/passport'
 import { ApiBearerAuth, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger'
 
 import { AdminGuard } from '../../../core/auth/guards/admin.guard.js'
+import { JwtAuthGuard } from '../../../core/auth/guards/jwt-auth.guard.js'
 import { HbServiceStartupSettings } from './hb-service.dto.js'
 import { HbServiceService } from './hb-service.service.js'
 
 @ApiTags('Platform - HB Service')
 @ApiBearerAuth()
-@UseGuards(AuthGuard())
+@UseGuards(JwtAuthGuard)
 @Controller('platform-tools/hb-service')
 export class HbServiceController {
   constructor(
