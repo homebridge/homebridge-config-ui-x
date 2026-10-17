@@ -22,6 +22,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(hb-service): quote paths with spaces when registering the Windows service (#3037) (@xLarry)
 - ci: improve beta release notes and workflow summaries (#3004)
 - ci: test hb-service from the packed package, so npm install errors are caught (#3023)
+- feat(plugins): add better support for plugins in a monorepo (#3045) (@rygine)
 
 ### Homebridge Dependencies
 
