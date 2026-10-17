@@ -11,7 +11,6 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common'
-import { AuthGuard } from '@nestjs/passport'
 import {
   ApiBearerAuth,
   ApiBody,
@@ -23,11 +22,12 @@ import {
 
 import { AuthService } from '../../core/auth/auth.service.js'
 import { AdminGuard } from '../../core/auth/guards/admin.guard.js'
+import { JwtAuthGuard } from '../../core/auth/guards/jwt-auth.guard.js'
 import { UserActivateOtpDto, UserDeactivateOtpDto, UserDto, UserUpdatePasswordDto } from './users.dto.js'
 
 @ApiTags('User Management')
 @ApiBearerAuth()
-@UseGuards(AuthGuard())
+@UseGuards(JwtAuthGuard)
 @Controller('users')
 export class UsersController {
   constructor(
