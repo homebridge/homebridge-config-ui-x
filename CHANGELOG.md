@@ -29,6 +29,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(hb-service): stop the macos installer failing when npm's path has spaces or shell characters (#3026) (@smitty078)
 - fix(server): consume multipart file streams in ssl keycert/pfx upload (#3067) (@aashishvanand)
 - fix(plugins): pick matter ports at random, skipping ports written as text and hap ports
+- fix(auth): log when a guarded route gets no bearer token (#3070) (@tbaur)
 
 ### Homebridge Dependencies
 

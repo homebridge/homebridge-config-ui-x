@@ -8,15 +8,15 @@ import {
   Request,
   UseGuards,
 } from '@nestjs/common'
-import { AuthGuard } from '@nestjs/passport'
 import { ApiBearerAuth, ApiOperation, ApiParam, ApiTags } from '@nestjs/swagger'
 
+import { JwtAuthGuard } from '../../core/auth/guards/jwt-auth.guard.js'
 import { AccessorySetCharacteristicDto } from './accessories.dto.js'
 import { AccessoriesService } from './accessories.service.js'
 
 @ApiTags('Accessories')
 @ApiBearerAuth()
-@UseGuards(AuthGuard())
+@UseGuards(JwtAuthGuard)
 @Controller('accessories')
 export class AccessoriesController {
   constructor(
