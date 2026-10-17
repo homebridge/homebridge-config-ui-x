@@ -14,7 +14,7 @@ import { ValidationPipe } from '@nestjs/common'
 import { FastifyAdapter } from '@nestjs/platform-fastify'
 import { Test } from '@nestjs/testing'
 import { copy, readJson, remove } from 'fs-extra'
-import { of } from 'rxjs'
+import { of, throwError } from 'rxjs'
 import { gt as semverGt } from 'semver'
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -519,6 +519,134 @@ describe('PluginController (e2e)', () => {
     })
 
     expect(res.statusCode).toBe(404)
+  })
+
+  describe('GET /plugins/release/:plugin-name', () => {
+    const pluginName = '@scope/homebridge-foo'
+
+    const mockHttp = (responses: Record<string, any>) => {
+      vi.spyOn(httpService, 'get').mockImplementation(((url: string) => url in responses
+        ? of({
+            data: responses[url],
+          })
+        : throwError(() => new Error('404'))) as any)
+    }
+
+    const registryEntry = (repository: object) => ({
+      'dist-tags': {
+        latest: '1.2.3',
+      },
+      'versions': {
+        '1.2.3': {
+          name: pluginName,
+          repository,
+        },
+      },
+    })
+
+    const getRelease = () => app.inject({
+      method: 'GET',
+      path: `/plugins/release/${encodeURIComponent(pluginName)}`,
+      headers: {
+        authorization,
+      },
+    })
+
+    beforeEach(() => {
+      vi.spyOn(pluginsService, 'getInstalledPlugins').mockImplementation(async () => {
+        const plugins = [
+          {
+            name: pluginName,
+            links: {
+              homepage: 'https://github.com/owner/repo#readme',
+            },
+          },
+        ] as HomebridgePlugin[]
+        ;(pluginsService as any).installedPlugins = plugins
+        return plugins
+      })
+    })
+
+    afterEach(() => {
+      vi.mocked(httpService.get).mockRestore()
+      vi.mocked(pluginsService.getInstalledPlugins).mockRestore()
+      ;(pluginsService as any).installedPlugins = null
+      ;(pluginsService as any).pluginChangelogs = {}
+    })
+
+    it('finds a release by its <plugin-name>@<version> tag and the changelog in repository.directory', async () => {
+      mockHttp({
+        'https://registry.npmjs.org/@scope%2Fhomebridge-foo': registryEntry({
+          type: 'git',
+          url: 'git+https://github.com/owner/repo.git',
+          directory: 'packages/homebridge-foo',
+        }),
+        'https://api.github.com/repos/owner/repo/releases/tags/@scope/homebridge-foo@1.2.3': {
+          tag_name: '@scope/homebridge-foo@1.2.3',
+          body: 'Release notes',
+        },
+        'https://raw.githubusercontent.com/owner/repo/refs/tags/@scope/homebridge-foo@1.2.3/packages/homebridge-foo/CHANGELOG.md': '## 1.2.3',
+      })
+
+      const res = await getRelease()
+
+      expect(res.statusCode).toBe(200)
+      expect(res.json()).toEqual({
+        name: '@scope/homebridge-foo@1.2.3',
+        notes: 'Release notes',
+        changelog: '## 1.2.3',
+        latestVersion: '1.2.3',
+      })
+    })
+
+    it('reads the root changelog before the one in repository.directory', async () => {
+      mockHttp({
+        'https://registry.npmjs.org/@scope%2Fhomebridge-foo': registryEntry({
+          type: 'git',
+          url: 'git+https://github.com/owner/repo.git',
+          directory: 'packages/homebridge-foo',
+        }),
+        'https://raw.githubusercontent.com/owner/repo/HEAD/CHANGELOG.md': '## root',
+        'https://raw.githubusercontent.com/owner/repo/HEAD/packages/homebridge-foo/CHANGELOG.md': '## package',
+      })
+
+      const res = await getRelease()
+
+      expect(res.json().changelog).toBe('## root')
+    })
+
+    it('prefers the plugin-changelogs.json path over repository.directory', async () => {
+      ;(pluginsService as any).pluginChangelogs = {
+        [pluginName]: 'listed/',
+      }
+      mockHttp({
+        'https://registry.npmjs.org/@scope%2Fhomebridge-foo': registryEntry({
+          type: 'git',
+          url: 'git+https://github.com/owner/repo.git',
+          directory: 'packages/homebridge-foo',
+        }),
+        'https://raw.githubusercontent.com/owner/repo/HEAD/listed/CHANGELOG.md': '## listed',
+        'https://raw.githubusercontent.com/owner/repo/HEAD/packages/homebridge-foo/CHANGELOG.md': '## package',
+      })
+
+      const res = await getRelease()
+
+      expect(res.json().changelog).toBe('## listed')
+    })
+
+    it('reads the root changelog when repository.directory is not set', async () => {
+      mockHttp({
+        'https://registry.npmjs.org/@scope%2Fhomebridge-foo': registryEntry({
+          type: 'git',
+          url: 'git+https://github.com/owner/repo.git',
+        }),
+        'https://raw.githubusercontent.com/owner/repo/HEAD/CHANGELOG.md': '## root',
+      })
+
+      const res = await getRelease()
+
+      expect(res.json().changelog).toBe('## root')
+    })
   })
 
   it('GET /plugins/alias/:plugin-name (with config.schema.json)', async () => {
