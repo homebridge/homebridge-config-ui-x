@@ -1,13 +1,13 @@
 import { Body, Controller, Get, Inject, Put, UseGuards } from '@nestjs/common'
-import { AuthGuard } from '@nestjs/passport'
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger'
 
 import { AdminGuard } from '../../../core/auth/guards/admin.guard.js'
+import { JwtAuthGuard } from '../../../core/auth/guards/jwt-auth.guard.js'
 import { DockerService } from './docker.service.js'
 
 @ApiTags('Platform - Docker')
 @ApiBearerAuth()
-@UseGuards(AuthGuard())
+@UseGuards(JwtAuthGuard)
 @Controller('platform-tools/docker')
 export class DockerController {
   constructor(
