@@ -365,7 +365,7 @@ export class DarwinInstaller extends BasePlatform {
       this.hbService.logger.error('You can fix this issue by running the following commands:')
 
       // These commands are displayed for copying into a POSIX shell.
-      const quote = (value: string) => "'" + value.replace(/'/g, "'\\''") + "'"
+      const quote = (value: string) => `'${value.replace(/'/g, '\'\\\'\'')}'`
 
       /* eslint-disable no-console */
       console.log('')
