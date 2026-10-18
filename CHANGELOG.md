@@ -21,6 +21,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(hb-service): quote paths with spaces when registering the Windows service (#3037) (@xLarry)
 - ci: improve beta release notes and workflow summaries (#3004)
 - test: give the status tests a longer timeout on windows arm64
+- ci: update github actions to their latest versions
 
 ### Homebridge Dependencies
 
