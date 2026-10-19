@@ -14,7 +14,6 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common'
-import { AuthGuard } from '@nestjs/passport'
 import {
   ApiBearerAuth,
   ApiBody,
@@ -26,6 +25,7 @@ import {
 } from '@nestjs/swagger'
 
 import { AdminGuard } from '../../core/auth/guards/admin.guard.js'
+import { JwtAuthGuard } from '../../core/auth/guards/jwt-auth.guard.js'
 import { PortRangeDto, SetBridgeAlertDto, SetScheduledRestartCronDto } from './config-editor.dto.js'
 import { ConfigEditorService } from './config-editor.service.js'
 
@@ -35,7 +35,7 @@ function includesRestartInfo(include: string | undefined): boolean {
 
 @ApiTags('Homebridge Config Editor')
 @ApiBearerAuth()
-@UseGuards(AuthGuard())
+@UseGuards(JwtAuthGuard)
 @Controller('config-editor')
 export class ConfigEditorController {
   constructor(
