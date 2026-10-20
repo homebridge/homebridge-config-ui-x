@@ -21,7 +21,7 @@
     "@angular/forms": "22.1.4",
     "@angular/localize": "22.1.4",
     "@angular/platform-browser": "22.1.4",
-    "@angular/router": "22.1.4",
+    "@angular/router": "22.2.1",
     "@auth0/angular-jwt": "5.2.0",
     "@homebridge/hap-client": "5.3.0",
     "@ng-bootstrap/ng-bootstrap": "21.0.0",
