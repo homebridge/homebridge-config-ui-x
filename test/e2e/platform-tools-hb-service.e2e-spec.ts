@@ -1,6 +1,8 @@
 import type { NestFastifyApplication } from '@nestjs/platform-fastify'
 import type { TestingModule } from '@nestjs/testing'
 
+import { Buffer } from 'node:buffer'
+import { get } from 'node:http'
 import { resolve } from 'node:path'
 import process from 'node:process'
 
@@ -220,6 +222,38 @@ describe('PlatformToolsHbService (e2e)', () => {
 
     expect(res.statusCode).toBe(200)
     expect(res.body).toEqual(sampleLogData)
+  })
+
+  it('GET /platform-tools/hb-service/log/download (colored download completes through a slow reader)', async () => {
+    // A chunked response fed utf8 strings with multi-byte characters can stall
+    // under backpressure (https://github.com/nodejs/node/issues/66781). Injected
+    // requests never push back, so this listens on a real socket, with a log
+    // large enough to fill the loopback buffers while the reader holds off.
+    const sampleLogData = Buffer.from('\u001B[0;36m[Front Door]\u001B[0m ⚡ Motion detected.\n'.repeat(350000))
+    await writeFile(logFilePath, sampleLogData)
+
+    await app.listen(0, '127.0.0.1')
+    const url = `${await app.getUrl()}/platform-tools/hb-service/log/download?colour=yes`
+
+    const received = await new Promise<Buffer>((resolveDownload, reject) => {
+      const req = get(url, { headers: { authorization } }, (res) => {
+        const chunks: Buffer[] = []
+
+        res.pause()
+        res.on('data', (chunk: Buffer) => chunks.push(chunk))
+        res.on('end', () => resolveDownload(Buffer.concat(chunks)))
+        res.on('error', reject)
+        setTimeout(() => res.resume(), 250)
+      })
+
+      // A stalled download goes quiet rather than failing, so an idle socket
+      // fails the test well before the test timeout.
+      req.setTimeout(2000, () => req.destroy(new Error('The log download stalled.')))
+      req.on('error', reject)
+    })
+
+    expect(received.length).toBe(sampleLogData.length)
+    expect(received.equals(sampleLogData)).toBe(true)
   })
 
   it('PUT /platform-tools/hb-service/log/truncate', async () => {

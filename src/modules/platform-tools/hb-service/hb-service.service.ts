@@ -93,8 +93,12 @@ export class HbServiceService {
       throw new BadRequestException('Cannot read log file. Check the log file permissions.')
     }
 
+    // The colored log is sent exactly as it is on disk, so it streams as raw
+    // bytes. Decoded utf8 strings would only be re-encoded on the way out, and
+    // string chunks holding multi-byte characters can stall a chunked response
+    // under backpressure (https://github.com/nodejs/node/issues/66781).
     if (!shouldRemoveColour) {
-      return createReadStream(this.configService.ui.log.path, { encoding: 'utf8' })
+      return createReadStream(this.configService.ui.log.path)
     }
 
     const removeColour = new Transform({
