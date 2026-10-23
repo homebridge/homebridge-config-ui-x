@@ -11,6 +11,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 
 - fix: add crossorigin attribute to manifest link for when using cf tunnels (#3005) (@Macleykun)
 - chore(status): drop the unused tooltip import from the bridges widget
+- fix(login): focus the 2fa code box once it renders, instead of on a timer that can outlive the page
 - fix(accessories): stop saved names colliding between separate outlets on the same accessory (#3009) (@msrivas-7)
 - fix(i18n): correct Korean plugin verification messages (#3007) (@chazepps)
 
