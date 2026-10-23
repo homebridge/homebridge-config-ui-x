@@ -244,7 +244,7 @@
   "child_bridge.config.hap_disabled_for_accessory": "Accessory plugins do not support Matter, so HAP cannot be disabled for an accessory child bridge.",
   "child_bridge.config.hap_externals_only": "Externals Only (HAP)",
   "child_bridge.config.hap_externals_only_desc": "When on, the bridge accessory itself is not advertised but plugins can still publish external HAP accessories. Useful for plugins that only expose external accessories.",
-  "child_bridge.config.hap_port_desc": "The port this child bridge listens on for HAP connections. Generated from the global port range when the bridge is first created.",
+  "child_bridge.config.hap_port_desc": "The port this child bridge listens on for HAP connections. When the bridge is first created, a port is picked outside the port range for separate accessories, skipping ports that other bridges or the UI already use.",
   "child_bridge.config.hide_pairing_alert": "Hide Pairing Alert",
   "child_bridge.config.hide_setup_recommendation": "Hide Set-Up Recommendation",
   "child_bridge.config.manufacturer": "Tillverkare",

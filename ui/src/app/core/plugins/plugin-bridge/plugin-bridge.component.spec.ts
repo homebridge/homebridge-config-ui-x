@@ -553,6 +553,19 @@ describe('pluginBridgeComponent', () => {
       expect(block._bridge.port).toBeLessThanOrEqual(60000)
     })
 
+    it('shows the reason and leaves the port blank when the server has no free port', async () => {
+      const modal = await open([{ platform: 'TestPlatform' }])
+      api.fail('get', '/server/port/new', { status: 500, error: { message: 'No available child bridge ports' } })
+      const block = modal.configBlocks()[0]
+
+      await modal.toggleHapBridge(block, true, '0')
+
+      // The server ruled out every port in the window, so a random guess would
+      // likely collide; a blank port is still valid and the user can set one
+      expect(block._bridge.port).toBeUndefined()
+      expect(toastr.error).toHaveBeenCalledWith('No available child bridge ports', 'toast.title_error')
+    })
+
     it('leaves a port the user already chose alone', async () => {
       const modal = await open([
         { platform: 'TestPlatform', _bridge: { username: '0E:11:11:11:11:11', port: 51999, hap: false } },

@@ -675,6 +675,77 @@ describe('ServerController (e2e)', () => {
     expect(res.json().port).toBeLessThanOrEqual(60000)
   })
 
+  it('GET /server/port/new (should skip the external accessory ports range)', async () => {
+    await copy(resolve(__dirname, '../mocks', 'config.json'), process.env.UIX_CONFIG_PATH)
+    const config: HomebridgeConfig = await readJson(configService.configPath)
+    config.ports = { start: 30000, end: 59999 }
+    await writeJson(configService.configPath, config)
+
+    const res = await app.inject({
+      method: 'GET',
+      path: '/server/port/new',
+      headers: {
+        authorization,
+      },
+    })
+
+    await copy(resolve(__dirname, '../mocks', 'config.json'), process.env.UIX_CONFIG_PATH)
+
+    expect(res.statusCode).toBe(200)
+    expect(res.json().port).toBe(60000)
+  })
+
+  it('GET /server/port/new (should skip ports already in the config)', async () => {
+    await copy(resolve(__dirname, '../mocks', 'config.json'), process.env.UIX_CONFIG_PATH)
+    const config: HomebridgeConfig = await readJson(configService.configPath)
+    config.ports = { start: 30000, end: 59995 }
+    config.bridge.port = 59996
+    config.platforms.find(x => x.platform === 'config').port = 59997
+    config.platforms.push({
+      platform: 'TestPlatform',
+      _bridge: { username: '02:00:00:00:00:01', port: 59998 },
+    })
+    config.accessories.push({
+      accessory: 'TestAccessory',
+      name: 'Test Accessory',
+      _bridge: { username: '02:00:00:00:00:02', port: 59999 },
+    })
+    await writeJson(configService.configPath, config)
+
+    const res = await app.inject({
+      method: 'GET',
+      path: '/server/port/new',
+      headers: {
+        authorization,
+      },
+    })
+
+    await copy(resolve(__dirname, '../mocks', 'config.json'), process.env.UIX_CONFIG_PATH)
+
+    expect(res.statusCode).toBe(200)
+    expect(res.json().port).toBe(60000)
+  })
+
+  it('GET /server/port/new (should return an error when no port is available)', async () => {
+    await copy(resolve(__dirname, '../mocks', 'config.json'), process.env.UIX_CONFIG_PATH)
+    const config: HomebridgeConfig = await readJson(configService.configPath)
+    config.ports = { start: 30000, end: 60000 }
+    await writeJson(configService.configPath, config)
+
+    const res = await app.inject({
+      method: 'GET',
+      path: '/server/port/new',
+      headers: {
+        authorization,
+      },
+    })
+
+    await copy(resolve(__dirname, '../mocks', 'config.json'), process.env.UIX_CONFIG_PATH)
+
+    expect(res.statusCode).toBe(500)
+    expect(res.json().message).toContain('No available child bridge ports')
+  })
+
   it('POST /server/wallpaper', async () => {
     // create multipart form
     const payload = new FormData()
