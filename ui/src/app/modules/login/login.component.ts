@@ -1,5 +1,5 @@
 import { NgOptimizedImage } from '@angular/common'
-import { AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, ElementRef, inject, OnInit, signal, viewChild } from '@angular/core'
+import { afterNextRender, AfterViewInit, ChangeDetectionStrategy, Component, DestroyRef, ElementRef, inject, Injector, OnInit, signal, viewChild } from '@angular/core'
 import { takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop'
 import { FormControl, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { Router } from '@angular/router'
@@ -26,6 +26,7 @@ import { environment } from '@/environments/environment'
 })
 export class LoginComponent implements OnInit, AfterViewInit {
   private destroyRef = inject(DestroyRef)
+  private injector = inject(Injector)
   private $auth = inject(AuthService)
   private $router = inject(Router)
   private $settings = inject(SettingsService)
@@ -151,9 +152,8 @@ export class LoginComponent implements OnInit, AfterViewInit {
         }
 
         this.twoFactorCodeRequired.set(true)
-        setTimeout(() => {
-          document.getElementById('form-ota')?.focus()
-        }, 100)
+        // The code field only exists once the template re-renders, and the callback is dropped if the page is destroyed first
+        afterNextRender(() => this.otpInput()?.nativeElement.focus(), { injector: this.injector })
       } else {
         this.invalidCredentials.set(true)
       }
