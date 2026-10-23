@@ -16,6 +16,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(i18n): translate untranslated and outdated Spanish strings (#3044) (@AxelDreemurr)
 - fix(config-editor): pair accessory blocks by child-bridge username (#3032) (@tbaur)
 - fix(login): focus the 2fa code box after render, not on a timer (#3082) (@tbaur)
+- fix(plugins): pick child bridge ports outside the external accessory range (#3081) (@tbaur)
 
 ### Other Changes
 

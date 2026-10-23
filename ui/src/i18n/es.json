@@ -244,7 +244,7 @@
   "child_bridge.config.hap_disabled_for_accessory": "Los plugins de accesorio no admiten Matter, por lo que no se puede deshabilitar HAP en un puente hijo de accesorio.",
   "child_bridge.config.hap_externals_only": "Solo externos (HAP)",
   "child_bridge.config.hap_externals_only_desc": "Cuando está activado, el accesorio del puente en sí no se anuncia, pero los plugins aún pueden publicar accesorios HAP externos. Útil para plugins que solo exponen accesorios externos.",
-  "child_bridge.config.hap_port_desc": "El puerto en el que este puente hijo escucha las conexiones HAP. Se genera a partir del rango de puertos global cuando se crea el puente por primera vez.",
+  "child_bridge.config.hap_port_desc": "El puerto en el que este puente hijo escucha las conexiones HAP. Se elige cuando se crea el puente por primera vez, fuera del rango de puertos de los accesorios independientes. Se omiten los puertos que ya usan otros puentes o la interfaz.",
   "child_bridge.config.hide_pairing_alert": "Ocultar alerta de emparejamiento",
   "child_bridge.config.hide_setup_recommendation": "Ocultar recomendación de configuración",
   "child_bridge.config.manufacturer": "Fabricante",

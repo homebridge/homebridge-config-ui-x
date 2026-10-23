@@ -244,7 +244,7 @@
   "child_bridge.config.hap_disabled_for_accessory": "配件外掛程式不支援 Matter，因此無法為配件子橋接器停用 HAP。",
   "child_bridge.config.hap_externals_only": "僅限外部配件（HAP）",
   "child_bridge.config.hap_externals_only_desc": "啟用後，不會廣播橋接器配件本身，但外掛程式仍可發布外部 HAP 配件。適用於僅提供外部配件的外掛程式。",
-  "child_bridge.config.hap_port_desc": "此子橋接器用來監聽 HAP 連線的連接埠。第一次建立橋接器時，會從全域連接埠範圍自動產生。",
+  "child_bridge.config.hap_port_desc": "此子橋接器用來監聽 HAP 連線的連接埠。第一次建立橋接器時，會在獨立配件的連接埠範圍之外選擇，並略過其他橋接器或 UI 已使用的連接埠。",
   "child_bridge.config.hide_pairing_alert": "隱藏配對警示",
   "child_bridge.config.hide_setup_recommendation": "隱藏設定建議",
   "child_bridge.config.manufacturer": "製造商",
