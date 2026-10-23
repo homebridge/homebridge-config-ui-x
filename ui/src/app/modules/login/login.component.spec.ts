@@ -384,5 +384,21 @@ describe('loginComponent', () => {
       // show a focus ring and nothing else
       expect(document.activeElement).not.toBe(fixture.nativeElement.querySelector('#form-username'))
     })
+
+    it('moves the cursor to the code box once it appears', async () => {
+      const { fixture, page } = await open({
+        auth: makeAuth({
+          login: vi.fn(async () => Promise.reject(httpError(412))) as any,
+        }),
+      })
+      page.form.setValue({ username: 'admin', password: 'letmein', otp: '' })
+
+      await page.onSubmit()
+      await fixture.whenStable()
+
+      // Focused after the render that adds the field, not on a timer - a timer
+      // could fire after the page is gone
+      expect(document.activeElement).toBe(fixture.nativeElement.querySelector('#form-ota'))
+    })
   })
 })
