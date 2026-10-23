@@ -643,11 +643,17 @@ export class PluginBridgeComponent implements OnInit {
     return false
   }
 
-  private async getUnusedPort() {
+  private async getUnusedPort(): Promise<number | undefined> {
     try {
       const lookup = await this.$api.get('/server/port/new')
       return lookup.port
-    } catch (e) {
+    } catch (error) {
+      // When the server says why it has no port, a random guess would land on a port it already ruled out
+      const serverMessage = (error as { error?: { message?: unknown } } | null)?.error?.message
+      if (typeof serverMessage === 'string' && serverMessage.trim().length > 0) {
+        this.$toastr.error(serverMessage, this.$translate.instant('toast.title_error'))
+        return undefined
+      }
       return Math.floor(Math.random() * (60000 - 30000 + 1) + 30000)
     }
   }

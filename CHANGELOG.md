@@ -14,6 +14,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(accessories): stop saved names colliding between separate outlets on the same accessory (#3009) (@msrivas-7)
 - fix(i18n): correct Korean plugin verification messages (#3007) (@chazepps)
 - fix(login): focus the 2fa code box after render, not on a timer (#3082) (@tbaur)
+- fix(plugins): pick child bridge ports outside the external accessory range (#3081) (@tbaur)
 
 ### Other Changes
 
