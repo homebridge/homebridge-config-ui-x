@@ -15,6 +15,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(accessories): stop saved names colliding between separate outlets on the same accessory (#3009) (@msrivas-7)
 - fix(i18n): translate untranslated and outdated Spanish strings (#3044) (@AxelDreemurr)
 - fix(config-editor): pair accessory blocks by child-bridge username (#3032) (@tbaur)
+- fix(login): focus the 2fa code box after render, not on a timer (#3082) (@tbaur)
 
 ### Other Changes
 
