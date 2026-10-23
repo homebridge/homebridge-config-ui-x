@@ -6,7 +6,7 @@ import type { NetworkOverviewEntry, StoredMatterAccessory } from '../../core/mat
 
 import { Buffer } from 'node:buffer'
 import { exec, spawn } from 'node:child_process'
-import { createPublicKey, X509Certificate } from 'node:crypto'
+import { createPublicKey, randomInt, X509Certificate } from 'node:crypto'
 import { createWriteStream } from 'node:fs'
 import { readdir, readFile, unlink, writeFile } from 'node:fs/promises'
 import { basename, extname, join, resolve } from 'node:path'
@@ -55,6 +55,9 @@ import { ConfigEditorService } from '../config-editor/config-editor.service.js'
 import { HomebridgeMdnsSettingDto } from './server.dto.js'
 
 const pump = promisify(pipeline)
+
+const CHILD_BRIDGE_PORT_MIN = 30000
+const CHILD_BRIDGE_PORT_MAX = 60000
 
 @Injectable()
 export class ServerService {
@@ -1207,21 +1210,67 @@ export class ServerService {
   }
 
   /**
-   * Generate a random, unused port and return it
+   * Generate an unused HAP port for a child bridge and return it
+   * The port is picked from 30000-60000, outside the configured `ports` range, because Homebridge hands
+   * that range to external accessories without checking which ports child bridges already use.
+   * Ports already written in config.json (main bridge, child bridges, UI) are skipped too.
+   * @returns Object containing an available port number
+   * @throws InternalServerErrorException if no ports are available
    */
-  public async lookupUnusedPort() {
-    // We should adhere to any port ranges defined in the config
-    const min = this.configService.homebridgeConfig.ports?.start ?? 30000
-    const max = this.configService.homebridgeConfig.ports?.end ?? 60000
+  public async lookupUnusedPort(): Promise<{ port: number }> {
+    const config = await this.configEditorService.getConfigFile()
+    const externalPortRange = this.getExternalAccessoryPortRange(config)
+    const configuredPorts = this.collectConfiguredHapPorts(config)
 
-    const randomPort = () => Math.floor(Math.random() * (max - min + 1) + min)
-
-    let port = randomPort()
-    while (await tcpCheck(port)) {
-      port = randomPort()
+    const candidates: number[] = []
+    for (let port = CHILD_BRIDGE_PORT_MIN; port <= CHILD_BRIDGE_PORT_MAX; port += 1) {
+      const isInExternalRange = externalPortRange && port >= externalPortRange.start && port <= externalPortRange.end
+      if (!isInExternalRange && !configuredPorts.has(port)) {
+        candidates.push(port)
+      }
     }
 
-    return { port }
+    // Start at a random candidate, so two bridges enabled before either is saved are unlikely to get the same port
+    const offset = candidates.length > 0 ? randomInt(candidates.length) : 0
+    for (let i = 0; i < candidates.length; i += 1) {
+      const port = candidates[(offset + i) % candidates.length]
+      if (!await tcpCheck(port)) {
+        return { port }
+      }
+    }
+
+    const excludedRange = externalPortRange ? ` outside the ports range (${externalPortRange.start}-${externalPortRange.end})` : ''
+    throw new InternalServerErrorException(`No available child bridge ports in ${CHILD_BRIDGE_PORT_MIN}-${CHILD_BRIDGE_PORT_MAX}${excludedRange}`)
+  }
+
+  /**
+   * Return the `ports` range that Homebridge uses for external accessories, or undefined if Homebridge would ignore it
+   * Homebridge ignores `ports` when `start` or `end` is missing, or when start > end
+   */
+  private getExternalAccessoryPortRange(config: HomebridgeConfig): { start: number, end: number } | undefined {
+    const start = config.ports?.start
+    const end = config.ports?.end
+    if (!Number.isInteger(start) || !Number.isInteger(end) || start > end) {
+      return undefined
+    }
+
+    return { start, end }
+  }
+
+  /**
+   * Collect the HAP ports already written in config.json: the main bridge, every child bridge and the UI
+   */
+  private collectConfiguredHapPorts(config: HomebridgeConfig): Set<number> {
+    const uiConfig = config.platforms?.find(x => x.platform === 'config')
+    const blocks = [...(config.accessories || []), ...(config.platforms || [])] as (AccessoryConfig | PlatformConfig)[]
+
+    const ports = [
+      config.bridge?.port,
+      uiConfig?.port || this.configService.ui.port,
+      ...blocks.map(block => block._bridge?.port),
+    ]
+
+    return new Set(ports.filter((port): port is number => Number.isInteger(port)))
   }
 
   /**
