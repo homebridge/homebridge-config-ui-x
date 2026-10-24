@@ -56,7 +56,9 @@ export class TerminalService {
     }
 
     // Fallback to bash if available, otherwise sh
-    return await pathExists('/bin/bash') ? '/bin/bash' : '/bin/sh'
+    return await pathExists('/bin/bash')
+      ? '/bin/bash'
+      : '/bin/sh'
   }
 
   /**

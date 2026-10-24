@@ -26,12 +26,16 @@ vi.mock('node:child_process', async (importOriginal) => {
   const actual = await importOriginal<typeof import('node:child_process')>()
   return {
     ...actual,
-    spawn: vi.fn(() => ({ on: vi.fn() })),
+    spawn: vi.fn(() => ({
+      on: vi.fn(),
+    })),
     exec: vi.fn((_command: string, callback?: (...args: any[]) => void) => {
       if (typeof callback === 'function') {
         callback(null, '', '')
       }
-      return { on: vi.fn() }
+      return {
+        on: vi.fn(),
+      }
     }),
   }
 })

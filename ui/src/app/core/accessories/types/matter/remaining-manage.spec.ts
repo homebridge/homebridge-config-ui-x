@@ -41,7 +41,9 @@ describe('the remaining matter manage modals', () => {
     accessoryData = new Subject()
     return {
       accessoryData,
-      accessories: { services: [current] },
+      accessories: {
+        services: [current],
+      },
     } as unknown as AccessoriesService
   }
 
@@ -58,24 +60,37 @@ describe('the remaining matter manage modals', () => {
   function create<T>(type: new (...args: any[]) => T, service: ServiceTypeX, temperatureUnits: 'c' | 'f' = 'c'): T {
     TestBed.resetTestingModule()
     toastr = toastrStub()
-    settings = makeSettings({ env: { temperatureUnits } })
+    settings = makeSettings({
+      env: { temperatureUnits },
+    })
 
     TestBed.configureTestingModule({
       imports: [type as any],
       providers: [
         provideTestTranslate(),
         provideFakes({ toastr, settings }),
-        { provide: NgbActiveModal, useValue: activeModalStub() },
+        {
+          provide: NgbActiveModal,
+          useValue: activeModalStub(),
+        },
         {
           provide: ACCESSORY_MANAGE_MODAL_DATA,
-          useValue: { service, $accessories: accessoriesStub(service) },
+          useValue: {
+            service,
+            $accessories: accessoriesStub(service),
+          },
         },
       ],
     })
 
     TestBed.overrideComponent(type as any, {
       set: {
-        imports: [TranslatePipe, ConvertTempPipe, DecimalPipe, UpperCasePipe],
+        imports: [
+          TranslatePipe,
+          ConvertTempPipe,
+          DecimalPipe,
+          UpperCasePipe,
+        ],
         schemas: [NO_ERRORS_SCHEMA],
       },
     })
@@ -92,7 +107,9 @@ describe('the remaining matter manage modals', () => {
   }
 
   function mouseEvent() {
-    return { target: document.createElement('button') } as unknown as MouseEvent
+    return {
+      target: document.createElement('button'),
+    } as unknown as MouseEvent
   }
 
   beforeEach(() => {
@@ -140,7 +157,10 @@ describe('the remaining matter manage modals', () => {
       })
 
       expect(service.writes).toEqual([
-        { cluster: 'thermostat', attributes: { occupiedHeatingSetpoint: 2200 } },
+        {
+          cluster: 'thermostat',
+          attributes: { occupiedHeatingSetpoint: 2200 },
+        },
       ])
     })
 
@@ -154,7 +174,10 @@ describe('the remaining matter manage modals', () => {
       })
 
       expect(service.writes).toEqual([
-        { cluster: 'thermostat', attributes: { occupiedCoolingSetpoint: 2600 } },
+        {
+          cluster: 'thermostat',
+          attributes: { occupiedCoolingSetpoint: 2600 },
+        },
       ])
     })
 
@@ -168,8 +191,14 @@ describe('the remaining matter manage modals', () => {
       })
 
       expect(service.writes).toEqual([
-        { cluster: 'thermostat', attributes: { occupiedHeatingSetpoint: 1900 } },
-        { cluster: 'thermostat', attributes: { occupiedCoolingSetpoint: 2700 } },
+        {
+          cluster: 'thermostat',
+          attributes: { occupiedHeatingSetpoint: 1900 },
+        },
+        {
+          cluster: 'thermostat',
+          attributes: { occupiedCoolingSetpoint: 2700 },
+        },
       ])
     })
 
@@ -272,7 +301,10 @@ describe('the remaining matter manage modals', () => {
       await component.setTargetMode(3, mouseEvent())
 
       expect(service.writes).toEqual([
-        { cluster: 'thermostat', attributes: { systemMode: 3 } },
+        {
+          cluster: 'thermostat',
+          attributes: { systemMode: 3 },
+        },
       ])
       expect(component.targetMode).toBe(3)
     })
@@ -321,7 +353,9 @@ describe('the remaining matter manage modals', () => {
     function fan(percentSetting = 50, fanMode = 2): MatterServiceFixture {
       return matterService({
         deviceType: 'Fan',
-        clusters: { fanControl: { fanMode, percentSetting, percentCurrent: percentSetting } },
+        clusters: {
+          fanControl: { fanMode, percentSetting, percentCurrent: percentSetting },
+        },
       })
     }
 
@@ -395,7 +429,12 @@ describe('the remaining matter manage modals', () => {
 
   describe('door lock', () => {
     function lock(lockState = 1): MatterServiceFixture {
-      return matterService({ deviceType: 'DoorLock', clusters: { doorLock: { lockState } } })
+      return matterService({
+        deviceType: 'DoorLock',
+        clusters: {
+          doorLock: { lockState },
+        },
+      })
     }
 
     it('reads the lock state', () => {
@@ -446,21 +485,37 @@ describe('the remaining matter manage modals', () => {
       const clusters: Record<string, Record<string, unknown>> = {
         rvcRunMode: {
           currentMode: options.runMode ?? 0,
-          supportedModes: [{ label: 'Idle', mode: 0 }, { label: 'Clean', mode: 1 }],
+          supportedModes: [
+            { label: 'Idle', mode: 0 },
+            { label: 'Clean', mode: 1 },
+          ],
         },
         rvcOperationalState: { operationalState: options.operationalState ?? 0 },
       }
       if (options.cleanMode) {
         clusters.rvcCleanMode = {
           currentMode: 1,
-          supportedModes: [{ label: 'Vacuum', mode: 1 }, { label: 'Mop', mode: 2 }],
+          supportedModes: [
+            { label: 'Vacuum', mode: 1 },
+            { label: 'Mop', mode: 2 },
+          ],
         }
       }
       if (options.areas) {
         clusters.serviceArea = {
           supportedAreas: [
-            { areaId: 1, areaInfo: { locationInfo: { locationName: 'Kitchen' } } },
-            { areaId: 2, areaInfo: { locationInfo: { locationName: 'Hallway' } } },
+            {
+              areaId: 1,
+              areaInfo: {
+                locationInfo: { locationName: 'Kitchen' },
+              },
+            },
+            {
+              areaId: 2,
+              areaInfo: {
+                locationInfo: { locationName: 'Hallway' },
+              },
+            },
           ],
           selectedAreas: [1],
           currentArea: 1,
@@ -501,7 +556,10 @@ describe('the remaining matter manage modals', () => {
       await component.setMode(1, mouseEvent())
 
       expect(service.writes).toEqual([
-        { cluster: 'rvcRunMode', attributes: { currentMode: 1 } },
+        {
+          cluster: 'rvcRunMode',
+          attributes: { currentMode: 1 },
+        },
       ])
     })
 
@@ -512,7 +570,10 @@ describe('the remaining matter manage modals', () => {
       await component.setMode(0, mouseEvent())
 
       expect(service.writes).toEqual([
-        { cluster: 'rvcRunMode', attributes: { currentMode: 0 } },
+        {
+          cluster: 'rvcRunMode',
+          attributes: { currentMode: 0 },
+        },
       ])
     })
 
@@ -524,7 +585,10 @@ describe('the remaining matter manage modals', () => {
       await component.setMode(2, mouseEvent())
 
       expect(service.writes).toEqual([
-        { cluster: 'rvcOperationalState', attributes: { operationalState: 2 } },
+        {
+          cluster: 'rvcOperationalState',
+          attributes: { operationalState: 2 },
+        },
       ])
     })
 
@@ -578,7 +642,10 @@ describe('the remaining matter manage modals', () => {
     it('offers the clean modes only to a vacuum that has them', () => {
       const withModes = create(RoboticVacuumCleanerManageComponent, vacuum({ cleanMode: true }))
       expect(withModes.hasCleanMode).toBe(true)
-      expect(withModes.cleanModes).toEqual([{ label: 'Vacuum', mode: 1 }, { label: 'Mop', mode: 2 }])
+      expect(withModes.cleanModes).toEqual([
+        { label: 'Vacuum', mode: 1 },
+        { label: 'Mop', mode: 2 },
+      ])
 
       const without = create(RoboticVacuumCleanerManageComponent, vacuum())
       expect(without.hasCleanMode).toBe(false)
@@ -591,7 +658,10 @@ describe('the remaining matter manage modals', () => {
       await component.setCleanMode(2, mouseEvent())
 
       expect(service.writes).toEqual([
-        { cluster: 'rvcCleanMode', attributes: { currentMode: 2 } },
+        {
+          cluster: 'rvcCleanMode',
+          attributes: { currentMode: 2 },
+        },
       ])
       expect(component.currentCleanModeId).toBe(2)
     })
@@ -625,7 +695,12 @@ describe('the remaining matter manage modals', () => {
 
       expect(component.isAreaSelected(2)).toBe(true)
       expect(service.writes).toEqual([
-        { cluster: 'serviceArea', attributes: { selectedAreas: [1, 2] } },
+        {
+          cluster: 'serviceArea',
+          attributes: {
+            selectedAreas: [1, 2],
+          },
+        },
       ])
     })
 
@@ -637,7 +712,10 @@ describe('the remaining matter manage modals', () => {
 
       expect(component.isAreaSelected(1)).toBe(false)
       expect(service.writes).toEqual([
-        { cluster: 'serviceArea', attributes: { selectedAreas: [] } },
+        {
+          cluster: 'serviceArea',
+          attributes: { selectedAreas: [] },
+        },
       ])
     })
 
@@ -659,7 +737,9 @@ describe('the remaining matter manage modals', () => {
     }
 
     it('reads the overall air quality', () => {
-      const component = create(AirQualitySensorManageComponent, sensor({ airQuality: { airQuality: 3 } }))
+      const component = create(AirQualitySensorManageComponent, sensor({
+        airQuality: { airQuality: 3 },
+      }))
 
       expect(component.airQuality).toBe(3)
     })
@@ -679,7 +759,9 @@ describe('the remaining matter manage modals', () => {
 
     it('leaves a concentration the sensor does not report as unknown', () => {
       // Rather than showing zero, which reads as a good measurement
-      const component = create(AirQualitySensorManageComponent, sensor({ airQuality: { airQuality: 2 } }))
+      const component = create(AirQualitySensorManageComponent, sensor({
+        airQuality: { airQuality: 2 },
+      }))
 
       expect(component.pm25).toBeNull()
       expect(component.no2).toBeNull()
@@ -693,7 +775,9 @@ describe('the remaining matter manage modals', () => {
       }))
       expect(withData.hasConcentration).toBe(true)
 
-      const without = create(AirQualitySensorManageComponent, sensor({ airQuality: { airQuality: 2 } }))
+      const without = create(AirQualitySensorManageComponent, sensor({
+        airQuality: { airQuality: 2 },
+      }))
       expect(without.hasConcentration).toBe(false)
     })
   })

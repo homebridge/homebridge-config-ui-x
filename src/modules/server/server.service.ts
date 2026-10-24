@@ -137,14 +137,18 @@ export class ServerService {
     const identifierCache = resolve(persistPath, `IdentifierCache.${id}.json`)
 
     // Handle both formats: with colons (0E:3C:22:18:EC:79) and without (0E3C2218EC79)
-    const deviceId = id.includes(':') ? ServerService.macToHex(id) : id.toUpperCase()
+    const deviceId = id.includes(':')
+      ? ServerService.macToHex(id)
+      : id.toUpperCase()
     const matterDir = resolve(this.configService.storagePath, 'matter')
     const matterPath = resolve(matterDir, deviceId)
 
     try {
       // Format username with colons if not already present
       const configFile = await this.configEditorService.getConfigFile()
-      const username = id.includes(':') ? id.toUpperCase() : ServerService.hexToMac(id)
+      const username = id.includes(':')
+        ? id.toUpperCase()
+        : ServerService.hexToMac(id)
 
       // Check if the original username is in the access list, if so, update it to the new username
       const uiConfig = configFile.platforms.find(x => x.platform === 'config')
@@ -311,8 +315,11 @@ export class ServerService {
     const uiConfig = configFile.platforms.find(x => x.platform === 'config')
     if (uiConfig.accessoryControl?.instanceBlacklist?.includes(oldUsername.toUpperCase())) {
       // Remove the old username from the blacklist, add the new one, and sort the blacklist alphabetically
-      uiConfig.accessoryControl.instanceBlacklist = [...uiConfig.accessoryControl.instanceBlacklist
-        .filter((x: string) => x.toUpperCase() !== oldUsername.toUpperCase()), configFile.bridge.username]
+      uiConfig.accessoryControl.instanceBlacklist = [
+        ...uiConfig.accessoryControl.instanceBlacklist
+          .filter((x: string) => x.toUpperCase() !== oldUsername.toUpperCase()),
+        configFile.bridge.username,
+      ]
         .sort((a: string, b: string) => a.localeCompare(b))
     }
 
@@ -355,7 +362,10 @@ export class ServerService {
     const matterExternalDevices = await this.getMatterExternalAccessories(hapDevices)
 
     // Combine and sort by name
-    return [...hapDevices, ...matterExternalDevices].sort((a, b) => a.name.localeCompare(b.name))
+    return [
+      ...hapDevices,
+      ...matterExternalDevices,
+    ].sort((a, b) => a.name.localeCompare(b.name))
   }
 
   /**
@@ -463,8 +473,12 @@ export class ServerService {
           try {
             const commissioningInfo = await readJson(commissioningPath)
             commissioned = commissioningInfo.commissioned || false
-            qrCode = typeof commissioningInfo.qrCode === 'string' ? commissioningInfo.qrCode : undefined
-            manualPairingCode = typeof commissioningInfo.manualPairingCode === 'string' ? commissioningInfo.manualPairingCode : undefined
+            qrCode = typeof commissioningInfo.qrCode === 'string'
+              ? commissioningInfo.qrCode
+              : undefined
+            manualPairingCode = typeof commissioningInfo.manualPairingCode === 'string'
+              ? commissioningInfo.manualPairingCode
+              : undefined
           } catch (parseError) {
             this.logger.warn(`Malformed commissioning.json at ${commissioningPath}, removing corrupted file`)
             try {
@@ -536,7 +550,11 @@ export class ServerService {
 
     const username = ServerService.hexToMac(deviceId)
     const isMain = this.configService.homebridgeConfig.bridge.username.toUpperCase() === username.toUpperCase()
-    const pluginBlock = [...configFile.accessories, ...configFile.platforms, { _bridge: configFile.bridge }]
+    const pluginBlock = [
+      ...configFile.accessories,
+      ...configFile.platforms,
+      { _bridge: configFile.bridge },
+    ]
       .find((block: any) => block._bridge?.username?.toUpperCase() === username.toUpperCase())
 
     try {
@@ -619,7 +637,9 @@ export class ServerService {
     try {
       const configFile = await this.configEditorService.getConfigFile()
       // Format username with colons if not already present
-      const username = id.includes(':') ? id.toUpperCase() : ServerService.hexToMac(id)
+      const username = id.includes(':')
+        ? id.toUpperCase()
+        : ServerService.hexToMac(id)
 
       // Find the child bridge plugin block
       const pluginBlocks = ([
@@ -651,7 +671,9 @@ export class ServerService {
     }
 
     // 3. Delete storage
-    const deviceId = id.includes(':') ? ServerService.macToHex(id) : id.toUpperCase()
+    const deviceId = id.includes(':')
+      ? ServerService.macToHex(id)
+      : id.toUpperCase()
     const matterPath = join(this.configService.storagePath, 'matter', deviceId)
 
     if (await pathExists(matterPath)) {
@@ -1243,7 +1265,10 @@ export class ServerService {
     }
 
     // Check child bridges
-    for (const block of [...(config.accessories || []), ...(config.platforms || [])] as (AccessoryConfig | PlatformConfig)[]) {
+    for (const block of [
+      ...(config.accessories || []),
+      ...(config.platforms || []),
+    ] as (AccessoryConfig | PlatformConfig)[]) {
       if (block._bridge?.matter?.port) {
         // Only count Matter ports from platform-based plugins (not accessory-based)
         if ('accessory' in block) {
@@ -1374,7 +1399,9 @@ export class ServerService {
 
     // 4. Bring the ports object to the front of the config, after the bridge object
     const { bridge, ports, ...rest } = config
-    config = ports ? { bridge, ports, ...rest } : { bridge, ...rest }
+    config = ports
+      ? { bridge, ports, ...rest }
+      : { bridge, ...rest }
 
     // 5. Save the config file
     await this.configEditorService.updateConfigFile(config)
@@ -1419,7 +1446,9 @@ export class ServerService {
         if (await pathExists(accessoriesPath)) {
           try {
             const accessories = await readJson(accessoriesPath)
-            deviceCount = Array.isArray(accessories) ? accessories.length : 0
+            deviceCount = Array.isArray(accessories)
+              ? accessories.length
+              : 0
           } catch {
             // Corrupted file, default to 0
           }
@@ -1450,9 +1479,14 @@ export class ServerService {
     entries.push(mainEntry)
 
     // Child bridges
-    for (const block of [...(config.accessories || []), ...(config.platforms || [])] as (AccessoryConfig | PlatformConfig)[]) {
+    for (const block of [
+      ...(config.accessories || []),
+      ...(config.platforms || []),
+    ] as (AccessoryConfig | PlatformConfig)[]) {
       if (block._bridge) {
-        const bridgeName = block._bridge.name || block.name || ('platform' in block ? block.platform : block.accessory)
+        const bridgeName = block._bridge.name || block.name || ('platform' in block
+          ? block.platform
+          : block.accessory)
         const entry: NetworkOverviewEntry = {
           service: bridgeName,
           port: block._bridge.port || 0,
@@ -1600,7 +1634,11 @@ export class ServerService {
   public async uploadSslKeyCert(req: any): Promise<{ ok: boolean, type: 'keycert', keyPath: string, certPath: string, details?: string }> {
     // Accept both specific field names (key, cert) and a generic 'files' array; detect content by PEM headers.
     // Override the global `files: 1` multipart limit since this endpoint legitimately receives a key + cert pair (#2789).
-    const parts = req.parts ? req.parts({ limits: { files: 2 } }) : null
+    const parts = req.parts
+      ? req.parts({
+          limits: { files: 2 },
+        })
+      : null
     const files: Array<{ fieldname: string, filename: string, mimetype: string, file: Readable, truncated?: boolean }> = []
 
     if (parts) {
@@ -1625,7 +1663,9 @@ export class ServerService {
     const readStreamToBuffer = async (stream: Readable): Promise<Buffer> => {
       const chunks: Buffer[] = []
       await new Promise<void>((resolvePromise, rejectPromise) => {
-        stream.on('data', (d: Buffer) => chunks.push(Buffer.isBuffer(d) ? d : Buffer.from(d)))
+        stream.on('data', (d: Buffer) => chunks.push(Buffer.isBuffer(d)
+          ? d
+          : Buffer.from(d)))
         stream.on('end', () => resolvePromise())
         stream.on('error', rejectPromise)
       })
@@ -1758,7 +1798,9 @@ export class ServerService {
     const readStreamToBuffer = async (stream: Readable): Promise<Buffer> => {
       const chunks: Buffer[] = []
       await new Promise<void>((resolvePromise, rejectPromise) => {
-        stream.on('data', (d: Buffer) => chunks.push(Buffer.isBuffer(d) ? d : Buffer.from(d)))
+        stream.on('data', (d: Buffer) => chunks.push(Buffer.isBuffer(d)
+          ? d
+          : Buffer.from(d)))
         stream.on('end', () => resolvePromise())
         stream.on('error', rejectPromise)
       })
@@ -1816,11 +1858,21 @@ export class ServerService {
     const ssl = uiConfigBlock?.ssl || {}
 
     if (!ssl || (!ssl.selfSigned && !ssl.key && !ssl.cert && !ssl.pfx)) {
-      return { ok: true, valid: true, type: 'off', details: 'HTTPS is disabled.' }
+      return {
+        ok: true,
+        valid: true,
+        type: 'off',
+        details: 'HTTPS is disabled.',
+      }
     }
 
     if (ssl.selfSigned) {
-      return { ok: true, valid: true, type: 'selfsigned', details: 'Self-signed mode enabled.' }
+      return {
+        ok: true,
+        valid: true,
+        type: 'selfsigned',
+        details: 'Self-signed mode enabled.',
+      }
     }
 
     try {
@@ -1831,22 +1883,47 @@ export class ServerService {
         const certPub = x509.publicKey.export({ type: 'spki', format: 'der' }) as Buffer
         const pubFromPriv = createPublicKey(keyPem).export({ type: 'spki', format: 'der' }) as Buffer
         if (!certPub.equals(pubFromPriv)) {
-          return { ok: true, valid: false, type: 'keycert', details: 'Private key does not match certificate.' }
+          return {
+            ok: true,
+            valid: false,
+            type: 'keycert',
+            details: 'Private key does not match certificate.',
+          }
         }
         createSecureContext({ key: keyPem, cert: certPem })
-        return { ok: true, valid: true, type: 'keycert', details: 'Key and certificate are valid and match.' }
+        return {
+          ok: true,
+          valid: true,
+          type: 'keycert',
+          details: 'Key and certificate are valid and match.',
+        }
       }
 
       if (ssl.pfx) {
         const pfx = await readFile(ssl.pfx)
         createSecureContext({ pfx, passphrase: ssl.passphrase })
-        return { ok: true, valid: true, type: 'pfx', details: 'PFX file and passphrase are valid.' }
+        return {
+          ok: true,
+          valid: true,
+          type: 'pfx',
+          details: 'PFX file and passphrase are valid.',
+        }
       }
     } catch (e: any) {
-      return { ok: true, valid: false, type: ssl.pfx ? 'pfx' : 'keycert', details: e?.message || String(e) }
+      return {
+        ok: true,
+        valid: false,
+        type: ssl.pfx ? 'pfx' : 'keycert',
+        details: e?.message || String(e),
+      }
     }
 
-    return { ok: true, valid: false, type: 'off', details: 'No SSL configuration found.' }
+    return {
+      ok: true,
+      valid: false,
+      type: 'off',
+      details: 'No SSL configuration found.',
+    }
   }
 
   /**
@@ -1908,8 +1985,12 @@ export class ServerService {
       ok: true,
       type: 'generated',
       mode,
-      keyPath: mode === 'keycert' ? keyPath : undefined,
-      certPath: mode === 'keycert' ? certPath : undefined,
+      keyPath: mode === 'keycert'
+        ? keyPath
+        : undefined,
+      certPath: mode === 'keycert'
+        ? certPath
+        : undefined,
       details: `Self-signed certificate generated for ${hostnames.join(', ')}`,
     }
   }

@@ -49,7 +49,9 @@ export class WsLogGuard implements CanActivate {
         throw new Error('User no longer valid')
       }
 
-      return this.configService.restrictLogsToAdmins ? Boolean(payload.admin) : true
+      return this.configService.restrictLogsToAdmins
+        ? Boolean(payload.admin)
+        : true
     } catch (e) {
       client.disconnect()
       throw new WsException('Unauthorized')

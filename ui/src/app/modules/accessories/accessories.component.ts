@@ -122,7 +122,9 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
     // Initialize selectedBridges if null or empty - default to showing all bridges
     const selected = this.selectedBridges()
     if ((selected === null || selected.length === 0) && this.availableBridges().length > 0) {
-      this.selectedBridges.set([...this.availableBridges()])
+      this.selectedBridges.set([
+        ...this.availableBridges(),
+      ])
     }
 
     void this.$accessories.start()
@@ -137,12 +139,14 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
   }
 
   public async addRoom(): Promise<void> {
-    const injector = createEnvironmentInjector([{
-      provide: ADD_ROOM_MODAL_DATA,
-      useValue: {
-        existingRooms: this.$accessories.rooms(),
+    const injector = createEnvironmentInjector([
+      {
+        provide: ADD_ROOM_MODAL_DATA,
+        useValue: {
+          existingRooms: this.$accessories.rooms(),
+        },
       },
-    }], this.injector)
+    ], this.injector)
 
     const ref = this.$modal.open(AddRoomComponent, {
       size: 'lg',
@@ -165,11 +169,14 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
         })))
       }
 
-      this.$accessories.rooms.update(current => [...current, {
-        name: result.name,
-        isDefault: result.isDefault,
-        services: [],
-      }])
+      this.$accessories.rooms.update(current => [
+        ...current,
+        {
+          name: result.name,
+          isDefault: result.isDefault,
+          services: [],
+        },
+      ])
 
       // Save the layout to persist the new room
       this.$accessories.saveLayout()
@@ -188,15 +195,17 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
       return
     }
 
-    const injector = createEnvironmentInjector([{
-      provide: EDIT_ROOM_MODAL_DATA,
-      useValue: {
-        roomName: room.name,
-        isDefault: room.isDefault || false,
-        existingRooms: this.$accessories.rooms(),
-        currentRoomIndex: roomIndex,
+    const injector = createEnvironmentInjector([
+      {
+        provide: EDIT_ROOM_MODAL_DATA,
+        useValue: {
+          roomName: room.name,
+          isDefault: room.isDefault || false,
+          existingRooms: this.$accessories.rooms(),
+          currentRoomIndex: roomIndex,
+        },
       },
-    }], this.injector)
+    ], this.injector)
 
     const ref = this.$modal.open(EditRoomComponent, {
       size: 'lg',
@@ -218,11 +227,15 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
         let targetRoomIndex: number
         if (roomToDelete.isDefault) {
           // If deleting default room, move services to first other room (which will become new default)
-          targetRoomIndex = roomIndex === 0 ? 1 : 0
+          targetRoomIndex = roomIndex === 0
+            ? 1
+            : 0
         } else {
           // If deleting non-default room, move services to current default room
           const defaultRoomIndex = this.$accessories.rooms().findIndex(r => r.isDefault)
-          targetRoomIndex = defaultRoomIndex !== -1 ? defaultRoomIndex : 0
+          targetRoomIndex = defaultRoomIndex !== -1
+            ? defaultRoomIndex
+            : 0
         }
 
         // If deleting the default room, set the target room as the new default
@@ -239,7 +252,13 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
         if (servicesToMove.length > 0) {
           this.$accessories.rooms.update(current => current.map((r, idx) =>
             idx === targetRoomIndex
-              ? { ...r, services: [...r.services, ...servicesToMove] }
+              ? {
+                  ...r,
+                  services: [
+                    ...r.services,
+                    ...servicesToMove,
+                  ],
+                }
               : r,
           ))
         }
@@ -415,7 +434,9 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
     newServices: ServiceTypeX[],
   ): void {
     this.$accessories.rooms.update(prev => prev.map(r => (
-      r === room ? { ...r, services: newServices } : r
+      r === room
+        ? { ...r, services: newServices }
+        : r
     )))
   }
 
@@ -509,7 +530,9 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
   public clearBridgeFilter(): void {
     // If in manage layout mode, selecting "All Bridges" should select all
     if (this.manageLayoutMode) {
-      this.selectedBridges.set([...this.availableBridges()])
+      this.selectedBridges.set([
+        ...this.availableBridges(),
+      ])
       this.manageLayoutMode = false
       this.previousBridgeSelection = null
 
@@ -524,7 +547,9 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
       this.selectedBridges.set([])
     } else {
       // Not all bridges selected, so select all
-      this.selectedBridges.set([...this.availableBridges()])
+      this.selectedBridges.set([
+        ...this.availableBridges(),
+      ])
     }
 
     if (!this.layoutLocked()) {
@@ -553,7 +578,9 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
     if (this.manageLayoutMode) {
       // Save current bridge selection
       const current = this.selectedBridges()
-      this.previousBridgeSelection = current ? [...current] : null
+      this.previousBridgeSelection = current
+        ? [...current]
+        : null
 
       // Unlock layout
       if (this.layoutLocked()) {
@@ -561,7 +588,9 @@ export class AccessoriesComponent implements OnInit, OnDestroy {
       }
     } else {
       // Restore previous bridge selection when toggling off via the button
-      this.selectedBridges.set(this.previousBridgeSelection ? [...this.previousBridgeSelection] : null)
+      this.selectedBridges.set(this.previousBridgeSelection
+        ? [...this.previousBridgeSelection]
+        : null)
       this.previousBridgeSelection = null
 
       // Lock layout when exiting manage mode

@@ -68,10 +68,20 @@ async function bootstrap(): Promise<NestFastifyApplication> {
         scriptSrc: ['\'self\'', '\'unsafe-eval\''],
         // Angular injects component styles as inline <style> blocks.
         styleSrc: ['\'self\'', '\'unsafe-inline\''],
-        imgSrc: ['\'self\'', 'data:', 'https://raw.githubusercontent.com', 'https://user-images.githubusercontent.com'],
-        connectSrc: ['\'self\'', 'https://openweathermap.org', 'https://api.openweathermap.org', (req) => {
-          return `wss://${req.headers.host} ws://${req.headers.host} ${startupConfig.cspWsOverride || ''}`
-        }],
+        imgSrc: [
+          '\'self\'',
+          'data:',
+          'https://raw.githubusercontent.com',
+          'https://user-images.githubusercontent.com',
+        ],
+        connectSrc: [
+          '\'self\'',
+          'https://openweathermap.org',
+          'https://api.openweathermap.org',
+          (req) => {
+            return `wss://${req.headers.host} ws://${req.headers.host} ${startupConfig.cspWsOverride || ''}`
+          },
+        ],
         frameSrc: ['\'self\'', 'data:', 'https://developers.homebridge.io'],
         workerSrc: ['\'self\'', 'blob:'], // required for web-workers for monaco editor
         fontSrc: ['\'self\'', 'data:'], // required for web-workers for monaco editor
@@ -86,7 +96,10 @@ async function bootstrap(): Promise<NestFastifyApplication> {
         // could frame the authenticated UI). X-Frame-Options stays off
         // (frameguard: false) because it cannot express an allowlist; modern
         // browsers honour this CSP directive instead.
-        frameAncestors: ['\'self\'', ...(startupConfig.allowedFrameAncestors ?? [])],
+        frameAncestors: [
+          '\'self\'',
+          ...(startupConfig.allowedFrameAncestors ?? []),
+        ],
         formAction: null,
         baseUri: null,
         upgradeInsecureRequests: null,
@@ -100,7 +113,9 @@ async function bootstrap(): Promise<NestFastifyApplication> {
     AppModule,
     fAdapter,
     {
-      logger: (startupConfig.debug || process.env.UIX_DEVELOPMENT === '1') ? new Logger() : false,
+      logger: (startupConfig.debug || process.env.UIX_DEVELOPMENT === '1')
+        ? new Logger()
+        : false,
       httpsOptions: startupConfig.httpsOptions,
     },
   )
@@ -145,7 +160,14 @@ async function bootstrap(): Promise<NestFastifyApplication> {
   // (9) Set up cors
   app.enableCors({
     ...devServerCorsConfig,
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    methods: [
+      'GET',
+      'POST',
+      'PUT',
+      'PATCH',
+      'DELETE',
+      'OPTIONS',
+    ],
   })
 
   // (10) Set up validation pipes for the api
@@ -191,7 +213,9 @@ async function bootstrap(): Promise<NestFastifyApplication> {
         name: serviceName,
         type: 'http',
         port: configService.ui.port,
-        host: startupConfig.host === '0.0.0.0' || startupConfig.host === '::' ? undefined : startupConfig.host,
+        host: startupConfig.host === '0.0.0.0' || startupConfig.host === '::'
+          ? undefined
+          : startupConfig.host,
         txt: {
           path: '/',
           version: configService.package.version,

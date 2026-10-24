@@ -71,7 +71,10 @@ describe('plugin modals', () => {
     activeModal = activeModalStub()
     modal = modalServiceSpy()
     pluginsCache = cacheStub<any[]>([])
-    log = { startTerminal: vi.fn(), destroyTerminal: vi.fn() }
+    log = {
+      startTerminal: vi.fn(),
+      destroyTerminal: vi.fn(),
+    }
 
     saveAs = fakeSaveAs()
 
@@ -81,7 +84,13 @@ describe('plugin modals', () => {
         provideHttpClient(),
         provideHttpClientTesting(),
         provideTestTranslate(),
-        provideFakes({ api, settings, toastr, activeModal, modal }),
+        provideFakes({
+          api,
+          settings,
+          toastr,
+          activeModal,
+          modal,
+        }),
         { provide: PluginsCacheService, useValue: pluginsCache },
         { provide: LogService, useValue: log },
         ...providers,
@@ -120,9 +129,15 @@ describe('plugin modals', () => {
   describe('choosing a version to install', () => {
     const versionsResponse = {
       versions: {
-        '1.0.0': { engines: { homebridge: '>=1.8.0' } },
-        '2.0.0': { engines: { homebridge: '>=2.0.0' } },
-        '2.1.0-beta.1': { engines: { homebridge: '>=2.0.0' } },
+        '1.0.0': {
+          engines: { homebridge: '>=1.8.0' },
+        },
+        '2.0.0': {
+          engines: { homebridge: '>=2.0.0' },
+        },
+        '2.1.0-beta.1': {
+          engines: { homebridge: '>=2.0.0' },
+        },
       },
       tags: { latest: '2.0.0', beta: '2.1.0-beta.1', next: '2.1.0-beta.1' },
     }
@@ -135,10 +150,12 @@ describe('plugin modals', () => {
     function openVersions(plugin = makePlugin(), arrange?: () => void) {
       return open(
         ManageVersionComponent,
-        [{
-          provide: MANAGE_VERSION_MODAL_DATA,
-          useValue: { plugin, onRefreshPluginList, onSettingsChange },
-        }],
+        [
+          {
+            provide: MANAGE_VERSION_MODAL_DATA,
+            useValue: { plugin, onRefreshPluginList, onSettingsChange },
+          },
+        ],
         () => {
           api.respond('get', /\/plugins\/lookup\/.*\/versions$/, versionsResponse)
           arrange?.()
@@ -253,7 +270,10 @@ describe('plugin modals', () => {
   })
 
   describe('changing what updates a plugin offers', () => {
-    const versionsResponse = { versions: { '1.0.0': {} }, tags: { latest: '1.0.0' } }
+    const versionsResponse = {
+      versions: { '1.0.0': {} },
+      tags: { latest: '1.0.0' },
+    }
 
     /**
      * Build the version modal and change its update preference.
@@ -264,10 +284,12 @@ describe('plugin modals', () => {
     async function choose(plugin: ReturnType<typeof makePlugin>, preference: any, env: Record<string, any> = {}) {
       const modalRef = await open(
         ManageVersionComponent,
-        [{
-          provide: MANAGE_VERSION_MODAL_DATA,
-          useValue: { plugin, onRefreshPluginList, onSettingsChange },
-        }],
+        [
+          {
+            provide: MANAGE_VERSION_MODAL_DATA,
+            useValue: { plugin, onRefreshPluginList, onSettingsChange },
+          },
+        ],
         () => {
           api.respond('get', /\/plugins\/lookup\//, versionsResponse)
           Object.assign(settings.env, env)
@@ -286,10 +308,20 @@ describe('plugin modals', () => {
     it('reads a regular plugin as hidden when it is on the hide list', async () => {
       const modalRef = await open(
         ManageVersionComponent,
-        [{ provide: MANAGE_VERSION_MODAL_DATA, useValue: { plugin: makePlugin(), onRefreshPluginList } }],
+        [
+          {
+            provide: MANAGE_VERSION_MODAL_DATA,
+            useValue: {
+              plugin: makePlugin(),
+              onRefreshPluginList,
+            },
+          },
+        ],
         () => {
           api.respond('get', /\/plugins\/lookup\//, versionsResponse)
-          settings.env.plugins = { hideUpdatesFor: ['homebridge-test'] }
+          settings.env.plugins = {
+            hideUpdatesFor: ['homebridge-test'],
+          }
         },
       )
 
@@ -299,10 +331,20 @@ describe('plugin modals', () => {
     it('reads a regular plugin as beta when it is on the betas list', async () => {
       const modalRef = await open(
         ManageVersionComponent,
-        [{ provide: MANAGE_VERSION_MODAL_DATA, useValue: { plugin: makePlugin(), onRefreshPluginList } }],
+        [
+          {
+            provide: MANAGE_VERSION_MODAL_DATA,
+            useValue: {
+              plugin: makePlugin(),
+              onRefreshPluginList,
+            },
+          },
+        ],
         () => {
           api.respond('get', /\/plugins\/lookup\//, versionsResponse)
-          settings.env.plugins = { showBetasFor: ['homebridge-test'] }
+          settings.env.plugins = {
+            showBetasFor: ['homebridge-test'],
+          }
         },
       )
 
@@ -312,7 +354,15 @@ describe('plugin modals', () => {
     it('reads homebridge from its own policy key', async () => {
       const modalRef = await open(
         ManageVersionComponent,
-        [{ provide: MANAGE_VERSION_MODAL_DATA, useValue: { plugin: makePlugin({ name: 'homebridge' }), onRefreshPluginList } }],
+        [
+          {
+            provide: MANAGE_VERSION_MODAL_DATA,
+            useValue: {
+              plugin: makePlugin({ name: 'homebridge' }),
+              onRefreshPluginList,
+            },
+          },
+        ],
         () => {
           api.respond('get', /\/plugins\/lookup\//, versionsResponse)
           settings.env.homebridgeUpdatePolicy = 'major'
@@ -325,7 +375,11 @@ describe('plugin modals', () => {
     })
 
     it('adds a regular plugin to the hide list', async () => {
-      await choose(makePlugin(), 'none', { plugins: { hideUpdatesFor: ['homebridge-aaa'] } })
+      await choose(makePlugin(), 'none', {
+        plugins: {
+          hideUpdatesFor: ['homebridge-aaa'],
+        },
+      })
 
       expect(api.lastCall('put', '/config-editor/ui/plugins/hide-updates-for')?.body).toEqual({
         body: ['homebridge-aaa', 'homebridge-test'],
@@ -333,13 +387,21 @@ describe('plugin modals', () => {
     })
 
     it('takes a plugin off the hide list when updates are wanted again', async () => {
-      await choose(makePlugin(), 'all', { plugins: { hideUpdatesFor: ['homebridge-test'] } })
+      await choose(makePlugin(), 'all', {
+        plugins: {
+          hideUpdatesFor: ['homebridge-test'],
+        },
+      })
 
       expect(api.lastCall('put', '/config-editor/ui/plugins/hide-updates-for')?.body).toEqual({ body: [] })
     })
 
     it('moves a plugin between the two lists rather than adding to both', async () => {
-      await choose(makePlugin(), 'beta', { plugins: { hideUpdatesFor: ['homebridge-test'] } })
+      await choose(makePlugin(), 'beta', {
+        plugins: {
+          hideUpdatesFor: ['homebridge-test'],
+        },
+      })
 
       // 'none' and 'beta' are mutually exclusive choices in one dropdown, so
       // switching has to clear the other list
@@ -381,7 +443,15 @@ describe('plugin modals', () => {
     it('puts the dropdown back when saving fails', async () => {
       const modalRef = await open(
         ManageVersionComponent,
-        [{ provide: MANAGE_VERSION_MODAL_DATA, useValue: { plugin: makePlugin(), onRefreshPluginList } }],
+        [
+          {
+            provide: MANAGE_VERSION_MODAL_DATA,
+            useValue: {
+              plugin: makePlugin(),
+              onRefreshPluginList,
+            },
+          },
+        ],
         () => {
           api.respond('get', /\/plugins\/lookup\//, versionsResponse)
           api.fail('put', '/config-editor/ui/plugins/hide-updates-for', new Error('read only'))
@@ -407,10 +477,16 @@ describe('plugin modals', () => {
     function openUninstall(data: Record<string, any> = {}, arrange?: () => void) {
       return open(
         UninstallPluginComponent,
-        [{
-          provide: UNINSTALL_PLUGIN_MODAL_DATA,
-          useValue: { plugin: makePlugin(), onRefreshPluginList, ...data },
-        }],
+        [
+          {
+            provide: UNINSTALL_PLUGIN_MODAL_DATA,
+            useValue: {
+              plugin: makePlugin(),
+              onRefreshPluginList,
+              ...data,
+            },
+          },
+        ],
         () => {
           api.respond('get', /\/plugins\/alias\//, { pluginType: 'platform', pluginAlias: 'TestPlatform' })
           arrange?.()
@@ -454,7 +530,11 @@ describe('plugin modals', () => {
     })
 
     it('ties the child bridge choice to the config choice', async () => {
-      const modalRef = await openUninstall({ childBridges: [makeChildBridge()] })
+      const modalRef = await openUninstall({
+        childBridges: [
+          makeChildBridge(),
+        ],
+      })
 
       modalRef.removeConfig.set(false)
       modalRef.onRemoveConfigChange()
@@ -486,7 +566,10 @@ describe('plugin modals', () => {
 
     it('removes each child bridge pairing with the colons stripped', async () => {
       const modalRef = await openUninstall({
-        childBridges: [makeChildBridge({ username: '0E:12:34:56:78:9A' }), makeChildBridge({ username: '0E:AA:BB:CC:DD:EE' })],
+        childBridges: [
+          makeChildBridge({ username: '0E:12:34:56:78:9A' }),
+          makeChildBridge({ username: '0E:AA:BB:CC:DD:EE' }),
+        ],
       })
 
       await modalRef.doUninstall()
@@ -503,7 +586,11 @@ describe('plugin modals', () => {
       // its config already emptied, which is the worst of both
       vi.spyOn(console, 'error').mockImplementation(() => {})
       const modalRef = await openUninstall(
-        { childBridges: [makeChildBridge()] },
+        {
+          childBridges: [
+            makeChildBridge(),
+          ],
+        },
         () => api.fail('delete', /\/server\/pairings\//, new Error('pairing not found')),
       )
       vi.mocked(toastr.error).mockClear()
@@ -541,7 +628,9 @@ describe('plugin modals', () => {
 
     it('uses the alias the editor already knows rather than asking again', async () => {
       const modalRef = await openUninstall({
-        editorContext: { alias: { pluginType: 'accessory', pluginAlias: 'TestAccessory' } },
+        editorContext: {
+          alias: { pluginType: 'accessory', pluginAlias: 'TestAccessory' },
+        },
       })
 
       expect(api.callsTo('get', /\/plugins\/alias\//)).toHaveLength(0)
@@ -568,9 +657,19 @@ describe('plugin modals', () => {
     function openLogs(data: Record<string, any> = {}, arrange?: () => void) {
       return open(
         PluginLogsComponent,
-        [{ provide: PLUGIN_LOGS_MODAL_DATA, useValue: { plugin: makePlugin(), ...data } }],
+        [
+          {
+            provide: PLUGIN_LOGS_MODAL_DATA,
+            useValue: {
+              plugin: makePlugin(),
+              ...data,
+            },
+          },
+        ],
         () => {
-          api.respond('get', '/config-editor/plugin/homebridge-test', [{ platform: 'TestPlatform', name: 'Kitchen' }])
+          api.respond('get', '/config-editor/plugin/homebridge-test', [
+            { platform: 'TestPlatform', name: 'Kitchen' },
+          ])
           arrange?.()
         },
       )
@@ -589,14 +688,20 @@ describe('plugin modals', () => {
     })
 
     it('falls back to the plugin name when the config has none', async () => {
-      await openLogs({}, () => api.respond('get', '/config-editor/plugin/homebridge-test', [{ platform: 'TestPlatform' }]))
+      await openLogs({}, () => api.respond('get', '/config-editor/plugin/homebridge-test', [
+        { platform: 'TestPlatform' },
+      ]))
 
       expect(vi.mocked(log.startTerminal).mock.calls[0][3]).toBe('homebridge-test')
     })
 
     it('uses the fixed tag for the ui itself', async () => {
-      await openLogs({ plugin: makePlugin({ name: 'homebridge-config-ui-x' }) }, () =>
-        api.respond('get', '/config-editor/plugin/homebridge-config-ui-x', [{ platform: 'config' }]))
+      await openLogs({
+        plugin: makePlugin({ name: 'homebridge-config-ui-x' }),
+      }, () =>
+        api.respond('get', '/config-editor/plugin/homebridge-config-ui-x', [
+          { platform: 'config' },
+        ]))
 
       // The UI logs under a display name that never appears in its config
       expect(vi.mocked(log.startTerminal).mock.calls[0][3]).toBe('Homebridge UI')
@@ -609,7 +714,13 @@ describe('plugin modals', () => {
     })
 
     it('reuses the config the editor already loaded', async () => {
-      await openLogs({ editorContext: { config: [{ platform: 'TestPlatform', name: 'Hallway' }] } })
+      await openLogs({
+        editorContext: {
+          config: [
+            { platform: 'TestPlatform', name: 'Hallway' },
+          ],
+        },
+      })
 
       expect(api.callsTo('get', '/config-editor/plugin/homebridge-test')).toHaveLength(0)
       expect(vi.mocked(log.startTerminal).mock.calls[0][3]).toBe('Hallway')
@@ -624,7 +735,10 @@ describe('plugin modals', () => {
 
     it('restarts each child bridge in turn', async () => {
       const modalRef = await openLogs({
-        childBridges: [makeChildBridge({ username: '0E:11:11:11:11:11' }), makeChildBridge({ username: '0E:22:22:22:22:22' })],
+        childBridges: [
+          makeChildBridge({ username: '0E:11:11:11:11:11' }),
+          makeChildBridge({ username: '0E:22:22:22:22:22' }),
+        ],
       })
 
       await modalRef.restartChildBridges()
@@ -638,7 +752,11 @@ describe('plugin modals', () => {
 
     it('re-enables the buttons when a restart fails', async () => {
       const modalRef = await openLogs(
-        { childBridges: [makeChildBridge()] },
+        {
+          childBridges: [
+            makeChildBridge(),
+          ],
+        },
         () => api.fail('put', /\/server\/restart\//, new Error('not running')),
       )
 

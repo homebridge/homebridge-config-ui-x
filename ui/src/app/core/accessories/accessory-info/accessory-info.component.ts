@@ -130,6 +130,17 @@ export class AccessoryInfoComponent implements OnInit, OnDestroy {
   public localPairingCache: PairingInfo[] = []
   public localService!: ServiceTypeX
   public isDetailsVisible: { [key: string]: boolean } = {}
+
+  /** Whether a characteristic has any limits worth listing in its details. */
+  public hasLimits(characteristic: object): boolean {
+    return [
+      'minStep',
+      'minValue',
+      'maxValue',
+      'validValues',
+    ].some(key => key in characteristic)
+  }
+
   public accessoryInformation!: Array<{ key: string, value: string | number | undefined }>
   public extraServices: ServiceTypeX[] = []
   public matchedCachedAccessory: MatchedCachedAccessory = null
@@ -251,14 +262,16 @@ export class AccessoryInfoComponent implements OnInit, OnDestroy {
 
   public removeSingleCachedAccessories() {
     this.$activeModal.close()
-    const injector = createEnvironmentInjector([{
-      provide: REMOVE_INDIVIDUAL_ACCESSORIES_MODAL_DATA,
-      useValue: {
-        selectedBridge: this.localService.instance.username.replaceAll(':', ''),
-        highlightUuid: this.matchedCachedAccessory?.UUID,
-        highlightCacheFile: this.matchedCachedAccessory?.$cacheFile,
+    const injector = createEnvironmentInjector([
+      {
+        provide: REMOVE_INDIVIDUAL_ACCESSORIES_MODAL_DATA,
+        useValue: {
+          selectedBridge: this.localService.instance.username.replaceAll(':', ''),
+          highlightUuid: this.matchedCachedAccessory?.UUID,
+          highlightCacheFile: this.matchedCachedAccessory?.$cacheFile,
+        },
       },
-    }], this.injector)
+    ], this.injector)
 
     this.$modal.open(RemoveIndividualAccessoriesComponent, {
       size: 'lg',

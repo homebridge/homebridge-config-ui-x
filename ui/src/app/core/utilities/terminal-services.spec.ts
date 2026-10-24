@@ -150,7 +150,9 @@ describe('the terminal-owning services', () => {
       await start()
       connect()
 
-      expect(io.socket.payloadsFor('tail-log')).toEqual([{ cols: 80, rows: 24 }])
+      expect(io.socket.payloadsFor('tail-log')).toEqual([
+        { cols: 80, rows: 24 },
+      ])
     })
 
     it('starts from a clean terminal on every reconnection', async () => {
@@ -183,7 +185,9 @@ describe('the terminal-owning services', () => {
       expect(io.socket.payloadsFor('resize')).toEqual([])
 
       await vi.advanceTimersByTimeAsync(1)
-      expect(io.socket.payloadsFor('resize')).toEqual([{ cols: 100, rows: 40 }])
+      expect(io.socket.payloadsFor('resize')).toEqual([
+        { cols: 100, rows: 40 },
+      ])
     })
 
     it('refits when the widget it sits in is resized', async () => {
@@ -348,7 +352,9 @@ describe('the terminal-owning services', () => {
       }
 
       function blobResponse(text: string) {
-        return { body: new Blob([text], { type: 'text/plain' }) }
+        return {
+          body: new Blob([text], { type: 'text/plain' }),
+        }
       }
 
       it('warns that the log may contain sensitive information first', async () => {
@@ -407,7 +413,9 @@ describe('the terminal-owning services', () => {
       it('surfaces the message the server put in the error blob', async () => {
         await start()
         api.fail('get', '/platform-tools/hb-service/log/download', {
-          error: new Blob([JSON.stringify({ message: 'Log file not found' })]),
+          error: new Blob([
+            JSON.stringify({ message: 'Log file not found' }),
+          ]),
         })
 
         void service.downloadLogFile()
@@ -477,7 +485,9 @@ describe('the terminal-owning services', () => {
 
       it('surfaces the server message on failure', async () => {
         await start()
-        api.fail('put', '/platform-tools/hb-service/log/truncate', { error: { message: 'Permission denied' } })
+        api.fail('put', '/platform-tools/hb-service/log/truncate', {
+          error: { message: 'Permission denied' },
+        })
 
         void service.truncateLogFile()
         await settle()
@@ -646,7 +656,9 @@ describe('the terminal-owning services', () => {
       expect(io.socket.payloadsFor('start-session')).toEqual([])
 
       await vi.advanceTimersByTimeAsync(1)
-      expect(io.socket.payloadsFor('start-session')).toEqual([{ cols: 80, rows: 24 }])
+      expect(io.socket.payloadsFor('start-session')).toEqual([
+        { cols: 80, rows: 24 },
+      ])
     })
 
     it('resets the terminal and takes focus when the session starts', async () => {
@@ -876,7 +888,9 @@ describe('the terminal-owning services', () => {
         term().resizeHandlers.at(-1)!({ cols: 120, rows: 50 })
         await vi.advanceTimersByTimeAsync(500)
 
-        expect(io.socket.payloadsFor('resize')).toEqual([{ cols: 120, rows: 50 }])
+        expect(io.socket.payloadsFor('resize')).toEqual([
+          { cols: 120, rows: 50 },
+        ])
       })
 
       it('refits when the widget is resized after reconnecting', async () => {
@@ -993,7 +1007,14 @@ describe('the terminal-owning services', () => {
 
     describe('touch handling', () => {
       function touch(y: number) {
-        return { touches: [{ clientY: y }], changedTouches: [{ clientY: y }] } as unknown as TouchEvent
+        return {
+          touches: [
+            { clientY: y },
+          ],
+          changedTouches: [
+            { clientY: y },
+          ],
+        } as unknown as TouchEvent
       }
 
       it('focuses on a tap', async () => {

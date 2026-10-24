@@ -47,7 +47,9 @@ export function hasClusterFeature(
   inferred: boolean,
 ): boolean {
   const features = getClusterFeatures(service, cluster)
-  return features ? features[feature] === true : inferred
+  return features
+    ? features[feature] === true
+    : inferred
 }
 
 /**
@@ -293,7 +295,9 @@ export async function toggleDimmableLight(service: ServiceTypeX): Promise<void> 
     const levelCluster = service.getCluster?.('levelControl')
     const onOffCluster = service.getCluster?.('onOff')
     if (!levelCluster || !onOffCluster) {
-      const error = new Error(!levelCluster ? 'LevelControl cluster not found' : 'OnOff cluster not found')
+      const error = new Error(!levelCluster
+        ? 'LevelControl cluster not found'
+        : 'OnOff cluster not found')
       console.error(error.message)
       throw error
     }
@@ -520,7 +524,9 @@ export async function toggleDoorLock(service: ServiceTypeX): Promise<void> {
       await cluster.setAttributes({ lockState: 1 })
     }
   } catch (error) {
-    console.error(`Failed to ${currentState === 1 ? 'unlock' : 'lock'} door:`, error)
+    console.error(`Failed to ${currentState === 1
+      ? 'unlock'
+      : 'lock'} door:`, error)
     throw error
   }
 }
@@ -745,11 +751,15 @@ export async function toggleWaterValve(service: ServiceTypeX): Promise<void> {
     throw error
   }
 
-  const targetState = isWaterValveOpen(service) ? WaterValveState.Closed : WaterValveState.Open
+  const targetState = isWaterValveOpen(service)
+    ? WaterValveState.Closed
+    : WaterValveState.Open
   try {
     await cluster.setAttributes({ targetState })
   } catch (error) {
-    console.error(`Failed to ${targetState === WaterValveState.Open ? 'open' : 'close'} water valve:`, error)
+    console.error(`Failed to ${targetState === WaterValveState.Open
+      ? 'open'
+      : 'close'} water valve:`, error)
     throw error
   }
 }

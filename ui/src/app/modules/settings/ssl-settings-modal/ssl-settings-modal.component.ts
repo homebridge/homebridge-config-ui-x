@@ -110,7 +110,9 @@ export class SslSettingsModalComponent implements OnInit {
     // Determine current SSL mode
     const currentMode = this.keyPathControl.value || this.certPathControl.value
       ? 'keycert'
-      : (this.pfxPathControl.value || this.$settings.env.ssl?.hasPassphrase) ? 'pfx' : 'off'
+      : (this.pfxPathControl.value || this.$settings.env.ssl?.hasPassphrase)
+          ? 'pfx'
+          : 'off'
 
     this.selectedMode.set(currentMode)
     this.sslModeControl.patchValue(currentMode, { emitEvent: false })
@@ -176,19 +178,25 @@ export class SslSettingsModalComponent implements OnInit {
 
   public onKeyChange(event: Event): void {
     const files = (event.target as HTMLInputElement).files
-    this.pendingKeyFile.set(files && files.length > 0 ? files[0] : null)
+    this.pendingKeyFile.set(files && files.length > 0
+      ? files[0]
+      : null)
     this.detectChanges()
   }
 
   public onCertChange(event: Event): void {
     const files = (event.target as HTMLInputElement).files
-    this.pendingCertFile.set(files && files.length > 0 ? files[0] : null)
+    this.pendingCertFile.set(files && files.length > 0
+      ? files[0]
+      : null)
     this.detectChanges()
   }
 
   public onPfxChange(event: Event): void {
     const files = (event.target as HTMLInputElement).files
-    this.pendingPfxFile.set(files && files.length > 0 ? files[0] : null)
+    this.pendingPfxFile.set(files && files.length > 0
+      ? files[0]
+      : null)
     this.detectChanges()
   }
 

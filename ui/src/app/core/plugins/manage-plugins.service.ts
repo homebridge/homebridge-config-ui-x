@@ -67,21 +67,23 @@ export class ManagePluginsService {
   }
 
   async installPlugin(plugin: Plugin, targetVersion: string, backToVersionModal: Plugin | null = null) {
-    const injector = createEnvironmentInjector([{
-      provide: MANAGE_PLUGIN_MODAL_DATA,
-      useValue: {
-        action: 'Install',
-        pluginName: plugin.name,
-        pluginDisplayName: plugin.displayName,
-        targetVersion,
-        isConfigured: plugin.isConfigured,
-        onRefreshPluginList: () => this.pluginListRefreshSubject.next(),
-        verifiedPlugin: plugin.verifiedPlugin,
-        verifiedPlusPlugin: plugin.verifiedPlusPlugin,
-        funding: plugin.funding,
-        backToVersionModal,
+    const injector = createEnvironmentInjector([
+      {
+        provide: MANAGE_PLUGIN_MODAL_DATA,
+        useValue: {
+          action: 'Install',
+          pluginName: plugin.name,
+          pluginDisplayName: plugin.displayName,
+          targetVersion,
+          isConfigured: plugin.isConfigured,
+          onRefreshPluginList: () => this.pluginListRefreshSubject.next(),
+          verifiedPlugin: plugin.verifiedPlugin,
+          verifiedPlusPlugin: plugin.verifiedPlusPlugin,
+          funding: plugin.funding,
+          backToVersionModal,
+        },
       },
-    }], this.injector)
+    ], this.injector)
 
     const ref = this.$modal.open(ManagePluginComponent, {
       size: 'lg',
@@ -124,17 +126,19 @@ export class ManagePluginsService {
       console.error(error)
     }
 
-    const injector = createEnvironmentInjector([{
-      provide: UNINSTALL_PLUGIN_MODAL_DATA,
-      useValue: {
-        plugin,
-        childBridges,
-        action: 'Uninstall',
-        keepOrphans: this.$settings.keepOrphans,
-        onRefreshPluginList: () => this.pluginListRefreshSubject.next(),
-        editorContext,
+    const injector = createEnvironmentInjector([
+      {
+        provide: UNINSTALL_PLUGIN_MODAL_DATA,
+        useValue: {
+          plugin,
+          childBridges,
+          action: 'Uninstall',
+          keepOrphans: this.$settings.keepOrphans,
+          onRefreshPluginList: () => this.pluginListRefreshSubject.next(),
+          editorContext,
+        },
       },
-    }], this.injector)
+    ], this.injector)
 
     const ref = this.$modal.open(UninstallPluginComponent, {
       size: 'lg',
@@ -160,24 +164,26 @@ export class ManagePluginsService {
   }
 
   async updatePlugin(plugin: Plugin, targetVersion: string, backToVersionModal: Plugin | null = null) {
-    const injector = createEnvironmentInjector([{
-      provide: MANAGE_PLUGIN_MODAL_DATA,
-      useValue: {
-        action: 'Update',
-        pluginName: plugin.name,
-        pluginDisplayName: plugin.displayName,
-        targetVersion,
-        latestVersion: plugin.latestVersion,
-        installedVersion: plugin.installedVersion,
-        isDisabled: plugin.disabled,
-        isConfigured: plugin.isConfigured,
-        onRefreshPluginList: () => this.pluginListRefreshSubject.next(),
-        verifiedPlugin: plugin.verifiedPlugin,
-        verifiedPlusPlugin: plugin.verifiedPlusPlugin,
-        funding: plugin.funding,
-        backToVersionModal,
+    const injector = createEnvironmentInjector([
+      {
+        provide: MANAGE_PLUGIN_MODAL_DATA,
+        useValue: {
+          action: 'Update',
+          pluginName: plugin.name,
+          pluginDisplayName: plugin.displayName,
+          targetVersion,
+          latestVersion: plugin.latestVersion,
+          installedVersion: plugin.installedVersion,
+          isDisabled: plugin.disabled,
+          isConfigured: plugin.isConfigured,
+          onRefreshPluginList: () => this.pluginListRefreshSubject.next(),
+          verifiedPlugin: plugin.verifiedPlugin,
+          verifiedPlusPlugin: plugin.verifiedPlusPlugin,
+          funding: plugin.funding,
+          backToVersionModal,
+        },
       },
-    }], this.injector)
+    ], this.injector)
 
     const ref = this.$modal.open(ManagePluginComponent, {
       size: 'lg',
@@ -210,17 +216,19 @@ export class ManagePluginsService {
       return
     }
 
-    const injector = createEnvironmentInjector([{
-      provide: MANAGE_PLUGIN_MODAL_DATA,
-      useValue: {
-        action: 'Update',
-        pluginName: homebridgePkg.name,
-        pluginDisplayName: homebridgePkg.displayName,
-        targetVersion,
-        latestVersion: homebridgePkg.latestVersion,
-        installedVersion: homebridgePkg.installedVersion,
+    const injector = createEnvironmentInjector([
+      {
+        provide: MANAGE_PLUGIN_MODAL_DATA,
+        useValue: {
+          action: 'Update',
+          pluginName: homebridgePkg.name,
+          pluginDisplayName: homebridgePkg.displayName,
+          targetVersion,
+          latestVersion: homebridgePkg.latestVersion,
+          installedVersion: homebridgePkg.installedVersion,
+        },
       },
-    }], this.injector)
+    ], this.injector)
 
     this.$modal.open(ManagePluginComponent, {
       size: 'lg',
@@ -235,14 +243,16 @@ export class ManagePluginsService {
    * @param onSettingsChange
    */
   async installAlternateVersion(plugin: Plugin, onSettingsChange?: () => void) {
-    const injector = createEnvironmentInjector([{
-      provide: MANAGE_VERSION_MODAL_DATA,
-      useValue: {
-        plugin,
-        onRefreshPluginList: () => this.pluginListRefreshSubject.next(),
-        onSettingsChange,
+    const injector = createEnvironmentInjector([
+      {
+        provide: MANAGE_VERSION_MODAL_DATA,
+        useValue: {
+          plugin,
+          onRefreshPluginList: () => this.pluginListRefreshSubject.next(),
+          onSettingsChange,
+        },
       },
-    }], this.injector)
+    ], this.injector)
 
     const ref = this.$modal.open(ManageVersionComponent, {
       size: 'lg',
@@ -288,15 +298,17 @@ export class ManagePluginsService {
 
     const schema = plugin.settingsSchema ? editorContext.configSchema : undefined
 
-    const injector = createEnvironmentInjector([{
-      provide: PLUGIN_BRIDGE_MODAL_DATA,
-      useValue: {
-        schema,
-        plugin,
-        justInstalled,
-        editorContext,
+    const injector = createEnvironmentInjector([
+      {
+        provide: PLUGIN_BRIDGE_MODAL_DATA,
+        useValue: {
+          schema,
+          plugin,
+          justInstalled,
+          editorContext,
+        },
       },
-    }], this.injector)
+    ], this.injector)
 
     const ref = this.$modal.open(PluginBridgeComponent, {
       size: 'lg',
@@ -320,10 +332,12 @@ export class ManagePluginsService {
    * @param plugin
    */
   async externalAccessories(plugin: Plugin) {
-    const injector = createEnvironmentInjector([{
-      provide: PLUGIN_EXTERNALS_MODAL_DATA,
-      useValue: { plugin },
-    }], this.injector)
+    const injector = createEnvironmentInjector([
+      {
+        provide: PLUGIN_EXTERNALS_MODAL_DATA,
+        useValue: { plugin },
+      },
+    ], this.injector)
 
     const ref = this.$modal.open(PluginExternalsComponent, {
       size: 'lg',
@@ -362,14 +376,16 @@ export class ManagePluginsService {
     }
 
     // Open the standard ui
-    const injector = createEnvironmentInjector([{
-      provide: PLUGIN_MODAL_DATA,
-      useValue: {
-        schema,
-        plugin,
-        editorContext,
+    const injector = createEnvironmentInjector([
+      {
+        provide: PLUGIN_MODAL_DATA,
+        useValue: {
+          schema,
+          plugin,
+          editorContext,
+        },
       },
-    }], this.injector)
+    ], this.injector)
 
     const ref = this.$modal.open(
       plugin.settingsSchema ? PluginConfigComponent : ManualConfigComponent,
@@ -396,14 +412,16 @@ export class ManagePluginsService {
 
     const schema = plugin.settingsSchema ? editorContext?.configSchema : undefined
 
-    const injector = createEnvironmentInjector([{
-      provide: PLUGIN_MODAL_DATA,
-      useValue: {
-        schema,
-        plugin,
-        editorContext,
+    const injector = createEnvironmentInjector([
+      {
+        provide: PLUGIN_MODAL_DATA,
+        useValue: {
+          schema,
+          plugin,
+          editorContext,
+        },
       },
-    }], this.injector)
+    ], this.injector)
 
     const ref = this.$modal.open(ManualConfigComponent, {
       size: 'lg',
@@ -437,15 +455,17 @@ export class ManagePluginsService {
     // If either are false, open modal warning about compatibility
     if (!isValidNode || !isValidHb) {
       try {
-        const injector = createEnvironmentInjector([{
-          provide: PLUGIN_COMPATIBILITY_MODAL_DATA,
-          useValue: {
-            plugin,
-            isValidNode,
-            isValidHb,
-            action,
+        const injector = createEnvironmentInjector([
+          {
+            provide: PLUGIN_COMPATIBILITY_MODAL_DATA,
+            useValue: {
+              plugin,
+              isValidNode,
+              isValidHb,
+              action,
+            },
           },
-        }], this.injector)
+        ], this.injector)
 
         const ref = this.$modal.open(PluginCompatibilityComponent, {
           size: 'lg',
@@ -477,12 +497,14 @@ export class ManagePluginsService {
    * Open the reset child bridges modal
    */
   async resetChildBridges(childBridges: ChildBridge[]) {
-    const injector = createEnvironmentInjector([{
-      provide: RESET_ACCESSORIES_MODAL_DATA,
-      useValue: {
-        childBridges,
+    const injector = createEnvironmentInjector([
+      {
+        provide: RESET_ACCESSORIES_MODAL_DATA,
+        useValue: {
+          childBridges,
+        },
       },
-    }], this.injector)
+    ], this.injector)
 
     this.$modal.open(ResetAccessoriesComponent, {
       size: 'lg',
@@ -492,12 +514,14 @@ export class ManagePluginsService {
   }
 
   async switchToScoped(plugin: Plugin) {
-    const injector = createEnvironmentInjector([{
-      provide: SWITCH_TO_SCOPED_MODAL_DATA,
-      useValue: {
-        plugin,
+    const injector = createEnvironmentInjector([
+      {
+        provide: SWITCH_TO_SCOPED_MODAL_DATA,
+        useValue: {
+          plugin,
+        },
       },
-    }], this.injector)
+    ], this.injector)
 
     this.$modal.open(SwitchToScopedComponent, {
       size: 'lg',

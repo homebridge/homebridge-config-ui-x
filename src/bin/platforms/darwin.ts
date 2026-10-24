@@ -169,7 +169,12 @@ export class DarwinInstaller extends BasePlatform {
    */
   public getPidOfPort(port: number) {
     try {
-      return execFileSync('lsof', ['-n', `-iTCP:${port}`, '-sTCP:LISTEN', '-t'], {
+      return execFileSync('lsof', [
+        '-n',
+        `-iTCP:${port}`,
+        '-sTCP:LISTEN',
+        '-t',
+      ], {
         stdio: ['ignore', 'pipe', 'ignore'],
       }).toString('utf8').trim()
     } catch (e) {
@@ -219,7 +224,12 @@ export class DarwinInstaller extends BasePlatform {
     try {
       // dscl is the canonical macOS directory-services lookup. execFileSync
       // (no shell) keeps the validated username out of any shell parser.
-      const output = execFileSync('dscl', ['.', '-read', `/Users/${this.user}`, 'NFSHomeDirectory']).toString('utf8').trim()
+      const output = execFileSync('dscl', [
+        '.',
+        '-read',
+        `/Users/${this.user}`,
+        'NFSHomeDirectory',
+      ]).toString('utf8').trim()
       const match = output.match(/NFSHomeDirectory: (.+)$/m)
       if (match && match[1] && match[1].charAt(0) === '/') {
         return match[1].trim()

@@ -348,7 +348,9 @@ export class ConfigEditorService implements OnApplicationBootstrap {
       throw new BadRequestException('Plugin alias could not be determined.')
     }
 
-    const arrayKey = plugin.pluginType === 'accessory' ? 'accessories' : 'platforms'
+    const arrayKey = plugin.pluginType === 'accessory'
+      ? 'accessories'
+      : 'platforms'
 
     return config[arrayKey].filter((block) => {
       return block[plugin.pluginType] === plugin.pluginAlias
@@ -367,7 +369,9 @@ export class ConfigEditorService implements OnApplicationBootstrap {
       throw new BadRequestException('Plugin alias could not be determined.')
     }
 
-    const arrayKey = plugin.pluginType === 'accessory' ? 'accessories' : 'platforms'
+    const arrayKey = plugin.pluginType === 'accessory'
+      ? 'accessories'
+      : 'platforms'
 
     // Ensure the update contains an array
     if (!Array.isArray(pluginConfig)) {
@@ -1132,8 +1136,12 @@ export class ConfigEditorService implements OnApplicationBootstrap {
     // Bring matterPorts after ports in config ordering
     const { bridge, ports, matterPorts, ...rest } = config
     config = matterPorts
-      ? (ports ? { bridge, ports, matterPorts, ...rest } : { bridge, matterPorts, ...rest })
-      : (ports ? { bridge, ports, ...rest } : { bridge, ...rest })
+      ? (ports
+          ? { bridge, ports, matterPorts, ...rest }
+          : { bridge, matterPorts, ...rest })
+      : (ports
+          ? { bridge, ports, ...rest }
+          : { bridge, ...rest })
 
     await this.updateConfigFile(config)
   }
@@ -1326,8 +1334,12 @@ export class ConfigEditorService implements OnApplicationBootstrap {
       if (useNestedShape) {
         config.bridge.hap = {
           enabled: false,
-          ...(targetExternalsOnly ? { externalsOnly: true } : {}),
-          ...(targetDisableIdentifyingMaterial ? { disableIdentifyingMaterial: true } : {}),
+          ...(targetExternalsOnly
+            ? { externalsOnly: true }
+            : {}),
+          ...(targetDisableIdentifyingMaterial
+            ? { disableIdentifyingMaterial: true }
+            : {}),
         }
       } else {
         // Legacy runtime: externalsOnly is ignored (the runtime would reject the nested form).

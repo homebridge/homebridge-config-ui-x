@@ -45,7 +45,9 @@ describe('testing toolkit', () => {
 
   describe('fakeApi', () => {
     it('resolves a registered response and records the call', async () => {
-      const api = fakeApi().respond('get', '/plugins', [makePlugin()])
+      const api = fakeApi().respond('get', '/plugins', [
+        makePlugin(),
+      ])
 
       await expect(api.get('/plugins')).resolves.toHaveLength(1)
       expect(api.lastCall('get', '/plugins')?.url).toBe('/plugins')
@@ -54,9 +56,13 @@ describe('testing toolkit', () => {
     it('records the options object, which is where delete payloads live', async () => {
       const api = fakeApi()
 
-      await api.delete('/users/1', { body: { confirm: true } })
+      await api.delete('/users/1', {
+        body: { confirm: true },
+      })
 
-      expect(api.lastCall('delete')?.options).toEqual({ body: { confirm: true } })
+      expect(api.lastCall('delete')?.options).toEqual({
+        body: { confirm: true },
+      })
     })
 
     it('rejects with the registered error', async () => {
@@ -109,7 +115,12 @@ describe('testing toolkit', () => {
       io.socket.respondTo('do-thing', { error: 'nope' })
 
       await expect(firstValueFrom(io.request('do-thing', { id: 1 }))).rejects.toEqual({ error: 'nope' })
-      expect(io.requests).toEqual([{ resource: 'do-thing', payload: { id: 1 } }])
+      expect(io.requests).toEqual([
+        {
+          resource: 'do-thing',
+          payload: { id: 1 },
+        },
+      ])
     })
 
     it('tolerates a null acknowledgement', async () => {
@@ -129,14 +140,20 @@ describe('testing toolkit', () => {
     })
 
     it('merges env overrides over the defaults', () => {
-      const settings = makeSettings({ env: { runningInDocker: true } })
+      const settings = makeSettings({
+        env: { runningInDocker: true },
+      })
 
       expect(settings.env.runningInDocker).toBe(true)
       expect(settings.env.enableAccessories).toBe(true)
     })
 
     it('reads feature flags back through isFeatureEnabled', () => {
-      const settings = makeSettings({ env: { featureFlags: { matter: true } } })
+      const settings = makeSettings({
+        env: {
+          featureFlags: { matter: true },
+        },
+      })
 
       expect(settings.isFeatureEnabled('matter')).toBe(true)
       expect(settings.isFeatureEnabled('missing')).toBe(false)
@@ -176,10 +193,12 @@ describe('testing toolkit', () => {
       const modal = modalServiceSpy()
 
       modal.open(class {}, {
-        injector: createEnvironmentInjector([{
-          provide: CONFIRM_MODAL_DATA,
-          useValue: { title: 'Remove', message: 'Are you sure?' },
-        }], parent),
+        injector: createEnvironmentInjector([
+          {
+            provide: CONFIRM_MODAL_DATA,
+            useValue: { title: 'Remove', message: 'Are you sure?' },
+          },
+        ], parent),
       })
 
       expect(modal.dataFor(CONFIRM_MODAL_DATA)?.title).toBe('Remove')

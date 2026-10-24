@@ -39,7 +39,10 @@ describe('the small shared components', () => {
         imports: [AppToastComponent],
         providers: [
           provideTestTranslate(),
-          { provide: ToastrService, useValue: toastrStub() },
+          {
+            provide: ToastrService,
+            useValue: toastrStub(),
+          },
           { provide: ToastPackage, useValue: toastPackageStub({ message, title }).package },
         ],
       })
@@ -160,7 +163,9 @@ describe('the small shared components', () => {
     async function render(data: string, darkMode = false) {
       TestBed.resetTestingModule()
       document.body.classList.toggle('dark-mode', darkMode)
-      TestBed.configureTestingModule({ imports: [QrcodeComponent] })
+      TestBed.configureTestingModule({
+        imports: [QrcodeComponent],
+      })
 
       const fixture = TestBed.createComponent(QrcodeComponent)
       fixture.componentRef.setInput('data', data)

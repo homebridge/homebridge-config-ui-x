@@ -240,7 +240,13 @@ export class LogService {
       command = ['powershell.exe', '-command', `Get-Content -Path '${this.configService.ui.log.path}' -Wait -Tail 200`]
     } else {
       // Linux / macos etc
-      command = ['tail', '-n', '500', '-f', this.configService.ui.log.path]
+      command = [
+        'tail',
+        '-n',
+        '500',
+        '-f',
+        this.configService.ui.log.path,
+      ]
 
       // Sudo mode is requested in plugin config
       if (this.configService.ui.sudo) {
@@ -255,7 +261,16 @@ export class LogService {
    * Construct the logs from systemd command
    */
   private logFromSystemd() {
-    const command = ['journalctl', '-o', 'cat', '-n', '500', '-f', '-u', this.configService.ui.log.service || 'homebridge']
+    const command = [
+      'journalctl',
+      '-o',
+      'cat',
+      '-n',
+      '500',
+      '-f',
+      '-u',
+      this.configService.ui.log.service || 'homebridge',
+    ]
 
     // Sudo mode is requested in plugin config
     if (this.configService.ui.sudo) {
@@ -277,7 +292,9 @@ export class LogService {
     // Read the first 50000 bytes of the log and emit to the client
     try {
       const logStats = await stat(this.configService.ui.log.path)
-      const logStartPosition = logStats.size <= 50000 ? 0 : logStats.size - 50000
+      const logStartPosition = logStats.size <= 50000
+        ? 0
+        : logStats.size - 50000
       const logStream = createReadStream(this.configService.ui.log.path, { start: logStartPosition })
 
       logStream.on('data', (buffer) => {
@@ -382,7 +399,11 @@ export class LogService {
 
     // Keep a `\r` directly after the last `\n` with the complete part so
     // `\n\r` line endings are not split in half
-    const splitAt = lastNewline === -1 ? 0 : (data[lastNewline + 1] === '\r' ? lastNewline + 2 : lastNewline + 1)
+    const splitAt = lastNewline === -1
+      ? 0
+      : (data[lastNewline + 1] === '\r'
+          ? lastNewline + 2
+          : lastNewline + 1)
     const partial = data.slice(splitAt)
 
     if (partial) {

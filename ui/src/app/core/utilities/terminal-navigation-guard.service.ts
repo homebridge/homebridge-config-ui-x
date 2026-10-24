@@ -55,18 +55,20 @@ export class TerminalNavigationGuardService {
     }
 
     // Show confirmation dialog when persistence is disabled, warning is enabled, there's an active session, and user has typed
-    const injector = createEnvironmentInjector([{
-      provide: CONFIRM_MODAL_DATA,
-      useValue: {
-        title: this.$translate.instant('platform.terminal.terminate_title'),
-        message: this.$translate.instant('platform.terminal.terminate_message_1'),
-        message2: this.$translate.instant('platform.terminal.terminate_message_2'),
-        message3: this.$translate.instant('common.phrases.are_you_sure'),
-        confirmButtonLabel: this.$translate.instant('form.button_continue'),
-        confirmButtonClass: 'btn-primary',
-        faIconClass: 'fas fa-exclamation-triangle text-warning',
+    const injector = createEnvironmentInjector([
+      {
+        provide: CONFIRM_MODAL_DATA,
+        useValue: {
+          title: this.$translate.instant('platform.terminal.terminate_title'),
+          message: this.$translate.instant('platform.terminal.terminate_message_1'),
+          message2: this.$translate.instant('platform.terminal.terminate_message_2'),
+          message3: this.$translate.instant('common.phrases.are_you_sure'),
+          confirmButtonLabel: this.$translate.instant('form.button_continue'),
+          confirmButtonClass: 'btn-primary',
+          faIconClass: 'fas fa-exclamation-triangle text-warning',
+        },
       },
-    }], this.injector)
+    ], this.injector)
 
     const ref = this.$modal.open(ConfirmComponent, {
       size: 'lg',

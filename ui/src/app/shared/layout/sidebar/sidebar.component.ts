@@ -193,19 +193,21 @@ export class SidebarComponent implements OnInit, OnDestroy {
   }
 
   public openUnderVoltageModal() {
-    const injector = createEnvironmentInjector([{
-      provide: INFORMATION_MODAL_DATA,
-      useValue: {
-        title: this.$translate.instant('rpi.throttled.undervoltage_title'),
-        message: this.$translate.instant(this.rPiCurrentlyUnderVoltage()
-          ? 'rpi.throttled.currently_message'
-          : 'rpi.throttled.previously_message',
-        ),
-        ctaButtonLabel: this.$translate.instant('form.button_more_info'),
-        faIconClass: 'fas fa-bolt yellow-text',
-        ctaButtonLink: 'https://pimylifeup.com/raspberry-pi-low-voltage-warning',
+    const injector = createEnvironmentInjector([
+      {
+        provide: INFORMATION_MODAL_DATA,
+        useValue: {
+          title: this.$translate.instant('rpi.throttled.undervoltage_title'),
+          message: this.$translate.instant(this.rPiCurrentlyUnderVoltage()
+            ? 'rpi.throttled.currently_message'
+            : 'rpi.throttled.previously_message',
+          ),
+          ctaButtonLabel: this.$translate.instant('form.button_more_info'),
+          faIconClass: 'fas fa-bolt yellow-text',
+          ctaButtonLink: 'https://pimylifeup.com/raspberry-pi-low-voltage-warning',
+        },
       },
-    }], this.injector)
+    ], this.injector)
 
     this.$modal.open(InformationComponent, {
       size: 'lg',

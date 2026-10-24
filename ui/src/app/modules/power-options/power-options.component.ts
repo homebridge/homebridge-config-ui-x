@@ -72,15 +72,17 @@ export class PowerOptionsComponent implements OnInit {
   public async shutdownServer(): Promise<void> {
     this.closeRestartToast()
     // Confirmation dialog
-    const injector = createEnvironmentInjector([{
-      provide: CONFIRM_MODAL_DATA,
-      useValue: {
-        title: this.$translate.instant('menu.linux.label_shutdown_server'),
-        message: this.$translate.instant('menu.linux.label_shutdown_modal'),
-        confirmButtonLabel: this.$translate.instant('form.button_continue'),
-        faIconClass: 'fas fa-power-off primary-text',
+    const injector = createEnvironmentInjector([
+      {
+        provide: CONFIRM_MODAL_DATA,
+        useValue: {
+          title: this.$translate.instant('menu.linux.label_shutdown_server'),
+          message: this.$translate.instant('menu.linux.label_shutdown_modal'),
+          confirmButtonLabel: this.$translate.instant('form.button_continue'),
+          faIconClass: 'fas fa-power-off primary-text',
+        },
       },
-    }], this.injector)
+    ], this.injector)
 
     const ref = this.$modal.open(ConfirmComponent, {
       size: 'lg',

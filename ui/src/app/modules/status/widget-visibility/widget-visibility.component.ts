@@ -130,14 +130,16 @@ export class WidgetVisibilityComponent implements OnInit {
         mobileOrder: 100,
       },
       ...this.$settings.isFeatureEnabled('matterSupport')
-        ? [{
-            name: this.$translate.instant('status.widget.add.matter_pairing_code'),
-            component: 'MatterQrcodeWidgetComponent',
-            hidden: false,
-            cols: 3,
-            rows: 7,
-            mobileOrder: 105,
-          }]
+        ? [
+            {
+              name: this.$translate.instant('status.widget.add.matter_pairing_code'),
+              component: 'MatterQrcodeWidgetComponent',
+              hidden: false,
+              cols: 3,
+              rows: 7,
+              mobileOrder: 105,
+            },
+          ]
         : [],
       {
         name: this.$translate.instant('status.widget.homebridge_logs'),
@@ -170,8 +172,12 @@ export class WidgetVisibilityComponent implements OnInit {
       .map((x) => {
         const dashboardItem = this.dashboard.find((i: any) => i.component === x.component)
         const isInDashboard = !!dashboardItem
-        const hideOnDesktop = isInDashboard ? (dashboardItem.hideOnDesktop ?? false) : true
-        const hideOnMobile = isInDashboard ? (dashboardItem.hideOnMobile ?? false) : true
+        const hideOnDesktop = isInDashboard
+          ? (dashboardItem.hideOnDesktop ?? false)
+          : true
+        const hideOnMobile = isInDashboard
+          ? (dashboardItem.hideOnMobile ?? false)
+          : true
         return {
           name: x.name,
           component: x.component,

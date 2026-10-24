@@ -49,7 +49,10 @@ export class ResetIndividualBridgesComponent implements OnInit {
     if (this.toDelete().some((item: { id: string }) => item.id === id)) {
       this.toDelete.set(this.toDelete().filter((item: { id: string, resetPairingInfo: boolean }) => item.id !== id))
     } else {
-      this.toDelete.update(list => [...list, { id, resetPairingInfo }])
+      this.toDelete.update(list => [
+        ...list,
+        { id, resetPairingInfo },
+      ])
     }
   }
 

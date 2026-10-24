@@ -124,9 +124,13 @@ describe('WsService', () => {
   describe('request', () => {
     it('emits the acknowledgement and completes', async () => {
       const namespace = service.connectToNamespace('status')
-      sockets[0].respondTo('get-server-uptime-info', { time: { uptime: 42 } })
+      sockets[0].respondTo('get-server-uptime-info', {
+        time: { uptime: 42 },
+      })
 
-      await expect(firstValueFrom(namespace.request('get-server-uptime-info'))).resolves.toEqual({ time: { uptime: 42 } })
+      await expect(firstValueFrom(namespace.request('get-server-uptime-info'))).resolves.toEqual({
+        time: { uptime: 42 },
+      })
       expect(sockets[0].payloadsFor('get-server-uptime-info')).toEqual([undefined])
     })
 
@@ -134,9 +138,15 @@ describe('WsService', () => {
       const namespace = service.connectToNamespace('status')
       sockets[0].respondTo('get-server-network-info', {})
 
-      await firstValueFrom(namespace.request('get-server-network-info', { netInterfaces: ['eth0'] }))
+      await firstValueFrom(namespace.request('get-server-network-info', {
+        netInterfaces: ['eth0'],
+      }))
 
-      expect(sockets[0].payloadsFor('get-server-network-info')).toEqual([{ netInterfaces: ['eth0'] }])
+      expect(sockets[0].payloadsFor('get-server-network-info')).toEqual([
+        {
+          netInterfaces: ['eth0'],
+        },
+      ])
     })
 
     it('fails when the server acknowledges with an error', async () => {

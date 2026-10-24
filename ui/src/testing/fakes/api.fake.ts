@@ -81,7 +81,9 @@ export interface FakeApi {
 }
 
 function matches(matcher: RegExp | string, url: string): boolean {
-  return typeof matcher === 'string' ? matcher === url : matcher.test(url)
+  return typeof matcher === 'string'
+    ? matcher === url
+    : matcher.test(url)
 }
 
 /**
@@ -118,7 +120,9 @@ export function fakeApi(options: FakeApiOptions = {}): FakeApi {
     }
     try {
       const value = route.responder(call)
-      return route.rejects ? Promise.reject(value) : Promise.resolve(value)
+      return route.rejects
+        ? Promise.reject(value)
+        : Promise.resolve(value)
     } catch (error) {
       return Promise.reject(error)
     }
@@ -126,16 +130,38 @@ export function fakeApi(options: FakeApiOptions = {}): FakeApi {
 
   const api = {
     get: vi.fn((url: string, opts?: Record<string, any>) => handle({ method: 'get', url, options: opts })),
-    post: vi.fn((url: string, body?: any, opts?: Record<string, any>) => handle({ method: 'post', url, body, options: opts })),
-    put: vi.fn((url: string, body?: any, opts?: Record<string, any>) => handle({ method: 'put', url, body, options: opts })),
-    patch: vi.fn((url: string, body?: any, opts?: Record<string, any>) => handle({ method: 'patch', url, body, options: opts })),
+    post: vi.fn((url: string, body?: any, opts?: Record<string, any>) => handle({
+      method: 'post',
+      url,
+      body,
+      options: opts,
+    })),
+    put: vi.fn((url: string, body?: any, opts?: Record<string, any>) => handle({
+      method: 'put',
+      url,
+      body,
+      options: opts,
+    })),
+    patch: vi.fn((url: string, body?: any, opts?: Record<string, any>) => handle({
+      method: 'patch',
+      url,
+      body,
+      options: opts,
+    })),
     delete: vi.fn((url: string, opts?: Record<string, any>) => handle({ method: 'delete', url, options: opts })),
     calls,
   } as FakeApi
 
   const register = (method: ApiMethod, url: RegExp | string, response: any, rejects: boolean) => {
-    const responder: Responder = typeof response === 'function' ? response : () => response
-    routes.push({ method, matcher: url, responder, rejects })
+    const responder: Responder = typeof response === 'function'
+      ? response
+      : () => response
+    routes.push({
+      method,
+      matcher: url,
+      responder,
+      rejects,
+    })
     return api
   }
 

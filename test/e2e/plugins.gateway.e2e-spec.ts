@@ -113,7 +113,12 @@ describe('PluginsGateway (e2e)', { timeout: 10_000 }, () => {
     // Expect the npm command to be spawned
     const expectedCmd = isWin32 ? win32NpmPath : 'npm'
     const expectedArgs = isWin32
-      ? ['install', '-g', '--omit=dev', 'homebridge-mock-plugin@latest']
+      ? [
+          'install',
+          '-g',
+          '--omit=dev',
+          'homebridge-mock-plugin@latest',
+        ]
       : ['install', '--omit=dev', 'homebridge-mock-plugin@latest']
     expect(mockSpawn).toHaveBeenCalledWith(expectedCmd, expectedArgs, expect.anything())
 
@@ -151,7 +156,13 @@ describe('PluginsGateway (e2e)', { timeout: 10_000 }, () => {
       // added when installing globally (which this path does on Windows).
       const expectedCmd = isWin32 ? win32NpmPath : 'npm'
       const expectedArgs = isWin32
-        ? ['install', '-g', '--omit=dev', '--allow-scripts=homebridge-mock-plugin,ffmpeg-for-homebridge', 'homebridge-mock-plugin@3.2.5']
+        ? [
+            'install',
+            '-g',
+            '--omit=dev',
+            '--allow-scripts=homebridge-mock-plugin,ffmpeg-for-homebridge',
+            'homebridge-mock-plugin@3.2.5',
+          ]
         : ['install', '--omit=dev', 'homebridge-mock-plugin@3.2.5']
       expect(mockSpawn).toHaveBeenCalledWith(expectedCmd, expectedArgs, expect.anything())
 
@@ -184,7 +195,12 @@ describe('PluginsGateway (e2e)', { timeout: 10_000 }, () => {
     // Expect the npm command to be spawned
     const expectedCmd = isWin32 ? win32NpmPath : 'npm'
     const expectedArgs = isWin32
-      ? ['install', '-g', '--omit=dev', 'homebridge-mock-plugin@3.2.5']
+      ? [
+          'install',
+          '-g',
+          '--omit=dev',
+          'homebridge-mock-plugin@3.2.5',
+        ]
       : ['install', '--omit=dev', 'homebridge-mock-plugin@3.2.5']
     expect(mockSpawn).toHaveBeenCalledWith(expectedCmd, expectedArgs, expect.anything())
 
@@ -220,7 +236,14 @@ describe('PluginsGateway (e2e)', { timeout: 10_000 }, () => {
     await pluginsGateway.installPlugin(client, { name: 'homebridge-mock-plugin', version: 'latest' })
 
     // Expect the npm command to be spawned with sudo
-    expect(mockSpawn).toHaveBeenCalledWith('sudo', ['-E', '-n', 'npm', 'install', '--omit=dev', 'homebridge-mock-plugin@latest'], expect.anything())
+    expect(mockSpawn).toHaveBeenCalledWith('sudo', [
+      '-E',
+      '-n',
+      'npm',
+      'install',
+      '--omit=dev',
+      'homebridge-mock-plugin@latest',
+    ], expect.anything())
 
     // Expect the method to let the client know the command succeeded
     expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('Operation succeeded!'))
@@ -247,7 +270,12 @@ describe('PluginsGateway (e2e)', { timeout: 10_000 }, () => {
     // Expect the npm command to be spawned
     const expectedCmd = isWin32 ? win32NpmPath : 'npm'
     const expectedArgs = isWin32
-      ? ['install', '-g', '--omit=dev', 'homebridge-mock-plugin@latest']
+      ? [
+          'install',
+          '-g',
+          '--omit=dev',
+          'homebridge-mock-plugin@latest',
+        ]
       : ['install', '--omit=dev', 'homebridge-mock-plugin@latest']
     expect(mockSpawn).toHaveBeenCalledWith(expectedCmd, expectedArgs, expect.anything())
 
@@ -330,7 +358,12 @@ describe('PluginsGateway (e2e)', { timeout: 10_000 }, () => {
     // Expect the npm command to be spawned
     const expectedCmd = isWin32 ? win32NpmPath : 'npm'
     const expectedArgs = isWin32
-      ? ['install', '-g', '--omit=dev', 'homebridge-mock-plugin@latest']
+      ? [
+          'install',
+          '-g',
+          '--omit=dev',
+          'homebridge-mock-plugin@latest',
+        ]
       : ['install', '--omit=dev', 'homebridge-mock-plugin@latest']
     expect(mockSpawn).toHaveBeenCalledWith(expectedCmd, expectedArgs, expect.anything())
 
@@ -359,7 +392,12 @@ describe('PluginsGateway (e2e)', { timeout: 10_000 }, () => {
     // Expect the npm command to be spawned
     const expectedCmd = isWin32 ? win32NpmPath : 'npm'
     const expectedArgs = isWin32
-      ? ['install', '-g', '--omit=dev', 'homebridge-mock-plugin@3.4.6']
+      ? [
+          'install',
+          '-g',
+          '--omit=dev',
+          'homebridge-mock-plugin@3.4.6',
+        ]
       : ['install', '--omit=dev', 'homebridge-mock-plugin@3.4.6']
     expect(mockSpawn).toHaveBeenCalledWith(expectedCmd, expectedArgs, expect.anything())
 
@@ -398,7 +436,12 @@ describe('PluginsGateway (e2e)', { timeout: 10_000 }, () => {
     // Expect the npm command to be spawned
     const expectedCmd = isWin32 ? win32NpmPath : 'npm'
     const expectedArgs = isWin32
-      ? ['install', '--omit=dev', '-g', 'homebridge@latest']
+      ? [
+          'install',
+          '--omit=dev',
+          '-g',
+          'homebridge@latest',
+        ]
       : ['install', '--omit=dev', 'homebridge@latest']
     expect(mockSpawn).toHaveBeenCalledWith(expectedCmd, expectedArgs, expect.anything())
 
@@ -437,7 +480,12 @@ describe('PluginsGateway (e2e)', { timeout: 10_000 }, () => {
     // Expect the npm command to be spawned
     const expectedCmd = isWin32 ? win32NpmPath : 'npm'
     const expectedArgs = isWin32
-      ? ['install', '--omit=dev', '-g', 'homebridge@1.2.5']
+      ? [
+          'install',
+          '--omit=dev',
+          '-g',
+          'homebridge@1.2.5',
+        ]
       : ['install', '--omit=dev', 'homebridge@1.2.5']
     expect(mockSpawn).toHaveBeenCalledWith(expectedCmd, expectedArgs, expect.anything())
     // Expect the method to let the client know the command succeeded
@@ -477,7 +525,15 @@ describe('PluginsGateway (e2e)', { timeout: 10_000 }, () => {
       const { validate } = await import('class-validator')
       const { PluginActionDto } = await import('../../src/modules/plugins/plugins.dto.js')
 
-      const good = ['latest', '1.0.0', '1.0.0-beta.1', '^1.0.0', '~1.0.0', '>=1.0.0', '*']
+      const good = [
+        'latest',
+        '1.0.0',
+        '1.0.0-beta.1',
+        '^1.0.0',
+        '~1.0.0',
+        '>=1.0.0',
+        '*',
+      ]
       for (const version of good) {
         const dto = plainToInstance(PluginActionDto, {
           name: 'homebridge-mock-plugin',

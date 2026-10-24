@@ -56,9 +56,14 @@ describe('resetIndividualBridgesComponent', () => {
     TestBed.resetTestingModule()
     api = fakeApi()
     toastr = toastrStub()
-    activeModal = { close: vi.fn(), dismiss: vi.fn() }
+    activeModal = {
+      close: vi.fn(),
+      dismiss: vi.fn(),
+    }
     overview = {
-      get: vi.fn(async () => ({ pairings: options.pairings ?? [pairing()] })),
+      get: vi.fn(async () => ({ pairings: options.pairings ?? [
+        pairing(),
+      ] })),
       invalidate: vi.fn(),
     }
 
@@ -71,14 +76,21 @@ describe('resetIndividualBridgesComponent', () => {
           api,
           toastr,
           activeModal,
-          settings: makeSettings({ env: { featureFlags: { matterSupport: options.matter ?? false } } }),
+          settings: makeSettings({
+            env: {
+              featureFlags: { matterSupport: options.matter ?? false },
+            },
+          }),
         }),
         { provide: AccessoryOverviewCacheService, useValue: overview },
       ],
     })
 
     TestBed.overrideComponent(ResetIndividualBridgesComponent, {
-      set: { imports: [TranslatePipe], schemas: [NO_ERRORS_SCHEMA] },
+      set: {
+        imports: [TranslatePipe],
+        schemas: [NO_ERRORS_SCHEMA],
+      },
     })
 
     // ⚠️ The modal navigates to /restart with a bare `void`, and no route is
@@ -105,7 +117,11 @@ describe('resetIndividualBridgesComponent', () => {
 
   describe('the bridges it lists', () => {
     it('lists a running child bridge as active', async () => {
-      const modal = open({ pairings: [pairing({ name: 'Kitchen Bridge' })] })
+      const modal = open({
+        pairings: [
+          pairing({ name: 'Kitchen Bridge' }),
+        ],
+      })
       await settle()
 
       expect(modal.pairingsChildActive().map(p => p.name)).toEqual(['Kitchen Bridge'])
@@ -115,7 +131,11 @@ describe('resetIndividualBridgesComponent', () => {
     it('lists a bridge that may be stale separately', async () => {
       // Its plugin has gone, so unpairing it is usually what the user wants — but
       // showing it among the live ones would invite unpairing a bridge in use
-      const modal = open({ pairings: [pairing({ _couldBeStale: true })] })
+      const modal = open({
+        pairings: [
+          pairing({ _couldBeStale: true }),
+        ],
+      })
       await settle()
 
       expect(modal.pairingsChildStale()).toHaveLength(1)
@@ -123,7 +143,11 @@ describe('resetIndividualBridgesComponent', () => {
     })
 
     it('lists anything that is not a child bridge on its own', async () => {
-      const modal = open({ pairings: [pairing({ _category: 'external', name: 'A Camera' })] })
+      const modal = open({
+        pairings: [
+          pairing({ _category: 'external', name: 'A Camera' }),
+        ],
+      })
       await settle()
 
       expect(modal.pairingsNonChild().map(p => p.name)).toEqual(['A Camera'])
@@ -132,16 +156,28 @@ describe('resetIndividualBridgesComponent', () => {
 
     it('never offers the main bridge', async () => {
       // Unpairing that is what the other modal does, and it takes everything with it
-      const modal = open({ pairings: [pairing({ _main: true, name: 'Homebridge' }), pairing()] })
+      const modal = open({
+        pairings: [
+          pairing({ _main: true, name: 'Homebridge' }),
+          pairing(),
+        ],
+      })
       await settle()
 
-      const listed = [...modal.pairingsChildActive(), ...modal.pairingsNonChild(), ...modal.pairingsChildStale()]
+      const listed = [
+        ...modal.pairingsChildActive(),
+        ...modal.pairingsNonChild(),
+        ...modal.pairingsChildStale(),
+      ]
       expect(listed.map(p => p.name)).toEqual(['Kitchen Bridge'])
     })
 
     it('sorts them by name', async () => {
       const modal = open({
-        pairings: [pairing({ name: 'Zebra Bridge' }), pairing({ name: 'Apple Bridge' })],
+        pairings: [
+          pairing({ name: 'Zebra Bridge' }),
+          pairing({ name: 'Apple Bridge' }),
+        ],
       })
       await settle()
 
@@ -151,7 +187,10 @@ describe('resetIndividualBridgesComponent', () => {
     it('closes itself when the list cannot be read', async () => {
       // An empty modal would look like "no bridges to unpair", which is worse than
       // saying nothing
-      overview = { get: vi.fn(), invalidate: vi.fn() }
+      overview = {
+        get: vi.fn(),
+        invalidate: vi.fn(),
+      }
       const modal = open()
       overview.get.mockRejectedValue(new Error('server unavailable'))
       await (modal as any).loadPairings()
@@ -174,7 +213,9 @@ describe('resetIndividualBridgesComponent', () => {
       modal.toggleList('ABC123')
 
       expect(modal.isInList('ABC123')).toBe(true)
-      expect(modal.toDelete()).toEqual([{ id: 'ABC123', resetPairingInfo: false }])
+      expect(modal.toDelete()).toEqual([
+        { id: 'ABC123', resetPairingInfo: false },
+      ])
     })
 
     it('takes it off again when unticked', async () => {
@@ -195,7 +236,9 @@ describe('resetIndividualBridgesComponent', () => {
 
       modal.toggleList('ABC123', true)
 
-      expect(modal.toDelete()).toEqual([{ id: 'ABC123', resetPairingInfo: true }])
+      expect(modal.toDelete()).toEqual([
+        { id: 'ABC123', resetPairingInfo: true },
+      ])
     })
 
     it('keeps several bridges in the list', async () => {
@@ -228,7 +271,9 @@ describe('resetIndividualBridgesComponent', () => {
       await modal.removeBridges()
 
       expect(api.lastCall('delete', '/server/pairings')?.options?.body)
-        .toEqual([{ id: 'ABC123', resetPairingInfo: false }])
+        .toEqual([
+          { id: 'ABC123', resetPairingInfo: false },
+        ])
     })
 
     it('sends the payload as a body on the delete', async () => {
@@ -263,7 +308,9 @@ describe('resetIndividualBridgesComponent', () => {
       await modal.removeBridges()
 
       expect(activeModal.close).toHaveBeenCalled()
-      expect(navigate).toHaveBeenCalledWith(['/restart'], { queryParams: { restarting: true } })
+      expect(navigate).toHaveBeenCalledWith(['/restart'], {
+        queryParams: { restarting: true },
+      })
     })
 
     it('disables the button while it works', async () => {

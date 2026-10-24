@@ -105,7 +105,9 @@ describe('PluginsSettingsUiController (e2e)', () => {
       headers: {
         authorization: `Bearer ${accessToken}`,
         host: 'localhost:8581',
-        ...(origin ? { origin } : {}),
+        ...(origin
+          ? { origin }
+          : {}),
       },
     })
   }
@@ -117,13 +119,20 @@ describe('PluginsSettingsUiController (e2e)', () => {
     }
     return await app.inject({
       method: 'GET',
-      path: `${API_PREFIX}/plugins/settings-ui/${pluginName}/index.html?${new URLSearchParams({ ticket: issued.json().ticket, ...(version ? { v: version } : {}) })}`,
+      path: `${API_PREFIX}/plugins/settings-ui/${pluginName}/index.html?${new URLSearchParams({
+        ticket: issued.json().ticket,
+        ...(version
+          ? { v: version }
+          : {}),
+      })}`,
     })
   }
 
   function assetCookie(indexResponse): string {
     const setCookie = indexResponse.headers['set-cookie']
-    const header = Array.isArray(setCookie) ? setCookie[0] : setCookie
+    const header = Array.isArray(setCookie)
+      ? setCookie[0]
+      : setCookie
     return header.split(';')[0]
   }
 
@@ -222,7 +231,9 @@ describe('PluginsSettingsUiController (e2e)', () => {
         const reloaded = await app.inject({
           method: 'GET',
           path,
-          headers: { cookie: assetCookie(first) },
+          headers: {
+            cookie: assetCookie(first),
+          },
         })
 
         expect(first.statusCode).toBe(200)
@@ -476,7 +487,9 @@ describe('PluginsSettingsUiController (e2e)', () => {
         const res = await app.inject({
           method: 'GET',
           path: `${API_PREFIX}/plugins/settings-ui/homebridge-mock-plugin/main.js`,
-          headers: { cookie: assetCookie(index) },
+          headers: {
+            cookie: assetCookie(index),
+          },
         })
 
         expect(res.statusCode).toBe(200)
@@ -490,7 +503,9 @@ describe('PluginsSettingsUiController (e2e)', () => {
         const res = await app.inject({
           method: 'GET',
           path: `${API_PREFIX}/plugins/settings-ui/homebridge-mock-plugin/chunk-ABCDEFGH.js`,
-          headers: { cookie: assetCookie(index) },
+          headers: {
+            cookie: assetCookie(index),
+          },
         })
 
         expect(res.statusCode).toBe(200)
@@ -658,7 +673,9 @@ describe('PluginsSettingsUiController (e2e)', () => {
         const res = await app.inject({
           method: 'GET',
           path: `${API_PREFIX}/plugins/settings-ui/homebridge-mock-plugin/assets/logo.svg`,
-          headers: { cookie: assetCookie(index) },
+          headers: {
+            cookie: assetCookie(index),
+          },
         })
 
         expect(res.statusCode).toBe(200)
@@ -671,7 +688,9 @@ describe('PluginsSettingsUiController (e2e)', () => {
         const res = await app.inject({
           method: 'GET',
           path: `${API_PREFIX}/plugins/settings-ui/homebridge-mock-plugin/other.html`,
-          headers: { cookie: assetCookie(index) },
+          headers: {
+            cookie: assetCookie(index),
+          },
         })
 
         expect(res.statusCode).toBe(404)
@@ -682,7 +701,9 @@ describe('PluginsSettingsUiController (e2e)', () => {
         const res = await app.inject({
           method: 'GET',
           path: `${API_PREFIX}/plugins/settings-ui/homebridge-mock-plugin-two/main.js`,
-          headers: { cookie: assetCookie(index) },
+          headers: {
+            cookie: assetCookie(index),
+          },
         })
 
         expect(res.statusCode).toBe(401)
@@ -693,7 +714,9 @@ describe('PluginsSettingsUiController (e2e)', () => {
         const res = await app.inject({
           method: 'GET',
           path: `${API_PREFIX}/plugins/settings-ui/homebridge-mock-plugin/nonexistent.js`,
-          headers: { cookie: assetCookie(index) },
+          headers: {
+            cookie: assetCookie(index),
+          },
         })
 
         expect(res.statusCode).toBe(404)
@@ -713,7 +736,9 @@ describe('PluginsSettingsUiController (e2e)', () => {
         const res = await app.inject({
           method: 'GET',
           path: `${API_PREFIX}/plugins/settings-ui/homebridge-mock-plugin/../../../etc/passwd`,
-          headers: { cookie: assetCookie(index) },
+          headers: {
+            cookie: assetCookie(index),
+          },
         })
 
         // Should not return 200 with file contents
@@ -925,7 +950,10 @@ describe('PluginsSettingsUiController (e2e)', () => {
       const { EventEmitter } = await import('node:events')
       const client = new EventEmitter()
 
-      return { client, emitSpy: vi.spyOn(client, 'emit') }
+      return {
+        client,
+        emitSpy: vi.spyOn(client, 'emit'),
+      }
     }
 
     // Wait for the socket to receive an event and hand back the payload it carried.
@@ -1050,7 +1078,11 @@ process.on('message', (request) => {
         client.emit('request', { requestId: 'r2', path: '/hello' })
 
         expect(await waitForEmit(emitSpy, 'response', payload => payload?.requestId === 'r2'))
-          .toEqual({ requestId: 'r2', success: true, data: { echo: '/hello' } })
+          .toEqual({
+            requestId: 'r2',
+            success: true,
+            data: { echo: '/hello' },
+          })
 
         client.emit('end')
       })
@@ -1067,7 +1099,11 @@ process.on('message', (request) => {
         client.emit('request', { requestId: 'r-second', path: '/again' })
 
         expect(await waitForEmit(emitSpy, 'response', payload => payload?.requestId === 'r-second'))
-          .toEqual({ requestId: 'r-second', success: true, data: { echo: '/again' } })
+          .toEqual({
+            requestId: 'r-second',
+            success: true,
+            data: { echo: '/again' },
+          })
 
         // A listener left behind by the superseded session would answer this same request id a
         // second time, with a rejection from its own dead child.
@@ -1131,7 +1167,11 @@ process.on('message', (request) => {
         client.emit('request', { requestId: 'r-again', path: '/back' })
 
         expect(await waitForEmit(emitSpy, 'response', payload => payload?.requestId === 'r-again'))
-          .toEqual({ requestId: 'r-again', success: true, data: { echo: '/back' } })
+          .toEqual({
+            requestId: 'r-again',
+            success: true,
+            data: { echo: '/back' },
+          })
 
         client.emit('end')
       })
@@ -1149,7 +1189,11 @@ process.on('message', (request) => {
         client.emit('request', { requestId: 'r-single', path: '/single' })
 
         expect(await waitForEmit(emitSpy, 'response', payload => payload?.requestId === 'r-single'))
-          .toEqual({ requestId: 'r-single', success: true, data: { echo: '/single' } })
+          .toEqual({
+            requestId: 'r-single',
+            success: true,
+            data: { echo: '/single' },
+          })
 
         // Both invocations have long since settled by now, so a second child would have announced
         // itself and answered alongside the first.
@@ -1169,7 +1213,11 @@ process.on('message', (request) => {
         client.emit('request', { requestId: 'r-exit2', path: '/exit' })
 
         expect(await waitForEmit(emitSpy, 'response', payload => payload?.requestId === 'r-hang'))
-          .toEqual({ requestId: 'r-hang', success: false, data: { message: customUiUnavailable } })
+          .toEqual({
+            requestId: 'r-hang',
+            success: false,
+            data: { message: customUiUnavailable },
+          })
 
         client.emit('end')
       })

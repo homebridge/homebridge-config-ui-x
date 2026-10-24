@@ -8,20 +8,28 @@ export const environment = {
     base: (() => {
       const baseElement = document.querySelector('base')
       const baseHref = baseElement?.getAttribute('href') || '/'
-      return baseHref.endsWith('/') ? `${baseHref}api` : `${baseHref}/api`
+      return baseHref.endsWith('/')
+        ? `${baseHref}api`
+        : `${baseHref}/api`
     })(),
-    socket: `${(window.location.protocol) === 'http:' ? 'ws://' : 'wss://'}${window.location.host}`,
+    socket: `${(window.location.protocol) === 'http:'
+      ? 'ws://'
+      : 'wss://'}${window.location.host}`,
     origin: window.location.origin,
   },
   jwt: {
     tokenKey: 'access_token',
     allowedDomains: [document.location.host],
-    disallowedRoutes: [(() => {
-      const baseElement = document.querySelector('base')
-      const baseHref = baseElement?.getAttribute('href') || '/'
-      const apiBase = baseHref.endsWith('/') ? `${baseHref}api` : `${baseHref}/api`
-      return `${window.location.protocol}//${document.location.host}${apiBase}/auth/login`
-    })()],
+    disallowedRoutes: [
+      (() => {
+        const baseElement = document.querySelector('base')
+        const baseHref = baseElement?.getAttribute('href') || '/'
+        const apiBase = baseHref.endsWith('/')
+          ? `${baseHref}api`
+          : `${baseHref}/api`
+        return `${window.location.protocol}//${document.location.host}${apiBase}/auth/login`
+      })(),
+    ],
   },
   apiHttpOptions: {},
   owm: {

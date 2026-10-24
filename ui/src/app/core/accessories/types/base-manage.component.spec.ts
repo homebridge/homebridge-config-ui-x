@@ -106,8 +106,12 @@ describe('BaseManageComponent', () => {
   function create(options: CreateOptions = {}) {
     TestBed.resetTestingModule()
 
-    const service = 'service' in options ? options.service : hapService({ uniqueId: 'hap-1' })
-    accessories = accessoriesStub(service ? [service] : [])
+    const service = 'service' in options
+      ? options.service
+      : hapService({ uniqueId: 'hap-1' })
+    accessories = accessoriesStub(service
+      ? [service]
+      : [])
     activeModal = activeModalStub()
     toastr = toastrStub()
 
@@ -121,7 +125,9 @@ describe('BaseManageComponent', () => {
           provide: ACCESSORY_MANAGE_MODAL_DATA,
           useValue: {
             service,
-            $accessories: (options.withAccessories ?? true) ? accessories : undefined,
+            $accessories: (options.withAccessories ?? true)
+              ? accessories
+              : undefined,
           },
         },
       ],
@@ -283,7 +289,9 @@ describe('BaseManageComponent', () => {
     })
 
     it('shows a message the server supplied', () => {
-      component.raiseError({ error: { message: 'Accessory is not responding' } })
+      component.raiseError({
+        error: { message: 'Accessory is not responding' },
+      })
 
       expect(toastr.error).toHaveBeenCalledWith('Accessory is not responding', 'toast.title_error')
     })

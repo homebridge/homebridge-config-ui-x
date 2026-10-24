@@ -40,7 +40,11 @@ describe('dialog modals', () => {
       providers: [
         provideRouter([]),
         provideTestTranslate(),
-        provideFakes({ settings: makeSettings(), toastr: toastrStub(), activeModal }),
+        provideFakes({
+          settings: makeSettings(),
+          toastr: toastrStub(),
+          activeModal,
+        }),
         ...data,
       ],
     })
@@ -57,9 +61,42 @@ describe('dialog modals', () => {
    * Every one of these is a read-only panel: there is nothing to agree to.
    */
   const dismissOnly: Array<[string, Type<any>, Array<{ provide: any, useValue: any }>]> = [
-    ['InformationComponent', InformationComponent, [{ provide: INFORMATION_MODAL_DATA, useValue: { title: 'Heads up', message: 'Something happened' } }]],
-    ['PluginInfoComponent', PluginInfoComponent, [{ provide: PLUGIN_MODAL_DATA, useValue: { plugin } }]],
-    ['DonateComponent', DonateComponent, [{ provide: PLUGIN_MODAL_DATA, useValue: { plugin: makePlugin({ funding: [{ type: 'github', url: 'https://github.com/sponsors/test' }] }) } }]],
+    [
+      'InformationComponent',
+      InformationComponent,
+      [
+        {
+          provide: INFORMATION_MODAL_DATA,
+          useValue: { title: 'Heads up', message: 'Something happened' },
+        },
+      ],
+    ],
+    [
+      'PluginInfoComponent',
+      PluginInfoComponent,
+      [
+        {
+          provide: PLUGIN_MODAL_DATA,
+          useValue: { plugin },
+        },
+      ],
+    ],
+    [
+      'DonateComponent',
+      DonateComponent,
+      [
+        {
+          provide: PLUGIN_MODAL_DATA,
+          useValue: {
+            plugin: makePlugin({
+              funding: [
+                { type: 'github', url: 'https://github.com/sponsors/test' },
+              ],
+            }),
+          },
+        },
+      ],
+    ],
   ]
 
   describe.each(dismissOnly)('%s', (_name, component, data) => {
@@ -74,7 +111,12 @@ describe('dialog modals', () => {
   })
 
   describe('ConfirmComponent', () => {
-    const data = [{ provide: CONFIRM_MODAL_DATA, useValue: { title: 'Are you sure?', message: 'This cannot be undone', confirmButtonLabel: 'Yes' } }]
+    const data = [
+      {
+        provide: CONFIRM_MODAL_DATA,
+        useValue: { title: 'Are you sure?', message: 'This cannot be undone', confirmButtonLabel: 'Yes' },
+      },
+    ]
 
     it('resolves when the user agrees', () => {
       const modal = open(ConfirmComponent, data)
@@ -127,10 +169,17 @@ describe('dialog modals', () => {
   })
 
   describe('PluginCompatibilityComponent', () => {
-    const data = [{
-      provide: PLUGIN_COMPATIBILITY_MODAL_DATA,
-      useValue: { plugin: makePlugin({ updateEngines: { node: '>=22', homebridge: '>=2.0.0' } } as any), action: 'update' },
-    }]
+    const data = [
+      {
+        provide: PLUGIN_COMPATIBILITY_MODAL_DATA,
+        useValue: {
+          plugin: makePlugin({
+            updateEngines: { node: '>=22', homebridge: '>=2.0.0' },
+          } as any),
+          action: 'update',
+        },
+      },
+    ]
 
     it('resolves with a yes when the user carries on anyway', () => {
       const modal = open(PluginCompatibilityComponent, data)
@@ -152,7 +201,12 @@ describe('dialog modals', () => {
   })
 
   describe('DisablePluginComponent', () => {
-    const data = [{ provide: DISABLE_PLUGIN_MODAL_DATA, useValue: { plugin } }]
+    const data = [
+      {
+        provide: DISABLE_PLUGIN_MODAL_DATA,
+        useValue: { plugin },
+      },
+    ]
 
     it('resolves when the user agrees to disable', () => {
       const modal = open(DisablePluginComponent, data)
@@ -173,28 +227,72 @@ describe('dialog modals', () => {
 
   describe('DonateComponent', () => {
     it.each([
-      ['a list of links', ['https://paypal.me/test'], [{ type: 'other', url: 'https://paypal.me/test' }]],
-      ['a list of typed entries', [{ type: 'github', url: 'https://github.com/sponsors/test' }], [{ type: 'github', url: 'https://github.com/sponsors/test' }]],
-      ['a single link', 'https://paypal.me/test', [{ type: 'other', url: 'https://paypal.me/test' }]],
-      ['a single typed entry', { type: 'kofi', url: 'https://ko-fi.com/test' }, [{ type: 'kofi', url: 'https://ko-fi.com/test' }]],
+      [
+        'a list of links',
+        ['https://paypal.me/test'],
+        [
+          { type: 'other', url: 'https://paypal.me/test' },
+        ],
+      ],
+      [
+        'a list of typed entries',
+        [
+          { type: 'github', url: 'https://github.com/sponsors/test' },
+        ],
+        [
+          { type: 'github', url: 'https://github.com/sponsors/test' },
+        ],
+      ],
+      [
+        'a single link',
+        'https://paypal.me/test',
+        [
+          { type: 'other', url: 'https://paypal.me/test' },
+        ],
+      ],
+      [
+        'a single typed entry',
+        { type: 'kofi', url: 'https://ko-fi.com/test' },
+        [
+          { type: 'kofi', url: 'https://ko-fi.com/test' },
+        ],
+      ],
     ])('understands funding given as %s', (_case, funding, expected) => {
       // Plugin authors declare this four different ways in package.json
-      const modal = open(DonateComponent, [{ provide: PLUGIN_MODAL_DATA, useValue: { plugin: makePlugin({ funding } as any) } }])
+      const modal = open(DonateComponent, [
+        {
+          provide: PLUGIN_MODAL_DATA,
+          useValue: {
+            plugin: makePlugin({ funding } as any),
+          },
+        },
+      ])
 
       expect(modal.fundingOptions()).toEqual(expected)
     })
 
     it('closes itself when there is nothing to show', () => {
-      open(DonateComponent, [{ provide: PLUGIN_MODAL_DATA, useValue: { plugin: makePlugin({ funding: undefined } as any) } }])
+      open(DonateComponent, [
+        {
+          provide: PLUGIN_MODAL_DATA,
+          useValue: {
+            plugin: makePlugin({ funding: undefined } as any),
+          },
+        },
+      ])
 
       expect(activeModal.close).toHaveBeenCalled()
     })
 
     it('credits the original author of the ui itself', () => {
-      const modal = open(DonateComponent, [{
-        provide: PLUGIN_MODAL_DATA,
-        useValue: { plugin: makePlugin({ name: 'homebridge-config-ui-x', author: 'homebridge', funding: 'https://paypal.me/oznu' } as any) },
-      }])
+      const modal = open(DonateComponent, [
+        {
+          provide: PLUGIN_MODAL_DATA,
+          useValue: {
+            plugin: makePlugin({ name: 'homebridge-config-ui-x', author: 'homebridge', funding: 'https://paypal.me/oznu' } as any),
+          },
+        },
+      ])
 
       expect(modal.authorName()).toBe('oznu')
     })

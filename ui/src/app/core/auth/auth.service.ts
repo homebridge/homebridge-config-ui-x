@@ -70,7 +70,9 @@ export class AuthService {
     // Start the request while the bearer token is still available to the HTTP
     // interceptor, then clear local authentication immediately. The server
     // cleanup is best-effort and must not leave the UI signed in if it stalls.
-    const logoutRequest = this.$api.post('/auth/logout', options?.scope ? { scope: options.scope } : {}, { withCredentials: true })
+    const logoutRequest = this.$api.post('/auth/logout', options?.scope
+      ? { scope: options.scope }
+      : {}, { withCredentials: true })
     this.user = {} as UserInterface
     this.token = null
     setStoredToken(null)
@@ -261,7 +263,9 @@ export class AuthService {
     this.isRefreshing = true
 
     try {
-      const resp = await this.$api.post('/auth/refresh', reason ? { reason } : {}, { withCredentials: true })
+      const resp = await this.$api.post('/auth/refresh', reason
+        ? { reason }
+        : {}, { withCredentials: true })
       if (resp.access_token) {
         // Hold the new token in memory; AuthHelperService reads through to
         // the same store, so there is nothing further to keep in step.

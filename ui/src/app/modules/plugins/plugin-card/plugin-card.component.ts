@@ -103,6 +103,21 @@ export class PluginCardComponent implements OnInit {
   public readonly allChildBridgesStopped = signal(false)
   public readonly childBridgeStatus = signal('pending')
   public readonly childBridgeRestartInProgress = signal(false)
+
+  /**
+   * Installed, not part-way through a move to a new scope, with no update
+   * waiting, not disabled and no restart running - the state every set-up and
+   * child bridge prompt on the card waits for before it shows.
+   */
+  public isSettled(): boolean {
+    const plugin = this.plugin()
+    return !!plugin.installedVersion
+      && (!plugin.newHbScope || plugin.newHbScope.switch !== plugin.installedVersion)
+      && !plugin.updateAvailable
+      && !plugin.disabled
+      && !this.childBridgeRestartInProgress()
+  }
+
   public readonly isMobile = signal<string>('')
   public readonly setChildBridges = signal<ChildBridge[]>([])
 
@@ -142,10 +157,12 @@ export class PluginCardComponent implements OnInit {
   }
 
   public openFundingModal(plugin: Plugin) {
-    const injector = createEnvironmentInjector([{
-      provide: PLUGIN_MODAL_DATA,
-      useValue: { plugin },
-    }], this.injector)
+    const injector = createEnvironmentInjector([
+      {
+        provide: PLUGIN_MODAL_DATA,
+        useValue: { plugin },
+      },
+    ], this.injector)
 
     this.$modal.open(DonateComponent, {
       size: 'lg',
@@ -155,10 +172,12 @@ export class PluginCardComponent implements OnInit {
   }
 
   public pluginInfoModal(plugin: Plugin) {
-    const injector = createEnvironmentInjector([{
-      provide: PLUGIN_MODAL_DATA,
-      useValue: { plugin },
-    }], this.injector)
+    const injector = createEnvironmentInjector([
+      {
+        provide: PLUGIN_MODAL_DATA,
+        useValue: { plugin },
+      },
+    ], this.injector)
 
     this.$modal.open(PluginInfoComponent, {
       size: 'lg',
@@ -168,15 +187,17 @@ export class PluginCardComponent implements OnInit {
   }
 
   public async disablePlugin(plugin: Plugin): Promise<void> {
-    const injector = createEnvironmentInjector([{
-      provide: DISABLE_PLUGIN_MODAL_DATA,
-      useValue: {
-        pluginName: plugin.displayName || plugin.name,
-        isConfigured: plugin.isConfigured,
-        isConfiguredDynamicPlatform: plugin.isConfiguredDynamicPlatform,
-        keepOrphans: this.$settings.keepOrphans,
+    const injector = createEnvironmentInjector([
+      {
+        provide: DISABLE_PLUGIN_MODAL_DATA,
+        useValue: {
+          pluginName: plugin.displayName || plugin.name,
+          isConfigured: plugin.isConfigured,
+          isConfiguredDynamicPlatform: plugin.isConfiguredDynamicPlatform,
+          keepOrphans: this.$settings.keepOrphans,
+        },
       },
-    }], this.injector)
+    ], this.injector)
 
     const ref = this.$modal.open(DisablePluginComponent, {
       size: 'lg',
@@ -210,15 +231,17 @@ export class PluginCardComponent implements OnInit {
   }
 
   public async enablePlugin(plugin: Plugin): Promise<void> {
-    const injector = createEnvironmentInjector([{
-      provide: CONFIRM_MODAL_DATA,
-      useValue: {
-        title: plugin.name,
-        message: this.$translate.instant('plugins.manage.confirm_enable', { pluginName: plugin.displayName }),
-        confirmButtonLabel: this.$translate.instant('plugins.manage.enable'),
-        faIconClass: 'fa-circle-play primary-text',
+    const injector = createEnvironmentInjector([
+      {
+        provide: CONFIRM_MODAL_DATA,
+        useValue: {
+          title: plugin.name,
+          message: this.$translate.instant('plugins.manage.confirm_enable', { pluginName: plugin.displayName }),
+          confirmButtonLabel: this.$translate.instant('plugins.manage.enable'),
+          faIconClass: 'fa-circle-play primary-text',
+        },
       },
-    }], this.injector)
+    ], this.injector)
 
     const ref = this.$modal.open(ConfirmComponent, {
       size: 'lg',
@@ -253,13 +276,15 @@ export class PluginCardComponent implements OnInit {
   }
 
   public viewPluginLog(): void {
-    const injector = createEnvironmentInjector([{
-      provide: PLUGIN_LOGS_MODAL_DATA,
-      useValue: {
-        plugin: this.plugin(),
-        childBridges: this.setChildBridges(),
+    const injector = createEnvironmentInjector([
+      {
+        provide: PLUGIN_LOGS_MODAL_DATA,
+        useValue: {
+          plugin: this.plugin(),
+          childBridges: this.setChildBridges(),
+        },
       },
-    }], this.injector)
+    ], this.injector)
 
     this.$modal.open(PluginLogsComponent, {
       size: 'xl',
@@ -281,7 +306,11 @@ export class PluginCardComponent implements OnInit {
     } finally {
       setTimeout(() => {
         this.childBridgeRestartInProgress.set(false)
-      }, action === 'restart' ? 12000 : action === 'stop' ? 6000 : 1000)
+      }, action === 'restart'
+        ? 12000
+        : action === 'stop'
+          ? 6000
+          : 1000)
     }
   }
 

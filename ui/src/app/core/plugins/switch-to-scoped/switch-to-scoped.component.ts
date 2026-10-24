@@ -148,7 +148,9 @@ export class SwitchToScopedComponent implements OnInit, OnDestroy {
         this.restarting.set(false)
       }
 
-      const message = error instanceof Error ? error.message : 'An error occurred'
+      const message = error instanceof Error
+        ? error.message
+        : 'An error occurred'
       this.failure.set(message)
       console.error(error)
       this.$toastr.error(message, this.$translate.instant('toast.title_error'))

@@ -235,7 +235,12 @@ describe('ServerController (e2e)', () => {
     const cachedAccessories = await readJson(resolve(accessoriesPath, 'cachedAccessories'))
     const uuid = cachedAccessories[0].UUID
 
-    for (const cacheFile of ['../../auth.json', 'auth.json', 'cachedAccessories.NOTHEX', 'random-file']) {
+    for (const cacheFile of [
+      '../../auth.json',
+      'auth.json',
+      'cachedAccessories.NOTHEX',
+      'random-file',
+    ]) {
       const res = await app.inject({
         method: 'DELETE',
         path: `/server/cached-accessories/${uuid}?cacheFile=${encodeURIComponent(cacheFile)}`,
@@ -851,7 +856,9 @@ describe('ServerController (e2e)', () => {
       headers: {
         authorization,
       },
-      payload: [{ deviceId: '../../etc', uuid: 'some-uuid' }],
+      payload: [
+        { deviceId: '../../etc', uuid: 'some-uuid' },
+      ],
     })
 
     expect(res.statusCode).toBe(400)
@@ -1118,7 +1125,9 @@ describe('ServerController (e2e)', () => {
       headers: {
         authorization,
       },
-      payload: [{ uuid: cachedAccessories[0].UUID, cacheFile: 'cachedAccessories' }],
+      payload: [
+        { uuid: cachedAccessories[0].UUID, cacheFile: 'cachedAccessories' },
+      ],
     })
 
     expect(res.statusCode).toBe(204)
@@ -1137,7 +1146,9 @@ describe('ServerController (e2e)', () => {
         method: 'DELETE',
         path: '/server/cached-accessories',
         headers: { authorization },
-        payload: [{ uuid: 'some-uuid', cacheFile }],
+        payload: [
+          { uuid: 'some-uuid', cacheFile },
+        ],
       })
       expect(res.statusCode).toBe(400)
     }
@@ -1153,7 +1164,9 @@ describe('ServerController (e2e)', () => {
       headers: {
         authorization,
       },
-      payload: [{ id: '67E41F0EA05D', resetPairingInfo: false }],
+      payload: [
+        { id: '67E41F0EA05D', resetPairingInfo: false },
+      ],
     })
 
     expect(res.statusCode).toBe(204)
@@ -1178,7 +1191,9 @@ describe('ServerController (e2e)', () => {
       headers: {
         authorization,
       },
-      payload: [{ id: '67E41F0EA05D' }],
+      payload: [
+        { id: '67E41F0EA05D' },
+      ],
     })
 
     expect(res.statusCode).toBe(204)

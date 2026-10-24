@@ -10,7 +10,12 @@ import { UpdateAllJournalService } from './update-all-journal.service.js'
 import { UpdateAllService } from './update-all.service.js'
 
 /** The progress events the orchestrator emits, forwarded verbatim to subscribers */
-const FORWARDED_EVENTS = ['item-start', 'stdout', 'item-result', 'run-complete'] as const
+const FORWARDED_EVENTS = [
+  'item-start',
+  'stdout',
+  'item-result',
+  'run-complete',
+] as const
 
 /**
  * Streams Update All progress to the browser. A client sends `subscribe` and

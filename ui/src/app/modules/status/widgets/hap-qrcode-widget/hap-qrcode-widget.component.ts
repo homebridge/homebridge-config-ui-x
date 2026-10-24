@@ -105,7 +105,9 @@ export class HapQrcodeWidgetComponent implements OnInit, OnDestroy {
     const pinCodeHeight = (this.pincodeElement()!.nativeElement as HTMLElement).offsetHeight
 
     const newHeight = containerHeight - pinCodeHeight
-    const newWidth = containerWidth > newHeight ? newHeight : containerWidth
+    const newWidth = containerWidth > newHeight
+      ? newHeight
+      : containerWidth
 
     this.qrCodeHeight.set(newHeight)
     this.qrCodeWidth.set(newWidth)

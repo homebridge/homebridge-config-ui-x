@@ -59,7 +59,9 @@ export interface HapServiceOptions {
  */
 export function hapService(options: HapServiceOptions = {}): ServiceTypeX {
   const type = options.type ?? 'Switch'
-  const characteristics = options.characteristics ?? [characteristic('On', false)]
+  const characteristics = options.characteristics ?? [
+    characteristic('On', false),
+  ]
 
   const service = {
     aid: 1,
@@ -135,7 +137,9 @@ export type MatterServiceFixture = ServiceTypeX & {
  * @param options - see MatterServiceOptions
  */
 export function matterService(options: MatterServiceOptions = {}): MatterServiceFixture {
-  const clusters = options.clusters ?? { onOff: { onOff: false } }
+  const clusters = options.clusters ?? {
+    onOff: { onOff: false },
+  }
   const writes: MatterWrite[] = []
   const failures = new Map<string, unknown>()
   const writers = new Map<string, (attributes: Record<string, unknown>) => Promise<void>>()
@@ -188,7 +192,10 @@ export function matterService(options: MatterServiceOptions = {}): MatterService
     },
     uniqueId: options.uniqueId ?? 'matter-unique-id',
     getCluster: vi.fn((name: string) => (clusters[name]
-      ? { attributes: clusters[name], setAttributes: writerFor(name) }
+      ? {
+          attributes: clusters[name],
+          setAttributes: writerFor(name),
+        }
       : null)),
     ...options.overrides,
   } as unknown as MatterServiceFixture

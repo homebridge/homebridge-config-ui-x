@@ -34,7 +34,9 @@ describe('PluginsService UI self-restart timer', () => {
 
     await copy(resolve(__dirname, '../mocks', 'config.json'), process.env.UIX_CONFIG_PATH)
 
-    app = await Test.createTestingModule({ imports: [PluginsModule] }).compile()
+    app = await Test.createTestingModule({
+      imports: [PluginsModule],
+    }).compile()
     pluginsService = app.get(PluginsService)
   })
 
