@@ -21,7 +21,8 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(hb-service): quote paths with spaces when registering the Windows service (#3037) (@xLarry)
 - ci: improve beta release notes and workflow summaries (#3004)
 - test: give the status tests a longer timeout on windows arm64
-- ci: update github actions to their latest versions
+- ci: update github actions to their latest versions (#3071)
+- fix(hb-service): stop the macos installer failing when npm's path has spaces or shell characters (#3026) (@smitty078)
 
 ### Homebridge Dependencies
 
