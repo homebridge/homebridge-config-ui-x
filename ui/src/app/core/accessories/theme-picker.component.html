@@ -1,0 +1,161 @@
+@if (enabled) {
+  <section
+    class="theme-section"
+    [attr.aria-label]="'accessories.themes.title' | translate"
+    [class.dark]="settings.actualLightingMode === 'dark'"
+  >
+    <div class="section-heading">
+      <h3>{{ 'accessories.themes.title' | translate }}</h3>
+      <button type="button" class="text-button" [disabled]="busy" (click)="show(true)">
+        {{ 'accessories.themes.edit' | translate }}
+      </button>
+    </div>
+    <button #opener type="button" class="picker-button" [disabled]="busy" (click)="show()">
+      <span class="theme-symbol" aria-hidden="true"
+        ><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6">
+          <path d="m12 3 2.5 6.5L21 12l-6.5 2.5L12 21l-2.5-6.5L3 12l6.5-2.5Z" /></svg
+      ></span>
+      <span class="picker-label"
+        >{{ 'accessories.themes.choose' | translate
+        }}<small>{{
+          (favoriteActions.length === 1 ? 'accessories.themes.counts_one' : 'accessories.themes.counts')
+            | translate: { available: actions.length, favorites: favoriteActions.length }
+        }}</small></span
+      >
+      <span class="chevron" aria-hidden="true">›</span>
+    </button>
+    <div class="quick-favorites">
+      @for (action of favoriteActions; track action.id) {
+        <button type="button" class="favorite-chip" [disabled]="busy" (click)="apply(action)">{{ action.name }}</button>
+      }
+    </div>
+    @if (busy) {
+      <p class="status-text" role="status">{{ busyLabel }}</p>
+    }
+    @if (error && !open) {
+      <p class="error-text" role="alert">{{ error }}</p>
+    }
+    @if (lastSent) {
+      <p class="status-text" role="status">{{ 'accessories.themes.last_sent' | translate: { name: lastSent } }}</p>
+    } @else {
+      <p class="status-text">{{ 'accessories.themes.hint' | translate }}</p>
+    }
+  </section>
+}
+<ng-template #catalog>
+  <div class="catalog-surface modal-content" [class.dark]="settings.actualLightingMode === 'dark'">
+    <div class="dialog-heading modal-header">
+      <div>
+        <h5 class="modal-title" id="theme-catalog-title">
+          {{ (editing ? 'accessories.themes.your_favorites' : 'accessories.themes.choose') | translate }}
+        </h5>
+        <p>
+          {{
+            editing
+              ? shared
+                ? ('accessories.themes.shared_hint' | translate)
+                : ('accessories.themes.local_hint' | translate)
+              : ('accessories.themes.explore' | translate)
+          }}
+        </p>
+      </div>
+      <button
+        type="button"
+        class="btn-close"
+        [attr.aria-label]="'accessories.themes.close' | translate"
+        (click)="close()"
+      ></button>
+    </div>
+    <div class="search-wrap">
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <circle cx="10" cy="10" r="6" stroke="currentColor" stroke-width="1.8" />
+        <path d="m15 15 5 5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" /></svg
+      ><input
+        #search
+        ngbAutofocus
+        type="search"
+        autocomplete="off"
+        [attr.aria-label]="'accessories.themes.search' | translate"
+        [placeholder]="'accessories.themes.search' | translate"
+        [(ngModel)]="query"
+      />
+    </div>
+    <div class="catalog-tabs" role="group" [attr.aria-label]="'accessories.themes.filter' | translate">
+      <button type="button" [attr.aria-pressed]="!onlyFavorites" (click)="onlyFavorites = false">
+        {{ 'accessories.themes.all' | translate }}</button
+      ><button type="button" [attr.aria-pressed]="onlyFavorites" (click)="onlyFavorites = true">
+        {{ 'accessories.themes.favorites' | translate }}</button
+      ><span aria-live="polite">{{
+        (filtered.length === 1 ? 'accessories.themes.count_one' : 'accessories.themes.count')
+          | translate: { count: filtered.length }
+      }}</span>
+    </div>
+    <div class="theme-list">
+      @for (action of filtered; track action.id) {
+        <div class="theme-row">
+          @if (editing) {
+            <span class="theme-choose">{{ action.name }}</span>
+          } @else {
+            <button
+              type="button"
+              class="theme-choose"
+              [disabled]="busy"
+              [attr.aria-label]="'accessories.themes.apply' | translate: { name: action.name }"
+              (click)="apply(action)"
+            >
+              {{ action.name }}
+            </button>
+          }
+          <button
+            type="button"
+            class="star-button"
+            [attr.aria-disabled]="busy"
+            [attr.aria-pressed]="favorites.includes(action.id)"
+            [attr.aria-label]="
+              (favorites.includes(action.id) ? 'accessories.themes.remove' : 'accessories.themes.add')
+                | translate: { name: action.name }
+            "
+            (click)="toggleFavorite(action)"
+          >
+            <svg
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="1.6"
+              aria-hidden="true"
+              [attr.fill]="favorites.includes(action.id) ? 'currentColor' : 'none'"
+            >
+              <path d="m12 3 2.8 5.7 6.3.9-4.5 4.4 1.1 6.2-5.7-3-5.7 3 1.1-6.2L3 9.6l6.2-.9Z" />
+            </svg>
+          </button>
+        </div>
+      } @empty {
+        <p class="list-empty">
+          {{
+            !actions.length
+              ? ('accessories.themes.unavailable' | translate)
+              : onlyFavorites && !query.trim()
+                ? ('accessories.themes.none' | translate)
+                : ('accessories.themes.no_matches' | translate)
+          }}
+        </p>
+      }
+    </div>
+    @if (error) {
+      <p class="error-text dialog-message" role="alert">{{ error }}</p>
+    }
+    @if (missingFavorites) {
+      <p class="status-text dialog-message">
+        {{
+          (missingFavorites === 1 ? 'accessories.themes.missing_one' : 'accessories.themes.missing')
+            | translate: { count: missingFavorites }
+        }}
+      </p>
+    }
+    <div class="dialog-footer modal-footer">
+      <p role="status">{{ busy ? busyLabel : ('accessories.themes.autosave' | translate) }}</p>
+      <button type="button" class="btn btn-primary" (click)="close()">
+        {{ 'accessories.themes.done' | translate }}
+      </button>
+    </div>
+  </div>
+</ng-template>

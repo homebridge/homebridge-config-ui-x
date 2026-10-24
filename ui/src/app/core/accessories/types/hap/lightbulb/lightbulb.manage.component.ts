@@ -11,8 +11,11 @@ import { TranslatePipe } from '@ngx-translate/core'
 import { NouisliderComponent } from 'ng2-nouislider'
 import { Subject } from 'rxjs'
 
+import { ThemePickerComponent } from '@/app/core/accessories/theme-picker.component'
+import { themeMetadata } from '@/app/core/accessories/theme-picker.model'
 import { BaseManageComponent } from '@/app/core/accessories/types/base-manage.component'
 import { ConvertMiredPipe } from '@/app/core/pipes/convert-mired.pipe'
+import { SettingsService } from '@/app/core/ui/settings.service'
 import { ColourService } from '@/app/core/utilities/colour.service'
 
 /**
@@ -30,19 +33,29 @@ export const LIGHTBULB_ADAPTIVE_LIGHTING = new InjectionToken<Signal<boolean> | 
     NouisliderComponent,
     TranslatePipe,
     ConvertMiredPipe,
+    ThemePickerComponent,
   ],
   standalone: true,
   templateUrl: './lightbulb.manage.component.html',
+  styleUrl: './lightbulb.manage.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LightbulbManageComponent extends BaseManageComponent {
   private $colour = inject(ColourService)
+  readonly settings = inject(SettingsService)
+  get hasThemePicker() {
+    return !!this.service && themeMetadata(this.service)?.role === 'source'
+  }
 
   // Inject lightbulb-specific data (optional — accessories without
   // adaptive lighting don't provide the token, so the signal can be
   // undefined; template calls must use `?.()` to stay safe).
   public adaptiveLightingSignal = inject(LIGHTBULB_ADAPTIVE_LIGHTING)
   public hasAdaptiveLighting = !!this.adaptiveLightingSignal
+
+  private powerRevision = 0
+  private brightnessPowerRevision = 0
+  private brightnessPending = false
 
   public targetMode!: boolean
   public targetBrightness!: SliderControlConfig
@@ -55,32 +68,38 @@ export class LightbulbManageComponent extends BaseManageComponent {
   public targetColorTemperatureChanged: Subject<number> = new Subject<number>()
 
   protected setupComponent() {
-    this.createDebouncedSubscription(this.targetBrightnessChanged, () => {
-      void this.service.getCharacteristic!('Brightness').setValue!(this.targetBrightness.value)
+    this.createDebouncedSubscription(this.targetBrightnessChanged, (value) => {
+      this.brightnessPending = false
+      void this.service.getCharacteristic!('Brightness').setValue!(value)
+
+      // A later explicit power choice takes precedence over a queued slider change.
+      if (this.brightnessPowerRevision !== this.powerRevision) {
+        return
+      }
 
       // Turn the bulb on or off when brightness is adjusted
-      if (this.targetBrightness.value && !this.service.values.On) {
+      if (value && !this.service.values.On) {
         this.targetMode = true
         void this.service.getCharacteristic!('On').setValue!(this.targetMode)
-      } else if (!this.targetBrightness.value && this.service.values.On) {
+      } else if (!value && this.service.values.On) {
         this.targetMode = false
         void this.service.getCharacteristic!('On').setValue!(this.targetMode)
       }
     })
 
-    this.createDebouncedSubscription(this.targetHueChanged, () => {
-      void this.service.getCharacteristic!('Hue').setValue!(this.targetHue.value)
+    this.createDebouncedSubscription(this.targetHueChanged, (value) => {
+      void this.service.getCharacteristic!('Hue').setValue!(value)
     })
 
-    this.createDebouncedSubscription(this.targetSaturationChanged, () => {
-      void this.service.getCharacteristic!('Saturation').setValue!(this.targetSaturation.value)
+    this.createDebouncedSubscription(this.targetSaturationChanged, (value) => {
+      void this.service.getCharacteristic!('Saturation').setValue!(value)
     })
 
     this.createDebouncedSubscription(this.targetColorTemperatureChanged, (miredValue) => {
       void this.service.getCharacteristic!('ColorTemperature').setValue!(miredValue)
     })
 
-    this.targetMode = this.service.values.On
+    this.targetMode = !!this.service.values.On
     this.loadTargetBrightness()
     this.loadTargetHue()
     this.loadTargetSaturation()
@@ -88,8 +107,8 @@ export class LightbulbManageComponent extends BaseManageComponent {
   }
 
   protected handleAccessoryUpdate() {
-    this.targetMode = this.service.values.On
-    if (this.targetBrightness) {
+    this.targetMode = !!this.service.values.On
+    if (this.targetBrightness && !this.brightnessPending) {
       this.targetBrightness.value = this.service.getCharacteristic!('Brightness').value as number
     }
     if (this.targetHue) {
@@ -106,6 +125,7 @@ export class LightbulbManageComponent extends BaseManageComponent {
   }
 
   public setTargetMode(value: boolean, event: MouseEvent) {
+    this.powerRevision++
     this.targetMode = value
     void this.service.getCharacteristic!('On').setValue!(this.targetMode)
 
@@ -118,6 +138,8 @@ export class LightbulbManageComponent extends BaseManageComponent {
   }
 
   public onBrightnessStateChange() {
+    this.brightnessPending = true
+    this.brightnessPowerRevision = this.powerRevision
     this.targetBrightnessChanged.next(this.targetBrightness.value)
   }
 

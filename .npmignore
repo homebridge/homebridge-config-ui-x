@@ -86,3 +86,6 @@ CLAUDE.md
 public/assets/monaco/monaco.d.ts
 !public/assets/monaco/min/vs/base/browser/ui/codicons/codicon/codicon.ttf
 patches/
+
+# Local contribution fixtures
+.contributions/

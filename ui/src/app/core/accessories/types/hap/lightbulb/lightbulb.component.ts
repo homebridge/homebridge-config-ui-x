@@ -1,6 +1,7 @@
 import {
   ChangeDetectionStrategy,
   Component,
+  computed,
   createEnvironmentInjector,
   DestroyRef,
   EnvironmentInjector,
@@ -17,6 +18,7 @@ import { interval, startWith, Subject, switchMap } from 'rxjs'
 
 import { ServiceTypeX } from '@/app/core/accessories/accessories.interfaces'
 import { AccessoriesService } from '@/app/core/accessories/accessories.service'
+import { themeMetadata } from '@/app/core/accessories/theme-picker.model'
 import { ACCESSORY_MANAGE_MODAL_DATA } from '@/app/core/accessories/types/base-manage.component'
 import { LIGHTBULB_ADAPTIVE_LIGHTING, LightbulbManageComponent } from '@/app/core/accessories/types/hap/lightbulb/lightbulb.manage.component'
 import { LongClickDirective } from '@/app/core/directives/long-click.directive'
@@ -30,6 +32,7 @@ import { ColourService } from '@/app/core/utilities/colour.service'
   ],
   standalone: true,
   templateUrl: './lightbulb.component.html',
+  styleUrl: './lightbulb.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class LightbulbComponent implements OnInit {
@@ -43,6 +46,8 @@ export class LightbulbComponent implements OnInit {
 
   public readonly service = input.required<ServiceTypeX>()
   public readonly readyForControl = input<boolean>(false)
+
+  public readonly hasThemePicker = computed(() => themeMetadata(this.service())?.role === 'source')
 
   public readonly hasAdaptiveLighting = signal(false)
   public readonly isAdaptiveLightingEnabled = signal(false)
@@ -131,12 +136,17 @@ export class LightbulbComponent implements OnInit {
     }
   }
 
+  public openControls(event: Event) {
+    event.stopPropagation()
+    void this.onLongClick()
+  }
+
   public async onLongClick(): Promise<void> {
     if (!this.readyForControl()) {
       return
     }
 
-    if ('Brightness' in this.service().values || 'Hue' in this.service().values || 'Saturation' in this.service().values || 'ColorTemperature' in this.service().values) {
+    if (this.hasThemePicker() || 'Brightness' in this.service().values || 'Hue' in this.service().values || 'Saturation' in this.service().values || 'ColorTemperature' in this.service().values) {
       // Create modal-specific injector with base accessory data and optional lightbulb-specific data
       const providers: StaticProvider[] = [
         {
