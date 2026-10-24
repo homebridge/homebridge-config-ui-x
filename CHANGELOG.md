@@ -17,6 +17,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(plugins): pick child bridge ports outside the external accessory range (#3081) (@tbaur)
 - feat: preview config with common secrets masked by default (#3011) (@msrivas-7)
 - feat(plugins): mask secret fields in generated plugin forms (#3013) (@msrivas-7)
+- fix(accessories): stop the light controls undoing a dragged brightness or a later power press (#3017) (@msrivas-7)
 
 ### Other Changes
 
