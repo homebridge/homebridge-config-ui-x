@@ -191,6 +191,33 @@ describe('PlatformToolsHbService (e2e)', () => {
     expect(res.body).toContain('red text')
   })
 
+  it('GET /platform-tools/hb-service/log/download (plain download strips color codes split across chunks)', async () => {
+    // The log streams in 64 KiB chunks. Each code here starts a different
+    // number of characters before a chunk boundary, so between them they cover
+    // every point at which a boundary can cut a code short.
+    const colorCode = '\u001B[0;37m'
+    const chunkSize = 64 * 1024
+    let sampleLogData = ''
+
+    for (let split = 1; split < colorCode.length; split++) {
+      sampleLogData += `${'a'.repeat(chunkSize * split - sampleLogData.length - split)}${colorCode}`
+    }
+
+    await writeFile(logFilePath, sampleLogData)
+
+    const res = await app.inject({
+      method: 'GET',
+      path: '/platform-tools/hb-service/log/download?colour=no',
+      headers: {
+        authorization,
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+    expect(res.body).not.toContain('\u001B')
+    expect(res.body).toBe(sampleLogData.replaceAll(colorCode, ''))
+  })
+
   it('GET /platform-tools/hb-service/log/download (colour=yes preserves ANSI codes)', async () => {
     const sampleLogData = '\u001B[0;32mgreen text\u001B[0m'
     await writeFile(logFilePath, sampleLogData)

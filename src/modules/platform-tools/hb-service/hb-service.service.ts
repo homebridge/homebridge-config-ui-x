@@ -8,7 +8,7 @@ import { pathExists, readJson, writeJsonSync } from 'fs-extra/esm'
 
 import { ConfigService } from '../../../core/config/config.service.js'
 import { Logger } from '../../../core/logger/logger.service.js'
-import { RE_ANSI_COLOUR } from '../../../core/regex.constants.js'
+import { RE_ANSI_COLOR_UNFINISHED, RE_ANSI_COLOUR } from '../../../core/regex.constants.js'
 import { HbServiceStartupSettings } from './hb-service.dto.js'
 
 @Injectable()
@@ -101,14 +101,27 @@ export class HbServiceService {
       return createReadStream(this.configService.ui.log.path)
     }
 
-    const removeColour = new Transform({
-      transform(chunk, _encoding, callback) {
-        callback(null, chunk.toString().replace(RE_ANSI_COLOUR, ''))
+    // Color codes are stripped chunk by chunk, so a code that a chunk boundary
+    // cuts short is held back and stripped once the next chunk finishes it. The
+    // stream decodes utf8 so multi-byte characters stay whole across chunks.
+    let unfinished = ''
+
+    const removeColor = new Transform({
+      decodeStrings: false,
+      transform(chunk: string, _encoding, callback) {
+        const text = unfinished + chunk
+        const lastEscape = text.lastIndexOf('\u001B')
+
+        unfinished = (lastEscape !== -1 && RE_ANSI_COLOR_UNFINISHED.test(text.slice(lastEscape))) ? text.slice(lastEscape) : ''
+        callback(null, text.slice(0, text.length - unfinished.length).replace(RE_ANSI_COLOUR, ''))
+      },
+      flush(callback) {
+        callback(null, unfinished)
       },
     })
 
     return createReadStream(this.configService.ui.log.path, { encoding: 'utf8' })
-      .pipe(removeColour)
+      .pipe(removeColor)
   }
 
   /**
