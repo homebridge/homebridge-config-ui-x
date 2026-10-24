@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, createEnvironmentInjector, EnvironmentInjector, inject, OnDestroy, OnInit, Renderer2, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, createEnvironmentInjector, EnvironmentInjector, inject, OnDestroy, OnInit, Renderer2, signal } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { ActivatedRoute, Router } from '@angular/router'
 import { NgbDropdown, NgbDropdownItem, NgbDropdownMenu, NgbDropdownToggle } from '@ng-bootstrap/ng-bootstrap/dropdown'
@@ -16,6 +16,7 @@ import { ConfirmComponent } from '@/app/core/components/confirm/confirm.componen
 import { RestartChildBridgesComponent } from '@/app/core/components/restart-child-bridges/restart-child-bridges.component'
 import { RestartHomebridgeComponent } from '@/app/core/components/restart-homebridge/restart-homebridge.component'
 import { createChildBridgeSchema } from '@/app/core/helpers/child-bridges-schema.helper'
+import { redactConfig } from '@/app/core/helpers/config-redaction.helper'
 import { createHapSchema } from '@/app/core/helpers/hap-schema.helper'
 import { createMatterSchema } from '@/app/core/helpers/matter-schema.helper'
 import { CONFIG_RESTORE_MODAL_DATA, CONFIRM_MODAL_DATA, RESTART_CHILD_BRIDGES_MODAL_DATA } from '@/app/core/modal-data-tokens'
@@ -39,6 +40,15 @@ declare const monaco: any
 declare global {
   interface Window {
     editor?: any
+  }
+}
+
+/** A true/false preference saved in this browser, or false when storage is unavailable. */
+function readStoredFlag(key: string): boolean {
+  try {
+    return typeof localStorage !== 'undefined' && localStorage.getItem(key) === 'true'
+  } catch {
+    return false
   }
 }
 
@@ -85,15 +95,18 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
   private isHapDisableIdentifyingMaterialEnabled = this.$settings.isFeatureEnabled('hapDisableIdentifyingMaterial')
 
   public readonly homebridgeConfig = signal<string>('')
+  // Masked by default, so a screenshot for support does not leak passwords. Once
+  // someone reveals the config in this browser it stays revealed for them, so it
+  // is one click once rather than on every visit
+  public readonly secretsRevealed = signal<boolean>(readStoredFlag('hb_config_editor_revealed'))
+  public readonly redactedConfig = computed(() => redactConfig(this.homebridgeConfig()))
   public readonly originalConfig = signal<string>('')
   public readonly saveInProgress = signal(false)
   public readonly isMobile = signal<boolean>(false)
   // Lets screen-reader users opt into a plain <textarea> instead of the Monaco
   // editor, which has well-known SR-support gaps. Persisted in localStorage so
   // the choice survives reloads.
-  public readonly preferPlainTextEditor = signal<boolean>(
-    typeof localStorage !== 'undefined' && localStorage.getItem('hb_config_editor_plaintext') === 'true',
-  )
+  public readonly preferPlainTextEditor = signal<boolean>(readStoredFlag('hb_config_editor_plaintext'))
 
   public monacoEditor: any
   public editorOptions: any
@@ -223,8 +236,8 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
 
   public onInitDiffEditor(editor: any) {
     this.monacoEditor = editor.getModifiedEditor()
-    this.updateDiffModels()
     window.editor = editor
+    this.updateDiffModels()
   }
 
   public setPlainTextEditor(enabled: boolean): void {
@@ -295,8 +308,30 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
     }
   }
 
+  public toggleSecrets(): void {
+    const model = this.secretsRevealed() && this.isMonacoActive
+      ? this.monacoEditor?.getModel?.()
+      : undefined
+    if (model) {
+      // Preserve unsaved edits before Angular destroys the editing surface.
+      this.homebridgeConfig.set(model.getValue())
+    }
+    this.secretsRevealed.update(revealed => !revealed)
+    try {
+      localStorage.setItem('hb_config_editor_revealed', this.secretsRevealed()
+        ? 'true'
+        : 'false')
+    } catch {
+      // localStorage can be unavailable (private mode, quota); the choice then lasts for this visit only
+    }
+    if (!this.secretsRevealed()) {
+      this.monacoEditor = undefined
+      window.editor = undefined
+    }
+  }
+
   public async onSave() {
-    if (this.saveInProgress()) {
+    if (!this.secretsRevealed() || this.saveInProgress()) {
       return
     }
 
