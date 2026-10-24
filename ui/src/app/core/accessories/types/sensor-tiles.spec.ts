@@ -54,16 +54,34 @@ describe('the sensor tiles', () => {
         provideFakes({
           modal,
           toastr: toastrStub(),
-          settings: makeSettings({ env: { temperatureUnits } }),
+          settings: makeSettings({
+            env: { temperatureUnits },
+          }),
         }),
-        { provide: AccessoriesServiceToken, useValue: { accessoryData: { subscribe: vi.fn() } } as unknown as AccessoriesService },
+        {
+          provide: AccessoriesServiceToken,
+          useValue: {
+            accessoryData: {
+              subscribe: vi.fn(),
+            },
+          } as unknown as AccessoriesService,
+        },
       ],
     })
 
     TestBed.overrideComponent(type as any, {
       // ⚠️ Trap: NO_ERRORS_SCHEMA tolerates unknown elements and attributes but
       // NOT unknown pipes, so every pipe the templates format with has to stay
-      set: { imports: [TranslatePipe, ConvertTempPipe, DecimalPipe, LowerCasePipe, UpperCasePipe], schemas: [NO_ERRORS_SCHEMA] },
+      set: {
+        imports: [
+          TranslatePipe,
+          ConvertTempPipe,
+          DecimalPipe,
+          LowerCasePipe,
+          UpperCasePipe,
+        ],
+        schemas: [NO_ERRORS_SCHEMA],
+      },
     })
 
     const fixture = TestBed.createComponent(type as any)
@@ -137,7 +155,10 @@ describe('the sensor tiles', () => {
     function sensor(clusters: Record<string, Record<string, unknown>> = {}) {
       return matterService({
         deviceType: 'AirQualitySensor',
-        clusters: { airQuality: { airQuality: 2 }, ...clusters },
+        clusters: {
+          airQuality: { airQuality: 2 },
+          ...clusters,
+        },
       })
     }
 
@@ -190,7 +211,10 @@ describe('the sensor tiles', () => {
       if (options.co !== undefined) {
         cluster.coState = options.co
       }
-      return matterService({ deviceType: 'SmokeCoAlarm', clusters: { smokeCoAlarm: cluster } })
+      return matterService({
+        deviceType: 'SmokeCoAlarm',
+        clusters: { smokeCoAlarm: cluster },
+      })
     }
 
     it('calls a smoke-only device a smoke alarm', () => {
@@ -246,7 +270,9 @@ describe('the sensor tiles', () => {
     it('takes the unit from the user settings on a HAP sensor', () => {
       const service = hapService({
         type: 'TemperatureSensor',
-        characteristics: [characteristic('CurrentTemperature', 20.5)],
+        characteristics: [
+          characteristic('CurrentTemperature', 20.5),
+        ],
       })
 
       expect(create(TemperatureSensorComponent, service, 'f').temperatureUnits).toBe('f')
@@ -256,7 +282,9 @@ describe('the sensor tiles', () => {
     it('takes the unit from the user settings on a matter sensor', () => {
       const service = matterService({
         deviceType: 'TemperatureSensor',
-        clusters: { temperatureMeasurement: { measuredValue: 2050 } },
+        clusters: {
+          temperatureMeasurement: { measuredValue: 2050 },
+        },
       })
 
       expect(create(MatterTemperatureSensorComponent, service, 'f').temperatureUnits).toBe('f')
@@ -265,7 +293,9 @@ describe('the sensor tiles', () => {
     it('reads a matter temperature out of hundredths of a degree', () => {
       const service = matterService({
         deviceType: 'TemperatureSensor',
-        clusters: { temperatureMeasurement: { measuredValue: 2050 } },
+        clusters: {
+          temperatureMeasurement: { measuredValue: 2050 },
+        },
       })
 
       expect(create(MatterTemperatureSensorComponent, service).temperature()).toBe(20.5)

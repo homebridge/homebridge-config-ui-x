@@ -53,7 +53,10 @@ describe('appComponent', () => {
     })
 
     TestBed.overrideComponent(AppComponent, {
-      set: { imports: [], schemas: [NO_ERRORS_SCHEMA] },
+      set: {
+        imports: [],
+        schemas: [NO_ERRORS_SCHEMA],
+      },
     })
 
     // The shell subscribes in its constructor, so the stream has to be in place
@@ -98,9 +101,18 @@ describe('appComponent', () => {
 
   describe('recovering from a stale chunk after a deploy', () => {
     it.each([
-      ['a ChunkLoadError by name', { name: 'ChunkLoadError', message: 'whatever' }],
-      ['the webpack message', { name: 'Error', message: 'Loading chunk 42 failed' }],
-      ['the vite message', { name: 'TypeError', message: 'Failed to fetch dynamically imported module: /x.js' }],
+      [
+        'a ChunkLoadError by name',
+        { name: 'ChunkLoadError', message: 'whatever' },
+      ],
+      [
+        'the webpack message',
+        { name: 'Error', message: 'Loading chunk 42 failed' },
+      ],
+      [
+        'the vite message',
+        { name: 'TypeError', message: 'Failed to fetch dynamically imported module: /x.js' },
+      ],
     ])('reloads the page on %s', (_label, error) => {
       create()
 
@@ -265,7 +277,9 @@ describe('appComponent', () => {
     async function mapKeys(): Promise<string[]> {
       const { WidgetsComponent } = await import('@/app/modules/status/widgets/widgets.component')
       TestBed.resetTestingModule()
-      TestBed.configureTestingModule({ imports: [WidgetsComponent] })
+      TestBed.configureTestingModule({
+        imports: [WidgetsComponent],
+      })
       const fixture = TestBed.createComponent(WidgetsComponent)
       return Object.keys((fixture.componentInstance as any).availableWidgets)
     }
@@ -290,7 +304,9 @@ describe('appComponent', () => {
       // A layout saved by a newer version can name a widget this one lacks
       const { WidgetsComponent } = await import('@/app/modules/status/widgets/widgets.component')
       TestBed.resetTestingModule()
-      TestBed.configureTestingModule({ imports: [WidgetsComponent] })
+      TestBed.configureTestingModule({
+        imports: [WidgetsComponent],
+      })
 
       const fixture = TestBed.createComponent(WidgetsComponent)
       fixture.componentRef.setInput('widget', {

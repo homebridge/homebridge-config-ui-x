@@ -91,7 +91,9 @@ describe('the vendored plugin settings components', () => {
   ])('%s', (plugin, errorKey) => {
     it('asks for its own dump endpoint, as a blob', async () => {
       const component = await create(plugin)
-      api.respond('get', `/plugins/custom-plugins/${plugin}/dump-file`, { body: new Blob(['dump']) })
+      api.respond('get', `/plugins/custom-plugins/${plugin}/dump-file`, {
+        body: new Blob(['dump']),
+      })
 
       await component.downloadDumpFile()
       await settle()
@@ -104,7 +106,9 @@ describe('the vendored plugin settings components', () => {
 
     it('saves it under its own name', async () => {
       const component = await create(plugin)
-      api.respond('get', `/plugins/custom-plugins/${plugin}/dump-file`, { body: new Blob(['dump']) })
+      api.respond('get', `/plugins/custom-plugins/${plugin}/dump-file`, {
+        body: new Blob(['dump']),
+      })
 
       await component.downloadDumpFile()
       await settle()

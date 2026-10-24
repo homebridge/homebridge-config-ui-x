@@ -1068,7 +1068,12 @@ describe('ConfigEditorController (e2e)', () => {
     await ensureDir(backupFilePath)
     await emptyDir(backupFilePath)
 
-    const timestamps = ['999999999', '1700000000000', '1500000000000', '100000000000']
+    const timestamps = [
+      '999999999',
+      '1700000000000',
+      '1500000000000',
+      '100000000000',
+    ]
     for (const ts of timestamps) {
       await writeFile(resolve(backupFilePath, `config.json.${ts}`), 'xyz')
     }
@@ -1081,7 +1086,12 @@ describe('ConfigEditorController (e2e)', () => {
 
     expect(res.statusCode).toBe(200)
     const ids = res.json().map((b: any) => b.id)
-    expect(ids).toEqual(['1700000000000', '1500000000000', '100000000000', '999999999'])
+    expect(ids).toEqual([
+      '1700000000000',
+      '1500000000000',
+      '100000000000',
+      '999999999',
+    ])
   })
 
   it('GET /config-editor/backups/:backupId', async () => {
@@ -1470,7 +1480,12 @@ describe('ConfigEditorController (e2e)', () => {
     expect(result).toContain('homebridge-another-plugin')
 
     // Test 4: Should filter invalid plugin names
-    const mixedPlugins = ['homebridge-valid-plugin', 'invalid-plugin', '', 'homebridge-another-valid']
+    const mixedPlugins = [
+      'homebridge-valid-plugin',
+      'invalid-plugin',
+      '',
+      'homebridge-another-valid',
+    ]
 
     res = await app.inject({
       method: 'PUT',
@@ -1549,7 +1564,12 @@ describe('ConfigEditorController (e2e)', () => {
     expect(result).toContain('homebridge-another-plugin')
 
     // Test 4: Should filter invalid plugin names
-    const mixedPlugins = ['homebridge-valid-plugin', 'invalid-plugin', '', 'homebridge-another-valid']
+    const mixedPlugins = [
+      'homebridge-valid-plugin',
+      'invalid-plugin',
+      '',
+      'homebridge-another-valid',
+    ]
 
     res = await app.inject({
       method: 'PUT',
@@ -1621,7 +1641,9 @@ describe('ConfigEditorController (e2e)', () => {
 
     expect(savedConfig.disabledPlugins).toContain('homebridge-mock-plugin')
     expect(uiBlock.plugins.hideUpdatesFor).toEqual(['homebridge-mock-plugin-two'])
-    expect(uiBlock.bridges).toEqual([{ username: '67:E4:1F:0E:A0:5D', hideHapAlert: true }])
+    expect(uiBlock.bridges).toEqual([
+      { username: '67:E4:1F:0E:A0:5D', hideHapAlert: true },
+    ])
     expect(uiBlock.accessoryControl.instanceBlacklist).toEqual(['0E:02:9A:9D:44:45'])
   })
 
@@ -1651,7 +1673,9 @@ describe('ConfigEditorController (e2e)', () => {
     const savedConfig: HomebridgeConfig = await readJson(configFilePath)
     const uiBlock = savedConfig.platforms.find(x => x.platform === 'config') as any
     expect(uiBlock).toBeTruthy()
-    expect(uiBlock.bridges).toEqual([{ username: '67:E4:1F:0E:A0:5D', hideHapAlert: true }])
+    expect(uiBlock.bridges).toEqual([
+      { username: '67:E4:1F:0E:A0:5D', hideHapAlert: true },
+    ])
   })
 
   it('GET/PUT /config-editor/ui/bridges/:username (should handle bridge configuration)', async () => {

@@ -39,8 +39,13 @@ export class RestartComponent implements OnInit, OnDestroy {
   public readonly timeout = signal(false)
 
   // Computed signals for icon classes
-  public readonly uiIcon = computed(() => this.uiOnline() ? 'far fa-check-circle' : 'fas fa-circle-notch fa-spin')
-  public readonly serviceIcon = computed(() => this.uiOnline() ? 'fas fa-circle-notch fa-spin' : 'far fa-circle')
+  public readonly uiIcon = computed(() => this.uiOnline()
+    ? 'far fa-check-circle'
+    : 'fas fa-circle-notch fa-spin')
+
+  public readonly serviceIcon = computed(() => this.uiOnline()
+    ? 'fas fa-circle-notch fa-spin'
+    : 'far fa-circle')
 
   // Other properties
   private io!: IoNamespace

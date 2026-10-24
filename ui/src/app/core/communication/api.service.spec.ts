@@ -19,7 +19,10 @@ describe('ApiService', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [provideHttpClient(), provideHttpClientTesting()],
+      providers: [
+        provideHttpClient(),
+        provideHttpClientTesting(),
+      ],
     })
     service = TestBed.inject(ApiService)
     http = TestBed.inject(HttpTestingController)
@@ -30,8 +33,14 @@ describe('ApiService', () => {
   })
 
   it.each([
-    ['get', () => service.get('/status')],
-    ['delete', () => service.delete('/status')],
+    [
+      'get',
+      () => service.get('/status'),
+    ],
+    [
+      'delete',
+      () => service.delete('/status'),
+    ],
   ])('sends a %s to the api base', async (method, call) => {
     const result = call()
     const req = http.expectOne(`${base}/status`)
@@ -43,9 +52,18 @@ describe('ApiService', () => {
   })
 
   it.each([
-    ['post', () => service.post('/users', { username: 'admin' })],
-    ['put', () => service.put('/users', { username: 'admin' })],
-    ['patch', () => service.patch('/users', { username: 'admin' })],
+    [
+      'post',
+      () => service.post('/users', { username: 'admin' }),
+    ],
+    [
+      'put',
+      () => service.put('/users', { username: 'admin' }),
+    ],
+    [
+      'patch',
+      () => service.patch('/users', { username: 'admin' }),
+    ],
   ])('sends a %s with its body to the api base', async (method, call) => {
     const result = call()
     const req = http.expectOne(`${base}/users`)

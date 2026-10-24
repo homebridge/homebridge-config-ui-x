@@ -65,7 +65,12 @@ export class RemoveAllAccessoriesComponent implements OnInit {
     try {
       const { hapAccessories, matterAccessories } = await this.$accessoryOverview.get<any, any>()
       const matterEnabled = this.$settings.isFeatureEnabled('matterSupport')
-      this.cachedAccessories.set([...hapAccessories, ...(matterEnabled ? matterAccessories : [])])
+      this.cachedAccessories.set([
+        ...hapAccessories,
+        ...(matterEnabled
+          ? matterAccessories
+          : []),
+      ])
     } catch (error) {
       console.error(error)
       this.$toastr.error(this.$translate.instant('reset.error_message'), this.$translate.instant('toast.title_error'))

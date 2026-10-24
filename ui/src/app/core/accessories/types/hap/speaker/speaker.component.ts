@@ -59,9 +59,13 @@ export class SpeakerComponent {
     if ('On' in this.service().values) {
       void this.service().getCharacteristic!('On').setValue!(!this.service().values.On)
     } else if ('Active' in this.service().values) {
-      void this.service().getCharacteristic!('Active').setValue!(this.service().values.Active === 0 ? 1 : 0)
+      void this.service().getCharacteristic!('Active').setValue!(this.service().values.Active === 0
+        ? 1
+        : 0)
     } else if ('TargetMediaState' in this.service().values) {
-      void this.service().getCharacteristic!('TargetMediaState').setValue!(this.service().values.TargetMediaState === 0 ? 1 : 0)
+      void this.service().getCharacteristic!('TargetMediaState').setValue!(this.service().values.TargetMediaState === 0
+        ? 1
+        : 0)
     } else if ('Mute' in this.service().values) {
       void this.service().getCharacteristic!('Mute').setValue!(!this.service().values.Mute)
     }
@@ -74,13 +78,15 @@ export class SpeakerComponent {
 
     if ('Active' in this.service().values || 'TargetMediaState' in this.service().values || 'Volume' in this.service().values || 'Mute' in this.service().values) {
       const modalInjector = createEnvironmentInjector(
-        [{
-          provide: ACCESSORY_MANAGE_MODAL_DATA,
-          useValue: {
-            service: this.service(),
-            $accessories: this.$accessories,
+        [
+          {
+            provide: ACCESSORY_MANAGE_MODAL_DATA,
+            useValue: {
+              service: this.service(),
+              $accessories: this.$accessories,
+            },
           },
-        }],
+        ],
         this.injector,
       )
 

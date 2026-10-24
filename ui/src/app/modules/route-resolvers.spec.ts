@@ -45,7 +45,11 @@ describe('the route resolvers', () => {
     toastr = toastrStub()
 
     TestBed.configureTestingModule({
-      providers: [provideRouter([]), provideTestTranslate(), provideFakes({ api, toastr })],
+      providers: [
+        provideRouter([]),
+        provideTestTranslate(),
+        provideFakes({ api, toastr }),
+      ],
     })
 
     navigate = vi.spyOn(TestBed.inject(Router), 'navigate').mockResolvedValue(true)
@@ -146,7 +150,9 @@ describe('the route resolvers', () => {
       it('passes on a message the server supplied', async () => {
         // These are the short, useful ones - "Config file not found" rather than
         // Angular's auto-generated http string
-        await failWith({ error: { message: 'Config file is not writable' } })
+        await failWith({
+          error: { message: 'Config file is not writable' },
+        })
 
         expect(toastr.error).toHaveBeenCalledWith('Config file is not writable', 'toast.title_error')
       })
@@ -172,7 +178,9 @@ describe('the route resolvers', () => {
     it('hands the editor formatted json rather than an object', async () => {
       // The editor is a text editor. It needs the config as text, and formatted -
       // a single-line dump of a large config is unreadable and unfixable by hand
-      api.respond('get', '/config-editor', { bridge: { name: 'Homebridge', port: 51826 } })
+      api.respond('get', '/config-editor', {
+        bridge: { name: 'Homebridge', port: 51826 },
+      })
 
       const resolved = await run(configEditorResolver)
 
@@ -188,7 +196,13 @@ describe('the route resolvers', () => {
     })
 
     it('round-trips a config unchanged', async () => {
-      const config = { bridge: { name: 'Homebridge' }, accessories: [], platforms: [{ platform: 'config' }] }
+      const config = {
+        bridge: { name: 'Homebridge' },
+        accessories: [],
+        platforms: [
+          { platform: 'config' },
+        ],
+      }
       api.respond('get', '/config-editor', config)
 
       const resolved = await run(configEditorResolver) as string
@@ -206,7 +220,9 @@ describe('the route resolvers', () => {
   describe('the users page', () => {
     it('hands over the user list as it arrived', async () => {
       // Not reshaped: the page reads `admin` and `otpActive` straight off these
-      const users = [{ id: 1, username: 'admin', admin: true }]
+      const users = [
+        { id: 1, username: 'admin', admin: true },
+      ]
       api.respond('get', '/users', users)
 
       expect(await run(usersResolver)).toEqual(users)

@@ -110,15 +110,17 @@ export class PluginLogsComponent implements OnInit, OnDestroy {
 
   public async downloadLogFile(): Promise<void> {
     this.midAction.set(true)
-    const modalInjector = createEnvironmentInjector([{
-      provide: CONFIRM_MODAL_DATA,
-      useValue: {
-        title: this.$translate.instant('logs.title_download_log_file'),
-        message: this.$translate.instant('logs.download_warning'),
-        confirmButtonLabel: this.$translate.instant('form.button_download'),
-        faIconClass: 'fas fa-user-secret primary-text',
+    const modalInjector = createEnvironmentInjector([
+      {
+        provide: CONFIRM_MODAL_DATA,
+        useValue: {
+          title: this.$translate.instant('logs.title_download_log_file'),
+          message: this.$translate.instant('logs.download_warning'),
+          confirmButtonLabel: this.$translate.instant('form.button_download'),
+          faIconClass: 'fas fa-user-secret primary-text',
+        },
       },
-    }], this.injector)
+    ], this.injector)
 
     const ref = this.$modal.open(ConfirmComponent, {
       size: 'lg',
@@ -194,14 +196,18 @@ export class PluginLogsComponent implements OnInit, OnDestroy {
       if (!this.plugin) {
         return
       }
-      this.pluginAlias = this.plugin.name === 'homebridge-config-ui-x' ? 'Homebridge UI' : (result[0]?.name || this.plugin.name)
+      this.pluginAlias = this.plugin.name === 'homebridge-config-ui-x'
+        ? 'Homebridge UI'
+        : (result[0]?.name || this.plugin.name)
       // Plugin logs are read-only — disable stdin so the xterm textarea is not a tab stop
       this.$log.startTerminal(this.termTarget()!, this.$settings.getTerminalOptions({ disableStdin: true }), this.resizeEvent, this.pluginAlias)
       // Configure xterm's screen-reader live region for log announcements
       requestAnimationFrame(() => this.patchXtermLiveRegion())
     } catch (error) {
       console.error(error)
-      const message = error instanceof Error ? (error as any).error?.message || error.message : this.$translate.instant('toast.title_error')
+      const message = error instanceof Error
+        ? (error as any).error?.message || error.message
+        : this.$translate.instant('toast.title_error')
       this.$toastr.error(message, this.$translate.instant('toast.title_error'))
       this.$activeModal.dismiss()
     }

@@ -36,7 +36,10 @@ describe('windowCoveringManageComponent', () => {
    * @param cluster - the windowCovering cluster attributes it reports
    */
   function covering(cluster: Record<string, unknown>): MatterServiceFixture {
-    return matterService({ deviceType: 'WindowCovering', clusters: { windowCovering: cluster } })
+    return matterService({
+      deviceType: 'WindowCovering',
+      clusters: { windowCovering: cluster },
+    })
   }
 
   /** One that lifts only, half open. */
@@ -70,20 +73,34 @@ describe('windowCoveringManageComponent', () => {
       imports: [WindowCoveringManageComponent],
       providers: [
         provideTestTranslate(),
-        provideFakes({ toastr, settings: makeSettings() }),
-        { provide: NgbActiveModal, useValue: activeModalStub() },
+        provideFakes({
+          toastr,
+          settings: makeSettings(),
+        }),
+        {
+          provide: NgbActiveModal,
+          useValue: activeModalStub(),
+        },
         {
           provide: ACCESSORY_MANAGE_MODAL_DATA,
           useValue: {
             service,
-            $accessories: { accessoryData, accessories: { services: [service] } } as unknown as AccessoriesService,
+            $accessories: {
+              accessoryData,
+              accessories: {
+                services: [service],
+              },
+            } as unknown as AccessoriesService,
           },
         },
       ],
     })
 
     TestBed.overrideComponent(WindowCoveringManageComponent, {
-      set: { imports: [TranslatePipe], schemas: [NO_ERRORS_SCHEMA] },
+      set: {
+        imports: [TranslatePipe],
+        schemas: [NO_ERRORS_SCHEMA],
+      },
     })
 
     const fixture = TestBed.createComponent(WindowCoveringManageComponent)
@@ -182,7 +199,10 @@ describe('windowCoveringManageComponent', () => {
       })
 
       expect(service.writes).toEqual([
-        { cluster: 'windowCovering', attributes: { targetPositionLiftPercent100ths: 2500 } },
+        {
+          cluster: 'windowCovering',
+          attributes: { targetPositionLiftPercent100ths: 2500 },
+        },
       ])
     })
 
@@ -198,7 +218,10 @@ describe('windowCoveringManageComponent', () => {
       })
 
       expect(service.writes).toEqual([
-        { cluster: 'windowCovering', attributes: { targetPositionTiltPercent100ths: 0 } },
+        {
+          cluster: 'windowCovering',
+          attributes: { targetPositionTiltPercent100ths: 0 },
+        },
       ])
     })
 

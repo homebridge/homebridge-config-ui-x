@@ -401,7 +401,9 @@ export class JsonSchemaFormPatchDirective implements AfterViewInit, OnDestroy {
       }
 
       const itemName = this.findNearestItemName(b, root)
-      b.setAttribute('aria-label', itemName ? `Delete ${itemName}` : 'Delete')
+      b.setAttribute('aria-label', itemName
+        ? `Delete ${itemName}`
+        : 'Delete')
       b.removeAttribute('title')
       b.setAttribute('data-jsf-a11y-delete', 'true')
     })
@@ -565,7 +567,13 @@ export class JsonSchemaFormPatchDirective implements AfterViewInit, OnDestroy {
   private isInteractiveElement(el: HTMLElement): boolean {
     const tagName = el.tagName.toLowerCase()
 
-    if (['a', 'button', 'input', 'select', 'textarea'].includes(tagName)) {
+    if ([
+      'a',
+      'button',
+      'input',
+      'select',
+      'textarea',
+    ].includes(tagName)) {
       return true
     }
 
@@ -575,7 +583,13 @@ export class JsonSchemaFormPatchDirective implements AfterViewInit, OnDestroy {
     }
 
     const role = el.getAttribute('role')
-    return role != null && ['button', 'link', 'menuitem', 'tab', 'option'].includes(role)
+    return role != null && [
+      'button',
+      'link',
+      'menuitem',
+      'tab',
+      'option',
+    ].includes(role)
   }
 
   private patchBasicControlNames(root: HTMLElement) {
@@ -635,7 +649,10 @@ export class JsonSchemaFormPatchDirective implements AfterViewInit, OnDestroy {
         .flatMap(x => x.items)
         .filter(x => x.dataType === 'array' || x.arrayItem)
 
-      const allItems = [...configItems, ...nestedItems]
+      const allItems = [
+        ...configItems,
+        ...nestedItems,
+      ]
       allItems.filter(x => x.dataType === 'array' || x.arrayItem).forEach((item) => {
         this.fixNestedArray(item, formData, refPointer)
       })
@@ -651,7 +668,9 @@ export class JsonSchemaFormPatchDirective implements AfterViewInit, OnDestroy {
         const dataItems = item.items.filter((x: any) => x.type === 'section' || x.type === 'div')
 
         const template = dataItems.length > 0
-          ? dataItems.reduce((a: any, b: any) => a.id > b.id ? a : b)
+          ? dataItems.reduce((a: any, b: any) => a.id > b.id
+              ? a
+              : b)
           : this.getItemTemplateFromRef(ref)
 
         const data = this.getDataFromPointer(formData, ref.dataPointer.replace(refPointer, ''))

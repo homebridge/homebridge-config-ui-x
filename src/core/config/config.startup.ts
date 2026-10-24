@@ -19,7 +19,9 @@ export async function getStartupConfig() {
   const configPath = process.env.UIX_CONFIG_PATH || resolve(homedir(), '.homebridge/config.json')
 
   const homebridgeConfig = await readJson(configPath)
-  const ui = Array.isArray(homebridgeConfig.platforms) ? homebridgeConfig.platforms.find((x: any) => x.platform === 'config') : undefined
+  const ui = Array.isArray(homebridgeConfig.platforms)
+    ? homebridgeConfig.platforms.find((x: any) => x.platform === 'config')
+    : undefined
 
   const config = {} as StartupConfig
 
@@ -70,9 +72,15 @@ export async function getStartupConfig() {
 
       try {
         config.httpsOptions = {
-          key: ui.ssl.key ? await readFile(ui.ssl.key) : undefined,
-          cert: ui.ssl.cert ? await readFile(ui.ssl.cert) : undefined,
-          pfx: ui.ssl.pfx ? await readFile(ui.ssl.pfx) : undefined,
+          key: ui.ssl.key
+            ? await readFile(ui.ssl.key)
+            : undefined,
+          cert: ui.ssl.cert
+            ? await readFile(ui.ssl.cert)
+            : undefined,
+          pfx: ui.ssl.pfx
+            ? await readFile(ui.ssl.pfx)
+            : undefined,
           passphrase: ui.ssl.passphrase,
         }
       } catch (e) {

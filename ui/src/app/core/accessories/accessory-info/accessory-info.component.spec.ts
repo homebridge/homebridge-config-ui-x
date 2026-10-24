@@ -39,7 +39,14 @@ describe('accessoryInfoComponent', () => {
    * tolerates unknown elements and attributes but NOT unknown pipes, and the
    * matter cluster table needs `keyvalue` in particular.
    */
-  const PIPES = [TranslatePipe, KeyValuePipe, ConvertTempPipe, ConvertMiredPipe, PrettifyPipe, ServiceToTranslationStringPipe]
+  const PIPES = [
+    TranslatePipe,
+    KeyValuePipe,
+    ConvertTempPipe,
+    ConvertMiredPipe,
+    PrettifyPipe,
+    ServiceToTranslationStringPipe,
+  ]
 
   let modal: FakeModalService
   let activeModal: { close: ReturnType<typeof vi.fn>, dismiss: ReturnType<typeof vi.fn> }
@@ -67,13 +74,15 @@ describe('accessoryInfoComponent', () => {
     return {
       UUID: options.uuid ?? 'cached-uuid',
       $cacheFile: options.cacheFile ?? 'cachedAccessories',
-      services: [{
-        constructorName: 'AccessoryInformation',
-        characteristics: [
-          { displayName: 'Name', value: options.name ?? 'Test Accessory' },
-          { displayName: 'Serial Number', value: options.serial ?? 'TEST-SERIAL' },
-        ],
-      }],
+      services: [
+        {
+          constructorName: 'AccessoryInformation',
+          characteristics: [
+            { displayName: 'Name', value: options.name ?? 'Test Accessory' },
+            { displayName: 'Serial Number', value: options.serial ?? 'TEST-SERIAL' },
+          ],
+        },
+      ],
     }
   }
 
@@ -87,7 +96,10 @@ describe('accessoryInfoComponent', () => {
   function open(service: ServiceTypeX, options: { accessoryCache?: any[], pairingCache?: any[] } = {}) {
     TestBed.resetTestingModule()
     modal = modalServiceSpy()
-    activeModal = { close: vi.fn(), dismiss: vi.fn() }
+    activeModal = {
+      close: vi.fn(),
+      dismiss: vi.fn(),
+    }
 
     TestBed.configureTestingModule({
       imports: [AccessoryInfoComponent],
@@ -99,14 +111,19 @@ describe('accessoryInfoComponent', () => {
           useValue: {
             service,
             accessoryCache: options.accessoryCache ?? [],
-            pairingCache: options.pairingCache ?? [pairing()],
+            pairingCache: options.pairingCache ?? [
+              pairing(),
+            ],
           },
         },
       ],
     })
 
     TestBed.overrideComponent(AccessoryInfoComponent, {
-      set: { imports: PIPES, schemas: [NO_ERRORS_SCHEMA] },
+      set: {
+        imports: PIPES,
+        schemas: [NO_ERRORS_SCHEMA],
+      },
     })
 
     const fixture = TestBed.createComponent(AccessoryInfoComponent)
@@ -147,7 +164,10 @@ describe('accessoryInfoComponent', () => {
     })
 
     it('leaves a type the user already chose alone', () => {
-      const service = hapService({ type: 'Switch', overrides: { customType: 'Outlet' } as any })
+      const service = hapService({
+        type: 'Switch',
+        overrides: { customType: 'Outlet' } as any,
+      })
 
       expect(open(service).componentInstance.localService.customType).toBe('Outlet')
     })
@@ -159,7 +179,9 @@ describe('accessoryInfoComponent', () => {
       const other = hapService({ type: 'Battery' })
       const lock = hapService({
         type: 'LockMechanism',
-        overrides: { linkedServices: { a: management, b: other } } as any,
+        overrides: {
+          linkedServices: { a: management, b: other },
+        } as any,
       })
 
       expect(open(lock).componentInstance.extraServices).toEqual([management])
@@ -177,7 +199,12 @@ describe('accessoryInfoComponent', () => {
      * @param customType - a type already chosen, if any
      */
     function typesFor(type: string, customType?: string) {
-      const service = hapService({ type, overrides: (customType ? { customType } : {}) as any })
+      const service = hapService({
+        type,
+        overrides: (customType
+          ? { customType }
+          : {}) as any,
+      })
       return open(service).componentInstance.customTypeList
     }
 
@@ -224,13 +251,19 @@ describe('accessoryInfoComponent', () => {
     it('migrates a stale smart speaker choice on a plain speaker', () => {
       // Saved before the two were separated, and it would otherwise sit in the
       // dropdown as a value that is no longer offered
-      const service = hapService({ type: 'Speaker', overrides: { customType: 'SmartSpeaker' } as any })
+      const service = hapService({
+        type: 'Speaker',
+        overrides: { customType: 'SmartSpeaker' } as any,
+      })
 
       expect(open(service).componentInstance.localService.customType).toBe('Speaker')
     })
 
     it('leaves a smart speaker its own choice', () => {
-      const service = hapService({ type: 'SmartSpeaker', overrides: { customType: 'SmartSpeaker' } as any })
+      const service = hapService({
+        type: 'SmartSpeaker',
+        overrides: { customType: 'SmartSpeaker' } as any,
+      })
 
       expect(open(service).componentInstance.localService.customType).toBe('SmartSpeaker')
     })
@@ -265,12 +298,21 @@ describe('accessoryInfoComponent', () => {
 
     it('lists every cluster the device reports', () => {
       const service = matterService({
-        clusters: { onOff: { onOff: true }, levelControl: { currentLevel: 128 } },
+        clusters: {
+          onOff: { onOff: true },
+          levelControl: { currentLevel: 128 },
+        },
       })
 
       expect(open(service).componentInstance.clusterInfo).toEqual([
-        { name: 'onOff', attributes: { onOff: true } },
-        { name: 'levelControl', attributes: { currentLevel: 128 } },
+        {
+          name: 'onOff',
+          attributes: { onOff: true },
+        },
+        {
+          name: 'levelControl',
+          attributes: { currentLevel: 128 },
+        },
       ])
     })
 
@@ -301,7 +343,11 @@ describe('accessoryInfoComponent', () => {
 
     it('never looks for a cached accessory', () => {
       // The cache files are a HAP thing; matter accessories are not in them
-      const info = open(matterService(), { accessoryCache: [cached()] }).componentInstance
+      const info = open(matterService(), {
+        accessoryCache: [
+          cached(),
+        ],
+      }).componentInstance
 
       expect(info.matchedCachedAccessory).toBeNull()
     })
@@ -312,14 +358,20 @@ describe('accessoryInfoComponent', () => {
       // Which is what makes "remove this one accessory" able to point at the
       // right cache entry
       const info = open(hapService(), {
-        accessoryCache: [cached({ uuid: 'the-one' })],
+        accessoryCache: [
+          cached({ uuid: 'the-one' }),
+        ],
       }).componentInstance
 
       expect(info.matchedCachedAccessory?.UUID).toBe('the-one')
     })
 
     it('says which bridge it belongs to', () => {
-      const info = open(hapService(), { accessoryCache: [cached()] }).componentInstance
+      const info = open(hapService(), {
+        accessoryCache: [
+          cached(),
+        ],
+      }).componentInstance
 
       expect(info.matchedCachedAccessory?.bridge).toBe('Homebridge Test')
     })
@@ -327,8 +379,12 @@ describe('accessoryInfoComponent', () => {
     it('reads a child bridge cache file rather than the main one', () => {
       // A child bridge keeps its accessories in cachedAccessories.<id>
       const info = open(hapService(), {
-        pairingCache: [pairing({ _main: false, _id: 'abc123', name: 'Child Bridge' })],
-        accessoryCache: [cached({ cacheFile: 'cachedAccessories.abc123', uuid: 'from-child' })],
+        pairingCache: [
+          pairing({ _main: false, _id: 'abc123', name: 'Child Bridge' }),
+        ],
+        accessoryCache: [
+          cached({ cacheFile: 'cachedAccessories.abc123', uuid: 'from-child' }),
+        ],
       }).componentInstance
 
       expect(info.matchedCachedAccessory?.UUID).toBe('from-child')
@@ -336,7 +392,9 @@ describe('accessoryInfoComponent', () => {
 
     it('ignores an accessory cached for a different bridge', () => {
       const info = open(hapService(), {
-        accessoryCache: [cached({ cacheFile: 'cachedAccessories.someone-else' })],
+        accessoryCache: [
+          cached({ cacheFile: 'cachedAccessories.someone-else' }),
+        ],
       }).componentInstance
 
       expect(info.matchedCachedAccessory).toBeNull()
@@ -344,7 +402,9 @@ describe('accessoryInfoComponent', () => {
 
     it('gives up when the serial number does not match', () => {
       const info = open(hapService(), {
-        accessoryCache: [cached({ serial: 'A-DIFFERENT-SERIAL' })],
+        accessoryCache: [
+          cached({ serial: 'A-DIFFERENT-SERIAL' }),
+        ],
       }).componentInstance
 
       expect(info.matchedCachedAccessory).toBeNull()
@@ -354,7 +414,10 @@ describe('accessoryInfoComponent', () => {
       // Two cached accessories with the same name and serial: picking either
       // could delete the wrong one
       const info = open(hapService(), {
-        accessoryCache: [cached({ uuid: 'one' }), cached({ uuid: 'two' })],
+        accessoryCache: [
+          cached({ uuid: 'one' }),
+          cached({ uuid: 'two' }),
+        ],
       }).componentInstance
 
       expect(info.matchedCachedAccessory).toBeNull()
@@ -362,8 +425,12 @@ describe('accessoryInfoComponent', () => {
 
     it('gives up when the bridge has no pairing on record', () => {
       const info = open(hapService(), {
-        pairingCache: [pairing({ _username: 'AA:BB:CC:DD:EE:FF' })],
-        accessoryCache: [cached()],
+        pairingCache: [
+          pairing({ _username: 'AA:BB:CC:DD:EE:FF' }),
+        ],
+        accessoryCache: [
+          cached(),
+        ],
       }).componentInstance
 
       expect(info.matchedCachedAccessory).toBeNull()
@@ -388,13 +455,26 @@ describe('accessoryInfoComponent', () => {
     it('puts every edited field back', () => {
       // ⚠️ The tile behind the modal holds this same object. Without the restore,
       // a cancelled rename stays on screen until the next poll
-      const service = hapService({ type: 'Switch', overrides: { customName: 'Kitchen', hidden: false, onDashboard: true } as any })
+      const service = hapService({
+        type: 'Switch',
+        overrides: { customName: 'Kitchen', hidden: false, onDashboard: true } as any,
+      })
       const info = open(service).componentInstance
 
-      Object.assign(info.localService, { customName: 'Changed', customType: 'Outlet', hidden: true, onDashboard: false })
+      Object.assign(info.localService, {
+        customName: 'Changed',
+        customType: 'Outlet',
+        hidden: true,
+        onDashboard: false,
+      })
       info.dismissModal()
 
-      expect(editable(service)).toEqual({ customName: 'Kitchen', customType: 'Switch', hidden: false, onDashboard: true })
+      expect(editable(service)).toEqual({
+        customName: 'Kitchen',
+        customType: 'Switch',
+        hidden: false,
+        onDashboard: true,
+      })
     })
 
     it('restores an unset name to unset, not to empty text', () => {
@@ -420,7 +500,12 @@ describe('accessoryInfoComponent', () => {
     it('hands back only the four fields the page has to persist', () => {
       const info = open(hapService({ type: 'Switch' })).componentInstance
 
-      Object.assign(info.localService, { customName: 'Kitchen Light', customType: 'Outlet', hidden: false, onDashboard: true })
+      Object.assign(info.localService, {
+        customName: 'Kitchen Light',
+        customType: 'Outlet',
+        hidden: false,
+        onDashboard: true,
+      })
       info.saveModal()
 
       expect(activeModal.close).toHaveBeenCalledWith({
@@ -474,7 +559,9 @@ describe('accessoryInfoComponent', () => {
     it('takes it off the dashboard at the same time', () => {
       // A hidden accessory left on the dashboard would be a tile the user cannot
       // find anywhere else to remove
-      const info = open(hapService({ overrides: { onDashboard: true } as any })).componentInstance
+      const info = open(hapService({
+        overrides: { onDashboard: true } as any,
+      })).componentInstance
 
       info.localService.hidden = true
       info.onHiddenChange()
@@ -483,7 +570,9 @@ describe('accessoryInfoComponent', () => {
     })
 
     it('leaves the dashboard choice alone when unhiding', () => {
-      const info = open(hapService({ overrides: { onDashboard: true } as any })).componentInstance
+      const info = open(hapService({
+        overrides: { onDashboard: true } as any,
+      })).componentInstance
 
       info.localService.hidden = false
       info.onHiddenChange()
@@ -514,7 +603,9 @@ describe('accessoryInfoComponent', () => {
 
     it('opens the detail of one with a list of valid values', () => {
       const info = open(hapService()).componentInstance
-      const char = characteristic('TargetHeatingCoolingState', 0, { validValues: [0, 1, 2] } as any)
+      const char = characteristic('TargetHeatingCoolingState', 0, {
+        validValues: [0, 1, 2],
+      } as any)
 
       info.toggleDetailsVisibility(char)
 
@@ -550,7 +641,9 @@ describe('accessoryInfoComponent', () => {
     let clipboard: { writeText: ReturnType<typeof vi.fn> }
 
     beforeEach(() => {
-      clipboard = { writeText: vi.fn(async () => undefined) }
+      clipboard = {
+        writeText: vi.fn(async () => undefined),
+      }
       Object.defineProperty(window.navigator, 'clipboard', { value: clipboard, configurable: true })
     })
 
@@ -587,7 +680,11 @@ describe('accessoryInfoComponent', () => {
     })
 
     it('copies the cached accessory uuid', () => {
-      const info = open(hapService(), { accessoryCache: [cached({ uuid: 'cached-uuid-here' })] }).componentInstance
+      const info = open(hapService(), {
+        accessoryCache: [
+          cached({ uuid: 'cached-uuid-here' }),
+        ],
+      }).componentInstance
 
       void info.copyUUIDToClipboard()
 
@@ -667,7 +764,9 @@ describe('accessoryInfoComponent', () => {
 
     it('highlights the cached entry it matched', () => {
       const info = open(hapService(), {
-        accessoryCache: [cached({ uuid: 'the-one', cacheFile: 'cachedAccessories' })],
+        accessoryCache: [
+          cached({ uuid: 'the-one', cacheFile: 'cachedAccessories' }),
+        ],
       }).componentInstance
 
       info.removeSingleCachedAccessories()
@@ -697,27 +796,52 @@ describe('accessoryInfoComponent', () => {
 
   describe('opened without the data it needs', () => {
     it.each([
-      ['no service', { service: undefined }],
-      ['no accessory cache', { accessoryCache: undefined }],
-      ['no pairing cache', { pairingCache: undefined }],
+      [
+        'no service',
+        { service: undefined },
+      ],
+      [
+        'no accessory cache',
+        { accessoryCache: undefined },
+      ],
+      [
+        'no pairing cache',
+        { pairingCache: undefined },
+      ],
     ])('closes itself when handed %s', (_label, missing) => {
       // A half-built modal would throw on the first template expression, leaving
       // a blank grey box the user cannot get out of
       TestBed.resetTestingModule()
-      activeModal = { close: vi.fn(), dismiss: vi.fn() }
+      activeModal = {
+        close: vi.fn(),
+        dismiss: vi.fn(),
+      }
       TestBed.configureTestingModule({
         imports: [AccessoryInfoComponent],
         providers: [
           provideTestTranslate(),
-          provideFakes({ modal: modalServiceSpy(), activeModal }),
+          provideFakes({
+            modal: modalServiceSpy(),
+            activeModal,
+          }),
           {
             provide: ACCESSORY_INFO_MODAL_DATA,
-            useValue: { service: hapService(), accessoryCache: [], pairingCache: [pairing()], ...missing },
+            useValue: {
+              service: hapService(),
+              accessoryCache: [],
+              pairingCache: [
+                pairing(),
+              ],
+              ...missing,
+            },
           },
         ],
       })
       TestBed.overrideComponent(AccessoryInfoComponent, {
-        set: { imports: PIPES, schemas: [NO_ERRORS_SCHEMA] },
+        set: {
+          imports: PIPES,
+          schemas: [NO_ERRORS_SCHEMA],
+        },
       })
 
       const fixture = TestBed.createComponent(AccessoryInfoComponent)

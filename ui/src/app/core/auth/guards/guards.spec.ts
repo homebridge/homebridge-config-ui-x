@@ -45,7 +45,10 @@ describe('route guards', () => {
         provideRouter([]),
         provideTestTranslate(),
         provideFakes({ auth, settings, toastr }),
-        { provide: AuthHelperService, useValue: { isAuthenticated } },
+        {
+          provide: AuthHelperService,
+          useValue: { isAuthenticated },
+        },
       ],
     })
 
@@ -82,14 +85,20 @@ describe('route guards', () => {
     })
 
     it('sends a fresh install to the setup wizard', async () => {
-      configure({ settings: { env: { setupWizardComplete: false } } })
+      configure({
+        settings: {
+          env: { setupWizardComplete: false },
+        },
+      })
 
       await expect(run(authGuard)).resolves.toBe(false)
       expect(navigate).toHaveBeenCalledWith(['/setup'])
     })
 
     it('signs the user in silently when the ui has no login', async () => {
-      configure({ settings: { formAuth: false } })
+      configure({
+        settings: { formAuth: false },
+      })
 
       await expect(run(authGuard)).resolves.toBe(true)
       expect(auth.noauth).toHaveBeenCalled()
@@ -106,13 +115,23 @@ describe('route guards', () => {
 
   describe('adminGuard', () => {
     it('lets an admin through', async () => {
-      configure({ authenticated: true, auth: { user: { admin: true } } })
+      configure({
+        authenticated: true,
+        auth: {
+          user: { admin: true },
+        },
+      })
 
       await expect(run(adminGuard)).resolves.toBe(true)
     })
 
     it('turns a non-admin away with a message', async () => {
-      configure({ authenticated: true, auth: { user: { admin: false } } })
+      configure({
+        authenticated: true,
+        auth: {
+          user: { admin: false },
+        },
+      })
 
       await expect(run(adminGuard)).resolves.toBe(false)
       expect(navigate).toHaveBeenCalledWith(['/'])
@@ -164,14 +183,20 @@ describe('route guards', () => {
     })
 
     it('sends a fresh install to the setup wizard', async () => {
-      configure({ settings: { env: { setupWizardComplete: false } } })
+      configure({
+        settings: {
+          env: { setupWizardComplete: false },
+        },
+      })
 
       await expect(run(loginGuard)).resolves.toBe(false)
       expect(navigate).toHaveBeenCalledWith(['/setup'])
     })
 
     it('has nothing to show when the ui has no login', async () => {
-      configure({ settings: { formAuth: false } })
+      configure({
+        settings: { formAuth: false },
+      })
       auth.isLoggedIn = vi.fn(() => false) as any
 
       await expect(run(loginGuard)).resolves.toBe(false)
@@ -181,13 +206,21 @@ describe('route guards', () => {
 
   describe('setupWizardGuard', () => {
     it('opens the wizard on a fresh install', async () => {
-      configure({ settings: { env: { setupWizardComplete: false } } })
+      configure({
+        settings: {
+          env: { setupWizardComplete: false },
+        },
+      })
 
       await expect(run(setupWizardGuard)).resolves.toBe(true)
     })
 
     it('sends everyone else home', async () => {
-      configure({ settings: { env: { setupWizardComplete: true } } })
+      configure({
+        settings: {
+          env: { setupWizardComplete: true },
+        },
+      })
 
       await expect(run(setupWizardGuard)).resolves.toBe(false)
       expect(navigate).toHaveBeenCalledWith(['/'])
@@ -196,20 +229,44 @@ describe('route guards', () => {
 
   describe('logsGuard', () => {
     it('lets any signed-in user read the log by default', async () => {
-      configure({ authenticated: true, settings: { env: { restrictLogsToAdmins: false } }, auth: { user: { admin: false } } })
+      configure({
+        authenticated: true,
+        settings: {
+          env: { restrictLogsToAdmins: false },
+        },
+        auth: {
+          user: { admin: false },
+        },
+      })
 
       await expect(run(logsGuard)).resolves.toBe(true)
     })
 
     it('requires an admin once the log is restricted', async () => {
-      configure({ authenticated: true, settings: { env: { restrictLogsToAdmins: true } }, auth: { user: { admin: false } } })
+      configure({
+        authenticated: true,
+        settings: {
+          env: { restrictLogsToAdmins: true },
+        },
+        auth: {
+          user: { admin: false },
+        },
+      })
 
       await expect(run(logsGuard)).resolves.toBe(false)
       expect(navigate).toHaveBeenCalledWith(['/'])
     })
 
     it('still admits an admin when the log is restricted', async () => {
-      configure({ authenticated: true, settings: { env: { restrictLogsToAdmins: true } }, auth: { user: { admin: true } } })
+      configure({
+        authenticated: true,
+        settings: {
+          env: { restrictLogsToAdmins: true },
+        },
+        auth: {
+          user: { admin: true },
+        },
+      })
 
       await expect(run(logsGuard)).resolves.toBe(true)
     })
@@ -224,8 +281,13 @@ describe('route guards', () => {
       })
       configure({
         authenticated: true,
-        settings: { env: { restrictLogsToAdmins: undefined } },
-        auth: { user: { admin: false }, tokenReady },
+        settings: {
+          env: { restrictLogsToAdmins: undefined },
+        },
+        auth: {
+          user: { admin: false },
+          tokenReady,
+        },
       })
 
       const decision = run(logsGuard)
@@ -241,7 +303,15 @@ describe('route guards', () => {
       // inject() calls, and this guard has already awaited by the time it
       // calls them. Without runInInjectionContext this throws NG0203 and the
       // log viewer never loads.
-      configure({ authenticated: true, settings: { env: { restrictLogsToAdmins: true } }, auth: { user: { admin: true } } })
+      configure({
+        authenticated: true,
+        settings: {
+          env: { restrictLogsToAdmins: true },
+        },
+        auth: {
+          user: { admin: true },
+        },
+      })
 
       await expect(run(logsGuard)).resolves.not.toThrow()
       expect(auth.refreshSession).toHaveBeenCalledWith('admin-guard')

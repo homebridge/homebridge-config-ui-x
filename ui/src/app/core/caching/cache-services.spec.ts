@@ -20,14 +20,29 @@ describe('cache services', () => {
 
   function configure(admin = true) {
     api = fakeApi()
-      .respond('get', /^\/plugins/, [{ name: 'homebridge-hue' }])
-      .respond('get', '/server/pairings', [{ _id: 'main' }])
-      .respond('get', '/server/cached-accessories', [{ UUID: 'hap' }])
-      .respond('get', '/server/matter-accessories', [{ uuid: 'matter' }])
+      .respond('get', /^\/plugins/, [
+        { name: 'homebridge-hue' },
+      ])
+      .respond('get', '/server/pairings', [
+        { _id: 'main' },
+      ])
+      .respond('get', '/server/cached-accessories', [
+        { UUID: 'hap' },
+      ])
+      .respond('get', '/server/matter-accessories', [
+        { uuid: 'matter' },
+      ])
       .respond('get', '/server/accessory-overview', { hapAccessories: [], matterAccessories: [], pairings: [] })
 
     TestBed.configureTestingModule({
-      providers: [provideFakes({ api, auth: makeAuth({ user: { admin } }) })],
+      providers: [
+        provideFakes({
+          api,
+          auth: makeAuth({
+            user: { admin },
+          }),
+        }),
+      ],
     })
   }
 

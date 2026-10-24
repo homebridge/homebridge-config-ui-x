@@ -123,7 +123,9 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
 
     this.editorOptions = {
       language: 'json',
-      theme: this.$settings.actualLightingMode === 'dark' ? 'vs-dark' : 'vs-light',
+      theme: this.$settings.actualLightingMode === 'dark'
+        ? 'vs-dark'
+        : 'vs-light',
       renderSideBySide: this.renderSideBySide(),
       renderIndicators: true,
       ignoreTrimWhitespace: false,
@@ -156,7 +158,9 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
     this.monacoEditorModel = {
       value: '{}',
       language: 'json',
-      uri: (window as any).monaco ? (window as any).monaco.Uri.parse('a://homebridge/config.json') : undefined,
+      uri: (window as any).monaco
+        ? (window as any).monaco.Uri.parse('a://homebridge/config.json')
+        : undefined,
     }
 
     // Set up diff editor models with initial content
@@ -366,13 +370,15 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
   }
 
   public async onRestore(fromSettings = false): Promise<void> {
-    const injector = createEnvironmentInjector([{
-      provide: CONFIG_RESTORE_MODAL_DATA,
-      useValue: {
-        currentConfig: this.homebridgeConfig(),
-        fromSettings,
+    const injector = createEnvironmentInjector([
+      {
+        provide: CONFIG_RESTORE_MODAL_DATA,
+        useValue: {
+          currentConfig: this.homebridgeConfig(),
+          fromSettings,
+        },
       },
-    }], this.injector)
+    ], this.injector)
 
     const ref = this.$modal.open(ConfigRestoreComponent, {
       size: 'lg',
@@ -452,7 +458,10 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
 
   public toggleSideBySide() {
     this.renderSideBySide.set(!this.renderSideBySide())
-    this.editorOptions = { ...this.editorOptions, renderSideBySide: this.renderSideBySide() }
+    this.editorOptions = {
+      ...this.editorOptions,
+      renderSideBySide: this.renderSideBySide(),
+    }
   }
 
   /**
@@ -486,16 +495,18 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
   }
 
   private confirmDiscardChanges(): Promise<boolean> {
-    const injector = createEnvironmentInjector([{
-      provide: CONFIRM_MODAL_DATA,
-      useValue: {
-        title: this.$translate.instant('config.label_unsaved_changes'),
-        message: this.$translate.instant('config.message_unsaved_changes'),
-        confirmButtonLabel: this.$translate.instant('form.button_discard'),
-        confirmButtonClass: 'btn-danger',
-        faIconClass: 'fas fa-triangle-exclamation orange-text',
+    const injector = createEnvironmentInjector([
+      {
+        provide: CONFIRM_MODAL_DATA,
+        useValue: {
+          title: this.$translate.instant('config.label_unsaved_changes'),
+          message: this.$translate.instant('config.message_unsaved_changes'),
+          confirmButtonLabel: this.$translate.instant('form.button_discard'),
+          confirmButtonClass: 'btn-danger',
+          faIconClass: 'fas fa-triangle-exclamation orange-text',
+        },
       },
-    }], this.injector)
+    ], this.injector)
 
     const ref = this.$modal.open(ConfirmComponent, {
       size: 'lg',
@@ -628,7 +639,10 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
         )
 
         this.editorDecorations = this.monacoEditor.deltaDecorations(this.editorDecorations, [
-          { range, options: { isWholeLine: true, linesDecorationsClassName: 'hb-monaco-editor-line-error' } },
+          {
+            range,
+            options: { isWholeLine: true, linesDecorationsClassName: 'hb-monaco-editor-line-error' },
+          },
         ])
       }
     })
@@ -658,7 +672,9 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
       schemas: [
         {
           uri: 'http://homebridge/config.json',
-          fileMatch: [uri.toString()],
+          fileMatch: [
+            uri.toString(),
+          ],
           schema: {
             type: 'object',
             additionalProperties: false,
@@ -752,10 +768,17 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
                   },
                   hap: createHapSchema(this.$translate, this.isProtocolExternalsOnlyEnabled, 'main', this.isHapDisableIdentifyingMaterialEnabled),
                   ...this.isMatterSupported
-                    ? { matter: createMatterSchema(this.$translate, this.isProtocolExternalsOnlyEnabled, 'main', this.isMatterDisableIpv4Enabled) }
+                    ? {
+                        matter: createMatterSchema(this.$translate, this.isProtocolExternalsOnlyEnabled, 'main', this.isMatterDisableIpv4Enabled),
+                      }
                     : {},
                 },
-                default: { name: 'Homebridge', username: '0E:89:49:64:91:86', port: 51173, pin: '6302-7655' },
+                default: {
+                  name: 'Homebridge',
+                  username: '0E:89:49:64:91:86',
+                  port: 51173,
+                  pin: '6302-7655',
+                },
               },
               mdns: {
                 type: 'object',
@@ -823,7 +846,9 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
                           type: 'string',
                           title: 'Platform Name',
                           description: 'This is used by Homebridge to identify which plugin this platform belongs to.',
-                          not: { enum: ['config'] },
+                          not: {
+                            enum: ['config'],
+                          },
                         },
                         name: {
                           type: 'string',
@@ -881,19 +906,58 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
                           type: 'string',
                           default: 'orange',
                           oneOf: [
-                            { title: this.$translate.instant('settings.display.orange'), enum: ['orange'] },
-                            { title: this.$translate.instant('settings.display.red'), enum: ['red'] },
-                            { title: this.$translate.instant('settings.display.pink'), enum: ['pink'] },
-                            { title: this.$translate.instant('settings.display.purple'), enum: ['purple'] },
-                            { title: this.$translate.instant('settings.display.deep_purple'), enum: ['deep-purple'] },
-                            { title: this.$translate.instant('settings.display.indigo'), enum: ['indigo'] },
-                            { title: this.$translate.instant('settings.display.blue'), enum: ['blue'] },
-                            { title: this.$translate.instant('settings.display.bluegrey'), enum: ['blue-grey'] },
-                            { title: this.$translate.instant('settings.display.cyan'), enum: ['cyan'] },
-                            { title: this.$translate.instant('settings.display.green'), enum: ['green'] },
-                            { title: this.$translate.instant('settings.display.teal'), enum: ['teal'] },
-                            { title: this.$translate.instant('settings.display.grey'), enum: ['grey'] },
-                            { title: this.$translate.instant('settings.display.brown'), enum: ['brown'] },
+                            {
+                              title: this.$translate.instant('settings.display.orange'),
+                              enum: ['orange'],
+                            },
+                            {
+                              title: this.$translate.instant('settings.display.red'),
+                              enum: ['red'],
+                            },
+                            {
+                              title: this.$translate.instant('settings.display.pink'),
+                              enum: ['pink'],
+                            },
+                            {
+                              title: this.$translate.instant('settings.display.purple'),
+                              enum: ['purple'],
+                            },
+                            {
+                              title: this.$translate.instant('settings.display.deep_purple'),
+                              enum: ['deep-purple'],
+                            },
+                            {
+                              title: this.$translate.instant('settings.display.indigo'),
+                              enum: ['indigo'],
+                            },
+                            {
+                              title: this.$translate.instant('settings.display.blue'),
+                              enum: ['blue'],
+                            },
+                            {
+                              title: this.$translate.instant('settings.display.bluegrey'),
+                              enum: ['blue-grey'],
+                            },
+                            {
+                              title: this.$translate.instant('settings.display.cyan'),
+                              enum: ['cyan'],
+                            },
+                            {
+                              title: this.$translate.instant('settings.display.green'),
+                              enum: ['green'],
+                            },
+                            {
+                              title: this.$translate.instant('settings.display.teal'),
+                              enum: ['teal'],
+                            },
+                            {
+                              title: this.$translate.instant('settings.display.grey'),
+                              enum: ['grey'],
+                            },
+                            {
+                              title: this.$translate.instant('settings.display.brown'),
+                              enum: ['brown'],
+                            },
                           ],
                         },
                         lightingMode: {
@@ -902,9 +966,18 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
                           type: 'string',
                           default: 'auto',
                           oneOf: [
-                            { title: this.$translate.instant('accessories.control.auto'), enum: ['auto'] },
-                            { title: this.$translate.instant('settings.display.light'), enum: ['light'] },
-                            { title: this.$translate.instant('settings.display.dark'), enum: ['dark'] },
+                            {
+                              title: this.$translate.instant('accessories.control.auto'),
+                              enum: ['auto'],
+                            },
+                            {
+                              title: this.$translate.instant('settings.display.light'),
+                              enum: ['light'],
+                            },
+                            {
+                              title: this.$translate.instant('settings.display.dark'),
+                              enum: ['dark'],
+                            },
                           ],
                         },
                         menuMode: {
@@ -913,8 +986,14 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
                           type: 'string',
                           default: 'default',
                           oneOf: [
-                            { title: this.$translate.instant('settings.display.menu_default'), enum: ['default'] },
-                            { title: this.$translate.instant('settings.display.menu_freeze'), enum: ['freeze'] },
+                            {
+                              title: this.$translate.instant('settings.display.menu_default'),
+                              enum: ['default'],
+                            },
+                            {
+                              title: this.$translate.instant('settings.display.menu_freeze'),
+                              enum: ['freeze'],
+                            },
                           ],
                         },
                         temp: {
@@ -928,8 +1007,14 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
                           type: 'string',
                           default: 'c',
                           oneOf: [
-                            { title: this.$translate.instant('settings.display.temp_units.c'), enum: ['c'] },
-                            { title: this.$translate.instant('settings.display.temp_units.f'), enum: ['f'] },
+                            {
+                              title: this.$translate.instant('settings.display.temp_units.c'),
+                              enum: ['c'],
+                            },
+                            {
+                              title: this.$translate.instant('settings.display.temp_units.f'),
+                              enum: ['f'],
+                            },
                           ],
                         },
                         lang: {
@@ -938,36 +1023,126 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
                           default: 'auto',
                           description: 'The language used for the UI.',
                           oneOf: [
-                            { title: this.$translate.instant('form.select.auto'), enum: ['auto'] },
-                            { title: 'Bulgarian (bg)', enum: ['bg'] },
-                            { title: 'Catalan (ca)', enum: ['ca'] },
-                            { title: 'Chinese - Simplified (zh-CN)', enum: ['zh-CN'] },
-                            { title: 'Chinese - Traditional (zh-TW)', enum: ['zh-TW'] },
-                            { title: 'Czech (cs)', enum: ['cs'] },
-                            { title: 'Dutch (nl)', enum: ['nl'] },
-                            { title: 'English (en)', enum: ['en'] },
-                            { title: 'Finnish (fi)', enum: ['fi'] },
-                            { title: 'French (fr)', enum: ['fr'] },
-                            { title: 'German (de)', enum: ['de'] },
-                            { title: 'Hebrew (he)', enum: ['he'] },
-                            { title: 'Hungarian (hu)', enum: ['hu'] },
-                            { title: 'Indonesian (id)', enum: ['id'] },
-                            { title: 'Italian (it)', enum: ['it'] },
-                            { title: 'Japanese (ja)', enum: ['ja'] },
-                            { title: 'Korean (ko)', enum: ['ko'] },
-                            { title: 'Macedonian (mk)', enum: ['mk'] },
-                            { title: 'Norwegian (no)', enum: ['no'] },
-                            { title: 'Polish (pl)', enum: ['pl'] },
-                            { title: 'Portuguese (Brazil)', enum: ['pt-BR'] },
-                            { title: 'Portuguese (Portugal)', enum: ['pt'] },
-                            { title: 'Russian (ru)', enum: ['ru'] },
-                            { title: 'Slovenian (sl)', enum: ['sl'] },
-                            { title: 'Spanish (es)', enum: ['es'] },
-                            { title: 'Swedish (sv)', enum: ['sv'] },
-                            { title: 'Thai (th)', enum: ['th'] },
-                            { title: 'Turkish (tr)', enum: ['tr'] },
-                            { title: 'Ukrainian (uk)', enum: ['uk'] },
-                            { title: 'Vietnamese (vi)', enum: ['vi'] },
+                            {
+                              title: this.$translate.instant('form.select.auto'),
+                              enum: ['auto'],
+                            },
+                            {
+                              title: 'Bulgarian (bg)',
+                              enum: ['bg'],
+                            },
+                            {
+                              title: 'Catalan (ca)',
+                              enum: ['ca'],
+                            },
+                            {
+                              title: 'Chinese - Simplified (zh-CN)',
+                              enum: ['zh-CN'],
+                            },
+                            {
+                              title: 'Chinese - Traditional (zh-TW)',
+                              enum: ['zh-TW'],
+                            },
+                            {
+                              title: 'Czech (cs)',
+                              enum: ['cs'],
+                            },
+                            {
+                              title: 'Dutch (nl)',
+                              enum: ['nl'],
+                            },
+                            {
+                              title: 'English (en)',
+                              enum: ['en'],
+                            },
+                            {
+                              title: 'Finnish (fi)',
+                              enum: ['fi'],
+                            },
+                            {
+                              title: 'French (fr)',
+                              enum: ['fr'],
+                            },
+                            {
+                              title: 'German (de)',
+                              enum: ['de'],
+                            },
+                            {
+                              title: 'Hebrew (he)',
+                              enum: ['he'],
+                            },
+                            {
+                              title: 'Hungarian (hu)',
+                              enum: ['hu'],
+                            },
+                            {
+                              title: 'Indonesian (id)',
+                              enum: ['id'],
+                            },
+                            {
+                              title: 'Italian (it)',
+                              enum: ['it'],
+                            },
+                            {
+                              title: 'Japanese (ja)',
+                              enum: ['ja'],
+                            },
+                            {
+                              title: 'Korean (ko)',
+                              enum: ['ko'],
+                            },
+                            {
+                              title: 'Macedonian (mk)',
+                              enum: ['mk'],
+                            },
+                            {
+                              title: 'Norwegian (no)',
+                              enum: ['no'],
+                            },
+                            {
+                              title: 'Polish (pl)',
+                              enum: ['pl'],
+                            },
+                            {
+                              title: 'Portuguese (Brazil)',
+                              enum: ['pt-BR'],
+                            },
+                            {
+                              title: 'Portuguese (Portugal)',
+                              enum: ['pt'],
+                            },
+                            {
+                              title: 'Russian (ru)',
+                              enum: ['ru'],
+                            },
+                            {
+                              title: 'Slovenian (sl)',
+                              enum: ['sl'],
+                            },
+                            {
+                              title: 'Spanish (es)',
+                              enum: ['es'],
+                            },
+                            {
+                              title: 'Swedish (sv)',
+                              enum: ['sv'],
+                            },
+                            {
+                              title: 'Thai (th)',
+                              enum: ['th'],
+                            },
+                            {
+                              title: 'Turkish (tr)',
+                              enum: ['tr'],
+                            },
+                            {
+                              title: 'Ukrainian (uk)',
+                              enum: ['uk'],
+                            },
+                            {
+                              title: 'Vietnamese (vi)',
+                              enum: ['vi'],
+                            },
                           ],
                         },
                         wallpaper: {
@@ -1337,7 +1512,19 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
                               type: ['string', 'number'],
                               description: this.$translate.instant('settings.terminal.font_weight_desc'),
                               default: '400',
-                              enum: ['100', '200', '300', '400', '500', '600', '700', '800', '900', 'bold', 'normal'],
+                              enum: [
+                                '100',
+                                '200',
+                                '300',
+                                '400',
+                                '500',
+                                '600',
+                                '700',
+                                '800',
+                                '900',
+                                'bold',
+                                'normal',
+                              ],
                             },
                             lightingMode: {
                               title: this.$translate.instant('settings.display.lighting_mode'),
@@ -1649,7 +1836,10 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
     const changedAccessoryEntries = originalAccessories.filter((a: AccessoryConfig) => {
       return !isEqual(a, this.findMatchingConfigEntry(a, updatedAccessories, 'accessory', claimedAccessories))
     })
-    const changedEntries = [...changedPlatformEntries, ...changedAccessoryEntries]
+    const changedEntries = [
+      ...changedPlatformEntries,
+      ...changedAccessoryEntries,
+    ]
 
     // Check seven: we need a full restart if the homebridge ui config entry has changed
     if (changedPlatformEntries.some((entry: PlatformConfig) => entry.platform === 'config')) {
@@ -1713,12 +1903,14 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
       return
     }
 
-    const injector = createEnvironmentInjector([{
-      provide: RESTART_CHILD_BRIDGES_MODAL_DATA,
-      useValue: {
-        bridges: this.childBridgesToRestart,
+    const injector = createEnvironmentInjector([
+      {
+        provide: RESTART_CHILD_BRIDGES_MODAL_DATA,
+        useValue: {
+          bridges: this.childBridgesToRestart,
+        },
       },
-    }], this.injector)
+    ], this.injector)
 
     const ref = this.$modal.open(RestartChildBridgesComponent, {
       size: 'lg',

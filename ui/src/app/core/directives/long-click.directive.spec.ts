@@ -36,7 +36,9 @@ describe('longClickDirective', () => {
 
   function create(duration = 350) {
     TestBed.resetTestingModule()
-    TestBed.configureTestingModule({ imports: [HostComponent] })
+    TestBed.configureTestingModule({
+      imports: [HostComponent],
+    })
 
     fixture = TestBed.createComponent(HostComponent)
     host = fixture.componentInstance
@@ -59,7 +61,11 @@ describe('longClickDirective', () => {
     // jsdom has no TouchEvent constructor, and the directive only looks for a
     // `touches` property rather than the event's type
     const event = new Event('touchstart', { bubbles: true, cancelable: true })
-    Object.defineProperty(event, 'touches', { value: [{ clientX: 0, clientY: 0 }] })
+    Object.defineProperty(event, 'touches', {
+      value: [
+        { clientX: 0, clientY: 0 },
+      ],
+    })
     button.dispatchEvent(event)
     return event
   }

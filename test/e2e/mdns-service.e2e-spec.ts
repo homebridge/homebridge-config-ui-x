@@ -142,12 +142,14 @@ describe('mDNS Service (e2e)', () => {
           port: 51173,
           pin: '630-27-655',
         },
-        platforms: [{
-          platform: 'config',
-          name: 'Config',
-          port: 8581,
-          enableMdnsAdvertise: true,
-        }],
+        platforms: [
+          {
+            platform: 'config',
+            name: 'Config',
+            port: 8581,
+            enableMdnsAdvertise: true,
+          },
+        ],
       }
 
       await writeJson(configPath, testConfig)
@@ -167,11 +169,13 @@ describe('mDNS Service (e2e)', () => {
           port: 51173,
           pin: '630-27-655',
         },
-        platforms: [{
-          platform: 'config',
-          name: 'Config',
-          port: 8581,
-        }],
+        platforms: [
+          {
+            platform: 'config',
+            name: 'Config',
+            port: 8581,
+          },
+        ],
       }
 
       await writeJson(configPath, testConfig)
@@ -191,12 +195,14 @@ describe('mDNS Service (e2e)', () => {
           port: 51173,
           pin: '630-27-655',
         },
-        platforms: [{
-          platform: 'config',
-          name: 'Config',
-          port: 8581,
-          enableMdnsAdvertise: true,
-        }],
+        platforms: [
+          {
+            platform: 'config',
+            name: 'Config',
+            port: 8581,
+            enableMdnsAdvertise: true,
+          },
+        ],
       }
 
       await writeJson(configPath, testConfig)
@@ -222,16 +228,18 @@ describe('mDNS Service (e2e)', () => {
           port: 51173,
           pin: '630-27-655',
         },
-        platforms: [{
-          platform: 'config',
-          name: 'Config',
-          port: 8581,
-          ssl: {
-            key: '/path/to/key.pem',
-            cert: '/path/to/cert.pem',
+        platforms: [
+          {
+            platform: 'config',
+            name: 'Config',
+            port: 8581,
+            ssl: {
+              key: '/path/to/key.pem',
+              cert: '/path/to/cert.pem',
+            },
+            enableMdnsAdvertise: true,
           },
-          enableMdnsAdvertise: true,
-        }],
+        ],
       }
 
       await writeJson(configPath, testConfig)

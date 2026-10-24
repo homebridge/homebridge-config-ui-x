@@ -6,7 +6,9 @@
 import packageJson from '../../../package.json'
 
 // Use current hostname to avoid CORS issues when accessing from non-localhost (e.g., local IP)
-const backendHost = typeof window !== 'undefined' ? window.location.hostname : 'localhost'
+const backendHost = typeof window !== 'undefined'
+  ? window.location.hostname
+  : 'localhost'
 const backendUrl = `http://${backendHost}:8581`
 
 export const environment = {

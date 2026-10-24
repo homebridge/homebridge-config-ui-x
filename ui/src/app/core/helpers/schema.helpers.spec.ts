@@ -12,7 +12,9 @@ describe('schema helpers', () => {
 
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [provideTestTranslate()],
+      providers: [
+        provideTestTranslate(),
+      ],
     })
     translate = TestBed.inject(TranslateService)
   })
@@ -34,9 +36,21 @@ describe('schema helpers', () => {
     })
 
     it.each([
-      [true, false, ['enabled', 'externalsOnly']],
-      [false, true, ['enabled', 'disableIdentifyingMaterial']],
-      [true, true, ['enabled', 'externalsOnly', 'disableIdentifyingMaterial']],
+      [
+        true,
+        false,
+        ['enabled', 'externalsOnly'],
+      ],
+      [
+        false,
+        true,
+        ['enabled', 'disableIdentifyingMaterial'],
+      ],
+      [
+        true,
+        true,
+        ['enabled', 'externalsOnly', 'disableIdentifyingMaterial'],
+      ],
     ])('offers only the supported options (externalsOnly=%s, identifyingMaterial=%s)', (externals, identifying, expected) => {
       const schema = createHapSchema(translate, externals, 'child', identifying) as any
 
@@ -68,9 +82,26 @@ describe('schema helpers', () => {
     })
 
     it.each([
-      [true, false, ['enabled', 'port', 'externalsOnly']],
-      [false, true, ['enabled', 'port', 'disableIpv4']],
-      [true, true, ['enabled', 'port', 'externalsOnly', 'disableIpv4']],
+      [
+        true,
+        false,
+        ['enabled', 'port', 'externalsOnly'],
+      ],
+      [
+        false,
+        true,
+        ['enabled', 'port', 'disableIpv4'],
+      ],
+      [
+        true,
+        true,
+        [
+          'enabled',
+          'port',
+          'externalsOnly',
+          'disableIpv4',
+        ],
+      ],
     ])('offers only the supported options (externalsOnly=%s, disableIpv4=%s)', (externals, ipv4, expected) => {
       const schema = createMatterSchema(translate, externals, 'child', ipv4) as any
 
@@ -118,12 +149,24 @@ describe('schema helpers', () => {
     })
 
     it.each([
-      [{ isMatterSupported: false, isPlatformPlugin: true }, false],
-      [{ isMatterSupported: true, isPlatformPlugin: false }, false],
-      [{ isMatterSupported: true, isPlatformPlugin: true }, true],
+      [
+        { isMatterSupported: false, isPlatformPlugin: true },
+        false,
+      ],
+      [
+        { isMatterSupported: true, isPlatformPlugin: false },
+        false,
+      ],
+      [
+        { isMatterSupported: true, isPlatformPlugin: true },
+        true,
+      ],
     ])('includes matter for %o: %s', (options, expected) => {
       // Matter only works with platform plugins, so both must be true
-      const schema = createChildBridgeSchema(translate, { ...base, ...options }) as any
+      const schema = createChildBridgeSchema(translate, {
+        ...base,
+        ...options,
+      }) as any
 
       expect('matter' in schema.properties).toBe(expected)
     })
@@ -140,7 +183,12 @@ describe('schema helpers', () => {
       expect(Object.keys(schema.properties.hap.oneOf[1].properties))
         .toEqual(['enabled', 'externalsOnly', 'disableIdentifyingMaterial'])
       expect(Object.keys(schema.properties.matter.properties))
-        .toEqual(['enabled', 'port', 'externalsOnly', 'disableIpv4'])
+        .toEqual([
+          'enabled',
+          'port',
+          'externalsOnly',
+          'disableIpv4',
+        ])
     })
   })
 })

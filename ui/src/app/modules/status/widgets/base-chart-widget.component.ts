@@ -37,7 +37,9 @@ export abstract class BaseChartWidgetComponent implements OnInit, OnDestroy {
   public lineChartLabels: string[] = []
   public lineChartType: ChartConfiguration['type'] = 'line'
   public lineChartData: ChartConfiguration['data'] = {
-    datasets: [{ data: [] }],
+    datasets: [
+      { data: [] },
+    ],
   }
 
   public lineChartOptions: ChartConfiguration['options'] = {

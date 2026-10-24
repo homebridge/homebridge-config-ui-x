@@ -28,8 +28,18 @@ describe('usersComponent', () => {
   let modal: FakeModalService
 
   const users = [
-    { id: 1, name: 'Test Admin', username: 'admin', admin: true },
-    { id: 2, name: 'Second Person', username: 'second', admin: false },
+    {
+      id: 1,
+      name: 'Test Admin',
+      username: 'admin',
+      admin: true,
+    },
+    {
+      id: 2,
+      name: 'Second Person',
+      username: 'second',
+      admin: false,
+    },
   ] as any[]
 
   /**
@@ -55,19 +65,30 @@ describe('usersComponent', () => {
           toastr,
           settings,
           modal,
-          auth: makeAuth({ user: { username: 'admin', admin: options.admin ?? true } }),
+          auth: makeAuth({
+            user: { username: 'admin', admin: options.admin ?? true },
+          }),
         }),
         {
           provide: ActivatedRoute,
           // `'resolved' in options` rather than `??`, so a case can pass
           // `undefined` on purpose to model a resolver that returned nothing
-          useValue: { data: of({ homebridgeUsers: 'resolved' in options ? options.resolved : users }) },
+          useValue: {
+            data: of({
+              homebridgeUsers: 'resolved' in options
+                ? options.resolved
+                : users,
+            }),
+          },
         },
       ],
     })
 
     TestBed.overrideComponent(UsersComponent, {
-      set: { imports: [TranslatePipe], schemas: [NO_ERRORS_SCHEMA] },
+      set: {
+        imports: [TranslatePipe],
+        schemas: [NO_ERRORS_SCHEMA],
+      },
     })
 
     options.arrange?.()
@@ -130,7 +151,12 @@ describe('usersComponent', () => {
     })
 
     it('re-reads the list once the user has been added', async () => {
-      const page = create({ arrange: () => api.respond('get', '/users', [...users, { id: 3, username: 'third' }]) })
+      const page = create({
+        arrange: () => api.respond('get', '/users', [
+          ...users,
+          { id: 3, username: 'third' },
+        ]),
+      })
 
       void page.openAddNewUser()
       await settle()
@@ -156,7 +182,9 @@ describe('usersComponent', () => {
     it('says so when the list cannot be re-read', async () => {
       // Otherwise the page silently keeps its old snapshot and the new user
       // looks as though they were never created
-      const page = create({ arrange: () => api.fail('get', '/users', new Error('server unavailable')) })
+      const page = create({
+        arrange: () => api.fail('get', '/users', new Error('server unavailable')),
+      })
 
       void page.openAddNewUser()
       await settle()
@@ -182,7 +210,9 @@ describe('usersComponent', () => {
     })
 
     it('re-reads the list once the edit is saved', async () => {
-      const page = create({ arrange: () => api.respond('get', '/users', users) })
+      const page = create({
+        arrange: () => api.respond('get', '/users', users),
+      })
 
       void page.openEditUser(users[1])
       await settle()
@@ -216,7 +246,9 @@ describe('usersComponent', () => {
 
     it('re-reads the list once it has been set up', async () => {
       // The list shows whether each user has 2FA on
-      const page = create({ arrange: () => api.respond('get', '/users', users) })
+      const page = create({
+        arrange: () => api.respond('get', '/users', users),
+      })
 
       void page.setup2fa(users[1])
       await settle()
@@ -236,7 +268,9 @@ describe('usersComponent', () => {
     })
 
     it('re-reads the list once it has been switched off', async () => {
-      const page = create({ arrange: () => api.respond('get', '/users', users) })
+      const page = create({
+        arrange: () => api.respond('get', '/users', users),
+      })
 
       void page.disable2fa(users[1])
       await settle()

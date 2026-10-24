@@ -53,7 +53,9 @@ describe('StatusService - getCpuTemp', () => {
       configService,
       {} as PluginsService,
       {} as ServerService,
-      { on: vi.fn() } as unknown as HomebridgeIpcService,
+      {
+        on: vi.fn(),
+      } as unknown as HomebridgeIpcService,
     )
   })
 
@@ -82,7 +84,11 @@ describe('StatusService - getCpuTemp', () => {
   it('should prefer the configured temp file over systeminformation', async () => {
     // Auto-detection can read the wrong sensor entirely, so an explicitly
     // configured file must always win, even when cpuTemperature() succeeds
-    cpuTemperatureMock.mockResolvedValue({ main: 88, cores: [88], max: 88 })
+    cpuTemperatureMock.mockResolvedValue({
+      main: 88,
+      cores: [88],
+      max: 88,
+    })
     await useTempFile('47000')
 
     const cpuTemperature = await getCpuTemp()
@@ -93,7 +99,11 @@ describe('StatusService - getCpuTemp', () => {
   })
 
   it('should use systeminformation when no temp file is configured', async () => {
-    cpuTemperatureMock.mockResolvedValue({ main: 88, cores: [88], max: 88 })
+    cpuTemperatureMock.mockResolvedValue({
+      main: 88,
+      cores: [88],
+      max: 88,
+    })
 
     const cpuTemperature = await getCpuTemp()
 

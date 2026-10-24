@@ -35,8 +35,18 @@ describe('backupComponent', () => {
   let modal: FakeModalService
 
   const scheduledBackups = [
-    { id: 'backup-1', fileName: 'homebridge-backup-1.tar.gz', timestamp: '2026-08-16T02:00:00.000Z', size: '1.2MB' },
-    { id: 'backup-2', fileName: 'homebridge-backup-2.tar.gz', timestamp: '2026-08-15T02:00:00.000Z', size: '1.1MB' },
+    {
+      id: 'backup-1',
+      fileName: 'homebridge-backup-1.tar.gz',
+      timestamp: '2026-08-16T02:00:00.000Z',
+      size: '1.2MB',
+    },
+    {
+      id: 'backup-2',
+      fileName: 'homebridge-backup-2.tar.gz',
+      timestamp: '2026-08-15T02:00:00.000Z',
+      size: '1.1MB',
+    },
   ]
 
   /**
@@ -47,7 +57,11 @@ describe('backupComponent', () => {
   function blobResponse(size: number, fileName?: string) {
     return {
       body: { size },
-      headers: { get: (name: string) => (name === 'File-Name' ? fileName ?? null : null) },
+      headers: {
+        get: (name: string) => (name === 'File-Name'
+          ? fileName ?? null
+          : null),
+      },
     }
   }
 
@@ -67,7 +81,13 @@ describe('backupComponent', () => {
       providers: [
         { provide: SAVE_AS, useValue: saveAs },
         provideTestTranslate(),
-        provideFakes({ api, settings, toastr, activeModal, modal }),
+        provideFakes({
+          api,
+          settings,
+          toastr,
+          activeModal,
+          modal,
+        }),
       ],
     })
   }

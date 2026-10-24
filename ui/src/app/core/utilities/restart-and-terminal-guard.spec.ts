@@ -48,7 +48,10 @@ describe('deciding what to restart', () => {
       providers: [
         provideTestTranslate(),
         provideFakes({ api, modal, toastr }),
-        { provide: TtlCacheService, useValue: ttlCacheStub() },
+        {
+          provide: TtlCacheService,
+          useValue: ttlCacheStub(),
+        },
       ],
     })
 
@@ -62,7 +65,9 @@ describe('deciding what to restart', () => {
       // ⚠️ The whole point: restarting all of Homebridge for a change that only
       // touched one bridge drops every other accessory off the network for a
       // minute or two
-      service.openCorrectRestartModalWithBridges([bridge()])
+      service.openCorrectRestartModalWithBridges([
+        bridge(),
+      ])
 
       expect(modal.lastOpened()!.content).toBe(RestartChildBridgesComponent)
       expect(modal.dataFor(RESTART_CHILD_BRIDGES_MODAL_DATA)?.bridges).toEqual([
@@ -71,7 +76,9 @@ describe('deciding what to restart', () => {
     })
 
     it('carries the matter serial number through, so a matter bridge can be found', () => {
-      service.openCorrectRestartModalWithBridges([bridge({ matterSerialNumber: 'MTR-123' } as any)])
+      service.openCorrectRestartModalWithBridges([
+        bridge({ matterSerialNumber: 'MTR-123' } as any),
+      ])
 
       expect(modal.dataFor(RESTART_CHILD_BRIDGES_MODAL_DATA)?.bridges[0].matterSerialNumber).toBe('MTR-123')
     })
@@ -102,7 +109,9 @@ describe('deciding what to restart', () => {
 
   describe('looking up the bridges of one plugin', () => {
     it('offers a child bridge restart for a plugin that has one', async () => {
-      api.respond('get', '/status/homebridge/child-bridges', [bridge()])
+      api.respond('get', '/status/homebridge/child-bridges', [
+        bridge(),
+      ])
 
       await service.openCorrectRestartModalForPlugin('homebridge-example')
 
@@ -110,7 +119,9 @@ describe('deciding what to restart', () => {
     })
 
     it('ignores the bridges of other plugins', async () => {
-      api.respond('get', '/status/homebridge/child-bridges', [bridge({ plugin: 'homebridge-other' })])
+      api.respond('get', '/status/homebridge/child-bridges', [
+        bridge({ plugin: 'homebridge-other' }),
+      ])
 
       await service.openCorrectRestartModalForPlugin('homebridge-example')
 
@@ -129,7 +140,9 @@ describe('deciding what to restart', () => {
     })
 
     it('reads the list through the cache', async () => {
-      api.respond('get', '/status/homebridge/child-bridges', [bridge()])
+      api.respond('get', '/status/homebridge/child-bridges', [
+        bridge(),
+      ])
 
       await service.getAll()
 
@@ -172,7 +185,9 @@ describe('leaving the terminal', () => {
     TestBed.resetTestingModule()
     modal = modalServiceSpy()
     settings = makeSettings({
-      env: { terminal: { persistence: options.persistence ?? false, hideWarning: options.hideWarning ?? false } },
+      env: {
+        terminal: { persistence: options.persistence ?? false, hideWarning: options.hideWarning ?? false },
+      },
     })
     terminal = {
       hasActiveSession: vi.fn(() => options.active ?? true),
@@ -236,7 +251,10 @@ describe('leaving the terminal', () => {
   describe('closing the browser tab', () => {
     /** A beforeunload event, as the browser raises it. */
     function unloadEvent() {
-      return { preventDefault: vi.fn(), returnValue: undefined } as unknown as BeforeUnloadEvent
+      return {
+        preventDefault: vi.fn(),
+        returnValue: undefined,
+      } as unknown as BeforeUnloadEvent
     }
 
     it('warns when a used session would be lost', () => {
@@ -250,10 +268,22 @@ describe('leaving the terminal', () => {
     })
 
     it.each([
-      ['the session survives anyway', { persistence: true }],
-      ['the user turned the warning off', { hideWarning: true }],
-      ['there is no session', { active: false }],
-      ['nothing was typed', { typed: false }],
+      [
+        'the session survives anyway',
+        { persistence: true },
+      ],
+      [
+        'the user turned the warning off',
+        { hideWarning: true },
+      ],
+      [
+        'there is no session',
+        { active: false },
+      ],
+      [
+        'nothing was typed',
+        { typed: false },
+      ],
     ])('lets the tab close when %s', (_label, options) => {
       const event = unloadEvent()
 

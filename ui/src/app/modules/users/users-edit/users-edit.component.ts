@@ -44,9 +44,20 @@ export class UsersEditComponent implements OnInit {
   // Other properties
   private initialFormValue: Record<string, any> = {}
   public form = new FormGroup({
-    username: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
-    name: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
-    password: new FormControl('', { nonNullable: true, validators: [Validators.minLength(4)] }),
+    username: new FormControl('', {
+      nonNullable: true,
+      validators: [Validators.required],
+    }),
+    name: new FormControl('', {
+      nonNullable: true,
+      validators: [Validators.required],
+    }),
+    password: new FormControl('', {
+      nonNullable: true,
+      validators: [
+        Validators.minLength(4),
+      ],
+    }),
     passwordConfirm: new FormControl('', { nonNullable: true }),
     admin: new FormControl(true, { nonNullable: true }),
   }, this.matchPassword)
@@ -156,7 +167,9 @@ export class UsersEditComponent implements OnInit {
       user => user.id !== this.user.id && user.username?.toLowerCase() === trimmedUsername,
     )
 
-    return isDuplicate ? { duplicateUsername: true } : null
+    return isDuplicate
+      ? { duplicateUsername: true }
+      : null
   }
 
   public dismissModal(): void {
@@ -167,13 +180,17 @@ export class UsersEditComponent implements OnInit {
     const passwordConfirmCtrl = abstractControl.get('passwordConfirm')
     const password = abstractControl.get('password')?.value
     const passwordConfirm = passwordConfirmCtrl?.value
-    const otherErrors = { ...(passwordConfirmCtrl?.errors ?? {}) }
+    const otherErrors = {
+      ...(passwordConfirmCtrl?.errors ?? {}),
+    }
     delete otherErrors.matchPassword
     if (password !== passwordConfirm) {
       passwordConfirmCtrl?.setErrors({ ...otherErrors, matchPassword: true })
       return { matchPassword: true }
     }
-    passwordConfirmCtrl?.setErrors(Object.keys(otherErrors).length ? otherErrors : null)
+    passwordConfirmCtrl?.setErrors(Object.keys(otherErrors).length
+      ? otherErrors
+      : null)
     return null
   }
 }

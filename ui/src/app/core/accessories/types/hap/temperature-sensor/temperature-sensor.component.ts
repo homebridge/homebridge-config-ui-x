@@ -8,7 +8,13 @@ import { SettingsService } from '@/app/core/ui/settings.service'
 
 @Component({
   selector: 'app-temperature-sensor',
-  imports: [DecimalPipe, ConvertTempPipe, LowerCasePipe, UpperCasePipe, TranslatePipe],
+  imports: [
+    DecimalPipe,
+    ConvertTempPipe,
+    LowerCasePipe,
+    UpperCasePipe,
+    TranslatePipe,
+  ],
   standalone: true,
   templateUrl: './temperature-sensor.component.html',
   styleUrl: './temperature-sensor.component.scss',

@@ -75,7 +75,9 @@ export class LightbulbComponent implements OnInit {
 
     let label = `${values?.Brightness}%`
     if (this.hasAdaptiveLighting()) {
-      const cls = this.isAdaptiveLightingEnabled() ? 'on-text' : 'grey-text'
+      const cls = this.isAdaptiveLightingEnabled()
+        ? 'on-text'
+        : 'grey-text'
       label += ` &middot; <i class='fas fa-sun ${cls}'></i>`
     }
     if (this.hasCurrentConsumption()) {
@@ -93,7 +95,9 @@ export class LightbulbComponent implements OnInit {
     }
     let label = ''
     if (this.hasAdaptiveLighting()) {
-      const cls = this.isAdaptiveLightingEnabled() ? 'on-text' : 'grey-text'
+      const cls = this.isAdaptiveLightingEnabled()
+        ? 'on-text'
+        : 'grey-text'
       label += ` &middot; <i class='fas fa-sun ${cls}'></i>`
     }
     if (this.hasCurrentConsumption()) {
@@ -122,7 +126,9 @@ export class LightbulbComponent implements OnInit {
     if ('On' in this.service().values) {
       void this.service().getCharacteristic!('On').setValue!(!this.service().values.On)
     } else if ('Active' in this.service().values) {
-      void this.service().getCharacteristic!('Active').setValue!(this.service().values.Active ? 0 : 1)
+      void this.service().getCharacteristic!('Active').setValue!(this.service().values.Active
+        ? 0
+        : 1)
     }
 
     // Set the brightness to max if on 0% when turned on

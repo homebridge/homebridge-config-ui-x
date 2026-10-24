@@ -58,7 +58,10 @@ describe('the terminal widgets', () => {
 
     log = {
       // The log widget reads options off the live terminal to apply font changes
-      term: { options: { fontSize: 14, fontWeight: 400 }, scrollToBottom: vi.fn() },
+      term: {
+        options: { fontSize: 14, fontWeight: 400 },
+        scrollToBottom: vi.fn(),
+      },
       startTerminal: vi.fn(),
       destroyTerminal: vi.fn(),
       setSearchFilter: vi.fn(),
@@ -70,7 +73,10 @@ describe('the terminal widgets', () => {
     terminal = {
       // The shell widget reads options off the live terminal to apply font and
       // theme changes, exactly as the log widget does off its own
-      term: { options: { fontSize: 14, fontWeight: 400 }, scrollToBottom: vi.fn() } as any,
+      term: {
+        options: { fontSize: 14, fontWeight: 400 },
+        scrollToBottom: vi.fn(),
+      } as any,
       startTerminal: vi.fn(),
       onTouchStart: vi.fn(),
       onTouchEnd: vi.fn(),
@@ -82,12 +88,19 @@ describe('the terminal widgets', () => {
       isTerminalReady: vi.fn(() => false),
       hasActiveSession: vi.fn(() => false),
     }
-    navigationGuard = { canDeactivate: vi.fn(async () => true), handleBeforeUnload: vi.fn() }
+    navigationGuard = {
+      canDeactivate: vi.fn(async () => true),
+      handleBeforeUnload: vi.fn(),
+    }
 
     TestBed.configureTestingModule({
       providers: [
         provideTestTranslate(),
-        provideFakes({ settings, auth: makeAuth(), toastr: toastrStub() }),
+        provideFakes({
+          settings,
+          auth: makeAuth(),
+          toastr: toastrStub(),
+        }),
         { provide: LogService, useValue: log },
         { provide: TerminalService, useValue: terminal },
         { provide: TerminalNavigationGuardService, useValue: navigationGuard },
@@ -95,7 +108,10 @@ describe('the terminal widgets', () => {
     })
 
     TestBed.overrideComponent(type as any, {
-      set: { imports: [TranslatePipe], schemas: [NO_ERRORS_SCHEMA] },
+      set: {
+        imports: [TranslatePipe],
+        schemas: [NO_ERRORS_SCHEMA],
+      },
     })
 
     options.arrange?.()
@@ -143,7 +159,9 @@ describe('the terminal widgets', () => {
 
   /** An event whose propagation can be stopped. */
   function clickEvent(): Event {
-    return { stopPropagation: vi.fn() } as unknown as Event
+    return {
+      stopPropagation: vi.fn(),
+    } as unknown as Event
   }
 
   afterEach(() => {
@@ -156,7 +174,12 @@ describe('the terminal widgets', () => {
       expect(dark.widget.theme()).toBe('dark')
 
       const light = await open(HomebridgeLogsWidgetComponent, {
-        settings: { actualLightingMode: 'light', env: { terminal: { lightingMode: 'light' } } as any },
+        settings: {
+          actualLightingMode: 'light',
+          env: {
+            terminal: { lightingMode: 'light' },
+          } as any,
+        },
       })
       expect(light.widget.theme()).toBe('light')
     })
@@ -410,7 +433,12 @@ describe('the terminal widgets', () => {
 
     it('follows the effective terminal theme', async () => {
       const { widget } = await open(TerminalWidgetComponent, {
-        settings: { actualLightingMode: 'light', env: { terminal: { lightingMode: 'light' } } as any },
+        settings: {
+          actualLightingMode: 'light',
+          env: {
+            terminal: { lightingMode: 'light' },
+          } as any,
+        },
       })
 
       expect(widget.theme()).toBe('light')
@@ -571,7 +599,9 @@ describe('the terminal widgets', () => {
         // ⚠️ A shell with something running is lost when the tab closes, and this
         // is the only warning the user gets
         const { widget } = await open(TerminalWidgetComponent)
-        const event = { preventDefault: vi.fn() } as unknown as BeforeUnloadEvent
+        const event = {
+          preventDefault: vi.fn(),
+        } as unknown as BeforeUnloadEvent
 
         widget.onBeforeUnload(event)
 
@@ -707,7 +737,13 @@ describe('the terminal widgets', () => {
     })
 
     it('keeps the session alive on the way out when persistence is on', async () => {
-      await open(TerminalWidgetComponent, { settings: { env: { terminal: { persistence: true } } as any } })
+      await open(TerminalWidgetComponent, {
+        settings: {
+          env: {
+            terminal: { persistence: true },
+          } as any,
+        },
+      })
       await vi.advanceTimersByTimeAsync(0)
 
       TestBed.resetTestingModule()

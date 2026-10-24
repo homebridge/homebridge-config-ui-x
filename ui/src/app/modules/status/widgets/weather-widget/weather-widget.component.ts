@@ -88,7 +88,10 @@ export class WeatherWidgetComponent implements OnInit {
       if (!locationId) {
         return
       }
-      const stamped: OpenWeatherMapResponse = { ...data, timestamp: new Date().toISOString() }
+      const stamped: OpenWeatherMapResponse = {
+        ...data,
+        timestamp: new Date().toISOString(),
+      }
       this.cachedWeather.set(stamped)
       localStorage.setItem(`weather-${locationId}`, JSON.stringify(stamped))
     })

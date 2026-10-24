@@ -59,7 +59,9 @@ describe('the switch-to-scoped and node version modals', () => {
       TestBed.resetTestingModule()
       api = fakeApi()
       toastr = toastrStub()
-      settings = makeSettings({ env: { platform: (options.platform ?? 'linux') as any } })
+      settings = makeSettings({
+        env: { platform: (options.platform ?? 'linux') as any },
+      })
       activeModal = activeModalStub()
       ws = fakeWs()
       io = ws.namespace('plugins')
@@ -79,7 +81,13 @@ describe('the switch-to-scoped and node version modals', () => {
           { provide: SAVE_AS, useValue: saveAs },
           provideRouter([]),
           provideTestTranslate(),
-          provideFakes({ api, toastr, settings, activeModal, ws }),
+          provideFakes({
+            api,
+            toastr,
+            settings,
+            activeModal,
+            ws,
+          }),
           {
             provide: SWITCH_TO_SCOPED_MODAL_DATA,
             useValue: {
@@ -97,7 +105,10 @@ describe('the switch-to-scoped and node version modals', () => {
       })
 
       TestBed.overrideComponent(SwitchToScopedComponent, {
-        set: { imports: [TranslatePipe], schemas: [NO_ERRORS_SCHEMA] },
+        set: {
+          imports: [TranslatePipe],
+          schemas: [NO_ERRORS_SCHEMA],
+        },
       })
 
       options.arrange?.()
@@ -151,7 +162,9 @@ describe('the switch-to-scoped and node version modals', () => {
     it('stops before removing the old plugin when the install fails', async () => {
       // Removing it anyway would leave the user with nothing installed
       const { modal } = await open({
-        arrange: () => io.socket.respondTo('install', { error: { message: 'not found on npm' } }),
+        arrange: () => io.socket.respondTo('install', {
+          error: { message: 'not found on npm' },
+        }),
       })
 
       await modal.doSwitch()
@@ -166,7 +179,9 @@ describe('the switch-to-scoped and node version modals', () => {
 
     it('reports a failed removal without pretending it worked', async () => {
       const { modal } = await open({
-        arrange: () => io.socket.respondTo('uninstall', { error: { message: 'permission denied' } }),
+        arrange: () => io.socket.respondTo('uninstall', {
+          error: { message: 'permission denied' },
+        }),
       })
 
       await modal.doSwitch()
@@ -249,7 +264,9 @@ describe('the switch-to-scoped and node version modals', () => {
       TestBed.resetTestingModule()
       api = fakeApi()
       toastr = toastrStub()
-      settings = makeSettings({ env: { nodeUpdatePolicy: options.policy ?? 'all' } as any })
+      settings = makeSettings({
+        env: { nodeUpdatePolicy: options.policy ?? 'all' } as any,
+      })
       activeModal = activeModalStub()
       plugins = cacheStub<any[]>(options.installed ?? [])
       statusIo = fakeIoNamespace()
@@ -276,7 +293,9 @@ describe('the switch-to-scoped and node version modals', () => {
               showNodeUnsupportedWarning: false,
               homebridgeRunningInSynologyPackage: false,
               homebridgeRunningInDocker: false,
-              homebridgePkg: { engines: { node: '^20 || ^22 || ^24' } },
+              homebridgePkg: {
+                engines: { node: '^20 || ^22 || ^24' },
+              },
               architecture: 'arm64',
               supportsNodeJs24: true,
               onUpdate: options.onUpdate,
@@ -287,7 +306,10 @@ describe('the switch-to-scoped and node version modals', () => {
       })
 
       TestBed.overrideComponent(NodeVersionModalComponent, {
-        set: { imports: [TranslatePipe], schemas: [NO_ERRORS_SCHEMA] },
+        set: {
+          imports: [TranslatePipe],
+          schemas: [NO_ERRORS_SCHEMA],
+        },
       })
 
       options.arrange?.()
@@ -299,12 +321,21 @@ describe('the switch-to-scoped and node version modals', () => {
     }
 
     function plugin(name: string, node?: string) {
-      return { name, displayName: name, engines: node ? { node } : undefined }
+      return {
+        name,
+        displayName: name,
+        engines: node
+          ? { node }
+          : undefined,
+      }
     }
 
     it('says whether each plugin supports the node version being offered', async () => {
       const modal = await open({
-        installed: [plugin('homebridge-good', '^22 || ^24'), plugin('homebridge-old', '^18 || ^20')],
+        installed: [
+          plugin('homebridge-good', '^22 || ^24'),
+          plugin('homebridge-old', '^18 || ^20'),
+        ],
         latestVersion: '24.0.0',
       })
 
@@ -316,14 +347,22 @@ describe('the switch-to-scoped and node version modals', () => {
     it('says unknown for a plugin that declares no engine range', async () => {
       // Not 'no' - it may well work, and marking it unsupported would scare the
       // user off an update they can safely take
-      const modal = await open({ installed: [plugin('homebridge-quiet')] })
+      const modal = await open({
+        installed: [
+          plugin('homebridge-quiet'),
+        ],
+      })
 
       const entry = modal.installedPlugins().find(item => item.name === 'homebridge-quiet')
       expect(entry?.isSupported).toBe('unknown')
     })
 
     it('puts homebridge itself at the top of the list', async () => {
-      const modal = await open({ installed: [plugin('homebridge-example', '^22')] })
+      const modal = await open({
+        installed: [
+          plugin('homebridge-example', '^22'),
+        ],
+      })
 
       expect(modal.installedPlugins()[0].name).toBe('homebridge')
       expect(modal.installedPlugins()[0].displayName).toBe('Homebridge')
@@ -339,7 +378,10 @@ describe('the switch-to-scoped and node version modals', () => {
     it('puts this ui second, ahead of the other plugins', async () => {
       // It is the plugin the user is looking at, so it goes where they will see it
       const modal = await open({
-        installed: [plugin('homebridge-aaa', '^22'), plugin('homebridge-config-ui-x', '^22')],
+        installed: [
+          plugin('homebridge-aaa', '^22'),
+          plugin('homebridge-config-ui-x', '^22'),
+        ],
       })
 
       expect(modal.installedPlugins().map(entry => entry.name)).toEqual([
@@ -351,7 +393,10 @@ describe('the switch-to-scoped and node version modals', () => {
 
     it('sorts the rest by name', async () => {
       const modal = await open({
-        installed: [plugin('homebridge-zebra', '^22'), plugin('homebridge-apple', '^22')],
+        installed: [
+          plugin('homebridge-zebra', '^22'),
+          plugin('homebridge-apple', '^22'),
+        ],
       })
 
       expect(modal.installedPlugins().map(entry => entry.name)).toEqual([
@@ -367,9 +412,11 @@ describe('the switch-to-scoped and node version modals', () => {
         throw new Error('server unavailable')
       })
       TestBed.resetTestingModule()
-      const modal = await open({ arrange: () => {
-        plugins.get = failing.get
-      } })
+      const modal = await open({
+        arrange: () => {
+          plugins.get = failing.get
+        },
+      })
 
       expect(modal.loading()).toBe(false)
       expect(toastr.error).toHaveBeenCalledWith('plugins.toast_failed_to_load_plugins', 'toast.title_error')
@@ -403,7 +450,10 @@ describe('the switch-to-scoped and node version modals', () => {
 
         await modal.updateNodeUpdatePolicy('major')
 
-        expect(api.lastCall('patch')).toMatchObject({ url: '/config-editor/ui', body: { nodeUpdatePolicy: 'major' } })
+        expect(api.lastCall('patch')).toMatchObject({
+          url: '/config-editor/ui',
+          body: { nodeUpdatePolicy: 'major' },
+        })
         expect(statusIo.requests.map(request => request.resource)).toEqual(['clear-nodejs-version-cache'])
         expect(toastr.success).toHaveBeenCalled()
       })
@@ -432,7 +482,10 @@ describe('the switch-to-scoped and node version modals', () => {
         // directly: calling it directly leaves the control on its original value
         // anyway, so the assertion passes whether or not anything reverts it
         vi.useFakeTimers()
-        const modal = await open({ policy: 'all', arrange: () => api.fail('patch', '/config-editor/ui', new Error('read only config')) })
+        const modal = await open({
+          policy: 'all',
+          arrange: () => api.fail('patch', '/config-editor/ui', new Error('read only config')),
+        })
 
         modal.nodeUpdatePolicyControl.setValue('major')
         expect(modal.nodeUpdatePolicyControl.value).toBe('major')
@@ -473,7 +526,11 @@ describe('the switch-to-scoped and node version modals', () => {
     })
 
     it('falls back to the homebridge icon when a plugin icon will not load', async () => {
-      const modal = await open({ installed: [plugin('homebridge-example', '^22')] })
+      const modal = await open({
+        installed: [
+          plugin('homebridge-example', '^22'),
+        ],
+      })
       const entry = modal.installedPlugins().find(item => item.name === 'homebridge-example')!
 
       modal.handleIconError(entry)

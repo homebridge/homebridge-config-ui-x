@@ -119,7 +119,9 @@ describe('BackupController (e2e)', { timeout: 10_000 }, () => {
     schedulerService = app.get(SchedulerService)
 
     // Isolate plugin discovery to the test plugin path only
-    ;(pluginsService as any)._paths = [resolve(process.env.UIX_STORAGE_PATH, 'plugins/node_modules')]
+    ;(pluginsService as any)._paths = [
+      resolve(process.env.UIX_STORAGE_PATH, 'plugins/node_modules'),
+    ]
   })
 
   beforeEach(async () => {
@@ -317,7 +319,10 @@ describe('BackupController (e2e)', { timeout: 10_000 }, () => {
 
     expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('Restoring backup'))
     expect(client.emit).toHaveBeenCalledWith('stdout', expect.stringContaining('Restore Complete'))
-    expect(pluginsService.managePlugin).toHaveBeenCalledWith('install', expect.objectContaining({ name: 'homebridge-mock-plugin', version: expect.anything() }), client)
+    expect(pluginsService.managePlugin).toHaveBeenCalledWith('install', expect.objectContaining({
+      name: 'homebridge-mock-plugin',
+      version: expect.anything(),
+    }), client)
 
     // Ensure the temp restore directory was removed
     expect(await pathExists(restoreDirectory)).toBe(false)
@@ -725,7 +730,11 @@ describe('BackupController (e2e)', { timeout: 10_000 }, () => {
       const backupId = 'abcdef012345.987654321'
       const backupFile = `homebridge-backup-${backupId}.tar.gz`
       await tarCreate(
-        { gzip: true, cwd: stagingDir, file: resolve(configService.instanceBackupPath, backupFile) },
+        {
+          gzip: true,
+          cwd: stagingDir,
+          file: resolve(configService.instanceBackupPath, backupFile),
+        },
         ['info.json'],
       )
 
@@ -749,7 +758,11 @@ describe('BackupController (e2e)', { timeout: 10_000 }, () => {
       const backupId = '0123456789ab.123456789'
       const backupFile = `homebridge-backup-${backupId}.tar.gz`
       await tarCreate(
-        { gzip: true, cwd: stagingDir, file: resolve(configService.instanceBackupPath, backupFile) },
+        {
+          gzip: true,
+          cwd: stagingDir,
+          file: resolve(configService.instanceBackupPath, backupFile),
+        },
         ['info.json', 'evil'],
       )
 
@@ -868,15 +881,25 @@ describe('BackupController (e2e)', { timeout: 10_000 }, () => {
         eocd.writeUInt32LE(centralSize, 12)
         eocd.writeUInt32LE(offset, 16)
         eocd.writeUInt16LE(0, 20)
-        return Buffer.concat([...localParts, ...centralParts, eocd])
+        return Buffer.concat([
+          ...localParts,
+          ...centralParts,
+          eocd,
+        ])
       }
 
       const destDir = await mkdtemp(join(tmpdir(), 'audit-zip-'))
       const escapeTarget = resolve(destDir, '..', 'audit-zip-escape.txt')
       try {
         const zipBuffer = buildZip([
-          { name: 'storage/legit.txt', data: Buffer.from('ok\n') },
-          { name: '../audit-zip-escape.txt', data: Buffer.from('OWNED\n') },
+          {
+            name: 'storage/legit.txt',
+            data: Buffer.from('ok\n'),
+          },
+          {
+            name: '../audit-zip-escape.txt',
+            data: Buffer.from('OWNED\n'),
+          },
         ])
         const source = Readable.from(zipBuffer)
         await expect((backupService as any).extractZipSafely(source, destDir))

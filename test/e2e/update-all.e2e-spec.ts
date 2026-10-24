@@ -146,11 +146,23 @@ describe('UpdateAllController (e2e)', () => {
     // orchestrator will use, and the read side the fresh page uses after the
     // UI restarts itself - the file IS the survival mechanism.
     const runId = await journalService.startRun([
-      { type: 'plugin', name: 'homebridge-mock-plugin', from: '1.0.0', to: '1.1.0' },
-      { type: 'ui', name: 'homebridge-config-ui-x', from: '5.27.0', to: '5.27.1' },
+      {
+        type: 'plugin',
+        name: 'homebridge-mock-plugin',
+        from: '1.0.0',
+        to: '1.1.0',
+      },
+      {
+        type: 'ui',
+        name: 'homebridge-config-ui-x',
+        from: '5.27.0',
+        to: '5.27.1',
+      },
     ])
 
-    await journalService.updateItem('homebridge-mock-plugin', 'ok', { logTail: ['installed ok'] })
+    await journalService.updateItem('homebridge-mock-plugin', 'ok', {
+      logTail: ['installed ok'],
+    })
     await journalService.updateItem('homebridge-config-ui-x', 'failed', { reason: 'npm exploded' })
     await journalService.finishRun({ homebridge: 'done', ui: 'not-needed' })
 
@@ -165,8 +177,22 @@ describe('UpdateAllController (e2e)', () => {
     expect(journal.runId).toBe(runId)
     expect(journal.finishedAt).toBeTruthy()
     expect(journal.items).toEqual([
-      { type: 'plugin', name: 'homebridge-mock-plugin', from: '1.0.0', to: '1.1.0', status: 'ok', logTail: ['installed ok'] },
-      { type: 'ui', name: 'homebridge-config-ui-x', from: '5.27.0', to: '5.27.1', status: 'failed', reason: 'npm exploded' },
+      {
+        type: 'plugin',
+        name: 'homebridge-mock-plugin',
+        from: '1.0.0',
+        to: '1.1.0',
+        status: 'ok',
+        logTail: ['installed ok'],
+      },
+      {
+        type: 'ui',
+        name: 'homebridge-config-ui-x',
+        from: '5.27.0',
+        to: '5.27.1',
+        status: 'failed',
+        reason: 'npm exploded',
+      },
     ])
     expect(journal.restart).toEqual({ homebridge: 'done', ui: 'not-needed' })
   })
@@ -188,8 +214,18 @@ describe('UpdateAllController (e2e)', () => {
     // is definitively dead - settle it at the source so every reader of the
     // file sees the truth, not just the modal's own interpretation
     await journalService.startRun([
-      { type: 'plugin', name: 'homebridge-done', from: '1.0.0', to: '1.1.0' },
-      { type: 'plugin', name: 'homebridge-stranded', from: '2.0.0', to: '2.1.0' },
+      {
+        type: 'plugin',
+        name: 'homebridge-done',
+        from: '1.0.0',
+        to: '1.1.0',
+      },
+      {
+        type: 'plugin',
+        name: 'homebridge-stranded',
+        from: '2.0.0',
+        to: '2.1.0',
+      },
     ])
     await journalService.updateItem('homebridge-done', 'ok')
 
@@ -204,7 +240,14 @@ describe('UpdateAllController (e2e)', () => {
   })
 
   it('leaves a finished journal alone when the module boots', async () => {
-    await journalService.startRun([{ type: 'plugin', name: 'homebridge-fine', from: '1.0.0', to: '1.1.0' }])
+    await journalService.startRun([
+      {
+        type: 'plugin',
+        name: 'homebridge-fine',
+        from: '1.0.0',
+        to: '1.1.0',
+      },
+    ])
     await journalService.updateItem('homebridge-fine', 'ok')
     await journalService.finishRun({ homebridge: 'not-needed', ui: 'not-needed' })
     const before = await journalService.read()
@@ -215,7 +258,14 @@ describe('UpdateAllController (e2e)', () => {
   })
 
   it('caps an item log tail at write time', async () => {
-    await journalService.startRun([{ type: 'plugin', name: 'homebridge-mock-plugin', from: '1.0.0', to: '1.1.0' }])
+    await journalService.startRun([
+      {
+        type: 'plugin',
+        name: 'homebridge-mock-plugin',
+        from: '1.0.0',
+        to: '1.1.0',
+      },
+    ])
 
     const lines = Array.from({ length: 100 }, (_, i) => `line ${i}`)
     await journalService.updateItem('homebridge-mock-plugin', 'ok', { logTail: lines })
@@ -262,8 +312,18 @@ describe('UpdateAllController (e2e)', () => {
 
     beforeEach(() => {
       mockPluginsService.getOutOfDatePlugins.mockResolvedValue([])
-      mockPluginsService.getHomebridgePackage.mockResolvedValue({ name: 'homebridge', installedVersion: '2.3.1', latestVersion: null, updateAvailable: false })
-      mockPluginsService.getHomebridgeUiPackage.mockResolvedValue({ name: 'homebridge-config-ui-x', installedVersion: '5.27.0', latestVersion: null, updateAvailable: false })
+      mockPluginsService.getHomebridgePackage.mockResolvedValue({
+        name: 'homebridge',
+        installedVersion: '2.3.1',
+        latestVersion: null,
+        updateAvailable: false,
+      })
+      mockPluginsService.getHomebridgeUiPackage.mockResolvedValue({
+        name: 'homebridge-config-ui-x',
+        installedVersion: '5.27.0',
+        latestVersion: null,
+        updateAvailable: false,
+      })
       configService.ui.plugins = { hideUpdatesFor: [] }
     })
 
@@ -286,8 +346,18 @@ describe('UpdateAllController (e2e)', () => {
         plugin('homebridge-zeta'),
         plugin('homebridge-alpha'),
       ])
-      mockPluginsService.getHomebridgePackage.mockResolvedValue({ name: 'homebridge', installedVersion: '2.3.1', latestVersion: '2.3.2', updateAvailable: true })
-      mockPluginsService.getHomebridgeUiPackage.mockResolvedValue({ name: 'homebridge-config-ui-x', installedVersion: '5.27.0', latestVersion: '5.27.1', updateAvailable: true })
+      mockPluginsService.getHomebridgePackage.mockResolvedValue({
+        name: 'homebridge',
+        installedVersion: '2.3.1',
+        latestVersion: '2.3.2',
+        updateAvailable: true,
+      })
+      mockPluginsService.getHomebridgeUiPackage.mockResolvedValue({
+        name: 'homebridge-config-ui-x',
+        installedVersion: '5.27.0',
+        latestVersion: '5.27.1',
+        updateAvailable: true,
+      })
 
       const { items, needsReview, skipped } = await getPlan()
       expect(items.map((x: any) => [x.type, x.name])).toEqual([
@@ -307,55 +377,91 @@ describe('UpdateAllController (e2e)', () => {
         plugin('homebridge-excluded'),
         plugin('homebridge-mainbridge'),
       ])
-      configService.ui.plugins = { hideUpdatesFor: ['homebridge-excluded'] }
+      configService.ui.plugins = {
+        hideUpdatesFor: ['homebridge-excluded'],
+      }
       mockPluginsService.getPluginChildBridgeUsernames.mockImplementation(async (name: string) =>
-        name === 'homebridge-childed' ? ['0E:AA:AA:AA:AA:AA', '0E:BB:BB:BB:BB:BB'] : [])
+        name === 'homebridge-childed'
+          ? ['0E:AA:AA:AA:AA:AA', '0E:BB:BB:BB:BB:BB']
+          : [])
 
       const { items, skipped } = await getPlan()
       expect(items).toEqual([
-        expect.objectContaining({ name: 'homebridge-childed', childBridgeUsernames: ['0E:AA:AA:AA:AA:AA', '0E:BB:BB:BB:BB:BB'] }),
+        expect.objectContaining({
+          name: 'homebridge-childed',
+          childBridgeUsernames: ['0E:AA:AA:AA:AA:AA', '0E:BB:BB:BB:BB:BB'],
+        }),
         expect.objectContaining({ name: 'homebridge-mainbridge', childBridgeUsernames: [] }),
       ])
-      expect(skipped).toEqual([expect.objectContaining({ name: 'homebridge-excluded', childBridgeUsernames: [] })])
+      expect(skipped).toEqual([
+        expect.objectContaining({ name: 'homebridge-excluded', childBridgeUsernames: [] }),
+      ])
       // Excluded items cannot be selected, so their bridges are never looked up
       expect(mockPluginsService.getPluginChildBridgeUsernames).not.toHaveBeenCalledWith('homebridge-excluded')
     })
 
     it('skips a plugin whose updates the user has hidden, with reason hidden', async () => {
-      mockPluginsService.getOutOfDatePlugins.mockResolvedValue([plugin('homebridge-hush')])
-      configService.ui.plugins = { hideUpdatesFor: ['homebridge-hush'] }
+      mockPluginsService.getOutOfDatePlugins.mockResolvedValue([
+        plugin('homebridge-hush'),
+      ])
+      configService.ui.plugins = {
+        hideUpdatesFor: ['homebridge-hush'],
+      }
 
       const { items, skipped } = await getPlan()
       expect(items).toEqual([])
-      expect(skipped).toEqual([expect.objectContaining({ name: 'homebridge-hush', reason: 'hidden' })])
+      expect(skipped).toEqual([
+        expect.objectContaining({ name: 'homebridge-hush', reason: 'hidden' }),
+      ])
     })
 
     it('skips a disabled plugin, with reason disabled', async () => {
-      mockPluginsService.getOutOfDatePlugins.mockResolvedValue([plugin('homebridge-off', { disabled: true })])
+      mockPluginsService.getOutOfDatePlugins.mockResolvedValue([
+        plugin('homebridge-off', { disabled: true }),
+      ])
 
       const { items, skipped } = await getPlan()
       expect(items).toEqual([])
-      expect(skipped).toEqual([expect.objectContaining({ name: 'homebridge-off', reason: 'disabled' })])
+      expect(skipped).toEqual([
+        expect.objectContaining({ name: 'homebridge-off', reason: 'disabled' }),
+      ])
     })
 
     it('moves a major version jump to needsReview', async () => {
-      mockPluginsService.getOutOfDatePlugins.mockResolvedValue([plugin('homebridge-big', { latestVersion: '2.0.0' })])
+      mockPluginsService.getOutOfDatePlugins.mockResolvedValue([
+        plugin('homebridge-big', { latestVersion: '2.0.0' }),
+      ])
 
       const { items, needsReview, skipped } = await getPlan()
       expect(items).toEqual([])
       expect(skipped).toEqual([])
-      expect(needsReview).toEqual([expect.objectContaining({ name: 'homebridge-big', from: '1.0.0', to: '2.0.0', reason: 'major' })])
+      expect(needsReview).toEqual([
+        expect.objectContaining({
+          name: 'homebridge-big',
+          from: '1.0.0',
+          to: '2.0.0',
+          reason: 'major',
+        }),
+      ])
     })
 
     it('skips an engines-incompatible update, and keeps a compatible one', async () => {
       mockPluginsService.getOutOfDatePlugins.mockResolvedValue([
-        plugin('homebridge-future-node', { updateEngines: { node: '>=99.0.0' } }),
-        plugin('homebridge-future-hb', { updateEngines: { homebridge: '>=99.0.0' } }),
-        plugin('homebridge-fine', { updateEngines: { node: '>=18.0.0' } }),
+        plugin('homebridge-future-node', {
+          updateEngines: { node: '>=99.0.0' },
+        }),
+        plugin('homebridge-future-hb', {
+          updateEngines: { homebridge: '>=99.0.0' },
+        }),
+        plugin('homebridge-fine', {
+          updateEngines: { node: '>=18.0.0' },
+        }),
       ])
 
       const { items, skipped } = await getPlan()
-      expect(items).toEqual([expect.objectContaining({ name: 'homebridge-fine' })])
+      expect(items).toEqual([
+        expect.objectContaining({ name: 'homebridge-fine' }),
+      ])
       expect(skipped.map((x: any) => [x.name, x.reason])).toEqual([
         ['homebridge-future-hb', 'engines'],
         ['homebridge-future-node', 'engines'],
@@ -377,7 +483,9 @@ describe('UpdateAllController (e2e)', () => {
 
       const { items, skipped } = await getPlan()
       expect(items).toEqual([])
-      expect(skipped).toEqual([expect.objectContaining({ name: 'homebridge-config-ui-x', reason: 'engines' })])
+      expect(skipped).toEqual([
+        expect.objectContaining({ name: 'homebridge-config-ui-x', reason: 'engines' }),
+      ])
     })
 
     it('reports only the first matching exclusion reason', async () => {
@@ -386,29 +494,46 @@ describe('UpdateAllController (e2e)', () => {
       mockPluginsService.getOutOfDatePlugins.mockResolvedValue([
         plugin('homebridge-multi', { disabled: true, latestVersion: '2.0.0' }),
       ])
-      configService.ui.plugins = { hideUpdatesFor: ['homebridge-multi'] }
+      configService.ui.plugins = {
+        hideUpdatesFor: ['homebridge-multi'],
+      }
 
       const { needsReview, skipped } = await getPlan()
       expect(needsReview).toEqual([])
-      expect(skipped).toEqual([expect.objectContaining({ name: 'homebridge-multi', reason: 'hidden' })])
+      expect(skipped).toEqual([
+        expect.objectContaining({ name: 'homebridge-multi', reason: 'hidden' }),
+      ])
     })
 
     it('plans the UI only once, even though it also appears in the plugin list', async () => {
       // the UI carries the homebridge-plugin keyword, so getOutOfDatePlugins
       // returns it alongside real plugins
-      mockPluginsService.getOutOfDatePlugins.mockResolvedValue([plugin('homebridge-config-ui-x', { installedVersion: '5.27.0', latestVersion: '5.27.1' })])
-      mockPluginsService.getHomebridgeUiPackage.mockResolvedValue({ name: 'homebridge-config-ui-x', installedVersion: '5.27.0', latestVersion: '5.27.1', updateAvailable: true })
+      mockPluginsService.getOutOfDatePlugins.mockResolvedValue([
+        plugin('homebridge-config-ui-x', { installedVersion: '5.27.0', latestVersion: '5.27.1' }),
+      ])
+      mockPluginsService.getHomebridgeUiPackage.mockResolvedValue({
+        name: 'homebridge-config-ui-x',
+        installedVersion: '5.27.0',
+        latestVersion: '5.27.1',
+        updateAvailable: true,
+      })
 
       const { items } = await getPlan()
-      expect(items).toEqual([expect.objectContaining({ type: 'ui', name: 'homebridge-config-ui-x' })])
+      expect(items).toEqual([
+        expect.objectContaining({ type: 'ui', name: 'homebridge-config-ui-x' }),
+      ])
     })
 
     it('still plans plugin updates when the Homebridge package cannot be resolved', async () => {
-      mockPluginsService.getOutOfDatePlugins.mockResolvedValue([plugin('homebridge-survivor')])
+      mockPluginsService.getOutOfDatePlugins.mockResolvedValue([
+        plugin('homebridge-survivor'),
+      ])
       mockPluginsService.getHomebridgePackage.mockRejectedValue(new Error('Unable To Find Homebridge Installation.'))
 
       const { items } = await getPlan()
-      expect(items).toEqual([expect.objectContaining({ name: 'homebridge-survivor' })])
+      expect(items).toEqual([
+        expect.objectContaining({ name: 'homebridge-survivor' }),
+      ])
     })
 
     it('rejects an unauthenticated caller', async () => {
@@ -436,7 +561,12 @@ describe('UpdateAllController (e2e)', () => {
       ok: true,
       name,
       version,
-      restart: { homebridge: false, ui: false, childBridgeUsernames: [], ...restart },
+      restart: {
+        homebridge: false,
+        ui: false,
+        childBridgeUsernames: [],
+        ...restart,
+      },
     })
 
     const deferred = () => {
@@ -456,8 +586,18 @@ describe('UpdateAllController (e2e)', () => {
       mockHomebridgeIpcService.restartHomebridge.mockReturnValue(true)
       mockChildBridgesService.restartChildBridge.mockReset()
       mockPluginsService.getOutOfDatePlugins.mockResolvedValue([])
-      mockPluginsService.getHomebridgePackage.mockResolvedValue({ name: 'homebridge', installedVersion: '2.3.1', latestVersion: null, updateAvailable: false })
-      mockPluginsService.getHomebridgeUiPackage.mockResolvedValue({ name: 'homebridge-config-ui-x', installedVersion: '5.27.0', latestVersion: null, updateAvailable: false })
+      mockPluginsService.getHomebridgePackage.mockResolvedValue({
+        name: 'homebridge',
+        installedVersion: '2.3.1',
+        latestVersion: null,
+        updateAvailable: false,
+      })
+      mockPluginsService.getHomebridgeUiPackage.mockResolvedValue({
+        name: 'homebridge-config-ui-x',
+        installedVersion: '5.27.0',
+        latestVersion: null,
+        updateAvailable: false,
+      })
       mockPluginsService.performPackageUpdate.mockImplementation(async (name: string, version: string) => {
         if (name === 'homebridge-config-ui-x') {
           return okUpdate(name, version, { ui: true })
@@ -489,9 +629,22 @@ describe('UpdateAllController (e2e)', () => {
     }
 
     it('runs the confirmed items serially, after a backup, and journals every step', async () => {
-      mockPluginsService.getOutOfDatePlugins.mockResolvedValue([plugin('homebridge-beta'), plugin('homebridge-alpha')])
-      mockPluginsService.getHomebridgePackage.mockResolvedValue({ name: 'homebridge', installedVersion: '2.3.1', latestVersion: '2.3.2', updateAvailable: true })
-      mockPluginsService.getHomebridgeUiPackage.mockResolvedValue({ name: 'homebridge-config-ui-x', installedVersion: '5.27.0', latestVersion: '5.27.1', updateAvailable: true })
+      mockPluginsService.getOutOfDatePlugins.mockResolvedValue([
+        plugin('homebridge-beta'),
+        plugin('homebridge-alpha'),
+      ])
+      mockPluginsService.getHomebridgePackage.mockResolvedValue({
+        name: 'homebridge',
+        installedVersion: '2.3.1',
+        latestVersion: '2.3.2',
+        updateAvailable: true,
+      })
+      mockPluginsService.getHomebridgeUiPackage.mockResolvedValue({
+        name: 'homebridge-config-ui-x',
+        installedVersion: '5.27.0',
+        latestVersion: '5.27.1',
+        updateAvailable: true,
+      })
 
       const res = await startRun([
         { name: 'homebridge-alpha', to: '1.1.0' },
@@ -527,11 +680,20 @@ describe('UpdateAllController (e2e)', () => {
     })
 
     it('a failed plugin does not stop the rest, and carries its output into the journal', async () => {
-      mockPluginsService.getOutOfDatePlugins.mockResolvedValue([plugin('homebridge-broken'), plugin('homebridge-working')])
+      mockPluginsService.getOutOfDatePlugins.mockResolvedValue([
+        plugin('homebridge-broken'),
+        plugin('homebridge-working'),
+      ])
       mockPluginsService.performPackageUpdate.mockImplementation(async (name: string, version: string, client: any) => {
         if (name === 'homebridge-broken') {
           client.emit('stdout', 'npm ERR! code E404\nnpm ERR! not found\n')
-          return { ok: false, name, version, error: 'npm exploded', restart: { homebridge: false, ui: false, childBridgeUsernames: [] } }
+          return {
+            ok: false,
+            name,
+            version,
+            error: 'npm exploded',
+            restart: { homebridge: false, ui: false, childBridgeUsernames: [] },
+          }
         }
         return okUpdate(name, version, { homebridge: true })
       })
@@ -545,17 +707,38 @@ describe('UpdateAllController (e2e)', () => {
 
       const journal = await readJournal()
       expect(journal.items).toEqual([
-        expect.objectContaining({ name: 'homebridge-broken', status: 'failed', reason: 'npm exploded', logTail: ['npm ERR! code E404', 'npm ERR! not found'] }),
+        expect.objectContaining({
+          name: 'homebridge-broken',
+          status: 'failed',
+          reason: 'npm exploded',
+          logTail: ['npm ERR! code E404', 'npm ERR! not found'],
+        }),
         expect.objectContaining({ name: 'homebridge-working', status: 'ok' }),
       ])
       expect(journal.restart.homebridge).toBe('done')
     })
 
     it('a failed Homebridge update skips the UI update, and says so', async () => {
-      mockPluginsService.getHomebridgePackage.mockResolvedValue({ name: 'homebridge', installedVersion: '2.3.1', latestVersion: '2.3.2', updateAvailable: true })
-      mockPluginsService.getHomebridgeUiPackage.mockResolvedValue({ name: 'homebridge-config-ui-x', installedVersion: '5.27.0', latestVersion: '5.27.1', updateAvailable: true })
+      mockPluginsService.getHomebridgePackage.mockResolvedValue({
+        name: 'homebridge',
+        installedVersion: '2.3.1',
+        latestVersion: '2.3.2',
+        updateAvailable: true,
+      })
+      mockPluginsService.getHomebridgeUiPackage.mockResolvedValue({
+        name: 'homebridge-config-ui-x',
+        installedVersion: '5.27.0',
+        latestVersion: '5.27.1',
+        updateAvailable: true,
+      })
       mockPluginsService.performPackageUpdate.mockImplementation(async (name: string, version: string) => {
-        return { ok: false, name, version, error: 'npm exploded', restart: { homebridge: false, ui: false, childBridgeUsernames: [] } }
+        return {
+          ok: false,
+          name,
+          version,
+          error: 'npm exploded',
+          restart: { homebridge: false, ui: false, childBridgeUsernames: [] },
+        }
       })
 
       const res = await startRun([
@@ -577,30 +760,41 @@ describe('UpdateAllController (e2e)', () => {
     })
 
     it('two concurrent starts: exactly one runs, the other gets 409, and the slot is released after', async () => {
-      mockPluginsService.getOutOfDatePlugins.mockResolvedValue([plugin('homebridge-slow')])
+      mockPluginsService.getOutOfDatePlugins.mockResolvedValue([
+        plugin('homebridge-slow'),
+      ])
       const gate = deferred()
       mockPluginsService.performPackageUpdate.mockImplementationOnce(async (name: string, version: string) => {
         await gate.promise
         return okUpdate(name, version, { homebridge: true })
       })
 
-      const first = await startRun([{ name: 'homebridge-slow', to: '1.1.0' }])
+      const first = await startRun([
+        { name: 'homebridge-slow', to: '1.1.0' },
+      ])
       expect(first.statusCode).toBe(201)
 
-      const second = await startRun([{ name: 'homebridge-slow', to: '1.1.0' }])
+      const second = await startRun([
+        { name: 'homebridge-slow', to: '1.1.0' },
+      ])
       expect(second.statusCode).toBe(409)
 
       gate.resolve()
       await updateAllService.waitForActiveRun()
 
       // slot released - a new run is allowed again
-      const third = await startRun([{ name: 'homebridge-slow', to: '1.1.0' }])
+      const third = await startRun([
+        { name: 'homebridge-slow', to: '1.1.0' },
+      ])
       expect(third.statusCode).toBe(201)
       await updateAllService.waitForActiveRun()
     })
 
     it('cancel takes effect between items and leaves an honest journal', async () => {
-      mockPluginsService.getOutOfDatePlugins.mockResolvedValue([plugin('homebridge-first'), plugin('homebridge-second')])
+      mockPluginsService.getOutOfDatePlugins.mockResolvedValue([
+        plugin('homebridge-first'),
+        plugin('homebridge-second'),
+      ])
       const gate = deferred()
       mockPluginsService.performPackageUpdate.mockImplementationOnce(async (name: string, version: string) => {
         await gate.promise
@@ -636,10 +830,14 @@ describe('UpdateAllController (e2e)', () => {
       // The backup step is the only pre-loop await - rejecting it simulates
       // the loop machinery itself dying (not an item failure, which the loop
       // handles). The journal must still read as a finished run.
-      mockPluginsService.getOutOfDatePlugins.mockResolvedValue([plugin('homebridge-stranded')])
+      mockPluginsService.getOutOfDatePlugins.mockResolvedValue([
+        plugin('homebridge-stranded'),
+      ])
       mockBackupService.runScheduledBackupJob.mockRejectedValue(new Error('disk gone'))
 
-      const res = await startRun([{ name: 'homebridge-stranded', to: '1.1.0' }])
+      const res = await startRun([
+        { name: 'homebridge-stranded', to: '1.1.0' },
+      ])
       expect(res.statusCode).toBe(201)
       await updateAllService.waitForActiveRun()
 
@@ -652,7 +850,9 @@ describe('UpdateAllController (e2e)', () => {
 
       // and the slot is free for the next run
       mockBackupService.runScheduledBackupJob.mockResolvedValue(undefined)
-      const retry = await startRun([{ name: 'homebridge-stranded', to: '1.1.0' }])
+      const retry = await startRun([
+        { name: 'homebridge-stranded', to: '1.1.0' },
+      ])
       expect(retry.statusCode).toBe(201)
       await updateAllService.waitForActiveRun()
     })
@@ -661,14 +861,18 @@ describe('UpdateAllController (e2e)', () => {
       // Cancel takes effect between items - arriving while the LAST item is
       // mid-npm means nothing is left to skip, and the finale must still
       // apply the restart the completed updates call for.
-      mockPluginsService.getOutOfDatePlugins.mockResolvedValue([plugin('homebridge-last')])
+      mockPluginsService.getOutOfDatePlugins.mockResolvedValue([
+        plugin('homebridge-last'),
+      ])
       const gate = deferred()
       mockPluginsService.performPackageUpdate.mockImplementationOnce(async (name: string, version: string) => {
         await gate.promise
         return okUpdate(name, version, { homebridge: true })
       })
 
-      const res = await startRun([{ name: 'homebridge-last', to: '1.1.0' }])
+      const res = await startRun([
+        { name: 'homebridge-last', to: '1.1.0' },
+      ])
       expect(res.statusCode).toBe(201)
 
       const cancel = await app.inject({
@@ -682,7 +886,9 @@ describe('UpdateAllController (e2e)', () => {
       await updateAllService.waitForActiveRun()
 
       const journal = await readJournal()
-      expect(journal.items).toEqual([expect.objectContaining({ name: 'homebridge-last', status: 'ok' })])
+      expect(journal.items).toEqual([
+        expect.objectContaining({ name: 'homebridge-last', status: 'ok' }),
+      ])
       expect(journal.restart.homebridge).toBe('done')
       expect(mockHomebridgeIpcService.restartHomebridge).toHaveBeenCalledTimes(1)
     })
@@ -692,13 +898,19 @@ describe('UpdateAllController (e2e)', () => {
       // started inside that window used to be truncated mid-way when the
       // exit fired between items
       mockPluginsService.uiRestartPending = true
-      mockPluginsService.getOutOfDatePlugins.mockResolvedValue([plugin('homebridge-late')])
+      mockPluginsService.getOutOfDatePlugins.mockResolvedValue([
+        plugin('homebridge-late'),
+      ])
 
       const res = await app.inject({
         method: 'POST',
         path: '/update-all/start',
         headers: { authorization },
-        payload: { items: [{ name: 'homebridge-late', to: '1.1.0' }] },
+        payload: {
+          items: [
+            { name: 'homebridge-late', to: '1.1.0' },
+          ],
+        },
       })
 
       expect(res.statusCode).toBe(409)
@@ -715,22 +927,32 @@ describe('UpdateAllController (e2e)', () => {
     })
 
     it('rejects an item that is not in the current plan, and releases the slot', async () => {
-      mockPluginsService.getOutOfDatePlugins.mockResolvedValue([plugin('homebridge-real')])
+      mockPluginsService.getOutOfDatePlugins.mockResolvedValue([
+        plugin('homebridge-real'),
+      ])
 
-      const res = await startRun([{ name: 'homebridge-imaginary', to: '1.1.0' }])
+      const res = await startRun([
+        { name: 'homebridge-imaginary', to: '1.1.0' },
+      ])
       expect(res.statusCode).toBe(400)
       expect(mockPluginsService.performPackageUpdate).not.toHaveBeenCalled()
 
       // the failed validation must not wedge future runs
-      const retry = await startRun([{ name: 'homebridge-real', to: '1.1.0' }])
+      const retry = await startRun([
+        { name: 'homebridge-real', to: '1.1.0' },
+      ])
       expect(retry.statusCode).toBe(201)
       await updateAllService.waitForActiveRun()
     })
 
     it('rejects an item whose target version no longer matches the plan', async () => {
-      mockPluginsService.getOutOfDatePlugins.mockResolvedValue([plugin('homebridge-moved', { latestVersion: '1.2.0' })])
+      mockPluginsService.getOutOfDatePlugins.mockResolvedValue([
+        plugin('homebridge-moved', { latestVersion: '1.2.0' }),
+      ])
 
-      const res = await startRun([{ name: 'homebridge-moved', to: '1.1.0' }])
+      const res = await startRun([
+        { name: 'homebridge-moved', to: '1.1.0' },
+      ])
       expect(res.statusCode).toBe(400)
       expect(mockPluginsService.performPackageUpdate).not.toHaveBeenCalled()
     })
@@ -744,7 +966,11 @@ describe('UpdateAllController (e2e)', () => {
       const res = await app.inject({
         method: 'POST',
         path: '/update-all/start',
-        payload: { items: [{ name: 'homebridge-x', to: '1.1.0' }] },
+        payload: {
+          items: [
+            { name: 'homebridge-x', to: '1.1.0' },
+          ],
+        },
       })
 
       expect(res.statusCode).toBe(401)
@@ -766,7 +992,12 @@ describe('UpdateAllController (e2e)', () => {
       ok: true,
       name,
       version,
-      restart: { homebridge: false, ui: false, childBridgeUsernames: [], ...restart },
+      restart: {
+        homebridge: false,
+        ui: false,
+        childBridgeUsernames: [],
+        ...restart,
+      },
     })
 
     const startRun = async (items: { name: string, to: string }[]) => {
@@ -787,19 +1018,36 @@ describe('UpdateAllController (e2e)', () => {
       mockHomebridgeIpcService.restartHomebridge.mockReturnValue(true)
       mockChildBridgesService.restartChildBridge.mockReset()
       mockPluginsService.getOutOfDatePlugins.mockResolvedValue([])
-      mockPluginsService.getHomebridgePackage.mockResolvedValue({ name: 'homebridge', installedVersion: '2.3.1', latestVersion: null, updateAvailable: false })
-      mockPluginsService.getHomebridgeUiPackage.mockResolvedValue({ name: 'homebridge-config-ui-x', installedVersion: '5.27.0', latestVersion: null, updateAvailable: false })
+      mockPluginsService.getHomebridgePackage.mockResolvedValue({
+        name: 'homebridge',
+        installedVersion: '2.3.1',
+        latestVersion: null,
+        updateAvailable: false,
+      })
+      mockPluginsService.getHomebridgeUiPackage.mockResolvedValue({
+        name: 'homebridge-config-ui-x',
+        installedVersion: '5.27.0',
+        latestVersion: null,
+        updateAvailable: false,
+      })
       mockBackupService.runScheduledBackupJob.mockResolvedValue(undefined)
       configService.ui.plugins = { hideUpdatesFor: [] }
     })
 
     it('the journal is on disk before the UI exit timer is armed', async () => {
-      mockPluginsService.getHomebridgeUiPackage.mockResolvedValue({ name: 'homebridge-config-ui-x', installedVersion: '5.27.0', latestVersion: '5.27.1', updateAvailable: true })
+      mockPluginsService.getHomebridgeUiPackage.mockResolvedValue({
+        name: 'homebridge-config-ui-x',
+        installedVersion: '5.27.0',
+        latestVersion: '5.27.1',
+        updateAvailable: true,
+      })
       mockPluginsService.performPackageUpdate.mockImplementation(async (name: string, version: string) => okUpdate(name, version, { ui: true }))
 
       const finishRunSpy = vi.spyOn(journalService, 'finishRun')
       try {
-        await startRun([{ name: 'homebridge-config-ui-x', to: '5.27.1' }])
+        await startRun([
+          { name: 'homebridge-config-ui-x', to: '5.27.1' },
+        ])
 
         expect(finishRunSpy).toHaveBeenCalledTimes(1)
         expect(mockPluginsService.scheduleUiRestart).toHaveBeenCalledTimes(1)
@@ -819,10 +1067,14 @@ describe('UpdateAllController (e2e)', () => {
       // (no process attached) used to be recorded as 'done', and the modal
       // then sent the user to a restart page for a restart that never happened
       mockHomebridgeIpcService.restartHomebridge.mockReturnValue(false)
-      mockPluginsService.getOutOfDatePlugins.mockResolvedValue([plugin('homebridge-main')])
+      mockPluginsService.getOutOfDatePlugins.mockResolvedValue([
+        plugin('homebridge-main'),
+      ])
       mockPluginsService.performPackageUpdate.mockImplementation(async (name: string, version: string) => okUpdate(name, version, { homebridge: true }))
 
-      await startRun([{ name: 'homebridge-main', to: '1.1.0' }])
+      await startRun([
+        { name: 'homebridge-main', to: '1.1.0' },
+      ])
 
       expect((await journalService.read()).restart.homebridge).toBe('failed')
     })
@@ -838,7 +1090,9 @@ describe('UpdateAllController (e2e)', () => {
       ])
       mockPluginsService.getPluginChildBridgeUsernames.mockImplementation(async (name: string) => [`0E:00:00:00:00:0${name.at(-1).toUpperCase()}`])
       mockPluginsService.performPackageUpdate.mockImplementation(async (name: string, version: string) => (
-        okUpdate(name, version, { childBridgeUsernames: [`0E:00:00:00:00:0${name.at(-1).toUpperCase()}`] })
+        okUpdate(name, version, {
+          childBridgeUsernames: [`0E:00:00:00:00:0${name.at(-1).toUpperCase()}`],
+        })
       ))
       mockChildBridgesService.restartChildBridge.mockImplementation((username: string) => {
         if (username.endsWith('B')) {
@@ -865,12 +1119,21 @@ describe('UpdateAllController (e2e)', () => {
      * it anyway.
      */
     it('issues no child bridge restarts when the ui is restarting too', async () => {
-      mockPluginsService.getOutOfDatePlugins.mockResolvedValue([plugin('homebridge-bridged')])
-      mockPluginsService.getHomebridgeUiPackage.mockResolvedValue({ name: 'homebridge-config-ui-x', installedVersion: '5.27.0', latestVersion: '5.27.1', updateAvailable: true })
+      mockPluginsService.getOutOfDatePlugins.mockResolvedValue([
+        plugin('homebridge-bridged'),
+      ])
+      mockPluginsService.getHomebridgeUiPackage.mockResolvedValue({
+        name: 'homebridge-config-ui-x',
+        installedVersion: '5.27.0',
+        latestVersion: '5.27.1',
+        updateAvailable: true,
+      })
       mockPluginsService.performPackageUpdate.mockImplementation(async (name: string, version: string) => (
         name === 'homebridge-config-ui-x'
           ? okUpdate(name, version, { ui: true })
-          : okUpdate(name, version, { childBridgeUsernames: ['AA:BB:CC:DD:EE:FF'] })
+          : okUpdate(name, version, {
+              childBridgeUsernames: ['AA:BB:CC:DD:EE:FF'],
+            })
       ))
 
       await startRun([
@@ -886,10 +1149,20 @@ describe('UpdateAllController (e2e)', () => {
     })
 
     it('no restart of any kind when nothing updated successfully', async () => {
-      mockPluginsService.getOutOfDatePlugins.mockResolvedValue([plugin('homebridge-doomed')])
-      mockPluginsService.performPackageUpdate.mockResolvedValue({ ok: false, name: 'homebridge-doomed', version: '1.1.0', error: 'npm exploded', restart: { homebridge: false, ui: false, childBridgeUsernames: [] } })
+      mockPluginsService.getOutOfDatePlugins.mockResolvedValue([
+        plugin('homebridge-doomed'),
+      ])
+      mockPluginsService.performPackageUpdate.mockResolvedValue({
+        ok: false,
+        name: 'homebridge-doomed',
+        version: '1.1.0',
+        error: 'npm exploded',
+        restart: { homebridge: false, ui: false, childBridgeUsernames: [] },
+      })
 
-      await startRun([{ name: 'homebridge-doomed', to: '1.1.0' }])
+      await startRun([
+        { name: 'homebridge-doomed', to: '1.1.0' },
+      ])
 
       expect(mockHomebridgeIpcService.restartHomebridge).not.toHaveBeenCalled()
       expect(mockChildBridgesService.restartChildBridge).not.toHaveBeenCalled()
@@ -898,11 +1171,17 @@ describe('UpdateAllController (e2e)', () => {
     })
 
     it('restarts only the child bridges when every updated plugin runs in one', async () => {
-      mockPluginsService.getOutOfDatePlugins.mockResolvedValue([plugin('homebridge-bridged')])
+      mockPluginsService.getOutOfDatePlugins.mockResolvedValue([
+        plugin('homebridge-bridged'),
+      ])
       mockPluginsService.performPackageUpdate.mockImplementation(async (name: string, version: string) =>
-        okUpdate(name, version, { childBridgeUsernames: ['0E:AA:AA:AA:AA:AA', '0E:BB:BB:BB:BB:BB'] }))
+        okUpdate(name, version, {
+          childBridgeUsernames: ['0E:AA:AA:AA:AA:AA', '0E:BB:BB:BB:BB:BB'],
+        }))
 
-      await startRun([{ name: 'homebridge-bridged', to: '1.1.0' }])
+      await startRun([
+        { name: 'homebridge-bridged', to: '1.1.0' },
+      ])
 
       expect(mockHomebridgeIpcService.restartHomebridge).not.toHaveBeenCalled()
       expect(mockChildBridgesService.restartChildBridge.mock.calls.map(x => x[0]).sort())
@@ -911,10 +1190,15 @@ describe('UpdateAllController (e2e)', () => {
     })
 
     it('a full restart covers everything - no separate child bridge restarts on top', async () => {
-      mockPluginsService.getOutOfDatePlugins.mockResolvedValue([plugin('homebridge-bridged'), plugin('homebridge-main')])
+      mockPluginsService.getOutOfDatePlugins.mockResolvedValue([
+        plugin('homebridge-bridged'),
+        plugin('homebridge-main'),
+      ])
       mockPluginsService.performPackageUpdate.mockImplementation(async (name: string, version: string) => {
         if (name === 'homebridge-bridged') {
-          return okUpdate(name, version, { childBridgeUsernames: ['0E:AA:AA:AA:AA:AA'] })
+          return okUpdate(name, version, {
+            childBridgeUsernames: ['0E:AA:AA:AA:AA:AA'],
+          })
         }
         return okUpdate(name, version, { homebridge: true })
       })
@@ -930,13 +1214,17 @@ describe('UpdateAllController (e2e)', () => {
     })
 
     it('a failed Homebridge restart is recorded and does not block the journal write', async () => {
-      mockPluginsService.getOutOfDatePlugins.mockResolvedValue([plugin('homebridge-main')])
+      mockPluginsService.getOutOfDatePlugins.mockResolvedValue([
+        plugin('homebridge-main'),
+      ])
       mockPluginsService.performPackageUpdate.mockImplementation(async (name: string, version: string) => okUpdate(name, version, { homebridge: true }))
       mockHomebridgeIpcService.restartHomebridge.mockImplementation(() => {
         throw new Error('ipc gone')
       })
 
-      await startRun([{ name: 'homebridge-main', to: '1.1.0' }])
+      await startRun([
+        { name: 'homebridge-main', to: '1.1.0' },
+      ])
 
       const journal = await journalService.read()
       expect(journal.finishedAt).toBeTruthy()
@@ -975,7 +1263,12 @@ describe('UpdateAllController (e2e)', () => {
     const makeWsClient = () => {
       const client = new EventEmitter()
       const received: [string, any][] = []
-      for (const event of ['item-start', 'stdout', 'item-result', 'run-complete']) {
+      for (const event of [
+        'item-start',
+        'stdout',
+        'item-result',
+        'run-complete',
+      ]) {
         client.on(event, (payload: any) => received.push([event, payload]))
       }
       activeClients.push(client)
@@ -998,8 +1291,18 @@ describe('UpdateAllController (e2e)', () => {
       mockHomebridgeIpcService.restartHomebridge.mockReturnValue(true)
       mockChildBridgesService.restartChildBridge.mockReset()
       mockPluginsService.getOutOfDatePlugins.mockResolvedValue([])
-      mockPluginsService.getHomebridgePackage.mockResolvedValue({ name: 'homebridge', installedVersion: '2.3.1', latestVersion: null, updateAvailable: false })
-      mockPluginsService.getHomebridgeUiPackage.mockResolvedValue({ name: 'homebridge-config-ui-x', installedVersion: '5.27.0', latestVersion: null, updateAvailable: false })
+      mockPluginsService.getHomebridgePackage.mockResolvedValue({
+        name: 'homebridge',
+        installedVersion: '2.3.1',
+        latestVersion: null,
+        updateAvailable: false,
+      })
+      mockPluginsService.getHomebridgeUiPackage.mockResolvedValue({
+        name: 'homebridge-config-ui-x',
+        installedVersion: '5.27.0',
+        latestVersion: null,
+        updateAvailable: false,
+      })
       mockPluginsService.performPackageUpdate.mockImplementation(async (name: string, version: string) => okUpdate(name, version))
       mockBackupService.runScheduledBackupJob.mockResolvedValue(undefined)
       configService.ui.plugins = { hideUpdatesFor: [] }
@@ -1047,9 +1350,13 @@ describe('UpdateAllController (e2e)', () => {
 
       client.emit('end')
 
-      mockPluginsService.getOutOfDatePlugins.mockResolvedValue([plugin('homebridge-after-end')])
+      mockPluginsService.getOutOfDatePlugins.mockResolvedValue([
+        plugin('homebridge-after-end'),
+      ])
       mockPluginsService.performPackageUpdate.mockImplementation(async (name: string, version: string) => okUpdate(name, version))
-      const res = await startRun([{ name: 'homebridge-after-end', to: '1.1.0' }])
+      const res = await startRun([
+        { name: 'homebridge-after-end', to: '1.1.0' },
+      ])
       expect(res.statusCode).toBe(201)
       await updateAllService.waitForActiveRun()
 
@@ -1057,7 +1364,9 @@ describe('UpdateAllController (e2e)', () => {
     })
 
     it('a subscriber sees the full event stream, in run order', async () => {
-      mockPluginsService.getOutOfDatePlugins.mockResolvedValue([plugin('homebridge-noisy')])
+      mockPluginsService.getOutOfDatePlugins.mockResolvedValue([
+        plugin('homebridge-noisy'),
+      ])
       mockPluginsService.performPackageUpdate.mockImplementation(async (name: string, version: string, wsClient: any) => {
         wsClient.emit('stdout', 'installing...\n')
         return okUpdate(name, version)
@@ -1066,20 +1375,36 @@ describe('UpdateAllController (e2e)', () => {
       const { client, received } = makeWsClient()
       await updateAllGateway.subscribe(client)
 
-      const res = await startRun([{ name: 'homebridge-noisy', to: '1.1.0' }])
+      const res = await startRun([
+        { name: 'homebridge-noisy', to: '1.1.0' },
+      ])
       expect(res.statusCode).toBe(201)
       await updateAllService.waitForActiveRun()
 
       expect(received).toEqual([
-        ['item-start', { name: 'homebridge-noisy' }],
-        ['stdout', { name: 'homebridge-noisy', data: 'installing...\n' }],
-        ['item-result', { name: 'homebridge-noisy', status: 'ok' }],
-        ['run-complete', { runId: res.json().runId }],
+        [
+          'item-start',
+          { name: 'homebridge-noisy' },
+        ],
+        [
+          'stdout',
+          { name: 'homebridge-noisy', data: 'installing...\n' },
+        ],
+        [
+          'item-result',
+          { name: 'homebridge-noisy', status: 'ok' },
+        ],
+        [
+          'run-complete',
+          { runId: res.json().runId },
+        ],
       ])
     })
 
     it('a client joining mid-run gets a snapshot of progress so far, then the live events', async () => {
-      mockPluginsService.getOutOfDatePlugins.mockResolvedValue([plugin('homebridge-slow')])
+      mockPluginsService.getOutOfDatePlugins.mockResolvedValue([
+        plugin('homebridge-slow'),
+      ])
       const gate = deferred()
       const entered = deferred()
       mockPluginsService.performPackageUpdate.mockImplementationOnce(async (name: string, version: string) => {
@@ -1088,26 +1413,38 @@ describe('UpdateAllController (e2e)', () => {
         return okUpdate(name, version)
       })
 
-      const res = await startRun([{ name: 'homebridge-slow', to: '1.1.0' }])
+      const res = await startRun([
+        { name: 'homebridge-slow', to: '1.1.0' },
+      ])
       expect(res.statusCode).toBe(201)
       await entered.promise
 
       const { client, received } = makeWsClient()
       const snapshot: any = await updateAllGateway.subscribe(client)
       expect(snapshot.active).toBe(true)
-      expect(snapshot.journal.items).toEqual([expect.objectContaining({ name: 'homebridge-slow', status: 'running' })])
+      expect(snapshot.journal.items).toEqual([
+        expect.objectContaining({ name: 'homebridge-slow', status: 'running' }),
+      ])
 
       gate.resolve()
       await updateAllService.waitForActiveRun()
 
       expect(received).toEqual([
-        ['item-result', { name: 'homebridge-slow', status: 'ok' }],
-        ['run-complete', { runId: res.json().runId }],
+        [
+          'item-result',
+          { name: 'homebridge-slow', status: 'ok' },
+        ],
+        [
+          'run-complete',
+          { runId: res.json().runId },
+        ],
       ])
     })
 
     it('one broken subscriber cannot break the run or the other subscribers', async () => {
-      mockPluginsService.getOutOfDatePlugins.mockResolvedValue([plugin('homebridge-steady')])
+      mockPluginsService.getOutOfDatePlugins.mockResolvedValue([
+        plugin('homebridge-steady'),
+      ])
 
       const broken = new EventEmitter()
       broken.emit = () => {
@@ -1119,7 +1456,9 @@ describe('UpdateAllController (e2e)', () => {
       const { client, received } = makeWsClient()
       await updateAllGateway.subscribe(client)
 
-      const res = await startRun([{ name: 'homebridge-steady', to: '1.1.0' }])
+      const res = await startRun([
+        { name: 'homebridge-steady', to: '1.1.0' },
+      ])
       expect(res.statusCode).toBe(201)
       await updateAllService.waitForActiveRun()
 
@@ -1132,13 +1471,17 @@ describe('UpdateAllController (e2e)', () => {
     })
 
     it('a disconnected client receives nothing further', async () => {
-      mockPluginsService.getOutOfDatePlugins.mockResolvedValue([plugin('homebridge-quiet')])
+      mockPluginsService.getOutOfDatePlugins.mockResolvedValue([
+        plugin('homebridge-quiet'),
+      ])
 
       const { client, received } = makeWsClient()
       await updateAllGateway.subscribe(client)
       client.emit('disconnect')
 
-      const res = await startRun([{ name: 'homebridge-quiet', to: '1.1.0' }])
+      const res = await startRun([
+        { name: 'homebridge-quiet', to: '1.1.0' },
+      ])
       expect(res.statusCode).toBe(201)
       await updateAllService.waitForActiveRun()
 
@@ -1155,7 +1498,9 @@ describe('UpdateAllController (e2e)', () => {
       // property the ws.service client checks - pin that so a nestjs upgrade
       // changing the shape fails here rather than silently succeeding with
       // an empty snapshot in the browser
-      expect(JSON.parse(JSON.stringify(result))).toMatchObject({ error: expect.any(String) })
+      expect(JSON.parse(JSON.stringify(result))).toMatchObject({
+        error: expect.any(String),
+      })
     })
   })
 

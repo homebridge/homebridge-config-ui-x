@@ -119,7 +119,9 @@ export function createChildBridgeSchema(translate: TranslateService, { isDebugMo
         },
       },
       ...(isMatterSupported && isPlatformPlugin)
-        ? { matter: createMatterSchema(translate, isProtocolExternalsOnlyEnabled, 'child', isMatterDisableIpv4Enabled) }
+        ? {
+            matter: createMatterSchema(translate, isProtocolExternalsOnlyEnabled, 'child', isMatterDisableIpv4Enabled),
+          }
         : {},
     },
   }

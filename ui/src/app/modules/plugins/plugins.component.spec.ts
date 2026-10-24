@@ -13,7 +13,9 @@ import { makePlugin, makeSettings } from '@/testing'
  * @param env - the settings env fields the sort depends on
  */
 function sortPlugins(plugins: Plugin[], env: Record<string, any> = {}): Plugin[] {
-  const context = { $settings: makeSettings({ env }) }
+  const context = {
+    $settings: makeSettings({ env }),
+  }
   return (PluginsComponent.prototype as any).sortPlugins.call(context, plugins)
 }
 
@@ -32,7 +34,9 @@ describe('PluginsComponent', () => {
     it('puts an available update above everything else', () => {
       const sorted = sortPlugins([
         plugin('plain'),
-        plugin('scoped', { newHbScope: { from: 'a', switch: 'b', to: 'c' } }),
+        plugin('scoped', {
+          newHbScope: { from: 'a', switch: 'b', to: 'c' },
+        }),
         plugin('updatable', { updateAvailable: true }),
       ])
 
@@ -59,13 +63,20 @@ describe('PluginsComponent', () => {
     })
 
     it('falls back to the name when two plugins score the same', () => {
-      const sorted = sortPlugins([plugin('zebra'), plugin('apple'), plugin('mango')])
+      const sorted = sortPlugins([
+        plugin('zebra'),
+        plugin('apple'),
+        plugin('mango'),
+      ])
 
       expect(sorted.map(x => x.name)).toEqual(['apple', 'mango', 'zebra'])
     })
 
     it('leaves the original array alone', () => {
-      const plugins = [plugin('zebra'), plugin('apple')]
+      const plugins = [
+        plugin('zebra'),
+        plugin('apple'),
+      ]
 
       sortPlugins(plugins)
 
@@ -75,7 +86,10 @@ describe('PluginsComponent', () => {
     describe('the child bridge nudge', () => {
       it('sinks a plugin that already runs on a child bridge', () => {
         const sorted = sortPlugins(
-          [plugin('a-on-bridge', { hasChildBridges: true }), plugin('b-needs-bridge')],
+          [
+            plugin('a-on-bridge', { hasChildBridges: true }),
+            plugin('b-needs-bridge'),
+          ],
           { recommendChildBridges: true },
         )
 
@@ -84,8 +98,16 @@ describe('PluginsComponent', () => {
 
       it('sinks a plugin the user opted out of the nudge', () => {
         const sorted = sortPlugins(
-          [plugin('a-opted-out'), plugin('b-needs-bridge')],
-          { recommendChildBridges: true, plugins: { hideChildBridgeSetupFor: ['a-opted-out'] } },
+          [
+            plugin('a-opted-out'),
+            plugin('b-needs-bridge'),
+          ],
+          {
+            recommendChildBridges: true,
+            plugins: {
+              hideChildBridgeSetupFor: ['a-opted-out'],
+            },
+          },
         )
 
         expect(sorted.map(x => x.name)).toEqual(['b-needs-bridge', 'a-opted-out'])
@@ -93,7 +115,10 @@ describe('PluginsComponent', () => {
 
       it('stops nudging entirely when recommendations are switched off', () => {
         const sorted = sortPlugins(
-          [plugin('a-on-bridge', { hasChildBridges: true }), plugin('b-needs-bridge')],
+          [
+            plugin('a-on-bridge', { hasChildBridges: true }),
+            plugin('b-needs-bridge'),
+          ],
           { recommendChildBridges: false },
         )
 
@@ -120,7 +145,10 @@ describe('PluginsComponent', () => {
         // -20 for configured against -10 for disabled. A working, set-up plugin
         // sinking below a switched-off one reads oddly, but it is deliberate:
         // the list is ordered by what still needs attention
-        const sorted = sortPlugins([plugin('a-configured', { isConfigured: true }), plugin('b-disabled', { disabled: true })])
+        const sorted = sortPlugins([
+          plugin('a-configured', { isConfigured: true }),
+          plugin('b-disabled', { disabled: true }),
+        ])
 
         expect(sorted.map(x => x.name)).toEqual(['b-disabled', 'a-configured'])
       })

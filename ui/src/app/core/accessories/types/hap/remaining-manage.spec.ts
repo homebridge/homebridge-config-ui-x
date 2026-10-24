@@ -41,7 +41,9 @@ describe('the remaining HAP manage modals', () => {
     accessoryData = new Subject()
     return {
       accessoryData,
-      accessories: { services: [current] },
+      accessories: {
+        services: [current],
+      },
     } as unknown as AccessoriesService
   }
 
@@ -58,11 +60,20 @@ describe('the remaining HAP manage modals', () => {
       imports: [type as any],
       providers: [
         provideTestTranslate(),
-        provideFakes({ toastr, settings: makeSettings() }),
-        { provide: NgbActiveModal, useValue: activeModalStub() },
+        provideFakes({
+          toastr,
+          settings: makeSettings(),
+        }),
+        {
+          provide: NgbActiveModal,
+          useValue: activeModalStub(),
+        },
         {
           provide: ACCESSORY_MANAGE_MODAL_DATA,
-          useValue: { service, $accessories: accessoriesStub(service) },
+          useValue: {
+            service,
+            $accessories: accessoriesStub(service),
+          },
         },
       ],
     })
@@ -131,7 +142,9 @@ describe('the remaining HAP manage modals', () => {
   }
 
   function mouseEvent() {
-    return { target: document.createElement('button') } as unknown as MouseEvent
+    return {
+      target: document.createElement('button'),
+    } as unknown as MouseEvent
   }
 
   beforeEach(() => {
@@ -159,7 +172,11 @@ describe('the remaining HAP manage modals', () => {
             uniqueId: `hap-input-${identifier}`,
             characteristics: [
               characteristic('Identifier', identifier),
-              ...(name === undefined ? [] : [characteristic('ConfiguredName', name)]),
+              ...(name === undefined
+                ? []
+                : [
+                    characteristic('ConfiguredName', name),
+                  ]),
             ],
           }) as any,
         ]))
@@ -171,7 +188,9 @@ describe('the remaining HAP manage modals', () => {
     it('offers the power buttons only to a television that has them', () => {
       expect(create(TelevisionManageComponent, television({ active: 1 })).hasActive).toBe(true)
 
-      const noPower = serviceWith('Television', [['ActiveIdentifier', 1]])
+      const noPower = serviceWith('Television', [
+        ['ActiveIdentifier', 1],
+      ])
       expect(create(TelevisionManageComponent, noPower).hasActive).toBe(false)
     })
 
@@ -181,7 +200,9 @@ describe('the remaining HAP manage modals', () => {
 
       component.setActive(0, mouseEvent())
 
-      expect(writesTo(service)).toEqual([{ type: 'Active', value: 0 }])
+      expect(writesTo(service)).toEqual([
+        { type: 'Active', value: 0 },
+      ])
     })
 
     it('writes an input choice to ActiveIdentifier', () => {
@@ -191,12 +212,17 @@ describe('the remaining HAP manage modals', () => {
 
       component.setInput(3, mouseEvent())
 
-      expect(writesTo(service)).toEqual([{ type: 'ActiveIdentifier', value: 3 }])
+      expect(writesTo(service)).toEqual([
+        { type: 'ActiveIdentifier', value: 3 },
+      ])
     })
 
     it('builds the input list from the linked input sources', () => {
       const component = create(TelevisionManageComponent, television({
-        inputs: [[1, 'HDMI 1'], [2, 'Apple TV']],
+        inputs: [
+          [1, 'HDMI 1'],
+          [2, 'Apple TV'],
+        ],
       }))
 
       expect(component.sourceList).toEqual([
@@ -207,9 +233,15 @@ describe('the remaining HAP manage modals', () => {
 
     it('names an unnamed input after its number', () => {
       // Rather than showing a blank row the user cannot identify
-      const component = create(TelevisionManageComponent, television({ inputs: [[4, undefined]] }))
+      const component = create(TelevisionManageComponent, television({
+        inputs: [
+          [4, undefined],
+        ],
+      }))
 
-      expect(component.sourceList).toEqual([{ identifier: 4, name: 'Input 4' }])
+      expect(component.sourceList).toEqual([
+        { identifier: 4, name: 'Input 4' },
+      ])
     })
 
     it('offers no input list on a television with none linked', () => {
@@ -220,7 +252,9 @@ describe('the remaining HAP manage modals', () => {
 
     it('ignores a linked service that is not an input source', () => {
       const tv = television()
-      tv.linkedServices = { 20: hapService({ type: 'TelevisionSpeaker', uniqueId: 'hap-speaker' }) as any }
+      tv.linkedServices = {
+        20: hapService({ type: 'TelevisionSpeaker', uniqueId: 'hap-speaker' }) as any,
+      }
       const component = create(TelevisionManageComponent, tv)
 
       expect(component.sourceList).toEqual([])
@@ -277,7 +311,9 @@ describe('the remaining HAP manage modals', () => {
 
       component.setTargetState(0, mouseEvent())
 
-      expect(writesTo(service)).toEqual([{ type: 'TargetDoorState', value: 0 }])
+      expect(writesTo(service)).toEqual([
+        { type: 'TargetDoorState', value: 0 },
+      ])
     })
   })
 
@@ -285,7 +321,11 @@ describe('the remaining HAP manage modals', () => {
     function alarm(current: number, target: number, validValues = [0, 1, 2, 3]) {
       return serviceWith('SecuritySystem', [
         ['SecuritySystemCurrentState', current],
-        ['SecuritySystemTargetState', target, { validValues }],
+        [
+          'SecuritySystemTargetState',
+          target,
+          { validValues },
+        ],
       ])
     }
 
@@ -307,7 +347,9 @@ describe('the remaining HAP manage modals', () => {
 
       component.setTargetMode(1, mouseEvent())
 
-      expect(writesTo(service)).toEqual([{ type: 'SecuritySystemTargetState', value: 1 }])
+      expect(writesTo(service)).toEqual([
+        { type: 'SecuritySystemTargetState', value: 1 },
+      ])
       expect(component.targetMode).toBe(1)
     })
 
@@ -363,7 +405,9 @@ describe('the remaining HAP manage modals', () => {
 
       component.resetFilterLife(mouseEvent())
 
-      expect(writesTo(service)).toEqual([{ type: 'ResetFilterIndication', value: 1 }])
+      expect(writesTo(service)).toEqual([
+        { type: 'ResetFilterIndication', value: 1 },
+      ])
     })
   })
 
@@ -377,7 +421,9 @@ describe('the remaining HAP manage modals', () => {
     })
 
     it('reads an unreported air quality as unknown rather than good', () => {
-      const component = create(HapAirQualitySensorManageComponent, serviceWith('AirQualitySensor', [['PM2_5Density', 12]]))
+      const component = create(HapAirQualitySensorManageComponent, serviceWith('AirQualitySensor', [
+        ['PM2_5Density', 12],
+      ]))
 
       expect(component.airQuality).toBe(0)
     })
