@@ -81,6 +81,12 @@ export const RE_STABLE_DATE = /^\d{4}-\d{2}-\d{2}$/
 // eslint-disable-next-line no-control-regex
 export const RE_ANSI_COLOUR = /\x1B\[(\d{1,3}(;\d{1,2})?)?[mGK]/g
 
+// A color code cut short before its final letter, matched from its escape
+// character to the end of the text. A stream that strips color codes chunk by
+// chunk holds this back and finishes it with the next chunk.
+// eslint-disable-next-line no-control-regex
+export const RE_ANSI_COLOUR_UNFINISHED = /^\x1B(?:\[(?:\d{1,3}(?:;\d{0,2})?)?)?$/
+
 // Log lines written by the hb-service supervisor, which carry level tags in
 // the form `[HB Supervisor]<ansi reset> [LEVEL] message`. Scoped to the
 // `[HB Supervisor]` marker so Homebridge core and plugin output is untouched.
