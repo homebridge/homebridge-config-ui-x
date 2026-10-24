@@ -16,6 +16,7 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - fix(login): focus the 2fa code box after render, not on a timer (#3082) (@tbaur)
 - fix(plugins): pick child bridge ports outside the external accessory range (#3081) (@tbaur)
 - feat: preview config with common secrets masked by default (#3011) (@msrivas-7)
+- feat(plugins): mask secret fields in generated plugin forms (#3013) (@msrivas-7)
 
 ### Other Changes
 
