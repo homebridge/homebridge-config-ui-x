@@ -103,7 +103,7 @@
     "class-validator": "0.15.1",
     "commander": "15.0.0",
     "dayjs": "1.11.23",
-    "fastify": "5.12.1",
+    "fastify": "5.12.5",
     "fs-extra": "11.4.0",
     "jsonwebtoken": "9.0.3",
     "node-cache": "5.1.2",
