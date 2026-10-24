@@ -46,6 +46,8 @@ describe('ConfigEditorComponent', () => {
   }
 
   function create(config: Record<string, any> = validConfig): ConfigEditorComponent {
+    // The reveal choice is remembered in the browser, so start every test masked
+    localStorage.removeItem('hb_config_editor_revealed')
     api = fakeApi().respond('post', /^\/config-editor/, { config, affectedBridges: [] })
     toastr = toastrStub()
     modal = modalServiceSpy()
@@ -97,6 +99,8 @@ describe('ConfigEditorComponent', () => {
     fixture = TestBed.createComponent(ConfigEditorComponent)
     component = fixture.componentInstance
     fixture.detectChanges()
+    component.toggleSecrets()
+    fixture.detectChanges()
     return component
   }
 
@@ -133,6 +137,142 @@ describe('ConfigEditorComponent', () => {
 
   afterAll(() => {
     document.querySelector('.content')?.remove()
+  })
+
+  describe('secret privacy', () => {
+    it('starts with a masked read-only preview and cannot save it', async () => {
+      fixture.destroy()
+      localStorage.removeItem('hb_config_editor_revealed')
+      fixture = TestBed.createComponent(ConfigEditorComponent)
+      component = fixture.componentInstance
+      fixture.detectChanges()
+      component.homebridgeConfig.set(JSON.stringify({ ...validConfig, password: 'synthetic-password' }))
+      fixture.detectChanges()
+      const preview = fixture.nativeElement.querySelector('textarea') as HTMLTextAreaElement
+      expect(component.secretsRevealed()).toBe(false)
+      expect(preview.readOnly).toBe(true)
+      expect(preview.value).not.toContain('synthetic-password')
+      expect(preview.value).toContain('********')
+      await component.onSave()
+      expect(api.calls.filter(call => call.method === 'post')).toHaveLength(0)
+    })
+
+    it('reveals and hides through the rendered button without changing the credential', async () => {
+      component.homebridgeConfig.set(JSON.stringify({ ...validConfig, password: 'original-secret' }))
+      fixture.detectChanges()
+      const toggle = fixture.nativeElement.querySelector('button') as HTMLButtonElement
+      toggle.click()
+      fixture.detectChanges()
+      expect(fixture.nativeElement.querySelector('textarea').value).not.toContain('original-secret')
+      toggle.click()
+      fixture.detectChanges()
+      await fixture.whenStable()
+      expect(fixture.nativeElement.querySelector('textarea').value).toContain('original-secret')
+      expect(JSON.parse(component.homebridgeConfig()).password).toBe('original-secret')
+    })
+
+    it('fails closed for incomplete edits and keeps those edits when revealed again', () => {
+      component.homebridgeConfig.set('{"password":"unfinished')
+      component.toggleSecrets()
+      fixture.detectChanges()
+      expect(fixture.nativeElement.querySelector('textarea')).toBeNull()
+      expect(fixture.nativeElement.textContent).not.toContain('unfinished')
+      component.toggleSecrets()
+      expect(component.homebridgeConfig()).toBe('{"password":"unfinished')
+    })
+
+    it('keeps edited backup content when the diff editor is hidden and recreated', () => {
+      component.isMobile.set(false)
+      component.preferPlainTextEditor.set(false)
+      component.originalConfig.set('{"password":"before-restore"}')
+      component.homebridgeConfig.set('{"password":"backup-value"}')
+      component.monacoEditor = {
+        getModel: () => ({
+          getValue: () => '{"password":"edited-backup"}',
+        }),
+      }
+      component.toggleSecrets()
+      expect(component.redactedConfig()).not.toContain('edited-backup')
+      component.toggleSecrets()
+      let recreatedContent = '{"password":"backup-value"}'
+      const modifiedEditor = {
+        getModel: () => ({
+          setValue: (value: string) => {
+            recreatedContent = value
+          },
+        }),
+      }
+      const originalModel = {
+        setValue: vi.fn(),
+      }
+      const originalEditor = {
+        getModel: () => originalModel,
+      }
+      component.onInitDiffEditor({
+        getModifiedEditor: () => modifiedEditor,
+        getOriginalEditor: () => originalEditor,
+      })
+      expect(recreatedContent).toBe('{"password":"edited-backup"}')
+      expect(originalEditor.getModel().setValue).toHaveBeenCalledWith('{"password":"before-restore"}')
+      window.editor = undefined
+      component.monacoEditor = undefined
+    })
+
+    it('remembers in this browser that the config was revealed, and hidden again', () => {
+      // create() revealed it, so a fresh visit starts revealed
+      fixture.destroy()
+      fixture = TestBed.createComponent(ConfigEditorComponent)
+      expect(fixture.componentInstance.secretsRevealed()).toBe(true)
+
+      fixture.componentInstance.toggleSecrets()
+      fixture.destroy()
+      fixture = TestBed.createComponent(ConfigEditorComponent)
+      expect(fixture.componentInstance.secretsRevealed()).toBe(false)
+      component = fixture.componentInstance
+    })
+
+    it('starts masked when the browser will not let it read the saved choice', () => {
+      fixture.destroy()
+      const getItem = vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => {
+        throw new Error('SecurityError')
+      })
+      try {
+        // Before, the plain-text editor setting was read without a guard, so
+        // the whole page failed to open in a browser that blocks storage
+        fixture = TestBed.createComponent(ConfigEditorComponent)
+        component = fixture.componentInstance
+      } finally {
+        getItem.mockRestore()
+      }
+
+      expect(component.secretsRevealed()).toBe(false)
+      expect(component.preferPlainTextEditor()).toBe(false)
+    })
+
+    it('hides without failing when the Monaco editor has no model yet', () => {
+      component.isMobile.set(false)
+      component.preferPlainTextEditor.set(false)
+      component.monacoEditor = {
+        getModel: () => null,
+      }
+
+      expect(() => component.toggleSecrets()).not.toThrow()
+      expect(component.secretsRevealed()).toBe(false)
+    })
+
+    it('captures unsaved Monaco edits before hiding', () => {
+      component.isMobile.set(false)
+      component.preferPlainTextEditor.set(false)
+      component.monacoEditor = {
+        getModel: () => ({
+          getValue: () => '{"password":"edited-secret"}',
+        }),
+      }
+      component.toggleSecrets()
+      expect(component.homebridgeConfig()).toContain('edited-secret')
+      expect(component.redactedConfig()).not.toContain('edited-secret')
+      expect(component.monacoEditor).toBeUndefined()
+    })
   })
 
   describe('refusing a config that would break homebridge', () => {
