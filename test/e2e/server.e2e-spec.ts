@@ -1064,6 +1064,50 @@ describe('ServerController (e2e)', () => {
     expect(returnedPort).toBeLessThanOrEqual(5541)
   })
 
+  it('GET /server/port/new/matter (should skip a Matter port written as text)', async () => {
+    await copy(resolve(__dirname, '../mocks', 'config.json'), process.env.UIX_CONFIG_PATH)
+    const config = await readJson(configService.configPath)
+    config.matterPorts = { start: 5530, end: 5531 }
+    config.bridge.matter = { port: '5530' }
+    await writeJson(configService.configPath, config)
+
+    const res = await app.inject({
+      method: 'GET',
+      path: '/server/port/new/matter',
+      headers: {
+        authorization,
+      },
+    })
+
+    await copy(resolve(__dirname, '../mocks', 'config.json'), process.env.UIX_CONFIG_PATH)
+
+    expect(res.statusCode).toBe(200)
+    expect(res.json().port).toBe(5531)
+  })
+
+  it('GET /server/port/new/matter (should skip a HAP port inside the Matter range)', async () => {
+    await copy(resolve(__dirname, '../mocks', 'config.json'), process.env.UIX_CONFIG_PATH)
+    const config = await readJson(configService.configPath)
+    // a matterPorts range that overlaps the main bridge's HAP port
+    config.matterPorts = { start: 51826, end: 51827 }
+    config.bridge.port = 51826
+    delete config.bridge.matter
+    await writeJson(configService.configPath, config)
+
+    const res = await app.inject({
+      method: 'GET',
+      path: '/server/port/new/matter',
+      headers: {
+        authorization,
+      },
+    })
+
+    await copy(resolve(__dirname, '../mocks', 'config.json'), process.env.UIX_CONFIG_PATH)
+
+    expect(res.statusCode).toBe(200)
+    expect(res.json().port).toBe(51827)
+  })
+
   it('DELETE /server/pairings/:deviceId/matter (should remove Matter config from child bridge)', async () => {
     // Setup: Create config with Matter enabled on a child bridge
     const config = await readJson(configService.configPath)
