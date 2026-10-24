@@ -1327,11 +1327,13 @@ export class ServerService {
     const min = config.matterPorts?.start ?? 5530
     const max = config.matterPorts?.end ?? 5541
 
-    // Collect used matter ports into a set
+    // Matter ports already in config.json. Homebridge skips these when it hands
+    // out Matter ports to external accessories, so the range itself is safe to
+    // pick from - unlike the HAP `ports` range (see lookupUnusedPort)
     const usedMatterPorts = new Set<number>()
-
-    if (config.bridge?.matter?.port) {
-      usedMatterPorts.add(config.bridge.matter.port)
+    const mainBridgeMatterPort = toPortNumber(config.bridge?.matter?.port)
+    if (mainBridgeMatterPort !== undefined) {
+      usedMatterPorts.add(mainBridgeMatterPort)
     }
 
     // Check child bridges
@@ -1339,19 +1341,35 @@ export class ServerService {
       ...(config.accessories || []),
       ...(config.platforms || []),
     ] as (AccessoryConfig | PlatformConfig)[]) {
-      if (block._bridge?.matter?.port) {
+      const port = toPortNumber(block._bridge?.matter?.port)
+      if (port !== undefined) {
         // Only count Matter ports from platform-based plugins (not accessory-based)
         if ('accessory' in block) {
-          this.logger.warn(`Found Matter configuration on accessory-based plugin block, skipping port ${block._bridge.matter.port}`)
+          this.logger.warn(`Found Matter configuration on accessory-based plugin block, skipping port ${port}`)
           continue
         }
-        usedMatterPorts.add(block._bridge.matter.port)
+        usedMatterPorts.add(port)
       }
     }
 
-    // Find first available port
+    // A matterPorts range that overlaps the HAP ports would otherwise hand out
+    // a port a bridge or the UI already listens on
+    const configuredHapPorts = this.collectConfiguredHapPorts(config)
+
+    const candidates: number[] = []
     for (let port = min; port <= max; port += 1) {
-      if (!usedMatterPorts.has(port) && !await tcpCheck(port)) {
+      if (!usedMatterPorts.has(port) && !configuredHapPorts.has(port)) {
+        candidates.push(port)
+      }
+    }
+
+    // Start at a random candidate, so two bridges enabled before either is saved are unlikely to get the same port
+    const offset = candidates.length > 0
+      ? randomInt(candidates.length)
+      : 0
+    for (let i = 0; i < candidates.length; i += 1) {
+      const port = candidates[(offset + i) % candidates.length]
+      if (!await tcpCheck(port)) {
         return { port }
       }
     }
