@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, createEnvironmentInjector, EnvironmentInjector, inject, OnDestroy, OnInit, Renderer2, signal } from '@angular/core'
+import { ChangeDetectionStrategy, Component, computed, createEnvironmentInjector, EnvironmentInjector, inject, OnDestroy, OnInit, Renderer2, signal } from '@angular/core'
 import { FormsModule } from '@angular/forms'
 import { ActivatedRoute, Router } from '@angular/router'
 import { NgbDropdown, NgbDropdownItem, NgbDropdownMenu, NgbDropdownToggle } from '@ng-bootstrap/ng-bootstrap/dropdown'
@@ -16,6 +16,7 @@ import { ConfirmComponent } from '@/app/core/components/confirm/confirm.componen
 import { RestartChildBridgesComponent } from '@/app/core/components/restart-child-bridges/restart-child-bridges.component'
 import { RestartHomebridgeComponent } from '@/app/core/components/restart-homebridge/restart-homebridge.component'
 import { createChildBridgeSchema } from '@/app/core/helpers/child-bridges-schema.helper'
+import { redactConfig } from '@/app/core/helpers/config-redaction.helper'
 import { createHapSchema } from '@/app/core/helpers/hap-schema.helper'
 import { createMatterSchema } from '@/app/core/helpers/matter-schema.helper'
 import { CONFIG_RESTORE_MODAL_DATA, CONFIRM_MODAL_DATA, RESTART_CHILD_BRIDGES_MODAL_DATA } from '@/app/core/modal-data-tokens'
@@ -85,6 +86,8 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
   private isHapDisableIdentifyingMaterialEnabled = this.$settings.isFeatureEnabled('hapDisableIdentifyingMaterial')
 
   public readonly homebridgeConfig = signal<string>('')
+  public readonly secretsRevealed = signal(false)
+  public readonly redactedConfig = computed(() => redactConfig(this.homebridgeConfig()))
   public readonly originalConfig = signal<string>('')
   public readonly saveInProgress = signal(false)
   public readonly isMobile = signal<boolean>(false)
@@ -219,8 +222,8 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
 
   public onInitDiffEditor(editor: any) {
     this.monacoEditor = editor.getModifiedEditor()
-    this.updateDiffModels()
     window.editor = editor
+    this.updateDiffModels()
   }
 
   public setPlainTextEditor(enabled: boolean): void {
@@ -291,8 +294,20 @@ export class ConfigEditorComponent implements OnInit, OnDestroy {
     }
   }
 
+  public toggleSecrets(): void {
+    if (this.secretsRevealed() && this.isMonacoActive) {
+      // Preserve unsaved edits before Angular destroys the editing surface.
+      this.homebridgeConfig.set(this.monacoEditor.getModel().getValue())
+    }
+    this.secretsRevealed.update(revealed => !revealed)
+    if (!this.secretsRevealed()) {
+      this.monacoEditor = undefined
+      window.editor = undefined
+    }
+  }
+
   public async onSave() {
-    if (this.saveInProgress()) {
+    if (!this.secretsRevealed() || this.saveInProgress()) {
       return
     }
 
