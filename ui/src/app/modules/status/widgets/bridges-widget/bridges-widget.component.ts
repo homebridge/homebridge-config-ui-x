@@ -89,7 +89,9 @@ export class BridgesWidgetComponent implements OnInit, OnDestroy {
     const inTransition = status?.status === 'pending' || this.isRestarting()
     const statusLabel = this.bridgeStatusLabel(status?.status, inTransition)
     const matter = this.matterStatusLabel(!!status?.matter?.enabled, status?.status, inTransition)
-    const restart = !inTransition && this.isAdmin ? `, ${this.$translate.instant('menu.tooltip_restart')}` : ''
+    const restart = !inTransition && this.isAdmin
+      ? `, ${this.$translate.instant('menu.tooltip_restart')}`
+      : ''
     return `${name}, ${statusLabel}${matter}${restart}`
   }
 
@@ -97,7 +99,9 @@ export class BridgesWidgetComponent implements OnInit, OnDestroy {
     const inTransition = bridge.status === 'pending' || bridge.restarting || this.isRestarting()
     const statusLabel = this.bridgeStatusLabel(bridge.status, inTransition)
     const matter = this.matterStatusLabel(this.isChildMatterEnabled(bridge), bridge.status, inTransition)
-    const restart = !inTransition && this.isAdmin ? `, ${this.$translate.instant('menu.tooltip_restart')}` : ''
+    const restart = !inTransition && this.isAdmin
+      ? `, ${this.$translate.instant('menu.tooltip_restart')}`
+      : ''
     return `${bridge.name}, ${statusLabel}${matter}${restart}`
   }
 
@@ -114,7 +118,9 @@ export class BridgesWidgetComponent implements OnInit, OnDestroy {
     if (inTransition) {
       return this.$translate.instant('status.services.label_restarting')
     }
-    return this.$translate.instant(status === 'down' ? 'status.services.label_not_running' : 'status.services.label_running')
+    return this.$translate.instant(status === 'down'
+      ? 'status.services.label_not_running'
+      : 'status.services.label_running')
   }
 
   /**
@@ -131,7 +137,9 @@ export class BridgesWidgetComponent implements OnInit, OnDestroy {
     if (!matterEnabledForBridge) {
       return `, ${this.$translate.instant('status.services.matter_not_enabled')}`
     }
-    return `, ${this.$translate.instant(status === 'down' ? 'status.services.matter_not_running' : 'status.services.matter_running')}`
+    return `, ${this.$translate.instant(status === 'down'
+      ? 'status.services.matter_not_running'
+      : 'status.services.matter_running')}`
   }
 
   private async initialize(): Promise<void> {
@@ -179,11 +187,16 @@ export class BridgesWidgetComponent implements OnInit, OnDestroy {
           updated[existingIndex] = {
             ...updated[existingIndex],
             ...data,
-            restarting: data.status === 'ok' ? false : updated[existingIndex].restarting,
+            restarting: data.status === 'ok'
+              ? false
+              : updated[existingIndex].restarting,
           } as ChildBridgeWithUIState
           return updated
         } else {
-          return [...bridges, { ...data, restarting: false } as ChildBridgeWithUIState].sort((a, b) => a.name.localeCompare(b.name))
+          return [
+            ...bridges,
+            { ...data, restarting: false } as ChildBridgeWithUIState,
+          ].sort((a, b) => a.name.localeCompare(b.name))
         }
       })
       this.maybeAnnounceChildRestart(data.name || key, key, prevStatus)

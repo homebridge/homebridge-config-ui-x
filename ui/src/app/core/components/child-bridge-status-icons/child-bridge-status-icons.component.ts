@@ -82,7 +82,9 @@ export class ChildBridgeStatusIconsComponent {
     if (this.hapDisabled()) {
       return 'status.services.hap_not_enabled'
     }
-    return this.isDown() ? 'status.services.hap_not_running' : 'status.services.hap_running'
+    return this.isDown()
+      ? 'status.services.hap_not_running'
+      : 'status.services.hap_running'
   })
 
   public readonly matterTooltipKey = computed(() => {
@@ -92,6 +94,8 @@ export class ChildBridgeStatusIconsComponent {
     if (!this.matterEnabled()) {
       return 'status.services.matter_not_enabled'
     }
-    return this.isDown() ? 'status.services.matter_not_running' : 'status.services.matter_running'
+    return this.isDown()
+      ? 'status.services.matter_not_running'
+      : 'status.services.matter_running'
   })
 }

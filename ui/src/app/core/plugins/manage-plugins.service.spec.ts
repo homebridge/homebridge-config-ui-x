@@ -84,16 +84,28 @@ describe('managePluginsService', () => {
 
   /** The aggregated payload every settings modal is built from. */
   function editorContext(overrides: Record<string, any> = {}) {
-    return { alias: 'Example', configSchema: { pluginAlias: 'Example', schema: {} }, blocks: [], childBridges: [], ...overrides }
+    return {
+      alias: 'Example',
+      configSchema: { pluginAlias: 'Example', schema: {} },
+      blocks: [],
+      childBridges: [],
+      ...overrides,
+    }
   }
 
   beforeEach(() => {
     TestBed.resetTestingModule()
     api = fakeApi()
     modal = modalServiceSpy()
-    settings = makeSettings({ env: { nodeVersion: '22.0.0', homebridgeVersion: '1.8.0' } })
+    settings = makeSettings({
+      env: { nodeVersion: '22.0.0', homebridgeVersion: '1.8.0' },
+    })
     toastr = toastrStub()
-    customPlugins = { plugins: {}, openCustomSettingsUi: vi.fn(), openSettings: vi.fn() }
+    customPlugins = {
+      plugins: {},
+      openCustomSettingsUi: vi.fn(),
+      openSettings: vi.fn(),
+    }
 
     TestBed.configureTestingModule({
       providers: [
@@ -117,7 +129,12 @@ describe('managePluginsService', () => {
 
   describe('installing a plugin', () => {
     it('opens the manage modal with everything it needs to show', async () => {
-      const plugin = makePlugin({ verifiedPlusPlugin: true, funding: [{ type: 'github', url: 'https://x' }] as any })
+      const plugin = makePlugin({
+        verifiedPlusPlugin: true,
+        funding: [
+          { type: 'github', url: 'https://x' },
+        ] as any,
+      })
 
       void service.installPlugin(plugin, '1.1.0')
       await settle()
@@ -133,7 +150,9 @@ describe('managePluginsService', () => {
     })
 
     it('carries the funding links through, so the thank-you panel can show them', async () => {
-      const funding = [{ type: 'github', url: 'https://github.com/sponsors/someone' }]
+      const funding = [
+        { type: 'github', url: 'https://github.com/sponsors/someone' },
+      ]
 
       void service.installPlugin(makePlugin({ funding: funding as any }), '1.1.0')
       await settle()
@@ -149,7 +168,10 @@ describe('managePluginsService', () => {
 
       void service.installPlugin(makePlugin(), '1.1.0')
       await settle()
-      modal.lastOpened()!.ref.close({ action: 'just-installed', plugin: makePlugin() })
+      modal.lastOpened()!.ref.close({
+        action: 'just-installed',
+        plugin: makePlugin(),
+      })
       await settle()
 
       expect(settings.env.hasInstalledPlugins).toBe(true)
@@ -158,7 +180,10 @@ describe('managePluginsService', () => {
     it('asks for a restart when the new plugin already has config', async () => {
       void service.installPlugin(makePlugin({ isConfigured: true }), '1.1.0')
       await settle()
-      modal.lastOpened()!.ref.close({ action: 'just-installed', plugin: makePlugin({ isConfigured: true }) })
+      modal.lastOpened()!.ref.close({
+        action: 'just-installed',
+        plugin: makePlugin({ isConfigured: true }),
+      })
       await settle()
 
       expect(modal.lastOpened()!.content).toBe(RestartHomebridgeComponent)
@@ -168,7 +193,10 @@ describe('managePluginsService', () => {
       // Homebridge is half-updated at that point
       void service.installPlugin(makePlugin(), '1.1.0')
       await settle()
-      modal.lastOpened()!.ref.close({ action: 'just-installed', plugin: makePlugin() })
+      modal.lastOpened()!.ref.close({
+        action: 'just-installed',
+        plugin: makePlugin(),
+      })
       await settle()
 
       expect(modal.lastOpened()!.options).toMatchObject({ backdrop: 'static', keyboard: false })
@@ -180,7 +208,10 @@ describe('managePluginsService', () => {
 
       void service.installPlugin(makePlugin(), '1.1.0')
       await settle()
-      modal.lastOpened()!.ref.close({ action: 'just-installed', plugin: makePlugin({ isConfigured: false }) })
+      modal.lastOpened()!.ref.close({
+        action: 'just-installed',
+        plugin: makePlugin({ isConfigured: false }),
+      })
       await settle()
 
       expect(modal.lastOpened()!.content).toBe(PluginConfigComponent)
@@ -229,7 +260,10 @@ describe('managePluginsService', () => {
     it('asks for a restart afterwards', async () => {
       void service.updatePlugin(makePlugin(), '2.0.0')
       await settle()
-      modal.lastOpened()!.ref.close({ action: 'just-installed', plugin: makePlugin({ isConfigured: true }) })
+      modal.lastOpened()!.ref.close({
+        action: 'just-installed',
+        plugin: makePlugin({ isConfigured: true }),
+      })
       await settle()
 
       expect(modal.lastOpened()!.content).toBe(RestartHomebridgeComponent)
@@ -241,21 +275,28 @@ describe('managePluginsService', () => {
 
       void service.updatePlugin(makePlugin(), '2.0.0')
       await settle()
-      modal.lastOpened()!.ref.close({ action: 'just-installed', plugin: makePlugin() })
+      modal.lastOpened()!.ref.close({
+        action: 'just-installed',
+        plugin: makePlugin(),
+      })
       await settle()
 
       expect(settings.env.hasInstalledPlugins).toBe(false)
     })
 
     it('checks compatibility before updating', async () => {
-      void service.checkAndUpdatePlugin(makePlugin({ updateEngines: { node: '>=99.0.0' } as any }), '2.0.0')
+      void service.checkAndUpdatePlugin(makePlugin({
+        updateEngines: { node: '>=99.0.0' } as any,
+      }), '2.0.0')
       await settle()
 
       expect(modal.lastOpened()!.content).toBe(PluginCompatibilityComponent)
     })
 
     it('does not update when the compatibility warning is refused', async () => {
-      void service.checkAndUpdatePlugin(makePlugin({ updateEngines: { node: '>=99.0.0' } as any }), '2.0.0')
+      void service.checkAndUpdatePlugin(makePlugin({
+        updateEngines: { node: '>=99.0.0' } as any,
+      }), '2.0.0')
       await settle()
       modal.lastOpened()!.ref.close(false)
       await settle()
@@ -264,7 +305,9 @@ describe('managePluginsService', () => {
     })
 
     it('goes ahead when the user accepts the warning', async () => {
-      void service.checkAndUpdatePlugin(makePlugin({ updateEngines: { node: '>=99.0.0' } as any }), '2.0.0')
+      void service.checkAndUpdatePlugin(makePlugin({
+        updateEngines: { node: '>=99.0.0' } as any,
+      }), '2.0.0')
       await settle()
       modal.lastOpened()!.ref.close(true)
       await settle()
@@ -280,20 +323,26 @@ describe('managePluginsService', () => {
     })
 
     it('says nothing when the box already meets them', async () => {
-      const plugin = makePlugin({ updateEngines: { node: '>=20.0.0', homebridge: '^1.6.0' } as any })
+      const plugin = makePlugin({
+        updateEngines: { node: '>=20.0.0', homebridge: '^1.6.0' } as any,
+      })
 
       expect(await service.checkHbAndNodeVersion(plugin, 'install')).toBe(true)
     })
 
     it('warns when the plugin wants a newer node', async () => {
-      void service.checkHbAndNodeVersion(makePlugin({ updateEngines: { node: '>=24.0.0' } as any }), 'install')
+      void service.checkHbAndNodeVersion(makePlugin({
+        updateEngines: { node: '>=24.0.0' } as any,
+      }), 'install')
       await settle()
 
       expect(modal.dataFor(PLUGIN_COMPATIBILITY_MODAL_DATA)).toMatchObject({ isValidNode: false, isValidHb: true, action: 'install' })
     })
 
     it('warns when the plugin wants a newer homebridge', async () => {
-      void service.checkHbAndNodeVersion(makePlugin({ updateEngines: { homebridge: '^2.0.0' } as any }), 'update')
+      void service.checkHbAndNodeVersion(makePlugin({
+        updateEngines: { homebridge: '^2.0.0' } as any,
+      }), 'update')
       await settle()
 
       expect(modal.dataFor(PLUGIN_COMPATIBILITY_MODAL_DATA)).toMatchObject({ isValidNode: true, isValidHb: false, action: 'update' })
@@ -301,7 +350,9 @@ describe('managePluginsService', () => {
 
     it('reads a range rather than a plain version', async () => {
       // `^1.8.0` means 1.8.0 or newer, and the box is on 1.8.0 exactly
-      const plugin = makePlugin({ updateEngines: { homebridge: '^1.8.0' } as any })
+      const plugin = makePlugin({
+        updateEngines: { homebridge: '^1.8.0' } as any,
+      })
 
       expect(await service.checkHbAndNodeVersion(plugin, 'install')).toBe(true)
     })
@@ -309,12 +360,16 @@ describe('managePluginsService', () => {
     it('ignores a homebridge requirement when the version is unknown', async () => {
       settings.env.homebridgeVersion = undefined as any
 
-      expect(await service.checkHbAndNodeVersion(makePlugin({ updateEngines: { homebridge: '^2.0.0' } as any }), 'install')).toBe(true)
+      expect(await service.checkHbAndNodeVersion(makePlugin({
+        updateEngines: { homebridge: '^2.0.0' } as any,
+      }), 'install')).toBe(true)
     })
 
     it('refuses rather than guessing when the requirement cannot be read', async () => {
       // A plugin can publish anything in its engines field
-      const result = await service.checkHbAndNodeVersion(makePlugin({ updateEngines: { node: 'not-a-version' } as any }), 'install')
+      const result = await service.checkHbAndNodeVersion(makePlugin({
+        updateEngines: { node: 'not-a-version' } as any,
+      }), 'install')
 
       expect(result).toBe(false)
       expect(toastr.error).toHaveBeenCalled()
@@ -322,7 +377,9 @@ describe('managePluginsService', () => {
     })
 
     it('treats a dismissed warning as a no', async () => {
-      const pending = service.checkHbAndNodeVersion(makePlugin({ updateEngines: { node: '>=24.0.0' } as any }), 'install')
+      const pending = service.checkHbAndNodeVersion(makePlugin({
+        updateEngines: { node: '>=24.0.0' } as any,
+      }), 'install')
       await settle()
       modal.lastOpened()!.ref.dismiss()
 
@@ -374,7 +431,11 @@ describe('managePluginsService', () => {
       // requirements
       void service.installAlternateVersion(makePlugin())
       await settle()
-      modal.lastOpened()!.ref.close({ action: 'update', version: '0.9.0', engines: { node: '>=24.0.0' } })
+      modal.lastOpened()!.ref.close({
+        action: 'update',
+        version: '0.9.0',
+        engines: { node: '>=24.0.0' },
+      })
       await settle()
 
       expect(modal.lastOpened()!.content).toBe(PluginCompatibilityComponent)
@@ -403,7 +464,9 @@ describe('managePluginsService', () => {
 
   describe('uninstalling a plugin', () => {
     it('hands the modal the child bridges it will have to remove', async () => {
-      const childBridges = [{ identifier: 'abc', name: 'Example Bridge' }] as any[]
+      const childBridges = [
+        { identifier: 'abc', name: 'Example Bridge' },
+      ] as any[]
 
       void service.uninstallPlugin(makePlugin(), childBridges)
       await settle()
@@ -490,7 +553,9 @@ describe('managePluginsService', () => {
 
     it('hands over to the plugin own ui when it declares one', async () => {
       // The plugin ships its own page; the standard form would ignore it
-      api.respond('get', /editor-context/, editorContext({ configSchema: { customUi: true } }))
+      api.respond('get', /editor-context/, editorContext({
+        configSchema: { customUi: true },
+      }))
       const plugin = makePlugin()
 
       await service.settings(plugin)
@@ -566,13 +631,21 @@ describe('managePluginsService', () => {
 
   describe('the child bridge settings', () => {
     it('opens the bridge modal with the loaded context', async () => {
-      api.respond('get', /editor-context/, editorContext({ childBridges: [{ identifier: 'abc' }] }))
+      api.respond('get', /editor-context/, editorContext({
+        childBridges: [
+          { identifier: 'abc' },
+        ],
+      }))
 
       void service.bridgeSettings(makePlugin())
       await settle()
 
       expect(modal.lastOpened()!.content).toBe(PluginBridgeComponent)
-      expect(modal.dataFor(PLUGIN_BRIDGE_MODAL_DATA)?.editorContext).toMatchObject({ childBridges: [{ identifier: 'abc' }] })
+      expect(modal.dataFor(PLUGIN_BRIDGE_MODAL_DATA)?.editorContext).toMatchObject({
+        childBridges: [
+          { identifier: 'abc' },
+        ],
+      })
     })
 
     it('says it was opened straight after an install when it was', async () => {
@@ -642,7 +715,9 @@ describe('managePluginsService', () => {
     })
 
     it('opens the bridge reset modal with the bridges to reset', async () => {
-      const childBridges = [{ identifier: 'abc' }] as any[]
+      const childBridges = [
+        { identifier: 'abc' },
+      ] as any[]
 
       await service.resetChildBridges(childBridges)
 

@@ -29,7 +29,10 @@ export class EditRoomComponent implements OnInit {
   private initialFormValue: { roomName: string | null, isDefault: boolean | null } = { roomName: null, isDefault: null }
 
   public roomForm = new FormGroup({
-    roomName: new FormControl('', [Validators.required, Validators.pattern(RE_NOT_BLANK)]),
+    roomName: new FormControl('', [
+      Validators.required,
+      Validators.pattern(RE_NOT_BLANK),
+    ]),
     isDefault: new FormControl(false),
   })
 
@@ -70,7 +73,9 @@ export class EditRoomComponent implements OnInit {
         && room.name.trim().toLowerCase() === trimmedName.toLowerCase(),
     )
 
-    return isDuplicate ? { duplicateRoom: true } : null
+    return isDuplicate
+      ? { duplicateRoom: true }
+      : null
   }
 
   public readonly isOnlyRoom = computed(() => this.existingRooms.length === 1)

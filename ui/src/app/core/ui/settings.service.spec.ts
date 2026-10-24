@@ -92,7 +92,9 @@ describe('SettingsService', () => {
 
   describe('loading', () => {
     it('reads the settings and announces that it has finished', async () => {
-      const service = create({ env: { homebridgeInstanceName: 'Front Room' } })
+      const service = create({
+        env: { homebridgeInstanceName: 'Front Room' },
+      })
       const loaded = vi.fn()
       service.onSettingsLoaded.subscribe(loaded)
 
@@ -365,7 +367,9 @@ describe('SettingsService', () => {
     })
 
     it('keeps the neighbouring values in a nested object', () => {
-      service.env = { terminal: { fontSize: 16, fontWeight: '700' } } as any
+      service.env = {
+        terminal: { fontSize: 16, fontWeight: '700' },
+      } as any
       service.setEnvItem('terminal.fontSize', 12)
 
       expect(service.env.terminal).toEqual({ fontSize: 12, fontWeight: '700' })
@@ -384,8 +388,16 @@ describe('SettingsService', () => {
 
   describe('feature flags', () => {
     it.each([
-      ['an enabled flag', { matterSupport: true }, true],
-      ['a disabled flag', { matterSupport: false }, false],
+      [
+        'an enabled flag',
+        { matterSupport: true },
+        true,
+      ],
+      [
+        'a disabled flag',
+        { matterSupport: false },
+        false,
+      ],
       ['a missing flag', {}, false],
     ])('reports %s', (_case, flags, expected) => {
       service.env = { featureFlags: flags } as any
@@ -426,7 +438,9 @@ describe('SettingsService', () => {
   describe('terminal lighting', () => {
     it('forces a dark terminal whenever the ui is dark', () => {
       service.actualLightingMode = 'dark'
-      service.env = { terminal: { lightingMode: 'light' } } as any
+      service.env = {
+        terminal: { lightingMode: 'light' },
+      } as any
 
       // Deliberate hard override: a light terminal inside a dark page is
       // unreadable, so the terminal setting does not get a say here
@@ -435,7 +449,9 @@ describe('SettingsService', () => {
 
     it('honours the terminal setting while the ui is light', () => {
       service.actualLightingMode = 'light'
-      service.env = { terminal: { lightingMode: 'light' } } as any
+      service.env = {
+        terminal: { lightingMode: 'light' },
+      } as any
 
       expect(service.getEffectiveTerminalLightingMode()).toBe('light')
     })
@@ -470,7 +486,9 @@ describe('SettingsService', () => {
 
     it('uses a transparent background in a light terminal', () => {
       service.actualLightingMode = 'light'
-      service.env = { terminal: { lightingMode: 'light' } } as any
+      service.env = {
+        terminal: { lightingMode: 'light' },
+      } as any
 
       const options = service.getTerminalOptions()
 
@@ -481,11 +499,18 @@ describe('SettingsService', () => {
     it('applies the default font settings', () => {
       const options = service.getTerminalOptions()
 
-      expect(options).toMatchObject({ fontSize: 13, fontWeight: '400', lineHeight: 1.2, screenReaderMode: true })
+      expect(options).toMatchObject({
+        fontSize: 13,
+        fontWeight: '400',
+        lineHeight: 1.2,
+        screenReaderMode: true,
+      })
     })
 
     it('prefers the configured font settings', () => {
-      service.env = { terminal: { fontSize: 18, fontWeight: '700' } } as any
+      service.env = {
+        terminal: { fontSize: 18, fontWeight: '700' },
+      } as any
 
       expect(service.getTerminalOptions()).toMatchObject({ fontSize: 18, fontWeight: '700' })
     })

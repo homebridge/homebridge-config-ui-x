@@ -16,9 +16,21 @@ import { SettingsService } from '@/app/core/ui/settings.service'
 })
 export class SchemaFormComponent implements OnInit, OnDestroy {
   private $settings = inject(SettingsService)
-  private availableLanguages = ['de', 'en', 'es', 'fr', 'it', 'pt', 'zh']
+  private availableLanguages = [
+    'de',
+    'en',
+    'es',
+    'fr',
+    'it',
+    'pt',
+    'zh',
+  ]
 
   readonly configSchema = input.required<any>()
+  // Deliberately not a model(): onChanges updates the caller's object in place
+  // and emits that SAME reference, which a model's set() would swallow as "no
+  // change" - so the parent would never hear about an edit
+  // eslint-disable-next-line angular/prefer-signal-model
   readonly data = input.required<any>()
 
   readonly dataChange = output<any>()

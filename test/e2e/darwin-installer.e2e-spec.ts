@@ -20,12 +20,20 @@ vi.mock('node:child_process', () => ({
 // DarwinInstaller is also tested by the Linux and Windows CI jobs.
 vi.mock('node:process', async (importOriginal) => {
   const actual = await importOriginal<typeof import('node:process')>()
-  return { default: { ...actual.default, getuid: vi.fn(() => 0) } }
+  return {
+    default: {
+      ...actual.default,
+      getuid: vi.fn(() => 0),
+    },
+  }
 })
 
 vi.mock('node:os', async (importOriginal) => {
   const actual = await importOriginal<typeof import('node:os')>()
-  return { ...actual, userInfo: vi.fn(() => ({ uid: 502, gid: 21 })) }
+  return {
+    ...actual,
+    userInfo: vi.fn(() => ({ uid: 502, gid: 21 })),
+  }
 })
 
 describe('DarwinInstaller npm paths', () => {
@@ -40,7 +48,11 @@ describe('DarwinInstaller npm paths', () => {
     vi.resetAllMocks()
     vi.stubEnv('SUDO_USER', '')
     vi.stubEnv('HOMEBRIDGE_MACOS_PACKAGE', '')
-    logger = { error: vi.fn(), success: vi.fn(), warn: vi.fn() }
+    logger = {
+      error: vi.fn(),
+      success: vi.fn(),
+      warn: vi.fn(),
+    }
     installer = new DarwinInstaller({ asUser: '_homebridge', logger } as unknown as HomebridgeServiceHelper)
     installer['user'] = '_homebridge'
     vi.spyOn(process, 'getuid').mockReturnValue(0)
@@ -52,7 +64,9 @@ describe('DarwinInstaller npm paths', () => {
         return `${binPath}/npm\n`
       }
       if (file === 'id') {
-        return Buffer.from(args[0] === '-u' ? '501\n' : '20\n')
+        return Buffer.from(args[0] === '-u'
+          ? '501\n'
+          : '20\n')
       }
       return Buffer.from('')
     })
@@ -100,7 +114,9 @@ describe('DarwinInstaller npm paths', () => {
   it('rebuilds the UI and global plugins using unsplit working directories', async () => {
     vi.stubEnv('UIX_BASE_PATH', `${globalPath}/homebridge-config-ui-x`)
     const normal = command.getMockImplementation()!
-    command.mockImplementation((file, args, options) => file === 'node' ? Buffer.from('v24.17.0\n') : normal(file, args, options))
+    command.mockImplementation((file, args, options) => file === 'node'
+      ? Buffer.from('v24.17.0\n')
+      : normal(file, args, options))
     await installer.rebuild(true)
     expect(command).toHaveBeenCalledWith('node', ['-v'])
     expect(command).toHaveBeenCalledWith('npm', ['rebuild'], { cwd: process.env.UIX_BASE_PATH, stdio: 'inherit' })
@@ -112,7 +128,12 @@ describe('DarwinInstaller npm paths', () => {
   it('looks up a listening process without shell redirection', () => {
     command.mockReturnValue(Buffer.from('1234\n'))
     expect(installer.getPidOfPort(8581)).toBe('1234')
-    expect(command).toHaveBeenCalledWith('lsof', ['-n', '-iTCP:8581', '-sTCP:LISTEN', '-t'], {
+    expect(command).toHaveBeenCalledWith('lsof', [
+      '-n',
+      '-iTCP:8581',
+      '-sTCP:LISTEN',
+      '-t',
+    ], {
       stdio: ['ignore', 'pipe', 'ignore'],
     })
   })
@@ -183,7 +204,9 @@ describe('DarwinInstaller npm paths', () => {
     ['/usr/bin/which', 'Could not resolve the npm executable'],
   ])('rejects empty output from %s before checking permissions', async (empty, message) => {
     const normal = command.getMockImplementation()!
-    command.mockImplementation((file, args, options) => file === empty ? '\n' : normal(file, args, options))
+    command.mockImplementation((file, args, options) => file === empty
+      ? '\n'
+      : normal(file, args, options))
     await expect(installer['checkGlobalNpmAccess']()).rejects.toThrow(message)
     expect(command.mock.calls.some(([file]) => file === '/bin/test' || file === '/usr/sbin/chown')).toBe(false)
   })

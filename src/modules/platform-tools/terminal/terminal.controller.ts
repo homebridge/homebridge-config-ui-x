@@ -18,7 +18,9 @@ export class TerminalController {
 
   @Get('has-persistent-session')
   hasPersistentSession() {
-    return { hasPersistentSession: this.terminalService.hasPersistentSession() }
+    return {
+      hasPersistentSession: this.terminalService.hasPersistentSession(),
+    }
   }
 
   @Post('destroy-persistent-session')

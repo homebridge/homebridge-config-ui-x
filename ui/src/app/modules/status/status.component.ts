@@ -186,13 +186,15 @@ export class StatusComponent implements OnInit, OnDestroy {
   }
 
   public async addWidget(): Promise<void> {
-    const injector = createEnvironmentInjector([{
-      provide: WIDGET_VISIBILITY_MODAL_DATA,
-      useValue: {
-        dashboard: this.dashboard(),
-        resetLayout: this.resetLayout.bind(this),
+    const injector = createEnvironmentInjector([
+      {
+        provide: WIDGET_VISIBILITY_MODAL_DATA,
+        useValue: {
+          dashboard: this.dashboard(),
+          resetLayout: this.resetLayout.bind(this),
+        },
       },
-    }], this.injector)
+    ], this.injector)
 
     const ref = this.$modal.open(WidgetVisibilityComponent, {
       size: 'lg',
@@ -202,7 +204,9 @@ export class StatusComponent implements OnInit, OnDestroy {
 
     try {
       const entries: WidgetVisibilityEntry[] = await ref.result
-      const currentDashboard = [...this.dashboard()]
+      const currentDashboard = [
+        ...this.dashboard(),
+      ]
 
       for (const entry of entries) {
         const existingIndex = currentDashboard.findIndex(x => x.component === entry.component)
@@ -250,12 +254,14 @@ export class StatusComponent implements OnInit, OnDestroy {
   }
 
   public async manageWidget(item: Widget): Promise<void> {
-    const injector = createEnvironmentInjector([{
-      provide: WIDGET_CONTROL_MODAL_DATA,
-      useValue: {
-        widget: item,
+    const injector = createEnvironmentInjector([
+      {
+        provide: WIDGET_CONTROL_MODAL_DATA,
+        useValue: {
+          widget: item,
+        },
       },
-    }], this.injector)
+    ], this.injector)
 
     const ref = this.$modal.open(WidgetControlComponent, {
       size: 'lg',
@@ -417,8 +423,12 @@ export class StatusComponent implements OnInit, OnDestroy {
       return
     }
     const current = this.selectedReorderComponent()
-    const idx = current && list.includes(current) ? list.indexOf(current) : 0
-    const nextIdx = prev ? (idx - 1 + list.length) % list.length : (idx + 1) % list.length
+    const idx = current && list.includes(current)
+      ? list.indexOf(current)
+      : 0
+    const nextIdx = prev
+      ? (idx - 1 + list.length) % list.length
+      : (idx + 1) % list.length
     const next = list[nextIdx]
     this.selectedReorderComponent.set(next)
     setTimeout(() => this.focusReorderItem(next), 0)
@@ -462,11 +472,15 @@ export class StatusComponent implements OnInit, OnDestroy {
     if (!selected || !list.includes(selected)) {
       return
     }
-    const target = edge === 'top' ? 0 : list.length - 1
+    const target = edge === 'top'
+      ? 0
+      : list.length - 1
     this.reorderTo(selected, target)
 
     const name = this.getWidgetDisplayName(selected)
-    const edgeLabel = this.$translate.instant(edge === 'top' ? 'status.reorder.edge_top' : 'status.reorder.edge_bottom')
+    const edgeLabel = this.$translate.instant(edge === 'top'
+      ? 'status.reorder.edge_top'
+      : 'status.reorder.edge_bottom')
     this.speakAction(this.$translate.instant('status.reorder.moved_to_edge', {
       name,
       edge: edgeLabel,
@@ -477,7 +491,9 @@ export class StatusComponent implements OnInit, OnDestroy {
   }
 
   private reorderTo(component: string, targetIdx: number): void {
-    const current = [...this.dashboard()]
+    const current = [
+      ...this.dashboard(),
+    ]
     const fromIdx = current.findIndex(x => x?.component === component)
     if (fromIdx < 0) {
       return
@@ -648,8 +664,11 @@ export class StatusComponent implements OnInit, OnDestroy {
     // otherwise the splice below permanently strips the Matter widget from the
     // cached default, and a later reset on a matter-capable view would be
     // missing it.
-    // eslint-disable-next-line ts/no-require-imports
-    const layout = [...require('./default-dashboard-layout.json')]
+
+    const layout = [
+      // eslint-disable-next-line ts/no-require-imports
+      ...require('./default-dashboard-layout.json'),
+    ]
 
     // If matter is not supported, remove the Matter QR code widget
     if (!this.isMatterSupported) {
@@ -673,7 +692,9 @@ export class StatusComponent implements OnInit, OnDestroy {
 
   private async gridChangedEvent() {
     // Sort the array to ensure mobile displays correctly
-    const currentDashboard = [...this.dashboard()]
+    const currentDashboard = [
+      ...this.dashboard(),
+    ]
     currentDashboard.sort((a, b) => a.mobileOrder - b.mobileOrder)
     this.dashboard.set(currentDashboard)
 

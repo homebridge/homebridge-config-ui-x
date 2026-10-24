@@ -157,7 +157,11 @@ describe('the supported locales', () => {
       vi.spyOn(TranslateService.prototype, 'getBrowserLang').mockReturnValue(options.browser)
       vi.spyOn(TranslateService.prototype, 'getBrowserCultureLang').mockReturnValue(options.browser)
 
-      TestBed.configureTestingModule({ providers: [provideAppTranslation()] })
+      TestBed.configureTestingModule({
+        providers: [
+          provideAppTranslation(),
+        ],
+      })
 
       return TestBed.inject(LOCALE_ID)
     }
@@ -182,7 +186,10 @@ describe('the supported locales', () => {
       // The shell loads the translation for the stored language; this has to be
       // the locale that goes with it, or the text and the dates disagree
       const resolved = Object.fromEntries(
-        Object.keys(supportedLocales).map(lang => [lang, localeFor({ stored: lang })]),
+        Object.keys(supportedLocales).map(lang => [
+          lang,
+          localeFor({ stored: lang }),
+        ]),
       )
 
       expect(resolved).toEqual(supportedLocales)
@@ -248,7 +255,9 @@ describe('the supported locales', () => {
       const block = html.match(/<option value="auto">[\s\S]*?<\/select>/)
       expect(block, 'the language select could not be found').not.toBeNull()
 
-      const offered = [...block![0].matchAll(/<option value="([\w-]+)"/g)]
+      const offered = [
+        ...block![0].matchAll(/<option value="([\w-]+)"/g),
+      ]
         .map(match => match[1])
         .filter(value => value !== 'auto')
 
@@ -264,11 +273,16 @@ describe('the supported locales', () => {
       const ts = source('config-editor.component.ts')
       const start = ts.indexOf('description: \'The language used for the UI.\'')
       expect(start, 'the language schema could not be found').toBeGreaterThan(-1)
-      // Each entry ends `] },` so the first `],` is the end of the list itself
-      const end = ts.indexOf('],', start)
+      // The list closes with a `],` at the same indent as its `oneOf: [` line.
+      // Every entry has its own `enum: [...],`, so the first `],` is not it
+      const open = ts.indexOf('oneOf: [', start)
+      const indent = ts.slice(ts.lastIndexOf('\n', open) + 1, open)
+      const end = ts.indexOf(`\n${indent}],`, open)
       expect(end, 'the end of the language schema could not be found').toBeGreaterThan(start)
 
-      const offered = [...ts.slice(start, end).matchAll(/enum: \['([\w-]+)'\]/g)]
+      const offered = [
+        ...ts.slice(start, end).matchAll(/enum: \['([\w-]+)'\]/g),
+      ]
         .map(match => match[1])
         .filter(value => value !== 'auto')
 
@@ -280,7 +294,9 @@ describe('the supported locales', () => {
         ['settings.component.html', /<option value="([\w-]+)"/g],
         ['config-editor.component.ts', /enum: \['([\w-]+)'\]/g],
       ] as const) {
-        const values = [...source(name).matchAll(pattern)].map(match => match[1])
+        const values = [
+          ...source(name).matchAll(pattern),
+        ].map(match => match[1])
         const languages = values.filter(value => value in supportedLocales)
         expect(new Set(languages).size, `${name} lists a language twice`).toBe(languages.length)
       }

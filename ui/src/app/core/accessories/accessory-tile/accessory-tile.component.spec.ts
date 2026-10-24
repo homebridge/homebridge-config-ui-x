@@ -40,7 +40,10 @@ describe('AccessoryTileComponent', () => {
     })
 
     TestBed.overrideComponent(AccessoryTileComponent, {
-      set: { imports: [TranslatePipe], schemas: [NO_ERRORS_SCHEMA] },
+      set: {
+        imports: [TranslatePipe],
+        schemas: [NO_ERRORS_SCHEMA],
+      },
     })
   })
 
@@ -53,7 +56,9 @@ describe('AccessoryTileComponent', () => {
 
   /** Which `app-*` type element the tile chose. */
   function renderedType(element: HTMLElement): string | undefined {
-    return [...element.querySelectorAll('*')]
+    return [
+      ...element.querySelectorAll('*'),
+    ]
       .map(node => node.tagName.toLowerCase())
       .find(tag => tag.startsWith('app-'))
   }
@@ -179,20 +184,29 @@ describe('AccessoryTileComponent', () => {
 
   describe('a user chosen type', () => {
     it('overrides the hap service type', () => {
-      const service = hapService({ type: 'Switch', overrides: { customType: 'Outlet' } })
+      const service = hapService({
+        type: 'Switch',
+        overrides: { customType: 'Outlet' },
+      })
 
       // The accessory info modal lets a user re-label a switch as an outlet
       expect(renderedType(render(service))).toBe('app-outlet')
     })
 
     it('overrides the matter device type', () => {
-      const service = matterService({ deviceType: 'OnOffLight', overrides: { customType: 'OnOffPlugInUnit' } })
+      const service = matterService({
+        deviceType: 'OnOffLight',
+        overrides: { customType: 'OnOffPlugInUnit' },
+      })
 
       expect(renderedType(render(service))).toBe('app-on-off-plug-in-unit')
     })
 
     it('still falls back when the chosen type is not handled', () => {
-      const service = hapService({ type: 'Switch', overrides: { customType: 'NotAThing' } })
+      const service = hapService({
+        type: 'Switch',
+        overrides: { customType: 'NotAThing' },
+      })
 
       expect(renderedType(render(service))).toBe('app-unknown')
     })
@@ -247,7 +261,9 @@ describe('AccessoryTileComponent', () => {
     })
 
     it('marks a hidden accessory', () => {
-      const element = render(hapService({ overrides: { hidden: true } }))
+      const element = render(hapService({
+        overrides: { hidden: true },
+      }))
 
       expect(element.querySelector('.accessory-hidden-indicator')).not.toBeNull()
       expect(element.querySelector('.accessory-hidden-icon')).not.toBeNull()

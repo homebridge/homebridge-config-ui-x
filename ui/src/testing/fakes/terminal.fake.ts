@@ -15,7 +15,10 @@ export class FakeTerminal {
   public written: string[] = []
   public cols = 80
   public rows = 24
-  public buffer = { active: { length: 42 } }
+  public buffer = {
+    active: { length: 42 },
+  }
+
   public dataHandlers: Array<(data: string) => void> = []
   public resizeHandlers: Array<(size: { cols: number, rows: number }) => void> = []
   public dataDisposed = false
@@ -45,7 +48,9 @@ export class FakeTerminal {
 
   public onResize(handler: (size: { cols: number, rows: number }) => void) {
     this.resizeHandlers.push(handler)
-    return { dispose: vi.fn() }
+    return {
+      dispose: vi.fn(),
+    }
   }
 }
 

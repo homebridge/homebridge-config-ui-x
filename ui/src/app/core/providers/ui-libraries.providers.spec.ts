@@ -128,7 +128,11 @@ describe('the ui library configuration', () => {
       // The app has its own toast markup. Losing this leaves the default
       // ngx-toastr styling, which does not match the theme
       TestBed.resetTestingModule()
-      TestBed.configureTestingModule({ providers: [provideUiLibraries()] })
+      TestBed.configureTestingModule({
+        providers: [
+          provideUiLibraries(),
+        ],
+      })
 
       expect(TestBed.inject(ToastrService).toastrConfig.toastComponent).toBe(AppToastComponent)
     })
@@ -137,7 +141,11 @@ describe('the ui library configuration', () => {
       // A failing plugin can raise a toast per accessory; without a cap they
       // cover the page
       TestBed.resetTestingModule()
-      TestBed.configureTestingModule({ providers: [provideUiLibraries()] })
+      TestBed.configureTestingModule({
+        providers: [
+          provideUiLibraries(),
+        ],
+      })
 
       const config = TestBed.inject(ToastrService).toastrConfig
       expect(config.maxOpened).toBe(2)
@@ -146,7 +154,11 @@ describe('the ui library configuration', () => {
 
     it('stacks them oldest first in the bottom right', () => {
       TestBed.resetTestingModule()
-      TestBed.configureTestingModule({ providers: [provideUiLibraries()] })
+      TestBed.configureTestingModule({
+        providers: [
+          provideUiLibraries(),
+        ],
+      })
 
       const config = TestBed.inject(ToastrService).toastrConfig
       expect(config.positionClass).toBe('toast-bottom-right')

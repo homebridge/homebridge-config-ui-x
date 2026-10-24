@@ -53,7 +53,9 @@ describe('restarting homebridge', () => {
     toastr = toastrStub()
     ws = fakeWs()
     io = ws.namespace('status')
-    cache = { invalidateAll: vi.fn() }
+    cache = {
+      invalidateAll: vi.fn(),
+    }
     modal = modalServiceSpy()
 
     TestBed.configureTestingModule({
@@ -288,11 +290,15 @@ describe('restarting homebridge', () => {
 
     it('offers the host controls only when the platform supports them', async () => {
       expect((await open(PowerOptionsComponent)).canShutdownRestartHost()).toBe(false)
-      expect((await open(PowerOptionsComponent, { env: { canShutdownRestartHost: true } })).canShutdownRestartHost()).toBe(true)
+      expect((await open(PowerOptionsComponent, {
+        env: { canShutdownRestartHost: true },
+      })).canShutdownRestartHost()).toBe(true)
     })
 
     it('knows when it is running in a container', async () => {
-      const page = await open(PowerOptionsComponent, { env: { runningInDocker: true } })
+      const page = await open(PowerOptionsComponent, {
+        env: { runningInDocker: true },
+      })
 
       // Restarting the container replaces both Homebridge and the UI, so it is a
       // different option from restarting the host
@@ -332,7 +338,9 @@ describe('restarting homebridge', () => {
     })
 
     it('sends the host restart to its own page', async () => {
-      const page = await open(PowerOptionsComponent, { env: { canShutdownRestartHost: true } })
+      const page = await open(PowerOptionsComponent, {
+        env: { canShutdownRestartHost: true },
+      })
 
       page.restartServer()
 
@@ -340,7 +348,9 @@ describe('restarting homebridge', () => {
     })
 
     it('sends a container restart to its own page', async () => {
-      const page = await open(PowerOptionsComponent, { env: { runningInDocker: true } })
+      const page = await open(PowerOptionsComponent, {
+        env: { runningInDocker: true },
+      })
 
       page.dockerRestartContainer()
 
@@ -348,7 +358,9 @@ describe('restarting homebridge', () => {
     })
 
     it('asks before shutting the machine down', async () => {
-      const page = await open(PowerOptionsComponent, { env: { canShutdownRestartHost: true } })
+      const page = await open(PowerOptionsComponent, {
+        env: { canShutdownRestartHost: true },
+      })
 
       const done = page.shutdownServer()
 
@@ -360,7 +372,9 @@ describe('restarting homebridge', () => {
     })
 
     it('shuts down once confirmed', async () => {
-      const page = await open(PowerOptionsComponent, { env: { canShutdownRestartHost: true } })
+      const page = await open(PowerOptionsComponent, {
+        env: { canShutdownRestartHost: true },
+      })
 
       const done = page.shutdownServer()
       modal.lastOpened()!.ref.close()
@@ -370,7 +384,9 @@ describe('restarting homebridge', () => {
     })
 
     it('does nothing when the shutdown is called off', async () => {
-      const page = await open(PowerOptionsComponent, { env: { canShutdownRestartHost: true } })
+      const page = await open(PowerOptionsComponent, {
+        env: { canShutdownRestartHost: true },
+      })
 
       const done = page.shutdownServer()
       modal.lastOpened()!.ref.dismiss('Dismiss')

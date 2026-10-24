@@ -149,7 +149,15 @@ describe('LogGateway (e2e)', () => {
 
     // check the log command is correct
     expect((logService as any).useNative).toBe(false)
-    expect((logService as any).command).toEqual(['sudo', '-n', 'tail', '-n', '500', '-f', logFilePath])
+    expect((logService as any).command).toEqual([
+      'sudo',
+      '-n',
+      'tail',
+      '-n',
+      '500',
+      '-f',
+      logFilePath,
+    ])
   })
 
   it('ON /log/tail-log (systemd)', async () => {
@@ -164,7 +172,16 @@ describe('LogGateway (e2e)', () => {
 
     // check the log command is correct
     expect((logService as any).useNative).toBe(false)
-    expect((logService as any).command).toEqual(['journalctl', '-o', 'cat', '-n', '500', '-f', '-u', 'homebridge'])
+    expect((logService as any).command).toEqual([
+      'journalctl',
+      '-o',
+      'cat',
+      '-n',
+      '500',
+      '-f',
+      '-u',
+      'homebridge',
+    ])
   })
 
   it('ON /log/tail-log (systemd - with sudo)', async () => {
@@ -180,7 +197,18 @@ describe('LogGateway (e2e)', () => {
 
     // check the log command is correct
     expect((logService as any).useNative).toBe(false)
-    expect((logService as any).command).toEqual(['sudo', '-n', 'journalctl', '-o', 'cat', '-n', '500', '-f', '-u', 'homebridge'])
+    expect((logService as any).command).toEqual([
+      'sudo',
+      '-n',
+      'journalctl',
+      '-o',
+      'cat',
+      '-n',
+      '500',
+      '-f',
+      '-u',
+      'homebridge',
+    ])
   })
 
   it('ON /log/tail-log (powershell)', async () => {
@@ -251,10 +279,14 @@ describe('LogGateway (e2e)', () => {
     const ptyExitCallbacks: Array<((event: { exitCode: number }) => void) | null> = [null, null]
     function makeMockPty(slot: number) {
       return {
-        onData: vi.fn(() => ({ dispose: vi.fn() })),
+        onData: vi.fn(() => ({
+          dispose: vi.fn(),
+        })),
         onExit: vi.fn((cb: (e: { exitCode: number }) => void) => {
           ptyExitCallbacks[slot] = cb
-          return { dispose: vi.fn() }
+          return {
+            dispose: vi.fn(),
+          }
         }),
         resize: vi.fn(),
         kill: vi.fn(),

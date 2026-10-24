@@ -22,7 +22,9 @@ import { StatusService } from '../../src/modules/status/status.service.js'
 
 // Near the top of the file (after imports)
 const NETWORK_TEST_TIMEOUT
-  = process.platform === 'win32' && process.arch === 'arm64' ? 60_000 : 30_000
+  = process.platform === 'win32' && process.arch === 'arm64'
+    ? 60_000
+    : 30_000
 
 describe('StatusController (e2e)', () => {
   let app: NestFastifyApplication

@@ -39,7 +39,10 @@ function iconClass(method: string, state: Record<string, any>): string {
 describe('UpdateInfoWidgetComponent', () => {
   describe('getHomebridgeIconClass', () => {
     const homebridge = (pkg: Record<string, any>, homebridgeUpdatePolicy = 'all') =>
-      iconClass('getHomebridgeIconClass', { homebridgePkg: signal(pkg), homebridgeUpdatePolicy })
+      iconClass('getHomebridgeIconClass', {
+        homebridgePkg: signal(pkg),
+        homebridgeUpdatePolicy,
+      })
 
     it('spins until the installed version is known', () => {
       expect(homebridge({})).toBe(SPINNER)
@@ -64,7 +67,10 @@ describe('UpdateInfoWidgetComponent', () => {
 
   describe('getHomebridgeUiIconClass', () => {
     const ui = (pkg: Record<string, any>, homebridgeUiUpdatePolicy = 'all') =>
-      iconClass('getHomebridgeUiIconClass', { homebridgeUiPkg: signal(pkg), homebridgeUiUpdatePolicy })
+      iconClass('getHomebridgeUiIconClass', {
+        homebridgeUiPkg: signal(pkg),
+        homebridgeUiUpdatePolicy,
+      })
 
     it('spins until the installed version is known', () => {
       expect(ui({})).toBe(SPINNER)
@@ -99,14 +105,20 @@ describe('UpdateInfoWidgetComponent', () => {
         homebridgePluginStatus: signal(plugins),
       })
 
-      expect(done([{ name: 'homebridge-test' }])).toBe(UPDATE)
+      expect(done([
+        { name: 'homebridge-test' },
+      ])).toBe(UPDATE)
       expect(done([])).toBe(UP_TO_DATE)
     })
   })
 
   describe('getNodejsIconClass', () => {
     const node = (info: Record<string, any> | null, nodeUpdatePolicy = 'all', done = true) =>
-      iconClass('getNodejsIconClass', { nodejsInfo: signal(info), nodejsStatusDone: signal(done), nodeUpdatePolicy })
+      iconClass('getNodejsIconClass', {
+        nodejsInfo: signal(info),
+        nodejsStatusDone: signal(done),
+        nodeUpdatePolicy,
+      })
 
     it('spins until the node check has finished', () => {
       expect(node(null, 'all', false)).toBe(SPINNER)
@@ -155,8 +167,18 @@ describe('UpdateInfoWidgetComponent', () => {
     function overview(overrides: Record<string, any> = {}) {
       return {
         serverInfo: { nodeVersion: '22.0.0', homebridgeRunningInDocker: false, homebridgeRunningInSynologyPackage: false },
-        node: { updateAvailable: false, showNodeUnsupportedWarning: false, architecture: 'arm64', supportsNodeJs24: true },
-        homebridge: { name: 'homebridge', installedVersion: '1.8.0', latestVersion: '1.8.0', updateAvailable: false },
+        node: {
+          updateAvailable: false,
+          showNodeUnsupportedWarning: false,
+          architecture: 'arm64',
+          supportsNodeJs24: true,
+        },
+        homebridge: {
+          name: 'homebridge',
+          installedVersion: '1.8.0',
+          latestVersion: '1.8.0',
+          updateAvailable: false,
+        },
         homebridgeUi: { name: 'homebridge-config-ui-x', installedVersion: '5.0.0', updateAvailable: true },
         outOfDatePlugins: [],
         docker: { latestVersion: null, latestReleaseBody: '', updateAvailable: false },
@@ -179,7 +201,9 @@ describe('UpdateInfoWidgetComponent', () => {
       modal = modalServiceSpy()
       ws = fakeWs()
       saveWidgets = new Subject<void>()
-      settings = makeSettings({ env: { packageVersion: '5.0.0', homebridgeVersion: '1.8.0', ...options.env } })
+      settings = makeSettings({
+        env: { packageVersion: '5.0.0', homebridgeVersion: '1.8.0', ...options.env },
+      })
       managePlugins = {
         installAlternateVersion: vi.fn(),
         upgradeHomebridge: vi.fn(),
@@ -206,14 +230,19 @@ describe('UpdateInfoWidgetComponent', () => {
             toastr,
             modal,
             ws,
-            auth: makeAuth({ user: { username: 'admin', admin: options.admin ?? true } }),
+            auth: makeAuth({
+              user: { username: 'admin', admin: options.admin ?? true },
+            }),
           }),
           { provide: ManagePluginsService, useValue: managePlugins },
         ],
       })
 
       TestBed.overrideComponent(UpdateInfoWidgetComponent, {
-        set: { imports: [TranslatePipe], schemas: [NO_ERRORS_SCHEMA] },
+        set: {
+          imports: [TranslatePipe],
+          schemas: [NO_ERRORS_SCHEMA],
+        },
       })
 
       const fixture = TestBed.createComponent(UpdateInfoWidgetComponent)
@@ -234,7 +263,11 @@ describe('UpdateInfoWidgetComponent', () => {
     })
 
     it('takes the homebridge version from the payload', async () => {
-      const widget = create({ payload: { homebridge: { installedVersion: '1.9.0', updateAvailable: true } } })
+      const widget = create({
+        payload: {
+          homebridge: { installedVersion: '1.9.0', updateAvailable: true },
+        },
+      })
       await settle()
 
       expect(widget.homebridgePkg().installedVersion).toBe('1.9.0')
@@ -243,7 +276,11 @@ describe('UpdateInfoWidgetComponent', () => {
 
     it('tells the rest of the app which homebridge is running', async () => {
       // Several other pages read this rather than asking again
-      create({ payload: { homebridge: { installedVersion: '1.9.0' } } })
+      create({
+        payload: {
+          homebridge: { installedVersion: '1.9.0' },
+        },
+      })
       await settle()
 
       expect(settings.env.homebridgeVersion).toBe('1.9.0')
@@ -265,14 +302,24 @@ describe('UpdateInfoWidgetComponent', () => {
     ])('reads %s as running v2: %s', async (installedVersion, expected) => {
       // ⚠️ By major version, not by a string prefix: '1.10.0' starts with '1.1'
       // and a prefix test on '2' would also match '20.x' one day
-      const widget = create({ payload: { homebridge: { installedVersion } } })
+      const widget = create({
+        payload: {
+          homebridge: { installedVersion },
+        },
+      })
       await settle()
 
       expect(widget.isRunningHbV2()).toBe(expected)
     })
 
     it('shows the plugins that are out of date', async () => {
-      const widget = create({ payload: { outOfDatePlugins: [{ name: 'homebridge-example' }] } })
+      const widget = create({
+        payload: {
+          outOfDatePlugins: [
+            { name: 'homebridge-example' },
+          ],
+        },
+      })
       await settle()
 
       expect(widget.homebridgePluginStatus().map(p => p.name)).toEqual(['homebridge-example'])
@@ -281,7 +328,14 @@ describe('UpdateInfoWidgetComponent', () => {
 
     it('never counts the ui among them', async () => {
       // It has its own row in the widget
-      const widget = create({ payload: { outOfDatePlugins: [{ name: 'homebridge-config-ui-x' }, { name: 'homebridge-example' }] } })
+      const widget = create({
+        payload: {
+          outOfDatePlugins: [
+            { name: 'homebridge-config-ui-x' },
+            { name: 'homebridge-example' },
+          ],
+        },
+      })
       await settle()
 
       expect(widget.homebridgePluginStatus().map(p => p.name)).toEqual(['homebridge-example'])
@@ -289,8 +343,16 @@ describe('UpdateInfoWidgetComponent', () => {
 
     it('leaves out a plugin the user muted', async () => {
       const widget = create({
-        payload: { outOfDatePlugins: [{ name: 'homebridge-example' }] },
-        env: { plugins: { hideUpdatesFor: ['homebridge-example'] } },
+        payload: {
+          outOfDatePlugins: [
+            { name: 'homebridge-example' },
+          ],
+        },
+        env: {
+          plugins: {
+            hideUpdatesFor: ['homebridge-example'],
+          },
+        },
       })
       await settle()
 
@@ -299,7 +361,9 @@ describe('UpdateInfoWidgetComponent', () => {
 
     it('keeps the node tile loading when the server could not check', async () => {
       // ⚠️ Not "up to date": nothing was checked
-      const widget = create({ payload: { node: null } })
+      const widget = create({
+        payload: { node: null },
+      })
       await settle()
 
       expect(widget.nodejsStatusDone()).toBe(false)
@@ -307,7 +371,9 @@ describe('UpdateInfoWidgetComponent', () => {
     })
 
     it('keeps the homebridge tile empty when the server could not check', async () => {
-      const widget = create({ payload: { homebridge: null } })
+      const widget = create({
+        payload: { homebridge: null },
+      })
       await settle()
 
       expect(widget.homebridgePkg().installedVersion).toBeUndefined()
@@ -315,7 +381,12 @@ describe('UpdateInfoWidgetComponent', () => {
 
     it('finishes the docker tile when homebridge is not in docker', async () => {
       // There is nothing to check, so it must not spin for ever
-      const widget = create({ payload: { serverInfo: { homebridgeRunningInDocker: false }, docker: null } })
+      const widget = create({
+        payload: {
+          serverInfo: { homebridgeRunningInDocker: false },
+          docker: null,
+        },
+      })
       await settle()
 
       expect(widget.dockerStatusDone()).toBe(true)
@@ -335,7 +406,12 @@ describe('UpdateInfoWidgetComponent', () => {
     })
 
     it('keeps the docker tile loading when that check failed', async () => {
-      const widget = create({ payload: { serverInfo: { homebridgeRunningInDocker: true }, docker: null } })
+      const widget = create({
+        payload: {
+          serverInfo: { homebridgeRunningInDocker: true },
+          docker: null,
+        },
+      })
       await settle()
 
       expect(widget.dockerStatusDone()).toBe(false)
@@ -352,7 +428,9 @@ describe('UpdateInfoWidgetComponent', () => {
 
     describe('the v2 readiness button', () => {
       it('shows the answer the server worked out', async () => {
-        const widget = create({ payload: { hbV2Ready: false } })
+        const widget = create({
+          payload: { hbV2Ready: false },
+        })
         await settle()
 
         expect(widget.isHbV2Ready()).toBe(false)
@@ -361,7 +439,10 @@ describe('UpdateInfoWidgetComponent', () => {
 
       it('is not offered to a non-admin', async () => {
         // Only an admin can act on it
-        const widget = create({ payload: { hbV2Ready: false }, admin: false })
+        const widget = create({
+          payload: { hbV2Ready: false },
+          admin: false,
+        })
         await settle()
 
         expect(widget.isHbV2Loaded()).toBe(false)
@@ -369,7 +450,12 @@ describe('UpdateInfoWidgetComponent', () => {
       })
 
       it('is not offered once v2 is already running', async () => {
-        const widget = create({ payload: { homebridge: { installedVersion: '2.0.0' }, hbV2Ready: false } })
+        const widget = create({
+          payload: {
+            homebridge: { installedVersion: '2.0.0' },
+            hbV2Ready: false,
+          },
+        })
         await settle()
 
         expect(widget.isHbV2Loaded()).toBe(false)
@@ -470,7 +556,12 @@ describe('UpdateInfoWidgetComponent', () => {
         const widget = create({
           payload: {
             serverInfo: { homebridgeRunningInDocker: true },
-            docker: { currentVersion: '1.0.0', latestVersion: '2.0.0', latestReleaseBody: 'what changed', updateAvailable: true },
+            docker: {
+              currentVersion: '1.0.0',
+              latestVersion: '2.0.0',
+              latestReleaseBody: 'what changed',
+              updateAvailable: true,
+            },
           },
         })
         await settle()
@@ -485,7 +576,12 @@ describe('UpdateInfoWidgetComponent', () => {
       })
 
       it('says the versions are unknown rather than showing an empty arrow', async () => {
-        const widget = create({ payload: { serverInfo: { homebridgeRunningInDocker: true }, docker: { latestVersion: null } } })
+        const widget = create({
+          payload: {
+            serverInfo: { homebridgeRunningInDocker: true },
+            docker: { latestVersion: null },
+          },
+        })
         await settle()
 
         widget.dockerUpdateModal()
@@ -574,9 +670,21 @@ describe('UpdateInfoWidgetComponent', () => {
        */
       function allOutOfDate() {
         return {
-          homebridge: { name: 'homebridge', installedVersion: '1.8.0', latestVersion: '1.9.0', updateAvailable: true },
+          homebridge: {
+            name: 'homebridge',
+            installedVersion: '1.8.0',
+            latestVersion: '1.9.0',
+            updateAvailable: true,
+          },
           homebridgeUi: { name: 'homebridge-config-ui-x', installedVersion: '5.0.0', updateAvailable: true },
-          outOfDatePlugins: [{ name: 'homebridge-example', displayName: 'Example', installedVersion: '1.0.0', latestVersion: '1.1.0' }],
+          outOfDatePlugins: [
+            {
+              name: 'homebridge-example',
+              displayName: 'Example',
+              installedVersion: '1.0.0',
+              latestVersion: '1.1.0',
+            },
+          ],
         }
       }
 
@@ -585,7 +693,9 @@ describe('UpdateInfoWidgetComponent', () => {
         // existing one-package flow is the right tool.
         // ⚠️ Two, not three: this is a dev build, and the widget forces the
         // ui's own update off in anything but production - see below
-        const widget = create({ payload: allOutOfDate() })
+        const widget = create({
+          payload: allOutOfDate(),
+        })
         await settle()
 
         expect(widget.updateAllCount()).toBe(2)
@@ -596,7 +706,9 @@ describe('UpdateInfoWidgetComponent', () => {
         // developer running it, so `updateAvailable` is cleared on load
         environment.production = true
         try {
-          const widget = create({ payload: allOutOfDate() })
+          const widget = create({
+            payload: allOutOfDate(),
+          })
           await settle()
 
           expect(widget.updateAllCount()).toBe(3)
@@ -608,7 +720,12 @@ describe('UpdateInfoWidgetComponent', () => {
       it('counts nothing when everything is up to date', async () => {
         const widget = create({
           payload: {
-            homebridge: { name: 'homebridge', installedVersion: '1.8.0', latestVersion: '1.8.0', updateAvailable: false },
+            homebridge: {
+              name: 'homebridge',
+              installedVersion: '1.8.0',
+              latestVersion: '1.8.0',
+              updateAvailable: false,
+            },
             homebridgeUi: { name: 'homebridge-config-ui-x', installedVersion: '5.0.0', updateAvailable: false },
             outOfDatePlugins: [],
           },

@@ -29,7 +29,12 @@ describe('HbService Win32Installer (e2e)', () => {
       serviceName: 'Homebridge',
       selfPath: 'C:\\Users\\John Doe\\AppData\\Local\\Author Software\\nvm\\v22.12.0\\node_modules\\homebridge-config-ui-x\\dist\\bin\\hb-service.js',
       storagePath: 'C:\\Users\\John Doe\\.homebridge',
-      logger: { log: vi.fn(), success: vi.fn(), warn: vi.fn(), error: vi.fn() },
+      logger: {
+        log: vi.fn(),
+        success: vi.fn(),
+        warn: vi.fn(),
+        error: vi.fn(),
+      },
       portCheck: vi.fn(),
       storagePathCheck: vi.fn(),
       configCheck: vi.fn(),

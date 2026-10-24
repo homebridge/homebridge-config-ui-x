@@ -82,7 +82,9 @@ export class PluginsComponent implements OnInit, OnDestroy, CanComponentDeactiva
    * The modal fetches the authoritative plan itself.
    */
   public readonly availableUpdateCount = computed(() =>
-    this.installedPlugins().filter(x => x.updateAvailable).length + (this.uiUpdateAvailable() ? 1 : 0))
+    this.installedPlugins().filter(x => x.updateAvailable).length + (this.uiUpdateAvailable()
+      ? 1
+      : 0))
 
   /**
    * Whether homebridge-config-ui-x itself has an update, captured before the
@@ -128,7 +130,9 @@ export class PluginsComponent implements OnInit, OnDestroy, CanComponentDeactiva
         Object.assign(existingBridge, data)
 
         // Trigger signal update
-        this.childBridges.set([...this.childBridges()])
+        this.childBridges.set([
+          ...this.childBridges(),
+        ])
       } else {
         this.childBridges.update(bridges => [...bridges, data])
       }
@@ -181,7 +185,9 @@ export class PluginsComponent implements OnInit, OnDestroy, CanComponentDeactiva
     } catch (error) {
       this.isSearchMode.set(false)
       console.error(error)
-      const message = error instanceof Error ? error.message : this.$translate.instant('plugins.toast_failed_to_search_plugins')
+      const message = error instanceof Error
+        ? error.message
+        : this.$translate.instant('plugins.toast_failed_to_search_plugins')
       this.$toastr.error(message, this.$translate.instant('toast.title_error'))
       void this.loadInstalledPlugins()
     } finally {
@@ -452,7 +458,9 @@ export class PluginsComponent implements OnInit, OnDestroy, CanComponentDeactiva
       return sortedList
     } catch (error) {
       console.error(error)
-      const message = error instanceof Error ? error.message : this.$translate.instant('plugins.toast_failed_to_load_plugins')
+      const message = error instanceof Error
+        ? error.message
+        : this.$translate.instant('plugins.toast_failed_to_load_plugins')
       this.$toastr.error(message, this.$translate.instant('toast.title_error'))
       this.mainError.set(true)
       return undefined
@@ -484,20 +492,34 @@ export class PluginsComponent implements OnInit, OnDestroy, CanComponentDeactiva
     return [...plugins].sort((a, b) => {
       const aScore = (a.updateAvailable ? 1000 : 0)
         + (a.newHbScope ? 100 : 0)
-        + (a.disabled ? -10 : 0)
-        + (a.isConfigured ? -20 : 0)
+        + (a.disabled
+          ? -10
+          : 0)
+        + (a.isConfigured
+          ? -20
+          : 0)
         + (a.hasChildBridgesUnpaired ? 5 : 0)
-        + (deprioritiseChildBridge(a) ? -1 : 0)
+        + (deprioritiseChildBridge(a)
+          ? -1
+          : 0)
 
       const bScore = (b.updateAvailable ? 1000 : 0)
         + (b.newHbScope ? 100 : 0)
-        + (b.disabled ? -10 : 0)
-        + (b.isConfigured ? -20 : 0)
+        + (b.disabled
+          ? -10
+          : 0)
+        + (b.isConfigured
+          ? -20
+          : 0)
         + (b.hasChildBridgesUnpaired ? 5 : 0)
-        + (deprioritiseChildBridge(b) ? -1 : 0)
+        + (deprioritiseChildBridge(b)
+          ? -1
+          : 0)
 
       // Compare scores first, then fallback to name
-      return aScore !== bScore ? bScore - aScore : a.name.localeCompare(b.name)
+      return aScore !== bScore
+        ? bScore - aScore
+        : a.name.localeCompare(b.name)
     })
   }
 
@@ -517,8 +539,12 @@ export class PluginsComponent implements OnInit, OnDestroy, CanComponentDeactiva
     const externalsFeatureEnabled = this.$settings.isFeatureEnabled('externalAccessoriesAttribution')
 
     const [cachedConfigList, pairings] = await Promise.all([
-      needsCacheLookup ? this.$pluginsCache.get() : Promise.resolve(null),
-      externalsFeatureEnabled ? this.$pairingsCache.get<any[]>().catch(() => []) : Promise.resolve([]),
+      needsCacheLookup
+        ? this.$pluginsCache.get()
+        : Promise.resolve(null),
+      externalsFeatureEnabled
+        ? this.$pairingsCache.get<any[]>().catch(() => [])
+        : Promise.resolve([]),
     ])
 
     const cachedConfigByName = cachedConfigList
@@ -589,6 +615,8 @@ export class PluginsComponent implements OnInit, OnDestroy, CanComponentDeactiva
     if (!bridge) {
       return false
     }
-    return protocol === 'hap' ? !!bridge.hideHapAlert : !!bridge.hideMatterAlert
+    return protocol === 'hap'
+      ? !!bridge.hideHapAlert
+      : !!bridge.hideMatterAlert
   }
 }

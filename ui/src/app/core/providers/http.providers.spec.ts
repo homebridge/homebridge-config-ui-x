@@ -37,7 +37,10 @@ describe('the http client wiring', () => {
     TestBed.configureTestingModule({
       // Testing last, so its backend replaces the real one while the
       // interceptors under test still run
-      providers: [provideAppHttpClient(), provideHttpClientTesting()],
+      providers: [
+        provideAppHttpClient(),
+        provideHttpClientTesting(),
+      ],
     })
 
     http = TestBed.inject(HttpClient)
@@ -56,7 +59,10 @@ describe('the http client wiring', () => {
    * @param url - where the request goes
    */
   function authorizationFor(url: string): string | null {
-    http.get(url).subscribe({ next: () => {}, error: () => {} })
+    http.get(url).subscribe({
+      next: () => {},
+      error: () => {},
+    })
     const request = controller.expectOne(request => request.url === url)
     const header = request.request.headers.get('Authorization')
     request.flush({})

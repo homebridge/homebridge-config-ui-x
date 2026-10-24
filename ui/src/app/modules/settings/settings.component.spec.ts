@@ -61,7 +61,13 @@ describe('SettingsComponent', () => {
     // configure the test module when it has already been instantiated"
     TestBed.resetTestingModule()
     api = fakeApi()
-      .respond('get', '/platform-tools/hb-service/homebridge-startup-settings', { HOMEBRIDGE_DEBUG: false, HOMEBRIDGE_KEEP_ORPHANS: false, HOMEBRIDGE_INSECURE: true, ENV_DEBUG: '', ENV_NODE_OPTIONS: '' })
+      .respond('get', '/platform-tools/hb-service/homebridge-startup-settings', {
+        HOMEBRIDGE_DEBUG: false,
+        HOMEBRIDGE_KEEP_ORPHANS: false,
+        HOMEBRIDGE_INSECURE: true,
+        ENV_DEBUG: '',
+        ENV_NODE_OPTIONS: '',
+      })
       .respond('get', '/server/network-interfaces/system', [])
       .respond('get', '/server/network-interfaces/bridge', [])
       .respond('get', '/server/mdns-advertiser', { advertiser: 'ciao' })
@@ -77,7 +83,10 @@ describe('SettingsComponent', () => {
     settings = makeSettings({ env })
     toastr = toastrStub()
     modal = modalServiceSpy()
-    terminal = { hasActiveSession: () => false, destroyPersistentSession: vi.fn() }
+    terminal = {
+      hasActiveSession: () => false,
+      destroyPersistentSession: vi.fn(),
+    }
 
     TestBed.configureTestingModule({
       imports: [SettingsComponent],
@@ -95,7 +104,11 @@ describe('SettingsComponent', () => {
         // Only when a case cares: the real LOCALE_ID comes from the language
         // stored at bootstrap, so leaving Angular's 'en-US' default in place
         // would make every language change look like a locale change
-        ...(locale ? [{ provide: LOCALE_ID, useValue: locale }] : []),
+        ...(locale
+          ? [
+              { provide: LOCALE_ID, useValue: locale },
+            ]
+          : []),
       ],
     })
 
@@ -157,19 +170,84 @@ describe('SettingsComponent', () => {
 
   describe('settings stored in the ui config', () => {
     it.each([
-      ['uiLangFormControl', 'de', 'lang', 'de'],
-      ['uiThemeFormControl', 'teal', 'theme', 'teal'],
-      ['uiTempFormControl', 'f', 'tempUnits', 'f'],
-      ['uiMenuFormControl', 'freeze', 'menuMode', 'freeze'],
-      ['hbPackageFormControl', '/usr/lib/homebridge', 'homebridgePackagePath', '/usr/lib/homebridge'],
-      ['uiHostFormControl', '192.168.1.10', 'host', '192.168.1.10'],
-      ['uiProxyHostFormControl', 'proxy.local', 'proxyHost', 'proxy.local'],
-      ['uiTerminalBufferSizeFormControl', 5000, 'terminal.bufferSize', 5000],
-      ['uiAccDebugFormControl', true, 'accessoryControl.debug', true],
-      ['hbLinuxShutdownFormControl', '/sbin/poweroff', 'linux.shutdown', '/sbin/poweroff'],
-      ['hbLinuxRestartFormControl', '/sbin/reboot', 'linux.restart', '/sbin/reboot'],
-      ['uiTempFileFormControl', '/sys/class/thermal/thermal_zone0/temp', 'temp', '/sys/class/thermal/thermal_zone0/temp'],
-      ['enableMdnsAdvertiseFormControl', false, 'enableMdnsAdvertise', false],
+      [
+        'uiLangFormControl',
+        'de',
+        'lang',
+        'de',
+      ],
+      [
+        'uiThemeFormControl',
+        'teal',
+        'theme',
+        'teal',
+      ],
+      [
+        'uiTempFormControl',
+        'f',
+        'tempUnits',
+        'f',
+      ],
+      [
+        'uiMenuFormControl',
+        'freeze',
+        'menuMode',
+        'freeze',
+      ],
+      [
+        'hbPackageFormControl',
+        '/usr/lib/homebridge',
+        'homebridgePackagePath',
+        '/usr/lib/homebridge',
+      ],
+      [
+        'uiHostFormControl',
+        '192.168.1.10',
+        'host',
+        '192.168.1.10',
+      ],
+      [
+        'uiProxyHostFormControl',
+        'proxy.local',
+        'proxyHost',
+        'proxy.local',
+      ],
+      [
+        'uiTerminalBufferSizeFormControl',
+        5000,
+        'terminal.bufferSize',
+        5000,
+      ],
+      [
+        'uiAccDebugFormControl',
+        true,
+        'accessoryControl.debug',
+        true,
+      ],
+      [
+        'hbLinuxShutdownFormControl',
+        '/sbin/poweroff',
+        'linux.shutdown',
+        '/sbin/poweroff',
+      ],
+      [
+        'hbLinuxRestartFormControl',
+        '/sbin/reboot',
+        'linux.restart',
+        '/sbin/reboot',
+      ],
+      [
+        'uiTempFileFormControl',
+        '/sys/class/thermal/thermal_zone0/temp',
+        'temp',
+        '/sys/class/thermal/thermal_zone0/temp',
+      ],
+      [
+        'enableMdnsAdvertiseFormControl',
+        false,
+        'enableMdnsAdvertise',
+        false,
+      ],
     ])('%s writes %s', async (control, value, key, expected) => {
       await change(control, value)
 
@@ -411,9 +489,21 @@ describe('SettingsComponent', () => {
     }
 
     it.each([
-      ['a font size below the smallest offered', { fontSize: 8 }, 'terminal.fontSize'],
-      ['a font size above the largest offered', { fontSize: 24 }, 'terminal.fontSize'],
-      ['a font weight that is not one of the choices', { fontWeight: '450' }, 'terminal.fontWeight'],
+      [
+        'a font size below the smallest offered',
+        { fontSize: 8 },
+        'terminal.fontSize',
+      ],
+      [
+        'a font size above the largest offered',
+        { fontSize: 24 },
+        'terminal.fontSize',
+      ],
+      [
+        'a font weight that is not one of the choices',
+        { fontWeight: '450' },
+        'terminal.fontWeight',
+      ],
     ])('deletes %s', async (_case, terminal, key) => {
       create({ terminal })
       await vi.advanceTimersByTimeAsync(0)
@@ -422,8 +512,18 @@ describe('SettingsComponent', () => {
     })
 
     it.each([
-      ['the font size', { fontSize: 8 }, 'uiTerminalFontSizeFormControl', 13],
-      ['the font weight', { fontWeight: '450' }, 'uiTerminalFontWeightFormControl', '400'],
+      [
+        'the font size',
+        { fontSize: 8 },
+        'uiTerminalFontSizeFormControl',
+        13,
+      ],
+      [
+        'the font weight',
+        { fontWeight: '450' },
+        'uiTerminalFontWeightFormControl',
+        '400',
+      ],
     ])('falls back to the default for %s', async (_case, terminal, control, expected) => {
       create({ terminal })
       await vi.advanceTimersByTimeAsync(0)
@@ -432,8 +532,14 @@ describe('SettingsComponent', () => {
     })
 
     it.each([
-      ['a font size inside the range', { fontSize: 16 }],
-      ['a listed font weight', { fontWeight: 'bold' }],
+      [
+        'a font size inside the range',
+        { fontSize: 16 },
+      ],
+      [
+        'a listed font weight',
+        { fontWeight: 'bold' },
+      ],
       ['nothing stored at all', {}],
     ])('leaves %s alone', async (_case, terminal) => {
       create({ terminal })
@@ -443,7 +549,9 @@ describe('SettingsComponent', () => {
     })
 
     it('keeps the stored value when it is a good one', async () => {
-      create({ terminal: { fontSize: 16, fontWeight: 'bold' } })
+      create({
+        terminal: { fontSize: 16, fontWeight: 'bold' },
+      })
       await vi.advanceTimersByTimeAsync(0)
 
       expect(component.uiTerminalFontSizeFormControl.value).toBe(16)
@@ -455,7 +563,9 @@ describe('SettingsComponent', () => {
       // setting they have never heard of on every page load would be noise. The
       // box still shows the default, which is what they actually see
       vi.spyOn(console, 'error').mockImplementation(() => {})
-      create({ terminal: { fontSize: 8 } }, undefined, broken =>
+      create({
+        terminal: { fontSize: 8 },
+      }, undefined, broken =>
         broken.fail('delete', '/config-editor/ui/terminal.fontSize', new Error('config not writable')))
       await vi.advanceTimersByTimeAsync(0)
 
@@ -477,7 +587,13 @@ describe('SettingsComponent', () => {
       // The endpoint replaces the block wholesale, so every field has to be
       // sent or the others are wiped
       expect(body).toMatchObject({ [key]: true })
-      expect(Object.keys(body!)).toEqual(expect.arrayContaining(['HOMEBRIDGE_DEBUG', 'HOMEBRIDGE_INSECURE', 'HOMEBRIDGE_KEEP_ORPHANS', 'ENV_DEBUG', 'ENV_NODE_OPTIONS']))
+      expect(Object.keys(body!)).toEqual(expect.arrayContaining([
+        'HOMEBRIDGE_DEBUG',
+        'HOMEBRIDGE_INSECURE',
+        'HOMEBRIDGE_KEEP_ORPHANS',
+        'ENV_DEBUG',
+        'ENV_NODE_OPTIONS',
+      ]))
     })
 
     it.each([
@@ -648,11 +764,36 @@ describe('SettingsComponent', () => {
     })
 
     it.each([
-      ['more days than a year', 'uiSessionTimeoutDaysFormControl', 400, 'uiSessionTimeoutDaysIsInvalid'],
-      ['more hours than a day', 'uiSessionTimeoutHoursFormControl', 24, 'uiSessionTimeoutHoursIsInvalid'],
-      ['more minutes than an hour', 'uiSessionTimeoutMinutesFormControl', 60, 'uiSessionTimeoutMinutesIsInvalid'],
-      ['part of a day', 'uiSessionTimeoutDaysFormControl', 1.5, 'uiSessionTimeoutDaysIsInvalid'],
-      ['a negative number of hours', 'uiSessionTimeoutHoursFormControl', -1, 'uiSessionTimeoutHoursIsInvalid'],
+      [
+        'more days than a year',
+        'uiSessionTimeoutDaysFormControl',
+        400,
+        'uiSessionTimeoutDaysIsInvalid',
+      ],
+      [
+        'more hours than a day',
+        'uiSessionTimeoutHoursFormControl',
+        24,
+        'uiSessionTimeoutHoursIsInvalid',
+      ],
+      [
+        'more minutes than an hour',
+        'uiSessionTimeoutMinutesFormControl',
+        60,
+        'uiSessionTimeoutMinutesIsInvalid',
+      ],
+      [
+        'part of a day',
+        'uiSessionTimeoutDaysFormControl',
+        1.5,
+        'uiSessionTimeoutDaysIsInvalid',
+      ],
+      [
+        'a negative number of hours',
+        'uiSessionTimeoutHoursFormControl',
+        -1,
+        'uiSessionTimeoutHoursIsInvalid',
+      ],
     ])('refuses %s', async (_case, control, value, invalid) => {
       // Each field carries its own units, so 90 minutes has to be entered as an
       // hour and a half rather than overflowing into the next field
@@ -663,9 +804,24 @@ describe('SettingsComponent', () => {
     })
 
     it.each([
-      ['a year of days', 'uiSessionTimeoutDaysFormControl', 365, 31536000],
-      ['the last hour of a day', 'uiSessionTimeoutHoursFormControl', 23, 82800],
-      ['the last minute of an hour', 'uiSessionTimeoutMinutesFormControl', 59, 3540],
+      [
+        'a year of days',
+        'uiSessionTimeoutDaysFormControl',
+        365,
+        31536000,
+      ],
+      [
+        'the last hour of a day',
+        'uiSessionTimeoutHoursFormControl',
+        23,
+        82800,
+      ],
+      [
+        'the last minute of an hour',
+        'uiSessionTimeoutMinutesFormControl',
+        59,
+        3540,
+      ],
     ])('accepts %s', async (_case, control, value, expected) => {
       // The top of each field's range is a valid entry, not one past it
       component.uiSessionTimeoutDaysFormControl.setValue(0, { emitEvent: false })
@@ -731,42 +887,227 @@ describe('SettingsComponent', () => {
 
     /** Every control, the write it makes, and the spinner it owns. */
     const CONTROLS = [
-      { control: 'uiThemeFormControl', value: 'teal', saving: 'uiThemeIsSaving', ...UI_CONFIG },
-      { control: 'uiLightFormControl', value: 'dark', saving: 'uiLightIsSaving', ...UI_CONFIG },
-      { control: 'uiMenuFormControl', value: 'freeze', saving: 'uiMenuIsSaving', ...UI_CONFIG },
-      { control: 'uiTempFormControl', value: 'f', saving: 'uiTempIsSaving', ...UI_CONFIG },
-      { control: 'uiTerminalPersistenceFormControl', value: true, saving: 'uiTerminalPersistenceIsSaving', ...UI_CONFIG },
-      { control: 'uiTerminalHideWarningFormControl', value: true, saving: 'uiTerminalHideWarningIsSaving', ...UI_CONFIG },
-      { control: 'uiTerminalBufferSizeFormControl', value: 5000, saving: 'uiTerminalBufferSizeIsSaving', ...UI_CONFIG },
-      { control: 'uiTerminalFontSizeFormControl', value: 14, saving: 'uiTerminalFontSizeIsSaving', ...UI_CONFIG },
-      { control: 'uiTerminalFontWeightFormControl', value: '600', saving: 'uiTerminalFontWeightIsSaving', ...UI_CONFIG },
-      { control: 'uiTerminalLightingModeFormControl', value: 'light', saving: 'uiTerminalLightingModeIsSaving', ...UI_CONFIG },
-      { control: 'hbLogSizeFormControl', value: 100, saving: 'hbLogSizeIsSaving', ...UI_CONFIG },
-      { control: 'hbLogTruncateFormControl', value: 50, saving: 'hbLogTruncateIsSaving', ...UI_CONFIG },
-      { control: 'enableMdnsAdvertiseFormControl', value: true, saving: 'enableMdnsAdvertiseIsSaving', ...UI_CONFIG },
-      { control: 'uiPortFormControl', value: 8582, saving: 'uiPortIsSaving', ...UI_CONFIG },
-      { control: 'uiAuthFormControl', value: false, saving: 'uiAuthIsSaving', ...UI_CONFIG },
-      { control: 'uiSessionTimeoutInactivityBasedFormControl', value: true, saving: 'uiSessionTimeoutInactivityBasedIsSaving', ...UI_CONFIG },
-      { control: 'uiSessionTimeoutHoursFormControl', value: 12, saving: 'uiSessionTimeoutIsSaving', ...UI_CONFIG },
-      { control: 'uiHostFormControl', value: '192.168.1.5', saving: 'uiHostIsSaving', ...UI_CONFIG },
-      { control: 'uiProxyHostFormControl', value: 'proxy.local', saving: 'uiProxyHostIsSaving', ...UI_CONFIG },
-      { control: 'hbPackageFormControl', value: '/usr/lib/homebridge', saving: 'hbPackageIsSaving', ...UI_CONFIG },
-      { control: 'uiMetricsFormControl', value: false, saving: 'uiMetricsIsSaving', ...UI_CONFIG },
-      { control: 'uiAccDebugFormControl', value: true, saving: 'uiAccDebugIsSaving', ...UI_CONFIG },
-      { control: 'uiTempFileFormControl', value: '/tmp/temp', saving: 'uiTempFileIsSaving', ...UI_CONFIG },
-      { control: 'hbLinuxShutdownFormControl', value: '/sbin/poweroff', saving: 'hbLinuxShutdownIsSaving', ...UI_CONFIG },
-      { control: 'hbLinuxRestartFormControl', value: '/sbin/reboot', saving: 'hbLinuxRestartIsSaving', ...UI_CONFIG },
-      { control: 'scheduledRestartCronFormControl', value: '0 4 * * *', saving: 'scheduledRestartCronIsSaving', ...UI_CONFIG },
-      { control: 'hbNameFormControl', value: 'Front Room', saving: 'hbNameIsSaving', method: 'put', url: '/server/name' },
-      { control: 'hbMDnsFormControl', value: 'avahi', saving: 'hbMDnsIsSaving', method: 'put', url: '/server/mdns-advertiser' },
-      { control: 'hbPortFormControl', value: 51830, saving: 'hbPortIsSaving', method: 'put', url: '/server/port' },
-      { control: 'hbStartPortFormControl', value: 52000, saving: 'hbStartPortIsSaving', method: 'put', url: '/server/ports' },
-      { control: 'hbEndPortFormControl', value: 52500, saving: 'hbEndPortIsSaving', method: 'put', url: '/server/ports' },
-      { control: 'hbDebugFormControl', value: true, saving: 'hbDebugIsSaving', ...STARTUP },
-      { control: 'hbInsecureFormControl', value: false, saving: 'hbInsecureIsSaving', ...STARTUP },
-      { control: 'hbKeepFormControl', value: true, saving: 'hbKeepIsSaving', ...STARTUP },
-      { control: 'hbEnvDebugFormControl', value: 'homebridge*', saving: 'hbEnvDebugIsSaving', ...STARTUP },
-      { control: 'hbEnvNodeFormControl', value: '--max-old-space-size=256', saving: 'hbEnvNodeIsSaving', ...STARTUP },
+      {
+        control: 'uiThemeFormControl',
+        value: 'teal',
+        saving: 'uiThemeIsSaving',
+        ...UI_CONFIG,
+      },
+      {
+        control: 'uiLightFormControl',
+        value: 'dark',
+        saving: 'uiLightIsSaving',
+        ...UI_CONFIG,
+      },
+      {
+        control: 'uiMenuFormControl',
+        value: 'freeze',
+        saving: 'uiMenuIsSaving',
+        ...UI_CONFIG,
+      },
+      {
+        control: 'uiTempFormControl',
+        value: 'f',
+        saving: 'uiTempIsSaving',
+        ...UI_CONFIG,
+      },
+      {
+        control: 'uiTerminalPersistenceFormControl',
+        value: true,
+        saving: 'uiTerminalPersistenceIsSaving',
+        ...UI_CONFIG,
+      },
+      {
+        control: 'uiTerminalHideWarningFormControl',
+        value: true,
+        saving: 'uiTerminalHideWarningIsSaving',
+        ...UI_CONFIG,
+      },
+      {
+        control: 'uiTerminalBufferSizeFormControl',
+        value: 5000,
+        saving: 'uiTerminalBufferSizeIsSaving',
+        ...UI_CONFIG,
+      },
+      {
+        control: 'uiTerminalFontSizeFormControl',
+        value: 14,
+        saving: 'uiTerminalFontSizeIsSaving',
+        ...UI_CONFIG,
+      },
+      {
+        control: 'uiTerminalFontWeightFormControl',
+        value: '600',
+        saving: 'uiTerminalFontWeightIsSaving',
+        ...UI_CONFIG,
+      },
+      {
+        control: 'uiTerminalLightingModeFormControl',
+        value: 'light',
+        saving: 'uiTerminalLightingModeIsSaving',
+        ...UI_CONFIG,
+      },
+      {
+        control: 'hbLogSizeFormControl',
+        value: 100,
+        saving: 'hbLogSizeIsSaving',
+        ...UI_CONFIG,
+      },
+      {
+        control: 'hbLogTruncateFormControl',
+        value: 50,
+        saving: 'hbLogTruncateIsSaving',
+        ...UI_CONFIG,
+      },
+      {
+        control: 'enableMdnsAdvertiseFormControl',
+        value: true,
+        saving: 'enableMdnsAdvertiseIsSaving',
+        ...UI_CONFIG,
+      },
+      {
+        control: 'uiPortFormControl',
+        value: 8582,
+        saving: 'uiPortIsSaving',
+        ...UI_CONFIG,
+      },
+      {
+        control: 'uiAuthFormControl',
+        value: false,
+        saving: 'uiAuthIsSaving',
+        ...UI_CONFIG,
+      },
+      {
+        control: 'uiSessionTimeoutInactivityBasedFormControl',
+        value: true,
+        saving: 'uiSessionTimeoutInactivityBasedIsSaving',
+        ...UI_CONFIG,
+      },
+      {
+        control: 'uiSessionTimeoutHoursFormControl',
+        value: 12,
+        saving: 'uiSessionTimeoutIsSaving',
+        ...UI_CONFIG,
+      },
+      {
+        control: 'uiHostFormControl',
+        value: '192.168.1.5',
+        saving: 'uiHostIsSaving',
+        ...UI_CONFIG,
+      },
+      {
+        control: 'uiProxyHostFormControl',
+        value: 'proxy.local',
+        saving: 'uiProxyHostIsSaving',
+        ...UI_CONFIG,
+      },
+      {
+        control: 'hbPackageFormControl',
+        value: '/usr/lib/homebridge',
+        saving: 'hbPackageIsSaving',
+        ...UI_CONFIG,
+      },
+      {
+        control: 'uiMetricsFormControl',
+        value: false,
+        saving: 'uiMetricsIsSaving',
+        ...UI_CONFIG,
+      },
+      {
+        control: 'uiAccDebugFormControl',
+        value: true,
+        saving: 'uiAccDebugIsSaving',
+        ...UI_CONFIG,
+      },
+      {
+        control: 'uiTempFileFormControl',
+        value: '/tmp/temp',
+        saving: 'uiTempFileIsSaving',
+        ...UI_CONFIG,
+      },
+      {
+        control: 'hbLinuxShutdownFormControl',
+        value: '/sbin/poweroff',
+        saving: 'hbLinuxShutdownIsSaving',
+        ...UI_CONFIG,
+      },
+      {
+        control: 'hbLinuxRestartFormControl',
+        value: '/sbin/reboot',
+        saving: 'hbLinuxRestartIsSaving',
+        ...UI_CONFIG,
+      },
+      {
+        control: 'scheduledRestartCronFormControl',
+        value: '0 4 * * *',
+        saving: 'scheduledRestartCronIsSaving',
+        ...UI_CONFIG,
+      },
+      {
+        control: 'hbNameFormControl',
+        value: 'Front Room',
+        saving: 'hbNameIsSaving',
+        method: 'put',
+        url: '/server/name',
+      },
+      {
+        control: 'hbMDnsFormControl',
+        value: 'avahi',
+        saving: 'hbMDnsIsSaving',
+        method: 'put',
+        url: '/server/mdns-advertiser',
+      },
+      {
+        control: 'hbPortFormControl',
+        value: 51830,
+        saving: 'hbPortIsSaving',
+        method: 'put',
+        url: '/server/port',
+      },
+      {
+        control: 'hbStartPortFormControl',
+        value: 52000,
+        saving: 'hbStartPortIsSaving',
+        method: 'put',
+        url: '/server/ports',
+      },
+      {
+        control: 'hbEndPortFormControl',
+        value: 52500,
+        saving: 'hbEndPortIsSaving',
+        method: 'put',
+        url: '/server/ports',
+      },
+      {
+        control: 'hbDebugFormControl',
+        value: true,
+        saving: 'hbDebugIsSaving',
+        ...STARTUP,
+      },
+      {
+        control: 'hbInsecureFormControl',
+        value: false,
+        saving: 'hbInsecureIsSaving',
+        ...STARTUP,
+      },
+      {
+        control: 'hbKeepFormControl',
+        value: true,
+        saving: 'hbKeepIsSaving',
+        ...STARTUP,
+      },
+      {
+        control: 'hbEnvDebugFormControl',
+        value: 'homebridge*',
+        saving: 'hbEnvDebugIsSaving',
+        ...STARTUP,
+      },
+      {
+        control: 'hbEnvNodeFormControl',
+        value: '--max-old-space-size=256',
+        saving: 'hbEnvNodeIsSaving',
+        ...STARTUP,
+      },
     ]
 
     beforeEach(() => {
@@ -926,8 +1267,18 @@ describe('SettingsComponent', () => {
    */
   describe('changing the theme and the lighting mode', () => {
     it.each([
-      ['uiThemeFormControl', 'teal', 'setTheme', 'uiThemeIsSaving'],
-      ['uiLightFormControl', 'dark', 'setLightingMode', 'uiLightIsSaving'],
+      [
+        'uiThemeFormControl',
+        'teal',
+        'setTheme',
+        'uiThemeIsSaving',
+      ],
+      [
+        'uiLightFormControl',
+        'dark',
+        'setLightingMode',
+        'uiLightIsSaving',
+      ],
     ])('%s applies at once and clears its spinner afterwards', async (control, value, setter, saving) => {
       await change(control, value)
 
@@ -1188,7 +1539,9 @@ describe('SettingsComponent', () => {
 
       component.openConfigBackup()
 
-      expect(navigate).toHaveBeenCalledWith(['/config'], { queryParams: { action: 'restore' } })
+      expect(navigate).toHaveBeenCalledWith(['/config'], {
+        queryParams: { action: 'restore' },
+      })
       expect(modal.open).not.toHaveBeenCalled()
     })
 
@@ -1244,7 +1597,9 @@ describe('SettingsComponent', () => {
 
     describe('the accessory control lists', () => {
       it('hands over the blacklist as it stands', async () => {
-        settings.env.accessoryControl = { instanceBlacklist: ['0E:11:22:33:44:55'] }
+        settings.env.accessoryControl = {
+          instanceBlacklist: ['0E:11:22:33:44:55'],
+        }
 
         const pending = component.accessoryUiControl()
         await Promise.resolve()
@@ -1300,8 +1655,12 @@ describe('SettingsComponent', () => {
 
     describe('choosing which network interfaces the bridge uses', () => {
       it('offers what is available and what is already chosen', async () => {
-        component.adaptersAvailable.set([{ iface: 'eth0', ip4: '192.168.1.10' }] as any)
-        component.adaptersSelected.set([{ iface: 'eth0' }] as any)
+        component.adaptersAvailable.set([
+          { iface: 'eth0', ip4: '192.168.1.10' },
+        ] as any)
+        component.adaptersSelected.set([
+          { iface: 'eth0' },
+        ] as any)
 
         const pending = component.selectNetworkInterfaces()
         await Promise.resolve()
@@ -1319,7 +1678,9 @@ describe('SettingsComponent', () => {
         // Dropping it silently would take the bridge off an interface the user
         // deliberately chose; marking it lets the page say so and keep the choice
         create({}, undefined, (broken) => {
-          broken.respond('get', '/server/network-interfaces/system', [{ iface: 'eth0', ip4: '192.168.1.10' }])
+          broken.respond('get', '/server/network-interfaces/system', [
+            { iface: 'eth0', ip4: '192.168.1.10' },
+          ])
           broken.respond('get', '/server/network-interfaces/bridge', ['eth0', 'wlan0'])
         })
         await vi.advanceTimersByTimeAsync(0)
@@ -1332,7 +1693,9 @@ describe('SettingsComponent', () => {
 
       it('selects nothing when the bridge is on no particular interface', async () => {
         create({}, undefined, (broken) => {
-          broken.respond('get', '/server/network-interfaces/system', [{ iface: 'eth0', ip4: '192.168.1.10' }])
+          broken.respond('get', '/server/network-interfaces/system', [
+            { iface: 'eth0', ip4: '192.168.1.10' },
+          ])
           broken.respond('get', '/server/network-interfaces/bridge', [])
         })
         await vi.advanceTimersByTimeAsync(0)
@@ -1347,7 +1710,9 @@ describe('SettingsComponent', () => {
         modal.lastOpened()!.ref.close(['eth0'])
         await pending
 
-        expect(api.lastCall('put', '/server/network-interfaces/bridge')?.body).toEqual({ adapters: ['eth0'] })
+        expect(api.lastCall('put', '/server/network-interfaces/bridge')?.body).toEqual({
+          adapters: ['eth0'],
+        })
         expect(settings.showRestartToast).toHaveBeenCalled()
       })
 
@@ -1607,7 +1972,9 @@ describe('SettingsComponent', () => {
         modal.lastOpened()!.ref.close()
         await settleMicrotasks()
 
-        expect(navigate).toHaveBeenCalledWith(['/restart'], { queryParams: { alreadyRestarting: 'true' } })
+        expect(navigate).toHaveBeenCalledWith(['/restart'], {
+          queryParams: { alreadyRestarting: 'true' },
+        })
       })
 
       it('puts the toggle back when the user changes their mind', async () => {
@@ -1961,8 +2328,16 @@ describe('SettingsComponent', () => {
      */
     describe('the matter port range', () => {
       it.each([
-        ['matterStartPortSave', 5551, { start: 5551, end: 5560 }],
-        ['matterEndPortSave', 5559, { start: 5550, end: 5559 }],
+        [
+          'matterStartPortSave',
+          5551,
+          { start: 5551, end: 5560 },
+        ],
+        [
+          'matterEndPortSave',
+          5559,
+          { start: 5550, end: 5559 },
+        ],
       ])('%s sends both ends of the range', async (method, value, expected) => {
         await withProtocols()
 
@@ -1972,12 +2347,42 @@ describe('SettingsComponent', () => {
       })
 
       it.each([
-        ['a start below the reserved range', 'matterStartPortSave', 1024, 'matterStartPortIsInvalid'],
-        ['a start above the maximum', 'matterStartPortSave', 65534, 'matterStartPortIsInvalid'],
-        ['a start that is not a whole number', 'matterStartPortSave', 5551.5, 'matterStartPortIsInvalid'],
-        ['an end below the reserved range', 'matterEndPortSave', 1024, 'matterEndPortIsInvalid'],
-        ['an end above the maximum', 'matterEndPortSave', 65534, 'matterEndPortIsInvalid'],
-        ['an end that is not a whole number', 'matterEndPortSave', 5559.5, 'matterEndPortIsInvalid'],
+        [
+          'a start below the reserved range',
+          'matterStartPortSave',
+          1024,
+          'matterStartPortIsInvalid',
+        ],
+        [
+          'a start above the maximum',
+          'matterStartPortSave',
+          65534,
+          'matterStartPortIsInvalid',
+        ],
+        [
+          'a start that is not a whole number',
+          'matterStartPortSave',
+          5551.5,
+          'matterStartPortIsInvalid',
+        ],
+        [
+          'an end below the reserved range',
+          'matterEndPortSave',
+          1024,
+          'matterEndPortIsInvalid',
+        ],
+        [
+          'an end above the maximum',
+          'matterEndPortSave',
+          65534,
+          'matterEndPortIsInvalid',
+        ],
+        [
+          'an end that is not a whole number',
+          'matterEndPortSave',
+          5559.5,
+          'matterEndPortIsInvalid',
+        ],
       ])('refuses %s', async (_case, method, value, invalid) => {
         const page = await withProtocols()
 
@@ -2020,8 +2425,18 @@ describe('SettingsComponent', () => {
       })
 
       it.each([
-        ['matterStartPortSave', 5551, 'matterStartPortIsSaving', 'matterStartPortIsInvalid'],
-        ['matterEndPortSave', 5559, 'matterEndPortIsSaving', 'matterEndPortIsInvalid'],
+        [
+          'matterStartPortSave',
+          5551,
+          'matterStartPortIsSaving',
+          'matterStartPortIsInvalid',
+        ],
+        [
+          'matterEndPortSave',
+          5559,
+          'matterEndPortIsSaving',
+          'matterEndPortIsInvalid',
+        ],
       ])('marks %s unsaved when the write fails', async (method, value, saving, invalid) => {
         const page = await withProtocols()
         api.fail('put', '/config-editor/matter/ports', new Error('config not writable'))
@@ -2049,7 +2464,9 @@ describe('SettingsComponent', () => {
     describe('the hap identifying material flag', () => {
       /** Build the page with the flag's feature gate on. */
       async function withFlag(hapEnabled = true) {
-        create({ featureFlags: { matterSupport: true, hapDisableIdentifyingMaterial: true } })
+        create({
+          featureFlags: { matterSupport: true, hapDisableIdentifyingMaterial: true },
+        })
         await vi.advanceTimersByTimeAsync(0)
         const page = component as any
         page.hapEnabledFormControl.setValue(hapEnabled, { emitEvent: false })
@@ -2064,7 +2481,12 @@ describe('SettingsComponent', () => {
         await save('hapDisableIdentifyingMaterialSave', true)
 
         expect(api.lastCall('put', '/config-editor/hap')?.body)
-          .toEqual({ enabled: true, externalsOnly: false, disableIdentifyingMaterial: true, restart: false })
+          .toEqual({
+            enabled: true,
+            externalsOnly: false,
+            disableIdentifyingMaterial: true,
+            restart: false,
+          })
       })
 
       it('keeps hap off when it was already off', async () => {
@@ -2140,7 +2562,9 @@ describe('SettingsComponent', () => {
     describe('the hap externals-only flag', () => {
       /** Build the page with the externals-only gate on and hap off. */
       async function withExternalsOnly(hapEnabled = false) {
-        create({ featureFlags: { matterSupport: true, protocolExternalsOnly: true } })
+        create({
+          featureFlags: { matterSupport: true, protocolExternalsOnly: true },
+        })
         await vi.advanceTimersByTimeAsync(0)
         const page = component as any
         page.hapEnabledFormControl.setValue(hapEnabled, { emitEvent: false })
@@ -2186,7 +2610,9 @@ describe('SettingsComponent', () => {
       async function withBrokenHapRead() {
         vi.spyOn(console, 'error').mockImplementation(() => {})
         create(
-          { featureFlags: { matterSupport: true, hapDisableIdentifyingMaterial: true } },
+          {
+            featureFlags: { matterSupport: true, hapDisableIdentifyingMaterial: true },
+          },
           undefined,
           broken => broken.fail('get', '/config-editor/hap', new Error('server unavailable')),
         )
@@ -2225,7 +2651,9 @@ describe('SettingsComponent', () => {
         vi.spyOn(console, 'error').mockImplementation(() => {})
 
         create(
-          { featureFlags: { matterSupport: true } },
+          {
+            featureFlags: { matterSupport: true },
+          },
           undefined,
           broken => broken.fail('get', '/config-editor/matter', new Error('not configured')),
         )

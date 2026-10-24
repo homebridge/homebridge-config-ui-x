@@ -38,14 +38,19 @@ describe('PluginCardComponent', () => {
   let fixture: ComponentFixture<PluginCardComponent>
 
   beforeEach(() => {
-    auth = makeAuth({ user: { admin: true } })
+    auth = makeAuth({
+      user: { admin: true },
+    })
     settings = makeSettings()
     api = fakeApi()
     modal = modalServiceSpy()
     toastr = toastrStub()
     ws = fakeWs()
     ws.namespace('child-bridges')
-    pluginsCache = { get: vi.fn(async () => []), invalidate: vi.fn() }
+    pluginsCache = {
+      get: vi.fn(async () => []),
+      invalidate: vi.fn(),
+    }
     managePlugins = {
       settings: vi.fn(),
       bridgeSettings: vi.fn(),
@@ -63,9 +68,23 @@ describe('PluginCardComponent', () => {
       imports: [PluginCardComponent],
       providers: [
         provideTestTranslate(),
-        provideFakes({ api, auth, settings, ws, toastr, modal }),
+        provideFakes({
+          api,
+          auth,
+          settings,
+          ws,
+          toastr,
+          modal,
+        }),
         { provide: PluginsCacheService, useValue: pluginsCache },
-        { provide: MobileDetectService, useValue: { detect: { mobile: () => null } } },
+        {
+          provide: MobileDetectService,
+          useValue: {
+            detect: {
+              mobile: () => null,
+            },
+          },
+        },
         { provide: ManagePluginsService, useValue: managePlugins },
       ],
     })
@@ -129,7 +148,9 @@ describe('PluginCardComponent', () => {
     it('offers the pairing code for a bridge that is not paired yet', () => {
       const element = render(
         { isConfigured: true, hasChildBridges: true, hasChildBridgesUnpaired: true },
-        [makeChildBridge({ status: 'ok' })],
+        [
+          makeChildBridge({ status: 'ok' }),
+        ],
       )
 
       expect(actionIcon(element)).toBe('fa-qrcode')
@@ -138,7 +159,9 @@ describe('PluginCardComponent', () => {
     it('warns while a child bridge is still starting', () => {
       const element = render(
         { isConfigured: true, hasChildBridges: true, hasChildBridgesUnpaired: false },
-        [makeChildBridge({ status: 'pending' })],
+        [
+          makeChildBridge({ status: 'pending' }),
+        ],
       )
 
       expect(actionIcon(element)).toBe('fa-bridge-circle-exclamation')
@@ -147,7 +170,9 @@ describe('PluginCardComponent', () => {
     it('warns when a child bridge is down', () => {
       const element = render(
         { isConfigured: true, hasChildBridges: true, hasChildBridgesUnpaired: false },
-        [makeChildBridge({ status: 'down' })],
+        [
+          makeChildBridge({ status: 'down' }),
+        ],
       )
 
       expect(actionIcon(element)).toBe('fa-bridge-circle-xmark')
@@ -156,7 +181,9 @@ describe('PluginCardComponent', () => {
     it('shows nothing when everything is healthy', () => {
       const element = render(
         { isConfigured: true, hasChildBridges: true, hasChildBridgesUnpaired: false },
-        [makeChildBridge({ status: 'ok' })],
+        [
+          makeChildBridge({ status: 'ok' }),
+        ],
       )
 
       expect(actionIcon(element)).toBeUndefined()
@@ -178,10 +205,26 @@ describe('PluginCardComponent', () => {
 
   describe('the verification shield', () => {
     it.each([
-      ['a homebridge scoped plugin', { isHbScoped: true, verifiedPlugin: false }, 'purple-text'],
-      ['a verified plugin', { isHbScoped: false, verifiedPlugin: true }, 'green-text'],
-      ['a verified plus plugin', { isHbScoped: false, verifiedPlugin: false, verifiedPlusPlugin: true }, 'green-text'],
-      ['an unverified plugin', { isHbScoped: false, verifiedPlugin: false, verifiedPlusPlugin: false }, 'orange-text'],
+      [
+        'a homebridge scoped plugin',
+        { isHbScoped: true, verifiedPlugin: false },
+        'purple-text',
+      ],
+      [
+        'a verified plugin',
+        { isHbScoped: false, verifiedPlugin: true },
+        'green-text',
+      ],
+      [
+        'a verified plus plugin',
+        { isHbScoped: false, verifiedPlugin: false, verifiedPlusPlugin: true },
+        'green-text',
+      ],
+      [
+        'an unverified plugin',
+        { isHbScoped: false, verifiedPlugin: false, verifiedPlusPlugin: false },
+        'orange-text',
+      ],
     ])('is %s coloured %s', (_case, plugin, expected) => {
       const shield = render(plugin).querySelector('.fa-shield-alt')!
 
@@ -199,10 +242,26 @@ describe('PluginCardComponent', () => {
 
   describe('the child bridge status', () => {
     it.each([
-      ['all running', ['ok', 'ok'], 'ok'],
-      ['one still starting', ['ok', 'pending'], 'pending'],
-      ['one down', ['ok', 'down'], 'down'],
-      ['one down and one starting', ['pending', 'down'], 'down'],
+      [
+        'all running',
+        ['ok', 'ok'],
+        'ok',
+      ],
+      [
+        'one still starting',
+        ['ok', 'pending'],
+        'pending',
+      ],
+      [
+        'one down',
+        ['ok', 'down'],
+        'down',
+      ],
+      [
+        'one down and one starting',
+        ['pending', 'down'],
+        'down',
+      ],
     ])('reports %s as %s', (_case, statuses, expected) => {
       // Worst first: a single failed bridge has to surface even when its
       // siblings are fine
@@ -215,7 +274,9 @@ describe('PluginCardComponent', () => {
   describe('the transport icons', () => {
     /** [hap enabled, matter enabled] as the card is showing them. */
     function transports(element: HTMLElement): boolean[] {
-      return [...element.querySelectorAll('.transport-icon')].map(icon => icon.classList.contains('enabled'))
+      return [
+        ...element.querySelectorAll('.transport-icon'),
+      ].map(icon => icon.classList.contains('enabled'))
     }
 
     it('are only shown on a search result', () => {
@@ -226,10 +287,26 @@ describe('PluginCardComponent', () => {
     })
 
     it.each([
-      ['both protocols', { supportsHap: true, supportsMatter: true }, [true, true]],
-      ['hap only', { supportsHap: true, supportsMatter: false }, [true, false]],
-      ['matter only', { supportsHap: false, supportsMatter: true }, [false, true]],
-      ['neither declared', {}, [true, false]],
+      [
+        'both protocols',
+        { supportsHap: true, supportsMatter: true },
+        [true, true],
+      ],
+      [
+        'hap only',
+        { supportsHap: true, supportsMatter: false },
+        [true, false],
+      ],
+      [
+        'matter only',
+        { supportsHap: false, supportsMatter: true },
+        [false, true],
+      ],
+      [
+        'neither declared',
+        {},
+        [true, false],
+      ],
     ])('shows %s', (_case, plugin, expected) => {
       // A plugin that declares nothing predates the keywords, and everything
       // from that era is hap
@@ -239,7 +316,9 @@ describe('PluginCardComponent', () => {
 
   describe('the actions menu', () => {
     function menuItems(element: HTMLElement): string[] {
-      return [...element.querySelectorAll('[ngbdropdownitem], .dropdown-item')]
+      return [
+        ...element.querySelectorAll('[ngbdropdownitem], .dropdown-item'),
+      ]
         .map(node => node.textContent!.trim())
         .filter(Boolean)
     }
@@ -283,7 +362,12 @@ describe('PluginCardComponent', () => {
     }
 
     it('asks first, telling the modal what it will affect', async () => {
-      render({ name: 'homebridge-example', displayName: 'Example', isConfigured: true, isConfiguredDynamicPlatform: true })
+      render({
+        name: 'homebridge-example',
+        displayName: 'Example',
+        isConfigured: true,
+        isConfiguredDynamicPlatform: true,
+      })
       settings.keepOrphans = true
 
       void card().disablePlugin(card().plugin())
@@ -414,7 +498,12 @@ describe('PluginCardComponent', () => {
 
     it('starts the child bridges again', async () => {
       const bridge = makeChildBridge({ username: '0E:11:22:33:44:55', status: 'down' })
-      render({ name: 'homebridge-example', disabled: true, isConfigured: true, hasChildBridges: true }, [bridge])
+      render({
+        name: 'homebridge-example',
+        disabled: true,
+        isConfigured: true,
+        hasChildBridges: true,
+      }, [bridge])
 
       void card().enablePlugin(card().plugin())
       await settle()
@@ -459,7 +548,9 @@ describe('PluginCardComponent', () => {
 
     it('shows the card as busy while it works', async () => {
       vi.useFakeTimers()
-      render({ isConfigured: true, hasChildBridges: true }, [makeChildBridge()])
+      render({ isConfigured: true, hasChildBridges: true }, [
+        makeChildBridge(),
+      ])
 
       const pending = card().doChildBridgeAction('restart')
       expect(card().childBridgeRestartInProgress()).toBe(true)
@@ -478,7 +569,9 @@ describe('PluginCardComponent', () => {
       // A bridge takes time to come back up, and the card would otherwise offer
       // the action again while it is still restarting
       vi.useFakeTimers()
-      render({ isConfigured: true, hasChildBridges: true }, [makeChildBridge()])
+      render({ isConfigured: true, hasChildBridges: true }, [
+        makeChildBridge(),
+      ])
 
       await card().doChildBridgeAction(action as any)
       await vi.advanceTimersByTimeAsync(wait - 1)
@@ -491,7 +584,9 @@ describe('PluginCardComponent', () => {
 
     it('says so when a bridge will not answer', async () => {
       vi.spyOn(console, 'error').mockImplementation(() => {})
-      render({ isConfigured: true, hasChildBridges: true }, [makeChildBridge()])
+      render({ isConfigured: true, hasChildBridges: true }, [
+        makeChildBridge(),
+      ])
       ws.namespace('child-bridges').socket.respondTo('restart-child-bridge', () => {
         throw new Error('socket error')
       })
@@ -612,7 +707,13 @@ describe('PluginCardComponent', () => {
 
     it('drops the homebridge prefix on a narrow screen', () => {
       // "Homebridge Example" wraps onto two lines on a phone; "Example" does not
-      TestBed.overrideProvider(MobileDetectService, { useValue: { detect: { mobile: () => 'iPhone' } } })
+      TestBed.overrideProvider(MobileDetectService, {
+        useValue: {
+          detect: {
+            mobile: () => 'iPhone',
+          },
+        },
+      })
 
       render({ displayName: 'Homebridge Example' })
 
@@ -626,7 +727,13 @@ describe('PluginCardComponent', () => {
     })
 
     it('leaves a name that does not start with homebridge alone', () => {
-      TestBed.overrideProvider(MobileDetectService, { useValue: { detect: { mobile: () => 'iPhone' } } })
+      TestBed.overrideProvider(MobileDetectService, {
+        useValue: {
+          detect: {
+            mobile: () => 'iPhone',
+          },
+        },
+      })
 
       render({ displayName: 'Example Plugin' })
 

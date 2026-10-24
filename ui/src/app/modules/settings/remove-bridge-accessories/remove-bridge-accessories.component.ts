@@ -63,7 +63,10 @@ export class RemoveBridgeAccessoriesComponent implements OnInit {
     if (this.toDelete().some(item => item.id === id && item.protocol === protocol)) {
       this.toDelete.set(this.toDelete().filter(item => item.id !== id || item.protocol !== protocol))
     } else {
-      this.toDelete.update(list => [...list, { id, protocol }])
+      this.toDelete.update(list => [
+        ...list,
+        { id, protocol },
+      ])
     }
   }
 

@@ -122,7 +122,9 @@ export function modalServiceSpy(): FakeModalService {
   modal.lastOpened = () => opened.at(-1)
 
   modal.dataFor = <T>(token: InjectionToken<T>, index?: number) => {
-    const entry = index === undefined ? opened.at(-1) : opened[index]
+    const entry = index === undefined
+      ? opened.at(-1)
+      : opened[index]
     const injector = entry?.options?.injector
     return injector?.get(token, undefined, { optional: true }) ?? undefined
   }

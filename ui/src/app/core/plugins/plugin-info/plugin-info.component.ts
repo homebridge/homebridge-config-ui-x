@@ -23,7 +23,9 @@ export class PluginInfoComponent {
   // Signals
   private readonly iconError = signal(false)
   public readonly pluginIcon = computed(() => {
-    return (this.plugin?.icon && !this.iconError()) ? this.plugin.icon : this.defaultIcon
+    return (this.plugin?.icon && !this.iconError())
+      ? this.plugin.icon
+      : this.defaultIcon
   })
 
   // Other properties

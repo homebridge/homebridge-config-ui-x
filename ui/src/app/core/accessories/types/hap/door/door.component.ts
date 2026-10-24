@@ -29,6 +29,29 @@ export class DoorComponent {
   public readonly service = input.required<ServiceTypeX>()
   public readonly readyForControl = input<boolean>(false)
 
+  // Plain methods rather than computed(): the values are updated in place, so a
+  // computed() would never see them change
+
+  /** The translation key for what the door is doing. */
+  public stateKey(): string {
+    const { CurrentPosition: pos, PositionState: posState } = this.service().values ?? {}
+    if (posState === 1) {
+      return 'accessories.control.opening'
+    }
+    if (posState === 0) {
+      return 'accessories.control.closing'
+    }
+    return pos === 0
+      ? 'accessories.control.closed'
+      : 'accessories.control.open'
+  }
+
+  /** Whether the door is standing part-way open, so its position is worth showing. */
+  public isPartOpen(): boolean {
+    const { CurrentPosition: pos, PositionState: posState } = this.service().values ?? {}
+    return posState !== 1 && posState !== 0 && pos !== 0 && pos !== 100
+  }
+
   public onClick() {
     if (!this.readyForControl()) {
       return
@@ -47,13 +70,15 @@ export class DoorComponent {
     }
 
     const modalInjector = createEnvironmentInjector(
-      [{
-        provide: ACCESSORY_MANAGE_MODAL_DATA,
-        useValue: {
-          service: this.service(),
-          $accessories: this.$accessories,
+      [
+        {
+          provide: ACCESSORY_MANAGE_MODAL_DATA,
+          useValue: {
+            service: this.service(),
+            $accessories: this.$accessories,
+          },
         },
-      }],
+      ],
       this.injector,
     )
 

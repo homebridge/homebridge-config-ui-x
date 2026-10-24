@@ -50,7 +50,10 @@ describe('AuthService', () => {
     settings = makeSettings(overrides)
     TestBed.configureTestingModule({
       providers: [
-        { provide: JwtHelperService, useValue: new JwtHelperService() },
+        {
+          provide: JwtHelperService,
+          useValue: new JwtHelperService(),
+        },
         provideFakes({ api, settings }),
       ],
     })
@@ -72,7 +75,9 @@ describe('AuthService', () => {
   describe('signing in', () => {
     it('keeps the token and the decoded user', async () => {
       const service = await create()
-      api.respond('post', '/auth/login', { access_token: makeJwt({ username: 'bwp91' }) })
+      api.respond('post', '/auth/login', {
+        access_token: makeJwt({ username: 'bwp91' }),
+      })
 
       await service.login({ username: 'bwp91', password: 'secret' })
 
@@ -82,7 +87,9 @@ describe('AuthService', () => {
 
     it('re-reads the settings once signed in', async () => {
       const service = await create()
-      api.respond('post', '/auth/login', { access_token: makeJwt() })
+      api.respond('post', '/auth/login', {
+        access_token: makeJwt(),
+      })
 
       await service.login({ username: 'admin', password: 'secret' })
 
@@ -93,7 +100,9 @@ describe('AuthService', () => {
 
     it('rejects a token that is already expired', async () => {
       const service = await create()
-      api.respond('post', '/auth/login', { access_token: makeJwt({}, -60) })
+      api.respond('post', '/auth/login', {
+        access_token: makeJwt({}, -60),
+      })
 
       await expect(service.login({ username: 'admin', password: 'secret' })).rejects.toThrow('Invalid username or password.')
     })
@@ -101,7 +110,9 @@ describe('AuthService', () => {
 
   describe('restoring a session on page load', () => {
     it('exchanges the refresh cookie for a token', async () => {
-      api.respond('post', '/auth/session', { access_token: makeJwt({ username: 'restored' }) })
+      api.respond('post', '/auth/session', {
+        access_token: makeJwt({ username: 'restored' }),
+      })
 
       const service = await create()
 
@@ -128,7 +139,9 @@ describe('AuthService', () => {
       //
       // ⚠️ Registered before `create()`: the token is read and decoded in the
       // constructor, so a response arranged afterwards is never seen
-      api.respond('post', '/auth/session', { access_token: makeJwt({ otpLegacySecret: 'OLDSECRET' }) })
+      api.respond('post', '/auth/session', {
+        access_token: makeJwt({ otpLegacySecret: 'OLDSECRET' }),
+      })
 
       await create()
 
@@ -136,7 +149,9 @@ describe('AuthService', () => {
     })
 
     it('says nothing for a user who has already moved over', async () => {
-      api.respond('post', '/auth/session', { access_token: makeJwt() })
+      api.respond('post', '/auth/session', {
+        access_token: makeJwt(),
+      })
 
       await create()
 
@@ -146,14 +161,18 @@ describe('AuthService', () => {
 
   describe('isLoggedIn', () => {
     it('is true for a valid token from this instance', async () => {
-      api.respond('post', '/auth/session', { access_token: makeJwt() })
+      api.respond('post', '/auth/session', {
+        access_token: makeJwt(),
+      })
       const service = await create()
 
       expect(service.isLoggedIn()).toBeTruthy()
     })
 
     it('is false when the token was issued by another homebridge instance', async () => {
-      api.respond('post', '/auth/session', { access_token: makeJwt({ instanceId: 'a-different-instance' }) })
+      api.respond('post', '/auth/session', {
+        access_token: makeJwt({ instanceId: 'a-different-instance' }),
+      })
       const service = await create()
 
       expect(service.isLoggedIn()).toBe(false)
@@ -168,7 +187,9 @@ describe('AuthService', () => {
 
   describe('logging out', () => {
     it('clears the session and reloads the page', async () => {
-      api.respond('post', '/auth/session', { access_token: makeJwt() })
+      api.respond('post', '/auth/session', {
+        access_token: makeJwt(),
+      })
       const service = await create()
 
       service.logout()
@@ -183,7 +204,9 @@ describe('AuthService', () => {
     })
 
     it('still reloads when the server cannot be reached', async () => {
-      api.respond('post', '/auth/session', { access_token: makeJwt() })
+      api.respond('post', '/auth/session', {
+        access_token: makeJwt(),
+      })
       api.fail('post', '/auth/logout', new Error('offline'))
       const service = await create()
 
@@ -205,7 +228,9 @@ describe('AuthService', () => {
 
   describe('checkToken', () => {
     it('logs out without asking the server when the token has expired', async () => {
-      api.respond('post', '/auth/session', { access_token: makeJwt({}, 3600) })
+      api.respond('post', '/auth/session', {
+        access_token: makeJwt({}, 3600),
+      })
       const service = await create()
       service.token = makeJwt({}, -60)
 
@@ -216,7 +241,9 @@ describe('AuthService', () => {
     })
 
     it('logs out and rethrows when the server rejects the token', async () => {
-      api.respond('post', '/auth/session', { access_token: makeJwt() })
+      api.respond('post', '/auth/session', {
+        access_token: makeJwt(),
+      })
       api.fail('get', '/auth/check', { status: 401 })
       const service = await create()
 
@@ -225,7 +252,9 @@ describe('AuthService', () => {
     })
 
     it('rethrows other failures without logging out', async () => {
-      api.respond('post', '/auth/session', { access_token: makeJwt() })
+      api.respond('post', '/auth/session', {
+        access_token: makeJwt(),
+      })
       api.fail('get', '/auth/check', { status: 500 })
       const service = await create()
 
@@ -237,9 +266,13 @@ describe('AuthService', () => {
 
   describe('refreshing the session', () => {
     it('re-decodes the user from the new token', async () => {
-      api.respond('post', '/auth/session', { access_token: makeJwt({ admin: true }) })
+      api.respond('post', '/auth/session', {
+        access_token: makeJwt({ admin: true }),
+      })
       const service = await create()
-      api.respond('post', '/auth/refresh', { access_token: makeJwt({ admin: false }) })
+      api.respond('post', '/auth/refresh', {
+        access_token: makeJwt({ admin: false }),
+      })
 
       await service.refreshSession('admin-guard')
 
@@ -250,7 +283,9 @@ describe('AuthService', () => {
 
     it('sends the reason so the server log says why', async () => {
       const service = await create()
-      api.respond('post', '/auth/refresh', { access_token: makeJwt() })
+      api.respond('post', '/auth/refresh', {
+        access_token: makeJwt(),
+      })
 
       await service.refreshSession('session-extension')
 
@@ -301,7 +336,9 @@ describe('AuthService', () => {
 
       const first = service.refreshSession()
       const second = service.refreshSession()
-      release({ access_token: makeJwt() })
+      release({
+        access_token: makeJwt(),
+      })
       await Promise.all([first, second])
 
       expect(api.callsTo('post', '/auth/refresh')).toHaveLength(1)
@@ -333,7 +370,9 @@ describe('AuthService', () => {
   describe('the inactivity timer', () => {
     it('signs the user out when the session expires', async () => {
       vi.useFakeTimers()
-      api.respond('post', '/auth/session', { access_token: makeJwt() })
+      api.respond('post', '/auth/session', {
+        access_token: makeJwt(),
+      })
       const service = await create({ formAuth: true, sessionTimeout: 60 })
 
       await vi.advanceTimersByTimeAsync(60_000)
@@ -346,7 +385,9 @@ describe('AuthService', () => {
       // here would otherwise end the user's active sessions on every other
       // device. Nobody chose this logout, so it reaches only this browser.
       vi.useFakeTimers()
-      api.respond('post', '/auth/session', { access_token: makeJwt() })
+      api.respond('post', '/auth/session', {
+        access_token: makeJwt(),
+      })
       const service = await create({ formAuth: true, sessionTimeout: 60 })
 
       await vi.advanceTimersByTimeAsync(60_000)
@@ -356,7 +397,9 @@ describe('AuthService', () => {
     })
 
     it('keeps a logout the user chose account-wide', async () => {
-      api.respond('post', '/auth/session', { access_token: makeJwt() })
+      api.respond('post', '/auth/session', {
+        access_token: makeJwt(),
+      })
       const service = await create({ formAuth: true })
 
       service.logout()
@@ -366,8 +409,12 @@ describe('AuthService', () => {
 
     it('quietly signs back in when the ui has no login', async () => {
       vi.useFakeTimers()
-      api.respond('post', '/auth/session', { access_token: makeJwt() })
-      api.respond('post', '/auth/noauth', { access_token: makeJwt() })
+      api.respond('post', '/auth/session', {
+        access_token: makeJwt(),
+      })
+      api.respond('post', '/auth/noauth', {
+        access_token: makeJwt(),
+      })
       await create({ formAuth: false, sessionTimeout: 60 })
 
       await vi.advanceTimersByTimeAsync(60_000)
@@ -379,8 +426,12 @@ describe('AuthService', () => {
     it('gives up reloading after a few attempts in one session', async () => {
       vi.useFakeTimers()
       window.sessionStorage.setItem('uix.noauthReloadCount', '3')
-      api.respond('post', '/auth/session', { access_token: makeJwt() })
-      api.respond('post', '/auth/noauth', { access_token: makeJwt() })
+      api.respond('post', '/auth/session', {
+        access_token: makeJwt(),
+      })
+      api.respond('post', '/auth/noauth', {
+        access_token: makeJwt(),
+      })
       await create({ formAuth: false, sessionTimeout: 60 })
 
       await vi.advanceTimersByTimeAsync(60_000)
@@ -393,7 +444,9 @@ describe('AuthService', () => {
     it('clamps a session timeout that a browser timer cannot hold', async () => {
       vi.useFakeTimers()
       const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
-      api.respond('post', '/auth/session', { access_token: makeJwt({}, 60 * 60 * 24 * 365) })
+      api.respond('post', '/auth/session', {
+        access_token: makeJwt({}, 60 * 60 * 24 * 365),
+      })
 
       // setTimeout takes a signed 32-bit millisecond count, so anything past
       // ~24.8 days silently never fires
@@ -405,7 +458,9 @@ describe('AuthService', () => {
 
   describe('extending the session on activity', () => {
     it('does nothing when inactivity based sessions are off', async () => {
-      api.respond('post', '/auth/session', { access_token: makeJwt() })
+      api.respond('post', '/auth/session', {
+        access_token: makeJwt(),
+      })
       const service = await create({ formAuth: true, sessionTimeoutInactivityBased: false })
 
       await service.checkAndRefreshIfNeeded()
@@ -414,7 +469,9 @@ describe('AuthService', () => {
     })
 
     it('does nothing when the ui has no login', async () => {
-      api.respond('post', '/auth/session', { access_token: makeJwt() })
+      api.respond('post', '/auth/session', {
+        access_token: makeJwt(),
+      })
       const service = await create({ formAuth: false, sessionTimeoutInactivityBased: true })
 
       await service.checkAndRefreshIfNeeded()
@@ -424,9 +481,13 @@ describe('AuthService', () => {
 
     it('waits until most of the session has passed', async () => {
       vi.useFakeTimers()
-      api.respond('post', '/auth/session', { access_token: makeJwt() })
+      api.respond('post', '/auth/session', {
+        access_token: makeJwt(),
+      })
       const service = await create({ formAuth: true, sessionTimeoutInactivityBased: true, sessionTimeout: 100 })
-      api.respond('post', '/auth/refresh', { access_token: makeJwt() })
+      api.respond('post', '/auth/refresh', {
+        access_token: makeJwt(),
+      })
 
       // 69% through - still plenty of time left, so no request
       await vi.advanceTimersByTimeAsync(69_000)
@@ -442,7 +503,9 @@ describe('AuthService', () => {
     it('survives a failed refresh', async () => {
       vi.useFakeTimers()
       vi.spyOn(console, 'error').mockImplementation(() => {})
-      api.respond('post', '/auth/session', { access_token: makeJwt() })
+      api.respond('post', '/auth/session', {
+        access_token: makeJwt(),
+      })
       const service = await create({ formAuth: true, sessionTimeoutInactivityBased: true, sessionTimeout: 100 })
       api.fail('post', '/auth/refresh', new Error('offline'))
 

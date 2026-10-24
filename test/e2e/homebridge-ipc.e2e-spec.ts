@@ -57,7 +57,10 @@ describe('HomebridgeIpcService (e2e)', () => {
 
       ipcService.sendMessage('testEvent', { foo: 'bar' })
 
-      expect(mockProcess.send).toHaveBeenCalledWith({ id: 'testEvent', data: { foo: 'bar' } })
+      expect(mockProcess.send).toHaveBeenCalledWith({
+        id: 'testEvent',
+        data: { foo: 'bar' },
+      })
     })
   })
 
@@ -75,7 +78,10 @@ describe('HomebridgeIpcService (e2e)', () => {
       ipcService.on('childBridgeStatusUpdate', listener)
 
       // Simulate a message from the child process
-      mockProcess.emit('message', { id: 'childBridgeStatusUpdate', data: { status: 'ok' } })
+      mockProcess.emit('message', {
+        id: 'childBridgeStatusUpdate',
+        data: { status: 'ok' },
+      })
 
       expect(listener).toHaveBeenCalledWith({ status: 'ok' })
 

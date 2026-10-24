@@ -83,7 +83,10 @@ export function fakeSocket(connected = true): FakeSocket {
     id: 'fake-socket',
     emitted,
     on: vi.fn((event: string, handler: Handler) => {
-      handlers.set(event, [...(handlers.get(event) ?? []), handler])
+      handlers.set(event, [
+        ...(handlers.get(event) ?? []),
+        handler,
+      ])
       return socket
     }),
     off: vi.fn((event: string, handler?: Handler) => {
@@ -111,7 +114,9 @@ export function fakeSocket(connected = true): FakeSocket {
       const ack = args.at(-1)
       if (typeof ack === 'function') {
         const responder = responders.get(event)
-        ack(responder ? responder(args[0]) : undefined)
+        ack(responder
+          ? responder(args[0])
+          : undefined)
       }
       return socket
     }),
@@ -123,10 +128,14 @@ export function fakeSocket(connected = true): FakeSocket {
       handler(...args)
     }
   }
-  socket.handlers = (event: string) => [...(handlers.get(event) ?? [])]
+  socket.handlers = (event: string) => [
+    ...(handlers.get(event) ?? []),
+  ]
   socket.payloadsFor = (event: string) => emitted.filter(entry => entry.event === event).map(entry => entry.args[0])
   socket.respondTo = (event: string, response: AckResponder | any) => {
-    responders.set(event, typeof response === 'function' ? response : () => response)
+    responders.set(event, typeof response === 'function'
+      ? response
+      : () => response)
     return socket
   }
 

@@ -119,12 +119,7 @@
         @for (characteristic of localService.serviceCharacteristics; track characteristic) {
           <li class="list-group-item d-flex justify-content-between align-items-left flex-column flex-md-row">
             <span class="me-3">
-              @if (
-                'minStep' in characteristic ||
-                'minValue' in characteristic ||
-                'maxValue' in characteristic ||
-                'validValues' in characteristic
-              ) {
+              @if (hasLimits(characteristic)) {
                 <span
                   class="hover-pointer text-nowrap"
                   role="button"
@@ -237,12 +232,7 @@
         @for (characteristic of extraService.serviceCharacteristics; track characteristic) {
           <li class="list-group-item d-flex justify-content-between align-items-left flex-column flex-md-row">
             <span>
-              @if (
-                'minStep' in characteristic ||
-                'minValue' in characteristic ||
-                'maxValue' in characteristic ||
-                'validValues' in characteristic
-              ) {
+              @if (hasLimits(characteristic)) {
                 <span
                   class="hover-pointer"
                   role="button"

@@ -227,18 +227,44 @@ export class SettingsComponent implements OnInit {
 
   public readonly uiTerminalFontSizeIsSaving = signal(false)
   public uiTerminalFontSizeFormControl = new FormControl(13)
-  public fontSizes = [10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+  public fontSizes = [
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+  ]
 
   public readonly uiTerminalFontWeightIsSaving = signal(false)
   public uiTerminalFontWeightFormControl = new FormControl('400')
-  public fontWeights = ['100', '200', '300', '400', '500', '600', '700', '800', '900', 'bold', 'normal']
+  public fontWeights = [
+    '100',
+    '200',
+    '300',
+    '400',
+    '500',
+    '600',
+    '700',
+    '800',
+    '900',
+    'bold',
+    'normal',
+  ]
 
   public readonly uiTerminalLightingModeIsSaving = signal(false)
   public uiTerminalLightingModeFormControl = new FormControl('dark')
 
   // Only allow light theme when in light mode
   public get terminalThemes(): string[] {
-    return this.$settings.actualLightingMode === 'light' ? ['light', 'dark'] : ['dark']
+    return this.$settings.actualLightingMode === 'light'
+      ? ['light', 'dark']
+      : ['dark']
   }
 
   // Disable terminal theme dropdown when in dark mode (since terminal must be dark)
@@ -714,7 +740,9 @@ export class SettingsComponent implements OnInit {
 
     // Terminal lighting mode - default to dark, but allow light if main theme is light
     const savedTerminalTheme = this.$settings.env.terminal?.lightingMode
-    const defaultTheme = this.$settings.actualLightingMode === 'light' ? (savedTerminalTheme || 'dark') : 'dark'
+    const defaultTheme = this.$settings.actualLightingMode === 'light'
+      ? (savedTerminalTheme || 'dark')
+      : 'dark'
     this.uiTerminalLightingModeFormControl.patchValue(defaultTheme, { emitEvent: false })
     if (this.isTerminalLightingModeDisabled) {
       this.uiTerminalLightingModeFormControl.disable({ emitEvent: false })
@@ -775,7 +803,9 @@ export class SettingsComponent implements OnInit {
         ? 'selfsigned'
         : this.$settings.env.ssl?.key || this.$settings.env.ssl?.cert
           ? 'keycert'
-          : (this.$settings.env.ssl?.pfx || this.$settings.env.ssl?.hasPassphrase) ? 'pfx' : 'off',
+          : (this.$settings.env.ssl?.pfx || this.$settings.env.ssl?.hasPassphrase)
+              ? 'pfx'
+              : 'off',
       { emitEvent: false },
     )
 
@@ -898,12 +928,14 @@ export class SettingsComponent implements OnInit {
 
   public async accessoryUiControl(): Promise<void> {
     try {
-      const injector = createEnvironmentInjector([{
-        provide: ACCESSORY_CONTROL_LISTS_MODAL_DATA,
-        useValue: {
-          existingBlacklist: this.$settings.env.accessoryControl?.instanceBlacklist || [],
+      const injector = createEnvironmentInjector([
+        {
+          provide: ACCESSORY_CONTROL_LISTS_MODAL_DATA,
+          useValue: {
+            existingBlacklist: this.$settings.env.accessoryControl?.instanceBlacklist || [],
+          },
         },
-      }], this.injector)
+      ], this.injector)
 
       const ref = this.$modal.open(AccessoryControlListsComponent, {
         size: 'lg',
@@ -922,12 +954,14 @@ export class SettingsComponent implements OnInit {
   }
 
   public removeSingleCachedAccessories(): void {
-    const injector = createEnvironmentInjector([{
-      provide: REMOVE_INDIVIDUAL_ACCESSORIES_MODAL_DATA,
-      useValue: {
-        selectedBridge: '',
+    const injector = createEnvironmentInjector([
+      {
+        provide: REMOVE_INDIVIDUAL_ACCESSORIES_MODAL_DATA,
+        useValue: {
+          selectedBridge: '',
+        },
       },
-    }], this.injector)
+    ], this.injector)
 
     this.$modal.open(RemoveIndividualAccessoriesComponent, {
       size: 'lg',
@@ -944,13 +978,15 @@ export class SettingsComponent implements OnInit {
   }
 
   public async selectNetworkInterfaces(): Promise<void> {
-    const injector = createEnvironmentInjector([{
-      provide: NETWORK_INTERFACES_MODAL_DATA,
-      useValue: {
-        adaptersAvailable: this.adaptersAvailable(),
-        adaptersSelected: this.adaptersSelected(),
+    const injector = createEnvironmentInjector([
+      {
+        provide: NETWORK_INTERFACES_MODAL_DATA,
+        useValue: {
+          adaptersAvailable: this.adaptersAvailable(),
+          adaptersSelected: this.adaptersSelected(),
+        },
       },
-    }], this.injector)
+    ], this.injector)
 
     const ref = this.$modal.open(SelectNetworkInterfacesComponent, {
       size: 'lg',
@@ -979,7 +1015,10 @@ export class SettingsComponent implements OnInit {
   }
 
   public toggleSection(section: keyof ReturnType<typeof this.showFields>): void {
-    this.showFields.set({ ...this.showFields(), [section]: !this.showFields()[section] })
+    this.showFields.set({
+      ...this.showFields(),
+      [section]: !this.showFields()[section],
+    })
   }
 
   private async initStartupSettings(): Promise<void> {
@@ -1289,17 +1328,19 @@ export class SettingsComponent implements OnInit {
   private async uiTerminalPersistenceSave(value: boolean): Promise<void> {
     // If turning off persistence and there's an active session, show confirmation
     if (!value && this.$terminal.hasActiveSession()) {
-      const injector = createEnvironmentInjector([{
-        provide: CONFIRM_MODAL_DATA,
-        useValue: {
-          title: this.$translate.instant('settings.terminal.persistence_confirm_title'),
-          message: this.$translate.instant('settings.terminal.persistence_confirm_message'),
-          message2: this.$translate.instant('common.phrases.are_you_sure'),
-          confirmButtonLabel: this.$translate.instant('form.button_continue'),
-          confirmButtonClass: 'btn-primary',
-          faIconClass: 'fas fa-exclamation-triangle text-warning',
+      const injector = createEnvironmentInjector([
+        {
+          provide: CONFIRM_MODAL_DATA,
+          useValue: {
+            title: this.$translate.instant('settings.terminal.persistence_confirm_title'),
+            message: this.$translate.instant('settings.terminal.persistence_confirm_message'),
+            message2: this.$translate.instant('common.phrases.are_you_sure'),
+            confirmButtonLabel: this.$translate.instant('form.button_continue'),
+            confirmButtonClass: 'btn-primary',
+            faIconClass: 'fas fa-exclamation-triangle text-warning',
+          },
         },
-      }], this.injector)
+      ], this.injector)
 
       const ref = this.$modal.open(ConfirmComponent, {
         size: 'lg',
@@ -1962,7 +2003,9 @@ export class SettingsComponent implements OnInit {
     try {
       this.scheduledRestartCronIsSaving.set(true)
       // Convert empty string to null
-      const cronValue = value?.trim() ? value : null
+      const cronValue = value?.trim()
+        ? value
+        : null
       this.$settings.setEnvItem('scheduledRestartCron', cronValue)
       await this.queueUiSettingChange('scheduledRestartCron', cronValue)
       setTimeout(() => {
@@ -2323,17 +2366,19 @@ export class SettingsComponent implements OnInit {
         }, 1000)
       } else {
         // When disabling, show confirmation modal
-        const injector = createEnvironmentInjector([{
-          provide: CONFIRM_MODAL_DATA,
-          useValue: {
-            title: this.$translate.instant('settings.matter.disable'),
-            message: this.$translate.instant(this.allowMatterDisableInPlace ? 'settings.matter.disable_desc_in_place' : 'settings.matter.disable_desc'),
-            message2: this.$translate.instant('common.phrases.are_you_sure'),
-            confirmButtonLabel: this.$translate.instant('form.button_continue'),
-            confirmButtonClass: 'btn-danger',
-            faIconClass: 'fas fa-exclamation-triangle text-warning',
+        const injector = createEnvironmentInjector([
+          {
+            provide: CONFIRM_MODAL_DATA,
+            useValue: {
+              title: this.$translate.instant('settings.matter.disable'),
+              message: this.$translate.instant(this.allowMatterDisableInPlace ? 'settings.matter.disable_desc_in_place' : 'settings.matter.disable_desc'),
+              message2: this.$translate.instant('common.phrases.are_you_sure'),
+              confirmButtonLabel: this.$translate.instant('form.button_continue'),
+              confirmButtonClass: 'btn-danger',
+              faIconClass: 'fas fa-exclamation-triangle text-warning',
+            },
           },
-        }], this.injector)
+        ], this.injector)
 
         const ref = this.$modal.open(ConfirmComponent, {
           size: 'lg',
@@ -2527,17 +2572,19 @@ export class SettingsComponent implements OnInit {
         }, 1000)
       } else {
         // Disabling HAP — confirm first
-        const injector = createEnvironmentInjector([{
-          provide: CONFIRM_MODAL_DATA,
-          useValue: {
-            title: this.$translate.instant('settings.hap.disable'),
-            message: this.$translate.instant('settings.hap.disable_desc'),
-            message2: this.$translate.instant('common.phrases.are_you_sure'),
-            confirmButtonLabel: this.$translate.instant('form.button_continue'),
-            confirmButtonClass: 'btn-danger',
-            faIconClass: 'fas fa-exclamation-triangle text-warning',
+        const injector = createEnvironmentInjector([
+          {
+            provide: CONFIRM_MODAL_DATA,
+            useValue: {
+              title: this.$translate.instant('settings.hap.disable'),
+              message: this.$translate.instant('settings.hap.disable_desc'),
+              message2: this.$translate.instant('common.phrases.are_you_sure'),
+              confirmButtonLabel: this.$translate.instant('form.button_continue'),
+              confirmButtonClass: 'btn-danger',
+              faIconClass: 'fas fa-exclamation-triangle text-warning',
+            },
           },
-        }], this.injector)
+        ], this.injector)
 
         const ref = this.$modal.open(ConfirmComponent, {
           size: 'lg',

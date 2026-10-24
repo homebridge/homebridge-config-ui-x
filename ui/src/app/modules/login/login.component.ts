@@ -50,8 +50,14 @@ export class LoginComponent implements OnInit, AfterViewInit {
   // Initialize form as property with all controls (including OTP for 2FA)
   // OTP validators are added dynamically when 2FA is required
   public form = new FormGroup({
-    username: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
-    password: new FormControl('', { nonNullable: true, validators: [Validators.required] }),
+    username: new FormControl('', {
+      nonNullable: true,
+      validators: [Validators.required],
+    }),
+    password: new FormControl('', {
+      nonNullable: true,
+      validators: [Validators.required],
+    }),
     otp: new FormControl('', { nonNullable: true }),
   })
 

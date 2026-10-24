@@ -196,13 +196,16 @@ export class PluginBridgeComponent implements OnInit {
       const index = configBlocks.findIndex(block => block._bridge?.username === username)
 
       // Update the accessoryBridgeLinks
-      this.accessoryBridgeLinks.update(current => [...current, {
-        index: selectedBlock,
-        usesIndex: index.toString(),
-        name: this.bridgeCache().get(index)?.name,
-        port: this.bridgeCache().get(index)?.port,
-        username,
-      }])
+      this.accessoryBridgeLinks.update(current => [
+        ...current,
+        {
+          index: selectedBlock,
+          usesIndex: index.toString(),
+          name: this.bridgeCache().get(index)?.name,
+          port: this.bridgeCache().get(index)?.port,
+          username,
+        },
+      ])
 
       // Update currently selected link
       this.currentlySelectedLink.set(this.accessoryBridgeLinks().find(link => link.index === selectedBlock) || null)
@@ -223,14 +226,21 @@ export class PluginBridgeComponent implements OnInit {
   // 9. Private Methods
   private async initialize(): Promise<void> {
     try {
-      await Promise.all([this.getPluginType(), this.loadPluginConfig(), this.loadBridgeConfigs(), this.loadGlobalStartupSettings()])
+      await Promise.all([
+        this.getPluginType(),
+        this.loadPluginConfig(),
+        this.loadBridgeConfigs(),
+        this.loadGlobalStartupSettings(),
+      ])
       this.canShowBridgeDebug.set(this.$settings.isFeatureEnabled('childBridgeDebugMode'))
       const initialHideSetup = !!this.plugin && !!this.$settings.env.plugins?.hideChildBridgeSetupFor?.includes(this.plugin.name)
       this.hideChildBridgeSetup.set(initialHideSetup)
       this.originalHideChildBridgeSetup = initialHideSetup
     } catch (error) {
       console.error('Failed to initialize:', error)
-      const message = error instanceof Error ? error.message : 'Failed to initialize component'
+      const message = error instanceof Error
+        ? error.message
+        : 'Failed to initialize component'
       this.$toastr.error(message, this.$translate.instant('toast.title_error'))
     } finally {
       this.loading.set(false)
@@ -250,7 +260,9 @@ export class PluginBridgeComponent implements OnInit {
       this.isPlatform.set(alias.pluginType === 'platform')
     } catch (error) {
       console.error(error)
-      const message = error instanceof Error ? error.message : 'Failed to load plugin type'
+      const message = error instanceof Error
+        ? error.message
+        : 'Failed to load plugin type'
       this.$toastr.error(message, this.$translate.instant('toast.title_error'))
       this.$activeModal.close()
     }
@@ -303,18 +315,25 @@ export class PluginBridgeComponent implements OnInit {
 
         if (block._bridge && block._bridge.username) {
           // For accessory plugin blocks, the username might be the same as a previous block
-          const existingBridgeEntry = [...this.bridgeCache().entries()].find(([, bridge]) => bridge.username === block._bridge.username)
-          const existingBridgeIndex = existingBridgeEntry ? existingBridgeEntry[0] : -1
+          const existingBridgeEntry = [
+            ...this.bridgeCache().entries(),
+          ].find(([, bridge]) => bridge.username === block._bridge.username)
+          const existingBridgeIndex = existingBridgeEntry
+            ? existingBridgeEntry[0]
+            : -1
           const existingBridge = existingBridgeEntry ? existingBridgeEntry[1] : undefined
           if (existingBridge) {
             block._bridge.env = {}
-            this.accessoryBridgeLinks.update(current => [...current, {
-              index: i.toString(),
-              usesIndex: existingBridgeIndex.toString(),
-              name: existingBridge.name,
-              port: existingBridge.port,
-              username: block._bridge.username,
-            }])
+            this.accessoryBridgeLinks.update(current => [
+              ...current,
+              {
+                index: i.toString(),
+                usesIndex: existingBridgeIndex.toString(),
+                name: existingBridge.name,
+                port: existingBridge.port,
+                username: block._bridge.username,
+              },
+            ])
           } else {
             block._bridge.env = block._bridge.env || {}
             this.bridgeCache.update(current => new Map(current).set(i, block._bridge))
@@ -328,7 +347,10 @@ export class PluginBridgeComponent implements OnInit {
               }
             }
             // Deep clone the bridge config to track original state
-            this.originalBridges.update(current => [...current, JSON.parse(JSON.stringify(block._bridge))])
+            this.originalBridges.update(current => [
+              ...current,
+              JSON.parse(JSON.stringify(block._bridge)),
+            ])
           }
         }
 
@@ -362,7 +384,10 @@ export class PluginBridgeComponent implements OnInit {
 
             // Only cache port + disableIpv4 - name is now shared at _bridge level
             this.matterBridgeCache.update(current => new Map(current).set(i, { port: block._bridge.matter.port, disableIpv4: block._bridge.matter.disableIpv4 === true }))
-            this.originalMatterBridges.update(current => [...current, { port: block._bridge.matter.port }])
+            this.originalMatterBridges.update(current => [
+              ...current,
+              { port: block._bridge.matter.port },
+            ])
             // Use username as key, just like HAP
             if (block._bridge.username) {
               await this.getMatterCommissioningInfo(block._bridge.username)
@@ -429,7 +454,9 @@ export class PluginBridgeComponent implements OnInit {
 
       // Always create HAP bridge configuration when HAP toggle is enabled
       block._bridge = {
-        username: bridgeCache ? bridgeCache.username : this.generateUsername(),
+        username: bridgeCache
+          ? bridgeCache.username
+          : this.generateUsername(),
         port: await this.getUnusedPort(),
         name: bridgeCache?.name || this.sanitizeBridgeName(plugin.displayName || plugin.name),
         model: bridgeCache?.model,
@@ -437,7 +464,11 @@ export class PluginBridgeComponent implements OnInit {
         firmwareRevision: bridgeCache?.firmwareRevision,
         debugModeEnabled: bridgeCache?.debugModeEnabled,
         env: bridgeCache?.env || {},
-        ...(keepHapDisableIdentifyingMaterial ? { hap: { disableIdentifyingMaterial: true } } : {}),
+        ...(keepHapDisableIdentifyingMaterial
+          ? {
+              hap: { disableIdentifyingMaterial: true },
+            }
+          : {}),
       }
 
       // Restore Matter configuration if it was previously cached (cached means it was enabled before disabling)
@@ -447,7 +478,9 @@ export class PluginBridgeComponent implements OnInit {
         // Use cached port if available, otherwise get a new Matter port
         block._bridge.matter = {
           port: matterCache.port ?? await this.getUnusedMatterPort(),
-          ...(matterCache.disableIpv4 === true ? { disableIpv4: true } : {}),
+          ...(matterCache.disableIpv4 === true
+            ? { disableIpv4: true }
+            : {}),
         }
         if (this.isMatterDisableIpv4Enabled) {
           this.matterDisableIpv4Blocks.update(current => ({ ...current, [Number(index)]: matterCache.disableIpv4 === true }))
@@ -535,11 +568,14 @@ export class PluginBridgeComponent implements OnInit {
           // Avoid duplicates
           if (!this.deleteBridges().some(b => b.id === block._bridge.username)) {
             const info = this.deviceInfo().get(block._bridge.username)
-            this.deleteBridges.update(current => [...current, {
-              id: block._bridge.username,
-              bridgeName: block._bridge.name || originalBridge.displayName,
-              paired: info ? info._isPaired : false,
-            }])
+            this.deleteBridges.update(current => [
+              ...current,
+              {
+                id: block._bridge.username,
+                bridgeName: block._bridge.name || originalBridge.displayName,
+                paired: info ? info._isPaired : false,
+              },
+            ])
           }
         }
 
@@ -567,11 +603,14 @@ export class PluginBridgeComponent implements OnInit {
             if (!this.deleteMatterBridges().some(b => b.identifier === identifier)) {
               // Store name before deleting block._bridge
               const name = block._bridge.name || plugin.displayName || plugin.name
-              this.deleteMatterBridges.update(current => [...current, {
-                username: block._bridge.username,
-                identifier,
-                name,
-              }])
+              this.deleteMatterBridges.update(current => [
+                ...current,
+                {
+                  username: block._bridge.username,
+                  identifier,
+                  name,
+                },
+              ])
             }
           }
         }
@@ -671,7 +710,9 @@ export class PluginBridgeComponent implements OnInit {
       0x1049: 'SmartThings',
     }
     const vendor = vendorNames[vendorId ?? 0] ?? `0x${(vendorId ?? 0).toString(16).toUpperCase()}`
-    return fabric.label ? `${vendor} · ${fabric.label}` : vendor
+    return fabric.label
+      ? `${vendor} · ${fabric.label}`
+      : vendor
   }
 
   private async getMatterCommissioningInfo(username: string) {
@@ -772,7 +813,9 @@ export class PluginBridgeComponent implements OnInit {
       // Only store port + disableIpv4 in matter config - name is now shared at _bridge level
       block._bridge.matter = {
         port,
-        ...(keepDisableIpv4 ? { disableIpv4: true } : {}),
+        ...(keepDisableIpv4
+          ? { disableIpv4: true }
+          : {}),
       }
       if (this.isMatterDisableIpv4Enabled) {
         this.matterDisableIpv4Blocks.update(current => ({ ...current, [Number(index)]: keepDisableIpv4 }))
@@ -850,11 +893,14 @@ export class PluginBridgeComponent implements OnInit {
           const identifier = block._bridge.username.replace(RE_NON_ALNUM, '-').replace(RE_CONSECUTIVE_DASHES, '-').replace(RE_LEADING_TRAILING_DASH, '')
           // Get name from block._bridge (still available at this point)
           const name = block._bridge.name || plugin.displayName || plugin.name
-          this.deleteMatterBridges.update(current => [...current, {
-            username: block._bridge.username,
-            identifier,
-            name,
-          }])
+          this.deleteMatterBridges.update(current => [
+            ...current,
+            {
+              username: block._bridge.username,
+              identifier,
+              name,
+            },
+          ])
         }
       }
 
@@ -976,7 +1022,9 @@ export class PluginBridgeComponent implements OnInit {
     if (this.hapEnabledBlocks()[idx] === false) {
       block._bridge.hap = {
         enabled: false,
-        ...(checked ? { externalsOnly: true } : {}),
+        ...(checked
+          ? { externalsOnly: true }
+          : {}),
         ...(this.hapDisableIdentifyingMaterialBlocks()[idx] === true
           ? { disableIdentifyingMaterial: true }
           : {}),
@@ -1105,7 +1153,9 @@ export class PluginBridgeComponent implements OnInit {
     // Keep the cache in sync so disable/enable round-trips preserve the flag
     this.matterBridgeCache.update((current) => {
       const existing = current.get(idx)
-      return existing ? new Map(current).set(idx, { ...existing, disableIpv4: checked }) : current
+      return existing
+        ? new Map(current).set(idx, { ...existing, disableIpv4: checked })
+        : current
     })
   }
 
@@ -1218,8 +1268,12 @@ export class PluginBridgeComponent implements OnInit {
         // written only when explicitly toggled on.
         block._bridge.hap = {
           enabled: false,
-          ...(hapExternalsOnly ? { externalsOnly: true } : {}),
-          ...(hapDisableIdentifyingMaterial ? { disableIdentifyingMaterial: true } : {}),
+          ...(hapExternalsOnly
+            ? { externalsOnly: true }
+            : {}),
+          ...(hapDisableIdentifyingMaterial
+            ? { disableIdentifyingMaterial: true }
+            : {}),
         }
       } else {
         block._bridge.hap = false
@@ -1265,7 +1319,9 @@ export class PluginBridgeComponent implements OnInit {
         // blocks always use HAP (no Matter alternative), so treat HAP as on for
         // them even if the signal was never set explicitly — e.g. when an
         // accessory block is linked to a shared child bridge.
-        const hapOn = block.accessory ? true : !!hapEnabledBlocks[index]
+        const hapOn = block.accessory
+          ? true
+          : !!hapEnabledBlocks[index]
         if (!this.allowDisableAllProtocols && enabledBlocks[index] && !hapOn && !matterEnabledBlocks[index]) {
           this.$toastr.error(
             this.$translate.instant('child_bridge.config.at_least_one_protocol'),
@@ -1399,8 +1455,12 @@ export class PluginBridgeComponent implements OnInit {
         const currentMatterAlert = !!bridgeConfig.hideMatterAlert
 
         // If no original, treat as false (default for new bridges)
-        const originalHapAlert = original ? !!original.hideHapAlert : false
-        const originalMatterAlert = original ? !!original.hideMatterAlert : false
+        const originalHapAlert = original
+          ? !!original.hideHapAlert
+          : false
+        const originalMatterAlert = original
+          ? !!original.hideMatterAlert
+          : false
 
         try {
           // Save hideHapAlert only if changed
@@ -1428,8 +1488,12 @@ export class PluginBridgeComponent implements OnInit {
         const originalValue = this.originalScheduledRestartCrons.get(username) || null
 
         // Normalize empty strings to null for comparison
-        const normalizedCurrent = currentValue === '' ? null : currentValue
-        const normalizedOriginal = originalValue === '' ? null : originalValue
+        const normalizedCurrent = currentValue === ''
+          ? null
+          : currentValue
+        const normalizedOriginal = originalValue === ''
+          ? null
+          : originalValue
 
         if (normalizedCurrent !== normalizedOriginal) {
           try {
@@ -1466,7 +1530,9 @@ export class PluginBridgeComponent implements OnInit {
       }
     } catch (error) {
       console.error(error)
-      const message = error instanceof Error ? error.message : 'Failed to save configuration'
+      const message = error instanceof Error
+        ? error.message
+        : 'Failed to save configuration'
       this.$toastr.error(message, this.$translate.instant('toast.title_error'))
     } finally {
       this.saveInProgress.set(false)
@@ -1555,7 +1621,9 @@ export class PluginBridgeComponent implements OnInit {
     if (!bridge) {
       return false
     }
-    return protocol === 'hap' ? !!bridge.hideHapAlert : !!bridge.hideMatterAlert
+    return protocol === 'hap'
+      ? !!bridge.hideHapAlert
+      : !!bridge.hideMatterAlert
   }
 
   /**
@@ -1644,8 +1712,12 @@ export class PluginBridgeComponent implements OnInit {
       const originalValue = this.originalScheduledRestartCrons.get(username) || null
 
       // Normalize empty strings to null for comparison
-      const normalizedCurrent = currentValue === '' ? null : currentValue
-      const normalizedOriginal = originalValue === '' ? null : originalValue
+      const normalizedCurrent = currentValue === ''
+        ? null
+        : currentValue
+      const normalizedOriginal = originalValue === ''
+        ? null
+        : originalValue
 
       if (normalizedCurrent !== normalizedOriginal) {
         return true
@@ -1762,8 +1834,12 @@ export class PluginBridgeComponent implements OnInit {
       const currentMatterAlert = !!bridge.hideMatterAlert
 
       // If no original, treat as false (default for new bridges)
-      const originalHapAlert = original ? !!original.hideHapAlert : false
-      const originalMatterAlert = original ? !!original.hideMatterAlert : false
+      const originalHapAlert = original
+        ? !!original.hideHapAlert
+        : false
+      const originalMatterAlert = original
+        ? !!original.hideMatterAlert
+        : false
 
       if (currentHapAlert !== originalHapAlert || currentMatterAlert !== originalMatterAlert) {
         return true
@@ -1832,7 +1908,9 @@ export class PluginBridgeComponent implements OnInit {
       await this.$api.put(endpoint, { value })
       this.updateLocalBridgeConfig(
         normalizedUsername,
-        protocol === 'hap' ? { hideHapAlert: value } : { hideMatterAlert: value },
+        protocol === 'hap'
+          ? { hideHapAlert: value }
+          : { hideMatterAlert: value },
       )
     } catch (error) {
       console.error(`Failed to update hide ${protocol} alert:`, error)

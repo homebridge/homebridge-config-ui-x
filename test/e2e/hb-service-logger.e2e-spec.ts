@@ -50,7 +50,9 @@ describe('HbServiceLogger (e2e)', () => {
 
       logger.log('before log file exists')
 
-      host.logFile = { write: (chunk: string) => written.push(chunk) } as unknown as LoggerHost['logFile']
+      host.logFile = {
+        write: (chunk: string) => written.push(chunk),
+      } as unknown as LoggerHost['logFile']
       logger.log('after log file exists')
 
       expect(consoleLogSpy).toHaveBeenCalledTimes(1)
@@ -65,7 +67,9 @@ describe('HbServiceLogger (e2e)', () => {
       const written: string[] = []
       const host: LoggerHost = {
         action: 'run',
-        logFile: { write: (chunk: string) => written.push(chunk) } as unknown as LoggerHost['logFile'],
+        logFile: {
+          write: (chunk: string) => written.push(chunk),
+        } as unknown as LoggerHost['logFile'],
       }
       const logger = new Logger(host)
 
@@ -112,7 +116,9 @@ describe('HbServiceLogger (e2e)', () => {
       const written: string[] = []
       const host: LoggerHost = {
         action: 'status',
-        logFile: { write: (chunk: string) => written.push(chunk) } as unknown as LoggerHost['logFile'],
+        logFile: {
+          write: (chunk: string) => written.push(chunk),
+        } as unknown as LoggerHost['logFile'],
       }
       const logger = new Logger(host)
 

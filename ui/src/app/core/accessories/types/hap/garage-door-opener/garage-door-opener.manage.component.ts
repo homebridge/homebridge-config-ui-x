@@ -33,7 +33,9 @@ export class GarageDoorOpenerManageComponent extends BaseManageComponent {
       this.lastMovingDirection = currentState
     }
     if (currentState === 4 && this.lastMovingDirection !== undefined) {
-      return this.lastMovingDirection === 3 ? 0 : 1
+      return this.lastMovingDirection === 3
+        ? 0
+        : 1
     }
     return currentState
   }

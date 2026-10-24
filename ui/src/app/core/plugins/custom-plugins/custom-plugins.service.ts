@@ -19,15 +19,17 @@ export class CustomPluginsService {
   async openSettings(plugin: Plugin, schema: any, editorContext?: PluginEditorContext) {
     const pluginConfig = editorContext?.config ?? await this.loadPluginConfig(plugin.name)
 
-    const injector = createEnvironmentInjector([{
-      provide: CUSTOM_PLUGINS_MODAL_DATA,
-      useValue: {
-        plugin,
-        schema,
-        pluginConfig,
-        editorContext,
+    const injector = createEnvironmentInjector([
+      {
+        provide: CUSTOM_PLUGINS_MODAL_DATA,
+        useValue: {
+          plugin,
+          schema,
+          pluginConfig,
+          editorContext,
+        },
       },
-    }], this.injector)
+    ], this.injector)
 
     const ref = this.$modal.open(this.plugins[plugin.name], {
       size: 'lg',
@@ -41,15 +43,17 @@ export class CustomPluginsService {
   async openCustomSettingsUi(plugin: Plugin, schema: any, editorContext?: PluginEditorContext) {
     const pluginConfig = editorContext?.config ?? await this.loadPluginConfig(plugin.name)
 
-    const injector = createEnvironmentInjector([{
-      provide: CUSTOM_PLUGINS_MODAL_DATA,
-      useValue: {
-        plugin,
-        schema,
-        pluginConfig,
-        editorContext,
+    const injector = createEnvironmentInjector([
+      {
+        provide: CUSTOM_PLUGINS_MODAL_DATA,
+        useValue: {
+          plugin,
+          schema,
+          pluginConfig,
+          editorContext,
+        },
       },
-    }], this.injector)
+    ], this.injector)
 
     const ref = this.$modal.open(CustomPluginsComponent, {
       size: 'lg',

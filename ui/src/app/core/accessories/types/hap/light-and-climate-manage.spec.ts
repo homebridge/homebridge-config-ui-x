@@ -44,7 +44,9 @@ describe('HAP light and climate manage modals', () => {
     accessoryData = new Subject()
     return {
       accessoryData,
-      accessories: { services: [current] },
+      accessories: {
+        services: [current],
+      },
     } as unknown as AccessoriesService
   }
 
@@ -61,7 +63,9 @@ describe('HAP light and climate manage modals', () => {
 
     service = target
     toastr = toastrStub()
-    settings = makeSettings({ env: { temperatureUnits: overrides.temperatureUnits ?? 'c' } })
+    settings = makeSettings({
+      env: { temperatureUnits: overrides.temperatureUnits ?? 'c' },
+    })
     activeModal = activeModalStub()
 
     TestBed.configureTestingModule({
@@ -72,14 +76,23 @@ describe('HAP light and climate manage modals', () => {
         { provide: NgbActiveModal, useValue: activeModal },
         {
           provide: ACCESSORY_MANAGE_MODAL_DATA,
-          useValue: { service, $accessories: accessoriesStub(service) },
+          useValue: {
+            service,
+            $accessories: accessoriesStub(service),
+          },
         },
       ],
     })
 
     TestBed.overrideComponent(type as any, {
       set: {
-        imports: [TranslatePipe, ConvertMiredPipe, ConvertTempPipe, DecimalPipe, UpperCasePipe],
+        imports: [
+          TranslatePipe,
+          ConvertMiredPipe,
+          ConvertTempPipe,
+          DecimalPipe,
+          UpperCasePipe,
+        ],
         schemas: [NO_ERRORS_SCHEMA],
       },
     })
@@ -119,7 +132,9 @@ describe('HAP light and climate manage modals', () => {
   }
 
   function mouseEvent() {
-    return { target: document.createElement('button') } as unknown as MouseEvent
+    return {
+      target: document.createElement('button'),
+    } as unknown as MouseEvent
   }
 
   beforeEach(() => {
@@ -153,7 +168,9 @@ describe('HAP light and climate manage modals', () => {
       return hapService({
         type: 'Lightbulb',
         serviceName: 'Plain Bulb',
-        characteristics: [characteristic('On', false)],
+        characteristics: [
+          characteristic('On', false),
+        ],
       })
     }
 
@@ -169,7 +186,12 @@ describe('HAP light and climate manage modals', () => {
       })
       const component = create(LightbulbManageComponent, bulb)
 
-      expect(component.targetBrightness).toEqual({ value: 200, min: 0, max: 254, step: 2 })
+      expect(component.targetBrightness).toEqual({
+        value: 200,
+        min: 0,
+        max: 254,
+        step: 2,
+      })
     })
 
     it('leaves the optional sliders undefined on a bulb that has none', () => {
@@ -191,7 +213,9 @@ describe('HAP light and climate manage modals', () => {
         component.onBrightnessStateChange()
       })
 
-      expect(writesTo(bulb)).toEqual([{ type: 'Brightness', value: 30 }])
+      expect(writesTo(bulb)).toEqual([
+        { type: 'Brightness', value: 30 },
+      ])
     })
 
     it('turns the bulb on when the slider is raised off zero', async () => {
@@ -266,7 +290,9 @@ describe('HAP light and climate manage modals', () => {
         component.onColorTemperatureStateChange()
       })
 
-      expect(writesTo(bulb)).toEqual([{ type: 'ColorTemperature', value: 400 }])
+      expect(writesTo(bulb)).toEqual([
+        { type: 'ColorTemperature', value: 400 },
+      ])
     })
 
     it('inverts the colour temperature range, because mired and kelvin run opposite ways', () => {
@@ -285,7 +311,9 @@ describe('HAP light and climate manage modals', () => {
 
       component.setTargetMode(true, mouseEvent())
 
-      expect(writesTo(bulb)).toEqual([{ type: 'On', value: true }])
+      expect(writesTo(bulb)).toEqual([
+        { type: 'On', value: true },
+      ])
     })
 
     it('moves the slider to full when switching on a bulb sitting at zero', () => {
@@ -297,14 +325,22 @@ describe('HAP light and climate manage modals', () => {
       component.setTargetMode(true, mouseEvent())
 
       expect(component.targetBrightness.value).toBe(100)
-      expect(writesTo(bulb)).toEqual([{ type: 'On', value: true }])
+      expect(writesTo(bulb)).toEqual([
+        { type: 'On', value: true },
+      ])
     })
 
     it('follows a change made elsewhere', () => {
       const bulb = colourBulb()
       const component = create(LightbulbManageComponent, bulb)
 
-      const updated = colourBulb({ on: false, brightness: 10, hue: 300, saturation: 20, mired: 500 })
+      const updated = colourBulb({
+        on: false,
+        brightness: 10,
+        hue: 300,
+        saturation: 20,
+        mired: 500,
+      })
       component.$accessories.accessories.services[0] = updated
       accessoryData.next([updated])
 
@@ -352,7 +388,14 @@ describe('HAP light and climate manage modals', () => {
           type: 'Fanv2',
           serviceName: 'Aircon',
           uniqueId: 'hap-fan',
-          characteristics: [characteristic('RotationSpeed', options.fanSpeed, { minValue: 0, maxValue: 100, minStep: 25, unit: 'percentage' })],
+          characteristics: [
+            characteristic('RotationSpeed', options.fanSpeed, {
+              minValue: 0,
+              maxValue: 100,
+              minStep: 25,
+              unit: 'percentage',
+            }),
+          ],
         })
         unit.linkedServices = { 11: fan as any }
       }
@@ -371,20 +414,26 @@ describe('HAP light and climate manage modals', () => {
     })
 
     it('treats a unit that cannot cool as a heater', () => {
-      const component = create(HeaterCoolerManageComponent, heaterCooler({ validValues: [0, 1] }))
+      const component = create(HeaterCoolerManageComponent, heaterCooler({
+        validValues: [0, 1],
+      }))
 
       expect(component.type).toBe('heater')
     })
 
     it('treats a unit that cannot heat as a cooler', () => {
-      const component = create(HeaterCoolerManageComponent, heaterCooler({ validValues: [0, 2] }))
+      const component = create(HeaterCoolerManageComponent, heaterCooler({
+        validValues: [0, 2],
+      }))
 
       expect(component.type).toBe('cooler')
     })
 
     it('leaves the type unset on a unit that can do both', () => {
       // The template then offers all three mode buttons
-      const component = create(HeaterCoolerManageComponent, heaterCooler({ validValues: [0, 1, 2] }))
+      const component = create(HeaterCoolerManageComponent, heaterCooler({
+        validValues: [0, 1, 2],
+      }))
 
       expect(component.type).toBeUndefined()
       expect(component.targetStateValidValues).toEqual([0, 1, 2])
@@ -427,7 +476,9 @@ describe('HAP light and climate manage modals', () => {
 
       component.setTargetState(0, mouseEvent())
 
-      expect(writesTo(unit)).toEqual([{ type: 'Active', value: 0 }])
+      expect(writesTo(unit)).toEqual([
+        { type: 'Active', value: 0 },
+      ])
       expect(component.targetState).toBe(0)
     })
 
@@ -437,7 +488,9 @@ describe('HAP light and climate manage modals', () => {
 
       component.setTargetMode(2, mouseEvent())
 
-      expect(writesTo(unit)).toEqual([{ type: 'TargetHeaterCoolerState', value: 2 }])
+      expect(writesTo(unit)).toEqual([
+        { type: 'TargetHeaterCoolerState', value: 2 },
+      ])
       expect(component.targetMode).toBe(2)
     })
 
@@ -466,7 +519,9 @@ describe('HAP light and climate manage modals', () => {
         component.onTargetRotationSpeedChange()
       })
 
-      expect(writesTo(fan)).toEqual([{ type: 'RotationSpeed', value: 75 }])
+      expect(writesTo(fan)).toEqual([
+        { type: 'RotationSpeed', value: 75 },
+      ])
       expect(writesTo(unit)).toEqual([])
     })
 
@@ -479,7 +534,9 @@ describe('HAP light and climate manage modals', () => {
 
     it('ignores a linked service that is not a fan', () => {
       const unit = heaterCooler()
-      unit.linkedServices = { 12: hapService({ type: 'TemperatureSensor', uniqueId: 'hap-temp' }) as any }
+      unit.linkedServices = {
+        12: hapService({ type: 'TemperatureSensor', uniqueId: 'hap-temp' }) as any,
+      }
       const component = create(HeaterCoolerManageComponent, unit)
 
       expect(component.serviceFan).toBeUndefined()
@@ -487,10 +544,22 @@ describe('HAP light and climate manage modals', () => {
 
     describe('the status colour', () => {
       it.each([
-        ['status-color-cooling', { active: 1, currentState: 3 }],
-        ['status-color-heating', { active: 1, currentState: 2 }],
-        ['status-color-active', { active: 1, currentState: 1 }],
-        ['status-color-inactive', { active: 0, currentState: 0 }],
+        [
+          'status-color-cooling',
+          { active: 1, currentState: 3 },
+        ],
+        [
+          'status-color-heating',
+          { active: 1, currentState: 2 },
+        ],
+        [
+          'status-color-active',
+          { active: 1, currentState: 1 },
+        ],
+        [
+          'status-color-inactive',
+          { active: 0, currentState: 0 },
+        ],
       ])('is %s', (expected, options) => {
         const component = create(HeaterCoolerManageComponent, heaterCooler(options))
 
@@ -499,13 +568,21 @@ describe('HAP light and climate manage modals', () => {
 
       it('shows a cool-only unit as cooling whenever it is running', () => {
         // Such a unit never reports CurrentHeaterCoolerState 3
-        const component = create(HeaterCoolerManageComponent, heaterCooler({ active: 1, currentState: 1, validValues: [0, 2] }))
+        const component = create(HeaterCoolerManageComponent, heaterCooler({
+          active: 1,
+          currentState: 1,
+          validValues: [0, 2],
+        }))
 
         expect(component.getStatusClass()).toBe('status-color-cooling')
       })
 
       it('shows a heat-only unit as heating whenever it is running', () => {
-        const component = create(HeaterCoolerManageComponent, heaterCooler({ active: 1, currentState: 1, validValues: [0, 1] }))
+        const component = create(HeaterCoolerManageComponent, heaterCooler({
+          active: 1,
+          currentState: 1,
+          validValues: [0, 1],
+        }))
 
         expect(component.getStatusClass()).toBe('status-color-heating')
       })
@@ -520,7 +597,13 @@ describe('HAP light and climate manage modals', () => {
     it('follows a change made elsewhere, fan speed included', () => {
       const component = create(HeaterCoolerManageComponent, heaterCooler({ fanSpeed: 50 }))
 
-      const updated = heaterCooler({ active: 0, mode: 2, heating: 15, cooling: 30, fanSpeed: 100 })
+      const updated = heaterCooler({
+        active: 0,
+        mode: 2,
+        heating: 15,
+        cooling: 30,
+        fanSpeed: 100,
+      })
       component.$accessories.accessories.services[0] = updated
       component.serviceFan = Object.values(updated.linkedServices!)[0]
       accessoryData.next([updated])
@@ -560,7 +643,12 @@ describe('HAP light and climate manage modals', () => {
       const component = create(ThermostatManageComponent, thermostat())
 
       expect(component.targetMode).toBe(1)
-      expect(component.targetTemperature).toEqual({ value: 21, min: 10, max: 38, step: 0.5 })
+      expect(component.targetTemperature).toEqual({
+        value: 21,
+        min: 10,
+        max: 38,
+        step: 0.5,
+      })
       expect(component.autoTemp).toEqual([18, 24])
     })
 
@@ -569,7 +657,9 @@ describe('HAP light and climate manage modals', () => {
       const service = hapService({
         type: 'Thermostat',
         characteristics: [
-          characteristic('TargetHeatingCoolingState', 1, { validValues: [0, 1] }),
+          characteristic('TargetHeatingCoolingState', 1, {
+            validValues: [0, 1],
+          }),
           characteristic('TargetTemperature', 21, { minValue: 10, maxValue: 38, minStep: 0 }),
         ],
       })
@@ -588,7 +678,9 @@ describe('HAP light and climate manage modals', () => {
         component.onTemperatureStateChange()
       })
 
-      expect(writesTo(service)).toEqual([{ type: 'TargetTemperature', value: 23 }])
+      expect(writesTo(service)).toEqual([
+        { type: 'TargetTemperature', value: 23 },
+      ])
     })
 
     it('writes both thresholds together in auto mode', async () => {
@@ -624,7 +716,9 @@ describe('HAP light and climate manage modals', () => {
 
       component.setTargetMode(2, mouseEvent())
 
-      expect(writesTo(service)).toEqual([{ type: 'TargetHeatingCoolingState', value: 2 }])
+      expect(writesTo(service)).toEqual([
+        { type: 'TargetHeatingCoolingState', value: 2 },
+      ])
     })
 
     it('shows the humidity reading only when the accessory reports one', () => {
@@ -633,16 +727,27 @@ describe('HAP light and climate manage modals', () => {
     })
 
     it('offers only the modes the accessory supports', () => {
-      const component = create(ThermostatManageComponent, thermostat({ validValues: [0, 1] }))
+      const component = create(ThermostatManageComponent, thermostat({
+        validValues: [0, 1],
+      }))
 
       expect(component.targetStateValidValues).toEqual([0, 1])
     })
 
     describe('the status colour', () => {
       it.each([
-        ['status-color-cooling', { currentState: 2 }],
-        ['status-color-heating', { currentState: 1 }],
-        ['status-color-inactive', { currentState: 0, mode: 0 }],
+        [
+          'status-color-cooling',
+          { currentState: 2 },
+        ],
+        [
+          'status-color-heating',
+          { currentState: 1 },
+        ],
+        [
+          'status-color-inactive',
+          { currentState: 0, mode: 0 },
+        ],
       ])('is %s from what it is currently doing', (expected, options) => {
         const component = create(ThermostatManageComponent, thermostat(options))
 
@@ -666,7 +771,12 @@ describe('HAP light and climate manage modals', () => {
     it('follows a change made elsewhere', () => {
       const component = create(ThermostatManageComponent, thermostat())
 
-      const updated = thermostat({ mode: 3, target: 25, heating: 15, cooling: 30 })
+      const updated = thermostat({
+        mode: 3,
+        target: 25,
+        heating: 15,
+        cooling: 30,
+      })
       component.$accessories.accessories.services[0] = updated
       accessoryData.next([updated])
 
@@ -699,7 +809,9 @@ describe('HAP light and climate manage modals', () => {
           type: 'Fanv2',
           serviceName: 'Bedroom',
           uniqueId: 'hap-fan',
-          characteristics: [characteristic('RotationSpeed', options.fanSpeed, { minValue: 0, maxValue: 100, minStep: 25 })],
+          characteristics: [
+            characteristic('RotationSpeed', options.fanSpeed, { minValue: 0, maxValue: 100, minStep: 25 }),
+          ],
         })
         device.linkedServices = { 11: fan as any }
       }
@@ -716,19 +828,25 @@ describe('HAP light and climate manage modals', () => {
     })
 
     it('treats a unit that cannot dehumidify as a humidifier', () => {
-      const component = create(HumidifierDehumidifierManageComponent, unit({ validValues: [0, 1] }))
+      const component = create(HumidifierDehumidifierManageComponent, unit({
+        validValues: [0, 1],
+      }))
 
       expect(component.type).toBe('humidifier')
     })
 
     it('treats a unit that cannot humidify as a dehumidifier', () => {
-      const component = create(HumidifierDehumidifierManageComponent, unit({ validValues: [0, 2] }))
+      const component = create(HumidifierDehumidifierManageComponent, unit({
+        validValues: [0, 2],
+      }))
 
       expect(component.type).toBe('dehumidifier')
     })
 
     it('leaves the type unset on a unit that can do both', () => {
-      const component = create(HumidifierDehumidifierManageComponent, unit({ validValues: [0, 1, 2] }))
+      const component = create(HumidifierDehumidifierManageComponent, unit({
+        validValues: [0, 1, 2],
+      }))
 
       expect(component.type).toBeUndefined()
     })
@@ -739,7 +857,9 @@ describe('HAP light and climate manage modals', () => {
 
       component.setTargetState(0, mouseEvent())
 
-      expect(writesTo(service)).toEqual([{ type: 'Active', value: 0 }])
+      expect(writesTo(service)).toEqual([
+        { type: 'Active', value: 0 },
+      ])
     })
 
     it('writes the mode to TargetHumidifierDehumidifierState', () => {
@@ -748,7 +868,9 @@ describe('HAP light and climate manage modals', () => {
 
       component.setTargetMode(2, mouseEvent())
 
-      expect(writesTo(service)).toEqual([{ type: 'TargetHumidifierDehumidifierState', value: 2 }])
+      expect(writesTo(service)).toEqual([
+        { type: 'TargetHumidifierDehumidifierState', value: 2 },
+      ])
     })
 
     it('writes each threshold to its own characteristic', async () => {
@@ -778,7 +900,9 @@ describe('HAP light and climate manage modals', () => {
         component.onTargetRotationSpeedChange()
       })
 
-      expect(writesTo(fan)).toEqual([{ type: 'RotationSpeed', value: 75 }])
+      expect(writesTo(fan)).toEqual([
+        { type: 'RotationSpeed', value: 75 },
+      ])
       expect(writesTo(service)).toEqual([])
     })
 
@@ -792,7 +916,13 @@ describe('HAP light and climate manage modals', () => {
     it('follows a change made elsewhere, fan speed included', () => {
       const component = create(HumidifierDehumidifierManageComponent, unit({ fanSpeed: 50 }))
 
-      const updated = unit({ active: 0, mode: 2, humidify: 30, dehumidify: 80, fanSpeed: 100 })
+      const updated = unit({
+        active: 0,
+        mode: 2,
+        humidify: 30,
+        dehumidify: 80,
+        fanSpeed: 100,
+      })
       component.$accessories.accessories.services[0] = updated
       component.serviceFan = Object.values(updated.linkedServices!)[0] as any
       accessoryData.next([updated])
@@ -864,7 +994,9 @@ describe('HAP light and climate manage modals', () => {
         type: 'AirPurifier',
         characteristics: [
           characteristic('Active', options.active ?? 1),
-          characteristic('TargetAirPurifierState', options.mode ?? 1, { validValues: [0, 1] }),
+          characteristic('TargetAirPurifierState', options.mode ?? 1, {
+            validValues: [0, 1],
+          }),
           characteristic('RotationSpeed', options.speed ?? 50, { minValue: 0, maxValue: 100, minStep: 1 }),
         ],
       })
@@ -897,7 +1029,9 @@ describe('HAP light and climate manage modals', () => {
 
       component.setTargetState(1, mouseEvent())
 
-      expect(writesTo(service)).toEqual([{ type: 'Active', value: 1 }])
+      expect(writesTo(service)).toEqual([
+        { type: 'Active', value: 1 },
+      ])
     })
 
     it('writes a boolean to On when that is all there is', () => {
@@ -906,7 +1040,9 @@ describe('HAP light and climate manage modals', () => {
 
       component.setTargetState(1, mouseEvent())
 
-      expect(writesTo(service)).toEqual([{ type: 'On', value: true }])
+      expect(writesTo(service)).toEqual([
+        { type: 'On', value: true },
+      ])
     })
 
     it('writes the auto or manual choice to TargetAirPurifierState', () => {
@@ -915,7 +1051,9 @@ describe('HAP light and climate manage modals', () => {
 
       component.setTargetMode(0, mouseEvent())
 
-      expect(writesTo(service)).toEqual([{ type: 'TargetAirPurifierState', value: 0 }])
+      expect(writesTo(service)).toEqual([
+        { type: 'TargetAirPurifierState', value: 0 },
+      ])
     })
 
     it('switches the purifier on when the speed is raised off zero', async () => {
@@ -988,8 +1126,18 @@ describe('HAP light and climate manage modals', () => {
     })
 
     it.each([
-      ['one reporting Active', () => purifier({ active: 1, speed: 50 }), () => purifier({ active: 0, mode: 0, speed: 20 }), 0],
-      ['one reporting On', () => onOffPurifier(true, 50), () => onOffPurifier(false, 20), 0],
+      [
+        'one reporting Active',
+        () => purifier({ active: 1, speed: 50 }),
+        () => purifier({ active: 0, mode: 0, speed: 20 }),
+        0,
+      ],
+      [
+        'one reporting On',
+        () => onOffPurifier(true, 50),
+        () => onOffPurifier(false, 20),
+        0,
+      ],
     ])('follows a change made elsewhere on %s', (_case, initial, changed, expectedState) => {
       const component = create(AirPurifierManageComponent, initial())
 

@@ -117,7 +117,9 @@ export class ConfigService {
       this.homebridgeConfig.bridge = {} as this['homebridgeConfig']['bridge']
     }
 
-    this.ui = Array.isArray(this.homebridgeConfig.platforms) ? this.homebridgeConfig.platforms.find(x => x.platform === 'config') : undefined as any
+    this.ui = Array.isArray(this.homebridgeConfig.platforms)
+      ? this.homebridgeConfig.platforms.find(x => x.platform === 'config')
+      : undefined as any
 
     if (!this.ui) {
       this.ui = {
@@ -138,7 +140,9 @@ export class ConfigService {
     }
 
     if (!this.ui.sessionTimeout) {
-      this.ui.sessionTimeout = this.ui.auth === 'none' ? 1296000 : 28800
+      this.ui.sessionTimeout = this.ui.auth === 'none'
+        ? 1296000
+        : 28800
     }
 
     if (this.ui.scheduledBackupPath) {
@@ -172,7 +176,9 @@ export class ConfigService {
         homebridgeVersion: this.homebridgeVersion || null,
         homebridgeInstanceName: this.homebridgeConfig.bridge.name,
         instanceId: this.instanceId,
-        lang: this.ui.lang === 'auto' ? null : this.ui.lang,
+        lang: this.ui.lang === 'auto'
+          ? null
+          : this.ui.lang,
         packageName: this.package.name,
         packageVersion: this.package.version,
         platform: platform(),

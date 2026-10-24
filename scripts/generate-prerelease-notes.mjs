@@ -16,7 +16,9 @@ function git(...args) {
 
 function tags(pattern) {
   const output = git('tag', '--merged', 'HEAD', '--list', pattern, '--sort=-version:refname')
-  return output ? output.split('\n') : []
+  return output
+    ? output.split('\n')
+    : []
 }
 
 function escapeRegExp(value) {
@@ -58,7 +60,9 @@ if (!cumulativeNotes) {
 const previousPrerelease = tags(`v${baseVersion}-${releaseType}.*`).find(tag => tag !== currentTag)
 const previousStable = tags('v[0-9]*.[0-9]*.[0-9]*').find(tag => !tag.includes('-'))
 const comparisonTag = previousPrerelease || previousStable
-const range = comparisonTag ? `${comparisonTag}..HEAD` : 'HEAD'
+const range = comparisonTag
+  ? `${comparisonTag}..HEAD`
+  : 'HEAD'
 const rawCommits = git('log', range, '--format=%h%x09%s')
 const repository = process.env.GITHUB_REPOSITORY || 'homebridge/homebridge-config-ui-x'
 const serverUrl = process.env.GITHUB_SERVER_URL || 'https://github.com'
@@ -68,7 +72,9 @@ const commitNotes = rawCommits
       return `- ${subjectParts.join('\t')} ([\`${hash}\`](${serverUrl}/${repository}/commit/${hash}))`
     }).join('\n')
   : '- No additional commits since the previous test release.'
-const releaseLabel = releaseType === 'beta' ? 'beta' : 'alpha'
+const releaseLabel = releaseType === 'beta'
+  ? 'beta'
+  : 'alpha'
 const comparisonHeading = comparisonTag
   ? `Changes since ${comparisonTag}`
   : 'Changes in this test release'
@@ -93,4 +99,6 @@ ${commitNotes}${comparisonLink}${cumulativeSection}
 `
 
 writeFileSync(outputPath, notes)
-console.log(`Generated ${outputPath} using ${comparisonTag || 'the complete history'}${cumulativeNotes ? ` and the v${baseVersion} pending changelog section` : ''}.`)
+console.log(`Generated ${outputPath} using ${comparisonTag || 'the complete history'}${cumulativeNotes
+  ? ` and the v${baseVersion} pending changelog section`
+  : ''}.`)
