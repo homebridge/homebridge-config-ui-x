@@ -120,7 +120,10 @@ const names = [...icons].sort()
 
 const fonts = ['fa-solid-900.woff2', 'fa-regular-400.woff2', 'fa-brands-400.woff2']
 const before = Object.fromEntries(
-  fonts.map(f => [f, fileSize(resolve(faWebfontsDir, f))]),
+  fonts.map(f => [
+    f,
+    fileSize(resolve(faWebfontsDir, f)),
+  ]),
 )
 
 // Feed the same name list to every family; fontawesome-subset only emits an

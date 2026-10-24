@@ -20,7 +20,9 @@ import { ColourService } from '@/app/core/utilities/colour.service'
  */
 export const LIGHTBULB_ADAPTIVE_LIGHTING = new InjectionToken<Signal<boolean> | undefined>(
   'LightbulbAdaptiveLighting',
-  { factory: () => undefined },
+  {
+    factory: () => undefined,
+  },
 )
 
 @Component({

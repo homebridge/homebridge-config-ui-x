@@ -177,7 +177,9 @@ export class StatusService {
       // unit by magnitude - no cpu runs at 1000°C, and a millidegrees reading is
       // never within 1°C of zero in practice. The comparison ignores the sign so
       // a sub-zero millidegrees reading is not mistaken for degrees (#2896)
-      const cpuTemp = Math.abs(tempValue) >= 1000 ? tempValue / 1000 : tempValue
+      const cpuTemp = Math.abs(tempValue) >= 1000
+        ? tempValue / 1000
+        : tempValue
       return {
         main: cpuTemp,
         cores: [],
@@ -447,7 +449,9 @@ export class StatusService {
     }
 
     const defaultInterfaceName = await networkInterfaceDefault()
-    const defaultInterface = defaultInterfaceName ? (await networkInterfaces()).find(x => x.iface === defaultInterfaceName) : undefined
+    const defaultInterface = defaultInterfaceName
+      ? (await networkInterfaces()).find(x => x.iface === defaultInterfaceName)
+      : undefined
 
     if (defaultInterface) {
       this.statusCache.set('defaultInterface', defaultInterface)
@@ -868,7 +872,9 @@ export class StatusService {
         latestReleaseBody = rawRelease?.body || ''
       }
     } catch (error) {
-      console.error('Failed to fetch Docker details:', error instanceof Error ? error.message : error)
+      console.error('Failed to fetch Docker details:', error instanceof Error
+        ? error.message
+        : error)
     }
 
     return {
@@ -937,7 +943,9 @@ export class StatusService {
 
       return { releases, rawReleases: data }
     } catch (error) {
-      console.error('Failed to fetch docker-homebridge releases:', error instanceof Error ? error.message : error)
+      console.error('Failed to fetch docker-homebridge releases:', error instanceof Error
+        ? error.message
+        : error)
       return { releases: [], rawReleases: [] }
     }
   }

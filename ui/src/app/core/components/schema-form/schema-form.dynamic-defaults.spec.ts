@@ -87,7 +87,9 @@ describe('schemaFormComponent dynamicDefaults', () => {
 
   function create(data: any, useSchema: any = schema) {
     TestBed.resetTestingModule()
-    settings = makeSettings({ env: { lang: 'en' } })
+    settings = makeSettings({
+      env: { lang: 'en' },
+    })
 
     TestBed.configureTestingModule({
       imports: [SchemaFormComponent],
@@ -196,7 +198,12 @@ describe('schemaFormComponent dynamicDefaults', () => {
     }
 
     beforeEach(() => {
-      create({ name: 'My Plugin', devices: [{ label: 'first' }] }, arraySchema)
+      create({
+        name: 'My Plugin',
+        devices: [
+          { label: 'first' },
+        ],
+      }, arraySchema)
     })
 
     it('generates a uuid for an existing item that is missing one', () => {

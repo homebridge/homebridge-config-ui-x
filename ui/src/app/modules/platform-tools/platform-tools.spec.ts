@@ -59,7 +59,9 @@ describe('the platform tools pages', () => {
     TestBed.resetTestingModule()
     api = fakeApi()
     md = {
-      detect: { mobile: () => isMobile },
+      detect: {
+        mobile: () => isMobile,
+      },
       disableTouchMove: vi.fn(),
       enableTouchMove: vi.fn(),
     }
@@ -76,14 +78,21 @@ describe('the platform tools pages', () => {
         { provide: MobileDetectService, useValue: md },
         {
           provide: ActivatedRoute,
-          useValue: { data: of({ startupScript: { script: options.script ?? '#!/bin/sh\n\necho hello' } }) },
+          useValue: {
+            data: of({
+              startupScript: { script: options.script ?? '#!/bin/sh\n\necho hello' },
+            }),
+          },
         },
       ],
     })
 
     // The startup script page renders a Monaco editor; the rest are static
     TestBed.overrideComponent(type as any, {
-      set: { imports: [TranslatePipe], schemas: [NO_ERRORS_SCHEMA] },
+      set: {
+        imports: [TranslatePipe],
+        schemas: [NO_ERRORS_SCHEMA],
+      },
     })
 
     navigate = vi.fn(async () => true)
@@ -315,7 +324,9 @@ describe('the platform tools pages', () => {
             editorValue = value
           },
         }),
-        getAction: () => ({ run: vi.fn() }),
+        getAction: () => ({
+          run: vi.fn(),
+        }),
         // Called on teardown, so without it every following test in this block
         // fails during cleanup rather than on its own assertion
         dispose: vi.fn(),
@@ -438,7 +449,11 @@ describe('the platform tools pages', () => {
        */
       function viewportHeight(height: number) {
         Object.defineProperty(window, 'visualViewport', {
-          value: { height, addEventListener: vi.fn(), removeEventListener: vi.fn() },
+          value: {
+            height,
+            addEventListener: vi.fn(),
+            removeEventListener: vi.fn(),
+          },
           configurable: true,
         })
         Object.defineProperty(window, 'innerHeight', { value: 800, configurable: true, writable: true })

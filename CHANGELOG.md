@@ -26,12 +26,13 @@ All notable changes to `homebridge-config-ui-x` will be documented in this file.
 - feat(plugins): add better support for plugins in a monorepo (#3045) (@rygine)
 - ci: update github actions to their latest versions (#3071)
 - fix(hb-service): stop the macos installer failing when npm's path has spaces or shell characters (#3026) (@smitty078)
+- chore(deps): dependency updates + code fixes
 
 ### Homebridge Dependencies
 
-- `@homebridge/hap-client` @ `v5.3.0`
-- `@homebridge/node-pty-prebuilt-multiarch` @ `v0.14.1`
-- `@homebridge/plugin-ui-utils` @ `v2.2.6`
+- `@homebridge/hap-client` @ `v5.4.0`
+- `@homebridge/node-pty-prebuilt-multiarch` @ `v0.15.0`
+- `@homebridge/plugin-ui-utils` @ `v2.2.7`
 
 ## v5.29.0 (2026-08-31)
 

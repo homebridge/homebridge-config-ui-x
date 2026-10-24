@@ -102,14 +102,18 @@ export class ManualConfigComponent implements OnInit, OnDestroy {
 
   // 6. Computed
   public readonly arrayKey = computed(() =>
-    this.pluginType() === 'accessory' ? 'accessories' : 'platforms',
+    this.pluginType() === 'accessory'
+      ? 'accessories'
+      : 'platforms',
   )
 
   // 7. Lifecycle
   public ngOnInit(): void {
     this.editorOptions = {
       language: 'json',
-      theme: this.$settings.actualLightingMode === 'dark' ? 'vs-dark' : 'vs-light',
+      theme: this.$settings.actualLightingMode === 'dark'
+        ? 'vs-dark'
+        : 'vs-light',
     }
 
     // Initialize validation properties
@@ -205,10 +209,13 @@ export class ManualConfigComponent implements OnInit, OnDestroy {
       return
     }
 
-    this.pluginConfig.update(current => [...current, {
-      [this.pluginType()!]: this.pluginAlias(),
-      name: this.pluginAlias(),
-    }])
+    this.pluginConfig.update(current => [
+      ...current,
+      {
+        [this.pluginType()!]: this.pluginAlias(),
+        name: this.pluginAlias(),
+      },
+    ])
 
     this.editBlock((this.pluginConfig().length - 1))
   }
@@ -421,7 +428,9 @@ export class ManualConfigComponent implements OnInit, OnDestroy {
             type: 'string',
             title: 'Platform Name',
             description: 'This is used by Homebridge to identify which plugin this platform belongs to.',
-            not: { enum: ['config'] },
+            not: {
+              enum: ['config'],
+            },
           },
           name: {
             type: 'string',

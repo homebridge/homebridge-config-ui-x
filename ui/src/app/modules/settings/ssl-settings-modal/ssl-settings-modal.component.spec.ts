@@ -32,7 +32,9 @@ describe('sslSettingsModalComponent', () => {
   async function open(ssl: EnvInterface['ssl'] = {}): Promise<SslSettingsModalComponent> {
     TestBed.resetTestingModule()
     api = fakeApi()
-    settings = makeSettings({ env: { ssl } })
+    settings = makeSettings({
+      env: { ssl },
+    })
     toastr = toastrStub()
     activeModal = activeModalStub()
 
@@ -62,7 +64,9 @@ describe('sslSettingsModalComponent', () => {
    * @param files - the selected files, if any
    */
   function fileEvent(files: File[]): Event {
-    return { target: { files } } as unknown as Event
+    return {
+      target: { files },
+    } as unknown as Event
   }
 
   describe('working out the current mode', () => {
@@ -148,10 +152,14 @@ describe('sslSettingsModalComponent', () => {
       modal.sslModeControl.setValue('keycert')
       expect(modal.isFormInvalid()).toBe(true)
 
-      modal.onKeyChange(fileEvent([makeFile('key.pem')]))
+      modal.onKeyChange(fileEvent([
+        makeFile('key.pem'),
+      ]))
       expect(modal.isFormInvalid()).toBe(true)
 
-      modal.onCertChange(fileEvent([makeFile('cert.pem')]))
+      modal.onCertChange(fileEvent([
+        makeFile('cert.pem'),
+      ]))
       expect(modal.isFormInvalid()).toBe(false)
     })
 
@@ -167,7 +175,9 @@ describe('sslSettingsModalComponent', () => {
       modal.sslModeControl.setValue('pfx')
       expect(modal.isFormInvalid()).toBe(true)
 
-      modal.onPfxChange(fileEvent([makeFile('cert.pfx')]))
+      modal.onPfxChange(fileEvent([
+        makeFile('cert.pfx'),
+      ]))
 
       // A pfx without a passphrase is legal, so an empty one cannot block save
       expect(modal.isFormInvalid()).toBe(false)
@@ -176,7 +186,9 @@ describe('sslSettingsModalComponent', () => {
     it('goes back to invalid when a chosen file is cleared', async () => {
       const modal = await open()
       modal.sslModeControl.setValue('pfx')
-      modal.onPfxChange(fileEvent([makeFile('cert.pfx')]))
+      modal.onPfxChange(fileEvent([
+        makeFile('cert.pfx'),
+      ]))
 
       modal.onPfxChange(fileEvent([]))
 
@@ -199,7 +211,9 @@ describe('sslSettingsModalComponent', () => {
 
       // Replacing the certificate does not alter any text field, so without the
       // pending-file checks this would look like nothing had happened
-      modal.onCertChange(fileEvent([makeFile('newer-cert.pem')]))
+      modal.onCertChange(fileEvent([
+        makeFile('newer-cert.pem'),
+      ]))
 
       expect(modal.isUnchanged()).toBe(false)
     })
@@ -299,7 +313,9 @@ describe('sslSettingsModalComponent', () => {
 
     it('writes no config at all when generating fails', async () => {
       const modal = await open()
-      api.fail('post', '/server/ssl/selfsigned/generate', { error: { message: 'openssl missing' } })
+      api.fail('post', '/server/ssl/selfsigned/generate', {
+        error: { message: 'openssl missing' },
+      })
       modal.sslModeControl.setValue('selfsigned')
 
       await modal.saveConfiguration()
@@ -318,8 +334,12 @@ describe('sslSettingsModalComponent', () => {
       const modal = await open()
       api.respond('post', '/server/ssl/keycert', { keyPath: '/up/key.pem', certPath: '/up/cert.pem' })
       modal.sslModeControl.setValue('keycert')
-      modal.onKeyChange(fileEvent([makeFile('key.pem')]))
-      modal.onCertChange(fileEvent([makeFile('cert.pem')]))
+      modal.onKeyChange(fileEvent([
+        makeFile('key.pem'),
+      ]))
+      modal.onCertChange(fileEvent([
+        makeFile('cert.pem'),
+      ]))
 
       await modal.saveConfiguration()
 
@@ -332,8 +352,12 @@ describe('sslSettingsModalComponent', () => {
       const modal = await open()
       api.respond('post', '/server/ssl/keycert', { keyPath: '/up/key.pem', certPath: '/up/cert.pem' })
       modal.sslModeControl.setValue('keycert')
-      modal.onKeyChange(fileEvent([makeFile('key.pem')]))
-      modal.onCertChange(fileEvent([makeFile('cert.pem')]))
+      modal.onKeyChange(fileEvent([
+        makeFile('key.pem'),
+      ]))
+      modal.onCertChange(fileEvent([
+        makeFile('cert.pem'),
+      ]))
 
       await modal.saveConfiguration()
 
@@ -347,7 +371,9 @@ describe('sslSettingsModalComponent', () => {
 
     it('refuses to upload one half of a pair', async () => {
       const modal = await open({ key: '/etc/key.pem', cert: '/etc/cert.pem' })
-      modal.onKeyChange(fileEvent([makeFile('newer-key.pem')]))
+      modal.onKeyChange(fileEvent([
+        makeFile('newer-key.pem'),
+      ]))
 
       await modal.saveConfiguration()
 
@@ -375,8 +401,12 @@ describe('sslSettingsModalComponent', () => {
       const modal = await open()
       api.respond('post', '/server/ssl/keycert', { keyPath: '/up/key.pem', certPath: '/up/cert.pem' })
       modal.sslModeControl.setValue('keycert')
-      modal.onKeyChange(fileEvent([makeFile('key.pem')]))
-      modal.onCertChange(fileEvent([makeFile('cert.pem')]))
+      modal.onKeyChange(fileEvent([
+        makeFile('key.pem'),
+      ]))
+      modal.onCertChange(fileEvent([
+        makeFile('cert.pem'),
+      ]))
 
       await modal.saveConfiguration()
 
@@ -391,7 +421,9 @@ describe('sslSettingsModalComponent', () => {
       const modal = await open()
       api.respond('post', '/server/ssl/pfx', { pfxPath: '/up/cert.pfx' })
       modal.sslModeControl.setValue('pfx')
-      modal.onPfxChange(fileEvent([makeFile('cert.pfx')]))
+      modal.onPfxChange(fileEvent([
+        makeFile('cert.pfx'),
+      ]))
       modal.passphraseControl.setValue('hunter2')
 
       await modal.saveConfiguration()
@@ -407,7 +439,9 @@ describe('sslSettingsModalComponent', () => {
       const modal = await open({ key: '/etc/key.pem', cert: '/etc/cert.pem' })
       api.respond('post', '/server/ssl/pfx', { pfxPath: '/up/cert.pfx' })
       modal.sslModeControl.setValue('pfx')
-      modal.onPfxChange(fileEvent([makeFile('cert.pfx')]))
+      modal.onPfxChange(fileEvent([
+        makeFile('cert.pfx'),
+      ]))
       modal.passphraseControl.setValue('hunter2')
 
       await modal.saveConfiguration()
@@ -423,9 +457,13 @@ describe('sslSettingsModalComponent', () => {
 
     it('writes no config when the bundle is rejected', async () => {
       const modal = await open()
-      api.fail('post', '/server/ssl/pfx', { error: { message: 'wrong passphrase' } })
+      api.fail('post', '/server/ssl/pfx', {
+        error: { message: 'wrong passphrase' },
+      })
       modal.sslModeControl.setValue('pfx')
-      modal.onPfxChange(fileEvent([makeFile('cert.pfx')]))
+      modal.onPfxChange(fileEvent([
+        makeFile('cert.pfx'),
+      ]))
 
       await modal.saveConfiguration()
 

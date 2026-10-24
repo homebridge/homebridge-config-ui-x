@@ -34,10 +34,15 @@ describe('childBridgeStatusIconsComponent', () => {
     // Reset here rather than in beforeEach: one test renders twice, to cover
     // both spellings of a disabled HAP bridge in a single assertion block.
     TestBed.resetTestingModule()
-    settings = makeSettings({ env: { featureFlags } })
+    settings = makeSettings({
+      env: { featureFlags },
+    })
     TestBed.configureTestingModule({
       imports: [ChildBridgeStatusIconsComponent],
-      providers: [...provideFakes({ settings }), provideTestTranslate()],
+      providers: [
+        ...provideFakes({ settings }),
+        provideTestTranslate(),
+      ],
     })
     const fixture = TestBed.createComponent(ChildBridgeStatusIconsComponent)
     fixture.componentRef.setInput('bridge', bridge)
@@ -53,17 +58,26 @@ describe('childBridgeStatusIconsComponent', () => {
    */
   function classesOf(fixture: ReturnType<typeof render>, which: 'hap' | 'matter'): string[] {
     const el = fixture.nativeElement.querySelector(`.fa-${which}`)
-    return el ? [...el.classList] : []
+    return el
+      ? [...el.classList]
+      : []
   }
 
   it('shows a running bridge in green on both protocols', () => {
-    const fixture = render({ status: HomebridgeStatus.OK, matterConfig: { enabled: true } })
+    const fixture = render({
+      status: HomebridgeStatus.OK,
+      matterConfig: { enabled: true },
+    })
     expect(classesOf(fixture, 'hap')).toContain('green-text')
     expect(classesOf(fixture, 'matter')).toContain('green-text')
   })
 
   it('shows a restarting bridge in amber, not green or red', () => {
-    const fixture = render({ status: HomebridgeStatus.OK, restarting: true, matterConfig: { enabled: true } })
+    const fixture = render({
+      status: HomebridgeStatus.OK,
+      restarting: true,
+      matterConfig: { enabled: true },
+    })
     expect(classesOf(fixture, 'hap')).toContain('text-warning')
     expect(classesOf(fixture, 'hap')).not.toContain('green-text')
     expect(classesOf(fixture, 'hap')).not.toContain('red-text')
@@ -76,13 +90,19 @@ describe('childBridgeStatusIconsComponent', () => {
   })
 
   it('shows a down bridge in red', () => {
-    const fixture = render({ status: HomebridgeStatus.DOWN, matterConfig: { enabled: true } })
+    const fixture = render({
+      status: HomebridgeStatus.DOWN,
+      matterConfig: { enabled: true },
+    })
     expect(classesOf(fixture, 'hap')).toContain('red-text')
     expect(classesOf(fixture, 'matter')).toContain('red-text')
   })
 
   it('mutes HAP when disabled, in both the legacy boolean and object spellings', () => {
-    for (const hap of [false as const, { enabled: false }]) {
+    for (const hap of [
+      false as const,
+      { enabled: false },
+    ]) {
       const fixture = render({ status: HomebridgeStatus.OK, hap })
       expect(classesOf(fixture, 'hap')).toContain('grey-text')
       expect(classesOf(fixture, 'hap')).toContain('opacity-muted')
@@ -91,13 +111,20 @@ describe('childBridgeStatusIconsComponent', () => {
   })
 
   it('ignores a disabled HAP flag when the runtime does not support disabling', () => {
-    const fixture = render({ status: HomebridgeStatus.OK, hap: { enabled: false } }, { matterSupport: true })
+    const fixture = render({
+      status: HomebridgeStatus.OK,
+      hap: { enabled: false },
+    }, { matterSupport: true })
     expect(classesOf(fixture, 'hap')).toContain('green-text')
     expect(classesOf(fixture, 'hap')).not.toContain('opacity-muted')
   })
 
   it('marks externals-only with the info colour rather than green', () => {
-    const fixture = render({ status: HomebridgeStatus.OK, hap: { externalsOnly: true }, matterConfig: { enabled: true, externalsOnly: true } })
+    const fixture = render({
+      status: HomebridgeStatus.OK,
+      hap: { externalsOnly: true },
+      matterConfig: { enabled: true, externalsOnly: true },
+    })
     expect(classesOf(fixture, 'hap')).toContain('text-info')
     expect(classesOf(fixture, 'hap')).not.toContain('green-text')
     expect(classesOf(fixture, 'matter')).toContain('text-info')
@@ -110,7 +137,10 @@ describe('childBridgeStatusIconsComponent', () => {
   })
 
   it('omits the Matter icon entirely when the runtime does not support Matter', () => {
-    const fixture = render({ status: HomebridgeStatus.OK, matterConfig: { enabled: true } }, { hapBridgeDisable: true })
+    const fixture = render({
+      status: HomebridgeStatus.OK,
+      matterConfig: { enabled: true },
+    }, { hapBridgeDisable: true })
     expect(fixture.nativeElement.querySelector('.fa-matter')).toBeNull()
     expect(fixture.nativeElement.querySelector('.fa-hap')).not.toBeNull()
   })

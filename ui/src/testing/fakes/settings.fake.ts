@@ -135,7 +135,9 @@ export function makeSettings(overrides: MakeSettingsOverrides = {}): FakeSetting
   settings.isFeatureEnabled = vi.fn((featureKey: string) => settings.env.featureFlags?.[featureKey] ?? false)
 
   settings.getEffectiveTerminalLightingMode = vi.fn(() => (
-    settings.actualLightingMode === 'dark' ? 'dark' : settings.env.terminal?.lightingMode || 'dark'
+    settings.actualLightingMode === 'dark'
+      ? 'dark'
+      : settings.env.terminal?.lightingMode || 'dark'
   ))
 
   return Object.assign(settings, rest)

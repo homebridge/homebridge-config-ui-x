@@ -27,7 +27,10 @@ describe('the platform tools routes', () => {
    * @param routes - the routes to walk
    */
   function flatten(routes: Route[]): Route[] {
-    return routes.flatMap(route => [route, ...flatten(route.children ?? [])])
+    return routes.flatMap(route => [
+      route,
+      ...flatten(route.children ?? []),
+    ])
   }
 
   const allRoutes = flatten(PLATFORM_TOOLS_ROUTES)
@@ -73,7 +76,9 @@ describe('the platform tools routes', () => {
   describe('where an empty path goes', () => {
     it.each(['', 'docker', 'linux'])('sends %s back to the dashboard', (path) => {
       // These sections have no landing page of their own
-      const route = path === '' ? PLATFORM_TOOLS_ROUTES[0] : routeFor(path).children![0]
+      const route = path === ''
+        ? PLATFORM_TOOLS_ROUTES[0]
+        : routeFor(path).children![0]
 
       expect(route.redirectTo).toBe('/')
       expect(route.pathMatch).toBe('full')
@@ -96,13 +101,17 @@ describe('the platform tools routes', () => {
      */
     function canLeave(component: any, nextUrl?: string) {
       const guard = routeFor('terminal').canDeactivate![0] as any
-      return guard(component, null, null, nextUrl === undefined ? undefined : { url: nextUrl })
+      return guard(component, null, null, nextUrl === undefined
+        ? undefined
+        : { url: nextUrl })
     }
 
     it('asks the terminal, and tells it where the user is going', () => {
       // The terminal only warns for some destinations - it does not prompt when
       // the user is only moving between tabs of the same page
-      const component = { canDeactivate: vi.fn().mockReturnValue(true) }
+      const component = {
+        canDeactivate: vi.fn().mockReturnValue(true),
+      }
 
       canLeave(component, '/plugins')
 
@@ -110,23 +119,31 @@ describe('the platform tools routes', () => {
     })
 
     it('lets the user leave when the terminal is happy', () => {
-      expect(canLeave({ canDeactivate: () => true }, '/plugins')).toBe(true)
+      expect(canLeave({
+        canDeactivate: () => true,
+      }, '/plugins')).toBe(true)
     })
 
     it('holds the user on the page when the terminal is not', () => {
       // A running command would otherwise be killed without a word
-      expect(canLeave({ canDeactivate: () => false }, '/plugins')).toBe(false)
+      expect(canLeave({
+        canDeactivate: () => false,
+      }, '/plugins')).toBe(false)
     })
 
     it('passes on whatever the terminal answers, prompt included', () => {
       // The real component returns a promise from a confirmation modal
       const answer = Promise.resolve(true)
 
-      expect(canLeave({ canDeactivate: () => answer }, '/plugins')).toBe(answer)
+      expect(canLeave({
+        canDeactivate: () => answer,
+      }, '/plugins')).toBe(answer)
     })
 
     it('copes with the router not knowing the next url', () => {
-      const component = { canDeactivate: vi.fn().mockReturnValue(true) }
+      const component = {
+        canDeactivate: vi.fn().mockReturnValue(true),
+      }
 
       canLeave(component, undefined)
 

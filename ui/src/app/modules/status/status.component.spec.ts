@@ -42,7 +42,15 @@ describe('statusComponent', () => {
    * @param overrides - fields to change
    */
   function widget(component: string, overrides: Record<string, any> = {}) {
-    return { x: 0, y: 0, cols: 5, rows: 5, component, mobileOrder: 0, ...overrides }
+    return {
+      x: 0,
+      y: 0,
+      cols: 5,
+      rows: 5,
+      component,
+      mobileOrder: 0,
+      ...overrides,
+    }
   }
 
   /**
@@ -76,7 +84,10 @@ describe('statusComponent', () => {
     ws = fakeWs()
     io = ws.namespace('status', { connected: options.connected ?? true })
     modal = modalServiceSpy()
-    navigationGuard = { canDeactivate: vi.fn(async () => true), handleBeforeUnload: vi.fn(() => 'stay') }
+    navigationGuard = {
+      canDeactivate: vi.fn(async () => true),
+      handleBeforeUnload: vi.fn(() => 'stay'),
+    }
 
     io.socket.respondTo('get-dashboard-init', options.failLoad
       ? { error: 'no layout' }
@@ -87,14 +98,25 @@ describe('statusComponent', () => {
       providers: [
         provideRouter([]),
         provideTestTranslate(),
-        provideFakes({ settings, toastr, ws, modal, auth: makeAuth({ user: { admin: options.admin ?? true } }) }),
+        provideFakes({
+          settings,
+          toastr,
+          ws,
+          modal,
+          auth: makeAuth({
+            user: { admin: options.admin ?? true },
+          }),
+        }),
         { provide: TerminalNavigationGuardService, useValue: navigationGuard },
       ],
     })
 
     // The grid is gridster's, and every widget has its own spec
     TestBed.overrideComponent(StatusComponent, {
-      set: { imports: [TranslatePipe], schemas: [NO_ERRORS_SCHEMA] },
+      set: {
+        imports: [TranslatePipe],
+        schemas: [NO_ERRORS_SCHEMA],
+      },
     })
 
     notification = TestBed.inject(NotificationService)
@@ -133,7 +155,12 @@ describe('statusComponent', () => {
     })
 
     it('asks the socket for the saved layout', async () => {
-      const page = await open({ layout: [widget('CpuWidgetComponent'), widget('MemoryWidgetComponent')] })
+      const page = await open({
+        layout: [
+          widget('CpuWidgetComponent'),
+          widget('MemoryWidgetComponent'),
+        ],
+      })
 
       expect(page.dashboard().map(item => item.component)).toEqual(['CpuWidgetComponent', 'MemoryWidgetComponent'])
     })
@@ -161,7 +188,12 @@ describe('statusComponent', () => {
     })
 
     it('loads the layout on the connect that arrives late', async () => {
-      const page = await open({ connected: false, layout: [widget('CpuWidgetComponent')] })
+      const page = await open({
+        connected: false,
+        layout: [
+          widget('CpuWidgetComponent'),
+        ],
+      })
 
       io.markConnected()
       for (let tick = 0; tick < 10; tick += 1) {
@@ -175,7 +207,11 @@ describe('statusComponent', () => {
       const page = await open({ failLoad: true })
       expect(toastr.at('error')).toHaveLength(1)
 
-      io.socket.respondTo('get-dashboard-init', { layout: [widget('CpuWidgetComponent')] })
+      io.socket.respondTo('get-dashboard-init', {
+        layout: [
+          widget('CpuWidgetComponent'),
+        ],
+      })
       io.markConnected()
       for (let tick = 0; tick < 10; tick += 1) {
         await Promise.resolve()
@@ -187,7 +223,11 @@ describe('statusComponent', () => {
     })
 
     it('does not reload the layout on a reconnect', async () => {
-      await open({ layout: [widget('CpuWidgetComponent')] })
+      await open({
+        layout: [
+          widget('CpuWidgetComponent'),
+        ],
+      })
 
       io.markConnected()
       for (let tick = 0; tick < 10; tick += 1) {
@@ -200,7 +240,9 @@ describe('statusComponent', () => {
     })
 
     it('raises the raspberry pi throttle warning', async () => {
-      await open({ rpiThrottled: { UnderVoltage: true } })
+      await open({
+        rpiThrottled: { UnderVoltage: true },
+      })
 
       expect(notification.raspberryPiThrottled()).toEqual({ UnderVoltage: true })
     })
@@ -226,7 +268,11 @@ describe('statusComponent', () => {
 
   describe('unlocking the grid', () => {
     it('starts locked', async () => {
-      const page = await open({ layout: [widget('CpuWidgetComponent')] })
+      const page = await open({
+        layout: [
+          widget('CpuWidgetComponent'),
+        ],
+      })
 
       // A dashboard that rearranges itself on a stray drag is worse than one
       // that needs a button pressed first
@@ -235,7 +281,11 @@ describe('statusComponent', () => {
     })
 
     it('allows dragging and resizing when unlocked', async () => {
-      const page = await open({ layout: [widget('CpuWidgetComponent')] })
+      const page = await open({
+        layout: [
+          widget('CpuWidgetComponent'),
+        ],
+      })
 
       page.unlockLayout()
 
@@ -244,7 +294,11 @@ describe('statusComponent', () => {
     })
 
     it('marks the widgets undraggable again when locked', async () => {
-      const page = await open({ layout: [widget('CpuWidgetComponent')] })
+      const page = await open({
+        layout: [
+          widget('CpuWidgetComponent'),
+        ],
+      })
       page.unlockLayout()
       expect(page.dashboard()[0].draggable).toBe(true)
 
@@ -257,7 +311,11 @@ describe('statusComponent', () => {
     })
 
     it('does not write the layout just for locking', async () => {
-      const page = await open({ layout: [widget('CpuWidgetComponent')] })
+      const page = await open({
+        layout: [
+          widget('CpuWidgetComponent'),
+        ],
+      })
       page.unlockLayout()
 
       page.lockLayout()
@@ -270,7 +328,10 @@ describe('statusComponent', () => {
     it('saves a reorder in progress rather than discarding it', async () => {
       vi.useFakeTimers()
       const page = await open({
-        layout: [widget('CpuWidgetComponent'), widget('MemoryWidgetComponent', { mobileOrder: 1 })],
+        layout: [
+          widget('CpuWidgetComponent'),
+          widget('MemoryWidgetComponent', { mobileOrder: 1 }),
+        ],
       })
       page.unlockLayout()
       page.toggleReorderMode()
@@ -287,7 +348,11 @@ describe('statusComponent', () => {
 
   describe('saving the layout', () => {
     it('strips the private event streams before sending', async () => {
-      const page = await open({ layout: [widget('CpuWidgetComponent')] })
+      const page = await open({
+        layout: [
+          widget('CpuWidgetComponent'),
+        ],
+      })
 
       page.saveWidgetsEvent.next(undefined)
       await Promise.resolve()
@@ -318,7 +383,11 @@ describe('statusComponent', () => {
     })
 
     it('saves when a widget asks it to', async () => {
-      const page = await open({ layout: [widget('AccessoriesWidgetComponent')] })
+      const page = await open({
+        layout: [
+          widget('AccessoriesWidgetComponent'),
+        ],
+      })
 
       page.saveWidgetsEvent.next(undefined)
       await Promise.resolve()
@@ -329,7 +398,11 @@ describe('statusComponent', () => {
     })
 
     it('keeps going when the save is refused', async () => {
-      const page = await open({ layout: [widget('CpuWidgetComponent')] })
+      const page = await open({
+        layout: [
+          widget('CpuWidgetComponent'),
+        ],
+      })
       io.socket.respondTo('set-dashboard-layout', { error: 'read only' })
 
       page.saveWidgetsEvent.next(undefined)
@@ -343,7 +416,11 @@ describe('statusComponent', () => {
 
   describe('choosing which widgets to show', () => {
     it('opens the visibility modal with the current dashboard', async () => {
-      const page = await open({ layout: [widget('CpuWidgetComponent')] })
+      const page = await open({
+        layout: [
+          widget('CpuWidgetComponent'),
+        ],
+      })
 
       const done = page.addWidget()
 
@@ -354,11 +431,22 @@ describe('statusComponent', () => {
     })
 
     it('adds a newly visible widget at the bottom', async () => {
-      const page = await open({ layout: [widget('CpuWidgetComponent', { y: 0, rows: 5 })] })
+      const page = await open({
+        layout: [
+          widget('CpuWidgetComponent', { y: 0, rows: 5 }),
+        ],
+      })
 
       const done = page.addWidget()
       modal.lastOpened()!.ref.close([
-        { component: 'MemoryWidgetComponent', showOnDesktop: true, showOnMobile: true, cols: 5, rows: 5, mobileOrder: 1 },
+        {
+          component: 'MemoryWidgetComponent',
+          showOnDesktop: true,
+          showOnMobile: true,
+          cols: 5,
+          rows: 5,
+          mobileOrder: 1,
+        },
       ])
       await done
 
@@ -369,11 +457,23 @@ describe('statusComponent', () => {
     })
 
     it('removes a widget hidden on both desktop and mobile', async () => {
-      const page = await open({ layout: [widget('CpuWidgetComponent'), widget('MemoryWidgetComponent')] })
+      const page = await open({
+        layout: [
+          widget('CpuWidgetComponent'),
+          widget('MemoryWidgetComponent'),
+        ],
+      })
 
       const done = page.addWidget()
       modal.lastOpened()!.ref.close([
-        { component: 'MemoryWidgetComponent', showOnDesktop: false, showOnMobile: false, cols: 5, rows: 5, mobileOrder: 1 },
+        {
+          component: 'MemoryWidgetComponent',
+          showOnDesktop: false,
+          showOnMobile: false,
+          cols: 5,
+          rows: 5,
+          mobileOrder: 1,
+        },
       ])
       await done
 
@@ -381,7 +481,11 @@ describe('statusComponent', () => {
     })
 
     it('keeps a widget that is hidden on only one of the two', async () => {
-      const page = await open({ layout: [widget('CpuWidgetComponent')] })
+      const page = await open({
+        layout: [
+          widget('CpuWidgetComponent'),
+        ],
+      })
 
       const done = page.addWidget()
       modal.lastOpened()!.ref.close([
@@ -403,12 +507,23 @@ describe('statusComponent', () => {
     })
 
     it('keeps the event streams of a widget when its visibility changes', async () => {
-      const page = await open({ layout: [widget('CpuWidgetComponent')] })
+      const page = await open({
+        layout: [
+          widget('CpuWidgetComponent'),
+        ],
+      })
       const before = page.dashboard()[0].$resizeEvent
 
       const done = page.addWidget()
       modal.lastOpened()!.ref.close([
-        { component: 'CpuWidgetComponent', showOnDesktop: true, showOnMobile: true, cols: 5, rows: 5, mobileOrder: 0 },
+        {
+          component: 'CpuWidgetComponent',
+          showOnDesktop: true,
+          showOnMobile: true,
+          cols: 5,
+          rows: 5,
+          mobileOrder: 0,
+        },
       ])
       await done
 
@@ -418,7 +533,11 @@ describe('statusComponent', () => {
     })
 
     it('changes nothing when the modal is dismissed', async () => {
-      const page = await open({ layout: [widget('CpuWidgetComponent')] })
+      const page = await open({
+        layout: [
+          widget('CpuWidgetComponent'),
+        ],
+      })
 
       const done = page.addWidget()
       modal.lastOpened()!.ref.dismiss('Dismiss')
@@ -431,7 +550,11 @@ describe('statusComponent', () => {
 
   describe('the settings of a single widget', () => {
     it('opens the control modal for that widget', async () => {
-      const page = await open({ layout: [widget('WeatherWidgetComponent')] })
+      const page = await open({
+        layout: [
+          widget('WeatherWidgetComponent'),
+        ],
+      })
 
       const done = page.manageWidget(page.dashboard()[0])
 
@@ -442,7 +565,11 @@ describe('statusComponent', () => {
     })
 
     it('tells the widget to re-read its configuration', async () => {
-      const page = await open({ layout: [widget('WeatherWidgetComponent')] })
+      const page = await open({
+        layout: [
+          widget('WeatherWidgetComponent'),
+        ],
+      })
       const configured = vi.fn()
       page.dashboard()[0].$configureEvent.subscribe(configured)
 
@@ -457,7 +584,11 @@ describe('statusComponent', () => {
     })
 
     it('finds the widget by component name', async () => {
-      const page = await open({ layout: [widget('WeatherWidgetComponent')] })
+      const page = await open({
+        layout: [
+          widget('WeatherWidgetComponent'),
+        ],
+      })
 
       page.manageWidgetByComponent('WeatherWidgetComponent')
 
@@ -466,7 +597,11 @@ describe('statusComponent', () => {
     })
 
     it('does nothing for a widget that is not on the dashboard', async () => {
-      const page = await open({ layout: [widget('CpuWidgetComponent')] })
+      const page = await open({
+        layout: [
+          widget('CpuWidgetComponent'),
+        ],
+      })
 
       page.manageWidgetByComponent('WeatherWidgetComponent')
 
@@ -602,8 +737,14 @@ describe('statusComponent', () => {
     })
 
     it.each([
-      ['Home', ['NetworkWidgetComponent', 'CpuWidgetComponent', 'MemoryWidgetComponent']],
-      ['ArrowLeft', ['NetworkWidgetComponent', 'CpuWidgetComponent', 'MemoryWidgetComponent']],
+      [
+        'Home',
+        ['NetworkWidgetComponent', 'CpuWidgetComponent', 'MemoryWidgetComponent'],
+      ],
+      [
+        'ArrowLeft',
+        ['NetworkWidgetComponent', 'CpuWidgetComponent', 'MemoryWidgetComponent'],
+      ],
     ])('sends the widget to the top on %s', async (key, expected) => {
       // A long dashboard would otherwise need one arrow press per position
       const page = await openThree()
@@ -616,8 +757,14 @@ describe('statusComponent', () => {
     })
 
     it.each([
-      ['End', ['MemoryWidgetComponent', 'NetworkWidgetComponent', 'CpuWidgetComponent']],
-      ['ArrowRight', ['MemoryWidgetComponent', 'NetworkWidgetComponent', 'CpuWidgetComponent']],
+      [
+        'End',
+        ['MemoryWidgetComponent', 'NetworkWidgetComponent', 'CpuWidgetComponent'],
+      ],
+      [
+        'ArrowRight',
+        ['MemoryWidgetComponent', 'NetworkWidgetComponent', 'CpuWidgetComponent'],
+      ],
     ])('sends the widget to the bottom on %s', async (key, expected) => {
       const page = await openThree()
       page.toggleReorderMode()
@@ -689,7 +836,14 @@ describe('statusComponent', () => {
       expect(preventDefault).not.toHaveBeenCalled()
     })
 
-    it.each(['ArrowUp', 'ArrowDown', 'Home', 'End', 'Tab', 'Escape'])('takes %s for itself', async (key) => {
+    it.each([
+      'ArrowUp',
+      'ArrowDown',
+      'Home',
+      'End',
+      'Tab',
+      'Escape',
+    ])('takes %s for itself', async (key) => {
       // Otherwise arrow keys scroll the page underneath and tab leaves the list
       const page = await openThree()
       page.toggleReorderMode()
@@ -786,14 +940,22 @@ describe('statusComponent', () => {
 
   describe('leaving the page with a terminal widget', () => {
     it('leaves freely when there is no terminal widget', async () => {
-      const page = await open({ layout: [widget('CpuWidgetComponent')] })
+      const page = await open({
+        layout: [
+          widget('CpuWidgetComponent'),
+        ],
+      })
 
       expect(page.canDeactivate()).toBe(true)
       expect(navigationGuard.canDeactivate).not.toHaveBeenCalled()
     })
 
     it('asks the guard when a terminal widget is on the dashboard', async () => {
-      const page = await open({ layout: [widget('TerminalWidgetComponent')] })
+      const page = await open({
+        layout: [
+          widget('TerminalWidgetComponent'),
+        ],
+      })
 
       await expect(page.canDeactivate()).resolves.toBe(true)
 
@@ -803,14 +965,22 @@ describe('statusComponent', () => {
     })
 
     it('warns before the browser tab closes on a terminal widget', async () => {
-      const page = await open({ layout: [widget('TerminalWidgetComponent')] })
+      const page = await open({
+        layout: [
+          widget('TerminalWidgetComponent'),
+        ],
+      })
       const event = new Event('beforeunload') as BeforeUnloadEvent
 
       expect(page.onBeforeUnload(event)).toBe('stay')
     })
 
     it('says nothing before the tab closes without one', async () => {
-      const page = await open({ layout: [widget('CpuWidgetComponent')] })
+      const page = await open({
+        layout: [
+          widget('CpuWidgetComponent'),
+        ],
+      })
 
       expect(page.onBeforeUnload(new Event('beforeunload') as BeforeUnloadEvent)).toBeUndefined()
       expect(navigationGuard.handleBeforeUnload).not.toHaveBeenCalled()
@@ -881,8 +1051,20 @@ describe('statusComponent', () => {
     it('announces the position of a widget being reordered', async () => {
       const page = await open({
         layout: [
-          { component: 'CpuWidgetComponent', x: 0, y: 0, cols: 2, rows: 2 },
-          { component: 'MemoryWidgetComponent', x: 2, y: 0, cols: 2, rows: 2 },
+          {
+            component: 'CpuWidgetComponent',
+            x: 0,
+            y: 0,
+            cols: 2,
+            rows: 2,
+          },
+          {
+            component: 'MemoryWidgetComponent',
+            x: 2,
+            y: 0,
+            cols: 2,
+            rows: 2,
+          },
         ],
       })
 
@@ -911,65 +1093,131 @@ describe('statusComponent', () => {
    * matter code on a homebridge without matter — are dropped instead.
    */
   describe('applying a saved layout', () => {
-    const item = (component: string) => ({ component, x: 0, y: 0, cols: 2, rows: 2 })
+    const item = (component: string) => ({
+      component,
+      x: 0,
+      y: 0,
+      cols: 2,
+      rows: 2,
+    })
 
     it('renames a widget that was renamed in an update', async () => {
-      const page = await open({ layout: [item('HomebridgeStatusWidgetComponent')] })
+      const page = await open({
+        layout: [
+          item('HomebridgeStatusWidgetComponent'),
+        ],
+      })
 
       expect(page.dashboard().map((w: any) => w.component)).toEqual(['UpdateInfoWidgetComponent'])
     })
 
     it('renames the old child bridge widget too', async () => {
-      const page = await open({ layout: [item('ChildBridgeWidgetComponent')] })
+      const page = await open({
+        layout: [
+          item('ChildBridgeWidgetComponent'),
+        ],
+      })
 
       expect(page.dashboard().map((w: any) => w.component)).toEqual(['BridgesWidgetComponent'])
     })
 
     it.each([
-      ['the terminal widget from a non-admin', 'TerminalWidgetComponent', { admin: false }],
-      ['the matter qr code when matter is off', 'MatterQrcodeWidgetComponent', { matterSupport: false }],
-      ['the accessories widget when accessory control is off', 'AccessoriesWidgetComponent', { enableAccessories: false }],
+      [
+        'the terminal widget from a non-admin',
+        'TerminalWidgetComponent',
+        { admin: false },
+      ],
+      [
+        'the matter qr code when matter is off',
+        'MatterQrcodeWidgetComponent',
+        { matterSupport: false },
+      ],
+      [
+        'the accessories widget when accessory control is off',
+        'AccessoriesWidgetComponent',
+        { enableAccessories: false },
+      ],
     ])('hides %s', async (_case, component, options) => {
       // ⚠️ A widget the user is not allowed to use must not be built at all. It
       // would render an error, or in the terminal's case put a shell on the
       // dashboard of someone with no terminal permission
-      const page = await open({ layout: [widget(component), widget('CpuWidgetComponent')], ...options })
+      const page = await open({
+        layout: [
+          widget(component),
+          widget('CpuWidgetComponent'),
+        ],
+        ...options,
+      })
 
       expect(page.dashboard().map(item => item.component)).toEqual(['CpuWidgetComponent'])
     })
 
     it.each([
-      ['the terminal widget for an admin', 'TerminalWidgetComponent', { admin: true }],
-      ['the matter qr code when matter is on', 'MatterQrcodeWidgetComponent', { matterSupport: true }],
-      ['the accessories widget when accessory control is on', 'AccessoriesWidgetComponent', { enableAccessories: true }],
+      [
+        'the terminal widget for an admin',
+        'TerminalWidgetComponent',
+        { admin: true },
+      ],
+      [
+        'the matter qr code when matter is on',
+        'MatterQrcodeWidgetComponent',
+        { matterSupport: true },
+      ],
+      [
+        'the accessories widget when accessory control is on',
+        'AccessoriesWidgetComponent',
+        { enableAccessories: true },
+      ],
     ])('keeps %s', async (_case, component, options) => {
-      const page = await open({ layout: [widget(component)], ...options })
+      const page = await open({
+        layout: [
+          widget(component),
+        ],
+        ...options,
+      })
 
       expect(page.dashboard().map(item => item.component)).toEqual([component])
     })
 
     it('saves the layout back after migrating it', async () => {
       // ⚠️ Otherwise the rename runs again on every single page load
-      await open({ layout: [item('HomebridgeStatusWidgetComponent')] })
+      await open({
+        layout: [
+          item('HomebridgeStatusWidgetComponent'),
+        ],
+      })
 
       expect(savedLayout()?.map((w: any) => w.component)).toEqual(['UpdateInfoWidgetComponent'])
     })
 
     it('does not save a layout that needed no migration', async () => {
-      await open({ layout: [item('CpuWidgetComponent')] })
+      await open({
+        layout: [
+          item('CpuWidgetComponent'),
+        ],
+      })
 
       expect(savedLayout()).toBeUndefined()
     })
 
     it('drops a widget this version does not have', async () => {
-      const page = await open({ layout: [item('CpuWidgetComponent'), item('SomeWidgetFromTheFuture')] })
+      const page = await open({
+        layout: [
+          item('CpuWidgetComponent'),
+          item('SomeWidgetFromTheFuture'),
+        ],
+      })
 
       expect(page.dashboard().map((w: any) => w.component)).toEqual(['CpuWidgetComponent'])
     })
 
     it('gives every widget its event streams', async () => {
       // The widget host completes these on destroy, so they have to exist
-      const page = await open({ layout: [item('CpuWidgetComponent')] })
+      const page = await open({
+        layout: [
+          item('CpuWidgetComponent'),
+        ],
+      })
 
       expect(page.dashboard()[0].$resizeEvent).toBeDefined()
       expect(page.dashboard()[0].$configureEvent).toBeDefined()

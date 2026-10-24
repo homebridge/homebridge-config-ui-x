@@ -125,7 +125,9 @@ export class UpdateAllModalComponent implements OnInit, OnDestroy {
     const homebridge = selected.some(x => x.restartImpact === 'homebridge')
     const childBridgeCount = homebridge
       ? 0
-      : new Set(selected.flatMap(x => x.restartImpact === 'child-bridges' ? (x.childBridgeUsernames ?? []) : [])).size
+      : new Set(selected.flatMap(x => x.restartImpact === 'child-bridges'
+        ? (x.childBridgeUsernames ?? [])
+        : [])).size
     return { ui, homebridge, childBridgeCount }
   })
 
@@ -149,7 +151,10 @@ export class UpdateAllModalComponent implements OnInit, OnDestroy {
     }))
 
     if (this.phase() === 'plan') {
-      return [...planItems.map(x => ({ ...x, status: 'planned' as const })), ...reviewRows]
+      return [
+        ...planItems.map(x => ({ ...x, status: 'planned' as const })),
+        ...reviewRows,
+      ]
     }
 
     // Once running, the plan's order is what keeps every row where the user last
@@ -158,7 +163,11 @@ export class UpdateAllModalComponent implements OnInit, OnDestroy {
     const journal = this.journal()
     const byName = new Map((journal?.items ?? []).map(x => [x.name, x]))
     return [
-      ...planItems.map(x => byName.get(x.name) ?? { ...x, status: 'planned' as const, excluded: this.unticked().has(x.name) }),
+      ...planItems.map(x => byName.get(x.name) ?? {
+        ...x,
+        status: 'planned' as const,
+        excluded: this.unticked().has(x.name),
+      }),
       ...reviewRows,
     ]
   })
@@ -186,43 +195,79 @@ export class UpdateAllModalComponent implements OnInit, OnDestroy {
     // Its own line rather than a status: it says both what would happen and why
     // it is not on offer, so a "will not be updated" line on top would be noise
     if (item.needsReview) {
-      return { key: `update_all.line_${item.reviewReason}`, params: { plugin, from: item.from, to: item.to } }
+      return {
+        key: `update_all.line_${item.reviewReason}`,
+        params: { plugin, from: item.from, to: item.to },
+      }
     }
 
     // Unticked, whether that is still a choice (plan) or already settled (run)
     if (item.excluded || (this.phase() === 'plan' && !this.isTicked(item.name))) {
-      return { key: 'update_all.line_excluded', params: { plugin } }
+      return {
+        key: 'update_all.line_excluded',
+        params: { plugin },
+      }
     }
 
     // The child bridges coming back is the last thing to happen to a row, so it
     // outranks the item's own status, exactly as the icon does
     switch (this.restartStatusFor(item)) {
       case 'restarting':
-        return { key: 'update_all.line_restarting', params: { plugin, to: item.to } }
+        return {
+          key: 'update_all.line_restarting',
+          params: { plugin, to: item.to },
+        }
       case 'restarted':
-        return { key: 'update_all.line_restarted', params: { plugin, to: item.to } }
+        return {
+          key: 'update_all.line_restarted',
+          params: { plugin, to: item.to },
+        }
     }
 
     switch (this.displayStatus(item.status)) {
       case 'running':
-        return { key: 'update_all.line_running', params: { plugin, to: item.to } }
+        return {
+          key: 'update_all.line_running',
+          params: { plugin, to: item.to },
+        }
       case 'ok':
-        return { key: 'update_all.line_ok', params: { plugin, to: item.to } }
+        return {
+          key: 'update_all.line_ok',
+          params: { plugin, to: item.to },
+        }
       case 'failed':
         return reason
-          ? { key: 'update_all.line_failed', params: { plugin, reason } }
-          : { key: 'update_all.line_failed_plain', params: { plugin } }
+          ? {
+              key: 'update_all.line_failed',
+              params: { plugin, reason },
+            }
+          : {
+              key: 'update_all.line_failed_plain',
+              params: { plugin },
+            }
       case 'skipped':
         return reason
-          ? { key: 'update_all.line_skipped', params: { plugin, reason } }
-          : { key: 'update_all.line_skipped_plain', params: { plugin } }
+          ? {
+              key: 'update_all.line_skipped',
+              params: { plugin, reason },
+            }
+          : {
+              key: 'update_all.line_skipped_plain',
+              params: { plugin },
+            }
       case 'incomplete':
-        return { key: 'update_all.line_incomplete', params: { plugin } }
+        return {
+          key: 'update_all.line_incomplete',
+          params: { plugin },
+        }
       default:
         // The only line that names the versions - the row has no separate
         // version line any more, and once a run is under way what matters is
         // what is happening, not what it is moving between
-        return { key: 'update_all.line_planned', params: { plugin, from: item.from, to: item.to } }
+        return {
+          key: 'update_all.line_planned',
+          params: { plugin, from: item.from, to: item.to },
+        }
     }
   }
 
@@ -419,7 +464,9 @@ export class UpdateAllModalComponent implements OnInit, OnDestroy {
     }
     this.journal.set({
       ...journal,
-      items: journal.items.map(x => x.name === name ? { ...x, status } : x),
+      items: journal.items.map(x => x.name === name
+        ? { ...x, status }
+        : x),
     })
   }
 
@@ -437,7 +484,9 @@ export class UpdateAllModalComponent implements OnInit, OnDestroy {
       return null
     }
     const done = this.restartedBridges()
-    return usernames.every(x => done.includes(x)) ? 'restarted' : 'restarting'
+    return usernames.every(x => done.includes(x))
+      ? 'restarted'
+      : 'restarting'
   }
 
   /**
@@ -480,7 +529,9 @@ export class UpdateAllModalComponent implements OnInit, OnDestroy {
       void this.$router.navigate(['/restart'], {
         queryParams: {
           restarting: 'true',
-          ...(uiRestarting ? { uiRestarting: 'true' } : {}),
+          ...(uiRestarting
+            ? { uiRestarting: 'true' }
+            : {}),
         },
       })
       return
@@ -489,9 +540,11 @@ export class UpdateAllModalComponent implements OnInit, OnDestroy {
     // Only child bridges restarted, so the modal stays put and follows them
     // back one by one, in place of each plugin's update status.
     if (restart?.childBridges === 'done') {
-      const usernames = [...new Set((journal?.items ?? [])
-        .filter(x => x.status === 'ok')
-        .flatMap(x => x.childBridgeUsernames ?? []))]
+      const usernames = [
+        ...new Set((journal?.items ?? [])
+          .filter(x => x.status === 'ok')
+          .flatMap(x => x.childBridgeUsernames ?? [])),
+      ]
       if (usernames.length) {
         this.watchChildBridges(usernames)
       }
@@ -525,7 +578,10 @@ export class UpdateAllModalComponent implements OnInit, OnDestroy {
         return
       }
       if (data.status === 'ok' && !this.restartedBridges().includes(data.username)) {
-        const done = [...this.restartedBridges(), data.username]
+        const done = [
+          ...this.restartedBridges(),
+          data.username,
+        ]
         this.restartedBridges.set(done)
         // Every bridge is back - the give-up timer has nothing left to do
         if (this.childRestartTimer && usernames.every(x => done.includes(x))) {

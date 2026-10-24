@@ -67,12 +67,19 @@ describe('settings modals', () => {
    * @param files - the selected files, if any
    */
   function fileEvent(files: File[]): Event {
-    return { target: { files, value: 'C:\\fakepath\\chosen' } } as unknown as Event
+    return {
+      target: { files, value: 'C:\\fakepath\\chosen' },
+    } as unknown as Event
   }
 
   describe('accessory control lists', () => {
     const pairings = [
-      { _id: 'main', _username: '0E:AA:AA:AA:AA:AA', _main: true, name: 'Homebridge' },
+      {
+        _id: 'main',
+        _username: '0E:AA:AA:AA:AA:AA',
+        _main: true,
+        name: 'Homebridge',
+      },
       { _id: 'ring', _username: '0E:CC:CC:CC:CC:CC', name: 'Ring' },
       { _id: 'hue', _username: '0E:BB:BB:BB:BB:BB', name: 'Hue' },
     ]
@@ -80,7 +87,11 @@ describe('settings modals', () => {
     function configure(existingBlacklist: string[] = []) {
       TestBed.resetTestingModule()
       api = fakeApi()
-      settings = makeSettings({ env: { featureFlags: { matterSupport: true } } })
+      settings = makeSettings({
+        env: {
+          featureFlags: { matterSupport: true },
+        },
+      })
       toastr = toastrStub()
       activeModal = activeModalStub()
 
@@ -90,9 +101,15 @@ describe('settings modals', () => {
           provideFakes({ api, settings, toastr, activeModal }),
           {
             provide: AccessoryOverviewCacheService,
-            useValue: { get: vi.fn(async () => ({ pairings })), invalidate: vi.fn() },
+            useValue: {
+              get: vi.fn(async () => ({ pairings })),
+              invalidate: vi.fn(),
+            },
           },
-          { provide: ACCESSORY_CONTROL_LISTS_MODAL_DATA, useValue: { existingBlacklist } },
+          {
+            provide: ACCESSORY_CONTROL_LISTS_MODAL_DATA,
+            useValue: { existingBlacklist },
+          },
         ],
       })
     }
@@ -179,12 +196,23 @@ describe('settings modals', () => {
       TestBed.configureTestingModule({
         providers: [
           provideTestTranslate(),
-          provideFakes({ api, settings: makeSettings(), toastr, activeModal }),
+          provideFakes({
+            api,
+            settings: makeSettings(),
+            toastr,
+            activeModal,
+          }),
           {
             provide: AccessoryOverviewCacheService,
-            useValue: { get: vi.fn(async () => Promise.reject(new Error('offline'))), invalidate: vi.fn() },
+            useValue: {
+              get: vi.fn(async () => Promise.reject(new Error('offline'))),
+              invalidate: vi.fn(),
+            },
           },
-          { provide: ACCESSORY_CONTROL_LISTS_MODAL_DATA, useValue: { existingBlacklist: [] } },
+          {
+            provide: ACCESSORY_CONTROL_LISTS_MODAL_DATA,
+            useValue: { existingBlacklist: [] },
+          },
         ],
       })
 
@@ -318,7 +346,12 @@ describe('settings modals', () => {
       TestBed.configureTestingModule({
         providers: [
           provideTestTranslate(),
-          provideFakes({ api, settings: makeSettings(), toastr, activeModal }),
+          provideFakes({
+            api,
+            settings: makeSettings(),
+            toastr,
+            activeModal,
+          }),
         ],
       })
     }
@@ -328,17 +361,46 @@ describe('settings modals', () => {
     it('lists homebridge first, then the ui, then bridges by name', async () => {
       api.respond('get', '/server/network/overview', {
         entries: [
-          { service: 'Child Bridge', port: 52001, protocol: 'hap', bridge: 'Ring', status: 'ok' },
-          { service: 'Config UI', port: 8581, protocol: 'http', bridge: 'Homebridge UI', status: 'ok' },
-          { service: 'Child Bridge', port: 52000, protocol: 'hap', bridge: 'Hue', status: 'ok' },
-          { service: 'Homebridge', port: 51826, protocol: 'hap', bridge: 'Homebridge', status: 'ok' },
+          {
+            service: 'Child Bridge',
+            port: 52001,
+            protocol: 'hap',
+            bridge: 'Ring',
+            status: 'ok',
+          },
+          {
+            service: 'Config UI',
+            port: 8581,
+            protocol: 'http',
+            bridge: 'Homebridge UI',
+            status: 'ok',
+          },
+          {
+            service: 'Child Bridge',
+            port: 52000,
+            protocol: 'hap',
+            bridge: 'Hue',
+            status: 'ok',
+          },
+          {
+            service: 'Homebridge',
+            port: 51826,
+            protocol: 'hap',
+            bridge: 'Homebridge',
+            status: 'ok',
+          },
         ],
         conflicts: [],
       })
 
       const modal = await open(PortOverviewModalComponent)
 
-      expect(modal.entries().map(e => e.bridge)).toEqual(['Homebridge', 'Homebridge UI', 'Hue', 'Ring'])
+      expect(modal.entries().map(e => e.bridge)).toEqual([
+        'Homebridge',
+        'Homebridge UI',
+        'Hue',
+        'Ring',
+      ])
       expect(modal.loading()).toBe(false)
     })
 
@@ -351,7 +413,10 @@ describe('settings modals', () => {
     })
 
     it('passes the conflicting ports through untouched', async () => {
-      api.respond('get', '/server/network/overview', { entries: [], conflicts: ['51826', '8581'] })
+      api.respond('get', '/server/network/overview', {
+        entries: [],
+        conflicts: ['51826', '8581'],
+      })
 
       const modal = await open(PortOverviewModalComponent)
 
@@ -373,7 +438,9 @@ describe('settings modals', () => {
     function configure(customWallpaperHash = '') {
       TestBed.resetTestingModule()
       api = fakeApi()
-      settings = makeSettings({ env: { customWallpaperHash } })
+      settings = makeSettings({
+        env: { customWallpaperHash },
+      })
       toastr = toastrStub()
       activeModal = activeModalStub()
 
@@ -406,7 +473,9 @@ describe('settings modals', () => {
       const modal = await open(WallpaperComponent)
       const before = modal.wallpaperUrl()
 
-      modal.onFileChange(fileEvent([makeFile('huge.png', globalThis.backup.maxBackupSize + 1)]))
+      modal.onFileChange(fileEvent([
+        makeFile('huge.png', globalThis.backup.maxBackupSize + 1),
+      ]))
 
       // Checked before the bytes are base64-encoded for the preview: a 40MB
       // image would otherwise lock the tab up and then be rejected anyway
@@ -418,7 +487,9 @@ describe('settings modals', () => {
     it('accepts a file within the limit', async () => {
       const modal = await open(WallpaperComponent)
 
-      modal.onFileChange(fileEvent([makeFile('nice.png', 1024)]))
+      modal.onFileChange(fileEvent([
+        makeFile('nice.png', 1024),
+      ]))
 
       expect(modal.selectedFile()?.name).toBe('nice.png')
       expect(toastr.at('error')).toHaveLength(0)
@@ -427,7 +498,9 @@ describe('settings modals', () => {
     it('goes back to the saved wallpaper when the picker is cleared', async () => {
       configure('abc123')
       const modal = await open(WallpaperComponent)
-      modal.onFileChange(fileEvent([makeFile('nice.png', 1024)]))
+      modal.onFileChange(fileEvent([
+        makeFile('nice.png', 1024),
+      ]))
 
       modal.onFileChange(fileEvent([]))
 
@@ -437,7 +510,9 @@ describe('settings modals', () => {
 
     it('uploads the chosen file as form data', async () => {
       const modal = await open(WallpaperComponent)
-      modal.onFileChange(fileEvent([makeFile('nice.png', 1024)]))
+      modal.onFileChange(fileEvent([
+        makeFile('nice.png', 1024),
+      ]))
 
       await modal.saveWallpaper()
 
@@ -449,7 +524,9 @@ describe('settings modals', () => {
 
     it('records the saved wallpaper under its own extension', async () => {
       const modal = await open(WallpaperComponent)
-      modal.onFileChange(fileEvent([makeFile('holiday.photo.jpeg', 1024)]))
+      modal.onFileChange(fileEvent([
+        makeFile('holiday.photo.jpeg', 1024),
+      ]))
 
       await modal.saveWallpaper()
 
@@ -472,7 +549,9 @@ describe('settings modals', () => {
     it('lets the user try again when the upload fails', async () => {
       api.fail('post', '/server/wallpaper', new Error('too big'))
       const modal = await open(WallpaperComponent)
-      modal.onFileChange(fileEvent([makeFile('nice.png', 1024)]))
+      modal.onFileChange(fileEvent([
+        makeFile('nice.png', 1024),
+      ]))
 
       await modal.saveWallpaper()
 

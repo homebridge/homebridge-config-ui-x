@@ -315,7 +315,9 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
             if (success) {
               this.requestResponse(e, this.getConfigBlocks())
             } else {
-              this.requestResponse(e, { message: this.$translate.instant('config.failed_to_save_config') }, false)
+              this.requestResponse(e, {
+                message: this.$translate.instant('config.failed_to_save_config'),
+              }, false)
             }
           })
           break
@@ -424,7 +426,9 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
     // gives it a helper, and nothing would answer it. Failing fast instead keeps the plugin UI's
     // promise chain moving and leaves its own retry logic free to recover once the socket is back.
     if (!this.io.socket.connected) {
-      this.requestResponse(event, { message: this.$translate.instant('plugins.settings.message_ui_offline') }, false)
+      this.requestResponse(event, {
+        message: this.$translate.instant('plugins.settings.message_ui_offline'),
+      }, false)
       return
     }
 
@@ -435,14 +439,18 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
     // Ensure the update contains an array
     if (!Array.isArray(pluginConfig)) {
       this.$toastr.error(this.$translate.instant('plugins.config.must_be_array'), this.$translate.instant('toast.title_error'))
-      return this.requestResponse(event, { message: this.$translate.instant('plugins.config.must_be_array') }, false)
+      return this.requestResponse(event, {
+        message: this.$translate.instant('plugins.config.must_be_array'),
+      }, false)
     }
 
     // Validate each block in the array
     for (const block of pluginConfig) {
       if (typeof block !== 'object' || Array.isArray(block)) {
         this.$toastr.error(this.$translate.instant('plugins.config.must_be_array_objects'), this.$translate.instant('toast.title_error'))
-        return this.requestResponse(event, { message: this.$translate.instant('plugins.config.must_be_array_objects') }, false)
+        return this.requestResponse(event, {
+          message: this.$translate.instant('plugins.config.must_be_array_objects'),
+        }, false)
       }
     }
 
@@ -498,17 +506,23 @@ export class CustomPluginsComponent implements OnInit, OnDestroy {
     }
 
     // Use parent's linked style sheets
-    const externalCss = [...document.querySelectorAll('link')]
+    const externalCss = [
+      ...document.querySelectorAll('link'),
+    ]
     for (const css of externalCss) {
       if (css.getAttribute('rel') === 'stylesheet') {
         const srcHref = css.getAttribute('href')
-        const href = document.baseURI + (srcHref!.startsWith('/') ? srcHref!.substring(1) : srcHref)
+        const href = document.baseURI + (srcHref!.startsWith('/')
+          ? srcHref!.substring(1)
+          : srcHref)
         sourceWindow.postMessage({ action: 'link-element', href, rel: 'stylesheet' }, event.origin)
       }
     }
 
     // Use parent's inline css
-    const inlineCss = [...document.querySelectorAll('style')]
+    const inlineCss = [
+      ...document.querySelectorAll('style'),
+    ]
     for (const css of inlineCss) {
       sourceWindow.postMessage({ action: 'inline-style', style: css.innerHTML }, event.origin)
     }

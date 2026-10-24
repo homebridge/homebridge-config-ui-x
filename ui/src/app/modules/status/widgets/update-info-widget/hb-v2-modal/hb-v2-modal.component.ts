@@ -91,7 +91,9 @@ export class HbV2ModalComponent implements OnInit {
               return false
             }
           })
-          const hb2Ready = homebridgeVersion === '2' ? 'hide' : supportsV2 ? 'supported' : 'unknown'
+          const hb2Ready = homebridgeVersion === '2'
+            ? 'hide'
+            : supportsV2 ? 'supported' : 'unknown'
           if (hb2Ready === 'unknown') {
             this.allPluginsSupported.set(false)
           }

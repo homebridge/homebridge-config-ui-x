@@ -283,15 +283,17 @@ export class LogService {
   }
 
   public async downloadLogFile(): Promise<void> {
-    const injector = createEnvironmentInjector([{
-      provide: CONFIRM_MODAL_DATA,
-      useValue: {
-        title: this.$translate.instant('logs.title_download_log_file'),
-        message: this.$translate.instant('logs.download_warning'),
-        confirmButtonLabel: this.$translate.instant('form.button_download'),
-        faIconClass: 'fas fa-user-secret primary-text',
+    const injector = createEnvironmentInjector([
+      {
+        provide: CONFIRM_MODAL_DATA,
+        useValue: {
+          title: this.$translate.instant('logs.title_download_log_file'),
+          message: this.$translate.instant('logs.download_warning'),
+          confirmButtonLabel: this.$translate.instant('form.button_download'),
+          faIconClass: 'fas fa-user-secret primary-text',
+        },
       },
-    }], this.injector)
+    ], this.injector)
 
     const ref = this.$modal.open(ConfirmComponent, {
       size: 'lg',
@@ -312,7 +314,9 @@ export class LogService {
             const cleanLine = line.replace(RE_ANSI_SIMPLE, '').toLowerCase()
             return cleanLine.includes(filter)
           })
-          const filteredBlob = new Blob([filteredLines.join('\n')], { type: 'text/plain' })
+          const filteredBlob = new Blob([
+            filteredLines.join('\n'),
+          ], { type: 'text/plain' })
           this.$saveAs(filteredBlob, 'homebridge.log.txt')
         } else {
           this.$saveAs(res.body!, 'homebridge.log.txt')
@@ -335,16 +339,18 @@ export class LogService {
   }
 
   public async truncateLogFile(): Promise<void> {
-    const injector = createEnvironmentInjector([{
-      provide: CONFIRM_MODAL_DATA,
-      useValue: {
-        title: this.$translate.instant('logs.title_truncate_log_file'),
-        message: this.$translate.instant('logs.truncate_log_warning'),
-        confirmButtonLabel: this.$translate.instant('form.button_delete'),
-        confirmButtonClass: 'btn-danger',
-        faIconClass: 'fas fa-circle-exclamation primary-text',
+    const injector = createEnvironmentInjector([
+      {
+        provide: CONFIRM_MODAL_DATA,
+        useValue: {
+          title: this.$translate.instant('logs.title_truncate_log_file'),
+          message: this.$translate.instant('logs.truncate_log_warning'),
+          confirmButtonLabel: this.$translate.instant('form.button_delete'),
+          confirmButtonClass: 'btn-danger',
+          faIconClass: 'fas fa-circle-exclamation primary-text',
+        },
       },
-    }], this.injector)
+    ], this.injector)
 
     const ref = this.$modal.open(ConfirmComponent, {
       size: 'lg',

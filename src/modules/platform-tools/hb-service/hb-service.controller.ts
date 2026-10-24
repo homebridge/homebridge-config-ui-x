@@ -51,7 +51,11 @@ export class HbServiceController {
   @UseGuards(AdminGuard)
   @ApiOperation({ summary: 'Download the entire log file.' })
   @Get('log/download')
-  @ApiQuery({ name: 'colour', enum: ['yes', 'no'], required: false })
+  @ApiQuery({
+    name: 'colour',
+    enum: ['yes', 'no'],
+    required: false,
+  })
   downloadLogFile(@Query('colour') colour?: string) {
     return this.hbServiceService.downloadLogFile((colour !== 'yes'))
   }

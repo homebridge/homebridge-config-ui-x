@@ -72,7 +72,9 @@ export class UninstallPluginComponent implements OnInit {
         await this.removePluginConfig()
       } catch (error) {
         console.error(error)
-        const message = error instanceof Error ? error.message : 'Unknown error'
+        const message = error instanceof Error
+          ? error.message
+          : 'Unknown error'
         this.$toastr.error(message, this.$translate.instant('toast.title_error'))
       }
     }
@@ -98,15 +100,17 @@ export class UninstallPluginComponent implements OnInit {
       return
     }
 
-    const modalInjector = createEnvironmentInjector([{
-      provide: MANAGE_PLUGIN_MODAL_DATA,
-      useValue: {
-        action: 'Uninstall',
-        pluginName: this.plugin.name,
-        pluginDisplayName: this.plugin.displayName,
-        onRefreshPluginList: this.onRefreshPluginList,
+    const modalInjector = createEnvironmentInjector([
+      {
+        provide: MANAGE_PLUGIN_MODAL_DATA,
+        useValue: {
+          action: 'Uninstall',
+          pluginName: this.plugin.name,
+          pluginDisplayName: this.plugin.displayName,
+          onRefreshPluginList: this.onRefreshPluginList,
+        },
       },
-    }], this.injector)
+    ], this.injector)
 
     this.$modal.open(ManagePluginComponent, {
       size: 'lg',
@@ -174,7 +178,9 @@ export class UninstallPluginComponent implements OnInit {
       this.removeChildBridges.set(this.removeConfig())
     } catch (error) {
       console.error('Failed to initialize:', error)
-      const message = error instanceof Error ? error.message : 'Failed to load plugin information'
+      const message = error instanceof Error
+        ? error.message
+        : 'Failed to load plugin information'
       this.$toastr.error(message, this.$translate.instant('toast.title_error'))
     } finally {
       this.loading.set(false)
@@ -211,7 +217,9 @@ export class UninstallPluginComponent implements OnInit {
       await this.$api.delete(`/server/pairings/${id}`)
     } catch (error) {
       console.error(error)
-      const message = error instanceof Error ? error.message : 'Failed to remove child bridge'
+      const message = error instanceof Error
+        ? error.message
+        : 'Failed to remove child bridge'
       this.$toastr.error(message, this.$translate.instant('toast.title_error'))
     }
   }

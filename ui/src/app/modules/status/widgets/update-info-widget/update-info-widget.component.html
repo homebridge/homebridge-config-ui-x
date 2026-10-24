@@ -90,13 +90,7 @@
                     } @else {
                       Homebridge
                     }
-                    @if (
-                      isHbV2Loaded() &&
-                      !isRunningHbV2() &&
-                      isAdmin &&
-                      homebridgeUpdatePolicy !== 'none' &&
-                      homebridgeUpdatePolicy !== 'major'
-                    ) {
+                    @if (canOfferHbV2()) {
                       <button
                         type="button"
                         class="btn btn-link p-0 text-decoration-none ms-1"
@@ -264,13 +258,7 @@
               } @else {
                 Homebridge
               }
-              @if (
-                isHbV2Loaded() &&
-                !isRunningHbV2() &&
-                isAdmin &&
-                homebridgeUpdatePolicy !== 'none' &&
-                homebridgeUpdatePolicy !== 'major'
-              ) {
+              @if (canOfferHbV2()) {
                 <button
                   type="button"
                   class="btn btn-link p-0 text-decoration-none ms-1"

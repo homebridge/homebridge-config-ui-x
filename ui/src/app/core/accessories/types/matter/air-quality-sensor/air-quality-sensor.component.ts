@@ -46,13 +46,15 @@ export class MatterAirQualitySensorComponent {
     }
 
     const modalInjector = createEnvironmentInjector(
-      [{
-        provide: ACCESSORY_MANAGE_MODAL_DATA,
-        useValue: {
-          service: this.service(),
-          $accessories: this.$accessories,
+      [
+        {
+          provide: ACCESSORY_MANAGE_MODAL_DATA,
+          useValue: {
+            service: this.service(),
+            $accessories: this.$accessories,
+          },
         },
-      }],
+      ],
       this.injector,
     )
 

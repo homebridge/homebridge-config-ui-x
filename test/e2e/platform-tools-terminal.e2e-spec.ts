@@ -192,7 +192,11 @@ describe('PlatformToolsTerminal (e2e)', () => {
     const clientB = new MockWsEventEmitter()
 
     let exitHandlerB: (info: { exitCode: number }) => void
-    const termA = { ...mockTerm, onExit: vi.fn(), kill: vi.fn() } as unknown as IPty
+    const termA = {
+      ...mockTerm,
+      onExit: vi.fn(),
+      kill: vi.fn(),
+    } as unknown as IPty
     const termB = {
       ...mockTerm,
       kill: vi.fn(),

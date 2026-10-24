@@ -82,14 +82,7 @@
                 }
                 <!-- // -->
                 <!-- installed, not configured -->
-                @if (
-                  plugin().installedVersion &&
-                  (!plugin().newHbScope || plugin().newHbScope?.switch !== plugin().installedVersion) &&
-                  !plugin().updateAvailable &&
-                  !plugin().isConfigured &&
-                  !childBridgeRestartInProgress() &&
-                  !plugin().disabled
-                ) {
+                @if (isSettled() && !plugin().isConfigured) {
                   <button
                     type="button"
                     class="card-link btn btn-link p-0 text-decoration-none"
@@ -106,14 +99,7 @@
                 <!-- // -->
                 <!-- installed, configured, not setup as child bridge although recommended -->
                 @if (
-                  plugin().installedVersion &&
-                  (!plugin().newHbScope || plugin().newHbScope?.switch !== plugin().installedVersion) &&
-                  !plugin().updateAvailable &&
-                  plugin().isConfigured &&
-                  !plugin().hasChildBridges &&
-                  !plugin().disabled &&
-                  plugin().recommendChildBridge &&
-                  !childBridgeRestartInProgress()
+                  isSettled() && plugin().isConfigured && !plugin().hasChildBridges && plugin().recommendChildBridge
                 ) {
                   <button
                     type="button"
@@ -134,15 +120,11 @@
                 <!-- // -->
                 <!-- installed, configured, setup as child bridge, not paired with homekit -->
                 @if (
-                  plugin().installedVersion &&
-                  (!plugin().newHbScope || plugin().newHbScope?.switch !== plugin().installedVersion) &&
-                  !plugin().updateAvailable &&
+                  isSettled() &&
                   plugin().isConfigured &&
                   plugin().hasChildBridges &&
-                  !childBridgeRestartInProgress() &&
                   plugin().hasChildBridgesUnpaired &&
-                  childBridgeStatus() === 'ok' &&
-                  !plugin().disabled
+                  childBridgeStatus() === 'ok'
                 ) {
                   <button
                     type="button"
@@ -170,15 +152,11 @@
                 <!-- // -->
                 <!-- child bridge status (good status is not shown) -->
                 @if (
-                  plugin().installedVersion &&
-                  (!plugin().newHbScope || plugin().newHbScope?.switch !== plugin().installedVersion) &&
-                  !plugin().updateAvailable &&
+                  isSettled() &&
                   plugin().isConfigured &&
                   plugin().hasChildBridges &&
-                  !childBridgeRestartInProgress() &&
                   !plugin().hasChildBridgesUnpaired &&
-                  childBridgeStatus() !== 'ok' &&
-                  !plugin().disabled
+                  childBridgeStatus() !== 'ok'
                 ) {
                   <i
                     class="fas fa-lg ms-3"

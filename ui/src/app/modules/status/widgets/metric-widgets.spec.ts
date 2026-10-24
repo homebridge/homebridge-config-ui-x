@@ -72,7 +72,11 @@ describe('the metric widgets', () => {
     TestBed.configureTestingModule({
       providers: [
         provideTestTranslate(),
-        provideFakes({ settings, ws, toastr: toastrStub() }),
+        provideFakes({
+          settings,
+          ws,
+          toastr: toastrStub(),
+        }),
       ],
     })
 
@@ -80,7 +84,14 @@ describe('the metric widgets', () => {
     // while every pipe the templates format their numbers with is kept
     TestBed.overrideComponent(type as any, {
       set: {
-        imports: [TranslatePipe, ConvertTempPipe, DatePipe, DecimalPipe, UpperCasePipe, TitleCasePipe],
+        imports: [
+          TranslatePipe,
+          ConvertTempPipe,
+          DatePipe,
+          DecimalPipe,
+          UpperCasePipe,
+          TitleCasePipe,
+        ],
         schemas: [NO_ERRORS_SCHEMA],
       },
     })
@@ -94,8 +105,14 @@ describe('the metric widgets', () => {
     // error outside any test rather than as a failure, so the suite reports
     // green while warning that results may be unreliable.
     io.socket.respondTo('get-server-cpu-info', { cpuTemperature: {}, currentLoad: 0, cpuLoadHistory: [] })
-    io.socket.respondTo('get-server-memory-info', { mem: { active: 0, total: 1 }, memoryUsageHistory: [] })
-    io.socket.respondTo('get-server-network-info', { net: { rx_sec: 0, tx_sec: 0, interval: 1 }, networkUsageHistory: [] })
+    io.socket.respondTo('get-server-memory-info', {
+      mem: { active: 0, total: 1 },
+      memoryUsageHistory: [],
+    })
+    io.socket.respondTo('get-server-network-info', {
+      net: { rx_sec: 0, tx_sec: 0, interval: 1 },
+      networkUsageHistory: [],
+    })
 
     options.arrange?.()
 
@@ -136,6 +153,18 @@ describe('the metric widgets', () => {
       // `0` would render as a confident "0%" on a server that simply has not
       // answered yet
       expect(widget.currentLoad()).toBeUndefined()
+    })
+
+    it('shows no temperature until there is a real reading', async () => {
+      const { widget } = await open(CpuWidgetComponent, makeWidget(), { connected: false })
+
+      // -1 is the server's "no sensor" answer, not a temperature
+      for (const main of [undefined, null, -1]) {
+        widget.cpuTemperature.set({ main } as any)
+        expect(widget.hasTemperatureReading()).toBe(false)
+      }
+      widget.cpuTemperature.set({ main: 52 } as any)
+      expect(widget.hasTemperatureReading()).toBe(true)
     })
 
     it('shows the memory as unknown rather than zero', async () => {
@@ -193,7 +222,9 @@ describe('the metric widgets', () => {
     })
 
     it('reads the temperature units from the settings', async () => {
-      const { widget } = await open(CpuWidgetComponent, makeWidget(), { env: { temperatureUnits: 'f' } })
+      const { widget } = await open(CpuWidgetComponent, makeWidget(), {
+        env: { temperatureUnits: 'f' },
+      })
 
       expect(widget.temperatureUnits).toBe('f')
     })
@@ -310,7 +341,11 @@ describe('the metric widgets', () => {
       const widget = await openWithHistory(5, [1, 2, 3])
       expect(series(widget)).toEqual([1, 2, 3])
 
-      io.socket.respondTo('get-server-cpu-info', { cpuTemperature: {}, currentLoad: 9, cpuLoadHistory: [9] })
+      io.socket.respondTo('get-server-cpu-info', {
+        cpuTemperature: {},
+        currentLoad: 9,
+        cpuLoadHistory: [9],
+      })
       configureEvent.next()
 
       // The old points were sampled at the old interval, so keeping them would
@@ -335,7 +370,9 @@ describe('the metric widgets', () => {
 
     it('ignores a reading with no memory in it', async () => {
       const { widget } = await open(MemoryWidgetComponent, makeWidget(), {
-        arrange: () => io.socket.respondTo('get-server-memory-info', { memoryUsageHistory: [70] }),
+        arrange: () => io.socket.respondTo('get-server-memory-info', {
+          memoryUsageHistory: [70],
+        }),
       })
 
       // Rather than dividing undefined and rendering NaN GB
@@ -368,7 +405,9 @@ describe('the metric widgets', () => {
 
       expect(io.requests[0]).toEqual({
         resource: 'get-server-network-info',
-        payload: { netInterfaces: ['wlan0'] },
+        payload: {
+          netInterfaces: ['wlan0'],
+        },
       })
     })
 
@@ -471,12 +510,18 @@ describe('the metric widgets', () => {
     it('asks for the server and node details', async () => {
       const { widget } = await open(SystemInfoWidgetComponent, makeWidget({ component: 'SystemInfoWidgetComponent' }), {
         arrange: () => {
-          io.socket.respondTo('get-homebridge-server-info', { os: { distro: 'Raspbian' }, network: {}, time: {} })
+          io.socket.respondTo('get-homebridge-server-info', {
+            os: { distro: 'Raspbian' },
+            network: {},
+            time: {},
+          })
           io.socket.respondTo('nodejs-version-check', { currentVersion: '22.0.0', latestVersion: '22.1.0' })
         },
       })
 
-      expect(widget.serverInfo()).toMatchObject({ os: { distro: 'Raspbian' } })
+      expect(widget.serverInfo()).toMatchObject({
+        os: { distro: 'Raspbian' },
+      })
       expect(widget.nodejsInfo()).toMatchObject({ currentVersion: '22.0.0' })
     })
 

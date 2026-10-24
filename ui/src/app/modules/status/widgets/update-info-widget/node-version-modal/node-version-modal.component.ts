@@ -126,7 +126,9 @@ export class NodeVersionModalComponent implements OnInit {
       const processedPlugins = installedPlugins
         .map((x: any) => {
           const isSupported = x.engines?.node
-            ? (satisfies(this.latestVersion, x.engines.node, { includePrerelease: true }) ? 'yes' : 'no')
+            ? (satisfies(this.latestVersion, x.engines.node, { includePrerelease: true })
+                ? 'yes'
+                : 'no')
             : 'unknown'
 
           return {

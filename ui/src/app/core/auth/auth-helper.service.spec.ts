@@ -20,7 +20,9 @@ describe('AuthHelperService', () => {
   beforeEach(() => {
     auth = makeAuth()
     TestBed.configureTestingModule({
-      providers: [{ provide: AuthService, useValue: auth }],
+      providers: [
+        { provide: AuthService, useValue: auth },
+      ],
     })
     service = TestBed.inject(AuthHelperService)
   })

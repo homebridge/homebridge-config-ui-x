@@ -101,7 +101,9 @@ export class PluginsSettingsUiController {
     // Build the scope from the known application prefix and route parameter;
     // never let encoded path text or query data influence a Set-Cookie Path.
     const cookiePath = `${API_PREFIX}/plugins/settings-ui/${encodeURIComponent(request.params.pluginName)}/`
-    const secure = request.protocol === 'https' ? '; Secure' : ''
+    const secure = request.protocol === 'https'
+      ? '; Secure'
+      : ''
     reply.header(
       'Set-Cookie',
       `hb-plugin-ui=${token}; HttpOnly; SameSite=Strict; Path=${cookiePath}; Max-Age=${maxAge}${secure}`,

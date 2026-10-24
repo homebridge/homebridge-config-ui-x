@@ -178,7 +178,10 @@ export class AuthService {
     const user = await this.authenticate(username, password, otp, clientId)
     // When this sign-in happened. Refreshes carry it forward unchanged, so the
     // renewal chain as a whole has an age that can be capped.
-    const token = this.jwtService.sign({ ...user, sessionStartedAt: Math.floor(Date.now() / 1000) })
+    const token = this.jwtService.sign({
+      ...user,
+      sessionStartedAt: Math.floor(Date.now() / 1000),
+    })
 
     return {
       access_token: token,
@@ -689,7 +692,9 @@ export class AuthService {
         throw new ConflictException(`User with username '${user.username}' already exists.`)
       }
       const newUser: UserDto = {
-        id: authfile.length ? Math.max(...authfile.map(x => x.id)) + 1 : 1,
+        id: authfile.length
+          ? Math.max(...authfile.map(x => x.id)) + 1
+          : 1,
         username: user.username,
         name: user.name,
         hashedPassword,
@@ -776,7 +781,9 @@ export class AuthService {
       if (adminChanged && !update.admin && authfile.filter(x => x.admin === true).length < 2) {
         throw new BadRequestException('Cannot remove admin from only admin user')
       }
-      user.admin = (update.admin === undefined) ? user.admin : update.admin
+      user.admin = (update.admin === undefined)
+        ? user.admin
+        : update.admin
       if (newHashedPassword && newSalt) {
         user.hashedPassword = newHashedPassword
         user.salt = newSalt
@@ -979,7 +986,9 @@ export class AuthService {
 
           // Persist the flag to the auth file (async, don't block login)
           this.markUserAsLegacyOtp(user.username).catch((err: unknown) => {
-            const message = err instanceof Error ? err.message : 'Unknown error'
+            const message = err instanceof Error
+              ? err.message
+              : 'Unknown error'
             this.logger.error(`Failed to mark user ${user.username} as having legacy OTP: ${message}`)
           })
 

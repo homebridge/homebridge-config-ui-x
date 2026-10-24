@@ -67,12 +67,16 @@ describe('bridgesWidgetComponent', () => {
   } = {}) {
     TestBed.resetTestingModule()
     api = fakeApi()
-    settings = makeSettings({ env: { featureFlags: options.featureFlags ?? {} } })
+    settings = makeSettings({
+      env: { featureFlags: options.featureFlags ?? {} },
+    })
     toastr = toastrStub()
     ws = fakeWs()
     mainIo = ws.namespace('status')
     childIo = ws.namespace('child-bridges')
-    cache = { invalidateAll: vi.fn() }
+    cache = {
+      invalidateAll: vi.fn(),
+    }
 
     mainIo.socket.respondTo('get-homebridge-status', options.status ?? { status: 'ok', name: 'Homebridge' })
     childIo.socket.respondTo('get-homebridge-child-bridge-status', options.bridges ?? [])
@@ -81,14 +85,25 @@ describe('bridgesWidgetComponent', () => {
     TestBed.configureTestingModule({
       providers: [
         provideTestTranslate(),
-        provideFakes({ api, settings, toastr, ws, auth: makeAuth({ user: { admin: options.admin ?? true } }) }),
+        provideFakes({
+          api,
+          settings,
+          toastr,
+          ws,
+          auth: makeAuth({
+            user: { admin: options.admin ?? true },
+          }),
+        }),
         { provide: TtlCacheService, useValue: cache },
       ],
     })
 
     // Bootstrap tooltips and the icon markup are not what this is about
     TestBed.overrideComponent(BridgesWidgetComponent, {
-      set: { imports: [TranslatePipe], schemas: [NO_ERRORS_SCHEMA] },
+      set: {
+        imports: [TranslatePipe],
+        schemas: [NO_ERRORS_SCHEMA],
+      },
     })
 
     const fixture = TestBed.createComponent(BridgesWidgetComponent)
@@ -109,7 +124,9 @@ describe('bridgesWidgetComponent', () => {
 
   describe('listing the bridges', () => {
     it('reads the main homebridge status', async () => {
-      const widget = await open({ status: { status: 'ok', name: 'My Homebridge' } })
+      const widget = await open({
+        status: { status: 'ok', name: 'My Homebridge' },
+      })
 
       expect(widget.homebridgeStatus()).toMatchObject({ status: 'ok', name: 'My Homebridge' })
     })
@@ -128,13 +145,21 @@ describe('bridgesWidgetComponent', () => {
     })
 
     it('starts every bridge as not restarting', async () => {
-      const widget = await open({ bridges: [makeBridge()] })
+      const widget = await open({
+        bridges: [
+          makeBridge(),
+        ],
+      })
 
       expect(widget.childBridges()[0].restarting).toBe(false)
     })
 
     it('updates a bridge in place when its status changes', async () => {
-      const widget = await open({ bridges: [makeBridge()] })
+      const widget = await open({
+        bridges: [
+          makeBridge(),
+        ],
+      })
 
       childIo.socket.fire('child-bridge-status-update', makeBridge({ status: 'down' }))
 
@@ -143,7 +168,11 @@ describe('bridgesWidgetComponent', () => {
     })
 
     it('adds a bridge it has not seen before', async () => {
-      const widget = await open({ bridges: [makeBridge({ name: 'Zulu' })] })
+      const widget = await open({
+        bridges: [
+          makeBridge({ name: 'Zulu' }),
+        ],
+      })
 
       childIo.socket.fire('child-bridge-status-update', makeBridge({ name: 'Alpha', username: '0E:22:22:22:22:22' }))
 
@@ -161,7 +190,9 @@ describe('bridgesWidgetComponent', () => {
     })
 
     it('keeps the bridge name when the socket drops', async () => {
-      const widget = await open({ status: { status: 'ok', name: 'My Homebridge' } })
+      const widget = await open({
+        status: { status: 'ok', name: 'My Homebridge' },
+      })
 
       mainIo.socket.fire('disconnect')
 
@@ -176,7 +207,12 @@ describe('bridgesWidgetComponent', () => {
     // aria-label's matter check, and mapping the main bridge into the shared
     // icon source shape so its icons obey the same rules as the child rows.
     it('reads no matter config as not enabled for the aria label', async () => {
-      const widget = await open({ featureFlags: { matterSupport: true }, bridges: [makeBridge()] })
+      const widget = await open({
+        featureFlags: { matterSupport: true },
+        bridges: [
+          makeBridge(),
+        ],
+      })
 
       expect(widget.isChildMatterEnabled(widget.childBridges()[0])).toBe(false)
     })
@@ -184,7 +220,11 @@ describe('bridgesWidgetComponent', () => {
     it('treats a configured matter bridge as enabled', async () => {
       const widget = await open({
         featureFlags: { matterSupport: true },
-        bridges: [makeBridge({ matterConfig: { port: 5540 } })],
+        bridges: [
+          makeBridge({
+            matterConfig: { port: 5540 },
+          }),
+        ],
       })
 
       expect(widget.isChildMatterEnabled(widget.childBridges()[0])).toBe(true)
@@ -194,7 +234,11 @@ describe('bridgesWidgetComponent', () => {
       // Still configured, so the icon shows, but it is not advertising anything
       const widget = await open({
         featureFlags: { matterSupport: true },
-        bridges: [makeBridge({ matterConfig: { port: 5540, enabled: false } })],
+        bridges: [
+          makeBridge({
+            matterConfig: { port: 5540, enabled: false },
+          }),
+        ],
       })
 
       expect(widget.isChildMatterEnabled(widget.childBridges()[0])).toBe(false)
@@ -203,7 +247,11 @@ describe('bridgesWidgetComponent', () => {
     it('maps the main bridge into the shared icon source', async () => {
       const widget = await open({
         featureFlags: { hapBridgeDisable: true, protocolExternalsOnly: true, matterSupport: true },
-        status: { status: 'ok', hap: { enabled: false, externalsOnly: true }, matter: { enabled: true, externalsOnly: true } },
+        status: {
+          status: 'ok',
+          hap: { enabled: false, externalsOnly: true },
+          matter: { enabled: true, externalsOnly: true },
+        },
       })
 
       expect(widget.mainBridgeIconSource()).toEqual({
@@ -216,14 +264,18 @@ describe('bridgesWidgetComponent', () => {
 
   describe('what a screen reader hears', () => {
     it('reads the name, the status and the restart action', async () => {
-      const widget = await open({ status: { status: 'ok', name: 'My Homebridge' } })
+      const widget = await open({
+        status: { status: 'ok', name: 'My Homebridge' },
+      })
 
       expect(widget.mainBridgeAriaLabel())
         .toBe('My Homebridge, status.services.label_running, menu.tooltip_restart')
     })
 
     it('says restarting instead of a status while in transition', async () => {
-      const widget = await open({ status: { status: 'pending', name: 'My Homebridge' } })
+      const widget = await open({
+        status: { status: 'pending', name: 'My Homebridge' },
+      })
 
       // And drops the restart action, because pressing it again does nothing
       expect(widget.mainBridgeAriaLabel())
@@ -231,7 +283,10 @@ describe('bridgesWidgetComponent', () => {
     })
 
     it('leaves out the restart action for a non-admin', async () => {
-      const widget = await open({ status: { status: 'ok', name: 'My Homebridge' }, admin: false })
+      const widget = await open({
+        status: { status: 'ok', name: 'My Homebridge' },
+        admin: false,
+      })
 
       // Non-admins cannot restart anything, so announcing the action would be
       // announcing a button that is not there
@@ -239,7 +294,9 @@ describe('bridgesWidgetComponent', () => {
     })
 
     it('falls back to Homebridge when the status has no name', async () => {
-      const widget = await open({ status: { status: 'ok' } })
+      const widget = await open({
+        status: { status: 'ok' },
+      })
 
       expect(widget.mainBridgeAriaLabel()).toContain('Homebridge,')
     })
@@ -247,7 +304,11 @@ describe('bridgesWidgetComponent', () => {
     it('adds the matter state when matter is supported', async () => {
       const widget = await open({
         featureFlags: { matterSupport: true },
-        status: { status: 'ok', name: 'My Homebridge', matter: { enabled: true } },
+        status: {
+          status: 'ok',
+          name: 'My Homebridge',
+          matter: { enabled: true },
+        },
       })
 
       // The icon is always drawn when matter is supported, so the same three
@@ -266,7 +327,9 @@ describe('bridgesWidgetComponent', () => {
     })
 
     it('leaves matter out entirely when the server does not support it', async () => {
-      const widget = await open({ status: { status: 'ok', name: 'My Homebridge' } })
+      const widget = await open({
+        status: { status: 'ok', name: 'My Homebridge' },
+      })
 
       expect(widget.mainBridgeAriaLabel()).not.toContain('matter')
     })
@@ -283,15 +346,25 @@ describe('bridgesWidgetComponent', () => {
     })
 
     it('reads a child bridge the same way', async () => {
-      const widget = await open({ bridges: [makeBridge({ name: 'Kitchen Bridge' })] })
+      const widget = await open({
+        bridges: [
+          makeBridge({ name: 'Kitchen Bridge' }),
+        ],
+      })
 
       expect(widget.childBridgeAriaLabel(widget.childBridges()[0]))
         .toBe('Kitchen Bridge, status.services.label_running, menu.tooltip_restart')
     })
 
     it('says restarting for a child bridge being restarted', async () => {
-      const widget = await open({ bridges: [makeBridge()] })
-      widget.childBridges.update(bridges => [{ ...bridges[0], restarting: true }])
+      const widget = await open({
+        bridges: [
+          makeBridge(),
+        ],
+      })
+      widget.childBridges.update(bridges => [
+        { ...bridges[0], restarting: true },
+      ])
 
       expect(widget.childBridgeAriaLabel(widget.childBridges()[0]))
         .toBe('Kitchen Bridge, status.services.label_restarting')
@@ -351,7 +424,11 @@ describe('bridgesWidgetComponent', () => {
     })
 
     it('asks the child socket to restart it by id', async () => {
-      const widget = await open({ bridges: [makeBridge()] })
+      const widget = await open({
+        bridges: [
+          makeBridge(),
+        ],
+      })
 
       await widget.restartChildBridge(widget.childBridges()[0])
 
@@ -363,7 +440,10 @@ describe('bridgesWidgetComponent', () => {
 
     it('shows that one bridge as restarting, not all of them', async () => {
       const widget = await open({
-        bridges: [makeBridge({ name: 'Alpha', username: '0E:11:11:11:11:11' }), makeBridge({ name: 'Beta', username: '0E:22:22:22:22:22' })],
+        bridges: [
+          makeBridge({ name: 'Alpha', username: '0E:11:11:11:11:11' }),
+          makeBridge({ name: 'Beta', username: '0E:22:22:22:22:22' }),
+        ],
       })
 
       void widget.restartChildBridge(widget.childBridges()[0])
@@ -373,7 +453,11 @@ describe('bridgesWidgetComponent', () => {
     })
 
     it('stops showing as restarting when that bridge reports itself up', async () => {
-      const widget = await open({ bridges: [makeBridge()] })
+      const widget = await open({
+        bridges: [
+          makeBridge(),
+        ],
+      })
       void widget.restartChildBridge(widget.childBridges()[0])
 
       childIo.socket.fire('child-bridge-status-update', makeBridge({ status: 'ok' }))
@@ -382,7 +466,11 @@ describe('bridgesWidgetComponent', () => {
     })
 
     it('keeps showing as restarting while it is still down', async () => {
-      const widget = await open({ bridges: [makeBridge()] })
+      const widget = await open({
+        bridges: [
+          makeBridge(),
+        ],
+      })
       void widget.restartChildBridge(widget.childBridges()[0])
 
       childIo.socket.fire('child-bridge-status-update', makeBridge({ status: 'down' }))
@@ -392,7 +480,11 @@ describe('bridgesWidgetComponent', () => {
     })
 
     it('gives up waiting after fifteen seconds', async () => {
-      const widget = await open({ bridges: [makeBridge()] })
+      const widget = await open({
+        bridges: [
+          makeBridge(),
+        ],
+      })
       void widget.restartChildBridge(widget.childBridges()[0])
 
       await vi.advanceTimersByTimeAsync(15000)
@@ -401,7 +493,11 @@ describe('bridgesWidgetComponent', () => {
     })
 
     it('tells the user when the restart is refused', async () => {
-      const widget = await open({ bridges: [makeBridge()] })
+      const widget = await open({
+        bridges: [
+          makeBridge(),
+        ],
+      })
       childIo.socket.respondTo('restart-child-bridge', { error: 'not running' })
 
       await widget.restartChildBridge(widget.childBridges()[0])
@@ -492,7 +588,11 @@ describe('bridgesWidgetComponent', () => {
     it('says nothing about a child bridge that drops back to restarting', async () => {
       // The counterpart for the child bridges, which keep this state per bridge
       // rather than in one shared flag
-      const widget = await open({ bridges: [makeBridge()] })
+      const widget = await open({
+        bridges: [
+          makeBridge(),
+        ],
+      })
       await widget.restartChildBridge(widget.childBridges()[0])
       childIo.socket.fire('child-bridge-status-update', makeBridge({ status: 'pending' }))
       childIo.socket.fire('child-bridge-status-update', makeBridge({ status: 'ok' }))
@@ -509,7 +609,9 @@ describe('bridgesWidgetComponent', () => {
       // is filed under `undefined`, so any two of them share one restart
       // state and one announcement
       const nameless = makeBridge({ username: undefined, name: 'Nameless Bridge' })
-      const widget = await open({ bridges: [nameless] })
+      const widget = await open({
+        bridges: [nameless],
+      })
 
       await widget.restartChildBridge(widget.childBridges()[0])
       childIo.socket.fire('child-bridge-status-update', { ...nameless, status: 'pending' })
@@ -544,7 +646,11 @@ describe('bridgesWidgetComponent', () => {
     })
 
     it('announces a finished child bridge restart against that bridge', async () => {
-      const widget = await open({ bridges: [makeBridge()] })
+      const widget = await open({
+        bridges: [
+          makeBridge(),
+        ],
+      })
       void widget.restartChildBridge(widget.childBridges()[0])
 
       childIo.socket.fire('child-bridge-status-update', makeBridge({ status: 'pending' }))
@@ -557,7 +663,11 @@ describe('bridgesWidgetComponent', () => {
     })
 
     it('says nothing about a child bridge restarting on its own', async () => {
-      const widget = await open({ bridges: [makeBridge()] })
+      const widget = await open({
+        bridges: [
+          makeBridge(),
+        ],
+      })
 
       childIo.socket.fire('child-bridge-status-update', makeBridge({ status: 'pending' }))
       childIo.socket.fire('child-bridge-status-update', makeBridge({ status: 'ok' }))
@@ -671,7 +781,9 @@ describe('bridgesWidgetComponent', () => {
 
     it('announces a child bridge coming back, by name', async () => {
       const bridge = makeBridge({ status: 'ok' })
-      const widget = await open({ bridges: [bridge] })
+      const widget = await open({
+        bridges: [bridge],
+      })
 
       void widget.restartChildBridge(widget.childBridges()[0])
       await Promise.resolve()
@@ -686,7 +798,9 @@ describe('bridgesWidgetComponent', () => {
 
     it('says nothing about a child bridge it did not restart', async () => {
       const bridge = makeBridge({ status: 'ok' })
-      const widget = await open({ bridges: [bridge] })
+      const widget = await open({
+        bridges: [bridge],
+      })
 
       childIo.socket.fire('child-bridge-status-update', { ...bridge, status: 'pending' })
       await Promise.resolve()
@@ -698,7 +812,9 @@ describe('bridgesWidgetComponent', () => {
 
     it('clears a child bridge message again too', async () => {
       const bridge = makeBridge({ status: 'ok' })
-      const widget = await open({ bridges: [bridge] })
+      const widget = await open({
+        bridges: [bridge],
+      })
 
       void widget.restartChildBridge(widget.childBridges()[0])
       await Promise.resolve()

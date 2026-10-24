@@ -43,7 +43,9 @@ export class ColourService {
       red = 255
       green = temp
       green = 99.4708025861 * Math.log(green) - 161.1195681661
-      blue = temp <= 19 ? 0 : (138.5177312231 * Math.log(temp - 10) - 305.0447927307)
+      blue = temp <= 19
+        ? 0
+        : (138.5177312231 * Math.log(temp - 10) - 305.0447927307)
     } else {
       red = 329.698727446 * (temp - 60) ** -0.1332047592
       green = 288.1221695283 * (temp - 60) ** -0.0755148492
@@ -71,7 +73,9 @@ export class ColourService {
     if (temp <= 66) {
       red = 255
       green = Math.min(99.4708025861 * Math.log(temp) - 161.1195681661, 255)
-      blue = temp <= 19 ? 0 : Math.min(138.5177312231 * Math.log(temp - 10) - 305.0447927307, 255)
+      blue = temp <= 19
+        ? 0
+        : Math.min(138.5177312231 * Math.log(temp - 10) - 305.0447927307, 255)
     } else {
       red = Math.min(329.698727446 * (temp - 60) ** -0.1332047592, 255)
       green = Math.min(288.1221695283 * (temp - 60) ** -0.0755148492, 255)
@@ -98,7 +102,9 @@ export class ColourService {
       }
     }
     const lightness = (max + min) / 2
-    const saturation = delta === 0 ? 0 : delta / (1 - Math.abs(2 * lightness - 1))
+    const saturation = delta === 0
+      ? 0
+      : delta / (1 - Math.abs(2 * lightness - 1))
     return `hsl(${Math.round(hue)}, ${Math.round(saturation * 100)}%, ${Math.round(lightness * 100)}%)`
   }
 }

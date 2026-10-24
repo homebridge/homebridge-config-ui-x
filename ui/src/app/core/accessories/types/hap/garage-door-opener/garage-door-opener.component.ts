@@ -9,6 +9,15 @@ import { ACCESSORY_MANAGE_MODAL_DATA } from '@/app/core/accessories/types/base-m
 import { GarageDoorOpenerManageComponent } from '@/app/core/accessories/types/hap/garage-door-opener/garage-door-opener.manage.component'
 import { LongClickDirective } from '@/app/core/directives/long-click.directive'
 
+// CurrentDoorState: 0 open, 1 closed, 2 opening, 3 closing, 4 stopped
+const GARAGE_DOOR_STATE_KEYS: Record<number, string> = {
+  0: 'accessories.control.open',
+  1: 'accessories.control.closed',
+  2: 'accessories.control.opening',
+  3: 'accessories.control.closing',
+  4: 'accessories.control.stopped',
+}
+
 @Component({
   selector: 'app-garage-door-opener',
   imports: [
@@ -28,6 +37,21 @@ export class GarageDoorOpenerComponent {
 
   public readonly service = input.required<ServiceTypeX>()
   public readonly readyForControl = input<boolean>(false)
+
+  /**
+   * The translation key for the door's state, or '' for a CurrentDoorState it
+   * does not know. A plain method rather than computed(): the values are
+   * updated in place, so a computed() would never see them change.
+   */
+  public stateKey(): string {
+    const values = this.service().values ?? {}
+    if ('CurrentDoorState' in values) {
+      return GARAGE_DOOR_STATE_KEYS[values.CurrentDoorState] ?? ''
+    }
+    return values.On || values.Active
+      ? 'accessories.control.open'
+      : 'accessories.control.closed'
+  }
 
   public readonly fromStopped = signal(false)
   private lastDoorState: number | undefined = undefined
@@ -61,7 +85,9 @@ export class GarageDoorOpenerComponent {
       // If Current is Stopped, reverse the last moving direction
       if (currentState === 4) {
         // Was Closing -> Open, was Opening -> Close
-        void this.service().getCharacteristic!('TargetDoorState').setValue!(this.lastMovingDirection === 3 ? 0 : 1)
+        void this.service().getCharacteristic!('TargetDoorState').setValue!(this.lastMovingDirection === 3
+          ? 0
+          : 1)
       } else if (currentState === 1 || currentState === 3) {
         void this.service().getCharacteristic!('TargetDoorState').setValue!(0)
       } else {
@@ -81,13 +107,15 @@ export class GarageDoorOpenerComponent {
 
     if ('TargetDoorState' in this.service().values) {
       const modalInjector = createEnvironmentInjector(
-        [{
-          provide: ACCESSORY_MANAGE_MODAL_DATA,
-          useValue: {
-            service: this.service(),
-            $accessories: this.$accessories,
+        [
+          {
+            provide: ACCESSORY_MANAGE_MODAL_DATA,
+            useValue: {
+              service: this.service(),
+              $accessories: this.$accessories,
+            },
           },
-        }],
+        ],
         this.injector,
       )
 

@@ -137,7 +137,9 @@ describe('AuthController (e2e)', () => {
 
     expect(res.statusCode).toBe(201)
     expect(res.json()).toHaveProperty('access_token')
-    const cookies = Array.isArray(res.headers['set-cookie']) ? res.headers['set-cookie'] : [res.headers['set-cookie']]
+    const cookies = Array.isArray(res.headers['set-cookie'])
+      ? res.headers['set-cookie']
+      : [res.headers['set-cookie']]
     expect(cookies.some(cookie => cookie?.startsWith('hb-refresh='))).toBe(true)
     expect(cookies.some(cookie => cookie?.startsWith('hb-session='))).toBe(false)
   })
@@ -179,7 +181,12 @@ describe('AuthController (e2e)', () => {
   })
 
   it('rejects a token whose user has been deleted', async () => {
-    const created: any = await authService.addUser({ name: 'Temp', username: 'temp-deleted', password: 'temp-pw', admin: false } as any)
+    const created: any = await authService.addUser({
+      name: 'Temp',
+      username: 'temp-deleted',
+      password: 'temp-pw',
+      admin: false,
+    } as any)
     const payload = await authService.authenticate('temp-deleted', 'temp-pw')
     expect(await authService.validateUser(payload)).toBeTruthy()
 
@@ -191,7 +198,12 @@ describe('AuthController (e2e)', () => {
   })
 
   it('rejects a token whose user has been demoted from admin', async () => {
-    const created: any = await authService.addUser({ name: 'Demote', username: 'temp-demote', password: 'temp-pw', admin: true } as any)
+    const created: any = await authService.addUser({
+      name: 'Demote',
+      username: 'temp-demote',
+      password: 'temp-pw',
+      admin: true,
+    } as any)
     const payload = await authService.authenticate('temp-demote', 'temp-pw')
     expect(payload.admin).toBe(true)
     expect(await authService.validateUser(payload)).toBeTruthy()
@@ -202,7 +214,12 @@ describe('AuthController (e2e)', () => {
   })
 
   it('rejects a token issued before the password was changed', async () => {
-    await authService.addUser({ name: 'Rotate', username: 'temp-rotate', password: 'old-password', admin: false } as any)
+    await authService.addUser({
+      name: 'Rotate',
+      username: 'temp-rotate',
+      password: 'old-password',
+      admin: false,
+    } as any)
     const payload = await authService.authenticate('temp-rotate', 'old-password')
     expect(await authService.validateUser(payload)).toBeTruthy()
 
@@ -220,7 +237,9 @@ describe('AuthController (e2e)', () => {
     })
     expect(login.statusCode).toBe(201)
     const header = login.headers['set-cookie']
-    const setCookies = (Array.isArray(header) ? header : [header]) as string[]
+    const setCookies = (Array.isArray(header)
+      ? header
+      : [header]) as string[]
     const refreshCookie = setCookies.find(c => c.startsWith('hb-refresh='))!
     expect(refreshCookie).toBeDefined()
     // The token must not be reachable from JavaScript, which is the whole point
@@ -251,7 +270,9 @@ describe('AuthController (e2e)', () => {
     })
     expect(loggedOut.statusCode).toBe(201)
     const clearedHeader = loggedOut.headers['set-cookie']
-    const cleared = (Array.isArray(clearedHeader) ? clearedHeader : [clearedHeader]) as string[]
+    const cleared = (Array.isArray(clearedHeader)
+      ? clearedHeader
+      : [clearedHeader]) as string[]
     expect(cleared.some(c => c.startsWith('hb-refresh=') && c.includes('Max-Age=0'))).toBe(true)
     expect(cleared.some(c => c.startsWith('hb-session='))).toBe(false)
 
@@ -272,7 +293,9 @@ describe('AuthController (e2e)', () => {
       payload: { username: 'admin', password: 'admin' },
     })
     const header = login.headers['set-cookie']
-    const setCookies = (Array.isArray(header) ? header : [header]) as string[]
+    const setCookies = (Array.isArray(header)
+      ? header
+      : [header]) as string[]
     const staleCookie = setCookies.find(c => c.startsWith('hb-refresh='))!.split(';')[0]
 
     await authService.updateOwnPassword('admin', 'admin', 'changed-password')
@@ -295,7 +318,9 @@ describe('AuthController (e2e)', () => {
       payload: { username: 'admin', password: 'admin' },
     })
     const header = login.headers['set-cookie']
-    const setCookies = (Array.isArray(header) ? header : [header]) as string[]
+    const setCookies = (Array.isArray(header)
+      ? header
+      : [header]) as string[]
     const staleCookie = setCookies.find(c => c.startsWith('hb-refresh='))!.split(';')[0]
 
     const adminUser = (await authService.getUsers()).find(x => x.username === 'admin')!
@@ -324,7 +349,9 @@ describe('AuthController (e2e)', () => {
       payload: { username: 'admin', password: 'admin' },
     })
     const header = login.headers['set-cookie']
-    const setCookies = (Array.isArray(header) ? header : [header]) as string[]
+    const setCookies = (Array.isArray(header)
+      ? header
+      : [header]) as string[]
     const staleCookie = setCookies.find(c => c.startsWith('hb-refresh='))!.split(';')[0]
 
     await authService.setupOtp('admin')
@@ -349,7 +376,9 @@ describe('AuthController (e2e)', () => {
       payload: { username: 'admin', password: 'admin' },
     })
     const header = login.headers['set-cookie']
-    const setCookies = (Array.isArray(header) ? header : [header]) as string[]
+    const setCookies = (Array.isArray(header)
+      ? header
+      : [header]) as string[]
     const staleCookie = setCookies.find(c => c.startsWith('hb-refresh='))!.split(';')[0]
 
     await authService.updateOwnPassword('admin', 'admin', 'changed-again')
@@ -439,7 +468,9 @@ describe('AuthController (e2e)', () => {
         const stale = await app.inject({
           method: 'POST',
           path: '/auth/session',
-          headers: { cookie: signUserCookie({ sessionStartedAt: Math.floor(Date.now() / 1000) - (31 * DAY) }) },
+          headers: {
+            cookie: signUserCookie({ sessionStartedAt: Math.floor(Date.now() / 1000) - (31 * DAY) }),
+          },
         })
         expect(stale.statusCode).toBe(401)
         expect(warn).toHaveBeenCalledWith(expect.stringContaining('Refused to refresh the session'))
@@ -450,7 +481,9 @@ describe('AuthController (e2e)', () => {
         const ok = await app.inject({
           method: 'POST',
           path: '/auth/session',
-          headers: { cookie: signUserCookie({}) },
+          headers: {
+            cookie: signUserCookie({}),
+          },
         })
         expect(ok.statusCode).toBe(201)
         // the successful path says nothing at info or above - that is the whole point
@@ -545,7 +578,9 @@ describe('AuthController (e2e)', () => {
       payload: { username: 'admin', password: 'admin' },
     })
     const header = login.headers['set-cookie']
-    const setCookies = (Array.isArray(header) ? header : [header]) as string[]
+    const setCookies = (Array.isArray(header)
+      ? header
+      : [header]) as string[]
     const cookieValue = setCookies.find(c => c.startsWith('hb-refresh='))!.split(';')[0]
 
     const revoke = vi.spyOn(authService, 'revokeUserSessions')
@@ -561,7 +596,9 @@ describe('AuthController (e2e)', () => {
       // response carries the cleared cookie, and does not surface as an error.
       expect(loggedOut.statusCode).toBe(201)
       const clearedHeader = loggedOut.headers['set-cookie']
-      const cleared = (Array.isArray(clearedHeader) ? clearedHeader : [clearedHeader]) as string[]
+      const cleared = (Array.isArray(clearedHeader)
+        ? clearedHeader
+        : [clearedHeader]) as string[]
       expect(cleared.some(c => c.startsWith('hb-refresh=') && c.includes('Max-Age=0'))).toBe(true)
 
       // Honest about the limit: with the write lost, the server-side session
@@ -590,7 +627,9 @@ describe('AuthController (e2e)', () => {
       payload: { username: 'admin', password: 'admin' },
     })
     const header = login.headers['set-cookie']
-    const setCookies = (Array.isArray(header) ? header : [header]) as string[]
+    const setCookies = (Array.isArray(header)
+      ? header
+      : [header]) as string[]
     const cookieValue = setCookies.find(c => c.startsWith('hb-refresh='))!.split(';')[0]
 
     const local = await app.inject({
@@ -603,7 +642,9 @@ describe('AuthController (e2e)', () => {
     // this browser is signed out...
     expect(local.statusCode).toBe(201)
     const clearedHeader = local.headers['set-cookie']
-    const cleared = (Array.isArray(clearedHeader) ? clearedHeader : [clearedHeader]) as string[]
+    const cleared = (Array.isArray(clearedHeader)
+      ? clearedHeader
+      : [clearedHeader]) as string[]
     expect(cleared.some(c => c.startsWith('hb-refresh=') && c.includes('Max-Age=0'))).toBe(true)
 
     // ...and the other device's copy of the session still works, because
@@ -637,7 +678,9 @@ describe('AuthController (e2e)', () => {
       headers: { authorization: 'Bearer invalid-token' },
     })
     const setCookie = loggedOut.headers['set-cookie']
-    const cleared = (Array.isArray(setCookie) ? setCookie : [setCookie]) as string[]
+    const cleared = (Array.isArray(setCookie)
+      ? setCookie
+      : [setCookie]) as string[]
 
     expect(loggedOut.statusCode).toBe(201)
     expect(cleared.some(cookie => cookie.startsWith('hb-refresh=') && cookie.includes('Max-Age=0'))).toBe(true)
@@ -706,7 +749,9 @@ describe('AuthController (e2e)', () => {
 
     expect(res.statusCode).toBe(201)
     expect(res.json()).toHaveProperty('access_token')
-    const cookies = Array.isArray(res.headers['set-cookie']) ? res.headers['set-cookie'] : [res.headers['set-cookie']]
+    const cookies = Array.isArray(res.headers['set-cookie'])
+      ? res.headers['set-cookie']
+      : [res.headers['set-cookie']]
     expect(cookies.some(cookie => cookie?.startsWith('hb-refresh='))).toBe(true)
     expect(cookies.some(cookie => cookie?.startsWith('hb-session='))).toBe(false)
   })
@@ -884,7 +929,9 @@ describe('AuthController (e2e)', () => {
     // Verify the token is valid (length and structure) - JWT uses base64url which includes - and _ chars
     expect(res.json().access_token).toMatch(RE_JWT)
 
-    const cookies = Array.isArray(res.headers['set-cookie']) ? res.headers['set-cookie'] : [res.headers['set-cookie']]
+    const cookies = Array.isArray(res.headers['set-cookie'])
+      ? res.headers['set-cookie']
+      : [res.headers['set-cookie']]
     expect(cookies.some(cookie => cookie?.startsWith('hb-refresh='))).toBe(true)
     expect(cookies.some(cookie => cookie?.startsWith('hb-session='))).toBe(false)
   })
@@ -974,7 +1021,9 @@ describe('AuthController (e2e)', () => {
         payload: { username: 'admin', password: 'admin' },
       })
       const header = login.headers['set-cookie']
-      const setCookies = (Array.isArray(header) ? header : [header]) as string[]
+      const setCookies = (Array.isArray(header)
+        ? header
+        : [header]) as string[]
       const cookieValue = setCookies.find(c => c.startsWith('hb-refresh='))!.split(';')[0]
 
       const loggedOut = await app.inject({
@@ -1017,7 +1066,9 @@ describe('AuthController (e2e)', () => {
       expect(loggedOut.statusCode).toBe(201)
 
       const header = loggedOut.headers['set-cookie']
-      const cleared = (Array.isArray(header) ? header : [header]) as string[]
+      const cleared = (Array.isArray(header)
+        ? header
+        : [header]) as string[]
       expect(cleared.some(c => c.startsWith('hb-plugin-ui='))).toBe(false)
     })
 
@@ -1041,7 +1092,9 @@ describe('AuthController (e2e)', () => {
       })
 
       const header = loggedOut.headers['set-cookie']
-      const cleared = (Array.isArray(header) ? header : [header]) as string[]
+      const cleared = (Array.isArray(header)
+        ? header
+        : [header]) as string[]
       expect(cleared.some(c => c.startsWith('hb-plugin-ui='))).toBe(true)
     })
 
@@ -1053,7 +1106,9 @@ describe('AuthController (e2e)', () => {
         payload: { username: 'admin', password: 'admin' },
       })
       const header = login.headers['set-cookie']
-      const setCookies = (Array.isArray(header) ? header : [header]) as string[]
+      const setCookies = (Array.isArray(header)
+        ? header
+        : [header]) as string[]
       const cookieValue = setCookies.find(c => c.startsWith('hb-refresh='))!.split(';')[0]
 
       await app.inject({
@@ -1135,7 +1190,9 @@ describe('AuthController (e2e)', () => {
     const context: any = {
       switchToWs: () => ({
         getClient: () => ({
-          handshake: { query: { token: 'not.a.valid.jwt' } },
+          handshake: {
+            query: { token: 'not.a.valid.jwt' },
+          },
           disconnect,
         }),
       }),
@@ -1162,7 +1219,9 @@ describe('AuthController (e2e)', () => {
     const context: any = {
       switchToWs: () => ({
         getClient: () => ({
-          handshake: { query: { token: expiredToken } },
+          handshake: {
+            query: { token: expiredToken },
+          },
           disconnect,
         }),
       }),
@@ -1175,7 +1234,12 @@ describe('AuthController (e2e)', () => {
   it('WsAdminGuard rejects a non-admin user even with a valid token', async () => {
     // The user has to exist in the auth file: a token naming a user who is not
     // there is now rejected outright rather than returning false.
-    await authService.addUser({ name: 'Someone', username: 'someone', password: 'someone-pw', admin: false } as any)
+    await authService.addUser({
+      name: 'Someone',
+      username: 'someone',
+      password: 'someone-pw',
+      admin: false,
+    } as any)
 
     const jwt = await import('jsonwebtoken')
     const nonAdminToken = jwt.sign(
@@ -1192,7 +1256,9 @@ describe('AuthController (e2e)', () => {
     const context: any = {
       switchToWs: () => ({
         getClient: () => ({
-          handshake: { query: { token: nonAdminToken } },
+          handshake: {
+            query: { token: nonAdminToken },
+          },
           disconnect,
         }),
       }),
@@ -1211,7 +1277,10 @@ describe('AuthController (e2e)', () => {
     const context: any = {
       switchToWs: () => ({
         getClient: () => ({
-          handshake: { auth: { token }, query: {} },
+          handshake: {
+            auth: { token },
+            query: {},
+          },
           disconnect,
         }),
       }),
@@ -1222,13 +1291,23 @@ describe('AuthController (e2e)', () => {
   })
 
   it('WsLogGuard follows the restrictLogsToAdmins setting', async () => {
-    await authService.addUser({ name: 'Log Reader', username: 'log-reader', password: 'log-reader-pw', admin: false } as any)
+    await authService.addUser({
+      name: 'Log Reader',
+      username: 'log-reader',
+      password: 'log-reader-pw',
+      admin: false,
+    } as any)
     const nonAdmin = (await authService.signIn('log-reader', 'log-reader-pw')).access_token
     const admin = (await authService.signIn('admin', 'admin')).access_token
 
     const contextFor = (token: string) => ({
       switchToWs: () => ({
-        getClient: () => ({ handshake: { auth: { token } }, disconnect: vi.fn() }),
+        getClient: () => ({
+          handshake: {
+            auth: { token },
+          },
+          disconnect: vi.fn(),
+        }),
       }),
     }) as any
 
@@ -1257,7 +1336,9 @@ describe('AuthController (e2e)', () => {
     const context: any = {
       switchToWs: () => ({
         getClient: () => ({
-          handshake: { query: { token: wizardToken } },
+          handshake: {
+            query: { token: wizardToken },
+          },
           disconnect,
         }),
       }),
@@ -1285,8 +1366,18 @@ describe('AuthController (e2e)', () => {
     const baseline = users.length
 
     const results = await Promise.all([
-      authService.addUser({ name: 'Race A', username: 'race-add-a', password: 'race-pw-a', admin: false } as any),
-      authService.addUser({ name: 'Race B', username: 'race-add-b', password: 'race-pw-b', admin: false } as any),
+      authService.addUser({
+        name: 'Race A',
+        username: 'race-add-a',
+        password: 'race-pw-a',
+        admin: false,
+      } as any),
+      authService.addUser({
+        name: 'Race B',
+        username: 'race-add-b',
+        password: 'race-pw-b',
+        admin: false,
+      } as any),
     ])
 
     expect(results[0].id).not.toBe(results[1].id)

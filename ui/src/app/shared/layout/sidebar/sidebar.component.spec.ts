@@ -66,7 +66,9 @@ describe('SidebarComponent', () => {
       writable: true,
     })
 
-    auth = makeAuth({ user: { admin: options.admin ?? true } })
+    auth = makeAuth({
+      user: { admin: options.admin ?? true },
+    })
     toastr = toastrStub()
     modal = modalServiceSpy()
     notification = {
@@ -74,7 +76,9 @@ describe('SidebarComponent', () => {
       formAuthEnabled: signal<boolean | null>(null),
       legacyOtpDetected: signal(false),
     }
-    authHelper = { isAuthenticated: vi.fn(async () => options.authenticated ?? true) }
+    authHelper = {
+      isAuthenticated: vi.fn(async () => options.authenticated ?? true),
+    }
     settings = makeSettings({
       formAuth: options.formAuth ?? true,
       env: {
@@ -120,7 +124,9 @@ describe('SidebarComponent', () => {
    * thing to assert on.
    */
   function items(element: HTMLElement): string[] {
-    return [...element.querySelectorAll('app-sidebar .title')]
+    return [
+      ...element.querySelectorAll('app-sidebar .title'),
+    ]
       .map(node => node.textContent!.trim())
       .filter(Boolean)
   }
@@ -176,10 +182,26 @@ describe('SidebarComponent', () => {
 
   describe('the terminal', () => {
     it.each([
-      ['an admin with terminal access', { admin: true, terminal: true }, true],
-      ['an admin without terminal access', { admin: true, terminal: false }, false],
-      ['a non-admin with terminal access', { admin: false, terminal: true }, false],
-      ['a non-admin without terminal access', { admin: false, terminal: false }, false],
+      [
+        'an admin with terminal access',
+        { admin: true, terminal: true },
+        true,
+      ],
+      [
+        'an admin without terminal access',
+        { admin: true, terminal: false },
+        false,
+      ],
+      [
+        'a non-admin with terminal access',
+        { admin: false, terminal: true },
+        false,
+      ],
+      [
+        'a non-admin without terminal access',
+        { admin: false, terminal: false },
+        false,
+      ],
     ])('is %s shown: %s', (_case, options, expected) => {
       const element = render(options)
 
@@ -189,10 +211,26 @@ describe('SidebarComponent', () => {
 
   describe('the log viewer', () => {
     it.each([
-      ['an admin while unrestricted', { admin: true, restrictLogs: false }, true],
-      ['an admin while restricted', { admin: true, restrictLogs: true }, true],
-      ['a non-admin while unrestricted', { admin: false, restrictLogs: false }, true],
-      ['a non-admin while restricted', { admin: false, restrictLogs: true }, false],
+      [
+        'an admin while unrestricted',
+        { admin: true, restrictLogs: false },
+        true,
+      ],
+      [
+        'an admin while restricted',
+        { admin: true, restrictLogs: true },
+        true,
+      ],
+      [
+        'a non-admin while unrestricted',
+        { admin: false, restrictLogs: false },
+        true,
+      ],
+      [
+        'a non-admin while restricted',
+        { admin: false, restrictLogs: true },
+        false,
+      ],
     ])('is %s shown: %s', (_case, options, expected) => {
       const element = render(options)
 

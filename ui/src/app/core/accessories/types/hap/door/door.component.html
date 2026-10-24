@@ -2,16 +2,7 @@
 @let pos = values?.CurrentPosition;
 @let posState = values?.PositionState;
 
-@let stateText =
-  posState === 1
-    ? ('accessories.control.opening' | translate)
-    : posState === 0
-      ? ('accessories.control.closing' | translate)
-      : pos === 0
-        ? ('accessories.control.closed' | translate)
-        : pos === 100
-          ? ('accessories.control.open' | translate)
-          : `${('accessories.control.open' | translate)} ${pos}%`;
+@let stateText = (stateKey() | translate) + (isPartOpen() ? ` ${pos}%` : '');
 
 @let srBaseName = (service().customName || service().serviceName || '').trim();
 @let srType = 'accessories.core.door' | translate;

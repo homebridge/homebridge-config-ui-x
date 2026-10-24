@@ -16,7 +16,9 @@ describe('serverUnreachableComponent', () => {
     TestBed.resetTestingModule()
     TestBed.configureTestingModule({
       imports: [ServerUnreachableComponent],
-      providers: [provideTestTranslate()],
+      providers: [
+        provideTestTranslate(),
+      ],
     })
     const fixture = TestBed.createComponent(ServerUnreachableComponent)
     fixture.detectChanges()

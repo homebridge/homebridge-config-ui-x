@@ -50,7 +50,9 @@ describe('matter light manage modals', () => {
     accessoryData = new Subject()
     return {
       accessoryData,
-      accessories: { services: [current] },
+      accessories: {
+        services: [current],
+      },
     } as unknown as AccessoriesService
   }
 
@@ -89,7 +91,10 @@ describe('matter light manage modals', () => {
         { provide: NgbActiveModal, useValue: activeModal },
         {
           provide: ACCESSORY_MANAGE_MODAL_DATA,
-          useValue: { service, $accessories: accessoriesStub(service) },
+          useValue: {
+            service,
+            $accessories: accessoriesStub(service),
+          },
         },
       ],
     })
@@ -141,7 +146,11 @@ describe('matter light manage modals', () => {
 
     it('shows the level as a percentage of 254, not of 100', () => {
       const component = create(type, {
-        clusters: { onOff: { onOff: true }, levelControl: { currentLevel: 127 }, colorControl: {} },
+        clusters: {
+          onOff: { onOff: true },
+          levelControl: { currentLevel: 127 },
+          colorControl: {},
+        },
       }).componentInstance
 
       expect(component.brightnessPercentage).toBe(50)
@@ -155,7 +164,12 @@ describe('matter light manage modals', () => {
         component.onBrightnessStateChange()
       })
 
-      expect(service.writes).toEqual([{ cluster: 'levelControl', attributes: { currentLevel: 200 } }])
+      expect(service.writes).toEqual([
+        {
+          cluster: 'levelControl',
+          attributes: { currentLevel: 200 },
+        },
+      ])
     })
 
     it('waits out the debounce before writing anything', async () => {
@@ -178,14 +192,23 @@ describe('matter light manage modals', () => {
         }
       })
 
-      expect(service.writes).toEqual([{ cluster: 'levelControl', attributes: { currentLevel: 200 } }])
+      expect(service.writes).toEqual([
+        {
+          cluster: 'levelControl',
+          attributes: { currentLevel: 200 },
+        },
+      ])
     })
 
     it('writes onOff as well when the slider is moved while the light is off', async () => {
       // A raw level write does not run Matter's on/off coupling, so a slider
       // move from the off state must also set onOff
       const component = create(type, {
-        clusters: { onOff: { onOff: false }, levelControl: { currentLevel: 0 }, colorControl: {} },
+        clusters: {
+          onOff: { onOff: false },
+          levelControl: { currentLevel: 0 },
+          colorControl: {},
+        },
       }).componentInstance
 
       await slide(() => {
@@ -194,8 +217,14 @@ describe('matter light manage modals', () => {
       })
 
       expect(service.writes).toEqual([
-        { cluster: 'levelControl', attributes: { currentLevel: 200 } },
-        { cluster: 'onOff', attributes: { onOff: true } },
+        {
+          cluster: 'levelControl',
+          attributes: { currentLevel: 200 },
+        },
+        {
+          cluster: 'onOff',
+          attributes: { onOff: true },
+        },
       ])
     })
 
@@ -209,7 +238,12 @@ describe('matter light manage modals', () => {
         component.onBrightnessStateChange()
       })
 
-      expect(service.writes).toEqual([{ cluster: 'onOff', attributes: { onOff: false } }])
+      expect(service.writes).toEqual([
+        {
+          cluster: 'onOff',
+          attributes: { onOff: false },
+        },
+      ])
       expect(component.targetMode).toBe(false)
     })
 
@@ -218,34 +252,61 @@ describe('matter light manage modals', () => {
       // must be written too or the light state never reads as on
       const component = create(type).componentInstance
 
-      await component.setTargetMode(true, { target: document.createElement('button') } as unknown as MouseEvent)
+      await component.setTargetMode(true, {
+        target: document.createElement('button'),
+      } as unknown as MouseEvent)
 
       expect(service.writes).toEqual([
-        { cluster: 'levelControl', attributes: { currentLevel: 120 } },
-        { cluster: 'onOff', attributes: { onOff: true } },
+        {
+          cluster: 'levelControl',
+          attributes: { currentLevel: 120 },
+        },
+        {
+          cluster: 'onOff',
+          attributes: { onOff: true },
+        },
       ])
       expect(component.targetMode).toBe(true)
     })
 
     it('turns a light that was left at zero back on at full brightness', async () => {
       const component = create(type, {
-        clusters: { onOff: { onOff: false }, levelControl: { currentLevel: 0 }, colorControl: {} },
+        clusters: {
+          onOff: { onOff: false },
+          levelControl: { currentLevel: 0 },
+          colorControl: {},
+        },
       }).componentInstance
 
-      await component.setTargetMode(true, { target: document.createElement('button') } as unknown as MouseEvent)
+      await component.setTargetMode(true, {
+        target: document.createElement('button'),
+      } as unknown as MouseEvent)
 
       expect(service.writes).toEqual([
-        { cluster: 'levelControl', attributes: { currentLevel: 254 } },
-        { cluster: 'onOff', attributes: { onOff: true } },
+        {
+          cluster: 'levelControl',
+          attributes: { currentLevel: 254 },
+        },
+        {
+          cluster: 'onOff',
+          attributes: { onOff: true },
+        },
       ])
     })
 
     it('turns the light off through onOff', async () => {
       const component = create(type).componentInstance
 
-      await component.setTargetMode(false, { target: document.createElement('button') } as unknown as MouseEvent)
+      await component.setTargetMode(false, {
+        target: document.createElement('button'),
+      } as unknown as MouseEvent)
 
-      expect(service.writes).toEqual([{ cluster: 'onOff', attributes: { onOff: false } }])
+      expect(service.writes).toEqual([
+        {
+          cluster: 'onOff',
+          attributes: { onOff: false },
+        },
+      ])
       expect(component.targetMode).toBe(false)
     })
 
@@ -253,7 +314,9 @@ describe('matter light manage modals', () => {
       const component = create(type).componentInstance
       service.failWrites('onOff', new Error('device offline'))
 
-      await component.setTargetMode(false, { target: document.createElement('button') } as unknown as MouseEvent)
+      await component.setTargetMode(false, {
+        target: document.createElement('button'),
+      } as unknown as MouseEvent)
 
       expect(component.targetMode).toBe(true)
       expect(toastr.error).toHaveBeenCalledWith('toast.api_error_generic', 'toast.title_error')
@@ -273,7 +336,12 @@ describe('matter light manage modals', () => {
     })
 
     it('complains rather than writing nowhere when the level cluster is missing', async () => {
-      const component = create(type, { clusters: { onOff: { onOff: true }, colorControl: {} } }).componentInstance
+      const component = create(type, {
+        clusters: {
+          onOff: { onOff: true },
+          colorControl: {},
+        },
+      }).componentInstance
 
       await slide(() => {
         component.targetBrightness.value = 200
@@ -327,7 +395,12 @@ describe('matter light manage modals', () => {
         component.onColorTemperatureStateChange()
       })
 
-      expect(service.writes).toEqual([{ cluster: 'colorControl', attributes: { colorTemperatureMireds: 400 } }])
+      expect(service.writes).toEqual([
+        {
+          cluster: 'colorControl',
+          attributes: { colorTemperatureMireds: 400 },
+        },
+      ])
     })
 
     it('records the mired value straight away so the label does not lag the slider', () => {
@@ -376,12 +449,21 @@ describe('matter light manage modals', () => {
       const component = create(ExtendedColorLightManageComponent).componentInstance
 
       expect(component.targetHue).toEqual({ value: 50, min: 0, max: 254, step: 1 })
-      expect(component.targetSaturation).toEqual({ value: 200, min: 0, max: 254, step: 1 })
+      expect(component.targetSaturation).toEqual({
+        value: 200,
+        min: 0,
+        max: 254,
+        step: 1,
+      })
     })
 
     it('reports both as a percentage of 254', () => {
       const component = create(ExtendedColorLightManageComponent, {
-        clusters: { onOff: { onOff: true }, levelControl: { currentLevel: 120 }, colorControl: { currentHue: 127, currentSaturation: 254 } },
+        clusters: {
+          onOff: { onOff: true },
+          levelControl: { currentLevel: 120 },
+          colorControl: { currentHue: 127, currentSaturation: 254 },
+        },
       }).componentInstance
 
       expect(component.huePercentage).toBe(50)
@@ -396,10 +478,12 @@ describe('matter light manage modals', () => {
         component.onHueStateChange()
       })
 
-      expect(service.writes).toEqual([{
-        cluster: 'colorControl',
-        attributes: { currentHue: 100, currentSaturation: 200 },
-      }])
+      expect(service.writes).toEqual([
+        {
+          cluster: 'colorControl',
+          attributes: { currentHue: 100, currentSaturation: 200 },
+        },
+      ])
     })
 
     it('sends both from the saturation slider too', async () => {
@@ -410,10 +494,12 @@ describe('matter light manage modals', () => {
         component.onSaturationStateChange()
       })
 
-      expect(service.writes).toEqual([{
-        cluster: 'colorControl',
-        attributes: { currentHue: 50, currentSaturation: 254 },
-      }])
+      expect(service.writes).toEqual([
+        {
+          cluster: 'colorControl',
+          attributes: { currentHue: 50, currentSaturation: 254 },
+        },
+      ])
     })
 
     it('puts both sliders back when the write is refused', async () => {
@@ -450,7 +536,10 @@ describe('matter light manage modals', () => {
 
     it('complains rather than writing nowhere when the colour cluster is missing', async () => {
       const component = create(ExtendedColorLightManageComponent, {
-        clusters: { onOff: { onOff: true }, levelControl: { currentLevel: 120 } },
+        clusters: {
+          onOff: { onOff: true },
+          levelControl: { currentLevel: 120 },
+        },
       }).componentInstance
 
       await slide(() => {
@@ -506,7 +595,9 @@ describe('matter light manage modals', () => {
         clusters: {
           onOff: { onOff: true },
           levelControl: { currentLevel: 120 },
-          colorControl: { featureMap: { colorTemperature: true, hueSaturation: true } },
+          colorControl: {
+            featureMap: { colorTemperature: true, hueSaturation: true },
+          },
         },
       }).componentInstance
 
@@ -521,7 +612,11 @@ describe('matter light manage modals', () => {
         clusters: {
           onOff: { onOff: true },
           levelControl: { currentLevel: 120 },
-          colorControl: { colorTemperatureMireds: 250, currentHue: 50, featureMap: { colorTemperature: false, hueSaturation: true } },
+          colorControl: {
+            colorTemperatureMireds: 250,
+            currentHue: 50,
+            featureMap: { colorTemperature: false, hueSaturation: true },
+          },
         },
       }).componentInstance
 

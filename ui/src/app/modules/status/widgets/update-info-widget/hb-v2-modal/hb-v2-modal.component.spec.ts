@@ -39,7 +39,13 @@ describe('hbV2ModalComponent', () => {
    * @param engines - what it declares in `engines.homebridge`
    */
   function installed(name: string, engines?: string) {
-    return { name, displayName: name, engines: engines === undefined ? undefined : { homebridge: engines } }
+    return {
+      name,
+      displayName: name,
+      engines: engines === undefined
+        ? undefined
+        : { homebridge: engines },
+    }
   }
 
   /**
@@ -62,8 +68,13 @@ describe('hbV2ModalComponent', () => {
     toastr = toastrStub()
     ws = fakeWs()
     pluginsCache = cacheStub<any[]>(options.plugins ?? [])
-    activeModal = { close: vi.fn(), dismiss: vi.fn() }
-    settings = makeSettings({ env: { homebridgeVersion: options.homebridgeVersion ?? '1.8.0' } })
+    activeModal = {
+      close: vi.fn(),
+      dismiss: vi.fn(),
+    }
+    settings = makeSettings({
+      env: { homebridgeVersion: options.homebridgeVersion ?? '1.8.0' },
+    })
 
     io = ws.namespace('status', { connected: options.connected ?? true })
     io.socket.respondTo('get-homebridge-server-info', { nodeVersion: options.nodeVersion ?? '22.0.0' })
@@ -82,7 +93,10 @@ describe('hbV2ModalComponent', () => {
     })
 
     TestBed.overrideComponent(HbV2ModalComponent, {
-      set: { imports: [TranslatePipe], schemas: [NO_ERRORS_SCHEMA] },
+      set: {
+        imports: [TranslatePipe],
+        schemas: [NO_ERRORS_SCHEMA],
+      },
     })
 
     const fixture = TestBed.createComponent(HbV2ModalComponent)
@@ -108,7 +122,12 @@ describe('hbV2ModalComponent', () => {
      * @param homebridgeVersion - the version running now
      */
     async function verdictFor(engines?: string, homebridgeVersion = '1.8.0') {
-      const modal = open({ plugins: [installed('homebridge-example', engines)], homebridgeVersion })
+      const modal = open({
+        plugins: [
+          installed('homebridge-example', engines),
+        ],
+        homebridgeVersion,
+      })
       await settle()
       return modal.installedPlugins()[0].hb2Ready
     }
@@ -149,7 +168,12 @@ describe('hbV2ModalComponent', () => {
     })
 
     it('never asks about the ui itself', async () => {
-      const modal = open({ plugins: [installed('homebridge-config-ui-x', '^1.8.0'), installed('homebridge-example', '^2.0.0')] })
+      const modal = open({
+        plugins: [
+          installed('homebridge-config-ui-x', '^1.8.0'),
+          installed('homebridge-example', '^2.0.0'),
+        ],
+      })
       await settle()
 
       expect(modal.installedPlugins().map(p => p.name)).toEqual(['homebridge-example'])
@@ -157,7 +181,10 @@ describe('hbV2ModalComponent', () => {
 
     it('lists the plugins in name order', async () => {
       const modal = open({
-        plugins: [installed('homebridge-zebra', '^2.0.0'), installed('homebridge-apple', '^2.0.0')],
+        plugins: [
+          installed('homebridge-zebra', '^2.0.0'),
+          installed('homebridge-apple', '^2.0.0'),
+        ],
       })
       await settle()
 
@@ -167,14 +194,24 @@ describe('hbV2ModalComponent', () => {
 
   describe('the overall verdict', () => {
     it('says everything is ready when every plugin declares v2', async () => {
-      const modal = open({ plugins: [installed('homebridge-a', '^2.0.0'), installed('homebridge-b', '2.x')] })
+      const modal = open({
+        plugins: [
+          installed('homebridge-a', '^2.0.0'),
+          installed('homebridge-b', '2.x'),
+        ],
+      })
       await settle()
 
       expect(modal.allPluginsSupported()).toBe(true)
     })
 
     it('says it is not ready when one plugin does not', async () => {
-      const modal = open({ plugins: [installed('homebridge-a', '^2.0.0'), installed('homebridge-b', '^1.8.0')] })
+      const modal = open({
+        plugins: [
+          installed('homebridge-a', '^2.0.0'),
+          installed('homebridge-b', '^1.8.0'),
+        ],
+      })
       await settle()
 
       expect(modal.allPluginsSupported()).toBe(false)
@@ -191,18 +228,28 @@ describe('hbV2ModalComponent', () => {
       // ⚠️ The flag is a running total over the list. Without resetting it, a
       // reload after the user updated the offending plugin still reported the old
       // verdict, and the readiness button stayed switched off
-      const modal = open({ plugins: [installed('homebridge-a', '^1.8.0')] })
+      const modal = open({
+        plugins: [
+          installed('homebridge-a', '^1.8.0'),
+        ],
+      })
       await settle()
       expect(modal.allPluginsSupported()).toBe(false)
 
-      pluginsCache.setValue([installed('homebridge-a', '^2.0.0')])
+      pluginsCache.setValue([
+        installed('homebridge-a', '^2.0.0'),
+      ])
       await (modal as any).loadInstalledPlugins()
 
       expect(modal.allPluginsSupported()).toBe(true)
     })
 
     it('empties the list before reloading it, rather than doubling it up', async () => {
-      const modal = open({ plugins: [installed('homebridge-a', '^2.0.0')] })
+      const modal = open({
+        plugins: [
+          installed('homebridge-a', '^2.0.0'),
+        ],
+      })
       await settle()
 
       await (modal as any).loadInstalledPlugins()
@@ -214,7 +261,12 @@ describe('hbV2ModalComponent', () => {
   describe('getting on with the update by itself', () => {
     it('closes and asks for the update when everything is ready', async () => {
       // This is the "do not stop to ask" path from the readiness button
-      open({ plugins: [installed('homebridge-a', '^2.0.0')], skipIfCompatible: true })
+      open({
+        plugins: [
+          installed('homebridge-a', '^2.0.0'),
+        ],
+        skipIfCompatible: true,
+      })
       await settle()
 
       expect(activeModal.close).toHaveBeenCalledWith('update')
@@ -228,14 +280,24 @@ describe('hbV2ModalComponent', () => {
     })
 
     it('stays open when a plugin cannot be vouched for', async () => {
-      open({ plugins: [installed('homebridge-a', '^1.8.0')], skipIfCompatible: true })
+      open({
+        plugins: [
+          installed('homebridge-a', '^1.8.0'),
+        ],
+        skipIfCompatible: true,
+      })
       await settle()
 
       expect(activeModal.close).not.toHaveBeenCalled()
     })
 
     it('stays open when it was not asked to skip', async () => {
-      open({ plugins: [installed('homebridge-a', '^2.0.0')], skipIfCompatible: false })
+      open({
+        plugins: [
+          installed('homebridge-a', '^2.0.0'),
+        ],
+        skipIfCompatible: false,
+      })
       await settle()
 
       expect(activeModal.close).not.toHaveBeenCalled()
@@ -266,7 +328,12 @@ describe('hbV2ModalComponent', () => {
 
     it('says nothing while the socket is down', async () => {
       // Asking would hang; the plugin list still loads from the cache
-      const modal = open({ connected: false, plugins: [installed('homebridge-a', '^2.0.0')] })
+      const modal = open({
+        connected: false,
+        plugins: [
+          installed('homebridge-a', '^2.0.0'),
+        ],
+      })
       await settle()
 
       expect(modal.nodeReady()).toBe(false)
@@ -293,7 +360,11 @@ describe('hbV2ModalComponent', () => {
     })
 
     it('stops once the list is in', async () => {
-      const modal = open({ plugins: [installed('homebridge-a', '^2.0.0')] })
+      const modal = open({
+        plugins: [
+          installed('homebridge-a', '^2.0.0'),
+        ],
+      })
       await settle()
 
       expect(modal.loading()).toBe(false)
@@ -312,7 +383,11 @@ describe('hbV2ModalComponent', () => {
 
   describe('the rest of the modal', () => {
     it('falls back to the homebridge icon for a plugin with none', async () => {
-      const modal = open({ plugins: [installed('homebridge-a', '^2.0.0')] })
+      const modal = open({
+        plugins: [
+          installed('homebridge-a', '^2.0.0'),
+        ],
+      })
       await settle()
       const plugin = modal.installedPlugins()[0]
 

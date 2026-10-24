@@ -73,9 +73,16 @@ describe('managePluginComponent', () => {
     modal = modalServiceSpy()
     ws = fakeWs()
     io = ws.namespace('plugins')
-    pluginsCache = cacheStub<any[]>([makePlugin()])
-    childBridges = { getAll: vi.fn(async () => []), invalidate: vi.fn() }
-    backup = { downloadBackup: vi.fn(async () => undefined) }
+    pluginsCache = cacheStub<any[]>([
+      makePlugin(),
+    ])
+    childBridges = {
+      getAll: vi.fn(async () => []),
+      invalidate: vi.fn(),
+    }
+    backup = {
+      downloadBackup: vi.fn(async () => undefined),
+    }
 
     xterm = fakeTerminals()
 
@@ -87,7 +94,14 @@ describe('managePluginComponent', () => {
         { provide: SAVE_AS, useValue: saveAs },
         provideRouter([]),
         provideTestTranslate(),
-        provideFakes({ api, settings, toastr, activeModal, modal, ws }),
+        provideFakes({
+          api,
+          settings,
+          toastr,
+          activeModal,
+          modal,
+          ws,
+        }),
         { provide: PluginsCacheService, useValue: pluginsCache },
         { provide: ChildBridgesService, useValue: childBridges },
         { provide: BackupService, useValue: backup },
@@ -170,7 +184,12 @@ describe('managePluginComponent', () => {
 
       expect(io.requests[0]).toEqual({
         resource: 'install',
-        payload: { name: 'homebridge-test', version: '2.0.0', termCols: 80, termRows: 24 },
+        payload: {
+          name: 'homebridge-test',
+          version: '2.0.0',
+          termCols: 80,
+          termRows: 24,
+        },
       })
     })
 
@@ -325,7 +344,9 @@ describe('managePluginComponent', () => {
     it('offers a restart when the plugin has child bridges, even unconfigured', async () => {
       const modalRef = await open({ action: 'Update', targetVersion: 'latest', isConfigured: false }, () => {
         io.socket.respondTo('update', {})
-        childBridges.getAll = vi.fn(async () => [makeChildBridge({ plugin: 'homebridge-test' })])
+        childBridges.getAll = vi.fn(async () => [
+          makeChildBridge({ plugin: 'homebridge-test' }),
+        ])
       })
 
       modalRef.update()
@@ -340,7 +361,9 @@ describe('managePluginComponent', () => {
     it('ignores child bridges belonging to other plugins', async () => {
       const modalRef = await open({ action: 'Update', targetVersion: 'latest', isConfigured: false }, () => {
         io.socket.respondTo('update', {})
-        childBridges.getAll = vi.fn(async () => [makeChildBridge({ plugin: 'homebridge-other' })])
+        childBridges.getAll = vi.fn(async () => [
+          makeChildBridge({ plugin: 'homebridge-other' }),
+        ])
       })
 
       modalRef.update()
@@ -613,7 +636,9 @@ describe('managePluginComponent', () => {
         pluginName: 'homebridge-config-ui-x',
         targetVersion: 'latest',
         verifiedPlugin: true,
-        funding: [{ type: 'github', url: 'https://github.com/sponsors/someone' }],
+        funding: [
+          { type: 'github', url: 'https://github.com/sponsors/someone' },
+        ],
       })
 
       // These are the project's own packages; asking users to donate to them
@@ -627,7 +652,9 @@ describe('managePluginComponent', () => {
         action: 'Update',
         targetVersion: 'latest',
         verifiedPlugin: true,
-        funding: [{ type: 'github', url: 'https://github.com/sponsors/someone' }],
+        funding: [
+          { type: 'github', url: 'https://github.com/sponsors/someone' },
+        ],
       })
 
       expect(modalRef.supportMessageKey()).toBe('plugins.manage.support_donate')
@@ -680,7 +707,9 @@ describe('managePluginComponent', () => {
         action: 'Update',
         targetVersion: 'latest',
         verifiedPlugin: true,
-        funding: [{ type: 'patreon' }],
+        funding: [
+          { type: 'patreon' },
+        ],
       })
 
       expect(modalRef.supportMessageKey()).toBe('plugins.manage.support_github')
@@ -708,7 +737,9 @@ describe('managePluginComponent', () => {
       const modalRef = await open({
         action: 'Update',
         targetVersion: 'latest',
-        funding: [{ url: 'https://ko-fi.com/someone' }],
+        funding: [
+          { url: 'https://ko-fi.com/someone' },
+        ],
       })
 
       expect(modalRef.supportMessageKey()).toBe('plugins.manage.support_github')
@@ -786,7 +817,9 @@ describe('managePluginComponent', () => {
       const modalRef = await open({ action: 'Update', targetVersion: 'latest' }, () => {
         api.fail('put', /\/server\/restart\//, new Error('not running'))
       })
-      modalRef.childBridges.set([makeChildBridge()])
+      modalRef.childBridges.set([
+        makeChildBridge(),
+      ])
 
       await modalRef.onRestartChildBridgeClick()
 

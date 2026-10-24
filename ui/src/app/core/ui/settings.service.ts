@@ -151,7 +151,9 @@ export class SettingsService implements OnDestroy {
       this.lightingMode = lightingMode
     }
     this.currentLightingMode = lightingMode
-    this.actualLightingMode = this.currentLightingMode === 'auto' ? this.browserLightingMode : this.currentLightingMode
+    this.actualLightingMode = this.currentLightingMode === 'auto'
+      ? this.browserLightingMode
+      : this.currentLightingMode
     if (this.theme) {
       this.setTheme(this.theme)
     }

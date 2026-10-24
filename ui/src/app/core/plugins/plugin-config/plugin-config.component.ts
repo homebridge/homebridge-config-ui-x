@@ -157,13 +157,16 @@ export class PluginConfigComponent implements OnInit {
     const __uuid__ = uuid()
     const schema = this.schema
 
-    this.pluginConfig.update(current => [...current, {
-      __uuid__,
-      name: schema.pluginAlias,
-      config: {
-        [this.pluginType()]: schema.pluginAlias,
+    this.pluginConfig.update(current => [
+      ...current,
+      {
+        __uuid__,
+        name: schema.pluginAlias,
+        config: {
+          [this.pluginType()]: schema.pluginAlias,
+        },
       },
-    }])
+    ])
 
     this.formBlocksValid.update(current => ({ ...current, [__uuid__]: false }))
     this.blockShown(__uuid__)

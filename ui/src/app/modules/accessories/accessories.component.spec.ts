@@ -97,7 +97,15 @@ describe('accessoriesComponent', () => {
       providers: [
         provideRouter([]),
         provideTestTranslate(),
-        provideFakes({ settings, ws, modal, toastr: toastrStub(), auth: makeAuth({ user: { admin: options.admin ?? true } }) }),
+        provideFakes({
+          settings,
+          ws,
+          modal,
+          toastr: toastrStub(),
+          auth: makeAuth({
+            user: { admin: options.admin ?? true },
+          }),
+        }),
         { provide: AccessoriesService, useValue: accessories },
         { provide: DragulaService, useValue: dragula },
       ],
@@ -106,7 +114,10 @@ describe('accessoriesComponent', () => {
     // The tiles are covered by their own routing spec, and dragula needs a real
     // layout to do anything useful
     TestBed.overrideComponent(AccessoriesComponent, {
-      set: { imports: [TranslatePipe], schemas: [NO_ERRORS_SCHEMA] },
+      set: {
+        imports: [TranslatePipe],
+        schemas: [NO_ERRORS_SCHEMA],
+      },
     })
 
     const fixture = TestBed.createComponent(AccessoriesComponent)
@@ -151,7 +162,10 @@ describe('accessoriesComponent', () => {
     })
 
     it('shows every bridge the first time the page is opened', async () => {
-      const page = await open({ availableBridges: ['Homebridge', 'Hue'], selectedBridges: null })
+      const page = await open({
+        availableBridges: ['Homebridge', 'Hue'],
+        selectedBridges: null,
+      })
 
       // A brand new user has never chosen a filter, and an empty selection means
       // nothing at all is shown
@@ -159,7 +173,10 @@ describe('accessoriesComponent', () => {
     })
 
     it('keeps a filter the user chose earlier', async () => {
-      const page = await open({ availableBridges: ['Homebridge', 'Hue'], selectedBridges: ['Hue'] })
+      const page = await open({
+        availableBridges: ['Homebridge', 'Hue'],
+        selectedBridges: ['Hue'],
+      })
 
       // The selection lives on the service so it survives navigating away and
       // back
@@ -183,11 +200,16 @@ describe('accessoriesComponent', () => {
 
     it('offers the filter only when there is something to filter', async () => {
       expect((await open({ availableBridges: [] })).shouldShowFilters()).toBe(false)
-      expect((await open({ availableBridges: ['Homebridge'] })).shouldShowFilters()).toBe(true)
+      expect((await open({
+        availableBridges: ['Homebridge'],
+      })).shouldShowFilters()).toBe(true)
     })
 
     it('hides the filter when no plugins are installed', async () => {
-      const page = await open({ availableBridges: ['Homebridge'], env: { hasInstalledPlugins: false } })
+      const page = await open({
+        availableBridges: ['Homebridge'],
+        env: { hasInstalledPlugins: false },
+      })
 
       expect(page.shouldShowFilters()).toBe(false)
     })
@@ -203,19 +225,28 @@ describe('accessoriesComponent', () => {
 
   describe('deciding which tiles to show', () => {
     it('shows an accessory from a selected bridge', async () => {
-      const page = await open({ availableBridges: ['Homebridge'], selectedBridges: ['Homebridge'] })
+      const page = await open({
+        availableBridges: ['Homebridge'],
+        selectedBridges: ['Homebridge'],
+      })
 
       expect(page.shouldDisplayService(makeService())).toBe(true)
     })
 
     it('hides an accessory from a bridge that is filtered out', async () => {
-      const page = await open({ availableBridges: ['Homebridge', 'Hue'], selectedBridges: ['Hue'] })
+      const page = await open({
+        availableBridges: ['Homebridge', 'Hue'],
+        selectedBridges: ['Hue'],
+      })
 
       expect(page.shouldDisplayService(makeService())).toBe(false)
     })
 
     it('hides everything when no bridge is selected', async () => {
-      const page = await open({ availableBridges: ['Homebridge'], selectedBridges: [] })
+      const page = await open({
+        availableBridges: ['Homebridge'],
+        selectedBridges: [],
+      })
       page.selectedBridges.set([])
 
       expect(page.shouldDisplayService(makeService())).toBe(false)
@@ -232,7 +263,9 @@ describe('accessoriesComponent', () => {
       const page = await open({
         availableBridges: ['Kitchen Bridge'],
         selectedBridges: ['Kitchen Bridge'],
-        bridgeNames: new Map([['0E:11:11:11:11:11', 'Kitchen Bridge']]),
+        bridgeNames: new Map([
+          ['0E:11:11:11:11:11', 'Kitchen Bridge'],
+        ]),
       })
 
       // The bridge name in the filter is the one from the child-bridge socket,
@@ -242,27 +275,39 @@ describe('accessoriesComponent', () => {
     })
 
     it('hides a hidden accessory', async () => {
-      const page = await open({ availableBridges: ['Homebridge'], selectedBridges: ['Homebridge'] })
+      const page = await open({
+        availableBridges: ['Homebridge'],
+        selectedBridges: ['Homebridge'],
+      })
 
       expect(page.shouldDisplayService(makeService({ hidden: true }))).toBe(false)
     })
 
     it('shows a hidden accessory once the user asks for it', async () => {
-      const page = await open({ availableBridges: ['Homebridge'], selectedBridges: ['Homebridge'] })
+      const page = await open({
+        availableBridges: ['Homebridge'],
+        selectedBridges: ['Homebridge'],
+      })
       page.hideHidden.set(false)
 
       expect(page.shouldDisplayService(makeService({ hidden: true }))).toBe(true)
     })
 
     it('shows an accessory with no bridge of its own', async () => {
-      const page = await open({ availableBridges: ['Homebridge'], selectedBridges: [] })
+      const page = await open({
+        availableBridges: ['Homebridge'],
+        selectedBridges: [],
+      })
 
       // Nothing to filter it by, so filtering it out would make it unreachable
       expect(page.shouldDisplayService(makeService({ instance: undefined }))).toBe(true)
     })
 
     it('shows absolutely everything in manage layout mode', async () => {
-      const page = await open({ availableBridges: ['Homebridge', 'Hue'], selectedBridges: ['Hue'] })
+      const page = await open({
+        availableBridges: ['Homebridge', 'Hue'],
+        selectedBridges: ['Hue'],
+      })
 
       page.toggleManageLayout()
 
@@ -275,7 +320,10 @@ describe('accessoriesComponent', () => {
 
   describe('manage layout mode', () => {
     it('unlocks the layout and remembers the filter', async () => {
-      const page = await open({ availableBridges: ['Homebridge', 'Hue'], selectedBridges: ['Hue'] })
+      const page = await open({
+        availableBridges: ['Homebridge', 'Hue'],
+        selectedBridges: ['Hue'],
+      })
 
       page.toggleManageLayout()
 
@@ -284,7 +332,10 @@ describe('accessoriesComponent', () => {
     })
 
     it('puts the filter back when the user leaves it', async () => {
-      const page = await open({ availableBridges: ['Homebridge', 'Hue'], selectedBridges: ['Hue'] })
+      const page = await open({
+        availableBridges: ['Homebridge', 'Hue'],
+        selectedBridges: ['Hue'],
+      })
 
       page.toggleManageLayout()
       page.toggleManageLayout()
@@ -297,7 +348,10 @@ describe('accessoriesComponent', () => {
     })
 
     it('shows no bridge as selected while rearranging', async () => {
-      const page = await open({ availableBridges: ['Homebridge', 'Hue'], selectedBridges: ['Hue'] })
+      const page = await open({
+        availableBridges: ['Homebridge', 'Hue'],
+        selectedBridges: ['Hue'],
+      })
 
       page.toggleManageLayout()
 
@@ -308,7 +362,10 @@ describe('accessoriesComponent', () => {
     })
 
     it('leaves manage mode when a bridge is picked from the filter', async () => {
-      const page = await open({ availableBridges: ['Homebridge', 'Hue'], selectedBridges: ['Hue'] })
+      const page = await open({
+        availableBridges: ['Homebridge', 'Hue'],
+        selectedBridges: ['Hue'],
+      })
       page.toggleManageLayout()
 
       page.toggleBridge('Homebridge')
@@ -321,7 +378,10 @@ describe('accessoriesComponent', () => {
     })
 
     it('leaves manage mode when all bridges are picked', async () => {
-      const page = await open({ availableBridges: ['Homebridge', 'Hue'], selectedBridges: ['Hue'] })
+      const page = await open({
+        availableBridges: ['Homebridge', 'Hue'],
+        selectedBridges: ['Hue'],
+      })
       page.toggleManageLayout()
 
       page.clearBridgeFilter()
@@ -332,7 +392,10 @@ describe('accessoriesComponent', () => {
     })
 
     it('does not restore the old filter when leaving through the filter', async () => {
-      const page = await open({ availableBridges: ['Homebridge', 'Hue'], selectedBridges: ['Hue'] })
+      const page = await open({
+        availableBridges: ['Homebridge', 'Hue'],
+        selectedBridges: ['Hue'],
+      })
       page.toggleManageLayout()
       page.toggleBridge('Homebridge')
 
@@ -406,7 +469,10 @@ describe('accessoriesComponent', () => {
 
   describe('the bridge filter', () => {
     it('adds and removes a bridge', async () => {
-      const page = await open({ availableBridges: ['Homebridge', 'Hue'], selectedBridges: ['Homebridge'] })
+      const page = await open({
+        availableBridges: ['Homebridge', 'Hue'],
+        selectedBridges: ['Homebridge'],
+      })
 
       page.toggleBridge('Hue')
       expect(page.selectedBridges()).toEqual(['Homebridge', 'Hue'])
@@ -416,14 +482,20 @@ describe('accessoriesComponent', () => {
     })
 
     it('reports which bridges are selected', async () => {
-      const page = await open({ availableBridges: ['Homebridge', 'Hue'], selectedBridges: ['Hue'] })
+      const page = await open({
+        availableBridges: ['Homebridge', 'Hue'],
+        selectedBridges: ['Hue'],
+      })
 
       expect(page.isBridgeSelected('Hue')).toBe(true)
       expect(page.isBridgeSelected('Homebridge')).toBe(false)
     })
 
     it('knows when everything is shown', async () => {
-      const page = await open({ availableBridges: ['Homebridge', 'Hue'], selectedBridges: ['Homebridge', 'Hue'] })
+      const page = await open({
+        availableBridges: ['Homebridge', 'Hue'],
+        selectedBridges: ['Homebridge', 'Hue'],
+      })
 
       expect(page.isShowingAllBridges).toBe(true)
     })
@@ -437,7 +509,10 @@ describe('accessoriesComponent', () => {
     })
 
     it('unselects everything when all are already selected', async () => {
-      const page = await open({ availableBridges: ['Homebridge', 'Hue'], selectedBridges: ['Homebridge', 'Hue'] })
+      const page = await open({
+        availableBridges: ['Homebridge', 'Hue'],
+        selectedBridges: ['Homebridge', 'Hue'],
+      })
 
       page.clearBridgeFilter()
 
@@ -445,7 +520,10 @@ describe('accessoriesComponent', () => {
     })
 
     it('selects everything when only some are selected', async () => {
-      const page = await open({ availableBridges: ['Homebridge', 'Hue'], selectedBridges: ['Hue'] })
+      const page = await open({
+        availableBridges: ['Homebridge', 'Hue'],
+        selectedBridges: ['Hue'],
+      })
 
       page.clearBridgeFilter()
 
@@ -453,7 +531,10 @@ describe('accessoriesComponent', () => {
     })
 
     it('locks the layout again whenever the filter changes', async () => {
-      const page = await open({ availableBridges: ['Homebridge', 'Hue'], selectedBridges: ['Hue'] })
+      const page = await open({
+        availableBridges: ['Homebridge', 'Hue'],
+        selectedBridges: ['Hue'],
+      })
       page.toggleLayoutLock()
       expect(page.layoutLocked()).toBe(false)
 
@@ -465,7 +546,10 @@ describe('accessoriesComponent', () => {
     })
 
     it('locks the layout again when the filter is cleared', async () => {
-      const page = await open({ availableBridges: ['Homebridge', 'Hue'], selectedBridges: ['Hue'] })
+      const page = await open({
+        availableBridges: ['Homebridge', 'Hue'],
+        selectedBridges: ['Hue'],
+      })
       page.toggleLayoutLock()
 
       page.clearBridgeFilter()
@@ -476,20 +560,33 @@ describe('accessoriesComponent', () => {
 
   describe('the rooms', () => {
     it('reads and writes the layout through the service', async () => {
-      const page = await open({ rooms: [{ name: 'Default Room', isDefault: true, services: [] }] })
+      const page = await open({
+        rooms: [
+          { name: 'Default Room', isDefault: true, services: [] },
+        ],
+      })
 
       expect(page.rooms.map(room => room.name)).toEqual(['Default Room'])
 
-      page.rooms = [{ name: 'Kitchen', services: [] }]
+      page.rooms = [
+        { name: 'Kitchen', services: [] },
+      ]
       // The service owns this so it survives navigation, and the setter is what
       // dragula's two-way binding writes through
       expect(accessories.rooms().map((room: any) => room.name)).toEqual(['Kitchen'])
     })
 
     it('replaces only the room that was reordered', async () => {
-      const kitchen = { name: 'Kitchen', services: [makeService()] }
+      const kitchen = {
+        name: 'Kitchen',
+        services: [
+          makeService(),
+        ],
+      }
       const hall = { name: 'Hall', services: [] }
-      const page = await open({ rooms: [kitchen, hall] })
+      const page = await open({
+        rooms: [kitchen, hall],
+      })
 
       page.onServicesReorder(kitchen, [])
 
@@ -529,7 +626,9 @@ describe('accessoriesComponent', () => {
 
     it('learns the child bridge names from the socket', async () => {
       const page = await open({
-        childBridges: [{ username: '0E:11:11:11:11:11', name: 'Kitchen Bridge' }],
+        childBridges: [
+          { username: '0E:11:11:11:11:11', name: 'Kitchen Bridge' },
+        ],
         availableBridges: ['Kitchen Bridge'],
         selectedBridges: ['Kitchen Bridge'],
       })
@@ -540,7 +639,10 @@ describe('accessoriesComponent', () => {
     })
 
     it('picks up a bridge renamed while the page is open', async () => {
-      const page = await open({ availableBridges: ['Kitchen Bridge'], selectedBridges: ['Kitchen Bridge'] })
+      const page = await open({
+        availableBridges: ['Kitchen Bridge'],
+        selectedBridges: ['Kitchen Bridge'],
+      })
 
       childIo.socket.fire('child-bridge-status-update', { username: '0E:11:11:11:11:11', name: 'Kitchen Bridge' })
 
@@ -550,7 +652,9 @@ describe('accessoriesComponent', () => {
     it('re-reads the available bridges when the accessories change', async () => {
       const page = await open({ availableBridges: [] })
 
-      accessoryData.next([makeService()])
+      accessoryData.next([
+        makeService(),
+      ])
       await Promise.resolve()
 
       // A plugin restarting adds and removes bridges, so the filter list cannot
@@ -567,7 +671,9 @@ describe('accessoriesComponent', () => {
     })
 
     it('reports whether accessory control is switched on at all', async () => {
-      expect((await open({ env: { enableAccessories: false } })).enableAccessories).toBe(false)
+      expect((await open({
+        env: { enableAccessories: false },
+      })).enableAccessories).toBe(false)
       expect((await open()).enableAccessories).toBe(true)
     })
   })
@@ -597,7 +703,11 @@ describe('accessoriesComponent', () => {
     describe('adding one', () => {
       it('tells the modal which rooms already exist', async () => {
         // So it can refuse a duplicate name
-        const page = await open({ rooms: [room('Kitchen')] })
+        const page = await open({
+          rooms: [
+            room('Kitchen'),
+          ],
+        })
 
         void page.addRoom()
         await settle()
@@ -607,7 +717,11 @@ describe('accessoriesComponent', () => {
       })
 
       it('adds the room and saves the layout', async () => {
-        const page = await open({ rooms: [room('Kitchen', { isDefault: true })] })
+        const page = await open({
+          rooms: [
+            room('Kitchen', { isDefault: true }),
+          ],
+        })
 
         void page.addRoom()
         await settle()
@@ -631,7 +745,11 @@ describe('accessoriesComponent', () => {
 
       it('makes it the only default when it is added as one', async () => {
         // Two default rooms would fight over every new accessory
-        const page = await open({ rooms: [room('Kitchen', { isDefault: true })] })
+        const page = await open({
+          rooms: [
+            room('Kitchen', { isDefault: true }),
+          ],
+        })
 
         void page.addRoom()
         await settle()
@@ -642,7 +760,11 @@ describe('accessoriesComponent', () => {
       })
 
       it('leaves the layout alone when the modal is dismissed', async () => {
-        const page = await open({ rooms: [room('Kitchen')] })
+        const page = await open({
+          rooms: [
+            room('Kitchen'),
+          ],
+        })
 
         void page.addRoom()
         await settle()
@@ -654,7 +776,11 @@ describe('accessoriesComponent', () => {
       })
 
       it('adds nothing for a nameless room', async () => {
-        const page = await open({ rooms: [room('Kitchen')] })
+        const page = await open({
+          rooms: [
+            room('Kitchen'),
+          ],
+        })
 
         void page.addRoom()
         await settle()
@@ -665,7 +791,11 @@ describe('accessoriesComponent', () => {
       })
 
       it('unlocks the layout, so the new room can be filled', async () => {
-        const page = await open({ rooms: [room('Kitchen')] })
+        const page = await open({
+          rooms: [
+            room('Kitchen'),
+          ],
+        })
         expect(page.layoutLocked()).toBe(true)
 
         void page.addRoom()
@@ -679,7 +809,12 @@ describe('accessoriesComponent', () => {
 
     describe('renaming one', () => {
       it('tells the modal the room it is editing, and which one that is', async () => {
-        const page = await open({ rooms: [room('Kitchen'), room('Hall')] })
+        const page = await open({
+          rooms: [
+            room('Kitchen'),
+            room('Hall'),
+          ],
+        })
 
         void page.editRoom(1)
         await settle()
@@ -690,19 +825,33 @@ describe('accessoriesComponent', () => {
 
       it('renames it in place, keeping its accessories', async () => {
         const service = makeService()
-        const page = await open({ rooms: [room('Kitchen', { services: [service] })] })
+        const page = await open({
+          rooms: [
+            room('Kitchen', {
+              services: [service],
+            }),
+          ],
+        })
 
         void page.editRoom(0)
         await settle()
         modal.lastOpened()!.ref.close({ name: 'Kitchenette', isDefault: false })
         await settle()
 
-        expect(accessories.rooms()[0]).toMatchObject({ name: 'Kitchenette', services: [service] })
+        expect(accessories.rooms()[0]).toMatchObject({
+          name: 'Kitchenette',
+          services: [service],
+        })
         expect(accessories.saveLayout).toHaveBeenCalled()
       })
 
       it('moves the default over when a room is made the default', async () => {
-        const page = await open({ rooms: [room('Kitchen', { isDefault: true }), room('Hall')] })
+        const page = await open({
+          rooms: [
+            room('Kitchen', { isDefault: true }),
+            room('Hall'),
+          ],
+        })
 
         void page.editRoom(1)
         await settle()
@@ -713,7 +862,11 @@ describe('accessoriesComponent', () => {
       })
 
       it('does nothing for a room index that is not there', async () => {
-        const page = await open({ rooms: [room('Kitchen')] })
+        const page = await open({
+          rooms: [
+            room('Kitchen'),
+          ],
+        })
 
         await page.editRoom(5)
 
@@ -721,7 +874,11 @@ describe('accessoriesComponent', () => {
       })
 
       it('leaves the room alone when the modal is dismissed', async () => {
-        const page = await open({ rooms: [room('Kitchen')] })
+        const page = await open({
+          rooms: [
+            room('Kitchen'),
+          ],
+        })
 
         void page.editRoom(0)
         await settle()
@@ -733,7 +890,11 @@ describe('accessoriesComponent', () => {
       })
 
       it('ignores a blank name', async () => {
-        const page = await open({ rooms: [room('Kitchen')] })
+        const page = await open({
+          rooms: [
+            room('Kitchen'),
+          ],
+        })
 
         void page.editRoom(0)
         await settle()
@@ -750,7 +911,12 @@ describe('accessoriesComponent', () => {
         // layout would be saved without them
         const service = makeService()
         const page = await open({
-          rooms: [room('Kitchen', { isDefault: true }), room('Spare', { services: [service] })],
+          rooms: [
+            room('Kitchen', { isDefault: true }),
+            room('Spare', {
+              services: [service],
+            }),
+          ],
         })
 
         void page.editRoom(1)
@@ -765,7 +931,13 @@ describe('accessoriesComponent', () => {
       it('hands the accessories of a deleted default room to another room', async () => {
         const service = makeService()
         const page = await open({
-          rooms: [room('Kitchen', { isDefault: true, services: [service] }), room('Hall')],
+          rooms: [
+            room('Kitchen', {
+              isDefault: true,
+              services: [service],
+            }),
+            room('Hall'),
+          ],
         })
 
         void page.editRoom(0)
@@ -781,7 +953,10 @@ describe('accessoriesComponent', () => {
         // Something has to be the default, or the next new accessory has nowhere
         // to land
         const page = await open({
-          rooms: [room('Kitchen', { isDefault: true }), room('Hall')],
+          rooms: [
+            room('Kitchen', { isDefault: true }),
+            room('Hall'),
+          ],
         })
 
         void page.editRoom(0)
@@ -794,7 +969,10 @@ describe('accessoriesComponent', () => {
 
       it('leaves the default where it is when deleting another room', async () => {
         const page = await open({
-          rooms: [room('Kitchen', { isDefault: true }), room('Spare')],
+          rooms: [
+            room('Kitchen', { isDefault: true }),
+            room('Spare'),
+          ],
         })
 
         void page.editRoom(1)
@@ -809,7 +987,12 @@ describe('accessoriesComponent', () => {
         // Older layouts predate the default-room flag
         const service = makeService()
         const page = await open({
-          rooms: [room('Kitchen'), room('Spare', { services: [service] })],
+          rooms: [
+            room('Kitchen'),
+            room('Spare', {
+              services: [service],
+            }),
+          ],
         })
 
         void page.editRoom(1)
@@ -821,7 +1004,12 @@ describe('accessoriesComponent', () => {
       })
 
       it('saves the layout afterwards', async () => {
-        const page = await open({ rooms: [room('Kitchen', { isDefault: true }), room('Spare')] })
+        const page = await open({
+          rooms: [
+            room('Kitchen', { isDefault: true }),
+            room('Spare'),
+          ],
+        })
 
         void page.editRoom(1)
         await settle()
@@ -832,7 +1020,12 @@ describe('accessoriesComponent', () => {
       })
 
       it('does not rename anything on the way out', async () => {
-        const page = await open({ rooms: [room('Kitchen', { isDefault: true }), room('Spare')] })
+        const page = await open({
+          rooms: [
+            room('Kitchen', { isDefault: true }),
+            room('Spare'),
+          ],
+        })
 
         void page.editRoom(1)
         await settle()
@@ -853,7 +1046,9 @@ describe('accessoriesComponent', () => {
    * their accessories for no reason. The list therefore only ever grows.
    */
   describe('the list of bridges to filter by', () => {
-    const service = (username: string, name: string) => makeService({ instance: { username, name } })
+    const service = (username: string, name: string) => makeService({
+      instance: { username, name },
+    })
     const room = (services: any[]) => ({ name: 'Kitchen', isDefault: true, services })
 
     /** Recompute the list from the current rooms. */
@@ -863,7 +1058,12 @@ describe('accessoriesComponent', () => {
 
     it('lists the bridge each accessory belongs to', async () => {
       const page = await open({
-        rooms: [room([service('0E:11:11:11:11:11', 'Homebridge'), service('0E:22:22:22:22:22', 'Kitchen Bridge')])],
+        rooms: [
+          room([
+            service('0E:11:11:11:11:11', 'Homebridge'),
+            service('0E:22:22:22:22:22', 'Kitchen Bridge'),
+          ]),
+        ],
       })
 
       recompute(page)
@@ -874,11 +1074,13 @@ describe('accessoriesComponent', () => {
     it('puts homebridge itself first, then the rest by name', async () => {
       // It is the one everybody has, and the list reads better with it at the top
       const page = await open({
-        rooms: [room([
-          service('0E:33:33:33:33:33', 'Zebra Bridge'),
-          service('0E:11:11:11:11:11', 'Homebridge'),
-          service('0E:22:22:22:22:22', 'Apple Bridge'),
-        ])],
+        rooms: [
+          room([
+            service('0E:33:33:33:33:33', 'Zebra Bridge'),
+            service('0E:11:11:11:11:11', 'Homebridge'),
+            service('0E:22:22:22:22:22', 'Apple Bridge'),
+          ]),
+        ],
       })
 
       recompute(page)
@@ -888,8 +1090,14 @@ describe('accessoriesComponent', () => {
 
     it('prefers the name the user gave a bridge in the config', async () => {
       const page = await open({
-        rooms: [room([service('0E:22:22:22:22:22', 'homebridge-example')])],
-        bridgeNames: new Map([['0E:22:22:22:22:22', 'My Own Name']]),
+        rooms: [
+          room([
+            service('0E:22:22:22:22:22', 'homebridge-example'),
+          ]),
+        ],
+        bridgeNames: new Map([
+          ['0E:22:22:22:22:22', 'My Own Name'],
+        ]),
       })
 
       recompute(page)
@@ -899,7 +1107,12 @@ describe('accessoriesComponent', () => {
 
     it('lists a bridge once however many accessories it has', async () => {
       const page = await open({
-        rooms: [room([service('0E:11:11:11:11:11', 'Homebridge'), service('0E:11:11:11:11:11', 'Homebridge')])],
+        rooms: [
+          room([
+            service('0E:11:11:11:11:11', 'Homebridge'),
+            service('0E:11:11:11:11:11', 'Homebridge'),
+          ]),
+        ],
       })
 
       recompute(page)
@@ -908,7 +1121,13 @@ describe('accessoriesComponent', () => {
     })
 
     it('ignores an accessory with no bridge attached', async () => {
-      const page = await open({ rooms: [room([makeService({ instance: undefined })])] })
+      const page = await open({
+        rooms: [
+          room([
+            makeService({ instance: undefined }),
+          ]),
+        ],
+      })
 
       recompute(page)
 
@@ -918,7 +1137,11 @@ describe('accessoriesComponent', () => {
     it('selects every bridge the first time the list is built', async () => {
       // The filter starts as "show everything"
       const page = await open({
-        rooms: [room([service('0E:11:11:11:11:11', 'Homebridge')])],
+        rooms: [
+          room([
+            service('0E:11:11:11:11:11', 'Homebridge'),
+          ]),
+        ],
         selectedBridges: null,
       })
 
@@ -929,11 +1152,20 @@ describe('accessoriesComponent', () => {
 
     it('keeps showing everything when a new bridge appears', async () => {
       const page = await open({
-        rooms: [room([service('0E:11:11:11:11:11', 'Homebridge')])],
+        rooms: [
+          room([
+            service('0E:11:11:11:11:11', 'Homebridge'),
+          ]),
+        ],
         availableBridges: ['Homebridge'],
         selectedBridges: ['Homebridge'],
       })
-      accessories.rooms.set([room([service('0E:11:11:11:11:11', 'Homebridge'), service('0E:22:22:22:22:22', 'New Bridge')])])
+      accessories.rooms.set([
+        room([
+          service('0E:11:11:11:11:11', 'Homebridge'),
+          service('0E:22:22:22:22:22', 'New Bridge'),
+        ]),
+      ])
 
       recompute(page)
 
@@ -943,15 +1175,22 @@ describe('accessoriesComponent', () => {
     it('leaves a narrowed filter narrowed when a new bridge appears', async () => {
       // The user deliberately hid a bridge; a new one must not undo that
       const page = await open({
-        rooms: [room([service('0E:11:11:11:11:11', 'Homebridge'), service('0E:22:22:22:22:22', 'Kitchen Bridge')])],
+        rooms: [
+          room([
+            service('0E:11:11:11:11:11', 'Homebridge'),
+            service('0E:22:22:22:22:22', 'Kitchen Bridge'),
+          ]),
+        ],
         availableBridges: ['Homebridge', 'Kitchen Bridge'],
         selectedBridges: ['Homebridge'],
       })
-      accessories.rooms.set([room([
-        service('0E:11:11:11:11:11', 'Homebridge'),
-        service('0E:22:22:22:22:22', 'Kitchen Bridge'),
-        service('0E:33:33:33:33:33', 'New Bridge'),
-      ])])
+      accessories.rooms.set([
+        room([
+          service('0E:11:11:11:11:11', 'Homebridge'),
+          service('0E:22:22:22:22:22', 'Kitchen Bridge'),
+          service('0E:33:33:33:33:33', 'New Bridge'),
+        ]),
+      ])
 
       recompute(page)
 
@@ -963,7 +1202,12 @@ describe('accessoriesComponent', () => {
       // is treated as the names not having arrived yet (see the case below), so a
       // bridge that really has gone is dropped when another appears in its place
       const page = await open({
-        rooms: [room([service('0E:11:11:11:11:11', 'Apple Bridge'), service('0E:33:33:33:33:33', 'New Bridge')])],
+        rooms: [
+          room([
+            service('0E:11:11:11:11:11', 'Apple Bridge'),
+            service('0E:33:33:33:33:33', 'New Bridge'),
+          ]),
+        ],
         availableBridges: ['Apple Bridge', 'Gone Bridge'],
         selectedBridges: ['Gone Bridge'],
       })
@@ -978,7 +1222,11 @@ describe('accessoriesComponent', () => {
       // The other half of the same rule: nothing is removed on a shrinking pass,
       // because the names may simply not have arrived yet
       const page = await open({
-        rooms: [room([service('0E:11:11:11:11:11', 'Apple Bridge')])],
+        rooms: [
+          room([
+            service('0E:11:11:11:11:11', 'Apple Bridge'),
+          ]),
+        ],
         availableBridges: ['Apple Bridge', 'Kitchen Bridge'],
         selectedBridges: ['Kitchen Bridge'],
       })
@@ -993,7 +1241,11 @@ describe('accessoriesComponent', () => {
       // fewer bridges. Shrinking here would deselect bridges the user is filtering
       // by and hide their accessories
       const page = await open({
-        rooms: [room([service('0E:11:11:11:11:11', 'Homebridge')])],
+        rooms: [
+          room([
+            service('0E:11:11:11:11:11', 'Homebridge'),
+          ]),
+        ],
         availableBridges: ['Homebridge', 'Kitchen Bridge'],
         selectedBridges: ['Homebridge', 'Kitchen Bridge'],
       })
@@ -1005,7 +1257,11 @@ describe('accessoriesComponent', () => {
 
     it('changes nothing when the list is the same as before', async () => {
       const page = await open({
-        rooms: [room([service('0E:11:11:11:11:11', 'Homebridge')])],
+        rooms: [
+          room([
+            service('0E:11:11:11:11:11', 'Homebridge'),
+          ]),
+        ],
         availableBridges: ['Homebridge'],
         selectedBridges: ['Homebridge'],
       })
