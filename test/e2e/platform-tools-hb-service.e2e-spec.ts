@@ -251,6 +251,27 @@ describe('PlatformToolsHbService (e2e)', () => {
     expect(res.body).toEqual(sampleLogData)
   })
 
+  it.each([
+    ['color=yes', true],
+    ['color=no', false],
+    ['color=yes&colour=no', true],
+    ['color=no&colour=yes', false],
+  ])('GET /platform-tools/hb-service/log/download?%s (keeps color codes: %s)', async (query, keepsColor) => {
+    const sampleLogData = '\u001B[0;32mgreen text\u001B[0m'
+    await writeFile(logFilePath, sampleLogData)
+
+    const res = await app.inject({
+      method: 'GET',
+      path: `/platform-tools/hb-service/log/download?${query}`,
+      headers: {
+        authorization,
+      },
+    })
+
+    expect(res.statusCode).toBe(200)
+    expect(res.body).toBe(keepsColor ? sampleLogData : 'green text')
+  })
+
   it('GET /platform-tools/hb-service/log/download (colored download completes through a slow reader)', async () => {
     // A chunked response fed utf8 strings with multi-byte characters can stall
     // under backpressure (https://github.com/nodejs/node/issues/66781). Injected
